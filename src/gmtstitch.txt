@@ -85,6 +85,10 @@ the complete segments to separate files called Map_segment_0001.dat,  Map_segmen
 .sp
 gmtstitch my_lines.txt -T150e -DMap_segment_%4.4d.dat
 .sp
+.SH BUGS
+The line connection does not work if a line only has a single point.  However, gmtstitch will correctly add
+the point to the nearest segment.  Running gmtstitch again on the new set of lines will eventually connect
+all close lines.
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR mapproject (1)

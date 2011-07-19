@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.307 2011-07-18 02:22:35 guru Exp $
+ *	$Id: gmt_io.c,v 1.308 2011-07-19 01:50:04 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1877,7 +1877,7 @@ GMT_LONG gmt_a_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 		C->current.io.status = GMT_IO_EOF;
 		return (-1);
 	}
-	for (i = strlen(line) - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);	/* Take out trailing whitespace */
+	for (i = strlen (line) - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);	/* Take out trailing whitespace */
 	line[++i] = '\0';
 	GMT_scanf (C, line, C->current.io.col_type[GMT_IN][GMT_Z], d);	/* Convert whatever it is to double */
 	*n = 1;

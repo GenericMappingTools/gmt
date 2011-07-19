@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.23 2011-07-16 00:10:38 guru Exp $
+ *	$Id: gmtstitch_func.c,v 1.24 2011-07-19 01:50:05 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -389,6 +389,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			else { /* No -C: Here we have a segment that is not closed.  Store refs to D[GMT_IN]->table and copy end points; more work on linking takes place below */
 			
+				if (np == 1) GMT_report (GMT, GMT_MSG_NORMAL, "Segment %ld only consists of a single point.  Stitching will take repeated runs\n", id);
 				seg[id].id = id;
 				seg[id].orig_id = ns;
 				seg[id].group = k;
@@ -496,7 +497,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			/* nearest_end indicates which end is closest to this end */
 			if (i == j) {	/* Store offset between the endpoints of a single segment (should be 0 if closed) */
 				dd[SEG_I][END_A] = dd[SEG_J][END_B] = DBL_MAX;
-				dd[SEG_I][END_B] = dd[SEG_J][END_A] = GMT_distance (GMT, seg[i].x_end[END_A], seg[i].y_end[END_A], seg[i].x_end[END_B], seg[i].y_end[END_B]);
+				dd[SEG_I][END_B] = dd[SEG_J][END_A] = (seg[i].n == 1) ? DBL_MAX : GMT_distance (GMT, seg[i].x_end[END_A], seg[i].y_end[END_A], seg[i].x_end[END_B], seg[i].y_end[END_B]);
     				nearest_end[SEG_I][END_A] = nearest_end[SEG_J][END_A] = END_B;
     				nearest_end[SEG_J][END_B] = nearest_end[SEG_I][END_B] = END_A;
 			}
@@ -532,8 +533,8 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->L.active) {	/* Write out the link information */
 		struct GMT_TEXTSET *LNK = NULL;
 		char name[GMT_BUFSIZ], name0[GMT_BUFSIZ], name1[GMT_BUFSIZ], *pp = NULL;
-		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtstitch_link.d");	/* Use default output filename */
-		dim_tscr[0] = 0;	dim_tscr[1] = 1;	dim_tscr[2] = ns;
+		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtstitch_link.txt");	/* Use default output filename */
+		dim_tscr[0] = 1;	dim_tscr[1] = 1;	dim_tscr[2] = ns;
 		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim_tscr, (void **)&LNK, -1, &ID))) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for link lists\n");
 			return (GMT_RUNTIME_ERROR);
@@ -545,17 +546,17 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		LNK->table[0]->header[0] = strdup (buffer);
 		for (i = 0; i < ns; i++) {
 			G = seg[i].group;	L = seg[i].pos;
-			if ((pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
+			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
 				strcpy (name, &pp[2]);
 				for (j = 0; name[j]; j++) if (name[j] == ' ') name[j] = '\0';		/* Just truncate after 1st word */
 			} else sprintf (name, "%ld", seg[i].orig_id);
 			G = seg[seg[i].buddy[0].id].group;	L = seg[seg[i].buddy[0].id].pos;
-			if ((pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
+			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
 				strcpy (name0, &pp[2]);
 				for (j = 0; name0[j]; j++) if (name0[j] == ' ') name0[j] = '\0';	/* Just truncate after 1st word */
 			} else sprintf (name0, "%ld", seg[i].buddy[0].orig_id);
 			G = seg[seg[i].buddy[1].id].group;	L = seg[seg[i].buddy[1].id].pos;
-			if ((pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
+			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
 				strcpy (name1, &pp[2]);
 				for (j = 0; name1[j]; j++) if (name1[j] == ' ') name1[j] = '\0';	/* Just truncate after 1st word */
 			} else sprintf (name1, "%ld", seg[i].buddy[1].orig_id);
@@ -563,6 +564,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				BE[seg[i].buddy[1].end_order], seg[i].buddy[1].dist, seg[i].buddy[1].next_dist);
 			LNK->table[0]->segment[0]->record[i] = strdup (buffer);
 		}
+		LNK->table[0]->n_records = LNK->table[0]->segment[0]->n_rows = ns;
 		if ((error = GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->L.file, (void *)LNK))) Return (error);
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&LNK);
 	}
@@ -584,7 +586,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #if DEBUG2
 		GMT_report (GMT, GMT_MSG_NORMAL, "%ld\n", seg[id].orig_id);
 #endif
-		while (!done && connect (seg, (int)id, (int)end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {
+		while (!done && connect (seg, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {
 			id2 = seg[id].buddy[end_order].id;
 #if DEBUG2
 			GMT_report (GMT, GMT_MSG_NORMAL, "%ld\n", seg[id2].orig_id);
