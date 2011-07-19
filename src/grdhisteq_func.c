@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdhisteq_func.c,v 1.18 2011-07-19 05:54:41 guru Exp $
+ *	$Id: grdhisteq_func.c,v 1.19 2011-07-19 06:02:58 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -190,8 +190,8 @@ float get_cell (float x, struct CELL *cell, GMT_LONG n_cells_m1, GMT_LONG last_c
 	return (0.0);	/* Cannot get here - just used to quiet compiler */
 }
 
-GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, char *outfile, GMT_LONG n_cells, GMT_LONG quadratic, GMT_LONG dump_intervals)
-{
+GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, char *outfile, GMT_LONG n_cells, GMT_LONG quadratic, GMT_LONG dump_intervals)
+{	/* Do basic histogram equalization */
 	GMT_LONG last_cell, n_cells_m1 = 0, current_cell, i, j, nxy, error, pad[4];
 	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
@@ -202,8 +202,8 @@ GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, ch
 	/* Sort the data and find the division points */
 
 	GMT_memcpy (pad, Grid->header->pad, 4, GMT_LONG);	/* Save the original pad */
-	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort */
-	if (outfile) Orig = GMT_duplicate_grid (GMT, Grid, TRUE); /* Must keep original */
+	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
+	if (outfile) Orig = GMT_duplicate_grid (GMT, Grid, TRUE); /* Must keep original if readonly */
 	GMT_sort_array (GMT, (void *)Grid->data, Grid->header->nm, GMT_FLOAT_TYPE);
 	
 	nxy = Grid->header->nm;
@@ -220,7 +220,7 @@ GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, ch
 		if (current_cell == (n_cells - 1))
 			j = nxy - 1;
 		else if (quadratic) {	/* Use y = 2x - x**2 scaling  */
-			target = ((double) (current_cell + 1)) / ((double) n_cells);
+			target = (current_cell + 1.0) / n_cells;
 			j = (GMT_LONG)floor (nxy * (1.0 - sqrt (1.0 - target)));
 		}
 		else	/* Use simple linear scale  */
@@ -229,7 +229,7 @@ GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, ch
 		cell[current_cell].low  = Grid->data[i];
 		cell[current_cell].high = Grid->data[j];
 
-		if (dump_intervals) {
+		if (dump_intervals) {	/* Write records to file or stdout */
 			out[GMT_X] = (double)Grid->data[i]; out[GMT_Y] = (double)Grid->data[j]; out[GMT_Z] = (double)current_cell;
 			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, (void *)out);
 		}
@@ -239,7 +239,6 @@ GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, ch
 	}
 	if (dump_intervals && (error = GMT_End_IO (GMT->parent, GMT_OUT, 0))) return (error);	/* Disables further data ioutput */
 	
-
 	if (outfile) {	/* Must re-read the grid and evaluate since it got sorted and trodden on... */
 		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (GMT_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
 		GMT_free_grid (GMT, &Orig, TRUE);
@@ -264,8 +263,8 @@ int compare_indices (const void *point_1, const void *point_2)
 	return (0);
 }
 
-GMT_LONG do_gaussian (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
-{
+GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
+{	/* Make an output grid file with standard normal scores */
 	GMT_LONG i = 0, j = 0, ij, row, col, nxy;
 	double dnxy;
 	struct INDEXED_DATA *indexed_data = NULL;
@@ -295,7 +294,7 @@ GMT_LONG do_gaussian (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
 	if (norm != 0.0) norm /= fabs (GMT_zcrit (GMT, (double)dnxy));	/* Normalize by abs(max score) */
 
 	for (i = 0; i < nxy; i++) {
-		indexed_data[i].x = (float)GMT_zcrit (GMT, (double)((i + 1) * dnxy));
+		indexed_data[i].x = (float)GMT_zcrit (GMT, (i + 1.0) * dnxy);
 		if (norm != 0.0) indexed_data[i].x *= (float)norm;
 	}
 
@@ -348,17 +347,17 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_grd_init (GMT, Out->header, options, TRUE);
 
 	if (Ctrl->N.active)
-		error = do_gaussian (GMT, Out, Ctrl->N.norm);
+		error = do_gaussian_scores (GMT, Out, Ctrl->N.norm);
 	else {
-		if (Ctrl->D.active) {	/* Initialize table output */
+		if (Ctrl->D.active) {	/* Initialize file/stdout for table output */
 			GMT_LONG out_ID;
 			if (Ctrl->D.file && (error = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, (void **)&Ctrl->D.file, NULL, NULL, &out_ID))) Return (EXIT_FAILURE);
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
 			if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
 			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);		/* Enables data output and sets access mode */
 		}
-		if ((error = do_usual (GMT, Out, Ctrl->In.file, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active))) Return (EXIT_FAILURE);	/* Read error */
-		/* do_usual will also call GMT_End_IO if Ctrl->D.active was TRUE */
+		if ((error = do_hist_equalization (GMT, Out, Ctrl->In.file, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active))) Return (EXIT_FAILURE);	/* Read error */
+		/* do_hist_equalization will also call GMT_End_IO if Ctrl->D.active was TRUE */
 	}
 	/* Initialize grid output */
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
