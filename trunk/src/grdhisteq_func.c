@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdhisteq_func.c,v 1.16 2011-06-25 01:59:47 guru Exp $
+ *	$Id: grdhisteq_func.c,v 1.17 2011-07-19 05:45:18 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -348,8 +348,9 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		error = do_gaussian (GMT, Out, Ctrl->N.norm);
 	else {
 		if (Ctrl->D.active) {	/* Initialize table output */
+			if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
 			if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
-			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);		/* Enables data input and sets access mode */
+			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);		/* Enables data output and sets access mode */
 		}
 		if ((error = do_usual (GMT, Out, Ctrl->In.file, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active))) Return (EXIT_FAILURE);	/* Read error */
 		/* do_usual will also call GMT_End_IO if Ctrl->D.active was TRUE */
