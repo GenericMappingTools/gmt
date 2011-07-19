@@ -4,7 +4,7 @@
 grdhisteq \- Perform histogram equalization for a grid 
 .SH SYNOPSIS
 BD(grdhisteq) IT(in_grdfile) [ OPT(G)IT(out_grdfile) ] 
-[ OPT(C)IT(n_cells) ] [ OPT(D) ] [ OPT(N)[IT(norm)] ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ]
+[ OPT(C)IT(n_cells) ] [ OPT(D)[IT(file)] ] [ OPT(N)[IT(norm)] ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 BD(grdhisteq) allows the user to find the data values which divide a given
 grid file into patches of equal area.  One common use of BD(grdhisteq) is in
@@ -48,7 +48,7 @@ OPT(C)IT(n_cells)
 Sets how many cells (or divisions) of data range to make.
 .TP
 OPT(D)
-Dump level information to standard output.
+Dump level information to IT(file), or standard output if no file is provided.
 .TP
 OPT(G)IT(out_grdfile)
 Name of output 2-D grid file.  Used with OPT(N) only.

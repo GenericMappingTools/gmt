@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdhisteq_func.c,v 1.17 2011-07-19 05:45:18 guru Exp $
+ *	$Id: grdhisteq_func.c,v 1.18 2011-07-19 05:54:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -35,8 +35,9 @@ struct GRDHISTEQ_CTRL {
 		GMT_LONG active;
 		GMT_LONG value;
 	} C;
-	struct D {	/* -D */
+	struct D {	/* -D[<file>] */
 		GMT_LONG active;
+		char *file;
 	} D;
 	struct G {	/* -G<file> */
 		GMT_LONG active;
@@ -73,6 +74,7 @@ void *New_grdhisteq_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 void Free_grdhisteq_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->In.file) free ((void *)C->In.file);	
+	if (C->D.file) free ((void *)C->D.file);	
 	if (C->G.file) free ((void *)C->G.file);	
 	GMT_free (GMT, C);	
 }
@@ -82,14 +84,14 @@ GMT_LONG GMT_grdhisteq_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdhisteq %s [API] - Perform histogram equalization for a grid\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C<n_cells>] [-D] [-N[<norm>]] [-Q]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_message (GMT, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C<n_cells>] [-D[<table>]] [-N[<norm>]] [-Q]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
 	GMT_message (GMT, "\t<ingrid> is name of input grid file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Set how many cells (divisions) of data range to make.\n");
-	GMT_message (GMT, "\t-D Dump level information to stdout.\n");
+	GMT_message (GMT, "\t-D Dump level information to <table> or stdout if not given.\n");
 	GMT_message (GMT, "\t-G Create an equalized output grid file called <outgrid>.\n");
 	GMT_message (GMT, "\t-N Use with -G to make an output grid file with standard normal scores.\n");
 	GMT_message (GMT, "\t   Append <norm> to normalize the scores to <-1,+1>.\n");
@@ -126,8 +128,9 @@ GMT_LONG GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl
 				Ctrl->C.active = TRUE;
 				Ctrl->C.value = atoi (opt->arg);
 				break;
-			case 'D':	/* Dump info to stdout */
+			case 'D':	/* Dump info to file or stdout */
 				Ctrl->D.active = TRUE;
+				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'G':	/* Output file for equalized grid */
 				Ctrl->G.active = TRUE;
@@ -348,6 +351,8 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		error = do_gaussian (GMT, Out, Ctrl->N.norm);
 	else {
 		if (Ctrl->D.active) {	/* Initialize table output */
+			GMT_LONG out_ID;
+			if (Ctrl->D.file && (error = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, (void **)&Ctrl->D.file, NULL, NULL, &out_ID))) Return (EXIT_FAILURE);
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
 			if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
 			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);		/* Enables data output and sets access mode */
