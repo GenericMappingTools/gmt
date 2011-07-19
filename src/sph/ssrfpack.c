@@ -1,4 +1,4 @@
-/* $Id: ssrfpack.c,v 1.10 2011-07-14 21:43:55 guru Exp $
+/* $Id: ssrfpack.c,v 1.11 2011-07-19 21:59:41 guru Exp $
  * ssrfpack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
@@ -6,7 +6,7 @@
 /* Need three functions from stripack.c: */
 extern doublereal store_(doublereal *);
 extern integer lstptr_(integer *, integer *, integer *, integer *);
-extern int trfind_(integer *, doublereal *, integer *, 
+extern integer trfind_(integer *, doublereal *, integer *, 
 	    doublereal *, doublereal *, doublereal *, integer *, integer *, 
 	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
 	    integer *, integer *);
@@ -22,7 +22,7 @@ double d_sign (doublereal *a, doublereal *b)
 
 static doublereal c_b23 = 1.0;
 
-/* Subroutine */ int aplyr_(doublereal *x, doublereal *y, doublereal *z__, 
+/* Subroutine */ integer aplyr_(doublereal *x, doublereal *y, doublereal *z__, 
 	doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy, 
 	doublereal *xp, doublereal *yp, doublereal *zp)
 {
@@ -105,7 +105,7 @@ L1:
     return 0;
 } /* aplyr_ */
 
-/* Subroutine */ int aplyrt_(doublereal *g1p, doublereal *g2p, doublereal *cx,
+/* Subroutine */ integer aplyrt_(doublereal *g1p, doublereal *g2p, doublereal *cx,
 	 doublereal *sx, doublereal *cy, doublereal *sy, doublereal *g)
 {
     static doublereal t;
@@ -240,7 +240,7 @@ doublereal arclen_(doublereal *p, doublereal *q)
     return ret_val;
 } /* arclen_ */
 
-/* Subroutine */ int snhcsh_(doublereal *x, doublereal *sinhm, doublereal *
+/* Subroutine */ integer snhcsh_(doublereal *x, doublereal *sinhm, doublereal *
 	coshm, doublereal *coshmm)
 {
     /* Initialized data */
@@ -325,7 +325,7 @@ doublereal arclen_(doublereal *p, doublereal *q)
     return 0;
 } /* snhcsh_ */
 
-/* Subroutine */ int arcint_(doublereal *p, doublereal *p1, doublereal *p2, 
+/* Subroutine */ integer arcint_(doublereal *p, doublereal *p1, doublereal *p2, 
 	doublereal *f1, doublereal *f2, doublereal *g1, doublereal *g2, 
 	doublereal *sigma, doublereal *f, doublereal *g, doublereal *gn)
 {
@@ -562,7 +562,7 @@ L2:
     return 0;
 } /* arcint_ */
 
-/* Subroutine */ int constr_(doublereal *xk, doublereal *yk, doublereal *zk, 
+/* Subroutine */ integer constr_(doublereal *xk, doublereal *yk, doublereal *zk, 
 	doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy)
 {
     /* Builtin functions */
@@ -969,7 +969,7 @@ doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doublereal *
     return ret_val;
 } /* fval_ */
 
-/* Subroutine */ int getsig_(integer *n, doublereal *x, doublereal *y, 
+/* Subroutine */ integer getsig_(integer *n, doublereal *x, doublereal *y, 
 	doublereal *z__, doublereal *h__, integer *list, integer *lptr, 
 	integer *lend, doublereal *grad, doublereal *tol, doublereal *sigma, 
 	doublereal *dsmax, integer *ier)
@@ -1198,7 +1198,7 @@ L1:
 
 L2:
 	lp1 = lptr[lp1];
-	n2 = (i__2 = list[lp1], abs(i__2));
+	n2 = (i__2 = list[lp1], GMT_abs(i__2));
 	if (n2 <= n1) {
 	    goto L9;
 	}
@@ -1526,7 +1526,7 @@ L12:
     return 0;
 } /* getsig_ */
 
-/* Subroutine */ int givens_(doublereal *a, doublereal *b, doublereal *c__, 
+/* Subroutine */ integer givens_(doublereal *a, doublereal *b, doublereal *c__, 
 	doublereal *s)
 {
     /* Builtin functions */
@@ -1637,7 +1637,7 @@ L12:
     return 0;
 } /* givens_ */
 
-/* Subroutine */ int grcoef_(doublereal *sigma, doublereal *d__, doublereal *sd)
+/* Subroutine */ integer grcoef_(doublereal *sigma, doublereal *d__, doublereal *sd)
 {
     /* Builtin functions */
     double exp(doublereal);
@@ -1716,7 +1716,7 @@ L12:
     return 0;
 } /* grcoef_ */
 
-/* Subroutine */ int gradg_(integer *n, doublereal *x, doublereal *y, 
+/* Subroutine */ integer gradg_(integer *n, doublereal *x, doublereal *y, 
 	doublereal *z__, doublereal *f, integer *list, integer *lptr, integer 
 	*lend, integer *iflgs, doublereal *sigma, integer *nit, doublereal *
 	dgmax, doublereal *grad, integer *ier)
@@ -1986,7 +1986,7 @@ L1:
 	lpj = lpl;
 L2:
 	lpj = lptr[lpj];
-	j = (i__2 = list[lpj], abs(i__2));
+	j = (i__2 = list[lpj], GMT_abs(i__2));
 
 /*   Compute the coordinates of J in the rotated system. */
 
@@ -2103,7 +2103,7 @@ L13:
     return 0;
 } /* gradg_ */
 
-/* Subroutine */ int getnp_(doublereal *x, doublereal *y, doublereal *z__, 
+/* Subroutine */ integer getnp_(doublereal *x, doublereal *y, doublereal *z__, 
 	integer *list, integer *lptr, integer *lend, integer *l, integer *
 	npts, doublereal *df, integer *ier)
 {
@@ -2240,7 +2240,7 @@ L13:
 /* Loop on neighbors NB of NI. */
 
 L2:
-	nb = (i__2 = list[lp], abs(i__2));
+	nb = (i__2 = list[lp], GMT_abs(i__2));
 	if (lend[nb] < 0) {
 	    goto L3;
 	}
@@ -2281,7 +2281,7 @@ L6:
     return 0;
 } /* getnp_ */
 
-/* Subroutine */ int setup_(doublereal *xi, doublereal *yi, doublereal *wi, 
+/* Subroutine */ integer setup_(doublereal *xi, doublereal *yi, doublereal *wi, 
 	doublereal *wk, doublereal *s1, doublereal *s2, doublereal *wt, 
 	doublereal *row)
 {
@@ -2351,7 +2351,7 @@ L6:
     return 0;
 } /* setup_ */
 
-/* Subroutine */ int rotate_(integer *n, doublereal *c__, doublereal *s, 
+/* Subroutine */ integer rotate_(integer *n, doublereal *c__, doublereal *s, 
 	doublereal *x, doublereal *y)
 {
     /* System generated locals */
@@ -2419,7 +2419,7 @@ L6:
     return 0;
 } /* rotate_ */
 
-/* Subroutine */ int gradl_(integer *n, integer *k, doublereal *x, doublereal 
+/* Subroutine */ integer gradl_(integer *n, integer *k, doublereal *x, doublereal 
 	*y, doublereal *z__, doublereal *w, integer *list, integer *lptr, 
 	integer *lend, doublereal *g, integer *ier)
 {
@@ -2816,7 +2816,7 @@ L14:
     return 0;
 } /* gradl_ */
 
-/* Subroutine */ int intrc0_(integer *n, doublereal *plat, doublereal *plon, 
+/* Subroutine */ integer intrc0_(integer *n, doublereal *plat, doublereal *plon, 
 	doublereal *x, doublereal *y, doublereal *z__, doublereal *w, integer 
 	*list, integer *lptr, integer *lend, integer *ist, doublereal *pw, 
 	integer *ier)
@@ -3076,7 +3076,7 @@ L13:
     return 0;
 } /* intrc0_ */
 
-/* Subroutine */ int intrc1_(integer *n, doublereal *plat, doublereal *plon, 
+/* Subroutine */ integer intrc1_(integer *n, doublereal *plat, doublereal *plon, 
 	doublereal *x, doublereal *y, doublereal *z__, doublereal *f, integer 
 	*list, integer *lptr, integer *lend, integer *iflgs, doublereal *
 	sigma, integer *iflgg, doublereal *grad, integer *ist, doublereal *fp,
@@ -3754,7 +3754,7 @@ L1:
 	if (lp1 != lpl) {
 	    goto L1;
 	}
-	if ((i__1 = list[lp1], abs(i__1)) != *n2) {
+	if ((i__1 = list[lp1], GMT_abs(i__1)) != *n2) {
 	    goto L11;
 	}
 
@@ -3769,7 +3769,7 @@ L3:
 	if (lp2 != lpl) {
 	    goto L3;
 	}
-	if ((i__1 = list[lp2], abs(i__1)) != *n1) {
+	if ((i__1 = list[lp2], GMT_abs(i__1)) != *n1) {
 	    goto L11;
 	}
     }
@@ -4292,7 +4292,7 @@ L1:
 	if (lp1 != lpl) {
 	    goto L1;
 	}
-	if ((i__1 = list[lp1], abs(i__1)) != *n2) {
+	if ((i__1 = list[lp1], GMT_abs(i__1)) != *n2) {
 	    goto L11;
 	}
 
@@ -4307,7 +4307,7 @@ L3:
 	if (lp2 != lpl) {
 	    goto L3;
 	}
-	if ((i__1 = list[lp2], abs(i__1)) != *n1) {
+	if ((i__1 = list[lp2], GMT_abs(i__1)) != *n1) {
 	    goto L11;
 	}
     }
@@ -4763,7 +4763,7 @@ L1:
 	if (lp1 != lpl) {
 	    goto L1;
 	}
-	if ((i__1 = list[lp1], abs(i__1)) != *n2) {
+	if ((i__1 = list[lp1], GMT_abs(i__1)) != *n2) {
 	    goto L11;
 	}
 
@@ -4778,7 +4778,7 @@ L3:
 	if (lp2 != lpl) {
 	    goto L3;
 	}
-	if ((i__1 = list[lp2], abs(i__1)) != *n1) {
+	if ((i__1 = list[lp2], GMT_abs(i__1)) != *n1) {
 	    goto L11;
 	}
     }
@@ -4928,7 +4928,7 @@ L11:
     return ret_val;
 } /* sig2_ */
 
-/* Subroutine */ int smsgs_(integer *n, doublereal *x, doublereal *y, 
+/* Subroutine */ integer smsgs_(integer *n, doublereal *x, doublereal *y, 
 	doublereal *z__, doublereal *u, integer *list, integer *lptr, integer 
 	*lend, integer *iflgs, doublereal *sigma, doublereal *w, doublereal *
 	p, integer *nit, doublereal *dfmax, doublereal *f, doublereal *grad, 
@@ -5113,7 +5113,7 @@ L1:
 	lpj = lpl;
 L2:
 	lpj = lptr[lpj];
-	j = (i__2 = list[lpj], abs(i__2));
+	j = (i__2 = list[lpj], GMT_abs(i__2));
 
 /*   Compute the coordinates of J in the rotated system. */
 
@@ -5247,7 +5247,7 @@ L7:
     return 0;
 } /* smsgs_ */
 
-/* Subroutine */ int smsurf_(integer *n, doublereal *x, doublereal *y, 
+/* Subroutine */ integer smsurf_(integer *n, doublereal *x, doublereal *y, 
 	doublereal *z__, doublereal *u, integer *list, integer *lptr, integer 
 	*lend, integer *iflgs, doublereal *sigma, doublereal *w, doublereal *
 	sm, doublereal *smtol, doublereal *gstol, integer *lprnt, doublereal *
@@ -5635,7 +5635,7 @@ L5:
     goto L3;
 } /* smsurf_ */
 
-/* Subroutine */ int unif_(integer *n, doublereal *x, doublereal *y, 
+/* Subroutine */ integer unif_(integer *n, doublereal *x, doublereal *y, 
 	doublereal *z__, doublereal *f, integer *list, integer *lptr, integer 
 	*lend, integer *iflgs, doublereal *sigma, integer *nrow, integer *ni, 
 	integer *nj, doublereal *plat, doublereal *plon, integer *iflgg, 
