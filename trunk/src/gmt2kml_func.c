@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.28 2011-07-15 20:00:17 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.29 2011-07-19 01:50:04 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -171,7 +171,7 @@ GMT_LONG GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "gmt2kml %s [API] - Convert GMT data tables to KML files for Google Earth\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmt2kml [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E]\n");
-	GMT_message (GMT, "\t[-Fe|s|t|l|p] [-Gf|n-|[+]<fill>] [-I<icon>] [-K] [-L<col:name>,<col:name>,...]\n");
+	GMT_message (GMT, "\t[-Fe|s|t|l|p] [-Gf|n[-|<fill>] [-I<icon>] [-K] [-L<col:name>,<col:name>,...]\n");
 	GMT_message (GMT, "\t[-N+|<template>|<name>] [-O] [-Q[e|s|t|l|p|n]<transp>] [-Ra|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
 	GMT_message (GMT, "\t[-T<title>[/<foldername>] [%s] [-W-|<pen>] [-Z<opts>]\n", GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
@@ -194,7 +194,7 @@ GMT_LONG GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Event requires a timestamp in the next column.\n");
 	GMT_message (GMT, "\t   Timespan requires begin and end timestamps in the next two columns\n");
 	GMT_message (GMT, "\t   (use NaN for unlimited begin and/or end times).\n");
-	GMT_rgb_syntax (GMT, 'G', "Set color for symbol/polygon fill (f) or label (n).");
+	GMT_rgb_syntax (GMT, 'G', "Set color for symbol/polygon fill (-Gf<color>) or label (-Gn<color>).");
 	GMT_message (GMT, "\t   Default polygon fill is lightorange with 75%% transparency.\n");
 	GMT_message (GMT, "\t   Default text label color is white.\n");
 	GMT_message (GMT, "\t   Use -Gf- to turn off polygon fill.\n");
@@ -330,7 +330,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 						if (opt->arg[1] == '-')
 				 			Ctrl->G.active[F_ID] = TRUE;
 						else if (!opt->arg[1] || GMT_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[F_ID])) {
-							GMT_fill_syntax (GMT, 'G', " ");
+							GMT_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
 							n_errors++;
 						}
 						break;
@@ -339,12 +339,12 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 						if (opt->arg[1] == '-')
 							Ctrl->t_transp = 0.0;
 						else if (!opt->arg[1] || GMT_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[N_ID])) {
-							GMT_fill_syntax (GMT, 'G', " ");
+							GMT_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
 							n_errors++;
 						}
 						break;
 					default:
-						GMT_fill_syntax (GMT, 'G', " ");
+						GMT_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
 						n_errors++;
 						break;
 				}
