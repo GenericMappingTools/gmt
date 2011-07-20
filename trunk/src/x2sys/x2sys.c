@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.166 2011-07-20 02:58:55 guru Exp $
+ *	$Id: x2sys.c,v 1.167 2011-07-20 23:40:37 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -862,7 +862,7 @@ GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, str
 	z = GMT_memory (C, NULL, s->n_out_columns, double *);
 	for (i = 0; i < s->n_out_columns; i++) z[i] = GMT_memory (C, NULL, C->current.io.ndim, double);
 
-	for (j = 0; j < C->current.io.ndim; j++) {
+	for (j = 0; j < (GMT_LONG)C->current.io.ndim; j++) {
 		if ((n_fields = C->current.io.input (C, fp, &n_expect, &in)) != s->n_out_columns) {
 			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_ncfile: Error reading file %s at record %ld\n", fname, (GMT_LONG)j);
 	     		return (GMT_GRDIO_READ_FAILED);
@@ -1537,8 +1537,8 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 			continue;	/* Return to top of while loop */
 		}
 		n_items = sscanf (&line[2], "%s %" GMT_LL "d %s %" GMT_LL "d %s %s", trk[0], &year[0], trk[1], &year[1], info[0], info[1]);
-		for (i = 0; i < strlen (trk[0]); i++) if (trk[0][i] == '.') trk[0][i] = '\0';
-		for (i = 0; i < strlen (trk[1]); i++) if (trk[1][i] == '.') trk[1][i] = '\0';
+		for (i = 0; i < (GMT_LONG)strlen (trk[0]); i++) if (trk[0][i] == '.') trk[0][i] = '\0';
+		for (i = 0; i < (GMT_LONG)strlen (trk[1]); i++) if (trk[1][i] == '.') trk[1][i] = '\0';
 		skip = FALSE;
 		if (!(coe_kind & 1) && !strcmp (trk[0], trk[1])) skip = TRUE;	/* Do not want internal crossovers */
 		if (!(coe_kind & 2) && strcmp (trk[0], trk[1])) skip = TRUE;	/* Do not want external crossovers */
