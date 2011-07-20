@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_list_func.c,v 1.10 2011-07-20 02:58:55 guru Exp $
+ *	$Id: x2sys_list_func.c,v 1.11 2011-07-20 23:40:37 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -227,7 +227,7 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 	n_errors += GMT_check_condition (GMT, GMT->current.io.multi_segments[GMT_OUT] && GMT->common.b.active[GMT_OUT], "Syntax error: Must use -F to specify output items.\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->F.flags, "Syntax error: Cannot use -M with binary output\n");
 	n_items = strlen (Ctrl->F.flags);
-	for (i = 0; i < strlen (Ctrl->F.flags); i++) {
+	for (i = 0; i < (GMT_LONG)strlen (Ctrl->F.flags); i++) {
 		if (!strchr (LETTERS, (int)Ctrl->F.flags[i])) {
 			GMT_report (GMT, GMT_MSG_FATAL, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
 			n_errors++;			
@@ -286,7 +286,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
  	/*---------------------------- This is the x2sys_list main code ----------------------------*/
 
-	for (i = 0; i < strlen (Ctrl->F.flags); i++) {
+	for (i = 0; i < (GMT_LONG)strlen (Ctrl->F.flags); i++) {
 		if (Ctrl->F.flags[i] == 'c' || Ctrl->F.flags[i] == 'z') check_for_NaN = TRUE; /* Do not output records where the crossover or values are NaN */
 		if (Ctrl->F.flags[i] == 'n') mixed = TRUE;		/* Both numbers and text */
 	}

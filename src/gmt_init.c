@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.559 2011-07-05 05:10:28 guru Exp $
+ *	$Id: gmt_init.c,v 1.560 2011-07-20 23:40:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -120,7 +120,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 	u = C->session.unit_name[C->current.setting.proj_length_unit][0];
 	s = C->session.u2u[GMT_INCH][C->current.setting.proj_length_unit];	/* Convert from internal inch to users unit */
 
-	for (k = 0; k < strlen (options); k++) {
+	for (k = 0; k < (GMT_LONG)strlen (options); k++) {
 
 		switch (options[k]) {
 

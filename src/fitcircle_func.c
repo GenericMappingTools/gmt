@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: fitcircle_func.c,v 1.15 2011-06-25 01:59:46 guru Exp $
+ *    $Id: fitcircle_func.c,v 1.16 2011-07-20 23:40:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -214,17 +214,15 @@ double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_LON
 double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_LONG ndata, double *center, double *gcpole, double *scpole, GMT_LONG norm, double *work, GMT_LONG mode, double slat)
 {
 	/* Find scpole, the pole to the best-fit small circle, 
-		by L(norm) iterative search along arc between
-		center and +/- gcpole, the pole to the best fit
-		great circle.  */
+	   by L(norm) iterative search along arc between center
+	   and +/- gcpole, the pole to the best fit great circle.  */
 
 	GMT_LONG i, j;
 	double temppole[3], a[3], b[3], oldpole[3];
 	double trypos, tryneg, afit, bfit, afactor, bfactor, fit, oldfit;
 	double length_ab, length_aold, length_bold, circle_distance;
 
-	/* First find out if solution is between center and gcpole,
-		or center and -gcpole */
+	/* First find out if solution is between center and gcpole, or center and -gcpole */
 
 	GMT_add3v (GMT, center, gcpole, temppole);
 	GMT_normalize3v (GMT, temppole);
@@ -243,8 +241,17 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_
 		GMT_cpy3v (b, gcpole);
 	}
 
-	/* Now a is at center and b is at pole on correct side.
-	  Try to bracket a minimum.  Move from b toward a in 1 degree steps */
+	/* Now a is at center and b is at pole on correct side. */
+	
+	if (mode) {	/* Want a specified latitude */
+		sincosd (slat, &afactor, &bfactor);
+		for (i = 0; i < 3; i++) scpole[i] = (afactor * a[i] + bfactor * b[i]);
+		GMT_normalize3v (GMT, scpole);
+		fit = circle_misfit (GMT, data, ndata, scpole, norm, work, &circle_distance);
+		return (90.0-slat);
+	}
+	
+	/*  Try to bracket a minimum.  Move from b toward a in 1 degree steps */
 
 	afit = circle_misfit (GMT, data, ndata, a, norm, work, &circle_distance);
 	bfit = circle_misfit (GMT, data, ndata, b, norm, work, &circle_distance);
@@ -258,8 +265,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_
 		j++;
 	} while (j < 90 && fit > bfit && fit > afit);
 
-	if (j == 90) {
-		/* Bad news.  There isn't a better fitting pole anywhere.  */
+	if (j == 90) {	/* Bad news.  There isn't a better fitting pole anywhere.  */
 		GMT_report (GMT, GMT_MSG_FATAL, "Sorry.  Cannot find small circle fitting better than great circle.\n");
 		GMT_cpy3v (scpole, gcpole);
 		return (-1.0);
@@ -274,8 +280,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_
 	length_aold = d_acos (GMT_dot3v (GMT, a, oldpole));
 	length_bold = d_acos (GMT_dot3v (GMT, b, oldpole));
 	do {
-		if (length_aold > length_bold) {
-			/* Section a_old  */
+		if (length_aold > length_bold) {	/* Section a_old  */
 			for (i = 0; i < 3; i++) temppole[i] = (0.38197*a[i] + 0.61803*oldpole[i]);
 			GMT_normalize3v (GMT, temppole);
 			fit = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
@@ -284,12 +289,10 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_
 				GMT_cpy3v (oldpole, temppole);
 				oldfit = fit;
 			}
-			else {	/* Not improved.  a = temppole  */
+			else	/* Not improved.  a = temppole  */
 				GMT_cpy3v (a, temppole);
-			}
 		}
-		else {
-			/* Section b_old  */
+		else {	/* Section b_old  */
 			for (i = 0; i < 3; i++) temppole[i] = (0.38197*b[i] + 0.61803*oldpole[i]);
 			GMT_normalize3v (GMT, temppole);
 			fit = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
@@ -298,9 +301,8 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_
 				GMT_cpy3v (oldpole, temppole);
 				oldfit = fit;
 			}
-			else {	/* Not improved.  b = temppole  */
+			else	/* Not improved.  b = temppole  */
 				GMT_cpy3v (b, temppole);
-			}
 		}
 		length_ab   = d_acos (GMT_dot3v (GMT, a, b));
 		length_aold = d_acos (GMT_dot3v (GMT, a, oldpole));

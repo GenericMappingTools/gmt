@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.309 2011-07-19 02:48:58 guru Exp $
+ *	$Id: gmt_io.c,v 1.310 2011-07-20 23:40:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1111,7 +1111,7 @@ GMT_LONG GMT_is_segment_header (struct GMT_CTRL *C, char *line)
 
 GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data)
 {
-	GMT_LONG i, pos, col_no = 0, in_col, col_pos, n_convert, n_ok, kind, add, n_use = 0;
+	GMT_LONG i, pos, col_no = 0, in_col, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
 	GMT_LONG done = FALSE, bad_record, set_nan_flag = FALSE;
 	char line[GMT_BUFSIZ], *p = NULL, token[GMT_BUFSIZ];
 	double val, **ptr = (double **)data;
@@ -4352,8 +4352,8 @@ void gmt_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 	}
 }
 
-void gmt_build_segheader_from_ogr (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGMENT *S)
-{	/* Write out segment-level OGR/GMT header metadata */
+void gmt_build_segheader_from_ogr (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
+{	/* Build segment-level OGR/GMT header metadata */
 	GMT_LONG k, col, n, space = FALSE;
 	char *sflag[7] = {"-D", "-G", "-I", "-L", "-T", "-W", "-Z"};
 	char buffer[GMT_BUFSIZ];
@@ -4645,7 +4645,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 			if (ascii && C->current.io.io_header[GMT_OUT]) for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (C, fp, table->header[k]);
 		}
 		if (C->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
-			if (table->segment[seg]->ogr) gmt_build_segheader_from_ogr (C, fp, table->segment[seg]);	/* We have access to OGR metadata */
+			if (table->segment[seg]->ogr) gmt_build_segheader_from_ogr (C, table->segment[seg]);	/* We have access to OGR metadata */
 			if (table->segment[seg]->header) strcpy (C->current.io.segment_header, table->segment[seg]->header);
 			GMT_write_segmentheader (C, fp, table->segment[seg]->n_columns);
 			if (table->segment[seg]->ogr && C->common.a.output) gmt_write_ogr_segheader (C, fp, table->segment[seg]);

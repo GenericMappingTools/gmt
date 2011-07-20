@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend1d_func.c,v 1.18 2011-07-20 00:13:46 guru Exp $
+ *	$Id: trend1d_func.c,v 1.19 2011-07-20 23:40:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -589,7 +589,7 @@ GMT_LONG GMT_trend1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	double *gtg = NULL, *v = NULL, *gtd = NULL, *lambda = NULL, *workb = NULL;
 	double *workz = NULL, *c_model = NULL, *o_model = NULL, *w_model = NULL, *work = NULL;
-	double xmin, xmax, c_chisq, o_chisq, w_chisq, scale = 1.0, prob;
+	double xmin, xmax, c_chisq, o_chisq = 0.0, w_chisq, scale = 1.0, prob;
 
 	char format[GMT_BUFSIZ];
 
