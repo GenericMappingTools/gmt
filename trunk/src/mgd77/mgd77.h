@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.128 2011-06-21 20:04:16 jluis Exp $
+ *	$Id: mgd77.h,v 1.129 2011-07-20 02:58:55 guru Exp $
  * 
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -511,7 +511,7 @@ EXTERN_MSC GMT_LONG MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, GMT_L
 EXTERN_MSC int MGD77_do_scale_offset_before_write (struct GMT_CTRL *C, double new[], const double x[], GMT_LONG n, double scale, double offset, int type);
 EXTERN_MSC void MGD77_select_high_resolution (struct GMT_CTRL *C);
 EXTERN_MSC void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H);
-EXTERN_MSC int MGD77_Match_List (struct GMT_CTRL *C, char *word, int n_fields, char **list);
+EXTERN_MSC GMT_LONG MGD77_Match_List (struct GMT_CTRL *C, char *word, GMT_LONG n_fields, char **list);
 
 /* User functions for direct use of Carter corrections */
 
@@ -558,12 +558,12 @@ EXTERN_MSC GMT_LONG MGD77_format_allowed[MGD77_N_FORMATS];	/* By default we allo
 EXTERN_MSC double MGD77_Epoch_zero;
 EXTERN_MSC int MGD77_pos[MGD77_N_DATA_EXTENDED];
 
-EXTERN_MSC int MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, int n_cruises, int n_fields, char **field_names, char ***item_names, int mode);
-EXTERN_MSC void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, int n_cruises, int n_fields, char **field_names, int mode, struct MGD77_CORRTABLE ***CORR);
+EXTERN_MSC GMT_LONG MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, GMT_LONG n_cruises, GMT_LONG n_fields, char **field_names, char ***item_names, GMT_LONG mode);
+EXTERN_MSC void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, GMT_LONG n_cruises, GMT_LONG n_fields, char **field_names, GMT_LONG mode, struct MGD77_CORRTABLE ***CORR);
 EXTERN_MSC void MGD77_Init_Correction (struct GMT_CTRL *C, struct MGD77_CORRTABLE *CORR, double **value);
 EXTERN_MSC double MGD77_Correction (struct GMT_CTRL *C, struct MGD77_CORRECTION *X, double **value, double *aux, GMT_LONG rec);
 EXTERN_MSC double MGD77_Correction_Rec (struct GMT_CTRL *C, struct MGD77_CORRECTION *X, double *value, double *aux);
-EXTERN_MSC void MGD77_Free_Correction (struct GMT_CTRL *C, struct MGD77_CORRTABLE **CORR, int n);
+EXTERN_MSC void MGD77_Free_Correction (struct GMT_CTRL *C, struct MGD77_CORRTABLE **CORR, GMT_LONG n);
 EXTERN_MSC void MGD77_Free_Table (struct GMT_CTRL *C, GMT_LONG n_items, char **item_names);
 
 #include "mgd77_functions.h"	/* These were created by mgd77netcdfhelper.sh */

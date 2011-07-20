@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.165 2011-06-28 03:15:52 guru Exp $
+ *	$Id: x2sys.c,v 1.166 2011-07-20 02:58:55 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -1799,14 +1799,14 @@ void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *ctable
 		col_name = GMT_memory (C, NULL, n_cols, char *);
 		for (i = 0; i < n_cols; i++) col_name[i] = strdup (S->info[S->out_order[i]].name);
 	}
-	n_items = MGD77_Scan_Corrtable (C, ctable, trk_name, (int)ntracks, (int)n_cols, col_name, &item_names, 0);
+	n_items = MGD77_Scan_Corrtable (C, ctable, trk_name, ntracks, n_cols, col_name, &item_names, (GMT_LONG)0);
 	if (aux && (n_aux = separate_aux_columns2 (C, n_items, item_names, aux, auxlist))) {	/* Determine which auxillary columns are requested (if any) */
 		aux_name = GMT_memory (C, NULL, n_aux, char *);
 		for (i = 0; i < n_aux; i++) aux_name[i] = strdup (auxlist[aux[i].type].name);
 	}
 	for (i = missing = 0; i < n_items; i++) {
-		if (MGD77_Match_List (C, item_names[i], (int)n_cols, col_name) == MGD77_NOT_SET) {	/* Requested column not among data cols */
-			if (n_aux && (k = MGD77_Match_List (C, item_names[i], (int)n_aux, aux_name)) == MGD77_NOT_SET) {
+		if (MGD77_Match_List (C, item_names[i], n_cols, col_name) == MGD77_NOT_SET) {	/* Requested column not among data cols */
+			if (n_aux && (k = MGD77_Match_List (C, item_names[i], n_aux, aux_name)) == MGD77_NOT_SET) {
 				GMT_report (C, GMT_MSG_FATAL, "X2SYS Correction table (%s) requires a column (%s) not present in COE database or auxillary columns\n", ctable, item_names[i]);
 				missing++;
 			}
@@ -1816,7 +1816,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *ctable
 	}
 	MGD77_Free_Table (C, n_items, item_names);
 	x2sys_free_list (C, aux_name, n_aux);
-	if (!missing) MGD77_Parse_Corrtable (C, ctable, trk_name, (int)ntracks, (int)n_cols, col_name, 0, CORR);
+	if (!missing) MGD77_Parse_Corrtable (C, ctable, trk_name, ntracks, n_cols, col_name, (GMT_LONG)0, CORR);
 	x2sys_free_list (C, col_name, n_cols);
 	if (missing) exit (EXIT_FAILURE);
 }

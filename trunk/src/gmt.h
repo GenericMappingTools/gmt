@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.215 2011-05-20 13:59:27 remko Exp $
+ *	$Id: gmt.h,v 1.216 2011-07-20 02:58:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -142,11 +142,11 @@ extern "C" {
 
 struct GMT_MAP {		/* Holds all map-related parameters */
 	struct GMT_PLOT_FRAME frame;		/* Everything about the frame parameters */
-	int this_x_status;			/* Tells us what quadrant old and new points are in */
-	int this_y_status;
-	int prev_x_status;
-	int prev_y_status;
-	int corner;
+	GMT_LONG this_x_status;			/* Tells us what quadrant old and new points are in */
+	GMT_LONG this_y_status;
+	GMT_LONG prev_x_status;
+	GMT_LONG prev_y_status;
+	GMT_LONG corner;
 	GMT_LONG on_border_is_outside;		/* TRUE if a point exactly on the map border shoud be considered outside the map */
 	GMT_LONG is_world;			/* TRUE if map has 360 degrees of longitude range */
 	GMT_LONG is_world_tm;			/* TRUE if GMT_TM map is global? */
@@ -203,11 +203,11 @@ struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	GMT_LONG n_alloc;		/* Size of allocated plot arrays */
 	GMT_LONG r_theta_annot;		/* TRUE for special r-theta map annotation (see GMT_get_annot_label) */
 	GMT_LONG mode_3D;		/* Determines if we draw fore and/or back 3-D box lines [Default is both] */
+	GMT_LONG *pen;			/* Pen (PSL_MOVE = up, PSL_DRAW = down) for these points */
 	struct GMT_PLOT_CALCLOCK calclock;
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	double *x;			/* Holds the x/y (inches) of a line to be plotted */
 	double *y;
-	int *pen;			/* Pen (PSL_MOVE = up, PSL_DRAW = down) for these points */
 	char format[3][2][GMT_TEXT_LEN256];	/* Keeps the 6 formats for dd:mm:ss plot output */
 };
 
@@ -227,7 +227,7 @@ struct GMT_INTERNAL {
 	/* These are internal parameters that need to be passed around between
 	 * many GMT functions.  These may change during execution but are not
 	 * modified directly by user interaction. */
-	int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  0 is top function */
+	GMT_LONG func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  0 is top function */
 };
 
 struct GMT_SHORTHAND {	/* Holds information for each grid extension shorthand read from the user's .gmtio file */

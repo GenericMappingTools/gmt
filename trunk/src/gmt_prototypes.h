@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.55 2011-07-20 00:13:46 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.56 2011-07-20 02:58:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -95,7 +95,7 @@ EXTERN_MSC void GMT_draw_front (struct GMT_CTRL *C, double x[], double y[], GMT_
 EXTERN_MSC void GMT_map_basemap (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_map_clip_off (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_map_clip_on (struct GMT_CTRL *C, double rgb[], GMT_LONG flag);
-EXTERN_MSC void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, int *pen, GMT_LONG n);
+EXTERN_MSC void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, GMT_LONG *pen, GMT_LONG n);
 EXTERN_MSC void GMT_setpen (struct GMT_CTRL *C, struct GMT_PEN *pen);
 EXTERN_MSC void GMT_setfill (struct GMT_CTRL *C, struct GMT_FILL *fill, GMT_LONG outline);
 EXTERN_MSC void GMT_vertical_axis (struct GMT_CTRL *C, GMT_LONG mode);

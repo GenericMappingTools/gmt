@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.28 2011-06-30 07:13:51 guru Exp $
+ *	$Id: grdraster_func.c,v 1.29 2011-07-20 02:58:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -84,7 +84,7 @@ void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row,
 
 void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer)
 {
-	GMT_LONG	i, tempval;
+	GMT_LONG i, tempval;
 	for (i = 0; i < ras.h.nx; i++) {
 		tempval = (GMT_LONG)buffer[i];
 		if (ras.nanset && tempval == ras.nanflag) {
@@ -101,7 +101,7 @@ void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row,
 
 void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, short unsigned int *buffer)
 {
-	GMT_LONG	i, tempval;
+	GMT_LONG i, tempval;
 	for (i = 0; i < ras.h.nx; i++) {
 		if (ras.swap_me) buffer[i] = GMT_swab2 (buffer[i]);
 
@@ -120,7 +120,7 @@ void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row,
 
 void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, short int *buffer)
 {
-	GMT_LONG	i, tempval;
+	GMT_LONG i, tempval;
 	for (i = 0; i < ras.h.nx; i++) {
 		if (ras.swap_me) buffer[i] = GMT_swab2 (buffer[i]);
 
@@ -139,7 +139,7 @@ void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row,
 
 void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, int *buffer)
 {
-	GMT_LONG	i, tempval;
+	GMT_LONG i, tempval;
 	for (i = 0; i < ras.h.nx; i++) {
 		if (ras.swap_me) buffer[i] = GMT_swab4 (buffer[i]);
 
@@ -161,20 +161,16 @@ GMT_LONG get_byte_size (struct GMT_CTRL *GMT, char type) {
 	int ksize;
 	switch (type) {
 		case 'b':
-			ksize = 0;
-			break;
+			ksize = 0;	break;
 		case 'c':
 		case 'u':
-			ksize = 1;
-			break;
+			ksize = 1;	break;
 		case 'd':
 		case 'h':
 		case 'i':
-			ksize = 2;
-			break;
+			ksize = 2;	break;
 		case 'l':
-			ksize = 4;
-			break;
+			ksize = 4;	break;
 		default:
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Invalid data type [%c]\n", (int)type);
 			return (EXIT_FAILURE);

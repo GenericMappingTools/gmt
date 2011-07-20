@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_datalist_func.c,v 1.14 2011-06-30 07:13:51 guru Exp $
+ *	$Id: x2sys_datalist_func.c,v 1.15 2011-07-20 02:58:55 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,7 +50,7 @@ struct X2SYS_DATALIST_CTRL {
 };
 
 struct X2SYS_ADJUST {
-	int n;
+	GMT_LONG n;
 	double *d, *c;
 };
 
@@ -175,7 +175,7 @@ GMT_LONG x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, cha
 	GMT_fclose (GMT, fp);
 	adj->d = GMT_memory (GMT, adj->d, n, double);
 	adj->c = GMT_memory (GMT, adj->c, n, double);
-	adj->n = (int)n;
+	adj->n = n;
 	*A = adj;
 	for (k = 0; k < 2; k++) l_swap (GMT->current.io.col_type[GMT_IN][k], type[k]);	/* Restore original input type setting */
 	return (TRUE);
@@ -337,7 +337,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, NULL, aux, auxlist, &CORR);
 		if (auxlist[MGD77_AUX_SP].requested && s->t_col == -1) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Selected correction table requires velocity which implies time (not selected)\n");
-			MGD77_Free_Correction (GMT, CORR, (int)n_tracks);
+			MGD77_Free_Correction (GMT, CORR, n_tracks);
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			exit (EXIT_FAILURE);
 		}
@@ -426,7 +426,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 		}
 	}
 
-	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (int)n_tracks);
+	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_tracks);
 
 	x2sys_end (GMT, s);
 	GMT_free (GMT, out);

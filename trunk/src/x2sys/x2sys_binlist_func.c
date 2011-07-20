@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_binlist_func.c,v 1.11 2011-06-30 08:45:18 guru Exp $
+ *	$Id: x2sys_binlist_func.c,v 1.12 2011-07-20 02:58:55 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -345,7 +345,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					x = data[s->x_col][j-1] + del_x;
 					X[nx].x = x;	X[nx].y = y;	X[nx].d = hypot (del_x , del_y);
 					nx++;
-					if (nx == (int)nx_alloc) {
+					if (nx == nx_alloc) {
 						nx_alloc <<= 1;
 						X = GMT_memory (GMT, X, nx_alloc, struct BINCROSS);
 					}
@@ -363,7 +363,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 					X[nx].x = x;	X[nx].y = y;	X[nx].d = hypot (del_x, del_y);
 					nx++;
-					if (nx == (int)nx_alloc) {
+					if (nx == nx_alloc) {
 						nx_alloc <<= 1;
 						X = GMT_memory (GMT, X, nx_alloc, struct BINCROSS);
 					}

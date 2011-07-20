@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.94 2011-06-22 14:09:52 remko Exp $
+ *	$Id: gmt_project.h,v 1.95 2011-07-20 02:58:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -404,10 +404,10 @@ struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 };
 
 struct GMT_PLOT_AXIS {		/* Information for one time axis */
-	int id;			/* 0 (x), 1(y), or 2(z) */
-	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
+	GMT_LONG id;			/* 0 (x), 1(y), or 2(z) */
 	GMT_LONG type;			/* GMT_LINEAR, GMT_LOG10, GMT_POW, GMT_TIME */
 	GMT_LONG special;		/* 0, GMT_CUSTOM, GMT_CPT */
+	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	char label[GMT_TEXT_LEN256];	/* Label of the axis */
 	char unit[GMT_TEXT_LEN64];	/* Axis unit appended to annotations */

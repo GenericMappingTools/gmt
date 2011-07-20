@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.21 2011-06-30 08:45:18 guru Exp $
+ *	$Id: originator_func.c,v 1.22 2011-07-20 02:58:55 guru Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -120,8 +120,8 @@ struct HOTSPOT_ORIGINATOR {
 	double np_time;		/* Predicted time at nearest point */
 	double np_lon;		/* Longitude of nearest point on the current flowline */
 	double np_lat;		/* Latitude  of nearest point on the current flowline */
-	int nearest;		/* Point id of current flowline node points closest to hotspot */
-	int stage;		/* Stage to which seamount belongs */
+	GMT_LONG nearest;	/* Point id of current flowline node points closest to hotspot */
+	GMT_LONG stage;		/* Stage to which seamount belongs */
 };
 
 struct ORIGINATOR_CTRL {	/* All control options for this program (except common args) */
@@ -455,7 +455,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (!Ctrl->L.degree) dist *= GMT->current.proj.DIST_KM_PR_DEG;
 				if (dist < hot[j].np_dist) {
 					hot[j].np_dist = dist;
-					hot[j].nearest = (int)kk;	/* Index of nearest point on the flowline */
+					hot[j].nearest = kk;	/* Index of nearest point on the flowline */
 				}
 			}
 		}
@@ -519,7 +519,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			k = 0;
 			while (k < ns && hot[j].np_time <= p[k].t_stop) k++;
-			hot[j].stage = (int)(ns - k);
+			hot[j].stage = ns - k;
 			if (hot[j].stage == 0) hot[j].stage++;
 		}
 
@@ -554,9 +554,9 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				sprintf (record, "%g\t%g\t%g\t%g\t%s", in[GMT_X], in[GMT_Y], z_smt, r_smt, buffer);
 				for (j = 0; j < n_max_spots; j++) {
 					if (Ctrl->Z.active)
-						sprintf (buffer, "\t%d\t%d\t%g\t%g", hot[j].h->id, hot[j].stage, hot[j].np_time, hot[j].np_dist);
+						sprintf (buffer, "\t%ld\t%ld\t%g\t%g", hot[j].h->id, hot[j].stage, hot[j].np_time, hot[j].np_dist);
 					else
-						sprintf (buffer, "\t%s\t%d\t%g\t%g", hot[j].h->abbrev, hot[j].stage, hot[j].np_time, hot[j].np_dist);
+						sprintf (buffer, "\t%s\t%ld\t%g\t%g", hot[j].h->abbrev, hot[j].stage, hot[j].np_time, hot[j].np_dist);
 					strcat (record, buffer);
 				}
 				strcat (record, "\n");

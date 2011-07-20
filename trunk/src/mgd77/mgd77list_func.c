@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.20 2011-06-30 08:45:18 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.21 2011-07-20 02:58:55 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -875,7 +875,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			Ctrl->L.file = path;
 		}
-		MGD77_Parse_Corrtable (GMT, Ctrl->L.file, list, (int)n_paths, M.n_out_columns, (char **)M.desired_column, 2, &CORR);
+		MGD77_Parse_Corrtable (GMT, Ctrl->L.file, list, n_paths, (GMT_LONG)M.n_out_columns, (char **)M.desired_column, (GMT_LONG)2, &CORR);
 	}
 
 	for (argno = 0; argno < n_paths; argno++) {		/* Process each ID */
@@ -1305,7 +1305,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Returned %ld output records from %ld cruises\n", n_out, n_cruises);
 	
 	MGD77_Path_Free (GMT, (int)n_paths, list);
-	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (int)n_paths);
+	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_paths);
 #ifdef USE_CM4
 	if (auxlist[MGD77_AUX_CM].requested) MGD77_CM4_end (GMT, &CM4);	/* Free up CM4 structure */
 #endif

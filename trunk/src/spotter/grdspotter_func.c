@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.19 2011-07-06 22:25:13 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.20 2011-07-20 02:58:55 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -380,10 +380,10 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, GMT_LONG n_stages, double d_km, GMT_LONG step, int flag, double wesn[], double **flow)
+GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, GMT_LONG n_stages, double d_km, GMT_LONG step, GMT_LONG flag, double wesn[], double **flow)
 {
 	GMT_LONG n_chunk, n_track, m, kx, ky, first, last, np;
-	double *c, *f;
+	double *c = NULL, *f = NULL;
 
 	/* Get the flowline from this point back to time tt, restricted to the given wesn box */
 	n_chunk = spotter_forthtrack (GMT, &xx, &yy, &tt, (GMT_LONG)1, p, n_stages, d_km, 0.0, flag, wesn, &c);
@@ -675,7 +675,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else
 			GMT_memcpy (this_wesn, wesn, 4, double);
 		
-		np = get_flowline (GMT, x_smt[col], y_smt[row], t_smt, p, n_stages, sampling_int_in_km, k_step, (int)forth_flag, this_wesn, &c);
+		np = get_flowline (GMT, x_smt[col], y_smt[row], t_smt, p, n_stages, sampling_int_in_km, k_step, forth_flag, this_wesn, &c);
 		if (np == 0) continue;	/* No flowline inside this wesn */
 
 		/* STEP 3: Convolve this flowline with node shape and add to CVA grid */
@@ -887,7 +887,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					GMT_memcpy (this_wesn, ID_info[(GMT_LONG)ID[ij]].wesn, 4, double);
 				else
 					GMT_memcpy (this_wesn, wesn, 4, double);
-				np = get_flowline (GMT, x_smt[col], y_smt[row], t_smt, p, n_stages, sampling_int_in_km, k_step, (int)forth_flag, this_wesn, &c);
+				np = get_flowline (GMT, x_smt[col], y_smt[row], t_smt, p, n_stages, sampling_int_in_km, k_step, forth_flag, this_wesn, &c);
 				if (np == 0) continue;	/* No flowline inside this wesn */
 		 		n_nodes++;
 				/* Fresh start for this flowline convolution */
