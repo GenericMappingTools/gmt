@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend1d_func.c,v 1.17 2011-06-25 01:59:47 guru Exp $
+ *	$Id: trend1d_func.c,v 1.18 2011-07-20 00:13:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -139,16 +139,10 @@ GMT_LONG read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, GM
 			*xmin = (*data)[i].x;
 			*xmax = (*data)[i].x;
 		}
-		i++;
 
-		if (i == n_alloc) {
+		if (++i == n_alloc) {
 			n_alloc <<= 1;
 			*data = GMT_memory (GMT, *data, n_alloc, struct TREND1D_DATA);
-		}
-		if (i == INT_MAX) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot process more than %d data points\n", INT_MAX);
-			GMT_free (GMT, data);
-			return (EXIT_FAILURE);
 		}
 	}
 

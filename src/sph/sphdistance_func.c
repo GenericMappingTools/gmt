@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphdistance_func.c,v 1.22 2011-07-19 23:11:16 guru Exp $
+ *	$Id: sphdistance_func.c,v 1.23 2011-07-20 00:13:46 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -234,9 +234,8 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG n_fields,  n_alloc, p_alloc = 0, nx1, error = FALSE, first = FALSE;
 	GMT_LONG node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
 
-	double first_x = 0.0, first_y = 0.0, X[3];
+	double first_x = 0.0, first_y = 0.0, X[3], *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
 	double *xx = NULL, *yy = NULL, *zz = NULL, *lon = NULL, *lat = NULL;
-	double *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
 
 	struct GMT_GRID *Grid = NULL;
 	struct SPHDISTANCE_CTRL *Ctrl = NULL;
@@ -273,10 +272,6 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!GMT->common.R.active) {	/* Default to a global grid */
 		Grid->header->wesn[XLO] = 0.0;	Grid->header->wesn[XHI] = 360.0;	Grid->header->wesn[YLO] = -90.0;	Grid->header->wesn[YHI] = 90.0;
 	}
-
-#ifdef SET_IO_MODE
-	GMT_setmode (GMT, GMT_OUT);
-#endif
 
 	/* Now we are ready to take on some input values */
 
@@ -343,8 +338,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, TRUE);
 			xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];
 			if (!Ctrl->C.active) {
-				lon[n] = in[GMT_X];
-				lat[n] = in[GMT_Y];
+				lon[n] = in[GMT_X];	lat[n] = in[GMT_Y];
 			}
 			
 			if (++n == n_alloc) {	/* Get more memory */
@@ -427,10 +421,9 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 				/* When we reach the vertex where we started, we are done with this polygon */
 			} while (node_new != node_stop);
-			P->coord[GMT_X][vertex] = P->coord[GMT_X][0];
+			P->coord[GMT_X][vertex] = P->coord[GMT_X][0];	/* Close polygon explicitly */
 			P->coord[GMT_Y][vertex] = P->coord[GMT_Y][0];
-			vertex++;
-			if (vertex == p_alloc) p_alloc = GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, p_alloc, double);
+			if (++vertex == p_alloc) p_alloc = GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, p_alloc, double);
 			P->n_rows = vertex;
 		}
 		
@@ -481,7 +474,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Gridding completed, %ld nodes visited (at least once)\n", n_set);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Spherical distance calculation completed, %ld nodes visited (at least once)\n", n_set);
 	
 	Return (GMT_OK);
 }

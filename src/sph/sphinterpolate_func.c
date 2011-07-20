@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphinterpolate_func.c,v 1.17 2011-07-19 23:11:16 guru Exp $
+ *	$Id: sphinterpolate_func.c,v 1.18 2011-07-20 00:13:46 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -254,20 +254,18 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip all headers */
 
-		GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, TRUE);
+		GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, TRUE);	/* Get unit vector */
 		xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];	ww[n] = in[GMT_Z];
 		if (Ctrl->Z.active) {
 			if (ww[n] < w_min) w_min = ww[n];
 			if (ww[n] > w_max) w_max = ww[n];
 		}
-		n++;
-
-		if (n == n_alloc) n_alloc = GMT_malloc4 (GMT, xx, yy, zz, ww, n, n_alloc, double);
+		if (++n == n_alloc) n_alloc = GMT_malloc4 (GMT, xx, yy, zz, ww, n, n_alloc, double);
 	}
 	n_alloc = GMT_malloc4 (GMT, xx, yy, zz, ww, 0, n, double);
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
+	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Do Delaunay triangulation using %ld points\n", n);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Do spherical interpolation using %ld points\n", n);
 
 	if (Ctrl->Z.active && w_max > w_min) {	/* Scale the data */
 		sf = 1.0 / (w_max - w_min);

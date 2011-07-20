@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend2d_func.c,v 1.16 2011-06-25 01:59:47 guru Exp $
+ *	$Id: trend2d_func.c,v 1.17 2011-07-20 00:13:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -101,16 +101,10 @@ GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, GM
 			*ymin = (*data)[i].y;
 			*ymax = (*data)[i].y;
 		}
-		i++;
 
-		if (i == n_alloc) {
+		if (++i == n_alloc) {
 			n_alloc <<= 1;
 			*data = GMT_memory (GMT, *data, n_alloc, struct TREND2D_DATA);
-		}
-		if (i == INT_MAX) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot process more than %d data points\n", INT_MAX);
-			GMT_free (GMT, data);
-			return (EXIT_FAILURE);
 		}
 	}
 	*data = GMT_memory (GMT, *data, i, struct TREND2D_DATA);
