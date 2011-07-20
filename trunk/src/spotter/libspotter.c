@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.81 2011-07-20 02:58:55 guru Exp $
+ *	$Id: libspotter.c,v 1.82 2011-07-20 05:39:22 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -581,7 +581,7 @@ GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_LONG geocentr
 
 	while (GMT_fgets (C, buffer, GMT_BUFSIZ, fp) != NULL) {
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
-		n = sscanf (buffer, "%lf %lf %s %d %lf %lf %lf %c %c %c %s", &e[i].lon, &e[i].lat, e[i].abbrev, &e[i].id, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
+		n = sscanf (buffer, "%lf %lf %s %" GMT_LL "d %lf %lf %lf %c %c %c %s", &e[i].lon, &e[i].lat, e[i].abbrev, &e[i].id, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
 		if (n == 3) e[i].id = i;	/* Minimal lon, lat, abbrev */
 		if (n >= 10) {
 			e[i].create = (create == 'Y');
