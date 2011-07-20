@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.18 2011-06-30 07:13:51 guru Exp $
+ *	$Id: x2sys_cross_func.c,v 1.19 2011-07-20 02:58:55 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -225,9 +225,9 @@ GMT_LONG GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG combo_ok (char *name_1, char *name_2, struct PAIR *pair, int n_pairs)
+GMT_LONG combo_ok (char *name_1, char *name_2, struct PAIR *pair, GMT_LONG n_pairs)
 {
-	int i;
+	GMT_LONG i;
 
 	/* Return TRUE if this particular combination is found in the list of pairs */
 
@@ -516,7 +516,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (!internal &&  same) continue;	/* Only do external errors */
 			if (!external && !same) continue;	/* Only do internal errors */
 
-			if (Ctrl->A.active && !combo_ok (trk_name[A], trk_name[B], pair, (int)n_pairs)) continue;	/* Do not want this combo */
+			if (Ctrl->A.active && !combo_ok (trk_name[A], trk_name[B], pair, n_pairs)) continue;	/* Do not want this combo */
 			
 			GMT_report (GMT, GMT_MSG_NORMAL, "Processing %s - %s : ", trk_name[A], trk_name[B]);
 

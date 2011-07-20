@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.h,v 1.40 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_customio.h,v 1.41 2011-07-20 02:58:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -30,7 +30,7 @@
 
 #define GRD_HEADER_SIZE	892
 
-/* Definition for Sun rasterfiles */
+/* Definition for Sun rasterfiles [THESE MUST REMAIN int]  */
 struct rasterfile {
         int magic;		/* magic number */
         int width;		/* width (pixels) of image */

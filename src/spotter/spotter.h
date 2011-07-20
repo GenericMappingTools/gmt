@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.30 2011-04-23 02:14:13 guru Exp $
+ *	$Id: spotter.h,v 1.31 2011-07-20 02:58:55 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -64,7 +64,7 @@ struct HOTSPOT {	/* Structure holding all the information about a hotspot */
 	/* Record is lon lat abbrev id [radius toff t_on create fit plot name] */
         double lon, lat;		/* Current location of hot spot (degrees)*/
 	char abbrev[4];			/* Max 3-char abbreviation of hotspot name */
-        int id;				/* Hot spot id flag */
+        GMT_LONG id;			/* Hot spot id flag */
 	double radius;			/* Uncertainty radius (in km) for hotspot location */
 	double t_off, t_on;		/* Time interval hotspot was active */
 	GMT_LONG create, fit, plot;	/* TRUE if we want to create, fit, or plot hotspot */

@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1145 2011-07-19 21:59:41 guru Exp $
+	$Id: ChangeLog,v 1.1146 2011-07-20 02:58:55 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-07-19	pwessel
 	* sph/*.[ch]:		Upgraded to be fully 64-bit compliant.
+	* gmt*.c:		Make sure we don't pass ints to funcs expecting GMT_LONG.
 
 2011-07-18	pwessel
 	* gmtstitch_func.c:	Warn that segment with a single point will not connect both

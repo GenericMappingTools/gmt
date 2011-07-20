@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.42 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_colors.h,v 1.43 2011-07-20 02:58:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -93,8 +93,8 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	GMT_LONG n_headers;		/* Number of CPT file header records (0 if no header) */
 	struct GMT_LUT *range;		/* CPT lookup table read by GMT_read_cpt */
 	struct GMT_BFN_COLOR patch[3];	/* Structures with back/fore/nan colors */
-	int n_colors;			/* Number of colors in CPT lookup table */
-	int cpt_flags;			/* Flags controling use of BFN colors */
+	GMT_LONG n_colors;		/* Number of colors in CPT lookup table */
+	GMT_LONG cpt_flags;		/* Flags controling use of BFN colors */
 	GMT_LONG alloc_mode;		/* Allocation info [0] */
 	GMT_LONG model;			/* RGB, HSV, CMYK */
 	GMT_LONG is_gray;		/* TRUE if only grayshades are needed */

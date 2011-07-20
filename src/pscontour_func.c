@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.30 2011-07-20 00:13:46 guru Exp $
+ *	$Id: pscontour_func.c,v 1.31 2011-07-20 02:58:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1030,7 +1030,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					cont[c].n_alloc <<= 1;
 					cont[c].L = GMT_memory (GMT, cont[c].L, cont[c].n_alloc, struct PSCONTOUR_LINE);
 				}
-				cont[c].nl = (int)n;
+				cont[c].nl = n;
 			}
 		}
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.357 2011-06-23 17:46:57 remko Exp $
+ *	$Id: gmt_plot.c,v 1.358 2011-07-20 02:58:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2251,7 +2251,7 @@ void gmt_echo_command (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_OPTION
 	PSL_command (P, "%s\n", outstring);
 }
 
-void gmt_NaN_pen_up (double x[], double y[], int pen[], GMT_LONG n)
+void gmt_NaN_pen_up (double x[], double y[], GMT_LONG pen[], GMT_LONG n)
 {
 	/* Ensure that if there are NaNs we set pen = PSL_MOVE */
 
@@ -2265,7 +2265,7 @@ void gmt_NaN_pen_up (double x[], double y[], int pen[], GMT_LONG n)
 	}
 }
 
-void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, int *pen, GMT_LONG n)
+void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, GMT_LONG *pen, GMT_LONG n)
 {
 	GMT_LONG i, j, i1, way, stop, close;
 	double x_cross[2], y_cross[2];
@@ -3076,8 +3076,7 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 
 void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G)
 {
-	GMT_LONG i, j;
-	int *pen = NULL;
+	GMT_LONG i, j, *pen = NULL;
 	double size[1] = {0.025};
 
 	/* If called we simply draw the helper lines or points to assist in debug */
@@ -3089,7 +3088,7 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 	}
 	else if (G->crossing) {	/* Draw a thin line */
 		for (j = 0; j < G->xp->n_segments; j++) {
-			pen = GMT_memory (C, NULL, G->xp->segment[j]->n_rows, int);
+			pen = GMT_memory (C, NULL, G->xp->segment[j]->n_rows, GMT_LONG);
 			for (i = 1, pen[0] = PSL_MOVE; i < G->xp->segment[j]->n_rows; i++) pen[i] = PSL_DRAW;
 			GMT_plot_line (C, G->xp->segment[j]->coord[GMT_X], G->xp->segment[j]->coord[GMT_Y], pen, G->xp->segment[j]->n_rows);
 			GMT_free (C, pen);
@@ -3099,14 +3098,13 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 
 void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
 {
-	GMT_LONG i, k;
-	int *pen = NULL;
+	GMT_LONG i, k, *pen = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
 	for (i = 0; i < G->n_segments; i++) {
 		L = G->segment[i];	/* Pointer to current segment */
 		if (L->annot && mode == 1) continue; /* Annotated lines done with curved text routine */
 		GMT_setpen (C, &L->pen);
-		pen = GMT_memory (C, NULL, L->n, int);
+		pen = GMT_memory (C, NULL, L->n, GMT_LONG);
 		for (k = 1, pen[0] = PSL_MOVE; k < L->n; k++) pen[k] = PSL_DRAW;
 		PSL_comment (P, "%s: %s\n", G->line_name, L->name);
 		GMT_plot_line (C, L->x, L->y, pen, L->n);

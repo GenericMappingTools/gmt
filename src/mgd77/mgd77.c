@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.287 2011-06-30 04:54:49 guru Exp $
+ *	$Id: mgd77.c,v 1.288 2011-07-20 02:58:55 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2485,9 +2485,9 @@ int MGD77_Get_Column (struct GMT_CTRL *C, char *word, struct MGD77_CONTROL *F)
 	return (k);
 }
 
-int MGD77_Match_List (struct GMT_CTRL *C, char *word, int n_fields, char **list)
+GMT_LONG MGD77_Match_List (struct GMT_CTRL *C, char *word, GMT_LONG n_fields, char **list)
 {
-	int j, k;
+	GMT_LONG j, k;
 
 	for (j = 0, k = MGD77_NOT_SET; k == MGD77_NOT_SET && j < n_fields; j++) if (!strcmp (word, list[j])) k = j;
 	return (k);
@@ -4908,20 +4908,18 @@ double MGD77_Recalc_Mag_Anomaly_CM4 (struct GMT_CTRL *C, double time, double lon
  * and apply the corrections to data before output in mgd77list
  */
 
-int MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, int n_cruises, int n_fields, char **field_names, char ***item_names, int mode)
+GMT_LONG MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, GMT_LONG n_cruises, GMT_LONG n_fields, char **field_names, char ***item_names, GMT_LONG mode)
 {
 	/* This function scans the correction table to determine which named columns
 	 * are needed for corrections as well as which auxilliary variables (e.g.,
 	 * time, dist, heading) are needed.
 	 */
 
-	int cruise_id, id, n_list = 0, n_alloc = GMT_SMALL_CHUNK;
-	GMT_LONG rec = 0, pos;
-	GMT_LONG sorted, mgd77;
+	GMT_LONG cruise_id, id, n_list = 0, n_alloc = GMT_SMALL_CHUNK, rec = 0, pos, sorted, mgd77;
 	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
-	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p, *f;
-	char **list;
-	FILE *fp;
+	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
+	char **list = NULL;
+	FILE *fp = NULL;
 
 	if ((fp = GMT_fopen (C, tablefile, "r")) == NULL) {
 		GMT_report (C, GMT_MSG_FATAL, "Correction table %s not found!\n", tablefile);
@@ -4992,7 +4990,7 @@ void MGD77_Free_Table (struct GMT_CTRL *C, GMT_LONG n_items, char **item_names)
 	GMT_free (C, item_names);
 	
 }
-void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, int n_cruises, int n_fields, char **field_names, int mode, struct MGD77_CORRTABLE ***CORR)
+void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, GMT_LONG n_cruises, GMT_LONG n_fields, char **field_names, GMT_LONG mode, struct MGD77_CORRTABLE ***CORR)
 {
 	/* We seek to make the correction system very flexible, in particular
 	 * since it is difficult to anticipate exactly what systematic trends
@@ -5015,9 +5013,7 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 	 * cruise abbrev term_1 term_2 ... term_n
 	 */
 
-	int cruise_id, id, i, n_aux;
-	GMT_LONG rec = 0, pos;
-	GMT_LONG sorted, mgd77;
+	GMT_LONG cruise_id, id, i, n_aux, rec = 0, pos, sorted, mgd77;
 	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
 	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p, *f;
 	struct MGD77_CORRTABLE **C_table;
@@ -5189,9 +5185,9 @@ double MGD77_Correction_Rec (struct GMT_CTRL *G, struct MGD77_CORRECTION *C, dou
 	return (dz);
 }
 
-void MGD77_Free_Correction (struct GMT_CTRL *C, struct MGD77_CORRTABLE **CORR, int n)
+void MGD77_Free_Correction (struct GMT_CTRL *C, struct MGD77_CORRTABLE **CORR, GMT_LONG n)
 {	/* Free up memory */
-	int i, col;
+	GMT_LONG i, col;
 	struct MGD77_CORRECTION *current, *past;
 	struct MGD77_CORRTABLE *T;
 

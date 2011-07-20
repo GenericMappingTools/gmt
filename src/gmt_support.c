@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.545 2011-07-06 20:30:46 guru Exp $
+ *	$Id: gmt_support.c,v 1.546 2011-07-20 02:58:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1851,7 +1851,7 @@ struct GMT_PALETTE *GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors)
 	/* Makes an empty palette table */
 	struct GMT_PALETTE *P = GMT_memory (C, NULL, 1, struct GMT_PALETTE);
 	P->range = GMT_memory (C, NULL, n_colors, struct GMT_LUT);
-	P->n_colors = (int)n_colors;
+	P->n_colors = n_colors;
 	return (P);
 }
 
@@ -1993,7 +1993,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 	X = GMT_memory (C, NULL, 1, struct GMT_PALETTE);
 
 	X->range = GMT_memory (C, NULL, n_alloc, struct GMT_LUT);
-	X->cpt_flags = (int)cpt_flags;	/* Maybe limit what to do with BFN selections */
+	X->cpt_flags = cpt_flags;	/* Maybe limit what to do with BFN selections */
 	color_model = C->current.setting.color_model;		/* Save the original setting since it may be modified by settings in the CPT file */
 	/* Also: C->current.setting.color_model is used in some rgb_to_xxx functions so it must be set if changed by cpt */
 	X->is_gray = X->is_bw = TRUE;	/* May be changed when reading the actual colors */
@@ -2270,7 +2270,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 	}
 
 	X->range = GMT_memory (C, X->range, n, struct GMT_LUT);
-	X->n_colors = (int)n;
+	X->n_colors = n;
 
 	if (X->categorical) {	/* Set up fake ranges so CPT is continuous */
 		for (i = 0; i < X->n_colors; i++) {
@@ -4929,7 +4929,7 @@ void GMT_get_plot_array (struct GMT_CTRL *C) {	/* Allocate more space for plot a
 	C->current.plot.n_alloc = (C->current.plot.n_alloc == 0) ? GMT_CHUNK : (C->current.plot.n_alloc << 1);
 	C->current.plot.x = GMT_memory (C, C->current.plot.x, C->current.plot.n_alloc, double);
 	C->current.plot.y = GMT_memory (C, C->current.plot.y, C->current.plot.n_alloc, double);
-	C->current.plot.pen = GMT_memory (C, C->current.plot.pen, C->current.plot.n_alloc, int);
+	C->current.plot.pen = GMT_memory (C, C->current.plot.pen, C->current.plot.n_alloc, GMT_LONG);
 }
 
 GMT_LONG GMT_get_format (struct GMT_CTRL *C, double interval, char *unit, char *prefix, char *format)
@@ -8067,7 +8067,7 @@ GMT_LONG GMT_time_array (struct GMT_CTRL *C, double min, double max, struct GMT_
 	if (!T->active) return (0);
 	val = GMT_memory (C, NULL, n_alloc, double);
 	I.unit = T->unit;
-	I.step = (int)T->interval;
+	I.step = T->interval;
 	interval = (T->type == 'i' || T->type == 'I');	/* Only for i/I axis items */
 	GMT_moment_interval (C, &I, min, TRUE);	/* First time we pass TRUE for initialization */
 	while (I.dt[0] <= max) {		/* As long as we are not gone way past the end time */

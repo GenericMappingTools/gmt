@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_list_func.c,v 1.9 2011-06-30 08:45:18 guru Exp $
+ *	$Id: x2sys_list_func.c,v 1.10 2011-07-20 02:58:55 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -641,7 +641,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_free (GMT, trk_nx);
 	if (Ctrl->A.active) GMT_free (GMT,  trk_symm);
 
-	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (int)n_tracks);
+	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_tracks);
 	GMT_free (GMT, trk_name);
 	x2sys_end (GMT, s);
 
