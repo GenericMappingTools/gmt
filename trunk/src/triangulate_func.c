@@ -1,5 +1,5 @@
  /*--------------------------------------------------------------------
- *	$Id: triangulate_func.c,v 1.17 2011-07-09 00:41:17 guru Exp $
+ *	$Id: triangulate_func.c,v 1.18 2011-07-20 00:13:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -36,11 +36,9 @@
 
 #ifdef TRIANGLE_D
 #define ALGORITHM "Shewchuk"
-EXTERN_MSC GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, double *we, double **x_out, double **y_out);
 #else
 #define ALGORITHM "Watson"
 #endif
-EXTERN_MSC GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, int **link);
 
 struct TRIANGULATE_CTRL {
 	struct D {	/* -Dx|y */
@@ -323,11 +321,11 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->Q.active) {
 			double we[2];
 			we[0] = GMT->current.proj.rect[XLO];	we[1] = GMT->current.proj.rect[XHI];
-			np = GMT_voronoi (GMT, xxp, yyp, (int)n, we, &xe, &ye);
+			np = GMT_voronoi (GMT, xxp, yyp, n, we, &xe, &ye);
 		}
 		else
 #endif
-			np = GMT_delaunay (GMT, xxp, yyp, (int)n, &link);
+			np = GMT_delaunay (GMT, xxp, yyp, n, &link);
 
 		GMT_free (GMT, xxp);
 		GMT_free (GMT, yyp);
@@ -339,11 +337,11 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->Q.active) {
 			double we[2];
 			we[0] = GMT->common.R.wesn[XLO];	we[1] = GMT->common.R.wesn[XHI];
-			np = GMT_voronoi (GMT, xx, yy, (int)n, we, &xe, &ye);
+			np = GMT_voronoi (GMT, xx, yy, n, we, &xe, &ye);
 		}
 		else
 #endif
-			np = GMT_delaunay (GMT, xx, yy, (int)n, &link);
+			np = GMT_delaunay (GMT, xx, yy, n, &link);
 	}
 
 #ifdef TRIANGLE_D

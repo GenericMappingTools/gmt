@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.h,v 1.18 2011-07-19 21:59:41 guru Exp $
+ *	$Id: sph.h,v 1.19 2011-07-20 00:13:46 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -21,11 +21,11 @@
 #define VORONOI		1
 #define INTERPOLATE	2
 
-#define TRI_NROW	6	/* Don't request arc indeces from STRIPACK  */
+#define TRI_NROW	6	/* Don't request arc indices from STRIPACK  */
 
 struct STRIPACK_DELAUNAY {	/* Information about Delaunay triangulation */
 	GMT_LONG n;		/* Number of Delaunay triangles */
-	GMT_LONG *tri;	/* Delaunay triplet node numbers and more */
+	GMT_LONG *tri;		/* Delaunay triplet node numbers and more */
 };
 
 struct STRIPACK_VORONOI {	/* Information about Voronoi polygons */

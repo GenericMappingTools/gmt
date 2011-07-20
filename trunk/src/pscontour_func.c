@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.29 2011-06-25 01:59:47 guru Exp $
+ *	$Id: pscontour_func.c,v 1.30 2011-07-20 00:13:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,8 +27,6 @@
 
 #include "pslib.h"
 #include "gmt.h"
-
-EXTERN_MSC GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, int **link);
 
 struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
@@ -605,7 +603,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, skip = FALSE, closed, *n_seg_alloc = NULL, *n_seg = NULL;
 	GMT_LONG tbl_scl = 0, two_only = FALSE, fmt[3] = {0, 0, 0}, n_tables = 0, tbl;
 	
-	int *ind = NULL;
+	int *ind = NULL;	/* Must remain int due to triangle */
 	
 	double xx[3], yy[3], zz[3], xout[5], yout[5], xyz[2][3], rgb[4], z_range, small;
 	double *xc = NULL, *yc = NULL, *zc = NULL, *x = NULL, *y = NULL, *z = NULL;
@@ -743,7 +741,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld indices triplets from %s.\n", np, Ctrl->Q.file);
 	}
 	else {	/* Do our own Delaunay triangulation */
-		np = GMT_delaunay (GMT, x, y, (int)n, &ind);
+		np = GMT_delaunay (GMT, x, y, n, &ind);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Obtained %ld indices triplets via Delauney triangulation [%s].\n", np, ALGORITHM);
 	}
 

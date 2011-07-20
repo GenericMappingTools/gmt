@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.36 2011-07-19 23:11:16 guru Exp $
+ *	$Id: sph.c,v 1.37 2011-07-20 00:13:46 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -224,7 +224,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 	/* Time to work on the interpolation */
 
 	sigma = GMT_memory (C, NULL, n_sig, double);
-	if (mode > 0) grad = GMT_memory (C, NULL, 3*n, double);
+	if (mode) grad = GMT_memory (C, NULL, 3*n, double);
 	
 	if (mode == 0) {	 /* C-0 interpolation (INTRC0). */
 		nxp = 0;
@@ -320,8 +320,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 		GMT_report (C, GMT_MSG_VERBOSE, "UNIF: Number of evaluations = %ld, number of extrapolations = %ld\n", nm, ierror);
 	}
 	else if (mode == 3) {	/* c-1 smoothing method smsurf. */
-		double wtk, smtol, gstol, e, sm, *wt = NULL;
-		wt = GMT_memory (C, NULL, n, double);
+		double wtk, smtol, gstol, e, sm, *wt = GMT_memory (C, NULL, n, double);
 		e    = (par[0] == 0.0) ? 0.01 : par[0];
 		sm   = (par[1] <= 0.0) ? (double)n : par[1];
 		itgs = (par[2] == 0.0) ? 3 : irint (par[2]);
