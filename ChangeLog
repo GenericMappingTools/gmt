@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1146 2011-07-20 02:58:55 guru Exp $
+	$Id: ChangeLog,v 1.1147 2011-07-21 01:05:19 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-07-20	pwessel
+	* fitcircle_func.c:	Had not implemented the fixed small circle -S<lat> solution.
+				Added test example for fitcircle.
 
 2011-07-19	pwessel
 	* sph/*.[ch]:		Upgraded to be fully 64-bit compliant.
