@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.560 2011-07-20 23:40:37 guru Exp $
+ *	$Id: gmt_init.c,v 1.561 2011-07-21 07:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2018,7 +2018,7 @@ GMT_LONG gmt_parse_n_option (struct GMT_CTRL *C, char *item)
 			case 'b':	/* Set BCs */
 				C->common.n.bc_set = TRUE;
 				strncpy (C->common.n.BC, &p[1], (size_t)4);
-				for (j = 0; j < strlen (C->common.n.BC); j++) {
+				for (j = 0; j < (GMT_LONG)strlen (C->common.n.BC); j++) {
 					switch (C->common.n.BC[j]) {
 						case 'g': case 'x': case 'y': break;
 						default:
