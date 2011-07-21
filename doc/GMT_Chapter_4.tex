@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.158 2011-07-08 03:34:15 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.159 2011-07-21 23:30:13 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -2267,7 +2267,7 @@ simply reports back how many bad records were skipped during reading; see Sectio
 	command line and it is not present in the current directory.  This allows maintainers to
 	consolidate large data files and to simplify scripting that use these files since the absolute path need not be specified.
 	Separate multiple directories with colons (:); under Windows you use semi-colons (;).  Any directory
-	name that ends in ``*'' will be search recursively (not under Windows).
+	name that ends in a trailing / will be search recursively (not under Windows).
 \item [\$GMT\_USERDIR] points to a directory where the user may place custom configuration files
 	(e.g., an alternate \filename{coastline.conf} file, preferred default settings in \filename{gmt.conf},
 	custom symbols and color palettes, and

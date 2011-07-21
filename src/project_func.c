@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: project_func.c,v 1.19 2011-06-25 01:59:47 guru Exp $
+ *	$Id: project_func.c,v 1.20 2011-07-21 23:30:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -107,7 +107,7 @@ int compare_distances (const void *point_1, const void *point_2)
 	return (0);
 }
 
-double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p, double *clat, double *clon, double *c, GMT_LONG c_given)
+double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p, double *clat, double *clon, double *c, GMT_LONG c_given, GMT_LONG generate)
 {
 	/* routine sets up a unit 3-vector p, the pole of an
 	   oblique projection, given plat, plon, the position
@@ -135,6 +135,7 @@ double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p,
 	GMT_normalize3v (GMT, x);
 	GMT_cross3v (GMT, x, p, c);
 	GMT_normalize3v (GMT, c);
+	if (!generate) GMT_memcpy (c, x, 3, double);
 	GMT_cart_to_geo (GMT, clat, clon, c, TRUE);	/* return the possibly adjusted center  */
 	cp = GMT_dot3v (GMT, p, c);
 	sin_lat_to_pole = d_sqrt (1.0 - cp * cp);
@@ -708,7 +709,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	else {
 		if (Ctrl->T.active) {
-			sin_lat_to_pole = oblique_setup (GMT, Ctrl->T.y, Ctrl->T.x, P.pole, &Ctrl->C.y, &Ctrl->C.x, center, Ctrl->C.active);
+			sin_lat_to_pole = oblique_setup (GMT, Ctrl->T.y, Ctrl->T.x, P.pole, &Ctrl->C.y, &Ctrl->C.x, center, Ctrl->C.active, Ctrl->G.active);
 			if (Ctrl->G.mode) {	/* Want small-circle path about T; must adjust C to be at right lat */
 				Ctrl->G.lat = 90 - Ctrl->G.lat;
 				sign = copysign (1.0, Ctrl->G.lat);
