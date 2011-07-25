@@ -28,54 +28,47 @@ The GMT archives are as follows:
 
 \begin{description}
 
-\item[GMT\_src.tar.bz2] Contains all \GMT\ source code needed for compilation.
+\item[gmt-\GMTDOCVERSION.tar.bz2] Contains all \GMT\ and supplemental source code needed for compilation, support files
+	needed at run-time (cpt files, symbols and \PS\ patterns), and all documentation
+	(man pages, Cookbook and Technical Reference, and the tutorial), the data files
+	used in the tutorial, and all the shell scripts and support data used in the Cookbook section.
 
-\item[GMT\_share.tar.bz2] Contains support files needed at run-time (CPT files, symbols and \PS\ patterns).
-
-\item[GSHHS\_coast.tar.bz2] Contains the intermediate,
-low, and crude resolutions of the GSHHS coastline database.  Required
-with GMT\_src.tar and GMT\_share.tar for minimal setup needed to run \GMT.
-
-\item[GMT\_doc.tar.bz2] Contains HTML and PDF versions all \GMT\ documentation
-(man pages, Cookbook and Technical Reference, and the tutorial), the data files
-used in the tutorial, and all the shell scripts
-and support data used in the Cookbook section.
-
-\item[GMT\_triangle.tar.bz2] Contains the optional triangulation routine of Shewchuk.
-
-\item[GMT\_suppl.tar.bz2] Contains several programs
-written by us and \GMT\ users elsewhere. (See Appendix~\ref{app:A} for more
-details).
-
-\item[GSHHS\_full.tar.bz2] Contains the optional GSHHS
-full-resolution coastline database.
-
-\item[GSHHS\_high.tar.bz2] Contains the optional GSHHS
-high-resolution coastline database.
+\item[gshhs-\GSHHSVERSION.tar.bz2] Contains all resolutions (full, high, intermediate,
+low, and crude) of the GSHHS coastline database.  Required to run \GMT.
 
 \end{description}
 
 \index{netCDF, obtaining}
 
 The netCDF library that makes up the backbone of the grid file
-i/o operations can be obtained from  Unidata by downloading he file
+i/o operations can be obtained from Unidata by downloading he file
 \filename{netcdf.tar.Z} from the anonymous FTP directory of
 \underline{unidata.ucar.edu}.
+
+\index{GMT@\GMT!subversion install}
+\section{Install via subversion}
+
+The \GMT\ development tree can be installed via subversion.  Simply run
+\begin{verbatim}
+	svn checkout svn://pohaku.soest.hawaii.edu/gmt5
+\end{verbatim}
 
 \index{GMT@\GMT!binaries for Win32}
 \section{Pre-compiled Executables}
 
-For Windows users who just want executables we have three Windows installers available:
+For Windows users who just want executables we have three Windows installers available.  Choose one
+of the first two and \emph{optionally} the third:
 
 \begin{description}
 
-\item[GMT\_basic\_install.exe] The basic install with all \GMT\ executables (including supplements),
-the netCDF DLL, the crude, low, and intermediate GSHHS coastlines, the example batch scripts and data, and all
-documentation in HTML format.
+\item[gmt-\GMTDOCVERSION\_install32.exe] The 32-bit install with all \GMT\ executables (including supplements),
+the netCDF DLL, the complete set of GSHHS coastlines, rivers, and borders, the example batch scripts and data, and all documentation in HTML format.
 
-\item[GMT\_PDF\_install.exe] Installer for the optional \GMT\ documentation in PDF format.
+\item[gmt-\GMTDOCVERSION\_install64.exe] The 64-bit install with all \GMT\ executables (including supplements),
+the netCDF DLL, the complete set of GSHHS coastlines, rivers, and borders, the example batch scripts and data, and all documentation in HTML format.
 
-\item[GSHHS\_fullhigh\_install.exe] Installer for the optional full- and high-resolution GSHHS coastlines.
+\item[gmt-\GMTDOCVERSION\_pdf\_install.exe] Installer for the optional \GMT\ documentation in PDF format.
 
 \end{description}
+Usually, only one of the 32- or 64-bit installers will be needed.
 
