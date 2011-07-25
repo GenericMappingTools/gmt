@@ -2,6 +2,9 @@
 	$Id: ChangeLog,v 1.1148 2011-07-21 23:30:13 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-07-24	pwessel
+	Now under subversion control
+
 2011-07-21	pwessel
 	* project_func.c:	Fixed same bug as in GMT 4 and added test oblique.sh
 
