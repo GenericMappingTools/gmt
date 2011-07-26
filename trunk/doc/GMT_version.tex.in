@@ -12,3 +12,4 @@
 \newcommand{\GMTDOCVERSION}{@PACKAGE_VERSION@}
 \newcommand{\GMTDOCDATE}{@DOCDATE@}
 \newcommand{\GMTDOCYEAR}{@DOCYEAR@}
+\newcommand{\GSHHSVERSION}{@GSHHS_VERSION@}
