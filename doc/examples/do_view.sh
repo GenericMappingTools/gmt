@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: do_view.sh,v 1.5 2011-03-15 02:06:31 guru Exp $
+#	$Id$
 #
 #	Simple driver to view all examples using ghostview
 #

@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_connect.c,v 1.5 2011-04-12 13:06:42 remko Exp $
+ *	$Id$
  *
  * segment_connect clean_segment_file.b tmp_poly_segment_file.b closed_poly.b
  *

@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_-B_time6.sh,v 1.8 2011-05-01 18:06:37 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 gmtset FORMAT_DATE_MAP "o yy" FORMAT_TIME_PRIMARY_MAP Abbreviated

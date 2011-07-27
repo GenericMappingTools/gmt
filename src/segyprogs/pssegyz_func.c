@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegyz_func.c,v 1.13 2011-06-25 02:45:58 guru Exp $
+ *	$Id$
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.

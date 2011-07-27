@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_Defaults_1b.sh,v 1.12 2011-05-01 18:06:37 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 gmtset MAP_FRAME_TYPE plain FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0i \

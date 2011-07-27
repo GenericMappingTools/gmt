@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: stitch.sh,v 1.6 2011-07-19 01:50:05 guru Exp $
+#	$Id$
 #
 # Basic stitching of Cartesian and geographic data
 

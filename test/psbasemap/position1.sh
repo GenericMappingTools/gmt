@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: position1.sh,v 1.12 2011-03-15 02:06:45 guru Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test psbasemap's annotation alignment"

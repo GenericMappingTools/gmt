@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 07
 REM
-REM		$Id: job07.bat,v 1.13 2011-06-09 15:31:36 remko Exp $
+REM		$Id$
 REM
 REM Purpose:	Make a basemap with earthquakes and isochrons etc
 REM GMT progs:	pscoast, pstext, psxy

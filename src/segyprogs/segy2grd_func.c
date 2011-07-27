@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: segy2grd_func.c,v 1.16 2011-06-25 02:45:58 guru Exp $
+ *	$Id$
  *
  *	Copyright (c) 1991-2011 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.

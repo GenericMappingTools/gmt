@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: connections.sh,v 1.1 2011-07-14 20:10:39 remko Exp $
+#	$Id$
 #
 # Plot a lot of line segments
 

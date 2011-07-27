@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 30
-#		$Id: job30.sh,v 1.6 2011-06-09 04:12:31 guru Exp $
+#		$Id$
 #
 # Purpose:	Show graph mode and math angles
 # GMT progs:	gmtmath, psbasemap, pstext and psxy

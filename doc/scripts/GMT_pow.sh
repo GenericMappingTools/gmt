@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_pow.sh,v 1.8 2011-06-10 23:29:27 guru Exp $
+#	$Id$
 #
 . ./functions.sh
 

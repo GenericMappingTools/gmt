@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: allsymbinch.sh,v 1.4 2011-04-26 19:29:44 remko Exp $
+#	$Id$
 #
 # Plot psxy symbols under INCH default unit
 

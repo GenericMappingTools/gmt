@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_G.sh,v 1.14 2011-05-18 19:54:38 remko Exp $
+#	$Id$
 #
 #	Makes the insert for Appendix G (fonts)
 #

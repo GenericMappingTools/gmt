@@ -23,7 +23,7 @@ function [lon lat z ym] = imgread (file, west, east, south, north, scl)
 % Example, to pull out data near Hawaii from the FAA grid:
 % [lon lat z] = imgreadf ('grav.16.1.img', 170, 220, 10, 40, 0.1);
 
-% $Id: imgread.m,v 1.6 2008-09-09 19:22:39 guru Exp $
+% $Id$
 % P. Wessel, based on img2mergrd.c by Walter H.F. Smith
 
 if (nargin == 5)	% Must specify default scale

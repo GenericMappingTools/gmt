@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: limits.sh,v 1.2 2011-06-04 02:31:01 guru Exp $
+#	$Id$
 # Testing grdclip
 
 . ../functions.sh

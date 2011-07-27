@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 09
-#		$Id: job09.sh,v 1.15 2011-06-09 04:12:31 guru Exp $
+#		$Id$
 #
 # Purpose:	Make wiggle plot along track from geoid deflections
 # GMT progs:	pswiggle, pstext, psxy

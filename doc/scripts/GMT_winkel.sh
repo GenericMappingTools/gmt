@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_winkel.sh,v 1.9 2011-06-24 21:13:45 guru Exp $
+#	$Id$
 #
 . ./functions.sh
 

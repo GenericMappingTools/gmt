@@ -1,5 +1,5 @@
 /*
- *	$Id: gshhs_to_polygon.c,v 1.6 2011-05-19 15:18:56 remko Exp $
+ *	$Id$
  * 
  *	read a GSHHS file and and write a polygon.b format file to stdout
  * UNTESTED but should work. (-pw)

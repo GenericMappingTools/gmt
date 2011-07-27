@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: grdclip.sh,v 1.1 2011-04-25 21:41:20 remko Exp $
+#	$Id$
 #
 # Check clipping of grids on a global conic plot
 

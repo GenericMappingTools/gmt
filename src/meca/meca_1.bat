@@ -1,4 +1,4 @@
-REM	$Id: meca_1.bat,v 1.3 2011-03-15 02:06:37 guru Exp $
+REM	$Id$
 gmtset MEASURE_UNIT inch TICK_LENGTH 0.075i FRAME_WIDTH 0.1i X_ORIGIN 2.5c Y_ORIGIN 1.3i DEGREE_FORMAT 3
 set frame=-R238.5/242/32.5/35.5
 set proj=-Jm1.3i 

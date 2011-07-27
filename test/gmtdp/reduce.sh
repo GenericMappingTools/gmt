@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: reduce.sh,v 1.1 2011-06-03 19:50:43 guru Exp $
+#	$Id$
 # Testing gmtdp on GSHHS high Australia polygon.
 
 . ../functions.sh

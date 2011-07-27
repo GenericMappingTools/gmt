@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.23 2011-06-21 20:11:12 jluis Exp $
+ * $Id$
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *

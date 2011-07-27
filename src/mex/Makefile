@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.17 2011-03-25 14:36:18 remko Exp $
+#		$Id$
 #
 #	Makefile for gmt <--> octave/matlab interface programs
 #	Use with GMT 5

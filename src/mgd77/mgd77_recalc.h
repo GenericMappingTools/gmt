@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77_recalc.h,v 1.9 2011-03-15 02:06:37 guru Exp $
+ *	$Id$
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.

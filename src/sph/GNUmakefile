@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.22 2011-07-19 22:12:03 guru Exp $
+#  $Id$
 #
 #	Guru Makefile for GMT Version 4.x sph directory
 #	

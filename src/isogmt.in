@@ -1,6 +1,6 @@
 #!/bin/sh -f
 #--------------------------------------------------------------------
-#	$Id: isogmt.in,v 1.6 2011-03-15 02:06:36 guru Exp $
+#	$Id$
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.

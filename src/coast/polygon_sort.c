@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sort.c,v 1.8 2011-04-12 13:06:42 remko Exp $
+ *	$Id$
  */
 /* polygon_sorts writes out final data in decreasing order (# points)
  *

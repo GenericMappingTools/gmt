@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.19 2011-03-15 02:06:37 guru Exp $
+#	$Id$
 #
 # Usage: swbd_stitch.sh type
 #

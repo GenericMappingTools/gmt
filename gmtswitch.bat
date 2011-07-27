@@ -1,6 +1,6 @@
 @ECHO OFF
 REM  
-REM	$Id: gmtswitch.bat,v 1.1 2011-06-25 20:37:58 jluis Exp $
+REM	$Id$
 REM
 REM	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 REM	See LICENSE.TXT file for copying and redistribution conditions.

@@ -1,4 +1,4 @@
-$Id: job18.txt,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+$Id$
 Example 18.  This more complicated script illustrates various
 search operations in GMT based on geospatial relationships.
 We seek to find all large seamounts within 200 km of Pratt

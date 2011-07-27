@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_J.sh,v 1.13 2011-05-01 18:06:37 remko Exp $
+#	$Id$
 #
 # Script to draw the impulse responses and transfer functions
 # for GMT cookbook Appendix_J.

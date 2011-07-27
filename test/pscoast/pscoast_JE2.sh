@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: pscoast_JE2.sh,v 1.1 2011-07-22 18:51:35 guru Exp $
+#	$Id$
 # Make sure when fixed it works for all resolutions -D?
 
 ps=pscoast_JE2.ps

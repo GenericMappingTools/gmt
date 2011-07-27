@@ -1,4 +1,4 @@
-$Id: job09.txt,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+$Id$
 Example 9.   A variety of data sets can be described as a time-series collected
 along a track.  Examples are magnetic anomalies and seismic traces.  This illustration
 shows deflections of the vertical along several sub-parallel Geosat tracks over some

@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT Appendix P, example 2
-#		$Id: GMT_App_P_2.sh,v 1.10 2011-06-23 01:17:06 remko Exp $
+#		$Id$
 #
 # Purpose:	Illustrates the use of isolation mode
 # GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast

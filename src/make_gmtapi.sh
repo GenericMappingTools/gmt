@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: make_gmtapi.sh,v 1.3 2011-04-23 02:14:13 guru Exp $
+#	$Id$
 #
 # Script that creates gmt_${suppl}.c and gmt_${suppl}.h.
 # It takes a list of all GMT programs as arguments. To use with the GMT

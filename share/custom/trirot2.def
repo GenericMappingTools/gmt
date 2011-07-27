@@ -1,4 +1,4 @@
-#	$Id: trirot2.def,v 1.1 2009-09-20 00:28:03 guru Exp $
+#	$Id$
 #
 #	Definition file for 90-degree triangle symbol (2nd quadrant).  Use in psxy
 #	as -Sktrirot2/size.  Can be circumscribed by the square.

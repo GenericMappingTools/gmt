@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: xy2ij.sh,v 1.15 2011-05-18 16:20:25 remko Exp $
+#	$Id$
 #
 # Test to make sure the (x,y) <--> (i,j) macros work correctly
 # We use -R0/5/0/5 -I1 for pixel and gridline registrations

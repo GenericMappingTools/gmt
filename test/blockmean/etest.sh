@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: etest.sh,v 1.8 2011-03-15 02:06:38 guru Exp $
+#	$Id$
 #
 # Test to make sure the -E option works as advertised.
 # We have data that will fall in to 4 separate blocks

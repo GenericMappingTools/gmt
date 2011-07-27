@@ -1,6 +1,6 @@
 # GMT Time language file for US (english) mode [US]
 #
-#	$Id: us.d,v 1.1 2001-09-23 23:41:15 pwessel Exp $
+#	$Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	January		Jan	J

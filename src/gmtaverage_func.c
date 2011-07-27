@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtaverage_func.c,v 1.11 2011-06-30 08:45:18 guru Exp $
+ *    $Id$
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.

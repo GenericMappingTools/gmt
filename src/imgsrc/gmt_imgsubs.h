@@ -1,4 +1,4 @@
-/* $Id: gmt_imgsubs.h,v 1.13 2011-03-15 02:06:37 guru Exp $
+/* $Id$
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.

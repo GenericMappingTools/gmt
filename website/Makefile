@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.64 2011-07-16 00:10:38 guru Exp $
+#  $Id$
 #
 #		 Guru Makefile for GMT Version 5.x
 #			GNU make compatible

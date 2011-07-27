@@ -1,5 +1,5 @@
 /*
- *	$Id: poly_misc_subs.c,v 1.8 2011-06-20 02:02:39 guru Exp $
+ *	$Id$
  *
  * Contains misc functions used by polygon* executables
  */

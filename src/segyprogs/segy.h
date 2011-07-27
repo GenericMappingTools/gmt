@@ -1,4 +1,4 @@
-/*	$Id: segy.h,v 1.3 2007-01-31 17:00:03 pwessel Exp $	*/
+/*	$Id$	*/
 #ifndef SEGY_H
 #define SEGY_H
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: intersect.sh,v 1.2 2011-07-06 01:15:25 guru Exp $
+#	$Id$
 # Testing gmtspatial intersection
 
 . ../functions.sh

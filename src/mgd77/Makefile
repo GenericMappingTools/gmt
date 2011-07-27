@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.69 2011-07-16 14:43:30 remko Exp $
+#	$Id$
 #
 #		Makefile for GMT mgd77 supplements
 #

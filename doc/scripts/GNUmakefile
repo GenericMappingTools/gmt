@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.2 2011-05-21 02:32:49 remko Exp $
+#	$Id$
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.

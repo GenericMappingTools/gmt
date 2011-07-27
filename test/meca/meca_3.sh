@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: meca_3.sh,v 1.4 2011-06-23 17:52:06 remko Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test psmeca for plotting focal mechanisms (3)"

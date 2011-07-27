@@ -1,4 +1,4 @@
-#	$Id: triangle.def,v 1.1 2001-09-21 03:01:12 pwessel Exp $
+#	$Id$
 #
 #	Definition file for triangle symbol.  Use in psxy
 #	as -Sktriangle/size.  Unlike -St, this allows for

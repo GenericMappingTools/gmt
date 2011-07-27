@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.22 2011-07-07 02:20:29 guru Exp $
+*    $Id$
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.

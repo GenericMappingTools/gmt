@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: withgdal.sh,v 1.2 2011-05-21 15:14:01 jluis Exp $
+#	$Id$
 
 . ../functions.sh
 GDAL=`grdreformat 2>&1 | grep -c gd`

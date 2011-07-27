@@ -1,4 +1,4 @@
-#	$Id: WK97.d,v 1.1 2011-06-14 01:28:40 guru Exp $
+#	$Id$
 #
 # Stage poles for the Pacific plate relative to
 # the hotspots.  From Wessel, P. & L.W. Kroenke (1997),

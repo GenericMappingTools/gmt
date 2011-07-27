@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_stereonets.sh,v 1.6 2011-05-18 16:24:14 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 

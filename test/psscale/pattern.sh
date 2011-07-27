@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: pattern.sh,v 1.3 2011-03-15 02:06:45 guru Exp $
+#	$Id$
 #
 . ../functions.sh
 

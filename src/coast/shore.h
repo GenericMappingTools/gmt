@@ -1,5 +1,5 @@
 /*
- *	$Id: shore.h,v 1.6 2011-03-15 02:06:37 guru Exp $
+ *	$Id$
  */
 #ifndef _WVS_H_
 #define MILL (1000000)

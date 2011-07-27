@@ -1,5 +1,5 @@
 #!/bin/bash
-#       $Id: ogrtest.sh,v 1.6 2011-05-19 17:26:27 remko Exp $
+#       $Id$
 #
 # Test grdmask for proper handling of perimeter and holes [OGR].
 

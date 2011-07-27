@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel2.c,v 1.10 2011-04-12 13:06:42 remko Exp $
+ *	$Id$
  */
 #include "wvs.h"
 

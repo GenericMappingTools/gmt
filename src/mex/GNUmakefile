@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.3 2011-03-15 02:06:37 guru Exp $
+#  $Id$
 #
 #	Guru Makefile for GMT Version 5 mex directory
 #	

@@ -1,7 +1,7 @@
 REM
 REM		GMT EXAMPLE 03
 REM
-REM		$Id: job03.bat,v 1.15 2011-03-15 02:06:31 guru Exp $
+REM		$Id$
 REM
 echo GMT EXAMPLE 03
 set ps=..\example_03.ps

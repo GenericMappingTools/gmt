@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_linear_cal.sh,v 1.8 2011-06-09 17:24:52 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 gmtset FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_CLOCK_MAP=-hham FORMAT_TIME_PRIMARY_MAP full

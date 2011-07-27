@@ -1,5 +1,5 @@
 /*
- *	$Id: douglas_peucker.c,v 1.5 2009-02-25 12:36:29 remko Exp $
+ *	$Id$
  */
 
 #define COASTLIB

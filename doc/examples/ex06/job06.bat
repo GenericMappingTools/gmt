@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 06
 REM
-REM		$Id: job06.bat,v 1.10 2011-06-08 18:31:28 guru Exp $
+REM		$Id$
 REM
 REM Purpose:	Make standard and polar histograms
 REM GMT progs:	pshistogram, psrose

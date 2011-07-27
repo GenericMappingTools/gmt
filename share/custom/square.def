@@ -1,4 +1,4 @@
-#	$Id: square.def,v 1.1 2001-09-21 03:01:12 pwessel Exp $
+#	$Id$
 #
 #	Definition file for square symbol.  Use in psxy
 #	as -Sksquare/size.  Unlike -Ss this allows for

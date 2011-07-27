@@ -1,5 +1,5 @@
 /*
- *	$Id: shoremaker.c,v 1.16 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /*
  *

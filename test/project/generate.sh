@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: generate.sh,v 1.12 2011-06-24 20:52:37 guru Exp $
+#	$Id$
 #
 # Tests project in generating lines
 

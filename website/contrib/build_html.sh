@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: build_html.sh,v 1.2 2009-09-20 04:39:05 guru Exp $
+#	$Id$
 #
 # Just a helper script to format the controb websites that has lists of 3-column tables of images.
 

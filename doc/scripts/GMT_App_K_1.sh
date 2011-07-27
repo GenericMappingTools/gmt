@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_K_1.sh,v 1.17 2011-06-23 01:17:06 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0 MAP_ANNOT_OBLIQUE 22 MAP_ANNOT_MIN_SPACING 0.3i

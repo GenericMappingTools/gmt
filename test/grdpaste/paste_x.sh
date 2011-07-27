@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: paste_x.sh,v 1.3 2011-06-19 01:48:01 guru Exp $
+#	$Id$
 #
 # Paste grids along X & Y
 

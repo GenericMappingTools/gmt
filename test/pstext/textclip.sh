@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: textclip.sh,v 1.4 2011-06-21 22:46:12 jluis Exp $
+# $Id$
 # Test pstext with text path clipping
 . ../functions.sh
 ps=textclip.ps

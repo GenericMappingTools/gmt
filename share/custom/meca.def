@@ -1,4 +1,4 @@
-#	$Id: meca.def,v 1.2 2011-03-15 02:06:31 guru Exp $
+#	$Id$
 #
 #	Definition file for meca symbol.  Use in psxy
 #	as -Skmeca/size.  Shows a focal mechanism beachball

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.175 2011-07-12 02:03:17 remko Exp $
+#	$Id$
 #
 #	Automatic installation of GMT 5
 #	Suitable for the Bourne shell (or compatible)

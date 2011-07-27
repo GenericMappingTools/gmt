@@ -1,4 +1,4 @@
-#	$Id: GMT_old_unique_sites.d,v 1.2054 2011-03-15 02:06:31 guru Exp $
+#	$Id$
 #
 #	This is a list of unique, verified block-averaged locations
 #	of GMT registration sites.  It is obtained

@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 04
 REM
-REM		$Id: job04.bat,v 1.12 2011-03-15 02:06:31 guru Exp $
+REM		$Id$
 REM
 REM Purpose:	3-D mesh plot of Hawaiian topography and geoid
 REM GMT progs:	grdcontour, grdview, pscoast, pstext

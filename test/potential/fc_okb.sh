@@ -1,5 +1,5 @@
 #! /bin/bash
-# $Id: fc_okb.sh,v 1.1 2011-06-29 22:24:41 jluis Exp $
+# $Id$
 #
 # Compute the gravity anomaly of the Flemish Cap Guyot
 

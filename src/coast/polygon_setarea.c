@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setarea.c,v 1.3 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  * Updates polygon areas for the resolution.
  */
 #include "wvs.h"

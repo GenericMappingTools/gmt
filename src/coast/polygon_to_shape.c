@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.18 2011-04-29 03:08:12 guru Exp $
+ *	$Id$
  * 
  *	Reads a polygon file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.

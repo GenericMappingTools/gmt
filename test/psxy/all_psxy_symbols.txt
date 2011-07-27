@@ -1,4 +1,4 @@
-# $Id: all_psxy_symbols.txt,v 1.2 2011-03-15 02:06:46 guru Exp $
+# $Id$
 # All the basic psxy symbols + two customs to fill the table
 # ALl dimensions hardwired to be in inches
 0.5	0.5	1i	-

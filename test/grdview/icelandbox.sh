@@ -2,7 +2,7 @@
 #
 # Script to plot 3D model of Iceland, provided by Peter Schmidt
 #
-#	$Id: icelandbox.sh,v 1.1 2011-05-01 18:58:06 remko Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test grdview, psclip, grdcontour, psxyz in 3D"

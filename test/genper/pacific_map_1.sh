@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: pacific_map_1.sh,v 1.5 2011-06-23 17:52:02 remko Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test -JG (Pacific 35000 km image)"

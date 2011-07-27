@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: near_a_line.sh,v 1.11 2011-03-15 02:06:45 guru Exp $
+#	$Id$
 #
 # Making sure both forms of "near a line" works:
 # Default (old) behavior is to think of a line as

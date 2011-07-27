@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findarea.c,v 1.4 2011-04-12 13:06:42 remko Exp $
+ *	$Id$
  * Based on polygon_findlevel but limited to just compute polygon areas.
  */
 #include "wvs.h"

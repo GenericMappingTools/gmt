@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: clipping1.sh,v 1.3 2011-03-15 02:06:46 guru Exp $
+#	$Id$
 #
 # Check clipping of lines crossing over the horizon AND dateline (N pole)
 

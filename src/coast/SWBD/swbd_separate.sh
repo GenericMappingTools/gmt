@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_separate.sh,v 1.3 2011-03-15 02:06:37 guru Exp $
+#	$Id$
 #
 # Usage: swbd_separate.sh w e s n TILE
 #

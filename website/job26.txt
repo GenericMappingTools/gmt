@@ -1,4 +1,4 @@
-$Id: job26.txt,v 1.1 2007-03-28 03:04:02 pwessel Exp $
+$Id$
 Example 26.  GMT 4.2.0 introduced the full general vertical
 perspective projection.  At the moment it is only available
 from pscoast and grdimage but it will eventually be implemented

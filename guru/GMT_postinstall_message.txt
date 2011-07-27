@@ -1,4 +1,4 @@
-$Id: GMT_postinstall_message.txt,v 1.2 2008-05-01 01:42:26 guru Exp $
+$Id$
 
 This installation does not include the man pages and the cookbook in PDF format,
 only the html version. Furthermore, it does not include neither of the High 

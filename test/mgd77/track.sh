@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: track.sh,v 1.2 2011-06-20 20:56:58 guru Exp $
+#       $Id$
 
 . ../functions.sh
 header "Testing mgd77track for mapping"

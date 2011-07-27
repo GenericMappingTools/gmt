@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 32
-#		$Id: job32.sh,v 1.6 2011-06-21 02:15:23 remko Exp $
+#		$Id$
 #
 # Purpose:	Illustrate draping of an image over topography
 # GMT progs:	grdcut, grdedit, grdgradient, grdreformat, grdtrack, grdview

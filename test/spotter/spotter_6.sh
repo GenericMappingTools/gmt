@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: spotter_6.sh,v 1.1 2011-07-05 23:45:47 guru Exp $
+#       $Id$
 
 . ../functions.sh
 header "Testing rotconverter for adding rotations"

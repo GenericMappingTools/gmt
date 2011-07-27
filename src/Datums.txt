@@ -1,4 +1,4 @@
-# $Id: Datums.txt,v 1.8 2007-09-14 01:13:39 remko Exp $
+# $Id$
 #
 # List of Datums available in GMT
 # The (Dx,Dy,Dz) values are in meters relative to WGS-84

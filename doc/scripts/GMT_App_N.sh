@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_N.sh,v 1.18 2011-05-18 19:54:38 remko Exp $
+#	$Id$
 #
 #	Makes the insert for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex

@@ -1,5 +1,5 @@
 # Crude representation of a closed polygon containing Eurasia
-# $Id: crude_eur_out.txt,v 1.2 2009-06-12 01:22:29 guru Exp $
+# $Id$
 -11	34
 12	36
 28	32

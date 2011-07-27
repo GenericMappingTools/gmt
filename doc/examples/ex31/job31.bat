@@ -1,5 +1,5 @@
 REM		GMT EXAMPLE 31
-REM		$Id: job31.bat,v 1.2 2011-03-15 02:06:31 guru Exp $
+REM		$Id$
 REM
 REM Purpose:	Illustrate usage of non-default fonts in PostScript
 REM GMT progs:	gmtset, pscoast, psxy, pstext, pslegend

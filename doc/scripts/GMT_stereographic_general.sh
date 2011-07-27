@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_stereographic_general.sh,v 1.12 2011-06-24 21:13:45 guru Exp $
+#	$Id$
 #
 . ./functions.sh
 gmtset MAP_ANNOT_OBLIQUE 0

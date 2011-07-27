@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 21
 REM
-REM             $Id: job21.bat,v 1.16 2011-06-08 22:09:23 guru Exp $
+REM             $Id$
 REM
 REM Purpose:    Plot a time-series
 REM

@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_general_cyl.sh,v 1.10 2011-06-23 01:17:06 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 

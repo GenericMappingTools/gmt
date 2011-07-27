@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_color_interpolate.sh,v 1.7 2011-05-18 19:54:38 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 ps=GMT_color_interpolate.ps

@@ -1,6 +1,6 @@
 #!/bin/sh
 # Combine the tile files
-#	$Id: swbd_combine.sh,v 1.1 2009-06-19 02:38:24 guru Exp $
+#	$Id$
 
 closed=""
 open=""

@@ -1,5 +1,5 @@
 # Crude representation of a closed polygon containing North America
-# $Id: crude_nam_out.txt,v 1.3 2009-06-12 01:22:29 guru Exp $
+# $Id$
 280	5
 284	12
 273	23

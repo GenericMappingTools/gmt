@@ -1,5 +1,5 @@
 /*
- *	$Id: river_fix.c,v 1.3 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /*  used to set all levels > 4 to level-1 (since 5 was removed)
  */

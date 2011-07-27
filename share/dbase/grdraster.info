@@ -1,4 +1,4 @@
-#	$Id: grdraster.info,v 1.7 2011-03-24 14:14:09 remko Exp $
+#	$Id$
 #
 # This file contains information on rasterfiles which are readable with grdraster.
 # This file must be named grdraster.info.  At run time, grdraster will look for

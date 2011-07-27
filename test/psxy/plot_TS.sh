@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: plot_TS.sh,v 1.3 2011-03-22 16:37:13 remko Exp $
+#	$Id$
 #
 # Plot lines with variable number of NaNs
 

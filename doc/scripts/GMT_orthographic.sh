@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_orthographic.sh,v 1.10 2011-06-24 21:13:45 guru Exp $
+#	$Id$
 #
 . ./functions.sh
 

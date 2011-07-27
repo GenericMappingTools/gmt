@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: zoom.sh,v 1.1 2004-09-05 04:25:01 pwessel Exp $
+#	$Id$
 #
 #	Use to zoom in on a part of a polygon
 #

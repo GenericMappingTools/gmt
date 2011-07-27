@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_restore.c,v 1.8 2011-04-29 03:08:12 guru Exp $
+ *	$Id$
  */
 /* 
  *

@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: circles.sh,v 1.2 2011-07-21 01:03:45 guru Exp $
+#	$Id$
 #
 # Tests fitcircle on spherical data points
 

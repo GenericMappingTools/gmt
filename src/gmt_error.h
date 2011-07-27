@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_error.h,v 1.18 2011-05-11 04:01:53 guru Exp $
+ *	$Id$
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: spotter_3.sh,v 1.4 2011-06-18 04:07:36 guru Exp $
+#       $Id$
 
 . ../functions.sh
 header "Testing originator to determine nearest origin"

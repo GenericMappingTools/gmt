@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_utm_zones.sh,v 1.10 2011-06-10 23:29:27 guru Exp $
+#	$Id$
 #
 # Makes a plot of the global UTM zone grid including the exceptions near Norway/Spitsbergen
 . ./functions.sh

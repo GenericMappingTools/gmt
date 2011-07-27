@@ -1,4 +1,4 @@
-#	$Id: mgd77_header.txt,v 1.3 2009-04-06 02:14:42 guru Exp $
+#	$Id$
 #
 # List of named items in the header sequences.  We use this file to generate
 # quite a bit of code, including structures and functions.  This is done to

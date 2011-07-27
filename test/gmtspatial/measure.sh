@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: measure.sh,v 1.1 2011-07-05 23:45:47 guru Exp $
+# $Id$
 #
 
 . ../functions.sh

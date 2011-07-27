@@ -1,4 +1,4 @@
-$Id: job12.txt,v 1.2 2008-05-06 22:14:48 guru Exp $
+$Id$
 Example 12.   This figure shows the results of optimal (Delaunay) triangulation on
 a data sets with uniformly distributed (x,y,z) values.  GMT allows for direct
 contouring and imaging of the raw data by way of triangulation.  Here, the program

@@ -4,7 +4,7 @@
 
 
 /*
- *	$Id: segy_io.c,v 1.5 2011-03-15 02:06:37 guru Exp $
+ *	$Id$
  * segy_io.c:  A suite of functions to cover reading SEGY header variables.
  *
  * modified by T. Henstock from the PASSCAL software suite.

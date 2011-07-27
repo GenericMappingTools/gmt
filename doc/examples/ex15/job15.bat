@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 15
 REM
-REM		$Id: job15.bat,v 1.12 2011-06-09 16:41:18 remko Exp $
+REM		$Id$
 REM
 REM Purpose:	Gridding and clipping when data are missing
 REM GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, minmax

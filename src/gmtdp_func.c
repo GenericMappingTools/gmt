@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtdp_func.c,v 1.12 2011-06-20 21:45:14 guru Exp $
+ *	$Id$
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.

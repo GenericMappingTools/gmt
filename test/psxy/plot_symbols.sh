@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: plot_symbols.sh,v 1.13 2011-05-18 16:20:25 remko Exp $
+#	$Id$
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 

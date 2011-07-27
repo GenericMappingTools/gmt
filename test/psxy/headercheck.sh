@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: headercheck.sh,v 1.10 2011-03-15 02:06:46 guru Exp $
+#	$Id$
 # Test that symbols pick up correct -W -G from command line or header
 
 . ../functions.sh

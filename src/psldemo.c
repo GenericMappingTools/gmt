@@ -1,4 +1,4 @@
-/* $Id: psldemo.c,v 1.3 2011-05-18 21:28:52 remko Exp $
+/* $Id$
  *
  * psldemo.c: Test all PSL functions at least once
  */

@@ -1,5 +1,5 @@
 /*
- *	$Id: grdwrite.c,v 1.20 2011-05-16 21:23:11 guru Exp $
+ *	$Id$
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.

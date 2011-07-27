@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-/* $Id: rearranger.c,v 1.5 2011-04-29 03:08:12 guru Exp $
+/* $Id$
  * Puts new GMT/GIS extra comments onto the segment header line for easy parsing
 * If an argument is given it is added to the multisegment headers
  */

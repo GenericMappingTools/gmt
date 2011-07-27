@@ -1,5 +1,5 @@
 /*
- *	$Id: grdinfo.c,v 1.12 2011-04-23 02:14:13 guru Exp $
+ *	$Id$
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.

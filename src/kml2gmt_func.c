@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: kml2gmt_func.c,v 1.15 2011-07-01 08:03:00 guru Exp $
+ *	$Id$
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.

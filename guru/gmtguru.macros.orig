@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.62 2011-06-03 02:13:17 guru Exp $
+#	$Id$
 #
 #	Original GMT Guru Makefile Macro for the main GNUmakefile
 #	Gurus should make a file gmtguru.macros to overrule any setting below.

@@ -1,7 +1,7 @@
 REM
 REM		GMT EXAMPLE 01
 REM
-REM		$Id: job01.bat,v 1.18 2011-05-19 14:44:43 remko Exp $
+REM		$Id$
 REM
 REM Purpose:	Make two contour maps based on the data in the file osu91a1f_16.nc
 REM GMT progs:	gmtset, grdcontour, psbasemap, pscoast

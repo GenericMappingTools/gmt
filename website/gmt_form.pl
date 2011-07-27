@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-#       $Id: gmt_form.pl,v 1.10 2008-09-30 16:32:13 guru Exp $
+#       $Id$
 
 $webmaster = "gmt-team\@hawaii\.edu";
 

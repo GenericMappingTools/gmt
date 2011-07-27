@@ -1,4 +1,4 @@
-#	$Id: common.mk,v 1.10 2011-04-26 21:32:40 remko Exp $
+#	$Id$
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.

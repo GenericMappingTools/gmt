@@ -1,4 +1,4 @@
-$Id: job15.txt,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+$Id$
 Example 15.  Gridding data with large unconstrained regions can cause problems.
 There are several techniques that can be used in GMT; this example illustrates
 some of them.  Lower left panel shows contours of the surface generated with

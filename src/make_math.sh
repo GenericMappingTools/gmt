@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: make_math.sh,v 1.18 2011-04-23 02:14:13 guru Exp $
+#	$Id$
 
 # This script puts together Xmath.h, Xmath_def.h, Xmath_explain.h, and Xmath_man.i
 # from Xmath_func.c.  To be run from the GMT src directory.  X is either grd or gmt.

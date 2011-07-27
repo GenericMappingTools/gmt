@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: cuerpo.sh,v 1.1 2011-04-26 19:30:38 remko Exp $
+#	$Id$
 # This test is based on a query by Eduardo Suarez
 
 ps=cuerpo.ps

@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_Defaults_1c.sh,v 1.16 2011-06-14 02:54:20 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 gmtset MAP_FRAME_TYPE plain FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh FONT_ANNOT_PRIMARY +8p

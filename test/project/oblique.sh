@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: oblique.sh,v 1.1 2011-07-21 23:30:13 guru Exp $
+#	$Id$
 #
 # Tests project to make oblique lines
 

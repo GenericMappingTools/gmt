@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: hilow.sh,v 1.4 2011-05-19 17:25:16 remko Exp $
+#	$Id$
 #
 
 . ../functions.sh

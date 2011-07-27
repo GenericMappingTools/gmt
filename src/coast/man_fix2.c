@@ -1,5 +1,5 @@
 /*
- *	$Id: man_fix2.c,v 1.7 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 #include "wvs.h"
 

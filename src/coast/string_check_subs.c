@@ -1,5 +1,5 @@
 /*
- *	$Id: string_check_subs.c,v 1.7 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /* string_check_subs.c
  * Subroutines for testing WVS string quality.

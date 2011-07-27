@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: GMT_dummydata.sh,v 1.4 2011-05-01 18:06:37 remko Exp $
+#	$Id$
 #
 #	This script makes the dummy data sets needed in Section 5.1
 . ./functions.sh

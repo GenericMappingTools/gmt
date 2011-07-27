@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 14
-#		$Id: job14.sh,v 1.21 2011-05-18 16:24:14 remko Exp $
+#		$Id$
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
 # GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project

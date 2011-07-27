@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.28 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons

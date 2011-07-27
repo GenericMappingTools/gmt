@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_loop.sh,v 1.3 2009-06-19 02:38:24 guru Exp $
+#	$Id$
 
 WEST=$1
 EAST=$2

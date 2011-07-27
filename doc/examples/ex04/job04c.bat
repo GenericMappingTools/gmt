@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 04
 REM
-REM		$Id: job04c.bat,v 1.5 2011-06-23 17:47:56 remko Exp $
+REM		$Id$
 REM
 REM 3-D perspective color plot of Hawaiian topography and geoid
 REM GMT progs:	grdcontour, grdgradient, grdimage, grdview, psbasemap, pscoast, pstext

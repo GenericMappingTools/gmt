@@ -1,5 +1,5 @@
 /*
- *	$Id: swap.c,v 1.3 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  * Based on polygon_findlevel but limited to just compute polygon areas.
  */
 #include "wvs.h"

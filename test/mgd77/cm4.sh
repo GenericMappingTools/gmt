@@ -1,5 +1,5 @@
 #! /bin/bash
-#	$Id: cm4.sh,v 1.7 2011-06-18 04:07:36 guru Exp $
+#	$Id$
 #
 
 . ../functions.sh

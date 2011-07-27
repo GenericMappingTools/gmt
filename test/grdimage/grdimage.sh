@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: grdimage.sh,v 1.14 2011-04-26 02:34:54 remko Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test grdimage for grid and pixel plots"

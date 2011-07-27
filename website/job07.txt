@@ -1,4 +1,4 @@
-$Id: job07.txt,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+$Id$
 Example 7.   Mercator basemap of the equatorial Atlantic ocean.  The continents were plotted
 with pscoast using one of 64 available fill patterns.  Several separate calls to GMT modules
 psxy and pstext added lines and earthquake symbols, as well as labels.

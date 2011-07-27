@@ -1,5 +1,5 @@
 /*
- * $Id: polygon_match.c,v 1.11 2011-05-19 15:18:56 remko Exp $
+ * $Id$
  * Compares the enw and old *.b files and looks for differences.
  * Currently set up for old using the previous GMT3_POLY structure
  * with endian swabbing while the new has the new structure and no

@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 31
-#		$Id: job31.sh,v 1.2 2011-03-15 02:06:31 guru Exp $
+#		$Id$
 #
 # Purpose:	Illustrate usage of non-default fonts in PostScript
 # GMT progs:	gmtset, pscoast, psxy, pstext, pslegend

@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.h,v 1.12 2011-03-15 02:06:36 guru Exp $
+/*	$Id$
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see LICENSE.TXT for details)

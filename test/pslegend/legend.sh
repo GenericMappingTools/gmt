@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: legend.sh,v 1.20 2011-07-06 23:23:19 jluis Exp $
+#	$Id$
 #
 # Testing pslegend capabilities
 

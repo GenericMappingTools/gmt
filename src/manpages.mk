@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: manpages.mk,v 1.11 2011-07-12 20:55:21 remko Exp $
+#  $Id$
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.

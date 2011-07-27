@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: hovmuller.sh,v 1.10 2011-03-15 02:06:45 guru Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test grdimage for making Hovmuller plots"

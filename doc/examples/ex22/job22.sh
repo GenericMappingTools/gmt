@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 22
-#		$Id: job22.sh,v 1.13 2011-03-15 02:06:31 guru Exp $
+#		$Id$
 #
 # Purpose:	Automatic map of last 7 days of world-wide seismicity
 # GMT progs:	gmtset, pscoast, psxy, pslegend

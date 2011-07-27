@@ -1,4 +1,4 @@
-#	$Id: GMT_programs.lis,v 1.8 2011-07-16 01:34:39 guru Exp $
+#	$Id$
 #
 # GMT_programs.lis contains a list of actual GMT programs written in C
 # It excludes scripts (such as GMT) and libraries (pslib etc).  We can

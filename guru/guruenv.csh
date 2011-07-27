@@ -1,6 +1,6 @@
 #!/bin/csh
 #
-#	$Id: guruenv.csh,v 1.12 2007-09-14 01:13:39 remko Exp $
+#	$Id$
 #
 #	Environmental variables needed by GMT gurus
 #	Stick these in your environment before making GMT

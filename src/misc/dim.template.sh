@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: dim.template.sh,v 1.3 2011-03-15 02:06:37 guru Exp $
+# $Id$
 #
 # Seung-Sep Kim, GG/SOEST/UHM
 # $Revision: 1.3 $    $Date: 2011-03-15 02:06:37 $

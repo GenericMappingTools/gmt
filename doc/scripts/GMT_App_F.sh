@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_F.sh,v 1.21 2011-06-14 03:02:54 remko Exp $
+#	$Id$
 #
 #	Makes the octal code charts in Appendix F
 . ./functions.sh

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: spikes.sh,v 1.1 2011-06-02 18:59:09 guru Exp $
+#	$Id$
 # Testing grdfilter's isotropic and rectangular filter
 # on a spike, using both -D0 and -Dp for pixel widths.
 

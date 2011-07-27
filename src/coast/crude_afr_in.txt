@@ -1,5 +1,5 @@
 # Crude representation of a closed polygon contained by Africa
-# $Id: crude_afr_in.txt,v 1.2 2009-06-12 01:22:29 guru Exp $
+# $Id$
 20	-33
 27	-33
 33	-20

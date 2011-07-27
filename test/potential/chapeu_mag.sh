@@ -1,5 +1,5 @@
 #! /bin/bash
-# $Id: chapeu_mag.sh,v 1.1 2011-07-10 19:43:13 jluis Exp $
+# $Id$
 #
 # Compute the magnetic anomaly of our mexican hat split in two halves
 

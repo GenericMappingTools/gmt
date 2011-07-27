@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: arcs.sh,v 1.5 2011-03-15 02:06:46 guru Exp $
+#	$Id$
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 

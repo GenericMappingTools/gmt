@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: extract.sh,v 1.1 2011-06-03 20:12:48 guru Exp $
+#	$Id$
 # Testing grd2xyz with -R and -s
 
 . ../functions.sh

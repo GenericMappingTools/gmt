@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: hexagone.sh,v 1.11 2011-03-15 02:06:46 guru Exp $
+#	$Id$
 #
 # Check wrapping around Greenwich
 

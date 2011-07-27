@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_volcano.sh,v 1.10 2011-05-01 18:06:37 remko Exp $
+#	$Id$
 . ./functions.sh
 
 ln -s ../examples/ex20/bullseye.def .

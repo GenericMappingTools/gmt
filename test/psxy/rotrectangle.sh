@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: rotrectangle.sh,v 1.10 2011-03-15 02:06:46 guru Exp $
+#	$Id$
 #
 # Test that psxy properly plots rotatable rectangles -Sj and -SJ
 

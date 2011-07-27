@@ -1,6 +1,6 @@
 # GMT language file for Japanese
 #
-#	$Id: jp.d,v 1.1 2004-07-14 18:41:29 pwessel Exp $
+#	$Id$
 #-------------------------------------------------
 #
 M	1	°ì·î		°ì	J

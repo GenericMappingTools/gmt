@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_clean.c,v 1.4 2011-04-12 13:06:42 remko Exp $
+ *	$Id$
  */
 /* segment_clean.c <raw_wvs_segment_file.b>  <clean_wvs_segment_file.b>
  *

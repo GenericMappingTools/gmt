@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: east_map_0.sh,v 1.5 2011-06-23 17:52:02 remko Exp $
+#	$Id$
 # Test of projection
 
 . ../functions.sh

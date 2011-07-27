@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: cartesian.sh,v 1.16 2011-05-14 00:04:07 guru Exp $
+#	$Id$
 #
 # Tests project in Cartesian manipulations
 

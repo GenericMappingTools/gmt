@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: units.sh,v 1.3 2011-05-01 21:18:00 guru Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test grdproject with SI and US units"

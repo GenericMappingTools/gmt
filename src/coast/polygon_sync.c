@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sync.c,v 1.9 2011-04-29 03:08:12 guru Exp $
+ *	$Id$
  * Based on output of polygon_hierarchy, update the h-i-l-c files with
  * meta data from the full set.
  */

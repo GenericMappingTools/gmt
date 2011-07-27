@@ -1,6 +1,6 @@
 # GMT Time language file for Tongan mode [TO]
 #
-#	$Id: to.d,v 1.1 2002-03-11 19:39:10 pwessel Exp $
+#	$Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Sanuali		San	S

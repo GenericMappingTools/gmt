@@ -1,4 +1,4 @@
-$Id: job20.txt,v 1.2 2008-05-06 22:14:48 guru Exp $
+$Id$
 Example 20.  It is fairly straightforward for the non-programmer to
 extend the capabilities of GMT.  Here we illustrate how one may go
 about introducing two new symbols for psxy, in this case a volcano

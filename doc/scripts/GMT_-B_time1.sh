@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_-B_time1.sh,v 1.12 2011-05-01 18:06:37 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 gmtset FORMAT_DATE_MAP=-o FONT_ANNOT_PRIMARY +9p

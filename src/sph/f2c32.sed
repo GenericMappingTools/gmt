@@ -1,4 +1,4 @@
-# $Id: f2c32.sed,v 1.1 2009-03-28 01:33:59 guru Exp $
+# $Id$
 # Used to modify the makefile.u to use CFLAGS everywhere.
 18c\
 CFLAGS = -O -fPIC

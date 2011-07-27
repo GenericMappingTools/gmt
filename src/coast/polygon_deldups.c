@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_deldups.c,v 1.4 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 #include "wvs.h"
 

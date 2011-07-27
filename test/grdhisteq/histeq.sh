@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: histeq.sh,v 1.2 2011-06-23 07:55:19 guru Exp $
+#	$Id$
 # Testing grdhisteq
 
 . ../functions.sh

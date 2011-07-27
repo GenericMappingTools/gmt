@@ -1,4 +1,4 @@
-#	$Id: invtriangle.def,v 1.3 2003-04-14 19:32:22 pwessel Exp $
+#	$Id$
 #
 #	Definition file for inverted triangle symbol.  Use in psxy
 #	as -Skinvtriangle/size.  Unlike -Si, this allows for

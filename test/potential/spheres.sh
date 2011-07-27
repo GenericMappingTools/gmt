@@ -1,5 +1,5 @@
 #! /bin/bash
-# $Id: spheres.sh,v 1.1 2011-06-29 22:24:41 jluis Exp $
+# $Id$
 #
 # Computes the gravity anomaly of a sphere both analytical and descrete triangles
 

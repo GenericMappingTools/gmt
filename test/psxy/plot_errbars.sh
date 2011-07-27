@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: plot_errbars.sh,v 1.6 2011-05-18 19:54:38 remko Exp $
+#	$Id$
 #
 # Plot error bars and test [+|-]<epen>
 

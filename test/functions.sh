@@ -1,5 +1,5 @@
 #
-#	$Id: functions.sh,v 1.18 2011-05-18 21:27:48 remko Exp $
+#	$Id$
 #
 # Functions to be used with test scripts
 

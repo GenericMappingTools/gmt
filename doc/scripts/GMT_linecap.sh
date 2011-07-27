@@ -1,5 +1,5 @@
 #!/bin/bash
-#       $Id: GMT_linecap.sh,v 1.1 2011-06-10 03:49:49 guru Exp $
+#       $Id$
 #
 . ./functions.sh
 

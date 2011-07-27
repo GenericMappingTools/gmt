@@ -2,7 +2,7 @@
 #
 # Check if we can wrap global grids over longitude
 #
-#	$Id: globalgrid.sh,v 1.11 2011-03-15 04:25:05 remko Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test grdimage for wrapping global grids"

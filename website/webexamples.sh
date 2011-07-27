@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.29 2011-07-12 22:27:59 remko Exp $
+#	 $Id$
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #

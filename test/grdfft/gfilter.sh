@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: gfilter.sh,v 1.1 2011-06-22 01:22:45 guru Exp $
+#	$Id$
 # Testing grdfft
 
 . ../functions.sh

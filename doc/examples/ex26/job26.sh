@@ -1,5 +1,5 @@
 #!/bin/bash
-#		$Id: job26.sh,v 1.8 2011-03-15 02:06:31 guru Exp $
+#		$Id$
 #		GMT EXAMPLE 26
 #
 # Purpose:	Demonstrate general vertical perspective projection
