@@ -22,7 +22,7 @@
  *
  * Author:	Paul Wessel
  * Date:	01-AUG-2011
- * Version:	5
+ * Version:	5 API
  */
 
 #ifdef __cplusplus	/* Basic C++ support */
