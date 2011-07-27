@@ -292,7 +292,7 @@ void psl_a85_encode (struct PSL_CTRL *PSL, unsigned char quad[], PSL_LONG nbytes
 PSL_LONG psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG n, PSL_LONG *ix, PSL_LONG *iy);
 int psl_comp_long_asc (const void *p1, const void *p2);
 int psl_comp_rgb_asc (const void *p1, const void *p2);
-static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname, const char *version);
+static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname, PSL_LONG revision);
 static void psl_init_fonts (struct PSL_CTRL *PSL);
 PSL_LONG psl_pattern_init (struct PSL_CTRL *PSL, PSL_LONG image_no, char *imagefile);
 void psl_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[]);
@@ -1263,12 +1263,12 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 		PSL_command (PSL, "%%%%EndComments\n\n");
 
 		PSL_command (PSL, "%%%%BeginProlog\n");
-		psl_bulkcopy (PSL, "PSL_prologue", "v 1.32 ");	/* Version number should match that of PSL_prologue.ps */
-		psl_bulkcopy (PSL, PSL->init.encoding, "");
+		psl_bulkcopy (PSL, "PSL_prologue", 8899);	/* Version number should match that of PSL_prologue.ps */
+		psl_bulkcopy (PSL, PSL->init.encoding, 0);
 
 		psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */
 
-		psl_bulkcopy (PSL, "PSL_label", "v 1.18 ");	/* Place code for label line annotations and clipping */
+		psl_bulkcopy (PSL, "PSL_label", 8899);	/* Place code for label line annotations and clipping */
 		PSL_command (PSL, "%%%%EndProlog\n\n");
 
 		PSL_command (PSL, "%%%%BeginSetup\n");
@@ -2628,7 +2628,7 @@ PSL_LONG psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, 
 	/* Load PSL_text procedures from file for now */
 
 	if (!PSL->internal.text_init) {
-		psl_bulkcopy (PSL, "PSL_text", "v 1.12 ");
+		psl_bulkcopy (PSL, "PSL_text", 8899);
 		PSL->internal.text_init = TRUE;
 	}
 
@@ -4123,14 +4123,13 @@ int psl_comp_long_asc (const void *p1, const void *p2)
 
 /* This function copies a file called $PSL_SHAREDIR/pslib/<fname>.ps
  * to the postscript output verbatim.
- * If version is not "" then the first line should contain both $Id: and
- * the requested version string.
+ * If revision is not 0 then the first line should contain
+ * Id: <fname>.ps <revision>
  */
-static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname, const char *version)
+static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname, PSL_LONG revision)
 {
 	FILE *in = NULL;
-	char buf[PSL_BUFSIZ];
-	char fullname[PSL_BUFSIZ];
+	char buf[PSL_BUFSIZ], fullname[PSL_BUFSIZ], version[PSL_BUFSIZ];
 	PSL_LONG i, first = TRUE;
 
 	psl_getsharepath (PSL, "pslib", fname, ".ps", fullname);
@@ -4141,9 +4140,10 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname, const char *v
 	}
 
 	while (fgets (buf, PSL_BUFSIZ, in)) {
-		if (version[0] && first) {
+		if (revision && first) {
+			sprintf (version, "$Id: %s.ps %ld", fname, revision);
 			first = FALSE;
-			if (!strstr (buf, "$Id:") || !strstr (buf, version)) PSL_message (PSL, PSL_MSG_FATAL, "Warning: PSL expects %s of %s\n", version, fullname);
+			if (!strstr (buf, version)) PSL_message (PSL, PSL_MSG_FATAL, "Warning: PSL expects rev %ld of %s\n", revision, fullname);
 		}
 		else if (PSL->internal.comments) {
 			/* We copy every line, including the comments, except those starting '%-' */
