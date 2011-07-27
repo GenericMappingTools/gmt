@@ -7,22 +7,21 @@
 #
 # Author:	P. Wessel
 # Date:		02-MAR-2001
-# Updated:	03-JUN-2007
+# Updated:	28-JUL-2011
 
 unalias cd
 set p = `pwd`
 
 set me = `whoami`
 cat << EOF
-===>>> INITIATION OF $me AS NEW GMT GURU  <<<===
+===>>> INITIATION OF $me AS NEW gmt5 GURU  <<<===
 
 Given your input, this script will create the directory GMTdev and make
-it the current working directory.  We will then login to the GMT CVS server
-and, if successfull, checkout the latest GMT project directory.  The GMT
-project directory is called (what else) GMT and is a subdirectory of your
-GMTdev directory.  It is convenient to keep earlier versions like GMT3.4.5
+it the current working directory.  We will then checkout the latest gmt5
+subversion trunk project directory which will be a subdirectory of your
+GMTdev directory.  It is convenient to keep earlier versions like GMT4.5.7
 as subdirectories of GMTdev.  These dirs should be considered READ-ONLY.
-Only edit files in the GMT work directory.
+Only edit files in the gmt5 work directory.
 
 
 STEP 1: CREATE GMTdev DIRECTORY
@@ -44,38 +43,21 @@ cd $dir/GMTdev
 
 cat << EOF
 
-STEP 2: LOGIN to GMT CVS SERVER in HAWAII
+STEP 2: GET CURRENT GMT PROJECT
 
-EOF
-echo -n "==> Enter your user name for GMT CVS server access [anonymous]: "
-set usr = $<
-if ($usr == "") then
-	set usr = anonymous
-endif
-
-setenv CVSROOT :pserver:$usr@pohaku.soest.hawaii.edu:/usr/local/cvs
-cvs login
-if ($status) then
-	echo "Please make sure your username and password are correct and try again"
-	exit -1
-endif
-cat << EOF
-
-STEP 3: GET CURRENT GMT PROJECT
-
-We are now ready to obtain the latest GMT project sources from the CVS server.
+We are now ready to obtain the latest gmt5 project sources from the svn server.
 This may take a while depending your network connection and net traffic.
 EOF
 echo -n "==> Hit return to initiate the transfer: "
 set answer = $<
 
-cvs checkout GMT
+svn checkout svn://pohaku.soest.hawaii.edu/gmt5
 
-cd GMT/guru
+cd gmt5/guru
 
 cat << EOF
 
-STEP 4: SET GURU- AND SITE-SPECIFIC ENVIRONMENT
+STEP 3: SET GURU- AND SITE-SPECIFIC ENVIRONMENT
 
 You must edit the guru/guruenv.csh environment to work on `uname -n`.
 Follow instructions in the file.  The modified file will be saved
@@ -88,8 +70,7 @@ set myenv = $<
 if ($myenv == "") then
 	set myenv = ${me}_env.csh
 endif
-grep -v CVSROOT guruenv.csh >! $myenv
-echo "setenv CVSROOT :pserver:$usr@pohaku.soest.hawaii.edu:/usr/local/cvs" >> $myenv
+cp -f guruenv.csh ${me}_env.csh
 if ($?EDITOR) then
 	$EDITOR $myenv
 else
@@ -98,7 +79,7 @@ endif
 source $myenv
 cat << EOF
 
-STEP 5: SET GURU- AND SITE-SPECIFIC MAKE PARAMETERS
+STEP 4: SET GURU- AND SITE-SPECIFIC MAKE PARAMETERS
 
 You must edit the guru Makefile macros to work on `uname -n`.
 Follow instructions in the file.
@@ -115,15 +96,15 @@ cd ..
 
 cat << EOF
 
-STEP 6: GET COASTLINE FILES VIA FTP
+STEP 5: GET COASTLINE FILES VIA FTP
 
-The GMT coastline files are NOT under CVS control since they are
+The GMT coastline files are NOT under svn control since they are
 themselves created from other files and this process is not yet
-ready to be set up in CVS.   Answering y below will initiate an
+ready to be set up in svn.   Answering y below will initiate an
 anonymous ftp to your nearest GMT mirror site and obtain all the
-coastline files and install them in GMT/share/coast.  If you already
+coastline files and install them in gmt5/share/coast.  If you already
 have these files on your system you could manually copy them to
-GMT/share/coast and save some ftp time - answer n to do this later.
+gmt5/share/coast and save some ftp time - answer n to do this later.
 
 EOF
 echo -n "==> Get the coastline files via ftp? (y/n) [y]: "
@@ -134,31 +115,27 @@ endif
 
 cat << EOF
 
-STEP 7: LEARN HOW TO UPDATE THE CVS SERVER
+STEP 6: LEARN HOW TO UPDATE THE SVN SERVER
 
 If you are a gmt-team member with write privileges, you need to learn
-how to commit your changes.  This requires you to know CVS quite a bit.
-If your have CVS read access only, you send patches to gmt@soest.hawaii.edu.
-Some references for CVS are 
+how to commit your changes.  This requires you to know svn quite a bit.
+If your have svn read access only, you send patches to gmt@soest.hawaii.edu.
+Some references for subversion are 
 
-"Open Source Development with CVS" by Karl Vogel.  Coriolis Open Press.
+"Version Control with Subversion" 2nd ed., by C. M. Pilato, B. Collins-Sussman, B. W. Fitzpatrick, O'Reilly.
 All the relevant chapters of this book are available for free on-line
-from cvsbook.red-bean.com.
-
-The Cederquist - The main manual for CVS; online at
-www.cvshome.org/docs/manual
+from http://svnbook.red-bean.com/.
 
 You really need to look through one of these to get a feel for how the
-CVS system works.  I won't grant write-access unless you know what you
+subversion system works.  I won't grant write-access unless you know what you
 will be doing!
 
-STEP 8: REQUIRED 3RD PARTY TOOLS
+STEP 7: REQUIRED 3RD PARTY TOOLS
 
 GMT guru script use several utilities to do their things, like converting
 man pages to html and generate gif files.  You need to make sure you have:
 
 ghostscript (and utility scripts ps2epsi, ps2pdf)
 latex (and dvips)
-latex2html (+ the pbm/ppm tools)
 autoconf and m4
 EOF

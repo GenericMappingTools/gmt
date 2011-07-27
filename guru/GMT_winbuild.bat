@@ -23,9 +23,9 @@ SET GVER=5.0.0b
 SET GSHHS=2.2.0
 
 IF "%1%" == "home" (
-	SET GMTDIR=W:\RESEARCH\CVSPROJECTS\GMTdev\GMT5
+	SET GMTDIR=W:\RESEARCH\CVSPROJECTS\GMTdev\gmt5
 ) ELSE (
-	SET GMTDIR=%1%:\UH\RESEARCH\CVSPROJECTS\GMTdev\GMT5
+	SET GMTDIR=%1%:\UH\RESEARCH\CVSPROJECTS\GMTdev\gmt5
 )
 IF "%2%" == "64" (
 	SET BITS=64
@@ -49,13 +49,13 @@ IF "%BITS%" == "32" (
 	7z x GSHHS*.tar -oGMT%GVER% -aoa
 	del *.tar.bz2
 	del *.tar
-	rename GMT%GVER% GMT5
-	copy %GMTDIR%\src\gmt_version.h C:\GMTdev\GMT5\src
-	copy %GMTDIR%\src\gmt_notposix.h C:\GMTdev\GMT5\src
-	copy %GMTDIR%\src\pslconfig.h C:\GMTdev\GMT5\src
-	copy %GMTDIR%\share\conf\gmt.conf C:\GMTdev\GMT5\share\conf\gmt.conf
-	copy %GMTDIR%\share\conf\gmt_SI.conf C:\GMTdev\GMT5\share\conf
-	copy %GMTDIR%\share\conf\gmt_US.conf C:\GMTdev\GMT5\share\conf
+	rename GMT%GVER% gmt5
+	copy %GMTDIR%\src\gmt_version.h C:\GMTdev\gmt5\src
+	copy %GMTDIR%\src\gmt_notposix.h C:\GMTdev\gmt5\src
+	copy %GMTDIR%\src\pslconfig.h C:\GMTdev\gmt5\src
+	copy %GMTDIR%\share\conf\gmt.conf C:\GMTdev\gmt5\share\conf\gmt.conf
+	copy %GMTDIR%\share\conf\gmt_SI.conf C:\GMTdev\gmt5\share\conf
+	copy %GMTDIR%\share\conf\gmt_US.conf C:\GMTdev\gmt5\share\conf
 
 	mkdir C:\GMTdev\INFO
 	mkdir C:\GMTdev\INSTALLERS
@@ -70,7 +70,7 @@ set OLD_LIB=%LIB%
 set INCLUDE=%OLD_INCLUDE%;%NETCDF_DIR%\include;%GDAL_DIR%\include
 set LIB=%OLD_LIB%;%NETCDF_DIR%\lib;%GDAL_DIR%\lib
 
-cd C:\GMTdev\GMT5
+cd C:\GMTdev\gmt5
 mkdir bin%BITS%
 mkdir lib
 mkdir include
@@ -80,19 +80,19 @@ call gmtsuppl %BITS%
 
 echo === 2. Run all the examples...
 
-set GMT_SHAREDIR=C:\GMTdev\GMT5\share
+set GMT_SHAREDIR=C:\GMTdev\gmt5\share
 set OLDPATH=%PATH%
-set PATH=C:\GMTdev\GMT5\bin%BITS%;%NETCDF_DIR%\bin;%GDAL_DIR%\bin;%GNU_DIR%;%OLDPATH%
+set PATH=C:\GMTdev\gmt5\bin%BITS%;%NETCDF_DIR%\bin;%GDAL_DIR%\bin;%GNU_DIR%;%OLDPATH%
 
-cd C:\GMTdev\GMT5\doc\examples
+cd C:\GMTdev\gmt5\doc\examples
 call do_examples
-cd C:\GMTdev\GMT5
+cd C:\GMTdev\gmt5
 
 echo === 3. Remove all the examples PS files...
 
-cd C:\GMTdev\GMT5\doc\examples
+cd C:\GMTdev\gmt5\doc\examples
 del example_*.ps
-cd C:\GMTdev\GMT5
+cd C:\GMTdev\gmt5
 
 echo === 4. Build the %BITS%-bit GMT+GDAL installer...
 

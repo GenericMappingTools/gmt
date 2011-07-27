@@ -32,10 +32,3 @@ setenv NETCDFHOME  /usr/local						# Set this to where netcdf lives
 #
 # 4. Searchable path
 #   Make sure you add $GMTROOT/bin to your path.
-
-#
-# 5. Authentication of CVS access
-#   This parameter needs to be set so you dont have to use the -d option on every
-#   cvs command.
-
-setenv CVSROOT :pserver:anonymous@pohaku.soest.hawaii.edu:/usr/local/cvs	# anonymous for reading; writers need a specific account

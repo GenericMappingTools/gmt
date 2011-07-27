@@ -358,9 +358,9 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 		sscanf (c->version, "%" GMT_LL "d.%" GMT_LL "d.%" GMT_LL "d", &major, &minor, &release) < 3 ||
 		major != 2 || minor < 1) {
 			fprintf (stderr, "GSHHS: Version 2.1.0 or newer is needed to use coastlines with GMT %s\n", GMT_VERSION);
-			fprintf (stderr, "GSHHS: CVS users must get the GSHHS %s tarballs from\n", GSHHS_VERSION);
+			fprintf (stderr, "GSHHS: Subversion users must get the GSHHS %s tarballs from\n", GSHHS_VERSION);
 			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/gshhs-%s.tar.bz2\n", GSHHS_VERSION);
-			fprintf (stderr, "GSHHS: or by running \"make get_gshhs_cvs\" from the top GMT directory.\n");
+			fprintf (stderr, "GSHHS: or by running \"make get_gshhs_svn\" from the top GMT directory.\n");
 		GMT_exit (EXIT_FAILURE);
 	}
         GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));

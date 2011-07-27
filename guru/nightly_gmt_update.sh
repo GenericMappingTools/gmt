@@ -5,7 +5,7 @@
 # First set some environment parameters since cron will not process login settings
 export NETCDFHOME=/sw
 export MATLAB=/Applications/MATLAB_R2010a.app
-export GMTHOME=/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT5
+export GMTHOME=/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5
 export AWK=awk
 export RGBDEF=/usr/X11/share/X11/rgb.txt
 export PATH=${PATH}:/sw/bin:$GMTHOME/bin
