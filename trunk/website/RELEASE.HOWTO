@@ -24,7 +24,7 @@ must ensure you do all the steps listed below:
     since sometimes we get blank files...
     cd website
     
-2.  Run cvs commit from the main GMT directory to check in any
+2.  Run svn commit from the main GMT directory to check in any
     uncommitted changes.
 
 3.  Compile and make all to make sure it all works (check examples)
@@ -45,8 +45,7 @@ must ensure you do all the steps listed below:
 
 If still good to go:
 
-6.  Tag the release(s), e.g.
-    cvs -q tag Release_2007_10_08_GMT_4_2_1
+6.  List the svn version number in the ChangeLog
 
 7.  Prepare the archives:
     make archive >& log

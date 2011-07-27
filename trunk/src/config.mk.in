@@ -192,7 +192,7 @@ ALPHA_SINCOS_O	= @ALPHA_SINCOS_O@
 #
 #-------------------------------------------------------------------------------
 #	TXT2MAN is the macro for the C-preprocessor call to make the manpages
-#	(only needed when compiled from CVS source).
+#	(only needed when compiled from Subversion source).
 #-------------------------------------------------------------------------------
 #
 TXT2MAN		= @TXT2MAN@

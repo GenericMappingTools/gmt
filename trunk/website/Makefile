@@ -57,7 +57,7 @@ help::
 #!hitmap		: Creates the GMT mirror page for site links
 #!---------------------------------------------------------------
 
-GMT4 = /Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT4
+GMT4 = /Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt4
 
 # Place stuff in the GMT website/www directory:
 
