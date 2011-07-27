@@ -71,14 +71,14 @@ sinclude $(GMTGURU)		# Guru-specific settings determined by GURU [Default is gur
 .PHONY:		FILES man manpages webman webdoc pdfman docs \
 		latest-config help update create prep prepare archive \
 		tar_all tar_gshhs install suppl alltests \
-		doctests extests tests ex examples animations cvsclean
+		doctests extests tests ex examples animations svnclean
 
 #-------------------------------------------------------------------------------
-# FILES stands for all those files (makefiles, etc) that are not part of the CVS
+# FILES stands for all those files (makefiles, etc) that are not part of the SVN
 # distribution but rather are created from more primitive forms.  Since those
 # primitive forms may undergo modifications we must check for changes before
 # compiling, making man pages, etc.  What follows is the rules for making these
-# FILES from the CVS-distributed master files:
+# FILES from the SVN-distributed master files:
 #-------------------------------------------------------------------------------
 
 FILES =		src/config.mk share/conf/gmt.conf share/conf/gmt_SI.conf share/conf/gmt_US.conf \
@@ -90,18 +90,18 @@ help::
 #!
 #!make <target>, where <target> can be:
 #!
-#!update        : Get the latest source via cvs
+#!update        : Get the latest source via svn
 #!alltests      : Run all tests and compare to originals
 #!manpages      : Create manpages from text files
 #!pdfman        : Create PDF version of manpages
 #!pdfdocs       : Create PDF documentation
-#!cvsclean      : Cleanup the package to a nearly clean CVS checkout
+#!svnclean      : Cleanup the package to a nearly clean SVN checkout
 #!prepare       : Create all files needed for a release
 #!archive       : Build the release archives
 #!
 
 update:
-		cvs -q update -Pd
+		svn -q update
 
 create:
 # We make the GMT$(GMT_VERSION) link from scratch each time
@@ -142,8 +142,8 @@ cleantests:
 #-------------------------------------------------------------------------------
 # Cleaning
 #-------------------------------------------------------------------------------
-cvsclean:
-		$(SHELL) guru/cvsclean.sh
+svnclean:
+		$(SHELL) guru/svnclean.sh
 
 clean spotless::
 		cd doc ; $(MAKE) $@
