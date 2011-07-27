@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 08
 REM
-REM		$Id: job08.bat,v 1.16 2011-06-09 16:09:35 remko Exp $
+REM		$Id$
 REM
 REM Purpose:	Make a 3-D bar plot
 REM GMT progs:	grd2xyz, pstext, psxyz

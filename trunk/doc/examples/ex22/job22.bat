@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 22
 REM
-REM             $Id: job22.bat,v 1.14 2011-03-15 02:06:31 guru Exp $
+REM             $Id$
 REM
 REM Purpose:    Automatic map of last 7 days of world-wide seismicity
 REM

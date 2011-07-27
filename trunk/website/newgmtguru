@@ -1,5 +1,5 @@
 #!/bin/csh
-#		$Id: newgmtguru,v 1.16 2011-05-27 01:48:17 guru Exp $
+#		$Id$
 #
 # newgmtguru is run to initiate a new guru site
 # and helps setting up the guru directory with

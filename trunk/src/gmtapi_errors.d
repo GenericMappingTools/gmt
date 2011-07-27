@@ -1,5 +1,5 @@
 #--------------------------------------------------------------------
-#	$Id: gmtapi_errors.d,v 1.4 2011-05-14 02:46:09 guru Exp $
+#	$Id$
 #
 #	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.

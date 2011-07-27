@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: gmtmath_op.sh,v 1.3 2011-06-10 23:15:36 jluis Exp $
+#	$Id$
 # Testing gmtmath for the DIFF, MEAN & -S Ops
 
 . ../functions.sh

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: origin.sh,v 1.5 2011-06-23 17:52:06 remko Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test positioning with -X and -Y"

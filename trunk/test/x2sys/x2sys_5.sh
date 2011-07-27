@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: x2sys_5.sh,v 1.1 2011-07-05 23:45:47 guru Exp $
+# $Id$
 #
 
 . ../functions.sh

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_final_info.c,v 1.10 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /* polygon_final_info wvs_polygon_file.b
  *

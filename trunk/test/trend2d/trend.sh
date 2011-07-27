@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: trend.sh,v 1.1 2011-06-24 03:43:00 guru Exp $
+#	$Id$
 # Testing trend2d
 
 . ../functions.sh

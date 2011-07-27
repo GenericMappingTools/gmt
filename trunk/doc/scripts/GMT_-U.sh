@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_-U.sh,v 1.5 2011-05-17 00:23:50 guru Exp $
+#	$Id$
 #
 . ./functions.sh
 

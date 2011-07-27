@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 23
 REM
-REM             $Id: job23.bat,v 1.20 2011-05-19 14:58:57 remko Exp $
+REM             $Id$
 REM
 REM Purpose:    Plot distances from Rome and draw shortest paths
 REM

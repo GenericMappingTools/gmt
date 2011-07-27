@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 16
-#		$Id: job16.sh,v 1.16 2011-06-09 16:41:18 remko Exp $
+#		$Id$
 #
 # Purpose:	Illustrates interpolation methods using same data as Example 12.
 # GMT progs:	gmtset, grdview, grdfilter, pscontour, psscale, pstext, surface, triangulate

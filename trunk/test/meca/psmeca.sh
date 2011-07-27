@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: psmeca.sh,v 1.4 2011-03-15 02:06:45 guru Exp $
+#	$Id$
 #
 # Check psmeca for plotting beach balls
 

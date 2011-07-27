@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_miller.sh,v 1.11 2011-06-23 01:17:06 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 

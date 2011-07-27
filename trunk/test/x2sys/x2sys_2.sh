@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: x2sys_2.sh,v 1.4 2011-06-18 04:07:36 guru Exp $
+# $Id$
 #
 # This is original Figure 2 script from
 # Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys package,

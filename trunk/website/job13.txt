@@ -1,4 +1,4 @@
-$Id: job13.txt,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+$Id$
 Example 13.   In many areas, such as fluid dynamics and elasticity, it is desirable to
 plot vector fields.  This example presents vector plots superposed on contour maps of
 the scalar field and its gradients.  The program grdcontour did the contouring, while

@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: quotedclip.sh,v 1.8 2011-06-13 20:54:55 remko Exp $
+#	$Id$
 #
 # Check clip path and delayed text using -Sq:+e for both
 # straight and curved text paths

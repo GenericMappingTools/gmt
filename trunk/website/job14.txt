@@ -1,4 +1,4 @@
-$Id: job14.txt,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+$Id$
 Example 14.   GMT supports several gridding algorithms.  Perhaps the most used is
 the continuous curvature splines in tension algorithm which was used in this
 example to grid the data shown in example 12.  Also shown is a comparison of

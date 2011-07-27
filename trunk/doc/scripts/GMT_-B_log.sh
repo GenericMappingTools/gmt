@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_-B_log.sh,v 1.9 2011-05-01 18:06:37 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 

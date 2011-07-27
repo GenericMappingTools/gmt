@@ -1,5 +1,5 @@
 #!/bin/sh
-#       $Id: filter.sh,v 1.1 2011-06-11 00:36:54 guru Exp $
+#       $Id$
 # Testing filter1d
 
 . ../functions.sh

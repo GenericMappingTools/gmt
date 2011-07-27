@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_-B_geo_1.sh,v 1.7 2011-05-17 00:23:50 guru Exp $
+#	$Id$
 #
 . ./functions.sh
 gmtset FORMAT_GEO_MAP ddd:mm:ssF

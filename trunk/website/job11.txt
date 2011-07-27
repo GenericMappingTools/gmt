@@ -1,4 +1,4 @@
-$Id: job11.txt,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+$Id$
 Example 11.   You may specify color in GMT using either the RGB system or the HSV
 system.  This example shows the RGB color cube.  If you cut along the dotted lines,
 fold, and glue it together it will form the 6 sides of the color cube.  This

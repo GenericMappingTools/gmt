@@ -1,6 +1,6 @@
 #!/bin/csh
 #
-#	$Id: nodes_job.csh,v 1.2 2006-05-03 03:53:49 pwessel Exp $
+#	$Id$
 #
 #	Calculates the node-grids for each resolution
 

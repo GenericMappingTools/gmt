@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: spotter_1.sh,v 1.3 2011-06-18 04:07:36 guru Exp $
+#       $Id$
 
 . ../functions.sh
 header "Testing backtracker fwd/back-ward"

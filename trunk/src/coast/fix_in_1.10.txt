@@ -1,4 +1,4 @@
-# $Id: fix_in_1.10.txt,v 1.2 2009-06-06 10:49:23 guru Exp $
+# $Id$
 # These are the polygons to fix in the lower resolutions.  To fix, we will:
 # a) if L then reverse polygon and edit level
 # b) if D then change dateline value

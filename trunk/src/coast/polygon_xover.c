@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.23 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons

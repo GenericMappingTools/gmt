@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: sph_ex_4.sh,v 1.6 2011-07-19 21:59:41 guru Exp $
+#	$Id$
 # Example of computing Delauney triangles with sphtriangulate
 ps=`basename $0 '.sh'`.ps
 # Use the locations of a global hotspot file

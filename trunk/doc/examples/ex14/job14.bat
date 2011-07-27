@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 14
 REM
-REM		$Id: job14.bat,v 1.17 2011-05-18 16:24:14 remko Exp $
+REM		$Id$
 REM
 REM Purpose:	Showing simple gridding, contouring, and resampling along tracks
 REM GMT progs:	gmtset, blockmean, grdcontour, grdtrack, grdtrend, minmax, project, pstext

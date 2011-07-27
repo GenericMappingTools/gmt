@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.h,v 1.19 2011-07-20 00:13:46 guru Exp $
+ *	$Id$
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.

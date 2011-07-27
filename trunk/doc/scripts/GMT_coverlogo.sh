@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_coverlogo.sh,v 1.13 2011-05-17 00:23:50 guru Exp $
+#	$Id$
 #
 # Creates the cover page GMT logo
 #

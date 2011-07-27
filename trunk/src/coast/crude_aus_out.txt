@@ -1,5 +1,5 @@
 # Crude representation of a closed polygon containing Australia
-# $Id: crude_aus_out.txt,v 1.2 2009-06-12 01:22:29 guru Exp $
+# $Id$
 155	-40
 155	-24
 145	-9

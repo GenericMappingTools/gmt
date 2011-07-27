@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: gmt_clip_test.sh,v 1.3 2008-03-28 03:56:24 guru Exp $
+#	$Id$
 # Test program for new rectangular clipping.  We create N random points
 # in the x/y plane with mean 0 and sigma = 3.  Then, sort these points
 # according to the angle they make with (0,0) so we get a non-intersecting

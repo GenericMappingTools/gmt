@@ -1,6 +1,6 @@
 # GMT Time language file for IT (italian) mode [IT]
 #
-#	$Id: it.d,v 1.2 2002-02-25 01:44:40 pwessel Exp $
+#	$Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	gennaio		gen	g

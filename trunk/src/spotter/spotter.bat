@@ -1,6 +1,6 @@
 echo OFF
 REM
-REM	$Id: spotter.bat,v 1.3 2011-03-15 02:06:37 guru Exp $
+REM	$Id$
 REM
 REM	Examples of how to use the SPOTTER package
 REM	DOS version

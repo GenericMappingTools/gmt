@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: split.sh,v 1.3 2011-06-21 21:55:46 jluis Exp $
+#	$Id$
 #
 # Split a polyline into chunks
 

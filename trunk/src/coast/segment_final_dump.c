@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_final_dump.c,v 1.4 2011-04-12 13:06:42 remko Exp $
+ *	$Id$
  */
 /* segment_final_dump <wvs_polygon_file.b> wvs_polygons.b
  *

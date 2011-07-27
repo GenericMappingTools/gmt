@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: clipannot.sh,v 1.4 2011-05-19 14:46:39 remko Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test grdcontour for clip path set by annotations"

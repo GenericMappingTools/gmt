@@ -1,4 +1,4 @@
-#	$Id: Ellipsoids.txt,v 1.13 2011-03-15 02:06:35 guru Exp $
+#	$Id$
 #
 # This is the core listing of supported ellipsoids in GMT map projections.
 # Please adhere to the format.

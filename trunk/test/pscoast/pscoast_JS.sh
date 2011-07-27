@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: pscoast_JS.sh,v 1.2 2011-03-15 02:06:45 guru Exp $
+#	$Id$
 #
 
 ps=pscoast_JS.ps

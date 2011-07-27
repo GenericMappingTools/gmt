@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: blend.sh,v 1.2 2011-05-26 02:01:45 guru Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test grdblend for blending overlapping grids"

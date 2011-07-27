@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: ssrfpack_prep.sh,v 1.8 2009-05-18 22:51:59 guru Exp $
+#	$Id$
 #
 # Removes print and plot subroutines from ssrfpack FORTRAN code,
 # then replaces error messages with return of error codes that

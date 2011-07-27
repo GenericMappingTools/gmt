@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_merge_func.c,v 1.8 2011-06-30 08:45:18 guru Exp $
+ *	$Id$
  *
  *      Copyright (c) 1999-2011 by J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.

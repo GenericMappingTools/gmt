@@ -1,4 +1,4 @@
-#	$Id: README.txt,v 1.6 2011-03-15 02:06:37 guru Exp $
+#	$Id$
 
 README for coast supplement:
 

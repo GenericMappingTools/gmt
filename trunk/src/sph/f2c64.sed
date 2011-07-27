@@ -1,4 +1,4 @@
-# $Id: f2c64.sed,v 1.1 2009-03-28 01:33:59 guru Exp $
+# $Id$
 # Used to modify the makefile.u to use 64-bit flags.
 18c\
 CFLAGS = -O -fPIC -m64

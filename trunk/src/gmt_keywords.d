@@ -1,4 +1,4 @@
-#	$Id: gmt_keywords.d,v 1.22 2011-06-23 17:47:34 remko Exp $
+#	$Id$
 #
 # List of all deprecated GMT 4 defaults parameters (and some from GMT 5)
 # This file will eventually be removed when we no longer support GMT 4

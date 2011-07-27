@@ -1,6 +1,6 @@
 # GMT Time language file for DK (danish) mode [DK]
 #
-#	$Id: dk.d,v 1.1 2002-02-25 01:44:40 pwessel Exp $
+#	$Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Januar		Jan	J

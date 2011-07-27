@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: testgmt5.c,v 1.3 2011-04-23 02:14:13 guru Exp $
+ *	$Id$
  *
  *	Copyright (c) 1991-$year by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.

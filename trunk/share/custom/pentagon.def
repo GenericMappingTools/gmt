@@ -1,4 +1,4 @@
-#	$Id: pentagon.def,v 1.2 2003-12-23 01:28:59 pwessel Exp $
+#	$Id$
 #
 #	Definition file for pentagon symbol.  Use in psxy
 #	as -Skpentagon/size.  Unlike -Sn, this allows for

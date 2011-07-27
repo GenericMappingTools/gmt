@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.81 2011-04-14 22:18:30 guru Exp $
+#	$Id$
 #
 #		Makefile for GMT coast suite
 #

@@ -1,5 +1,5 @@
 #!/bin/sh 
-# $Id: copyright.sh,v 1.9 2011-03-15 02:06:31 guru Exp $
+# $Id$
 
 # Tool that updates the 199?-???? Copyright string to the current year.
 

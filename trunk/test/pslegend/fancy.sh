@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: fancy.sh,v 1.1 2011-06-22 00:04:46 guru Exp $
+#	$Id$
 #
 # Testing pslegend fancy frames
 

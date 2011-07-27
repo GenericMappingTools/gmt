@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_segment_dump.c,v 1.3 2011-04-12 13:06:42 remko Exp $
+ *	$Id$
  */
 /* wvs_segment_dump <raw_wvs_segment_file.b> <prefix>
  *

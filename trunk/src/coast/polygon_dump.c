@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_dump.c,v 1.4 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /* 
  *	polygon_dump makes a multisegment ascii-file of entire dbase

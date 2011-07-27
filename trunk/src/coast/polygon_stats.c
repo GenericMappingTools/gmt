@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_stats.c,v 1.5 2011-04-12 13:06:42 remko Exp $
+ *	$Id$
  */
 /* 
  *	polygon_stats finds the average point spacing

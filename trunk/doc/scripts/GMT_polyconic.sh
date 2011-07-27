@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_polyconic.sh,v 1.6 2011-06-23 01:17:06 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 

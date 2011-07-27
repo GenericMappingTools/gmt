@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 24
 REM
-REM             $Id: job24.bat,v 1.15 2011-03-15 02:06:31 guru Exp $
+REM             $Id$
 REM
 REM Purpose:    Extract subsets of data based on geospatial criteria
 REM

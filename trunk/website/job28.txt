@@ -1,4 +1,4 @@
-$Id: job28.txt,v 1.1 2008-12-06 02:40:10 guru Exp $
+$Id$
 Example 28.  When mixing data already in projected units such as UTM meters,
 you must plot such data using a linear scale and then overlay other
 geographical (lon, lat) data using the UTM projection with the same scale.

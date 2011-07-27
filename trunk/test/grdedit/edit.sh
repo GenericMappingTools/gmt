@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: edit.sh,v 1.1 2011-06-03 20:58:51 guru Exp $
+#	$Id$
 # Testing grdedit -R -N
 
 . ../functions.sh

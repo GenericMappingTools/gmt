@@ -1,6 +1,6 @@
 function fixcoast (id1,fixids)
 % FIXCOAST
-%	$Id: fixcoast.m,v 1.9 2009-06-09 02:26:02 guru Exp $
+%	$Id$
 %
 % Give the id of the polygon to be fixed.  A file polygon.id.new
 % will be create with the new, modified polygon,  Optionally,

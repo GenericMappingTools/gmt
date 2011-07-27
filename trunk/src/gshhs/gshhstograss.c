@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.33 2011-07-01 18:58:18 guru Exp $
+/*	$Id$
 *
 * PROGRAM:   gshhstograss.c
 * AUTHOR:    Simon Cox (simon@ned.dem.csiro.au),

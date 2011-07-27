@@ -1,5 +1,5 @@
 /*
- *	$Id: read_wvs.c,v 1.7 2011-05-20 13:03:42 remko Exp $
+ *	$Id$
  */
 /***************************************************************************/
 /*WDBPLTC.C-reads and plots compressed coastlines                          */

@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_gall_stereo.sh,v 1.7 2011-06-23 01:17:06 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 gmtset FORMAT_GEO_MAP dddA

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract_all.c,v 1.5 2011-04-12 13:06:42 remko Exp $
+ *	$Id$
  */
 /* 
  *

@@ -1,4 +1,4 @@
-$Id: job24.txt,v 1.2 2004-09-21 18:58:44 pwessel Exp $
+$Id$
 Example 24.  Geospatial filtering and selection can be
 done with gmtselect.  Here we see (in green) the subset
 of earthquakes with epicenter in the ocean that happen

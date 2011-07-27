@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: gspline_3.sh,v 1.2 2011-06-22 21:49:35 jluis Exp $
+#       $Id$
 
 . ../functions.sh
 header "greenspline: Testing Cartesian 2-D interpolation II"

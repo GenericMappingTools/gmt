@@ -1,5 +1,5 @@
 /*
- *	$Id: poly_check_subs.c,v 1.5 2011-04-12 13:06:42 remko Exp $
+ *	$Id$
  */
 /* poly_check_subs.c
  * Subroutines for testing polygon quality.

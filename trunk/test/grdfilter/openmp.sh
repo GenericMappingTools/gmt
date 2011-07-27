@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: openmp.sh,v 1.2 2011-07-08 20:17:32 guru Exp $
+#	$Id$
 # Testing grdfilter if openmp is used.
 
 . ../functions.sh

@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.20 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to

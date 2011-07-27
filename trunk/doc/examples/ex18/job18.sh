@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 18
-#		$Id: job18.sh,v 1.19 2011-05-21 01:53:31 guru Exp $
+#		$Id$
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data

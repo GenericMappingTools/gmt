@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.30 2011-07-16 14:43:29 remko Exp $
+#	$Id$
 #
 #
 #	makefile for imgsrc directory

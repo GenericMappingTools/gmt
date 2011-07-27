@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: sph_ex_2.sh,v 1.4 2011-07-19 21:59:41 guru Exp $
+#	$Id$
 # Example of gridding with sphinterpolate
 ps=`basename $0 '.sh'`.ps
 makecpt -Crainbow -T-9000/9000/1000 -Z > $$.cpt

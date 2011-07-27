@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: GMT_encoding.sh,v 1.13 2011-05-18 16:24:14 remko Exp $
+#	$Id$
 #
 #	This plots the given encoding vector to stdout
 #

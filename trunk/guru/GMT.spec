@@ -1,4 +1,4 @@
-# $Id: GMT.spec,v 1.28 2009-09-14 03:24:16 guru Exp $
+# $Id$
 # spec file for package GMT (Version 4)
 #
 # Copyright (c) 2004-2008 Dirk Stoecker <gmt@dstoecker.de>.

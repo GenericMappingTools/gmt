@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.51 2011-07-09 00:41:17 guru Exp $
+#       $Id$
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)

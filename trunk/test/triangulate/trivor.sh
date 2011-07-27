@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: trivor.sh,v 1.6 2011-05-14 00:04:07 guru Exp $
+#	$Id$
 #
 # Test Delauney and Voronoi for Cartesian data
 

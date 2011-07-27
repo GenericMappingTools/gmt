@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: contours.sh,v 1.4 2011-05-14 00:04:07 guru Exp $
+#	$Id$
 #
 # Test that contours are oriented correctly
 # grdraster 5 -R204/206/19/21 -GBigIsland.nc

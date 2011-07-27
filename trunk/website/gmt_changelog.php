@@ -1,4 +1,4 @@
-<!--    $Id: gmt_changelog.php,v 1.4 2008-08-23 13:19:27 remko Exp $      -->
+<!--    $Id$      -->
 <!-- This simple PHP script will display the latest ChangeLog written to the gmt web directory      -->
 <!-- from the cvs server, which happens once each night      -->
 <HTML>

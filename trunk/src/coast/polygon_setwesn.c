@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setwesn.c,v 1.4 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /* polygon_setwesn updates the wesn info
  *

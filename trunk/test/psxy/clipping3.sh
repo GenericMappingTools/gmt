@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: clipping3.sh,v 1.1 2011-05-26 23:36:07 guru Exp $
+#	$Id$
 #
 # Check clipping of polygons outside region and with dateline
 

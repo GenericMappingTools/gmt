@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 12
-#		$Id: job12.sh,v 1.15 2011-03-15 02:06:31 guru Exp $
+#		$Id$
 #
 # Purpose:	Illustrates Delaunay triangulation of points, and contouring
 # GMT progs:	makecpt, minmax, pscontour, pstext, psxy, triangulate

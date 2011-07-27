@@ -1,4 +1,4 @@
-$Id: job02.txt,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+$Id$
 Example 2. Images of bathymetry and the marine geoid in the region surrounding the
 Hawaiian Islands.  The two images are oblique Mercator projections of data
 sampled on a geographical grid.  The data were extracted from global data sets

@@ -1,5 +1,5 @@
 /*
- *	$Id: coast_io.c,v 1.9 2011-05-19 15:18:56 remko Exp $
+ *	$Id$
  */
 #define COASTLIB 1
 #include "wvs.h"

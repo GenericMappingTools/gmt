@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: sample.sh,v 1.1 2011-06-20 21:55:18 guru Exp $
+#	$Id$
 # Testing grdsample
 
 . ../functions.sh

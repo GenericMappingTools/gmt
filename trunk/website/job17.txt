@@ -1,4 +1,4 @@
-$Id: job17.txt,v 1.2 2008-05-06 22:14:48 guru Exp $
+$Id$
 Example 17.  It is often difficult to blend two different gridded
 data sets on one map.  A solution is to use coastline clipping.
 Here, a geoid grid is imaged in color, before pscoast is used to

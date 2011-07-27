@@ -1,4 +1,4 @@
-$Id: job03.txt,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+$Id$
 Example 3. Two log10 diagrams showing a spectral comparison between gravity anomaly
 estimates from ship gravity observations and Geosat altimetry.  Calculations were
 completed using the programs sample1d and spectrum1d; the composite black

@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 20
-#		$Id: job20.sh,v 1.11 2011-03-15 02:06:31 guru Exp $
+#		$Id$
 #
 # Purpose:	Extend GMT to plot custom symbols
 # GMT progs:	pscoast, psxy

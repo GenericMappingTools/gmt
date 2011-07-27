@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: categorical.sh,v 1.5 2011-03-15 02:06:45 guru Exp $
+#       $Id$
 
 . ../functions.sh
 header "Test grdview for categorical grid plots"

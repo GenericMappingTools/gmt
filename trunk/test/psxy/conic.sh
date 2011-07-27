@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: conic.sh,v 1.2 2011-03-15 02:06:46 guru Exp $
+#	$Id$
 #
 # Check clipping of line for a global conic plot
 

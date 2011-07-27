@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: bands.sh,v 1.1 2011-06-17 21:54:34 guru Exp $
+#       $Id$
 
 . ../functions.sh
 header "Mapping color bands with grd2rgb"

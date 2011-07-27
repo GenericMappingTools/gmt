@@ -1,4 +1,4 @@
-#	$Id: bullseye.def,v 1.4 2004-04-13 21:32:27 pwessel Exp $
+#	$Id$
 #
 #	Segment info file for bullseye symbol
 #	These instructions are intended for make_symbol

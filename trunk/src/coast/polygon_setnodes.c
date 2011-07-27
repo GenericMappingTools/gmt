@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.17 2011-04-12 13:06:42 remko Exp $
+ *	$Id$
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: arrow.sh,v 1.1 2004-09-05 04:25:01 pwessel Exp $
+#	$Id$
 #
 # Use do identify which direction this polygon follows
 

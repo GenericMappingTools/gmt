@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: east_map_3.sh,v 1.5 2011-06-23 17:52:02 remko Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test -JG (US East Coast 160 km w/tilt+view2)"

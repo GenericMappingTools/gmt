@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: clipping2.sh,v 1.3 2011-03-15 02:06:46 guru Exp $
+#	$Id$
 #
 # Check clipping of multisegment lines crossing over the horizon
 

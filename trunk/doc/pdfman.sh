@@ -1,6 +1,6 @@
 #!/bin/bash
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.1 2011-03-25 15:55:02 remko Exp $
+#	 $Id$
 #
 #	pdfman.sh - Automatic generation of the GMT ps and pdf manual pages
 #

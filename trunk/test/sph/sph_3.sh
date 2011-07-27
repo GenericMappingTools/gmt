@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: sph_3.sh,v 1.2 2011-06-18 04:07:36 guru Exp $
+#       $Id$
 
 . ../functions.sh
 header "Testing sphtriangulate and sphdistance"

@@ -1,5 +1,5 @@
 /*
- *	$Id: ciaman_fix.c,v 1.6 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 #include "wvs.h"
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: readwrite_withgdal.sh,v 1.7 2011-05-21 02:24:15 remko Exp $
+#	$Id$
 
 . ../functions.sh
 GDAL=`grdreformat 2>&1 | grep -c gd`

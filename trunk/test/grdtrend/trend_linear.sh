@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: trend_linear.sh,v 1.1 2011-06-18 16:50:50 jluis Exp $
+#	$Id$
 #
 # Remove a bilinear trend
 

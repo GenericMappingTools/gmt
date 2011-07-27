@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: annotations1.sh,v 1.5 2011-06-14 12:02:54 remko Exp $
+#	$Id$
 
 ps=annotations1.ps
 

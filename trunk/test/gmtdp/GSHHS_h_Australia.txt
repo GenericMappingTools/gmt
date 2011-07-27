@@ -1,4 +1,4 @@
-# $Id: GSHHS_h_Australia.txt,v 1.1 2011-06-03 19:50:43 guru Exp $
+# $Id$
 #
 # GSHHS Master File: Resolution = high Continent = Australia
 #

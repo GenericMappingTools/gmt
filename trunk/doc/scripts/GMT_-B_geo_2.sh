@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_-B_geo_2.sh,v 1.8 2011-06-23 17:47:56 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 

@@ -1,6 +1,6 @@
 # GMT Time language file for NL (Dutch/Netherlands) mode [NL]
 #
-#       $Id: nl.d,v 1.3 2006-11-21 22:08:25 remko Exp $
+#       $Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	januari		jan	j

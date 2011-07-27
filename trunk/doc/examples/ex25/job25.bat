@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 25
 REM
-REM             $Id: job25.bat,v 1.15 2011-04-25 00:21:06 guru Exp $
+REM             $Id$
 REM
 REM Purpose:    Display distribution of antipode types
 REM

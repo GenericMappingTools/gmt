@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 06
-#		$Id: job06.sh,v 1.9 2011-06-08 18:31:28 guru Exp $
+#		$Id$
 #
 # Purpose:	Make standard and polar histograms
 # GMT progs:	pshistogram, psrose

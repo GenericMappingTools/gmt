@@ -1,5 +1,5 @@
 #!/bin/bash
-#		$Id: snyder.sh,v 1.3 2011-05-23 00:43:58 guru Exp $
+#		$Id$
 #
 #	Testing GMT mapproject on examples in Snyder.
 #

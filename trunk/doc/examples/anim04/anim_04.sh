@@ -1,6 +1,6 @@
 #!/bin/bash
 #               GMT ANIMATION 04
-#               $Id: anim_04.sh,v 1.9 2011-06-07 20:12:06 guru Exp $
+#               $Id$
 #
 # Purpose:      Make DVD-res Quicktime movie of NY to Miami flight
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster

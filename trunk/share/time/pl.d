@@ -1,6 +1,6 @@
 # GMT Time language file for PL (polish) mode [PL]
 #
-#	$Id: pl.d,v 1.1 2004-07-14 18:41:29 pwessel Exp $
+#	$Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Styczeñ		Sty	St

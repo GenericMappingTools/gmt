@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_O.sh,v 1.16 2011-06-13 01:24:15 guru Exp $
+#	$Id$
 #
 #	Makes the inserts for Appendix O (labeled lines)
 #	This first script just gets the data ready and run the various scripts

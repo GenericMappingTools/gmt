@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 01
-#		$Id: job01.sh,v 1.21 2011-05-19 14:44:43 remko Exp $
+#		$Id$
 #
 # Purpose:	Make two contour maps based on the data in the file osu91a1f_16.nc
 # GMT progs:	gmtset, grdcontour, psbasemap, pscoast

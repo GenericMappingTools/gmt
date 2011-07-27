@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.33 2011-06-08 01:33:14 guru Exp $
+/*	$Id$
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_fixlevel.c,v 1.5 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /* 
  */

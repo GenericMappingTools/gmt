@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.41 2011-07-08 20:17:32 guru Exp $
+/*	$Id$
  *
  * Include file defining structures used in gshhs.c
  *

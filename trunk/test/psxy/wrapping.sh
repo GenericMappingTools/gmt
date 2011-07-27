@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: wrapping.sh,v 1.13 2011-05-18 16:20:25 remko Exp $
+#	$Id$
 #
 # Test how psxy handles polygons that wrap around periodic boundaries
 # testpol.d is a nasty polygon that exceeds 360-degree range.

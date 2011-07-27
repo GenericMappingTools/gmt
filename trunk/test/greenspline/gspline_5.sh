@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: gspline_5.sh,v 1.3 2011-06-21 18:13:08 guru Exp $
+#       $Id$
 
 . ../functions.sh
 header "greenspline: Testing Spherical 3-D interpolation"

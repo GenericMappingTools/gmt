@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: mask.sh,v 1.4 2011-03-15 02:06:45 guru Exp $
+#	$Id$
 #
 # Test grdlandmask for proper wrapping.
 

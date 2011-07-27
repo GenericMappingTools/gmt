@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: time_testing_3.sh,v 1.8 2011-05-01 01:01:44 jluis Exp $
+#	$Id$
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully

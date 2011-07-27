@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 19
 REM
-REM		$Id: job19.bat,v 1.22 2011-05-18 19:54:38 remko Exp $
+REM		$Id$
 REM
 REM Purpose:	Illustrates various color pattern effects for maps
 REM GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast, pstext, psimage

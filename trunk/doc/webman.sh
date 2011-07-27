@@ -1,6 +1,6 @@
 #!/bin/bash
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.3 2011-07-16 12:55:22 remko Exp $
+#	 $Id$
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #

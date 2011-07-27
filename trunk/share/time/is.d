@@ -1,6 +1,6 @@
 # GMT Time language file for IS (icelandic) mode [IS]
 #
-#	$Id: is.d,v 1.2 2004-10-08 18:05:13 pwessel Exp $
+#	$Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Janúar		Jan	J

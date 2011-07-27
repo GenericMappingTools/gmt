@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: clip_ellipse.sh,v 1.4 2011-05-18 16:20:25 remko Exp $
+#	$Id$
 #
 # Check clipping of ellipses that should wrap in a global projection
 

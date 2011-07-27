@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: fix_pol.sh,v 1.1 2009-06-05 06:09:12 guru Exp $
+# $Id$
 # Script to help with editing coastline files
 FID=$1
 grep "Id = $FID N" GSHHS+WDBII/GSHHS/res_f/GSHHS_*.txt | awk -F: '{print $2}' > this

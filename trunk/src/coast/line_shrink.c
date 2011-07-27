@@ -1,5 +1,5 @@
 /*
- *	$Id: line_shrink.c,v 1.6 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /* 
  * line_shrink applies the Douglas-Peucker algorithm to simplify a line

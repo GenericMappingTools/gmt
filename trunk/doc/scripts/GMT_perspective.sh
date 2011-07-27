@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_perspective.sh,v 1.8 2011-06-23 01:17:06 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 

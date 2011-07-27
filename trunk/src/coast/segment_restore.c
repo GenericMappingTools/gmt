@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_restore.c,v 1.2 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /* segment_restore <asciifiles> > <segments.b>
  *

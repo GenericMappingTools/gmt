@@ -1,4 +1,4 @@
-#	$Id: seamounts.d,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+#	$Id$
 #
 # Subset of data from Wessel, P., and S. Lyons, 1997, Distribution
 # of large Pacific seamounts from Geosat/ERS-1: Implications for

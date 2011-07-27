@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_hierarchy.c,v 1.11 2011-04-29 03:08:12 guru Exp $
+ *	$Id$
  * Determines the polygon ID in the full resolution that corresponds to
  * the lower-resolution polygons.
  */

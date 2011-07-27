@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: run_gmt_tests.sh,v 1.17 2011-06-02 02:38:32 remko Exp $
+#	$Id$
 #
 #	test script for GMT/test directory
 #

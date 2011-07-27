@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_-B_linear.sh,v 1.9 2011-05-17 00:23:50 guru Exp $
+#	$Id$
 #
 . ./functions.sh
 

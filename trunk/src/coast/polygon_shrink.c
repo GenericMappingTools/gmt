@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_shrink.c,v 1.3 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  */
 /* 
  * polygon_shrink applies the Douglas-Peucker algorithm to simplify a line

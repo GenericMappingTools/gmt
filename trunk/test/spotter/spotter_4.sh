@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: spotter_4.sh,v 1.5 2011-06-18 04:07:36 guru Exp $
+#       $Id$
 
 . ../functions.sh
 header "Testing grdrotater for rotating a grid"

@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 21
-#		$Id: job21.sh,v 1.16 2011-06-08 22:09:23 guru Exp $
+#		$Id$
 #
 # Purpose:	Plot a time-series
 # GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy 

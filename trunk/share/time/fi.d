@@ -1,6 +1,6 @@
 # GMT Time language file for FI (finnish) mode [FI]
 #
-#	$Id: fi.d,v 1.1 2002-02-25 17:15:15 pwessel Exp $
+#	$Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Tammikuu	Tam	T

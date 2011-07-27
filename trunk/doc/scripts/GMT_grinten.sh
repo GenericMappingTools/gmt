@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_grinten.sh,v 1.10 2011-06-24 03:43:00 guru Exp $
+#	$Id$
 #
 . ./functions.sh
 

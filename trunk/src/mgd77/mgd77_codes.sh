@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: mgd77_codes.sh,v 1.11 2011-03-15 02:06:37 guru Exp $
+#	$Id$
 #
 #	Convert the trkdas.cod file into two useable files:
 #	1. mgd77_codes.h for inclusion by mgd77info.c

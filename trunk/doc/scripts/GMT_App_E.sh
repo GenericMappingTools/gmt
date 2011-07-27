@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_E.sh,v 1.15 2011-06-09 17:15:26 remko Exp $
+#	$Id$
 #
 #	This script makes the documentation in Appendix E.
 #

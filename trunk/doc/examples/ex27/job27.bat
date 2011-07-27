@@ -1,6 +1,6 @@
 REM
 REM		GMT EXAMPLE 27
-REM		$Id: job27.bat,v 1.7 2011-03-15 02:06:31 guru Exp $
+REM		$Id$
 REM
 REM Purpose:	Illustrates how to plot Mercator img grids
 REM GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast

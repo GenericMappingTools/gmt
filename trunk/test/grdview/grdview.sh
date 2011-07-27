@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: grdview.sh,v 1.12 2011-04-27 20:34:00 remko Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test grdview for grid and pixel plots"

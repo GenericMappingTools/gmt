@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_fix.c,v 1.5 2011-04-12 13:06:43 remko Exp $
+ *	$Id$
  *
  * Used to make minor fixes - check src to see what it actually is doing!
  */

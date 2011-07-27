@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.29 2011-03-15 02:06:37 guru Exp $
+#	$Id$
 #
 #	Author:		P. Wessel
 #	Date:		2005-OCT-14

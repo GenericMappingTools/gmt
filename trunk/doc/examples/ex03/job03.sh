@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 03
-#		$Id: job03.sh,v 1.24 2011-05-23 21:47:36 jluis Exp $
+#		$Id$
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT progs:	filter1d, fitcircle, minmax, project, sample1d

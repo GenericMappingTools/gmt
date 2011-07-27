@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: mixread.sh,v 1.2 2011-06-10 23:15:36 jluis Exp $
+#	$Id$
 # Test gmtconvert with mixed format binary input
 
 . ../functions.sh

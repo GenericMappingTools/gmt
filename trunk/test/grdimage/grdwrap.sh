@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: grdwrap.sh,v 1.7 2011-03-15 02:06:45 guru Exp $
+#	$Id$
 
 . ../functions.sh
 header "Test grdimage for wrapping of global grid"

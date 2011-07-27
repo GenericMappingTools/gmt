@@ -1,4 +1,4 @@
-$Id: job10.txt,v 1.2 2008-05-06 22:14:48 guru Exp $
+$Id$
 Example 10.   GMT's strength is its ability to combine simple plots into complex graphics.
 This example superposes an obliquely viewed bar graph on a world map.
 The map is laid down with pscoast, while the bars are drawn with psxyz.

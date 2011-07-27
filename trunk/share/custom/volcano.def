@@ -1,4 +1,4 @@
-#	$Id: volcano.def,v 1.5 2004-04-13 21:32:27 pwessel Exp $
+#	$Id$
 #
 #	Definition file for a volcano symbol
 #	To be used with psxy as -Skvolcano/<size>.

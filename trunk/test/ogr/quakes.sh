@@ -1,5 +1,5 @@
 #!/bin/bash
-#       $Id: quakes.sh,v 1.2 2011-03-15 02:06:45 guru Exp $
+#       $Id$
 #
 # Test psxy for proper handling of -a [OGR].  We read an OGR file
 # with depth and magnitude among the aspatial values and we wish to

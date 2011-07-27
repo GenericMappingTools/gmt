@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.39 2011-07-16 14:43:30 remko Exp $
+#	$Id$
 #
 #		Makefile for GMT 5 spotter supplements
 #

@@ -1,4 +1,4 @@
-#	$Id: CUSTOM_font_info.d,v 1.4 2009-04-26 19:10:53 guru Exp $
+#	$Id$
 #
 #	Listing of additional PostScript fonts than those found on most PS printers.
 #	Add your extra font information there.  This is the only required change as

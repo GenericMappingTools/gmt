@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 20
 REM
-REM		$Id: job20.bat,v 1.11 2011-03-15 02:06:31 guru Exp $
+REM		$Id$
 REM
 REM Purpose:	Extend GMT to plot custom symbols
 REM GMT progs:	pscoast, psxy

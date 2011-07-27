@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_M_1.sh,v 1.10 2011-06-23 17:47:56 remko Exp $
+#	$Id$
 #
 #	Makes the insert for Appendix M(cpt)
 #

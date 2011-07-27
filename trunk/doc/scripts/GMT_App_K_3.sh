@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_K_3.sh,v 1.15 2011-06-23 17:47:56 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 pscoast `getbox -JE130.35/-0.2/3.5i 500` -J -P -Di -A20 \

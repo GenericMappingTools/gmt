@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: subset.sh,v 1.1 2011-06-03 20:47:15 guru Exp $
+#	$Id$
 # Testing grdcut -Z
 
 . ../functions.sh

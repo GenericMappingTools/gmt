@@ -1,6 +1,6 @@
 # GMT Time language file for UK (english) mode [UK]
 #
-#	$Id: uk.d,v 1.1 2004-07-14 18:53:19 pwessel Exp $
+#	$Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	January		Jan	J

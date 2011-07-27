@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_pstext_justify.sh,v 1.8 2011-05-01 18:06:37 remko Exp $
+#	$Id$
 #
 . ./functions.sh
 

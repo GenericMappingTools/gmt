@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_segment_restore2.c,v 1.3 2011-04-12 13:06:42 remko Exp $
+ *	$Id$
  */
 /* wvs_segment_restore2 <asciifiles> > <segments.b>
  *

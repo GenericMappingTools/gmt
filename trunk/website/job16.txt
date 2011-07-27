@@ -1,4 +1,4 @@
-$Id: job16.txt,v 1.1 2001-02-01 18:05:38 pwessel Exp $
+$Id$
 Example 16.  There are several ways to interpolate (x,y,z) data
 in GMT.  The simplest method is triangulation, using linear triangular
 facets as building-blocks.  Gridding with minimum curvature splines is

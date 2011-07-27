@@ -1,5 +1,5 @@
 # Crude representation of a closed polygon containing S America
-# $Id: crude_sam_out.txt,v 1.3 2009-06-12 01:22:29 guru Exp $
+# $Id$
 287	13
 280	10
 278	0

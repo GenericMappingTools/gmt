@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 09
 REM
-REM		$Id: job09.bat,v 1.10 2011-06-09 04:12:31 guru Exp $
+REM		$Id$
 REM
 REM Purpose:	Make wiggle plot along track from geoid deflections
 REM GMT progs:	pswiggle, pstext, psxy

@@ -1,6 +1,6 @@
 #!/bin/csh
 #
-#	$Id: gshhs_job.csh,v 1.2 2006-05-03 04:22:16 pwessel Exp $
+#	$Id$
 
 set VERSION = v4.1
 

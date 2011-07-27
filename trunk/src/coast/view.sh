@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: view.sh,v 1.2 2004-09-10 04:28:46 pwessel Exp $
+#	$Id$
 #
 # Use to zoom in on area near a particular point in a polygon
 # view.sh polid recno [dx]

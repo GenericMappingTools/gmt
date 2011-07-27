@@ -1,6 +1,6 @@
 # GMT Time language file for german mode [DE]
 #
-#	$Id: de.d,v 1.2 2004-08-05 04:05:19 pwessel Exp $
+#	$Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Januar		Jan	J

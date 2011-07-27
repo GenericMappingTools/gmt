@@ -1,4 +1,4 @@
-#	$Id: GMTprogs.txt,v 1.2 2011-03-15 02:06:35 guru Exp $
+#	$Id$
 # List of GMT program executables and their API mode.
 # As new programs are added to the main suite you should
 # add the corresponding entry here, alphabetically within

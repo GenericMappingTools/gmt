@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: spotter_7.sh,v 1.1 2011-07-06 22:25:14 guru Exp $
+#       $Id$
 
 . ../functions.sh
 header "Testing grdspotter for NW Pacific grid"

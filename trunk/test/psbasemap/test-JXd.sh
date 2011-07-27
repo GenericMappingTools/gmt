@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: test-JXd.sh,v 1.12 2011-05-14 00:04:07 guru Exp $
+#	$Id$
 
 psbasemap="psbasemap --FORMAT_GEO_MAP=dddF --FONT_LABEL=16p --MAP_FRAME_AXES=WeSn"
 

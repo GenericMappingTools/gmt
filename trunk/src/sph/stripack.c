@@ -1,4 +1,4 @@
-/* $Id: stripack.c,v 1.11 2011-07-19 23:11:16 guru Exp $
+/* $Id$
  * stripack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */

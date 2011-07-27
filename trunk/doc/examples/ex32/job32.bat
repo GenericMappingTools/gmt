@@ -1,5 +1,5 @@
 REM		GMT EXAMPLE 32
-REM		$Id: job32.bat,v 1.4 2011-04-25 00:21:06 guru Exp $
+REM		$Id$
 REM
 REM Purpose:	Illustrate draping of an image over topography
 REM GMT progs:	grdcut, grdedit, grdgradient, grdreformat, grdtrack, grdview

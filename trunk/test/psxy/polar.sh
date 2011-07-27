@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: polar.sh,v 1.5 2011-06-18 04:07:36 guru Exp $
+#	$Id$
 #
 # Check plotting of boxes in stereographic polar projection
 # Original script by Bruce Raup.

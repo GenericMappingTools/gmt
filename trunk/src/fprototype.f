@@ -1,4 +1,4 @@
-C	$Id: fprototype.f,v 1.6 2008-05-03 21:49:47 guru Exp $
+C	$Id$
 C	Example of using GMTAPI from Fortran
 C
 C	We will need some sort of include file to set the parameters later
