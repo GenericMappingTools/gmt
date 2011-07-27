@@ -129,7 +129,7 @@ install-data:
 			for dir in coast conf cpt custom dbase mgd77 mgg pattern pslib time x2sys; do \
 				if [ -d $(rootdir)/share/$$dir ]; then \
 					mkdir -p $(datadir)/$$dir; \
-					\cp -p `ls -d $(rootdir)/share/$$dir/* | grep -v "\.in$$" | grep -v "CVS"` $(datadir)/$$dir ; \
+					\cp -p `ls -d $(rootdir)/share/$$dir/* | grep -v "\.in$$" | grep -v "^.svn$$"` $(datadir)/$$dir ; \
 				fi; \
 			done; \
 		else \

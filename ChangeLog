@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-07-27	remko
+	* guru/svnclean.sh:	Renamed from cvsclean.sh and based on .svn directories
+	* GNUmakefile, Makefile:	Replaced cvs traces by svn
+
 2011-07-26	remko
 	* doc/GMT_version.tex.in:	Added \GSHHSVERSION
 

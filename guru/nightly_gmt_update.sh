@@ -1,6 +1,6 @@
 #/bin/sh
 # $Id$
-# This script is used to get the latest GMT CVS changes and compile and install everything.
+# This script is used to get the latest GMT revision and compile and install everything.
 # We do that by first getting the changes and then build and install executables.
 # First set some environment parameters since cron will not process login settings
 export NETCDFHOME=/sw
