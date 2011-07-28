@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-07-28	remko
+	* meant to cause a conflict
+
 2011-07-27	remko
 	* guru/svnclean.sh:	Renamed from cvsclean.sh and based on .svn directories
 	* GNUmakefile, Makefile:	Replaced cvs traces by svn
@@ -9,7 +12,7 @@
 
 2011-07-26	remko
 	* doc/GMT_version.tex.in:	Added \GSHHSVERSION
-
+-----------------------------------------------------------------------------------------
 2011-07-24	pwessel
 	Now under subversion control under repository name gmt5.  To check out a copy:
 		svn checkout svn://pohaku.soest.hawaii.edu/gmt5 or, for a "trunkless" copy:
