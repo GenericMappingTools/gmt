@@ -1441,7 +1441,7 @@ GMT_LONG GMT_getpen (struct GMT_CTRL *C, char *buffer, struct GMT_PEN *P)
 			strcpy (style, color);
 			color[0] = '\0';
 			if (gmt_is_color (C, width)) {	/* color got stored in width */
-				strcpy (width, color);
+				strcpy (color, width);
 				width[0] = '\0';
 			}
 		}
