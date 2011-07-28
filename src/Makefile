@@ -168,7 +168,7 @@ distclean:	spotless
 #-------------------------------------------------------------------------------
 
 $(LIBGMT_O) $(PROGS_O):		$(GMT_H)
-$(LIBGMTPS_O) $(PROGSPS_O):	$(GMT_H) $(PS_H)
+$(LIBGMTPS_O) $(PROGSPS_O) $(DEMOS_O):	$(GMT_H) $(PS_H)
 $(LIBPS_O) $(PSLDEMO_O):	$(PS_H)
 
 # Additional unusual dependancies
