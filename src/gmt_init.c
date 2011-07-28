@@ -127,8 +127,8 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 		case 'B':	/* Tickmark option */
 
 			GMT_message (C, "\t-B Specify basemap frame info.  <tickinfo> is a textstring made up of one or\n");
-			GMT_message (C, "\t   more substrings of the form [a|f|g][<stride>[+-<phase>][<unit>]], where the (optional) a");
-			GMT_message (C, "\t   indicates annotation and major tick interval, f minor tick interval and g grid interval");
+			GMT_message (C, "\t   more substrings of the form [a|f|g][<stride>[+-<phase>][<unit>]], where the (optional) a\n");
+			GMT_message (C, "\t   indicates annotation and major tick interval, f minor tick interval and g grid interval\n");
 			GMT_message (C, "\t   <stride> is the spacing between ticks or annotations, the (optional)\n");
 			GMT_message (C, "\t   <phase> specifies phase-shifted annotations by that amount, and the (optional)\n");
 			GMT_message (C, "\t   <unit> specifies the <stride> unit [Default is unit implied in -R]. There can be\n");
