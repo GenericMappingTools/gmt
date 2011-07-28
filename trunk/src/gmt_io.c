@@ -805,6 +805,17 @@ GMT_LONG gmt_ogr_decode_aspatial_names (struct GMT_CTRL *C, char *record, struct
 	return (col);
 }
 
+GMT_LONG GMT_append_ogr_item (struct GMT_CTRL *C, char *name, GMT_LONG type, struct GMT_OGR *S)
+{
+	/* Adds one more metadata item to this OGR structure */
+	S->n_aspatial++;
+	S->name = GMT_memory (C, S->name, S->n_aspatial, char *);
+	S->name[S->n_aspatial-1] = strdup (name);
+	S->type = GMT_memory (C, S->type, S->n_aspatial, GMT_LONG);
+	S->type[S->n_aspatial-1] = type;
+	return (GMT_NOERROR);
+}
+
 GMT_LONG gmt_ogr_parser (struct GMT_CTRL *C, char *record)
 {	/* Parsing of the GMT/OGR vector specification (v 1.0). See Appendix R */
 	return (C->current.io.ogr_parser (C, record));
@@ -1003,7 +1014,7 @@ GMT_LONG gmt_ogr_header_parser (struct GMT_CTRL *C, char *record)
 						C->current.io.ogr = 0;
 						return (FALSE);
 				}
-				S->proj[k] = strdup (&p[1]);
+				S->proj[k] = strdup (&p[2]);
 				break;
 
 			case 'R':	/* Dataset region */
@@ -4264,7 +4275,7 @@ GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *patt
 	return (TRUE);
 }
 
-void gmt_write_ogr_header (FILE *fp, struct GMT_OGR *G)
+void GMT_write_ogr_header (FILE *fp, struct GMT_OGR *G)
 {	/* Write out table-level OGR/GMT header metadata */
 	GMT_LONG k;
 	char *flavor = "egpw";
@@ -4625,7 +4636,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 		if (ascii && C->current.io.io_header[GMT_OUT]) {
 			for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (C, fp, table->header[k]);
 		}
-		if (table->ogr) gmt_write_ogr_header (fp, table->ogr);	/* Must write OGR/GMT header */
+		if (table->ogr) GMT_write_ogr_header (fp, table->ogr);	/* Must write OGR/GMT header */
 	}
 
 	out = GMT_memory (C, NULL, table->n_columns, double);
