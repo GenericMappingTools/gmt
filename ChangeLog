@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-07-27	pwessel
+	* gmt_io.c:		Ensure that comment records that are written always start with #
+
 2011-07-27	remko
 	* guru/svnclean.sh:	Renamed from cvsclean.sh and based on .svn directories
 	* GNUmakefile, Makefile:	Replaced cvs traces by svn
