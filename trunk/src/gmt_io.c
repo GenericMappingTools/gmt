@@ -1839,6 +1839,7 @@ void GMT_write_tableheader (struct GMT_CTRL *C, FILE *fp, char *txt)
 	else if (!txt || !txt[0])				/* Blank header */
 		fprintf (fp, "#\n");
 	else {
+		if (txt[0] != '#') fputc ('#', fp);	/* Make sure we have # at start */
 		fprintf (fp, "%s", txt);
 		if (txt[strlen(txt)-1] != '\n') fputc ('\n', fp);	/* Make sure we have \n at end */
 	}
