@@ -3,7 +3,7 @@
 # $Id$
 #
 # Seung-Sep Kim, GG/SOEST/UHM
-# $Revision: 1.3 $    $Date: 2011-03-15 02:06:37 $
+# $Revision$    $Date$
 
 # This is a template file showing the steps for DiM-based
 # regional-residual separation
