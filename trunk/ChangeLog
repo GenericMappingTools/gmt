@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-07-28	pwessel
+	* gmt_support.c:	Pens like brown,- (i.e., no width) did not set the color.
+
 2011-07-27	pwessel
 	* gmt_io.c:		Ensure that comment records that are written always start with #
 
