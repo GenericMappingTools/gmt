@@ -104,7 +104,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.51 $, on
+# Processed by install_gmt_form.pl $Revision$, on
 #
 #	$now
 #
