@@ -8,7 +8,7 @@
 #	Date:	22-JUN-2007
 #
 #	Uses groff -T html + alot of sed and awk...
-#	Assumes a cvs update has occured so files are fresh.
+#	Assumes a svn update has occured so files are fresh.
 #
 #	Must be run from the main GMT directory after man pages have
 #	been made.

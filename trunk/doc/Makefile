@@ -35,7 +35,7 @@ install::
 			mkdir -p $(docdir); \
 			cp -pr html pdf examples tutorial $(docdir); \
 			rm -rf $(docdir)/examples/{*.ps,*.pdf,*.png} \
-				$(docdir)/{*,*/*,*/*/*}/{CVS,.gmt*,.cvs*}; \
+				$(docdir)/{*,*/*,*/*/*}/{.gmt*,.svn}; \
 		fi
 
 uninstall:

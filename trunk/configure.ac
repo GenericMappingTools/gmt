@@ -25,14 +25,14 @@ dnl First specify the GMT and GSHHS version and release date
 dnl -----------------------------------------------------------------
 dnl Below, set the VERSION to be created.
 dnl Also, fix the MANDATE and DOCDATE values.
-dnl For final version set CVS_VERSION to 0
+dnl For final version set SVN_VERSION to 0
 dnl
 AC_INIT(GMT, 5.0.0b, gmt-help@lists.hawaii.edu)
 MANDATE="15 Jul 2011"
 DOCDATE="July 2011"
 DOCYEAR="2011"
 GSHHS_VERSION=2.2.0
-CVS_VERSION=1
+SVN_VERSION=1
 dnl
 dnl -----------------------------------------------------------------
 dnl Specify the minimal supplement directories
@@ -82,7 +82,7 @@ AC_SUBST(DOCYEAR)
 AC_SUBST(MANDATE)
 AC_SUBST(FTPSITE)
 AC_SUBST(GSHHS_VERSION)
-AC_SUBST(CVS_VERSION)
+AC_SUBST(SVN_VERSION)
 AC_SUBST(GMT_MAJOR_VERSION)
 AC_SUBST(GMT_MINOR_VERSION)
 AC_SUBST(GMT_RELEASE_VERSION)

@@ -8,7 +8,7 @@
 #	Date:	29-JUN-2007
 #
 #	Uses groff -man
-#	Assumes a cvs update has occured so files are fresh.
+#	Assumes a svn update has occured so files are fresh.
 #
 #	Must be run from the main GMT directory after man pages have
 #	been made.
