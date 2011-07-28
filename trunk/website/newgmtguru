@@ -135,7 +135,5 @@ STEP 7: REQUIRED 3RD PARTY TOOLS
 GMT guru script use several utilities to do their things, like converting
 man pages to html and generate gif files.  You need to make sure you have:
 
-ghostscript (and utility scripts ps2epsi, ps2pdf)
-latex (and dvips)
-autoconf and m4
+ghostscript, pdflatex, autoconf 
 EOF
