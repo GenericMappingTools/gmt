@@ -152,11 +152,6 @@ IT(Arrow_width/Head_length/Head_width )
 Size of arrow in inches.  [Default is 0.03/0.12/0.09].
 #include "explain_-B.txt"
 .TP
-OPT(C)
-Offset focal mechanisms to the latitude and longitude specified in the last
-two columns of the input file.
-.br
-.TP
 OPT(D)IT(Sigma_scale )
 can be used to rescale the uncertainties of velocities (OPT(Se) and
 OPT(Sr)) and rotations (OPT(Sw)).  Can be combined with the
@@ -174,10 +169,8 @@ specified, the uncertainty regions will be transparent.]
 .br
 .TP
 OPT(G)IT(fill)
-Select filling of ellipses, wedges, and focal mechanisms.  By
-convention, the compressional quadrants of the focal mechanism beach
-balls are shaded.  Set the color [Default is
-black].  Optionally, specify OPT(Gp)IT(icon_size/pattern), where
+Specify color (for symbols/polygons) or pattern (for polygons) [Default is black].
+Optionally, specify OPT(Gp)IT(icon_size/pattern), where
 IT(pattern) gives the number of the image pattern (1-90) OR the name
 of a icon-format file.  IT(icon_size) sets the unit size in inches.
 To invert black and white pixels, use OPT(GP) instead of
