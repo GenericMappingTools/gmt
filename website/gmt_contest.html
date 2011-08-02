@@ -19,7 +19,7 @@ competition.  First let us define what these items are meant to be and how they 
 <LI>The GMT <b>Logo</b> is a color graphics suitable to put on posters, powerpoint presentation, and documentation.
 	We currently use the logo on our web page and on the cover pages of the documentation.  Because it
 	is typically used at a reasonable size (e.g., 1 inch high by 2 inch wide or 2.5cm by 5 cm) it can be moderately
-	detailed and high resolution.  GMT comes with a script called <b>gmtlogo</b> that produces PostScript code for the
+	detailed and high resolution.  GMT4 comes with a script called <b>gmtlogo</b> that produces PostScript code for the
 	logo that can be used as an overlay on a plot.
 <LI>The GMT <b>Timestamp</b> is a small graphic item plotted on GMT maps when the <b>-U</b> option is used.  Currently,
 	it is a very small 90 x 220 pixels B/W bit-map image that is plotted at 600 dpi, thus having dimensions of
@@ -31,7 +31,7 @@ There are a few guidelines that all entries have to abide by:
 <UL><LI>The GMT <b>Logo</b>:
 	<OL>
 		<LI>The logo must be created by a GMT 5 sh or bash script called gmt5logo which must have the following usage:<br>
-		    gmtlogo dx dy scale [-Gbackground] [-Wboxpen] >> t.ps<br>
+		    gmt5logo dx dy scale [-Gbackground] [-Wboxpen] >> t.ps<br>
 		   For an closer explanation of options, see the current gmtlogo man page.  The script must use GMT 5 syntax; you
 		   can model your script based on the old version.
 		<LI>The script cannot involve a very time-consuming calculation or rendering.
@@ -55,7 +55,7 @@ that the timestamp graphic be a miniaturized version of the logo.
 <H3>Copyright, etc.</H3>
 	By submitting an entry you are basically giving up all rights to the script or PNG.  Specifically, you are giving the GMT team the right to use and distribute your script or image as part of the GMT distribution.  The GMT team may modify your script to make it more efficient, shorter, and to better comply with GMT syntax but will not alter the result.
 	Any data set needed to run the script will be incorporated into the GMT distribution and therefore must be in the public domain.
-	The GMT Documentation will acknowledge the author of the logo, as will the gmtlogo usage message and man page.  You are also giving us
+	The GMT Documentation will acknowledge the author of the logo, as will the gmt5logo usage message and man page.  You are also giving us
 	the right to use the graphics on items like T-shirts or coffee mugs without further compensation.
 <H3>Prizes</H3>
 The winning Logo entry will receive a white T-shirt with his/her logo on the front!
