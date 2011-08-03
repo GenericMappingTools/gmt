@@ -97,9 +97,6 @@ AC_SUBST(MEX_INC)
 AC_SUBST(MEX_EXT)
 AC_SUBST(MEX_XDIR)
 AC_SUBST(MEX_MDIR)
-AC_SUBST(FFTW)
-AC_SUBST(ACCELERATE)
-AC_SUBST(PERFLIB)
 AC_SUBST(SUPPL)
 AC_SUBST(rootdir)
 dnl
@@ -128,7 +125,7 @@ AC_ARG_ENABLE(flock,    [  --enable-flock          Enable file locking on .gmtco
 AC_ARG_ENABLE(gdal,     [  --enable-gdal           Compile optional, experimental support for grid input via GDAL [[default=no]]], [], [enable_gdal=no])
 AC_ARG_WITH(gdal_config,[  -–with-gdal-config=     Full path to gdal-config [[auto]]], [], [with_gdal_config=no])
 AC_ARG_WITH(fftw,       [  -–enable-fftw=          Enable the use of FFTs from FFTW and append path])
-AC_ARG_WITH(vDSP,       [  -–enable-accelerate     Use Accelerate Framework under OS/X for FFTs [[OS X only]]])
+AC_ARG_WITH(accelerate, [  -–enable-accelerate     Use Accelerate Framework under OS/X for FFTs [[OS X only]]])
 AC_ARG_WITH(perflib,    [  -–enable-perflib=       Use Performance Library under Solaris for FFTs [[Solaris only]]])
 AC_ARG_ENABLE(mex,      [  --disable-mex           Disable compilation of mex supplement which requires Octave/Matlab])
 AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
@@ -581,15 +578,16 @@ dnl -----------------------------------------------------------------
 dnl
 if test ! "X$enable_perflib" = "X"; then
 	PERFLIB=$enable_perflib
-	AC_MSG_RESULT([Using Performance Library directory $PERFLIB)
+	AC_MSG_RESULT([Using Performance Library directory $PERFLIB])
 fi
 dnl
 dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-accelerate to set FFTW dir
 dnl -----------------------------------------------------------------
 dnl
-if test ! "X$enable_accelerate" = "Xyes"; then
-	ACCELERATE=$enable_accelerate
+if test "X$enable_accelerate" = "X" || test "X$enable_accelerate" = "Xyes"; then
+	CPPFLAGS="$CPPFLAGS -DWITH_ACCELERATE"
+	LDFLAGS="$LDFLAGS -framework Accelerate"
 	AC_MSG_RESULT([Using Accelerate framework])
 fi
 dnl
@@ -755,6 +753,9 @@ elif test "$os" = "Darwin" ; then	# MacOS X
 	SL_VERSION=$GMT_MAJOR_VERSION.$SL
 	LD='$(CC)'
 	LD_OPT='-install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version '$GMT_MAJOR_VERSION'.0.0 -current_version '$GMT_MAJOR_VERSION.$GMT_MINOR_VERSION.$GMT_RELEASE_VERSION' -dynamiclib '$OSX_L
+	if test "X$enable_accelerate" = "X" || test "X$enable_accelerate" = "Xyes"; then
+		LD_OPT="$LD_OPT -framework Accelerate"
+	fi
 	if test $osr -eq 8 ; then	# Tiger needs special option for shared libs
 		CFLAGS="$CFLAGS -fno-common"
 	fi
