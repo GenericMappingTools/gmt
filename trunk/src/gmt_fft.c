@@ -2528,7 +2528,7 @@ void transpose_complex_NM (struct FCOMPLEX *in, int n, int m)
 	free((char *) tmp);
 }
 
-int cfft2d (int *N, int *M, struct FCOMPLEX *cin, int *dir)
+int cfft2d_fftpack (int *N, int *M, struct FCOMPLEX *cin, int *dir)
 {
 	int	i, j;
 	static	int flag = 1;
@@ -2574,6 +2574,10 @@ int cfft2d (int *N, int *M, struct FCOMPLEX *cin, int *dir)
 
 return 0;
 
+GMT_LONG GMT_fft_2d_fftpack (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
+{
+	int N = (int)ny, M = (int)nx, dir = (int)direction;
+	return (cfft2d_fftpack (&N, &M, (struct FCOMPLEX *)data, &dir));
 }
 #endif
 
@@ -2704,7 +2708,7 @@ GMT_LONG GMT_fft_1d_perflib (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LO
 }
 #endif
 
-#ifdef WITH_ACCELLERATE
+#ifdef WITH_ACCELERATE
 
 /************************************************************************
 * cfft1d is a subroutine used to call and initialize veclib FFT         *
@@ -2714,11 +2718,9 @@ GMT_LONG GMT_fft_1d_perflib (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LO
 * Creator: Robert Kern          (Scripps Institution of Oceanography    *
 * Date   : 12/2005                                                      *
 ************************************************************************/
-#include <vecLib/vecLib.h>
-#include <stdio.h>
-#include <stdlib.h>
+//#include <vecLib/vecLib.h>
+#include <Accelerate/Accelerate.h>
 
-int cfft1d_(int* np, DSPComplex* c, int* dir);
 void cfft1d_cleanup_();
 
 static int n = 0; 
@@ -2728,7 +2730,7 @@ static DSPSplitComplex d;
 static float scale;
 static int inited = 0;
 
-int cfft1d_accelerate (int* np, DSPComplex* c, int* dir)
+void cfft1d_accelerate (int* np, DSPComplex* c, int* dir)
 {
 	if (*dir == 0) return;
 	if (n != *np) {
@@ -2768,7 +2770,7 @@ void cfft1d_cleanup_()
 GMT_LONG GMT_fft_1d_accelerate (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
 {
 	int np = (int)n, dir = (int)direction;
-	cfft1d_accelerate (&np, (DSPComplex)data, &dir);
+	cfft1d_accelerate (&np, (DSPComplex *)data, &dir);
 	return (GMT_NOERROR);
 }
 #endif
@@ -2889,21 +2891,24 @@ void GMT_fft_initialization (struct GMT_CTRL *C) {
 	
 	GMT_memset (C->session.fft1d, N_GMT_FFT, PFL);	/* Start with nothing */
 	GMT_memset (C->session.fft2d, N_GMT_FFT, PFL);	/* Start with nothing */
-#ifdef WITH_ACCELLERATE
+#ifdef WITH_ACCELERATE
 	C->session.fft1d[GMT_FFT_ACCELERATE] = GMT_fft_1d_accelerate;	/* OS X Accelerate Framework */
-	C->session.fft2d[GMT_FFT_ACCELERATE] = GMT_fft_2d_accelerate;	/* OS X Accelerate Framework */
+	// C->session.fft2d[GMT_FFT_ACCELERATE] = GMT_fft_2d_accelerate;	/* OS X Accelerate Framework */
+	C->session.fft2d[GMT_FFT_ACCELERATE] = NULL;	/* OS X Accelerate Framework */
 #endif
 #ifdef WITH_FFTW
 	C->session.fft1d[GMT_FFT_W] = GMT_fft_1d_fftw;	/* FFTW */
-	C->session.fft2d[GMT_FFT_W] = GMT_fft_2d_fftw;	/* FFTW */
+	//C->session.fft2d[GMT_FFT_W] = GMT_fft_2d_fftw;	/* FFTW */
+	C->session.fft2d[GMT_FFT_W] = NULL;	/* FFTW */
 #endif
 #ifdef WITH_PERFLIB
 	C->session.fft1d[GMT_FFT_PERFLIB] = GMT_fft_1d_perflib;		/* Sun Performance Library */
-	C->session.fft2d[GMT_FFT_PERFLIB] = GMT_fft_2d_perflib;		/* Sun Performance Library */
+	//C->session.fft2d[GMT_FFT_PERFLIB] = GMT_fft_2d_perflib;		/* Sun Performance Library */
+	C->session.fft2d[GMT_FFT_PERFLIB] = NULL;		/* Sun Performance Library */
 #endif
 #ifdef WITH_FFTPACK
-	C->session.fft1d[GMT_FFT_PACK] = GMT_fft_1d_fftpack;		/* Sun Performance Library */
-	C->session.fft2d[GMT_FFT_PACK] = GMT_fft_2d_fftpack;		/* Sun Performance Library */
+	C->session.fft1d[GMT_FFT_PACK] = GMT_fft_1d_fftpack;		/* FFTPack */
+	C->session.fft2d[GMT_FFT_PACK] = GMT_fft_2d_fftpack;
 #endif
 	C->session.fft1d[GMT_FFT_BRENNER] = GMT_fft_1d_brenner;	/* The old GMT standby is always available */
 	C->session.fft2d[GMT_FFT_BRENNER] = GMT_fft_2d_brenner;	/* The old GMT standby is always available */
