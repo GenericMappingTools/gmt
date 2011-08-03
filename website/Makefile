@@ -160,10 +160,10 @@ update-ftp-live:
 	scp ../ftp/netcdf-3.6.3_win.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
 	scp ../ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER):$(LIVEFTPDIR)/contrib
 
-update-gshhs-live:
+update-gshhs-live: update-gshhs-local
 	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/gshhs-*'
-	scp ../ftp/gshhs-*.bz2  $(FTPSERVER):$(LIVEFTPDIR)
-#	scp ../ftp/gshhs-*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
+	scp ftp/gshhs-*.bz2  $(FTPSERVER):$(LIVEFTPDIR)
+#	scp ftp/gshhs-*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 
 update-ftp-test:
 	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $$1}'` -ge 1300 ]; then \
@@ -179,10 +179,10 @@ update-ftp-test:
 	scp ../ftp/netcdf-3.6.3_win.zip $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	scp ../ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER2):$(LIVEFTPDIR2)/contrib
 
-update-gshhs-test:
+update-gshhs-test: update-gshhs-local
 #	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/gshhs-*'
-	scp ../ftp/gshhs-*.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
-#	scp ../ftp/gshhs-*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
+	scp ftp/gshhs-*.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
+#	scp ftp/gshhs-*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 
 update-ftp-local:
 	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $$1}'` -ge 1300 ]; then \
@@ -200,8 +200,7 @@ update-ftp-local:
 
 update-gshhs-local:
 	rm -rf ftp/gshhs-*
-	cp -f ../ftp/gshhs-*.bz2 ftp
-#	cp -f ../ftp/gshhs-*.exe ftp/windows
+	cp -f $(GMT4)/ftp/gshhs-*.bz2 ftp
 
 clean-ftp-local:
 	rm -rf ftp
