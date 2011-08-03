@@ -260,6 +260,8 @@ struct GMT_SESSION {
 	PFL writeinfo[GMT_N_GRD_FORMATS];	/* Pointers to grid write header functions */
 	PFL readgrd[GMT_N_GRD_FORMATS];		/* Pointers to grid read functions */
 	PFL writegrd[GMT_N_GRD_FORMATS];	/* Pointers to grid read functions */
+	PFL fft1d[N_GMT_FFT];			/* Pointers to available 1-D FFT functions (or NULL if not configured) */
+	PFL fft2d[N_GMT_FFT];			/* Pointers to available 2-D FFT functions (or NULL if not configured) */
 	/* This part contains pointers that may point to additional memory outside this struct */
 	char *SHAREDIR;			/* Path to the GMT share directory */
 	char *HOMEDIR;			/* Path to the user's home directory */

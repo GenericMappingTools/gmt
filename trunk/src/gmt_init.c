@@ -3425,6 +3425,22 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 
 		/* GMT GROUP */
 
+		case GMTCASE_GMT_FFT:
+			if (!strcmp (lower_value, "auto"))
+				C->current.setting.fft = GMT_FFT_AUTO;
+			else if (!strcmp (lower_value, "brenner"))
+				C->current.setting.fft = GMT_FFT_BRENNER;
+			else if (!strcmp (lower_value, "fftw"))
+				C->current.setting.fft = GMT_FFT_W;
+			else if (!strcmp (lower_value, "accelerate"))
+				C->current.setting.fft = GMT_FFT_ACCELERATE;
+			else if (!strcmp (lower_value, "fftpack"))
+				C->current.setting.fft = GMT_FFT_PACK;
+			else if (!strcmp (lower_value, "perflib"))
+				C->current.setting.fft = GMT_FFT_PERFLIB;
+			else
+				error = TRUE;
+			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_HISTORY: GMT_COMPAT_CHANGE ("GMT_HISTORY");
 #endif
@@ -4204,6 +4220,22 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 
 		/* GMT GROUP */
 
+		case GMTCASE_GMT_FFT:
+			if (C->current.setting.fft == GMT_FFT_AUTO)
+				strcpy (value, "auto");
+			else if (C->current.setting.fft == GMT_FFT_BRENNER)
+				strcpy (value, "brenner");
+			else if (C->current.setting.fft == GMT_FFT_W)
+				strcpy (value, "fftw");
+			else if (C->current.setting.fft == GMT_FFT_ACCELERATE)
+				strcpy (value, "accelerate");
+			else if (C->current.setting.fft == GMT_FFT_PACK)
+				strcpy (value, "fftpack");
+			else if (C->current.setting.fft == GMT_FFT_PERFLIB)
+				strcpy (value, "perflib");
+			else
+				strcpy (value, "undefined");
+			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_HISTORY: GMT_COMPAT_WARN;
 #endif
@@ -7734,6 +7766,8 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 	gmt_get_history (C);	/* Process and store command shorthands passed to the application */
 
 	if (C->current.setting.io_gridfile_shorthand) gmt_setshorthand (C);	/* Load the short hand mechanism from .gmt_io */
+
+	GMT_fft_initialization (C);	/* Determine which FFT algos are available and set pointers */
 
 	return (C);
 }

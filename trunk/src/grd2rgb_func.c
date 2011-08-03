@@ -160,7 +160,6 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 		k += 2;
 	}
 
-	/* GMT_fourt (GMT, datac, &narray, 1, -1, 1, work); */
 	GMT_fft_1d (GMT, datac, n_pix, GMT_FFT_FWD, GMT_FFT_COMPLEX);
 
 	/* Now compute the image's power spectrum */

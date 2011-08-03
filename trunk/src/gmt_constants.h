@@ -120,10 +120,13 @@
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
 
 /* Various options for FFT calculations [Default is 0] */
-#define GMT_FFTPACK		1
-#define GMT_FFTW		2
-#define GMT_SUN4		3
-#define GMT_VECLIB		4
+#define GMT_FFT_AUTO		-1
+#define GMT_FFT_ACCELERATE	0
+#define GMT_FFT_W		1
+#define GMT_FFT_PERFLIB		2
+#define GMT_FFT_PACK		3
+#define GMT_FFT_BRENNER		4
+#define N_GMT_FFT		5
 
 /* Various directions and modes to call the FFT */
 #define GMT_FFT_FWD		0

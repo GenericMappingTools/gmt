@@ -51,6 +51,7 @@ FORMAT_TIME_LOGO		# How to plot time for the GMT time-stamp
 #-------------------------------------------------------
 # GMT Group:	Misc. GMT settings
 #-------------------------------------------------------
+GMT_FFT				# Which FFT algorithm to use
 GMT_HISTORY			# Should we update the command history?
 GMT_INTERPOLANT			# Spline interpolant
 GMT_VERBOSE			# Verbosity level
