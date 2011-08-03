@@ -97,6 +97,9 @@ AC_SUBST(MEX_INC)
 AC_SUBST(MEX_EXT)
 AC_SUBST(MEX_XDIR)
 AC_SUBST(MEX_MDIR)
+AC_SUBST(FFTW)
+AC_SUBST(ACCELERATE)
+AC_SUBST(PERFLIB)
 AC_SUBST(SUPPL)
 AC_SUBST(rootdir)
 dnl
@@ -124,6 +127,9 @@ AC_ARG_ENABLE(64,       [  --enable-64             Force 64-bit compilation if s
 AC_ARG_ENABLE(flock,    [  --enable-flock          Enable file locking on .gmtcommands4 file (not good on networked drives)])
 AC_ARG_ENABLE(gdal,     [  --enable-gdal           Compile optional, experimental support for grid input via GDAL [[default=no]]], [], [enable_gdal=no])
 AC_ARG_WITH(gdal_config,[  -–with-gdal-config=     Full path to gdal-config [[auto]]], [], [with_gdal_config=no])
+AC_ARG_WITH(fftw,       [  -–enable-fftw=          Enable the use of FFTs from FFTW and append path])
+AC_ARG_WITH(vDSP,       [  -–enable-accelerate     Use Accelerate Framework under OS/X for FFTs [[OS X only]]])
+AC_ARG_WITH(perflib,    [  -–enable-perflib=       Use Performance Library under Solaris for FFTs [[Solaris only]]])
 AC_ARG_ENABLE(mex,      [  --disable-mex           Disable compilation of mex supplement which requires Octave/Matlab])
 AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
 AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid supplement which requires X11])
@@ -558,6 +564,33 @@ if test "X$enable_gdal" != "Xno" || test "X$with_gdal_config" != "Xno"; then
 else
 	GDAL_LIB=
 	GDAL_INC=
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow user to set --enable-fftw[=dir] to set FFTW dir
+dnl -----------------------------------------------------------------
+dnl
+if test ! "X$enable_fftw" = "X"; then
+	FFTW=$enable_fftw
+	AC_MSG_RESULT([Using FFTW directory $FFTW])
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow user to set --enable-perflib[=dir] to set Performance Library dir
+dnl -----------------------------------------------------------------
+dnl
+if test ! "X$enable_perflib" = "X"; then
+	PERFLIB=$enable_perflib
+	AC_MSG_RESULT([Using Performance Library directory $PERFLIB)
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow user to set --enable-accelerate to set FFTW dir
+dnl -----------------------------------------------------------------
+dnl
+if test ! "X$enable_accelerate" = "Xyes"; then
+	ACCELERATE=$enable_accelerate
+	AC_MSG_RESULT([Using Accelerate framework])
 fi
 dnl
 dnl -----------------------------------------------------------------

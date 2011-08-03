@@ -80,6 +80,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	char format_time[2][GMT_TEXT_LEN64];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
 	char format_time_logo[GMT_TEXT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
 	/* GMT group */
+	GMT_LONG fft;				/* -1 for auto, or 0-4 for specific FFT algorithm */
 	GMT_LONG history;			/* TRUE to pass information via gmt.conf files */
 	GMT_LONG interpolant;			/* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
 	GMT_LONG verbose;			/* Level of verbosity 0-4 [1] */

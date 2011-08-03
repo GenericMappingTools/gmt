@@ -253,6 +253,9 @@ EXTERN_MSC void gmt_Cdiv (double A[], double B[], double C[]);
 EXTERN_MSC void gmt_Ccot (double Z[], double cotZ[]);
 EXTERN_MSC double Cabs (double A[]);
 
+/* From gmt_fft.c */
+EXTERN_MSC void GMT_fft_initialization (struct GMT_CTRL *C);
+
 /* For supplements */
 #ifdef GMT_COMPAT
 	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);

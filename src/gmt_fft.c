@@ -40,6 +40,9 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
+static char *GMT_fft_algo[N_GMT_FFT] = {"OS/X Accelerate Framework", "Fastest Fourier Transform in the West", "Sun Performance Library", \
+	"Paul N. Swarztrauber's FFT pack", "Fortran-to-C translation of FOURT by Norman Brenner, MIT"};
+
 /* Default GMT FFT which we always compile in */
 
 /*--------------------------------------------------------------------
@@ -954,7 +957,7 @@ GMT_LONG brenner_worksize (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny)
 	return (2 * storage);
 } 
 
-#if GMT_FFT == GMT_FFTPACK
+#ifdef WITH_FFTPACK
 
 /*
 fftpack.c : A set of FFT routines in C.
@@ -2456,7 +2459,7 @@ void rffti(int n, Treal wsave[])
 typedef struct FCOMPLEX {float r,i;} fcomplex;
 
 /*----------------------------------------------------------------------------*/
-void cfft1d_(int *np, fcomplex *c, int *dir)
+void cfft1d_fftpack (int *np, fcomplex *c, int *dir)
 {
 
 	static float *work;
@@ -2493,6 +2496,13 @@ void cfft1d_(int *np, fcomplex *c, int *dir)
 			c[i].r = c[i].r/(1.0*n);
 		}
 	}
+}
+
+GMT_LONG GMT_fft_1d_fftpack (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+{
+	int np = (int)n, dir = (int)direction;
+	cfft1d_fftpack (&np, (fcomplex)data, &dir);
+	return (GMT_NOERROR);
 }
 
 /*------------------------------------------------------------------------*/
@@ -2565,8 +2575,9 @@ int cfft2d (int *N, int *M, struct FCOMPLEX *cin, int *dir)
 return 0;
 
 }
+#endif
 
-#elif GMT_FFT == GMT_FFTW
+#ifdef WITH_FFTW
 /************************************************************************
 * cfft1d is a subroutine to do a 1-D fft using FFTW routines            *
 ************************************************************************/
@@ -2582,7 +2593,7 @@ return 0;
 
 #include "fftw3.h"
 
-cfft1d_(int *np, fftwf_complex *c, int *dir)
+cfft1d_fftw (int *np, fftwf_complex *c, int *dir)
 {
         static int nold = 0;
         static fftwf_plan pf, pi;
@@ -2620,7 +2631,15 @@ cfft1d_(int *np, fftwf_complex *c, int *dir)
 	}
 }
 
-#elif GMT_FFT == GMT_SUN4
+GMT_LONG GMT_fft_1d_fftw (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+{
+	int np = (int)n, dir = (int)direction;
+	cfft1d_fftw (&np, (fftwf_complex)data, &dir);
+	return (GMT_NOERROR);
+}
+#endif
+
+#ifdef WITH_PERFLIB
 
 /************************************************************************
 * cfft1d is a subroutine used to call and initialize perflib Fortran FFT *
@@ -2639,7 +2658,7 @@ cfft1d_(int *np, fftwf_complex *c, int *dir)
  
 #include "../include/soi.h"
 
-cfft1d_(int *np,fcomplex *c,int *dir)
+cfft1d_perflib (int *np,fcomplex *c,int *dir)
 {
 
 	static float *work;
@@ -2677,7 +2696,15 @@ cfft1d_(int *np,fcomplex *c,int *dir)
 	}
 }
 
-#elif GMT_FFT == GMT_VECLIB
+GMT_LONG GMT_fft_1d_perflib (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+{
+	int np = (int)n, dir = (int)direction;
+	cfft1d_perflib (&np, (fcomplex)data, &dir);
+	return (GMT_NOERROR);
+}
+#endif
+
+#ifdef WITH_ACCELLERATE
 
 /************************************************************************
 * cfft1d is a subroutine used to call and initialize veclib FFT         *
@@ -2701,7 +2728,7 @@ static DSPSplitComplex d;
 static float scale;
 static int inited = 0;
 
-int cfft1d_ (int* np, DSPComplex* c, int* dir)
+int cfft1d_accelerate (int* np, DSPComplex* c, int* dir)
 {
 	if (*dir == 0) return;
 	if (n != *np) {
@@ -2738,13 +2765,19 @@ void cfft1d_cleanup_()
 	}
 }
 
+GMT_LONG GMT_fft_1d_accelerate (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+{
+	int np = (int)n, dir = (int)direction;
+	cfft1d_accelerate (&np, (DSPComplex)data, &dir);
+	return (GMT_NOERROR);
+}
 #endif
 
 /* C-callable wrapper for BRENNER_fourt_ */
 
 #define GMT_radix2(n) GMT_IS_ZERO(log2 ((double)n)-floor(log2 ((double)n)))
 
-GMT_LONG GMT_fft_1d_general (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d_brenner (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
 {
 	/* void GMT_fourt (struct GMT_CTRL *C, float *data, GMT_LONG *nn, GMT_LONG ndim, GMT_LONG ksign, GMT_LONG iform, float *work) */
 	/* Data array */
@@ -2761,12 +2794,8 @@ GMT_LONG GMT_fft_1d_general (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LO
 	if (work_size) GMT_free (C, work);
 	return (GMT_OK);
 }
-GMT_LONG GMT_fft_1d_radix2 (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
-{
-	return (GMT_fft_1d_general (C, data, n, direction, mode));
-}
 
-GMT_LONG GMT_fft_2d_general (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
 {
 	/* Data array */
 	/* Dimension array */
@@ -2783,13 +2812,9 @@ GMT_LONG GMT_fft_2d_general (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_L
 	if (work_size) GMT_free (C, work);
 	return (GMT_OK);
 }
-GMT_LONG GMT_fft_2d_radix2 (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
-{
-	return (GMT_fft_2d_general (C, data, nx, ny, direction, mode));
-	
-}
 
-/* C-callable wrapper for BRENNER_fourt_ */
+#ifdef GMT_COMPAT
+/* C-callable wrapper for BRENNER_fourt_ [for backwards compatibility only] */
 
 void GMT_fourt (struct GMT_CTRL *C, float *data, GMT_LONG *nn, GMT_LONG ndim, GMT_LONG ksign, GMT_LONG iform, float *work)
 {
@@ -2801,6 +2826,35 @@ void GMT_fourt (struct GMT_CTRL *C, float *data, GMT_LONG *nn, GMT_LONG ndim, GM
 	/* Work array */
 	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &iform, work);
 }
+#endif
+
+GMT_LONG GMT_fft_1d_selection (struct GMT_CTRL *C, GMT_LONG n) {
+	/* Returns the most suitable 1-D FFT for the job - or the one requested via GMT_FFT */
+	
+	if (C->current.setting.fft != GMT_FFT_AUTO) return (C->current.setting.fft);	/* Specific selection requested */
+	/* Here we want automatic selection from available candidates */
+	if (GMT_radix2 (n) && C->session.fft1d[GMT_FFT_ACCELERATE]) return (GMT_FFT_ACCELERATE);	/* Use if Radix-2 under OS/X */
+	if (C->session.fft1d[GMT_FFT_W]) return (GMT_FFT_W);			/* Use that fast gunslinger */
+	if (C->session.fft1d[GMT_FFT_PERFLIB]) return (GMT_FFT_PERFLIB);	/* Make Sun-people happy */
+	if (C->session.fft1d[GMT_FFT_PACK]) return (GMT_FFT_PACK);		/* General-purpose FFT */
+	return (GMT_FFT_BRENNER);						/* Default */
+}
+
+GMT_LONG GMT_fft_2d_selection (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny) {
+	/* Returns the most suitable 2-D FFT for the job - or the one requested via GMT_FFT */
+	
+	if (C->current.setting.fft != GMT_FFT_AUTO) {	/* Specific selection requested */
+		if (C->session.fft2d[C->current.setting.fft]) return (C->current.setting.fft);	/* It was available */
+		GMT_report (C, GMT_MSG_FATAL, "Desired FFT Algorithm (%s) not configured - Default to brenner instead\n", GMT_fft_algo[C->current.setting.fft]);
+		return (GMT_FFT_BRENNER);						/* Default */
+	}
+	/* Here we want automatic selection from available candidates */
+	if (GMT_radix2 (nx) && GMT_radix2 (ny) && C->session.fft2d[GMT_FFT_ACCELERATE]) return (GMT_FFT_ACCELERATE);	/* Use if Radix-2 under OS/X */
+	if (C->session.fft2d[GMT_FFT_W]) return (GMT_FFT_W);			/* Use that fast gunslinger */
+	if (C->session.fft2d[GMT_FFT_PERFLIB]) return (GMT_FFT_PERFLIB);	/* Make Sun-people happy */
+	if (C->session.fft2d[GMT_FFT_PACK]) return (GMT_FFT_PACK);		/* General-purpose FFT */
+	return (GMT_FFT_BRENNER);						/* Default */
+}
 
 GMT_LONG GMT_fft_1d (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
 {
@@ -2809,11 +2863,10 @@ GMT_LONG GMT_fft_1d (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direc
 	 * direction is either 0 (forward) or 1(inverse)
 	 * mode is either 0(real) or 1(complex)
 	 */
-	GMT_LONG status;
-	if (GMT_radix2 (n))
-		status = GMT_fft_1d_radix2 (C, data, n, direction, mode);
-	else
-		status = GMT_fft_1d_general (C, data, n, direction, mode);
+	GMT_LONG status, use;
+	use = GMT_fft_1d_selection (C, n);
+	GMT_report (C, GMT_MSG_DEBUG, "1-D FFT using %s\n", GMT_fft_algo[use]);
+	status = C->session.fft1d[use] (C, data, n, direction, mode);
 	return (status);
 }
 
@@ -2824,10 +2877,34 @@ GMT_LONG GMT_fft_2d (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, 
 	 * direction is either 0 (forward) or 1(inverse)
 	 * mode is either 0(real) or 1(complex)
 	 */
-	GMT_LONG status;
-	if (GMT_radix2 (nx) && GMT_radix2 (ny))
-		status = GMT_fft_2d_radix2 (C, data, nx, ny, direction, mode);
-	else
-		status = GMT_fft_2d_general (C, data, nx, ny, direction, mode);
+	GMT_LONG status, use;
+	use = GMT_fft_2d_selection (C, nx, ny);
+	GMT_report (C, GMT_MSG_DEBUG, "2-D FFT using %s\n", GMT_fft_algo[use]);
+	status = C->session.fft2d[use] (C, data, nx, ny, direction, mode);
 	return (status);
+}
+
+void GMT_fft_initialization (struct GMT_CTRL *C) {
+	/* Called by GMT_begin and sets up pointers to the available FFT calls */
+	
+	GMT_memset (C->session.fft1d, N_GMT_FFT, PFL);	/* Start with nothing */
+	GMT_memset (C->session.fft2d, N_GMT_FFT, PFL);	/* Start with nothing */
+#ifdef WITH_ACCELLERATE
+	C->session.fft1d[GMT_FFT_ACCELERATE] = GMT_fft_1d_accelerate;	/* OS X Accelerate Framework */
+	C->session.fft2d[GMT_FFT_ACCELERATE] = GMT_fft_2d_accelerate;	/* OS X Accelerate Framework */
+#endif
+#ifdef WITH_FFTW
+	C->session.fft1d[GMT_FFT_W] = GMT_fft_1d_fftw;	/* FFTW */
+	C->session.fft2d[GMT_FFT_W] = GMT_fft_2d_fftw;	/* FFTW */
+#endif
+#ifdef WITH_PERFLIB
+	C->session.fft1d[GMT_FFT_PERFLIB] = GMT_fft_1d_perflib;		/* Sun Performance Library */
+	C->session.fft2d[GMT_FFT_PERFLIB] = GMT_fft_2d_perflib;		/* Sun Performance Library */
+#endif
+#ifdef WITH_FFTPACK
+	C->session.fft1d[GMT_FFT_PACK] = GMT_fft_1d_fftpack;		/* Sun Performance Library */
+	C->session.fft2d[GMT_FFT_PACK] = GMT_fft_2d_fftpack;		/* Sun Performance Library */
+#endif
+	C->session.fft1d[GMT_FFT_BRENNER] = GMT_fft_1d_brenner;	/* The old GMT standby is always available */
+	C->session.fft2d[GMT_FFT_BRENNER] = GMT_fft_2d_brenner;	/* The old GMT standby is always available */
 }

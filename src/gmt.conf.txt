@@ -187,6 +187,12 @@ character.  If the leading f, a, or c are replaced with F, A, and C the entire a
 Controls how secondary month-, week-, and weekday-names are formatted.  Choose among full, abbreviated, and
 character.  If the leading f, a, or c are replaced with F, A, and C the entire annotation will be in upper case  [full].
 .TP
+.B GMT_FFT
+Determines which Fast Fourier Transform should be used among those that have been configured during installation.
+Choose from auto (pick the most suitable for the task among available algorithms), brenner (GMT's version of Normal Brenner's
+Fortran multi-dimensional FFT), fftw (The Fastest Fourier Transform in the West), accelerate (Use the Accelerate Framework under OS X), fftpack
+(use Paul N. Swarztrauber FFT pack translated from Fortran) or perflib (Sun Performance Library under Solaris) [auto].
+.TP
 .B GMT_HISTORY
 If true, passes the history of past common command options via the hidden \.gmtcommands file [true].
 .TP
