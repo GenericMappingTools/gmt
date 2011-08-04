@@ -21,7 +21,7 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		12-JUL-2011
+#	Date:		01-AUG-2011
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
@@ -88,10 +88,9 @@ update-www-live:	update-www-local
 		cp -f gmt_windows_*.html www/gmt
 		ssh $(WEBSERVER) rm -rf $(LIVEWWWDIR)/gmt $(LIVEWWWDIR)/index.html
 		scp -r www/gmt $(WEBSERVER):$(LIVEWWWDIR)
-		scp -r www/5 $(WEBSERVER):$(LIVEWWWDIR)
 		scp www/index.html $(WEBSERVER):$(LIVEWWWDIR)
 #	Update the Perl script in the CGI bin dir
-		scp install_gmt_form.pl $(WEBSERVER):$(LIVECGIDIR)/install_gmt_form.pl
+		scp install_gmt_form.pl $(WEBSERVER):$(LIVECGIDIR)/install_gmt5_form.pl
 
 update-www-test:	update-www-local
 #	First completely remove the test www files then copy then from the www-local files
@@ -99,29 +98,28 @@ update-www-test:	update-www-local
 		cp -f gmt_windows_*.html www/gmt
 		ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/index.html
 		scp -r www/gmt $(WEBSERVER2):$(LIVEWWWDIR2)
-		scp -r www/5 $(WEBSERVER2):$(LIVEWWWDIR2)
 		scp www/index.html $(WEBSERVER2):$(LIVEWWWDIR2)
 #	For the test we want GMT_ftpsite to always be 0, and to use the test web site - hence these sed commands
 		echo "sB/gmt/B/gmttest/Bg" > job.sed
 		echo "sBgmt.soest.hawaii.edu/gmttempBwww.soest.hawaii.edu/gmttest/gmttempBg" >> job.sed
 		echo 's/"GMT_ftpsite=", \$$site/"GMT_ftpsite=0"/g' >> job.sed
-		sed -f job.sed install_gmt_form.pl > install_gmt_form_test.pl
-		scp install_gmt_form_test.pl $(WEBSERVER2):$(LIVECGIDIR2)
-		echo "sBftp.soest.hawaii.edu/gmtBftp.soest.hawaii.edu/gmttestBg" > job.sed
-		rm -f install_gmt_form_test.pl job.sed
+		sed -f job.sed install_gmt_form.pl > install_gmt5_form_test.pl
+		scp install_gmt5_form_test.pl $(WEBSERVER2):$(LIVECGIDIR2)
+		echo "sBftp.soest.hawaii.edu/gmtBftp.soest.hawaii.edu/gmttest/5Bg" > job.sed
+		rm -f install_gmt5_form_test.pl job.sed
 #	Change the Href to the ftp server to go to the test server dir instead
 		sed -e sBftp.soest.hawaii.edu/gmtBftp.soest.hawaii.edu/gmttestBg gmt_install_form.html > tmp
 		scp tmp $(WEBSERVER2):$(LIVEWWWDIR2)/gmt/gmt_install_form.html
 		echo "cd $(LIVEWWWDIR2)/gmt" > gmt_server_job.sh
-		echo "sed -e s/install_gmt_form.pl/install_gmt_form_test.pl/g gmt_install_form.html > tmp" >> gmt_server_job.sh
+		echo "sed -e s/install_gmt5_form.pl/install_gmt5_form_test.pl/g gmt_install_form.html > tmp" >> gmt_server_job.sh
 		echo "mv -f tmp gmt_install_form.html" >> gmt_server_job.sh
-		echo "cp -f ../../gmt/gmt/ChangeLog ." >> gmt_server_job.sh
+		echo "cp -f ../../../gmt5/gmt/ChangeLog ." >> gmt_server_job.sh
 		echo "rm -f gmt_server_job.sh" >> gmt_server_job.sh
 		scp gmt_server_job.sh $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		ssh $(WEBSERVER2) sh $(LIVEWWWDIR2)/gmt/gmt_server_job.sh
 		rm -f gmt_server_job.sh tmp
 
-update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_releases.html www/gmt/examples/ex01/example_01.zip
+update-www-local:	../registration/gmt_usage.png gmt_mirrors.html www/gmt/gmt_releases.html www/gmt/examples/ex01/example_01.zip
 		sh winsites.sh gmt
 		mkdir -p www/gmt
 		cp -f ../guru/install_gmt.sh www/gmt
@@ -130,13 +128,13 @@ update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_rel
 		rm -f www/gmt/gmt_*_template.html
 		cp -f newgmtguru www/gmt
 		cp -f *.gif *.ico linux.jpg osx.jpg unix.jpg vista.jpg www/gmt
-		cp -f gmt_*.png ../registration/gmt_usage.jpg www/gmt
+		cp -f gmt_*.png GMT4_*.png ../registration/gmt_usage.png www/gmt
 		cp -f soest_*.png www/gmt
 		cp -f ../src/README.TRIANGLE www/gmt
 		rm -rf www/gmt/{doc,html,pdf}
 		cp -Rf ../doc/{html,pdf} www/gmt
 		cp -Rf contrib www/gmt
-		find www -name '.*' -exec rm -f {} \;
+		find www -type f -name '.*' -exec rm -f {} \;
 		rm -f www/gmt/contrib/*.sh
 
 
@@ -157,8 +155,8 @@ update-ftp-live:
 	scp ../ftp/gmt-*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/gmt-*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
-	scp ../ftp/netcdf-3.6.3_win.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
-	scp ../ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER):$(LIVEFTPDIR)/contrib
+	scp $(GMT4)/ftp/netcdf-3.6.3_win.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
+	scp $(GMT4)/ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER):$(LIVEFTPDIR)/contrib
 
 update-gshhs-live: update-gshhs-local
 	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/gshhs-*'
@@ -176,8 +174,8 @@ update-ftp-test:
 	scp ../ftp/gmt-*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/gmt-*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER2):$(LIVEFTPDIR2)/windows
-	scp ../ftp/netcdf-3.6.3_win.zip $(FTPSERVER2):$(LIVEFTPDIR2)/windows
-	scp ../ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER2):$(LIVEFTPDIR2)/contrib
+	scp $(GMT4)/ftp/netcdf-3.6.3_win.zip $(FTPSERVER2):$(LIVEFTPDIR2)/windows
+	scp $(GMT4)/ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER2):$(LIVEFTPDIR2)/contrib
 
 update-gshhs-test: update-gshhs-local
 #	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/gshhs-*'
@@ -195,8 +193,8 @@ update-ftp-local:
 	cp -f ../ftp/gmt-*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION ftp
 	cp -f ../ftp/gmt-*.exe ftp/windows
 	cp -f ../ftp/gawk*.zip ftp/windows
-	cp -f ../ftp/netcdf-3.6.3_win.zip ftp/windows
-	cp -f ../ftp/Whale-watching_symbols_for_GMT.zip ftp/contrib
+	cp -f $(GMT4)/ftp/netcdf-3.6.3_win.zip ftp/windows
+	cp -f $(GMT4)/ftp/Whale-watching_symbols_for_GMT.zip ftp/contrib
 
 update-gshhs-local:
 	rm -rf ftp/gshhs-*
@@ -234,8 +232,8 @@ gmt_hitmap.png: 	gmt_hitmap.sh
 hitmap:
 	gmt_hitmap.sh -s
 
-../registration/gmt_usage.jpg:
-		cp -f $(GMT4)/registration/gmt_usage.jpg ../registration
+../registration/gmt_usage.png:
+		cp -f $(GMT4)/registration/gmt_usage.png ../registration
 
 www/gmt/gmt_releases.html:	gmt_releases_template.html
 	mkdir -p www/gmt

@@ -4,17 +4,17 @@
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
-<FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
+<FORM ACTION="/cgi-bin/wessel/install_gmt5_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
 <INPUT TYPE="hidden" VALUE="$Revision$" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
 operating systems capable of running a Bourne (sh) script. When submitting the completed form,
 you will receive a parameter file (e.g., GMT4param.txt) that you may save and use as argument to the
-<b>install_gmt.sh script</b>.  For example, assuming you save the parameter file to GMT4param.txt,
-you can install the GMT4 package with the command<BR>
+<b>install_gmt.sh script</b>.  For example, assuming you save the parameter file to GMT5param.txt,
+you can install the GMT5 package with the command<BR>
 <p>
-sh install_gmt.sh GMT4param.txt<BR>
+sh install_gmt.sh GMT5param.txt<BR>
 <p>
 Output may be redirected to a log file by appending >& install.log (if your login shell
 is csh or tcsh) or appending > install.log 2>&1 (if your login shell is bash or sh).<BR>

@@ -70,8 +70,9 @@ EOF
 fi
 REGHOME4=$GMTHOME4/registration	# Where to do the work
 REGHOME5=$GMTHOME5/registration	# Where to do the work
+gmtswitch gmt5
 
-cd $REGHOME4
+cd $REGHOME5
 verbose=0
 if [ $# -ge 1 ]; then	# Check for verbose first
 	if [ "X$1" = "X-v" ]; then
@@ -84,63 +85,74 @@ if [ $# = 1 ]; then	# Only wanted some tasks done
 else				# Default is all tasks
 	key="all"
 fi
-if [ $key = "all" ] || [ $key = "get" ]; then
+#if [ $key = "all" ] || [ $key = "get" ]; then
 #	Extracts new sites from teh web server's tmp dir and only returns
 #	those over land.  To be run from the GMT/registration directory.
 
 # Check if there is new data there
-
-	scp imina.soest.hawaii.edu:/tmp/gmtregistration /tmp
-	FILE=/tmp/gmtregistration
-	if [ ! -e $FILE ] & [ $verbose -eq 1 ]; then
-		echo "GMT_usage_map.sh: No new registrations to process" >&2
-		exit
-	fi
-
-# OK, go ahead and process the new data
+#
+#	scp imina.soest.hawaii.edu:/tmp/gmtregistration /tmp
+#	FILE=/tmp/gmtregistration
+#	if [ ! -e $FILE ] & [ $verbose -eq 1 ]; then
+#		echo "GMT_usage_map.sh: No new registrations to process" >&2
+#		exit
+#	fi
+#
+## OK, go ahead and process the new data
 
 #
 #	Only keep ones over land
 #
-	gmtselect -R0/360/-60/72 -Jm1 -Ns/k -Dl $FILE > new_sites_land.d
-	n=`cat new_sites_land.d | wc  -l`
-	if [ $n -gt 0 ] & [ $verbose -eq 1 ]; then
-		echo "GMT_usage_map.sh: Found $n new sites" >&2
-	fi
-	rm -f $FILE
-fi
+#	gmtselect -R0/360/-60/72 -Jm1 -Ns/k -Dl $FILE > new_sites_land.d
+#	n=`cat new_sites_land.d | wc  -l`
+#	if [ $n -gt 0 ] & [ $verbose -eq 1 ]; then
+#		echo "GMT_usage_map.sh: Found $n new sites" >&2
+#	fi
+#	rm -f $FILE
+#fi
 
-if [ $key = "all" ] || [ $key = "update" ]; then
-
+#if [ $key = "all" ] || [ $key = "update" ]; then
+#
 #	Gets the previous GMT_old_unique_sites.d file,
 #	add in the new_sites_land.d data, and runs blockmean
 #	on it again to remove duplicates
-
-	svn -q update
-	egrep '^#' GMT_old_unique_sites.d > $$.d
-	n_old=`grep -v '^#' GMT_old_unique_sites.d | wc -l`
-	egrep -v '^#' GMT_old_unique_sites.d > $$.add
-	awk '{print $1, $2, 1}' new_sites_land.d >> $$.add
-	blockmean -R0/360/-72/72 -I15m $$.add -S >> $$.d
-	mv -f $$.d GMT_old_unique_sites.d
-	svn -q commit -m "Automatic update" GMT_old_unique_sites.d
-	rm -f $$.add new_sites_land.d
-	n_new=`grep -v '^#' GMT_old_unique_sites.d | wc -l`
-	delta=`expr $n_new - $n_old`
-	if [ $delta -gt 0 ] & [ $verbose -eq 1 ]; then
-		echo "GMT_usage_map.sh: Added $delta new sites" >&2
-	fi
-fi
+#
+#	svn -q update
+#	egrep '^#' GMT_old_unique_sites.d > $$.d
+#	n_old=`grep -v '^#' GMT_old_unique_sites.d | wc -l`
+#	egrep -v '^#' GMT_old_unique_sites.d > $$.add
+#	awk '{print $1, $2, 1}' new_sites_land.d >> $$.add
+#	blockmean -R0/360/-72/72 -I15m $$.add -S >> $$.d
+#	mv -f $$.d GMT_old_unique_sites.d
+#	svn -q commit -m "Automatic update" GMT_old_unique_sites.d
+#	rm -f $$.add new_sites_land.d
+#	n_new=`grep -v '^#' GMT_old_unique_sites.d | wc -l`
+#	delta=`expr $n_new - $n_old`
+#	if [ $delta -gt 0 ] & [ $verbose -eq 1 ]; then
+#		echo "GMT_usage_map.sh: Added $delta new sites" >&2
+#	fi
+#fi
 
 if [ $key = "all" ] || [ $key = "map" ]; then
 
-	svn -q update
-	cd $REGHOME5
+#	svn -q update
+#	cd $REGHOME5
 	cp $REGHOME4/GMT_old_unique_sites.d .
-	pscoast -R-175/185/-60/72 -JM5.0i -Gburlywood -Sazure2 -Dc -A2000 -Ba60f30/30WSne -K -P -X0.6i -Y0.35i --MAP_FRAME_WIDTH=0.04i --FONT_ANNOT_PRIMARY=12p > gmt_usage.ps
-	grep -v '^#' GMT_old_unique_sites.d | psxy -R -J -O -K -Sc0.02i -Gred >> gmt_usage.ps
-	date +%x | awk '{print 0.1, 0.1, "$1}' | pstext -R0/5/0/5 -Jx1i -F+f10p,Helvetica+jLB -O -Gwhite -To -W0.25p >> gmt_usage.ps
-	ps2raster -E100 -A -Tj gmt_usage.ps
+#	pscoast -R-175/185/-60/72 -JKf0/5.0i -Gburlywood -Sazure -Dc -A2000 -Ba60f30/30WSne -K -P -X0.6i -Y0.35i --MAP_FRAME_WIDTH=0.04i --FONT_ANNOT_PRIMARY=12p > gmt_usage.ps
+#	pscoast -Rg -JKf10/5.0i -Gspringgreen -Sazure -Dc -Wfaint -A2000 -B0 -K -P -X0.6i -Y0.35i --MAP_FRAME_PEN=1p --FONT_ANNOT_PRIMARY=12p > gmt_usage.ps
+#	grep -v '^#' GMT_old_unique_sites.d | psxy -R -J -O -K -Sc0.02i -Gred >> gmt_usage.ps
+#	date +%x | awk '{print 0.1, 0.1, $1}' | pstext -R0/5/0/5 -Jx1i -F+f10p,Helvetica+jLB -O -Gcornsilk -To -W0.25p >> gmt_usage.ps
+#	ps2raster -E150 -A -TG gmt_usage.ps
+#	rm -f gmt_usage.ps
+	#scp gmt_usage.png imina.soest.hawaii.edu:/export/imina2/httpd/htdocs/gmt5/gmt
+	pscoast -R200/340/-90/90 -Ji0.014i -Bg -A10000 -Dc -Gdarkred -Sazure -K -P > gmt_usage.ps
+	grep -v '^#' GMT_old_unique_sites.d | psxy -R -J -O -K -Sc0.02i -Gyellow >> gmt_usage.ps
+	pscoast -R-20/60/-90/90 -J -B -Dc -A10000 -Gdarkgreen -Sazure -X1.96i -O -K >> gmt_usage.ps
+	grep -v '^#' GMT_old_unique_sites.d | psxy -R -J -O -K -Sc0.02i -Gyellow >> gmt_usage.ps
+	pscoast -R60/200/-90/90 -J -B -Dc -A10000 -Gdarkblue -Sazure -X1.12i -O -K >> gmt_usage.ps
+	grep -v '^#' GMT_old_unique_sites.d | psxy -R -J -O -K -Sc0.02i -Gyellow >> gmt_usage.ps
+	date +%x | awk '{print 0.05, 0.05, $1}' | pstext -R0/5/0/5 -Jx1i -F+f10p,Helvetica+jLB -O -Gcornsilk -TO -W0.25p -X-3.08i >> gmt_usage.ps
+	ps2raster -E150 -A -TG gmt_usage.ps
 	rm -f gmt_usage.ps
-	scp gmt_usage.jpg imina.soest.hawaii.edu:/export/imina2/httpd/htdocs/gmt5/gmt
+	gmtswitch gmt4
 fi

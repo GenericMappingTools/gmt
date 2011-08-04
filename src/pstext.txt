@@ -7,7 +7,7 @@ BD(pstext) [ IT(textfiles) ] GMT_J_OPT GMT_Rgeoz_OPT
 [ OPT(A) ] [ GMT_B_OPT ] [ OPT(C)IT(dx/dy) ]  
 [ OPT(D)[BD(j)]IT(dx)[/IT(dy)][BD(v)[IT(pen)] ] [ OPT(F)[BD(+a)[IT(angle)]][BD(+f)[IT(font)]][BD(+j)[IT(justify)]] ] 
 [ OPT(G)IT(color) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)BD(l)|BD(u) ] 
-[ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[IT(color),][BD(o)|BD(O)|BD(c)|BD(C)[IT(pen)]] ] 
+[ OPT(T)BD(o)|BD(O)|BD(c)|BD(C) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)IT(pen) ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z) ] [ GMT_a_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] 
 [ GMT_p_OPT ] [ GMT_t_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -27,8 +27,8 @@ each other.  To learn the octal codes for symbols not available on the keyboard
 and some accented European characters, see Section 4.16 and Appendix F in the
 BD(GMT) Technical Reference and Cookbook.  Note that BD(PS_CHAR_ENCODING) must be
 set to an extended character set in your BD(gmt.conf) file in order to use the accented characters.
-Using the OPT(W) option, a colored rectangle underlying the text may
-be plotted  (Does not work for strings with sub/super scripts, symbols, or composite
+Using the OPT(G) or OPT(W) options, a rectangle underlying the text may
+be plotted (does not work for strings with sub/super scripts, symbols, or composite
 characters, except in paragraph mode (OPT(m))).
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
