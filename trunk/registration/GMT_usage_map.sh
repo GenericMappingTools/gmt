@@ -42,14 +42,16 @@
 # server (currently /var/www/cgi-bin on gmt) which will write the lon/lat
 # to /tmp/gmtregistration on gmt.  This script
 # then acts on these records as described above.
+# Note: This script uses the GMT4 registration dir since that part is in GMT 4 subversion
 
 GMT4=/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT4
 
 if [ "X$GMTHOME" = "X" ]; then	# Running crontab and environment is not set
 	. /sw/bin/init.sh
 	GS_LIB=/sw/share/ghostscript/8.61/lib
-	GMTHOME=/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT
-	PATH=$GMTHOME/bin:$PATH
+	GMTHOME4=/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt4
+	GMTHOME5=/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5
+	PATH=$GMTHOME5/bin:$PATH
 	export PATH
 	export GS_LIB
 	CVSROOT=":pserver:guru@pohaku.soest.hawaii.edu:/usr/local/cvs"
@@ -59,20 +61,17 @@ if [ $# = 1 ] && [ $1 = "help" ]; then
 usage: GMT_usage_map.sh [-v] [all | get | update | map | help]
 
 get	Get fresh registrations and compile locations
-update	Update the CVS version of the complete list
+update	Update the Subversion version of the complete list
 map	Generate a new usage map with the latest data
 all	Do all of the above [Default]
 help	Give a brief help message
 EOF
 	exit
 fi
-REGHOME=$GMTHOME/registration	# Where to do the work
+REGHOME4=$GMTHOME4/registration	# Where to do the work
+REGHOME5=$GMTHOME5/registration	# Where to do the work
 
-cd $REGHOME
-if [ "X$GMTHOME" = "X" ]; then	# Must set environment
-	export GMTHOME=/opt/gmt
-	export PATH=$GMTHOME/bin:$PATH
-fi
+cd $REGHOME4
 verbose=0
 if [ $# -ge 1 ]; then	# Check for verbose first
 	if [ "X$1" = "X-v" ]; then
@@ -117,14 +116,14 @@ if [ $key = "all" ] || [ $key = "update" ]; then
 #	add in the new_sites_land.d data, and runs blockmean
 #	on it again to remove duplicates
 
-	cvs -Q update GMT_old_unique_sites.d
+	svn -q update
 	egrep '^#' GMT_old_unique_sites.d > $$.d
 	n_old=`grep -v '^#' GMT_old_unique_sites.d | wc -l`
 	egrep -v '^#' GMT_old_unique_sites.d > $$.add
 	awk '{print $1, $2, 1}' new_sites_land.d >> $$.add
 	blockmean -R0/360/-72/72 -I15m $$.add -S >> $$.d
 	mv -f $$.d GMT_old_unique_sites.d
-	cvs -Q commit -m "Automatic update" -n GMT_old_unique_sites.d
+	svn -q commit -m "Automatic update" GMT_old_unique_sites.d
 	rm -f $$.add new_sites_land.d
 	n_new=`grep -v '^#' GMT_old_unique_sites.d | wc -l`
 	delta=`expr $n_new - $n_old`
@@ -135,11 +134,13 @@ fi
 
 if [ $key = "all" ] || [ $key = "map" ]; then
 
-	cvs -Q update GMT_old_unique_sites.d
-	pscoast -R-175/185/-60/72 -JM5.0i -G25/140/25 -S0/30/120 -Dc -A2000 -Ba60f30/30WSne -K -P -X0.6i -Y0.35i --MAP_FRAME_WIDTH=0.04i --FONT_ANNOT_PRIMARY=12p > gmt_usage.ps
-	grep -v '^#' GMT_old_unique_sites.d | psxy -R -JM -O -K -Sc0.02i -Gyellow >> gmt_usage.ps
-	date +%x | awk '{print 0.1, 0.1, "LB", $1}' | pstext -R0/5/0/5 -Jx1i -F+f10p,Helvetica+jLB -O -Gwhite -To -W0.25p >> gmt_usage.ps
+	svn -q update
+	cd $REGHOME5
+	cp $REGHOME4/GMT_old_unique_sites.d .
+	pscoast -R-175/185/-60/72 -JM5.0i -Gburlywood -Sazure2 -Dc -A2000 -Ba60f30/30WSne -K -P -X0.6i -Y0.35i --MAP_FRAME_WIDTH=0.04i --FONT_ANNOT_PRIMARY=12p > gmt_usage.ps
+	grep -v '^#' GMT_old_unique_sites.d | psxy -R -J -O -K -Sc0.02i -Gred >> gmt_usage.ps
+	date +%x | awk '{print 0.1, 0.1, "$1}' | pstext -R0/5/0/5 -Jx1i -F+f10p,Helvetica+jLB -O -Gwhite -To -W0.25p >> gmt_usage.ps
 	ps2raster -E100 -A -Tj gmt_usage.ps
 	rm -f gmt_usage.ps
-	scp gmt_usage.jpg imina.soest.hawaii.edu:/export/imina2/httpd/htdocs/gmt/gmt
+	scp gmt_usage.jpg imina.soest.hawaii.edu:/export/imina2/httpd/htdocs/gmt5/gmt
 fi
