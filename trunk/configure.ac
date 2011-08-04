@@ -28,8 +28,8 @@ dnl Also, fix the MANDATE and DOCDATE values.
 dnl For final version set SVN_VERSION to 0
 dnl
 AC_INIT(GMT, 5.0.0b, gmt-help@lists.hawaii.edu)
-MANDATE="15 Jul 2011"
-DOCDATE="July 2011"
+MANDATE="15 Aug 2011"
+DOCDATE="August 2011"
 DOCYEAR="2011"
 GSHHS_VERSION=2.2.0
 SVN_VERSION=1

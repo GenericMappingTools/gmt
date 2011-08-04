@@ -249,9 +249,9 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	GMT_message (GMT, "pstext %s [API] - Plot or typeset text on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pstext [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[-A] [%s] [-C<dx>/<dy>] [-D[j]<dx>[/<dy>][v[<pen>]]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[-F[a+<angle>][+f<font>][+j<justify>]] [-G<fill>] [%s] [-K] [-L]\n", GMT_Jz_OPT);
+	GMT_message (GMT, "\t[-F[a+<angle>][+f<font>][+j<justify>]] [-G<color>] [%s] [-K] [-L]\n", GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-M] [-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s]\n", GMT_U_OPT);
-	GMT_message (GMT, "\t[%s] [-W[<fill>] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_message (GMT, "\t[%s] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_message (GMT, "\t[-Z[<zlevel>|+]] [%s] [%s] [%s] [%s]\n", GMT_a_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 	GMT_message (GMT, "\tReads (x,y[,fontinfo,angle,justify],text) from <table> [or stdin].\n");

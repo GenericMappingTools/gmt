@@ -19,7 +19,7 @@
 # Live GMT web server gmt.soest.hawaii.edu
 WEBSERVER	= imina.soest.hawaii.edu
 LIVEWWWDIR	= /export/imina2/httpd/htdocs/gmt5
-LIVECGIDIR	= /export/imina2/httpd/cgi-bin
+LIVECGIDIR	= /export/imina2/httpd/cgi-bin/wessel
 # Live ftp server (now main SOEST ftp server)
 FTPSERVER	= ftp.soest.hawaii.edu
 LIVEFTPDIR	= /export/ftp1/ftp/pub/gmt5
@@ -28,7 +28,7 @@ LIVEFTPDIR	= /export/ftp1/ftp/pub/gmt5
 # Live GMT web server TEST dir (live2)
 WEBSERVER2	= imina.soest.hawaii.edu
 LIVEWWWDIR2	= /export/imina2/httpd/htdocs/gmttest/5
-LIVECGIDIR2	= /export/imina2/httpd/cgi-bin
+LIVECGIDIR2	= /export/imina2/httpd/cgi-bin/wessel
 # Live ftp server TEST directory (live2)
 FTPSERVER2	= ftp.soest.hawaii.edu
 LIVEFTPDIR2	= /export/ftp1/ftp/pub/gmttest/5

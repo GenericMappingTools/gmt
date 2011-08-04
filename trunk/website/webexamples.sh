@@ -7,7 +7,7 @@
 #	To be run from the GMT/website directory
 #
 #	Author:	Paul Wessel
-#	Date:	26-APR-2008
+#	Date:	1-AUG-2011
 #
 #	Script that creates the examples web pages from
 #	the scripts files and resulting postscript files
@@ -18,7 +18,7 @@
 #	gmt/examples/gmt_example_??.{ps,png} (copy from fig directory)
 #-----------------------------------------------------------------------------
 
-n_examples=30
+n_examples=32
 
 if [ $# -eq 1 ]; then
 	gush=0
@@ -144,6 +144,12 @@ surfaces.</A></LI>
 
 <LI>
 <A HREF="examples/ex30/gmt_example_30.html">A simple math graph with curved arrow.</A></LI>
+
+<LI>
+<A HREF="examples/ex31/gmt_example_31.html">Using non-default PostScript fonts.</A></LI>
+
+<LI>
+<A HREF="examples/ex32/gmt_example_32.html">Draping an image over a topography grid.</A></LI>
 </OL>
 </BODY>
 </HTML>
