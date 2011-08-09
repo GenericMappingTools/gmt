@@ -117,7 +117,7 @@ AC_ARG_ENABLE(compat,   [  --enable-compat         Attempt backward compatibilit
 AC_ARG_ENABLE(openmp,   [  --enable-openmp         Enable parallel calculations via OpenMP multi-processing])
 AC_ARG_ENABLE(fapi,     [  --enable-fapi           Include FORTRAN API bindings])
 AC_ARG_ENABLE(shared,   [  --enable-shared         Build shared (dynamic) GMT libraries instead of static])
-AC_ARG_ENABLE(triangle, [  --enable-triangle       Use J. Shewchuk's fast, non-GPL triangulation routine])
+AC_ARG_ENABLE(triangle, [  --enable-triangle       Use fast, non-GPL triangulation routine by J. Shewchuk])
 AC_ARG_ENABLE(US,       [  --enable-US             Choose US (inch) rather than SI (cm) units as default])
 AC_ARG_ENABLE(universal,[  --enable-universal      Make universal binaries [[OS X only]]])
 AC_ARG_ENABLE(64,       [  --enable-64             Force 64-bit compilation if supported, use --disable-64 to force 32-bit compilation])
