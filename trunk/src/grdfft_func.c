@@ -1127,14 +1127,19 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 
 GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG error = FALSE, stop, op_count = 0, par_count = 0, status, two_grids = FALSE;
+	GMT_LONG error = FALSE, stop, op_count = 0, par_count = 0, status;
 	GMT_LONG narray[2], i, j, i_data_start, j_data_start, new_grid;
 
-	struct GMT_GRID *GridA = NULL, *GridB = NULL, *Out = NULL;
+	struct GMT_GRID *GridA = NULL, *Out = NULL;
 	struct F_INFO f_info;
 	struct K_XY K;
 	struct GRDFFT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+
+#ifdef NEW
+	GMT_LONG two_grids = FALSE;
+	struct GMT_GRID *GridB = NULL;
+#endif
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
