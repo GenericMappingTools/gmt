@@ -589,7 +589,7 @@ dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-accelerate to set FFTW dir
 dnl -----------------------------------------------------------------
 dnl
-if test "X$enable_accelerate" = "X" || test "X$enable_accelerate" = "Xyes"; then
+if test test "X$enable_accelerate" = "Xyes"; then
 	CPPFLAGS="$CPPFLAGS -DWITH_ACCELERATE"
 	LDFLAGS="$LDFLAGS -framework Accelerate"
 	AC_MSG_RESULT([Using Accelerate framework])
@@ -791,7 +791,7 @@ elif test "$os" = "Darwin" ; then	# MacOS X
 	SL_VERSION=$GMT_MAJOR_VERSION.$SL
 	LD='$(CC)'
 	LD_OPT='-install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version '$GMT_MAJOR_VERSION'.0.0 -current_version '$GMT_MAJOR_VERSION.$GMT_MINOR_VERSION.$GMT_RELEASE_VERSION' -dynamiclib '$OSX_L
-	if test "X$enable_accelerate" = "X" || test "X$enable_accelerate" = "Xyes"; then
+	if test "X$enable_accelerate" = "Xyes"; then
 		LD_OPT="$LD_OPT -framework Accelerate"
 	fi
 	if test $osr -eq 8 ; then	# Tiger needs special option for shared libs
