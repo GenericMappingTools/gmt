@@ -38,7 +38,7 @@ include config.mk	# GMT-specific settings determined by user & configure
 include common.mk	# Dependencies
 
 DEFINES		= -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
-INCLUDES	= $(NETCDF_INC) $(GDAL_INC)
+INCLUDES	= $(NETCDF_INC) $(GDAL_INC) $(PCRE_INC)
 
 DEMOS_O		= gmt.o $(DEMOS2_O)
 DEMOS		= $(DEMOS_O:.o=$(EXE))
@@ -72,7 +72,7 @@ PROGSPS_O	= $(FUNCSPS_O:_func.o=.o)
 
 LIBPS_O		= pslib.o
 LIBGMT_O	= gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_fft.o gmt_grdio.o \
-		  gmt_io.o  gmt_nc.o gmt_notposix.o gmt_proj.o gmt_shore.o gmt_stat.o gmt_support.o \
+		  gmt_io.o  gmt_nc.o gmt_notposix.o gmt_proj.o gmt_shore.o gmt_stat.o gmt_support.o gmt_regexp.o \
 		  gmt_vector.o $(TRIANGLE_O) $(ALPHA_SINCOS_O) gmtapi_parse.o $(FUNCS_O)
 LIBGMTPS_O	= gmt_init.o gmt_map.o gmt_plot.o gmtapi_util.o $(FUNCSPS_O) $(API_O)
 
@@ -226,7 +226,7 @@ libpsl.$(SL):	libpsl.a
 		$(LD) $(LD_OPT) $(LIBPS_O) $(LIBS) -o $@
 
 libgmt.$(SL):	libgmt.a libpsl.$(SL)
-		$(LD) $(LD_OPT) $(LIBGMT_O) $(LIBGMTPS_O) libpsl.$(SL) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(LIBGMT_O) $(LIBGMTPS_O) libpsl.$(SL) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules

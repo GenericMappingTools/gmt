@@ -74,6 +74,7 @@ struct GMTCONVERT_CTRL {
 	struct S {	/* -S[~]\"search string\" */
 		GMT_LONG active;
 		GMT_LONG inverse;
+		GMT_LONG regexp;
 		char *pattern;
 	} S;
 	struct T {	/* -T */
@@ -136,6 +137,7 @@ GMT_LONG GMT_gmtconvert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Use -S~\"string\" to output segment that DO NOT contain this pattern.\n");
 	GMT_message (GMT, "\t   If your pattern begins with ~, escape it with \\~.\n");
 	GMT_message (GMT, "\t   To match OGR aspatial values, use name=value.\n");
+	GMT_message (GMT, "\t   To match against extended regular expressions use -S[~]\"/regexp/\".\n");
 	GMT_message (GMT, "\t-T Prevent the writing of segment headers.\n");
 	GMT_explain_options (GMT, "VaC0Dfghios:.");
 	
@@ -219,6 +221,11 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 				k = (opt->arg[0] == '\\' && strlen (opt->arg) > 3 && opt->arg[1] == '~') ? 1 : 0;	/* Special escape if pattern starts with ~ */
 				if (opt->arg[0] == '~') Ctrl->S.inverse = TRUE;
 				Ctrl->S.pattern = strdup (&opt->arg[k+Ctrl->S.inverse]);
+        if (opt->arg[Ctrl->S.inverse] == '/' && opt->arg[strlen (opt->arg) - 1]  == '/' ) {
+          Ctrl->S.regexp = TRUE;
+          opt->arg[strlen (opt->arg) - 1] = '\0'; /* remove trailing '/' from pattern string */
+        }
+        Ctrl->S.pattern = strdup (&opt->arg[k+Ctrl->S.inverse+Ctrl->S.regexp]); /* remove any '/', '\', and '~' from beginning of pattern */
 				break;
 			case 'T':	/* Do not write segment headers */
 				Ctrl->T.active = TRUE;
@@ -342,7 +349,9 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (match && GMT_polygon_is_hole (D[GMT_IN]->table[tbl_ver]->segment[seg])) match = TRUE;	/* Extend a true match on a perimeter to the trailing holes */
 				else if (ogr_match)	/* Compare to aspatial value */
 					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr->value[ogr_item], Ctrl->S.pattern) != NULL);		/* TRUE if we matched */
-				else match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern) != NULL);		/* TRUE if we matched */
+				else if (Ctrl->S.regexp)	/* Compare to ERE */
+          match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && gmt_regexp_match(GMT, D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern));		/* TRUE if we matched */
+        else match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern) != NULL);		/* TRUE if we matched */
 				if (Ctrl->S.inverse == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			}
 			if (Ctrl->Q.active && seg != Ctrl->Q.seg) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */

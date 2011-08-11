@@ -437,6 +437,10 @@ EXTERN_MSC void GMT_free_func (struct GMT_CTRL *C, void **addr, char *fname, GMT
 EXTERN_MSC GMT_LONG GMT_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, GMT_LONG mode, GMT_LONG ex_cols, GMT_LONG smode, struct GMT_DATASET **Dout);
 EXTERN_MSC GMT_LONG GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, GMT_LONG n_cols, struct GMT_DATASET **Dout);
 
+/* gmt_regexp.c */
+
+EXTERN_MSC GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *pattern);
+
 /* gmt_vector.c: */
 
 EXTERN_MSC void GMT_cart_to_geo (struct GMT_CTRL *C, double *lat, double *lon, double *a, GMT_LONG degrees);
