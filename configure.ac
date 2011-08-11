@@ -2,16 +2,16 @@ dnl -----------------------------------------------------------------
 dnl $Id$
 dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
-dnl 
+dnl
 dnl 	This program is free software; you can redistribute it and/or modify
 dnl 	it under the terms of the GNU General Public License as published by
 dnl 	the Free Software Foundation; version 2 or any later version.
-dnl 
+dnl
 dnl 	This program is distributed in the hope that it will be useful,
 dnl 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 dnl 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 dnl 	GNU General Public License for more details.
-dnl 
+dnl
 dnl 	Contact info: gmt.soest.hawaii.edu
 dnl -------------------------------------------------------------------------------
 AC_REVISION($Revision$)
@@ -97,6 +97,8 @@ AC_SUBST(MEX_INC)
 AC_SUBST(MEX_EXT)
 AC_SUBST(MEX_XDIR)
 AC_SUBST(MEX_MDIR)
+AC_SUBST(PCRE_INC)
+AC_SUBST(PCRE_LIB)
 AC_SUBST(SUPPL)
 AC_SUBST(rootdir)
 dnl
@@ -123,13 +125,15 @@ AC_ARG_ENABLE(universal,[  --enable-universal      Make universal binaries [[OS 
 AC_ARG_ENABLE(64,       [  --enable-64             Force 64-bit compilation if supported, use --disable-64 to force 32-bit compilation])
 AC_ARG_ENABLE(flock,    [  --enable-flock          Enable file locking on .gmtcommands4 file (not good on networked drives)])
 AC_ARG_ENABLE(gdal,     [  --enable-gdal           Compile optional, experimental support for grid input via GDAL [[default=no]]], [], [enable_gdal=no])
-AC_ARG_WITH(gdal_config,[  -–with-gdal-config=     Full path to gdal-config [[auto]]], [], [with_gdal_config=no])
-AC_ARG_WITH(fftw,       [  -–enable-fftw=          Enable the use of FFTs from FFTW and append path])
-AC_ARG_WITH(accelerate, [  -–enable-accelerate     Use Accelerate Framework under OS/X for FFTs [[OS X only]]])
-AC_ARG_WITH(perflib,    [  -–enable-perflib=       Use Performance Library under Solaris for FFTs [[Solaris only]]])
+AC_ARG_WITH(gdal_config,[  --with-gdal-config=     Full path to gdal-config [[auto]]], [], [with_gdal_config=no])
+AC_ARG_WITH(fftw,       [  --enable-fftw=          Enable the use of FFTs from FFTW and append path])
+AC_ARG_WITH(accelerate, [  --enable-accelerate     Use Accelerate Framework under OS/X for FFTs [[OS X only]]])
+AC_ARG_WITH(perflib,    [  --enable-perflib=       Use Performance Library under Solaris for FFTs [[Solaris only]]])
 AC_ARG_ENABLE(mex,      [  --disable-mex           Disable compilation of mex supplement which requires Octave/Matlab])
 AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
 AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid supplement which requires X11])
+AC_ARG_ENABLE(pcre,     [  --disable-pcre          Disable support of Perl Compatible Regular Expressions (PCRE)])
+AC_ARG_WITH(pcre_config,[  --with-pcre-config=     Full path to pcre-config [[auto]]], [], [with_pcre_config=no])
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 AC_ARG_VAR(GDAL_INC,Location of GDAL headers (compile-time))
@@ -634,6 +638,40 @@ elif test "X$enable_xgrid" = "Xno"; then
 else
 	SUPPL=$SUPPL" xgrid"
 	AC_MSG_RESULT(yes)
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow user to set --disable-pcre for turning off PCRE support
+dnl -----------------------------------------------------------------
+dnl
+AC_MSG_CHECKING(if PCRE support is requested)
+if test "X$enable_pcre" = "Xno" ; then
+	AC_MSG_RESULT([[no]])
+else
+	AC_MSG_RESULT([[yes]])
+	AC_PATH_PROG([PCRE_CONF], [pcre-config], [$with_pcre_config])
+	if test -x "$PCRE_CONF" ; then
+		AC_MSG_CHECKING(for PCRE includes)
+		PCRE_INC=`$PCRE_CONF --cflags`
+		AC_MSG_RESULT($PCRE_INC)
+		AC_MSG_CHECKING(for PCRE libs)
+		PCRE_LIB=`$PCRE_CONF --libs`
+		AC_MSG_RESULT($PCRE_LIB)
+		CPPFLAGS="$CPPFLAGS -DHAVE_PCRE"
+	else
+		AC_PATH_PROG([PCK_CONF], [pkg-config], [$with_pkg_config])
+		if test -x "$PKG_CONF" && "$PKG_CONF" libpcre ; then
+			AC_MSG_CHECKING(for PCRE includes)
+			PCRE_INC=`$PKG_CONF --cflags libpcre`
+			AC_MSG_RESULT($PCRE_INC)
+			AC_MSG_CHECKING(for PCRE libs)
+			PCRE_LIB=`$PKG_CONF --libs libpcre`
+			AC_MSG_RESULT($PCRE_LIB)
+			CPPFLAGS="$CPPFLAGS -DHAVE_PCRE"
+		else
+			AC_MSG_RESULT([[Warning: Could not find either pkg-config or pcre-config. No pcre support included.]])
+		fi
+	fi
 fi
 dnl
 dnl -----------------------------------------------------------------

@@ -6,6 +6,10 @@
 2011-08-15	pwessel
 	GMT 5.0.0b finalized and released.
 -----------------------------------------------------------------------------------------
+2011-08-11	remko
+	* gmtconvert_func.c, configure.ac:	Added PCRE (regular expression) support.
+				Thanks to Florian Wobbe.
+
 2011-08-02	pwessel
 	* gmt_fft.c:		Started groundwork to enable FFTW, Accelerate framework,
 				Sun Performance library, and FFT Pack configurations.
