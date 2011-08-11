@@ -6,6 +6,11 @@
 2011-08-15	pwessel
 	GMT 5.0.0b finalized and released.
 -----------------------------------------------------------------------------------------
+2011-08-11	pwessel
+	* gmtmath_func.c:	The EXCH should just swap data set pointers.
+	* grdblend_func.c:	Pass a -R when resampling a subset.
+	* mapproject_func.c:	Using just -Gc on Cartesian data now leaves coordinates alone.
+
 2011-08-11	remko
 	* gmtconvert_func.c, configure.ac:	Added PCRE (regular expression) support.
 				Thanks to Florian Wobbe.

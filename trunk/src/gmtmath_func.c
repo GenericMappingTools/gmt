@@ -1050,16 +1050,9 @@ void table_EQ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATAS
 void table_EXCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *S[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG col)
 /*OPERATOR: EXCH 2 2 Exchanges A and B on the stack.  */
 {
-	GMT_LONG s, i, prev = last - 1;
-	struct GMT_TABLE *T = (constant[last]) ? NULL : S[last]->table[0], *T_prev = S[prev]->table[0];
-
-	if (!(constant[last] && constant[prev])) {
-		for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) {
-			if (constant[last]) T->segment[s]->coord[col][i] = factor[last];
-			if (constant[prev]) T_prev->segment[s]->coord[col][i] = factor[prev];
-			d_swap (T->segment[s]->coord[col][i], T_prev->segment[s]->coord[col][i]);
-		}
-	}
+	GMT_LONG prev = last - 1;
+	struct GMT_DATASET *D = S[last];
+	S[last] = S[prev];	S[prev] = D;
 	l_swap (constant[last], constant[prev]);
 	d_swap (factor[last], factor[prev]);
 }
@@ -3254,7 +3247,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		nstack = new_stack;
 
-		for (i = 1; i <= produced_operands[op]; i++) constant[nstack-i] = FALSE;	/* Now filled with table */
+	//	for (i = 1; i <= produced_operands[op]; i++) if (stack[nstack-i]) constant[nstack-i] = FALSE;	/* Now filled with table */
 	}
 
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */

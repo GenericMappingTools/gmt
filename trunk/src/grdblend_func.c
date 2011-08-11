@@ -274,6 +274,11 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			GMT_report (GMT, GMT_MSG_NORMAL, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
 			do_sample |= 1;
 		}
+		else if (GMT_is_subset (GMT, h, B[n].G.header.wesn)) {	/* Set explicit -R for resampling inside desired grid */
+			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", h->wesn[XLO], h->wesn[XHI], h->wesn[YLO], h->wesn[YHI]);
+			GMT_report (GMT, GMT_MSG_NORMAL, "File %s exceeds output grid dimensions - get subset\n", B[n].file);
+			do_sample |= 2;
+		}
 		if (do_sample) {	/* One or more reasons to call grdsample before using this grid */
 			if (do_sample & 1) {	/* Resampling of the grid */
 				sprintf (buffer, "/tmp/grdblend_resampled_%ld_%ld.nc", (GMT_LONG)getpid(), n);
@@ -287,7 +292,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
 				sprintf (buffer, "/tmp/grdblend_reformatted_%ld_%ld.nc", (GMT_LONG)getpid(), n);
-				sprintf (cmd, "%s %s -V%ld", B[n].file, buffer, GMT->current.setting.verbose);
+				sprintf (cmd, "%s %s %s -V%ld", B[n].file, Rargs, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
 				if ((status = GMT_grdreformat_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */

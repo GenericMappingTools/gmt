@@ -510,13 +510,18 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
 
 	if (Ctrl->G.mode) {	/* save output format in case -J changes it */
-		save[GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X];
-		save[GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y];
+		save[GMT_X] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : GMT->current.io.col_type[GMT_OUT][GMT_X];
+		save[GMT_Y] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : GMT->current.io.col_type[GMT_OUT][GMT_Y];
 	}
 	u_scale = (Ctrl->I.active) ? inv_scale : fwd_scale;
 
 	if (!GMT->common.J.active) {	/* Supply dummy linear proj */
-		GMT_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
+		if (Ctrl->G.active && Ctrl->G.unit == 'X') {
+			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
+			GMT_parse_common_options (GMT, "J", 'J', "x1");	/* Fake linear Cartesian projection */
+		}
+		else
+			GMT_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear degree projection */
 		if (!GMT->common.R.active) {
 			GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
