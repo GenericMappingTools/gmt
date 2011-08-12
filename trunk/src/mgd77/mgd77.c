@@ -4936,7 +4936,7 @@ GMT_LONG MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruis
 		if (line[0] == '#' || line[0] == '\0') continue;
 		GMT_chop (C, line);	/* Deal with CR/LF issues */
 		sscanf (line, "%s %s %[^\n]", cruise, name, arguments);
-		if ((cruise_id = MGD77_Find_Cruise_ID (C, cruise, cruises, n_cruises, sorted)) == MGD77_NOT_SET) continue; /* Not a cruise we are interested in at the moment */
+		if ((cruise_id = MGD77_Find_Cruise_ID (C, cruise, cruises, (int)n_cruises, sorted)) == MGD77_NOT_SET) continue; /* Not a cruise we are interested in at the moment */
 		if ((id = MGD77_Match_List (C, name, n_fields, field_names)) == MGD77_NOT_SET) continue; 		/* Not a column we are interested in at the moment */
 		pos = 0;
 		while (GMT_strtok (C, arguments, " ,\t", &pos, word)) {
@@ -5056,7 +5056,7 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 		if (line[0] == '#' || line[0] == '\0') continue;
 		GMT_chop (C, line);	/* Deal with CR/LF issues */
 		sscanf (line, "%s %s %[^\n]", cruise, name, arguments);
-		if ((cruise_id = MGD77_Find_Cruise_ID (C, cruise, cruises, n_cruises, sorted)) == MGD77_NOT_SET) continue; /* Not a cruise we are interested in at the moment */
+		if ((cruise_id = MGD77_Find_Cruise_ID (C, cruise, cruises, (int)n_cruises, sorted)) == MGD77_NOT_SET) continue; /* Not a cruise we are interested in at the moment */
 		if ((id = MGD77_Match_List (C, name, n_fields, field_names)) == MGD77_NOT_SET) continue; 		/* Not a column we are interested in at the moment */
 		pos = 0;
 		previous = &C_table[cruise_id][id].term;
@@ -5108,8 +5108,8 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 					sscanf (p, "%[^)])", name);
 					c->origin = 0.0;
 				}
-				if ((c->id = MGD77_Match_List (C, name, n_fields, field_names)) == MGD77_NOT_SET) {;	/* Not a recognized column */
-					for (i = 0; i < n_aux; i++) if (!strcmp (name, aux_names[i])) c->id = i;	/* check auxilliaries */
+				if ((c->id = (int)MGD77_Match_List (C, name, n_fields, field_names)) == MGD77_NOT_SET) {;	/* Not a recognized column */
+					for (i = 0; i < n_aux; i++) if (!strcmp (name, aux_names[i])) c->id = (int)i;	/* check auxilliaries */
 					if (c->id == MGD77_NOT_SET) { /* Not an auxilliary column either */
 						GMT_report (C, GMT_MSG_FATAL, "Column %s not found - requested by the correction table %s!\n", name, tablefile);
 						GMT_exit (EXIT_FAILURE);
