@@ -349,8 +349,10 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (match && GMT_polygon_is_hole (D[GMT_IN]->table[tbl_ver]->segment[seg])) match = TRUE;	/* Extend a true match on a perimeter to the trailing holes */
 				else if (ogr_match)	/* Compare to aspatial value */
 					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr->value[ogr_item], Ctrl->S.pattern) != NULL);		/* TRUE if we matched */
+#ifndef WIN32
 				else if (Ctrl->S.regexp)	/* Compare to ERE */
           match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && gmt_regexp_match(GMT, D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern));		/* TRUE if we matched */
+#endif
 				else
 					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern) != NULL);		/* TRUE if we matched */
 				if (Ctrl->S.inverse == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
