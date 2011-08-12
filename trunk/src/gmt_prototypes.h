@@ -439,7 +439,7 @@ EXTERN_MSC GMT_LONG GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 
 /* gmt_regexp.c */
 
-EXTERN_MSC GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *pattern);
+EXTERN_MSC GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *pattern, GMT_LONG caseless);
 
 /* gmt_vector.c: */
 

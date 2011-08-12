@@ -5840,12 +5840,12 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 	   If either x or y is periodic, the padding is entirely set.
 	   However, if neither is true (this rules out geographical also)
 	   then all but three corner-most points in each corner are set.
-           
+
 	   As written, not ready to use with "surface" for GMT 5, because
 	   assumes left/right is +/- 1 and down/up is +/- mx.  In "surface"
 	   the amount to move depends on the current mesh size, a parameter
 	   not used here.
-           
+
 	   This is the revised, two-rows version (WHFS 6 May 1998).
 	*/
 
@@ -6242,12 +6242,12 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 	   If either x or y is periodic, the padding is entirely set.
 	   However, if neither is true (this rules out geographical also)
 	   then all but three corner-most points in each corner are set.
-           
+
 	   As written, not ready to use with "surface" for GMT v4, because
 	   assumes left/right is +/- 1 and down/up is +/- mx.  In "surface"
 	   the amount to move depends on the current mesh size, a parameter
 	   not used here.
-           
+
 	   This is the revised, two-rows version (WHFS 6 May 1998).
 	   Based on GMT_boundcont_set but extended to multiple bands and using char * array
 	*/

@@ -634,13 +634,13 @@ GMT_LONG gmt_traverse_dir (const char *file, char *path) {
 	struct dirent *F = NULL;
 	int len, d_namlen;
 	GMT_LONG ok = FALSE;
-        char savedpath[GMT_BUFSIZ];
+	char savedpath[GMT_BUFSIZ];
 
  	if ((D = opendir (path)) == NULL) return (0);	/* Unable to open directory listing */
 	len = strlen (file);
 	strcpy (savedpath, path);	/* Make copy of current directory path */
 
-        while (!ok && (F = readdir (D)) != NULL) {	/* For each directory entry until end or ok becomes TRUE */
+	while (!ok && (F = readdir (D)) != NULL) {	/* For each directory entry until end or ok becomes TRUE */
 		d_namlen = strlen (F->d_name);
 		if (d_namlen == 1 && F->d_name[0] == '.') continue;				/* Skip current dir */
 		if (d_namlen == 2 && F->d_name[0] == '.' && F->d_name[1] == '.') continue;	/* Skip parent dir */
@@ -3655,23 +3655,23 @@ GMT_LONG gmt_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 	      in user units since epoch;
 	   OR
 	   -- absolute time in a restricted format, which is to be converted to relative time.
-           
+
 	   The absolute format must be restricted because we cannot use '/' as a delimiter in an arg
 	   string, but we might allow the user to use that in a data file (in C->current.setting.[in/out]put_date_format.
 	   Therefore we cannot use the user's date format string here, and we hard-wire something here.
-           
+
 	   The relative format must be decodable by gmt_scanf_float().  It may optionally end in 't'
 	   (which will be stripped off by this routine).
-           
+
 	   The absolute format must have a T.  If it has a clock string then it must be of the form
 	   <complete_calstring>T<clockstring> or just T<clockstring>.  If it has no clockstring then
 	   it must be of the form <partial or complete calstring>T.
-           
+
 	   A <clockstring> may be partial (e.g. hh or hh:mm) or complete (hh:mm:ss[.xxx]) but it must use
 	   ':' for a delimiter and it must be readable with "%2d:%2d:%lf".
 	   Also, it must be a 24 hour clock (00:00:00 to 23:59:59.xxx,
 	   or 60.xxx on a leap second); no am/pm suffixes allowed.
-           
+
 	   A <calstring> must be of the form
 	   [-]yyyy[-mm[-dd]]T readable after first '-' with "%4d-%2d-%2dT" (Gregorian year,month,day)
 	   [-]yyyy[-jjj]T readable after first '-' with "%4d-%3dT" (Gregorian year, day-of-year)

@@ -480,7 +480,7 @@ GMT_LONG GMT_native_read_grd_header (FILE *fp, struct GRD_HEADER *header)
 	GMT_LONG err = GMT_NOERROR;
 	/* Because GRD_HEADER is not 64-bit aligned we must read it in parts */
 	if (GMT_fread ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || GMT_fread ((void *)header->wesn, sizeof (struct GRD_HEADER) - ((long)header->wesn - (long)&header->nx), (size_t)1, fp) != 1)
-                err = GMT_GRDIO_READ_FAILED;
+	err = GMT_GRDIO_READ_FAILED;
 	return (err);
 }
 
@@ -564,7 +564,7 @@ GMT_LONG GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header)
 	/* Because GRD_HEADER is not 64-bit aligned we must write it in parts */
 
 	if (GMT_fwrite ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || GMT_fwrite ((void *)header->wesn, sizeof (struct GRD_HEADER) - ((long)header->wesn - (long)&header->nx), (size_t)1, fp) != 1)
-                err = GMT_GRDIO_WRITE_FAILED;
+		err = GMT_GRDIO_WRITE_FAILED;
 	return (err);
 }
 
@@ -574,7 +574,7 @@ GMT_LONG GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header)
 	/* Because GRD_HEADER is not 64-bit aligned we must estimate the # of bytes in parts */
 
 	if (GMT_fseek (fp, (long)(3*sizeof (int) + sizeof (struct GRD_HEADER) - ((long)header->wesn - (long)&header->nx)), SEEK_SET))
-                err = GMT_GRDIO_SEEK_FAILED;
+		err = GMT_GRDIO_SEEK_FAILED;
 	return (err);
 }
 

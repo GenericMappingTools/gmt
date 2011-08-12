@@ -306,8 +306,8 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	i_dx_inch = 1.0 / fabs (x[1] - x[0]);
 	i_dy_inch = 1.0 / fabs (y[1] - y[0]);
 
-        west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
-        east_border =  ceil (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
+	west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
+	east_border =  ceil (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
 
 		bin = c.bins[ind];

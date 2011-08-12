@@ -75,6 +75,7 @@ struct GMTCONVERT_CTRL {
 		GMT_LONG active;
 		GMT_LONG inverse;
 		GMT_LONG regexp;
+		GMT_LONG caseless;
 		char *pattern;
 	} S;
 	struct T {	/* -T */
@@ -137,7 +138,7 @@ GMT_LONG GMT_gmtconvert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Use -S~\"string\" to output segment that DO NOT contain this pattern.\n");
 	GMT_message (GMT, "\t   If your pattern begins with ~, escape it with \\~.\n");
 	GMT_message (GMT, "\t   To match OGR aspatial values, use name=value.\n");
-	GMT_message (GMT, "\t   To match against extended regular expressions use -S[~]\"/regexp/\".\n");
+	GMT_message (GMT, "\t   To match against extended regular expressions use -S[~]/regexp/[i].\n");
 	GMT_message (GMT, "\t-T Prevent the writing of segment headers.\n");
 	GMT_explain_options (GMT, "VaC0Dfghios:.");
 	
@@ -218,14 +219,20 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 				break;
 			case 'S':	/* Segment header pattern search */
 				Ctrl->S.active = TRUE;
-				k = (opt->arg[0] == '\\' && strlen (opt->arg) > 3 && opt->arg[1] == '~') ? 1 : 0;	/* Special escape if pattern starts with ~ */
+				size_t arg_length = strlen (opt->arg);
+				k = (opt->arg[0] == '\\' && arg_length > 3 && opt->arg[1] == '~') ? 1 : 0;	/* Special escape if pattern starts with ~ */
 				if (opt->arg[0] == '~') Ctrl->S.inverse = TRUE;
 				Ctrl->S.pattern = strdup (&opt->arg[k+Ctrl->S.inverse]);
-        if (opt->arg[Ctrl->S.inverse] == '/' && opt->arg[strlen (opt->arg) - 1]  == '/' ) {
-          Ctrl->S.regexp = TRUE;
-          opt->arg[strlen (opt->arg) - 1] = '\0'; /* remove trailing '/' from pattern string */
-        }
-        Ctrl->S.pattern = strdup (&opt->arg[k+Ctrl->S.inverse+Ctrl->S.regexp]); /* remove any '/', '\', and '~' from beginning of pattern */
+				if (opt->arg[Ctrl->S.inverse] == '/' && opt->arg[arg_length-2]  == '/'  && opt->arg[arg_length-1]  == 'i' ) {
+					Ctrl->S.regexp = TRUE;
+					Ctrl->S.caseless = TRUE;
+					opt->arg[arg_length-2] = '\0'; /* remove trailing '/i' from pattern string */
+				}
+				else if (opt->arg[Ctrl->S.inverse] == '/' && opt->arg[arg_length-1]  == '/' ) {
+					Ctrl->S.regexp = TRUE;
+					opt->arg[arg_length-1] = '\0'; /* remove trailing '/' */
+				}
+				Ctrl->S.pattern = strdup (&opt->arg[k+Ctrl->S.inverse+Ctrl->S.regexp]); /* remove any '/', '\', and '~' from beginning of pattern */
 				break;
 			case 'T':	/* Do not write segment headers */
 				Ctrl->T.active = TRUE;
@@ -351,7 +358,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr->value[ogr_item], Ctrl->S.pattern) != NULL);		/* TRUE if we matched */
 #ifndef WIN32
 				else if (Ctrl->S.regexp)	/* Compare to ERE */
-          match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && gmt_regexp_match(GMT, D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern));		/* TRUE if we matched */
+					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && gmt_regexp_match(GMT, D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern, Ctrl->S.caseless));		/* TRUE if we matched */
 #endif
 				else
 					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern) != NULL);		/* TRUE if we matched */

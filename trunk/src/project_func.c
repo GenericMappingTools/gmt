@@ -79,7 +79,7 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 };
 
 struct PROJECT_DATA {
-        double a[6];
+	double a[6];
 	double *z;
 	char *t;
 };

@@ -296,7 +296,7 @@ void make_rot_matrix (struct GMT_CTRL *C, double lonp, double latp, double w, do
 
 	double E[3], sin_w, cos_w, c, E_x, E_y, E_z, E_12c, E_13c, E_23c;
 
-        GMT_geo_to_cart (C, latp, lonp, E, TRUE);
+	GMT_geo_to_cart (C, latp, lonp, E, TRUE);
 
 	sincosd (w, &sin_w, &cos_w);
 	c = 1.0 - cos_w;

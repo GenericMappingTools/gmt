@@ -363,7 +363,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], data[n_data].x, TRUE);
 
 		if (++n_data == n_alloc) data = GMT_memory (GMT, data, n_alloc <<= 1, struct FITCIRCLE_DATA);
-        }
+	}
   	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
  	if (n_data == 0) {	/* Blank/empty input files */
@@ -372,7 +372,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Return (EXIT_SUCCESS);
 	}
      
-      	if (n_data < n_alloc) data = GMT_memory (GMT, data, n_data, struct FITCIRCLE_DATA);
+	if (n_data < n_alloc) data = GMT_memory (GMT, data, n_data, struct FITCIRCLE_DATA);
 	allocate = (Ctrl->S.active && (Ctrl->L.norm%2));	/* Will need work array */
 	if (allocate) work = GMT_memory (GMT, NULL, n_data, double);
 

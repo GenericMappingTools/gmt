@@ -622,10 +622,10 @@ PSL_LONG PSL_plotbitimage (struct PSL_CTRL *PSL, double x, double y, double xsiz
 	if (PSL_eq (ysize, 0.0)) ysize = (xsize * ny) / nx;
 
 	/* Correct origin (x,y) in case of justification */
-        if (justify > 1) {      /* Move the new origin so (0,0) is lower left of box */
+	if (justify > 1) {      /* Move the new origin so (0,0) is lower left of box */
 		x -= 0.5 * ((justify + 3) % 4) * xsize;
 		y -= 0.5 * (justify / 4) * ysize;
-        }
+	}
 
 	PSL_comment (PSL, "Start of 1-bit image\n");
 	PSL_command (PSL, "V N %ld %ld T %ld %ld scale", psl_ix(PSL, x), psl_iy(PSL, y), psl_iz (PSL, xsize), psl_iz (PSL, ysize));
@@ -726,10 +726,10 @@ PSL_LONG PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xs
 	if (PSL_eq (ysize, 0.0)) ysize = (xsize * ny) / nx;
 
 	/* Correct origin (x,y) in case of justification */
-        if (justify > 1) {      /* Move the new origin so (0,0) is lower left of box */
+	if (justify > 1) {      /* Move the new origin so (0,0) is lower left of box */
 		x -= 0.5 * ((justify + 3) % 4) * xsize;
 		y -= 0.5 * (justify / 4) * ysize;
-        }
+	}
 
 	/* Gray scale, CMYK or RGB encoding/colorspace */
 	id = (PSL->internal.color_mode == PSL_GRAY || PSL_abs (nbits) < 24) ? 0 : (PSL->internal.color_mode == PSL_CMYK ? 2 : 1);
@@ -1026,10 +1026,10 @@ PSL_LONG PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsiz
 	if (PSL_eq (ysize, 0.0)) ysize = (xsize * ny) / nx;
 
 	/* Correct origin (x,y) in case of justification */
-        if (justify > 1) {      /* Move the new origin so (0,0) is lower left of box */
+	if (justify > 1) {      /* Move the new origin so (0,0) is lower left of box */
 		x -= 0.5 * ((justify + 3) % 4) * xsize;
 		y -= 0.5 * (justify / 4) * ysize;
-        }
+	}
 
 	PSL_command (PSL, "PSL_eps_begin\n");
 	PSL_command (PSL, "%ld %ld T %g %g scale\n", psl_ix (PSL, x), psl_iy (PSL, y), xsize * PSL->internal.dpu / nx, ysize * PSL->internal.dpu / ny);

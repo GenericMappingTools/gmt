@@ -379,7 +379,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!Ctrl->C.active) GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 	
 
-        if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	if (Ctrl->I.inc[GMT_X] != 0.0 && Ctrl->I.inc[GMT_Y] != 0.0) {	/* Coarsen the output interval */
 		struct GRD_HEADER tmp_h;
@@ -465,7 +465,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
-        if (!Ctrl->N.active) GMT_map_clip_off (GMT);
+	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 
 	GMT_map_basemap (GMT);
 

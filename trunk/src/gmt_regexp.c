@@ -36,12 +36,13 @@
  */
 #ifdef HAVE_PCRE
 #include <pcre.h>
-#define OVECCOUNT 30    /* should be a multiple of 3 */
+#define OVECCOUNT 30        /* should be a multiple of 3 */
 #else
 #include <regex.h>
+#define MAX_ERR_LENGTH 80   /* max error message length */
 #endif
 
-GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *pattern)
+GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *pattern, GMT_LONG caseless)
 {
 /* Match string against the extended regular expression in pattern. Return 1 for match, 0 for no match. */
 
@@ -55,23 +56,29 @@ GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *
 	int erroffset;
 	int ovector[OVECCOUNT];
 	int rc;
-	
+  int options = 0; /* default options */
+
 	/*************************************************************************
 	 * Now we are going to compile the regular expression pattern, and handle *
 	 * and errors that are detected.                                          *
 	 *************************************************************************/
-	
+
+  if ( caseless )
+    options = options|PCRE_CASELESS;      /* caseless matching */
+
 	re = pcre_compile(
 	                  pattern,              /* the pattern */
-	                  0,                    /* default options */
+	                  options,              /* options */
 	                  &error,               /* for error message */
 	                  &erroffset,           /* for error offset */
 	                  NULL);                /* use default character tables */
 	
 	/* Compilation failed: print the error message and exit */
-	
-	if (re == NULL)
+
+	if (re == NULL) {
 	  GMT_report (C, GMT_MSG_FATAL, "gmt_regexp_match: PCRE compilation failed at offset %d: %s.\n", erroffset, error);
+	  GMT_exit (EXIT_FAILURE);
+	}
 	
 	/*************************************************************************
 	 * If the compilation succeeded, we call PCRE again, in order to do a     *
@@ -95,7 +102,7 @@ GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *
 		switch(rc) {
 			case PCRE_ERROR_NOMATCH: break;
 			/* Handle other special cases if you like */
-			default: GMT_report (C, GMT_MSG_FATAL, "gmt_regexp_match: PCRE matching error %d.\n", rc); break;
+			default: GMT_report (C, GMT_MSG_FATAL, "gmt_regexp_match: PCRE matching error %d.\n", rc); GMT_exit (EXIT_FAILURE); break;
 		}
 		pcre_free(re);     /* Release memory used for the compiled pattern */
 		return (0);	/* Match failed */
@@ -105,16 +112,35 @@ GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *
 
 #else
 
-	/* Based on the regcomp documentation */
-	int    status;
-	regex_t    re;
-	
-	if (regcomp(&re, pattern, REG_EXTENDED|REG_NOSUB) != 0)
-		GMT_report (C, GMT_MSG_FATAL, "gmt_regexp_match: POSIX ERE compilation failed.\n"); /* Report error. */
+	/* Use POSIX ERE for matching
+   * Based on the regcomp documentation */
+	regex_t re;
+	int cflags = REG_EXTENDED|REG_NOSUB;
+  int status;
+  char err_msg[MAX_ERR_LENGTH];
+
+  if ( caseless )
+    cflags = cflags|REG_ICASE; /* caseless matching */
+
+  /* compile the RE */
+  if ( (status = regcomp(&re, pattern, cflags)) != 0) {
+    regerror(status, &re, err_msg, MAX_ERR_LENGTH);
+		GMT_report (C, GMT_MSG_FATAL, "gmt_regexp_match: POSIX ERE compilation failed: %s\n", err_msg); /* Report error. */
+		GMT_exit (EXIT_FAILURE);
+	}
+
+  /* execute the RE against the subject string */
 	status = regexec(&re, subject, (size_t) 0, NULL, 0);
-	regfree(&re);
-	if (status != 0) return (0); /* No match */
-	return (1); /* Match succeded */
+	regfree(&re);     /* Release memory used for the compiled pattern */
+  if ( status == 0 )
+    return (1); /* Match succeded */
+  else if ( status != REG_NOMATCH ) {
+    /* this is when errors have been encountered */
+    regerror(status, &re, err_msg, MAX_ERR_LENGTH);
+		GMT_report (C, GMT_MSG_FATAL, "gmt_regexp_match: POSIX ERE matching error: %s\n", err_msg); /* Report error. */
+		GMT_exit (EXIT_FAILURE);
+  }
+  return (0); /* No match */
 
 #endif
 }
