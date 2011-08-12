@@ -5,7 +5,7 @@ gmtconvert \- Convert, Paste, and/or Extract columns from data tables
 .SH SYNOPSIS
 BD(gmtconvert) [ IT(table) ] [ OPT(A) ] [ OPT(D)[IT(template)] ] [ OPT(E)[BD(f)|BD(l)] ] 
 [ OPT(L) ] [ OPT(I)[BD(tsr)] ] [ OPT(N) ] [ OPT(Q)IT(seg) ] 
-[ OPT(S)[BD(~)]IT("search string") ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_a_OPT ] [ GMT_b_OPT ] 
+[ OPT(S)[BD(~)]IT("search string") | OPT(S)[BD(~)]/IT(regexp)/[BD(i)] ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_a_OPT ] [ GMT_b_OPT ] 
 [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(gmtconvert) reads its standard input [or input files] and writes out
@@ -60,15 +60,14 @@ Do not write records that only contain NaNs in every field [Default writes all r
 OPT(Q)IT(seg)
 Only write segment number IT(seg) and skip all others.  Cannot be used with OPT(S).
 .TP
-OPT(S)[BD(~)]IT("search string") or OPT(S)[BD(~)]IT("/regexp/")
+OPT(S)[BD(~)]IT("search string") or OPT(S)[BD(~)]/IT(regexp)/[BD(i)]
 Only output those segments whose header record contains the specified text string.  To reverse the search,
 i.e., to output segments whose headers do IT(not) contain the specified pattern, use OPT(S~).
 Should your pattern happen to start with ~ you need to escape this character with a backslash \ [Default output all segments].
 Cannot be used with OPT(Q).  For matching segments based on aspatial values (via OGR/GMT format), give the
 search string as IT(varname)=IT(value) and we will compare IT(value) against the value of IT(varname) for
 each segment.  Note: If the features are polygons then a match of a particular polygon perimeter also means
-that any associated polygon holes will also be matched.  For matching segment
-headers against extended regular expressions enclose the expression in slashes.
+that any associated polygon holes will also be matched.  For matching segment headers against extended regular expressions enclose the expression in slashes. Append BD(i) for caseless matching.
 .TP
 OPT(T)
 Suppress the writing of segment headers on output.

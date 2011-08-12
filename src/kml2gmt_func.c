@@ -109,7 +109,7 @@ GMT_LONG GMT_kml2gmt_parse (struct GMTAPI_CTRL *C, struct KML2GMT_CTRL *Ctrl, st
 		}
 	}
 
-        if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
+	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one file can be processed at the time\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->In.active && access (Ctrl->In.file, R_OK), "Syntax error: Cannot read file %s\n", Ctrl->In.file);
 
@@ -177,7 +177,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	GMT_Put_Record (API, GMT_WRITE_TBLHEADER, (void *)buffer);	/* Write this to output */
 
-        while (fgets (line, GMT_BUFSIZ, fp)) {
+	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (strstr (line, "<Placemark")) scan = TRUE;
 		if (strstr (line, "</Placemark")) scan = FALSE;
 		if (!scan) continue;

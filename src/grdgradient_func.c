@@ -560,7 +560,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				Out->header->z_max =  Ctrl->N.norm * (1.0 - exp (-(max_gradient - ave_gradient) * denom));
 				Out->header->z_min = -Ctrl->N.norm * (1.0 - exp ( (min_gradient - ave_gradient) * denom));
 			}
-                	else {	/* Linear transformation */
+			else {	/* Linear transformation */
 				if ((max_gradient - ave_gradient) > (ave_gradient - min_gradient))
 					denom = Ctrl->N.norm / (max_gradient - ave_gradient);
 				else

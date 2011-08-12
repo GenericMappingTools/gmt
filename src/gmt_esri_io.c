@@ -81,8 +81,8 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 			len = strlen (file);
 			if ((file[len-3] == 'N' || file[len-3] == 'n' || file[len-3] == 'S' || file[len-3] == 's') &&
 				(file[len-7] == 'W' || file[len-7] == 'w' || file[len-7] == 'E' || file[len-7] == 'e')) {
-        			/* It is a GTOPO30 or SRTM30 source file without a .hdr companion. */
-        			/* see http://dds.cr.usgs.gov/srtm/version1/SRTM30/GTOPO30_Documentation */
+				/* It is a GTOPO30 or SRTM30 source file without a .hdr companion. */
+				/* see http://dds.cr.usgs.gov/srtm/version1/SRTM30/GTOPO30_Documentation */
 				header->flags[0] = 'B';		/* GTOPO30 & SRTM30 are Big Endians */
 				header->flags[1] = '0';		/* Flag to let us know the file type */
 				strcpy (header->title, file);		/* Store the file name with all extensions removed.

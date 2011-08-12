@@ -150,8 +150,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	hDstDS = GDALCreate( hDriver, "mem", nx, ny, n_bands, typeCLASS, NULL );
 
 	if (hDstDS == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "GDALOpen failed - %d\n%s\n",
-                CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+		GMT_report (C, GMT_MSG_FATAL, "GDALOpen failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 		return(-1);
 	}
 	GDALSetGeoTransform( hDstDS, adfGeoTransform ); 
@@ -191,7 +190,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	}
 
 	hOutDS = GDALCreateCopy( hDriverOut, fname, hDstDS, bStrict, papszOptions, pfnProgress, NULL );
-        if ( hOutDS != NULL ) GDALClose( hOutDS );
+	if ( hOutDS != NULL ) GDALClose( hOutDS );
 
 	GDALClose( hDstDS );
 

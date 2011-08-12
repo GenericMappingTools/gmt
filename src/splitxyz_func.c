@@ -124,7 +124,7 @@ void *New_splitxyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	C = GMT_memory (GMT, NULL, 1, struct SPLITXYZ_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-        C->A.azimuth = 90.0;
+	C->A.azimuth = 90.0;
 	C->A.tolerance = 360.0;
 	return ((void *)C);
 }
@@ -275,7 +275,7 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
-               }
+		}
 	}
 
 	n_errors += GMT_check_condition (GMT, Ctrl->D.value < 0.0, "Syntax error -D option: Minimum segment distance must be positive\n");

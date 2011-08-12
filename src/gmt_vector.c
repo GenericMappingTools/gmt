@@ -923,7 +923,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 	 * If mode=2: first follows parallel, then meridian
 	 * Returns the new number of points (original plus auxiliary).
 	 */
-      
+
 	GMT_LONG i, j, k = 1, n_tmp, n_step = 0, n_alloc = 0, meridian;
 	double *lon_tmp = NULL, *lat_tmp = NULL;
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
@@ -1036,7 +1036,7 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 	 * If mode=2: staircase; first follows x, then y
 	 * Returns the new number of points (original plus auxiliary).
 	 */
-      
+
 	GMT_LONG i, j, k = 1, n_tmp, n_step = 0, n_alloc = 0;
 	double *x_tmp = NULL, *y_tmp = NULL, *x = NULL, *y = NULL, c;
 

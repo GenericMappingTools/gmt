@@ -738,7 +738,7 @@ void fourt_stats (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny, GMT_LONG *f, dou
 
 	/* Now get factors of ntotal  */
 	ntotal = GMT_get_nm (C, nx, ny);
-        n_factors = GMT_get_prime_factors (C, ntotal, f);
+	n_factors = GMT_get_prime_factors (C, ntotal, f);
 	storage = MAX (nonsym, f[n_factors-1]);
 	*s = (storage == 2) ? 0 : storage;
 
@@ -767,8 +767,8 @@ void suggest_fft (struct GMT_CTRL *GMT, GMT_LONG nx, GMT_LONG ny, struct FFT_SUG
 	GMT_LONG nx_best_t, ny_best_t;
 	GMT_LONG nx_best_e, ny_best_e;
 	GMT_LONG nx_best_s, ny_best_s;
-        GMT_LONG nxg, nyg;       /* Guessed by this routine  */
-        GMT_LONG nx2, ny2, nx3, ny3, nx5, ny5;   /* For powers  */
+	GMT_LONG nxg, nyg;       /* Guessed by this routine  */
+	GMT_LONG nx2, ny2, nx3, ny3, nx5, ny5;   /* For powers  */
 	GMT_LONG current_space, best_space, given_space, e_space, t_space;
 	double current_time, best_time, given_time, s_time, e_time;
 	double current_err, best_err, given_err, s_err, t_err;
@@ -788,17 +788,17 @@ void suggest_fft (struct GMT_CTRL *GMT, GMT_LONG nx, GMT_LONG ny, struct FFT_SUG
 	xstop = 2 * nx;
 	ystop = 2 * ny;
 
-        for (nx2 = 2; nx2 <= xstop; nx2 *= 2) {
-          for (nx3 = 1; nx3 <= xstop; nx3 *= 3) {
-            for (nx5 = 1; nx5 <= xstop; nx5 *= 5) {
-                nxg = nx2 * nx3 * nx5;
-                if (nxg < nx || nxg > xstop) continue;
+	for (nx2 = 2; nx2 <= xstop; nx2 *= 2) {
+	  	for (nx3 = 1; nx3 <= xstop; nx3 *= 3) {
+		    for (nx5 = 1; nx5 <= xstop; nx5 *= 5) {
+		        nxg = nx2 * nx3 * nx5;
+		        if (nxg < nx || nxg > xstop) continue;
 
-                for (ny2 = 2; ny2 <= ystop; ny2 *= 2) {
-                  for (ny3 = 1; ny3 <= ystop; ny3 *= 3) {
-                    for (ny5 = 1; ny5 <= ystop; ny5 *= 5) {
-                        nyg = ny2 * ny3 * ny5;
-                        if (nyg < ny || nyg > ystop) continue;
+		        for (ny2 = 2; ny2 <= ystop; ny2 *= 2) {
+		          for (ny3 = 1; ny3 <= ystop; ny3 *= 3) {
+		            for (ny5 = 1; ny5 <= ystop; ny5 *= 5) {
+		                nyg = ny2 * ny3 * ny5;
+		                if (nyg < ny || nyg > ystop) continue;
 
 			fourt_stats (GMT, nxg, nyg, f, &current_err, &current_space, &current_time);
 			current_space += nxg*nyg;
@@ -908,8 +908,8 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 		Gin->header->nx, Gin->header->ny, Ctrl->N.nx2, Ctrl->N.ny2);
 
 	if (worksize) {
-                if (worksize < Ctrl->N.nx2) worksize = Ctrl->N.nx2;
-                if (worksize < Ctrl->N.ny2) worksize = Ctrl->N.ny2;
+		if (worksize < Ctrl->N.nx2) worksize = Ctrl->N.nx2;
+		if (worksize < Ctrl->N.ny2) worksize = Ctrl->N.ny2;
 		worksize *= 2;
 	}
 	else
@@ -1110,7 +1110,7 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
-               }
+		}
 	}
 
 	n_errors += GMT_check_condition (GMT, !(Ctrl->n_op_count), "Syntax error: Must specify at least one operation\n");

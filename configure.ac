@@ -589,7 +589,7 @@ dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-accelerate to set FFTW dir
 dnl -----------------------------------------------------------------
 dnl
-if test test "X$enable_accelerate" = "Xyes"; then
+if test "X$enable_accelerate" = "Xyes"; then
 	CPPFLAGS="$CPPFLAGS -DWITH_ACCELERATE"
 	LDFLAGS="$LDFLAGS -framework Accelerate"
 	AC_MSG_RESULT([Using Accelerate framework])

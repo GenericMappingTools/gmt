@@ -622,7 +622,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef _OPENMP
 #pragma omp parallel shared(fast_way,x_shift,i_origin) private(F,par,x_width,y_width,i,j,effort_level,tid,weight,work_array,work_data,half_nx) firstprivate(x_scale,y_scale,filter_type,spherical,visit_check,go_on,max_lat,merc_range,slow,slower,x_fix,y_fix) reduction(+:n_nan)
 {
-        tid = omp_get_thread_num ();
+	tid = omp_get_thread_num ();
 #endif
 
 	switch (Ctrl->D.mode) {

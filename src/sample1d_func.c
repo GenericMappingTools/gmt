@@ -272,7 +272,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		m_supplied = m;
 		t_out = GMT_memory (GMT, NULL, m_supplied, double);
-                GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld knots from file\n", m_supplied);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld knots from file\n", m_supplied);
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Cin);
 	}
 

@@ -495,7 +495,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					if (GMT_is_fnan (Work->data[ij+ij_inc[k]])) bad = TRUE;
 				}
 
-                                if (bad || neg == 4) continue;	/* Contour not crossing, go to next bin */
+				if (bad || neg == 4) continue;	/* Contour not crossing, go to next bin */
 
 				if (pos == 4) {	/* Need entire prism */
 					for (k = 0, sum = 0.0; k < 4; k++) sum += Work->data[ij+ij_inc[k]];
