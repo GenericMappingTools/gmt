@@ -137,7 +137,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			arc[ij].begin = D->tri[ij1];	arc[ij].end = D->tri[ij3];	ij++;
 		}
 		for (k = 0; k < n_arcs; k++) 
-			if (arc[k].begin > arc[k].end) i_swap ((int)arc[k].begin, (int)arc[k].end);
+			if (arc[k].begin > arc[k].end) i_swap (arc[k].begin, arc[k].end);
 
 		/* Sort and eliminate duplicate arcs */
 		qsort ((void *)arc, (size_t)n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
@@ -289,7 +289,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 	}
 	if (get_arcs) {	/* Process arcs */
 		for (k = 0; k < n_arcs; k++) if (arc[k].begin > arc[k].end) 
-			i_swap ((int)arc[k].begin, (int)arc[k].end);
+			i_swap (arc[k].begin, arc[k].end);
 
 		/* Sort and exclude duplicates */
 		qsort ((void *)arc, (size_t)n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
