@@ -112,9 +112,9 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			else	/* Just a plain header with triangle number */
 				sprintf (segment_header, "Triangle: %ld", k);
 			if (nodes) {	/* Output Voronoi node and area information via S[1] */
-				S[1]->coord[GMT_X][k] = D->tri[ij];
-				S[1]->coord[GMT_Y][k] = D->tri[ij+1];
-				S[1]->coord[GMT_Z][k] = D->tri[ij+2];
+				S[1]->coord[GMT_X][k] = (double)D->tri[ij];
+				S[1]->coord[GMT_Y][k] = (double)D->tri[ij+1];
+				S[1]->coord[GMT_Z][k] = (double)D->tri[ij+2];
 				if (get_area) S[1]->coord[3][k] = area_triangle * R2;
 			}
 			S[0]->header = strdup (segment_header);
@@ -136,7 +136,8 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			arc[ij].begin = D->tri[ij2];	arc[ij].end = D->tri[ij3];	ij++;
 			arc[ij].begin = D->tri[ij1];	arc[ij].end = D->tri[ij3];	ij++;
 		}
-		for (k = 0; k < n_arcs; k++) if (arc[k].begin > arc[k].end) i_swap (arc[k].begin, arc[k].end);
+		for (k = 0; k < n_arcs; k++) 
+			if (arc[k].begin > arc[k].end) i_swap ((int)arc[k].begin, (int)arc[k].end);
 
 		/* Sort and eliminate duplicate arcs */
 		qsort ((void *)arc, (size_t)n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
@@ -287,7 +288,8 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 		}
 	}
 	if (get_arcs) {	/* Process arcs */
-		for (k = 0; k < n_arcs; k++) if (arc[k].begin > arc[k].end) i_swap (arc[k].begin, arc[k].end);
+		for (k = 0; k < n_arcs; k++) if (arc[k].begin > arc[k].end) 
+			i_swap ((int)arc[k].begin, (int)arc[k].end);
 
 		/* Sort and exclude duplicates */
 		qsort ((void *)arc, (size_t)n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
