@@ -274,10 +274,15 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			GMT_report (GMT, GMT_MSG_NORMAL, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
 			do_sample |= 1;
 		}
-		else if (GMT_is_subset (GMT, h, B[n].G.header.wesn)) {	/* Set explicit -R for resampling inside desired grid */
-			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", h->wesn[XLO], h->wesn[XHI], h->wesn[YLO], h->wesn[YHI]);
-			GMT_report (GMT, GMT_MSG_NORMAL, "File %s exceeds output grid dimensions - get subset\n", B[n].file);
-			do_sample |= 2;
+		else if (do_sample) {	/* Set explicit -R to handle possible subsetting */
+			double wesn[4];
+			GMT_memcpy (wesn, h->wesn, 4, double);
+			if (wesn[XLO] < B[n].G.header.wesn[XLO]) wesn[XLO] = B[n].G.header.wesn[XLO];
+			if (wesn[XHI] > B[n].G.header.wesn[XHI]) wesn[XHI] = B[n].G.header.wesn[XHI];
+			if (wesn[YLO] < B[n].G.header.wesn[YLO]) wesn[YLO] = B[n].G.header.wesn[YLO];
+			if (wesn[YHI] > B[n].G.header.wesn[YHI]) wesn[YHI] = B[n].G.header.wesn[YHI];
+			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+			GMT_report (GMT, GMT_MSG_DEBUG, "File %s is sampled using region %s\n", B[n].file, Rargs);
 		}
 		if (do_sample) {	/* One or more reasons to call grdsample before using this grid */
 			if (do_sample & 1) {	/* Resampling of the grid */

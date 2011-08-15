@@ -8,7 +8,7 @@
 -----------------------------------------------------------------------------------------
 2011-08-11	pwessel
 	* gmtmath_func.c:	The EXCH should just swap data set pointers.
-	* grdblend_func.c:	Pass a -R when resampling a subset.
+	* grdblend_func.c:	Pass -R to grdsample/grdreformat to only deal with smallest region.
 	* mapproject_func.c:	Using just -Gc on Cartesian data now leaves coordinates alone.
 
 2011-08-11	remko
