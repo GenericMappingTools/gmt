@@ -41,8 +41,8 @@
 -----------------------------------------------------------------------------------------
 2011-07-24	pwessel
 	Now under subversion control under repository name gmt5.  To check out a copy:
-		svn checkout svn://pohaku.soest.hawaii.edu/gmt5 or, for a "trunkless" copy:
-		svn checkout svn://pohaku.soest.hawaii.edu/gmt5/trunk gmt5
+		svn checkout svn://gmtserver.soest.hawaii.edu/gmt5 or, for a "trunkless" copy:
+		svn checkout svn://gmtserver.soest.hawaii.edu/gmt5/trunk gmt5
 -----------------------------------------------------------------------------------------
 2011-07-21	pwessel
 	* project_func.c:	Fixed same bug as in GMT 4 and added test oblique.sh
