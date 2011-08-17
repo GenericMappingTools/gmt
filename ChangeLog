@@ -6,6 +6,10 @@
 2011-08-15	pwessel
 	GMT 5.0.0b finalized and released.
 -----------------------------------------------------------------------------------------
+2011-08-17	jluis
+	* gmtconvert_func.c:	Added (optional) PCRE support on Windows.
+	* gmtinstall.bat:			" "
+
 2011-08-11	pwessel
 	* gmtmath_func.c:	The EXCH should just swap data set pointers.
 	* grdblend_func.c:	Pass -R to grdsample/grdreformat to only deal with smallest region.
