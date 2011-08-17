@@ -41,13 +41,17 @@ REM STEP b: Specify the "Bitage" and if building normal or debug version
 REM         Set DEBUG to "yes" or "no" and BITS = 32 or 64 (no quotes)
 REM	    NOTE: The value set here for BITS will be the default but it
 REM		  can be overriden by a third input arg.
-SET DEBUG="yes"
+SET DEBUG="no"
 SET BITS=64
 
 REM
 REM If two input args, they must contain NETCDF & GDAL base dirs. 
 REM Otherwise this batch uses the default paths below.
 REM A third input arg will be used to set the "Bitage" (default was set above).
+REM An optional fourth input sets the path for the PCRE dir. This directory must than
+REM two sub-dirs named 'lib' and 'include'. Still, for building with PCRE support the
+REM STEP h must have been set to "yes" (Default)
+
 IF  "%2%" == "" (
 SET NETCDF_DIR=C:\progs_cygw\netcdf-3.6.3
 SET GDAL_DIR=C:\programs\GDALtrunk\gdal\compileds\VC10_%BITS%\
@@ -60,6 +64,11 @@ SET BITS=%3%
 ) ELSE (
 IF "%3%" == "64" (
 SET BITS=%3%)
+)
+IF  "%4%" == "" (
+SET PCRE_DIR=C:\programs\compa_libs\pcre-8.12\compileds\VC10_%BITS%\
+) ELSE (
+SET PCRE_DIR=%4%
 )
 
 REM
@@ -136,6 +145,18 @@ REM
 SET COMPAT=
 IF  %COMPAT_MODE%=="yes" SET COMPAT=/DGMT_COMPAT
 
+REM STEP h: Specify if building with PCRE support
+REM 	    Set to "yes" to build with PCRE. The right path to PCRE_DIR must have been 
+REM	    set already (top) or sent as input
+SET PCRE__="yes"
+SET PCRE_INC=
+SET PCRE_LIB=
+REM
+SET PCRE=
+IF  %PCRE__%=="yes" SET PCRE=/DHAVE_PCRE
+IF  %PCRE__%=="yes" SET PCRE_INC="/I%PCRE_DIR%\include" 
+IF  %PCRE__%=="yes" SET PCRE_LIB=%PCRE_DIR%\lib\pcre.lib 
+
 REM ----------------------------------------------------
 REM STOP HERE - THE REST IS AUTOMATIC
 REM ----------------------------------------------------
@@ -149,7 +170,7 @@ SET DLL_NETCDF=/DDLL_NETCDF
 SET TR=/DTRIANGLE_D
 
 SET COMPFLAGS=/W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0 /nologo
-SET COPT=/I%cd% /DWIN32 %OPTIM% %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC% %TO_MATLAB% %COMPFLAGS% %COMPAT%
+SET COPT=/I%cd% /DWIN32 %OPTIM% %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC% %TO_MATLAB% %COMPFLAGS% %COMPAT% %PCRE% %PCRE_INC%
 
 set LOPT=/nologo /dll /incremental:no %LDEBUG%
 
@@ -169,7 +190,7 @@ REM ----------------------------------------------------
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% %MATINC% gmt_init.c gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_fft.c gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmtapi_parse.c gmtapi_util.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% *_func.c gmt_modules.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% *_func.c gmt_modules.c gmt_regexp.c
 %CC% %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
 
 REM ----------------------------------- SUPPLEMENTS ----------------------------------------------
@@ -185,7 +206,7 @@ REM ----------------------------------- SUPPLEMENTS ----------------------------
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% /I%cd%\mgd77 x2sys\*_func.c x2sys\x2sys.c x2sys\gmt_x2sys.c
 REM ----------------------------------------------------------------------------------------------
 
-link %LOPT% /out:gmt.dll /implib:gmt.lib psl.lib %lib_netcdf% %GDAL_LIB% %MATLIB% *.obj
+link %LOPT% /out:gmt.dll /implib:gmt.lib psl.lib %lib_netcdf% %GDAL_LIB% %MATLIB% %PCRE_LIB% *.obj
 
 IF %forMATLAB%=="yes" DEL *.obj *.lib *.exp psl.dll
 IF %forMATLAB%=="yes" GOTO fim
