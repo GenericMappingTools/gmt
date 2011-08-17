@@ -153,6 +153,7 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
+	size_t arg_length;
 	GMT_LONG n_errors = 0, k, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -219,7 +220,7 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 				break;
 			case 'S':	/* Segment header pattern search */
 				Ctrl->S.active = TRUE;
-				size_t arg_length = strlen (opt->arg);
+				arg_length = strlen (opt->arg);
 				k = (opt->arg[0] == '\\' && arg_length > 3 && opt->arg[1] == '~') ? 1 : 0;	/* Special escape if pattern starts with ~ */
 				if (opt->arg[0] == '~') Ctrl->S.inverse = TRUE;
 				Ctrl->S.pattern = strdup (&opt->arg[k+Ctrl->S.inverse]);
@@ -356,7 +357,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (match && GMT_polygon_is_hole (D[GMT_IN]->table[tbl_ver]->segment[seg])) match = TRUE;	/* Extend a true match on a perimeter to the trailing holes */
 				else if (ogr_match)	/* Compare to aspatial value */
 					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr->value[ogr_item], Ctrl->S.pattern) != NULL);		/* TRUE if we matched */
-#ifndef WIN32
+#if !defined(WIN32) || (defined(WIN32) && defined(HAVE_PCRE))
 				else if (Ctrl->S.regexp)	/* Compare to ERE */
 					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && gmt_regexp_match(GMT, D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern, Ctrl->S.caseless));		/* TRUE if we matched */
 #endif
