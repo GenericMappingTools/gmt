@@ -47,15 +47,15 @@ mkdir GMTdev<br>
 <p>
 Then cd into the GMTdev directory.<P>
 <LI><B>Checkout GMT 5.</B>  To check out GMT 5 via subversion, run
-<P>svn checkout svn://pohaku.soest.hawaii.edu/gmt5<P>
+<P>svn checkout svn://gmtserver.soest.hawaii.edu/gmt5<P>
 or, for a "trunkless" copy, run
-<P>svn checkout svn://pohaku.soest.hawaii.edu/gmt5/trunk gmt5<P>
+<P>svn checkout svn://gmtserver.soest.hawaii.edu/gmt5/trunk gmt5<P>
 which will start copying the entire gmt5 tree from the GMT server - this can take a while
 depending on where you are and traffic load.  It is a good time to go for lunch.
 Barring any errors or network troubles you should have everything the GMT gurus have
 access to in your local directory.  Note: Those who prefer to use git instead of svn
 can mirror gmt5 to a local git repository:<P>
-git svn clone svn://pohaku.soest.hawaii.edu/gmt5/trunk gmt5<P>
+git svn clone svn://gmtserver.soest.hawaii.edu/gmt5/trunk gmt5<P>
 <LI><B>Tune your environment.</B>  There are a few parameters that need to be set before you
 can run any make operations in GMT.  Hopefully, this process can be simplified as more
 gurus come online.  For now, cd into gmt5/guru and copy the guruenv.csh to yourname_env.csh
