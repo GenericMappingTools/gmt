@@ -254,13 +254,13 @@ it is inconvenient to convert, say, 1" to 2.54 cm; we use 2.5 cm
 instead.  Although strongly discouraged, if you want to make
 permanent changes to some of the defaults you can edit the
 gmtdefaults_{SI,US} files directly.  A much better approach is to
-create a .gmtdefaults4 file in your home directory and edit those
+create a gmt.conf file in your home directory and edit those
 settings since GMT will check for that file before loading system
 defaults (actually, it will first look in the current directory,
 then the home directory, and then finally in share).  See the gmtdefaults
 man page for a description of all defaults.
 
-To prevent two GMT processes writing to the same .gmtcommands4 file
+To prevent two GMT processes writing to the same .gmtcommands file
 simultaneously (thereby corrupting it), GMT can implement the POSIX
 advisory file locking scheme and sets and releases locks on these
 files.  Under GNU/Linux, this does not work when the files reside
