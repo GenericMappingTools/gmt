@@ -3247,7 +3247,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		nstack = new_stack;
 
-	//	for (i = 1; i <= produced_operands[op]; i++) if (stack[nstack-i]) constant[nstack-i] = FALSE;	/* Now filled with table */
+		for (i = 1; i <= produced_operands[op]; i++) if (stack[nstack-i]) constant[nstack-i] = FALSE;	/* Now filled with table */
 	}
 
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
