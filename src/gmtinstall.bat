@@ -163,8 +163,8 @@ REM ----------------------------------------------------
 
 SET LDEBUG=
 IF  %DEBUG%=="yes" SET LDEBUG=/debug
-SET OPTIM=/O1 /DNDEBUG
-IF  %DEBUG%=="yes" SET OPTIM=/Z7 /DDEBUG /O1
+SET OPTIM=/O2 /DNDEBUG
+IF  %DEBUG%=="yes" SET OPTIM=/Z7 /DDEBUG /O2
 
 SET DLL_NETCDF=/DDLL_NETCDF
 SET TR=/DTRIANGLE_D
