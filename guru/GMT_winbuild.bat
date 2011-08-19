@@ -79,7 +79,7 @@ call gmtsuppl %BITS%
 
 echo === 2. Run all the examples...
 
-set GMT_SHAREDIR=C:\GMTdev\GMT5\share
+set GMT5_SHAREDIR=C:\GMTdev\GMT5\share
 set OLDPATH=%PATH%
 set PATH=C:\GMTdev\GMT5\bin%BITS%;%NETCDF_DIR%\bin;%GDAL_DIR%\bin;%GNU_DIR%;%OLDPATH%
 

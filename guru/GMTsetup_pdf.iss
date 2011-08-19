@@ -10,8 +10,8 @@ AppVerName=GMT 5.0.0b
 AppVersion=5.0.0b
 AppPublisherURL=http://gmt.soest.hawaii.edu
 AppUpdatesURL=http://gmt.soest.hawaii.edu
-DefaultDirName={sd}\programs\GMT
-DefaultGroupName=GMT
+DefaultDirName={sd}\programs\GMT5
+DefaultGroupName=GMT5
 AllowNoIcons=true
 LicenseFile=Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\guru\gpl.txt
 OutputBaseFilename=GMT5.0.0b_pdf_install
@@ -20,7 +20,7 @@ OutputDir=Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp
 
 [Files]
 Source: c:\GMT\LICENSE.TXT; DestDir: {app}; Flags: ignoreversion
-Source: c:\GMT\share\doc\gmt\pdf\*.pdf; DestDir: {app}\share\doc\gmt\pdf; Flags: ignoreversion
+Source: c:\GMT\doc\pdf\*.pdf; DestDir: {app}\doc\pdf; Flags: ignoreversion
 
 [Messages]
 WelcomeLabel2=This will install the optional PDF documentation for [name/ver] on your computer.%n%nYou should already have completed the basic GMT installation.
