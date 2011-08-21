@@ -848,7 +848,10 @@ PSL_LONG PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[]
 		/* Multi-parameter fillable symbols */
 
 		case PSL_WEDGE:		/* A wedge or pie-slice. size[0] = radius, size[1..2] = azimuth range of arc */
-			PSL_command (PSL, "%ld %g %g %ld %ld Sw\n", psl_iz (PSL, size[0]), size[1], size[2], psl_ix (PSL, x), psl_iy (PSL, y));
+			if (fabs (fabs (size[2] - size[1]) -360.0) < PSL_SMALL) /* Circle instead */
+				PSL_command (PSL, "%ld %ld %ld S%c\n", psl_iz (PSL, size[0]), psl_ix (PSL, x), psl_iy (PSL, y), (char)PSL_CIRCLE);
+			else
+				PSL_command (PSL, "%ld %g %g %ld %ld Sw\n", psl_iz (PSL, size[0]), size[1], size[2], psl_ix (PSL, x), psl_iy (PSL, y));
 			break;
 		case PSL_MARC:		/* An arc with optional arrows. size[0] = radius, size[1..2] = azimuth range of arc, size[3] = shape, size[4] = arrows (0 = none, 1 = backward, 2 = foreward, 3 = both) */
 			psl_matharc (PSL, x, y, size);
