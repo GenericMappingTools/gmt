@@ -498,6 +498,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (half_only) PSL_endclipping (PSL, 1);		/* Reduce polygon clipping by one level */
 	}
 	if (GMT->common.B.active) {	/* Draw frame */
+		GMT_LONG symbol = (half_only) ? GMT_SYMBOL_WEDGE : GMT_SYMBOL_CIRCLE;
 		double dim[3];
 		struct GMT_FILL no_fill;
 		GMT_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
@@ -506,7 +507,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		dim[2] = (half_only) ? 180.0 : 360.0;
 		GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
 		GMT_setfill (GMT, &no_fill, TRUE);
-		PSL_plotsymbol (PSL, 0.0, 0.0, dim, GMT_SYMBOL_WEDGE);
+		PSL_plotsymbol (PSL, 0.0, 0.0, dim, symbol);
 	}
 
 	GMT_setpen (GMT, &Ctrl->W.pen);
