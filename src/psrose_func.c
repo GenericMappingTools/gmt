@@ -502,7 +502,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		double dim[3];
 		struct GMT_FILL no_fill;
 		GMT_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
-		dim[0] = Ctrl->S.scale;
+		dim[0] = (half_only) ? Ctrl->S.scale : 2.0 * Ctrl->S.scale;
 		dim[1] = 0.0;
 		dim[2] = (half_only) ? 180.0 : 360.0;
 		GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
