@@ -205,7 +205,7 @@ GMT_LONG GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, stru
 				break;
 			case 'C':	/* Read mode file and plot directions */
 				Ctrl->C.active = TRUE;
-				Ctrl->C.file = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Center the bins */
 				Ctrl->D.active = TRUE;
@@ -297,7 +297,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, find_mean = FALSE, half_only = FALSE;
 	GMT_LONG automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
 	GMT_LONG n_bins, n_annot, n_alpha, n_modes, n_fields, form;
-	GMT_LONG i, bin, n = 0, do_fill, n_alloc = GMT_CHUNK;
+	GMT_LONG i, bin, n = 0, do_fill = FALSE, n_alloc = GMT_CHUNK;
 
 	char text[GMT_BUFSIZ], format[GMT_BUFSIZ];
 
@@ -496,6 +496,17 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_setfill (GMT, &GMT->current.map.frame.fill, FALSE);
 		PSL_plotsymbol (PSL, 0.0, 0.0, &dim, GMT_SYMBOL_CIRCLE);
 		if (half_only) PSL_endclipping (PSL, 1);		/* Reduce polygon clipping by one level */
+	}
+	if (GMT->common.B.active) {	/* Draw frame */
+		double dim[3];
+		struct GMT_FILL no_fill;
+		GMT_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
+		dim[0] = Ctrl->S.scale;
+		dim[1] = 0.0;
+		dim[2] = (half_only) ? 180.0 : 360.0;
+		GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
+		GMT_setfill (GMT, &no_fill, TRUE);
+		PSL_plotsymbol (PSL, 0.0, 0.0, dim, GMT_SYMBOL_WEDGE);
 	}
 
 	GMT_setpen (GMT, &Ctrl->W.pen);
