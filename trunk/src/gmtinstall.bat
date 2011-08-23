@@ -157,20 +157,38 @@ IF  %PCRE__%=="yes" SET PCRE=/DHAVE_PCRE
 IF  %PCRE__%=="yes" SET PCRE_INC="/I%PCRE_DIR%\include" 
 IF  %PCRE__%=="yes" SET PCRE_LIB=%PCRE_DIR%\lib\pcre.lib 
 
+REM STEP i: Optional use of Visual Leak Detector (VLD) by Dan Moulding, available at
+REM	    http://vld.codeplex.com
+REM	    Set to "yes" and adjust path to use VLD in debug configuration only:
+SET VLD__="yes"
+SET VLD_DIR="C:\programs\Visual_Leak_Detector"
+SET VLD_INC=
+SET VLD_LIB=
+SET VLD=
+IF  %VLD__%=="yes" SET VLD=/DUSE_VLD
+IF  %VLD__%=="yes" SET VLD_LIB=%VLD_DIR%\lib\Win%BITS%\vld.lib
+IF  %VLD__%=="yes" SET VLD_INC="/I%VLD_DIR%\include"
+
+REM STEP j: Set to "yes" to use Data-Alignment Memory Routines
+REM	    See: http://msdn.microsoft.com/en-us/library/fs9stz4e(v=VS.71).aspx
+SET MEM_ALIGNED=="no"
+SET USE_MEM_ALIGNED=
+IF  %MEM_ALIGNED%=="yes" SET USE_MEM_ALIGNED=/DUSE_MEM_ALIGNED
+
 REM ----------------------------------------------------
 REM STOP HERE - THE REST IS AUTOMATIC
 REM ----------------------------------------------------
 
 SET LDEBUG=
 IF  %DEBUG%=="yes" SET LDEBUG=/debug
-SET OPTIM=/O2 /DNDEBUG
-IF  %DEBUG%=="yes" SET OPTIM=/Z7 /DDEBUG /O2
+SET OPTIM=/O1 /DNDEBUG
+IF  %DEBUG%=="yes" SET OPTIM=/Z7 /DDEBUG
 
 SET DLL_NETCDF=/DDLL_NETCDF
 SET TR=/DTRIANGLE_D
 
 SET COMPFLAGS=/W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0 /nologo
-SET COPT=/I%cd% /DWIN32 %OPTIM% %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC% %TO_MATLAB% %COMPFLAGS% %COMPAT% %PCRE% %PCRE_INC%
+SET COPT=/I%cd% /DWIN32 %OPTIM% %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC% %TO_MATLAB% %COMPFLAGS% %COMPAT% %PCRE% %PCRE_INC% %VLD_INC% %USE_MEM_ALIGNED% /DWINBITAGE=%BITS%
 
 set LOPT=/nologo /dll /incremental:no %LDEBUG%
 
@@ -206,7 +224,7 @@ REM ----------------------------------- SUPPLEMENTS ----------------------------
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% /I%cd%\mgd77 x2sys\*_func.c x2sys\x2sys.c x2sys\gmt_x2sys.c
 REM ----------------------------------------------------------------------------------------------
 
-link %LOPT% /out:gmt.dll /implib:gmt.lib psl.lib %lib_netcdf% %GDAL_LIB% %MATLIB% %PCRE_LIB% *.obj
+link %LOPT% /out:gmt.dll /implib:gmt.lib psl.lib %lib_netcdf% %GDAL_LIB% %MATLIB% %PCRE_LIB% %VLD_LIB% *.obj
 
 IF %forMATLAB%=="yes" DEL *.obj *.lib *.exp psl.dll
 IF %forMATLAB%=="yes" GOTO fim
