@@ -97,6 +97,9 @@ extern "C" {
 #include "gmt_notposix.h"	/* Non-POSIX extensions */
 #ifndef WIN32
 #include <unistd.h>
+#  if defined(USE_VLD) && defined(DEBUG)
+#    include <vld.h>
+#  endif
 #endif
 
 #include "gmt_constants.h"	/* All basic constant definitions */
