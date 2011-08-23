@@ -34,12 +34,6 @@
  
 #include "gmt.h"
 
-#ifdef TRIANGLE_D
-#define ALGORITHM "Shewchuk"
-#else
-#define ALGORITHM "Watson"
-#endif
-
 struct TRIANGULATE_CTRL {
 	struct D {	/* -Dx|y */
 		GMT_LONG active;
@@ -102,12 +96,9 @@ GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "triangulate %s [API] - Do optimal (Delaunay) triangulation and gridding of Cartesian table data [%s]\n\n", GMT_VERSION, ALGORITHM);
+	GMT_message (GMT, "triangulate %s [API] - Do optimal (Delaunay) triangulation and gridding of Cartesian table data\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: triangulate [<table>] [-Dx|y] [-E<empty>] [-G<outgrid>]\n");
-	GMT_message (GMT, "\t[%s] [%s]", GMT_I_OPT, GMT_J_OPT);
-#ifdef TRIANGLE_D
-	GMT_message (GMT, " [-Q]");
-#endif
+	GMT_message (GMT, "\t[%s] [%s] [-Q]", GMT_I_OPT, GMT_J_OPT);
 	GMT_message (GMT, "\n\t[-M] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
 
@@ -122,9 +113,7 @@ GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "J");   
 	GMT_message (GMT, "\t-M Output triangle edges as multiple segments separated by segment headers.\n");
 	GMT_message (GMT, "\t   [Default is to output the indices of vertices for each Delaunay triangle].\n");
-#ifdef TRIANGLE_D
-	GMT_message (GMT, "\t-Q Compute Voronoi polygon edges instead (requires -R) [Delaunay triangulation].\n");
-#endif
+	GMT_message (GMT, "\t-Q Compute Voronoi polygon edges instead (requires -R and Shukchuck algorithm) [Delaunay triangulation].\n");
 	GMT_explain_options (GMT, "RVC2");
 	GMT_message (GMT, "\t-bo Write binary (double) index table [Default is ASCII i/o].\n");
 	GMT_explain_options (GMT, "fhiF:.");
@@ -186,11 +175,9 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 			case 'M':
 				Ctrl->M.active = TRUE;
 				break;
-#ifdef TRIANGLE_D
 			case 'Q':
 				Ctrl->Q.active = TRUE;
 				break;
-#endif
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -205,10 +192,9 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify file name\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && (Ctrl->I.active + GMT->common.R.active) != 2, "Syntax error: Must specify -R, -I, -G for gridding\n");
-#ifdef TRIANGLE_D
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->Q.active, "Syntax error -G option: Cannot be used with -Q\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active, "Syntax error -Q option: Requires -R\n");
-#endif
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON, "Syntax error -Q option: Requires Shewchuck triangulation algorithm\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -226,9 +212,9 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double zj, zk, zl, zlj, zkj, xp, yp, a, b, c, f;
 	double xkj, xlj, ykj, ylj, out[3], vx[4], vy[4];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *in = NULL;
-#ifdef TRIANGLE_D
 	double *xe = NULL, *ye = NULL;
-#endif
+
+	char *tri_algorithm[2] = {"Watson", "Shewchuk"};
 
 	struct GMT_GRID *Grid = NULL;
 
@@ -252,6 +238,8 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/*---------------------------- This is the triangulate main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "%s triangulation algoritm selected\n", tri_algorithm[GMT->current.setting.triangulate]);
+	
 	if (Ctrl->G.active) {
 		Grid = GMT_create_grid (GMT);
 		GMT_grd_init (GMT, Grid->header, options, FALSE);
@@ -317,14 +305,12 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Do Delaunay optimal triangulation on projected coordinates\n");
 
-#ifdef TRIANGLE_D
 		if (Ctrl->Q.active) {
 			double we[2];
 			we[0] = GMT->current.proj.rect[XLO];	we[1] = GMT->current.proj.rect[XHI];
 			np = GMT_voronoi (GMT, xxp, yyp, n, we, &xe, &ye);
 		}
 		else
-#endif
 			np = GMT_delaunay (GMT, xxp, yyp, n, &link);
 
 		GMT_free (GMT, xxp);
@@ -333,22 +319,18 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Do Delaunay optimal triangulation on given coordinates\n");
 
-#ifdef TRIANGLE_D
 		if (Ctrl->Q.active) {
 			double we[2];
 			we[0] = GMT->common.R.wesn[XLO];	we[1] = GMT->common.R.wesn[XHI];
 			np = GMT_voronoi (GMT, xx, yy, n, we, &xe, &ye);
 		}
 		else
-#endif
 			np = GMT_delaunay (GMT, xx, yy, n, &link);
 	}
 
-#ifdef TRIANGLE_D
 	if (Ctrl->Q.active)
 		GMT_report (GMT, GMT_MSG_NORMAL, "%ld Voronoi edges found\n", np);
 	else
-#endif
 		GMT_report (GMT, GMT_MSG_NORMAL, "%ld Delaunay triangles found\n", np);
 	
 
@@ -421,7 +403,6 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
 	if (Ctrl->M.active) {	/* Must find unique edges to output only once */
-#ifdef TRIANGLE_D
 		if (Ctrl->Q.active) {	/* Voronoi edges */
 			for (i = j = 0; i < np; i++) {
 				GMT_fprintf (GMT->session.std[GMT_OUT], "%c Edge %ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], i);
@@ -434,7 +415,6 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_free (GMT, ye);
 		}
 		else {	/* Triangle edges */
-#endif
 			n_edge = 3 * np;
 			edge = GMT_memory (GMT, NULL, n_edge, struct TRIANGULATE_EDGE);
 			for (i = ij1 = 0, ij2 = 1, ij3 = 2; i < np; i++, ij1 += 3, ij2 += 3, ij3 += 3) {
@@ -461,9 +441,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
 			}
 			GMT_free (GMT, edge);
-#ifdef TRIANGLE_D
 		}
-#endif
 	}
 	else {	/* Write table of indices */
 		for (i = ij = 0; i < np; i++, ij += 3) {
@@ -478,13 +456,13 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef TRIANGLE_D
 #ifdef DEBUG
 	/* Shewchuk's function allocated the memory separately */
-	GMT_memtrack_off (GMT, GMT_mem_keeper);
+	if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
 #endif
 	if (!Ctrl->Q.active) GMT_free (GMT, link);
 #ifdef TRIANGLE_D
 #ifdef DEBUG
-	GMT_memtrack_on (GMT, GMT_mem_keeper);
+	if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
 #endif
 

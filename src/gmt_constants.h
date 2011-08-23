@@ -134,6 +134,10 @@
 #define GMT_FFT_REAL		0
 #define GMT_FFT_COMPLEX		1
 
+/* Various algorithms for triangulations */
+#define GMT_TRIANGLE_WATSON	0
+#define GMT_TRIANGLE_SHEWCHUK	1
+
 /* Various grid/image interpolation modes */
 #define BCR_NEARNEIGHBOR	0
 #define BCR_BILINEAR		1

@@ -5364,12 +5364,11 @@ GMT_LONG GMT_inonout (struct GMT_CTRL *C, double x, double y, const struct GMT_L
 	return (side);
 }
 
-/* GMT can either compile with its standard Delaunay triangulation routine
- * based on the work by Dave Watson, OR you may link with the triangle.o
- * module from Jonathan Shewchuk, Berkeley U.  By default, the former is
- * chosen unless the compiler directive -DTRIANGLE_D is passed.  The latter
- * is much faster and will hopefully become the standard once we sort out
- * copyright issues etc.
+/* GMT always compiles the standard Delaunay triangulation routine
+ * based on the work by Dave Watson.  You may also link with the triangle.o
+ * module from Jonathan Shewchuk, Berkeley U. by passing the compiler
+ * directive -DTRIANGLE_D. The latter is much faster and also has options
+ * for Voronoi construction (which Watson's funciton does not have).
  */
 
 #ifdef TRIANGLE_D
@@ -5385,7 +5384,7 @@ GMT_LONG GMT_inonout (struct GMT_CTRL *C, double x, double y, const struct GMT_L
 #include "triangle.h"
 
 /* Leave link as int**, not GMT_LONG** */
-GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, int **link)
+GMT_LONG GMT_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, int **link)
 {
 	/* GMT interface to the triangle package; see above for references.
 	 * All that is done is reformatting of parameters and calling the
@@ -5426,7 +5425,7 @@ GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG 
 	return (Out.numberoftriangles);
 }
 
-GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, double *we, double **x_out, double **y_out)
+GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, double *we, double **x_out, double **y_out)
 {
 	/* GMT interface to the triangle package; see above for references.
 	 * All that is done is reformatting of parameters and calling the
@@ -5504,8 +5503,19 @@ GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n
 
 	return (n_edges);
 }
-
 #else
+/* Dummy functions since not installed */
+GMT_LONG GMT_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, int **link)
+{
+	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_delaunay_shewchuk is unavailable: Shewchuk's triangle option was not selected during GMT installation");
+	return (0);
+	
+}
+GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, double *we, double **x_out, double **y_out) {
+	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_voronoi_shewchuk is unavailable: Shewchuk's triangle option was not selected during GMT installation");
+	return (0);
+}
+#endif
 
 /*
  * GMT_delaunay performs a Delaunay triangulation on the input data
@@ -5516,7 +5526,7 @@ GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n
  */
 
 /* Leave link as int**, not GMT_LONG** */
-GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, int **link)
+GMT_LONG GMT_delaunay_watson (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, int **link)
 	/* Input point x coordinates */
 	/* Input point y coordinates */
 	/* Number of input points */
@@ -5679,13 +5689,28 @@ GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG 
 	return (i/3);
 }
 
-GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, double *we, double **x_out, double **y_out)
+GMT_LONG GMT_voronoi_watson (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, double *we, double **x_out, double **y_out)
 {
 	GMT_report (C, GMT_MSG_FATAL, "GMT: No Voronoi unless you select Shewchuk's triangle option during GMT installation");
 	return (0);
 }
-#endif
 
+GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, int **link)
+{
+	if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (GMT_delaunay_shewchuk (C, x_in, y_in, n, link));
+	if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (GMT_delaunay_watson    (C, x_in, y_in, n, link));
+	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_delaunay: GMT_TRIANGULATE outside possible range! %ld\n", C->current.setting.triangulate);
+	return (-1);
+}
+
+GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, double *we, double **x_out, double **y_out)
+{
+	if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (GMT_voronoi_shewchuk (C, x_in, y_in, n, we, x_out, y_out));
+	if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (GMT_voronoi_watson    (C, x_in, y_in, n, we, x_out, y_out));
+	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_voronoi: GMT_TRIANGULATE outside possible range! %ld\n", C->current.setting.triangulate);
+	return (-1);
+	
+}
 /*
  * This section holds functions used for setting boundary  conditions in
  * processing grd file data.

@@ -200,6 +200,10 @@ If true, passes the history of past common command options via the hidden \.gmtc
 Determines if linear (linear), Akima's spline (akima), natural cubic spline (cubic) or\"'
 no interpolation (none) should be used for 1-D interpolations in various programs [akima].
 .TP
+.B GMT_TRIANGULATE
+Determines if we use the BD(Watson) [Default] or BD(Shewchuk) algorithm (if configured during installation) for triangulation.
+Note that Shewchuk is required for operations involving Voronoi constructions.
+.TP
 .B GMT_VERBOSE
 (BD(* \-V)) Determines the level of verbosity used by BD(GMT) programs.  Choose among 5 levels; each level
 adds to the verbosity of the lower levels: 0 = silence, 1 = fatal errors, 2 = warnings and progress reports,
