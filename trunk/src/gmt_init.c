@@ -5103,7 +5103,8 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 	}
 #else
 	for (i = 0; i < GMT_N_UNIQUE; i++) {
-		if (Ccopy->init.history[i] && Ccopy->init.history[i] != C->init.history[i]) free ((void *)Ccopy->init.history[i]);
+		if (Ccopy->init.history[i] && Ccopy->init.history[i] != C->init.history[i])
+			free ((void *)Ccopy->init.history[i]);
 		Ccopy->init.history[i] = C->init.history[i];
 	}
 #endif
