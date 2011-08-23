@@ -3462,6 +3462,14 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_GMT_TRIANGULATE:
+			if (!strcmp (lower_value, "watson"))
+				C->current.setting.triangulate = GMT_TRIANGLE_WATSON;
+			else if (!strcmp (lower_value, "shewchuk"))
+				C->current.setting.triangulate = GMT_TRIANGLE_SHEWCHUK;
+			else
+				error = TRUE;
+			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_VERBOSE: GMT_COMPAT_CHANGE ("GMT_VERBOSE");
 			ival = atoi (value) + 1;
@@ -4254,6 +4262,14 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 				strcpy (value, "cubic");
 			else if (C->current.setting.interpolant == 3)
 				strcpy (value, "none");
+			else
+				strcpy (value, "undefined");
+			break;
+		case GMTCASE_GMT_TRIANGULATE:
+			if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)
+				strcpy (value, "Watson");
+			else if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK)
+				strcpy (value, "Shewchuk");
 			else
 				strcpy (value, "undefined");
 			break;

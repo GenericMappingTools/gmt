@@ -26,12 +26,6 @@
 #include "pslib.h"
 #include "gmt_modules.h"
 
-#ifdef TRIANGLE_D
-#define ALGORITHM "Shewchuk"
-#else
-#define ALGORITHM "Watson"
-#endif
-
 struct GMT_PROGRAMS {		/* Struct with name and mode for each GMT 4 program */
 	char name[GMT_TEXT_LEN64];	/* Program name */
 	GMT_LONG mode;			/* Either GMTAPI_GMT or GMTAPI_GMTPSL */

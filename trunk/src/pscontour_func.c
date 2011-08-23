@@ -92,12 +92,6 @@ struct SAVE {
 	GMT_LONG do_it, high;
 };
 
-#ifdef TRIANGLE_D
-#define ALGORITHM "Shewchuk"
-#else
-#define ALGORITHM "Watson"
-#endif
-
 /* Returns the id of the node common to the two edges */
 #define get_node_index(edge_1, edge_2) (((PSCONTOUR_SUM = (edge_1) + (edge_2)) == 1) ? 1 : ((PSCONTOUR_SUM == 2) ? 0 : 2))
 #define get_other_node(node1, node2) (((PSCONTOUR_SUM = (node1 + node2)) == 3) ? 0 : ((PSCONTOUR_SUM == 2) ? 1 : 2))	/* The other node needed */
@@ -355,7 +349,7 @@ GMT_LONG GMT_pscontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 	struct GMT_PEN P;
 
-	GMT_message (GMT, "pscontour %s [API] - Contour table data by direct triangulation [%s]\n\n", GMT_VERSION, ALGORITHM);
+	GMT_message (GMT, "pscontour %s [API] - Contour table data by direct triangulation\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pscontour <table> -C<cpt> %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[-A[-|<annot_int>][<labelinfo>] [%s] [-D<template>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[%s] [-I] [%s] [-K] [-L<pen>] [-N] [-O]\n", GMT_CONTG, GMT_Jz_OPT);
@@ -610,6 +604,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double current_contour = -DBL_MAX, *in = NULL, *xp = NULL, *yp = NULL;
 
 	char cont_label[GMT_TEXT_LEN256], format[GMT_TEXT_LEN256];
+	char *tri_algorithm[2] = {"Watson", "Shewchuk"};
 
 	struct PSCONTOUR *cont = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -742,7 +737,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	else {	/* Do our own Delaunay triangulation */
 		np = GMT_delaunay (GMT, x, y, n, &ind);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Obtained %ld indices triplets via Delauney triangulation [%s].\n", np, ALGORITHM);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Obtained %ld indices triplets via Delauney triangulation [%s].\n", np, tri_algorithm[GMT->current.setting.triangulate]);
 	}
 
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
@@ -1263,13 +1258,13 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef TRIANGLE_D
 #ifdef DEBUG
 	/* Shewchuk's function allocated the memory separately */
-		GMT_memtrack_off (GMT, GMT_mem_keeper);
+		if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
 #endif
 		GMT_free (GMT, ind);
 #ifdef TRIANGLE_D
 #ifdef DEBUG
-		GMT_memtrack_on (GMT, GMT_mem_keeper);
+		if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
 #endif
 	}

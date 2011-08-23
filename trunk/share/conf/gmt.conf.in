@@ -45,6 +45,7 @@ FORMAT_TIME_LOGO		= %Y %b %d %H:%M:%S
 GMT_FFT				= auto
 GMT_HISTORY			= true
 GMT_INTERPOLANT			= akima
+GMT_TRIANGULATE			= @TRIANGULATE@
 GMT_VERBOSE			= 1
 #
 # I/O Parameters

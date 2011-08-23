@@ -725,7 +725,9 @@ if test "X$enable_triangle" = "Xyes" ; then
 	AC_MSG_RESULT(yes)
 	TRIANGLE_D=-DTRIANGLE_D
 	TRIANGLE_O=triangle.o
+	TRIANGULATE=Shewchuk
 else
+	TRIANGULATE=Watson
 	AC_MSG_RESULT(no)
 fi
 dnl
@@ -928,18 +930,18 @@ if test -f doc/GMT_version.tex.in ; then
 fi
 AC_OUTPUT(src/config.mk src/gmt_version.h src/isogmt $morefiles)
 sed -e s/@UNITS@/Template\ SI/ -e s/@PS_CHAR_ENCODING@/ISOLatin1+/ -e s/@PS_MEDIA@/a4/ -e s/@PROJ_LENGTH_UNIT@/cm/ \
-	-e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
+	-e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ -e s/@TRIANGULATE@/$TRIANGULATE/ \
 	share/conf/gmt.conf.in > share/conf/gmt_SI.conf
 sed -e s/@UNITS@/Template\ US/ -e s/@PS_CHAR_ENCODING@/Standard+/ -e s/@PS_MEDIA@/letter/ -e s/@PROJ_LENGTH_UNIT@/inch/ \
-	-e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
+	-e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ -e s/@TRIANGULATE@/$TRIANGULATE/  \
 	share/conf/gmt.conf.in > share/conf/gmt_US.conf
 if test "$UNITS" = "SI" ; then
 	sed -e s/@UNITS@/System-wide/ -e s/@PS_CHAR_ENCODING@/ISOLatin1+/ -e s/@PS_MEDIA@/a4/ -e s/@PROJ_LENGTH_UNIT@/cm/ \
-	-e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
+	-e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ -e s/@TRIANGULATE@/$TRIANGULATE/  \
 	share/conf/gmt.conf.in > share/conf/gmt.conf
 else
 	sed -e s/@UNITS@/System-wide/ -e s/@PS_CHAR_ENCODING@/Standard+/ -e s/@PS_MEDIA@/letter/ -e s/@PROJ_LENGTH_UNIT@/inch/ \
-	-e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
+	-e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ -e s/@TRIANGULATE@/$TRIANGULATE/  \
 	share/conf/gmt.conf.in > share/conf/gmt.conf
 fi
 dnl

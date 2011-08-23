@@ -6,6 +6,11 @@
 2011-08-25	pwessel
 	GMT 5.0.0b finalized and released.
 -----------------------------------------------------------------------------------------
+2011-08-23	pwessel
+	* gmt_init.c:		New parameter GMT_TRIANGULATION which selects the triangulation
+				algorithm to use (Watson or Shewchuk). The latter is only
+				available if --enable-triangle was used during configuration.
+				
 2011-08-20	pwessel
 	* psrose_func.c:	The -C with no file still looked for a file.
 				do_fill was not initialized, could case black fill.

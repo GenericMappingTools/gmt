@@ -83,6 +83,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	GMT_LONG fft;				/* -1 for auto, or 0-4 for specific FFT algorithm */
 	GMT_LONG history;			/* TRUE to pass information via gmt.conf files */
 	GMT_LONG interpolant;			/* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
+	GMT_LONG triangulate;			/* 0 for Watson [Default], 1 for Shewchuk (if configured) */
 	GMT_LONG verbose;			/* Level of verbosity 0-4 [1] */
 	/* IO group */
 	char io_col_separator[8];		/* Separator between output ascii data columns [tab] */
