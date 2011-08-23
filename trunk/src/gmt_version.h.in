@@ -7,11 +7,21 @@
 #define GMT_STRING "@PACKAGE_STRING@"
 #define MANDATE "@MANDATE@"
 #endif
+
 #ifdef __LP64__
 #define GMT_VER_64 " [64-bit]"
 #else
+#if defined(WIN32) && defined(WINBITAGE)
+#	if (WINBITAGE == 64)
+#		define GMT_VER_64 " [Win64-bit]"
+#	else
+#		define GMT_VER_64 " [Win32-bit]"
+#	endif
+#else
 #define GMT_VER_64 ""
 #endif
+#endif
+
 #ifdef GMT_COMPAT
 #define GMT_VER_COMPAT " [C4]"
 #else
