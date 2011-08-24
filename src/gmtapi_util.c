@@ -3252,6 +3252,7 @@ GMT_LONG GMT_Destroy_Data (struct GMTAPI_CTRL *API, GMT_LONG mode, void **X)
 			return (GMT_Report_Error (API, GMT_WRONG_KIND));
 			break;		
 	}
+	*X = NULL;	/* This line used to be at the end of next IF block but, for WFKW, it made some tests crash on Windows */
 	if (!error) {	/* We successfully freed the items, now remove from IO list */
 		GMT_LONG j;
 		void *address = API->object[item]->data;
@@ -3260,7 +3261,6 @@ GMT_LONG GMT_Destroy_Data (struct GMTAPI_CTRL *API, GMT_LONG mode, void **X)
 		if ((error = GMTAPI_Unregister_IO (API, object_ID, direction))) return (GMT_Report_Error (API, error));	/* Did not find object */
 		for (j = 0; j < API->n_objects; j++) if (API->object[j]->data == address) API->object[j]->data = NULL;	/* Set repeated entries to NULL so we don't try to free twice */
 		error = 1;	/* Freed one item */
-		*X = NULL;
 	}
 	
 	return (error);	/* Returns number of items freed or an error */	
