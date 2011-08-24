@@ -6,6 +6,10 @@
 2011-08-25	pwessel
 	GMT 5.0.0b finalized and released.
 -----------------------------------------------------------------------------------------
+
+2011-08-23	remko
+	* *_tests.sh:		Now using graphicsmagick instead of imagemagick for compare.
+	
 2011-08-23	pwessel
 	* guru/install_gmt.sh:	Now offers option to set PCRE libs or disable.
 	* gmt_init.c:		New parameter GMT_TRIANGULATE which selects the triangulation
