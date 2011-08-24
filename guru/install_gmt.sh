@@ -1,7 +1,7 @@
 #!/bin/sh
 #	$Id$
 #
-#	Automatic installation of GMT 5
+#	Automatic installation of GMT 4 or 5
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
@@ -9,9 +9,12 @@
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
 NETCDF_VERSION=3.6.3
-VERSION=5.0.0b
+VERSION4=4.5.7
+VERSION5=5.0.0b
 GSHHS=2.2.0
 GMT_FTP_TEST=0
+GMT_SIZE=38
+GSHHS_SIZE=45
 #--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
@@ -77,31 +80,45 @@ cat << EOF > gmt_install.ftp_site
 8. School of Geosciences, U of Sydney, AUSTRALIA
 9. TENET, Tertiary Education & Research Networks of South Africa, SOUTH AFRICA
 EOF
-# Order (1-7) is 1:src, 2:share, 3:coast, 4:high, 5:full, 6:suppl, 7:doc
-cat << EOF > gmt_install.ftp_bzsizes
-1.0
-0.04
-4.2
-9.4
-29.0
-3.9
-24.0
-EOF
+
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
 		  
-We first need a questions and answer session to
-determine how and where GMT is to be installed.
-Then, when all parameters have been assembled,
-we will run the installation (unless you chose
--n when starting this script).
+We first need a questions and answer session to determine how
+and where GMT is to be installed.   Then, when all parameters
+have been assembled, we will run the installation (unless you
+chose -n when starting this script).
 
-This script will install GMT version $VERSION.
+This script will install the latest version of GMT4 or GMT5.
 
+Choose between these two GMT versions:
+
+	1. GMT $VERSION4
+	2. GMT $VERSION5
+	
 EOF
-
+answer=`get_def_answer "Enter the version to install (1/2)" "1"`
+while [ ! "X$answer" = "X1" ] && [  ! "X$answer" = "X2" ]; do
+	echo "You must choose either 1 or 2!" >&2
+	answer=`get_def_answer "Enter the version to install (1/2)" "1"`
+done
+if [ $answer -eq 1 ]; then
+	GMT_version=$VERSION4
+	SERIES=4
+	N_EXAMPLES=30
+else
+	GMT_version=$VERSION5
+	SERIES=5
+	N_EXAMPLES=32
+fi	
+echo "You have chosen to install GMT $SERIES version $GMT_version" >&2
 topdir=`pwd`
 os=`uname -s`
+if [ "$os" = "Darwin" ]; then	# Set default paths for OSX
+	LIBINC_DEF=/sw
+else
+	LIBINC_DEF=/usr/local
+fi
 #--------------------------------------------------------------------------------
 # See if user has defined NETCDFHOME, if so use it as default path
 #--------------------------------------------------------------------------------
@@ -112,7 +129,6 @@ check_for_bzip2
 
 suffix="bz2"
 expand="bzip2 -dc"
-sizes=gmt_install.ftp_bzsizes
 
 #--------------------------------------------------------------------------------
 #	MAKE UTILITY
@@ -148,7 +164,7 @@ if [ "$answer" = "n" ]; then	# Must install netcdf one way or the other
 		if [ "$answer" = "n" ]; then
 			answer=`get_def_answer "Do you have netcdf-${NETCDF_VERSION}.tar.{Z,bz2,gz} in $topdir? (y/n)" "y"`
 			if [ "$answer" = "n" ]; then
-				echo "Please ftp or install netcdf and then rerun install_gmt" >&2
+				echo "Please ftp or install netcdf and then rerun install_gmt.sh" >&2
 				exit
 			fi
 		else
@@ -172,7 +188,7 @@ if [ "$answer" = "n" ]; then	# Must install netcdf one way or the other
 		fi
 	fi
 else
-	def=${NETCDFHOME:-/usr/local/netcdf-$NETCDF_VERSION}
+	def=${NETCDFHOME:-$LIBINC_DEF}
 	netcdf_path=`get_def_answer "Enter directory with netcdf lib and include" "$def"`
 	netcdf_ftp=n
 	netcdf_install=n
@@ -184,12 +200,12 @@ fi
 
 cat << EOF >&2
 
-GMT offers experimental and optional support for other grid formats
+GMT${SERIES} offers experimental and optional support for other grid formats
 and plotting of geotiffs via GDAL.  To use this option you must already
 have the GDAL library and include files installed.
 
 EOF
-use_gdal=`get_def_answer "Use experimental GDAL grid input in GMT (y/n)" "y"`
+use_gdal=`get_def_answer "Use experimental GDAL grid input in GMT${SERIES} (y/n)" "y"`
 if [ "$use_gdal" = "y" ]; then	# Must get the path
 	cat <<- EOF >&2
 
@@ -198,32 +214,53 @@ if [ "$use_gdal" = "y" ]; then	# Must get the path
 	the two environmental parameters GDAL_INC and GDAL_LIB.
 
 	EOF
-	def=${GDALHOME:-/usr/local/gdal}
+	def=${GDALHOME:$LIBINC_DEF}
 	gdal_path=`get_def_answer "Enter directory with GDAL lib and include" "$def"`
 else
 	gdal_path=
 fi
 
-GMT_run_examples=`get_def_answer "Want to test GMT by running the $N_EXAMPLES examples? (y/n)" "y"`
+#--------------------------------------------------------------------------------
+#	PCRE SETUP
+#--------------------------------------------------------------------------------
+
+cat << EOF >&2
+
+GMT${SERIES} offers optional support for search involving regular expression (RegEx).
+To use this option you must already have the PCRE library and include files installed.
+
+EOF
+use_pcre=`get_def_answer "Use optional PCRE library in GMT${SERIES} (y/n)" "y"`
+if [ "$use_pcre" = "y" ]; then	# Must get the path
+	cat <<- EOF >&2
+
+	If the dirs include and lib both reside in the same parent directory,
+	you can specify that below.  If not, leave blank and manually set
+	the two environmental parameters PCRE_INC and PCRE_LIB.
+
+	EOF
+	def=${PCREHOME:$LIBINC_DEF}
+	pcre_path=`get_def_answer "Enter directory with PCRE lib and include" "$def"`
+else
+	pcre_path=
+fi
+
 #--------------------------------------------------------------------------------
 #	GMT FTP SECTION
 #--------------------------------------------------------------------------------
 
-GMT_get_src=d
-GMT_get_share=d
-GMT_get_coast=d
-GMT_get_suppl=d
-GMT_get_doc=d
-GMT_get_high=d
-GMT_get_full=d
-GMT_triangle=n
+GMT_inst_gshhs=d
 GMT_ftpsite=1
 GMT_ftp=n
+GSHHS_ftp=n
+GMT_inst_gmt=`get_def_answer "Install GMT${SERIES} version $GMT_version? (y/n)" "y"`
+GMT_inst_gshhs=`get_def_answer "Install GSHHS version $GSHHS? (y/n)" "y"`
 if [ $do_ftp_qa -eq 1 ]; then
-	GMT_ftp=`get_def_answer "Get any of the GMT version $VERSION archives via ftp? (y/n)" "y"`
+	GMT_ftp=`get_def_answer "Get the GMT${SERIES} version $GMT_version archive ($GMT_SIZE Mb) via ftp? (y/n)" "y"`
+	GSHHS_ftp=`get_def_answer "Get the GSHHS version $GSHHS archive ($GSHHS_SIZE Mb) via ftp? (y/n)" "y"`
 fi
 
-if [ "$GMT_ftp" = "y" ]; then
+if [ "$GMT_ftp" = "y" ] || [ "$GSHHS_ftp" = "y" ]; then
 	cat << EOF >&2
 
 We offer $N_FTP_SITES different ftp sites.  Choose the one nearest
@@ -261,73 +298,35 @@ to register your computer.
 
 EOF
 	fi
-
-	echo " The first three archives are required for a minimal GMT install" >&2
-	echo " " >&2
-
-	size=`sed -n 1p $sizes`
-	GMT_get_src=`get_def_answer "Want the program source archive [$size Mb] (y/n)?" "y"`
-	size=`sed -n 2p $sizes`
-	GMT_get_share=`get_def_answer "Want the shared run-time files (cpt, patterns) [$size Mb] (y/n)?" "y"`
-	size=`sed -n 3p $sizes`
-	GMT_get_coast=`get_def_answer "Want the basic support data (GSHHS coastlines) [$size Mb] (y/n)?" "y"`
-
-	echo " " >&2
-	echo " The next three archives are optional but recommended for a typical GMT install" >&2
-	echo " " >&2
-
-	size=`sed -n 6p $sizes`
-	GMT_get_suppl=`get_def_answer "Want optional GMT supplemental programs [$size Mb] (y/n)?" "y"`
-	size=`sed -n 7p $sizes`
-	GMT_get_doc=`get_def_answer "Want optional GMT Documentation [$size Mb] (y/n)?" "y"`
-
-	echo " " >&2
-	echo " The next two archives are larger and contain more accurate coastline data:" >&2
-	echo " " >&2
-
-	size=`sed -n 4p $sizes`
-	GMT_get_high=`get_def_answer "Want optional high resolution GSHHS coastline data [$size Mb] (y/n)?" "y"`
-	size=`sed -n 5p $sizes`
-	GMT_get_full=`get_def_answer "Want optional full resolution GSHHS coastline data [$size Mb] (y/n)?" "y"`
-
-			     	
-	echo " " >&2
-	echo "GMT can use two different algorithms for Delauney triangulation." >&2
-	echo " " >&2
-	echo "   Shewchuk [1996]: Modern and very fast, copyrighted." >&2
-	echo "   Watson [1982]  : Older and slower, public domain." >&2
-	echo " " >&2
-	echo "Because of the copyright, GMT uses Watson's routine by default." >&2
-	echo " " >&2
-	GMT_triangle=`get_def_answer "Use optional Shewchuk's triangulation routine (y/n)?" "n"`
 else
 	echo " " >&2
 	echo "Since ftp mode is not selected, the install procedure will" >&2
 	echo "assume the compressed archives are in the current directory." >&2
-	echo "GMT can use two different algorithms for Delauney triangulation." >&2
-	echo " " >&2
-	echo "   Shewchuk [1996]: Modern and very fast, copyrighted." >&2
-	echo "   Watson [1982]  : Older and slower, public domain." >&2
-	echo " " >&2
-	echo "Because of the copyright, GMT uses Watson's routine by default." >&2
-	echo "However, most will want to use the optional Shewchuk routine." >&2
-	GMT_triangle=`get_def_answer "Use optional Shewchuk's triangulation routine (y/n)?" "y"`
 fi
+
+echo "GMT${SERIES} can use two different algorithms for Delauney triangulation." >&2
+echo " " >&2
+echo "   Shewchuk [1996]: Modern and very fast, copyrighted." >&2
+echo "   Watson [1982]  : Older and slower, public domain." >&2
+echo " " >&2
+echo "Because of the copyright, GMT${SERIES} uses Watson's routine by default." >&2
+echo "However, most will want to use the optional Shewchuk routine." >&2
+GMT_triangle=`get_def_answer "Use optional Shewchuk's triangulation routine (y/n)?" "y"`
 	
 cat << EOF >&2
 
-The installation will install all GMT components in several subdirectories
+The installation will install all GMT${SERIES} components in several subdirectories
 under one root directory. On most Unix systems this root directory will be
 something like /usr/local or /sw, under which the installation will add
 bin, lib, share, etc.  Below you are asked to select to location of each
 of the subdirectories.
 
 EOF
-GMT_bin=`get_def_answer "Directory for GMT executables?" "$topdir/GMT${VERSION}/bin"`
+GMT_bin=`get_def_answer "Directory for GMT${SERIES} executables?" "$topdir/GMT${GMT_version}/bin"`
 GMT_prefix=`echo $GMT_bin | sed 's!/bin!!'`
-GMT_lib=`get_def_answer "Directory for GMT linkable libraries?" "$GMT_prefix/lib"`
-GMT_include=`get_def_answer "Directory for GMT include files?" "$GMT_prefix/include"`
-GMT_share=`get_def_answer "Directory for GMT data resources?" "$GMT_prefix/share"`
+GMT_lib=`get_def_answer "Directory for GMT${SERIES} linkable libraries?" "$GMT_prefix/lib"`
+GMT_include=`get_def_answer "Directory for GMT${SERIES} include files?" "$GMT_prefix/include"`
+GMT_share=`get_def_answer "Directory for GMT${SERIES} data resources?" "$GMT_prefix/share"`
 
 cat << EOF >&2
 
@@ -336,29 +335,29 @@ the relevant man section.  Below, you will be asked for the /usr/man part;
 the /manX will be appended automatically, so do not answer /usr/man/man1.
 
 EOF
-GMT_man=`get_def_answer "Directory for GMT man pages?" "$GMT_prefix/man"`
-GMT_doc=`get_def_answer "Directory for GMT doc pages?" "$GMT_prefix/share/doc/gmt"`
+GMT_man=`get_def_answer "Directory for GMT${SERIES} man pages?" "$GMT_prefix/man"`
+GMT_doc=`get_def_answer "Directory for GMT${SERIES} doc pages?" "$GMT_prefix/share/doc/gmt"`
 
 cat << EOF >&2
 
-At run-time GMT will look in the directory $GMT_share to find configuration
+At run-time GMT${SERIES} will look in the directory $GMT_share to find configuration
 and data files.  That directory may appear with a different name to remote users
 if a different mount point or a symbolic link is set.
-GMT can use the environment variable \$GMT_SHAREDIR to point to the right place.
+GMT${SERIES} can use the environment variable \$GMT_SHAREDIR to point to the right place.
 If users see a different location for the shared data files, specify it here.
 (It will be used only to remind you at the end of the installation to set
-the environment variable \$GMT_SHAREDIR).
+the enronment variable \$GMT_SHAREDIR).
 
 EOF
 GMT_sharedir=`get_def_answer "Enter value of GMT_SHAREDIR selection" "$GMT_share"`
 
 cat << EOF >&2
 
-The answer to the following question will modify the GMT defaults.
+The answer to the following question will modify the GMT${SERIES} defaults.
 (You can always change your mind by editing share/gmt.conf)
 
 EOF
-answer=`get_def_answer "Do you prefer SI or US default values for GMT (s/u)" "s"`
+answer=`get_def_answer "Do you prefer SI or US default values for GMT${SERIES} (s/u)" "s"`
 if [ "$answer" = "s" ]; then
 	GMT_si=y
 else
@@ -367,7 +366,7 @@ fi
 
 cat << EOF >&2
 
-The answer to the following question will modify the GMT defaults.
+The answer to the following question will modify the GMT${SERIES} defaults.
 (You can always change your mind later by using gmtset)
 
 PostScript (PS) files may contain commands to set paper size, pick
@@ -386,7 +385,7 @@ fi
 
 cat << EOF >&2
 
-Building the GMT libraries as shared instead of static will
+Building the GMT${SERIES} libraries as shared instead of static will
 reduce executable sizes considerably.  GMT supports shared
 libraries under Linux, Mac OS X, SunOS, Solaris, IRIX, HPUX,
 and FreeBSD.  Under other systems you may have to manually
@@ -402,15 +401,31 @@ otherwise just hit return to use the default compiler.
 
 EOF
 GMT_cc=`get_answer "Enter name of C compiler (include path if not in search path)"`
-GMT_64=`get_def_answer "Produce 64-bit executables? (y/n)" "n"`
+cat << EOF >&2
+
+GMT${SERIES} can be built as 32-bit or 64-bit.  We do not recommend to
+explicitly choose 32-bit or 64-bit, as the netCDF install is
+not set up to honor either of these settings. The default is
+to compile without sending any 32-bit or 64-bit options to the
+compiler, which generally create 32-bit versions on older systems,
+and 64-bit versions on newer systems, like OS X Snow Leopard.
+
+EOF
+
+answer=`get_def_answer "Explicitly select 32- or 64-bit executables? (y/n)" "n"`
+if [ $answer = y ]; then
+	GMT_64=`get_def_answer "Force 64-bit? (y/n) " "y"`
+else
+	GMT_64=
+fi
 GMT_univ=`get_def_answer "Produce universal executables (OS X)? (y/n)" "n"`
 
 cat << EOF >&2
 
-GMT passes information about previous GMT commands onto later
-GMT commands via a hidden file (.gmtcommands).  To avoid that
+GMT${SERIES} passes information about previous GMT commands onto later
+GMT${SERIES} commands via a hidden file (.gmtcommands).  To avoid that
 this file is updated by more than one program at the same time
-(e.g., when connecting two or more GMT programs with pipes) we
+(e.g., when connecting two or more GMT${SERIES} programs with pipes) we
 use POSIX advisory file locking on the file.  Apparently, some
 versions of the Network File System (NFS) have not implemented
 file locking properly.  We know this is the case with Linux
@@ -418,52 +433,14 @@ pre-2.4 kernels when mounting NFS disks from a Unix server.
 If this is your case you should turn file locking OFF.
 
 EOF
-GMT_flock=`get_def_answer "Use POSIX Advisory File Locking in GMT (y/n)" "y"`
+GMT_flock=`get_def_answer "Use POSIX Advisory File Locking in GMT${SERIES} (y/n)" "n"`
 
-GMT_run_examples=`get_def_answer "Want to test GMT by running the $N_EXAMPLES examples? (y/n)" "y"`
+GMT_run_examples=`get_def_answer "Want to test GMT${SERIES} by running the $N_EXAMPLES examples? (y/n)" "y"`
 GMT_delete=`get_def_answer "Delete all tar files after install? (y/n)" "n"`
 
 # export CONFIG_SHELL=`type sh | awk '{print $NF}'`
 
-#--------------------------------------------------------------------------------
-# Now do coastline archives
-#--------------------------------------------------------------------------------
-
-cat << EOF >&2
-
-Normally, all coastline files are installed in $GMT_share/coast.
-However, you can also place some of them in separate directories.
-These dirs must exist or you must have write permission to make them.
-If alternate directories are specified then a coastline.conf file will
-be kept in $GMT_share/conf to contain the names of these directories.
-NOTE:  Enter full pathname of directory were coastline files are to be stored.
-
-EOF
-
-GMT_dir_cli=`get_def_answer "Directory for int, low, and crude coastline files?" "$GMT_share/coast"`
-if [ ! $GMT_get_high = n ]; then
-	GMT_dir_high=`get_def_answer "Directory for high coastline files?" "$GMT_dir_cli"`
-else
-	GMT_dir_high=$GMT_dir_cli
-fi
-if [ ! $GMT_get_full = n ]; then
-	GMT_dir_full=`get_def_answer "Directory for full coastline files?" "$GMT_dir_high"`
-else
-	GMT_dir_full=$GMT_dir_high
-fi
-
-GMT_suppl_dbase=d
-GMT_suppl_gshhs=d
-GMT_suppl_imgsrc=d
-GMT_suppl_meca=d
 GMT_suppl_mex=d
-GMT_suppl_mgd77=d
-GMT_suppl_misc=d
-GMT_suppl_potential=d
-GMT_suppl_segyprogs=d
-GMT_suppl_sph=d
-GMT_suppl_spotter=d
-GMT_suppl_x2sys=d
 GMT_suppl_xgrid=d
 if [ ! "X$MATLAB" = "X" ]; then
 	MATDIR=$MATLAB
@@ -483,7 +460,7 @@ if [ ! $GMT_get_suppl = "n" ]; then
 
 cat << EOF >&2
 
-Several supplemental packages are available:
+Several supplemental packages are included in the archive:
 
 ------------------------------------------------------------------------------
 dbase:     Extracting data from NGDC DEM and other grids
@@ -492,51 +469,29 @@ imgsrc:    Extracting grids from global altimeter files (Sandwell/Smith)
 meca:      Plotting special symbols in seismology and geodesy
 mex:       Interface for reading/writing GMT grdfiles (REQUIRES MATLAB or OCTAVE)
 mgd77:     Programs for handling MGD77 data files
+mgg:       Programs for making, managing, and plotting .gmt files
 misc:      Digitize or stitch line segments, read netCDF 1-D tables, and more
-potential: Misc geopotential modeling
+EOF
+if [ $SERIES -eq 5 ]; then
+	cat <<- EOF >&2
+	potential: Geopotential tools
+	EOF
+fi
+cat << EOF >&2
 segyprogs: Plot SEGY seismic data files
 sph:       Spherical triangulation, Voronoi construction and interpolation
 spotter:   Plate tectonic backtracking and hotspotting
 x2sys:     New (Generic) Track intersection (crossover) tools
+x_system:  Old (MGG-specific) Track intersection (crossover) tools
 xgrid:     An X11-based graphical editor for netCDF-based .nc files
 ------------------------------------------------------------------------------
 
+Supplements that only depend on GMT will be installed.  Because others depend on
+libraries outside GMT we ask if you want to install these supplements separately.
 EOF
 
-	answer=`get_def_answer "Install any of the supplemental programs? (y/n/a(ll))?" "a"`
-	if [ "$answer" = "a" ] || [ "$answer" = "n" ]; then
-		y_or_n=n
-		if [ "$answer" = "a" ]; then
-			y_or_n=y
-		fi
-		GMT_suppl_dbase=$y_or_n
-		GMT_suppl_gshhs=$y_or_n
-		GMT_suppl_imgsrc=$y_or_n
-		GMT_suppl_meca=$y_or_n
-		GMT_suppl_mex=$y_or_n
-		GMT_suppl_mgd77=$y_or_n
-		GMT_suppl_misc=$y_or_n
-		GMT_suppl_potential=$y_or_n
-		GMT_suppl_segyprogs=$y_or_n
-		GMT_suppl_sph=$y_or_n
-		GMT_suppl_spotter=$y_or_n
-		GMT_suppl_x2sys=$y_or_n
-		GMT_suppl_xgrid=$y_or_n
-	elif [ "$answer" = "y" ]; then
-		GMT_suppl_dbase=`get_def_answer "Install the dbase supplemental package? (y/n)?" "y"`
-		GMT_suppl_gshhs=`get_def_answer "Install the gshhs supplemental package? (y/n)?" "y"`
-		GMT_suppl_imgsrc=`get_def_answer "Install the imgsrc supplemental package? (y/n)?" "y"`
-		GMT_suppl_meca=`get_def_answer "Install the meca supplemental package? (y/n)?" "y"`
-		GMT_suppl_mex=`get_def_answer "Install the mex supplemental package? (y/n)?" "y"`
-		GMT_suppl_mgd77=`get_def_answer "Install the mgd77 supplemental package? (y/n)?" "y"`
-		GMT_suppl_misc=`get_def_answer "Install the misc supplemental package? (y/n)?" "y"`
-		GMT_suppl_potential=`get_def_answer "Install the potential supplemental package? (y/n)?" "y"`
-		GMT_suppl_segyprogs=`get_def_answer "Install the segyprogs supplemental package? (y/n)?" "y"`
-		GMT_suppl_sph=`get_def_answer "Install the sph supplemental package? (y/n)?" "y"`
-		GMT_suppl_spotter=`get_def_answer "Install the spotter supplemental package? (y/n)?" "y"`
-		GMT_suppl_x2sys=`get_def_answer "Install the x2sys supplemental package? (y/n)?" "y"`
-		GMT_suppl_xgrid=`get_def_answer "Install the xgrid supplemental package? (y/n)?" "y"`
-	fi
+	GMT_suppl_mex=`get_def_answer "Install the mex supplemental package? (y/n)?" "y"`
+	GMT_suppl_xgrid=`get_def_answer "Install the xgrid supplemental package? (y/n)?" "y"`
 	if [ "$GMT_suppl_mex" = "y" ]; then
 		echo " " >&2
 		echo "The mex supplement requires Matlab or Octave." >&2
@@ -550,7 +505,7 @@ EOF
 	fi
 fi
 
-file=`get_def_answer "Enter name of the parameter file that will now be created" "GMTparam.txt"`
+file=`get_def_answer "Enter name of the parameter file that will now be created" "GMT${SERIES}param.txt"`
 
 if [ $GMT_FTP_TEST -eq 1 ]; then
 	GMT_ftpsite=0
@@ -562,13 +517,13 @@ fi
 
 cat << EOF > $file
 # This file contains parameters needed by the install script
-# for GMT Version ${VERSION}.  Give this parameter file
-# as the argument to the install_gmt script and the whole
+# for GMT${SERIES} Version ${GMT_version}.  Give this parameter file
+# as the argument to the install_gmt.sh script and the whole
 # installation process can be placed in the background.
 # Default answers will be selected where none is given.
 # You can edit the values, but do not remove definitions!
 #
-# This script was created by install_gmt on
+# This script was created by install_gmt.sh on
 #
 EOF
 date | awk '{printf "#\t%s\n", $0}' >> $file
@@ -579,7 +534,7 @@ cat << EOF >> $file
 #---------------------------------------------
 #       GMT VERSION TO INSTALL
 #---------------------------------------------
-VERSION=$VERSION
+VERSION=$GMT_version
 #---------------------------------------------
 #       SYSTEM UTILITIES
 #---------------------------------------------
@@ -598,33 +553,22 @@ passive_ftp=$passive_ftp
 use_gdal=$use_gdal
 gdal_path=$gdal_path
 #---------------------------------------------
-#       GMT FTP SECTION
+#       PCRE SECTION
+#---------------------------------------------
+use_pcre=$use_pcre
+pcre_path=$pcre_path
+#---------------------------------------------
+#       GMT & GSHHS FTP SECTION
 #---------------------------------------------
 GMT_ftp=$GMT_ftp
+GSHHS_ftp=$GSHHS_ftp
+GMT_inst_gmt=$GMT_inst_gmt
+GMT_inst_gshhs=$GMT_inst_gshhs
 GMT_ftpsite=$GMT_ftpsite
-GMT_get_src=$GMT_get_src
-GMT_get_share=$GMT_get_share
-GMT_get_coast=$GMT_get_coast
-GMT_get_high=$GMT_get_high
-GMT_get_full=$GMT_get_full
-GMT_get_suppl=$GMT_get_suppl
-GMT_get_doc=$GMT_get_doc
 #---------------------------------------------
 #       GMT SUPPLEMENTS SELECT SECTION
 #---------------------------------------------
-GMT_suppl_dbase=$GMT_suppl_dbase
-GMT_suppl_imgsrc=$GMT_suppl_imgsrc
-GMT_suppl_gshhs=$GMT_suppl_gshhs
-GMT_suppl_meca=$GMT_suppl_meca
 GMT_suppl_mex=$GMT_suppl_mex
-GMT_mex_type=$GMT_mex_type
-GMT_suppl_mgd77=$GMT_suppl_mgd77
-GMT_suppl_misc=$GMT_suppl_misc
-GMT_suppl_potential=$GMT_suppl_potential
-GMT_suppl_segyprogs=$GMT_suppl_segyprogs
-GMT_suppl_sph=$GMT_suppl_sph
-GMT_suppl_spotter=$GMT_suppl_spotter
-GMT_suppl_x2sys=$GMT_suppl_x2sys
 GMT_suppl_xgrid=$GMT_suppl_xgrid
 #---------------------------------------------
 #       GMT ENVIRONMENT SECTION
@@ -639,9 +583,6 @@ GMT_include=$GMT_include
 GMT_man=$GMT_man
 GMT_doc=$GMT_doc
 GMT_sharedir=$GMT_sharedir
-GMT_dir_full=$GMT_dir_full
-GMT_dir_high=$GMT_dir_high
-GMT_dir_cli=$GMT_dir_cli
 #---------------------------------------------
 #       COMPILING & LINKING SECTION
 #---------------------------------------------
@@ -674,45 +615,28 @@ install_this_gmt()
 # Get? File
 {
 	ok=1
-	get_this=$1
-	if [ -f GMT${VERSION}_$2.tar.$suffix ]; then
-		this=GMT${VERSION}_$2.tar.$suffix
-	elif [ -f GMT_$2.tar.$suffix ]; then
-		this=GMT_$2.tar.$suffix
+	if [ -f gmt-${GMT_version}.tar.$suffix ]; then
+		this=gmt-${GMT_version}.tar.$suffix
 	else
 		ok=0
 	fi
-	if [ $ok -eq 1 ] && [ "$get_this" != "n" ]; then	# File exists and we have not said no
+	if [ $ok -eq 1 ]; then	# File exists and we have not said no
 		$expand $this | tar xvf -
 	fi
 }
-install_coast()
+install_gshhs()
 {
-# Get? File dir
-	get_this=$1
-	file=$2
-	dir=$3
+# Get? dir
+	dir=$1
 	here=`pwd`
 	ok=1
 	done=0
-	if [ -f GMT${VERSION}_${file}.tar.$suffix ]; then
-		this=GMT${VERSION}_${file}.tar.$suffix
-	elif [ -f GSHHS${GSHHS}_${file}.tar.$suffix ]; then
-		this=GSHHS${GSHHS}_${file}.tar.$suffix
-	elif [ -f GMT_${file}.tar.$suffix ]; then
-		this=GMT_${file}.tar.$suffix
-	elif [ -f GSHHS_${file}.tar.$suffix ]; then
-		this=GSHHS_${file}.tar.$suffix
-	elif [ -f GMT${VERSION}_${file}.tar.$suffix ]; then
-		this=GMT${VERSION}_${file}.tar.$suffix
-	elif [ -f GMT${GSHHS}_${file}.tar.$suffix ]; then
-		this=GMT${GSHHS}_${file}.tar.$suffix
-	elif [ -f GMT_${file}.tar.$suffix ]; then
-		this=GMT_${file}.tar.$suffix
+	if [ -f gshhs-${GSHHS}.tar.$suffix ]; then
+		this=gshhs-${GSHHS}.tar.$suffix
 	else
 		ok=0
 	fi
-	cd GMT${VERSION}
+	cd GMT${GMT_version}
 	if [ $ok -eq 1 ] && [ "$get_this" != "n" ]; then	# File is present and wanted
 		if [ ! -d $dir ]; then
 			mkdir -p $dir
@@ -729,12 +653,11 @@ install_coast()
 
 make_ftp_list()
 {
-# arg1=get arg2=file arg3=prefix
+# arg1=get arg2=prefix
 	get_this=$1
-	file=$2
-	pre=$3
+	pre=$2
 	if [ "$get_this" = "y" ]; then
-		echo "get ${pre}_${file}.tar.$suffix" >> gmt_install.ftp_list
+		echo "get ${pre}.tar.$suffix" >> gmt_install.ftp_list
 	fi
 }
 
@@ -783,9 +706,9 @@ fi
 
 if [ $give_help -eq 1 ]; then
 	cat << EOF >&2
-install_gmt - Automatic installation of GMT
+install_gmt.sh - Automatic installation of GMT${SERIES}
 
-GMT is installed in the background following the gathering
+GMT${SERIES} is installed in the background following the gathering
 of installation parameters.  These parameters are obtained
 in one of two ways:
 
@@ -803,15 +726,15 @@ carries out the installation without further interruptions.
 
 Thus, two forms of the command are recognized:
 
-install_gmt [ -c ] parameterfile [ &> logfile]  (for background install)
-install_gmt [ -c ] [ -n ] [ &> logfile]	 (for interactive install)
+install_gmt.sh [ -c ] parameterfile [ &> logfile]  (for background install)
+install_gmt.sh [ -c ] [ -n ] [ &> logfile]	 (for interactive install)
 
 The option -n means do NOT install, just gather the parameters.
 The option -c means all tar archices are already in current directory
     and there is no need to ask questions regarding ftp transfers.
 Of course, there is also
 
-      install_gmt -h			    (to display this message)
+      install_gmt.sh -h			    (to display this message)
      
 EOF
 	exit
@@ -831,7 +754,7 @@ fi
 if [ $# -eq 1 ] && [ "$1" != "-h" ]; then	# User gave a parameter file
 	parfile=$1
 	if [ ! -f $parfile ]; then
-		echo "install_gmt: Parameter file $parfile not found" >&2
+		echo "install_gmt.sh: Parameter file $parfile not found" >&2
 		exit
 	fi
 else			# We must run an interactive session first
@@ -839,6 +762,7 @@ else			# We must run an interactive session first
 	if [ $do_install -eq 0 ]; then	# Did not want to install yet
 		exit
 	fi
+	answer=`get_answer "Hit return to start the install"`
 fi
 
 #--------------------------------------------------------------------------------
@@ -854,7 +778,7 @@ if [ "$first" = "/" ]; then	# absolute path OK
 else				# Local file, prepend ./
 	. ./$parfile
 fi
-
+SERIES=`echo $GMT_version | awk '{print substr($1,1,1)}'`
 topdir=`pwd`
 os=`uname -s`
 
@@ -938,7 +862,7 @@ if [ "$netcdf_install" = "y" ]; then
 fi
 
 if [ ! x"$NETCDF_INC" = x ] && [ ! x"$NETCDF_LIB" = x ]; then	# Only set up path if these are not set
-	echo "install_gmt: Using NETCDF_INC=$NETCDF_INC and NETCDF_LIB=$NETCDF_LIB to find netcdf support"
+	echo "install_gmt.sh: Using NETCDF_INC=$NETCDF_INC and NETCDF_LIB=$NETCDF_LIB to find netcdf support"
 else
 	if [ x"$netcdf_path" = x ]; then	# Not explicitly set, must assign it
 		if [ ! x"$NETCDFHOME" = x ]; then	# Good, used an environmental variable for it
@@ -952,12 +876,12 @@ else
 			elif [ -f /sw/lib/libnetcdf.a ]; then	# Mac OSX with fink
 	      			netcdf_path="/sw"
 			else
-	               		echo "install_gmt: No path for netcdf provided - abort" >&2
-	               		echo "install_gmt: netcdf not in /usr/local, /usr/local/netcdf, or /sw" >&2
+	               		echo "install_gmt.sh: No path for netcdf provided - abort" >&2
+	               		echo "install_gmt.sh: netcdf not in /usr/local, /usr/local/netcdf, or /sw" >&2
 				exit
 			fi
 	        fi
-		echo "install_gmt: netcdf found in $netcdf_path" >&2
+		echo "install_gmt.sh: netcdf found in $netcdf_path" >&2
 	fi
 	NETCDFHOME=$netcdf_path
 	export NETCDFHOME
@@ -968,7 +892,7 @@ fi
 #--------------------------------------------------------------------------------
 
 cd $topdir
-if [ "$GMT_ftp" = "y" ]; then
+if [ "$GMT_ftp" = "y" ] || [ "$GSHHS_ftp" = "y" ]; then
 
 	if [ $GMT_ftpsite -eq 0 ]; then
 		GMT_ftpsite=1
@@ -981,7 +905,7 @@ if [ "$GMT_ftp" = "y" ]; then
 	fi
 	if [ $GMT_ftpsite -eq 1 ]; then	# SOEST's server starts at / and there is no pub
 		if [ $GMT_FTP_TEST -eq 1 ]; then	# Special dir for guru testing
-			DIR=gmttest
+			DIR=gmttest/$SERIES
 		else
 			DIR=gmt
 		fi
@@ -1002,14 +926,8 @@ if [ "$GMT_ftp" = "y" ]; then
 	fi
 	echo "cd $DIR" >> gmt_install.ftp_list
 	echo "binary" >> gmt_install.ftp_list
-	make_ftp_list $GMT_get_src src GMT
-	make_ftp_list $GMT_triangle triangle GMT
-	make_ftp_list $GMT_get_share share GMT
-	make_ftp_list $GMT_get_coast coast GSHHS
-	make_ftp_list $GMT_get_high high GSHHS
-	make_ftp_list $GMT_get_full full GSHHS
-	make_ftp_list $GMT_get_suppl suppl GMT
-	make_ftp_list $GMT_get_doc doc GMT
+	make_ftp_list $GMT_ftp gmt-${GMT_version}
+	make_ftp_list $GSHHS_ftp gshhs-${GSHHS}
 	echo "quit" >> gmt_install.ftp_list
 	echo " " >> gmt_install.ftp_list
 
@@ -1028,7 +946,7 @@ fi
 # If we got here via a parameter file that had blank answers
 # we need to provide the default values here
 
-GMT_prefix=${GMT_prefix:-$topdir/GMT${VERSION}}
+GMT_prefix=${GMT_prefix:-$topdir/GMT${GMT_version}}
 GMT_bin=${GMT_bin:-$GMT_prefix/bin}
 GMT_lib=${GMT_lib:-$GMT_prefix/lib}
 GMT_share=${GMT_share:-$GMT_prefix/share}
@@ -1041,46 +959,21 @@ GMT_sharedir=${GMT_sharedir:-$GMT_share}
 # First install source code and documentation
 #--------------------------------------------------------------------------------
 
-install_this_gmt $GMT_get_src src
-install_this_gmt $GMT_get_share share
-install_this_gmt $GMT_triangle triangle
-install_this_gmt $GMT_get_suppl suppl
-install_this_gmt $GMT_get_doc doc
-
+if [ "$GMT_inst_gmt" = "y" ]; then
+	install_this_gmt
+fi
 #--------------------------------------------------------------------------------
 # Now do coastline archives
 #--------------------------------------------------------------------------------
 
-dir=$GMT_share/coast
-GMT_dir_full=${GMT_dir_full:-$dir}
-if [ "$GMT_dir_full" != "$dir" ]; then
-	echo $GMT_dir_full >> $$.coast
-fi
-
-GMT_dir_high=${GMT_dir_high:-$dir}
-if [ "$GMT_dir_high" != "$dir" ]; then
-	echo $GMT_dir_high >> $$.coast
-fi
-
-GMT_dir_cli=${GMT_dir_cli:-$dir}
-if [ "$GMT_dir_cli" != "$dir" ]; then
-	echo $GMT_dir_cli >> $$.coast
-fi
-
-install_coast $GMT_get_coast coast $GMT_dir_cli
-install_coast $GMT_get_high  high  $GMT_dir_high
-install_coast $GMT_get_full  full  $GMT_dir_full
-
-if [ -f $$.coast ]; then	# Install coastline.conf file
-	echo "# GMT Coastline Path Configuration File" > $topdir/GMT${VERSION}/share/conf/coastline.conf
-	sort -u $$.coast >> $topdir/GMT${VERSION}/share/conf/coastline.conf
-	echo "$topdir/GMT${VERSION}/share/conf/coastline.conf initialized" >&2
-	rm -f $$.coast
+if [ "$GMT_inst_gshhs" = "y" ]; then
+	dir=$GMT_share/coast
+	install_gshhs $dir
 fi
 
 echo " " >&2
-echo "Set write privileges on all files in GMT${VERSION} ..." >&2
-cd GMT${VERSION}
+echo "Set write privileges on all files in GMT${GMT_version} ..." >&2
+cd GMT${GMT_version}
 chmod -R +w .
 cd ..
 echo "Done" >&2
@@ -1091,7 +984,7 @@ echo " " >&2
 #--------------------------------------------------------------------------------
 
 cd $topdir
-cd GMT${VERSION}
+cd GMT${GMT_version}
 here=`pwd`
 
 # Are we allowed to write in $GMT_share?
@@ -1139,6 +1032,11 @@ if [ "$GMT_si" = "y" ]; then
 else
 	enable_us=--enable-US
 fi
+if [ "$GMT_ps" = "y" ]; then
+	enable_eps=
+else
+	enable_eps=--enable-eps
+fi
 if [ "$GMT_flock" = "y" ]; then
 	disable_flock=
 else
@@ -1159,11 +1057,6 @@ if [ "$GMT_suppl_xgrid" = "y" ]; then
 else
 	disable_xgrid=--disable-xgrid
 fi
-if [ "$GMT_suppl_sph" = "y" ]; then
-	disable_sph=
-else
-	disable_sph=--disable-sph
-fi
 
 if [ "$GMT_sharedlib" = "y" ]; then
 	enable_shared=--enable-shared
@@ -1173,8 +1066,10 @@ fi
 
 if [ "$GMT_64" = "y" ]; then
 	enable_64=--enable-64
-else
+elif [ "$GMT_64" = "n" ]; then
 	enable_64=--disable-64
+else
+	enable_64=
 fi
 if [ "$GMT_univ" = "y" ]; then
 	enable_univ=--enable-universal
@@ -1213,13 +1108,24 @@ else
 	enable_gdal=
 fi
 
+# Experimental PCRE support 
+if [ "$use_pcre" = "y" ]; then	# Try to include PCRE support
+        if [ ! "x$pcre_path" = "x" ]; then	# PCRE parent dir specified
+ 		enable_pcre=--enable-pcre=$pcre_path
+	else
+ 		enable_pcre=--enable-pcre
+        fi
+else
+	enable_pcre=--disable-pcre
+fi
+
 #--------------------------------------------------------------------------------
 #	GMT installation commences here
 #--------------------------------------------------------------------------------
 
 cat << EOF >&2
 
----> Begin GMT $VERSION installation <---
+---> Begin GMT $GMT_version installation <---
 
 ---> Run configure to create config.mk and gmt_notposix.h
 
@@ -1240,15 +1146,15 @@ fi
 
 cat << EOF >&2
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
-  --enable-netcdf=$netcdf_path $enable_matlab $disable_flock $enable_shared $enable_triangle $enable_64 \
+  --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   $enable_univ --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
-  $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir $enable_gdal
+  $disable_mex $disable_xgrid $enable_mex_mdir $enable_mex_xdir $enable_gdal $enable_pcre
 EOF
 
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
-  --enable-netcdf=$netcdf_path $enable_matlab $disable_flock $enable_shared $enable_triangle $enable_64 \
+  --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   $enable_univ --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
-  $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir $enable_gdal
+  $disable_mex $disable_xgrid $enable_mex_mdir $enable_mex_xdir $enable_gdal $enable_pcre
 
 if [ -f .gmtconfigure ]; then
 	cat .gmtconfigure
@@ -1312,8 +1218,7 @@ fi
 if [ -d doc/examples ] && [ "$GMT_run_examples" = "y" ]; then
 	GMT_SHAREDIR=$GMT_sharedir
 	export GMT_SHAREDIR
-	$GMT_make examples || exit
-	$GMT_make animations || exit
+	$GMT_make examples animations || exit
 fi
 
 cd $here/src
@@ -1340,7 +1245,7 @@ fi
 
 cd $topdir
 if [ "$GMT_delete" = "y" ]; then
-	rm -f GMT*.tar.$suffix GSHHS*.tar.$suffix
+	rm -f gmt-*.tar.$suffix gshhs-*.tar.$suffix
 fi
 
 cat << EOF >&2
@@ -1359,6 +1264,10 @@ cat << EOF >&2
 For sh or bash users:
 export NETCDFHOME=$NETCDFHOME
 export PATH=$GMT_bin:\$PATH
+
+Note: if you installed netCDF as a shared library you may have to add
+the path to this library to LD_LIBRARY_PATH or place the library in a
+standard system path [see information on shared library for your OS].
 EOF
 if [ "$GMT_sharedir" != "$GMT_share" ]; then
 	echo export GMT_SHAREDIR=$GMT_sharedir >&2

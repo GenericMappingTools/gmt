@@ -116,6 +116,7 @@ src/gmt_nc.c
 src/gmt_plot.c
 src/gmt_proj.c
 src/gmt_qsort.c
+src/gmt_regexp.c
 src/gmt_shore.c
 src/gmt_stat.c
 src/gmt_support.c
