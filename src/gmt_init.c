@@ -4867,6 +4867,7 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 
 	/* If current directory is writable, use it; else use the home directory */
 
+	getcwd (cwd, (size_t)GMT_BUFSIZ);
 	if (C->session.TMPDIR)			/* Isolation mode: Use C->session.TMPDIR/.gmtcommands */
 		sprintf (hfile, "%s/.gmtcommands", C->session.TMPDIR);
 	else if (!access (cwd, W_OK))		/* Current directory is writable */
@@ -4935,6 +4936,7 @@ GMT_LONG gmt_put_history (struct GMT_CTRL *C)
 
 	/* If current directory is writable, use it; else use the home directory */
 
+	getcwd (cwd, (size_t)GMT_BUFSIZ);
 	if (C->session.TMPDIR)			/* Isolation mode: Use C->session.TMPDIR/.gmtcommands */
 		sprintf (hfile, "%s/.gmtcommands", C->session.TMPDIR);
 	else if (!access (cwd, W_OK))	/* Current directory is writable */
