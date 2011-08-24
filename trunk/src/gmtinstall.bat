@@ -34,14 +34,14 @@ REM it is necessary to build it first under Cygwin (or operate on a provided sou
 
 REM
 REM STEP a: Specify your compiler (Tested with MS CL and Intel ICL)
-SET CC=CL
+SET CC=ICL
 
 REM
 REM STEP b: Specify the "Bitage" and if building normal or debug version
 REM         Set DEBUG to "yes" or "no" and BITS = 32 or 64 (no quotes)
 REM	    NOTE: The value set here for BITS will be the default but it
 REM		  can be overriden by a third input arg.
-SET DEBUG="no"
+SET DEBUG="yes"
 SET BITS=64
 
 REM
@@ -187,7 +187,7 @@ IF  %DEBUG%=="yes" SET OPTIM=/Z7 /DDEBUG
 SET DLL_NETCDF=/DDLL_NETCDF
 SET TR=/DTRIANGLE_D
 
-SET COMPFLAGS=/W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0 /nologo
+SET COMPFLAGS=/W4 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0 /nologo
 SET COPT=/I%cd% /DWIN32 %OPTIM% %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC% %TO_MATLAB% %COMPFLAGS% %COMPAT% %PCRE% %PCRE_INC% %VLD_INC% %USE_MEM_ALIGNED% /DWINBITAGE=%BITS%
 
 set LOPT=/nologo /dll /incremental:no %LDEBUG%
@@ -208,7 +208,7 @@ REM ----------------------------------------------------
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% %MATINC% gmt_init.c gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_fft.c gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmtapi_parse.c gmtapi_util.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% *_func.c gmt_modules.c gmt_regexp.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% *_func.c gmt_modules.c gmt_regexp.c gmt_version.c
 %CC% %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
 
 REM ----------------------------------- SUPPLEMENTS ----------------------------------------------
