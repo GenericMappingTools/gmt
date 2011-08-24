@@ -73,7 +73,7 @@ PROGSPS_O	= $(FUNCSPS_O:_func.o=.o)
 LIBPS_O		= pslib.o
 LIBGMT_O	= gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_fft.o gmt_grdio.o \
 		  gmt_io.o  gmt_nc.o gmt_notposix.o gmt_proj.o gmt_shore.o gmt_stat.o gmt_support.o gmt_regexp.o \
-		  gmt_vector.o $(TRIANGLE_O) $(ALPHA_SINCOS_O) gmtapi_parse.o $(FUNCS_O)
+		  gmt_vector.o gmt_version.o $(TRIANGLE_O) $(ALPHA_SINCOS_O) gmtapi_parse.o $(FUNCS_O)
 LIBGMTPS_O	= gmt_init.o gmt_map.o gmt_plot.o gmtapi_util.o $(FUNCSPS_O) $(API_O)
 
 SCRIPTS		= gmt_shell_functions.sh gmtlogo isogmt ../gmtswitch
