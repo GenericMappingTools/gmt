@@ -17,11 +17,11 @@ rm -f fail_count.d
 for o in $* ; do
         f=`basename $o .ps`
 	printf "%-32s" $f.ps
-	rms=`compare -density 100 -metric RMSE $f.ps ../fig/$f.ps $f.png 2>&1`
+	rms=`gm compare -density 100 -metric rmse -file $f.png $f.ps ../fig/$f.ps|grep Total|cut -c23-`
 	if test $? -ne 0; then
         	echo "[FAIL]"
 		echo $f: $rms >> fail_count.d
-	elif test `echo 40 \> $rms|cut -d' ' -f-3|bc` -eq 1; then
+	elif test `echo 50 \> $rms|bc` -eq 1; then
         	echo "[PASS]"
         	rm -f $f.png
 	else
@@ -31,7 +31,7 @@ for o in $* ; do
 done
 
 echo "--------------------------------------"
-if test -s fail_count.d; then
+if test -s fail_count.d ; then
 	wc -l fail_count.d | awk '{printf "GMT Documentation PS file failures: %d\n", $1}'
 	cat fail_count.d
 	echo "--------------------------------------"
