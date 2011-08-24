@@ -4851,7 +4851,7 @@ void gmt_file_unlock (struct GMT_CTRL *C, int fd, struct flock *lock)
 GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 {
 	GMT_LONG id, done = FALSE;
-	char line[GMT_BUFSIZ], hfile[GMT_BUFSIZ], cwd[GMT_BUFSIZ], *not_used = NULL;
+	char line[GMT_BUFSIZ], hfile[GMT_BUFSIZ], cwd[GMT_BUFSIZ];
 	char option[GMT_TEXT_LEN64], value[GMT_BUFSIZ];
 	FILE *fp = NULL;	/* For .gmtcommands file */
 	static struct GMT_HASH unique_hashnode[GMT_N_UNIQUE];
@@ -4867,7 +4867,6 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 
 	/* If current directory is writable, use it; else use the home directory */
 
-	not_used = getcwd (cwd, (size_t)GMT_BUFSIZ);
 	if (C->session.TMPDIR)			/* Isolation mode: Use C->session.TMPDIR/.gmtcommands */
 		sprintf (hfile, "%s/.gmtcommands", C->session.TMPDIR);
 	else if (!access (cwd, W_OK))		/* Current directory is writable */
@@ -4922,7 +4921,7 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 GMT_LONG gmt_put_history (struct GMT_CTRL *C)
 {
 	GMT_LONG id;
-	char hfile[GMT_BUFSIZ], cwd[GMT_BUFSIZ], *not_used = NULL;
+	char hfile[GMT_BUFSIZ], cwd[GMT_BUFSIZ];
 	FILE *fp = NULL;	/* For .gmtcommands file */
 #ifdef FLOCK
 	struct flock lock;
@@ -4936,7 +4935,6 @@ GMT_LONG gmt_put_history (struct GMT_CTRL *C)
 
 	/* If current directory is writable, use it; else use the home directory */
 
-	not_used = getcwd (cwd, (size_t)GMT_BUFSIZ);
 	if (C->session.TMPDIR)			/* Isolation mode: Use C->session.TMPDIR/.gmtcommands */
 		sprintf (hfile, "%s/.gmtcommands", C->session.TMPDIR);
 	else if (!access (cwd, W_OK))	/* Current directory is writable */

@@ -492,7 +492,7 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG n_in_median, n_nan = 0, tid = 0, spherical = FALSE, full_360;
-	GMT_LONG j_origin, col_out, row_out, half_nx, nx_wrap = 0, visit_check = FALSE;
+	GMT_LONG j_origin, col_out, row_out, nx_wrap = 0, visit_check = FALSE;
 	GMT_LONG col_in, row_in, ii, jj, i, j, ij_in, ij_out, ij_wt, effort_level, go_on;
 	GMT_LONG filter_type, one_or_zero = 1, GMT_n_multiples = 0, *i_origin = NULL;
 	GMT_LONG error = FALSE, fast_way, slow = FALSE, slower = FALSE, same_grid = FALSE;
@@ -620,7 +620,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Set up the distance scalings for lon and lat, and assign pointer to distance function  */
 #ifdef _OPENMP
-#pragma omp parallel shared(fast_way,x_shift,i_origin) private(F,par,x_width,y_width,i,j,effort_level,tid,weight,work_array,work_data,half_nx) firstprivate(x_scale,y_scale,filter_type,spherical,visit_check,go_on,max_lat,merc_range,slow,slower,x_fix,y_fix) reduction(+:n_nan)
+#pragma omp parallel shared(fast_way,x_shift,i_origin) private(F,par,x_width,y_width,i,j,effort_level,tid,weight,work_array,work_data) firstprivate(x_scale,y_scale,filter_type,spherical,visit_check,go_on,max_lat,merc_range,slow,slower,x_fix,y_fix) reduction(+:n_nan)
 {
 	tid = omp_get_thread_num ();
 #endif
@@ -762,7 +762,6 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		effort_level = 3;
 	
 	if (effort_level == 1) set_weight_matrix (GMT, &F, weight, 0.0, par, x_fix, y_fix);
-	half_nx = (Gin->header->registration == GMT_PIXEL_REG) ? nx_wrap / 2 : (nx_wrap - 1) / 2;
 	
 #ifdef DEBUG
 	if (Ctrl->A.active) for (i = 0; i < Gin->header->size; i++) Gin->data[i] = 0.0;	/* We are using Gin to store filter weights etc instead */

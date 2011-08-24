@@ -1222,10 +1222,8 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	 */
 	
 	GMT_LONG global, error = FALSE;
-	double half_or_zero, val, dx, small;
+	double val, dx, small;
 	
-	half_or_zero = (header->registration == GMT_PIXEL_REG) ? 0.5 : 0.0;
-
 	switch (GMT_minmaxinc_verify (C, wesn[XLO], wesn[XHI], header->inc[GMT_X], GMT_SMALL)) {	/* Check if range is compatible with x_inc */
 		case 3:
 			return (GMT_GRDIO_BAD_XINC);
