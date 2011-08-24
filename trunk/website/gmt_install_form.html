@@ -99,7 +99,7 @@ for more details.</I><BR>
 
 <P>
 <I>Note: GMT passes information about previous GMT command-line options to future GMT commands via a
-hidden file in the current directory (.gmtcommands4).  To avoid that this file is updated by more than
+configuration file in the current directory (gmt.conf).  To avoid that this file is updated by more than
 one program at the time (e.g., when you connect two or more GMT commands with a pipe) we use POSIX
 advisory file locking on the file.  Unfortunately, some versions of the Network File System (NFS) have
 not implemented file locking properly.  We know this to be the case with Linux pre-2.4 kernels when
@@ -141,6 +141,17 @@ If these directories do not have the same parent directory, then leave the path 
 variables $GDAL_LIB and $GDAL_INC prior to running the installer.</I>
 <HR>
 	
+<B>3. OPTIONAL. Experimental PCRE (Perl Compatible Regular Expressions) support:</B><BR>
+
+<INPUT TYPE="radio" VALUE="no" NAME="radio_pcre" CHECKED> Do not build optional/experimental PCRE support<BR>
+<INPUT TYPE="radio" VALUE="yes" NAME="radio_pcre"> Build optional/experimental PCRE support<BR>
+
+If you selected to use PCRE, give full pathname to the PCRE directory with lib and include: <INPUT NAME="pcre_dir" TYPE="text" SIZE="30"><BR>
+<P>
+<I>Note: If selected, some GMT tools may use regular expression pattern matching using the same syntax and semantics
+as Perl 5 in internal GMT searching (e.g., gmtconvert -S).</I>
+<HR>
+
 <!--  GMT FTP SELECTION  -->
 
 <CENTER><H3>C. GMT Setup</H3></CENTER>

@@ -42,6 +42,9 @@ include ../src/config.mk
 # Papersize
 PAPER=a4
 
+# PNG resolution
+PNGRES=100
+
 # LaTeX command
 PDFLATEX=pdflatex --interaction=batchmode
 
@@ -53,6 +56,7 @@ ALLTEX=	GMT_version.tex GMT_macros.tex GMT_Cover.tex
 TUTPS=	fig/GMT_Environment.eps fig/GMT_pstext_clearance.ps fig/GMT_pstext_justify.ps \
 	fig/GMT_nearneighbor.ps fig/GMT_atan.ps $(ALLPS)
 TUTPDF=$(TUTPS:.ps=.pdf)
+TUTPNG=$(TUTPS:.ps=.png)
 TUTTEX=GMT_Tutorial.tex $(ALLTEX)
 
 # PS, PDF and TEX files used to make API documentation
@@ -128,6 +132,7 @@ DOCIMG=	fig/GMT5_Summit_2011.png fig/gimp-panel.png fig/gimp-sliders.png fig/hsv
 # All PS, EPS and PDF files for GMT_Docs
 DOCPS=	$(DOCPS0) $(DOCPS1) $(DOCPS2) $(ALLPS) $(RGBPS)
 DOCPDF= $(DOCPS:.ps=.pdf) $(IS_EPS:.eps=.pdf) $(EX_PS:.ps=.pdf) $(AN_PS:.ps=.pdf)
+EXPNG=	$(EX_PS:.ps=.png)
 
 # All TEX files needed for GMT_Docs
 DOCTEX= GMT_Docs.tex GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex GMT_Appendix_D.tex \
@@ -142,9 +147,10 @@ all:	pdf html
 install::	all
 
 # Shortcut, just to preprocess all required files
-prep prepro:	prep-ps prep-pdf prep-tex $(DOCIMG)
+prep prepro:	prep-ps prep-pdf prep-tex prep-png $(DOCIMG)
 prep-ps:	$(DOCPS) $(TUTPS) $(APIPS)
 prep-pdf:	$(DOCPDF) $(TUTPDF) $(APIPDF)
+prep-png:	$(EXPNG)
 prep-tex:	$(DOCTEX) $(TUTTEX) $(APITEX)
 
 # Cleanup, before or after
@@ -153,12 +159,12 @@ clean:
 	\rm -f *.aux *.lot *.lof *.toc *.pdf *.out *.dvi *.ind *.ilg *.idx *.log *.ps \
 		*.4ct *.4tc *.css *.html *.idv *.lg *.tmp *.xref *-js.tex
 	\rm -f GMT_Appendix_N_inc.tex
-	\rm -f fig/*.{tex,pdf}
+	\rm -f fig/*.{tex,pdf} fig/{GMT,example,anim}_*.png
 	\rm -rf GMT_Docs GMT_Tutorial GMT_API
 
 spotless:	clean
 	\rm -f GMT_version.tex
-	\rm -rf html/man html/index.html pdf
+	\rm -rf html/man html/index.html html/images pdf
 
 # Shortcuts, just to do a couple of things
 pdf:	docs tutorial api man
@@ -173,13 +179,19 @@ html:	html/man/blockmean.html html/index.html
 # The extra FONTPATH options is only needed for example 31, but we do it here for all.
 $(EX_PS:.ps=.pdf) $(AN_PS:.ps=.pdf):	%.pdf: %.ps
 	ps2raster -Au -P -Tf -C-sFONTPATH=$(FONTPATH) $*.ps
+$(EX_PS:.ps=.png) $(AN_PS:.ps=.png):    %.png: %.ps
+	ps2raster -Au -P -Tg -E$(PNGRES) $*.ps
 
 %.pdf: %.ps
 	ps2raster -A -P -Tf $*.ps
+%.png: %.ps
+	ps2raster -A -P -Tg -E$(PNGRES) $*.ps
 
 # To convert EPS to PDF
 %.pdf:	%.eps
 	ps2raster -P -Tf $*.eps
+%.png:  %.eps
+	ps2raster -P -Tg -E$(PNGRES) $*.eps
 
 # Turn scripts into TeX files for inclusion in the documentation. Keep comments in these.
 $(DOCPS0:.ps=.tex) fig/functions.tex:	fig/%.tex:	scripts/%.sh
@@ -245,5 +257,7 @@ html/man/blockmean.html:	webman.sh ../src/blockmean.1
 	bash webman.sh -s
 html/index.html:
 	ln -f html/gmt_services.html $@
+	\mkdir -p html/images
+	\ln -f $(EXPNG) html/images
 
 include Makefile

@@ -155,7 +155,8 @@ clean spotless::
 # For compatibility with previous versions
 #-------------------------------------------------------------------------------
 ex:		examples
-webdoc:		;
+webdoc:		
+		cd doc ; $(MAKE) prep
 
 #-------------------------------------------------------------------------------
 # To check there are no files with DOS line-endings

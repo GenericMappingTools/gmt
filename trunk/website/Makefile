@@ -82,17 +82,21 @@ update-version-live:	update-ftp-live update-www-live
 # GMT WEB PAGE MATERIALS
 #---------------------------------------------------------------------------
 
-update-www-live:	update-www-local
+update-www-live:	update-www-local live.sed
 #	First completely remove the live www files then copy them from the www-local files
 		sh winsites.sh gmt
 		cp -f gmt_windows_*.html www/gmt
-		ssh $(WEBSERVER) rm -rf $(LIVEWWWDIR)/gmt $(LIVEWWWDIR)/index.html
-		scp -r www/gmt $(WEBSERVER):$(LIVEWWWDIR)
-		scp www/index.html $(WEBSERVER):$(LIVEWWWDIR)
+		ssh $(WEBSERVER1) rm -rf $(LIVEWWWDIR1)/gmt $(LIVEWWWDIR1)/index.html
+		ssh $(WEBSERVER1) mkdir -p $(LIVEWWWDIR1)/gmt
+		scp -r www/gmt $(WEBSERVER1):$(LIVEWWWDIR1)
+		scp www/index.html $(WEBSERVER1):$(LIVEWWWDIR1)
 #	Update the Perl script in the CGI bin dir
-		scp install_gmt_form.pl $(WEBSERVER):$(LIVECGIDIR)/install_gmt5_form.pl
+		sed -f live.sed install_gmt_form.pl > install_gmt5_form_test.pl
+		chmod +x install_gmt5_form_test.pl
+		scp install_gmt5_form_test.pl $(WEBSERVER1):$(LIVECGIDIR1)/install_gmt5_form.pl
+		rm -f live.sed
 
-update-www-test:	update-www-local
+update-www-test:	update-www-local test.sed
 #	First completely remove the test www files then copy then from the www-local files
 		sh winsites.sh gmttest
 		cp -f gmt_windows_*.html www/gmt
@@ -100,16 +104,12 @@ update-www-test:	update-www-local
 		scp -r www/gmt $(WEBSERVER2):$(LIVEWWWDIR2)
 		scp www/index.html $(WEBSERVER2):$(LIVEWWWDIR2)
 #	For the test we want GMT_ftpsite to always be 0, and to use the test web site - hence these sed commands
-		echo "sB/gmt/B/gmttest/Bg" > job.sed
-		echo "sBgmt.soest.hawaii.edu/gmttempBwww.soest.hawaii.edu/gmttest/gmttempBg" >> job.sed
-		echo 's/"GMT_ftpsite=", \$$site/"GMT_ftpsite=0"/g' >> job.sed
-		sed -f job.sed install_gmt_form.pl > install_gmt5_form_test.pl
+		sed -f test.sed install_gmt_form.pl > install_gmt5_form_test.pl
+		chmod +x install_gmt5_form_test.pl
 		scp install_gmt5_form_test.pl $(WEBSERVER2):$(LIVECGIDIR2)
-		echo "sBftp.soest.hawaii.edu/gmtBftp.soest.hawaii.edu/gmttest/5Bg" > job.sed
-		rm -f install_gmt5_form_test.pl job.sed
+		rm -f install_gmt5_form_test.pl
 #	Change the Href to the ftp server to go to the test server dir instead
-		sed -e sBftp.soest.hawaii.edu/gmtBftp.soest.hawaii.edu/gmttestBg gmt_install_form.html > tmp
-		scp tmp $(WEBSERVER2):$(LIVEWWWDIR2)/gmt/gmt_install_form.html
+		scp gmt_install_form.html $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		echo "cd $(LIVEWWWDIR2)/gmt" > gmt_server_job.sh
 		echo "sed -e s/install_gmt5_form.pl/install_gmt5_form_test.pl/g gmt_install_form.html > tmp" >> gmt_server_job.sh
 		echo "mv -f tmp gmt_install_form.html" >> gmt_server_job.sh
@@ -117,7 +117,7 @@ update-www-test:	update-www-local
 		echo "rm -f gmt_server_job.sh" >> gmt_server_job.sh
 		scp gmt_server_job.sh $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		ssh $(WEBSERVER2) sh $(LIVEWWWDIR2)/gmt/gmt_server_job.sh
-		rm -f gmt_server_job.sh tmp
+		rm -f gmt_server_job.sh tmp test.sed
 
 update-www-local:	../registration/gmt_usage.png gmt_mirrors.html www/gmt/gmt_releases.html www/gmt/examples/ex01/example_01.zip
 		sh winsites.sh gmt
@@ -149,19 +149,19 @@ update-ftp-live:
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
-	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib $(LIVEFTPDIR)/gmt-* $(LIVEFTPDIR)/install_gmt.sh $(LIVEFTPDIR)/VERSION'
-	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib
-	scp ../guru/install_gmt.sh $(FTPSERVER):$(LIVEFTPDIR)
-	scp ../ftp/gmt-*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
-	scp ../ftp/gmt-*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
-	scp ../ftp/gawk*.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
-	scp $(GMT4)/ftp/netcdf-3.6.3_win.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
-	scp $(GMT4)/ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER):$(LIVEFTPDIR)/contrib
+	ssh $(FTPSERVER1) 'rm -rf $(LIVEFTPDIR1)/windows $(LIVEFTPDIR1)/contrib $(LIVEFTPDIR1)/gmt-* $(LIVEFTPDIR1)/install_gmt.sh $(LIVEFTPDIR1)/VERSION'
+	ssh $(FTPSERVER1) mkdir -p $(LIVEFTPDIR1)/windows $(LIVEFTPDIR1)/contrib
+	scp ../guru/install_gmt.sh $(FTPSERVER1):$(LIVEFTPDIR1)
+	scp ../ftp/gmt-*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER1):$(LIVEFTPDIR1)
+	scp ../ftp/gmt-*.exe $(FTPSERVER1):$(LIVEFTPDIR1)/windows
+	scp ../ftp/gawk*.zip $(FTPSERVER1):$(LIVEFTPDIR1)/windows
+	scp $(GMT4)/ftp/netcdf-3.6.3_win.zip $(FTPSERVER1):$(LIVEFTPDIR1)/windows
+	scp $(GMT4)/ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER1):$(LIVEFTPDIR1)/contrib
 
 update-gshhs-live: update-gshhs-local
-	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/gshhs-*'
-	scp ftp/gshhs-*.bz2  $(FTPSERVER):$(LIVEFTPDIR)
-#	scp ftp/gshhs-*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
+	ssh $(FTPSERVER1) 'rm -rf $(LIVEFTPDIR1)/gshhs-*'
+	scp ftp/gshhs-*.bz2  $(FTPSERVER1):$(LIVEFTPDIR1)
+#	scp ftp/gshhs-*.exe $(FTPSERVER1):$(LIVEFTPDIR1)/windows
 
 update-ftp-test:
 	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $$1}'` -ge 1300 ]; then \
@@ -210,10 +210,10 @@ clean-local:	clean-ftp-local clean-www-local
 
 clean-test:
 	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/*
-	ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/gmt.html $(LIVEWWWDIR2)/index.html
+	ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/gmt.html $(LIVEWWWDIR2)/index.html $(LIVECGIDIR2)/install_gmt5_form_test.pl
 
 spotless:
-	rm -f gmt_windows_[A-Z]*.html
+	rm -f gmt_windows_[A-Z]*.html *.sed
 
 netcdf: ../ftp/netcdf.tar.bz2
 
@@ -238,3 +238,14 @@ hitmap:
 www/gmt/gmt_releases.html:	gmt_releases_template.html
 	mkdir -p www/gmt
 	cp -f gmt_releases_template.html www/gmt/gmt_releases.html
+
+test.sed:
+	grep WEBSITE2 gmtsite.macros | awk '{printf "sXWEBSITEX%sXg\n", $$3}' > test.sed
+	grep WEBSERVER2 gmtsite.macros | awk '{printf "sXWEBSERVERX%sXg\n", $$3}' >> test.sed
+	grep LIVEWWWDIR2 gmtsite.macros | awk '{printf "sXLIVEWWWDIRX%sXg\n", $$3}' >> test.sed
+	echo 's/"GMT_ftpsite=", \$$site/"GMT_ftpsite=0"/g' >> test.sed
+
+live.sed:
+	grep WEBSITE1 gmtsite.macros | awk '{printf "sXWEBSITEX%sXg\n", $$3}' > live.sed
+	grep WEBSERVER1 gmtsite.macros | awk '{printf "sXWEBSERVERX%sXg\n", $$3}' > live.sed
+	grep LIVEWWWDIR1 gmtsite.macros | awk '{printf "sXLIVEWWWDIRX%sXg\n", $$3}' >> live.sed

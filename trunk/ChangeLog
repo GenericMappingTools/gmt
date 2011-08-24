@@ -7,7 +7,8 @@
 	GMT 5.0.0b finalized and released.
 -----------------------------------------------------------------------------------------
 2011-08-23	pwessel
-	* gmt_init.c:		New parameter GMT_TRIANGULATION which selects the triangulation
+	* guru/install_gmt.sh:	Now offers option to set PCRE libs or disable.
+	* gmt_init.c:		New parameter GMT_TRIANGULATE which selects the triangulation
 				algorithm to use (Watson or Shewchuk). The latter is only
 				available if --enable-triangle was used during configuration.
 				

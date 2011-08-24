@@ -12,16 +12,18 @@
 #	that are older than 5 minutes.  The command for cron would be
 #
 #	entry for P.Wessel temp files (crontab on imina as root):
-#	07 01 * * * find /export/imina2/apache222/htdocs/gmt/gmttemp -xdev -mtime +1 -type d -exec rm -r {} \; > /dev/null 2>&1
+#	07 01 * * * find LIVEWWWDIR/gmttemp -xdev -mtime +1 -type d -exec rm -r {} \; > /dev/null 2>&1
 #
 #	The temporary files are placed in <PID>/GMT[45]param.txt
+#
+# Note: website/Makefile will replace LIVEWWWDIR and WEBSITE with actual settings from gmtsite.macros 
 
 $webmaster = "gmt\@soest\.hawaii\.edu";
 
 # Create unique filename for temp file:
 
 $PID		= $$;
-$PDIR           = "/export/imina2/httpd/htdocs/gmt/gmttemp/" . $PID;
+$PDIR           = "LIVEWWWDIR/gmttemp/" . $PID;
 
 mkdir $PDIR;
 
@@ -39,6 +41,8 @@ $ftpmode	= $gmt_form{'radio_ftpmode'};
 $cdf_path	= $gmt_form{'netcdf_dir'};
 $gdal		= $gmt_form{'radio_gdal'};
 $gdal_path	= $gmt_form{'gdal_dir'};
+$pcre		= $gmt_form{'radio_pcre'};
+$pcre_path	= $gmt_form{'pcre_dir'};
 $site		= $gmt_form{'radio_site'};
 $inst_gmt	= $gmt_form{'checkbox_gmt'};
 $inst_gshhs	= $gmt_form{'checkbox_gshhs'};
@@ -142,6 +146,17 @@ if ($gdal eq "yes") {
 else {
 	print FILE "use_gdal=n\n";
 	print FILE "gdal_path=\n";	
+}
+print FILE "#---------------------------------------------\n";
+print FILE "#	PCRE SECTION\n";
+print FILE "#---------------------------------------------\n";
+if ($pcre eq "yes") {
+	print FILE "use_pcre=y\n";
+	print FILE "pcre_path=", $pcre_path, "\n";
+}
+else {
+	print FILE "use_pcre=n\n";
+	print FILE "pcre_path=\n";	
 }
 print FILE "#---------------------------------------------\n";
 print FILE "#	GMT FTP SECTION\n";
@@ -313,7 +328,7 @@ close (FILE);
 
 print "Content-type: text/html", "\n";
 print "Status: 200 OK", "\n\n";
-print "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0; url=http://gmt.soest.hawaii.edu/gmttemp/$FOUT\">";
+print "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0; url=http://WEBSITE/gmttemp/$FOUT\">";
 
 exit(0);
 
