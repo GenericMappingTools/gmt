@@ -7,6 +7,9 @@
 	GMT 5.0.0b finalized and released.
 -----------------------------------------------------------------------------------------
 
+2011-08-24	pwessel
+	* gmtswitch:		Added man page in src
+
 2011-08-24	remko
 	* gmt_version.c:	Introduced new function GMT_version() to generate version number.
 	* *_tests.sh:		Now using graphicsmagick instead of imagemagick for compare.
@@ -454,7 +457,7 @@
 
 2011-05-11	jluis
 	* grdimage_func.c:	Now reads also indexed and gray scale images.
-				Use white for NaN color in images writen with gdalwrite. 
+				Use white for NaN color in images written with gdalwrite. 
 	* gmt_gdalwrite.c:	When known, save projection info in GeoTiff files.
 
 2011-05-09	pwessel

@@ -49,9 +49,9 @@ recommend that users of \GMT\ 4 consider learning the new rules and defaults.  H
 transition to \GMT\ 5 you may use the \-\-enable-compat switch when running configure , thus allowing the use
 of many obsolete default names and command switches (you will receive a warning instead).
 
-\subsection{Overview of \gmt\ 5.0.0a [Nov-1, 2010]}
+\subsection{Overview of \gmt\ 5.0.0b [Aug-25, 2011]}
 
-This version shares the same bug fixes applied to \GMT\ 4.5.4, also released Nov-1, 2010.
+This version shares the same bug fixes applied to \GMT\ 4.5.7, released July 15, 2011.
 Several new programs have been added; some have been promoted from earlier supplements:
 
 \begin{description}
@@ -80,9 +80,17 @@ before \GMT\ 5 becomes the official version and \GMT\ 4 will be retired:
 		These are produced by \progname{ogr2ogr} (a GDAL tool) when selecting the -f ``GMT'' output format.  See Appendix Q
 		for an explanation of the OGR/GMT file format.  Because all GIS information is encoded via \GMT\ comment lines
 		these files can also be used in \GMT\ 4 (the GIS metadata is simply skipped).
-	\item All program that reads data tables can control which columns to read and in what order with the new \Opt{i} option.
+	\item All program that read data tables can control which columns to read and in what order with the new \Opt{i} option.
 	\item All program that write data tables can control which columns to write and in what order with the new \Opt{o} option.
-	\item All program that reads data tables can control how records with NaNs are handled with the new \Opt{s} option.
+	\item All program that write data tables can specify a custom binary format using the enhanced \Opt{b} option.
+	\item All program that read data tables can control how records with NaNs are handled with the new \Opt{s} option.
+	\item All program that read grids can use new common option \Opt{n} to control grid interpolation settings and boundary conditions.
+	\item All program that read grids can now handle Arc/Info float binary files (GRIDFLOAT) and ESRI .hdr formats.
+	\item All program that read grids now set boundary conditions to aid further processing.  If a subset then the
+		boundary conditions are taken from the surrounding grid values.
+	\item There is now a defaults parameter that controls which algorithms to use for Fourier transforms and triangulation.
+	\item The \Opt{B} option can now handle irregular and custom annotations (see Section \ref{sec:custaxes}).
+		It also has an automatic mode which will select optimal intervals.
 	\item All plot programs can take a new \Opt{p} option for perspective view from infinity.  In \GMT\ 4, only some
 		programs could do this (e.g., \GMTprog{pscoast}) and it took a program-specific option, typically \Opt{E} and
 		sometimes an option \Opt{Z} would be needed as well.  This information is now all passed via \Opt{p} and
@@ -95,6 +103,18 @@ before \GMT\ 5 becomes the official version and \GMT\ 4 will be retired:
 		by manipulating the corresponding FONT defaults (e.g., \textbf{FONT\_TITLE}).
 	\item All color or fill specifications may append @\emph{transparency} to change the PDF transparency level for that item.
 		See \Opt{t} for limitations on how to visualize this transparency.
+	\item \GMTprog{gmtconvert} now has optional PCRE (regular expression) support; Thanks to Florian Wobbe.
+	\item \GMTprog{grdblend} can take list of grids on the command line and blend, and now has more blend choices.  Grids no
+		longer have to have same registration or spacing.
+	\item \GMTprog{grdfilter} can now do spherical filtering (with wrap around longitudes and over poles) for non-global grids.
+		We have also begun implementing Open MP threads to speed up calculations on multi-core machines.  Finally, we have
+		added rectangular filtering and automatic resampling to input resolution for high-pass filters.
+	\item \GMTprog{grdmask} has new option \Opt{Ni}$|$I$|$p$|$P to set inside of polygons to the polygon IDs.
+		These may come from OGR aspatial values, segment head \Opt{L}ID,
+		or a running number, starting at a specified origin [0].
+		Now correctly handles polygons with perimeters and holes.
+	\item \GMTprog{grdtrack} has a new \Opt{C}, \Opt{D} options to automatically create an equidistant set of cross-sectional
+		profiles given input line segments; one or more grids can then be sampled at these locations.
 	\item \GMTprog{mapproject} has a new \Opt{N} option to do geodetic/geocentric conversions; it combines with \Opt{I}
 		for inverse conversions.  Also, we have extended \Opt{A} to accept \Opt{A}\textbf{o}$|$\textbf{O} to compute line orientations (-90/90).
 	\item \GMTprog{makecpt} and \GMTprog{grd2cpt} has a new \Opt{F} option to specify output color representation, e.g.,
