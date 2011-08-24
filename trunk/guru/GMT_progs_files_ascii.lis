@@ -225,6 +225,7 @@ src/gmtselect.1
 src/gmtset.1
 src/gmtspatial.1
 src/gmtstitch.1
+src/gmtswitch.1
 src/gmtvector.1
 src/gmtwhich.1
 src/grd2cpt.1
