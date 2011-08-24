@@ -13,11 +13,11 @@ header () {
 pscmp () {
 	f=${1:-`basename $ps .ps`}
 	d=`basename $PWD`
-	rms=`compare -density 100 -metric RMSE $f.ps orig/$f.ps $f.png 2>&1`
+	rms=`gm compare -density 100 -metric rmse -file $f.png $f.ps orig/$f.ps|grep Total|cut -c23-`
 	if test $? -ne 0; then
         	echo "[FAIL]"
 		echo $d/$f: $rms >> ../fail_count.d
-	elif test `echo 200 \> $rms|cut -d' ' -f-3|bc` -eq 1; then
+	elif test `echo 50 \> $rms|bc` -eq 1; then
         	echo "[PASS]"
         	rm -f $f.png $f.ps
 	else
