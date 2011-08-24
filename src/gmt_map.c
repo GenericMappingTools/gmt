@@ -580,7 +580,7 @@ GMT_LONG gmt_wesn_crossing (struct GMT_CTRL *C, double lon0, double lat0, double
 	 * which ones are valid crossings.  We may find 0, 1, or 2 intersections */
 
 	GMT_LONG n = 0, i;
-	double d, dlon0, dlat0, x0, y0;
+	double d, x0, y0;
 
 	/* If wrapping is allowed: first bring both points between W and E boundaries,
 	 * then move the western-most point east if it is further than 180 degrees away.
@@ -598,9 +598,6 @@ GMT_LONG gmt_wesn_crossing (struct GMT_CTRL *C, double lon0, double lat0, double
 			lon1 += 360.0;
 	}
 
-	dlat0 = lat0 - lat1;
-	dlon0 = lon0 - lon1;
-
 	/* Then set 'almost'-corners to corners */
 	gmt_x_wesn_corner (C, &lon0);
 	gmt_x_wesn_corner (C, &lon1);
@@ -614,7 +611,7 @@ GMT_LONG gmt_wesn_crossing (struct GMT_CTRL *C, double lon0, double lat0, double
 		d = lat0 - lat1;
 		clon[n] = (GMT_IS_ZERO (d)) ? lon1 : lon1 + (lon0 - lon1) * (clat[n] - lat1) / d;
 		gmt_x_wesn_corner (C, &clon[n]);
-		if (fabs (dlat0) > 0.0 && gmt_lon_inside (C, clon[n], C->common.R.wesn[XLO], C->common.R.wesn[XHI])) n++;
+		if (fabs (d) > 0.0 && gmt_lon_inside (C, clon[n], C->common.R.wesn[XLO], C->common.R.wesn[XHI])) n++;
 	}
 	/* Crossing East */
 	if ((lon0 >= C->common.R.wesn[XHI] && lon1 <= C->common.R.wesn[XHI]) || (lon1 >= C->common.R.wesn[XHI] && lon0 <= C->common.R.wesn[XHI])) {
@@ -623,7 +620,7 @@ GMT_LONG gmt_wesn_crossing (struct GMT_CTRL *C, double lon0, double lat0, double
 		d = lon0 - lon1;
 		clat[n] = (GMT_IS_ZERO (d)) ? lat1 : lat1 + (lat0 - lat1) * (clon[n] - lon1) / d;
 		gmt_y_wesn_corner (C, &clat[n]);
-		if (fabs (dlon0) > 0.0 && clat[n] >= C->common.R.wesn[YLO] && clat[n] <= C->common.R.wesn[YHI]) n++;
+		if (fabs (d) > 0.0 && clat[n] >= C->common.R.wesn[YLO] && clat[n] <= C->common.R.wesn[YHI]) n++;
 	}
 
 	/* Now adjust the longitudes so that they might span the western boundary */
@@ -638,7 +635,7 @@ GMT_LONG gmt_wesn_crossing (struct GMT_CTRL *C, double lon0, double lat0, double
 		d = lat0 - lat1;
 		clon[n] = (GMT_IS_ZERO (d)) ? lon1 : lon1 + (lon0 - lon1) * (clat[n] - lat1) / d;
 		gmt_x_wesn_corner (C, &clon[n]);
-		if (fabs (dlat0) > 0.0 && gmt_lon_inside (C, clon[n], C->common.R.wesn[XLO], C->common.R.wesn[XHI])) n++;
+		if (fabs (d) > 0.0 && gmt_lon_inside (C, clon[n], C->common.R.wesn[XLO], C->common.R.wesn[XHI])) n++;
 	}
 	/* Crossing West */
 	if ((lon0 <= C->common.R.wesn[XLO] && lon1 >= C->common.R.wesn[XLO]) || (lon1 <= C->common.R.wesn[XLO] && lon0 >= C->common.R.wesn[XLO])) {
@@ -647,7 +644,7 @@ GMT_LONG gmt_wesn_crossing (struct GMT_CTRL *C, double lon0, double lat0, double
 		d = lon0 - lon1;
 		clat[n] = (GMT_IS_ZERO (d)) ? lat1 : lat1 + (lat0 - lat1) * (clon[n] - lon1) / d;
 		gmt_y_wesn_corner (C, &clat[n]);
-		if (fabs (dlon0) > 0.0 && clat[n] >= C->common.R.wesn[YLO] && clat[n] <= C->common.R.wesn[YHI]) n++;
+		if (fabs (d) > 0.0 && clat[n] >= C->common.R.wesn[YLO] && clat[n] <= C->common.R.wesn[YHI]) n++;
 	}
 
 	if (n == 0) return (0);

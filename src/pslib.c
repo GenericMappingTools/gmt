@@ -1019,7 +1019,6 @@ PSL_LONG PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsiz
 	 *   |----------------|
 	 *   1       2        3
 	 */
-	int unused = 0;
 
 	/* If one of [xy]size is 0, keep the aspect ratio */
 	if (PSL_eq (xsize, 0.0)) xsize = (ysize * nx) / ny;
@@ -1036,7 +1035,7 @@ PSL_LONG PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsiz
 	PSL_command (PSL, "%ld %ld T\n", -ox, -oy);
 	PSL_command (PSL, "N %ld %ld M %ld %ld L %ld %ld L %ld %ld L P clip N\n", ox, oy, ox+nx, oy, ox+nx, oy+ny, ox, oy+ny);
 	PSL_command (PSL, "%%%%BeginDocument: psimage.eps\n");
-	unused = (int)fwrite (buffer, (size_t)1, (size_t)size, PSL->internal.fp);
+	fwrite (buffer, (size_t)1, (size_t)size, PSL->internal.fp);
 	PSL_command (PSL, "%%%%EndDocument\n");
 	PSL_command (PSL, "PSL_eps_end\n");
 	return (PSL_NO_ERROR);
@@ -2872,7 +2871,7 @@ PSL_LONG psl_read_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h
 
 void psl_get_origin (double xt, double yt, double xr, double yr, double r, double *xo, double *yo, double *b1, double *b2)
 { /* finds origin so that distance is r to the two points given */
-	double a0, b0, c0, A, B, C, q, sx1, sx2, sy1, sy2, r1, r2;
+	double a0, b0, c0, A, B, C, q, sx1, sx2, sy1, sy2;
 
 	a0 = (xt - xr) / (yr - yt);
 	b0 = 0.5 * (xr*xr + yr*yr - xt*xt - yt*yt)/(yr - yt);
@@ -2886,9 +2885,7 @@ void psl_get_origin (double xt, double yt, double xr, double yr, double r, doubl
 	sy1 = b0 + a0 * sx1;
 	sy2 = b0 + a0 * sx2;
 
-	r1 = hypot (sx1, sy1);
-	r2 = hypot (sx2, sy2);
-	if (r1 < r) {
+	if (hypot (sx1, sy1) < r) {
 	    *xo = sx1;
 	    *yo = sy1;
 	}

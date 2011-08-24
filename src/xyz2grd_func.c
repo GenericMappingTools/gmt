@@ -356,7 +356,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->E.active) {	/* Read an ESRI Arc Interchange grid format in ASCII.  This must be a single physical file. */
 		GMT_LONG n_left;
 		float value;
-		char line[GMT_BUFSIZ], *not_used = NULL;
+		char line[GMT_BUFSIZ];
 		FILE *fp = GMT->session.std[GMT_IN];
 		
 		if (Ctrl->In.file && (fp = GMT_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
@@ -365,29 +365,29 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		
 		Grid->header->registration = GMT_GRIDLINE_REG;
-		not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->nx) != 1) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding ncols record\n");
 			Return (EXIT_FAILURE);
 		}
-		not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->ny) != 1) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding ncols record\n");
 			Return (EXIT_FAILURE);
 		}
-		not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[XLO]) != 1) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding xll record\n");
 			Return (EXIT_FAILURE);
 		}
 		if (!strncmp (line, "xllcorner", (size_t)9)) Grid->header->registration = GMT_PIXEL_REG;	/* Pixel grid */
-		not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[YLO]) != 1) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding yll record\n");
 			Return (EXIT_FAILURE);
 		}
 		if (!strncmp (line, "yllcorner", (size_t)9)) Grid->header->registration = GMT_PIXEL_REG;	/* Pixel grid */
-		not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->inc[GMT_X]) != 1) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding cellsize record\n");
 			Return (EXIT_FAILURE);

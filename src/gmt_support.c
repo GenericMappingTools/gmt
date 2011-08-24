@@ -3198,7 +3198,7 @@ void GMT_contlabel_init (struct GMT_CTRL *C, struct GMT_CONTOUR *G, GMT_LONG mod
 
 GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR *G)
 {
-	GMT_LONG k, bad = 0, pos = 0, g_set = FALSE;
+	GMT_LONG k, bad = 0, pos = 0;
 	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], c;
 	char *specs = NULL;
 
@@ -3255,7 +3255,6 @@ GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR 
 			case 'g':	/* Box Fill specification */
 				if (GMT_getrgb (C, &p[1], G->rgb)) bad++;
 				G->transparent = FALSE;
-				g_set = TRUE;
 				break;
 
 			case 'j':	/* Justification specification */
