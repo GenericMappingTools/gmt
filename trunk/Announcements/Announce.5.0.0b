@@ -12,9 +12,18 @@ see Chapter 1 in the Technical Reference & Cookbook or
 follow the RELEASES link on the updated GMT web page
 (http://www.soest.hawaii.edu/gmt5).
 
+Because GMT 5 beta may not be stable enough for production work
+we recommend you install both GMT 4 (e.g., 4.5.7) and 5 beta
+and use the gmtswitch script to quickly switch between any
+number of GMT installations.  GMT 5b comes with a gmtswitch.bat
+script that allows this functionality under Windows as well.
+See gmtswitch man page for details.
+
 Because this is a beta release it is possible that only some
-mirrors will sync - pleasel use the SOEST site your nearest
+mirrors will sync - please use the SOEST site your nearest
 site is not populated.
+
+To obtain GMT 5b, visit the GMT 5 web site www.soest.hawaii.edu/gmt5
 
 Sincerely,
 
