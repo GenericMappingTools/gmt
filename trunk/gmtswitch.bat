@@ -34,8 +34,8 @@ REM	WARNING: The path change will not be visible on the shell cmd where it was e
 REM		 For the change to be active you will need to open a new cmd window.
 REM
 REM	The second mode is temporary because the path to the selected GMT binary dir is
-REM	prepended to the via a shell command line. This modification disappears when the
-REM	shell cmd window where it was executes is deleted.
+REM	prepended to previous path via a shell command line. This modification disappears
+REM	when the shell cmd window where it was executes is deleted.
 REM
 REM	It is the user responsibility to set the contents of the G32_32 to G5_64 bellow
 REM	to valid paths where the binaries of the different GMT versions are installed
