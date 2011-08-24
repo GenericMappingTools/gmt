@@ -25,6 +25,6 @@ awk '{print $1, $3}' ptodos_g.dat | psxy -R -JX -Sc.1c -G0 -O -K >> $ps
 gmtmath -T-50/50/1 T $z0 HYPOT 3 POW INV 6.674e-6 MUL 4 MUL 3 DIV PI MUL $r 3 POW MUL $ro MUL $z0 ABS MUL = ztmp.dat
 psxy ztmp.dat -R -JX -W1p,200/0/0 -O >> $ps
 
-\rm li li1.dat ptodos_g.dat ztmp.dat .gmtcom*
+rm -f li li1.dat ptodos_g.dat ztmp.dat .gmtcom*
 
 pscmp
