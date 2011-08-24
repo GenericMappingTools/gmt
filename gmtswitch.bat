@@ -30,6 +30,8 @@ REM	change the user path in the registry. It's called permanent because the chan
 REM	remains until ... next change.
 REM	http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml 
 REM	Off course the editpath.exe binary must be in your system's path as well.
+REM	WARNING: The path change will not be visible on the shell cmd where it was executed.
+REM		 For the change to be active you will need to open a new cmd window.
 REM
 REM	The second mode is temporary because the path to the selected GMT binary dir is
 REM	prepended to the via a shell command line. This modification disappears when the
