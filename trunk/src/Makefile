@@ -76,12 +76,12 @@ LIBGMT_O	= gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_fft.o gmt_grdio
 		  gmt_vector.o gmt_version.o $(TRIANGLE_O) $(ALPHA_SINCOS_O) gmtapi_parse.o $(FUNCS_O)
 LIBGMTPS_O	= gmt_init.o gmt_map.o gmt_plot.o gmtapi_util.o $(FUNCSPS_O) $(API_O)
 
-SCRIPTS		= gmt_shell_functions.sh gmtlogo isogmt ../gmtswitch
+SCRIPTS		= gmt_shell_functions.sh gmtlogo isogmt gmtswitch
 ALLPROGS	= $(SCRIPTS) $(PROGS) $(PROGSPS) $(DEMOS) $(GMT_COMPAT_PROGS)
 
 CONFIGS		= config.mk gmt_version.h gmt_notposix.h
 
-MAN1		= gmt.1 gmt_shell_functions.1 gmtlogo.1 isogmt.1 \
+MAN1		= gmt.1 gmt_shell_functions.1 gmtlogo.1 isogmt.1 gmtswitch.1 \
 		  $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 MAN3		= pslib.3
 MAN5		= gmtcolors.5 gmt.conf.5
