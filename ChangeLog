@@ -7,8 +7,8 @@
 	GMT 5.0.0b finalized and released.
 -----------------------------------------------------------------------------------------
 
-2011-08-24	pwessel
-	* gmtswitch:		Added man page in src
+2011-08-24	pwessel, remko
+	* gmtswitch:		Added man page in src, and script moved to src.
 
 2011-08-24	remko
 	* gmt_version.c:	Introduced new function GMT_version() to generate version number.
