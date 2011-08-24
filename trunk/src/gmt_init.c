@@ -5108,6 +5108,9 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 		Ccopy->init.history[i] = C->init.history[i];
 	}
 #endif
+	free ((void *)Ccopy->init.progname);
+	/*free ((void *)C->init.progname);	Needs to be freed but can't be done blindly like this as it makes readwrite_withgdal test crash */
+
 	/* GMT_CURRENT */
 
 	Ccopy->current.ps.clip_level = C->current.ps.clip_level;
