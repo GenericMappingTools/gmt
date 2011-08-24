@@ -59,7 +59,7 @@ FILES = gmt_ellipsoids.h gmt_datums.h Ellipsoids.i Fonts.i gmt_grdkeys.h \
 	gmtmath_func.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i \
 	grdmath_func.h grdmath_op.h grdmath_explain.h grdmath_man.i \
 	grdreformat_man.i gmtapi_errstr.h gmtapi_errno.h \
-	$(API_H) $(API_C) gmt_prognames.h gmt_progcases.h gmt_progpurpose.h
+	$(API_H) $(API_C) gmt_prognames.h gmt_progcases.h gmt_progpurpose.h gmt_svn_revision.h
 
 gmtmacros FILES:	$(FILES)
 $(FILES):		GNUmakefile
@@ -136,6 +136,12 @@ gmt_progcases.h:	GMTprogs.txt
 
 gmt_progpurpose.h:	$(FUNCS_C)
 			grep -h "%s \[API\]" *_func.c | sed -e 's/GMT_message (GMT/fprintf (stderr/g' -e 's/\[API\] //g' -e 's/\\n\\n/\\n/g' -e 's/ %s/%s/g' -e 's/GMT_VERSION/""/g' > gmt_progpurpose.h
+
+# Get SVN revision number
+
+gmt_version.o:		gmt_svn_revision.h
+gmt_svn_revision.h:	.svn/entries
+			head -n 4 .svn/entries | tail -n 1 > $@
 
 # Add all the dimensions to gmt_dimensions.h
 
