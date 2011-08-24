@@ -5103,8 +5103,8 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 	}
 #else
 	for (i = 0; i < GMT_N_UNIQUE; i++) {
-		if (Ccopy->init.history[i] && Ccopy->init.history[i] != C->init.history[i])
-			free ((void *)Ccopy->init.history[i]);
+		/*if (Ccopy->init.history[i] && Ccopy->init.history[i] != C->init.history[i])
+			free ((void *)Ccopy->init.history[i]);*/
 		Ccopy->init.history[i] = C->init.history[i];
 	}
 #endif
@@ -5287,6 +5287,12 @@ GMT_LONG GMT_Complete_Options (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		}
 		if (update) {	/* Gave -J<code><args>, -R<args>, -B<args> etc. so we update history and continue */
 			if (remember) C->init.history[id] = strdup (opt->arg);
+#if 0
+			if (remember) {
+				C->init.history[id] = realloc((void *)C->init.history[id], (size_t)(strlen(opt->arg) + 1));
+				strcpy(C->init.history[id], opt->arg);
+			}
+#endif
 		}
 		else {	/* Gave -J<code>, -R, -B etc. so we complete the option and continue */
 			if (!C->init.history[id]) Return;
