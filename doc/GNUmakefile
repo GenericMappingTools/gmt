@@ -255,7 +255,7 @@ pdf/GMT_Manpages.pdf:	pdfman.sh ../src/blockmean.1
 
 html/man/blockmean.html:	webman.sh ../src/blockmean.1
 	bash webman.sh -s
-html/index.html:
+html/index.html:	$(EXPNG)
 	ln -f html/gmt_services.html $@
 	\mkdir -p html/images
 	\ln -f $(EXPNG) html/images
