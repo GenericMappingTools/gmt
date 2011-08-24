@@ -34,14 +34,14 @@ REM it is necessary to build it first under Cygwin (or operate on a provided sou
 
 REM
 REM STEP a: Specify your compiler (Tested with MS CL and Intel ICL)
-SET CC=ICL
+SET CC=CL
 
 REM
 REM STEP b: Specify the "Bitage" and if building normal or debug version
 REM         Set DEBUG to "yes" or "no" and BITS = 32 or 64 (no quotes)
 REM	    NOTE: The value set here for BITS will be the default but it
 REM		  can be overriden by a third input arg.
-SET DEBUG="yes"
+SET DEBUG="no"
 SET BITS=64
 
 REM
@@ -187,7 +187,7 @@ IF  %DEBUG%=="yes" SET OPTIM=/Z7 /DDEBUG
 SET DLL_NETCDF=/DDLL_NETCDF
 SET TR=/DTRIANGLE_D
 
-SET COMPFLAGS=/W4 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0 /nologo
+SET COMPFLAGS=/W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0 /nologo
 SET COPT=/I%cd% /DWIN32 %OPTIM% %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC% %TO_MATLAB% %COMPFLAGS% %COMPAT% %PCRE% %PCRE_INC% %VLD_INC% %USE_MEM_ALIGNED% /DWINBITAGE=%BITS%
 
 set LOPT=/nologo /dll /incremental:no %LDEBUG%
