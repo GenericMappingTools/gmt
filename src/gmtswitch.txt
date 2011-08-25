@@ -90,7 +90,7 @@ change the user path in the registry. It's called permanent because the changes
 remains until ... next change. See
 .br
 http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml
-,br
+.br
 Of course the editpath.exe binary must be in your system's path as well.
 WARNING: The path change will not be visible on the shell cmd where it was executed.
 For the change to be active you will need to open a new cmd window.
