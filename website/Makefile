@@ -247,5 +247,6 @@ test.sed:
 
 live.sed:
 	grep WEBSITE1 gmtsite.macros | awk '{printf "sXWEBSITEX%sXg\n", $$3}' > live.sed
-	grep WEBSERVER1 gmtsite.macros | awk '{printf "sXWEBSERVERX%sXg\n", $$3}' > live.sed
+	grep WEBSERVER1 gmtsite.macros | awk '{printf "sXWEBSERVERX%sXg\n", $$3}' >> live.sed
 	grep LIVEWWWDIR1 gmtsite.macros | awk '{printf "sXLIVEWWWDIRX%sXg\n", $$3}' >> live.sed
+	echo 's/"GMT_ftpsite=", \$$site/"GMT_ftpsite=1"/g' >> live.sed
