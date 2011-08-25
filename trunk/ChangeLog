@@ -49,7 +49,8 @@
 	* gmt_fft.c:		Started groundwork to enable FFTW, Accelerate framework,
 				Sun Performance library, and FFT Pack configurations.
 	* gmt.conf:		New parameter GMT_FFT which selects what FFT implementation
-				to use in programs like spectrum1d and grdfft.
+				to use in programs like spectrum1d and grdfft.  For now
+				set to brenner [GMT4] since others are not tested.
 
 2011-07-28	pwessel
 	* gmt_support.c:	Pens like brown,- (i.e., no width) did not set the color.
