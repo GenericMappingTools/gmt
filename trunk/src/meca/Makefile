@@ -13,7 +13,7 @@ include $(GMTSRCDIR)config.mk
 include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
-ALLLIB		= $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS)
+ALLLIB		= $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS)
 
 API_O		= gmt_meca.o
 API_H		= $(API_O:.o=.h)
@@ -102,7 +102,7 @@ pscoupe$(EXE):	pscoupe.o
 pspolar$(EXE):	pspolar.o
 
 $(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
 
 $(PROGS_O):	../gmtprogram.c
 		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMTPSL -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c

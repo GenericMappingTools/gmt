@@ -1,7 +1,7 @@
 <HTML>
 <!--  $Id$  -->
 <TITLE>GMT5 Logo and Timestamp Contest</TITLE>
-<BODY bgcolor="#ffffff">
+<BODY bgcolor="#e0f0ff">
 <CENTER><H2>GMT5 Logo and Timestamp Contest</CENTER></H2><P>
 <HR>
 GMT4 Logo:<br>
@@ -19,8 +19,8 @@ competition.  First let us define what these items are meant to be and how they 
 <LI>The GMT <b>Logo</b> is a color graphics suitable to put on posters, KeyNote/PowerPoint presentations, and documentation.
 	We currently use the logo on our web page and on the cover pages of the documentation.  Because it
 	is typically used at a reasonable size (e.g., 1 inch high by 2 inch wide or 2.5cm by 5 cm) it can be moderately
-	detailed and high resolution.  GMT4 comes with a script called <b>gmtlogo</b> that produces PostScript code for the
-	logo that can be used as an overlay on a plot.
+	detailed and of high resolution.  GMT4 comes with a script called <b>gmtlogo</b> that produces PostScript code
+	that can be used to overlay the logo on a plot (i.e., it has -O -K set).
 <LI>The GMT <b>Timestamp</b> is a small graphic item plotted on GMT maps when the <b>-U</b> option is used.  Currently,
 	it is a very small 90 x 220 pixels B/W bit-map image that is plotted at 600 dpi, thus having dimensions of
 	approximately 0.15 inch by 0.365 inch (3.8 mm by 9.3 mm).  Because of the small size it cannot be too detailed, i.e., it
@@ -34,13 +34,14 @@ There are a few guidelines that all entries have to abide by:
 		    gmt5logo dx dy scale [-Gbackground] [-Wboxpen] >> t.ps<br>
 		   For an closer explanation of options, see the current GMT4 gmtlogo man page.  The script must use GMT 5 syntax; you
 		   can model your script based on the old version.
-		<LI>The script cannot involve a very time-consuming calculation or rendering.
+		<LI>The script cannot involve a very time-consuming calculation or rendering or depend on a very large data set.
+		<LI>Any data set used to generate the logo must be in the public domain so it can be included in GMT 5.
 		<LI>The logo should be artistic but also represent an aspect that GMT excels in.
 	</OL>  
 <LI>The GMT <b>Timestamp</b>:			
 	<OL>
 		<LI>You may create this in any way you like (it does not have to be a GMT script). The submission should be a PNG file with dimensions 90 pixels tall
-			and 220 pixels wide.  The <b>-U</b> option will place this graphics as indicated.
+			and 220 pixels wide [The <b>-U</b> option will place this graphics when the winning entry is implemented].
 		<LI>The graphics can be in color but should also reproduce adequately when printed on black/white laserwriters.
 	</OL>
 </UL>
@@ -48,7 +49,7 @@ There is NO requirement that you must submit entries for both the logo and the t
 that the timestamp graphic be a miniaturized version of the logo.  You may submit more than one entry in each category.
 <H3>Submission and Deadlines</H3>
 	Submit your entries to <A HREF="mailto:pwessel@hawaii.edu">Paul Wessel</A>; make sure you attach any data sets needed
-	to run your script (for binary or large files, please attach as tbz or zip archives).  <b>The deadline is September 15, 2011 at midnight HST</b>.
+	to run your script (for binary or large files, please attach as tbz or zip archives).  <b>The deadline is September 25, 2011 at midnight HST</b>.
 <H3>Determining the winning entries</H3>
 	We will arrange for a vote after the deadline.  We will render all entries and set up a webpage where you can cast your votes.  The result of
 	the vote will be announced a few days prior to the release of GMT 5 which is anticipated for Oct 8, 2011.
@@ -58,7 +59,7 @@ that the timestamp graphic be a miniaturized version of the logo.  You may submi
 	The GMT Documentation will acknowledge the author of the logo, as will the gmt5logo usage message and man page.  You are also giving us
 	the right to use the graphics on items like T-shirts or coffee mugs without further compensation.
 <H3>Prizes</H3>
-The winning Logo entry will receive a white T-shirt with his/her logo on the front!
+The winning Logo entry will receive a white T-shirt with his/her logo on the front, and there will be runner-up prizes as well!
 <HR>
 <I>Last updated Aug 25, 2011 by Paul Wessel</I>
 </BODY>

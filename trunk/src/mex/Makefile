@@ -18,7 +18,7 @@ include $(GMTSRCDIR)common.mk
 .SUFFIXES:	.$(MEX_EXT)
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(MEX_INC) $(GDAL_INC)
-ALLLIB     	= $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(MEX_LIB)
+ALLLIB     	= $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(MEX_LIB)
 FLAGS		= -I$(srcdir) $(MEX_INC) $(NETCDF_INC) $(GDAL_INC)
 # PROGS_C are source files provided by us
 PROGS_C		= blockmean.c grdinfo.c grdread.c grdwrite.c surface.c nearneighbor.c psxy.c pscoast.c \

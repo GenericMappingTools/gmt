@@ -51,4 +51,4 @@ dimfilter$(EXE):	dimfilter.o
 gmtdigitize$(EXE):	gmtdigitize.o
 
 $(PROGS):	$(LIBGMT) $(PROGS_O)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@

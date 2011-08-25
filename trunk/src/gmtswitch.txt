@@ -117,4 +117,3 @@ gmtswitch g4_32 1
 .br
 .sp
 Run without arguments to get a "Usage" (for permanent mode)
-#include "refs.i"

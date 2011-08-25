@@ -319,10 +319,10 @@ gmt2rgb$(EXE):		grd2rgb$(EXE)
 		$(LN_S) grd2rgb$(EXE) gmt2rgb$(EXE)
 
 $(FUNCS) $(PROGS) $(PROGSPS):	$(LIBGMT)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
 
 $(DEMOS):	$(LIBGMT)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
 
 # To create to PSL demo program. Requires pslib only
 $(PSLDEMO):	$(PSLDEMO_O) $(LIBPS_O)

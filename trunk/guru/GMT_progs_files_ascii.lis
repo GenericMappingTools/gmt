@@ -12,10 +12,8 @@ config.guess
 config.sub
 configure.ac
 configure
-gmtswitch
 install-sh
 Makefile
-gmtswitch.bat
 src/Makefile
 src/config.mk.in
 src/common.mk
@@ -121,6 +119,7 @@ src/gmt_shore.c
 src/gmt_stat.c
 src/gmt_support.c
 src/gmt_vector.c
+src/gmt_version.c
 src/s_rint.c
 src/gmt2kml_func.c
 src/gmtdefaults_func.c
@@ -225,7 +224,9 @@ src/gmtselect.1
 src/gmtset.1
 src/gmtspatial.1
 src/gmtstitch.1
+src/gmtswitch
 src/gmtswitch.1
+src/gmtswitch.bat
 src/gmtvector.1
 src/gmtwhich.1
 src/grd2cpt.1
