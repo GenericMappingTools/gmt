@@ -1225,7 +1225,12 @@ fi
 if [ -d doc/examples ] && [ "$GMT_run_examples" = "y" ]; then
 	GMT_SHAREDIR=$GMT_sharedir
 	export GMT_SHAREDIR
-	$GMT_make examples animations || exit
+	# avoid parallel builds with gmake
+	if $GMT_make -v | grep -q "GNU Make"; then
+		$GMT_make -j1 examples animations || exit
+	else
+		$GMT_make examples animations || exit
+	fi
 fi
 
 cd $here/src

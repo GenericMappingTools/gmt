@@ -105,5 +105,4 @@ cat << EOF >> gmt_mirrors.html
 </BODY>
 </HTML>
 EOF
-#rm -f mirrors.d master.d mirror_sites.d master_site.d gmt_hitmap.ps $$
-rm -f $$
+rm -f mirrors.d master.d mirror_sites.d master_site.d gmt_hitmap.ps $$
