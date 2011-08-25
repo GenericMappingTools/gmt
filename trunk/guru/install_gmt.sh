@@ -914,7 +914,7 @@ if [ "$GMT_ftp" = "y" ] || [ "$GSHHS_ftp" = "y" ]; then
 		if [ $GMT_FTP_TEST -eq 1 ]; then	# Special dir for guru testing
 			DIR=gmttest/$SERIES
 		else
-			DIR=gmt
+			DIR=gmt${SERIES}
 		fi
 	fi
 	ftp_ip=`sed -n ${GMT_ftpsite}p gmt_install.ftp_ip`

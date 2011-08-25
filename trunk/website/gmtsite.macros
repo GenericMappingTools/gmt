@@ -16,7 +16,7 @@
 
 #-------------------------------------------------
 # THE ACTIVE WWW AND FTP SITES
-WEBSITE1	= gmt.soest.hawaii.edu
+WEBSITE1	= www.soest.hawaii.edu/gmt5
 WEBSERVER1	= imina.soest.hawaii.edu
 LIVEWWWDIR1	= /export/imina2/httpd/htdocs/gmt5
 LIVECGIDIR1	= /export/imina2/httpd/cgi-bin/wessel
