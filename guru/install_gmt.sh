@@ -864,7 +864,7 @@ fi
 if [ ! x"$NETCDF_INC" = x ] && [ ! x"$NETCDF_LIB" = x ]; then	# Only set up path if these are not set
 	echo "install_gmt.sh: Using NETCDF_INC=$NETCDF_INC and NETCDF_LIB=$NETCDF_LIB to find netcdf support"
 else
-	if [ x"$netcdf_path" = x ]; then	# Not explicitly set, must assign it
+	if [ x"$netcdf_path" = x ]; then	# Not explicitly set, see if we can assign it
 		if [ ! x"$NETCDFHOME" = x ]; then	# Good, used an environmental variable for it
 	                netcdf_path=$NETCDFHOME
 	        elif [ "$netcdf_ftp" = "n" ]; then	# Next, see if it was already installed in $topdir
@@ -875,16 +875,14 @@ else
 	      			netcdf_path="/usr/local/netcdf"
 			elif [ -f /sw/lib/libnetcdf.a ]; then	# Mac OSX with fink
 	      			netcdf_path="/sw"
-			else
-	               		echo "install_gmt.sh: No path for netcdf provided - abort" >&2
-	               		echo "install_gmt.sh: netcdf not in /usr/local, /usr/local/netcdf, or /sw" >&2
-				exit
 			fi
 	        fi
-		echo "install_gmt.sh: netcdf found in $netcdf_path" >&2
 	fi
-	NETCDFHOME=$netcdf_path
-	export NETCDFHOME
+	if [ ! x"$netcdf_path" = x ]; then	# Got a value
+		echo "install_gmt.sh: netcdf found in $netcdf_path" >&2
+		NETCDFHOME=$netcdf_path
+		export NETCDFHOME
+	fi
 fi
 
 #--------------------------------------------------------------------------------
@@ -1262,7 +1260,6 @@ GMT installation complete. Remember to set these:
 
 -----------------------------------------------------------------------
 For csh or tcsh users:
-setenv NETCDFHOME $NETCDFHOME
 set path=($GMT_bin \$path)
 EOF
 if [ "$GMT_sharedir" != "$GMT_share" ]; then
@@ -1271,7 +1268,6 @@ fi
 cat << EOF >&2
 
 For sh or bash users:
-export NETCDFHOME=$NETCDFHOME
 export PATH=$GMT_bin:\$PATH
 
 Note: if you installed netCDF as a shared library you may have to add
