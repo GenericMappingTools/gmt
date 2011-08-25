@@ -50,7 +50,7 @@ and furthermore /usr/bin/awk thinks sin(1) = 1.</LI>
 <B>0. Select GMT version</B><BR>
 
 <!--  <INPUT TYPE="radio" VALUE="4.5.7" NAME="radio_version" CHECKED> GMT 4.5.7<BR> -->
-<INPUT TYPE="radio" VALUE="5.0.0b" NAME="radio_version"> GMT 5.0.0 beta<BR>
+<INPUT TYPE="radio" VALUE="5.0.0b" NAME="radio_version" CHECKED> GMT 5.0.0 beta<BR>
 <P>
 <I>Note: GMT 4.5.7 is the latest stable version of GMT.  Here we offer
 an installation of GMT 5.0.0 beta.  All our development is now focused on GMT 5 and only bug
@@ -131,7 +131,10 @@ variables $GDAL_LIB and $GDAL_INC prior to running the installer.</I>
 If you selected to use PCRE, give full pathname to the PCRE directory with lib and include: <INPUT NAME="pcre_dir" TYPE="text" SIZE="30"><BR>
 <P>
 <I>Note: If selected, some GMT tools may use regular expression pattern matching using the same syntax and semantics
-as Perl 5 in internal GMT searching (e.g., gmtconvert -S).</I>
+as Perl 5 in internal GMT searching (e.g., gmtconvert -S).
+Specify the parent directory where both the lib and include subdirs for PCRE can be found.
+If these directories do not have the same parent directory, then leave the path blank and manually set the environmental
+variables $PCRE_LIB and $PCRE_INC prior to running the installer.</I>
 <HR>
 
 <!--  GMT FTP SELECTION  -->
