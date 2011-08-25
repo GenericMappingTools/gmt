@@ -394,7 +394,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (M.format == MGD77_FORMAT_CDF) {
 				fprintf (GMT->session.std[GMT_OUT], "%s\n", D->H.history);
 				for (i = 0; i < M.n_out_columns; i++) {
-					if ((M.order[i].set == MGD77_CDF_SET)) {
+					if (M.order[i].set == MGD77_CDF_SET) {
 						fprintf (GMT->session.std[GMT_OUT], "> %s%s%s%s%s%s%s", D->H.info[MGD77_CDF_SET].col[M.order[i].item].abbrev, GMT->current.setting.io_col_separator,
 						D->H.info[MGD77_CDF_SET].col[M.order[i].item].name, GMT->current.setting.io_col_separator,
 						D->H.info[MGD77_CDF_SET].col[M.order[i].item].units, GMT->current.setting.io_col_separator,
