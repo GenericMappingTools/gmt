@@ -89,6 +89,8 @@ before \GMT\ 5 becomes the official version and \GMT\ 4 will be retired:
 	\item All program that read grids now set boundary conditions to aid further processing.  If a subset then the
 		boundary conditions are taken from the surrounding grid values.
 	\item There is now a defaults parameter that controls which algorithms to use for Fourier transforms and triangulation.
+	\item \GMT\ 5 only produces \PS\ and no longer has a setting for EPS.  We made this decision since a) our EPS effort was always
+		very approximate (no consideration of font metrics. etc.) and often wrong, and b) \GMTprog{ps2raster} handles it exactly.
 	\item The \Opt{B} option can now handle irregular and custom annotations (see Section \ref{sec:custaxes}).
 		It also has an automatic mode which will select optimal intervals.
 	\item All plot programs can take a new \Opt{p} option for perspective view from infinity.  In \GMT\ 4, only some
@@ -114,7 +116,8 @@ before \GMT\ 5 becomes the official version and \GMT\ 4 will be retired:
 		or a running number, starting at a specified origin [0].
 		Now correctly handles polygons with perimeters and holes.
 	\item \GMTprog{grdtrack} has a new \Opt{C}, \Opt{D} options to automatically create an equidistant set of cross-sectional
-		profiles given input line segments; one or more grids can then be sampled at these locations.
+		profiles given input line segments; one or more grids can then be sampled at these locations.  Finally, \Opt{N}
+		will not skip points that are outside the grid domain but return NaN as sampled value.
 	\item \GMTprog{mapproject} has a new \Opt{N} option to do geodetic/geocentric conversions; it combines with \Opt{I}
 		for inverse conversions.  Also, we have extended \Opt{A} to accept \Opt{A}\textbf{o}$|$\textbf{O} to compute line orientations (-90/90).
 	\item \GMTprog{makecpt} and \GMTprog{grd2cpt} has a new \Opt{F} option to specify output color representation, e.g.,

@@ -84,7 +84,7 @@ update-version-live:	update-ftp-live update-www-live
 
 update-www-live:	update-www-local live.sed
 #	First completely remove the live www files then copy them from the www-local files
-		sh winsites.sh gmt
+		sh winsites.sh gmt5
 		cp -f gmt_windows_*.html www/gmt
 		ssh $(WEBSERVER1) rm -rf $(LIVEWWWDIR1)/gmt $(LIVEWWWDIR1)/index.html
 		ssh $(WEBSERVER1) mkdir -p $(LIVEWWWDIR1)/gmt
@@ -98,7 +98,7 @@ update-www-live:	update-www-local live.sed
 
 update-www-test:	update-www-local test.sed
 #	First completely remove the test www files then copy then from the www-local files
-		sh winsites.sh gmttest
+		sh winsites.sh gmttest/5
 		cp -f gmt_windows_*.html www/gmt
 		ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/index.html
 		scp -r www/gmt $(WEBSERVER2):$(LIVEWWWDIR2)
@@ -120,7 +120,7 @@ update-www-test:	update-www-local test.sed
 		rm -f gmt_server_job.sh tmp test.sed
 
 update-www-local:	../registration/gmt_usage.png gmt_mirrors.html www/gmt/gmt_releases.html www/gmt/examples/ex01/example_01.zip
-		sh winsites.sh gmt
+		sh winsites.sh gmt5
 		mkdir -p www/gmt
 		cp -f ../guru/install_gmt.sh www/gmt
 		cp -f gmt.html www/index.html

@@ -4,7 +4,7 @@
 grdtrack \- Sample grids at specified (x,y) locations
 .SH SYNOPSIS
 BD(grdtrack) [ IT(xyfile) ] OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(m)|BD(p) ] 
-[ OPT(C)IT(length)/IT(ds)[IT(spacing)] ] [ OPT(D)IT(dfile) ] [ OPT(L)IT(flag) ] 
+[ OPT(C)IT(length)/IT(ds)[IT(spacing)] ] [ OPT(D)IT(dfile) ] [ OPT(L)IT(flag) ] [ OPT(N) ] 
 [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] 
 [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -63,6 +63,9 @@ Boundary condition IT(flag) may be IT(x) or IT(y) or IT(xy) indicating data is p
 x or y or both set by OPT(R), or IT(flag) may be IT(g) indicating geographical conditions (x and y are 
 lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero) unless
 the grid is automatically recognized as periodic.]
+.TP
+OPT(N)
+Do IT(not) skip points that fall outside the domain of the grid(s) [Default only output points within grid domain].
 #include "explain_-R.txt"
 #include "explain_-V.txt"
 .TP
