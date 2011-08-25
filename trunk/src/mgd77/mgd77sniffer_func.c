@@ -1413,7 +1413,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 										}
 									}
 								}
-								else if ((this_grid[i].col == MGD77_FAA)) {
+								else if (this_grid[i].col == MGD77_FAA) {
 									/*check faa rls slope (two sided test) */
 									for (j = 0; faa_v_grid[j].cd < percent_limit/200.0 && j < RLS_N_FAA_ROWS-2; j++);
 									for (n = RLS_N_FAA_ROWS-1; 1-percent_limit/200.0 < faa_v_grid[n].cd && n > 1; n--);
