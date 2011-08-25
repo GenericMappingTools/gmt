@@ -34,7 +34,6 @@ mkdir $PDIR;
 $form_version	= $gmt_form{'form_version'};
 $version	= $gmt_form{'radio_version'};
 $unit		= $gmt_form{'radio_unit'};
-$eps		= $gmt_form{'radio_eps'};
 $flock		= $gmt_form{'radio_flock'};
 $cdf		= $gmt_form{'radio_netcdf'};
 $ftpmode	= $gmt_form{'radio_ftpmode'};
@@ -223,13 +222,6 @@ if ($unit eq "SI") {
 }
 else {
 	print FILE "GMT_si=n\n";
-}
-
-if ($eps eq "PS") {
-	print FILE "GMT_ps=y\n";
-}
-else {
-	print FILE "GMT_ps=n\n";
 }
 
 if ($gmt_sharedir eq "" && $gmt_share ne "") {

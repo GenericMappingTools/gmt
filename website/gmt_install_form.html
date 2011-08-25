@@ -3,14 +3,14 @@
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
-<BODY bgcolor="#ffffff">
+<BODY bgcolor="#ffffef">
 <FORM ACTION="/cgi-bin/wessel/install_gmt5_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
 <INPUT TYPE="hidden" VALUE="$Revision$" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
 operating systems capable of running a Bourne (sh) script. When submitting the completed form,
-you will receive a parameter file (e.g., GMT4param.txt) that you may save and use as argument to the
+you will receive a parameter file (e.g., GMT5param.txt) that you may save and use as argument to the
 <b>install_gmt.sh script</b>.  For example, assuming you save the parameter file to GMT5param.txt,
 you can install the GMT5 package with the command<BR>
 <p>
@@ -49,10 +49,10 @@ and furthermore /usr/bin/awk thinks sin(1) = 1.</LI>
 
 <B>0. Select GMT version</B><BR>
 
-<INPUT TYPE="radio" VALUE="4.5.7" NAME="radio_version" CHECKED> GMT 4.5.7<BR>
+<!--  <INPUT TYPE="radio" VALUE="4.5.7" NAME="radio_version" CHECKED> GMT 4.5.7<BR> -->
 <INPUT TYPE="radio" VALUE="5.0.0b" NAME="radio_version"> GMT 5.0.0 beta<BR>
 <P>
-<I>Note: GMT 4.5.7 is the latest stable version of GMT.  We also offer
+<I>Note: GMT 4.5.7 is the latest stable version of GMT.  Here we offer
 an installation of GMT 5.0.0 beta.  All our development is now focused on GMT 5 and only bug
 fixes will be considered for GMT 4.  Because GMT 5 will be a beta release we recommend you install
 both versions and use gmtswitch to toggle between the two as needed.</I><BR>
@@ -71,28 +71,9 @@ man page for how to change this choice at a later time).  Individual users can a
 with gmtset MEASURE_UNIT cm|inch</I><BR>
 <HR>
 
-<!--  PS OR EPS SELECTION  -->
-
-<B>2. Select default PostScript output format for GMT:</B><BR>
-
-<INPUT TYPE="radio" VALUE="PS"  NAME="radio_eps" CHECKED> Freeform PostScript (PS)<BR>
-<INPUT TYPE="radio" VALUE="EPS" NAME="radio_eps"> Encapsulated PostScript (EPS)<BR>
-<P>
-<I>Note: GMT-produced PostScript files will by default
-use the printer configuration command <b>setpagedevice</b> to set image area (i.e., paper size) and
-to select specific paper trays, including the manual tray (e.g., when making overhead
-transparencies).  Encapsulated PostScript files (EPS) are not allowed to use this command.  Some older
-PostScript previewers (like Sun's pageview) do not understand <b>setpagedevice</b>, while more up-to-date
-previewers like GNU ghostview does.  The parameter PAPER_MEDIA is used to choose between EPS and PS output
-and this can be changed at run-time with the gmtset command.  Thus, this radio button only affects the
-initial default selection.  Choose EPS if you do not need to worry about paper trays.  Choose the default
-PS if you need the extra flexibility offered.  Please read the gmtdefaults man page and Appendix C
-for more details.</I><BR>
-<HR>
-
 <!--  POSIX FILE LOCKING SELECTION  -->
 
-<B>3. Select POSIX Advisory File Locking:<BR></B>
+<B>2. Select POSIX Advisory File Locking:<BR></B>
 
 <INPUT TYPE="radio" VALUE="Lock" NAME="radio_flock"> YES. Use file locking<BR>
 <INPUT TYPE="radio" VALUE="Nolock" NAME="radio_flock" CHECKED> NO. Do not use file locking<BR>
@@ -112,8 +93,8 @@ avoid using the GMT shorthands in commands that are piped together.</I><BR>
 <CENTER><H3>B. Support Library Setup</H3></CENTER>
 <B>1. Select the appropriate netCDF library option:</B><BR>
 
-<INPUT TYPE="radio" VALUE="have" NAME="radio_netcdf" CHECKED> netCDF 3.6.x is already installed<BR>
-<INPUT TYPE="radio" VALUE="get" NAME="radio_netcdf"> Please get and install the latest netCDF 3.6.x<BR>
+<INPUT TYPE="radio" VALUE="have" NAME="radio_netcdf" CHECKED> netCDF 3.6.x or later is already installed<BR>
+<INPUT TYPE="radio" VALUE="get" NAME="radio_netcdf"> Please get and install the latest netCDF 3.6.x or later<BR>
 <INPUT TYPE="radio" VALUE="install" NAME="radio_netcdf"> I already have the netcdf.tar.Z archive, just install it for me<BR>
 
 Give full pathname to the netCDF directory: <INPUT NAME="netcdf_dir" TYPE="text" SIZE="30"><BR>
@@ -125,7 +106,8 @@ If the library and include files do not have the same parent directory, then lea
 manually set the environmental variables $NETCDF_LIB and $NETCDF_INC prior to running the installer.
 Finally, if you have already installed netCDF as a SHARED library it is your responsibility to make sure
 these libraries are in default paths or explicitly have been added to LD_LIBRARY_PATH or similar environment
-parameters.</I>
+parameters.  Note that netcdf 4 requires hdf as well, so when not using shared libs for those, you would
+need to add -lhdf etc. But in principle, when netcdf 4 is installed as shared lib, the installation should work.</I>
 <HR>
 
 <B>2. OPTIONAL. Experimental GDAL import support:</B><BR>
@@ -212,8 +194,8 @@ under the GNU Public License it is not included by default.  For-profit organiza
 
 <HR><B>5. Select library build type:<BR></B>
 
-<INPUT TYPE="radio" VALUE="Static" NAME="radio_link" CHECKED> Static Libraries<BR>
-<INPUT TYPE="radio" VALUE="Shared" NAME="radio_link"> Shared (dynamic) Libraries<BR>
+<INPUT TYPE="radio" VALUE="Static" NAME="radio_link"> Static Libraries<BR>
+<INPUT TYPE="radio" VALUE="Shared" NAME="radio_link" CHECKED> Shared (dynamic) Libraries<BR>
 
 <P>
 <I>Note: The GMT libraries can be made static or shared.  The main benefit of using shared (dynamic)
@@ -221,7 +203,7 @@ libraries is significantly reduced executable sizes (50-70% savings in disk spac
 procedure knows how to make shared libraries under Linux, FreeBSD, NetBSD, SunOS, Solaris, HPUX, OSF1,
 OSX, and IRIX.  For other systems capable of generating shared libraries you must manually configure the
 config.mk file.  If you have no preferences or no idea what to do on an unlisted system, select
-the default static libraries.</I><BR>
+the default shared libraries.</I><BR>
 
 <!--  COMPILER SELECTION  -->
 
@@ -287,12 +269,12 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 
 <I><P>
 Note: The installation will install all GMT components in several subdirectories
-under one root directory.  By default, GMT will be installed under GMT4.5.7
+under one root directory.  By default, GMT will be installed under GMT5.0.0b
 in the current working directory where install_gmt.sh is run.
 On most Unix systems, however, the preferred location of the root directory will be
 something like /usr/local or /sw, under which the installation will add
 bin, lib, include, share, share/man, and share/doc/gmt, respectively.
-To select another location for the root directory than the default (GMT4.5.7),
+To select another location for the root directory than the default (GMT5.0.0b),
 specify it in the first box above, or enter subdirectories individually.
 Only specify alternative directories if you want to place the files elsewhere. 
 <P>

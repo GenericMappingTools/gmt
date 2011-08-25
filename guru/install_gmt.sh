@@ -892,6 +892,15 @@ fi
 #--------------------------------------------------------------------------------
 
 cd $topdir
+if [ -f gmt-${GMT_version}.tar.$suffix ]; then
+	GMT_ftp=n
+	echo " Found gmt-${GMT_version}.tar.$suffix in current dir - refuse to ftp unless deleted" >&2
+fi
+if [ -f gshhs-${GSHHS}.tar.$suffix ]; then
+	GSHHS_ftp=n
+	echo " Found gshhs-${GSHHS}.tar.$suffix in current dir - refuse to ftp unless deleted" >&2
+fi
+	
 if [ "$GMT_ftp" = "y" ] || [ "$GSHHS_ftp" = "y" ]; then
 
 	if [ $GMT_ftpsite -eq 0 ]; then

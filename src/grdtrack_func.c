@@ -65,6 +65,9 @@ struct GRDTRACK_CTRL {
 		GMT_LONG mode[MAX_GRIDS];
 		GMT_LONG type[MAX_GRIDS];	/*HIDDEN */
 	} G;
+	struct N {	/* -N */
+		GMT_LONG active;
+	} N;
 	struct Z {	/* -Z */
 		GMT_LONG active;
 	} Z;
@@ -94,7 +97,7 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "grdtrack %s [API] - Sample grids at specified (x,y) locations\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[m|p]] [-C<length>[u]/<ds>[u][/<spacing>[u]]]\n"); 
-	GMT_message (GMT, "\t[-D<dfile>] [%s] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
+	GMT_message (GMT, "\t[-D<dfile>] [-N] [%s] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -121,6 +124,7 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   Default samples the grid(s) at the input data points.\n");
 	GMT_message (GMT, "\t-D Save [resampled] input lines to a separate file <dfile>.  Requires -C.\n");
 	GMT_message (GMT, "\t   Output columns are lon, lat, dist, az, z1, z2, ...\n");
+	GMT_message (GMT, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain]\n");
 	GMT_explain_options (GMT, "R");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-Z Only output z-values [Default gives all columns].\n");
@@ -214,15 +218,18 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 #endif
 				break;
 #ifdef GMT_COMPAT
-			case 'N':	/* Backwards compatible */
-				GMT->common.n.interpolant = BCR_NEARNEIGHBOR;
-				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -N deprecated. Use -nn instead.\n");
-				break;
+//			case 'N':	/* Backwards compatible */
+//				GMT->common.n.interpolant = BCR_NEARNEIGHBOR;
+//				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -N deprecated. Use -nn instead.\n");
+//				break;
 			case 'S':
 				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -S deprecated. Use -sa instead.\n");
 				GMT->current.setting.io_nan_mode = 3;
 				break;
 #endif
+			case 'N':
+				Ctrl->N.active = TRUE;
+				break;
 			case 'Z':
 				Ctrl->Z.active = TRUE;
 				break;
@@ -300,7 +307,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	struct GRDTRACK_CTRL *Ctrl = NULL;
 	struct GRD_CONTAINER *GC = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-
+	
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
@@ -436,14 +443,14 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			n_read++;
 
 			status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, in[GMT_X], in[GMT_Y], value);
-			if (status == -1) continue;					/* Point is outside the region of all grids */
+			if (status == -1 && !Ctrl->N.active) continue;		/* Point is outside the region of all grids */
 
 			if (Ctrl->Z.active)	/* Simply print out values */
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)value);
 			else if (pure_ascii && n_fields >= 2) {
 				/* Special case: Ascii i/o and at least 3 columns:
 				   Columns beyond first two could be text strings */
-					if (gmt_skip_output (GMT, value, Ctrl->G.n_grids)) continue;	/* Suppress output due to NaNs */
+				if (gmt_skip_output (GMT, value, Ctrl->G.n_grids)) continue;	/* Suppress output due to NaNs */
 
 				/* First get rid of any commas that may cause grief */
 				for (k = 0; GMT->current.io.current_record[k]; k++) if (GMT->current.io.current_record[k] == ',') GMT->current.io.current_record[k] = ' ';
