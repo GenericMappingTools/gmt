@@ -7,6 +7,9 @@
 	GMT 5.0.0b finalized and released.
 -----------------------------------------------------------------------------------------
 
+2011-08-24	jluis
+	* gmtapi_util.c:	A bit of voodoo programming to make vanish some tests crash on Windows
+
 2011-08-24	pwessel, remko
 	* gmtswitch:		Added man page in src, and script moved to src.
 
