@@ -247,6 +247,7 @@ set GMTLIB=gmt.lib %lib_netcdf% setargv.obj
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_gmtconvert   /Fegmtconvert   gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_gmtdefaults  /Fegmtdefaults  gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_gmtdp        /Fegmtdp        gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_gmtget       /Fegmtget       gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_gmtmath      /Fegmtmath      gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_gmtselect    /Fegmtselect    gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_gmtset       /Fegmtset       gmtprogram.c %GMTLIB%
