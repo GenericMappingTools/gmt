@@ -113,7 +113,7 @@ x2sys_solve$(EXE):	x2sys_solve.o
 x2sys_merge$(EXE):	x2sys_merge.o
 
 $(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) -L../mgd77 -lgmt_mgd77 $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) -L../mgd77 -lgmt_mgd77 $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
 
 $(PROGS_O):	../gmtprogram.c
 		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c

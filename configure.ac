@@ -32,7 +32,7 @@ MANDATE="25 Aug 2011"
 DOCDATE="August 2011"
 DOCYEAR="2011"
 GSHHS_VERSION=2.2.0
-SVN_VERSION=1
+SVN_VERSION=0
 dnl
 dnl -----------------------------------------------------------------
 dnl Specify the minimal supplement directories
@@ -138,6 +138,8 @@ AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 AC_ARG_VAR(GDAL_INC,Location of GDAL headers (compile-time))
 AC_ARG_VAR(GDAL_LIB,Location of GDAL library (compile-time))
+AC_ARG_VAR(PCRE_INC,Location of PCRE headers (compile-time))
+AC_ARG_VAR(PCRE_LIB,Location of PCRE library (compile-time))
 dnl
 dnl -----------------------------------------------------------------
 dnl Check for ar, csh/bash, ld, awk, and ranlib

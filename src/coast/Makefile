@@ -94,12 +94,12 @@ info:		info_f info_h info_i info_l info_c
 
 set_new:
 		cp -f res_?/binned_*_?.cdf $(rootdir)/share/coast
-		
+
 set_old:
 		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_coast.tar.bz2
 		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_high.tar.bz2
 		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_full.tar.bz2
-		
+
 delete:		
 		\rm res_?/binned_*_?.bin res_?/binned_*_?.seg res_?/binned_*_?.pt
 
@@ -176,4 +176,4 @@ $(LIB):		$(SUBS_O)
 #-------------------------------------------------------------------------------
 
 $(PROGS):	$(LIB) $(PROGS_O) $(LIBGMT)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lcoast $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lcoast $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@

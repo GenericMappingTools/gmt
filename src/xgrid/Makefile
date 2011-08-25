@@ -57,4 +57,4 @@ $(PROGS_O) $(OBJS2):	$(PROGS_H) $(GMT_H)
 xgridedit$(EXE):	xGridEdit.o
 
 $(PROGS):	$(OBJS1) $(OBJS2) $(LIBGMT)
-		$(CC) $(LDFLAGS) -o $@ $(PROGS_O) $(OBJS1) $(OBJS2) $(X_LIBS) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS)
+		$(CC) $(LDFLAGS) -o $@ $(PROGS_O) $(OBJS1) $(OBJS2) $(X_LIBS) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS)
