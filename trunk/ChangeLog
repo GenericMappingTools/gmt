@@ -3,9 +3,15 @@
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
-2011-08-25	pwessel
+2011-08-26	pwessel
 	GMT 5.0.0b finalized and released.
 -----------------------------------------------------------------------------------------
+
+2011-08-26	remko
+	* pslib.c:		Made PSL_comment and PSL_command functions instead of macros
+				for all platforms
+	* gmt_init.c:		Made GMT_message and GMT_report functions instead of macros
+				for all platforms
 
 2011-08-25	remko
 	* configure.ac:		Fixed bug in finding pkg-config

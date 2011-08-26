@@ -1,19 +1,19 @@
 Package: gmt
-Version: 4.5.7
-Revision: 1
+Version: 5.0.0b
+Revision: 0
 Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v.tar.bz2
-Source-MD5: fc8a4a546ff8572c225aa7bdb56bbdf8
+Source-MD5: 8f0cee2990f84f0512bae4d220e45d29
 
 SourceDirectory: GMT%v
-BuildDepends: netcdf (>= 3.6.2-6)
-Depends: netcdf-shlibs (>= 3.6.2-6), %n-shlibs (= %v-%r), gshhs (>= 2.2.0)
+BuildDepends: netcdf7
+Depends: netcdf7-shlibs, %n-shlibs (= %v-%r), gshhs (>= 2.2.0)
 Recommends: %n-doc
 NoSetCPPFLAGS: true
 NoSetLDFLAGS: true
 
 # don't build xgrid to avoid x11 dependency.
 # don't build mex (won't work unless matlab or octave is installed).
-ConfigureParams: --datadir='${prefix}/share/%n' --enable-netcdf=%p --enable-shared --enable-triangle --disable-xgrid --disable-mex
+ConfigureParams: --datadir='${prefix}/share/%n' --enable-netcdf7=%p/opt/netcdf7 --enable-shared --enable-triangle --disable-xgrid --disable-mex
 InstallScript: <<
  #!/bin/sh -ev
  make install-all prefix=%i
@@ -26,14 +26,14 @@ SplitOff: <<
 <<
 SplitOff2: <<
   Package: %N-shlibs
-  Files: lib/*.4.dylib
+  Files: lib/*.5.dylib
   Shlibs: <<
-    %p/lib/libpsl.4.dylib 4.0.0 %n (>= 4.5.7-1)
-    %p/lib/libgmt.4.dylib 4.0.0 %n (>= 4.5.7-1)
-    %p/lib/libgmtps.4.dylib 4.0.0 %n (>= 4.5.7-1)
-    %p/lib/libmgd77.4.dylib 4.0.0 %n (>= 4.5.7-1)
-    %p/lib/libgmt_mgg.4.dylib 4.0.0 %n (>= 4.5.7-1)
-    %p/lib/libx2sys.4.dylib 4.0.0 %n (>= 4.5.7-1)
+    %p/lib/libpsl.4.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt.4.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmtps.4.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libmgd77.4.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt_mgg.4.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libx2sys.4.dylib 5.0.0 %n (>= 5.0.0-1)
   <<
   DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<

@@ -96,22 +96,6 @@ EXTERN_MSC const char * GMT_strerror (GMT_LONG err);
 
 #define GMT_is_verbose(C,level) (C->current.setting.verbose >= level)
 
-/* Definition for printing a report. When DEBUG is on, also print source file and line number.
- * Use this for various progress statements, debugging to see certain variables, and even fatal
- * error messages not covered by GMT_err_pass or GMT_err_fail functions.
- */
-#ifdef DEBUG
-#define GMT_report(C,level,...) ((level) <= C->current.setting.verbose ? GMT_message (C, "%s(%s):%s:%d: ", C->init.progname, C->init.module_name, __FILE__, __LINE__) + GMT_message (C, __VA_ARGS__) : 0)
-#else
-#define GMT_report(C,level,...) ((level) <= C->current.setting.verbose ? GMT_message (C, "%s(%s): ", C->init.progname, C->init.module_name) + GMT_message (C, __VA_ARGS__) : 0)
-#endif
-
-/* Definition for printing a simple message to standard output */
-/* Due to the DLL boundary cross problem on Windows the next macro is implemented as a function in gmt_init.c */
-#if !(defined (WIN32) || defined (__MINGW32__))
-#define GMT_message(C,...) fprintf(C->session.std[GMT_ERR],__VA_ARGS__)
-#endif
-
 /* Check condition and report error if true */
 #define GMT_check_condition(C,condition,...) ((condition) ? GMT_report(C,GMT_MSG_FATAL,__VA_ARGS__)+1 : 0)
 

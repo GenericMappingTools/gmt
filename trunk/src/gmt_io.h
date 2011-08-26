@@ -241,8 +241,8 @@ EXTERN_MSC long GMT_ftell (FILE *stream);
 EXTERN_MSC size_t GMT_fread (void * ptr, size_t size, size_t nmemb, FILE *stream);
 EXTERN_MSC size_t GMT_fwrite (const void * ptr, size_t size, size_t nmemb, FILE *stream);
 EXTERN_MSC void GMT_rewind (FILE *stream);
-EXTERN_MSC int GMT_fprintf (FILE *fp, char *format, ...);
 #if 0
+EXTERN_MSC int GMT_fprintf (FILE *fp, char *format, ...);
 EXTERN_MSC int GMT_fscanf (FILE *fp, char *format, ...);
 #endif
 #else
@@ -256,8 +256,8 @@ EXTERN_MSC int GMT_fscanf (FILE *fp, char *format, ...);
 #define GMT_fread(ptr,size,nmemb,stream) fread(ptr,size,nmemb,stream)
 #define GMT_fwrite(ptr,size,nmemb,stream) fwrite(ptr,size,nmemb,stream)
 #define GMT_rewind(stream) rewind(stream)
-#define GMT_fprintf(stream,...) fprintf(stream,__VA_ARGS__)
 #if 0
+#define GMT_fprintf(stream,...) fprintf(stream,__VA_ARGS__)
 #define GMT_fscanf(stream,...) fscanf(stream,__VA_ARGS__)
 #endif
 #endif

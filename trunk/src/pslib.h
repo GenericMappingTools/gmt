@@ -371,38 +371,12 @@ EXTERN_MSC PSL_LONG PSL_free_nonmacro (struct PSL_CTRL *P, void **addr);
 /* Definition for printing a message. When DEBUG is on, also print source file and line number.
  * Use this for various progress statements, debugging to see certain variables, and even fatal
  * error messages. */
-#if defined (WIN32) || defined (__MINGW32__)
-/* Due to the DLL boundary cross problem on Windows the next macros are implemented as functions
-   in pslib.c */
+/* For FORTRAN there is PSL_command_ that only accepts one text argument */
 EXTERN_MSC int PSL_command (struct PSL_CTRL *C, char *format, ...);
 EXTERN_MSC int PSL_comment (struct PSL_CTRL *C, char *format, ...);
 EXTERN_MSC int PSL_initerr (struct PSL_CTRL *C, char *format, ...);
+EXTERN_MSC int PSL_message (struct PSL_CTRL *C, PSL_LONG level, char *format, ...);
 EXTERN_MSC FILE *PSL_fopen (char *file, char *mode);
-#else
-/* From FORTRAN there is PSL_command_ that only accepts one text argument */
-#define PSL_command(C,...) fprintf (C->internal.fp, __VA_ARGS__)
-#define PSL_comment(C,...) (C->internal.comments ? PSL_command (C, "%%\n%% ") + PSL_command (C, __VA_ARGS__) + PSL_command (C, "%%\n") : 0)
-#define PSL_initerr(C,...) fprintf (C->init.err, __VA_ARGS__)
-#define PSL_fopen fopen
-#endif
-
-#if 0
-/* Alternative definition as a macro for Windows that cannot apply the same solution as in unix because
-   PSL_command is a function and compiler optimizations will change the order of the terms in the
-   addition as it pleases */
-#define PSL_comment(C,...) do {			\
-	if (C->internal.comments) {		\
-		PSL_command (C, "%%\n%% ");	\
-		PSL_command (C, __VA_ARGS__);	\
-	}					\
-} while (0)
-#endif
-
-#ifdef DEBUG
-#define PSL_message(C,level,...) ((level) <= C->internal.verbose ? PSL_initerr (C, "PSL:%s:%d: ", __FILE__, __LINE__) + PSL_initerr (C, __VA_ARGS__) : 0)
-#else
-#define PSL_message(C,level,...) ((level) <= C->internal.verbose ? PSL_initerr (C, "PSL: ") + PSL_initerr (C, __VA_ARGS__) : 0)
-#endif
 
 #define PSL_free(C,ptr) PSL_free_nonmacro (C,(void**)&ptr)					/* Easier macro for PSL_free */
 
