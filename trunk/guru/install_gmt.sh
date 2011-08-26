@@ -221,31 +221,6 @@ else
 fi
 
 #--------------------------------------------------------------------------------
-#	PCRE SETUP
-#--------------------------------------------------------------------------------
-
-cat << EOF >&2
-
-GMT${SERIES} offers optional support for search involving regular expression (RegEx).
-To use this option you must already have the PCRE library and include files installed.
-
-EOF
-use_pcre=`get_def_answer "Use optional PCRE library in GMT${SERIES} (y/n)" "y"`
-if [ "$use_pcre" = "y" ]; then	# Must get the path
-	cat <<- EOF >&2
-
-	If the dirs include and lib both reside in the same parent directory,
-	you can specify that below.  If not, leave blank and manually set
-	the two environmental parameters PCRE_INC and PCRE_LIB.
-
-	EOF
-	def=${PCREHOME:$LIBINC_DEF}
-	pcre_path=`get_def_answer "Enter directory with PCRE lib and include" "$def"`
-else
-	pcre_path=
-fi
-
-#--------------------------------------------------------------------------------
 #	GMT FTP SECTION
 #--------------------------------------------------------------------------------
 
@@ -552,11 +527,6 @@ passive_ftp=$passive_ftp
 #---------------------------------------------
 use_gdal=$use_gdal
 gdal_path=$gdal_path
-#---------------------------------------------
-#       PCRE SECTION
-#---------------------------------------------
-use_pcre=$use_pcre
-pcre_path=$pcre_path
 #---------------------------------------------
 #       GMT & GSHHS FTP SECTION
 #---------------------------------------------
@@ -1115,17 +1085,6 @@ else
 	enable_gdal=
 fi
 
-# Experimental PCRE support 
-if [ "$use_pcre" = "y" ]; then	# Try to include PCRE support
-        if [ ! "x$pcre_path" = "x" ]; then	# PCRE parent dir specified
- 		enable_pcre=--enable-pcre=$pcre_path
-	else
- 		enable_pcre=--enable-pcre
-        fi
-else
-	enable_pcre=--disable-pcre
-fi
-
 #--------------------------------------------------------------------------------
 #	GMT installation commences here
 #--------------------------------------------------------------------------------
@@ -1155,13 +1114,13 @@ cat << EOF >&2
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   $enable_univ --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
-  $disable_mex $disable_xgrid $enable_mex_mdir $enable_mex_xdir $enable_gdal $enable_pcre
+  $disable_mex $disable_xgrid $enable_mex_mdir $enable_mex_xdir $enable_gdal
 EOF
 
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   $enable_univ --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
-  $disable_mex $disable_xgrid $enable_mex_mdir $enable_mex_xdir $enable_gdal $enable_pcre
+  $disable_mex $disable_xgrid $enable_mex_mdir $enable_mex_xdir $enable_gdal
 
 if [ -f .gmtconfigure ]; then
 	cat .gmtconfigure
