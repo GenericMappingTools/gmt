@@ -406,11 +406,11 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], out[k], k);
 					else {
 						if (!GMT_is_dnan (out[k]))
-							GMT_fprintf (GMT->session.std[GMT_OUT], s->info[s->out_order[k]].format, out[k]);
+							fprintf (GMT->session.std[GMT_OUT], s->info[s->out_order[k]].format, out[k]);
 						else
-							GMT_fprintf (GMT->session.std[GMT_OUT], "NaN");
+							fprintf (GMT->session.std[GMT_OUT], "NaN");
 					}
-					(k == (s->n_out_columns - 1)) ? GMT_fprintf (GMT->session.std[GMT_OUT], "\n") : GMT_fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+					(k == (s->n_out_columns - 1)) ? fprintf (GMT->session.std[GMT_OUT], "\n") : fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 				}
 			}
 			else {

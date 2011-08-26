@@ -145,6 +145,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdarg.h>
 #include "pslib.h"
 #include "pslconfig.h"
 #include "gmt_notunix.h"
@@ -4588,16 +4589,14 @@ char *psl_putusername ()
 	return (unknown);
 }
 
-#if defined (WIN32) || defined (__MINGW32__)
 /* Due to the DLL boundary cross problem on Windows we are forced to have the following, otherwise
-   defined as macros, implemented as functions */
-#include <stdarg.h>
+   defined as macros, implemented as functions. However, macros proved to be problematic too
+   on Unixes, so now we have functions only. */
 int PSL_command (struct PSL_CTRL *C, char *format, ...) {
 	va_list args;
 	va_start (args, format);
 	vfprintf (C->internal.fp, format, args);
 	va_end (args);
-
 	return (0);
 }
 
@@ -4609,7 +4608,6 @@ int PSL_comment (struct PSL_CTRL *C, char *format, ...) {
 	vfprintf (C->internal.fp, format, args);
 	fprintf (C->internal.fp, "%%\n");
 	va_end (args);
-
 	return (0);
 }
 
@@ -4618,14 +4616,26 @@ int PSL_initerr (struct PSL_CTRL *C, char *format, ...) {
 	va_start (args, format);
 	vfprintf (C->init.err, format, args);
 	va_end (args);
+	return (0);
+}
 
+int PSL_message (struct PSL_CTRL *C, PSL_LONG level, char *format, ...) {
+	va_list args;
+	if (level > C->internal.comments) return (0);
+#ifdef DEBUG
+	fprintf (C->init.err, "PSL:%s:%d: ", __FILE__, __LINE__);
+#else
+	fprintf (C->init.err, "PSL: ");
+#endif
+	va_start (args, format);
+	vfprintf (C->init.err, format, args);
+	va_end (args);
 	return (0);
 }
 
 FILE *PSL_fopen (char *file, char *mode) {
 	return (fopen (file, mode));
 }
-#endif
 #ifndef HAVE_RINT
 #include "s_rint.c"
 #endif

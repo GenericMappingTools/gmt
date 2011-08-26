@@ -303,174 +303,174 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* OK, time to report results */
 
 		if (Ctrl->I.active && Ctrl->I.status == 1) {
-			GMT_fprintf (GMT->session.std[GMT_OUT], "-R");
+			fprintf (GMT->session.std[GMT_OUT], "-R");
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->wesn[XLO], GMT_X);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "/");
+			fprintf (GMT->session.std[GMT_OUT], "/");
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->wesn[XHI], GMT_X);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "/");
+			fprintf (GMT->session.std[GMT_OUT], "/");
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->wesn[YLO], GMT_Y);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "/");
+			fprintf (GMT->session.std[GMT_OUT], "/");
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->wesn[YHI], GMT_Y);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "\n");
+			fprintf (GMT->session.std[GMT_OUT], "\n");
 		} else if (Ctrl->I.active && Ctrl->I.status == 0) {
-			GMT_fprintf (GMT->session.std[GMT_OUT], "-I");
+			fprintf (GMT->session.std[GMT_OUT], "-I");
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->inc[GMT_X], GMT_Z);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "/");
+			fprintf (GMT->session.std[GMT_OUT], "/");
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->inc[GMT_Y], GMT_Z);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "\n");
+			fprintf (GMT->session.std[GMT_OUT], "\n");
 		} else if (Ctrl->C.active && !Ctrl->I.active) {
-			GMT_fprintf (GMT->session.std[GMT_OUT], "%s\t", G->header->name);
+			fprintf (GMT->session.std[GMT_OUT], "%s\t", G->header->name);
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->wesn[XLO], GMT_X);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "\t");
+			fprintf (GMT->session.std[GMT_OUT], "\t");
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->wesn[XHI], GMT_X);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "\t");
+			fprintf (GMT->session.std[GMT_OUT], "\t");
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->wesn[YLO], GMT_Y);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "\t");
+			fprintf (GMT->session.std[GMT_OUT], "\t");
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->wesn[YHI], GMT_Y);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "\t");
+			fprintf (GMT->session.std[GMT_OUT], "\t");
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->z_min, GMT_Z);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "\t");
+			fprintf (GMT->session.std[GMT_OUT], "\t");
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->z_max, GMT_Z);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "\t");
+			fprintf (GMT->session.std[GMT_OUT], "\t");
 			GMT_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_X);
 			if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
-			GMT_fprintf (GMT->session.std[GMT_OUT], "%s\t", text);
+			fprintf (GMT->session.std[GMT_OUT], "%s\t", text);
 			GMT_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_Y);
 			if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
-			GMT_fprintf (GMT->session.std[GMT_OUT], "%s\t", text);
+			fprintf (GMT->session.std[GMT_OUT], "%s\t", text);
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], (double)G->header->nx, GMT_Z);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "\t");
+			fprintf (GMT->session.std[GMT_OUT], "\t");
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], (double)G->header->ny, GMT_Z);
 
 			if (Ctrl->M.active) {
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x_min, GMT_X);
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y_min, GMT_Y);
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x_max, GMT_X);
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y_max, GMT_Y);
+				fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x_min, GMT_X);
+				fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y_min, GMT_Y);
+				fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x_max, GMT_X);
+				fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y_max, GMT_Y);
 			}
 			if (Ctrl->L.norm & 1) {
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], median, GMT_Z);
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], scale, GMT_Z);
+				fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], median, GMT_Z);
+				fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], scale, GMT_Z);
 			}
 			if (Ctrl->L.norm & 2) {
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mean, GMT_Z);
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], stdev, GMT_Z);
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], rms, GMT_Z);
+				fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mean, GMT_Z);
+				fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], stdev, GMT_Z);
+				fprintf (GMT->session.std[GMT_OUT], "\t");	GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], rms, GMT_Z);
 			}
-			if (Ctrl->M.active) GMT_fprintf (GMT->session.std[GMT_OUT], "\t%" GMT_LL "d", n_nan);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "\n");
+			if (Ctrl->M.active) fprintf (GMT->session.std[GMT_OUT], "\t%" GMT_LL "d", n_nan);
+			fprintf (GMT->session.std[GMT_OUT], "\n");
 		}
 		else if (!(Ctrl->T.active || (Ctrl->I.active && Ctrl->I.status == 2))) {
-			GMT_fprintf (GMT->session.std[GMT_OUT], "%s: Title: %s\n", G->header->name, G->header->title);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "%s: Command: %s\n", G->header->name, G->header->command);
-			GMT_fprintf (GMT->session.std[GMT_OUT], "%s: Remark: %s\n", G->header->name, G->header->remark);
+			fprintf (GMT->session.std[GMT_OUT], "%s: Title: %s\n", G->header->name, G->header->title);
+			fprintf (GMT->session.std[GMT_OUT], "%s: Command: %s\n", G->header->name, G->header->command);
+			fprintf (GMT->session.std[GMT_OUT], "%s: Remark: %s\n", G->header->name, G->header->remark);
 			if (G->header->registration == GMT_GRIDLINE_REG || G->header->registration == GMT_PIXEL_REG)
-				GMT_fprintf (GMT->session.std[GMT_OUT], 
+				fprintf (GMT->session.std[GMT_OUT], 
 					"%s: %s node registration used\n", G->header->name, type[G->header->registration]);
 			else
-				GMT_fprintf (GMT->session.std[GMT_OUT], 
+				fprintf (GMT->session.std[GMT_OUT], 
 					"%s: Unknown registration! Probably not a GMT grid\n", G->header->name);
 			if (G->header->type >= 0 && G->header->type < GMT_N_GRD_FORMATS)
-				GMT_fprintf (GMT->session.std[GMT_OUT], 
+				fprintf (GMT->session.std[GMT_OUT], 
 					"%s: Grid file format: %s\n", G->header->name, GMT->session.grdformat[G->header->type]);
 			else
-				GMT_fprintf (GMT->session.std[GMT_OUT], 
+				fprintf (GMT->session.std[GMT_OUT], 
 					"%s: Unrecognized grid file format! Probably not a GMT grid\n", G->header->name);
 			if (Ctrl->F.active) {
 				if ((fabs (G->header->wesn[XLO]) < 500.0) && (fabs (G->header->wesn[XHI]) < 500.0) && (fabs (G->header->wesn[YLO]) < 500.0) && (fabs (G->header->wesn[YHI]) < 500.0)) {
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: x_min: %.7f\n", G->header->name, G->header->wesn[XLO]);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: x_max: %.7f\n", G->header->name, G->header->wesn[XHI]);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: x_inc: %.7f\n", G->header->name, G->header->inc[GMT_X]);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: name: %s\n",    G->header->name, G->header->x_units);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: nx: %d\n",      G->header->name, G->header->nx);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: y_min: %.7f\n", G->header->name, G->header->wesn[YLO]);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: y_max: %.7f\n", G->header->name, G->header->wesn[YHI]);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: y_inc: %.7f\n", G->header->name, G->header->inc[GMT_Y]);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: name: %s\n",    G->header->name, G->header->y_units);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: ny: %d\n",      G->header->name, G->header->ny);
+					fprintf (GMT->session.std[GMT_OUT], "%s: x_min: %.7f\n", G->header->name, G->header->wesn[XLO]);
+					fprintf (GMT->session.std[GMT_OUT], "%s: x_max: %.7f\n", G->header->name, G->header->wesn[XHI]);
+					fprintf (GMT->session.std[GMT_OUT], "%s: x_inc: %.7f\n", G->header->name, G->header->inc[GMT_X]);
+					fprintf (GMT->session.std[GMT_OUT], "%s: name: %s\n",    G->header->name, G->header->x_units);
+					fprintf (GMT->session.std[GMT_OUT], "%s: nx: %d\n",      G->header->name, G->header->nx);
+					fprintf (GMT->session.std[GMT_OUT], "%s: y_min: %.7f\n", G->header->name, G->header->wesn[YLO]);
+					fprintf (GMT->session.std[GMT_OUT], "%s: y_max: %.7f\n", G->header->name, G->header->wesn[YHI]);
+					fprintf (GMT->session.std[GMT_OUT], "%s: y_inc: %.7f\n", G->header->name, G->header->inc[GMT_Y]);
+					fprintf (GMT->session.std[GMT_OUT], "%s: name: %s\n",    G->header->name, G->header->y_units);
+					fprintf (GMT->session.std[GMT_OUT], "%s: ny: %d\n",      G->header->name, G->header->ny);
 				}
 				else {
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: x_min: %.2f\n", G->header->name, G->header->wesn[XLO]);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: x_max: %.2f\n", G->header->name, G->header->wesn[XHI]);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: x_inc: %.2f\n", G->header->name, G->header->inc[GMT_X]);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: name: %s\n",    G->header->name, G->header->x_units);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: nx: %d\n",      G->header->name, G->header->nx);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: y_min: %.2f\n", G->header->name, G->header->wesn[YLO]);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: y_max: %.2f\n", G->header->name, G->header->wesn[YHI]);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: y_inc: %.2f\n", G->header->name, G->header->inc[GMT_Y]);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: name: %s\n",    G->header->name, G->header->y_units);
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s: ny: %d\n",      G->header->name, G->header->ny);
+					fprintf (GMT->session.std[GMT_OUT], "%s: x_min: %.2f\n", G->header->name, G->header->wesn[XLO]);
+					fprintf (GMT->session.std[GMT_OUT], "%s: x_max: %.2f\n", G->header->name, G->header->wesn[XHI]);
+					fprintf (GMT->session.std[GMT_OUT], "%s: x_inc: %.2f\n", G->header->name, G->header->inc[GMT_X]);
+					fprintf (GMT->session.std[GMT_OUT], "%s: name: %s\n",    G->header->name, G->header->x_units);
+					fprintf (GMT->session.std[GMT_OUT], "%s: nx: %d\n",      G->header->name, G->header->nx);
+					fprintf (GMT->session.std[GMT_OUT], "%s: y_min: %.2f\n", G->header->name, G->header->wesn[YLO]);
+					fprintf (GMT->session.std[GMT_OUT], "%s: y_max: %.2f\n", G->header->name, G->header->wesn[YHI]);
+					fprintf (GMT->session.std[GMT_OUT], "%s: y_inc: %.2f\n", G->header->name, G->header->inc[GMT_Y]);
+					fprintf (GMT->session.std[GMT_OUT], "%s: name: %s\n",    G->header->name, G->header->y_units);
+					fprintf (GMT->session.std[GMT_OUT], "%s: ny: %d\n",      G->header->name, G->header->ny);
 				}
 			}
 			else {
 				GMT_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_X);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%s: x_min: ", G->header->name);
+				fprintf (GMT->session.std[GMT_OUT], "%s: x_min: ", G->header->name);
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->wesn[XLO], GMT_X);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " x_max: ");
+				fprintf (GMT->session.std[GMT_OUT], " x_max: ");
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->wesn[XHI], GMT_X);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " x_inc: %s", text);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " name: %s nx: %d\n", G->header->x_units, G->header->nx);
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%s: y_min: ", G->header->name);
+				fprintf (GMT->session.std[GMT_OUT], " x_inc: %s", text);
+				fprintf (GMT->session.std[GMT_OUT], " name: %s nx: %d\n", G->header->x_units, G->header->nx);
+				fprintf (GMT->session.std[GMT_OUT], "%s: y_min: ", G->header->name);
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->wesn[YLO], GMT_Y);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " y_max: ");
+				fprintf (GMT->session.std[GMT_OUT], " y_max: ");
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->wesn[YHI], GMT_Y);
 				GMT_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_Y);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
-				GMT_fprintf (GMT->session.std[GMT_OUT], " y_inc: %s", text);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " name: %s ny: %d\n", G->header->y_units, G->header->ny);
+				fprintf (GMT->session.std[GMT_OUT], " y_inc: %s", text);
+				fprintf (GMT->session.std[GMT_OUT], " name: %s ny: %d\n", G->header->y_units, G->header->ny);
 			}
 
 			if (Ctrl->M.active) {
 				if (z_min == -DBL_MAX) z_min = GMT->session.d_NaN;
 				if (z_max == +DBL_MAX) z_max = GMT->session.d_NaN;
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%s: z_min: ", G->header->name);
+				fprintf (GMT->session.std[GMT_OUT], "%s: z_min: ", G->header->name);
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], z_min, GMT_Z);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " at x = ");
+				fprintf (GMT->session.std[GMT_OUT], " at x = ");
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x_min, GMT_X);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " y = ");
+				fprintf (GMT->session.std[GMT_OUT], " y = ");
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y_min, GMT_Y);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " z_max: ");
+				fprintf (GMT->session.std[GMT_OUT], " z_max: ");
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], z_max, GMT_Z);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " at x = ");
+				fprintf (GMT->session.std[GMT_OUT], " at x = ");
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x_max, GMT_X);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " y = ");
+				fprintf (GMT->session.std[GMT_OUT], " y = ");
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y_max, GMT_Y);
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\n");
+				fprintf (GMT->session.std[GMT_OUT], "\n");
 			}
 			else if (Ctrl->F.active) {
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%s: zmin: %g\n", G->header->name, G->header->z_min);
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%s: zmax: %g\n", G->header->name, G->header->z_max);
-			 	GMT_fprintf (GMT->session.std[GMT_OUT], "%s: name: %s\n", G->header->name, G->header->z_units);
+				fprintf (GMT->session.std[GMT_OUT], "%s: zmin: %g\n", G->header->name, G->header->z_min);
+				fprintf (GMT->session.std[GMT_OUT], "%s: zmax: %g\n", G->header->name, G->header->z_max);
+			 	fprintf (GMT->session.std[GMT_OUT], "%s: name: %s\n", G->header->name, G->header->z_units);
 			}
 			else {
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%s: z_min: ", G->header->name);
+				fprintf (GMT->session.std[GMT_OUT], "%s: z_min: ", G->header->name);
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->z_min, GMT_Z);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " z_max: ");
+				fprintf (GMT->session.std[GMT_OUT], " z_max: ");
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], G->header->z_max, GMT_Z);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " name: %s\n", G->header->z_units);
+				fprintf (GMT->session.std[GMT_OUT], " name: %s\n", G->header->z_units);
 			}
 
 			GMT_ascii_format_col (GMT, text, G->header->z_add_offset, GMT_Z);
 			if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 			sprintf (format, "%s: scale_factor: %s add_offset: %%s\n", G->header->name, GMT->current.setting.format_float_out);
-			GMT_fprintf (GMT->session.std[GMT_OUT], format, G->header->z_scale_factor, text);
-			if (n_nan) GMT_fprintf (GMT->session.std[GMT_OUT], "%s: %" GMT_LL "d nodes set to NaN\n", G->header->name, n_nan);
+			fprintf (GMT->session.std[GMT_OUT], format, G->header->z_scale_factor, text);
+			if (n_nan) fprintf (GMT->session.std[GMT_OUT], "%s: %" GMT_LL "d nodes set to NaN\n", G->header->name, n_nan);
 			if (Ctrl->L.norm & 1) {
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%s: median: ", G->header->name);
+				fprintf (GMT->session.std[GMT_OUT], "%s: median: ", G->header->name);
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], median, GMT_Z);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " scale: ");
+				fprintf (GMT->session.std[GMT_OUT], " scale: ");
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], scale, GMT_Z);
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\n");
+				fprintf (GMT->session.std[GMT_OUT], "\n");
 			}
 			if (Ctrl->L.norm & 2) {
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%s: mean: ", G->header->name);
+				fprintf (GMT->session.std[GMT_OUT], "%s: mean: ", G->header->name);
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mean, GMT_Z);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " stdev: ");
+				fprintf (GMT->session.std[GMT_OUT], " stdev: ");
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], stdev, GMT_Z);
-				GMT_fprintf (GMT->session.std[GMT_OUT], " rms: ");
+				fprintf (GMT->session.std[GMT_OUT], " rms: ");
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], rms, GMT_Z);
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\n");
+				fprintf (GMT->session.std[GMT_OUT], "\n");
 			}
 		}
 		else {
@@ -493,7 +493,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
-		GMT_fprintf (GMT->session.std[GMT_OUT], "%" GMT_LL "d\t", n_grds);
+		fprintf (GMT->session.std[GMT_OUT], "%" GMT_LL "d\t", n_grds);
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_xmin, GMT_X);	GMT_fputs ("\t", GMT->session.std[GMT_OUT]);
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_xmax, GMT_X);	GMT_fputs ("\t", GMT->session.std[GMT_OUT]);
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_ymin, GMT_Y);	GMT_fputs ("\t", GMT->session.std[GMT_OUT]);
@@ -504,20 +504,20 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else if (Ctrl->T.active) {
 		global_zmin = floor (global_zmin / Ctrl->T.inc) * Ctrl->T.inc;
 		global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
-		GMT_fprintf (GMT->session.std[GMT_OUT], "-T");
+		fprintf (GMT->session.std[GMT_OUT], "-T");
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_zmin, GMT_Z);
-		GMT_fprintf (GMT->session.std[GMT_OUT], "/");
+		fprintf (GMT->session.std[GMT_OUT], "/");
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_zmax, GMT_Z);
-		GMT_fprintf (GMT->session.std[GMT_OUT], "/");
+		fprintf (GMT->session.std[GMT_OUT], "/");
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], Ctrl->T.inc, GMT_Z);
-		GMT_fprintf (GMT->session.std[GMT_OUT], "\n");
+		fprintf (GMT->session.std[GMT_OUT], "\n");
 	}
 	else if ((Ctrl->I.active && Ctrl->I.status == 2)) {
 		global_xmin = floor (global_xmin / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
-		GMT_fprintf (GMT->session.std[GMT_OUT], "-R");
+		fprintf (GMT->session.std[GMT_OUT], "-R");
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_xmin, GMT_X);	GMT_fputs ("/", GMT->session.std[GMT_OUT]);
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_xmax, GMT_X);	GMT_fputs ("/", GMT->session.std[GMT_OUT]);
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_ymin, GMT_Y);	GMT_fputs ("/", GMT->session.std[GMT_OUT]);

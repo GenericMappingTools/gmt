@@ -7840,8 +7840,8 @@ void GMT_setmode (struct GMT_CTRL *C, int direction)
 #ifdef GMT_MATLAB
 #include "mex.h"
 #endif
-/* Due to the DLL boundary cross problem on Windows we are forced to have the following, otherwise
-   defined as macro, implemented as a function. */
+#endif
+
 int GMT_message (struct GMT_CTRL *C, char *format, ...) {
 #ifdef GMT_MATLAB
 	char line[GMT_BUFSIZ];
@@ -7856,10 +7856,31 @@ int GMT_message (struct GMT_CTRL *C, char *format, ...) {
 	vfprintf (C->session.std[GMT_ERR], format, args);
 #endif
 	va_end (args);
-
 	return (0);
 }
 
+int GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
+	va_list args;
+	if (level > C->current.setting.verbose) return (0);
+#ifdef DEBUG
+	GMT_message (C, "%s(%s):%s:%d: ", C->init.progname, C->init.module_name, __FILE__, __LINE__);
+#else
+	GMT_message (C, "%s(%s): ", C->init.progname, C->init.module_name);
+#endif
+	va_start (args, format);
+#ifdef GMT_MATLAB
+	/* Version used by Matlab MEXs that are not able to print to stdout/stderr */
+	vsnprintf (line, GMT_BUFSIZ, format, args);
+	mexPrintf ("%s", line);
+#else
+	vfprintf (C->session.std[GMT_ERR], format, args);
+#endif
+	va_end (args);
+	return (0);
+}
+
+#if 0
+/* Comment out for now since not used for now */
 int GMT_fprintf (FILE *stream, char *format, ...) {
 	va_list args;
 	va_start (args, format);
@@ -7868,8 +7889,6 @@ int GMT_fprintf (FILE *stream, char *format, ...) {
 
 	return (0);
 }
-#if 0
-/* Comment out for now since not used for now */
 int GMT_fscanf (FILE *stream, char *format, ...) {
 	va_list args;
 	va_start (args, format);
@@ -7878,7 +7897,6 @@ int GMT_fscanf (FILE *stream, char *format, ...) {
 
 	return (0);
 }
-#endif
 #endif
 
 GMT_LONG GMT_equal_double (double A, double B, int maxUlps) {
