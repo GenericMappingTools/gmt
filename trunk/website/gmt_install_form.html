@@ -99,15 +99,15 @@ avoid using the GMT shorthands in commands that are piped together.</I><BR>
 
 Give full pathname to the netCDF directory: <INPUT NAME="netcdf_dir" TYPE="text" SIZE="30"><BR>
 <P>
-<I>Note: In either case you must fill out the directory name.  If you already have netCDF then give the
-directory it resides in; if you need to install netCDF then give the directory you intend to install it.
-You can leave it blank if you have defined $NETCDFHOME to be the directory where you installed netcdf.
-If the library and include files do not have the same parent directory, then leave the path blank and
-manually set the environmental variables $NETCDF_LIB and $NETCDF_INC prior to running the installer.
-Finally, if you have already installed netCDF as a SHARED library it is your responsibility to make sure
-these libraries are in default paths or explicitly have been added to LD_LIBRARY_PATH or similar environment
-parameters.  Note that netcdf 4 requires hdf as well, so when not using shared libs for those, you would
-need to add -lhdf etc. But in principle, when netcdf 4 is installed as shared lib, the installation should work.</I>
+<I>Note: f you already have netCDF then give the directory it resides in; if you need to install netCDF then
+give the directory you intend to install it. You can leave it blank if you have nc-config in your search
+path or if you have defined $NETCDFHOME to be the directory where you installed netcdf. If the library and
+include files do not have the same parent directory, then leave the path blank and manually set the
+environmental variables $NETCDF_LIB and $NETCDF_INC prior to running the installer. Finally, if you have
+already installed netCDF as a SHARED library it is your responsibility to make sure these libraries are
+in default paths or explicitly have been added to LD_LIBRARY_PATH or similar environment parameters. Note
+that netcdf 4 requires hdf as well, so when not using shared libs for those, you would need to add -lhdf etc.
+But in principle, when netcdf 4 is installed as shared lib, the installation should work.</I>
 <HR>
 
 <B>2. OPTIONAL. Experimental GDAL import support:</B><BR>
@@ -117,26 +117,13 @@ need to add -lhdf etc. But in principle, when netcdf 4 is installed as shared li
 
 If you selected to use GDAL, give full pathname to the GDAL directory: <INPUT NAME="gdal_dir" TYPE="text" SIZE="30"><BR>
 <P>
-<I>Note: If selected, GMT will be able to read additional grid formats supported by GDAL, and grdimage can plot
-images such as geotiffs.  Specify the parent directory where both the lib and include subdirs for GDAL can be found.
-If these directories do not have the same parent directory, then leave the path blank and manually set the environmental
-variables $GDAL_LIB and $GDAL_INC prior to running the installer.</I>
+<I>Note: If selected, GMT will be able to read additional grid formats supported by GDAL, and grdimage
+can plot images such as geotiffs. Leave pathname blank if gdal-config is installed in the search
+path or specify the parent directory where both the lib and include subdirs for GDAL can be found.
+If these directories do not have the same parent directory, then leave the path blank and
+manually set the environmental variables $GDAL_LIB and $GDAL_INC prior to running the installer.</I>
 <HR>
 	
-<B>3. OPTIONAL. Experimental PCRE (Perl Compatible Regular Expressions) support:</B><BR>
-
-<INPUT TYPE="radio" VALUE="no" NAME="radio_pcre" CHECKED> Do not build optional/experimental PCRE support<BR>
-<INPUT TYPE="radio" VALUE="yes" NAME="radio_pcre"> Build optional/experimental PCRE support<BR>
-
-If you selected to use PCRE, give full pathname to the PCRE directory with lib and include: <INPUT NAME="pcre_dir" TYPE="text" SIZE="30"><BR>
-<P>
-<I>Note: If selected, some GMT tools may use regular expression pattern matching using the same syntax and semantics
-as Perl 5 in internal GMT searching (e.g., gmtconvert -S).
-Specify the parent directory where both the lib and include subdirs for PCRE can be found.
-If these directories do not have the same parent directory, then leave the path blank and manually set the environmental
-variables $PCRE_LIB and $PCRE_INC prior to running the installer.</I>
-<HR>
-
 <!--  GMT FTP SELECTION  -->
 
 <CENTER><H3>C. GMT Setup</H3></CENTER>

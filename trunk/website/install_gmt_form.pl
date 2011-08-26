@@ -40,8 +40,6 @@ $ftpmode	= $gmt_form{'radio_ftpmode'};
 $cdf_path	= $gmt_form{'netcdf_dir'};
 $gdal		= $gmt_form{'radio_gdal'};
 $gdal_path	= $gmt_form{'gdal_dir'};
-$pcre		= $gmt_form{'radio_pcre'};
-$pcre_path	= $gmt_form{'pcre_dir'};
 $site		= $gmt_form{'radio_site'};
 $inst_gmt	= $gmt_form{'checkbox_gmt'};
 $inst_gshhs	= $gmt_form{'checkbox_gshhs'};
@@ -145,17 +143,6 @@ if ($gdal eq "yes") {
 else {
 	print FILE "use_gdal=n\n";
 	print FILE "gdal_path=\n";	
-}
-print FILE "#---------------------------------------------\n";
-print FILE "#	PCRE SECTION\n";
-print FILE "#---------------------------------------------\n";
-if ($pcre eq "yes") {
-	print FILE "use_pcre=y\n";
-	print FILE "pcre_path=", $pcre_path, "\n";
-}
-else {
-	print FILE "use_pcre=n\n";
-	print FILE "pcre_path=\n";	
 }
 print FILE "#---------------------------------------------\n";
 print FILE "#	GMT FTP SECTION\n";
