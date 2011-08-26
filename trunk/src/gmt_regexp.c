@@ -37,7 +37,7 @@
 #ifdef HAVE_PCRE
 #include <pcre.h>
 #define OVECCOUNT 30        /* should be a multiple of 3 */
-#else
+#elif defined HAVE_POSIX_ERE
 #include <regex.h>
 #define MAX_ERR_LENGTH 80   /* max error message length */
 #endif
@@ -112,7 +112,7 @@ GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *
 	
 	return (1); /* Match succeded */
 
-#else
+#elif defined HAVE_POSIX_ERE
 
 	/* Use POSIX ERE for matching
 	 * Based on the regcomp documentation */
@@ -143,6 +143,12 @@ GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *
 		GMT_exit (EXIT_FAILURE);
 	}
 	return (0); /* No match */
+
+#else
+
+	/* disable ERE support */
+	GMT_report (C, GMT_MSG_FATAL, "gmt_regexp_match: this GMT version was compiled without regular expression support.\n");
+	GMT_exit (EXIT_FAILURE);
 
 #endif
 }

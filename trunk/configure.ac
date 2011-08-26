@@ -649,6 +649,7 @@ dnl
 AC_MSG_CHECKING(if PCRE support is requested)
 if test "X$enable_pcre" = "Xno" ; then
 	AC_MSG_RESULT([[no]])
+	AC_CHECK_HEADERS([regex.h], [CPPFLAGS="$CPPFLAGS -DHAVE_POSIX_ERE"])
 else
 	AC_MSG_RESULT([[yes]])
 	AC_PATH_PROG([PCRE_CONF], [pcre-config], [$with_pcre_config])
@@ -672,6 +673,7 @@ else
 			CPPFLAGS="$CPPFLAGS -DHAVE_PCRE"
 		else
 			AC_MSG_RESULT([[Warning: Could not find either pkg-config or pcre-config. No pcre support included.]])
+			AC_CHECK_HEADERS([regex.h], [CPPFLAGS="$CPPFLAGS -DHAVE_POSIX_ERE"])
 		fi
 	fi
 fi
