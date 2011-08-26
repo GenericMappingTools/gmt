@@ -54,6 +54,7 @@
 
 #include "pslib.h"
 #include "gmt.h"
+#include <stdarg.h>
 #include "gmt_internals.h"
 
 EXTERN_MSC GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
