@@ -760,6 +760,9 @@ echo "+++ Will expand *.bz2 files made with bzip2 +++"
 CONFIG_SHELL=`type sh | awk '{print $NF}'`
 export CONFIG_SHELL
 
+# avoid parallel builds with make: remove -j from MAKEFLAGS
+test "$MAKEFLAGS" && export MAKEFLAGS=`echo "$MAKEFLAGS" | sed -E 's/-j\ ?[0-9]*\ ?//g'`
+
 #--------------------------------------------------------------------------------
 #	NETCDF SECTION
 #--------------------------------------------------------------------------------
@@ -1184,12 +1187,7 @@ fi
 if [ -d doc/examples ] && [ "$GMT_run_examples" = "y" ]; then
 	GMT_SHAREDIR=$GMT_sharedir
 	export GMT_SHAREDIR
-	# avoid parallel builds with gmake
-	if $GMT_make -v | grep -q "GNU Make"; then
-		$GMT_make -j1 examples animations || exit
-	else
-		$GMT_make examples animations || exit
-	fi
+	$GMT_make examples animations || exit
 fi
 
 cd $here/src
