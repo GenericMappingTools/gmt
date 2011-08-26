@@ -7,6 +7,9 @@
 	GMT 5.0.0b finalized and released.
 -----------------------------------------------------------------------------------------
 
+2011-08-25	remko
+	* configure.ac:		Fixed bug in finding pkg-config
+
 2011-08-25	pwessel
 	* grdtrack_func.c:	Added -N to NOT skip points outside grid domain.
 
