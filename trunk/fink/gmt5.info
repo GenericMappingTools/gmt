@@ -1,9 +1,9 @@
-Package: gmt
+Package: gmt5
 Version: 5.0.0b
 Revision: 0
 Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v.tar.bz2
-Source-MD5: 8f0cee2990f84f0512bae4d220e45d29
-
+Source-MD5: c5b78de5edab4c42a8a08e7fcfa976b4
+Conflicts: gmt
 SourceDirectory: GMT%v
 BuildDepends: netcdf7
 Depends: netcdf7-shlibs, %n-shlibs (= %v-%r), gshhs (>= 2.2.0)
@@ -13,32 +13,41 @@ NoSetLDFLAGS: true
 
 # don't build xgrid to avoid x11 dependency.
 # don't build mex (won't work unless matlab or octave is installed).
-ConfigureParams: --datadir='${prefix}/share/%n' --enable-netcdf7=%p/opt/netcdf7 --enable-shared --enable-triangle --disable-xgrid --disable-mex
+ConfigureParams: --datadir='${prefix}/share/gmt' --enable-netcdf7=%p/opt/netcdf7 --enable-shared --enable-triangle --disable-xgrid --disable-mex
 InstallScript: <<
  #!/bin/sh -ev
  make install-all prefix=%i
 <<
 SplitOff: <<
   Package: %N-doc
+  Conflicts: gmt-doc
   BuildDependsOnly: True
   Files: share/doc/gmt
   DocFiles: LICENSE.TXT
 <<
 SplitOff2: <<
   Package: %N-shlibs
+  Conflicts: gmt-shlibs
   Files: lib/*.5.dylib
   Shlibs: <<
-    %p/lib/libpsl.4.dylib 5.0.0 %n (>= 5.0.0-1)
-    %p/lib/libgmt.4.dylib 5.0.0 %n (>= 5.0.0-1)
-    %p/lib/libgmtps.4.dylib 5.0.0 %n (>= 5.0.0-1)
-    %p/lib/libmgd77.4.dylib 5.0.0 %n (>= 5.0.0-1)
-    %p/lib/libgmt_mgg.4.dylib 5.0.0 %n (>= 5.0.0-1)
-    %p/lib/libx2sys.4.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt.5.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt_dbase.5.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt_gshhs.5.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt_img.5.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt_meca.5.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt_mgd77.5.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt_potential.5.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt_segy.5.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt_sph.5.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt_spotter.5.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libgmt_x2sys.5.dylib 5.0.0 %n (>= 5.0.0-1)
+    %p/lib/libpsl.5.dylib 5.0.0 %n (>= 5.0.0-1)
   <<
   DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<
 SplitOff3: <<
   Package: %N-dev
+  Conflicts: gmt-dev
   BuildDependsOnly: True
   Files: include lib/*.a lib/*.dylib
   DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
