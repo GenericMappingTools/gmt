@@ -661,7 +661,7 @@ else
 		AC_MSG_RESULT($PCRE_LIB)
 		CPPFLAGS="$CPPFLAGS -DHAVE_PCRE"
 	else
-		AC_PATH_PROG([PCK_CONF], [pkg-config], [$with_pkg_config])
+		AC_PATH_PROG([PKG_CONF], [pkg-config], [$with_pkg_config])
 		if test -x "$PKG_CONF" && "$PKG_CONF" libpcre ; then
 			AC_MSG_CHECKING(for PCRE includes)
 			PCRE_INC=`$PKG_CONF --cflags libpcre`
