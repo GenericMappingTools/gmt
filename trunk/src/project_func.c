@@ -841,7 +841,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Now output generated track */
 
 		if (!GMT->common.b.active[GMT_OUT]) {
-			if (GMT->current.io.io_header[GMT_OUT]) fprintf (GMT->session.std[GMT_OUT], "lon\tlat\tdist\n");
+			if (GMT->current.io.io_header[GMT_OUT]) GMT_fprintf (GMT->session.std[GMT_OUT], "lon\tlat\tdist\n");
 
 			for (i = 0; i < P.n_used; i++) {
 				for (j = 0; j < P.n_outputs; j++) out[j] = p_data[i].a[P.output_choice[j]];

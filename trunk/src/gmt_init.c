@@ -7835,13 +7835,6 @@ void GMT_setmode (struct GMT_CTRL *C, int direction)
 
 #endif	/* SET_IO_MODE */
 
-#if defined (WIN32) || defined (__MINGW32__)
-#include <stdarg.h>
-#ifdef GMT_MATLAB
-#include "mex.h"
-#endif
-#endif
-
 int GMT_message (struct GMT_CTRL *C, char *format, ...) {
 #ifdef GMT_MATLAB
 	char line[GMT_BUFSIZ];
@@ -7879,8 +7872,12 @@ int GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
 	return (0);
 }
 
-#if 0
-/* Comment out for now since not used for now */
+#if defined (WIN32) || defined (__MINGW32__)
+#ifdef GMT_MATLAB
+#include "mex.h"
+#endif
+/* Due to the DLL boundary cross problem on Windows we are forced to have the following, otherwise
+   defined as macro, implemented as a function. */
 int GMT_fprintf (FILE *stream, char *format, ...) {
 	va_list args;
 	va_start (args, format);
@@ -7889,6 +7886,8 @@ int GMT_fprintf (FILE *stream, char *format, ...) {
 
 	return (0);
 }
+#if 0
+/* Comment out for now since not used for now */
 int GMT_fscanf (FILE *stream, char *format, ...) {
 	va_list args;
 	va_start (args, format);
@@ -7897,6 +7896,7 @@ int GMT_fscanf (FILE *stream, char *format, ...) {
 
 	return (0);
 }
+#endif
 #endif
 
 GMT_LONG GMT_equal_double (double A, double B, int maxUlps) {
