@@ -77,10 +77,12 @@ struct PSTEXT_CTRL {
 		GMT_LONG active;
 		GMT_LONG mode;	/* 0 = do nothing, -1 = force lower case, +1 = force upper case */
 	} Q;
+#ifdef GMT_COMPAT
 	struct S {	/* -S<pen> */
 		GMT_LONG active;
 		struct GMT_PEN pen;
 	} S;
+#endif
 	struct T {	/* -To|O|c|C */
 		GMT_LONG active;
 		char mode;
@@ -117,12 +119,15 @@ void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	C->D.pen = C->S.pen = C->W.pen = GMT->current.setting.map_default_pen;
+	C->D.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	C->C.dx = C->C.dy = 15.0;	/* 15% of font size is default clearance */
 	C->C.percent = TRUE;
 	C->F.justify = 6;	/* CM */
 	C->F.font = GMT->current.setting.font_annot[0];		/* Default font */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* No fill */
+#ifdef GMT_COMPAT
+	C->S.pen = GMT->current.setting.map_default_pen;
+#endif
 
 	return ((void *)C);
 }
@@ -300,8 +305,8 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	GMT_message (GMT, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
 	GMT_message (GMT, "\t   data file in the order given on the -F option.\n");
 	GMT_message (GMT, "\t-G Paint the box underneath the text with specified color [Default is no paint].\n");
-	GMT_message (GMT, "\t   Alternatively, append c to set clip paths based on text (and -C).  No text is plotted.\n");
-	GMT_message (GMT, "\t   See psclip -Ct to plot the hidden text.  Cannot be used with paragraph mode (-M).\n");
+	GMT_message (GMT, "\t   Alternatively, append c to set these boxes as clip paths based on text (and -C).  No text is plotted.\n");
+	GMT_message (GMT, "\t   See psclip -Cs to plot the hidden text.  Cannot be used with paragraph mode (-M).\n");
 	GMT_explain_options (GMT, "K");
 	GMT_message (GMT, "\t-L List the font-numbers and font-names available, then exits.\n");
 	GMT_message (GMT, "\t-M Set paragraph text mode [Default is single item mode].\n");

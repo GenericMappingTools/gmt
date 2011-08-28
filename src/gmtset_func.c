@@ -97,7 +97,7 @@ GMT_LONG GMT_gmtset_parse (struct GMTAPI_CTRL *C, struct GMTSET_CTRL *Ctrl, stru
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Input files: Here, arguments like ANNOT_OFFSET = 1i will show up as "files" or numbers */
+			case '<':	/* Input files: Here, arguments like ANNOT_OFFSET = -0.1i will show up as "files" or numbers */
 			case '#':
 				break;
 

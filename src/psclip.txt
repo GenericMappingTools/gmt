@@ -11,7 +11,7 @@ BD(psclip) [ IT(table) ] GMT_J_OPT GMT_Rgeoz_OPT
 [ GMT_i_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ] [ GMT_colon_OPT ]
 .br
 .sp
-BD(psclip) OPT(C)[BD(c)|BD(s)|BD(p)|BD(t)][BD(a)|IT(n)] [ GMT_K_OPT ] [ GMT_O_OPT ]
+BD(psclip) OPT(C)[BD(c)|BD(s)|[BD(a)|IT(n)] [ GMT_K_OPT ] [ GMT_O_OPT ]
 .SH DESCRIPTION
 BD(psclip) reads (x,y) file(s) [or standard input] and draws polygons that are
 activated as clipping paths.  Several files may be read to create complex paths

@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-08-28	pwessel
+	* pstext_func.c:	Stated one needed to use psclip -Ct but it was -Cs
+	* psclip.txt:		Fixed old -C syntax in synopsis.
+	* gmt_io.c:		The GMT_not_numeric function failed to consider the
+				trailing units, e.g., -0.2c.  This tripped up gmtset.
+
 2011-08-27	pwessel
 	* gmtselect_func.c:	Did not return to read after finding a table header
 	* gmt_support.c:	Reduced the verbosity level of contouring -Gd messages
