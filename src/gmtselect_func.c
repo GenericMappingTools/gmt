@@ -614,7 +614,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);		/* Bail if there are io errors */
 
-		if (GMT_REC_IS_TBL_HEADER (GMT)) GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);	/* Echo table headers */
+		if (GMT_REC_IS_TBL_HEADER (GMT)) {
+			GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);	/* Echo table headers */
+			continue;
+		}
 
 		while (GMT_REC_IS_SEG_HEADER (GMT) && !GMT_REC_IS_EOF (GMT)) {
 			output_header = TRUE;

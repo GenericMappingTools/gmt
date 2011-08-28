@@ -4725,7 +4725,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 				else	/* Go to next point in line */
 					i++;
 			}
-			if (G->n_label == 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: Your -Gd|D option produced no contour labels for z = %g\n", zval);
+			if (G->n_label == 0) GMT_report (C, GMT_MSG_VERBOSE, "Warning: Your -Gd|D option produced no contour labels for z = %g\n", zval);
 
 		}
 		if (G->number) {	/* Place prescribed number of labels evenly along contours */
@@ -4787,7 +4787,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 				else	/* All in vain... */
 					GMT_free (C, new_label);
 			}
-			if (G->n_label == 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: Your -Gn|N option produced no contour labels for z = %g\n", zval);
+			if (G->n_label == 0) GMT_report (C, GMT_MSG_VERBOSE, "Warning: Your -Gn|N option produced no contour labels for z = %g\n", zval);
 		}
 		if (G->crossing) {	/* Determine label positions based on crossing lines */
 			GMT_LONG left, right, line_no;
@@ -4835,7 +4835,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 				GMT_x_free (C, &G->XC);
 			}
 			GMT_free (C, G->ylist);
-			if (G->n_label == 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: Your -Gx|X|l|L option produced no contour labels for z = %g\n", zval);
+			if (G->n_label == 0) GMT_report (C, GMT_MSG_VERBOSE, "Warning: Your -Gx|X|l|L option produced no contour labels for z = %g\n", zval);
 		}
 		if (G->fixed) {	/* Prescribed point locations for labels that match points in input records */
 			double dist, min_dist;
@@ -4870,7 +4870,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 				}
 			}
 
-			if (G->n_label == 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: Your -Gf option produced no contour labels for z = %g\n", zval);
+			if (G->n_label == 0) GMT_report (C, GMT_MSG_VERBOSE, "Warning: Your -Gf option produced no contour labels for z = %g\n", zval);
 		}
 		gmt_contlabel_fixpath (C, &xx, &yy, map_dist, &nn, G);	/* Inserts the label x,y into path */
 		gmt_contlabel_addpath (C, xx, yy, nn, zval, label, TRUE, G);		/* Appends this path and the labels to list */

@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-08-27	pwessel
+	* gmtselect_func.c:	Did not return to read after finding a table header
+	* gmt_support.c:	Reduced the verbosity level of contouring -Gd messages
+				to require -V3 as it is too detailed and repetitive for -V2.
+
 -----------------------------------------------------------------------------------------
 2011-08-26	pwessel
 	GMT 5.0.0b finalized and released.

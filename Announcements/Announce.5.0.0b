@@ -11,7 +11,8 @@ For a mostly complete list of enhancements and features, please
 see Chapter 1 in the Technical Reference & Cookbook or follow
 the RELEASES link on the GMT 5 web page
 (http://www.soest.hawaii.edu/gmt5).  GMT 5b is only available
-from the SOEST site.
+from the SOEST site.  In particular, developer wishing to
+leverage GMT functionality should consider switching to GMT 5.
 
 Because GMT 5 beta may not be stable enough for production work
 we recommend you install both GMT 4 (e.g., 4.5.7) and 5 beta
@@ -20,9 +21,9 @@ number of GMT installations.  GMT 5b comes with a gmtswitch.bat
 script that allows this functionality under Windows as well;
 See the new gmtswitch man page for setup instructions.
 
-Make sure to consider participating in the GMT 5 LOGO CONTEST!
-To obtain GMT 5b and see the guidelines for the contest, visit
-the GMT 5 web site www.soest.hawaii.edu/gmt5
+Be sure to consider participating in the GMT 5 LOGO CONTEST!
+To obtain GMT 5 beta and see the guidelines for the contest,
+visit the GMT 5 web site www.soest.hawaii.edu/gmt5
 
 GMT 4 will continue to be maintained and updated until GMT 5
 reaches comparable stability, probably late next year.
