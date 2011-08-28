@@ -5651,7 +5651,41 @@ GMT_LONG GMT_not_numeric (struct GMT_CTRL *C, char *text)
 	 * that we are sure of. */
 
 	GMT_LONG i, k, n_digits = 0, n_period = 0, period = 0, n_plus = 0, n_minus = 0, len;
+	static char *valid = "0123456789-+.:WESNT" GMT_LEN_UNITS GMT_DIM_UNITS;
+	if (!text) return (TRUE);	/* NULL pointer */
+	if (!(len = strlen (text)))  return (TRUE);	/* Blank string */
+	if (isalpha ((int)text[0])) return (TRUE);	/* Numbers cannot start with letters */
+	if (!(text[0] == '+' || text[0] == '-' || text[0] == '.' || isdigit ((int)text[0]))) return (TRUE);	/* Numbers must be [+|-][.][<digits>] */
+	for (i = 0; text[i]; i++) {	/* Check each character */
+		/* First check for ASCII values that should never appear in any number */
+		if (!strchr (valid, text[i])) return (TRUE);	/* Found a char not among valid letters */
+		if (isdigit ((int)text[i])) n_digits++;
+		if (text[i] == '.') {
+			n_period++;
+			period = i;
+		}
+		if (text[i] == '+') n_plus++;
+		if (text[i] == '-') n_minus++;
+	}
+	if (n_digits == 0 || n_period > 1 || (n_plus + n_minus) > 2) return (TRUE);
+	if (n_period) {	/* Check if we have filename.ext with ext having no numbers */
+		for (i = period + 1, n_digits = k = 0; text[i]; i++, k++) if (isdigit ((int)text[i])) n_digits++;
+		if (k > 0 && n_digits == 0) return (TRUE);	/* Probably a file */
+	}
+	return (FALSE);	/* This may in fact be numeric */
+}
 
+#if 0
+GMT_LONG GMT_not_numeric_old (struct GMT_CTRL *C, char *text)
+{
+	/* TRUE if text cannot represent a valid number  However,
+	 * FALSE does not therefore mean we have a valid number because
+	 * <date>T<clock> representations may use all kinds
+	 * of punctuations or letters according to the various format
+	 * settings in gmt.conf.  Here we just rule out things
+	 * that we are sure of. */
+
+	GMT_LONG i, k, n_digits = 0, n_period = 0, period = 0, n_plus = 0, n_minus = 0, len;
 	if (!text) return (TRUE);	/* NULL pointer */
 	if (!(len = strlen (text)))  return (TRUE);	/* Blank string */
 	if (isalpha ((int)text[0])) return (TRUE);	/* Numbers cannot start with letters */
@@ -5664,7 +5698,7 @@ GMT_LONG GMT_not_numeric (struct GMT_CTRL *C, char *text)
 		if (text[i] > 'E' && text[i] < 'N') return (TRUE);
 		if (text[i] > 'N' && text[i] < 'S') return (TRUE);
 		if (text[i] > 'S' && text[i] < 'W') return (TRUE);
-		if (text[i] > 'W' && text[i] < 'd') return (TRUE);
+		if (text[i] > 'W' && text[i] < 'c') return (TRUE);
 		if (text[i] > 'e') return (TRUE);
 		if (isdigit ((int)text[i])) n_digits++;
 		if (text[i] == '.') {
@@ -5681,6 +5715,7 @@ GMT_LONG GMT_not_numeric (struct GMT_CTRL *C, char *text)
 	}
 	return (FALSE);	/* This may in fact be numeric */
 }
+#endif
 
 GMT_LONG GMT_conv_intext2dbl (struct GMT_CTRL *C, char *record, GMT_LONG ncols)
 {
