@@ -27,7 +27,7 @@ may be deactivated by running BD(psclip) a second time with the OPT(C) option on
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-OPT(C)[BD(c)|BD(s)|[BD(a)|IT(n)]
+OPT(C)[BD(c)|BD(s)[BD(a)|IT(n)]
 Mark end of existing clip path(s).  No input file will be processed.  No projection information is needed
 unless OPT(B) has been selected as well.
 Append BD(c) (for curved text) or BD(s) (for straight text) to plot text previously used to lay down a
