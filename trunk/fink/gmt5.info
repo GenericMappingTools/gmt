@@ -13,7 +13,7 @@ NoSetLDFLAGS: true
 
 # don't build xgrid to avoid x11 dependency.
 # don't build mex (won't work unless matlab or octave is installed).
-ConfigureParams: --datadir='${prefix}/share/gmt' --enable-netcdf7=%p/opt/netcdf7 --enable-shared --enable-triangle --disable-xgrid --disable-mex
+ConfigureParams: --datadir='${prefix}/share/gmt' --enable-netcdf7=%p/opt/netcdf7 --enable-shared --enable-triangle --disable-xgrid --disable-mex --docdir='${prefix}/share/doc/%n'
 InstallScript: <<
  #!/bin/sh -ev
  make install-all prefix=%i
@@ -22,7 +22,7 @@ SplitOff: <<
   Package: %N-doc
   Conflicts: gmt-doc
   BuildDependsOnly: True
-  Files: share/doc/gmt
+  Files: share/doc/gmt5
   DocFiles: LICENSE.TXT
 <<
 SplitOff2: <<
