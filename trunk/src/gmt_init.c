@@ -7870,7 +7870,7 @@ int GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
 	vfprintf (C->session.std[GMT_ERR], format, args);
 #endif
 	va_end (args);
-	return (0);
+	return (1);
 }
 
 #if defined (WIN32) || defined (__MINGW32__)
