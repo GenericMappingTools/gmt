@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-08-29	remko
+	* gmt_init.c gmt_error.h:	Let GMT_report product return value of 1.
+	* configure.ac:		When --includedir is specified, do not automatically add /gmt.
+
 2011-08-28	pwessel
 	* pstext_func.c:	Stated one needed to use psclip -Ct but it was -Cs
 	* psclip.txt:		Fixed old -C syntax in synopsis.
