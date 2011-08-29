@@ -97,7 +97,7 @@ EXTERN_MSC const char * GMT_strerror (GMT_LONG err);
 #define GMT_is_verbose(C,level) (C->current.setting.verbose >= level)
 
 /* Check condition and report error if true */
-#define GMT_check_condition(C,condition,...) ((condition) ? GMT_report(C,GMT_MSG_FATAL,__VA_ARGS__)+1 : 0)
+#define GMT_check_condition(C,condition,...) ((condition) ? GMT_report(C,GMT_MSG_FATAL,__VA_ARGS__) : 0)
 
 /* Convenience functions to GMT_err_func */
 #ifdef DEBUG
