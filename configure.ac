@@ -27,12 +27,12 @@ dnl Below, set the VERSION to be created.
 dnl Also, fix the MANDATE and DOCDATE values.
 dnl For final version set SVN_VERSION to 0
 dnl
-AC_INIT(GMT, 5.0.0b, gmt-help@lists.hawaii.edu)
-MANDATE="25 Aug 2011"
-DOCDATE="August 2011"
+AC_INIT(GMT, 5.0.0, gmt-help@lists.hawaii.edu)
+MANDATE="1 Nov 2011"
+DOCDATE="November 2011"
 DOCYEAR="2011"
 GSHHS_VERSION=2.2.0
-SVN_VERSION=0
+SVN_VERSION=1
 dnl
 dnl -----------------------------------------------------------------
 dnl Specify the minimal supplement directories
@@ -69,6 +69,7 @@ AC_SUBST(TRIANGLE_D)
 AC_SUBST(TRIANGLE_O)
 AC_SUBST(ALPHA_SINCOS_O)
 AC_SUBST(CFLAGS)
+AC_SUBST(C_WFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LD_OPT)
 AC_SUBST(LDFLAGS)
@@ -236,7 +237,7 @@ if test "$SINCOS" = "1" ; then
 		;;
 		*)
 			AC_MSG_RESULT([yes.])
-			AC_MSG_RESULT([I don't know how to fix sincos on this machine.])
+			AC_MSG_RESULT([I do not know how to fix sincos on this machine.])
 	esac
 	], [
 	AC_MSG_RESULT([no sincos found.])
@@ -277,6 +278,14 @@ if test "X$TXT2MAN" = "X" ; then
 	fi
 fi
 AC_MSG_RESULT($TXT2MAN)
+dnl
+dnl -----------------------------------------------------------------
+dnl When --includedir is the @prefix@/include, make it @prefix@/include/gmt
+dnl -----------------------------------------------------------------
+dnl
+if test "$includedir" = '${prefix}/include' ; then
+	includedir='${prefix}/include/gmt'
+fi
 dnl
 dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-64 for turning on 64-bit compilation
@@ -495,9 +504,7 @@ dnl Allow user to set --enable-netcdf to set netCDF dir
 dnl Use nc-config if possible
 dnl -----------------------------------------------------------------
 dnl
-if test "X$with_nc_config" != "Xno" ; then
-        AC_PATH_PROG([NC_CONF], [nc-config], [$with_nc_config])
-fi
+AC_PATH_PROG([NC_CONF], [nc-config], [$with_nc_config])
 if test -x "$NC_CONF" && test "X$NETCDF_INC" = "X" && test "X$NETCDF_LIB" = "X" ; then
 	AC_MSG_CHECKING(for netCDF includes)
 	NETCDF_INC=`$NC_CONF --cflags`
@@ -683,7 +690,8 @@ dnl Allow user to set --enable-debug to pass -g flag
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(if we should compile with debugging switch -g)
-CFLAGS=$ac_save_CFLAGS
+dnl First remove -O, -O2 or -g
+CFLAGS=`echo "$ac_save_CFLAGS " | sed -e "s/-O2 //" -e "s/-O //" -e "s/-g //"`
 if test "X$enable_debug" = "Xyes" ; then
 	AC_MSG_RESULT(yes)
 	CFLAGS="-g $CFLAGS"

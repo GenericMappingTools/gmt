@@ -113,8 +113,8 @@ install:	all
 		$(INSTALL_DIR) $(bindir)
 		$(INSTALL) $(ALLPROGS) $(bindir)
 		if [ ! . -ef $(includedir) ]; then \
-			$(INSTALL_DIR) $(includedir)/gmt ; \
-			$(INSTALL_DATA) $(GMT_H) $(PS_H) $(PS_I) $(includedir)/gmt; \
+			$(INSTALL_DIR) $(includedir) ; \
+			$(INSTALL_DATA) $(GMT_H) $(PS_H) $(PS_I) $(includedir); \
 		fi
 		if [ ! . -ef $(libdir) ]; then \
 			$(INSTALL_DIR) $(libdir) ; \
@@ -138,7 +138,7 @@ install:	all
 uninstall:
 		cd $(bindir); \rm -f $(ALLPROGS)
 		if [ ! . -ef $(includedir) ]; then \
-			cd $(includedir)/gmt; \rm -f $(GMT_H) $(PS_H) $(PS_I); \
+			cd $(includedir); \rm -f $(GMT_H) $(PS_H) $(PS_I); \
 		fi
 		if [ ! . -ef $(libdir) ]; then \
 			cd $(libdir); \rm -f $(LIBGMT) $(LIBGMT:.$(LIBEXT)=.a); \
