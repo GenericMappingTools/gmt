@@ -2517,7 +2517,7 @@ GMT_LONG gmt_decode_wesnz (struct GMT_CTRL *C, const char *in, GMT_LONG side[], 
 			case '+': *draw_box = TRUE; break;
 		}
 	}
-	if (in[i] == ',') i--;	/* Special case for -BCcustomfile,WESNwesn to avoid the filename being parsed for WESN */
+	if (i >= 0 && in[i] == ',') i--;	/* Special case for -BCcustomfile,WESNwesn to avoid the filename being parsed for WESN */
 	
 	return (i+1);	/* Return remaining string length */
 }
