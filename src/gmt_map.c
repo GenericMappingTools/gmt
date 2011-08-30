@@ -7211,7 +7211,8 @@ GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 		if (wesn[YHI] < -90.0 || wesn[YHI] > 90.0) return (GMT_MAP_BAD_LAT_MAX);
 	}
 
-	GMT_memcpy (C->common.R.wesn, wesn, 4, double);
+	if (C->common.R.wesn != wesn)		/* In many cases they are both copies of same pointer */
+		GMT_memcpy (C->common.R.wesn, wesn, 4, double);
 	C->current.proj.GMT_convert_latitudes = FALSE;
 	if (C->current.proj.gave_map_width) C->current.proj.units_pr_degree = FALSE;
 
