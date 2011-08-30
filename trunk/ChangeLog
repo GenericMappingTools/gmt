@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-08-30	jluis
+	* gmt_plot.h:		More Voodoo. If the "char string[GMT_TEXT_LEN64];" 
+				is not the first member in the GMT_SYMBOL struct than 
+				psxy -Sl<size>/Text will have corrupt 'Text'in non-debug 
+				binaries compiled with VS2010. 
+
 2011-08-29	remko
 	* gmt_init.c gmt_error.h:	Let GMT_report product return value of 1.
 	* configure.ac:		When --includedir is specified, do not automatically add /gmt.
