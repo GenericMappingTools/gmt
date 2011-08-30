@@ -94,6 +94,10 @@ struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
 };
 
 struct GMT_SYMBOL {
+	/* Voodoo: If next line is not the first member in this struct, psxy -Sl<size>/Text will have corrupt 'Text'
+		   in non-debug binaries compiled with VS2010 */
+	char string[GMT_TEXT_LEN64];	/* Character code to plot (could be octal) */
+
 	GMT_LONG symbol;	/* Symbol id */
 	GMT_LONG n_required;	/* Number of additional columns necessary to decode chosen symbol */
 	GMT_LONG u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
@@ -127,8 +131,6 @@ struct GMT_SYMBOL {
 	double h_width;		/* Width of vector head in inches */
 	GMT_LONG v_just;		/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
 	GMT_LONG v_double_heads;		/* If TRUE, Add 8 (|= 8) to outline to specify double-headed vector (FALSE is single-headed) */
-
-	char string[GMT_TEXT_LEN64];	/* Character code to plot (could be octal) */
 
 	struct GMT_FRONTLINE f;	/* parameters needed for a front */
 	struct GMT_CUSTOM_SYMBOL *custom;	/* pointer to a custom symbol */
