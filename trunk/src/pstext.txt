@@ -118,8 +118,8 @@ Choose upper case BD(C) to get a convex rectangle (only in paragraph mode).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-OPT(W)[IT(color),][BD(o)|BD(O)|BD(c)|BD(C)[IT(pen)]]
-Draw a rectangle around the text string.  Set pen [Default is width = default, color = black, style = solid].
+OPT(W)IT(pen)
+Sets the pen used to draw a rectangle around the text string (see OPT(T)) [Default is width = default, color = black, style = solid].
 #include "explain_-XY.txt"
 .TP
 OPT(Z)

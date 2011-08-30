@@ -63,6 +63,7 @@ src/meca/utilmeca.c
 src/meca/utilmeca.h
 src/mex/Makefile
 src/mex/README.mex
+src/mex/blockmean.c
 src/mex/gmt_mex.c
 src/mex/gmt_mex.h
 src/mex/gmtconvert.c
