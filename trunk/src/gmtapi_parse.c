@@ -299,6 +299,14 @@ GMT_LONG GMT_Create_Cmd (struct GMTAPI_CTRL *API, char **cmd, struct GMT_OPTION 
 	return (GMT_Report_Error (API, GMT_OK));
 }
 
+struct GMT_OPTION * GMT_Prep_Options (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+{	/* Either we passed an option struct list or we passed argc, argv and must convert to get option list */
+	struct GMT_OPTION *options = NULL;
+	if (mode < 0) options = (struct GMT_OPTION *)args;	/* Gave a list of options already */	
+	else if (GMT_Create_Options (API, mode, args, &options)) exit (EXIT_FAILURE);
+	return (options);
+}
+
 GMT_LONG GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char *arg, struct GMT_OPTION **ptr)
 {
 	/* Create a structure option given the option character and the optional argument arg */

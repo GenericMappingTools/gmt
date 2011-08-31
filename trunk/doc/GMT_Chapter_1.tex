@@ -70,7 +70,7 @@ before \GMT\ 5 becomes the official version and \GMT\ 4 will be retired:
 \begin{enumerate}
 	\item All programs now use consistent, standardized choices for plot dimension units (\textbf{c}m, \textbf{i}nch, or
 	\textbf{p}oint;
-		we no longer consider \textbf{m}eter a plot length unit), and projected distances (choose spherical arc lengths in {bf d}egree,
+		we no longer consider \textbf{m}eter a plot length unit), and projected distances (choose spherical arc lengths in \textbf{d}egree,
 		\textbf{m}inute, and \textbf{s}econd [was \textbf{c}], or distances in m\textbf{e}ter [Default], \textbf{f}eet [new], 
 		\textbf{k}m, \textbf{M}iles [was sometimes \textbf{i} or \textbf{m}], or \textbf{n}autical miles).
 	\item All program that reads data tables can now process multi-segment tables automatically.  This means
@@ -88,7 +88,7 @@ before \GMT\ 5 becomes the official version and \GMT\ 4 will be retired:
 	\item All program that read grids can now handle Arc/Info float binary files (GRIDFLOAT) and ESRI .hdr formats.
 	\item All program that read grids now set boundary conditions to aid further processing.  If a subset then the
 		boundary conditions are taken from the surrounding grid values.
-	\item There is now a defaults parameter that controls which algorithms to use for Fourier transforms and triangulation.
+	\item There is now defaults parameters that control which algorithms to use for Fourier transforms and triangulation.
 	\item \GMT\ 5 only produces \PS\ and no longer has a setting for EPS.  We made this decision since a) our EPS effort was always
 		very approximate (no consideration of font metrics. etc.) and often wrong, and b) \GMTprog{ps2raster} handles it exactly.
 	\item The \Opt{B} option can now handle irregular and custom annotations (see Section \ref{sec:custaxes}).
