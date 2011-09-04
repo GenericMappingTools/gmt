@@ -59,7 +59,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	GMT_LONG	fliplr;
 	GMT_LONG	n, m, nn, off, got_R = FALSE, got_r = FALSE, error = FALSE;
 	GMT_LONG	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
-	GMT_LONG	n_alloc, n_commas, n_dash, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
+	GMT_LONG	n_alloc, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
 	GMT_LONG	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	char	*tmp = NULL;
 	float	*tmpF32 = NULL;
@@ -78,17 +78,17 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	GMT_memset (anSrcWin, 4, int);
 
 	if (prhs->B.active) {		/* We have a selected bands request */
-		int nc_ind;
-		for (nc_ind = 0, n_commas = 0; prhs->B.bands[nc_ind]; nc_ind++)
+		int nc_ind, n_commas = 0, n_dash = 0;
+		for (nc_ind = 0; prhs->B.bands[nc_ind]; nc_ind++)
 			if (prhs->B.bands[nc_ind] == ',') n_commas++;
-		for (n = 0, n_dash = 0; prhs->B.bands[n]; n++)
+		for (n = 0; prhs->B.bands[n]; n++)
 			if (prhs->B.bands[n] == '-') n_dash = n;
 		nn = MAX(n_commas+1, n_dash);
 		if (nn) {
 			nn = MAX( nn, atoi(&prhs->B.bands[nc_ind-1])+1 );		/* +1 because band numbering in GMT is zero based */
 			if (n_dash)	nn = MAX( nn, atoi(&prhs->B.bands[nn+1])+1 );
 		}
-		else
+		else		/* Hmm, this else case is never reached */
 			nn = atoi(prhs->B.bands);
 		whichBands = GMT_memory (C, NULL, nn, GMT_LONG);
 		nReqBands = gdal_decode_columns (C, prhs->B.bands, whichBands, nn);
