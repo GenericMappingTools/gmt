@@ -920,17 +920,20 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			else if (!strncmp (c, "%%BeginSetup", (size_t)12))
 				setup = TRUE;
-			else if (!strncmp (c, "%%EndSetup", (size_t)10))
+			else if (!strncmp (c, "%%EndSetup", (size_t)10)) {
 				setup = FALSE;
 				if (Ctrl->T.eps == -1)	/* Write out /PageSize command */
-					fprintf (fpo, "PSLevel 1 gt { << /PageSize [%g %g] /ImagingBBox null >> setpagedevice } if\n", w, h);
-			else if (!strncmp (c, "%%EndComments", (size_t)13)) {
-				fprintf (fpo, "%s", line);
+					fprintf (fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
 				if (r != 0) fprintf (fpo, "%ld rotate\n", r);
 				if (!GMT_IS_ZERO (xt) || !GMT_IS_ZERO (yt)) fprintf (fpo, "%g %g translate\n", xt, yt);
 				xt = yt = 0.0;
 				r = 0;
-				continue;
+			}
+			else if (!strncmp (c, "%%Page:", (size_t)7)) {
+				if (r != 0) fprintf (fpo, "%ld rotate\n", r);
+				if (!GMT_IS_ZERO (xt) || !GMT_IS_ZERO (yt)) fprintf (fpo, "%g %g translate\n", xt, yt);
+				xt = yt = 0.0;
+				r = 0;
 			}
 #ifdef USE_GDAL
 			else if (!strncmp (c, "%%PageTrailer", (size_t)13) && found_proj) {
