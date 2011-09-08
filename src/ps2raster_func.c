@@ -922,7 +922,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				setup = TRUE;
 			else if (!strncmp (c, "%%EndSetup", (size_t)10)) {
 				setup = FALSE;
-				if (Ctrl->T.eps == -1)	/* Write out /PageSize command */
+				if (Ctrl->T.eps != 1)	/* Write out /PageSize command */
 					fprintf (fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
 				if (r != 0) fprintf (fpo, "%ld rotate\n", r);
 				if (!GMT_IS_ZERO (xt) || !GMT_IS_ZERO (yt)) fprintf (fpo, "%g %g translate\n", xt, yt);
