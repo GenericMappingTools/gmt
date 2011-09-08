@@ -6,7 +6,7 @@ ps2raster \- Convert [E]PS file(s) to other formats using GhostScript
 BD(ps2raster) IT(psfile(s)) [ OPT(A)[BD(u)[IT(margins)]|-] ] [ OPT(C)IT(gs_option) ] [ OPT(D)IT(outdir) ] 
 [ OPT(E)IT(resolution) ] [ OPT(G)IT(ghost_path) ] [ OPT(L)IT(listfile) ] [ OPT(P) ] 
 [ OPT(Q)[BD(g)|BD(t)][1|2|4] ] [ OPT(S) ]  
-[ OPT(Tb)|BD(e)|BD(f)|BD(F)|BD(j)|BD(g)|BD(G)|BD(m)|BD(t) ] [ OPT(V) ] 
+[ OPT(Tb)|BD(e)|BD(E)|BD(f)|BD(F)|BD(j)|BD(g)|BD(G)|BD(m)|BD(t) ] [ OPT(V) ] 
 [ OPT(W)[BD(+g)][BD(+t)IT(docname)][BD(+n)IT(layername)][BD(+o)IT(foldername)][BD(+a)IT(altmode)[IT(alt)]][BD(+l)IT(minLOD/maxLOD)][BD(+f)IT(minfade/maxfade)][BD(+u)IT(URL)] ]
 .SH DESCRIPTION
 BD(ps2raster) converts one or more PS files to other formats (BMP, EPS, JPEG, PDF, PNG, PPM, TIFF)
@@ -72,8 +72,8 @@ box (1, 2, or 4) [4].  Default is no anti-aliasing (same as IT(bits) = 1).
 OPT(S)
 Print to standard output the GhostScript command after it has been executed.
 .TP
-OPT(Tb)|BD(e)|BD(f)|BD(F)|BD(j)|BD(g)|BD(G)|BD(m)|BD(t)
-Sets the output format, where BD(b) means BMP, BD(e) means EPS, BD(f) means PDF, BD(F) means multi-page PDF, BD(j) means JPEG, BD(g) means PNG,
+OPT(Tb)|BD(e)|BD(E)|BD(f)|BD(F)|BD(j)|BD(g)|BD(G)|BD(m)|BD(t)
+Sets the output format, where BD(b) means BMP, BD(e) means EPS, BD(E) means EPS with PageSize command, BD(f) means PDF, BD(F) means multi-page PDF, BD(j) means JPEG, BD(g) means PNG,
 BD(G) means transparent PNG (untouched regions are transparent), BD(m) means PPM, and BD(t) means TIFF [default is JPEG].
 For BD(bjgt) you can append - to get a grayscale image only.
 The EPS format can be combined with any of the other formats. For example, OPT(Tef) creates both an EPS and a PDF file.

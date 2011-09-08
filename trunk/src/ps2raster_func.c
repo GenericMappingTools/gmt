@@ -111,7 +111,7 @@ struct PS2RASTER_CTRL {
 	} S;
 	struct T {	/* -T */
 		GMT_LONG active;
-		GMT_LONG eps;	/* TRUE if we want to make EPS (possibly in addition to another format) */
+		GMT_LONG eps;	/* 1 if we want to make EPS, -1 with /PageSize (possibly in addition to another format) */
 		GMT_LONG device;
 	} T;
 	struct W {	/* -W -- for world file production */
@@ -245,7 +245,7 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "ps2raster %s [API] - Convert [E]PS file(s) to other formats using GhostScript.\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: ps2raster <psfile1> <psfile2> <...> [-A[u][-][<margin(s)>]] [-C<gs_command>]\n");
 	GMT_message (GMT, "\t[-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
-	GMT_message (GMT, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|f|F|g|G|j|m|t] [%s]\n", GMT_V_OPT);
+	GMT_message (GMT, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|f|F|g|G|j|m|p|t] [%s]\n", GMT_V_OPT);
 	GMT_message (GMT, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -291,6 +291,7 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-T Set output format [default is jpeg]:\n");
 	GMT_message (GMT, "\t   b means BMP.\n");
 	GMT_message (GMT, "\t   e means EPS.\n");
+	GMT_message (GMT, "\t   E means EPS with /PageSize command.\n");
 	GMT_message (GMT, "\t   f means PDF.\n");
 	GMT_message (GMT, "\t   F means multi-page PDF (requires -F).\n");
 	GMT_message (GMT, "\t   g means PNG.\n");
@@ -457,7 +458,10 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
 						case 'e':	/* EPS */
-							Ctrl->T.eps = TRUE;
+							Ctrl->T.eps = 1;
+							break;
+						case 'E':	/* EPS with /PageSize */
+							Ctrl->T.eps = -1;
 							break;
 						case 'f':	/* PDF */
 							Ctrl->T.device = GS_DEV_PDF;
@@ -915,9 +919,11 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				continue;
 			}
 			else if (!strncmp (c, "%%BeginSetup", (size_t)12))
-				setup=TRUE;
+				setup = TRUE;
 			else if (!strncmp (c, "%%EndSetup", (size_t)10))
-				setup=FALSE;
+				setup = FALSE;
+				if (Ctrl->T.eps == -1)	/* Write out /PageSize command */
+					fprintf (fpo, "PSLevel 1 gt { << /PageSize [%g %g] /ImagingBBox null >> setpagedevice } if\n", w, h);
 			else if (!strncmp (c, "%%EndComments", (size_t)13)) {
 				fprintf (fpo, "%s", line);
 				if (r != 0) fprintf (fpo, "%ld rotate\n", r);
