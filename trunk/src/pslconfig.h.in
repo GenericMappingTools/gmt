@@ -17,6 +17,7 @@
  *--------------------------------------------------------------------*/
 /*
  * A few things in PSL that are system dependent.
+ * @configure_input@
  *
  * Version:	5
  */

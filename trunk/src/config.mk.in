@@ -3,6 +3,8 @@
 #
 #	Standard Makefile Macro Setup for GMT 5
 #
+# @configure_input@
+#
 # Edit this file only, NOT the makefile itself.
 #-------------------------------------------------------------------------------
 # The purpose of this section is to contain common make macros

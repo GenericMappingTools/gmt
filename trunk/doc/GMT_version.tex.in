@@ -6,8 +6,7 @@
 %	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
-% This file will be converted to GMT_version.tex by 'configure'.
-% That script will insert the version number and document date
+% @configure_input@
 %
 \newcommand{\GMTDOCVERSION}{@PACKAGE_VERSION@}
 \newcommand{\GMTDOCDATE}{@DOCDATE@}
