@@ -1,5 +1,7 @@
 # GMT @PACKAGE_VERSION@ Defaults file (@UNITS@ version)
 #
+# @configure_input@
+#
 # COLOR Parameters
 #
 COLOR_BACKGROUND		= black

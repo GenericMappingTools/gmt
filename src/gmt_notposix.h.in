@@ -36,7 +36,8 @@
 #define _GMT_NOTPOSIX_H
 
 /* >>> THIS SECTION WILL BE MODIFIED BY configure <<<
- * >>> DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING!! <<< */
+ * >>> DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING!! <<<
+ * @configure_input@ */
 
 /* HAVE_<func> is undefined or defined as 1 depending on whether or
  * not <func> is available on this system.  The default setting is undefined:

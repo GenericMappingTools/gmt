@@ -17,6 +17,7 @@
 #
 #	Contact info: gmt.soest.hawaii.edu
 #--------------------------------------------------------------------
+# @configure_input@
 #
 # isogmt runs a GMT command or script in isolation mode.
 
