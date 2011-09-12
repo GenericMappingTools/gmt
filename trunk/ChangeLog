@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-09-12	remko
+	* configure.ac:		Do not unnecessarily overrule CFLAGS.
+
 2011-09-08	remko
 	* ps2raster_func.c:	Add -TE option to include /PageSize in EPS.
 

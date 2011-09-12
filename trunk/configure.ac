@@ -686,22 +686,43 @@ else
 fi
 dnl
 dnl -----------------------------------------------------------------
+dnl Test if CFLAGS variable was already set
+dnl If unset, AC_PROG_CC will set it to -g -O2 for gcc and leave 
+dnl ac_save_CFLAGS empty. Otherwise ac_save_CFLAGS == CFLAGS.
+dnl -----------------------------------------------------------------
+dnl
+AC_MSG_CHECKING(whether configure should try to set CFLAGS)
+if test "X$ac_save_CFLAGS" = "X" ; then
+	enable_cflags_setting=yes
+else
+	enable_cflags_setting=no
+fi
+AC_MSG_RESULT($enable_cflags_setting)
+dnl
+dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-debug to pass -g flag
+dnl Note: AC_PROG_CC already sets CFLAGS to -g for all compilers
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(if we should compile with debugging switch -g)
-dnl First remove -O, -O2 or -g
-CFLAGS=`echo "$ac_save_CFLAGS " | sed -e "s/-O2 //" -e "s/-O //" -e "s/-g //"`
-if test "X$enable_debug" = "Xyes" ; then
-	AC_MSG_RESULT(yes)
-	CFLAGS="-g $CFLAGS"
-else
-	AC_MSG_RESULT(no)
-	if test "$GCC" = "yes" || test "$os" = "Linux" || test "$os" = "AIX"; then
-		CFLAGS="-O2 $CFLAGS"
-	elif ! ( test "$chip" = "alpha" || test "$os" = "AUX" || test "$os" = "HP-UX" ); then
-		CFLAGS="-O $CFLAGS"
+if test "X$enable_cflags_setting" = "Xyes" ; then
+	if test "X$enable_debug" = "Xyes" ; then
+		AC_MSG_RESULT(yes)
+	else
+		AC_MSG_RESULT(no)
+		dnl Remove -g:
+		CFLAGS=`echo "$CFLAGS " | sed -e "s/-g //"`
+		dnl Do not mess up gcc defaults (I suppose this can be cleaned up):
+		if ! test "$GCC" = "yes" ; then
+			if test "$os" = "AIX"; then
+				CFLAGS="-O2 $CFLAGS"
+			elif ! ( test "$chip" = "alpha" || test "$os" = "AUX" || test "$os" = "HP-UX" ); then
+				CFLAGS="-O $CFLAGS"
+			fi
+		fi
 	fi
+else
+	AC_MSG_RESULT(CFLAGS were already set: leaving CFLAGS untouched)
 fi
 dnl -----------------------------------------------------------------
 dnl Allow developers to set --enable-devdebug to pass -DDEBUG
