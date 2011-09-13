@@ -1,4 +1,4 @@
-# @configure_input@
+/* @configure_input@ */
 #define SVN_VERSION @SVN_VERSION@
 #define PACKAGE_VERSION "@PACKAGE_VERSION@"
 #if SVN_VERSION
