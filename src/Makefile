@@ -68,6 +68,8 @@ PROGS_O		= $(FUNCS_O:_func.o=.o)
 
 PROGSPS_O	= $(FUNCSPS_O:_func.o=.o)
 
+API_H		= gmt_modules.h
+
 LIBPS_O		= pslib.o
 LIBGMT_O	= gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_fft.o gmt_grdio.o \
 		  gmt_io.o  gmt_nc.o gmt_notposix.o gmt_proj.o gmt_shore.o gmt_stat.o gmt_support.o gmt_regexp.o \

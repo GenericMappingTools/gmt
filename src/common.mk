@@ -83,10 +83,6 @@ LIBGMT	= $(GMTSRCDIR)libpsl.$(LIBEXT) $(GMTSRCDIR)libgmt.$(LIBEXT)
 
 GMT_LIB	= -L$(GMTSRCDIR). -lgmt -lpsl
 
-# Header files for API
-API_H	= $(API_O:.o=.h)
-API_C	= $(API_O:.o=.c)
-
 # Define executables to be created from objects
 PROGS	= $(PROGS_O:.o=$(EXE))
 PROGSPS	= $(PROGSPS_O:.o=$(EXE))
