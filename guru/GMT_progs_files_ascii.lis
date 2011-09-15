@@ -107,7 +107,6 @@ src/gmt_init.c
 src/gmt_io.c
 src/gmt_map.c
 src/gmt_mgg_header2.c
-src/gmt_modules.c
 src/gmt_notposix.c
 src/gmt_agc_io.c
 src/gmt_nc.c

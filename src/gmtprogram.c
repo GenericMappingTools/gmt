@@ -21,34 +21,27 @@
  * either GMTAPI_GMT or GMTAPI_GMTPSL (when PSL needs to be initialized).
  *
  * Version:	5
- * Created:	20-Oct-2009
+ * Created:	14-Sep-2011
  *
  */
 
 #include "pslib.h"
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG FUNC (struct GMTAPI_CTRL *API, struct GMT_OPTION *options);
+EXTERN_MSC GMT_LONG FUNC (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args);
 
 int main (int argc, char *argv[]) {
 
 	int status = 0;				/* Status code from GMT API */
-	struct GMT_OPTION *options = NULL;	/* Linked list of options */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 
 	/* 1. Initializing new GMT session */
 	if (GMT_Create_Session (&API, argv[0], FUNC_MODE)) exit (EXIT_FAILURE);
 
-	/* 2. Convert command line arguments to local linked option list */
-	if (GMT_Create_Options (API, (GMT_LONG)(argc-1), (void *)(argv+1), &options)) exit (EXIT_FAILURE);
+	/* 2. Run GMT function, or give usage message if errors arise during parsing */
+	status = (int)FUNC (API, (GMT_LONG)(argc-1), (void *)(argv+1));
 
-	/* 3. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = (int)FUNC (API, options);
-
-	/* 4. Destroy local linked option list */
-	if (GMT_Destroy_Options (API, &options)) exit (EXIT_FAILURE);
-
-	/* 5. Destroy GMT session */
+	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);
 
 	exit (status);		/* Return the status from FUNC */

@@ -671,9 +671,10 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 	return (closed);
 }
 
-#define Return(code) {Free_grdcontour_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_grdcontour_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the grdcontour task */
 	GMT_LONG c, n_edges, n_alloc = 0, n_contours, id, cont_counts[2] = {0, 0}, need_proj;
 	GMT_LONG tbl_scl = 1, n_save = 0, i, n, nn, ij, closed, begin, error, io_mode = 0;
@@ -693,14 +694,16 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_GRID *G = NULL, *G_orig = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;	/* General PSL interal parameters */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_grdcontour_usage (API, GMTAPI_USAGE));/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_grdcontour_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdcontour_usage (API, GMTAPI_USAGE));/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdcontour_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

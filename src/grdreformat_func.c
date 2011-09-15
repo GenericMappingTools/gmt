@@ -123,24 +123,27 @@ GMT_LONG GMT_grdreformat_parse (struct GMTAPI_CTRL *C, struct GRDREFORMAT_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {Free_grdreformat_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_grdreformat_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, mode, type[2];
+	GMT_LONG error = FALSE, hmode, type[2];
 
 	char fname[2][GMT_BUFSIZ];
 
 	struct GMT_GRID *Grid = NULL;
 	struct GRDREFORMAT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_grdreformat_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_grdreformat_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdreformat_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdreformat_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -153,7 +156,7 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	Grid = GMT_create_grid (GMT);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
-	mode = (Ctrl->N.active) ? GMT_GRID_NO_HEADER : 0;
+	hmode = (Ctrl->N.active) ? GMT_GRID_NO_HEADER : 0;
 	GMT_err_fail (GMT, GMT_grd_get_format (GMT, Ctrl->IO.file[0], Grid->header, TRUE), Ctrl->IO.file[0]);
 	type[0] = Grid->header->type;
 	strcpy (fname[0], Grid->header->name);
@@ -175,7 +178,7 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->IO.file[0][0] == '=') strcpy (fname[0], "<stdin>");
 		if (Ctrl->IO.file[1][0] == '=') strcpy (fname[1], "<stdout>");
 		GMT_report (GMT, GMT_MSG_NORMAL, "Translating file %s (format %s)\nto file %s (format %s)\n", fname[0], GMT->session.grdformat[type[0]], fname[1], GMT->session.grdformat[type[1]]);
-		if (mode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n') GMT_report (GMT, GMT_MSG_FATAL, "No grd header will be written\n");
+		if (hmode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n') GMT_report (GMT, GMT_MSG_FATAL, "No grd header will be written\n");
 	}
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
@@ -202,7 +205,7 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_grd_init (GMT, Grid->header, options, TRUE);
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, mode, (void **)&Ctrl->IO.file[1], (void *)Grid);
+	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, hmode, (void **)&Ctrl->IO.file[1], (void *)Grid);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	Return (GMT_OK);

@@ -1791,7 +1791,7 @@ GMT_LONG GMT_geo_to_dms (double val, GMT_LONG n_items, double fact, GMT_LONG *d,
 
 void GMT_add_to_record (struct GMT_CTRL *C, char *record, double val, GMT_LONG col, GMT_LONG sep)
 {	/* formats and appends val to the record texts string.
-	 * If sep is 1 we preend col separator.
+	 * If sep is 1 we prepend col separator.
 	 * If sep is 2 we append col separator
 	 * If sep is 1|2 do both [0 means no separator].
 	 */
@@ -4465,7 +4465,7 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	if (GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_COPY, GMT_IS_POINT, GMT_OUT, (void **)&M, NULL, (void *)M, &object_ID)) return (EXIT_FAILURE);
 	GMT_Encode_ID (C->parent, out_string, object_ID);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-C -fg -<%s ->%s", in_string, out_string);
-	status = GMT_minmax_cmd (C->parent, 0, (void *)buffer);	/* Get the extent via minmax */
+	status = GMT_minmax (C->parent, 0, (void *)buffer);	/* Get the extent via minmax */
 	
 	/* Time to reregister the original destination */
 	

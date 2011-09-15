@@ -290,7 +290,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 				sprintf (cmd, "%s %s %s %s -G%s -V%ld", B[n].file, Targs, Iargs, Rargs, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
-				if ((status = GMT_grdsample_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
+				if ((status = GMT_grdsample (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 					GMT_exit (EXIT_FAILURE);
 				}
@@ -300,7 +300,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 				sprintf (cmd, "%s %s %s -V%ld", B[n].file, Rargs, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
-				if ((status = GMT_grdreformat_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
+				if ((status = GMT_grdreformat (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 					GMT_exit (EXIT_FAILURE);
 				}
@@ -548,9 +548,10 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {for (k = 0; k < Ctrl->In.n; k++) free ((void *)Ctrl->In.file[k]); GMT_free (GMT, Ctrl->In.file); Free_grdblend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {for (k = 0; k < Ctrl->In.n; k++) free ((void *)Ctrl->In.file[k]); GMT_free (GMT, Ctrl->In.file); Free_grdblend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG col, pcol, row, nx_360 = 0, k, kk, m, n_blend, error, n_fill, n_tot, ij, wrap_x, reformat;
 	
@@ -558,7 +559,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	float *z = NULL, no_data_f;
 	
-	char mode[2] = {'w', 'W'}, type;
+	char wmode[2] = {'w', 'W'}, type;
 	char *outfile = NULL, outtemp[GMT_BUFSIZ];
 	
 	struct GRDBLEND_INFO *blend = NULL;
@@ -566,13 +567,15 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_GRID *Grid = NULL;
 	struct GRDBLEND_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_grdblend_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_grdblend_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdblend_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdblend_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -647,7 +650,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			outfile = Ctrl->G.file;
 		if (!Ctrl->Q.active) GMT_err_fail (GMT, GMT_write_grd_info (GMT, Ctrl->G.file, &S.header), Ctrl->G.file);
 
-		GMT_err_fail (GMT, GMT_open_grd (GMT, Ctrl->G.file, &S, mode[Ctrl->Q.active]), Ctrl->G.file);
+		GMT_err_fail (GMT, GMT_open_grd (GMT, Ctrl->G.file, &S, wmode[Ctrl->Q.active]), Ctrl->G.file);
 	}
 	
 	if (Ctrl->Z.active) GMT_report (GMT, GMT_MSG_NORMAL, "Output data will be scaled by %g\n", Ctrl->Z.scale);
@@ -768,7 +771,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		char cmd[GMT_BUFSIZ];
 		sprintf (cmd, "%s %s -V%ld", outfile, Ctrl->G.file, GMT->current.setting.verbose);
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Reformat %s via grdreformat %s\n", outfile, cmd);
-		if ((status = GMT_grdreformat_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
+		if ((status = GMT_grdreformat (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s.\n", outfile);
 		}
 	}

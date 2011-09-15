@@ -15,8 +15,7 @@ include $(GMTSRCDIR)common.mk
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 ALLLIB		= $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS)
 
-API_O		= gmt_meca.o
-API_H		= $(API_O:.o=.h)
+API_H		= gmt_meca.h
 LIB_O		= utilmeca.o nrutil.o submeca.o distaz.o
 FUNCS_O		= psmeca_func.o pspolar_func.o psvelo_func.o pscoupe_func.o
 PROGS_O		= $(FUNCS_O:_func.o=.o)
@@ -78,12 +77,12 @@ LIBAPI		= libgmt_meca.$(LIBEXT)
 
 libs:		libgmt_meca.a
 
-libgmt_meca.a:	$(FUNCS_O) $(LIB_O) $(API_O)
+libgmt_meca.a:	$(FUNCS_O) $(LIB_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_meca.$(SL):	libgmt_meca.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(API_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	object file dependencies

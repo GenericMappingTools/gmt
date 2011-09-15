@@ -13,7 +13,7 @@ include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
-API_O		= gmt_gshhs.o
+API_H		= gmt_gshhs.h
 FUNCS_O		= gshhs_func.o
 PROGS_API_O	= $(FUNCS_O:_func.o=.o)
 PROGS_API	= $(PROGS_API_O:.o=$(EXE))
@@ -81,12 +81,12 @@ LIBAPI		= libgmt_gshhs.$(LIBEXT)
 
 libs:		libgmt_gshhs.a
 
-libgmt_gshhs.a:	$(FUNCS_O) $(API_O)
+libgmt_gshhs.a:	$(FUNCS_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_gshhs.$(SL):	libgmt_gshhs.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(API_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules

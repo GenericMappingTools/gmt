@@ -22,8 +22,7 @@ include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
-API_O		= gmt_mgd77.o
-API_H		= $(API_O:.o=.h)
+API_H		= gmt_mgd77.h
 FUNCS_O		= mgd77convert_func.o mgd77info_func.o mgd77list_func.o mgd77path_func.o \
 		  mgd77manage_func.o mgd77magref_func.o mgd77sniffer_func.o
 FUNCSPS_O	= mgd77track_func.o

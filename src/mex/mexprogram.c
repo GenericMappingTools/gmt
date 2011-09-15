@@ -49,7 +49,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	if (GMTMEX_parser (API, plhs, nlhs, prhs, nrhs, key, n_keys, options)) mexErrMsgTxt ("Failure to parse mex command options\n");
 	
 	/* 3. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = (int)FUNC (API, options);
+	status = (int)FUNC (API, -1, (void *)options);
 
 	/* 4. Destroy local linked option list */
 	if (GMT_Destroy_Options (API, &options)) mexErrMsgTxt ("Failure to destroy GMT options\n");

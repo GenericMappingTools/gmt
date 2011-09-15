@@ -514,12 +514,13 @@ GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG
 	return (nscan);
 }
 
-#define Return(code) {Free_pstext_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_pstext_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pstext task */
 
-	GMT_LONG i, nscan, length = 0, n_paragraphs = 0, n_add, n_fields, mode, n_alloc = 0, m = 0;
+	GMT_LONG i, nscan, length = 0, n_paragraphs = 0, n_add, n_fields, fmode, n_alloc = 0, m = 0;
 	GMT_LONG n_read = 0, n_processed = 0, txt_alloc = 0, old_is_world, add, n_expected_cols;
 	GMT_LONG error = FALSE, master_record = FALSE, skip_text_records = FALSE, pos, text_col;
 
@@ -535,14 +536,16 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct PSTEXT_INFO T;
 	struct PSTEXT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_pstext_usage (API, GMTAPI_USAGE, FALSE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_pstext_usage (API, GMTAPI_SYNOPSIS, FALSE));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pstext_usage (API, GMTAPI_USAGE, FALSE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pstext_usage (API, GMTAPI_SYNOPSIS, FALSE));	/* Return the synopsis */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
@@ -821,7 +824,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			else
 				curr_txt = in_txt;
-			mode = GMT_setfont (GMT, &T.font);
+			fmode = GMT_setfont (GMT, &T.font);
 			if (Ctrl->G.mode) {
 				if (m <= n_alloc) {
 					n_alloc = GMT_malloc3 (GMT, c_angle, c_x, c_y, m, n_alloc, double);
@@ -834,7 +837,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				m++;
 			}
 			else {	
-				PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, mode);
+				PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
 				if (T.boxflag & 32) {	/* Draw line from original point to shifted location */
 					GMT_setpen (GMT, &T.vecpen);
 					PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);

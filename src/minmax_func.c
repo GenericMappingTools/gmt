@@ -226,13 +226,14 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {Free_minmax_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_minmax_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
 	GMT_LONG brackets = FALSE, work_on_abs_value, do_report;
-	GMT_LONG i, j, ncol = 0, n = 0, n_fields, save_range, mode, done;
+	GMT_LONG i, j, ncol = 0, n = 0, n_fields, save_range, wmode, done;
 
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
 
@@ -242,13 +243,15 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_QUAD *Q = NULL;
 	struct MINMAX_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (options && options->option == '?') return (GMT_minmax_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options && options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_minmax_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (options && options->option == GMTAPI_OPT_USAGE) bailout (GMT_minmax_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_minmax_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -262,7 +265,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	give_r_string = (Ctrl->I.active && !Ctrl->C.active);
 	delimeter[0] = (Ctrl->C.active) ? '\t' : '/';
 	delimeter[1] = '\0';
-	mode = (Ctrl->C.active) ? GMT_WRITE_DOUBLE : GMT_WRITE_TEXT;
+	wmode = (Ctrl->C.active) ? GMT_WRITE_DOUBLE : GMT_WRITE_TEXT;
 	GMT_memset (file, GMT_BUFSIZ, char);
 	
 	brackets = !Ctrl->C.active;

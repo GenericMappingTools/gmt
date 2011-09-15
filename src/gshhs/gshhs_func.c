@@ -188,16 +188,17 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
 #ifdef DEBUG
-#define Return(code) {Free_gshhs_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_memtrack_on (GMT, GMT_mem_keeper); return (code);}
+#define Return(code) {Free_gshhs_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_memtrack_on (GMT, GMT_mem_keeper); bailout (code);}
 #else
-#define Return(code) {Free_gshhs_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define Return(code) {Free_gshhs_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 #endif
 
-GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG k, seg_no = 0, is_line = 0, n_alloc = 0, n_seg = 0, max_east = 270000000;
-	GMT_LONG error, ID, n_read, m, mode, level, version, greenwich, is_river, src;
+	GMT_LONG error, ID, n_read, m, gmode, level, version, greenwich, is_river, src;
 	GMT_LONG must_swab, dim[4] = {1, 0, 2, 0}, OK, first = TRUE;
 
 	double w, e, s, n, area, f_area, scale = 10.0;
@@ -214,13 +215,15 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
  	struct GMT_TEXT_SEGMENT *TX = NULL;
 	struct GSHHS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
       
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_gshhs_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_gshhs_usage (API, GMTAPI_SYNOPSIS));		/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gshhs_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gshhs_usage (API, GMTAPI_SYNOPSIS));		/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -411,9 +414,9 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, seg_no, struct GMT_LINE_SEGMENT *);
 		}
 		D->n_segments = D->table[0]->n_segments = seg_no;
-		mode = (is_line) ? GMT_IS_LINE : GMT_IS_POLY;
+		gmode = (is_line) ? GMT_IS_LINE : GMT_IS_POLY;
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, mode, NULL, 0, (void **)&Ctrl->Out.file, (void *)D))) Return (error);
+		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, gmode, NULL, 0, (void **)&Ctrl->Out.file, (void *)D))) Return (error);
 	}
   	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 

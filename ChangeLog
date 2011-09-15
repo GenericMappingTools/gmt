@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-09-15	pwessel
+	* *.c:			Change module interface to one flavor:
+				GMT_module (API, mode, args) to avoid having separate
+				GMT_module and GMT_module_cmd wrappers.  This eliminates
+				the need for the gmt_module.c and gmt_<suppl>.c files.
+
 2011-09-12	remko
 	* configure.ac:		Do not unnecessarily overrule CFLAGS.
 

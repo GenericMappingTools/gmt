@@ -2764,8 +2764,9 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 #define Free_Hash { for (i = 0; i < GMTMATH_N_OPERATORS; i++) { p = localhashnode[i].next; while ((current = p)) { p = p->next; GMT_free (GMT, current); } } }
 #define Free_Stack { for (i = 0; i < GMTMATH_STACK_SIZE; i++) if (alloc_mode[i] == 2) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&stack[i]); else if (alloc_mode[i] == 1) GMT_free_dataset (GMT, &stack[i]); }
 #define Free_Misc {if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&T_in); GMT_free_dataset (GMT, &Template); GMT_free_dataset (GMT, &Time); if (read_stdin) GMT_free_dataset (GMT, &D_stdin); }
-#define Return1(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code); }
-#define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Hash; Free_Stack; Free_Misc;  GMT_end_module (GMT, GMT_cpy); return (code); }
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return1(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code); }
+#define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Hash; Free_Stack; Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
 
 GMT_LONG decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
 	GMT_LONG expect, i, check = GMT_IS_NAN, possible_number = FALSE;
@@ -2824,7 +2825,7 @@ GMT_LONG decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, st
 	return (GMTMATH_ARG_IS_BAD);	/* Dummy return to satisfy some compilers */
 }
 
-GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, j, k, kk, op = 0, nstack = 0, new_stack = -1, use_t_col = 0, status, n_macros;
 	GMT_LONG consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS];
@@ -2848,13 +2849,15 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct MATH_MACRO *M = NULL;
 	struct GMTMATH_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_gmtmath_usage (API, GMTAPI_USAGE));/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_gmtmath_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtmath_usage (API, GMTAPI_USAGE));/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmtmath_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

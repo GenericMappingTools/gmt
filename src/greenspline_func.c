@@ -1039,9 +1039,10 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, G
 	return (C);
 }
 
-#define Return(code) {Free_greenspline_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_greenspline_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, j, k, p, ii, n, m, nm, n_fields, error, dimension = 0;
 	GMT_LONG n_expected_fields, normalize = 1, unit = 0, out_ID;
@@ -1077,13 +1078,15 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_GRD_INFO info;
 	struct GREENSPLINE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_greenspline_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_greenspline_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_greenspline_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_greenspline_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

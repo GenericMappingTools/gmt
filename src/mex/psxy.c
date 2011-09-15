@@ -53,7 +53,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	cmd = GMTMEX_build_cmd (API, input, options, NULL, GMT_IS_PS);
 	
 	/* Run psxy module, or give usage message if errors arise during parsing */
-	if ((status = GMT_psxy_cmd (API, 0, (void *)cmd))) mexErrMsgTxt ("Run-time error\n");
+	if ((status = GMT_psxy (API, 0, (void *)cmd))) mexErrMsgTxt ("Run-time error\n");
 		
 	/* Free temporary local variables  */
 	GMTMEX_free (input, NULL, options, cmd);

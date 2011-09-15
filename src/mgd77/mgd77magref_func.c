@@ -393,9 +393,10 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {Free_mgd77magref_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_exit (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_mgd77magref_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, j, s, nval = 0, nfval = 0, error = 0, t_col = 3, n_out = 0, cm4_igrf_T = FALSE;
 	GMT_LONG lval = 0, lfval = 0, n_field_components, n_alloc = 0, need = 0, tbl;
@@ -408,13 +409,15 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_DATASET *Din = NULL;
 	struct GMT_TABLE *T = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
 	if (options && options->option == '?') return (GMT_mgd77magref_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options && options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_mgd77magref_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77magref_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

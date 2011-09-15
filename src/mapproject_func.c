@@ -401,11 +401,12 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {Free_mapproject_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_mapproject_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG k, x, y, mode, pos, i = 0, j, n_fields, n_output = 0, two;
+	GMT_LONG k, x, y, rmode, pos, i = 0, j, n_fields, n_output = 0, two;
 	GMT_LONG fmt[2], save[2] = {0,0}, unit = 0, n_read = 0, n = 0, proj_type = 0;
 	GMT_LONG error = FALSE, line_start = TRUE, n_read_in_seg, do_geo_conv = FALSE;
 	GMT_LONG geodetic_calc = FALSE, greenwich = FALSE, lat_mode = 0;
@@ -424,13 +425,15 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_OPTION *ptr = NULL;
 	struct MAPPROJECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_mapproject_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_mapproject_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mapproject_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mapproject_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -628,7 +631,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Initialize the i/o for doing record-by-record reading/writing */
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
-	mode = (!GMT->common.b.active[GMT_IN] && !GMT->common.b.active[GMT_OUT] && !GMT->common.o.active && GMT_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
+	rmode = (!GMT->common.b.active[GMT_IN] && !GMT->common.b.active[GMT_OUT] && !GMT->common.o.active && GMT_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
 	x_in_min = y_in_min = x_out_min = y_out_min = DBL_MAX;
 	x_in_max = y_in_max = x_out_max = y_out_max = -DBL_MAX;
@@ -656,7 +659,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_output = GMT_get_cols (GMT, GMT_OUT);
 
 	n = n_read_in_seg = 0;
-	while ((n_fields = GMT_Get_Record (API, mode, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((n_fields = GMT_Get_Record (API, rmode, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
 
 		if (GMT_REC_IS_ERROR (GMT) && n_fields < 2) continue;
 
@@ -733,7 +736,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				y_out_max = MAX (y_out_max, out[GMT_Y]);
 			}
 
-			if (mode == GMT_READ_MIXED) {
+			if (rmode == GMT_READ_MIXED) {
 				/* Special case: ASCII i/o and at least 3 input columns:
 				   Columns beyond first two could be text strings */
 
@@ -853,7 +856,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				else {	/* Azimuths with respect to a fixed point */
 					d = GMT_az_backaz (GMT, Ctrl->A.lon, Ctrl->A.lat, in[GMT_X], in[GMT_Y], Ctrl->A.reverse);
 				}
-				if (mode == GMT_READ_MIXED) {
+				if (rmode == GMT_READ_MIXED) {
 					/* Special case: Ascii input and at least 3 columns:
 					   Columns beyond first two could be text strings */
 
@@ -900,7 +903,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					y_out_min = MIN (y_out_min, out[GMT_Y]);
 					y_out_max = MAX (y_out_max, out[GMT_Y]);
 				}
-				if (mode == GMT_READ_MIXED) {
+				if (rmode == GMT_READ_MIXED) {
 					/* Special case: Ascii input and at least 3 columns:
 					   Columns beyond first two could be text strings */
 

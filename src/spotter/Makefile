@@ -26,8 +26,7 @@ LIB_H		= spotter.h
 LIB_O		= libspotter.o
 FUNCS_O		= backtracker_func.o grdpmodeler_func.o grdrotater_func.o grdspotter_func.o \
 		  hotspotter_func.o originator_func.o rotconverter_func.o
-API_O		= gmt_spotter.o
-API_H		= $(API_O:.o=.h)
+API_H		= gmt_spotter.h
 PROGS_O		= $(FUNCS_O:_func.o=.o)
 MAN1		= $(PROGS_O:.o=.1)
 

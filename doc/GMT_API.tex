@@ -725,34 +725,32 @@ will also reallocate any arrays used into their proper lengths.
 \section{Prepare program options}
 \index{Program options!Prepare}
 \label{sec:func}
-All GMT modules  are available in two different flavors.
-The two versions differ in how the command options are passed to the module:
+The module prototype interface is
+
+\begin{verbatim}
+GMT_module (struct GMTAPI_CTRL *API, long mode, void *args)
+\end{verbatim}
+All GMT modules may be called with one of three sets of \texttt{args} depending on \texttt{mode}.
+The three modes differ in how the options are passed to the module:
 \begin{description}
-\item [\texttt{GMT\_module\_cmd}]: Expects an array of text options and a count of
-how many options are passed (i.e., the \texttt{argc, argv[]} model).
-\item [\texttt{GMT\_module}]: Expects a pointer to a doubly-linked list of objects with individual options
+\item [$mode < 0$]: Expects \texttt{args} to be a pointer to a doubly-linked list of objects with individual options
 for the current program.
+\item [$mode == 0$]: Expects \texttt{args} to be a single text string with all required options.
+\item [$mode > 0$]: Expects \texttt{args} to be an array of text options \texttt{mode} to be a count of
+how many options are passed (i.e., the \texttt{argc, argv[]} model).
 \end{description}
 Here, \texttt{GMT\_module} stands for any of the \GMT\ modules, such as \texttt{GMT\_psxy}.
-There are no restrictions on the use of these modules and the developer may choose
-either form or mix and match depending on how options are to be assembled.  In the implementation,
-\texttt{GMT\_module\_cmd} is simply a wrapper that creates the option list from the arguments and then
-calls \texttt{GMT\_module}.
 
 \subsection{Set program options via text arguments}
 \index{Set program options via text arguments}
 \index{Program options!Text arguments}
-The module prototype for the text-based interface is
 
-\begin{verbatim}
-GMT_module_cmd (struct GMTAPI_CTRL *API, long argc, char *argv[])
-\end{verbatim}
-In addition to the API control structure pointer, we expect an array \texttt{argv} of character strings that each
-holds a single command line argument (e.g., ``\Opt{R}\emph{120:30/134:45/8S/3N}'') as well as the count \texttt{argc}
+In addition to the API control structure pointer, we expect an array \texttt{args} of character strings that each
+holds a single command line argument (e.g., ``\Opt{R}\emph{120:30/134:45/8S/3N}'') as well as the count \texttt{mode}
 of how many options are passed.  This, of course, is almost exactly how the stand-alone \GMT\
 programs are called (and reflects how they themselves are activated internally).  Depending on how
 your program obtains the necessary options you may find that this interface offers all you need.
-Note: if \texttt{argc} == 0 then \texttt{argv} will be further examined to see if it contains several options within a single string.
+Note: if \texttt{mode} == 0 then \texttt{argv} will be further examined to see if it contains several options within a single string.
 If so we will break these into separate options.  This is useful if you wish to pass a single string such as
 ``\Opt{R}\emph{120:30/134:45/8S/3N} \Opt{JM}\emph{6i} mydata.txt \Opt{Sc}0.2c''.
 
@@ -762,12 +760,8 @@ If so we will break these into separate options.  This is useful if you wish to 
 
 The second, linked-list interface allows developers using higher-level programming languages to pass all command
 options via a pointer to a NULL-terminated, doubly-linked list of option structures, each containing
-information about a single option.  The prototype for this interface is
-
-\begin{verbatim}
-GMT_module (struct GMTAPI_CTRL *API, struct GMT_OPTIONS *options)
-\end{verbatim}
-Here, instead of text arguments we pass the pointer to the linked list of options mentioned above.  Using
+information about a single option.  Here, instead of text arguments we pass the pointer to the linked list of
+options mentioned above, and \texttt{mode} must be passed as -1 (or any negative value).  Using
 this interface can be more involved since you need to generate the linked
 list of program options; however, utility functions exist to simplify its use.
 This interface is intended for programs whose internal workings are better suited to
