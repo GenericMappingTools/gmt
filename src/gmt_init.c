@@ -1100,11 +1100,11 @@ GMT_LONG GMT_default_error (struct GMT_CTRL *C, char option)
 
 		default:
 			/* Not a processed common options */
-			GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized option -%c\n", option);
 			error++;
 			break;
 	}
 
+	if (error) GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized option -%c\n", option);
 	return (error);
 }
 
