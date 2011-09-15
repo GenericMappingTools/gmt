@@ -29,8 +29,6 @@
 
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, struct GMT_OPTION *head);
-
 int main (int argc, char *argv[]) {
 
 	GMT_LONG status = 0;				/* Status code from GMT API */
@@ -71,7 +69,7 @@ int main (int argc, char *argv[]) {
 	if (GMT_Append_Option (API, new, &head)) exit (EXIT_FAILURE);
 
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = GMT_grdcut (API, head);	/* This allocates memory for the export grid associated with the -G option */
+	status = GMT_grdcut (API, -1, (void *)head);	/* This allocates memory for the export grid associated with the -G option */
 
 	/* 6. Destroy local linked option list */
 	if (GMT_Destroy_Options (API, &head)) exit (EXIT_FAILURE);

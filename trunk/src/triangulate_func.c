@@ -199,9 +199,10 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {Free_triangulate_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_triangulate_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	int *link = NULL;	/* Must remain int and not GMT_LONG due to triangle function */
 	
@@ -221,13 +222,15 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct TRIANGULATE_EDGE *edge = NULL;
 	struct TRIANGULATE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_triangulate_usage (API, GMTAPI_USAGE));/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_triangulate_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_triangulate_usage (API, GMTAPI_USAGE));/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_triangulate_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

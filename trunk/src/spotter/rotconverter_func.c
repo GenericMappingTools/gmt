@@ -231,9 +231,10 @@ GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {Free_rotconverter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_rotconverter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 	struct EULER *a = NULL, *b = NULL;	/* Pointer to arrays of stage poles */
@@ -259,10 +260,12 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_OPTION *ptr = NULL, *opt = NULL;
 	struct ROTCONVERTER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
 	/* Special preprocessing since online rotations like -144/34/-9 and -.55/33/2 will
 	 * have been decoded as options -4 and option -., respectively.  Here we simply
@@ -287,7 +290,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				break;
 		}
 	}
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_rotconverter_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_rotconverter_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (n_opt == 1 && confusion) return (GMT_rotconverter_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */

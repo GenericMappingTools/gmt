@@ -46,7 +46,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	cmd = GMTMEX_build_cmd (API, NULL, options, NULL, GMT_IS_PS);
 	
 	/* Run pscoast module, or give usage message if errors arise during parsing */
-	if ((status = GMT_pscoast_cmd (API, 0, (void *)cmd))) mexErrMsgTxt ("Run-time error\n");
+	if ((status = GMT_pscoast (API, 0, (void *)cmd))) mexErrMsgTxt ("Run-time error\n");
 		
 	/* Free temporary local variables  */
 	mxFree (cmd);

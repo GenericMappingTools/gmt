@@ -384,9 +384,10 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {Free_xyzokb_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_xyzokb_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
+GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT_LONG error = FALSE;
 	GMT_LONG row, col, i, j, ij, k;
@@ -406,6 +407,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	struct	XYZOKB_CTRL *Ctrl = NULL;
 	struct	GMT_GRID *Gout = NULL;
 	struct	GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	data = NULL, triang = NULL, vert = NULL, t_center = NULL, raw_mesh = NULL, mag_param = NULL;
 	mag_var = NULL, mag_var2 = NULL, mag_var3 = NULL, mag_var4 = NULL;
@@ -413,11 +415,12 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) 
-		return (GMT_xyzokb_usage (API, GMTAPI_USAGE));		/* Return the usage message */
+		bailout (GMT_xyzokb_usage (API, GMTAPI_USAGE));		/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) 
-		return (GMT_xyzokb_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+		bailout (GMT_xyzokb_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

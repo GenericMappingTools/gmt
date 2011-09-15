@@ -247,10 +247,6 @@ EXTERN_MSC double GMT_right_sinusoidal (struct GMT_CTRL *C, double y);	/* For si
 EXTERN_MSC double GMT_left_polyconic (struct GMT_CTRL *C, double y);	/* For polyconic maps	*/
 EXTERN_MSC double GMT_right_polyconic (struct GMT_CTRL *C, double y);	/* For polyconic maps	*/
 
-/* From gmtapi_parse.c */
-EXTERN_MSC struct GMT_OPTION * GMT_Prep_Options (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args);
-#define GMT_Free_Options(mode) {if (mode == 0 && GMT_Destroy_Options (API, &options)) exit (EXIT_FAILURE);}
-
 /* Complex math from gmt_stat.c */
 EXTERN_MSC void gmt_Cmul (double A[], double B[], double C[]);
 EXTERN_MSC void gmt_Cdiv (double A[], double B[], double C[]);

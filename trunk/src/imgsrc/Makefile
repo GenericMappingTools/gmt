@@ -13,8 +13,7 @@ include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
-API_O		= gmt_img.o
-API_H		= $(API_O:.o=.h)
+API_H		= gmt_img.h
 LIB_O		= gmt_imgsubs.o
 FUNCS_O		= img2grd_func.o
 LIB_H		= gmt_imgsubs.h
@@ -75,12 +74,12 @@ LIBAPI		= libgmt_img.$(LIBEXT)
 
 libs:		libgmt_img.a
 
-libgmt_img.a:	$(FUNCS_O) $(LIB_O) $(API_O)
+libgmt_img.a:	$(FUNCS_O) $(LIB_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_img.$(SL):	libgmt_img.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(API_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	object file dependencies

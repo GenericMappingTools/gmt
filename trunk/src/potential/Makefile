@@ -12,8 +12,7 @@ include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
-API_O		= gmt_potential.o
-API_H		= $(API_O:.o=.h)
+API_H		= gmt_potential.h
 FUNCS_O		= redpol_func.o xyzokb_func.o
 
 PROGS_O		= $(FUNCS_O:_func.o=.o)
@@ -72,12 +71,12 @@ LIBAPI		= libgmt_potential.$(LIBEXT)
 
 libs:		libgmt_potential.a
 
-libgmt_potential.a:	$(FUNCS_O) $(API_O)
+libgmt_potential.a:	$(FUNCS_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_potential.$(SL):	libgmt_potential.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(API_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	object file dependencies

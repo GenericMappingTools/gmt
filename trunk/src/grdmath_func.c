@@ -2722,7 +2722,8 @@ void grd_ZDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 
 #include "grdmath_func.h"
 
-#define Return(code) {GMT_Destroy_Options (API, &list); Free_grdmath_Ctrl (GMT, Ctrl); grdmath_free (GMT, stack, alloc_mode, &info, localhashnode); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {GMT_Destroy_Options (API, &list); Free_grdmath_Ctrl (GMT, Ctrl); grdmath_free (GMT, stack, alloc_mode, &info, localhashnode); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LONG decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *value, struct GMT_HASH *H)
 {
@@ -2803,7 +2804,7 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GMT_GRID *stack[], GMT_LONG allo
 	}
 }
 
-GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG row, col, k, kk, node, op = 0, nstack = 0, new_stack = -1, n_items = 0, this_stack;
 	GMT_LONG consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
@@ -2825,13 +2826,15 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GRDMATH_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *opt = NULL, *list = NULL, *ptr = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_grdmath_usage (API, GMTAPI_USAGE));/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_grdmath_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdmath_usage (API, GMTAPI_USAGE));/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdmath_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

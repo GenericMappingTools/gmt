@@ -220,9 +220,10 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {Free_grdpmodeler_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_grdpmodeler_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG col, row, node, inside, seg, k, n_stages, registration, error = FALSE;
 	
@@ -238,13 +239,15 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_GRID *G_age = NULL, *G_mod = NULL;
 	struct GRDROTATER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_grdpmodeler_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_grdpmodeler_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdpmodeler_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdpmodeler_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

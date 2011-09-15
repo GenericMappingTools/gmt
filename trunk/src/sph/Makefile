@@ -17,8 +17,7 @@ include $(GMTSRCDIR)common.mk
 
 INCLUDES = -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
-API_O		= gmt_sph.o
-API_H		= $(API_O:.o=.h)
+API_H		= gmt_sph.h
 FUNCS_O		= sphtriangulate_func.o sphdistance_func.o sphinterpolate_func.o
 
 LIB_O		= sph.o
@@ -85,12 +84,12 @@ LIBAPI		= libgmt_sph.$(LIBEXT)
 
 libs:		libgmt_sph.a
 
-libgmt_sph.a:	$(FUNCS_O) $(LIB_O) $(API_O)
+libgmt_sph.a:	$(FUNCS_O) $(LIB_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_sph.$(SL):	libgmt_sph.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(API_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	object file dependencies

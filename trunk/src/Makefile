@@ -64,8 +64,6 @@ FUNCSPS_O	= gmtdefaults_func.o gmtget_func.o gmtset_func.o grdcontour_func.o grd
 		  grdview_func.o psbasemap_func.o psclip_func.o pscoast_func.o pscontour_func.o pshistogram_func.o psimage_func.o \
 		  psmask_func.o psrose_func.o psscale_func.o pstext_func.o pswiggle_func.o psxy_func.o psxyz_func.o pslegend_func.o $(FUNCSPS2_O)
 
-API_O		= gmt_modules.o
-
 PROGS_O		= $(FUNCS_O:_func.o=.o)
 
 PROGSPS_O	= $(FUNCSPS_O:_func.o=.o)
@@ -74,7 +72,7 @@ LIBPS_O		= pslib.o
 LIBGMT_O	= gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_fft.o gmt_grdio.o \
 		  gmt_io.o  gmt_nc.o gmt_notposix.o gmt_proj.o gmt_shore.o gmt_stat.o gmt_support.o gmt_regexp.o \
 		  gmt_vector.o gmt_version.o $(TRIANGLE_O) $(ALPHA_SINCOS_O) gmtapi_parse.o $(FUNCS_O)
-LIBGMTPS_O	= gmt_init.o gmt_map.o gmt_plot.o gmtapi_util.o $(FUNCSPS_O) $(API_O)
+LIBGMTPS_O	= gmt_init.o gmt_map.o gmt_plot.o gmtapi_util.o $(FUNCSPS_O)
 
 SCRIPTS		= gmt_shell_functions.sh gmtlogo isogmt gmtswitch
 ALLPROGS	= $(SCRIPTS) $(PROGS) $(PROGSPS) $(DEMOS) $(GMT_COMPAT_PROGS)

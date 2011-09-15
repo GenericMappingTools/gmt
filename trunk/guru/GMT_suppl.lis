@@ -13,12 +13,10 @@ share/x2sys/xyz.def
 src/dbase/Makefile
 src/dbase/README.dbase
 src/dbase/grdraster.1
-src/dbase/gmt_dbase.c
 src/dbase/gmt_dbase.h
 src/dbase/grdraster_func.c
 src/gshhs/Makefile
 src/gshhs/README.gshhs
-src/gshhs/gmt_gshhs.c
 src/gshhs/gmt_gshhs.h
 src/gshhs/gshhs.1
 src/gshhs/gshhs_func.c
@@ -29,7 +27,6 @@ src/gshhs/gshhstograss.1
 src/gshhs/gshhstograss.c
 src/imgsrc/Makefile
 src/imgsrc/README.imgsrc
-src/imgsrc/gmt_img.c
 src/imgsrc/gmt_img.h
 src/imgsrc/gmt_imgsubs.c
 src/imgsrc/gmt_imgsubs.h
@@ -40,7 +37,6 @@ src/imgsrc/img2grd.1
 src/meca/Makefile
 src/meca/README.meca
 src/meca/distaz.c
-src/meca/gmt_meca.c
 src/meca/gmt_meca.h
 src/meca/meca.h
 src/meca/meca_1.csh
@@ -95,8 +91,6 @@ src/mgd77/Makefile
 src/mgd77/README.mgd77
 src/mgd77/cm4_functions.c
 src/mgd77/cm4_functions.h
-src/mgd77/gmt_mgd77.c
-src/mgd77/gmt_mgd77.h
 src/mgd77/mgd77.c
 src/mgd77/mgd77.h
 src/mgd77/mgd77_IGF_coeffs.h
@@ -136,7 +130,6 @@ src/misc/gmtdigitize.1
 src/misc/gmtdigitize.c
 src/potential/Makefile
 src/potential/README.potential
-src/potential/gmt_potential.c
 src/potential/gmt_potential.h
 src/potential/redpol.1
 src/potential/redpol_func.c
@@ -145,7 +138,6 @@ src/potential/xyzokb_func.c
 src/segyprogs/Makefile
 src/segyprogs/Makefile
 src/segyprogs/README.segyprogs
-src/segyprogs/gmt_segy.c
 src/segyprogs/gmt_segy.h
 src/segyprogs/pssegy.1
 src/segyprogs/pssegy_func.c
@@ -171,7 +163,6 @@ src/sph/gshhs_c.txt
 src/sph/hotspots.d
 src/sph/lun2.txt
 src/sph/mars370.txt
-src/sph/gmt_sph.c
 src/sph/gmt_sph.h
 src/sph/sph.c
 src/sph/sph.h
@@ -191,7 +182,6 @@ src/spotter/DC85.d
 src/spotter/Makefile
 src/spotter/README.spotter
 src/spotter/WK97.d
-src/spotter/gmt_spotter.c
 src/spotter/gmt_spotter.h
 src/spotter/backtracker.1
 src/spotter/backtracker_func.c
@@ -216,7 +206,6 @@ src/spotter/spotter.h
 src/spotter/spotter.sh
 src/x2sys/Makefile
 src/x2sys/README.x2sys
-src/x2sys/gmt_x2sys.c
 src/x2sys/gmt_x2sys.h
 src/x2sys/x2sys.c
 src/x2sys/x2sys.h

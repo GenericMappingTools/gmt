@@ -208,20 +208,20 @@ REM ----------------------------------------------------
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% %MATINC% gmt_init.c gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_fft.c gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmtapi_parse.c gmtapi_util.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% *_func.c gmt_modules.c gmt_regexp.c gmt_version.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% *_func.c gmt_regexp.c gmt_version.c
 %CC% %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
 
 REM ----------------------------------- SUPPLEMENTS ----------------------------------------------
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% dbase\*_func.c dbase\gmt_dbase.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% dbase\*_func.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gshhs\*_func.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% imgsrc\*_func.c imgsrc\gmt_imgsubs.c imgsrc\gmt_img.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% meca\*_func.c meca\nrutil.c meca\distaz.c meca\submeca.c meca\utilmeca.c meca\gmt_meca.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% mgd77\*_func.c mgd77\mgd77.c mgd77\gmt_mgd77.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% potential\*_func.c potential\gmt_potential.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% segyprogs\*_func.c segyprogs\segy_io.c segyprogs\gmt_segy.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% sph\*_func.c sph\sph.c sph\gmt_sph.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% imgsrc\*_func.c imgsrc\gmt_imgsubs.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% meca\*_func.c meca\nrutil.c meca\distaz.c meca\submeca.c meca\utilmeca.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% mgd77\*_func.c mgd77\mgd77.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% potential\*_func.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% segyprogs\*_func.c segyprogs\segy_io.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% sph\*_func.c sph\sph.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% spotter\*_func.c spotter\libspotter.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% /I%cd%\mgd77 x2sys\*_func.c x2sys\x2sys.c x2sys\gmt_x2sys.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% /I%cd%\mgd77 x2sys\*_func.c x2sys\x2sys.c
 REM ----------------------------------------------------------------------------------------------
 
 link %LOPT% /out:gmt.dll /implib:gmt.lib psl.lib %lib_netcdf% %GDAL_LIB% %MATLIB% %PCRE_LIB% %VLD_LIB% *.obj

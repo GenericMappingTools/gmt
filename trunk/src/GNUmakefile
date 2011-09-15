@@ -132,7 +132,7 @@ gmt_prognames.h:	GMTprogs.txt
 			egrep -v '#' GMTprogs.txt | $(AWK) '{printf "{\"%s\",\t%s},\n", $$1, $$2}' > gmt_prognames.h
 
 gmt_progcases.h:	GMTprogs.txt
-			egrep -v '#' GMTprogs.txt | $(AWK) '{printf "\t\tcase %d:\n\t\t\tfunc = (PFL)GMT_%s_cmd;\n\t\t\t*mode = %s;\n\t\t\tbreak;\n", NR-1, $$1, $$2}' > gmt_progcases.h
+			egrep -v '#' GMTprogs.txt | $(AWK) '{printf "\t\tcase %d:\n\t\t\tfunc = (PFL)GMT_%s;\n\t\t\t*mode = %s;\n\t\t\tbreak;\n", NR-1, $$1, $$2}' > gmt_progcases.h
 
 gmt_progpurpose.h:	$(FUNCS_C)
 			grep -h "%s \[API\]" *_func.c | sed -e 's/GMT_message (GMT/fprintf (stderr/g' -e 's/\[API\] //g' -e 's/\\n\\n/\\n/g' -e 's/ %s/%s/g' -e 's/GMT_VERSION/""/g' > gmt_progpurpose.h

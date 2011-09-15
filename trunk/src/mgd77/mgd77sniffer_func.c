@@ -210,7 +210,9 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+
+GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	/* THE FOLLOWING VARIABLES DO NOT VARY FOR EACH CRUISE */
 	GMT_LONG error = FALSE, nautical = FALSE, custom_max_speed = FALSE, simulate = FALSE;
@@ -272,16 +274,18 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_mgd77sniffer_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_mgd77sniffer_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77sniffer_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77sniffer_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77sniffer", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRb", "n" GMT_OPT("Q"), options))) return (error);
+	if ((error = GMT_Parse_Common (API, "-VRb", "n" GMT_OPT("Q"), options))) bailout (error);
 
 #ifdef DEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
@@ -560,37 +564,37 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* ENSURE VALID USE OF OPTIONS */
 	if (n_cruises != 0 && !strcmp(display,"LIMITS")) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: omit cruise ids for -Dl option.\n");
-		return (EXIT_FAILURE);
+		bailout (EXIT_FAILURE);
 	}
 	else if (GMT->common.b.active[GMT_OUT] && !display) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: -b option requires -D.\n");
-		return (EXIT_FAILURE);
+		bailout (EXIT_FAILURE);
 	}
 	else if (custom_warn && strcmp(display,"")) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: Incompatible options -D and -W.\n");
-		return (EXIT_FAILURE);
+		bailout (EXIT_FAILURE);
 	}
 	else if (!strcmp(display,"DIFFS") && n_grids == 0) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: -Dd option requires -G|g.\n");
-		return (EXIT_FAILURE);
+		bailout (EXIT_FAILURE);
 	}
 	if (east < west || south > north) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: Region set incorrectly\n");
-		return (EXIT_FAILURE);
+		bailout (EXIT_FAILURE);
 	}
 	if (adjustData && n_cruises > 1) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: -A adjustments valid for only one cruise.\n");
-		return (EXIT_FAILURE);
+		bailout (EXIT_FAILURE);
 	}
 	if (!strcmp(display,"DTC") && ! dist_to_coast) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: -Dn option requires -Gnav or -gnav.\n");
-		return (EXIT_FAILURE);
+		bailout (EXIT_FAILURE);
 	}
 	if (simulate && n_grids > 0) {
 		for (i = 0; i < n_grids; i++) {
 			if (sscanf (this_grid[i].fname, "%lf/%lf", &sim_m[i], &sim_b[i]) != 2) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -G option: Give m/b for simulated grid.\n");
-				return (EXIT_FAILURE);
+				bailout (EXIT_FAILURE);
 			}
 		}
 	}
@@ -611,7 +615,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (custom_limit_file) {
 		if ((custom_fp = GMT_fopen (GMT, custom_limit_file, "r")) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Could not open custom limit file %s\n", custom_limit_file);
-			return (EXIT_FAILURE);
+			bailout (EXIT_FAILURE);
 	 	}
 		else {
 			while (GMT_fgets (GMT, custom_limit_line, GMT_BUFSIZ, custom_fp)) {
@@ -628,7 +632,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				else {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error in custom limits file [%s]\n", custom_limit_line);
-					return (EXIT_FAILURE);
+					bailout (EXIT_FAILURE);
 				}
 			}
 		}
@@ -686,7 +690,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
 			}
 		}
-		return (EXIT_FAILURE);
+		bailout (EXIT_FAILURE);
 	}
 
 	/* PRINT HEADER FOR SNIFFER DATA DUMPS */
@@ -792,7 +796,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			sprintf (outfile,"%s.e77",M.NGDC_id);
 			if ((fpout = fopen (outfile, "w")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Could not open E77 output file %s\n", outfile);
-				return (EXIT_FAILURE);
+				bailout (EXIT_FAILURE);
 			}
 	 	}
 
@@ -2679,7 +2683,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
 
-	return (GMT_OK);
+	bailout (GMT_OK);
 }
 
 void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG nvalues, double *stat, int col)

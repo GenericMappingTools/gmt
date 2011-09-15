@@ -522,9 +522,10 @@ GMT_LONG bad_coordinates (double lon, double lat) {
 
 extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */
 
-#define Return(code) {Free_mgd77track_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_exit (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_mgd77track_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG rec, first_rec, last_rec, n_alloc_c = GMT_SMALL_CHUNK, i, n_id = 0, mrk = 0, dist_flag = 2, use, n_paths;
 	GMT_LONG this_julian = 0, last_julian, argno, n_cruises = 0, error = FALSE, first, form, both = FALSE;
@@ -544,16 +545,18 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct MGD77TRACK_ANNOT *info[2] = {NULL, NULL};
 	struct MGD77TRACK_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77track", &GMT_cpy);	/* Save current state */
 	Ctrl = (struct MGD77TRACK_CTRL *) New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if (!options || options->option == GMTAPI_OPT_USAGE) Return ((int)GMT_mgd77track_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
-	if (options && options->option == GMTAPI_OPT_SYNOPSIS) Return ((int)GMT_mgd77track_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77track_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
+	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77track_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

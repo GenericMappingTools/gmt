@@ -12,8 +12,7 @@ include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
-API_O		= gmt_segy.o
-API_H		= $(API_O:.o=.h)
+API_H		= gmt_segy.h
 FUNCS_O		= pssegy_func.o pssegyz_func.o segy2grd_func.o
 LIB_O		= segy_io.o
 LIB_H		= segy_io.h segy.h segyreel.h
@@ -81,7 +80,7 @@ LIBAPI		= libgmt_segy.$(LIBEXT)
 
 libs:		libgmt_segy.a
 
-libgmt_segy.a:	$(FUNCS_O) $(LIB_O) $(API_O)
+libgmt_segy.a:	$(FUNCS_O) $(LIB_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 

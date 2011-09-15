@@ -291,7 +291,7 @@ struct GMT_CTRL {
 #include "gmtapi.h"			/* All GMT high-level API */
 #include "gmt_prototypes.h"      	/* All GMT low-level API */
 
-#include "gmt_modules.h"     	 	/* All GMT *_cmd modules */
+#include "gmt_modules.h"     	 	/* All GMT_* modules */
 
 #ifdef DEBUG
 /* Items needed if -DDEBUG is in effect */

@@ -231,13 +231,14 @@ GMT_LONG Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_SEGMENT
 	return (k);	/* The next output record number */
 }
 
-#define Return(code) {Free_gmtstitch_Ctrl (GMT, Ctrl); GMT_free (GMT, seg); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_gmtstitch_Ctrl (GMT, Ctrl); GMT_free (GMT, seg); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG nearest_end[2][2], ii, end, n_open, dim_tscr[4] = {1, 1, 0, 0}, n_seg_alloc[2] = {0, 0};
 	GMT_LONG i, j, k, np, ns, id, pos, start_id, done, end_order, n_columns, n_rows, out_p, n_alloc_pts;
-	GMT_LONG n_new, n, chain = 0, n_islands = 0, n_trouble = 0, n_closed = 0, id2, L, G, error = 0, mode = 0;
+	GMT_LONG n_new, n, chain = 0, n_islands = 0, n_trouble = 0, n_closed = 0, id2, L, G, error = 0, d_mode = 0;
 	GMT_LONG n_id_alloc = GMT_CHUNK, out_seg, match = 0, n_steps, ID, n_seg_length, io_mode = GMT_WRITE_DATASET;
 	GMT_LONG save_type = FALSE, first, wrap_up = FALSE, n_qfiles = 0, q_mode = 0, *skip = NULL;
 
@@ -253,13 +254,15 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_TEXT_SEGMENT *QT[2] = {NULL, NULL};
 	struct GMTSTITCH_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_gmtstitch_usage (API, GMTAPI_USAGE));/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_gmtstitch_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtstitch_usage (API, GMTAPI_USAGE));/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmtstitch_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -619,7 +622,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		
 		GMT_memset (GMT->current.io.segment_header, GMT_BUFSIZ, char);
 		if (Ctrl->D.active) {	/* Prepare and set segment output file name */
-			mode = OPEN;
+			d_mode = OPEN;
 			(save_type) ? sprintf (buffer, Ctrl->D.format, 'O', out_seg) : sprintf (buffer, Ctrl->D.format, out_seg);
 			T[OPEN][out_seg]->file[GMT_OUT] = strdup (buffer);
 		}
@@ -691,13 +694,13 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				sprintf (buffer, Ctrl->D.format, 'C', out_seg);
 				free ((void *)T[OPEN][out_seg]->file[GMT_OUT]);
 				T[OPEN][out_seg]->file[GMT_OUT] = strdup (buffer);
-				mode = CLOSED;	/* Mode is used with -Q only */
+				d_mode = CLOSED;	/* Mode is used with -Q only */
 			}
 			n_closed++;
 		}
 		if (Ctrl->Q.active) {
-			QT[mode]->record[QT[mode]->n_rows++] = strdup (buffer);
-			if (QT[mode]->n_rows == QT[mode]->n_alloc) QT[mode]->record = GMT_memory (GMT, QT[mode]->record, (QT[mode]->n_alloc <<= 2), char *);
+			QT[d_mode]->record[QT[d_mode]->n_rows++] = strdup (buffer);
+			if (QT[d_mode]->n_rows == QT[d_mode]->n_alloc) QT[d_mode]->record = GMT_memory (GMT, QT[d_mode]->record, (QT[d_mode]->n_alloc <<= 2), char *);
 		}
 		
 		chain++;

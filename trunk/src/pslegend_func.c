@@ -267,7 +267,8 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {Free_pslegend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_pslegend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 #ifdef DEBUG
 /* Used to draw the current y-line for debug purposes only.  To use you would also
@@ -291,7 +292,7 @@ void drawbase (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double x1, dou
 #define PAR 2
 #define N_CMD 3
 
-GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pslegend task */
 	GMT_LONG i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan, n_fields;
 	GMT_LONG flush_paragraph = FALSE, draw_vertical_line = FALSE, gave_label, gave_mapscale_options;
@@ -319,6 +320,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct imageinfo header;
 	struct PSLEGEND_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 	struct GMT_OPTION *r_ptr = NULL, *j_ptr = NULL;
 	struct GMT_FONT ifont;
@@ -332,9 +334,10 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_pslegend_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_pslegend_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pslegend_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pslegend_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
@@ -460,10 +463,10 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				sscanf (&line[2], "%s %s %s %[^\n]", bar_cpt, bar_gap, bar_height, bar_opts);
 				x_off = GMT_to_inch (GMT, bar_gap);
 				sprintf (buffer, "-C%s -O -K -D%gi/%gi/%gi/%sh %s", bar_cpt, Ctrl->D.lon + 0.5 * Ctrl->D.width, y0, Ctrl->D.width - 2 * x_off, bar_height, bar_opts);
-				status = GMT_psscale_cmd (API, 0, (void *)buffer);	/* Plot the colorbar */
+				status = GMT_psscale (API, 0, (void *)buffer);	/* Plot the colorbar */
 				y0 -= GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 				column_number = 0;
-				API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psscale_cmd */
+				API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psscale */
 				break;
 
 			case 'C':	/* Color change */
@@ -519,7 +522,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				x_off = Ctrl->D.lon;
 				x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width - Ctrl->C.dx : 0.5 * Ctrl->D.width);
 				sprintf (buffer, "-O -K %s -W%s -C%gi/%gi/%s", image, size, x_off, y0, key);
-				status = GMT_psimage_cmd (API, 0, (void *)buffer);	/* Plot the image */
+				status = GMT_psimage (API, 0, (void *)buffer);	/* Plot the image */
 				y0 -= GMT_to_inch (GMT, size) * (double)header.height / (double)header.width;
 				column_number = 0;
 				break;
@@ -586,7 +589,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 					sprintf (buffer, "-R%s -J%s -O -K -L%s", r_ptr->arg, j_ptr->arg, &mapscale[k]);
 				}
-				status = GMT_psbasemap_cmd (API, 0, (void *)buffer);	/* Plot the scale */
+				status = GMT_psbasemap (API, 0, (void *)buffer);	/* Plot the scale */
 				if (gave_label && just == 'b') y0 -= d_off;
 				y0 -= GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
 				column_number = 0;
@@ -673,8 +676,8 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -S%s%s %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], symbol, &size[i], string);
 					if (txt_c[0] != '-') {strcat (buffer, " -G"); strcat (buffer, txt_c);}
 					if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
-					status = GMT_psxy_cmd (API, 0, (void *)buffer);	/* Plot the front */
-					API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psxy_cmd */
+					status = GMT_psxy (API, 0, (void *)buffer);	/* Plot the front */
+					API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psxy */
 				}
 				else {	/* Regular symbols */
 					if (symbol[0] == 'k')
@@ -799,7 +802,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, (void **)&D[SYM], NULL, (void *)D[SYM], &object_ID)) Return (EXIT_FAILURE);
 		GMT_Encode_ID (API, string, object_ID);	/* Make filename with embedded object ID */
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		status = GMT_psxy_cmd (API, 0, (void *)buffer);	/* Plot the symbols */
+		status = GMT_psxy (API, 0, (void *)buffer);	/* Plot the symbols */
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[SYM]);
 	}
 	else
@@ -809,7 +812,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, (void **)&D[TXT], NULL, (void *)D[TXT], &object_ID)) Return (EXIT_FAILURE);
 		GMT_Encode_ID (API, string, object_ID);	/* Make filename with embedded object ID */
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -F+f+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		status = GMT_pstext_cmd (API, 0, (void *)buffer);	/* Plot the symbols */
+		status = GMT_pstext (API, 0, (void *)buffer);	/* Plot the symbols */
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[TXT]);
 	}
 	else
@@ -819,7 +822,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, (void **)&D[PAR], NULL, (void *)D[PAR], &object_ID)) Return (EXIT_FAILURE);
 		GMT_Encode_ID (API, string, object_ID);	/* Make filename with embedded object ID */
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -M -F+f+a+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		status = GMT_pstext_cmd (API, 0, (void *)buffer);	/* Plot the symbols */
+		status = GMT_pstext (API, 0, (void *)buffer);	/* Plot the symbols */
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[PAR]);
 	}
 	else

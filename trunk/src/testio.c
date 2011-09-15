@@ -29,7 +29,7 @@
 
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG GMT_mapproject_cmd (struct GMTAPI_CTRL *API, GMT_LONG argc, char *argv[]);
+EXTERN_MSC GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args);
 
 int main (int argc, char *argv[]) {
 
@@ -63,7 +63,7 @@ int main (int argc, char *argv[]) {
 	sprintf (buffer, "-<%s -R0/5/0/5 -Jm1 -Fk -bi3 ->%s", i_string, o_string);
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = GMT_mapproject_cmd (API, 0, (void *)buffer);
+	status = GMT_mapproject (API, 0, (void *)buffer);
 
 	/* 6. Create command options for GMT_xyz2grd */
 
@@ -74,7 +74,7 @@ int main (int argc, char *argv[]) {
 	sprintf (buffer, "-<%s -R0/3/0/3 -I1 -G%s", i_string, o_string);
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = GMT_xyz2grd_cmd (API, 0, (void *)buffer);
+	status = GMT_xyz2grd (API, 0, (void *)buffer);
 
 	/* Now print out the results locally */
 	
@@ -101,7 +101,7 @@ int main (int argc, char *argv[]) {
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	fprintf (stderr, "\ngmtselect output\n");
-	status = GMT_gmtselect_cmd (API, 0, (void *)buffer);
+	status = GMT_gmtselect (API, 0, (void *)buffer);
 	GMT_free_vector (API->GMT, &Vi, FALSE);
 	for (row = 0; row < Vo->n_rows; row++) {
 		for (col = 0; col < Vo->n_columns; col++) printf ("%g\t", ((double *)Vo->data[col])[row]);

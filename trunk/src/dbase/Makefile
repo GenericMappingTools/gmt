@@ -15,7 +15,7 @@ include $(GMTSRCDIR)common.mk
 DEFINES		= $(SWAP)
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
-API_O		= gmt_dbase.o
+API_H		= gmt_dbase.h
 FUNCS_O		= grdraster_func.o
 
 PROGS_O		= $(FUNCS_O:_func.o=.o)
@@ -80,12 +80,12 @@ LIBAPI		= libgmt_dbase.$(LIBEXT)
 
 libs:		libgmt_dbase.a
 
-libgmt_dbase.a:	$(FUNCS_O) $(API_O)
+libgmt_dbase.a:	$(FUNCS_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_dbase.$(SL):	libgmt_dbase.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(API_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules

@@ -469,11 +469,12 @@ GMT_LONG GMT_sphtriangulate_parse (struct GMTAPI_CTRL *C, struct SPHTRIANGULATE_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {Free_sphtriangulate_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_sphtriangulate_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	char *mode[2] = {"Delaunay", "Voronoi"}, header[GMT_BUFSIZ];
+	char *tmode[2] = {"Delaunay", "Voronoi"}, header[GMT_BUFSIZ];
 
 	GMT_LONG n = 0, n_alloc, n_dup = 0, n_fields, do_authalic = FALSE;
 	GMT_LONG error = FALSE, first = FALSE, steradians = FALSE;
@@ -485,13 +486,15 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 	struct STRIPACK T;
 	struct GMT_DATASET **Dout = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_sphtriangulate_usage (API, GMTAPI_USAGE));/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_sphtriangulate_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_sphtriangulate_usage (API, GMTAPI_USAGE));/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_sphtriangulate_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -582,7 +585,7 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 	}
 
 	Dout[0]->table[0]->header = GMT_memory (GMT, NULL, 1, char *);	/* One header record only */
-	sprintf (header, "# sphtriangulate %s output via STRPACK", mode[Ctrl->Q.mode]);
+	sprintf (header, "# sphtriangulate %s output via STRPACK", tmode[Ctrl->Q.mode]);
 	if (Ctrl->A.active) {
 		strcat (header, (Ctrl->T.active) ? ".  Arc lengths in " : ".  Areas in ");
 		strcat (header, unit_name (Ctrl->L.unit, Ctrl->T.active));

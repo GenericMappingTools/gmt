@@ -20,7 +20,6 @@ include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) -I../mgd77 $(NETCDF_INC) $(GDAL_INC)
 
-API_O		= gmt_x2sys.o
 FUNCS_O		= x2sys_init_func.o x2sys_put_func.o x2sys_get_func.o x2sys_binlist_func.o x2sys_datalist_func.o \
 		  x2sys_cross_func.o x2sys_list_func.o x2sys_report_func.o x2sys_solve_func.o x2sys_merge_func.o
 PROGS_O		= $(FUNCS_O:_func.o=.o)
