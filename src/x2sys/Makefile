@@ -20,9 +20,8 @@ include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) -I. -I../mgd77 $(NETCDF_INC) $(GDAL_INC)
 
-FUNCS_O		= x2sys_init_func.o x2sys_put_func.o x2sys_get_func.o x2sys_binlist_func.o x2sys_datalist_func.o \
-		  x2sys_cross_func.o x2sys_list_func.o x2sys_report_func.o x2sys_solve_func.o x2sys_merge_func.o
-PROGS_O		= $(FUNCS_O:_func.o=.o)
+PROGS_O		= x2sys_init.o x2sys_put.o x2sys_get.o x2sys_binlist.o x2sys_datalist.o \
+		  x2sys_cross.o x2sys_list.o x2sys_report.o x2sys_solve.o x2sys_merge.o
 MAN1		= $(PROGS_O:.o=.1)
 
 API_H		= gmt_x2sys.h
@@ -76,7 +75,7 @@ clean:
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(FUNCS_O) $(PROGS_O):	$(LIB_H) $(GMT_H) $(API_H)
+$(PROGS_O):	$(LIB_H) $(GMT_H) $(API_H)
 x2sys.o:	$(LIB_H) $(GMT_H)
 
 #-------------------------------------------------------------------------------
@@ -89,12 +88,12 @@ LIBAPI		= libgmt_x2sys.$(LIBEXT)
 
 libs:		libgmt_x2sys.a
 
-libgmt_x2sys.a:	$(FUNCS_O) $(LIB_O)
+libgmt_x2sys.a:	$(PROGS_O) $(LIB_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_x2sys.$(SL):	libgmt_x2sys.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(GMT_LIB) -L../mgd77 -lgmt_mgd77 $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(PROGS_O) $(LIB_O) $(GMT_LIB) -L../mgd77 -lgmt_mgd77 $(LIBS) -o $@
 
 
 #-------------------------------------------------------------------------------
@@ -112,8 +111,6 @@ x2sys_report$(EXE):	x2sys_report.o
 x2sys_solve$(EXE):	x2sys_solve.o
 x2sys_merge$(EXE):	x2sys_merge.o
 
-$(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) -L../mgd77 -lgmt_mgd77 $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
-
-$(PROGS_O):	../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c
+$(PROGS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(LDFLAGS) $(LIBAPI) -L../mgd77 -lgmt_mgd77 $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@

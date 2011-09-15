@@ -14,8 +14,7 @@ include $(GMTSRCDIR)common.mk
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
 API_H		= gmt_gshhs.h
-FUNCS_O		= gshhs_func.o
-PROGS_API_O	= $(FUNCS_O:_func.o=.o)
+PROGS_API_O	= gshhs.o
 PROGS_API	= $(PROGS_API_O:.o=$(EXE))
 PROGS_O		= gshhs_dp.o gshhstograss.o
 LIB_H		= gshhs.h
@@ -68,7 +67,7 @@ clean:
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(FUNCS_O) $(PROGS_API_O):	$(GMT_H) $(LIB_H) $(API_H)
+$(PROGS_API_O):	$(GMT_H) $(LIB_H) $(API_H)
 $(PROGS_O):	$(GMT_H) $(LIB_H)
 
 #-------------------------------------------------------------------------------
@@ -81,12 +80,12 @@ LIBAPI		= libgmt_gshhs.$(LIBEXT)
 
 libs:		libgmt_gshhs.a
 
-libgmt_gshhs.a:	$(FUNCS_O)
+libgmt_gshhs.a:	$(PROGS_API_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_gshhs.$(SL):	libgmt_gshhs.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(PROGS_API_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules
@@ -99,8 +98,6 @@ gshhstograss$(EXE):	gshhstograss.o
 $(PROGS):	$(PROGS_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
 
-$(PROGS_API):	$(PROGS_API_O) $(LIBAPI)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
-
-$(PROGS_API_O):	../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c
+$(PROGS_API):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(LDFLAGS) $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@

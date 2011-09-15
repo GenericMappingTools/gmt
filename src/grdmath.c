@@ -2720,7 +2720,7 @@ void grd_ZDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 
 /* ---------------------- end operator functions --------------------- */
 
-#include "grdmath_func.h"
+#include "grdmath.h"
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Options (API, &list); Free_grdmath_Ctrl (GMT, Ctrl); grdmath_free (GMT, stack, alloc_mode, &info, localhashnode); GMT_end_module (GMT, GMT_cpy); bailout (code);}

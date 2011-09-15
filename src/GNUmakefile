@@ -56,8 +56,8 @@ uninstall2-suppl:
 FILES = gmt_ellipsoids.h gmt_datums.h Ellipsoids.i Fonts.i gmt_grdkeys.h \
 	gmt_keywords.h gmt_keycases.h \
 	Colors.i gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h \
-	gmtmath_func.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i \
-	grdmath_func.h grdmath_op.h grdmath_explain.h grdmath_man.i \
+	gmtmath.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i \
+	grdmath.h grdmath_op.h grdmath_explain.h grdmath_man.i \
 	grdreformat_man.i gmtapi_errstr.h gmtapi_errno.h \
 	$(API_H) gmt_prognames.h gmt_progcases.h gmt_progpurpose.h gmt_svn_revision.h
 
@@ -134,8 +134,8 @@ gmt_prognames.h:	GMTprogs.txt
 gmt_progcases.h:	GMTprogs.txt
 			egrep -v '#' GMTprogs.txt | $(AWK) '{printf "\t\tcase %d:\n\t\t\tfunc = (PFL)GMT_%s;\n\t\t\t*mode = %s;\n\t\t\tbreak;\n", NR-1, $$1, $$2}' > gmt_progcases.h
 
-gmt_progpurpose.h:	$(FUNCS_C)
-			grep -h "%s \[API\]" *_func.c | sed -e 's/GMT_message (GMT/fprintf (stderr/g' -e 's/\[API\] //g' -e 's/\\n\\n/\\n/g' -e 's/ %s/%s/g' -e 's/GMT_VERSION/""/g' > gmt_progpurpose.h
+gmt_progpurpose.h:	$(PROGS_C)
+			grep -h "%s \[API\]" *.c | sed -e 's/GMT_message (GMT/fprintf (stderr/g' -e 's/\[API\] //g' -e 's/\\n\\n/\\n/g' -e 's/ %s/%s/g' -e 's/GMT_VERSION/""/g' > gmt_progpurpose.h
 
 # Get SVN revision number
 
@@ -159,10 +159,10 @@ gmt_dimensions.h:	gmt_colornames.h gmt_datums.h gmt_ellipsoids.h gmt_grdkeys.h g
 
 # Must create g[rd|mt]math.h from g[rd|mt]math.c
 
-gmtmath_func.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i:	make_math.sh gmtmath_func.c
+gmtmath.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i:	make_math.sh gmtmath.c
 			$(SHELL) make_math.sh gmt
 
-grdmath_func.h grdmath_op.h grdmath_explain.h grdmath_man.i:	make_math.sh grdmath_func.c
+grdmath.h grdmath_op.h grdmath_explain.h grdmath_man.i:	make_math.sh grdmath.c
 			$(SHELL) make_math.sh grd
 
 # When doing "spotless" make sure at least a dummy config.mk exists.

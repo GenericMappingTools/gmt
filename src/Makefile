@@ -40,41 +40,37 @@ include common.mk	# Dependencies
 DEFINES		= -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
 INCLUDES	= $(NETCDF_INC) $(GDAL_INC) $(PCRE_INC)
 
+# These three lines are temporarily here for the beta release
+PROGS2_O	= gmtaverage.o
+PROGSPS2_O	= testapi.o
+DEMOS2_O	= testgmt5.o testgmtio.o testio.o
+
 DEMOS_O		= gmt.o $(DEMOS2_O)
 DEMOS		= $(DEMOS_O:.o=$(EXE))
 
 PSLDEMO_O	= psldemo.o
 PSLDEMO		= $(PSLDEMO_O:.o=$(EXE))
 
-# These three lines are temporarily here for the beta release
-FUNCS2_O	= gmtaverage_func.o
-FUNCSPS2_O	= testapi_func.o
-DEMOS2_O	= testgmt5.o testgmtio.o testio.o
+PROGS_O		= blockmean.o blockmedian.o blockmode.o colmath.o filter1d.o fitcircle.o gmt2kml.o \
+		  gmtconvert.o gmtdp.o gmtmath.o gmtselect.o gmtspatial.o gmtstitch.o gmtvector.o\
+		  gmtwhich.o grd2cpt.o grd2rgb.o grd2xyz.o grdblend.o grdclip.o grdcut.o grdedit.o grdfft.o \
+		  grdfilter.o grdgradient.o grdhisteq.o grdinfo.o grdlandmask.o grdmask.o grdmath.o \
+		  grdpaste.o grdproject.o grdsample.o grdreformat.o grdtrack.o grdtrend.o grdvolume.o \
+		  greenspline.o kml2gmt.o makecpt.o mapproject.o minmax.o nearneighbor.o project.o \
+		  ps2raster.o sample1d.o spectrum1d.o splitxyz.o surface.o trend1d.o \
+		  trend2d.o triangulate.o xyz2grd.o $(PROGS2_O)
 
-FUNCS_O		= blockmean_func.o blockmedian_func.o blockmode_func.o colmath_func.o filter1d_func.o fitcircle_func.o gmt2kml_func.o \
-		  gmtconvert_func.o gmtdp_func.o gmtmath_func.o gmtselect_func.o gmtspatial_func.o gmtstitch_func.o gmtvector_func.o\
-		  gmtwhich_func.o grd2cpt_func.o grd2rgb_func.o grd2xyz_func.o grdblend_func.o grdclip_func.o grdcut_func.o grdedit_func.o grdfft_func.o \
-		  grdfilter_func.o grdgradient_func.o grdhisteq_func.o grdinfo_func.o grdlandmask_func.o grdmask_func.o grdmath_func.o \
-		  grdpaste_func.o grdproject_func.o grdsample_func.o grdreformat_func.o grdtrack_func.o grdtrend_func.o grdvolume_func.o \
-		  greenspline_func.o kml2gmt_func.o makecpt_func.o mapproject_func.o minmax_func.o nearneighbor_func.o project_func.o \
-		  ps2raster_func.o sample1d_func.o spectrum1d_func.o splitxyz_func.o surface_func.o trend1d_func.o \
-		  trend2d_func.o triangulate_func.o xyz2grd_func.o $(FUNCS2_O)
-
-FUNCSPS_O	= gmtdefaults_func.o gmtget_func.o gmtset_func.o grdcontour_func.o grdimage_func.o grdvector_func.o \
-		  grdview_func.o psbasemap_func.o psclip_func.o pscoast_func.o pscontour_func.o pshistogram_func.o psimage_func.o \
-		  psmask_func.o psrose_func.o psscale_func.o pstext_func.o pswiggle_func.o psxy_func.o psxyz_func.o pslegend_func.o $(FUNCSPS2_O)
-
-PROGS_O		= $(FUNCS_O:_func.o=.o)
-
-PROGSPS_O	= $(FUNCSPS_O:_func.o=.o)
+PROGSPS_O	= gmtdefaults.o gmtget.o gmtset.o grdcontour.o grdimage.o grdvector.o \
+		  grdview.o psbasemap.o psclip.o pscoast.o pscontour.o pshistogram.o psimage.o \
+		  psmask.o psrose.o psscale.o pstext.o pswiggle.o psxy.o psxyz.o pslegend.o $(PROGSPS2_O)
 
 API_H		= gmt_modules.h
 
 LIBPS_O		= pslib.o
 LIBGMT_O	= gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_fft.o gmt_grdio.o \
 		  gmt_io.o  gmt_nc.o gmt_notposix.o gmt_proj.o gmt_shore.o gmt_stat.o gmt_support.o gmt_regexp.o \
-		  gmt_vector.o gmt_version.o $(TRIANGLE_O) $(ALPHA_SINCOS_O) gmtapi_parse.o $(FUNCS_O)
-LIBGMTPS_O	= gmt_init.o gmt_map.o gmt_plot.o gmtapi_util.o $(FUNCSPS_O)
+		  gmt_vector.o gmt_version.o $(TRIANGLE_O) $(ALPHA_SINCOS_O) gmtapi_parse.o $(PROGS_O)
+LIBGMTPS_O	= gmt_init.o gmt_map.o gmt_plot.o gmtapi_util.o $(PROGSPS_O)
 
 SCRIPTS		= gmt_shell_functions.sh gmtlogo isogmt gmtswitch
 ALLPROGS	= $(SCRIPTS) $(PROGS) $(PROGSPS) $(DEMOS) $(GMT_COMPAT_PROGS)
@@ -178,8 +174,8 @@ gmt_customio.o: gmt_mgg_header2.c gmt_mgg_header2.h gmt_agc_io.c gmt_esri_io.c g
 gmt_init.o:	gmt_colornames.h gmt_datums.h gmt_ellipsoids.h gmt_unique.h \
 		gmt_keycases.h gmt_keywords.h gmt_media_name.h gmt_media_size.h
 gmt_support.o:	gmt_color_rgb.h gmt_pennames.h
-gmtmath_func.o:	gmtmath_func.h gmtmath_op.h gmtmath_explain.h
-grdmath_func.o:	grdmath_func.h grdmath_op.h grdmath_explain.h
+gmtmath.o:	gmtmath.h gmtmath_op.h gmtmath_explain.h
+grdmath.o:	grdmath.h grdmath_op.h grdmath_explain.h
 gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_grdio.o gmt_init.o \
 gmt_io.o gmt_map.o gmt_nc.o gmt_plot.o gmt_proj.o gmt_shore.o gmt_stat.o \
 gmt_fft.o gmt_support.o gmt_vector.o gmtapi_util.o:	gmt_internals.h
@@ -194,11 +190,11 @@ triangle.o:	triangle.c triangle.h
 		$(CC) -c $(CFLAGS) -DNO_TIMER -DTRILIBRARY -DREDUCED -DCDT_ONLY $<
 
 # Special way to create the program objects
-$(PROGS_O):	gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o gmtprogram.c
+$(PROGS_O:.o=_prog.o):	gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$(*:_prog=) -c -o $*.o gmtprogram.c
 
-$(PROGSPS_O):	gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMTPSL -DFUNC=GMT_$* -c -o $*.o gmtprogram.c
+$(PROGSPS_O:.o=_prog.o):	gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMTPSL -DFUNC=GMT_$(*:_prog=) -c -o $*.o gmtprogram.c
 
 # Assembly wrapper for sincos on Dec Alphas
 # Only used if ALPHA_SINCOS_O are set in config.mk
@@ -231,8 +227,14 @@ libgmt.$(SL):	libgmt.a libpsl.$(SL)
 #-------------------------------------------------------------------------------
 #	program rules
 #-------------------------------------------------------------------------------
+# DEMOS
 gmt$(EXE):		gmt.o
 
+testgmt5$(EXE):		testgmt5.o
+testgmtio$(EXE):	testgmtio.o
+testio$(EXE):		testio.o
+
+# PROGS
 blockmean$(EXE):	blockmean.o
 blockmedian$(EXE):	blockmedian.o
 blockmode$(EXE):	blockmode.o
@@ -310,16 +312,15 @@ xyz2grd$(EXE):		xyz2grd.o
 
 testapi$(EXE):		testapi.o
 gmtaverage$(EXE):	gmtaverage.o
-testgmt5$(EXE):		testgmt5.o
-testio$(EXE):		testio.o
-testgmtio$(EXE):	testgmtio.o
 
 gmt2rgb$(EXE):		grd2rgb$(EXE)
 		$(RM) gmt2rgb$(EXE)
 		$(LN_S) grd2rgb$(EXE) gmt2rgb$(EXE)
 
-$(FUNCS) $(PROGS) $(PROGSPS):	$(LIBGMT)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
+$(PROGS):	$(LIBGMT) gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$@ gmtprogram.c $(LDFLAGS) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
+$(PROGSPS):	$(LIBGMT) gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMTPSL -DFUNC=GMT_$@ gmtprogram.c $(LDFLAGS) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
 
 $(DEMOS):	$(LIBGMT)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@

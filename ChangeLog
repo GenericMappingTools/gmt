@@ -5,6 +5,7 @@
 2011-09-15	remko
 	* gmt_init.c:		Produce error report when non-common option found by
 				GMT_default_error.
+	* *_func.c:		Renamed to *.c
 
 2011-09-15	pwessel
 	* *.c:			Change module interface to one flavor:

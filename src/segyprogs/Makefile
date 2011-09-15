@@ -13,11 +13,10 @@ include $(GMTSRCDIR)common.mk
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
 API_H		= gmt_segy.h
-FUNCS_O		= pssegy_func.o pssegyz_func.o segy2grd_func.o
+PROGS_O		= pssegy.o pssegyz.o segy2grd.o
 LIB_O		= segy_io.o
 LIB_H		= segy_io.h segy.h segyreel.h
 
-PROGS_O		= $(FUNCS_O:_func.o=.o)
 MAN1		= $(PROGS_O:.o=.1)
 
 #---------------------------------------------------------------
@@ -67,7 +66,7 @@ clean:
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(FUNCS_O) $(PROGS_O):	$(LIB_H) $(GMT_H) $(PS_H) $(API_H)
+$(PROGS_O):	$(LIB_H) $(GMT_H) $(PS_H) $(API_H)
 $(LIB_O):	$(LIB_H) $(GMT_H)
 
 #-------------------------------------------------------------------------------
@@ -80,12 +79,12 @@ LIBAPI		= libgmt_segy.$(LIBEXT)
 
 libs:		libgmt_segy.a
 
-libgmt_segy.a:	$(FUNCS_O) $(LIB_O)
+libgmt_segy.a:	$(PROGS_O) $(LIB_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_segy.$(SL):	libgmt_segy.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(PROGS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
 
 
 #-------------------------------------------------------------------------------
@@ -96,8 +95,6 @@ pssegyz$(EXE):	pssegyz.o
 pssegy$(EXE):	pssegy.o
 segy2grd$(EXE):	segy2grd.o
 
-$(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_API_O)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_segy $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) $(LIBAPI) -o $@
-
-$(PROGS_O):	../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c
+$(PROGS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(LDFLAGS) -L. -lgmt_segy $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) $(LIBAPI) -o $@

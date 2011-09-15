@@ -30,7 +30,7 @@
 SUFFIXES:	.1 .3 .5 .txt
 
 $(API_H):	$(GMTSRCDIR)make_gmtapi.sh
-	sh $(GMTSRCDIR)make_gmtapi.sh $(FUNCS_O) $(FUNCSPS_O)
+	sh $(GMTSRCDIR)make_gmtapi.sh $(PROGS_O) $(PROGSPS_O)
 
 DEP1=$(MAN1:.1=.dep)
 DEP3=$(MAN3:.3=.dep)
