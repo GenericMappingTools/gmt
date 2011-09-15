@@ -17,7 +17,7 @@ pscmp () {
 	if test $? -ne 0; then
         	echo "[FAIL]"
 		echo $d/$f: $rms >> ../fail_count.d
-	elif test `echo 50 \> $rms|bc` -eq 1; then
+	elif test `echo 200 \> $rms|bc` -eq 1; then
         	echo "[PASS]"
         	rm -f $f.png $f.ps
 	else
