@@ -13,9 +13,8 @@ include $(GMTSRCDIR)common.mk
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
 API_H		= gmt_potential.h
-FUNCS_O		= redpol_func.o xyzokb_func.o
+PROGS_O		= redpol.o xyzokb.o
 
-PROGS_O		= $(FUNCS_O:_func.o=.o)
 MAN1		= $(PROGS_O:.o=.1)
 
 #-------------------------------------------------------------------------------
@@ -71,18 +70,18 @@ LIBAPI		= libgmt_potential.$(LIBEXT)
 
 libs:		libgmt_potential.a
 
-libgmt_potential.a:	$(FUNCS_O)
+libgmt_potential.a:	$(PROGS_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_potential.$(SL):	libgmt_potential.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(PROGS_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(FUNCS_O) $(PROGS_O):	$(GMT_H) $(PS_H) $(API_H)
+$(PROGS_O):	$(GMT_H) $(PS_H) $(API_H)
 
 #-------------------------------------------------------------------------------
 #	program rules
@@ -91,8 +90,6 @@ $(FUNCS_O) $(PROGS_O):	$(GMT_H) $(PS_H) $(API_H)
 redpol$(EXE):	redpol.o
 xyzokb$(EXE):	xyzokb.o
 
-$(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) $(LIBAPI) -o $@
-
-$(PROGS_O):	../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c
+$(PROGS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(LDFLAGS) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) $(LIBAPI) -o $@

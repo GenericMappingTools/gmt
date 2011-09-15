@@ -24,10 +24,9 @@ INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
 LIB_H		= spotter.h
 LIB_O		= libspotter.o
-FUNCS_O		= backtracker_func.o grdpmodeler_func.o grdrotater_func.o grdspotter_func.o \
-		  hotspotter_func.o originator_func.o rotconverter_func.o
+PROGS_O		= backtracker.o grdpmodeler.o grdrotater.o grdspotter.o \
+		  hotspotter.o originator.o rotconverter.o
 API_H		= gmt_spotter.h
-PROGS_O		= $(FUNCS_O:_func.o=.o)
 MAN1		= $(PROGS_O:.o=.1)
 
 #-------------------------------------------------------------------------------
@@ -78,7 +77,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 $(LIB_O):	$(GMT_H) $(LIB_H)
-$(FUNCS_O) $(PROGS_O):	$(GMT_H) $(API_H)
+$(PROGS_O):	$(GMT_H) $(API_H)
 
 #-------------------------------------------------------------------------------
 #	libraries
@@ -90,12 +89,12 @@ LIBAPI		= libgmt_spotter.$(LIBEXT)
 
 libs:		libgmt_spotter.a
 
-libgmt_spotter.a:	$(FUNCS_O) $(LIB_O)
+libgmt_spotter.a:	$(PROGS_O) $(LIB_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_spotter.$(SL):	libgmt_spotter.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(PROGS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules
@@ -109,8 +108,6 @@ hotspotter$(EXE):	hotspotter.o
 originator$(EXE):	originator.o
 rotconverter$(EXE):	rotconverter.o
 
-$(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
-
-$(PROGS_O):	../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c
+$(PROGS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(LDFLAGS) $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@

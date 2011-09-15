@@ -15,10 +15,9 @@ INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
 API_H		= gmt_img.h
 LIB_O		= gmt_imgsubs.o
-FUNCS_O		= img2grd_func.o
+PROGS_O		= img2grd.o
 LIB_H		= gmt_imgsubs.h
 
-PROGS_O		= $(FUNCS_O:_func.o=.o)
 MAN1		= $(PROGS_O:.o=.1) img2google.1
 
 #-------------------------------------------------------------------------------
@@ -74,18 +73,18 @@ LIBAPI		= libgmt_img.$(LIBEXT)
 
 libs:		libgmt_img.a
 
-libgmt_img.a:	$(FUNCS_O) $(LIB_O)
+libgmt_img.a:	$(PROGS_O) $(LIB_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_img.$(SL):	libgmt_img.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(PROGS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(FUNCS_O) $(PROGS_O):	$(GMT_H) $(API_H) $(LIB_H)
+$(PROGS_O):	$(GMT_H) $(API_H) $(LIB_H)
 $(LIB_O):	$(LIB_H)
 
 #-------------------------------------------------------------------------------
@@ -94,8 +93,6 @@ $(LIB_O):	$(LIB_H)
 
 img2grd$(EXE):	img2grd.o
 
-$(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
-
-$(PROGS_O):	../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c
+$(PROGS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(LDFLAGS) $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@

@@ -17,8 +17,7 @@ ALLLIB		= $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS)
 
 API_H		= gmt_meca.h
 LIB_O		= utilmeca.o nrutil.o submeca.o distaz.o
-FUNCS_O		= psmeca_func.o pspolar_func.o psvelo_func.o pscoupe_func.o
-PROGS_O		= $(FUNCS_O:_func.o=.o)
+PROGS_O		= psmeca.o pspolar.o psvelo.o pscoupe.o
 
 LIB_H		= meca.h nrutil.h submeca.h utilmeca.h
 
@@ -77,18 +76,18 @@ LIBAPI		= libgmt_meca.$(LIBEXT)
 
 libs:		libgmt_meca.a
 
-libgmt_meca.a:	$(FUNCS_O) $(LIB_O)
+libgmt_meca.a:	$(PROGS_O) $(LIB_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_meca.$(SL):	libgmt_meca.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(PROGS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(FUNCS_O) $(PROGS_O):	$(GMT_H) $(PS_H) $(API_H) $(LIB_H)
+$(PROGS_O):	$(GMT_H) $(PS_H) $(API_H) $(LIB_H)
 $(LIB_O):	$(GMT_H) $(PS_H) $(LIB_H)
 
 #-------------------------------------------------------------------------------
@@ -100,9 +99,6 @@ psvelo$(EXE):	psvelo.o
 pscoupe$(EXE):	pscoupe.o
 pspolar$(EXE):	pspolar.o
 
-$(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
-
-$(PROGS_O):	../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMTPSL -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c
-
+$(PROGS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMTPSL -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(LDFLAGS) $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@

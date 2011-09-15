@@ -55,7 +55,7 @@ cat << EOF > gmt_${suppl}.h
 EOF
 
 for file in $*; do
-	prog=`basename $file '_func.o'`
+	prog=`basename $file .o`
 	cat <<- EOF >> gmt_${suppl}.h
 	EXTERN_MSC GMT_LONG GMT_${prog} (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args);
 	EOF

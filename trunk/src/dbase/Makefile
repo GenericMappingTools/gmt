@@ -16,9 +16,8 @@ DEFINES		= $(SWAP)
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
 API_H		= gmt_dbase.h
-FUNCS_O		= grdraster_func.o
+PROGS_O		= grdraster.o
 
-PROGS_O		= $(FUNCS_O:_func.o=.o)
 MAN1		= $(PROGS_O:.o=.1)
 
 #-------------------------------------------------------------------------------
@@ -68,7 +67,7 @@ clean:
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(FUNCS_O) $(PROGS_O):	$(GMT_H) $(API_H)
+$(PROGS_O):	$(GMT_H) $(API_H)
 
 #-------------------------------------------------------------------------------
 #	libraries
@@ -80,12 +79,12 @@ LIBAPI		= libgmt_dbase.$(LIBEXT)
 
 libs:		libgmt_dbase.a
 
-libgmt_dbase.a:	$(FUNCS_O)
+libgmt_dbase.a:	$(PROGS_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_dbase.$(SL):	libgmt_dbase.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(PROGS_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules
@@ -93,8 +92,6 @@ libgmt_dbase.$(SL):	libgmt_dbase.a
 
 grdraster$(EXE):	grdraster.o
 
-$(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) $(LIBAPI) -o $@
-
-$(PROGS_O):	../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c
+$(PROGS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(LDFLAGS) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) $(LIBAPI) -o $@

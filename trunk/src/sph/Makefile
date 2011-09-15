@@ -18,12 +18,11 @@ include $(GMTSRCDIR)common.mk
 INCLUDES = -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
 API_H		= gmt_sph.h
-FUNCS_O		= sphtriangulate_func.o sphdistance_func.o sphinterpolate_func.o
+PROGS_O		= sphtriangulate.o sphdistance.o sphinterpolate.o
 
 LIB_O		= sph.o
 LIB_H		= sph.h
 
-PROGS_O		= $(FUNCS_O:_func.o=.o)
 MAN1		= $(PROGS_O:.o=.1)
 
 LIB_C		= sph.c
@@ -84,18 +83,18 @@ LIBAPI		= libgmt_sph.$(LIBEXT)
 
 libs:		libgmt_sph.a
 
-libgmt_sph.a:	$(FUNCS_O) $(LIB_O)
+libgmt_sph.a:	$(PROGS_O) $(LIB_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_sph.$(SL):	libgmt_sph.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(PROGS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(FUNCS_O) $(PROGS_O):	$(LIB_H) $(GMT_H) $(PS_H) $(API_H) 
+$(PROGS_O):	$(LIB_H) $(GMT_H) $(PS_H) $(API_H) 
 $(LIB_O):	$(LIB_H) $(GMT_H) stripack.c ssrfpack.c
 
 #-------------------------------------------------------------------------------
@@ -106,8 +105,6 @@ sphtriangulate$(EXE):	sphtriangulate.o
 sphdistance$(EXE):	sphdistance.o
 sphinterpolate$(EXE):	sphinterpolate.o
 
-$(PROGS):	$(PROGS_O) $(LIBAPI) $(PROGS_O)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_sph $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) $(LIBAPI) -o $@
-
-$(PROGS_O):	../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c
+$(PROGS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(LDFLAGS) -L. -lgmt_sph $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) $(LIBAPI) -o $@
