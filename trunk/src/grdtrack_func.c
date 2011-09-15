@@ -412,7 +412,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Dout);
 	}
 	else {	/* Standard resampling point case */
-		GMT_LONG pure_ascii = FALSE, ix, iy, n_fields, mode;
+		GMT_LONG pure_ascii = FALSE, ix, iy, n_fields, rmode;
 		double *in = NULL, *out = NULL;
 		char record[GMT_BUFSIZ];
 		EXTERN_MSC GMT_LONG gmt_skip_output (struct GMT_CTRL *C, double *cols, GMT_LONG n_cols);
@@ -430,9 +430,9 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			GMT->common.b.ncol[GMT_OUT] = Ctrl->G.n_grids;
 		}
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
-		mode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
+		rmode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
-		while ((n_fields = GMT_Get_Record (API, mode, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+		while ((n_fields = GMT_Get_Record (API, rmode, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
 
 			if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);	/* Bail on any i/o error */
 			if (GMT_REC_IS_TBL_HEADER (GMT)) continue;		/* Skip any table headers */

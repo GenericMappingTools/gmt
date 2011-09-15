@@ -181,6 +181,11 @@ not supported for clipping.
 The political borders are for the most part 1970s-style but have been updated to reflect more recent
 border rearrangements in Europe and elsewhere.  Let us know if you find something out of date.
 .br
+The full-resolution coastlines are also from a digitizing effort in the 1970-80s and it is difficult
+to assess the accuracy. Users who zoom in close enough may find that the GSHHS coastline is not
+matching other data, e.g., satellite images, more recent coastline data, etc.  We are aware of such
+mismatches but cannot undertake band-aid solutions each time this occurs.
+.br
 Some users of BD(pscoast) will not be satisfied with what they find for the
 Antarctic shoreline.  In Antarctica, the boundary between ice and 
 ocean varies seasonally and inter-annually.  There are some areas of 
