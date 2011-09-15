@@ -59,7 +59,7 @@ FILES = gmt_ellipsoids.h gmt_datums.h Ellipsoids.i Fonts.i gmt_grdkeys.h \
 	gmtmath_func.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i \
 	grdmath_func.h grdmath_op.h grdmath_explain.h grdmath_man.i \
 	grdreformat_man.i gmtapi_errstr.h gmtapi_errno.h \
-	$(API_H) $(API_C) gmt_prognames.h gmt_progcases.h gmt_progpurpose.h gmt_svn_revision.h
+	$(API_H) gmt_prognames.h gmt_progcases.h gmt_progpurpose.h gmt_svn_revision.h
 
 gmtmacros FILES:	$(FILES)
 $(FILES):		GNUmakefile

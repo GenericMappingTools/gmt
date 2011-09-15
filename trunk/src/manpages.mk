@@ -21,7 +21,7 @@
 #
 #	This makefile spells out how to create manpages (*.1, *.3, *.5)
 #	out of text files *.txt. Dependencies are automatically created.
-#	It also has the rule on how to create the gmt_{suppl}.[ch] files.
+#	It also has the rule on how to create the gmt_{suppl}.h files.
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
@@ -29,7 +29,7 @@
 #-------------------------------------------------------------------------------
 SUFFIXES:	.1 .3 .5 .txt
 
-$(API_H) $(API_C):	$(GMTSRCDIR)make_gmtapi.sh
+$(API_H):	$(GMTSRCDIR)make_gmtapi.sh
 	sh $(GMTSRCDIR)make_gmtapi.sh $(FUNCS_O) $(FUNCSPS_O)
 
 DEP1=$(MAN1:.1=.dep)
@@ -63,4 +63,4 @@ $(DEP5):	%.dep:	%.txt
 manpages:	$(FILES) $(MAN1) $(MAN3) $(MAN5)
 
 spotless::
-		\rm -f *.1 *.3 *.5 *.dep $(API_H) $(API_C)
+		\rm -f *.1 *.3 *.5 *.dep $(API_H)
