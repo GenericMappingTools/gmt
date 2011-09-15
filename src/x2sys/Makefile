@@ -18,13 +18,14 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)config.mk
 include $(GMTSRCDIR)common.mk
 
-INCLUDES	= -I$(srcdir) -I../mgd77 $(NETCDF_INC) $(GDAL_INC)
+INCLUDES	= -I$(srcdir) -I. -I../mgd77 $(NETCDF_INC) $(GDAL_INC)
 
 FUNCS_O		= x2sys_init_func.o x2sys_put_func.o x2sys_get_func.o x2sys_binlist_func.o x2sys_datalist_func.o \
 		  x2sys_cross_func.o x2sys_list_func.o x2sys_report_func.o x2sys_solve_func.o x2sys_merge_func.o
 PROGS_O		= $(FUNCS_O:_func.o=.o)
 MAN1		= $(PROGS_O:.o=.1)
 
+API_H		= gmt_x2sys.h
 LIB_O		= x2sys.o
 LIB_H		= x2sys.h
 
