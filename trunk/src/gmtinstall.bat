@@ -160,7 +160,7 @@ IF  %PCRE__%=="yes" SET PCRE_LIB=%PCRE_DIR%\lib\pcre.lib
 REM STEP i: Optional use of Visual Leak Detector (VLD) by Dan Moulding, available at
 REM	    http://vld.codeplex.com
 REM	    Set to "yes" and adjust path to use VLD in debug configuration only:
-SET VLD__="yes"
+SET VLD__="no"
 SET VLD_DIR="C:\programs\Visual_Leak_Detector"
 SET VLD_INC=
 SET VLD_LIB=
@@ -207,21 +207,46 @@ REM ----------------------------------------------------
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_bcr.c gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c gmt_notposix.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% %MATINC% gmt_init.c gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_fft.c gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmtapi_parse.c gmtapi_util.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% *_func.c gmt_regexp.c gmt_version.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmtapi_parse.c gmtapi_util.c gmt_regexp.c gmt_version.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% blockmean.c blockmedian.c blockmode.c colmath.c filter1d.c fitcircle.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt2kml.c gmtconvert.c gmtdp.c gmtmath.c gmtselect.c gmtspatial.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmtstitch.c gmtvector.c gmtwhich.c grd2cpt.c grd2rgb.c grd2xyz.c grdblend.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% grdclip.c grdcut.c grdedit.c grdfft.c grdfilter.c grdgradient.c grdhisteq.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% grdinfo.c grdlandmask.c grdmask.c grdmath.c grdpaste.c grdproject.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% grdsample.c grdreformat.c grdtrack.c grdtrend.c grdvolume.c greenspline.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% kml2gmt.c makecpt.c mapproject.c minmax.c nearneighbor.c project.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% ps2raster.c sample1d.c spectrum1d.c splitxyz.c surface.c trend1d.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% trend2d.c triangulate.c xyz2grd.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% testio.c gmtaverage.c testapi.c
+REM %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% testgmt5.c testgmtio.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmtdefaults.c gmtget.c gmtset.c grdcontour.c grdimage.c grdvector.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% grdview.c psbasemap.c psclip.c pscoast.c pscontour.c pshistogram.c psimage.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% psmask.c psrose.c psscale.c pstext.c pswiggle.c psxy.c psxyz.c pslegend.c
+
 %CC% %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
 
 REM ----------------------------------- SUPPLEMENTS ----------------------------------------------
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% dbase\*_func.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gshhs\*_func.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% imgsrc\*_func.c imgsrc\gmt_imgsubs.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% meca\*_func.c meca\nrutil.c meca\distaz.c meca\submeca.c meca\utilmeca.c 
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% mgd77\*_func.c mgd77\mgd77.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% potential\*_func.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% segyprogs\*_func.c segyprogs\segy_io.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% sph\*_func.c sph\sph.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% spotter\*_func.c spotter\libspotter.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% /I%cd%\mgd77 x2sys\*_func.c x2sys\x2sys.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% dbase\grdraster.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gshhs\gshhs.c
+REM %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gshhs\gshhs.c gshhs\gshhs_dp.c gshhs\gshhstograss.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% imgsrc\img2grd.c imgsrc\gmt_imgsubs.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% meca\nrutil.c meca\distaz.c meca\submeca.c meca\utilmeca.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% meca\psmeca.c meca\pspolar.c meca\psvelo.c meca\pscoupe.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% mgd77\mgd77.c mgd77\mgd77convert.c mgd77\mgd77info.c mgd77\mgd77list.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% mgd77\mgd77path.c mgd77\mgd77manage.c mgd77\mgd77magref.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% mgd77\mgd77sniffer.c mgd77\mgd77track.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% potential\redpol.c potential\xyzokb.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% segyprogs\segy_io.c segyprogs\pssegy.c segyprogs\pssegyz.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% segyprogs\segy2grd.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% sph\sph.c sph\sphtriangulate.c sph\sphdistance.c sph\sphinterpolate.c
+REM %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% spharmonics\grd2sph.c spharmonics\sph2grd.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% spotter\libspotter.c spotter\backtracker.c spotter\grdpmodeler.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% spotter\grdrotater.c spotter\grdspotter.c spotter\hotspotter.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% spotter\originator.c spotter\rotconverter.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% /I%cd%\mgd77 x2sys\x2sys.c x2sys\x2sys_init.c x2sys\x2sys_put.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% /I%cd%\mgd77 x2sys\x2sys_get.c x2sys\x2sys_binlist.c x2sys\x2sys_datalist.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% /I%cd%\mgd77 x2sys\x2sys_cross.c x2sys\x2sys_list.c x2sys\x2sys_report.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% /I%cd%\mgd77 x2sys\x2sys_solve.c x2sys\x2sys_merge.c
 REM ----------------------------------------------------------------------------------------------
 
 link %LOPT% /out:gmt.dll /implib:gmt.lib psl.lib %lib_netcdf% %GDAL_LIB% %MATLIB% %PCRE_LIB% %VLD_LIB% *.obj
@@ -347,13 +372,13 @@ REM ----------------------------------- SUPPLEMENTS ----------------------------
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_rotconverter /Ferotconverter gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_binlist /Fex2sys_binlist  /I%cd%\mgd77 gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_cross   /Fex2sys_cross    /I%cd%\mgd77 gmtprogram.c %GMTLIB%
-%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_datalist  /Fex2sys_datalist /I%cd%\mgd77 gmtprogram.c %GMTLIB%
-%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_get    /Fex2sys_get      /I%cd%\mgd77 gmtprogram.c %GMTLIB%
-%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_init   /Fex2sys_init     /I%cd%\mgd77 gmtprogram.c %GMTLIB%
-%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_put    /Fex2sys_put      /I%cd%\mgd77 gmtprogram.c %GMTLIB%
-%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_list   /Fex2sys_list     /I%cd%\mgd77 gmtprogram.c %GMTLIB%
-%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_report /Fex2sys_report   /I%cd%\mgd77 gmtprogram.c %GMTLIB%
-%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_solve  /Fex2sys_solve    /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_datalist /Fex2sys_datalist /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_get    /Fex2sys_get    /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_init   /Fex2sys_init   /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_put    /Fex2sys_put    /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_list   /Fex2sys_list   /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_report /Fex2sys_report /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_solve  /Fex2sys_solve  /I%cd%\mgd77 gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_merge  /Fex2sys_merge gmtprogram.c %GMTLIB%
 REM -----------------------------------------------------------------------------------------------
 
