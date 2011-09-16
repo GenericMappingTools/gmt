@@ -109,5 +109,5 @@ originator$(EXE):	originator.o
 rotconverter$(EXE):	rotconverter.o
 
 $(PROGS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$(@:.exe=) ../gmtprogram.c \
 		$(LDFLAGS) $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@

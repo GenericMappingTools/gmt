@@ -94,5 +94,5 @@ $(LIB_O):	$(LIB_H)
 img2grd$(EXE):	img2grd.o
 
 $(PROGS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$(@:.exe=) ../gmtprogram.c \
 		$(LDFLAGS) $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
