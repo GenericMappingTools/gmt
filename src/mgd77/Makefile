@@ -114,9 +114,9 @@ mgd77magref$(EXE):	mgd77magref.o
 mgd77track$(EXE):	mgd77track.o
 
 $(PROGS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$(@:.exe=) ../gmtprogram.c \
 		$(LDFLAGS) -L. -lgmt_mgd77 $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) $(LIBMGD77_API) -o $@
 
 $(PROGSPS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMTPSL -DFUNC=GMT_$@ ../gmtprogram.c \
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMTPSL -DFUNC=GMT_$(@:.exe=) ../gmtprogram.c \
 		$(LDFLAGS) -L. -lgmt_mgd77 $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) $(LIBMGD77_API) -o $@
