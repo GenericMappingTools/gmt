@@ -14,20 +14,20 @@ include $(GMTSRCDIR)common.mk
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
 API_H		= gmt_gshhs.h
-PROGS_API_O	= gshhs.o
-PROGS_API	= $(PROGS_API_O:.o=$(EXE))
-PROGS_O		= gshhs_dp.o gshhstograss.o
+PROGS_O		= gshhs.o
+PROGS2_O	= gshhs_dp.o gshhstograss.o
+PROGS2		= $(PROGS2_O:.o=$(EXE))
 LIB_H		= gshhs.h
-MAN1		= $(PROGS_O:.o=.1) $(PROGS_API_O:.o=.1)
+MAN1		= $(PROGS_O:.o=.1) $(PROGS2_O:.o=.1)
 
 #-------------------------------------------------------------------------------
 #	software targets
 #-------------------------------------------------------------------------------
 
-all:		$(PROGS) $(PROGS_API)
+all:		$(PROGS) $(PROGS2)
 
 install:	all
-		$(INSTALL) $(PROGS_API) $(PROGS) $(bindir)
+		$(INSTALL) $(PROGS) $(PROGS2) $(bindir)
 		if [ ! .. -ef $(libdir) ]; then \
 			$(INSTALL_DIR) $(libdir) ; \
 			$(INSTALL_DATA) $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
@@ -61,14 +61,14 @@ uninstall-man:
 spotless::	clean
 
 clean:	
-		\rm -f *.o *.a *.$(SL) $(PROGS_API) $(PROGS)
+		\rm -f *.o *.a *.$(SL) $(PROGS) $(PROGS2)
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(PROGS_API_O):	$(GMT_H) $(LIB_H) $(API_H)
-$(PROGS_O):	$(GMT_H) $(LIB_H)
+$(PROGS_O):	$(GMT_H) $(LIB_H) $(API_H)
+$(PROGS2_O):	$(GMT_H) $(LIB_H)
 
 #-------------------------------------------------------------------------------
 #	libraries
@@ -80,12 +80,12 @@ LIBAPI		= libgmt_gshhs.$(LIBEXT)
 
 libs:		libgmt_gshhs.a
 
-libgmt_gshhs.a:	$(PROGS_API_O)
+libgmt_gshhs.a:	$(PROGS_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_gshhs.$(SL):	libgmt_gshhs.a
-		$(LD) $(LD_OPT) $(PROGS_API_O) $(GMT_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(PROGS_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules
@@ -95,9 +95,9 @@ gshhs$(EXE):		gshhs.o
 gshhs_dp$(EXE):		gshhs_dp.o
 gshhstograss$(EXE):	gshhstograss.o
 
-$(PROGS):	$(PROGS_O)
+$(PROGS2):	$(PROGS2_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
 
-$(PROGS_API):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
+$(PROGS):	$(LIBGMT) $(LIBAPI) ../gmtprogram.c
 		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$(@:.exe=) ../gmtprogram.c \
 		$(LDFLAGS) $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS) -o $@
