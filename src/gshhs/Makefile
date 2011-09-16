@@ -18,7 +18,7 @@ PROGS_API_O	= gshhs.o
 PROGS_API	= $(PROGS_API_O:.o=$(EXE))
 PROGS_O		= gshhs_dp.o gshhstograss.o
 LIB_H		= gshhs.h
-MAN1		= $(PROGS_O:.o=.1) gshhs.1
+MAN1		= $(PROGS_O:.o=.1) $(PROGS_API_O:.o=.1)
 
 #-------------------------------------------------------------------------------
 #	software targets
