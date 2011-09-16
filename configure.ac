@@ -504,7 +504,8 @@ dnl Allow user to set --enable-netcdf to set netCDF dir
 dnl Use nc-config if possible
 dnl -----------------------------------------------------------------
 dnl
-AC_PATH_PROG([NC_CONF], [nc-config], [$with_nc_config])
+test -x "$with_nc_config" -a ! -d "$with_nc_config" && NC_CONF="$with_nc_config"
+AC_PATH_PROG([NC_CONF], [nc-config], [], [$with_nc_config$PATH_SEPARATOR$PATH])
 if test -x "$NC_CONF" && test "X$NETCDF_INC" = "X" && test "X$NETCDF_LIB" = "X" ; then
 	AC_MSG_CHECKING(for netCDF includes)
 	NETCDF_INC=`$NC_CONF --cflags`
@@ -550,7 +551,8 @@ dnl -----------------------------------------------------------------
 dnl
 if test "X$enable_gdal" != "Xno" || test "X$with_gdal_config" != "Xno"; then
 	AC_MSG_RESULT([Compile experimental support for GDAL input])
-	AC_PATH_PROG([GDAL_CONF], [gdal-config], [$with_gdal_config])
+	test -x "$with_gdal_config" -a ! -d "$with_gdal_config" && GDAL_CONF="$with_gdal_config"
+	AC_PATH_PROG([GDAL_CONF], [gdal-config], [], [$with_gdal_config$PATH_SEPARATOR$PATH])
 	if test -x "$GDAL_CONF" ; then
 		AC_MSG_CHECKING(for GDAL includes)
 		if test "X$GDAL_INC" = "X"; then
@@ -659,7 +661,8 @@ if test "X$enable_pcre" = "Xno" ; then
 	AC_CHECK_HEADERS([regex.h], [CPPFLAGS="$CPPFLAGS -DHAVE_POSIX_ERE"])
 else
 	AC_MSG_RESULT([[yes]])
-	AC_PATH_PROG([PCRE_CONF], [pcre-config], [$with_pcre_config])
+	test -x "$with_pcre_config" -a ! -d "$with_pcre_config" && PCRE_CONF="$with_pcre_config"
+	AC_PATH_PROG([PCRE_CONF], [pcre-config], [], [$with_pcre_config$PATH_SEPARATOR$PATH])
 	if test -x "$PCRE_CONF" ; then
 		AC_MSG_CHECKING(for PCRE includes)
 		PCRE_INC=`$PCRE_CONF --cflags`
@@ -669,7 +672,7 @@ else
 		AC_MSG_RESULT($PCRE_LIB)
 		CPPFLAGS="$CPPFLAGS -DHAVE_PCRE"
 	else
-		AC_PATH_PROG([PKG_CONF], [pkg-config], [$with_pkg_config])
+		AC_PATH_PROG([PKG_CONF], [pkg-config])
 		if test -x "$PKG_CONF" && "$PKG_CONF" libpcre ; then
 			AC_MSG_CHECKING(for PCRE includes)
 			PCRE_INC=`$PKG_CONF --cflags libpcre`
