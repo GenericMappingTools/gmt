@@ -189,13 +189,6 @@ gmt.o:		gmt_prognames.h gmt_progcases.h gmt_progpurpose.h
 triangle.o:	triangle.c triangle.h
 		$(CC) -c $(CFLAGS) -DNO_TIMER -DTRILIBRARY -DREDUCED -DCDT_ONLY $<
 
-# Special way to create the program objects
-$(PROGS_O:.o=_prog.o):	gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$(*:_prog=) -c -o $*.o gmtprogram.c
-
-$(PROGSPS_O:.o=_prog.o):	gmtprogram.c
-		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMTPSL -DFUNC=GMT_$(*:_prog=) -c -o $*.o gmtprogram.c
-
 # Assembly wrapper for sincos on Dec Alphas
 # Only used if ALPHA_SINCOS_O are set in config.mk
 
