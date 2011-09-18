@@ -823,7 +823,12 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		to_GDALW->geog = 0;
 		to_GDALW->nx = (int)nx;
 		to_GDALW->ny = (int)ny;
-		to_GDALW->n_bands = (int)MIN(Img_proj->header->n_bands, 3);	/* Transparency not accounted yet */
+		if (Ctrl->D.active)
+			to_GDALW->n_bands = (int)MIN(Img_proj->header->n_bands, 3);	/* Transparency not accounted yet */
+		else if ((P && gray_only) || Ctrl->M.active)
+			to_GDALW->n_bands = 1;
+		else
+			to_GDALW->n_bands = 3;
 		to_GDALW->registration = 1;
 		if (!need_to_project) {
 			to_GDALW->ULx = GMT->common.R.wesn[XHI];
