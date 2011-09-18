@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-09-18	remko
+	* grdimage.c:		Avoid segfault when not reading grid through GDAL.
+				(Thanks, Florian)
+
 2011-09-15	remko
 	* gmt_init.c:		Produce error report when non-common option found by
 				GMT_default_error.
