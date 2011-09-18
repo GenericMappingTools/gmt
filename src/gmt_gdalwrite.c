@@ -144,7 +144,8 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	/* Use compression with GeoTiff driver */
 	if (!strcmp(pszFormat,"GTiff")) {
 		papszOptions = CSLAddString( papszOptions, "COMPRESS=DEFLATE" ); 
-		papszOptions = CSLAddString( papszOptions, "TILED=YES" ); 
+		/* Florian says: tiles are not supported everywhere, so leave out */
+		/* papszOptions = CSLAddString( papszOptions, "TILED=YES" ); */
 	}
 
 	hDstDS = GDALCreate( hDriver, "mem", nx, ny, n_bands, typeCLASS, NULL );
