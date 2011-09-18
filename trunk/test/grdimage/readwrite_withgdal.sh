@@ -25,8 +25,14 @@ grdgradient somb.nc -A225 -Gillum.nc -Nt0.75
 grdimage -D gdal/needle.jpg -Iillum.nc -JM8c -Y-10c -X-2c -O -K >> $ps
 
 # A gray image (one band, no color map)
-grdimage -D gdal/vader.jpg -JX4c/0 -X9c -O >> $ps
+grdimage -D gdal/vader.jpg -JX4c/0 -X9c -Y5c -K -O >> $ps
 
-rm -f somb.nc illum.nc
+# Create a .png from a dummy grid and import it
+grdmath -R-5/5/-5/5 -I1 X Y MUL = lixo.grd
+makecpt -T-25/25/1 > lixo.cpt
+grdimage lixo.grd -Alixo.png=PNG -JX4c -Clixo.cpt
+grdimage -D lixo.png -JX4c -Y-5c -O >> $ps
+
+rm -f somb.nc illum.nc lixo.png lixo.cpt lixo.grd
 
 pscmp
