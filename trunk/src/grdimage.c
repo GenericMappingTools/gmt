@@ -849,6 +849,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			char *pstr = NULL;
 			to_GDALW->P.active = TRUE;
 			to_GDALW->P.ProjectionRefPROJ4 = GMT_export2proj4 (GMT, pstr);
+			if (to_GDALW->P.ProjectionRefPROJ4[1] == 'x' && to_GDALW->P.ProjectionRefPROJ4[2] == 'y')	/* -JX. Forget conversion */
+				to_GDALW->P.active = FALSE;
 		}
 	}
 #endif
