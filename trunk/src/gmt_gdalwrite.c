@@ -180,7 +180,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 			case GDT_Byte:
 			 	tmpByte = (unsigned char *)data;	
 				for (nn = 0; nn < nx*ny; nn++) {
-					outByte[nn] = tmpByte[nn*3 + i];
+					outByte[nn] = tmpByte[nn*n_bands + i];
 				}
 				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, outByte, nx, ny, typeCLASS, 0, 0 );
 				break;
