@@ -124,12 +124,6 @@ install:	all
 				$(LN_S) $$lib.$(SL_VERSION) $$lib.$(SL); \
 			done; \
 		fi
-		if [ "$(DSYMUTIL)" ]; then \
-			cd $(bindir) ; \
-			$(DSYMUTIL) $(PROGS) $(PROGSPS) $(DEMOS) $(GMT_COMPAT_PROGS); \
-			cd $(libdir) ; \
-			$(DSYMUTIL) $(LIBGMT:$(LIBEXT)=$(SL_VERSION)); \
-		fi
 
 uninstall:
 		cd $(bindir); \rm -f $(ALLPROGS)

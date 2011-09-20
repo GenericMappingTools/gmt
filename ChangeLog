@@ -2,6 +2,13 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-09-20	fwobbe
+	* {dbase,gshhs,imgsrc,meca,mgd77,potential,segyprogs,sph,spotter,x2sys,}Makefile:
+				Add rm -rf *.dSym to clean targets. Do not generate dSYM
+				files in bindir and libdir: dsymutil cannot create symbol
+				files without object file present (CC invoked without -c).
+	* gmt_gdalwrite.c:	Avoid tiling small GTiffs
+
 2011-09-18	remko
 	* grdimage.c:		Avoid segfault when not reading grid through GDAL.
 				(Thanks, Florian)
