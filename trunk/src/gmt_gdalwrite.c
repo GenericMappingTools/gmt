@@ -34,6 +34,8 @@
  *
  */
 
+#define GDAL_TILE_SIZE 256 /* default tile size when creating tiled GTiff */
+
 int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs) {
 	int	flipud, i_x_nXYSize, bQuiet = FALSE, bStrict = FALSE;
 	char **papszOptions = NULL, *projWKT = NULL;
@@ -144,8 +146,10 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	/* Use compression with GeoTiff driver */
 	if (!strcmp(pszFormat,"GTiff")) {
 		papszOptions = CSLAddString( papszOptions, "COMPRESS=DEFLATE" ); 
-		/* Florian says: tiles are not supported everywhere, so leave out */
-		/* papszOptions = CSLAddString( papszOptions, "TILED=YES" ); */
+		/* tiles are less efficient in small grids (padding) and are not
+		 * supported everywhere, when nx < tile_width || ny < tile_height */
+		if ( nx > 3 * GDAL_TILE_SIZE && ny > 3 * GDAL_TILE_SIZE )
+			papszOptions = CSLAddString( papszOptions, "TILED=YES" );
 	}
 
 	hDstDS = GDALCreate( hDriver, "mem", nx, ny, n_bands, typeCLASS, NULL );
