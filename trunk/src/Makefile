@@ -153,6 +153,7 @@ uninstall-man:
 
 clean:
 		\rm -f *% *.o *.a *.$(SL) $(PROGS) $(PROGSPS) $(DEMOS) $(PSLDEMO)
+		\rm -rf *.dSYM
 
 spotless::	clean
 		\rm -f $(CONFIGS)

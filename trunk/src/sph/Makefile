@@ -67,6 +67,7 @@ spotless::	clean
 
 clean:
 		\rm -f *.o *.a *.$(SL) *% $(PROGS)
+		\rm -rf *.dSYM
 
 ex:		$(SCRIPTS)
 		for i in $(SCRIPTS); do \
