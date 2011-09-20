@@ -74,7 +74,8 @@ uninstall-man:
 spotless::	clean
 
 clean:
-		rm -f *% *.o *.a *.$(SL) $(PROGS) $(PROGSPS)
+		\rm -f *% *.o *.a *.$(SL) $(PROGS) $(PROGSPS)
+		\rm -rf *.dSYM
 
 #-------------------------------------------------------------------------------
 #	object file dependencies

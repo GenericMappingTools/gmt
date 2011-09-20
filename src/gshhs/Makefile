@@ -62,6 +62,7 @@ spotless::	clean
 
 clean:	
 		\rm -f *.o *.a *.$(SL) $(PROGS) $(PROGS2)
+		\rm -rf *.dSYM
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
