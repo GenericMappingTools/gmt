@@ -42,7 +42,8 @@ This is one or more files containing 1 or more records with (IT(x), IT(y)[, IT(f
 The attributes in brackets can alternatively be set directly via OPT(F).
 If no files are given, BD(pstext) will read standard input.
 IT(font) is a font specification with format [IT(size),][IT(font),][IT(color)] where IT(size) is
-text size in points, IT(font) is the font to use, IT(color) sets the font color, IT(angle)
+text size in points, IT(font) is the font to use, and IT(color) sets the font color.  To draw outline
+fonts you append =IT(pen) to the filo.  The IT(angle)
 is measured in degrees counter-clockwise from horizontal, and IT(justify) sets the alignment. 
 If IT(font) is not an integer, then it is taken to be a text string with the desired fontname (see
 OPT(L) for available fonts).  The alignment refers to the
@@ -136,11 +137,11 @@ to have its own level given in the 3rd column, and OPT(N) is implicitly set.
 #include "explain_-t.txt"
 #include "explain_help.txt"
 .SH EXAMPLES
-To plot the outlines of the text strings stored in the file text.d on a Mercator plot with
+To plot just the red outlines of the (lon at text strings) stored in the file text.d on a Mercator plot with
 the given specifications, use
 .br
 .sp
-pstext text.d -R-30/30/-10/20 -Jm0.1i -P -B5 -S0.5p > plot.ps
+pstext text.d -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red -B5 > plot.ps
 .br
 .sp
 To add a typeset figure caption for a 3-inch wide illustration, use

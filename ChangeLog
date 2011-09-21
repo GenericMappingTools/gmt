@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-09-21	pwessel
+	* pstext.txt:		Removed old -S from examples
+
 2011-09-21	fwobbe
 	* filter1d.c:		Fixed a bug that caused incomplete output of successive
 				segments. Cleaned up code (use prefix operator). Removed
