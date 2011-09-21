@@ -8,7 +8,7 @@ pswiggle \- Plot z = f(x,y) anomalies along tracks
 BD(pswiggle) [ IT(table) ] GMT_J_OPT GMT_Rgeoz_OPT 
 OPT(Z)IT(scale) [ OPT(A)IT(azimuth) ] [ GMT_B_OPT ] [ OPT(C)IT(center) ] 
 [ OPT(G)[BD(+)|BD(-)|BD(=)]IT(fill) ] [ GMT_Jz_OPT ] 
-[ OPT(I)IT(fix_az) ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(I)IT(fix_az) ] [ GMT_K_OPT ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(S)[BD(x)]IT(lon0)/IT(lat0)/IT(length)[/IT(units)] ] [ OPT(T)IT(pen) ] 
 [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)IT(pen) ] [ GMT_X_OPT ] 
 [ GMT_Y_OPT ] [ GMT_bi_OPT ] [ GMT_c_OPT ] [ GMT_fi_OPT ] [ GMT_g_OPT ] 
