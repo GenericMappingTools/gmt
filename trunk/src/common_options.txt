@@ -55,8 +55,8 @@
 #define GMT_Rx_OPT	OPT(R)IT(xmin)/IT(xmax)/IT(ymin)/IT(ymax)[BD(r)]
 #define GMT_U_OPT	OPT(U)[IT(just)/IT(dx)/IT(dy)/][BD(c)|IT(label)]
 #define GMT_V_OPT	OPT(V)[IT(level)]
-#define GMT_X_OPT	OPT(X)[BD(a)|BD(c)|BD(r)][IT(x-shift)[BD(u)]]
-#define GMT_Y_OPT	OPT(Y)[BD(a)|BD(c)|BD(r)][IT(y-shift)[BD(u)]]
+#define GMT_X_OPT	OPT(X)[BD(a)|BD(c)|BD(f)|BD(r)][IT(x-shift)[BD(u)]]
+#define GMT_Y_OPT	OPT(Y)[BD(a)|BD(c)|BD(f)|BD(r)][IT(y-shift)[BD(u)]]
 /* Use b, f when applies to both i and o, else use only the bi, bo, fi, fo variants */
 #define GMT_a_OPT	OPT(a)IT(col)=IT(name)[IT(...)]
 #define GMT_b_OPT	OPT(b)[IT(ncol)][BD(t)][BD(+L)|BD(+B)]
