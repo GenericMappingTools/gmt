@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-09-21	remko
+	* pscoast.c:		Set default fill colour to same as set by -B+g
+	* test/pscoast/{placement,pseudo}.sh:	New tests by Ken McLean
+
 2011-09-20	pwessel
 	* meca:			Added missing -A to the synopsis of psvelo.c
 
