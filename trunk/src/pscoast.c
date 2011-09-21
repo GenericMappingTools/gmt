@@ -128,10 +128,12 @@ void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	C->A.info.high = GMT_MAX_GSHHS_LEVEL;			/* Include all GSHHS levels */
 	C->D.set = 'l';						/* Low-resolution coastline data */
-	GMT_init_fill (GMT, &C->S.fill, 1.0, 1.0, 1.0);		/* Default Ocean color */
-	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);		/* Default Land color */
-	GMT_init_fill (GMT, &C->C.fill[LAKE], 1.0, 1.0, 1.0);	/* Default Lake color */
-	GMT_init_fill (GMT, &C->C.fill[RIVER], 1.0, 1.0, 1.0);	/* Default Riverlake color */
+	if (GMT->current.map.frame.paint)	/* Default Ocean color = Frame background color */
+		C->S.fill = GMT->current.map.frame.fill;
+	else
+		GMT_init_fill (GMT, &C->S.fill, 1.0, 1.0, 1.0);		/* Default Ocean color = white */
+	C->C.fill[LAKE] = C->C.fill[RIVER] = C->S.fill;		/* Default Lake/Riverlake color = Ocean color */
+	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);		/* Default Land color = black */
 	for (k = 0; k < GMT_N_RLEVELS; k++) C->I.pen[k] = GMT->current.setting.map_default_pen;		/* Default river pens */
 	for (k = 0; k < GMT_N_BLEVELS; k++) C->N.pen[k] = GMT->current.setting.map_default_pen;		/* Default border pens */
 	for (k = 0; k < GMT_MAX_GSHHS_LEVEL; k++) C->W.pen[k] = GMT->current.setting.map_default_pen;	/* Default coastline pens */
