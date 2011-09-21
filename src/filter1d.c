@@ -139,6 +139,8 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	double half_width;
 	double t_start;			/* x-value of first output point */
 	double t_stop;			/* x-value of last output point */
+	double t_start_t;		/* user specified x-value of first output point if out_at_time == TRUE */
+	double t_stop_t;		/* user specified x-value of last output point if out_at_time == TRUE */
 	double t_int;			/* Output interval */
 	double sym_coeff;		/* Symmetry coefficient  */
 	double lack_width;		/* Lack of data width  */
@@ -266,14 +268,14 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 								Ctrl->F.file = strdup (&opt->arg[1]);
 							else {
 								GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F[Ff] option: Could not find file %s.\n", &opt->arg[1]);
-								n_errors++;
+								++n_errors;
 							}
 							break;
 					}
 				}
 				else {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
-					n_errors++;
+					++n_errors;
 				}
 				break;
 			case 'I':	/* Activate the ignore option */
@@ -291,7 +293,7 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
 					if (sscanf (opt->arg, "%*s/%" GMT_LL "d", &Ctrl->N.col) != 1) {
 						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Syntax is -N<tcol>\n");
-						n_errors++;
+						++n_errors;
 					}
 				}
 				else if (!strchr (opt->arg, '/'))
@@ -312,7 +314,7 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 				Ctrl->T.active = TRUE;
 				if (sscanf (opt->arg, "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->T.inc) != 3) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Suntax error -T option: Syntax is -T<start>/<stop>/<inc>\n");
-					n_errors++;
+					++n_errors;
 				}
 				else {
 					GMT_scanf_arg (GMT, txt_a, GMT_IS_UNKNOWN, &Ctrl->T.min);
@@ -360,14 +362,14 @@ void allocate_data_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
 	GMT_LONG i;
 
-	for (i = 0; i < F->n_cols; i++) F->data[i] = GMT_memory (GMT, F->data[i], F->n_row_alloc, double);
+	for (i = 0; i < F->n_cols; ++i) F->data[i] = GMT_memory (GMT, F->data[i], F->n_row_alloc, double);
 }
 
 void allocate_more_work_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
 	GMT_LONG i;
 
-	for (i = 0; i < F->n_cols; i++) F->work[i] = GMT_memory (GMT, F->work[i], F->n_work_alloc, double);
+	for (i = 0; i < F->n_cols; ++i) F->work[i] = GMT_memory (GMT, F->work[i], F->n_work_alloc, double);
 }
 
 GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
@@ -388,7 +390,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		}
 		F->f_wt = GMT_memory (GMT, F->f_wt, F->n_f_wts, double);
 		GMT_memcpy (F->f_wt, F->Fin->table[0]->segment[0]->coord[GMT_X], F->n_f_wts, double);
-		for (i = 0, w_sum = 0.0; i < F->n_f_wts; i++) w_sum += F->f_wt[i];
+		for (i = 0, w_sum = 0.0; i < F->n_f_wts; ++i) w_sum += F->f_wt[i];
 		F->f_operator = (GMT_IS_ZERO (w_sum));	/* If weights sum to zero it is an operator like {-1 1] or [1 -2 1] */
 		F->half_n_f_wts = F->n_f_wts / 2;
 		F->half_width = F->half_n_f_wts * F->dt;
@@ -403,7 +405,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		F->n_f_wts = 2 * F->half_n_f_wts + 1;
 
 		F->f_wt = GMT_memory (GMT, F->f_wt, F->n_f_wts, double);
-		for (i = 0; i <= F->half_n_f_wts; i++) {
+		for (i = 0; i <= F->half_n_f_wts; ++i) {
 			time = i * F->dt;
 			i1 = F->half_n_f_wts - i;
 			i2 = F->half_n_f_wts + i;
@@ -411,8 +413,8 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		}
 		if (normalize) {
 			w_sum = 0.0;
-			for (i = 0; i < F->n_f_wts; i++) w_sum += F->f_wt[i];
-			for (i = 0; i < F->n_f_wts; i++) F->f_wt[i] /= w_sum;
+			for (i = 0; i < F->n_f_wts; ++i) w_sum += F->f_wt[i];
+			for (i = 0; i < F->n_f_wts; ++i) F->f_wt[i] /= w_sum;
 		}
 	}
 	else
@@ -421,14 +423,29 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	/* Initialize start/stop time */
 
 	if (F->out_at_time) {
-		if (F->use_ends) {
-			while (F->t_start < t_0) F->t_start += F->t_int;
-			while (F->t_stop > t_1) F->t_stop -= F->t_int;
+		/* populate F->t_start and F->t_stop */
+		if (F->t_start_t < t_0) /* user defined t_start_t outside bounds */
+			F->t_start = t_0;
+		else
+			F->t_start = F->t_start_t;
+		if (F->t_stop_t > t_1) /* user defined t_stop_t outside bounds */
+			F->t_stop = t_1;
+		else
+			F->t_stop = F->t_stop_t;
+
+		if (!F->use_ends) {
+			/* remove filter half width from bounds */
+			F->t_start += F->half_width;
+			F->t_stop -= F->half_width;
 		}
-		else {
-			while ( (F->t_start - F->half_width) < t_0) F->t_start += F->t_int;
-			while ( (F->t_stop + F->half_width) > t_1) F->t_stop -= F->t_int;
-		}
+
+		/* align F->t_start and F->t_stop to F->t_int */
+		double t_shift = F->t_int - fmod (F->t_start - F->t_start_t, F->t_int);
+		if ( fabs (t_shift - F->t_int) < GMT_SMALL ) t_shift=0; /* avoid values close to F->t_int */
+		F->t_start += t_shift; /* make F->t_start - F->t_start_t an integral multiple of F->t_int */
+		t_shift = fmod (F->t_stop - F->t_start_t, F->t_int);
+		if ( fabs (t_shift - F->t_int) < GMT_SMALL ) t_shift=0; /* avoid values close to F->t_int */
+		F->t_stop -= t_shift; /* make F->t_stop - F->t_start_t an integral multiple of F->t_int */
 	}
 	else {
 		if (F->use_ends) {
@@ -436,9 +453,9 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 			F->t_stop = t_1;
 		}
 		else {
-			for (i = 0; (F->data[F->t_col][i] - t_0) < F->half_width; i++);
+			for (i = 0; (F->data[F->t_col][i] - t_0) < F->half_width; ++i);
 			F->t_start = F->data[F->t_col][i];
-			for (i = F->n_rows - 1; (t_1 - F->data[F->t_col][i]) < F->half_width; i--);
+			for (i = F->n_rows - 1; (t_1 - F->data[F->t_col][i]) < F->half_width; --i);
 			F->t_stop = F->data[F->t_col][i];
 		}
 	}
@@ -454,19 +471,19 @@ GMT_LONG lack_check (struct FILTER1D_INFO *F, GMT_LONG i_col, GMT_LONG left, GMT
 	double last_t;
 
 	last_row = left;
-	while (!(GMT_is_dnan (F->data[i_col][last_row])) && last_row < (right - 1)) last_row++;
+	while (!(GMT_is_dnan (F->data[i_col][last_row])) && last_row < (right - 1)) ++last_row;
 
 	last_t = F->data[F->t_col][last_row];
 	this_row = last_row + 1;
 	while (!(lacking) && this_row < (right - 1)) {
-		while (!(GMT_is_dnan (F->data[i_col][this_row])) && this_row < (right - 1)) this_row++;
+		while (!(GMT_is_dnan (F->data[i_col][this_row])) && this_row < (right - 1)) ++this_row;
 
 		if ( (F->data[F->t_col][this_row] - last_t) > F->lack_width)
 			lacking = TRUE;
 		else {
 			last_t = F->data[F->t_col][this_row];
 			last_row = this_row;
-			this_row++;
+			++this_row;
 		}
 	}
 	return (lacking);
@@ -494,7 +511,7 @@ void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, GMT_LO
 	F->last_loc[j] = F->this_loc[j] = temp;
 
 	if (both) {
-		for (i = 0; i < n; i++) F->work[j][i] = fabs (F->work[j][i] - F->this_loc[j]);
+		for (i = 0; i < n; ++i) F->work[j][i] = fabs (F->work[j][i] - F->this_loc[j]);
 		low = F->min_scl[j];
 		high = F->max_scl[j];
 		last = F->last_scl[j];
@@ -519,7 +536,7 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 	data_sum = GMT_memory (GMT, NULL, F->n_cols, double);
 
 	if(!F->out_at_time) {	/* Position i_t_output at first output time  */
-		for(i_t_output = 0; F->data[F->t_col][i_t_output] < F->t_start; i_t_output++);
+		for(i_t_output = 0; F->data[F->t_col][i_t_output] < F->t_start; ++i_t_output);
 		small = (F->data[F->t_col][1] - F->data[F->t_col][0]);
 	}
 	else
@@ -532,20 +549,20 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 	iq = irint (F->q_factor);
 
 	while (time <= (F->t_stop + small)) {
-		while ((time - F->data[F->t_col][left] - small) > F->half_width) left++;
-		while (right < F->n_rows && (F->data[F->t_col][right] - time - small) <= F->half_width) right++;
+		while ((time - F->data[F->t_col][left] - small) > F->half_width) ++left;
+		while (right < F->n_rows && (F->data[F->t_col][right] - time - small) <= F->half_width) ++right;
 		n_in_filter = right - left;
 		if ( (!(n_in_filter)) || (F->check_lack && ( (F->filter_width / n_in_filter) > F->lack_width) ) ) {
 			if (F->out_at_time)
 				time += F->t_int;
 			else {
-				i_t_output++;
+				++i_t_output;
 				time = (i_t_output < F->n_rows) ? F->data[F->t_col][i_t_output] : F->t_stop + 1.0;
 			}
 			continue;
 		}
 
-		for (i_col = 0; i_col < F->n_cols; i_col++) {
+		for (i_col = 0; i_col < F->n_cols; ++i_col) {
 			F->n_this_col[i_col] = 0;
 			wt_sum[i_col] = data_sum[i_col] = 0.0;
 			if (i_col == F->t_col)
@@ -562,8 +579,8 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 				F->n_work_alloc = n_in_filter;
 				allocate_more_work_space (GMT, F);
 			}
-			for (i_row = left; i_row < right; i_row++) {
-				for (i_col = 0; i_col < F->n_cols; i_col++) {
+			for (i_row = left; i_row < right; ++i_row) {
+				for (i_col = 0; i_col < F->n_cols; ++i_col) {
 					if (!(good_one[i_col])) continue;
 					if (!GMT_is_dnan (F->data[i_col][i_row])) {
 						F->work[i_col][F->n_this_col[i_col]] = F->data[i_col][i_row];
@@ -576,7 +593,7 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 				}
 			}
 			if (F->check_asym) {
-				for (i_col = 0; i_col < F->n_cols; i_col++) {
+				for (i_col = 0; i_col < F->n_cols; ++i_col) {
 					if (!(good_one[i_col])) continue;
 					n_l = F->n_left[i_col];
 					n_r = F->n_right[i_col];
@@ -584,12 +601,12 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 				}
 			}
 			if ((F->filter_type > FILTER1D_CONVOLVE) && F->check_q) {
-				for (i_col = 0; i_col < F->n_cols; i_col++) {
+				for (i_col = 0; i_col < F->n_cols; ++i_col) {
 					if (F->n_this_col[i_col] < iq) good_one[i_col] = FALSE;
 				}
 			}
 
-			for (i_col = 0; i_col < F->n_cols; i_col++) {
+			for (i_col = 0; i_col < F->n_cols; ++i_col) {
 				if (good_one[i_col]) {
 					n_for_call = F->n_this_col[i_col];
 					get_robust_estimates (GMT, F, i_col, n_for_call, F->robust);
@@ -603,12 +620,12 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 			/* Need to count how many good ones; use data_sum area  */
 
 			n_good_ones = 0;
-			for (i_col = 0; i_col < F->n_cols; i_col++) {
+			for (i_col = 0; i_col < F->n_cols; ++i_col) {
 				if (i_col == F->t_col)
 					data_sum[i_col] = time;
 				else if (good_one[i_col]) {
 					data_sum[i_col] = F->this_loc[i_col];
-					n_good_ones++;
+					++n_good_ones;
 				}
 				else
 					data_sum[i_col] = GMT->session.d_NaN;
@@ -616,14 +633,14 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 			if (n_good_ones) GMT_Put_Record (C, GMT_WRITE_DOUBLE, (void *)data_sum);
 		}
 		else {
-			if (F->robust) for (i_col = 0; i_col < F->n_cols; i_col++) F->n_this_col[i_col] = 0;
+			if (F->robust) for (i_col = 0; i_col < F->n_cols; ++i_col) F->n_this_col[i_col] = 0;
 
-			for (i_row = left; i_row < right; i_row++) {
+			for (i_row = left; i_row < right; ++i_row) {
 				delta_time = time - F->data[F->t_col][i_row];
 				i_f_wt = F->half_n_f_wts + (GMT_LONG)floor (0.5 + delta_time/F->dt);
 				if ((i_f_wt < 0) || (i_f_wt >= F->n_f_wts)) continue;
 
-				for(i_col = 0; i_col < F->n_cols; i_col++) {
+				for(i_col = 0; i_col < F->n_cols; ++i_col) {
 					if (!good_one[i_col]) continue;
 					if (!GMT_is_dnan (F->data[i_col][i_row])) {
 						wt = F->f_wt[i_f_wt];
@@ -644,7 +661,7 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 				}
 			}
 			n_good_ones = 0;
-			for (i_col = 0; i_col < F->n_cols; i_col++) {
+			for (i_col = 0; i_col < F->n_cols; ++i_col) {
 				if (!good_one[i_col]) continue;
 				if (!F->n_this_col[i_col]) {
 					good_one[i_col] = FALSE;
@@ -662,10 +679,10 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 					good_one[i_col] = FALSE;
 					continue;
 				}
-				n_good_ones++;
+				++n_good_ones;
 			}
 			if (n_good_ones) {
-				for (i_col = 0; i_col < F->n_cols; i_col++) {
+				for (i_col = 0; i_col < F->n_cols; ++i_col) {
 					if (i_col == F->t_col)
 						outval[i_col] = time;
 					else if (good_one[i_col])
@@ -682,7 +699,7 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 		if (F->out_at_time)
 			time += F->t_int;
 		else {
-			i_t_output++;
+			++i_t_output;
 			time = (i_t_output < F->n_rows) ? F->data[F->t_col][i_t_output] : F->t_stop + 1.0;
 		}
 	}
@@ -707,7 +724,7 @@ GMT_LONG allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		GMT_LONG i;
 
 		F->work = GMT_memory (GMT, NULL, F->n_cols, double *);
-		for (i = 0; i < F->n_cols; i++) F->work[i] = GMT_memory (GMT, NULL, F->n_work_alloc, double);
+		for (i = 0; i < F->n_cols; ++i) F->work[i] = GMT_memory (GMT, NULL, F->n_work_alloc, double);
 		F->min_loc = GMT_memory (GMT, NULL, F->n_cols, double);
 		F->max_loc = GMT_memory (GMT, NULL, F->n_cols, double);
 		F->last_loc = GMT_memory (GMT, NULL, F->n_cols, double);
@@ -725,10 +742,10 @@ void free_space_filter1d (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	GMT_LONG i;
 	if (!F) return;
 	if (F->robust || (F->filter_type > FILTER1D_CONVOLVE) ) {
-		for (i = 0; i < F->n_cols; i++)	GMT_free (GMT, F->work[i]);
+		for (i = 0; i < F->n_cols; ++i)	GMT_free (GMT, F->work[i]);
 		GMT_free (GMT, F->work);
 	}
-	for (i = 0; i < F->n_cols; i++)	GMT_free (GMT, F->data[i]);
+	for (i = 0; i < F->n_cols; ++i)	GMT_free (GMT, F->data[i]);
 	GMT_free (GMT, F->data);
 	GMT_free (GMT, F->n_this_col);
 	if (F->check_asym) GMT_free (GMT, F->n_left);
@@ -758,8 +775,8 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 	F->check_q = Ctrl->Q.active;
 	F->check_asym = Ctrl->S.active;
 	F->sym_coeff = Ctrl->S.value;
-	F->t_start = Ctrl->T.min;
-	F->t_stop = Ctrl->T.max;
+	F->t_start_t = F->t_start = Ctrl->T.min;
+	F->t_stop_t = F->t_stop = Ctrl->T.max;
 	F->t_int =Ctrl->T.inc;
 	F->out_at_time = Ctrl->T.active;
 }
@@ -873,8 +890,8 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error, "Error in Begin_IO\n");	/* Enables data output and sets access mode */
 
 	allocate_space (GMT, &F);	/* Gets column-specific flags and counter space */
-	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each input table */
-		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment */
+	for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
+		for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
 			/* Duplicate data and set up arrays and parameters needed to filter this segment */
 			if (D->table[tbl]->segment[seg]->n_rows > F.n_row_alloc) {
 				F.n_row_alloc = MAX (GMT_CHUNK, D->table[tbl]->segment[seg]->n_rows);
@@ -882,20 +899,20 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 
 			if (F.robust || (F.filter_type == FILTER1D_MEDIAN) ) {
-				for (i = 0; i < F.n_cols; i++) {
+				for (i = 0; i < F.n_cols; ++i) {
 					F.min_loc[i] = +DBL_MAX;
 					F.max_loc[i] = -DBL_MAX;
 				}
 			}
 			last_time = -DBL_MAX;
 
-			for (row = F.n_rows = 0; row < D->table[tbl]->segment[seg]->n_rows; row++) {
+			for (row = F.n_rows = 0; row < D->table[tbl]->segment[seg]->n_rows; ++row, ++F.n_rows) {
 				in = D->table[tbl]->segment[seg]->coord[F.t_col][row];
 				if (GMT_is_dnan (in)) continue;	/* Skip records with time == NaN */
 				new_time = in;
 				if (new_time < last_time) Return (GMT_DATA_READ_ERROR, "Error! Time decreases at line # %ld\n\tUse UNIX utility sort and then try again.\n", row);
 				last_time = new_time;
-				for (i = 0; i < F.n_cols; i++) {
+				for (i = 0; i < F.n_cols; ++i) {
 					in = D->table[tbl]->segment[seg]->coord[i][row];
 					if (Ctrl->I.active && in == Ctrl->I.value)
 						F.data[i][F.n_rows] = GMT->session.d_NaN;
@@ -906,14 +923,13 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						if (in < F.min_loc[i]) F.min_loc[i] = in;
 					}
 				}
-				F.n_rows++;
 			}
 			GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld records from table %ld, segment %ld\n", F.n_rows, tbl, seg);
 			
 			/* FILTER: Initialize scale parameters and last_loc based on min and max of data  */
 
 			if (F.robust || (F.filter_type == FILTER1D_MEDIAN) ) {
-				for (i = 0; i < F.n_cols; i++) {
+				for (i = 0; i < F.n_cols; ++i) {
 					F.min_scl[i] = 0.0;
 					F.max_scl[i] = 0.5 * (F.max_loc[i] - F.min_loc[i]);
 					F.last_scl[i] = 0.5 * F.max_scl[i];
