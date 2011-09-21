@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-09-20	pwessel
+	* meca:			Added missing -A to the synopsis of psvelo.c
+
 2011-09-20	fwobbe
 	* {dbase,gshhs,imgsrc,meca,mgd77,potential,segyprogs,sph,spotter,x2sys,}Makefile:
 				Add rm -rf *.dSym to clean targets. Do not generate dSYM
