@@ -3,10 +3,11 @@
 -----------------------------------------------------------------------------------------
 
 2011-09-21	fwobbe
-	* gmtconvert.c		Prevent memory access violation in GMT_report
-	* pswiggle.txt		Removed old option -N from synopsis
+	* gmtconvert.c:		Prevent memory access violation in GMT_report
+	* pswiggle.txt:		Removed old option -N from synopsis
 
 2011-09-21	remko
+	* common_options.txt:	Added missing -Xf, -Yf
 	* pscoast.c:		Set default fill colour to same as set by -B+g
 	* test/pscoast/{placement,pseudo}.sh:	New tests by Ken McLean
 
