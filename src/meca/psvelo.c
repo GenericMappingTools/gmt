@@ -119,7 +119,7 @@ GMT_LONG GMT_psvelo_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the psvelo synopsis and optionally full usage information */
 
 	GMT_message (GMT,"psvelo %s - Plot velocity vectors, crosses, and wedges on maps\n\n", GMT_VERSION);
-	GMT_message (GMT,"usage: psvelo [<table>] %s %s [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
+	GMT_message (GMT,"usage: psvelo [<table>] %s %s [-A<awidth>/<alength>/<hwidth>] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
 	GMT_message (GMT, "\t[-G<fill>] [-K] [-L] [-N] [-O]\n");
 	GMT_message (GMT, "\t[-P] [-S<symbol><scale><fontsize>] [%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
