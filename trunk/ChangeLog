@@ -3,6 +3,10 @@
 -----------------------------------------------------------------------------------------
 
 2011-09-21	fwobbe
+	* filter1d.c:		Fixed a bug that caused incomplete output of successive
+				segments. Cleaned up code (use prefix operator). Removed
+				expensive while constructs to speed up large start/stop
+				times in -T
 	* gmtconvert.c:		Prevent memory access violation in GMT_report
 	* pswiggle.txt:		Removed old option -N from synopsis
 
