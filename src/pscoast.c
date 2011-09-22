@@ -656,8 +656,8 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (GMT_OK);
 		}
 
-		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 	}
 
 	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = TRUE;

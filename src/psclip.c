@@ -224,7 +224,6 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->C.active && !GMT->current.map.frame.init) {
 		GMT_plotinit (GMT, options);
-		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 		GMT_plotend (GMT);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
