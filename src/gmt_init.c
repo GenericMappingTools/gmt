@@ -6560,8 +6560,11 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 		for (j = strlen (text); j > 0 && text[j] != '/'; j--);;
 		if (j == 0) {	/* No slash, i.e., no symbol size given */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+#if 0
+			/* Removed because it produced erroneous result in example 20 */
 			if (p->size_x == 0.0)		/* It may still come out as zero from the above line */ 
 				p->size_x = p->given_size_x = GMT_to_inch (C, "1");
+#endif
 			n = sscanf (text, "%c%s", &symbol_type, text_cp);
 			col_off++;
 		}
