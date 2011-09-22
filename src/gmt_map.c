@@ -1957,7 +1957,7 @@ double gmt_left_circle (struct GMT_CTRL *C, double y)
 	return (C->current.map.half_width - d_sqrt (C->current.proj.r * C->current.proj.r - y * y));
 }
 
-double GMT_right_circle (struct GMT_CTRL *C, double y)
+double gmt_right_circle (struct GMT_CTRL *C, double y)
 {
 	/* y -= C->current.proj.r; */
 	y -= C->current.proj.origin[GMT_Y];
@@ -2592,7 +2592,7 @@ GMT_LONG gmt_map_init_polar (struct GMT_CTRL *C)
 	}
 	if (GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI])) C->current.proj.edge[1] = C->current.proj.edge[3] = FALSE;
 	C->current.map.left_edge = (PFD) gmt_left_circle;
-	C->current.map.right_edge = (PFD) GMT_right_circle;
+	C->current.map.right_edge = (PFD) gmt_right_circle;
 	C->current.proj.fwd = (PFL) GMT_polar;
 	C->current.proj.inv = (PFL) GMT_ipolar;
 	C->current.map.is_world = FALSE;	/* There is no wrapping around here */
@@ -2942,7 +2942,7 @@ GMT_LONG gmt_map_init_stereo (struct GMT_CTRL *C) {
 			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
 		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) GMT_right_circle;
+		C->current.map.right_edge = (PFD) gmt_right_circle;
 	}
 
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[3]);
@@ -3582,7 +3582,7 @@ GMT_LONG gmt_map_init_lambeq (struct GMT_CTRL *C) {
 			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
 		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) GMT_right_circle;
+		C->current.map.right_edge = (PFD) gmt_right_circle;
 	}
 
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[3]);
@@ -3673,7 +3673,7 @@ GMT_LONG gmt_map_init_ortho (struct GMT_CTRL *C) {
 			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
 		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) GMT_right_circle;
+		C->current.map.right_edge = (PFD) gmt_right_circle;
 	}
 
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[3]);
@@ -3764,7 +3764,7 @@ GMT_LONG gmt_map_init_genper (struct GMT_CTRL *C) {
 		C->current.map.clip = (PFL) gmt_radial_clip;
 		C->current.map.outside = (PFL) gmt_radial_outside;
 		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) GMT_right_circle;
+		C->current.map.right_edge = (PFD) gmt_right_circle;
 
 		if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 
@@ -3871,7 +3871,7 @@ GMT_LONG gmt_map_init_gnomonic (struct GMT_CTRL *C) {
 			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
 		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) GMT_right_circle;
+		C->current.map.right_edge = (PFD) gmt_right_circle;
 	}
 
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[3]);
@@ -3943,7 +3943,6 @@ GMT_LONG gmt_map_init_azeqdist (struct GMT_CTRL *C) {
 			C->common.R.wesn[YHI] = 90.0;
 			xmax = ymax = C->current.proj.rho_max * C->current.proj.EQ_RAD;
 			xmin = ymin = -xmax;
-			xmax = ymax = -xmin;
 			C->current.map.outside = (PFL) gmt_radial_outside;
 			C->current.map.crossing = (PFL) gmt_radial_crossing;
 			C->current.map.overlap = (PFL) gmt_radial_overlap;
@@ -3951,7 +3950,7 @@ GMT_LONG gmt_map_init_azeqdist (struct GMT_CTRL *C) {
 			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
 		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) GMT_right_circle;
+		C->current.map.right_edge = (PFD) gmt_right_circle;
 	}
 
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[3]);
@@ -4113,7 +4112,7 @@ GMT_LONG gmt_map_init_grinten (struct GMT_CTRL *C) {
 		C->current.map.overlap = (PFL) gmt_wesn_overlap;
 		C->current.map.clip = (PFL) GMT_wesn_clip;
 		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) GMT_right_circle;
+		C->current.map.right_edge = (PFD) gmt_right_circle;
 		C->current.map.frame.horizontal = 2;
 		C->current.proj.polar = TRUE;
 	}
@@ -7020,7 +7019,6 @@ GMT_LONG gmt_init_three_D (struct GMT_CTRL *C) {
 
 	switch (C->current.proj.projection) {
 		case GMT_LINEAR:
-		case GMT_POLAR:
 		case GMT_MERCATOR:
 		case GMT_OBLIQUE_MERC:
 		case GMT_CYL_EQ:
@@ -7029,6 +7027,7 @@ GMT_LONG gmt_init_three_D (struct GMT_CTRL *C) {
 		case GMT_MILLER:
 			easy = TRUE;
 			break;
+		case GMT_POLAR:
 		case GMT_LAMBERT:
 		case GMT_TM:
 		case GMT_UTM:
@@ -7071,15 +7070,34 @@ GMT_LONG gmt_init_three_D (struct GMT_CTRL *C) {
 		for (i = 0; i < 4; i++) {
 			GMT_xy_to_geo (C, &C->current.proj.z_project.corner_x[i], &C->current.proj.z_project.corner_y[i], xx[i], yy[i]);
 			GMT_xyz_to_xy (C, xx[i], yy[i], GMT_z_to_zz(C, C->common.R.wesn[ZLO]), &x, &y);
-			C->current.proj.z_project.ymin = MIN (C->current.proj.z_project.ymin, y);
-			C->current.proj.z_project.ymax = MAX (C->current.proj.z_project.ymax, y);
 			C->current.proj.z_project.xmin = MIN (C->current.proj.z_project.xmin, x);
 			C->current.proj.z_project.xmax = MAX (C->current.proj.z_project.xmax, x);
+			C->current.proj.z_project.ymin = MIN (C->current.proj.z_project.ymin, y);
+			C->current.proj.z_project.ymax = MAX (C->current.proj.z_project.ymax, y);
 			GMT_xyz_to_xy (C, xx[i], yy[i], GMT_z_to_zz(C, C->common.R.wesn[ZHI]), &x, &y);
-			C->current.proj.z_project.ymin = MIN (C->current.proj.z_project.ymin, y);
-			C->current.proj.z_project.ymax = MAX (C->current.proj.z_project.ymax, y);
 			C->current.proj.z_project.xmin = MIN (C->current.proj.z_project.xmin, x);
 			C->current.proj.z_project.xmax = MAX (C->current.proj.z_project.xmax, x);
+			C->current.proj.z_project.ymin = MIN (C->current.proj.z_project.ymin, y);
+			C->current.proj.z_project.ymax = MAX (C->current.proj.z_project.ymax, y);
+		}
+	}
+	else if (C->current.proj.r > 0.0) {	/* Do not think the next four lines mean anything in this case, just copied from the general case */
+		C->current.proj.z_project.corner_x[0] = C->current.proj.z_project.corner_x[3] = (C->current.proj.xyz_pos[GMT_X]) ? C->common.R.wesn[XLO] : C->common.R.wesn[XHI];
+		C->current.proj.z_project.corner_x[1] = C->current.proj.z_project.corner_x[2] = (C->current.proj.xyz_pos[GMT_X]) ? C->common.R.wesn[XHI] : C->common.R.wesn[XLO];
+		C->current.proj.z_project.corner_y[0] = C->current.proj.z_project.corner_y[1] = (C->current.proj.xyz_pos[GMT_Y]) ? C->common.R.wesn[YLO] : C->common.R.wesn[YHI];
+		C->current.proj.z_project.corner_y[2] = C->current.proj.z_project.corner_y[3] = (C->current.proj.xyz_pos[GMT_Y]) ? C->common.R.wesn[YHI] : C->common.R.wesn[YLO];
+		for (i = 0; i < 360; i++) {	/* Go around the circle */
+			sincosd (i * 1.0, &y, &x);
+			GMT_xyz_to_xy (C, C->current.proj.r * (1.0 + x), C->current.proj.r * (1.0 + y), GMT_z_to_zz(C, C->common.R.wesn[ZLO]), &x, &y);
+			C->current.proj.z_project.xmin = MIN (C->current.proj.z_project.xmin, x);
+			C->current.proj.z_project.xmax = MAX (C->current.proj.z_project.xmax, x);
+			C->current.proj.z_project.ymin = MIN (C->current.proj.z_project.ymin, y);
+			C->current.proj.z_project.ymax = MAX (C->current.proj.z_project.ymax, y);
+			GMT_xyz_to_xy (C, C->current.proj.r * (1.0 + x), C->current.proj.r * (1.0 + y), GMT_z_to_zz(C, C->common.R.wesn[ZHI]), &x, &y);
+			C->current.proj.z_project.xmin = MIN (C->current.proj.z_project.xmin, x);
+			C->current.proj.z_project.xmax = MAX (C->current.proj.z_project.xmax, x);
+			C->current.proj.z_project.ymin = MIN (C->current.proj.z_project.ymin, y);
+			C->current.proj.z_project.ymax = MAX (C->current.proj.z_project.ymax, y);
 		}
 	}
 	else {
