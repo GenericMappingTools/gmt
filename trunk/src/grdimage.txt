@@ -7,7 +7,7 @@
 .SH NAME
 grdimage \- Project grids or images and plot them on maps
 .SH SYNOPSIS
-BD(grdimage) IT(grd_z) | IT(grd_r grd_g grd_b) [OPT(A)<IT(out_img=driver)>]  OPT(C)IT(cptfile) [ OPT(D)[BD(r)] ] GMT_J_OPT 
+BD(grdimage) IT(grd_z) | IT(grd_r grd_g grd_b) [ OPT(A)IT(out_img)BD(=)IT(driver) ]  OPT(C)IT(cptfile) [ OPT(D)[BD(r)] ] GMT_J_OPT 
 [ GMT_B_OPT ] [ OPT(Ei)[|IT(dpi)] ] [ OPT(G)[BD(f)|BD(b)]IT(color) ] [ OPT(I)IT(intensfile) ] 
 [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
 [ GMT_Rgeoz_OPT ] [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] 
@@ -48,9 +48,10 @@ OPT(C)IT(cptfile)
 name of the color palette table (for IT(grd_z) only).
 #include "explain_-J.txt"
 .SH OPTIONAL ARGUMENTS
-OPT(A)
-With GDAL aware versions save image in a raster format instead of postscript. Append =<IT(driver)> to select the
-image format. The IT(driver) is the driver code name used by GDAL. For example OPT(A)img.tif=GTiff will write a GeoTiff
+.TP
+OPT(A)IT(out_img)BD(=)IT(driver)
+With GDAL aware versions: save image in a raster format instead of postscript. Append IT(out_img)BD(=)IT(driver) to select the
+file name and image format. The IT(driver) is the driver code name used by GDAL. For example, OPT(A)img.tif=GTiff will write a GeoTiff
 image if the subset of GMT syntax projections that is currently possible to translate into the PROJ4 syntax allows it,
 or a plain tiff file otherwise. Note: any vector elements are lost. 
 #include "explain_-B.txt"
