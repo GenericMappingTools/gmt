@@ -424,6 +424,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 
 	if (F->out_at_time) {
 		/* populate F->t_start and F->t_stop */
+		double	t_shift;
 		if (F->t_start_t < t_0) /* user defined t_start_t outside bounds */
 			F->t_start = t_0;
 		else
@@ -440,7 +441,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		}
 
 		/* align F->t_start and F->t_stop to F->t_int */
-		double t_shift = F->t_int - fmod (F->t_start - F->t_start_t, F->t_int);
+		t_shift = F->t_int - fmod (F->t_start - F->t_start_t, F->t_int);
 		if ( fabs (t_shift - F->t_int) < GMT_SMALL ) t_shift=0; /* avoid values close to F->t_int */
 		F->t_start += t_shift; /* make F->t_start - F->t_start_t an integral multiple of F->t_int */
 		t_shift = fmod (F->t_stop - F->t_start_t, F->t_int);
