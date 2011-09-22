@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-09-22	remko
+	* psclip.c, pscoast.c, grdcontour.c:	Changed order GMT_plotcanvas and
+				GMT_plane_perspective.
+	* gmt_plot.c:		Added a new way to determine the edges of a plot when circular.
+
 2011-09-21	pwessel
 	* pstext.txt:		Removed old -S from examples
 
