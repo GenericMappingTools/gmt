@@ -740,8 +740,10 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No data within specified region\n");
 		if (make_plot) {
 			GMT_plotinit (GMT, options);
+			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 			GMT_map_basemap (GMT);
+			GMT_plane_perspective (GMT, -1, 0.0);
 			GMT_plotend (GMT);
 		}
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
@@ -862,8 +864,10 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No contours found\n");
 		if (make_plot) {
 			GMT_plotinit (GMT, options);
+			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 			GMT_map_basemap (GMT);
+			GMT_plane_perspective (GMT, -1, 0.0);
 			GMT_plotend (GMT);
 		}
 		GMT_free (GMT, contour);
