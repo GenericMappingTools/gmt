@@ -141,6 +141,7 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 				break;
 			case 'S':	/* Suppress/no-suppress NaNs on output */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -S is deprecated; use -s instead.\n");
+				GMT->current.io.io_nan_ncols = 1;		/* Default is that single z column */
 				GMT->current.setting.io_nan_mode = 1;	/* Plain -S */
 				if (opt->arg[0] == 'r') GMT->current.setting.io_nan_mode = 2;
 				GMT->common.s.active = TRUE;
