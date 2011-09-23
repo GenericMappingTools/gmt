@@ -846,9 +846,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) 
 			if (GMT->current.proj.proj4[k].id == GMT->current.proj.projection) id = k;
 		if (id >= 0) {			/* Valid projection for creating world file info */
-			char *pstr = NULL;
 			to_GDALW->P.active = TRUE;
-			to_GDALW->P.ProjectionRefPROJ4 = GMT_export2proj4 (GMT, pstr);
+			to_GDALW->P.ProjectionRefPROJ4 = GMT_export2proj4 (GMT);
 			if (to_GDALW->P.ProjectionRefPROJ4[1] == 'x' && to_GDALW->P.ProjectionRefPROJ4[2] == 'y')	/* -JX. Forget conversion */
 				to_GDALW->P.active = FALSE;
 		}
