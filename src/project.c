@@ -136,7 +136,7 @@ double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p,
 	GMT_cross3v (GMT, x, p, c);
 	GMT_normalize3v (GMT, c);
 	if (!generate) GMT_memcpy (c, x, 3, double);
-	GMT_cart_to_geo (GMT, clat, clon, c, TRUE);	/* return the possibly adjusted center  */
+	/* this returns wrong center coordinates: GMT_cart_to_geo (GMT, clat, clon, c, TRUE);	* return the possibly adjusted center  */
 	cp = GMT_dot3v (GMT, p, c);
 	sin_lat_to_pole = d_sqrt (1.0 - cp * cp);
 	return (sin_lat_to_pole);
