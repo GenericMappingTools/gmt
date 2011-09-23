@@ -4902,10 +4902,11 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 		if (sscanf (line, "%s %[^\n]", option, value) != 2) continue;	/* Quietly skip malformed lines */
 		if (!value[0]) continue;	/* No argument found */
 		if (option[0] == 'C') {	/* Read clip level */
-			C->current.ps.clip_level = atoi(value);
+			C->current.ps.clip_level = atoi (value);
 			continue;
 		}
 		if ((id = GMT_hash_lookup (C, option, unique_hashnode, GMT_N_UNIQUE, GMT_N_UNIQUE)) < 0) continue;	/* Quietly skip malformed lines */
+		if (C->init.history[id]) free ((void *)C->init.history[id]);
 		C->init.history[id] = strdup (value);
 	}
 
@@ -5270,7 +5271,10 @@ GMT_LONG GMT_Complete_Options (struct GMT_CTRL *C, struct GMT_OPTION *options)
 			if (opt->arg && opt->arg[0]) {	/* Gave -J<code>[<args>] so we either use or update history and continue */
 				str[1] = opt->arg[0];
 				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
-				if (str[1] != 'Z' && str[1] != 'z' && remember) C->init.history[id] = strdup (&str[1]);
+				if (str[1] != 'Z' && str[1] != 'z' && remember) {
+					if (C->init.history[id]) free ((void *)C->init.history[id]);
+					C->init.history[id] = strdup (&str[1]);
+				}
 				if (opt->arg[1]) update = TRUE;	/* Gave -J<code><args> so we want to update history and continue */
 			}
 			else {
@@ -5287,13 +5291,10 @@ GMT_LONG GMT_Complete_Options (struct GMT_CTRL *C, struct GMT_OPTION *options)
 			if (opt->arg && opt->arg[0]) update = TRUE;	/* Gave -R<args>, -B<args> etc. so we we want to update history and continue */
 		}
 		if (update) {	/* Gave -J<code><args>, -R<args>, -B<args> etc. so we update history and continue */
-			if (remember) C->init.history[id] = strdup (opt->arg);
-#if 0
 			if (remember) {
-				C->init.history[id] = realloc((void *)C->init.history[id], (size_t)(strlen(opt->arg) + 1));
-				strcpy(C->init.history[id], opt->arg);
+				if (C->init.history[id]) free ((void *)C->init.history[id]);
+				C->init.history[id] = strdup (opt->arg);
 			}
-#endif
 		}
 		else {	/* Gave -J<code>, -R, -B etc. so we complete the option and continue */
 			if (!C->init.history[id]) Return;
@@ -5573,6 +5574,7 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *i
 		GMT_LONG k, n_int[4];
 		char *list = "aifg";
 		if (!(GMT_access (C, &in[1], R_OK))) {
+			if (A->file_custom) free ((void *)A->file_custom);
 			A->file_custom = strdup (&in[1]);
 			A->special = GMT_CUSTOM;
 			if (gmt_init_custom_annot (C, A, n_int)) return (-1);	/* See what ticks, anots, gridlines etc are requested */
@@ -7750,6 +7752,7 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 #endif
 #endif
 	C = (struct GMT_CTRL *)New_GMT_Ctrl ();		/* Allocate and initialize a new common control structure */
+	if (C->init.progname) free ((void *)C->init.progname);		/* Free up any prior program name */
 	C->init.progname = strdup (session);		/* We use the calling programs session name as program name */
 	C->init.module_name = module_name;		/* This will be reset by the GMT modules we call */
 
