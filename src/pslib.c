@@ -516,6 +516,7 @@ PSL_LONG PSL_endsession (struct PSL_CTRL *PSL)
 	PSL_free (PSL, PSL->internal.SHAREDIR);
 	PSL_free (PSL, PSL->internal.USERDIR);
 	PSL_free (PSL, PSL->init.encoding);
+	PSL_free (PSL, PSL->init.session);
 	PSL_free (PSL, PSL);
 	return (PSL_NO_ERROR);
 }
@@ -1473,8 +1474,8 @@ PSL_LONG PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double page_r
 	if (xyscales[1] != 0.0) PSL->init.magnify[1] = xyscales[1];	/* Change plot y magnifier */
 	if (page_rgb) PSL_rgb_copy (PSL->init.page_rgb, page_rgb);	/* Change media color */
 	if (PSL->init.encoding && encoding && strcmp (PSL->init.encoding, encoding)) {
-		free ((void *)PSL->init.encoding);
-		PSL->init.encoding = strdup (encoding);
+		PSL_free (PSL, PSL->init.encoding);
+		PSL->init.encoding = strdup (encoding); //free (PSL->init.encoding);
 	}
 	else if (!PSL->init.encoding)
 		PSL->init.encoding = (encoding) ? strdup (encoding) : strdup ("Standard");

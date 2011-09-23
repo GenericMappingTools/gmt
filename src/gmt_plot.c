@@ -3302,7 +3302,8 @@ void GMT_contlabel_plot (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 	}
 }
 
-char *GMT_export2proj4 (struct GMT_CTRL *C, char *pStrOut) {
+char *GMT_export2proj4 (struct GMT_CTRL *C) {
+	char *pStrOut = NULL;
 	char szProj4[512];
 	double scale_factor, false_easting = 0.0, false_northing = 0.0, a, b, f;
 
@@ -3516,10 +3517,11 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		else
 			strcpy(proj4name, C->current.proj.proj4[id].name);
 
+		pstr = GMT_export2proj4 (C);
 		PSL_command (P, "%%%%PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f %s\n", proj4name,
 			C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI],
-			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2], GMT_export2proj4 (C, pstr));
-		free((void *)pstr);
+			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2], pstr);
+		free(pstr);
 	}
 
 	/* Set layer transparency, if requested. Note that /SetTransparency actually sets the opacity, which is (1 - transparency) */
