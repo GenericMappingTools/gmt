@@ -783,7 +783,8 @@ PSL_LONG PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xs
 
 PSL_LONG PSL_free_nonmacro (struct PSL_CTRL *PSL, void **addr)
 {
-	if (!addr && *addr) free (*addr);
+	if (addr && *addr) 
+		free (*addr);
 	*addr = NULL;
 	return (PSL_NO_ERROR);
 }
