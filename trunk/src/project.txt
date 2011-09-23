@@ -82,9 +82,9 @@ to IT(xyzpqrs) [Default].  If both input and output are using ASCII format then 
 textstring(s).
 If the OPT(G) option is selected, the output will be IT(rsp).
 .TP
-OPT(G)IT(dist)
-IT(dist) Generate mode.  No input is read.  Create (IT(r), IT(s), IT(p)) output points every IT(dist) units of IT(p).  See 
-OPT(Q) option. Alternatively, append /IT(lat) for a small circle that goes through the center (OPT(C)) and end points (OPT(E));
+OPT(G)IT(dist)[/IT(lat)]
+Generate mode.  No input is read.  Create (IT(r), IT(s), IT(p)) output points every IT(dist) units of IT(p).  See 
+OPT(Q) option. Alternatively, append BD(/)IT(lat) for a small circle that goes through the center (OPT(C)) and end points (OPT(E));
 requires OPT(C) and OPT(E).  Note, the center and end point cannot be farther apart than 2*|IT(lat)|.
 .TP
 OPT(L)[BD(w)][IT(l_min)/IT(l_max)]
@@ -102,7 +102,7 @@ OPT(S)
 Sort the output into increasing IT(p) order.  Useful when projecting random data into a sequential profile.
 .TP
 OPT(T)IT(px)/IT(py)
-IT(px/py) sets the position of the roTation pole of the projection.  (Definition 3).
+IT(px/py) sets the position of the rotation pole of the projection.  (Definition 3).
 #include "explain_-V.txt"
 .TP
 OPT(W)IT(w_min)/IT(w_max)
