@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-09-23	jluis
+	* pslib.c:		PSL_free_nonmacro was actually not freeing any memory.
+
 2011-09-23	pwessel
 	* gmt_init.c:		Fixed memory leaks pointed out by Florian Wobbe.
 
