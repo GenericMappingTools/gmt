@@ -130,9 +130,10 @@ else
 	i=0
 	while [ $i -lt $n ]; do
 		i=`expr $i + 1`
-		line=`sed -n ${i}p $home/.gmtversions`
+		line=`sed -n 's/#.*//;'${i}p $home/.gmtversions`
+		comment=`sed -n ${i}'s/.*# *\(.*\)/ (\1)/p' $home/.gmtversions`
 		version=`basename $line`
-		echo "$i. Version $version" >&2
+		echo "$i. Version ${version}${comment}" >&2
 	done
 	echo "" >&2
 	v=-1
@@ -148,7 +149,7 @@ else
 			v=-1
 		fi
 	done
-	line=`sed -n ${v}p $home/.gmtversions`
+	line=`sed -n 's/#.*//;'${v}p $home/.gmtversions`
 	rm -f $home/this_gmt
 	ln -sf $line $home/this_gmt
 fi
