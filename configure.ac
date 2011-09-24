@@ -33,6 +33,16 @@ DOCDATE="November 2011"
 DOCYEAR="2011"
 GSHHS_VERSION=2.2.0
 SVN_VERSION=1
+dnl see whether subversion is installed
+AC_PATH_PROG([SVNVERSIONCOMMAND], [svnversion], [])
+dnl use svnversion to record the current repository revision only if
+dnl subversion is installed and we are in a working copy
+if test "$SVN_VERSION" != "0" && test -x "$SVNVERSIONCOMMAND"; then
+  SVN_VERSION_STRING=`"$SVNVERSIONCOMMAND" -n '.'`
+  if test "$SVN_VERSION_STRING" == "exported"; then
+    SVN_VERSION=0
+  fi
+fi
 dnl
 dnl -----------------------------------------------------------------
 dnl Specify the minimal supplement directories
@@ -84,6 +94,7 @@ AC_SUBST(MANDATE)
 AC_SUBST(FTPSITE)
 AC_SUBST(GSHHS_VERSION)
 AC_SUBST(SVN_VERSION)
+AC_SUBST(SVN_VERSION_STRING)
 AC_SUBST(GMT_MAJOR_VERSION)
 AC_SUBST(GMT_MINOR_VERSION)
 AC_SUBST(GMT_RELEASE_VERSION)
