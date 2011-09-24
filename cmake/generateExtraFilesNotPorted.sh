@@ -1,5 +1,5 @@
 #!/bin/bash
-#
+# 
 GMT_SOURCE_DIR="$1/src"
 AWK=$(which gawk || which awk)
 
