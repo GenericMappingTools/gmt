@@ -25,16 +25,15 @@
 
 #include "gmt.h"
 
+#if HAVE_SVN_VERSION
+#define SVN_SUFFIX "_r" SVN_VERSION_STRING
+#else
+#define SVN_SUFFIX ""
+#endif
+
 char *GMT_version ()
 {
 	static char text[GMT_TEXT_LEN256];
-#if SVN_VERSION
-	int svn_revision =
-#include "gmt_svn_revision.h"
-	;
-	sprintf (text, PACKAGE_VERSION "-%d" GMT_VER_64 GMT_VER_COMPAT, svn_revision);
-#else
-	sprintf (text, PACKAGE_VERSION GMT_VER_64 GMT_VER_COMPAT);
-#endif
+	sprintf (text, PACKAGE_VERSION SVN_SUFFIX GMT_VER_64 GMT_VER_COMPAT);
 	return (text);
 }
