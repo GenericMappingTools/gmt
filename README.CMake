@@ -1,35 +1,47 @@
 #
-#	Information for building GMT 5 with CMake
-#
 #	$Id$
 #
+#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+#	See LICENSE.TXT file for copying and redistribution conditions.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; version 2 or any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	Contact info: gmt.soest.hawaii.edu
+#-------------------------------------------------------------------------------
 
-#
-# Quick start:
-#
+Information for building GMT 5 with CMake
+
+1) Quick start:
 
 svn switch to cmake-build and cd into tree:
 
- mkdir build && cd build
- cmake -DCMAKE_INSTALL_PREFIX=gmt5 -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
- make -j8
+$ mkdir build
+$ cd build
+$ cmake -DCMAKE_INSTALL_PREFIX=gmt5 -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+$ make -j8
 
 Will build out-of-source in the the directory build.
 
- make install
+$ make install
  
 Installs a basic gmt in build/gmt5
 
-#
-# In more detail:
-#
+
+2) In more detail:
 
 See http://www.cmake.org/cmake/help/cmake-2-8-docs.html
 
 CMAKE_BUILD_TYPE can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 
 cmake makes a copy of cmake/ConfigUserTemplate.cmake and creates a new file
-cmake/ConfigUser.cmake if it does not already exist. You can configure aditional
+cmake/ConfigUser.cmake if it does not already exist. You can configure additional
 options there.
 
 There are two configuration files:
@@ -42,19 +54,17 @@ NOTE: If you want to change CMake behaviour just for yourself then modify the
       "ConfigUser.cmake" file (not "ConfigDefault.cmake").
 
 
-#
-# TODO list
-#
+3) TODO list
 
-* replace shell scripts, grep, sed, awk, etc. by cmake macros (this
+* Replace shell scripts, grep, sed, awk, etc. by cmake macros (this
   is necessary for cross platform compatibility)
 
-* clean up config.h.cmake gmt_version.h.cmake gmt_notposix.h.cmake
-   pslconfig.h.cmake
+* Clean up config.h.cmake gmt_version.h.cmake gmt_notposix.h.cmake
+  pslconfig.h.cmake
 
-* make exported cmake variables consistent GMT_...
+* Make exported cmake variables consistent GMT_...
 
-* add further subtrees
+* Add further subtrees
 
-* build targets for manpages, examples, doc, tests
+* Build targets for manpages, examples, doc, tests
 
