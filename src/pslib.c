@@ -147,7 +147,6 @@
 #include <time.h>
 #include <stdarg.h>
 #include "pslib.h"
-#include "pslconfig.h"
 #include "gmt_notunix.h"
 #include "gmt_notposix.h"
 #include "gmt_math.h"
