@@ -10,7 +10,7 @@
 
 svn switch to cmake-build and cd into tree:
 
- md build && cd build
+ mkdir build && cd build
  cmake -DCMAKE_INSTALL_PREFIX=gmt5 -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
  make -j8
 
