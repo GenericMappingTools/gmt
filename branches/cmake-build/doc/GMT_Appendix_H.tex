@@ -1,0 +1,239 @@
+%------------------------------------------
+%	$Id$
+%
+%	The GMT Documentation Project
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+%------------------------------------------
+%
+\chapter{Problems with display of \gmt\ \PS}
+\label{app:H}
+\thispagestyle{headings}
+
+\GMT\ creates valid (so far as we know) Adobe \PS\
+Level 2.  It does not use operators specific to Level 3 and
+should therefore produce output that should print on all \PS\ printers\footnote{Note, however, that the \Opt{Q} option in \GMTprog{grdimage}
+will exercise a \PS\ Level 3 feature called colormasking.}.  Sometimes unexpected things
+happen when \GMT\ output is sent to certain printers or displays.
+This section lists some things we have learned from experience,
+and some work-arounds.  Note that many of these lessons are now rather old so hopefully
+these workarounds no longer apply to anybody...
+
+\section{\PS\ driver bugs}
+\index{PostScript@\PS!driver bugs}
+
+When you try to display a \PS\ file on a device,
+such as a printer or your screen, then a program called a
+\PS\ device driver has to compute which device
+pixels should receive which colors (black or white in the case
+of a simple laser printer) in order to display the file.  At
+this stage, certain device-dependent things may happen.  These
+are not limitations of \GMT\ or \PS, but of the
+particular display device.  The following bugs are known to us
+based on our experiences:
+
+\begin{enumerate}
+\index{PostScript@\PS!Sun SPARCprinter bug}
+
+\item 	Early versions of the Sun SPARCprinter software
+caused linewidth-dependent path displacement.  We reported
+this bug and it has been fixed in newer versions of the software.
+Try using \GMTprog{psxy} to draw $y = f(x)$ twice, once with a
+thin pen (\Opt{W}1) and once with a fat pen (\Opt{W}10);
+if they do not plot on top of each other, you have this kind
+of bug and need new software.  The problem may also show up
+when you plot a mixture of solid and dashed (or dotted) lines
+of various pen thickness
+
+\index{PostScript@\PS!HP Laserjet 4M bug}
+
+\item The first version of the HP Laserjet 4M (prior to Aug--93)
+had bugs in the driver program.  The old one was
+\PS\ SIMM, part number C2080-60001; the new one
+is called \PS\ SIMM, part number C2080-60002.
+You need to get this one plugged into your printer if you have
+an HP LaserJet 4M.
+
+\index{PostScript@\PS!limitations|(}
+
+\item Apple Laserwriters with the older versions of Apple's
+\PS\ driver will give the error ``limitcheck''
+and fail to plot when they encounter a path exceeding about
+1000--1500 points.  Try to get a newer driver from Apple, but
+if you can't do that, set the parameter MAX\_L1\_PATH to
+1000--1500 or even smaller in the file \filename{src/pslib\_inc.h}
+and recompile \GMT.  The number of points in a \PS\
+path can be arbitrarily large, in principle; \GMT\ will only
+create paths longer than MAX\_L1\_PATH if the path represents
+a filled polygon or clipping path.  Line-drawings (no fill)
+will be split so that no segment exceeds MAX\_L1\_PATH.
+This means \GMTprog{psxy} \Opt{G} will issue a warning when you
+plot a polygon with more than MAX\_L1\_PATH points in it.  It is
+then your responsibility to split the large polygon into several
+smaller segments.  If \GMTprog{pscoast} gives such warnings and the
+file fails to plot you may have to select one of the lower
+resolution databases  The path limitation exemplified by these
+Apple printers is what makes the higher-resolution coastlines
+for \GMTprog{pscoast} non-trivial:  such coastlines have to be
+organized so that fill operations do not generate excessively
+large paths.  Some HP \PS\ cartridges for the
+Laserjet III also have trouble with paths exceeding 1500
+points; they may successfully print the file, but it can take
+all night!
+\index{PostScript@\PS!limitations|)}
+
+\index{PostScript@\PS!Sun pageview}
+
+\item 8-bit color screen displays (and programs which use only
+8-bits, even on 24-bit monitors, such as Sun's \progname{pageview} under
+OpenWindows) may not dither cleverly, and so the color they show you
+may not resemble the color your \PS\ file is asking
+for.  Therefore, if you choose colors you like on the screen,
+you may be surprised to find that your plot looks different on
+the hardcopy printer or film writer.  The only thing you can
+do is be aware of this, and make some test cases on your hardcopy
+devices and compare them with the screen, until you get used
+to this effect.  (Each hardcopy device is also a little
+different, and so you will eventually find that you want to
+tune your color choices for each device.)  The rgb color cube
+in example 11 may help.
+
+\item Some versions of Sun's OpenWindows program \progname{pageview}
+have only a limited number of colors available; the number
+can be increased somewhat by starting \progname{openwin} with the
+option ``\texttt{openwin -cubesize large}''.
+
+\item Finally, \progname{pageview} seem to have problems understanding
+the \texttt{setpagedevice} operator.  We recommend you only use
+\progname{pageview} on EPS files or use \progname{ghostview} instead.
+
+\index{PostScript@\PS!CMYK and RGB|(}
+
+\item Many color hardcopy devices use CMYK color systems. \GMT\
+\PS\ uses RGB (even if your CPT files are using HSV).
+The three coordinates of RGB space can be mapped into three
+coordinates in CMY space, and in theory K (black) is superfluous.
+But it is hard to get CMY inks to mix into a good black or gray,
+so these printers supply a black ink as well, hence CMYK.  The
+\PS\ driver for a CMYK printer should be smart
+enough to compute what portion of CMY can be drawn in K, and
+use K for this and remove it from CMY; however, some of them
+aren't.
+
+\item In early releases of \GMT\ we always used the \PS\
+command \texttt{r g b setrgbcolor} to specify colors, even if the color
+happened to be a shade of gray ($r=g=b$) or black ($r=g=b=0$).  One
+of our users found that black came out muddy brown when he used
+\progname{FreedomOfPress} to make a Versatec plot of a \GMT\ map.
+He found that if he used the \PS\ command \texttt{g setgray} (where $g$
+is a graylevel) then the problem went away.
+Apparently, his installation of \progname{FreedomOfPress} uses only CMY with
+the command \texttt{setrgbcolor}, and so \texttt{0 0 0 setrgbcolor}
+tries to make black out of CMY instead of K.  To fix this, in
+release 2.1 of \GMT\ we changed some routines in \filename{pslib.c}
+to check if ($r=g$ and $r=b$), in which case \texttt{g setgray} is
+used instead of \texttt{r g b setrgbcolor}.
+
+\item Recent experience with some Tektronix Phaser printers and
+with commercial printing shops has shown that this substitution
+creates problems precisely opposite of the problems our Versatec
+user has.  The Tektronix and commercial (we think it was a Scitex)
+machines do not use K when you say \texttt{0 setgray} but they do when
+you say \texttt{0 0 0 setrgbcolor}.  We believe that these problems are
+likely to disappear as the various software developers make their
+codes more robust.  Note that this is not a fault with \GMT:
+$r = g = b = 0$ means black and should plot that way.
+Thus, the \GMT\ source code as shipped to you checks whether $r=g$
+and $r=b$, in which case it uses \texttt{setgray}, else \texttt{setrgbcolor}.
+If your gray tones are not being drawn with K, you have two
+work-around options: (1) edit the source for \filename{pslib.c}
+or (2) edit your \PS\ file and try using \texttt{setrgbcolor}
+in all cases.  The simplest way to do so is to redefine the
+\texttt{setgray} operator to use \texttt{setrgbcolor}.
+Insert the line \\
+
+\indent \texttt{/setgray  \{dup dup setrgbcolor\} def} \\
+
+immediately following the first line in the file (starts with
+\%!PS.) 
+
+\item Some color film writers are very sensitive to the brand
+of film.  If black doesn't look black on your color slides, try
+a different film.
+\index{PostScript@\PS!CMYK and RGB|)}
+
+\end{enumerate}
+
+\section{European characters}
+\index{Text!European}
+\index{Characters!European}
+Note for users of \progname{pageview} in Sun OpenWindows: \GMT\ now
+offers some octal escape sequences to load European alphabet
+characters in text strings (see Section~\ref{sec:escape}).  When
+this feature is enabled, the header on \GMT\ \PS\ output includes
+a section defining special fonts.  The definition is added to
+the header whether or not your plot actually uses the fonts.
+
+Users who view their \GMT\ \PS\ output using
+\progname{pageview} in OpenWindows on Sun computers or user older
+laserwriters may have difficulties with the European font
+definition.  If your installation of OpenWindows followed
+a space-saving suggestion of Sun, you may have excluded the
+European fonts, in which case \progname{pageview} will fail
+to render your plot.
+
+Ask your system administrator about this, or run this simple
+test: (1) View a \GMT\ \PS\ file with \progname{pageview}.
+If it comes up OK, you will be fine.  If it comes up blank,
+open the ``Edit PostScript'' button and examine the lower
+window for error messages.  (The European font problem generates
+lots of error messages in this window).  (2)  Verify that the
+\PS\ file is OK, by sending it to a laserwriter
+and making sure it comes out.  (3)  If the \PS\
+file is OK but it chokes \progname{pageview}, then edit the \PS\
+file, cutting out everything between the lines: \\
+
+\noindent
+\%\%\%\%\% START OF EUROPEAN FONT DEFINITION \%\%\%\%\% \\
+$<$bunch of definitions$>$ \\
+\%\%\%\%\% END OF EUROPEAN FONT DEFINITION \%\%\%\%\% \\
+
+Now try \progname{pageview} on the edited version.  If it now comes
+up, you have a limited subset of OpenWindows installed.  If
+you discover that these fonts cause you trouble, then you can
+edit your \filename{gmt.conf} file to set \textbf{PS\_CHAR\_ENCODING} = Standard,
+which will suppress the printing of this definition in the
+\GMT\ \PS\ header.  You can
+make output which will be viewable in \progname{pageview} without
+any editing.  However, you would have to reset this to TRUE
+before attempting to use European fonts, and then the output will
+become un-\progname{pageview}-able again.  If you try to
+concatenate segments of \GMT\ \PS\ made with and without the
+European fonts enabled, then you may find that you have problems,
+either with the definition, or because you ask for something
+not defined.
+
+\section{Hints}
+\index{PostScript@\PS!\GMT\ hints}
+
+When making images and perspective views of large amounts of
+data, the \GMT\ programs can take some time to run, the resulting
+\PS\ files can be very large, and the time to display
+the plot can be long.  Fine tuning a plot script can take lots
+of trial and error.  We recommend using \GMTprog{grdsample} to make
+a low resolution version of the data files you are plotting, and
+practice with that, so it is faster; when the script is perfect,
+use the full-resolution data files.  We often begin building a
+script using only \GMTprog{psbasemap} or \GMTprog{pscoast} to get
+the various plots oriented correctly on the page; once this works
+we replace the \GMTprog{psbasemap} calls with the actually desired
+\GMT\ programs.
+
+If you want to make color shaded relief images and you haven't
+had much experience with it, here is a good first cut at the
+problem:  Set your \textbf{COLOR\_MODEL} to HSV using \GMTprog{gmtset}.  Use
+\GMTprog{makecpt} or \GMTprog{grd2cpt} to make a continuous color
+palette spanning the range of your data.  Use the \Opt{Nt}
+option on \GMTprog{grdgradient}.  Try the result, and then play with
+the tuning of the \filename{gmt.conf}, the CPT file, and
+the gradient file.

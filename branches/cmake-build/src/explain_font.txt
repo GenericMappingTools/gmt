@@ -1,0 +1,15 @@
+.SS SPECIFYING FONTS
+.TP
+IT(font)
+The attributes of text fonts as defined by IT(font) is a comma delimited list of
+IT(size), IT(fonttype) and IT(fill), each of which is optional.
+IT(size) is the font size (usually in points) but BD(c) or BD(i) can be added to indicate other units.
+IT(fonttype) is the name (case sensitive!) of the font or its equivalent numerical ID (e.g., Helvetica-Bold or 1).
+IT(fill) specifies the gray shade, color or pattern of the text (see SPECIFYING FILL above).
+Optionally, you may append BD(=)IT(pen) to the IT(fill) value in order to draw the text outline;
+if used you may optionally skip the text fill by setting it to BD(-).
+If any of the attributes is omitted their default or previous setting will be retained.
+.sp
+The 35 available fonts are:
+.sp
+#include "Fonts.i"

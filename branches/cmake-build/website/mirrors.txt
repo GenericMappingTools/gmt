@@ -1,0 +1,9 @@
+ftp://ftp.soest.hawaii.edu	SOEST	SOEST, Dept of Geology & Geophysics, Honolulu, Hawaii, USA
+ftp://ibis.grdl.noaa.gov	NOAA	NOAA, Lab for Satellite Altimetry, Silver Spring, Maryland, USA
+ftp://ftp.iris.washington.edu	IRIS	IRIS (Incorporated Research Institutions for Seismology), Seattle, Washington, USA
+ftp://ftp.iag.usp.br		IAG	IAG-USP, Dept of Geophysics, S&#227;o Paulo, Brazil
+ftp://ftp.geologi.uio.no	UIO	IFG, Dept of Geosciences, Oslo, Norway
+ftp://gd.tuwien.ac.at		VIENNA	Vienna U of Techology, Vienna, Austria
+ftp://ftp.scc.u-tokai.ac.jp	TOKAI	Tokai U, Shimizu, Japan
+ftp://mirror.geosci.usyd.edu.au	SYDNEY	EarthByte, School of Geosciences, U of Sydney, Australia
+ftp://gmt.mirror.ac.za		TENET	TENET, Tertiary Education & Research Networks of South Africa, South Africa

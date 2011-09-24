@@ -1,0 +1,16 @@
+# Crude representation of a closed polygon contained by Antarctica
+# $Id$
+-15	-73
+55	-67
+77	-70
+86	-68
+121	-67
+148	-69
+162	-72
+156	-77
+-160	-80
+-126	-76
+-88	-74
+-67	-73
+-30	-80
+-15	-73

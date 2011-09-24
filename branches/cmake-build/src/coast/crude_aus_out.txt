@@ -1,0 +1,11 @@
+# Crude representation of a closed polygon containing Australia
+# $Id$
+155	-40
+155	-24
+145	-9
+130	-9
+110	-20
+110	-36
+131	-36
+138	-40
+155	-40

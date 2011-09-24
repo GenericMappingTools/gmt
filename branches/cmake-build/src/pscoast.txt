@@ -1,0 +1,211 @@
+#include "common_options.txt"
+.TH PSCOAST 1 MANDATE GMT_STRING "Generic Mapping Tools"
+#define LEN_1   0.1
+#define SCALE_M1   OPT(Jm)0.1BD(i)
+#define LEN_2   1
+#define SCALE_M2   OPT(Jm)1BD(c)
+.SH NAME
+pscoast \- Plot continents, shorelines, rivers, and borders on maps
+.SH SYNOPSIS
+BD(pscoast) GMT_J_OPT GMT_Rgeoz_OPT 
+[ GMT_A_OPT ] [ GMT_B_OPT ] [ OPT(C)[BD(l)|BD(r)/]IT(fill) ] 
+[ OPT(D)IT(resolution)[BD(+)] ] [ OPT(G)IT(fill)|BD(c) ] 
+[ OPT(I)IT(river)[/IT(pen)] ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
+[ GMT_SCALE ] [ OPT(M) ] [ OPT(N)IT(border)[/IT(pen)] ] [ GMT_O_OPT ] 
+[ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)IT(fill)|BD(c) ] [ GMT_TROSE ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
+[ OPT(W)[IT(level)/]IT(pen) ] [ GMT_X_OPT ] [ GMT_Y_OPT ]
+[ GMT_bo_OPT ] [ GMT_c_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
+.SH DESCRIPTION
+BD(pscoast) plots grayshaded, colored, or textured land-masses [or water-masses] on maps and [optionally]
+draws coastlines, rivers, and political boundaries.  Alternatively, it can (1) issue clip paths that will
+contain all land or all water areas, or (2) dump the data to an ASCII table.  The data files come in 5 different resolutions:
+(BD(f))ull, (BD(h))igh, (BD(i))ntermediate, (BD(l))ow, and (BD(c))rude.  The full resolution files amount to more than 55 Mb
+of data and provide great detail; for maps of larger geographical extent it is more economical to use
+one of the other resolutions.  If the user selects to paint the land-areas and does not specify fill of
+water-areas then the latter will be transparent (i.e., earlier graphics drawn in those areas will not
+be overwritten).  Likewise, if the water-areas are painted and no land fill is set then the land-areas
+will be transparent.  A map projection must be supplied.  The IT(PostScript) code is written to standard output.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_-J.txt"
+#include "explain_-Rgeo.txt"
+#include "explain_-Rz.txt"
+.SH OPTIONAL ARGUMENTS
+#include "explain_-A.txt"
+#include "explain_-B.txt"
+.TP
+OPT(C)[BD(l)|BD(r)/]IT(fill)
+Set the shade, color, or pattern for lakes and river-lakes  [Default is the fill chosen for "wet" areas (OPT(S))].
+Optionally, specify separate fills by prepending BD(l)/ for lakes and BD(r)/ for river-lakes, repeating
+the OPT(C) option as needed.
+.TP
+OPT(D)IT(resolution)[BD(+)]
+Selects the resolution of the data set to use ((BD(f))ull, (BD(h))igh, (BD(i))ntermediate, (BD(l))ow, and (BD(c))rude).  The
+resolution drops off by 80% between data sets  [Default is BD(l)].  Append )+) to automatically select a lower resolution should
+the one requested not be available [abort if not found].
+.TP
+OPT(G)IT(fill)|BD(c)
+Select filling or clipping of "dry" areas.  Append the shade, color, or pattern;
+or use OPT(Gc) for clipping [Default is no fill].
+.TP
+OPT(I)IT(river)[/IT(pen)]
+Draw rivers.  Specify the type of rivers and [optionally] append pen attributes  [Default pen:
+width = 1, color = black, style = solid].
+.br
+Choose from the list of river types below; repeat option OPT(I) as often as necessary.
+.br
+	 0 = Double-lined rivers (river-lakes)
+.br
+	 1 = Permanent major rivers
+.br
+	 2 = Additional major rivers
+.br
+	 3 = Additional rivers
+.br
+	 4 = Minor rivers
+.br
+	 5 = Intermittent rivers - major
+.br
+	 6 = Intermittent rivers - additional
+.br
+	 7 = Intermittent rivers - minor
+.br
+	 8 = Major canals
+.br
+	 9 = Minor canals
+.br
+	10 = Irrigation canals
+.br
+	You can also choose from several preconfigured river groups:
+.br
+	 a = All rivers and canals (0-10)
+.br
+	 A = All rivers and canals except river-lakes (1-10)
+.br
+	 r = All permanent rivers (0-4)
+.br
+	 R = All permanent rivers except river-lakes (1-4)
+.br
+	 i = All intermittent rivers (5-7)
+.br
+	 c = All canals (8-10)
+.br
+#include "explain_-Jz.txt"
+#include "explain_-K.txt"
+#include "explain_-L_scale.txt"
+.TP
+OPT(M)
+Dumps a single multisegment ASCII (or binary, see GMT_bo_OPT) file to standard output.  No plotting occurs.
+Specify any combination of OPT(W), OPT(I), OPT(N).
+.TP
+OPT(N)IT(border)[/IT(pen)]
+Draw political boundaries.  Specify the type of boundary and [optionally] append pen attributes  [Default pen:
+width = 1, color = black, style = solid].
+.br
+Choose from the list of boundaries below.
+Repeat option OPT(N) as often as necessary.
+.br
+	1 = National boundaries
+.br
+	2 = State boundaries within the Americas
+.br
+	3 = Marine boundaries
+.br
+	a = All boundaries (1-3)
+.br
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+OPT(Q)
+Mark end of existing clip path.  No projection information is needed.
+Also supply OPT(X) and OPT(Y) settings if you have moved since the clip started.
+.TP
+OPT(S)IT(fill)|BD(c)
+Select filling or clipping of "wet" areas.  Append the shade, color, or pattern;
+or use OPT(Sc) for clipping [Default is no fill].
+#include "explain_-T_rose.txt"
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+.TP
+OPT(W)[IT(level)/]IT(pen)
+Draw shorelines [Default is no shorelines].  Append pen attributes  [Defaults:
+width = 1, color = black, style = solid] which apply to all four levels.  To set
+the pen for each level differently, prepend IT(level)/, where IT(level) is 1-4
+and represent coastline, lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
+Repeat OPT(W) as needed.  When specific level pens are set, those not listed will not
+be drawn [Default draws all levels; but see OPT(A)].
+#include "explain_-XY.txt"
+#include "explain_-bo.txt"
+#include "explain_-c.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To plot a green Africa with white outline on blue background, with permanent major rivers in thick blue pen, additional major rivers in thin blue pen, and national borders as dashed lines
+on a Mercator map at scale LEN_1 inch/degree, use
+.br
+.sp
+pscoast -R-30/30/-40/40 SCALE_M1 -B5 -I1/1p,blue -I2/0.25p,blue 
+-N1/0.25p,- -W0.25p,white -Ggreen -Sblue -P > africa.ps
+.br
+.sp
+To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a Mercator map at scale LEN_2 cm/degree, run
+.br
+.sp
+pscoast -R-30/-10/60/65 SCALE_M2 -B5 -Gp100/28 > iceland.ps
+.br
+.sp
+To initiate a clip path for Africa so that the subsequent colorimage of gridded topography is only
+seen over land, using a Mercator map at scale LEN_1 inch/degree, use
+.br
+.sp
+pscoast -R-30/30/-40/40 SCALE_M1 -B5 -Gc -P -K > africa.ps
+.br
+grdimage SCALE_M1 etopo5.nc -Ccolors.cpt -O -K >> africa.ps
+.br
+pscoast -Q -O >> africa.ps
+.sp
+BD(pscoast) will first look for coastline files in directory BD($GMT_SHAREDIR)/coast
+If the desired file is not found, it will look for the file
+BD($GMT_SHAREDIR)/coastline.conf.  This file may contain any number of records that
+each holds the full pathname of an alternative directory.  Comment lines (#) and blank lines
+are allowed.  The desired file is then sought for in the alternate directories.
+#include "explain_gshhs.txt"
+.SH BUGS
+The options to fill (OPT(C) OPT(G) OPT(S)) may not always work if the Azimuthal equidistant projection is
+chosen (OPT(Je)|BD(E)).  If the antipole of the projection is in the oceans it will most likely work.
+If not, try to avoid using projection center coordinates that are even multiples of the coastline
+bin size (1, 2, 5, 10, and 20 degrees for BD(f), BD(h), BD(i), BD(l), BD(c), respectively).  This projection is
+not supported for clipping.
+.br
+The political borders are for the most part 1970s-style but have been updated to reflect more recent
+border rearrangements in Europe and elsewhere.  Let us know if you find something out of date.
+.br
+The full-resolution coastlines are also from a digitizing effort in the 1970-80s and it is difficult
+to assess the accuracy. Users who zoom in close enough may find that the GSHHS coastline is not
+matching other data, e.g., satellite images, more recent coastline data, etc.  We are aware of such
+mismatches but cannot undertake band-aid solutions each time this occurs.
+.br
+Some users of BD(pscoast) will not be satisfied with what they find for the
+Antarctic shoreline.  In Antarctica, the boundary between ice and 
+ocean varies seasonally and inter-annually.  There are some areas of 
+permanent sea ice.  In addition to these time-varying ice-ocean 
+boundaries, there are also ice grounding lines where ice goes from 
+floating on the sea to sitting on land, and lines delimiting areas 
+of rock outcrop.  For consistency's sake, we have used the World\"'
+Vector Shoreline throughout the world in pscoast, as described in
+the BD(GMT) Cookbook Appendix K. Users who need specific boundaries
+in Antarctica should get the Antarctic Digital Database, prepared
+by the British Antarctic Survey, Scott Polar Research Institute,
+World Conservation Monitoring Centre, under the auspices of the
+Scientific Committee on Antarctic Research.  This data base contains
+various kinds of limiting lines for Antarctica and is available on
+CD-ROM.  It is published by the Scientific Committee on Antarctic
+Research, Scott Polar Research Institute, Lensfield Road, Cambridge
+CB2 1ER, United Kingdom.
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmt.conf (5),
+.IR gmtcolors (5),
+.IR grdlandmask (1),
+.IR psbasemap (1)

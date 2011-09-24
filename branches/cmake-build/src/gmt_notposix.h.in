@@ -1,0 +1,75 @@
+/*--------------------------------------------------------------------
+ *	$Id$
+ *
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; version 2 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Contact info: gmt.soest.hawaii.edu
+ *--------------------------------------------------------------------*/
+/*
+ * This include file contains ifdefs that tell us if this system has
+ * some of the several functions that are not part of POSIX but are
+ * often distributed anyway as part of ANSI C.  The set of defines
+ * below is automatically assigned by configure and determines if the
+ * required functions are present or not.  These macros are then used
+ * in gmt_math.h to choose between a function prototype (if found), an
+ * alternative GMT function, or simply a macro.  The purpose is to
+ * take advantage of the built-in functions if they exist and provide
+ * alternative definitions otherwise.  For some non-Unix Operating
+ * Systems, like Win32, these settings have already been hard-wired
+ * into gmt_notunix.h and _GMT_NOTPOSIX_H is defined there so we do not
+ * override those system-specific settings.
+ *
+ * Version:	5
+ */
+
+#ifndef _GMT_NOTPOSIX_H
+#define _GMT_NOTPOSIX_H
+
+/* >>> THIS SECTION WILL BE MODIFIED BY configure <<<
+ * >>> DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING!! <<<
+ * @configure_input@ */
+
+/* HAVE_<func> is undefined or defined as 1 depending on whether or
+ * not <func> is available on this system.  The default setting is undefined:
+ * none of the functions are available (the POSIX standard) */
+
+#undef HAVE_COPYSIGN
+#undef HAVE_LOG2
+#undef HAVE_LOG1P
+#undef HAVE_HYPOT
+#undef HAVE_ACOSH
+#undef HAVE_ASINH
+#undef HAVE_ATANH
+#undef HAVE_RINT
+#undef HAVE_IRINT
+#undef HAVE_ISNANF
+#undef HAVE_ISNAND
+#undef HAVE_ISNAN
+#undef HAVE_J0
+#undef HAVE_J1
+#undef HAVE_JN
+#undef HAVE_Y0
+#undef HAVE_Y1
+#undef HAVE_YN
+#undef HAVE_ERF
+#undef HAVE_ERFC
+#undef HAVE_SINCOS
+#undef HAVE_ALPHASINCOS
+#undef HAVE_GETPWUID
+#undef HAVE_QSORT_R
+#undef HAVE_STRDUP
+#undef HAVE_STRTOD
+#undef HAVE_STRTOK_R
+#undef WORDS_BIGENDIAN
+
+#endif /* _GMT_NOTPOSIX_H */

@@ -1,0 +1,14 @@
+#	$Id$
+#
+#	Definition file for octagon symbol.  Use in psxy
+#	as -Skoctagon/size.  Unlike -Sg, this allows for
+#	using patterns as fill
+#
+0.207106781	0.5		M
+-0.207106781	0.5		D
+-0.5		0.207106781	D
+-0.5		-0.207106781	D
+-0.207106781	-0.5		D
+0.207106781	-0.5		D
+0.5		-0.207106781	D
+0.5		0.207106781	D

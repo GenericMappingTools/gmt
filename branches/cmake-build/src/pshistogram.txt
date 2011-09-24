@@ -1,0 +1,107 @@
+#include "common_options.txt"
+.TH PSHISTOGRAM 1 MANDATE GMT_STRING "Generic Mapping Tools"
+#define LEN 0.75
+#define SCALE OPT(Jx)LENBD(c)/0.01BD(c)
+.SH NAME
+pshistogram \- Calculate and plot histograms
+.SH SYNOPSIS
+BD(pshistogram) [ IT(table) ] GMT_Jx_OPT OPT(W)IT(bin_width) [ OPT(A) ] [ GMT_B_OPT ] 
+[ OPT(C)IT(cptfile) ] [ OPT(F) ] [ OPT(G)IT(fill) ] [ GMT_Jz_OPT ] 
+[ OPT(I)[BD(o)|BD(O)] ] [ GMT_K_OPT ] [ OPT(L)IT(pen) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
+[ GMT_Rx_OPT ] [ OPT(S) ] [ GMT_U_OPT ] [ GMT_V_OPT ]  
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)IT(type) ] [ GMT_bi_OPT ] [ GMT_c_OPT ]
+[ GMT_f_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
+.SH DESCRIPTION
+BD(pshistogram) reads IT(file) [or standard input] and examines the first data column (or use OPT(i)) to
+calculate histogram parameters based on the bin-width provided.  Using these parameters,
+scaling, and optional range parameters it will generate IT(PostScript) code that plots a histogram.
+A cumulative histogram may also be specified.  
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(Jx)
+IT(xscale[/yscale]) (Linear scale(s) in distance unit/data unit).
+.TP
+OPT(W)IT(bin_width)
+Sets the bin width used for histogram calculations.
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+.TP
+OPT(A)
+Plot the histogram horizontally from x = 0 [Default is vertically from y = 0].
+#include "explain_-B.txt"
+.TP
+OPT(C)IT(cptfile)
+Give a color palette file.  The mid x-value for each bar is used to look-up the bar color.
+.TP
+OPT(F)
+Center bin on each value. [Default is left edge].
+.TP
+OPT(G)IT(fill)
+Select filling of bars [Default is no fill].
+.TP
+OPT(I)[BD(o)|BD(O)]
+Inquire about min/max x and y after binning.  No plotting is done.  Append BD(o)
+to output an ASCII table of the resulting x,y data to stdout.  Alternatively, append
+BD(O) to output all x,y bin data even when y == 0.
+#include "explain_-Jz.txt"
+#include "explain_-K.txt"
+.TP
+OPT(L)IT(pen)
+Draw bar outline using the specified pen thickness.  [Default is no outline].
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+OPT(Q)
+Draw a cumulative histogram.
+#include "explain_-R.txt"
+#include "explain_-Rz.txt"
+If not given, BD(pshistogram) will automatically find reasonable values for the region.
+.TP
+OPT(S)
+Draws a stairs-step diagram which does not include the internal bars of the default histogram.
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+#include "explain_-XY.txt"
+.TP
+OPT(Z)IT(type)
+Choose between 6 types of histograms: 0 = counts [Default], 1 = frequency_percent,
+2 = log (1.0 + count), 3 = log (1.0 + frequency_percent),
+4 = log10 (1.0 + count), 5 = log10 (1.0 + frequency_percent).
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-c.txt"
+#include "explain_-f.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To draw a histogram of the data v3206.t containing seafloor depths, using a 250 meter
+bin width, center bars, and draw bar outline, use:
+.br
+.sp
+pshistogram v3206.t -JXh -W250 -F -LP0.5p -V > plot.ps
+.br
+.sp
+If you know the distribution of your data, you may explicitly specify range and scales.  E.g.,
+to plot a histogram of the y-values (2nd column) in the file errors.xy using a 1 meter
+bin width, plot from -10 to +10 meters @ LEN cm/m, annotate every 2 m and 100 counts,
+and use black bars, run:
+.br
+.sp
+pshistogram errors.xy -W1 -R-10/10/0/0 SCALE -B2:Error:/100:Counts: -Gblack -i1 -V > plot.ps
+.br
+.sp
+Since no y-range was specified, pshistogram will calculate ymax in even increments of 100.
+.SH BUGS
+The OPT(W) option does not yet work properly with time series data (e.g., OPT(f)0T).  Thus, such
+variable intervals as months and years are not calculated.  Instead, specify your interval in the
+same units as the current setting of BD(TIME_UNIT).
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmtcolors (5),
+.IR psbasemap (1),
+.IR psrose (1),
+.IR psxy (1)

@@ -1,0 +1,198 @@
+%------------------------------------------
+%	$Id$
+%
+%	The GMT Documentation Project
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+%------------------------------------------
+%
+\chapter{Custom Plot Symbols}
+\label{app:N}
+\index{symbols!custom}
+\thispagestyle{headings}
+
+\section{Background}
+\index{Custom Symbols}
+\index{Symbols, custom}
+
+The \GMT\ tools \GMTprog{psxy.c} and \GMTprog{psxyz.c} are capable of using
+custom symbols as alternatives to the built-in, standard geometrical shapes
+like circles, triangles, and many others.  One the command line, custom
+symbols are selected via the \Opt{Sk}\emph{symbolname}[.\emph{size}] symbol
+selection, where \emph{symbolname} refers to a special symbol definition
+file called \filename{symbolname.def} that must be available via the standard
+\GMT\ user paths.  Several custom symbols comes pre-configured with \GMT\
+(see Figure~\ref{fig:GMT_App_N_1})
+
+\GMTfig[h]{GMT_App_N_1}{Custom plot symbols supported by \gmt. Note that we
+only show the symbol outline and not any fill.  These are all single-parameter symbols.
+Be aware that some symbols may have a hardwired fill or no-fill component,
+while others duplicate what is already available as standard built-in symbols.}
+
+You may find it convenient to examine some of these and use them as a starting
+point for your own design; they can be found in \GMT's share/custom directory.
+
+% The following file will contain more \GMTfig commands when needed.
+% \input{GMT_Appendix_N_inc.tex}
+\section{The macro language}
+
+To make your own custom plot symbol, you will need to design your own *.def files.
+This section defines the language used to build custom symbols.  You can place these
+definition files in your current directory or your .gmt user directory.  When designing
+the symbol, you are doing so in a relative coordinate system centered on (0,0).  This point
+will be mapped to the actual location specified by your data coordinates.  Furthermore,
+your symbol should be constructed within the domain ${-\frac{1}{2},+\frac{1}{2},-\frac{1}{2},+\frac{1}{2}}$,
+resulting in a 1 by 1 relative canvas.  This 1 x 1 box will be scaled by your actual
+symbol size when plotted.
+
+\subsection{Comment lines}
+
+Your definition file may have any number of comment lines, defined to begin with
+the character \#.  These are skipped by \GMT\ but provides a mechanism for you to
+clarify what your symbol does.
+
+\subsection{Symbol variables}
+
+Simple symbols, such as circles and triangles, only take a single parameter: the
+symbol size.  However, more complicated symbol, such as the ellipse or vector symbols,
+require more parameters.  If your custom symbol requires more than a single size parameter
+you must include the line
+\begin{quote}
+	\textbf{N}: \emph{n\_extra\_parameters}
+\end{quote}
+before any other macro commands.  It is an optional statement in that \emph{n\_extra\_parameters} will
+default to 0 unless explicitly set.
+
+\subsection{Macro commands}
+
+The custom symbol language contains commands to rotate the relative coordinate system,
+draw free-form polygons and lines, change the current fill and/or pen, and include basic
+geometric symbols as part of the overall design (e.g., circles, triangles, etc.).
+The available commands are listed in
+Table~\ref{tbl:custsymb}.
+\begin{table}[H]
+\small
+\centering
+\begin{tabular}{|l|c|l|l|} \hline
+Name 		& 	Code		&	Purpose				&	Arguments \\ \hline
+rotate		&	\textbf{R}	& Rotate the coordinate system		& $\alpha$ \\ \hline
+moveto		&	\textbf{M}	& Set a new anchor point 		& $x_0, y_0$  \\ \hline
+drawto		&	\textbf{D}	& Draw line from previous point 	& $x, y$  \\ \hline
+arc		&	\textbf{A}	& Append circular arc to existing path 	& $x_c, y_c, r, \alpha_1, \alpha_2$  \\ \hline
+stroke		&	\textbf{S}	& Stroke existing path only 		&  \\ \hline \hline
+texture		&	\textbf{T}	& Change current pen and fill		&  \\ \hline \hline
+circle		&	\textbf{c}	& Plot a circle 			& $x, y$,\emph{size}  \\ \hline
+cross		&	\textbf{x}	& Plot a cross 				& $x, y$,\emph{size}  \\ \hline
+cross		&	\textbf{x}	& Plot a cross 				& $x, y$,\emph{size}  \\ \hline
+diamond		&	\textbf{d}	& Plot a diamond 			& $x, y$,\emph{size}  \\ \hline
+ellipse		&	\textbf{e}	& Plot a ellipse 			& $x, y, \alpha$,\emph{major},\emph{minor}  \\ \hline
+hexagon		&	\textbf{h}	& Plot a hexagon 			& $x, y$,\emph{size}  \\ \hline
+invtriangle	&	\textbf{i}	& Plot a hexagon 			& $x, y$,\emph{size}  \\ \hline
+letter		&	\textbf{l}	& Plot a letter 			& $x, y$,\emph{size}, \emph{string}  \\ \hline
+octagon		&	\textbf{o}	& Plot a octagon 			& $x, y$,\emph{size}  \\ \hline
+pentagon	&	\textbf{h}	& Plot a pentagon 			& $x, y$,\emph{size}  \\ \hline
+plus		&	\textbf{h}	& Plot a plus sign 			& $x, y$,\emph{size}  \\ \hline
+rect		&	\textbf{h}	& Plot a rectangle 			& $x, y$, \emph{width}, \emph{height}  \\ \hline
+square		&	\textbf{h}	& Plot a square 			& $x, y$,\emph{size}  \\ \hline
+star		&	\textbf{a}	& Plot a star 				& $x, y$,\emph{size}  \\ \hline
+triangle	&	\textbf{h}	& Plot a triangle 			& $x, y$,\emph{size}  \\ \hline
+wedge		&	\textbf{h}	& Plot a wedge 				& $x, y, r, \alpha_1, \alpha_2$  \\ \hline
+x-dash		&	\textbf{-}	& Plot a square 			& $x, y$,\emph{size}  \\ \hline
+y-dash		&	\textbf{y}	& Plot a square 			& $x, y$,\emph{size}  \\ \hline
+\end{tabular}
+\label{tbl:custsymb}
+\caption{List of macro codes used to define custom symbols.  Note that arguments are given first with the symbol code at the end.
+All angles are expected in degrees. The \textbf{S} macro is only used if you just want to draw a line and not close/fill it as
+a polygon [Default]; place it on its own line after your last path construction operator.}
+\end{table} 
+For \textbf{M}, \textbf{T}, and all the lower-case codes you may optionally append specific pens (with \Opt{W}\emph{pen})
+and fills (with \Opt{G}\emph{pen}).  These settings will override the pens and fills you may have specified
+on the command line.  Passing \Opt{G}- or \Opt{W}- means no fill or outline, respectively.
+
+\subsection{Conditional statements}
+
+There are two types of conditional statements in the macro language: A simple condition
+preceding a single command, or a more elaborate if--then--elseif--else construct.  In any test you
+may use one (and only one) of many logical operators, as listed in Table~\ref{tbl:custop}.
+\begin{table}[H]
+\small
+\centering
+\begin{tabular}{|c|l|} \hline
+Operator 	& 	Purpose					\\ \hline
+$<$ 		& 	Is \emph{var} less than \emph{constant}?		\\ \hline
+$<$= 		& 	Is \emph{var} less than or equal to \emph{constant}?		\\ \hline
+== 		& 	Is \emph{var} equal to \emph{constant}?		\\ \hline
+!= 		& 	Is \emph{var} not equal to \emph{constant}?		\\ \hline
+$>$= 		& 	Is \emph{var} greater than or equal to \emph{constant}?		\\ \hline
+$>$ 		& 	Is \emph{var} greater than \emph{constant}?		\\ \hline
+\% 		& 	Does \emph{var} have a remainder with \emph{constant}?		\\ \hline
+!\% 		& 	Is \emph{var} an exact multiple of \emph{constant}?		\\ \hline
+$<>$ 		& 	Is \emph{var} within the exclusive range of \emph{constant}?	\\ \hline
+[] 		& 	Is \emph{var} within the inclusive range of \emph{constant}?	\\ \hline
+$<$] 		& 	Is \emph{var} within the in/ex-clusive range of \emph{constant}?	\\ \hline
+[$>$		& 	Is \emph{var} within the ex/in-clusive range of \emph{constant}?	\\ \hline
+\end{tabular}
+\label{tbl:custop}
+\caption{List of operators to use for logical tests.  The equality and inequality operators
+may be compared to NaN.  Note that the last four range operators
+expect \emph{constant} to contain two colon-separated values (e.g., 0:9.5).}
+\end{table} 
+
+\subsubsection{Simple conditional test}
+The simple if-test uses a one-line format, defined as
+\begin{quote}
+	\textbf{if} \emph{var OP constant} \textbf{then}  \emph{command}
+\end{quote}
+where \emph{var} must be one of the symbol parameters, specified as \$1, \$2, \$3, etc.
+You must document what these additional parameters control.  For example, to plot a
+small cyan circle at (0.2, 0.3) with diameter 0.4 only if \$2 exceeds 45 you would write
+\begin{verbatim}
+	if $2 > 45 then 0.2 0.3 0.4 c -Gcyan
+\end{verbatim}
+Note that this form of the conditional test has no mechanism for an \textbf{else} branch, but this can be accomplished
+by repeating the test but reversing the logic for the second copy, e.g.,
+\begin{verbatim}
+	if $1 > 10 then 0 0 0.5 c -Gred
+	if $1 <= 10 then 0 0 0.5 c -Gblue
+\end{verbatim}
+or you may instead consider the complete conditional construct below.
+\subsubsection{Complete conditional test}
+
+The complete conditional test uses a multi-line format, such as
+\begin{tabbing}
+	\textbf{if} \emph{var} \= \emph{OP constant} \textbf{then}  \{ \\
+	\> $<$one or more lines with commands$>$ \\
+	\} \textbf{elseif} \emph{var OP constant} \textbf{then}  \{ \\
+	\> $<$one or more lines with commands$>$ \\
+	\} \textbf{else} \{ \\
+	\> $<$one or more lines with commands$>$ \\
+	\}
+\end{tabbing}
+The \textbf{elseif} (one or more) and \textbf{else} branches are optional.  Note that the syntax is strictly enforced,
+meaning the opening brace must appear after \textbf{then} with nothing following it, and the closing brace
+must appear by itself with no other text, and that the \textbf{elseif} and \textbf{else} statements must have both closing
+and opening braces on the same line (and nothing else).  You may nest tests as well (up to 10 levels deep), e.g.,
+\begin{verbatim}
+if $1 > 45 then {
+        if $2 [> 0:10 then 0 0 0.5 c -Gred
+} elseif $1 < 15 then {
+        if $2 [> 0:10 then 0 0 0.5 c -Ggreen
+} else {
+        if $2 [> 10:20 then {
+                0 0 M -W1p,blue
+                0.3 0.3 D
+                S
+                0.3 0.3 0.3 c -Gcyan
+        }
+}
+\end{verbatim}
+
+%\subsection{PostScript symbols}
+% [This may or may not be implemented in the future ]
+%For very complicated symbols it may in fact be simpler to design the entire symbol in
+%the \PS\ language.  In that case, your definition file may only contain the macro code
+%\textbf{N} (if needed), and the rest of the file should contain the \PS\ code for the symbol,
+%starting with the naming \texttt{/Sk\_}\emph{symbolname} and ending with the line \texttt{def}.  Your
+%\PS\ code will be passed the symbol size and all \emph{n\_extra\_parameters} you have specified (if any).
+%\GMT\ will automatically encapsulate the symbol within a \emph{gsave--grestore} pair, thus limiting
+%any changes to the \PS\ state you may cause to the symbol execution only.

@@ -1,0 +1,106 @@
+#include "common_options.txt"
+.TH GRDHISTEQ 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+grdhisteq \- Perform histogram equalization for a grid 
+.SH SYNOPSIS
+BD(grdhisteq) IT(in_grdfile) [ OPT(G)IT(out_grdfile) ] 
+[ OPT(C)IT(n_cells) ] [ OPT(D)[IT(file)] ] [ OPT(N)[IT(norm)] ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ]
+.SH DESCRIPTION
+BD(grdhisteq) allows the user to find the data values which divide a given
+grid file into patches of equal area.  One common use of BD(grdhisteq) is in
+a kind of histogram equalization of an image.  In this application, the
+user might have a grid of flat topography with a mountain in the middle.
+Ordinary gray shading of this file (using grdimage/grdview) with a linear mapping
+from topography to graytone will result in most of the image being very
+dark gray, with the mountain being almost white.  One could use BD(grdhisteq)
+to write to stdout an ASCII list of those data values which divide the
+range of the data into IT(n_cells) segments, each of which has an equal
+area in the image.  Using BD(awk) or BD(makecpt) one can take this output and build a cpt
+file; using the cptfile with grdimage will result in an image with all
+levels of gray occurring equally.  Alternatively, see BD(grd2cpt).
+.P
+The second common use of BD(grdhisteq) is in writing a grid with statistics
+based on some kind of cumulative distribution function.  In this application,
+the output has relative highs and lows in the same (x,y) locations as the
+input file, but the values are changed to reflect their place in some
+cumulative distribution.  One example would be to find the lowest 10%
+of the data:  Take a grid, run BD(grdhisteq) and make a grid using
+IT(n_cells) = 10, and then contour the result to trace the 1 contour.
+This will enclose the lowest 10% of the data, regardless of their original
+values.  Another example is in equalizing the output of BD(grdgradient).
+For shading purposes it is desired that the data have a smooth distribution,
+such as a gaussian.  If you run BD(grdhisteq) on output from BD(grdgradient)
+and make a grid file output with the Gaussian option, you will have a
+grid whose values are distributed according to a gaussian distribution
+with zero mean and unit variance.  The locations of these values will
+correspond to the locations of the input; that is, the most negative
+output value will be in the (x,y) location of the most negative input
+value, and so on.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(in_grdfile)
+2-D binary grid file to be equalized.
+(See GRID FILE FORMATS below).
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(C)IT(n_cells)
+Sets how many cells (or divisions) of data range to make.
+.TP
+OPT(D)
+Dump level information to IT(file), or standard output if no file is provided.
+.TP
+OPT(G)IT(out_grdfile)
+Name of output 2-D grid file.  Used with OPT(N) only.
+(See GRID FILE FORMATS below).
+.TP
+OPT(N)[IT(norm)]
+Gaussian output.  Use with OPT(G) to make an output grid with standard normal scores.
+Append IT(norm) to force the scores to fall in the <-1,+1> range [Default is standard normal scores].
+.TP
+OPT(Q)
+Use quadratic intensity scaling.  [Default is linear].
+#include "explain_-R.txt" 
+Using the OPT(R) option will select a subsection of IT(in_grdfile) grid. If this subsection exceeds the
+boundaries of the grid, only the common region will be extracted.
+#include "explain_-V.txt"
+#include "explain_help.txt"
+#include "explain_grd_inout.txt"
+.SH EXAMPLES
+To find the height intervals that divide the file heights.nc into 16 divisions of
+equal area:
+.br
+.sp
+grdhisteq heights.nc -C16 -D > levels.d
+.br
+.sp
+To make the poorly distributed intensities in the file raw_intens.nc suitable for use
+with BD(grdimage) or BD(grdview), run
+.br
+.sp
+grdhisteq raw_intens.nc -Gsmooth_intens.nc -N -V
+.SH RESTRICTIONS
+If you use BD(grdhisteq) to make a gaussian output for gradient shading
+in BD(grdimage) or BD(grdview), you should be aware of the following:  the output will be
+in the range [-x, x], where x is based on the number of data in the input
+grid (nx * ny) and the cumulative gaussian distribution function F(x).
+That is, let N = nx * ny.  Then x will be adjusted so that 
+F(x) = (N - 1 + 0.5)/N.  Since about 68% of the values from a standard normal
+distribution fall within +/- 1, this will be true of the output grid.
+But if N is very large, it is possible for x to be greater than 4.  Therefore,
+with the BD(grdimage) program clipping gradients to the range [-1, 1], you will
+get correct shading of 68% of your data, while 16% of them will be clipped
+to -1 and 16% of them clipped to +1.  If this makes too much of the image
+too light or too dark, you should take the output of BD(grdhisteq) and rescale
+it using BD(grdmath) and multiplying by something less than 1.0, to shrink
+the range of the values, thus bringing more than 68% of the image into the
+range [-1, 1].  Alternatively, supply a normalization factor with OPT(N).
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmt.conf (5),
+.IR grd2cpt (1),
+.IR grdgradient (1),
+.IR grdimage (1),
+.IR grdmath (1),
+.IR grdview (1),
+.IR makecpt (1)

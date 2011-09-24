@@ -1,0 +1,113 @@
+#include "common_options.txt"
+.TH MAKECPT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+makecpt \- Make GMT color palette tables
+.SH SYNOPSIS
+BD(makecpt) [ OPT(A)[BD(+)]IT(transparency) ] [ OPT(C)IT(table) ] [ OPT(D)[BD(i)|BD(o)] ]
+[ OPT(F)[BD(R)|BD(r)|BD(h)|BD(c) ] [ OPT(I) ] [ OPT(M) ] [ OPT(N) ]
+[ OPT(Q)[BD(i)|BD(o)] ] [ OPT(T)IT(z0)/IT(z1)[/IT(dz)] | OPT(T)IT(ztable) ] [ GMT_V_OPT ]
+[ OPT(W) ] [ OPT(Z) ]
+.SH DESCRIPTION
+BD(makecpt) is a utility that will help you make color palette tables (cpt files).  You define
+an equidistant set of contour intervals or pass your own z-table, and create a new cpt file based on
+an existing master cpt file.  The resulting cpt file can be reversed relative
+to the master cpt, and can be made continuous or discrete.
+.br
+The color palette includes three additional colors beyond the range of z-values. These are
+the background color (B) assigned to values lower than the lowest IT(z)-value,
+the foreground color (F) assigned to values higher than the highest IT(z)-value,
+and the NaN color (N) painted whereever values are undefined.
+.br
+If the master cpt file includes B, F, and N entries, these will be copied into the new master file.
+If not, the parameters BD(COLOR_BACKGROUND), BD(COLOR_FOREGROUND), and BD(COLOR_NAN) from
+the BD(gmt.conf) file or the command line will be used. This default behavior can be overruled
+using the options OPT(D), OPT(M) or OPT(N).
+.br
+The color model (RGB, HSV or CMYK) of the palette created by BD(makecpt) will be the same as
+specified in the header of the master cpt file. When there is no BD(COLOR_MODEL) entry in the
+master cpt file, the BD(COLOR_MODEL) specified in the BD(gmt.conf) file or on the command line
+will be used.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)[BD(+)]IT(transparency)
+Sets a constant level of transparency (0\-100) for all color slices.  Prepend BD(+) to also
+affect the fore-, back-, and nan-colors [Default is no transparency, i.e. 0 (opaque)].
+.TP
+OPT(C)IT(table)
+Selects the master color table IT(table) to use in the interpolation.
+Choose among the built-in tables (type BD(makecpt) to see the list) or
+give the name of an existing cpt file [Default gives a rainbow cpt file].
+.TP
+OPT(D)[BD(i)|BD(o)]
+Select the back- and foreground colors to match the colors for lowest and highest IT(z)-values
+in the output cpt file [Default uses the colors specified in the master file, or those defined by 
+the parameters BD(COLOR_BACKGROUND), BD(COLOR_FOREGROUND), and BD(COLOR_NAN)].
+Append BD(i) to match the colors for the lowest and highest values in the input (instead of the output) cpt file.
+.TP
+OPT(F)[BD(R)|BD(r)|BD(h)|BD(c)]
+Force output cpt file to written with r/g/b codes, gray-scale values or color name (BD(R), default)
+or r/g/b codes only (BD(r)), or h-s-v codes (BD(h)), or c/m/y/k codes (BD(c)).
+.TP
+OPT(I)
+Reverses the sense of color progression in the master cpt file.
+Also exchanges the foreground and background colors, including those specified by
+the parameters BD(COLOR_BACKGROUND) and BD(COLOR_FOREGROUND).
+.TP
+OPT(M)
+Overrule background, foreground, and NaN colors specified in the master cpt file with the values of
+the parameters BD(COLOR_BACKGROUND), BD(COLOR_FOREGROUND), and BD(COLOR_NAN) specified in
+the BD(gmt.conf) file or on the command line.
+When combined with OPT(D), only BD(COLOR_NAN) is considered.
+.TP
+OPT(N)
+Do not write out the background, foreground, and NaN-color fields [Default will write them].
+.TP
+OPT(Q)[BD(i)|BD(o)]
+Selects a logarithmic interpolation scheme [Default is linear].  OPT(Qi)
+expects input z-values to be log10(z), assigns colors, and writes out z
+[Default].  OPT(Qo) takes log10(z) first, assigns colors, and writes out z.
+.TP
+OPT(T)IT(z0)/IT(z1)[/IT(dz)] | OPT(T)IT(ztable)
+Defines the range of the new cpt file by giving the lowest and highest z-value and interval.
+When used with OPT(C) and the interval is not specified, the number of intervals remains the same as in the input palette.
+Alternatively, give the name of a ASCII file that has one z-value per record.
+If OPT(T) is not given, the existing range in the master cpt file will be used intact.
+#include "explain_-V.txt"
+.TP
+OPT(W)
+Do not interpolate the input color table but pick the output colors starting at the beginning of the map.
+This is particularly useful in combination with a categorical color table. Cannot be used in combination with OPT(Z).
+.TP
+OPT(Z)
+Creates a continuous cpt file [Default is discontinuous, i.e. constant colors
+for each interval].
+#include "explain_help.txt"
+.SH EXAMPLES
+To make a cpt file with z-values from -200 to 200, with discrete color changes every
+25, and using a polar blue-white-red colortable:
+.br
+.sp
+makecpt -Cpolar -T-200/200/25 > colors.cpt
+.br
+.sp
+To make an equidistant cpt file from z = -2 to 6, in steps of 1, using
+continuous default rainbow colors:
+.br
+.sp
+makecpt -T-2/6/1 -Z > rainbow.cpt
+.br
+.sp
+To make a GEBCO look-alike cpt file for bathymetry, run
+.br
+.sp
+makecpt -Cgebco > my_gebco.cpt
+.SH BUGS
+Since BD(makecpt) will also interpolate from any existing .cpt file you
+may have in your directory, you cannot use one of the listed cpt names
+as an output filename; hence the my_gebco.cpt in the example.
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR grd2cpt (1)

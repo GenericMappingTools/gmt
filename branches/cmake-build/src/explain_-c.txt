@@ -1,0 +1,3 @@
+.TP
+GMT_c_OPT (*)
+Specify number of plot copies [Default is 1].

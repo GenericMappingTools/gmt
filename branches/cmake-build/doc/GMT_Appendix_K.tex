@@ -1,0 +1,332 @@
+%------------------------------------------
+%	$Id$
+%
+%	The GMT Documentation Project
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+%------------------------------------------
+%
+\chapter{The \gmt\ High-Resolution Coastline Data}
+\label{app:K}
+\index{GMT@\GMT!coastlines|(}
+\index{Coastlines!preprocessing|(}
+\thispagestyle{headings}
+
+Starting with version 3.0, \GMT\ use a completely new coastline
+database and the \GMTprog{pscoast} utility was been completely
+rewritten to handle the new file format.  Many users have asked
+us why it has taken so long for \GMT\ to use a high-resolution
+coastline database; after all, such data have been available in
+the public domain for years.  To answer such questions we will
+take you along the road that starts with these public domain
+data sets and ends up with the database used by \GMT.
+
+\section{Selecting the right data} 
+\index{World Data Bank II}
+\index{CIA Data Bank}
+\index{World Vector Shoreline}
+\index{WVS}
+\index{WDBII}
+
+There are two well-known public-domain data sets that could be
+used for this purpose.  Once is known as the World Data Bank II
+or CIA Data Bank (WDB) and contains coastlines, lakes, political
+boundaries, and rivers.  The other, the World Vector Shoreline
+(WVS) only contains shorelines between saltwater and land (i.e.,
+no lakes).  It turns out that the WVS data is far superior to the
+WDB data as far as data quality goes, but as noted it lacks lakes,
+not to mention rivers and borders.  We decided to use the WVS
+whenever possible and supplement it with WDB data.  We got these
+data over the Internet; they are also available on CD-ROM from
+the National Geophysical Data Center in Boulder, Colorado\footnote{
+www.ngdc.noaa.gov}.
+
+\section{Format required by \gmt} 
+
+In order to paint continents or oceans it is necessary that the
+coastline data be organized in polygons that may be filled.
+Simple line segments can be used to draw the coastline, but for
+painting polygons are required.  Both the WVS and WDB data
+consists of unsorted line segments: there is no information
+included that tells you which segments belong to the same
+polygon (e.g., Australia should be one large polygon).
+In addition, polygons enclosing land must be differentiated from
+polygons enclosing lakes since they will need different paint.
+Finally, we want \GMTprog{pscoast} to be flexible enough that it can
+paint the land \emph{or} the oceans \emph{or} both.
+If just land (or oceans) is selected we do not want to paint
+those areas that are not land (or oceans) since previous plot
+programs may have drawn in those areas.  Thus, we will need to
+combine polygons into new polygons that lend themselves to fill
+land (or oceans) only (Note that older versions of \GMTprog{pscoast}
+always painted lakes and wiped out whatever was plotted beneath).
+
+\section{The long and winding road} 
+
+The WVS and WDB together represent more than 100 Mb of binary
+data and something like 20 million data points.  Hence, it
+becomes obvious that any manipulation of these data must be
+automated.  For instance, the reasonable requirement that no
+coastline should cross another coastline becomes a complicated
+processing step.
+
+\begin{enumerate} 
+
+\item To begin, we first made sure that all data were ``clean'',
+i.e. that there were no outliers and bad points.  We had to
+write several programs to ensure data consistency and remove
+``spikes'' and bad points from the raw data.  Also, crossing
+segments were automatically ``trimmed'' provided only
+a few points had to be deleted.  A few hundred more complicated
+cases had to be examined semi-manually.
+
+\item Programs were written to examine all the loose segments
+and determine which segments should be joined to produce
+polygons.  Because not all segments joined exactly (there were
+non-zero gaps between some segments) we had to find all possible
+combinations and choose the simplest combinations.
+The WVS segments joined to produce more than 200,000 polygons,
+the largest being the Africa-Eurasia polygon which has 1.4
+million points.  The WDB data resulted in a smaller data base
+($\sim$25\% of WVS).
+
+\item We now needed to combine the WVS and WDB data bases.
+The main problem here is that we have duplicates of polygons:
+most of the features in WVS are also in WDB.  However, because
+the resolution of the data differ it is nontrivial to figure
+out which polygons in WDB to include and which ones to ignore.
+We used two techniques to address this problem.
+First, we looked for crossovers between all possible pairs of
+polygons.  Because of the crossover processing in step 1 above we know
+that there are no remaining crossovers within WVS and WDB; thus
+any crossovers would be between WVS and WDB polygons.  Crossovers
+could mean two things: (1) A slightly misplaced WDB polygon
+crosses a more accurate WVS polygon, both representing the same
+geographic feature, or (2) a misplaced WDB polygon (e.g. a small
+coastal lake) crosses the accurate WVS shoreline.  We distinguished
+between these cases by comparing the area and centroid of the two
+polygons.  In almost all cases it was obvious when we had
+duplicates; a few cases had to be checked manually.  Second,
+on many occasions the WDB duplicate polygon did not cross its
+WVS counterpart but was either entirely inside or outside the
+WVS polygon.  In those cases we relied on the area-centroid tests.
+
+\item While the largest polygons were easy to identify by visual
+inspection, the majority remain unidentified.  Since it is
+important to know whether a polygon is a continent or a small
+pond inside an island inside a lake we wrote programs that would
+determine the hierarchical level of each polygon.  Here, level~=~1
+represents ocean/land boundaries, 2 is land/lakes borders, 3 is
+lakes/islands-in-lakes, and 4 is islands-in-lakes/ponds-in-islands-in-lakes.
+Level 4 was the highest level encountered in the data.
+To automatically determine the hierarchical levels we wrote
+programs that would compare all possible pairs of polygons
+and find how many polygons a given polygon was inside.  Because
+of the size and number of the polygons such programs would
+typically run for 3 days on a Sparc-2 workstation.
+
+\item Once we know what type a polygon is we can enforce a
+common ``orientation'' for all polygons. We arranged them so
+that when you move along a polygon from beginning to end, your
+left hand is pointing toward ``land''.  At this step we also
+computed the area of all polygons since we would like the
+option to plot only features that are bigger than a minimum
+area to be specified by the user.
+
+\item Obviously, if you need to make a map of Denmark then
+you do not want to read the entire 1.4 million points making
+up the Africa-Eurasia polygon.  Furthermore, most plotting
+devices will not let you paint and fill a polygon of that size
+due to memory restrictions.  Hence, we need to partition the
+polygons so that smaller subsets can be accessed rapidly.
+Likewise, if you want to plot a world map on a letter-size paper
+there is no need to plot 10 million data points as most of them
+will plot several times on the same pixel and the operation
+would take a very long time to complete.  We chose to make 5
+versions on the database, corresponding to different resolutions.
+The decimation was carried out using the Douglas-Peucker (DP)
+line-reduction algorithm\footnote{Douglas, D.H., and T. K. Peucker,
+1973, Algorithms for the reduction of the number of points
+required to represent a digitized line or its caricature,
+\emph{Canadian Cartographer}, 10, 112--122.}.  We chose the
+cutoffs so that each subset was approximately 20\% the size of
+the next higher resolution.  The five resolutions are called
+\textbf{f}ull, \textbf{h}igh, \textbf{i}ntermediate, \textbf{l}ow, and
+\textbf{c}rude; they are accessed in \GMTprog{pscoast}, \GMTprog{gmtselect},
+and \GMTprog{grdlandmask} with the \Opt{D} option\footnote{ The full
+and high resolution files are in separate archives because of their
+size.  Not all users may need these files as the intermediate data
+set is better than the data provided with version 2.1.4.}.  For each of
+these 5 data sets (\textbf{f}, \textbf{h}, \textbf{i}, \textbf{l}, \textbf{c})
+we specified an equidistant grid (1\DS, 2\DS, 5\DS,
+10\DS, 20\DS) and split all polygons into line-segments
+that each fit inside one of the many boxes defined by these grid
+lines.  Thus, to paint the entire continent of Australia we
+instead paint many smaller polygons made up of these line
+segments and gridlines.  Some book-keeping has to be done since
+we need to know which parent polygon these smaller pieces came
+from in order to prescribe the correct paint or ignore if the
+feature is smaller than the cutoff specified by the user.  The
+resulting segment coordinates were then scaled to fit in short
+integer format to preserve precision and written in netCDF format
+for ultimate portability across hardware platforms\footnote{
+If you need complete polygons in a simpler format, see the article
+on GSHHS\index{GSHHS} (Wessel, P., and W. H. F. Smith, 1996, A Global, self-consistent, hierarchical, high-resolution shoreline database,
+\emph{J. Geophys. Res. 101}, 8741--8743).}.
+
+\item While we are now back to a file of line-segments we are in
+a much better position to create smaller polygons for painting.
+Two problems must be overcome to correctly paint an area:
+
+\begin{itemize}
+
+\item We must be able to join line segments and grid cell borders
+into meaningful polygons; how we do this will depend on whether
+we want to paint the land or the oceans.
+
+\item We want to nest the polygons so that no paint falls on areas
+that are ``wet'' (or ``dry''); e.g., if a grid cell completely on
+land contains a lake with a small island, we do not want to paint
+the lake and then draw the island, but paint the annulus or ``donut''
+that is represented by the land and lake, and then plot the island.
+
+\end{itemize}
+
+\GMT\ uses a polygon-assembly routine that carries out these
+tasks on the fly.
+\index{GMT@\GMT!coastlines|)}
+\index{Coastlines!preprocessing|)}
+
+\end{enumerate} 
+
+\section{The Five Resolutions} 
+
+We will demonstrate the power of the new database by starting with
+a regional hemisphere map centered near Papua New Guinea and zoom
+in on a specified point.  The map regions will be specified in
+projected km from the projection center, e.g., we may want the
+map to go from \mbox{-2000} km to \mbox{+2000} km in the longitudinal
+and the latitudinal direction.
+However, \GMT\ programs expects degrees in the \Opt{R} option that
+specifies the desired region.  Given the chosen map projection we
+can automate this process by using a simple shell function that we
+call \progname{getbox}.
+
+Also, as we zoom in on the projection center we want to draw the
+outline of the next map region on the plot.  To do that we need
+the geographical coordinates of the four corners of the region
+rectangle.  Again, we automate this task by adding the simple
+function \progname{getrect} from \progname{doc/scripts/functions.sh}.
+
+\script{functions}
+
+\subsection{The crude resolution (\Opt{Dc})} 
+\index{Coastlines!resolution!crude|(}
+
+We begin with an azimuthal equidistant map of the hemisphere
+centered on 130\DS 21'E, 0\DS 12'S, which is slightly west
+of New Guinea, near the Strait of Dampier.  The edges of the
+map are all 9000 km true distance from the projection center.
+At this scale (and for global maps) the crude resolution data
+will usually be adequate to capture the main geographic features.
+To avoid cluttering the map with insignificant detail we only
+plot features (i.e., polygons) that exceed 500 km$^2$ in area.
+Smaller features would only occupy a few pixels on the plot and
+make the map look ``dirty''.  We also add national borders to
+the plot.  The crude database is heavily decimated and simplified
+by the DP-routine: The total file size of the coastlines, rivers,
+and borders database is only 283 kbytes.  The plot is produced by the
+script:
+
+\script{GMT_App_K_1} 
+
+\GMTfig{GMT_App_K_1}{Map using the crude resolution coastline data.}
+
+Here, we use the \textbf{MAP\_ANNOT\_OBLIQUE} bit flags to achieve
+horizontal annotations and set \textbf{MAP\_ANNOT\_MIN\_SPACING} to suppress some longitudinal
+annotations near the S pole that otherwise would overprint.
+The box indicates the outline of the next map.
+
+\index{Coastlines!resolution!crude|)}
+
+\subsection{The low resolution (\Opt{Dl})} 
+\index{Coastlines!resolution!low|(}
+
+We have now reduced the map area by zooming in on the map center.
+Now, the edges of the map are all 2000 km true distance from
+the projection center.  At this scale we choose the low resolution
+data that faithfully reproduce the dominant geographic features
+in the region.  We cut back on minor features less than 100 km$^2$
+in area.  We still add national borders to the plot.  The low
+database is less decimated and simplified by the DP-routine: The
+total file size of the coastlines, rivers, and borders combined
+grows to 907 kbytes; it is the default resolution in \GMT.  The
+plot is generated by the script:
+
+\script{GMT_App_K_2} 
+
+\GMTfig{GMT_App_K_2}{Map using the low resolution coastline data.}
+
+\index{Coastlines!resolution!low|)}
+
+\subsection{The intermediate resolution (\Opt{Di})} 
+\index{Coastlines!resolution!intermediate|(}
+
+We continue to zoom in on the map center.  In this map, the
+edges of the map are all 500 km true distance from the projection
+center.  We abandon the low resolution data set as it would look
+too jagged at this scale and instead employ the intermediate
+resolution data that faithfully reproduce the dominant geographic
+features in the region.  This time, we ignore features less than
+20 km$^2$ in area.  Although the script still asks for national
+borders none exist within our region.  The intermediate database
+is moderately decimated and simplified by the DP-routine: The
+combined file size of the coastlines, rivers, and borders now
+exceeds 3.35 Mbytes.  The plot is generated by the script:
+
+\script{GMT_App_K_3} 
+
+\GMTfig{GMT_App_K_3}{Map using the intermediate resolution coastline data.  We
+have added a compass rose just because we have the power to do so.}
+
+\index{Coastlines!resolution!intermediate|)}
+
+\subsection{The high resolution (\Opt{Dh})} 
+\index{Coastlines!resolution!high|(}
+
+The relentless zooming continues!  Now, the edges of the map
+are all 100 km true distance from the projection center.  We
+step up to the high resolution data set as it is needed to
+accurately portray the detailed geographic features within the
+region.  Because of the small scale we only ignore features less
+than 1 km$^2$ in area.  The high resolution database has undergone
+minor decimation and simplification by the DP-routine: The
+combined file size of the coastlines, rivers, and borders now
+swells to 12.3 Mbytes.  The map and the final outline box are
+generated by these commands:
+
+\script{GMT_App_K_4} 
+
+\GMTfig{GMT_App_K_4}{Map using the high resolution coastline data.}
+
+\index{Coastlines!resolution!high|)}
+
+\subsection{The full resolution (\Opt{Df})} 
+\index{Coastlines!resolution!full|(}
+
+We now arrive at our final plot, which shows a detailed view of
+the western side of the small island of Waigeo.  The map area
+is approximately 40 by 40 km.  We call upon the full resolution
+data set to portray the richness of geographic detail within this
+region; no features are ignored.  The full resolution has
+undergone no decimation and it shows: The combined file size of
+the coastlines, rivers, and borders totals a (once considered hefty) 55.9 Mbytes.
+Our final map is reproduced by the single command:
+
+\script{GMT_App_K_5} 
+
+\GMTfig{GMT_App_K_5}{Map using the full resolution coastline data.}
+
+We hope you will study these examples to enable you to make
+efficient and wise use of this vast data set.
+\index{Coastlines!resolution!full|)}

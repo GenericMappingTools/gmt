@@ -1,0 +1,6 @@
+#	$Id$
+#
+# Simulates the POLAR colormap in Matlab
+#
+-1	blue	0	white
+0	white	1	red

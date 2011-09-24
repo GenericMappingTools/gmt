@@ -1,0 +1,269 @@
+<HTML>
+<!--  $Id$  -->
+<TITLE>GMT5 Incompatibilities Notes</title>
+<BODY bgcolor="#ffffff">
+<CENTER><H2>GMT5 Incompatibilities Notes</CENTER></H2><P>
+<HR>
+<H3><CENTER>25-AUG-2011: GMT Version 5.0.0b Released</H3></CENTER>
+5.0.0b scripts should be fully backward compatible with 4.5.7, but only if you use the
+configure --enable-compat option.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>15-JUL-2011: GMT Version 4.5.7 Released</H3></CENTER>
+4.5.7 scripts should be fully backward compatible with 4.5.6.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>10-MAR-2011: GMT Version 4.5.6 Released</H3></CENTER>
+4.5.6 scripts should be fully backward compatible with 4.5.5.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>1-NOV-2010: GMT Version 4.5.5 Released</H3></CENTER>
+4.5.5 scripts should be fully backward compatible with 4.5.3.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>15-JUL-2010: GMT Version 4.5.3 Released</H3></CENTER>
+4.5.3 scripts should be fully backward compatible with 4.5.2.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>15-JAN-2010: GMT Version 4.5.2 Released</H3></CENTER>
+4.5.2 scripts should be fully backward compatible with 4.5.1.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>20-SEPT-2009: GMT Version 4.5.1 Released</H3></CENTER>
+4.5.1 scripts should be fully backward compatible with 4.5.0.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>15-JUL-2009: GMT Version 4.5.0 Released</H3></CENTER>
+4.5.0 scripts are for the most part fully backward compatible with 4.4.0.  One
+exception is the modifier :<I>radius</I>[unit] to the <B>-G</B> option in grdcontour for
+the placement of contour labels.  This is now +r<I>radius</I>[unit] since the
+colon interfered poorly with ddd:mm:ss coordinates.  Also, we have now made -180/+180
+the default output range for geographic coordinates (it used to be 0-360).  You can change
+this by editing the OUTPUT_DEGREE_FORMAT setting.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>15-FEB-2009: GMT Version 4.4.0 Released</H3></CENTER>
+4.4.0 scripts are for the most part fully backward compatible with 4.3.1.  One
+exception is the map scale option <B>-L</B> in psbasemap and pscoast which
+had difficulties parsing ddd:mm:ss coordinates in the presence of the optional
+:label: modifier.  Also, we have now made -180/+180 the default annotation range
+for geographic maps (it used to be 0-360).  You can change this by editing the
+PLOT_DEGREE_FORMAT setting.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>15-MAY-2008: GMT Version 4.3.1 Released</H3></CENTER>
+4.3.1 scripts are believed to be fully backward compatible with 4.3.0.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>1-MAY-2008: GMT Version 4.3.0 Released</H3></CENTER>
+4.3.0 scripts are believed to be fully backward compatible with 4.2.1.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>1-OCT-2007: GMT Version 4.2.1 Released</H3></CENTER>
+4.2.1 scripts are believed to be fully backward compatible with 4.2.0.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>1-APR-2007: GMT Version 4.2.0 Released</H3></CENTER>
+4.2.0 scripts are believed to be fully backward compatible with 4.1.4.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>1-NOV-2006: GMT Version 4.1.4 Released</H3></CENTER>
+4.1.4 scripts are fully backward compatible with 4.1.3.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>1-JUN-2006: GMT Version 4.1.3 Released</H3></CENTER>
+4.1.3 scripts are fully backward compatible with 4.1.2.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>10-MAY-2006: GMT Version 4.1.2 Released</H3></CENTER>
+4.1.2 scripts are fully backward compatible with 4.1.1.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>01-MAR-2006: GMT Version 4.1.1 Released</H3></CENTER>
+4.1.1 scripts are fully backward compatible with 4.1.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>01-JAN-2006: GMT Version 4.1 Released</H3></CENTER>
+4.1 scripts are fully backward compatible with 4.0.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>01-OCT-2004: GMT Version 4.0 Released</H3></CENTER>
+4.0 scripts are fully backward compatible with 3.4.5.  All bug fixes
+in GMT 3.4.5 have been applied to GMT 4.0.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
+<HR>
+<H3><CENTER>01-OCT-2004: GMT Version 3.4.5 Released</H3></CENTER>
+3.4.5 scripts are fully backward compatible with 3.4.4.  No new capabilities
+have been introduced, just bug fixes.
+<HR>
+<H3><CENTER>07-JAN-2004: GMT Version 3.4.4 Released</H3></CENTER>
+3.4.4 scripts are fully backward compatible with 3.4.3.  No new capabilities
+have been introduced, just bug fixes.
+<HR>
+<H3><CENTER>01-MAY-2003: GMT Version 3.4.3 Released</H3></CENTER>
+3.4.3 scripts are fully backward compatible with 3.4.2.  No new capabilities
+have been introduced, just bug fixes.
+<HR>
+<H3><CENTER>02-OCT-2002: GMT Version 3.4.2 Released</H3></CENTER>
+3.4.2 scripts are fully backward compatible with 3.4.1.  No new capabilities
+have been introduced, just bug fixes.
+<HR>
+<H3><CENTER>01-MAR-2002: GMT Version 3.4.1 Released</H3></CENTER>
+3.4.1 scripts are fully backward compatible with 3.4.  No new capabilities
+have been introduced, just bug fixes.
+<HR>
+<H3><CENTER>18-APR-2001: GMT Version 3.4 Released</H3></CENTER>
+3.4 scripts should be backward compatible with 3.3.6 except for
+one minor feature:  Because we have extended the number of possible
+DEGREE_FORMAT options to 12, users must now add 100 (not 10 as before)
+to choose the big degree symbol.  As most users are hardly aware of
+that option it should not cause much uproar(?).
+<HR>
+<H3><CENTER>17-OCT-2000: GMT Version 3.3.6 Released</H3></CENTER>
+3.3.6 scripts should be backward compatible with 3.3.5
+<HR>
+<H3><CENTER>21-JUL-2000: GMT Version 3.3.5 Released</H3></CENTER>
+<HR><P>
+3.3.5 scripts should be backward compatible with 3.3.4, with the
+following potential exceptions:
+<UL>
+<LI>The function <B>STEP</b> in gmtmath has been renamed <B>STEPT</b>
+to be compatible in function to <b>STEPX</b> and <b>STEPY</b> in grdmath.
+A new function <b>STEP</b> has been added to gmtmath (and grdmath) that
+simply takes the Heaviside function of the current stack entries.
+<LI>The common option -: is now processed in the generic i/o functions
+and not in individual programs.  The fact that -: was only intended to
+apply to geographical data is now enforced.  Thus, if you used -: in
+imaginative ways on non-geographic data you will have to consider
+changes to those scripts.
+</UL>
+<HR><H3><CENTER>20-MAR-2000: GMT Version 3.3.4 Released</H3></CENTER>
+<HR><P>
+3.3.4 scripts should be backward compatible with 3.3.3
+<HR>
+<HR>
+<H3><CENTER>03-DEC-1999: GMT Version 3.3.3 Released</H3></CENTER>
+<HR><P>
+3.3.3 scripts should be backward compatible with 3.3.2
+<HR>
+<HR>
+<H3><CENTER>24-SEPT-1999: GMT Version 3.3.2 Released</H3></CENTER>
+<HR><P>
+3.3.2 scripts should be backward compatible with 3.3.1
+<HR>
+<H3><CENTER>01-JULY-1999: GMT Version 3.3.1 Released</H3></CENTER>
+<HR><P>
+3.3.1 scripts should be backward compatible with 3.3
+<HR>
+<H3><CENTER>09-JUNE-1999: GMT Version 3.3 Released</H3></CENTER>
+<HR><P>
+Going from GMT version 3.2 to 3.3 there were several minor syntax
+changes that renders GMT 3.3 slightly incompatible with 3.2.
+The following is a list of known incompatibilies (please report
+others if you find any; we may have missed some):
+<OL>
+<LI>grdproject.c: The -F option now toggles the node registration
+of the output file.  This change was necessary since the old
+version would write out a node-registred grid regardless what
+the input grid was, unless -F was set.  The new policy will
+use the same registration as the input unless -F is set.
+</OL>
+<HR>
+<H3><CENTER>19-MAR-1999: GMT Version 3.2 Released</H3></CENTER>
+<HR><P>
+Going from GMT version 3.1 to 3.2 there were several minor syntax
+changes that renders GMT 3.2 slightly imcompatible with 3.1.
+The following is a list of known incompatibilies (please report
+others if you find any; we may have missed some):
+<OL>
+<LI>makecpt.c: Due to the much more flexible version in 3.2 (with
+many choices of different cpt master tables there are several
+changes.  The old options -C, -M, -S have been replaced by
+-Tz0/z1/dz. and -I (reversing the colors) have been added.
+
+<LI>pslib.c: This change only affects programmers that link their
+own code with -lpsl.  The arguments to ps_plotinit has changed
+so that instead of passing paper_width as a double we pass a
+2-element integer array with paper width and height in points.
+See the pslib man page for details.
+</OL>
+<HR>
+<H3><CENTER>25-NOV-1998: GMT Version 3.1.1 Released</H3></CENTER>
+<HR><P>
+3.1.1 scripts should be backward compatible with 3.1
+<HR>
+<H3><CENTER>08-NOV-1998: GMT Version 3.1 Released</H3></CENTER>
+<HR><P>
+Going from GMT version 3.0 to 3.1 there were several minor syntax
+changes that renders GMT 3.1 slightly imcompatible with 3.0.
+The following is a list of known incompatibilies:
+<OL>
+<LI>grdclip.c: -A and -B have been replaced by -Sa and -Sb; the -B
+    interferred with the usual meaning of -B.
+
+<LI>grdpaste.c: Same problem; introduced -Sa and -Sb.
+
+<LI>grdview.c: -D no longer an option; -M and -W follow grdcontour
+    syntax and are set by -Wc and -Wm instead.
+
+<LI>nearneighbor.c: -M is replaced by -Sradius[k] as in psmask.
+
+<LI>psmask.c: -S and -C have reversed roles to match psclip; -M is
+    replaced by -Sradius[k] as in nearneighbor.
+
+<LI>project.c: -M becomes the multisegment flag as usual; old -M is
+    replaced by -Q.
+
+<LI>psclip.c: -S becomes -C, and -O must now explicitly be set.
+
+<LI>psxy[z].c: -L only needed to close polygons; -W[pen] determines
+    symbol outlines.
+
+<LI>No programs have the old option -F to change the color of the map
+    frame.  This is now done via gmtset BASEMAP_FRAME_RGB r/g/b.
+    
+<LI>-GP|p now takes pattern dpi, not building block size.  A dpi setting
+    of 0 still gives the resolution implied by DOTS_PR_INCH.
+
+<LI>psscale now uses the machinery of the common -B option for anotations.
+    This means that the x-label goes beneath the scale and the y-label can
+    be used as a unit label.  The title string :.title: is no longer used.
+
+<LI>grd2xyz.c and xyz2grd.c.  Please note that -Z and -b are incompatible
+    and are NOT to be used at the same time (your i/o cannot both have 1
+    and 3 columns...).
+
+<LI>pscoast.c.  -A changed from -A<area>/<maxlevel> (with <min_level> implicitly
+set to 0) to -A<area>/<min_level>/<maxlevel>.  If you used -A to exclude
+higher levels you need to explicitly include the 0 for min_level
+
+</OL>
+In addition, there are changes that ARE backward compatible but you are 
+encouraged to change your script to follow the new syntax:
+<OL>
+<LI>sample1d.c:  Old options -A, -C, -L are now set via -Fa, -Fc, -Fl,
+    but the old options are still silently recognized.  As these may go
+    away in the future we suggest you adopt to the new order.
+</OL>
+
+</BODY>
+</HTML>

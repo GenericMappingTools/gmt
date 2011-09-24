@@ -1,0 +1,207 @@
+#-------------------------------------------------------------------------------
+#	$Id$
+#
+#	Standard Makefile Macro Setup for GMT 5
+#
+# @configure_input@
+#
+# Edit this file only, NOT the makefile itself.
+#-------------------------------------------------------------------------------
+# The purpose of this section is to contain common make macros
+# that should be processed by every execution of that utility.
+#-------------------------------------------------------------------------------
+
+# POSIX shell.  On some platforms it is not /bin/sh.
+SHELL		= @SHELL@
+
+# Installation Directories:
+PACKAGE_TARNAME	= @PACKAGE_TARNAME@
+rootdir		= @rootdir@
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+datarootdir	= @datarootdir@
+srcdir		= @rootdir@/src
+bindir		= $(DESTDIR)@bindir@
+libdir		= $(DESTDIR)@libdir@
+includedir	= $(DESTDIR)@includedir@
+mandir		= $(DESTDIR)@mandir@
+datadir		= $(DESTDIR)@datadir@
+docdir		= $(DESTDIR)@docdir@
+
+# Supplementary source directories
+SUPPL		= @SUPPL@
+
+# GMT FTP site
+FTPSITE		= @FTPSITE@
+
+# GMT version number
+GMT_VERSION	= @PACKAGE_VERSION@
+# GSHHS version number
+GSHHS_VERSION	= @GSHHS_VERSION@
+
+# Compiler, if $CC not set in environment
+CC		= @CC@
+
+# Preprocessing:
+CPP		= @CPP@
+CPPFLAGS	= $(INCLUDES) $(DEFINES) @CPPFLAGS@
+
+# X11 compiler flags and link flags
+X_CFLAGS	= @X_CFLAGS@
+X_LIBS		= @X_PRE_LIBS@ @X_LIBS@ -lXaw -lXt -lXmu -lXext -lX11 @X_EXTRA_LIBS@
+
+#-------------------------------------------------------------------------------
+#	Link debug information (Mac OS X only)
+#-------------------------------------------------------------------------------
+#
+DSYMUTIL	= @DSYMUTIL@
+#
+#-------------------------------------------------------------------------------
+#	Math library specification 
+#	(Will most of the time be -lm, on Solaris -lsunmath -lm)
+#-------------------------------------------------------------------------------
+#
+LIBS		= @LIBS@
+#
+#-------------------------------------------------------------------------------
+#	Miscellaneous Standard Utilities
+#-------------------------------------------------------------------------------
+#
+INSTALL		= @INSTALL@
+INSTALL_DATA	= @INSTALL_DATA@
+INSTALL_DIR	= $(INSTALL) -d
+AWK		= @AWK@
+AS		= @AS@
+AR		= @AR@
+RANLIB		= @RANLIB@
+CSH		= @CSH@
+LD		= @LD@
+LN_S		= @LN_S@
+#
+#-------------------------------------------------------------------------------
+#	Macros for Octave or Matlab (if available)
+#-------------------------------------------------------------------------------
+#
+MEX_BLD		= @MEX_BLD@
+MEX_LIB		= @MEX_LIB@
+MEX_INC		= @MEX_INC@
+MEX_EXT		= @MEX_EXT@
+MEX_XDIR	= $(DESTDIR)@MEX_XDIR@
+MEX_MDIR	= $(DESTDIR)@MEX_MDIR@
+#
+#-------------------------------------------------------------------------------
+#	Miscellaneous macros for Cygwin
+#	Normally empty, EXE=.exe under Cygwin
+#-------------------------------------------------------------------------------
+#
+EXE		= @EXE@
+#
+#-------------------------------------------------------------------------------
+#	Required directives for netCDF includes and library
+#-------------------------------------------------------------------------------
+#
+NETCDF_INC	= @NETCDF_INC@
+NETCDF_LIB	= @NETCDF_LIB@
+#
+#-------------------------------------------------------------------------------
+#	Optional directives for GDAL includes and library
+#-------------------------------------------------------------------------------
+#
+GDAL_INC	= @GDAL_INC@
+GDAL_LIB	= @GDAL_LIB@
+#
+#-------------------------------------------------------------------------------
+#       Optional directives for PCRE includes and library
+#-------------------------------------------------------------------------------
+#
+PCRE_INC        = @PCRE_INC@
+PCRE_LIB        = @PCRE_LIB@
+#
+#-------------------------------------------------------------------------------
+#	Programs and other stuff added only for backward compatibility
+#-------------------------------------------------------------------------------
+#
+@GMT_COMPAT@GMT_COMPAT_PROGS	= gmt2rgb$(EXE)
+#
+#-------------------------------------------------------------------------------
+#	Required path to GMT shared data (used as $GMT_SHAREDIR by users)
+#-------------------------------------------------------------------------------
+#
+GMT_SHARE_PATH	= @datadir@
+#
+#-------------------------------------------------------------------------------
+#	Compiler switches and linker flags
+#-------------------------------------------------------------------------------
+#
+CFLAGS		= @CFLAGS@
+LDFLAGS		= @LDFLAGS@
+#
+#-------------------------------------------------------------------------------
+# For your information, here are some CFLAGS options known to work on other systems:
+#CFLAGS	= -O					# Generic
+#CFLAGS	= -ieee_with_inexact -Olimit 1500	# Dec Alpha OSF
+#CFLAGS	= -O -Olimit 1500			# Dec VMS Ultrix
+#CFLAGS	= -mieee -O2				# Dec Alpha/Alpha PC Linux
+#CFLAGS	= -Aa +Ofltacc +O1 +Olibcalls		# HPUX
+#CFLAGS	= -Daux -O				# A/UX
+#CFLAGS	= -O -pedantic				# Gnu gcc compiler
+#CFLAGS	= -O -Xc		 		# Sun Solaris
+#CFLAGS	= -O -w					# SGI IRIX
+#CFLAGS	= -O2					# IBM AIX
+#CFLAGS = -D_WIN32				# Cygwin
+#
+# FYI, here are some LDFLAGS options known to work on other systems:
+#LDFLAGS= -s					# Static link, strip executables
+#LDFLAGS= -s -Wl,+b,$(libdir) +z		# HPUX w/shared libs
+#LDFLAGS= -s -Wl,-rpath,$(libdir)		# Linux w/shared libs
+#LDFLAGS= -s -Wl,-rpath,$(libdir)		# SGI IRIX w/shared libs
+#LDFLAGS= -s -Wl,-rpath,$(libdir)		# Gnu gcc compiler w/shared libs
+#LDFLAGS= -s -Wl,-R$(libdir)			# Sun Solaris w/shared libs
+#
+#-------------------------------------------------------------------------------
+#	Set  LIBEXT = a      to create static libraries (default)
+#	Set  LIBEXT = $(SL)  to create shared libraries (and set SL below)
+#-------------------------------------------------------------------------------
+#
+LIBEXT		= @LIBEXT@
+#
+#-------------------------------------------------------------------------------
+#	Shared library file extension. Examples:
+#	Solaris, Linux, IRIX: so	HP: sl		Mac OS X: dylib
+#	SL_VERSION is extension for versioned shared libraries. Examples:
+#	Linux: so.<version>		Mac OS X: <version>.dylib
+#	Set SL_VERSION = $(SL) to prevent the creation of versioned shared libraries
+#-------------------------------------------------------------------------------
+#
+SL		= @SL@
+SL_VERSION	= @SL_VERSION@
+#
+#-------------------------------------------------------------------------------
+#	Linker switch for building shared libraries
+#	These are only made if GMTLIB is set to $(SHARED_LIB) below
+#	SunOS: -G  HP-UX: -b  Linux,IRIX: -shared
+#-------------------------------------------------------------------------------
+#
+LD_OPT		= @LD_OPT@
+#
+#-------------------------------------------------------------------------------
+#	Set TRIANGLE_x = -DTRIANGLE_x to use Shewchuk's triangulation routine
+#	where x = D and O.  Default is to leave these empty.
+#-------------------------------------------------------------------------------
+#
+TRIANGLE_D	= @TRIANGLE_D@
+TRIANGLE_O	= @TRIANGLE_O@
+#
+#-------------------------------------------------------------------------------
+#	Set ALPHA_SINCOS_O = alpha-sincos.o under OSF1 on Dec Alphas to use an
+#	assembler wrapper to call the alpha's funny sincos function correctly.
+#-------------------------------------------------------------------------------
+#
+ALPHA_SINCOS_O	= @ALPHA_SINCOS_O@
+#
+#-------------------------------------------------------------------------------
+#	TXT2MAN is the macro for the C-preprocessor call to make the manpages
+#	(only needed when compiled from Subversion source).
+#-------------------------------------------------------------------------------
+#
+TXT2MAN		= @TXT2MAN@

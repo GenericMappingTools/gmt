@@ -1,0 +1,200 @@
+#include "common_options.txt"
+.TH MAPPROJECT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+#define	LEN1	0.5
+#define SCALE1	OPT(Jm)0.5BD(c)
+.SH NAME
+mapproject \- Do forward and inverse map transformations, datum conversions and geodesy
+.SH SYNOPSIS
+BD(mapproject) [ IT(table) ] GMT_J_OPT GMT_Rgeo_OPT 
+[ OPT(Ab)|BD(B)|BD(f)|BD(F)|BD(o)|BD(O)[IT(lon0)/IT(lat0)] ] [ OPT(C)[IT(dx)/IT(dy)] ] [ OPT(Dc)|BD(i)|BD(p) ] [ OPT(E)[IT(datum)] ] 
+[ OPT(F)[IT(unit)] ] [ OPT(G)[IT(x0)/IT(y0)][/IT(unit)][BD(+)|BD(-)] ] [ OPT(I) ] 
+[ OPT(L)IT(line.xy)[/IT(unit)][BD(+)] ] [ OPT(N)[BD(a)|BD(c)|BD(g)|BD(m)] ] [ OPT(Q)[BD(d)|BD(e) ] [ OPT(S) ] [ OPT(T)[BD(h)]IT(from)[/IT(to)] ] 
+[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(mapproject) reads (longitude, latitude) positions from IT(infiles) [or standard input] and
+computes (x,y) coordinates using the specified map projection and scales.
+Optionally, it can read (x,y) positions and compute (longitude, latitude) values
+doing the inverse transformation.  This can be used to transform linear (x,y) points
+obtained by digitizing a map of known projection to geographical coordinates.  May also
+calculate distances along track, to a fixed point, or closest approach to a line.
+Finally, can be used to perform various datum conversions.
+Additional data fields are permitted after the first 2 columns which must have (longitude,latitude) or (x,y).
+See option OPT(:) on how to read (latitude,longitude) files.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_-J.txt"
+#include "explain_-R.txt"
+Special case for the UTM projection: If OPT(C) is used and OPT(R) is not given then the region is set to coincide with
+the given UTM zone so as to preserve the full ellipsoidal solution (See RESTRICTIONS for more information).
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+.TP
+OPT(Ab)|BD(B)|BD(f)|BD(F)|BD(o)|BD(O)[IT(lon0)/IT(lat0)]
+OPT(Af) calculates the (forward) azimuth from fixed point IT(lon/lat) to each data point.  Use OPT(Ab) to get
+back-azimuth from data points to fixed point.  Use OPT(Ao) to get orientations (-90/90) rather than azimuths (0/360).
+Upper case BD(F), BD(B) or BD(O) will convert from geodetic to
+geocentric latitudes and estimate azimuth of geodesics (assuming the current ellipsoid is not a sphere).
+If no fixed point is given then we compute the azimuth (or back-azimuth) from the previous point.
+.TP
+OPT(C)[IT(dx)/IT(dy)]
+Set center of projected coordinates to be at map projection center [Default is lower left corner].
+Optionally, add offsets in the projected units to be added (or subtracted when OPT(I) is set) to (from)
+the projected coordinates, such as false eastings and northings for particular projection zones [0/0].
+The unit used for the offsets is the plot distance unit in effect (see BD(PROJ_LENGTH_UNIT)) unless OPT(F) is used,
+in which case the offsets are in meters.
+.TP
+OPT(Dc)|BD(i)|BD(p)
+Temporarily override BD(PROJ_LENGTH_UNIT) and use BD(c) (cm), BD(i) (inch),
+or BD(p) (points) instead.  Cannot be used with OPT(F).
+.TP
+OPT(E)[IT(datum)]
+Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates (add OPT(I) for the
+inverse conversion).  Append
+datum ID (see OPT(Qd)) or give IT(ellipsoid):IT(dx),IT(dy),IT(dz)
+where IT(ellipsoid) may be an ellipsoid ID (see OPT(Qe)) or given as IT(a)[,IT(inv_f)], where IT(a) is the
+semi-major axis and IT(inv_f) is the inverse flattening (0 if omitted).
+If IT(datum) is - or not given we assume WGS-84.
+.TP
+OPT(F)[IT(unit)]
+Force 1:1 scaling, i.e., output (or input, see OPT(I)) data are in actual projected meters.  To specify other units,
+append the desired unit (see UNITS).
+Without OPT(F), the output (or input, see OPT(I)) are in the units specified by BD(PROJ_LENGTH_UNIT) (but see OPT(D)).
+.TP
+OPT(G)[IT(x0)/IT(y0)][/IT(unit)][BD(+)|BD(-)]
+Calculate distances along track IT(or) to the optional point set with OPT(G)IT(x0/y0).  Append the distance unit (see UNITS),
+including BD(c) (Cartesian distance using input coordinates) or BD(C) (Cartesian distance using projected coordinates).  The
+BD(C) unit requires OPT(R) and OPT(J) to be set.  With no fixed point is given we
+calculate cumulate distances along track. Append BD(-) to obtain incremental distance between successive points.
+Append BD(+) to specify the 2nd point via two extra columns in the input file.
+.TP
+OPT(I)
+Do the Inverse transformation, i.e. get (longitude,latitude) from (x,y) data.
+.TP
+OPT(L)IT(line.xy)[/IT(unit)][BD(+)]
+Determine the shortest distance from the input data points to the line(s) given in the ASCII multisegment file IT(line.xy).
+The distance and the coordinates of the nearest point will be appended to the output as three new columns.
+Append the distance unit (see UNITS), including BD(c) (Cartesian distance using input coordinates) or BD(C)
+(Cartesian distance using projected coordinates).  The BD(C) unit requires OPT(R) and OPT(J) to be set. 
+Finally, append BD(+) to report the line segment id and the fractional point number instead of lon/lat of the nearest point.
+.TP
+OPT(N)[BD(a)|BD(c)|BD(g)|BD(m)]
+Convert from geodetic latitudes (using the current ellipsoid; see BD(PROJ_ELLIPSOID)) to one of four different
+auxiliary latitudes (longitudes are unaffected).  Choose from BD(a)uthalic, BD(c)onformal, BD(g)eocentric, and
+BD(m)eridional latitudes [geocentric].
+Use OPT(I) to convert from auxiliary latitudes to geodetic latitudes.
+.TP
+OPT(Q)[BD(d)|BD(e)
+List all projection parameters.  To only list datums, use OPT(Qd).  To only list ellipsoids, use OPT(Qe).
+.TP
+OPT(S)
+Suppress points that fall outside the region.
+.TP
+OPT(T)[BD(h)]IT(from)[/IT(to)]
+Coordinate conversions between datums IT(from) and IT(to) using the standard Molodensky transformation.  Use OPT(Th) if 3rd input column has
+height above ellipsoid [Default assumes height = 0, i.e., on the ellipsoid].  Specify datums using the
+datum ID (see OPT(Qd)) or give IT(ellipsoid):IT(dx),IT(dy),IT(dz)
+where IT(ellipsoid) may be an ellipsoid ID (see OPT(Qe)) or given as IT(a)[,IT(inv_f)], where IT(a) is the
+semi-major axis and IT(inv_f) is the inverse flattening (0 if omitted).
+If IT(datum) is - or not given we assume WGS-84.
+OPT(T) may be used in conjunction with OPT(R) OPT(J) to change the datum before coordinate projection
+(add OPT(I) to apply the datum conversion after the inverse projection).  Make sure that the
+BD(PROJ_ELLIPSOID) setting is correct for your case.
+#include "explain_-V.txt"
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-bo.txt"
+[Default is same as input].
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_-s.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_distunits.txt"
+#include "explain_precision.txt"
+.SH EXAMPLES
+To transform a file with (longitude,latitude) into (x,y) positions in cm on
+a Mercator grid for a given scale of LEN1 cm per degree, run
+.br
+.sp
+mapproject lonlatfile -R20/50/12/25 SCALE1 > xyfile
+.br
+.sp
+To transform several 2-column, binary, double precision files with (latitude,longitude) into (x,y) positions in inch on
+a Transverse Mercator grid (central longitude 75W) for scale = 1:500000 and suppress those points
+that would fall outside the map area, run
+.br
+.sp
+mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
+.br
+.sp
+To convert the geodetic coordinates (lon, lat, height) in the file old.dat from the NAD27 CONUS datum
+(Datum ID 131 which uses the Clarke-1866 ellipsoid) to WGS 84, run
+.br
+.sp
+mapproject old.dat -Th131 > new.dat
+.br
+.sp
+To compute the closest distance (in km) between each point in the input file quakes.dat and the
+line segments given in the multisegment ASCII file coastline.xy, run
+.br
+.sp
+mapproject quakes.dat -Lcoastline.xy/k > quake_dist.dat
+.SH RESTRICTIONS
+The rectangular input region set with OPT(R) will in general be mapped into a
+non-rectangular grid.  Unless OPT(C) is set, the leftmost point on this grid has xvalue = 0.0, and the
+lowermost point will have yvalue = 0.0. Thus, before you digitize a map, run the
+extreme map coordinates through BD(mapproject) using the appropriate scale and see
+what  (x,y) values they are mapped onto.  Use these values when setting up for
+digitizing in order to have the inverse transformation work correctly, or alternatively,
+use BD(awk) to scale and shift the (x,y) values before transforming.
+.br
+For some projection, a spherical solution may be used despite the user having
+selected an ellipsoid.  This occurs when the users OPT(R) setting implies a
+region that exceeds the domain in which the ellipsoidal series expansions are
+valid.  These are the conditions: (1) Lambert Conformal Conic (OPT(JL))and Albers
+Equal-Area (OPT(JB)) will use the spherical solution when the map scale exceeds
+1.0E7.  (2) Transverse Mercator (OPT(JT)) and UTM (OPT(JU)) will will use the
+spherical solution when either the west or east boundary given in OPT(R) is
+more than 10 degrees from the central meridian, and (3) same for Cassini (OPT(JC))
+but with a limit of only 4 degrees.
+.SH ELLIPSOIDS AND SPHEROIDS
+BD(GMT) will use ellipsoidal formulae if they are implemented and the user have
+selected an ellipsoid as the reference shape (see BD(PROJ_ELLIPSOID) in BD(gmt.conf)).  The user
+needs to be aware of a few potential pitfalls: (1)  For some projections,
+such as Transverse Mercator, Albers, and Lambert's conformal conic we use the\"'
+ellipsoidal expressions when the areas mapped are small, and switch to the
+spherical expressions (and substituting the appropriate auxiliary latitudes)
+for larger maps.  The ellipsoidal formulae are used as follows: (a) Transverse
+Mercator: When all points are within 10 degrees of central meridian, (b) Conic
+projections when longitudinal range is less than 90 degrees, (c) Cassini
+projection when all points are within 4 degrees of central meridian. (2) When
+you are trying to match some historical data (e.g., coordinates obtained with
+a certain projection and a certain reference ellipsoid) you may find that BD(GMT)
+gives results that are slightly different.  One likely source of this mismatch
+is that older calculations often used less significant digits.  For instance,
+Snyder's examples often use the Clarke 1866 ellipsoid (defined by him as\"'
+having a flattening f = 1/294.98).  From f we get the eccentricity squared to
+be 0.00676862818 (this is what BD(GMT) uses), while Snyder rounds off and uses
+0.00676866.  This difference can give discrepancies of several tens of cm.
+If you need to reproduce coordinates projected with this slightly different
+eccentricity, you should specify your own ellipsoid with the same parameters
+as Clarke 1866, but with f = 1/294.97861076.  Also, be aware that older data
+may be referenced to different datums, and unless you know which datum was
+used and convert all data to a common datum you may experience mismatches of
+tens to hundreds of meters. (3) Finally, be aware that BD(PROJ_SCALE_FACTOR)
+have certain default values for some projections so you may have to override
+the setting in order to match results produced with other settings.
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmt.conf (5),
+.IR project (1)
+.SH REFERENCES
+Bomford, G., 1952, Geodesy, Oxford U. Press.
+.br
+Snyder, J. P., 1987, Map Projections \- A Working Manual, U.S. Geological Survey Prof. Paper 1395.
+.br
+Vanicek, P. and Krakiwsky, E, 1982, Geodesy \- The Concepts, North-Holland Publ., ISBN: 0 444 86149 1.
+.br

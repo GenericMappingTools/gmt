@@ -1,0 +1,284 @@
+	$Id$
+
+README for gmt/src/dbase directory.
+Distributed under the GNU Public License (see file ../LICENSE.TXT)
+
+==> CHANGES IN GMT 5.x <==
+
+Made into a module.  Added -T<file> to save table xyz files instead
+of always writing to stdout.
+
+==> CHANGES IN GMT 4.0.1 <==
+
+We can now either give data set ID number or give a text string
+that we search for in the data set descriptions and if we find
+a single match we assign that ID as the chosen one.
+
+==> CHANGES IN GMT 3.3.1 <==
+
+We have added more flexibility in dealing with the fact that
+binary files written on one system may need to be byte-swapped
+on another.  For instance, native binary files written on a
+Sun or Mac will have Bigendian byte order, while the same file
+written on a machine with Intel or Alpha chips will be Little-endian.
+Since some users mount Sun disks with PC-NSF and want to read
+the same binary files with grdraster from both PCs and Suns, a
+problem can arise.  The new grdraster implements a new polify
+to deals with this situation:
+
+   1. When grdraster is compiled, it "remembers" what byteorder
+      the machine it is running on supports (L or B).
+   2. Files given in grdraster.info are ASSUMED to be of the same
+      byteorder, UNLESS the grdraster.info record has an extra
+      column with the 1-character byteorder flag L or B.  Thus,
+      if a particular binary file was generated on a Sun you should
+      add the flag B.  That way, should you every copy the file (and
+      the grdraster.info file to a machine with another byteorder
+      it will read properly.
+
+==> CHANGES IN GMT 3.3 <==
+
+The makefile have an option to build-in automatic swapping
+of input data.  Because the input data sets can come from
+many different sources it may be more useful to instead
+swap those data sets that were created on machines with a
+different byte-order than yours.  To do so, simply use
+
+xyz2grd troublefile -Sgoodfile -V -Z?
+
+where troublefile is the file with byte-order problems
+      goodfile is the name of the fixed file
+      ? is one of h (short), H (unsigned short), i (int)
+	I (unsigned int), l (long), f (float), d (double)
+
+==> CHANGES IN GMT 3.2 <==
+
+Default GMT_GRIDDIR directory is now $rootdir/lib/dbase
+following the new policy for supplemental programs and
+their support files.
+
+==> CHANGES IN GMT 3.1 <==
+
+With the release of GMT 3.1, several supplemental dbase programs
+became obsolete due to the inproved flexibility of xyz2grd; these
+are no longer distributed in the GMT3.1 supplemental archive.
+Specifically:
+
+raster_transpose.c:  Program was used to read a global 5'x5' file
+	of signed short integers written as columns from W to E
+	with each column written fron N to S and write out a
+	scanline oriented file.  Its function can be duplicated by
+
+	xyz2grd -R0/359:55/-90/90 -I5m -ZLTh oldfile -Gtmp.grd
+	grd2xyz tmp.grd -ZTLh -bo > newfile
+
+ngdc/etopo5_append.c:  Program to add one row of values to the ETOPO5.dat
+	file from NGDC's "Global Relief" CD-ROM which is missing the
+	south pole. Its function can be duplicated with
+
+	xyz2grd -R0/359:55/-90/90 -I5m -ZTLh -N2810 etopo5.dat -Gtmp.grd
+	grd2xyz tmp.grd -ZTLh -bo > new_etopo5.dat
+
+ngdc/haxby_trim.c:  Program to take the file haxby.bin from the NGDC CD-ROM
+	"Global Relief" and trim off the zero rows outside +/- 72 degrees
+	latitude, to save disk space.  Its function can be duplicated with
+
+	xyz2grd -R0:05/360/-71:55/72 -I5m -ZTLhxs1866240 haxby.bin -Gtmp.grd
+	grd2xyz tmp.grd -ZTLh -bo > new_haxby.bin
+
+	where 1866240 is 216 rows of 4320 values at 2 bytes each.  These
+	steps also allows for the fact that first row is at 0 degrees 5 min
+	east.
+
+sio/siofligage.c:  Program to read the global gridded age file by
+	Dietmar Muller et al., as supplied by ftp from Scrippts,
+	with 10 wsamples per degree grid registered in -R0/360/-72/72
+	and flip it over since it was written in upside-down scan-line
+	format (Australian view?).  Later versions of these data are no
+	longer upside down.
+
+	xyz2grd -R0/360/-72/72 -I6m -ZBLh infilename -Gtmp.grd
+	grd2xyz tmp.grd -ZTLh -bo > outfilename
+
+For any of these examples, you may append w to the -Z options to swap byte-
+order on systems that are not bigendian.
+
+
+Do install the only supplied program, grdraster, simply type
+
+make install
+
+the process inherits all your makefile settings from the main GMT src
+directory.
+grdraster will look for the file grdraster.info and all the files referred
+to in it (unless filename starts at /) in the directory indicated by the
+environmental variable GMT_GRIDDIR.  If this is not set, grdraster will
+default to $rootdir/lib.
+
+==> GMT 3.0 COMMENTS <==
+
+Programs are supplied which allow the user to extract grd files spanning
+user-defined regions [-R option] from large-area native binary data files.
+Information is also supplied to help you set up a database from existing
+files available on CD or through ftp over Internet.  The data files we
+describe here may be of interest only to Earth scientists.  However, other
+GMT users may want to play with these anyway, to see how to adapt the
+program "grdraster" to their needs.
+
+A sub-directory "ngdc" is supplied with programs designed to aid
+the user in taking files from a CD-ROM called "Global Relief" and setting
+up a database used by a new version of "grdraster".  This CD is available
+from the U. S. National Geophysical Data Center (mosaic:  http://www.ngdc.
+noaa.gov   gopher:  gopher.ngdc.noaa.gov   ftp:   ftp.ngdc.noaa.gov
+general info   info@ngdc.noaa.gov   point of contact Robin R. Warnken
+rrw@mail.ngdc.noaa.gov)  The files on this CD which we support here have
+gravity anomalies and topographic elevations.
+
+Another sub-directory, "sio" is supplied with programs designed to
+aid the user in taking files from an ftp site at the Scripps Institution
+of Oceanography and plugging these into "grdraster" or otherwise into GMT.
+The file that plugs into grdraster contains ages of the sea floor determined
+from magnetic anomaly data.  There is also a file of gravity anomalies which
+is supplied in a mercator projection, and programs "img2latlongrd" and
+"img2mercgrid" are provided to handle that.
+
+
+PLEASE NOTE that the authors of GMT cannot supply you with these data files.
+You have to ftp the files yourself, or purchase the CD.  We are giving you
+these software tools as a courtesy and to encourage you to explore what data
+products are out there in cyberspace and at the world data centers.  We are
+not responsible for the quality of these data sets.  We did not create them
+(except in a couple of cases !) and they are not ours to give away.  GMT is
+a system of software tools.  It is not a database.
+
+
+HISTORY and CHANGES in version 3.0:
+
+In the past, we have supplied a program "grdraster" which extracted grd files
+spanning regions specified by -R<w>/<e>/<s>/<n> from native binary grid files.
+The supplied version of grdraster.c read global files sampled at 5 minutes of
+latitude and longitude and written from W to E as a sequence of 2161 element
+column vectors.  This was a file format used at Lamont, and Paul Wessel has
+used it at Hawaii.
+
+Meanwhile, at Scripps and later at NOAA, Walter Smith was using a different
+"grdraster" which read native binary files in "scan-line format", that is,
+written from N to S as row vectors, with each row written from W to E.  The
+Smith version supported different registrations (grid or pixel), and varying
+sampling intervals, etc. so was more flexible.  Also, the various data sets
+available on CD and by ftp are usually written in scan-line format, so in
+version 3.0 we now supply this version.
+
+In previous releases of GMT, we have supplied the source code for Paul's
+version and called it "grdraster_gmt.c".  This was so that in extracting
+the tar file, it would not clobber whatever the user had named "grdraster.c".
+This release only supports the new version; users who installed files that
+could be read by the old version should convert their files (see below).
+
+If you have something set up which you like, don't change it.  Ignore these
+files.  If you want to use the new system, we suggest you use the 3.0
+version.  If you have the old (Paul's) system but want to go to the new
+system, the program "raster_transpose" will let you flip your old data
+files to make them compatible with the new 3.0 version of grdraster.
+
+Actually, with user-defined binary I/O available in GMT 3.0, grdraster is
+not really needed.  All that is needed is to have a header on each file.
+But this is what we have working for now, and we supply it to be helpful
+to other users of this data.
+
+
+TO USE THIS VERSION:
+
+First, create a directory where you have "enough" disk space for the
+files which grdraster will read.  The size of "enough" depends on how
+much data you want to use.  For example, the world topography data called
+"etopo5" which is on the NGDC "Global Relief" CD-ROM takes about 19 Mbytes.
+Walter Smith's installation has lots of data files he has taken from
+internet, and uses about 480 Mbytes.
+
+Now edit the macro GRIDDIR in the makefile and set it to the complete
+path name (starting with "/") of the directory you created.  Also,
+edit switches having to do with cc, install, etc. as you do when you
+install GMT.
+
+Now you can make all; make install; make clean; in this (dbase)
+directory.  (This assumes that you have already made GMT.)  This will make
+the programs grdraster and "raster_transpose".  raster_transpose will
+convert files in Paul's old grdraster format to the new grdraster format.
+If you don't need this you can delete it from the GMTBIN dir now.
+
+Now take the file called "documentation" which is in this directory
+and move it to the GRIDDIR.  The file as supplied has entries for several
+data files.  "documentation" should have one line for each file you
+install in the GRIDDIR.  The file we supply here is a sample.  You can
+comment out the lines you do not need by placing a "#" as the first
+character on a line.  If you add grids you get from other sources
+(or which you had and converted using "raster_transpose"), you can add
+an entry for these to the file.  It should be obvious from the file
+how to do this (we hope!).
+
+Scripps data:
+
+At Scripps you can get two kinds of data:  A worldwide sea floor age
+map based on magnetic anomaly identifications, and a world wide marine
+gravity map based on satellite altimetry.  The ages are ready to plug
+into grdraster except that they need to be flipped over (they are
+written from S to N instead of the other way around).  The gravity map
+is harder to use because it is gridded in a Mercator-projected 
+coordinate system instead of the the lat,lon system.  Programs are
+supplied in the "sio" subdirectory to deal with these files.  If you
+want these, edit the make file and make all,install,clean as before.
+
+To take files from Scripps:  use anonymous ftp from baltica.ucsd.edu
+(132.239.121.193) and get the files you want.  If you want seafloor age
+data, cd to "pub/global_age" and get (binary mode) a file called
+"globalage.bint".  Then use "dd" if you need to swap bytes on this file
+(it is big-endian) and run "sioflipage" to flip it, putting the result
+in your GRIDDIR.  If you want the marine gravity field, cd to "pub/
+global_grav" and get (binary mode) "world_grav.img.4".  Because of the
+Mercator projection of this file, it is not read by grdraster but we
+supply programs "img2mercgrd" and "img2latlongrd" to handle it directly.
+To make other plots overlay this data, you must use the Sphere as your
+default ellipsoid.  Also note that the world_grav.img file is updated
+as more data become available.  At this writing (January 1995) the current
+version is ".4".  This file also has information about satellite tracks
+encoded into it, which is another reason it cannot be handled with a
+simple grdraster or grd header.
+
+NGDC data:
+
+To take files from the "Global Relief" CD-ROM:  Some files will come
+over directly.  The file called "topo/usgs/topo30." contains elevations
+in feet above and below sea level (or lake level datum) for the 48 state
+area of the U.S. and near-offshore.  This file is in big-endian byte
+order so either copy it or use "dd" to swap the bytes if you want this
+one.  Put your copy in your GRIDDIR.  The files in gravity/geosat called
+"GEOSAT30.BIN" and "GEOSAT30.DOS" are in big-endian and little-endian
+byte order and are gravity fields over the ocean areas between 30 S
+and 72 S latitude.  Copy the one which is appropriate for your system
+to your GRIDDIR if you want this data.  Software in the ngdc
+directory will help you take the files "gravity/seasat/haxby.bin" and
+"topo/etopo5/etopo5.dat (or dos)" and fix them up for installation in
+your GRIDDIR.  etopo5 needs the south pole added (done by the program
+etopo5_append) and haxby.bin needs empty rows between 72 and 90 lat
+trimmed off [and optional byte swapping] (done by haxby_trim).  So again
+you can edit the makefile, then run these programs to make the versions
+for the GRIDDIR.
+
+Remember:
+
+You need to comment out lines in "documentation" if you are not using
+the corresponding files.  Also, the programs "haxby_trim, etopo5_append",
+raster_transpose", "sioflipage" only need to be used once, so you don't
+really need to leave them installed in the GMTBIN directory.  You might
+as well delete them when you are finished with them, to save space.  The
+only files that need to live in your directory are grdraster and if you
+use the SIO gravity file:  img2latlongrd and img2mercgrid.
+
+NOTE:  Whenever you take files from people, whether on CD from a data center
+or by ftp from Internet, be sure to also take the documentation, print it out,
+and read it.  And figure out how to give credit where it is due.  When you
+publish results using other people's data, cite their article or data
+distribution as appropriate.  They have been generous to you in giving
+away their data; don't let them perish.
+
