@@ -3059,6 +3059,9 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 	static char *m_unit[4] = {"bytes", "kb", "Mb", "Gb"};
 	double mem;
 	GMT_LONG k;
+#if defined(WIN32) && defined(USE_MEM_ALIGNED)
+	size_t alignment = 16;
+#endif
 
 	if (nelem < 0) {	/* Probably 32-bit overflow */
 		GMT_report (C, GMT_MSG_FATAL, "Error: Requesting negative number of items (%ld) - exceeding 32-bit counting?\n", nelem);
@@ -3073,7 +3076,11 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 			GMT_free (C, prev_addr);
 			return (NULL);
 		}
+#if defined(WIN32) && defined(USE_MEM_ALIGNED)
+		if ((tmp = _aligned_realloc ((void *) prev_addr, (size_t)(nelem * size), alignment)) == NULL) {
+#else
 		if ((tmp = realloc ((void *) prev_addr, (size_t)(nelem * size))) == NULL) {
+#endif
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
@@ -3086,7 +3093,14 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 	}
 	else {
 		if (nelem == 0) return (NULL); /* Take care of n == 0 */
+#if defined(WIN32) && defined(USE_MEM_ALIGNED)
+		tmp = _aligned_malloc ((size_t)(nelem * size), alignment);
+		if (tmp != NULL)
+			tmp = memset(tmp, 0, (size_t)(nelem * size));
+		else {
+#else
 		if ((tmp = calloc ((size_t)nelem, size)) == NULL) {
+#endif
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
@@ -3109,7 +3123,11 @@ void GMT_free_func (struct GMT_CTRL *C, void **addr, char *fname, GMT_LONG line)
 #ifdef DEBUG
 	gmt_memtrack_sub (C, GMT_mem_keeper, fname, line, *addr);
 #endif
+#if defined(WIN32) && defined(USE_MEM_ALIGNED)
+	_aligned_free (*addr);
+#else
 	free (*addr);
+#endif
 	*addr = NULL;	/* Cleanly set the freed pointer to NULL */
 }
 

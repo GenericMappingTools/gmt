@@ -387,7 +387,7 @@ char *strtok_r (char *s1, const char *s2, char **lasts)
 }
 #endif /* HAVE_STRTOK_R */
 
-#if WIN32
+#ifdef WIN32
 /* Turn /c/dir/... paths into c:/dir/... 
  * Must do it in a loop since dir may be several ;-separated dirs
 */
