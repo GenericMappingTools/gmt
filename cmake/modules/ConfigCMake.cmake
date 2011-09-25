@@ -83,3 +83,24 @@ if(NOT GMT_SHARE_PATH)
   set(GMT_SHARE_PATH  "${CMAKE_INSTALL_PREFIX}/share")
 endif(NOT GMT_SHARE_PATH)
 
+# add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+#set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# use, i.e. don't skip the full RPATH for the build tree
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
+
+# when building, don't use the install RPATH already
+# (but later on when installing)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+# the RPATH to be used when installing
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+if(APPLE)
+  set(CMAKE_INSTALL_NAME_DIR ${CMAKE_INSTALL_RPATH})
+endif(APPLE)
+
+# add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
