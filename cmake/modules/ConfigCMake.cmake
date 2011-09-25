@@ -77,3 +77,9 @@ else (TRIANGLE_D)
   set(TRIANGULATE "Watson")
 endif (TRIANGLE_D)
 
+# GMT paths used in the code
+if(NOT GMT_SHARE_PATH)
+  # do not reset user setting
+  set(GMT_SHARE_PATH  "${CMAKE_INSTALL_PREFIX}/share")
+endif(NOT GMT_SHARE_PATH)
+

@@ -35,10 +35,6 @@ set(GMT_VERSION_YEAR "2011")
 set(GSHHS_VERSION "2.2.0")
 #set(MANDATE "")
 
-# GMT paths used in the code
-set(GMT_DATAROOTDIR "${CMAKE_INSTALL_PREFIX}/share") # is this needed: two vars
-set(GMT_SHARE_PATH  "${GMT_DATAROOTDIR}")            # pointing to the same dir?
-
 # Use SI units per default
 set(UNITS "SI")
 
