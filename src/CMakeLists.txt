@@ -76,14 +76,16 @@ grdtrend.c grdvolume.c greenspline.c kml2gmt.c
 makecpt.c mapproject.c minmax.c nearneighbor.c
 project.c ps2raster.c sample1d.c spectrum1d.c
 splitxyz.c surface.c trend1d.c trend2d.c
-triangulate.c xyz2grd.c ${GMT_PROGS2_SRCS})
+triangulate.c xyz2grd.c)
+list(APPEND GMT_PROGS_SRCS ${GMT_PROGS2_SRCS})
 
 set(GMT_PROGSPS_SRCS gmtdefaults.c gmtget.c gmtset.c
 grdcontour.c grdimage.c grdvector.c grdview.c
 psbasemap.c psclip.c pscoast.c pscontour.c
 pshistogram.c psimage.c psmask.c psrose.c
 psscale.c pstext.c pswiggle.c psxy.c psxyz.c
-pslegend.c ${GMT_PROGSPS2_SRCS})
+pslegend.c)
+list(APPEND GMT_PROGSPS_SRCS ${GMT_PROGSPS2_SRCS})
 
 # libpslib
 set(GMT_PSL_SRCS pslib.c gmt_notposix.h)
@@ -101,6 +103,36 @@ set(GMT_LIB_HDRS gmt_progpurpose.h gmt_config.h)
 # lib targets
 set(GMT_LIBS gmtlib pslib)
 
+# manpages
+string(REPLACE ".c" ".1" GMT_MAN_1_SRCS "${GMT_PROGS_SRCS};${GMT_PROGSPS_SRCS}")
+list(APPEND GMT_MAN_1_SRCS
+  gmt.1 gmt_shell_functions.1 gmtlogo.1 isogmt.1 gmtswitch.1)
+set(GMT_MAN_3_SRCS pslib.3)
+set(GMT_MAN_5_SRCS gmtcolors.5 gmt.conf.5)
+set(GMT_MAN_DEPS common_options.txt
+  explain_-A.txt explain_-B.txt explain_-B_full.txt explain_-I.txt
+  explain_-J.txt explain_-J_full.txt explain_-Jz.txt explain_-Jz_full.txt
+  explain_-K.txt explain_-K_full.txt explain_-L_scale.txt explain_-O.txt
+  explain_-O_full.txt explain_-P.txt explain_-P_full.txt explain_-R.txt
+  explain_-R_full.txt explain_-Rgeo.txt explain_-Rz.txt explain_-Rz_full.txt
+  explain_-T_rose.txt explain_-U.txt explain_-U_full.txt explain_-V.txt
+  explain_-V_full.txt explain_-XY.txt explain_-XY_full.txt
+  explain_-aspatial.txt explain_-aspatial_full.txt explain_-bi.txt
+  explain_-bi_full.txt explain_-bo.txt explain_-bo_full.txt explain_-c.txt
+  explain_-c_full.txt explain_-f.txt explain_-f_full.txt explain_-g.txt
+  explain_-g_full.txt explain_-h.txt explain_-h_full.txt explain_-icols.txt
+  explain_-icols_full.txt explain_-n.txt explain_-n_full.txt
+  explain_-ocols.txt explain_-ocols_full.txt explain_-s.txt
+  explain_-s_full.txt explain_-t.txt explain_-t_full.txt explain_colon.txt
+  explain_color.txt explain_commonitems.txt explain_contdump.txt
+  explain_contlabel.txt explain_distunits.txt explain_fill.txt
+  explain_float.txt explain_font.txt explain_grd_coord.txt
+  explain_grd_inout.txt explain_grd_input.txt explain_grd_output.txt
+  explain_gshhs.txt explain_help.txt explain_intables.txt
+  explain_labelinfo.txt explain_nodereg.txt explain_nodereg_full.txt
+  explain_pen.txt explain_perspective.txt explain_perspective_full.txt
+  explain_precision.txt explain_symbols.txt refs.i)
+
 
 ## generate header files (this must be rewritten with cmake macros to be platform independent)
 
@@ -110,7 +142,8 @@ set(GMT_EXTRA_HDRS
   gmt_dimensions.h gmtapi_errno.h gmt_color_rgb.h
   gmtmath_explain.h gmtmath.h gmtmath_man.i
   grdmath_explain.h grdmath.h grdmath_man.i
-  gmt_keycases.h gmtapi_errstr.h)
+  gmt_keycases.h gmtapi_errstr.h
+  Colors.i Ellipsoids.i Fonts.i grdreformat_man.i)
 
 # this is terrible:
 foreach(_filename ${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS})
@@ -249,6 +282,58 @@ endif(DSYMUTIL AND DEBUG_BUILD)
 install(TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
+
+if(CMAKE_COMPILER_IS_GNUCC)
+  # generate manpages
+  foreach(_manpage ${GMT_MAN_1_SRCS} ${GMT_MAN_3_SRCS} ${GMT_MAN_5_SRCS})
+    string(REGEX REPLACE "\\.[135]" ".txt" _gmt_man_template ${_manpage})
+    add_custom_command(
+      OUTPUT ${_manpage}
+      COMMAND cpp -w -P -nostdinc
+      -I${CMAKE_CURRENT_SOURCE_DIR}
+      -I${CMAKE_CURRENT_BINARY_DIR}
+      ${CMAKE_CURRENT_SOURCE_DIR}/${_gmt_man_template}
+      >${_manpage}
+      DEPENDS ${GMT_MAN_DEPS} ${GMT_EXTRA_HDRS}
+      COMMENT "Generate ${_manpage}")
+
+    # install manpages
+    foreach(_manfile ${GMT_MAN_1_SRCS})
+      list(APPEND GMT_MAN_1_FILES
+	"${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
+    endforeach(_manfile)
+    foreach(_manfile ${GMT_MAN_3_SRCS})
+      list(APPEND GMT_MAN_3_FILES
+	"${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
+    endforeach(_manfile)
+    foreach(_manfile ${GMT_MAN_5_SRCS})
+      list(APPEND GMT_MAN_5_FILES
+	"${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
+    endforeach(_manfile)
+  endforeach(_manpage)
+
+  # manpage target
+  add_custom_target(manpages ALL
+    DEPENDS
+    ${GMT_MAN_1_SRCS} ${GMT_MAN_3_SRCS} ${GMT_MAN_5_SRCS})
+
+  # install manpages
+  foreach(_manfile ${GMT_MAN_1_SRCS})
+    list(APPEND GMT_MAN_1_FILES "${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
+  endforeach(_manfile)
+  foreach(_manfile ${GMT_MAN_3_SRCS})
+    list(APPEND GMT_MAN_3_FILES "${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
+  endforeach(_manfile)
+  foreach(_manfile ${GMT_MAN_5_SRCS})
+    list(APPEND GMT_MAN_5_FILES "${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
+  endforeach(_manfile)
+  install(FILES ${GMT_MAN_1_FILES}
+    DESTINATION ${GMT_SHARE_PATH}/man/man1)
+  install(FILES ${GMT_MAN_3_FILES}
+    DESTINATION ${GMT_SHARE_PATH}/man/man3)
+  install(FILES ${GMT_MAN_5_FILES}
+    DESTINATION ${GMT_SHARE_PATH}/man/man5)
+endif(CMAKE_COMPILER_IS_GNUCC)
 
 # add subtrees
 add_subdirectory( meca )

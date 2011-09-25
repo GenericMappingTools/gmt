@@ -74,5 +74,8 @@ NOTE: If you want to change CMake behaviour just for yourself then modify the
 * Add further subtrees: follow example of CMakeLists.txt in src/meca, share
   and share/conf
 
-* Build targets for manpages, examples, doc, tests
+* Build targets for examples, doc, tests
+
+* Manpages: any ideas how to remove blank lines from CPP output without
+  using grep and cmake "file(read ..."?
 
