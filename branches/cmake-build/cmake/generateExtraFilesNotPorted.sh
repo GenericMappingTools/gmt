@@ -29,4 +29,15 @@ cat ${GMT_SOURCE_DIR}/gmt_keywords.txt ${GMT_SOURCE_DIR}/gmt_keywords.d | grep -
 grep -v '^#' ${GMT_SOURCE_DIR}/gmtapi_errors.d | awk '{printf "\"%s\",\n", $1}' > gmtapi_errstr.h
 egrep -v '#' ${GMT_SOURCE_DIR}/GMTprogs.txt | ${AWK} '{printf "\t\tcase %d:\n\t\t\tfunc = (PFL)GMT_%s;\n\t\t\t*mode = %s;\n\t\t\tbreak;\n", NR-1, $1, $2}' > gmt_progcases.h
 
+# manpages
+grep -v '^#' ${GMT_SOURCE_DIR}/Colors.txt | LANG=C ${AWK} '{printf ".br\n%3i\t%3i\t%3i\t%s\n", $1, $2, $3, $4}' > Colors.i
+grep -v '^#' ${GMT_SOURCE_DIR}/Ellipsoids.txt > tmp0.txt
+${AWK} '{printf "%s :\n", $1, $2}' tmp0.txt > tmp1.txt
+${AWK} -F: '{print $2}' tmp0.txt | sed -e 's/^ //g' > tmp2.txt
+${AWK} '{printf "(%d)\n", $2}' tmp0.txt > tmp3.txt
+paste -d' ' tmp[123].txt | ${AWK} '{printf ".br\n%s\n", $0}' > Ellipsoids.i
+rm -f tmp[0123].txt
+grep -v '^#' ${GMT_SOURCE_DIR}/../share/pslib/PS_font_info.d | ${AWK} '{printf ".br\n%i\t%s\n", NR - 1, $1}' > Fonts.i
+egrep 'session.grdformat.* = ' ${GMT_SOURCE_DIR}/gmt_customio.c | egrep -v 'not supported' | cut -d\" -f2 | ${AWK} '{printf "BD(%s)\t%s\n.br\n", $1, substr($0,6,length($0)-5)}'  > grdreformat_man.i
+
 exit 0

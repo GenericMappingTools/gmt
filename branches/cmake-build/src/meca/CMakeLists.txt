@@ -18,7 +18,7 @@ set(GMT_MECA_PROGS_SRCS
   pscoupe.c)
 
 # generate header file gmt_meca.h
-string(REPLACE ".c" ";" GMT_MECA_PROGS ${GMT_MECA_PROGS_SRCS})
+string(REPLACE ".c" "" GMT_MECA_PROGS "${GMT_MECA_PROGS_SRCS}")
 string(REGEX REPLACE ".*[/]" "" GMT_SUPPL_STRING
   "${CMAKE_CURRENT_SOURCE_DIR}") # current dirname
 set(GMT_MECA_API_H gmt_${GMT_SUPPL_STRING}.h)
