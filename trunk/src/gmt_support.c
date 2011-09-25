@@ -3279,7 +3279,7 @@ GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR 
 				txt_a[0] = p[1];	txt_a[1] = p[2];	txt_a[2] = '\0';
 				G->just = GMT_just_decode (C, txt_a, 6);
 				break;
-#if GMT_COMPAT
+#ifdef GMT_COMPAT
 			case 'k':	/* Font color specification (backwards compatibility only since font color is now part of font specification */
 				GMT_report (C, GMT_MSG_COMPAT, "+k<fontcolor> in contour label spec is obsolete, now part of +f<font>\n");
 				if (GMT_getfill (C, &p[1], &(G->font_label.fill))) bad++;
@@ -3350,7 +3350,7 @@ GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR 
 				G->min_radius = GMT_to_inch (C, &p[1]);
 				break;
 
-#if GMT_COMPAT
+#ifdef GMT_COMPAT
 			case 's':	/* Font size specification (for backward compatibility only since size is part of font specification) */
 				GMT_report (C, GMT_MSG_COMPAT, "+s<fontsize> in contour label spec is obsolete, now part of +f<font>\n");
 				G->font_label.size = GMT_convert_units (C, &p[1], GMT_PT, GMT_PT);
