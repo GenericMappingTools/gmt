@@ -194,11 +194,6 @@ set_source_files_properties(triangle
   COMPILE_FLAGS "-include float.h"
 )
 
-# temporary include config header (todo: include this in srcs by default)
-set_source_files_properties(${GMT_LIB_PS_SRCS} ${GMT_PSL_SRCS} ${GMT_PROGRAM}
-  PROPERTIES
-  COMPILE_FLAGS "-include gmt_config.h")
-
 
 # libpslib
 add_library (pslib ${GMT_PSL_SRCS})

@@ -92,6 +92,7 @@ extern "C" {
 #endif
 #endif
 
+#include "gmt_config.h"		/* CMake definitions: FLOCK, TRIANGLE_D, GMT_COMPAT, ... */
 #include "gmt_types.h"		/* All basic typedef declarations */
 #include "gmt_notunix.h"	/* Stuff for Windows */
 #include "gmt_notposix.h"	/* Non-POSIX extensions */

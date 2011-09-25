@@ -2218,7 +2218,7 @@ GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		rec++;
 		GMT_chop (C, line);	/* Get rid of [\r]\n */
-		if (rec == 1 && (strlen (line) < 7 || line[6] != '5')) {
+		if (rec == 2 && (strlen (line) < 7 || line[6] != '5')) {
 			GMT_message (C, "Warning: Your gmt.conf file may not be GMT 5 compatible\n");
 		}
 		if (line[0] == '#') continue;	/* Skip comments */
