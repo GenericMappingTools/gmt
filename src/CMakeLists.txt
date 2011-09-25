@@ -32,10 +32,11 @@ else(PCRE_FOUND)
   endif(REGEX_FOUND)
 endif(PCRE_FOUND)
 
-find_package( OpenMP )
-if(OPENMP_FOUND)
-    list(APPEND CMAKE_C_FLAGS ${OpenMP_C_FLAGS})
-endif(OPENMP_FOUND)
+# Commented OpenMP out because things do not link with it activated
+#find_package( OpenMP )
+#if(OPENMP_FOUND)
+#    list(APPEND CMAKE_C_FLAGS ${OpenMP_C_FLAGS})
+#endif(OPENMP_FOUND)
 
 find_package( Threads )
 
