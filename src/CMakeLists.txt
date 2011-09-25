@@ -104,11 +104,11 @@ set(GMT_LIB_HDRS gmt_progpurpose.h gmt_config.h)
 set(GMT_LIBS gmtlib pslib)
 
 # manpages
-string(REPLACE ".c" ".1" GMT_MAN_1_SRCS "${GMT_PROGS_SRCS};${GMT_PROGSPS_SRCS}")
-list(APPEND GMT_MAN_1_SRCS
+string(REPLACE ".c" ".1" GMT_MAN_1 "${GMT_PROGS_SRCS};${GMT_PROGSPS_SRCS}")
+list(APPEND GMT_MAN_1
   gmt.1 gmt_shell_functions.1 gmtlogo.1 isogmt.1 gmtswitch.1)
-set(GMT_MAN_3_SRCS pslib.3)
-set(GMT_MAN_5_SRCS gmtcolors.5 gmt.conf.5)
+set(GMT_MAN_3 pslib.3)
+set(GMT_MAN_5 gmtcolors.5 gmt.conf.5)
 set(GMT_MAN_DEPS common_options.txt
   explain_-A.txt explain_-B.txt explain_-B_full.txt explain_-I.txt
   explain_-J.txt explain_-J_full.txt explain_-Jz.txt explain_-Jz_full.txt
@@ -179,7 +179,8 @@ if(UNIX)
     DEPENDS ${GMT_SOURCE_DIR}/cmake/generateExtraFilesNotPorted.sh Colors.txt
     Datums.txt Ellipsoids.txt gmt_keywords.txt GMTprogs.txt gmtapi_errors.d gmt_progpurpose.h
     ${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS} ${GMT_LIB_SRCS}
-    COMMENT "Regenerating header files...")
+    COMMENT "Regenerating header files..."
+    VERBATIM)
 endif(UNIX)
 ## end generate header files
 
@@ -271,7 +272,8 @@ if(DSYMUTIL AND DEBUG_BUILD)
   foreach(target ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS})
     add_custom_command(TARGET ${target}
       POST_BUILD
-      COMMAND ${DSYMUTIL} $<TARGET_FILE:${target}>)
+      COMMAND ${DSYMUTIL} $<TARGET_FILE:${target}>
+      VERBATIM)
   endforeach(target)
   add_custom_target(allclean make clean
     COMMAND rm -rf *.dSYM
@@ -285,46 +287,33 @@ install(TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
 
 if(CMAKE_COMPILER_IS_GNUCC)
   # generate manpages
-  foreach(_manpage ${GMT_MAN_1_SRCS} ${GMT_MAN_3_SRCS} ${GMT_MAN_5_SRCS})
-    string(REGEX REPLACE "\\.[135]" ".txt" _gmt_man_template ${_manpage})
+  foreach(_manpage ${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5})
+    string(REGEX REPLACE "\\.[135]" ".txt" _man_src ${_manpage})
     add_custom_command(
       OUTPUT ${_manpage}
-      COMMAND cpp -w -P -nostdinc
+      COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc
       -I${CMAKE_CURRENT_SOURCE_DIR}
       -I${CMAKE_CURRENT_BINARY_DIR}
-      ${CMAKE_CURRENT_SOURCE_DIR}/${_gmt_man_template}
-      >${_manpage}
+      < ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
+      > ${_manpage}
       DEPENDS ${GMT_MAN_DEPS} ${GMT_EXTRA_HDRS}
-      COMMENT "Generate ${_manpage}")
-
-    # install manpages
-    foreach(_manfile ${GMT_MAN_1_SRCS})
-      list(APPEND GMT_MAN_1_FILES
-	"${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
-    endforeach(_manfile)
-    foreach(_manfile ${GMT_MAN_3_SRCS})
-      list(APPEND GMT_MAN_3_FILES
-	"${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
-    endforeach(_manfile)
-    foreach(_manfile ${GMT_MAN_5_SRCS})
-      list(APPEND GMT_MAN_5_FILES
-	"${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
-    endforeach(_manfile)
+      COMMENT "Generate ${_manpage}"
+      VERBATIM)
   endforeach(_manpage)
 
   # manpage target
-  add_custom_target(manpages ALL
+  add_custom_target(gmt_man ALL
     DEPENDS
-    ${GMT_MAN_1_SRCS} ${GMT_MAN_3_SRCS} ${GMT_MAN_5_SRCS})
+    ${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5})
 
   # install manpages
-  foreach(_manfile ${GMT_MAN_1_SRCS})
+  foreach(_manfile ${GMT_MAN_1})
     list(APPEND GMT_MAN_1_FILES "${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
   endforeach(_manfile)
-  foreach(_manfile ${GMT_MAN_3_SRCS})
+  foreach(_manfile ${GMT_MAN_3})
     list(APPEND GMT_MAN_3_FILES "${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
   endforeach(_manfile)
-  foreach(_manfile ${GMT_MAN_5_SRCS})
+  foreach(_manfile ${GMT_MAN_5})
     list(APPEND GMT_MAN_5_FILES "${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
   endforeach(_manfile)
   install(FILES ${GMT_MAN_1_FILES}
