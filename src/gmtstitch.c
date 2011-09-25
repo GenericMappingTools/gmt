@@ -586,12 +586,12 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		done = FALSE;
 		id = start_id;
 		end_order = n_steps = n_alloc_pts = 0;
-#if DEBUG2
+#ifdef DEBUG2
 		GMT_report (GMT, GMT_MSG_NORMAL, "%ld\n", seg[id].orig_id);
 #endif
 		while (!done && connect (seg, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {
 			id2 = seg[id].buddy[end_order].id;
-#if DEBUG2
+#ifdef DEBUG2
 			GMT_report (GMT, GMT_MSG_NORMAL, "%ld\n", seg[id2].orig_id);
 #endif
 			if (id2 == start_id)	/* Closed polygon, start here */
