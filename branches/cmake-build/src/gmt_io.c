@@ -425,13 +425,13 @@ FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 		return (fopen (filename, mode));
 	else if (C->common.b.active[GMT_IN])	/* Definitely not netCDF */
 		return (fopen (GMT_getdatapath(C, filename, path), mode));
-#if GMT_COMPAT
+#ifdef GMT_COMPAT
 	else if (C->common.b.varnames[0])	/* Definitely netCDF */
 		return (gmt_nc_fopen (C, filename, mode));
 #endif
 	else if (strchr (filename, '?'))	/* Definitely netCDF */
 		return (gmt_nc_fopen (C, filename, mode));
-#if WIN32
+#ifdef WIN32
 	else if (!strcmp (filename, "NUL")) {	/* Special case of /dev/null under Windows */
 #else
 	else if (!strcmp (filename, "/dev/null")) {	/* The Unix null device; catch here to avoid gmt_nc_fopen */
@@ -448,7 +448,7 @@ FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 	}
 }
 
-#if WIN32
+#ifdef WIN32
 /* Turn /c/dir/... paths into c:/dir/... 
  * Must do it in a loop since dir may be several ;-separated dirs
 */
