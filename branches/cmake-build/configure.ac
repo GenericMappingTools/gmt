@@ -56,7 +56,6 @@ dnl -----------------------------------------------------------------
 dnl
 AC_CONFIG_SRCDIR(src/gmt.h)
 AC_CONFIG_HEADER(src/gmt_notposix.h)
-AC_CONFIG_HEADER(src/pslconfig.h)
 AC_CONFIG_AUX_DIR(`pwd`)
 AC_CYGWIN
 AC_CANONICAL_SYSTEM
