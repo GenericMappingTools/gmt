@@ -1,8 +1,9 @@
 #
-# $Id$
-#
 # Use this file to override variables in 'ConfigDefault.cmake' on a per-user basis.
 # 'ConfigUser.cmake' is not version controlled.
+#
+# $Revision$ 
+# $LastChangedDate$
 #
 
 # Installation path

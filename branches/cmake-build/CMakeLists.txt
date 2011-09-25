@@ -53,12 +53,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 # Include configuration options (default options and options overridden by user).
 include (ConfigCMake)
 
-# GMT paths used in the code
-set(GMT_DATAROOTDIR "${CMAKE_INSTALL_PREFIX}/share")
-set(GMT_SHARE_PATH  "${GMT_DATAROOTDIR}")
-
-#add_definitions(-DGMT_SHARE_PATH="${GMT_SHARE_PATH}")
-
 # Configure a header file to pass some of the CMake settings to the source code
 configure_file(
   "${PROJECT_SOURCE_DIR}/config.h.cmake"
