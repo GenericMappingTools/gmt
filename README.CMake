@@ -57,14 +57,22 @@ NOTE: If you want to change CMake behaviour just for yourself then modify the
 3) TODO list
 
 * Replace shell scripts, grep, sed, awk, etc. by cmake macros (this
-  is necessary for cross platform compatibility)
+  is necessary for cross platform compatibility). Basically port
+  cmake/generateExtraFilesNotPorted.sh to cmake. Sometimes it might be
+  easier to create new cmake macros if the layout of the underlying
+  source files would be altered a litte. If absolutely necessary write
+  a little C program that is build and run during configure pahase to
+  generate support files.
 
-* Clean up config.h.cmake gmt_version.h.cmake gmt_notposix.h.cmake
-  pslconfig.h.cmake
+* Clean up config.h.cmake gmt_version.h.cmake gmt_notposix.h.cmake.
+  Right now this is a mixture of partly redundant defines that can be
+  simplified.
 
-* Make exported cmake variables consistent GMT_...
+* Make exported cmake variables consistent GMT_..., prefix temporary
+  variables with "_"
 
-* Add further subtrees
+* Add further subtrees: follow example of CMakeLists.txt in src/meca, share
+  and share/conf
 
 * Build targets for manpages, examples, doc, tests
 

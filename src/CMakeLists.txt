@@ -135,18 +135,19 @@ configure_file(gmt_version.h.cmake gmt_version.h)
 configure_file(isogmt.cmake isogmt @ONLY)
 
 # generate extra files (not yet ported to cmake)
-configure_file(gmtmath.c gmtmath.c COPYONLY)
-configure_file(grdmath.c grdmath.c COPYONLY)
-add_custom_command(
-  OUTPUT ${GMT_EXTRA_HDRS}
-  COMMAND ${GMT_SOURCE_DIR}/cmake/generateExtraFilesNotPorted.sh ${GMT_SOURCE_DIR}
-  COMMAND bash ${GMT_SOURCE_DIR}/src/make_math.sh gmt
-  COMMAND bash ${GMT_SOURCE_DIR}/src/make_math.sh grd
-  DEPENDS ${GMT_SOURCE_DIR}/cmake/generateExtraFilesNotPorted.sh Colors.txt
-  Datums.txt Ellipsoids.txt gmt_keywords.txt GMTprogs.txt gmtapi_errors.d gmt_progpurpose.h
-  ${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS} ${GMT_LIB_SRCS}
-  COMMENT "Regenerating header files...")
-
+if(UNIX)
+  configure_file(gmtmath.c gmtmath.c COPYONLY)
+  configure_file(grdmath.c grdmath.c COPYONLY)
+  add_custom_command(
+    OUTPUT ${GMT_EXTRA_HDRS}
+    COMMAND ${GMT_SOURCE_DIR}/cmake/generateExtraFilesNotPorted.sh ${GMT_SOURCE_DIR}
+    COMMAND bash ${GMT_SOURCE_DIR}/src/make_math.sh gmt
+    COMMAND bash ${GMT_SOURCE_DIR}/src/make_math.sh grd
+    DEPENDS ${GMT_SOURCE_DIR}/cmake/generateExtraFilesNotPorted.sh Colors.txt
+    Datums.txt Ellipsoids.txt gmt_keywords.txt GMTprogs.txt gmtapi_errors.d gmt_progpurpose.h
+    ${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS} ${GMT_LIB_SRCS}
+    COMMENT "Regenerating header files...")
+endif(UNIX)
 ## end generate header files
 
 # gmtprogram

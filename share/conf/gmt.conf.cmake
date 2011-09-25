@@ -1,4 +1,8 @@
+#
 # GMT @GMT_PACKAGE_VERSION@ Defaults file (@GMT_CONF_TEMPLATE@ version)
+#
+# $Revision$ 
+# $LastChangedDate$
 #
 # COLOR Parameters
 #
