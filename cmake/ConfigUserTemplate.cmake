@@ -40,5 +40,5 @@
 
 # This is for gcc on Solaris to avoid "relocations remain against
 # allocatable but non-writable sections" problems:
-set(USER_GMTLIB_LINK_FLAGS -mimpure-text)
+#set(USER_GMTLIB_LINK_FLAGS -mimpure-text)
 

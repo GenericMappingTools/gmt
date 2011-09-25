@@ -79,7 +79,6 @@ find_path(NETCDF_INCLUDE_DIR netcdf.h
   /opt
   )
 
-#if(NOT NETCDF_CONFIG)
 find_library(NETCDF_LIBRARY 
   NAMES netcdf
   HINTS
@@ -96,7 +95,6 @@ find_library(NETCDF_LIBRARY
   /opt
   /usr/freeware
   )
-#endif(NOT NETCDF_CONFIG)
 
 list(REMOVE_DUPLICATES _netcdf_lib)
 list(REMOVE_ITEM _netcdf_lib netcdf)
@@ -111,18 +109,9 @@ foreach(_extralib ${_netcdf_lib})
 endforeach(_extralib)
 list(REMOVE_DUPLICATES NETCDF_LIBRARY)
 
-#list(REMOVE_DUPLICATES _netcdf_lib)
-#list(REMOVE_ITEM _netcdf_lib netcdf)
-#list(APPEND NETCDF_LIBRARY ${_netcdf_lib})
-
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(NETCDF DEFAULT_MSG NETCDF_LIBRARY NETCDF_INCLUDE_DIR)
 
 set(NETCDF_LIBRARIES ${NETCDF_LIBRARY})
 set(NETCDF_INCLUDE_DIRS ${NETCDF_INCLUDE_DIR})
 set(NETCDF_DEFINITIONS ${_netcdf_cflags_other})
-
-# extra libs that nc-config reports
-#list(REMOVE_DUPLICATES _netcdf_lib)
-#set(NETCDF_EXTRA_LIBS ${_netcdf_lib})
-
