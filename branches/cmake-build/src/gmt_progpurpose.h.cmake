@@ -2,6 +2,5 @@
  * $Id$
  */
 
-fprintf (stderr,
-  ${GMT_PROG_PURPOSE});
+fprintf (stderr, ${GMT_PROG_PURPOSE});
 
