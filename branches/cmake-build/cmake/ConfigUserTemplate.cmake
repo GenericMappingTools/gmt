@@ -1,6 +1,7 @@
 #
 # Use this file to override variables in 'ConfigDefault.cmake' on a per-user basis.
-# 'ConfigUser.cmake' is not version controlled.
+# First copy 'ConfigUserDefault.cmake' to 'ConfigUser.cmake', then edit 'ConfigUser.cmake'.
+# 'ConfigUser.cmake' is not version controlled (currently listed in svn:ignore property)
 #
 # $Revision$ 
 # $LastChangedDate$
