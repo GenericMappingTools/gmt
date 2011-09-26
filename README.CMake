@@ -77,5 +77,12 @@ NOTE: If you want to change CMake behaviour just for yourself then modify the
 * Build targets for examples, doc, tests
 
 * Manpages: any ideas how to remove blank lines from CPP output without
-  using grep and cmake "file(read ..."?
+  using grep and cmake "file(read ..."? Switching to m4 is an alternative.
+  This general purpose preprocessor is preinstalled on most systems.
+
+* Add further tests/cmake-find-modules:
+  - octave/Matlab
+  - fftw/Accelerate Framework
+  - xgrid
+  - WIN32: test for USE_MEM_ALIGNED, defined in src/gmt_config.h.cmake
 
