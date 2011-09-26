@@ -282,7 +282,7 @@ install(TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
   RUNTIME DESTINATION bin)
 
 # install extra files
-install(FILES
+install(PROGRAMS
   ${CMAKE_CURRENT_BINARY_DIR}/isogmt
   gmtlogo
   gmtswitch
