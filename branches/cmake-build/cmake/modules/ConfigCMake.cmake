@@ -21,7 +21,7 @@ include ("${CMAKE_SOURCE_DIR}/cmake/ConfigDefault.cmake")
 # If "ConfigUser.cmake" doesn't exist then create one for convenience.
 if (EXISTS "${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")
 	include ("${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")
-endif (NOT EXISTS "${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")
+endif (EXISTS "${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")
 
 # If you've got a 'ConfigUser.cmake' in the build tree then that overrides the
 # one in the source tree.
