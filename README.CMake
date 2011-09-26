@@ -40,9 +40,9 @@ See http://www.cmake.org/cmake/help/cmake-2-8-docs.html
 
 CMAKE_BUILD_TYPE can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 
-cmake makes a copy of cmake/ConfigUserTemplate.cmake and creates a new file
-cmake/ConfigUser.cmake if it does not already exist. You can configure additional
-options there.
+To store the command line options, are to configure other options, copy
+cmake/ConfigUserTemplate.cmake to cmake/ConfigUser.cmake and then make changes
+in cmake/ConfigUser.cmake. See comments in that file.
 
 There are two configuration files:
 1) "ConfigDefault.cmake" - is version controlled and used to add new default
