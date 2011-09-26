@@ -4363,7 +4363,7 @@ GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 	while (fgets (line, GMT_BUFSIZ, fpi)) {
 		rec++;
 		GMT_chop (C, line);	/* Get rid of [\r]\n */
-		if (rec == 1) {	/* Copy version from gmt.conf */
+		if (rec == 2) {	/* Copy version from gmt.conf */
 			sscanf (line, "# GMT %s", string);
 			fprintf (fpo, "# GMT %s Defaults file\n", string);
 			continue;

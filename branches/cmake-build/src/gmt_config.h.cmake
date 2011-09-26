@@ -16,8 +16,10 @@
 
 /* set triangulation method */
 #cmakedefine TRIANGLE_D
-#define TRIANGULATE @TRIANGULATE@
 
 /* enable compatibility mode */
 #cmakedefine GMT_COMPAT
+
+/* applies only if defined(WIN32) */
+#cmakedefine USE_MEM_ALIGNED
 
