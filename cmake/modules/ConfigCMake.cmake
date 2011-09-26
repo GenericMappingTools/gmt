@@ -1,14 +1,20 @@
 #
 # $Id$
 #
-# Useful CMAKE variables.
+# Useful CMake variables.
 #
 # There are three configuration files:
-#   1) "ConfigDefault.cmake" - is version controlled and used to add new default variables and set defaults for everyone.
-#   2) "ConfigUser.cmake" in the source tree - is not version controlled (currently listed in svn:ignore property) and used to override defaults on a per-user basis.
-#   3) "ConfigUser.cmake" in the build tree - is used to override "ConfigUser.cmake" in the source tree.
+#   1) "ConfigDefault.cmake" - is version controlled and used to add new default
+#      variables and set defaults for everyone.
+#   2) "ConfigUser.cmake" in the source tree - is not version controlled
+#      (currently listed in svn:ignore property) and used to override defaults on
+#      a per-user basis.
+#   3) "ConfigUser.cmake" in the build tree - is used to override
+#      "ConfigUser.cmake" in the source tree.
 #
-# NOTE: If you want to change CMake behaviour just for yourself then modify the "ConfigUser.cmake" file (not "ConfigDefault.cmake").
+# NOTE: If you want to change CMake behaviour just for yourself then copy
+#      "ConfigUserTemplate.cmake" to "ConfigUser.cmake" and then edit
+#      "ConfigUser.cmake" (not "ConfigDefault.cmake" or "ConfigUserTemplate.cmake").
 #
 include ("${CMAKE_SOURCE_DIR}/cmake/ConfigDefault.cmake")
 
