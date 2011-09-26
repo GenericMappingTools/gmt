@@ -281,6 +281,14 @@ install(TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
 
+# install extra files
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/isogmt
+  gmtlogo
+  gmtswitch
+  gmt_shell_functions.sh
+  DESTINATION bin)
+
 if(CMAKE_COMPILER_IS_GNUCC)
   # generate manpages
   foreach(_manpage ${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5})

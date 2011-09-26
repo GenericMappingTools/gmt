@@ -6,7 +6,7 @@
 # $LastChangedDate$
 #
 
-# Installation path
+# Installation path:
 #set(CMAKE_INSTALL_PREFIX "prefix_path")
 
 # Set build type can be: empty, Debug, Release, relwithdebinfo or minsizerel (default is Release)
@@ -26,6 +26,9 @@
 
 # Use fast, non-GPL triangulation routine by J. Shewchuk:
 #set(TRIANGLE_D "yes")
+
+# Extra debugging for developers:
+#add_definitions(-DDEBUG)
 
 # Extra compiler Flags:
 #set(CMAKE_C_FLAGS_DEBUG -ggdb3)
