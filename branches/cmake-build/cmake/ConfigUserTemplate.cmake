@@ -52,6 +52,7 @@
 #add_definitions(-DDEBUG)
 #set (CMAKE_C_FLAGS_DEBUG -ggdb3)
 #set (CMAKE_C_FLAGS_RELEASE -ggdb3)
+#set (CMAKE_LINK_DEPENDS_DEBUG_MODE TRUE)
 
 # Extra compiler Flags:
 #add_definitions(
