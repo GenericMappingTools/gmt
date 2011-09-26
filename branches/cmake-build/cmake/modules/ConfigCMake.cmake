@@ -72,9 +72,9 @@ set(GMT_LONG_VERSION_STRING "${GMT_PACKAGE_NAME} - ${GMT_PACKAGE_DESCRIPTION_SUM
 
 # set triangulation method
 if (TRIANGLE_D)
-  set(TRIANGULATE "Shewchuk")
+  set(GMT_TRIANGULATE "Shewchuk")
 else (TRIANGLE_D)
-  set(TRIANGULATE "Watson")
+  set(GMT_TRIANGULATE "Watson")
 endif (TRIANGLE_D)
 
 # GMT paths used in the code
