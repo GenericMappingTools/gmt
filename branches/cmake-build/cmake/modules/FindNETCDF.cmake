@@ -60,6 +60,10 @@ if(UNIX)
       string(REGEX REPLACE "-L" "" _netcdf_libpath "${_netcdf_dashL}")
     endif(NETCDF_CONFIG_LIBS)
   endif(NETCDF_CONFIG)
+  if(_netcdf_lib)
+    list(REMOVE_DUPLICATES _netcdf_lib)
+    list(REMOVE_ITEM _netcdf_lib netcdf)
+  endif(_netcdf_lib)
 endif(UNIX)
 
 find_path(NETCDF_INCLUDE_DIR netcdf.h
@@ -96,9 +100,6 @@ find_library(NETCDF_LIBRARY
   /usr/freeware
   )
 
-list(REMOVE_DUPLICATES _netcdf_lib)
-list(REMOVE_ITEM _netcdf_lib netcdf)
-
 # find all libs that nc-config reports
 foreach(_extralib ${_netcdf_lib})
   find_library(_found_lib_${_extralib}
@@ -107,7 +108,6 @@ foreach(_extralib ${_netcdf_lib})
     PATHS ${_netcdf_libpath})
   list(APPEND NETCDF_LIBRARY ${_found_lib_${_extralib}})
 endforeach(_extralib)
-list(REMOVE_DUPLICATES NETCDF_LIBRARY)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(NETCDF DEFAULT_MSG NETCDF_LIBRARY NETCDF_INCLUDE_DIR)
