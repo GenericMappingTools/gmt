@@ -111,7 +111,7 @@ endif (NOT CMAKE_CONFIGURATION_TYPES)
 set (CMAKE_VERBOSE_MAKEFILE false)
 
 # prefer shared libs over static
-set (BUILD_SHARED_LIBS TRUE)
+set (BUILD_SHARED_LIBS true)
 set (CMAKE_FIND_STATIC LAST)
 
 # maybe not so good idea:
@@ -124,3 +124,5 @@ if (MINGW OR UNIX)
 	)
 endif (MINGW OR UNIX)
 
+# File locking off
+set (FLOCK off)

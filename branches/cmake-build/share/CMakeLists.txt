@@ -9,7 +9,6 @@ install (DIRECTORY ./ DESTINATION ${GMT_SHARE_PATH}
 	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
 	PATTERN ".cmake" EXCLUDE
-	REGEX "[.]in$" EXCLUDE
 )
 
 # add subtrees

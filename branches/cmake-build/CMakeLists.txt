@@ -29,44 +29,52 @@
 #
 
 # Make sure the user doesn't play dirty with symlinks
-get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
-get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
+get_filename_component (srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
+get_filename_component (bindir "${CMAKE_BINARY_DIR}" REALPATH)
 
 # Disallow in-source builds
-if(${srcdir} STREQUAL ${bindir})
-  message(FATAL_ERROR "In-source builds are not allowed. "
-  "Please create a directory and run cmake from there, passing the path "
-  "to this source directory as the last argument. This process created "
-  "the file `CMakeCache.txt' and the directory `CMakeFiles' in ${srcdir}. "
-  "Please remove them.")
-endif(${srcdir} STREQUAL ${bindir})
+if (${srcdir} STREQUAL ${bindir})
+	message(FATAL_ERROR "In-source builds are not allowed. "
+	"Please create a directory and run cmake from there, passing the path "
+	"to this source directory as the last argument. This process created "
+	"the file `CMakeCache.txt' and the directory `CMakeFiles' in ${srcdir}. "
+	"Please remove them.")
+endif (${srcdir} STREQUAL ${bindir})
 
 # Define minimum CMake version required
-cmake_minimum_required( VERSION 2.8 )
+cmake_minimum_required (VERSION 2.8)
 
 # Define project name
-project( GMT )
+project (GMT)
 
 # Where to find our CMake modules (this variable is visible in subdirectories).
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
+set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
 # Include configuration options (default options and options overridden by user).
 include (ConfigCMake)
 
 # Configure a header file to pass some of the CMake settings to the source code
-configure_file(
-  "${PROJECT_SOURCE_DIR}/config.h.cmake"
-  "${PROJECT_BINARY_DIR}/config.h")
+configure_file (
+	"${PROJECT_SOURCE_DIR}/config.h.cmake"
+	"${PROJECT_BINARY_DIR}/config.h"
+)
 
 # Add subdirectories
-add_subdirectory( src )
-add_subdirectory( share )
+add_subdirectory (src)
+add_subdirectory (share)
 
 # Configuration done
 message(
-  "** Installing GMT in ${CMAKE_INSTALL_PREFIX}\n"
-  "** GMT_SHARE_PATH: ${GMT_SHARE_PATH}\n"
-  "** GDAL: ${HAVE_GDAL}\n"
-  "** Triangulation method: ${TRIANGULATE}\n"
-  "** File locking: ${FLOCK}"
-  )
+	"* Installing GMT in    : ${CMAKE_INSTALL_PREFIX}\n"
+	"* GMT_SHARE_PATH       : ${GMT_SHARE_PATH}\n"
+	"* NetCDF library       : ${NETCDF_LIBRARY}\n"
+	"* NetCDF include dir   : ${NETCDF_INCLUDE_DIR}\n"
+	"* GDAL library         : ${GDAL_LIBRARY}\n"
+	"* GDAL include dir     : ${GDAL_INCLUDE_DIR}\n"
+	"* PCRE library         : ${PCRE_LIBRARY}\n"
+	"* PCRE include dir     : ${PCRE_INCLUDE_DIR}\n"
+	"* REGEX library        : ${REGEX_LIBRARY_TEMP}\n"
+	"* REGEX include dir    : ${REGEX_INCLUDE_DIR}\n"
+	"* Triangulation method : ${GMT_TRIANGULATE}\n"
+	"* File locking         : ${FLOCK}\n"
+)

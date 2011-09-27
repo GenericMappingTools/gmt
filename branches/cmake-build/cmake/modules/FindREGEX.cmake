@@ -8,28 +8,67 @@
 #  REGEX_LIBRARY       - List of libraries when using regex.
 #  REGEX_FOUND         - True if regex found.
 #
-#=============================================================================
+# - Locate a C-style regex library
+# This module defines
+#  REGEX_LIBRARY, the library to link against, if needed
+#  REGEX_FOUND, if false, do not try to link to regex
+#  REGEX_INCLUDE_DIR, where to find regex.h
+#
 
-include (CheckLibraryExists)
+set (REGEX_FOUND "NO")
+include (CheckCSourceCompiles)
+set (REGEX_LIBRARY "")
+find_path (REGEX_INCLUDE_DIR regex.h
+	$ENV{REGEXDIR}/include
+	/usr/local/include
+	/usr/include
+	/sw/include
+	/opt/local/include
+	/opt/csw/include 
+	/opt/include
+	/usr/include/awk
+	/usr/local/include/awk
+)
 
-# because at least one specific framework (Ruby) on OSX has been observed
-# to include its own regex.h copy, check frameworks last - /usr/include
-# is preferred to a package-specific copy for a generic regex search
-set (CMAKE_FIND_FRAMEWORK LAST)
-find_path (REGEX_INCLUDE_DIR regex.h)
-set (REGEX_NAMES c regex compat)
-foreach (rname ${REGEX_NAMES})
-	if (NOT REGEX_LIBRARY)
-		check_library_exists (${rname} regcomp "" HAVE_REGEX_LIB)
-		if (HAVE_REGEX_LIB)
-			find_library (REGEX_LIBRARY NAMES ${rname})
-		endif (HAVE_REGEX_LIB)
-	endif (NOT REGEX_LIBRARY)
-endforeach (rname ${REGEX_NAMES})
+#try compiling, even if not found
+check_c_source_compiles ("int main() {(void)regcomp();}" REGCOMP_IN_LIBC)
 
-mark_as_advanced(REGEX_LIBRARY REGEX_INCLUDE_DIR)
+if (REGEX_INCLUDE_DIR)
+	if (NOT REGCOMP_IN_LIBC)
+		# we need to link some library
+		find_library (REGEX_LIBRARY_TEMP
+			NAMES regex
+			PATHS
+			$ENV{REGEXDIR}/lib
+			/usr/local/lib
+			/usr/lib
+			/sw/lib
+			/opt/local/lib
+			/opt/csw/lib
+			/opt/lib
+		)
+		if (REGEX_LIBRARY_TEMP)
+			set (CMAKE_REQUIRED_LIBRARIES ${REGEX_LIBRARY_TEMP})
+			check_c_source_compiles ("int main() {(void)regcomp();}" REGCOMP_IN_REGEX)
+		
+			if (REGCOMP_IN_REGEX)
+				set (REGEX_LIBRARY ${REGEX_LIBRARY_TEMP})
+				set (REGEX_FOUND "YES")
+			else (REGCOMP_IN_REGEX)
+				message ("I found regex.h and a libregex but couldn't get regcomp() to compile")
+			endif (REGCOMP_IN_REGEX)
+		
+		else (REGEX_LIBRARY_TEMP)
+			message ("I found regex.h but regcomp() is not in libc or libregex")
+		endif (REGEX_LIBRARY_TEMP)
+	
+	else (NOT REGCOMP_IN_LIBC)
+		set (REGEX_FOUND "YES")
+	endif (NOT REGCOMP_IN_LIBC)
+else (REGEX_INCLUDE_DIR)
+	if (REGCOMP_IN_LIBC)
+		message ("regcomp() exists in libc, but I can't locate regex.h")
+	endif (REGCOMP_IN_LIBC)
+endif (REGEX_INCLUDE_DIR)
 
-# handle the QUIETLY and REQUIRED arguments and set REGEX_FOUND to TRUE if 
-# all listed variables are TRUE
-include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (REGEX DEFAULT_MSG REGEX_INCLUDE_DIR REGEX_LIBRARY)
+mark_as_advanced (REGEX_LIBRARY_TEMP REGCOMP_IN_LIBC REGCOMP_IN_REGEX)
