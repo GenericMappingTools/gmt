@@ -1,4 +1,4 @@
-# 
+#
 #	$Id$
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
@@ -25,28 +25,29 @@ add_definitions (${NETCDF_DEFINITIONS})
 
 find_package (GDAL)
 if (GDAL_FOUND)
-	set (HAVE_GDAL 1 CACHE INTERNAL "System has GDAL")
+	set (HAVE_GDAL TRUE CACHE INTERNAL "System has GDAL")
 	include_directories (${GDAL_INCLUDE_DIR})
-	#add_definitions(${GDAL_DEFINITIONS} -DUSE_GDAL)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${GDAL_LIBRARIES})
 endif (GDAL_FOUND)
 
 find_package (PCRE)
 if (PCRE_FOUND)
-	set (HAVE_PCRE 1 CACHE INTERNAL "System has PCRE")
+	set (HAVE_PCRE TRUE CACHE INTERNAL "System has PCRE")
+	set (GMT_CONFIG_REGEX_MESSAGE "PCRE (${PCRE_LIBRARIES})"
+		CACHE INTERNAL "Regex config message")
 	include_directories (${PCRE_INCLUDE_DIR})
-	#add_definitions(${PCRE_DEFINITIONS} -DHAVE_PCRE)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${PCRE_LIBRARIES})
 else (PCRE_FOUND)
 	find_package (REGEX)
 	if (REGEX_FOUND)
-		set (HAVE_POSIX_ERE 1 CACHE INTERNAL "System has regex.h")
+		set (HAVE_POSIX_ERE TRUE CACHE INTERNAL "System has regex.h")
+		set (GMT_CONFIG_REGEX_MESSAGE "POSIX Regex (${REGEX_INCLUDE_DIR}/regex.h)"
+			CACHE INTERNAL "Regex config message")
 		include_directories (${REGEX_INCLUDE_DIR})
-		#add_definitions(-DHAVE_POSIX_ERE)
+		# I don't think its needed but just in case:
 		list (APPEND GMT_OPTIONAL_LIBRARIES ${REGEX_LIBRARIES})
 	endif (REGEX_FOUND)
 endif (PCRE_FOUND)
-find_package (REGEX)
 
 # Commented OpenMP out because things do not link with it activated
 #find_package (OpenMP)

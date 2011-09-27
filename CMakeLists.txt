@@ -1,4 +1,4 @@
-# 
+#
 #	$Id$
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
@@ -65,16 +65,13 @@ add_subdirectory (share)
 
 # Configuration done
 message(
-	"* Installing GMT in    : ${CMAKE_INSTALL_PREFIX}\n"
-	"* GMT_SHARE_PATH       : ${GMT_SHARE_PATH}\n"
-	"* NetCDF library       : ${NETCDF_LIBRARY}\n"
-	"* NetCDF include dir   : ${NETCDF_INCLUDE_DIR}\n"
-	"* GDAL library         : ${GDAL_LIBRARY}\n"
-	"* GDAL include dir     : ${GDAL_INCLUDE_DIR}\n"
-	"* PCRE library         : ${PCRE_LIBRARY}\n"
-	"* PCRE include dir     : ${PCRE_INCLUDE_DIR}\n"
-	"* REGEX library        : ${REGEX_LIBRARY_TEMP}\n"
-	"* REGEX include dir    : ${REGEX_INCLUDE_DIR}\n"
-	"* Triangulation method : ${GMT_TRIANGULATE}\n"
-	"* File locking         : ${FLOCK}\n"
+	"*  Installing GMT in    : ${CMAKE_INSTALL_PREFIX}\n"
+	"*  GMT_SHARE_PATH       : ${GMT_SHARE_PATH}\n"
+	"*  NetCDF library       : ${NETCDF_LIBRARY}\n"
+	"*  NetCDF include dir   : ${NETCDF_INCLUDE_DIR}\n"
+	"*  GDAL library         : ${GDAL_LIBRARY}\n"
+	"*  GDAL include dir     : ${GDAL_INCLUDE_DIR}\n"
+	"*  Regex support        : ${GMT_CONFIG_REGEX_MESSAGE}\n"
+	"*  Triangulation method : ${GMT_TRIANGULATE}\n"
+	"*  File locking         : ${FLOCK}\n"
 )
