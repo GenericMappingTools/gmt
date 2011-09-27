@@ -73,5 +73,5 @@ message(
 	"*  GDAL include dir     : ${GDAL_INCLUDE_DIR}\n"
 	"*  Regex support        : ${GMT_CONFIG_REGEX_MESSAGE}\n"
 	"*  Triangulation method : ${GMT_TRIANGULATE}\n"
-	"*  File locking         : ${FLOCK}\n"
+	"*  File locking         : ${FLOCK}"
 )

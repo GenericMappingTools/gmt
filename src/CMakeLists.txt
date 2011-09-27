@@ -46,6 +46,9 @@ else (PCRE_FOUND)
 		include_directories (${REGEX_INCLUDE_DIR})
 		# I don't think its needed but just in case:
 		list (APPEND GMT_OPTIONAL_LIBRARIES ${REGEX_LIBRARIES})
+	else (REGEX_FOUND)
+		set (GMT_CONFIG_REGEX_MESSAGE "unsupported"
+			CACHE INTERNAL "Regex config message")
 	endif (REGEX_FOUND)
 endif (PCRE_FOUND)
 
