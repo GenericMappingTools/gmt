@@ -44,16 +44,16 @@
 #define GMT_same_rgb(a,b) (GMT_eq(a[0],b[0]) && GMT_eq(a[1],b[1]) && GMT_eq(a[2],b[2]) && GMT_eq(a[3],b[3]))
 
 /* Macros for conversion of RGB in 0-1 range to 0-255 range */
-#define GMT_s255(s) (s * 255.0)
+#define GMT_s255(s) ((s) * 255.0)
 #define GMT_t255(t) GMT_q(GMT_s255(t[0])),GMT_q(GMT_s255(t[1])),GMT_q(GMT_s255(t[2]))
 #define GMT_u255(s) ((unsigned char)rint(GMT_s255(s)))
 
 /* Macros for conversion of RGB in 0-255 range to 0-1 range */
-#define GMT_is255(s) (s / 255.0)
+#define GMT_is255(s) ((s) / 255.0)
 #define GMT_it255(t) GMT_is255(t[0]),GMT_is255(t[1]),GMT_is255(t[2])
 
 /* Macro to avoid small numbers in color codes */
-#define GMT_q(s) (s < 1e-5 ? 0.0 : s)
+#define GMT_q(s) ((s) < 1e-5 ? 0.0 : (s))
 
 /* How B/W TV's convert RGB to Gray */
 #define GMT_YIQ(rgb) (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2])
