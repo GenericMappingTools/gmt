@@ -1,7 +1,22 @@
+# 
+#	$Id$
 #
-# $Id$
+#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+#	See LICENSE.TXT file for copying and redistribution conditions.
 #
-# src CMakeLists.txt
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; version 2 or any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	Contact info: gmt.soest.hawaii.edu
+#-------------------------------------------------------------------------------
+#
+# src/CMakeLists.txt
 #
 
 find_package (NETCDF REQUIRED)
@@ -22,7 +37,7 @@ if (PCRE_FOUND)
 	include_directories (${PCRE_INCLUDE_DIR})
 	#add_definitions(${PCRE_DEFINITIONS} -DHAVE_PCRE)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${PCRE_LIBRARIES})
-else(PCRE_FOUND)
+else (PCRE_FOUND)
 	find_package (REGEX)
 	if (REGEX_FOUND)
 		set (HAVE_POSIX_ERE 1 CACHE INTERNAL "System has regex.h")
@@ -31,6 +46,7 @@ else(PCRE_FOUND)
 		list (APPEND GMT_OPTIONAL_LIBRARIES ${REGEX_LIBRARIES})
 	endif (REGEX_FOUND)
 endif (PCRE_FOUND)
+find_package (REGEX)
 
 # Commented OpenMP out because things do not link with it activated
 #find_package (OpenMP)
@@ -235,9 +251,11 @@ set_target_properties (gmtlib
 # create build targets for gmt progs
 string (REPLACE ".c" "" GMT_PROGS "${GMT_PROGS_SRCS}")
 foreach (_gmtprog ${GMT_PROGS})
-		add_executable (${_gmtprog} ${GMT_PROGRAM})
-		set_target_properties (${_gmtprog} PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${_gmtprog}")
-		target_link_libraries (${_gmtprog} gmtlib)
+	add_executable (${_gmtprog} ${GMT_PROGRAM})
+	set_target_properties (${_gmtprog} PROPERTIES
+		COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${_gmtprog}"
+	)
+	target_link_libraries (${_gmtprog} gmtlib)
 endforeach (_gmtprog)
 
 # create build targets for gmt progsps
@@ -318,8 +336,8 @@ if (CMAKE_COMPILER_IS_GNUCC)
 
 	# manpage target
 	add_custom_target (gmt_man ALL
-		DEPENDS
-		${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5})
+		DEPENDS ${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5}
+	)
 
 	# install manpages
 	foreach (_manfile ${GMT_MAN_1})

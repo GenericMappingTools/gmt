@@ -27,7 +27,7 @@
 #  License text for the above reference.)
 
 #
-# $GDALDIR is an environment variable that would
+# $GDAL_DIR is an environment variable that would
 # correspond to the ./configure --prefix=$GDAL_DIR
 # used in building gdal.
 #
@@ -114,7 +114,7 @@ find_library (GDAL_LIBRARY
 	/usr/freeware
 )
 
-include(FindPackageHandleStandardArgs)
+include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (GDAL DEFAULT_MSG GDAL_LIBRARY GDAL_INCLUDE_DIR)
 
 set (GDAL_LIBRARIES ${GDAL_LIBRARY})
