@@ -29,9 +29,9 @@ $grdimage -O -K -R-1/3/-1/3 -X4c
 
 $grdimage -E50 -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c -nl ; $grdcontour -K
 label "$3" "-E50 -nl"
-$grdimage -E50 -O -K -R0/2/0/2 -X4c ; $grdcontour -K -nl
-$grdimage -E50 -O -K -R-0.5/1.5/0/2 -X4c ; $grdcontour -K -nl
-$grdimage -E50 -O -K -R-1/3/-1/3 -X4c ; $grdcontour -K -nl
+$grdimage -E50 -O -K -R0/2/0/2 -X4c -nl ; $grdcontour -K
+$grdimage -E50 -O -K -R-0.5/1.5/0/2 -X4c -nl ; $grdcontour -K
+$grdimage -E50 -O -K -R-1/3/-1/3 -X4c -nl ; $grdcontour -K
 
 $grdimage -E50 -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c ; $grdcontour -K
 label "$3" -E50
