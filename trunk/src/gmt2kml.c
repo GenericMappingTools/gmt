@@ -49,7 +49,7 @@ EXTERN_MSC void GMT_get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, G
 #define FMT_LABEL		3
 
 /* Need unsigned int BGR triplets */
-#define GMT_ui255(t) (unsigned int)GMT_s255(t[2]),(unsigned int)GMT_s255(t[1]),(unsigned int)GMT_s255(t[0])
+#define GMT_3u255(t) GMT_u255(t[2]),GMT_u255(t[1]),GMT_u255(t[0])
 
 struct EXT_COL {
 	int col;			/* Column in input record */
@@ -546,7 +546,7 @@ void set_iconstyle (double *rgb, double scale, char *iconfile, GMT_LONG N)
 	tabs (--N); printf ("</Icon>\n");
 	if (iconfile[0] != '-') {
 		tabs (N); printf ("<scale>%g</scale>\n", scale);
-		tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - rgb[3])), GMT_ui255 (rgb));
+		tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	}
 	tabs (--N); printf ("</IconStyle>\n");
 }
@@ -554,7 +554,7 @@ void set_iconstyle (double *rgb, double scale, char *iconfile, GMT_LONG N)
 void set_linestyle (struct GMT_PEN *pen, double *rgb, GMT_LONG N)
 {
 	tabs (N++); printf ("<LineStyle>\n");
-	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - rgb[3])), GMT_ui255 (rgb));
+	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	tabs (N); printf ("<width>%d</width>\n", irint (pen->width));
 	tabs (--N); printf ("</LineStyle>\n");
 }
@@ -562,7 +562,7 @@ void set_linestyle (struct GMT_PEN *pen, double *rgb, GMT_LONG N)
 void set_polystyle (double *rgb, GMT_LONG outline, GMT_LONG active, GMT_LONG N)
 {
 	tabs (N++); printf ("<PolyStyle>\n");
-	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - rgb[3])), GMT_ui255 (rgb));
+	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	tabs (N); printf ("<fill>%d</fill>\n", !active);
 	tabs (N); printf ("<outline>%ld</outline>\n", outline);
 	tabs (--N); printf ("</PolyStyle>\n");
@@ -688,7 +688,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Set style for labels */
 	tabs (N++); printf ("<LabelStyle>\n");
 	tabs (N); printf ("<scale>%g</scale>\n", Ctrl->S.scale[N_ID]);
-	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - Ctrl->G.fill[N_ID].rgb[3])), GMT_ui255 (Ctrl->G.fill[N_ID].rgb));
+	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", GMT_u255 (1.0 - Ctrl->G.fill[N_ID].rgb[3]), GMT_3u255 (Ctrl->G.fill[N_ID].rgb));
 	tabs (--N); printf ("</LabelStyle>\n");
 	tabs (--N); printf ("</Style>\n");
 
