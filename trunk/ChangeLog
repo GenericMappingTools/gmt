@@ -2,9 +2,15 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-09-27	remko
+	* gmt_colors.h:		Missing () in GMT_s255 macro caused possibly wrong results.
+	* gmt2kml.c:		Color indices had int() instead of rint().
+	* test/psxy/gaps.sh:	Make reference gaps.nc in advance.
+	* test/x2sys/x2sys_5.sh:Reduce decimals to 2 to avoid rounding differences.
+
 2011-09-23	fwobbe
 	* gmtswitch:		Allow comments in ~/.gmtversions
-	* configure.ac, src/{gmt_version.h.in,gmt_version.c,GNUmakefile}:	Set
+	* configure.ac, gmt_version.h.in, gmt_version.c, GNUmakefile:	Set
 				svnversion in configure.ac. Fallback solution if tree
 				was exported from svn and does not contain metadata.
 
