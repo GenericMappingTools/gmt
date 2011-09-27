@@ -359,3 +359,4 @@ endif (CMAKE_COMPILER_IS_GNUCC)
 
 # add subtrees
 add_subdirectory (meca)
+add_subdirectory (misc)
