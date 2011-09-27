@@ -21,7 +21,7 @@
 
 find_package (NETCDF REQUIRED)
 include_directories (${NETCDF_INCLUDE_DIR})
-add_definitions(${NETCDF_DEFINITIONS})
+add_definitions (${NETCDF_DEFINITIONS})
 
 find_package (GDAL)
 if (GDAL_FOUND)
@@ -349,12 +349,9 @@ if (CMAKE_COMPILER_IS_GNUCC)
 	foreach (_manfile ${GMT_MAN_5})
 		list (APPEND GMT_MAN_5_FILES "${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
 	endforeach (_manfile)
-	install (FILES ${GMT_MAN_1_FILES}
-		DESTINATION ${GMT_SHARE_PATH}/man/man1)
-	install (FILES ${GMT_MAN_3_FILES}
-		DESTINATION ${GMT_SHARE_PATH}/man/man3)
-	install (FILES ${GMT_MAN_5_FILES}
-		DESTINATION ${GMT_SHARE_PATH}/man/man5)
+	install (FILES ${GMT_MAN_1_FILES} DESTINATION ${GMT_SHARE_PATH}/man/man1)
+	install (FILES ${GMT_MAN_3_FILES} DESTINATION ${GMT_SHARE_PATH}/man/man3)
+	install (FILES ${GMT_MAN_5_FILES} DESTINATION ${GMT_SHARE_PATH}/man/man5)
 endif (CMAKE_COMPILER_IS_GNUCC)
 
 # add subtrees
