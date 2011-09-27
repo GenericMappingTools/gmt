@@ -28,33 +28,17 @@ pstext -R -J -F+f16p+jBL -O -K -N <<< "0 -4.5 Black triangles indicate NaN locat
 psxy -R -J -O -T
 }
 
-ncgen -o $$.nc <<EOF
-netcdf gaps {
-dimensions:
-        nr = 15 ;
-variables:
-        int x(nr) ;
-        int y(nr) ;
-                y:_FillValue = 999;
-data:
-
- x = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ;
-
- y = 0, 1, 1, 1, 999, 999, -1, 0, 1, 2, 999, 0, 0, 2, 1 ;
-}
-EOF
-
 # First test with ASCII input
 header "Test sample1d and psxy with NaNs indicating line gaps (ASCII)"
 ps=gaps.ps
 tmp=$$.txt
-gmtconvert $$.nc > $tmp
+gmtconvert gaps.nc > $tmp
 makeps > $ps
 pscmp
 
 # Do the same with netCDF input
 header "Test sample1d and psxy with NaNs indicating line gaps (netCDF)"
-tmp=$$.nc
+tmp=gaps.nc
 makeps > $ps
 pscmp
-rm -f $$.nc $$.txt
+rm -f $$.txt
