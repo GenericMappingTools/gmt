@@ -2,14 +2,14 @@
 # $Id$
 #
 # - Generates manpages from txt-files and creates installation targets
-# GMT_CREATE_MANPAGES (MAN_FILES DEPENDS)
+# GMT_CREATE_MANPAGES ("${MAN_FILES}" [DEPENDS [DEPENDS2] ...]])
 #
 #  MAN_FILES - list of manpages, e.g., user.1 system.2 special.4 formats.5
 #  DEPENDS   - list of dependencies
 #
 # Typical use:
 #  set (MAN_FILES user.1 system.2 special.4 formats.5)
-#  GMT_CREATE_MANPAGES ("${MAN_FILES}" "")
+#  GMT_CREATE_MANPAGES ("${MAN_FILES}")
 #
 # Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
@@ -26,14 +26,13 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 
-macro (GMT_CREATE_MANPAGES _MAN_FILES _DEPENDS)
+# usefull macros
+include (GMTmacros)
+
+macro (GMT_CREATE_MANPAGES _MAN_FILES)
 	if (CMAKE_COMPILER_IS_GNUCC)
     # create tag from current dirname
-    get_filename_component (_basename ${CMAKE_CURRENT_SOURCE_DIR} NAME_WE)
-    string(COMPARE NOTEQUAL "${_basename}" "src" _in_subtree)
-    if (_in_subtree)
-      set (_tag "_${_basename}")
-    endif (_in_subtree)
+		tag_from_current_source_dir (_tag "_")
 
 		foreach (_manfile ${_MAN_FILES})
 			# strip section number
@@ -54,7 +53,7 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES _DEPENDS)
 				-I${CMAKE_CURRENT_SOURCE_DIR}
 				< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
 				> ${_manfile}
-				DEPENDS ${_man_src} ${_DEPENDS}
+				DEPENDS ${_man_src} ${ARGN} # ARGN: list of arguments past the last expected argument
 				COMMENT "Generate ${_manfile}"
 				VERBATIM
 				)

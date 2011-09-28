@@ -18,8 +18,8 @@
 /*
  * Include file for the GMT_* functions; see man page for details.
  */
-#ifndef _GMTAPI${GMT_SUPPL_STRING_UPPER}_INC_H
-#define _GMTAPI${GMT_SUPPL_STRING_UPPER}_INC_H
+#ifndef _GMTAPI_${GMT_SUPPL_STRING_UPPER}_INC_H
+#define _GMTAPI_${GMT_SUPPL_STRING_UPPER}_INC_H
 
 #include "gmt.h"
 
@@ -27,5 +27,5 @@
 
 ${GMT_API_FUNCTION_LIST};
 
-#endif /* _GMTAPI${GMT_SUPPL_STRING_UPPER}_INC_H */
+#endif /* _GMTAPI_${GMT_SUPPL_STRING_UPPER}_INC_H */
 
