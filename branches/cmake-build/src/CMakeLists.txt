@@ -22,6 +22,9 @@
 # Include GMT_CREATE_MANPAGES macro
 include (GMTmanpages)
 
+# Include CREATE_DEBUG_SYM macro
+include (CreateDebugSym)
+
 find_package (NETCDF REQUIRED)
 include_directories (${NETCDF_INCLUDE_DIR})
 add_definitions (${NETCDF_DEFINITIONS})
@@ -65,14 +68,10 @@ find_package (Threads)
 
 include(ConfigureChecks)
 
-if (APPLE)
-	# Check for dsymutil
-	find_program(DSYMUTIL dsymutil)
-endif (APPLE)
-
 include_directories (${GMT_SOURCE_DIR}/src)
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 #include_directories (${PROJECT_BINARY_DIR})
+set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 
 # These three lines are temporarily here for the beta release
@@ -281,13 +280,7 @@ endforeach (_gmtprogps)
 
 # generate gmt_modules.h
 set (GMT_SUPPL_STRING "modules")
-foreach (_function ${GMT_PROGS} ${GMT_PROGSPS})
-	set (_api_function "EXTERN_MSC GMT_LONG GMT_${_function} (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)")
-	list (APPEND GMT_API_FUNCTION_LIST ${_api_function})
-endforeach (_function)
-string (REPLACE ";" ";\n" GMT_API_FUNCTION_LIST "${GMT_API_FUNCTION_LIST}")
-# create header file from template
-configure_file (${GMT_SOURCE_DIR}/src/gmt_api.h.cmake gmt_${GMT_SUPPL_STRING}.h)
+gmt_set_api_header(GMT_MODULES_API_H ${GMT_PROGS} ${GMT_PROGSPS})
 
 # build targets for demos
 string (REPLACE ".c" "" GMT_DEMOS "${GMT_DEMOS_SRCS}")
@@ -300,18 +293,7 @@ add_executable (psldemo psldemo.c)
 target_link_libraries (psldemo pslib)
 
 # generate Mac debugging symbols
-if (DSYMUTIL AND DEBUG_BUILD)
-	foreach (target ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS})
-		add_custom_command (TARGET ${target}
-			POST_BUILD
-			COMMAND ${DSYMUTIL} $<TARGET_FILE:${target}>
-			VERBATIM
-		)
-	endforeach (target)
-	add_custom_target (allclean make clean
-		COMMAND rm -rf *.dSYM
-		COMMENT "Removing dSYM files")
-endif (DSYMUTIL AND DEBUG_BUILD)
+create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS})
 
 # add the install targets
 install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo

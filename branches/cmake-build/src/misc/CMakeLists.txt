@@ -24,24 +24,13 @@ set (GMT_MISC_PROGS_SRCS dimfilter.c gmtdigitize.c)
 
 string (REPLACE ".c" "" GMT_MISC_PROGS "${GMT_MISC_PROGS_SRCS}")
 
-include_directories (${CMAKE_CURRENT_BINARY_DIR})
-
 foreach (prog ${GMT_MISC_PROGS})
 	add_executable (${prog} ${prog}.c)
 	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 
 # generate Mac debugging symbols
-if (DSYMUTIL AND DEBUG_BUILD)
-	foreach (target ${GMT_MISC_PROGS})
-		list (APPEND DSYM_FILES $<TARGET_FILE:${target}>)
-		add_custom_command (TARGET ${target}
-			POST_BUILD
-			COMMAND ${DSYMUTIL} $<TARGET_FILE:${target}>
-			VERBATIM
-		)
-	endforeach (target)
-endif (DSYMUTIL AND DEBUG_BUILD)
+create_debug_sym (${GMT_MISC_PROGS})
 
 # add the install targets
 install (TARGETS ${GMT_MISC_PROGS}
