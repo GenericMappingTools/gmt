@@ -86,3 +86,8 @@ NOTE: If you want to change CMake behaviour just for yourself then modify the
   - xgrid
   - WIN32: test for USE_MEM_ALIGNED, defined in src/gmt_config.h.cmake
 
+* Generate macros
+  - to simplify copying files (http://www.vtk.org/Wiki/CMakeCopyIfDifferent)
+  - to simplify manpage creation (done)
+  - for LaTeX docu (http://www.vtk.org/Wiki/CMakeUserUseLATEX)
+

@@ -81,32 +81,8 @@ install (TARGETS gmt_meca ${GMT_MECA_PROGS}
 	RUNTIME DESTINATION bin
 )
 
-if (CMAKE_COMPILER_IS_GNUCC)
-	# generate manpages
-	string (REPLACE ".c" ".txt" GMT_MECA_MAN_DEPS "${GMT_MECA_PROGS_SRCS}")
-	string (REPLACE ".c" ".1" GMT_MECA_MAN_1 "${GMT_MECA_PROGS_SRCS}")
-	foreach (_manpage ${GMT_MECA_MAN_1})
-		string (REGEX REPLACE "\\.[135]" ".txt" _man_src ${_manpage})
-		add_custom_command (
-			OUTPUT ${_manpage}
-			COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc
-			-I${GMT_SOURCE_DIR}/src
-			-I${GMT_BINARY_DIR}/src
-			-I${CMAKE_CURRENT_SOURCE_DIR}
-			< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
-			> ${_manpage}
-			DEPENDS gmt_man
-			COMMENT "Generate ${_manpage}"
-			VERBATIM
-		)
-	endforeach (_manpage)
+# Generate manpages
+string (REPLACE ".c" ".1" GMT_MECA_MAN_1 "${GMT_MECA_PROGS_SRCS}")
+gmt_create_manpages ("${GMT_MECA_MAN_1}" headers)
 
-	# manpage target
-	add_custom_target (gmt_meca_man ALL DEPENDS ${GMT_MECA_MAN_1})
-
-	# install manpages
-	foreach (_manfile ${GMT_MECA_MAN_1})
-		list (APPEND GMT_MECA_MAN_1_FILES "${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
-	endforeach (_manfile)
-	install (FILES ${GMT_MECA_MAN_1_FILES} DESTINATION ${GMT_SHARE_PATH}/man/man1)
-endif (CMAKE_COMPILER_IS_GNUCC)
+# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
