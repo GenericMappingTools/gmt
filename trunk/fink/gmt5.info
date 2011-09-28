@@ -10,6 +10,7 @@ Depends: netcdf7-shlibs, %n-shlibs (= %v-%r), gshhs (>= 2.2.0), pcre-shlibs
 Recommends: %n-doc
 NoSetCPPFLAGS: true
 NoSetLDFLAGS: true
+SetMAKEFLAGS: -j1
 
 # don't build xgrid to avoid x11 dependency.
 # don't build mex (won't work unless matlab or octave is installed).
