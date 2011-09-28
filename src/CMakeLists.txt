@@ -314,6 +314,7 @@ install (PROGRAMS
 gmt_create_manpages ("${GMT_MAN_1};${GMT_MAN_3};${GMT_MAN_5}" headers)
 
 # add subtrees
+add_subdirectory (gshhs)
 add_subdirectory (meca)
 add_subdirectory (misc)
 

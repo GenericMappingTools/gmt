@@ -37,6 +37,12 @@ install (TARGETS ${GMT_MISC_PROGS}
 	RUNTIME DESTINATION bin
 )
 
+# install shell script
+install (PROGRAMS
+  dim.template.sh
+  DESTINATION bin
+)
+
 # Generate manpages
 string (REPLACE ".c" ".1" GMT_MISC_MAN_1 "${GMT_MISC_PROGS_SRCS}")
 gmt_create_manpages ("${GMT_MISC_MAN_1}" headers)
