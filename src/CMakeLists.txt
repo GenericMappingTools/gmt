@@ -19,6 +19,9 @@
 # src/CMakeLists.txt
 #
 
+# Include GMT_CREATE_MANPAGES macro
+include (GMTmanpages)
+
 find_package (NETCDF REQUIRED)
 include_directories (${NETCDF_INCLUDE_DIR})
 add_definitions (${NETCDF_DEFINITIONS})
@@ -208,6 +211,7 @@ if (UNIX)
 		VERBATIM
 	)
 endif (UNIX)
+add_custom_target (headers ALL DEPENDS ${GMT_EXTRA_HDRS})
 ## end generate header files
 
 # gmtprogram
@@ -233,7 +237,10 @@ set_target_properties (pslib
 )
 
 # libgmt
-add_library (gmtlib ${GMT_LIB_HDRS} ${GMT_EXTRA_HDRS} ${GMT_LIB_SRCS} ${GMT_LIB_PS_SRCS})
+add_library (gmtlib ${GMT_LIB_HDRS} ${GMT_LIB_SRCS} ${GMT_LIB_PS_SRCS})
+
+# make sure headers are generated first
+add_dependencies(gmtlib headers)
 
 target_link_libraries (gmtlib
 	${NETCDF_LIBRARIES}
@@ -321,43 +328,11 @@ install (PROGRAMS
 	DESTINATION bin
 )
 
-if (CMAKE_COMPILER_IS_GNUCC)
-	# generate manpages
-	foreach (_manpage ${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5})
-		string (REGEX REPLACE "\\.[135]" ".txt" _man_src ${_manpage})
-		add_custom_command (
-			OUTPUT ${_manpage}
-			COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc
-			-I${CMAKE_CURRENT_SOURCE_DIR}
-			-I${CMAKE_CURRENT_BINARY_DIR}
-			< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
-			> ${_manpage}
-			DEPENDS ${GMT_MAN_DEPS} ${GMT_EXTRA_HDRS}
-			COMMENT "Generate ${_manpage}"
-			VERBATIM
-		)
-	endforeach (_manpage)
-
-	# manpage target
-	add_custom_target (gmt_man ALL
-		DEPENDS ${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5}
-	)
-
-	# install manpages
-	foreach (_manfile ${GMT_MAN_1})
-		list (APPEND GMT_MAN_1_FILES "${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
-	endforeach (_manfile)
-	foreach (_manfile ${GMT_MAN_3})
-		list (APPEND GMT_MAN_3_FILES "${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
-	endforeach (_manfile)
-	foreach (_manfile ${GMT_MAN_5})
-		list (APPEND GMT_MAN_5_FILES "${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
-	endforeach (_manfile)
-	install (FILES ${GMT_MAN_1_FILES} DESTINATION ${GMT_SHARE_PATH}/man/man1)
-	install (FILES ${GMT_MAN_3_FILES} DESTINATION ${GMT_SHARE_PATH}/man/man3)
-	install (FILES ${GMT_MAN_5_FILES} DESTINATION ${GMT_SHARE_PATH}/man/man5)
-endif (CMAKE_COMPILER_IS_GNUCC)
+# Generate manpages
+gmt_create_manpages ("${GMT_MAN_1};${GMT_MAN_3};${GMT_MAN_5}" headers)
 
 # add subtrees
 add_subdirectory (meca)
 add_subdirectory (misc)
+
+# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
