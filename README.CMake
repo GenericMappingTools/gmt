@@ -78,7 +78,8 @@ NOTE: If you want to change CMake behaviour just for yourself then modify the
 
 * Manpages: any ideas how to remove blank lines from CPP output without
   using grep and cmake "file(read ..."? Switching to m4 is an alternative.
-  This general purpose preprocessor is preinstalled on most systems.
+  This general purpose preprocessor is preinstalled on most systems. Or
+  include gema (http://gema.sourceforge.net/).
 
 * Add further tests/cmake-find-modules:
   - octave/Matlab
