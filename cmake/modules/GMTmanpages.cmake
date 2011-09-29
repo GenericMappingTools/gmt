@@ -34,6 +34,14 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES)
     # create tag from current dirname
 		tag_from_current_source_dir (_tag "_")
 
+		if(GZIP)
+			set (_gz ".gz")
+		endif(GZIP)
+
+		# clear lists
+		set (_install_sections)
+		set (_target_depends)
+
 		foreach (_manfile ${_MAN_FILES})
 			# strip section number
 			string (REGEX MATCH "[1-8]$" _man_section ${_manfile})
@@ -45,25 +53,46 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES)
 
       # generator
 			string (REGEX REPLACE "\\.[1-8]$" ".txt" _man_src ${_manfile})
-			add_custom_command (
-				OUTPUT ${_manfile}
-				COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc
-				-I${GMT_SOURCE_DIR}/src
-				-I${GMT_BINARY_DIR}/src
-				-I${CMAKE_CURRENT_SOURCE_DIR}
-				< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
-				> ${_manfile}
-				DEPENDS ${_man_src} ${ARGN} # ARGN: list of arguments past the last expected argument
-				COMMENT "Generate ${_manfile}"
-				VERBATIM
-				)
+			if(GZIP)
+				add_custom_command (
+					OUTPUT "${_manfile}${_gz}"
+					COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc
+					-I${GMT_SOURCE_DIR}/src
+					-I${GMT_BINARY_DIR}/src
+					-I${CMAKE_CURRENT_SOURCE_DIR}
+					< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
+					> ${_manfile}
+					COMMAND ${GZIP} -9 ${_manfile}
+					DEPENDS ${_man_src} ${ARGN} # ARGN: list of arguments past the last expected argument
+					COMMENT "Generate ${_manfile}"
+					VERBATIM
+					)
+			else(GZIP)
+				add_custom_command (
+					OUTPUT ${_manfile}
+					COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc
+					-I${GMT_SOURCE_DIR}/src
+					-I${GMT_BINARY_DIR}/src
+					-I${CMAKE_CURRENT_SOURCE_DIR}
+					< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
+					> ${_manfile}
+					DEPENDS ${_man_src} ${ARGN} # ARGN: list of arguments past the last expected argument
+					COMMENT "Generate ${_manfile}"
+					VERBATIM
+					)
+			endif(GZIP)
 
 			# append full path
-			list (APPEND _manfilepaths_${_man_section} "${CMAKE_CURRENT_BINARY_DIR}/${_manfile}")
+			list (APPEND _manfilepaths_${_man_section}
+				"${CMAKE_CURRENT_BINARY_DIR}/${_manfile}${_gz}")
+			list (APPEND _target_depends "${_manfile}${_gz}")
 		endforeach (_manfile)
 
 		# manpage target
-		add_custom_target (manpages${_tag} ALL DEPENDS ${_MAN_FILES})
+		add_custom_target (manpages${_tag} ALL DEPENDS ${_target_depends})
+		if(TARGET manpages)
+			add_dependencies(manpages manpages${_tag})
+		endif(TARGET manpages)
 
 		# install manpages
 		list (SORT _install_sections)
@@ -72,7 +101,6 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES)
 			install (FILES ${_manfilepaths_${_man_section}}
 				DESTINATION ${GMT_SHARE_PATH}/man/man${_man_section})
 		endforeach (_man_section ${_install_sections})
-		set (_install_sections) # remove list
 	else (CMAKE_COMPILER_IS_GNUCC)
 		message(WARNING
 			"Not creating manpages in ${CMAKE_CURRENT_SOURCE_DIR}")

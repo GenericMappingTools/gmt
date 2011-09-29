@@ -43,6 +43,9 @@ install (PROGRAMS
   DESTINATION bin
 )
 
+# add to gmt_suppl target
+add_depend_to_target (gmt_suppl ${GMT_MISC_PROGS})
+
 # Generate manpages
 string (REPLACE ".c" ".1" GMT_MISC_MAN_1 "${GMT_MISC_PROGS_SRCS}")
 gmt_create_manpages ("${GMT_MISC_MAN_1}" headers)
