@@ -56,7 +56,7 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES)
 			if(GZIP)
 				add_custom_command (
 					OUTPUT "${_manfile}${_gz}"
-					COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc
+					COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc -traditional-cpp
 					-I${GMT_SOURCE_DIR}/src
 					-I${GMT_BINARY_DIR}/src
 					-I${CMAKE_CURRENT_SOURCE_DIR}
@@ -70,7 +70,7 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES)
 			else(GZIP)
 				add_custom_command (
 					OUTPUT ${_manfile}
-					COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc
+					COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc -traditional-cpp
 					-I${GMT_SOURCE_DIR}/src
 					-I${GMT_BINARY_DIR}/src
 					-I${CMAKE_CURRENT_SOURCE_DIR}
