@@ -53,6 +53,9 @@ set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 # Include configuration options (default options and options overridden by user).
 include (ConfigCMake)
 
+# Find UNIX commands
+include (FindUnixCommands)
+
 # Configure a header file to pass some of the CMake settings to the source code
 configure_file (
 	"${PROJECT_SOURCE_DIR}/config.h.cmake"

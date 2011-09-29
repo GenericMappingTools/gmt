@@ -48,7 +48,7 @@ macro (CREATE_DEBUG_SYM _TARGETS)
 
 		# clean target
 		add_custom_target (dsym_clean${_tag}
-			COMMAND rm -rf *.dSYM
+			COMMAND ${RM} -rf *.dSYM
 			COMMENT "Removing .dSYM bundles")
 
 		# register with spotless target

@@ -19,8 +19,10 @@
 #-------------------------------------------------------------------------------
 
 # tag_from_current_source_dir (TAG [PREFIX])
+# add_depend_to_target (TARGET DEPEND [ DEPEND [ DEPEND ... ]])
 # add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
 # gmt_set_api_header (API_HEADER FUNCTIONS)
+
 
 # tag_from_current_source_dir (TAG [PREFIX])
 # example: tag_from_current_source_dir (_tag "_")
@@ -33,6 +35,18 @@ macro (TAG_FROM_CURRENT_SOURCE_DIR _TAG)
 	endif (_in_subtree)
 endmacro (TAG_FROM_CURRENT_SOURCE_DIR)
 
+
+# add_depend_to_target (TARGET DEPEND [ DEPEND [ DEPEND ... ]])
+# example: add_depend_to_target (main_target custom_target)
+macro (ADD_DEPEND_TO_TARGET _TARGET)
+	if(NOT TARGET ${_TARGET})
+		add_custom_target (${_TARGET}
+			WORKING_DIRECTORY ${GMT_BINARY_DIR})
+	endif(NOT TARGET ${_TARGET})
+	add_dependencies(${_TARGET} ${ARGN})
+endmacro (ADD_DEPEND_TO_TARGET)
+
+
 # add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
 # example: add_depend_to_spotless (custom_target)
 macro (ADD_DEPEND_TO_SPOTLESS)
@@ -43,6 +57,7 @@ macro (ADD_DEPEND_TO_SPOTLESS)
 	endif(NOT TARGET spotless)
 	add_dependencies(spotless ${ARGV})
 endmacro (ADD_DEPEND_TO_SPOTLESS)
+
 
 # gmt_set_api_header (API_HEADER FUNCTIONS)
 # example: gmt_set_api_header(GMT_MECA_API_H "${GMT_MECA_PROGS_SRCS}")

@@ -56,6 +56,9 @@ install (TARGETS gmt_meca ${GMT_MECA_PROGS}
 	RUNTIME DESTINATION bin
 )
 
+# add to gmt_suppl target
+add_depend_to_target (gmt_suppl gmt_meca ${GMT_MECA_PROGS})
+
 # Generate manpages
 string (REPLACE ".c" ".1" GMT_MECA_MAN_1 "${GMT_MECA_PROGS_SRCS}")
 gmt_create_manpages ("${GMT_MECA_MAN_1}" headers)

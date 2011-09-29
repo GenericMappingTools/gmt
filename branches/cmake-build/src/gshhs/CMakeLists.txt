@@ -62,6 +62,12 @@ install (TARGETS gmt_gshhs ${GMT_GSHHS_PROGS} ${GMT_GSHHS_PROGS2}
 	RUNTIME DESTINATION bin
 )
 
+# add to gmt_suppl target
+add_depend_to_target (gmt_suppl
+	gmt_gshhs
+	${GMT_GSHHS_PROGS}
+	${GMT_GSHHS_PROGS2})
+
 # Generate manpages
 string (REPLACE ".c" ".1" GMT_GSHHS_MAN_1
 	"${GMT_GSHHS_PROGS_SRCS};${GMT_GSHHS_PROGS2_SRCS}")
