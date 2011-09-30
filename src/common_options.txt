@@ -69,7 +69,7 @@
 #define GMT_g_OPT	OPT(g)[BD(a)]BD(x)|BD(y)|BD(d)|BD(X)|BD(Y)|BD(D)|[IT(col)]BD(z)[+|-]IT(gap)[BD(u)]
 #define GMT_h_OPT	OPT(h)[BD(i)|BD(o)][IT(n)]
 #define GMT_ho_OPT	OPT(ho)[IT(n)]
-#define GMT_i_OPT	OPT(i)IT(cols)[BD(l)][BD(s)IT(scale)][BD(o)IT(offset)],IT(...)
+#define GMT_i_OPT	OPT(i)IT(cols)[BD(l)][BD(s)IT(scale)][BD(o)IT(offset)][,IT(...)]
 #define GMT_n_OPT	OPT(n)[BD(b)|BD(c)|BD(l)|BD(n)][BD(+a)][BD(+b)IT(BC)][BD(+t)IT(threshold)]
 #define GMT_o_OPT	OPT(o)IT(cols)[,IT(...)]
 #define GMT_p_OPT	OPT(p)IT(azim)/IT(elev)[/IT(zlevel)][BD(+w)IT(lon0)/IT(lat0)[/IT(z0)]][BD(+v)IT(x0)/IT(y0)]
