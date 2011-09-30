@@ -62,7 +62,7 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES)
 					-I${CMAKE_CURRENT_SOURCE_DIR}
 					< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
 					> ${_manfile}
-					COMMAND ${GZIP} -9 ${_manfile}
+					COMMAND ${GZIP} -9 -f ${_manfile}
 					DEPENDS ${_man_src} ${ARGN} # ARGN: list of arguments past the last expected argument
 					COMMENT "Generate ${_manfile}"
 					VERBATIM
