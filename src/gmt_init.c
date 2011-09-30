@@ -57,6 +57,20 @@
 #include <stdarg.h>
 #include "gmt_internals.h"
 
+#define USER_MEDIA_OFFSET 1000
+
+#define GMT_def(case_val) * C->session.u2u[GMT_INCH][GMT_unit_lookup(C, C->current.setting.given_unit[case_val], C->current.setting.proj_length_unit)], C->current.setting.given_unit[case_val]
+
+#define Return { GMT_report (C, GMT_MSG_FATAL, "Found no history for option -%s\n", str); return (-1); }
+
+#define GMT_more_than_once(C,active) (GMT_check_condition (C, active, "Warning: Option -%c given more than once\n", option))
+
+#ifdef GMT_COMPAT
+#define GMT_COMPAT_WARN GMT_report (C, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated.\n", GMT_keywords[case_val])
+#define GMT_COMPAT_CHANGE(new) GMT_report (C, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated. Use %s instead.\n", GMT_keywords[case_val], new)
+#define GMT_COMPAT_OPT(new) if (strchr (list, new)) { GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n", option, new); option = new; }
+#endif
+
 EXTERN_MSC GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_grdio_init (struct GMT_CTRL *C);	/* Defined in gmt_customio.c and only used here */
 
@@ -84,8 +98,6 @@ static struct GMT_MEDIA GMT_media[GMT_N_MEDIA] = {	/* Sizes in points of all pap
 #include "gmt_media_size.h"
 };
 
-#define USER_MEDIA_OFFSET 1000
-
 static char *GMT_color_name[GMT_N_COLOR_NAMES] = {	/* Names of all the X11 colors */
 #include "gmt_colornames.h"
 };
@@ -101,8 +113,6 @@ static char *GMT_just_string[12] = {	/* Strings to specify justification */
 /* Local variables to gmt_init.c */
 
 static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
-
-#define GMT_def(case_val) * C->session.u2u[GMT_INCH][GMT_unit_lookup(C, C->current.setting.given_unit[case_val], C->current.setting.proj_length_unit)], C->current.setting.given_unit[case_val]
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
@@ -2294,11 +2304,6 @@ void GMT_pickdefaults (struct GMT_CTRL *C, GMT_LONG lines, struct GMT_OPTION *op
 	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now  */
 }
 
-#ifdef GMT_COMPAT
-#define GMT_COMPAT_WARN GMT_report (C, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated.\n", GMT_keywords[case_val])
-#define GMT_COMPAT_CHANGE(new) GMT_report (C, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated. Use %s instead.\n", GMT_keywords[case_val], new)
-#endif
-
 GMT_LONG gmt_true_false_or_error (char *value, GMT_LONG *answer)
 {
 	/* Assigns 0 or 1 to answer, depending on whether value is false or true.
@@ -4351,7 +4356,7 @@ GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 
 	sprintf (line, "%s/conf/gmt.conf", C->session.SHAREDIR);
 	if (access (line, R_OK)) {
-		GMT_report (C, -GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
+		GMT_report (C, GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
 		return (0);
 	}
 	if ((fpi = fopen (line, "r")) == NULL) return (-1);
@@ -5227,10 +5232,11 @@ void GMT_set_env (struct GMT_CTRL *C)
 
 	if ((this = getenv ("GMT_TMPDIR")) != CNULL) {	/* GMT_TMPDIR was set */
 #ifdef WIN32
-		if (access (this, R_OK+W_OK)) {		/* Adding the +X_OK makes Win 64 bits version crash */
+		if (access (this, R_OK+W_OK)) /* Adding the +X_OK makes Win 64 bits version crash */
 #else
-		if (access (this, R_OK+W_OK+X_OK)) {
+		if (access (this, R_OK+W_OK+X_OK))
 #endif
+		{
 			GMT_report (C, GMT_MSG_FATAL, "Warning: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this);
 			GMT_report (C, GMT_MSG_FATAL, "Warning: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
 			C->session.TMPDIR = CNULL;
@@ -5242,8 +5248,6 @@ void GMT_set_env (struct GMT_CTRL *C)
 #endif
 	}
 }
-
-#define Return { GMT_report (C, GMT_MSG_FATAL, "Found no history for option -%s\n", str); return (-1); }
 
 GMT_LONG GMT_Complete_Options (struct GMT_CTRL *C, struct GMT_OPTION *options)
 {
@@ -7185,8 +7189,6 @@ GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item) {
 }
 #endif
 
-#define GMT_more_than_once(C,active) (GMT_check_condition (C, active, "Warning: Option -%c given more than once\n", option))
-
 GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char *item)
 {
 	/* GMT_parse_common_options interprets the command line for the common, unique options
@@ -7199,7 +7201,6 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 	if (!list || !strchr (list, option)) return (FALSE);	/* Not a common option we accept */
 
 #ifdef GMT_COMPAT
-#define GMT_COMPAT_OPT(new) if (strchr (list, new)) { GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n", option, new); option = new; }
 	/* Translate some options */
 	switch (option) {
 		case 'E': GMT_COMPAT_OPT ('p'); break;
@@ -7269,7 +7270,7 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 			if (item && item[0]) {	/* Specified a verbosity level */
 				i = atoi (item);
 				if (i < GMT_MSG_SILENCE || i > GMT_MSG_DEBUG) {
-					GMT_report (C, -GMT_MSG_FATAL, "Error: Option -V verbosity levels are %d-%d\n", GMT_MSG_SILENCE, GMT_MSG_DEBUG);
+					GMT_report (C, GMT_MSG_FATAL, "Error: Option -V verbosity levels are %d-%d\n", GMT_MSG_SILENCE, GMT_MSG_DEBUG);
 					error++;
 				}
 				else
@@ -7552,7 +7553,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 
 	GMT_getsharepath (C, "pslib", "PS_font_info", ".d", fullname);
 	if ((in = fopen (fullname, "r")) == NULL) {
-		GMT_report (C, -GMT_MSG_FATAL, "Error: Cannot open %s", fullname);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open %s\n", fullname);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -7573,7 +7574,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 
 	if (GMT_getsharepath (C, "pslib", "CUSTOM_font_info", ".d", fullname)) {	/* Decode Custom font file */
 		if ((in = fopen (fullname, "r")) == NULL) {
-			GMT_report (C, -GMT_MSG_FATAL, "Error: Cannot open %s", fullname);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open %s\n", fullname);
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -7654,6 +7655,9 @@ struct GMT_CTRL *New_GMT_Ctrl () {	/* Allocate and initialize a new common contr
 	C->session.std[GMT_IN]  = stdin;
 	C->session.std[GMT_OUT] = stdout;
 	C->session.std[GMT_ERR] = stderr;
+	
+	/* Set default verbosity level */
+	C->current.setting.verbose = GMT_MSG_FATAL;
 
 #ifdef DEBUG
 	GMT_memtrack_init (C, &GMT_mem_keeper);	/* Helps us determine memory leaks */
@@ -7759,8 +7763,8 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 	if (mode == GMTAPI_GMTPSL) {			/* The application will need PSL */
 		C->PSL = (struct PSL_CTRL *)New_PSL_Ctrl (session);	/* Allocate a PSL control structure */
 		if (!C->PSL) {
-			GMT_report (C, -GMT_MSG_FATAL, "Error: Could not initialize PSL - Aborting.\n");
-			return (NULL);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not initialize PSL - Aborting.\n");
+			GMT_exit (EXIT_FAILURE);
 		}
 		C->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
 		PSL_beginsession (C->PSL);					/* Initializes the session and sets a few defaults */
@@ -7774,8 +7778,8 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 
 	sprintf (path, "%s/conf/gmt.conf", C->session.SHAREDIR);
 	if (access (path, R_OK)) {
-		GMT_report (C, -GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
-		return (NULL);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
+		GMT_exit (EXIT_FAILURE);
 	}
 	GMT_loaddefaults (C, path);	/* Load GMT system default settings [and PSL settings if selected] */
 	GMT_getdefaults (C, CNULL);	/* Override using local GMT default settings (if any) [and PSL if selected] */

@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-09-30	fwobbe
+	* common_options.txt	Removed excess ']' in GMT_i_OPT.
+	* gmt_init.c		Code cleanup. Fixed issue with content aware src
+			  	editors. Moved definitions to top. Fixed GMT_MSG_FATAL report and
+				verbosity level during init.
+
 2011-09-27	remko
 	* gmt_colors.h:		Missing () in GMT_s255 macro caused possibly wrong results.
 	* gmt2kml.c:		Color indices had int() instead of rint().
