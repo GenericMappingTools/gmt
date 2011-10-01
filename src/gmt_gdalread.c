@@ -822,7 +822,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	/* Fill in the rest of the GMT header values (If ...) */
 	if (raster_count > 0) {
 		if (z_min == 1e50) {		/* We don't know yet the dataset Min/Max */
-			GDALComputeRasterMinMax( hBand, TRUE, adfMinMax );
+			GDALComputeRasterMinMax( hBand, FALSE, adfMinMax );
 			Ctrl->hdr[4] = adfMinMax[0];
 			Ctrl->hdr[5] = adfMinMax[1];
 		}
