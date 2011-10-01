@@ -4355,7 +4355,7 @@ GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 	/* Find the global gmt.conf file */
 
 	sprintf (line, "%s/conf/gmt.conf", C->session.SHAREDIR);
-	if (access (line, R_OK) != 0) {
+	if (access (line, R_OK)) {
 		/* Not found in SHAREDIR, try USERDIR instead */
 		if (GMT_getuserpath (C, "conf/gmt.conf", line) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
@@ -7780,7 +7780,7 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 	/* Initialize the standard GMT system default settings from the system file */
 
 	sprintf (path, "%s/conf/gmt.conf", C->session.SHAREDIR);
-	if (access (path, R_OK) != 0) {
+	if (access (path, R_OK)) {
 		/* Not found in SHAREDIR, try USERDIR instead */
 		if (GMT_getuserpath (C, "conf/gmt.conf", path) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
