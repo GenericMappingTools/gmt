@@ -506,7 +506,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT->current.setting.io_nan_records = FALSE;	/* Cannot have x,y as NaNs here */
 	}
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, Ctrl->Z.active ? 1 : 3))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN, Ctrl->Z.active ? 1 : Ctrl->A.mode == 'n' ? 2 : 3))) Return (error);
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
