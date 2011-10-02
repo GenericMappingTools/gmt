@@ -1,7 +1,8 @@
 #
 # $Id$
 #
-# - Usefull CMake macros
+# - Generates extra header files
+# GMT_CREATE_HEADERS ()
 #
 # Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
@@ -18,67 +19,239 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 
-# tag_from_current_source_dir (TAG [PREFIX])
-# add_depend_to_target (TARGET DEPEND [ DEPEND [ DEPEND ... ]])
-# add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
-# gmt_set_api_header (API_HEADER FUNCTIONS)
+include (ManageString)
 
+# GMT_MAKE_PURPOSE_STRING (var file [file...])
+macro (GMT_MAKE_PURPOSE_STRING _PURPOSES _FILE)
+	grep (
+		#"GMT_message[^%]+%s [[]API[]]"
+		"%s [API] -"
+		_raw_purpose_list
+		${_FILE} ${ARGN}
+		LITERALLY
+	)
+	set(_purpose_list)
+	list_regex_replace (
+		"^[ \t]*GMT_message \\\\(GMT, ([^ ]+)[^-]*(.*#Bn)#Bn.+"
+		"\\\\1 \\\\2\""
+		_purpose_list ${_raw_purpose_list})
+	string_unescape (_purpose_list "${_purpose_list}" NOESCAPE_SEMICOLON)
+	string (REPLACE ";" "\n  " ${_PURPOSES} "${_purpose_list}")
+endmacro(GMT_MAKE_PURPOSE_STRING _PURPOSES _FILE)
 
-# tag_from_current_source_dir (TAG [PREFIX])
-# example: tag_from_current_source_dir (_tag "_")
-macro (TAG_FROM_CURRENT_SOURCE_DIR _TAG)
-	get_filename_component (_basename ${CMAKE_CURRENT_SOURCE_DIR} NAME_WE)
-	string(COMPARE NOTEQUAL "${_basename}" "src" _in_subtree)
-	set (${_TAG})
-	if (_in_subtree)
-		set (${_TAG} "${ARGN}${_basename}")
-	endif (_in_subtree)
-endmacro (TAG_FROM_CURRENT_SOURCE_DIR)
+# gmt_datums.h
+file2list (_datums_file ${GMT_SOURCE_DIR}/src/Datums.txt)
+list_regex_replace (
+	"^([^#\t]+)[\t]+([^\t]+)[\t]+([^\t]+)[\t]+([^\t]+)[\t]+([^\t]+)[\t]+(.+)"
+	"\t\t\"\\\\1\", \"\\\\2\", \"\\\\6\", {\\\\3, \\\\4, \\\\5}"
+	_datums ${_datums_file}
+	MATCHES_ONLY)
+list(REMOVE_DUPLICATES _datums)
+list(LENGTH _datums GMT_N_DATUMS)
+string (REPLACE ";" ",\n" _datums "${_datums}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_datums.h "${_datums}\n")
 
+# gmt_prognames.h
+file2list (_prognames_file ${GMT_SOURCE_DIR}/src/GMTprogs.txt)
+list_regex_replace (
+	"^([^# \t]+)[ \t]+([^ \t]+)"
+	"{\"\\\\1\", \"\\\\2\"}"
+	_prognames ${_prognames_file}
+	MATCHES_ONLY)
+list(REMOVE_DUPLICATES _prognames)
+list(LENGTH _prognames GMT_N_PROGRAMS)
+string (REPLACE ";" ",\n" _prognames "${_prognames}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_prognames.h "${_prognames}\n")
 
-# add_depend_to_target (TARGET DEPEND [ DEPEND [ DEPEND ... ]])
-# example: add_depend_to_target (main_target custom_target)
-macro (ADD_DEPEND_TO_TARGET _TARGET)
-	if(NOT TARGET ${_TARGET})
-		add_custom_target (${_TARGET}
-			WORKING_DIRECTORY ${GMT_BINARY_DIR})
-	endif(NOT TARGET ${_TARGET})
-	add_dependencies(${_TARGET} ${ARGN})
-endmacro (ADD_DEPEND_TO_TARGET)
+# gmt_progcases.h
+list_regex_replace (
+	"^([^# \t]+)[ \t]+([^ \t]+)"
+	"\t\t\tfunc = (PFL)GMT_\\\\1#S\n\t\t\t*mode = \\\\2#S\n\t\t\tbreak#S"
+	_raw_progcases ${_prognames_file}
+	MATCHES_ONLY)
+list(REMOVE_DUPLICATES _raw_progcases)
+set(_progcases)
+set(_casenum 0)
+foreach (_case ${_raw_progcases})
+	list (APPEND _progcases "\t\tcase ${_casenum}:\n${_case}")
+	math(EXPR _casenum "${_casenum} + 1")
+endforeach (_case ${_raw_progcases})
+string (REPLACE ";" "\n" _progcases "${_progcases}")
+string_unescape (_progcases "${_progcases}" NOESCAPE_SEMICOLON)
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_progcases.h "${_progcases}\n")
 
+# gmt_colornames.h
+file2list (_color_file ${GMT_SOURCE_DIR}/src/Colors.txt)
+list_regex_replace (
+	"^[0-9 \t]+([a-z]+[0-9]*).*"
+	"\"\\\\1\""
+	_color_names ${_color_file}
+	MATCHES_ONLY)
+list(LENGTH _color_names GMT_N_COLOR_NAMES)
+string (REPLACE ";" ",\n" _color_names "${_color_names}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_colornames.h "${_color_names}\n")
 
-# add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
-# example: add_depend_to_spotless (custom_target)
-macro (ADD_DEPEND_TO_SPOTLESS)
-	if(NOT TARGET spotless)
-		add_custom_target (spotless
-			COMMAND make clean
-			WORKING_DIRECTORY ${GMT_BINARY_DIR})
-	endif(NOT TARGET spotless)
-	add_dependencies(spotless ${ARGV})
-endmacro (ADD_DEPEND_TO_SPOTLESS)
+# gmt_color_rgb.h
+list_regex_replace (
+	"^([0-9]+)[ \t]+([0-9]+)[ \t]+([0-9]+).*"
+	"{\\\\1, \\\\2, \\\\3}"
+	_colors_rgb ${_color_file}
+	MATCHES_ONLY)
+string (REPLACE ";" ",\n" _colors_rgb "${_colors_rgb}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_color_rgb.h "${_colors_rgb}\n")
 
+# Colors.i
+list_regex_replace (
+	"^([0-9]+)[ \t]+([0-9]+)[ \t]+([0-9]+)[ \t]+([a-z]+[0-9]*).*"
+	"\\\\1\t\\\\2\t\\\\3\t\\\\4"
+	_colors_man ${_color_file}
+	MATCHES_ONLY)
+string (REPLACE ";" "\n.br\n" _colors_man "${_colors_man}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Colors.i ".br\n${_colors_man}\n")
 
-# gmt_set_api_header (API_HEADER FUNCTIONS)
-# example: gmt_set_api_header(GMT_MECA_API_H "${GMT_MECA_PROGS_SRCS}")
-macro (GMT_SET_API_HEADER _API_HEADER _FUNCTIONS)
-	string (REPLACE ".c" "" _functions "${_FUNCTIONS};${ARGN}")
-	if (NOT GMT_SUPPL_STRING)
-		tag_from_current_source_dir (GMT_SUPPL_STRING)
-	endif (NOT GMT_SUPPL_STRING)
-	set (${_API_HEADER} gmt_${GMT_SUPPL_STRING}.h)
-	string (TOUPPER ${GMT_SUPPL_STRING} GMT_SUPPL_STRING_UPPER)
-	set (GMT_API_FUNCTION_LIST) # reset list
-	foreach (_function ${_functions})
-		set (_api_function "EXTERN_MSC GMT_LONG GMT_${_function} (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)")
-		list (APPEND GMT_API_FUNCTION_LIST ${_api_function})
-	endforeach (_function)
-	string (REPLACE ";" ";\n" GMT_API_FUNCTION_LIST "${GMT_API_FUNCTION_LIST}")
-	# create api header file from template
-	configure_file (${GMT_SOURCE_DIR}/src/gmt_api.h.cmake
-		gmt_${GMT_SUPPL_STRING}.h)
-	set (${_API_HEADER} gmt_${GMT_SUPPL_STRING}.h)
-	set (GMT_SUPPL_STRING) # reset GMT_SUPPL_STRING
-endmacro (GMT_SET_API_HEADER _API_HEADER _FUNCTIONS)
+# Fonts.i
+file2list (_fonts_file ${GMT_SOURCE_DIR}/share/pslib/PS_font_info.d)
+list_regex_replace (
+	"^([^# \t]+).*"
+	"\\\\1"
+	_fonts_list ${_fonts_file}
+	MATCHES_ONLY)
+set(_fonts_man)
+set(_fontnum 0)
+foreach (_font ${_fonts_list})
+	list (APPEND _fonts_man "${_fontnum}\t${_font}")
+	math(EXPR _fontnum "${_fontnum} + 1")
+endforeach (_font ${_fonts_list})
+string (REPLACE ";" "\n.br\n" _fonts_man "${_fonts_man}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Fonts.i ".br\n${_fonts_man}\n")
+
+# gmt_ellipsoids.h
+file2list (_ellipsnames_file ${GMT_SOURCE_DIR}/src/Ellipsoids.txt)
+list_regex_replace (
+	"^([^#\t]+)[ \t]+([0-9]+)[ \t]+([0-9.]+)[ \t]+([0-9.]+)[ \t]+:.*"
+	"\t\t{\"\\\\1\", \\\\2, \\\\3, 1.0/\\\\4}"
+	_ellipsnames ${_ellipsnames_file}
+	MATCHES_ONLY)
+list(REMOVE_DUPLICATES _ellipsnames)
+list(LENGTH _ellipsnames GMT_N_ELLIPSOIDS)
+string (REPLACE "1.0/0}" "0}" _ellipsnames "${_ellipsnames}")
+string (REPLACE ";" ",\n" _ellipsnames "${_ellipsnames}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_ellipsoids.h "${_ellipsnames}\n")
+
+# Ellipsoids.i
+list_regex_replace (
+	"^([^#\t]+)[ \t]+([0-9]+)[ \t]+[0-9.]+[ \t]+[0-9.]+[ \t]+:[ \t]+(.*)"
+	"\\\\1: \\\\3 (\\\\2)"
+	_ellipsnames ${_ellipsnames_file}
+	MATCHES_ONLY)
+list(REMOVE_DUPLICATES _ellipsnames)
+string (REPLACE ";" "\n.br\n" _ellipsnames "${_ellipsnames}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Ellipsoids.i "${_ellipsnames}\n")
+
+# gmt_grdkeys.h
+grep (
+	"C->session.grdformat[id]"
+	_raw_grdkeys_list
+	${GMT_SOURCE_DIR}/src/gmt_customio.c
+	LITERALLY
+	)
+list_regex_get ("not supported"
+	_raw_grdkeys_list
+	"${_raw_grdkeys_list}"
+	INVERT)
+list_regex_replace (
+	"^[^=]+=[^a-z]+([a-z]+).+"
+	"\\\\1"
+	_grdkeys ${_raw_grdkeys_list}
+	MATCHES_ONLY)
+list(REMOVE_DUPLICATES _grdkeys)
+list(LENGTH _grdkeys GMT_N_GRD_FORMATS)
+string(TOUPPER "${_grdkeys}" _grdkeys)
+set(_grdkeydef)
+set(_keynum 0)
+foreach (_key ${_grdkeys})
+	list (APPEND _grdkeydef "#define GMT_GRD_IS_${_key} ${_keynum}")
+	math(EXPR _keynum "${_keynum} + 1")
+endforeach (_key ${_grdkeys})
+string (REPLACE ";" "\n" _grdkeydef "${_grdkeydef}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_grdkeys.h "${_grdkeydef}\n")
+
+# grdreformat_man.i
+list_regex_replace (
+  "^[^=]+=[^a-z]+([a-z]+)[^=]+=[\t ]*(.+).#S"
+	"BD(\\\\1)  \\\\2"
+	_grdreformat_man ${_raw_grdkeys_list}
+	MATCHES_ONLY)
+string (REPLACE ";" "\n.br\n" _grdreformat_man "${_grdreformat_man}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/grdreformat_man.i "${_grdreformat_man}\n.br\n")
+
+# gmt_keycases.h
+file2list (_gmtkeywords_file
+	${GMT_SOURCE_DIR}/src/gmt_keywords.txt
+	${GMT_SOURCE_DIR}/src/gmt_keywords.d)
+list_regex_replace (
+	"^([^#\t ]+).*"
+	"\\\\1 "
+	_gmtkeycases ${_gmtkeywords_file}
+	MATCHES_ONLY)
+list(SORT _gmtkeycases)
+list(REMOVE_DUPLICATES _gmtkeycases)
+list(LENGTH _gmtkeycases GMT_N_KEYS)
+set(_gmtkeycasedef)
+set(_casenum 0)
+foreach (_case ${_gmtkeycases})
+	list (APPEND _gmtkeycasedef "#define GMTCASE_${_case}${_casenum}")
+	math(EXPR _casenum "${_casenum} + 1")
+endforeach (_case ${_gmtkeycases})
+string (REPLACE ";" "\n" _gmtkeycasedef "${_gmtkeycasedef}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_keycases.h "${_gmtkeycasedef}\n")
+
+# gmt_keywords.h
+list_regex_replace (
+	"^([^\t ]+)[\t ]*$"
+	"\"\\\\1\""
+	_gmtkeywords ${_gmtkeycases})
+string (REPLACE ";" ",\n" _gmtkeywords "${_gmtkeywords}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_keywords.h "${_gmtkeywords}\n")
+
+# gmtapi_errno.h
+file2list (_gmtapierr_file ${GMT_SOURCE_DIR}/src/gmtapi_errors.d)
+list_regex_replace (
+	"^([^#\t ]+).*"
+	"\\\\1 "
+	_gmtapierr ${_gmtapierr_file}
+	MATCHES_ONLY)
+list(REMOVE_DUPLICATES _gmtapierr)
+set(_gmtapierrnodef)
+set(_errno 0)
+foreach (_err ${_gmtapierr})
+	list (APPEND _gmtapierrnodef "#define ${_err}${_errno}")
+	math(EXPR _errno "0${_errno} - 1")
+	#set(_errno "${_errno}")
+endforeach (_err ${_gmtapierr})
+string (REPLACE ";" "\n" _gmtapierrnodef "${_gmtapierrnodef}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmtapi_errno.h "${_gmtapierrnodef}\n")
+
+# gmtapi_errstr.h
+list_regex_replace (
+	"^([^\t ]+)[\t ]*$"
+	"\"\\\\1\""
+	_gmtapierrstr ${_gmtapierr})
+string (REPLACE ";" ",\n" _gmtapierrstr "${_gmtapierrstr}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmtapi_errstr.h "${_gmtapierrstr}\n")
+
+# gmt_media_name.h  gmt_pennames.h  gmt_unique.h
+file2list (_file_lines ${GMT_SOURCE_DIR}/src/gmt_media_name.h)
+list(REMOVE_DUPLICATES _file_lines)
+list(LENGTH _file_lines GMT_N_MEDIA)
+file2list (_file_lines ${GMT_SOURCE_DIR}/src/gmt_pennames.h)
+list(REMOVE_DUPLICATES _file_lines)
+list(LENGTH _file_lines GMT_N_PEN_NAMES)
+file2list (_file_lines ${GMT_SOURCE_DIR}/src/gmt_unique.h)
+list(REMOVE_DUPLICATES _file_lines)
+list(LENGTH _file_lines GMT_N_UNIQUE)
+
+# gmt_dimensions.h
+configure_file (gmt_dimensions.h.cmake gmt_dimensions.h)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
