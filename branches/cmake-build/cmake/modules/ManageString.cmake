@@ -311,6 +311,7 @@
 			list(REMOVE_ITEM _args "INVERT")
 		endif(_INVERT EQUAL -1)
 
+		set(_matches)
 		foreach (_file ${_FILE} ${_args})
 			file2list (_list ${_file})
 			foreach (_line ${_list})

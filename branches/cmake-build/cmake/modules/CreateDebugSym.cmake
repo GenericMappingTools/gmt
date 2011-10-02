@@ -22,7 +22,7 @@
 #-------------------------------------------------------------------------------
 
 # usefull macros
-include (GMTmacros)
+include (GmtHelperMacros)
 
 # Check for dsymutil only on Mac
 if (APPLE)
