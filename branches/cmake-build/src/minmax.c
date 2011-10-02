@@ -48,7 +48,7 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 		GMT_LONG mode;
 		GMT_LONG col;
 	} E;
-	struct I {	/* -Idx[/dy[/<dz>..]] */
+	struct I {	/* -Idx[/dy[/<dz>..] */
 		GMT_LONG active;
 		GMT_LONG ncol;
 		double inc[GMT_MAX_COLUMNS];

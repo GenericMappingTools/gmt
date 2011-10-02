@@ -91,7 +91,7 @@ struct GRDVIEW_CTRL {
 		GMT_LONG active;
 		GMT_LONG value;
 	} S;
-	struct T {	/* -T[s][o[<pen>]] */
+	struct T {	/* -T[s][o[<pen>] */
 		GMT_LONG active;
 		GMT_LONG skip;
 		GMT_LONG outline;
