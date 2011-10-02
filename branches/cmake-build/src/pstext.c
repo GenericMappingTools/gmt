@@ -45,7 +45,7 @@ struct PSTEXT_CTRL {
 		GMT_LONG percent;
 		double dx, dy;
 	} C;
-	struct D {	/* -D[j]<dx>/<dy>[v[<pen>] */
+	struct D {	/* -D[j]<dx>[/<dy>][v[<pen>]] */
 		GMT_LONG active;
 		GMT_LONG justify;
 		GMT_LONG line;

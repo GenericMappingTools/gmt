@@ -169,7 +169,7 @@ void centroid (struct GMT_CTRL *GMT, double x[], double y[], GMT_LONG n, double 
 {	/* Estimate mean position */
 	GMT_LONG i, k;
 	
-	n--; /* Skip 1st point since it is repeated as last] */
+	n--; /* Skip 1st point since it is repeated as last */
 	if (n <= 0) return;
 
 	if (geo) {	/* Geographic data, must use vector mean */
