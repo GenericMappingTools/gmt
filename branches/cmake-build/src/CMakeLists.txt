@@ -19,8 +19,10 @@
 # src/CMakeLists.txt
 #
 
+include (GmtExtraHeader)
+
 # Include GMT_CREATE_MANPAGES macro
-include (GMTmanpages)
+include (GmtManpages)
 
 # Include CREATE_DEBUG_SYM macro
 include (CreateDebugSym)
@@ -172,25 +174,17 @@ set (GMT_EXTRA_HDRS
 	Colors.i Ellipsoids.i Fonts.i grdreformat_man.i
 )
 
-# this is terrible:
-foreach (_filename ${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS})
-	if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${_filename}")
-		file (READ ${_filename} file_CONTENT)
-		string (REGEX MATCH "GMT_message[^%]+%s \\[API\\][^;]+" prog_purpose "${file_CONTENT}")
-		string (REGEX REPLACE "GMT_message \\(GMT, ([\"][^ ]+)[^-]+(.*\\\\n)\\\\n.+"
-			"\\1 \\2\"" prog_purpose ${prog_purpose})
-		list (APPEND GMT_PROG_PURPOSE ${prog_purpose})
-	endif (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${_filename}")
-endforeach (_filename)
-
-# cmake separates elements in an appended variable or list by ";"
-string (REPLACE ";" "\n  " GMT_PROG_PURPOSE "${GMT_PROG_PURPOSE}")
-
+# generate gmt_progpurpose.h
+gmt_make_purpose_string (
+	GMT_PROG_PURPOSE
+	${GMT_PROGS_SRCS}
+	${GMT_PROGSPS_SRCS}
+	)
+configure_file (gmt_progpurpose.h.cmake gmt_progpurpose.h)
 
 #configure_file (GMTprogs.txt GMTprogs.txt COPYONLY)
 configure_file (gmt_config.h.cmake gmt_config.h)
 configure_file (gmt_notposix.h.cmake gmt_notposix.h)
-configure_file (gmt_progpurpose.h.cmake gmt_progpurpose.h)
 configure_file (gmt_version.h.cmake gmt_version.h)
 configure_file (isogmt.cmake isogmt @ONLY)
 
