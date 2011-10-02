@@ -77,7 +77,7 @@ struct GRD2CPT_CTRL {
 	struct N {	/* -N */
 		GMT_LONG active;
 	} N;
-	struct Q {	/* -Q[i|o] */
+	struct Q {	/* -Q[i|o */
 		GMT_LONG active;
 		GMT_LONG mode;
 	} Q;

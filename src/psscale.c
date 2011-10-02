@@ -50,7 +50,7 @@ struct PSSCALE_CTRL {
 		GMT_LONG horizontal;
 		double x, y, width, length;
 	} D;
-	struct E {	/* -E[b|f][<length>][+n[<text>]] */
+	struct E {	/* -E[b|f][<length>][+n[<text>] */
 		GMT_LONG active;
 		GMT_LONG mode;
 		double length;
