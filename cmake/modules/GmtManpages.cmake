@@ -27,7 +27,7 @@
 #-------------------------------------------------------------------------------
 
 # usefull macros
-include (GMTmacros)
+include (GmtHelperMacros)
 
 macro (GMT_CREATE_MANPAGES _MAN_FILES)
 	if (CMAKE_COMPILER_IS_GNUCC)

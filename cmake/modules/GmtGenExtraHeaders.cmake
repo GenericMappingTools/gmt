@@ -30,32 +30,33 @@ macro (GMT_MAKE_PURPOSE_STRING _PURPOSES _FILE)
 		${_FILE} ${ARGN}
 		LITERALLY
 	)
-	set(_purpose_list)
 	list_regex_replace (
 		"^[ \t]*GMT_message \\\\(GMT, ([^ ]+)[^-]*(.*#Bn)#Bn.+"
 		"\\\\1 \\\\2\""
 		_purpose_list ${_raw_purpose_list})
 	string_unescape (_purpose_list "${_purpose_list}" NOESCAPE_SEMICOLON)
-	string (REPLACE ";" "\n  " ${_PURPOSES} "${_purpose_list}")
+	string (REPLACE ";" "\n  " _purpose_list "${_purpose_list}")
+	set (${_PURPOSES} "${_purpose_list}")
 endmacro(GMT_MAKE_PURPOSE_STRING _PURPOSES _FILE)
 
 # gmt_datums.h
 file2list (_datums_file ${GMT_SOURCE_DIR}/src/Datums.txt)
 list_regex_replace (
 	"^([^#\t]+)[\t]+([^\t]+)[\t]+([^\t]+)[\t]+([^\t]+)[\t]+([^\t]+)[\t]+(.+)"
-	"\t\t\"\\\\1\", \"\\\\2\", \"\\\\6\", {\\\\3, \\\\4, \\\\5}"
+	"\t\t{\"\\\\1\", \"\\\\2\", \"\\\\6\", {\\\\3, \\\\4, \\\\5}}"
 	_datums ${_datums_file}
 	MATCHES_ONLY)
 list(REMOVE_DUPLICATES _datums)
 list(LENGTH _datums GMT_N_DATUMS)
 string (REPLACE ";" ",\n" _datums "${_datums}")
+string_unescape (_datums "${_datums}" NOESCAPE_SEMICOLON)
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_datums.h "${_datums}\n")
 
 # gmt_prognames.h
 file2list (_prognames_file ${GMT_SOURCE_DIR}/src/GMTprogs.txt)
 list_regex_replace (
 	"^([^# \t]+)[ \t]+([^ \t]+)"
-	"{\"\\\\1\", \"\\\\2\"}"
+	"{\"\\\\1\", \\\\2}"
 	_prognames ${_prognames_file}
 	MATCHES_ONLY)
 list(REMOVE_DUPLICATES _prognames)
