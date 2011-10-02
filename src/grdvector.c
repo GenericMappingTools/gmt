@@ -59,7 +59,7 @@ struct GRDVECTOR_CTRL {
 		GMT_LONG active;
 		double v_width, h_length, h_width, norm;
 	} Q;
-	struct S {	/* -S[l]<scale>][<unit>] */
+	struct S {	/* -S[l]<scale>[<unit>] */
 		GMT_LONG active;
 		GMT_LONG constant;
 		char unit;
