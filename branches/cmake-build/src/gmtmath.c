@@ -326,8 +326,8 @@ GMT_LONG GMT_gmtmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\tThe stack can hold up to %d entries (given enough memory).\n", GMTMATH_STACK_SIZE);
 	GMT_message (GMT, "\tTrigonometric operators expect radians.\n");
 	GMT_message (GMT, "\tThe operators and number of input and output arguments:\n\n");
-	GMT_message (GMT, "\tName    #args   Returns\n");
-	GMT_message (GMT, "\t-----------------------\n");
+	GMT_message (GMT, "\tName       #args   Returns\n");
+	GMT_message (GMT, "\t--------------------------\n");
 #include "gmtmath_explain.h"
 	GMT_message (GMT, "\n\tThe special symbols are:\n\n");
 	GMT_message (GMT, "\t  PI	= 3.1415926...\n");

@@ -265,7 +265,7 @@ grep (
 
 # gmtmath.h
 list_regex_replace (
-	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+(.+)[.][ *]+/.*"
 	"\tops[OP_NUM] = table_\\\\1#S\tn_args[OP_NUM] = \\\\2#S\tn_out[OP_NUM] = \\\\3#S"
 	_raw_op_init ${_raw_op_descriptions}
 	MATCHES_ONLY)
@@ -284,7 +284,7 @@ configure_file (gmtmath.h.cmake gmtmath.h)
 
 # gmtmath_op.h
 list_regex_replace (
-	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+(.+)[.][ *]+/.*"
 	"\t\"\\\\1\",\t/* id = OP_NUM */"
 	_raw_op_array ${_raw_op_descriptions}
 	MATCHES_ONLY)
@@ -301,27 +301,31 @@ configure_file (gmtmath_op.h.cmake gmtmath_op.h)
 
 # gmtmath_explain.h
 list_regex_replace (
-	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
-	"\t\t\"\t\\\\1\t\\\\2 \\\\3\t\\\\4#Bn\""
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+(.+)[.][ *]+/.*"
+	"\t\t\"\t\\\\1PADDING\\\\2  \\\\3    \\\\4#Bn\""
 	_op_explain ${_raw_op_descriptions}
 	MATCHES_ONLY)
-string (REPLACE ";" "\n" _op_explain "${_op_explain}")
+set (_padded_lines)
+foreach (_line ${_op_explain})
+	string_pad (_line 15 PADDING)
+	list (APPEND _padded_lines ${_line})
+endforeach (_line ${_op_explain})
+string (REPLACE ";" "\n" _op_explain "${_padded_lines}")
 string_unescape (GMTMATH_OPERATOR_EXPLAIN "${_op_explain}" NOESCAPE_SEMICOLON)
 
 configure_file (gmtmath_explain.h.cmake gmtmath_explain.h)
 
 # gmtmath_man.i
-# todo: we need a function "string_pad (string length)" for pretty printing
 list_regex_replace (
-	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
-	"#BfB\\\\1\t#BfP\t\\\\2 \\\\3\t\\\\4"
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+(.+)[.][ *]+/.*"
+	"#BfB\\\\1#BfP\t\\\\2  \\\\3\t\\\\4"
 	_op_man ${_raw_op_descriptions}
 	MATCHES_ONLY)
-string (REPLACE ";" "\n.br\n" _op_man "${_op_man}")
+string (REPLACE ";" "\n" _op_man "${_op_man}")
 string_unescape (_op_man "${_op_man}" NOESCAPE_SEMICOLON)
 set(_op_man "Choose among the following ${GMTMATH_N_OPERATORS} operators.
 \"args\" are the number of input and output arguments.
-.br\n.sp\nOperator\targs\tReturns\n.br\n.sp\n${_op_man}\n.br\n")
+.TS\nl l l .\nOperator\targs\tReturns\n${_op_man}\n.TE\n")
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmtmath_man.i ${_op_man})
 
 # grdmath.h grdmath_op.h grdmath_explain.h grdmath_man.i
@@ -334,7 +338,7 @@ grep (
 
 # grdmath.h
 list_regex_replace (
-	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+(.+)[.][ *]+/.*"
 	"\tops[OP_NUM] = grd_\\\\1#S\tn_args[OP_NUM] = \\\\2#S\tn_out[OP_NUM] = \\\\3#S"
 	_raw_op_init ${_raw_op_descriptions}
 	MATCHES_ONLY)
@@ -353,7 +357,7 @@ configure_file (grdmath.h.cmake grdmath.h)
 
 # grdmath_op.h
 list_regex_replace (
-	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+(.+)[.][ *]+/.*"
 	"\t\"\\\\1\",\t/* id = OP_NUM */"
 	_raw_op_array ${_raw_op_descriptions}
 	MATCHES_ONLY)
@@ -370,26 +374,31 @@ configure_file (grdmath_op.h.cmake grdmath_op.h)
 
 # grdmath_explain.h
 list_regex_replace (
-	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
-	"\t\t\"\t\\\\1\t\\\\2 \\\\3\t\\\\4#Bn\""
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+(.+)[.][ *]+/.*"
+	"\t\t\"\t\\\\1PADDING\\\\2  \\\\3    \\\\4#Bn\""
 	_op_explain ${_raw_op_descriptions}
 	MATCHES_ONLY)
-string (REPLACE ";" "\n" _op_explain "${_op_explain}")
+set (_padded_lines)
+foreach (_line ${_op_explain})
+	string_pad (_line 15 PADDING)
+	list (APPEND _padded_lines ${_line})
+endforeach (_line ${_op_explain})
+string (REPLACE ";" "\n" _op_explain "${_padded_lines}")
 string_unescape (GRDMATH_OPERATOR_EXPLAIN "${_op_explain}" NOESCAPE_SEMICOLON)
 
 configure_file (grdmath_explain.h.cmake grdmath_explain.h)
 
 # grdmath_man.i
 list_regex_replace (
-	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
-	"#BfB\\\\1\t#BfP\t\\\\2 \\\\3\t\\\\4"
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+(.+)[.][ *]+/.*"
+	"#BfB\\\\1#BfP\t\\\\2  \\\\3\t\\\\4"
 	_op_man ${_raw_op_descriptions}
 	MATCHES_ONLY)
-string (REPLACE ";" "\n.br\n" _op_man "${_op_man}")
+string (REPLACE ";" "\n" _op_man "${_op_man}")
 string_unescape (_op_man "${_op_man}" NOESCAPE_SEMICOLON)
 set(_op_man "Choose among the following ${GRDMATH_N_OPERATORS} operators.
 \"args\" are the number of input and output arguments.
-.br\n.sp\nOperator\targs\tReturns\n.br\n.sp\n${_op_man}\n.br\n")
+.TS\nl l l .\nOperator\targs\tReturns\n${_op_man}\n.TE\n")
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/grdmath_man.i ${_op_man})
 
 

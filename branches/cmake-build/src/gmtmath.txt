@@ -85,23 +85,17 @@ contains the desired t-coordinates which may be irregular.
 .SH SYMBOLS
 The following symbols have special meaning:
 .br
-.sp
+.TS
+l l .
 BD(PI)	3.1415926...
-.br
 BD(E)	2.7182818...
-.br
 BD(EULER)	0.5772156...
-.br
 BD(TMIN)	Minimum t value
-.br
 BD(TMAX)	Maximum t value
-.br
 BD(TINC)	t increment
-.br
 BD(N)	The number of records
-.br
 BD(T)	Table with t-coordinates
-.br
+.TE
 #include "explain_precision.txt"
 .SH NOTES ON OPERATORS
 (1) The operators BD(PLM) and BD(PLMg) calculate the associated Legendre polynomial
