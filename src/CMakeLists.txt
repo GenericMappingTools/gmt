@@ -164,15 +164,16 @@ set (GMT_MAN_DEPS common_options.txt
 
 ## generate header files (this must be rewritten with cmake macros to be platform independent)
 
-set (GMT_EXTRA_HDRS
-	gmtmath_explain.h gmtmath.h gmtmath_man.i
-	grdmath_explain.h grdmath.h grdmath_man.i
-	#gmt_progcases.h gmt_prognames.h gmt_colornames.h
-	#gmt_datums.h gmt_grdkeys.h gmt_keywords.h
-	#gmt_dimensions.h gmtapi_errno.h gmt_color_rgb.h
-	#gmt_keycases.h gmtapi_errstr.h
-	#Colors.i Ellipsoids.i Fonts.i grdreformat_man.i
-)
+# not needed anymore:
+# set (GMT_EXTRA_HDRS
+#   gmtmath_explain.h gmtmath.h gmtmath_man.i
+#   grdmath_explain.h grdmath.h grdmath_man.i
+#   gmt_progcases.h gmt_prognames.h gmt_colornames.h
+#   gmt_datums.h gmt_grdkeys.h gmt_keywords.h
+#   gmt_dimensions.h gmtapi_errno.h gmt_color_rgb.h
+#   gmt_keycases.h gmtapi_errstr.h
+#   Colors.i Ellipsoids.i Fonts.i grdreformat_man.i
+# )
 
 # creates the above commented files
 include (GmtGenExtraHeaders)
@@ -191,21 +192,22 @@ configure_file (gmt_version.h.cmake gmt_version.h)
 configure_file (isogmt.cmake isogmt @ONLY)
 
 # generate extra files (not yet ported to cmake)
-if (UNIX)
-	configure_file (gmtmath.c gmtmath.c COPYONLY)
-	configure_file (grdmath.c grdmath.c COPYONLY)
-	add_custom_command (
-		OUTPUT ${GMT_EXTRA_HDRS}
-		COMMAND bash ${GMT_SOURCE_DIR}/src/make_math.sh gmt
-		COMMAND bash ${GMT_SOURCE_DIR}/src/make_math.sh grd
-		DEPENDS Colors.txt Datums.txt Ellipsoids.txt gmt_keywords.txt
-	  GMTprogs.txt gmtapi_errors.d gmt_progpurpose.h
-		${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS} ${GMT_LIB_SRCS}
-		COMMENT "Regenerating header files..."
-		VERBATIM
-	)
-endif (UNIX)
-add_custom_target (headers ALL DEPENDS ${GMT_EXTRA_HDRS})
+# not needed anymore
+# if (UNIX)
+#   configure_file (gmtmath.c gmtmath.c COPYONLY)
+#   configure_file (grdmath.c grdmath.c COPYONLY)
+#   add_custom_command (
+#     OUTPUT ${GMT_EXTRA_HDRS}
+#     COMMAND bash ${GMT_SOURCE_DIR}/src/make_math.sh gmt
+#     COMMAND bash ${GMT_SOURCE_DIR}/src/make_math.sh grd
+#     DEPENDS Colors.txt Datums.txt Ellipsoids.txt gmt_keywords.txt
+#     GMTprogs.txt gmtapi_errors.d gmt_progpurpose.h
+#     ${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS} ${GMT_LIB_SRCS}
+#     COMMENT "Regenerating header files..."
+#     VERBATIM
+#   )
+# endif (UNIX)
+# add_custom_target (headers ALL DEPENDS ${GMT_EXTRA_HDRS})
 ## end generate header files
 
 # gmtprogram
@@ -234,7 +236,7 @@ set_target_properties (pslib
 add_library (gmtlib ${GMT_LIB_HDRS} ${GMT_LIB_SRCS} ${GMT_LIB_PS_SRCS})
 
 # make sure headers are generated first
-add_dependencies(gmtlib headers)
+#add_dependencies(gmtlib headers)
 
 target_link_libraries (gmtlib
 	${NETCDF_LIBRARIES}
@@ -306,7 +308,7 @@ install (PROGRAMS
 )
 
 # Generate manpages
-gmt_create_manpages ("${GMT_MAN_1};${GMT_MAN_3};${GMT_MAN_5}" headers)
+gmt_create_manpages ("${GMT_MAN_1};${GMT_MAN_3};${GMT_MAN_5}")
 
 # add subtrees
 add_subdirectory (gshhs)
