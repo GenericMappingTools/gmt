@@ -71,7 +71,7 @@ TODO list
   easier to create new cmake macros if the layout of the underlying
   source files would be altered a litte. If absolutely necessary write
   a little C program that is build and run during configure pahase to
-  generate support files.
+  generate support files. *(done)*
 
 * Clean up config.h.cmake gmt_version.h.cmake gmt_notposix.h.cmake.
   Right now this is a mixture of partly redundant defines that can be

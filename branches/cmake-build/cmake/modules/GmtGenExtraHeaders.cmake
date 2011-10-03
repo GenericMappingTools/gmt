@@ -255,4 +255,142 @@ list(LENGTH _file_lines GMT_N_UNIQUE)
 # gmt_dimensions.h
 configure_file (gmt_dimensions.h.cmake gmt_dimensions.h)
 
+# gmtmath.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i
+# GMTMATH_OPERATOR_INIT GMTMATH_OPERATOR_ARRAY GMTMATH_OPERATOR_EXPLAIN
+# GMTMATH_N_OPERATORS
+grep (
+	"^/[* ]+OPERATOR:"
+	_raw_op_descriptions
+	${GMT_SOURCE_DIR}/src/gmtmath.c)
+
+# gmtmath.h
+list_regex_replace (
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
+	"\tops[OP_NUM] = table_\\\\1#S\tn_args[OP_NUM] = \\\\2#S\tn_out[OP_NUM] = \\\\3#S"
+	_raw_op_init ${_raw_op_descriptions}
+	MATCHES_ONLY)
+list(LENGTH _raw_op_init GMTMATH_N_OPERATORS)
+set(_op_init)
+set(_opnum 0)
+foreach (_op ${_raw_op_init})
+	string (REPLACE "OP_NUM" "${_opnum}" _op ${_op})
+	list (APPEND _op_init ${_op})
+	math(EXPR _opnum "${_opnum} + 1")
+endforeach (_op ${_raw_op_init})
+string (REPLACE ";" "\n" _op_init "${_op_init}")
+string_unescape (GMTMATH_OPERATOR_INIT "${_op_init}" NOESCAPE_SEMICOLON)
+
+configure_file (gmtmath.h.cmake gmtmath.h)
+
+# gmtmath_op.h
+list_regex_replace (
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
+	"\t\"\\\\1\",\t/* id = OP_NUM */"
+	_raw_op_array ${_raw_op_descriptions}
+	MATCHES_ONLY)
+set(_op_array)
+set(_opnum 0)
+foreach (_op ${_raw_op_array})
+	string (REPLACE "OP_NUM" "${_opnum}" _op ${_op})
+	list (APPEND _op_array ${_op})
+	math(EXPR _opnum "${_opnum} + 1")
+endforeach (_op ${_raw_op_array})
+string (REPLACE ";" "\n" GMTMATH_OPERATOR_ARRAY "${_op_array}")
+
+configure_file (gmtmath_op.h.cmake gmtmath_op.h)
+
+# gmtmath_explain.h
+list_regex_replace (
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
+	"\t\t\"\t\\\\1\t\\\\2 \\\\3\t\\\\4#Bn\""
+	_op_explain ${_raw_op_descriptions}
+	MATCHES_ONLY)
+string (REPLACE ";" "\n" _op_explain "${_op_explain}")
+string_unescape (GMTMATH_OPERATOR_EXPLAIN "${_op_explain}" NOESCAPE_SEMICOLON)
+
+configure_file (gmtmath_explain.h.cmake gmtmath_explain.h)
+
+# gmtmath_man.i
+# todo: we need a function "string_pad (string length)" for pretty printing
+list_regex_replace (
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
+	"#BfB\\\\1\t#BfP\t\\\\2 \\\\3\t\\\\4"
+	_op_man ${_raw_op_descriptions}
+	MATCHES_ONLY)
+string (REPLACE ";" "\n.br\n" _op_man "${_op_man}")
+string_unescape (_op_man "${_op_man}" NOESCAPE_SEMICOLON)
+set(_op_man "Choose among the following ${GMTMATH_N_OPERATORS} operators.
+\"args\" are the number of input and output arguments.
+.br\n.sp\nOperator\targs\tReturns\n.br\n.sp\n${_op_man}\n.br\n")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmtmath_man.i ${_op_man})
+
+# grdmath.h grdmath_op.h grdmath_explain.h grdmath_man.i
+# GRDMATH_OPERATOR_INIT GRDMATH_OPERATOR_ARRAY GRDMATH_OPERATOR_EXPLAIN
+# GRDMATH_N_OPERATORS
+grep (
+	"^/[* ]+OPERATOR:"
+	_raw_op_descriptions
+	${GMT_SOURCE_DIR}/src/grdmath.c)
+
+# grdmath.h
+list_regex_replace (
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
+	"\tops[OP_NUM] = grd_\\\\1#S\tn_args[OP_NUM] = \\\\2#S\tn_out[OP_NUM] = \\\\3#S"
+	_raw_op_init ${_raw_op_descriptions}
+	MATCHES_ONLY)
+list(LENGTH _raw_op_init GRDMATH_N_OPERATORS)
+set(_op_init)
+set(_opnum 0)
+foreach (_op ${_raw_op_init})
+	string (REPLACE "OP_NUM" "${_opnum}" _op ${_op})
+	list (APPEND _op_init ${_op})
+	math(EXPR _opnum "${_opnum} + 1")
+endforeach (_op ${_raw_op_init})
+string (REPLACE ";" "\n" _op_init "${_op_init}")
+string_unescape (GRDMATH_OPERATOR_INIT "${_op_init}" NOESCAPE_SEMICOLON)
+
+configure_file (grdmath.h.cmake grdmath.h)
+
+# grdmath_op.h
+list_regex_replace (
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
+	"\t\"\\\\1\",\t/* id = OP_NUM */"
+	_raw_op_array ${_raw_op_descriptions}
+	MATCHES_ONLY)
+set(_op_array)
+set(_opnum 0)
+foreach (_op ${_raw_op_array})
+	string (REPLACE "OP_NUM" "${_opnum}" _op ${_op})
+	list (APPEND _op_array ${_op})
+	math(EXPR _opnum "${_opnum} + 1")
+endforeach (_op ${_raw_op_array})
+string (REPLACE ";" "\n" GRDMATH_OPERATOR_ARRAY "${_op_array}")
+
+configure_file (grdmath_op.h.cmake grdmath_op.h)
+
+# grdmath_explain.h
+list_regex_replace (
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
+	"\t\t\"\t\\\\1\t\\\\2 \\\\3\t\\\\4#Bn\""
+	_op_explain ${_raw_op_descriptions}
+	MATCHES_ONLY)
+string (REPLACE ";" "\n" _op_explain "${_op_explain}")
+string_unescape (GRDMATH_OPERATOR_EXPLAIN "${_op_explain}" NOESCAPE_SEMICOLON)
+
+configure_file (grdmath_explain.h.cmake grdmath_explain.h)
+
+# grdmath_man.i
+list_regex_replace (
+	"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([^.]+[.]).+"
+	"#BfB\\\\1\t#BfP\t\\\\2 \\\\3\t\\\\4"
+	_op_man ${_raw_op_descriptions}
+	MATCHES_ONLY)
+string (REPLACE ";" "\n.br\n" _op_man "${_op_man}")
+string_unescape (_op_man "${_op_man}" NOESCAPE_SEMICOLON)
+set(_op_man "Choose among the following ${GRDMATH_N_OPERATORS} operators.
+\"args\" are the number of input and output arguments.
+.br\n.sp\nOperator\targs\tReturns\n.br\n.sp\n${_op_man}\n.br\n")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/grdmath_man.i ${_op_man})
+
+
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

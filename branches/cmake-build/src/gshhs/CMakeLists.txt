@@ -71,6 +71,6 @@ add_depend_to_target (gmt_suppl
 # Generate manpages
 string (REPLACE ".c" ".1" GMT_GSHHS_MAN_1
 	"${GMT_GSHHS_PROGS_SRCS};${GMT_GSHHS_PROGS2_SRCS}")
-gmt_create_manpages ("${GMT_GSHHS_MAN_1}" headers)
+gmt_create_manpages ("${GMT_GSHHS_MAN_1}")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
