@@ -230,6 +230,7 @@ set_target_properties (pslib
 	VERSION ${GMT_PACKAGE_VERSION}
 	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
+	DEFINE_SYMBOL "LIBRARY_EXPORTS"
 )
 
 # libgmt
@@ -253,6 +254,7 @@ set_target_properties (gmtlib
 	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
 	LINK_FLAGS "${USER_GMTLIB_LINK_FLAGS}"
+	DEFINE_SYMBOL "LIBRARY_EXPORTS"
 )
 
 # create build targets for gmt progs
@@ -299,13 +301,18 @@ install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
 )
 
 # install extra files
-install (PROGRAMS
-	${CMAKE_CURRENT_BINARY_DIR}/isogmt
-	gmtlogo
-	gmtswitch
-	gmt_shell_functions.sh
-	DESTINATION bin
-)
+if (UNIX)
+	install (PROGRAMS
+		${CMAKE_CURRENT_BINARY_DIR}/isogmt
+		gmtlogo
+		gmtswitch
+		gmt_shell_functions.sh
+		DESTINATION bin)
+elseif (WIN32)
+	install (PROGRAMS
+		gmtswitch.bat
+		DESTINATION bin)
+endif (UNIX)
 
 # Generate manpages
 gmt_create_manpages ("${GMT_MAN_1};${GMT_MAN_3};${GMT_MAN_5}")

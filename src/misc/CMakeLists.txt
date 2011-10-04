@@ -38,10 +38,11 @@ install (TARGETS ${GMT_MISC_PROGS}
 )
 
 # install shell script
-install (PROGRAMS
-  dim.template.sh
-  DESTINATION bin
-)
+if (UNIX)
+	install (PROGRAMS
+		dim.template.sh
+		DESTINATION bin)
+endif (UNIX)
 
 # add to gmt_suppl target
 add_depend_to_target (gmt_suppl ${GMT_MISC_PROGS})

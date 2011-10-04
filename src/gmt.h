@@ -45,23 +45,13 @@ extern "C" {
 #define _POSIX_SOURCE 1
 #endif
 
-/* Declaration modifiers for DLL support (MSC et al) */
-
-#if defined(DLL_GMT)		/* define when library is a DLL */
-#if defined(DLL_EXPORT)		/* define when building the library */
-#define MSC_EXTRA_GMT __declspec(dllexport)
-#else
-#define MSC_EXTRA_GMT __declspec(dllimport)
-#endif
-#else
-#define MSC_EXTRA_GMT
-#endif				/* defined(DLL_GMT) */
+#include "declspec.h" /* Declaration modifiers for DLL support (MSC et al) */
 
 #ifndef EXTERN_MSC
-#define EXTERN_MSC extern MSC_EXTRA_GMT
+/* By default, we use the standard "extern" declarations. */
+#define EXTERN_MSC extern LIBSPEC
 #endif
 
-/* So unless DLL_GMT is defined under Windows, EXTERN_MSC is simply extern */
 
 /*--------------------------------------------------------------------
  *			SYSTEM HEADER FILES
