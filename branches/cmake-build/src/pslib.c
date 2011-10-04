@@ -103,24 +103,6 @@
 #define _POSIX_SOURCE 1
 #define _POSIX_C_SOURCE 199506L
 
-/* Declaration modifiers for DLL support (MSC et al) */
-
-#if defined(DLL_PSL)		/* define when library is a DLL */
-#if defined(DLL_EXPORT)		/* define when building the library */
-#define MSC_EXTRA_PSL __declspec(dllexport)
-#else
-#define MSC_EXTRA_PSL __declspec(dllimport)
-#endif
-#else
-#define MSC_EXTRA_PSL
-#endif				/* defined(DLL_PSL) */
-
-#ifndef EXTERN_MSC
-#define EXTERN_MSC extern MSC_EXTRA_PSL
-#endif
-
-/* So unless DLL_PSL is defined, EXTERN_MSC is simply extern */
-
 #ifdef WIN32
 #include <process.h>
 #define getpid _getpid

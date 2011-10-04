@@ -43,12 +43,8 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 #define PSL_LL "l"
 #endif
 
-#include "declspec.h" /* Declaration modifiers for DLL support (MSC et al) */
-
-#ifndef EXTERN_MSC
-/* By default, we use the standard "extern" declarations. */
-#define EXTERN_MSC extern LIBSPEC
-#endif
+/* Declaration modifiers for DLL support (MSC et al) */
+#include "declspec.h"
 
 /* Number of PostScript points in one inch */
 

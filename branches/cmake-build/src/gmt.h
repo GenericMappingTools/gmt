@@ -45,12 +45,8 @@ extern "C" {
 #define _POSIX_SOURCE 1
 #endif
 
-#include "declspec.h" /* Declaration modifiers for DLL support (MSC et al) */
-
-#ifndef EXTERN_MSC
-/* By default, we use the standard "extern" declarations. */
-#define EXTERN_MSC extern LIBSPEC
-#endif
+/* Declaration modifiers for DLL support (MSC et al) */
+#include "declspec.h"
 
 
 /*--------------------------------------------------------------------

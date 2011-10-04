@@ -37,4 +37,7 @@
 #		define LIBSPEC
 #	endif /* ifdef _WIN32 */
 
+/* By default, we use the standard "extern" declarations. */
+#		define EXTERN_MSC extern LIBSPEC
+
 #endif /* _DECLSPEC_H_ */

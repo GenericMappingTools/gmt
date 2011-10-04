@@ -64,19 +64,19 @@ SET MEX_EXT="dll"
 ) ELSE (
 
 IF %WIN64%=="yes" (
-SET MATLIB=C:\PROGRAMS\MATLAB\R2010B\extern\lib\win64\microsoft 
+SET MATLIB=C:\PROGRAMS\MATLAB\R2010B\extern\lib\win64\microsoft
 SET MATINC=C:\PROGRAMS\MATLAB\R2010B\extern\include
 SET _MX_COMPAT=-DMX_COMPAT_32
 SET MEX_EXT="mexw64"
 
 ) ELSE (
 
-SET MATLIB=C:\PROGRAMS\MATLAB32\R2010B\extern\lib\win32\microsoft 
+SET MATLIB=C:\PROGRAMS\MATLAB32\R2010B\extern\lib\win32\microsoft
 SET MATINC=C:\PROGRAMS\MATLAB32\R2010B\extern\include
 SET _MX_COMPAT=-DMX_COMPAT_32
 SET MEX_EXT="mexw32"
 ) )
- 
+
 REM -------------- Set GMT & NetCDF lib and include ----------------------------
 IF %WIN64%=="yes" (
 
@@ -106,8 +106,8 @@ REM ____________________________________________________________________________
 REM ___________________ STOP EDITING HERE ______________________________________
 
 
-SET COMPFLAGS=/c /Zp8 /GR /EHs /D_CRT_SECURE_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0 /DMATLAB_MEX_FILE /nologo /MD 
-SET OPTIMFLAGS=/Ox /Oy- /DNDEBUG 
+SET COMPFLAGS=/c /Zp8 /GR /EHs /D_CRT_SECURE_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0 /DMATLAB_MEX_FILE /nologo /MD
+SET OPTIMFLAGS=/Ox /Oy- /DNDEBUG
 IF %DEBUG%=="yes" SET OPTIMFLAGS=/Z7
 
 IF %WIN64%=="yes" SET arc=X64
@@ -115,35 +115,35 @@ IF %WIN64%=="no" SET arc=X86
 SET LINKFLAGS=/dll /export:mexFunction /LIBPATH:%MATLIB% libmx.lib libmex.lib libmat.lib /MACHINE:%arc% kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:NO %LDEBUG%
 
 REM -------------------------------------------------------------------------------------------------------
-%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DDLL_GMT -DGMT_MATLAB gmt_mex.c
+%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DLIBRARY_EXPORTS -DGMT_MATLAB gmt_mex.c
 for %%G in (blockmean gmtconvert grdinfo grdread grdtrack grdwrite mapproject nearneighbor psxy pscoast surface) do (
 
-%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DDLL_GMT -DGMT_MATLAB %%G.c
-link  /out:"%%G.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj %%G.obj 
+%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DLIBRARY_EXPORTS -DGMT_MATLAB %%G.c
+link  /out:"%%G.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj %%G.obj
 )
 REM -------------------------------------------------------------------------------------------------------
 
 REM --------- These follow the same aproach as with the gmtprogram.c template -----------------------------
-%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DDLL_GMT -DGMT_MATLAB /DFUNC=GMT_grdsample_cmd /Fegrdsample grd2grd.c  
-link  /out:"grdsample.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj 
+%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DLIBRARY_EXPORTS -DGMT_MATLAB /DFUNC=GMT_grdsample_cmd /Fegrdsample grd2grd.c
+link  /out:"grdsample.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj
 
-%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DDLL_GMT -DGMT_MATLAB /DFUNC=GMT_grdfilter_cmd /Fegrdfilter grd2grd.c  
-link  /out:"grdfilter.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj 
+%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DLIBRARY_EXPORTS -DGMT_MATLAB /DFUNC=GMT_grdfilter_cmd /Fegrdfilter grd2grd.c
+link  /out:"grdfilter.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj
 
-%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DDLL_GMT -DGMT_MATLAB /DFUNC=GMT_grdfft_cmd /Fegrdfft grd2grd.c  
-link  /out:"grdfft.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj 
+%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DLIBRARY_EXPORTS -DGMT_MATLAB /DFUNC=GMT_grdfft_cmd /Fegrdfft grd2grd.c
+link  /out:"grdfft.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj
 
-%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DDLL_GMT -DGMT_MATLAB /DFUNC=GMT_grdcut_cmd /Fegrdcut grd2grd.c  
-link  /out:"grdcut.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj 
+%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DLIBRARY_EXPORTS -DGMT_MATLAB /DFUNC=GMT_grdcut_cmd /Fegrdcut grd2grd.c
+link  /out:"grdcut.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj
 
-%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DDLL_GMT -DGMT_MATLAB /DFUNC=GMT_grdclip_cmd /Fegrdclip grd2grd.c  
-link  /out:"grdclip.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj 
+%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DLIBRARY_EXPORTS -DGMT_MATLAB /DFUNC=GMT_grdclip_cmd /Fegrdclip grd2grd.c
+link  /out:"grdclip.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj
 
-%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DDLL_GMT -DGMT_MATLAB /DFUNC=GMT_grdhisteq_cmd /Fegrdhisteq grd2grd.c  
-link  /out:"grdhisteq.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj 
+%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DLIBRARY_EXPORTS -DGMT_MATLAB /DFUNC=GMT_grdhisteq_cmd /Fegrdhisteq grd2grd.c
+link  /out:"grdhisteq.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj
 
-%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DDLL_GMT -DGMT_MATLAB /DFUNC=GMT_grdproject_cmd /Fegrdproject grd2grd.c  
-link  /out:"grdproject.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj 
+%CC% -DWIN32 %COMPFLAGS% -I%MATINC% -I%NETCDF_INC% -I%GMT_INC% %OPTIMFLAGS% %_MX_COMPAT% -DLIBRARY_EXPORTS -DGMT_MATLAB /DFUNC=GMT_grdproject_cmd /Fegrdproject grd2grd.c
+link  /out:"grdproject.%MEX_EXT%" %LINKFLAGS% %NETCDF_LIB% %GMT_LIB% /implib:templib.x gmt_mex.obj grd2grd.obj
 REM -------------------------------------------------------------------------------------------------------
 
 
