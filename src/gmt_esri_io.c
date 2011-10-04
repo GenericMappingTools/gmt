@@ -529,15 +529,16 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 			}
 			n_left--;
 		}
-		if (n_left) {
-			GMT_report (C, GMT_MSG_FATAL, "Expected %ld points, found only %ld\n", header->nm, header->nm - n_left);
-			return (GMT_GRDIO_READ_FAILED);
-		}
 	}
 
 	GMT_fclose (C, fp);
 	GMT_free (C, k);
 	GMT_free (C, tmp);
+
+	if (n_left) {
+		GMT_report (C, GMT_MSG_FATAL, "Expected %ld points, found only %ld\n", header->nm, header->nm - n_left);
+		return (GMT_GRDIO_READ_FAILED);
+	}
 
 	header->nx = (int)width_in;
 	header->ny = (int)height_in;
