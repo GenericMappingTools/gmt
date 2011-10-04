@@ -194,16 +194,28 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memcpy (C->header->wesn, A->header->wesn, 4, double);	/* Output region is set as the same as A... */
 	if (fabs (A->header->wesn[XLO] - B->header->wesn[XLO]) < x_noise && fabs (A->header->wesn[XHI] - B->header->wesn[XHI]) < x_noise) {
 
-		if (fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < y_noise) {
+		C->header->nx = A->header->nx;
+
+		if (fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < y_noise) {			/* B is exactly on top of A */
 			way = 1;
-			C->header->nx = A->header->nx;
 			C->header->ny = A->header->ny + B->header->ny - (int)one_or_zero;
 			C->header->wesn[YHI] = B->header->wesn[YHI];			/* ...but not for north */
 		}
-		else if (fabs (A->header->wesn[YLO] - B->header->wesn[YHI]) < y_noise) {
+		else if (fabs (A->header->wesn[YLO] - B->header->wesn[YHI]) < y_noise) {	/* A is exactly on top of B */
 			way = 2;
-			C->header->nx = A->header->nx;
 			C->header->ny = A->header->ny + B->header->ny - (int)one_or_zero;
+			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
+		}
+		else if ( !one_or_zero && (fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < (C->header->inc[GMT_Y] + y_noise)) ) {
+			/* B is on top of A but their pixel reg limits overlap by one cell */
+			way = 11;
+			C->header->ny = A->header->ny + B->header->ny - 1;
+			C->header->wesn[YHI] = B->header->wesn[YHI];			/* ...but not for north */
+		}
+		else if ( !one_or_zero && (fabs (A->header->wesn[YLO] - B->header->wesn[YHI]) < (C->header->inc[GMT_Y] + y_noise)) ) {
+			/* A is on top of B but their pixel reg limits overlap by one cell */
+			way = 22;
+			C->header->ny = A->header->ny + B->header->ny - 1;
 			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
 		}
 		else {
@@ -213,16 +225,28 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (fabs (A->header->wesn[YLO] - B->header->wesn[YLO]) < y_noise && fabs (A->header->wesn[YHI] - B->header->wesn[YHI]) < y_noise) {
 
-		if (fabs (A->header->wesn[XLO] - B->header->wesn[XHI]) < x_noise) {
+		C->header->ny = A->header->ny;
+
+		if (fabs (A->header->wesn[XLO] - B->header->wesn[XHI]) < x_noise) {			/* A is on the right of B */
 			way = 3;
 			C->header->nx = A->header->nx + B->header->nx - (int)one_or_zero;
-			C->header->ny = A->header->ny;
 			C->header->wesn[XLO] = B->header->wesn[XLO];			/* ...but not for west */
 		}
-		else if (fabs (A->header->wesn[XHI] - B->header->wesn[XLO]) < x_noise) {
+		else if (fabs (A->header->wesn[XHI] - B->header->wesn[XLO]) < x_noise) {	/* A is on the left of B */
 			way = 4;
 			C->header->nx = A->header->nx + B->header->nx - (int)one_or_zero;
-			C->header->ny = A->header->ny;
+			C->header->wesn[XHI] = B->header->wesn[XHI];			/* ...but not for east */
+		}
+		else if ( !one_or_zero && (fabs (A->header->wesn[XLO] - B->header->wesn[XHI]) < (C->header->inc[GMT_X] + x_noise)) ) {
+			/* A is on right of B but their pixel reg limits overlap by one cell */
+			way = 33;
+			C->header->nx = A->header->nx + B->header->nx - 1;
+			C->header->wesn[XLO] = B->header->wesn[XLO];			/* ...but not for west */
+		}
+		else if ( !one_or_zero && (fabs (A->header->wesn[XHI] - B->header->wesn[XLO]) < (C->header->inc[GMT_X] + x_noise)) ) {
+			/* A is on left of B but their pixel reg limits overlap by one cell */
+			way = 44;
+			C->header->nx = A->header->nx + B->header->nx - 1;
 			C->header->wesn[XHI] = B->header->wesn[XHI];			/* ...but not for east */
 		}
 		else {
@@ -249,6 +273,7 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, format, Ctrl->G.file, C->header->wesn[XLO], C->header->wesn[XHI], C->header->wesn[YLO], C->header->wesn[YHI], C->header->inc[GMT_X], C->header->inc[GMT_Y], C->header->nx, C->header->ny);
 	}
 
+	C->header->registration = A->header->registration;
 	GMT_set_grddim (GMT, C->header);
 	C->data = GMT_memory (GMT, NULL, C->header->size, float);
 	A->data = B->data = C->data;	/* A and B share the same final matrix declared for C */
@@ -256,29 +281,41 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	A->header->nm = B->header->nm = C->header->nm;
 	A->header->no_BC = B->header->no_BC = TRUE;	/* We must disable the BC machinery */
 
-	switch (way) {	/* How A and B are positioned relative to each other */
-		case 1:
+	switch (way) {      /* How A and B are positioned relative to each other */
+		case 1:         /* B is on top of A */
+		case 11:        /* B is on top of A but their pixel reg limits overlap by one cell */
 			GMT->current.io.pad[YHI] = B->header->ny - one_or_zero + 2;
+			if (way == 11) GMT->current.io.pad[YHI] -= 1;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[0]), (void **)&A)) Return (GMT_DATA_READ_ERROR);	/* Get data from A */
 			GMT->current.io.pad[YHI] = 2;	GMT->current.io.pad[YLO] = A->header->ny - one_or_zero + 2;
+			if (way == 11) GMT->current.io.pad[YLO] -= 1;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[1]), (void **)&B)) Return (GMT_DATA_READ_ERROR);	/* Get data from B */
 			break;
-		case 2:
+		case 2:         /* A is on top of B */
+		case 22:        /* A is on top of B but their pixel reg limits overlap by one cell */
 			GMT->current.io.pad[YLO] = B->header->ny - one_or_zero + 2;
+			if (way == 22) GMT->current.io.pad[YLO] -= 1;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[0]), (void **)&A)) Return (GMT_DATA_READ_ERROR);	/* Get data from A */
 			GMT->current.io.pad[YLO] = 2;	GMT->current.io.pad[YHI] = A->header->ny - one_or_zero + 2;
+			if (way == 22) GMT->current.io.pad[YHI] -= 1;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[1]), (void **)&B)) Return (GMT_DATA_READ_ERROR);	/* Get data from B */
 			break;
-		case 3:
+		case 3:         /* A is on the right of B */
+		case 33:        /* A is on right of B but their pixel reg limits overlap by one cell */
 			GMT->current.io.pad[XLO] = B->header->nx - one_or_zero + 2;
+			if (way == 33) GMT->current.io.pad[XLO] -= 1;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[0]), (void **)&A)) Return (GMT_DATA_READ_ERROR);	/* Get data from A */
 			GMT->current.io.pad[XLO] = 2;	GMT->current.io.pad[XHI] = A->header->nx - one_or_zero + 2;
+			if (way == 33) GMT->current.io.pad[XHI] -= 1;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[1]), (void **)&B)) Return (GMT_DATA_READ_ERROR);	/* Get data from B */
 			break;
-		case 4:
+		case 4:         /* A is on the left of B */
+		case 44:        /* A is on left of B but their pixel reg limits overlap by one cell */
 			GMT->current.io.pad[XHI] = B->header->nx - one_or_zero + 2;
+			if (way == 44) GMT->current.io.pad[XHI] -= 1;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[0]), (void **)&A)) Return (GMT_DATA_READ_ERROR);	/* Get data from A */
 			GMT->current.io.pad[XHI] = 2;	GMT->current.io.pad[XLO] = A->header->nx - one_or_zero + 2;
+			if (way == 44) GMT->current.io.pad[XLO] -= 1;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[1]), (void **)&B)) Return (GMT_DATA_READ_ERROR);	/* Get data from B */
 			break;
 	}
