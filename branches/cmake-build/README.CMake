@@ -64,15 +64,6 @@ NOTE: If you want to change CMake behaviour just for yourself then modify the
 
 TODO list
 ---------
-
-* Replace shell scripts, grep, sed, awk, etc. by cmake macros (this
-  is necessary for cross platform compatibility). Basically port
-  cmake/generateExtraFilesNotPorted.sh to cmake. Sometimes it might be
-  easier to create new cmake macros if the layout of the underlying
-  source files would be altered a litte. If absolutely necessary write
-  a little C program that is build and run during configure pahase to
-  generate support files. *(done)*
-
 * Clean up config.h.cmake gmt_version.h.cmake gmt_notposix.h.cmake.
   Right now this is a mixture of partly redundant defines that can be
   simplified.
@@ -112,6 +103,16 @@ TODO list
   - to simplify manpage creation *(done)*
   - for LaTeX docu (http://www.vtk.org/Wiki/CMakeUserUseLATEX)
   - to build a release (including precompiled manpages, pdf docu, ...)
+
+Done
+----
+* Replace shell scripts, grep, sed, awk, etc. by cmake macros (this
+  is necessary for cross platform compatibility). Basically port
+  cmake/generateExtraFilesNotPorted.sh to cmake. Sometimes it might be
+  easier to create new cmake macros if the layout of the underlying
+  source files would be altered a litte. If absolutely necessary write
+  a little C program that is build and run during configure pahase to
+  generate support files. *(done)*
 
 ////
 vim: ft=asciidoc tw=78 et ts=2 sts=2 sw=2 autoindent smartindent
