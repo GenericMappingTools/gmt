@@ -36,6 +36,7 @@ set_target_properties (gmt_meca
 	VERSION "${GMT_PACKAGE_VERSION}"
 	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
+	DEFINE_SYMBOL "LIBRARY_EXPORTS"
 )
 
 # create build targets for meca progs
