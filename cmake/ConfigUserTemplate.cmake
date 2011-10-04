@@ -68,3 +68,6 @@
 # allocatable but non-writable sections" problems:
 #set (USER_GMTLIB_LINK_FLAGS -mimpure-text)
 
+# If your NetCDF library is static (not recommended)
+#set (NETCDF_STATIC TRUE)
+

@@ -20,6 +20,8 @@
 /* enable compatibility mode */
 #cmakedefine GMT_COMPAT
 
-/* applies only if defined(WIN32) */
+/* applies only #ifdef _WIN32 */
 #cmakedefine USE_MEM_ALIGNED
 
+/* if NetCDF is static; applies only #ifdef _WIN32 */
+#cmakedefine NETCDF_STATIC

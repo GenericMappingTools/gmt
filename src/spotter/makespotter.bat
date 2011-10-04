@@ -30,9 +30,8 @@ REM
 REM STEP a: Install GMT using instructions in gmtinstall.bat
 REM
 REM STEP b: If you DID NOT install netcdf as a DLL you must
-REM	    remove REM from the 2nd DLL line below:
-SET DLL_NETCDF="/DDLL_NETCDF"
-REM SET DLL_NETCDF=
+REM         remove REM from the line below:
+REM SET DLL_NETCDF="/DNETCDF_STATIC"
 REM
 REM STEP c: Change BINDIR if necessary
 SET BINDIR="..\..\bin"
@@ -40,7 +39,7 @@ REM
 REM ----------------------------------------------------
 REM STOP HERE - THE REST IS AUTOMATIC
 REM ----------------------------------------------------
-set COPT=/I.. /DWIN32 %SI% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT /W3 /O2 /nologo
+set COPT=/I.. /DWIN32 %SI% %DLL_NETCDF% /DLIBRARY_EXPORTS /W3 /O2 /nologo
 set LIBS=%BINDIR%\gmt.lib %BINDIR%\psl.lib netcdf.lib
 ECHO STEP 1: Make spotter library
 REM ----------------------------------------------------
