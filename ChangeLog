@@ -2,7 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
-<<<<<<< .mine
+2011-10-05	jluis
+	* grdpaste.c:		Now works also with pixel registered grids with both cases of
+				an actual repeated row or column (one ell overlap) or when both
+				-R share a common edge. Added two tests under test/grdpaste 
+				to test this new features.
+
 2011-10-01	remko
 	* xyz2grd.c:		Only request 2 columns when using -An.
 
