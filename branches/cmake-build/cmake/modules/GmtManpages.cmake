@@ -31,7 +31,7 @@ include (GmtHelperMacros)
 
 macro (GMT_CREATE_MANPAGES _MAN_FILES)
 	if (CMAKE_COMPILER_IS_GNUCC)
-    # create tag from current dirname
+		# create tag from current dirname
 		tag_from_current_source_dir (_tag "_")
 
 		if(GZIP)
@@ -51,7 +51,7 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES)
 			endif (NOT _man_section)
 			list (APPEND _install_sections ${_man_section})
 
-      # generator
+			# generator
 			string (REGEX REPLACE "\\.[1-8]$" ".txt" _man_src ${_manfile})
 			if(GZIP)
 				add_custom_command (

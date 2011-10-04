@@ -21,40 +21,46 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 
-# usefull macros
-include (GmtHelperMacros)
-
-# Check for dsymutil only on Mac
 if (APPLE)
+
+	# usefull macros
+	include (GmtHelperMacros)
+
+	# Check for dsymutil only on Mac
 	find_program(DSYMUTIL dsymutil)
+
+	# Macro for generating Mac debugging symbols
+	macro (CREATE_DEBUG_SYM _TARGETS)
+		if (DSYMUTIL AND DEBUG_BUILD AND "${CMAKE_GENERATOR}" MATCHES "Make")
+
+			# generator
+			foreach (target ${ARGV}) # instead of _TARGETS we use ARGV to get all args
+				add_custom_command (TARGET ${target}
+					POST_BUILD
+					COMMAND ${DSYMUTIL} $<TARGET_FILE:${target}>
+					COMMENT "Generating .dSYM bundle for ${target}"
+					VERBATIM
+					)
+			endforeach (target)
+
+			# create tag from current dirname
+			tag_from_current_source_dir (_tag "_")
+
+			# clean target
+			add_custom_target (dsym_clean${_tag}
+				COMMAND ${RM} -rf *.dSYM
+				COMMENT "Removing .dSYM bundles")
+
+			# register with spotless target
+			add_depend_to_spotless (dsym_clean${_tag})
+
+		endif (DSYMUTIL AND DEBUG_BUILD AND "${CMAKE_GENERATOR}" MATCHES "Make")
+	endmacro (CREATE_DEBUG_SYM _TARGETS)
+
+else (APPLE)
+	macro (CREATE_DEBUG_SYM _TARGETS)
+		# do nothing
+	endmacro (CREATE_DEBUG_SYM _TARGETS)
 endif (APPLE)
-
-# Macro for generating Mac debugging symbols
-macro (CREATE_DEBUG_SYM _TARGETS)
-	if (DSYMUTIL AND DEBUG_BUILD AND "${CMAKE_GENERATOR}" MATCHES "Make")
-
-		# generator
-		foreach (target ${ARGV}) # instead of _TARGETS we use ARGV to get all args
-			add_custom_command (TARGET ${target}
-				POST_BUILD
-				COMMAND ${DSYMUTIL} $<TARGET_FILE:${target}>
-				COMMENT "Generating .dSYM bundle for ${target}"
-				VERBATIM
-				)
-		endforeach (target)
-
-		# create tag from current dirname
-		tag_from_current_source_dir (_tag "_")
-
-		# clean target
-		add_custom_target (dsym_clean${_tag}
-			COMMAND ${RM} -rf *.dSYM
-			COMMENT "Removing .dSYM bundles")
-
-		# register with spotless target
-		add_depend_to_spotless (dsym_clean${_tag})
-
-	endif (DSYMUTIL AND DEBUG_BUILD AND "${CMAKE_GENERATOR}" MATCHES "Make")
-endmacro (CREATE_DEBUG_SYM _TARGETS)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

@@ -76,7 +76,7 @@ check_function_exists (malloc HAVE_MALLOC)
 check_function_exists (realloc HAVE_REALLOC)
 check_function_exists (chown HAVE_CHOWN)
 
-test_big_endian (WORDS_BIGENDIAN)
+#test_big_endian (WORDS_BIGENDIAN)
 check_include_files (machine/endian.h HAVE_MACHINE_ENDIAN_H)
 
 #check_include_file (argz.h HAVE_ARGZ_H)
