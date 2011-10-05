@@ -53,7 +53,7 @@
  */
 
 #include "gmt_imgsubs.h"
-#include "gmt_img.h"
+#include "gmt_imgsrc.h"
 
 struct IMG2GRD_CTRL {
 	struct In {	/* Input file name */
