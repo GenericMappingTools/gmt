@@ -104,9 +104,12 @@ TODO list
   - for LaTeX docu (http://www.vtk.org/Wiki/CMakeUserUseLATEX)
   - to build a release (including precompiled manpages, pdf docu, ...)
 
-* Replace shell scripts in supplements with cmake macros: mgd77
+* Replace shell scripts in supplements with cmake macros: mgd77, sph
 
 * Turn into GMT module: potential/gravfft.c
+
+* Fix segfault in xgridedit: tries to access grid outside bounds in
+   gmt_nc.c:536  grid[kk] = tmp[k[i]];
 
 Done
 ----
