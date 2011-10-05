@@ -27,7 +27,6 @@ endif (X11_FOUND AND X11_Xt_FOUND)
 
 if (X11_FOUND AND X11_Xt_FOUND AND XAW_LIBRARY)
 
-	message ("${X11_Xext_FOUND}")
 	# source files
 	set (GMT_XGRID_PROGS_SRCS xgrid_Canvas.h xgrid_CanvasP.h xgrid_GMTgrid.h
 		xgrid_Panner.h xgrid_PannerP.h xgrid_Xutility.h xgrid_controls.h
