@@ -322,9 +322,12 @@ add_subdirectory (dbase)
 add_subdirectory (gshhs)
 add_subdirectory (imgsrc)
 add_subdirectory (meca)
+#add_subdirectory (mgd77) # have to rewrite header generators
 add_subdirectory (misc)
 add_subdirectory (potential)
 add_subdirectory (segy)
 add_subdirectory (spotter)
+#add_subdirectory (x2sys) # depends on mgd77
+add_subdirectory (xgrid)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
