@@ -63,6 +63,7 @@ configure_file (
 )
 
 # Add subdirectories
+add_subdirectory (doc)
 add_subdirectory (src)
 add_subdirectory (share)
 
@@ -78,3 +79,5 @@ message(
 	"*  Triangulation method : ${GMT_TRIANGULATE}\n"
 	"*  File locking         : ${FLOCK}"
 )
+
+# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
