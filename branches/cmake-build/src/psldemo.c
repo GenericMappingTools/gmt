@@ -4,7 +4,7 @@
  */
 
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
 #include "pslib.h"
 
 int main (int argc, char **argv) {
@@ -140,7 +140,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	PSL_plotparagraph (PSL, 2.2, 8.1, 12.0, NULL, 0.0, PSL_TL);
 
 	/* Plot an image by itself */
-	PSL_loadimage (PSL, "vader.ras", &h, &picture);
+	PSL_loadimage (PSL, "../src/vader.ras", &h, &picture);
 	PSL_plotcolorimage (PSL, 5.0, 8.2, 1.5, 0.0, PSL_TL, picture, h.width, h.height, h.depth);
 	PSL_free (PSL, picture);
 	
