@@ -1,19 +1,19 @@
 ////
-#	$Id$
+# $Id$
 #
-#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
-#	See LICENSE.TXT file for copying and redistribution conditions.
+# Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# See LICENSE.TXT file for copying and redistribution conditions.
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; version 2 or any later version.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 or any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#	Contact info: gmt.soest.hawaii.edu
+# Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 ////
 
@@ -103,6 +103,10 @@ TODO list
   - to simplify manpage creation *(done)*
   - for LaTeX docu (http://www.vtk.org/Wiki/CMakeUserUseLATEX)
   - to build a release (including precompiled manpages, pdf docu, ...)
+
+* Replace shell scripts in supplements with cmake macros: mgd77
+
+* Turn into GMT module: potential/gravfft.c
 
 Done
 ----

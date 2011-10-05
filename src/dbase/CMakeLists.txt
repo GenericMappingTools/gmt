@@ -18,58 +18,47 @@
 #
 
 # source files
-set (GMT_GSHHS_PROGS_SRCS gshhs.c)
-set (GMT_GSHHS_PROGS2_SRCS gshhs_dp.c gshhstograss.c)
+set (GMT_DBASE_PROGS_SRCS grdraster.c)
 
-# generate header file gmt_gshhs.h
-gmt_set_api_header(GMT_GSHHS_API_H "${GMT_GSHHS_PROGS_SRCS}")
+# generate header file gmt_dbase.h
+gmt_set_api_header(GMT_DBASE_API_H "${GMT_DBASE_PROGS_SRCS}")
 
 # make lib
-add_library (gmt_gshhs ${GMT_GSHHS_PROGS_SRCS} ${GMT_GSHHS_API_H})
-target_link_libraries (gmt_gshhs gmtlib)
+add_library (gmt_dbase ${GMT_DBASE_PROGS_SRCS} ${GMT_DBASE_API_H})
+target_link_libraries (gmt_dbase gmtlib)
 
 # set the build version (VERSION) and the API version (SOVERSION)
-set_target_properties (gmt_gshhs
+set_target_properties (gmt_dbase
 	PROPERTIES
 	VERSION "${GMT_PACKAGE_VERSION}"
 	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
 	DEFINE_SYMBOL "LIBRARY_EXPORTS"
-)
+	)
 
 # create build targets
-string (REPLACE ".c" "" GMT_GSHHS_PROGS "${GMT_GSHHS_PROGS_SRCS}")
-foreach (prog ${GMT_GSHHS_PROGS})
+string (REPLACE ".c" "" GMT_DBASE_PROGS "${GMT_DBASE_PROGS_SRCS}")
+foreach (prog ${GMT_DBASE_PROGS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
 		PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
-	target_link_libraries (${prog} gmt_gshhs)
+	target_link_libraries (${prog} gmt_dbase)
 endforeach (prog)
 
-string (REPLACE ".c" "" GMT_GSHHS_PROGS2 "${GMT_GSHHS_PROGS2_SRCS}")
-foreach (_prog ${GMT_GSHHS_PROGS2})
-	add_executable (${_prog} ${_prog}.c)
-	target_link_libraries (${_prog} gmtlib)
-endforeach (_prog)
-
 # generate Mac debugging symbols
-create_debug_sym (gmt_gshhs ${GMT_GSHHS_PROGS} ${GMT_GSHHS_PROGS2})
+create_debug_sym (${GMT_DBASE_PROGS})
 
 # add the install targets
-install (TARGETS gmt_gshhs ${GMT_GSHHS_PROGS} ${GMT_GSHHS_PROGS2}
+install (TARGETS gmt_dbase ${GMT_DBASE_PROGS}
 	LIBRARY DESTINATION lib
 	RUNTIME DESTINATION bin
 )
 
 # add to gmt_suppl target
-add_depend_to_target (gmt_suppl
-	gmt_gshhs
-	${GMT_GSHHS_PROGS}
-	${GMT_GSHHS_PROGS2})
+add_depend_to_target (gmt_suppl gmt_dbase ${GMT_DBASE_PROGS})
 
 # Generate manpages
-string (REPLACE ".c" ".1" GMT_GSHHS_MAN_1
-	"${GMT_GSHHS_PROGS_SRCS};${GMT_GSHHS_PROGS2_SRCS}")
-gmt_create_manpages ("${GMT_GSHHS_MAN_1}")
+string (REPLACE ".c" ".1" GMT_DBASE_MAN_1 "${GMT_DBASE_PROGS_SRCS}")
+gmt_create_manpages ("${GMT_DBASE_MAN_1}")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

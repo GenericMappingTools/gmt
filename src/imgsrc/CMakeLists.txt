@@ -18,24 +18,20 @@
 #
 
 # source files
-set (GMT_SPOTTER_LIB_SRCS spotter.h libspotter.c)
-set (GMT_SPOTTER_PROGS_SRCS backtracker.c grdpmodeler.c grdrotater.c
-	grdspotter.c hotspotter.c originator.c rotconverter.c)
+set (GMT_IMGSRC_LIB_SRCS gmt_imgsubs.h gmt_imgsubs.c)
+set (GMT_IMGSRC_PROGS_SRCS img2grd.c)
 
-# example files
-set (GMT_SPOTTER_EXAMPLE_FILES README.spotter
-	DC85.d WK97.d euler.txt pac_hs.d seamounts.d)
-set (GMT_SPOTTER_EXAMPLE_PROGS spotter.bat spotter.sh)
+set (GMT_IMGSRC_SHELL_SCRIPTS img2google)
 
-# generate header file gmt_spotter.h
-gmt_set_api_header(GMT_SPOTTER_API_H "${GMT_SPOTTER_PROGS_SRCS}")
+# generate header file gmt_imgsrc.h
+gmt_set_api_header(GMT_IMGSRC_API_H "${GMT_IMGSRC_PROGS_SRCS}")
 
 # make lib
-add_library (gmt_spotter ${GMT_SPOTTER_LIB_SRCS} ${GMT_SPOTTER_PROGS_SRCS} ${GMT_SPOTTER_API_H})
-target_link_libraries (gmt_spotter gmtlib)
+add_library (gmt_imgsrc ${GMT_IMGSRC_LIB_SRCS} ${GMT_IMGSRC_PROGS_SRCS} ${GMT_IMGSRC_API_H})
+target_link_libraries (gmt_imgsrc gmtlib)
 
 # set the build version (VERSION) and the API version (SOVERSION)
-set_target_properties (gmt_spotter
+set_target_properties (gmt_imgsrc
 	PROPERTIES
 	VERSION "${GMT_PACKAGE_VERSION}"
 	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
@@ -44,36 +40,34 @@ set_target_properties (gmt_spotter
 )
 
 # create build targets
-string (REPLACE ".c" "" GMT_SPOTTER_PROGS "${GMT_SPOTTER_PROGS_SRCS}")
-foreach (prog ${GMT_SPOTTER_PROGS})
+string (REPLACE ".c" "" GMT_IMGSRC_PROGS "${GMT_IMGSRC_PROGS_SRCS}")
+foreach (prog ${GMT_IMGSRC_PROGS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
 	PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMTPSL;FUNC=GMT_${prog}")
-	target_link_libraries (${prog} gmt_spotter)
+	target_link_libraries (${prog} gmt_imgsrc)
 endforeach (prog)
 
 # generate Mac debugging symbols
-create_debug_sym (gmt_spotter ${GMT_SPOTTER_PROGS})
+create_debug_sym (gmt_imgsrc ${GMT_IMGSRC_PROGS})
 
 # add the install targets
-install (TARGETS gmt_spotter ${GMT_SPOTTER_PROGS}
+install (TARGETS gmt_imgsrc ${GMT_IMGSRC_PROGS}
 	LIBRARY DESTINATION lib
 	RUNTIME DESTINATION bin
 )
 
 # add to gmt_suppl target
-add_depend_to_target (gmt_suppl gmt_spotter ${GMT_SPOTTER_PROGS})
+add_depend_to_target (gmt_suppl gmt_imgsrc ${GMT_IMGSRC_PROGS})
 
 # Generate manpages
-string (REPLACE ".c" ".1" GMT_SPOTTER_MAN_1 "${GMT_SPOTTER_PROGS_SRCS}")
-gmt_create_manpages ("${GMT_SPOTTER_MAN_1}")
+string (REPLACE ".c" ".1" GMT_IMGSRC_MAN_1 "${GMT_IMGSRC_PROGS_SRCS}")
+gmt_create_manpages ("${GMT_IMGSRC_MAN_1}")
 
-# install example data
-install (FILES ${GMT_SPOTTER_EXAMPLE_FILES}
-	DESTINATION
-	${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/examples/spotter)
-install (PROGRAMS ${GMT_SPOTTER_EXAMPLE_PROGS}
-	DESTINATION
-	${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/examples/spotter)
+# install shell script
+if (UNIX)
+	install (PROGRAMS ${GMT_IMGSRC_SHELL_SCRIPTS}
+		DESTINATION bin)
+endif (UNIX)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
