@@ -18,24 +18,26 @@
 #
 
 # source files
-set (GMT_SPOTTER_LIB_SRCS spotter.h libspotter.c)
-set (GMT_SPOTTER_PROGS_SRCS backtracker.c grdpmodeler.c grdrotater.c
-	grdspotter.c hotspotter.c originator.c rotconverter.c)
+set (GMT_MGD77_LIB_SRCS mgd77.h mgd77_IGF_coeffs.h mgd77_init.h mgd77_recalc.h
+	mgd77magref.h mgd77defaults.h mgd77_functions.h cm4_functions.h
+	mgd77.c cm4_functions.c)
+set (GMT_MGD77_PROGS_SRCS mgd77convert.o mgd77info.o mgd77list.o
+	mgd77path.o mgd77manage.o mgd77magref.o mgd77sniffer.o)
+set (GMT_MGD77_PROGSPS_SRCS mgd77track.c)
 
-# example files
-set (GMT_SPOTTER_EXAMPLE_FILES README.spotter
-	DC85.d WK97.d euler.txt pac_hs.d seamounts.d)
-set (GMT_SPOTTER_EXAMPLE_PROGS spotter.bat spotter.sh)
-
-# generate header file gmt_spotter.h
-gmt_set_api_header(GMT_SPOTTER_API_H "${GMT_SPOTTER_PROGS_SRCS}")
+# generate header file gmt_mgd77.h
+gmt_set_api_header(GMT_MGD77_API_H "${GMT_MGD77_PROGS_SRCS}")
 
 # make lib
-add_library (gmt_spotter ${GMT_SPOTTER_LIB_SRCS} ${GMT_SPOTTER_PROGS_SRCS} ${GMT_SPOTTER_API_H})
-target_link_libraries (gmt_spotter gmtlib)
+add_library (gmt_mgd77
+	${GMT_MGD77_LIB_SRCS}
+	${GMT_MGD77_PROGS_SRCS}
+	${GMT_MGD77_PROGSPS_SRCS}
+	${GMT_MGD77_API_H})
+target_link_libraries (gmt_mgd77 gmtlib)
 
 # set the build version (VERSION) and the API version (SOVERSION)
-set_target_properties (gmt_spotter
+set_target_properties (gmt_mgd77
 	PROPERTIES
 	VERSION "${GMT_PACKAGE_VERSION}"
 	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
@@ -44,36 +46,35 @@ set_target_properties (gmt_spotter
 )
 
 # create build targets
-string (REPLACE ".c" "" GMT_SPOTTER_PROGS "${GMT_SPOTTER_PROGS_SRCS}")
-foreach (prog ${GMT_SPOTTER_PROGS})
+string (REPLACE ".c" "" GMT_MGD77_PROGS "${GMT_MGD77_PROGS_SRCS}")
+string (REPLACE ".c" "" GMT_MGD77_PROGSPS "${GMT_MGD77_PROGSPS_SRCS}")
+foreach (prog ${GMT_MGD77_PROGS})
+	add_executable (${prog} ${GMT_PROGRAM})
+	set_target_properties (${prog}
+	PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
+	target_link_libraries (${prog} gmt_mgd77)
+endforeach (prog)
+foreach (prog ${GMT_MGD77_PROGSPS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
 	PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMTPSL;FUNC=GMT_${prog}")
-	target_link_libraries (${prog} gmt_spotter)
+	target_link_libraries (${prog} gmt_mgd77)
 endforeach (prog)
 
 # generate Mac debugging symbols
-create_debug_sym (gmt_spotter ${GMT_SPOTTER_PROGS})
+create_debug_sym (gmt_mgd77 ${GMT_MGD77_PROGS})
 
 # add the install targets
-install (TARGETS gmt_spotter ${GMT_SPOTTER_PROGS}
+install (TARGETS gmt_mgd77 ${GMT_MGD77_PROGS}
 	LIBRARY DESTINATION lib
 	RUNTIME DESTINATION bin
 )
 
 # add to gmt_suppl target
-add_depend_to_target (gmt_suppl gmt_spotter ${GMT_SPOTTER_PROGS})
+add_depend_to_target (gmt_suppl gmt_mgd77 ${GMT_MGD77_PROGS})
 
 # Generate manpages
-string (REPLACE ".c" ".1" GMT_SPOTTER_MAN_1 "${GMT_SPOTTER_PROGS_SRCS}")
-gmt_create_manpages ("${GMT_SPOTTER_MAN_1}")
-
-# install example data
-install (FILES ${GMT_SPOTTER_EXAMPLE_FILES}
-	DESTINATION
-	${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/examples/spotter)
-install (PROGRAMS ${GMT_SPOTTER_EXAMPLE_PROGS}
-	DESTINATION
-	${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/examples/spotter)
+string (REPLACE ".c" ".1" GMT_MGD77_MAN_1 "${GMT_MGD77_PROGS_SRCS}")
+gmt_create_manpages ("${GMT_MGD77_MAN_1}")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

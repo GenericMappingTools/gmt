@@ -318,10 +318,12 @@ endif (UNIX)
 gmt_create_manpages ("${GMT_MAN_1};${GMT_MAN_3};${GMT_MAN_5}")
 
 # add subtrees
+add_subdirectory (dbase)
 add_subdirectory (gshhs)
 add_subdirectory (imgsrc)
 add_subdirectory (meca)
 add_subdirectory (misc)
+add_subdirectory (potential)
 add_subdirectory (spotter)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
