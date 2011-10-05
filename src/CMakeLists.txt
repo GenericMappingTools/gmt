@@ -321,5 +321,6 @@ gmt_create_manpages ("${GMT_MAN_1};${GMT_MAN_3};${GMT_MAN_5}")
 add_subdirectory (gshhs)
 add_subdirectory (meca)
 add_subdirectory (misc)
+add_subdirectory (spotter)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
