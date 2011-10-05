@@ -91,6 +91,7 @@ void *New_grdmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	struct GRDMATH_CTRL *C = NULL;
 
 	C = GMT_memory (GMT, NULL, 1, struct GRDMATH_CTRL);
+	C->Out.file = NULL;
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
@@ -2839,14 +2840,15 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdmath", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghinrs" GMT_OPT("F"), options))) Return (error);
 	Ctrl = (struct GRDMATH_CTRL *) New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	GMT_memset (&info, 1, struct GRDMATH_INFO);		/* Initialize here to not crash when Return gets called */
+	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
+	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghinrs" GMT_OPT("F"), options))) Return (error);
 	if ((error = GMT_grdmath_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/
 
-	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
-	GMT_memset (&info, 1, struct GRDMATH_INFO);
+	//GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
 	GMT_memset (alloc_mode, GRDMATH_STACK_SIZE, GMT_LONG);
 	GMT_memset (stack, GRDMATH_STACK_SIZE, struct GMT_GRID *);
 
