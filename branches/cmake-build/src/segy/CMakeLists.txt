@@ -69,11 +69,13 @@ string (REPLACE ".c" ".1" GMT_SEGY_MAN_1 "${GMT_SEGY_PROGS_SRCS}")
 gmt_create_manpages ("${GMT_SEGY_MAN_1}")
 
 # install example data
-install (FILES ${GMT_SEGY_EXAMPLE_FILES}
-	DESTINATION
-	${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/examples/segy)
-install (PROGRAMS ${GMT_SEGY_EXAMPLE_PROGS}
-	DESTINATION
-	${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/examples/segy)
+if (UNIX)
+	install (FILES ${GMT_SEGY_EXAMPLE_FILES}
+		DESTINATION
+		${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/segy)
+	install (PROGRAMS ${GMT_SEGY_EXAMPLE_PROGS}
+		DESTINATION
+		${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/segy)
+endif (UNIX)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

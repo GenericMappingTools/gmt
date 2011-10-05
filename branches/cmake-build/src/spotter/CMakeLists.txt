@@ -69,11 +69,13 @@ string (REPLACE ".c" ".1" GMT_SPOTTER_MAN_1 "${GMT_SPOTTER_PROGS_SRCS}")
 gmt_create_manpages ("${GMT_SPOTTER_MAN_1}")
 
 # install example data
-install (FILES ${GMT_SPOTTER_EXAMPLE_FILES}
-	DESTINATION
-	${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/examples/spotter)
-install (PROGRAMS ${GMT_SPOTTER_EXAMPLE_PROGS}
-	DESTINATION
-	${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/examples/spotter)
+if (UNIX)
+	install (FILES ${GMT_SPOTTER_EXAMPLE_FILES}
+		DESTINATION
+		${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/spotter)
+	install (PROGRAMS ${GMT_SPOTTER_EXAMPLE_PROGS}
+		DESTINATION
+		${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/spotter)
+endif (UNIX)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

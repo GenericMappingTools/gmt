@@ -20,6 +20,10 @@
 # source files
 set (GMT_MISC_PROGS_SRCS dimfilter.c gmtdigitize.c)
 
+# example files
+set (GMT_MISC_EXAMPLE_FILES README.misc)
+set (GMT_MISC_EXAMPLE_PROGS dim.template.sh)
+
 # create build targets
 string (REPLACE ".c" "" GMT_MISC_PROGS "${GMT_MISC_PROGS_SRCS}")
 foreach (prog ${GMT_MISC_PROGS})
@@ -35,18 +39,21 @@ install (TARGETS ${GMT_MISC_PROGS}
 	RUNTIME DESTINATION bin
 )
 
-# install shell script
-if (UNIX)
-	install (PROGRAMS
-		dim.template.sh
-		DESTINATION bin)
-endif (UNIX)
-
 # add to gmt_suppl target
 add_depend_to_target (gmt_suppl ${GMT_MISC_PROGS})
 
 # Generate manpages
 string (REPLACE ".c" ".1" GMT_MISC_MAN_1 "${GMT_MISC_PROGS_SRCS}")
 gmt_create_manpages ("${GMT_MISC_MAN_1}")
+
+# install example data
+if (UNIX)
+	install (FILES ${GMT_MISC_EXAMPLE_FILES}
+		DESTINATION
+		${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/misc)
+	install (PROGRAMS ${GMT_MISC_EXAMPLE_PROGS}
+		DESTINATION
+		${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/misc)
+endif (UNIX)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
