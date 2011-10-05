@@ -27,7 +27,7 @@ set (GMT_SPOTTER_EXAMPLE_FILES README.spotter
 	DC85.d WK97.d euler.txt pac_hs.d seamounts.d)
 set (GMT_SPOTTER_EXAMPLE_PROGS spotter.bat spotter.sh)
 
-# generate header file gmt_SPOTTER.h
+# generate header file gmt_spotter.h
 gmt_set_api_header(GMT_SPOTTER_API_H "${GMT_SPOTTER_PROGS_SRCS}")
 
 # libmeca
