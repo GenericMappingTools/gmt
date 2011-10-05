@@ -324,6 +324,7 @@ add_subdirectory (imgsrc)
 add_subdirectory (meca)
 add_subdirectory (misc)
 add_subdirectory (potential)
+add_subdirectory (segy)
 add_subdirectory (spotter)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
