@@ -213,11 +213,10 @@ configure_file (isogmt.cmake isogmt @ONLY)
 # gmtprogram
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
 
-# extra definitions for triangle
+# extra ugly definitions for triangle
 set_source_files_properties (triangle
 	PROPERTIES
 	COMPILE_DEFINITIONS "NO_TIMER;TRILIBRARY;REDUCED;CDT_ONLY"
-	COMPILE_FLAGS "-include float.h"
 )
 
 
