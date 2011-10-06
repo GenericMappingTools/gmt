@@ -114,4 +114,4 @@ find_package_handle_standard_args (NETCDF DEFAULT_MSG NETCDF_LIBRARY NETCDF_INCL
 
 set (NETCDF_LIBRARIES ${NETCDF_LIBRARY})
 set (NETCDF_INCLUDE_DIRS ${NETCDF_INCLUDE_DIR})
-string (REPLACE "-DNDEBUG" "" NETCDF_DEFINITIONS ${_netcdf_cflags_other})
+string (REPLACE "-DNDEBUG" "" NETCDF_DEFINITIONS "${_netcdf_cflags_other}")
