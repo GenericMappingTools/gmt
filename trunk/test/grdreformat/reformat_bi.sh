@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: $
+#	$Id$
 #
 # Convert grids between netcdf and several of the other "native" formats
 
