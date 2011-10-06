@@ -47,7 +47,7 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		file = strdup (header->name);
 		GMT_chop_ext (C, file);
 		name_len = strlen (header->name);
-		if (isupper (header->name[name_len - 1]))
+		if (isupper ((unsigned char) header->name[name_len - 1]))
 			strcat (file, ".HDR");
 		else
 			strcat (file, ".hdr");
