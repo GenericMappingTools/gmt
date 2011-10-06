@@ -50,24 +50,17 @@
 
 # Extra debugging for developers:
 #add_definitions(-DDEBUG)
-#set (CMAKE_C_FLAGS_DEBUG -ggdb3)
-#set (CMAKE_C_FLAGS_RELEASE -ggdb3)
-#set (CMAKE_LINK_DEPENDS_DEBUG_MODE TRUE)
-
-# Extra compiler Flags:
-#add_definitions(
-#  -Wall
-#  -Wdeclaration-after-statement
-#  -fPIC
-#  -fno-strict-aliasing
-#  -Wextra
-#  -Wuninitialized
-#)
+#set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement") # recommended even for release build
+#set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")            # extra warnings
+#set (CMAKE_C_FLAGS_DEBUG -ggdb3)                          # gdb debugging symbols
+#set (CMAKE_C_FLAGS_RELEASE "-ggdb3 -O2 -Wuninitialized")  # check uninitialized variables
+#set (CMAKE_LINK_DEPENDS_DEBUG_MODE TRUE)                  # debug link dependencies
 
 # This is for gcc on Solaris to avoid "relocations remain against
 # allocatable but non-writable sections" problems:
 #set (USER_GMTLIB_LINK_FLAGS -mimpure-text)
 
-# If your NetCDF library is static (not recommended)
+# If your NetCDF library is static (not recommended, applies to Windows only)
 #set (NETCDF_STATIC TRUE)
 
+# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

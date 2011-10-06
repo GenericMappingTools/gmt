@@ -114,15 +114,5 @@ set (CMAKE_VERBOSE_MAKEFILE false)
 set (BUILD_SHARED_LIBS true)
 set (CMAKE_FIND_STATIC LAST)
 
-# maybe not so good idea:
-if (MINGW OR UNIX)
-	add_definitions(
-	-Wall
-	-Wdeclaration-after-statement
-	#-fPIC
-	#-fno-strict-aliasing
-	)
-endif (MINGW OR UNIX)
-
 # File locking off
 set (FLOCK off)

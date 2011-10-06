@@ -329,4 +329,10 @@ add_subdirectory (spotter)
 #add_subdirectory (x2sys) # depends on mgd77
 add_subdirectory (xgrid)
 
+# this prints out the final version of the compiler/linker flags
+string (TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_UPPER)
+message (STATUS "USING CFLAGS = '${CMAKE_C_FLAGS} "
+	"${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} "
+	"${NETCDF_DEFINITIONS} ${_compile_definitions}'")
+
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
