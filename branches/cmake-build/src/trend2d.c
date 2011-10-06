@@ -512,7 +512,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	double *gtg = NULL, *v = NULL, *gtd = NULL, *lambda = NULL, *workb = NULL;
 	double *workz = NULL, *c_model = NULL, *o_model = NULL, *w_model = NULL, *work = NULL;
-	double xmin, xmax, ymin, ymax, c_chisq, o_chisq, w_chisq, scale = 1.0, prob;
+	double xmin, xmax, ymin, ymax, c_chisq, o_chisq = 0.0, w_chisq, scale = 1.0, prob;
 
 	char format[GMT_BUFSIZ];
 
@@ -634,7 +634,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			significant = GMT_sig_f (GMT, c_chisq, n_data-n_model, o_chisq, n_data-n_model-1, Ctrl->I.value, &prob);
 		}
 
-		if (!(significant) ) {	/* Go back to previous [robust] model, stored in o_model  */
+		if (!significant) {	/* Go back to previous [robust] model, stored in o_model  */
 			n_model--;
 			rank--;
 			move_model_a_to_b_2d (o_model, c_model, n_model, &o_chisq, &c_chisq);
