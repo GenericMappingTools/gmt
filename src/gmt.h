@@ -32,6 +32,9 @@ extern "C" {
 #ifndef _GMT_H
 #define _GMT_H
 
+/* CMake definitions: This must be first! */
+#include "gmt_config.h"
+
 /* GMT 4 compatibility */
 #ifdef DEBUG
 #define GMT_MSG_COMPAT 1	/* Set high rank warning level for compatibility for debuggers */
@@ -53,6 +56,7 @@ extern "C" {
  *			SYSTEM HEADER FILES
  *--------------------------------------------------------------------*/
 
+#include <assert.h>
 #include <ctype.h>
 #include <float.h>
 #include <math.h>
@@ -72,21 +76,27 @@ extern "C" {
 #include <string.h>
 #include <time.h>
 
+#ifdef HAVE_UNISTD_H
+#	include <unistd.h>
+#endif
+#ifdef HAVE_INTTYPES_H
+#	include <inttypes.h> /* Exact-width integer types */
+#else
+#	include "pstdint.h"  /* Free portable implementation */
+#endif /* HAVE_INTTYPES_H */
+
 #ifdef __FreeBSD__
 #ifdef _i386_
 #include <floatingpoint.h>
 #endif
 #endif
 
-#include "gmt_config.h"		/* CMake definitions: FLOCK, TRIANGLE_D, GMT_COMPAT, ... */
 #include "gmt_types.h"		/* All basic typedef declarations */
 #include "gmt_notunix.h"	/* Stuff for Windows */
 #include "gmt_notposix.h"	/* Non-POSIX extensions */
-#ifndef WIN32
-#include <unistd.h>
-#  if defined(USE_VLD) && defined(DEBUG)
-#    include <vld.h>
-#  endif
+
+#if defined WIN32 && defined(USE_VLD) && defined(DEBUG)
+#	include <vld.h>
 #endif
 
 #include "gmt_constants.h"	/* All basic constant definitions */

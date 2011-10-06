@@ -7918,45 +7918,49 @@ int GMT_fscanf (FILE *stream, char *format, ...) {
 #endif
 #endif
 
+#define ABS(x) (((x) >= 0) ? (x) : -(x))
+
 GMT_LONG GMT_equal_double (double A, double B, int maxUlps) {
+	/* Adapted from http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
+	 * Note: the original code breaks the strict aliasing requirement from C99.
+	 * The only safe way to avoid undefined behavior is via memcpy:
+	 * http://labs.qt.nokia.com/2011/06/10/type-punning-and-strict-aliasing/ */
+
+	int64_t aInt, bInt;
+	int intDiff;
+
 	/* Make sure maxUlps is non-negative and small enough that the */
 	/* default NAN won't compare as equal to anything. */
-	/* Adapted from http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm */
-#ifdef WIN32
-	__int64 aInt = *(__int64*)&A;
-	__int64 bInt = *(__int64*)&B;
-	__int64 intDiff;
-#else
-	long long int aInt = *(long long int*)&A;
-	long long int bInt = *(long long int*)&B;
-	long long int intDiff;
-#endif
-	
-	/*assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);*/
+	assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
+
+	memcpy(&aInt, &A, sizeof(double));
+	memcpy(&bInt, &B, sizeof(double));
+
 	/* Make aInt lexicographically ordered as a twos-complement int */
 	if (aInt < 0) aInt = 0x8000000000000000 - aInt;
 	/* Make bInt lexicographically ordered as a twos-complement int */
 	if (bInt < 0) bInt = 0x8000000000000000 - bInt;
-#ifdef WIN32
-	intDiff = _abs64(aInt - bInt);
-#else
-	intDiff = labs(aInt - bInt);
-#endif
+	intDiff = ABS (aInt - bInt);
 	if (intDiff <= maxUlps) return TRUE;
 	return FALSE;
 }
 
 GMT_LONG GMT_equal_float (float A, float B, int maxUlps) {
-	int aInt = *(int*)&A;
-	int bInt = *(int*)&B;
+	int64_t aInt, bInt;
 	int intDiff;
 
-	/*assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);*/
+	/* Make sure maxUlps is non-negative and small enough that the */
+	/* default NAN won't compare as equal to anything. */
+	assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
+
+	memcpy(&aInt, &A, sizeof(float));
+	memcpy(&bInt, &B, sizeof(float));
+
 	/* Make aInt lexicographically ordered as a twos-complement int */
 	if (aInt < 0) aInt = 0x80000000 - aInt;
 	/* Make bInt lexicographically ordered as a twos-complement int */
 	if (bInt < 0) bInt = 0x80000000 - bInt;
-	intDiff = abs (aInt - bInt);
+	intDiff = ABS (aInt - bInt);
 	if (intDiff <= maxUlps) return TRUE;
 	return FALSE;
 }

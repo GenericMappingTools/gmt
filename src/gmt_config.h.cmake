@@ -4,11 +4,18 @@
 
 #include "../config.h"
 
-/* which regex library */
+/* C99 exact-width integer types <inttypes.h>, <stdint.h> */
+#cmakedefine HAVE_INTTYPES_H
+#cmakedefine HAVE_STDINT_H
+
+/* if <unistd.h> exists */
+#cmakedefine HAVE_UNISTD_H
+
+/* which regex library <pcre.h>, <regex.h> */
 #cmakedefine HAVE_PCRE
 #cmakedefine HAVE_POSIX_ERE
 
-/* compile with GDAL support */
+/* compile with GDAL support <gdal.h> */
 #cmakedefine HAVE_GDAL
 
 /* file locking */
