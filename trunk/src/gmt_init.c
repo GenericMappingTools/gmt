@@ -5778,7 +5778,7 @@ GMT_LONG gmt_project_type (char *args, GMT_LONG *pos, GMT_LONG *width_given)
 	 * GMT_NO_PROJ when unsuccessful.
 	 */
 
-	char t;
+	unsigned char t;
 
 	/* Check for upper case */
 
@@ -5831,7 +5831,7 @@ GMT_LONG gmt_project_type (char *args, GMT_LONG *pos, GMT_LONG *width_given)
 	/* Finally, check only the first letter (used until GMT 4.2.1) */
 
 	*pos = 1;
-	t = (char)tolower(args[0]);
+	t = (unsigned char) tolower((unsigned char) args[0]);
 	if (t == 'a') return (GMT_LAMB_AZ_EQ);
 	if (t == 'b') return (GMT_ALBERS);
 	if (t == 'c') return (GMT_CASSINI);

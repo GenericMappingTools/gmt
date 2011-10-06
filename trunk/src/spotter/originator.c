@@ -402,7 +402,8 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else
 		n_out = n_expected_fields;
 	if (n_out == 3) {
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_FLOAT;	/* NO lon/lat out */
+		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_FLOAT;
+		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT; /* NO lon/lat out */
 	}
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_out))) Return (error);
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_expected_fields))) Return (error);
