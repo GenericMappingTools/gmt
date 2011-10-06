@@ -91,6 +91,7 @@ using ceil (IT(nx) / 32) * 4 instead of IT(nx).
 Note that these files are platform-dependent. Files written on Little Endian machines (e.g. PCs) can not be
 read on Big Endian machines (e.g. most workstations).  Also note that it is not possible for BD(GMT) to determine uniquely
 if a 4-byte grid is float or int; in such cases it is best to use the IT(=ID) mechanism to specify the file format.
+In all cases a native grid is considered to be signed (i.e., there are no provision for unsigned short ints or unsigned bytes).
 For header and grid details, see Appendix B.
 #include "explain_float.txt"
 .SH EXAMPLES
