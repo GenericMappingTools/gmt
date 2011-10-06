@@ -897,7 +897,7 @@ GMT_LONG GMT_getrgb (struct GMT_CTRL *C, char *line, double rgb[])
 
 	/* If it starts with a letter, then it could be a name */
 
-	if (isalpha (buffer[0])) {
+	if (isalpha ((unsigned char) buffer[0])) {
 		if ((n = (int)GMT_colorname2index (C, buffer)) < 0) {
 			GMT_report (C, GMT_MSG_FATAL, "Colorname %s not recognized!\n", buffer);
 			return (TRUE);
@@ -908,7 +908,7 @@ GMT_LONG GMT_getrgb (struct GMT_CTRL *C, char *line, double rgb[])
 
 	/* Definitely wrong, at this point, is something that does not end in a number */
 
-	if (!isdigit(buffer[strlen(buffer)-1])) return (TRUE);
+	if (!isdigit((unsigned char) buffer[strlen(buffer)-1])) return (TRUE);
 
 	count = (int)gmt_char_count (buffer, '/');
 
@@ -985,7 +985,7 @@ GMT_LONG gmt_gethsv (struct GMT_CTRL *C, char *line, double hsv[])
 
 	/* If it starts with a letter, then it could be a name */
 
-	if (isalpha (buffer[0])) {
+	if (isalpha ((unsigned char) buffer[0])) {
 		if ((n = (int)GMT_colorname2index (C, buffer)) < 0) {
 			GMT_report (C, GMT_MSG_FATAL, "Colorname %s not recognized!\n", buffer);
 			return (TRUE);
@@ -997,7 +997,7 @@ GMT_LONG gmt_gethsv (struct GMT_CTRL *C, char *line, double hsv[])
 
 	/* Definitely wrong, at this point, is something that does not end in a number */
 
-	if (!isdigit (buffer[strlen(buffer)-1])) return (TRUE);
+	if (!isdigit ((unsigned char) buffer[strlen(buffer)-1])) return (TRUE);
 
 	count = (int)gmt_char_count (buffer, '/');
 
@@ -1130,11 +1130,11 @@ GMT_LONG gmt_getfonttype (struct GMT_CTRL *C, char *name)
 	GMT_LONG i;
 
 	if (!name[0]) return (-1);
-	if (!isdigit (name[0])) {	/* Does not start with number. Try font name */
+	if (!isdigit ((unsigned char) name[0])) {	/* Does not start with number. Try font name */
 		for (i = 0; i < C->session.n_fonts && strcmp (name, C->session.font[i].name); i++);
 		return ((i == C->session.n_fonts) ? -1 : i);
 	}
-	if (!isdigit (name[strlen(name)-1])) return (-1);	/* Starts with digit, ends with something else: cannot be */
+	if (!isdigit ((unsigned char) name[strlen(name)-1])) return (-1);	/* Starts with digit, ends with something else: cannot be */
 	return ((GMT_LONG)atoi (name));
 }
 
@@ -7169,7 +7169,7 @@ GMT_LONG GMT_strlcmp (char *str1, char *str2)
 	 * length of str1, otherwise it returns 0.
 	 */
 	GMT_LONG i = 0;
-	while (str1[i] && tolower(str1[i]) == tolower(str2[i])) i++;
+	while (str1[i] && tolower((unsigned char) str1[i]) == tolower((unsigned char) str2[i])) ++i;
 	if (str1[i]) return 0;
 	return i;
 }
@@ -7184,8 +7184,8 @@ GMT_LONG GMT_strrcmp (char *str1, char *str2)
 	GMT_LONG i, j, l;
 	l = i = strlen (str1), j = strlen (str2);
 	if (j < i) return 0;
-	i--, j--;
-	while (i >= 0 && tolower(str1[i]) == tolower(str2[j])) i--, j--;
+	--i, --j;
+	while (i >= 0 && tolower((unsigned char) str1[i]) == tolower((unsigned char) str2[j])) --i, --j;
 	if (i >= 0) return 0;
 	return l;
 }
@@ -8184,7 +8184,7 @@ GMT_LONG GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struc
 	if (!T->active) return (0);	/* Nothing to do */
 
 	if (C->current.map.frame.axis[T->parent].file_custom) {	/* Want custom intervals */
-		n = gmt_load_custom_annot (C, &C->current.map.frame.axis[T->parent], tolower(T->type), array, labels);
+		n = gmt_load_custom_annot (C, &C->current.map.frame.axis[T->parent], tolower((unsigned char) T->type), array, labels);
 		return (n);
 	}
 
