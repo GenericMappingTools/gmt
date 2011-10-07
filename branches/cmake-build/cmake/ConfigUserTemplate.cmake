@@ -48,6 +48,13 @@
 # Use fast, non-GPL triangulation routine by J. Shewchuk [FALSE]:
 #set (TRIANGLE_D TRUE)
 
+# Enable running examples/test with "make test" (out-of-source)
+# Need to set either DO_EXAMPLES, DO_TESTS or both and uncomment
+# the following line:
+#enable_testing()
+#set (DO_EXAMPLES TRUE)
+#set (DO_TESTS TRUE)
+
 # Extra debugging for developers:
 #add_definitions(-DDEBUG)
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement") # recommended even for release build

@@ -15,9 +15,6 @@
 #
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
-#
-# doc CMakeLists.txt
-#
 
 # install target for data
 install (DIRECTORY examples
@@ -26,5 +23,7 @@ install (DIRECTORY examples
 	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
 	PATTERN ".cmake" EXCLUDE)
+
+add_subdirectory (examples)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
