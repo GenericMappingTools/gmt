@@ -92,7 +92,6 @@ extern "C" {
 #endif
 
 #include "gmt_types.h"		/* All basic typedef declarations */
-#include "gmt_notunix.h"	/* Stuff for Windows */
 #include "gmt_notposix.h"	/* Non-POSIX extensions */
 
 #if defined WIN32 && defined(USE_VLD) && defined(DEBUG)
