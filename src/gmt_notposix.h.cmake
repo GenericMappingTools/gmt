@@ -44,6 +44,7 @@
  * none of the functions are available (the POSIX standard) */
 
 #cmakedefine HAVE_COPYSIGN
+#cmakedefine HAVE__COPYSIGN
 #cmakedefine HAVE_LOG2
 #cmakedefine HAVE_LOG1P
 #cmakedefine HAVE_HYPOT
@@ -53,8 +54,10 @@
 #cmakedefine HAVE_RINT
 #cmakedefine HAVE_IRINT
 #cmakedefine HAVE_ISNANF
+#cmakedefine HAVE__ISNANF
 #cmakedefine HAVE_ISNAND
 #cmakedefine HAVE_ISNAN
+#cmakedefine HAVE__ISNAN
 #cmakedefine HAVE_J0
 #cmakedefine HAVE_J1
 #cmakedefine HAVE_JN
@@ -67,9 +70,104 @@
 #cmakedefine HAVE_ALPHASINCOS
 #cmakedefine HAVE_GETPWUID
 #cmakedefine HAVE_QSORT_R
+#cmakedefine HAVE_QSORT_S
 #cmakedefine HAVE_STRDUP
 #cmakedefine HAVE_STRTOD
 #cmakedefine HAVE_STRTOK_R
+#cmakedefine HAVE_STRTOK_S
 #cmakedefine WORDS_BIGENDIAN
+#cmakedefine HAVE_GETCWD
+#cmakedefine HAVE__GETCWD
+#cmakedefine HAVE__ACCESS
+#cmakedefine HAVE__MKDIR
+#cmakedefine HAVE__FILENO
+#cmakedefine HAVE__SETMODE
+
+#if defined HAVE__COPYSIGN && !defined HAVE_COPYSIGN
+#define copysign(x,y) _copysign(x,y)
+#elif !defined HAVE_COPYSIGN
+/* define custom function */
+#endif
+
+#if defined HAVE__ISNAN && !defined HAVE_ISNAN
+#define isnan(x) _isnan(x)
+#elif !defined HAVE_ISNAN
+/* define custom function */
+#endif
+
+#if defined HAVE__ISNANF && !defined HAVE_ISNANF
+#define isnanf(x) _isnanf(x)
+#elif !defined HAVE_ISNANF
+/* define custom function */
+#endif
+
+#if defined HAVE_QSORT_S && !defined HAVE_QSORT_R
+#define qsort_r(x) qsort_s(x)
+#elif !defined HAVE_QSORT_R
+/* define custom function */
+#endif
+
+#if defined HAVE_STRTOK_S && !defined HAVE_STRTOK_R
+#define strtok_r(x) strtok_s(x)
+#elif !defined HAVE_STRTOK_R
+/* define custom function */
+#endif
+
+#if defined HAVE__GETCWD && !defined HAVE_GETCWD
+#define getcwd(path, len) _getcwd(path, len)
+#endif
+
+#if defined HAVE__ACCESS && !defined HAVE_UNISTD
+#define access(path, mode) _access(path, mode)
+#endif
+
+#if defined HAVE__MKDIR
+#define mkdir(path,mode) _mkdir(path)
+#endif
+
+#if defined HAVE__FILENO
+#define fileno(stream) _fileno(stream)
+#endif
+
+#if defined HAVE__SETMODE
+#define setmode(fd,mode) _setmode(fd,mode)
+#endif
+
+#ifdef _WIN32
+
+typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byte integer */
+
+#define PATH_SEPARATOR ';'	/* Win uses ; while Unix uses : */
+
+#include <io.h>
+#include <direct.h>
+
+/* GMT normally gets these macros from unistd.h */
+
+#define R_OK 04
+#define W_OK 02
+#define X_OK 01
+#define F_OK 00
+
+EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
+EXTERN_MSC void DOS_path_fix (char *dir);
+
+#undef FLOCK		/* Do not support file locking */
+#define SET_IO_MODE	/* Need to force binary i/o upon request */
+
+#endif	/* _WIN32 */
+
+
+#ifndef PATH_SEPARATOR
+#define PATH_SEPARATOR ':'	/* Win uses ; while Unix uses : */
+#endif
+
+#ifndef NO_FCNTL
+#include <fcntl.h>
+#endif
+
+#ifndef GMT_STAT
+#define GMT_STAT stat
+#endif
 
 #endif /* _GMT_NOTPOSIX_H */
