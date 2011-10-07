@@ -17,6 +17,9 @@
 
 /* compile with GDAL support <gdal.h> */
 #cmakedefine HAVE_GDAL
+#ifdef HAVE_GDAL
+#define USE_GDAL	/* Unfortunately, GMT uses this define and not HAVE_GDAL */
+#endif
 
 /* file locking */
 #cmakedefine FLOCK
