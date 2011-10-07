@@ -18,7 +18,11 @@
 #
 
 # source files
-set (GMT_MISC_PROGS_SRCS dimfilter.c gmtdigitize.c)
+if (UNIX)
+	set (GMT_MISC_PROGS_SRCS dimfilter.c gmtdigitize.c)
+elseif (WIN32)
+	set (GMT_MISC_PROGS_SRCS dimfilter.c)
+endif (UNIX)
 
 # example files
 set (GMT_MISC_EXAMPLE_FILES README.misc)
