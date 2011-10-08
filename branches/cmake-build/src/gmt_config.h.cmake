@@ -40,3 +40,4 @@
 #cmakedefine _CRT_SECURE_NO_DEPRECATE
 #cmakedefine _CRT_NONSTDC_NO_DEPRECATE
 #cmakedefine _SCL_SECURE_NO_DEPRECATE
+#cmakedefine _CRT_SECURE_NO_WARNINGS
