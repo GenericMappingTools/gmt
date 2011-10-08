@@ -386,7 +386,7 @@ GMT_LONG write_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *heade
 	sprintf (item, C->current.setting.format_float_out, header->inc[GMT_X]);
 	strcat  (record, item);	strcat  (record, "\n");
 	GMT_fputs (record, fp);		/* Write a text record */
-	if (GMT_is_fnan (header->nan_value)) {
+	if (GMT_is_dnan (header->nan_value)) {
 		GMT_report (C, GMT_MSG_NORMAL, "Warning: ESRI Arc/Info ASCII Interchange file must use proxy for NaN; default to -9999\n");
 		header->nan_value = -9999.0;
 	}
