@@ -81,7 +81,9 @@ extern int irint(double x);
 #if defined(j0)
 /* Macro already takes care of j0 - probably from BSD */
 #elif defined(HAVE_J0)
-extern double j0(double x);
+#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
+	extern double j0(double x);
+#endif
 #else
 EXTERN_MSC double j0(double x);
 #endif
@@ -89,7 +91,9 @@ EXTERN_MSC double j0(double x);
 #if defined(j1)
 /* Macro already takes care of j1 - probably from BSD */
 #elif defined(HAVE_J1)
-extern double j1(double x);
+#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
+	extern double j1(double x);
+#endif
 #else
 EXTERN_MSC double j1(double x);
 #endif
@@ -97,7 +101,9 @@ EXTERN_MSC double j1(double x);
 #if defined(jn)
 /* Macro already takes care of jn - probably from BSD */
 #elif defined(HAVE_JN)
-extern double jn(int n, double x);
+#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
+	extern double jn(int n, double x);
+#endif
 #else
 EXTERN_MSC double jn(int n, double x);
 #endif
@@ -105,7 +111,9 @@ EXTERN_MSC double jn(int n, double x);
 #if defined(y0)
 /* Macro already takes care of y0 - probably from BSD */
 #elif defined(HAVE_Y0)
-extern double y0(double x);
+#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
+	extern double y0(double x);
+#endif
 #else
 EXTERN_MSC double y0(double x);
 #endif
@@ -113,7 +121,9 @@ EXTERN_MSC double y0(double x);
 #if defined(y1)
 /* Macro already takes care of y1 - probably from BSD */
 #elif defined(HAVE_Y1)
-extern double y1(double x);
+#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
+	extern double y1(double x);
+#endif
 #else
 EXTERN_MSC double y1(double x);
 #endif
@@ -121,7 +131,9 @@ EXTERN_MSC double y1(double x);
 #if defined(yn)
 /* Macro already takes care of yn - probably from BSD */
 #elif defined(HAVE_YN)
-extern double yn(int n, double x);
+#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
+	extern double yn(int n, double x);
+#endif
 #else
 EXTERN_MSC double yn(int n, double x);
 #endif
@@ -166,9 +178,11 @@ EXTERN_MSC double hypot(double x, double y);
 
 #if defined(strdup)
 /* Macro already takes care of strdup - probably from BSD */
-#elif defined(HAVE_STRDUP)
-extern char *strdup(const char *s);
-#else
+//#elif defined(HAVE_STRDUP)
+//#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
+//	extern char *strdup(const char *s);
+//#endif
+#elif !defined(HAVE_STRDUP)
 EXTERN_MSC char *strdup(const char *s);
 #endif
 

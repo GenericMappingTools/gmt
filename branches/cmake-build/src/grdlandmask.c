@@ -270,21 +270,21 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 		if (Ctrl->N.mode) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes in water will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[0])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[0]);
+			(GMT_is_dnan (Ctrl->N.mask[0])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[0]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes on land will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[1])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[1]);
+			(GMT_is_dnan (Ctrl->N.mask[1])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[1]);
 		}
 		else {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes in the oceans will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[0])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[0]);
+			(GMT_is_dnan (Ctrl->N.mask[0])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[0]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes on land will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[1])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[1]);
+			(GMT_is_dnan (Ctrl->N.mask[1])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[1]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes in lakes will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[2])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[2]);
+			(GMT_is_dnan (Ctrl->N.mask[2])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[2]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes in islands will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[3])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[3]);
+			(GMT_is_dnan (Ctrl->N.mask[3])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[3]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes in ponds will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[4])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[4]);
+			(GMT_is_dnan (Ctrl->N.mask[4])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[4]);
 		}
 	}
 
