@@ -82,7 +82,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		for (nc_ind = 0; prhs->B.bands[nc_ind]; nc_ind++)
 			if (prhs->B.bands[nc_ind] == ',') n_commas++;
 		for (n = 0; prhs->B.bands[n]; n++)
-			if (prhs->B.bands[n] == '-') n_dash = n;
+			if (prhs->B.bands[n] == '-') n_dash = (int)n;
 		nn = MAX(n_commas+1, n_dash);
 		if (nn) {
 			nn = MAX( nn, atoi(&prhs->B.bands[nc_ind-1])+1 );		/* +1 because band numbering in GMT is zero based */
