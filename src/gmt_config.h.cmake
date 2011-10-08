@@ -35,9 +35,3 @@
 
 /* if NetCDF is static; applies only #ifdef _WIN32 */
 #cmakedefine NETCDF_STATIC
-
-/* disable VS 'secure' warnings */
-#cmakedefine _CRT_SECURE_NO_DEPRECATE
-#cmakedefine _CRT_NONSTDC_NO_DEPRECATE
-#cmakedefine _SCL_SECURE_NO_DEPRECATE
-#cmakedefine _CRT_SECURE_NO_WARNINGS
