@@ -7918,7 +7918,9 @@ int GMT_fscanf (FILE *stream, char *format, ...) {
 #endif
 #endif
 
-#define ABS(x) (((x) >= 0) ? (x) : -(x))
+#ifndef ABS
+#	define ABS(x) (((x) >= 0) ? (x) : -(x))
+#endif
 
 GMT_LONG GMT_equal_double (double A, double B, int maxUlps) {
 	/* Adapted from http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
