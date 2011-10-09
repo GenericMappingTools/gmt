@@ -86,7 +86,7 @@ int main (int argc, char **argv)
 	y = (int *) get_memory (VNULL, 1, sizeof (int), "gshhs_dp");
 	index = (int *) get_memory (VNULL, 1, sizeof (int), "gshhs_dp");
 	
-	n_read = fread ((void *)&h, sizeof (struct GSHHS), (size_t)1, fp_in);
+	n_read = (int)fread ((void *)&h, sizeof (struct GSHHS), (size_t)1, fp_in);
 	version = (h.flag >> 8) & 255;
 	flip = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 	
@@ -154,7 +154,7 @@ int main (int argc, char **argv)
 		
 		n_id++;
 
-		n_read = fread ((void *)&h, sizeof (struct GSHHS), (size_t)1, fp_in);
+		n_read = (int)fread ((void *)&h, sizeof (struct GSHHS), (size_t)1, fp_in);
 	}
 		
 	free ((void *)x);	
