@@ -79,8 +79,10 @@ extern "C" {
 #ifdef HAVE_UNISTD_H
 #	include <unistd.h>
 #endif
-#ifdef HAVE_INTTYPES_H
+#if defined(HAVE_INTTYPES_H)
 #	include <inttypes.h> /* Exact-width integer types */
+#elif defined(HAVE_STDINT_H)  /* VS 2010 has stdint.h */
+#	include "stdint.h"
 #else
 #	include "pstdint.h"  /* Free portable implementation */
 #endif /* HAVE_INTTYPES_H */
