@@ -61,12 +61,12 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	for (i = 0; i < 6; i++) PSL_plotsymbol (PSL, x[i], y[i], size, PSL_STAR);
 
 	/* Plot some patterns within the x-y axis */
-	rgb[5][1] = PSL_setpattern (PSL, -1, "../doc/examples/ex16/circuit.ras", 100, rgb[2], rgb[2]);
+	rgb[5][1] = (double)PSL_setpattern (PSL, -1, "../doc/examples/ex16/circuit.ras", 100, rgb[2], rgb[2]);
 	PSL_setfill (PSL, rgb[5], PSL_NO);
 	PSL_plotbox (PSL, 80.0, 30.0, 140, 50);
 
 	size[0] = 0.5;
-	rgb[5][1] = PSL_setpattern (PSL, 13, "", 100, rgb[3], rgb[2]);
+	rgb[5][1] = (double)PSL_setpattern (PSL, 13, "", 100, rgb[3], rgb[2]);
 	PSL_setcolor (PSL, rgb[5], PSL_IS_STROKE);
 	PSL_plotsymbol (PSL, 80.0, 30.0, size, PSL_DOT);
 
@@ -75,15 +75,15 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	PSL_plotsymbol (PSL, 95.0, 30.0, size, PSL_SQUARE);
 
 	size[0] = 100.0; size[1] = 0.5; size[2] = 0.4;
-	rgb[5][1] = PSL_setpattern (PSL, 13, "", 100, rgb[2], rgb[3]);
+	rgb[5][1] = (double)PSL_setpattern (PSL, 13, "", 100, rgb[2], rgb[3]);
 	PSL_plotsymbol (PSL, 110.0, 30.0, size, PSL_ROTRECT);
 
-	rgb[5][1] = PSL_setpattern (PSL, 14, "", 100, rgb[1], rgb[2]);
+	rgb[5][1] = (double)PSL_setpattern (PSL, 14, "", 100, rgb[1], rgb[2]);
 	PSL_setfill (PSL, rgb[5], PSL_OUTLINE);
 	PSL_plotsymbol (PSL, 125.0, 30.0, size, PSL_ELLIPSE);
 
 	size[0] = 0.3; size[1] = 45.0; size[2] = 315.0;
-	rgb[5][1] = PSL_setpattern (PSL, 14, "", 100, rgb[1], rgb[0]);
+	rgb[5][1] = (double)PSL_setpattern (PSL, 14, "", 100, rgb[1], rgb[0]);
 	PSL_plotsymbol (PSL, 140.0, 30.0, size, PSL_WEDGE);
 
 	/* Return to normal coordinates */
