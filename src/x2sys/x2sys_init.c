@@ -302,7 +302,11 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	x2sys_set_home (GMT);
 	x2sys_path (GMT, Ctrl->In.TAG, path);
 	if (x2sys_access (GMT, Ctrl->In.TAG, R_OK)) {	/* No such dir */
+#ifndef _WIN32
 		if (mkdir (path, (mode_t)0777)) {
+#else
+		if (mkdir (path)) {
+#endif
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create TAG directory : %s\n", path);
 			Return (EXIT_FAILURE);
 		}
