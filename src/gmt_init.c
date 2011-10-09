@@ -7942,7 +7942,7 @@ GMT_LONG GMT_equal_double (double A, double B, int maxUlps) {
 	if (aInt < 0) aInt = 0x8000000000000000 - aInt;
 	/* Make bInt lexicographically ordered as a twos-complement int */
 	if (bInt < 0) bInt = 0x8000000000000000 - bInt;
-	intDiff = ABS (aInt - bInt);
+	intDiff = (int)ABS (aInt - bInt);
 	if (intDiff <= maxUlps) return TRUE;
 	return FALSE;
 }
@@ -7962,7 +7962,7 @@ GMT_LONG GMT_equal_float (float A, float B, int maxUlps) {
 	if (aInt < 0) aInt = 0x80000000 - aInt;
 	/* Make bInt lexicographically ordered as a twos-complement int */
 	if (bInt < 0) bInt = 0x80000000 - bInt;
-	intDiff = ABS (aInt - bInt);
+	intDiff = (int)ABS (aInt - bInt);
 	if (intDiff <= maxUlps) return TRUE;
 	return FALSE;
 }
