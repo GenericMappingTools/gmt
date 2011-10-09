@@ -79,6 +79,7 @@
 #cmakedefine HAVE_GETCWD
 #cmakedefine HAVE__GETCWD
 #cmakedefine HAVE__ACCESS
+#cmakedefine HAVE_MKDIR
 #cmakedefine HAVE__MKDIR
 #cmakedefine HAVE__FILENO
 #cmakedefine HAVE__SETMODE
@@ -121,7 +122,7 @@
 #define access(path, mode) _access(path, mode)
 #endif
 
-#if defined HAVE__MKDIR
+#if defined HAVE__MKDIR && !defined HAVE_MKDIR 	/* Visual Studio 2010 has both */
 #define mkdir(path,mode) _mkdir(path)
 #endif
 
