@@ -24,7 +24,6 @@
  * functions if they exist and provide an alternative definition otherwise.
  *
  * If you must do a manual edit, you should do so in gmt_notposix.h.
- * For non-UNIX platforms you should also look in gmt_notunix.h
  *
  * Version:	5 API
  */
@@ -78,125 +77,58 @@ extern int irint(double x);
  * seek to use them.  If not available then we compile in
  * replacements from gmt_notposix.c */
 
-#if defined(j0)
-/* Macro already takes care of j0 - probably from BSD */
-#elif defined(HAVE_J0)
-#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
-	extern double j0(double x);
-#endif
-#else
+#ifndef HAVE_J0
 EXTERN_MSC double j0(double x);
 #endif
 
-#if defined(j1)
-/* Macro already takes care of j1 - probably from BSD */
-#elif defined(HAVE_J1)
-#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
-	extern double j1(double x);
-#endif
-#else
+#ifndef HAVE_J1
 EXTERN_MSC double j1(double x);
 #endif
 
-#if defined(jn)
-/* Macro already takes care of jn - probably from BSD */
-#elif defined(HAVE_JN)
-#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
-	extern double jn(int n, double x);
-#endif
-#else
-EXTERN_MSC double jn(int n, double x);
+#ifndef HAVE_JN
+EXTERN_MSC double jn(double x);
 #endif
 
-#if defined(y0)
-/* Macro already takes care of y0 - probably from BSD */
-#elif defined(HAVE_Y0)
-#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
-	extern double y0(double x);
-#endif
-#else
+#ifndef HAVE_Y0
 EXTERN_MSC double y0(double x);
 #endif
 
-#if defined(y1)
-/* Macro already takes care of y1 - probably from BSD */
-#elif defined(HAVE_Y1)
-#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
-	extern double y1(double x);
-#endif
-#else
+#ifndef HAVE_Y1
 EXTERN_MSC double y1(double x);
 #endif
 
-#if defined(yn)
-/* Macro already takes care of yn - probably from BSD */
-#elif defined(HAVE_YN)
-#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
-	extern double yn(int n, double x);
-#endif
-#else
-EXTERN_MSC double yn(int n, double x);
+#ifndef HAVE_YN
+EXTERN_MSC double yn(double x);
 #endif
 
-#if defined(erf)
-/* Macro already takes care of erf - probably from BSD */
-#elif defined(HAVE_ERF)
-extern double erf(double x);
-#else
+#ifndef HAVE_ERF
 EXTERN_MSC double erf(double x);
 #endif
 
-#if defined(erfc)
-/* Macro already takes care of erfc - probably from BSD */
-#elif defined(HAVE_ERFC)
-extern double erfc(double x);
-#else
+#ifndef HAVE_ERFC
 EXTERN_MSC double erfc(double x);
 #endif
 
-#ifdef HAVE_ATANH
-extern double atanh(double x);
-#else
+#ifndef HAVE_ATANH
 EXTERN_MSC double atanh(double x);
 #endif
 
-#if defined(log1p)
-/* Macro already takes care of log1p - probably from BSD */
-#elif defined(HAVE_LOG1P)
-extern double log1p(double x);
-#else
+#ifndef HAVE_LOG1P
 EXTERN_MSC double log1p(double x);
 #endif
 
-#if defined(hypot)
-/* Macro already takes care of hypot - probably from BSD */
-#elif defined(HAVE_HYPOT)
-extern double hypot(double x, double y);
-#else
+#ifndef HAVE_HYPOT
 EXTERN_MSC double hypot(double x, double y);
 #endif
 
-#if defined(strdup)
-/* Macro already takes care of strdup - probably from BSD */
-//#elif defined(HAVE_STRDUP)
-//#ifndef _WIN32		/* Otherwise already prefixed with __cdecl */
-//	extern char *strdup(const char *s);
-//#endif
-#elif !defined(HAVE_STRDUP)
+#ifndef HAVE_STRDUP
 EXTERN_MSC char *strdup(const char *s);
 #endif
 
-#if defined(strtod)
-/* Macro already takes care of strtod - probably from BSD */
-#elif defined(HAVE_STRTOD)
-#if defined(WIN32) && !defined(__MINGW32__)
-#pragma warning( disable : 4273 )	/* The annoying inconsistent dll linkage */
-#pragma warning( disable : 4706 )	/* assignment within conditional expression */
-#endif
-extern double strtod(const char *nptr, char **endptr);
-#else
+#ifndef HAVE_STRTOD
 EXTERN_MSC double strtod(const char *nptr, char **endptr);
 #endif
+
 
 /* On Dec Alpha OSF1 there is a sincos with different syntax.
  * Assembly wrapper provided by Lloyd Parkes <lloyd@must-have-coffee.gen.nz>
