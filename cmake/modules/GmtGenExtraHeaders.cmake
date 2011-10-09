@@ -94,7 +94,7 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_colornames.h "${_color_names}\n")
 
 # gmt_color_rgb.h
 list_regex_replace (
-	"^([0-9]+)[ \t]+([0-9]+)[ \t]+([0-9]+).*"
+	"^[ ]*([0-9]+)[ \t]+([0-9]+)[ \t]+([0-9]+).*"
 	"{\\\\1, \\\\2, \\\\3}"
 	_colors_rgb ${_color_file}
 	MATCHES_ONLY)
