@@ -114,18 +114,33 @@
 /* define custom function */
 #endif
 
+/* getcwd is usually in unistd.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _;
+ * it is defined in direct.h. */
 #if defined HAVE__GETCWD && !defined HAVE_GETCWD
 #define getcwd(path, len) _getcwd(path, len)
 #endif
 
+/* access is usually in unistd.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _
+ * and defined in io.h */
 #if defined HAVE__ACCESS && !defined HAVE_UNISTD
 #define access(path, mode) _access(path, mode)
 #endif
 
+/* mkdir is usually in sys/stat.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _
+ * and furthermore does not pass the mode argument;
+ * it is defined in direct.h
+ * The above was copyed from the old gmt_notunix and is left here
+ * because it probably refers to older MSVC compilers, but is not for VS2010 */
 #if defined HAVE__MKDIR && !defined HAVE_MKDIR 	/* Visual Studio 2010 has both */
 #define mkdir(path,mode) _mkdir(path)
 #endif
 
+/* fileno is usually in stdio.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _
+ * and defined in stdio.h */
 #if defined HAVE__FILENO
 #define fileno(stream) _fileno(stream)
 #endif
@@ -153,6 +168,11 @@ typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byt
 EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
 EXTERN_MSC void DOS_path_fix (char *dir);
 
+/* FLOCK is a pain. If cannot be used under Windows.
+ * Also, users have problems with file locking because their 
+ * NFS does not support it. Only those who are really sure should
+ * activate -DFLOCK. For these reasons, FLOCK is off by default.
+ */
 #undef FLOCK		/* Do not support file locking */
 #define SET_IO_MODE	/* Need to force binary i/o upon request */
 
