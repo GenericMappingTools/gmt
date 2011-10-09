@@ -236,7 +236,7 @@ EXTERN_MSC FILE *GMT_fdopen (int handle, const char *mode);
 EXTERN_MSC int GMT_fgetc (FILE *stream);
 EXTERN_MSC int GMT_ungetc (int c, FILE *stream);
 EXTERN_MSC int GMT_fputs (const char *line, FILE *fp);
-EXTERN_MSC int GMT_fseek (FILE *stream, GMT_LONG offset, int whence);
+EXTERN_MSC int GMT_fseek (FILE *stream, long offset, int whence);
 EXTERN_MSC long GMT_ftell (FILE *stream);
 EXTERN_MSC size_t GMT_fread (void * ptr, size_t size, size_t nmemb, FILE *stream);
 EXTERN_MSC size_t GMT_fwrite (const void * ptr, size_t size, size_t nmemb, FILE *stream);
