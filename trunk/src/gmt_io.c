@@ -123,7 +123,7 @@ FILE *GMT_fdopen (int handle, const char *mode) { return (fdopen (handle, mode))
 int GMT_fgetc (FILE *stream) { return (fgetc (stream)); }
 int GMT_ungetc (int c, FILE *stream) { return (ungetc (c, stream)); }
 int GMT_fputs (const char *str, FILE *stream) { return (fputs (str, stream)); }
-int GMT_fseek (FILE *stream, GMT_LONG offset, int whence) { return (fseek(stream, offset, whence)); }
+int GMT_fseek (FILE *stream, long offset, int whence) { return (fseek(stream, offset, whence)); }
 long GMT_ftell (FILE *stream) { return (ftell(stream)); }
 size_t GMT_fread (void *ptr, size_t size, size_t nmemb, FILE * stream) { return (fread (ptr, size, nmemb, stream)); }
 size_t GMT_fwrite (const void *ptr, size_t size, size_t nmemb, FILE * stream) { return (fwrite (ptr, size, nmemb, stream)); }
