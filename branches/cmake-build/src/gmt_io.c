@@ -5170,7 +5170,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	/* Reads an entire data set into a single table memory with any number of segments */
 
 	GMT_LONG ascii, close_file = FALSE, header = TRUE, no_segments, n_head_alloc = GMT_TINY_CHUNK;
-	GMT_LONG n_fields, n_expected_fields, k, n_read = 0, seg = -1, row = 0, col, n_row_alloc;
+	GMT_LONG n_fields, n_expected_fields, k, n_read = 0, seg = (GMT_LONG)(-1), row = 0, col, n_row_alloc;
 	char open_mode[4], file[GMT_BUFSIZ], line[GMT_TEXT_LEN64];
 	double d, *in = NULL;
 	FILE *fp = NULL;
@@ -5284,9 +5284,8 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 			}
 			/* Segment initialization */
 			row = 0;
-			if (!no_segments) {
-				n_fields = C->current.io.input (C, fp, &n_expected_fields, &in);	/* Read if we read a segment header up front */
-				n_read++;
+			if (!no_segments) {	/* Read data if we read a segment header up front, but guard against headers which sets n_fields = 0 */
+				while (!GMT_REC_IS_EOF (C) && (n_fields = C->current.io.input (C, fp, &n_expected_fields, &in)) == 0) n_read++;
 			}
 			T->segment[seg]->n_columns = n_expected_fields;
 			no_segments = FALSE;	/* This has now served its purpose */

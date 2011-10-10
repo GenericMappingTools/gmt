@@ -2,8 +2,14 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-10-10	remko
+	* xyz2grd.c:		Implemented -Am (mean, default) and -Ar (rms)
+
+2011-10-10	pwessel
+	* gmt_io.c:		Crashed if a segment header was followed by a comment record.
+
 2011-10-05	fwobbe
-	* src/{gmt_init.c,gmt_esri_io.c,spotter/originator.c,gmt_support.c}:
+	* gmt_init.c, gmt_esri_io.c, spotter/originator.c, gmt_support.c:
 				Fixed bugs, uninitialized values and wrong casts.
 
 2011-10-05	jluis
