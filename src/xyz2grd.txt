@@ -4,14 +4,14 @@
 xyz2grd \- Convert data table to a grid file
 .SH SYNOPSIS
 BD(xyz2grd) [ IT(table) ] OPT(G)IT(grdfile) GMT_I_OPT 
-GMT_Rgeo_OPT [ OPT(A)[BD(f)|BD(l)|BD(n)|BD(s)|BD(u)|BD(z)] ] [ GMT_GRDEDIT ] 
+GMT_Rgeo_OPT [ OPT(A)[BD(f)|BD(l)|BD(m)|BD(n)|BD(r)|BD(s)|BD(u)|BD(z)] ] [ GMT_GRDEDIT ] 
 [ OPT(N)IT(nodata) ] [ OPT(S)[IT(zfile)] ] [ GMT_V_OPT ] [ OPT(Z)[IT(flags)] ] 
 [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(xyz2grd) reads one or more z or xyz tables and
 creates a binary grid file.  BD(xyz2grd) will report if some of the nodes are not filled in with
 data.  Such unconstrained nodes are set to a value specified by the user [Default is NaN].
-Nodes with more than one value will be set to the average value.  As an option (using OPT(Z)),
+Nodes with more than one value will be set to the mean value.  As an option (using OPT(Z)),
 a 1-column z-table may be read assuming all nodes are present (z-tables can be in organized in a
 number of formats, see OPT(Z) below.)
 #include "explain_commonitems.txt"
@@ -28,11 +28,12 @@ IT(table)
 One or more ASCII [or binary, see GMT_bi_OPT] files holding z or (x,y,z) values.  The xyz triplets do not
 have to be sorted.  One-column z tables must be sorted and the OPT(Z) must be set. 
 .TP
-OPT(A)[BD(f)|BD(l)|BD(n)|BD(s)|BD(u)|BD(z)]
+OPT(A)[BD(f)|BD(l)|BD(m)|BD(n)|BD(r)|BD(s)|BD(u)|BD(z)]
 By default we will calculate mean values if multiple entries fall on the same node.  Use
 OPT(A) to change this behavior, except it is ignored if OPT(Z) is given.
 Append BD(f) or BD(s) to simply keep the first or last data point that was assigned to each node.
 Append BD(l) or BD(u) to find the lowest (minimum) or upper (maximum) value at each node, respectively. 
+Append BD(m) or BD(r) to compute mean or RMS value at each node, respectively.
 Append BD(n) to simply count the number of data points that were assigned to each node.
 Append BD(z) to sum multiple values that belong to the same node.
 .TP
