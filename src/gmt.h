@@ -85,7 +85,6 @@ extern "C" {
 #include "gmt_gdalread.h"
 #endif
 #include "gmt_common.h"         /* For holding the GMT common option settings */
-#include "gmt_math.h"           /* Machine-dependent macros for non-POSIX math functions */
 #include "gmt_nan.h"            /* Machine-dependent macros for making and testing NaNs */
 #include "gmt_error.h"          /* Only contains error codes */
 #include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
