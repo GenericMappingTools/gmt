@@ -108,7 +108,7 @@
 #if defined HAVE__COPYSIGN && !defined HAVE_COPYSIGN
 #	define copysign(x,y) _copysign(x,y)
 #elif !defined HAVE_COPYSIGN
-/* define custom function */
+#	define copysign(x,y) ((y) < 0.0 ? -fabs(x) : fabs(x))
 #endif
 
 #if defined HAVE__ISNAN && !defined HAVE_ISNAN
@@ -121,6 +121,95 @@
 #	define isnanf(x) _isnanf(x)
 #elif !defined HAVE_ISNANF
 /* define custom function */
+#endif
+
+#ifndef HAVE_LOG2
+#	define log2(x) (log10(x)/0.30102999566398114250631579125183634459972381591796875)
+#endif
+
+#ifndef HAVE_ACOSH
+#	define acosh(x) log((x) + (d_sqrt((x) + 1.0)) * (d_sqrt((x) - 1.0)))
+#endif
+
+#ifndef HAVE_ASINH
+#	define asinh(x) log((x) + (hypot((x), 1.0)))
+#endif
+
+#ifndef HAVE_RINT
+/*#define rint(x) (floor((x)+0.5))	This is now deffined by the ieee function s_rint.c */
+EXTERN_MSC double rint(double x);
+#endif
+
+#ifndef HAVE_IRINT
+#	define irint(x) ((int)rint(x))
+#endif
+
+
+/* Misc. ANSI-C math functions used by grdmath and gmtmath.
+ * These functions are available on many platforms and we
+ * seek to use them.  If not available then we compile in
+ * replacements from gmt_notposix.c */
+
+#ifndef HAVE_J0
+EXTERN_MSC double j0(double x);
+#endif
+
+#ifndef HAVE_J1
+EXTERN_MSC double j1(double x);
+#endif
+
+#ifndef HAVE_JN
+EXTERN_MSC double jn(double x);
+#endif
+
+#ifndef HAVE_Y0
+EXTERN_MSC double y0(double x);
+#endif
+
+#ifndef HAVE_Y1
+EXTERN_MSC double y1(double x);
+#endif
+
+#ifndef HAVE_YN
+EXTERN_MSC double yn(double x);
+#endif
+
+#ifndef HAVE_ERF
+EXTERN_MSC double erf(double x);
+#endif
+
+#ifndef HAVE_ERFC
+EXTERN_MSC double erfc(double x);
+#endif
+
+#ifndef HAVE_ATANH
+EXTERN_MSC double atanh(double x);
+#endif
+
+#ifndef HAVE_LOG1P
+EXTERN_MSC double log1p(double x);
+#endif
+
+#ifndef HAVE_HYPOT
+EXTERN_MSC double hypot(double x, double y);
+#endif
+
+#ifndef HAVE_STRDUP
+EXTERN_MSC char *strdup(const char *s);
+#endif
+
+#ifndef HAVE_STRTOD
+EXTERN_MSC double strtod(const char *nptr, char **endptr);
+#endif
+
+/* On Dec Alpha OSF1 there is a sincos with different syntax.
+ * Assembly wrapper provided by Lloyd Parkes <lloyd@must-have-coffee.gen.nz>
+ * can be used instead.
+ * See alpha-sincos.s */
+#if !defined(HAVE_SINCOS) && !defined(HAVE_ALPHASINCOS)
+EXTERN_MSC void sincos (double x, double *s, double *c);
+#elif defined(HAVE_ALPHASINCOS)
+#	define sincos(x,s,c) alpha_sincos (x, s, c)
 #endif
 
 /*
@@ -159,13 +248,13 @@
 #endif
 
 #if defined HAVE_QSORT_S && !defined HAVE_QSORT_R
-#	define qsort_r(x) qsort_s(x)
+#	define qsort_r qsort_s
 #elif !defined HAVE_QSORT_R
 /* define custom function */
 #endif
 
 #if defined HAVE_STRTOK_S && !defined HAVE_STRTOK_R
-#	define strtok_r(x) strtok_s(x)
+#	define strtok_r strtok_s
 #elif !defined HAVE_STRTOK_R
 /* define custom function */
 #endif
