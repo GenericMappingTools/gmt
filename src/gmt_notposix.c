@@ -49,7 +49,8 @@
 /* Platform does not have sincos - make a dummy one with sin and cos */
 void sincos (double a, double *s, double *c)
 {
-	*s = sin (a);	*c = cos (a);
+	*s = sin (a);
+	*c = cos (a);
 }
 #endif
 

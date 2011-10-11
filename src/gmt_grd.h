@@ -32,7 +32,7 @@
 
 /* Declaration modifier for netcdf DLL support
  * annoying: why can't netcdf.h do this on its own? */
-#if defined _WIN32 && ! defined NETCDF_STATIC
+#if defined WIN32 && ! defined NETCDF_STATIC
 #define DLL_NETCDF
 #endif
 

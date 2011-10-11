@@ -7843,7 +7843,7 @@ void GMT_setmode (struct GMT_CTRL *C, int direction)
 
 		fp = (direction == 0) ? C->session.std[GMT_IN] : C->session.std[GMT_OUT];
 		fflush (fp);	/* Should be untouched but anyway... */
-#ifdef _WIN32
+#ifdef WIN32
 		GMT_report (C, GMT_MSG_DEBUG, "Set binary mode for %s\n", IO_direction[direction]);
 		setmode (fileno (fp), _O_BINARY);
 #else

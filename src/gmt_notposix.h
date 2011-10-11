@@ -101,31 +101,10 @@
 #	include <floatingpoint.h>
 #endif
 
-/*
- * Math related
- */
-
-#if defined HAVE__COPYSIGN && !defined HAVE_COPYSIGN
-#	define copysign(x,y) _copysign(x,y)
-#elif !defined HAVE_COPYSIGN
-#	define copysign(x,y) ((y) < 0.0 ? -fabs(x) : fabs(x))
-#endif
-
-#if defined HAVE__ISNAN && !defined HAVE_ISNAN
-#	define isnan(x) _isnan(x)
-#elif !defined HAVE_ISNAN
-/* define custom function */
-#endif
-
-#if defined HAVE__ISNANF && !defined HAVE_ISNANF
-#	define isnanf(x) _isnanf(x)
-#elif !defined HAVE_ISNANF
-/* define custom function */
-#endif
-
-#ifndef HAVE_LOG2
-#	define log2(x) (log10(x)/0.30102999566398114250631579125183634459972381591796875)
-#endif
+/* Misc. ANSI-C math functions used by grdmath and gmtmath.
+ * These functions are available on many platforms and we
+ * seek to use them.  If not available then we compile in
+ * replacements from gmt_notposix.c */
 
 #ifndef HAVE_ACOSH
 #	define acosh(x) log((x) + (d_sqrt((x) + 1.0)) * (d_sqrt((x) - 1.0)))
@@ -135,81 +114,88 @@
 #	define asinh(x) log((x) + (hypot((x), 1.0)))
 #endif
 
-#ifndef HAVE_RINT
-/*#define rint(x) (floor((x)+0.5))	This is now deffined by the ieee function s_rint.c */
-EXTERN_MSC double rint(double x);
+#ifndef HAVE_ATANH
+	EXTERN_MSC double atanh(double x);
 #endif
 
-#ifndef HAVE_IRINT
-#	define irint(x) ((int)rint(x))
-#endif
-
-
-/* Misc. ANSI-C math functions used by grdmath and gmtmath.
- * These functions are available on many platforms and we
- * seek to use them.  If not available then we compile in
- * replacements from gmt_notposix.c */
-
-#ifndef HAVE_J0
-EXTERN_MSC double j0(double x);
-#endif
-
-#ifndef HAVE_J1
-EXTERN_MSC double j1(double x);
-#endif
-
-#ifndef HAVE_JN
-EXTERN_MSC double jn(double x);
-#endif
-
-#ifndef HAVE_Y0
-EXTERN_MSC double y0(double x);
-#endif
-
-#ifndef HAVE_Y1
-EXTERN_MSC double y1(double x);
-#endif
-
-#ifndef HAVE_YN
-EXTERN_MSC double yn(double x);
+#if defined HAVE__COPYSIGN && !defined HAVE_COPYSIGN
+#	define copysign _copysign
+#elif !defined HAVE_COPYSIGN
+#	define copysign(x,y) ((y) < 0.0 ? -fabs(x) : fabs(x))
 #endif
 
 #ifndef HAVE_ERF
-EXTERN_MSC double erf(double x);
+	EXTERN_MSC double erf(double x);
 #endif
 
 #ifndef HAVE_ERFC
-EXTERN_MSC double erfc(double x);
-#endif
-
-#ifndef HAVE_ATANH
-EXTERN_MSC double atanh(double x);
-#endif
-
-#ifndef HAVE_LOG1P
-EXTERN_MSC double log1p(double x);
+	EXTERN_MSC double erfc(double x);
 #endif
 
 #ifndef HAVE_HYPOT
-EXTERN_MSC double hypot(double x, double y);
+	EXTERN_MSC double hypot(double x, double y);
 #endif
 
-#ifndef HAVE_STRDUP
-EXTERN_MSC char *strdup(const char *s);
+#ifndef HAVE_IRINT
+#	define irint (int)rint
 #endif
 
-#ifndef HAVE_STRTOD
-EXTERN_MSC double strtod(const char *nptr, char **endptr);
+#if defined HAVE__ISNAN && !defined HAVE_ISNAN
+#	define isnan _isnan
+#elif !defined HAVE_ISNAN
+/* define custom function */
+#endif
+
+#if defined HAVE__ISNANF && !defined HAVE_ISNANF
+#	define isnanf _isnanf
+#elif !defined HAVE_ISNANF
+/* define custom function */
+#endif
+
+#ifndef HAVE_J0
+	EXTERN_MSC double j0(double x);
+#endif
+
+#ifndef HAVE_J1
+	EXTERN_MSC double j1(double x);
+#endif
+
+#ifndef HAVE_JN
+	EXTERN_MSC double jn(double x);
+#endif
+
+#ifndef HAVE_LOG1P
+	EXTERN_MSC double log1p(double x);
+#endif
+
+#ifndef HAVE_LOG2
+#	define log2(x) (log10(x)/0.30102999566398114250631579125183634459972381591796875)
+#endif
+
+#ifndef HAVE_RINT
+	/* #define rint(x) (floor((x)+0.5f)) This is now defined by the ieee function s_rint.c */
+	EXTERN_MSC double rint(double x);
 #endif
 
 /* On Dec Alpha OSF1 there is a sincos with different syntax.
  * Assembly wrapper provided by Lloyd Parkes <lloyd@must-have-coffee.gen.nz>
- * can be used instead.
- * See alpha-sincos.s */
+ * can be used instead. See alpha-sincos.s */
 #if !defined(HAVE_SINCOS) && !defined(HAVE_ALPHASINCOS)
-EXTERN_MSC void sincos (double x, double *s, double *c);
+	EXTERN_MSC void sincos (double x, double *s, double *c);
 #elif defined(HAVE_ALPHASINCOS)
-#	define sincos(x,s,c) alpha_sincos (x, s, c)
+#	define sincos alpha_sincos
+#endif
+
+#ifndef HAVE_Y0
+	EXTERN_MSC double y0(double x);
+#endif
+
+#ifndef HAVE_Y1
+	EXTERN_MSC double y1(double x);
+#endif
+
+#ifndef HAVE_YN
+	EXTERN_MSC double yn(double x);
 #endif
 
 /*
@@ -220,21 +206,21 @@ EXTERN_MSC void sincos (double x, double *s, double *c);
  * since the same function under WIN32 is prefixed with _
  * and defined in io.h */
 #if defined HAVE__ACCESS && !defined HAVE_UNISTD
-#	define access(path, mode) _access(path, mode)
+#	define access _access
 #endif
 
 /* fileno is usually in stdio.h; we use a macro here
  * since the same function under WIN32 is prefixed with _
  * and defined in stdio.h */
 #if defined HAVE__FILENO
-#	define fileno(stream) _fileno(stream)
+#	define fileno _fileno
 #endif
 
 /* getcwd is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _;
  * it is defined in direct.h. */
 #if defined HAVE__GETCWD && !defined HAVE_GETCWD
-#	define getcwd(path, len) _getcwd(path, len)
+#	define getcwd _getcwd
 #endif
 
 /* mkdir is usually in sys/stat.h; we use a macro here
@@ -253,14 +239,22 @@ EXTERN_MSC void sincos (double x, double *s, double *c);
 /* define custom function */
 #endif
 
+#if defined HAVE__SETMODE
+#	define setmode _setmode
+#endif
+
+#ifndef HAVE_STRDUP
+	EXTERN_MSC char *strdup(const char *s);
+#endif
+
+#ifndef HAVE_STRTOD
+	EXTERN_MSC double strtod(const char *nptr, char **endptr);
+#endif
+
 #if defined HAVE_STRTOK_S && !defined HAVE_STRTOK_R
 #	define strtok_r strtok_s
 #elif !defined HAVE_STRTOK_R
 /* define custom function */
-#endif
-
-#if defined HAVE__SETMODE
-#	define setmode(fd,mode) _setmode(fd,mode)
 #endif
 
 /* GMT normally gets these macros from unistd.h */
@@ -272,31 +266,44 @@ EXTERN_MSC void sincos (double x, double *s, double *c);
 #endif /* !HAVE_UNISTD_H */
 
 /*
+ * Make sure Cygwin does not use Windows related tweaks
+ */
+
+#ifdef __CYGWIN__
+#	undef _WIN32
+#	undef WIN32
+#endif
+
+/*
  * Windows tweaks
  */
 
-#if defined WIN32 && !defined __CYGWIN__
+#if defined _WIN32 || defined WIN32
 
-typedef int mode_t;        /* mode_t not defined under Windows; assumed a signed 4-byte integer */
+#	ifndef WIN32
+#		define WIN32
+#	endif
 
-#define PATH_SEPARATOR ';' /* Win uses ; while Unix uses : */
+	typedef int mode_t;       /* mode_t not defined under Windows */
 
-EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
-EXTERN_MSC void DOS_path_fix (char *dir);
+#	define PATH_SEPARATOR ';' /* Win uses ; while Unix uses : */
 
-/* FLOCK is a pain. If cannot be used under Windows.
- * Also, users have problems with file locking because their 
- * NFS does not support it. Only those who are really sure should
- * activate -DFLOCK. For these reasons, FLOCK is off by default.
- */
-#undef FLOCK          /* Do not support file locking */
-#define SET_IO_MODE   /* Need to force binary i/o upon request */
+	EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
+	EXTERN_MSC void DOS_path_fix (char *dir);
 
-#if defined(USE_VLD) && defined(DEBUG)
-#	include <vld.h>
-#endif
+	/* FLOCK is a pain. If cannot be used under Windows.
+	 * Also, users have problems with file locking because their
+	 * NFS does not support it. Only those who are really sure should
+	 * activate -DFLOCK. For these reasons, FLOCK is off by default.
+	 */
+#	undef FLOCK          /* Do not support file locking */
+#	define SET_IO_MODE   /* Need to force binary i/o upon request */
 
-#endif /* defined WIN32 && !defined __CYGWIN__ */
+#	if defined(USE_VLD) && defined(DEBUG)
+#		include <vld.h>
+#	endif
+
+#endif /* defined _WIN32 || defined WIN32 */
 
 #ifndef PATH_SEPARATOR
 #	define PATH_SEPARATOR ':' /* Win uses ; while Unix uses : */
@@ -305,7 +312,7 @@ EXTERN_MSC void DOS_path_fix (char *dir);
 /* Must replace the system qsort with ours which is 64-bit compliant
  * See gmt_qsort.c. */
 #ifdef GMT_QSORT
-EXTERN_MSC void GMT_qsort (void *a, size_t n, size_t es, int (*cmp) (const void *, const void *));
+	EXTERN_MSC void GMT_qsort (void *a, size_t n, size_t es, int (*cmp) (const void *, const void *));
 #	define qsort GMT_qsort
 #endif /* GMT_QSORT */
 

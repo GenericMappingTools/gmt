@@ -1075,7 +1075,7 @@ GMT_LONG gmt_assign_aspatial_cols (struct GMT_CTRL *C)
 GMT_LONG gmt_trim_line (struct GMT_CTRL *C, char *line, GMT_LONG add_linefeed) {
 	/* Get rid of trailing \r \n \t and spaces */
 	GMT_LONG i, len = strlen (line);
-#ifndef _WIN32
+#ifndef WIN32
 	if (len >= (GMT_BUFSIZ-1)) {
 		GMT_report (C, GMT_MSG_FATAL, "This file appears to be in DOS format - reformat with dos2unix\n");
 		GMT_exit (EXIT_FAILURE);

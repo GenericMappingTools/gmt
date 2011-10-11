@@ -93,8 +93,6 @@
 
 /* windows specific */
 
-#cmakedefine MINGW /* when using the MinGW compiler in Windows */
-
 #cmakedefine HAVE_DIRECT_H_
 #cmakedefine HAVE_IO_H_
 
