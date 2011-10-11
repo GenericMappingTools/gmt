@@ -30,7 +30,7 @@
 include (GmtHelperMacros)
 
 macro (GMT_CREATE_MANPAGES _MAN_FILES)
-	if (CMAKE_COMPILER_IS_GNUCC)
+	if (CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU)
 		# create tag from current dirname
 		tag_from_current_source_dir (_tag "_")
 
@@ -104,7 +104,7 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES)
 	else (CMAKE_COMPILER_IS_GNUCC)
 		message(WARNING
 			"Not creating manpages in ${CMAKE_CURRENT_SOURCE_DIR}")
-	endif (CMAKE_COMPILER_IS_GNUCC)
+	endif (CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU)
 endmacro (GMT_CREATE_MANPAGES _MAN_FILES)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
