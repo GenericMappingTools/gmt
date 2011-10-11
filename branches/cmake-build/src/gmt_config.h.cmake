@@ -93,7 +93,6 @@
 
 /* windows specific */
 
-#cmakedefine WIN32 /* defined on Windows, including CygWin */
 #cmakedefine MINGW /* when using the MinGW compiler in Windows */
 
 #cmakedefine HAVE_DIRECT_H_
