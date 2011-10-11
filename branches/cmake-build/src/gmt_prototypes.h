@@ -432,7 +432,7 @@ EXTERN_MSC void GMT_fourt (struct GMT_CTRL *C, float *data, GMT_LONG *nn, GMT_LO
 EXTERN_MSC void GMT_set_meminc (struct GMT_CTRL *C, GMT_LONG increment);
 EXTERN_MSC void GMT_reset_meminc (struct GMT_CTRL *C);
 EXTERN_MSC void * GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size_t size, char *fname, GMT_LONG line);
-EXTERN_MSC void GMT_free_func (struct GMT_CTRL *C, void **addr, char *fname, GMT_LONG line);
+EXTERN_MSC void GMT_free_func (struct GMT_CTRL *C, void *addr, char *fname, GMT_LONG line);
 EXTERN_MSC GMT_LONG GMT_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, GMT_LONG mode, GMT_LONG ex_cols, GMT_LONG smode, struct GMT_DATASET **Dout);
 EXTERN_MSC GMT_LONG GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, GMT_LONG n_cols, struct GMT_DATASET **Dout);
 
