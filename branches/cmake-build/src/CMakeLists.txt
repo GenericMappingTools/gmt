@@ -187,7 +187,6 @@ gmt_make_purpose_string (
 configure_file (gmt_progpurpose.h.cmake gmt_progpurpose.h)
 
 configure_file (gmt_config.h.cmake gmt_config.h)
-configure_file (gmt_notposix.h.cmake gmt_notposix.h)
 configure_file (gmt_version.h.cmake gmt_version.h)
 configure_file (isogmt.cmake isogmt @ONLY)
 

@@ -135,7 +135,7 @@ EXTERN_MSC double strtod(const char *nptr, char **endptr);
  * can be used instead.
  * See alpha-sincos.s
  */
- 
+
 #if defined(sincos)
 /* Macro already takes care of strtod - probably from BSD */
 #elif defined(HAVE_SINCOS)
@@ -145,15 +145,6 @@ extern void sincos (double x, double *s, double *c);
 extern void alpha_sincos (double x, double *s, double *c);
 #else
 EXTERN_MSC void sincos (double x, double *s, double *c);
-#endif
-
-/* Must replace the system qsort with ours which is 64-bit compliant
- * See gmt_qsort.c.
- */
-
-#ifdef GMT_QSORT
-EXTERN_MSC void GMT_qsort (void *a, size_t n, size_t es, int (*cmp) (const void *, const void *));
-#define qsort GMT_qsort
 #endif
 
 #endif /* _GMT_MATH_H */

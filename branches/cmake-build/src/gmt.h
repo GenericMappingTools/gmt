@@ -53,91 +53,61 @@ extern "C" {
 
 
 /*--------------------------------------------------------------------
- *			SYSTEM HEADER FILES
+ *      SYSTEM HEADER FILES
  *--------------------------------------------------------------------*/
 
-#include <assert.h>
-#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <float.h>
 #include <math.h>
 #include <limits.h>
 #include <stddef.h>
-#include <sys/stat.h>
-#ifdef __MACHTEN__
-/* Kludge to fix a Machten POSIX bug */
-#include <sys/types.h>
-#endif
-#if defined(__ultrix__) && defined(__mips)
-/* Needed to get isnan[fd] macros */
-#include <ieeefp.h>
-#endif
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
 #include <time.h>
 
-#ifdef HAVE_UNISTD_H
-#	include <unistd.h>
-#endif
-#if defined(HAVE_INTTYPES_H)
-#	include <inttypes.h> /* Exact-width integer types */
-#elif defined(HAVE_STDINT_H)  /* VS 2010 has stdint.h */
-#	include "stdint.h"
-#else
-#	include "pstdint.h"  /* Free portable implementation */
-#endif /* HAVE_INTTYPES_H */
+#include "gmt_types.h"          /* All basic typedef declarations */
+#include "gmt_notposix.h"       /* Non-POSIX extensions */
 
-#ifdef __FreeBSD__
-#ifdef _i386_
-#include <floatingpoint.h>
-#endif
-#endif
-
-#include "gmt_types.h"		/* All basic typedef declarations */
-#include "gmt_notposix.h"	/* Non-POSIX extensions */
-
-#if defined WIN32 && defined(USE_VLD) && defined(DEBUG)
-#	include <vld.h>
-#endif
-
-#include "gmt_constants.h"	/* All basic constant definitions */
-#include "gmt_macros.h"		/* All basic macros definitions */
-#include "gmt_dimensions.h"	/* Constant definitions created by configure */
-#include "gmt_time.h"		/* Declarations of structures for dealing with time */
-#include "gmt_texture.h"	/* Declarations of structures for dealing with pen, fill, etc. */
-#include "gmt_defaults.h"	/* Declarations of structure for GMT default settings */
-#include "gmt_ps.h"		/* Declarations of structure for GMT PostScript settings */
-#include "gmt_hash.h"		/* Declarations of structure for GMT hashing */
-#include "gmt_crossing.h"	/* Declarations of structure for GMT map crossings */
+#include "gmt_constants.h"      /* All basic constant definitions */
+#include "gmt_macros.h"         /* All basic macros definitions */
+#include "gmt_dimensions.h"     /* Constant definitions created by configure */
+#include "gmt_time.h"           /* Declarations of structures for dealing with time */
+#include "gmt_texture.h"        /* Declarations of structures for dealing with pen, fill, etc. */
+#include "gmt_defaults.h"       /* Declarations of structure for GMT default settings */
+#include "gmt_ps.h"             /* Declarations of structure for GMT PostScript settings */
+#include "gmt_hash.h"           /* Declarations of structure for GMT hashing */
+#include "gmt_crossing.h"       /* Declarations of structure for GMT map crossings */
 
 /* Experimental GDAL support */
 #ifdef USE_GDAL
 #include "gmt_gdalread.h"
 #endif
-#include "gmt_common.h"		/* For holding the GMT common option settings */
-#include "gmt_math.h"		/* Machine-dependent macros for non-POSIX math functions */
-#include "gmt_nan.h"		/* Machine-dependent macros for making and testing NaNs */
-#include "gmt_error.h"       	/* Only contains error codes */
+#include "gmt_common.h"         /* For holding the GMT common option settings */
+#include "gmt_math.h"           /* Machine-dependent macros for non-POSIX math functions */
+#include "gmt_nan.h"            /* Machine-dependent macros for making and testing NaNs */
+#include "gmt_error.h"          /* Only contains error codes */
 #include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
 #include "gmt_version.h"        /* Only contains the current GMT version number */
 #include "gmt_project.h"        /* Define GMT->current.proj and GMT->current.map.frame structures */
 #include "gmt_grd.h"            /* Define grd file header structure */
 #include "gmt_grdio.h"          /* Defines function pointers for grd i/o operations */
-#include "gmt_io.h"		/* Defines structures and macros for table i/o */
+#include "gmt_io.h"             /* Defines structures and macros for table i/o */
 #include "gmt_colors.h"         /* Defines color/shading global structure */
-#include "gmt_shore.h"		/* Defines structures used when reading shore database */
-#include "gmt_calclock.h"	/* Calendar/time functions */
-#include "gmt_symbol.h"		/* Custom symbol functions */
-#include "gmt_contour.h"	/* Contour label structure and functions */
-#include "gmt_map.h"      	/* extern functions defined in gmt_map.c */
-#include "gmt_plot.h"      	/* extern functions defined in gmt_plot.c */
-#include "gmt_init.h"      	/* extern functions defined in gmt_init.c */
-#include "gmt_stat.h"      	/* extern functions defined in gmt_stat.c */
-#include "gmt_support.h"      	/* extern functions defined in gmt_support.c */
-#include "gmt_vector.h"      	/* extern functions defined in gmt_vector.c */
-#include "gmt_proj.h"      	/* Macros used in gmt_map.c and gmt_proj.c */
+#include "gmt_shore.h"          /* Defines structures used when reading shore database */
+#include "gmt_calclock.h"       /* Calendar/time functions */
+#include "gmt_symbol.h"         /* Custom symbol functions */
+#include "gmt_contour.h"        /* Contour label structure and functions */
+#include "gmt_map.h"            /* extern functions defined in gmt_map.c */
+#include "gmt_plot.h"           /* extern functions defined in gmt_plot.c */
+#include "gmt_init.h"           /* extern functions defined in gmt_init.c */
+#include "gmt_stat.h"           /* extern functions defined in gmt_stat.c */
+#include "gmt_support.h"        /* extern functions defined in gmt_support.c */
+#include "gmt_vector.h"         /* extern functions defined in gmt_vector.c */
+#include "gmt_proj.h"           /* Macros used in gmt_map.c and gmt_proj.c */
 
-#ifdef _OPENMP			/* Using open MP parallelization */
+#ifdef _OPENMP                  /* Using open MP parallelization */
 #include "omp.h"
 #endif
 

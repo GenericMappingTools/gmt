@@ -14,6 +14,61 @@ include (CheckCSourceCompiles)
 include (CheckCSourceRuns)
 include (TestBigEndian)
 
+#
+# Check for windows header
+#
+
+check_include_file (io.h                HAVE_IO_H_)
+check_include_file (direct.h            HAVE_DIRECT_H_)
+
+#
+# Check for C90, C99 and POSIX conformity
+#
+
+check_include_file (assert.h            HAVE_ASSERT_H_)
+check_include_file (errno.h             HAVE_ERRNO_H_)
+check_include_file (fcntl.h             HAVE_FCNTL_H_)
+check_include_file (sys/stat.h          HAVE_STAT_H_)
+check_include_file (sys/types.h         HAVE_TYPES_H_)
+check_include_file (unistd.h            HAVE_UNISTD_H_)
+
+check_function_exists (chown            HAVE_CHOWN)
+check_function_exists (closedir         HAVE_CLOSEDIR)
+check_function_exists (getpwuid         HAVE_GETPWUID)
+check_function_exists (mkdir            HAVE_MKDIR)
+check_function_exists (_mkdir           HAVE__MKDIR)
+check_function_exists (qsort_r          HAVE_QSORT_R)
+check_function_exists (qsort_s          HAVE_QSORT_S)
+check_function_exists (strdup           HAVE_STRDUP)
+check_function_exists (strtod           HAVE_STRTOD)
+check_function_exists (strtok_r         HAVE_STRTOK_R)
+check_function_exists (strtok_s         HAVE_STRTOK_S)
+
+check_symbol_exists (_access io.h       HAVE__ACCESS)
+check_symbol_exists (_fileno stdio.h    HAVE__FILENO)
+check_symbol_exists (_getcwd direct.h   HAVE__GETCWD)
+#check_symbol_exists (_mkdir direct.h    HAVE__MKDIR)
+check_symbol_exists (_setmode io.h      HAVE__SETMODE)
+
+#
+# Check c types
+#
+
+check_include_file (ctype.h             HAVE_CTYPE_H_)
+check_include_file (inttypes.h          HAVE_INTTYPES_H_)
+check_include_file (machine/endian.h    HAVE_MACHINE_ENDIAN_H_)
+check_include_file (stdint.h            HAVE_STDINT_H_)
+
+check_type_size ("long double"          HAVE_LONG_DOUBLE)
+check_type_size ("long long"            HAVE_LONG_LONG)
+check_type_size (intmax_t               HAVE_INTMAX_T)
+check_type_size (wchar_t                HAVE_WCHAR_T)
+check_type_size (wint_t                 HAVE_WINT_T)
+
+#
+# Check math related stuff
+#
+
 # check if -lm is needed
 check_library_exists ("" cos "" HAVE_M_FUNCTIONS)
 if (NOT HAVE_M_FUNCTIONS)
@@ -25,37 +80,48 @@ if (NOT HAVE_M_FUNCTIONS)
 	endif (HAVE_M_LIBRARY)
 endif (NOT HAVE_M_FUNCTIONS)
 
-check_function_exists (copysign HAVE_COPYSIGN)
-check_function_exists (_copysign HAVE__COPYSIGN)
+# extra math headers
 
-check_symbol_exists (log2 math.h HAVE_LOG2)
-check_symbol_exists (log1p math.h HAVE_LOG1P)
-check_symbol_exists (hypot math.h HAVE_HYPOT)
-check_symbol_exists (acosh math.h HAVE_ACOSH)
-check_symbol_exists (asinh math.h HAVE_ASINH)
-check_symbol_exists (atanh math.h HAVE_ATANH)
-check_symbol_exists (rint math.h HAVE_RINT)
-check_symbol_exists (irint math.h HAVE_IRINT)
-check_symbol_exists (isnanf math.h HAVE_ISNANF)
-check_symbol_exists (_isnanf math.h HAVE__ISNANF)
-check_symbol_exists (isnand math.h HAVE_ISNAND)
-check_symbol_exists (isnan math.h HAVE_ISNAN)
-check_symbol_exists (_isnan float.h HAVE__ISNAN)
-check_symbol_exists (j0 math.h HAVE_J0)
-check_symbol_exists (j1 math.h HAVE_J1)
-check_symbol_exists (jn math.h HAVE_JN)
-check_symbol_exists (y0 math.h HAVE_Y0)
-check_symbol_exists (y1 math.h HAVE_Y1)
-check_symbol_exists (yn math.h HAVE_YN)
-check_symbol_exists (erf math.h HAVE_ERF)
-check_symbol_exists (erfc math.h HAVE_ERFC)
-check_symbol_exists (sincos math.h HAVE_SINCOS)
-check_symbol_exists (_getcwd direct.h HAVE__GETCWD)
-check_symbol_exists (_access io.h HAVE__ACCESS)
-#check_symbol_exists (_mkdir direct.h HAVE__MKDIR)
-check_symbol_exists (_fileno stdio.h HAVE__FILENO)
-check_symbol_exists (_setmode io.h HAVE__SETMODE)
+check_include_file (floatingpoint.h     HAVE_FLOATINGPOINT_H_)
+check_include_file (ieeefp.h            HAVE_IEEEFP_H_)
 
+set (_math_h math.h float.h)
+if (HAVE_FLOATINGPOINT_H_)
+	list (APPEND _math_h floatingpoint.h)
+endif (HAVE_FLOATINGPOINT_H_)
+if (HAVE_IEEEFP_H_)
+	list (APPEND _math_h ieeefp.h)
+endif (HAVE_IEEEFP_H_)
+
+# check symbols
+
+check_symbol_exists (acosh "${_math_h}"       HAVE_ACOSH)
+check_symbol_exists (alphasincos "${_math_h}" HAVE_ALPHASINCOS)
+check_symbol_exists (asinh "${_math_h}"       HAVE_ASINH)
+check_symbol_exists (atanh "${_math_h}"       HAVE_ATANH)
+check_symbol_exists (copysign "${_math_h}"    HAVE_COPYSIGN)
+check_symbol_exists (_copysign "${_math_h}"   HAVE__COPYSIGN)
+check_symbol_exists (erf "${_math_h}"         HAVE_ERF)
+check_symbol_exists (erfc "${_math_h}"        HAVE_ERFC)
+check_symbol_exists (hypot "${_math_h}"       HAVE_HYPOT)
+check_symbol_exists (irint "${_math_h}"       HAVE_IRINT)
+check_symbol_exists (isnan "${_math_h}"       HAVE_ISNAN)
+check_symbol_exists (isnand "${_math_h}"      HAVE_ISNAND)
+check_symbol_exists (isnanf "${_math_h}"      HAVE_ISNANF)
+check_symbol_exists (_isnan "${_math_h}"      HAVE__ISNAN)
+check_symbol_exists (_isnanf "${_math_h}"     HAVE__ISNANF)
+check_symbol_exists (j0 "${_math_h}"          HAVE_J0)
+check_symbol_exists (j1 "${_math_h}"          HAVE_J1)
+check_symbol_exists (jn "${_math_h}"          HAVE_JN)
+check_symbol_exists (log1p "${_math_h}"       HAVE_LOG1P)
+check_symbol_exists (log2 "${_math_h}"        HAVE_LOG2)
+check_symbol_exists (rint "${_math_h}"        HAVE_RINT)
+check_symbol_exists (sincos "${_math_h}"      HAVE_SINCOS)
+check_symbol_exists (y0 "${_math_h}"          HAVE_Y0)
+check_symbol_exists (y1 "${_math_h}"          HAVE_Y1)
+check_symbol_exists (yn "${_math_h}"          HAVE_YN)
+
+# test if sincos is buggy
 if (HAVE_SINCOS)
 	check_c_source_runs (
 	"
@@ -70,33 +136,7 @@ if (HAVE_SINCOS)
 	HAVE_SINCOS)
 endif (HAVE_SINCOS)
 
-check_symbol_exists (alphasincos math.h HAVE_ALPHASINCOS)
 
-check_function_exists (alloca HAVE_ALLOCA)
-check_function_exists (chown HAVE_CHOWN)
-check_function_exists (closedir HAVE_CLOSEDIR)
-check_function_exists (getpwuid HAVE_GETPWUID)
-check_function_exists (malloc HAVE_MALLOC)
-check_function_exists (qsort_r HAVE_QSORT_R)
-check_function_exists (qsort_s HAVE_QSORT_S)
-check_function_exists (realloc HAVE_REALLOC)
-check_function_exists (strdup HAVE_STRDUP)
-check_function_exists (strtod HAVE_STRTOD)
-check_function_exists (strtok_r HAVE_STRTOK_R)
-check_function_exists (strtok_s HAVE_STRTOK_S)
-check_include_file (byteswap.h HAVE_BYTESWAP_H)
-check_include_file (ctype.h HAVE_CTYPE_H)
-check_include_file (errno.h HAVE_ERRNO_H)
-check_include_file (inttypes.h HAVE_INTTYPES_H)
-check_include_file (machine/endian.h HAVE_MACHINE_ENDIAN_H)
-check_include_file (stdint.h HAVE_STDINT_H)
-check_include_file (unistd.h HAVE_UNISTD_H)
-check_symbol_exists (alloca "malloc.h" HAVE_SYMBOL_ALLOCA)
-check_type_size ("long double"  HAVE_LONG_DOUBLE)
-check_type_size ("long long"  HAVE_LONG_LONG)
-check_type_size (intmax_t HAVE_INTMAX_T)
-check_type_size (wchar_t HAVE_WCHAR_T)
-check_type_size (wint_t  HAVE_WINT_T)
 
 #check_symbol_exists (intptr_t "stdint.h" HAVE_STDINT_H_WITH_INTPTR)
 #check_symbol_exists (intptr_t "unistdint.h" HAVE_UNISTD_H_WITH_INTPTR)
@@ -108,7 +148,6 @@ check_type_size (wint_t  HAVE_WINT_T)
 #check_function_exists (_close HAVE__CLOSE)
 #check_function_exists (_dyld_func_lookup HAVE_DYLD)
 #check_function_exists (_getpid HAVE__GETPID)
-check_function_exists (_mkdir HAVE__MKDIR)
 #check_function_exists (_open HAVE__OPEN)
 #check_function_exists (_pclose HAVE__PCLOSE)
 #check_function_exists (_popen HAVE__POPEN)
@@ -136,7 +175,6 @@ check_function_exists (_mkdir HAVE__MKDIR)
 #check_function_exists (index HAVE_INDEX)
 #check_function_exists (mach_absolute_time HAVE_MACH_ABSOLUTE_TIME)
 #check_function_exists (mempcpy HAVE_MEMPCPY)
-check_function_exists (mkdir  HAVE_MKDIR)
 #check_function_exists (mkfifo HAVE_MKFIFO)
 #check_function_exists (mkstemp HAVE_MKSTEMP)
 #check_function_exists (mktemp HAVE_MKTEMP)
@@ -247,32 +285,32 @@ endif (NOT DEFINED STDC_HEADERS)
 
 # Define to 1 if you can safely include both <sys/time.h> and <time.h>
 #if (HAVE_SYS_TIME_H)
-#	check_include_files ("sys/time.h;time.h" TIME_WITH_SYS_TIME)
+#   check_include_files ("sys/time.h;time.h" TIME_WITH_SYS_TIME)
 #else (HAVE_SYS_TIME_H)
-#	set (TIME_WITH_SYS_TIME 0)
+#   set (TIME_WITH_SYS_TIME 0)
 #endif (HAVE_SYS_TIME_H)
 
 # Define to 1 if your <sys/time.h> declares `struct tm'. */
 #check_type_exists ("struct tm" sys/time.h TM_IN_SYS_TIME)
 
 #check_cxx_source_compiles (
-#	"
-#	#include <algorithm>
-#	using std::count;
-#	int countChar(char * b, char * e, char const c)
-#	{
-#		return count (b, e, c);
-#	}
-#	int main (){return 0;}
-#	"
+#   "
+#   #include <algorithm>
+#   using std::count;
+#   int countChar(char * b, char * e, char const c)
+#   {
+#       return count (b, e, c);
+#   }
+#   int main (){return 0;}
+#   "
 #HAVE_STD_COUNT)
 
 #check_cxx_source_compiles (
-#	"
-#	#include <cctype>
-#	using std::tolower;
-#	int main (){return 0;}
-#	"
+#   "
+#   #include <cctype>
+#   using std::tolower;
+#   int main (){return 0;}
+#   "
 #CXX_GLOBAL_CSTD)
 
 check_c_source_compiles (
