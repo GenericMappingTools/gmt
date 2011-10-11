@@ -131,7 +131,6 @@
 #include "pslib.h"
 #include "gmt_config.h"
 #include "gmt_notposix.h"
-#include "gmt_math.h"
 
 #ifndef WIN32
 #include <unistd.h>
@@ -318,7 +317,7 @@ char *PDF_transparency_modes[N_PDF_TRANSPARENCY_MODES] = {
 	"Overlay", "Saturation", "SoftLight", "Screen"
 };
 
-#if !defined(HAVE_STRTOK_R)
+#if !defined(HAVE_STRTOK_R) && !defined(HAVE_STRTOK_S)
 /* Lame compiler that does not support reentrant strtok */
 /*
  * Copyright (c) 1995, 1996, 1997 Kungliga Tekniska Hgskolan
