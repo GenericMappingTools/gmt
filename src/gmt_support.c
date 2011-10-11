@@ -3117,18 +3117,17 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 	return (tmp);
 }
 
-void GMT_free_func (struct GMT_CTRL *C, void **addr, char *fname, GMT_LONG line)
+void GMT_free_func (struct GMT_CTRL *C, void *addr, char *fname, GMT_LONG line)
 {
-	if (!addr || !(*addr)) return;	/* Do not try to free a NULL pointer! */
+	if (addr==NULL) return; /* Do not try to free a NULL pointer! */
 #ifdef DEBUG
-	gmt_memtrack_sub (C, GMT_mem_keeper, fname, line, *addr);
+	gmt_memtrack_sub (C, GMT_mem_keeper, fname, line, addr);
 #endif
 #if defined(WIN32) && defined(USE_MEM_ALIGNED)
-	_aligned_free (*addr);
+	_aligned_free (addr);
 #else
-	free (*addr);
+	free (addr);
 #endif
-	*addr = NULL;	/* Cleanly set the freed pointer to NULL */
 }
 
 GMT_LONG GMT_malloc_func (struct GMT_CTRL *C, void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *fname, GMT_LONG line)
