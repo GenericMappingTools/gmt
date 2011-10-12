@@ -732,11 +732,11 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		tabs (--N); printf ("]]>\n");
 		tabs (--N); printf ("</description>\n");
 	}
-	
-	if (Ctrl->N.mode == GET_LABEL) {	/* Special ASCII table processing */
+
+	if (Ctrl->N.mode == GET_LABEL) { /* Special ASCII table processing */
 		GMT_LONG n_fields, ix, iy, n_rec = 0;
-		char *record = NULL, C[4][GMT_TEXT_LEN64];
-		
+		char *record = NULL, C[5][GMT_TEXT_LEN64];
+
 		ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
 		if ((error = GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 		if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
