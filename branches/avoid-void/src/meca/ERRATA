@@ -1,0 +1,272 @@
+	$Id$
+	
+###########
+utilmeca.c :
+###########
+
+ after line 46 add :
+           
+     cpt *= cdt; spt *= cdt;
+     cpp *= cdp; spp *= cdp;
+
+++++++++++++++++++++++++++++
+
+ after line 150 add :
+
+/* Cliff Frohlich, Seismological Research letters,
+ * Vol 7, Number 1, January-February, 1996
+ * Unless the isotropic parameter lies in the range
+ * between -1 and 1 - f there will be no nodes whatsoever */
+
+    if(iso < -1) {
+        ps_circle(x0, y0, radius_size*2., e_rgb, lineout);
+        return(radius_size*2.);
+    }
+    else if(iso > 1-f) {
+        ps_circle(x0, y0, radius_size*2., c_rgb, lineout);
+        return(radius_size*2.);
+    }
+
+++++++++++++++++++++++++++++
+
+ lines 509, 510, 512 : printf(
+            ==>
+            fprintf(stderr, 
+ line 511 : printf("\nstr2 = NP1.str is taken to define");
+            ==>
+            fprintf(stderr, "\nstr2 = NP1.str + 180. is taken to define");
+(lines 509-512 are commented out)
+ line 514 : str2 = NP1.str;     
+            ==>   
+            str2 = NP1.str + 180.;
+
+++++++++++++++++++++++++++++
+
+ after line 593 add commented line :
+            and the only first plane will be plotted.
+
+++++++++++++++++++++++++++++
+
+ line 603 : printf("\nSecond plane dip is indetermined.");
+            ==>
+            dip2 = 1000.; /* (only first plane will be plotted) */
+
+++++++++++++++++++++++++++++
+
+ lines 957 to 962 are put out of loop for(i=0; i<360; i++), after previous add
+
+        sincos (p[d]*D2R, &spd, &cpd);
+        sincos (p[b]*D2R, &spb, &cpb);
+        sincos (p[m]*D2R, &spm, &cpm);
+        sincos (a[d]*D2R, &sad, &cad);
+        sincos (a[b]*D2R, &sab, &cab);
+        sincos (a[m]*D2R, &sam, &cam);
+
+++++++++++++++++++++++++++++
+
+ after line 953 add
+     if(s2alphan > 1.) big_iso++;
+     else {
+ and close after line 1016 adding 
+     }
+
+++++++++++++++++++++++++++++
+
+ after line 1079 add
+
+            if(big_iso) {
+                for(ii=j2-1; ii>=0; ii--) {
+                    xp1[i] = x2[ii]; yp1[i++] = y2[ii];
+                }
+                npoints = i;
+                ps_polygon(xp1, yp1, npoints, rgb1, outline);
+                break;
+            }
+
+###########
+psmeca.c :
+###########
+
+ after line 61 add
+            BOOLEAN    transparence_old, not_defined = FALSE;
+ line 88  : int n_plane;
+            ==>
+            int n_plane = 0, n_plane_old;
+
+++++++++++++++++++++++++++++
+
+ line 198 : n=0; while (txt_a[n] != '/') n++; txt_a[n]=0;
+            ==> 
+            n=0; while (txt_a[n] && txt_a[n] != '/') n++; txt_a[n]=0;
+ line 288 : n=0; while (txt_a[n] != '/') n++; txt_a[n]=0;
+            ==> 
+            n=0; while (txt_a[n] && txt_a[n] != '/') n++; txt_a[n]=0;
+
+++++++++++++++++++++++++++++
+
+ line 438 : if (argc == 1 || error)
+            ==> 
+            if (argc == 1 || GMT_quick || error)
+ line 439 : (stderr,"psmeca v. 3.3 plots symbols on maps\n\n"); 
+            ==>
+            (stderr,"psmeca %s - Plot seismological symbols on maps\n\n", GMT_VERSION);
+
+++++++++++++++++++++++++++++
+
+ lines 695-696 
+            meca.NP2.rake = computed_rake2(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip, fault);
+            meca.NP1.rake = computed_rake2(meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
+            ==>
+            if(meca.NP2.dip == 1000.) {
+                not_defined = TRUE;
+                transparence_old = transparence;
+                n_plane_old = n_plane;
+                transparence = TRUE;
+                n_plane = 1;
+                meca.NP2.rake = 1000.;
+                if(gmtdefs.verbose) {
+                    fprintf(stderr, "WARNING : second plane is not defined for event %s only first plane is plotted.\n", line);
+                    }
+            }
+            else {
+                meca.NP1.rake = computed_rake2(meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
+            }
+            meca.NP2.rake = computed_rake2(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip, fault);
+
+++++++++++++++++++++++++++++
+
+ after line 855 add
+            if(not_defined) {
+                not_defined = FALSE;
+                transparence = transparence_old;
+                n_plane = n_plane_old;
+            }
+
+++++++++++++++++++++++++++++
+
+ line 889 : removed (debug statement)
+
+###########
+pscoupe.c :
+###########
+
+ after line 60 add :
+            BOOLEAN    transparence_old, not_defined = FALSE;
+ line  84 : int n_plane;
+            ==>
+            int n_plane = 0, n_plane_old;
+
+++++++++++++++++++++++++++++
+
+ line 213 : n=0; while (txt_a[n] != '/') n++; txt_a[n]=0;
+            ==>
+            n=0; while (txt_a[n] && txt_a[n] != '/') n++; txt_a[n]=0;
+ line 272 : n=0; while (txt_a[n] != '/') n++; txt_a[n]=0;
+            ==>
+            n=0; while (txt_a[n] && txt_a[n] != '/') n++; txt_a[n]=0;
+ line 353 : n=0; while (txt_a[n] != '/') n++; txt_a[n]=0;
+            ==>
+            n=0; while (txt_a[n] && txt_a[n] != '/') n++; txt_a[n]=0;
+
+++++++++++++++++++++++++++++
+
+ line 496 : if (argc == 1 || error)
+            ==>
+            if (argc == 1 || GMT_quick || error)
+ line 497 : (stderr,"pscoupe v. 3.1b plots symbols on maps\n\n");
+            ==>
+            (stderr,"pscoupe  %s - Plot seismological symbols on cross-sections\n\n", GMT_VERSION);
+
+++++++++++++++++++++++++++++
+
+ lines 790-792 : 
+            meca.NP2.rake = computed_rake2(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip, fault);
+            meca.NP2.rake = computed_rake2(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip, fault);
+            meca.NP1.rake = computed_rake2(meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
+            ==>
+           if(meca.NP2.dip == 1000.) {
+                    not_defined = TRUE;
+                    transparence_old = transparence;
+                    n_plane_old = n_plane;
+                    transparence = TRUE;
+                    n_plane = 1;
+                    meca.NP1.rake = 1000.;
+                    if(gmtdefs.verbose) {
+                        fprintf(stderr, "WARNING : second plane is not defined for event %s only first plane is plotted.\n", line);
+                    }
+                }
+                else {
+                    meca.NP1.rake = computed_rake2(meca.NP2.str, meca.NP2.dip, m
+eca.NP1.str, meca.NP1.dip, fault);
+                }
+                meca.NP2.rake = computed_rake2(meca.NP1.str, meca.NP1.dip, meca.
+NP2.str, meca.NP2.dip, fault);
+ 
+++++++++++++++++++++++++++++
+
+ after line 918 add :
+                if(not_defined) {
+                    not_defined = FALSE;
+                    transparence = transparence_old;
+                    n_plane = n_plane_old;
+                }
+
+###########
+pspolar.c :
+###########
+
+ line 213 : n=0; while (txt_a[n] != '/' && txt_a[n] != 'V' && txt_a[n] != 'G' && txt_a[n] != 'L') n++; txt_a[n]=0;
+            ==>
+            n=0; while (txt_a[n] && txt_a[n] != '/' && txt_a[n] != 'V' && txt_a[n] != 'G' && txt_a[n] != 'L') n++; txt_a[n]=0;
+ line 230 : n=0; while (txt_a[n] != '/') n++; txt_a[n]=0;
+            ==>
+            n=0; while (txt_a[n] && txt_a[n] != '/') n++; txt_a[n]=0;
+ line 231 : n=0; while (txt_b[n] != '/') n++; txt_b[n]=0;
+            ==>
+            n=0; while (txt_b[n] && txt_b[n] != '/') n++; txt_b[n]=0;
+ line 232 : n=0; while (txt_c[n] != '/') n++; txt_c[n]=0;
+            ==>
+            n=0; while (txt_c[n] && txt_c[n] != '/') n++; txt_c[n]=0;
+ line 232 : n=0; while (txt_d[n] != '/') n++; txt_d[n]=0;
+            ==>
+            n=0; while (txt_d[n] && txt_d[n] != '/') n++; txt_d[n]=0;
+
+++++++++++++++++++++++++++++
+
+ line 288 :
+            if (argc == 1 || error)
+            ==>
+            if (argc == 1 || GMT_quick || error)
+ line 298 : if (GMT_quick) exit (-1);
+            ==>
+            if (GMT_quick) exit (EXIT_FAILURE);
+ line 356 :
+            exit (-1);
+            ==>
+            exit (EXIT_FAILURE);
+
+###########
+psvelo.c :
+###########
+
+ line 133 : n=0; while (txt_a[n] != '/') n++; txt_a[n]=0;
+            ==>
+            n=0; while (txt_a[n] && txt_a[n] != '/') n++; txt_a[n]=0;
+ line 134 : n=0; while (txt_b[n] != '/') n++; txt_b[n]=0;
+            ==>
+            n=0; while (txt_b[n] && txt_b[n] != '/') n++; txt_b[n]=0;
+ line 161 : n=0; while (txt_a[n] != '/') n++; txt_a[n]=0;
+            ==>
+            n=0; while (txt_a[n] && txt_a[n] != '/') n++; txt_a[n]=0;
+ line 171 : n=0; while (txt_a[n] != '/') n++; txt_a[n]=0;
+            ==>
+            n=0; while (txt_a[n] && txt_a[n] != '/') n++; txt_a[n]=0;
+
+++++++++++++++++++++++++++++
+
+ line 228 : if (argc == 1 || error)
+            ==>
+            if (argc == 1 || GMT_quick || error)
+ line 229 : fprintf (stderr,"psvelo v. 3.1b plots symbols on maps\n\n");
+            ==>
+            fprintf (stderr,"psvelo %s - Plot symbols on maps\n\n", GMT_VERSION);

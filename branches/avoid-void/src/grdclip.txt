@@ -1,0 +1,44 @@
+#include "common_options.txt"
+.TH GRDCLIP 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+grdclip \- Clip the range of grids
+.SH SYNOPSIS
+BD(grdclip) IT(ingrid) OPT(G)IT(outgrid) [ GMT_Rgeo_OPT ] 
+[ OPT(Sa)IT(high/above) ] [ OPT(Sb)IT(low/below) ] [ GMT_V_OPT ] 
+.SH DESCRIPTION
+BD(grdclip) will set values < IT(low) to IT(below) and/or values > IT(high) to IT(above).  Useful
+when you want all of a continent or an ocean to fall into one color or gray shade in image processing,
+or clipping of the range of data values is required.  IT(above/below) can be any number or NaN (Not a Number).
+You must choose at least one of OPT(Sa) or OPT(Sb).  Use OPT(R) to only extract a subset of the IT(ingrid) file.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(ingrid)
+The input 2-D binary grid file.
+.TP
+OPT(G)IT(outgrid)
+IT(outgrid) is the modified output grid file.
+.SH OPTIONAL ARGUMENTS
+#include "explain_-R.txt" 
+Using the OPT(R) option will select a subsection of IT(ingrid) grid. If this subsection exceeds the
+boundaries of the grid, only the common region will be extracted.
+.TP
+OPT(Sa)IT(high/above)
+Set all data[i] > IT(high) to IT(above).
+.TP
+OPT(Sb)IT(low/below)
+Set all data[i] < IT(low) to IT(below).
+#include "explain_-V.txt"
+#include "explain_help.txt"
+#include "explain_grd_inout.txt"
+.SH EXAMPLES
+To set all values > 70 to NaN and all values < 0 to 0 in file data.nc:
+.sp
+grdclip data.nc -Gnew_data.nc -Sa70/NaN -Sb0/0 -V
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR grdlandmask (1),
+.IR grdmask (1),
+.IR grdmath (1),
+.IR grd2xyz (1),
+.IR xyz2grd (1)

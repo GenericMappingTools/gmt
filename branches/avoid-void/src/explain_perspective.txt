@@ -1,0 +1,3 @@
+.TP
+GMT_p_OPT (*)
+Select perspective view.

@@ -1,0 +1,145 @@
+<!--  $Id$  -->
+<HEAD>
+<TITLE>Updating the GSHHS data set</TITLE>
+</HEAD>
+<BODY BACKGROUND="ffffff">
+<CENTER><H1>Updating the GSHHS data set</H2></CENTER>
+<H2>1. Background</H2>
+Appendix K in the GMT Technical Reference and Cookbook describes some of the
+steps that were taken to arrive at the GSHHS polygon data set.  Both the GSHHS
+data files and the netCDF files binned_GSHHS_?.cdf used by GMT to plot coastlines,
+where ? is one of the five resolutions <B>f</B>(ull), <B>h</B>(igh), <B>i</B>(ntermediate), <B>l</B>(ow), or
+<B>c</B>(rude) are automatically created by reformatting the underlying, raw, data bases.
+From time to time it has become necessary to make changes to the raw data files
+and regenerate new GSHHS and GMT coastline files.  So far, this has happened when
+<OL>
+<LI>A problem has been found affecting one or more polygons, such as internal crossovers,
+duplicate points, lack of closure, and triplets of points representing zero-area features.
+<LI>External crossovers between two polygons, especially after the Douglas-Peucker decimation
+tool has been used to reduce the full-resolution data down to smaller size.
+<LI>A feature (e.g., a small island) was completely missing from the data base.
+<LI>River mouths were poorly represented in the WVS data base and in some cases
+led to small islands being interpreted as lakes.
+</OL>
+Because GSHHS derives from WVS (relative good resolution for shorelines) and WDBII (considerably
+poorer resolution for lakes), quality concerns will often be raised when a user is making
+maps of a particular region of the world in great detail.  In such cases a relatively minor
+shortcoming on a regional or global scale becomes crippling in that the GMT-generated map is
+simply too far off when compared to local quality shoreline data.  In such situations it may
+be reasonable to replace all or portions of one or more raw polygons and then recreate the
+derivative products.
+<BR>
+This page will describe the process that is required in order to do such "surgery".  Lacking
+high-level GUI tools this procedure is not for the faint of heart.  The revised data set must
+pass many tests in order for us to consider the improvements in the next GSHHS and GMT releases.
+<H2>2. Entry Requirements</H2>
+You will need to obtain the latest GSHHS data files.  See the
+<A HREF="http://www.soest.hawaii.edu/pwessel/gshhs" target="_blank">GSHHS</A> site for details.
+You will also need the install GMT via the CVS mechanism.  This will give you access to the
+<B>coast</B> supplement which normally is not distributed with GMT.  This supplement contains
+all the tools you need.  Compile and link as usual with "make install".
+<H2>Data Reformatting</H2>
+The tools required works on a raw data format not usually distributed.  However, the tool
+<U>gshhs_to_polygon</U> is used to convert GSHHS files back to the native polygon format used by
+the <B>coast</B> tools.  To convert the five resolution GSHHS files to the native databases, run
+<P>
+gshhs_to_polygon gshhs_f.b > VERSION_final_dbase.b
+<BR>
+gshhs_to_polygon gshhs_h.b > VERSION_final_dbase_0.2km.b
+<BR>
+gshhs_to_polygon gshhs_i.b > VERSION_final_dbase_1km.b
+<BR>
+gshhs_to_polygon gshhs_l.b > VERSION_final_dbase_5km.b
+<BR>
+gshhs_to_polygon gshhs_c.b > VERSION_final_dbase_25km.b
+<P>
+where VERSION should match the current definition in the makefile (e.g., v4.2).
+<H2>3a. Replacing all or part of a particular polygon</H2>
+These are the steps you are likely to take:
+<OL>
+<LI>Identify the ID(s) of the polygon(s) you wish to edit or replace.
+To do this you need to run <U>polygon_id</U>.  It accepts the data base file and
+a lon,lat point and returns the ID of the polygon that came closest to this
+point as well as that minimum distance in meters.  By making a pscoast map
+zoomed in on a detail of the feature to be replaced you should be able to
+pick a point that uniquely finds the ID.  In general, polygons are sorted by
+size so the ID = 0 represents the Eurasia-Africa polygon.
+<LI>Extract the polygon(s) that matches the ID(s).  Given the ID(s), use <U>polygon_extract</U>
+without the -M or -b options to pull out an ASCII file per polygon selected.
+Polygons will be written to files called polygon.ID. Place these in a subdirectory called pol.
+<LI>Make the changes.  This could simply mean replacing the relevant polygon.ID
+file with the new data (obviously in the same file format), or it could mean manually
+changing some of the points to address the problem.  The Matlab function fixcoast.m
+may be of use to you.  If you need to replace a segment of the polygon, you should
+identify the starting point on the line segment you want to insert into the
+coastline (note it must also be oriented correctly first; as the line number increases
+the "left" side of the line must be oriented towards land - if not use tac or tail -r to reverse
+the segment) and write down the lon, lat.  Now find the line number in the coastline that is
+closest to that point using, e.g. for the point (237.59,47.6745) on polygon.1, do
+<P>
+mapproject polygon.1 -G237.59/47.6745 | awk '{if ($3 < 200) print NR, $0}'
+<P>
+This will echo out all points within 200 m of the given coordinate in -G.
+Edit polygon.1, goto the line in question.  Then, use zoom.sh to make a
+plot of the area that shows each point as a dot.  Visually identify which
+points to replace and where to insert the new segment, and then identify
+those points in the polygon.1 file.  Remove and insert accordingly, and save
+polygon.1.  Now move polygon.1 to the sub-directory pol.
+<LI>Update the binary data base.  You will need the tool <U>polygon_update</U> which takes
+four arguments: Name of old data base, an ascii list of  polygon IDs that should be
+removed completely, an ascii list of IDs for polygons that have been modified, and
+the name of the new data base.  One of the two ascii lists may be /dev/null.  The ascii
+polygon files must reside in the subdiretory pol in the current directory.  The
+new database should be given the next logical version number (e.g., v4.3).  You will
+need to update the definition in the makefile so that reformatting commands further
+down will work on your revised files and not the old ones!
+Now, updated polygons will replace the older ones and polygon areas and regions are
+reset.  If the polygon's handedness conflict with the specified level then the polygon
+will be reversed (the level is assumed fixed).
+</OL>
+<H2>3b. Adding an entirely new polygon</H2>
+If you want to add a missing feature such as a small island or lake you need
+to take these steps:
+<OL>
+<LI>Convert the ascii polygons to a binary sub-database using <U>polygon_restore</U>.
+Specify the level of the polygon; region and area etc will be determined, and
+polygons will be reversed if need be.  If the polygons have different levels (e.g.,
+a mix of islands and lakes) you need to run this step for each level separately.
+If several sub-databases are made you can simply concatenate them into one file using
+the cat command.
+<LI>Use <U>polygon_shrink</U> to generate the four lower resolutions from the full resolution
+sub-database.
+<LI>Merge the new sub-database and the previous database using <U>polygon_sort</U> which
+will rearrange the polygons in order of size.  This will renumber the polygons as well.
+Repeat for each resolution
+</OL>
+<H2>4. Checking for consistency</H2>
+Once you have a set of five revised polygon database you must check that they are internally consistent.
+Run these checks on each resolution:
+<OL>
+<LI><U>polygon_consistency</U>: This tool will check for point duplicates, closure problems,
+internal crossings (a polygon crossing itself), header conflicts, and 3-point sections
+spanning zero-degree angle.  Study the report and if problems are found you must redo
+some of the steps above.  Keep doing this until the report is clean.
+<LI><U>polygon_xover</U>: Will check if any polygon is crossing any other polygon.  This test
+takes many hours for the full data set.  If crossings are found you must examine the
+pairs of polygons and manually determine how to modify coordinates to eliminate the
+crossing.  Update the database using <U>polygon_update</U> and test again.
+</OL>
+<H2>5. Regenerating new GSHHS and GMT coastline files</H2>
+Once your new database files have been created and finalized in the res_? directories
+and you have updated the VERSION definition in the makefile, you can reformat the data
+into GSHHS and GMT netCDF files:
+<UL>
+<LI><B>GSHHS</B>:  Just run "make gshhs"; this will make the five GSHHS files.
+<LI><B>GMT</B>: First update the nodes grids with "make nodes" (will take awhile).
+Once that is finished you can make the netCDF binned data files using "make bin".
+</UL>
+<H2>5. Point of Contact</H2>
+Questions regarding this entire procedure should be directed to <A HREF="mailto:listserv@hawaii.edu">Paul Wessel</A>.
+<P>
+<HR>
+<I>
+Modified Tuesday, May 8, 2007 by P. Wessel.</I>
+</BODY>
+</HTML>

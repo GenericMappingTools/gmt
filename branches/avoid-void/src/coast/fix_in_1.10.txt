@@ -1,0 +1,74 @@
+# $Id$
+# These are the polygons to fix in the lower resolutions.  To fix, we will:
+# a) if L then reverse polygon and edit level
+# b) if D then change dateline value
+# c) if W|E|S|N the update west|east|south|north
+# d) if # or # P then run shrink on the full polygon and UPDATE feature in res database
+# e) if - then run shrink on the full polygon and ADD feature to res database
+# f) if just an R we already have fixed it in GSHHS all resolutions
+# Place a Y in last (Fixed?) column when this is accomplished.
+#---------------------------------------------------------------------------------------
+Full    High    Int     Low     Crude   Area    Parent  River   Problem Fixed?
+1	1	1	1	1	3.8e+07	X	0	#
+33	29	21	12	8	28347	1	1	# E R
+110	124	91	69	80	5309.18	0	0	#
+206	174	135	112	74	26997.2	1	0	#
+466	245	182	184	134	1650.53	1	1	# R
+566	919	1106	888	1387	963.64	0	0	#
+627	2147	11394	6075	1343	21.3705	X	0	D
+722	461	362	192	229	1449.54	1	0	#
+869	422	309	342	212	2039.71	0	0	#
+1046	871	570	375	752	1600.46	1	1	# R P
+1522	1264	1148	1156	1839	844.142	1	1	# N R P
+1808	1239	1113	1224	568	441.565	1	0	# P
+1979	833	1048	578	607	208.696	0	0	#
+2873	2039	1615	4402	787	139.434	0	1	# W R P
+4457	2618	1977	1248	X	92.6449	1	0	#
+4538	10477	20995	6076	X	13.1972	X	0	D
+5002	2047	1537	2315	X	109.875	0	0	# P
+5842	4750	5810	X	X	201.316	X	0	L P
+5845	4874	3486	2480	X	69.5313	1	0	# P
+8167	4497	3224	2326	X	142.784	0	0	#
+8373	4739	3270	3668	X	84.4814	1	0	#
+10265	20588	15984	X	X	2.23862	X	0	#
+14122	10431	8494	X	X	25.4937	4	0	#
+20495	8663	20421	5097	X	24.7568	0	0	# P
+22012	11289	10855	X	X	22.1857	X	0	L P
+23390	13518	10913	X	X	3.64426	0	0	# E
+27349	14909	9004	X	X	11.5643	94	0	L
+71241	22672	40421	X	X	2.19901	8181	0	# P
+5336	X	X	X	X	250.911	X	0	New 5336 not in old file
+8383	X	X	X	X	52.7923	X	0	New 8383 not in old file
+11430	X	X	X	X	89.8497	X	0	New 11430 not in old file
+13159	X	X	X	X	33.4996	X	0	New 13159 not in old file
+13512	X	X	X	X	49.6386	X	0	New 13512 not in old file
+14647	X	X	X	X	35.149	X	0	New 14647 not in old file
+15250	X	X	X	X	24.8356	X	0	New 15250 not in old file
+18173	X	X	X	X	26.5799	X	0	New 18173 not in old file
+20506	X	X	X	X	16.8923	X	0	New 20506 not in old file
+25844	X	X	X	X	13.2159	X	0	New 25844 not in old file
+27893	X	X	X	X	13.7429	X	0	New 27893 not in old file
+31683	X	X	X	X	1.08742	1	0	New 31683 not in old file
+188605	X	X	X	X	43414.6	X	0	New 188605 not in old file
+188606	X	X	X	X	50	X	0	New 188606 not in old file
+188607	X	X	X	X	50	X	0	New 188607 not in old file
+188608	X	X	X	X	50	X	0	New 188608 not in old file
+188609	X	X	X	X	50	X	0	New 188609 not in old file
+188610	X	X	X	X	50	X	0	New 188610 not in old file
+188611	X	X	X	X	50	X	0	New 188611 not in old file
+188612	X	X	X	X	50	X	0	New 188612 not in old file
+188613	X	X	X	X	50	X	0	New 188613 not in old file
+188614	X	X	X	X	50	X	0	New 188614 not in old file
+188615	X	X	X	X	50	X	0	New 188615 not in old file
+	Old 5336 not in new file
+	Old 8383 not in new file
+	Old 11430 not in new file
+	Old 13159 not in new file
+	Old 13512 not in new file
+	Old 14647 not in new file
+	Old 15250 not in new file
+	Old 18173 not in new file
+	Old 20506 not in new file
+	Old 25844 not in new file
+	Old 27893 not in new file
+	Old 31683 not in new file

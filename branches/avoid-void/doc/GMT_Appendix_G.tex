@@ -1,0 +1,130 @@
+%------------------------------------------
+%	$Id$
+%
+%	The GMT Documentation Project
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+%------------------------------------------
+%
+\chapter{\PS\ fonts used by \gmt}
+\label{app:G}
+\index{Font!standard}
+\thispagestyle{headings}
+
+\GMT\ uses the standard 35 fonts that come with most \PS\
+laserwriters.  If your printer does not support some of these
+fonts, it will automatically substitute the default font (which is
+usually Courier).  The following is
+a list of the \GMT\ fonts: \\
+
+\GMTfig[h]{GMT_App_G}{The standard 35 \PS\ fonts recognized by \gmt.}
+
+For the special fonts Symbol (12) and ZapfDingbats (34), see the
+octal charts in Appendix~\ref{app:F}.  When specifying fonts in
+\GMT, you can either give the entire font name \emph{or} just the
+font number listed in this table.  To change the fonts used in
+plotting basemap frames, see the man page for
+\GMTprog{gmt.conf}.  For direct plotting of text-strings, see
+the man page for \GMTprog{pstext}.
+
+
+\section{Using non-default fonts with \GMT}
+\label{sec:non-default-fonts}
+
+To add additional fonts that you may have purchased or that are
+available freely in the internet or at your institution, see the
+instructions in the \filename{CUSTOM\_font\_info.d} under the
+\filename{share/pslib} directory and continue reading.
+%
+\GMT\ does not read or process any font files and thus does not
+know anything about installed fonts and their metrics. In order to
+use extra fonts in \GMT\ you need to specify the \PS\ name of the
+relevant fonts in the file \filename{CUSTOM\_font\_info.d}. You
+can either edit the existing file distributed with \GMT\ to make
+the changes global or you can create a new file in the current
+working directory, e.g.:
+%
+\begin{verbatim}
+LinBiolinumO      0.700    0
+LinLibertineOB    0.700    0
+\end{verbatim}
+%
+The format is a space delimited list of the \PS\ font name, the
+font height-point size-ratio, and a boolean variable that tells
+\GMT\ to re-encode the font (if set to zero). The latter has to be
+set to zero as additional fonts will most likely not come in
+standard \PS\ encoding. \GMT\ determines how tall typical
+annotations might be from the font size ratio so that the vertical
+position of labels and titles can be adjusted to a more uniform
+typesetting. Now, you can set the \GMT\ font parameters to your
+non-standard fonts:
+%
+\begin{verbatim}
+gmtset FONT LinBiolinumO \
+ FONT_TITLE 28p,LinLibertineOB \
+ PS_CHAR_ENCODING ISO-8859-1 \
+ MAP_DEGREE_SYMBOL degree
+\end{verbatim}
+%
+After setting the encoding and the degree symbol, the
+configuration part for \GMT\ is finished and you can proceed to
+create \GMT-maps as usual. An example script is discussed in
+Section~\ref{sec:non-default-fonts-example}.
+
+
+\subsection{Embedding fonts in PostScript and PDF}
+
+If you have Type 1 fonts in PFA (Printer Font ASCII) format you
+can embed them directly by copying them at the very top of your
+\PS-file, before even the \%!PS header comment. PFB (Printer Font
+Binary), TrueType or OpenType fonts cannot be embedded in \PS\
+directly and therefore have to be converted to PFA first.
+
+However, you most likely will have to tell \progname{Ghostscript}
+where to find your custom fonts in order to convert your
+\GMT-\PS-plot to PDF or an image with \GMTprog{ps2raster}. When
+you have used the correct \PS-names of the fonts in
+\filename{CUSTOM\_font\_info.d} you only need to point the
+\verb#GS_FONTPATH# environment variable to the directory where the
+font files can be found and invoke \GMTprog{ps2raster} in the
+usual way. Likewise you can specify \progname{Ghostscript}'s
+\verb#-sFONTPATH# option on the command line with
+\Opt[-sFONTPATH=/path/to/fontdir]{-C}.  \progname{Ghostscript},
+which is invoked by \GMTprog{ps2raster}, does not depend on file
+names. It will automatically find the relevant font files by their
+\PS-names and embed and subset them in PDF-files. This is quite
+convenient as the document can be displayed and printed even on
+other computers when the font is not available locally. There is
+no need to convert your fonts as \progname{Ghostscript} can handle
+all Type 1, TrueType and OpenType fonts. Note also, that you do
+not need to edit \progname{Ghostscript}'s Fontmap.GS.
+
+If you do not want or cannot embed the fonts you can convert them
+to outlines (shapes with fills) with \progname{Ghostscript} in the
+following way:
+\begin{verbatim}
+gs -q -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dNOPLATFONTS \
+  -sDEVICE=pswrite -sFONTPATH="/path/to/fontdir" \
+  -sOutputFile=mapWithOutlinedFonts.ps map.ps
+\end{verbatim}
+Note, that this only works with the \emph{pswrite} device. If you
+need outlined fonts in PDF, create the PDF from the converted
+\PS-file.  Also, \GMTprog{ps2raster} cannot correctly crop
+\progname{Ghostscript} converted \PS-files anymore. Use Heiko
+Oberdiek's
+\htmladdnormallinkfoot{\progname{pdfcrop}}{http://code.google.com/p/pdfcrop2/}
+% \GMTprog{pdfcrop}
+instead or crop with \GMTprog{ps2raster} \Opt{A} \Opt{Te} before
+(See Example~\ref{sec:non-default-fonts-example}).
+
+
+\subsection{Character encoding}
+
+Since \PS\ itself does not support Unicode fonts, \progname{Ghostscript} will
+re-encode the fonts on the fly. You have to make sure to set the
+correct \verb#PS_CHAR_ENCODING# with gmtset and save your script
+file with the same character encoding. Alternatively, you can
+substitute all non ASCII characters with their corresponding octal
+codes, e.g., \textbackslash 265 instead of \textmu. Note, that
+\PS\ fonts support only a small range of glyphs and you may have
+to switch the \verb#PS_CHAR_ENCODING# within your script.

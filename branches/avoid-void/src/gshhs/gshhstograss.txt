@@ -1,0 +1,44 @@
+#include "common_options.txt"
+.TH GSHHS2GRASS 1 MANDATE GMT_STRING "Generic Mapping Tools [gshhs supplement]"
+.SH NAME
+gshhs2grass \- Extracting GSHHS and WDBII data in GRASS-compatible ASCII format
+.SH SYNOPSIS
+BD(gshhs2grass) OPT(i) gshhs_[f|h|i|l|c].b [ OPT(x)IT(minx) ] [OPT(X)IT(maxx) ] 
+[ OPT(y)IT(miny) ] [ OPT(Y)IT(maxy) ]
+.SH DESCRIPTION
+BD(gshhs2grass) reads the binary coastline (GSHHS) and
+and translates it into an ASCII format suitable for import into GRASS.  It automatically
+handles byte-swabbing between different architectures.
+.SH REQUIRED ARGUMENTS
+.TP
+IT(gshhs_[f|h|i|l|c].b)
+One of the GSHHS binary data file as distributed with the GSHHS data supplement.  Any of the
+5 standard resolutions (full, high, intermediate, low, crude) can be used.
+The resulting files are called dig_[ascii|att|cats].gshhs_[f|h|i|l|c].
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(x)IT(minx)
+Specify a minimum (west) longitude.
+.TP
+OPT(X)IT(maxx)
+Specify a maximum (east) longitude.
+.TP
+OPT(y)IT(miny)
+Specify a minimum (south) latitude.
+.TP
+OPT(Y)IT(maxy)
+Specify a maximum (north) latitude.
+.SH EXAMPLES
+.sp
+To convert the full GSHHS data set , try
+.sp
+BD(gshhs2grass) IT(gshhs_f.b)
+.SH BUGS
+Not updated to handle the WDBII line data (borders or rivers).
+.SH AUTHOR
+Original version by Simon Cox (simon@ned.dem.csiro.au) with
+some maintenance by Paul Wessel (pwessel@hawaii.edu).
+.SH "SEE ALSO"
+.IR GMT (1),
+.IR gshhs (1)
+.IR gshhs_dp (1)

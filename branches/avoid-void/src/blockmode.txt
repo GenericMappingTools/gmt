@@ -1,0 +1,80 @@
+#include "common_options.txt"
+.TH BLOCKMODE 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+blockmode \- Block average (IT(x),IT(y),IT(z)) data tables by mode estimation
+.SH SYNOPSIS
+BD(blockmode) [ IT(table) ] GMT_I_OPT GMT_Rx_OPT 
+[ OPT(C) ] [ OPT(E) ] [ OPT(Q) ] [ GMT_V_OPT ] 
+[ OPT(W)[BD(i)|BD(o)] ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] 
+[ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(blockmode) reads arbitrarily located (IT(x),IT(y),IT(z)) triples [or optionally weighted
+quadruples (IT(x),IT(y),IT(z),IT(w))] from standard input [or IT(table)] and writes to
+standard output mode estimates of position and value for every non-empty block in a grid
+region defined by the OPT(R) and OPT(I) arguments.  Either BD(blockmean), BD(blockmedian),
+or BD(blockmode) should be used as a pre-processor before running BD(surface) to avoid
+aliasing short wavelengths.  These routines are also generally useful for decimating or
+averaging (IT(x),IT(y),IT(z)) data.  You can modify the precision of the output format by editing
+the BD(FORMAT_FLOAT_OUT) parameter in your BD(gmt.conf) file, or you may choose binary input
+and/or output to avoid loss of precision.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_-I.txt"
+#include "explain_-R.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+IT(table)
+3 [or 4, see OPT(W)] column ASCII data table file(s) [or binary, see GMT_bi_OPT] holding (IT(x),IT(y),IT(z)[,IT(w)])
+data values.  [IT(w)] is an optional weight for the data.  If no file is specified,
+BD(blockmode) will read from standard input.
+.TP
+OPT(C)
+Use the center of the block as the output location [Default uses the modal xy location
+(but see OPT(Q))].  OPT(C) overrides OPT(Q).
+.TP
+OPT(E)
+Provide Extended report which includes BD(s) (the L1 scale of the mode),
+BD(l), the lowest value, and BD(h), the high value for each block. Output order
+becomes IT(x),IT(y),IT(z),IT(s),IT(l),IT(h)[,IT(w)]. [Default outputs IT(x),IT(y),IT(z)[,IT(w)].
+See OPT(W) for IT(w) output.
+.TP
+OPT(Q)
+(Quicker) Finds mode IT(z) and mean (IT(x),IT(y)) [Default finds mode IT(x),
+mode IT(y), mode IT(z)].
+#include "explain_-V.txt"
+.TP
+OPT(W)[BD(i)|BD(o)]
+Weighted modifier[s].  Unweighted input and output has 3 columns IT(x),IT(y),IT(z); Weighted
+i/o has 4 columns IT(x),IT(y),IT(z),IT(w).  Weights can be used in input to construct weighted
+mean values in blocks.  Weight sums can be reported in output for later combining several
+runs, etc.  Use OPT(W) for weighted i/o, OPT(Wi) for weighted input only, OPT(Wo) for
+weighted output only.  [Default uses unweighted i/o].
+#include "explain_-bi.txt"
+[Default is 3 (or 4 if OPT(Wi) is set)].
+#include "explain_-bo.txt"
+[Default is 3 (or 4 if OPT(Wo) is set)]. OPT(E) adds 3 additional columns.
+#include "explain_-f.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_nodereg.txt"
+Each block is the
+locus of points nearest the grid value location.  For example, with OPT(R)10/15/10/15
+and and OPT(I)1:  with the OPT(r) option 10 <= (IT(x),IT(y)) < 11 is one of 25 blocks;
+without it 9.5 <= (IT(x),IT(y)) < 10.5 is one of 36 blocks.
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_precision.txt"
+.SH EXAMPLES
+To find 5 by 5 minute block mode estimates from the double precision binary data in
+hawaii_b.xyg and output an ASCII table, run:
+.sp
+blockmode hawaii_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii_5x5.xyg
+.SH "SEE ALSO"
+.IR blockmean (1),
+.IR blockmedian (1),
+.IR gmt (1),
+.IR gmt.conf (5),
+.IR nearneighbor (1),
+.IR surface (1),
+.IR triangulate (1)

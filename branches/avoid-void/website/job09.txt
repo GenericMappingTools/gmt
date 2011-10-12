@@ -1,0 +1,6 @@
+$Id$
+Example 9.   A variety of data sets can be described as a time-series collected
+along a track.  Examples are magnetic anomalies and seismic traces.  This illustration
+shows deflections of the vertical along several sub-parallel Geosat tracks over some
+south-Pacific fracture zones.  The program pswiggle plots the anomalies, while
+psxy and pstext draw other features and anotates the plot.

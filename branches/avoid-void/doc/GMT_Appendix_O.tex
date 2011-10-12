@@ -1,0 +1,330 @@
+%------------------------------------------
+%	$Id$
+%
+%	The GMT Documentation Project
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+%------------------------------------------
+%
+\chapter{Annotation of Contours and ``Quoted Lines''}
+\label{app:O}
+\thispagestyle{headings}
+
+The \GMT\ programs \GMTprog{grdcontour} (for data given as 2-dimensional grids)
+and \GMTprog{pscontour} (for \emph{x,y,z} tables) allow
+for contouring of data sets, while \GMTprog{psxy} and \GMTprog{psxyz}
+can plot lines based on \emph{x,y}- and \emph{x,y,z}-tables, respectively.
+In both cases it may be necessary to attach labels to
+these lines.  Clever or optimal placements of labels is a very difficult
+topic, and \GMT\ provides several algorithms for this placement as well
+as complete freedom in specifying the attributes of the labels.
+Because of the richness of these choices we present this Appendix which
+summarizes the various options and gives several examples of their use.
+
+\section{Label Placement}
+
+While the previous \GMT\ versions 1--3 allowed for a single algorithm that
+determined where labels would be placed, \GMT\ 4 allows for five different
+algorithms.  Furthermore, a new ``symbol'' option (\Opt{Sq} for ``quoted line'')
+has been added to \GMTprog{psxy} and \GMTprog{psxyz} and hence the new label
+placement mechanisms apply to those programs as well.  The contouring programs
+expect the algorithm to be specified as arguments to \Opt{G} while the line plotting
+programs expect the same arguments to follow \Opt{Sq}.  The information appended
+to these options is the same in both cases and is of the form [\textbf{code}]\emph{info}.
+The five algorithms correspond to the five codes below (some codes will appear in both
+upper and lower case; they share the same algorithm but differ in some other ways).
+In what follows, the phrase ``line segment'' is taken to mean either a contour or a line
+to be labeled.  The codes are:
+\begin{description}
+\item [d:] Full syntax is \textbf{d}\emph{dist}[\textbf{c$|$i$|$p}][/\emph{frac}].
+Place labels according to the distance measured along the projected line on the map.  Append the
+unit you want to measure distances in [Default is taken from \textbf{PROJ\_LENGTH\_UNIT}].
+Starting at the beginning of a line, place labels every \emph{dist} increment of
+distance along the line.  To ensure that closed lines whose total length is less
+than \emph{dist} get annotated, we may append \emph{frac} which will place the first
+label at the distance $d =$ \emph{dist} $\times$ \emph{frac} from the start of a closed
+line (and every \emph{dist} thereafter).  If not given, \emph{frac} defaults to 0.25.
+\item [D:] Full syntax is \textbf{D}\emph{dist}[\textbf{d$|$m$|$s$|$e$|$f$|$k$|$M$|$n}][/\emph{frac}].
+This option is similar to \textbf{d} except the original data must be referred to geographic
+coordinates (and a map projection must have been chosen) and actual Earth\footnote{or whatever
+planet we are dealing with.} surface distances along the lines are considered.  Append the
+unit you want to measure distances in; choose among arc \textbf{d}egree, \textbf{m}minute, and \textbf{s}second,
+or m\textbf{e}ter [Default], \textbf{f}eet, \textbf{k}ilometer, statute \textbf{M}iles, or \textbf{n}autical miles.  Other aspects are similar to code \textbf{d}.
+\item [f:] Full syntax is \textbf{f}\emph{fix.d}[/\emph{slop}[\textbf{c$|$i$|$p}]].  Here, an ASCII file \emph{fix.d} is
+given which must contain records whose first two columns hold the coordinates of points along
+the lines at which locations the labels should be placed.  Labels will only be placed if the coordinates
+match the line coordinates to within a distance of \emph{slop} (append unit or we use \textbf{PROJ\_LENGTH\_UNIT}).
+The default \emph{slop} is zero, meaning only exact coordinate matches will do.
+\item [l:] Full syntax is \textbf{l}\emph{line1}[,\emph{line2}[, ...]].  One or more straight line segments
+are specified separated by commas, and labels will be placed at the intersections between these lines and
+our line segments.  Each \emph{line} specification implies a \emph{start} and \emph{stop} point, each
+corresponding to a coordinate pair.  These pairs can be regular coordinate pairs (i.e., longitude/latitude separated by a slash), or they
+can be two-character codes that refer to predetermined points relative to the map region.  These codes
+are taken from the \GMTprog{pstext} justification keys [\textbf{L$|$C$|$R}][\textbf{B$|$M$|$T}] so that the first
+character determines the $x$-coordinate and the second determines the $y$-coordinate.  In \GMTprog{grdcontour},
+you can also use the two codes \textbf{Z+} and \textbf{Z-} as shorthands for the location of the grid's global
+maximum and minimum, respectively.  For example, the \emph{line} \textbf{LT}/\textbf{RB} is a diagonal from the
+upper left to the lower right map corner, while \textbf{Z-}/135W/15S is a line from the grid minimum to the point
+(135\DS W, 15\DS S).
+\item [L:] Same as \textbf{l} except we will treat the lines given as great circle start/stop coordinates and fill in
+the points between before looking for intersections.
+\item [n:] Full syntax is \textbf{n}\emph{number}[/\emph{minlength}[\textbf{c$|$i$|$p}]].  Place
+\emph{number} of labels along each line regardless of total line length.  The line is divided into \emph{number}
+segments and the labels are placed at the centers of these segments.  Optionally, you may give a \emph{minlength}
+distance to ensure that no labels are placed closer than this distance to its neighbors.
+\item [N:] Full syntax is \textbf{N}\emph{number}[/\emph{minlength}[\textbf{c$|$i$|$p}]].  Similar to
+code \textbf{n} but here labels are placed at the ends of each segment (for \emph{number} $\geq 2$).  A special
+case arises for \emph{number} $= 1$ when a single label will be placed according to the sign of \emph{number}:
+$-1$ places one label justified at the start of the line, while $+1$ places one label justified at the end of the line.
+\item [x:] Full syntax is \textbf{x}\emph{cross.d}.  Here, an ASCII file \emph{cross.d} is
+a multi-segment file whose lines will intersect our segment lines; labels will be placed at these intersections.
+\item [X:] Same as \textbf{x} except we treat the lines given as great circle start/stop coordinates and fill in the
+points between before looking for intersections.
+\end{description}
+Only one algorithm can be specified at any given time.
+
+\section{Label Attributes}
+Determining where to place labels is half the battle.  The other half is to specify exactly
+what are the attributes of the labels.  It turns out that there are quite a few possible
+attributes that we may want to control, hence understanding how to specify these attributes
+becomes important.  In the contouring programs, one or more attributes may be appended to the
+\Opt{A} option using the format +\emph{code}[\emph{args}] for each attribute, whereas for the line
+plotting programs these attributes are appended to the \Opt{Sq} option following a colon (:)
+that separates the label codes from the placement algorithm.  Several of the attributes do not
+apply to contours so we start off with listing those that apply universally.  These codes are:
+\begin{description}
+\item [+a:]  Controls the angle of the label relative to the angle of the line.  Append \textbf{n}
+for normal to the line, give a fixed \emph{angle} measured counter-clockwise relative to the
+horizontal. or append \textbf{p} for parallel to the line [Default].  If using \GMTprog{grdcontour}
+the latter option you may further append \textbf{u} or \textbf{d} to get annotations whose upper edge
+always face the next higher or lower contour line.
+\item [+c:] Surrounding each label is an imaginary label ``textbox'' which defines a region in
+which no segment lines should be visible.  The initial box provides an exact fit to the enclosed
+text but clearance may be extended in both the horizontal and vertical directions (relative to the label
+baseline) by the given amounts.  If these should be different amounts please separate them by
+a slash; otherwise the single value applies to both directions.  Append the distance units of
+your choice (\textbf{c$|$i$|$m$|$p}), or give \% to indicate that the clearance should be this
+fixed percentage of the label font size in use.  The default is 15\%.
+\item [+d:] Debug mode.  This is useful when testing contour placement as it will draw the normally
+invisible helper lines and points in the label placement algorithms above.
+\item [+d:] Delayed mode, to delay the plotting of the text as text clipping is set instead.
+\item [+f:] Specifies the desired label font.  See \GMTprog{pstext} for font names or numbers.  The
+default font is given by \textbf{FONT\_ANNOT\_PRIMARY}.
+\item [+g:] Selects opaque rather than the default transparent text boxes.  You may optionally append
+the color you want to fill the label boxes; the default is the same as \textbf{PS\_PAGE\_COLOR}.
+\item [+j:] Selects the justification of the label relative to the placement points determined
+above.  Normally this is center/mid justified (\textbf{CM} in \GMTprog{pstext} justification parlance) and
+this is indeed the default setting.  Override by using this option and append another justification
+key code from [\textbf{L$|$C$|$R}][\textbf{B$|$M$|$T}].  Note for curved text (\textbf{+v}) only vertical
+justification will be affected.
+\item [+k:] Sets the color of the text labels, which otherwise defaults to that given by \textbf{COLOR\_BACKGROUND}.
+\item [+o:] Request a rounded, rectangular label box shape; the default is rectangular.  This is only
+manifested if the box is filled or outlined, neither of which is implied by this option alone (see \textbf{+g}
+and \textbf{+p}).  As this option only applies to straight text, it is ignored if \textbf{+v} is given.
+\item [+p:] Selects the drawing of the label box outline; append your preferred \emph{pen} unless you
+want the default \GMT\ pen [0.25p,black].
+\item [+r:] Do not place labels at points along the line whose local radius of curvature falls below
+the given threshold value.  Append the radius unit of your choice (\textbf{c$|$i$|$p}) [Default is 0].
+\item [+s:] Change the font size of the labels, which by default is 9 points.
+\item [+u:] Append the chosen \emph{unit} to the label.  Normally a space will separate the label
+and the unit.  If you want to close this gap, append a \emph{unit} that begins with a hyphen (--).
+If you are contouring with \GMTprog{grdcontour} and you specify this option without appending a unit, the unit will be taken from the
+$z$-unit attribute of the grid header.
+\item [+v:]  Place curved labels that follow the wiggles of the line segments.  This is especially
+useful if the labels are long relative to the length-scale of the wiggles.  The default places labels
+on an invisible straight line at the angle determined.
+\item [+w:] The angle of the line at the point of straight label placement is calculated by a least-squares
+fit to the \emph{width} closest points.  If not specified, \emph{width} defaults to 10.
+\item [+=:]  Similar in most regards to \textbf{+u} but applies instead to a label \emph{prefix} which
+you must append.
+\end{description}
+For contours, the label will be the value of the contour (possibly modified by \textbf{+u} or \textbf{+=}).
+However, for quoted lines other options apply:
+\begin{description}
+\item [+l:] Append a fixed \emph{label} that will be placed at all label locations.  If the label contains
+spaces you must place it inside matching quotes.
+\item [+L:] Append a code \emph{flag} that will determine the label.  Available codes are:
+\begin{description}
+\item [+Lh:]  Take the label from the current multi-segment header (hence it is assumed that the
+input line segments are given in the multi-segment file format; if not we pick the single label
+from the file's header record).  We first scan the header for an embedded
+\Opt{L}\emph{label} option; if none is found we instead use the first word following the segment marker [$>$].
+\item [+Ld:] Take the Cartesian plot distances along the line as the label; append \textbf{c$|$i$|$p}
+as the unit [Default is \textbf{PROJ\_LENGTH\_UNIT}].  The label will be formatted according to the \textbf{FORMAT\_FLOAT\_OUT}
+string, \emph{unless} label placement was determined from map distances along the segment lines, in which
+case we determine the appropriate format from the distance value itself. 
+\item [+LD:]  Calculate actual Earth surface distances and use the distance at the label placement point as
+the label; append \textbf{d$|$e$|$f$|$k$|$m$|$M$|$n$|$s} to specify the unit [If not given we default to \textbf{d}egrees,
+\emph{unless} label placement was determined from map distances along the segment lines, in which case we
+use the same unit specified for that algorithm].  Requires a map projection to be used.
+\item [+Lf:]  Use all text after the 2nd column in the fixed label location file \emph{fix.d} as labels.
+This choice obviously requires the fixed label location algorithm (code \textbf{f}) to be in effect.
+\item [+Ln:]  Use the running number of the current multi-segment as label.
+\item [+LN:]  Use a slash-separated combination of the current file number and the current multi-segment number as label.
+\item [+Lx:]  As \textbf{h} but use the multi-segment headers in the \emph{cross.d} file instead.
+This choice obviously requires the crossing segments location algorithm (code \textbf{x$|$X}) to be in effect.
+\end{description}
+\end{description}
+
+\section{Examples of Contour Label Placement}
+
+We will demonstrate the use of these options with a few simple examples.
+First, we will contour a subset of the global geoid data used in \GMT\ Example 01;
+the region selected encompasses the world's strongest ``geoid dipole'': the Indian Low
+and the New Guinea High.
+
+\subsection{Equidistant labels}
+
+Our first example uses the default placement algorithm.  Because of the size
+of the map we request contour labels every 1.5 inches along the lines:
+
+\script{GMT_App_O_1}
+
+\noindent
+As seen in Figure~\ref{fig:GMT_App_O_1}, the contours are placed rather arbitrary.
+The string of contours for $-40$ to $60$ align well but that is a fortuitous 
+consequence of reaching the 1.5 inch distance from the start at the bottom of the map.
+
+\GMTfig[H]{GMT_App_O_1}{Equidistant contour label placement with \Opt{Gd}, the only algorithm
+available in previous \gmt\ versions.}
+
+\subsection{Fixed number of labels}
+
+We now exercise the option for specifying exactly how many labels each contour line
+should have:
+
+\script{GMT_App_O_2}
+
+\noindent
+By selecting only one label per contour and requiring that labels only be placed on
+contour lines whose length exceed 1 inch, we achieve the effect shown in Figure~\ref{fig:GMT_App_O_2}.
+
+\GMTfig[H]{GMT_App_O_2}{Placing one label per contour that exceed 1 inch in length,
+centered on the segment with \Opt{Gn}.}
+
+\subsection{Prescribed label placements}
+
+Here, we specify four points where we would like contour labels to be placed.  Our points
+are not exactly on the contour lines so we give a nonzero ``slop'' to be used in the
+distance calculations: The point on the contour closest to our fixed points and within
+the given maximum distance will host the label.
+
+\script{GMT_App_O_3}
+
+\noindent
+The angle of the label is evaluated from the contour line geometry, and the final result
+is shown in Figure~\ref{fig:GMT_App_O_3}.
+\GMTfig[H]{GMT_App_O_3}{Four labels are positioned on the points along the contours that
+are closest to the locations given in the file \protect\filename{fix.d} in the \protect\Opt{Gf} option.}
+To aid in understanding the algorithm we chose to specify ``debug'' mode (\textbf{+d}) which placed a
+small circle at each of the fixed points.
+
+\subsection{Label placement at simple line intersections}
+
+Often, it will suffice to place contours at the imaginary intersections between the
+contour lines and a well-placed straight line segment.  The \Opt{Gl} or \Opt{GL}
+algorithms work well in those cases:
+
+\script{GMT_App_O_4}
+
+\noindent
+The obvious choice in this example is to specify a great circle between the high and
+the low, thus placing all labels between these extrema.
+
+\GMTfig[H]{GMT_App_O_4}{Labels are placed at the intersections between contours and the
+great circle specified in the \protect\Opt{GL} option.}
+\noindent
+The thin debug line in Figure~\ref{fig:GMT_App_O_4} shows the great circle and the
+intersections where labels are plotted.  Note that any number of such lines could be specified;
+here we are content with just one.
+
+\subsection{Label placement at general line intersections}
+
+If (1) the number of intersecting straight line segments needed to pick the desired label
+positions becomes too large to be given conveniently on the command line, or (2) we have
+another data set or lines whose intersections we wish to use, the general crossing
+algorithm makes more sense:
+
+\script{GMT_App_O_5}
+
+\GMTfig[H]{GMT_App_O_5}{Labels are placed at the intersections between contours and the
+multi-segment lines specified in the \protect\Opt{GX} option.}
+
+\noindent
+In this case, we have created three strands of lines whose intersections with the contours
+define the label placements, presented in Figure~\ref{fig:GMT_App_O_5}.
+
+\section{Examples of Label Attributes}
+
+We will now demonstrate some of the ways to play with the label attributes.  To do so we
+will use \GMTprog{psxy} on a great-circle line connecting the geoid extrema, along which
+we have sampled the ETOPO5 relief data set.  The file \filename{transect.d} thus contains
+\emph{lon, lat, dist, geoid, relief}, with distances in km.
+
+\subsection{Label placement by along-track distances, 1}
+
+This example will change the orientation of labels from along-track to across-track, and
+surrounds the labels with an opaque, outlined text box so that the label is more readable.  We choose
+the place the labels every 1000 km along the line and use that distance as the label.  The
+labels are placed normal to the line:
+
+\script{GMT_App_O_6}
+
+\GMTfig[H]{GMT_App_O_6}{Labels attributes are controlled with the arguments to the \protect\Opt{Sq} option.}
+
+\noindent
+The composite illustration in Figure~\ref{fig:GMT_App_O_6} shows the new effects.  Note that
+the line connecting the extrema does not end exactly at the `-' and `+' symbols.  This is
+because the placements of those symbols are based on the mean coordinates of the contour and
+not the locations of the (local or global) extrema.
+
+\subsection{Label placement by along-track distances, 2}
+
+A small variation on this theme is to place the labels parallel to the line, use
+spherical degrees for placement, append the degree symbol as a unit for the
+labels, choose a rounded rectangular text box, and inverse-video the label:
+
+\script{GMT_App_O_7}
+
+\noindent
+The output is presented as Figure~\ref{fig:GMT_App_O_7}.
+
+\GMTfig[H]{GMT_App_O_7}{Another label attribute example.}
+
+\subsection{Using a different data set for labels}
+
+In the next example we will use the bathymetry values along the transect as
+our label, with placement determined by the distance along track.  We choose
+to place labels every 1500 km.  To do this we need to pull out those records
+whose distances are multiples of 1500 km and create a ``fixed points'' file
+that can be used to place labels and specify the labels.  This is done with
+\progname{awk}.
+
+\script{GMT_App_O_8}
+
+\noindent
+The output is presented as Figure~\ref{fig:GMT_App_O_8}.
+
+\GMTfig[H]{GMT_App_O_8}{Labels based on another data set (here bathymetry) while
+the placement is based on distances.}
+
+\section{Putting it all together}
+
+Finally, we will make a more complex composite illustration that uses several of the
+label placement and label attribute settings discussed in the previous sections.  We
+make a map showing the tsunami travel times (in hours) from a hypothetical catastrophic
+landslide in the Canary Islands\footnote{Travel times were calculated using Geoware's
+travel time calculator, \progname{ttt};
+see \htmladdnormallink{(http://www.geoware-online.com)}{(http://www.geoware-online.com)}}.
+We lay down a color map based on the travel times
+and the shape of the seafloor, and travel time contours with curved labels as well
+as a few quoted lines.  The final script is
+
+\script{GMT_App_O_9}
+
+\noindent
+with the complete illustration presented as Figure~\ref{fig:GMT_App_O_9}.
+\GMTfig[H]{GMT_App_O_9}{Tsunami travel times from the Canary Islands to places
+in the Atlantic, in particular New York.  Should a catastrophic landslide occur
+it is possible that New York will experience a large tsunami about 8 hours after
+the event.}

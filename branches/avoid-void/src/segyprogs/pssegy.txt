@@ -1,0 +1,134 @@
+#include "common_options.txt"
+.TH PSSEGY 1 MANDATE GMT_STRING "Generic Mapping Tools [segyprogs supplement]"
+.SH NAME
+pssegy \- Plot a SEGY file on a map
+.SH SYNOPSIS
+BD(pssegy) IT(SEGYfile) GMT_J_OPT GMT_Rgeo_OPT OPT(D)IT(deviation) 
+OPT(F)[IT(rgb)|IT(gray)] OPT(W) 
+[ OPT(B)IT(bias) ] [ OPT(C)IT(clip) ] [ OPT(E)IT(error) ] [ OPT(I) ]
+[ GMT_K_OPT ] [ OPT(L)IT(nsamp) ] [ OPT(M)IT(ntrace) ] [ OPT(N) ] [ GMT_O_OPT ]
+[ GMT_P_OPT ] [ OPT(S)IT(header) ] [ OPT(T)IT(filename) ] [ OPT(U)IT(redvel) ]
+[ GMT_V_OPT ] [ OPT(X)IT(scale) ] [ OPT(Y)IT(sample_int) ] [ OPT(Z) ] [ GMT_p_OPT ] [ GMT_t_OPT ]
+.SH DESCRIPTION
+BD(pssegy) reads a native (IEEE) format SEGY file and produces a
+IT(PostScript) image of the seismic data. The IT(imagemask)
+operator is used so that the seismic data are plotted as a 1-bit
+deep bitmap in a single
+(user-specified) color or gray shade, with a transparent background.
+The bitmap resolution is taken from the current BD(GMT) defaults.
+The seismic traces may be plotted at their true locations using information
+in the trace headers (in which case order of the
+traces in the file is not significant).
+Standard BD(GMT) geometry routines are used so that
+in principle any map projection may be used, however it is likely that the
+geographic projections will lead to unexpected results. Beware also
+that some parameters have non-standard meanings.
+
+Note that the order of operations before the seismic data are plotted is
+deviation*[clip]([bias]+[normalize](sample value)). Deviation determines
+how far IT(in the plot coordinates) a [normalized][biased][clipped] sample
+value of 1 plots from the trace location.
+
+The SEGY file should be a disk image of the tape format (ie 3200 byte
+text header, which is ignored, 400 byte binary reel header, and
+240 byte header for each trace) with samples as native real*4 (IEEE real
+on all the platforms to which I have access)
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(SEGYfile)
+Seismic data set to be imaged
+#include "explain_-J.txt"
+#include "explain_-Rgeo.txt"
+.br
+.TP
+OPT(D)IT(deviation)
+gives the deviation in X units of the plot for 1.0 on the scaled trace.
+.br 
+.TP
+OPT(F)[IT(rgb)|IT(gray)]
+Fill trace (variable area, defaults to filling positive). rgb or gray gives
+the color with which the imagemask is filled.
+.TP
+OPT(W)
+Draw wiggle trace.
+.TP
+You IT(must) specify at least one of OPT(W) and OPT(F).
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)
+Flip the default byte-swap state (default assumes data have a bigendian byte-order).
+.TP
+OPT(C)IT(clip)
+Sample value at which to clip data (clipping is applied to both positive and
+negative values).
+.TP
+OPT(E)IT(error)
+Allow IT(error) difference between requested and actual trace locations
+when using BD(-T) option.
+.TP
+OPT(I)
+Fill negative rather than positive excursions.
+#include "explain_-K.txt"
+.TP
+OPT(L)
+Override number of samples per trace in reel header (program attempts to
+determine number of samples from each trace header if possible to
+allow for variable length traces).
+.TP
+OPT(M)
+Override number of traces specified in reel header. Program detects
+end of file (relatively) gracefully, but this parameter limits number
+of traces that the program attempts to read.
+.TP
+OPT(N)
+Normalize trace by dividing by rms amplitude over full trace length.
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+OPT(S)IT(header)
+Read trace locations from trace headers: header is either c for CDP,
+o for offset, or b<num> to read a long starting at byte <num> in the
+header (first byte corresponds to num=0). Default has location given by
+trace number.
+.TP
+OPT(T)IT(filename)
+Plot only traces whose location corresponds to a list given in IT(filename).
+Order in which traces are listed is not significant - the entire space is
+checked for each trace.
+.TP
+OPT(U)IT(redvel)
+Apply reduction velocity by shifting traces IT(upwards) by redvel/|offset|.
+Negative velocity removes existing reduction. Units should be consistent with
+offset in trace header and sample interval.
+#include "explain_-V.txt"
+.TP
+OPT(X)IT(scale)
+Multiply trace locations by scale before plotting.
+.TP
+OPT(Y)IT(sample_int)
+Override sample interval in reel header.
+.TP
+OPT(Z)
+Do not plot traces with zero rms amplitude.
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To plot the SEGY file wa1.segy with normalized traces plotted at true offset 
+locations, clipped at +-3 and with wiggle trace and positive variable area
+shading in black, use
+.br
+.sp
+BD(pssegy) wa1.segy OPT(JX)5/\-5 OPT(R)0/100/0/10 OPT(D)1 OPT(C)3 OPT(N) OPT(S)o OPT(W) OPT(F)black > segy.ps
+.br
+.sp
+To plot the SEGY file wa1.segy with traces plotted at true cdp*0.1, clipped
+at +-3, with bias -1 and negative variable area shaded red, use
+.br
+.sp
+BD(pssegy) wa1.segy OPT(JX)5/\-5 OPT(R)0/100/0/10 OPT(D)1 OPT(C)3 OPT(S)c OPT(X)0.1 OPT(F)red OPT(B)\-1 OPT(I) > segy.ps
+
+.SH "SEE ALSO"
+.IR GMT (1),
+.IR pssegyz (1)

@@ -1,0 +1,46 @@
+	$Id$
+
+#	Copyright (c) 1991-2011, P. Wessel, W. H. F. Smith, R. Scharroo, & J. Luis
+
+README file for installing GMT5 from scratch (i.e., compiling the
+source) under Windows.  If you only want to install executables,
+follow the GMT website link to our GMT Windows Installers.
+
+INSTALLATION:
+=============
+
+To compile GMT for your Windows you must
+
+1  Obtain precompiled netCDF files (netcdf.lib, netcdf.dll) and the
+   netcdf.h include file from the netCDF home page.
+2  Add HOME (your home directory, or C:\), GMTHOME (the top directory
+   where you install GMT), and GMT_SHAREDIR (where you plan to store
+   the run-time share files, typically %GMTHOME%\share) and modify
+   PATH in the environmental parameters via the system settings so
+   that %GMTHOME%\bin is included.
+   
+3  Read the src\gmtinstall.bat file instructions
+   and make whatever modifications you need to (e.g., if you want to
+   use static libraries or the optional TRIANGLE function.)
+
+4  Run gmtinstall.bat
+
+
+ADDITIONAL MATERIAL:
+====================
+
+For complete GMT Documentation, including a Cookbook and Technical
+Reference Manual, a Tutorial and Short Course Manual, all examples,
+and UNIX man pages, all in HTML and PDF format, get the GMT5_doc.bz2
+archive.  After installing, make a bookmark for the file
+
+	GMT\doc\html\gmt_sevices.html.
+
+If you want the high and/or full resolution GSHHS 2.0 coastlines,
+political borders, and rivers you must obtain GSHHS_high.bz2 and
+GSHHS_full.bz2 as well. Extract from the directory that contains GMT.
+
+To view your GMT PostScript or EPS plots, we recommend you install gsview
+(see www.cs.wisc.edu/~ghost/gsview). It is required to run the do_view script.
+
+The GMT Team

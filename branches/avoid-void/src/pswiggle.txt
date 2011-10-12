@@ -1,0 +1,109 @@
+#include "common_options.txt"
+.TH PSWIGGLE 1 MANDATE GMT_STRING "Generic Mapping Tools"
+#define LEN 15
+#define SCALE_S OPT(JS)0/90/15BD(c)
+.SH NAME
+pswiggle \- Plot z = f(x,y) anomalies along tracks
+.SH SYNOPSIS
+BD(pswiggle) [ IT(table) ] GMT_J_OPT GMT_Rgeoz_OPT 
+OPT(Z)IT(scale) [ OPT(A)IT(azimuth) ] [ GMT_B_OPT ] [ OPT(C)IT(center) ] 
+[ OPT(G)[BD(+)|BD(-)|BD(=)]IT(fill) ] [ GMT_Jz_OPT ] 
+[ OPT(I)IT(fix_az) ] [ GMT_K_OPT ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(S)[BD(x)]IT(lon0)/IT(lat0)/IT(length)[/IT(units)] ] [ OPT(T)IT(pen) ] 
+[ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)IT(pen) ] [ GMT_X_OPT ] 
+[ GMT_Y_OPT ] [ GMT_bi_OPT ] [ GMT_c_OPT ] [ GMT_fi_OPT ] [ GMT_g_OPT ] 
+[ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(pswiggle) reads (IT(x),IT(y),IT(z)) triplets from files [or standard input] and plots z as a function of
+distance along track.  This means that two consecutive (IT(x),IT(y)) points define the local distance axis,
+and the local IT(z) axis is then perpendicular to the distance axis.  The user may set a preferred
+positive anomaly plot direction, and if the positive normal is outside
+the plus/minus 90 degree window around the preferred direction, then 180 degrees are added to the
+direction.  Either the positive or the negative wiggle may be shaded.  The resulting IT(PostScript)
+code is written to standard output.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_-J.txt"
+#include "explain_-R.txt"
+#include "explain_-Rz.txt"
+.TP
+OPT(Z)IT(scale)
+Gives anomaly scale in data-units/distance-unit.
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+.TP
+OPT(A)IT(azimuth)
+Sets the preferred positive azimuth.  Positive wiggles will "gravitate" towards that
+direction.
+#include "explain_-B.txt"
+.TP
+OPT(C)IT(center)
+Subtract IT(center) from the data set before plotting [0].
+.TP
+OPT(G)[BD(+)|BD(-)|BD(=)]IT(fill)
+Set fill shade, color or pattern for positive and/or negative wiggles [Default is no fill].
+Optionally, prepend BD(+) to fill positive areas (this is the default behavior).
+Prepend BD(-) to fill negative areas.
+Prepend BD(=) to fill both positive and negative areas with the same fill.
+.TP
+OPT(I)IT(fix_az)
+Set a fixed azimuth projection for wiggles [Default uses track azimuth, but see OPT(A)].
+#include "explain_-Jz.txt"
+#include "explain_-K.txt"
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+OPT(S)[BD(x)]IT(lon0)/IT(lat0)/IT(length)[/IT(units)]
+Draws a simple vertical scale centered on IT(lon0/lat0).  Use OPT(Sx) to specify cartesian coordinates instead.
+IT(length) is in z units, append unit name for labeling.  BD(FONT_ANNOT_PRIMARY) is used as font.
+.TP
+OPT(T)IT(pen)
+Draw track  [Default is no track].  Append pen attributes to use [Defaults: width = 0.25p, color = black, style = solid].
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+.TP
+OPT(W)IT(pen)
+Draw wiggle outline  [Default is no outline].  Append pen attributes to use
+[Defaults: width = 0.25p, color = black, style = solid].
+#include "explain_-XY.txt"
+#include "explain_-bi.txt"
+[Default is 3 input columns].
+#include "explain_-c.txt"
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To plot the magnetic anomaly stored in the file track.xym along track @ 1000 nTesla/cm (after removing a mean value of 32000 nTesla),
+using a LEN-cm-wide Polar Stereographic map ticked
+every 5 degrees in Portrait mode, with positive anomalies in red on a blue track of width 0.25 points, use
+.br
+.sp
+pswiggle track.xym -R-20/10/-80/-60 SCALE_S -Z1000 -B5 -C32000 -P -Gred -T0.25p,blue -S1000 -V > track_xym.ps
+.SH BUGS
+Sometimes the (x,y) coordinates are not printed with enough significant
+digits, so the local perpendicular to the track swings around a lot.  To
+see if this is the problem, you should do this:
+.br
+.sp
+awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz | more
+.br
+.sp
+(note that output is in radians; on some machines you need "nawk" to do this).
+Then if these numbers jump around a lot, you may do this:
+.br
+.sp
+awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0 --FORMAT_FLOAT_OUT=%.12lg > smoothed.xyz
+.br
+.sp
+and plot this data set instead.
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmtcolors (5),
+.IR filter1d (1),
+.IR psbasemap (1),
+.IR splitxyz (1)

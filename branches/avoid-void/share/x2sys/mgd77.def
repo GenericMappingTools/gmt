@@ -1,0 +1,30 @@
+#		$Id$
+#
+# Define file for X2SYS processing of MGD77 files
+#
+#----------------------------------------------------------------------
+#ASCII		# The input file is ascii
+#SKIP 24	# The number of header records to skip
+#----------------------------------------------------------------------
+#name	intype	NaN-proxy?	NaN-proxy	scale	offset	oformat
+#----------------------------------------------------------------------
+time	a	N		0		1	0	%10.0f
+drt	a	N		0		1	0	%1.0f
+tz	a	N		0		1	0	%3.0f
+lat	a	N		0		1	0	%9.5f
+lon	a	N		0		1	0	%10.5f
+ptc	a	N		0		1	0	%1.0f
+twt	a	N		0		1	0	%6.4f
+depth	a	N		0		1	0	%6.0f
+bcc	a	N		0		1	0	%2.0f
+btc	a	N		0		1	0	%1.0f
+mtf1	a	N		0		1	0	%6.0f
+mtf2	a	N		0		1	0	%6.0f
+mag	a	N		0		1	0	%6.0f
+msens	a	N		0		1	0	%1.0f
+diur	a	N		0		1	0	%5.0f
+msd	a	N		0		1	0	%5.0f
+gobs	a	N		0		1	0	%7.1f
+eot	a	N		0		1	0	%6.1f
+faa	a	N		0		1	0	%6.1f
+nqc	a	N		0		1	0	%1.0f

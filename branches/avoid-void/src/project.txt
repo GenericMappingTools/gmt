@@ -1,0 +1,166 @@
+#include "common_options.txt"
+.TH PROJECT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+project \- Project table data onto lines or great circles, generate tracks, or translate coordinates
+.SH SYNOPSIS
+BD(project) [ IT(table) ] OPT(C)IT(cx)/IT(cy) [ OPT(A)IT(azimuth) ] 
+[ OPT(E)IT(bx)/IT(by) ] [ OPT(F)IT(flags) ] [ OPT(G)IT(dist)[/IT(lat)] ]
+[ OPT(L)[BD(w)][IT(l_min)/IT(l_max)] ] [ OPT(N) ] [ OPT(Q) ] [ OPT(S) ] 
+[ OPT(T)IT(px)/IT(py) ] [ GMT_V_OPT ] [ OPT(W)IT(w_min)/IT(w_max) ]
+[ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(project) reads arbitrary (IT(x), IT(y)[,IT( z)]) data from standard input 
+[or IT(infile) ] and writes to standard output any combination of 
+(IT(x), IT(y), IT(z), IT(p), IT(q), IT(r), IT(s)), where (IT(p), IT(q)) are the coordinates 
+in the projection, (IT(r), IT(s)) is the position in the (IT(x), IT(y)) coordinate system of 
+the point on the profile (IT(q) = 0 path) closest to (IT(x), IT(y)), and IT(z) is
+all remaining columns in the input (beyond the required IT(x) and IT(y) columns).
+
+Alternatively, BD(project) may be used to generate (IT(r), IT(s), IT(p)) triples at equal increments IT(dist) 
+along a profile.  In this case ( OPT(G) option), no input is read.
+
+Projections are defined in any (but only) one of three ways:
+
+(Definition 1)  By a Center OPT(C) and an Azimuth OPT(A) in degrees clockwise from North.
+
+(Definition 2)  By a Center OPT(C) and end point E of the projection path OPT(E).
+
+(Definition 3)  By a Center OPT(C) and a roTation pole position OPT(T).
+
+To spherically project data along a great circle path, an oblique coordinate system 
+is created which has its equator along that path, and the zero meridian through the 
+Center.  Then the oblique longitude (IT(p)) corresponds to the distance from the Center 
+along the great circle, and the oblique latitude (IT(q)) corresponds to the distance 
+perpendicular to the great circle path.  When moving in the increasing (IT(p)) direction, 
+(toward IT(B) or in the IT(azimuth) direction), the positive (IT(q)) direction is to your left.  
+If a Pole has been specified, then the positive (IT(q)) direction is toward the pole.
+.br
+To specify an oblique projection, use the OPT(T) option to set the Pole.  Then the 
+equator of the projection is already determined and the OPT(C) option is used to locate 
+the IT(p) = 0 meridian.  The Center IT(cx/cy) will be taken as a point through which
+the IT(p) = 0 meridian passes.  If you do not care to choose a particular point, use the 
+South pole (IT(ox) = 0, IT(oy) = -90).
+.br
+Data can be selectively windowed by using the OPT(L) and OPT(W) options.  If 
+OPT(W) is used, the projection Width is set to use only points with 
+IT(w_min) < q < IT(w_max).  If OPT(L) is set, then the Length is set to use 
+only those points with IT(l_min) < p < IT(l_max).  If the OPT(E) option 
+has been used to define the projection, then OPT(Lw) may be selected to window 
+the length of the projection to exactly the span from BD(O) to BD(B).
+.br
+Flat Earth (Cartesian) coordinate transformations can also be made.  Set OPT(N)  
+and remember that IT(azimuth) is clockwise from North (the IT(y) axis), NOT 
+the usual cartesian theta, which is counterclockwise from the IT(x) axis.  IT(azimuth) = 90 - theta. 
+.br
+No assumptions are made regarding the units for IT(x), IT(y), IT(r), IT(s), IT(p), IT(q), IT(dist), IT(l_min), IT(l_max), IT(w_min), IT(w_max).
+If OPT(Q) is selected, map units are assumed and IT(x), IT(y), IT(r), IT(s) must be in degrees and
+IT(p), IT(q), IT(dist), IT(l_min), IT(l_max), IT(w_min), IT(w_max) will be in km.
+.br
+Calculations of specific great-circle and geodesic distances or for back-azimuths or azimuths are better done using BD(mapproject).
+.br
+BD(project) is CASE SENSITIVE.  Use UPPER CASE for all one-letter designators which begin optional arguments.  Use 
+lower case for the xyzpqrs letters in OPT(flags). 
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(C)IT(cx)/IT(cy)
+IT(cx/cy) sets the origin of the projection, in Definition 1 or 2.  If Definition 3 is used (OPT(T)), then
+IT(cx/cy) are the coordinates of a point through which the oblique zero meridian (IT(p) = 0) should pass.
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+.TP
+OPT(A)IT(azimuth)
+IT(azimuth) defines the azimuth of the projection (Definition 1).
+.TP
+OPT(E)IT(bx)/IT(by)
+IT(bx/by) defines the end point of the projection path (Definition 2).
+.TP
+OPT(F)IT(flags)
+Specify your desired output using any combination of IT(xyzpqrs), in any order.  Do not space between
+the letters.  Use lower case.  The output will be ASCII (or binary, see GMT_bo_OPT) columns of values corresponding 
+to IT(xyzpqrs) [Default].  If both input and output are using ASCII format then the IT(z) data are treated as
+textstring(s).
+If the OPT(G) option is selected, the output will be IT(rsp).
+.TP
+OPT(G)IT(dist)[/IT(lat)]
+Generate mode.  No input is read.  Create (IT(r), IT(s), IT(p)) output points every IT(dist) units of IT(p).  See 
+OPT(Q) option. Alternatively, append BD(/)IT(lat) for a small circle that goes through the center (OPT(C)) and end points (OPT(E));
+requires OPT(C) and OPT(E).  Note, the center and end point cannot be farther apart than 2*|IT(lat)|.
+.TP
+OPT(L)[BD(w)][IT(l_min)/IT(l_max)]
+Length controls.  Project only those points whose IT(p) coordinate is within IT(l_min) < IT(p) < IT(l_max).  
+If OPT(E) has been set, then you may use OPT(Lw) to stay within the distance from BD(C) to BD(E).
+.TP
+OPT(N)
+Flat Earth.  Make a Cartesian coordinate transformation in the plane.  [Default uses spherical trigonometry.]
+.TP
+OPT(Q)
+Map type units, i.e., project assumes IT(x), IT(y), IT(r), IT(s) are in degrees while
+IT(p), IT(q), IT(dist), IT(l_min), IT(l_max), IT(w_min), IT(w_max) are in km.  If OPT(Q) is not set, then all these are assumed to be in the same units.
+.TP
+OPT(S)
+Sort the output into increasing IT(p) order.  Useful when projecting random data into a sequential profile.
+.TP
+OPT(T)IT(px)/IT(py)
+IT(px/py) sets the position of the rotation pole of the projection.  (Definition 3).
+#include "explain_-V.txt"
+.TP
+OPT(W)IT(w_min)/IT(w_max)
+Width controls.  Project only those points whose IT(q) coordinate is within IT(w_min) < IT(q) < IT(w_max).  
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-bo.txt"
+[Default is given by OPT(F) or OPT(G)].
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-s.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_precision.txt"
+.SH EXAMPLES
+To generate points every 10km along a great circle from 10N,50W to 30N,10W:
+.sp
+project -C-50/10 -E-10/30 -G10 -Q > great_circle_points.xyp
+.sp
+(Note that great_circle_points.xyp could now be used as input for BD(grdtrack), etc. ).
+.sp
+To project the shiptrack gravity, magnetics, and bathymetry in c2610.xygmb along a great circle through an origin at 30S, 30W, the great circle having 
+an azimuth of N20W at the origin, keeping only the data from NE of the profile and within +/- 500 km of the origin, run:
+.sp 
+project c2610.xygmb -C-30/-30 -A-20 -W-10000/0 -L-500/500 -Fpz -Q > c2610_projected.pgmb
+.sp
+(Note in this example that OPT(W)-10000/0 is used to admit any value with a large negative IT(q) coordinate.  This 
+will take those points which are on our right as we walk along the great circle path, or to the NE in this example.)
+.sp
+To make a Cartesian coordinate transformation of mydata.xy so that the new origin is at 5,3 and the new IT(x) axis (IT(p)) 
+makes an angle of 20 degrees with the old IT(x) axis, use:
+.sp
+project mydata.xy -C5/3 -A70 -Fpq > mydata.pq
+.sp
+To take data in the file pacific.lonlat and transform it into oblique coordinates using a pole from the hotspot reference 
+frame and placing the oblique zero meridian (IT(p) = 0 line) through Tahiti, run:
+.sp
+project pacific.lonlat -T-75/68 -C-149:26/-17:37 -Fpq > pacific.pq
+.sp
+Suppose that pacific_topo.nc is a grid file of bathymetry, and you want to make a file of flowlines in the hotspot reference 
+frame.  If you run:
+.sp
+grd2xyz pacific_topo.nc | project -T-75/68 -C0/-90 -Fxyq | xyz2grd 
+-Retc -Ietc -Cflow.nc
+.sp
+then flow.nc is a file in the same area as pacific_topo.nc, but flow contains the latitudes about the pole of the projection.  
+You now can use grdcontour on flow.nc to draw lines of constant oblique latitude, which are flow lines in the hotspot frame.
+.br
+.sp
+If you have an arbitrarily rotation pole IT(px/py) and you would like to draw an oblique small circle on a map, you
+will first need to make a file with the oblique coordinates for the small circle (i.e., lon = 0\-360, lat is constant), then create
+a file with two records: the north pole (0/90) and the origin (0/0), and find what their oblique coordinates are using your
+rotation pole.  Now, use the projected North pole and origin coordinates as the rotation pole and center, respectively,
+and project your file as in the pacific example above.  This gives coordinates for an oblique small circle.
+.SH "SEE ALSO"
+.IR fitcircle (1),
+.IR gmt (1),
+.IR mapproject (1),
+.IR grdproject (1)

@@ -1,0 +1,4 @@
+$Id$
+Example 27.  When plotting the Mercator grids for gravity or
+predicted bathymetry by Sandwell & Smith, it is important to
+avoid projecting the data twice as this wastes time and reduces image quality.

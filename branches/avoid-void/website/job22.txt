@@ -1,0 +1,5 @@
+$Id$
+Example 22.  We demonstrate how to make a map legend by
+showing the distribution of earthquakes during a week.
+The script actually obtains the data from USGS and makes
+an updated map.

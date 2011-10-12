@@ -1,0 +1,5 @@
+.br
+In case of perspective view (OPT(p)), a z-range (IT(zmin), IT(zmax)) can be appended to indicate
+the third dimension. This needs to be done only when using the OPT(Jz) option, not when using
+only the OPT(p) option. In the latter case a perspective view of the plane is plotted, with
+no third dimension.

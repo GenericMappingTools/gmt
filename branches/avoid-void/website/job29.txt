@@ -1,0 +1,4 @@
+$Id$
+Example 29.  The gridding of data on a spherical surface can be problematic
+if the data domain is global; in that case gridding using Green's functions
+may be a suitable option.
