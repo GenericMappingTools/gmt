@@ -173,7 +173,8 @@
 #endif
 
 #ifndef HAVE_RINT
-	/* #define rint(x) (floor((x)+0.5f)) This is now defined by the ieee function s_rint.c */
+	/* #define rint(x) (floor((x)+0.5f)) does not work reliable.
+	 * We use s_rint.c from sun instead. */
 	EXTERN_MSC double rint(double x);
 #endif
 
