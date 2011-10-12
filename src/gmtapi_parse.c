@@ -245,7 +245,7 @@ GMT_LONG GMT_Destroy_Args (struct GMTAPI_CTRL *API, GMT_LONG argc, char *args[])
 
 	if (argc == 0 || !args) return (GMT_Report_Error (API, GMT_ARGV_LIST_NULL));	/* We were given no args to destroy, so there! */
 	/* Just deallocate the space taken by the list of arguments */
-	while (argc) GMT_free (API->GMT, args[--argc]);
+	while (argc--) GMT_free (API->GMT, args[argc]);
 	GMT_free (API->GMT, args);
 	return (GMT_Report_Error (API, GMT_OK));
 }
