@@ -26,6 +26,8 @@
 char *operator[GRDMATH_N_OPERATORS + 1] = {
 
 @GRDMATH_OPERATOR_ARRAY@
-	""	/* last element is intentionally left blank */
+	"" /* last element is intentionally left blank */
 
 };
+
+/* vim: set ft=c: */

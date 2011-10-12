@@ -31,3 +31,5 @@ void grdmath_init (PFV ops[], GMT_LONG n_args[], GMT_LONG n_out[])
 @GRDMATH_OPERATOR_INIT@
 
 }
+
+/* vim: set ft=c: */

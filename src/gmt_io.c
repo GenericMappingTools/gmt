@@ -432,12 +432,11 @@ FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 	else if (strchr (filename, '?'))	/* Definitely netCDF */
 		return (gmt_nc_fopen (C, filename, mode));
 #ifdef WIN32
-	else if (!strcmp (filename, "NUL")) {	/* Special case of /dev/null under Windows */
+	else if (!strcmp (filename, "NUL")) /* Special case of /dev/null under Windows */
 #else
-	else if (!strcmp (filename, "/dev/null")) {	/* The Unix null device; catch here to avoid gmt_nc_fopen */
+	else if (!strcmp (filename, "/dev/null")) /* The Unix null device; catch here to avoid gmt_nc_fopen */
 #endif
 		return (fopen (GMT_getdatapath(C, filename, path), mode));
-	}
 	else {	/* Maybe netCDF */
 		fd = gmt_nc_fopen (C, filename, mode);
 		if (!fd) {
@@ -520,10 +519,11 @@ char *GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path)
 	/* If a full path is given, we only look for that file directly */
 
 #ifdef WIN32
-	if (stem[0] == '/' || stem[1] == ':') {
+	if (stem[0] == '/' || stem[1] == ':')
 #else
-	if (stem[0] == '/') {
+	if (stem[0] == '/')
 #endif
+	{
 		if (!access (stem, R_OK)) return (strcpy (path, stem));	/* Yes, found it */
 		return (NULL);	/* No file found, give up */
 	}

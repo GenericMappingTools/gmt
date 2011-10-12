@@ -16,20 +16,14 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 
+# run examples (test)
 if (DO_EXAMPLES AND UNIX)
-	# run examples (test)
-	file(COPY ./
-		DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
-		USE_SOURCE_PERMISSIONS
-		PATTERN ".svn" EXCLUDE
-		PATTERN "CMakeLists.txt" EXCLUDE
-		PATTERN ".cmake" EXCLUDE)
-
+	# this file takes care of setting up the test environment
 	configure_file (functions.sh.cmake functions.sh @ONLY)
 
 	set (GMT_EXAMPLE_DIRS anim01 anim02 anim03 anim04 ex01 ex02 ex03 ex04 ex05
 		ex06 ex07 ex08 ex09 ex10 ex11 ex12 ex13 ex14 ex15 ex16 ex17 ex18 ex19 ex20
-		ex21 ex22 ex23 ex24 ex25 ex26 ex27 ex28 ex29 ex30 ex31 ex32)
+		ex21 ex22 ex23 ex24 ex25 ex26 ex27 ex28 ex29 ex30 ex31 ex32 pslib)
 
 	foreach (_test_dir ${GMT_EXAMPLE_DIRS})
 		file(GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_BINARY_DIR}

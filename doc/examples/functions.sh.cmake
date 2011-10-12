@@ -33,7 +33,7 @@ ERROR=0
 function make_pdf()
 {
   test -f ${ps} || return
-  test -f ${ps%.ps}.pdf && return
+  #test -f ${ps%.ps}.pdf && return # do not replace existing pdf
   ps2raster -Tf -A -P ${ps} || ((ERROR++))
 }
 

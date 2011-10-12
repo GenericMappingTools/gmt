@@ -84,8 +84,16 @@ endif (TRIANGLE_D)
 # GMT paths used in the code
 if (NOT GMT_SHARE_PATH)
 	# do not reset user setting
-	set (GMT_SHARE_PATH  "${CMAKE_INSTALL_PREFIX}/share")
+	set (GMT_SHARE_PATH
+      "${CMAKE_INSTALL_PREFIX}/share/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
 endif (NOT GMT_SHARE_PATH)
+
+if (NOT GMT_DOC_PATH)
+	# do not reset user setting
+	set (GMT_DOC_PATH
+      "${CMAKE_INSTALL_PREFIX}/share/doc/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
+endif (NOT GMT_DOC_PATH)
+
 
 # add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH
@@ -107,3 +115,5 @@ endif (APPLE)
 # add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH
 set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

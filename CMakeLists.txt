@@ -65,13 +65,14 @@ configure_file (
 # Add subdirectories
 add_subdirectory (doc)
 add_subdirectory (src)
-add_subdirectory (share)
+add_subdirectory (share) # share must be added *after* src (GSHHS_PATH)
 add_subdirectory (test)
 
 # Configuration done
 message(
 	"*  Installing GMT in    : ${CMAKE_INSTALL_PREFIX}\n"
 	"*  GMT_SHARE_PATH       : ${GMT_SHARE_PATH}\n"
+	"*  GMT_DOC_PATH         : ${GMT_DOC_PATH}\n"
 	"*  NetCDF library       : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir   : ${NETCDF_INCLUDE_DIR}\n"
 	"*  GDAL library         : ${GDAL_LIBRARY}\n"

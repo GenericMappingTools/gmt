@@ -25,3 +25,4 @@
 @GRDMATH_OPERATOR_EXPLAIN@
 	);
 
+/* vim: set ft=c: */
