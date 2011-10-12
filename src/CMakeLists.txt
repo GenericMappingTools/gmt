@@ -68,6 +68,17 @@ endif (PCRE_FOUND)
 
 find_package (Threads)
 
+find_package (Matlab)
+if (GMT_MATLAB AND MATLAB_FOUND)
+	# We want the Matlab API
+	set (GMT_MATLAB yes PARENT_SCOPE)
+	include_directories (${MATLAB_INCLUDE_DIR})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${MATLAB_LIBRARIES})
+else (GMT_MATLAB AND MATLAB_FOUND)
+	# Don't build Matlab API
+	set (GMT_MATLAB no PARENT_SCOPE)
+endif (GMT_MATLAB AND MATLAB_FOUND)
+
 include(ConfigureChecks)
 
 include_directories (${GMT_SOURCE_DIR}/src)

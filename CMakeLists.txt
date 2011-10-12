@@ -78,7 +78,8 @@ message(
 	"*  GDAL include dir     : ${GDAL_INCLUDE_DIR}\n"
 	"*  Regex support        : ${GMT_CONFIG_REGEX_MESSAGE}\n"
 	"*  Triangulation method : ${GMT_TRIANGULATE}\n"
-	"*  File locking         : ${FLOCK}"
+	"*  File locking         : ${FLOCK}\n"
+	"*  Build Matlab API     : ${GMT_MATLAB}"
 )
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

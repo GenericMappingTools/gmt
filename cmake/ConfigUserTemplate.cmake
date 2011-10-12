@@ -1,19 +1,19 @@
-# 
-#	$Id$
 #
-#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
-#	See LICENSE.TXT file for copying and redistribution conditions.
+# $Id$
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; version 2 or any later version.
+# Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# See LICENSE.TXT file for copying and redistribution conditions.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 or any later version.
 #
-#	Contact info: gmt.soest.hawaii.edu
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 #
 # Use this file to override variables in 'ConfigDefault.cmake' on a per-user basis.
@@ -47,6 +47,12 @@
 
 # Use fast, non-GPL triangulation routine by J. Shewchuk [FALSE]:
 #set (TRIANGLE_D TRUE)
+
+# Enable Matlab API [FALSE]:
+#set (GMT_MATLAB TRUE)
+# If Matlab is not found, point MATLAB_ROOT to its installation path, e.g.:
+#set (MATLAB_ROOT /Applications/MATLAB_R2010a.app)  # MacOSX
+#set (MATLAB_ROOT /opt/matlab-7sp1)                 # Linux
 
 # Enable running examples/test with "make test" (out-of-source)
 # Need to set either DO_EXAMPLES, DO_TESTS or both and uncomment
