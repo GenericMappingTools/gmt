@@ -30,6 +30,15 @@
 # Installation path [auto]:
 #set (CMAKE_INSTALL_PREFIX "prefix_path")
 
+# Set share installation path [${CMAKE_INSTALL_PREFIX}/share/gmt-<version>]:
+#set (GMT_SHARE_PATH "share_path")
+
+# Set doc installation path [${CMAKE_INSTALL_PREFIX}/share/doc/gmt-<version>]:
+#set (GMT_DOC_PATH "doc_path")
+
+# Set path to GSHHS Shoreline Database [auto]:
+#set (GSHHS_ROOT "gshhs_path")
+
 # Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel [Release]:
 #set (CMAKE_BUILD_TYPE Debug)
 

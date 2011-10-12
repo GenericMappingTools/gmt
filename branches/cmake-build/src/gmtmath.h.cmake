@@ -31,3 +31,5 @@ void gmtmath_init (PFV ops[], GMT_LONG n_args[], GMT_LONG n_out[])
 @GMTMATH_OPERATOR_INIT@
 
 }
+
+/* vim: set ft=c: */

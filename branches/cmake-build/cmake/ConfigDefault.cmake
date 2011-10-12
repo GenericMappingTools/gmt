@@ -1,19 +1,19 @@
-# 
-#	$Id$
 #
-#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
-#	See LICENSE.TXT file for copying and redistribution conditions.
+# $Id$
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; version 2 or any later version.
+# Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# See LICENSE.TXT file for copying and redistribution conditions.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 or any later version.
 #
-#	Contact info: gmt.soest.hawaii.edu
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 #
 # Useful CMake variables.
@@ -50,7 +50,7 @@ set (GMT_PACKAGE_VERSION_PATCH "0")
 set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
 
 set (GMT_VERSION_YEAR "2011")
-set (GSHHS_VERSION "2.2.0")
+#set (GSHHS_VERSION "2.2.0")
 #set (MANDATE "")
 
 # Use SI units per default

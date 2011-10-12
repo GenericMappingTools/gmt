@@ -140,3 +140,5 @@
 #cmakedefine HAVE_YN
 
 #endif /* _GMT_CONFIG_H */
+
+/* vim: set ft=c: */

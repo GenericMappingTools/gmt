@@ -11,3 +11,5 @@
 #define GMT_N_PEN_NAMES   @GMT_N_PEN_NAMES@ /* Lines in gmt_pennames.h */
 #define GMT_N_UNIQUE      @GMT_N_UNIQUE@ /* Lines in gmt_unique.h */
 #define GMT_N_PROGRAMS    @GMT_N_PROGRAMS@ /* Lines in gmt_prognames.h */
+
+/* vim: set ft=c: */

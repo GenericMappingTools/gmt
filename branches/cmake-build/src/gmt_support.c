@@ -3077,10 +3077,11 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 			return (NULL);
 		}
 #if defined(WIN32) && defined(USE_MEM_ALIGNED)
-		if ((tmp = _aligned_realloc ((void *) prev_addr, (size_t)(nelem * size), alignment)) == NULL) {
+		if ((tmp = _aligned_realloc ((void *) prev_addr, (size_t)(nelem * size), alignment)) == NULL)
 #else
-		if ((tmp = realloc ((void *) prev_addr, (size_t)(nelem * size))) == NULL) {
+		if ((tmp = realloc ((void *) prev_addr, (size_t)(nelem * size))) == NULL)
 #endif
+		{
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
@@ -3097,10 +3098,11 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 		tmp = _aligned_malloc ((size_t)(nelem * size), alignment);
 		if (tmp != NULL)
 			tmp = memset(tmp, 0, (size_t)(nelem * size));
-		else {
+		else
 #else
-		if ((tmp = calloc ((size_t)nelem, size)) == NULL) {
+		if ((tmp = calloc ((size_t)nelem, size)) == NULL)
 #endif
+		{
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;

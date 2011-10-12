@@ -61,20 +61,38 @@ There are two configuration files:
 NOTE: If you want to change CMake behaviour just for yourself then modify the
       "ConfigUser.cmake" file (not "ConfigDefault.cmake").
 
+Finding GSHHS:
+~~~~~~~~~~~~~~
+
+GSHHS shorelines are searched in FindGSHHS.cmake and a little helper programm
+tests the version (gshhs_version.c)
+
+IMPORTANT: add getenv("GSHHS_PATH") to gmt_init.c and do min version checks.
+
+In-build-dir tests:
+~~~~~~~~~~~~~~~~~~~
+
+Examples and tests can be build inside GMT_BINARY_DIR *without* installing.
+This is very convenient for testing. Just _enable_testing()_, set _DO_EXAMPLES_
+and/or _DO_TESTS_ in ConfigUser.cmake and do:
+
+  $ make -j6
+  $ make test ARGS=-j6
 
 TODO list
 ---------
+* Add further subtrees: follow example of CMakeLists.txt in src/meca, share
+  and share/conf. Problem: mgd77 still uses nonportable header generators,
+  x2sys depends on mgd77
+
 * Clean up config.h.cmake gmt_version.h.cmake gmt_notposix.h.cmake.
   Right now this is a mixture of partly redundant defines that can be
-  simplified.
+  simplified. (almost done)
 
 * Make exported cmake variables consistent GMT_..., prefix temporary
   variables with "_"
 
-* Add further subtrees: follow example of CMakeLists.txt in src/meca, share
-  and share/conf
-
-* Build targets for examples, doc, tests
+* Build targets for LaTeX doc
 
 * Man Pages
   - Editing troff is difficult at least for people who are not familiar with
@@ -90,7 +108,7 @@ TODO list
     documentation is written in AsciiDoc. Git like GMT is a compilation of
     many small progams.
   - Any ideas how to remove blank lines from CPP output without using grep and
-    cmake "file(read ..."?
+    cmake "file(read ..."? Btw: clang -E does not output blank lines
 
 * Add further tests/cmake-find-modules:
   - octave/Matlab
@@ -119,7 +137,7 @@ Done
   easier to create new cmake macros if the layout of the underlying
   source files would be altered a litte. If absolutely necessary write
   a little C program that is build and run during configure pahase to
-  generate support files. *(done)*
+  generate support files. *(almost done)*
 
 ////
 vim: ft=asciidoc tw=78 et ts=2 sts=2 sw=2 autoindent smartindent

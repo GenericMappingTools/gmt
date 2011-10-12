@@ -16,14 +16,25 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 
-# install target for data
+# install target for examples
 install (DIRECTORY examples
-	DESTINATION ${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}
+	DESTINATION ${GMT_DOC_PATH}
 	USE_SOURCE_PERMISSIONS
 	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
 	PATTERN ".cmake" EXCLUDE)
 
-add_subdirectory (examples)
+# run examples (test)
+if (DO_EXAMPLES AND UNIX)
+	# need to copy data first
+	file(COPY examples tutorial
+		DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+		USE_SOURCE_PERMISSIONS
+		PATTERN ".svn" EXCLUDE
+		PATTERN "CMakeLists.txt" EXCLUDE
+		PATTERN ".cmake" EXCLUDE)
+
+	add_subdirectory (examples)
+endif (DO_EXAMPLES AND UNIX)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

@@ -1,19 +1,19 @@
 #
-#	$Id$
+# $Id$
 #
-#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
-#	See LICENSE.TXT file for copying and redistribution conditions.
+# Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# See LICENSE.TXT file for copying and redistribution conditions.
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; version 2 or any later version.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 or any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#	Contact info: gmt.soest.hawaii.edu
+# Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 #
 # src/CMakeLists.txt
@@ -60,14 +60,6 @@ else (PCRE_FOUND)
 	endif (REGEX_FOUND)
 endif (PCRE_FOUND)
 
-# Commented OpenMP out because things do not link with it activated
-#find_package (OpenMP)
-#if (OPENMP_FOUND)
-#    list (APPEND CMAKE_C_FLAGS ${OpenMP_C_FLAGS})
-#endif (OPENMP_FOUND)
-
-find_package (Threads)
-
 find_package (Matlab)
 if (GMT_MATLAB AND MATLAB_FOUND)
 	# We want the Matlab API
@@ -79,7 +71,19 @@ else (GMT_MATLAB AND MATLAB_FOUND)
 	set (GMT_MATLAB no PARENT_SCOPE)
 endif (GMT_MATLAB AND MATLAB_FOUND)
 
+# Commented OpenMP out because things do not link with it activated
+#find_package (OpenMP)
+#if (OPENMP_FOUND)
+#    list (APPEND CMAKE_C_FLAGS ${OpenMP_C_FLAGS})
+#endif (OPENMP_FOUND)
+
+find_package (Threads)
+
+# check for math and POSIX functions
 include(ConfigureChecks)
+
+# find GSHHS shorelines
+find_package (GSHHS)
 
 include_directories (${GMT_SOURCE_DIR}/src)
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
@@ -297,6 +301,7 @@ foreach (_gmtdemo ${GMT_DEMOS})
 	target_link_libraries (${_gmtdemo} gmtlib)
 endforeach (_gmtdemo)
 
+configure_file (psldemo.c.cmake psldemo.c @ONLY)
 add_executable (psldemo psldemo.c)
 target_link_libraries (psldemo pslib)
 
@@ -341,8 +346,9 @@ add_subdirectory (xgrid)
 
 # this prints out the final version of the compiler/linker flags
 string (TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_UPPER)
-message (STATUS "USING CFLAGS = '${CMAKE_C_FLAGS} "
-	"${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} "
-	"${NETCDF_DEFINITIONS} ${_compile_definitions}'")
+string(REGEX REPLACE "[ ]+" " " _using_cflags ${CMAKE_C_FLAGS}
+	${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} ${NETCDF_DEFINITIONS}
+	${_compile_definitions})
+message (STATUS "Using CFLAGS = '${_using_cflags}'")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
