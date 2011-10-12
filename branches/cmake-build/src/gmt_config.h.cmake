@@ -63,6 +63,9 @@
 /* if NetCDF is static; applies only #ifdef _WIN32 */
 #cmakedefine NETCDF_STATIC
 
+/* Build Matlab API */
+#cmakedefine GMT_MATLAB
+
 /* system specific headers */
 
 #cmakedefine HAVE_ASSERT_H_

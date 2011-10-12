@@ -57,6 +57,10 @@
 #include <stdarg.h>
 #include "gmt_internals.h"
 
+#ifdef GMT_MATLAB
+#	include <mex.h>
+#endif
+
 #define USER_MEDIA_OFFSET 1000
 
 #define GMT_def(case_val) * C->session.u2u[GMT_INCH][GMT_unit_lookup(C, C->current.setting.given_unit[case_val], C->current.setting.proj_length_unit)], C->current.setting.given_unit[case_val]
@@ -7872,6 +7876,9 @@ int GMT_message (struct GMT_CTRL *C, char *format, ...) {
 }
 
 int GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
+#ifdef GMT_MATLAB
+	char line[GMT_BUFSIZ];
+#endif
 	va_list args;
 	if (level > C->current.setting.verbose) return (0);
 #ifdef DEBUG
@@ -7891,12 +7898,11 @@ int GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
 	return (1);
 }
 
-#if defined (WIN32) || defined (__MINGW32__)
+/* Due to the DLL boundary cross problem on Windows we
+ * are forced to have the following, otherwise defined
+ * as macro, implemented as a function. */
 #ifdef GMT_MATLAB
-#include "mex.h"
-#endif
-/* Due to the DLL boundary cross problem on Windows we are forced to have the following, otherwise
-   defined as macro, implemented as a function. */
+#undef GMT_fprintf
 int GMT_fprintf (FILE *stream, char *format, ...) {
 	va_list args;
 	va_start (args, format);
@@ -7905,6 +7911,8 @@ int GMT_fprintf (FILE *stream, char *format, ...) {
 
 	return (0);
 }
+#endif
+
 #if 0
 /* Comment out for now since not used for now */
 int GMT_fscanf (FILE *stream, char *format, ...) {
@@ -7915,7 +7923,6 @@ int GMT_fscanf (FILE *stream, char *format, ...) {
 
 	return (0);
 }
-#endif
 #endif
 
 #ifndef ABS

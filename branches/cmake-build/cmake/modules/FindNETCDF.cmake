@@ -83,7 +83,7 @@ find_path (NETCDF_INCLUDE_DIR netcdf.h
 	/opt
 )
 
-find_library (NETCDF_LIBRARY 
+find_library (NETCDF_LIBRARY
 	NAMES netcdf
 	HINTS
 	${_netcdf_libpath}
