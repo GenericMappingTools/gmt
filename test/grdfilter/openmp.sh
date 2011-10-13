@@ -5,11 +5,9 @@
 . ../functions.sh
 header "Test grdfilter for parallel operations (-fopenmp only)"
 
-grep '\-fopenmp' ../../src/config.mk > tmp
-if [ ! -s tmp ]; then
-	echo "[N/A]"
-	rm -f tmp
-	exit
+if [ -z "$HAVE_OPENMP" ]; then
+  echo "[N/A]"
+  exit
 fi
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output

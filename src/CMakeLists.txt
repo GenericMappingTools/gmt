@@ -72,10 +72,13 @@ else (GMT_MATLAB AND MATLAB_FOUND)
 endif (GMT_MATLAB AND MATLAB_FOUND)
 
 # Commented OpenMP out because things do not link with it activated
-#find_package (OpenMP)
-#if (OPENMP_FOUND)
-#    list (APPEND CMAKE_C_FLAGS ${OpenMP_C_FLAGS})
-#endif (OPENMP_FOUND)
+find_package (OpenMP)
+if (OPENMP_FOUND)
+	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+	set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_C_FLAGS}")
+	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${OpenMP_C_FLAGS}")
+	set (HAVE_OPENMP TRUE PARENT_SCOPE)
+endif (OPENMP_FOUND)
 
 find_package (Threads)
 
@@ -340,15 +343,15 @@ add_subdirectory (meca)
 add_subdirectory (misc)
 add_subdirectory (potential)
 add_subdirectory (segy)
+# add_subdirectory (sph) # have to rewrite generators
 add_subdirectory (spotter)
 #add_subdirectory (x2sys) # depends on mgd77
 add_subdirectory (xgrid)
 
 # this prints out the final version of the compiler/linker flags
 string (TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_UPPER)
-string(REGEX REPLACE "[ ]+" " " _using_cflags ${CMAKE_C_FLAGS}
-	${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} ${NETCDF_DEFINITIONS}
-	${_compile_definitions})
+string(REGEX REPLACE "[ ]+" " " _using_cflags ${CMAKE_C_FLAGS} " "
+	${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} " " ${NETCDF_DEFINITIONS})
 message (STATUS "Using CFLAGS = '${_using_cflags}'")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

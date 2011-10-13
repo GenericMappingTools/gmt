@@ -21,7 +21,15 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 
+set (_apple_debug_build)
 if (APPLE)
+	string(TOLOWER ${CMAKE_BUILD_TYPE} _build_type)
+	if (DEBUG_BUILD OR _build_type STREQUAL "relwithdebinfo")
+		set (_apple_debug_build TRUE)
+	endif (DEBUG_BUILD OR _build_type STREQUAL "relwithdebinfo")
+endif (APPLE)
+
+if (_apple_debug_build)
 
 	# usefull macros
 	include (GmtHelperMacros)
@@ -31,7 +39,7 @@ if (APPLE)
 
 	# Macro for generating Mac debugging symbols
 	macro (CREATE_DEBUG_SYM _TARGETS)
-		if (DSYMUTIL AND DEBUG_BUILD AND "${CMAKE_GENERATOR}" MATCHES "Make")
+		if (DSYMUTIL AND "${CMAKE_GENERATOR}" MATCHES "Make")
 
 			# generator
 			foreach (target ${ARGV}) # instead of _TARGETS we use ARGV to get all args
@@ -54,13 +62,13 @@ if (APPLE)
 			# register with spotless target
 			add_depend_to_spotless (dsym_clean${_tag})
 
-		endif (DSYMUTIL AND DEBUG_BUILD AND "${CMAKE_GENERATOR}" MATCHES "Make")
+		endif (DSYMUTIL AND "${CMAKE_GENERATOR}" MATCHES "Make")
 	endmacro (CREATE_DEBUG_SYM _TARGETS)
 
-else (APPLE)
+else (_apple_debug_build)
 	macro (CREATE_DEBUG_SYM _TARGETS)
 		# do nothing
 	endmacro (CREATE_DEBUG_SYM _TARGETS)
-endif (APPLE)
+endif (_apple_debug_build)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
