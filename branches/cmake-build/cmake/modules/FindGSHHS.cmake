@@ -32,8 +32,10 @@ if (_GSHHS_FILE)
 		CMAKE_FLAGS
 		-DINCLUDE_DIRECTORIES=${NETCDF_INCLUDE_DIR}
 		-DLINK_LIBRARIES=${NETCDF_LIBRARIES}
+		#COMPILE_OUTPUT_VARIABLE _compile_debug
 		RUN_OUTPUT_VARIABLE _GSHHS_VERSION_STRING
 		ARGS ${_GSHHS_FILE})
+	#message("_compile_debug>${_compile_debug}")
 endif (_GSHHS_FILE)
 
 # check version string

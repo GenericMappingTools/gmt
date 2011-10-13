@@ -21,8 +21,8 @@ LANG=C
 # Use executables from GMT_BINARY_DIR
 BIN_DIR=@GMT_BINARY_DIR@/src
 SRC_DIR=@GMT_SOURCE_DIR@/src
-SUPPLEMENTS_DIR=$(find ${BIN_DIR}/* -maxdepth 0 -type d -print0 | sed -e 's/\o0/:/g')
-export PATH="${BIN_DIR}:${SUPPLEMENTS_DIE}:${SRC_DIR}:${PATH}"
+SUPPLEMENTS_DIR=$(find ${BIN_DIR}/* -maxdepth 0 -type d -and -not -name '*.dSYM' -print0 | tr '\0' ':')
+export PATH="${BIN_DIR}:${SUPPLEMENTS_DIR}:${SRC_DIR}:${PATH}"
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 

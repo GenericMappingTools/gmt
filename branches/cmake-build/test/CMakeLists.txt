@@ -25,6 +25,14 @@ if (DO_TESTS AND UNIX)
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN ".cmake" EXCLUDE)
 
+	get_directory_property(_dir_defs COMPILE_DEFINITIONS)
+	list(FIND _dir_defs DEBUG HAVE_GMT_DEBUG_SYMBOLS)
+	if (HAVE_GMT_DEBUG_SYMBOLS EQUAL -1)
+		set (HAVE_GMT_DEBUG_SYMBOLS)
+	else (HAVE_GMT_DEBUG_SYMBOLS EQUAL -1)
+		set (HAVE_GMT_DEBUG_SYMBOLS TRUE)
+	endif (HAVE_GMT_DEBUG_SYMBOLS EQUAL -1)
+
 	configure_file (functions.sh.cmake functions.sh @ONLY)
 
 	set (GMT_TEST_DIRS api blockmean filter1d fitcircle genper gmtconvert gmtdp

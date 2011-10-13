@@ -9,8 +9,17 @@ header () {
   printf "%-72s" "$0: $1"
 }
 
+# Convert PS to PDF
+function make_pdf()
+{
+  test -f ${1} || return 1
+  #test -f ${ps%.ps}.pdf && return # do not replace existing PDF file
+  ps2raster -Tf -A -P ${1} || ((ERROR++))
+}
+
 # Compare the ps file with its original. Check $1.ps (if $1 given) or $ps
 pscmp () {
+  make_pdf $ps # make pdf file
   f=${1:-`basename $ps .ps`}
   d=`basename $PWD`
   rms=`gm compare -density 100 -metric rmse -file $f.png $f.ps orig/$f.ps|grep Total|cut -c23-`
@@ -46,31 +55,19 @@ LANG=C
 # Use executables from GMT_BINARY_DIR
 BIN_DIR=@GMT_BINARY_DIR@/src
 SRC_DIR=@GMT_SOURCE_DIR@/src
-SUPPLEMENTS_DIR=$(find ${BIN_DIR}/* -maxdepth 0 -type d -print0 | sed -e 's/\o0/:/g')
-export PATH="${BIN_DIR}:${SUPPLEMENTS_DIE}:${SRC_DIR}:${PATH}"
+SUPPLEMENTS_DIR=$(find ${BIN_DIR}/* -maxdepth 0 -type d -and -not -name '*.dSYM' -print0 | tr '\0' ':')
+export PATH="${BIN_DIR}:${SUPPLEMENTS_DIR}:${SRC_DIR}:${PATH}"
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
+export HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
+export HAVE_OPENMP="@HAVE_OPENMP@"
 
 # Reset error count
 ERROR=0
 
-# Convert PS to PDF
-function make_pdf()
-{
-  test -f ${ps} || return
-  test -f ${ps%.ps}.pdf && return
-  ps2raster -Tf -A -P ${ps} || ((ERROR++))
-  for ps in *.ps; do
-    test -f ${ps} || continue
-    test -f ${ps%.ps}.pdf && continue
-    ps2raster -Tf -A -P ${ps} || ((ERROR++))
-  done
-}
-
 # Make sure to cleanup at end
 function on_exit()
 {
-  make_pdf
   rm -f .gmt* gmt.conf
   echo "exit status: ${ERROR}"
   exit ${ERROR}
