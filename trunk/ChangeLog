@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-10-14	pwessel
+	* test/meca:		Added new meca_5.sh test from Vala Hjorleifsdottir
+
 2011-10-11	fwobbe
 	* gmt2kml.c:		Fixed an array that was accessed past its end
 
