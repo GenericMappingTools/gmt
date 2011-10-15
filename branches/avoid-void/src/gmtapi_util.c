@@ -1930,7 +1930,7 @@ GMT_LONG GMTAPI_Init_Import (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	/* Note that n_reg can have changed if we added file args above */
 	
 	if ((mode & GMT_REG_STD_ALWAYS) || ((mode & GMT_REG_STD_IF_NONE) && n_reg == 0)) {	/* Wish to register stdin pointer as a source */
-		error = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, (void *)&API->GMT->session.std[GMT_IN], NULL, NULL, &object_ID);
+		error = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, API->GMT->session.std[GMT_IN], NULL, NULL, &object_ID);
 		if (error != GMT_OK) return (GMT_Report_Error (API, error));	/* Failure to register stdin */
 		n_reg++;		/* Add the single item */
 		if (*first_ID == GMTAPI_NOTSET) *first_ID = object_ID;	/* Found our first ID */
@@ -1992,7 +1992,7 @@ GMT_LONG GMTAPI_Init_Export (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	if ((mode & GMT_REG_STD_ALWAYS) && n_reg == 1) return (GMT_Report_Error (API, GMT_ONLY_ONE_ALLOWED));	/* Only one output destination allowed at once */
 	
 	if (n_reg == 0 && ((mode & GMT_REG_STD_ALWAYS) || (mode & GMT_REG_STD_IF_NONE))) {	/* Wish to register stdout pointer as a destination */
-		error = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, (void *)&API->GMT->session.std[GMT_OUT], NULL, NULL, object_ID);
+		error = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, API->GMT->session.std[GMT_OUT], NULL, NULL, object_ID);
 		if (error != GMT_OK) return (GMT_Report_Error (API, error));	/* Failure to register stdout? */
 		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Export added stdout to registered destinations\n");
 		n_reg = 1;	/* Only have one item */
@@ -2695,7 +2695,7 @@ GMT_LONG GMT_Get_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method
 		if ((error = GMT_Register_IO (API, family, method, geometry, GMT_IN, input, wesn, data, &in_ID))) return (GMT_Report_Error (API, error));
 	}
 	else if (input == NULL && geometry) {	/* Case 2: Load from stdin.  Register stdin first */
-		if ((error = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, (void *)API->GMT->session.std[GMT_IN], wesn, data, &in_ID))) return (GMT_Report_Error (API, error));	/* Failure to register std??? */
+		if ((error = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, API->GMT->session.std[GMT_IN], wesn, data, &in_ID))) return (GMT_Report_Error (API, error));	/* Failure to register std??? */
 	}
 	else {	/* Case 3: input == NULL && geometry == 0, so use all previously registered sources (unless already used). */
 		if (!(family == GMT_IS_DATASET || family == GMT_IS_TEXTSET)) return (GMT_Report_Error (API, GMT_ONLY_ONE_ALLOWED));	/* Virtual source only applies to data and text tables */
@@ -2741,7 +2741,7 @@ GMT_LONG GMT_Put_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method
 	}
 	else if (output == NULL && geometry) {	/* Case 2: Save to stdout.  Register stdout first. */
 		if (family == GMT_IS_GRID) return (GMT_Report_Error (API, GMT_STREAM_NOT_ALLOWED));	/* Cannot write grids to stream */
-		if ((error = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, (void *)API->GMT->session.std[GMT_OUT], wesn, data, &out_ID))) return (GMT_Report_Error (API, error));	/* Failure to register std??? */
+		if ((error = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, API->GMT->session.std[GMT_OUT], wesn, data, &out_ID))) return (GMT_Report_Error (API, error));	/* Failure to register std??? */
 	}
 	else {	/* Case 3: output == NULL && geometry == 0, so use the previously registered destination */
 		if ((n_reg = GMTAPI_n_items (API, family, GMT_OUT, &out_ID)) != 1) return (GMT_Report_Error (API, GMT_NO_OUTPUT));	/* There is no registered output */
