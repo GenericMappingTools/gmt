@@ -46,7 +46,7 @@ int main (int argc, char *argv[]) {
 	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN,  GMT_BY_SET)) exit (EXIT_FAILURE);				/* Enables data input and sets access mode */
 
 	/* 2. READING IN A GRID */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&in_grid, (void **)&Gin)) exit (EXIT_FAILURE);
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, in_grid, &Gin)) exit (EXIT_FAILURE);
 
 	/* 3. PREPARING SOURCE AND DESTINATION FOR GMT_grdcut */
 	/* 3a. Register the Gin grid to be the source read by grdcut by passing a pointer */
@@ -76,7 +76,7 @@ int main (int argc, char *argv[]) {
 
 	/* 7. WRITING THE RESULT TO FILE */
 	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) exit (EXIT_FAILURE);				/* Enables data input and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&out_grid, Gout)) exit (EXIT_FAILURE);
+	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, out_grid, Gout)) exit (EXIT_FAILURE);
 
 	if (GMT_End_IO (API, GMT_IN,  0)) exit (EXIT_FAILURE);		/* Disables further data output */
 	if (GMT_End_IO (API, GMT_OUT, 0)) exit (EXIT_FAILURE);		/* Disables further data output */

@@ -211,7 +211,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	via[GMT_IN] = Ctrl->I.via / 100;	via[GMT_OUT] = Ctrl->W.via / 100;
 	if (Ctrl->I.via == GMT_VIA_MATRIX) {	/* We will use a matrix in memory as data source */
-		GMT_Create_Data (API, GMT_IS_MATRIX, NULL, (void **)&M, GMT_IN, &k);
+		GMT_Create_Data (API, GMT_IS_MATRIX, NULL, &M, GMT_IN, &k);
 		if (Ctrl->T.mode == GMT_IS_DATASET) {	/* Mimic the dtest.txt table */
 			M->n_rows = 9;	M->n_columns = 2;	M->n_layers = 1;	M->dim = 9;	M->type = GMTAPI_INT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
@@ -229,7 +229,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		M->data = (void *)fdata;
 	}
 	else if (Ctrl->I.via == GMT_VIA_VECTOR) {	/* We will use vectors in memory as data source */
-		GMT_Create_Data (API, GMT_IS_VECTOR, par, (void **)&V, GMT_IN, &k);
+		GMT_Create_Data (API, GMT_IS_VECTOR, par, &V, GMT_IN, &k);
 		V->n_rows = 9;
 		fdata = GMT_memory (GMT, NULL, V->n_rows, float);
 		ddata = GMT_memory (GMT, NULL, V->n_rows, double);
@@ -282,13 +282,13 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		case GMT_IS_COPY: case GMT_IS_REF:
 			switch (Ctrl->I.via) {
 				case GMT_VIA_MATRIX:	/* Get the dataset|grid via a user matrix */
-					error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], NULL, 0, (void **)&M, &Intmp);
+					error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], NULL, 0, &M, &Intmp);
 					break;
 				case GMT_VIA_VECTOR:	/* Get the dataset|grid via a user vectors */
-					error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], NULL, 0, (void **)&V, &Intmp);
+					error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], NULL, 0, &V, &Intmp);
 					break;
 				default:		/* Get directly from file */
-					error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, (void **)&(ifile[Ctrl->T.mode]), &Intmp);
+					error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, ifile[Ctrl->T.mode], &Intmp);
 					break;
 			}
 			error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, &Intmp, NULL, Intmp, &in_ID);
@@ -305,7 +305,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_Encode_ID (API, string, in_ID);	/* Make filename with embedded object ID */
 	input = strdup (string);
-	error = GMT_Get_Data (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], NULL, 0, (void **)&input, &In);
+	error = GMT_Get_Data (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], NULL, 0, &input, &In);
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, 2);	/* Reset to GMT default */
 	
@@ -315,7 +315,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_Encode_ID (API, string, in_ID);	/* Make filename with embedded object ID */
 		sprintf (buffer, "%s -W6i -P -F0.25p --PS_MEDIA=letter --PS_CHAR_ENCODING=Standard+", string);
 		error += GMT_psimage (API, 0, (void *)buffer);	/* Plot the image */
-		GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&Intmp);
+		GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 		Return (GMT_OK);
 	}
@@ -383,24 +383,24 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if ((error = GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_OUT, GMT_REG_FILES_IF_NONE, options))) Return (error);	/* Registers default output destination, unless already set */
 	if ((error = GMT_Begin_IO (API, Ctrl->T.mode, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	error = GMT_Put_Data (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], NULL, 0, (void **)&output, In);
+	error = GMT_Put_Data (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], NULL, 0, output, In);
 	
 	if (Ctrl->W.mode == GMT_IS_COPY || Ctrl->W.mode == GMT_IS_REF) {	/* Must write out what is in memory to the file */
 		if (Ctrl->W.via) {	/* Must first read into proper GMT container, then write to file */
-			error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->W.via, geometry[Ctrl->T.mode], NULL, 0, (void **)&Out, &Outtmp);
-			error += GMT_Put_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, (void **)&ofile[Ctrl->T.mode], Outtmp);
+			error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->W.via, geometry[Ctrl->T.mode], NULL, 0, &Out, &Outtmp);
+			error += GMT_Put_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, ofile[Ctrl->T.mode], Outtmp);
 		}
 		else {
-			error = GMT_Put_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, (void **)&ofile[Ctrl->T.mode], Out);
+			error = GMT_Put_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, ofile[Ctrl->T.mode], Out);
 		}
 	}
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 	free ((void *)input);	free ((void *)output);
 	
-	GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&Intmp);
-	GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&M);
-	GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&V);
-	if (!(Ctrl->I.mode == GMT_IS_REF && Ctrl->W.mode == GMT_IS_REF)) GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&Out);
+	GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp);
+	GMT_Destroy_Data (API, GMT_CLOBBER, &M);
+	GMT_Destroy_Data (API, GMT_CLOBBER, &V);
+	if (!(Ctrl->I.mode == GMT_IS_REF && Ctrl->W.mode == GMT_IS_REF)) GMT_Destroy_Data (API, GMT_CLOBBER, &Out);
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 	Return (GMT_OK);
 }

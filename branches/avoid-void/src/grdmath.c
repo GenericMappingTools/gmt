@@ -214,7 +214,8 @@ GMT_LONG GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, st
 
 void alloc_stack (struct GMT_CTRL *GMT, struct GMT_GRID **G, struct GMT_GRID *Template)
 {	/* Allocate a new GMT_GRID structure based on dimensions etc of the Template */
-	struct GMT_GRID *New = GMT_create_grid (GMT);
+	struct GMT_GRID *New = NULL;
+	GMT_create_grid (GMT, &New);
 	GMT_memcpy (New->header, Template->header, 1, struct GRD_HEADER);
 	New->data = GMT_memory (GMT, NULL, Template->header->size, float);
 	*G = New;
@@ -1290,7 +1291,7 @@ void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRI
 
 	GMT_set_cols (GMT, GMT_IN, 2);
 	GMT_skip_xy_duplicates (GMT, TRUE);	/* Avoid repeating x/y points in polygons */
-	if (GMT_Get_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&(info->ASCII_file), (void **)&D)) {
+	if (GMT_Get_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, info->ASCII_file, &D)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error in operator INSIDE reading file %s!\n", info->ASCII_file);
 		info->error = GMT_DATA_READ_ERROR;
 		return;
@@ -1308,7 +1309,7 @@ void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRI
 
 	/* Free memory used for pol */
 
-	GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&D);
+	GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D);
 }
 
 void grd_INV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
@@ -1508,7 +1509,7 @@ void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
 
 	GMT_set_cols (GMT, GMT_IN,  2);
-	if (GMT_Get_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, (void **)&(info->ASCII_file), (void **)&D)) {
+	if (GMT_Get_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, info->ASCII_file, &D)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error in operator LDIST reading file %s!\n", info->ASCII_file);
 		info->error = GMT_DATA_READ_ERROR;
 		return;
@@ -1523,7 +1524,7 @@ void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 
 	/* Free memory used for line */
 
-	GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&D);
+	GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D);
 }
 
 void grd_LE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
@@ -1950,7 +1951,7 @@ void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
 
 	GMT_set_cols (GMT, GMT_IN,  2);
-	if (GMT_Get_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&(info->ASCII_file), (void **)&D)) {
+	if (GMT_Get_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, info->ASCII_file, &D)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error in operator grd_PDIST reading file %s!\n", info->ASCII_file);
 		info->error = GMT_DATA_READ_ERROR;
 		return;
@@ -1961,7 +1962,7 @@ void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 
 	/* Free memory used for points */
 
-	GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&D);
+	GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D);
 }
 
 void grd_POP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
@@ -2907,10 +2908,10 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		status = decode_grd_argument (GMT, opt, &value, localhashnode);		/* Determine what this is */
 		if (status == GRDMATH_ARG_IS_BAD) Return (EXIT_FAILURE);		/* Horrible */
 		if (status != GRDMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(opt->arg), (void **)&G_in)) Return (GMT_GRID_READ_ERROR);	/* Get header only */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, &G_in)) Return (GMT_GRID_READ_ERROR);	/* Get header only */
 	}
 
-	info.G = GMT_create_grid (GMT);
+	GMT_create_grid (GMT, &info.G);
 	GMT_grd_init (GMT, info.G->header, options, TRUE);
 	subset = (GMT->common.R.active && Ctrl->I.active);
 
@@ -2925,11 +2926,11 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		if (subset) {	/* Gave -R and files: Read the subset to set the header properly */
 			GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(opt->arg), (void **)&G_in)) Return (GMT_DATA_READ_ERROR);	/* Get subset only */
+			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, opt->arg, &G_in)) Return (GMT_DATA_READ_ERROR);	/* Get subset only */
 		}
 		GMT_memcpy (info.G->header, G_in->header, 1, struct GRD_HEADER);
 		GMT_set_grddim (GMT, info.G->header);			/* To adjust for the pad */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G_in);
+		GMT_Destroy_Data (API, GMT_ALLOCATED, &G_in);
 	}
 	else if (GMT->common.R.active && Ctrl->I.active) {	/* Must create from -R -I [-r] */
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
@@ -3014,7 +3015,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_grd_loop (GMT, info.G, row, col, node) stack[nstack-1]->data[node] = (float)factor[nstack-1];
 			}
 			this_stack = nstack - 1;
-			GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&opt->arg, (void *)stack[this_stack]);
+			GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, opt->arg, stack[this_stack]);
 			alloc_mode[this_stack] = 2;	/* Since it now is registered */
 			if (n_items) nstack--;	/* Pop off the current stack if there is one */
 			new_stack = nstack;
@@ -3091,7 +3092,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else if (op == GRDMATH_ARG_IS_FILE) {		/* Filename given */
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s ", opt->arg);
-				if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_HEADER, (void **)&(opt->arg), (void **)&stack[nstack])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+				if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_HEADER, opt->arg, &stack[nstack])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 				if (!subset && (stack[nstack]->header->nx != info.G->header->nx || stack[nstack]->header->ny != info.G->header->ny)) {
 					GMT_report (GMT, GMT_MSG_FATAL, "grid files not of same size!\n");
 					Return (EXIT_FAILURE);
@@ -3101,7 +3102,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_report (GMT, GMT_MSG_FATAL, "grid files do not cover the same area!\n");
 					Return (EXIT_FAILURE);
 				}
-				if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(opt->arg), (void **)&stack[nstack])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+				if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, opt->arg, &stack[nstack])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 				alloc_mode[nstack] = 2;
 			}
 			nstack++;

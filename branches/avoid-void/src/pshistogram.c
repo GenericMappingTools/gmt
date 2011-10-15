@@ -498,7 +498,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
 	if (Ctrl->C.active) {
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
+		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, &P)) Return (GMT_DATA_READ_ERROR);
 	}
 
 	data = GMT_memory (GMT, NULL, n_alloc , double);
@@ -506,7 +506,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n = 0;
 	x_min = DBL_MAX;	x_max = -DBL_MAX;
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we have no more files */
+	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we have no more files */
 
 		if (GMT_REC_IS_ERROR(GMT)) Return (EXIT_FAILURE);
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip all headers */
@@ -578,7 +578,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			struct GMT_LINE_SEGMENT *S = NULL;
 			
 			dim[3] = F.n_boxes;
-			if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D, -1, &ID))) {
+			if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, &D, -1, &ID))) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for spectrum\n");
 				return (GMT_RUNTIME_ERROR);
 			}
@@ -604,8 +604,8 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				S->coord[GMT_X][ibox] = xx;
 				S->coord[GMT_Y][ibox] = yy;
 			}
-			if ((error = GMT_Put_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, D->io_mode, (void **)&Ctrl->Out.file, (void *)D))) return (error);
-			GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&D);
+			if ((error = GMT_Put_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, D->io_mode, Ctrl->Out.file, D))) return (error);
+			GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D);
 		}
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 		GMT_free (GMT, data);

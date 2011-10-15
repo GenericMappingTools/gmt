@@ -140,7 +140,7 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 		//char buffer[GMT_BUFSIZ];
 		i_string = (char *) mxMalloc(GMT_BUFSIZ);
 
-		*G = GMT_create_grid (API->GMT);
+		GMT_create_grid (API->GMT, G);
 		GMT_grd_init (API->GMT, (*G)->header, NULL, FALSE);
 		
 		/*  Get the Z array and fill in the header info */
