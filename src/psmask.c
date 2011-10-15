@@ -553,7 +553,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			if (fmt[1]) io_mode = GMT_WRITE_SEGMENTS;	/* d: Want individual files with running numbers */
 		}
-		D = GMT_create_dataset (GMT, 1, 0, 2, 0);	/* An empty table */
+		GMT_create_dataset (GMT, 1, 0, 2, 0, &D);	/* An empty table */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	}
@@ -575,7 +575,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_memset (&info, 1, struct PSMASK_INFO);
 		info.first_dump = TRUE;
 
-		Grid = GMT_create_grid (GMT);
+		GMT_create_grid (GMT, &Grid);
 		GMT_setnval (GMT->current.io.pad, 4, 1);		/* Change default pad to 1 only */
 		GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, Ctrl->F.active);
 		
@@ -618,7 +618,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
 		n_read = 0;
-		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
 
 			if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
 
@@ -722,7 +722,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_free (GMT, y);
 			if (Ctrl->D.active) {	/* Write the clip polygon file(s) */
 				D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, n_seg, struct GMT_LINE_SEGMENT *);
-				if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, io_mode, (void **)&(Ctrl->D.file), (void *)D))) Return (error);
+				if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, io_mode, Ctrl->D.file, D))) Return (error);
 				if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 			}
 		}

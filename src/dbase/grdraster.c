@@ -222,7 +222,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 	n_alloc = GMT_SMALL_CHUNK;
 	rasinfo = GMT_memory (GMT, NULL, n_alloc, struct GRDRASTER_INFO);
 
-	while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, (void **)&record)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, &record)) != EOF) {	/* Keep returning records until we reach EOF */
 		if (GMT_REC_IS_ERROR (GMT)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Skipping record in grdraster.info (Cannot read data record).\n");
 			continue;
@@ -813,7 +813,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* OK, here we have a recognized dataset ID */
 
-	Grid = GMT_create_grid (GMT);
+	GMT_create_grid (GMT, &Grid);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	GMT_memcpy (Grid->header->wesn, GMT->common.R.wesn, 4, double);
@@ -1097,7 +1097,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->T.active)
 		GMT_free (GMT, x);
-	else if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid))
+	else if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid))
 		Return (GMT_DATA_WRITE_ERROR);
 
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */

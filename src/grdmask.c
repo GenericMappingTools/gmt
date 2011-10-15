@@ -239,7 +239,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the grdmask main code ----------------------------*/
 
-	Grid = GMT_create_grid (GMT);
+	GMT_create_grid (GMT, &Grid);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
@@ -289,7 +289,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_skip_xy_duplicates (GMT, TRUE);	/* Avoid repeating x/y points in polygons */
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&D))) Return (error);
+	if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, &D))) Return (error);
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
 
@@ -382,7 +382,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Grid);
+	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Grid);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	if (Ctrl->S.active) {

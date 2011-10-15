@@ -329,7 +329,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_report (GMT, GMT_MSG_NORMAL, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_TEXT, (void **)&line)) != EOF) {	/* Keep returning records until we have no more files */
+	while ((n_fields = GMT_Get_Record (API, GMT_READ_TEXT, &line)) != EOF) {	/* Keep returning records until we have no more files */
 
  		if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */

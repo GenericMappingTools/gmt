@@ -1183,7 +1183,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT->current.io.pad[YLO] = GMT->current.io.pad[YHI] = m21-1;
 
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, 	/* Get header only */
-			 (void **)&(Ctrl->In.file), (void **)&Gin)) 
+			 Ctrl->In.file, &Gin)) 
 		Return (GMT_DATA_READ_ERROR);
 
 	if (!GMT->common.R.active) 
@@ -1200,11 +1200,11 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT_grd_init (GMT, Gin->header, options, TRUE);
 
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, 
-			 (void **)&(Ctrl->In.file), (void **)&Gin)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
+			 Ctrl->In.file, &Gin)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 
 	GMT_set_pad (GMT, 2);		/* Reset the default GMT pad */
 
-	Gout = GMT_create_grid (GMT);
+	GMT_create_grid (GMT, &Gout);
 
 	GMT_memcpy (Gout->header->wesn, wesn_new, 4, double);
 	GMT_memcpy (Gout->header->inc, Gin->header->inc, 2, double);
@@ -1231,20 +1231,20 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	if (Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd) {
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 		/* Get header only */
-			 	  GMT_GRID_HEADER, (void **)&(Ctrl->E.dipfile), (void **)&Gdip)) 
+			 	  GMT_GRID_HEADER, Ctrl->E.dipfile, &Gdip)) 
 			Return (GMT_DATA_READ_ERROR);
 	
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, 
-			 	(void **)&(Ctrl->E.dipfile), (void **)&Gdip)) 
+			 	Ctrl->E.dipfile, &Gdip)) 
 			Return (GMT_DATA_READ_ERROR);
 	}
 	if (Ctrl->E.dip_dec_grd) {
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER,
-			 	(void **)&(Ctrl->E.decfile), (void **)&Gdec)) 
+			 	Ctrl->E.decfile, &Gdec)) 
 			Return (GMT_DATA_READ_ERROR);
 	
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, 
-			 	(void **)&(Ctrl->E.decfile), (void **)&Gdec)) 
+			 	Ctrl->E.decfile, &Gdec)) 
 			Return (GMT_DATA_READ_ERROR);
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);		/* Disables further data input */
@@ -1301,7 +1301,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 					
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
-		Gfilt = GMT_create_grid (GMT);
+		GMT_create_grid (GMT, &Gfilt);
 		GMT_grd_init (GMT, Gfilt->header, options, TRUE);
 		strcpy (Gfilt->header->title, "Reduction To the Pole filter");
 		strcpy (Gfilt->header->x_units, "radians");
@@ -1496,9 +1496,9 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) /* Enables data output and sets access mode */
 		Return (error);
 
-	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Gout);
+	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout);
 	if (Ctrl->Z.active)
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->Z.file, (void *)Gfilt);
+		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->Z.file, Gfilt);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);			/* Disables further data output */
 
 	Return (GMT_OK);

@@ -344,7 +344,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT->current.io.output = GMT_z_output;		/* Override output writer */
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
 		in = &bucket;
-		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in))) GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)in);
+		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in))) GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)in);
 
 		GMT->current.io.output = save;			/* Reset output pointer */
 		GMT->common.b.active[GMT_OUT] = previous;	/* Reset output binary */
@@ -354,7 +354,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Here we will need a grid */
 	
-	Grid = GMT_create_grid (GMT);
+	GMT_create_grid (GMT, &Grid);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 #ifdef GMT_COMPAT	/* PW: This is now done in grdreformat since ESRI Arc Interchange is a recognized format */
@@ -438,7 +438,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
+		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid)) Return (GMT_DATA_WRITE_ERROR);
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 		Return (EXIT_SUCCESS);
 	}
@@ -494,7 +494,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	ij = -1;	/* Will be incremented to 0 in -Z section or recomputed in the xyz section */
 	if (Ctrl->Z.active) for (i = 0; i < io.skip; i++) fread ((void *)&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
 
@@ -650,7 +650,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
+	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid)) Return (GMT_DATA_WRITE_ERROR);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	Return (GMT_OK);

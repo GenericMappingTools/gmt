@@ -629,13 +629,13 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (Ctrl->A.mode == MODE_g) {	/* Read regular GMT grid */
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->A.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->A.file, &G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 	
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->A.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->A.file, &G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}
 	else if (Ctrl->A.mode == MODE_i) {	/* Read Sandwell/Smith IMG file */
-		G = GMT_create_grid (GMT);
+		GMT_create_grid (GMT, &G);
 		GMT_read_img (GMT, Ctrl->A.file, G, NULL, Ctrl->A.parameters[IMG_SCALE], (GMT_LONG)irint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], TRUE);
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}

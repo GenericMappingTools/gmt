@@ -229,7 +229,7 @@ void get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GMT_DATAS
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
 	
-	D = GMT_create_dataset (GMT, 1, 1, 2, 0);	/* An empty table with one segment, two cols */
+	GMT_create_dataset (GMT, 1, 1, 2, 0, &D);	/* An empty table with one segment, two cols */
 
 	S = D->table[0]->segment[0];	/* Short hand */
 		
@@ -355,7 +355,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->In.file) {
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, &G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 
 		if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
 
@@ -373,13 +373,13 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Read the input grid */
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Allocates memory and read grid file\n");
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT->common.R.wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT->common.R.wesn, GMT_GRID_DATA, Ctrl->In.file, &G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);			/* Disables further data input */
 	
 	if (Ctrl->F.active) {	/* Read the user's polygon file */
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&Ctrl->F.file, (void **)&D)) Return ((error = GMT_DATA_READ_ERROR));
+		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->F.file, &D)) Return ((error = GMT_DATA_READ_ERROR));
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 		pol = D->table[0];	/* Since it is a single file */
 	}
@@ -427,13 +427,13 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_set_tbl_minmax (GMT, pol);	/* Update table domain */
 	if (!Ctrl->N.active && not_global) {
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&Ctrl->D.file, (void *)D)) Return (GMT_DATA_WRITE_ERROR);
+		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->D.file, D)) Return (GMT_DATA_WRITE_ERROR);
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 		
 	}
 	if (Ctrl->S.active) {
 		if (Ctrl->F.active)
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
+			GMT_Destroy_Data (API, GMT_ALLOCATED, &D);
 		else if (not_global)
 			GMT_free_dataset (GMT, &D);
 	
@@ -456,7 +456,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI]) GMT->common.R.wesn[XHI] += 360.0;
 	}
 	
-	G_rot = GMT_create_grid (GMT);
+	GMT_create_grid (GMT, &G_rot);
 	GMT_grd_init (GMT, G_rot->header, options, FALSE);
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
@@ -529,7 +529,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	sprintf (G_rot->header->remark, "Grid rotated using R[lon lat omega] = %g %g %g", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)G_rot)) Return (GMT_DATA_WRITE_ERROR);
+	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G_rot)) Return (GMT_DATA_WRITE_ERROR);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	GMT_free (GMT, grd_x);
@@ -537,7 +537,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, grd_yc);
 	
 	if (Ctrl->F.active)
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
+		GMT_Destroy_Data (API, GMT_ALLOCATED, &D);
 	else if (not_global)
 		GMT_free_dataset (GMT, &D);
 

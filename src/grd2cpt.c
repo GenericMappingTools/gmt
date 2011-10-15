@@ -343,7 +343,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	file = CPT_file;
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
-	if ((error = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, (void **)&file, (void **)&Pin))) Return (error);
+	if ((error = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, file, &Pin))) Return (error);
 
 	GMT_memset (wesn, 4, double);
 	if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Subset */
@@ -354,7 +354,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (opt = options, k = 0; opt; opt = opt->next) {
 		if (opt->option != '<') continue;	/* We are only processing input files here */
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, (void **)&opt->arg, (void **)&G[k])) Return (GMT_DATA_READ_ERROR);
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, opt->arg, &G[k])) Return (GMT_DATA_READ_ERROR);
 		grdfile[k] = strdup (opt->arg);
 		if (k && !(G[k]->header->nx == G[k-1]->header->nx && G[k]->header->ny == G[k-1]->header->ny)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Grids do not have the same domain!\n");
@@ -538,12 +538,15 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->A.active) GMT_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
-	if (GMT_Put_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, (void **)&Ctrl->Out.file, (void *)Pout)) Return (GMT_DATA_WRITE_ERROR);
+	if (GMT_Put_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, Ctrl->Out.file, Pout)) Return (GMT_DATA_WRITE_ERROR);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	GMT_free (GMT, cdf_cpt);
 	GMT_free (GMT, z);
-	for (k = 0; k < ngrd; k++) free ((void *)grdfile[k]);
+	for (k = 0; k < ngrd; k++) {
+		free ((void *)grdfile[k]);
+		GMT_Destroy_Data (API, GMT_CLOBBER, &G[k]);
+	}
 	GMT_free (GMT, G);
 	GMT_free (GMT, grdfile);
 

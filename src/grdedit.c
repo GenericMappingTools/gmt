@@ -221,7 +221,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	}
 	
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&G)) 
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, &G)) 
 		Return (GMT_DATA_READ_ERROR);	/* Get header only */
 
 	if ((G->header->type == GMT_GRD_IS_SF || G->header->type == GMT_GRD_IS_SD) && Ctrl->T.active) {
@@ -254,24 +254,24 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	if (Ctrl->S.active) {
 		shift_amount = GMT->common.R.wesn[XLO] - G->header->wesn[XLO];
 		GMT_report (GMT, GMT_MSG_NORMAL, "Shifting longitudes in file %s by %g degrees\n", Ctrl->In.file, shift_amount);
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&G)) 
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file, &G)) 
 			Return (GMT_DATA_READ_ERROR);	/* Get data */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 		GMT_grd_shift (GMT, G, shift_amount);
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->In.file, (void *)G);
+		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->In.file, G);
 	}
 	else if (Ctrl->N.active) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Replacing nodes using xyz values from file %s\n", Ctrl->N.file);
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get data */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file, &G)) Return (GMT_DATA_READ_ERROR);	/* Get data */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 		if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);		/* Enables data input and sets access mode */
 
 		n_data = 0;
-		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
 
 			if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);	/* Bail if io errors */
 			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;		/* Skip any segment headers */
@@ -295,14 +295,14 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->In.file, (void *)G);
+		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->In.file, G);
 	}
 	else if (Ctrl->E.active) {	/* Transpose the matrix and exchange x and y info */
 		struct GRD_HEADER *h_tr = NULL;
 		GMT_LONG ij, ij_tr;
 		float *a_tr = NULL;
 		
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&G)) 
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file, &G)) 
 			Return (GMT_DATA_READ_ERROR);	/* Get data */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
@@ -331,7 +331,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		GMT_memcpy (G->header, h_tr, 1, struct GRD_HEADER);	/* Update to the new header */
 		GMT_free (GMT, h_tr);
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->In.file, (void *)G);
+		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->In.file, G);
 	}
 	else {	/* Change the domain boundaries */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
@@ -355,7 +355,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 				Ctrl->In.file, G->header->inc[GMT_X], G->header->inc[GMT_Y]);
 		}
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&Ctrl->In.file, (void *)G);
+		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, G);
 	}
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 

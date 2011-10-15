@@ -654,7 +654,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 1 + C.y_given))) Return (error);
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return ((error = GMT_DATA_READ_ERROR));
+	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, &Din)) Return ((error = GMT_DATA_READ_ERROR));
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
 	alloc_arrays (GMT, &C);
@@ -667,7 +667,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		if (one_table) {
-			GMT_create_table (GMT, &Tout, Din->table[tbl]->n_segments, Din->n_columns, 0);
+			GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0, &Tout);
 			Dout->table[tbl] = Tout;
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
@@ -690,7 +690,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	free_space_spectrum1d (GMT, &C);
 	
 	if (one_table) {
-		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout->io_mode, (void **)&(Ctrl->N.name), (void *)Dout))) Return (error);
+		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout->io_mode, Ctrl->N.name, Dout))) Return (error);
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 	}
 

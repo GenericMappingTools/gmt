@@ -197,7 +197,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 		char *line = NULL, r_in[GMT_TEXT_LEN256], file[GMT_TEXT_LEN256];
 		double weight;
 		GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
-		while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, (void **)&line)) != EOF) {	/* Keep returning records until we have no more files */
+		while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, &line)) != EOF) {	/* Keep returning records until we have no more files */
 			if (line[0] == '#' || line[0] == '\n' || line[0] == '\r') continue;	/* Skip comment lines or blank lines */
 			nr = sscanf (line, "%s %s %lf", file, r_in, &weight);
 			if (nr < 1) {
@@ -634,7 +634,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	z = GMT_memory (GMT, NULL, S.header.nx, float);	/* Memory for one output row */
 
 	if (GMT_File_Is_Memory (Ctrl->G.file)) {	/* GMT_grdblend is called by another module; must return as GMT_GRID */
-		Grid = GMT_create_grid (GMT);
+		GMT_create_grid (GMT, &Grid);
 		GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
@@ -736,7 +736,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Grid) {	/* Must write entire grid */
 		if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);		/* Enables data output and sets access mode */
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Grid);
+		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Grid);
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 	}
 	else {	/* Finish the line-by-line writing */

@@ -286,7 +286,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
 
-	Grid = GMT_create_grid (GMT);
+	GMT_create_grid (GMT, &Grid);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
@@ -336,7 +336,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
 
@@ -477,7 +477,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
+	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid)) Return (GMT_DATA_WRITE_ERROR);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {

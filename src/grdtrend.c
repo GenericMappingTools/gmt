@@ -501,9 +501,9 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, &G)) Return (GMT_DATA_READ_ERROR);
 	if (GMT_is_subset (GMT, G->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, &G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 
 	/* Check for NaNs (we include the pad for simplicity)  */
 	i = 0;
@@ -511,12 +511,12 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	/* Allocate other required arrays */
 
-	T = GMT_create_grid (GMT);	/* Pointer for grid with array containing fitted surface  */
+	GMT_create_grid (GMT, &T);	/* Pointer for grid with array containing fitted surface  */
 	GMT_memcpy (T->header, G->header, 1, struct GRD_HEADER);
 	GMT_grd_init (GMT, T->header, options, TRUE);
 	T->data = GMT_memory (GMT, NULL, G->header->size, float);
 	if (Ctrl->D.active || Ctrl->N.robust) {	/* If !D but robust, we would only need to allocate the data array */
-		R = GMT_create_grid (GMT);	/* Pointer for grid with array containing residual surface  */
+		GMT_create_grid (GMT, &R);	/* Pointer for grid with array containing residual surface  */
 		GMT_memcpy (R->header, G->header, 1, struct GRD_HEADER);
 		R->data = GMT_memory (GMT, NULL, G->header->size, float);
 	}
@@ -530,15 +530,15 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	/* If a weight array is needed, get one */
 
-	W = GMT_create_grid (GMT);	/* Pointer for grid with array containing data weights  */
+	GMT_create_grid (GMT, &W);	/* Pointer for grid with array containing data weights  */
 	GMT_grd_init (GMT, W->header, options, TRUE);
 	if (weighted) {
 		if (!GMT_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->W.file), (void **)&W)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->W.file, &W)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 			if (W->header->nx != G->header->nx || W->header->ny != G->header->ny)
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Input weight file does not match input data file.  Ignoring.\n");
 			else {
-				if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->W.file), (void **)&W)) Return (GMT_DATA_READ_ERROR);	/* Get data */
+				if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->W.file, &W)) Return (GMT_DATA_READ_ERROR);	/* Get data */
 				set_ones = FALSE;
 			}
 		}
@@ -614,19 +614,19 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) write_model_parameters (GMT, gtd, Ctrl->N.value);
 	if (Ctrl->T.file) {
 		strcpy (T->header->title, "trend surface");
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->T.file, (void *)T);
+		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->T.file, T);
 	}
 	else
 		GMT_free_grid (GMT, &T, TRUE);	/* Not written out */
 	if (Ctrl->D.file) {
 		strcpy (R->header->title, "trend residuals");
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->D.file, (void *)R);
+		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->D.file, R);
 	}
 	else if (Ctrl->D.active || Ctrl->N.robust)
 		GMT_free_grid (GMT, &R, TRUE);
 	if (Ctrl->W.file && Ctrl->N.robust) {
 		strcpy (W->header->title, "trend weights");
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->W.file, (void *)W);
+		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->W.file, W);
 	}
 	else if (set_ones)
 		GMT_free_grid (GMT, &W, TRUE);

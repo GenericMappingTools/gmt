@@ -411,7 +411,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->F.active) {	/* Get hotspot motion file */
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->F.file, (void **)&F)) Return ((error = GMT_DATA_READ_ERROR));
+		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->F.file, &F)) Return ((error = GMT_DATA_READ_ERROR));
 		H = F->table[0]->segment[0];	/* Only one table with one segment for histories */
 		for (j = 0; j < H->n_rows; j++) H->coord[GMT_Y][j] = GMT_lat_swap (GMT, H->coord[GMT_Y][j], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	}
@@ -439,7 +439,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);				/* Enables data output and sets access mode */
 
 	n = 0;
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
 
 		if (GMT_REC_IS_ERROR (GMT) && n_fields < 2) continue;
 

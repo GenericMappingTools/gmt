@@ -69,7 +69,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (nlhs) GMTMEX_prep_mexgrd (API, plhs, nlhs, G);
 
 	/* Destroy the main grid returned from the module  */
-	GMT_Destroy_Data (API, GMT_REFERENCE, (void **)&G);
+	GMT_Destroy_Data (API, GMT_REFERENCE, &G);
 	
 	/* Free temporary local variables  */
 	GMTMEX_free (input, output, options, cmd);

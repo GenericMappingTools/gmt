@@ -225,7 +225,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&opt->arg, (void **)&G)) Return (GMT_DATA_READ_ERROR);
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, &G)) Return (GMT_DATA_READ_ERROR);
 		subset = GMT_is_subset (GMT, G->header, wesn);	/* Subset requested */
 		if (subset) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
 
@@ -237,7 +237,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (Ctrl->M.active || Ctrl->L.active || subset) {	/* Must determine the location of global min and max values */
 			GMT_LONG ij_min, ij_max, col, row;
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&opt->arg, (void **)&G)) Return (GMT_DATA_READ_ERROR);
+			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, opt->arg, &G)) Return (GMT_DATA_READ_ERROR);
 
 			z_min = DBL_MAX;	z_max = -DBL_MAX;
 			mean = median = sum2 = 0.0;
@@ -484,7 +484,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (G->header->wesn[YLO] < global_ymin) global_ymin = G->header->wesn[YLO];
 			if (G->header->wesn[YHI] > global_ymax) global_ymax = G->header->wesn[YHI];
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
+		GMT_Destroy_Data (API, GMT_ALLOCATED, &G);
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 

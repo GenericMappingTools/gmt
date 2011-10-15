@@ -51,7 +51,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	/* 2. READING IN A GRID */
 	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) mexErrMsgTxt ("GMT: (grdinfo) Failure to Begin IO\n");
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&filein, (void **)&G))
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, filein, &G))
 		mexErrMsgTxt ("GMT: (grdread) Read failure\n");
 	if (GMT_End_IO (API, GMT_IN, 0)) mexErrMsgTxt ("GMT: (grdinfo) Failure to End IO\n");
 	
@@ -74,7 +74,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (pi >= 0) GMTMEX_grdheader2info (plhs, G, pi);	/* Also return info array */
 	if (px >= 0) GMTMEX_grdxy (API, plhs, G, px, py);	/* Return x,y arrays also */
 	
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
+	GMT_Destroy_Data (API, GMT_ALLOCATED, &G);
 	
 	/* 10. Destroy GMT API session */
 	if (GMT_Destroy_Session (&API)) mexErrMsgTxt ("GMT: (surface) Failure to destroy GMT Session\n");

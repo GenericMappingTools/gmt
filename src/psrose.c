@@ -370,7 +370,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);	/* Bail for any i/o error */
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;		/* Skip all table and segment headers */
@@ -581,7 +581,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			mode_length[0] = mean_radius;
 		}
 		else {	/* Get mode parameters from separate file */
-			if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&Cin)) Return ((error = GMT_DATA_READ_ERROR));
+			if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, &Cin)) Return ((error = GMT_DATA_READ_ERROR));
 			P = Cin->table[0];	/* Can only be one table since we read a single file; We also only use the first segment */
 			n_modes = P->n_records;
 			mode_direction = P->segment[0]->coord[GMT_X];

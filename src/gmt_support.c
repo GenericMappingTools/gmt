@@ -1846,13 +1846,17 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	h->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
 }
 
-struct GMT_PALETTE *GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors)
+GMT_LONG GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors, struct GMT_PALETTE **Pout)
 {
 	/* Makes an empty palette table */
-	struct GMT_PALETTE *P = GMT_memory (C, NULL, 1, struct GMT_PALETTE);
-	P->range = GMT_memory (C, NULL, n_colors, struct GMT_LUT);
+	struct GMT_PALETTE *P = NULL;
+	if ((P = GMT_memory (C, NULL, 1, struct GMT_PALETTE)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((P->range = GMT_memory (C, NULL, n_colors, struct GMT_LUT)) == NULL) return (GMT_MEMORY_ERROR);
 	P->n_colors = n_colors;
-	return (P);
+	P->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	*Pout = P;
+	
+	return (GMT_OK);
 }
 
 GMT_LONG gmt_reset_palette (struct GMT_CTRL *C, struct GMT_PALETTE *P)
@@ -2344,7 +2348,7 @@ void GMT_sample_cpt (struct GMT_CTRL *C, struct GMT_PALETTE *Pin, double z[], GM
 		even = TRUE;
 	}
 
-	P = GMT_create_palette (C, nz - 1);
+	GMT_create_palette (C, nz - 1, &P);
 	lut = GMT_memory (C, NULL, Pin->n_colors, struct GMT_LUT);
 
 	GMT_check_condition (C, no_inter && P->n_colors > Pin->n_colors, "Warning: Number of picked colors exceeds colors in input cpt!\n");
@@ -9482,7 +9486,7 @@ GMT_LONG gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *
 	resample = (!GMT_IS_ZERO(along_ds));
 	n_cols = 2 + mode + ex_cols;
 	along_ds_degree = (along_ds / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;
-	GMT_alloc_dataset (GMT, Din, &D, n_cols, 0, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to 4 columns (lon, lat, dist, az) */
+	GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL, &D);	/* Same table length as Din, but with up to 4 columns (lon, lat, dist, az) */
 	ndig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {
@@ -9545,7 +9549,7 @@ GMT_LONG gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *
 
 	resample = (!GMT_IS_ZERO(along_ds));
 	n_cols = 2 + mode + ex_cols;
-	GMT_alloc_dataset (GMT, Din, &D, n_cols, 0, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to 4 columns (lon, lat, dist, az) */
+	GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL, &D);	/* Same table length as Din, but with up to 4 columns (lon, lat, dist, az) */
 	ndig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {
@@ -9637,7 +9641,7 @@ GMT_LONG gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	across_ds_radians = D2R * (cross_half_width / GMT->current.proj.DIST_M_PR_DEG) / n_half_cross;	/* Angular change from point to point */
 	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
 	n_tot_cols = 4 + n_cols;	/* Total number of columns in the resulting data set */
-	Xout = GMT_create_dataset (GMT, Din->n_tables, 0, n_tot_cols, np_cross);	/* An empty dataset of n_tot_cols columns and np_cross rows */
+	GMT_create_dataset (GMT, Din->n_tables, 0, n_tot_cols, np_cross, &Xout);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */
@@ -9762,7 +9766,7 @@ GMT_LONG gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
 	across_ds = cross_length / n_half_cross;		/* Exact increment (recalculated in case of roundoff) */
 	n_tot_cols = 4 + n_cols;				/* Total number of columns in the resulting data set */
-	Xout = GMT_create_dataset (GMT, Din->n_tables, 0, n_tot_cols, np_cross);	/* An empty dataset of n_tot_cols columns and np_cross rows */
+	GMT_create_dataset (GMT, Din->n_tables, 0, n_tot_cols, np_cross, &Xout);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */

@@ -520,7 +520,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
 
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, GMT_IO_ASCII, (void **)&Ctrl->C.file, (void **)&Cin)) Return ((error = GMT_DATA_READ_ERROR));
+		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, GMT_IO_ASCII, Ctrl->C.file, &Cin)) Return ((error = GMT_DATA_READ_ERROR));
 		if (Cin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
@@ -571,7 +571,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->L.active) {	/* Initialize lines structure used in test for proximity to lines [use Ctrl->L.dist, ] */
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, GMT_IO_ASCII, (void **)&Ctrl->L.file, (void **)&Lin)) Return ((error = GMT_DATA_READ_ERROR));
+		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, GMT_IO_ASCII, Ctrl->L.file, &Lin)) Return ((error = GMT_DATA_READ_ERROR));
 		if (Lin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -L option: %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
 			Return (EXIT_FAILURE);
@@ -590,7 +590,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (Ctrl->F.active) {	/* Initialize polygon structure used in test for polygon in/out test */
 		GMT_skip_xy_duplicates (GMT, TRUE);	/* Avoid repeating x/y points in polygons */
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, GMT_IO_ASCII, (void **)&Ctrl->F.file, (void **)&Fin)) Return ((error = GMT_DATA_READ_ERROR));
+		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, GMT_IO_ASCII, Ctrl->F.file, &Fin)) Return ((error = GMT_DATA_READ_ERROR));
 		GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
 		if (Fin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
@@ -613,7 +613,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->common.b.ncol[GMT_OUT] = -1;
 	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 	
-	while ((n_fields = GMT_Get_Record (API, r_mode, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((n_fields = GMT_Get_Record (API, r_mode, &in)) != EOF) {	/* Keep returning records until we reach EOF */
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);		/* Bail if there are io errors */
 
@@ -624,7 +624,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		while (GMT_REC_IS_SEG_HEADER (GMT) && !GMT_REC_IS_EOF (GMT)) {
 			output_header = TRUE;
-			n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in);
+			n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in);
 		}
 		if (GMT_REC_IS_EOF (GMT)) break;	/* At EOF */
 

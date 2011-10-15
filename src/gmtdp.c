@@ -299,10 +299,10 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&D[GMT_IN])) Return ((error = GMT_DATA_READ_ERROR));
+	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, &D[GMT_IN])) Return ((error = GMT_DATA_READ_ERROR));
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	
-	GMT_alloc_dataset (GMT, D[GMT_IN], &D[GMT_OUT], 0, 0, GMT_ALLOC_NORMAL);	/* Allocate identical output tables; we reallocate memory below */
+	GMT_alloc_dataset (GMT, D[GMT_IN], 0, 0, GMT_ALLOC_NORMAL, &D[GMT_OUT]);	/* Allocate identical output tables; we reallocate memory below */
 
 	geo = GMT_is_geographic (GMT, GMT_IN);					/* TRUE for lon/lat coordinates */
 	if (!geo && strchr (GMT_LEN_UNITS, (int)Ctrl->T.unit)) geo = TRUE;	/* Used units but did not set -fg; implicitly set -fg via geo */
@@ -349,7 +349,7 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->Out.file, (void *)D[GMT_OUT]))) Return (error);
+	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Out.file, D[GMT_OUT]))) Return (error);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 	
 	Return (GMT_OK);

@@ -640,7 +640,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
 	if (Ctrl->C.cpt) {	/* Presumably got a cpt-file; read it here so we can crash if no-such-file before we process input data */
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
+		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, &P)) Return (GMT_DATA_READ_ERROR);
 		if (Ctrl->I.active && P->is_continuous) {
 			GMT_report (GMT, GMT_MSG_FATAL, "-I option requires constant color between contours!\n");
 			Return (GMT_OK);
@@ -661,7 +661,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	xyz[0][GMT_Z] = DBL_MAX;	xyz[1][GMT_Z] = -DBL_MAX;
 	n = 0;
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we have no more files */
+	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we have no more files */
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
 
@@ -720,11 +720,11 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_TABLE *T = NULL;
 
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->Q.file, (void **)&Tin)) Return ((error = GMT_DATA_READ_ERROR));
+		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Q.file, &Tin)) Return ((error = GMT_DATA_READ_ERROR));
 
  		if (Tin->n_columns < 3) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q: %s does not have at least 3 columns with indices\n", Ctrl->Q.file);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Tin);
+			GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin);
 			Return (EXIT_FAILURE);
 		}
 		T = Tin->table[0];	/* Since we only have one table here */
@@ -735,7 +735,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (col = 0; col < 3; col++) ind[ij++] = irint (T->segment[seg]->coord[col][row]);
 			}
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Tin);
+		GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld indices triplets from %s.\n", np, Ctrl->Q.file);
 	}
 	else {	/* Do our own Delaunay triangulation */
@@ -783,7 +783,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		c = 0;
-		while (GMT_Get_Record (API, GMT_READ_TEXT, (void **)&record) != EOF) {
+		while (GMT_Get_Record (API, GMT_READ_TEXT, &record) != EOF) {
 			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
 			if (c == c_alloc) n_alloc = GMT_malloc (GMT, cont, c, c_alloc, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
@@ -853,7 +853,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
-		D = GMT_create_dataset (GMT, n_tables, 0, 3, 0);	/* An empty table */
+		GMT_create_dataset (GMT, n_tables, 0, 3, 0, &D);	/* An empty table */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 		n_seg = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
@@ -1238,7 +1238,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_LINE_SEGMENT *);
-		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, io_mode, (void **)&(Ctrl->D.file), (void *)D))) Return (error);
+		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, io_mode, Ctrl->D.file, D))) Return (error);
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 		GMT_free (GMT, n_seg_alloc);
 		GMT_free (GMT, n_seg);

@@ -78,7 +78,7 @@ GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, GM
 	*data = GMT_memory (GMT, NULL, n_alloc, struct TREND2D_DATA);
 
 	i = 0;
-	while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
 
 		if (GMT_REC_IS_ERROR (GMT)) return (GMT_RUNTIME_ERROR);
 
