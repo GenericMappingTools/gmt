@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-10-16	remko
+	* gmt_init.c:		Do not write "empty" .gmtcommands
+
 2011-10-14	pwessel
 	* test/meca:		Added new meca_5.sh test from Vala Hjorleifsdottir
 
