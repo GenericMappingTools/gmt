@@ -4459,16 +4459,16 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	/* Determine w/e/s/n via GMT_minmax */
 
 	/* Create option list, register D[GMT_OUT] as input source via ref */
-	if (GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, (void **)&D, NULL, (void *)D, &object_ID)) return (EXIT_FAILURE);
+	if (GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D, NULL, D, &object_ID)) return (EXIT_FAILURE);
 	GMT_Encode_ID (C->parent, in_string, object_ID);	/* Make filename with embedded object ID */
-	if (GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_COPY, GMT_IS_POINT, GMT_OUT, (void **)&M, NULL, (void *)M, &object_ID)) return (EXIT_FAILURE);
+	if (GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_COPY, GMT_IS_POINT, GMT_OUT, M, NULL, M, &object_ID)) return (EXIT_FAILURE);
 	GMT_Encode_ID (C->parent, out_string, object_ID);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-C -fg -<%s ->%s", in_string, out_string);
 	status = GMT_minmax (C->parent, 0, (void *)buffer);	/* Get the extent via minmax */
 	
 	/* Time to reregister the original destination */
 	
-	if (GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, (void **)&D, NULL, (void *)D, &object_ID)) return (EXIT_FAILURE);
+	if (GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, D, NULL, D, &object_ID)) return (EXIT_FAILURE);
 	if ((error = GMTAPI_Validate_ID (C->parent, GMT_IS_DATASET, object_ID, GMT_OUT, &item)) != GMT_OK) return (GMT_Report_Error (C->parent, error));
 	GMT_memcpy (C->parent->object[item], &O, 1, struct GMTAPI_DATA_OBJECT);	/* Restore what we had before */
 	
@@ -4967,6 +4967,7 @@ GMT_LONG GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_s
 	struct GMT_TEXT_TABLE *T = NULL;
 	struct GMT_TEXTSET *D = NULL;
 	
+	if (*Dout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((D = GMT_memory (C, NULL, n_tables, struct GMT_TEXTSET)) == NULL) return (GMT_MEMORY_ERROR);
 	if ((D->table = GMT_memory (C, NULL, n_tables, struct GMT_TEXT_TABLE *)) == NULL) return (GMT_MEMORY_ERROR);
 	D->n_tables = D->n_alloc = n_tables;
@@ -5149,10 +5150,12 @@ GMT_LONG GMT_create_table (struct GMT_CTRL *C, GMT_LONG n_segments, GMT_LONG n_c
 		if ((T->min = GMT_memory (C, NULL, n_columns, double)) == NULL) return (GMT_MEMORY_ERROR);
 		if ((T->max = GMT_memory (C, NULL, n_columns, double)) == NULL) return (GMT_MEMORY_ERROR);
 	}
-	if ((T->segment = GMT_memory (C, NULL, n_segments, struct GMT_LINE_SEGMENT *)) == NULL) return (GMT_MEMORY_ERROR);
-	for (seg = 0; n_columns && seg < n_segments; seg++) {
-		if ((T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT)) == NULL) return (GMT_MEMORY_ERROR);
-		if (GMT_alloc_segment (C, T->segment[seg], n_rows, n_columns, TRUE)) return (GMT_MEMORY_ERROR);
+	if (n_segments) {
+		if ((T->segment = GMT_memory (C, NULL, n_segments, struct GMT_LINE_SEGMENT *)) == NULL) return (GMT_MEMORY_ERROR);
+		for (seg = 0; n_columns && seg < n_segments; seg++) {
+			if ((T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT)) == NULL) return (GMT_MEMORY_ERROR);
+			if (GMT_alloc_segment (C, T->segment[seg], n_rows, n_columns, TRUE)) return (GMT_MEMORY_ERROR);
+		}
 	}
 	*Tout = T;
 	
@@ -5164,6 +5167,7 @@ GMT_LONG GMT_create_dataset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_s
 	GMT_LONG tbl;
 	struct GMT_DATASET *D = NULL;
 	
+	if (*Dout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((D = GMT_memory (C, NULL, n_tables, struct GMT_DATASET)) == NULL) return (GMT_MEMORY_ERROR);
 	D->n_columns = n_columns;
 	if ((D->table = GMT_memory (C, NULL, n_tables, struct GMT_TABLE *)) == NULL) return (GMT_MEMORY_ERROR);
@@ -5613,12 +5617,13 @@ void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, GMT_LONG free_ima
 	*I = NULL;
 }
 
-GMT_LONG GMT_create_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **M_out)
+GMT_LONG GMT_create_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **Mout)
 {	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
+	if (*Mout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((M = GMT_memory (C, NULL, 1, struct GMT_MATRIX)) == NULL) return (GMT_MEMORY_ERROR);
 	M->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
-	*M_out = M;
+	*Mout = M;
 	return (GMT_OK);
 }
 
@@ -5634,6 +5639,7 @@ GMT_LONG GMT_create_vector (struct GMT_CTRL *C, GMT_LONG n_columns, struct GMT_V
 {	/* Allocates space for a new vector container.  No space allocated for the vectors themselves */
 	struct GMT_VECTOR *V = NULL;
 	
+	if (*Vout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((V = GMT_memory (C, NULL, 1, struct GMT_VECTOR)) == NULL) return (GMT_MEMORY_ERROR);
 	if ((V->data = GMT_memory (C, NULL, n_columns, void *)) == NULL) return (GMT_MEMORY_ERROR);
 	if ((V->type = GMT_memory (C, NULL, n_columns, GMT_LONG)) == NULL) return (GMT_MEMORY_ERROR);

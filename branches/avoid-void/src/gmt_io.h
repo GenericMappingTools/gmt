@@ -198,6 +198,7 @@ enum GMT_io {GMT_IN, GMT_OUT, GMT_ERR};
 #define GMT_OUT	1
 #define GMT_ERR	2
 #endif
+#define GMT_NOWHERE -1
 
 /* Get current setting for in/out columns */
 

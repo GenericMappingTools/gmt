@@ -614,11 +614,11 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Undo the implicit spherical Mercator -Jm1i projection.\n");
 	/* Preparing source and destination for GMT_grdproject */
 	/* a. Register the Mercator grid to be the source read by GMT_grdproject by passing a pointer */
-	if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, (void **)&Merc, NULL, (void *)Merc, &in_ID)) exit (EXIT_FAILURE);
+	if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, Merc, NULL, Merc, &in_ID)) exit (EXIT_FAILURE);
 	GMT_Encode_ID (API, s_in_ID, in_ID);	/* Make filename with embedded object ID */
 	/* b. If -E: Register a grid struct Geo to be the destination allocated and written to by GMT_grdproject, else write to -G<file> */
 	if (Ctrl->E.active) {	/* Since we will resample again, register a memory location for the result */
-		if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, (void **)&Geo, NULL, (void *)Geo, &out_ID)) exit (EXIT_FAILURE);
+		if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, Geo, NULL, Geo, &out_ID)) exit (EXIT_FAILURE);
 		GMT_Encode_ID (API, s_out_ID, out_ID);	/* Make filename with embedded object ID */
 	}
 	else	/* The output here is the final result */
@@ -633,7 +633,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		strcpy (Geo->header->z_units, z_units);
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
-		if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, (void **)&Geo, NULL, (void *)Geo, &in_ID)) exit (EXIT_FAILURE);
+		if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, Geo, NULL, Geo, &in_ID)) exit (EXIT_FAILURE);
 		GMT_Encode_ID (API, s_in_ID, in_ID);	/* Make filename with embedded object ID */
 		sprintf (cmd, "-R%g/%g/%g/%g -I%gm %s -G%s -fg", west, east, south, north, Ctrl->I.value, s_in_ID, Ctrl->G.file);
 		if ((status = GMT_grdsample (API, 0, (void *)cmd))) Return (GMT_RUNTIME_ERROR);	/* Resample the grid or fail */

@@ -215,7 +215,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		Return (EXIT_FAILURE);
 	}
 
-	if (Ctrl->N.active && GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IN, (void **)&Ctrl->N.file, NULL, NULL, &out_ID)) {
+	if (Ctrl->N.active && GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IN, Ctrl->N.file, NULL, NULL, &out_ID)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to register file %s\n", Ctrl->N.file);
 		Return (EXIT_FAILURE);
 	}

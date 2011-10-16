@@ -1513,6 +1513,7 @@ GMT_LONG GMT_create_grid (struct GMT_CTRL *C, struct GMT_GRID **Gout)
 {	/* Allocates space for a new grid container.  No space allocated for the float grid itself */
 	struct GMT_GRID *G = NULL;
 
+	if (*Gout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((G = GMT_memory (C, NULL, 1, struct GMT_GRID)) == NULL) return (GMT_MEMORY_ERROR);
 	if ((G->header = GMT_memory (C, NULL, 1, struct GRD_HEADER)) == NULL) return (GMT_MEMORY_ERROR);
 	GMT_grd_setpad (C, G->header, C->current.io.pad);	/* Use the system pad setting by default */

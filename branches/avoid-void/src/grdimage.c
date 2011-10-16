@@ -580,11 +580,11 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_LONG object_ID, status = 0;			/* Status code from GMT API */
 			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[GMT_BUFSIZ];
 			/* Create option list, register G as input source via reference */
-			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, (void **)&Intens_orig, NULL, (void *)Intens_orig, &object_ID)) 
+			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, Intens_orig, NULL, Intens_orig, &object_ID)) 
 				return (EXIT_FAILURE);
 			GMT_Encode_ID (API, in_string, object_ID);	/* Make filename with embedded object ID for grid G */
 
-			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, (void **)&G2, NULL, (void *)G2, &object_ID)) 
+			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, G2, NULL, G2, &object_ID)) 
 				return (EXIT_FAILURE);
 			GMT_Encode_ID (GMT->parent, out_string, object_ID);	/* Make filename with embedded object ID for result grid G2 */
 
@@ -796,14 +796,14 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (k = 1; k < n_grids; k++) {	/* Not done with Grid_proj[0] yet, hence we start loop at k = 1 */
 		if (need_to_project) /* Must remove locally created grids */
 			GMT_free_grid (GMT, &Grid_proj[k], TRUE);
-		else
-			GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_proj[k]);
+//		else
+//			GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_proj[k]);
 	}
 	if (Ctrl->I.active) {
 		if (need_to_project || !n_grids) /* Must remove locally created grids */
 			GMT_free_grid (GMT, &Intens_proj, TRUE);
-		else
-			GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_proj);
+//		else
+//			GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_proj);
 	}
 	
 	/* Get actual size of each pixel */
@@ -946,8 +946,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (need_to_project && n_grids)
 		GMT_free_grid (GMT, &Grid_proj[0], TRUE);
-	else if (n_grids)
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_proj[0]);
+//	else if (n_grids)
+//		GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_proj[0]);
 
 #ifdef USE_GDAL
 	if (Ctrl->D.active) {

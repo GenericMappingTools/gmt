@@ -1850,6 +1850,7 @@ GMT_LONG GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors, struct GMT_P
 {
 	/* Makes an empty palette table */
 	struct GMT_PALETTE *P = NULL;
+	if (Pout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((P = GMT_memory (C, NULL, 1, struct GMT_PALETTE)) == NULL) return (GMT_MEMORY_ERROR);
 	if ((P->range = GMT_memory (C, NULL, n_colors, struct GMT_LUT)) == NULL) return (GMT_MEMORY_ERROR);
 	P->n_colors = n_colors;
