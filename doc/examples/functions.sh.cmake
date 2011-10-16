@@ -25,6 +25,7 @@ SUPPLEMENTS_DIR=$(find ${BIN_DIR}/* -maxdepth 0 -type d -and -not -name '*.dSYM'
 export PATH="${BIN_DIR}:${SUPPLEMENTS_DIR}:${SRC_DIR}:${PATH}"
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
+export EXTRA_FONTS_DIR="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 
 # Reset error count
 ERROR=0
@@ -34,7 +35,7 @@ function make_pdf()
 {
   test -f ${ps} || return
   #test -f ${ps%.ps}.pdf && return # do not replace existing pdf
-  ps2raster -Tf -A -P ${ps} || ((ERROR++))
+  ps2raster -Tf -A -P -C-sFONTPATH=${EXTRA_FONTS_DIR} ${ps} || ((ERROR++))
 }
 
 # Make sure to cleanup at end

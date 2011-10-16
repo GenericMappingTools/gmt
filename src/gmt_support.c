@@ -3125,11 +3125,11 @@ void GMT_free_func (struct GMT_CTRL *C, void *addr, char *fname, GMT_LONG line)
 	{
 		/* report freeing unallocated memory */
 #ifdef DEBUG
-		GMT_report (C, GMT_MSG_FATAL,
+		GMT_report (C, GMT_MSG_NORMAL,
 		    "GMT_free_func: %s from file %s on line %ld tried to free unallocated memory\n",
 		    C->init.progname, fname, line);
 #else
-		GMT_report (C, GMT_MSG_NORMAL,
+		GMT_report (C, GMT_MSG_DEBUG,
 		    "GMT_free_func: %s tried to free unallocated memory\n");
 #endif
 		return; /* Do not free a NULL pointer, although allowed */
@@ -8934,21 +8934,23 @@ void GMT_free_custom_symbols (struct GMT_CTRL *C) {	/* Free the allocated list o
 	GMT_LONG i;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *current = NULL;
 
-	for (i = 0; i < C->init.n_custom_symbols; i++) {
-		s = C->init.custom_symbol[i]->first;
-		while (s) {
-			current = s;
-			s = s->next;
-			GMT_free (C, current->fill);
-			GMT_free (C, current->pen);
-			GMT_free (C, current->string);
-			GMT_free (C, current);
+	if (C->init.n_custom_symbols > 0) {
+		for (i = 0; i < C->init.n_custom_symbols; i++) {
+			s = C->init.custom_symbol[i]->first;
+			while (s) {
+				current = s;
+				s = s->next;
+				GMT_free (C, current->fill);
+				GMT_free (C, current->pen);
+				GMT_free (C, current->string);
+				GMT_free (C, current);
+			}
+			GMT_free (C, C->init.custom_symbol[i]->PS_macro);
+			GMT_free (C, C->init.custom_symbol[i]);
 		}
-		GMT_free (C, C->init.custom_symbol[i]->PS_macro);
-		GMT_free (C, C->init.custom_symbol[i]);
+		GMT_free (C, C->init.custom_symbol);
+		C->init.n_custom_symbols = 0;
 	}
-	GMT_free (C, C->init.custom_symbol);
-	C->init.n_custom_symbols = 0;
 }
 
 GMT_LONG GMT_polygon_is_open (struct GMT_CTRL *C, double x[], double y[], GMT_LONG n)

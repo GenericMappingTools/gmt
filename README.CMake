@@ -92,7 +92,7 @@ TODO list
 * Make exported cmake variables consistent GMT_..., prefix temporary
   variables with "_"
 
-* Build targets for LaTeX doc
+* Build targets for LaTeX doc: expand tabs for verbatim (pr); make proper project
 
 * Man Pages
   - Editing troff is difficult at least for people who are not familiar with

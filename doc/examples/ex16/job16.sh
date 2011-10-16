@@ -15,15 +15,15 @@ gmtset FONT_ANNOT_PRIMARY 9p
 pscontour -R0/6.5/-0.2/6.5 -Jx0.45i -P -K -Y5.5i -Ba2f1WSne table_5.11 -Cex16.cpt -I > $ps
 echo "3.25 7 pscontour (triangulate)" | pstext -R -J -O -K -N -F+f18p,Times-Roman+jCB >> $ps
 #
-surface table_5.11 -R -I0.1 -Graws0.nc
+surface table_5.11 -R -I0.2 -Graws0.nc
 grdview raws0.nc -R -J -B -Cex16.cpt -Qs -O -K -X3.5i >> $ps
 echo "3.25 7 surface (tension = 0)" | pstext -R -J -O -K -N -F+f18p,Times-Roman+jCB >> $ps
 #
-surface table_5.11 -R -I0.1 -Graws5.nc -T0.5
+surface table_5.11 -R -I0.2 -Graws5.nc -T0.5
 grdview raws5.nc -R -J -B -Cex16.cpt -Qs -O -K -Y-3.75i -X-3.5i >> $ps
 echo "3.25 7 surface (tension = 0.5)" | pstext -R -J -O -K -N -F+f18p,Times-Roman+jCB >> $ps
 #
-triangulate table_5.11 -Grawt.nc -R -I0.1 > /dev/null
+triangulate table_5.11 -Grawt.nc -R -I0.2 > /dev/null
 grdfilter rawt.nc -Gfiltered.nc -D0 -Fc1
 grdview filtered.nc -R -J -B -Cex16.cpt -Qs -O -K -X3.5i >> $ps
 echo "3.25 7 triangulate @~\256@~ grdfilter" | pstext -R -J -O -K -N -F+f18p,Times-Roman+jCB >> $ps
