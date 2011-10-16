@@ -1255,8 +1255,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, y);
 	GMT_free (GMT, z);
 	GMT_free (GMT, cont);
-	if (Ctrl->Q.active)
+	if (Ctrl->Q.active) {
 		GMT_free (GMT, ind);	/* Allocated above by GMT_memory */
+	}
 	else {
 #ifdef TRIANGLE_D
 #ifdef DEBUG

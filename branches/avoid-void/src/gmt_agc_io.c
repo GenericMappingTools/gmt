@@ -45,8 +45,8 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 Private Functions used by the public functions:
 
-GMT_LONG ReadRecord (FILE *fpi, float *z)
-GMT_LONG WriteRecord (FILE *file, float *rec, float *prerec, float *postrec)
+GMT_LONG ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT])
+GMT_LONG WriteRecord (FILE *file, float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec)
 void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header)
 void SaveAGCHeader (char *remark, float *agchead)
 
@@ -63,7 +63,7 @@ void SaveAGCHeader (char *remark, float *agchead)
 # define AGCHEADINDICATOR	"agchd:"
 # define PARAMSIZE		(GMT_LONG)((GRD_REMARK_LEN160 - HEADINDSIZE) / BUFFHEADSIZE)
 
-GMT_LONG ReadRecord (FILE *fpi, float *z)
+GMT_LONG ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT])
 {	/* Reads one block of data, including pre- and post-headers */
 	GMT_LONG nitems;
 	float garbage[PREHEADSIZE];
@@ -76,7 +76,7 @@ GMT_LONG ReadRecord (FILE *fpi, float *z)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG WriteRecord (FILE *file, float *rec, float *prerec, float *postrec)
+GMT_LONG WriteRecord (FILE *file, float rec[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec)
 {	/* Writes one block of data, including pre- and post-headers */
 	if (GMT_fwrite ((void *)prerec, sizeof(float), (size_t)PREHEADSIZE, file) < (size_t)PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
 	if (GMT_fwrite ((void *)rec, sizeof(float), (size_t)(ZBLOCKWIDTH * ZBLOCKHEIGHT), file) < (size_t)(ZBLOCKWIDTH * ZBLOCKHEIGHT)) return (GMT_GRDIO_WRITE_FAILED);
@@ -252,7 +252,7 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	n_blocks = n_blocks_x * n_blocks_y;
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {
-		if (ReadRecord (fp, (float *)z)) return (GMT_GRDIO_READ_FAILED);
+		if (ReadRecord (fp, z)) return (GMT_GRDIO_READ_FAILED);
 		rowstart = datablockrow * ZBLOCKHEIGHT;
 		rowend = MIN (rowstart + ZBLOCKHEIGHT, header->ny);
 		for (i = 0, row = rowstart; row < rowend; i++, row++) {
@@ -373,7 +373,7 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 			}
 		} 
 
-		if (WriteRecord (fp, (float*)outz, prez, postz)) return (GMT_GRDIO_WRITE_FAILED);
+		if (WriteRecord (fp, outz, prez, postz)) return (GMT_GRDIO_WRITE_FAILED);
 
 		if (++datablockrow >= n_blocks_y) {
 			datablockrow = 0;

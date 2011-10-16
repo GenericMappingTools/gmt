@@ -366,7 +366,7 @@ EXTERN_MSC PSL_LONG psl_iz (struct PSL_CTRL *P, double value);
 EXTERN_MSC PSL_LONG psl_ip (struct PSL_CTRL *P, double value);
 
 /* Used indirectly by macro PSL_free and FORTRAN wrapper PSL_free_ . */
-EXTERN_MSC PSL_LONG PSL_free_nonmacro (struct PSL_CTRL *P, void **addr);
+EXTERN_MSC PSL_LONG PSL_free_nonmacro (struct PSL_CTRL *P, void *addr);
 
 /* Definition for printing a message. When DEBUG is on, also print source file and line number.
  * Use this for various progress statements, debugging to see certain variables, and even fatal
@@ -378,7 +378,12 @@ EXTERN_MSC int PSL_initerr (struct PSL_CTRL *C, char *format, ...);
 EXTERN_MSC int PSL_message (struct PSL_CTRL *C, PSL_LONG level, char *format, ...);
 EXTERN_MSC FILE *PSL_fopen (char *file, char *mode);
 
-#define PSL_free(C,ptr) PSL_free_nonmacro (C,(void**)&ptr)					/* Easier macro for PSL_free */
+#define PSL_free(C,ptr) \
+	if (ptr) /* Do not try to free a NULL pointer! */ \
+	{ \
+		PSL_free_nonmacro (C,ptr); \
+		ptr = NULL; /* Cleanly set the freed pointer to NULL */ \
+	}
 
 #ifdef __cplusplus
 }

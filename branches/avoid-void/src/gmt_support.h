@@ -42,9 +42,9 @@ struct MATH_MACRO {
 
 /* Macros to reallocate memory for groups of 2, 3 or 4 arrays at a time of the same size/type */
 #ifdef DEBUG
-#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,(void **)&a,n,n_alloc,sizeof(type),__FILE__,__LINE__)
+#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),__FILE__,__LINE__)
 #else
-#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,(void **)&a,n,n_alloc,sizeof(type),"",0)
+#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),"",0)
 #endif
 #define GMT_malloc2(C,a,b,n,n_alloc,type) (GMT_malloc(C,a,n,n_alloc,type) | GMT_malloc(C,b,n,n_alloc,type))
 #define GMT_malloc3(C,a,b,c,n,n_alloc,type) (GMT_malloc(C,a,n,n_alloc,type) | GMT_malloc(C,b,n,n_alloc,type) | GMT_malloc(C,c,n,n_alloc,type))
@@ -52,16 +52,24 @@ struct MATH_MACRO {
 
 /* Convenience macro for GMT_memory_func */
 #ifdef DEBUG
-#define GMT_memory(C,ptr,n,type) (type*) GMT_memory_func(C,(void*)ptr,(GMT_LONG)(n),sizeof(type),__FILE__,__LINE__)
+#define GMT_memory(C,ptr,n,type) (type*) GMT_memory_func(C,ptr,(GMT_LONG)(n),sizeof(type),__FILE__,__LINE__)
 #else
-#define GMT_memory(C,ptr,n,type) (type*) GMT_memory_func(C,(void*)ptr,(GMT_LONG)(n),sizeof(type),"",0)
+#define GMT_memory(C,ptr,n,type) (type*) GMT_memory_func(C,ptr,(GMT_LONG)(n),sizeof(type),"",0)
 #endif
 
 /* Convenience macro for GMT_free_func */
 #ifdef DEBUG
-#define GMT_free(C,array) GMT_free_func(C,(void**)&(array),__FILE__,__LINE__)
+#define GMT_free(C,array) { if (array) /* Do not try to free a NULL pointer! */ \
+{ \
+	GMT_free_func(C,(void *)array,__FILE__,__LINE__); \
+	array = NULL; /* Cleanly set the freed pointer to NULL */ \
+} }
 #else
-#define GMT_free(C,array) GMT_free_func(C,(void**)&(array),"",0)
+#define GMT_free(C,array) { if (array) /* Do not try to free a NULL pointer! */ \
+{ \
+	GMT_free_func(C,(void *)array,"",0); \
+	array = NULL; /* Cleanly set the freed pointer to NULL */ \
+} }
 #endif
 
 #ifdef DEBUG

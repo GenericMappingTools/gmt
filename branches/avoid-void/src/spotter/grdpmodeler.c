@@ -301,7 +301,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 	
-	GMT_create_grid (GMT, G_mod);
+	GMT_create_grid (GMT, &G_mod);
 	GMT_grd_init (GMT, G_mod->header, options, FALSE);
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
