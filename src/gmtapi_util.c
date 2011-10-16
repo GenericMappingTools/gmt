@@ -3125,7 +3125,6 @@ GMT_LONG GMT_Create_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG par
 
 	GMT_LONG error = 0;
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	if (data) return (GMT_Report_Error (API, GMT_PTR_NOT_NULL));
 	
 	*ID = GMTAPI_NOTSET;
 	switch (family) {	/* dataset, cpt, text, or grid */
@@ -3156,7 +3155,7 @@ GMT_LONG GMT_Create_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG par
 	
 	/* Optionally register the resource */
 	if (direction == GMT_IN || direction == GMT_OUT) return (GMT_Register_IO (API, family, GMT_IS_REF, 0, direction, NULL, NULL, NULL, ID));
-	if (!API->object[*ID]->data) API->object[*ID]->data = data;	/* Save address to memory we wrote to */
+	if (*ID != GMTAPI_NOTSET && !API->object[*ID]->data) API->object[*ID]->data = data;	/* Save address to memory we wrote to */
 		
 	return (GMT_OK);
 }

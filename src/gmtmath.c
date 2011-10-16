@@ -3285,7 +3285,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_Create_Data (API, GMT_IS_DATASET, dim, &R, GMT_OUT, &ID))) Return (error)
 		for (i = 0; i < info.n_roots; i++) R->table[0]->segment[0]->coord[GMT_X][i] = S->coord[info.r_col][i];
 		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, stack[0]->io_mode, Ctrl->Out.file, R))) Return (error);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &R);
+		GMT_free_dataset (API->GMT, &R);
 	}
 	else {	/* Regular table result */
 		if (stack[0])	/* There is an output stack, select it */
@@ -3309,7 +3309,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			if ((error = GMT_Put_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, N->io_mode, Ctrl->Out.file, N))) Return (error);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, &N);
+			GMT_free_dataset (API->GMT, &N);
 		}
 		else {	/* Write the whole enchilada */
 			if ((error = GMT_Put_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, R->io_mode, Ctrl->Out.file, R))) Return (error);
