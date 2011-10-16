@@ -224,8 +224,9 @@ GMT_LONG GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, char **args[]
 		}
 	}
 	/* OK, done processing all options */
-	if (arg == 0)	/* Found no options, so delete the list we allocated */
+	if (arg == 0) {	/* Found no options, so delete the list we allocated */
 		GMT_free (G, txt);
+	}
 	else if (arg < n_alloc) {	/* Trim back on the list to fit what we want */
 		if ((txt = GMT_memory (G, txt, arg, char *)) == NULL) {	/* Failed to shrink the list; free what we got and cry foul */
 			(void) GMT_Destroy_Args (API, arg, txt);		/* Free list content built so far, as well as the list.  We ignore the OK return since this is an error */
@@ -287,8 +288,9 @@ GMT_LONG GMT_Create_Cmd (struct GMTAPI_CTRL *API, char **cmd, struct GMT_OPTION 
 	}
 	length++;	/* Need space for trailing \0 */
 	/* OK, done processing all options */
-	if (length == 1)	/* Found no options, so delete the string we allocated */
+	if (length == 1) {	/* Found no options, so delete the string we allocated */
 		GMT_free (G, txt);
+	}
 	else if (length < n_alloc) {	/* Trim back on the list to fit what we want */
 		if ((txt = GMT_memory (G, txt, length, char)) == NULL) {	/* Failed to shrink the list; free what we got and cry foul */
 			return (GMT_Report_Error (API, GMT_MEMORY_ERROR));	/* Report the error */

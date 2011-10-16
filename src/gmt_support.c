@@ -3122,21 +3122,20 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 	return (tmp);
 }
 
-void GMT_free_func (struct GMT_CTRL *C, void **addr, char *fname, GMT_LONG line)
+void GMT_free_func (struct GMT_CTRL *C, void *addr, char *fname, GMT_LONG line)
 {
-	if (!addr || !(*addr)) return;	/* Do not try to free a NULL pointer! */
+	if (!addr) return;	/* Do not try to free a NULL pointer! */
 #ifdef DEBUG
-	gmt_memtrack_sub (C, GMT_mem_keeper, fname, line, *addr);
+	gmt_memtrack_sub (C, GMT_mem_keeper, fname, line, addr);
 #endif
 #if defined(WIN32) && defined(USE_MEM_ALIGNED)
-	_aligned_free (*addr);
+	_aligned_free (addr);
 #else
-	free (*addr);
+	free (addr);
 #endif
-	*addr = NULL;	/* Cleanly set the freed pointer to NULL */
 }
 
-GMT_LONG GMT_malloc_func (struct GMT_CTRL *C, void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *fname, GMT_LONG line)
+GMT_LONG GMT_malloc_func (struct GMT_CTRL *C, void *ptr, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *fname, GMT_LONG line)
 {
 	/* GMT_malloc is used to initialize, grow, and finalize an array allocation in cases
 	 * were more memory is needed as new data are read.  There are three different situations:
@@ -3159,7 +3158,7 @@ GMT_LONG GMT_malloc_func (struct GMT_CTRL *C, void **ptr, GMT_LONG n, GMT_LONG n
 
 	if (n_alloc == 0) {	/* A) First time allocation, use default minimum size, unless n > 0 is given */
 		n_alloc = (n == 0) ? C->session.min_meminc : n;
-		*ptr = NULL;	/* Initialize a new pointer to NULL before calling GMT_memory with it */
+		ptr = NULL;	/* Initialize a new pointer to NULL before calling GMT_memory with it */
 	}
 	else if (n == 0 && n_alloc > 0)	/* C) Final allocation, set to actual final size */
 		n = n_alloc;		/* Keep the given n_alloc */
@@ -3174,7 +3173,7 @@ GMT_LONG GMT_malloc_func (struct GMT_CTRL *C, void **ptr, GMT_LONG n, GMT_LONG n
 
 	/* Here n_alloc is set one way or another.  Do the actual [re]allocation */
 
-	*ptr = GMT_memory_func (C, *ptr, n_alloc, element_size, fname, line);
+	ptr = GMT_memory_func (C, ptr, n_alloc, element_size, fname, line);
 
 	return (n_alloc);
 }

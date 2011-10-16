@@ -1095,8 +1095,9 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (n_nan == Grid->header->nx * Grid->header->ny) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your grid file is entirely full of NaNs.\n");
 
-	if (Ctrl->T.active)
+	if (Ctrl->T.active) {
 		GMT_free (GMT, x);
+	}
 	else if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid))
 		Return (GMT_DATA_WRITE_ERROR);
 

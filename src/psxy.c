@@ -519,7 +519,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 
-	void **record = NULL;	/* Opaque pointer to either a text or double record */
+	void *record = NULL;	/* Opaque pointer to either a text or double record */
 	
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -711,13 +711,13 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (read_symbol) {	/* If symbol info is given we must process text records */
 		set_type = GMT_IS_TEXTSET;
 		read_mode = GMT_READ_TEXT;
-		record = (void **)buffer;
+		record = (void *)buffer;
 		in = GMT->current.io.curr_rec;
 	}
 	else {	/* Here we can process data records (ASCII or binary) */
 		set_type = GMT_IS_DATASET;
 		read_mode = GMT_READ_DOUBLE;
-		record = (void **)&in;
+		record = (void *)in;
 	}
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed))) Return (error);
 
@@ -744,7 +744,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_total_read++;
 
 			if (read_symbol) {	/* Must do special processing */
-				text_rec = (char *)(*record);	/* Get current text record */
+				text_rec = (char *)record;	/* Get current text record */
 				/* First establish the symbol type given at the end of the record */
 				GMT_chop (GMT, text_rec);	/* Get rid of \n \r */
 				i = strlen (text_rec) - 1;

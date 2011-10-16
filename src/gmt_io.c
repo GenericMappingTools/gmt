@@ -4040,8 +4040,9 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 	if (close_file) GMT_fclose (C, fp);
 	C->current.io.input = psave;	/* Restore former pointer */
 
-	if (T->segment[seg]->n_rows == 0)	/* Last segment was empty; we delete to avoid problems downstream in applications */
+	if (T->segment[seg]->n_rows == 0) {	/* Last segment was empty; we delete to avoid problems downstream in applications */
 		GMT_free (C, T->segment[seg]);
+	}
 	else
 		seg++;
 	T->segment = GMT_memory (C, T->segment, seg, struct GMT_TEXT_SEGMENT *);
@@ -5395,8 +5396,9 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	if (close_file) GMT_fclose (C, fp);
 	if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 
-	if (T->segment[seg]->n_rows == 0)	/* Last segment was empty; we delete to avoid problems downstream in applications */
+	if (T->segment[seg]->n_rows == 0) {	/* Last segment was empty; we delete to avoid problems downstream in applications */
 		GMT_free (C, T->segment[seg]);
+	}
 	else
 		seg++;
 	T->segment = GMT_memory (C, T->segment, seg, struct GMT_LINE_SEGMENT *);

@@ -479,8 +479,9 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef USE_GDAL
 	GMT_Destroy_Data (API, GMT_ALLOCATED, &I);	/* If I is NULL then nothing is done */
 #endif
-	if (free_GMT)
+	if (free_GMT) {
 		GMT_free (GMT, picture);
+	}
 	else if (known)
 		PSL_free (PSL, picture);
 
