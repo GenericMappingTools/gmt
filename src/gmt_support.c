@@ -3121,7 +3121,19 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 
 void GMT_free_func (struct GMT_CTRL *C, void *addr, char *fname, GMT_LONG line)
 {
-	if (addr==NULL) return; /* Do not try to free a NULL pointer! */
+	if (addr==NULL)
+	{
+		/* report freeing unallocated memory */
+#ifdef DEBUG
+		GMT_report (C, GMT_MSG_FATAL,
+		    "GMT_free_func: %s from file %s on line %ld tried to free unallocated memory\n",
+		    C->init.progname, fname, line);
+#else
+		GMT_report (C, GMT_MSG_NORMAL,
+		    "GMT_free_func: %s tried to free unallocated memory\n");
+#endif
+		return; /* Do not free a NULL pointer, although allowed */
+	}
 #ifdef DEBUG
 	gmt_memtrack_sub (C, GMT_mem_keeper, fname, line, addr);
 #endif
