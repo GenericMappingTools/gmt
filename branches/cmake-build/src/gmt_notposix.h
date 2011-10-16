@@ -42,6 +42,8 @@
 
 #ifdef HAVE_ASSERT_H_
 #	include <assert.h>
+#else
+#	define assert(e) ((void)0)
 #endif
 
 #ifdef HAVE_CTYPE_H_
@@ -213,25 +215,15 @@
 /* fileno is usually in stdio.h; we use a macro here
  * since the same function under WIN32 is prefixed with _
  * and defined in stdio.h */
-#if defined HAVE__FILENO
+#ifdef HAVE__FILENO
 #	define fileno _fileno
 #endif
 
 /* getcwd is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _;
  * it is defined in direct.h. */
-#if defined HAVE__GETCWD && !defined HAVE_GETCWD
+#ifdef HAVE__GETCWD
 #	define getcwd _getcwd
-#endif
-
-/* mkdir is usually in sys/stat.h; we use a macro here
- * since the same function under WIN32 is prefixed with _
- * and furthermore does not pass the mode argument;
- * it is defined in direct.h
- * The above was copyed from the old gmt_notunix and is left here
- * because it probably refers to older MSVC compilers, but is not for VS2010 */
-#if defined HAVE__MKDIR && !defined HAVE_MKDIR 	/* Visual Studio 2010 has both */
-#	define mkdir(path,mode) _mkdir(path)
 #endif
 
 #if defined HAVE_QSORT_S && !defined HAVE_QSORT_R
@@ -240,7 +232,7 @@
 /* define custom function */
 #endif
 
-#if defined HAVE__SETMODE
+#ifdef HAVE__SETMODE
 #	define setmode _setmode
 #endif
 

@@ -250,6 +250,7 @@ list(REMOVE_DUPLICATES _file_lines)
 list(LENGTH _file_lines GMT_N_PEN_NAMES)
 file2list (_file_lines ${GMT_SOURCE_DIR}/src/gmt_unique.h)
 list(REMOVE_DUPLICATES _file_lines)
+
 list(LENGTH _file_lines GMT_N_UNIQUE)
 
 # gmt_dimensions.h

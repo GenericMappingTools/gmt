@@ -72,19 +72,19 @@
 #cmakedefine HAVE_ERRNO_H_
 #cmakedefine HAVE_FCNTL_H_
 #cmakedefine HAVE_STAT_H_
-#cmakedefine HAVE_TYPES_H_
 #cmakedefine HAVE_UNISTD_H_
 
 /* system specific functions */
 
 #cmakedefine HAVE__ACCESS
-#cmakedefine HAVE_CHOWN
-#cmakedefine HAVE_CLOSEDIR
 #cmakedefine HAVE__FILENO
-#cmakedefine HAVE_GETCWD
+#cmakedefine HAVE_FOPEN64
+#cmakedefine HAVE_FSEEKO
+#cmakedefine HAVE__FSEEKI64
+#cmakedefine HAVE_FTELLO
+#cmakedefine HAVE__FTELLI64
 #cmakedefine HAVE__GETCWD
 #cmakedefine HAVE_GETPWUID
-#cmakedefine HAVE_MKDIR
 #cmakedefine HAVE__MKDIR
 #cmakedefine HAVE_QSORT_R
 #cmakedefine HAVE_QSORT_S
@@ -105,6 +105,7 @@
 #cmakedefine HAVE_INTTYPES_H_
 #cmakedefine HAVE_MACHINE_ENDIAN_H_
 #cmakedefine HAVE_STDINT_H_
+#cmakedefine HAVE_TYPES_H_
 
 /* Math headers */
 

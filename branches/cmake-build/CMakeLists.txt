@@ -48,7 +48,8 @@ cmake_minimum_required (VERSION 2.8.5)
 project (GMT)
 
 # Where to find our CMake modules (this variable is visible in subdirectories).
-set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
+set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/"
+	CACHE INTERNAL "Location of our custom CMake modules.")
 
 # Include configuration options (default options and options overridden by user).
 include (ConfigCMake)
@@ -63,10 +64,10 @@ configure_file (
 )
 
 # Add subdirectories
-add_subdirectory (doc)
+add_subdirectory (doc EXCLUDE_FROM_ALL)
 add_subdirectory (src)
 add_subdirectory (share) # share must be added *after* src (GSHHS_PATH)
-add_subdirectory (test)
+add_subdirectory (test EXCLUDE_FROM_ALL)
 
 # Configuration done
 message(

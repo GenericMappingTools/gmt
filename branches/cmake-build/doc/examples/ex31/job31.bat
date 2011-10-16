@@ -18,10 +18,10 @@ echo LinBiolinumOB 0.700 0 >> CUSTOM_font_info.d
 echo LinLibertineOB 0.700 0 >> CUSTOM_font_info.d
 
 REM common settings
-gmtset FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL degree MAP_TITLE_OFFSET 20p MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-1 FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
+gmtset FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL colon MAP_TITLE_OFFSET 20p MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-1 FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
 
 REM map of countries
-pscoast -Di -R-7/31/64/66/r -JL15/50/40/60/16c -P -B10g10/5g5:."Europe\072 Countries and Capital Cities": -A250 -U"Example 31 in Cookbook" -Slightblue -Glightgreen -W0.25p -N1/1p,white -K > %ps%
+pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P -B10g10/5g5:."Europe\072 Countries and Capital Cities": -A250 -U"Example 31 in Cookbook" -Slightblue -Glightgreen -W0.25p -N1/1p,white -K > %ps%
 
 REM mark capitals
 psxy europe-capitals.csv -R -J -i0,1 -Sc0.15c -G196/80/80 -O -K >> %ps%
