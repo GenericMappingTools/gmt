@@ -6,7 +6,7 @@
 triangulate \- Do optimal (Delaunay) triangulation and gridding of Cartesian table data [method]
 .SH SYNOPSIS
 BD(triangulate) [ IT(table) ] [ OPT(Dx)|BD(y) ] [ OPT(E)IT(empty) ] 
-[ OPT(G)IT(grdfile) ] [ GMT_I_OPT ] [ GMT_J_OPT ] [ OPT(M) ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] 
+[ OPT(G)IT(grdfile) ] [ GMT_I_OPT ] [ GMT_J_OPT ] [ OPT(M) ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] [ OPT(S) ] 
 [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(triangulate) reads one or more ASCII [or binary] files (or standard input) containing x,y[,z] and
@@ -53,11 +53,14 @@ OPT(Q)
 Output the edges of the Voronoi cells instead [Default is Delaunay triangle edges].  Requires
 OPT(R) and is only available if linked with the Shewchuk [1996] library.
 #include "explain_-R.txt"
+.TP
+OPT(S)
+Output triangles as polygon segments separated by a segment header record.  Requires Delaunay triangulation.
 #include "explain_-V.txt"
 .TP
 OPT(Z)
-Controls whether binary data file has two or three columns [2].  Ignored if GMT_bi_OPT
-is not set.
+Controls whether we read (x,y) or (x,y,z) data and if z should be output when OPT(M) or OPT(S)
+are used [Read (x,y) only].
 #include "explain_-bi.txt"
 [Default is 2 input columns].
 #include "explain_-bo.txt"

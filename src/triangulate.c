@@ -57,6 +57,12 @@ struct TRIANGULATE_CTRL {
 	struct Q {	/* -Q */
 		GMT_LONG active;
 	} Q;
+	struct S {	/* -S */
+		GMT_LONG active;
+	} S;
+	struct Z {	/* -Z */
+		GMT_LONG active;
+	} Z;
 };
 
 struct TRIANGULATE_EDGE {
@@ -98,8 +104,8 @@ GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "triangulate %s [API] - Do optimal (Delaunay) triangulation and gridding of Cartesian table data\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: triangulate [<table>] [-Dx|y] [-E<empty>] [-G<outgrid>]\n");
-	GMT_message (GMT, "\t[%s] [%s] [-Q]", GMT_I_OPT, GMT_J_OPT);
-	GMT_message (GMT, "\n\t[-M] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_message (GMT, "\t[%s] [%s] [-M[z]] [-Q]", GMT_I_OPT, GMT_J_OPT);
+	GMT_message (GMT, "\n\t[%s] [-S] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -114,6 +120,9 @@ GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-M Output triangle edges as multiple segments separated by segment headers.\n");
 	GMT_message (GMT, "\t   [Default is to output the indices of vertices for each Delaunay triangle].\n");
 	GMT_message (GMT, "\t-Q Compute Voronoi polygon edges instead (requires -R and Shukchuck algorithm) [Delaunay triangulation].\n");
+	GMT_message (GMT, "\t-S Output triangle polygons as multiple segments separated by segment headers.\n");
+	GMT_message (GMT, "\t   Requires Delaunay triangulation.\n");
+	GMT_message (GMT, "\t-Z Expect (x,y,z) data on input (and output); automatically set if -G is used [Expect (x,y) data].\n");
 	GMT_explain_options (GMT, "RVC2");
 	GMT_message (GMT, "\t-bo Write binary (double) index table [Default is ASCII i/o].\n");
 	GMT_explain_options (GMT, "fhiF:.");
@@ -178,6 +187,12 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 			case 'Q':
 				Ctrl->Q.active = TRUE;
 				break;
+			case 'S':
+				Ctrl->S.active = TRUE;
+				break;
+			case 'Z':
+				Ctrl->Z.active = TRUE;
+				break;
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -208,7 +223,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_LONG ij, ij1, ij2, ij3, np, n_alloc, n = 0, i, j, k, n_edge;
 	GMT_LONG col_min, col_max, row_min, row_max, p, n_fields, n_output;
-	GMT_LONG row, col, error = FALSE, map_them = FALSE;
+	GMT_LONG row, col, n_input, triplets[2] = {FALSE, FALSE}, error = FALSE, map_them = FALSE;
 
 	double zj, zk, zl, zlj, zkj, xp, yp, a, b, c, f;
 	double xkj, xlj, ykj, ylj, out[3], vx[4], vy[4];
@@ -249,7 +264,8 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
 	}
-	n_output = (Ctrl->M.active) ? 2 : 3;
+	n_output = ((Ctrl->M.active || Ctrl->S.active) && (Ctrl->Q.active || !Ctrl->Z.active)) ? 2 : 3;
+	triplets[GMT_OUT] = (n_output == 3);
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output))) Return (error);
 	
 	if (GMT->common.R.active && GMT->common.J.active) { /* Gave -R -J */
@@ -259,15 +275,17 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Now we are ready to take on some input values */
 
-	if ((error = GMT_set_cols (GMT, GMT_IN,  2 + Ctrl->G.active))) Return (error);
+	n_input = (Ctrl->G.active || Ctrl->Z.active) ? 3 : 2;
+	if ((error = GMT_set_cols (GMT, GMT_IN, n_input))) Return (error);
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT,  options))) Return (error);	/* Establishes data input */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
+	triplets[GMT_IN] = (n_input == 3);
 	n_alloc = GMT_CHUNK;
 	xx = GMT_memory (GMT, NULL, n_alloc, double);
 	yy = GMT_memory (GMT, NULL, n_alloc, double);
-	if (Ctrl->G.active) zz = GMT_memory (GMT, NULL, n_alloc, double);
+	if (triplets[GMT_IN]) zz = GMT_memory (GMT, NULL, n_alloc, double);
 
 	n = 0;
 	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
@@ -276,20 +294,20 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;		/* Skip all table and segment headers */
 	
 		xx[n] = in[GMT_X];	yy[n] = in[GMT_Y];
-		if (Ctrl->G.active) zz[n] = in[GMT_Z];
+		if (triplets[GMT_IN]) zz[n] = in[GMT_Z];
 		n++;
 
 		if (n == n_alloc) {	/* Get more memory */
 			n_alloc <<= 1;
 			xx = GMT_memory (GMT, xx, n_alloc, double);
 			yy = GMT_memory (GMT, yy, n_alloc, double);
-			if (Ctrl->G.active) zz = GMT_memory (GMT, zz, n_alloc, double);
+			if (triplets[GMT_IN]) zz = GMT_memory (GMT, zz, n_alloc, double);
 		}
 		if (n == INT_MAX) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot triangulate more than %d points\n", INT_MAX);
 			GMT_free (GMT, xx);
 			GMT_free (GMT, yy);
-			if (Ctrl->G.active) GMT_free (GMT, zz);
+			if (triplets[GMT_IN]) GMT_free (GMT, zz);
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -297,7 +315,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	xx = GMT_memory (GMT, xx, n, double);
 	yy = GMT_memory (GMT, yy, n, double);
-	if (Ctrl->G.active) zz = GMT_memory (GMT, zz, n, double);
+	if (triplets[GMT_IN]) zz = GMT_memory (GMT, zz, n, double);
 
 	if (map_them) {	/* Must make parallel arrays for projected x/y */
 		double *xxp = NULL, *yyp = NULL;
@@ -397,7 +415,6 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 		}
-		GMT_free (GMT, zz);
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
@@ -438,12 +455,21 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			for (i = 0; i < n_edge; i++) {
 				GMT_fprintf (GMT->session.std[GMT_OUT], "%c Edge %ld-%ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], edge[i].begin, edge[i].end);
-				out[GMT_X] = xx[edge[i].begin];	out[GMT_Y] = yy[edge[i].begin];
+				out[GMT_X] = xx[edge[i].begin];	out[GMT_Y] = yy[edge[i].begin];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].begin];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
-				out[GMT_X] = xx[edge[i].end];	out[GMT_Y] = yy[edge[i].end];
+				out[GMT_X] = xx[edge[i].end];	out[GMT_Y] = yy[edge[i].end];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].end];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
 			}
 			GMT_free (GMT, edge);
+		}
+	}
+	else if (Ctrl->S.active)  {	/* Write triangle polygons */
+		for (i = ij = 0; i < np; i++, ij += 3) {
+			GMT_fprintf (GMT->session.std[GMT_OUT], "%c Polygon %d-%d-%d\n", GMT->current.setting.io_seg_marker[GMT_OUT], link[ij], link[ij+1], link[ij+2]);
+			for (k = 0; k < 3; k++) {	/* Three vertices */
+				out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij+k]];
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+			}
 		}
 	}
 	else {	/* Write table of indices */
@@ -456,6 +482,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_free (GMT, xx);
 	GMT_free (GMT, yy);
+	if (triplets[GMT_IN]) GMT_free (GMT, zz);
 #ifdef TRIANGLE_D
 #ifdef DEBUG
 	/* Shewchuk's function allocated the memory separately */
