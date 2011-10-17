@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-10-16	pwessel
+	* triangulate.c:	Added -S to write triangle polygons and -Z to control use
+				of z-column.
+
 2011-10-16	remko
 	* gmt_init.c:		Do not write "empty" .gmtcommands
 
