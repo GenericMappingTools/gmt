@@ -28,6 +28,7 @@
 #include "gmt.h"
 
 EXTERN_MSC GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd);
+EXTERN_MSC char * gmt_get_char_ptr (char **ptr);
 
 /* Control structure for psxyz */
 
@@ -553,7 +554,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_total_read++;
 
 			if (read_symbol) {	/* Must do special processing */
-				text_rec = (char *)record;	/* Get current text record */
+				text_rec = gmt_get_char_ptr (record);
 				/* First establish the symbol type given at the end of the record */
 				GMT_chop (GMT, text_rec);	/* Get rid of \n \r */
 				i = strlen (text_rec) - 1;

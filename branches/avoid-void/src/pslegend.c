@@ -803,31 +803,24 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_Encode_ID (API, string, object_ID);	/* Make filename with embedded object ID */
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		status = GMT_psxy (API, 0, (void *)buffer);	/* Plot the symbols */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &D[SYM]);
 	}
-	else
-		GMT_free_textset (GMT, &D[SYM]);
 	if (S[TXT] && S[TXT]->n_rows) {
 		/* Create option list, register D[TXT] as input source */
 		if (GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D[TXT], NULL, D[TXT], &object_ID)) Return (EXIT_FAILURE);
 		GMT_Encode_ID (API, string, object_ID);	/* Make filename with embedded object ID */
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -F+f+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		status = GMT_pstext (API, 0, (void *)buffer);	/* Plot the symbols */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &D[TXT]);
 	}
-	else
-		GMT_free_textset (GMT, &D[TXT]);
 	if (S[PAR] && S[PAR]->n_rows) {
 		/* Create option list, register D[PAR] as input source */
 		if (GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D[PAR], NULL, D[PAR], &object_ID)) Return (EXIT_FAILURE);
 		GMT_Encode_ID (API, string, object_ID);	/* Make filename with embedded object ID */
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -M -F+f+a+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		status = GMT_pstext (API, 0, (void *)buffer);	/* Plot the symbols */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &D[PAR]);
 	}
-	else
-		GMT_free_textset (GMT, &D[PAR]);
 
+	for (id = 0; id < N_CMD; id++) GMT_free_textset (GMT, &D[id]);	/* Free since all allocated in this module */
+	
 	GMT_map_basemap (GMT);
 	GMT_plotend (GMT);
 

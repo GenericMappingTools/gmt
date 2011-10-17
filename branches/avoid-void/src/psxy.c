@@ -28,6 +28,7 @@
 #include "gmt.h"
 
 EXTERN_MSC GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd);
+EXTERN_MSC char * gmt_get_char_ptr (char **ptr);
 
 /* Control structure for psxy */
 
@@ -503,8 +504,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG ex1, ex2, ex3, change, pos2x, pos2y, save_u = FALSE;
 	GMT_LONG xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
 
-	//char buffer[GMT_BUFSIZ], *text_rec = NULL;
-	char *buffer = NULL, *text_rec = NULL, **ppp = NULL;
+	char buffer[GMT_BUFSIZ], *text_rec = NULL;
 
 	double dim[7], *in = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
@@ -520,9 +520,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 
-	void *record = NULL;	/* Opaque pointer to either a text or double record */
-	
-	buffer = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
+	void *record = NULL;	/* Opaque pointer to either a text (buffer) or double (in) record */
 	
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -747,8 +745,8 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_total_read++;
 
 			if (read_symbol) {	/* Must do special processing */
-				ppp = (char **)record;	/* Get current text record */
-				text_rec = *ppp;	/* Get current text record */
+				text_rec = gmt_get_char_ptr (record);
+				
 				/* First establish the symbol type given at the end of the record */
 				GMT_chop (GMT, text_rec);	/* Get rid of \n \r */
 				i = strlen (text_rec) - 1;
