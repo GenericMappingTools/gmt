@@ -46,6 +46,7 @@ struct MATH_MACRO {
 #else
 #define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),"",0)
 #endif
+/* The k = *n_alloc below is needed to ensure only the final GMT_malloc call changes n_alloc */
 #define GMT_malloc2(C,a,b,n,n_alloc,type) { GMT_LONG k = *n_alloc; a = GMT_malloc(C,a,n,&k,type); b = GMT_malloc(C,b,n,n_alloc,type); }
 #define GMT_malloc3(C,a,b,c,n,n_alloc,type) { GMT_LONG k = *n_alloc; a = GMT_malloc(C,a,n,&k,type); k = *n_alloc; b = GMT_malloc(C,b,n,&k,type); c = GMT_malloc(C,c,n,n_alloc,type); }
 #define GMT_malloc4(C,a,b,c,d,n,n_alloc,type) { GMT_LONG k = *n_alloc; a = GMT_malloc(C,a,n,&k,type); k = *n_alloc; b = GMT_malloc(C,b,n,&k,type); k = *n_alloc; c = GMT_malloc(C,c,n,&k,type); d = GMT_malloc(C,d,n,n_alloc,type); }
@@ -61,13 +62,13 @@ struct MATH_MACRO {
 #ifdef DEBUG
 #define GMT_free(C,array) { if (array) /* Do not try to free a NULL pointer! */ \
 { \
-	GMT_free_func(C,(void *)array,__FILE__,__LINE__); \
+	GMT_free_func(C,array,__FILE__,__LINE__); \
 	array = NULL; /* Cleanly set the freed pointer to NULL */ \
 } }
 #else
 #define GMT_free(C,array) { if (array) /* Do not try to free a NULL pointer! */ \
 { \
-	GMT_free_func(C,(void *)array,"",0); \
+	GMT_free_func(C,array,"",0); \
 	array = NULL; /* Cleanly set the freed pointer to NULL */ \
 } }
 #endif
@@ -88,8 +89,8 @@ struct MEMORY_ITEM {
 };
 
 struct MEMORY_TRACKER {
-	GMT_LONG active;		/* Normally TRUE but can be changed to focus on just some allocations */
-	GMT_LONG search;		/* Normally TRUE but can be changed to skip searching when we know we add a new item */
+	GMT_LONG active;	/* Normally TRUE but can be changed to focus on just some allocations */
+	GMT_LONG search;	/* Normally TRUE but can be changed to skip searching when we know we add a new item */
 	GMT_LONG n_ptr;		/* Number of unique pointers to allocated memory */
 	GMT_LONG n_allocated;	/* Number of items allocated by GMT_memory */
 	GMT_LONG n_reallocated;	/* Number of items reallocated by GMT_memory */
