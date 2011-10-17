@@ -90,6 +90,7 @@ void gmt_set_cpt_ptr (struct GMT_PALETTE **ptr, struct GMT_PALETTE *item) {*ptr 
 void gmt_set_dataset_ptr (struct GMT_DATASET **ptr, struct GMT_DATASET *item) {*ptr = item;}
 void gmt_set_textset_ptr (struct GMT_TEXTSET **ptr, struct GMT_TEXTSET *item) {*ptr = item;}
 void gmt_set_grid_ptr (struct GMT_GRID **ptr, struct GMT_GRID *item) {*ptr = item;}
+char * gmt_get_char_ptr (char **ptr) {return (*ptr);}
 
 /* Note: Many/all of these do not need to check if API == NULL since they are called from functions that do. */
 /* Private functions used by this library only.  These are not accessed outside this file. */
@@ -2916,12 +2917,11 @@ GMT_LONG GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 							strcpy (API->GMT->current.io.segment_header, &t_record[i]);
 							API->GMT->current.io.status = GMT_IO_SEG_HEADER;
 						}
-						else {
+						else {	/* Regular record */
 							strcpy (API->GMT->current.io.current_record, t_record);
-							record = (void *)&API->GMT->current.io.current_record;
 						}
 						retval = 1;
-						//gmt_set_char_ptr (record, t_record);
+						gmt_set_char_ptr (record, t_record);
 					}
 				}
 				break;
