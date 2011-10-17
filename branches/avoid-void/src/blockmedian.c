@@ -317,7 +317,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		node = GMT_IJP (Grid->header, row, col);	/* Bin node */
 
-		if (n_pitched == n_alloc) n_alloc = GMT_malloc (GMT, data, n_pitched, n_alloc, struct BLK_DATA);
+		if (n_pitched == n_alloc) data = GMT_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
 		data[n_pitched].i = node;
 		data[n_pitched].a[BLK_W] = ((Ctrl->W.weighted[GMT_IN]) ? in[3] : 1.0);
 		if (!Ctrl->C.active) {	/* Need to store (x,y) so we can compute median location later */
@@ -339,7 +339,10 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_SUCCESS);
 	}
 
-	if (n_pitched < n_alloc) n_alloc = GMT_malloc (GMT, data, 0, n_pitched, struct BLK_DATA);
+	if (n_pitched < n_alloc) {
+		n_alloc = n_pitched;
+		data = GMT_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
+	}
 
 	/* Ready to go. */
 
@@ -357,7 +360,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	while (first_in_cell < n_pitched) {
 		weight = data[first_in_cell].a[BLK_W];
 		if (Ctrl->E.active) {
-			if (nz == nz_alloc) nz_alloc = GMT_malloc (GMT, z_tmp, nz, nz_alloc, double);
+			if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 			z_tmp[0] = data[first_in_cell].a[BLK_Z];
 			nz = 1;
 		}
@@ -365,7 +368,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		while ((first_in_new_cell < n_pitched) && (data[first_in_new_cell].i == data[first_in_cell].i)) {
 			weight += data[first_in_new_cell].a[BLK_W];
 			if (Ctrl->E.active) {	/* Must get a temporary copy of the sorted z array */
-				if (nz == nz_alloc) nz_alloc = GMT_malloc (GMT, z_tmp, nz, nz_alloc, double);
+				if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 				z_tmp[nz++] = data[first_in_new_cell].a[BLK_Z];
 			}
 			first_in_new_cell++;

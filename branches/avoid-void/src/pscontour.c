@@ -785,7 +785,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		c = 0;
 		while (GMT_Get_Record (API, GMT_READ_TEXT, &record) != EOF) {
 			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
-			if (c == c_alloc) n_alloc = GMT_malloc (GMT, cont, c, c_alloc, struct PSCONTOUR);
+			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
 			if (cont[c].type == '\0') cont[c].type = 'C';
 			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? 1 : 0;
@@ -809,7 +809,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else	/* No annotations, set aval outside range */
 			aval = xyz[1][GMT_Z] + 1.0;
 		for (ic = irint (min/Ctrl->C.interval), c = 0; ic <= irint (max/Ctrl->C.interval); ic++, c++) {
-			if (c == c_alloc) n_alloc = GMT_malloc (GMT, cont, c, c_alloc, struct PSCONTOUR);
+			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			cont[c].val = ic * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_SMALL) aval += Ctrl->A.interval;
 			cont[c].type = (fabs (cont[c].val - aval) < GMT_SMALL) ? 'A' : 'C';
@@ -818,7 +818,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		n_contours = c;
 	}
-	GMT_malloc (GMT, cont, 0, n_contours, struct PSCONTOUR);
+	cont = GMT_malloc (GMT, cont, 0, &n_contours, struct PSCONTOUR);
 
 	if (Ctrl->D.active) {
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
@@ -1199,8 +1199,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				if (make_plot) {
 					if (cont[c].do_tick && closed) {	/* Must store the entire contour for later processing */
-						if (n_save == n_save_alloc) n_save_alloc = GMT_malloc (GMT, save, n_save, n_alloc, struct SAVE);
-						(void)GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, n, 0, double);
+						if (n_save == n_save_alloc) save = GMT_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
+						n_alloc = 0;
+						GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, n, &n_alloc, double);
 						GMT_memcpy (save[n_save].x, xp, n, double);
 						GMT_memcpy (save[n_save].y, yp, n, double);
 						save[n_save].n = n;
@@ -1222,7 +1223,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		if (make_plot) {
 			if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours */
-				(void)GMT_malloc (GMT, save, 0, n_save, struct SAVE);
+				save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);
 
 				sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt);
 				for (i = 0; i < n_save; i++) {

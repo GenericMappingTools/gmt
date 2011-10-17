@@ -677,7 +677,7 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the grdcontour task */
 	GMT_LONG c, n_edges, n_alloc = 0, n_contours, id, cont_counts[2] = {0, 0}, need_proj;
-	GMT_LONG tbl_scl = 1, n_save = 0, i, n, nn, ij, closed, begin, error, io_mode = 0;
+	GMT_LONG tbl_scl = 1, n_save = 0, i, n, nn, ij, closed, begin, error, io_mode = 0, n_tmp;
 	GMT_LONG make_plot, fmt[3] = {0, 0, 0}, two_only = FALSE, n_tables = 1, tbl, extra;
 	GMT_LONG *n_seg_alloc = NULL, *n_seg = NULL, *edge = NULL;
 
@@ -789,8 +789,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		/* Set up which contours to draw based on the CPT slices and their attributes */
 		n_contours = P->n_colors + 1;	/* Since n_colors refer to slices */
-		(void)GMT_malloc2 (GMT, contour, cont_angle, n_contours, 0, double);
-		n_alloc = GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, 0, char);
+		n_tmp = 0;
+		GMT_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
+		GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 		for (i = c = 0; i < P->n_colors; i++) {
 			if (P->range[i].skip) continue;
 			contour[c] = P->range[i].z_low;
@@ -828,8 +829,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		while (GMT_Get_Record (API, GMT_READ_TEXT, &record) != EOF) {
 			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
 			if (n_contours == n_alloc) {
-				(void)GMT_malloc2 (GMT, contour, cont_angle, n_contours, n_alloc, double);
-				n_alloc = GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, n_alloc, char);
+				n_tmp = n_alloc;
+				GMT_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
+				GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 			}
 			got = sscanf (record, "%lf %c %lf", &contour[n_contours], &cont_type[n_contours], &tmp);
 			if (cont_type[n_contours] == '\0') cont_type[n_contours] = 'C';
@@ -845,8 +847,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		max = ceil (G->header->z_max / Ctrl->C.interval) * Ctrl->C.interval; if (max > G->header->z_max) max -= Ctrl->C.interval;
 		for (c = irint (min/Ctrl->C.interval), n_contours = 0; c <= irint (max/Ctrl->C.interval); c++, n_contours++) {
 			if (n_contours == n_alloc) {
-				(void)GMT_malloc2 (GMT, contour, cont_angle, n_contours, n_alloc, double);
-				n_alloc = GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, n_alloc, char);
+				n_tmp = n_alloc;
+				GMT_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
+				GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 			}
 			contour[n_contours] = c * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (contour[n_contours] - aval) > GMT_SMALL) aval += Ctrl->A.interval;
@@ -883,8 +886,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	z_range = G->header->z_max - G->header->z_min;
 	small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
-	(void)GMT_malloc2 (GMT, contour, cont_angle, 0, n_contours, double);
-	n_alloc = GMT_malloc2 (GMT, cont_type, cont_do_tick, 0, n_contours, char);
+	n_alloc = n_tmp = n_contours;
+	GMT_malloc2 (GMT, contour, cont_angle, 0, &n_tmp, double);
+	GMT_malloc2 (GMT, cont_type, cont_do_tick, 0, &n_contours, char);
 
 	GMT_grd_minmax (GMT, G, xyz);
 	if (GMT_contlabel_prep (GMT, &Ctrl->contour, xyz)) Return (EXIT_FAILURE);	/* Prep for crossing lines, if any */
@@ -994,9 +998,10 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				if (make_plot && cont_do_tick[c] && closed) {	/* Must store the entire contour for later processing */
 					/* These are original coordinates that have not yet been projected */
-					if (n_save == n_alloc) n_alloc = GMT_malloc (GMT, save, n_save, n_alloc, struct SAVE);
+					if (n_save == n_alloc) save = GMT_malloc (GMT, save, n_save, &n_alloc, struct SAVE);
 					extra = (GMT_abs (closed) == 2);	/* Need extra slot to temporarily close half-polygons */
-					(void)GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, n + extra, 0, double);
+					n_alloc = 0;
+					GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, n + extra, &n_alloc, double);
 					GMT_memcpy (save[n_save].x, x, n, double);
 					GMT_memcpy (save[n_save].y, y, n, double);
 					GMT_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
@@ -1045,7 +1050,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->W.pen[0].style || Ctrl->W.pen[1].style) PSL_setdash (PSL, CNULL, 0.0);
 
 		if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours */
-			(void)GMT_malloc (GMT, save, 0, n_save, struct SAVE);
+			save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);
 
 			grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt);
 			for (i = 0; i < n_save; i++) {

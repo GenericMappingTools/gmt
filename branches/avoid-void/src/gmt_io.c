@@ -4968,7 +4968,7 @@ GMT_LONG GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_s
 	struct GMT_TEXT_TABLE *T = NULL;
 	struct GMT_TEXTSET *D = NULL;
 	
-	if (*Dout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
+	if (!Dout || *Dout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((D = GMT_memory (C, NULL, n_tables, struct GMT_TEXTSET)) == NULL) return (GMT_MEMORY_ERROR);
 	if ((D->table = GMT_memory (C, NULL, n_tables, struct GMT_TEXT_TABLE *)) == NULL) return (GMT_MEMORY_ERROR);
 	D->n_tables = D->n_alloc = n_tables;
@@ -5142,6 +5142,7 @@ GMT_LONG GMT_create_table (struct GMT_CTRL *C, GMT_LONG n_segments, GMT_LONG n_c
 	GMT_LONG seg;
 	struct GMT_TABLE *T = NULL;
 	
+	if (!Tout || *Tout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((T = GMT_memory (C, NULL, 1, struct GMT_TABLE)) == NULL) return (GMT_MEMORY_ERROR);
 	if (n_segments > 0) T->n_segments = n_segments;
 	n_segments = GMT_abs (n_segments);
@@ -5168,7 +5169,7 @@ GMT_LONG GMT_create_dataset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_s
 	GMT_LONG tbl;
 	struct GMT_DATASET *D = NULL;
 	
-	if (*Dout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
+	if (!Dout || *Dout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((D = GMT_memory (C, NULL, n_tables, struct GMT_DATASET)) == NULL) return (GMT_MEMORY_ERROR);
 	D->n_columns = n_columns;
 	if ((D->table = GMT_memory (C, NULL, n_tables, struct GMT_TABLE *)) == NULL) return (GMT_MEMORY_ERROR);
@@ -5622,7 +5623,7 @@ void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, GMT_LONG free_ima
 GMT_LONG GMT_create_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **Mout)
 {	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
-	if (*Mout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
+	if (!Mout || *Mout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((M = GMT_memory (C, NULL, 1, struct GMT_MATRIX)) == NULL) return (GMT_MEMORY_ERROR);
 	M->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
 	*Mout = M;
@@ -5641,7 +5642,7 @@ GMT_LONG GMT_create_vector (struct GMT_CTRL *C, GMT_LONG n_columns, struct GMT_V
 {	/* Allocates space for a new vector container.  No space allocated for the vectors themselves */
 	struct GMT_VECTOR *V = NULL;
 	
-	if (*Vout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
+	if (!Vout || *Vout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((V = GMT_memory (C, NULL, 1, struct GMT_VECTOR)) == NULL) return (GMT_MEMORY_ERROR);
 	if ((V->data = GMT_memory (C, NULL, n_columns, void *)) == NULL) return (GMT_MEMORY_ERROR);
 	if ((V->type = GMT_memory (C, NULL, n_columns, GMT_LONG)) == NULL) return (GMT_MEMORY_ERROR);

@@ -46,9 +46,9 @@ struct MATH_MACRO {
 #else
 #define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),"",0)
 #endif
-#define GMT_malloc2(C,a,b,n,n_alloc,type) (GMT_malloc(C,a,n,n_alloc,type) | GMT_malloc(C,b,n,n_alloc,type))
-#define GMT_malloc3(C,a,b,c,n,n_alloc,type) (GMT_malloc(C,a,n,n_alloc,type) | GMT_malloc(C,b,n,n_alloc,type) | GMT_malloc(C,c,n,n_alloc,type))
-#define GMT_malloc4(C,a,b,c,d,n,n_alloc,type) (GMT_malloc(C,a,n,n_alloc,type) | GMT_malloc(C,b,n,n_alloc,type) | GMT_malloc(C,c,n,n_alloc,type) | GMT_malloc(C,d,n,n_alloc,type))
+#define GMT_malloc2(C,a,b,n,n_alloc,type) { GMT_LONG k = *n_alloc; a = GMT_malloc(C,a,n,&k,type); b = GMT_malloc(C,b,n,n_alloc,type); }
+#define GMT_malloc3(C,a,b,c,n,n_alloc,type) { GMT_LONG k = *n_alloc; a = GMT_malloc(C,a,n,&k,type); k = *n_alloc; b = GMT_malloc(C,b,n,&k,type); c = GMT_malloc(C,c,n,n_alloc,type); }
+#define GMT_malloc4(C,a,b,c,d,n,n_alloc,type) { GMT_LONG k = *n_alloc; a = GMT_malloc(C,a,n,&k,type); k = *n_alloc; b = GMT_malloc(C,b,n,&k,type); k = *n_alloc; c = GMT_malloc(C,c,n,&k,type); d = GMT_malloc(C,d,n,n_alloc,type); }
 
 /* Convenience macro for GMT_memory_func */
 #ifdef DEBUG

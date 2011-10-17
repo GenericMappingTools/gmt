@@ -583,7 +583,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (P->skip) continue;	/* Chosen cpt file indicates skip for this t */
 			}
 
-			if (n == n_alloc) n_alloc = GMT_malloc (GMT, data, n, n_alloc, struct PSXYZ_DATA);
+			if (n == n_alloc) data = GMT_malloc (GMT, data, n, &n_alloc, struct PSXYZ_DATA);
 
 			if (GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || GMT_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
 			data[n].z = GMT_z_to_zz (GMT, in[GMT_Z]);
@@ -690,7 +690,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n++;
 			if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
 		}
-		n_alloc = GMT_malloc (GMT, data, 0, n, struct PSXYZ_DATA);
+		data = GMT_malloc (GMT, data, 0, &n, struct PSXYZ_DATA);
 
 		/* Sort according to distance from viewer */
 

@@ -278,7 +278,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		node = GMT_IJP (Grid->header, row, col);		/* Bin node */
 
-		if (n_pitched == n_alloc) n_alloc = GMT_malloc (GMT, data, n_pitched, n_alloc, struct BLK_DATA);
+		if (n_pitched == n_alloc) data = GMT_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
 		data[n_pitched].i = node;
 		if (mode_xy) {	/* Need to store (x,y) so we can compute modal location later */
 			data[n_pitched].a[GMT_X] = in[GMT_X];
@@ -300,7 +300,10 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_SUCCESS);
 	}
 
-	n_alloc = GMT_malloc (GMT, data, 0, n_pitched, struct BLK_DATA);
+	if (n_pitched < n_alloc) {
+		n_alloc = n_pitched;
+		data = GMT_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
+	}
 
 	/* Ready to go. */
 
@@ -318,7 +321,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	while (first_in_cell < n_pitched) {
 		weight = data[first_in_cell].a[BLK_W];
 		if (Ctrl->E.active) {
-			if (nz == nz_alloc) nz_alloc = GMT_malloc (GMT, z_tmp, nz, nz_alloc, double);
+			if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 			z_tmp[0] = data[first_in_cell].a[BLK_Z];
 			nz = 1;
 		}
@@ -340,7 +343,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				out[GMT_Y] += data[first_in_new_cell].a[GMT_Y];
 			}
 			if (Ctrl->E.active) {	/* Must get a temporary copy of the sorted z array */
-				if (nz == nz_alloc) nz_alloc = GMT_malloc (GMT, z_tmp, nz, nz_alloc, double);
+				if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 				z_tmp[nz] = data[first_in_new_cell].a[BLK_Z];
 				nz++;
 			}

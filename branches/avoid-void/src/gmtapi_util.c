@@ -3013,7 +3013,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 				case GMT_WRITE_SEGHEADER:	/* Export a segment header record; write NaNs if binary  */
 					p[1]++, p[2] = 0;	/* Go to next segment */
 					if (p[1] > 0) GMT_alloc_segment (API->GMT, T->segment[p[1]-1], T->segment[p[1]-1]->n_rows, T->n_columns, FALSE);
-					if (p[1] == T->n_alloc) T->n_alloc = GMT_malloc (API->GMT, T->segment, p[1], T->n_alloc, struct GMT_LINE_SEGMENT *);
+					if (p[1] == T->n_alloc) T->segment = GMT_malloc (API->GMT, T->segment, p[1], &T->n_alloc, struct GMT_LINE_SEGMENT *);
 					if (!T->segment[p[1]]) T->segment[p[1]] = GMT_memory (API->GMT, NULL, 1, struct GMT_LINE_SEGMENT);
 					if (record) T->segment[p[1]]->header = strdup ((char *)record);	/* Default to last segment record if NULL */
 					T->n_segments++;

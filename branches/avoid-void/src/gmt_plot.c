@@ -1394,7 +1394,7 @@ GMT_LONG gmt_annot_too_crowded (struct GMT_CTRL *C, double x, double y, GMT_LONG
 
 	/* OK to plot and add to list */
 
-	if (GMT_n_annotations[side] == GMT_alloc_annotations[side]) GMT_alloc_annotations[side] = GMT_malloc2 (C, GMT_x_annotation[side], GMT_y_annotation[side], GMT_n_annotations[side], GMT_alloc_annotations[side], double);
+	if (GMT_n_annotations[side] == GMT_alloc_annotations[side]) GMT_malloc2 (C, GMT_x_annotation[side], GMT_y_annotation[side], GMT_n_annotations[side], &(GMT_alloc_annotations[side]), double);
 	GMT_x_annotation[side][GMT_n_annotations[side]] = x, GMT_y_annotation[side][GMT_n_annotations[side]] = y, GMT_n_annotations[side]++;
 
 	return (FALSE);
@@ -2891,7 +2891,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 			case GMT_SYMBOL_MOVE:	/* Flush existing polygon and start a new path */
 				if (flush) gmt_flush_symbol_piece (C, P, xx, yy, &n, p, f, this_outline, &flush);
 				n = 0;
-				if (n >= n_alloc) n_alloc = GMT_malloc2 (C, xx, yy, n, n_alloc, double);
+				if (n >= n_alloc) GMT_malloc2 (C, xx, yy, n, &n_alloc, double);
 				xx[n] = x, yy[n] = y, n++;
 				p = (s->pen) ? s->pen : current_pen;
 				f = (s->fill) ? s->fill : current_fill;
@@ -2905,7 +2905,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 
 			case GMT_SYMBOL_DRAW:	/* Append another point to the path */
 				flush = TRUE;
-				if (n >= n_alloc) n_alloc = GMT_malloc2 (C, xx, yy, n, n_alloc, double);
+				if (n >= n_alloc) GMT_malloc2 (C, xx, yy, n, &n_alloc, double);
 				xx[n] = x, yy[n] = y, n++;
 				break;
 
@@ -2913,7 +2913,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 				flush = TRUE;
 				na = GMT_get_arc (C, x, y, 0.5 * s->p[0] * size[0], s->p[1], s->p[2], &xp, &yp);
 				for (i = 0; i < na; i++) {
-					if (n >= n_alloc) n_alloc = GMT_malloc2 (C, xx, yy, n, n_alloc, double);
+					if (n >= n_alloc) GMT_malloc2 (C, xx, yy, n, &n_alloc, double);
 					xx[n] = xp[i], yy[n] = yp[i], n++;
 				}
 				GMT_free (C, xp);
@@ -3179,7 +3179,8 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 
 		if (mode == 0) {	/* Opaque so PSL_plottextclip is called for 1st time here */
 			/* Allocate temp space for everything that must be passed to PSL_plottextclip */
-			(void)GMT_malloc3 (C, angle, xt, yt, m, 0, double);
+			GMT_LONG n_alloc = 0;
+			GMT_malloc3 (C, angle, xt, yt, m, &n_alloc, double);
 			txt = GMT_memory (C, NULL, m, char *);
 			for (i = m = 0; i < G->n_segments; i++) {
 				L = G->segment[i];	/* Pointer to current segment */
@@ -3233,12 +3234,13 @@ void gmt_contlabel_clippath (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_
 		if (nseg == 1) G->box |= 8;	/* Special message to just repeate the labelline call */
 	}
 	else {				/* Save PS memory by doing it this way instead via PSL_plottextclip */
+		GMT_LONG n_alloc = 0;
 		if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
 			just = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
 		else
 			just = G->just;
 		/* Allocate temp space for everything that must be passed to PSL_plottextclip */
-		(void)GMT_malloc3 (C, angle, xt, yt, m, 0, double);
+		GMT_malloc3 (C, angle, xt, yt, m, &n_alloc, double);
 		txt = GMT_memory (C, NULL, m, char *);
 		for (i = m = 0; i < G->n_segments; i++) {
 			L = G->segment[i];	/* Pointer to current segment */
