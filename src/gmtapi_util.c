@@ -2916,8 +2916,12 @@ GMT_LONG GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 							strcpy (API->GMT->current.io.segment_header, &t_record[i]);
 							API->GMT->current.io.status = GMT_IO_SEG_HEADER;
 						}
+						else {
+							strcpy (API->GMT->current.io.current_record, t_record);
+							record = (void *)&API->GMT->current.io.current_record;
+						}
 						retval = 1;
-						gmt_set_char_ptr (record, t_record);
+						//gmt_set_char_ptr (record, t_record);
 					}
 				}
 				break;
