@@ -1120,12 +1120,12 @@ GMT_LONG GMT_is_segment_header (struct GMT_CTRL *C, char *line)
 /* This is the lowest-most input function in GMT.  All ASCII table data are read via
  * gmt_ascii_input.  Changes here affect all programs that read such data. */
 
-GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data)
+GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **data)
 {
 	GMT_LONG i, pos, col_no = 0, in_col, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
 	GMT_LONG done = FALSE, bad_record, set_nan_flag = FALSE;
 	char line[GMT_BUFSIZ], *p = NULL, token[GMT_BUFSIZ];
-	double val, **ptr = (double **)data;
+	double val;
 
 	/* gmt_ascii_input will skip blank lines and shell comment lines which start
 	 * with #.  Fields may be separated by spaces, tabs, or commas.  The routine returns
@@ -1248,7 +1248,7 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 		else
 			done = TRUE;	/* Success, we can get out of this loop and return what we got */
 	}
-	*ptr = C->current.io.curr_rec;	/* Set input pointer to current hidden record array */
+	*data = C->current.io.curr_rec;	/* Set input pointer to current hidden record array */
 	C->current.io.status = (n_ok == n_use || *n == GMT_MAX_COLUMNS) ? 0 : GMT_IO_MISMATCH;	/* Hopefully set status to 0 (OK) */
 	if (set_nan_flag) C->current.io.status |= GMT_IO_NAN;					/* But we might have to say we found NaNs */
 	if (*n == GMT_MAX_COLUMNS) *n = n_ok;							/* Update the number of expected fields */

@@ -517,13 +517,13 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (read_symbol) {	/* If symbol info is given we must process text records */
 		set_type = GMT_IS_TEXTSET;
 		read_mode = GMT_READ_TEXT;
-		record = (void *)buffer;
+		record = (void *)&buffer;
 		in = GMT->current.io.curr_rec;
 	}
 	else {	/* Here we can process data records (ASCII or binary) */
 		set_type = GMT_IS_DATASET;
 		read_mode = GMT_READ_DOUBLE;
-		record = (void *)in;
+		record = (void *)&in;
 	}
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
