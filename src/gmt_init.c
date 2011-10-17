@@ -2421,8 +2421,9 @@ GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified m
 		GMT_str_tolower (media);	/* Convert string to lower case */
 
 		if (n == n_alloc) {
-			(void)GMT_malloc (C, C->session.user_media, n, n_alloc, struct GMT_MEDIA);
-			n_alloc = GMT_malloc (C, C->session.user_media_name, n, n_alloc, char *);
+			GMT_LONG k = n_alloc;	/* So we don't update n_alloc in the first GMT_malloc call */
+			C->session.user_media = GMT_malloc (C, C->session.user_media, n, &k, struct GMT_MEDIA);
+			C->session.user_media_name = GMT_malloc (C, C->session.user_media_name, n, &n_alloc, char *);
 		}
 		C->session.user_media_name[n] = strdup (media);
 		C->session.user_media[n].width  = w;
@@ -2431,8 +2432,8 @@ GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified m
 	}
 	fclose (fp);
 
-	(void)GMT_malloc (C, C->session.user_media, 0, n, struct GMT_MEDIA);
-	(void)GMT_malloc (C, C->session.user_media_name, 0, n, char *);
+	C->session.user_media = GMT_malloc (C, C->session.user_media, 0, &n, struct GMT_MEDIA);
+	C->session.user_media_name = GMT_malloc (C, C->session.user_media_name, 0, &n, char *);
 	GMT_reset_meminc (C);
 
 	C->session.n_user_media = n;
@@ -4801,7 +4802,7 @@ void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and init
 			GMT_exit (EXIT_FAILURE);
 		}
 
-		if (n == n_alloc) n_alloc = GMT_malloc (C, C->session.shorthand, n, n_alloc, struct GMT_SHORTHAND);
+		if (n == n_alloc) C->session.shorthand = GMT_malloc (C, C->session.shorthand, n, &n_alloc, struct GMT_SHORTHAND);
 
 		C->session.shorthand[n].suffix = strdup (a);
 		C->session.shorthand[n].id = GMT_grd_format_decoder (C, b);
@@ -4814,7 +4815,7 @@ void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and init
 
 	C->session.n_shorthands = n;
 	GMT_reset_meminc (C);
-	(void)GMT_malloc (C, C->session.shorthand, 0, n, struct GMT_SHORTHAND);
+	C->session.shorthand = GMT_malloc (C, C->session.shorthand, 0, &n, struct GMT_SHORTHAND);
 }
 
 void gmt_freeshorthand (struct GMT_CTRL *C) {/* Free memory used by shorthand arrays */
@@ -7560,7 +7561,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 	GMT_set_meminc (C, GMT_SMALL_CHUNK);	/* Only allocate a small amount */
 	while (fgets (buf, GMT_BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-		if (i == n_alloc) n_alloc = GMT_malloc (C, C->session.font, i, n_alloc, struct GMT_FONTSPEC);
+		if (i == n_alloc) C->session.font = GMT_malloc (C, C->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 		if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding font info for font %ld\n", i);
 			GMT_exit (EXIT_FAILURE);
@@ -7580,7 +7581,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 
 		while (fgets (buf, GMT_BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-			if (i == n_alloc) n_alloc = GMT_malloc (C, C->session.font, i, n_alloc, struct GMT_FONTSPEC);
+			if (i == n_alloc) C->session.font = GMT_malloc (C, C->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 			if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
 				GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding custom font info for font %ld\n", i - n_GMT_fonts);
 				GMT_exit (EXIT_FAILURE);
@@ -7590,7 +7591,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 		fclose (in);
 		C->session.n_fonts = i;
 	}
-	(void)GMT_malloc (C, C->session.font, 0, i, struct GMT_FONTSPEC);
+	C->session.font = GMT_malloc (C, C->session.font, 0, &i, struct GMT_FONTSPEC);
 	GMT_reset_meminc (C);
 	return (GMT_NOERROR);
 }

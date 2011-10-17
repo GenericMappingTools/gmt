@@ -1850,7 +1850,7 @@ GMT_LONG GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors, struct GMT_P
 {
 	/* Makes an empty palette table */
 	struct GMT_PALETTE *P = NULL;
-	if (Pout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
+	if (!Pout || *Pout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((P = GMT_memory (C, NULL, 1, struct GMT_PALETTE)) == NULL) return (GMT_MEMORY_ERROR);
 	if ((P->range = GMT_memory (C, NULL, n_colors, struct GMT_LUT)) == NULL) return (GMT_MEMORY_ERROR);
 	P->n_colors = n_colors;
@@ -3135,7 +3135,7 @@ void GMT_free_func (struct GMT_CTRL *C, void *addr, char *fname, GMT_LONG line)
 #endif
 }
 
-GMT_LONG GMT_malloc_func (struct GMT_CTRL *C, void *ptr, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *fname, GMT_LONG line)
+void * GMT_malloc_func (struct GMT_CTRL *C, void *ptr, GMT_LONG n, GMT_LONG *n_alloc, size_t element_size, char *fname, GMT_LONG line)
 {
 	/* GMT_malloc is used to initialize, grow, and finalize an array allocation in cases
 	 * were more memory is needed as new data are read.  There are three different situations:
@@ -3156,26 +3156,26 @@ GMT_LONG GMT_malloc_func (struct GMT_CTRL *C, void *ptr, GMT_LONG n, GMT_LONG n_
 	 * module is the name of the module requesting the memory (main program or library function).
 	 */
 
-	if (n_alloc == 0) {	/* A) First time allocation, use default minimum size, unless n > 0 is given */
-		n_alloc = (n == 0) ? C->session.min_meminc : n;
+	if (*n_alloc == 0) {	/* A) First time allocation, use default minimum size, unless n > 0 is given */
+		*n_alloc = (n == 0) ? C->session.min_meminc : n;
 		ptr = NULL;	/* Initialize a new pointer to NULL before calling GMT_memory with it */
 	}
-	else if (n == 0 && n_alloc > 0)	/* C) Final allocation, set to actual final size */
-		n = n_alloc;		/* Keep the given n_alloc */
-	else if (n < n_alloc)	/* Nothing to do, already has enough memory.  This is a safety valve. */
-		return (n_alloc);
+	else if (n == 0 && *n_alloc > 0)	/* C) Final allocation, set to actual final size */
+		n = *n_alloc;		/* Keep the given n_alloc */
+	else if (n < *n_alloc)	/* Nothing to do, already has enough memory.  This is a safety valve. */
+		return (ptr);
 	else {		/* B) n >= n_alloc: Compute an increment, but make sure not to exceed GMT_LONG limit under 32-bit systems */
 		size_t add;	/* The increment of memory (in items) */
-		add = MAX (C->session.min_meminc, MIN (n_alloc/2, C->session.max_meminc));	/* Suggested increment from 50% rule, but no less than C->session.min_meminc */
-		n_alloc = MIN (add + n_alloc, LONG_MAX);	/* Limit n_alloc to LONG_MAX */
-		if (n >= n_alloc) n_alloc = n + 1;		/* If still not big enough, set n_alloc to n + 1 */
+		add = MAX (C->session.min_meminc, MIN (*n_alloc/2, C->session.max_meminc));	/* Suggested increment from 50% rule, but no less than C->session.min_meminc */
+		*n_alloc = MIN (add + *n_alloc, LONG_MAX);	/* Limit n_alloc to LONG_MAX */
+		if (n >= *n_alloc) *n_alloc = n + 1;		/* If still not big enough, set n_alloc to n + 1 */
 	}
 
 	/* Here n_alloc is set one way or another.  Do the actual [re]allocation */
 
-	ptr = GMT_memory_func (C, ptr, n_alloc, element_size, fname, line);
+	ptr = GMT_memory_func (C, ptr, *n_alloc, element_size, fname, line);
 
-	return (n_alloc);
+	return (ptr);
 }
 
 void GMT_set_meminc (struct GMT_CTRL *C, GMT_LONG increment)

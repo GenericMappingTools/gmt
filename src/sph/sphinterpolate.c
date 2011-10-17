@@ -208,7 +208,7 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 
 GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, i, ij, ij_f, n = 0, n_alloc = GMT_CHUNK, n_fields, error = FALSE;
+	GMT_LONG row, col, i, ij, ij_f, n = 0, n_alloc = 0, n_fields, error = FALSE;
 
 	double w_min, w_max, sf = 1.0, X[3];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;
@@ -249,7 +249,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
-	n_alloc = GMT_malloc4 (GMT, xx, yy, zz, ww, 0, 0, double);
+	GMT_malloc4 (GMT, xx, yy, zz, ww, GMT_CHUNK, &n_alloc, double);
 	n = 0;
 	w_min = DBL_MAX;	w_max = -DBL_MAX;
 	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
@@ -263,9 +263,9 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (ww[n] < w_min) w_min = ww[n];
 			if (ww[n] > w_max) w_max = ww[n];
 		}
-		if (++n == n_alloc) n_alloc = GMT_malloc4 (GMT, xx, yy, zz, ww, n, n_alloc, double);
+		if (++n == n_alloc) GMT_malloc4 (GMT, xx, yy, zz, ww, n, &n_alloc, double);
 	}
-	n_alloc = GMT_malloc4 (GMT, xx, yy, zz, ww, 0, n, double);
+	GMT_malloc4 (GMT, xx, yy, zz, ww, 0, &n, double);
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Do spherical interpolation using %ld points\n", n);

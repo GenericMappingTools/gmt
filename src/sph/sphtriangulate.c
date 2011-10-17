@@ -520,8 +520,10 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
-	if (!Ctrl->C.active) (void)GMT_malloc2 (GMT, lon, lat, 0, 0, double);
-	n_alloc = GMT_malloc3 (GMT, xx, yy, zz, 0, 0, double);
+	n_alloc = 0;
+	if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
+	n_alloc = 0;
+	GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 	
 	n = 0;
 	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
@@ -549,16 +551,16 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		
 		if (++n == n_alloc) {	/* Get more memory */
-			if (!Ctrl->C.active) (void)GMT_malloc2 (GMT, lon, lat, n, n_alloc, double);
-			n_alloc = GMT_malloc3 (GMT, xx, yy, zz, n, n_alloc, double);
+			if (!Ctrl->C.active) {GMT_LONG n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
+			GMT_malloc3 (GMT, xx, yy, zz, n, &n_alloc, double);
 		}
 		first = FALSE;
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	/* Reallocate memory to n points */
-	if (!Ctrl->C.active) (void)GMT_malloc2 (GMT, lon, lat, 0, n, double);
-	n_alloc = GMT_malloc3 (GMT, xx, yy, zz, 0, n, double);
+	if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n, double);
+	GMT_malloc3 (GMT, xx, yy, zz, 0, &n, double);
 
 	if (Ctrl->D.active && n_dup) GMT_report (GMT, GMT_MSG_NORMAL, "Skipped %ld duplicate points in segments\n", n_dup);
 	GMT_report (GMT, GMT_MSG_NORMAL, "Do Voronoi construction using %ld points\n", n);
