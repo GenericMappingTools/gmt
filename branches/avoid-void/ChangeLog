@@ -2,6 +2,13 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-10-17	pwessel
+	* gmtapi*.[ch]:		API modified to eliminate any void ** references or variables.
+				API abstraction-layer functions now take void * instead and no
+				casting to void * takes place, letting the compiler know what is
+				going on.  Memory alloc/free macros changed similarly.
+	* surface.c:		The -Lu<upperfile> instead applied the -Ll<lowerfile>.
+
 2011-10-11	fwobbe
 	* gmt2kml.c:		Fixed an array that was accessed past its end
 
