@@ -53,9 +53,9 @@ struct MATH_MACRO {
 
 /* Convenience macro for GMT_memory_func */
 #ifdef DEBUG
-#define GMT_memory(C,ptr,n,type) (type*) GMT_memory_func(C,ptr,(GMT_LONG)(n),sizeof(type),__FILE__,__LINE__)
+#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),__FILE__,__LINE__)
 #else
-#define GMT_memory(C,ptr,n,type) (type*) GMT_memory_func(C,ptr,(GMT_LONG)(n),sizeof(type),"",0)
+#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),"",0)
 #endif
 
 /* Convenience macro for GMT_free_func */
