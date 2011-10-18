@@ -272,8 +272,8 @@ EXTERN_MSC GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file);
 EXTERN_MSC GMT_LONG GMT_equal_double (double A, double B, int maxUlps);
 EXTERN_MSC GMT_LONG GMT_equal_float  (float A, float B, int maxUlps);
 
-EXTERN_MSC int GMT_message (struct GMT_CTRL *C, char *format, ...);
-EXTERN_MSC int GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...);
+EXTERN_MSC GMT_LONG GMT_message (struct GMT_CTRL *C, char *format, ...);
+EXTERN_MSC GMT_LONG GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...);
 
 #ifdef MIRONE 
 EXTERN_MSC struct GMT_CTRL * GMT_short_begin (int argc, char **argv);
