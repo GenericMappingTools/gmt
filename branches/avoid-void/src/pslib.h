@@ -350,13 +350,13 @@ EXTERN_MSC PSL_LONG PSL_setmiterlimit (struct PSL_CTRL *P, PSL_LONG limit);
 EXTERN_MSC PSL_LONG PSL_setorigin (struct PSL_CTRL *P, double x, double y, double angle, PSL_LONG mode);
 EXTERN_MSC PSL_LONG PSL_setparagraph (struct PSL_CTRL *P, double line_space, double par_width, PSL_LONG par_just);
 EXTERN_MSC PSL_LONG PSL_setpattern (struct PSL_CTRL *P, PSL_LONG image_no, char *imagefile, PSL_LONG image_dpi, double f_rgb[], double b_rgb[]);
-EXTERN_MSC PSL_LONG PSL_settransparencymode (struct PSL_CTRL *PSL, char *mode);
-EXTERN_MSC PSL_LONG PSL_definteger (struct PSL_CTRL *P, char *param, PSL_LONG value);
-EXTERN_MSC PSL_LONG PSL_defpen (struct PSL_CTRL *P, char *param, double width, char *style, double offset, double rgb[]);
-EXTERN_MSC PSL_LONG PSL_defpoints (struct PSL_CTRL *P, char *param, double fontsize);
-EXTERN_MSC PSL_LONG PSL_defcolor (struct PSL_CTRL *P, char *param, double rgb[]);
-EXTERN_MSC PSL_LONG PSL_deftextdim (struct PSL_CTRL *P, char *dim, double fontsize, char *text);
-EXTERN_MSC PSL_LONG PSL_defunits (struct PSL_CTRL *P, char *param, double value);
+EXTERN_MSC PSL_LONG PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode);
+EXTERN_MSC PSL_LONG PSL_definteger (struct PSL_CTRL *P, const char *param, PSL_LONG value);
+EXTERN_MSC PSL_LONG PSL_defpen (struct PSL_CTRL *P, const char *param, double width, char *style, double offset, double rgb[]);
+EXTERN_MSC PSL_LONG PSL_defpoints (struct PSL_CTRL *P, const char *param, double fontsize);
+EXTERN_MSC PSL_LONG PSL_defcolor (struct PSL_CTRL *P, const char *param, double rgb[]);
+EXTERN_MSC PSL_LONG PSL_deftextdim (struct PSL_CTRL *P, const char *dim, double fontsize, char *text);
+EXTERN_MSC PSL_LONG PSL_defunits (struct PSL_CTRL *P, const char *param, double value);
 EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, PSL_LONG *nbytes, unsigned char *input);
 
 /* Other deep level routines that could be useful */
@@ -366,24 +366,19 @@ EXTERN_MSC PSL_LONG psl_iz (struct PSL_CTRL *P, double value);
 EXTERN_MSC PSL_LONG psl_ip (struct PSL_CTRL *P, double value);
 
 /* Used indirectly by macro PSL_free and FORTRAN wrapper PSL_free_ . */
-EXTERN_MSC PSL_LONG PSL_free_nonmacro (struct PSL_CTRL *P, void *addr);
+EXTERN_MSC PSL_LONG PSL_free_nonmacro (void *addr);
 
 /* Definition for printing a message. When DEBUG is on, also print source file and line number.
  * Use this for various progress statements, debugging to see certain variables, and even fatal
  * error messages. */
 /* For FORTRAN there is PSL_command_ that only accepts one text argument */
-EXTERN_MSC int PSL_command (struct PSL_CTRL *C, char *format, ...);
-EXTERN_MSC int PSL_comment (struct PSL_CTRL *C, char *format, ...);
-EXTERN_MSC int PSL_initerr (struct PSL_CTRL *C, char *format, ...);
-EXTERN_MSC int PSL_message (struct PSL_CTRL *C, PSL_LONG level, char *format, ...);
+EXTERN_MSC int PSL_command (struct PSL_CTRL *C, const char *format, ...);
+EXTERN_MSC int PSL_comment (struct PSL_CTRL *C, const char *format, ...);
+EXTERN_MSC int PSL_initerr (struct PSL_CTRL *C, const char *format, ...);
+EXTERN_MSC int PSL_message (struct PSL_CTRL *C, PSL_LONG level, const char *format, ...);
 EXTERN_MSC FILE *PSL_fopen (char *file, char *mode);
 
-#define PSL_free(C,ptr) \
-	if (ptr) /* Do not try to free a NULL pointer! */ \
-	{ \
-		PSL_free_nonmacro (C,ptr); \
-		ptr = NULL; /* Cleanly set the freed pointer to NULL */ \
-	}
+#define PSL_free(ptr) (PSL_free_nonmacro(ptr),(ptr)=NULL) /* Cleanly set the freed pointer to NULL */
 
 #ifdef __cplusplus
 }

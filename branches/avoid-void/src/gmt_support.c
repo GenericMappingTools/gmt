@@ -3122,7 +3122,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 	return (tmp);
 }
 
-void GMT_free_func (struct GMT_CTRL *C, void *addr, char *fname, GMT_LONG line)
+void GMT_free_func (struct GMT_CTRL *C, void *addr, const char *fname, const GMT_LONG line)
 {
 	if (!addr) return;	/* Do not try to free a NULL pointer! */
 #ifdef DEBUG
