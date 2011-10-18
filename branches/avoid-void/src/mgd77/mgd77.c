@@ -4214,12 +4214,9 @@ int MGD77_igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double
   *	Updated for IGRF 11th generation
   */
 
-     struct IGRF {
-	double e_1[3255];
-     };
      /* Initialized data */
-     static struct IGRF equiv_22 = {
-       {-31543.,-2298., 5922., -677., 2905.,-1061.,  924., 1121., /* g0 (1900) */
+     static double gh[3255] = {
+       -31543.,-2298., 5922., -677., 2905.,-1061.,  924., 1121., /* g0 (1900) */
          1022.,-1469., -330., 1256.,    3.,  572.,  523.,  876.,
           628.,  195.,  660.,  -69., -361., -210.,  134.,  -75.,
          -184.,  328., -210.,  264.,   53.,    5.,  -33.,  -86.,
@@ -4640,9 +4637,8 @@ int MGD77_igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double
             0.0,      0.0,     0.0,       0.0,     0.0,      0.0,     0.0,
             0.0,      0.0,     0.0,       0.0,     0.0,      0.0,     0.0,
             0.0,      0.0,     0.0,       0.0,     0.0,      0.0,     0.0,
-            0.0,      0.0,     0.0,       0.0,     0.0,      0.0}
+            0.0,      0.0,     0.0,       0.0,     0.0,      0.0
 	 };
-#define gh ((double *)&equiv_22)
 
 	int i, j, k, l, m, n, ll, lm, kmx, nmx, nc;
 	double cd, cl[13], tc, ct, sd, fn = 0.0, gn = 0.0, fm, sl[13];
