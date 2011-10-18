@@ -60,17 +60,9 @@ struct MATH_MACRO {
 
 /* Convenience macro for GMT_free_func */
 #ifdef DEBUG
-#define GMT_free(C,array) { if (array) /* Do not try to free a NULL pointer! */ \
-{ \
-	GMT_free_func(C,array,__FILE__,__LINE__); \
-	array = NULL; /* Cleanly set the freed pointer to NULL */ \
-} }
+#define GMT_free(C,ptr) (GMT_free_func(C,ptr,__FILE__,__LINE__),(ptr)=NULL)
 #else
-#define GMT_free(C,array) { if (array) /* Do not try to free a NULL pointer! */ \
-{ \
-	GMT_free_func(C,array,"",0); \
-	array = NULL; /* Cleanly set the freed pointer to NULL */ \
-} }
+#define GMT_free(C,ptr) (GMT_free_func(C,ptr,"",0),(ptr)=NULL)
 #endif
 
 #ifdef DEBUG

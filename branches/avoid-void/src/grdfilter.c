@@ -935,8 +935,8 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, F.y);
 	GMT_free (GMT, F.visit);
 	if (slow) {
-		if (slower) { GMT_free (GMT, work_data); }
-		else { GMT_free (GMT, work_array); }
+		if (slower) GMT_free (GMT, work_data);
+		else GMT_free (GMT, work_array);
 	}
 #ifdef _OPENMP
 }  /* end of parallel region */
