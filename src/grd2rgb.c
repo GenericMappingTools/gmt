@@ -499,7 +499,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, grdfile, Grid);
 			free ((void *)grdfile);
 		}
-		if (Ctrl->W.active) { GMT_free (GMT, picture);} else PSL_free (PSL, picture);
+		if (Ctrl->W.active) GMT_free (GMT, picture); else PSL_free (PSL, picture);
 		GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid);
 	}
 	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
