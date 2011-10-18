@@ -386,7 +386,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n = 3 * header.width * header.height;
 		buffer = psl_gray_encode (PSL, &n, picture);
 		header.depth = 8;
-		if (known) PSL_free (PSL, picture);	/* EPS or Sun raster file */
+		if (known) PSL_free (picture); /* EPS or Sun raster file */
 #ifdef USE_GDAL
 		else	/* Got it via GMT_Get_Data */
 			GMT_Destroy_Data (API, GMT_ALLOCATED, &I);
@@ -407,7 +407,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef USE_GDAL
 		GMT_Destroy_Data (API, GMT_ALLOCATED, &I);	/* If I is NULL then nothing is done */
 #else
-		PSL_free (PSL, picture);
+		PSL_free (picture);
 #endif
 		picture = buffer;
 		free_GMT = TRUE;
@@ -483,7 +483,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, picture);
 	}
 	else if (known)
-		PSL_free (PSL, picture);
+		PSL_free (picture);
 
 	Return (GMT_OK);
 }
