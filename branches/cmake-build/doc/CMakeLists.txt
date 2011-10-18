@@ -118,7 +118,7 @@ install (DIRECTORY examples
 	PATTERN ".cmake" EXCLUDE)
 
 # run examples (test)
-if (DO_EXAMPLES AND UNIX)
+if (DO_EXAMPLES)
 	# need to copy data first
 	file(COPY examples tutorial
 		DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
@@ -128,6 +128,6 @@ if (DO_EXAMPLES AND UNIX)
 		PATTERN ".cmake" EXCLUDE)
 
 	add_subdirectory (examples)
-endif (DO_EXAMPLES AND UNIX)
+endif (DO_EXAMPLES)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

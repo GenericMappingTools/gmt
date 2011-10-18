@@ -54,8 +54,13 @@
 #	include <sys/stat.h>
 #endif
 
-#ifdef HAVE_TYPES_H_
+#ifdef HAVE_SYS_TYPES_H_
 #	include <sys/types.h>
+#endif
+
+#ifndef HAVE_MODE_T
+  /* MSC does not define mode_t */
+	typedef unsigned int mode_t;
 #endif
 
 #ifdef HAVE_FCNTL_H_
@@ -65,6 +70,10 @@
 #ifdef HAVE_STAT_H_
 #	include <sys/stat.h>
 #	define GMT_STAT stat
+#endif
+
+#ifdef HAVE_STDDEF_H_
+#	include <stddef.h>
 #endif
 
 #ifdef HAVE_UNISTD_H_
@@ -88,6 +97,10 @@
 
 #ifdef HAVE_IO_H_
 #	include <io.h>
+#endif
+
+#ifdef HAVE_PROCESS_H_
+#	include <process.h>
 #endif
 
 /*
@@ -208,22 +221,29 @@
 /* access is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _
  * and defined in io.h */
-#if defined HAVE__ACCESS && !defined HAVE_UNISTD
+#if defined HAVE__ACCESS && !defined HAVE_ACCESS
 #	define access _access
 #endif
 
 /* fileno is usually in stdio.h; we use a macro here
  * since the same function under WIN32 is prefixed with _
  * and defined in stdio.h */
-#ifdef HAVE__FILENO
+#if defined HAVE__FILENO && !defined HAVE_FILENO
 #	define fileno _fileno
 #endif
 
 /* getcwd is usually in unistd.h; we use a macro here
- * since the same function under WIN32 is prefixed with _;
- * it is defined in direct.h. */
+ * since the same function under WIN32 is prefixed with _
+ * and defined in direct.h */
 #ifdef HAVE__GETCWD
 #	define getcwd _getcwd
+#endif
+
+/* getpid is usually in unistd.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _
+ * and defined in process.h */
+#if defined HAVE__GETPID && !defined HAVE_GETPID
+#	define getpid _getpid
 #endif
 
 #if defined HAVE_QSORT_S && !defined HAVE_QSORT_R
@@ -277,12 +297,7 @@
 #		define WIN32
 #	endif
 
-	typedef int mode_t;       /* mode_t not defined under Windows */
-
 #	define PATH_SEPARATOR ';' /* Win uses ; while Unix uses : */
-
-	EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
-	EXTERN_MSC void DOS_path_fix (char *dir);
 
 	/* FLOCK is a pain. If cannot be used under Windows.
 	 * Also, users have problems with file locking because their

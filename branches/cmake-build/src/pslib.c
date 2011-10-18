@@ -103,26 +103,13 @@
 #define _POSIX_SOURCE 1
 #define _POSIX_C_SOURCE 199506L
 
-#ifdef WIN32
-#include <process.h>
-#define getpid _getpid
-#else
-#include <unistd.h>
-#endif
-
 /*--------------------------------------------------------------------
  *			SYSTEM HEADER FILES
  *--------------------------------------------------------------------*/
 
-#include <ctype.h>
 #include <float.h>
 #include <limits.h>
 #include <math.h>
-#include <stddef.h>
-#ifdef __MACHTEN__
-/* Kludge to fix a Machten POSIX bug */
-#include <sys/types.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -131,10 +118,6 @@
 #include "pslib.h"
 #include "gmt_config.h"
 #include "gmt_notposix.h"
-
-#ifndef WIN32
-#include <unistd.h>
-#endif
 
 /* Macro for exit since this should be returned when called from Matlab */
 #ifdef DO_NOT_EXIT

@@ -40,11 +40,6 @@
 
 #include "gmt.h"
 
-#ifdef WIN32	/* Special for Windows */
-#include <process.h>
-#define getpid _getpid
-#endif
-
 EXTERN_MSC GMT_LONG GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, GMT_LONG magic);
 EXTERN_MSC GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code);

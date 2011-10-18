@@ -7903,7 +7903,6 @@ int GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
  * are forced to have the following, otherwise defined
  * as macro, implemented as a function. */
 #ifdef GMT_MATLAB
-#undef GMT_fprintf
 int GMT_fprintf (FILE *stream, char *format, ...) {
 	va_list args;
 	va_start (args, format);

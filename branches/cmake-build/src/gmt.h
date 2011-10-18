@@ -63,7 +63,6 @@ extern "C" {
 #include <float.h>
 #include <math.h>
 #include <limits.h>
-#include <stddef.h>
 
 #include <time.h>
 
