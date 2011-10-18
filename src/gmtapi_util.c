@@ -1298,7 +1298,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
 			if (mode != GMT_GRID_DATA) {		/* Must init header and read the header information from file */
 				GMT_grd_init (API->GMT, I->header, NULL, FALSE);
-				if (GMT_err_pass (API->GMT, GMT_read_image_info (API->GMT, (char *)S->ptr, I), (char *)S->ptr)) 
+				if (GMT_err_pass (API->GMT, GMT_read_image_info (API->GMT, S->ptr, I), S->ptr)) 
 					return (GMT_Report_Error (API, GMT_BAD_PERMISSION));
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header, get out of here */
 			}
@@ -1312,11 +1312,11 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 				size = GMTAPI_set_grdarray_size (API->GMT, I->header, S->wesn);	/* Get array dimension only, which includes padding. DANGER DANGER JL*/
 				if (size > I->header->size) return (GMT_Report_Error (API, GMT_IMAGE_READ_ERROR));
 			}
-			GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading image from file %s\n", (char *)S->ptr);
-			if (GMT_err_pass (API->GMT, GMT_read_image (API->GMT, (char *)S->ptr, I, S->wesn, 
-								API->GMT->current.io.pad, complex_mode), (char *)S->ptr)) 
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading image from file %s\n", S->ptr);
+			if (GMT_err_pass (API->GMT, GMT_read_image (API->GMT, S->ptr, I, S->wesn, 
+								API->GMT->current.io.pad, complex_mode), S->ptr)) 
 				return (GMT_Report_Error (API, GMT_IMAGE_READ_ERROR));
-			if (GMT_err_pass (API->GMT, GMT_image_BC_set (API->GMT, I), (char *)S->ptr)) return (GMT_Report_Error (API, GMT_IMAGE_BC_ERROR));	/* Set boundary conditions */
+			if (GMT_err_pass (API->GMT, GMT_image_BC_set (API->GMT, I), S->ptr)) return (GMT_Report_Error (API, GMT_IMAGE_BC_ERROR));	/* Set boundary conditions */
 			I->alloc_mode = GMT_ALLOCATED;
 			break;
 			
@@ -1408,7 +1408,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 				ij_orig = API->GMT_2D_to_index[M->shape] (row, col, M->dim, complex_mode);
 				I->data[ij] = (char)GMTAPI_get_val (M->data, ij_orig, M->type);
 			}
-			if (M->alloc_mode == 1) GMT_free (API->GMT, *S->ptr);
+			if (M->alloc_mode == 1) GMT_free (API->GMT, S->ptr);
 			break;
 			
 	 	case GMT_IS_REF + GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
