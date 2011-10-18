@@ -174,6 +174,10 @@ EXTERN_MSC GMT_LONG GMT_append_ogr_item (struct GMT_CTRL *C, char *name, GMT_LON
 EXTERN_MSC void GMT_write_ogr_header (FILE *fp, struct GMT_OGR *G);
 EXTERN_MSC GMT_LONG GMT_trim_segheader (struct GMT_CTRL *C, char *line);
 
+#ifdef WIN32
+EXTERN_MSC void DOS_path_fix (char *dir);
+#endif
+
 /* gmt_proj.c: */
 
 EXTERN_MSC double GMT_lat_swap_quick (struct GMT_CTRL *C, double lat, double c[]);
@@ -274,6 +278,10 @@ EXTERN_MSC GMT_LONG GMT_equal_float  (float A, float B, int maxUlps);
 
 EXTERN_MSC int GMT_message (struct GMT_CTRL *C, char *format, ...);
 EXTERN_MSC int GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...);
+
+#ifdef WIN32
+EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
+#endif
 
 #ifdef MIRONE 
 EXTERN_MSC struct GMT_CTRL * GMT_short_begin (int argc, char **argv);

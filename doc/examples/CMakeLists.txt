@@ -88,6 +88,16 @@ macro (SETUP)
 				WORKING_DIRECTORY ${_job_path}
 				COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_job})
 		endforeach (_job)
+	elseif (DO_EXAMPLES AND WIN32)
+		# only supporting examples with installed GMT in %path%
+		string (REPLACE ".sh" ".bat" _example_jobs_win "${_example_jobs}")
+		foreach (_job ${_example_jobs_win})
+			get_filename_component (_job_path
+				${CMAKE_CURRENT_BINARY_DIR}/${_job} PATH)
+			add_test(NAME ${_job}
+				WORKING_DIRECTORY ${_job_path}
+				COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_job})
+		endforeach (_job)
 	endif(DO_EXAMPLES AND UNIX)
 endmacro (SETUP)
 

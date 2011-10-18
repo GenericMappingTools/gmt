@@ -37,11 +37,6 @@
 
 EXTERN_MSC void GMT_str_toupper (char *string);
 
-#ifdef WIN32	/* Special for Windows */
-#include <process.h>
-#define getpid _getpid
-#endif
-
 #define N_GS_DEVICES		12	/* Number of supported GS output devices */
 #define GS_DEV_EPS		0
 #define GS_DEV_PDF		1

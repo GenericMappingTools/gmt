@@ -44,8 +44,7 @@ if (UNIX)
 		/sw # Fink
 		/opt/local # DarwinPorts
 		/opt/csw # Blastwave
-		/opt
-	)
+		/opt)
 
 	if (PCRE_CONFIG)
 		exec_program (${PCRE_CONFIG} ARGS --cflags OUTPUT_VARIABLE PCRE_CONFIG_CFLAGS)
@@ -81,12 +80,13 @@ find_path (PCRE_INCLUDE_DIR pcre.h
 	/sw # Fink
 	/opt/local # DarwinPorts
 	/opt/csw # Blastwave
-	/opt
-)
+	/opt)
 
-find_library (PCRE_LIBRARY 
+find_library (PCRE_LIBRARY
 	NAMES ${_pcre_lib} pcre pcre.0 PCRE
 	HINTS
+	${PCRE_DIR}
+	${PCRE_ROOT}
 	$ENV{PCRE_DIR}
 	$ENV{PCRE_ROOT}
 	${_pcre_libpath}
@@ -96,8 +96,7 @@ find_library (PCRE_LIBRARY
 	/opt/local
 	/opt/csw
 	/opt
-	/usr/freeware
-)
+	/usr/freeware)
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (PCRE DEFAULT_MSG PCRE_LIBRARY PCRE_INCLUDE_DIR)

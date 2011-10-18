@@ -76,7 +76,9 @@
 
 /* system specific functions */
 
+#cmakedefine HAVE_ACCESS
 #cmakedefine HAVE__ACCESS
+#cmakedefine HAVE_FILENO
 #cmakedefine HAVE__FILENO
 #cmakedefine HAVE_FOPEN64
 #cmakedefine HAVE_FSEEKO
@@ -84,6 +86,8 @@
 #cmakedefine HAVE_FTELLO
 #cmakedefine HAVE__FTELLI64
 #cmakedefine HAVE__GETCWD
+#cmakedefine HAVE_GETPID
+#cmakedefine HAVE__GETPID
 #cmakedefine HAVE_GETPWUID
 #cmakedefine HAVE__MKDIR
 #cmakedefine HAVE_QSORT_R
@@ -98,6 +102,7 @@
 
 #cmakedefine HAVE_DIRECT_H_
 #cmakedefine HAVE_IO_H_
+#cmakedefine HAVE_PROCESS_H_
 
 /* C types; C99 exact-width integer types <inttypes.h>, <stdint.h>; etc */
 
@@ -105,7 +110,10 @@
 #cmakedefine HAVE_INTTYPES_H_
 #cmakedefine HAVE_MACHINE_ENDIAN_H_
 #cmakedefine HAVE_STDINT_H_
-#cmakedefine HAVE_TYPES_H_
+#cmakedefine HAVE_STDDEF_H_
+#cmakedefine HAVE_SYS_TYPES_H_
+
+#cmakedefine HAVE_MODE_T
 
 /* Math headers */
 
