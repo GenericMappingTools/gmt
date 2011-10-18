@@ -1264,7 +1264,7 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 	char p[GMT_BUFSIZ], name[GMT_BUFSIZ], A[64], *s = NULL, *c = NULL;
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -a requires an argument */
 	if ((s = strstr (arg, "+g")) || (s = strstr (arg, "+G"))) {	/* Also got +g|G<geometry> */
-		C->common.a.geometry = gmt_ogr_get_geometry ((char *)(s+2));
+		C->common.a.geometry = gmt_ogr_get_geometry (s+2);
 		if (s[1] == 'G') C->common.a.clip = TRUE;	/* Clip features at Dateline */
 		s[0] = '\0';	/* Temporarily truncate off the geometry */
 		C->common.a.output = TRUE;	/* We are producing, not reading an OGR/GMT file */
@@ -1279,7 +1279,7 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 	}
 	while ((GMT_strtok (C, arg, ",", &pos, p))) {	/* Another col=name argument */
 		if ((c = strchr (p, ':'))) {	/* Also got :<type> */
-			C->common.a.type[C->common.a.n_aspatial] = gmt_ogr_get_type ((char *)(c+1));
+			C->common.a.type[C->common.a.n_aspatial] = gmt_ogr_get_type (c+1);
 			c[0] = '\0';	/* Truncate off the type */
 		}
 		else
@@ -6520,7 +6520,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 		s[0] = '\0';		/* Temporarily separate this modifer from the rest of the symbol option (restored at end of function) */
 		p->convert_size = (text[k] == 'l') ? 2 : 1;		/* If last char is l we want log10 conversion */
 		if (p->convert_size == 2) text[k] = '\0';		/* Temporarily remove the l */
-		n = sscanf ((char *)(s+2), "%[^,],%[^l]", txt_a, txt_b);	/* Get the 1-2 pieces */
+		n = sscanf (s+2, "%[^,],%[^l]", txt_a, txt_b);	/* Get the 1-2 pieces */
 		if (n == 0) GMT_report (C, GMT_MSG_FATAL, "-S...+s contains bad scale info\n");
 		p->scale = GMT_to_inch (C, txt_a);	/* The scale may have units */
 		if (n == 2) p->origin = atof (txt_b);	/* Origin is in data units */
