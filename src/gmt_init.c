@@ -7849,7 +7849,7 @@ void GMT_setmode (struct GMT_CTRL *C, int direction)
 
 #endif	/* SET_IO_MODE */
 
-int GMT_message (struct GMT_CTRL *C, char *format, ...) {
+GMT_LONG GMT_message (struct GMT_CTRL *C, char *format, ...) {
 #ifdef GMT_MATLAB
 	char line[GMT_BUFSIZ];
 #endif
@@ -7866,7 +7866,7 @@ int GMT_message (struct GMT_CTRL *C, char *format, ...) {
 	return (0);
 }
 
-int GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
+GMT_LONG GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
 	va_list args;
 	if (level > C->current.setting.verbose) return (0);
 #ifdef DEBUG
