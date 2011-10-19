@@ -97,7 +97,7 @@ awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz | more
 Then if these numbers jump around a lot, you may do this:
 .br
 .sp
-awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0 --FORMAT_FLOAT_OUT=%.12lg > smoothed.xyz
+awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0 --FORMAT_FLOAT_OUT=%.12g > smoothed.xyz
 .br
 .sp
 and plot this data set instead.
