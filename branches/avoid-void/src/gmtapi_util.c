@@ -940,10 +940,10 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 		return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));
 	default_method = GMT_IS_FILE;
 	if (S->filename)	/* Write to this file */
-		ptr = (void *)S->filename;
+		ptr = S->filename;
 	else {			/* No filename so we switch to writing to the stream or fdesc */
 		default_method = (S->method == GMT_IS_FILE) ? GMT_IS_STREAM : S->method;
-		ptr = (void *)S->fp;
+		ptr = S->fp;
 #ifdef SET_IO_MODE
 		GMT_setmode (API->GMT, GMT_OUT);	/* Windows may need to switch write mode from text to binary */
 #endif
@@ -964,19 +964,19 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating data table to GMT_DATASET memory location\n");
 			GMT_duplicate_dataset (API->GMT, D, D->n_columns, GMT_ALLOC_NORMAL, &D_copy);
 			gmt_set_dataset_ptr (S->ptr, D_copy);
-			S->data = (void *)&D_copy;
+			S->data = &D_copy;
 			break;
 			
 		case GMT_IS_REF:	/* Just pass memory location */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing data table to GMT_DATASET memory location\n");
 			D->alloc_mode = GMT_REFERENCE;	/* To avoid accidental freeing upstream */
 			gmt_set_dataset_ptr (S->ptr, D);
-			S->data = (void *)&D;
+			S->data = &D;
 			break;
 			
 	 	case GMT_IS_COPY + GMT_VIA_MATRIX:
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating data table to user array location\n");
-			M = (struct GMT_MATRIX *)S->ptr;
+			M = S->ptr;
 			if (M->alloc_mode == 1) {	/* Must allocate output space */
 				GMT_LONG size = D->n_records;
 				void **v = NULL;
@@ -1003,7 +1003,7 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 			
 		case GMT_IS_COPY + GMT_VIA_VECTOR:
 		case GMT_IS_REF + GMT_VIA_VECTOR:
-			V = (struct GMT_VECTOR *)S->ptr;
+			V = S->ptr;
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating data table to user column arrays location\n");
 			if (V->alloc_mode == 1) {	/* Must allocate output space */
 				GMT_LONG size = D->n_records;
