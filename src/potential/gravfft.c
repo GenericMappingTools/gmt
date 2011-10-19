@@ -419,8 +419,8 @@ int main (int argc, char **argv) {
 				GMT_fputs (buffer, GMT_stdout);
 			}
 		}
-		if (from_top) GMT_free ((void *)z_from_top);
-		if (!from_top) GMT_free ((void *)z_from_below);
+		if (from_top) GMT_free (z_from_top);
+		if (!from_top) GMT_free (z_from_below);
 		GMT_end (argc, argv);
 		return(0);
 	}
@@ -579,7 +579,7 @@ int main (int argc, char **argv) {
 
 		if (script) write_script();
 
-		GMT_free((void *)datac);
+		GMT_free(datac);
 		GMT_end (argc, argv);
 		return(0);
 
@@ -720,7 +720,7 @@ int 	read_data(int argc, char **argv, int bat) {
 			exit (EXIT_FAILURE);
 		}
 
-		GMT_free ((void *)datac);
+		GMT_free (datac);
 
 		if (verbose) fprintf (stderr, "done!\n");
 
@@ -841,9 +841,9 @@ void	write_output(void) {
 		exit (EXIT_FAILURE);
 	}
 
-	GMT_free((void *)datac);
-	GMT_free((void *)raised);
-	GMT_free((void *)topo);
+	GMT_free(datac);
+	GMT_free(raised);
+	GMT_free(topo);
 }
 
 void	remove_level(void) {
@@ -1443,15 +1443,15 @@ void	do_admittance(int give_wavelength, float k_or_m) {
 			GMT_fputs (buffer, GMT_stdout);
 		}
 	}
-	GMT_free ((void *)out);
-	GMT_free ((void *)b_pow);
-	GMT_free ((void *)g_pow);
-	GMT_free ((void *)err_bar);
-	GMT_free ((void *)co_spec);
-	GMT_free ((void *)coh);
-	GMT_free ((void *)quad);
-	if (from_below) GMT_free ((void *)z_from_below);
-	if (from_top) GMT_free ((void *)z_from_top);
+	GMT_free (out);
+	GMT_free (b_pow);
+	GMT_free (g_pow);
+	GMT_free (err_bar);
+	GMT_free (co_spec);
+	GMT_free (coh);
+	GMT_free (quad);
+	if (from_below) GMT_free (z_from_below);
+	if (from_top) GMT_free (z_from_top);
 }
 
 void	remove_plane(float *grid)

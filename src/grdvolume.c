@@ -282,11 +282,11 @@ void *New_grdvolume_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->L.value = GMT->session.d_NaN;
 	C->Z.scale = 1.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdvolume_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* Deallocate control structure */
-	if (C->In.file) free ((void *)C->In.file);	
+	if (C->In.file) free (C->In.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -601,12 +601,12 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->T.active) {	/* Determine the best contour value and return the corresponding information for that contour only */
 		c = ors_find_kink (GMT, height, n_contours, Ctrl->T.mode);
 		out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c];	out[3] = height[c];
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 	}
 	else {			/* Return information for all contours (possibly one if -C<val> was used) */
 		for (c = 0; c < n_contours; c++) {
 			out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c];	out[3] = height[c];
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 	}
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */

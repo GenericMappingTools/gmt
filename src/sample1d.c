@@ -75,13 +75,13 @@ void *New_sample1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->F.mode = GMT->current.setting.interpolant;
 		
-	return ((void *)C);
+	return (C);
 }
 
 void Free_sample1d_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free ((void *)C->Out.file);	
-	if (C->N.file) free ((void *)C->N.file);	
+	if (C->Out.file) free (C->Out.file);	
+	if (C->N.file) free (C->N.file);	
 	GMT_free (GMT, C);	
 }
 

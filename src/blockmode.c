@@ -313,7 +313,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Sort on node and Z value */
 
-	qsort ((void *)data, n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
+	qsort (data, n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
 
 	/* Find n_in_cell and write appropriate output  */
 
@@ -358,10 +358,10 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				out[GMT_Y] *= i_n_in_cell;
 			}
 			else if (mode_xy) {
-				qsort ((void *)&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
+				qsort (&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
 				out[GMT_X] = weighted_mode (&data[first_in_cell], weight, n_in_cell, 0);
 
-				qsort ((void *)&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
+				qsort (&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
 				out[GMT_Y] = weighted_mode (&data[first_in_cell], weight, n_in_cell, 1);
 			}
 		}
@@ -405,7 +405,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Turn z_tmp into absolute deviations from the mode (out[GMT_Z]) */
 			if (nz > 1) {
 				for (node = 0; node < nz; node++) z_tmp[node] = fabs (z_tmp[node] - out[GMT_Z]);
-				GMT_sort_array (GMT, (void *)z_tmp, nz, GMT_DOUBLE_TYPE);
+				GMT_sort_array (GMT, z_tmp, nz, GMT_DOUBLE_TYPE);
 				out[3] = (nz%2) ? z_tmp[nz/2] : 0.5 * (z_tmp[(nz-1)/2] + z_tmp[nz/2]);
 				out[3] *= 1.4826;	/* This will be LMS MAD-based scale */
 			}
@@ -414,7 +414,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = weight;
 
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 
 		n_cells_filled++;
 		first_in_cell = first_in_new_cell;

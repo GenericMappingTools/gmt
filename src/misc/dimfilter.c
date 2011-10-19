@@ -90,14 +90,14 @@ void *New_dimfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->F.filter = C->N.filter = C->D.mode = -1;
 	C->N.n_sectors = 1;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_dimfilter_Ctrl (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->S.file) free ((void *)C->S.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->G.file) free (C->G.file);	
+	if (C->S.file) free (C->S.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -875,7 +875,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef OBSOLETE								
 				if (Ctrl->S.active) {	/* Now assess a measure of deviation about this value */
 					if (slow) {	/* Get MAD! */
-						GMT_sort_array (GMT, (void *)work_array2, n, GMT_DOUBLE_TYPE);
+						GMT_sort_array (GMT, work_array2, n, GMT_DOUBLE_TYPE);
 						GMT_getmad (GMT, work_array2, n, z, &scale);
 					}
 					else {		/* Get weighted stdev. */
@@ -985,7 +985,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			out[2] = (Ctrl->Q.err_cols) ? err_sum / Ctrl->Q.err_cols : 0.0;
 		  
 			/* print out the results */
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		  
 			GMT_report (GMT, GMT_MSG_DEBUG, "line %ld passed\n", err_l);
 			err_l++;
@@ -1008,7 +1008,7 @@ int main (int argc, char *argv[]) {
 	if (GMT_Create_Session (&API, argv[0], GMTAPI_GMT)) exit (EXIT_FAILURE);
 
 	/* 2. Convert command line arguments to local linked option list */
-	if (GMT_Create_Options (API, (GMT_LONG)(argc-1), (void *)(argv+1), &options)) exit (EXIT_FAILURE);
+	if (GMT_Create_Options (API, (GMT_LONG)(argc-1), (argv+1), &options)) exit (EXIT_FAILURE);
 
 	/* 3. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = (int)GMT_dimfilter (API, options);

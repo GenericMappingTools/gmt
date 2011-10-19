@@ -129,7 +129,7 @@ void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->S.pen = GMT->current.setting.map_default_pen;
 #endif
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pstext_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Deallocate control structure */

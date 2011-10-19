@@ -51,7 +51,7 @@ void *New_psbasemap_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	GMT_memset (&C->L.item, 1, struct GMT_MAP_SCALE);
 	GMT_memset (&C->T.item, 1, struct GMT_MAP_ROSE);
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psbasemap_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deallocate control structure */

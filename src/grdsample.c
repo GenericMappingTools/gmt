@@ -55,13 +55,13 @@ void *New_grdsample_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = GMT_memory (GMT, NULL, 1, struct GRDSAMPLE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdsample_Ctrl (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 

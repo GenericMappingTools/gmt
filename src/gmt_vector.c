@@ -711,7 +711,7 @@ GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, GMT_LONG m, GMT_LONG n, do
 			w[k]=x;
 		}
 	}
-	free ((void *)rv1);
+	free (rv1);
 	return (GMT_NOERROR);
 }
 
@@ -794,7 +794,7 @@ GMT_LONG GMT_solve_svd (struct GMT_CTRL *GMT, double *u, GMT_LONG m, GMT_LONG n,
 
 	/* free work space */
 
-	free ((void *)ut);
+	free (ut);
 	
 	return (n_use);
 }

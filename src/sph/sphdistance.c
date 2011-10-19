@@ -106,14 +106,14 @@ void *New_sphdistance_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	C = GMT_memory (GMT, NULL, 1, struct SPHDISTANCE_CTRL);
 	C->L.unit = 'e';	/* Default is meter distances */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_sphdistance_Ctrl (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->N.file) free ((void *)C->N.file);	
-	if (C->Q.file) free ((void *)C->Q.file);	
+	if (C->G.file) free (C->G.file);	
+	if (C->N.file) free (C->N.file);	
+	if (C->Q.file) free (C->Q.file);	
 	GMT_free (GMT, C);	
 }
 

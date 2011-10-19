@@ -9,14 +9,14 @@
 int pol_readheader (struct GMT3_POLY *h, FILE *fp)
 {
 	int n;
-	n = fread ((void *)h, sizeof (struct GMT3_POLY), 1, fp);
+	n = fread (h, sizeof (struct GMT3_POLY), 1, fp);
 	return (n);
 }
 
 int pol_writeheader (struct GMT3_POLY *h, FILE *fp)
 {
 	int n;
-	n = fwrite ((void *)h, sizeof (struct GMT3_POLY), 1, fp);
+	n = fwrite (h, sizeof (struct GMT3_POLY), 1, fp);
 	return (n);
 }
 
@@ -24,14 +24,14 @@ int pol_fread (struct LONGPAIR *p, size_t n_items, FILE *fp)
 {
 	int n;
 
-	n = fread ((void *)p, sizeof (struct LONGPAIR), n_items, fp);
+	n = fread (p, sizeof (struct LONGPAIR), n_items, fp);
 	return (n);
 }
 
 int pol_fwrite (struct LONGPAIR *p, size_t n_items, FILE *fp)
 {
 	int n;
-	n = fwrite ((void *)p, sizeof (struct LONGPAIR), n_items, fp);
+	n = fwrite (p, sizeof (struct LONGPAIR), n_items, fp);
 	return (n);
 }
 
@@ -47,7 +47,7 @@ void swab_polpoints (struct LONGPAIR *p, int n);
 int pol_readheader2 (struct GMT3_POLY *h, FILE *fp)
 {
 	int n;
-	n = fread ((void *)h, sizeof (struct GMT3_POLY), 1, fp);
+	n = fread (h, sizeof (struct GMT3_POLY), 1, fp);
 #ifndef WORDS_BIGENDIAN
 	swab_polheader (h);
 #endif
@@ -66,7 +66,7 @@ int pol_writeheader2 (struct GMT3_POLY *h, FILE *fp)
 #else
 	use_h = h;
 #endif
-	n = fwrite ((void *)use_h, sizeof (struct GMT3_POLY), 1, fp);
+	n = fwrite (use_h, sizeof (struct GMT3_POLY), 1, fp);
 	return (n);
 }
 
@@ -74,7 +74,7 @@ int pol_fread2 (struct LONGPAIR *p, size_t n_items, FILE *fp)
 {
 	int n;
 
-	n = fread ((void *)p, sizeof (struct LONGPAIR), n_items, fp);
+	n = fread (p, sizeof (struct LONGPAIR), n_items, fp);
 #ifndef WORDS_BIGENDIAN
 	swab_polpoints (p, n_items);
 #endif
@@ -87,7 +87,7 @@ int pol_fwrite2 (struct LONGPAIR *p, size_t n_items, FILE *fp)
 #ifndef WORDS_BIGENDIAN
 	swab_polpoints (p, n_items);
 #endif
-	n = fwrite ((void *)p, sizeof (struct LONGPAIR), n_items, fp);
+	n = fwrite (p, sizeof (struct LONGPAIR), n_items, fp);
 	return (n);
 }
 

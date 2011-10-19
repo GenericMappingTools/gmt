@@ -77,14 +77,14 @@ void *New_grdgradient_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	C->E.specular = 0.4;
 	C->E.shine = 10;
 	C->N.norm = 1.0;		
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdgradient_Ctrl (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->S.file) free ((void *)C->S.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->G.file) free (C->G.file);	
+	if (C->S.file) free (C->S.file);	
 	GMT_free (GMT, C);	
 }
 

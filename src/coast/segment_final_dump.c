@@ -27,8 +27,8 @@ int main (int argc, char **argv)
 	fp = fopen(argv[1], "r");
 	fp2 = fopen(argv[2], "w");
 	id = 0;
-	while (fread((void *)&hin, sizeof(struct RAWSEG_HEADER), 1, fp) == 1) {
-		if ((fread((void *)p, sizeof(struct LONGPAIR), (size_t) hin.n, fp)) != hin.n) {
+	while (fread(&hin, sizeof(struct RAWSEG_HEADER), 1, fp) == 1) {
+		if ((fread(p, sizeof(struct LONGPAIR), (size_t) hin.n, fp)) != hin.n) {
 			fprintf(stderr,"segment_final_dump: Error reading file.\n");
 			exit(-1);
 		}

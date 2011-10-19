@@ -79,16 +79,16 @@ void *New_grdtrack_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	C = GMT_memory (GMT, NULL, 1, struct GRDTRACK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdtrack_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Deallocate control structure */
 	GMT_LONG g;
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);
-	if (C->D.file) free ((void *)C->D.file);
-	for (g = 0; g < C->G.n_grids; g++) if (C->G.file[g]) free ((void *)C->G.file[g]);	
-	if (C->Out.file) free ((void *)C->Out.file);	
+	if (C->In.file) free (C->In.file);
+	if (C->D.file) free (C->D.file);
+	for (g = 0; g < C->G.n_grids; g++) if (C->G.file[g]) free (C->G.file[g]);	
+	if (C->Out.file) free (C->Out.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -449,7 +449,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			if (status == -1 && !Ctrl->N.active) continue;		/* Point is outside the region of all grids */
 
 			if (Ctrl->Z.active)	/* Simply print out values */
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)value);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, value);
 			else if (pure_ascii && n_fields >= 2) {
 				/* Special case: Ascii i/o and at least 3 columns:
 				   Columns beyond first two could be text strings */
@@ -465,13 +465,13 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 				for (g = 0; g < Ctrl->G.n_grids; g++) {
 					GMT_add_to_record (GMT, record, value[g], GMT_Z+g, 1);	/* Format our output y value */
 				}
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 			}
 			else {	/* Simply copy other columns, append value, and output */
 				if (!out) out = GMT_memory (GMT, NULL, GMT->common.b.ncol[GMT_OUT], double);
 				for (k = 0; k < n_fields; k++) out[k] = in[k];
 				for (g = 0; g < Ctrl->G.n_grids; g++, k++) out[k] = value[g];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
 
 			n_points++;

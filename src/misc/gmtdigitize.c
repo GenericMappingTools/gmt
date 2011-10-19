@@ -103,13 +103,13 @@ void *New_gmtdigitize_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	
 	C->L.LPI = DIG_LPI;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtdigitize_Ctrl (struct GMT_CTRL *GMT, struct GMTDIGITIZE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.device) free ((void *)C->C.device);	
-	if (C->N.name) free ((void *)C->N.name);	
+	if (C->C.device) free (C->C.device);	
+	if (C->N.name) free (C->N.name);	
 	GMT_free (GMT, C);	
 }
 
@@ -625,7 +625,7 @@ int main (int argc, char *argv[]) {
 	if (GMT_Create_Session (&API, argv[0], GMTAPI_GMT)) exit (EXIT_FAILURE);
 
 	/* 2. Convert command line arguments to local linked option list */
-	if (GMT_Create_Options (API, (GMT_LONG)(argc-1), (void *)(argv+1), &options)) exit (EXIT_FAILURE);
+	if (GMT_Create_Options (API, (GMT_LONG)(argc-1), (argv+1), &options)) exit (EXIT_FAILURE);
 
 	/* 3. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = (int)GMT_gmtdigitize (API, options);

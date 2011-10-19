@@ -80,12 +80,12 @@ void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	strcpy (C->C.justify, "LB");
 	C->G.f_rgb[0] = C->G.b_rgb[0] = C->G.t_rgb[0] = -2;
 	C->N.nx = C->N.ny = 1;	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psimage_Ctrl (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);
+	if (C->In.file) free (C->In.file);
 	GMT_free (GMT, C);
 }
 
@@ -272,7 +272,7 @@ GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
 		GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", file);
 		return (-1);
 	}
-	if (GMT_fread ((void *)c, (size_t)1, (size_t)4, fp) != (size_t)4) {
+	if (GMT_fread (c, (size_t)1, (size_t)4, fp) != (size_t)4) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Could not read 4 bytes from file %s\n", file);
 		return (-1);
 	}

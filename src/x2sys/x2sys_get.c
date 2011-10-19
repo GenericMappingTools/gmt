@@ -66,14 +66,14 @@ void *New_x2sys_get_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
 	C->L.mode = 1;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_get_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* Deallocate control structure */
-	if (C->F.flags) free ((void *)C->F.flags);
-	if (C->L.file) free ((void *)C->L.file);
-	if (C->N.flags) free ((void *)C->N.flags);
-	if (C->T.TAG) free ((void *)C->T.TAG);
+	if (C->F.flags) free (C->F.flags);
+	if (C->L.file) free (C->L.file);
+	if (C->N.flags) free (C->N.flags);
+	if (C->T.TAG) free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 

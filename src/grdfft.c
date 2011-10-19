@@ -146,16 +146,16 @@ void *New_grdfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
 	C->S.scale = 1.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->operation) GMT_free (GMT, C->operation);	
 	if (C->par) GMT_free (GMT, C->par);	
-	if (C->In.file[0]) free ((void *)C->In.file[0]);	
-	if (C->In.file[1]) free ((void *)C->In.file[1]);	
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->In.file[0]) free (C->In.file[0]);	
+	if (C->In.file[1]) free (C->In.file[1]);	
+	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 

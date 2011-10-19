@@ -89,14 +89,14 @@ void *New_grdvector_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->Q.h_width  = VECTOR_HEAD_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
 	C->Q.h_length = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 	C->S.factor = 1.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdvector_Ctrl (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file[0]) free ((void *)C->In.file[0]);	
-	if (C->In.file[1]) free ((void *)C->In.file[1]);	
-	if (C->C.file) free ((void *)C->C.file);	
+	if (C->In.file[0]) free (C->In.file[0]);	
+	if (C->In.file[1]) free (C->In.file[1]);	
+	if (C->C.file) free (C->C.file);	
 	GMT_free (GMT, C);	
 }
 

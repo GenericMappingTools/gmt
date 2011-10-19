@@ -41,7 +41,7 @@ void *New_gmtdefaults_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	struct GMTDEFAULTS_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct GMTDEFAULTS_CTRL);
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtdefaults_Ctrl (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *C) {	/* Deallocate control structure */

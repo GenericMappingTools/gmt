@@ -97,7 +97,7 @@ int main (int argc, char **argv)
 		GMT_init_track (lat, this_n, &ylist);
 		if (!GMT_IS_ZERO (h.east - h.west)) {
 			nx = found = GMT_crossover (lon, lat, NULL, ylist, this_n, lon, lat, NULL, ylist, this_n, TRUE, &XC);
-			GMT_free ((void *)ylist);
+			GMT_free (ylist);
 			for (i = end = 0; i < nx; i++) {
 				A = irint (XC.xnode[0][i]);
 				B = irint (XC.xnode[1][i]);

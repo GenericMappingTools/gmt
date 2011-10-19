@@ -63,7 +63,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	cmd = GMTMEX_build_cmd (API, input, options, output, GMT_IS_GRID);
 	
 	/* Run nearneighbor module, and give usage message if errors arise during parsing */
-	if ((status = GMT_nearneighbor (API, 0, (void *)cmd))) mexErrMsgTxt ("Run-time error\n");
+	if ((status = GMT_nearneighbor (API, 0, cmd))) mexErrMsgTxt ("Run-time error\n");
 	
 	/* Pass output arguments to Matlab vectors Z, with optional (x, y) or hdr. */
 	if (nlhs) GMTMEX_prep_mexgrd (API, plhs, nlhs, G);

@@ -185,12 +185,12 @@ void *New_pswiggle_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	GMT_init_fill (GMT, &C->G.fill[0], GMT->current.setting.map_frame_pen.rgb[0], GMT->current.setting.map_frame_pen.rgb[1], GMT->current.setting.map_frame_pen.rgb[2]);
 	C->G.fill[1] = C->G.fill[0];
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pswiggle_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->S.label) free ((void *)C->S.label);	
+	if (C->S.label) free (C->S.label);	
 	GMT_free (GMT, C);	
 }
 

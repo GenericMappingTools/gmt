@@ -100,7 +100,7 @@ void * NEW_BLK (struct GMT_CTRL *G) {	/* Allocate and initialize a new control s
 #if defined(BLOCKMEDIAN)	/* Initialize default to 0.5, i.e., the median */
 	C->T.quantile = 0.5;
 #endif
-	return ((void *)C);
+	return (C);
 }
 
 void FREE_BLK (struct GMT_CTRL *G, struct  BLOCK_CTRL *C) {	/* Deallocate control structure */

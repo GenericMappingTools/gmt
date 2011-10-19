@@ -139,12 +139,12 @@ void *New_pscoupe_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->S.fontsize = DEFAULT_FONTSIZE;
 	C->S.offset = DEFAULT_OFFSET;
 	C->A.size = GMT->session.d_NaN;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pscoupe_Ctrl (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Z.file) free ((void *)C->Z.file);
+	if (C->Z.file) free (C->Z.file);
 	GMT_free (GMT, C);
 }
 

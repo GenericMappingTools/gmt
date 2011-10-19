@@ -51,7 +51,7 @@ void *New_psclip_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = GMT_memory (GMT, NULL, 1, struct PSCLIP_CTRL);
 	C->C.n = 1;	/* Default undoes one level of clipping */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psclip_Ctrl (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *C) {	/* Deallocate control structure */

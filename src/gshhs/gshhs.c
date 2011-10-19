@@ -84,13 +84,13 @@ void *New_gshhs_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new c
 
 	C = GMT_memory (GMT, NULL, 1, struct GSHHS_CTRL);
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gshhs_Ctrl (struct GMT_CTRL *GMT, struct GSHHS_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->Out.file) free ((void *)C->Out.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->Out.file) free (C->Out.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -284,7 +284,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		D->table[0]->segment = GMT_memory (GMT, T, n_alloc, struct GMT_LINE_SEGMENT *);
 		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
 	}
-	n_read = fread ((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
+	n_read = fread (&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
 	version = (h.flag >> 8) & 255;
 	must_swab = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 	
@@ -332,7 +332,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (OK && Ctrl->N.active && Ctrl->N.level != level) OK = 0;		/* Skip if not the right level (-N) */
 		if (!OK) {	/* Not what we are looking for, skip to next */
 			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
-			n_read = fread ((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
+			n_read = fread (&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
 			continue;	/* Back to top of loop */
 		}
 		
@@ -380,7 +380,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Allocate h.n number of data records */
 			GMT_alloc_segment (GMT, T[seg_no], dim[3], dim[2], TRUE);
 			for (k = 0; k < h.n; k++) {
-				if (fread ((void *)&p, (size_t)sizeof(struct POINT), (size_t)1, fp) != 1) {
+				if (fread (&p, (size_t)sizeof(struct POINT), (size_t)1, fp) != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s for %s %d, point %ld.\n", Ctrl->In.file, name[is_line], h.id, k);
 					Return (EXIT_FAILURE);
 				}
@@ -397,7 +397,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		seg_no++;
 		max_east = 180000000;	/* Only Eurasia (the first polygon) needs 270 */
-		n_read = fread((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
+		n_read = fread(&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
 	}
 	GMT_fclose (GMT, fp);
 	

@@ -111,13 +111,13 @@ void *New_pssegy_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->A.active = !GMT_BIGENDIAN;
 	C->M.value = 10000;
 	C->Q.value[X_ID] = 1.0; /* Ctrl->Q.value[X_ID], Ctrl->Q.value[Y_ID] are trace and sample interval */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pssegy_Ctrl (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C && C->In.file) free ((void *)C->In.file);
-	if (C && C->T.file) free ((void *)C->T.file);
+	if (C && C->In.file) free (C->In.file);
+	if (C && C->T.file) free (C->T.file);
 	GMT_free (GMT, C);
 }
 

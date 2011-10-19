@@ -98,14 +98,14 @@ void *New_segy2grd_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	C->N.f_value = GMT->session.f_NaN;
 	C->N.d_value = GMT->session.d_NaN;
 	C->Q.value[X_ID] = 1.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_segy2grd_Ctrl (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C && C->In.file) free ((void *)C->In.file);
-	if (C && C->D.text) free ((void *)C->D.text);
-	if (C && C->G.file) free ((void *)C->G.file);
+	if (C && C->In.file) free (C->In.file);
+	if (C && C->D.text) free (C->D.text);
+	if (C && C->G.file) free (C->G.file);
 	GMT_free (GMT, C);
 }
 

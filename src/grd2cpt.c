@@ -105,14 +105,14 @@ void *New_grd2cpt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct GRD2CPT_CTRL);
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grd2cpt_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free ((void *)C->Out.file);
-	if (C->C.file) free ((void *)C->C.file);
-	if (C->S.file) free ((void *)C->S.file);
+	if (C->Out.file) free (C->Out.file);
+	if (C->C.file) free (C->C.file);
+	if (C->S.file) free (C->S.file);
 	GMT_free (GMT, C);
 }
 
@@ -364,14 +364,14 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		k++;
 		if (k == n_alloc) {
 			n_alloc += GMT_TINY_CHUNK;
-			G = GMT_memory (GMT, (void *)G, n_alloc, struct GMT_GRID *);
-			grdfile = GMT_memory (GMT, (void *)grdfile, n_alloc, char *);
+			G = GMT_memory (GMT, G, n_alloc, struct GMT_GRID *);
+			grdfile = GMT_memory (GMT, grdfile, n_alloc, char *);
 		}
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
 	ngrd = k;
-	if (ngrd < n_alloc) G = GMT_memory (GMT, (void *)G, ngrd, struct GMT_GRID *);
+	if (ngrd < n_alloc) G = GMT_memory (GMT, G, ngrd, struct GMT_GRID *);
 
 	nxyg = G[0]->header->nm * ngrd;
 
@@ -544,7 +544,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, cdf_cpt);
 	GMT_free (GMT, z);
 	for (k = 0; k < ngrd; k++) {
-		free ((void *)grdfile[k]);
+		free (grdfile[k]);
 		GMT_Destroy_Data (API, GMT_CLOBBER, &G[k]);
 	}
 	GMT_free (GMT, G);

@@ -83,15 +83,15 @@ void *New_grdimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 	C->G.b_rgb[0] = C->G.b_rgb[1] = C->G.b_rgb[2] = 1.0;
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdimage_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* Deallocate control structure */
 	GMT_LONG k;
 	if (!C) return;
-	for (k = 0; k < 3; k++) if (C->In.file[k]) free ((void *)C->In.file[k]);	
-	if (C->C.file) free ((void *)C->C.file);
-	if (C->I.file) free ((void *)C->I.file);
+	for (k = 0; k < 3; k++) if (C->In.file[k]) free (C->In.file[k]);	
+	if (C->C.file) free (C->C.file);
+	if (C->I.file) free (C->I.file);
 	GMT_free (GMT, C);
 }
 
@@ -589,7 +589,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_Encode_ID (GMT->parent, out_string, object_ID);	/* Make filename with embedded object ID for result grid G2 */
 
 			sprintf (cmd, "%s -G%s -I%ld+/%ld+", in_string, out_string, nx, ny);
-			status = GMT_grdsample (GMT->parent, 0, (void *)cmd);	/* Do the resampling */
+			status = GMT_grdsample (GMT->parent, 0, cmd);	/* Do the resampling */
 			Intens_orig->alloc_mode = GMT_ALLOCATED;	/* So we may destroy it */
 			GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig);
 			Intens_orig = G2;
@@ -910,7 +910,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef USE_GDAL
 		if (Ctrl->A.active) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Creating 8-bit grayshade image via GDAL\n");
-			to_GDALW->data = (void *)bitimage_8;
+			to_GDALW->data = bitimage_8;
 			GMT_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
 		}
 		else {
@@ -922,7 +922,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (Ctrl->A.active) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Creating 24-bit color image via GDAL\n");
-		to_GDALW->data = (void *)bitimage_24;
+		to_GDALW->data = bitimage_24;
 		GMT_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
 	}
 #endif
@@ -964,8 +964,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->A.active) {
 		if (to_GDALW->P.ProjectionRefPROJ4) free (to_GDALW->P.ProjectionRefPROJ4);
 		GMT_free (GMT, to_GDALW);
-		free((void *)Ctrl->A.driver);
-		free((void *)Ctrl->A.file);
+		free(Ctrl->A.driver);
+		free(Ctrl->A.file);
 	}
 #endif
 

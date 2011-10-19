@@ -89,14 +89,14 @@ void *New_makecpt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct MAKECPT_CTRL);
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_makecpt_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free ((void *)C->Out.file);
-	if (C->C.file) free ((void *)C->C.file);
-	if (C->T.file) free ((void *)C->T.file);
+	if (C->Out.file) free (C->Out.file);
+	if (C->C.file) free (C->C.file);
+	if (C->T.file) free (C->T.file);
 	GMT_free (GMT, C);
 }
 

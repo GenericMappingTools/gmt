@@ -104,14 +104,14 @@ void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	for (k = 0; k < 2; k++) C->T.off[k] = H_BORDER * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Default is 8p padding */
 	for (k = 2; k < 4; k++) C->T.off[k] = V_BORDER * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Default is 8p padding */
 	GMT_init_fill (GMT, &C->T.fill, -1.0, -1.0, -1.0);	/* No fill */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psscale_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) free ((void *)C->C.file);
-	if (C->E.text) free ((void *)C->E.text);
-	if (C->Z.file) free ((void *)C->Z.file);
+	if (C->C.file) free (C->C.file);
+	if (C->E.text) free (C->E.text);
+	if (C->Z.file) free (C->Z.file);
 	GMT_free (GMT, C);	
 }
 

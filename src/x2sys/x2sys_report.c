@@ -89,16 +89,16 @@ void *New_x2sys_report_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_report_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *C) {	/* Deallocate control structure */
-	if (C->In.file) free ((void *)C->In.file);
-	if (C->C.col) free ((void *)C->C.col);
-	if (C->I.file) free ((void *)C->I.file);
-	if (C->L.file) free ((void *)C->L.file);
-	if (C->S.file) free ((void *)C->S.file);
-	if (C->T.TAG) free ((void *)C->T.TAG);
+	if (C->In.file) free (C->In.file);
+	if (C->C.col) free (C->C.col);
+	if (C->I.file) free (C->I.file);
+	if (C->L.file) free (C->L.file);
+	if (C->S.file) free (C->S.file);
+	if (C->T.TAG) free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 
@@ -388,7 +388,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			adj[k].K[adj[k].n].c = 0.0;
 			adj[k].n++;
 			
-			qsort((void *)adj[k].K, (size_t)adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
+			qsort(adj[k].K, (size_t)adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
 			sprintf (file, "%s/%s/%s.%s.adj", X2SYS_HOME, Ctrl->T.TAG, trk_name[k], Ctrl->C.col);
 			if ((fp = GMT_fopen (GMT, file, "w")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create file %s!\n", file);

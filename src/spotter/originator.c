@@ -179,13 +179,13 @@ void *New_originator_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C->N.t_upper = 180.0;
 	C->S.n = 1;
 	C->W.dist = 1.0e100;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_originator_Ctrl (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->E.file) free ((void *)C->E.file);	
-	if (C->F.file) free ((void *)C->F.file);	
+	if (C->E.file) free (C->E.file);	
+	if (C->F.file) free (C->F.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -527,7 +527,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (hot[j].stage == 0) hot[j].stage++;
 		}
 
-		if (nh > 1) qsort ((void *)hot, (size_t)nh, sizeof(struct HOTSPOT_ORIGINATOR), comp_hs);
+		if (nh > 1) qsort (hot, (size_t)nh, sizeof(struct HOTSPOT_ORIGINATOR), comp_hs);
 
 		if (hot[0].np_dist < Ctrl->W.dist) {
 			if (Ctrl->L.mode == 1) {	/* Want time, dist, z output */
@@ -564,7 +564,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					strcat (record, buffer);
 				}
 				strcat (record, "\n");
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 		}
 

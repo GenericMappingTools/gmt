@@ -123,14 +123,14 @@ void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->N.mask[1] = C->N.mask[3] = 1;				/* Default for "dry" areas = 1 (inside) */
 	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtselect_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) free ((void *)C->C.file);	
-	if (C->F.file) free ((void *)C->F.file);	
-	if (C->L.file) free ((void *)C->L.file);	
+	if (C->C.file) free (C->C.file);	
+	if (C->F.file) free (C->F.file);	
+	if (C->L.file) free (C->L.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -557,7 +557,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			
 			/* Sort on x to speed up inside testing */
-			qsort ((void *)data, (size_t)point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
+			qsort (data, (size_t)point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
 			
 			for (i = k = 0; i < point->n_segments; i++) {	/* Put back the new order */
 				for (j = 0; j < point->segment[i]->n_rows; j++, k++) {
@@ -763,7 +763,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (just_copy_record)
 			GMT_Put_Record (API, GMT_WRITE_TEXT, NULL);
 		else
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)in);
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
 		n_pass++;
 	}
 	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */

@@ -71,11 +71,11 @@ void *New_mgd77magref_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
 	C->do_CM4 = TRUE;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_mgd77magref_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	/* Deallocate control structure */
-	free ((void *)C->CM4);
+	free (C->CM4);
 	GMT_free (GMT, C);
 }
 
@@ -205,7 +205,7 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 				break;
 			case 'C':	/* Alternate CM4 coefficient file */
 				Ctrl->C.active = TRUE;
-				free ((void *)Ctrl->CM4->CM4_M.path);
+				free (Ctrl->CM4->CM4_M.path);
 				Ctrl->CM4->CM4_M.path = strdup (opt->arg);
 				break;
 			case 'D':
@@ -216,7 +216,7 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 					Ctrl->CM4->CM4_D.index = FALSE;
 				}
 				else {
-					free ((void *)Ctrl->CM4->CM4_D.path);
+					free (Ctrl->CM4->CM4_D.path);
 					Ctrl->CM4->CM4_D.path = strdup (opt->arg);
 					Ctrl->CM4->CM4_D.load = TRUE;
 				}
@@ -227,7 +227,7 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 					Ctrl->CM4->CM4_I.index = FALSE;
 				}
 				else {
-					free ((void *)Ctrl->CM4->CM4_I.path);
+					free (Ctrl->CM4->CM4_I.path);
 					Ctrl->CM4->CM4_I.path = strdup (opt->arg);
 					Ctrl->CM4->CM4_I.load = TRUE;
 				}
@@ -598,7 +598,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					for (j = 0; j < n_field_components; j++)
 						out[n_out++] = Ctrl->CM4->CM4_DATA.out_field[i*n_field_components+j];
 
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
 			}
 			else {					/* DID CM4 and IGRF */
@@ -617,7 +617,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							out[n_out++] = Ctrl->CM4->CM4_DATA.out_field[i*3+j] + igrf_xyz[i*3+j];
 					}
 
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
 			}
 

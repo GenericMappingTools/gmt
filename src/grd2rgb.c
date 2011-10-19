@@ -67,14 +67,14 @@ void *New_grd2rgb_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->G.name = strdup ("grd2rgb_%c.nc");
 	C->W.size = 3;	/* 3 bytes per pixel */
 		
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grd2rgb_Ctrl (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->C.file) free ((void *)C->C.file);	
-	if (C->G.name) free ((void *)C->G.name);	
+	if (C->In.file) free (C->In.file);	
+	if (C->C.file) free (C->C.file);	
+	if (C->G.name) free (C->G.name);	
 	GMT_free (GMT, C);	
 }
 
@@ -100,7 +100,7 @@ GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GM
 	header->length = (int)nm;
 
 	buffer = GMT_memory (GMT, NULL, nm, unsigned char);
-	if (GMT_fread ((void *)buffer, (size_t)1, (size_t)nm, fp) != (size_t)nm) {
+	if (GMT_fread (buffer, (size_t)1, (size_t)nm, fp) != (size_t)nm) {
 		if (byte_per_pixel == 3)
 			GMT_report (GMT, GMT_MSG_FATAL, "Trouble reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
@@ -143,7 +143,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 	img_pow = GMT_memory (GMT, NULL, n_pix/2, float);
 	GMT_memset (work, 2*n_pix, float);
 
-	if (GMT_fread ((void *)buffer, (size_t)1, (size_t)img_size, fp) != (size_t)img_size) {
+	if (GMT_fread (buffer, (size_t)1, (size_t)img_size, fp) != (size_t)img_size) {
 		if (byte_per_pixel == 3)
 			GMT_report (GMT, GMT_MSG_FATAL, "Trouble_ reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
@@ -412,7 +412,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, grdfile, Out);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid);
 			if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, &Out);
-			free ((void *)grdfile);
+			free (grdfile);
 		}
 		GMT_Destroy_Data (API, GMT_ALLOCATED, &P);
 	}
@@ -497,7 +497,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, grdfile, Grid);
-			free ((void *)grdfile);
+			free (grdfile);
 		}
 		if (Ctrl->W.active)
 			GMT_free (GMT, picture);

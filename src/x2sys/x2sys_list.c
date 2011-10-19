@@ -85,18 +85,18 @@ void *New_x2sys_list_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
 	C->A.value = 1.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_list_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *C) {	/* Deallocate control structure */
-	if (C->In.file) free ((void *)C->In.file);
-	if (C->C.col) free ((void *)C->C.col);
-	if (C->F.flags) free ((void *)C->F.flags);
-	if (C->I.file) free ((void *)C->I.file);
-	if (C->L.file) free ((void *)C->L.file);
-	if (C->S.file) free ((void *)C->S.file);
-	if (C->T.TAG) free ((void *)C->T.TAG);
-	if (C->W.file) free ((void *)C->W.file);
+	if (C->In.file) free (C->In.file);
+	if (C->C.col) free (C->C.col);
+	if (C->F.flags) free (C->F.flags);
+	if (C->I.file) free (C->I.file);
+	if (C->L.file) free (C->L.file);
+	if (C->S.file) free (C->S.file);
+	if (C->T.TAG) free (C->T.TAG);
+	if (C->W.file) free (C->W.file);
 	GMT_free (GMT, C);
 }
 

@@ -91,7 +91,7 @@ int poly_problems (struct PAIR p[], int *n)
 
 	duplicate = 0;
 
-	qsort((void *)p, *n-1, sizeof(struct PAIR), P_compare_xy);
+	qsort(p, *n-1, sizeof(struct PAIR), P_compare_xy);
 	i = 0;
 	while (i < *n-1) {
 		j = i + 1;
@@ -104,7 +104,7 @@ int poly_problems (struct PAIR p[], int *n)
 		}
 		i = j;
 	}
-	qsort((void *)p, *n, sizeof(struct PAIR), P_compare_absk);
+	qsort(p, *n, sizeof(struct PAIR), P_compare_absk);
 
 	if (duplicate)
 		return(-1);
@@ -163,7 +163,7 @@ int P_remove_spikes (struct PAIR p[], int *n)
 	if (spike) {
 		if (p[0].k < 0) p[*n-1].k = -*n;
 		/* Shuffle the negative k points down line, and move the data back  */
-		qsort((void *)p, *n-1, sizeof(struct PAIR), P_compare_k);
+		qsort(p, *n-1, sizeof(struct PAIR), P_compare_k);
 		i = 0;
 		while (i < *n-1 && p[i].k < 0) i++;
 		if (i == *n-1) {

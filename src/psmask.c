@@ -326,12 +326,12 @@ void *New_psmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
 		
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psmask_Ctrl (struct GMT_CTRL *GMT, struct PSMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->D.file) free ((void *)C->D.file);	
+	if (C->D.file) free (C->D.file);	
 	GMT_free (GMT, C);	
 }
 

@@ -149,12 +149,12 @@ void *New_psmeca_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->S.offset = DEFAULT_OFFSET;
 	C->a2.size = GMT->session.d_NaN;
 	C->O2.mode = 1;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psmeca_Ctrl (struct GMT_CTRL *GMT, struct PSMECA_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Z.file) free ((void *)C->Z.file);
+	if (C->Z.file) free (C->Z.file);
 	GMT_free (GMT, C);
 }
 

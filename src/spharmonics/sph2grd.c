@@ -237,8 +237,8 @@ int main (int argc, char **argv)
 	
 	GMT_err_fail (GMT_write_grd (Ctrl->G.file, &header, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, FALSE), Ctrl->G.file);
 	
-	GMT_free ((void *)grd);
-	GMT_free ((void *)lon);
+	GMT_free (grd);
+	GMT_free (lon);
 	
 	Free_sph2grd_Ctrl (Ctrl);	/* Deallocate control structure */
 
@@ -253,10 +253,10 @@ void *New_sph2grd_Ctrl () {	/* Allocate and initialize a new control structure *
 	C = (struct SPH2GRD_CTRL *) GMT_memory (VNULL, 1, sizeof (struct SPH2GRD_CTRL), "New_sph2grd_Ctrl");
 	
 	C->N.mode = 'm';
-	return ((void *)C);
+	return (C);
 }
 
 void Free_sph2grd_Ctrl (struct SPH2GRD_CTRL *C) {	/* Deallocate control structure */
-	if (C->G.file) GMT_free ((void *)C->G.file);	
-	GMT_free ((void *)C);	
+	if (C->G.file) GMT_free (C->G.file);	
+	GMT_free (C);	
 }

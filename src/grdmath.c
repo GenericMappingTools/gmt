@@ -95,11 +95,11 @@ void *New_grdmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdmath_Ctrl (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *C) {	/* Deallocate control structure */
-	if (C->Out.file) free ((void *)C->Out.file);	
+	if (C->Out.file) free (C->Out.file);	
 	GMT_free (GMT, C);
 }
 
@@ -1605,7 +1605,7 @@ void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRI
 
 	GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
 	GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
-	GMT_sort_array (GMT, (void *)stack[last]->data, info->nm, GMT_FLOAT_TYPE);
+	GMT_sort_array (GMT, stack[last]->data, info->nm, GMT_FLOAT_TYPE);
 	for (n = info->nm; GMT_is_fnan (stack[last]->data[n-1]) && n > 1; n--);
 	if (n) {
 		GMT_mode_f (GMT, stack[last]->data, n, n/2, 0, GMT_mode_selection, &GMT_n_multiples, &mode);
@@ -1687,7 +1687,7 @@ void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *
 
 	GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
 	GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
-	GMT_sort_array (GMT, (void *)stack[last]->data, info->nm, GMT_FLOAT_TYPE);
+	GMT_sort_array (GMT, stack[last]->data, info->nm, GMT_FLOAT_TYPE);
 	for (n = info->nm; GMT_is_fnan (stack[last]->data[n-1]) && n > 1; n--);
 	if (n) {
 		med = (n%2) ? stack[last]->data[n/2] : (float)(0.5 * (stack[last]->data[(n-1)/2] + stack[last]->data[n/2]));
@@ -1748,7 +1748,7 @@ void grd_MED (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *
 
 	GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
 	GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
-	GMT_sort_array (GMT, (void *)stack[last], info->nm, GMT_FLOAT_TYPE);
+	GMT_sort_array (GMT, stack[last], info->nm, GMT_FLOAT_TYPE);
 	for (n = info->nm; GMT_is_fnan (stack[last]->data[n-1]) && n > 1; n--);
 	if (n)
 		med = (n%2) ? stack[last]->data[n/2] : (float)(0.5 * (stack[last]->data[(n-1)/2] + stack[last]->data[n/2]));
@@ -1801,7 +1801,7 @@ void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 
 	GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
 	GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
-	GMT_sort_array (GMT, (void *)stack[last]->data, info->nm, GMT_FLOAT_TYPE);
+	GMT_sort_array (GMT, stack[last]->data, info->nm, GMT_FLOAT_TYPE);
 	for (n = info->nm; GMT_is_fnan (stack[last]->data[n-1]) && n > 1; n--);
 	if (n)
 		GMT_mode_f (GMT, stack[last]->data, n, n/2, 0, GMT_mode_selection, &GMT_n_multiples, &mode);
@@ -2050,7 +2050,7 @@ void grd_PQUANT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRI
 	else {
 		GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
 		GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
-		GMT_sort_array (GMT, (void *)stack[prev]->data, info->nm, GMT_FLOAT_TYPE);
+		GMT_sort_array (GMT, stack[prev]->data, info->nm, GMT_FLOAT_TYPE);
 		p = (float) GMT_quantile_f (GMT, stack[prev]->data, factor[last], (GMT_LONG)info->nm);
 		GMT_memset (stack[last]->data, info->size, float);	/* Wipes everything */
 		GMT_grd_pad_on (GMT, stack[last], pad);			/* Reinstate the original pad */
@@ -2799,7 +2799,7 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GMT_GRID *stack[], GMT_LONG allo
 	GMT_free (GMT, info->grd_xn);
 	GMT_free (GMT, info->grd_yn);
 	GMT_free (GMT, info->dx);
-	if (info->ASCII_file) free ((void *)info->ASCII_file);
+	if (info->ASCII_file) free (info->ASCII_file);
 	for (k = 0; k < GRDMATH_N_OPERATORS; k++) {
 		p = lnode[k].next;
 		while ((current = p)) { p = p->next; GMT_free (GMT, current); }
@@ -3084,7 +3084,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->data[node] = info.grd_yn[row];
 			}
 			else if (op == GRDMATH_ARG_IS_ASCIIFILE) {
-				if (info.ASCII_file) free ((void *)info.ASCII_file);
+				if (info.ASCII_file) free (info.ASCII_file);
 				if (!stack[nstack]) alloc_stack (GMT, &stack[nstack], info.G);
 				alloc_mode[nstack] = 1;
 				info.ASCII_file = strdup (opt->arg);

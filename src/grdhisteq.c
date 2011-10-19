@@ -68,14 +68,14 @@ void *New_grdhisteq_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = GMT_memory (GMT, NULL, 1, struct GRDHISTEQ_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdhisteq_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->D.file) free ((void *)C->D.file);	
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->D.file) free (C->D.file);	
+	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -204,7 +204,7 @@ GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char
 	GMT_memcpy (pad, Grid->header->pad, 4, GMT_LONG);	/* Save the original pad */
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
 	if (outfile) Orig = GMT_duplicate_grid (GMT, Grid, TRUE); /* Must keep original if readonly */
-	GMT_sort_array (GMT, (void *)Grid->data, Grid->header->nm, GMT_FLOAT_TYPE);
+	GMT_sort_array (GMT, Grid->data, Grid->header->nm, GMT_FLOAT_TYPE);
 	
 	nxy = Grid->header->nm;
 	while (nxy > 0 && GMT_is_fnan (Grid->data[nxy-1])) nxy--;	/* Only deal with real numbers */
@@ -231,7 +231,7 @@ GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char
 
 		if (dump_intervals) {	/* Write records to file or stdout */
 			out[GMT_X] = (double)Grid->data[i]; out[GMT_Y] = (double)Grid->data[j]; out[GMT_Z] = (double)current_cell;
-			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, (void *)out);
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
 		}
 
 		i = j;
@@ -287,7 +287,7 @@ GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double
 
 	/* Sort on data value  */
 
-	qsort ((void *)indexed_data, (size_t)nxy, sizeof (struct INDEXED_DATA), compare_indexed_floats);
+	qsort (indexed_data, (size_t)nxy, sizeof (struct INDEXED_DATA), compare_indexed_floats);
 
 	dnxy = 1.0 / (nxy + 1);
 
@@ -300,7 +300,7 @@ GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double
 
 	/* Sort on data index  */
 
-	qsort ((void *)indexed_data, (size_t)Grid->header->nm, sizeof (struct INDEXED_DATA), compare_indices);
+	qsort (indexed_data, (size_t)Grid->header->nm, sizeof (struct INDEXED_DATA), compare_indices);
 
 	i = 0;
 	GMT_grd_loop (GMT, Grid, row, col, ij) Grid->data[ij] = indexed_data[i++].x;	/* Load up the grid */

@@ -330,8 +330,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		/* Get only one dst first so that we can test (and abort if needed) if date is out of bounds */
 		Ctrl->CM4_D.dst[0] = intdst(mjdl, mjdh, mjdy[0], msec[0], dstx, &cerr);
 		if (cerr > 49) {
-			free((void *) dstx);
-			if (Ctrl->CM4_DATA.n_times > 1) free((void *) Ctrl->CM4_D.dst);
+			free( dstx);
+			if (Ctrl->CM4_DATA.n_times > 1) free( Ctrl->CM4_D.dst);
 			return 1;
 		}
 
@@ -339,7 +339,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		for (n = 1; n < Ctrl->CM4_DATA.n_times; ++n)
 			Ctrl->CM4_D.dst[n] = intdst(mjdl, mjdh, mjdy[n], msec[n], dstx, &cerr);
 
-		free((void *) dstx);
+		free( dstx);
 		if (cerr > 49) return 1;
 	}
 	if (Ctrl->CM4_I.index) {
@@ -368,8 +368,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		Ctrl->CM4_I.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
 		if (cerr > 49) return 1;
 	}
-	free ((void *) msec);
-	free ((void *) mjdy);
+	free ( msec);
+	free ( mjdy);
 
 	/* On Windows, either this or declare them as "static", otherwise ... BOOM */
 	hysq = (double *) calloc((size_t)(82080), sizeof(double));
@@ -739,16 +739,16 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		}
 	}
 
-	free ((void *) mut);
-	free ((void *) gpsq);	free ((void *) gssq);	free ((void *) gpmg);
-	free ((void *) gsmg);	free ((void *) hysq);	free ((void *) epsq);
-	free ((void *) essq);	free ((void *) ecto);	free ((void *) hyto);
-	free ((void *) hq);	free ((void *) ht);	free ((void *) bkpo);
-	free ((void *) ws);	free ((void *) gamf);	free ((void *) epmg);
-	free ((void *) esmg);	free ((void *) hymg);	free ((void *) f107x);
-	free ((void *) pleg);	free ((void *) rcur);
-	if (gcto_or) free((void *) gcto_or);
-	if (gcto_mg) free((void *) gcto_mg);
+	free ( mut);
+	free ( gpsq);	free ( gssq);	free ( gpmg);
+	free ( gsmg);	free ( hysq);	free ( epsq);
+	free ( essq);	free ( ecto);	free ( hyto);
+	free ( hq);	free ( ht);	free ( bkpo);
+	free ( ws);	free ( gamf);	free ( epmg);
+	free ( esmg);	free ( hymg);	free ( f107x);
+	free ( pleg);	free ( rcur);
+	if (gcto_or) free( gcto_or);
+	if (gcto_mg) free( gcto_mg);
 	return 0;
 }
 

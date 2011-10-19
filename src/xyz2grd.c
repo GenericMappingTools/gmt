@@ -79,15 +79,15 @@ void *New_xyz2grd_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->N.value = GMT->session.d_NaN;
 	C->Z.type = 'a';
 	C->Z.format[0] = 'T';	C->Z.format[1] = 'L';
-	return ((void *)C);
+	return (C);
 }
 
 void Free_xyz2grd_Ctrl (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->D.information) free ((void *)C->D.information);	
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->S.file) free ((void *)C->S.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->D.information) free (C->D.information);	
+	if (C->G.file) free (C->G.file);	
+	if (C->S.file) free (C->S.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -344,7 +344,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT->current.io.output = GMT_z_output;		/* Override output writer */
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
 		in = &bucket;
-		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in))) GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)in);
+		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in))) GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
 
 		GMT->current.io.output = save;			/* Reset output pointer */
 		GMT->common.b.active[GMT_OUT] = previous;	/* Reset output binary */
@@ -492,7 +492,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	n_read = 0;
 	ij = -1;	/* Will be incremented to 0 in -Z section or recomputed in the xyz section */
-	if (Ctrl->Z.active) for (i = 0; i < io.skip; i++) fread ((void *)&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
+	if (Ctrl->Z.active) for (i = 0; i < io.skip; i++) fread (&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
 
 	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
 

@@ -45,12 +45,12 @@ void *New_x2sys_merge_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_merge_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *C) {	/* Deallocate control structure */
-	if (C->A.file) free ((void *)C->A.file);
-	if (C->M.file) free ((void *)C->M.file);
+	if (C->A.file) free (C->A.file);
+	if (C->M.file) free (C->M.file);
 	GMT_free (GMT, C);
 }
 

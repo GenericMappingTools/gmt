@@ -38,7 +38,7 @@ int main (int argc, char *argv[]) {
 	GMT = API->GMT;
 
 	/* 2. Convert command line arguments to local linked option list */
-	if (GMT_Create_Options (API, (GMT_LONG)(argc-1), (void *)(argv+1), &options)) exit (EXIT_FAILURE);
+	if (GMT_Create_Options (API, (GMT_LONG)(argc-1), (argv+1), &options)) exit (EXIT_FAILURE);
 
 	/* 3. Parse the common GMT options (e.g., -h -V) */
 	if ((error = GMT_Parse_Common (API, "-VJRbf:", "BKOPUXYcghp", options))) exit (EXIT_FAILURE);
@@ -97,7 +97,7 @@ int main (int argc, char *argv[]) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Data found in record %ld\n", GMT->current.io.rec_no);
 			fprintf (stdout, "D: ");
 		}
-		GMT_Put_Record (API, mode, (void *)in);
+		GMT_Put_Record (API, mode, in);
 	}
 	fprintf (stdout, "B: --- End of All Files ---\n");
 	if ((error = GMT_End_IO (API, GMT_IN,  0))) exit (error);				/* Disables further data input */

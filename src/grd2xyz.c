@@ -59,7 +59,7 @@ void *New_grd2xyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->Z.type = 'a';
 	C->Z.format[0] = 'T';	C->Z.format[1] = 'L';
 		
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grd2xyz_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallocate control structure */
@@ -272,7 +272,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				d_value = G->data[gmt_ij];
 				if ((io.x_missing && io.gmt_i == io.x_period) || (io.y_missing && io.gmt_j == 0)) continue;
 				if (Ctrl->N.active && GMT_is_dnan (d_value)) d_value = Ctrl->N.value;
-				ok = GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)&d_value);
+				ok = GMT_Put_Record (API, GMT_WRITE_DOUBLE, &d_value);
 				if (!ok) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
 			GMT->current.io.output = save;			/* Reset pointer */
@@ -293,33 +293,33 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			record = GMT_memory (GMT, NULL, G->header->nx, char);
 			
 			sprintf (record, "ncols %d\nnrows %d", G->header->nx, G->header->ny);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write a text record */
+			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
 			if (G->header->registration == GMT_PIXEL_REG) {	/* Pixel format */
 				sprintf (record, "xllcorner ");
 				sprintf (item, GMT->current.setting.format_float_out, G->header->wesn[XLO]);
 				strcat  (record, item);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write a text record */
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
 				sprintf (record, "yllcorner ");
 				sprintf (item, GMT->current.setting.format_float_out, G->header->wesn[YLO]);
 				strcat  (record, item);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write a text record */
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
 			}
 			else {	/* Gridline format */
 				sprintf (record, "xllcenter ");
 				sprintf (item, GMT->current.setting.format_float_out, G->header->wesn[XLO]);
 				strcat  (record, item);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write a text record */
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
 				sprintf (record, "yllcenter ");
 				sprintf (item, GMT->current.setting.format_float_out, G->header->wesn[YLO]);
 				strcat  (record, item);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write a text record */
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
 			}
 			sprintf (record, "cellsize ");
 			sprintf (item, GMT->current.setting.format_float_out, G->header->inc[GMT_X]);
 			strcat  (record, item);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write a text record */
+			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
 			sprintf (record, "nodata_value %ld", (GMT_LONG)irint (Ctrl->E.nodata));
-			GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write a text record */
+			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
 			GMT_row_loop (GMT, G, row) {	/* Scanlines, starting in the north (ymax) */
 				rec_len = 0;
 				GMT_col_loop (GMT, G, row, col, ij) {
@@ -338,7 +338,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					rec_len += len;
 					if (col < (G->header->nx-1)) { strcat (record, " "); rec_len++;}
 				}
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write a whole y line */
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a whole y line */
 			}
 			GMT_free (GMT, record);
 		}
@@ -363,14 +363,14 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				else
 					sprintf (header, "# %s\t%s\t%s", G->header->x_units, G->header->y_units, G->header->z_units);
 				if (Ctrl->W.active) strcat (header, "\tweight");
-				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, (void *)header);	/* Write a header record */
+				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, header);	/* Write a header record */
 				first = FALSE;
 			}
 
 			GMT_grd_loop (GMT, G, row, col, ij) {
 				out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
 				if (Ctrl->N.active && GMT_is_dnan (out[GMT_Z])) out[GMT_Z] = Ctrl->N.value;
-				ok = GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);		/* Write this to output */
+				ok = GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);		/* Write this to output */
 				if (!ok) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
 			GMT_free (GMT, x);

@@ -290,7 +290,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 				sprintf (cmd, "%s %s %s %s -G%s -V%ld", B[n].file, Targs, Iargs, Rargs, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
-				if ((status = GMT_grdsample (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
+				if ((status = GMT_grdsample (GMT->parent, 0, cmd))) {	/* Resample the file */
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 					GMT_exit (EXIT_FAILURE);
 				}
@@ -300,7 +300,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 				sprintf (cmd, "%s %s %s -V%ld", B[n].file, Rargs, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
-				if ((status = GMT_grdreformat (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
+				if ((status = GMT_grdreformat (GMT->parent, 0, cmd))) {	/* Resample the file */
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 					GMT_exit (EXIT_FAILURE);
 				}
@@ -357,8 +357,8 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 	}
 
 	for (n = 0; n < n_files; n++) {
-		free ((void *)L[n].file);
-		free ((void *)L[n].region);
+		free (L[n].file);
+		free (L[n].region);
 	}
 	GMT_free (GMT, L);
 	*blend = B;
@@ -411,12 +411,12 @@ void *New_grdblend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	C->N.nodata = GMT->session.d_NaN;
 	C->Z.scale = 1.0;
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdblend_Ctrl (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -549,7 +549,7 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {for (k = 0; k < Ctrl->In.n; k++) free ((void *)Ctrl->In.file[k]); GMT_free (GMT, Ctrl->In.file); Free_grdblend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {for (k = 0; k < Ctrl->In.n; k++) free (Ctrl->In.file[k]); GMT_free (GMT, Ctrl->In.file); Free_grdblend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
@@ -771,7 +771,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		char cmd[GMT_BUFSIZ];
 		sprintf (cmd, "%s %s -V%ld", outfile, Ctrl->G.file, GMT->current.setting.verbose);
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Reformat %s via grdreformat %s\n", outfile, cmd);
-		if ((status = GMT_grdreformat (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
+		if ((status = GMT_grdreformat (GMT->parent, 0, cmd))) {	/* Resample the file */
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s.\n", outfile);
 		}
 	}

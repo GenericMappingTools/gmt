@@ -64,12 +64,12 @@ void *New_grdmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->N.mask[GMT_INSIDE] = 1.0;	/* Default inside value */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdmask_Ctrl (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 

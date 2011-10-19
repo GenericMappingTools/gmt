@@ -104,7 +104,7 @@ void *New_rotconverter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 	
 	C->E.value = 0.5;	/* To get half-angles */
 	C->F.mode = TRUE;	/* Default format is total reconstruction rotation poles for both input and output */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_rotconverter_Ctrl (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *C) {	/* Deallocate control structure */
@@ -277,7 +277,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			case '0': case '1': case '2': case '3': case '4': case '5': 
 			case '6': case '7': case '8': case '9': case '.':
 				sprintf (record, "-%c%s", opt->option, opt->arg);
-				free ((void *)opt->arg);
+				free (opt->arg);
 				opt->arg = strdup (record);
 				opt->option = GMTAPI_OPT_INFILE;
 				break;
@@ -418,7 +418,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		spotter_total_to_stages (GMT, a, n_a, TRUE, TRUE);				/* To ensure we have the right kind of poles for output */
 		printf (record, "#longitude\tlatitude\t%s\t%s\tangle(deg)\n", start_text[Ctrl->A.active], end_text[Ctrl->A.active]);
 	}
-	if (GMT->current.io.io_header[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+	if (GMT->current.io.io_header[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 	
 	for (i = 0; i < n_a; i++) {
 		if (Ctrl->T.active) a[i].omega = -a[i].omega;
@@ -455,7 +455,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			spotter_covar_to_record (GMT, &a[i], K);
 			for (k = 0; k < 9; k++) out[n++] = K[k];
 		}
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 	}
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);		/* Disables further data output */
 

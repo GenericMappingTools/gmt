@@ -108,17 +108,17 @@ void *New_psrose_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->M.v_width  = VECTOR_LINE_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 2p */
 	C->M.h_width  = VECTOR_HEAD_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
 	C->M.h_length = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psrose_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->C.file) free ((void *)C->C.file);	
-	if (C->L.w) free ((void *)C->L.w);	
-	if (C->L.e) free ((void *)C->L.e);	
-	if (C->L.s) free ((void *)C->L.s);	
-	if (C->L.n) free ((void *)C->L.n);	
+	if (C->In.file) free (C->In.file);	
+	if (C->C.file) free (C->C.file);	
+	if (C->L.w) free (C->L.w);	
+	if (C->L.e) free (C->L.e);	
+	if (C->L.s) free (C->L.s);	
+	if (C->L.n) free (C->L.n);	
 	GMT_free (GMT, C);	
 }
 
@@ -639,7 +639,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (half_only) {
 			char text[GMT_TEXT_LEN64];
 			if (!Ctrl->L.active) {	/* Use default labels */
-				free ((void *)Ctrl->L.w);	free ((void *)Ctrl->L.e);	free ((void *)Ctrl->L.n);
+				free (Ctrl->L.w);	free (Ctrl->L.e);	free (Ctrl->L.n);
 				if (GMT->current.setting.map_degree_symbol == gmt_none) {
 					Ctrl->L.w = strdup ("90W");
 					Ctrl->L.e = strdup ("90E");

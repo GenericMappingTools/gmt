@@ -91,16 +91,16 @@ void *New_gmtstitch_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	C = GMT_memory (GMT, NULL, 1, struct GMTSTITCH_CTRL);
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtstitch_Ctrl (struct GMT_CTRL *GMT, struct GMTSTITCH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free ((void *)C->Out.file);	
-	if (C->C.file) free ((void *)C->C.file);	
-	if (C->D.format) free ((void *)C->D.format);	
-	if (C->L.file) free ((void *)C->L.file);	
-	if (C->Q.file) free ((void *)C->Q.file);	
+	if (C->Out.file) free (C->Out.file);	
+	if (C->C.file) free (C->C.file);	
+	if (C->D.format) free (C->D.format);	
+	if (C->L.file) free (C->L.file);	
+	if (C->Q.file) free (C->Q.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -692,7 +692,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (p_first_x == p_last_x && p_first_y == p_last_y) {
 			if (Ctrl->D.active && save_type) {	/* Ended up closed, rename with the C type */
 				sprintf (buffer, Ctrl->D.format, 'C', out_seg);
-				free ((void *)T[OPEN][out_seg]->file[GMT_OUT]);
+				free (T[OPEN][out_seg]->file[GMT_OUT]);
 				T[OPEN][out_seg]->file[GMT_OUT] = strdup (buffer);
 				d_mode = CLOSED;	/* Mode is used with -Q only */
 			}

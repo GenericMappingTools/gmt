@@ -56,11 +56,11 @@ void *New_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *C) {	/* Deallocate control structure */
-	if (C->T.TAG) free ((void *)C->T.TAG);
+	if (C->T.TAG) free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 
@@ -374,7 +374,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				
 				/* Here we have 1 or more intersections */
 				
-				qsort ((void *)X, (size_t)nx, sizeof (struct BINCROSS), comp_bincross);
+				qsort (X, (size_t)nx, sizeof (struct BINCROSS), comp_bincross);
 				
 				for (k = 1, k1 = 0; k < nx; k++, k1++) {	/* Process the intervals, getting mid-points and using that to get bin */
 					dx = X[k].x - X[k1].x;

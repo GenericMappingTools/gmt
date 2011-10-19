@@ -196,13 +196,13 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_i
 
 	weight_half = quantile[k_for_xy] * weight_sum;	/* We want the same quantile for locations as was used for z */
 
-	if (n_in_cell > 2) qsort((void *)&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
+	if (n_in_cell > 2) qsort(&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
 	node = first_in_cell;
 	weight_count = data[first_in_cell].a[BLK_W];
 	while (weight_count < weight_half) weight_count += data[++node].a[BLK_W];
 	out[GMT_X] = (weight_count == weight_half) ?  0.5 * (data[node].a[GMT_X] + data[node + 1].a[GMT_X]) : data[node].a[GMT_X];
 
-	if (n_in_cell > 2) qsort ((void *)&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
+	if (n_in_cell > 2) qsort (&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
 	node = first_in_cell;
 	weight_count = data[first_in_cell].a[BLK_W];
 	while (weight_count < weight_half) weight_count += data[++node].a[BLK_W];
@@ -352,7 +352,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Sort on node and Z value */
 
-	qsort ((void *)data, (size_t)n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
+	qsort (data, (size_t)n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
 
 	/* Find n_in_cell and write appropriate output  */
 
@@ -390,7 +390,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Turn z_tmp into absolute deviations from the median (out[GMT_Z]) */
 			if (nz > 1) {
 				for (node = 0; node < nz; node++) z_tmp[node] = fabs (z_tmp[node] - out[GMT_Z]);
-				GMT_sort_array (GMT, (void *)z_tmp, nz, GMT_DOUBLE_TYPE);
+				GMT_sort_array (GMT, z_tmp, nz, GMT_DOUBLE_TYPE);
 				out[3] = (nz%2) ? z_tmp[nz/2] : 0.5 * (z_tmp[(nz-1)/2] + z_tmp[nz/2]);
 				out[3] *= 1.4826;	/* This will be L1 MAD-based scale */
 			}
@@ -399,7 +399,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = weight;
 
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 
 		n_cells_filled++;
 		first_in_cell = first_in_new_cell;

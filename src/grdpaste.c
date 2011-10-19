@@ -44,14 +44,14 @@ void *New_grdpaste_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 			
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdpaste_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->In.file[0]) free ((void *)C->In.file[0]);	
-	if (C->In.file[1]) free ((void *)C->In.file[1]);	
+	if (C->G.file) free (C->G.file);	
+	if (C->In.file[0]) free (C->In.file[0]);	
+	if (C->In.file[1]) free (C->In.file[1]);	
 	GMT_free (GMT, C);	
 }
 

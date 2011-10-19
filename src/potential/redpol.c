@@ -102,16 +102,16 @@ void *New_redpol_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->F.ncoef_col = 25;
 	C->T.year = 2000;
 	C->W.wid = 5;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_redpol_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->E.dipfile) free ((void *)C->E.dipfile);	
-	if (C->E.decfile) free ((void *)C->E.decfile);	
-	if (C->Z.file) free ((void *)C->Z.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->G.file) free (C->G.file);	
+	if (C->E.dipfile) free (C->E.dipfile);	
+	if (C->E.decfile) free (C->E.decfile);	
+	if (C->Z.file) free (C->Z.file);	
 	GMT_free (GMT, C);	
 }
 

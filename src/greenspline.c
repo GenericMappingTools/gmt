@@ -147,17 +147,17 @@ void *New_greenspline_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->S.mode = SANDWELL_1987_2D;
 	C->S.rval[0] = -1.0;	C->S.rval[1] = 1.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_greenspline_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->A.file) free ((void *)C->A.file);	
-	if (C->C.file) free ((void *)C->C.file);	
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->N.file) free ((void *)C->N.file);	
-	if (C->T.file) free ((void *)C->T.file);	
-	if (C->S.arg)  free ((void *)C->S.arg);	
+	if (C->A.file) free (C->A.file);	
+	if (C->C.file) free (C->C.file);	
+	if (C->G.file) free (C->G.file);	
+	if (C->N.file) free (C->N.file);	
+	if (C->T.file) free (C->T.file);	
+	if (C->S.arg)  free (C->S.arg);	
 	GMT_free (GMT, C);	
 }
 
@@ -785,7 +785,7 @@ void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], double *z,
 		if (grad) g[i] = gradspline2d_Wessel_Becker (GMT, x, par, NULL);
 #ifdef DUMP
 		out[0] = x;	out[1] = z[i];	if (grad) out[2] = g[i];
-		fwrite ((void *)out, sizeof (double), n_out, fp);
+		fwrite (out, sizeof (double), n_out, fp);
 #endif
 	}
 #ifdef DUMP
@@ -1173,7 +1173,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			old_n_alloc = n_alloc;
 			n_alloc <<= 1;
 			X = GMT_memory (GMT, X, n_alloc, double *);
-			for (k = old_n_alloc; k < n_alloc; k++) X[k] = GMT_memory (GMT, (void *)X[k], dimension, double);
+			for (k = old_n_alloc; k < n_alloc; k++) X[k] = GMT_memory (GMT, X[k], dimension, double);
 			obs = GMT_memory (GMT, obs, n_alloc, double);
 		}
 	}
@@ -1523,7 +1523,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			sprintf (format, "%%d\t%s\n", GMT->current.setting.format_float_out);
 			/* Sort eigenvalues into ascending order */
-			GMT_sort_array (GMT, (void *)eig, nm, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, eig, nm, GMT_DOUBLE_TYPE);
 			eig_max = eig[nm-1];
 			for (i = 0, j = nm-1; i < nm; i++, j--) fprintf (fp, format, i, eig[j] / eig_max);
 			GMT_fclose (GMT, fp);
@@ -1574,7 +1574,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					out[dimension] += alpha[p] * part;
 				}
 				out[dimension] = undo_normalization (out, out[dimension], normalize, norm);
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
 		}
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
@@ -1626,7 +1626,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (dimension == 2)	/* Special 2-D grid output */
 						Out->data[ij] = (float)V[dimension];
 					else	/* Crude dump for now for both 1-D and 3-D */
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)V);
+						GMT_Put_Record (API, GMT_WRITE_DOUBLE, V);
 				}
 			}
 		}

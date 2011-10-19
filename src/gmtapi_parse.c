@@ -106,7 +106,7 @@ GMT_LONG GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args_in, void *
 			new_args[new_n_args++] = strdup (p);
 			if (new_n_args == n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
-				if ((new_args = GMT_memory (G, (void *)new_args, n_alloc, char *)) == NULL) return (GMT_Report_Error (API, GMT_MEMORY_ERROR));
+				if ((new_args = GMT_memory (G, new_args, n_alloc, char *)) == NULL) return (GMT_Report_Error (API, GMT_MEMORY_ERROR));
 			}
 		}
 		args = new_args;
@@ -150,7 +150,7 @@ GMT_LONG GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args_in, void *
 	*list = head;	/* We return the linked list */
 
 	if (n_args_in == 0) {	/* Free up temporary arg list */
-		for (arg = 0; arg < n_args; arg++) free ((void *)new_args[arg]);
+		for (arg = 0; arg < n_args; arg++) free (new_args[arg]);
 		GMT_free (G, new_args);
 	}
 

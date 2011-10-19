@@ -507,7 +507,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 
 		if (nx) GMT_free (C, knots);
 		if (label_c) {
-			for (i = 0; i < nx; i++) if (label_c[i]) free ((void *)label_c[i]);
+			for (i = 0; i < nx; i++) if (label_c[i]) free (label_c[i]);
 			GMT_free (C, label_c);
 		}
 	}
@@ -3040,14 +3040,14 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 	if (GMT_Register_IO (C->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_OUT, name, NULL, NULL, &object_ID)) return (EXIT_FAILURE);
 	if ((error = GMT_set_cols (C, GMT_OUT, 1))) return (error);
 	if ((error = GMT_Begin_IO (C->parent, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC))) return (error);	/* Enables data output and sets access mode */
-	free ((void *)name);
+	free (name);
 	kind = GMT_is_geographic (C, GMT_IN);
 	if (G->save_labels == 2)
 		sprintf (record, "# %s%s%s%sangle%slabel", xname[kind], C->current.setting.io_col_separator, yname[kind],
 			C->current.setting.io_col_separator, C->current.setting.io_col_separator);
 	else 
 		sprintf (record, "# %s%s%s%slabel", xname[kind], C->current.setting.io_col_separator, yname[kind], C->current.setting.io_col_separator);
-	GMT_Put_Record (C->parent, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+	GMT_Put_Record (C->parent, GMT_WRITE_TEXT, record);	/* Write this to output */
 	for (i = 0; i < G->n_segments; i++) {
 		L = G->segment[i];	/* Pointer to current segment */
 		if (!L->annot || L->n_labels == 0) continue;
@@ -3067,7 +3067,7 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 				strcat (record, C->current.setting.io_col_separator);
 			}
 			strcat (record, L->L[k].label);
-			GMT_Put_Record (C->parent, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+			GMT_Put_Record (C->parent, GMT_WRITE_TEXT, record);	/* Write this to output */
 		}
 	}
 	if ((error = GMT_End_IO (C->parent, GMT_OUT, 0))) return (error);	/* Disables further data output */
@@ -3485,7 +3485,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	fno[id++] = C->current.setting.font_annot[0].id;
 	fno[id++] = C->current.setting.font_annot[1].id;
 
-	GMT_sort_array (C, (void *)fno, id, GMT_LONG_TYPE);
+	GMT_sort_array (C, fno, id, GMT_LONG_TYPE);
 
 	last = -1;
 	for (k = n_fonts = 0; k < id; k++) {

@@ -217,7 +217,7 @@ void xyw_to_struct_euler (struct GMT_CTRL *C, struct EULER *p, double lon[], dou
 void set_I_matrix (struct GMT_CTRL *C, double R[3][3])
 {	/* Simply sets R to I, the identity matrix */
 
-	memset ((void *)R, 0, (size_t)(9 * sizeof (double)));
+	memset (R, 0, (size_t)(9 * sizeof (double)));
 	R[0][0] = R[1][1] = R[2][2] = 1.0;
 }
 
@@ -521,11 +521,11 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 	
 	n = i;
 	if (total_in) {
-		qsort ((void *)e, (size_t)n, sizeof (struct EULER), spotter_comp_total);
+		qsort (e, (size_t)n, sizeof (struct EULER), spotter_comp_total);
 		invert = FALSE;	/* Since we have taken care of this already */
 	}
 	else
-		qsort ((void *)e, (size_t)n, sizeof (struct EULER), spotter_comp_stage);
+		qsort (e, (size_t)n, sizeof (struct EULER), spotter_comp_stage);
 	
 	if (total_in && !total_out) spotter_total_to_stages (C, e, n, TRUE, TRUE);	/* Convert total reconstruction poles to forward stage poles */
 	if (!total_in && total_out) {
@@ -1043,7 +1043,7 @@ void spotter_stages_to_total (struct GMT_CTRL *C, struct EULER p[], GMT_LONG n, 
 		if (stage_rates) p[i].omega *= p[i].duration;				/* Convert opening rate to opening angle */
 		spotter_make_rot_matrix (C, p[i].lon, p[i].lat, p[i].omega, R_stage);		/* Make matrix from rotation parameters */
 		spotter_matrix_mult (C, R_old, R_stage, R_young);					/* Set R_young = R_old * R_stage */
-		memcpy ((void *)R_old, (void *)R_young, (size_t)(9 * sizeof (double)));	/* Set R_old = R_young for next time around */
+		memcpy (R_old, R_young, (size_t)(9 * sizeof (double)));	/* Set R_old = R_young for next time around */
 		spotter_matrix_to_pole (C, R_young, &elon[i], &elat[i], &ew[i]);			/* Get rotation parameters from matrix */
 		if (elon[i] > 180.0) elon[i] -= 360.0;					/* Adjust lon */
 	}
@@ -1182,11 +1182,11 @@ void spotter_add_rotations (struct GMT_CTRL *C, struct EULER a[], GMT_LONG n_a, 
 			if (sign_a < 0.0)
 				spotter_cov_of_inverse (C, &a2[i], Ca);
 			else
-				memcpy ((void *)Ca, (void *)a2[i].C, 9*sizeof (double));
+				memcpy (Ca, a2[i].C, 9*sizeof (double));
 			if (sign_b < 0.0)
 				spotter_cov_of_inverse (C, &b2[i], Cb);
 			else
-				memcpy ((void *)Cb, (void *)b2[i].C, 9*sizeof (double));
+				memcpy (Cb, b2[i].C, 9*sizeof (double));
 			spotter_matrix_mult (C, Cb, Ra, tmp);
 			spotter_matrix_mult (C, RaT, tmp, c2[i].C);
 			for (k = 0; k < 3; k++) for (j = 0; j < 3; j++) c2[i].C[k][j] *= fb;
@@ -1357,7 +1357,7 @@ GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, doubl
 	spotter_make_rot_matrix (G, p[k].lon, p[k].lat, w, R);
 	spotter_matrix_transpose (G, Rt, R);			/* Get the transpose of R^t */
 	if (!forward) {		/* Rotate the point into the present */
-		memcpy ((void *)cov, p[k].C, 9*sizeof (double));	/* The rotation's covarience matrix */
+		memcpy (cov, p[k].C, 9*sizeof (double));	/* The rotation's covarience matrix */
 	}
 	else {	/* Use inverse rotation to rotate the point from the present to past rotations */
 		/* We change the sign of w so then R is actually R^t */

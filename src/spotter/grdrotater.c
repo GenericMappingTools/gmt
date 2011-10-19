@@ -74,16 +74,16 @@ void *New_grdrotater_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdrotater_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->D.file) free ((void *)C->D.file);	
-	if (C->E.file) free ((void *)C->E.file);	
-	if (C->F.file) free ((void *)C->F.file);	
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->D.file) free (C->D.file);	
+	if (C->E.file) free (C->E.file);	
+	if (C->F.file) free (C->F.file);	
+	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 

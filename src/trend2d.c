@@ -154,7 +154,7 @@ void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, GMT_
 					break;
 			}
 		}
-		GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+		GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 	}
 }
 
@@ -233,7 +233,7 @@ void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, GMT_
 	   and compute chisq based on this.  */ 
 
 	for (i = 0; i < n_data; i++) work[i] = fabs(data[i].r);
-	GMT_sort_array (GMT, (void *)work, n_data, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, work, n_data, GMT_DOUBLE_TYPE);
 
 	if (n_data%2)
 		*scale = 1.4826 * work[n_data/2];
@@ -391,7 +391,7 @@ void *New_trend2d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->C.value = 1.0e06;		/* Condition number for matrix solution  */	
 	C->I.value = 0.51;		/* Confidence interval for significance test  */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_trend2d_Ctrl (struct GMT_CTRL *GMT, struct TREND2D_CTRL *C) {	/* Deallocate control structure */

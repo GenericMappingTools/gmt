@@ -26,9 +26,9 @@ int main (int argc, char **argv) {
 	while (pol_readheader (&h, fp) == 1) {
 		if (h.n > n_alloc) {
 			n_alloc = h.n;
-			flon = (double *) GMT_memory ((void *)flon, n_alloc, sizeof(double), "polygon_setarea");
-			flat = (double *) GMT_memory ((void *)flat, n_alloc, sizeof(double), "polygon_setarea");
-			p = (struct LONGPAIR *) GMT_memory ((void *)p, n_alloc, sizeof(struct LONGPAIR), "polygon_setarea");
+			flon = (double *) GMT_memory (flon, n_alloc, sizeof(double), "polygon_setarea");
+			flat = (double *) GMT_memory (flat, n_alloc, sizeof(double), "polygon_setarea");
+			p = (struct LONGPAIR *) GMT_memory (p, n_alloc, sizeof(struct LONGPAIR), "polygon_setarea");
 		}
 		if (pol_fread (p, h.n, fp) != h.n) {
 			fprintf(stderr,"polygon_setarea: Error reading file.\n");
@@ -53,9 +53,9 @@ int main (int argc, char **argv) {
 	fclose (fp);
 	fclose (fp_out);
 	
-	free ((void *)flon);
-	free ((void *)flat);
-	free ((void *)p);
+	free (flon);
+	free (flat);
+	free (p);
 	
 	exit (0);
 }	

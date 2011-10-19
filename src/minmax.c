@@ -81,7 +81,7 @@ void *New_minmax_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_minmax_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallocate control structure */
@@ -385,11 +385,11 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			if (Ctrl->C.active) {	/* Plain data record */
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)GMT->current.io.curr_rec);	/* Write data record to output destination */
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, GMT->current.io.curr_rec);	/* Write data record to output destination */
 			}
 			else {
 				strcat (record, "\n");
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write text record to output destination */
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
 			}
 			got_stuff = TRUE;		/* We have at least reported something */
 			for (i = 0; i < ncol; i++) {	/* Reset counters for next block */

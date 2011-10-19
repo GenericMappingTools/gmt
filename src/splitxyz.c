@@ -126,13 +126,13 @@ void *New_splitxyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->A.azimuth = 90.0;
 	C->A.tolerance = 360.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_splitxyz_Ctrl (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free ((void *)C->Out.file);	
-	if (C->N.name) free ((void *)C->N.name);	
+	if (C->Out.file) free (C->Out.file);	
+	if (C->N.name) free (C->N.name);	
 	GMT_free (GMT, C);	
 }
 
@@ -501,7 +501,7 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							}
 							if (seg2 == n_alloc_seg) {
 								n_alloc_seg = (n_alloc_seg == 0) ? D[GMT_IN]->n_segments : n_alloc_seg * 2;
-								rec = GMT_memory (GMT, (void *)rec, n_alloc_seg, GMT_LONG);
+								rec = GMT_memory (GMT, rec, n_alloc_seg, GMT_LONG);
 							}
 							rec[seg2++] = k;
 							n_total += n_out;
