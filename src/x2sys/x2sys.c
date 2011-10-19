@@ -818,7 +818,7 @@ GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data
 	MGD77_Close_File (C, &M);
 
 	z = GMT_memory (C, NULL, M.n_out_columns, double *);
-	for (i = 0; i < M.n_out_columns; i++) z[i] = (double *) S->values[i];
+	for (i = 0; i < M.n_out_columns; i++) z[i] = S->values[i];
 
 	strncpy (p->name, fname, (size_t)32);
 	p->n_rows = S->H.n_records;

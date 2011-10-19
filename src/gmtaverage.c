@@ -194,7 +194,7 @@ GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_gmtaverage", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRbf:", "aghior>" GMT_OPT("H"), options))) Return (error);
-	Ctrl = (struct GMTAVERAGE_CTRL *) New_gmtaverage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_gmtaverage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtaverage_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmtaverage main code ----------------------------*/

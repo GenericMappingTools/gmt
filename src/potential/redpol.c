@@ -1163,7 +1163,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT = GMT_begin_module (API, "GMT_redpol", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VR", "", options))) Return (error);
-	Ctrl = (struct REDPOL_CTRL *) New_redpol_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_redpol_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_redpol_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the redpol main code ----------------------------*/
@@ -1250,36 +1250,36 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);		/* Disables further data input */
 
 	n_coef = Ctrl->F.ncoef_row * Ctrl->F.ncoef_col;
-       	cosphi = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	sinphi = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	cospsi = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	sinpsi = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxr    = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxi    = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxar   = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxai   = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxbr   = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxbi   = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxgr   = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxgi   = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fxr    = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fix    = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fxar   = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fxbr   = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fxgr   = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	ftlon  = (double *) GMT_memory (GMT, NULL, (size_t) Gin->header->nx, double);
-       	ftlat  = (double *) GMT_memory (GMT, NULL, (size_t) Gin->header->ny, double);
+       	cosphi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	sinphi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	cospsi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	sinpsi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	gxr    = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	gxi    = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	gxar   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	gxai   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	gxbr   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	gxbi   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	gxgr   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	gxgi   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	fxr    = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	fix    = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	fxar   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	fxbr   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	fxgr   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       	ftlon  = GMT_memory (GMT, NULL, (size_t) Gin->header->nx, double);
+       	ftlat  = GMT_memory (GMT, NULL, (size_t) Gin->header->ny, double);
 
 	if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) { 
-       		gxtr = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxti = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxmr = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxmi = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxnr = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxni = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		fxtr = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		fxmr = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		fxnr = (double *) GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       		gxtr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       		gxti = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       		gxmr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       		gxmi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       		gxnr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       		gxni = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       		fxtr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       		fxmr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       		fxnr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
 	}
 
 	/* Generate vectors of lon & lats */

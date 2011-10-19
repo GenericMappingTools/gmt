@@ -171,7 +171,7 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grdcut", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRf:", "", options))) Return (error);
-	Ctrl = (struct GRDCUT_CTRL *) New_grdcut_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdcut_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdcut_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdcut main code ----------------------------*/

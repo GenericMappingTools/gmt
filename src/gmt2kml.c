@@ -617,7 +617,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_gmt2kml", &GMT_cpy);		/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghiOK>" GMT_OPT("HMm"), options))) Return (error);
-	Ctrl = (struct GMT2KML_CTRL *) New_gmt2kml_Ctrl (GMT);		/* Allocate and initialize a new control structure */
+	Ctrl = New_gmt2kml_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmt2kml_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmt2kml main code ----------------------------*/

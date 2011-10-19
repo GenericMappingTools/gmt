@@ -629,7 +629,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_pscontour", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VJRb:", "BKOPUXxYychipst>" GMT_OPT("EMm"), options))) Return (error);
-	Ctrl = (struct PSCONTOUR_CTRL *)New_pscontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_pscontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pscontour_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 

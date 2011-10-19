@@ -265,7 +265,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_makecpt", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-V", ">", options))) Return (error);
-	Ctrl = (struct MAKECPT_CTRL *) New_makecpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_makecpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_makecpt_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the makecpt main code ----------------------------*/

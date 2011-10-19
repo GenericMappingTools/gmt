@@ -342,7 +342,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT = GMT_begin_module (API, "GMT_grdrotater", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghion>" GMT_OPT("HMmQ"), options))) Return (error);
 	if (GMT_Find_Option (API, 'f', options, &ptr)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
-	Ctrl = (struct GRDROTATER_CTRL *) New_grdrotater_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdrotater_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdrotater_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the grdrotater main code ----------------------------*/

@@ -34,7 +34,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct GMT_GRID *G = NULL;
-	double *info = (double *)NULL;
+	double *info = NULL;
 	char *filein = NULL;
 
 	if (nrhs != 1) {
@@ -43,7 +43,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		return;
 	}
 
-	filein = (char *)mxArrayToString (prhs[0]);	/* Load the file name into a char string */
+	filein = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
 	
 	/* 1. Initializing new GMT session */
 	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("GMT: (grdinfo) Failure to create GMT Session\n");

@@ -459,7 +459,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 				}
 				break;
 			case GDT_Float32:
-				tmpF32 = (float *) tmp;
+				tmpF32 = tmp;
 				Ctrl->Float.active = TRUE;
 				for (m = 0; m < nYSize; m++) {
 					nn = (pad+m)*(nXSize_withPad) + startColPos;
@@ -470,7 +470,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 				}
 				break;
 			case GDT_Float64:	/* For now we don't care about doubles */
-				tmpF64 = (double *) tmp;
+				tmpF64 = tmp;
 				Ctrl->Float.active = TRUE;
 				for (m = 0; m < nYSize; m++) {
 					nn = (pad+m)*(nXSize_withPad) + startColPos;
@@ -583,7 +583,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 		OGRSpatialReferenceH  hSRS;
 		char *pszProjection;
 		char *pszResult = NULL;
-		pszProjection = (char *) GDALGetProjectionRef( hDataset );
+		pszProjection = GDALGetProjectionRef( hDataset );
 
 		hSRS = OSRNewSpatialReference(NULL);
 		/* First in PROJ4 format */
@@ -999,7 +999,7 @@ void ComputeRasterMinMax(struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, d
 			}
 			break;
 		case GDT_Float32:
-			tmpF32 = (float *) tmp;
+			tmpF32 = tmp;
 			for (i = 0; i < nXSize*nYSize; i++) {
 				if( bGotNoDataValue && tmpF32[i] == dfNoDataValue ) continue;
 				z_min = MIN(tmpF32[i], z_min);
@@ -1007,7 +1007,7 @@ void ComputeRasterMinMax(struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, d
 			}
 			break;
 		case GDT_Float64:
-			tmpF64 = (double *) tmp;
+			tmpF64 = tmp;
 			for (i = 0; i < nXSize*nYSize; i++) {
 				if( bGotNoDataValue && tmpF64[i] == dfNoDataValue ) continue;
 				z_min = MIN(tmpF64[i], z_min);

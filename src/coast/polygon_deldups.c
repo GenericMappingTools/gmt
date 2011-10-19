@@ -153,8 +153,8 @@ int main (int argc, char **argv) {
 		blob[q[i1].dup].h.source = -1;
 	}
 	
-	free ((char *)lon);
-	free ((char *)lat);
+	free (lon);
+	free (lat);
 
 	fprintf (stderr, "Write out new data base\n");
 
@@ -183,7 +183,7 @@ int main (int argc, char **argv) {
 	fclose (fp);
 	fclose (fp2);
 	
-	free ((char *)pp);
+	free (pp);
 	
 	exit (0);
 }	

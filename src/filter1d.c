@@ -812,7 +812,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_filter1d", &GMT_cpy);		/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghi>" GMT_OPT("HMm"), options))) Return (error, "Error parsing filter1d options\n");
-	Ctrl = (struct FILTER1D_CTRL *)New_filter1d_Ctrl (GMT);		/* Allocate and initialize a new control structure */
+	Ctrl = New_filter1d_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = GMT_filter1d_parse (API, Ctrl, options))) Return (error, "Error parsing filter1d options\n");
 
 	/*---------------------------- This is the filter1d main code ----------------------------*/

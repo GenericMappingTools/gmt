@@ -167,10 +167,10 @@ int main (int argc, char **argv)
 					n_int++;
 					if (kk == n_alloc) {
 						n_alloc += GMT_SMALL_CHUNK;
-						ix = (int *) GMT_memory ((char *)ix, n_alloc, sizeof (int), "lines_to_bins");
-						iy = (int *) GMT_memory ((char *)iy, n_alloc, sizeof (int), "lines_to_bins");
-						xx = (int *) GMT_memory ((char *)xx, n_alloc, sizeof (int), "lines_to_bins");
-						yy = (int *) GMT_memory ((char *)yy, n_alloc, sizeof (int), "lines_to_bins");
+						ix = (int *) GMT_memory (ix, n_alloc, sizeof (int), "lines_to_bins");
+						iy = (int *) GMT_memory (iy, n_alloc, sizeof (int), "lines_to_bins");
+						xx = (int *) GMT_memory (xx, n_alloc, sizeof (int), "lines_to_bins");
+						yy = (int *) GMT_memory (yy, n_alloc, sizeof (int), "lines_to_bins");
 					}
 				}
 			}
@@ -187,10 +187,10 @@ int main (int argc, char **argv)
 					n_int++;
 					if (kk == n_alloc) {
 						n_alloc += GMT_SMALL_CHUNK;
-						ix = (int *) GMT_memory ((char *)ix, n_alloc, sizeof (int), "lines_to_bins");
-						iy = (int *) GMT_memory ((char *)iy, n_alloc, sizeof (int), "lines_to_bins");
-						xx = (int *) GMT_memory ((char *)xx, n_alloc, sizeof (int), "lines_to_bins");
-						yy = (int *) GMT_memory ((char *)yy, n_alloc, sizeof (int), "lines_to_bins");
+						ix = (int *) GMT_memory (ix, n_alloc, sizeof (int), "lines_to_bins");
+						iy = (int *) GMT_memory (iy, n_alloc, sizeof (int), "lines_to_bins");
+						xx = (int *) GMT_memory (xx, n_alloc, sizeof (int), "lines_to_bins");
+						yy = (int *) GMT_memory (yy, n_alloc, sizeof (int), "lines_to_bins");
 					}
 				}
 			}
@@ -199,10 +199,10 @@ int main (int argc, char **argv)
 			kk++;
 			if (kk == n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
-				ix = (int *) GMT_memory ((char *)ix, n_alloc, sizeof (int), "lines_to_bins");
-				iy = (int *) GMT_memory ((char *)iy, n_alloc, sizeof (int), "lines_to_bins");
-				xx = (int *) GMT_memory ((char *)xx, n_alloc, sizeof (int), "lines_to_bins");
-				yy = (int *) GMT_memory ((char *)yy, n_alloc, sizeof (int), "lines_to_bins");
+				ix = (int *) GMT_memory (ix, n_alloc, sizeof (int), "lines_to_bins");
+				iy = (int *) GMT_memory (iy, n_alloc, sizeof (int), "lines_to_bins");
+				xx = (int *) GMT_memory (xx, n_alloc, sizeof (int), "lines_to_bins");
+				yy = (int *) GMT_memory (yy, n_alloc, sizeof (int), "lines_to_bins");
 			}
 		}
 		
@@ -324,8 +324,8 @@ int main (int argc, char **argv)
 			nn++;
 			if (nn > (n_alloc-5)) {
 				n_alloc += GMT_CHUNK;
-				xx = (int *) GMT_memory ((char *)xx, n_alloc, sizeof (int), "polygon_to_bins");
-				yy = (int *) GMT_memory ((char *)yy, n_alloc, sizeof (int), "polygon_to_bins");
+				xx = (int *) GMT_memory (xx, n_alloc, sizeof (int), "polygon_to_bins");
+				yy = (int *) GMT_memory (yy, n_alloc, sizeof (int), "polygon_to_bins");
 			}
 			i_x_1 = i_x_2;
 			i_y_1 = i_y_2;

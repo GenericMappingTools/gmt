@@ -261,7 +261,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT = GMT_begin_module (API, "GMT_sphdistance", &GMT_cpy);		/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRb:", "himrs" GMT_OPT("F"), options))) Return (error);
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
-	Ctrl = (struct SPHDISTANCE_CTRL *) New_sphdistance_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_sphdistance_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_sphdistance_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the sphdistance main code ----------------------------*/

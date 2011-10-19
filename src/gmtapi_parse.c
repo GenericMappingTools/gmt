@@ -99,7 +99,7 @@ GMT_LONG GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args_in, void *
 
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
 		GMT_LONG pos = 0, new_n_args = 0, n_alloc = GMT_SMALL_CHUNK;
-		char p[GMT_BUFSIZ], *txt_in = (char *)in;	/* Passed a single text string */
+		char p[GMT_BUFSIZ], *txt_in = in;	/* Passed a single text string */
 		if ((new_args = GMT_memory (G, NULL, n_alloc, char *)) == NULL) return (GMT_Report_Error (API, GMT_MEMORY_ERROR));
 
 		while ((GMT_strtok (API->GMT, txt_in, " ", &pos, p))) {	/* Break up string into separate words */
@@ -304,7 +304,7 @@ GMT_LONG GMT_Create_Cmd (struct GMTAPI_CTRL *API, char **cmd, struct GMT_OPTION 
 struct GMT_OPTION * GMT_Prep_Options (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* Either we passed an option struct list or we passed argc, argv and must convert to get option list */
 	struct GMT_OPTION *options = NULL;
-	if (mode < 0) options = (struct GMT_OPTION *)args;	/* Gave a list of options already */	
+	if (mode < 0) options = args;	/* Gave a list of options already */	
 	else if (GMT_Create_Options (API, mode, args, &options)) exit (EXIT_FAILURE);
 	return (options);
 }

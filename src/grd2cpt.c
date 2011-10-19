@@ -321,7 +321,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grd2cpt", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VR", ">", options))) Return (error);
-	Ctrl = (struct GRD2CPT_CTRL *) New_grd2cpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grd2cpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grd2cpt_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grd2cpt main code ----------------------------*/

@@ -234,7 +234,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grdmask", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRbf:", "aghirs" GMT_OPT("FHMm"), options))) Return (error);
-	Ctrl = (struct GRDMASK_CTRL *) New_grdmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdmask_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdmask main code ----------------------------*/

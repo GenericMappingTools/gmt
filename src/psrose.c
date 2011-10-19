@@ -329,7 +329,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_psrose", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRb:", "BKOPUXxYychipst>" GMT_OPT("E"), options))) Return (error);
-	Ctrl = (struct PSROSE_CTRL *)New_psrose_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_psrose_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psrose_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 

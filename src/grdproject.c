@@ -230,7 +230,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grdproject", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VJR", "nr" GMT_OPT("FS"), options))) Return (error);
-	Ctrl = (struct GRDPROJECT_CTRL *) New_grdproject_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdproject_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdproject_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdproject main code ----------------------------*/

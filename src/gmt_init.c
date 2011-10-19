@@ -5037,7 +5037,7 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 	GMT_LONG i;
 	struct GMT_CTRL *C = API->GMT, *Csave = NULL;
 
-	Csave = (struct GMT_CTRL *) calloc ((size_t)1, sizeof (struct GMT_CTRL));
+	Csave = calloc ((size_t)1, sizeof (struct GMT_CTRL));
 
 	/* First memcpy over everything; this will include pointer addresses we will have to fix below */
 
@@ -7647,7 +7647,7 @@ struct GMT_CTRL *New_GMT_Ctrl () {	/* Allocate and initialize a new common contr
 	};
 
 	/* Alloc using calloc since GMT_memory may use resources not yet initialized */
-	C = (struct GMT_CTRL *) calloc ((size_t)1, sizeof (struct GMT_CTRL));
+	C = calloc ((size_t)1, sizeof (struct GMT_CTRL));
 	GMT_memcpy (C->current.setting.ref_ellipsoid, ref_ellipsoid, 1, ref_ellipsoid);
 	GMT_memcpy (C->current.setting.proj_datum, datum, 1, datum);
 
@@ -7756,13 +7756,13 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 	fpsetmask (fpgetmask () & ~(FP_X_DZ | FP_X_INV));
 #endif
 #endif
-	C = (struct GMT_CTRL *)New_GMT_Ctrl ();		/* Allocate and initialize a new common control structure */
+	C = New_GMT_Ctrl ();		/* Allocate and initialize a new common control structure */
 	if (C->init.progname) free (C->init.progname);		/* Free up any prior program name */
 	C->init.progname = strdup (session);		/* We use the calling programs session name as program name */
 	C->init.module_name = module_name;		/* This will be reset by the GMT modules we call */
 
 	if (mode == GMTAPI_GMTPSL) {			/* The application will need PSL */
-		C->PSL = (struct PSL_CTRL *)New_PSL_Ctrl (session);	/* Allocate a PSL control structure */
+		C->PSL = New_PSL_Ctrl (session);	/* Allocate a PSL control structure */
 		if (!C->PSL) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Could not initialize PSL - Aborting.\n");
 			GMT_exit (EXIT_FAILURE);

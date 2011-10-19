@@ -401,7 +401,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	S.h_width  = VECTOR_HEAD_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
 	S.h_length = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 
-	Ctrl = (struct PSXYZ_CTRL *)New_psxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_psxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psxyz_parse (API, Ctrl, options, &S))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 

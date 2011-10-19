@@ -268,7 +268,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_gmtstitch", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options))) Return (error);
-	Ctrl = (struct GMTSTITCH_CTRL *) New_gmtstitch_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_gmtstitch_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtstitch_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the gmtstitch main code ----------------------------*/

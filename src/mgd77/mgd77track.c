@@ -554,7 +554,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77track", &GMT_cpy);	/* Save current state */
-	Ctrl = (struct MGD77TRACK_CTRL *) New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77track_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
 	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77track_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
 

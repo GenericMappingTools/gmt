@@ -233,7 +233,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT = GMT_begin_module (API, "GMT_gshhs", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vbfo:", "m", options))) Return (error);
 	if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg unless already set */
-	Ctrl = (struct GSHHS_CTRL *) New_gshhs_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_gshhs_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gshhs_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the gshhs main code ----------------------------*/

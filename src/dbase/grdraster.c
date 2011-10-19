@@ -746,7 +746,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grdraster", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VJRb", "", options))) Return (error);
-	Ctrl = (struct GRDRASTER_CTRL *) New_grdraster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdraster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdraster_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdraster main code ----------------------------*/
@@ -1051,7 +1051,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						convert_c_row (GMT, myras, floatrasrow, buffer);
 						break;
 					case 'd':
-						convert_d_row (GMT, myras, floatrasrow, (unsigned short int *)buffer);
+						convert_d_row (GMT, myras, floatrasrow, (short unsigned int *)buffer);
 						break;
 					case 'i':
 						convert_i_row (GMT, myras, floatrasrow, (short int *)buffer);

@@ -31,7 +31,7 @@ float *vector(GMT_LONG nl, GMT_LONG nh)
 {
 	float *v;
 
-	v=(float *)malloc((size_t) ((nh-nl+1+NR_END)*sizeof(float)));
+	v=malloc((size_t) ((nh-nl+1+NR_END)*sizeof(float)));
 	if (!v) nrerror("allocation failure in vector()");
 	return v-nl+NR_END;
 }
@@ -71,7 +71,7 @@ double *dvector(GMT_LONG nl, GMT_LONG nh)
 {
 	double *v;
 
-	v=(double *)malloc((size_t) ((nh-nl+1+NR_END)*sizeof(double)));
+	v=malloc((size_t) ((nh-nl+1+NR_END)*sizeof(double)));
 	if (!v) nrerror("allocation failure in dvector()");
 	return v-nl+NR_END;
 }
@@ -89,7 +89,7 @@ float **matrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
 	m -= nrl;
 
 	/* allocate rows and set pointers to them */
-	m[nrl]=(float *) malloc((size_t)((nrow*ncol+NR_END)*sizeof(float)));
+	m[nrl]= malloc((size_t)((nrow*ncol+NR_END)*sizeof(float)));
 	if (!m[nrl]) nrerror("allocation failure 2 in matrix()");
 	m[nrl] += NR_END;
 	m[nrl] -= ncl;
@@ -113,7 +113,7 @@ double **dmatrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
 	m -= nrl;
 
 	/* allocate rows and set pointers to them */
-	m[nrl]=(double *) malloc((size_t)((nrow*ncol+NR_END)*sizeof(double)));
+	m[nrl]= malloc((size_t)((nrow*ncol+NR_END)*sizeof(double)));
 	if (!m[nrl]) nrerror("allocation failure 2 in matrix()");
 	m[nrl] += NR_END;
 	m[nrl] -= ncl;
@@ -210,7 +210,7 @@ float ***f3tensor(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch, GMT_LO
 	t[nrl] -= ncl;
 
 	/* allocate rows and set pointers to them */
-	t[nrl][ncl]=(float *) malloc((size_t)((nrow*ncol*ndep+NR_END)*sizeof(float)));
+	t[nrl][ncl]= malloc((size_t)((nrow*ncol*ndep+NR_END)*sizeof(float)));
 	if (!t[nrl][ncl]) nrerror("allocation failure 3 in f3tensor()");
 	t[nrl][ncl] += NR_END;
 	t[nrl][ncl] -= ndl;

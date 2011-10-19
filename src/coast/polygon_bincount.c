@@ -29,7 +29,7 @@ int main (int argc, char **argv)
 	tmp = (int*) GMT_memory (CNULL, nbins, sizeof (int), "polygon_bincount");
 	
 	while (pol_readheader (&h, fp_in) == 1) {
-		memset ((char *)tmp, 0, nbins * sizeof (int));
+		memset (tmp, 0, nbins * sizeof (int));
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
 				fprintf(stderr,"polygon_bincount: Error reading file.\n");
@@ -56,7 +56,7 @@ int main (int argc, char **argv)
 	
 	fprintf (stderr, "Bin %d has the longest segment: %d points\n", j, k);
 	
-	free ((char *)bin);
-	free ((char *)tmp);
+	free (bin);
+	free (tmp);
 	exit (0);
 }

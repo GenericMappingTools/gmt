@@ -2068,13 +2068,13 @@ void grd_PSI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *
 	x[1] = 0.0;	/* No imaginary part */
 	if (constant[last]) {
 		x[0] = factor[last];
-		a = GMT_psi (GMT, x, (double *)NULL);
+		a = GMT_psi (GMT, x, NULL);
 	}
 
 	for (node = 0; node < info->size; node++) {
 		if (!constant[last]) {
 			x[0] = (double)stack[last]->data[node];
-			a = GMT_psi (GMT, x, (double *)NULL);
+			a = GMT_psi (GMT, x, NULL);
 		}
 		stack[last]->data[node] = (float)a;
 	}
@@ -2197,7 +2197,7 @@ void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 	/* Set up permutation vector */
 
 	new_col = GMT_memory (GMT, NULL, nx, GMT_LONG);
-	z =  (float *) GMT_memory (GMT, NULL, nx, float);
+	z = GMT_memory (GMT, NULL, nx, float);
 	for (col = 0; col < info->G->header->nx; col++) new_col[col] = (col + shift) % info->G->header->nx;	/* Move by shift but rotate around */
 	GMT_row_loop (GMT, info->G, row) {	/* For each row */
 		GMT_col_loop (GMT, info->G, row, col, node) z[new_col[col]] = stack[prev]->data[node];	/* Copy one row of data to z with shift */
@@ -2228,7 +2228,7 @@ void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 	/* Set up permutation vector */
 
 	new_row = GMT_memory (GMT, NULL, info->G->header->ny, GMT_LONG);
-	z =  (float *) GMT_memory (GMT, NULL, info->G->header->ny, float);
+	z = GMT_memory (GMT, NULL, info->G->header->ny, float);
 	for (row = 0; row < info->G->header->ny; row++) new_row[row] = (row + info->G->header->ny - shift) % info->G->header->ny;	/* Move by shift but rotate around */
 	for (col = 0; col < info->G->header->nx; col++) {	/* For each column */
 		for (row = 0; row < info->G->header->ny; row++) z[new_row[row]] = stack[prev]->data[GMT_IJP(info->G->header, row, col)];	/* Copy one column of data to z with shift */
@@ -2841,7 +2841,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdmath", &GMT_cpy);	/* Save current state */
-	Ctrl = (struct GRDMATH_CTRL *) New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	GMT_memset (&info, 1, struct GRDMATH_INFO);		/* Initialize here to not crash when Return gets called */
 	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
 	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghinrs" GMT_OPT("F"), options))) Return (error);

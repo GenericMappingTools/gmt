@@ -456,7 +456,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_gmtvector", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options))) Return (error);
-	Ctrl = (struct GMTVECTOR_CTRL *) New_gmtvector_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_gmtvector_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtvector_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the gmtvector main code ----------------------------*/

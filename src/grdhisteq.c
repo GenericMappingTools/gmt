@@ -335,7 +335,7 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grdhisteq", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VR", "", options))) Return (error);
-	Ctrl = (struct GRDHISTEQ_CTRL *) New_grdhisteq_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdhisteq_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdhisteq_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdhisteq main code ----------------------------*/

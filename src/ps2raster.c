@@ -590,7 +590,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_ps2raster", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return (error);
-	Ctrl = (struct PS2RASTER_CTRL *) New_ps2raster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_ps2raster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_ps2raster_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the ps2raster main code ----------------------------*/

@@ -44,7 +44,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	/* Load the file name into a char string */
 
-	filein = (char *) mxArrayToString (prhs[0]);	/* Load the file name into a char string */
+	filein = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
 
 	/* 1. Initializing new GMT session */
 	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("GMT: (grdread) Failure to create GMT Session\n");
@@ -62,7 +62,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (nlhs > 2) {px = 0; py = 1;}
 
 	plhs[pz] = mxCreateNumericMatrix (G->header->ny, G->header->nx, mxSINGLE_CLASS, mxREAL);
-	z = (float *)mxGetData (plhs[pz]);
+	z = mxGetData (plhs[pz]);
 	
 	/*  Load the real grd array into a double matlab array
 	    by transposing from padded GMT grd format to unpadded matlab format */

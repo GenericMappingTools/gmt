@@ -561,7 +561,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_pscoast", &GMT_cpy);		/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VJRb", "BKOPUXxYycpt>" GMT_OPT("EZ"), options))) Return (error);
-	Ctrl = (struct PSCOAST_CTRL *) New_pscoast_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
+	Ctrl = New_pscoast_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = GMT_pscoast_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 

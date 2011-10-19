@@ -218,8 +218,8 @@ int main (int argc, char **argv)
 	GMT_RI_prepare (&header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_fail (GMT_grd_RI_verify (&header, 1), Ctrl->G.file);
 
-	grd = (float *) GMT_memory (VNULL, (size_t)(header.nx * header.ny), sizeof (float), GMT->init.progname);
-	lon = (double *) GMT_memory (VNULL, (size_t)header.nx, sizeof (double), GMT->init.progname);
+	grd = GMT_memory (VNULL, (size_t)(header.nx * header.ny), sizeof (float), GMT->init.progname);
+	lon = GMT_memory (VNULL, (size_t)header.nx, sizeof (double), GMT->init.progname);
 	for (i = 0; i < header.nx; i++) lon[i] = GMT_col_to_x (GMT, i, header.x_min, header.x_max, header.x_inc, header.xy_off, header.nx);
 		
 	for (j = ij = 0; j < header.ny; j++) {

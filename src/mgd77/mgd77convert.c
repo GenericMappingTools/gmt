@@ -203,7 +203,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_mgd77convert", &GMT_cpy);		/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
-	Ctrl = (struct MGD77CONVERT_CTRL *) New_mgd77convert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_mgd77convert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mgd77convert_parse (API, Ctrl, options))) Return ((int)error);
 	
 	/*---------------------------- This is the mgd77convert main code ----------------------------*/

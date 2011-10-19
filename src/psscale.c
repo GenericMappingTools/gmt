@@ -1060,7 +1060,7 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 3;
 	if ((error = GMT_Parse_Common (API, "-VJR", "BKOPUXxYycpt>", options))) Return (error);
-	Ctrl = (struct PSSCALE_CTRL *)New_psscale_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_psscale_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psscale_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 

@@ -204,7 +204,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_testapi", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-V", ">", options))) Return (error);
-	Ctrl = (struct TESTAPI_CTRL *)New_testapi_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_testapi_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_testapi_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the testapi main code ----------------------------*/

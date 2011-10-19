@@ -171,7 +171,7 @@ struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, GMT_LONG *found
 	
 	struct X2SYS_BIX_TRACK_INFO *this_info;
 	for (this_info = B->head; this_info->next_info && strcmp (this_info->next_info->trackname, track) < 0; this_info = this_info->next_info);
-	*found_it = (this_info->next_info != (struct X2SYS_BIX_TRACK_INFO *)NULL && !strcmp (this_info->next_info->trackname, track));
+	*found_it = (this_info->next_info != NULL && !strcmp (this_info->next_info->trackname, track));
 	return (this_info);
 }
 
@@ -218,7 +218,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_x2sys_put", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VR", ">", options))) Return (error);
-	Ctrl = (struct X2SYS_PUT_CTRL *)New_x2sys_put_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_x2sys_put_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_put_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the x2sys_put main code ----------------------------*/
