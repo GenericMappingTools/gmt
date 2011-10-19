@@ -191,7 +191,7 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_colmath", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options))) Return (error);
-	Ctrl = (struct COLMATH_CTRL *) New_colmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_colmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_colmath_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the colmath main code ----------------------------*/

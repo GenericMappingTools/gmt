@@ -491,7 +491,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT = GMT_begin_module (API, "GMT_grdtrend", &GMT_cpy);		/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VR", "", options))) Return (error);
-	Ctrl = (struct GRDTREND_CTRL *) New_grdtrend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdtrend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdtrend_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdtrend main code ----------------------------*/

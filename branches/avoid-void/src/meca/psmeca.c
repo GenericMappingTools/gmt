@@ -275,7 +275,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 				Ctrl->C.active = TRUE;
 				if (!opt->arg[0]) break;
 				p = NULL;	strcpy (txt, opt->arg);
-				if ((p = strchr (txt, 'P'))) Ctrl->C.size = GMT_to_inch (GMT, (char *)(p+1));
+				if ((p = strchr (txt, 'P'))) Ctrl->C.size = GMT_to_inch (GMT, (p+1));
 				if (txt[0] != 'P') {	/* Have a pen up front */
 					if (p) p[0] = '\0';
 					if (GMT_getpen (GMT, txt, &Ctrl->C.pen)) {
@@ -570,7 +570,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_psmeca", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VJR:", "BHKOPUVXhixYyc>", options))) Return (error);
-	Ctrl = (struct PSMECA_CTRL *)New_psmeca_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_psmeca_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psmeca_parse (API, Ctrl, options))) Return (error);
  	PSL = GMT->PSL;		/* This module also needs PSL */
 

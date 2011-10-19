@@ -1122,7 +1122,7 @@ GMT_LONG gmt_is_color (struct GMT_CTRL *C, char *word)
 		if (word[n] == '-') n_hyphen++;
 		n--;	/* Wind down as long as we find -,., or digits */
 	}
-	return ((GMT_LONG)(n == -1 && n_hyphen == 2));	/* TRUE if we only found h-s-v and FALSE otherwise */
+	return ((n == -1 && n_hyphen == 2));	/* TRUE if we only found h-s-v and FALSE otherwise */
 }
 
 GMT_LONG gmt_getfonttype (struct GMT_CTRL *C, char *name)
@@ -1135,7 +1135,7 @@ GMT_LONG gmt_getfonttype (struct GMT_CTRL *C, char *name)
 		return ((i == C->session.n_fonts) ? -1 : i);
 	}
 	if (!isdigit ((unsigned char) name[strlen(name)-1])) return (-1);	/* Starts with digit, ends with something else: cannot be */
-	return ((GMT_LONG)atoi (name));
+	return (atoi (name));
 }
 
 GMT_LONG gmt_is_fontname (struct GMT_CTRL *C, char *word) {
@@ -1409,7 +1409,7 @@ GMT_LONG gmt_is_penstyle (char *word)
 	if (strchr(word,'t')) return (FALSE);	/* Got a t somewhere */
 	if (strchr(word,':')) return (TRUE);	/* Got <pattern>:<phase> */
 	while (n >= 0 && (word[n] == '-' || word[n] == '.')) n--;	/* Wind down as long as we find - or . */
-	return ((GMT_LONG)(n == -1));	/* TRUE if we only found -/., FALSE otherwise */
+	return ((n == -1));	/* TRUE if we only found -/., FALSE otherwise */
 }
 
 GMT_LONG GMT_getpen (struct GMT_CTRL *C, char *buffer, struct GMT_PEN *P)
@@ -1516,7 +1516,7 @@ GMT_LONG gmt_is_penwidth (struct GMT_CTRL *C, char *word)
 	if (n < 0) return (FALSE);		/* word only contained a unit character? */
 	if (gmt_name2pen (word) >= 0) return (TRUE);	/* Valid pen name */
 	while (n >= 0 && (word[n] == '.' || isdigit((int)word[n]))) n--;	/* Wind down as long as we find . or integers */
-	return ((GMT_LONG)(n == -1));	/* TRUE if we only found floating point FALSE otherwise */
+	return ((n == -1));	/* TRUE if we only found floating point FALSE otherwise */
 }
 #endif
 
@@ -1898,11 +1898,11 @@ GMT_LONG GMT_copy_palette (struct GMT_CTRL *C, struct GMT_PALETTE *P_to, struct 
 	P_to->range = GMT_memory (C, NULL, P_to->n_colors, struct GMT_LUT);
 	GMT_memcpy (P_to->range, P_from->range, P_to->n_colors, struct GMT_LUT);
 	for (i = 0; i < 3; i++) if (P_from->patch[i].fill) {
-		P_to->patch[i].fill = (struct GMT_FILL *)GMT_memory (C, NULL, 1, struct GMT_FILL);
+		P_to->patch[i].fill = GMT_memory (C, NULL, 1, struct GMT_FILL);
 		GMT_memcpy (P_to->patch[i].fill, P_from->patch[i].fill, 1, struct GMT_FILL);
 	}
 	for (i = 0; i < P_from->n_colors; i++) if (P_from->range[i].fill) {
-		P_to->range[i].fill = (struct GMT_FILL *)GMT_memory (C, NULL, 1, struct GMT_FILL);
+		P_to->range[i].fill = GMT_memory (C, NULL, 1, struct GMT_FILL);
 		GMT_memcpy (P_to->range[i].fill, P_from->range[i].fill, 1, struct GMT_FILL);
 		if (P_from->range[i].label) P_to->range[i].label = strdup (P_from->range[i].label);
 	}
@@ -1961,7 +1961,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strcpy (cpt_file, (char *)source);
+		strcpy (cpt_file, source);
 		if ((fp = fopen (cpt_file, "r")) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open color palette table %s\n", cpt_file);
 			return (EXIT_FAILURE);
@@ -1977,7 +1977,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 			strcpy (cpt_file, "<input stream>");
 	}
 	else if (source_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
-		int *fd = (int *)source;
+		int *fd = source;
 		if (fd && (fp = fdopen (*fd, "r")) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot convert file descriptor %d to stream in GMT_read_cpt\n", *fd);
 			return (EXIT_FAILURE);
@@ -2542,7 +2542,7 @@ GMT_LONG GMT_write_cpt (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, GMT_
 	if (dest_type == GMT_IS_FILE && !dest) dest_type = GMT_IS_STREAM;	/* No filename given, default to stdout */
 
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
-		strcpy (cpt_file, (char *)dest);
+		strcpy (cpt_file, dest);
 		if ((fp = GMT_fopen (C, cpt_file, "w")) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot create file %s\n", cpt_file);
 			return (EXIT_FAILURE);
@@ -2558,7 +2558,7 @@ GMT_LONG GMT_write_cpt (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, GMT_
 			strcpy (cpt_file, "<output stream>");
 	}
 	else if (dest_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
-		int *fd = (int *)dest;
+		int *fd = dest;
 		if (fd && (fp = fdopen (*fd, "w")) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot convert file descriptor %d to stream in GMT_write_cpt\n", *fd);
 			return (EXIT_FAILURE);
@@ -4923,7 +4923,7 @@ void GMT_hold_contour (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_LONG 
 	GMT_LONG seg, first, n, *split = NULL;
 	double *xs = NULL, *ys = NULL, *xin = NULL, *yin = NULL;
 
-	if ((split = GMT_split_line (C, xxx, yyy, &nn, (GMT_LONG)G->line_type)) == NULL) {	/* Just one long line */
+	if ((split = GMT_split_line (C, xxx, yyy, &nn, G->line_type)) == NULL) {	/* Just one long line */
 		gmt_hold_contour_sub (C, xxx, yyy, nn, zval, label, ctype, cangle, closed, G);
 		return;
 	}
@@ -7532,7 +7532,7 @@ int GMT_ysort (const void *p1, const void *p2, void *data)	/* Can use qsort_r an
 {
 	struct GMT_XSEGMENT *a = (struct GMT_XSEGMENT *)p1, *b = (struct GMT_XSEGMENT *)p2;
 #ifdef HAVE_QSORT_R
-	double *GMT_x2sys_Y = (double *)data;
+	double *GMT_x2sys_Y = data;
 #endif
 
 	if (GMT_x2sys_Y[a->start] < GMT_x2sys_Y[b->start]) return -1;
@@ -7580,7 +7580,7 @@ GMT_LONG GMT_init_track (struct GMT_CTRL *C, double y[], GMT_LONG n, struct GMT_
 #ifndef HAVE_QSORT_R
 	GMT_x2sys_Y = y;	/* Sort routine needs this global variable pointer */
 	qsort (L, (size_t)nl, sizeof (struct GMT_XSEGMENT), GMT_ysort);
-	GMT_x2sys_Y = (double *)NULL;	/* Set to NULL to indicate not in use */
+	GMT_x2sys_Y = NULL;	/* Set to NULL to indicate not in use */
 #elif defined(__APPLE__) || defined(__FreeBSD__)
 	/* Wonderful news: BSD and GLIBC has different argument order in qsort_r */
 	qsort_r (L, (size_t)nl, sizeof (struct GMT_XSEGMENT), y, GMT_ysort);
@@ -9136,9 +9136,9 @@ void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER **M) {	/* Call
 	/* Create the memory tracker structure and initialize it */
 	struct MEMORY_TRACKER *P = NULL;
 	char *c = NULL;
-	P = (struct MEMORY_TRACKER *)calloc (1, sizeof (struct MEMORY_TRACKER));
+	P = calloc (1, sizeof (struct MEMORY_TRACKER));
 	P->n_alloc = GMT_CHUNK;
-	P->item = (struct MEMORY_ITEM *)calloc ((size_t)P->n_alloc, sizeof(struct MEMORY_ITEM));
+	P->item = calloc ((size_t)P->n_alloc, sizeof(struct MEMORY_ITEM));
 	P->active = ((c = getenv ("GMT_MEM")) == CNULL);
 	*M = P;
 }
@@ -9146,7 +9146,7 @@ void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER **M) {	/* Call
 void gmt_memtrack_alloc (struct GMT_CTRL *C, struct MEMORY_TRACKER *M)
 {	/* Increase available memory for memory tracking */
 	M->n_alloc += GMT_CHUNK;
-	M->item = (struct MEMORY_ITEM *) realloc (M->item, (size_t)(M->n_alloc * sizeof(struct MEMORY_ITEM)));
+	M->item = realloc (M->item, (size_t)(M->n_alloc * sizeof(struct MEMORY_ITEM)));
 }
 
 void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name, GMT_LONG line, void *ptr, void *prev_ptr, GMT_LONG size) {
@@ -9251,12 +9251,12 @@ void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M) {	/* Cal
 void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER **M) {	/* Called in GMT_begin() */
 	struct MEMORY_TRACKER *P = NULL;
 	char *c = NULL;
-	P = (struct MEMORY_TRACKER *)calloc (1, sizeof (struct MEMORY_TRACKER));
+	P = calloc (1, sizeof (struct MEMORY_TRACKER));
 	P->active = ((c = getenv ("GMT_MEM")) == CNULL);
 	P->search = TRUE;
-	P->list_tail = (struct MEMORY_ITEM *) calloc (1, sizeof *P->list_tail);
+	P->list_tail = calloc (1, sizeof *P->list_tail);
 	P->list_tail->l = P->list_tail;	P->list_tail->r = P->list_tail;
-	P->list_head = (struct MEMORY_ITEM *) calloc (1, sizeof *P->list_head);
+	P->list_head = calloc (1, sizeof *P->list_head);
 	P->list_head->r = P->list_tail;
 	P->list_head->l = NULL;
 	*M = P;
@@ -9270,7 +9270,7 @@ struct MEMORY_ITEM * gmt_treeinsert (struct GMT_CTRL *C, struct MEMORY_TRACKER *
 		p = x;
 		x = (addr < x->ptr) ? x->l : x->r;
 	}
-	x = (struct MEMORY_ITEM *)calloc (1, sizeof (struct MEMORY_ITEM));
+	x = calloc (1, sizeof (struct MEMORY_ITEM));
 	x->ptr = addr;
 	x->l = M->list_tail;	x->r = M->list_tail;
 	if (x->ptr < p->ptr) p->l = x; else p->r = x;

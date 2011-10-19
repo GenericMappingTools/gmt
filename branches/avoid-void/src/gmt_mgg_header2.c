@@ -399,7 +399,7 @@ GMT_LONG GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	is_float = (mggHeader.numType < 0 && abs (mggHeader.numType) == (int)sizeof (float));	/* Float file */
 
 	tLong = GMT_memory (C, CNULL, width_in, int);
-	tShort = (short *) tLong;	tChar = (char *) tLong;	tFloat = (float *) tLong;
+	tShort = (short *) tLong;	tChar = (char *)tLong;	tFloat = (float *) tLong;
 	
 	i2 = first_col + pad[XLO];
 	for (j = 0, j2 = first_row + pad[YHI]; j < height_out; j++, j2++) {

@@ -623,8 +623,8 @@ int main (int argc, char **argv) {
 		}
 	}
 
-	memcpy ((char *)topo, (char *)datac, ndatac * sizeof (float));
-	memcpy ((char *)raised, (char *)datac, ndatac * sizeof (float));
+	memcpy (topo, datac, ndatac * sizeof (float));
+	memcpy (raised, datac, ndatac * sizeof (float));
 	for (i = 0; i < ndatac; i++) datac[i] = 0.0;
 
 	if (verbose) fprintf (stderr, "%s: Evatuating for term = 1", GMT_program);
@@ -707,7 +707,7 @@ int 	read_data(int argc, char **argv, int bat) {
 	}
 
 	if (rem_something) {  /*  Just remove the mean or half way and exit   */
-		datac = (float *) GMT_memory (VNULL, (size_t) h.nx*h.ny, sizeof(float), GMT_program);
+		datac = GMT_memory (VNULL, (size_t) h.nx*h.ny, sizeof(float), GMT_program);
 		if (GMT_read_grd (infile, &h, datac, 0.0, 0.0, 0.0, 0.0, (GMT_LONG *)dummy, FALSE)) {
 			fprintf (stderr, "%s: Error reading file %s\n", GMT_program, infile);
 			exit (EXIT_FAILURE);
@@ -766,25 +766,25 @@ int 	read_data(int argc, char **argv, int bat) {
 	ndatac = 2 * nx2 * ny2;
 
 	if (bat) {
-		datac = (float *) GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
-		topo = (float *) GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
-		raised = (float *) GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
-		memset ((char *)datac, 0, (size_t)(ndatac*sizeof(float)));
+		datac = GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
+		topo = GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
+		raised = GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
+		memset (datac, 0, (size_t)(ndatac*sizeof(float)));
 	}
 	else {		/* means the -I option was set */
-		in_grv = (float *) GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
-		memset ((char *)in_grv, 0, (size_t)(ndatac*sizeof(float)));
+		in_grv = GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
+		memset (in_grv, 0, (size_t)(ndatac*sizeof(float)));
 	}
 	if (worksize) {
 		if (worksize < nx2) worksize = nx2;
 		if (worksize < ny2) worksize = ny2;
 		worksize *= 2;
-		workc = (float *) GMT_memory (VNULL, (size_t)worksize, sizeof(float), GMT_program);
-		memset ((char *)workc, 0, (size_t)(worksize*sizeof(float)));
+		workc = GMT_memory (VNULL, (size_t)worksize, sizeof(float), GMT_program);
+		memset (workc, 0, (size_t)(worksize*sizeof(float)));
 	}
 	else {
-		workc = (float *) GMT_memory (VNULL, 4, sizeof(float), GMT_program);
-		memset ((char *)workc, 0, (size_t)(4*sizeof(float)));
+		workc = GMT_memory (VNULL, 4, sizeof(float), GMT_program);
+		memset (workc, 0, (size_t)(4*sizeof(float)));
 	}
 
 	/* Put the data in the middle of the padded array */
@@ -1374,14 +1374,14 @@ void	do_admittance(int give_wavelength, float k_or_m) {
 	else {delta_k = delta_ky;	nk = ny2/2;}
 
 	/* Get an array for summing stuff */
-	b_pow = (double *) GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
-	g_pow = (double *) GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
-	err_bar = (double *) GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
-	co_spec = (double *) GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
-	quad = (double *) GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
-	coh = (double *) GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
-	out = (double *) GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
-	nused = (int *) GMT_memory (VNULL, (size_t)nx2*ny2, sizeof(int), GMT_program);
+	b_pow = GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
+	g_pow = GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
+	err_bar = GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
+	co_spec = GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
+	quad = GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
+	coh = GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
+	out = GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
+	nused = GMT_memory (VNULL, (size_t)nx2*ny2, sizeof(int), GMT_program);
 
 	if (coherence)
 		admittance = FALSE;
@@ -1521,7 +1521,7 @@ void	load_from_below_admit(void) {
 	if (delta_kx < delta_ky) {delta_k = delta_kx;	 nk = nx2/2;}
 	else {delta_k = delta_ky;	 nk = ny2/2;}
 
-	z_from_below = (float *) GMT_memory (VNULL, (size_t) nk, sizeof(float), GMT_program);
+	z_from_below = GMT_memory (VNULL, (size_t) nk, sizeof(float), GMT_program);
 
 	twopi = 2. * M_PI;
 	delta_k /= twopi;	/* Use frequency, not wavenumber  */
@@ -1551,7 +1551,7 @@ void	load_from_top_admit(void) {
 	if (delta_kx < delta_ky) {delta_k = delta_kx;	 nk = nx2/2;}
 	else {delta_k = delta_ky;	 nk = ny2/2;}
 
-	z_from_top = (float *) GMT_memory (VNULL, (size_t) nk, sizeof(float), GMT_program);
+	z_from_top = GMT_memory (VNULL, (size_t) nk, sizeof(float), GMT_program);
 
 	twopi = 2. * M_PI;
 	delta_k /= twopi;	/* Use frequency, not wavenumber  */

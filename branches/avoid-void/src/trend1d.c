@@ -611,7 +611,7 @@ GMT_LONG GMT_trend1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_trend1d", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vbf:", "his>" GMT_OPT("H"), options))) Return (error);
-	Ctrl = (struct TREND1D_CTRL *) New_trend1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_trend1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_trend1d_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the trend1d main code ----------------------------*/

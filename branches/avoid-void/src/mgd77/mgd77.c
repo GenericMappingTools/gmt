@@ -1791,7 +1791,7 @@ int MGD77_Read_Data_asc (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 		if (GMT_is_dnan (MGD77Record.time)) n_nan_times++;
 	}
 	S->H.no_time = (n_nan_times == S->H.n_records);
-	for (col = n_txt = n_val = 0; col < F->n_out_columns; col++) S->values[col] = ((S->H.info[MGD77_M77_SET].col[F->order[col].item].text) ? text[n_txt++] : values[n_val++]);
+	for (col = n_txt = n_val = 0; col < F->n_out_columns; col++) S->values[col] = ((S->H.info[MGD77_M77_SET].col[F->order[col].item].text) ? (void *)text[n_txt++] : (void *)values[n_val++]);
 	S->n_fields = F->n_out_columns;
 
 	return (MGD77_NO_ERROR);
@@ -1826,8 +1826,8 @@ int MGD77_Write_Data_asc (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *
 	struct GMT_gcal cal;
 
 	for (k = 0; k < F->n_out_columns; k++) {
-		text[k] = (char *)S->values[k];
-		values[k] = (double *)S->values[k];
+		text[k] = S->values[k];
+		values[k] = S->values[k];
 	}
 
 	for (id = 0; id < MGD77_N_DATA_FIELDS; id++) {	/* See which columns correspond to our standard MGD77 columns */
@@ -1859,7 +1859,7 @@ int MGD77_Write_Data_asc (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *
 		for (id = MGD77_N_NUMBER_FIELDS; id < MGD77_N_DATA_FIELDS; id++) {
 			k = id - MGD77_N_NUMBER_FIELDS;
 			if (col[id] >= 0)	/* Have this string column */
-				strncpy (MGD77Record.word[k], (char *)&text[col[id]][rec*Clength[k]], (size_t)Clength[k]);
+				strncpy (MGD77Record.word[k], &text[col[id]][rec*Clength[k]], (size_t)Clength[k]);
 			else
 				strncpy (MGD77Record.word[k], ALL_NINES, (size_t)Clength[k]);
 		}
@@ -2847,7 +2847,7 @@ void MGD77_Apply_Bitflags (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct M
 	for (i = 0; i < F->n_out_columns; i++) {
 		set = F->order[i].set;
 		if (apply_bits[set] && (S->flags[set][rec] & (1 << F->order[i].item))) {
-			value = (double *)S->values[i];
+			value = S->values[i];
 			value[rec] = C->session.d_NaN;
 		}
 	}
@@ -2864,7 +2864,7 @@ GMT_LONG MGD77_Pass_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct 
 
 	if (F->n_exact) {	/* Must make sure that none of these key geophysical columns are NaN */
 		for (i = 0; i < F->n_exact; i++) {
-			value = (double *)S->values[F->Exact[i].col];
+			value = S->values[F->Exact[i].col];
 			if (GMT_is_dnan (value[rec])) return (FALSE);	/* Sorry, one NaN and you're history */
 		}
 	}
@@ -2875,11 +2875,11 @@ GMT_LONG MGD77_Pass_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct 
 			c  = F->order[col].set;
 			id = F->order[col].item;
 			if (S->H.info[c].col[id].text) {
-				text = (char *)S->values[col];
+				text = S->values[col];
 				pass = F->Constraint[i].string_test (&text[rec*S->H.info[c].col[id].text], F->Constraint[i].c_constraint, S->H.info[c].col[id].text);
 			}
 			else {
-				value = (double *)S->values[col];
+				value = S->values[col];
 				pass = F->Constraint[i].double_test (value[rec], F->Constraint[i].d_constraint);
 			}
 			if (pass)	/* OK, we survived for now, tally up victories and goto next battle */
@@ -3111,7 +3111,7 @@ void MGD77_Prep_Header_cdf (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct 
 
 	entry = MGD77_Info_from_Abbrev (C, "time", &S->H, &t_set, &t_id);
 	if (entry != MGD77_NOT_SET) {	/* Supposedly has time, but we we'll check again */
-		values = (double *)S->values[entry];
+		values = S->values[entry];
 		if (MGD77_dbl_are_constant (C, values, S->H.n_records, S->H.info[t_set].col[t_id].limit)) {	/* If constant time it means NaNs */
 			S->H.no_time = TRUE;
 			S->H.info[t_set].col[t_id].present = FALSE;
@@ -3134,7 +3134,7 @@ void MGD77_Prep_Header_cdf (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct 
 	   This is done to be in compliance with COARDS which says there should be no jump in longitude.
 	 */
 
-	values = (double *)S->values[entry];
+	values = S->values[entry];
 	for (i = 1; i < S->H.n_records; i++) {	/* Look at pairs of longitudes for jumps */
 		dx = values[i] - values[i-1];
 		if (fabs (dx) > 180.0) {	/* Crossed Greenwich or Dateline, depending on range */
@@ -3157,11 +3157,11 @@ void MGD77_Prep_Header_cdf (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct 
 		for (id = 0; id < MGD77_SET_COLS; id++) {
 			if (!S->H.info[set].col[id].present) continue;	/* No such field, move on */
 			if (S->H.info[set].col[id].text) {		/* This variable is a text string */
-				text = (char *)S->values[entry];
+				text = S->values[entry];
 				S->H.info[set].col[id].constant = (MGD77_txt_are_constant (C, text, S->H.n_records, S->H.info[set].col[id].text));	/* Do we need to store 1 or n strings? */
 			}
 			else {					/* This variable is a numerical field */
-				values = (double *)S->values[entry];
+				values = S->values[entry];
 				S->H.info[set].col[id].constant = (MGD77_dbl_are_constant (C, values, S->H.n_records, S->H.info[set].col[id].limit));
 			}
 			entry++;
@@ -3323,7 +3323,7 @@ int MGD77_Write_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *
 			if (!S->H.info[set].col[id].present) continue;	/* No such field, move on */
 			if (S->H.info[set].col[id].text) {		/* This variable is a text string */
 				count[1] = S->H.info[set].col[id].text;	/* Set text dimension */
-				text = (char *)S->values[entry];
+				text = S->values[entry];
 				if (S->H.info[set].col[id].constant)	/* Only need to store one text string */
 					MGD77_nc_status (C, nc_put_vara_schar (F->nc_id, S->H.info[set].col[id].var_id, start, &count[1], (signed char *)text));
 				else
@@ -3338,7 +3338,7 @@ int MGD77_Write_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *
 					offset = S->H.info[set].col[id].offset * S->H.info[set].col[id].corr_factor + S->H.info[set].col[id].corr_offset;
 				}
 				transform = (! (scale == 1.0 && offset == 0.0));	/* TRUE if we must transform before writing */
-				values = (double *)S->values[entry];			/* Pointer to current double array */
+				values = S->values[entry];			/* Pointer to current double array */
 				if (S->H.info[set].col[id].constant) {	/* Only write a single value (after possibly transforming) */
 					n_bad = MGD77_do_scale_offset_before_write (C, &single_val, values, (GMT_LONG)1, scale, offset, S->H.info[set].col[id].type);
 					MGD77_nc_status (C, nc_put_var1_double (F->nc_id, S->H.info[set].col[id].var_id, start, &single_val));
@@ -3515,7 +3515,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 			if (!E.needed[i]) continue;	/* Dont need this particular column */
 			if (E.got_it[nc_id[i]]) {	/* This aux is actually one of the output columns so we have already read it - just use a pointer */
 				col =  MGD77_Info_from_Abbrev (C, abbrev[i], &S->H, &c, &id);	/* Which output column is it? */
-				E.aux[i] = (double *)S->values[col];
+				E.aux[i] = S->values[col];
 			}
 			else {	/* Not read, must read separately, and use the nc_id array to get proper column number) */
 				scale = S->H.info[MGD77_M77_SET].col[nc_id[i]].factor;
@@ -3547,7 +3547,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 		if (E.correction_requested[E77_CORR_FIELD_DEPTH]) {	/* Must recalculate depths from twt via Carter table lookup */
 			struct MGD77_CARTER Carter;	/* Used to calculate Carter depths */
 			MGD77_carter_init (C, &Carter);	/* Initialize Carter machinery */
-			values = (double *)S->values[E.col[E77_CORR_FIELD_DEPTH]];		/* Output depths */
+			values = S->values[E.col[E77_CORR_FIELD_DEPTH]];		/* Output depths */
 			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
 				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc depth if originally flagged as a NaN */
 				MGD77_carter_depth_from_xytwt (C, E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], 1000.0 * E.aux[E77_AUX_FIELD_TWT][rec], &Carter, &values[rec]);
@@ -3555,7 +3555,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 		}
 
 		if (E.correction_requested[E77_CORR_FIELD_MAG]) {	/* Must recalculate mag from mtf1 and IGRF */
-			values = (double *)S->values[E.col[E77_CORR_FIELD_MAG]];		/* Output mag */
+			values = S->values[E.col[E77_CORR_FIELD_MAG]];		/* Output mag */
 			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
 				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc mag if originally flagged as a NaN */
 				values[rec] = MGD77_Recalc_Mag_Anomaly_IGRF (C, F, E.aux[E77_AUX_FIELD_TIME][rec], E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], E.aux[E77_AUX_FIELD_MTF1][rec], TRUE);
@@ -3563,7 +3563,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 		}
 
 		if (E.correction_requested[E77_CORR_FIELD_FAA]) {	/* Must recalculate faa from gobs and IGF */
-			values = (double *)S->values[E.col[E77_CORR_FIELD_FAA]];		/* Output faa */
+			values = S->values[E.col[E77_CORR_FIELD_FAA]];		/* Output faa */
 			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
 				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc faa if originally flagged as a NaN */
 			 	values[rec] = E.aux[E77_AUX_FIELD_GOBS][rec] - MGD77_Theoretical_Gravity (C, 0.0, E.aux[E77_AUX_FIELD_LAT][rec], MGD77_IGF_1980);
@@ -3571,7 +3571,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 		}
 
 		if (E.correction_requested[E77_CORR_FIELD_FAA_EOT]) {	/* Must recalculate faa from gobs, eot and IGF */
-			values = (double *)S->values[E.col[E77_CORR_FIELD_FAA_EOT]];		/* Output faa */
+			values = S->values[E.col[E77_CORR_FIELD_FAA_EOT]];		/* Output faa */
 			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
 				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc faa if originally flagged as a NaN */
 			 	values[rec] = E.aux[E77_AUX_FIELD_GOBS][rec] + E.aux[E77_AUX_FIELD_EOT][rec] - MGD77_Theoretical_Gravity (C, 0.0, E.aux[E77_AUX_FIELD_LAT][rec], MGD77_IGF_1980);
@@ -3611,7 +3611,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 				c  = F->order[i].set;	/* Determine set and item */
 				id = F->order[i].item;
 				if (S->H.info[c].col[id].text) continue ;	/* Skip text variables in this section */
-				values = (double *)S->values[i];
+				values = S->values[i];
 				for (rec_in = rec = 0; rec_in < S->H.n_records; rec_in++) {
 					if (rec_in > rec) values[rec] = values[rec_in];	/* Must shuffle records */
 					if (! (S->flags[MGD77_M77_SET][rec_in] & bad_nav_bits)) rec++;	/* Record was OK so increment output rec number */
@@ -3624,7 +3624,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 				id = F->order[i].item;
 				if (!S->H.info[c].col[id].text) continue ;	/* Skip double variables in this section */
 				count[1] = S->H.info[c].col[id].text;	/* Get length of each string */
-				text = (char *)S->values[i];
+				text = S->values[i];
 				for (rec_in = rec = 0; rec_in < S->H.n_records; rec_in++) {
 					if (rec_in > rec) strncpy (&text[rec*count[1]], &text[rec_in*count[1]], count[1]);	/* Must shuffle text records */
 					if (! (S->flags[MGD77_M77_SET][rec_in] & bad_nav_bits)) rec++;	/* Record was OK so increment output rec number */

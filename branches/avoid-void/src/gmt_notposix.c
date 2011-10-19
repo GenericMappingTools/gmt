@@ -390,7 +390,7 @@ char *strdup (const char *s) {
 	char *p = NULL;
 
 	n = strlen (s) + 1;
-	p = (char *)malloc ((size_t)n);
+	p = malloc ((size_t)n);
 	strncpy (p, s, n);
 	return (p);
 }
@@ -417,12 +417,12 @@ double strtod (const char *s, char **ends) {
 	double x = 0.0;
 	GMT_LONG i, nsign[2], nradix[2], nexp, ndigits, error, inside = FALSE;
 
-	t = (char *)s;
+	t = s;
 	i = 0;
 	ndigits = 0;
 	while (t[i] && isspace( (int)t[i]) ) i++;
 	if (t[i] == 0 || isalpha ( (int)t[i]) ) {
-		if (ends != (char **)NULL) *ends = (char *)s;
+		if (ends != (char **)NULL) *ends = s;
 		return (x);
 	}
 	nsign[0] = nsign[1] = nradix[0] = nradix[1] = nexp = error = 0;
@@ -452,7 +452,7 @@ double strtod (const char *s, char **ends) {
 			if (nexp > 1 || nradix[nexp] > 1 || nsign[nexp] > 1) error++;
 			if (error) {
 				if (ndigits == 0) {
-					if (ends != (char **)NULL) *ends = (char *)s;
+					if (ends != (char **)NULL) *ends = s;
 					return (0.0);
 				}
 				savechar = t[i];
@@ -470,7 +470,7 @@ double strtod (const char *s, char **ends) {
 		i++;
 	}
 	if (ndigits == 0) {
-		if (ends != (char **)NULL) *ends = (char *)s;
+		if (ends != (char **)NULL) *ends = s;
 		return (0.0);
 	}
 	x = atof(t);

@@ -533,7 +533,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_trend2d", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vbf:", "his>" GMT_OPT("H"), options))) Return (error);
-	Ctrl = (struct TREND2D_CTRL *) New_trend2d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_trend2d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_trend2d_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the trend2d main code ----------------------------*/

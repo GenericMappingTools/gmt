@@ -582,7 +582,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT = GMT_begin_module (API, "GMT_grdblend", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRf:", "r", options))) Return (error);
 	GMT_grd_init (GMT, &S.header, options, FALSE);
-	Ctrl = (struct GRDBLEND_CTRL *) New_grdblend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdblend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdblend_parse (API, Ctrl, &S, options))) Return (error);
 	
 	/*---------------------------- This is the grdblend main code ----------------------------*/

@@ -2649,7 +2649,7 @@ GMT_LONG GMT_z_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **data)
 	
 GMT_LONG GMT_z_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, void *data)
 {
-	double *ptr = (double *)data;
+	double *ptr = data;
 	return (C->current.io.write_item (C, fp, n, ptr));
 }
 	
@@ -3913,7 +3913,7 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strcpy (file, (char *)source);
+		strcpy (file, source);
 		if ((fp = GMT_fopen (C, file, "r")) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot open file %s\n", file);
 			return (EXIT_FAILURE);
@@ -3929,7 +3929,7 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 			strcpy (file, "<input stream>");
 	}
 	else if (source_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
-		int *fd = (int *)source;
+		int *fd = source;
 		if (fd && (fp = fdopen (*fd, "r")) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot convert file descriptor %d to stream in GMT_read_texttable\n", *fd);
 			return (EXIT_FAILURE);
@@ -4597,7 +4597,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
-			strcpy (file, (char *)dest);
+			strcpy (file, dest);
 			if (io_mode < GMT_WRITE_SEGMENTS) {	/* Only require one destination */
 				if ((fp = GMT_fopen (C, &file[append], open_mode)) == NULL) {
 					GMT_report (C, GMT_MSG_FATAL, "Cannot open file %s\n", &file[append]);
@@ -4615,7 +4615,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 				strcpy (file, "<output stream>");
 			break;
 		case GMT_IS_FDESC:		/* Open file descriptor given, just convert to file pointer */
-			fd = (int *)dest;
+			fd = dest;
 			if (fd && (fp = fdopen (*fd, open_mode)) == NULL) {
 				GMT_report (C, GMT_MSG_FATAL, "Cannot convert file descriptor %d to stream in GMT_write_table\n", *fd);
 				GMT_exit (EXIT_FAILURE);
@@ -4695,7 +4695,7 @@ GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, 
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
-			strcpy (file, (char *)dest);
+			strcpy (file, dest);
 			if (D->io_mode < GMT_WRITE_TABLES) {	/* Only need one destination */
 				if ((fp = GMT_fopen (C, &file[append], open_mode)) == NULL) {
 					GMT_report (C, GMT_MSG_FATAL, "Cannot open file %s\n", &file[append]);
@@ -4715,7 +4715,7 @@ GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, 
 			GMT_report (C, GMT_MSG_NORMAL, "Write Data Table to %s\n", file);
 			break;
 		case GMT_IS_FDESC:		/* Open file descriptor given, just convert to file pointer */
-			fd = (int *)dest;
+			fd = dest;
 			if (fd && (fp = fdopen (*fd, open_mode)) == NULL) {
 				GMT_report (C, GMT_MSG_FATAL, "Cannot convert file descriptor %d to stream in GMT_write_table\n", *fd);
 				return (EXIT_FAILURE);
@@ -4777,7 +4777,7 @@ GMT_LONG gmt_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
-			strcpy (file, (char *)dest);
+			strcpy (file, dest);
 			if (io_mode < GMT_WRITE_SEGMENTS) {	/* Only require one destination */
 				if ((fp = GMT_fopen (C, &file[append], (append) ? "a" : "w")) == NULL) {
 					GMT_report (C, GMT_MSG_FATAL, "Cannot open file %s in gmt_write_texttable\n", &file[append]);
@@ -4795,7 +4795,7 @@ GMT_LONG gmt_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 				strcpy (file, "<output stream>");
 			break;
 		case GMT_IS_FDESC:		/* Open file descriptor given, just convert to file pointer */
-			fd = (int *)dest;
+			fd = dest;
 			if (fd && (fp = fdopen (*fd, "w")) == NULL) {
 				GMT_report (C, GMT_MSG_FATAL, "Cannot convert file descriptor %d to stream in gmt_write_texttable\n", *fd);
 				GMT_exit (EXIT_FAILURE);
@@ -4863,7 +4863,7 @@ GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, 
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
-			strcpy (file, (char *)dest);
+			strcpy (file, dest);
 			if (D->io_mode < GMT_WRITE_TABLES) {	/* Only need one destination */
 				if ((fp = GMT_fopen (C, &file[append], (append) ? "a" : "w")) == NULL) {
 					GMT_report (C, GMT_MSG_FATAL, "Cannot open file %s\n", &file[append]);
@@ -4883,7 +4883,7 @@ GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, 
 			GMT_report (C, GMT_MSG_NORMAL, "Write Text Table to %s\n", file);
 			break;
 		case GMT_IS_FDESC:		/* Open file descriptor given, just convert to file pointer */
-			fd = (int *)dest;
+			fd = dest;
 			if (fd && (fp = fdopen (*fd, "w")) == NULL) {
 				GMT_report (C, GMT_MSG_FATAL, "Cannot convert file descriptor %d to stream in GMT_write_textset\n", *fd);
 				return (EXIT_FAILURE);
@@ -5214,7 +5214,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strcpy (file, (char *)source);
+		strcpy (file, source);
 		if ((fp = GMT_fopen (C, file, open_mode)) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot open file %s\n", file);
 			if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
@@ -5231,7 +5231,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 			strcpy (file, "<input stream>");
 	}
 	else if (source_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
-		int *fd = (int *)source;
+		int *fd = source;
 		if (fd && (fp = fdopen (*fd, open_mode)) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot convert file descriptor %d to stream in GMT_read_table\n", *fd);
 			if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */

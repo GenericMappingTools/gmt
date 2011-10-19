@@ -2122,12 +2122,12 @@ void table_PSI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 	x[1] = 0.0;	/* No imaginary part */
 	if (constant[last]) {
 		x[0] = factor[last];
-		a = GMT_psi (GMT, x, (double *)NULL);
+		a = GMT_psi (GMT, x, NULL);
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) {
 		if (!constant[last]) {
 			x[0] = T->segment[s]->coord[col][i];
-			a = GMT_psi (GMT, x, (double *)NULL);
+			a = GMT_psi (GMT, x, NULL);
 		}
 		T->segment[s]->coord[col][i] = a;
 	}
@@ -2863,7 +2863,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_gmtmath", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options))) Return1 (error);
-	Ctrl = (struct GMTMATH_CTRL *) New_gmtmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_gmtmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtmath_parse (API, Ctrl, options))) Return1 (error);
 
 	/*---------------------------- This is the gmtmath main code ----------------------------*/

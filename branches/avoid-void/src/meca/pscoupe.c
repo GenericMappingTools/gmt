@@ -526,7 +526,7 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_pscoupe", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VJR:", "BHKOPUVXhixYyc>", options))) Return (error);
-	Ctrl = (struct PSCOUPE_CTRL *)New_pscoupe_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_pscoupe_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pscoupe_parse (API, Ctrl, options))) Return (error);
  	PSL = GMT->PSL;		/* This module also needs PSL */
 

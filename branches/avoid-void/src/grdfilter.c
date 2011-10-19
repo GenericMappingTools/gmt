@@ -529,7 +529,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grdfilter", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRf:", "", options))) Return (error);
-	Ctrl = (struct GRDFILTER_CTRL *) New_grdfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdfilter_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdfilter main code ----------------------------*/

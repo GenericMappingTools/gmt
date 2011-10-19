@@ -582,7 +582,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grdview", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VJR", "BKOPUXxYycnpt>" GMT_OPT("E"), options))) Return (error);
-	Ctrl = (struct GRDVIEW_CTRL *) New_grdview_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdview_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdview_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 

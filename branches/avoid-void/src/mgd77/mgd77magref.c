@@ -66,7 +66,7 @@ void *New_mgd77magref_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	struct MGD77MAGREF_CTRL *C = NULL;
 
 	C = GMT_memory (GMT, NULL, 1, struct MGD77MAGREF_CTRL);
-	C->CM4 = (struct MGD77_CM4 *) calloc ((size_t)1, sizeof (struct MGD77_CM4));
+	C->CM4 = calloc ((size_t)1, sizeof (struct MGD77_CM4));
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
@@ -423,7 +423,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_mgd77magref", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vfb", "Hm", options))) Return ((int)error);
-	Ctrl = (struct MGD77MAGREF_CTRL *) New_mgd77magref_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_mgd77magref_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_CM4_init (GMT, &M, Ctrl->CM4);	/* Presets path using strdup */
 	if ((error = GMT_mgd77magref_parse (API, Ctrl, options))) Return ((int)error);
 
@@ -433,7 +433,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
 
-	Ctrl->CM4->CM4_D.dst = (double *) calloc((size_t)(1), sizeof(double));	/* We need at least a size of one in case a value is given in input */
+	Ctrl->CM4->CM4_D.dst = calloc((size_t)(1), sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = GMT_IS_ABSTIME;	/* By default, time is in 4th input column */
 
 	/* Shorthand for these */

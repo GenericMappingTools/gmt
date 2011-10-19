@@ -124,7 +124,7 @@ In addition, we have two data types to facilitate the passing of simple user arr
 of any data type, e.g., double, char) and 2-D user matrix (of any data type and column/row organization).
 There are many attributes for each of these entities and therefore we use a top-level structure
 to keep them all in one container.  These containers are given or returned by the \GMT\ API
-functions using opaque pointer addresses \texttt{void **}.  Below we discuss these containers in some detail; we
+functions using opaque pointers (\texttt{void *}).  Below we discuss these containers in some detail; we
 will later present how they are used when importing or exporting them to or from files,
 memory locations, or streams.  The first four are the standard \GMT\ types, while the latter two are the
 special user data containers.
@@ -342,7 +342,7 @@ The basic registration machinery involves a direct or indirect call to
 
 \begin{verbatim}
 GMT_Register_IO (struct GMTAPI_CTRL *API, long family, long method, \
-   long geometry, long direction, void **ptr, double wesn[], \
+   long geometry, long direction, void *ptr, double wesn[], \
    void *data, long *ID)
 \end{verbatim}
 where \texttt{family} specifies what kind of resource is to be registered
@@ -351,7 +351,7 @@ how we expect to access this resource (see Table \ref{tbl:methods} for recognize
 as well as modifiers you can add; these are listed in Table \ref{tbl:via}),
 \texttt{geometry} specifies
 the geometry of the data (see Table \ref{tbl:geometry} for recognized geometries),
-\texttt{ptr} is the address of an opaque pointer to the named resource.
+\texttt{ptr} is the pointer to the named resource.
 For GMT\_IS\_GMTGRID resources you may request to obtain a subset via the \texttt{wesn}
 array (see Table~\ref{tbl:wesn} for information); otherwise, pass NULL to obtain the entire grid.
 The \texttt{direction} indicates input or output and is either GMT\_IN (0) or GMT\_OUT (1).
@@ -529,7 +529,7 @@ This is done with the \texttt{GMT\_Create\_Data} function, whose prototype is
 
 \begin{verbatim}
 GMT_Create_Data (struct GMTAPI_CTRL *API, long family, long par[], \
-	void **data, long *ID)
+	void *data, long *ID)
 \end{verbatim}
 where \texttt{data} returns the address of an opaque pointer to the allocated resource.
 Pass \texttt{family} as one of GMT\_IS\_GMTGRID, GMT\_IS\_DATASET, or GMT\_IS\_CPT,
@@ -616,9 +616,9 @@ an generic form:
 
 \begin{verbatim}
 GMT_Get_Data (struct GMTAPI_CTRL *API, long family, long method, \
-    long geometry, double wesn[], long mode, void **input, void **data)
+    long geometry, double wesn[], long mode, void *input, void *data)
 \end{verbatim}
-where \texttt{data} can be the address of an opaque pointer to any of the four structures
+where \texttt{data} can be a pointer to any of the four structures
 discussed above.  Most of these arguments have been discussed earlier.  This function can
 be called in three different situations:
 \begin{enumerate}
@@ -629,8 +629,8 @@ with \texttt{GMT\_Register\_IO} or gather the sources with \texttt{GMT\_Init\_IO
 \item If you already registered all available sources with \texttt{GMT\_Init\_IO} then
 you pass \texttt{geometry} = 0.
 \end{enumerate}
-In all cases, cast the address of the actual pointer to your CPT table, grid, or data set to
-\texttt{void **} when calling \texttt{GMT\_Get\_Data}.  Space will
+In all cases, pass the address of the actual pointer to your CPT table, grid, text set or data set
+when calling \texttt{GMT\_Get\_Data}.  Space will
 be allocated to hold the results, if needed.
 The \texttt{mode} parameter takes on different meanings for the different data types.
 \begin{description}
@@ -666,9 +666,10 @@ If your program must read data table records one-by-one you will instead use the
 \index{GMT\_Get\_Record}
 
 \begin{verbatim}
-GMT_Get_Record (struct GMTAPI_CTRL *API, long mode, void **data)
+GMT_Get_Record (struct GMTAPI_CTRL *API, long mode, void *data)
 \end{verbatim}
-where \texttt{data} is usually the address of a pointer to a double array with the current row;
+where \texttt{data} is either a pointer to a double array with the current row
+or a pointer to a character string with the current row, depending on \texttt{mode}.
 You need to allocate any memory for this array if the method used to register
 the source was GMT\_IS\_ARRAY; otherwise it points to memory internal to \GMT.
 
@@ -1019,9 +1020,9 @@ The prototype is:
 
 \begin{verbatim}
 GMT_Put_Data (struct GMTAPI_CTRL *API, long family, long method, \
-    long geometry, double wesn[], long mode, void **output, void *data)
+    long geometry, double wesn[], long mode, void *output, void *data)
 \end{verbatim}
-where \texttt{data} can be an opaque pointer to any of the four structures
+where \texttt{data} is a pointer to any of the four structures
 discussed previously.  Again, the \texttt{mode} parameter is specific to
 each data type:
 
@@ -1128,9 +1129,9 @@ This is done with the \texttt{GMT\_Destroy\_Data} function, whose prototype is
 \index{GMT\_Destroy\_Data}
 
 \begin{verbatim}
-GMT_Destroy_Data (struct GMTAPI_CTRL *API, long mode, void **data)
+GMT_Destroy_Data (struct GMTAPI_CTRL *API, long mode, void *data)
 \end{verbatim}
-where \texttt{data} is the address of an opaque pointer to the resource.
+where \texttt{data} is a pointer to the resource.
 Pass \texttt{mode} either as GMT\_ALLOCATED or GMT\_REFERENCE.  The former
 is used internally by the \GMT\ modules since they can only free resources that are
 not destined to live on in the memory of their calling program.  The latter mode is used

@@ -234,7 +234,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grdlandmask", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRr", GMT_OPT("F"), options))) Return (error);
-	Ctrl = (struct GRDLANDMASK_CTRL *) New_grdlandmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdlandmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdlandmask_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdlandmask main code ----------------------------*/

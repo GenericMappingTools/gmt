@@ -400,7 +400,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if ((error = GMT_Parse_Common (API, "-VRf:", "", options))) Return (error);
 	GMT = GMT_begin_module (API, "GMT_dimfilter", &GMT_cpy);	/* Save current state */
-	Ctrl = (struct DIMFILTER_CTRL *) New_dimfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_dimfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_dimfilter_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the dimfilter main code ----------------------------*/

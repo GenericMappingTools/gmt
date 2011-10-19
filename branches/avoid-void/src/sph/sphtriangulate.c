@@ -501,7 +501,7 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT = GMT_begin_module (API, "GMT_sphtriangulate", &GMT_cpy);			/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRb:", "hims", options))) Return (error);
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
-	Ctrl = (struct SPHTRIANGULATE_CTRL *) New_sphtriangulate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_sphtriangulate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_sphtriangulate_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the sphtriangulate main code ----------------------------*/

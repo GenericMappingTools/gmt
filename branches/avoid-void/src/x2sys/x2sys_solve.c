@@ -299,7 +299,7 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		GMT_chop (GMT, line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %s", name, date);
-		p[n] = (char *) strdup (name);
+		p[n] = strdup (name);
 		if (date[strlen(date)-1] != 'T') strcat (date, "T");
 		if (GMT_scanf (GMT, date, GMT_IS_ABSTIME, &T[n]) == GMT_IS_NAN) T[n] = GMT->session.d_NaN;
 		
@@ -359,7 +359,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_x2sys_solve", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vb", ">", options))) Return (error);
-	Ctrl = (struct X2SYS_SOLVE_CTRL *)New_x2sys_solve_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_x2sys_solve_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_solve_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the x2sys_solve main code ----------------------------*/

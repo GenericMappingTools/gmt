@@ -301,7 +301,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_segy2grd", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRr", GMT_OPT("F"), options))) Return (error);
-	Ctrl = (struct SEGY2GRD_CTRL *)New_segy2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_segy2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_segy2grd_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the segy2grd main code ----------------------------*/
@@ -409,7 +409,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			 	header->sampleLength = GMT_swab2 (header->sampleLength);
 			}
 
-			data = (float *) get_segy_data (fpi, header); /* read a trace */
+			data = (float *)get_segy_data (fpi, header); /* read a trace */
 			/* get number of samples in _this_ trace or set to number in reel header */
 			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
 
@@ -417,7 +417,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (n_samp - ij0 > Grid->header->ny) n_samp = Grid->header->ny + ij0;
 
 			if (swap_bytes) { /* need to swap the order of the bytes in the data even though assuming IEEE format */
-				int *intdata = (int *) data;
+				int *intdata = (int *)data;
 				for (isamp = 0; isamp < n_samp; isamp++) intdata[isamp] = GMT_swab4 (intdata[isamp]);
 			}
 
@@ -442,7 +442,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				x0 = (double) cdpval;
 			}
 			else if (Ctrl->S.value) { /* ugly code - want to get value starting at Ctrl->S.value of header into a double... */
-				head = (char *) header;
+				head = (char *)header;
 				memcpy(&head2, &head[Ctrl->S.value], 4); /* edited to fix bug where 8bytes were copied from head.
                                                 Caused by casting to a long directly from char array*/ 
 				x0 = (double) ((swap_bytes)? GMT_swab4 (head2): head2);
@@ -461,13 +461,13 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				header->num_samps = GMT_swab4 (header->num_samps);
 			}
 
-			data = (float *) get_segy_data (fpi, header); /* read a trace */
+			data = (float *)get_segy_data (fpi, header); /* read a trace */
 			/* get number of samples in _this_ trace (e.g. OMEGA has strange ideas about SEGY standard)
 			   or set to number in reel header */
 			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
 
 			if (swap_bytes) { /* need to swap the order of the bytes in the data even though assuming IEEE format */
-				int *intdata = (int *) data;
+				int *intdata = (int *)data;
 				for (isamp = 0; isamp < n_samp; isamp++) intdata[isamp] = GMT_swab4 (intdata[isamp]);
 			}
 

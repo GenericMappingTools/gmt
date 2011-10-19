@@ -36,7 +36,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	char *cmd = NULL;
 	char *key = KEY;
 
-	cmd = (char *) mxArrayToString (prhs[0]);	/* First argument is the command string, e.g., '$ -R0/5/0/5 -I1' */
+	cmd = mxArrayToString (prhs[0]);	/* First argument is the command string, e.g., '$ -R0/5/0/5 -I1' */
 
 	/* 1. Initializing new GMT session */
 	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("Failure to create GMT Session\n");

@@ -1155,7 +1155,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grdfft", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vf", "", options))) Return (error);
-	Ctrl = (struct GRDFFT_CTRL *) New_grdfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdfft_parse (API, Ctrl, &f_info, options))) Return (error);
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/

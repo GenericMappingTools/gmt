@@ -183,7 +183,7 @@ GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT = GMT_begin_module (API, "GMT_grdclip", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VR", "", options))) Return (error);
-	Ctrl = (struct GRDCLIP_CTRL *) New_grdclip_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdclip_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdclip_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdclip main code ----------------------------*/

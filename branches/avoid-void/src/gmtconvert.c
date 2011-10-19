@@ -286,7 +286,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_gmtconvert", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vbf:", "aghios>" GMT_OPT("HMm"), options))) Return (error);
-	Ctrl = (struct GMTCONVERT_CTRL *) New_gmtconvert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_gmtconvert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtconvert_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmtconvert main code ----------------------------*/
@@ -423,7 +423,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (seg1 = 0, seg2 = D[GMT_OUT]->table[tbl]->n_segments-1; seg1 < D[GMT_OUT]->table[tbl]->n_segments/2; seg1++, seg2--) {	/* For each segment in the table */
 					p = D[GMT_OUT]->table[tbl]->segment[seg1];
 					D[GMT_OUT]->table[tbl]->segment[seg1] = D[GMT_OUT]->table[tbl]->segment[seg2];
-					D[GMT_OUT]->table[tbl]->segment[seg2] = (struct GMT_LINE_SEGMENT *)p;
+					D[GMT_OUT]->table[tbl]->segment[seg2] = p;
 				}
 			}
 		}
@@ -432,7 +432,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (tbl1 = 0, tbl2 = D[GMT_OUT]->n_tables-1; tbl1 < D[GMT_OUT]->n_tables/2; tbl1++, tbl2--) {	/* For each table */
 				p = D[GMT_OUT]->table[tbl1];
 				D[GMT_OUT]->table[tbl1] = D[GMT_OUT]->table[tbl2];
-				D[GMT_OUT]->table[tbl2] = (struct GMT_TABLE *)p;
+				D[GMT_OUT]->table[tbl2] = p;
 			}
 		}
 	}

@@ -326,7 +326,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grdgradient", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRf:", "", options))) Return (error);
-	Ctrl = (struct GRDGRADIENT_CTRL *) New_grdgradient_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdgradient_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdgradient_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdgradient main code ----------------------------*/

@@ -306,7 +306,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_img2grd", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRf", GMT_OPT("m"), options))) Return (error);
-	Ctrl = (struct IMG2GRD_CTRL *)New_img2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_img2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_img2grd_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the img2grd main code ----------------------------*/

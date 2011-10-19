@@ -1225,7 +1225,7 @@ GMT_LONG gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n
 	inside[0] = inside[3] = gmt_inside_lower_boundary;		outside[0] = outside[3] = gmt_outside_lower_boundary;
 	border[0] = border[3] = 0.0;	border[1] = C->current.map.width;	border[2] = C->current.map.height;
 
-	n_get = (GMT_LONG)irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
+	n_get = irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
 	GMT_malloc4 (C, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
 
@@ -1301,7 +1301,7 @@ GMT_LONG GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 
 	for (side = 0; side < 2; side++) {	/* Do it twice to get two truncated polygons */
 		L[side] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
-		n_alloc = (GMT_LONG)irint (1.05*S->n_rows+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
+		n_alloc = irint (1.05*S->n_rows+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 		GMT_alloc_segment (C, L[side], n_alloc, S->n_columns, TRUE);	/* Temp segment with twice the number of points as we will add crossings*/
 		m = 0;		/* Start with nuthin' */
 
@@ -1501,7 +1501,7 @@ GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n
 	if (border[3] > border[1] && way == 0) border[3] -= 360.0;
 	else if (border[3] > border[1] && way == 1) border[1] += 360.0;
 
-	n_get = (GMT_LONG)irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
+	n_get = irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
 	GMT_malloc4 (C, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
 
@@ -2505,7 +2505,7 @@ GMT_LONG gmt_map_init_linear (struct GMT_CTRL *C) {
 		case GMT_POW:	/* x^y transformation */
 			C->current.proj.xyz_pow[GMT_X] = C->current.proj.pars[2];
 			C->current.proj.xyz_ipow[GMT_X] = 1.0 / C->current.proj.pars[2];
-			positive = !(((GMT_LONG)C->current.proj.xyz_pos[GMT_X] + (GMT_LONG)(C->current.proj.xyz_pow[GMT_X] > 0.0)) % 2);
+			positive = !((C->current.proj.xyz_pos[GMT_X] + (C->current.proj.xyz_pow[GMT_X] > 0.0)) % 2);
 			xmin = (positive) ? pow (C->common.R.wesn[XLO], C->current.proj.xyz_pow[GMT_X]) : pow (C->common.R.wesn[XHI], C->current.proj.xyz_pow[GMT_X]);
 			xmax = (positive) ? pow (C->common.R.wesn[XHI], C->current.proj.xyz_pow[GMT_X]) : pow (C->common.R.wesn[XLO], C->current.proj.xyz_pow[GMT_X]);
 			C->current.proj.fwd_x = (PFL) GMT_transpowx;
@@ -2532,7 +2532,7 @@ GMT_LONG gmt_map_init_linear (struct GMT_CTRL *C) {
 		case GMT_POW:	/* x^y transformation */
 			C->current.proj.xyz_pow[GMT_Y] = C->current.proj.pars[3];
 			C->current.proj.xyz_ipow[GMT_Y] = 1.0 / C->current.proj.pars[3];
-			positive = !(((GMT_LONG)C->current.proj.xyz_pos[GMT_Y] + (GMT_LONG)(C->current.proj.xyz_pow[GMT_Y] > 0.0)) % 2);
+			positive = !((C->current.proj.xyz_pos[GMT_Y] + (C->current.proj.xyz_pow[GMT_Y] > 0.0)) % 2);
 			ymin = (positive) ? pow (C->common.R.wesn[YLO], C->current.proj.xyz_pow[GMT_Y]) : pow (C->common.R.wesn[YHI], C->current.proj.xyz_pow[GMT_Y]);
 			ymax = (positive) ? pow (C->common.R.wesn[YHI], C->current.proj.xyz_pow[GMT_Y]) : pow (C->common.R.wesn[YLO], C->current.proj.xyz_pow[GMT_Y]);
 			C->current.proj.fwd_y = (PFL) GMT_transpowy;
@@ -6528,7 +6528,7 @@ GMT_LONG GMT_map_clip_path (struct GMT_CTRL *C, double **x, double **y, GMT_LONG
 		}
 	}
 
-	if (!(*donut)) np = GMT_compact_line (C, work_x, work_y, np, FALSE, (int *)0);
+	if (!(*donut)) np = GMT_compact_line (C, work_x, work_y, np, FALSE, NULL);
 
 	*x = work_x;
 	*y = work_y;
@@ -7005,7 +7005,7 @@ GMT_LONG gmt_init_three_D (struct GMT_CTRL *C) {
 		case GMT_POW:	/* x^y transformation */
 			C->current.proj.xyz_pow[GMT_Z] = C->current.proj.z_pars[1];
 			C->current.proj.xyz_ipow[GMT_Z] = 1.0 / C->current.proj.z_pars[1];
-			positive = !(((GMT_LONG)C->current.proj.xyz_pos[GMT_Z] + (GMT_LONG)(C->current.proj.xyz_pow[GMT_Z] > 0.0)) % 2);
+			positive = !((C->current.proj.xyz_pos[GMT_Z] + (C->current.proj.xyz_pow[GMT_Z] > 0.0)) % 2);
 			zmin = (positive) ? pow (C->common.R.wesn[ZLO], C->current.proj.xyz_pow[GMT_Z]) : pow (C->common.R.wesn[ZHI], C->current.proj.xyz_pow[GMT_Z]);
 			zmax = (positive) ? pow (C->common.R.wesn[ZHI], C->current.proj.xyz_pow[GMT_Z]) : pow (C->common.R.wesn[ZLO], C->current.proj.xyz_pow[GMT_Z]);
 			C->current.proj.fwd_z = (PFL) GMT_transpowz;

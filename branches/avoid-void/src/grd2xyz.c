@@ -213,7 +213,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grd2xyz", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRbf:", "hos>" GMT_OPT("H"), options))) Return (error);
-	Ctrl = (struct GRD2XYZ_CTRL *)New_grd2xyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grd2xyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grd2xyz_parse (API, Ctrl, &io, options))) Return (error);
 	
 	/*---------------------------- This is the grd2xyz main code ----------------------------*/

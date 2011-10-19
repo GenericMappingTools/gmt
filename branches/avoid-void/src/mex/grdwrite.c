@@ -55,11 +55,11 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	/* 3. Load the file name and title (if given) into char strings */
 	k = (nrhs >= 5) ? 3 : 2;
-	fileout = (char *) mxArrayToString (prhs[k]);	/* Load the file name into a char string */
+	fileout = mxArrayToString (prhs[k]);	/* Load the file name into a char string */
 
 	if (nrhs >= 4) {	/* Load the title into a char string */
 		k = (nrhs >= 5) ? 4 : 3;
-		title = (char *) mxArrayToString (prhs[k]);	/* Load the file name into a char string */
+		title = mxArrayToString (prhs[k]);	/* Load the file name into a char string */
 		strcpy (G->header->title, title);
 	}
 

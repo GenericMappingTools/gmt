@@ -36,10 +36,10 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 	double *z = NULL;
 	if (nrhs == 3) {	/* Gave Z, info */
 		double *hdr = NULL;
-		z = (double *)mxGetData (prhs[0]);
+		z = mxGetData (prhs[0]);
 		G->header->nx = mxGetN (prhs[0]);
 		G->header->ny = mxGetM (prhs[0]);
-		hdr = (double *)mxGetData (prhs[1]);
+		hdr = mxGetData (prhs[1]);
 		GMT_memcpy (G->header->wesn, hdr, 4, double);
 		G->header->z_min = hdr[4];
 		G->header->z_max = hdr[5];
@@ -50,9 +50,9 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 	else {	/* Gave x, y, Z [reg] */
 		double *r = NULL, *x = NULL, *y = NULL;
 		GMT_LONG col, row, error = 0;
-		x = (double *)mxGetData (prhs[0]);
-		y = (double *)mxGetData (prhs[1]);
-		z = (double *)mxGetData (prhs[2]);
+		x = mxGetData (prhs[0]);
+		y = mxGetData (prhs[1]);
+		z = mxGetData (prhs[2]);
 		G->header->nx = mxGetN (prhs[2]);
 		G->header->ny = mxGetM (prhs[2]);
 		G->header->inc[GMT_X] = x[1] - x[0];
@@ -65,7 +65,7 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 			mexErrMsgTxt ("grdwrite: x and/or y not equidistant");
 		}
 		if (nrhs == 5) {
-			r = (double *)mxGetData (prhs[3]);
+			r = mxGetData (prhs[3]);
 			G->header->registration = (GMT_LONG)irint (r[0]);
 		}
 		else
@@ -96,11 +96,11 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 {	/* Used by programs that expect either an input file name or data vectors x, y[, other cols] */
 	char *i_string = NULL;
 	if (mxIsChar(prhs[0]))		/* Gave a file name */
-		i_string = (char *) mxArrayToString (prhs[0]);	/* Load the file name into a char string */
+		i_string = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
  	else {				/* Input via two or more column vectors */
 		GMT_LONG col, in_ID;
 		//char buffer[GMT_BUFSIZ];
-		i_string = (char *) mxMalloc (GMT_BUFSIZ);
+		i_string = mxMalloc (GMT_BUFSIZ);
 		*V = GMT_create_vector (API->GMT, n_cols);
 		for (col = n_start; col < n_cols+n_start; col++) {	/* Hook up one vector per column and determine data type */
 			(*V)->data[col] = mxGetData (prhs[col]);
@@ -133,12 +133,12 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 {	/* Used by programs that expect either an input file name or matrix with info or data vectors x, y */
 	char *i_string = NULL;
 	if (nrhs == 2)		/* Gave a file name */
-		i_string = (char *) mxArrayToString (prhs[0]);	/* Load the file name into a char string */
+		i_string = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
  	else {			/* Input via matrix and either info array or x,y arrays */
 		GMT_LONG row, col, gmt_ij, in_ID;
 		double *z = NULL;
 		//char buffer[GMT_BUFSIZ];
-		i_string = (char *) mxMalloc(GMT_BUFSIZ);
+		i_string = mxMalloc(GMT_BUFSIZ);
 
 		GMT_create_grid (API->GMT, G);
 		GMT_grd_init (API->GMT, (*G)->header, NULL, FALSE);
@@ -169,7 +169,7 @@ char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, struct GMT_GRID **G, int n
 		else
 			mexErrMsgTxt ("Error: neither -G option nor left hand side output args.");
 	}
-	o_string = (char *) mxMalloc(GMTAPI_STRLEN);
+	o_string = mxMalloc(GMTAPI_STRLEN);
 	GMT_Encode_ID (API, o_string, out_ID);	/* Make filename with embedded object ID */
 	//o_string = strdup (buffer);
 	return (o_string);
@@ -181,7 +181,7 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 	GMT_LONG out_ID, col;
 	//char buffer[GMTAPI_STRLEN];
 
-	o_string = (char *) mxMalloc(GMTAPI_STRLEN);
+	o_string = mxMalloc(GMTAPI_STRLEN);
 	if (nlhs == 0) {
 		if (strstr (options, ">")) 	/* User gave > file among the options */
 			return (NULL);		/* No output will be send to Matlab */
@@ -212,7 +212,7 @@ void GMTMEX_prep_mexgrd (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, str
 
 	/* A. Create 2-D matrices for the return matrix */
 	plhs[pz] = mxCreateNumericMatrix (G->header->ny, G->header->nx, mxSINGLE_CLASS, mxREAL);
-	z = (float *)mxGetData (plhs[pz]);
+	z = mxGetData (plhs[pz]);
 
 	/* B. Load the real grd array into a double matlab array by
               transposing from padded GMT grd format to unpadded matlab format */
@@ -231,7 +231,7 @@ void GMTMEX_prep_mextbl (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, str
 	double *z = NULL;
 	for (p = 0; p < nlhs; p++) {
 		plhs[p] = mxCreateNumericMatrix (V->n_rows, 1, mxDOUBLE_CLASS, mxREAL);
-		z = (double *)mxGetData (plhs[p]);
+		z = mxGetData (plhs[p]);
 		GMT_memcpy (z, ((double *)V->data[p]), V->n_rows, double);
 	}
 }
@@ -242,7 +242,7 @@ char *GMTMEX_options_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int n
 	char *options = NULL, *s = NULL;
 
 	if (!mxIsChar(prhs[nrhs-1])) return (NULL);	/* No options in this case */
-	options = (char *) mxArrayToString (prhs[nrhs-1]);
+	options = mxArrayToString (prhs[nrhs-1]);
 
 	if ((s = strstr (options, "-V"))) {	/* User gave -V[level] among the options */
 		GMT_LONG level;
@@ -279,7 +279,7 @@ char *GMTMEX_options_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int n
 char *GMTMEX_build_cmd (struct GMTAPI_CTRL *API, char *src, char *options, char *dest, GMT_LONG mode)
 {	/* Create the command based on options, src, and dist, which depends slightly on output type */
 	char *cmd;
-	cmd = (char *)mxMalloc (GMT_BUFSIZ);
+	cmd = mxMalloc (GMT_BUFSIZ);
 	if (mode == GMT_IS_GRID) {
 		if (dest)
 			sprintf (cmd, "%s %s -G%s", src, options, dest);
@@ -429,7 +429,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 	char name[GMTAPI_STRLEN];	/* Used to hold the GMT API embedded file name, e.g., @GMTAPI@-###### */
 	char buffer[GMT_BUFSIZ];		/* Temp buffer */
 	struct GMT_OPTIONS *opt;	/* Pointer to a GMT option structure */
-	void **ptr = NULL;		/* Void pointer used to point to either L or R side pointer argument */
+	void *ptr = NULL;		/* Void pointer used to point to either L or R side pointer argument */
 	
 	get_key_pos (key, n_keys, head, def);	/* Determine if we must add the primary in and out arguments to the option list */
 	for (direction = GMT_IN; direction <= GMT_OUT; direction++) {

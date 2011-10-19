@@ -418,7 +418,7 @@ struct PSL_CTRL *New_PSL_Ctrl (char *session)
 
 	/* Initialize the PSL structure */
 
-	PSL = (struct PSL_CTRL *) calloc ((size_t)1, sizeof (struct PSL_CTRL));
+	PSL = calloc ((size_t)1, sizeof (struct PSL_CTRL));
 	if (session) PSL->init.session = strdup (session);
 	for (i = 0; i < 3; i++) PSL->init.page_rgb[i] = -1.0;		/* Not set */
 
@@ -1623,7 +1623,7 @@ PSL_LONG PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize,
 	PSL_command (PSL, "V MU 0 0 M ");	/* Initialize currentpoint */
 	if(string[0] != '@') {
 		PSL_command (PSL, "(%s) FP ", ptr);
-		ptr = strtok_r ((char *)NULL, "@", &plast);
+		ptr = strtok_r (NULL, "@", &plast);
 	}
 
 	while (ptr) {
@@ -1696,7 +1696,7 @@ PSL_LONG PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize,
 		else	/* Not recognized or @@ for a single @ */
 			strcpy (piece, ptr);
 		if (strlen (piece) > 0) PSL_command (PSL, "%ld F%ld (%s) FP ", psl_ip (PSL, size), font, piece);
-		ptr = strtok_r ((char *)NULL, "@", &plast);
+		ptr = strtok_r (NULL, "@", &plast);
 	}
 
 	if (dim[0] == '-' && dim[1] == 'w')
@@ -1833,7 +1833,7 @@ PSL_LONG PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize
 	ptr = strtok_r (string, "@", &plast);
 	if(string[0] != '@') {	/* String has @ but not at start - must deal with first piece explicitly */
 		PSL_command (PSL, "(%s) %s\n", ptr, op[mode]);
-		ptr = strtok_r ((char *)NULL, "@", &plast);
+		ptr = strtok_r (NULL, "@", &plast);
 	}
 
 	font = old_font = PSL->current.font_no;
@@ -1985,7 +1985,7 @@ PSL_LONG PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize
 		if (stop_uline) PSL_command (PSL, "V %ld W currentpoint pop /x1_u edef x0_u y0_u %ld sub M x1_u x0_u sub 0 D S x1_u y0_u M U\n", upen, ugap);
 		start_uline = stop_uline = FALSE;
 		if (strlen (piece) > 0) PSL_command (PSL, "%ld F%ld (%s) %s\n", psl_ip (PSL, size), font, piece, op[mode]);
-		ptr = strtok_r ((char *)NULL, "@", &plast);
+		ptr = strtok_r (NULL, "@", &plast);
 	}
 	if (pmode == 1) PSL_command (PSL, "S\n");
 	else if (pmode == 2) PSL_command (PSL, "N\n");

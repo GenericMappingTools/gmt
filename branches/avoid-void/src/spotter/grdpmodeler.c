@@ -254,7 +254,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT = GMT_begin_module (API, "GMT_grdpmodeler", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRf:", "", options))) Return (error);
 	if (GMT_Find_Option (API, 'f', options, &ptr)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
-	Ctrl = (struct GRDROTATER_CTRL *) New_grdpmodeler_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_grdpmodeler_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdpmodeler_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the grdpmodeler main code ----------------------------*/

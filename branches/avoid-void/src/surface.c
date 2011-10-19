@@ -1798,7 +1798,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_surface", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRbf:", "hirs" GMT_OPT("FH"), options))) Return (error);
-	Ctrl = (struct SURFACE_CTRL *) New_surface_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_surface_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_surface_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the surface main code ----------------------------*/

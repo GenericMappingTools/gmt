@@ -326,7 +326,7 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_splitxyz", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("H"), options))) Return (error);
-	Ctrl = (struct SPLITXYZ_CTRL *)New_splitxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_splitxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_splitxyz_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the splitxyz main code ----------------------------*/

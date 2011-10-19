@@ -154,7 +154,7 @@ int main (int argc, char **argv)
 
 	nm = header.nx * header.ny;
 
-	grd = (float *) GMT_memory (VNULL, (size_t) nm, sizeof (float), GMT->init.progname);
+	grd = GMT_memory (VNULL, (size_t) nm, sizeof (float), GMT->init.progname);
 
 	GMT_err_fail (GMT_read_grd (argv[f_arg], &header, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, FALSE), argv[f_arg]);
 	/* Do conversion to spherical harmonic coefficients */

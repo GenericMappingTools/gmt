@@ -135,7 +135,7 @@ GMT_LONG GMT_gmtget (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_gmtget", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return (error);
-	Ctrl = (struct GMTGET_CTRL *) New_gmtget_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_gmtget_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtget_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmtget main code ----------------------------*/

@@ -550,7 +550,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_mgd77manage", &GMT_cpy);		/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
-	Ctrl = (struct MGD77MANAGE_CTRL *) New_mgd77manage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_mgd77manage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mgd77manage_parse (API, Ctrl, options))) Return ((int)error);
 	
 	/*---------------------------- This is the mgd77manage main code ----------------------------*/
@@ -875,9 +875,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((iy = skip_if_missing (GMT, "lat",  list[argno], &In, D)) == MGD77_NOT_SET) continue;
 			if ((it = skip_if_missing (GMT, "time", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
-			tvar = (double *)D->values[it];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
+			tvar = D->values[it];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (i = n_sampled = 0; i < D->H.n_records; i++) {
@@ -897,9 +897,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((iy = skip_if_missing (GMT, "lat",  list[argno], &In, D)) == MGD77_NOT_SET) continue;
 			if ((it = skip_if_missing (GMT, "time", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
-			tvar = (double *)D->values[it];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
+			tvar = D->values[it];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			MGD77_CM4_init (&In, &CM4);
 			
@@ -922,10 +922,10 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sprintf (field, "mtf%d", MTF_col);
 			if ((im = skip_if_missing (GMT, field, list[argno], &In, D)) == MGD77_NOT_SET) continue;
 
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
-			tvar = (double *)D->values[it];
-			mvar = (double *)D->values[im];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
+			tvar = D->values[it];
+			mvar = D->values[im];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (i = n_sampled = 0; i < D->H.n_records; i++) {
@@ -952,8 +952,8 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GF_version = MGD77_IGF_1980;
 				}
 			}
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (i = 0; i < D->H.n_records; i++) colvalue[i] = MGD77_Theoretical_Gravity (GMT, xvar[i], yvar[i], (int)GF_version);
@@ -967,9 +967,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 			if ((it = skip_if_missing (GMT, "twt", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
-			tvar = (double *)D->values[it];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
+			tvar = D->values[it];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (i = 0; i < D->H.n_records; i++) colvalue[i] = MGD77_carter_correction (GMT, xvar[i], yvar[i], 1000.0 * tvar[i], &Carter);
@@ -986,10 +986,10 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sprintf (field, "mtf%ld", MTF_col);
 			if ((im = skip_if_missing (GMT, field, list[argno], &In, D)) == MGD77_NOT_SET) continue;
 
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
-			tvar = (double *)D->values[it];
-			mvar = (double *)D->values[im];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
+			tvar = D->values[it];
+			mvar = D->values[im];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (i = n_sampled = 0; i < D->H.n_records; i++) {
@@ -1007,8 +1007,8 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 			if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (i = n_sampled = 0; i < D->H.n_records; i++) {
@@ -1056,14 +1056,14 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->A.mode == MODE_d) {	/* Must create distances in user's units */
 				if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 				if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, D)) == MGD77_NOT_SET) continue;
-				x = (double *)D->values[ix];
-				y = (double *)D->values[iy];
+				x = D->values[ix];
+				y = D->values[iy];
 				GMT_err_fail (GMT, GMT_dist_array (GMT, x, y, D->H.n_records, dist_scale, Ctrl->C.mode, &d), "");
 				x = d;
 			}
 			else if (Ctrl->A.mode == MODE_t) {	/* Time */
 				if ((it = skip_if_missing (GMT, "time", list[argno], &In, D)) == MGD77_NOT_SET) continue;
-				x = (double *)D->values[it];
+				x = D->values[it];
 			}
 			if (Ctrl->A.interpolate) {	/* Using given table to interpolate the values at all mgd77 records */
 				y = GMT_memory (GMT, NULL, D->H.n_records, double);
@@ -1360,7 +1360,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((it = skip_if_missing (GMT, "time", list[argno], &In, D)) == MGD77_NOT_SET)
 				has_time = FALSE;
 			else {	/* See if we really have time or if they are all NaN */
-				tvar = (double *)D->values[it];
+				tvar = D->values[it];
 				for (rec = 0, has_time = FALSE; !has_time && rec < D->H.n_records; rec++) if (!GMT_is_dnan (tvar[rec])) has_time = TRUE;
 			}
 			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {	/* Read until EOF */

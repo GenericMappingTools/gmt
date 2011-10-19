@@ -267,7 +267,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_mgd77info", &GMT_cpy);		/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
-	Ctrl = (struct MGD77INFO_CTRL *) New_mgd77info_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_mgd77info_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);		/* Initialize MGD77 Machinery */
 	if ((error = GMT_mgd77info_parse (API, Ctrl, options, &M))) Return ((int)error);
 
@@ -420,8 +420,8 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_memset (counter, MGD77_MAX_COLS, GMT_LONG);
 	
 		for (i = 0; i < MGD77_MAX_COLS; i++) {
-			dvalue[i] = (double *)D->values[i];
-			tvalue[i] = (char *)D->values[i];
+			dvalue[i] = D->values[i];
+			tvalue[i] = D->values[i];
 		}
 		
 		/* Start processing data */

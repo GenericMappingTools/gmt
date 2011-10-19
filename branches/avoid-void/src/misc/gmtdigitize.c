@@ -308,7 +308,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if ((error = GMT_Parse_Common (API, "-VJRbf:", "h>" GMT_OPT("HMm"), options))) Return (error);
 	GMT = GMT_begin_module (API, "GMT_gmtdigitize", &GMT_cpy);				/* Save current state */
-	Ctrl = (struct GMTDIGITIZE_CTRL *) New_gmtdigitize_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_gmtdigitize_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtdigitize_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the gmtdigitize main code ----------------------------*/
