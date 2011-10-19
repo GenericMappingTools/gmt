@@ -134,7 +134,7 @@ void *New_mgd77track_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	GMT_getfont (GMT, "Times-Italic", &C->T.marker[MGD77TRACK_MARK_SAMEDAY].font);
 	GMT_getfont (GMT, "Times-Roman", &C->T.marker[MGD77TRACK_MARK_DIST].font);
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_mgd77track_Ctrl (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *C) {	/* Deallocate control structure */

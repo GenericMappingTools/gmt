@@ -23,7 +23,7 @@ int main (int argc, char **argv)
 	
 	fp_in = fopen(argv[1], "rb");
 		
-	while (fread ((void *)&gshhs_header, sizeof (struct GSHHS), 1, fp_in) == 1) {
+	while (fread (&gshhs_header, sizeof (struct GSHHS), 1, fp_in) == 1) {
 #ifndef WORDS_BIGENDIAN
 		/* Must swap header explicitly on little-endian machines */
 		gshhs_header.id = swabi4 ((unsigned int)gshhs_header.id);

@@ -60,12 +60,12 @@ void *New_gmtdp_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new c
 
 	C = GMT_memory (GMT, NULL, 1, struct GMTDP_CTRL);
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtdp_Ctrl (struct GMT_CTRL *GMT, struct GMTDP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free ((void *)C->Out.file);	
+	if (C->Out.file) free (C->Out.file);	
 	GMT_free (GMT, C);	
 }
 

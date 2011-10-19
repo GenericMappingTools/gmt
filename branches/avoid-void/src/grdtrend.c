@@ -114,15 +114,15 @@ void *New_grdtrend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 		
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdtrend_Ctrl (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->D.file) free ((void *)C->D.file);	
-	if (C->T.file) free ((void *)C->T.file);	
-	if (C->W.file) free ((void *)C->W.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->D.file) free (C->D.file);	
+	if (C->T.file) free (C->T.file);	
+	if (C->W.file) free (C->W.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -350,7 +350,7 @@ double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct G
 		W->data[j++] = (float)fabs((double)R->data[ij]);
 	}
 
-	GMT_sort_array (GMT, (void *)R->data, j, GMT_FLOAT_TYPE);
+	GMT_sort_array (GMT, R->data, j, GMT_FLOAT_TYPE);
 
 	j2 = j / 2;
 	mad = (j%2) ? W->data[j2] : 0.5 *(W->data[j2] + W->data[j2 - 1]);

@@ -117,12 +117,12 @@ void *New_mapproject_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C->L.sph = 1;			/* Default is great-circle distances */
 	C->N.mode = GMT_LATSWAP_G2O;	/* Default is geodetic<->geocentric, if -N is used */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_mapproject_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->L.file) free ((void *)C->L.file);	
+	if (C->L.file) free (C->L.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -756,7 +756,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */
 				}
 				if (line[pos]) strcat (record, &line[pos]);	/* Append the remainder of the user text */
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 				
 			}
 			else {	/* Simply copy other columns and output */
@@ -765,7 +765,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					n_output = GMT_get_cols (GMT, GMT_OUT);
 				}
 				for (k = two; k < n_output; k++) out[k] = in[k];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
 			n++;
 			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Projected %ld points\r", n);
@@ -880,7 +880,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						GMT_add_to_record (GMT, record, xnear, fmt[0], 1);
 						GMT_add_to_record (GMT, record, ynear, fmt[1], 1);
 					}
-					GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 				}
 				else {	/* Simply copy other columns and output */
 					if (!GMT_get_cols (GMT, GMT_OUT)) {
@@ -893,7 +893,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						out[k++] = xnear;
 						out[k++] = ynear;
 					}
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}
 			}
 			else {
@@ -923,7 +923,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						GMT_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */
 					}
 					strcat (record, &line[pos]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 				}
 				else {	/* Simply copy other columns and output */
 					if (!GMT_get_cols (GMT, GMT_OUT)) {
@@ -931,7 +931,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						n_output = GMT_get_cols (GMT, GMT_OUT);
 					}
 					for (k = two; k < n_output; k++) out[k] = in[k];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}
 			}
 			n++;

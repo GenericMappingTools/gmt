@@ -65,7 +65,7 @@ void *New_mgd77info_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	C->C.mode = 3;	
 	C->L.mode = 1;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_mgd77info_Ctrl (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *C) {	/* Deallocate control structure */

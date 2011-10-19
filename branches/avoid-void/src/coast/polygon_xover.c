@@ -119,11 +119,11 @@ int main (int argc, char **argv)
 			GMT_init_track (Y, P[id2].h.n, &ylist2);
 
 			nx = GMT_crossover (P[id1].lon, P[id1].lat, NULL, ylist1, P[id1].h.n, X, Y, NULL, ylist2, P[id2].h.n, FALSE, &XC);
-			GMT_free ((void *)ylist2);
+			GMT_free (ylist2);
 			if (cont_no == ANTARCTICA) {	/* Undo projection for crossover results */
 				for (i = 0; i < nx; i++) rtheta2xy (&XC.x[i], &XC.y[i]);
-				GMT_free ((void *)X);
-				GMT_free ((void *)Y);
+				GMT_free (X);
+				GMT_free (Y);
 			}
 			else if (!GMT_IS_ZERO (x_shift)) {	/* Undo longitude adjustment */
 				for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] -= x_shift;
@@ -134,7 +134,7 @@ int main (int argc, char **argv)
 			}
 			nx_tot += nx;
 		}
-		GMT_free ((void *)ylist1);
+		GMT_free (ylist1);
 	}
 	crude_free (CX, CY, N);
 	

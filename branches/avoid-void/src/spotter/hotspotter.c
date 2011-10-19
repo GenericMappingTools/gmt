@@ -168,14 +168,14 @@ void *New_hotspotter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	
 	C->D.value = 0.5;	/* Sets how many points along flowline per node */
 	C->N.t_upper = 180.0;	/* Upper age assigned to seamounts on undated seafloor */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_hotspotter_Ctrl (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->E.file) free ((void *)C->E.file);	
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->S.file) free ((void *)C->S.file);	
+	if (C->E.file) free (C->E.file);	
+	if (C->G.file) free (C->G.file);	
+	if (C->S.file) free (C->S.file);	
 	GMT_free (GMT, C);	
 }
 

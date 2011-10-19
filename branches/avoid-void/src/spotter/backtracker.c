@@ -132,14 +132,14 @@ void *New_backtracker_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_backtracker_Ctrl (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->E.file) free ((void *)C->E.file);	
-	if (C->F.file) free ((void *)C->F.file);	
-	if (C->S.file) free ((void *)C->S.file);	
+	if (C->E.file) free (C->E.file);	
+	if (C->F.file) free (C->F.file);	
+	if (C->S.file) free (C->S.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -454,7 +454,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			spotter_matrix_vect_mult (GMT, R, x, y);			/* Rotate the x-vector */
 			GMT_cart_to_geo (GMT, &out[GMT_Y], &out[GMT_X], y, TRUE);	/* Recover lon lat representation; TRUE to get degrees */
 			out[GMT_Y] = GMT_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
-			memcpy ((void *)&out[GMT_Z], (void *)&in[GMT_Z], (n_fields - 2) * sizeof (double));
+			memcpy (&out[GMT_Z], &in[GMT_Z], (n_fields - 2) * sizeof (double));
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			continue;
 		}

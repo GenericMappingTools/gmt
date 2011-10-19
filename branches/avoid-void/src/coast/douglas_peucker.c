@@ -143,8 +143,8 @@ start point */
         index[n_dest] = n_source-1;
         n_dest++;
 
-	free ((void *)sig_start);
-	free ((void *)sig_end);
+	free (sig_start);
+	free (sig_end);
 	
         return(n_dest);
 }
@@ -272,8 +272,8 @@ start point */
         index[n_dest] = n_source-1;
         n_dest++;
 
-	free ((void *)sig_start);
-	free ((void *)sig_end);
+	free (sig_start);
+	free (sig_end);
 	
         return (n_dest);
 }

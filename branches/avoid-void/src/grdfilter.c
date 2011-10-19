@@ -125,15 +125,15 @@ void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->D.mode = -1;	
 	C->F.quantile = 0.5;	/* Default is median */	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->G.file) free (C->G.file);	
 #ifdef DEBUG
-	if (C->W.file) free ((void *)C->W.file);	
+	if (C->W.file) free (C->W.file);	
 #endif
 	GMT_free (GMT, C);	
 }
@@ -961,7 +961,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sprintf (cmd, "%s -G%s -R%s -V%ld", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Highpass requires us to resample the lowpass result via grdsample %s\n", cmd);
-			if ((status = GMT_grdsample (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
+			if ((status = GMT_grdsample (GMT->parent, 0, cmd))) {	/* Resample the file */
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample the lowpass result - exiting\n");
 				GMT_exit (EXIT_FAILURE);
 			}

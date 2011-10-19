@@ -55,7 +55,7 @@ void *New_mgd77convert_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 	
 	C->F.format = C->T.format = MGD77_NOT_SET;
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_mgd77convert_Ctrl (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *C) {	/* Deallocate control structure */

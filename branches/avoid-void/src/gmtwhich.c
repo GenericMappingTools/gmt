@@ -40,7 +40,7 @@ void *New_gmtwhich_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 		
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtwhich_Ctrl (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *C) {	/* Deallocate control structure */
@@ -137,9 +137,9 @@ GMT_LONG GMT_gmtwhich (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (!opt->arg[0]) continue;		/* Skip empty arguments */
 
 		if (GMT_getdatapath (GMT, opt->arg, path))	/* Found the file */
-			GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)((Ctrl->C.active) ? Yes : path));
+			GMT_Put_Record (API, GMT_WRITE_TEXT, ((Ctrl->C.active) ? Yes : path));
 		else {
-			if (Ctrl->C.active) GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)No);
+			if (Ctrl->C.active) GMT_Put_Record (API, GMT_WRITE_TEXT, No);
 			GMT_report (GMT, GMT_MSG_NORMAL, "File %s not found!\n", opt->arg);
 		}
 	}

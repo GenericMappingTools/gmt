@@ -67,13 +67,13 @@ void *New_colmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_colmath_Ctrl (struct GMT_CTRL *GMT, struct COLMATH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free ((void *)C->Out.file);	
-	if (C->S.pattern) free ((void *)C->S.pattern);	
+	if (C->Out.file) free (C->Out.file);	
+	if (C->S.pattern) free (C->S.pattern);	
 	GMT_free (GMT, C);	
 }
 

@@ -80,21 +80,21 @@ void *New_x2sys_init_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_init_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *C) {	/* Deallocate control structure */
-	if (C->In.TAG) free ((void *)C->In.TAG);
-	if (C->C.string) free ((void *)C->C.string);
-	if (C->D.file) free ((void *)C->D.file);
-	if (C->E.string) free ((void *)C->E.string);
-	if (C->G.string) free ((void *)C->G.string);
-	if (C->I.string) free ((void *)C->I.string);
-	if (C->m.string) free ((void *)C->m.string);
-	if (C->N.string[0]) free ((void *)C->N.string[0]);
-	if (C->N.string[1]) free ((void *)C->N.string[1]);
-	if (C->W.string[0]) free ((void *)C->W.string[0]);
-	if (C->W.string[1]) free ((void *)C->W.string[1]);
+	if (C->In.TAG) free (C->In.TAG);
+	if (C->C.string) free (C->C.string);
+	if (C->D.file) free (C->D.file);
+	if (C->E.string) free (C->E.string);
+	if (C->G.string) free (C->G.string);
+	if (C->I.string) free (C->I.string);
+	if (C->m.string) free (C->m.string);
+	if (C->N.string[0]) free (C->N.string[0]);
+	if (C->N.string[1]) free (C->N.string[1]);
+	if (C->W.string[0]) free (C->W.string[0]);
+	if (C->W.string[1]) free (C->W.string[1]);
 	GMT_free (GMT, C);
 }
 

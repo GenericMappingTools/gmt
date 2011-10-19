@@ -491,12 +491,12 @@ void *New_spectrum1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C->C.col[6] = 'g';
 	C->C.col[7] = 'o';
 	C->N.name = strdup ("spectrum");
-	return ((void *)C);
+	return (C);
 }
 
 void Free_spectrum1d_Ctrl (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->N.name) free ((void *)C->N.name);	
+	if (C->N.name) free (C->N.name);	
 	GMT_free (GMT, C);	
 }
 
@@ -575,7 +575,7 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 			case 'N':
 				Ctrl->N.active = TRUE;
 				if (opt->arg[0]) {
-					free ((void *)Ctrl->N.name);
+					free (Ctrl->N.name);
 					if (opt->arg[0] == '+') Ctrl->N.mode = 1;
 					Ctrl->N.name = strdup (&opt->arg[Ctrl->N.mode]);
 				}

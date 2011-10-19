@@ -98,7 +98,7 @@ void *New_fitcircle_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_fitcircle_Ctrl (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *C) {	/* Deallocate control structure */
@@ -190,7 +190,7 @@ double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_LON
 
 	if (norm == 1) {
 		for (i = 0; i < ndata; i++) work[i] = d_acos (GMT_dot3v (GMT, &data[i].x[0], pole));
-		GMT_sort_array (GMT, (void *)work, ndata, GMT_DOUBLE_TYPE);
+		GMT_sort_array (GMT, work, ndata, GMT_DOUBLE_TYPE);
 		*circle_distance = (ndata%2) ?  work[ndata/2] : 0.5 * (work[(ndata/2)-1] + work[ndata/2]);
 	}
 	else {
@@ -384,7 +384,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	lonsum /= n_data;	latsum /= n_data;
 	sprintf (record, "%ld points read, Average Position (Flat Earth): ", n_data);
 	sprintf (item, format, lonsum, latsum);	strcat (record, item);
-	GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 
 	/* Get Fisher mean in any case, in order to set L2 mean correctly, if needed.  */
 
@@ -398,7 +398,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;
 		sprintf (record, format, lonsum, latsum);
 		sprintf (item, "\tL1 Average Position (Fisher's Method)");	strcat (record, item);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		GMT_memset (cross_sum, 3, double);
 		for (i = 0; i < n_data; i++) {
 			GMT_cross3v (GMT, &data[i].x[0], meanv, cross);
@@ -414,13 +414,13 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;
 		sprintf (record, format, lonsum, latsum);
 		sprintf (item, "\tL1 N Hemisphere Great Circle Pole (Cross-Averaged)");	strcat (record, item);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		latsum = -latsum;
 		lonsum = d_atan2d (-cross_sum[GMT_Y], -cross_sum[GMT_X]);
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;
 		sprintf (record, format, lonsum, latsum);
 		sprintf (item, "\tL1 S Hemisphere Great Circle Pole (Cross-Averaged)");	strcat (record, item);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		if (Ctrl->S.active) {	/* Determine small circle pole */
 			GMT_report (GMT, GMT_MSG_NORMAL, "Fitting small circle using L1 norm.\n");
 			rad = get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, (GMT_LONG)1, work, Ctrl->S.mode, Ctrl->S.lat);
@@ -431,7 +431,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sprintf (item, "\tL1 Small Circle Pole.  ");	strcat (record, item);
 				sprintf (format, "Distance from Pole to L1 Small Circle (degrees): %s\n", GMT->current.setting.format_float_out);
 				sprintf (item, format, rad);	strcat (record, item);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 		}
 	}
@@ -464,7 +464,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;
 		sprintf (record, format, lonsum, latsum);
 		sprintf (item, "\tL2 Average Position (Eigenval Method)");	strcat (record, item);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 
 		if (v[imin*np+2] < 0.0)	/* Eigvec is in S Hemisphere  */
 			for (i = 0; i < 3; i++) gcpole[i] = -v[imin*np+i];
@@ -475,13 +475,13 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;
 		sprintf (record, format, lonsum, latsum);
 		sprintf (item, "\tL2 N Hemisphere Great Circle Pole (Eigenval Method)\n");	strcat (record, item);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		latsum = -latsum;
 		lonsum = d_atan2d (-gcpole[GMT_Y], -gcpole[GMT_X]);
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;
 		sprintf (record, format, lonsum, latsum);
 		sprintf (item, "\tL2 S Hemisphere Great Circle Pole (Eigenval Method)");	strcat (record, item);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 
 		GMT_free (GMT, v);
 		GMT_free (GMT, z);
@@ -499,7 +499,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sprintf (item, "\tL2 Small Circle Pole.  ");	strcat (record, item);
 				sprintf (format, "Distance from Pole to L2 Small Circle (degrees): %s\n", GMT->current.setting.format_float_out);
 				sprintf (item, format, rad);	strcat (record, item);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 		}
 	}

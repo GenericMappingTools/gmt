@@ -105,8 +105,8 @@ int main (int argc, char **argv) {
 		blob[id].reverse = sign + 1;
 	}
 
-	free ((void *)flon);
-	free ((void *)flat);
+	free (flon);
+	free (flat);
 	if (full) fclose (fp2);
 	
 	lon = (int *) GMT_memory (CNULL, N_LONGEST, sizeof(int), "polygon_findlevel");
@@ -214,8 +214,8 @@ int main (int argc, char **argv) {
 		}
 	}
 		
-	free ((void *)lon);
-	free ((void *)lat);
+	free (lon);
+	free (lat);
 	crude_free_int (IX, IY, N);
 
 	fprintf (stderr, "\nFound %d bad cases\n", bad);
@@ -326,8 +326,8 @@ int main (int argc, char **argv) {
 		fprintf (fp, "\n");
 	}
 	fclose (fp);
-	free ((void *)pp);
-	free ((void *)id2k);
+	free (pp);
+	free (id2k);
 	
 	exit (EXIT_SUCCESS);
 }	

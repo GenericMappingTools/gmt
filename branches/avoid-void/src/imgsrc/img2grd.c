@@ -112,13 +112,13 @@ void *New_img2grd_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->T.value = 1;		/* Default img type */
 	C->I.value = GMT_IMG_MPIXEL;
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_img2grd_Ctrl (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -538,7 +538,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (iout = 0; iout < Merc->header->nx; iout++, ij++) Merc->data[ij] = GMT->session.f_NaN;
 			continue;
 		}
-		if ((fread ((void *)row, sizeof (short int), (size_t)(navg * imgcoord.nxcol), fp) ) != (size_t)(navg * imgcoord.nxcol)) {
+		if ((fread (row, sizeof (short int), (size_t)(navg * imgcoord.nxcol), fp) ) != (size_t)(navg * imgcoord.nxcol)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Read failure at jin = %ld.\n", jin);
 			exit (EXIT_FAILURE);
 		}
@@ -624,7 +624,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else	/* The output here is the final result */
 		strcpy (s_out_ID, Ctrl->G.file);
 	sprintf (cmd, "-R%g/%g/%g/%g -Jm1 -I %s -G%s --PROJ_ELLIPSOID=Sphere --PROJ_LENGTH_UNIT=inch", west, east, south2, north2, s_in_ID, s_out_ID);
-	if ((status = GMT_grdproject (API, 0, (void *)cmd))) Return (GMT_RUNTIME_ERROR);	/* Inverse project the grid or fail */
+	if ((status = GMT_grdproject (API, 0, cmd))) Return (GMT_RUNTIME_ERROR);	/* Inverse project the grid or fail */
 	GMT_Destroy_Data (API, GMT_CLOBBER, &Merc);	/* Clobber since we know we allocated this grid */
 	if (Ctrl->E.active) {	/* Resample again using the given -R and the dx/dy in even minutes */
 		/* Preparing source and destination for GMT_grdsample */
@@ -636,7 +636,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, Geo, NULL, Geo, &in_ID)) exit (EXIT_FAILURE);
 		GMT_Encode_ID (API, s_in_ID, in_ID);	/* Make filename with embedded object ID */
 		sprintf (cmd, "-R%g/%g/%g/%g -I%gm %s -G%s -fg", west, east, south, north, Ctrl->I.value, s_in_ID, Ctrl->G.file);
-		if ((status = GMT_grdsample (API, 0, (void *)cmd))) Return (GMT_RUNTIME_ERROR);	/* Resample the grid or fail */
+		if ((status = GMT_grdsample (API, 0, cmd))) Return (GMT_RUNTIME_ERROR);	/* Resample the grid or fail */
 		GMT_Destroy_Data (API, GMT_CLOBBER, &Geo);	/* Clobber since we know we allocated this grid */
 	}
 

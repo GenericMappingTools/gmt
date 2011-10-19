@@ -190,18 +190,18 @@ void *New_grdspotter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	
 	C->N.t_upper = 180.0;	/* Upper age assigned to nodes on undated seafloor */
 	C->Z.max = DBL_MAX;	/* Only deal with z-values inside this range [0/Inf] */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdspotter_Ctrl (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->A.file) free ((void *)C->A.file);	
-	if (C->D.file) free ((void *)C->D.file);	
-	if (C->E.file) free ((void *)C->E.file);	
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->L.file) free ((void *)C->L.file);	
-	if (C->PA.file) free ((void *)C->PA.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->A.file) free (C->A.file);	
+	if (C->D.file) free (C->D.file);	
+	if (C->E.file) free (C->E.file);	
+	if (C->G.file) free (C->G.file);	
+	if (C->L.file) free (C->L.file);	
+	if (C->PA.file) free (C->PA.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -423,7 +423,7 @@ GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, st
 		n_alloc = np * step;	/* Number of (x,y[,t]) to copy */
 		f = GMT_memory (GMT, NULL, n_alloc+1, double);
 		f[0] = (double)np;	/* Number of points found */
-		memcpy ((void *)&f[1], (void *)&c[first], n_alloc * sizeof (double));
+		memcpy (&f[1], &c[first], n_alloc * sizeof (double));
 		GMT_free (GMT, c);	/* Free the old flowline vector */
 		*flow = f;		/* Return pointer to trimmed flowline */
 	}
@@ -981,7 +981,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			out[1] = GMT_grd_row_to_y (GMT, row, G->header);
 			out[2] = CVA_max;
 			
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "Bootstrap try %ld\n", Ctrl->W.n_try);
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */

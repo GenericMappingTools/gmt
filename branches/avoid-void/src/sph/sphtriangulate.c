@@ -140,7 +140,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			if (arc[k].begin > arc[k].end) i_swap (arc[k].begin, arc[k].end);
 
 		/* Sort and eliminate duplicate arcs */
-		qsort ((void *)arc, (size_t)n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
+		qsort (arc, (size_t)n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
 		for (i = 1, j = 0; i < n_arcs; i++) {
 			if (arc[i].begin != arc[j].begin || arc[i].end != arc[j].end) j++;
 			arc[j] = arc[i];
@@ -292,7 +292,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 			i_swap (arc[k].begin, arc[k].end);
 
 		/* Sort and exclude duplicates */
-		qsort ((void *)arc, (size_t)n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
+		qsort (arc, (size_t)n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
 		for (i = 1, j = 0; i < n_arcs; i++) {
 			if (arc[i].begin != arc[j].begin || arc[i].end != arc[j].end) j++;
 			arc[j] = arc[i];
@@ -361,13 +361,13 @@ void *New_sphtriangulate_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initializ
 	C = GMT_memory (GMT, NULL, 1, struct SPHTRIANGULATE_CTRL);
 	C->L.unit = 'e';	/* Default is meter distances */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_sphtriangulate_Ctrl (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->N.file) free ((void *)C->N.file);	
+	if (C->G.file) free (C->G.file);	
+	if (C->N.file) free (C->N.file);	
 	GMT_free (GMT, C);	
 }
 

@@ -156,12 +156,12 @@ void *New_filter1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_filter1d_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->F.file) free ((void *)C->F.file);
+	if (C->F.file) free (C->F.file);
 	GMT_free (GMT, C);
 }
 
@@ -631,7 +631,7 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 				else
 					data_sum[i_col] = GMT->session.d_NaN;
 			}
-			if (n_good_ones) GMT_Put_Record (C, GMT_WRITE_DOUBLE, (void *)data_sum);
+			if (n_good_ones) GMT_Put_Record (C, GMT_WRITE_DOUBLE, data_sum);
 		}
 		else {
 			if (F->robust) for (i_col = 0; i_col < F->n_cols; ++i_col) F->n_this_col[i_col] = 0;
@@ -691,7 +691,7 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 					else
 						outval[i_col] = GMT->session.d_NaN;
 				}
-				GMT_Put_Record (C, GMT_WRITE_DOUBLE, (void *)outval);
+				GMT_Put_Record (C, GMT_WRITE_DOUBLE, outval);
 			}
 		}
 

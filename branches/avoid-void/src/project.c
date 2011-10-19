@@ -313,7 +313,7 @@ void *New_project_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
 	C->G.lat = 90.0;	/* Great circle path */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_project_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Deallocate control structure */
@@ -527,7 +527,7 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
 	char record[GMT_BUFSIZ], text[GMT_BUFSIZ];
 
-	if (Ctrl->S.active) qsort ((void *)p_data, (size_t)P->n_used, sizeof (struct PROJECT_DATA), compare_distances);
+	if (Ctrl->S.active) qsort (p_data, (size_t)P->n_used, sizeof (struct PROJECT_DATA), compare_distances);
 
 	/* Get here when all data are loaded with p,q and p is in increasing order if desired. */
 
@@ -581,7 +581,7 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 				}
 				(j == (P->n_outputs - 1)) ? strcat (record, "\n") : strcat (record, GMT->current.setting.io_col_separator);
 			}
-			GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+			GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, record);	/* Write this to output */
 		}
 	}
 	else {	/* Any other i/o combination */
@@ -594,7 +594,7 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 				else
 					out[k++] = p_data[i].a[P->output_choice[j]];
 			}
-			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 	}
 	GMT_free (GMT, out);
@@ -848,7 +848,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			for (i = 0; i < P.n_used; i++) {
 				for (j = 0; j < P.n_outputs; j++) out[j] = p_data[i].a[P.output_choice[j]];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
 		}
 	}

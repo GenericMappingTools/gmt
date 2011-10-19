@@ -52,7 +52,7 @@ void *New_testapi_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_testapi_Ctrl (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *C) {	/* Deallocate control structure */
@@ -226,7 +226,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			fdata = GMT_memory (GMT, NULL, M->size, float);
 			for (k = 0; k < M->size; k++) fdata[k] = (float)((int)(k%M->n_columns + (M->n_columns - 1 - k/M->n_columns) * M->n_rows));
 		}
-		M->data = (void *)fdata;
+		M->data = fdata;
 	}
 	else if (Ctrl->I.via == GMT_VIA_VECTOR) {	/* We will use vectors in memory as data source */
 		GMT_Create_Data (API, GMT_IS_VECTOR, par, &V, GMT_IN, &k);
@@ -238,8 +238,8 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		fdata[0] = fdata[4] = GMT->session.f_NaN;
 		ddata[0] = ddata[4] = GMT->session.d_NaN;
-		V->data[GMT_X] = (void *) fdata;	V->type[GMT_X] = GMTAPI_FLOAT;
-		V->data[GMT_Y] = (void *) ddata;	V->type[GMT_Y] = GMTAPI_DOUBLE;
+		V->data[GMT_X] =  fdata;	V->type[GMT_X] = GMTAPI_FLOAT;
+		V->data[GMT_Y] =  ddata;	V->type[GMT_Y] = GMTAPI_DOUBLE;
 	}
 	
 	/* Get input and register it */
@@ -314,7 +314,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		error += GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_REF, geometry[Ctrl->T.mode], GMT_IN, In, NULL, In, &in_ID);
 		GMT_Encode_ID (API, string, in_ID);	/* Make filename with embedded object ID */
 		sprintf (buffer, "%s -W6i -P -F0.25p --PS_MEDIA=letter --PS_CHAR_ENCODING=Standard+", string);
-		error += GMT_psimage (API, 0, (void *)buffer);	/* Plot the image */
+		error += GMT_psimage (API, 0, buffer);	/* Plot the image */
 		GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 		Return (GMT_OK);
@@ -395,7 +395,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
-	free ((void *)input);	free ((void *)output);
+	free (input);	free (output);
 	
 	GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp);
 	GMT_Destroy_Data (API, GMT_CLOBBER, &M);

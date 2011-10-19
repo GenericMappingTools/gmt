@@ -222,19 +222,19 @@ void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->W.overlayname = strdup ("GMT Image Overlay");
 	C->W.foldername = strdup ("GMT Image Folder");
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_ps2raster_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->D.dir) free ((void *)C->D.dir);
-	if (C->F.file) free ((void *)C->F.file);
-	if (C->G.file) free ((void *)C->G.file);
-	if (C->L.file) free ((void *)C->L.file);
-	free ((void *)C->W.doctitle);
-	free ((void *)C->W.overlayname);
-	free ((void *)C->W.foldername);
-	if (C->W.URL) free ((void *)C->W.URL);
+	if (C->D.dir) free (C->D.dir);
+	if (C->F.file) free (C->F.file);
+	if (C->G.file) free (C->G.file);
+	if (C->L.file) free (C->L.file);
+	free (C->W.doctitle);
+	free (C->W.overlayname);
+	free (C->W.foldername);
+	if (C->W.URL) free (C->W.URL);
 	GMT_free (GMT, C);
 }
 
@@ -418,7 +418,7 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 				break;
 			case 'G':	/* Set GS path */
 				Ctrl->G.active = TRUE;
-				free ((void *)Ctrl->G.file);
+				free (Ctrl->G.file);
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'L':	/* Give list of files to convert */
@@ -664,7 +664,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		all_names_in = GMT_memory (GMT, NULL, n_alloc, char);
 		for (k = 0; k < Ctrl->In.n_files; k++) {
 			add_to_list (all_names_in, ps_names[k]);
-			free ((void *)ps_names[k]);
+			free (ps_names[k]);
 		}
 		cmd2 = GMT_memory (GMT, NULL, n_alloc + GMT_BUFSIZ, char);
 		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s -r%ld -sOutputFile=%s.pdf %s", 
@@ -1085,7 +1085,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (proj4_cmd) GMT_report (GMT, GMT_MSG_VERBOSE, "Proj4 definition: %s\n", proj4_cmd);
 			}
 
-			free ((void *)wext);	
+			free (wext);	
 
 			if (Ctrl->W.warp && proj4_cmd && proj4_cmd[1] == 'p') {	/* We got a usable Proj4 string. Run it (if gdal is around) */
 				/* The true geotiff file will have the same base name plus a .tiff extension.
@@ -1203,7 +1203,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	for (k = 0; k < Ctrl->In.n_files; k++) free ((void *)ps_names[k]);
+	for (k = 0; k < Ctrl->In.n_files; k++) free (ps_names[k]);
 	GMT_free (GMT, ps_names);
 
 	Return (GMT_OK);

@@ -124,16 +124,16 @@ void *New_grdcontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C->W.pen[1].width *= 3.0;
 	C->Z.scale = 1.0;
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdcontour_Ctrl (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);
-	if (C->C.file) free ((void *)C->C.file);
-	if (C->D.file) free ((void *)C->D.file);
-	if (C->T.txt[0]) free ((void *)C->T.txt[0]);
-	if (C->T.txt[1]) free ((void *)C->T.txt[1]);
+	if (C->In.file) free (C->In.file);
+	if (C->C.file) free (C->C.file);
+	if (C->D.file) free (C->D.file);
+	if (C->T.txt[0]) free (C->T.txt[0]);
+	if (C->T.txt[1]) free (C->T.txt[1]);
 	GMT_free (GMT, C);
 }
 
@@ -271,7 +271,7 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 				break;
 			case 'D':	/* Dump file name */
 				Ctrl->D.active = TRUE;
-				free ((void *)Ctrl->D.file);
+				free (Ctrl->D.file);
 				Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'F':	/* Orient dump contours */
@@ -341,8 +341,8 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 							n_errors++;
 						}
 						if (Ctrl->T.label) {	/* Replace defaults */
-							free ((void *)Ctrl->T.txt[0]);
-							free ((void *)Ctrl->T.txt[1]);
+							free (Ctrl->T.txt[0]);
+							free (Ctrl->T.txt[1]);
 							Ctrl->T.txt[0] = strdup (txt_a);
 							Ctrl->T.txt[1] = strdup (txt_b);
 						}

@@ -85,14 +85,14 @@ void *New_gmtvector_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->A.conf = 0.95;	/* 95% conf level */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtvector_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.arg) free ((void *)C->In.arg);	
-	if (C->Out.file) free ((void *)C->Out.file);	
-	if (C->S.arg) free ((void *)C->S.arg);	
+	if (C->In.arg) free (C->In.arg);	
+	if (C->Out.file) free (C->Out.file);	
+	if (C->S.arg) free (C->S.arg);	
 	GMT_free (GMT, C);	
 }
 

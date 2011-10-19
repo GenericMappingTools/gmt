@@ -104,7 +104,7 @@ void *New_psvelo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	C->S.wedge_amp = 1.e7;
 	C->S.conrad = 1.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psvelo_Ctrl (struct GMT_CTRL *GMT, struct PSVELO_CTRL *C) {	/* Deallocate control structure */

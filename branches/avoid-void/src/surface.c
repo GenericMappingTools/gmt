@@ -378,7 +378,7 @@ void set_index (struct SURFACE_INFO *C) {
 			C->data[k].index = i * C->block_ny + j;
 	}
 
-	qsort ((void *)C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
+	qsort (C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 
 	C->npoints -= k_skipped;
 
@@ -1222,7 +1222,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 
 	/* Sort the data  */
 
-	qsort ((void *)C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
+	qsort (C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 
 	/* If more than one datum is indexed to same node, only the first should be kept.
 		Mark the additional ones as SURFACE_OUTSIDE
@@ -1239,7 +1239,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	}
 	
 	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be thrown away  */
-		qsort ((void *)C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
+		qsort (C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 		C->npoints -= n_outside;
 		C->data = GMT_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 		GMT_report (GMT, GMT_MSG_NORMAL, "%ld unusable points were supplied; these will be ignored.\n", n_outside);
@@ -1422,7 +1422,7 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LO
 	}
 
 	if (n_sug) {
-		qsort ((void *)sug, (size_t)n_sug, sizeof(struct SURFACE_SUGGESTION), compare_sugs);
+		qsort (sug, (size_t)n_sug, sizeof(struct SURFACE_SUGGESTION), compare_sugs);
 		for (i = 0; i < n_sug && i < 10; i++) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Hint: Choosing nx = %ld, ny = %ld might cut run time by a factor of %.8g\n",
 				sug[i].nx, sug[i].ny, sug[i].factor);
@@ -1565,15 +1565,15 @@ void *New_surface_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->A.value = 1.0;
 	C->Z.value = 1.4;
 		
-	return ((void *)C);
+	return (C);
 }
 
 void Free_surface_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->D.file) free ((void *)C->D.file);	
-	if (C->L.low)  free ((void *)C->L.low);	
-	if (C->L.high) free ((void *)C->L.high);	
+	if (C->G.file) free (C->G.file);	
+	if (C->D.file) free (C->D.file);	
+	if (C->L.low)  free (C->L.low);	
+	if (C->L.high) free (C->L.high);	
 	GMT_free (GMT, C);	
 }
 

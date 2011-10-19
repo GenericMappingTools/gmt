@@ -48,11 +48,11 @@ void *New_kml2gmt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_kml2gmt_Ctrl (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *C) {	/* Deallocate control structure */
-	if (C->In.file) free ((void *)C->In.file);
+	if (C->In.file) free (C->In.file);
 	GMT_free (GMT, C);
 }
 
@@ -178,7 +178,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Get enough decimals */
 	
-	GMT_Put_Record (API, GMT_WRITE_TBLHEADER, (void *)buffer);	/* Write this to output */
+	GMT_Put_Record (API, GMT_WRITE_TBLHEADER, buffer);	/* Write this to output */
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (strstr (line, "<Placemark")) scan = TRUE;
@@ -196,7 +196,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_chop (GMT, name);
 			if (first) {
 				sprintf (buffer, "# %s\n", &line[start]);
-				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, (void *)buffer);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, buffer);	/* Write this to output */
 			}
 			first = FALSE;
 		}
@@ -209,7 +209,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_chop (GMT, description);
 			if (first) {
 				sprintf (buffer, "# %s\n", &line[start]);
-				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, (void *)buffer);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, buffer);	/* Write this to output */
 			}
 			first = FALSE;
 		}
@@ -227,7 +227,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sscanf (&line[i+1], "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
 			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next Point\n");
 			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);	/* Write segment header */
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 		else {
 			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next feature\n");
@@ -235,7 +235,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			
 			name[0] = description[0] = 0;
 			while (fscanf (fp, "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z])) {
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
 		}
 	}

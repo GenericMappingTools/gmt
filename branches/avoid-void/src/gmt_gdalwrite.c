@@ -68,7 +68,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	nx = prhs->nx;
 	ny = prhs->ny;
 	n_bands = prhs->n_bands;
-	data = (void *)prhs->data;
+	data = prhs->data;
 
 	/* Find out in which data type was given the input array */
 	if (!strcmp(prhs->type,"byte")) {

@@ -168,7 +168,7 @@ enum GMT_wesnIDs {XLO, XHI, YLO, YHI, ZLO, ZHI};
 
 /* GMT_grd_setpad copies the given pad into the header */
 
-#define GMT_grd_setpad(C,h,newpad) memcpy ((void *)(h)->pad, (void *)newpad, 4*sizeof(GMT_LONG))
+#define GMT_grd_setpad(C,h,newpad) memcpy ((h)->pad, newpad, 4*sizeof(GMT_LONG))
 
 /* gmt_grd_get_size computes grid size including the padding, and doubles it if complex values */
 

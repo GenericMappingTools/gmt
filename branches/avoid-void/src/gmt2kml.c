@@ -149,16 +149,16 @@ void *New_gmt2kml_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->Z.max[ALT] = -1.0;
 	C->W.pen = GMT->current.setting.map_default_pen; C->W.pen.width = 1.0;		/* Default pen width = 1p */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmt2kml_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deallocate control structure */
-	if (C->C.file) free ((void *)C->C.file);
-	if (C->D.file) free ((void *)C->D.file);
-	if (C->I.file) free ((void *)C->I.file);
-	if (C->N.fmt) free ((void *)C->N.fmt);
-	if (C->T.title) free ((void *)C->T.title);
-	if (C->T.folder) free ((void *)C->T.folder);
+	if (C->C.file) free (C->C.file);
+	if (C->D.file) free (C->D.file);
+	if (C->I.file) free (C->I.file);
+	if (C->N.fmt) free (C->N.fmt);
+	if (C->T.title) free (C->T.title);
+	if (C->T.folder) free (C->T.folder);
 	GMT_free (GMT, C->L.ext);
 	GMT_free (GMT, C);
 }
@@ -351,7 +351,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				break;
 			case 'I':	/* Custom icon */
 	 			Ctrl->I.active = TRUE;
-				free ((void *)Ctrl->I.file);
+				free (Ctrl->I.file);
 				if (opt->arg[0] == '+')
 					sprintf (buffer, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
 				else if (opt->arg[0])

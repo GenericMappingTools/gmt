@@ -1573,7 +1573,7 @@ double GMT_median_weighted (struct GMT_CTRL *C, fpair *data, GMT_LONG n, double 
 
 	/* First sort data on z */
 
-	qsort ((void *)data, (size_t)n, sizeof (fpair), compare_fpair);
+	qsort (data, (size_t)n, sizeof (fpair), compare_fpair);
 	
 	/* Find weight sum, then get half-value */
 	
@@ -1597,7 +1597,7 @@ double GMT_mode_weighted (struct GMT_CTRL *C, fpair *data, GMT_LONG n)
 
 	/* First sort data on z */
 
-	qsort ((void *)data, (size_t)n, sizeof (fpair), compare_fpair);
+	qsort (data, (size_t)n, sizeof (fpair), compare_fpair);
 	
 	/* Find weight sum, then get half-value */
 	
@@ -1640,7 +1640,7 @@ GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, GMT_LONG n, GMT_LONG j, GMT_LO
 		return (0);
 	}
 
-	if (sort) GMT_sort_array (C, (void *)x, n, GMT_DOUBLE_TYPE);
+	if (sort) GMT_sort_array (C, x, n, GMT_DOUBLE_TYPE);
 
 	istop = n - j;
 	multiplicity = 0;
@@ -1693,7 +1693,7 @@ GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, GMT_LONG n, GMT_LONG j, GMT_L
 		*mode_est = x[0];
 		return (0);
 	}
-	if (sort) GMT_sort_array (C, (void *)x, n, GMT_FLOAT_TYPE);
+	if (sort) GMT_sort_array (C, x, n, GMT_FLOAT_TYPE);
 
 	istop = n - j;
 	multiplicity = 0;
@@ -1744,7 +1744,7 @@ void GMT_getmad (struct GMT_CTRL *C, double *x, GMT_LONG n, double location, dou
 	double med, *dev = GMT_memory (C, NULL, n, double);
 
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
-	GMT_sort_array (C, (void *)dev, n, GMT_DOUBLE_TYPE);
+	GMT_sort_array (C, dev, n, GMT_DOUBLE_TYPE);
 	for (i = n; GMT_is_dnan (dev[i-1]) && i > 1; i--);
 	if (i)
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
@@ -1761,7 +1761,7 @@ void GMT_getmad_f (struct GMT_CTRL *C, float *x, GMT_LONG n, double location, do
 	double med;
 
 	for (i = 0; i < n; i++) dev[i] = (float) fabs ((double)(x[i] - location));
-	GMT_sort_array (C, (void *)dev, n, GMT_FLOAT_TYPE);
+	GMT_sort_array (C, dev, n, GMT_FLOAT_TYPE);
 	for (i = n; GMT_is_fnan (dev[i-1]) && i > 1; i--);
 	if (i)
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);

@@ -136,16 +136,16 @@ void *New_pscontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
 	C->W.pen[1].width *= 3.0;
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pscontour_Ctrl (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) free ((void *)C->C.file);	
-	if (C->D.file) free ((void *)C->D.file);	
-	if (C->Q.file) free ((void *)C->Q.file);	
-	if (C->T.txt[0]) free ((void *)C->T.txt[0]);	
-	if (C->T.txt[1]) free ((void *)C->T.txt[1]);	
+	if (C->C.file) free (C->C.file);	
+	if (C->D.file) free (C->D.file);	
+	if (C->Q.file) free (C->Q.file);	
+	if (C->T.txt[0]) free (C->T.txt[0]);	
+	if (C->T.txt[1]) free (C->T.txt[1]);	
 	GMT_free (GMT, C);	
 }
 
@@ -457,7 +457,7 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 				break;
 			case 'D':	/* Dump contours */
 				Ctrl->D.active = TRUE;
-				free ((void *)Ctrl->D.file);
+				free (Ctrl->D.file);
 				Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'G':	/* contour annotation settings */
@@ -526,8 +526,8 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 							n_errors++;
 						}
 						if (Ctrl->T.label) {	/* Replace defaults */
-							free ((void *)Ctrl->T.txt[0]);
-							free ((void *)Ctrl->T.txt[1]);
+							free (Ctrl->T.txt[0]);
+							free (Ctrl->T.txt[1]);
 							Ctrl->T.txt[0] = strdup (txt_a);
 							Ctrl->T.txt[1] = strdup (txt_b);
 						}

@@ -47,8 +47,8 @@ int main (int argc, char **argv)
 		}
 		hin.n = j;
 		hin.rank = level;
-		fwrite((void *)&hin, sizeof(struct RAWSEG_HEADER), 1, stdout);
-		if ((fwrite((void *)p, sizeof(struct LONGPAIR), (size_t) hin.n, stdout)) != hin.n) {
+		fwrite(&hin, sizeof(struct RAWSEG_HEADER), 1, stdout);
+		if ((fwrite(p, sizeof(struct LONGPAIR), (size_t) hin.n, stdout)) != hin.n) {
 			fprintf(stderr,"segment_restore: Error writing file.\n");
 			exit(-1);
 		}

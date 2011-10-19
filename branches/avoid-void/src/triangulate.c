@@ -83,12 +83,12 @@ void *New_triangulate_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->D.dir = -1;	/* No derivatives */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_triangulate_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -410,9 +410,9 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (i = j = 0; i < np; i++) {
 				GMT_fprintf (GMT->session.std[GMT_OUT], "%c Edge %ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], i);
 				out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
 			GMT_free (GMT, xe);
 			GMT_free (GMT, ye);
@@ -427,7 +427,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			for (i = 0; i < n_edge; i++) if (edge[i].begin > edge[i].end) l_swap (edge[i].begin, edge[i].end);
 
-			qsort ((void *)edge, (size_t)n_edge, sizeof (struct TRIANGULATE_EDGE), compare_edge);
+			qsort (edge, (size_t)n_edge, sizeof (struct TRIANGULATE_EDGE), compare_edge);
 			for (i = 1, j = 0; i < n_edge; i++) {
 				if (edge[i].begin != edge[j].begin || edge[i].end != edge[j].end) j++;
 				edge[j] = edge[i];
@@ -439,9 +439,9 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (i = 0; i < n_edge; i++) {
 				GMT_fprintf (GMT->session.std[GMT_OUT], "%c Edge %ld-%ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], edge[i].begin, edge[i].end);
 				out[GMT_X] = xx[edge[i].begin];	out[GMT_Y] = yy[edge[i].begin];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				out[GMT_X] = xx[edge[i].end];	out[GMT_Y] = yy[edge[i].end];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
 			GMT_free (GMT, edge);
 		}
@@ -449,7 +449,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {	/* Write table of indices */
 		for (i = ij = 0; i < np; i++, ij += 3) {
 			for (k = 0; k < 3; k++) out[k] = (double)link[ij+k];
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 	}
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */

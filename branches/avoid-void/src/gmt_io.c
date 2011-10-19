@@ -753,7 +753,7 @@ GMT_LONG gmt_ogr_decode_aspatial_values (struct GMT_CTRL *C, char *record, struc
 			GMT_memset (&S->value[n_alloc], GMT_TINY_CHUNK, char *);	/* Explicitly set new items to NULL */
 			S->dvalue = GMT_memory (C, S->dvalue, n_alloc += GMT_TINY_CHUNK, double);
 		}
-		if (S->value[col]) free ((void *)S->value[col]);	/* Free previous item */
+		if (S->value[col]) free (S->value[col]);	/* Free previous item */
 		S->value[col] = strdup (p);
 		S->dvalue[col] = gmt_convert_aspatial_value (C, S->type[col], p);
 		col++;
@@ -1426,7 +1426,7 @@ GMT_LONG gmt_x_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
 {	/* Used to write n bytes of space for filler on binary output */
 	char c = ' ';
 	GMT_LONG i;
-	for (i = 0; i < n; i++) if (GMT_fwrite ((void *)&c, sizeof (char), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+	for (i = 0; i < n; i++) if (GMT_fwrite (&c, sizeof (char), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	return (GMT_NOERROR);
 }
 
@@ -1832,10 +1832,10 @@ void GMT_io_binary_header (struct GMT_CTRL *C, FILE *fp, GMT_LONG dir)
 	GMT_LONG k;
 	char c = ' ';
 	if (dir == GMT_IN) {	/* Use fread since we dont know if input is a stream or a file */
-		for (k = 0; k < C->current.io.io_n_header_items; k++) GMT_fread ((void *)&c, sizeof (char), (size_t)1, fp);
+		for (k = 0; k < C->current.io.io_n_header_items; k++) GMT_fread (&c, sizeof (char), (size_t)1, fp);
 	}
 	else {
-		for (k = 0; k < C->current.io.io_n_header_items; k++) GMT_fwrite ((void *)&c, sizeof (char), (size_t)1, fp);
+		for (k = 0; k < C->current.io.io_n_header_items; k++) GMT_fwrite (&c, sizeof (char), (size_t)1, fp);
 	}
 }
 
@@ -1902,7 +1902,7 @@ GMT_LONG gmt_c_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	char c;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&c, sizeof (char), (size_t)1, fp)) {	/* Read was unsuccessful */
+		if (!GMT_fread (&c, sizeof (char), (size_t)1, fp)) {	/* Read was unsuccessful */
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -1916,7 +1916,7 @@ GMT_LONG gmt_u_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	unsigned char u;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&u, sizeof (unsigned char), (size_t)1, fp)) {
+		if (!GMT_fread (&u, sizeof (unsigned char), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -1930,7 +1930,7 @@ GMT_LONG gmt_h_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	short int h;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&h, sizeof (short int), (size_t)1, fp)) {
+		if (!GMT_fread (&h, sizeof (short int), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -1944,7 +1944,7 @@ GMT_LONG gmt_h_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	short int h;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&h, sizeof (short int), (size_t)1, fp)) {
+		if (!GMT_fread (&h, sizeof (short int), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -1958,7 +1958,7 @@ GMT_LONG gmt_H_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	unsigned short int h;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&h, sizeof (unsigned short int), (size_t)1, fp)) {
+		if (!GMT_fread (&h, sizeof (unsigned short int), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -1972,7 +1972,7 @@ GMT_LONG gmt_H_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	unsigned short int h;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&h, sizeof (unsigned short int), (size_t)1, fp)) {
+		if (!GMT_fread (&h, sizeof (unsigned short int), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -1986,7 +1986,7 @@ GMT_LONG gmt_i_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	int i4;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&i4, sizeof (int), (size_t)1, fp)) {
+		if (!GMT_fread (&i4, sizeof (int), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2000,7 +2000,7 @@ GMT_LONG gmt_i_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	int i4;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&i4, sizeof (int), (size_t)1, fp)) {
+		if (!GMT_fread (&i4, sizeof (int), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2014,7 +2014,7 @@ GMT_LONG gmt_I_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	unsigned int i4;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&i4, sizeof (unsigned int), (size_t)1, fp)) {
+		if (!GMT_fread (&i4, sizeof (unsigned int), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2028,7 +2028,7 @@ GMT_LONG gmt_I_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	unsigned int i4;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&i4, sizeof (unsigned int), (size_t)1, fp)) {
+		if (!GMT_fread (&i4, sizeof (unsigned int), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2043,7 +2043,7 @@ GMT_LONG gmt_l_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	long int l;
 
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&l, sizeof (long int), (size_t)1, fp)) {
+		if (!GMT_fread (&l, sizeof (long int), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2057,10 +2057,10 @@ GMT_LONG gmt_l_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	long int l;
 	unsigned int *i4, k;
-	void *vptr = (void *)&l;
+	void *vptr = &l;
 
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&l, sizeof (long int), (size_t)1, fp)) {
+		if (!GMT_fread (&l, sizeof (long int), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2077,7 +2077,7 @@ GMT_LONG gmt_L_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	unsigned long int l;
 
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&l, sizeof (unsigned long int), (size_t)1, fp)) {
+		if (!GMT_fread (&l, sizeof (unsigned long int), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2091,10 +2091,10 @@ GMT_LONG gmt_L_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	unsigned long int l;
 	unsigned int *i4, k;
-	void *vptr = (void *)&l;
+	void *vptr = &l;
 
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&l, sizeof (unsigned long int), (size_t)1, fp)) {
+		if (!GMT_fread (&l, sizeof (unsigned long int), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2110,7 +2110,7 @@ GMT_LONG gmt_f_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	float f;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&f, sizeof (float), (size_t)1, fp)) {
+		if (!GMT_fread (&f, sizeof (float), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2124,9 +2124,9 @@ GMT_LONG gmt_f_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	float f;
 	unsigned int *i4;
-	void *vptr = (void *)&f;
+	void *vptr = &f;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&f, sizeof (float), (size_t)1, fp)) {
+		if (!GMT_fread (&f, sizeof (float), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2141,7 +2141,7 @@ GMT_LONG gmt_d_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 {
 	GMT_LONG i;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&d[i], sizeof (double), (size_t)1, fp)) {
+		if (!GMT_fread (&d[i], sizeof (double), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2154,7 +2154,7 @@ GMT_LONG gmt_d_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 	GMT_LONG i;
 	unsigned int j4, *i4;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&d[i], sizeof (double), (size_t)1, fp)) {
+		if (!GMT_fread (&d[i], sizeof (double), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2185,7 +2185,7 @@ GMT_LONG gmt_c_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		c = (char) d[i];
-		if (GMT_fwrite ((void *)&c, sizeof (char), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&c, sizeof (char), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2197,7 +2197,7 @@ GMT_LONG gmt_u_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		u = (unsigned char) d[i];
-		if (GMT_fwrite ((void *)&u, sizeof (unsigned char), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&u, sizeof (unsigned char), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2209,7 +2209,7 @@ GMT_LONG gmt_h_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		h = (short int) d[i];
-		if (GMT_fwrite ((void *)&h, sizeof (short int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&h, sizeof (short int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2221,7 +2221,7 @@ GMT_LONG gmt_h_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		h = GMT_swab2 ((short int) d[i]);
-		if (GMT_fwrite ((void *)&h, sizeof (short int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&h, sizeof (short int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2233,7 +2233,7 @@ GMT_LONG gmt_H_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		h = (unsigned short int) d[i];
-		if (GMT_fwrite ((void *)&h, sizeof (unsigned short int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&h, sizeof (unsigned short int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2245,7 +2245,7 @@ GMT_LONG gmt_H_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		h = GMT_swab2 ((unsigned short int) d[i]);
-		if (GMT_fwrite ((void *)&h, sizeof (unsigned short int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&h, sizeof (unsigned short int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2257,7 +2257,7 @@ GMT_LONG gmt_i_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		i4 = (int) d[i];
-		if (GMT_fwrite ((void *)&i4, sizeof (int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&i4, sizeof (int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2269,7 +2269,7 @@ GMT_LONG gmt_i_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		i4 = GMT_swab4 ((int) d[i]);
-		if (GMT_fwrite ((void *)&i4, sizeof (int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&i4, sizeof (int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2281,7 +2281,7 @@ GMT_LONG gmt_I_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		i4 = (unsigned int) d[i];
-		if (GMT_fwrite ((void *)&i4, sizeof (unsigned int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&i4, sizeof (unsigned int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2293,7 +2293,7 @@ GMT_LONG gmt_I_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		i4 = GMT_swab4 ((unsigned int) d[i]);
-		if (GMT_fwrite ((void *)&i4, sizeof (unsigned int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&i4, sizeof (unsigned int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2305,7 +2305,7 @@ GMT_LONG gmt_l_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		l = (long int) d[i];
-		if (GMT_fwrite ((void *)&l, sizeof (long int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&l, sizeof (long int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2317,7 +2317,7 @@ GMT_LONG gmt_l_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		l = GMT_swab4 ((long int) d[i]);
-		if (GMT_fwrite ((void *)&l, sizeof (long int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&l, sizeof (long int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2329,7 +2329,7 @@ GMT_LONG gmt_L_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		l = (unsigned long int) d[i];
-		if (GMT_fwrite ((void *)&l, sizeof (unsigned long int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&l, sizeof (unsigned long int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2341,7 +2341,7 @@ GMT_LONG gmt_L_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		l = GMT_swab4 ((unsigned long int) d[i]);
-		if (GMT_fwrite ((void *)&l, sizeof (unsigned long int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&l, sizeof (unsigned long int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2353,7 +2353,7 @@ GMT_LONG gmt_f_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	for (i = 0; i < n; i++) {
 		float f;
 		f = (float) d[i];
-		if (GMT_fwrite ((void *)&f, sizeof (float), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&f, sizeof (float), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2362,13 +2362,13 @@ GMT_LONG gmt_f_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 {	/* Input n is ignored since it is always 1 */
 	GMT_LONG i;
 	float f;
-	void *vptr = (void *)&f;
+	void *vptr = &f;
 	unsigned int *i4 = (unsigned int *)vptr;
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		f = (float) d[i];
 		f = (float) GMT_swab4 (*i4);
-		if (GMT_fwrite ((void *)&f, sizeof (float), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+		if (GMT_fwrite (&f, sizeof (float), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
 }
@@ -2376,7 +2376,7 @@ GMT_LONG gmt_f_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 GMT_LONG gmt_d_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 {	/* Input n is ignored since it is always 1 */
 	if (gmt_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
-	return (GMT_fwrite ((void *)d, sizeof (double), (size_t)n, fp));
+	return (GMT_fwrite (d, sizeof (double), (size_t)n, fp));
 }
 
 GMT_LONG gmt_d_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
@@ -2389,7 +2389,7 @@ GMT_LONG gmt_d_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 		j4 = GMT_swab4 (i4[0]);
 		i4[0] = GMT_swab4 (i4[1]);
 		i4[1] = j4;
-		if (!GMT_fwrite ((void *)&d[i], sizeof (double), (size_t)1, fp))  return (GMT_DATA_WRITE_ERROR);
+		if (!GMT_fwrite (&d[i], sizeof (double), (size_t)1, fp))  return (GMT_DATA_WRITE_ERROR);
 	}
 	return (GMT_NOERROR);
 }
@@ -4396,7 +4396,7 @@ void gmt_build_segheader_from_ogr (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *
 		strcat (buffer, "-Ph");
 	}
 	if (S->header) { strcat (buffer, " "); strcat (buffer, S->header); }	/* Append rest of previous header */
-	free ((void *)S->header);
+	free (S->header);
 	S->header = strdup (buffer);
 }
 
@@ -4464,7 +4464,7 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	if (GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_COPY, GMT_IS_POINT, GMT_OUT, M, NULL, M, &object_ID)) return (EXIT_FAILURE);
 	GMT_Encode_ID (C->parent, out_string, object_ID);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-C -fg -<%s ->%s", in_string, out_string);
-	status = GMT_minmax (C->parent, 0, (void *)buffer);	/* Get the extent via minmax */
+	status = GMT_minmax (C->parent, 0, buffer);	/* Get the extent via minmax */
 	
 	/* Time to reregister the original destination */
 	
@@ -4748,10 +4748,10 @@ GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, 
 			else
 				sprintf (tmpfile, file, D->table[tbl]->id);
 			GMT_report (C, GMT_MSG_NORMAL, "Write Data Table to %s\n", out_file);
-			if ((error = GMT_write_table (C, (void *)out_file, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode))) return (error);
+			if ((error = GMT_write_table (C, out_file, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode))) return (error);
 		}
 		else {	/* Write to stream we set up earlier */
-			if ((error = GMT_write_table (C, (void *)fp, GMT_IS_STREAM, D->table[tbl], use_GMT_io, D->io_mode))) return (error);
+			if ((error = GMT_write_table (C, fp, GMT_IS_STREAM, D->table[tbl], use_GMT_io, D->io_mode))) return (error);
 		}
 	}
 
@@ -4912,10 +4912,10 @@ GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, 
 			else
 				sprintf (tmpfile, file, D->table[tbl]->id);
 			GMT_report (C, GMT_MSG_NORMAL, "Write Text Table to file %s\n", out_file);
-			if ((error = gmt_write_texttable (C, (void *)out_file, GMT_IS_FILE, D->table[tbl], D->io_mode))) return (error);
+			if ((error = gmt_write_texttable (C, out_file, GMT_IS_FILE, D->table[tbl], D->io_mode))) return (error);
 		}
 		else {	/* Write to stream we set up earlier */
-			if ((error = gmt_write_texttable (C, (void *)fp, GMT_IS_STREAM, D->table[tbl], D->io_mode))) return (error);
+			if ((error = gmt_write_texttable (C, fp, GMT_IS_STREAM, D->table[tbl], D->io_mode))) return (error);
 		}
 	}
 
@@ -5509,7 +5509,7 @@ void gmt_free_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 	GMT_LONG k, n;
 	n = (C->current.io.OGR) ? C->current.io.OGR->n_aspatial : C->common.a.n_aspatial; 
 	if (n) {
-		for (k = 0; S->ogr->value && k < n; k++) if (S->ogr->value[k]) free ((void *)S->ogr->value[k]);
+		for (k = 0; S->ogr->value && k < n; k++) if (S->ogr->value[k]) free (S->ogr->value[k]);
 		GMT_free (C, S->ogr->value);
 		GMT_free (C, S->ogr->dvalue);
 	}
@@ -5526,9 +5526,9 @@ void GMT_free_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *segment)
 	GMT_free (C, segment->coord);
 	if (segment->min) GMT_free (C, segment->min);
 	if (segment->max) GMT_free (C, segment->max);
-	if (segment->label) free ((void *) segment->label);
-	if (segment->header) free ((void *) segment->header);
-	for (k = 0; k < 2; k++) if (segment->file[k]) free ((void *)segment->file[k]);
+	if (segment->label) free ( segment->label);
+	if (segment->header) free ( segment->header);
+	for (k = 0; k < 2; k++) if (segment->file[k]) free (segment->file[k]);
 	if (segment->ogr) gmt_free_ogr_seg (C, segment);	/* OGR metadata */
 	GMT_free (C, segment);
 }
@@ -5537,11 +5537,11 @@ void GMT_free_table (struct GMT_CTRL *C, struct GMT_TABLE *table)
 {
 	GMT_LONG k;
 	if (!table) return;		/* Do not try to free NULL pointer */
-	for (k = 0; k < table->n_headers; k++) free ((void *)table->header[k]);
+	for (k = 0; k < table->n_headers; k++) free (table->header[k]);
 	if (table->n_headers) GMT_free (C, table->header);
 	GMT_free (C, table->min);
 	GMT_free (C, table->max);
-	for (k = 0; k < 2; k++) if (table->file[k]) free ((void *)table->file[k]);
+	for (k = 0; k < 2; k++) if (table->file[k]) free (table->file[k]);
 	GMT_free_ogr (C, &(table->ogr), 1);
 	if (table->segment) {	/* Free segments */
 		for (k = 0; k < table->n_segments; k++) GMT_free_segment (C, table->segment[k]);
@@ -5559,7 +5559,7 @@ void GMT_free_dataset (struct GMT_CTRL *C, struct GMT_DATASET **data)
 		GMT_free_table (C, (*data)->table[tbl]);
 	}
 	GMT_free (C, (*data)->table);
-	for (k = 0; k < 2; k++) if ((*data)->file[k]) free ((void *)(*data)->file[k]);
+	for (k = 0; k < 2; k++) if ((*data)->file[k]) free ((*data)->file[k]);
 	GMT_free (C, *data);
 }
 
@@ -5571,9 +5571,9 @@ void gmt_free_textsegment (struct GMT_CTRL *C, struct GMT_TEXT_SEGMENT *segment)
 	if (!segment) return;	/* Do not try to free NULL pointer */
 	for (k = 0; k < segment->n_rows; k++) if (segment->record[k]) free (segment->record[k]);
 	GMT_free (C, segment->record);
-	if (segment->label) free ((void *) segment->label);
-	if (segment->header) free ((void *) segment->header);
-	for (k = 0; k < 2; k++) if (segment->file[k]) free ((void *)segment->file[k]);
+	if (segment->label) free ( segment->label);
+	if (segment->header) free ( segment->header);
+	for (k = 0; k < 2; k++) if (segment->file[k]) free (segment->file[k]);
 	GMT_free (C, segment);
 }
 
@@ -5582,10 +5582,10 @@ void gmt_free_texttable (struct GMT_CTRL *C, struct GMT_TEXT_TABLE *table)
 	GMT_LONG k;
 	if (!table) return;	/* Do not try to free NULL pointer */
 	for (k = 0; k < table->n_segments; k++) gmt_free_textsegment (C, table->segment[k]);
-	for (k = 0; k < table->n_headers; k++) free ((void *)table->header[k]);
+	for (k = 0; k < table->n_headers; k++) free (table->header[k]);
 	if (table->n_headers) GMT_free (C, table->header);
 	GMT_free (C, table->segment);
-	for (k = 0; k < 2; k++) if (table->file[k]) free ((void *)table->file[k]);
+	for (k = 0; k < 2; k++) if (table->file[k]) free (table->file[k]);
 	GMT_free (C, table);
 }
 
@@ -5595,7 +5595,7 @@ void GMT_free_textset (struct GMT_CTRL *C, struct GMT_TEXTSET **data)
 	GMT_LONG tbl, k;
 	for (tbl = 0; tbl < (*data)->n_tables; tbl++) gmt_free_texttable (C, (*data)->table[tbl]);
 	GMT_free (C, (*data)->table);
-	for (k = 0; k < 2; k++) if ((*data)->file[k]) free ((void *)(*data)->file[k]);
+	for (k = 0; k < 2; k++) if ((*data)->file[k]) free ((*data)->file[k]);
 	GMT_free (C, *data);
 }
 
@@ -5789,8 +5789,8 @@ void GMT_free_ogr (struct GMT_CTRL *C, struct GMT_OGR **G, GMT_LONG mode)
 	if (!(*G)) return;	/* Nothing to do */
 	/* mode = 0 only frees the aspatial data value array, while mode = 1 frees the entire struct and contents */
 	for (k = 0; k < (*G)->n_aspatial; k++) {
-		if (mode == 1 && (*G)->name && (*G)->name[k]) free ((void *)(*G)->name[k]);
-		if ((*G)->value && (*G)->value[k]) free ((void *)(*G)->value[k]);
+		if (mode == 1 && (*G)->name && (*G)->name[k]) free ((*G)->name[k]);
+		if ((*G)->value && (*G)->value[k]) free ((*G)->value[k]);
 	}
 	GMT_free (C, (*G)->value);
 	GMT_free (C, (*G)->dvalue);

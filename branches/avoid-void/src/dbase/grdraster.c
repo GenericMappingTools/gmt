@@ -596,14 +596,14 @@ void *New_grdraster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	C = GMT_memory (GMT, NULL, 1, struct GRDRASTER_CTRL);
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdraster_Ctrl (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);
-	if (C->G.file) free ((void *)C->G.file);
-	if (C->T.file) free ((void *)C->T.file);
+	if (C->In.file) free (C->In.file);
+	if (C->G.file) free (C->G.file);
+	if (C->T.file) free (C->T.file);
 	GMT_free (GMT, C);
 }
 
@@ -964,7 +964,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (myras.swap_me) GMT_report (GMT, GMT_MSG_NORMAL, "Data from %s will be byte-swapped\n", myras.h.remark);
 
 	if (myras.type == 'b') {	/* Must handle bit rasters a bit differently */
-		if ( (GMT_fread ((void *)ubuffer, sizeof (unsigned char), (size_t)nmask, fp)) != (size_t)nmask) {
+		if ( (GMT_fread (ubuffer, sizeof (unsigned char), (size_t)nmask, fp)) != (size_t)nmask) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Failure to read a bitmap raster from %s.\n", myras.h.remark);
 			GMT_free (GMT, ubuffer);
 			GMT_fclose (GMT, fp);
@@ -1002,7 +1002,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (i = 0; i < Grid->header->nx; i++) {
 					out[0] = x[i];
 					out[2] = Grid->data[i];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
 			}
 		}
@@ -1034,7 +1034,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_free (GMT, buffer);
 					Return (EXIT_FAILURE);
 				}
-				if ( (GMT_fread((void *)buffer, (size_t)ksize, (size_t)myras.h.nx, fp)) != (size_t)myras.h.nx) {
+				if ( (GMT_fread(buffer, (size_t)ksize, (size_t)myras.h.nx, fp)) != (size_t)myras.h.nx) {
 					GMT_report (GMT, GMT_MSG_FATAL, "ERROR reading in %s\n", myras.h.remark);
 					GMT_fclose (GMT, fp);
 					GMT_free (GMT, buffer);
@@ -1080,7 +1080,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (i = 0; i < Grid->header->nx; i++) {
 					out[0] = x[i];
 					out[2] = Grid->data[i];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
 			}
 		}

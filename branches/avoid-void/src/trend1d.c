@@ -191,7 +191,7 @@ void write_output_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, GMT_
 					break;
 			}
 		}
-		GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+		GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 	}
 }
 
@@ -262,7 +262,7 @@ void recompute_weights_1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, GMT_
 		and compute chisq based on this.  */ 
 
 	for (i = 0; i < n_data; i++) work[i] = fabs(data[i].r);
-	GMT_sort_array (GMT, (void *)work, n_data, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, work, n_data, GMT_DOUBLE_TYPE);
 
 	if (n_data%2)
 		*scale = 1.4826 * work[n_data/2];
@@ -453,7 +453,7 @@ void *New_trend1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->C.value = 1.0e06;		/* Condition number for matrix solution  */	
 	C->I.value = 0.51;		/* Confidence interval for significance test  */
 	C->N.mode = TREND1D_POLYNOMIAL;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_trend1d_Ctrl (struct GMT_CTRL *GMT, struct TREND1D_CTRL *C) {	/* Deallocate control structure */

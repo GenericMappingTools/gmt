@@ -82,12 +82,12 @@ void *New_nearneighbor_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->N.sectors = NN_DEF_SECTORS;
 	C->N.min_sectors = NN_MIN_SECTORS;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_nearneighbor_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);
+	if (C->G.file) free (C->G.file);
 	GMT_free (GMT, C);
 }
 

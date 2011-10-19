@@ -205,9 +205,9 @@ void gmt_shore_prepare_sides (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG 
 	
 	for (i = 0; i < 4; i++)	{	/* sort on position */
 		if (dir == 1)
-			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), gmt_shore_asc_sort);
+			qsort (c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), gmt_shore_asc_sort);
 		else
-			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), gmt_shore_desc_sort);
+			qsort (c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), gmt_shore_desc_sort);
 	}
 }
 

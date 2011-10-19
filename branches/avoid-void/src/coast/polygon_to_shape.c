@@ -116,10 +116,10 @@ int main (int argc, char **argv)
 					for (k = 1; k < np; k++) {
 						if (!( GMT_IS_ZERO(xx[k]-xx[k-1]) && GMT_IS_ZERO(yy[k]-yy[k-1]))) fprintf (fp, "%.6f\t%.6f\n", xx[k], yy[k]);
 					}
-					GMT_free ((void *)xx);	GMT_free ((void *)yy);
+					GMT_free (xx);	GMT_free (yy);
 					for (k = 0; k < P[id].h.n; k++) lon[k] -= 360.0;	/* Set up lons that go -360 to -tiny */
 				}
-				GMT_free ((void *)lon);	GMT_free ((void *)lat);
+				GMT_free (lon);	GMT_free (lat);
 			}
 			else {	/* No problems, just write as is */
 				fprintf (fp, "> GSHHS polygon Id = %d Level = %d Area = %.12g\n# @P @D%d|%d|%s|%d|%d|%.12g\n",
@@ -133,7 +133,7 @@ int main (int argc, char **argv)
 		fclose (fp);	/* Done with this set */
 	}
 	
-	for (id = 0; id < n_id; id++) GMT_free ((void *)P[id].p);
+	for (id = 0; id < n_id; id++) GMT_free (P[id].p);
 	
 	fprintf (stderr,"Now convert to ESRI Shapefiles: ");
 	for (level = 1; level <= 4; level++) {	/* Make separate files for each level*/

@@ -299,8 +299,8 @@ char *GMTMEX_build_cmd (struct GMTAPI_CTRL *API, char *src, char *options, char 
 
 void GMTMEX_free (char *input, char *output, char *options, char *cmd) {
 	/* Free temporary local variables */
-	if (input) mxFree ((void *)input);
-	if (output) mxFree ((void *)output);	
+	if (input) mxfree (input);
+	if (output) mxfree (output);	
 	if (options) mxFree (options);	
 	mxFree (cmd);
 }
@@ -463,7 +463,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		opt->arg[pos] = '\0';		/* Chop off the stuff starting at the $ sign */
 		sprintf (buffer, "%s%s", opt->arg, name);	/* Make a new option argument that replaces the $ with name */
 		opt->arg[pos] = '$';		/* Restore the $ sign in the old argument */
-		free ((void *))opt->arg);	/* Free the old option argument */
+		free ()opt->arg);	/* Free the old option argument */
 		opt->arg = strdup (buffer);	/* Allocate and set the new argument with the embedded filename */
 	}
 }

@@ -135,15 +135,15 @@ void *New_gmtspatial_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C->D.I.d_threshold = MIN_SEPARATION;
 	C->D.I.c_threshold = MIN_CLOSENESS;
 	C->D.I.s_threshold = MIN_SUBSET;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtspatial_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free ((void *)C->Out.file);	
-	if (C->D.file) free ((void *)C->D.file);	
-	if (C->N.file) free ((void *)C->N.file);	
-	if (C->T.file) free ((void *)C->T.file);	
+	if (C->Out.file) free (C->Out.file);	
+	if (C->D.file) free (C->D.file);	
+	if (C->N.file) free (C->N.file);	
+	if (C->T.file) free (C->T.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -284,7 +284,7 @@ void write_record (struct GMT_CTRL *GMT, double **R, GMT_LONG n, GMT_LONG p)
 	GMT_LONG c;
 	double out[GMT_MAX_COLUMNS];
 	for (c = 0; c < n; c++) out[c] = R[c][p];
-	GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, (void *)out);
+	GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
 }
 
 GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, struct GMT_DATASET *D, struct DUP *I, struct DUP_INFO **L)
@@ -910,7 +910,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					S->header = strdup (line);
 				}
 				else
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write area or length to output */
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write area or length to output */
 			}
 		}
 		/* Write out results */
@@ -979,7 +979,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 								yy = GMT_memory (GMT, NULL, nx, double);
 								kk = GMT_memory (GMT, NULL, nx, double);
 								for (px = 0; px < nx; px++) pair[px].node = XC.xnode[1][px], pair[px].pos = px;
-								qsort ((void *)pair, nx, sizeof (struct PAIR), comp_pairs);
+								qsort (pair, nx, sizeof (struct PAIR), comp_pairs);
 								for (px = 0; px < nx; px++) {
 									xx[px] = XC.x[pair[px].pos];
 									yy[px] = XC.y[pair[px].pos];
@@ -1001,7 +1001,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 											GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 											first = FALSE;
 										}
-										GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+										GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 									}
 									/* Always output crossover point */
 									if (first && GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
@@ -1014,7 +1014,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 									}
 									for (c = 2; c < S2->n_columns; c++) out[c] = 0.0;
 									out[GMT_X] = xx[px];	out[GMT_Y] = yy[px];
-									GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+									GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 									px++;
 									in = !in;	/* Go from out to in or vice versa */
 									if (!in) first = TRUE;	/* Since we went outside */
@@ -1031,7 +1031,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 												GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 												first = FALSE;
 											}
-											GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+											GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 										}
 										go = FALSE;
 									}
@@ -1065,7 +1065,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 								}
 								for (p = 0; p < S2->n_rows; p++) {
 									for (c = 0; c < S2->n_columns; c++) out[c] = S2->coord[c][p];
-									GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+									GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 								}
 							}
 						}
@@ -1151,7 +1151,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						(C->n_tables == 1) ? sprintf (dup, "[ segment %ld ]", seg2) : sprintf (dup, "[ table %ld segment %ld ]", tbl2, seg2);
 						sprintf (record, "%c : Input %s %s is an %s duplicate of a %s %s in %s, with d = %.3f c = %.6g s = %.4g", 
 							verdict[GMT_abs(I->mode)], feature[poly_D], src, kind[I->mode+4], feature[poly_S2], dup, from, I->distance, I->closeness, I->setratio);
-						GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					}
 				}
 			}
@@ -1252,7 +1252,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					/* Here we are inside */
 					if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
 						sprintf (record, "%s from table %ld segment %ld is inside polygon # %ld", kind[Ctrl->N.all], tbl, seg, ID);
-						GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					}
 					else if (Ctrl->N.mode == 2) {	/* Add ID as last data column */
 						for (row = 0, n = S->n_columns-1; row < S->n_rows; row++) S->coord[n][row] = (double)ID;
@@ -1264,7 +1264,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						else {	/* Add -Z<ID< to the segment header */
 							char buffer[GMT_BUFSIZ], txt[GMT_TEXT_LEN64];
 							buffer[0] = txt[0] = 0;
-							if (S->header) { strcpy (buffer, S->header); free ((void *)S->header); }
+							if (S->header) { strcpy (buffer, S->header); free (S->header); }
 							sprintf (txt, " -Z%ld", ID);
 							strcat (buffer, txt);
 							S->header = strdup (buffer);

@@ -140,7 +140,7 @@ void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	GMT_memset (&C->L.item, 1, struct GMT_MAP_SCALE);
 	GMT_memset (&C->T.item, 1, struct GMT_MAP_ROSE);
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pscoast_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deallocate control structure */
@@ -629,9 +629,9 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
 		sprintf (header, "# %s extracted from the %s resolution GSHHS version %s database\n", kind[id], shore_resolution[base], c.version);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)header);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, header);
 		sprintf (header, "# %s\n# %s\n", c.title, c.source);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)header);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, header);
 	}
 	else {
 		if (Ctrl->Q.active)
@@ -834,7 +834,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+						GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 					}
 				}
 				else if (Ctrl->W.use[p[i].level-1]) {
@@ -895,7 +895,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+						GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 					}
 				}
 				else {
@@ -956,7 +956,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+						GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 					}
 				}
 				else {

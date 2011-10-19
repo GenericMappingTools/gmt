@@ -301,16 +301,16 @@ void *New_grdview_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->Q.dpi = 100;
 	GMT_init_fill (GMT, &C->Q.fill, GMT->PSL->init.page_rgb[0], GMT->PSL->init.page_rgb[1], GMT->PSL->init.page_rgb[2]);
 	C->S.value = 1;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdview_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Deallocate control structure */
 	GMT_LONG i;
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->C.file) free ((void *)C->C.file);	
-	for (i = 0; i < 3; i++) if (C->G.file[i]) free ((void *)C->G.file[i]);	
-	if (C->I.file) free ((void *)C->I.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->C.file) free (C->C.file);	
+	for (i = 0; i < 3; i++) if (C->G.file[i]) free (C->G.file[i]);	
+	if (C->I.file) free (C->I.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -978,7 +978,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			layers = 1;
 			bitimage_8 = GMT_memory (GMT, NULL, nm_i, unsigned char);
 			gray = GMT_u255 (GMT_YIQ (GMT->current.setting.ps_page_rgb));
-			memset ((void *)bitimage_8, gray, nm_i * sizeof (unsigned char));
+			memset (bitimage_8, gray, nm_i * sizeof (unsigned char));
 		}
 		else {
 			nm_i = nx_i * ny_i * 3;

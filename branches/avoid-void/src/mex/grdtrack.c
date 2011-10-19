@@ -75,7 +75,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	mexPrintf ("cmd = (%s)\n", cmd);
 
 	/* Run blockmean module, and give usage message if errors arise during parsing */
-	if ((status = GMT_grdtrack (API, 0, (void *)cmd))) mexErrMsgTxt ("Run-time error\n");
+	if ((status = GMT_grdtrack (API, 0, cmd))) mexErrMsgTxt ("Run-time error\n");
 	
 	/* Pass output arguments to Matlab column vectors. */
 	if (nlhs) GMTMEX_prep_mextbl (API, plhs, nlhs, Vo);

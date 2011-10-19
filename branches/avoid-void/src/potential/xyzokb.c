@@ -180,12 +180,12 @@ void *New_xyzokb_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->D.dir = -1;
 	C->S.radius = 50000;
 	C->S.active = TRUE;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_xyzokb_Ctrl (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);
+	if (C->G.file) free (C->G.file);
 	GMT_free (GMT, C);
 }
 

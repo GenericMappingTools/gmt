@@ -255,7 +255,7 @@ GMT_LONG get_loc_scl (struct GMT_CTRL *GMT, double *data, GMT_LONG n, double *st
 
 	if (n < 3) return (-1);
 
-	GMT_sort_array (GMT, (void *)data, n, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, data, n, GMT_DOUBLE_TYPE);
 
 	/* Get median */
 	j = n/2;
@@ -297,13 +297,13 @@ void *New_pshistogram_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Do not fill is default */
 	C->L.pen = GMT->current.setting.map_default_pen;
 		
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pshistogram_Ctrl (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free ((void *)C->Out.file);	
-	if (C->C.file) free ((void *)C->C.file);	
+	if (C->Out.file) free (C->Out.file);	
+	if (C->C.file) free (C->C.file);	
 	GMT_free (GMT, C);	
 }
 

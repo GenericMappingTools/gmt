@@ -48,7 +48,7 @@ void * New_gmtaverage_Ctrl (struct GMT_CTRL *G) {	/* Allocate and initialize a n
 	C = GMT_memory (G, NULL, 1, struct  GMTAVERAGE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtaverage_Ctrl (struct GMT_CTRL *G, struct  GMTAVERAGE_CTRL *C) {	/* Deallocate control structure */

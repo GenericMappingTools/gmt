@@ -44,12 +44,12 @@ void *New_grdreformat_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdreformat_Ctrl (struct GMT_CTRL *GMT, struct GRDREFORMAT_CTRL *C) {	/* Deallocate control structure */
-	if (C->IO.file[0]) free ((void *)C->IO.file[0]);	
-	if (C->IO.file[1]) free ((void *)C->IO.file[1]);	
+	if (C->IO.file[0]) free (C->IO.file[0]);	
+	if (C->IO.file[1]) free (C->IO.file[1]);	
 	GMT_free (GMT, C);	
 }
 

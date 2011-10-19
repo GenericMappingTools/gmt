@@ -58,12 +58,12 @@ void *New_x2sys_put_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_put_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *C) {	/* Deallocate control structure */
-	if (C->In.file) free ((void *)C->In.file);
-	if (C->T.TAG) free ((void *)C->T.TAG);
+	if (C->In.file) free (C->In.file);
+	if (C->T.TAG) free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 
@@ -378,11 +378,11 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (bin = 0; bin < B.nm_bin; bin++) {
 		if (B.base[bin].n_tracks == 0) continue;
 
-		s_unused = fwrite ((void *)(&bin), (size_t)4, (size_t)1, fbin);
-		s_unused = fwrite ((void *)(&B.base[bin].n_tracks), (size_t)4, (size_t)1, fbin);
+		s_unused = fwrite ((&bin), (size_t)4, (size_t)1, fbin);
+		s_unused = fwrite ((&B.base[bin].n_tracks), (size_t)4, (size_t)1, fbin);
 		for (this_track = B.base[bin].first_track->next_track; this_track; this_track = this_track->next_track) {
-			s_unused = fwrite ((void *)(&this_track->track_id), (size_t)4, (size_t)1, fbin);
-			s_unused = fwrite ((void *)(&this_track->track_flag), (size_t)4, (size_t)1, fbin);
+			s_unused = fwrite ((&this_track->track_id), (size_t)4, (size_t)1, fbin);
+			s_unused = fwrite ((&this_track->track_flag), (size_t)4, (size_t)1, fbin);
 		}
 	}
 	fclose (fbin);

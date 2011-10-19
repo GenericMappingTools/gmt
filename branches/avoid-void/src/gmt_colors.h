@@ -37,7 +37,7 @@
 #define GMT_NAN 2
 
 /* Copy two RGB[T] arrays (a = b) */
-#define GMT_rgb_copy(a,b) memcpy ((void *)a, (void *)b, (size_t)(4 * sizeof(double)))
+#define GMT_rgb_copy(a,b) memcpy (a, b, (size_t)(4 * sizeof(double)))
 
 /* To compare is two colors are ~ the same */
 #define GMT_eq(a,b) (fabs((a)-(b)) < GMT_SMALL)

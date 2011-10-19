@@ -488,7 +488,7 @@ int MGD77_Read_Header_Record_asc (struct GMT_CTRL *C, char *file, struct MGD77_C
 
 	/* argument file is generally ignored since file is already open */
 
-	memset ((void *)H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
+	memset (H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
 	if (F->format == MGD77_FORMAT_M77) {			/* Can compute # records from file size because format is fixed */
 		if (GMT_STAT (F->path, &buf)) {	/* Inquiry about file failed somehow */
 			GMT_report (C, GMT_MSG_FATAL, "Unable to stat file %s\n", F->path);
@@ -556,7 +556,7 @@ int MGD77_Decode_Header (struct GMT_CTRL *C, struct MGD77_HEADER_PARAMS *P, char
 
 	if (dir == MGD77_TO_HEADER) {	/* Set all records to space-filled records */
 		for (k = 0; k < MGD77_N_HEADER_RECORDS; k++) {
-			memset ((void *)record[k], ' ', (size_t)MGD77_HEADER_LENGTH);
+			memset (record[k], ' ', (size_t)MGD77_HEADER_LENGTH);
 			sprintf (&record[k][78], "%2.2d", k + 1);	/* Place sequence number */
 		}
 		P->Record_Type = '4';	/* Set record type */
@@ -1225,7 +1225,7 @@ void MGD77_Verify_Prep_m77 (struct GMT_CTRL *G, struct MGD77_CONTROL *F, struct 
 
 	xpmin = xnmin = ymin = +DBL_MAX;
 	xpmax = xnmax = ymax = -DBL_MAX;
-	memset ((void *) C, 0, sizeof (struct MGD77_META));
+	memset ( C, 0, sizeof (struct MGD77_META));
 
 	C->verified = TRUE;
 	C->G1980_1930 = 0.0;
@@ -1300,7 +1300,7 @@ void MGD77_Verify_Prep (struct GMT_CTRL *G, struct MGD77_CONTROL *F, struct MGD7
 	xpmin = xnmin = ymin = +DBL_MAX;
 	xpmax = xnmax = ymax = -DBL_MAX;
 	C = &(D->H.meta);
-	memset ((void *) C, 0, sizeof (struct MGD77_META));
+	memset ( C, 0, sizeof (struct MGD77_META));
 	C->verified = TRUE;
 
 	for (i = 0; i < D->H.n_records; i++ ){
@@ -1454,10 +1454,10 @@ void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H)
 
 	for (c = 0; c < MGD77_N_SETS; c++) {
 		for (id = 0; id < MGD77_SET_COLS ; id++) {
-			if (H->info[c].col[id].abbrev) free ((void *)H->info[c].col[id].abbrev);
-			if (H->info[c].col[id].name) free ((void *)H->info[c].col[id].name);
-			if (H->info[c].col[id].units) free ((void *)H->info[c].col[id].units);
-			if (H->info[c].col[id].comment) free ((void *)H->info[c].col[id].comment);
+			if (H->info[c].col[id].abbrev) free (H->info[c].col[id].abbrev);
+			if (H->info[c].col[id].name) free (H->info[c].col[id].name);
+			if (H->info[c].col[id].units) free (H->info[c].col[id].units);
+			if (H->info[c].col[id].comment) free (H->info[c].col[id].comment);
 		}
 	}
 }
@@ -1473,7 +1473,7 @@ int MGD77_Read_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct MGD77_C
 
 	MGD77_nc_status (C, nc_open (F->path, NC_NOWRITE, &F->nc_id));	/* Open the file */
 
-	memset ((void *)H, 0, sizeof (struct MGD77_HEADER));	/* Initialize header */
+	memset (H, 0, sizeof (struct MGD77_HEADER));	/* Initialize header */
 
 	/* GET AUTHOR, HISTORY INFORMATION */
 
@@ -1661,7 +1661,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char 
 {
 	int i, id, match, length, pick[MGD77_N_HEADER_ITEMS];
 
-	memset ((void *)F->Want_Header_Item, 0, MGD77_N_HEADER_ITEMS * sizeof (GMT_LONG));
+	memset (F->Want_Header_Item, 0, MGD77_N_HEADER_ITEMS * sizeof (GMT_LONG));
 
 	if (item && item[0] == '-') return 1;	/* Just wants a listing */
 
@@ -1791,7 +1791,7 @@ int MGD77_Read_Data_asc (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 		if (GMT_is_dnan (MGD77Record.time)) n_nan_times++;
 	}
 	S->H.no_time = (n_nan_times == S->H.n_records);
-	for (col = n_txt = n_val = 0; col < F->n_out_columns; col++) S->values[col] = ((S->H.info[MGD77_M77_SET].col[F->order[col].item].text) ? (void *)text[n_txt++] : (void *)values[n_val++]);
+	for (col = n_txt = n_val = 0; col < F->n_out_columns; col++) S->values[col] = ((S->H.info[MGD77_M77_SET].col[F->order[col].item].text) ? text[n_txt++] : values[n_val++]);
 	S->n_fields = F->n_out_columns;
 
 	return (MGD77_NO_ERROR);
@@ -1836,7 +1836,7 @@ int MGD77_Write_Data_asc (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *
 	for (k = 0, col[MGD77_TIME] = MGD77_NOT_SET; k < F->n_out_columns; k++) if (S->H.info[MGD77_M77_SET].col[k].abbrev && !strcmp (S->H.info[MGD77_M77_SET].col[k].abbrev, "time")) col[MGD77_TIME] = k;
 	make_ymdhm = (col[MGD77_TIME] >= 0 && (col[MGD77_YEAR] == MGD77_NOT_SET && col[MGD77_MONTH] == MGD77_NOT_SET && col[MGD77_DAY] == MGD77_NOT_SET && col[MGD77_HOUR] == MGD77_NOT_SET && col[MGD77_MIN] == MGD77_NOT_SET));
 
-	memset ((void *)&MGD77Record, 0, sizeof (struct MGD77_DATA_RECORD));
+	memset (&MGD77Record, 0, sizeof (struct MGD77_DATA_RECORD));
 	for (rec = 0; rec < S->H.n_records; rec++) {
 		MGD77Record.number[MGD77_RECTYPE] = (col[MGD77_RECTYPE] == MGD77_NOT_SET || GMT_is_dnan (values[col[MGD77_RECTYPE]][rec])) ?  5.0 : values[col[MGD77_RECTYPE]][rec];
 		for (id = 1; id < MGD77_N_NUMBER_FIELDS; id++) {
@@ -2158,7 +2158,7 @@ void MGD77_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	/* Initialize MGD77 control system */
 	int i, k;
 
-	memset ((void *)F, 0, sizeof (struct MGD77_CONTROL));		/* Initialize structure */
+	memset (F, 0, sizeof (struct MGD77_CONTROL));		/* Initialize structure */
 	MGD77_Path_Init (C, F);
 	MGD77_Init_Columns (C, F, NULL);
 	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = TRUE;		/* TRUE means programs will use error bitflags (if present) when returning data */
@@ -2166,7 +2166,7 @@ void MGD77_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	GMT_get_time_system (C, "unix", &(F->utime));						/* MGD77+ uses GMT's Unix time epoch */
 	GMT_init_time_system_structure (C, &(F->utime));
 	if (strcmp (F->utime.epoch, C->current.setting.time_system.epoch)) F->adjust_time = TRUE;	/* Since MGD77+ uses unix time we must convert to new epoch */
-	memset ((void *)mgd77_range, 0, (size_t)(MGD77_N_DATA_EXTENDED * sizeof (struct MGD77_LIMITS)));
+	memset (mgd77_range, 0, (size_t)(MGD77_N_DATA_EXTENDED * sizeof (struct MGD77_LIMITS)));
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
 	strcpy (F->user, GMT_putusername(C));
 	F->verbose_level = 0;
@@ -2233,16 +2233,16 @@ void MGD77_Reset (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = TRUE;	/* TRUE means we will apply correction factors (if present) when reading data */
 	F->rec_no = F->n_out_columns = F->bit_pattern[0] = F->bit_pattern[1] = F->n_constraints = F->n_exact = F->n_bit_tests = 0;
 	F->no_checking = FALSE;
-	memset ((void *)F->NGDC_id, 0, (size_t)(MGD77_COL_ABBREV_LEN * sizeof (char)));
-	memset ((void *)F->path, 0, (size_t)(GMT_BUFSIZ * sizeof (char)));
+	memset (F->NGDC_id, 0, (size_t)(MGD77_COL_ABBREV_LEN * sizeof (char)));
+	memset (F->path, 0, (size_t)(GMT_BUFSIZ * sizeof (char)));
 	F->fp = NULL;
 	F->nc_id = F->nc_recid = MGD77_NOT_SET;
 	F->format = MGD77_FORMAT_ANY;
-	memset ((void *)F->order, 0, (size_t)(MGD77_MAX_COLS * sizeof (struct MGD77_ORDER)));
-	memset ((void *)F->Constraint, 0, (size_t)(MGD77_MAX_COLS * sizeof (struct MGD77_CONSTRAINT)));
-	memset ((void *)F->desired_column, 0, (size_t)(MGD77_MAX_COLS * MGD77_COL_ABBREV_LEN));
-	memset ((void *)F->Exact, 0, (size_t)(MGD77_MAX_COLS * sizeof (struct MGD77_PAIR)));
-	memset ((void *)F->Bit_test, 0, (size_t)(MGD77_MAX_COLS * sizeof (struct MGD77_PAIR)));
+	memset (F->order, 0, (size_t)(MGD77_MAX_COLS * sizeof (struct MGD77_ORDER)));
+	memset (F->Constraint, 0, (size_t)(MGD77_MAX_COLS * sizeof (struct MGD77_CONSTRAINT)));
+	memset (F->desired_column, 0, (size_t)(MGD77_MAX_COLS * MGD77_COL_ABBREV_LEN));
+	memset (F->Exact, 0, (size_t)(MGD77_MAX_COLS * sizeof (struct MGD77_PAIR)));
+	memset (F->Bit_test, 0, (size_t)(MGD77_MAX_COLS * sizeof (struct MGD77_PAIR)));
 }
 
 int MGD77_Order_Columns (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
@@ -2359,7 +2359,7 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 
 	if (!arg || !arg[0]) return;	/* Return when nothing is passed to us */
 
-	memset ((void *)F->order, 0, (size_t)(MGD77_MAX_COLS * sizeof (int)));		/* Initialize array */
+	memset (F->order, 0, (size_t)(MGD77_MAX_COLS * sizeof (int)));		/* Initialize array */
 	F->bit_pattern[MGD77_M77_SET] = F->bit_pattern[MGD77_CDF_SET] = 0;
 
 	if (strchr (arg, ':')) {	/* Have specific bit-flag conditions */
@@ -2701,7 +2701,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 	}
 
 	if (n) {	/* Avoid duplicates by sorting and removing them */
-		qsort ((void *)L, (size_t)n, sizeof (char *), compare_L);
+		qsort (L, (size_t)n, sizeof (char *), compare_L);
 		for (i = j = 1; j < n; j++) {
 			if (i != j) L[i] = L[j];
 			if (strcmp (L[i], L[i-1])) i++;
@@ -3406,7 +3406,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 
 	if (MGD77_Open_File (C, file, F, MGD77_READ_MODE)) return (-1);	/* Basically sets the path */
 
-	memset ((void *)&E, 0, sizeof (struct MGD77_E77_APPLY));
+	memset (&E, 0, sizeof (struct MGD77_E77_APPLY));
 	count[0] = S->H.n_records;
 	for (col = 0; col < F->n_out_columns; col++) {	/* Only loop over columns that are desired */
 		c  = F->order[col].set;	/* Determine set and item */
@@ -3428,13 +3428,13 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 			}
 			else	/* Get all individual strings */
 				MGD77_nc_status (C, nc_get_vara_schar (F->nc_id, S->H.info[c].col[id].var_id, start, count, (signed char *)text));
-			S->values[col] = (void *)text;
+			S->values[col] = text;
 			S->H.info[c].bit_pattern |= MGD77_this_bit[id];		/* We return this data field */
 		}
 		else if (S->H.no_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Fake NaN time and bit_pattern not set */
 			values = GMT_memory (C, NULL, count[0], double);
 			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) values[rec] = C->session.d_NaN;
-			S->values[col] = (void *)values;
+			S->values[col] = values;
 		}
 		else {
 			values = MGD77_Read_Column (C, F->nc_id, start, count, scale, offset, &(S->H.info[c].col[id]));
@@ -3443,7 +3443,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 				for (rec = 0; rec < (GMT_LONG)count[0]; rec++) values[rec] = MGD77_utime2time (C, F, values[rec]);
 			}
 #endif
-			S->values[col] = (void *)values;
+			S->values[col] = values;
 			S->H.info[c].bit_pattern |= MGD77_this_bit[id];		/* We return this data field */
 		}
 		if (c == MGD77_M77_SET) E.got_it[id] = TRUE;	/* Actually read this field into memory */
@@ -3585,7 +3585,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 
 	/* Look for optional bit flags to read and apply */
 
-	memset ((void *)apply_bits, 0, MGD77_N_SETS * sizeof (GMT_LONG));
+	memset (apply_bits, 0, MGD77_N_SETS * sizeof (GMT_LONG));
 	for (k = 0; k < MGD77_N_SETS; k++) {
 		if (F->use_flags[k] && nc_inq_varid (F->nc_id, flagname[k], &nc_id) == NC_NOERR) {	/* There are bitflags for this set and we want them */
 			flags = GMT_memory (C, NULL, count[0], unsigned int);
@@ -3617,7 +3617,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 					if (! (S->flags[MGD77_M77_SET][rec_in] & bad_nav_bits)) rec++;	/* Record was OK so increment output rec number */
 				}
 				values = GMT_memory (C, values, count[0], double);
-				S->values[i] = (void *)values;
+				S->values[i] = values;
 			}
 			for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
 				c  = F->order[i].set;	/* Determine set and item */
@@ -3630,7 +3630,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 					if (! (S->flags[MGD77_M77_SET][rec_in] & bad_nav_bits)) rec++;	/* Record was OK so increment output rec number */
 				}
 				text = GMT_memory (C, text, count[0] * count[1], char);
-				S->values[i] = (void *)text;
+				S->values[i] = text;
 			}
 			S->H.n_records = count[0];
 		}
@@ -3898,7 +3898,7 @@ int MGD77_carter_init (struct GMT_CTRL *G, struct MGD77_CARTER *C)
 	char buffer [GMT_BUFSIZ], *not_used = NULL;
 	int  i;
 
-	memset ((void *)C, 0, sizeof (struct MGD77_CARTER));
+	memset (C, 0, sizeof (struct MGD77_CARTER));
 
 	/* Read the correction table */
 
@@ -4876,7 +4876,7 @@ void MGD77_CM4_end (struct GMT_CTRL *C, struct MGD77_CM4 *CM4)
 {
 	int i;
 	/* Free space */
-	for (i = 0; i < 3; i++) free ((void *) CM4->path[i]);
+	for (i = 0; i < 3; i++) free ( CM4->path[i]);
 }
 
 double MGD77_Calc_CM4 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double time, double lon, double lat, GMT_LONG calc_date, struct MGD77_CM4 *CM4)
@@ -4982,7 +4982,7 @@ void MGD77_Free_Table (struct GMT_CTRL *C, GMT_LONG n_items, char **item_names)
 {
 	int i;
 	if (!n_items) return;
-	for (i = 0; i < n_items; i++) free ((void *)item_names[i]);	/* free because they were allocated with strdup */
+	for (i = 0; i < n_items; i++) free (item_names[i]);	/* free because they were allocated with strdup */
 	GMT_free (C, item_names);
 	
 }
@@ -5352,7 +5352,7 @@ void MGD77_CM4_init (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_C
 	char file[GMT_BUFSIZ];
 	MGD77_Set_Home (C, F);
 
-	memset ((void *)CM4, 0, sizeof (struct MGD77_CM4));	/* All is set to 0/FALSE */
+	memset (CM4, 0, sizeof (struct MGD77_CM4));	/* All is set to 0/FALSE */
 	GMT_getsharepath (C, "mgd77", "umdl", ".CM4", file);
 	CM4->CM4_M.path = strdup (file);
 	GMT_getsharepath (C, "mgd77", "Dst_all", ".wdc", file);

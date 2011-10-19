@@ -70,20 +70,20 @@ int main (int argc, char **argv) {
 		}
 		nx -= end;
 		if (nx && special) {
-			free ((void *)c.x);
-			free ((void *)c.y);
-			free ((void *)c.xnode[0]);
-			free ((void *)c.xnode[1]);
+			free (c.x);
+			free (c.y);
+			free (c.xnode[0]);
+			free (c.xnode[1]);
 			nx = n_found = 0;
 		}
 		if (!update && nx) {
 			printf ("%s: Polygon %d has %d crossovers\n", argv[0], h.id, nx);
 		}
 		if (!update && n_found) {
-			free ((void *)c.x);
-			free ((void *)c.y);
-			free ((void *)c.xnode[0]);
-			free ((void *)c.xnode[1]);
+			free (c.x);
+			free (c.y);
+			free (c.xnode[0]);
+			free (c.xnode[1]);
 			nx = 0;
 		}
 		if (nx) {	/* Must chop off the bad sections */
@@ -121,10 +121,10 @@ int main (int argc, char **argv) {
 				if (no[k] > 0) j++;
 			}
 			h.n = j;
-			free ((void *)c.x);
-			free ((void *)c.y);
-			free ((void *)c.xnode[0]);
-			free ((void *)c.xnode[1]);
+			free (c.x);
+			free (c.y);
+			free (c.xnode[0]);
+			free (c.xnode[1]);
 			
 			/* Make sure it worked ok */
 			
@@ -138,17 +138,17 @@ int main (int argc, char **argv) {
 			if (nx) {	/* Shit... */
 				printf ("\nPolygon # %d still has %d xovers\n", h.id, nx);
 				for (i = 0; i < nx; i++) printf ("%g\t%g\n", c.x[i], c.y[i]);
-				free ((void *)c.x);
-				free ((void *)c.y);
-				free ((void *)c.xnode[0]);
-				free ((void *)c.xnode[1]);
+				free (c.x);
+				free (c.y);
+				free (c.xnode[0]);
+				free (c.xnode[1]);
 				n_fatal++;
 			}
 			report = TRUE;
 			
 		}
 		
-		free ((void *)ylist);
+		free (ylist);
 		/* Write out new trimmed polygon */
 		
 		if (update && h.n > 2) {

@@ -135,12 +135,12 @@ void *New_mgd77list_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->Q.max[Q_A] = 360.0;		/* Max azimuth limit */
 	C->T.mode = MGD77_NOT_SET;
 	C->W.value = 1.0;	/* Default weight */	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_mgd77list_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* Deallocate control structure */
-	if (C->F.flags) free ((void *)C->F.flags);
-	if (C->L.file) free ((void *)C->L.file);
+	if (C->F.flags) free (C->F.flags);
+	if (C->L.file) free (C->L.file);
 	GMT_free (GMT, C);	
 }
 

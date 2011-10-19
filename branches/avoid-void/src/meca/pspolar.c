@@ -111,7 +111,7 @@ void *New_pspolar_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	GMT_init_fill (GMT, &C->S2.fill, -1.0, -1.0, -1.0); 
 	C->T.justify = 5;
 	C->T.fontsize = 12.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pspolar_Ctrl (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *C) {	/* Deallocate control structure */

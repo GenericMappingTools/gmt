@@ -62,12 +62,12 @@ void *New_sphinterpolate_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initializ
 	struct SPHINTERPOLATE_CTRL *C;
 	
 	C = GMT_memory (GMT, NULL, 1, struct SPHINTERPOLATE_CTRL);
-	return ((void *)C);
+	return (C);
 }
 
 void Free_sphinterpolate_Ctrl (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 
