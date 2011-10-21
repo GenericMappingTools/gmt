@@ -29,8 +29,23 @@
 # usefull macros
 include (GmtHelperMacros)
 
-macro (GMT_CREATE_MANPAGES _MAN_FILES)
-	if (CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU)
+macro (GMT_CREATE_MANPAGES MAN_FILES)
+	if ((CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU) AND HAVE_TRADITIONAL_CPP)
+		# parse arguments
+		set (_arg_is_man_file TRUE)
+		set (_man_files ${MAN_FILES})
+		set (_depends)
+		foreach (_arg ${ARGN})
+			if (_arg_is_man_file AND _arg STREQUAL "DEPENDS")
+				set (_arg_is_man_file FALSE)
+			endif (_arg_is_man_file AND _arg STREQUAL "DEPENDS")
+			if (_arg_is_man_file)
+				list (APPEND _man_files ${_arg})
+			else (_arg_is_man_file)
+				list (APPEND _depends ${_arg})
+			endif (_arg_is_man_file)
+		endforeach (_arg ${ARGN})
+
 		# create tag from current dirname
 		tag_from_current_source_dir (_tag "_")
 
@@ -42,7 +57,7 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES)
 		set (_install_sections)
 		set (_target_depends)
 
-		foreach (_manfile ${_MAN_FILES})
+		foreach (_manfile ${_man_files})
 			# strip section number
 			string (REGEX MATCH "[1-8]$" _man_section ${_manfile})
 			if (NOT _man_section)
@@ -63,8 +78,8 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES)
 					< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
 					> ${_manfile}
 					COMMAND ${GZIP} -9 -f ${_manfile}
-					DEPENDS ${_man_src} ${ARGN} # ARGN: list of arguments past the last expected argument
-					COMMENT "Generate ${_manfile}"
+					DEPENDS ${_man_src} ${_depends}
+					#COMMENT "Generate ${_manfile}"
 					VERBATIM
 					)
 			else(GZIP)
@@ -76,8 +91,8 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES)
 					-I${CMAKE_CURRENT_SOURCE_DIR}
 					< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
 					> ${_manfile}
-					DEPENDS ${_man_src} ${ARGN} # ARGN: list of arguments past the last expected argument
-					COMMENT "Generate ${_manfile}"
+					DEPENDS ${_man_src} ${_depends}
+					#COMMENT "Generate ${_manfile}"
 					VERBATIM
 					)
 			endif(GZIP)
@@ -101,10 +116,10 @@ macro (GMT_CREATE_MANPAGES _MAN_FILES)
 			install (FILES ${_manfilepaths_${_man_section}}
 				DESTINATION ${GMT_SHARE_PATH}/man/man${_man_section})
 		endforeach (_man_section ${_install_sections})
-	else (CMAKE_COMPILER_IS_GNUCC)
-		message(WARNING
-			"Not creating manpages in ${CMAKE_CURRENT_SOURCE_DIR}")
-	endif (CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU)
-endmacro (GMT_CREATE_MANPAGES _MAN_FILES)
+#	else ((CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU) AND HAVE_TRADITIONAL_CPP)
+#		message(WARNING
+#			"Not creating manpages in ${CMAKE_CURRENT_SOURCE_DIR}")
+	endif ((CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU) AND HAVE_TRADITIONAL_CPP)
+endmacro (GMT_CREATE_MANPAGES MAN_FILES)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

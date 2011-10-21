@@ -98,14 +98,11 @@
  *
  */
 
-/*  PSL is POSIX COMPLIANT  */
-
-#define _POSIX_SOURCE 1
-#define _POSIX_C_SOURCE 199506L
-
 /*--------------------------------------------------------------------
  *			SYSTEM HEADER FILES
  *--------------------------------------------------------------------*/
+
+#include "gmt_config.h" /* must be first */
 
 #include <float.h>
 #include <limits.h>
@@ -116,8 +113,6 @@
 #include <time.h>
 #include <stdarg.h>
 #include "pslib.h"
-#include "gmt_config.h"
-#include "gmt_notposix.h"
 
 /* Macro for exit since this should be returned when called from Matlab */
 #ifdef DO_NOT_EXIT

@@ -148,7 +148,11 @@ set (GMT_LIB_SRCS gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c
 
 set (GMT_LIB_PS_SRCS gmt_init.c gmt_map.c gmt_plot.c gmtapi_util.c ${GMT_PROGSPS_SRCS})
 
-set (GMT_LIB_HDRS gmt_progpurpose.h gmt_config.h)
+set (GMT_LIB_HDRS gmt_datums.h gmt_prognames.h gmt_progcases.h
+	gmt_colornames.h gmt_color_rgb.h gmt_ellipsoids.h gmt_grdkeys.h
+	gmt_keycases.h gmt_keywords.h gmtapi_errno.h gmtapi_errstr.h
+	gmt_dimensions.h gmtmath.h gmtmath_op.h gmtmath_explain.h grdmath.h
+	grdmath_op.h grdmath_explain.h gmt_progpurpose.h gmt_config.h)
 
 # lib targets
 set (GMT_LIBS gmtlib pslib)
@@ -183,53 +187,22 @@ set (GMT_MAN_DEPS common_options.txt
 	explain_precision.txt explain_symbols.txt refs.i
 )
 
+# add generated depends
+set (GMT_MAN_DEPS ${GMT_MAN_DEPS} Colors.i Fonts.i Ellipsoids.i
+	grdreformat_man.i gmtmath_man.i grdmath_man.i)
 
-## generate header files (this must be rewritten with cmake macros to be platform independent)
-
-# not needed anymore:
-# set (GMT_EXTRA_HDRS
-#   gmtmath_explain.h gmtmath.h gmtmath_man.i
-#   grdmath_explain.h grdmath.h grdmath_man.i
-#   gmt_progcases.h gmt_prognames.h gmt_colornames.h
-#   gmt_datums.h gmt_grdkeys.h gmt_keywords.h
-#   gmt_dimensions.h gmtapi_errno.h gmt_color_rgb.h
-#   gmt_keycases.h gmtapi_errstr.h
-#   Colors.i Ellipsoids.i Fonts.i grdreformat_man.i
-# )
-
-# creates the above commented files
+# rules for generating missing files
 include (GmtGenExtraHeaders)
 
 # generate gmt_progpurpose.h
-gmt_make_purpose_string (
+gmt_make_purpose_h (
 	GMT_PROG_PURPOSE
 	${GMT_PROGS_SRCS}
-	${GMT_PROGSPS_SRCS}
-	)
-configure_file (gmt_progpurpose.h.cmake gmt_progpurpose.h)
+	${GMT_PROGSPS_SRCS})
 
 configure_file (gmt_config.h.cmake gmt_config.h)
 configure_file (gmt_version.h.cmake gmt_version.h)
 configure_file (isogmt.cmake isogmt @ONLY)
-
-# generate extra files (not yet ported to cmake)
-# not needed anymore
-# if (UNIX)
-#   configure_file (gmtmath.c gmtmath.c COPYONLY)
-#   configure_file (grdmath.c grdmath.c COPYONLY)
-#   add_custom_command (
-#     OUTPUT ${GMT_EXTRA_HDRS}
-#     COMMAND bash ${GMT_SOURCE_DIR}/src/make_math.sh gmt
-#     COMMAND bash ${GMT_SOURCE_DIR}/src/make_math.sh grd
-#     DEPENDS Colors.txt Datums.txt Ellipsoids.txt gmt_keywords.txt
-#     GMTprogs.txt gmtapi_errors.d gmt_progpurpose.h
-#     ${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS} ${GMT_LIB_SRCS}
-#     COMMENT "Regenerating header files..."
-#     VERBATIM
-#   )
-# endif (UNIX)
-# add_custom_target (headers ALL DEPENDS ${GMT_EXTRA_HDRS})
-## end generate header files
 
 # gmtprogram
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
@@ -237,9 +210,7 @@ set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
 # extra ugly definitions for triangle
 set_source_files_properties (triangle
 	PROPERTIES
-	COMPILE_DEFINITIONS "NO_TIMER;TRILIBRARY;REDUCED;CDT_ONLY"
-)
-
+	COMPILE_DEFINITIONS "NO_TIMER;TRILIBRARY;REDUCED;CDT_ONLY")
 
 # libpslib
 add_library (pslib ${GMT_PSL_SRCS})
@@ -336,7 +307,8 @@ elseif (WIN32)
 endif (UNIX)
 
 # Generate manpages
-gmt_create_manpages ("${GMT_MAN_1};${GMT_MAN_3};${GMT_MAN_5}")
+gmt_create_manpages (${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5}
+	DEPENDS ${GMT_MAN_DEPS})
 
 # add subtrees
 add_subdirectory (dbase)

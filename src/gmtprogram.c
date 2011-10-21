@@ -39,7 +39,7 @@ int main (int argc, char *argv[]) {
 	if (GMT_Create_Session (&API, argv[0], FUNC_MODE)) exit (EXIT_FAILURE);
 
 	/* 2. Run GMT function, or give usage message if errors arise during parsing */
-	status = (int)FUNC (API, (GMT_LONG)(argc-1), (void *)(argv+1));
+	status = (int)FUNC (API, argc-1, argv+1);
 
 	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);
