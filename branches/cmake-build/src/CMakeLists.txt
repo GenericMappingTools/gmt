@@ -215,6 +215,11 @@ set_source_files_properties (triangle
 # libpslib
 add_library (pslib ${GMT_PSL_SRCS})
 
+if (HAVE_M_LIBRARY)
+	# link the math library
+	target_link_libraries (pslib m)
+endif (HAVE_M_LIBRARY)
+
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (pslib
 	PROPERTIES
@@ -227,15 +232,17 @@ set_target_properties (pslib
 # libgmt
 add_library (gmtlib ${GMT_LIB_HDRS} ${GMT_LIB_SRCS} ${GMT_LIB_PS_SRCS})
 
-# make sure headers are generated first
-#add_dependencies(gmtlib headers)
-
 target_link_libraries (gmtlib
 	${NETCDF_LIBRARIES}
 	${GMT_OPTIONAL_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 	pslib
 )
+
+if (HAVE_M_LIBRARY)
+	# link the math library
+	target_link_libraries (gmtlib m)
+endif (HAVE_M_LIBRARY)
 
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (gmtlib
