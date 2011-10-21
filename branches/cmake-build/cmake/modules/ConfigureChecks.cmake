@@ -15,6 +15,14 @@ include (CheckCSourceRuns)
 include (TestBigEndian)
 
 #
+# Check if compiler supports -traditional-cpp
+#
+
+set (CMAKE_REQUIRED_FLAGS "-E -w -P -nostdinc -traditional-cpp")
+check_c_source_compiles ("#define TEST" HAVE_TRADITIONAL_CPP)
+set (CMAKE_REQUIRED_FLAGS)
+
+#
 # Check for windows header
 #
 
@@ -32,6 +40,13 @@ check_include_file (fcntl.h             HAVE_FCNTL_H_)
 check_include_file (sys/stat.h          HAVE_STAT_H_)
 check_include_file (unistd.h            HAVE_UNISTD_H_)
 
+check_function_exists (fopen64          HAVE_FOPEN64)
+check_function_exists (fseeko           HAVE_FSEEKO)
+check_function_exists (fseeko64         HAVE_FSEEKO64)
+check_function_exists (_fseeki64        HAVE__FSEEKI64)
+check_function_exists (ftello           HAVE_FTELLO)
+check_function_exists (ftello64         HAVE_FTELLO64)
+check_function_exists (_ftelli64        HAVE__FTELLI64)
 check_function_exists (getpwuid         HAVE_GETPWUID)
 check_function_exists (qsort_r          HAVE_QSORT_R)
 check_function_exists (qsort_s          HAVE_QSORT_S)
@@ -49,11 +64,6 @@ endif (HAVE_UNISTD_H_)
 check_symbol_exists (_access   io.h     HAVE__ACCESS)
 check_symbol_exists (fileno    stdio.h  HAVE_FILENO)
 check_symbol_exists (_fileno   stdio.h  HAVE__FILENO)
-check_symbol_exists (fopen64   stdio.h  HAVE_FOPEN64)
-check_symbol_exists (fseeko    stdio.h  HAVE_FSEEKO)
-check_symbol_exists (_fseeki64 stdio.h  HAVE__FSEEKI64)
-check_symbol_exists (ftello    stdio.h  HAVE_FTELLO)
-check_symbol_exists (_ftelli64 stdio.h  HAVE__FTELLI64)
 check_symbol_exists (_getcwd   direct.h HAVE__GETCWD)
 if (HAVE_UNISTD_H_)
 	check_symbol_exists (getpid  unistd.h  HAVE_GETPID)
@@ -88,7 +98,7 @@ check_type_size (wint_t                 WINT_T)
 #
 
 # check if -lm is needed
-check_library_exists ("" cos "" HAVE_M_FUNCTIONS)
+check_function_exists (cos HAVE_M_FUNCTIONS)
 if (NOT HAVE_M_FUNCTIONS)
 	check_library_exists (m cos "" HAVE_M_LIBRARY)
 	if (HAVE_M_LIBRARY)
@@ -111,8 +121,10 @@ if (HAVE_IEEEFP_H_)
 	list (APPEND _math_h ieeefp.h)
 endif (HAVE_IEEEFP_H_)
 
-# check symbols
+# sincos is a GNU extension:
+set (CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
 
+# check symbols
 check_symbol_exists (acosh       "${_math_h}" HAVE_ACOSH)
 check_symbol_exists (alphasincos "${_math_h}" HAVE_ALPHASINCOS)
 check_symbol_exists (asinh       "${_math_h}" HAVE_ASINH)
@@ -143,6 +155,7 @@ check_symbol_exists (yn          "${_math_h}" HAVE_YN)
 if (HAVE_SINCOS)
 	check_c_source_runs (
 	"
+	#define _GNU_SOURCE
 	include <math.h>
 	int main () {
 	double s = 0.1, c = 0.2;
@@ -154,7 +167,7 @@ if (HAVE_SINCOS)
 	HAVE_SINCOS)
 endif (HAVE_SINCOS)
 
-
+set (CMAKE_REQUIRED_DEFINITIONS)
 
 #check_symbol_exists (intptr_t "stdint.h" HAVE_STDINT_H_WITH_INTPTR)
 #check_symbol_exists (intptr_t "unistdint.h" HAVE_UNISTD_H_WITH_INTPTR)

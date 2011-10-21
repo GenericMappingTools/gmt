@@ -35,6 +35,8 @@
  * The definitions are stored in gmt_config.h */
 #include "gmt_config.h"
 
+/* Declaration modifiers for DLL support (MSC et al) */
+#include "declspec.h"
 
 /*
  * Include POSIX headers

@@ -2477,7 +2477,7 @@ GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z
 					GMT_report (C, GMT_MSG_FATAL, "Syntax error -Z: Cannot specify %c in 32-bit mode\n", (int)txt[i]);
 					return (EXIT_FAILURE);
 				}
-			case 'A':	/* ASCII (next regular float (%lg) from the stream) */
+			case 'A':	/* ASCII (next regular float (%g) from the stream) */
 			case 'a':	/* ASCII (1 per record) */
 			case 'c':	/* Binary signed char */
 			case 'u':	/* Binary unsigned char */
@@ -3075,7 +3075,7 @@ void gmt_clock_C_format (struct GMT_CTRL *C, char *form, struct GMT_CLOCK_IO *S,
 					}
 				}
 				else {		/* Input format */
-					sprintf (fmt, "%%lf");
+					sprintf (fmt, "%%f");
 					strcat (S->format, fmt);
 				}
 			}
@@ -3344,7 +3344,7 @@ GMT_LONG gmt_scanf_clock (struct GMT_CTRL *C, char *s, double *val)
 	*/
 
 	GMT_LONG k, hh, mm, add_noon = 0, hh_limit = 24;	/* ISO std allows 24:00:00  */
-	double ss, x;
+	float ss, x;
 	char *p = NULL;
 
 	if ( (p = strpbrk (s, "apAP") ) ) {

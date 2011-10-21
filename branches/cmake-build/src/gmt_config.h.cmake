@@ -82,8 +82,10 @@
 #cmakedefine HAVE__FILENO
 #cmakedefine HAVE_FOPEN64
 #cmakedefine HAVE_FSEEKO
+#cmakedefine HAVE_FSEEKO64
 #cmakedefine HAVE__FSEEKI64
 #cmakedefine HAVE_FTELLO
+#cmakedefine HAVE_FTELLO64
 #cmakedefine HAVE__FTELLI64
 #cmakedefine HAVE__GETCWD
 #cmakedefine HAVE_GETPID
@@ -147,6 +149,20 @@
 #cmakedefine HAVE_Y0
 #cmakedefine HAVE_Y1
 #cmakedefine HAVE_YN
+
+/* Since glibc 2.12 strdup is only declared if
+ * _POSIX_C_SOURCE >= 200809L || _XOPEN_SOURCE >= 500 */
+#define _POSIX_C_SOURCE 200809L
+/* #undef _XOPEN_SOURCE 700 */
+
+/* Math function sincos is a GNU extension */
+#define _GNU_SOURCE
+
+/* Enable 32 bit systems to use files of sizes beyond the usual limit of 2GB */
+#cmakedefine _LARGEFILE64_SOURCE
+#ifdef _LARGEFILE64_SOURCE
+#	define _FILE_OFFSET_BITS 64
+#endif
 
 #endif /* _GMT_CONFIG_H */
 

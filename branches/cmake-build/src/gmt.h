@@ -42,12 +42,6 @@ extern "C" {
 #define GMT_MSG_COMPAT 2	/* Set lower rank warning level otherwise */
 #endif
 
-/* GMT is POSIX.1 COMPLIANT  */
-
-#ifndef _POSIX_SOURCE
-#define _POSIX_SOURCE 1
-#endif
-
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
