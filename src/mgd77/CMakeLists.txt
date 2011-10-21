@@ -29,21 +29,12 @@ set (GMT_MGD77_PROGSPS_SRCS mgd77track.c)
 gmt_set_api_header(GMT_MGD77_API_H "${GMT_MGD77_PROGS_SRCS}")
 
 # make lib
-add_library (gmt_mgd77
+add_library (gmt_mgd77 STATIC
 	${GMT_MGD77_LIB_SRCS}
 	${GMT_MGD77_PROGS_SRCS}
 	${GMT_MGD77_PROGSPS_SRCS}
 	${GMT_MGD77_API_H})
-target_link_libraries (gmt_mgd77 gmtlib)
-
-# set the build version (VERSION) and the API version (SOVERSION)
-set_target_properties (gmt_mgd77
-	PROPERTIES
-	VERSION "${GMT_PACKAGE_VERSION}"
-	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
-	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
-	DEFINE_SYMBOL "LIBRARY_EXPORTS"
-)
+add_dependencies (gmt_mgd77 gmt_headers)
 
 # create build targets
 string (REPLACE ".c" "" GMT_MGD77_PROGS "${GMT_MGD77_PROGS_SRCS}")
@@ -52,26 +43,24 @@ foreach (prog ${GMT_MGD77_PROGS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
 	PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
-	target_link_libraries (${prog} gmt_mgd77)
+	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 foreach (prog ${GMT_MGD77_PROGSPS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
 	PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMTPSL;FUNC=GMT_${prog}")
-	target_link_libraries (${prog} gmt_mgd77)
+	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 
 # generate Mac debugging symbols
-create_debug_sym (gmt_mgd77 ${GMT_MGD77_PROGS})
+create_debug_sym (${GMT_MGD77_PROGS})
 
 # add the install targets
-install (TARGETS gmt_mgd77 ${GMT_MGD77_PROGS}
-	LIBRARY DESTINATION lib
-	RUNTIME DESTINATION bin
-)
+install (TARGETS ${GMT_MGD77_PROGS}
+	RUNTIME DESTINATION bin)
 
 # add to gmt_suppl target
-add_depend_to_target (gmt_suppl gmt_mgd77 ${GMT_MGD77_PROGS})
+add_depend_to_target (gmt_suppl ${GMT_MGD77_PROGS})
 
 # Generate manpages
 string (REPLACE ".c" ".1" GMT_MGD77_MAN_1 "${GMT_MGD77_PROGS_SRCS}")

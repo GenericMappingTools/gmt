@@ -25,17 +25,8 @@ set (GMT_GSHHS_PROGS2_SRCS gshhs_dp.c gshhstograss.c)
 gmt_set_api_header(GMT_GSHHS_API_H "${GMT_GSHHS_PROGS_SRCS}")
 
 # make lib
-add_library (gmt_gshhs ${GMT_GSHHS_PROGS_SRCS} ${GMT_GSHHS_API_H})
-target_link_libraries (gmt_gshhs gmtlib)
-
-# set the build version (VERSION) and the API version (SOVERSION)
-set_target_properties (gmt_gshhs
-	PROPERTIES
-	VERSION "${GMT_PACKAGE_VERSION}"
-	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
-	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
-	DEFINE_SYMBOL "LIBRARY_EXPORTS"
-)
+add_library (gmt_gshhs STATIC ${GMT_GSHHS_PROGS_SRCS} ${GMT_GSHHS_API_H})
+add_dependencies (gmt_gshhs gmt_headers)
 
 # create build targets
 string (REPLACE ".c" "" GMT_GSHHS_PROGS "${GMT_GSHHS_PROGS_SRCS}")
@@ -43,7 +34,7 @@ foreach (prog ${GMT_GSHHS_PROGS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
 		PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
-	target_link_libraries (${prog} gmt_gshhs)
+	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 
 string (REPLACE ".c" "" GMT_GSHHS_PROGS2 "${GMT_GSHHS_PROGS2_SRCS}")
@@ -53,17 +44,14 @@ foreach (_prog ${GMT_GSHHS_PROGS2})
 endforeach (_prog)
 
 # generate Mac debugging symbols
-create_debug_sym (gmt_gshhs ${GMT_GSHHS_PROGS} ${GMT_GSHHS_PROGS2})
+create_debug_sym (${GMT_GSHHS_PROGS} ${GMT_GSHHS_PROGS2})
 
 # add the install targets
-install (TARGETS gmt_gshhs ${GMT_GSHHS_PROGS} ${GMT_GSHHS_PROGS2}
-	LIBRARY DESTINATION lib
-	RUNTIME DESTINATION bin
-)
+install (TARGETS ${GMT_GSHHS_PROGS} ${GMT_GSHHS_PROGS2}
+	RUNTIME DESTINATION bin)
 
 # add to gmt_suppl target
 add_depend_to_target (gmt_suppl
-	gmt_gshhs
 	${GMT_GSHHS_PROGS}
 	${GMT_GSHHS_PROGS2})
 
