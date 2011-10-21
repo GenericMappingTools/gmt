@@ -29,17 +29,9 @@ set (GMT_MECA_EXAMPLE_PROGS meca_1.bat meca_1.csh meca_2.csh meca_3.csh meca_4.c
 gmt_set_api_header(GMT_MECA_API_H "${GMT_MECA_PROGS_SRCS}")
 
 # make lib
-add_library (gmt_meca ${GMT_MECA_LIB_SRCS} ${GMT_MECA_PROGS_SRCS} ${GMT_MECA_API_H})
-target_link_libraries (gmt_meca gmtlib)
-
-# set the build version (VERSION) and the API version (SOVERSION)
-set_target_properties (gmt_meca
-	PROPERTIES
-	VERSION "${GMT_PACKAGE_VERSION}"
-	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
-	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
-	DEFINE_SYMBOL "LIBRARY_EXPORTS"
-)
+add_library (gmt_meca STATIC ${GMT_MECA_LIB_SRCS}
+	${GMT_MECA_PROGS_SRCS} ${GMT_MECA_API_H})
+add_dependencies (gmt_meca gmt_headers)
 
 # create build targets
 string (REPLACE ".c" "" GMT_MECA_PROGS "${GMT_MECA_PROGS_SRCS}")
@@ -47,20 +39,18 @@ foreach (prog ${GMT_MECA_PROGS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
 	PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMTPSL;FUNC=GMT_${prog}")
-	target_link_libraries (${prog} gmt_meca)
+	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 
 # generate Mac debugging symbols
-create_debug_sym (gmt_meca ${GMT_MECA_PROGS})
+create_debug_sym (${GMT_MECA_PROGS})
 
 # add the install targets
-install (TARGETS gmt_meca ${GMT_MECA_PROGS}
-	LIBRARY DESTINATION lib
-	RUNTIME DESTINATION bin
-)
+install (TARGETS ${GMT_MECA_PROGS}
+	RUNTIME DESTINATION bin)
 
 # add to gmt_suppl target
-add_depend_to_target (gmt_suppl gmt_meca ${GMT_MECA_PROGS})
+add_depend_to_target (gmt_suppl ${GMT_MECA_PROGS})
 
 # Generate manpages
 string (REPLACE ".c" ".1" GMT_MECA_MAN_1 "${GMT_MECA_PROGS_SRCS}")

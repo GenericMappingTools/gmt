@@ -154,8 +154,20 @@ set (GMT_LIB_HDRS gmt_datums.h gmt_prognames.h gmt_progcases.h
 	gmt_dimensions.h gmtmath.h gmtmath_op.h gmtmath_explain.h grdmath.h
 	grdmath_op.h grdmath_explain.h gmt_progpurpose.h gmt_config.h)
 
+# header target
+add_custom_target (gmt_headers DEPENDS ${GMT_LIB_HDRS})
+
 # lib targets
 set (GMT_LIBS gmtlib pslib)
+
+# supplement libs
+set (GMT_SUPPL_LIBS gmt_dbase gmt_gshhs gmt_imgsrc gmt_meca
+	#mgd77 # have to rewrite header generators
+	gmt_potential gmt_segy
+	#sph # have to rewrite generators
+	gmt_spotter
+	#x2sys # depends on mgd77
+	)
 
 # manpages
 string (REPLACE ".c" ".1" GMT_MAN_1 "${GMT_PROGS_SRCS};${GMT_PROGSPS_SRCS}")
@@ -233,6 +245,7 @@ set_target_properties (pslib
 add_library (gmtlib ${GMT_LIB_HDRS} ${GMT_LIB_SRCS} ${GMT_LIB_PS_SRCS})
 
 target_link_libraries (gmtlib
+	${GMT_SUPPL_LIBS} # suppl static libs
 	${NETCDF_LIBRARIES}
 	${GMT_OPTIONAL_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
@@ -318,17 +331,12 @@ gmt_create_manpages (${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5}
 	DEPENDS ${GMT_MAN_DEPS})
 
 # add subtrees
-add_subdirectory (dbase)
-add_subdirectory (gshhs)
-add_subdirectory (imgsrc)
-add_subdirectory (meca)
-#add_subdirectory (mgd77) # have to rewrite header generators
+string (REPLACE "gmt_" "" GMT_SUPPL_DIRS "${GMT_SUPPL_LIBS}")
+foreach (_dir ${GMT_SUPPL_DIRS})
+	add_subdirectory (${_dir})
+endforeach (_dir)
+
 add_subdirectory (misc)
-add_subdirectory (potential)
-add_subdirectory (segy)
-# add_subdirectory (sph) # have to rewrite generators
-add_subdirectory (spotter)
-#add_subdirectory (x2sys) # depends on mgd77
 add_subdirectory (xgrid)
 
 # this prints out the final version of the compiler/linker flags
