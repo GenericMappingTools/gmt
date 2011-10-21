@@ -101,11 +101,6 @@ check_type_size (wint_t                 WINT_T)
 check_function_exists (cos HAVE_M_FUNCTIONS)
 if (NOT HAVE_M_FUNCTIONS)
 	check_library_exists (m cos "" HAVE_M_LIBRARY)
-	if (HAVE_M_LIBRARY)
-		set (CMAKE_SHARED_LINKER_FLAGS -lm)
-		#set (CMAKE_EXE_LINKER_FLAGS -lm)
-		set (CMAKE_REQUIRED_LIBRARIES m)
-	endif (HAVE_M_LIBRARY)
 endif (NOT HAVE_M_FUNCTIONS)
 
 # extra math headers
