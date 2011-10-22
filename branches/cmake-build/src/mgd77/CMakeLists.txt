@@ -28,16 +28,12 @@ set (GMT_MGD77_PROGSPS_SRCS mgd77track.c)
 # generate header file gmt_mgd77.h
 gmt_set_api_header(GMT_MGD77_API_H "${GMT_MGD77_PROGS_SRCS}")
 
-# make lib
-add_library (gmt_mgd77 STATIC
+# lib sources
+set (LIB_SRCS
 	${GMT_MGD77_LIB_SRCS}
 	${GMT_MGD77_PROGS_SRCS}
 	${GMT_MGD77_PROGSPS_SRCS}
 	${GMT_MGD77_API_H})
-add_dependencies (gmt_mgd77 gmt_headers)
-set_target_properties (gmt_mgd77
-	PROPERTIES
-	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
 # create build targets
 string (REPLACE ".c" "" GMT_MGD77_PROGS "${GMT_MGD77_PROGS_SRCS}")

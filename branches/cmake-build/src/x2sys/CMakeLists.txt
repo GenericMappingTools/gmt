@@ -30,13 +30,9 @@ set (GMT_X2SYS_EXAMPLE_PROGS test_x2sys.sh)
 # generate header file gmt_x2sys.h
 gmt_set_api_header(GMT_X2SYS_API_H "${GMT_X2SYS_PROGS_SRCS}")
 
-# make lib
-add_library (gmt_x2sys ${GMT_X2SYS_LIB_SRCS}
+# lib sources
+set (LIB_SRCS ${GMT_X2SYS_LIB_SRCS}
 	${GMT_X2SYS_PROGS_SRCS} ${GMT_X2SYS_API_H})
-add_dependencies (gmt_x2sys gmt_headers)
-set_target_properties (gmt_x2sys
-	PROPERTIES
-	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
 # create build targets
 string (REPLACE ".c" "" GMT_X2SYS_PROGS "${GMT_X2SYS_PROGS_SRCS}")

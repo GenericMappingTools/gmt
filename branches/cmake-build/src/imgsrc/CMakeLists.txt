@@ -26,13 +26,9 @@ set (GMT_IMGSRC_SHELL_SCRIPTS img2google)
 # generate header file gmt_imgsrc.h
 gmt_set_api_header(GMT_IMGSRC_API_H "${GMT_IMGSRC_PROGS_SRCS}")
 
-# make lib
-add_library (gmt_imgsrc STATIC ${GMT_IMGSRC_LIB_SRCS}
+# lib sources
+set (LIB_SRCS ${GMT_IMGSRC_LIB_SRCS}
 	${GMT_IMGSRC_PROGS_SRCS} ${GMT_IMGSRC_API_H})
-add_dependencies (gmt_imgsrc gmt_headers)
-set_target_properties (gmt_imgsrc
-	PROPERTIES
-	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
 # create build targets
 string (REPLACE ".c" "" GMT_IMGSRC_PROGS "${GMT_IMGSRC_PROGS_SRCS}")

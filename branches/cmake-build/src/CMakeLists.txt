@@ -160,15 +160,6 @@ add_custom_target (gmt_headers DEPENDS ${GMT_LIB_HDRS})
 # lib targets
 set (GMT_LIBS gmtlib pslib)
 
-# supplement libs
-set (GMT_SUPPL_LIBS gmt_dbase gmt_gshhs gmt_imgsrc gmt_meca
-	#mgd77 # have to rewrite header generators
-	gmt_potential gmt_segy
-	#sph # have to rewrite generators
-	gmt_spotter
-	#x2sys # depends on mgd77
-	)
-
 # manpages
 string (REPLACE ".c" ".1" GMT_MAN_1 "${GMT_PROGS_SRCS};${GMT_PROGSPS_SRCS}")
 list (APPEND GMT_MAN_1 gmt.1 gmt_shell_functions.1 gmtlogo.1 isogmt.1 gmtswitch.1)
@@ -241,11 +232,36 @@ set_target_properties (pslib
 	DEFINE_SYMBOL "LIBRARY_EXPORTS"
 )
 
+# supplement directories
+set (GMT_SUPPL_DIRS dbase gshhs imgsrc meca
+	#mgd77 # have to rewrite header generators
+	potential segy
+	#sph # have to rewrite generators
+	spotter
+	#x2sys # depends on mgd77
+	)
+
+# process supplement directories
+foreach (_dir ${GMT_SUPPL_DIRS})
+	add_subdirectory (${_dir})
+endforeach (_dir)
+
+# supplement library files
+get_subdir_var_files (GMT_SUPPL_LIB_SRCS LIB_SRCS ${GMT_SUPPL_DIRS})
+
+# include supplement directories
+foreach (_dir ${GMT_SUPPL_DIRS})
+	include_directories (${CMAKE_CURRENT_BINARY_DIR}/${_dir})
+endforeach (_dir)
+
 # libgmt
-add_library (gmtlib ${GMT_LIB_HDRS} ${GMT_LIB_SRCS} ${GMT_LIB_PS_SRCS})
+add_library (gmtlib
+	${GMT_LIB_HDRS}
+	${GMT_LIB_SRCS}
+	${GMT_LIB_PS_SRCS}
+	${GMT_SUPPL_LIB_SRCS})
 
 target_link_libraries (gmtlib
-	${GMT_SUPPL_LIBS} # suppl static libs
 	${NETCDF_LIBRARIES}
 	${GMT_OPTIONAL_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
@@ -331,11 +347,6 @@ gmt_create_manpages (${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5}
 	DEPENDS ${GMT_MAN_DEPS})
 
 # add subtrees
-string (REPLACE "gmt_" "" GMT_SUPPL_DIRS "${GMT_SUPPL_LIBS}")
-foreach (_dir ${GMT_SUPPL_DIRS})
-	add_subdirectory (${_dir})
-endforeach (_dir)
-
 add_subdirectory (misc)
 add_subdirectory (xgrid)
 

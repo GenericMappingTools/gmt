@@ -313,6 +313,11 @@
 #		include <vld.h>
 #	endif
 
+	/* Suppress Visual Studio deprecation warnings */
+#	ifdef _MSC_VER
+		/* #		pragma warning( disable : 4996 ) */
+#	endif
+
 #endif /* defined _WIN32 || defined WIN32 */
 
 #ifndef PATH_SEPARATOR

@@ -22,7 +22,7 @@
 # add_depend_to_target (TARGET DEPEND [ DEPEND [ DEPEND ... ]])
 # add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
 # gmt_set_api_header (API_HEADER FUNCTIONS)
-
+# get_subdir_var_files (VARIABLE VAR_NAME DIR [ DIR ... ])
 
 # tag_from_current_source_dir (TAG [PREFIX])
 # example: tag_from_current_source_dir (_tag "_")
@@ -80,5 +80,19 @@ macro (GMT_SET_API_HEADER _API_HEADER _FUNCTIONS)
 	set (${_API_HEADER} gmt_${GMT_SUPPL_STRING}.h)
 	set (GMT_SUPPL_STRING) # reset GMT_SUPPL_STRING
 endmacro (GMT_SET_API_HEADER _API_HEADER _FUNCTIONS)
+
+# get_subdir_var_files (VARIABLE VAR_NAME DIR [ DIR ... ])
+# example: get_subdir_var_files (SUB_LIB_SRCS LIB_SRCS ${SUB_DIRS})
+macro (GET_SUBDIR_VAR_FILES VARIABLE VAR_NAME DIR_NAME)
+	set (${VARIABLE}) # clear VARIABLE
+	foreach (_dir ${DIR_NAME} ${ARGN})
+		# get value of variable ${VAR_NAME} in dir ${_dir}:
+		get_directory_property (_files DIRECTORY ${_dir} DEFINITION ${VAR_NAME})
+		foreach (_file ${_files})
+			# prepend dirname:
+			list (APPEND ${VARIABLE} "${_dir}/${_file}")
+		endforeach (_file)
+	endforeach(_dir)
+endmacro (GET_SUBDIR_VAR_FILES VARIABLE VAR_NAME DIR_NAME)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

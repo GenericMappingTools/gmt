@@ -23,12 +23,8 @@ set (GMT_DBASE_PROGS_SRCS grdraster.c)
 # generate header file gmt_dbase.h
 gmt_set_api_header(GMT_DBASE_API_H "${GMT_DBASE_PROGS_SRCS}")
 
-# make lib
-add_library (gmt_dbase STATIC ${GMT_DBASE_PROGS_SRCS} ${GMT_DBASE_API_H})
-add_dependencies (gmt_dbase gmt_headers)
-set_target_properties (gmt_dbase
-	PROPERTIES
-	DEFINE_SYMBOL "LIBRARY_EXPORTS")
+# lib sources
+set (LIB_SRCS ${GMT_DBASE_PROGS_SRCS} ${GMT_DBASE_API_H})
 
 # create build targets
 string (REPLACE ".c" "" GMT_DBASE_PROGS "${GMT_DBASE_PROGS_SRCS}")
