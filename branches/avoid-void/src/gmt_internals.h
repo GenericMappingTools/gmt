@@ -264,5 +264,13 @@ EXTERN_MSC int gmt_comp_double_asc (const void *p_1, const void *p_2);
 
 EXTERN_MSC void gmt_set_double_ptr (double **ptr, double *array);
 EXTERN_MSC void gmt_set_char_ptr (char **ptr, char *array);
-
+EXTERN_MSC void GMT_free_dataset_ptr (struct GMT_CTRL *C, struct GMT_DATASET *data);
+EXTERN_MSC void GMT_free_textset_ptr (struct GMT_CTRL *C, struct GMT_TEXTSET *data);
+EXTERN_MSC GMT_LONG GMT_free_cpt_ptr (struct GMT_CTRL *C, struct GMT_PALETTE *P);
+EXTERN_MSC void GMT_free_grid_ptr (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG free_grid);
+EXTERN_MSC void GMT_free_matrix_ptr (struct GMT_CTRL *C, struct GMT_MATRIX *M, GMT_LONG free_matrix);
+EXTERN_MSC void GMT_free_vector_ptr (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_LONG free_vector);
+#ifdef USE_GDAL
+EXTERN_MSC void GMT_free_image_ptr (struct GMT_CTRL *C, struct GMT_IMAGE *I, GMT_LONG free_image);
+#endif
 #endif /* _GMT_INTERNALS_H */

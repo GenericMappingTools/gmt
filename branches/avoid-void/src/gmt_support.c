@@ -1860,7 +1860,7 @@ GMT_LONG GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors, struct GMT_P
 	return (GMT_OK);
 }
 
-GMT_LONG gmt_reset_palette (struct GMT_CTRL *C, struct GMT_PALETTE *P)
+GMT_LONG GMT_free_cpt_ptr (struct GMT_CTRL *C, struct GMT_PALETTE *P)
 {
 	GMT_LONG i;
 	if (!P) return (GMT_NOERROR);
@@ -1893,7 +1893,7 @@ GMT_LONG GMT_copy_palette (struct GMT_CTRL *C, struct GMT_PALETTE *P_to, struct 
 {
 	GMT_LONG i;
 	/* Makes the specified palette the current palette */
-	gmt_reset_palette (C,P_to);
+	GMT_free_cpt_ptr (C, P_to);
 	GMT_memcpy (P_to, P_from, 1, struct GMT_PALETTE);
 	P_to->range = GMT_memory (C, NULL, P_to->n_colors, struct GMT_LUT);
 	GMT_memcpy (P_to->range, P_from->range, P_to->n_colors, struct GMT_LUT);
@@ -1912,7 +1912,7 @@ GMT_LONG GMT_copy_palette (struct GMT_CTRL *C, struct GMT_PALETTE *P_to, struct 
 
 GMT_LONG GMT_free_palette (struct GMT_CTRL *C, struct GMT_PALETTE **P)
 {
-	gmt_reset_palette (C, *P);
+	GMT_free_cpt_ptr (C, *P);
 	GMT_free (C, *P);
 	*P = NULL;
 	return (GMT_NOERROR);
