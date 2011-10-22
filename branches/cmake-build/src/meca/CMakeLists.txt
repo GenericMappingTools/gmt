@@ -32,6 +32,9 @@ gmt_set_api_header(GMT_MECA_API_H "${GMT_MECA_PROGS_SRCS}")
 add_library (gmt_meca STATIC ${GMT_MECA_LIB_SRCS}
 	${GMT_MECA_PROGS_SRCS} ${GMT_MECA_API_H})
 add_dependencies (gmt_meca gmt_headers)
+set_target_properties (gmt_meca
+	PROPERTIES
+	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
 # create build targets
 string (REPLACE ".c" "" GMT_MECA_PROGS "${GMT_MECA_PROGS_SRCS}")

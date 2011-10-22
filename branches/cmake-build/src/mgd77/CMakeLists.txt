@@ -35,6 +35,9 @@ add_library (gmt_mgd77 STATIC
 	${GMT_MGD77_PROGSPS_SRCS}
 	${GMT_MGD77_API_H})
 add_dependencies (gmt_mgd77 gmt_headers)
+set_target_properties (gmt_mgd77
+	PROPERTIES
+	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
 # create build targets
 string (REPLACE ".c" "" GMT_MGD77_PROGS "${GMT_MGD77_PROGS_SRCS}")
