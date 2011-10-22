@@ -58,7 +58,7 @@ struct GMTAPI_DATA_OBJECT {
 	GMT_LONG region;			/* 1 if wesn was passed, 0 otherwise */
 	GMT_LONG level;				/* Nested module level when object was allocated */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
-	void *ptr;				/* Points to the source|destination (typically filenames) */
+	void *resource;				/* Points to the source|destination (typically filenames) */
 	void *data;				/* Points to the memory location of the data (i.e., a GMT_GRID, GMT_DATASET structs) */
 	FILE *fp;				/* Pointer to source/destination stream [NULL if memory location] */
 	char *filename;				/* Locally allocated copy of a filename (or NULL) */

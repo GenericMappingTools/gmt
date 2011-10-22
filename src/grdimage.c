@@ -794,16 +794,10 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->Q.active) GMT_free (GMT, rgb_used);
 	
 	for (k = 1; k < n_grids; k++) {	/* Not done with Grid_proj[0] yet, hence we start loop at k = 1 */
-		if (need_to_project) /* Must remove locally created grids */
-			GMT_free_grid (GMT, &Grid_proj[k], TRUE);
-//		else
-//			GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_proj[k]);
+		if (need_to_project) GMT_free_grid (GMT, &Grid_proj[k], TRUE);	/* Must remove locally created grids */
 	}
 	if (Ctrl->I.active) {
-		if (need_to_project || !n_grids) /* Must remove locally created grids */
-			GMT_free_grid (GMT, &Intens_proj, TRUE);
-//		else
-//			GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_proj);
+		if (need_to_project || !n_grids) GMT_free_grid (GMT, &Intens_proj, TRUE);	/* Must remove locally created grids */
 	}
 	
 	/* Get actual size of each pixel */
@@ -944,10 +938,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, bitimage_8);
 	GMT_free (GMT, bitimage_24);
 
-	if (need_to_project && n_grids)
-		GMT_free_grid (GMT, &Grid_proj[0], TRUE);
-//	else if (n_grids)
-//		GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_proj[0]);
+	if (need_to_project && n_grids) GMT_free_grid (GMT, &Grid_proj[0], TRUE);
 
 #ifdef USE_GDAL
 	if (Ctrl->D.active) {

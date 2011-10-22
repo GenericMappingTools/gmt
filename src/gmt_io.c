@@ -5550,16 +5550,21 @@ void GMT_free_table (struct GMT_CTRL *C, struct GMT_TABLE *table)
 	GMT_free (C, table);
 }
 
-void GMT_free_dataset (struct GMT_CTRL *C, struct GMT_DATASET **data)
+void GMT_free_dataset_ptr (struct GMT_CTRL *C, struct GMT_DATASET *data)
 {	/* This takes pointer to data array and thus can return it as NULL */
 	GMT_LONG tbl, k;
-	if (!(*data)) return;	/* Do not try to free NULL pointer */
-	if (!(*data)->table) return;	/* Do not try to free NULL pointer of tables */
-	for (tbl = 0; tbl < (*data)->n_tables; tbl++) {
-		GMT_free_table (C, (*data)->table[tbl]);
+	if (!data) return;	/* Do not try to free NULL pointer */
+	if (!data->table) return;	/* Do not try to free NULL pointer of tables */
+	for (tbl = 0; tbl < data->n_tables; tbl++) {
+		GMT_free_table (C, data->table[tbl]);
 	}
-	GMT_free (C, (*data)->table);
-	for (k = 0; k < 2; k++) if ((*data)->file[k]) free ((*data)->file[k]);
+	GMT_free (C, data->table);
+	for (k = 0; k < 2; k++) if (data->file[k]) free (data->file[k]);
+}
+
+void GMT_free_dataset (struct GMT_CTRL *C, struct GMT_DATASET **data)
+{	/* This takes pointer to data array and thus can return it as NULL */
+	GMT_free_dataset_ptr (C, *data);
 	GMT_free (C, *data);
 }
 
@@ -5589,16 +5594,23 @@ void gmt_free_texttable (struct GMT_CTRL *C, struct GMT_TEXT_TABLE *table)
 	GMT_free (C, table);
 }
 
-void GMT_free_textset (struct GMT_CTRL *C, struct GMT_TEXTSET **data)
+void GMT_free_textset_ptr (struct GMT_CTRL *C, struct GMT_TEXTSET *data)
 {	/* This takes pointer to data array and thus can return it as NULL */
 
 	GMT_LONG tbl, k;
-	for (tbl = 0; tbl < (*data)->n_tables; tbl++) gmt_free_texttable (C, (*data)->table[tbl]);
-	GMT_free (C, (*data)->table);
-	for (k = 0; k < 2; k++) if ((*data)->file[k]) free ((*data)->file[k]);
+	for (tbl = 0; tbl < data->n_tables; tbl++) gmt_free_texttable (C, data->table[tbl]);
+	GMT_free (C, data->table);
+	for (k = 0; k < 2; k++) if (data->file[k]) free (data->file[k]);
+}
+
+void GMT_free_textset (struct GMT_CTRL *C, struct GMT_TEXTSET **data)
+{	/* This takes pointer to data array and thus can return it as NULL */
+
+	GMT_free_textset_ptr (C, *data);
 	GMT_free (C, *data);
 }
 
+#ifdef USE_GDAL
 struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *C)
 {	/* Allocates space for a new image container. */
 	struct GMT_IMAGE *I = GMT_memory (C, NULL, 1, struct GMT_IMAGE);
@@ -5608,15 +5620,20 @@ struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *C)
 	return (I);
 }
 
+void GMT_free_image_ptr (struct GMT_CTRL *C, struct GMT_IMAGE *I, GMT_LONG free_image)
+{	/* Free contents of image pointer */
+	if (!I) return;	/* Nothing to deallocate */
+	if (I->data && free_image) GMT_free (C, I->data);
+	if (I->header) GMT_free (C, I->header);
+	if (I->ColorMap) GMT_free (C, I->ColorMap);
+}
+
 void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, GMT_LONG free_image)
 {	/* By taking a reference to the image pointer we can set it to NULL when done */
-	if (!(*I)) return;	/* Nothing to deallocate */
-	if ((*I)->data && free_image) GMT_free (C, (*I)->data);
-	if ((*I)->header) GMT_free (C, (*I)->header);
-	if ((*I)->ColorMap) GMT_free (C, (*I)->ColorMap);
+	GMT_free_image_ptr (C, *I, free_image);
 	GMT_free (C, *I);
-	*I = NULL;
 }
+#endif
 
 GMT_LONG GMT_create_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **Mout)
 {	/* Allocates space for a new matrix container. */
@@ -5628,12 +5645,16 @@ GMT_LONG GMT_create_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **Mout)
 	return (GMT_OK);
 }
 
+void GMT_free_matrix_ptr (struct GMT_CTRL *C, struct GMT_MATRIX *M, GMT_LONG free_matrix)
+{	/* Free everything but the struct itself  */
+	if (!M) return;	/* Nothing to deallocate */
+	if (M->data && free_matrix) GMT_free (C, M->data);
+}
+
 void GMT_free_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **M, GMT_LONG free_matrix)
 {	/* By taking a reference to the matrix pointer we can set it to NULL when done */
-	if (!(*M)) return;	/* Nothing to deallocate */
-	if ((*M)->data && free_matrix) GMT_free (C, (*M)->data);
+	GMT_free_matrix_ptr (C, *M, free_matrix);
 	GMT_free (C, *M);
-	*M = NULL;
 }
 
 GMT_LONG GMT_create_vector (struct GMT_CTRL *C, GMT_LONG n_columns, struct GMT_VECTOR **Vout)
@@ -5651,18 +5672,23 @@ GMT_LONG GMT_create_vector (struct GMT_CTRL *C, GMT_LONG n_columns, struct GMT_V
 	return (GMT_OK);
 }
 
+void GMT_free_vector_ptr (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_LONG free_vector)
+{	/* By taking a reference to the vector pointer we can set it to NULL when done */
+	/* free_vector = FALSE means the vectors are not to be freed but the data array itself will be */
+	if (!V) return;	/* Nothing to deallocate */
+	if (V->data && free_vector) {
+		GMT_LONG col;
+		for (col = 0; col < V->n_columns; col++) GMT_free (C, V->data[col]);
+	}
+	GMT_free (C, V->data);
+	GMT_free (C, V->type);
+}
+
 void GMT_free_vector (struct GMT_CTRL *C, struct GMT_VECTOR **V, GMT_LONG free_vector)
 {	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = FALSE means the vectors are not to be freed but the data array itself will be */
-	if (!(*V)) return;	/* Nothing to deallocate */
-	if ((*V)->data && free_vector) {
-		GMT_LONG col;
-		for (col = 0; col < (*V)->n_columns; col++) GMT_free (C, (*V)->data[col]);
-	}
-	GMT_free (C, (*V)->data);
-	GMT_free (C, (*V)->type);
+	GMT_free_vector_ptr (C, *V, free_vector);
 	GMT_free (C, *V);
-	*V = NULL;
 }
 
 GMT_LONG GMT_not_numeric (struct GMT_CTRL *C, char *text)
