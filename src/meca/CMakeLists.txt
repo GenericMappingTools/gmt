@@ -28,13 +28,9 @@ set (GMT_MECA_EXAMPLE_PROGS meca_1.bat meca_1.csh meca_2.csh meca_3.csh meca_4.c
 # generate header file gmt_meca.h
 gmt_set_api_header(GMT_MECA_API_H "${GMT_MECA_PROGS_SRCS}")
 
-# make lib
-add_library (gmt_meca STATIC ${GMT_MECA_LIB_SRCS}
+# lib sources
+set (LIB_SRCS ${GMT_MECA_LIB_SRCS}
 	${GMT_MECA_PROGS_SRCS} ${GMT_MECA_API_H})
-add_dependencies (gmt_meca gmt_headers)
-set_target_properties (gmt_meca
-	PROPERTIES
-	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
 # create build targets
 string (REPLACE ".c" "" GMT_MECA_PROGS "${GMT_MECA_PROGS_SRCS}")

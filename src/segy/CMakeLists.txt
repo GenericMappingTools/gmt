@@ -30,13 +30,9 @@ set (GMT_SEGY_EXAMPLE_PROGS segyprogs_1.sh segyprogs_2.sh segyprogs_3.sh
 # generate header file gmt_segy.h
 gmt_set_api_header(GMT_SEGY_API_H "${GMT_SEGY_PROGS_SRCS}")
 
-# make lib
-add_library (gmt_segy STATIC ${GMT_SEGY_LIB_SRCS}
+# lib sources
+set (LIB_SRCS ${GMT_SEGY_LIB_SRCS}
 	${GMT_SEGY_PROGS_SRCS} ${GMT_SEGY_API_H})
-add_dependencies (gmt_segy gmt_headers)
-set_target_properties (gmt_segy
-	PROPERTIES
-	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
 # create build targets
 string (REPLACE ".c" "" GMT_SEGY_PROGS "${GMT_SEGY_PROGS_SRCS}")

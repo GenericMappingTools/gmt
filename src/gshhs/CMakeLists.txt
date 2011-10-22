@@ -24,12 +24,8 @@ set (GMT_GSHHS_PROGS2_SRCS gshhs_dp.c gshhstograss.c)
 # generate header file gmt_gshhs.h
 gmt_set_api_header(GMT_GSHHS_API_H "${GMT_GSHHS_PROGS_SRCS}")
 
-# make lib
-add_library (gmt_gshhs STATIC ${GMT_GSHHS_PROGS_SRCS} ${GMT_GSHHS_API_H})
-add_dependencies (gmt_gshhs gmt_headers)
-set_target_properties (gmt_gshhs
-	PROPERTIES
-	DEFINE_SYMBOL "LIBRARY_EXPORTS")
+# lib sources
+set (LIB_SRCS ${GMT_GSHHS_PROGS_SRCS} ${GMT_GSHHS_API_H})
 
 # create build targets
 string (REPLACE ".c" "" GMT_GSHHS_PROGS "${GMT_GSHHS_PROGS_SRCS}")

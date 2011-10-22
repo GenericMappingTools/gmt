@@ -24,13 +24,8 @@ set (GMT_POTENTIAL_PROGS2_SRCS gravfft.c)
 # generate header file gmt_potential.h
 gmt_set_api_header(GMT_POTENTIAL_API_H "${GMT_POTENTIAL_PROGS_SRCS}")
 
-# make lib
-add_library (gmt_potential STATIC
-	${GMT_POTENTIAL_PROGS_SRCS} ${GMT_POTENTIAL_API_H})
-add_dependencies (gmt_potential gmt_headers)
-set_target_properties (gmt_potential
-	PROPERTIES
-	DEFINE_SYMBOL "LIBRARY_EXPORTS")
+# lib sources
+set (LIB_SRCS ${GMT_POTENTIAL_PROGS_SRCS} ${GMT_POTENTIAL_API_H})
 
 # create build targets
 string (REPLACE ".c" "" GMT_POTENTIAL_PROGS "${GMT_POTENTIAL_PROGS_SRCS}")

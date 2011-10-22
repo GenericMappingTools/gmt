@@ -30,13 +30,9 @@ set (GMT_SPOTTER_EXAMPLE_PROGS spotter.bat spotter.sh)
 # generate header file gmt_spotter.h
 gmt_set_api_header(GMT_SPOTTER_API_H "${GMT_SPOTTER_PROGS_SRCS}")
 
-# make lib
-add_library (gmt_spotter STATIC ${GMT_SPOTTER_LIB_SRCS}
+# lib sources
+set (LIB_SRCS ${GMT_SPOTTER_LIB_SRCS}
 	${GMT_SPOTTER_PROGS_SRCS} ${GMT_SPOTTER_API_H})
-add_dependencies (gmt_spotter gmt_headers)
-set_target_properties (gmt_spotter
-	PROPERTIES
-	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
 # create build targets
 string (REPLACE ".c" "" GMT_SPOTTER_PROGS "${GMT_SPOTTER_PROGS_SRCS}")
