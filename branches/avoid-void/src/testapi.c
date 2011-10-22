@@ -291,7 +291,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, ifile[Ctrl->T.mode], &Intmp);
 					break;
 			}
-			error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, Intmp, NULL, Intmp, &in_ID);
+			error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, &Intmp, NULL, Intmp, &in_ID);
 			break;
 		default:
 			GMT_report (GMT, GMT_MSG_FATAL, "Bad Input mode\n");
@@ -359,13 +359,13 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		case GMT_IS_COPY: case GMT_IS_REF:
 			switch (Ctrl->W.via) {
 				case GMT_VIA_MATRIX:	/* Put the dataset|grid via a user matrix */
-					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, Out, NULL, Out, &out_ID);
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, Out, &out_ID);
 					break;
 				case GMT_VIA_VECTOR:	/* Put the dataset|grid via a user vector */
-					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, Out, NULL, Out, &out_ID);
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, Out, &out_ID);
 					break;
 				default:
-					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, Out, NULL, Out, &out_ID);
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, Out, &out_ID);
 					break;
 			}
 			break;
