@@ -314,7 +314,7 @@ GMT_LONG skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon,
 
 GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG ij, col, row, ij_rot, seg, rec, not_global;
+	GMT_LONG ij, col, row, ij_rot, seg, rec, not_global, registered_d = FALSE;
 	GMT_LONG col2, row2, col_o, row_o, error = FALSE, global = FALSE;
 	
 	double xx, yy, lon, P_original[3], P_rotated[3], R[3][3];
@@ -382,6 +382,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->F.file, &D)) Return ((error = GMT_DATA_READ_ERROR));
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 		pol = D->table[0];	/* Since it is a single file */
+		registered_d = TRUE;
 	}
 	else if (not_global) {	/* Make a single grid-outline polygon */
 		get_grid_path (GMT, G->header, &D);
@@ -429,7 +430,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->D.file, D)) Return (GMT_DATA_WRITE_ERROR);
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
-		
+		registered_d = TRUE;
 	}
 	if (Ctrl->S.active) {
 		if (Ctrl->F.active)
@@ -536,7 +537,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, grd_y);
 	GMT_free (GMT, grd_yc);
 	
-	if (Ctrl->F.active)
+	if (registered_d)
 		GMT_Destroy_Data (API, GMT_ALLOCATED, &D);
 	else if (not_global)
 		GMT_free_dataset (GMT, &D);
