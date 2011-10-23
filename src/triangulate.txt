@@ -51,7 +51,8 @@ Output triangulation network as multiple line segments separated by a segment he
 .TP
 OPT(Q)
 Output the edges of the Voronoi cells instead [Default is Delaunay triangle edges].  Requires
-OPT(R) and is only available if linked with the Shewchuk [1996] library.
+OPT(R) and is only available if linked with the Shewchuk [1996] library.  Note that OPT(Z) is
+ignored on output.
 #include "explain_-R.txt"
 .TP
 OPT(S)
