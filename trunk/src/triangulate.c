@@ -115,13 +115,14 @@ GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-D Take derivative in the x- or y-direction (only with -G) [Default is z value].\n");
 	GMT_message (GMT, "\t-E Value to use for empty nodes [Default is NaN].\n");
 	GMT_message (GMT, "\t-G Grid data. Give name of output grid file and specify -R -I.\n");
+	GMT_message (GMT, "\t   Cannot be used with -Q.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "J");   
 	GMT_message (GMT, "\t-M Output triangle edges as multiple segments separated by segment headers.\n");
 	GMT_message (GMT, "\t   [Default is to output the indices of vertices for each Delaunay triangle].\n");
-	GMT_message (GMT, "\t-Q Compute Voronoi polygon edges instead (requires -R and Shukchuck algorithm) [Delaunay triangulation].\n");
+	GMT_message (GMT, "\t-Q Compute Voronoi polygon edges instead (requires -R and Shewchuk algorithm) [Delaunay triangulation].\n");
 	GMT_message (GMT, "\t-S Output triangle polygons as multiple segments separated by segment headers.\n");
-	GMT_message (GMT, "\t   Requires Delaunay triangulation.\n");
+	GMT_message (GMT, "\t   Cannot be used with -Q.\n");
 	GMT_message (GMT, "\t-Z Expect (x,y,z) data on input (and output); automatically set if -G is used [Expect (x,y) data].\n");
 	GMT_explain_options (GMT, "RVC2");
 	GMT_message (GMT, "\t-bo Write binary (double) index table [Default is ASCII i/o].\n");
@@ -208,6 +209,7 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify file name\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && (Ctrl->I.active + GMT->common.R.active) != 2, "Syntax error: Must specify -R, -I, -G for gridding\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->Q.active, "Syntax error -G option: Cannot be used with -Q\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->Q.active, "Syntax error -G option: Cannot be used with -S\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active, "Syntax error -Q option: Requires -R\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON, "Syntax error -Q option: Requires Shewchuck triangulation algorithm\n");
 
@@ -264,6 +266,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
 	}
+	if (Ctrl->Q.active && Ctrl->Z.active) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
 	n_output = ((Ctrl->M.active || Ctrl->S.active) && (Ctrl->Q.active || !Ctrl->Z.active)) ? 2 : 3;
 	triplets[GMT_OUT] = (n_output == 3);
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output))) Return (error);
