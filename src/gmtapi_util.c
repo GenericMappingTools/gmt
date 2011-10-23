@@ -1439,7 +1439,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 				ij_orig = API->GMT_2D_to_index[M->shape] (row, col, M->dim, complex_mode);
 				I->data[ij] = (char)GMTAPI_get_val (M->data, ij_orig, M->type);
 			}
-			if (M->alloc_mode == 1) GMT_free_matrix (API->GMT, M, TRUE);
+			if (M->alloc_mode == 1) GMT_free_matrix (API->GMT, &M, TRUE);
 			break;
 			
 	 	case GMT_IS_REF + GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
@@ -3014,7 +3014,7 @@ GMT_LONG GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 	if (!(retval == EOF || retval == GMT_IO_NEXT_FILE)) API->current_rec[GMT_IN]++;	/* Increase record count, unless EOF */
 
 #ifdef DEBUG
-	if (S->family == GMT_IS_TEXTSET) GMT_report (API->GMT, GMT_MSG_DEBUG, "%s", (char *)(*record));
+	if (S->family == GMT_IS_TEXTSET) GMT_report (API->GMT, GMT_MSG_DEBUG, "%s", gmt_get_char_ptr (record));
 #endif
 	
 	return (retval);		
