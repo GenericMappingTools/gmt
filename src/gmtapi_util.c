@@ -88,7 +88,7 @@ static const char *GMT_stream[2] = {"Standard", "User-supplied"};
  * We are given a void * pointer which actually holds the address to a pointer
  * and we wish to assign a new value to that pointer.  We thus need to turn that
  * void * pointer into what it really is, e.g., a double ** pointer, so that the
- * assignment can be made safely. The gmt_set_***_ptr does this for us: */
+ * assignment can be made safely. The gmt_set_<type>_ptr does this for us: */
 
 void gmt_set_double_ptr (double **ptr, double *item) {*ptr = item;}
 void gmt_set_char_ptr (char **ptr, char *item) {*ptr = item;}
