@@ -3126,7 +3126,7 @@ void GMT_free_func (struct GMT_CTRL *C, void *addr, const char *fname, const GMT
 {
 	if (!addr) return;	/* Do not try to free a NULL pointer! */
 #ifdef DEBUG
-	gmt_memtrack_sub (C, GMT_mem_keeper, fname, line, addr);
+	gmt_memtrack_sub (C, GMT_mem_keeper, (char *)fname, line, addr);
 #endif
 #if defined(WIN32) && defined(USE_MEM_ALIGNED)
 	_aligned_free (addr);
