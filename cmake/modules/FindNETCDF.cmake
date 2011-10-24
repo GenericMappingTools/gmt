@@ -97,7 +97,6 @@ find_library (NETCDF_LIBRARY
 	/opt/local
 	/opt/csw
 	/opt
-	/usr/freeware
 )
 
 # find all libs that nc-config reports

@@ -1,7 +1,7 @@
 #
 # $Id$
 #
-# - Find regex 
+# - Find regex
 # Find the native REGEX includes and library
 #
 #  REGEX_INCLUDE_DIR   - where to find regex.h, etc.
@@ -24,7 +24,7 @@ find_path (REGEX_INCLUDE_DIR regex.h
 	/usr/include
 	/sw/include
 	/opt/local/include
-	/opt/csw/include 
+	/opt/csw/include
 	/opt/include
 	/usr/include/awk
 	/usr/local/include/awk
@@ -50,18 +50,18 @@ if (REGEX_INCLUDE_DIR)
 		if (REGEX_LIBRARY_TEMP)
 			set (CMAKE_REQUIRED_LIBRARIES ${REGEX_LIBRARY_TEMP})
 			check_c_source_compiles ("int main() {(void)regcomp();}" REGCOMP_IN_REGEX)
-		
+
 			if (REGCOMP_IN_REGEX)
 				set (REGEX_LIBRARY ${REGEX_LIBRARY_TEMP})
 				set (REGEX_FOUND "YES")
 			else (REGCOMP_IN_REGEX)
 				message ("I found regex.h and a libregex but couldn't get regcomp() to compile")
 			endif (REGCOMP_IN_REGEX)
-		
+
 		else (REGEX_LIBRARY_TEMP)
 			message ("I found regex.h but regcomp() is not in libc or libregex")
 		endif (REGEX_LIBRARY_TEMP)
-	
+
 	else (NOT REGCOMP_IN_LIBC)
 		set (REGEX_FOUND "YES")
 	endif (NOT REGCOMP_IN_LIBC)
@@ -72,3 +72,4 @@ else (REGEX_INCLUDE_DIR)
 endif (REGEX_INCLUDE_DIR)
 
 mark_as_advanced (REGEX_LIBRARY_TEMP REGCOMP_IN_LIBC REGCOMP_IN_REGEX)
+

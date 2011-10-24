@@ -81,6 +81,19 @@ and/or _DO_TESTS_ in ConfigUser.cmake and do:
 
 TODO list
 ---------
+* Replace shell scripts in supplements with cmake macros: mgd77, sph
+
+* Turn into GMT module: potential/gravfft.c
+
+* Fix segfault in xgridedit: tries to access grid outside bounds in
+   gmt_nc.c:536  grid[kk] = tmp[k[i]];
+
+* Replace GMT_(malloc|memory): perl -i -pe 's/(GMT_(malloc|memory)[^_].+, )([^,)]+)/$1sizeof($3)/g' files ...
+
+* Remove (void *) casts: perl -i -pe 's/(free.*[(])[(]void[ ]*[*][)][ ]*/$1/g' *.c
+
+* Remove macros GMT_fopen et al. and implement LFS support
+
 * Add further subtrees: follow example of CMakeLists.txt in src/meca, share
   and share/conf. Problem: mgd77 still uses nonportable header generators,
   x2sys depends on mgd77
@@ -111,7 +124,6 @@ TODO list
     cmake "file(read ..."? Btw: clang -E does not output blank lines
 
 * Add further tests/cmake-find-modules:
-  - octave/Matlab
   - fftw/Accelerate Framework
   - xgrid
   - WIN32: test for USE_MEM_ALIGNED, defined in src/gmt_config.h.cmake
@@ -121,13 +133,6 @@ TODO list
   - to simplify manpage creation *(done)*
   - for LaTeX docu (http://www.vtk.org/Wiki/CMakeUserUseLATEX)
   - to build a release (including precompiled manpages, pdf docu, ...)
-
-* Replace shell scripts in supplements with cmake macros: mgd77, sph
-
-* Turn into GMT module: potential/gravfft.c
-
-* Fix segfault in xgridedit: tries to access grid outside bounds in
-   gmt_nc.c:536  grid[kk] = tmp[k[i]];
 
 Done
 ----
