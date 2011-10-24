@@ -3227,7 +3227,7 @@ GMT_LONG GMT_Create_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG par
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with no contents */
 		 	error = GMT_create_matrix (API->GMT, data);
 			break;
-		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with columns but no contents */
+		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with the requested number of columns but no contents */
 		 	error = GMT_create_vector (API->GMT, par[0], data);
 			break;
 		default:
