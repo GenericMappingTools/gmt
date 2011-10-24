@@ -36,7 +36,7 @@ if (UNIX)
 	find_program (PCRE_CONFIG pcre-config
 		HINTS
 		${PCRE_DIR}
-		${PCRE_ROOT} 
+		${PCRE_ROOT}
 		$ENV{PCRE_DIR}
 		$ENV{PCRE_ROOT}
 		PATH_SUFFIXES bin
@@ -95,8 +95,7 @@ find_library (PCRE_LIBRARY
 	/sw
 	/opt/local
 	/opt/csw
-	/opt
-	/usr/freeware)
+	/opt)
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (PCRE DEFAULT_MSG PCRE_LIBRARY PCRE_INCLUDE_DIR)

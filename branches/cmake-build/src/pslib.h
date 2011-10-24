@@ -38,6 +38,7 @@ extern "C" {
 #include "declspec.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "gmt_notposix.h"
 
 /* Declaration of type PSL_LONG */
