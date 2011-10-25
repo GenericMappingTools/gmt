@@ -1846,18 +1846,16 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	h->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
 }
 
-GMT_LONG GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors, struct GMT_PALETTE **Pout)
+struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors)
 {
 	/* Makes an empty palette table */
 	struct GMT_PALETTE *P = NULL;
-	if (!Pout || *Pout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
-	if ((P = GMT_memory (C, NULL, 1, struct GMT_PALETTE)) == NULL) return (GMT_MEMORY_ERROR);
-	if ((P->range = GMT_memory (C, NULL, n_colors, struct GMT_LUT)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((P = GMT_memory (C, NULL, 1, struct GMT_PALETTE)) == NULL) return (NULL);
+	if ((P->range = GMT_memory (C, NULL, n_colors, struct GMT_LUT)) == NULL) return (NULL);
 	P->n_colors = n_colors;
 	P->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
-	*Pout = P;
 	
-	return (GMT_OK);
+	return (P);
 }
 
 GMT_LONG GMT_free_cpt_ptr (struct GMT_CTRL *C, struct GMT_PALETTE *P)
@@ -2349,7 +2347,7 @@ void GMT_sample_cpt (struct GMT_CTRL *C, struct GMT_PALETTE *Pin, double z[], GM
 		even = TRUE;
 	}
 
-	GMT_create_palette (C, nz - 1, &P);
+	P = GMT_create_palette (C, nz - 1);
 	lut = GMT_memory (C, NULL, Pin->n_colors, struct GMT_LUT);
 
 	GMT_check_condition (C, no_inter && P->n_colors > Pin->n_colors, "Warning: Number of picked colors exceeds colors in input cpt!\n");
@@ -3642,7 +3640,7 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double x
 		}
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
-		GMT_read_table (C, G->file, GMT_IS_FILE, &G->xp, FALSE, FALSE, FALSE);
+		G->xp = GMT_read_table (C, G->file, GMT_IS_FILE, FALSE, FALSE, FALSE);
 		for (k = 0; k < G->xp->n_segments; k++) {
 			for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
 				GMT_geo_to_xy (C, G->xp->segment[k]->coord[GMT_X][i], G->xp->segment[k]->coord[GMT_Y][i], &x, &y);
@@ -9641,7 +9639,7 @@ GMT_LONG gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	across_ds_radians = D2R * (cross_half_width / GMT->current.proj.DIST_M_PR_DEG) / n_half_cross;	/* Angular change from point to point */
 	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
 	n_tot_cols = 4 + n_cols;	/* Total number of columns in the resulting data set */
-	GMT_create_dataset (GMT, Din->n_tables, 0, n_tot_cols, np_cross, &Xout);	/* An empty dataset of n_tot_cols columns and np_cross rows */
+	Xout = GMT_create_dataset (GMT, Din->n_tables, 0, n_tot_cols, np_cross);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */
@@ -9766,7 +9764,7 @@ GMT_LONG gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
 	across_ds = cross_length / n_half_cross;		/* Exact increment (recalculated in case of roundoff) */
 	n_tot_cols = 4 + n_cols;				/* Total number of columns in the resulting data set */
-	GMT_create_dataset (GMT, Din->n_tables, 0, n_tot_cols, np_cross, &Xout);	/* An empty dataset of n_tot_cols columns and np_cross rows */
+	Xout = GMT_create_dataset (GMT, Din->n_tables, 0, n_tot_cols, np_cross);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */

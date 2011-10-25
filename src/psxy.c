@@ -504,7 +504,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG ex1, ex2, ex3, change, pos2x, pos2y, save_u = FALSE;
 	GMT_LONG xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
 
-	char buffer[GMT_BUFSIZ], *text_rec = NULL;
+	char *text_rec = NULL;
 
 	double dim[7], *in = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
@@ -709,16 +709,14 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	old_is_world = GMT->current.map.is_world;
 	geometry = not_line ? GMT_IS_POINT : (GMT_IS_LINE + polygon);
+	in = GMT->current.io.curr_rec;
 	if (read_symbol) {	/* If symbol info is given we must process text records */
 		set_type = GMT_IS_TEXTSET;
 		read_mode = GMT_READ_TEXT;
-		record = &buffer;
-		in = GMT->current.io.curr_rec;
 	}
 	else {	/* Here we can process data records (ASCII or binary) */
 		set_type = GMT_IS_DATASET;
 		read_mode = GMT_READ_DOUBLE;
-		record = &in;
 	}
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed))) Return (error);
 
@@ -726,7 +724,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
 		if ((error = GMT_Begin_IO (API, set_type, GMT_IN, GMT_BY_REC))) Return (error);		/* Enables data input and sets access mode */
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
-		while ((n_fields = GMT_Get_Record (API, read_mode, record)) != EOF) {	/* Keep returning records until we have no more files */
+		while ((record = GMT_Get_Record (API, read_mode, &n_fields))) {	/* Keep returning records until we have no more files */
 
 			if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
 
@@ -738,7 +736,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 					GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 				}
-				n_fields = GMT_Get_Record (API, read_mode, record);
+				record = GMT_Get_Record (API, read_mode, &n_fields);
 			}
 			if (GMT_REC_IS_EOF (GMT)) continue;	/* At EOF */
 

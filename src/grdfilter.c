@@ -563,7 +563,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Check range of output area and set i,j offsets, etc.  */
 
-	GMT_create_grid (GMT, &Gout);
+	Gout = GMT_create_grid (GMT);
 	GMT_grd_init (GMT, Gout->header, options, TRUE);	/* Update command history only */
 	/* Use the -R region for output if set; otherwise match grid domain */
 	GMT_memcpy (Gout->header->wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
@@ -613,7 +613,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Compute the wrap-around delta_nx to use [may differ from nx unless a 360 grid] */
 		nx_wrap = GMT_get_n (GMT, 0.0, 360.0, Gin->header->inc[GMT_X], GMT_PIXEL_REG);	/* So we basically bypass the duplicate point at east */
 	}	
-	GMT_create_grid (GMT, &A);
+	A = GMT_create_grid (GMT);
 #ifdef DEBUG
 	if ((error = init_area_weights (GMT, Gin, Ctrl->D.mode, A, Ctrl->W.file))) Return (error);	/* Precalculate area weights */
 #else

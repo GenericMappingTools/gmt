@@ -506,7 +506,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n = 0;
 	x_min = DBL_MAX;	x_max = -DBL_MAX;
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we have no more files */
+	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we have no more files */
 
 		if (GMT_REC_IS_ERROR(GMT)) Return (EXIT_FAILURE);
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip all headers */

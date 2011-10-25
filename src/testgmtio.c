@@ -58,7 +58,7 @@ int main (int argc, char *argv[]) {
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) exit (error);				/* Enables data input and sets access mode */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) exit (error);				/* Enables data output and sets access mode */
 	
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, &in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, &n_fields))) {	/* Keep returning records until we reach EOF */
 		mode = GMT_WRITE_DOUBLE;	/* Normally we treat data as double precision values */
 		if (GMT_REC_IS_ERROR (GMT)) {	/* This check kicks in if the data has bad formatting, text etc */
 			GMT_report (GMT, GMT_MSG_NORMAL, "Error found in record %ld\n", GMT->current.io.rec_no);

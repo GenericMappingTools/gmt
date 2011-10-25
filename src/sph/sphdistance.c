@@ -323,13 +323,13 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 		
 		n = 0;
-		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
+		while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
 
 			if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_TBL_HEADER (GMT)) continue;	/* Skip table headers */
 
 			while (GMT_REC_IS_SEG_HEADER (GMT)) {	/* Segment header, get next record */
-				n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in);	
+				in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields);	
 				first_x = in[GMT_X];	first_y = in[GMT_Y];
 				first = TRUE;
 			}

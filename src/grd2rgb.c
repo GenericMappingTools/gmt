@@ -440,7 +440,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 
-		GMT_create_grid (GMT, &Grid);
+		Grid = GMT_create_grid (GMT);
 		GMT_grd_init (GMT, Grid->header, options, FALSE);
 		Grid->header->registration = (int)GMT->common.r.active;
 		if (!Ctrl->I.active) {

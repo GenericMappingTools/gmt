@@ -266,7 +266,7 @@ GMT_LONG gmt_process_binary_input (struct GMT_CTRL *C, GMT_LONG n_read) {
 	return (0);	/* 0 means OK regular record */
 }
 
-GMT_LONG gmt_nc_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **ptr)
+void * gmt_nc_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *retval)
 {
 	GMT_LONG i, status, n_use;
 
@@ -282,7 +282,8 @@ GMT_LONG gmt_nc_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **ptr)
 
 		if (C->current.io.nrec == C->current.io.ndim) {
 			C->current.io.status = GMT_IO_EOF;
-			return (-1);
+			*retval = -1;
+			return (NULL);
 		}
 		for (i = 0; i < C->current.io.nvars && i < n_use; i++) {
 			nc_get_var1_double (C->current.io.ncid, C->current.io.varid[i], &C->current.io.nrec, &C->current.io.curr_rec[i]);
@@ -295,12 +296,15 @@ GMT_LONG gmt_nc_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **ptr)
 		C->current.io.nrec++;
 		C->current.io.rec_no++;
 		status = gmt_process_binary_input (C, n_use);
-		if (status == 1) return (0);		/* A segment header */
+		if (status == 1) { *retval = 0; return (C->current.io.curr_rec); }		/* A segment header */
 	} while (status == 2);	/* Continue reading when record is to be skipped */
-	*ptr = C->current.io.curr_rec;
-	if (gmt_gap_detected (C)) return (gmt_set_gap (C));
+	if (gmt_gap_detected (C)) {
+		*retval = gmt_set_gap (C);
+		return (C->current.io.curr_rec);
+	}
 	C->current.io.pt_no++;
-	return (*n);
+	*retval = *n;
+	return (C->current.io.curr_rec);
 }
 
 GMT_LONG GMT_nc_get_att_text (struct GMT_CTRL *C, int ncid, int varid, char *name, char *text, size_t textlen)
@@ -1120,7 +1124,7 @@ GMT_LONG GMT_is_segment_header (struct GMT_CTRL *C, char *line)
 /* This is the lowest-most input function in GMT.  All ASCII table data are read via
  * gmt_ascii_input.  Changes here affect all programs that read such data. */
 
-GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **data)
+void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *status)
 {
 	GMT_LONG i, pos, col_no = 0, in_col, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
 	GMT_LONG done = FALSE, bad_record, set_nan_flag = FALSE;
@@ -1147,7 +1151,8 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **da
 			strcpy (C->current.io.current_record, line);
 			C->current.io.status = GMT_IO_TBL_HEADER;
 			C->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on table headers on output */
-			return (0);
+			*status = 0;
+			return (C->current.io.current_record);
 		}
 		/* Here we are done with any header records implied by -h */
 		if (C->current.setting.io_blankline[GMT_IN]) {	/* Treat blank lines as segment markers, so only read one line */
@@ -1161,7 +1166,8 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **da
 		if (line[0] == '#') {	/* Got a file header, copy it and return */
 			strcpy (C->current.io.current_record, line);
 			C->current.io.status = GMT_IO_TBL_HEADER;
-			return (0);
+			*status = 0;
+			return (C->current.io.current_record);
 		}
 		if (!p) {	/* Ran out of records, which can happen if file ends in a comment record */
 			C->current.io.status = GMT_IO_EOF;
@@ -1170,7 +1176,8 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **da
 				C->current.io.n_bad_records = C->current.io.pt_no = C->current.io.n_clean_rec = 0;
 				C->current.io.rec_no = C->current.io.rec_in_tbl_no = -1;
 			}
-			return (-1);
+			*status = -1;
+			return (NULL);
 		}
 
 		if ((kind = GMT_is_segment_header (C, line))) {	/* Got a segment header, take action and return */
@@ -1183,7 +1190,8 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **da
 			}
 			else	/* Got a segment break instead - set header to NULL */
 				C->current.io.segment_header[0] = '\0';
-			return (0);
+			*status = 0;
+			return (C->current.io.segment_header);
 		}
 
 		/* Here we know we are processing a data record */
@@ -1248,7 +1256,6 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **da
 		else
 			done = TRUE;	/* Success, we can get out of this loop and return what we got */
 	}
-	*data = C->current.io.curr_rec;	/* Set input pointer to current hidden record array */
 	C->current.io.status = (n_ok == n_use || *n == GMT_MAX_COLUMNS) ? 0 : GMT_IO_MISMATCH;	/* Hopefully set status to 0 (OK) */
 	if (set_nan_flag) C->current.io.status |= GMT_IO_NAN;					/* But we might have to say we found NaNs */
 	if (*n == GMT_MAX_COLUMNS) *n = n_ok;							/* Update the number of expected fields */
@@ -1257,13 +1264,14 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **da
 	if (C->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2) d_swap (C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);	/* Must account for periodicity in 360 as per current rule*/
 
-	if (gmt_gap_detected (C)) return (gmt_set_gap (C));	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
+	if (gmt_gap_detected (C)) {*status = gmt_set_gap (C); return (C->current.io.curr_rec); }	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
 
-	C->current.io.pt_no++;	/* Got a valid data record (which is true even if it was a gap) */
-	return (n_ok);		/* Return the number of fields successfully read */
+	C->current.io.pt_no++;			/* Got a valid data record (which is true even if it was a gap) */
+	*status = n_ok;				/* Return the number of fields successfully read */
+	return (C->current.io.curr_rec);	/* Pass back pointer to data array */
 }
 
-GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, char **data)
+char * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *status)
 {
 	GMT_LONG i;
 	char line[GMT_BUFSIZ], *p = NULL;
@@ -1284,18 +1292,21 @@ GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, char **
 	if (C->current.io.io_header[GMT_IN] && C->current.io.rec_in_tbl_no < C->current.io.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 		strcpy (C->current.io.current_record, line);
 		C->current.io.status = GMT_IO_TBL_HEADER;
-		return (0);
+		*status = 0;
+		return (C->current.io.current_record);
 	}
 	if (!p) {	/* Ran out of records */
 		C->current.io.status = GMT_IO_EOF;
 		*n = 0;
-		return (-1);
+		*status = -1;
+		return (NULL);
 	}
 	if (line[0] == '#') {	/* Got a file header, take action and return */
 		strcpy (C->current.io.current_record, line);
 		C->current.io.status = GMT_IO_TBL_HEADER;
 		*n = 1;
-		return (0);
+		*status = 0;
+		return (C->current.io.current_record);
 	}
 
 	if (line[0] == C->current.setting.io_seg_marker[GMT_IN]) {	/* Got a segment header, take action and return */
@@ -1305,7 +1316,8 @@ GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, char **
 		i = GMT_trim_segheader (C, line);	/* Eliminate DOS endings and both leading and trailing white space, incl segment marker */
 		strcpy (C->current.io.segment_header, &line[i]);
 		*n = 1;
-		return (0);
+		*status = 0;
+		return (C->current.io.segment_header);
 	}
 
 	/* Normal data record */
@@ -1316,12 +1328,11 @@ GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, char **
 
 	strcpy (C->current.io.current_record, line);
 
-	*data = C->current.io.current_record;
 	C->current.io.status = 0;
-
 	C->current.io.pt_no++;	/* Got a valid text record */
 	*n = 1;			/* We always return 1 item as there are no columns */
-	return (1);
+	*status = 1;
+	return (C->current.io.current_record);
 }
 
 GMT_LONG GMT_is_a_blank_line (char *line) {
@@ -1357,7 +1368,7 @@ GMT_LONG gmt_x_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
 }
 
 GMT_LONG gmt_get_binary_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG n) {
-	/* Reads the n binary doubles from input */
+	/* Reads the n binary doubles from input and saves to C->current.io.curr_rec[] */
 	GMT_LONG i, one = 1;
 	
 	if (n > GMT_MAX_COLUMNS) {
@@ -1379,25 +1390,25 @@ GMT_LONG gmt_get_binary_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG n) {
 	return (FALSE);	/* OK so far */
 }
 
-GMT_LONG gmt_bin_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **ptr)
+void * gmt_bin_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *retval)
 {	/* General binary read function which calls function pointed to by C->current.io.read_binary to handle actual reading (and possbily swabbing) */
 	GMT_LONG status, n_use;
 
 	C->current.io.status = 0;
 	do {	/* Keep reading until (1) EOF, (2) got a segment record, or (3) a valid data record */
 		n_use = gmt_n_cols_needed_for_gaps (C, *n);
-		if (gmt_get_binary_input (C, fp, n_use)) return (-1);	/* EOF */
+		if (gmt_get_binary_input (C, fp, n_use)) { *retval = -1; return (NULL); }	/* EOF */
 		C->current.io.rec_no++;
 		status = gmt_process_binary_input (C, n_use);
-		if (status == 1) return (0);		/* A segment header */
+		if (status == 1) { *retval = 0; return (C->current.io.curr_rec); }		/* A segment header */
 	} while (status == 2);	/* Continue reading when record is to be skipped */
 	if (C->common.i.active) *n = gmt_bin_colselect (C);
 	
-	*ptr = C->current.io.curr_rec;
-	if (gmt_gap_detected (C)) return (gmt_set_gap (C));
+	if (gmt_gap_detected (C)) { *retval = gmt_set_gap (C); return (C->current.io.curr_rec); }
 	C->current.io.pt_no++;
 
-	return (*n);
+	*retval = *n;
+	return (C->current.io.curr_rec);
 }
 
 GMT_LONG gmt_skip_output (struct GMT_CTRL *C, double *cols, GMT_LONG n_cols)
@@ -2642,9 +2653,10 @@ GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_LONG repeat[], GM
 }
 
 /* GMT_z_input and GMT_z_output are used in grd2xyz/xyz2grd to fascilitate reading of one-col items via the general i/o machinery */
-GMT_LONG GMT_z_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **data)
+void * GMT_z_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *status)
 {
-	return (C->current.io.read_item (C, fp, n, *data));
+	*status = C->current.io.read_item (C, fp, n, C->current.io.curr_rec);
+	return (C->current.io.curr_rec);
 }
 	
 GMT_LONG GMT_z_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, void *data)
@@ -3908,7 +3920,7 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 	char file[GMT_BUFSIZ], *in = NULL;
 	FILE *fp = NULL;
 	struct GMT_TEXT_TABLE *T = NULL;
-	PFL psave = NULL;
+	PFP psave = NULL;
 
 	/* Determine input source */
 
@@ -3945,7 +3957,7 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 		return (EXIT_FAILURE);
 	}
 
-	n_fields = GMT_ascii_textinput (C, fp, &ncol, &in);	/* Get first record */
+	in = GMT_ascii_textinput (C, fp, &ncol, &n_fields);	/* Get first record */
 	n_read++;
 	if (GMT_REC_IS_EOF (C)) {
 		GMT_report (C, GMT_MSG_NORMAL, "File %s is empty!\n", file);
@@ -3967,7 +3979,7 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 				n_head_alloc <<= 1;
 				T->header = GMT_memory (C, T->header, n_head_alloc, char *);
 			}
-			n_fields = GMT_ascii_textinput (C, fp, &ncol, &in);
+			in = GMT_ascii_textinput (C, fp, &ncol, &n_fields);
 			n_read++;
 		}
 		header = FALSE;	/* Done processing header block; other comments are GIS/OGR encoded comments */
@@ -3993,7 +4005,7 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 			n_row_alloc = GMT_CHUNK;
 			row = 0;
 			if (!no_segments) {
-				n_fields = GMT_ascii_textinput (C, fp, &ncol, &in);	/* Don't read if we didnt read a segment header up front */
+				in = GMT_ascii_textinput (C, fp, &ncol, &n_fields);	/* Don't read if we didnt read a segment header up front */
 				n_read++;
 			}
 			no_segments = FALSE;	/* This has now served its purpose */
@@ -4016,7 +4028,7 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 				n_row_alloc <<= 1;
 				T->segment[seg]->record = GMT_memory (C, T->segment[seg]->record, n_row_alloc, char *);
 			}
-			n_fields = GMT_ascii_textinput (C, fp, &ncol, &in);
+			in = GMT_ascii_textinput (C, fp, &ncol, &n_fields);
 			n_read++;
 		}
 		T->segment[seg]->n_rows = row;	/* Number of records in this segment */
@@ -4961,32 +4973,30 @@ void GMT_adjust_dataset (struct GMT_CTRL *C, struct GMT_DATASET *D, GMT_LONG n_c
 	D->n_columns = n_columns;
 }
 
-GMT_LONG GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_segments, GMT_LONG n_rows, struct GMT_TEXTSET **Dout)
+struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_segments, GMT_LONG n_rows)
 {	/* Create an empty text set structure with the required number of empty tables, all set to hold n_segments with n_rows */
 	GMT_LONG tbl, seg;
 	struct GMT_TEXT_TABLE *T = NULL;
 	struct GMT_TEXTSET *D = NULL;
 	
-	if (!Dout || *Dout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
-	if ((D = GMT_memory (C, NULL, n_tables, struct GMT_TEXTSET)) == NULL) return (GMT_MEMORY_ERROR);
-	if ((D->table = GMT_memory (C, NULL, n_tables, struct GMT_TEXT_TABLE *)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((D = GMT_memory (C, NULL, 1, struct GMT_TEXTSET)) == NULL) return (NULL);
+	if ((D->table = GMT_memory (C, NULL, n_tables, struct GMT_TEXT_TABLE *)) == NULL) return (NULL);
 	D->n_tables = D->n_alloc = n_tables;
 	D->n_segments = n_tables * n_segments;
 	for (tbl = 0; tbl < n_tables; tbl++) {
-		if ((D->table[tbl] = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE)) == NULL) return (GMT_MEMORY_ERROR);
+		if ((D->table[tbl] = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE)) == NULL) return (NULL);
 		T = D->table[tbl];
-		if ((T->segment = GMT_memory (C, NULL, n_segments, struct GMT_TEXT_SEGMENT *)) == NULL) return (GMT_MEMORY_ERROR);
+		if ((T->segment = GMT_memory (C, NULL, n_segments, struct GMT_TEXT_SEGMENT *)) == NULL) return (NULL);
 		T->n_segments = T->n_alloc = n_segments;
 		for (seg = 0; seg < T->n_segments; seg++) {
-			if ((T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXT_SEGMENT)) == NULL) return (GMT_MEMORY_ERROR);
-			if ((T->segment[seg]->record = GMT_memory (C, NULL, n_rows, char *)) == NULL) return (GMT_MEMORY_ERROR);
+			if ((T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXT_SEGMENT)) == NULL) return (NULL);
+			if ((T->segment[seg]->record = GMT_memory (C, NULL, n_rows, char *)) == NULL) return (NULL);
 			T->segment[seg]->n_alloc = n_rows;
 		}
 	}
 	D->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
-	*Dout = D;
 	
-	return (GMT_OK);
+	return (D);
 }
 
 void gmt_alloc_texttable (struct GMT_CTRL *C, struct GMT_TEXT_TABLE *Tin, struct GMT_TEXT_TABLE **Tout)
@@ -5163,23 +5173,21 @@ GMT_LONG GMT_create_table (struct GMT_CTRL *C, GMT_LONG n_segments, GMT_LONG n_c
 	return (GMT_OK);
 }
 
-GMT_LONG GMT_create_dataset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_segments, GMT_LONG n_columns, GMT_LONG n_rows, struct GMT_DATASET **Dout)
+struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_segments, GMT_LONG n_columns, GMT_LONG n_rows)
 {	/* Create an empty data set structure with the required number of empty tables, all set to hold n_segments with n_columns */
 	GMT_LONG tbl;
 	struct GMT_DATASET *D = NULL;
 	
-	if (!Dout || *Dout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
-	if ((D = GMT_memory (C, NULL, n_tables, struct GMT_DATASET)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((D = GMT_memory (C, NULL, 1, struct GMT_DATASET)) == NULL) return (NULL);
 	D->n_columns = n_columns;
-	if ((D->table = GMT_memory (C, NULL, n_tables, struct GMT_TABLE *)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((D->table = GMT_memory (C, NULL, n_tables, struct GMT_TABLE *)) == NULL) return (NULL);
 	D->n_tables = D->n_alloc = n_tables;
 	if (n_segments > 0) D->n_segments = D->n_tables * n_segments;
 	if (n_segments > 0) D->n_records = D->n_segments * n_rows;
-	for (tbl = 0; tbl < n_tables; tbl++) if (GMT_create_table (C, n_segments, n_columns, n_rows, &D->table[tbl])) return (GMT_MEMORY_ERROR);
+	for (tbl = 0; tbl < n_tables; tbl++) if (GMT_create_table (C, n_segments, n_columns, n_rows, &D->table[tbl])) return (NULL);
 	D->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
-	*Dout = D;
 	
-	return (GMT_OK);
+	return (D);
 }
 
 struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type, GMT_LONG greenwich, GMT_LONG poly, GMT_LONG use_GMT_io)
@@ -5192,7 +5200,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 	double d, *in = NULL;
 	FILE *fp = NULL;
 	struct GMT_TABLE *T = NULL;
-	PFL psave = NULL;
+	PFP psave = NULL;
 
 	if (use_GMT_io) {	/* Use C->current.io.info settings to determine if input is ascii/binary, else it defaults to ascii */
 		n_expected_fields = C->common.b.active[GMT_IN] ? C->common.b.ncol[GMT_IN] : GMT_MAX_COLUMNS;
@@ -5249,7 +5257,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 		return (NULL);
 	}
 
-	n_fields = C->current.io.input (C, fp, &n_expected_fields, &in);	/* Get first record */
+	in = C->current.io.input (C, fp, &n_expected_fields, &n_fields);	/* Get first record */
 	n_read++;
 	if (GMT_REC_IS_EOF(C)) {
 		GMT_report (C, GMT_MSG_NORMAL, "File %s is empty!\n", file);
@@ -5273,7 +5281,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 				n_head_alloc <<= 1;
 				T->header = GMT_memory (C, T->header, n_head_alloc, char *);
 			}
-			n_fields = C->current.io.input (C, fp, &n_expected_fields, &in);
+			in = C->current.io.input (C, fp, &n_expected_fields, &n_fields);
 			n_read++;
 		}
 		header = FALSE;	/* Done processing header block; other comments are GIS/OGR encoded comments */
@@ -5302,7 +5310,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 			/* Segment initialization */
 			row = 0;
 			if (!no_segments) {	/* Read data if we read a segment header up front, but guard against headers which sets n_fields = 0 */
-				while (!GMT_REC_IS_EOF (C) && (n_fields = C->current.io.input (C, fp, &n_expected_fields, &in)) == 0) n_read++;
+				while (!GMT_REC_IS_EOF (C) && (in = C->current.io.input (C, fp, &n_expected_fields, &n_fields)) && n_fields == 0) n_read++;
 			}
 			T->segment[seg]->n_columns = n_expected_fields;
 			no_segments = FALSE;	/* This has now served its purpose */
@@ -5329,7 +5337,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 			if (C->current.io.status & GMT_IO_MISMATCH) {
 				GMT_report (C, GMT_MSG_FATAL, "Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", n_fields, n_expected_fields, n_read);
 				if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
-				NULL (EXIT_FAILURE);
+				return (NULL);
 			}
 
 			if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) {
@@ -5347,8 +5355,8 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 				T->segment[seg]->n_alloc <<= 1;
 				GMT_alloc_segment (C, T->segment[seg], T->segment[seg]->n_alloc, T->segment[seg]->n_columns, FALSE);
 			}
-			n_fields = C->current.io.input (C, fp, &n_expected_fields, &in);
-			while (GMT_REC_IS_TBL_HEADER (C)) n_fields = C->current.io.input (C, fp, &n_expected_fields, &in);	/* Just wind past other comments */
+			in = C->current.io.input (C, fp, &n_expected_fields, &n_fields);
+			while (GMT_REC_IS_TBL_HEADER (C)) in = C->current.io.input (C, fp, &n_expected_fields, &n_fields);	/* Just wind past other comments */
 			n_read++;
 		}
 		T->segment[seg]->n_rows = row;	/* Number of records in this segment */
@@ -5633,14 +5641,12 @@ void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, GMT_LONG free_ima
 }
 #endif
 
-GMT_LONG GMT_create_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **Mout)
+struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *C)
 {	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
-	if (!Mout || *Mout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
-	if ((M = GMT_memory (C, NULL, 1, struct GMT_MATRIX)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((M = GMT_memory (C, NULL, 1, struct GMT_MATRIX)) == NULL) return (NULL);
 	M->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
-	*Mout = M;
-	return (GMT_OK);
+	return (M);
 }
 
 void GMT_free_matrix_ptr (struct GMT_CTRL *C, struct GMT_MATRIX *M, GMT_LONG free_matrix)
@@ -5655,19 +5661,17 @@ void GMT_free_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **M, GMT_LONG free_m
 	GMT_free (C, *M);
 }
 
-GMT_LONG GMT_create_vector (struct GMT_CTRL *C, GMT_LONG n_columns, struct GMT_VECTOR **Vout)
+struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *C, GMT_LONG n_columns)
 {	/* Allocates space for a new vector container.  No space allocated for the vectors themselves */
 	struct GMT_VECTOR *V = NULL;
 	
-	if (!Vout || *Vout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
-	if ((V = GMT_memory (C, NULL, 1, struct GMT_VECTOR)) == NULL) return (GMT_MEMORY_ERROR);
-	if ((V->data = GMT_memory (C, NULL, n_columns, void *)) == NULL) return (GMT_MEMORY_ERROR);
-	if ((V->type = GMT_memory (C, NULL, n_columns, GMT_LONG)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((V = GMT_memory (C, NULL, 1, struct GMT_VECTOR)) == NULL) return (NULL);
+	if ((V->data = GMT_memory (C, NULL, n_columns, void *)) == NULL) return (NULL);
+	if ((V->type = GMT_memory (C, NULL, n_columns, GMT_LONG)) == NULL) return (NULL);
 	V->n_columns = n_columns;
 	V->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
-	*Vout = V;
 	
-	return (GMT_OK);
+	return (V);
 }
 
 void GMT_free_vector_ptr (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_LONG free_vector)

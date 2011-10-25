@@ -1509,19 +1509,17 @@ void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G)
 	GMT_memset (G->header->BC, 4, GMT_LONG);				/* BCs no longer set for this grid */
 }
 
-GMT_LONG GMT_create_grid (struct GMT_CTRL *C, struct GMT_GRID **Gout)
+struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *C)
 {	/* Allocates space for a new grid container.  No space allocated for the float grid itself */
 	struct GMT_GRID *G = NULL;
 
-	if (*Gout) return (GMT_Report_Error (C->parent, GMT_PTR_NOT_NULL));
 	if ((G = GMT_memory (C, NULL, 1, struct GMT_GRID)) == NULL) return (GMT_MEMORY_ERROR);
 	if ((G->header = GMT_memory (C, NULL, 1, struct GRD_HEADER)) == NULL) return (GMT_MEMORY_ERROR);
 	GMT_grd_setpad (C, G->header, C->current.io.pad);	/* Use the system pad setting by default */
 	G->header->pocket = NULL;			/* Char pointer to hold whatever we may temporarilly need to store */
 	G->header->n_bands = 1;				/* Since all grids only have 1 layer */
 	G->alloc_mode = GMT_ALLOCATED;			/* So GMT_* modules can free this memory. */
-	*Gout = G;
-	return (GMT_OK);
+	return (G);
 }
 
 struct GRD_HEADER *GMT_duplicate_gridheader (struct GMT_CTRL *C, struct GRD_HEADER *h)
@@ -1537,7 +1535,7 @@ struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, GMT
 {	/* Duplicates an entire grid, including data. */
 	struct GMT_GRID *Gnew = NULL;
 
-	GMT_create_grid (C, &Gnew);
+	Gnew = GMT_create_grid (C);
 	GMT_memcpy (Gnew->header, G->header, 1, struct GRD_HEADER);
 	if (alloc_data) {	/* ALso allocate and duplicate data array */
 		Gnew->data = GMT_memory (C, NULL, G->header->size, float);
