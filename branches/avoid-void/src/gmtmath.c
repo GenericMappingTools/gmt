@@ -2940,13 +2940,13 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (status != GMTMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
 		if (!got_t_from_file) {
 			if (!strcmp (opt->arg, "STDIN")) {	/* Special stdin name.  We store this input in a special struct since we may need it again and it can only be read once! */
-				if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, 0, NULL, &D_stdin)) Return ((error = GMT_DATA_READ_ERROR));
+				if ((D_stdin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
 				read_stdin = TRUE;
 				D_in = D_stdin;
 				I = D_stdin->table[0];
 			}
 			else {
-				if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, opt->arg, &D_in)) Return ((error = GMT_DATA_READ_ERROR));
+				if ((D_in = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, opt->arg, NULL)) == NULL) Return (API->error);
 			}
 			got_t_from_file = 1;
 		}
@@ -2966,9 +2966,9 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Cannot have data files when -A is specified\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->A.file, &A_in)) {
+		if ((A_in = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->A.file, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s\n", Ctrl->A.file);
-			Return ((error = GMT_DATA_READ_ERROR));
+			Return (API->error);
 		}
 		rhs = A_in->table[0];	/* Only one table */
 		if (rhs->n_columns != 2) {
@@ -2994,9 +2994,9 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Cannot use -T when data files are specified\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->T.file, &T_in)) {
+		if ((T_in = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->T.file, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s\n", Ctrl->T.file);
-			Return (EXIT_FAILURE);
+			Return (API->error);
 		}
 		use_t_col = 0;
 		got_t_from_file = 2;
@@ -3182,9 +3182,9 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				else {
 					if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s ", opt->arg);
-					if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, opt->arg, &stack[nstack])) {
+					if ((stack[nstack] = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, opt->arg, NULL)) == NULL) {
 						GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s\n", opt->arg);
-						Return (EXIT_FAILURE);
+						Return (API->error);
 					}
 					alloc_mode[nstack] = 2;
 				}
@@ -3279,10 +3279,10 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (info.roots_found) {	/* Special treatment of root finding */
 		struct GMT_LINE_SEGMENT *S = stack[0]->table[0]->segment[0];
-		GMT_LONG dim[4] = {1, 1, 1, 0}, ID;
+		GMT_LONG dim[4] = {1, 1, 1, 0};
 		
 		dim[3] = info.n_roots;
-		if ((error = GMT_Create_Data (API, GMT_IS_DATASET, dim, &R, GMT_OUT, &ID))) Return (error)
+		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_OUT)) == NULL) Return (API->error)
 		for (i = 0; i < info.n_roots; i++) R->table[0]->segment[0]->coord[GMT_X][i] = S->coord[info.r_col][i];
 		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, stack[0]->io_mode, Ctrl->Out.file, R))) Return (error);
 		GMT_Destroy_Data (API, GMT_ALLOCATED, &R);

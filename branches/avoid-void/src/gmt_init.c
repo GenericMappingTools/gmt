@@ -1173,7 +1173,7 @@ GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	if (!GMT_access (C, item, R_OK)) {	/* Gave a readable file, presumably a grid */
 		struct GMT_GRID *G = NULL;
 		if ((error = GMT_Begin_IO (C->parent, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (C->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, item, &G)) return (GMT_DATA_READ_ERROR);
+		if ((G = GMT_Get_Data (C->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, item, NULL)) == NULL) return (C->parent->error);
 		if ((error = GMT_End_IO (C->parent, GMT_IN, 0))) return (error);	/* Disables further data input */
 		GMT_memcpy (&(C->current.io.grd_info.grd), G->header, 1, struct GRD_HEADER);
 		GMT_Destroy_Data (C->parent, GMT_ALLOCATED, &G);

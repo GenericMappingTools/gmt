@@ -181,7 +181,7 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
 		GMT_LONG i0, i1, j0, j1, j, ij;
 		
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, &G)) Return (GMT_DATA_READ_ERROR);	/* Get entire grid */
+		if ((G = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get entire grid */
 		
 		for (i = 0, i0 = -1; i0 == -1 && i < G->header->nx; i++) {	/* Scan from xmin towards xmax */
 			for (j = 0, ij = GMT_IJP (G->header, 0, i); i0 == -1 && j < G->header->ny; j++, ij += G->header->mx) {
@@ -231,7 +231,7 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, G->data);	/* Free the grid array only as we need the header below */
 	}
 	else {	/* Just the usual subset selection via -R */
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, &G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if ((G = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 		GMT_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
 	}
 	
@@ -289,7 +289,7 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memcpy (wesn_old, G->header->wesn, 4, double);
 	nx_old = G->header->nx;		ny_old = G->header->ny;
 	
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->In.file, &G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) Return (API->error);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {

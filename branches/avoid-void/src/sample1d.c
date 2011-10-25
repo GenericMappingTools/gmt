@@ -266,7 +266,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->N.active) {	/* read file with abscissae */
 		struct GMT_DATASET *Cin = NULL;
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->N.file, &Cin)) Return ((error = GMT_DATA_READ_ERROR));
+		if ((Cin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->N.file, NULL)) == NULL) Return (API->error);
 		T = Cin->table[0];	/* Since we only have one table here */
 		t_supplied_out = GMT_memory (GMT, NULL, Cin->table[0]->n_records, double);
 		for (seg = 0; seg < T->n_segments; seg++) {
@@ -286,7 +286,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		inc_degrees = (Ctrl->I.inc / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Convert increment to spherical degrees */
 	}
 	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
-	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, &Din)) Return ((error = GMT_DATA_READ_ERROR));
+	if ((Din = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	Dout = GMT_memory (GMT, NULL, 1, struct GMT_DATASET);				/* Output dataset... */

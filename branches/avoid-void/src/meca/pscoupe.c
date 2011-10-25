@@ -540,7 +540,7 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->Z.active) {
 		if ((error = GMT_Begin_IO (API, GMT_IS_CPT, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, &CPT)) Return (GMT_DATA_READ_ERROR);
+		if ((CPT = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, NULL)) == NULL) Return (API->error);
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	}
 

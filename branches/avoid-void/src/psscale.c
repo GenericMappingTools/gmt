@@ -1067,15 +1067,7 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the psscale main code ----------------------------*/
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_CPT, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-
-	if (Ctrl->C.file) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Reading CPT file %s.", Ctrl->C.file);
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, &P)) Return (GMT_DATA_READ_ERROR);
-	}
-	else {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Reading standard input.");
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, NULL, &P)) Return (GMT_DATA_READ_ERROR);
-	}
+	if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (P->categorical) {
@@ -1102,7 +1094,7 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	max_intens[1] = Ctrl->I.max;
 
 	if (Ctrl->Z.active) {
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, &D)) Return (GMT_DATA_READ_ERROR);
+		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, &D)) Return (API->error);
 		z_width = D->table[0]->segment[0]->coord[GMT_X];
 		if (D->table[0]->segment[0]->n_rows < P->n_colors) {
 			GMT_report (GMT, GMT_MSG_FATAL, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);

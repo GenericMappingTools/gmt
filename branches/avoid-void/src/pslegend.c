@@ -431,15 +431,15 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	txtcolor[0] = 0;
 
 	dim[2] = 2;	/* We will a 2-row data set for fronts */
-	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, &Front, GMT_NOWHERE, &object_ID))) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for pslegend\n");
-		return (GMT_RUNTIME_ERROR);
+	if ((Front = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) {
+		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a Front text set for pslegend\n");
+		return (API->error);
 	}
 	dim[2] = GMT_SMALL_CHUNK;	/* We will allocate 3 more textsets; one for text, paragraph text, symbols */
 	for (id = 0; id < N_CMD; id++) {
-		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim, &D[id], GMT_NOWHERE, &object_ID))) {
+		if ((D[id] = GMT_Create_Data (API, GMT_IS_TEXTSET, dim, GMT_NOWHERE)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for pslegend\n");
-			Return (GMT_RUNTIME_ERROR);
+			Return (API->error);
 		}
 	}
 

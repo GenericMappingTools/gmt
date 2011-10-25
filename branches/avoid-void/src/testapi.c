@@ -211,7 +211,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	via[GMT_IN] = Ctrl->I.via / 100;	via[GMT_OUT] = Ctrl->W.via / 100;
 	if (Ctrl->I.via == GMT_VIA_MATRIX) {	/* We will use a matrix in memory as data source */
-		GMT_Create_Data (API, GMT_IS_MATRIX, NULL, &M, GMT_IN, &k);
+		M = GMT_Create_Data (API, GMT_IS_MATRIX, NULL, GMT_IN);
 		if (Ctrl->T.mode == GMT_IS_DATASET) {	/* Mimic the dtest.txt table */
 			M->n_rows = 9;	M->n_columns = 2;	M->n_layers = 1;	M->dim = 9;	M->type = GMTAPI_INT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
@@ -229,7 +229,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		M->data = fdata;
 	}
 	else if (Ctrl->I.via == GMT_VIA_VECTOR) {	/* We will use vectors in memory as data source */
-		GMT_Create_Data (API, GMT_IS_VECTOR, par, &V, GMT_IN, &k);
+		V = GMT_Create_Data (API, GMT_IS_VECTOR, par, GMT_IN);
 		V->n_rows = 9;
 		fdata = GMT_memory (GMT, NULL, V->n_rows, float);
 		ddata = GMT_memory (GMT, NULL, V->n_rows, double);

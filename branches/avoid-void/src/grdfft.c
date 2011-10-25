@@ -594,7 +594,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	 */
 
 	char format[GMT_TEXT_LEN64];
-	GMT_LONG k, nk, nused, ifreq, error, ID, dim[4] = {1, 1, 1, 0};
+	GMT_LONG k, nk, nused, ifreq, error, dim[4] = {1, 1, 1, 0};
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
 	PFD get_k;
 	float *datac = Grid->data;
@@ -648,9 +648,9 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	sprintf (format, "%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	powfactor = 4.0 / pow ((double)Grid->header->size, 2.0);
 	dim[2] = 3;	dim[3] = nk;
-	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, &D, -1, &ID))) {
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, -1)) == NULL) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for spectrum\n");
-		return (GMT_RUNTIME_ERROR);
+		return (GMT->parent->error);
 	}
 	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 3 cols and nk rows */
 	for (k = 0; k < nk; k++) {
@@ -1161,14 +1161,14 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[0], &GridA)) 
-		Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if ((GridA = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[0], NULL)) == NULL) 
+		Return (API->error);	/* Get header only */
 
 #ifdef NEW
 	if (Ctrl->In.file[1]) two_grids = TRUE;
 	if (two_grids) { 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[1], &GridB)) 
-			Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if ((GridB = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[1], NULL)) == NULL) 
+			Return (API->error);	/* Get header only */
 		if(GridA->header->registration != GridB->header->registration) {
 			GMT_report (GMT, GMT_MSG_FATAL, "The two grids have different registrations!\n");
 			Return (EXIT_FAILURE);
@@ -1197,7 +1197,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (j = 0; j < 4; j++) GridA->header->BC[j] = GMT_BC_IS_DATA;
 
 	/* Now read data into the real positions in the padded complex radix grid */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, Ctrl->In.file, &GridA)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, Ctrl->In.file, GridA) == NULL) Return (API->error);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
 	/* Check that no NaNs are present */

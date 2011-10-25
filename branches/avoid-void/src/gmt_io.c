@@ -5182,7 +5182,7 @@ GMT_LONG GMT_create_dataset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_s
 	return (GMT_OK);
 }
 
-GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type, struct GMT_TABLE **table, GMT_LONG greenwich, GMT_LONG poly, GMT_LONG use_GMT_io)
+struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type, GMT_LONG greenwich, GMT_LONG poly, GMT_LONG use_GMT_io)
 {
 	/* Reads an entire data set into a single table memory with any number of segments */
 
@@ -5218,7 +5218,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		if ((fp = GMT_fopen (C, file, open_mode)) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot open file %s\n", file);
 			if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
-			return (EXIT_FAILURE);
+			return (NULL);
 		}
 		close_file = TRUE;	/* We only close files we have opened here */
 	}
@@ -5235,7 +5235,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		if (fd && (fp = fdopen (*fd, open_mode)) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot convert file descriptor %d to stream in GMT_read_table\n", *fd);
 			if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
-			return (EXIT_FAILURE);
+			return (NULL);
 		}
 		if (fd == NULL) fp = C->session.std[GMT_IN];	/* Default input */
 		if (fp == C->session.std[GMT_IN])
@@ -5246,7 +5246,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	else {
 		GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %ld in GMT_read_table\n", source_type);
 		if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
-		return (EXIT_FAILURE);
+		return (NULL);
 	}
 
 	n_fields = C->current.io.input (C, fp, &n_expected_fields, &in);	/* Get first record */
@@ -5254,7 +5254,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	if (GMT_REC_IS_EOF(C)) {
 		GMT_report (C, GMT_MSG_NORMAL, "File %s is empty!\n", file);
 		if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
-		return (GMT_IO_EOF);
+		return (NULL);
 	}
 	/* Allocate the Table structure with GMT_CHUNK segments, but none has any rows or columns */
 
@@ -5321,7 +5321,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		if (poly && T->segment[seg]->n_columns < 2) {
 			GMT_report (C, GMT_MSG_FATAL, "File %s does not have at least 2 columns required for polygons (found %ld)\n", file, T->segment[seg]->n_columns);
 			if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
-			return (EXIT_FAILURE);
+			return (NULL);
 		}
 		GMT_alloc_segment (C, T->segment[seg], n_row_alloc, T->segment[seg]->n_columns, TRUE);	/* Alloc space for this segment with n_row_alloc rows */
 
@@ -5329,7 +5329,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 			if (C->current.io.status & GMT_IO_MISMATCH) {
 				GMT_report (C, GMT_MSG_FATAL, "Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", n_fields, n_expected_fields, n_read);
 				if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
-				return (EXIT_FAILURE);
+				NULL (EXIT_FAILURE);
 			}
 
 			if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) {
@@ -5415,9 +5415,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		if (T->segment[seg]->pole) {T->min[GMT_X] = 0.0; T->max[GMT_X] = 360.0;}
 	}
 
-	*table = T;
-
-	return (0);
+	return (T);
 }
 
 void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout)
