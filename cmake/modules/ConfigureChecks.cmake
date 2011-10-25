@@ -2,17 +2,22 @@
 # $Id$
 #
 
-include (CheckIncludeFile)
-include (CheckIncludeFiles)
-include (CheckSymbolExists)
-include (CheckFunctionExists)
-include (CheckLibraryExists)
-include (CheckPrototypeExists)
-include (CheckTypeExists)
-include (CheckTypeSize)
-include (CheckCSourceCompiles)
-include (CheckCSourceRuns)
-include (TestBigEndian)
+if(NOT DEFINED _INCLUDED_CHECK_MACROS_)
+	set(_INCLUDED_CHECK_MACROS_ "DEFINED")
+
+	include (CheckIncludeFile)
+	include (CheckIncludeFiles)
+	include (CheckSymbolExists)
+	include (CheckFunctionExists)
+	include (CheckLibraryExists)
+	include (CheckPrototypeExists)
+	include (CheckTypeExists)
+	include (CheckTypeSize)
+	include (CheckCSourceCompiles)
+	include (CheckCSourceRuns)
+	include (TestBigEndian)
+
+endif(NOT DEFINED _INCLUDED_CHECK_MACROS_)
 
 #
 # Check if compiler supports -traditional-cpp
@@ -336,29 +341,29 @@ endif (NOT DEFINED STDC_HEADERS)
 #   "
 #CXX_GLOBAL_CSTD)
 
-check_c_source_compiles (
-	"
-	#include <iconv.h>
-	// this declaration will fail when there already exists a non const char** version which returns size_t
-	double iconv(iconv_t cd,  char **inbuf, size_t *inbytesleft, char **outbuf, size_t *outbytesleft);
-	int main () { return 0; }
-	"
-HAVE_ICONV_CONST)
-
-check_c_source_compiles (
-	"
-	#include <stdlib.h>
-	int i[ ( sizeof(wchar_t)==2 ? 1 : -1 ) ];
-	int main (){return 0;}
-	"
-SIZEOF_WCHAR_T_IS_2)
-
-check_c_source_compiles (
-	"
-	#include <stdlib.h>
-	int i[ ( sizeof(wchar_t)==4 ? 1 : -1 ) ];
-	int main (){return 0;}
-	"
-SIZEOF_WCHAR_T_IS_4)
+#   check_c_source_compiles (
+#     "
+#     #include <iconv.h>
+#     // this declaration will fail when there already exists a non const char** version which returns size_t
+#     double iconv(iconv_t cd,  char **inbuf, size_t *inbytesleft, char **outbuf, size_t *outbytesleft);
+#     int main () { return 0; }
+#     "
+#   HAVE_ICONV_CONST)
+#
+#   check_c_source_compiles (
+#     "
+#     #include <stdlib.h>
+#     int i[ ( sizeof(wchar_t)==2 ? 1 : -1 ) ];
+#     int main (){return 0;}
+#     "
+#   SIZEOF_WCHAR_T_IS_2)
+#
+#   check_c_source_compiles (
+#     "
+#     #include <stdlib.h>
+#     int i[ ( sizeof(wchar_t)==4 ? 1 : -1 ) ];
+#     int main (){return 0;}
+#     "
+#   SIZEOF_WCHAR_T_IS_4)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

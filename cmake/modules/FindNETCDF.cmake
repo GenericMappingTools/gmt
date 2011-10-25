@@ -29,7 +29,7 @@
 #
 #include "netcdf.h"
 
-if (UNIX)
+if (UNIX AND NOT NETCDF_FOUND)
 	# Use nc-config to obtain the libraries
 	find_program (NETCDF_CONFIG nc-config
 		HINTS
@@ -64,7 +64,7 @@ if (UNIX)
 		list (REMOVE_DUPLICATES _netcdf_lib)
 		list (REMOVE_ITEM _netcdf_lib netcdf)
 	endif (_netcdf_lib)
-endif (UNIX)
+endif (UNIX AND NOT NETCDF_FOUND)
 
 find_path (NETCDF_INCLUDE_DIR netcdf.h
 	HINTS
@@ -103,7 +103,6 @@ find_library (NETCDF_LIBRARY
 foreach (_extralib ${_netcdf_lib})
 	find_library (_found_lib_${_extralib}
 		NAMES ${_extralib}
-		HINTS ${_netcdf_libpath}
 		PATHS ${_netcdf_libpath})
 	list (APPEND NETCDF_LIBRARY ${_found_lib_${_extralib}})
 endforeach (_extralib)

@@ -58,10 +58,25 @@
 #       + INVERT: (Optional) Invert match
 #
 #   LIST_REGEX_REPLACE (<regular_expression> <replace_expression>
-#                       <output list> <list> [<list>...])
+#                       <output list> <list> [<list>...] [MATCHES_ONLY] [STRIP])
+#   - Do REGEX REPLACE for each lelement of list individually.
+#     * Parameters:
+#       + MATCHES_ONLY: (Optional) Return only matched elements in output list
+#       + STRIP: (Optional) Strip whitespace of each element in output list
 #
 #   LIST_REGEX_GET (<regular_expression> <output list>
 #                   <list> [<list>...] [INVERT])
+#   - Return list with matched elements.
+#     * Parameters:
+#       + INVERT: (Optional) invert the selection
+#
+#   STRING_PAD (string length [RIGHT] [PADDING])
+#   - Pad a string with spaces to the given length. String will be left
+#     aligned.
+#     * Parameters:
+#       + RIGHT: (Optional) right-align the string
+#       + PADDING: (Optional) apply padding at the location by the marker
+#           string PADDING
 #
 # Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
@@ -78,7 +93,7 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 
-#if(NOT DEFINED _MANAGE_STRING_CMAKE_)
+if(NOT DEFINED _MANAGE_STRING_CMAKE_)
 	set(_MANAGE_STRING_CMAKE_ "DEFINED")
 
 	# STRING_ESCAPE(var str [NOESCAPE_SEMICOLON] [ESCAPE_VARIABLE])
@@ -166,7 +181,7 @@
 		string_unescape(${var} "${_str}" NOESCAPE_SEMICOLON)
 	endmacro(STRING_UNQUOTE _var _str)
 
-  # STRING_JOIN(var delimiter str_list [str...])
+	# STRING_JOIN(var delimiter str_list [str...])
 	macro(STRING_JOIN var delimiter str_list)
 		set(_ret)
 		foreach(_str ${str_list})
@@ -461,6 +476,6 @@
 		set (${_STR} ${_copy})
 	endmacro (STRING_PAD _STR _LEN)
 
-	#endif(NOT DEFINED _MANAGE_STRING_CMAKE_)
+endif(NOT DEFINED _MANAGE_STRING_CMAKE_)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

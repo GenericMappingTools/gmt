@@ -43,7 +43,7 @@
 #
 #include "gdal.h"
 
-if (UNIX)
+if (UNIX AND NOT GDAL_FOUND)
 	# Use gdal-config to obtain the library version (this should hopefully
 	# allow us to -lgdal1.x.y where x.y are correct version)
 	# For some reason, libgdal development packages do not contain
@@ -77,7 +77,7 @@ if (UNIX)
 			string (REGEX REPLACE "-L" "" _gdal_libpath "${_gdal_dashL}")
 		endif (GDAL_CONFIG_LIBS)
 	endif (GDAL_CONFIG)
-endif (UNIX)
+endif (UNIX AND NOT GDAL_FOUND)
 
 find_path (GDAL_INCLUDE_DIR gdal.h
 	HINTS

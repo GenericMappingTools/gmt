@@ -28,7 +28,7 @@
 #
 #include "pcre.h"
 
-if (UNIX)
+if (UNIX AND NOT PCRE_FOUND)
 	# Use pcre-config to obtain the library version (this should hopefully
 	# allow us to -lpcre1.x.y where x.y are correct version)
 	# For some reason, libpcre development packages do not contain
@@ -61,7 +61,7 @@ if (UNIX)
 			string (REGEX REPLACE "-L" "" _pcre_libpath "${_pcre_dashL}")
 		endif (PCRE_CONFIG_LIBS)
 	endif (PCRE_CONFIG)
-endif (UNIX)
+endif (UNIX AND NOT PCRE_FOUND)
 
 find_path (PCRE_INCLUDE_DIR pcre.h
 	HINTS

@@ -119,13 +119,23 @@ install (DIRECTORY examples
 
 # run examples (test)
 if (DO_EXAMPLES)
-	# need to copy data first
-	file(COPY examples tutorial
-		DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
-		USE_SOURCE_PERMISSIONS
-		PATTERN ".svn" EXCLUDE
-		PATTERN "CMakeLists.txt" EXCLUDE
-		PATTERN ".cmake" EXCLUDE)
+	# rules for copying example files to build dir
+	file (GLOB_RECURSE _example_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} examples/* tutorial/*)
+	list_regex_get ("[.]svn/|[.]cmake|CMakeLists.txt" _example_files ${_example_files} INVERT)
+	set (_test_files)
+	foreach (_file ${_example_files})
+		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_file}
+			COMMAND ${CMAKE_COMMAND}
+			-E copy_if_different
+			${CMAKE_CURRENT_SOURCE_DIR}/${_file}
+			${CMAKE_CURRENT_BINARY_DIR}/${_file})
+		list (APPEND _test_files ${CMAKE_CURRENT_BINARY_DIR}/${_file})
+	endforeach (_file ${_example_files})
+
+	# add file dependencies to check target
+	add_custom_target (copy_example_tests
+		DEPENDS ${_test_files})
+	add_dependencies (check copy_example_tests)
 
 	add_subdirectory (examples)
 endif (DO_EXAMPLES)

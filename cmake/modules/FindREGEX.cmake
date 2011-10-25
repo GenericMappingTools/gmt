@@ -17,7 +17,7 @@
 
 set (REGEX_FOUND "NO")
 include (CheckCSourceCompiles)
-set (REGEX_LIBRARY "")
+set (REGEX_LIBRARY)
 find_path (REGEX_INCLUDE_DIR regex.h
 	$ENV{REGEXDIR}/include
 	/usr/local/include

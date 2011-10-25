@@ -63,6 +63,11 @@ configure_file (
 	"${PROJECT_BINARY_DIR}/config.h"
 )
 
+# Global test target
+add_custom_target (check
+	COMMAND ${CMAKE_CTEST_COMMAND}
+	--force-new-ctest-process -j${N_TEST_JOBS})
+
 # Add subdirectories
 add_subdirectory (doc EXCLUDE_FROM_ALL)
 add_subdirectory (src)

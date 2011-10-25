@@ -1,3 +1,6 @@
+#
+# $Id$
+#
 # - this module looks for Matlab
 # Defines:
 #  MATLAB_INCLUDE_DIR: include path for mex.h, engine.h
@@ -38,7 +41,7 @@ set (_matlab_root_hardcoded
 	$ENV{HOME}/matlab-7sp1
 	$ENV{HOME}/redhat-matlab)
 
-set (MATLAB_FOUND FALSE)
+#set (MATLAB_FOUND FALSE)
 if (WIN32)
 	if (${CMAKE_GENERATOR} MATCHES "Visual Studio 6")
 		set (MATLAB_ROOT "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\7.0;MATLABROOT]/extern/lib/win32/microsoft/msvc60")

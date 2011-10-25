@@ -77,7 +77,10 @@ This is very convenient for testing. Just _enable_testing()_, set _DO_EXAMPLES_
 and/or _DO_TESTS_ in ConfigUser.cmake and do:
 
   $ make -j6
-  $ make test ARGS=-j6
+  $ make check
+
+Optionally set _N_TEST_JOBS_ to the number of ctest jobs to run
+simultaneously.
 
 TODO list
 ---------
@@ -133,6 +136,8 @@ TODO list
   - to simplify manpage creation *(done)*
   - for LaTeX docu (http://www.vtk.org/Wiki/CMakeUserUseLATEX)
   - to build a release (including precompiled manpages, pdf docu, ...)
+
+* ps2raster: use gslib API (http://www.ghostscript.com/doc/9.04/API.htm)
 
 Done
 ----

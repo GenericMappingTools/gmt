@@ -63,12 +63,13 @@
 #set (MATLAB_ROOT /Applications/MATLAB_R2010a.app)  # MacOSX
 #set (MATLAB_ROOT /opt/matlab-7sp1)                 # Linux
 
-# Enable running examples/test with "make test" (out-of-source)
+# Enable running examples/tests with "make check" (out-of-source)
 # Need to set either DO_EXAMPLES, DO_TESTS or both and uncomment
 # the following line:
 #enable_testing()
 #set (DO_EXAMPLES TRUE)
 #set (DO_TESTS TRUE)
+#set (N_TEST_JOBS 4)
 
 # Extra debugging for developers:
 #add_definitions(-DDEBUG)
