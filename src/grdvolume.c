@@ -425,7 +425,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the grdvolume main code ----------------------------*/
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, &Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if ((Grid = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 	if (Ctrl->L.active && Ctrl->L.value >= Grid->header->z_min) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Selected base value exceeds the minimum grid z value - aborting\n");
 		Return (EXIT_FAILURE);
@@ -434,7 +434,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, Grid->header->wesn, 4, double);	/* No -R, use grid domain */
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
 
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, &Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, Grid) == NULL) Return (API->error);	/* Get header only */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	new_grid = GMT_set_outgrid (GMT, Grid, &Work);	/* TRUE if input is a read-only array */

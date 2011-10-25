@@ -71,6 +71,7 @@ struct GMTAPI_CTRL {
 	 * Use GMTAPI_Create_Session to initialize a new session and GMTAPI_Destroy_Session to end it.
 	 */
 	
+	GMT_LONG error;				/* Error code from latest API call [GMT_OK] */
 	GMT_LONG n_objects;			/* Number of currently active input and output data objects */
 	GMT_LONG n_objects_alloc;		/* Allocation counter for data objects */
 	GMT_LONG unique_ID;			/* Used to create unique IDs for duration of session */
@@ -108,8 +109,8 @@ EXTERN_MSC GMT_LONG GMT_Init_IO		(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LO
 EXTERN_MSC GMT_LONG GMT_Begin_IO	(struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_End_IO		(struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_Report_Error	(struct GMTAPI_CTRL *C, GMT_LONG error);
-EXTERN_MSC GMT_LONG GMT_Create_Data	(struct GMTAPI_CTRL *C, GMT_LONG type, GMT_LONG par[], void *data, GMT_LONG direction, GMT_LONG *ID);
-EXTERN_MSC GMT_LONG GMT_Get_Data	(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, void *input,  void *data);
+EXTERN_MSC void * GMT_Create_Data	(struct GMTAPI_CTRL *C, GMT_LONG type, GMT_LONG par[], GMT_LONG direction);
+EXTERN_MSC void * GMT_Get_Data		(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, void *input,  void *data);
 EXTERN_MSC GMT_LONG GMT_Put_Data	(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, void *output, void *data);
 EXTERN_MSC GMT_LONG GMT_Destroy_Data	(struct GMTAPI_CTRL *C, GMT_LONG mode, void *X);
 EXTERN_MSC GMT_LONG GMT_Get_Record	(struct GMTAPI_CTRL *C, GMT_LONG mode, void *record);

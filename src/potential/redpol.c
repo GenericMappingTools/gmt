@@ -1182,9 +1182,9 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT->current.io.pad[XLO] = GMT->current.io.pad[XHI] = n21-1;
 	GMT->current.io.pad[YLO] = GMT->current.io.pad[YHI] = m21-1;
 
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, 	/* Get header only */
-			 Ctrl->In.file, &Gin)) 
-		Return (GMT_DATA_READ_ERROR);
+	if ((Gin = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, 	/* Get header only */
+			 Ctrl->In.file, NULL)) == NULL) 
+		Return (API->error);
 
 	if (!GMT->common.R.active) 
 		GMT_memcpy (wesn_new, Gin->header->wesn, 4, double);
@@ -1200,7 +1200,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT_grd_init (GMT, Gin->header, options, TRUE);
 
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, 
-			 Ctrl->In.file, &Gin)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
+			 Ctrl->In.file, Gin) == NULL) Return (API->error);	/* Get subset */
 
 	GMT_set_pad (GMT, 2);		/* Reset the default GMT pad */
 
@@ -1230,22 +1230,22 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* Section to deal with possible external grids with dip and dec for interpolation */
 
 	if (Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd) {
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 		/* Get header only */
-			 	  GMT_GRID_HEADER, Ctrl->E.dipfile, &Gdip)) 
-			Return (GMT_DATA_READ_ERROR);
+		if ((Gdip = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 		/* Get header only */
+			 	  GMT_GRID_HEADER, Ctrl->E.dipfile, NULL)) == NULL) 
+			Return (API->error);
 	
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, 
-			 	Ctrl->E.dipfile, &Gdip)) 
-			Return (GMT_DATA_READ_ERROR);
+			 	Ctrl->E.dipfile, Gdip) == NULL) 
+			Return (API->error);
 	}
 	if (Ctrl->E.dip_dec_grd) {
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER,
-			 	Ctrl->E.decfile, &Gdec)) 
-			Return (GMT_DATA_READ_ERROR);
+		if ((Gdec = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER,
+			 	Ctrl->E.decfile, NULL)) == NULL) 
+			Return (API->error);
 	
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, 
-			 	Ctrl->E.decfile, &Gdec)) 
-			Return (GMT_DATA_READ_ERROR);
+			 	Ctrl->E.decfile, Gdec) == NULL) 
+			Return (API->error);
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);		/* Disables further data input */
 

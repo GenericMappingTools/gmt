@@ -640,7 +640,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
 	if (Ctrl->C.cpt) {	/* Presumably got a cpt-file; read it here so we can crash if no-such-file before we process input data */
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, &P)) Return (GMT_DATA_READ_ERROR);
+		if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
 		if (Ctrl->I.active && P->is_continuous) {
 			GMT_report (GMT, GMT_MSG_FATAL, "-I option requires constant color between contours!\n");
 			Return (GMT_OK);
@@ -720,7 +720,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_TABLE *T = NULL;
 
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Q.file, &Tin)) Return ((error = GMT_DATA_READ_ERROR));
+		if ((Tin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Q.file, NULL)) == NULL) Return (API->error);
 
  		if (Tin->n_columns < 3) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q: %s does not have at least 3 columns with indices\n", Ctrl->Q.file);

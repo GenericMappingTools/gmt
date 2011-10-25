@@ -498,7 +498,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
 	if (Ctrl->C.active) {
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, &P)) Return (GMT_DATA_READ_ERROR);
+		if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (GMT_DATA_READ_ERROR);
 	}
 
 	data = GMT_memory (GMT, NULL, n_alloc , double);
@@ -572,15 +572,15 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
 		if (Ctrl->I.mode) {
-			GMT_LONG ibox, ID, dim[4] = {1, 1, 2, 0};
+			GMT_LONG ibox, dim[4] = {1, 1, 2, 0};
 			double xx, yy;
 			struct GMT_DATASET *D = NULL;
 			struct GMT_LINE_SEGMENT *S = NULL;
 			
 			dim[3] = F.n_boxes;
-			if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, &D, -1, &ID))) {
+			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim, -1)) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for spectrum\n");
-				return (GMT_RUNTIME_ERROR);
+				return (API->error);
 			}
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
 			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */

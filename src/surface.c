@@ -663,6 +663,7 @@ GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LON
 {
 	GMT_LONG i, j, ij, error;
 	double yy;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	/* Load lower/upper limits, verify range, deplane, and rescale */
 
@@ -675,12 +676,12 @@ GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LON
 			for (i = 0; i < C->mxmy; i++) C->Low->data[i] = (float)C->low_limit;
 		}
 		else {
-			if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, C->low_file, &C->Low)) return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if ((C->Low = GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, C->low_file, NULL)) == NULL) return (API->error);	/* Get header only */
 			if (C->Low->header->nx != C->nx || C->Low->header->ny != C->ny) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Lower limit file not of proper dimension!\n");
 				return (EXIT_FAILURE);
 			}
-			if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, C->low_file, &C->Low)) return (GMT_DATA_READ_ERROR);
+			if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, C->low_file, C->Low) == NULL) return (API->error);
 		}
 		if (transform) {
 			for (j = 0; j < C->ny; j++) {
@@ -702,12 +703,12 @@ GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LON
 			for (i = 0; i < C->mxmy; i++) C->High->data[i] = (float)C->high_limit;
 		}
 		else {
-			if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, C->high_file, &C->High)) return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if ((C->High = GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, C->high_file, NULL)) == NULL) return (API->error);	/* Get header only */
 			if (C->High->header->nx != C->nx || C->High->header->ny != C->ny) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Upper limit file not of proper dimension!\n");
 				return (EXIT_FAILURE);
 			}
-			if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, C->high_file, &C->High)) return (GMT_DATA_READ_ERROR);
+			if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, C->high_file, C->High) == NULL) return (API->error);
 		}
 		if (transform) {
 			for (j = 0; j < C->ny; j++) {
@@ -1867,8 +1868,8 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->D.active) {
 		greenwich = (C.Grid->header->wesn[XLO] < 0.0 && C.Grid->header->wesn[XHI] > 0.0);
 
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, Ctrl->D.file, &Lin))
-			Return ((error = GMT_DATA_READ_ERROR));
+		if ((Lin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, Ctrl->D.file, NULL)) == NULL)
+			Return (API->error);
 		xyzline = Lin->table[0];			/* Can only be one table since we read a single file */
 
 		interp_breakline (GMT, &C, xyzline);

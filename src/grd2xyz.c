@@ -246,15 +246,15 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (opt->option != '<') continue;	/* We are only processing input files here */
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, &G)) 
-			Return (GMT_DATA_READ_ERROR);
+		if ((G = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, NULL)) == NULL) 
+			Return (API->error);
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Working on file %s\n", G->header->name);
 
 		if (GMT_is_subset (GMT, G->header, wesn))	/* Subset requested; make sure wesn matches header spacing */
 			GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, opt->arg, &G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, opt->arg, G) == NULL) Return (API->error);	/* Get subset */
 
 		n_total += G->header->nm;
 

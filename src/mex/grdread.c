@@ -51,7 +51,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	/* 2. READING IN A GRID */
 	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) mexErrMsgTxt ("GMT: (grdinfo) Failure to Begin IO\n");
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, filein, &G))
+	if ((G = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, filein, NULL)) == NULL)
 		mexErrMsgTxt ("GMT: (grdread) Read failure\n");
 	if (GMT_End_IO (API, GMT_IN, 0)) mexErrMsgTxt ("GMT: (grdinfo) Failure to End IO\n");
 	

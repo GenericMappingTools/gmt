@@ -338,7 +338,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
 		GC[g].type = Ctrl->G.type[g];
 		if (Ctrl->G.type[g] == 0) {	/* Regular GMT grids */
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->G.file[g], &GC[g].G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if ((GC[g].G = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->G.file[g], NULL)) == NULL) Return (API->error);	/* Get header only */
 			if (GMT->common.R.active) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, GC[g].G->header), "");		/* Subset requested; make sure wesn matches header spacing */
 
 			if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, GC[g].G->header->wesn, 4, double);
@@ -348,7 +348,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 				Return (GMT_OK);
 			}
 
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->G.file[g], &GC[g].G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
+			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->G.file[g], GC[g].G) == NULL) Return (API->error);	/* Get subset */
 
 			GMT_memcpy (GMT->common.R.wesn, wesn, 4, double);
 
@@ -369,7 +369,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		
 		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, &Din)) Return ((error = GMT_DATA_READ_ERROR));
+		if ((Din = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
 		if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
 
 		GMT_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);

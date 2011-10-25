@@ -490,7 +490,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
 			if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
 			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-			if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, &Din)) Return ((error = GMT_DATA_READ_ERROR));
+			if ((Din = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
 			if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 			n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || GMT_is_geographic (GMT, GMT_IN))) ? 3 : 2;
 			mean_vector (GMT, Din, Ctrl->C.active[GMT_IN], Ctrl->A.conf, vector_1, E);	/* Get mean vector and confidence ellispe parameters */
@@ -516,7 +516,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {	/* Read input files or stdin */
 		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, &Din)) Return ((error = GMT_DATA_READ_ERROR));
+		if ((Din = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 		n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || GMT_is_geographic (GMT, GMT_IN))) ? 3 : 2;
 	}
@@ -614,7 +614,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, Ctrl->Out.file, Dout)) Return ((error = GMT_DATA_READ_ERROR));
+	if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, Ctrl->Out.file, Dout)) Return (API->error);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 	if (single) GMT_free_dataset (GMT, &Din);
 	

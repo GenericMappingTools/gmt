@@ -593,7 +593,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 
 	if (Ctrl->C.active) {
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, &P)) Return (GMT_DATA_READ_ERROR);
+		if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
 		if (P->is_bw) Ctrl->Q.monochrome = TRUE;
 		if (P->categorical && Ctrl->W.active) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
@@ -603,11 +603,11 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	n_drape = (Ctrl->G.image) ? 3 : 1;
 
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, &Topo)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-	if (Ctrl->I.active && GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->I.file, &Intens)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if ((Topo = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
+	if (Ctrl->I.active && (Intens = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->I.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 
 	if (Ctrl->G.active) {
-		for (i = 0; i < n_drape; i++) if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->G.file[i], &Drape[i])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		for (i = 0; i < n_drape; i++) if ((Drape[i] = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->G.file[i], NULL)) == NULL) Return (API->error);	/* Get header only */
 	}
 
 	/* Determine what wesn to pass to map_setup */
@@ -643,14 +643,14 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Processing shape file\n");
 
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, &Topo)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, Topo) == NULL) Return (API->error);	/* Get topo data */
 	t_reg = GMT_change_grdreg (GMT, Topo->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 
 	if (Ctrl->G.active) {	/* Draping wanted */
 		for (i = 0; i < n_drape; i++) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Processing drape file %s\n", Ctrl->G.file[i]);
 
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->G.file[i], &Drape[i])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->G.file[i], Drape[i]) == NULL) Return (API->error);	/* Get drape data */
 			if (Drape[i]->header->nx != Topo->header->nx || Drape[i]->header->ny != Topo->header->ny) drape_resample = TRUE;
 			d_reg[i] = GMT_change_grdreg (GMT, Drape[i]->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 		}
@@ -744,12 +744,12 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (Ctrl->G.active) {
 			GMT_Destroy_Data (API, GMT_ALLOCATED, &Drape[0]);
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, Ctrl->G.file[0], &Drape[0])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if ((Drape[0] = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, Ctrl->G.file[0], NULL)) == NULL) Return (API->error);	/* Get drape data*/
 			Z = Drape[0];
 		}
 		else {
 			GMT_Destroy_Data (API, GMT_ALLOCATED, &Topo);
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, Ctrl->In.file, &Topo)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if ((Topo = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 			Z = Topo;
 		}
 		GMT_change_grdreg (GMT, Z->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration, again */
@@ -759,7 +759,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Processing illumination file\n");
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->I.file, &Intens)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->I.file, Intens) == NULL) Return (API->error);	/* Get intensity grid */
 		if (Intens->header->nx != Topo->header->nx || Intens->header->ny != Topo->header->ny) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Intensity file has improper dimensions!\n");
 			Return (EXIT_FAILURE);

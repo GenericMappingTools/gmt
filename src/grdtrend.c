@@ -501,9 +501,9 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, &G)) Return (GMT_DATA_READ_ERROR);
+	if ((G = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) Return (API->error);
 	if (GMT_is_subset (GMT, G->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, &G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) Return (API->error);	/* Get subset */
 
 	/* Check for NaNs (we include the pad for simplicity)  */
 	i = 0;
@@ -534,11 +534,11 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT_grd_init (GMT, W->header, options, TRUE);
 	if (weighted) {
 		if (!GMT_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->W.file, &W)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if ((W = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->W.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 			if (W->header->nx != G->header->nx || W->header->ny != G->header->ny)
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Input weight file does not match input data file.  Ignoring.\n");
 			else {
-				if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->W.file, &W)) Return (GMT_DATA_READ_ERROR);	/* Get data */
+				if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->W.file, W) == NULL) Return (API->error);	/* Get data */
 				set_ones = FALSE;
 			}
 		}

@@ -411,7 +411,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!Ctrl->Q.active) {
 	
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, &Gin)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if ((Gin = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 		GMT_grd_init (GMT, Gin->header, options, TRUE);	/* Update command history only */
 

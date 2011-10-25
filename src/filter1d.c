@@ -824,7 +824,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read the input data into memory */
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT,  options))) Return (error, "Error initializing input\n");	/* Register data input */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error, "Error in Begin_IO\n");				/* Enables data input and sets access mode */
-	if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, &D))) Return (error, "Error Reading input\n");	/* Get header only */
+	if ((D = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error, "Error Reading input\n");	/* Get header only */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error, "Error in End_IO\n");		/* Disables further data input */
 	
 	load_parameters_filter1d (&F, Ctrl, D->n_columns);	/* Pass parameters from Control structure to Filter structure */
@@ -877,7 +877,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			F.filter_type = FILTER1D_CUSTOM;
 			if ((error = GMT_set_cols (GMT, GMT_IN, 1))) Return (error, "Error in GMT_set_cols");
 			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error, "Error in Begin_IO\n");	/* Enables data input and sets access mode */
-			if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, Ctrl->F.file, &F.Fin))) Return (error, "Error Reading input\n");	/* Get header only */
+			if ((F.Fin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, Ctrl->F.file, NULL)) == NULL) Return (API->error, "Error Reading input\n");	/* Get header only */
 			if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error, "Error in End_IO\n");	/* Disables further data input */
 			GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;

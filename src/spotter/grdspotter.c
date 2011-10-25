@@ -577,7 +577,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Init_IO (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN,  GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
 
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, &Z)) Return (GMT_DATA_READ_ERROR);	/* Get data */
+	if ((Z = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get data */
 	area = 111.195 * Z->header->inc[GMT_Y] * 111.195 * Z->header->inc[GMT_X];	/* In km^2 at Equator */
 	x_smt = GMT_memory (GMT, NULL, Z->header->nx, double);
 	for (i = 0; i < Z->header->nx; i++) x_smt[i] = D2R * GMT_grd_col_to_x (GMT, i, Z->header);
@@ -592,20 +592,20 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	y_cva = GMT_memory (GMT, NULL, G->header->ny, double);
 	for (j = 0; j < G->header->ny; j++) y_cva[j] = GMT_grd_row_to_y (GMT, j, G->header);
 	if (Ctrl->A.file) {
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->A.file, &A)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if ((A = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->A.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 		if (!(A->header->nx == Z->header->nx && A->header->ny == Z->header->ny && A->header->wesn[XLO] == Z->header->wesn[XLO] && A->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Topo grid and age grid must coregister\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->A.file, &A)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->A.file, A) == NULL) Return (API->error);	/* Get age data */
 	}
 	if (Ctrl->L.file) {
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->L.file, &L)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if ((L = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->L.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 		if (!(L->header->nx == Z->header->nx && L->header->ny == Z->header->ny && L->header->wesn[XLO] == Z->header->wesn[XLO] && L->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Topo grid and ID grid must coregister\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->L.file, &L)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->L.file, L) == NULL) Return (API->error);	/* Get ID data */
 		
 		/* Store IDs in a GMT_LONG array instead */
 		ID = GMT_memory (GMT, NULL, L->header->size, GMT_LONG);

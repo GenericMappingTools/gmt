@@ -203,7 +203,7 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read in the input tables */
 	
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, &D[GMT_IN])) Return ((error = GMT_DATA_READ_ERROR));
+	if ((D[GMT_IN] = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	for (tbl = n_cols_in = n_cols_out = 0; tbl < D[GMT_IN]->n_tables; tbl++) {

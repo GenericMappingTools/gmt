@@ -281,7 +281,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read Volonoi polygons from %s ...", Ctrl->Q.file);
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Q.file, &Qin)) Return ((error = GMT_DATA_READ_ERROR));
+		if ((Qin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Q.file, NULL)) == NULL) Return (API->error);
 		Table = Qin->table[0];	/* Only one table in a file */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld segments\n", Table->n_segments);
 	 	lon = GMT_memory (GMT, NULL, Table->n_segments, double);
@@ -291,7 +291,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			struct GMT_TABLE *NTable = NULL;
 			if ((error = GMT_set_cols (GMT, GMT_IN, 3))) Return (error);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Read Nodes from %s ...", Ctrl->N.file);
-			if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->N.file, &Nin)) Return ((error = GMT_DATA_READ_ERROR));
+			if ((Nin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->N.file, NULL)) == NULL) Return (API->error);
 			NTable = Nin->table[0];	/* Only one table in a file with a single segment */
 			if (NTable->n_segments != 1) {
 				GMT_report (GMT, GMT_MSG_FATAL, "File %s can only have 1 segment!\n", Ctrl->N.file);

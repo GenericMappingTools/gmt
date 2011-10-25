@@ -392,12 +392,12 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->C.active) {	/* Apply CPT to get three r,g,b channel files */
 		GMT_LONG new_grid = FALSE;
 		/* Since these GMT grids COULD be passed in via memory locations, they COULD have pads so we must use general IJ access */
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, &P)) Return (GMT_DATA_READ_ERROR);
+		if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
 		
 		for (i = 0; i < 3; i++) {	/* Do the r, g, and b channels */
 			if (Ctrl->L.active && Ctrl->L.layer != rgb[i]) continue;	/* Only do one of the layers */
 			GMT_report (GMT, GMT_MSG_NORMAL, "Processing the %s components\n", comp[i]);
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, &Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if ((Grid = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 			GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 			new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array; else Out == Grid */

@@ -253,7 +253,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {	/* If -R was not given we infer the option via the input grid */
 		char opt_R[GMT_BUFSIZ];
 		struct GMT_GRID *G = NULL;
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, &G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if ((G = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 		GMT_memcpy (wesn, G->header->wesn, 4, double);
 		if (!Ctrl->I.active) {
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
@@ -364,7 +364,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_create_grid (GMT, &Geo);
 		GMT_memcpy (Geo->header->wesn, wesn, 4, double);
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, &Rect)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if ((Rect = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 		offset = Rect->header->registration;	/* Same as input */
@@ -422,7 +422,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {	/* Forward projection from geographical to rectangular grid */
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, &Geo)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if ((Geo = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 		GMT_create_grid (GMT, &Rect);

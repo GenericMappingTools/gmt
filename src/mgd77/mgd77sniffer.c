@@ -2873,14 +2873,14 @@ void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[
 	if (strlen (info->fname) == 0) return;	/* No name */
 
 	if (info->format == 0) {	/* GMT geographic grid with header */
-		if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, info->fname, &(info->G))) return;	/* Get header only */
+		if ((info->G = GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, info->fname, NULL)) == NULL) return;	/* Get header only */
 
 		/* Get grid dimensions */
 		info->one_or_zero = (info->G->header->registration) ? 0 : 1;
 		info->nx = irint ( (info->G->header->wesn[XHI] - info->G->header->wesn[XLO]) / info->G->header->inc[GMT_X]) + info->one_or_zero;
 		info->ny = irint ( (info->G->header->wesn[YHI] - info->G->header->wesn[YLO]) / info->G->header->inc[GMT_Y]) + info->one_or_zero;
 
-		if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, info->fname, &(info->G))) return;	/* Get subset */
+		if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, info->fname, info->G) == NULL) return;	/* Get subset */
 	}
 	else {	/* Read a Mercator grid Sandwell/Smith style */
 		GMT_create_grid (GMT, &info->G);

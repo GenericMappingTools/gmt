@@ -307,7 +307,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 	if (Ctrl->C.active) {
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, &P)) Return (GMT_DATA_READ_ERROR);
+		if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
 	}
 
 	if (!(strcmp (Ctrl->In.file[0], "=") || strcmp (Ctrl->In.file[1], "="))) {
@@ -316,7 +316,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	for (k = 0; k < 2; k++) {
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[k], &Grid[k])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if ((Grid[k] = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[k], NULL)) == NULL) Return (API->error);	/* Get header only */
 		GMT_grd_init (GMT, Grid[k]->header, options, TRUE);
 	}
 
@@ -349,7 +349,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Read data */
 
-	for (k = 0; k < 2; k++) if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file[k], &Grid[k])) Return (GMT_DATA_READ_ERROR);	/* Get data */
+	for (k = 0; k < 2; k++) if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file[k], Grid[k]) == NULL) Return (API->error);	/* Get data */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (!Ctrl->S.constant) Ctrl->S.factor = 1.0 / Ctrl->S.factor;
