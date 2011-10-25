@@ -63,7 +63,6 @@ extern double asinh(double x);
 #ifdef HAVE_RINT
 extern double rint(double x);
 #else
-/*#define rint(x) (floor((x)+0.5))	This is now deffined by the ieee function s_rint.c */
 EXTERN_MSC double rint(double x);
 #endif
 
