@@ -686,12 +686,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_expected_fields = 1;
 		}
 		
-		if (ok_to_read) n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in);
+		if (ok_to_read) in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields);
 
 		while (ok_to_read && !GMT_REC_IS_EOF (GMT)) {	/* Not yet EOF */
 
 			while (GMT_REC_IS_SEG_HEADER (GMT) && !GMT_REC_IS_EOF(GMT)) {
-				n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in);
+				in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields);
 			}
 			if ((GMT->current.io.status & GMT_IO_EOF)) continue;	/* At EOF */
 
@@ -732,7 +732,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (two_cols) coldnt = GMT_memory (GMT, coldnt, n_alloc, double);
 			}
 
-			n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in);
+			in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields);
 		}
 		GMT_fclose (GMT, fp);
 		if (two_cols && n_ave) { colvalue[n] = sum_z / n_ave; coldnt[n++] = last_dnt;}

@@ -597,7 +597,7 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 	wesn_lim[YLO] = h->wesn[YLO] - C->grid_yinc;	wesn_lim[YHI] = h->wesn[YHI] + C->grid_yinc;
 
 	if ((error = GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) return (error);	/* Enables data input and sets access mode */
-	while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((in = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
 
 		if (GMT_REC_IS_ERROR (GMT)) return (GMT_RUNTIME_ERROR);
 

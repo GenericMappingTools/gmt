@@ -457,7 +457,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 #ifdef USE_GDAL
 		else if (Ctrl->D.active) {
-			GMT_LONG ID, dim[1] = {256};
+			GMT_LONG dim[1] = {256};
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
 			if ((P = GMT_Create_Data (API, GMT_IS_CPT, dim, GMT_IN)) == NULL) Return (API->error);
 			P->model = GMT_RGB;
@@ -623,7 +623,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 #endif
 		for (k = 0; k < n_grids; k++) {
-			if (!Grid_proj[k]) GMT_create_grid (GMT, &Grid_proj[k]);
+			if (!Grid_proj[k]) Grid_proj[k] = GMT_create_grid (GMT);
 			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header);
 			if (grid_registration == GMT_GRIDLINE_REG)		/* Force pixel if dpi is set */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_PIXEL_REG : Grid_orig[k]->header->registration;
@@ -633,7 +633,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_orig[k]);
 		}
 		if (Ctrl->I.active) {
-			GMT_create_grid (GMT, &Intens_proj);
+			Intens_proj = GMT_create_grid (GMT);
 
 			if (n_grids)
 				GMT_memcpy (Intens_proj->header->wesn, Grid_proj[0]->header->wesn, 4, double);

@@ -62,7 +62,7 @@ struct GMTAPI_DATA_OBJECT {
 	void *data;				/* Points to the memory location of the data (i.e., a GMT_GRID, GMT_DATASET structs) */
 	FILE *fp;				/* Pointer to source/destination stream [NULL if memory location] */
 	char *filename;				/* Locally allocated copy of a filename (or NULL) */
-	PFL import;				/* Pointer to input function (for DATASET/TEXTSET only) */
+	PFP import;				/* Pointer to input function (for DATASET/TEXTSET only) */
 };
 
 struct GMTAPI_CTRL {
@@ -111,9 +111,9 @@ EXTERN_MSC GMT_LONG GMT_End_IO		(struct GMTAPI_CTRL *API, GMT_LONG direction, GM
 EXTERN_MSC GMT_LONG GMT_Report_Error	(struct GMTAPI_CTRL *C, GMT_LONG error);
 EXTERN_MSC void * GMT_Create_Data	(struct GMTAPI_CTRL *C, GMT_LONG type, GMT_LONG par[], GMT_LONG direction);
 EXTERN_MSC void * GMT_Get_Data		(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, void *input,  void *data);
+EXTERN_MSC void * GMT_Get_Record	(struct GMTAPI_CTRL *C, GMT_LONG mode, GMT_LONG *retval);
 EXTERN_MSC GMT_LONG GMT_Put_Data	(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, void *output, void *data);
 EXTERN_MSC GMT_LONG GMT_Destroy_Data	(struct GMTAPI_CTRL *C, GMT_LONG mode, void *X);
-EXTERN_MSC GMT_LONG GMT_Get_Record	(struct GMTAPI_CTRL *C, GMT_LONG mode, void *record);
 EXTERN_MSC GMT_LONG GMT_Put_Record	(struct GMTAPI_CTRL *C, GMT_LONG mode, void *record);
 EXTERN_MSC GMT_LONG GMT_Encode_ID	(struct GMTAPI_CTRL *C, char *string, GMT_LONG object_ID);
 

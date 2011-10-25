@@ -155,7 +155,7 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Try to find a common side to join on  */
 
-	GMT_create_grid (GMT, &C);
+	C = GMT_create_grid (GMT);
 	GMT_grd_init (GMT, C->header, options, FALSE);
 	
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */

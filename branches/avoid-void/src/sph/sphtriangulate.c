@@ -66,7 +66,7 @@ struct SPHTRIANGULATE_CTRL {
 
 void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET ***DD)
 {	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
-	GMT_LONG i, ij, k, error, do_authalic, dim[4] = {1, 0, 0, 0};
+	GMT_LONG i, ij, k, do_authalic, dim[4] = {1, 0, 0, 0};
 	double area_sphere = 0.0, area_triangle = GMT->session.d_NaN, V[3][3], R2, y, dist = GMT->session.d_NaN;
 	char segment_header[GMT_BUFSIZ];
 	struct GMT_DATASET *Dout[2] = {NULL, NULL};
@@ -175,7 +175,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, double *lat, struct STRIPACK_VORONOI *V, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET ***DD)
 {	/* Prints out the Voronoi polygons either as polygons (for filling) or arcs (lines) */
 	GMT_LONG i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
-	GMT_LONG n_alloc = GMT_CHUNK, p_alloc = GMT_TINY_CHUNK, error, do_authalic, dim[4] = {1, 0, 0, 0};
+	GMT_LONG n_alloc = GMT_CHUNK, p_alloc = GMT_TINY_CHUNK, do_authalic, dim[4] = {1, 0, 0, 0};
 	
 	char segment_header[GMT_BUFSIZ];
 	
@@ -526,13 +526,13 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 	
 	n = 0;
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
 		if (GMT_REC_IS_TBL_HEADER (GMT)) continue;	/* Skip table headers */
 
 		while (GMT_REC_IS_SEG_HEADER (GMT)) {	/* Segment header, get next record */
-			n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in);	
+			in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields);	
 			first_x = in[GMT_X];	first_y = in[GMT_Y];
 			first = TRUE;
 		}

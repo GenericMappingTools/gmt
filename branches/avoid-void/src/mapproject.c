@@ -659,7 +659,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_output = GMT_get_cols (GMT, GMT_OUT);
 
 	n = n_read_in_seg = 0;
-	while ((n_fields = GMT_Get_Record (API, rmode, &in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((in = GMT_Get_Record (API, rmode, &n_fields))) {	/* Keep returning records until we reach EOF */
 
 		if (GMT_REC_IS_ERROR (GMT) && n_fields < 2) continue;
 

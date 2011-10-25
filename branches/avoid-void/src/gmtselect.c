@@ -613,7 +613,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->common.b.ncol[GMT_OUT] = -1;
 	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 	
-	while ((n_fields = GMT_Get_Record (API, r_mode, &in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((in = GMT_Get_Record (API, r_mode, &n_fields))) {	/* Keep returning records until we reach EOF */
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);		/* Bail if there are io errors */
 
@@ -624,7 +624,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		while (GMT_REC_IS_SEG_HEADER (GMT) && !GMT_REC_IS_EOF (GMT)) {
 			output_header = TRUE;
-			n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in);
+			in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields);
 		}
 		if (GMT_REC_IS_EOF (GMT)) break;	/* At EOF */
 

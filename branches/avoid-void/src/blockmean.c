@@ -191,7 +191,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the blockmean main code ----------------------------*/
 
 	GMT_set_pad (GMT, 0);	/* We are using grid indexing but have no actual grid so no padding is needed */
-	GMT_create_grid (GMT, &Grid);
+	Grid = GMT_create_grid (GMT);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
@@ -240,7 +240,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Read the input data */
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we reach EOF */
+	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);		/* Bail if there are any read errors */
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;			/* Skip all table and segment headers */

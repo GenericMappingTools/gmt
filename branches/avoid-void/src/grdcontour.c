@@ -817,8 +817,8 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_contours = c + 1;
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
-		char record[GMT_BUFSIZ];
-		GMT_LONG got, out_ID;
+		char *record = NULL;
+		GMT_LONG got, out_ID, n_fields;
 		double tmp;
 
 		n_contours = 0;
@@ -826,7 +826,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Error registering contour info file %s\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
-		while (GMT_Get_Record (API, GMT_READ_TEXT, &record) != EOF) {
+		while ((record = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields))) {
 			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
 			if (n_contours == n_alloc) {
 				n_tmp = n_alloc;

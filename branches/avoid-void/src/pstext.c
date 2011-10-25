@@ -595,7 +595,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		c_txt = GMT_memory (GMT, NULL, n_alloc, char *);
 	}
 	
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_TEXT, &line)) != EOF) {	/* Keep returning records until we have no more files */
+	while ((line = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields))) {	/* Keep returning records until we have no more files */
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
 

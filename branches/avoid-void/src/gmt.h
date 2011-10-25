@@ -243,7 +243,7 @@ struct GMT_SESSION {
 	/* These are parameters that is set once at the start of a GMT session and
 	 * are essentially read-only constants for the duration of the session */
 	FILE *std[3];			/* Pointers for standard input, output, and error */
-	PFL input_ascii;		/* Pointer to function reading ascii tables only */
+	PFP input_ascii;		/* Pointer to function reading ascii tables only */
 	PFL output_ascii;		/* Pointer to function writing ascii tables only */
 	GMT_LONG n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
 	GMT_LONG n_user_media;		/* Total number of user media returned by gmt_load_user_media */

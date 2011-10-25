@@ -212,13 +212,13 @@ GMT_LONG GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void alloc_stack (struct GMT_CTRL *GMT, struct GMT_GRID **G, struct GMT_GRID *Template)
+struct GMT_GRID * alloc_stack (struct GMT_CTRL *GMT, struct GMT_GRID *Template)
 {	/* Allocate a new GMT_GRID structure based on dimensions etc of the Template */
 	struct GMT_GRID *New = NULL;
-	GMT_create_grid (GMT, &New);
+	New = GMT_create_grid (GMT);
 	GMT_memcpy (New->header, Template->header, 1, struct GRD_HEADER);
 	New->data = GMT_memory (GMT, NULL, Template->header->size, float);
-	*G = New;
+	return (New);
 }
 
 /* -----------------------------------------------------------------
@@ -3010,7 +3010,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "= %s", opt->arg);
 
 			if (n_items && new_stack < 0 && constant[nstack-1]) {	/* Only a constant provided, set grid accordingly */
-				if (!stack[nstack-1]) alloc_stack (GMT, &stack[nstack-1], info.G);
+				if (!stack[nstack-1]) stack[nstack-1] = alloc_stack (GMT, info.G);
 				alloc_mode[nstack-1] = 1;
 				GMT_grd_loop (GMT, info.G, row, col, node) stack[nstack-1]->data[node] = (float)factor[nstack-1];
 			}
@@ -3055,7 +3055,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			if (op == GRDMATH_ARG_IS_X_MATRIX) {		/* Need to set up matrix of x-values */
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "X ");
-				if (!stack[nstack]) alloc_stack (GMT, &stack[nstack], info.G);
+				if (!stack[nstack]) stack[nstack] = alloc_stack (GMT, info.G);
 				alloc_mode[nstack] = 1;
 				GMT_row_padloop (GMT, info.G, row, node) {
 					node = row * info.G->header->mx;
@@ -3064,7 +3064,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else if (op == GRDMATH_ARG_IS_x_MATRIX) {		/* Need to set up matrix of normalized x-values */
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Xn ");
-				if (!stack[nstack]) alloc_stack (GMT, &stack[nstack], info.G);
+				if (!stack[nstack]) stack[nstack] = alloc_stack (GMT, info.G);
 				alloc_mode[nstack] = 1;
 				GMT_row_padloop (GMT, info.G, row, node) {
 					node = row * info.G->header->mx;
@@ -3073,19 +3073,19 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else if (op == GRDMATH_ARG_IS_Y_MATRIX) {	/* Need to set up matrix of y-values */
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Y ");
-				if (!stack[nstack]) alloc_stack (GMT, &stack[nstack], info.G);
+				if (!stack[nstack]) stack[nstack] = alloc_stack (GMT, info.G);
 				alloc_mode[nstack] = 1;
 				GMT_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->data[node] = info.grd_y[row];
 			}
 			else if (op == GRDMATH_ARG_IS_y_MATRIX) {	/* Need to set up matrix of normalized y-values */
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Yn ");
-				if (!stack[nstack]) alloc_stack (GMT, &stack[nstack], info.G);
+				if (!stack[nstack])&stack[nstack] = alloc_stack (GMT, info.G);
 				alloc_mode[nstack] = 1;
 				GMT_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->data[node] = info.grd_yn[row];
 			}
 			else if (op == GRDMATH_ARG_IS_ASCIIFILE) {
 				if (info.ASCII_file) free (info.ASCII_file);
-				if (!stack[nstack]) alloc_stack (GMT, &stack[nstack], info.G);
+				if (!stack[nstack]) stack[nstack] = alloc_stack (GMT, info.G);
 				alloc_mode[nstack] = 1;
 				info.ASCII_file = strdup (opt->arg);
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "(%s) ", opt->arg);
@@ -3129,7 +3129,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Must make space for more */
 
-			alloc_stack (GMT, &stack[nstack+k-1], info.G);
+			stack[nstack+k-1] = alloc_stack (GMT, info.G);
 			alloc_mode[nstack+k-1] = 1;
 		}
 
@@ -3137,7 +3137,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		for (kk = 0, k = nstack - consumed_operands[op]; kk < produced_operands[op]; kk++, k++) {
 			if (constant[k] && !stack[k]) {
-				alloc_stack (GMT, &stack[k], info.G);
+				stack[k] = alloc_stack (GMT, info.G);
 				alloc_mode[k] = 1;
 			}
 		}

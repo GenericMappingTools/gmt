@@ -661,7 +661,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	xyz[0][GMT_Z] = DBL_MAX;	xyz[1][GMT_Z] = -DBL_MAX;
 	n = 0;
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, &in)) != EOF) {	/* Keep returning records until we have no more files */
+	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we have no more files */
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
 
@@ -774,8 +774,8 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_contours = c + 1;
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
-		char record[GMT_BUFSIZ];
-		GMT_LONG got, out_ID, c_alloc = 0;
+		char *record = NULL;
+		GMT_LONG got, out_ID, NL, c_alloc = 0;
 		double tmp;
 
 		if (GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, Ctrl->C.file, NULL, NULL, &out_ID)) {
@@ -783,7 +783,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		c = 0;
-		while (GMT_Get_Record (API, GMT_READ_TEXT, &record) != EOF) {
+		while ((record = GMT_Get_Record (API, GMT_READ_TEXT, &NL))) {
 			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
 			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);

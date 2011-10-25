@@ -300,7 +300,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	first_data_record = TRUE;
 	done = FALSE;
 	while (!done) {	/* Keep returning records until we reach EOF of last file */
-		n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, &in);
+		in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, &n_fields);
 		do_report = FALSE;
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
@@ -399,8 +399,9 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_quad_reset (GMT, Q, ncol);
 			n = 0;
 			file[0] = '\0';
-			if (done || do_report) continue;	/* We are done OR have no data record to process yet */
+			if (done || do_report || GMT_REC_IS_FILE_BREAK (GMT)) continue;	/* We are done OR have no data record to process yet */
 		}
+		if (GMT_REC_IS_FILE_BREAK (GMT)) continue;
 
 		/* We get here once we have read a data record */
 		

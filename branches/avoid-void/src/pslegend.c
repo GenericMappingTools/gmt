@@ -447,7 +447,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (guide) drawbase (GMT, PSL, Ctrl->D.lon, Ctrl->D.lon + Ctrl->D.width, y0);
 #endif
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_TEXT, &line)) != EOF) {	/* Keep returning records until we have no more files */
+	while ((line = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields))) {	/* Keep returning records until we have no more files */
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */

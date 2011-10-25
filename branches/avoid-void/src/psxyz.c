@@ -358,7 +358,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_cols_start = 3, n_fields, error = GMT_NOERROR;
 	GMT_LONG ex1, ex2, ex3, change, n_needed, read_mode, save_u = FALSE;
 
-	char buffer[GMT_BUFSIZ], *text_rec = NULL;
+	char *text_rec = NULL;
 
 	void *record = NULL;	/* Opaque pointer to either a text or double record */
 
@@ -518,14 +518,12 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (read_symbol) {	/* If symbol info is given we must process text records */
 		set_type = GMT_IS_TEXTSET;
 		read_mode = GMT_READ_TEXT;
-		record = &buffer;
-		in = GMT->current.io.curr_rec;
 	}
 	else {	/* Here we can process data records (ASCII or binary) */
 		set_type = GMT_IS_DATASET;
 		read_mode = GMT_READ_DOUBLE;
-		record = &in;
 	}
+	in = GMT->current.io.curr_rec;
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
 		if ((error = GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
@@ -533,7 +531,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		n = 0;
-		while ((n_fields = GMT_Get_Record (API, read_mode, record)) != EOF) {	/* Keep returning records until we have no more files */
+		while ((record = GMT_Get_Record (API, read_mode, &n_fields))) {	/* Keep returning records until we have no more files */
 
 			if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
 
@@ -547,7 +545,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 				}
 				if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
-				n_fields = GMT_Get_Record (API, read_mode, record);
+				record = GMT_Get_Record (API, read_mode, &n_fields);
 			}
 			if (GMT_REC_IS_EOF (GMT)) continue;	/* At EOF */
 

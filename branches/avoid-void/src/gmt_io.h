@@ -345,7 +345,7 @@ struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 
 struct GMT_IO {				/* Used to process input data records */
 	
-	PFL input;			/* Pointer to function reading ascii or binary tables */
+	PFP input;			/* Pointer to function reading ascii or binary tables */
 	PFL output;			/* Pointer to function writing ascii or binary tables */
 	PFL read_item;			/* Pointer to function reading 1-col z tables in grd2xyz */
 	PFL write_item;			/* Pointer to function writing 1-col z tables in xyz2grd */

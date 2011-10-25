@@ -862,7 +862,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 		rmode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
-		while ((n_fields = GMT_Get_Record (API, rmode, &in)) != EOF) {	/* Keep returning records until we reach EOF */
+		while ((in = GMT_Get_Record (API, rmode, &n_fields))) {	/* Keep returning records until we reach EOF */
 
 			if (GMT_REC_IS_ERROR (GMT) && n_fields < 2) continue;
 
