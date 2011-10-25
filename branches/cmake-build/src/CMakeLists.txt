@@ -213,7 +213,7 @@ set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
 # extra ugly definitions for triangle
 set_source_files_properties (triangle
 	PROPERTIES
-	COMPILE_DEFINITIONS "NO_TIMER;TRILIBRARY;REDUCED;CDT_ONLY")
+	COMPILE_DEFINITIONS "NO_TIMER;TRILIBRARY;REDUCED;CDT_ONLY;ANSI_DECLARATORS")
 
 # libpslib
 add_library (pslib ${GMT_PSL_SRCS})
@@ -321,6 +321,9 @@ target_link_libraries (psldemo pslib)
 
 # generate Mac debugging symbols
 create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS})
+
+# Tests depend on GMT progs:
+add_dependencies (check ${GMT_PROGSPS} ${GMT_PROGS} ${GMT_DEMOS} psldemo)
 
 # add the install targets
 install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo

@@ -248,6 +248,8 @@
 /*                                                                           */
 /*****************************************************************************/
 
+#pragma GCC diagnostic ignored "-Wuninitialized"
+
 struct triangulateio {
   REAL *pointlist;                                               /* In / out */
   REAL *pointattributelist;                                      /* In / out */

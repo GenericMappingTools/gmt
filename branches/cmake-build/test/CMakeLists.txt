@@ -18,13 +18,34 @@
 
 # run tests
 if (DO_TESTS AND UNIX)
-	file(COPY ./
-		DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
-		USE_SOURCE_PERMISSIONS
-		PATTERN ".svn" EXCLUDE
-		PATTERN "CMakeLists.txt" EXCLUDE
-		PATTERN ".cmake" EXCLUDE)
+	# list of test dirs
+	set (GMT_TEST_DIRS api blockmean filter1d fitcircle genper gmtconvert gmtdp
+		gmtmath gmtselect gmtspatial gmtstitch gmtvector grd2rgb grd2xyz grdblend
+		grdclip grdcontour grdcut grdedit grdfft grdfilter grdhisteq grdimage
+		grdlandmask grdmask grdpaste grdproject grdreformat grdsample grdtrend
+		grdview grdvolume greenspline kml mapproject meca mgd77 ogr potential
+		project psbasemap pscoast pscontour psimage pslegend psrose psscale pstext
+		psxy psxyz sph splitxyz spotter time trend2d triangulate x2sys)
 
+	# rules for copying test files to build dir
+	file (GLOB_RECURSE _files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
+	list_regex_get ("[.]svn/|[.]cmake|CMakeLists.txt" _files ${_files} INVERT)
+	set (_test_files)
+	foreach (_file ${_files})
+		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_file}
+			COMMAND ${CMAKE_COMMAND}
+			-E copy_if_different
+			${CMAKE_CURRENT_SOURCE_DIR}/${_file}
+			${CMAKE_CURRENT_BINARY_DIR}/${_file})
+		list (APPEND _test_files ${CMAKE_CURRENT_BINARY_DIR}/${_file})
+	endforeach (_file ${_files})
+
+	# add file dependencies to check target
+	add_custom_target (copy_test_files
+		DEPENDS ${_test_files})
+	add_dependencies (check copy_test_files)
+
+	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property(_dir_defs COMPILE_DEFINITIONS)
 	list(FIND _dir_defs DEBUG HAVE_GMT_DEBUG_SYMBOLS)
 	if (HAVE_GMT_DEBUG_SYMBOLS EQUAL -1)
@@ -35,14 +56,7 @@ if (DO_TESTS AND UNIX)
 
 	configure_file (functions.sh.cmake functions.sh @ONLY)
 
-	set (GMT_TEST_DIRS api blockmean filter1d fitcircle genper gmtconvert gmtdp
-		gmtmath gmtselect gmtspatial gmtstitch gmtvector grd2rgb grd2xyz grdblend
-		grdclip grdcontour grdcut grdedit grdfft grdfilter grdhisteq grdimage
-		grdlandmask grdmask grdpaste grdproject grdreformat grdsample grdtrend
-		grdview grdvolume greenspline kml mapproject meca mgd77 ogr potential
-		project psbasemap pscoast pscontour psimage pslegend psrose psscale pstext
-		psxy psxyz sph splitxyz spotter time trend2d triangulate x2sys)
-
+	# add tests
 	foreach (_test_dir ${GMT_TEST_DIRS})
 		file(GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_BINARY_DIR}
 			"${CMAKE_CURRENT_BINARY_DIR}/${_test_dir}/*.sh")
