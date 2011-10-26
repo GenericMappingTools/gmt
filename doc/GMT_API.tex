@@ -528,10 +528,9 @@ This is done with the \texttt{GMT\_Create\_Data} function, whose prototype is
 \index{GMT\_Create\_Data}.
 
 \begin{verbatim}
-GMT_Create_Data (struct GMTAPI_CTRL *API, long family, long par[], \
-	void *data, long *ID)
+void * GMT_Create_Data (struct GMTAPI_CTRL *API, long family, long par[])
 \end{verbatim}
-where \texttt{data} returns the address of an opaque pointer to the allocated resource.
+which returns a pointer to the allocated resource.
 Pass \texttt{family} as one of GMT\_IS\_GMTGRID, GMT\_IS\_DATASET, or GMT\_IS\_CPT,
 or the special families GMT\_IS\_VECTOR or GMT\_IS\_MATRIX when handling user data.
 Depending on the data type chosen you may need to pass additional parameters via
@@ -552,8 +551,7 @@ the \texttt{par} array, as indicated below:
 	\item [GMT\_IS\_MATRIX]: An empty GMT\_VECTOR structure is allocated.
 \end{description}
 In all cases the data entries are initialized to zero (NULL in the case of text).
-The \texttt{data} pointer is expected to
-point to NULL when calling the function.  Note: if you need to
+Note: if you need to
 duplicate an existing data structure the simplest way is to use \texttt{GMT\_Get\_Data}
 after registering the original structure as the data source.
 \index{Duplicate!Data}
@@ -615,11 +613,12 @@ an generic form:
 \index{GMT\_Get\_Data}
 
 \begin{verbatim}
-GMT_Get_Data (struct GMTAPI_CTRL *API, long family, long method, \
+void * GMT_Get_Data (struct GMTAPI_CTRL *API, long family, long method, \
     long geometry, double wesn[], long mode, void *input, void *data)
 \end{verbatim}
-where \texttt{data} can be a pointer to any of the four structures
-discussed above.  Most of these arguments have been discussed earlier.  This function can
+where \texttt{data} is usually NULL except when reading grids in two steps
+(i.e., first get a grid structure with a header, then read the data).
+Most of these arguments have been discussed earlier.  This function can
 be called in three different situations:
 \begin{enumerate}
 \item If you have a single source (filename, stream pointer, etc.) you can call
@@ -650,7 +649,8 @@ To get the entire grid and its header, pass GMT\_GRID\_ALL.  However, if you
 need to extract a sub-region you must first get the header only by passing
 GMT\_GRID\_HEADER, then use the header structure attributes \texttt{x\_min},
 \texttt{x\_max}, \texttt{y\_min}, and \texttt{y\_max} to specify a subset via \texttt{wesn}, and then call
-\texttt{GMT\_Get\_Data} a second time, with \texttt{mode} = GMT\_GRID\_DATA and passing your \texttt{wesn} array.
+\texttt{GMT\_Get\_Data} a second time, with \texttt{mode} = GMT\_GRID\_DATA and passing your \texttt{wesn} array
+and the grid structure returned from the first call (no new return value is given).
 In the event your data array should be allocated to hold both the real and imaginary parts of a
 complex data set you must add either GMT\_GRID\_COMPLEX\_REAL or GMT\_GRID\_COMPLEX\_IMAG to \texttt{mode}
 so as to allow for the extra space and to position the input values correctly.
@@ -666,12 +666,11 @@ If your program must read data table records one-by-one you will instead use the
 \index{GMT\_Get\_Record}
 
 \begin{verbatim}
-GMT_Get_Record (struct GMTAPI_CTRL *API, long mode, void *data)
+void * GMT_Get_Record (struct GMTAPI_CTRL *API, long mode, long *nfields)
 \end{verbatim}
-where \texttt{data} is either a pointer to a double array with the current row
+where the returned value is either a pointer to a double array with the current row
 or a pointer to a character string with the current row, depending on \texttt{mode}.
-You need to allocate any memory for this array if the method used to register
-the source was GMT\_IS\_ARRAY; otherwise it points to memory internal to \GMT.
+In either case these pointers point to memory internal to \GMT and should be considered read-only
 
 Normally (\texttt{mode} == GMT\_READ\_DOUBLE or 0), we return a pointer to the double array.
 \index{GMT\_READ\_DOUBLE}
@@ -1195,10 +1194,10 @@ function GMT_Register_IO (family, method, geometry, direction, \
 function GMT_Encode_ID (filename, ID)
 function GMT_Init_IO (family, geometry, direction, head, ID)
 function GMT_Begin_IO (family, geometry, direction, mode)
-function GMT_Create_Data (family, geometry, ipar, data, ID)
+function GMT_Create_Data (family, geometry, ipar)
 function GMT_Get_Data (family, method, geometry, wesn, mode, \
 	input, data)
-function GMT_Get_Record (rec)
+function GMT_Get_Record (rec, mode, nfields)
 function GMT_Put_Data (family, method, geometry, wesn, mode, \
 	output, data)
 function GMT_Put_Record (mode, rec)

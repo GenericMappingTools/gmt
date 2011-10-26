@@ -374,7 +374,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 		GMT_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
 		/* Expand with dist,az columns (and posibly make space for more) and optionally resample */
-		GMT_resample_data (GMT, Din, Ctrl->C.spacing, 2, (Ctrl->D.active) ? Ctrl->G.n_grids : 0, Ctrl->A.mode, &Dtmp);
+		if ((Dtmp = GMT_resample_data (GMT, Din, Ctrl->C.spacing, 2, (Ctrl->D.active) ? Ctrl->G.n_grids : 0, Ctrl->A.mode)) == NULL) Return (API->error);
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 		if (Ctrl->D.active) {	/* Also want to sample grids along the original resampled trace */
 			for (tbl = 0; tbl < Dtmp->n_tables; tbl++) {
@@ -390,7 +390,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, Ctrl->D.file, Dtmp))) Return (error);
 		}
 		/* Get dataset with cross-profiles, with columns for x,y,d and the n_grids samples */
-		if ((error = GMT_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, Ctrl->G.n_grids, &Dout)) != GMT_OK) Return (error);
+		if ((Dout = GMT_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, Ctrl->G.n_grids)) == NULL) Return (API->error);
 		GMT_Destroy_Data (API, GMT_ALLOCATED, &Dtmp);
 		GMT_Destroy_Data (API, GMT_ALLOCATED, &Din);
 		

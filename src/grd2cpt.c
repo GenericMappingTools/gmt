@@ -527,7 +527,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (k = 0; k < Ctrl->E.levels; k++) z[k] = cdf_cpt[k].z;
 	if (Ctrl->Q.mode == 2) for (k = 0; k < Ctrl->E.levels; k++) z[k] = d_log10 (GMT, z[k]);	/* Make log10(z) values for interpolation step */
 
-	GMT_sample_cpt (GMT, Pin, z, -Ctrl->E.levels, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active, &Pout);	/* -ve to keep original colors */
+	Pout = GMT_sample_cpt (GMT, Pin, z, -Ctrl->E.levels, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);	/* -ve to keep original colors */
 	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);				/* Enables data output and sets access mode */
 
 	/* Determine mode flags for output */

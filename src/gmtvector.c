@@ -529,7 +529,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else if (Ctrl->C.active[GMT_OUT] || !GMT_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
 
-	GMT_alloc_dataset (GMT, Din, n_out + add, 0, GMT_ALLOC_NORMAL, &Dout);
+	Dout = GMT_alloc_dataset (GMT, Din, n_out + add, 0, GMT_ALLOC_NORMAL);
 	GMT_memset (out, 3, double);
 
 	/* OK, with data in hand we can do some damage */

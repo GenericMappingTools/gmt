@@ -162,7 +162,7 @@ GMT_LONG x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, cha
 	adj->d = GMT_memory (GMT, NULL, n_alloc, double);
 	adj->c = GMT_memory (GMT, NULL, n_alloc, double);
 	for (k = 0; k < 2; k++) l_swap (type[k], GMT->current.io.col_type[GMT_IN][k]);	/* Save original input type setting */
-	while ((n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in)) >= 0 && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
+	while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) != NULL && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		adj->d[n] = in[0];
 		adj->c[n] = in[1];
 		n++;

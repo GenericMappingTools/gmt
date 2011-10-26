@@ -667,8 +667,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		if (one_table) {
-			GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0, &Tout);
-			Dout->table[tbl] = Tout;
+			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0);
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */

@@ -863,7 +863,7 @@ GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, str
 	for (i = 0; i < s->n_out_columns; i++) z[i] = GMT_memory (C, NULL, C->current.io.ndim, double);
 
 	for (j = 0; j < (GMT_LONG)C->current.io.ndim; j++) {
-		if ((n_fields = C->current.io.input (C, fp, &n_expect, &in)) != s->n_out_columns) {
+		if ((in = C->current.io.input (C, fp, &n_expect, &n_fields)) == NULL || n_fields != s->n_out_columns) {
 			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_ncfile: Error reading file %s at record %ld\n", fname, (GMT_LONG)j);
 	     		return (GMT_GRDIO_READ_FAILED);
 		}

@@ -302,7 +302,7 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((D[GMT_IN] = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	
-	GMT_alloc_dataset (GMT, D[GMT_IN], 0, 0, GMT_ALLOC_NORMAL, &D[GMT_OUT]);	/* Allocate identical output tables; we reallocate memory below */
+	D[GMT_OUT] = GMT_alloc_dataset (GMT, D[GMT_IN], 0, 0, GMT_ALLOC_NORMAL);	/* Allocate identical output tables; we reallocate memory below */
 
 	geo = GMT_is_geographic (GMT, GMT_IN);					/* TRUE for lon/lat coordinates */
 	if (!geo && strchr (GMT_LEN_UNITS, (int)Ctrl->T.unit)) geo = TRUE;	/* Used units but did not set -fg; implicitly set -fg via geo */

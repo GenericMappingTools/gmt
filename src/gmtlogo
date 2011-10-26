@@ -37,7 +37,7 @@ if [ $# -gt 3 ]; then
 	0	1
 EOF
 else
-	psxy -R0/2/0/1 -Jx${scl1}i -O -K -X$1 -Y$2 /dev/null
+	psxy -R0/2/0/1 -Jx${scl1}i -O -K -X$1 -Y$2 -T
 fi
 # This scaling is to stretch the font a bit
 echo "gsave 1 2 scale"

@@ -6810,7 +6810,7 @@ void GMT_ECEF_inverse (struct GMT_CTRL *C, double in[], double out[])
 	out[GMT_Z] = (p / cos_lat) - N;
 }
 
-GMT_LONG GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], GMT_LONG n, double scale, GMT_LONG dist_flag, double **dist)
+double * GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], GMT_LONG n, double scale, GMT_LONG dist_flag)
 {	/* Returns distances in meter; use scale to get other units */
 	GMT_LONG this, prev, cumulative = TRUE, do_scale, xy_not_NaN;
 	double *d = NULL, cum_dist = 0.0, inc = 0.0;
@@ -6820,7 +6820,7 @@ GMT_LONG GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], GMT_LONG n,
 		cumulative = FALSE;
 	}
 
-	if (dist_flag < 0 || dist_flag > 3) return (GMT_MAP_BAD_DIST_FLAG);
+	if (dist_flag < 0 || dist_flag > 3) return (NULL);
 
 	do_scale = (scale != 1.0);
 	d = GMT_memory (C, NULL, n, double);
@@ -6860,8 +6860,7 @@ GMT_LONG GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], GMT_LONG n,
 
 		if (xy_not_NaN) prev = this;	/* This was a record with OK x,y; make it the previous point for distance calculations */
 	}
-	*dist = d;
-	return (GMT_NOERROR);
+	return (d);
 }
 
 GMT_LONG GMT_map_latcross (struct GMT_CTRL *C, double lat, double west, double east, struct GMT_XINGS **xings)

@@ -282,7 +282,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->Q.active) {	/* We also want to build list(s) those files */
 			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtstitch_list.txt");
 			dim_tscr[0] = n_qfiles = (strstr (Ctrl->Q.file, "%c")) ? 2 : 1;	/* Build one or two tables (closed and open) */
-			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim_tscr, -1)) == NULL) {
+			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim_tscr, GMT_NOWHERE)) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for segment lists\n");
 				return (GMT->parent->error);
 			}
@@ -329,7 +329,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_columns = dim_tscr[2] = D[GMT_IN]->n_columns;	/* Set the required columns for output */
 	
 	n_seg_alloc[0] = dim_tscr[1] = 0;	/* Allocate no segments for now - we will do this as needed */
-	if ((D[GMT_OUT] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim_tscr, -1)) == NULL) {
+	if ((D[GMT_OUT] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim_tscr, GMT_NOWHERE)) == NULL) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for output segments\n");
 		return (GMT->parent->error);
 	}
@@ -338,7 +338,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_seg_alloc[1] = 0;	/* Allocate no segments for now - we will do this as needed */
 	
 	if (Ctrl->C.active) {	/* Wish to return already-closed polygons via a separate file */
-		if ((C = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim_tscr, -1)) == NULL) {
+		if ((C = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim_tscr, GMT_NOWHERE)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for closed segments\n");
 			return (GMT->parent->error);
 		}
@@ -538,7 +538,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		char name[GMT_BUFSIZ], name0[GMT_BUFSIZ], name1[GMT_BUFSIZ], *pp = NULL;
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtstitch_link.txt");	/* Use default output filename */
 		dim_tscr[0] = 1;	dim_tscr[1] = 1;	dim_tscr[2] = ns;
-		if ((LNK = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim_tscr, -1)) == NULL) {
+		if ((LNK = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim_tscr, GMT_NOWHERE)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for link lists\n");
 			return (GMT->parent->error);
 		}

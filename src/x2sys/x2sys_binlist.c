@@ -278,7 +278,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_memset (B.binflag, B.nm_bin, unsigned int);
 		if (Ctrl->D.active) {
 			GMT_memset (dist_bin, B.nm_bin, double);
-			GMT_err_fail (GMT, GMT_dist_array (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -s->dist_flag, &dist_km), "");	/* -ve gives increments */
+			if ((dist_km = GMT_dist_array (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -s->dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 		}
 
 		last_bin_ij = last_bin_i = last_bin_j = -1;
