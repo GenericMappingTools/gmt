@@ -61,10 +61,10 @@ gmt_create_manpages ("${GMT_SEGY_MAN_1}")
 if (UNIX)
 	install (FILES ${GMT_SEGY_EXAMPLE_FILES}
 		DESTINATION
-		${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/segy)
+		${GMT_DOC_PATH}/supplements/segy)
 	install (PROGRAMS ${GMT_SEGY_EXAMPLE_PROGS}
 		DESTINATION
-		${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/segy)
+		${GMT_DOC_PATH}/supplements/segy)
 endif (UNIX)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

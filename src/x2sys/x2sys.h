@@ -63,7 +63,7 @@
   This information must be conveyed via the *.def files (-D)
 ------------------------------------------------------------------*/
 
-#include "mgd77.h"
+#include "mgd77/mgd77.h"
 #include "gmt_x2sys.h"
 
 #ifdef GMT_COMPAT
