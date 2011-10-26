@@ -554,7 +554,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			if (fmt[1]) io_mode = GMT_WRITE_SEGMENTS;	/* d: Want individual files with running numbers */
 		}
-		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (API->error);	/* An empty table */
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty table */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	}
@@ -576,7 +576,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_memset (&info, 1, struct PSMASK_INFO);
 		info.first_dump = TRUE;
 
-		Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
+		Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL);
 		GMT_setnval (GMT->current.io.pad, 4, 1);		/* Change default pad to 1 only */
 		GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, Ctrl->F.active);
 		

@@ -578,7 +578,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			struct GMT_LINE_SEGMENT *S = NULL;
 			
 			dim[3] = F.n_boxes;
-			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) {
+			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for spectrum\n");
 				return (API->error);
 			}

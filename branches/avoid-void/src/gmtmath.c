@@ -3047,7 +3047,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Template = GMT_alloc_dataset (GMT, D_in, n_columns, 0, GMT_ALLOC_NORMAL);
 	else {		/* Must use -N -T etc to create single segment */
 		dim[2] = n_columns;	dim[3] = n_rows;
-		if ((Template = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (GMT_MEMORY_ERROR);
+		if ((Template = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (GMT_MEMORY_ERROR);
 	}
 	alloc_mode[0] = 1;	/* Allocated locally */
 	Ctrl->N.ncol = n_columns;
@@ -3070,7 +3070,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {	/* Create orderly output */
 		dim[2] = 2;	dim[3] = n_rows;
-		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (GMT_MEMORY_ERROR);
+		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
 		for (i = 0; i < info.T->segment[0]->n_rows; i++) info.T->segment[0]->coord[0][i] = (i == (info.T->segment[0]->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + i * Ctrl->T.inc;
 		t_noise = fabs (GMT_SMALL * Ctrl->T.inc);
@@ -3285,7 +3285,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_LONG dim[4] = {1, 1, 1, 0};
 		
 		dim[3] = info.n_roots;
-		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_OUT)) == NULL) Return (API->error)
+		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error)
 		for (i = 0; i < info.n_roots; i++) R->table[0]->segment[0]->coord[GMT_X][i] = S->coord[info.r_col][i];
 		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, stack[0]->io_mode, Ctrl->Out.file, R))) Return (error);
 		GMT_Destroy_Data (API, GMT_ALLOCATED, &R);

@@ -938,7 +938,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
 				GMT_LONG dim[4] = {1, 1, 2, 5};
-				if ((C = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (API->error);
+				if ((C = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);
 				S1 = C->table[0]->segment[0];
 				S1->coord[GMT_X][0] = S1->coord[GMT_X][3] = S1->coord[GMT_X][4] = GMT->common.R.wesn[XLO];
 				S1->coord[GMT_X][1] = S1->coord[GMT_X][2] = GMT->common.R.wesn[XHI];
@@ -1292,7 +1292,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct GMT_LINE_SEGMENT **L = NULL;
 		
 		dim[0] = D->n_tables;	dim[2] = D->n_columns;
-		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (API->error);
+		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);
 		Dout->n_segments = 0;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			T = Dout->table[tbl];

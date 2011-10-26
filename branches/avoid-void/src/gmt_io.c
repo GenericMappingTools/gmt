@@ -722,15 +722,21 @@ int GMT_access (struct GMT_CTRL *C, const char* filename, int mode)
 
 double gmt_convert_aspatial_value (struct GMT_CTRL *C, GMT_LONG type, char *V)
 {
-	/* Return the value associated with the aspatial values given for this column col */
+	/* Return the value associated with the aspatial values given for this column col as a double */
 
 	double value;
 
 	switch (type) {
 		case GMTAPI_DOUBLE:
 		case GMTAPI_FLOAT:
+		case GMTAPI_ULONG:
+		case GMTAPI_LONG:
+		case GMTAPI_UINT:
 		case GMTAPI_INT:
-		case GMTAPI_BYTE:
+		case GMTAPI_USHORT:
+		case GMTAPI_SHORT:
+		case GMTAPI_CHAR:
+		case GMTAPI_UCHAR:
 			value = atof (V);
 			break;
 		case GMTAPI_TIME:
@@ -4321,8 +4327,12 @@ void gmt_write_formatted_ogr_value (struct GMT_CTRL *C, FILE *fp, GMT_LONG col, 
 			GMT_ascii_format_col (C, text, G->dvalue[col], GMT_Z);
 			fprintf (fp, "%s", text);
 			break;
-		case GMTAPI_BYTE:
+		case GMTAPI_CHAR:
+		case GMTAPI_UCHAR:
 		case GMTAPI_INT:
+		case GMTAPI_UINT:
+		case GMTAPI_LONG:
+		case GMTAPI_ULONG:
 			fprintf (fp, "%ld", (GMT_LONG)irint (G->dvalue[col]));
 			break;
 		case GMTAPI_TIME:
@@ -5643,6 +5653,85 @@ void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, GMT_LONG free_ima
 }
 #endif
 
+void GMT_free_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, GMT_LONG type)
+{	/* By taking a reference to the vector pointer we can set it to NULL when done */
+	/* free_vector = FALSE means the vectors are not to be freed but the data array itself will be */
+	if (!u) return;	/* Nothing to deallocate */
+	switch (type) {
+		case GMTAPI_UCHAR:	GMT_free (C, u->uc1); break;
+		case GMTAPI_CHAR:	GMT_free (C, u->sc1); break;
+		case GMTAPI_USHORT:	GMT_free (C, u->ui2); break;
+		case GMTAPI_SHORT:	GMT_free (C, u->si2); break;
+		case GMTAPI_UINT:	GMT_free (C, u->ui4); break;
+		case GMTAPI_INT:	GMT_free (C, u->si4); break;
+		case GMTAPI_ULONG:	GMT_free (C, u->ui8); break;
+		case GMTAPI_LONG:	GMT_free (C, u->si8); break;
+		case GMTAPI_FLOAT:	GMT_free (C, u->f4);  break;
+		case GMTAPI_DOUBLE:	GMT_free (C, u->f8);  break;
+	}
+}
+
+struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *C, GMT_LONG n_columns)
+{	/* Allocates space for a new vector container.  No space allocated for the vectors themselves */
+	struct GMT_VECTOR *V = NULL;
+	
+	if ((V = GMT_memory (C, NULL, 1, struct GMT_VECTOR)) == NULL) return (NULL);
+	if ((V->data = GMT_memory (C, NULL, n_columns, union GMT_UNIVECTOR)) == NULL) return (NULL);
+	if ((V->type = GMT_memory (C, NULL, n_columns, GMT_LONG)) == NULL) return (NULL);
+	V->n_columns = n_columns;
+	V->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	
+	return (V);
+}
+
+GMT_LONG GMT_alloc_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, GMT_LONG type, GMT_LONG n_rows)
+{	/* Allocate space for one univector according to data type */
+	GMT_LONG err = 0;
+	
+	switch (type) {
+		case GMTAPI_UCHAR:  if ((u->uc1 = GMT_memory (C, u->uc1, n_rows, unsigned char)) == NULL) err = GMT_MEMORY_ERROR;	break;
+		case GMTAPI_CHAR:   if ((u->sc1 = GMT_memory (C, u->sc1, n_rows, char)) == NULL) err = GMT_MEMORY_ERROR;		break;
+		case GMTAPI_USHORT: if ((u->ui2 = GMT_memory (C, u->ui2, n_rows, unsigned short int)) == NULL) err = GMT_MEMORY_ERROR;	break;
+		case GMTAPI_SHORT:  if ((u->si2 = GMT_memory (C, u->si2, n_rows, short int)) == NULL) err = GMT_MEMORY_ERROR;		break;
+		case GMTAPI_UINT:   if ((u->ui4 = GMT_memory (C, u->ui4, n_rows, unsigned int)) == NULL) err = GMT_MEMORY_ERROR;	break;
+		case GMTAPI_INT:    if ((u->si4 = GMT_memory (C, u->si4, n_rows, int)) == NULL) err = GMT_MEMORY_ERROR;			break;
+		case GMTAPI_ULONG:  if ((u->ui8 = GMT_memory (C, u->ui8, n_rows, GMT_ULONG)) == NULL) err = GMT_MEMORY_ERROR;		break;
+		case GMTAPI_LONG:   if ((u->si8 = GMT_memory (C, u->si8, n_rows, GMT_LONG)) == NULL) err = GMT_MEMORY_ERROR;		break;
+		case GMTAPI_FLOAT:  if ((u->f4  = GMT_memory (C, u->f4,  n_rows, float)) == NULL) err = GMT_MEMORY_ERROR;		break;
+		case GMTAPI_DOUBLE: if ((u->f8  = GMT_memory (C, u->f8,  n_rows, double)) == NULL) err = GMT_MEMORY_ERROR;		break;
+	}
+	return (err);
+}
+
+GMT_LONG GMT_alloc_vectors (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_LONG n_rows)
+{	/* Allocate space for each column according to data type */
+	GMT_LONG col;
+	
+	for (col = 0; col < V->n_columns; col++) {
+		if (GMT_alloc_univector (C, &V->data[col], V->type[col], n_rows) != GMT_OK) return (GMT_MEMORY_ERROR);
+	}
+	return (GMT_OK);
+}
+
+void GMT_free_vector_ptr (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_LONG free_vector)
+{	/* By taking a reference to the vector pointer we can set it to NULL when done */
+	/* free_vector = FALSE means the vectors are not to be freed but the data array itself will be */
+	if (!V) return;	/* Nothing to deallocate */
+	if (V->data && free_vector) {
+		GMT_LONG col;
+		for (col = 0; col < V->n_columns; col++) GMT_free_univector (C, &(V->data[col]), V->type[col]);
+	}
+	GMT_free (C, V->data);
+	GMT_free (C, V->type);
+}
+
+void GMT_free_vector (struct GMT_CTRL *C, struct GMT_VECTOR **V, GMT_LONG free_vector)
+{	/* By taking a reference to the vector pointer we can set it to NULL when done */
+	/* free_vector = FALSE means the vectors are not to be freed but the data array itself will be */
+	GMT_free_vector_ptr (C, *V, free_vector);
+	GMT_free (C, *V);
+}
+
 struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *C)
 {	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
@@ -5654,45 +5743,13 @@ struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *C)
 void GMT_free_matrix_ptr (struct GMT_CTRL *C, struct GMT_MATRIX *M, GMT_LONG free_matrix)
 {	/* Free everything but the struct itself  */
 	if (!M) return;	/* Nothing to deallocate */
-	if (M->data && free_matrix) GMT_free (C, M->data);
+	if (free_matrix) GMT_free_univector (C, &(M->data), M->type);
 }
 
 void GMT_free_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **M, GMT_LONG free_matrix)
 {	/* By taking a reference to the matrix pointer we can set it to NULL when done */
 	GMT_free_matrix_ptr (C, *M, free_matrix);
 	GMT_free (C, *M);
-}
-
-struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *C, GMT_LONG n_columns)
-{	/* Allocates space for a new vector container.  No space allocated for the vectors themselves */
-	struct GMT_VECTOR *V = NULL;
-	
-	if ((V = GMT_memory (C, NULL, 1, struct GMT_VECTOR)) == NULL) return (NULL);
-	if ((V->data = GMT_memory (C, NULL, n_columns, void *)) == NULL) return (NULL);
-	if ((V->type = GMT_memory (C, NULL, n_columns, GMT_LONG)) == NULL) return (NULL);
-	V->n_columns = n_columns;
-	V->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
-	
-	return (V);
-}
-
-void GMT_free_vector_ptr (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_LONG free_vector)
-{	/* By taking a reference to the vector pointer we can set it to NULL when done */
-	/* free_vector = FALSE means the vectors are not to be freed but the data array itself will be */
-	if (!V) return;	/* Nothing to deallocate */
-	if (V->data && free_vector) {
-		GMT_LONG col;
-		for (col = 0; col < V->n_columns; col++) GMT_free (C, V->data[col]);
-	}
-	GMT_free (C, V->data);
-	GMT_free (C, V->type);
-}
-
-void GMT_free_vector (struct GMT_CTRL *C, struct GMT_VECTOR **V, GMT_LONG free_vector)
-{	/* By taking a reference to the vector pointer we can set it to NULL when done */
-	/* free_vector = FALSE means the vectors are not to be freed but the data array itself will be */
-	GMT_free_vector_ptr (C, *V, free_vector);
-	GMT_free (C, *V);
 }
 
 GMT_LONG GMT_not_numeric (struct GMT_CTRL *C, char *text)
@@ -5795,10 +5852,10 @@ GMT_LONG gmt_ogr_get_type (char *item)
 	if (!strcmp (item, "double") || !strcmp (item, "DOUBLE")) return (GMTAPI_DOUBLE);
 	if (!strcmp (item, "float") || !strcmp (item, "FLOAT")) return (GMTAPI_FLOAT);
 	if (!strcmp (item, "integer") || !strcmp (item, "INTEGER")) return (GMTAPI_INT);
-	if (!strcmp (item, "char") || !strcmp (item, "CHAR")) return (GMTAPI_BYTE);
+	if (!strcmp (item, "char") || !strcmp (item, "CHAR")) return (GMTAPI_CHAR);
 	if (!strcmp (item, "string") || !strcmp (item, "STRING")) return (GMTAPI_TEXT);
 	if (!strcmp (item, "datetime") || !strcmp (item, "DATETIME")) return (GMTAPI_TIME);
-	if (!strcmp (item, "logical") || !strcmp (item, "LOGICAL")) return (GMTAPI_BYTE);
+	if (!strcmp (item, "logical") || !strcmp (item, "LOGICAL")) return (GMTAPI_UCHAR);
 	return (GMTAPI_NOTSET);
 }
 
@@ -5873,8 +5930,14 @@ GMT_LONG GMT_load_aspatial_values (struct GMT_CTRL *C, struct GMT_OGR *G)
 		switch (G->type[id]) {
 			case GMTAPI_DOUBLE:
 			case GMTAPI_FLOAT:
+			case GMTAPI_ULONG:
+			case GMTAPI_LONG:
+			case GMTAPI_UINT:
 			case GMTAPI_INT:
-			case GMTAPI_BYTE:
+			case GMTAPI_USHORT:
+			case GMTAPI_SHORT:
+			case GMTAPI_UCHAR:
+			case GMTAPI_CHAR:
 				C->current.io.curr_rec[C->common.a.col[k]] = atof (G->value[id]);
 				break;
 			case GMTAPI_TIME:

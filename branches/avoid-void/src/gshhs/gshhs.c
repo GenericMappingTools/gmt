@@ -257,14 +257,14 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
 		dim[1] = 1;
 		dim[2] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHS_MAXPOL;
-		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, dim, GMT_NOWHERE)) == NULL) {
+		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, dim)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for GSHHS header features.\n");
 			return (API->error);
 		}
 	}
 	else {
 		dim[1] = n_alloc = 0;
-		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) {
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for GSHHS features.\n");
 			return (API->error);
 		}

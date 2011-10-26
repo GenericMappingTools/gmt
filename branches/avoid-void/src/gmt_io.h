@@ -46,45 +46,44 @@
 #define GMT_BY_REC		1	/* Means we will access the registere files on a record-by-record basis */
 
 /* These are the 6 methods for i/o */
-#ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
-enum GMT_methods {GMT_IS_FILE, GMT_IS_STREAM, GMT_IS_FDESC, GMT_IS_COPY, GMT_IS_REF, GMT_IS_READONLY};
-#else
-#define GMT_IS_FILE		0	/* Entity is a filename */
-#define GMT_IS_STREAM		1	/* Entity is an open stream */
-#define GMT_IS_FDESC		2	/* Entity is an open file descriptor */
-#define GMT_IS_COPY		3	/* Entity is a memory location that should be duplicated */
-#define GMT_IS_REF		4	/* Entity is a memory location and we just pass the ref (no copying) */
-#define GMT_IS_READONLY		5	/* As GMT_IS_REF, but we are not allowed to change the data in any way. */
-#endif
-#define GMT_N_METHODS		6	/* Number of methods we recognize */
 
+enum GMT_methods {GMT_IS_FILE, GMT_IS_STREAM, GMT_IS_FDESC, GMT_IS_COPY, GMT_IS_REF, GMT_IS_READONLY, GMT_N_METHODS};
+/* These methods are:
+	GMT_IS_FILE		0	Entity is a filename
+	GMT_IS_STREAM		1	Entity is an open stream
+	GMT_IS_FDESC		2	Entity is an open file descriptor
+	GMT_IS_COPY		3	Entity is a memory location that should be duplicated
+	GMT_IS_REF		4	Entity is a memory location and we just pass the ref (no copying)
+	GMT_IS_READONLY		5	As GMT_IS_REF, but we are not allowed to change the data in any way.
+	GMT_N_METHODS		6	Number of methods we recognize
+*/
 /* But Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 
 #define GMT_VIA_VECTOR		100
 #define GMT_VIA_MATRIX		200
 
 /* These are the 5 families of data types */
-#ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
-enum GMT_families {GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE, GMT_IS_VECTOR, GMT_IS_MATRIX};
-#else
-#define GMT_IS_DATASET		0	/* Entity is data table */
-#define GMT_IS_TEXTSET		1	/* Entity is a Text table */
-#define GMT_IS_GRID		2	/* Entity is a GMT grid */
-#define GMT_IS_CPT		3	/* Entity is a CPT table */
-#define GMT_IS_IMAGE		4	/* Entity is a 1- or 3-layer unsigned char image */
-/* These are used internally to hande interfacing with user data types */
-#define GMT_IS_VECTOR		5	/* Entity is user vectors */
-#define GMT_IS_MATRIX		6	/* Entity is user matrix */
-#endif
-#define GMT_N_FAMILIES		5	/* Number of families we recognize */
+enum GMT_families {GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE, GMT_IS_VECTOR, GMT_IS_MATRIX, GMT_N_FAMILIES};
+/* The families are:
 
-#ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
+	GMT_IS_DATASET		0	Entity is data table
+	GMT_IS_TEXTSET		1	Entity is a Text table
+	GMT_IS_GRID		2	Entity is a GMT grid
+	GMT_IS_CPT		3	Entity is a CPT table
+	GMT_IS_IMAGE		4	Entity is a 1- or 3-layer unsigned char image
+  In addition, tese are used internally to hande interfacing with user data types:
+	GMT_IS_VECTOR		5	Entity is user vectors
+	GMT_IS_MATRIX		6	Entity is user matrix
+	GMT_N_FAMILIES		5	Number of families we recognize
+*/
+
+/* There are 3 named columns */
 enum GMT_dimensions {GMT_X, GMT_Y, GMT_Z};
-#else
-#define GMT_X			0	/* x or lon is in 0th column */
-#define GMT_Y			1	/* y or lat is in 1st column */
-#define GMT_Z			2	/* z is in 2nd column */
-#endif
+/* These columns are:
+	GMT_X			0	x or lon is in 0th column
+	GMT_Y			1	y or lat is in 1st column
+	GMT_Z			2	z is in 2nd column
+*/
 #ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
 enum GMT_geometries {GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE};
 #else
@@ -556,6 +555,19 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 
 /* These containers are used to pass user vectors and matrices in/out of GMT */
 
+union GMT_UNIVECTOR {	/* Universal vector or any data type can be held here */
+	unsigned char *uc1;		/* Unsigned 1-byte char */
+	char *sc1;			/* Signed 1-byte char */
+	unsigned short int *ui2;	/* Unsigned 2-byte int */
+	short int *si2;			/* Signed 2-byte int */
+	unsigned int *ui4;		/* Unsigned 4-byte int */
+	int *si4;			/* Signed 4-byte int */
+	GMT_ULONG *ui8;		/* Unsigned 8-byte int */
+	GMT_LONG *si8;			/* Signed 8-byte int */
+	float *f4;			/* 4-byte float */
+	double *f8;			/* 8-byte float */
+};
+
 struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	GMT_LONG id;			/* The internal number of the data set */
 	GMT_LONG n_rows;		/* Number of rows in this matrix */
@@ -568,7 +580,7 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	GMT_LONG size;			/* Byte length of data */
 	GMT_LONG alloc_mode;		/* Allocation info [0] */
 	double limit[6];		/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
-	void *data;			/* Opaque pointer to actual matrix */
+	union GMT_UNIVECTOR data;	/* Union with pointer to actual matrix or the chosen type */
 };
 
 struct GMT_VECTOR {	/* Single container for user vector(s) of data */
@@ -577,7 +589,7 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	GMT_LONG n_columns;		/* Number of vectors */
 	GMT_LONG *type;			/* Data type of each vector, e.g. GMTAPI_FLOAT */
 	GMT_LONG alloc_mode;		/* Allocation info [0 = allocated, 1 = allocate as needed] */
-	void **data;			/* Opaque pointers to actual vectors */
+	union GMT_UNIVECTOR *data;	/* Array of uni-vectors */
 };
 	
 #endif /* _GMT_IO_H */

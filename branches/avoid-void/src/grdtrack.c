@@ -354,7 +354,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 		}
 		else {	/* Sandwell/Smith Mercator grids */
-			GC[g].G = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
+			GC[g].G = GMT_Create_Data (API, GMT_IS_GRID, NULL);
 			GMT_read_img (GMT, Ctrl->G.file[g], GC[g].G, wesn, Ctrl->G.scale[g], Ctrl->G.mode[g], Ctrl->G.lat[g], TRUE);
 			img_conv_needed = TRUE;
 		}

@@ -44,11 +44,10 @@ int main (int argc, char *argv[]) {
 	if (GMT_Create_Session (&API, "TEST", GMTAPI_GMT)) exit (EXIT_FAILURE);
 
 	Vi = GMT_create_vector (API->GMT, 3);
-	Vi->data[0] = x;	Vi->data[1] = y;	Vi->data[2] = z;
-	Vo = GMT_create_vector (API->GMT, 3);
 	Vi->type[0] = Vi->type[1] = Vi->type[2] = GMTAPI_FLOAT;
 	Vi->n_rows = 4;
-	Vi->n_columns = 3;
+	Vi->data[0].f4 = x;	Vi->data[1].f4 = y;	Vi->data[2].f4 = z;
+	Vo = GMT_create_vector (API->GMT, 3);
 
 	if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, &Vi, NULL, Vi, &in_ID)) exit (EXIT_FAILURE);
 
@@ -79,7 +78,7 @@ int main (int argc, char *argv[]) {
 	/* Now print out the results locally */
 	
 	for (row = 0; row < Vo->n_rows; row++) {
-		for (col = 0; col < Vo->n_columns; col++) printf ("%g\t", ((double *)Vo->data[col])[row]);
+		for (col = 0; col < Vo->n_columns; col++) printf ("%g\t", Vo->data[col].f8[row]);
 		printf ("\n");
 	}
 	GMT_free_vector (API->GMT, &Vo, TRUE);
@@ -104,7 +103,7 @@ int main (int argc, char *argv[]) {
 	status = GMT_gmtselect (API, 0, buffer);
 	GMT_free_vector (API->GMT, &Vi, FALSE);
 	for (row = 0; row < Vo->n_rows; row++) {
-		for (col = 0; col < Vo->n_columns; col++) printf ("%g\t", ((double *)Vo->data[col])[row]);
+		for (col = 0; col < Vo->n_columns; col++) printf ("%g\t", Vo->data[col].f8[row]);
 		printf ("\n");
 	}
 	GMT_free_vector (API->GMT, &Vo, TRUE);

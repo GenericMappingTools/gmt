@@ -101,19 +101,28 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 		GMT_LONG col, in_ID, dim[1] = {n_cols};
 		//char buffer[GMT_BUFSIZ];
 		i_string = mxMalloc (GMT_BUFSIZ);
-		*V = GMT_Create_Data (API, GMT_IS_VECTOR, dim, GMT_NOWHERE);
+		*V = GMT_Create_Data (API, GMT_IS_VECTOR, dim);
 		for (col = n_start; col < n_cols+n_start; col++) {	/* Hook up one vector per column and determine data type */
-			(*V)->data[col] = mxGetData (prhs[col]);
-			if (mxIsDouble(prhs[col]))
+			if (mxIsDouble(prhs[col])) {
 				(*V)->type[col] = GMTAPI_DOUBLE;
-			else if (mxIsSingle(prhs[col]))
+				(*V)->data[col].f8 = mxGetData (prhs[col]);
+			}
+			else if (mxIsSingle(prhs[col])) {
 				(*V)->type[col] = GMTAPI_FLOAT;
-			else if (mxIsInt32(prhs[col]))
+				(*V)->data[col].f4 = (float *)mxGetData (prhs[col]);
+			}
+			else if (mxIsInt32(prhs[col])) {
 				(*V)->type[col] = GMTAPI_INT;
-			else if (mxIsInt16(prhs[col]))
+				(*V)->data[col].si4 = (int *)mxGetData (prhs[col]);
+			}
+			else if (mxIsInt16(prhs[col])) {
 				(*V)->type[col] = GMTAPI_SHORT;
-			else if (mxIsInt8(prhs[col]))
-				(*V)->type[col] = GMTAPI_BYTE;
+				(*V)->data[col].si2 = (short int *)mxGetData (prhs[col]);
+			}
+			else if (mxIsInt8(prhs[col])) {
+				(*V)->type[col] = GMTAPI_CHAR;
+				(*V)->data[col].sc1 = (char *)mxGetData (prhs[col]);
+			}
 			else
 				mexErrMsgTxt ("Unsupported data type in GMT input.");
 		}
@@ -140,7 +149,7 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 		//char buffer[GMT_BUFSIZ];
 		i_string = mxMalloc(GMT_BUFSIZ);
 
-		G = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
+		G = GMT_Create_Data (API, GMT_IS_GRID, NULL);
 		GMT_grd_init (API->GMT, (*G)->header, NULL, FALSE);
 		
 		/*  Get the Z array and fill in the header info */
@@ -189,7 +198,7 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 			mexErrMsgTxt ("Error: neither output file name with the '>' "
 					"redirection operator nor left hand side output args.");
 	}
-	*V = GMT_Create_Data (API, GMT_IS_VECTOR, &n_cols, GMT_NOWHERE);
+	*V = GMT_Create_Data (API, GMT_IS_VECTOR, &n_cols);
 	for (col = 0; col < n_cols; col++) (*V)->type[col] = GMTAPI_DOUBLE;
 	(*V)->alloc_mode = GMT_REFERENCE;
 	if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF + GMT_VIA_VECTOR, 
@@ -232,7 +241,7 @@ void GMTMEX_prep_mextbl (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, str
 	for (p = 0; p < nlhs; p++) {
 		plhs[p] = mxCreateNumericMatrix (V->n_rows, 1, mxDOUBLE_CLASS, mxREAL);
 		z = mxGetData (plhs[p]);
-		GMT_memcpy (z, ((double *)V->data[p]), V->n_rows, double);
+		GMT_memcpy (z, V->data[p].f8, V->n_rows, double);
 	}
 }
 

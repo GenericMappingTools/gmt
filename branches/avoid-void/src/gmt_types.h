@@ -37,10 +37,12 @@
  * using the GMT_LL string which is either "l" or "ll"
  */
 #ifdef _WIN64
-typedef __int64 GMT_LONG;	/* A signed 8-byte integer under 64-bit Windows */
+typedef __int64 GMT_LONG;		/* A signed 8-byte integer under 64-bit Windows */
+typedef unsigned __int64 GMT_ULONG;	/* A unsigned 8-byte integer under 64-bit Windows */
 #define GMT_LL "ll"
 #else
-typedef long GMT_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
+typedef long GMT_LONG;			/* A signed 4 (or 8-byte for 64-bit) integer */
+typedef unsigned long GMT_ULONG;	/* A unsigned 4 (or 8-byte for 64-bit) integer */
 #define GMT_LL "l"
 #endif
 typedef void (*PFV) ();		/* PFV declares a pointer to a function returning void */

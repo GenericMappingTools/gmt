@@ -373,7 +373,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (Ctrl->S.active) {	/* Want slope grid */
-		Slope = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
+		Slope = GMT_Create_Data (API, GMT_IS_GRID, NULL);
 		GMT_memcpy (Slope->header, Surf->header, 1, struct GRD_HEADER);
 		Slope->data = GMT_memory (GMT, NULL, Surf->header->size, float);
 	}
