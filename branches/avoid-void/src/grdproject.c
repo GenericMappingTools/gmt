@@ -361,7 +361,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* if (GMT->common.R.oblique) d_swap (s, e); */  /* Got w/s/e/n, make into w/e/s/n */
 
-		Geo = GMT_create_grid (GMT);
+		Geo = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 		GMT_memcpy (Geo->header->wesn, wesn, 4, double);
 
 		if ((Rect = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
@@ -425,7 +425,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((Geo = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
-		GMT_create_grid (GMT, &Rect);
+		Rect = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 		GMT_memcpy (Rect->header->wesn, GMT->current.proj.rect, 4, double);
 		if (Ctrl->A.active) {	/* Convert from 1:1 scale */
 			if (unit) {	/* Undo the 1:1 unit used */

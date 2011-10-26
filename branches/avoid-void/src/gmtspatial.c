@@ -937,7 +937,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
-				GMT_create_dataset (GMT, 1, 1, 2, 5, &C);	/* An empty table with 2 cols and 5 rows */
+				GMT_LONG dim[4] = {1, 1, 2, 5};
+				if ((C = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (API->error);
 				S1 = C->table[0]->segment[0];
 				S1->coord[GMT_X][0] = S1->coord[GMT_X][3] = S1->coord[GMT_X][4] = GMT->common.R.wesn[XLO];
 				S1->coord[GMT_X][1] = S1->coord[GMT_X][2] = GMT->common.R.wesn[XHI];
@@ -1285,12 +1286,13 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_SUCCESS);
 	}
 	if (Ctrl->S.active) {	/* Do geospatial operations */
-		GMT_LONG n_split = 0, tbl, seg, n_segs, crossing;
+		GMT_LONG n_split = 0, tbl, seg, n_segs, crossing, dim[4] = {0, 1, 0, 0};
 		struct GMT_DATASET *Dout = NULL;
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT **L = NULL;
 		
-		GMT_create_dataset (GMT, D->n_tables, 1, D->n_columns, 0, &Dout);
+		dim[0] = D->n_tables;	dim[2] = D->n_columns;
+		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (API->error);
 		Dout->n_segments = 0;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			T = Dout->table[tbl];

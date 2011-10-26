@@ -423,7 +423,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else
 			one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 0 : 1;
 		
-		GMT_create_grid (GMT, &Gout);
+		Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 		/* Use the -R region for output if set; otherwise match grid domain */
 		GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 		full_360 = (Ctrl->D.mode && GMT_360_RANGE (Gin->header->wesn[XHI], Gin->header->wesn[XLO]));	/* Periodic geographic grid */
@@ -468,7 +468,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 #ifdef OBSOLETE						
 		if (Ctrl->S.active) {
-			GMT_create_grid (GMT, &Sout);
+			Sout = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 			GMT_err_fail (GMT, GMT_init_newgrid (GMT, Sout, wesn, inc, !one_or_zero), Ctrl->S.file);
 			Sout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 		}

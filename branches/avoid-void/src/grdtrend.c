@@ -511,12 +511,12 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	/* Allocate other required arrays */
 
-	GMT_create_grid (GMT, &T);	/* Pointer for grid with array containing fitted surface  */
+	T = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);	/* Pointer for grid with array containing fitted surface  */
 	GMT_memcpy (T->header, G->header, 1, struct GRD_HEADER);
 	GMT_grd_init (GMT, T->header, options, TRUE);
 	T->data = GMT_memory (GMT, NULL, G->header->size, float);
 	if (Ctrl->D.active || Ctrl->N.robust) {	/* If !D but robust, we would only need to allocate the data array */
-		GMT_create_grid (GMT, &R);	/* Pointer for grid with array containing residual surface  */
+		R = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);	/* Pointer for grid with array containing residual surface  */
 		GMT_memcpy (R->header, G->header, 1, struct GRD_HEADER);
 		R->data = GMT_memory (GMT, NULL, G->header->size, float);
 	}
@@ -530,7 +530,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	/* If a weight array is needed, get one */
 
-	GMT_create_grid (GMT, &W);	/* Pointer for grid with array containing data weights  */
+	W = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);	/* Pointer for grid with array containing data weights  */
 	GMT_grd_init (GMT, W->header, options, TRUE);
 	if (weighted) {
 		if (!GMT_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */

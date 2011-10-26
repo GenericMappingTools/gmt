@@ -1204,7 +1204,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT_set_pad (GMT, 2);		/* Reset the default GMT pad */
 
-	GMT_create_grid (GMT, &Gout);
+	Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 
 	GMT_memcpy (Gout->header->wesn, wesn_new, 4, double);
 	GMT_memcpy (Gout->header->inc, Gin->header->inc, 2, double);
@@ -1301,7 +1301,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 					
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
-		GMT_create_grid (GMT, &Gfilt);
+		Gfilt = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 		GMT_grd_init (GMT, Gfilt->header, options, TRUE);
 		strcpy (Gfilt->header->title, "Reduction To the Pole filter");
 		strcpy (Gfilt->header->x_units, "radians");

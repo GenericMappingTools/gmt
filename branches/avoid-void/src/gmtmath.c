@@ -2830,7 +2830,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG i, j, k, kk, op = 0, nstack = 0, new_stack = -1, use_t_col = 0, status, n_macros;
 	GMT_LONG consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS];
 	GMT_LONG n_records, n_rows = 0, n_columns = 0, n_segments, seg, alloc_mode[GMTMATH_STACK_SIZE];
-	GMT_LONG constant[GMTMATH_STACK_SIZE], error = FALSE, set_equidistant_t = FALSE;
+	GMT_LONG constant[GMTMATH_STACK_SIZE], error = FALSE, set_equidistant_t = FALSE, dim[4] = {1, 1, 0, 0};
 	GMT_LONG read_stdin = FALSE, t_check_required = TRUE, got_t_from_file = FALSE, done;
 
 	double factor[GMTMATH_STACK_SIZE], t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
@@ -3045,8 +3045,10 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (D_in)	/* Obtained file structure from an input file, use this to create new stack entry */
 		GMT_alloc_dataset (GMT, D_in, n_columns, 0, GMT_ALLOC_NORMAL, &Template);
-	else		/* Must use -N -T etc to create single segment */
-		 GMT_create_dataset (GMT, 1, 1, n_columns, n_rows, &Template);
+	else {		/* Must use -N -T etc to create single segment */
+		dim[2] = n_columns;	dim[3] = n_rows;
+		if ((Template = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (GMT_MEMORY_ERROR);
+	}
 	alloc_mode[0] = 1;	/* Allocated locally */
 	Ctrl->N.ncol = n_columns;
 	if (!Ctrl->T.notime && n_columns > 1) Ctrl->C.cols[Ctrl->N.tcol] = (Ctrl->Q.active) ? FALSE : TRUE;
@@ -3067,7 +3069,8 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (!read_stdin) GMT_Destroy_Data (API, GMT_ALLOCATED, &D_in);
 	}
 	else {	/* Create orderly output */
-		GMT_create_dataset (GMT, 1, 1, 2, n_rows, &Time);
+		dim[2] = 2;	dim[3] = n_rows;
+		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
 		for (i = 0; i < info.T->segment[0]->n_rows; i++) info.T->segment[0]->coord[0][i] = (i == (info.T->segment[0]->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + i * Ctrl->T.inc;
 		t_noise = fabs (GMT_SMALL * Ctrl->T.inc);

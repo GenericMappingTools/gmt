@@ -487,7 +487,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 /* ---------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {
-		GMT_create_grid (GMT, &Gout);
+		Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 		GMT_grd_init (GMT, Gout->header, options, FALSE);
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, GMT->common.R.wesn, Ctrl->I.inc, FALSE), Ctrl->G.file);

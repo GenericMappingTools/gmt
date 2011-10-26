@@ -354,7 +354,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 		}
 		else {	/* Sandwell/Smith Mercator grids */
-			GMT_create_grid (GMT, &GC[g].G);
+			GC[g].G = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 			GMT_read_img (GMT, Ctrl->G.file[g], GC[g].G, wesn, Ctrl->G.scale[g], Ctrl->G.mode[g], Ctrl->G.lat[g], TRUE);
 			img_conv_needed = TRUE;
 		}
@@ -390,7 +390,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, Ctrl->D.file, Dtmp))) Return (error);
 		}
 		/* Get dataset with cross-profiles, with columns for x,y,d and the n_grids samples */
-		GMT_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, Ctrl->G.n_grids, &Dout);
+		if ((error = GMT_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, Ctrl->G.n_grids, &Dout)) != GMT_OK) Return (error);
 		GMT_Destroy_Data (API, GMT_ALLOCATED, &Dtmp);
 		GMT_Destroy_Data (API, GMT_ALLOCATED, &Din);
 		

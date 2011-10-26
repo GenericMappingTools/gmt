@@ -218,18 +218,18 @@ GMT_LONG GMT_grdrotater_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GMT_DATASET **Dout)
+struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 {
 	/* Return a single polygon that encloses this geographic grid exactly.
 	 * It is used in the case when no particular clip polygon has been given.
 	 * Note that the path is the same for pixel or grid-registered grids.
 	 */
 
-	GMT_LONG np = 0, add, i, j;
+	GMT_LONG np = 0, add, i, j, dim[4] = {1, 1, 2, 0};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
 	
-	GMT_create_dataset (GMT, 1, 1, 2, 0, &D);	/* An empty table with one segment, two cols */
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) return (NULL);	/* An empty table with one segment, two cols */
 
 	S = D->table[0]->segment[0];	/* Short hand */
 		
@@ -296,7 +296,7 @@ void get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GMT_DATAS
 	S->min[GMT_Y] = h->wesn[YLO];	S->max[GMT_Y] = h->wesn[YHI];
 	S->pole = 0;
 	
-	*Dout = D;
+	return (D);
 }
 
 GMT_LONG skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon, double lat)
@@ -385,7 +385,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		registered_d = TRUE;
 	}
 	else if (not_global) {	/* Make a single grid-outline polygon */
-		get_grid_path (GMT, G->header, &D);
+		if ((D = get_grid_path (GMT, G->header)) == NULL) Return (API->error);
 		pol = D->table[0];	/* Since it is a single file */
 	}
 
@@ -457,7 +457,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI]) GMT->common.R.wesn[XHI] += 360.0;
 	}
 	
-	GMT_create_grid (GMT, &G_rot);
+	G_rot = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 	GMT_grd_init (GMT, G_rot->header, options, FALSE);
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */

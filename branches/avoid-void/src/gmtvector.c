@@ -487,6 +487,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memset (vector_1, 3, double);
 	GMT_memset (vector_3, 3, double);
 	if (Ctrl->A.active) {	/* Want a single primary vector */
+		GMT_LONG dim[4] = {1, 1, 3, 1};
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
 			if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
 			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
@@ -508,7 +509,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			n_out = (Ctrl->C.active[GMT_OUT] && n == 3) ? 3 : 2;
 		}
-		GMT_create_dataset (GMT, 1, 1, 3, 1, &Din);
+		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (API->error);
 		nv = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
 		for (k = 0; k < nv; k++) Din->table[0]->segment[0]->coord[k][0] = vector_1[k];
 		single = TRUE;

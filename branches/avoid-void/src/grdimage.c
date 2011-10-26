@@ -623,7 +623,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 #endif
 		for (k = 0; k < n_grids; k++) {
-			if (!Grid_proj[k]) Grid_proj[k] = GMT_create_grid (GMT);
+			if (!Grid_proj[k]) Grid_proj[k] = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header);
 			if (grid_registration == GMT_GRIDLINE_REG)		/* Force pixel if dpi is set */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_PIXEL_REG : Grid_orig[k]->header->registration;
@@ -633,8 +633,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_orig[k]);
 		}
 		if (Ctrl->I.active) {
-			Intens_proj = GMT_create_grid (GMT);
-
+			Intens_proj = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 			if (n_grids)
 				GMT_memcpy (Intens_proj->header->wesn, Grid_proj[0]->header->wesn, 4, double);
 #ifdef USE_GDAL

@@ -215,7 +215,7 @@ GMT_LONG GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, st
 struct GMT_GRID * alloc_stack (struct GMT_CTRL *GMT, struct GMT_GRID *Template)
 {	/* Allocate a new GMT_GRID structure based on dimensions etc of the Template */
 	struct GMT_GRID *New = NULL;
-	New = GMT_create_grid (GMT);
+	New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL, GMT_NOWHERE);
 	GMT_memcpy (New->header, Template->header, 1, struct GRD_HEADER);
 	New->data = GMT_memory (GMT, NULL, Template->header->size, float);
 	return (New);
@@ -2911,7 +2911,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((G_in = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, NULL)) == NULL) Return (API->error);	/* Get header only */
 	}
 
-	GMT_create_grid (GMT, &info.G);
+	info.G = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 	GMT_grd_init (GMT, info.G->header, options, TRUE);
 	subset = (GMT->common.R.active && Ctrl->I.active);
 
@@ -3079,7 +3079,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else if (op == GRDMATH_ARG_IS_y_MATRIX) {	/* Need to set up matrix of normalized y-values */
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Yn ");
-				if (!stack[nstack])&stack[nstack] = alloc_stack (GMT, info.G);
+				if (!stack[nstack]) stack[nstack] = alloc_stack (GMT, info.G);
 				alloc_mode[nstack] = 1;
 				GMT_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->data[node] = info.grd_yn[row];
 			}

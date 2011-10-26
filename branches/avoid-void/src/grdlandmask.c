@@ -239,7 +239,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the grdlandmask main code ----------------------------*/
 
-	Grid = GMT_create_grid (GMT);
+	Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 	
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 

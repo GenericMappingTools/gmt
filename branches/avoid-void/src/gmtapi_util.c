@@ -3148,7 +3148,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 			}
 			V = gmt_get_vector_ptr (S->resource);
 			if (!V) {	/* Was given a NULL pointer == First time allocation, default to double data type */
-				GMT_create_vector (API->GMT, API->GMT->common.b.ncol[GMT_OUT], &V);
+				V = GMT_create_vector (API->GMT, API->GMT->common.b.ncol[GMT_OUT]);
 				gmt_set_vector_ptr (S->resource, V);
 				for (col = 0; col < S->n_columns; col++) V->type[col] = GMTAPI_DOUBLE;
 			}

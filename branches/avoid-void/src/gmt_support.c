@@ -9613,7 +9613,7 @@ GMT_LONG gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 
 	int ndig, sdig;
 
-	GMT_LONG tbl, row, k, seg, left, right, ii, np_cross, seg_no;
+	GMT_LONG tbl, row, k, seg, left, right, ii, np_cross, seg_no, dim[4] = {0, 0, 0, 0};
 	GMT_LONG n_x_seg = 0, n_x_seg_alloc = 0, n_half_cross, n_tot_cols;
 
 	char buffer[GMT_BUFSIZ], seg_name[GMT_BUFSIZ], ID[GMT_BUFSIZ];
@@ -9639,7 +9639,8 @@ GMT_LONG gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	across_ds_radians = D2R * (cross_half_width / GMT->current.proj.DIST_M_PR_DEG) / n_half_cross;	/* Angular change from point to point */
 	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
 	n_tot_cols = 4 + n_cols;	/* Total number of columns in the resulting data set */
-	Xout = GMT_create_dataset (GMT, Din->n_tables, 0, n_tot_cols, np_cross);	/* An empty dataset of n_tot_cols columns and np_cross rows */
+	dim[0] = Din->n_tables;	dim[2] = n_tot_cols;	dim[3] = np_cross;
+	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) return (1);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */
@@ -9741,7 +9742,7 @@ GMT_LONG gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 
 	int ndig, sdig;
 
-	GMT_LONG tbl, row, k, seg, ii, np_cross, seg_no;
+	GMT_LONG tbl, row, k, seg, ii, np_cross, seg_no, dim[4] = {0, 0, 0, 0};
 	GMT_LONG n_x_seg = 0, n_x_seg_alloc = 0, n_half_cross, n_tot_cols;
 
 	char buffer[GMT_BUFSIZ], seg_name[GMT_BUFSIZ], ID[GMT_BUFSIZ];
@@ -9764,7 +9765,8 @@ GMT_LONG gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
 	across_ds = cross_length / n_half_cross;		/* Exact increment (recalculated in case of roundoff) */
 	n_tot_cols = 4 + n_cols;				/* Total number of columns in the resulting data set */
-	Xout = GMT_create_dataset (GMT, Din->n_tables, 0, n_tot_cols, np_cross);	/* An empty dataset of n_tot_cols columns and np_cross rows */
+	dim[0] = Din->n_tables;	dim[2] = n_tot_cols;	dim[3] = np_cross;
+	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) return (1);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */

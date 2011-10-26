@@ -236,7 +236,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the sphinterpolate main code ----------------------------*/
 
-	GMT_create_grid (GMT, &Grid);
+	Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	if (!GMT->common.R.active) {	/* Default is global region */

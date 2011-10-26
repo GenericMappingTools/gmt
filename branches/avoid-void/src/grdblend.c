@@ -634,7 +634,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	z = GMT_memory (GMT, NULL, S.header.nx, float);	/* Memory for one output row */
 
 	if (GMT_File_Is_Memory (Ctrl->G.file)) {	/* GMT_grdblend is called by another module; must return as GMT_GRID */
-		Grid = GMT_create_grid (GMT);
+		Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 		GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */

@@ -821,6 +821,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	cont = GMT_malloc (GMT, cont, 0, &n_contours, struct PSCONTOUR);
 
 	if (Ctrl->D.active) {
+		GMT_LONG dim[4] = {0, 0, 3, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_DATASET;
 		else {	/* Must determine the kind of output organization */
@@ -853,7 +854,8 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
-		GMT_create_dataset (GMT, n_tables, 0, 3, 0, &D);	/* An empty table */
+		dim[0] = n_tables;
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (API->error);	/* An empty dataset */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 		n_seg = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);

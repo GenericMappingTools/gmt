@@ -398,7 +398,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
-	GMT_create_grid (GMT, &Merc);
+	Merc = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 	GMT_grd_init (GMT, Merc->header, options, FALSE);
 
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
