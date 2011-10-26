@@ -183,13 +183,35 @@ of variable.
 \small
 \centering
 \begin{tabular}{ll} \hline
+\multicolumn{2}{l}{\texttt{union GMT\_UNIVECTOR \{}} \\ 
+\texttt{	unsigned char *uc1;}	&       /* \emph{Pointer for unsigned char array} */ \\
+\texttt{	char *sc1;}		&       /* \emph{Pointer for signed char array} */ \\
+\texttt{	unsigned short *ui2;}	&       /* \emph{Pointer for unsigned short array} */ \\
+\texttt{	short *si2;}		&       /* \emph{Pointer for signed short array} */ \\
+\texttt{	unsigned int *ui4;}	&       /* \emph{Pointer for unsigned int array} */ \\
+\texttt{	int *si4;}		&       /* \emph{Pointer for signed int array} */ \\
+\texttt{	unsigned long *ui8;}	&       /* \emph{Pointer for unsigned long array} */ \\
+\texttt{	long *si8;}		&       /* \emph{Pointer for signed long array} */ \\
+\texttt{	float *f4;}		&       /* \emph{Pointer for float array} */ \\
+\texttt{	double *f8;}		&       /* \emph{Pointer for double array} */ \\
+\texttt{\};}	&        \\  \hline
+\end{tabular}
+\caption{Definition of the GMT\_UNIVECTOR union that can hold any array type.}
+\label{tbl:univector}
+\index{Vectors!Structure}
+\end{table}
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{ll} \hline
 \multicolumn{2}{l}{\texttt{struct GMT\_VECTOR \{}} \\ 
 \texttt{	long id;}		&       /* \emph{An identification number} */ \\
 \texttt{	long n\_rows;}		&       /* \emph{Number of rows in each vector} */ \\
 \texttt{	long n\_columns;}	&       /* \emph{Number of vectors}  */\\
 \texttt{	long alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
 \texttt{	long *type;}		&       /* \emph{Array with data type for each vector}  */\\
-\texttt{	void **data;}		&       /* \emph{Array with void pointers for each vector}  */\\
+\texttt{	union GMT_UNIVECTOR *data;}	&       /* \emph{Array with unions for each column}  */\\
 \texttt{\};}	&        \\  \hline
 \end{tabular}
 \caption{Definition of the GMT\_VECTOR structure used to pass user data columns.}
@@ -201,7 +223,7 @@ Programs that may wish to call \GMT\ modules may have input data in their own pa
 structures.  For instance, the user's program may have three column arrays of type float
 and wishes to use these as the input source to the \texttt{GMT\_surface} module, which normally
 expects a \texttt{struct GMT\_DATASET} via file or reference.  Simply create a \texttt{struct GMT\_VECTOR}
-(see section~\ref{sec:create}) and assign the void pointers to your data columns and provide
+(see section~\ref{sec:create}) and assign the union array pointers  (see Table~\ref{tbl:univector}) to your data columns and provide
 the required information on length and data types (see Table~\ref{tbl:vector}).
 By letting the \GMT\ module know you are passing a data set via a \texttt{struct GMT\_VECTOR} it will know how to
 read the data properly.
@@ -225,7 +247,7 @@ read the data properly.
 \texttt{	long alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
 \texttt{	long type;}		&       /* \emph{The matrix data type}  */\\
 \texttt{	double limit[6];}	&       /* \emph{The min and max limits on x-, y-, and z-ranges}  */\\
-\texttt{	void *data;}		&       /* \emph{Void pointer to the data matrix}  */\\
+\texttt{	union GMT_UNIVECTOR data;}	&       /* \emph{Union with pointers a data matrix of any type}  */\\
 \texttt{\};}	&        \\  \hline
 \end{tabular}
 \caption{Definition of the GMT\_MATRIX structure used to pass a user data matrix.}

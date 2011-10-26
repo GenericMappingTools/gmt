@@ -509,7 +509,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			n_out = (Ctrl->C.active[GMT_OUT] && n == 3) ? 3 : 2;
 		}
-		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (API->error);
+		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);
 		nv = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
 		for (k = 0; k < nv; k++) Din->table[0]->segment[0]->coord[k][0] = vector_1[k];
 		single = TRUE;

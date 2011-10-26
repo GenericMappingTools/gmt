@@ -529,7 +529,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Initialize the CVA grid and structure */
 
-	G = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
+	G = GMT_Create_Data (API, GMT_IS_GRID, NULL);
 	GMT_grd_init (GMT, G->header, options, FALSE);	/* Initialize grid structure */
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
@@ -546,7 +546,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Assign grid-region variables in radians to avoid conversions inside convolution loop */
 
-	G_rad = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
+	G_rad = GMT_Create_Data (API, GMT_IS_GRID, NULL);
 	G_rad->header->inc[GMT_X] = G->header->inc[GMT_X] * D2R;
 	G_rad->header->inc[GMT_Y] = G->header->inc[GMT_Y] * D2R;
 	G_rad->header->wesn[XLO]  = G->header->wesn[XLO] * D2R;
@@ -843,7 +843,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			
 	if (Ctrl->D.active || Ctrl->PA.active) {	/* Must determine max CVA along each flowline */
 		if (Ctrl->D.active) {
-			DI = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
+			DI = GMT_Create_Data (API, GMT_IS_GRID, NULL);
 			GMT_grd_init (GMT, DI->header, options, FALSE);
 
 			/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
@@ -851,7 +851,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			DI->data = GMT_memory (GMT, NULL, PA->header->size, float);
 		}
 		if (Ctrl->PA.active) {
-			PA = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
+			PA = GMT_Create_Data (API, GMT_IS_GRID, NULL);
 			GMT_grd_init (GMT, PA->header, options, FALSE);
 
 			/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */

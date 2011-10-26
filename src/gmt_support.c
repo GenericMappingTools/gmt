@@ -9637,7 +9637,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
 	n_tot_cols = 4 + n_cols;	/* Total number of columns in the resulting data set */
 	dim[0] = Din->n_tables;	dim[2] = n_tot_cols;	dim[3] = np_cross;
-	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
+	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */
@@ -9761,7 +9761,7 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 	across_ds = cross_length / n_half_cross;		/* Exact increment (recalculated in case of roundoff) */
 	n_tot_cols = 4 + n_cols;				/* Total number of columns in the resulting data set */
 	dim[0] = Din->n_tables;	dim[2] = n_tot_cols;	dim[3] = np_cross;
-	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
+	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */

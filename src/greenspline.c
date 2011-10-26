@@ -1309,7 +1309,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		T = Nin->table[0];
 	}
 	else {	/* Fill in an equidistant output table or grid */
-		Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
+		Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL);
 		Grid->header->wesn[XLO] = Ctrl->R3.range[0];	Grid->header->wesn[XHI] = Ctrl->R3.range[1];
 		Grid->header->registration = (int)GMT->common.r.active;
 		Grid->header->inc[GMT_X] = Ctrl->I.inc[GMT_X];

@@ -267,7 +267,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the sphdistance main code ----------------------------*/
 
 	GMT_memset (&T, 1, struct STRIPACK);
-	Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
+	Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	GMT_init_distaz (GMT, Ctrl->L.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);

@@ -353,7 +353,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Here we will need a grid */
 	
-	Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
+	Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 #ifdef GMT_COMPAT	/* PW: This is now done in grdreformat since ESRI Arc Interchange is a recognized format */

@@ -286,7 +286,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
 
-	Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
+	Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
