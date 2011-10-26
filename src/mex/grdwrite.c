@@ -50,7 +50,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. Prepare the GMT grid */
-	GMT_create_grid (API->GMT, &G);
+	G = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 	GMT_grd_init (API->GMT, G->header, NULL, FALSE);
 
 	/* 3. Load the file name and title (if given) into char strings */

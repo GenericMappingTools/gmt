@@ -671,7 +671,7 @@ GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LON
 	
 	if (C->set_low > 0) {
 		if (C->set_low < 3) {
-			GMT_create_grid (GMT, &C->Low);
+			C->Low = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 			C->Low->data = GMT_memory (GMT, NULL, C->mxmy, float);
 			for (i = 0; i < C->mxmy; i++) C->Low->data[i] = (float)C->low_limit;
 		}
@@ -698,7 +698,7 @@ GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LON
 	}
 	if (C->set_high > 0) {
 		if (C->set_high < 3) {
-			GMT_create_grid (GMT, &C->High);
+			C->High = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 			C->High->data = GMT_memory (GMT, NULL, C->mxmy, float);
 			for (i = 0; i < C->mxmy; i++) C->High->data[i] = (float)C->high_limit;
 		}
@@ -1811,7 +1811,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	C.mode_type[0] = 'I';
 	C.mode_type[1] = 'D';	/* D means include data points when iterating */
 
-	GMT_create_grid (GMT, &C.Grid);
+	C.Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 	GMT_grd_init (GMT, C.Grid->header, options, FALSE);
 	GMT_memcpy (C.Grid->header->wesn, GMT->common.R.wesn, 4, double);
 

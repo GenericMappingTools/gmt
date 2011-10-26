@@ -274,7 +274,7 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
 	
 	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, D[GMT_OUT]->io_mode, Ctrl->Out.file, D[GMT_OUT]))) Return (error);
+	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, D[GMT_OUT]->io_mode, Ctrl->Out.file, D[GMT_OUT])) != GMT_OK) Return (error);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "%ld tables %s, %ld records passed (input cols = %ld; output cols = %ld)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);

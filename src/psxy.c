@@ -743,7 +743,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_total_read++;
 
 			if (read_symbol) {	/* Must do special processing */
-				text_rec = gmt_get_char_ptr (record);
+				text_rec = (char *)record;
 				
 				/* First establish the symbol type given at the end of the record */
 				GMT_chop (GMT, text_rec);	/* Get rid of \n \r */

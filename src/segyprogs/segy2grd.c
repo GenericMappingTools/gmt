@@ -308,7 +308,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	read_cont = (Ctrl->S.mode != PLOT_CDP && Ctrl->S.mode != PLOT_OFFSET && !Ctrl->S.value);
 
-	GMT_create_grid (GMT, &Grid);
+	Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);

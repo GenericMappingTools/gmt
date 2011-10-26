@@ -101,7 +101,7 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 		GMT_LONG col, in_ID;
 		//char buffer[GMT_BUFSIZ];
 		i_string = mxMalloc (GMT_BUFSIZ);
-		*V = GMT_create_vector (API->GMT, n_cols);
+		*V = GMT_Create_Data (API, GMT_IS_VECTOR, &n_cols, GMT_NOWHERE);
 		for (col = n_start; col < n_cols+n_start; col++) {	/* Hook up one vector per column and determine data type */
 			(*V)->data[col] = mxGetData (prhs[col]);
 			if (mxIsDouble(prhs[col]))
@@ -140,7 +140,7 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 		//char buffer[GMT_BUFSIZ];
 		i_string = mxMalloc(GMT_BUFSIZ);
 
-		GMT_create_grid (API->GMT, G);
+		G = GMT_Create_Data (API, GMT_IS_GRID, NULL, GMT_NOWHERE);
 		GMT_grd_init (API->GMT, (*G)->header, NULL, FALSE);
 		
 		/*  Get the Z array and fill in the header info */
@@ -189,7 +189,7 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 			mexErrMsgTxt ("Error: neither output file name with the '>' "
 					"redirection operator nor left hand side output args.");
 	}
-	*V = GMT_create_vector (API->GMT, n_cols);
+	*V = GMT_Create_Data (API, GMT_IS_VECTOR, &n_cols, GMT_NOWHERE);
 	for (col = 0; col < n_cols; col++) (*V)->type[col] = GMTAPI_DOUBLE;
 	(*V)->alloc_mode = GMT_REFERENCE;
 	if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF + GMT_VIA_VECTOR, 
