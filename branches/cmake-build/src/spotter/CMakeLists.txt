@@ -61,10 +61,10 @@ gmt_create_manpages ("${GMT_SPOTTER_MAN_1}")
 if (UNIX)
 	install (FILES ${GMT_SPOTTER_EXAMPLE_FILES}
 		DESTINATION
-		${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/spotter)
+		${GMT_DOC_PATH}/supplements/spotter)
 	install (PROGRAMS ${GMT_SPOTTER_EXAMPLE_PROGS}
 		DESTINATION
-		${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/spotter)
+		${GMT_DOC_PATH}/supplements/spotter)
 endif (UNIX)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

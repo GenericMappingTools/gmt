@@ -69,9 +69,11 @@
 /* system specific headers */
 
 #cmakedefine HAVE_ASSERT_H_
+#cmakedefine HAVE_DIRENT_H_
 #cmakedefine HAVE_ERRNO_H_
 #cmakedefine HAVE_FCNTL_H_
 #cmakedefine HAVE_STAT_H_
+#cmakedefine HAVE_SYS_DIR_H_
 #cmakedefine HAVE_UNISTD_H_
 
 /* system specific functions */

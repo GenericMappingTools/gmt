@@ -61,10 +61,10 @@ gmt_create_manpages ("${GMT_X2SYS_MAN_1}")
 if (UNIX)
 	install (FILES ${GMT_X2SYS_EXAMPLE_FILES}
 		DESTINATION
-		${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/x2sys)
+		${GMT_DOC_PATH}/supplements/x2sys)
 	install (PROGRAMS ${GMT_X2SYS_EXAMPLE_PROGS}
 		DESTINATION
-		${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/x2sys)
+		${GMT_DOC_PATH}/supplements/x2sys)
 endif (UNIX)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

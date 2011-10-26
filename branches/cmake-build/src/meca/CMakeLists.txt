@@ -58,9 +58,9 @@ gmt_create_manpages ("${GMT_MECA_MAN_1}")
 # install example data
 install (FILES ${GMT_MECA_EXAMPLE_FILES}
 	DESTINATION
-	${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/meca)
+	${GMT_DOC_PATH}/supplements/meca)
 install (PROGRAMS ${GMT_MECA_EXAMPLE_PROGS}
 	DESTINATION
-	${GMT_SHARE_PATH}/doc/gmt-${GMT_PACKAGE_VERSION}/supplements/meca)
+	${GMT_DOC_PATH}/supplements/meca)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

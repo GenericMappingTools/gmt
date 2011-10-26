@@ -18,11 +18,11 @@
 #
 
 # source files
-set (GMT_MGD77_LIB_SRCS mgd77.h mgd77_IGF_coeffs.h mgd77_init.h mgd77_recalc.h
-	mgd77magref.h mgd77defaults.h mgd77_functions.h cm4_functions.h
-	mgd77.c cm4_functions.c)
-set (GMT_MGD77_PROGS_SRCS mgd77convert.o mgd77info.o mgd77list.o
-	mgd77path.o mgd77manage.o mgd77magref.o mgd77sniffer.o)
+set (GMT_MGD77_LIB_SRCS mgd77.h mgd77_IGF_coeffs.h mgd77_codes.h mgd77_init.h
+	mgd77_recalc.h mgd77magref.h mgd77defaults.h mgd77_functions.h
+	cm4_functions.h mgd77.c mgd77_functions.c cm4_functions.c)
+set (GMT_MGD77_PROGS_SRCS mgd77convert.c mgd77info.c mgd77list.c
+	mgd77path.c mgd77manage.c mgd77magref.c mgd77sniffer.c)
 set (GMT_MGD77_PROGSPS_SRCS mgd77track.c)
 
 # generate header file gmt_mgd77.h

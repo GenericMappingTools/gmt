@@ -95,14 +95,16 @@ EXTERN_MSC GMT_LONG GMTAPI_n_items (struct GMTAPI_CTRL *API, GMT_LONG family, GM
 EXTERN_MSC GMT_LONG GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG direction);
 EXTERN_MSC GMT_LONG GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG object_ID, GMT_LONG direction, GMT_LONG *item_no);
 
-#ifndef WIN32
-#include <dirent.h>
-#if !(defined(__CYGWIN__) || defined(__MINGW32__) || defined(__sun__)) /* Cygwin and Solaris don't have dir.h */
-#include <sys/dir.h>
+#ifdef HAVE_DIRENT_H_
+#	include <dirent.h>
 #endif
+
+#ifdef HAVE_SYS_DIR_H_
+#	include <sys/dir.h>
+#endif
+
 #ifndef DT_DIR
-#define DT_DIR           4
-#endif
+#	define DT_DIR 4
 #endif
 
 /* Macro to apply columns log/scale/offset conversion on the fly */
@@ -564,10 +566,10 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	GMT_LONG d, pos, L, found;
 	char *udir[2] = {C->session.USERDIR, C->session.DATADIR}, dir[GMT_BUFSIZ];
 	char path_separator[2] = {PATH_SEPARATOR, '\0'};
-#ifndef WIN32
+#ifdef HAVE_DIRENT_H_
 	GMT_LONG N;
 	GMT_LONG gmt_traverse_dir (const char *file, char *path);
-#endif
+#endif /* HAVE_DIRENT_H_ */
 	GMT_LONG gmt_file_is_readable (struct GMT_CTRL *C, char *path);
 
 	/* First look in the current working directory */
@@ -594,24 +596,24 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 		found = pos = 0;
 		while (!found && (GMT_strtok (C, udir[d], path_separator, &pos, dir))) {
 			L = strlen (dir);
-#ifndef WIN32
+#ifdef HAVE_DIRENT_H_
 #ifdef GMT_COMPAT
 			if (dir[L-1] == '*' || dir[L-1] == '/') {	/* Must search recursively from this dir */
 				N = (dir[L-1] == '/') ? L - 1 : L - 2;
 #else
 			if (dir[L-1] == '/') {	/* Must search recursively from this dir */
 				N = L - 1;
-#endif
+#endif /* GMT_COMPAT */
 				strncpy (path, dir, N);	path[N] = 0;
 				found = gmt_traverse_dir (stem, path);
 			}
 			else {
-#endif
+#endif /* HAVE_DIRENT_H_ */
 				sprintf (path, "%s/%s", dir, stem);
 				found = (!access (path, F_OK));
-#ifndef WIN32
+#ifdef HAVE_DIRENT_H_
 			}
-#endif
+#endif /* HAVE_DIRENT_H_ */
 		}
 		if (found && gmt_file_is_readable (C, path)) return (path);	/* Yes, can read it */
 	}
@@ -627,7 +629,7 @@ GMT_LONG gmt_file_is_readable (struct GMT_CTRL *C, char *path)
 	return (FALSE);	/* Cannot read, give up */
 }
 
-#ifndef WIN32
+#ifdef HAVE_DIRENT_H_
 GMT_LONG gmt_traverse_dir (const char *file, char *path) {
 	/* Look for file in the directory pointed to by path, recursively */
 	DIR *D = NULL;
@@ -644,7 +646,7 @@ GMT_LONG gmt_traverse_dir (const char *file, char *path) {
 		d_namlen = strlen (F->d_name);
 		if (d_namlen == 1 && F->d_name[0] == '.') continue;				/* Skip current dir */
 		if (d_namlen == 2 && F->d_name[0] == '.' && F->d_name[1] == '.') continue;	/* Skip parent dir */
-#if !(defined(__CYGWIN__) || defined(__MINGW32__) || defined(__sun__))
+#ifdef HAVE_SYS_DIR_H_
 		if (F->d_type == DT_DIR) {	/* Entry is a directory; must search this directory recursively */
 			sprintf (path, "%s/%s", savedpath, F->d_name);
 			ok = gmt_traverse_dir (file, path);
@@ -653,12 +655,12 @@ GMT_LONG gmt_traverse_dir (const char *file, char *path) {
 			sprintf (path, "%s/%s", savedpath, file);
 			ok = TRUE;
 		}
-#endif
+#endif /* HAVE_SYS_DIR_H_ */
 	}
 	(void)closedir (D);
 	return (ok);	/* did or did not find file */
 }
-#endif
+#endif /* HAVE_DIRENT_H_ */
 
 char *GMT_getsharepath (struct GMT_CTRL *C, const char *subdir, const char *stem, const char *suffix, char *path)
 {

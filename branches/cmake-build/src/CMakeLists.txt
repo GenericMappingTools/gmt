@@ -232,14 +232,9 @@ set_target_properties (pslib
 	DEFINE_SYMBOL "LIBRARY_EXPORTS"
 )
 
-# supplement directories
-set (GMT_SUPPL_DIRS dbase gshhs imgsrc meca
-	#mgd77 # have to rewrite header generators
-	potential segy
-	#sph # have to rewrite generators
-	spotter
-	#x2sys # depends on mgd77
-	)
+# supplement directories (only those, which are to be included in gmtlib)
+set (GMT_SUPPL_DIRS dbase gshhs imgsrc meca mgd77 potential segy sph spotter
+	x2sys)
 
 # process supplement directories
 foreach (_dir ${GMT_SUPPL_DIRS})
