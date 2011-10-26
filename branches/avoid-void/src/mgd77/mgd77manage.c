@@ -1058,7 +1058,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 				x = D->values[ix];
 				y = D->values[iy];
-				GMT_err_fail (GMT, GMT_dist_array (GMT, x, y, D->H.n_records, dist_scale, Ctrl->C.mode, &d), "");
+				if ((d = GMT_dist_array (GMT, x, y, D->H.n_records, dist_scale, Ctrl->C.mode)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 				x = d;
 			}
 			else if (Ctrl->A.mode == MODE_t) {	/* Time */

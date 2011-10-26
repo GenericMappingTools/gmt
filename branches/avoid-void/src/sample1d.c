@@ -295,20 +295,20 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	nan_flag = GMT_memory (GMT, NULL, Din->n_columns, GMT_LONG);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
-		GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0, &Tout);
+		Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0);
 		Dout->table[tbl] = Tout;
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			GMT_memset (nan_flag, Din->n_columns, GMT_LONG);
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (GMT_is_dnan (S->coord[col][row])) nan_flag[col] = TRUE;
 			if (spatial) {	/* Need distance for spatial interpolation */
-				GMT_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, 1.0, 2, &dist_in);
+				dist_in = GMT_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, 1.0, 2);
 				lon = GMT_memory (GMT, NULL, S->n_rows, double);
 				lat = GMT_memory (GMT, NULL, S->n_rows, double);
 				GMT_memcpy (lon, S->coord[GMT_X], S->n_rows, double);
 				GMT_memcpy (lat, S->coord[GMT_Y], S->n_rows, double);
 				m = GMT_fix_up_path (GMT, &lon, &lat, S->n_rows, inc_degrees, Ctrl->A.mode);
-				GMT_dist_array (GMT, lon, lat, m, 1.0, 2, &t_out);
+				t_out = GMT_dist_array (GMT, lon, lat, m, 1.0, 2);
 			}
 			else if (Ctrl->N.active) {	/* Get relevant t_out segment */
 				low_t  = MIN (S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);

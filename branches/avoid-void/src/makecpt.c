@@ -354,7 +354,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Now we can resample the cpt table and write out the result */
 
-	GMT_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active, &Pout);
+	Pout = GMT_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);
 
 	if (!Ctrl->T.file) GMT_free (GMT, z);
 

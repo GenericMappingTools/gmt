@@ -502,6 +502,9 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_read++;
 		if (Ctrl->Z.active) {	/* Read separately because of all the possible formats */
 			ij++;
+			if (ij == 98) {
+				gmt_ij = 0;
+			}
 			if (ij == io.n_expected) {
 				GMT_report (GMT, GMT_MSG_FATAL, "More than %ld records, only %ld was expected (aborting)!\n", ij, io.n_expected);
 				Return (EXIT_FAILURE);

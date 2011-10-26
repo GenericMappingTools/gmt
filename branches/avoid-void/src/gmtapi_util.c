@@ -658,19 +658,19 @@ struct GMT_PALETTE * GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GM
 		case GMT_IS_FILE:
 			/* GMT_read_cpt will report where it is reading from if level is GMT_MSG_NORMAL */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading CPT table from %s %s\n", GMT_method[S->method], (char *)S->resource);
-			if ((error = GMT_read_cpt (API->GMT, S->resource, S->method, mode, &D))) ptr_return (API, error, NULL);
+			if ((D = GMT_read_cpt (API->GMT, S->resource, S->method, mode)) == NULL) ptr_return (API, GMT_CPT_READ_ERROR, NULL);
 			break;
 		case GMT_IS_STREAM:
  			/* GMT_read_cpt will report where it is reading from if level is GMT_MSG_NORMAL */
 			kind = (S->fp == API->GMT->session.std[GMT_OUT]) ? 0 : 1;	/* 0 if stdin/out, 1 otherwise for user pointer */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading CPT table from %s %s stream\n", GMT_method[S->method], GMT_stream[kind]);
-			if ((error = GMT_read_cpt (API->GMT, S->resource, S->method, mode, &D))) ptr_return (API, error, NULL);
+			if ((D = GMT_read_cpt (API->GMT, S->resource, S->method, mode)) == NULL) ptr_return (API, GMT_CPT_READ_ERROR, NULL);
 			break;
 		case GMT_IS_FDESC:
 			/* GMT_read_cpt will report where it is reading from if level is GMT_MSG_NORMAL */
 			kind = (*((int *)S->fp) == GMT_OUT) ? 0 : 1;	/* 0 if stdin/out, 1 otherwise for user pointer */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading CPT table from %s %s stream\n", GMT_method[S->method], GMT_stream[kind]);
-			if ((error = GMT_read_cpt (API->GMT, S->resource, S->method, mode, &D))) ptr_return (API, error, NULL);
+			if ((D = GMT_read_cpt (API->GMT, S->resource, S->method, mode)) == NULL) ptr_return (API, GMT_CPT_READ_ERROR, NULL);
 			break;
 		case GMT_IS_COPY:	/* Duplicate the input CPT palette */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating CPT table from GMT_PALETTE memory location\n");
@@ -818,9 +818,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 				if (API->GMT->current.io.ogr == 1 && D->n_tables > 0)	/* Only single tables if GMT/OGR */
 					ptr_return (API, GMT_OGR_ONE_TABLE_ONLY, NULL);
 				GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading %s from %s %s\n", GMT_family[S->family], GMT_method[S->method], (char *)S->resource);
-				if ((D->table[D->n_tables] = GMT_read_table (API->GMT, S->resource, S->method, FALSE, poly, use_GMT_io)) == NULL) 
-					ptr_return (API, GMT_DATA_READ_ERROR, NULL);
-				if (error == GMT_IO_EOF) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
+				if ((D->table[D->n_tables] = GMT_read_table (API->GMT, S->resource, S->method, FALSE, poly, use_GMT_io)) == NULL) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
 				D->table[D->n_tables]->id = D->n_tables;	/* Give sequential internal ID numbers to tables */
 				D->n_tables++;	/* Since we just read one */
 				update = TRUE;
@@ -832,7 +830,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 				GMT_free (API->GMT, D->table);	/* Free up what we allocated earlier since GMT_alloc_dataset does it all */
 				GMT_free (API->GMT, D);
 				Din = gmt_get_dataset_ptr (S->resource);
-				GMT_duplicate_dataset (API->GMT, Din, Din->n_columns, GMT_ALLOC_NORMAL, &D);
+				D = GMT_duplicate_dataset (API->GMT, Din, Din->n_columns, GMT_ALLOC_NORMAL);
 				break;
 				
 			case GMT_IS_REF:	/* Just pass memory location, so free up what we allocated first */
@@ -1001,7 +999,7 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 			
 		case GMT_IS_COPY:		/* Duplicate the input dataset */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating data table to GMT_DATASET memory location\n");
-			GMT_duplicate_dataset (API->GMT, D, D->n_columns, GMT_ALLOC_NORMAL, &D_copy);
+			D_copy = GMT_duplicate_dataset (API->GMT, D, D->n_columns, GMT_ALLOC_NORMAL);
 			gmt_set_dataset_ptr (S->resource, D_copy);
 			S->data = D_copy;
 			break;
@@ -1122,9 +1120,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID
 				if (ID == GMTAPI_NOTSET && item == first_item) S->data = T;	/* Since not set yet */
 				/* GMT_read_texttable will report where it is reading from if level is GMT_MSG_NORMAL */
 				GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading %s from %s %s\n", GMT_family[S->family], GMT_method[S->method], (char *)S->resource);
-				if ((error = GMT_read_texttable (API->GMT, S->resource, S->method, &(T->table[T->n_tables])))) 
-					ptr_return (API, error, NULL);
-				if (error == GMT_IO_EOF) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
+				if ((T->table[T->n_tables] = GMT_read_texttable (API->GMT, S->resource, S->method)) == NULL) continue;	/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
 				T->table[T->n_tables]->id = T->n_tables;	/* Give internal ID numbers to tables */
 				update = TRUE;
 				break;
@@ -1134,7 +1130,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID
 				GMT_free (API->GMT, T->table);	/* Free up what we allocated since GMT_alloc_dataset does it all */
 				GMT_free (API->GMT, T);
 				Tin = gmt_get_textset_ptr (S->resource);
-				GMT_duplicate_textset (API->GMT, Tin, &T, GMT_ALLOC_NORMAL);
+				T = GMT_duplicate_textset (API->GMT, Tin, GMT_ALLOC_NORMAL);
 				break;
 			case GMT_IS_REF:	/* Just pass memory location, so free up what we allocated first */
 				if (n_alloc > 1) ptr_return (API, GMT_ONLY_ONE_ALLOWED, NULL);
@@ -1238,8 +1234,7 @@ GMT_LONG GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 			break;
 		case GMT_IS_COPY:		/* Duplicate the input dataset */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating data table to GMT_TEXTSET memory location\n");
-			GMT_alloc_textset (API->GMT, T, &T_copy, GMT_ALLOC_NORMAL);
-			GMT_duplicate_textset (API->GMT, T, &T_copy, GMT_ALLOC_NORMAL);
+			T_copy = GMT_duplicate_textset (API->GMT, T, GMT_ALLOC_NORMAL);
 			gmt_set_textset_ptr (S->resource, T_copy);
 			S->data = T_copy;
 			break;
@@ -1705,7 +1700,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_
 
 	S->status += done;	/* Mark as read (unless we just got the header) */
 	
-	return ((mode == GMT_GRID_DATA) ? NULL : G);	/* Pass back out what we have so far */	
+	return (G);	/* Pass back out what we have so far */	
 }
 
 GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode, struct GMT_GRID *G)
@@ -2162,7 +2157,7 @@ GMT_LONG GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, GMT_LONG family, void *X
 	
 	switch (family) {	/* dataset, cpt, text table or grid */
 		case GMT_IS_GRID:	/* GMT grid */
-			GMT_free_grid_ptr (API->GMT, X, GMT_ALLOCATED);
+			GMT_free_grid_ptr (API->GMT, X, GMT_CLOBBER);
 			break;
 		case GMT_IS_DATASET:
 			GMT_free_dataset_ptr (API->GMT, X);
@@ -2175,16 +2170,16 @@ GMT_LONG GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, GMT_LONG family, void *X
 			break;
 #ifdef USE_GDAL
 		case GMT_IS_IMAGE:
-			GMT_free_image_ptr (API->GMT, X, GMT_ALLOCATED);
+			GMT_free_image_ptr (API->GMT, X, GMT_CLOBBER);
 			break;
 #endif
 			
 		/* Also allow destoying of intermediate vector and matrix containers */
 		case GMT_IS_MATRIX:
-			GMT_free_matrix_ptr (API->GMT, X, GMT_ALLOCATED);
+			GMT_free_matrix_ptr (API->GMT, X, GMT_CLOBBER);
 			break;
 		case GMT_IS_VECTOR:
-			GMT_free_vector_ptr (API->GMT, X, GMT_ALLOCATED);
+			GMT_free_vector_ptr (API->GMT, X, GMT_CLOBBER);
 			break;
 		default:
 			return (GMT_Report_Error (API, GMT_WRONG_KIND));

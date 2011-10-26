@@ -648,7 +648,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	sprintf (format, "%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	powfactor = 4.0 / pow ((double)Grid->header->size, 2.0);
 	dim[2] = 3;	dim[3] = nk;
-	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, -1)) == NULL) {
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for spectrum\n");
 		return (GMT->parent->error);
 	}

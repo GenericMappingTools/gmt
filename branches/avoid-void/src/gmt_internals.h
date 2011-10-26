@@ -97,9 +97,9 @@ GMT_LONG GMT_get_fill_from_z (struct GMT_CTRL *C, struct GMT_PALETTE *P, double 
 GMT_LONG GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
 EXTERN_MSC struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_segments, GMT_LONG n_rows);
 EXTERN_MSC struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors);
-EXTERN_MSC GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_type, struct GMT_TEXT_TABLE **table);
+EXTERN_MSC struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_type);
 EXTERN_MSC GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, struct GMT_TEXTSET *D, GMT_LONG table);
-EXTERN_MSC void GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, struct GMT_TEXTSET **Dout, GMT_LONG mode);
+EXTERN_MSC struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_init_complex (GMT_LONG complex, GMT_LONG *inc, GMT_LONG *off);
 
 EXTERN_MSC GMT_LONG GMT_gmonth_length (GMT_LONG year, GMT_LONG month);

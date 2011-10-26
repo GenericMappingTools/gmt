@@ -3044,7 +3044,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 	if (D_in)	/* Obtained file structure from an input file, use this to create new stack entry */
-		GMT_alloc_dataset (GMT, D_in, n_columns, 0, GMT_ALLOC_NORMAL, &Template);
+		Template = GMT_alloc_dataset (GMT, D_in, n_columns, 0, GMT_ALLOC_NORMAL);
 	else {		/* Must use -N -T etc to create single segment */
 		dim[2] = n_columns;	dim[3] = n_rows;
 		if ((Template = GMT_Create_Data (API, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) Return (GMT_MEMORY_ERROR);
@@ -3055,7 +3055,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Create the Time data structure with 2 cols: 0 is t, 1 is normalized tn */
 	if (D_in) {	/* Either D_in or D_stdin */
-		GMT_alloc_dataset (GMT, D_in, 2, 0, GMT_ALLOC_NORMAL, &Time);
+		Time = GMT_alloc_dataset (GMT, D_in, 2, 0, GMT_ALLOC_NORMAL);
 		info.T = Time->table[0];	D = D_in->table[0];
 		for (seg = 0, done = FALSE; seg < D->n_segments; seg++) {
 			GMT_memcpy (info.T->segment[seg]->coord[0], D->segment[seg]->coord[use_t_col], D->segment[seg]->n_rows, double);
@@ -3153,7 +3153,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					Return (EXIT_FAILURE);
 				}
 				if (!stack[nstack]) {
-					GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL, &(stack[nstack]));
+					stack[nstack] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 					alloc_mode[nstack] = 1;
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "T ");
@@ -3166,7 +3166,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					Return (EXIT_FAILURE);
 				}
 				if (!stack[nstack]) {
-					GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL, &(stack[nstack]));
+					stack[nstack] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 					alloc_mode[nstack] = 1;
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Tn ");
@@ -3177,7 +3177,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (!strcmp (opt->arg, "STDIN")) {	/* stdin file */
 					if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "<stdin> ");
 					if (!stack[nstack]) {
-						GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL, &(stack[nstack]));
+						stack[nstack] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 						alloc_mode[nstack] = 1;
 					}
 					for (j = 0; j < n_columns; j++) load_column (stack[nstack], j, I, j);
@@ -3228,7 +3228,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Must make space for more */
 
-			GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL, &(stack[nstack+i-1]));
+			stack[nstack+i-1] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 			alloc_mode[nstack+i-1] = 1;
 		}
 
@@ -3236,7 +3236,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		for (j = 0, i = nstack - consumed_operands[op]; j < produced_operands[op]; j++, i++) {
 			if (constant[i] && !stack[i]) {
-				GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL, &(stack[i]));
+				stack[i] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 				alloc_mode[i] = 1;
 			}
 		}
@@ -3264,7 +3264,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (new_stack < 0 && constant[0]) {	/* Only a constant provided, set table accordingly */
 		if (!stack[0]) {
-			GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL, &(stack[0]));
+			stack[0] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 			alloc_mode[0] = 1;
 		}
 		for (j = 0; j < n_columns; j++) {
@@ -3304,7 +3304,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_LONG nr, r, c, row;
 			struct GMT_DATASET *N = NULL;
 			nr = (Ctrl->S.active) ? 1 : 0;
-			GMT_alloc_dataset (GMT, R, n_columns, nr, GMT_ALLOC_NORMAL, &N);
+			N = GMT_alloc_dataset (GMT, R, n_columns, nr, GMT_ALLOC_NORMAL);
 			for (seg = 0; seg < R->table[0]->n_segments; seg++) {
 				for (r = 0; r < N->table[0]->segment[seg]->n_rows; r++) {
 					row = (Ctrl->S.active) ? ((Ctrl->S.mode == -1) ? 0 : R->table[0]->segment[seg]->n_rows - 1) : r;

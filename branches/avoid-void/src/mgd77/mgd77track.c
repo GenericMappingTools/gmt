@@ -636,7 +636,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		track_time = (double*)D.values[0];
 		lon = (double*)D.values[1];
 		lat = (double*)D.values[2];
-		GMT_err_fail (GMT, GMT_dist_array (GMT, lon, lat, D.H.n_records, 1.0, dist_flag, &track_dist), "");	/* Work internally in meters */
+		if ((track_dist = GMT_dist_array (GMT, lon, lat, D.H.n_records, 1.0, dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* Work internally in meters */
 		for (rec = 0; rec < D.H.n_records && bad_coordinates (lon[rec], lat[rec]) && track_time[rec] < Ctrl->D.start && track_dist[rec] < Ctrl->S.start; rec++);	/* Find first record of interest */
 		first_rec = rec;
 		for (rec = D.H.n_records - 1; rec && track_time[rec] > Ctrl->D.stop && bad_coordinates (lon[rec], lat[rec]) && track_dist[rec] > Ctrl->S.stop; rec--);	/* Find last record of interest */

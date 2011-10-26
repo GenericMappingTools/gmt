@@ -1937,7 +1937,7 @@ GMT_LONG GMT_list_cpt (struct GMT_CTRL *C, char option)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, GMT_LONG cpt_flags, struct GMT_PALETTE **P)
+struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, GMT_LONG cpt_flags)
 {
 	/* Opens and reads a color palette file in RGB, HSV, or CMYK of arbitrary length.
 	 * Return the result as a palette struct.
@@ -1962,7 +1962,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 		strcpy (cpt_file, source);
 		if ((fp = fopen (cpt_file, "r")) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open color palette table %s\n", cpt_file);
-			return (EXIT_FAILURE);
+			return (NULL);
 		}
 		close_file = TRUE;	/* We only close files we have opened here */
 	}
@@ -1978,7 +1978,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 		int *fd = source;
 		if (fd && (fp = fdopen (*fd, "r")) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot convert file descriptor %d to stream in GMT_read_cpt\n", *fd);
-			return (EXIT_FAILURE);
+			return (NULL);
 		}
 		if (fd == NULL) fp = C->session.std[GMT_IN];	/* Default input */
 		if (fp == C->session.std[GMT_IN])
@@ -1988,7 +1988,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 	}
 	else {
 		GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %ld in GMT_read_cpt\n", source_type);
-		return (EXIT_FAILURE);
+		return (NULL);
 	}
 
 	GMT_report (C, GMT_MSG_DEBUG, "Reading CPT table from %s\n", cpt_file);
@@ -2027,7 +2027,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 				X->model = GMT_CMYK;
 			else {
 				GMT_report (C, GMT_MSG_FATAL, "Error: unrecognized COLOR_MODEL in color palette table %s\n", cpt_file);
-				return (EXIT_FAILURE);
+				return (NULL);
 			}
 		}
 		C->current.setting.color_model = X->model;
@@ -2070,7 +2070,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 				X->patch[id].fill = GMT_memory (C, NULL, 1, struct GMT_FILL);
 				if (GMT_getfill (C, T1, X->patch[id].fill)) {
 					GMT_report (C, GMT_MSG_FATAL, "Error: CPT Pattern fill (%s) not understood!\n", T1);
-					return (EXIT_FAILURE);
+					return (NULL);
 				}
 				X->has_pattern = TRUE;
 			}
@@ -2141,7 +2141,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 		if (T1[0] == '-') {				/* Skip this slice */
 			if (nread != 4) {
 				GMT_report (C, GMT_MSG_FATAL, "Error: z-slice to skip not in [z0 - z1 -] format!\n");
-				return (EXIT_FAILURE);
+				return (NULL);
 			}
 			GMT_scanf_arg (C, T2, GMT_IS_UNKNOWN, &X->range[n].z_high);
 			X->range[n].skip = TRUE;		/* Don't paint this slice if possible*/
@@ -2152,7 +2152,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 			X->range[n].fill = GMT_memory (C, NULL, 1, struct GMT_FILL);
 			if (GMT_getfill (C, T1, X->range[n].fill)) {
 				GMT_report (C, GMT_MSG_FATAL, "Error: CPT Pattern fill (%s) not understood!\n", T1);
-				return (EXIT_FAILURE);
+				return (NULL);
 			}
 			else if (nread == 2) {	/* Categorical cpt records with key fill [;label] */
 				X->range[n].z_high = X->range[n].z_low;
@@ -2164,7 +2164,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 			}
 			else {
 				GMT_report (C, GMT_MSG_FATAL, "Error: z-slice with pattern fill not in [z0 pattern z1 -] format!\n");
-				return (EXIT_FAILURE);
+				return (NULL);
 			}
 			X->has_pattern = TRUE;
 		}
@@ -2216,7 +2216,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 				dz = X->range[n].z_high - X->range[n].z_low;
 				if (dz == 0.0) {
 					GMT_report (C, GMT_MSG_FATAL, "Error: Z-slice with dz = 0\n");
-					return (EXIT_FAILURE);
+					return (NULL);
 				}
 				X->range[n].i_dz = 1.0 / dz;
 			}
@@ -2261,15 +2261,15 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 
 	if (X->categorical && n_cat_records != n) {
 		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot decode %s as categorical cpt file\n", cpt_file);
-		return (EXIT_FAILURE);
+		return (NULL);
 	}
 	if (error) {
 		GMT_report (C, GMT_MSG_FATAL, "Error: Failed to decode %s\n", cpt_file);
-		return (EXIT_FAILURE);
+		return (NULL);
 	}
 	if (n == 0) {
 		GMT_report (C, GMT_MSG_FATAL, "Error: CPT file %s has no z-slices!\n", cpt_file);
-		return (EXIT_FAILURE);
+		return (NULL);
 	}
 
 	X->range = GMT_memory (C, X->range, n, struct GMT_LUT);
@@ -2281,7 +2281,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 			dz = X->range[i].z_high - X->range[i].z_low;
 			if (dz == 0.0) {
 				GMT_report (C, GMT_MSG_FATAL, "Error: Z-slice with dz = 0\n");
-				return (EXIT_FAILURE);
+				return (NULL);
 			}
 			X->range[i].i_dz = 1.0 / dz;
 		}
@@ -2294,7 +2294,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 	annot += X->range[i].annot;
 	if (gap) {
 		GMT_report (C, GMT_MSG_FATAL, "Error: Color palette table %s has gaps - aborts!\n", cpt_file);
-		return (EXIT_FAILURE);
+		return (NULL);
 	}
 	if (!annot) {	/* Must set default annotation flags */
 		for (i = 0; i < X->n_colors; i++) X->range[i].annot = 1;
@@ -2306,8 +2306,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 
 	if (X->n_headers < n_hdr_alloc) X->header = GMT_memory (C, X->header, X->n_headers, char *);
 
-	*P = X;
-	return (GMT_NOERROR);
+	return (X);
 }
 
 void GMT_cpt_transparency (struct GMT_CTRL *C, struct GMT_PALETTE *P, double transparency, GMT_LONG mode)
@@ -2325,7 +2324,7 @@ void GMT_cpt_transparency (struct GMT_CTRL *C, struct GMT_PALETTE *P, double tra
 	for (i = 0; i < 3; i++) P->patch[i].hsv[3] = P->patch[i].rgb[3] = transparency;
 }
 
-void GMT_sample_cpt (struct GMT_CTRL *C, struct GMT_PALETTE *Pin, double z[], GMT_LONG nz, GMT_LONG continuous, GMT_LONG reverse, GMT_LONG log_mode, GMT_LONG no_inter, struct GMT_PALETTE **Pout)
+struct GMT_PALETTE * GMT_sample_cpt (struct GMT_CTRL *C, struct GMT_PALETTE *Pin, double z[], GMT_LONG nz, GMT_LONG continuous, GMT_LONG reverse, GMT_LONG log_mode, GMT_LONG no_inter)
 {
 	/* Resamples the current cpt table based on new z-array.
 	 * Old cpt is normalized to 0-1 range and scaled to fit new z range.
@@ -2520,7 +2519,7 @@ void GMT_sample_cpt (struct GMT_CTRL *C, struct GMT_PALETTE *Pin, double z[], GM
 	}
 
 	(void) gmt_copy_palette_hdrs (C, P, Pin);
-	*Pout = P;
+	return (P);
 }
 
 GMT_LONG GMT_write_cpt (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, GMT_LONG cpt_flags, struct GMT_PALETTE *P)
@@ -9462,7 +9461,7 @@ void gmt_matrix_vect_mult (double a[3][3], double b[3], double c[3])
 #define SEG_DIST 2
 #define SEG_AZIM 3
 
-GMT_LONG gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, GMT_LONG mode, GMT_LONG ex_cols, GMT_LONG smode, struct GMT_DATASET **Dout)
+struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, GMT_LONG mode, GMT_LONG ex_cols, GMT_LONG smode)
 {
 	/* Din is a data set with at least two columns (x,y or lon/lat);
 	 * it can contain any number of tables and segments with lines.
@@ -9484,7 +9483,7 @@ GMT_LONG gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *
 	resample = (!GMT_IS_ZERO(along_ds));
 	n_cols = 2 + mode + ex_cols;
 	along_ds_degree = (along_ds / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;
-	GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL, &D);	/* Same table length as Din, but with up to 4 columns (lon, lat, dist, az) */
+	D = GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to 4 columns (lon, lat, dist, az) */
 	ndig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {
@@ -9522,11 +9521,10 @@ GMT_LONG gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *
 			Tout->segment[seg]->header = strdup (buffer);
 		}
 	}
-	*Dout = D;
-	return (0);
+	return (D);
 }
 
-GMT_LONG gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, GMT_LONG mode, GMT_LONG ex_cols, GMT_LONG smode, struct GMT_DATASET **Dout)
+struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, GMT_LONG mode, GMT_LONG ex_cols, GMT_LONG smode)
 {
 	/* Din is a data set with at least two columns (x,y or lon/lat);
 	 * it can contain any number of tables and segments with lines.
@@ -9547,7 +9545,7 @@ GMT_LONG gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *
 
 	resample = (!GMT_IS_ZERO(along_ds));
 	n_cols = 2 + mode + ex_cols;
-	GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL, &D);	/* Same table length as Din, but with up to 4 columns (lon, lat, dist, az) */
+	D = GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to 4 columns (lon, lat, dist, az) */
 	ndig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {
@@ -9585,22 +9583,21 @@ GMT_LONG gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *
 			Tout->segment[seg]->header = strdup (buffer);
 		}
 	}
-	*Dout = D;
-	return (0);
+	return (D);
 
 }
 
-GMT_LONG GMT_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, GMT_LONG mode, GMT_LONG ex_cols, GMT_LONG smode, struct GMT_DATASET **Dout)
+struct GMT_DATASET * GMT_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, GMT_LONG mode, GMT_LONG ex_cols, GMT_LONG smode)
 {
-	GMT_LONG err;
+	struct GMT_DATASET *D = NULL;
 	if (GMT_is_geographic (GMT, GMT_IN))
-		err = gmt_resample_data_spherical (GMT, Din, along_ds, mode, ex_cols, smode, Dout);
+		D = gmt_resample_data_spherical (GMT, Din, along_ds, mode, ex_cols, smode);
 	else
-		err = gmt_resample_data_cartesian (GMT, Din, along_ds, mode, ex_cols, smode, Dout);
-	return (err);
+		D = gmt_resample_data_cartesian (GMT, Din, along_ds, mode, ex_cols, smode);
+	return (D);
 }
 
-GMT_LONG gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, GMT_LONG n_cols, struct GMT_DATASET **Dout)
+struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, GMT_LONG n_cols)
 {
 	/* Din is a data set with at least two columns (lon/lat);
 	 * it can contain any number of tables and segments.
@@ -9628,7 +9625,7 @@ GMT_LONG gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 
 	if (Din->n_columns < 2) {	/* Trouble */
 		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Dataset does not have at least 2 columns with coordinates\n");
-		return (1);
+		return (NULL);
 	}
 
 	/* Get resampling step size and zone width in degrees */
@@ -9640,7 +9637,7 @@ GMT_LONG gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
 	n_tot_cols = 4 + n_cols;	/* Total number of columns in the resulting data set */
 	dim[0] = Din->n_tables;	dim[2] = n_tot_cols;	dim[3] = np_cross;
-	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) return (1);	/* An empty dataset of n_tot_cols columns and np_cross rows */
+	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */
@@ -9725,12 +9722,10 @@ GMT_LONG gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 		}
 	}
 
-	*Dout = Xout;
-
-	return (0);
+	return (Xout);
 }
 
-GMT_LONG gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, GMT_LONG n_cols, struct GMT_DATASET **Dout)
+struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, GMT_LONG n_cols)
 {
 	/* Din is a data set with at least two columns (x,y);
 	 * it can contain any number of tables and segments.
@@ -9755,7 +9750,7 @@ GMT_LONG gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 
 	if (Din->n_columns < 2) {	/* Trouble */
 		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Dataset does not have at least 2 columns with coordinates\n");
-		return (1);
+		return (NULL);
 	}
 
 	/* Get resampling step size and zone width in degrees */
@@ -9766,7 +9761,7 @@ GMT_LONG gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	across_ds = cross_length / n_half_cross;		/* Exact increment (recalculated in case of roundoff) */
 	n_tot_cols = 4 + n_cols;				/* Total number of columns in the resulting data set */
 	dim[0] = Din->n_tables;	dim[2] = n_tot_cols;	dim[3] = np_cross;
-	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) return (1);	/* An empty dataset of n_tot_cols columns and np_cross rows */
+	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, GMT_NOWHERE)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */
@@ -9828,19 +9823,17 @@ GMT_LONG gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 		}
 	}
 
-	*Dout = Xout;
-
-	return (0);
+	return (Xout);
 }
 
-GMT_LONG GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, GMT_LONG n_cols, struct GMT_DATASET **Dout)
+struct GMT_DATASET * GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, GMT_LONG n_cols)
 {	/* Call either the spherical or Cartesian version */
-	GMT_LONG err;
+	struct GMT_DATASET *D = NULL;
 	if (GMT_is_geographic (GMT, GMT_IN))
-		err = gmt_crosstracks_spherical (GMT, Din, cross_length, across_ds, n_cols, Dout);
+		D = gmt_crosstracks_spherical (GMT, Din, cross_length, across_ds, n_cols);
 	else
-		err = gmt_crosstracks_cartesian (GMT, Din, cross_length, across_ds, n_cols, Dout);
-	return (err);
+		D = gmt_crosstracks_cartesian (GMT, Din, cross_length, across_ds, n_cols);
+	return (D);
 }
 
 GMT_LONG gmt_straddle_dateline (double x0, double x1) {

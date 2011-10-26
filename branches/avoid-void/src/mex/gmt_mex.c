@@ -98,10 +98,10 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 	if (mxIsChar(prhs[0]))		/* Gave a file name */
 		i_string = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
  	else {				/* Input via two or more column vectors */
-		GMT_LONG col, in_ID;
+		GMT_LONG col, in_ID, dim[1] = {n_cols};
 		//char buffer[GMT_BUFSIZ];
 		i_string = mxMalloc (GMT_BUFSIZ);
-		*V = GMT_Create_Data (API, GMT_IS_VECTOR, &n_cols, GMT_NOWHERE);
+		*V = GMT_Create_Data (API, GMT_IS_VECTOR, dim, GMT_NOWHERE);
 		for (col = n_start; col < n_cols+n_start; col++) {	/* Hook up one vector per column and determine data type */
 			(*V)->data[col] = mxGetData (prhs[col]);
 			if (mxIsDouble(prhs[col]))
@@ -299,8 +299,8 @@ char *GMTMEX_build_cmd (struct GMTAPI_CTRL *API, char *src, char *options, char 
 
 void GMTMEX_free (char *input, char *output, char *options, char *cmd) {
 	/* Free temporary local variables */
-	if (input) mxfree (input);
-	if (output) mxfree (output);	
+	if (input) mxFree (input);
+	if (output) mxFree (output);	
 	if (options) mxFree (options);	
 	mxFree (cmd);
 }
