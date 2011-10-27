@@ -58,8 +58,8 @@ if (DO_TESTS AND UNIX)
 
 	# add tests
 	foreach (_test_dir ${GMT_TEST_DIRS})
-		file(GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_BINARY_DIR}
-			"${CMAKE_CURRENT_BINARY_DIR}/${_test_dir}/*.sh")
+		file(GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			"${CMAKE_CURRENT_SOURCE_DIR}/${_test_dir}/*.sh")
 		foreach (_test ${_test_scripts})
 			add_test(NAME ${_test}
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_test_dir}
