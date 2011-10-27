@@ -25,7 +25,6 @@
  */
 
 #include "spotter.h"
-#include "gmt_proj.h"
 
 #define N_PM_ITEMS	8
 #define PM_RATE		0

@@ -59,7 +59,6 @@ GMT_H	= $(GMTSRCDIR)gmt.h \
 	  $(GMTSRCDIR)gmt_notposix.h \
 	  $(GMTSRCDIR)gmt_notunix.h \
 	  $(GMTSRCDIR)gmt_plot.h \
-	  $(GMTSRCDIR)gmt_proj.h \
 	  $(GMTSRCDIR)gmt_project.h \
 	  $(GMTSRCDIR)gmt_prototypes.h \
 	  $(GMTSRCDIR)gmt_ps.h \

@@ -103,7 +103,6 @@
  */
  
 #include "spotter.h"
-#include "gmt_proj.h"
 
 #define B_TO_MB	(1.0 / 1048576.0)
 #define OUTSIDE -1
