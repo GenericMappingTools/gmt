@@ -317,14 +317,14 @@ target_link_libraries (psldemo pslib)
 # generate Mac debugging symbols
 create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS})
 
-# Tests depend on GMT progs:
-add_dependencies (check ${GMT_PROGSPS} ${GMT_PROGS} ${GMT_DEMOS} psldemo)
+# Tests depend on GMT progs and supplements:
+add_dependencies (check ${GMT_PROGSPS} ${GMT_PROGS} ${GMT_DEMOS} psldemo
+	gmt_suppl)
 
 # add the install targets
 install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
 	LIBRARY DESTINATION lib
-	RUNTIME DESTINATION bin
-)
+	RUNTIME DESTINATION bin)
 
 # install extra files
 if (UNIX)
