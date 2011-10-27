@@ -14,7 +14,7 @@ OLDX=$X2SYS_HOME
 export X2SYS_HOME=`pwd`
 (cd bad; ls *.xyg > ../bad.lis)
 (cd data; ls *.xyg > ../data.lis)
-x2sys_init TEST -D../../share/x2sys/geoz -Exyg -F -G -R180/185/0/5
+x2sys_init TEST -D${GMT_SOURCE_DIR}/share/x2sys/geoz -Exyg -F -G -R180/185/0/5
 echo "$X2SYS_HOME/bad" >> $X2SYS_HOME/TEST/TEST_paths.txt
 x2sys_cross -TTEST =data.lis -Qe -Ia > COE_clean.txt
 x2sys_cross -TTEST =bad.lis -Qe -Ia > COE_orig.txt

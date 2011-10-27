@@ -12,7 +12,7 @@ ps=gspline_2.ps
 
 D=0.05
 R=0/7.2/-0.2/7
-T=../../doc/examples/ex12/table_5.11
+T=${GMT_SOURCE_DIR}/doc/examples/ex12/table_5.11
 greenspline -R$R -I$D -GWB1998.grd $T -St0.5 -D1
 greenspline -R$R -I$D -GMM1993.grd $T -Sr0.99 -D1
 surface $T -R$R -I$D -Graws5.grd -T0.5 -N10000 -C0.0000001

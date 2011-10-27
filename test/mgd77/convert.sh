@@ -9,7 +9,7 @@ header "Test mgd77convert conversions between mgd77-dat-nc"
 log=convert.log
 
 OLD=$MGD77_HOME
-export MGD77_HOME=../../share/mgd77
+export MGD77_HOME=${GMT_SOURCE_DIR}/share/mgd77
 cp dummy.mgd77 12345678.mgd77
 
 # Make cdf file
