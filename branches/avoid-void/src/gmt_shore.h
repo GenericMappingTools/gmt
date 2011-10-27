@@ -28,16 +28,14 @@
 
 #include "netcdf.h"
 
-#define GSHHS_MAX_DELTA		65535	/* Largest value to store in a unsigned short, used as largest dx or dy in bin  */
-#define GMT_MAX_GSHHS_LEVEL	4	/* Highest hierarchical level of coastlines */
-
-#define GMT_N_BLEVELS		3	/* Number of levels for borders */
-#define GMT_N_RLEVELS		11	/* Number of levels for rivers */
-#define GMT_RIV_INTERMITTENT	5	/* Id for intermittent rivers */
-#define GMT_RIV_CANALS		8	/* Id for river canals */
-
-#define GMT_NO_RIVERLAKES	1
-#define GMT_NO_LAKES		2
+enum GMT_enum_gshhs {GSHHS_MAX_DELTA = 65535,	/* Largest value to store in a unsigned short, used as largest dx or dy in bin  */
+	GSHHS_MAX_LEVEL			= 4,	/* Highest hierarchical level of coastlines */
+	GSHHS_N_BLEVELS			= 3,	/* Number of levels for borders */
+	GSHHS_N_RLEVELS			= 11,	/* Number of levels for rivers */
+	GSHHS_RIVER_INTERMITTENT	= 5,	/* Id for intermittent rivers */
+	GSHHS_RIVER_CANALS		= 8,	/* Id for river canals */
+	GSHHS_NO_RIVERLAKES		= 1,
+	GSHHS_NO_LAKES			= 2};
 
 struct GMT_SHORE_SELECT {	/* Information on levels and min area to use */
 	int low;	/* Lowest hierarchical level to use [0] */

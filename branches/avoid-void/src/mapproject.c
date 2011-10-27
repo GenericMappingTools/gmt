@@ -38,7 +38,6 @@
  */
 
 #include "gmt.h"
-#include "gmt_proj.h"
 
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */

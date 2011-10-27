@@ -405,7 +405,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Turn z_tmp into absolute deviations from the mode (out[GMT_Z]) */
 			if (nz > 1) {
 				for (node = 0; node < nz; node++) z_tmp[node] = fabs (z_tmp[node] - out[GMT_Z]);
-				GMT_sort_array (GMT, z_tmp, nz, GMT_DOUBLE_TYPE);
+				GMT_sort_array (GMT, z_tmp, nz, GMTAPI_DOUBLE);
 				out[3] = (nz%2) ? z_tmp[nz/2] : 0.5 * (z_tmp[(nz-1)/2] + z_tmp[nz/2]);
 				out[3] *= 1.4826;	/* This will be LMS MAD-based scale */
 			}

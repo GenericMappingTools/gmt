@@ -26,6 +26,13 @@
 #ifndef _GMT_CONSTANTS_H
 #define _GMT_CONSTANTS_H
 
+/*=====================================================================================
+ *	GMT API CONSTANTS DEFINITIONS
+ *===================================================================================*/
+
+#include "gmtapi_errno.h"			/* All error return values are defined here */
+#include "gmtapi_define.h"			/* All constant values are defined here */
+
 /*--------------------------------------------------------------------
  *			GMT CONSTANTS MACRO DEFINITIONS
  *--------------------------------------------------------------------*/
@@ -120,13 +127,13 @@
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
 
 /* Various options for FFT calculations [Default is 0] */
-#define GMT_FFT_AUTO		-1
-#define GMT_FFT_ACCELERATE	0
-#define GMT_FFT_W		1
-#define GMT_FFT_PERFLIB		2
-#define GMT_FFT_PACK		3
-#define GMT_FFT_BRENNER		4
-#define N_GMT_FFT		5
+enum GMT_enum_fft {GMT_FFT_AUTO=-1,	/* Automatically select best FFT algorithm */
+	GMT_FFT_ACCELERATE,		/* Select Accelerate Framework FFT [OS X only] */
+	GMT_FFT_W,			/* Select FFT in the West */
+	GMT_FFT_PERFLIB,		/* Select Sun's Performance library FFT [Solaris only] */
+	GMT_FFT_PACK,			/* Select FFT Pack */
+	GMT_FFT_BRENNER,		/* Select Normal Brenners old-school FFT */
+	N_GMT_FFT};
 
 /* Various directions and modes to call the FFT */
 #define GMT_FFT_FWD		0
@@ -135,21 +142,26 @@
 #define GMT_FFT_COMPLEX		1
 
 /* Various algorithms for triangulations */
-#define GMT_TRIANGLE_WATSON	0
-#define GMT_TRIANGLE_SHEWCHUK	1
+enum GMT_enum_tri {GMT_TRIANGLE_WATSON = 0,	/* Select Watson's algorithm */
+	GMT_TRIANGLE_SHEWCHUK};			/* Select Shewchuk's algorithm */
 
 /* Various grid/image interpolation modes */
-#define BCR_NEARNEIGHBOR	0
-#define BCR_BILINEAR		1
-#define BCR_BSPLINE		2
-#define BCR_BICUBIC		3
+enum GMT_enum_bcr {BCR_NEARNEIGHBOR = 0,	/* Nearest neighbor algorithm */
+	BCR_BILINEAR,				/* Bilinear spline */
+	BCR_BSPLINE,				/* B-spline */
+	BCR_BICUBIC};				/* Bicubic spline */
 
 /* Various grid/image boundary conditions */
-#define GMT_BC_IS_NOTSET	0
-#define GMT_BC_IS_NATURAL	1
-#define GMT_BC_IS_PERIODIC	2
-#define GMT_BC_IS_POLE		3
-#define GMT_BC_IS_DATA		4
+enum GMT_enum_bc {GMT_BC_IS_NOTSET = 0,		/* BC not yet set */
+	GMT_BC_IS_NATURAL,			/* Use natural BC */
+	GMT_BC_IS_PERIODIC,			/* Use periodic BC */
+	GMT_BC_IS_POLE,				/* N or S pole BC condition */
+	GMT_BC_IS_DATA};			/* Fill in BC with actual data */
+
+enum GMT_enum_alloc {GMT_ALLOCATED = 0,	/* Item was allocated so GMT_* modules should free when GMT_Destroy_Data is called */
+	GMT_REFERENCE,			/* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called, but may realloc if needed */
+	GMT_READONLY,			/* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called . Consider read-only data */
+	GMT_CLOBBER};			/* Free item no matter what its allocation status */
 
 /* Help us with big and little endianness */
 #ifdef WORDS_BIGENDIAN

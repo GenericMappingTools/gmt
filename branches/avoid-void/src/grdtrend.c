@@ -350,7 +350,7 @@ double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct G
 		W->data[j++] = (float)fabs((double)R->data[ij]);
 	}
 
-	GMT_sort_array (GMT, R->data, j, GMT_FLOAT_TYPE);
+	GMT_sort_array (GMT, R->data, j, GMTAPI_FLOAT);
 
 	j2 = j / 2;
 	mad = (j%2) ? W->data[j2] : 0.5 *(W->data[j2] + W->data[j2 - 1]);
