@@ -105,7 +105,6 @@
  */
  
 #include "spotter.h"
-#include "gmt_proj.h"
 
 EXTERN_MSC double GMT_great_circle_dist_degree (struct GMT_CTRL *C, double x0, double y0, double x1, double y1);
 EXTERN_MSC GMT_LONG GMT_great_circle_intersection (struct GMT_CTRL *T, double A[], double B[], double C[], double X[], double *CX_dist);

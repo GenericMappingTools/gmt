@@ -24,7 +24,6 @@
  */
 
 #include "spotter.h"
-#include "gmt_proj.h"
 
 #define PAD 3	/* Used to polish up a rotated grid by checking near neighbor nodes */
 

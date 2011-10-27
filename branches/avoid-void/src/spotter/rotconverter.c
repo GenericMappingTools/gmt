@@ -63,7 +63,6 @@
  */
 
 #include "spotter.h"
-#include "gmt_proj.h"
 
 struct ROTCONVERTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
