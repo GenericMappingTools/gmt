@@ -16,13 +16,10 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 
-# Define minimum CMake version required
-cmake_minimum_required (VERSION 2.8.5)
-
-# Define project name
-project (GMT_DOC)
-
 include (GmtHelperMacros)
+
+# TeX output PDFs
+set (_docs_output GMT_Docs.pdf GMT_Tutorial.pdf GMT_API.pdf)
 
 # TeX files
 set (_docs_inputs GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex
@@ -74,44 +71,28 @@ if (PDFLATEX_COMPILER)
 	add_subdirectory (fig)
 	add_subdirectory (ppt) # must be added after fig
 
-	# GMT_Docs.pdf
-	add_latex_document (GMT_Docs.tex
-		INPUTS ${_docs_inputs}
-		IMAGE_DIRS fig ppt
-		USE_INDEX
-		DEFAULT_PDF
-		MANGLE_TARGET_NAMES)
-	# add pdf to gmt_doc target
-	add_depend_to_target (gmt_doc GMT_Docs_pdf)
-	# Make sure PS figures are converted to PDF before LaTeX runs
-	add_dependencies (GMT_Docs_pdf ${_common_depends})
+	foreach (_pdf_file ${_docs_output})
+		string (REPLACE ".pdf" ".tex" _tex_file ${_pdf_file})
+		string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
 
-	# GMT_Tutorial.pdf
-	add_latex_document (GMT_Tutorial.tex
-		DEPENDS copy_tex_depends pdf_figures verbatim_examples verbatim_scripts
-		IMAGE_DIRS fig ppt
-		USE_INDEX
-		DEFAULT_PDF
-		MANGLE_TARGET_NAMES)
-	# add pdf to gmt_doc target
-	add_depend_to_target (gmt_doc GMT_Tutorial_pdf)
-	# Make sure PS figures are converted to PDF before LaTeX runs
-	add_dependencies (GMT_Tutorial_pdf ${_common_depends})
+		add_latex_document (${_tex_file}
+			USE_INDEX
+			DEFAULT_PDF
+			MANGLE_TARGET_NAMES)
 
-	# GMT_API.pdf
-	add_latex_document (GMT_API.tex
-		DEPENDS copy_tex_depends pdf_figures verbatim_examples verbatim_scripts
-		IMAGE_DIRS fig ppt
-		USE_INDEX
-		DEFAULT_PDF
-		MANGLE_TARGET_NAMES)
-	# add pdf to gmt_doc target
-	add_depend_to_target (gmt_doc GMT_API_pdf)
-	# Make sure PS figures are converted to PDF before LaTeX runs
-	add_dependencies (GMT_API_pdf ${_common_depends})
+		# Add pdf to gmt_doc target
+		add_depend_to_target (gmt_doc ${_pdf_target})
+
+		# Make sure PS figures are converted to PDF before LaTeX runs
+		add_dependencies (${_pdf_target} ${_common_depends})
+
+		# Install pdf file (if available)
+		install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_pdf_file}
+			DESTINATION ${GMT_DOC_PATH}/pdf OPTIONAL)
+	endforeach (_pdf_file)
 endif (PDFLATEX_COMPILER)
 
-# install target for examples
+# Install target for examples
 install (DIRECTORY examples
 	DESTINATION ${GMT_DOC_PATH}
 	USE_SOURCE_PERMISSIONS
@@ -119,9 +100,9 @@ install (DIRECTORY examples
 	PATTERN "CMakeLists.txt" EXCLUDE
 	PATTERN ".cmake" EXCLUDE)
 
-# run examples (test)
+# Run examples (test)
 if (DO_EXAMPLES)
-	# rules for copying example files to build dir
+	# Rules for copying example files to build dir
 	file (GLOB_RECURSE _example_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} examples/* tutorial/*)
 	list_regex_get ("[.]svn/|[.]cmake|CMakeLists.txt" _example_files ${_example_files} INVERT)
 	set (_test_files)
@@ -134,7 +115,7 @@ if (DO_EXAMPLES)
 		list (APPEND _test_files ${CMAKE_CURRENT_BINARY_DIR}/${_file})
 	endforeach (_file ${_example_files})
 
-	# add file dependencies to check target
+	# Add file dependencies to check target
 	add_custom_target (copy_example_tests
 		DEPENDS ${_test_files})
 	add_dependencies (check copy_example_tests)

@@ -109,7 +109,8 @@ set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 # the RPATH to be used when installing
 set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 if (APPLE)
-	set (CMAKE_INSTALL_NAME_DIR ${CMAKE_INSTALL_RPATH})
+	# on OSX make rpath relative to executable dir:
+	set (CMAKE_INSTALL_NAME_DIR @loader_path/../lib)
 endif (APPLE)
 
 # add the automatically determined parts of the RPATH

@@ -21,7 +21,7 @@
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
 
-INCLUDE(CheckCXXSourceCompiles)
+INCLUDE(CheckCSourceCompiles)
 
 MACRO (CHECK_PROTOTYPE_EXISTS _SYMBOL _HEADER _RESULT)
 	SET(_INCLUDE_FILES)
