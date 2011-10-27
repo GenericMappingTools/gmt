@@ -47,15 +47,23 @@
 
 /* These are the 6 methods for i/o */
 
-enum GMT_methods {GMT_IS_FILE, GMT_IS_STREAM, GMT_IS_FDESC, GMT_IS_COPY, GMT_IS_REF, GMT_IS_READONLY, GMT_N_METHODS};
+enum GMT_methods {
+	GMT_IS_FILE = 0,
+	GMT_IS_STREAM,
+	GMT_IS_FDESC,
+	GMT_IS_COPY,
+	GMT_IS_REF,
+	GMT_IS_READONLY,
+	GMT_N_METHODS
+};
 /* These methods are:
-	GMT_IS_FILE		0	Entity is a filename
-	GMT_IS_STREAM		1	Entity is an open stream
-	GMT_IS_FDESC		2	Entity is an open file descriptor
-	GMT_IS_COPY		3	Entity is a memory location that should be duplicated
-	GMT_IS_REF		4	Entity is a memory location and we just pass the ref (no copying)
-	GMT_IS_READONLY		5	As GMT_IS_REF, but we are not allowed to change the data in any way.
-	GMT_N_METHODS		6	Number of methods we recognize
+	GMT_IS_FILE       0   Entity is a filename
+	GMT_IS_STREAM     1   Entity is an open stream
+	GMT_IS_FDESC      2   Entity is an open file descriptor
+	GMT_IS_COPY       3   Entity is a memory location that should be duplicated
+	GMT_IS_REF        4   Entity is a memory location and we just pass the ref (no copying)
+	GMT_IS_READONLY   5   As GMT_IS_REF, but we are not allowed to change the data in any way.
+	GMT_N_METHODS     6   Number of methods we recognize
 */
 /* But Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 
@@ -63,29 +71,47 @@ enum GMT_methods {GMT_IS_FILE, GMT_IS_STREAM, GMT_IS_FDESC, GMT_IS_COPY, GMT_IS_
 #define GMT_VIA_MATRIX		200
 
 /* These are the 5 families of data types */
-enum GMT_families {GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE, GMT_IS_VECTOR, GMT_IS_MATRIX, GMT_N_FAMILIES};
+enum GMT_families {
+	GMT_IS_DATASET = 0,
+	GMT_IS_TEXTSET,
+	GMT_IS_GRID,
+	GMT_IS_CPT,
+	GMT_IS_IMAGE,
+	GMT_IS_VECTOR,
+	GMT_IS_MATRIX,
+	GMT_N_FAMILIES
+};
 /* The families are:
-
-	GMT_IS_DATASET		0	Entity is data table
-	GMT_IS_TEXTSET		1	Entity is a Text table
-	GMT_IS_GRID		2	Entity is a GMT grid
-	GMT_IS_CPT		3	Entity is a CPT table
-	GMT_IS_IMAGE		4	Entity is a 1- or 3-layer unsigned char image
-  In addition, tese are used internally to hande interfacing with user data types:
-	GMT_IS_VECTOR		5	Entity is user vectors
-	GMT_IS_MATRIX		6	Entity is user matrix
-	GMT_N_FAMILIES		5	Number of families we recognize
+	GMT_IS_DATASET    0   Entity is data table
+	GMT_IS_TEXTSET    1   Entity is a Text table
+	GMT_IS_GRID       2   Entity is a GMT grid
+	GMT_IS_CPT        3   Entity is a CPT table
+	GMT_IS_IMAGE      4   Entity is a 1- or 3-layer unsigned char image
+	In addition, tese are used internally to hande interfacing with user data types:
+	GMT_IS_VECTOR     5   Entity is user vectors
+	GMT_IS_MATRIX     6   Entity is user matrix
+	GMT_N_FAMILIES    5   Number of families we recognize
 */
 
 /* There are 3 named columns */
-enum GMT_dimensions {GMT_X, GMT_Y, GMT_Z};
+enum GMT_dimensions {
+	GMT_X = 0,
+	GMT_Y,
+	GMT_Z
+};
 /* These columns are:
-	GMT_X			0	x or lon is in 0th column
-	GMT_Y			1	y or lat is in 1st column
-	GMT_Z			2	z is in 2nd column
+	GMT_X             0   x or lon is in 0th column
+	GMT_Y             1   y or lat is in 1st column
+	GMT_Z             2   z is in 2nd column
 */
-#ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
-enum GMT_geometries {GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE};
+#ifdef DEBUG    /* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
+enum GMT_geometries {
+	GMT_IS_TEXT = 0,
+	GMT_IS_POINT,
+	GMT_IS_LINE,
+	GMT_IS_POLY,
+	GMT_IS_SURFACE
+};
 #else
 #define GMT_IS_TEXT		0	/* GIS geometries (text here refers to just a line of text with no coordinates) */
 #define GMT_IS_POINT		1
@@ -168,13 +194,17 @@ enum GMT_geometries {GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS
 
 /* Error return codes */
 
-#define GMT_IO_TBL_HEADER	1	/* Return codes for GMT_ascii_input */
-#define GMT_IO_SEG_HEADER	2
-#define GMT_IO_MISMATCH		4
-#define GMT_IO_EOF		8
-#define GMT_IO_NAN		16
-#define GMT_IO_GAP		32
-#define GMT_IO_NEXT_FILE	64	/* Like EOF except for an individual file (with more files to follow) */
+enum GMT_ascii_input_return {
+	/* Return codes for GMT_ascii_input */
+	GMT_IO_TBL_HEADER = 1,
+	GMT_IO_SEG_HEADER = 2,
+	GMT_IO_MISMATCH   = 4,
+	GMT_IO_EOF        = 8,
+	GMT_IO_NAN        = 16,
+	GMT_IO_GAP        = 32,
+	/* Like EOF except for an individual file (with more files to follow): */
+	GMT_IO_NEXT_FILE  = 64
+};
 
 #define GMT_REC_IS_TBL_HEADER(C)	(C->current.io.status & GMT_IO_TBL_HEADER)
 #define GMT_REC_IS_SEG_HEADER(C)	(C->current.io.status & GMT_IO_SEG_HEADER)
@@ -191,7 +221,11 @@ enum GMT_geometries {GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS
 /* Array indices for input/output/stderr variables */
 
 #ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging only */
-enum GMT_io {GMT_IN, GMT_OUT, GMT_ERR};
+enum GMT_io {
+	GMT_IN = 0,
+	GMT_OUT,
+	GMT_ERR
+};
 #else
 #define GMT_IN	0
 #define GMT_OUT	1
