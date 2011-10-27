@@ -69,6 +69,7 @@
 #enable_testing()
 #set (DO_EXAMPLES TRUE)
 #set (DO_TESTS TRUE)
+# Number of parallel test jobs:
 #set (N_TEST_JOBS 4)
 
 # Extra debugging for developers:
