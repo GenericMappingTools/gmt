@@ -69,10 +69,10 @@ add_custom_target (check
 	--force-new-ctest-process -j${N_TEST_JOBS})
 
 # Add subdirectories
-add_subdirectory (doc EXCLUDE_FROM_ALL)
+add_subdirectory (doc)
 add_subdirectory (src)
 add_subdirectory (share) # share must be added *after* src (GSHHS_PATH)
-add_subdirectory (test EXCLUDE_FROM_ALL)
+add_subdirectory (test)
 
 # Configuration done
 message(
