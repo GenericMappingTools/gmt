@@ -1523,7 +1523,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			sprintf (format, "%%d\t%s\n", GMT->current.setting.format_float_out);
 			/* Sort eigenvalues into ascending order */
-			GMT_sort_array (GMT, eig, nm, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, eig, nm, GMTAPI_DOUBLE);
 			eig_max = eig[nm-1];
 			for (i = 0, j = nm-1; i < nm; i++, j--) fprintf (fp, format, i, eig[j] / eig_max);
 			GMT_fclose (GMT, fp);

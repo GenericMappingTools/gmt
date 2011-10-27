@@ -26,8 +26,7 @@
 #ifndef _GMT_INTERNALS_H
 #define _GMT_INTERNALS_H
 
-#define GMT_RE 0
-#define GMT_IM 1
+enum GMT_enum_cplx {GMT_RE = 0, GMT_IM = 1};	/* Real and imaginary indices */
 
 EXTERN_MSC void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_LONG do_minutes, GMT_LONG do_seconds, GMT_LONG lonlat, GMT_LONG worldmap);
 EXTERN_MSC GMT_LONG GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels);

@@ -137,7 +137,6 @@ extern "C" {
 #include "gmt_stat.h"      	/* extern functions defined in gmt_stat.c */
 #include "gmt_support.h"      	/* extern functions defined in gmt_support.c */
 #include "gmt_vector.h"      	/* extern functions defined in gmt_vector.c */
-#include "gmt_proj.h"      	/* Macros used in gmt_map.c and gmt_proj.c */
 
 #ifdef _OPENMP			/* Using open MP parallelization */
 #include "omp.h"

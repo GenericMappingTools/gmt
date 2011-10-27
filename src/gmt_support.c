@@ -455,9 +455,9 @@ GMT_LONG GMT_get_prime_factors (struct GMT_CTRL *C, GMT_LONG n, GMT_LONG *f)
  * 64-bit Ready.
  */
 
-#define BLK_X	0
-#define BLK_Y	1
-#define BLK_Z	2
+enum GMT_enum_blocks {BLK_X = 0, 
+	BLK_Y	= 1,
+	BLK_Z	= 2};
 
 struct BLK_DATA {
 	double	 a[4];	/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
@@ -537,12 +537,36 @@ int gmt_comp_float_asc (const void *p_1, const void *p_2)
 	return (0);
 }
 
+int gmt_comp_ulong_asc (const void *p_1, const void *p_2)
+{
+	/* Returns -1 if point_1 is < that point_2,
+	   +1 if point_2 > point_1, and 0 if they are equal
+	*/
+	GMT_ULONG *point_1 = (GMT_ULONG *)p_1, *point_2 = (GMT_ULONG *)p_2;
+
+	if ((*point_1) < (*point_2)) return (-1);
+	if ((*point_1) > (*point_2)) return (+1);
+	return (0);
+}
+
 int gmt_comp_long_asc (const void *p_1, const void *p_2)
 {
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
 	GMT_LONG *point_1 = (GMT_LONG *)p_1, *point_2 = (GMT_LONG *)p_2;
+
+	if ((*point_1) < (*point_2)) return (-1);
+	if ((*point_1) > (*point_2)) return (+1);
+	return (0);
+}
+
+int gmt_comp_uint_asc (const void *p_1, const void *p_2)
+{
+	/* Returns -1 if point_1 is < that point_2,
+	   +1 if point_2 > point_1, and 0 if they are equal
+	*/
+	unsigned int *point_1 = (unsigned int *)p_1, *point_2 = (unsigned int *)p_2;
 
 	if ((*point_1) < (*point_2)) return (-1);
 	if ((*point_1) > (*point_2)) return (+1);
@@ -561,12 +585,36 @@ int gmt_comp_int_asc (const void *p_1, const void *p_2)
 	return (0);
 }
 
+int gmt_comp_ushort_asc (const void *p_1, const void *p_2)
+{
+	/* Returns -1 if point_1 is < that point_2,
+	   +1 if point_2 > point_1, and 0 if they are equal
+	*/
+	unsigned short int *point_1 = (unsigned short int *)p_1, *point_2 = (unsigned short int *)p_2;
+
+	if ((*point_1) < (*point_2)) return (-1);
+	if ((*point_1) > (*point_2)) return (+1);
+	return (0);
+}
+
 int gmt_comp_short_asc (const void *p_1, const void *p_2)
 {
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
 	short int *point_1 = (short int *)p_1, *point_2 = (short int *)p_2;
+
+	if ((*point_1) < (*point_2)) return (-1);
+	if ((*point_1) > (*point_2)) return (+1);
+	return (0);
+}
+
+int gmt_comp_uchar_asc (const void *p_1, const void *p_2)
+{
+	/* Returns -1 if point_1 is < that point_2,
+	   +1 if point_2 > point_1, and 0 if they are equal
+	*/
+	unsigned char *point_1 = (unsigned char *)p_1, *point_2 = (unsigned char *)p_2;
 
 	if ((*point_1) < (*point_2)) return (-1);
 	if ((*point_1) > (*point_2)) return (+1);
@@ -586,9 +634,30 @@ int gmt_comp_char_asc (const void *p_1, const void *p_2)
 }
 
 void GMT_sort_array (struct GMT_CTRL *C, void *base, GMT_LONG n, GMT_LONG type)
-{	/* Front function to call qsort on char, short int, int, GMT_LONG, float or double array into ascending order */
-	size_t width[GMT_N_TYPES] = {sizeof(char), sizeof(short int), sizeof(int), sizeof(GMT_LONG), sizeof(float), sizeof(double)};
-	PFI compare[GMT_N_TYPES] = {gmt_comp_char_asc, gmt_comp_short_asc, gmt_comp_int_asc, gmt_comp_long_asc, gmt_comp_float_asc, gmt_comp_double_asc};
+{	/* Front function to call qsort on all <type> array into ascending order */
+	size_t width[GMTAPI_N_TYPES] = {
+		sizeof(unsigned char),		/* GMTAPI_CHAR */
+		sizeof(char),			/* GMTAPI_USHORT */
+		sizeof(unsigned short int),	/* GMTAPI_SHORT */
+		sizeof(short int),		/* GMTAPI_UINT */
+		sizeof(unsigned int),		/* GMTAPI_INT */
+		sizeof(int),			/* GMTAPI_LONG */
+		sizeof(GMT_ULONG),		/* GMTAPI_ULONG */
+		sizeof(GMT_LONG),		/* GMTAPI_FLOAT */
+		sizeof(float),			/* GMTAPI_DOUBLE */
+		sizeof(double)};		/* GMTAPI_TEXT */
+	PFI compare[GMTAPI_N_TYPES] = {
+		gmt_comp_uchar_asc,		/* GMTAPI_CHAR */
+		gmt_comp_char_asc,		/* GMTAPI_USHORT */
+		gmt_comp_ushort_asc,		/* GMTAPI_SHORT */
+		gmt_comp_short_asc,		/* GMTAPI_UINT */
+		gmt_comp_uint_asc,		/* GMTAPI_INT */
+		gmt_comp_int_asc,		/* GMTAPI_LONG */
+		gmt_comp_ulong_asc,		/* GMTAPI_ULONG */
+		gmt_comp_long_asc,		/* GMTAPI_FLOAT */
+		gmt_comp_float_asc,		/* GMTAPI_DOUBLE */
+		gmt_comp_double_asc};		/* GMTAPI_TEXT */
+		
 	qsort (base, (size_t)n, width[type], compare[type]);
 }
 
@@ -7695,7 +7764,7 @@ GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], GMT_LONG *
 						/* Assign as crossover the middle of the overlapping segments */
 						X->x[nx] = xa[xa_start];
 						y4[0] = ya[xa_start];	y4[1] = ya[xa_stop];	y4[2] = yb[xb_start];	y4[3] = yb[xb_stop];
-						GMT_sort_array (C, y4, 4, GMT_DOUBLE_TYPE);
+						GMT_sort_array (C, y4, 4, GMTAPI_DOUBLE);
 						if (y4[1] != y4[2]) {
 							X->y[nx] = 0.5 * (y4[1] + y4[2]);
 							X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
@@ -7786,7 +7855,7 @@ GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], GMT_LONG *
 						/* Assign as crossover the middle of the overlapping segments */
 						X->y[nx] = ya[xa_start];
 						x4[0] = xa[xa_start];	x4[1] = xa[xa_stop];	x4[2] = xb[xb_start];	x4[3] = xb[xb_stop];
-						GMT_sort_array (C, x4, 4, GMT_DOUBLE_TYPE);
+						GMT_sort_array (C, x4, 4, GMTAPI_DOUBLE);
 						if (x4[1] != x4[2]) {
 							X->x[nx] = 0.5 * (x4[1] + x4[2]);
 							X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
@@ -7882,7 +7951,7 @@ GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], GMT_LONG *
 						double x4[4];
 						/* Assign as possible crossover the middle of the overlapping segments */
 						x4[0] = xa[xa_start];	x4[1] = xa[xa_stop];	x4[2] = xb[xb_start];	x4[3] = xb[xb_stop];
-						GMT_sort_array (C, x4, 4, GMT_DOUBLE_TYPE);
+						GMT_sort_array (C, x4, 4, GMTAPI_DOUBLE);
 						if (x4[1] != x4[2]) {
 							xc = 0.5 * (x4[1] + x4[2]);
 							yc = slp_a * (xc - xa[xa_start]) + ya[xa_start];

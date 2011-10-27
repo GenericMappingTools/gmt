@@ -19,19 +19,10 @@
 #ifndef _GMT_SUPPORT_H
 #define _GMT_SUPPORT_H
 
-/* The 6 basic 1, 2, 4, 4|8, 4, 8-byte types */
-#define GMT_N_TYPES	6
-#define GMT_CHAR_TYPE	0
-#define GMT_SHORT_TYPE	1
-#define GMT_INT_TYPE	2
-#define GMT_LONG_TYPE	3
-#define GMT_FLOAT_TYPE	4
-#define GMT_DOUBLE_TYPE	5
-
 /* Return codes from GMT_inonout */
-#define GMT_OUTSIDE	0
-#define GMT_ONEDGE	1
-#define GMT_INSIDE	2
+enum GMT_enum_inside {GMT_OUTSIDE = 0,
+	GMT_ONEDGE,
+	GMT_INSIDE};
 
 /* Here are definition of MATH_MACRO and some functions used by grdmath and gmtmath */
 struct MATH_MACRO {

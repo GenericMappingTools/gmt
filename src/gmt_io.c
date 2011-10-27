@@ -2522,12 +2522,16 @@ GMT_LONG GMT_get_io_type (struct GMT_CTRL *C, char type)
 	GMT_LONG t = -1;
 	switch (type) {	/* Set read pointer depending on data format */
 		case 'a': case 'A': t = -1; break;		/* ASCII */
-		case 'c': case 'u': t = GMT_CHAR_TYPE; break;	/* Binary char */
-		case 'h': case 'H': t = GMT_SHORT_TYPE; break;	/* Binary unsigned short 2-byte integer */
-		case 'i': case 'I': t = GMT_INT_TYPE; break;	/* Binary 4-byte unsigned integer */
-		case 'l': case 'L': t = GMT_LONG_TYPE; break;	/* Binary 8-byte unsigned integer, 64-bit mode only */
-		case 'f': t = GMT_FLOAT_TYPE; break;		/* Binary 4-byte float */
-		case 'd': t = GMT_DOUBLE_TYPE; break;		/* Binary 8-byte double */
+		case 'u': t = GMTAPI_UCHAR; break;	/* Binary unsigned char */
+		case 'c': t = GMTAPI_CHAR; break;	/* Binary signed char */
+		case 'H': t = GMTAPI_USHORT; break;	/* Binary unsigned short 2-byte integer */
+		case 'h': t = GMTAPI_SHORT; break;	/* Binary signed short 2-byte integer */
+		case 'I': t = GMTAPI_UINT; break;	/* Binary 4-byte unsigned integer */
+		case 'i': t = GMTAPI_INT; break;	/* Binary 4-byte signed integer */
+		case 'L': t = GMTAPI_ULONG; break;	/* Binary 8-byte unsigned integer, 64-bit mode only */
+		case 'l': t = GMTAPI_LONG; break;	/* Binary 8-byte signed integer, 64-bit mode only */
+		case 'f': t = GMTAPI_FLOAT; break;		/* Binary 4-byte float */
+		case 'd': t = GMTAPI_DOUBLE; break;		/* Binary 8-byte double */
 		default:
 			GMT_report (C, GMT_MSG_FATAL, "%c not a valid data type!\n", type);
 			GMT_exit (EXIT_FAILURE);
@@ -5007,7 +5011,7 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, 
 	return (D);
 }
 
-void gmt_alloc_texttable (struct GMT_CTRL *C, struct GMT_TEXT_TABLE *Tin, struct GMT_TEXT_TABLE **Tout)
+struct GMT_TEXT_TABLE * gmt_alloc_texttable (struct GMT_CTRL *C, struct GMT_TEXT_TABLE *Tin)
 {
 	/* Allocate the new Text Table structure with same # of segments and rows/segment as input table. */
 	GMT_LONG seg, hdr;
@@ -5027,7 +5031,7 @@ void gmt_alloc_texttable (struct GMT_CTRL *C, struct GMT_TEXT_TABLE *Tin, struct
 		T->segment[seg]->n_rows = T->segment[seg]->n_alloc = Tin->segment[seg]->n_rows;
 		if (Tin->segment[seg]->header) T->segment[seg]->header = strdup (Tin->segment[seg]->header);
 	}
-	*Tout = T;
+	return (T);
 }
 
 struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, GMT_LONG mode)
@@ -5084,7 +5088,7 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 		D->n_segments  = Din->n_segments;	/* Same number of segments as input dataset */
 		D->n_records  = Din->n_records;		/* Same number of records as input dataset */
 		D->table = GMT_memory (C, NULL, D->n_tables, struct GMT_TEXT_TABLE *);
-		for (tbl = 0; tbl < D->n_tables; tbl++) gmt_alloc_texttable (C, Din->table[tbl], &D->table[tbl]);
+		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl] = gmt_alloc_texttable (C, Din->table[tbl]);
 	}
 	return (D);
 }

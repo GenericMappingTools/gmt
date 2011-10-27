@@ -204,7 +204,7 @@ GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char
 	GMT_memcpy (pad, Grid->header->pad, 4, GMT_LONG);	/* Save the original pad */
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
 	if (outfile) Orig = GMT_duplicate_grid (GMT, Grid, TRUE); /* Must keep original if readonly */
-	GMT_sort_array (GMT, Grid->data, Grid->header->nm, GMT_FLOAT_TYPE);
+	GMT_sort_array (GMT, Grid->data, Grid->header->nm, GMTAPI_FLOAT);
 	
 	nxy = Grid->header->nm;
 	while (nxy > 0 && GMT_is_fnan (Grid->data[nxy-1])) nxy--;	/* Only deal with real numbers */

@@ -190,7 +190,7 @@ double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_LON
 
 	if (norm == 1) {
 		for (i = 0; i < ndata; i++) work[i] = d_acos (GMT_dot3v (GMT, &data[i].x[0], pole));
-		GMT_sort_array (GMT, work, ndata, GMT_DOUBLE_TYPE);
+		GMT_sort_array (GMT, work, ndata, GMTAPI_DOUBLE);
 		*circle_distance = (ndata%2) ?  work[ndata/2] : 0.5 * (work[(ndata/2)-1] + work[ndata/2]);
 	}
 	else {

@@ -27,19 +27,18 @@
 #ifndef _GMT_COMMON_H
 #define _GMT_COMMON_H
 
-/* Macros related to detecting data gaps which should be treated as segment boundaries */
-#define GMT_N_GAP_METHODS	10
-
-#define GMT_NEGGAP_IN_COL	1
-#define GMT_POSGAP_IN_COL	2
-#define GMT_ABSGAP_IN_COL	3
-#define GMT_NEGGAP_IN_MAP_COL	4
-#define GMT_POSGAP_IN_MAP_COL	5
-#define GMT_ABSGAP_IN_MAP_COL	6
-#define GMT_GAP_IN_GDIST	7
-#define GMT_GAP_IN_CDIST	8
-#define GMT_GAP_IN_PDIST	9
-#define GMT_GAP_IN_DDIST	10
+/* Constants related to detecting data gaps which should be treated as segment boundaries */
+enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current column value exceeds <gap> */
+	GMT_POSGAP_IN_COL,			/* Check if current minus previous column value exceeds <gap> */
+	GMT_ABSGAP_IN_COL,			/* Check if |current minus previous column value| exceeds <gap> */
+	GMT_NEGGAP_IN_MAP_COL,			/* Check if previous minus current column value exceeds <gap> after map projection */
+	GMT_POSGAP_IN_MAP_COL,			/* Check if current minus previous column value exceeds <gap> after map projection */
+	GMT_ABSGAP_IN_MAP_COL,			/* Check if |current minus previous column value| exceeds <gap> after map projection */
+	GMT_GAP_IN_GDIST,			/* Check if great-circle distance between successive points exceeds <gap> (in km,m,nm, etc)*/
+	GMT_GAP_IN_CDIST,			/* Check if Cartesian distance between successive points exceeds <gap> */
+	GMT_GAP_IN_PDIST,			/* Check if Cartesian distance between successive points exceeds <gap> after map projection */
+	GMT_GAP_IN_DDIST,			/* Check if great-circle distance between successive points exceeds <gap> (in arc degrees,min,sec) */
+	GMT_N_GAP_METHODS};
 
 #define MAX_ASPATIAL 64		/* No more than 64 aspatial options in -a */
 
@@ -124,7 +123,7 @@ struct GMT_COMMON {
 		GMT_LONG n_methods;			/* How many different criteria to apply */
 		GMT_LONG n_col;				/* Largest column-number needed to be read */
 		GMT_LONG match_all;			/* If TRUE then all specified criteria must be met to be a gap [default is any of them] */
-		GMT_LONG method[GMT_N_GAP_METHODS];	/* How distances are computed for each criteria */
+		enum GMT_enum_gaps method[GMT_N_GAP_METHODS];	/* How distances are computed for each criteria */
 		GMT_LONG col[GMT_N_GAP_METHODS];	/* Which column to use (-1 for x,y distance) */
 		double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
 		PFD get_dist[GMT_N_GAP_METHODS];	/* Pointers to functiosn that compute those distances */

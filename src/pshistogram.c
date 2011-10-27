@@ -255,7 +255,7 @@ GMT_LONG get_loc_scl (struct GMT_CTRL *GMT, double *data, GMT_LONG n, double *st
 
 	if (n < 3) return (-1);
 
-	GMT_sort_array (GMT, data, n, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, data, n, GMTAPI_DOUBLE);
 
 	/* Get median */
 	j = n/2;
