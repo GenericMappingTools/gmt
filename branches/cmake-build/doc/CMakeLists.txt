@@ -51,6 +51,7 @@ if (PDFLATEX_COMPILER)
 	set (_common_depends
 		copy_tex_depends
 		pdf_figures
+		copy_other_figures
 		verbatim_examples
 		verbatim_scripts)
 
@@ -71,6 +72,7 @@ if (PDFLATEX_COMPILER)
 
 	# Make PDF figures
 	add_subdirectory (fig)
+	add_subdirectory (ppt) # must be added after fig
 
 	# GMT_Docs.pdf
 	add_latex_document (GMT_Docs.tex
