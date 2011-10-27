@@ -42,7 +42,7 @@ function make_pdf()
 function on_exit()
 {
   make_pdf
-  rm -f .gmt* gmt.conf
+  rm -f .gmt* gmt.conf example.lock
   echo "exit status: ${ERROR}"
   exit ${ERROR}
 }
@@ -56,6 +56,10 @@ function on_err()
   on_exit
 }
 trap on_err ERR SIGSEGV SIGTRAP SIGBUS
+
+# Create lockfile (needed for running parallel tasks in the same directory).
+# Timeout and remove lockfile after 240 seconds.
+lockfile -5 -l 240 example.lock
 
 # Start with proper GMT defaults
 gmtset -Du FORMAT_TIME_LOGO "Version 5"
