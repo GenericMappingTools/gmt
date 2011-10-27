@@ -48,26 +48,6 @@ macro (SCRIPT_TO_VERBATIM)
 		file (WRITE ${_verbatim_file} "${_verbatim_txt}")
 endmacro (SCRIPT_TO_VERBATIM)
 
-# # copy example files to build dir
-# #macro (COPY_EXAMPLE_FILES)
-# file (GLOB_RECURSE _example_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
-# list_regex_get ("[.]svn/|[.]cmake|CMakeLists.txt" _example_files ${_example_files} INVERT)
-# #message ("f>${_example_files}")
-# set (_test_files)
-# foreach (_file ${_example_files})
-# 	add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_file}
-# 		COMMAND ${CMAKE_COMMAND}
-# 		-E copy_if_different
-# 		${CMAKE_CURRENT_SOURCE_DIR}/${_file}
-# 		${CMAKE_CURRENT_BINARY_DIR}/${_file})
-# 	list (APPEND _test_files ${CMAKE_CURRENT_BINARY_DIR}/${_file})
-# endforeach (_file ${_example_files})
-# #endmacro (COPY_EXAMPLE_FILES)
-# #copy_example_files()
-# add_custom_target (check
-# 	COMMAND ${CMAKE_CTEST_COMMAND}
-# 	DEPENDS ${_test_files})
-
 macro (SETUP)
 	# List of output verbatime files for inclusion in LaTeX doc
 	set (_all_verbatim)

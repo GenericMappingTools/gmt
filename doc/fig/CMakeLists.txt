@@ -17,6 +17,9 @@
 #-------------------------------------------------------------------------------
 
 # Figure files
+set (_copy_only_figures GMT4_mode.png GMT5_Summit_2011.png GMT5_mode.png
+	gimp-panel.png gimp-sliders.png hsv-cone.png)
+
 set (_doc_figures GMT_-B_custom.ps GMT_-B_geo_1.ps GMT_-B_geo_2.ps
 	GMT_-B_linear.ps GMT_-B_log.ps GMT_-B_pow.ps GMT_-B_time1.ps GMT_-B_time2.ps
 	GMT_-B_time3.ps GMT_-B_time4.ps GMT_-B_time5.ps GMT_-B_time6.ps
@@ -52,6 +55,17 @@ set (_example_figures anim_01.ps anim_02.ps
 	example_23.ps example_24.ps example_25.ps example_26.ps example_27.ps
 	example_28.ps example_29.ps example_30.ps example_31.ps example_32.ps)
 
+# Copy figures without converting
+foreach (_fig ${_copy_only_figures})
+	add_custom_command (OUTPUT ${_fig}
+		COMMAND ${CMAKE_COMMAND}
+		-E copy_if_different
+		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+		${_fig}
+		DEPENDS ${_fig})
+endforeach (_fig ${_copy_only_figures})
+add_custom_target (copy_other_figures DEPENDS ${_copy_only_figures})
+
 # Convert figures to PDF
 macro (_ps2raster _filename)
 	set(_ADJUST_BB -A)
@@ -72,8 +86,8 @@ macro (_ps2raster _filename)
 		-D${CMAKE_CURRENT_BINARY_DIR}
 		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS ps2raster ${_fig}
-		COMMENT "Generating ${_pdf_fig}")
+		DEPENDS ps2raster ${_fig})
+	#COMMENT "Generating ${_pdf_fig}")
 endmacro (_ps2raster _filename)
 
 set (_pdf_figures)
