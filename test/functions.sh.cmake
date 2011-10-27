@@ -68,7 +68,7 @@ ERROR=0
 # Make sure to cleanup at end
 function on_exit()
 {
-  rm -f .gmt* gmt.conf
+  rm -f .gmt* gmt.conf test.lock
   echo "exit status: ${ERROR}"
   exit ${ERROR}
 }
@@ -82,6 +82,10 @@ function on_err()
   on_exit
 }
 trap on_err ERR SIGSEGV SIGTRAP SIGBUS
+
+# Create lockfile (needed for running parallel tests).
+# Timeout and remove lockfile after 180 seconds.
+lockfile -5 -l 180 test.lock
 
 # Start with proper GMT defaults
 gmtset -Du
