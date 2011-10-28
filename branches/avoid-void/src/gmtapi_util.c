@@ -2786,7 +2786,8 @@ GMT_LONG GMT_Put_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method
 
 	/* Update the pointer in the object so we can destroy the data later */
 	if ((error = GMTAPI_Validate_ID (API, family, out_ID, GMT_OUT, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
-	if (!API->object[item]->data && method > GMT_IS_FDESC) API->object[item]->data = data;	/* Save pointer to memory we wrote to */
+	//if (!API->object[item]->data && method > GMT_IS_FDESC) API->object[item]->data = data;	/* Save pointer to memory we wrote to */
+	if (!API->object[item]->data) API->object[item]->data = data;	/* Save pointer to memory we wrote to */
 	
 	return (GMT_Report_Error (API, GMT_OK));	/* Return status */
 }
