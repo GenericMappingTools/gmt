@@ -908,6 +908,8 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 	else {	/* Found one or more tables */
 		if (allocate && D->n_tables < n_alloc) D->table = GMT_memory (API->GMT, D->table, D->n_tables, struct GMT_TABLE *);
 		D->n_columns = D->table[0]->n_columns;
+		if ((D->min = GMT_memory (API->GMT, NULL, D->n_columns, double)) == NULL) return (NULL);
+		if ((D->max = GMT_memory (API->GMT, NULL, D->n_columns, double)) == NULL) return (NULL);
 	}
 
 	return (D);		
