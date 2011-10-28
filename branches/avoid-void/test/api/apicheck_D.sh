@@ -3,10 +3,7 @@
 
 . ../functions.sh
 function dataset_check {
-	echo testapi -I$1 -W$2 -Td
 	testapi -I$1 -W$2 -Td
-	echo "$1 $2" >> crap
-	diff -q --strip-trailing-cr dtest[io].txt >> crap
 	diff -q --strip-trailing-cr dtest[io].txt >> fail
 }
 header "Test the API for various DATASET i/o combinations"
