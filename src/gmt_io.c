@@ -5438,6 +5438,15 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 	return (T);
 }
 
+void GMT_copy_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sout, struct GMT_LINE_SEGMENT *Sin)
+{	/* Duplicates the segment */
+	GMT_LONG col;
+	for (col = 0; col < Sin->n_columns; col++) GMT_memcpy (Sout->coord[col], Sin->coord[col], Sin->n_rows, double);
+	GMT_memcpy (Sout->min, Sin->min, Sin->n_columns, double);
+	GMT_memcpy (Sout->max, Sin->max, Sin->n_columns, double);
+	Sout->n_rows = Sin->n_rows;
+}
+
 struct GMT_LINE_SEGMENT * GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin)
 {	/* Duplicates the segment */
 	GMT_LONG col;
@@ -5520,9 +5529,15 @@ struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATAS
 	GMT_LONG tbl, seg;
 	struct GMT_DATASET *D = NULL;
 	D = GMT_alloc_dataset (C, Din, n_columns, 0, mode);
-	//for (tbl = 0; tbl < Din->n_tables; tbl++) for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
-	//	D->table[tbl]->segment[seg] = GMT_duplicate_segment (C, Din->table[tbl]->segment[seg]);
-	//}
+	GMT_memcpy (D->min, Din->min, Din->n_columns, double);
+	GMT_memcpy (D->max, Din->max, Din->n_columns, double);
+	for (tbl = 0; tbl < Din->n_tables; tbl++) {
+		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
+			GMT_copy_segment (C, D->table[tbl]->segment[seg], Din->table[tbl]->segment[seg]);
+		}
+		GMT_memcpy (D->table[tbl]->min, Din->table[tbl]->min, Din->table[tbl]->n_columns, double);
+		GMT_memcpy (D->table[tbl]->max, Din->table[tbl]->max, Din->table[tbl]->n_columns, double);
+	}
 	return (D);
 }
 
