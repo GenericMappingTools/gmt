@@ -182,7 +182,7 @@ GMT_LONG GMT_grdedit_parse (struct GMTAPI_CTRL *C, struct GRDEDIT_CTRL *Ctrl, st
 GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* High-level function that implements the grdedit task */
 
-	GMT_LONG row, col, n_fields, error, n_data, k, out_ID = 0;
+	GMT_LONG row, col, n_fields, error, n_data, k;
 	
 	double shift_amount = 0.0, *in = NULL;
 
@@ -215,11 +215,6 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		Return (EXIT_FAILURE);
 	}
 
-	if (Ctrl->N.active && GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IN, Ctrl->N.file, NULL, &out_ID)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Unable to register file %s\n", Ctrl->N.file);
-		Return (EXIT_FAILURE);
-	}
-	
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 	if ((G = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) 
 		Return (API->error);	/* Get header only */
@@ -262,13 +257,18 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->In.file, G);
 	}
 	else if (Ctrl->N.active) {
+		GMT_LONG in_ID = 0;
 		GMT_report (GMT, GMT_MSG_NORMAL, "Replacing nodes using xyz values from file %s\n", Ctrl->N.file);
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file, G)) Return (API->error);	/* Get data */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) Return (API->error);	/* Get data */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
+		if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IN, Ctrl->N.file, NULL, &in_ID)) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Unable to register file %s\n", Ctrl->N.file);
+			Return (EXIT_FAILURE);
+		}
+
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
-		if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);		/* Enables data input and sets access mode */
 
 		n_data = 0;
 		while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
