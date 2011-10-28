@@ -364,8 +364,7 @@ The basic registration machinery involves a direct or indirect call to
 
 \begin{verbatim}
 GMT_Register_IO (struct GMTAPI_CTRL *API, long family, long method, \
-   long geometry, long direction, void *ptr, double wesn[], \
-   void *data, long *ID)
+   long geometry, long direction, void *ptr, double wesn[], long *ID)
 \end{verbatim}
 where \texttt{family} specifies what kind of resource is to be registered
 (see Table \ref{tbl:family} for list of all families), \texttt{method} specifies
@@ -377,7 +376,6 @@ the geometry of the data (see Table \ref{tbl:geometry} for recognized geometries
 For GMT\_IS\_GMTGRID resources you may request to obtain a subset via the \texttt{wesn}
 array (see Table~\ref{tbl:wesn} for information); otherwise, pass NULL to obtain the entire grid.
 The \texttt{direction} indicates input or output and is either GMT\_IN (0) or GMT\_OUT (1).
-The data set is associated with the \texttt{ptr}.
 Finally, the function returns a unique resource ID via the \texttt{ID} parameter.
 
 If registered resources are to be given as program arguments you will need to pass them via

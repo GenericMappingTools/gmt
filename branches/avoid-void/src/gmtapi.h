@@ -97,7 +97,7 @@ struct GMT_OPTION {
 /* 14 Primary API functions */
 EXTERN_MSC GMT_LONG GMT_Create_Session	(struct GMTAPI_CTRL **C, char *tag, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_Destroy_Session	(struct GMTAPI_CTRL **C);
-EXTERN_MSC GMT_LONG GMT_Register_IO	(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, GMT_LONG direction, void *resource, double wesn[], void *data, GMT_LONG *object_ID);
+EXTERN_MSC GMT_LONG GMT_Register_IO	(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, GMT_LONG direction, void *resource, double wesn[], GMT_LONG *object_ID);
 EXTERN_MSC GMT_LONG GMT_Init_IO		(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG geometry, GMT_LONG direction, GMT_LONG mode, struct GMT_OPTION *head);
 EXTERN_MSC GMT_LONG GMT_Begin_IO	(struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_End_IO		(struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode);

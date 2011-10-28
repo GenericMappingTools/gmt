@@ -954,9 +954,9 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_LONG object_ID, status = 0;			/* Status code from GMT API */
 			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[GMT_BUFSIZ];
 			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
-			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Gout, NULL, Gout, &object_ID)) Return (EXIT_FAILURE);
+			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Gout, NULL, &object_ID)) Return (EXIT_FAILURE);
 			GMT_Encode_ID (API, in_string, object_ID);	/* Make filename with embedded object ID for grid Gout */
-			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &L, NULL, L, &object_ID)) Return (EXIT_FAILURE);
+			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &L, NULL, &object_ID)) Return (EXIT_FAILURE);
 			GMT_Encode_ID (GMT->parent, out_string, object_ID);	/* Make filename with embedded object ID for result grid L */
 			sprintf (cmd, "%s -G%s -R%s -V%ld", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
