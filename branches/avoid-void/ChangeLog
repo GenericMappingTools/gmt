@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-10-28	pwessel		API finalized.  Simplified by eliminating unneeded arguments
+				to GMT_Create_Data, GMT_Register_IO, and let all functions that
+				produce objects (Create, Get) return a pointer to those objects.
+
 2011-10-17	pwessel
 	* gmtapi*.[ch]:		API modified to eliminate any void ** references or variables.
 				API abstraction-layer functions now take void * instead and no

@@ -5192,6 +5192,10 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, GMT_LONG n_tables, 
 	
 	if ((D = GMT_memory (C, NULL, 1, struct GMT_DATASET)) == NULL) return (NULL);
 	D->n_columns = n_columns;
+	if (n_columns) {
+		if ((D->min = GMT_memory (C, NULL, n_columns, double)) == NULL) return (NULL);
+		if ((D->max = GMT_memory (C, NULL, n_columns, double)) == NULL) return (NULL);
+	}
 	if ((D->table = GMT_memory (C, NULL, n_tables, struct GMT_TABLE *)) == NULL) return (NULL);
 	D->n_tables = D->n_alloc = n_tables;
 	if (n_segments > 0) D->n_segments = D->n_tables * n_segments;
@@ -5473,6 +5477,8 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 	struct GMT_DATASET *D = GMT_memory (C, NULL, 1, struct GMT_DATASET);
 	
 	D->n_columns = (n_columns) ? n_columns : Din->n_columns;
+	D->min = GMT_memory (C, NULL, D->n_columns, double);
+	D->max = GMT_memory (C, NULL, D->n_columns, double);
 	if (mode) {	/* Pack everything into a single table */
 		D->n_tables = D->n_alloc = 1;
 		if (mode == 1)
@@ -5595,6 +5601,8 @@ void GMT_free_dataset_ptr (struct GMT_CTRL *C, struct GMT_DATASET *data)
 	for (tbl = 0; tbl < data->n_tables; tbl++) {
 		GMT_free_table (C, data->table[tbl]);
 	}
+	GMT_free (C, data->min);
+	GMT_free (C, data->max);
 	GMT_free (C, data->table);
 	for (k = 0; k < 2; k++) if (data->file[k]) free (data->file[k]);
 }

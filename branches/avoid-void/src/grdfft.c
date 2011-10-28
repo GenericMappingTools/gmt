@@ -1130,6 +1130,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, stop, op_count = 0, par_count = 0, status;
 	GMT_LONG narray[2], i, j, i_data_start, j_data_start, new_grid;
+	
 
 	struct GMT_GRID *GridA = NULL, *Out = NULL;
 	struct F_INFO f_info;
@@ -1197,7 +1198,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (j = 0; j < 4; j++) GridA->header->BC[j] = GMT_BC_IS_DATA;
 
 	/* Now read data into the real positions in the padded complex radix grid */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, Ctrl->In.file, GridA) == NULL) Return (API->error);	/* Get subset */
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, Ctrl->In.file[0], GridA) == NULL) Return (API->error);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
 	/* Check that no NaNs are present */
