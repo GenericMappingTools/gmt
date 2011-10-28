@@ -80,7 +80,8 @@ enum GMT_enum_geometries {GMT_IS_TEXT = 0,
 	GMT_IS_POINT,
 	GMT_IS_LINE,
 	GMT_IS_POLY,
-	GMT_IS_SURFACE};
+	GMT_IS_SURFACE,
+	GMT_N_GEOMETRIES};
 
 /* These are two polygon modes */
 enum GMT_enum_pol {GMT_IS_PERIMETER = 0,

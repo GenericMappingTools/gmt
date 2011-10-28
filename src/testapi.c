@@ -213,7 +213,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->I.via == GMT_VIA_MATRIX) {	/* We will use a matrix in memory as data source */
 		M = GMT_Create_Data (API, GMT_IS_MATRIX, NULL);
 		if (Ctrl->T.mode == GMT_IS_DATASET) {	/* Mimic the dtest.txt table */
-			M->n_rows = 9;	M->n_columns = 2;	M->n_layers = 1;	M->dim = 9;	M->type = GMTAPI_INT;	M->size = M->n_rows * M->n_columns * M->n_layers;
+			M->n_rows = 9;	M->n_columns = 2;	M->n_layers = 1;	M->dim = 9;	M->type = GMTAPI_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
 			for (k = 0; k < M->n_rows; k++) {
 				fdata[2*k] = (float)k;	fdata[2*k+1] = (float)k*10;
@@ -221,12 +221,12 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			fdata[0] = fdata[1] = fdata[8] = fdata[9] = GMT->session.f_NaN;
 		}
 		else {	/* Mimic the gtest.nc grid as table */
-			M->n_rows = 6;	M->n_columns = 6;	M->n_layers = 1;	M->dim = 6;	M->type = GMTAPI_INT;	M->size = M->n_rows * M->n_columns * M->n_layers;
+			M->n_rows = 6;	M->n_columns = 6;	M->n_layers = 1;	M->dim = 6;	M->type = GMTAPI_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			M->limit[XLO] = 0.0;	M->limit[XHI] = 5.0;	M->limit[YLO] = 0.0;	M->limit[YHI] = 5.0;	M->limit[4] = 0.0;	M->limit[5] = 25.0;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
 			for (k = 0; k < M->size; k++) fdata[k] = (float)((int)(k%M->n_columns + (M->n_columns - 1 - k/M->n_columns) * M->n_rows));
 		}
-		M->data.si4 = fdata;
+		M->data.f4 = fdata;
 	}
 	else if (Ctrl->I.via == GMT_VIA_VECTOR) {	/* We will use vectors in memory as data source */
 		V = GMT_Create_Data (API, GMT_IS_VECTOR, par);
@@ -252,13 +252,13 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, 0);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 	switch (Ctrl->I.mode) {
 		case GMT_IS_FILE:	/* Pass filename */
-			error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, ifile[Ctrl->T.mode], NULL, NULL, &in_ID);
+			error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, ifile[Ctrl->T.mode], NULL, &in_ID);
 			break;
 		case GMT_IS_STREAM:
 			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
 					fp = GMT_fopen (GMT, ifile[Ctrl->T.mode], "r");
-					error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, fp, NULL, NULL, &in_ID);
+					error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, fp, NULL, &in_ID);
 					break;
 				default:
 					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_STREAM only allows d, t, c!\n");
@@ -271,7 +271,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
 					fd = open (ifile[Ctrl->T.mode], O_RDONLY);
 					fdp = &fd;
-					error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, fdp, NULL, NULL, &in_ID);
+					error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, fdp, NULL, &in_ID);
 					break;
 				default:
 					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_FDESC only allows d, t, c!\n");
@@ -292,7 +292,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					break;
 			}
 			error += API->error;
-			error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, &Intmp, NULL, Intmp, &in_ID);
+			error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, &Intmp, NULL, &in_ID);
 			break;
 		default:
 			GMT_report (GMT, GMT_MSG_FATAL, "Bad Input mode\n");
@@ -312,7 +312,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	if (Ctrl->T.mode == GMT_IS_IMAGE) {	/* Since writing is not supported we just make a plot via GMT_psimage */
 		char buffer[GMT_BUFSIZ];
-		error += GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_REF, geometry[Ctrl->T.mode], GMT_IN, In, NULL, In, &in_ID);
+		error += GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_REF, geometry[Ctrl->T.mode], GMT_IN, &In, NULL, &in_ID);
 		GMT_Encode_ID (API, string, in_ID);	/* Make filename with embedded object ID */
 		sprintf (buffer, "%s -W6i -P -F0.25p --PS_MEDIA=letter --PS_CHAR_ENCODING=Standard+", string);
 		error += GMT_psimage (API, 0, buffer);	/* Plot the image */
@@ -325,13 +325,13 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	switch (Ctrl->W.mode) {
 		case GMT_IS_FILE:	/* Pass filename */
-			error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, ofile[Ctrl->T.mode], NULL, NULL, &out_ID);
+			error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, ofile[Ctrl->T.mode], NULL, &out_ID);
 			break;
 		case GMT_IS_STREAM:
 			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
 					fp = GMT_fopen (GMT, ofile[Ctrl->T.mode], "w");
-					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, fp, NULL, NULL, &out_ID);
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, fp, NULL, &out_ID);
 					break;
 				default:
 					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_STREAM only allows d, t, c!\n");
@@ -349,7 +349,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					fd = open (ofile[Ctrl->T.mode], O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
 #endif
 					fdp = &fd;
-					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, fdp, NULL, NULL, &out_ID);
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, fdp, NULL, &out_ID);
 					break;
 				default:
 					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_FDESC only allows d, t, c!\n");
@@ -360,13 +360,13 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		case GMT_IS_COPY: case GMT_IS_REF:
 			switch (Ctrl->W.via) {
 				case GMT_VIA_MATRIX:	/* Put the dataset|grid via a user matrix */
-					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, Out, &out_ID);
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, &out_ID);
 					break;
 				case GMT_VIA_VECTOR:	/* Put the dataset|grid via a user vector */
-					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, Out, &out_ID);
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, &out_ID);
 					break;
 				default:
-					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, Out, &out_ID);
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, &out_ID);
 					break;
 			}
 			break;
