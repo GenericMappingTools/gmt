@@ -3371,7 +3371,7 @@ GMT_LONG gmt_scanf_clock (struct GMT_CTRL *C, char *s, double *val)
 	if (k == 0) return (-1);
 	if (hh < 0 || hh > hh_limit) return (-1);
 
-	x = (double)(add_noon + 3600*hh);
+	x = (float)(add_noon + 3600*hh);
 	if (k > 1) {
 		if (mm < 0 || mm > 59) return (-1);
 		x += 60*mm;
