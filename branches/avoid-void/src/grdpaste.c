@@ -277,45 +277,44 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_set_grddim (GMT, C->header);
 	C->data = GMT_memory (GMT, NULL, C->header->size, float);
 	A->data = B->data = C->data;	/* A and B share the same final matrix declared for C */
-	A->header->size = B->header->size = C->header->size;	/* Set A & B's nm,size to the same as C */
-	A->header->nm = B->header->nm = C->header->nm;
+	A->header->size = B->header->size = C->header->size;	/* Set A & B's size to the same as C */
 	A->header->no_BC = B->header->no_BC = TRUE;	/* We must disable the BC machinery */
 
 	switch (way) {      /* How A and B are positioned relative to each other */
 		case 1:         /* B is on top of A */
 		case 11:        /* B is on top of A but their pixel reg limits overlap by one cell */
 			GMT->current.io.pad[YHI] = B->header->ny - one_or_zero + 2;
-			if (way == 11) GMT->current.io.pad[YHI] -= 1;
+			if (way == 11) GMT->current.io.pad[YHI] -= 1;	GMT_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file[0], A) == NULL) Return (API->error);	/* Get data from A */
 			GMT->current.io.pad[YHI] = 2;	GMT->current.io.pad[YLO] = A->header->ny - one_or_zero + 2;
-			if (way == 11) GMT->current.io.pad[YLO] -= 1;
+			if (way == 11) GMT->current.io.pad[YLO] -= 1;	GMT_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file[1], B) == NULL) Return (API->error);	/* Get data from B */
 			break;
 		case 2:         /* A is on top of B */
 		case 22:        /* A is on top of B but their pixel reg limits overlap by one cell */
 			GMT->current.io.pad[YLO] = B->header->ny - one_or_zero + 2;
-			if (way == 22) GMT->current.io.pad[YLO] -= 1;
+			if (way == 22) GMT->current.io.pad[YLO] -= 1;	GMT_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file[0], A) == NULL) Return (API->error);	/* Get data from A */
 			GMT->current.io.pad[YLO] = 2;	GMT->current.io.pad[YHI] = A->header->ny - one_or_zero + 2;
-			if (way == 22) GMT->current.io.pad[YHI] -= 1;
+			if (way == 22) GMT->current.io.pad[YHI] -= 1;	GMT_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file[1], B) == NULL) Return (API->error);	/* Get data from B */
 			break;
 		case 3:         /* A is on the right of B */
 		case 33:        /* A is on right of B but their pixel reg limits overlap by one cell */
 			GMT->current.io.pad[XLO] = B->header->nx - one_or_zero + 2;
-			if (way == 33) GMT->current.io.pad[XLO] -= 1;
+			if (way == 33) GMT->current.io.pad[XLO] -= 1;	GMT_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file[0], A) == NULL) Return (API->error);	/* Get data from A */
 			GMT->current.io.pad[XLO] = 2;	GMT->current.io.pad[XHI] = A->header->nx - one_or_zero + 2;
-			if (way == 33) GMT->current.io.pad[XHI] -= 1;
+			if (way == 33) GMT->current.io.pad[XHI] -= 1;	GMT_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file[1], B) == NULL) Return (API->error);	/* Get data from B */
 			break;
 		case 4:         /* A is on the left of B */
 		case 44:        /* A is on left of B but their pixel reg limits overlap by one cell */
 			GMT->current.io.pad[XHI] = B->header->nx - one_or_zero + 2;
-			if (way == 44) GMT->current.io.pad[XHI] -= 1;
+			if (way == 44) GMT->current.io.pad[XHI] -= 1;	GMT_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file[0], A) == NULL) Return (API->error);	/* Get data from A */
 			GMT->current.io.pad[XHI] = 2;	GMT->current.io.pad[XLO] = A->header->nx - one_or_zero + 2;
-			if (way == 44) GMT->current.io.pad[XLO] -= 1;
+			if (way == 44) GMT->current.io.pad[XLO] -= 1;	GMT_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file[1], B) == NULL) Return (API->error);	/* Get data from B */
 			break;
 	}
