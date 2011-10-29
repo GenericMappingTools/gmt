@@ -248,7 +248,9 @@
 /*                                                                           */
 /*****************************************************************************/
 
+#ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wuninitialized"
+#endif
 
 struct triangulateio {
   REAL *pointlist;                                               /* In / out */

@@ -98,7 +98,44 @@ install (DIRECTORY examples
 	USE_SOURCE_PERMISSIONS
 	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
-	PATTERN ".cmake" EXCLUDE)
+	REGEX ".cmake$" EXCLUDE)
+
+# Create and install pdf manpages file (if available)
+if (_manfiles_ps AND PS2PDF_CONVERTER)
+	# create file with list of PS manpages
+	set (_manfiles_ps_relative)
+	foreach (_manfile ${_manfiles_ps})
+		file(RELATIVE_PATH _rel_path ${CMAKE_CURRENT_BINARY_DIR} ${_manfile})
+		list (APPEND _manfiles_ps_relative ${_rel_path})
+	endforeach (_manfile ${_manfiles_ps})
+	foreach (_manfile ${_manfiles_suppl_ps})
+		file(RELATIVE_PATH _rel_path ${CMAKE_CURRENT_BINARY_DIR} ${_manfile})
+		list (APPEND _manfiles_suppl_ps_relative ${_rel_path})
+	endforeach (_manfile ${_manfiles_suppl_ps})
+	string (REPLACE ";" "\n" _manfiles_ps_relative "${_manfiles_ps_relative}")
+	string (REPLACE ";" "\n" _manfiles_suppl_ps_relative "${_manfiles_suppl_ps_relative}")
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/manfiles_ps.list ${_manfiles_ps_relative})
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/manfiles_suppl_ps.list ${_manfiles_suppl_ps_relative})
+
+	# using the list, concatenate PS manpages and convert to PDF
+	add_custom_command (OUTPUT GMT_Manpages.pdf
+		COMMAND xargs cat < manfiles_ps.list |
+		${PS2PDF_CONVERTER} - GMT_Manpages.pdf
+		DEPENDS manpages_all
+		VERBATIM)
+	add_custom_command (OUTPUT GMT_Manpages_suppl.pdf
+		COMMAND xargs cat < manfiles_suppl_ps.list |
+		${PS2PDF_CONVERTER} - GMT_Manpages_suppl.pdf
+		DEPENDS manpages_all
+		VERBATIM)
+	add_custom_target (gmt_pdf_manpages
+		DEPENDS GMT_Manpages.pdf GMT_Manpages_suppl.pdf)
+	add_depend_to_target (gmt_doc gmt_pdf_manpages)
+	install (FILES
+		${CMAKE_CURRENT_BINARY_DIR}/GMT_Manpages.pdf
+		${CMAKE_CURRENT_BINARY_DIR}/GMT_Manpages_suppl.pdf
+		DESTINATION ${GMT_DOC_PATH}/pdf OPTIONAL)
+endif (_manfiles_ps AND PS2PDF_CONVERTER)
 
 # Run examples (test)
 if (DO_EXAMPLES)

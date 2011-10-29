@@ -56,7 +56,9 @@ There are two configuration files:
 1. "ConfigDefault.cmake" -- is version controlled and used to add new default
     variables and set defaults for everyone.
 2. "ConfigUser.cmake" -- is not version controlled (currently listed in svn:ignore
-    property) and used to override defaults on a per-user basis.
+    property) and used to override defaults on a per-user basis. There is a
+    template file, ConfigUserTemplate.cmake, that you should copy to
+    ConfigUser.cmake and make your changes therein.
 
 NOTE: If you want to change CMake behaviour just for yourself then modify the
       "ConfigUser.cmake" file (not "ConfigDefault.cmake").
@@ -65,7 +67,7 @@ Finding GSHHS:
 ~~~~~~~~~~~~~~
 
 GSHHS shorelines are searched in FindGSHHS.cmake and a little helper programm
-tests the version (gshhs_version.c)
+tests the version (gshhs_version.c).
 
 IMPORTANT: add getenv("GSHHS_PATH") to gmt_init.c and do min version checks.
 

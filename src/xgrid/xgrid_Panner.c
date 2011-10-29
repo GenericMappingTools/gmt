@@ -163,11 +163,12 @@ static void recalculateBar (bar)
 /****	Class record	****/
 
 static CompositeClassExtensionRec extension = {
-    /* next_extension		*/ NULL,
-    /* record_type		*/ NULLQUARK,
-    /* version			*/ XtCompositeExtensionVersion,
-    /* record_size		*/ sizeof(CompositeClassExtensionRec),
-    /* accepts_objects		*/ True
+	/* next_extension            */ NULL,
+	/* record_type               */ NULLQUARK,
+	/* version                   */ XtCompositeExtensionVersion,
+	/* record_size               */ sizeof(CompositeClassExtensionRec),
+	/* accepts_objects           */ True,
+	/* allows_change_managed_set */ False
 };
 
 PannerClassRec pannerClassRec = {

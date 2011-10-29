@@ -236,8 +236,11 @@ set_target_properties (pslib
 set (GMT_SUPPL_DIRS dbase gshhs imgsrc meca mgd77 potential segy sph spotter
 	x2sys)
 
+# other supplement directories
+set (GMT_OTHER_SUPPL_DIRS misc xgrid)
+
 # process supplement directories
-foreach (_dir ${GMT_SUPPL_DIRS})
+foreach (_dir ${GMT_SUPPL_DIRS} ${GMT_OTHER_SUPPL_DIRS})
 	add_subdirectory (${_dir})
 endforeach (_dir)
 
@@ -314,6 +317,17 @@ configure_file (psldemo.c.cmake psldemo.c @ONLY)
 add_executable (psldemo psldemo.c)
 target_link_libraries (psldemo pslib)
 
+# rman for converting html manpages
+add_executable (rman rman.c)
+set (_rman_prop
+	VOLLIST=\"1:2:3:4:5:6:7:8:9:o:l:n:p\"
+	"MANTITLEPRINTF=\"%s(%s) manual page\""
+	MANREFPRINTF=\"%s.%s.html\"
+	POLYGLOTMANVERSION=\"3.2\")
+set_target_properties (rman
+	PROPERTIES COMPILE_DEFINITIONS
+	"${_rman_prop}")
+
 # generate Mac debugging symbols
 create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS})
 
@@ -343,10 +357,6 @@ endif (UNIX)
 # Generate manpages
 gmt_create_manpages (${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5}
 	DEPENDS ${GMT_MAN_DEPS})
-
-# add subtrees
-add_subdirectory (misc)
-add_subdirectory (xgrid)
 
 # this prints out the final version of the compiler/linker flags
 string (TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_UPPER)
