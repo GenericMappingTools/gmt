@@ -2861,7 +2861,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option == GMTAPI_OPT_INFILE && !strcmp (opt->arg, "=")) {	/* Found the output sequence */
 			if (opt->next) {
-				GMT_Make_Option (API, GMTAPI_OPT_OUTFILE, opt->next->arg, &ptr);
+				ptr = GMT_Make_Option (API, GMTAPI_OPT_OUTFILE, opt->next->arg);
 				opt = opt->next;	/* Now we must skip that option */
 			}
 			else {	/* Standard output */
@@ -2872,21 +2872,15 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else if (opt->option == GMTAPI_OPT_INFILE && (k = gmt_find_macro (opt->arg, n_macros, M)) != GMTAPI_NOTSET) {
 			/* Add in the replacement commands from the macro */
 			for (kk = 0; kk < M[k].n_arg; kk++) {
-				GMT_Make_Option (API, GMTAPI_OPT_INFILE, M[k].arg[kk], &ptr);
-			 	if (list)
-					GMT_Append_Option (API, ptr, &list);
-				else
-					list = ptr;
+				ptr = GMT_Make_Option (API, GMTAPI_OPT_INFILE, M[k].arg[kk]);
+				if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) Return (API->error);
 			}
 			continue;
 		}
 		else
-		 	GMT_Make_Option (API, opt->option, opt->arg, &ptr);
+		 	ptr = GMT_Make_Option (API, opt->option, opt->arg);
 
-		if (list)
-			GMT_Append_Option (API, ptr, &list);
-		else
-			list = ptr;
+		if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) Return (API->error);
 	}
 	gmt_free_macros (GMT, n_macros, &M);
 

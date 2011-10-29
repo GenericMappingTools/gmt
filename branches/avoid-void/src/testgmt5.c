@@ -57,16 +57,16 @@ int main (int argc, char *argv[]) {
 	/* 4. Create linked options for GMT_grdcut equivalent to "grdcut t.nc -R2/4/2/4 -Gnew.nc -V" */
 
 	GMT_Encode_ID (API, string, in_grdcut_ID);	/* Make filename with embedded object ID */
-	if (GMT_Make_Option (API, '<', string, &new)) exit (EXIT_FAILURE);
-	if (GMT_Append_Option (API, new, &head)) exit (EXIT_FAILURE);
+	if ((new = GMT_Make_Option (API, '<', string)) == NULL) exit (EXIT_FAILURE);
+	if ((head = GMT_Append_Option (API, new, NULL)) == NULL) exit (EXIT_FAILURE);
 	sprintf (string, "%g/%g/%g/%g", w, e, s, n);		/* Create argument for -R option */
-	if (GMT_Make_Option (API, 'R', string, &new)) exit (EXIT_FAILURE);
-	if (GMT_Append_Option (API, new, &head)) exit (EXIT_FAILURE);
+	if ((new = GMT_Make_Option (API, 'R', string)) == NULL) exit (EXIT_FAILURE);
+	if ((head = GMT_Append_Option (API, new, head)) == NULL) exit (EXIT_FAILURE);
 	GMT_Encode_ID (API, string, out_grdcut_ID);	/* Make -Gfilename with embedded object ID */
-	if (GMT_Make_Option (API, 'G', string, &new)) exit (EXIT_FAILURE);
-	if (GMT_Append_Option (API, new, &head)) exit (EXIT_FAILURE);
-	if (GMT_Make_Option (API, 'V', NULL, &new)) exit (EXIT_FAILURE);	/* Add -V*/
-	if (GMT_Append_Option (API, new, &head)) exit (EXIT_FAILURE);
+	if ((new = GMT_Make_Option (API, 'G', string)) == NULL) exit (EXIT_FAILURE);
+	if ((head = GMT_Append_Option (API, new, head)) == NULL) exit (EXIT_FAILURE);
+	if ((new = GMT_Make_Option (API, 'V', NULL)) == NULL) exit (EXIT_FAILURE);	/* Add -V*/
+	if ((head = GMT_Append_Option (API, new, head)) == NULL) exit (EXIT_FAILURE);
 
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_grdcut (API, -1, head);	/* This allocates memory for the export grid associated with the -G option */

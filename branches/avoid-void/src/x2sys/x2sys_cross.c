@@ -731,7 +731,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						t_or_i = (got_time) ? 't' : 'i';
 						sprintf (line, "# Tag: %s", Ctrl->T.TAG);
 						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, line);
-						GMT_Create_Cmd (API, &cmd, options);
+						cmd = GMT_Create_Cmd (API, options);
 						sprintf (line, "# Command: %s %s", GMT->init.progname, cmd);	/* Build command line argument string */
 						GMT_free (GMT, cmd);
 						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, line);

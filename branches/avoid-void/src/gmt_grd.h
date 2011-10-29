@@ -34,8 +34,8 @@
 
 /* Nodes that are unconstrained are assumed to be set to NaN */
 
-#define GMT_GRIDLINE_REG	0
-#define GMT_PIXEL_REG		1
+enum GMT_enum_reg {GMT_GRIDLINE_REG = 0,
+	GMT_PIXEL_REG};
 
 /* These 4 lengths must NOT be changed as they are part of grd definition */
 #define GRD_COMMAND_LEN320	320

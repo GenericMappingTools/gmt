@@ -3448,7 +3448,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 #endif
 	PSL_setdefaults (P, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb, C->current.setting.ps_encoding.name);
 
-	if (!GMT_Find_Option (C->parent, '>', options, &Out)) {	/* Want to use a specific output file */
+	if ((Out = GMT_Find_Option (C->parent, '>', options))) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
 		if (C->common.O.active && k == 0) {
 			GMT_report (C, GMT_MSG_NORMAL, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
