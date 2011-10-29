@@ -36,7 +36,7 @@ enum GMT_enum_pars {GMTAPI_TYPE = 0,	/* ipar[0] = data type (GMTAPI_{BYTE|SHORT|
 	GMTAPI_NODE};		/* ipar[7] = 1 for pixel registration, 0 for node */
 
 /* These data primitive identifiers are as follows: */
-enum GMT_enum_datatypes {GMTAPI_UCHAR = 0,	/* The 1-byte unsigned integer type */
+enum GMT_enum_type {GMTAPI_UCHAR = 0,	/* The 1-byte unsigned integer type */
 	GMTAPI_CHAR,			/* The 1-byte signed integer type */
 	GMTAPI_USHORT,			/* The 2-byte unsigned integer type */
 	GMTAPI_SHORT,			/* The 2-byte signed integer type */
@@ -52,8 +52,8 @@ enum GMT_enum_datatypes {GMTAPI_UCHAR = 0,	/* The 1-byte unsigned integer type *
 
 /* Array ordering constants */
 	
-#define GMTAPI_ORDER_ROW	0	/* C-style array order: as index increase we move across rows */
-#define GMTAPI_ORDER_COL	1	/* Fortran-style array order: as index increase we move down columns */
+enum GMT_enum_order {GMTAPI_ORDER_ROW = 0,	/* C-style array order: as index increase we move across rows */
+	GMTAPI_ORDER_COL};			/* Fortran-style array order: as index increase we move down columns */
 
 #define GMTAPI_USAGE		0	/* Want to report full program usage message */
 #define GMTAPI_SYNOPSIS		1	/* Just want the synopsis of usage */

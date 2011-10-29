@@ -453,7 +453,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!GMT->common.b.active[GMT_OUT]) {	/* Write 3 header records */
 		char *cmd = NULL;
 		GMT_fprintf (GMT->session.std[GMT_OUT], "# Tag: %s %s\n", Ctrl->T.TAG, Ctrl->C.col);
-		GMT_Create_Cmd (API, &cmd, options);
+		cmd = GMT_Create_Cmd (API, options);
 		GMT_fprintf (GMT->session.std[GMT_OUT], "# Command: %s %s\n", GMT->init.progname, cmd);	/* Build command line argument string */
 		GMT_free (GMT, cmd);
 		

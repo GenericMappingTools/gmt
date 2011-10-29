@@ -112,17 +112,22 @@ EXTERN_MSC GMT_LONG GMT_Encode_ID	(struct GMTAPI_CTRL *C, char *string, GMT_LONG
 
 /* 11 functions argument and option parsing */
 
-EXTERN_MSC GMT_LONG GMT_Create_Options	(struct GMTAPI_CTRL *C, GMT_LONG argc, void *in, struct GMT_OPTION **head);
-EXTERN_MSC GMT_LONG GMT_Destroy_Options	(struct GMTAPI_CTRL *C, struct GMT_OPTION **head);
-EXTERN_MSC GMT_LONG GMT_Create_Args	(struct GMTAPI_CTRL *C, GMT_LONG *argc, char **argv[], struct GMT_OPTION *head);
-EXTERN_MSC GMT_LONG GMT_Destroy_Args	(struct GMTAPI_CTRL *C, GMT_LONG argc, char *argv[]);
-EXTERN_MSC GMT_LONG GMT_Create_Cmd	(struct GMTAPI_CTRL *C, char **cmd, struct GMT_OPTION *head);
-EXTERN_MSC GMT_LONG GMT_Make_Option	(struct GMTAPI_CTRL *C, char option, char *arg, struct GMT_OPTION **ptr);
-EXTERN_MSC GMT_LONG GMT_Find_Option	(struct GMTAPI_CTRL *C, char option, struct GMT_OPTION *head, struct GMT_OPTION **ptr);
-EXTERN_MSC GMT_LONG GMT_Append_Option	(struct GMTAPI_CTRL *C, struct GMT_OPTION *current, struct GMT_OPTION **head);
-EXTERN_MSC GMT_LONG GMT_Update_Option	(struct GMTAPI_CTRL *C, char option, char *arg, struct GMT_OPTION *head);
-EXTERN_MSC GMT_LONG GMT_Delete_Option	(struct GMTAPI_CTRL *C, struct GMT_OPTION *current);
-EXTERN_MSC GMT_LONG GMT_Parse_Common	(struct GMTAPI_CTRL *C, char *sorted, char *unsorted, struct GMT_OPTION *options);
+EXTERN_MSC struct GMT_OPTION * GMT_Create_Options (struct GMTAPI_CTRL *C, GMT_LONG argc, void *in);
+EXTERN_MSC GMT_LONG GMT_Destroy_Options		  (struct GMTAPI_CTRL *C, struct GMT_OPTION **head);
+EXTERN_MSC char ** GMT_Create_Args		  (struct GMTAPI_CTRL *C, GMT_LONG *argc, struct GMT_OPTION *head);
+EXTERN_MSC GMT_LONG GMT_Destroy_Args		  (struct GMTAPI_CTRL *C, GMT_LONG argc, char *argv[]);
+EXTERN_MSC char * GMT_Create_Cmd		  (struct GMTAPI_CTRL *C, struct GMT_OPTION *head);
+EXTERN_MSC struct GMT_OPTION * GMT_Make_Option	  (struct GMTAPI_CTRL *C, char option, char *arg);
+EXTERN_MSC struct GMT_OPTION * GMT_Find_Option	  (struct GMTAPI_CTRL *C, char option, struct GMT_OPTION *head);
+EXTERN_MSC struct GMT_OPTION * GMT_Append_Option  (struct GMTAPI_CTRL *C, struct GMT_OPTION *current, struct GMT_OPTION *head);
+EXTERN_MSC GMT_LONG GMT_Update_Option		  (struct GMTAPI_CTRL *C, char option, char *arg, struct GMT_OPTION *head);
+EXTERN_MSC GMT_LONG GMT_Delete_Option		  (struct GMTAPI_CTRL *C, struct GMT_OPTION *current);
+EXTERN_MSC GMT_LONG GMT_Parse_Common		  (struct GMTAPI_CTRL *C, char *sorted, char *unsorted, struct GMT_OPTION *options);
+
+#ifdef DEBUG
+/* This function is available for testing purposes if --enable-debug was used during configuration */
+EXTERN_MSC GMT_LONG GMT_List_Args (struct GMTAPI_CTRL *API, struct GMT_OPTION *head);
+#endif
 
 /* Sub function needed by GMT_end to free memory used in modules and at end of session */
 

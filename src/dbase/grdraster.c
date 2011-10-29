@@ -756,7 +756,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Since load_rasinfo processed -R options we need to re-parse the main -R */
 
-	GMT_Find_Option (GMT->parent, 'R', options, &r_opt);
+	r_opt = GMT_Find_Option (GMT->parent, 'R', options);
 	GMT->common.R.active = FALSE;	/* Forget that -R was used before */
 	if (GMT_parse_common_options (GMT, "R", 'R', r_opt->arg)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error reprocessing -R?.\n");

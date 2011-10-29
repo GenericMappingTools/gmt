@@ -118,11 +118,11 @@ However, some exceptions such as \GMTprog{pslegend} and \GMTprog{gmtconvert} cal
 \index{Recognized resources}
 \index{Resources!Recognized by GMT}
 
-The \GMT\ API knows how to read and write four types of data common to \GMT\ operations:
-CPT palette tables, data tables (ASCII or binary), text tables, and \GMT\ grids.
+The \GMT\ API knows how to read and write five types of data common to \GMT\ operations:
+CPT palette tables, data tables (ASCII or binary), text tables, \GMT\ grids and images (reading only).
 In addition, we have two data types to facilitate the passing of simple user arrays (one or more data columns
-of any data type, e.g., double, char) and 2-D user matrix (of any data type and column/row organization).
-There are many attributes for each of these entities and therefore we use a top-level structure
+of any data type, e.g., double, char) and 2-D user matrices (of any data type and column/row organization).
+There are many attributes for each of these two entities and therefore we use a top-level structure
 to keep them all in one container.  These containers are given or returned by the \GMT\ API
 functions using opaque pointers (\texttt{void *}).  Below we discuss these containers in some detail; we
 will later present how they are used when importing or exporting them to or from files,
@@ -211,7 +211,7 @@ of variable.
 \texttt{	long n\_columns;}	&       /* \emph{Number of vectors}  */\\
 \texttt{	long alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
 \texttt{	long *type;}		&       /* \emph{Array with data type for each vector}  */\\
-\texttt{	union GMT_UNIVECTOR *data;}	&       /* \emph{Array with unions for each column}  */\\
+\texttt{	union GMT\_UNIVECTOR *data;}	&       /* \emph{Array with unions for each column}  */\\
 \texttt{\};}	&        \\  \hline
 \end{tabular}
 \caption{Definition of the GMT\_VECTOR structure used to pass user data columns.}
@@ -247,7 +247,7 @@ read the data properly.
 \texttt{	long alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
 \texttt{	long type;}		&       /* \emph{The matrix data type}  */\\
 \texttt{	double limit[6];}	&       /* \emph{The min and max limits on x-, y-, and z-ranges}  */\\
-\texttt{	union GMT_UNIVECTOR data;}	&       /* \emph{Union with pointers a data matrix of any type}  */\\
+\texttt{	union GMT\_UNIVECTOR data;}	&       /* \emph{Union with pointers a data matrix of any type}  */\\
 \texttt{\};}	&        \\  \hline
 \end{tabular}
 \caption{Definition of the GMT\_MATRIX structure used to pass a user data matrix.}

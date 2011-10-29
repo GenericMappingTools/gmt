@@ -367,7 +367,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_originator", &GMT_cpy);				/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("HMm"), options))) Return (error);
-	if (GMT_Find_Option (API, 'f', options, &ptr)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
+	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_originator_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_originator_parse (API, Ctrl, options))) Return (error);
 

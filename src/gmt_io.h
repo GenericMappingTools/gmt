@@ -98,7 +98,7 @@ enum GMT_enum_ogr {GMT_IS_LINESTRING = 2,
 	GMT_IS_MULTILINESTRING,
 	GMT_IS_MULTIPOLYGON};
 
-enum GMT_enum_reg {GMT_REG_FILES_IF_NONE = 1,	/* Tell GMT_Init_IO we conditionally want to register all input files in the option list if nothing else is registered */
+enum GMT_enum_freg {GMT_REG_FILES_IF_NONE = 1,	/* Tell GMT_Init_IO we conditionally want to register all input files in the option list if nothing else is registered */
 	GMT_REG_FILES_ALWAYS = 2,		/* Tell GMT_Init_IO to always register all input files in the option list */
 	GMT_REG_STD_IF_NONE = 4,		/* Tell GMT_Init_IO we conditionally want to register std(in|out) if nothing else has been registered */
 	GMT_REG_STD_ALWAYS = 8,			/* Tell GMT_Init_IO to always register std(in|out) */
@@ -563,7 +563,7 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	GMT_LONG shape;			/* 0 = C (rows) and 1 = Fortran (cols) */
 	GMT_LONG registration;     	/* 0 for gridline and 1 for pixel registration  */
 	GMT_LONG size;			/* Byte length of data */
-	enum GMT_enum_datatypes type;	/* Data type, e.g. GMTAPI_FLOAT */
+	enum GMT_enum_type type;	/* Data type, e.g. GMTAPI_FLOAT */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
 	double limit[6];		/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
 	union GMT_UNIVECTOR data;	/* Union with pointer to actual matrix of the chosen type */
@@ -573,7 +573,7 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	GMT_LONG id;			/* The internal number of the data set */
 	GMT_LONG n_rows;		/* Number of rows in each vector */
 	GMT_LONG n_columns;		/* Number of vectors */
-	enum GMT_enum_datatypes *type;	/* Array of data types (type of each uni-vector, e.g. GMTAPI_FLOAT */
+	enum GMT_enum_type *type;	/* Array of data types (type of each uni-vector, e.g. GMTAPI_FLOAT */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0 = allocated, 1 = allocate as needed] */
 	union GMT_UNIVECTOR *data;	/* Array of uni-vectors */
 };

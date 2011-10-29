@@ -201,7 +201,7 @@ GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Determine which value to report and use that to select correct GMT module */
 	
-	GMT_Find_Option (API, 'T', options, &t_ptr);	/* Find the required -T option */
+	t_ptr = GMT_Find_Option (API, 'T', options);	/* Find the required -T option */
 	
 	switch (t_ptr->arg[0]) {	/* Determine what GMT_block* module we need */
 		case 'm': case 'n': case 's': case 'w':	/* Call blockmean */
