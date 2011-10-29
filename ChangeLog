@@ -2,9 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
-2011-10-28	pwessel		API finalized.  Simplified by eliminating unneeded arguments
+2011-10-28	pwessel
+	* gmtapi_util.c:	API finalized.  Simplified by eliminating unneeded arguments
 				to GMT_Create_Data, GMT_Register_IO, and let all functions that
 				produce objects (Create, Get) return a pointer to those objects.
+	* grdpaste.c:		Must change both the grid pad and the default pad in this application.
 
 2011-10-17	pwessel
 	* gmtapi*.[ch]:		API modified to eliminate any void ** references or variables.
