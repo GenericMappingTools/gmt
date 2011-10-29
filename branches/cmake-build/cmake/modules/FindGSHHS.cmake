@@ -9,7 +9,7 @@
 #
 # This module defines the following CMake variables:
 #
-#    GSHHS_FOUND - True if libpcre is found
+#    GSHHS_FOUND - True if GSHHS is found
 #    GSHHS_PATH  - A variable pointing to the GSHHS path
 
 # get GSHHS path

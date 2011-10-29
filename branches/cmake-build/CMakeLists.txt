@@ -60,8 +60,7 @@ include (FindUnixCommands)
 # Configure a header file to pass some of the CMake settings to the source code
 configure_file (
 	"${PROJECT_SOURCE_DIR}/config.h.cmake"
-	"${PROJECT_BINARY_DIR}/config.h"
-)
+	"${PROJECT_BINARY_DIR}/config.h")
 
 # Global test target
 add_custom_target (check
@@ -88,7 +87,6 @@ message(
 	"*  Regex support        : ${GMT_CONFIG_REGEX_MESSAGE}\n"
 	"*  Triangulation method : ${GMT_TRIANGULATE}\n"
 	"*  File locking         : ${FLOCK}\n"
-	"*  Build Matlab API     : ${GMT_MATLAB}"
-)
+	"*  Build Matlab API     : ${GMT_MATLAB}")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

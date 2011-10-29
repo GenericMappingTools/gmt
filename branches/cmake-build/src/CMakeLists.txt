@@ -27,6 +27,7 @@ include (GmtManpages)
 # Include CREATE_DEBUG_SYM macro
 include (CreateDebugSym)
 
+# Find libraries
 find_package (NETCDF REQUIRED)
 include_directories (${NETCDF_INCLUDE_DIR})
 add_definitions (${NETCDF_DEFINITIONS})
@@ -89,13 +90,17 @@ find_package (Threads)
 # check for math and POSIX functions
 include(ConfigureChecks)
 
-# find GSHHS shorelines
-find_package (GSHHS)
-
 include_directories (${GMT_SOURCE_DIR}/src)
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 #include_directories (${PROJECT_BINARY_DIR})
 set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
+
+# Examples and tests depend on Shorelines
+find_package (GSHHS)
+if (DO_EXAMPLES OR DO_TESTS AND NOT GSHHS_FOUND)
+	message (FATAL_ERROR "Cannot proceed without GSHHS Shorelines. "
+		"Need to either set GSHHS_ROOT or disable tests.")
+endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHS_FOUND)
 
 
 # These three lines are temporarily here for the beta release
@@ -123,8 +128,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c
 	makecpt.c mapproject.c minmax.c nearneighbor.c
 	project.c ps2raster.c sample1d.c spectrum1d.c
 	splitxyz.c surface.c trend1d.c trend2d.c
-	triangulate.c xyz2grd.c
-)
+	triangulate.c xyz2grd.c)
 list (APPEND GMT_PROGS_SRCS ${GMT_PROGS2_SRCS})
 
 set (GMT_PROGSPS_SRCS gmtdefaults.c gmtget.c gmtset.c
@@ -132,8 +136,7 @@ set (GMT_PROGSPS_SRCS gmtdefaults.c gmtget.c gmtset.c
 	psbasemap.c psclip.c pscoast.c pscontour.c
 	pshistogram.c psimage.c psmask.c psrose.c
 	psscale.c pstext.c pswiggle.c psxy.c psxyz.c
-	pslegend.c
-)
+	pslegend.c)
 list (APPEND GMT_PROGSPS_SRCS ${GMT_PROGSPS2_SRCS})
 
 # libpslib
@@ -143,8 +146,7 @@ set (GMT_PSL_SRCS pslib.c gmt_notposix.h)
 set (GMT_LIB_SRCS gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c
 	gmt_fft.c gmt_grdio.c gmt_io.c  gmt_nc.c gmt_notposix.c gmt_proj.c
 	gmt_shore.c gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c
-	gmt_version.c gmtapi_parse.c ${GMT_PROGS_SRCS} ${GMT_TRIANGLE_SRCS}
-)
+	gmt_version.c gmtapi_parse.c ${GMT_PROGS_SRCS} ${GMT_TRIANGLE_SRCS})
 
 set (GMT_LIB_PS_SRCS gmt_init.c gmt_map.c gmt_plot.c gmtapi_util.c ${GMT_PROGSPS_SRCS})
 
@@ -187,8 +189,7 @@ set (GMT_MAN_DEPS common_options.txt
 	explain_gshhs.txt explain_help.txt explain_intables.txt
 	explain_labelinfo.txt explain_nodereg.txt explain_nodereg_full.txt
 	explain_pen.txt explain_perspective.txt explain_perspective_full.txt
-	explain_precision.txt explain_symbols.txt refs.i
-)
+	explain_precision.txt explain_symbols.txt refs.i)
 
 # add generated depends
 set (GMT_MAN_DEPS ${GMT_MAN_DEPS} Colors.i Fonts.i Ellipsoids.i
@@ -229,8 +230,7 @@ set_target_properties (pslib
 	VERSION ${GMT_PACKAGE_VERSION}
 	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
-	DEFINE_SYMBOL "LIBRARY_EXPORTS"
-)
+	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
 # supplement directories (only those, which are to be included in gmtlib)
 set (GMT_SUPPL_DIRS dbase gshhs imgsrc meca mgd77 potential segy sph spotter
@@ -263,8 +263,7 @@ target_link_libraries (gmtlib
 	${NETCDF_LIBRARIES}
 	${GMT_OPTIONAL_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
-	pslib
-)
+	pslib)
 
 if (HAVE_M_LIBRARY)
 	# link the math library
@@ -279,16 +278,14 @@ set_target_properties (gmtlib
 	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
 	LINK_FLAGS "${USER_GMTLIB_LINK_FLAGS}"
-	DEFINE_SYMBOL "LIBRARY_EXPORTS"
-)
+	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
 # create build targets for gmt progs
 string (REPLACE ".c" "" GMT_PROGS "${GMT_PROGS_SRCS}")
 foreach (_gmtprog ${GMT_PROGS})
 	add_executable (${_gmtprog} ${GMT_PROGRAM})
 	set_target_properties (${_gmtprog} PROPERTIES
-		COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${_gmtprog}"
-	)
+		COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${_gmtprog}")
 	target_link_libraries (${_gmtprog} gmtlib)
 endforeach (_gmtprog)
 
