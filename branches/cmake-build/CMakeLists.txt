@@ -69,9 +69,11 @@ add_custom_target (check
 	--force-new-ctest-process -j${N_TEST_JOBS})
 
 # Add subdirectories
-add_subdirectory (doc)
+set(_manfiles_ps "" CACHE INTERNAL "Global list of PS manpages")
+set(_manfiles_suppl_ps "" CACHE INTERNAL "Global list of supplement PS manpages")
 add_subdirectory (src)
-add_subdirectory (share) # share must be added *after* src (GSHHS_PATH)
+add_subdirectory (share) # share must be processed *after* src (GSHHS_PATH)
+add_subdirectory (doc)   # share must be processed *after* src (PDF manpages)
 add_subdirectory (test)
 
 # Configuration done

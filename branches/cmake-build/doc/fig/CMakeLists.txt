@@ -55,6 +55,9 @@ set (_example_figures anim_01.ps anim_02.ps
 	example_23.ps example_24.ps example_25.ps example_26.ps example_27.ps
 	example_28.ps example_29.ps example_30.ps example_31.ps example_32.ps)
 
+set (_pdf_fig_install GMT_Manpages.pdf GMT_RGBchart_a4.pdf
+	GMT_RGBchart_tabloid.pdf GMT_Manpages_suppl.pdf GMT_RGBchart_letter.pdfs)
+
 # Copy figures without converting
 foreach (_fig ${_copy_only_figures})
 	add_custom_command (OUTPUT ${_fig}
@@ -102,5 +105,11 @@ endforeach (_fig ${_example_figures})
 
 # Add build target
 add_custom_target (pdf_figures DEPENDS ${_pdf_figures})
+
+# Install pdf figures (if found)
+foreach (_fig ${_pdf_fig_install})
+	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_fig}
+		DESTINATION ${GMT_DOC_PATH}/pdf OPTIONAL)
+endforeach (_fig ${_pdf_fig_install})
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

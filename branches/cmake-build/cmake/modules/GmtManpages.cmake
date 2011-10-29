@@ -26,11 +26,17 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 
-# usefull macros
-include (GmtHelperMacros)
-
 if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 	set(_GMT_MANPAGES_CMAKE_ "DEFINED")
+
+	# usefull macros
+	include (GmtHelperMacros)
+
+	# Find groff front-end
+	find_program (GROFF groff)
+
+	# Find ps2pdf
+	#find_package (LATEX)
 
 	macro (GMT_CREATE_MANPAGES MAN_FILES)
 		if ((CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU) AND HAVE_TRADITIONAL_CPP)
@@ -52,13 +58,10 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 			# create tag from current dirname
 			tag_from_current_source_dir (_tag "_")
 
-			if(GZIP)
-				set (_gz ".gz")
-			endif(GZIP)
-
 			# clear lists
 			set (_install_sections)
 			set (_target_depends)
+			set (_manfiles_html)
 
 			foreach (_manfile ${_man_files})
 				# strip section number
@@ -71,46 +74,74 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 
 				# generator
 				string (REGEX REPLACE "\\.[1-8]$" ".txt" _man_src ${_manfile})
+
+				# uncompressed manpage
+				add_custom_command (
+					OUTPUT ${_manfile}
+					COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc -traditional-cpp
+					-I${GMT_SOURCE_DIR}/src
+					-I${GMT_BINARY_DIR}/src
+					-I${CMAKE_CURRENT_SOURCE_DIR}
+					< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
+					> ${_manfile}
+					DEPENDS ${_man_src} ${_depends}
+					VERBATIM)
+
+				# compress manpage
 				if(GZIP)
 					add_custom_command (
-						OUTPUT "${_manfile}${_gz}"
-						COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc -traditional-cpp
-						-I${GMT_SOURCE_DIR}/src
-						-I${GMT_BINARY_DIR}/src
-						-I${CMAKE_CURRENT_SOURCE_DIR}
-						< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
-						> ${_manfile}
-						COMMAND ${GZIP} -9 -f ${_manfile}
-						DEPENDS ${_man_src} ${_depends}
-						#COMMENT "Generate ${_manfile}"
-						VERBATIM
-						)
-				else(GZIP)
-					add_custom_command (
-						OUTPUT ${_manfile}
-						COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc -traditional-cpp
-						-I${GMT_SOURCE_DIR}/src
-						-I${GMT_BINARY_DIR}/src
-						-I${CMAKE_CURRENT_SOURCE_DIR}
-						< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
-						> ${_manfile}
-						DEPENDS ${_man_src} ${_depends}
-						#COMMENT "Generate ${_manfile}"
-						VERBATIM
-						)
+						OUTPUT ${_manfile}.gz
+						COMMAND ${GZIP} -9 -c ${_manfile} > ${_manfile}.gz
+						DEPENDS ${_manfile}
+						VERBATIM)
+					set (_gz ".gz")
 				endif(GZIP)
 
-				# append full path
+				# append full path + make list for each man section
 				list (APPEND _manfilepaths_${_man_section}
 					"${CMAKE_CURRENT_BINARY_DIR}/${_manfile}${_gz}")
 				list (APPEND _target_depends "${_manfile}${_gz}")
+
+				if (GROFF)
+					# ps manpages
+					add_custom_command (
+						OUTPUT ${_manfile}.ps
+						COMMAND ${GROFF} -mandoc -T ps
+						${_manfile} > ${_manfile}.ps
+						DEPENDS ${_manfile}
+						VERBATIM)
+
+					# append to list of ps manfiles
+					if (_tag)
+						# supplement manpage
+						list (APPEND _manfiles_suppl_ps
+							"${CMAKE_CURRENT_BINARY_DIR}/${_manfile}.ps")
+					else (_tag)
+						# gmt manpage
+						list (APPEND _manfiles_ps
+							"${CMAKE_CURRENT_BINARY_DIR}/${_manfile}.ps")
+					endif (_tag)
+					list (APPEND _target_depends ${_manfile}.ps)
+				endif (GROFF)
+
+				# html manpages
+				add_custom_command (
+					OUTPUT ${_manfile}.html
+					COMMAND ${GMT_BINARY_DIR}/src/rman
+					-f HTML
+					< ${_manfile} > ${_manfile}.html
+					DEPENDS ${_manfile} rman
+					VERBATIM)
+
+				# append to list of html manfiles
+				list (APPEND _manfiles_html
+					"${CMAKE_CURRENT_BINARY_DIR}/${_manfile}.html")
+				list (APPEND _target_depends ${_manfile}.html)
 			endforeach (_manfile)
 
 			# manpage target
 			add_custom_target (manpages${_tag} ALL DEPENDS ${_target_depends})
-			if(TARGET manpages)
-				add_dependencies(manpages manpages${_tag})
-			endif(TARGET manpages)
+			add_depend_to_target (manpages_all manpages${_tag})
 
 			# install manpages
 			list (SORT _install_sections)
@@ -119,9 +150,20 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 				install (FILES ${_manfilepaths_${_man_section}}
 					DESTINATION ${GMT_SHARE_PATH}/man/man${_man_section})
 			endforeach (_man_section ${_install_sections})
-			#	else ((CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU) AND HAVE_TRADITIONAL_CPP)
-			#		message(WARNING
-			#			"Not creating manpages in ${CMAKE_CURRENT_SOURCE_DIR}")
+
+			# install html manpages
+			install (FILES ${_manfiles_html}
+				DESTINATION ${GMT_DOC_PATH}/html)
+
+			# remember _manfiles_ps
+			if (_tag)
+				set(_manfiles_suppl_ps "${_manfiles_suppl_ps}" CACHE INTERNAL
+					"Global list of supplement PS manpages")
+			else (_tag)
+				set(_manfiles_ps "${_manfiles_ps}" CACHE INTERNAL
+					"Global list of PS manpages")
+			endif (_tag)
+
 		endif ((CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU) AND HAVE_TRADITIONAL_CPP)
 	endmacro (GMT_CREATE_MANPAGES MAN_FILES)
 
