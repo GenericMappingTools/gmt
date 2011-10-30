@@ -96,6 +96,5 @@ lockfile -5 -l 180 test.lock
 
 # Start with proper GMT defaults
 gmtset -Du
-gmtset PS_MEDIA letter PROJ_LENGTH_UNIT inch
 
 # vim: ft=sh
