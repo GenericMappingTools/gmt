@@ -47,7 +47,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 
 	/* 1. Initializing new GMT session */
-	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("Failure to create GMT Session\n");
+	if ((API = GMT_Create_Session ("GMT/MEX-API", GMTAPI_GMT)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. Prepare the GMT grid */
 	G = GMT_Create_Data (API, GMT_IS_GRID, NULL);

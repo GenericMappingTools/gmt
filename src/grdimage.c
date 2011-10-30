@@ -580,11 +580,11 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_LONG object_ID, status = 0;			/* Status code from GMT API */
 			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[GMT_BUFSIZ];
 			/* Create option list, register G as input source via reference */
-			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Intens_orig, NULL, &object_ID)) 
+			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Intens_orig, NULL)) == GMTAPI_NOTSET) 
 				return (EXIT_FAILURE);
 			GMT_Encode_ID (API, in_string, object_ID);	/* Make filename with embedded object ID for grid G */
 
-			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &G2, NULL, &object_ID)) 
+			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &G2, NULL)) == GMTAPI_NOTSET) 
 				return (EXIT_FAILURE);
 			GMT_Encode_ID (GMT->parent, out_string, object_ID);	/* Make filename with embedded object ID for result grid G2 */
 

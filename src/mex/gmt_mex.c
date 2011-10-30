@@ -129,8 +129,8 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 
 		(*V)->n_rows = MAX (mxGetM (prhs[0]), mxGetN (prhs[0]));	/* So it works for both column or row vectors */
 		(*V)->n_columns = n_cols;
-		if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, 
-				     GMT_IS_POINT, GMT_IN, V, NULL, &in_ID)) 
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, 
+				     GMT_IS_POINT, GMT_IN, V, NULL)) == GMTAPI_NOTSET) 
 			mexErrMsgTxt ("Failure to register GMT source vectors\n");
 		GMT_Encode_ID (API, i_string, in_ID);		/* Make filename with embedded object ID */
 		//i_string = strdup (buffer);
@@ -158,7 +158,7 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 		(*G)->data = GMT_memory (API->GMT, NULL, (*G)->header->size, float);
 		/* Transpose from Matlab orientation to grd orientation */
 		GMT_grd_loop (API->GMT, (*G), row, col, gmt_ij) (*G)->data[gmt_ij] = (float)z[MEX_IJ((*G),row,col)];
-		if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, G, NULL, &in_ID)) 
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, G, NULL)) == GMTAPI_NOTSET) 
 			mexErrMsgTxt ("Failure to register GMT source grid\n");
 		GMT_Encode_ID (API, i_string, in_ID);	/* Make filename with embedded object ID */
 		//i_string = strdup (buffer);
@@ -170,7 +170,7 @@ char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, struct GMT_GRID **G, int n
 {	/* Associate output grid with Matlab grid */
 	GMT_LONG out_ID;
 	char buffer[GMTAPI_STRLEN], *o_string = NULL;
-	if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, G, NULL, &out_ID)) 
+	if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, G, NULL)) == GMTAPI_NOTSET) 
 		mexErrMsgTxt ("Failure to register GMT destination grid\n");
 	if (nlhs == 0) {
 		if (strstr (options, "-G")) 	/* User gave -G<file> among the options */
@@ -201,8 +201,8 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 	*V = GMT_Create_Data (API, GMT_IS_VECTOR, &n_cols);
 	for (col = 0; col < n_cols; col++) (*V)->type[col] = GMTAPI_DOUBLE;
 	(*V)->alloc_mode = GMT_REFERENCE;
-	if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF + GMT_VIA_VECTOR, 
-			     GMT_IS_POINT, GMT_OUT, V, NULL, &out_ID)) 
+	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF + GMT_VIA_VECTOR, 
+			     GMT_IS_POINT, GMT_OUT, V, NULL)) == GMTAPI_NOTSET) 
 		mexErrMsgTxt ("Failure to register GMT destination vectors\n");
 		
 	GMT_Encode_ID (API, o_string, out_ID);	/* Make filename with embedded object ID */
@@ -447,7 +447,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		(void)get_arg_dir (key[def[direction]][0], key, n_keys, &data_type, &geometry);		/* Get info about the data set */
 		ptr = (direction == GMT_IN) ? prhs[lr_pos[direction]] : lrhs[lr_pos[direction]];	/* Pick the next left or right side pointer */
 		/* Register a Matlab/Octave entity as a source or destination */
-		if (GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, ptr, NULL, &ID)) 
+		if ((ID = GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, ptr, NULL)) == GMTAPI_NOTSET) 
 			mexErrMsgTxt ("GMTMEX_parser: Failure to register GMT source or destination\n");
 		lr_pos[direction]++;		/* Advance counter for next time */
 		GMT_Encode_ID (API, name, ID);	/* Make filename with embedded object ID */
@@ -463,7 +463,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		direction == get_arg_dir (opt->option, key, n_keys, &data_type, &geometry);
 		ptr = (direction == GMT_IN) ? prhs[lr_pos[direction]] : lrhs[lr_pos[direction]];	/* Pick the next left or right side pointer */
 		/* Register a Matlab/Octave entity as a source or destination */
-		if (GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, ptr, NULL, &ID)) 
+		if ((ID = GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, ptr, NULL)) == GMTAPI_NOTSET) 
 			mexErrMsgTxt ("GMTMEX_parser: Failure to register GMT source or destination\n");
 		GMT_Encode_ID (API, name, ID);	/* Make filename with embedded object ID */
 		lr_pos[direction]++;		/* Advance counter for next time */

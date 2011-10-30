@@ -74,11 +74,8 @@ struct GMTAPI_CTRL {
 	GMT_LONG registered[2];			/* TRUE if at least one source/destination has been registered (in and out) */
 	GMT_LONG io_enabled[2];			/* TRUE if access has been allowed (in and out) */
 	GMT_LONG io_mode[2];			/* 1 if access as set, 0 if record-by-record */
-	GMT_LONG GMTAPI_size[GMTAPI_N_TYPES];	/* Size of byte, short, int, long, float, double */	
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
-	PFL GMT_2D_to_index[2];			/* Pointers to the row or column-order index functions */
-	PFV GMT_index_to_2D[2];			/* Pointers to the inverse index functions */
 	char *session_tag;			/* Name tag for this session (or NULL) */
 };
 
@@ -95,9 +92,9 @@ struct GMT_OPTION {
  */
 
 /* 14 Primary API functions */
-EXTERN_MSC GMT_LONG GMT_Create_Session	(struct GMTAPI_CTRL **C, char *tag, GMT_LONG mode);
+EXTERN_MSC struct GMTAPI_CTRL * GMT_Create_Session	(char *tag, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_Destroy_Session	(struct GMTAPI_CTRL **C);
-EXTERN_MSC GMT_LONG GMT_Register_IO	(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, GMT_LONG direction, void *resource, double wesn[], GMT_LONG *object_ID);
+EXTERN_MSC GMT_LONG GMT_Register_IO	(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, GMT_LONG direction, void *resource, double wesn[]);
 EXTERN_MSC GMT_LONG GMT_Init_IO		(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG geometry, GMT_LONG direction, GMT_LONG mode, struct GMT_OPTION *head);
 EXTERN_MSC GMT_LONG GMT_Begin_IO	(struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_End_IO		(struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode);

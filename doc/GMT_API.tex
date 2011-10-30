@@ -122,11 +122,11 @@ The \GMT\ API knows how to read and write five types of data common to \GMT\ ope
 CPT palette tables, data tables (ASCII or binary), text tables, \GMT\ grids and images (reading only).
 In addition, we have two data types to facilitate the passing of simple user arrays (one or more data columns
 of any data type, e.g., double, char) and 2-D user matrices (of any data type and column/row organization).
-There are many attributes for each of these two entities and therefore we use a top-level structure
+There are many attributes for each of these two entities and therefore we use a top-level structure for each
 to keep them all in one container.  These containers are given or returned by the \GMT\ API
-functions using opaque pointers (\texttt{void *}).  Below we discuss these containers in some detail; we
+functions using pointers (\texttt{void *}).  Below we discuss these containers in some detail; we
 will later present how they are used when importing or exporting them to or from files,
-memory locations, or streams.  The first four are the standard \GMT\ types, while the latter two are the
+memory locations, or streams.  The first five are the standard \GMT\ objects, while the latter two are the
 special user data containers.
 
 \subsection{CPT palette tables}
@@ -151,7 +151,8 @@ records one at the time.  The \GMT\ API has functions that let you read record-b
 by presenting a virtual data set that combines all the data tables specified as input.
 This simplifies record processing considerably.  A \texttt{struct GMT\_DATASET} may contain
 any number of tables, each with any number of segments, and each segment with any number of records.   Thus, the
-arguments to \GMT\ API functions that handle such data sets expect this type of variable.
+arguments to \GMT\ API functions that handle such data sets expect this type of variable.  All segments
+are expected to have the same number of columns.
 
 \subsection{Text tables}
 \index{Text tables}
@@ -175,6 +176,18 @@ pass this information via a \texttt{struct GMT\_GRID}, which is a container that
 Thus, the arguments to \GMT\ API functions that handle such \GMT\ grids expect this type
 of variable.
 
+\subsection{GMT images}
+\index{GMT images}
+\index{Resources!GMT images}
+
+\GMT\ images are used to represent bit-mapped images obtained via the GDAL bridge.  These can be
+reprojected internally, such as when used in grdimage.  Since images and grids share the concept
+of a header, we use the same header structure for grids as for images; however, some additional
+metadata attributes are also needed.  Finally, the image itself may be of any data type.
+Both image and header information are passed via a \texttt{struct GMT\_IMAGE}, which is a container that holds both items.
+Thus, the arguments to \GMT\ API functions that handle such \GMT\ images expect this type
+of variable.  Unlike the other objects, images can only be read and not written.
+
 \subsection{User data columns}
 \index{User data columns}
 \index{Resources!User data columns}
@@ -196,7 +209,7 @@ of variable.
 \texttt{	double *f8;}		&       /* \emph{Pointer for double array} */ \\
 \texttt{\};}	&        \\  \hline
 \end{tabular}
-\caption{Definition of the GMT\_UNIVECTOR union that can hold any array type.}
+\caption{Definition of the GMT\_UNIVECTOR union that hold a pointer to any array type.}
 \label{tbl:univector}
 \index{Vectors!Structure}
 \end{table}
@@ -258,8 +271,8 @@ read the data properly.
 Likewise, a programs may have an integer 2-D matrix in memory 
 and wish to use that as the input grid to the \texttt{GMT\_grdfilter} module, which normally
 expects a \texttt{struct GMT\_GRID} via file or reference.  As for user vectors, we create a
-\texttt{struct GMT\_MATRIX} (see section~\ref{sec:create}), assign its void pointer to your data
-columns and provide information on dimensions and data type (see Table~\ref{tbl:matrix}).
+\texttt{struct GMT\_MATRIX} (see section~\ref{sec:create}), assign the appropriate union pointer to your data
+matrix and provide information on dimensions and data type (see Table~\ref{tbl:matrix}).
 Letting the \GMT\ module know you are passing a grid via a
 \texttt{struct GMT\_MATRIX} it will know how to read the matrix properly.
 
@@ -290,13 +303,14 @@ then converted to unique filenames of the form ``@GMTAPI@-\#\#\#\#\#\#'' that ar
 \GMT\ i/o library functions encounter such filenames they extract the ID and make a connection
 to the resource registered under that ID.  Any number of table data or text sources
 will be combined into a single virtual source for \GMT\ functions to operate on.
-In contrast, CPT and Grid resources are operated on individually.
+In contrast, CPT, Grid, and image resources are operated on individually.
 \item Enable data import once all registrations are complete.
-\item Read into memory all data that will be passed to \GMT\ functions via pointers.  You may choose
+\item Read into memory all data that will be passed to \GMT\ modules via pointers.  You may choose
 	to read everything into memory at once or process the data record-by-record (tables only).
-\item Prepare the program options required and call the \GMT\ function you wish to use.
+\item Prepare the program options required and call the \GMT\ module you wish to use.
 \item Process the results that were returned to memory via pointers rather than written to files.
-\item Destroy the resources allocated by \GMT\ functions to hold the results.
+\item Explicitly destroy the resources allocated by \GMT\ modules to hold the results, or let the
+garbage collector do this automatically at the end of the module and at the end of the session.
 \end{enumerate}
 \item Repeat steps a--f as many times as your application requires.  All API functions
 return a status code which is GMTAPI\_OK (0) if all is well.  For non-zero return values, use
@@ -327,20 +341,21 @@ function prototype is
 \index{GMT\_Create\_Session}
 
 \begin{verbatim}
-GMT_Create_Session (struct GMTAPI_CTRL **API, char *tag, long mode)
+struct GMTAPI_CTRL * GMT_Create_Session (char *tag, long mode)
 \end{verbatim}
 and you will typically call it thus:
 \begin{verbatim}
-GMT_LONG error, mode = GMTAPI_GMT;
+GMT_LONG mode = GMTAPI_GMT;
 struct GMTAPI_CTRL *API = NULL;
-error = GMT_Create_Session (&API, "Session name", mode);
+API = GMT_Create_Session ("Session name", mode);
 \end{verbatim}
 where \texttt{API} is a pointer to the allocated \GMT\ API control structure.  You will need to
 pass this pointer to \emph{all} subsequent \GMT\ API functions.  The key task of this initialization
 is to set up the \GMT\ machinery and its internal variables used for map projections, plotting,
 etc.  The initialization also allocates space for internal structures used to register resources.
 If you expect to call modules that also require the PSL library, then set \texttt{mode} to
-GMTAPI\_GMTPSL (1); else simply pass GMTAPI\_GMT (0).
+GMTAPI\_GMTPSL (1); else simply pass GMTAPI\_GMT (0).  Should something go wrong then \texttt{API}
+will be returned as \texttt{NULL}.
 
 \section{Register input or output resources}
 \index{Register input or output resources}
@@ -364,7 +379,7 @@ The basic registration machinery involves a direct or indirect call to
 
 \begin{verbatim}
 GMT_Register_IO (struct GMTAPI_CTRL *API, long family, long method, \
-   long geometry, long direction, void *ptr, double wesn[], long *ID)
+   long geometry, long direction, void *ptr, double wesn[])
 \end{verbatim}
 where \texttt{family} specifies what kind of resource is to be registered
 (see Table \ref{tbl:family} for list of all families), \texttt{method} specifies
@@ -372,11 +387,11 @@ how we expect to access this resource (see Table \ref{tbl:methods} for recognize
 as well as modifiers you can add; these are listed in Table \ref{tbl:via}),
 \texttt{geometry} specifies
 the geometry of the data (see Table \ref{tbl:geometry} for recognized geometries),
-\texttt{ptr} is the pointer to the named resource.
+\texttt{ptr} is the address of the pointer to the named resource.
 For GMT\_IS\_GMTGRID resources you may request to obtain a subset via the \texttt{wesn}
 array (see Table~\ref{tbl:wesn} for information); otherwise, pass NULL to obtain the entire grid.
 The \texttt{direction} indicates input or output and is either GMT\_IN (0) or GMT\_OUT (1).
-Finally, the function returns a unique resource ID via the \texttt{ID} parameter.
+Finally, the function returns a unique resource ID, or -1 if failure.
 
 If registered resources are to be given as program arguments you will need to pass them via
 a text string that represents a special file name.  We ensure proper formatting by using the
@@ -522,7 +537,7 @@ sure \GMT\ will allocate the necessary memory at the location you specify.
 We refer to Table~\ref{tbl:matrix}.  The \texttt{type} parameter specifies the
 data type used for the array in the user's program.  All types other than GMTAPI\_FLOAT will need
 to be converted internally in \GMT\ to \texttt{float}, thus possibly increasing memory requirements.
-If the type is GMTAPI\_FLOAT then \GMT\ may be able to use the matrix directly.  The \texttt{n\_rows}
+If the type is GMTAPI\_FLOAT then \GMT\ may be able to use the matrix directly by reference.  The \texttt{n\_rows}
 and \texttt{n\_columns} parameters simply specify the dimensions of the matrix.  These are known in
 the case of input but may be unknowable in the case
 of output; if so you may pass 0 for these values and set \texttt{alloc\_mode} to 1; this will make
@@ -551,7 +566,7 @@ This is done with the \texttt{GMT\_Create\_Data} function, whose prototype is
 void * GMT_Create_Data (struct GMTAPI_CTRL *API, long family, long par[])
 \end{verbatim}
 which returns a pointer to the allocated resource.
-Pass \texttt{family} as one of GMT\_IS\_GMTGRID, GMT\_IS\_DATASET, or GMT\_IS\_CPT,
+Pass \texttt{family} as one of GMT\_IS\_GMTGRID, GMT\_IS\_DATASET, GMT\_IS\_TEXTSET, or GMT\_IS\_CPT,
 or the special families GMT\_IS\_VECTOR or GMT\_IS\_MATRIX when handling user data.
 Depending on the data type chosen you may need to pass additional parameters via
 the \texttt{par} array, as indicated below:
@@ -582,7 +597,7 @@ after registering the original structure as the data source.
 \index{Data!Import}
 \index{Resources!Import data}
 
-If your main program needs to read any of the four recognized data types (CPT files, data tables, text tables, or \GMT\ grids)
+If your main program needs to read any of the five recognized data types (CPT files, data tables, text tables, \GMT\ grids, or images)
 you will use the \texttt{GMT\_Get\_Data}. In the case of data and text tables, you may also consider the
 \texttt{GMT\_Get\_Record} function.
 As a general rule, your program organization will simplify if you can read the entire resource into memory with
@@ -613,8 +628,8 @@ GMT_Begin_IO (struct GMTAPI_CTRL *API, long family, long direction, \
 where \texttt{family} specifies what kind of resources is about to be read or written (see Table \ref{tbl:family}
 for list of all families). The \texttt{direction} is either GMT\_IN or GMT\_out, and for import we obviously use GMT\_IN.
 The \texttt{mode} parameter controls how the
-resources will be accessed:  Select GMT\_BY\_SET to read entire tables, CPT files, or grids, and use
-GMT\_BY\_REC when you need to access a dataset record by record.  The latter selection involves determining
+resources will be accessed:  Select GMT\_BY\_SET to read entire data or text tables, CPT files, or grids, and use
+GMT\_BY\_REC when you need to access a dataset (or text set) record by record.  The latter selection involves determining
 which is the first input file and setting up procedures for skipping to the next input file in a virtual data set.
 No input functions will be able to read any data before \texttt{GMT\_Begin\_IO} has been called.  As you might
 guess, there is a companion \texttt{GMT\_End\_IO} function that disables data access.  You can use these several
@@ -626,7 +641,7 @@ data access, perhaps to do more registration.  We will discuss \texttt{GMT\_End\
 \index{Data!Import data}
 \index{Resources!Import data set}
 
-If your main program needs to import any of the four recognized data types (CPT table, data table, text table or \GMT\ grid)
+If your main program needs to import any of the five recognized data types (CPT table, data table, text table, \GMT\ grid, or image)
 you will use the \texttt{GMT\_Get\_Data} function.
 Because of the similarities of these four import functions we use
 an generic form:
@@ -648,9 +663,8 @@ with \texttt{GMT\_Register\_IO} or gather the sources with \texttt{GMT\_Init\_IO
 \item If you already registered all available sources with \texttt{GMT\_Init\_IO} then
 you pass \texttt{geometry} = 0.
 \end{enumerate}
-In all cases, pass the address of the actual pointer to your CPT table, grid, text set or data set
-when calling \texttt{GMT\_Get\_Data}.  Space will
-be allocated to hold the results, if needed.
+Space will be allocated to hold the results, if needed, and a pointer to the object is returned.
+If there are errors we simply return NULL.
 The \texttt{mode} parameter takes on different meanings for the different data types.
 \begin{description}
 \item [CPT table]:  \texttt{mode} are bit-flags that controls how the CPT file's back-, fore-, and NaN-colors
@@ -667,10 +681,10 @@ entries for highest and lowest value.
 \index{GMT\_GRID\_COMPLEX\_IMAG}
 To get the entire grid and its header, pass GMT\_GRID\_ALL.  However, if you
 need to extract a sub-region you must first get the header only by passing
-GMT\_GRID\_HEADER, then use the header structure attributes \texttt{x\_min},
-\texttt{x\_max}, \texttt{y\_min}, and \texttt{y\_max} to specify a subset via \texttt{wesn}, and then call
+GMT\_GRID\_HEADER, then use the header structure attributes \texttt{wesn},
+to specify a subset via the array \texttt{wesn}, and then call
 \texttt{GMT\_Get\_Data} a second time, with \texttt{mode} = GMT\_GRID\_DATA and passing your \texttt{wesn} array
-and the grid structure returned from the first call (no new return value is given).
+and the grid structure returned from the first call.
 In the event your data array should be allocated to hold both the real and imaginary parts of a
 complex data set you must add either GMT\_GRID\_COMPLEX\_REAL or GMT\_GRID\_COMPLEX\_IMAG to \texttt{mode}
 so as to allow for the extra space and to position the input values correctly.
@@ -690,12 +704,12 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, long mode, long *nfields)
 \end{verbatim}
 where the returned value is either a pointer to a double array with the current row
 or a pointer to a character string with the current row, depending on \texttt{mode}.
-In either case these pointers point to memory internal to \GMT and should be considered read-only
+In either case these pointers point to memory internal to \GMT\ and should be considered read-only
 
 Normally (\texttt{mode} == GMT\_READ\_DOUBLE or 0), we return a pointer to the double array.
 \index{GMT\_READ\_DOUBLE}
 \index{GMT\_READ\_TEXT}
-To read text record, supply instead \texttt{mode} == GMT\_READ\_TEXT or 1) and we
+To read text record, supply instead \texttt{mode} == GMT\_READ\_TEXT (or 1) and we
 instead return a pointer to the text record.
 However, if you have input records that mixes organized floating-point columns with text
 items you could pass \texttt{mode} == GMT\_READ\_MIXED (2).  Then, \GMT\ will attempt to extract the
@@ -704,7 +718,7 @@ Finally, if your application needs to be notified when \GMT\ closes one file and
 add GMT\_FILE\_BREAK to \texttt{mode} and check for the return code GMT\_IO\_NEXT\_FILE (By
 default, we treat the combination of many input files as one virtual file).
 Using \texttt{GMT\_Get\_Record} requires you to first initialize the source(s)
-with \texttt{GMT\_Init\_IO}.  This function returns status codes that your
+with \texttt{GMT\_Init\_IO}.  This function returns NULL if there are problems and sets status codes that your
 program will need to examine to take appropriate response:
 \begin{description}
 \item [GMT\_IO\_TABLE\_HEADER]: We read a table header; to examine this text string
@@ -739,8 +753,9 @@ function disables further data import and its prototype is
 GMT_End_IO (struct GMTAPI_CTRL *API, long direction, long mode)
 \end{verbatim}
 
+\noindent
 and we specify \texttt{direction} = GMT\_IN.  At the moment, \texttt{mode} is not used.  This call
-will also reallocate any arrays used into their proper lengths.
+will also reallocate any arrays obtained into their proper lengths.
 
 \section{Prepare program options}
 \index{Program options!Prepare}
@@ -753,39 +768,44 @@ GMT_module (struct GMTAPI_CTRL *API, long mode, void *args)
 All GMT modules may be called with one of three sets of \texttt{args} depending on \texttt{mode}.
 The three modes differ in how the options are passed to the module:
 \begin{description}
+\item [$mode > 0$]: Expects \texttt{args} to be an array of text options \texttt{mode} to be a count of
+how many options are passed (i.e., the \texttt{argc, argv[]} model).
 \item [$mode < 0$]: Expects \texttt{args} to be a pointer to a doubly-linked list of objects with individual options
 for the current program.
 \item [$mode == 0$]: Expects \texttt{args} to be a single text string with all required options.
-\item [$mode > 0$]: Expects \texttt{args} to be an array of text options \texttt{mode} to be a count of
-how many options are passed (i.e., the \texttt{argc, argv[]} model).
 \end{description}
 Here, \texttt{GMT\_module} stands for any of the \GMT\ modules, such as \texttt{GMT\_psxy}.
 
-\subsection{Set program options via text arguments}
-\index{Set program options via text arguments}
-\index{Program options!Text arguments}
+\subsection{Set program options via text array arguments}
+\index{Set program options via text array arguments}
+\index{Program options!Text array arguments}
 
-In addition to the API control structure pointer, we expect an array \texttt{args} of character strings that each
-holds a single command line argument (e.g., ``\Opt{R}\emph{120:30/134:45/8S/3N}'') as well as the count \texttt{mode}
-of how many options are passed.  This, of course, is almost exactly how the stand-alone \GMT\
-programs are called (and reflects how they themselves are activated internally).  Depending on how
-your program obtains the necessary options you may find that this interface offers all you need.
-Note: if \texttt{mode} == 0 then \texttt{argv} will be further examined to see if it contains several options within a single string.
+When texttt{mode} $> 0$ we expect an array \texttt{args} of character strings that each
+holds a single command line argument (e.g., ``\Opt{R}\emph{120:30/134:45/8S/3N}'') and interpret \texttt{mode}
+to be the count of how many options are passed.  This, of course, is almost exactly how the stand-alone \GMT\
+programs are called (and reflects how they themselves are activated internally).  We call this the ``argc--argv'' mode.
+Depending on how your program obtains the necessary options you may find that this interface offers all you need.
+
+\subsection{Set program options via text command}
+\index{Set program options via text command}
+\index{Program options!Text command argument}
+
+If \texttt{mode} == 0 then \texttt{args} will be examined to see if it contains several options within a single command string.
 If so we will break these into separate options.  This is useful if you wish to pass a single string such as
-``\Opt{R}\emph{120:30/134:45/8S/3N} \Opt{JM}\emph{6i} mydata.txt \Opt{Sc}0.2c''.
+``\Opt{R}\emph{120:30/134:45/8S/3N} \Opt{JM}\emph{6i} mydata.txt \Opt{Sc}0.2c''.  We call this the ``command'' mode.
 
 \subsection{Set program options via linked structures}
 \index{Set program options via linked structures}
 \index{Program options!Linked structures}
 
-The second, linked-list interface allows developers using higher-level programming languages to pass all command
+The third, linked-list interface allows developers using higher-level programming languages to pass all command
 options via a pointer to a NULL-terminated, doubly-linked list of option structures, each containing
 information about a single option.  Here, instead of text arguments we pass the pointer to the linked list of
 options mentioned above, and \texttt{mode} must be passed as -1 (or any negative value).  Using
 this interface can be more involved since you need to generate the linked
 list of program options; however, utility functions exist to simplify its use.
 This interface is intended for programs whose internal workings are better suited to
-generate such arguments.  The order in the list is not important as \GMT\ will sort it internally
+generate such arguments -- we call this the ``options'' mode.  The order in the list is not important as \GMT\ will sort it internally
 according to need.  The option structure is defined in Table \ref{tbl:options}.
 \begin{table}[h]
 \small
@@ -812,12 +832,12 @@ To assist programmers there are also two convenience functions that
 allow you to convert between the two argument formats.  They are
 
 \begin{verbatim}
-GMT_Create_Options (struct GMTAPI_CTRL *API, long argc, \
-    void *args, struct GMT_OPTIONS **list)
+struct GMT_OPTIONS * GMT_Create_Options (struct GMTAPI_CTRL *API, \
+    long argc, void *args)
 \end{verbatim}
 \index{GMT\_Create\_Options}
 This function accepts your array of text arguments (cast via a void pointer), allocates the necessary
-space, performs the conversion, and returns the address to a pointer to the
+space, performs the conversion, and returns a pointer to the
 head of the linked list of program options.  This may now be passed to the
 relevant \texttt{GMT\_module}.  Note that if your list of text arguments
 were obtained from a C \texttt{main()} function then \texttt{argv[0]} will
@@ -833,12 +853,12 @@ GMT_Destroy_Options (struct GMTAPI_CTRL *API, \
 \index{GMT\_Destroy\_Options}
 The inverse function prototype is
 \begin{verbatim}
-GMT_Create_Args (struct GMTAPI_CTRL *API, long *argc, char **argv[], \
+char ** GMT_Create_Args (struct GMTAPI_CTRL *API, long *argc, \
     struct GMT_OPTIONS *list)
 \end{verbatim}
 \index{GMT\_Create\_Args}
 which allocates space for the text strings and performs the conversion;
-it passes back the count of the arguments and a pointer to the text array.
+it passes back the count of the arguments via \texttt{argc} and returns a pointer to the text array.
 Note that \texttt{argv[0]} will not contain the name of the program as
 is the case the arguments presented by a C \texttt{main()} function.
 When you no longer have any use for the text array, call
@@ -850,10 +870,9 @@ to deallocate the space used.
 Finally, to convert the linked list of option structures to a single
 text string command, use
 \begin{verbatim}
-GMT_Create_Cmd (struct GMTAPI_CTRL *API, char **cmd, struct GMT_OPTION **list)
+char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *list)
 \end{verbatim}
-\index{GMT\_Destroy\_Args}
-to deallocate the space used.
+\index{GMT\_Create\_Cmd}
 Developers who plan to import and export \GMT\ shell scripts might find it
 convenient to use these functions.
 
@@ -866,7 +885,7 @@ Several additional utility functions are available for programmers who wish to m
 program option structures within their own programs.  These allow you to create new
 option structures, append them to the linked list, replace existing options with new
 values, find a particular option, and remove options from the list.  Note: The
-order in which the options appear in the linked list is of no consequence to \GMT\.
+order in which the options appear in the linked list is of no consequence to \GMT.
 Internally, \GMT\ will sort and process the options in the manner required.
 Externally, you are free to maintain your own order.
 
@@ -876,16 +895,16 @@ Externally, you are free to maintain your own order.
 
 \texttt{GMT\_Make\_Option} will allocate a new option structure, assign it values
 given the \texttt{option} and \texttt{arg} parameter (pass NULL if there is no
-argument for this option), and returns the pointer \texttt{option} that points
+argument for this option), and returns a pointer
 to the allocated structure.  The prototype is
 \index{GMT\_Make\_Option}
 
 \begin{verbatim}
-GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char *arg, \
-    struct GMT_OPTION **option)
+struct GMT_OPTION *GMT_Make_Option (struct GMTAPI_CTRL *API, char option, \
+    char *arg)
 \end{verbatim}
 Should memory allocation fail the function will print an error message
-and return an error code (\texttt{option} will then be NULL).
+set an error code, and return NULL.
 
 \subsubsection{Append an option to the linked list}
 \index{Append an option to the linked list}
@@ -896,10 +915,10 @@ of the doubly-linked \texttt{list}.  The prototype is
 \index{GMT\_Append\_Option}
 
 \begin{verbatim}
-GMT_Append_Option (struct GMTAPI_CTRL *API, \
-    struct GMT_OPTION *option, struct GMT_OPTION **list)
+struct GMT_OPTION * GMT_Append_Option (struct GMTAPI_CTRL *API, \
+    struct GMT_OPTION *option, struct GMT_OPTION *list)
 \end{verbatim}
-An error will be reported if the \texttt{list} is empty (NULL).
+We return the list back, and if \texttt{list} is given as NULL we return \texttt{option} as the start of the new list.
 
 \subsubsection{Find an option in the linked list}
 \index{Find an option in the linked list}
@@ -911,8 +930,8 @@ The prototype is
 \index{GMT\_Find\_Option}
 
 \begin{verbatim}
-GMT_Find_Option (struct GMTAPI_CTRL *API, char option, \
-    struct GMT_OPTION *list, struct GMT_OPTION **ptr)
+struct GMT_OPTION *GMT_Find_Option (struct GMTAPI_CTRL *API, char option, \
+    struct GMT_OPTION *list)
 \end{verbatim}
 If you need to look for multiple occurrences of a certain option you will need to
 call \texttt{GMT\_Find\_Option} again, passing the option following the
@@ -1002,7 +1021,7 @@ All modules return an error or status code that your program should consider bef
 \index{Resources!Export data}
 
 If your program needs to write any of the four recognized data types (CPT files, data tables, text tables, or \GMT\ grids)
-you can use the \texttt{GMT\_Put\_Data}. In the case of data tables, you may also consider the
+you can use the \texttt{GMT\_Put\_Data}. In the case of data and text tables, you may also consider the
 \texttt{GMT\_Put\_Record} function.
 As a general rule, your program organization may simplify if you can write the export the entire resource with
 \texttt{GMT\_Put\_Data}.  However, if the program logic is simple or already involves using \texttt{GMT\_Get\_Record},
@@ -1013,7 +1032,7 @@ Both of these output functions takes a parameter called \texttt{mode}.  The \tex
 takes on different meanings for the different data types and will be discussed below.
 However, one bit setting is common to all types: By default, you are only allowed to write a
 data resource once; the resource is then flagged to have been written and subsequent attempts to write
-from the same resource will quietly be ignored.  In the unlikely event you need to re-write a
+to the same resource will quietly be ignored.  In the unlikely event you need to re-write a
 resource you can override this default behavior by adding GMT\_IO\_RESET to your \texttt{mode} parameter.
 
 \subsection{Enable Data Export}
@@ -1047,26 +1066,26 @@ each data type:
 
 \begin{description}
 \item [CPT table]: \texttt{mode} controls if the CPT table's back-, fore-, and NaN-colors
-should written (1) or not (0).
-\item [Data table]: If \texttt{method} is GMT\_IS\_DATASET\_FILE, then the value of
+should be written (1) or not (0).
+\item [Data table]: If \texttt{method} is GMT\_IS\_FILE, then the value of
 \texttt{mode} affects how the data set is written:
 \index{GMT\_IS\_DATASET\_FILE}
 \begin{description}
 \item [GMT\_WRITE\_DATASET]: The entire data set will be written to the single file [0].
 \index{GMT\_WRITE\_DATASET}
 \item [GMT\_WRITE\_TABLES]: Each table in the data set is written to individual files [1].
-You can either register an output file name that \emph{must} contain one C-style
-format specifier for a GMT\_LONG variable (e.g., ``New\_Table\_\%6.6ld.txt''), which will be
+You can either specify an output file name that \emph{must} contain one C-style
+format specifier for a long variable (e.g., ``New\_Table\_\%6.6ld.txt''), which will be
 replaced with the table number (a running number from 0) \emph{or} you must assign
 to each table \emph{i} a unique output file name via the \texttt{D->table[i]->file[GMT\_OUT]}
 variables prior to calling the function.
 \index{GMT\_WRITE\_TABLES}
-\item [GMT\_WRITE\_SEGMENTS]: Each segment in the data set is written to individual files [2].
+\item [GMT\_WRITE\_SEGMENTS]: Each segment in the data set is written to an individual file [2].
 Same setup as for GMT\_WRITE\_TABLES except we use sequential segment numbers to build the file names.
 \index{GMT\_WRITE\_SEGMENTS}
-\item [GMT\_WRITE\_TABLE\_SEGMENTS]: Each segment in the data set is written to individual files [3].
-You can either register an output file name that \emph{must} contain two C-style
-format specifiers for two GMT\_LONG variables (e.g., ``New\_Table\_\%6.6ld\_Segment\_\%3.3ld.txt''),
+\item [GMT\_WRITE\_TABLE\_SEGMENTS]: Each segment in the data set is written to an individual file [3].
+You can either specify an output file name that \emph{must} contain two C-style
+format specifiers for two long variables (e.g., ``New\_Table\_\%6.6ld\_Segment\_\%3.3ld.txt''),
 which will be replaced with the table and segment numbers, \emph{or}
 you must assign to each segment \emph{j} in each table \emph{i} a unique output file name
 via the \texttt{D->table[i]->segment[j]->file[GMT\_OUT]} variables prior to calling the function.
@@ -1078,7 +1097,7 @@ via the \texttt{D->table[i]->segment[j]->file[GMT\_OUT]} variables prior to call
 \item [GMT grid]: Here, \texttt{mode} may be GMT\_GRID\_HEADER to only update a file's header
 structure, but normally it is simply GMT\_GRID\_ALL (0) so the entire
 grid and its header will be exported (a subset is not allowed during export).
-However, In the event your data array holds both the real and imaginary parts of a
+However, in the event your data array holds both the real and imaginary parts of a
 complex data set you must add either GMT\_GRID\_COMPLEX\_REAL (4) or GMT\_GRID\_COMPLEX\_IMAG (16) to \texttt{mode}
 so as to export the corresponding grid values correctly.  Finally, for native binary grids you may skip writing
 the grid header by adding GMT\_GRID\_NO\_HEADER (16); this setting is ignored for other grid formats.
@@ -1096,7 +1115,6 @@ the grid header by adding GMT\_GRID\_NO\_HEADER (16); this setting is ignored fo
 
 If your program must write data table records one-by-one you will instead use the
 \texttt{GMT\_Put\_Record} function; the prototype is
-The prototype is:
 \index{GMT\_Put\_Record}
 
 \begin{verbatim}
@@ -1142,7 +1160,7 @@ function disables further data export; here, we obviously pass \texttt{direction
 \index{Destroy allocated resources}
 \index{Resources!Destroy}
 
-If your session imported any data sets into memory then you should explicitly free this
+If your session imported any data sets into memory then you may explicitly free this
 memory once it is no longer needed and before terminating the session.
 This is done with the \texttt{GMT\_Destroy\_Data} function, whose prototype is
 \index{GMT\_Destroy\_Data}
@@ -1150,11 +1168,14 @@ This is done with the \texttt{GMT\_Destroy\_Data} function, whose prototype is
 \begin{verbatim}
 GMT_Destroy_Data (struct GMTAPI_CTRL *API, long mode, void *data)
 \end{verbatim}
-where \texttt{data} is a pointer to the resource.
+where \texttt{data} is the address of the pointer to a data container.
 Pass \texttt{mode} either as GMT\_ALLOCATED or GMT\_REFERENCE.  The former
 is used internally by the \GMT\ modules since they can only free resources that are
 not destined to live on in the memory of their calling program.  The latter mode is used
-to free resources in your calling program.
+to free resources in your calling program.  Note that when each module completes it will
+automatically free memory created by the API; similarly, when the session is destroyed
+we also automatically free up memory.  Thus, \texttt{GMT\_Destroy\_Data} is therefore
+generally only needed when you wish to directly free up memory to avoid running out of it.
 \index{GMT\_ALLOCATED}
 \index{GMT\_REFERENCE}
 
@@ -1168,7 +1189,7 @@ Before your program exits it should properly terminate the \GMT\ session, which 
 GMT_Destroy_Session (struct GMTAPI_CTRL **API)
 \end{verbatim}
 \index{GMT\_Destroy\_Session}
-which simply takes the address of the \GMT\ API control structure as its only arguments.  It terminates the \GMT\ machinery
+which simply takes the address of the pointer to the \GMT\ API control structure as its only arguments.  It terminates the \GMT\ machinery
 with a call to \texttt{GMT\_end} and deallocates all memory used by the \GMT\ API book-keeping. If you
 requested PSL during creation then the PSL resources are freed as well.  It
 also unregisters any remaining resources previously registered with the session.
@@ -1179,7 +1200,7 @@ Finally, the API structure itself is freed so your main program does not need to
 \index{Report errors}
 \index{Errors!Report}
 
-Since all API functions returns a status code, you should always check this return code before
+Since all API functions returns a status code via \texttt{API->error}, you should always check this code before
 moving to the next step.  All API functions will issue an error message before returning control
 to the calling program.  This function is
 
@@ -1210,9 +1231,9 @@ The list of the basic 14 FORTRAN prototype functions thus becomes
 function GMT_Create_Session (tag, mode)
 function GMT_Destroy_Session ()
 function GMT_Register_IO (family, method, geometry, direction, \
-    resource, wesn, ID)
+    resource, wesn)
 function GMT_Encode_ID (filename, ID)
-function GMT_Init_IO (family, geometry, direction, head, ID)
+function GMT_Init_IO (family, geometry, direction, head)
 function GMT_Begin_IO (family, geometry, direction, mode)
 function GMT_Create_Data (family, geometry, ipar)
 function GMT_Get_Data (family, method, geometry, wesn, mode, \
@@ -1227,7 +1248,7 @@ function GMT_Report_Error (error)
 \end{verbatim}
 where \texttt{method}, \texttt{geometry}, \texttt{direction}, \texttt{ID} and \texttt{error} are integers,
 \texttt{ipar} is an integer parameter array, \texttt{wesn} is a real (double precision) array,
-and \texttt{source} and \texttt{receiver} are the resource addresses.
+and \texttt{resource} are source or destination addresses.
 
 \clearpage
 \thispagestyle{headings}

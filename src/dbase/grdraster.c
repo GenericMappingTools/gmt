@@ -208,7 +208,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 	}
 	file = dir;
 
-	if (GMT_Register_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, file, NULL, &object_ID)) return (0);
+	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, file, NULL)) == GMTAPI_NOTSET) return (0);
 
 	if ((error = GMT_Begin_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) {	/* Enables data input and sets access mode */
 		GMT_report (GMT, GMT_MSG_FATAL, "Error reading grdraster.info. Error code = %ld\n", error);
