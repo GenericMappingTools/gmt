@@ -330,7 +330,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT_memset (wesn, 4, double);
 	if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Specified a subset */
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
 
 	GC = GMT_memory (GMT, NULL, Ctrl->G.n_grids, struct GRD_CONTAINER);
 	value = GMT_memory (GMT, NULL, Ctrl->G.n_grids, double);
@@ -354,12 +354,12 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 		}
 		else {	/* Sandwell/Smith Mercator grids */
-			GC[g].G = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+			if ((GC[g].G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 			GMT_read_img (GMT, Ctrl->G.file[g], GC[g].G, wesn, Ctrl->G.scale[g], Ctrl->G.mode[g], Ctrl->G.lat[g], TRUE);
 			img_conv_needed = TRUE;
 		}
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 	
 	if (Ctrl->C.active) {	/* Special case of requesting cross-profiles for given line segments */
 		GMT_LONG tbl, seg, row, col;
@@ -367,15 +367,15 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL;
 		
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);				/* Enables data input and sets access mode */
 		if ((Din = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
-		if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 		GMT_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
 		/* Expand with dist,az columns (and posibly make space for more) and optionally resample */
 		if ((Dtmp = GMT_resample_data (GMT, Din, Ctrl->C.spacing, 2, (Ctrl->D.active) ? Ctrl->G.n_grids : 0, Ctrl->A.mode)) == NULL) Return (API->error);
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
 		if (Ctrl->D.active) {	/* Also want to sample grids along the original resampled trace */
 			for (tbl = 0; tbl < Dtmp->n_tables; tbl++) {
 				T = Dtmp->table[tbl];
@@ -387,12 +387,12 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 					}
 				}
 			}
-			if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, Ctrl->D.file, Dtmp))) Return (error);
+			if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, Ctrl->D.file, Dtmp)) Return (API->error);
 		}
 		/* Get dataset with cross-profiles, with columns for x,y,d and the n_grids samples */
 		if ((Dout = GMT_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, Ctrl->G.n_grids)) == NULL) Return (API->error);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &Dtmp);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &Din);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dtmp)) Return (API->error);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Din)) Return (API->error);
 		
 		/* Sample the grids along all profiles in Dout */
 		
@@ -407,9 +407,9 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 				}
 			}
 		}
-		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, Dout->io_mode, Ctrl->Out.file, Dout))) Return (error);
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */		
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &Dout);
+		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, Dout->io_mode, Ctrl->Out.file, Dout)) Return (API->error);
+		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */		
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dout)) Return (API->error);
 	}
 	else {	/* Standard resampling point case */
 		GMT_LONG pure_ascii = FALSE, ix, iy, n_fields, rmode;
@@ -419,10 +419,10 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		
 		pure_ascii = !(GMT->common.b.active[GMT_IN] || GMT->common.b.active[GMT_OUT] || GMT->common.o.active);
 
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data output */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
 
 		GMT_memset (line, GMT_BUFSIZ, char);
 		if (Ctrl->Z.active) {
@@ -476,8 +476,8 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 			n_points++;
 		}
-		if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_IN,  0)) Return (API->error);	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 
 		if (out) GMT_free (GMT, out);
 	}
@@ -485,8 +485,9 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Sampled %ld points from grid %s (%d x %d)\n",
 			n_points, Ctrl->G.file[g], GC[g].G->header->nx, GC[g].G->header->ny);
-		if (Ctrl->G.type[g] == 0)
-			GMT_Destroy_Data (API, GMT_ALLOCATED, &GC[g].G);
+		if (Ctrl->G.type[g] == 0) {
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &GC[g].G)) Return (API->error);
+		}
 		else
 			GMT_free_grid (GMT, &GC[g].G, TRUE);
 	}

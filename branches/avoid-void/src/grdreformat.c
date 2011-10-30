@@ -154,7 +154,7 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the grdreformat main code ----------------------------*/
 
-	Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 	hmode = (Ctrl->N.active) ? GMT_GRID_NO_HEADER : 0;
 	GMT_err_fail (GMT, GMT_grd_get_format (GMT, Ctrl->IO.file[0], Grid->header, TRUE), Ctrl->IO.file[0]);
@@ -182,7 +182,7 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	GMT_free_grid (GMT, &Grid, TRUE);
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
 	if ((Grid = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->IO.file[0], NULL)) == NULL) Return (API->error);	/* Get header only */
 
 	if (GMT->common.R.active) {	/* Specified a subset */
@@ -199,15 +199,15 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->IO.file[0], Grid) == NULL) Return (API->error);	/* Get all */
 
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	Grid->header->type = type[1];
 
 	GMT_grd_init (GMT, Grid->header, options, TRUE);
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, hmode, Ctrl->IO.file[1], Grid);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
+	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, hmode, Ctrl->IO.file[1], Grid)) Return (API->error);
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 
 	Return (GMT_OK);
 }

@@ -199,10 +199,10 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	/*---------------------------- This is the grdsample main code ----------------------------*/
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
 	if ((Gin = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 
-	Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_memcpy (Gout->header->wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 
 	if (Ctrl->I.active)
@@ -266,7 +266,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		Gout->header->inc[GMT_X], Gout->header->inc[GMT_Y], Gout->header->registration);
 
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file, Gin) == NULL) Return (API->error);	/* Get subset */
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X]) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Output sampling interval in x exceeds input interval and may lead to aliasing.\n");
 	if (Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y]) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Output sampling interval in y exceeds input interval and may lead to aliasing.\n");
@@ -297,9 +297,9 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		GMT_col_loop (GMT, Gout, row, col, ij) Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat);
 	}
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
+	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout)) Return (API->error);
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 
 	GMT_free (GMT, lon);
 

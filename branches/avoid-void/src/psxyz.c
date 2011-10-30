@@ -440,9 +440,9 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles or km, not dimensions */
 
 	if (Ctrl->C.active) {
-		if ((error = GMT_Begin_IO (API, GMT_IS_CPT, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_CPT, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
 		if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 	}
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (GMT_contlabel_prep (GMT, &S.G, NULL)) Return (EXIT_FAILURE);
@@ -526,8 +526,8 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	in = GMT->current.io.curr_rec;
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
-		if ((error = GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-		if ((error = GMT_Begin_IO (API, set_type, GMT_IN, GMT_BY_REC))) Return (error);		/* Enables data input and sets access mode */
+		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Register data input */
+		if (GMT_Begin_IO (API, set_type, GMT_IN, GMT_BY_REC)) Return (API->error);		/* Enables data input and sets access mode */
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		n = 0;
@@ -860,8 +860,8 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {	/* Line/polygon part */
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT segment table(s) */
 
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
 		if ((D = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
 
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
@@ -943,9 +943,9 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_free (GMT, yp);
 			}
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &D);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D)) Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	if (S.u_set) GMT->current.setting.proj_length_unit = save_u;	/* Reset unit */
 

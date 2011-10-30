@@ -308,7 +308,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	read_cont = (Ctrl->S.mode != PLOT_CDP && Ctrl->S.mode != PLOT_OFFSET && !Ctrl->S.value);
 
-	Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
@@ -523,9 +523,9 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	GMT_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid)) Return (GMT_DATA_WRITE_ERROR);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
+	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid)) Return (API->error);
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);				/* Disables further data output */
 
 	GMT_free (GMT, flag);
 

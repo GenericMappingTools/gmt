@@ -217,9 +217,9 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	global_xmin = global_ymin = global_zmin = +DBL_MAX;
 	global_xmax = global_ymax = global_zmax = -DBL_MAX;
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);				/* Enables data output and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default output destination, unless already set */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) Return (API->error);				/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);				/* Enables data output and sets access mode */
 
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
 
@@ -484,9 +484,9 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (G->header->wesn[YLO] < global_ymin) global_ymin = G->header->wesn[YLO];
 			if (G->header->wesn[YHI] > global_ymax) global_ymax = G->header->wesn[YHI];
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &G);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G)) Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	if (global_zmin == -DBL_MAX) global_zmin = GMT->session.d_NaN;	/* Never got set */
 	if (global_zmax == +DBL_MAX) global_zmax = GMT->session.d_NaN;
@@ -526,7 +526,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_ymin, GMT_Y);	GMT_fputs ("/", GMT->session.std[GMT_OUT]);
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_ymax, GMT_Y);	GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
 	}
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 	Return (GMT_OK);

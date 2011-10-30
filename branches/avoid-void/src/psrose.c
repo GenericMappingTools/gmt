@@ -367,8 +367,8 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	n = 0;
 	if ((error = GMT_set_cols (GMT, GMT_IN, 2))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Register data input */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
 
 	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
 
@@ -603,7 +603,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);				/* Disables further data input */
 
 	if (Ctrl->L.active) {	/* Deactivate those with - */
 		if (Ctrl->L.w[0] == '-' && Ctrl->L.w[1] == '\0') Ctrl->L.w[0] = '\0';

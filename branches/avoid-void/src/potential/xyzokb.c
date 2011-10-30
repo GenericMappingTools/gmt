@@ -431,8 +431,8 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	
 	/*---------------------------- This is the redpol main code ----------------------------*/
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) 	/* Enables data input and sets access mode */
-		Return (error);
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) 	/* Enables data input and sets access mode */
+		Return (API->error);
 
 	if (!Ctrl->M.active) 
 		Ctrl->N.d_to_m = 1.;
@@ -487,7 +487,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 /* ---------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {
-		Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		GMT_grd_init (GMT, Gout->header, options, FALSE);
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, GMT->common.R.wesn, Ctrl->I.inc, FALSE), Ctrl->G.file);
@@ -696,11 +696,11 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			strcpy (Gout->header->z_units, "nT");
 		}
 
-		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) /* Enables data output and sets access mode */
-			Return (error);
+		if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) /* Enables data output and sets access mode */
+			Return (API->error);
 
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout);
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);			/* Disables further data output */
+		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout)) Return (API->error);
+		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);			/* Disables further data output */
 
 	}
 	else {

@@ -234,9 +234,9 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (io.binary) GMT->common.b.active[GMT_OUT] = TRUE;
 
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options))) Return (error);	/* Registers stdout, unless already set */
-	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);		/* Enables data input and sets access mode */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options)) Return (API->error);	/* Registers stdout, unless already set */
+	if (GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET)) Return (API->error);		/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
 
 	GMT->common.b.ncol[GMT_OUT] = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : 3);
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 0))) Return (error);
@@ -344,7 +344,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 #endif
 		else {	/* Regular x,y,z[,w] output */
-			if (first && (error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options))) Return (error);	/* Establishes data output */
+			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options)) Return (API->error);	/* Establishes data output */
 
 			x = GMT_memory (GMT, NULL, G->header->nx, double);
 			y = GMT_memory (GMT, NULL, G->header->ny, double);
@@ -378,8 +378,8 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_IN,  0)) Return (API->error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "%ld values extracted\n", n_total - n_suppressed);
 	if (n_suppressed) {

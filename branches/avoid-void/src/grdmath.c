@@ -215,7 +215,7 @@ GMT_LONG GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, st
 struct GMT_GRID * alloc_stack (struct GMT_CTRL *GMT, struct GMT_GRID *Template)
 {	/* Allocate a new GMT_GRID structure based on dimensions etc of the Template */
 	struct GMT_GRID *New = NULL;
-	New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL);
+	if ((New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL)) == NULL) return (NULL);
 	GMT_memcpy (New->header, Template->header, 1, struct GRD_HEADER);
 	New->data = GMT_memory (GMT, NULL, Template->header->size, float);
 	return (New);
@@ -2892,8 +2892,8 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Read the first file we encounter so we may allocate space */
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN,  GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN,  GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
 
 	for (opt = list; !G_in && opt; opt = opt->next) {	/* Look for a grid file, if given */
 		if (!(opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_NUMBER))	continue;	/* Skip command line options and output file */
@@ -2905,7 +2905,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((G_in = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, NULL)) == NULL) Return (API->error);	/* Get header only */
 	}
 
-	info.G = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+	if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, info.G->header, options, TRUE);
 	subset = (GMT->common.R.active && Ctrl->I.active);
 
@@ -2924,7 +2924,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		GMT_memcpy (info.G->header, G_in->header, 1, struct GRD_HEADER);
 		GMT_set_grddim (GMT, info.G->header);			/* To adjust for the pad */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &G_in);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G_in)) Return (API->error);
 	}
 	else if (GMT->common.R.active && Ctrl->I.active) {	/* Must create from -R -I [-r] */
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
@@ -3009,7 +3009,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_grd_loop (GMT, info.G, row, col, node) stack[nstack-1]->data[node] = (float)factor[nstack-1];
 			}
 			this_stack = nstack - 1;
-			GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, opt->arg, stack[this_stack]);
+			if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, opt->arg, stack[this_stack])) Return (API->error);
 			alloc_mode[this_stack] = 2;	/* Since it now is registered */
 			if (n_items) nstack--;	/* Pop off the current stack if there is one */
 			new_stack = nstack;
@@ -3145,8 +3145,8 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "\n");
 
-	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN,  0)) Return (API->error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data input */
 
 	if (nstack > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %ld more operands left on the stack!\n", nstack);
 

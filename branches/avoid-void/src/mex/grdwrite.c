@@ -50,7 +50,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if ((API = GMT_Create_Session ("GMT/MEX-API", GMTAPI_GMT)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. Prepare the GMT grid */
-	G = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+	if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) mexErrMsgTxt ("Allocation failure\n");
 	GMT_grd_init (API->GMT, G->header, NULL, FALSE);
 
 	/* 3. Load the file name and title (if given) into char strings */
@@ -80,7 +80,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (GMT_End_IO (API, GMT_OUT, 0)) mexErrMsgTxt ("Failure to End IO\n");
 	
 	/* 8. Destroy the temporary grid */
-	GMT_Destroy_Data (API, GMT_ALLOCATED, &G);
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G)) mexErrMsgTxt ("Run-time error\n");
 
 	/* 9. Destroy GMT API session */
 	if (GMT_Destroy_Session (&API)) mexErrMsgTxt ("Failure to destroy GMT Session\n");

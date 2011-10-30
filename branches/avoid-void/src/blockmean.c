@@ -191,7 +191,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the blockmean main code ----------------------------*/
 
 	GMT_set_pad (GMT, 0);	/* We are using grid indexing but have no actual grid so no padding is needed */
-	Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
@@ -208,8 +208,8 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_OUT, ((Ctrl->W.weighted[GMT_OUT]) ? 4 : 3) + 3 * Ctrl->E.active))) Return (error);
 
 	/* Register likely data sources unless the caller has already done so */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default output destination, unless already set */
 
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* wesn may include some padding if gridline-registered */
 
@@ -232,7 +232,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
 
 	n_read = n_pitched = 0;	/* Initialize counters */
 	weight = 1.0;		/* Set the default point weight */
@@ -283,7 +283,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		zw[node].a[BLK_Z] += weighted_z;	/* Sum up the weighted values */
 		n_pitched++;				/* Number of points actually used */
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	/* Done with reading (files are automatically closed by i/o-machinery) */
 	
@@ -301,7 +301,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Calculating block means\n");
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
 
 	for (node = 0; node < Grid->header->nm; node++) {	/* Visit all possible blocks to see if they were visited */
 
@@ -338,7 +338,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 	}
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
 	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);

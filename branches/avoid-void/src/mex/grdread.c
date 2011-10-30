@@ -74,7 +74,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (pi >= 0) GMTMEX_grdheader2info (plhs, G, pi);	/* Also return info array */
 	if (px >= 0) GMTMEX_grdxy (API, plhs, G, px, py);	/* Return x,y arrays also */
 	
-	GMT_Destroy_Data (API, GMT_ALLOCATED, &G);
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G)) mexErrMsgTxt ("Run-time error\n");
 	
 	/* 10. Destroy GMT API session */
 	if (GMT_Destroy_Session (&API)) mexErrMsgTxt ("GMT: (surface) Failure to destroy GMT Session\n");

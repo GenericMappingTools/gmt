@@ -297,10 +297,10 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Now we are ready to take on some input values */
 	/* Allocate memory and read in all the files; each file can have many lines */
 	
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
+	if (GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
 	if ((D[GMT_IN] = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 	
 	D[GMT_OUT] = GMT_alloc_dataset (GMT, D[GMT_IN], 0, 0, GMT_ALLOC_NORMAL);	/* Allocate identical output tables; we reallocate memory below */
 
@@ -348,9 +348,9 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Out.file, D[GMT_OUT]))) Return (error);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
+	if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Out.file, D[GMT_OUT])) Return (API->error);
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 	
 	Return (GMT_OK);
 }

@@ -386,8 +386,8 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* No command line files or std** to add via GMT_Init_IO */
 	
-	if ((error = GMT_Begin_IO (API, 0, GMT_IN,  GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, 0, GMT_IN,  GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
 
 	if (Ctrl->C.active) {	/* Apply CPT to get three r,g,b channel files */
 		GMT_LONG new_grid = FALSE;
@@ -409,12 +409,12 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				index = GMT_get_rgb_from_z (GMT, P, Grid->data[ij], f_rgb);
 				Out->data[ij] = (float)GMT_s255 (f_rgb[i]);
 			}
-			GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, grdfile, Out);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid);
-			if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, &Out);
+			if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, grdfile, Out)) Return (API->error);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid)) Return (API->error);
+			if (new_grid && GMT_Destroy_Data (API, GMT_ALLOCATED, &Out)) Return (API->error);
 			free (grdfile);
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &P);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &P)) Return (API->error);
 	}
 	else {
 		if (GMT_access (GMT, Ctrl->In.file, R_OK)) {
@@ -440,7 +440,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 
-		Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		GMT_grd_init (GMT, Grid->header, options, FALSE);
 		Grid->header->registration = (int)GMT->common.r.active;
 		if (!Ctrl->I.active) {
@@ -496,17 +496,17 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					k3 += 3;
 				}
 			}
-			GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, grdfile, Grid);
+			if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, grdfile, Grid)) Return (API->error);
 			free (grdfile);
 		}
 		if (Ctrl->W.active)
 			GMT_free (GMT, picture);
 		else
 			PSL_free (picture);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid)) Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_IN,  0)) Return (API->error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 
 	Return (GMT_OK);
 }

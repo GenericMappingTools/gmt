@@ -412,9 +412,9 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	if (!Ctrl->Q.active) {
 	
-		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
 		if ((Gin = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 		GMT_grd_init (GMT, Gin->header, options, TRUE);	/* Update command history only */
 
 		slow  = (Ctrl->F.filter == 3 || Ctrl->F.filter == 4);	/* Will require sorting etc */
@@ -425,7 +425,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else
 			one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 0 : 1;
 		
-		Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		/* Use the -R region for output if set; otherwise match grid domain */
 		GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 		full_360 = (Ctrl->D.mode && GMT_360_RANGE (Gin->header->wesn[XHI], Gin->header->wesn[XLO]));	/* Periodic geographic grid */
@@ -470,7 +470,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 #ifdef OBSOLETE						
 		if (Ctrl->S.active) {
-			Sout = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+			if ((Sout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 			GMT_err_fail (GMT, GMT_init_newgrid (GMT, Sout, wesn, inc, !one_or_zero), Ctrl->S.file);
 			Sout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 		}
@@ -899,15 +899,15 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld multiple modes found\n", GMT_n_multiples);
 				
 		GMT_report (GMT, GMT_MSG_NORMAL, "Write filtered grid\n");
-		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout);
+		if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
+		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout)) Return (API->error);
 #ifdef OBSOLETE						
 		if (Ctrl->S.active) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Write scale grid\n");
-			GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->S.file, Sout);
+			if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->S.file, Sout)) Return (API->error);
 		}
 #endif	
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);				/* Disables further data output */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Done\n");
 		
 		GMT_free (GMT, F. weight);
@@ -952,7 +952,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);				/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);				/* Enables data output and sets access mode */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;		/* No coordinates here */
 
 		/* read depths from each column until EOF */
@@ -994,7 +994,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		/* close the input */
 		fclose (ip);
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 	}
 	
 	Return (GMT_OK);

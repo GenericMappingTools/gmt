@@ -3039,7 +3039,7 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 
 	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_OUT, name, NULL)) == GMTAPI_NOTSET) return (EXIT_FAILURE);
 	if ((error = GMT_set_cols (C, GMT_OUT, 1))) return (error);
-	if ((error = GMT_Begin_IO (C->parent, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC))) return (error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (C->parent, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC)) return (C->parent->error);	/* Enables data output and sets access mode */
 	free (name);
 	kind = GMT_is_geographic (C, GMT_IN);
 	if (G->save_labels == 2)
@@ -3070,7 +3070,7 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 			GMT_Put_Record (C->parent, GMT_WRITE_TEXT, record);	/* Write this to output */
 		}
 	}
-	if ((error = GMT_End_IO (C->parent, GMT_OUT, 0))) return (error);	/* Disables further data output */
+	if (GMT_End_IO (C->parent, GMT_OUT, 0)) return (C->parent->error);	/* Disables further data output */
 	return (GMT_NOERROR);
 }
 

@@ -513,11 +513,11 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Gather input/output  file names (or stdin/out) and enable i/o */
 	
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data output */
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
 
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
 		if ((Cin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, GMT_IO_ASCII, Ctrl->C.file, NULL)) == NULL) Return (API->error);
@@ -766,8 +766,8 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
 		n_pass++;
 	}
-	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_IN,  0)) Return (API->error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld records, passed %ld records\n", n_read, n_pass);
 

@@ -2883,7 +2883,7 @@ void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[
 		if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, info->fname, info->G) == NULL) return;	/* Get subset */
 	}
 	else {	/* Read a Mercator grid Sandwell/Smith style */
-		info->G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL);
+		if ((info->G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL)) == NULL) return;
 		GMT_read_img (GMT, info->fname, info->G, wesn, info->scale, info->mode, info->max_lat, TRUE);
 	}
 	info->mx = info->G->header->nx + 4;

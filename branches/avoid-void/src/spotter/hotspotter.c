@@ -353,7 +353,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Initialize the CVA grid and structure */
 
-	G = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+	if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, G->header, options, FALSE);	/* Initialize grid structure */
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
@@ -362,7 +362,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Assign grid-region variables in radians to avoid conversions inside convolution loop */
 
-	G_rad = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+	if ((G_rad = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	G_rad->header->inc[GMT_X] = G->header->inc[GMT_X] * D2R;
 	G_rad->header->inc[GMT_Y] = G->header->inc[GMT_Y] * D2R;
 	G_rad->header->wesn[XLO]  = G->header->wesn[XLO] * D2R;
@@ -410,8 +410,8 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	n_expected_fields = (GMT->common.b.ncol[GMT_IN]) ? GMT->common.b.ncol[GMT_IN] : 5;
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_expected_fields))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);				/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
 
 	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
 		n_read++;
@@ -518,7 +518,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (!(n_smts%100)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed %5ld seamounts\r", n_smts);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);				/* Disables further data input */
 
 	/* OK, Done processing, time to write out */
 
@@ -544,9 +544,9 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Write CVA grid %s\n", Ctrl->G.file);
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G)) Return (GMT_DATA_WRITE_ERROR);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
+	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G)) Return (API->error);
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);				/* Disables further data output */
 
 	/* Clean up memory */
 

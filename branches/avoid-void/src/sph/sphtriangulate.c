@@ -517,8 +517,8 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Now we are ready to take on some input values */
 
 	if ((error = GMT_set_cols (GMT, GMT_IN, 2))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default input sources, unless already set */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
 
 	n_alloc = 0;
 	if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
@@ -556,7 +556,7 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		first = FALSE;
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	/* Reallocate memory to n points */
 	if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n, double);
@@ -596,19 +596,19 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	Dout[0]->table[0]->n_headers = 1;
 	Dout[0]->table[0]->header[0] = strdup (header);
 	
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output sources, unless already set */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default output sources, unless already set */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
 
 	if (Ctrl->T.active) GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Must produce multisegment output files */
 	
-	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout[0]->io_mode, NULL, Dout[0]))) Return (error);
+	if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout[0]->io_mode, NULL, Dout[0])) Return (API->error);
 	if (Ctrl->N.active) {
 		GMT->current.io.multi_segments[GMT_OUT] = FALSE;	/* Since we only have one segment */
 		if (Ctrl->A.active) sprintf (header, "# sphtriangulate nodes (lon, lat, area)"); else sprintf (header, "# sphtriangulate nodes (lon, lat)");
 		Dout[1]->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
 		Dout[1]->table[0]->n_headers = 1;
 		Dout[1]->table[0]->header[0] = strdup (header);
-		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout[1]->io_mode, Ctrl->N.file, Dout[1]))) Return (error);
+		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout[1]->io_mode, Ctrl->N.file, Dout[1])) Return (API->error);
 	}
 	
 	GMT_free (GMT, T.D.tri);

@@ -590,7 +590,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 	
-	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
 
 	if (Ctrl->C.active) {
 		if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
@@ -628,7 +628,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!GMT_grd_setregion (GMT, Topo->header, wesn, BCR_BILINEAR)) {
 		/* No grid to plot; just do empty map and bail */
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 		GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->current.plot.mode_3D |= 2;	/* Ensure that foreground axis is drawn */
@@ -743,12 +743,12 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Go back to beginning and reread since grd has been destroyed */
 
 		if (Ctrl->G.active) {
-			GMT_Destroy_Data (API, GMT_ALLOCATED, &Drape[0]);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Drape[0])) Return (API->error);
 			if ((Drape[0] = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, Ctrl->G.file[0], NULL)) == NULL) Return (API->error);	/* Get drape data*/
 			Z = Drape[0];
 		}
 		else {
-			GMT_Destroy_Data (API, GMT_ALLOCATED, &Topo);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Topo)) Return (API->error);
 			if ((Topo = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
 			Z = Topo;
 		}
@@ -766,7 +766,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		i_reg = GMT_change_grdreg (GMT, Intens->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	inc2[GMT_X] = 0.5 * Z->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * Z->header->inc[GMT_Y];
 

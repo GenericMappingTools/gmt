@@ -176,7 +176,7 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the grdcut main code ----------------------------*/
 
-	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET)) Return (API->error);				/* Enables data input and sets access mode */
 
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
 		GMT_LONG i0, i1, j0, j1, j, ij;
@@ -290,7 +290,7 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	nx_old = G->header->nx;		ny_old = G->header->ny;
 	
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) Return (API->error);	/* Get subset */
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		char format[GMT_BUFSIZ];
@@ -305,9 +305,9 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Send the subset of the grid to the destination. */
 	
-	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);		/* Enables data output and sets access mode */
-	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, G);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
+	if (GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET)) Return (API->error);		/* Enables data output and sets access mode */
+	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, G)) Return (API->error);
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);				/* Disables further data output */
 
 	Return (GMT_OK);
 }

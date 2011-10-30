@@ -247,7 +247,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
 	}
 	
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);		/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) Return (API->error);		/* Enables data input and sets access mode */
 	if (GMT->common.R.active)	/* Load the w/e/s/n from -R */
 		GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
 	else {	/* If -R was not given we infer the option via the input grid */
@@ -319,7 +319,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT->common.R.active = FALSE;
 			GMT_parse_common_options (GMT, "R", 'R', opt_R);
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &G);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G)) Return (API->error);
 	}
 
 	if (GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
@@ -356,16 +356,16 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	sprintf (format, "(%s/%s/%s/%s)", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
 	if (Ctrl->I.active) {	/* Transforming from rectangular projection to geographical */
 
 		/* if (GMT->common.R.oblique) d_swap (s, e); */  /* Got w/s/e/n, make into w/e/s/n */
 
-		Geo = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+		if ((Geo = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		GMT_memcpy (Geo->header->wesn, wesn, 4, double);
 
 		if ((Rect = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 		offset = Rect->header->registration;	/* Same as input */
 		if (GMT->common.r.active) offset = !offset;	/* Toggle */
@@ -418,14 +418,14 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		GMT_grd_project (GMT, Rect, Geo, TRUE);
 
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Geo);
+		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Geo)) Return (API->error);
 	}
 	else {	/* Forward projection from geographical to rectangular grid */
 
 		if ((Geo = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
-		Rect = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+		if ((Rect = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		GMT_memcpy (Rect->header->wesn, GMT->current.proj.rect, 4, double);
 		if (Ctrl->A.active) {	/* Convert from 1:1 scale */
 			if (unit) {	/* Undo the 1:1 unit used */
@@ -493,9 +493,9 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* rect xy values are here in GMT projected units chosen by user */
 
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Rect);
+		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Rect)) Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 
 	Return (GMT_OK);
 }

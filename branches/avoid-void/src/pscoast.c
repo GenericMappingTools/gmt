@@ -626,8 +626,8 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2; 
 		GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data output */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
 		sprintf (header, "# %s extracted from the %s resolution GSHHS version %s database\n", kind[id], shore_resolution[base], c.version);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, header);
 		sprintf (header, "# %s\n# %s\n", c.title, c.source);
@@ -995,7 +995,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_plotend (GMT);
 	}
 	else {
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 	}
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done\n");
