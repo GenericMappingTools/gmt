@@ -6,7 +6,7 @@
 # Print the shell script name and purpose and fill out to 72 characters
 # and make sure to use US system defaults
 header () {
-  printf "%-72s" "$0: $1"
+  printf "%-72s\n" "$0: $1"
 }
 
 # Convert PS to PDF
@@ -20,32 +20,38 @@ function make_pdf()
 # Compare the ps file with its original. Check $1.ps (if $1 given) or $ps
 pscmp () {
   make_pdf $ps # make pdf file
-  f=${1:-`basename $ps .ps`}
-  d=`basename $PWD`
-  rms=`gm compare -density 100 -metric rmse -file $f.png $f.ps orig/$f.ps|grep Total|cut -c23-`
-  if test $? -ne 0; then
-    echo "[FAIL]"
-    echo $d/$f: $rms >> ../fail_count.d
-        ((ERROR++))
-  elif test `echo 200 \> $rms|bc` -eq 1; then
-    echo "[PASS]"
-    rm -f $f.png $f.ps
+  f=${1:-$(basename $ps .ps)}
+  d=$(basename $PWD)
+  # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
+  rms=$(gm compare -density 300 -maximum-error 0.057 -highlight-color magenta -highlight-style assign -metric rmse -file ${f}.png orig/${f}.ps ${f}.ps) || pscmpfailed="yes"
+  rms=$(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p' <<< "$rms")
+  if [ -z "$rms" ]; then
+    rms="NA"
   else
-    echo "[FAIL]"
-    echo $d/$f: RMS Error = $rms >> ../fail_count.d
-        ((ERROR++))
+    rms=$(printf "%.3f\n" $rms)
+  fi
+  if [ "$pscmpfailed" ]; then
+    now=$(date "+%F %T")
+    echo "RMS Error = $rms [FAIL]"
+    echo "$now ${d}/${f}: RMS Error = $rms" >> ../fail_count.d
+    ((ERROR++))
+  else
+    test -z "$rms" && rms=NA
+    echo "RMS Error = $rms [PASS]"
+    rm -f ${f}.png ${f}.ps
   fi
 }
 
 passfail () {
   if [ -s fail ]; then
+    now=$(date "+%F %T")
     echo "[FAIL]"
-    echo $d/$1: `wc -l fail`ed lines >> ../fail_count.d
+    echo "$now $d/$1: $(wc -l fail)ed lines" >> ../fail_count.d
     mv -f fail $1.log
     ((ERROR++))
   else
     echo "[PASS]"
-    rm -f fail $1.log $1.png
+    rm -f fail ${1}.log ${1}.png
   fi
 }
 
@@ -70,6 +76,7 @@ function on_exit()
 {
   rm -f .gmt* gmt.conf test.lock
   echo "exit status: ${ERROR}"
+  trap - EXIT # Restore ERR trap
   exit ${ERROR}
 }
 trap on_exit EXIT
@@ -89,5 +96,6 @@ lockfile -5 -l 180 test.lock
 
 # Start with proper GMT defaults
 gmtset -Du
+gmtset PS_MEDIA letter PROJ_LENGTH_UNIT inch
 
 # vim: ft=sh

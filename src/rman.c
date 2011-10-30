@@ -6,24 +6,25 @@
 #pragma GCC diagnostic ignored "-Wformat-security"
 #endif
 
-/* static char cvsid[] = "$Header: /Users/phelps/cvs/prj/RosettaMan/rman.c,v 1.154 2003/07/26 19:00:48 phelps Exp $"; */
-
 /*
-   PolyglotMan by Thomas A. Phelps (phelps@ACM.org)
+	 PolyglotMan by Thomas A. Phelps (phelps@ACM.org)
 
-  accept man pages as formatted by (10)
-     Hewlett-Packard HP-UX, AT&T System V, SunOS, Sun Solaris, OSF/1, 
-     DEC Ultrix, SGI IRIX, Linux, FreeBSD, SCO
+	 accept man pages as formatted by (10)
+	  Hewlett-Packard HP-UX, AT&T System V, SunOS, Sun Solaris, OSF/1,
+	  DEC Ultrix, SGI IRIX, Linux, FreeBSD, SCO
 
-  output as (9)
-     printable ASCII, section headers only, TkMan, [tn]roff, HTML,
-     LaTeX, LaTeX2e, RTF, Perl pod, MIME, DocBook XML
+	 output as (9)
+	  printable ASCII, section headers only, TkMan, [tn]roff, HTML,
+	  LaTeX, LaTeX2e, RTF, Perl pod, MIME, DocBook XML
 
-  written March 24, 1993
-	bs2tk generalized into RosettaMan November 4-5, 1993
-	source interpretation added September 24, 1996
-	renamed PolyglotMan due to lawsuit by Rosetta, Inc. August 8, 1997
-*/
+	 written March 24, 1993
+	 bs2tk generalized into RosettaMan November 4-5, 1993
+	 source interpretation added September 24, 1996
+	 renamed PolyglotMan due to lawsuit by Rosetta, Inc. August 8, 1997
+
+	 PolyglotMan is free software; you can redistribute it and/or modify
+	 it under the terms of the "Artistic License".
+ */
 
 #include <unistd.h>
 #include <stdio.h>
