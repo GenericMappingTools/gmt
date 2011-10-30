@@ -23,7 +23,7 @@ pscmp () {
   f=${1:-$(basename $ps .ps)}
   d=$(basename $PWD)
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$(gm compare -density 300 -maximum-error 0.057 -highlight-color magenta -highlight-style assign -metric rmse -file ${f}.png orig/${f}.ps ${f}.ps) || pscmpfailed="yes"
+  rms=$(gm compare -density 300 -maximum-error 0.005 -highlight-color magenta -highlight-style assign -metric rmse -file ${f}.png orig/${f}.ps ${f}.ps) || pscmpfailed="yes"
   rms=$(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p' <<< "$rms")
   if [ -z "$rms" ]; then
     rms="NA"
