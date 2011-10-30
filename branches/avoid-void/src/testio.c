@@ -41,7 +41,7 @@ int main (int argc, char *argv[]) {
 	struct GMT_GRID *G = NULL;
 	
 	/* 1. Initializing new GMT session */
-	if (GMT_Create_Session (&API, "TEST", GMTAPI_GMT)) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session ("TEST", GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
 
 	Vi = GMT_create_vector (API->GMT, 3);
 	Vi->type[0] = Vi->type[1] = Vi->type[2] = GMTAPI_FLOAT;
@@ -49,11 +49,11 @@ int main (int argc, char *argv[]) {
 	Vi->data[0].f4 = x;	Vi->data[1].f4 = y;	Vi->data[2].f4 = z;
 	Vo = GMT_create_vector (API->GMT, 3);
 
-	if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, &Vi, NULL, &in_ID)) exit (EXIT_FAILURE);
+	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, &Vi, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 
 	Vo->type[0] = Vo->type[1] = Vo->type[2] = GMTAPI_DOUBLE;
 	Vo->alloc_mode = GMT_REFERENCE;	/* To tell mapproject to allocate as needed */
-	if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_COPY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, &Vo, NULL, &out_ID)) exit (EXIT_FAILURE);
+	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_COPY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, &Vo, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 
 	/* 4. Create command options for GMT_mapproject */
 
@@ -66,8 +66,8 @@ int main (int argc, char *argv[]) {
 
 	/* 6. Create command options for GMT_xyz2grd */
 
-	if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, &Vi, NULL, &in_ID)) exit (EXIT_FAILURE);
-	if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &G, NULL, &out_ID)) exit (EXIT_FAILURE);
+	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, &Vi, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &G, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	GMT_Encode_ID (API, i_string, in_ID);	/* Make filename with embedded object ID */
 	GMT_Encode_ID (API, o_string, out_ID);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-<%s -R0/3/0/3 -I1 -G%s", i_string, o_string);
@@ -92,8 +92,8 @@ int main (int argc, char *argv[]) {
 
 	Vo = GMT_create_vector (API->GMT, 3);
 	Vo->alloc_mode = GMT_REFERENCE;	/* To tell gmtselect to allocate as needed */
-	if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, &Vi, NULL, &in_ID)) exit (EXIT_FAILURE);
-	if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_COPY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, &Vo, NULL, &out_ID)) exit (EXIT_FAILURE);
+	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, &Vi, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_COPY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, &Vo, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	GMT_Encode_ID (API, i_string, in_ID);	/* Make filename with embedded object ID */
 	GMT_Encode_ID (API, o_string, out_ID);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-<%s -R0/3/0/3 ->%s", i_string, o_string);

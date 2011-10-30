@@ -82,7 +82,7 @@ int main (int argc, char *argv[]) {
 	/* OK, here we found a recognized GMT module; do the job */
 	
 	/* 1. Initializing new GMT session */
-	if (GMT_Create_Session (&API, argv[0], mode)) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session (argv[0], mode)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. Run selected GMT cmd function, or give usage message if errors arise during parsing */
 	status = func (API, (GMT_LONG)(argc-2), argv+2);

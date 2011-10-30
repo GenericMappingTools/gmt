@@ -36,7 +36,7 @@ struct XYZ2GRD_CTRL {
 		GMT_LONG active;
 		char *file;
 	} In;
-	struct A {	/* -A[f|l|n|s|u|z] */
+	struct A {	/* -A[f|l|n|m|r|s|u|z] */
 		GMT_LONG active;
 		char mode;
 	} A;
@@ -111,8 +111,8 @@ GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-A Determine what to do if multiple entries are found for a node:\n");
 	GMT_message (GMT, "\t   -Af: Keep first value if multiple entries per node.\n");
 	GMT_message (GMT, "\t   -Al: Keep lower (minimum) value if multiple entries per node.\n");
-	GMT_message (GMT, "\t   -Am: mean the multiple entries per node.\n");
-	GMT_message (GMT, "\t   -An: Count number of multiple entries per node instead.\n");
+	GMT_message (GMT, "\t   -Am: Compute mean of multiple entries per node.\n");
+	GMT_message (GMT, "\t   -An: Count number of multiple entries per node.\n");
 	GMT_message (GMT, "\t   -Ar: Compute RMS of multiple entries per node.\n");
 	GMT_message (GMT, "\t   -As: Keep last value if multiple entries per node.\n");
 	GMT_message (GMT, "\t   -Au: Keep upper (maximum) value if multiple entries per node.\n");
@@ -334,7 +334,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->S.active) io.swab = TRUE;	/* Need to pass swabbing down to the gut level */
 
 		if (!Ctrl->S.file)
-			GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->S.file, NULL, &in_ID);
+			in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->S.file, NULL);
 		else if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 		
 		GMT->current.io.input = save_i;			/* Reset input pointer */

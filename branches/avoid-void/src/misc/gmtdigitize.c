@@ -623,7 +623,7 @@ int main (int argc, char *argv[]) {
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 
 	/* 1. Initializing new GMT session */
-	if (GMT_Create_Session (&API, argv[0], GMTAPI_GMT)) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session (argv[0], GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = (int)GMT_gmtdigitize (API, (GMT_LONG)(argc-1), (argv+1));

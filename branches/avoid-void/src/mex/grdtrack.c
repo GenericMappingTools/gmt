@@ -46,7 +46,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (!mxIsChar(prhs[nrhs-1]) && nrhs != 4) mexErrMsgTxt ("Last input must contain the options string\n");
 
 	/* Initializing new GMT session */
-	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("Failure to create GMT Session\n");
+	if ((API = GMT_Create_Session ("GMT/MEX-API", FUNC_MODE)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* Make sure options are given, and get them */
 	options = GMTMEX_options_init (API, prhs, nrhs);
