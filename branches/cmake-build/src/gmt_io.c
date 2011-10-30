@@ -687,7 +687,11 @@ char *GMT_getsharepath (struct GMT_CTRL *C, const char *subdir, const char *stem
 	/* Not found, see if there is a file in the user's GMT_USERDIR (~/.gmt) directory */
 
 	if (C->session.USERDIR) {
+		/* Try to get file from $GMT_USERDIR */
 		sprintf (path, "%s/%s%s", C->session.USERDIR, stem, suffix);
+		if (!access (path, R_OK)) return (path);
+		/* Try to get file from $GMT_USERDIR/subdir */
+		sprintf (path, "%s/%s/%s%s", C->session.USERDIR, subdir, stem, suffix);
 		if (!access (path, R_OK)) return (path);
 	}
 
