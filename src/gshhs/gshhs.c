@@ -406,8 +406,8 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			TX->record = GMT_memory (GMT, TX->record, seg_no, char *);
 		}
 		X->n_records = X->table[0]->n_records = TX->n_rows;
-		if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		if ((error = GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, NULL, 0, Ctrl->Out.file, X))) Return (error);
+		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
+		if (GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, NULL, 0, Ctrl->Out.file, X)) Return (API->error);
 	}
 	else {
 		if (seg_no < n_alloc) {	/* Allocate to final size table */
@@ -415,10 +415,10 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		D->n_segments = D->table[0]->n_segments = seg_no;
 		gmode = (is_line) ? GMT_IS_LINE : GMT_IS_POLY;
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, gmode, NULL, 0, Ctrl->Out.file, D))) Return (error);
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
+		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, gmode, NULL, 0, Ctrl->Out.file, D)) Return (API->error);
 	}
-  	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
+  	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);				/* Disables further data output */
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "%s in: %ld %s out: %ld\n", name[is_line], n_seg, name[is_line], seg_no);
 

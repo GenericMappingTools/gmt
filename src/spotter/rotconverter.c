@@ -402,8 +402,8 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->G.active) n_out = 6;
 	
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);				/* Enables data output and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data output */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);				/* Enables data output and sets access mode */
 
 	if (Ctrl->G.active)		/* GPlates header */
 		sprintf (record, "#plateid\ttime\tlatitude\tlongitude\tangle\tfixedplateid\n");
@@ -456,7 +456,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 	}
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);		/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);		/* Disables further data output */
 
 	GMT_free (GMT, a);
 	

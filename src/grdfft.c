@@ -594,7 +594,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	 */
 
 	char format[GMT_TEXT_LEN64];
-	GMT_LONG k, nk, nused, ifreq, error, dim[4] = {1, 1, 1, 0};
+	GMT_LONG k, nk, nused, ifreq, dim[4] = {1, 1, 1, 0};
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
 	PFD get_k;
 	float *datac = Grid->data;
@@ -661,10 +661,10 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 		S->coord[GMT_Y][k] = power[k];
 		S->coord[GMT_Y][k] = eps_pow * power[k];
 	}
-	if ((error = GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) return (error);	/* Enables data output and sets access mode */
-	if ((error = GMT_Put_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, 0, file, D))) return (error);
-	if ((error = GMT_End_IO (GMT->parent, GMT_OUT, 0))) return (error);			/* Disables further data output */
-	GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D);
+	if (GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET)) return (GMT->parent->error);	/* Enables data output and sets access mode */
+	if (GMT_Put_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, 0, file, D)) return (GMT->parent->error);
+	if (GMT_End_IO (GMT->parent, GMT_OUT, 0)) return (GMT->parent->error);	/* Disables further data output */
+	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D)) return (GMT->parent->error);
 	GMT_free (GMT, power);
 	return (2);	/* Number of parameters used */
 }
@@ -1161,7 +1161,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
 	if ((GridA = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[0], NULL)) == NULL) 
 		Return (API->error);	/* Get header only */
 
@@ -1199,7 +1199,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Now read data into the real positions in the padded complex radix grid */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, Ctrl->In.file[0], GridA) == NULL) Return (API->error);	/* Get subset */
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);				/* Disables further data input */
 
 	/* Check that no NaNs are present */
 	for (j = stop = 0; !stop && j < GridA->header->size; j++) if (GridA->data[j] == 15.0) stop = j;
@@ -1298,9 +1298,9 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* The data are in the middle of the padded array */
 
-		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, Ctrl->G.file, Out);
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);			/* Disables further data output */
+		if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
+		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, Ctrl->G.file, Out)) Return (API->error);
+		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);			/* Disables further data output */
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Done\n");

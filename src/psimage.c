@@ -343,10 +343,10 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef USE_GDAL
 	else  {	/* Read a raster image */
 		GMT_set_pad (GMT, 0);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
-		if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
 		if ((I = GMT_Get_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) 
 			Return (API->error);
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 		GMT_set_pad (GMT, 2);	/* Reset to GMT default */
 
 		if (I->ColorMap != NULL) {
@@ -388,8 +388,9 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		header.depth = 8;
 		if (known) PSL_free (picture); /* EPS or Sun raster file */
 #ifdef USE_GDAL
-		else	/* Got it via GMT_Get_Data */
-			GMT_Destroy_Data (API, GMT_ALLOCATED, &I);
+		else {	/* Got it via GMT_Get_Data */
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I)) Return (API->error);
+		}
 #endif
 		picture = buffer;
 	}
@@ -405,7 +406,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)Ctrl->G.t_rgb[i];
 		GMT_memcpy (&(buffer[j]), picture, n, unsigned char);
 #ifdef USE_GDAL
-		GMT_Destroy_Data (API, GMT_ALLOCATED, &I);	/* If I is NULL then nothing is done */
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I)) Return (API->error);	/* If I is NULL then nothing is done */
 #else
 		PSL_free (picture);
 #endif
@@ -477,7 +478,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_plotend (GMT);
 
 #ifdef USE_GDAL
-	GMT_Destroy_Data (API, GMT_ALLOCATED, &I);	/* If I is NULL then nothing is done */
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I)) Return (API->error);	/* If I is NULL then nothing is done */
 #endif
 	if (free_GMT) {
 		GMT_free (GMT, picture);

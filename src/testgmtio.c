@@ -46,8 +46,8 @@ int main (int argc, char *argv[]) {
 	/* 4. Initializing data input via stdin */
 	
 	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) exit (EXIT_FAILURE);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) exit (EXIT_FAILURE);	/* Establishes data input */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) exit (EXIT_FAILURE);	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options)) exit (EXIT_FAILURE);	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) exit (EXIT_FAILURE);	/* Establishes data output */
 	
 	/* 5. Read individual records until end of data set */
 	/*    The GMT_FILE_BREAK in GMT_Get_Record means we will return a special EOF marker at the end of each

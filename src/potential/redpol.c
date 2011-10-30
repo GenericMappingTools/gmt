@@ -1168,8 +1168,8 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	
 	/*---------------------------- This is the redpol main code ----------------------------*/
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) 	/* Enables data input and sets access mode */
-		Return (error);
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) 	/* Enables data input and sets access mode */
+		Return (API->error);
 
 	/* ... */
 	if (Ctrl->F.compute_n) {
@@ -1204,7 +1204,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT_set_pad (GMT, 2);		/* Reset the default GMT pad */
 
-	Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 
 	GMT_memcpy (Gout->header->wesn, wesn_new, 4, double);
 	GMT_memcpy (Gout->header->inc, Gin->header->inc, 2, double);
@@ -1247,7 +1247,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			 	Ctrl->E.decfile, Gdec) == NULL) 
 			Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);		/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);		/* Disables further data input */
 
 	n_coef = Ctrl->F.ncoef_row * Ctrl->F.ncoef_col;
        	cosphi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
@@ -1301,7 +1301,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 					
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
-		Gfilt = GMT_Create_Data (API, GMT_IS_GRID, NULL);
+		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		GMT_grd_init (GMT, Gfilt->header, options, TRUE);
 		strcpy (Gfilt->header->title, "Reduction To the Pole filter");
 		strcpy (Gfilt->header->x_units, "radians");
@@ -1493,13 +1493,12 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	strcpy (Gout->header->title, "Anomaly reducted to the pole");
 	strcpy (Gout->header->z_units, "nT");
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) /* Enables data output and sets access mode */
-		Return (error);
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) /* Enables data output and sets access mode */
+		Return (API->error);
 
-	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout);
-	if (Ctrl->Z.active)
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->Z.file, Gfilt);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);			/* Disables further data output */
+	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout)) Return (API->error);
+	if (Ctrl->Z.active && GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->Z.file, Gfilt)) Return (API->error);
+	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 
 	Return (GMT_OK);
 }

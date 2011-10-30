@@ -73,7 +73,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	if (nlhs == 1) GMTMEX_grdheader2info (plhs, G, 0);	/* Return info array */
  	
-	GMT_Destroy_Data (API, GMT_ALLOCATED, &G);
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G)) mexErrMsgTxt ("Run-time error\n");
 
 	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (&API))  mexErrMsgTxt ("GMT: (grdinfo) Failure to destroy GMT Session\n");

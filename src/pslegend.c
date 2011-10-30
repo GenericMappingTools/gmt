@@ -355,8 +355,8 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	save_EOF = GMT->current.setting.io_seg_marker[GMT_IN];
 	GMT->current.setting.io_seg_marker[GMT_IN] = '#';
 #endif
-	if ((error = GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) Return (error);				/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Register data input */
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC)) Return (API->error);				/* Enables data input and sets access mode */
 
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
 		double wesn[4];
@@ -785,7 +785,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 #ifdef GMT_COMPAT
 	/* Reset the flag */
 	GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
@@ -793,7 +793,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	Front->alloc_mode = GMT_ALLOCATED;	/* So we can free it */
 	if (!F) GMT_free_dataset (GMT, &Front);	/* Was unused so free explicitly */
-	else GMT_Destroy_Data (API, GMT_ALLOCATED, &Front);
+	else if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Front)) Return (API->error);
 	
 	/* Time to plot any symbols, text, and paragraphs we collected in the loop */
 
