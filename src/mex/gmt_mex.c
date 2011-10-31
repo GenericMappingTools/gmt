@@ -132,7 +132,7 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, 
 				     GMT_IS_POINT, GMT_IN, V, NULL)) == GMTAPI_NOTSET) 
 			mexErrMsgTxt ("Failure to register GMT source vectors\n");
-		GMT_Encode_ID (API, i_string, in_ID);		/* Make filename with embedded object ID */
+		if (GMT_Encode_ID (API, i_string, in_ID) mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");		/* Make filename with embedded object ID */
 		//i_string = strdup (buffer);
 	}
 	return (i_string);
@@ -160,7 +160,7 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 		GMT_grd_loop (API->GMT, (*G), row, col, gmt_ij) (*G)->data[gmt_ij] = (float)z[MEX_IJ((*G),row,col)];
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, G, NULL)) == GMTAPI_NOTSET) 
 			mexErrMsgTxt ("Failure to register GMT source grid\n");
-		GMT_Encode_ID (API, i_string, in_ID);	/* Make filename with embedded object ID */
+		if (GMT_Encode_ID (API, i_string, in_ID) mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");	/* Make filename with embedded object ID */
 		//i_string = strdup (buffer);
 	}
 	return (i_string);
@@ -179,7 +179,7 @@ char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, struct GMT_GRID **G, int n
 			mexErrMsgTxt ("Error: neither -G option nor left hand side output args.");
 	}
 	o_string = mxMalloc(GMTAPI_STRLEN);
-	GMT_Encode_ID (API, o_string, out_ID);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, o_string, out_ID) mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");	/* Make filename with embedded object ID */
 	//o_string = strdup (buffer);
 	return (o_string);
 }
@@ -205,7 +205,7 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 			     GMT_IS_POINT, GMT_OUT, V, NULL)) == GMTAPI_NOTSET) 
 		mexErrMsgTxt ("Failure to register GMT destination vectors\n");
 		
-	GMT_Encode_ID (API, o_string, out_ID);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, o_string, out_ID) mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");	/* Make filename with embedded object ID */
 	//o_string = strdup (buffer);
 	return (o_string);
 }
@@ -450,7 +450,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		if ((ID = GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, ptr, NULL)) == GMTAPI_NOTSET) 
 			mexErrMsgTxt ("GMTMEX_parser: Failure to register GMT source or destination\n");
 		lr_pos[direction]++;		/* Advance counter for next time */
-		GMT_Encode_ID (API, name, ID);	/* Make filename with embedded object ID */
+		if (GMT_Encode_ID (API, name, ID) mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");	/* Make filename with embedded object ID */
 		GMT_Make_Option (API, key[def[direction]][0], name, &new_ptr);	/* Create the missing (implicit) GMT option */
 		GMT_Append_Option (API, new_ptr, head);				/* Append it to the option list */
 	}
@@ -465,7 +465,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		/* Register a Matlab/Octave entity as a source or destination */
 		if ((ID = GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, ptr, NULL)) == GMTAPI_NOTSET) 
 			mexErrMsgTxt ("GMTMEX_parser: Failure to register GMT source or destination\n");
-		GMT_Encode_ID (API, name, ID);	/* Make filename with embedded object ID */
+		if (GMT_Encode_ID (API, name, ID) mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");	/* Make filename with embedded object ID */
 		lr_pos[direction]++;		/* Advance counter for next time */
 		
 		/* Replace the option argument with the embedded file */

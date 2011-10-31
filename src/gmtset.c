@@ -140,7 +140,7 @@ GMT_LONG GMT_gmtset (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (options) {
 		if (options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtset_usage (API, GMTAPI_USAGE));		/* Return the usage message */
@@ -150,7 +150,7 @@ GMT_LONG GMT_gmtset (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_gmtset", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return (error);
+	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
 	Ctrl = New_gmtset_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtset_parse (API, Ctrl, options))) Return (error);
 

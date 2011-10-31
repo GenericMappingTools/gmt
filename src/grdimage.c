@@ -377,7 +377,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdimage_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdimage_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -385,7 +385,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdimage", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycnpt>" GMT_OPT("S"), options))) Return (error);
+	if (GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycnpt>" GMT_OPT("S"), options)) Return (API->error);
 	Ctrl = New_grdimage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdimage_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
@@ -581,12 +581,12 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[GMT_BUFSIZ];
 			/* Create option list, register G as input source via reference */
 			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Intens_orig, NULL)) == GMTAPI_NOTSET) 
-				return (EXIT_FAILURE);
-			GMT_Encode_ID (API, in_string, object_ID);	/* Make filename with embedded object ID for grid G */
+				return (API->error);
+			if (GMT_Encode_ID (API, in_string, object_ID)) return (API->error);	/* Make filename with embedded object ID for grid G */
 
 			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &G2, NULL)) == GMTAPI_NOTSET) 
-				return (EXIT_FAILURE);
-			GMT_Encode_ID (GMT->parent, out_string, object_ID);	/* Make filename with embedded object ID for result grid G2 */
+				return (API->error);
+			if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) return (API->error);	/* Make filename with embedded object ID for result grid G2 */
 
 			sprintf (cmd, "%s -G%s -I%ld+/%ld+", in_string, out_string, nx, ny);
 			status = GMT_grdsample (GMT->parent, 0, cmd);	/* Do the resampling */

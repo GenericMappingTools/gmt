@@ -2833,7 +2833,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdmath_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdmath_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -2844,7 +2844,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	Ctrl = New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	GMT_memset (&info, 1, struct GRDMATH_INFO);		/* Initialize here to not crash when Return gets called */
 	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghinrs" GMT_OPT("F"), options))) Return (error);
+	if (GMT_Parse_Common (API, "-VRbf:", "ghinrs" GMT_OPT("F"), options)) Return (API->error);
 	if ((error = GMT_grdmath_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/

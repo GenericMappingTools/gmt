@@ -48,6 +48,9 @@
 #include "gmt.h"
 
 #define ptr_return(API,err,ptr) { GMT_Report_Error(API,err); return (ptr);}
+#define return_null(API,err) { GMT_Report_Error(API,err); return (NULL);}
+#define return_error(API,err) { GMT_Report_Error(API,err); return (TRUE);}
+#define return_value(API,err,val) { GMT_Report_Error(API,err); return (val);}
 
 #ifdef DEBUG
 GMT_LONG GMT_List_Args (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
@@ -58,7 +61,7 @@ GMT_LONG GMT_List_Args (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 
 	struct GMT_OPTION *opt = NULL;
 
-	if (head == NULL) return (GMT_Report_Error (API, GMT_OPTION_LIST_NULL));
+	if (head == NULL) return_error (API, GMT_OPTION_LIST_NULL);
 
 	fprintf (stderr, "Options:");
 	for (opt = head; opt; opt = opt->next) {
@@ -76,7 +79,7 @@ GMT_LONG GMT_List_Args (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	}
 	fprintf (stderr, "\n");
 
-	return (GMT_Report_Error (API, GMT_OK));
+	return (API->error = GMT_OK);	/* No error encountered */
 }
 #endif
 
@@ -97,18 +100,18 @@ struct GMT_OPTION * GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args
 	struct GMT_OPTION *head = NULL, *new = NULL;
 	struct GMT_CTRL *G = API->GMT;	/* GMT control structure */
 
-	if (API == NULL) ptr_return (API, GMT_NOT_A_SESSION, NULL);	/* GMT_Create_Session has not been called */
+	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
 		GMT_LONG pos = 0, new_n_args = 0, n_alloc = GMT_SMALL_CHUNK;
 		char p[GMT_BUFSIZ], *txt_in = in;	/* Passed a single text string */
-		if ((new_args = GMT_memory (G, NULL, n_alloc, char *)) == NULL) ptr_return (API, GMT_MEMORY_ERROR, NULL);
+		if ((new_args = GMT_memory (G, NULL, n_alloc, char *)) == NULL) return_null (API, GMT_MEMORY_ERROR);
 
 		while ((GMT_strtok (API->GMT, txt_in, " ", &pos, p))) {	/* Break up string into separate words */
 			new_args[new_n_args++] = strdup (p);
 			if (new_n_args == n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
-				if ((new_args = GMT_memory (G, new_args, n_alloc, char *)) == NULL) ptr_return (API, GMT_MEMORY_ERROR, NULL);
+				if ((new_args = GMT_memory (G, new_args, n_alloc, char *)) == NULL) return_null (API, GMT_MEMORY_ERROR);
 			}
 		}
 		args = new_args;
@@ -145,7 +148,7 @@ struct GMT_OPTION * GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args
 		}
 
 		/* GMT_Make_Option will separate numbers from files and turn option to GMTAPI_OPT_NUMBER if file is not found and arg has valid numeric structure */
-		if ((new = GMT_Make_Option (API, option, &args[arg][first_char])) == NULL) ptr_return (API, error, NULL);	/* Create the new option structure given the args, or return the error */
+		if ((new = GMT_Make_Option (API, option, &args[arg][first_char])) == NULL) return_null (API, error);	/* Create the new option structure given the args, or return the error */
 
 		head = GMT_Append_Option (API, new, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
 	}
@@ -154,7 +157,8 @@ struct GMT_OPTION * GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args
 		GMT_free (G, new_args);
 	}
 
-	ptr_return (API, GMT_OK, head);	/* We return the linked list */
+	API->error = GMT_OK;	/* No error encountered */
+	return (head);		/* We return the linked list */
 }
 
 GMT_LONG GMT_Destroy_Options (struct GMTAPI_CTRL *API, struct GMT_OPTION **head)
@@ -163,9 +167,8 @@ GMT_LONG GMT_Destroy_Options (struct GMTAPI_CTRL *API, struct GMT_OPTION **head)
 
 	struct GMT_OPTION *current = NULL, *delete = NULL;
 
-	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));		/* GMT_Create_Session has not been called */
-
-	if (*head == NULL) return (GMT_Report_Error (API, GMT_OK));			/* Cannot delete a non-existant list */
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
+	if (*head == NULL) return_error (API, GMT_OK);			/* Cannot delete a non-existant list */
 
 	current = *head;
 	while (current) {	/* Start at head and loop over the list and delete the options, one by one. */
@@ -175,7 +178,7 @@ GMT_LONG GMT_Destroy_Options (struct GMTAPI_CTRL *API, struct GMT_OPTION **head)
 		GMT_free (API->GMT, delete);		/* Then free the structure which was allocated by GMT_memory */
 	}
 	*head = NULL;	/* Reset head to NULL value since it no longer points to any allocated memory */
-	return (GMT_Report_Error (API, GMT_OK));
+	return (API->error = GMT_OK);	/* No error encountered */
 }
 
 char ** GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, struct GMT_OPTION *head)
@@ -188,13 +191,12 @@ char ** GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, struct GMT_OPT
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *G = API->GMT;	/* GMT control structure */
 
-	if (API == NULL) ptr_return (API, GMT_NOT_A_SESSION, NULL);	/* GMT_Create_Session has not been called */
-
-	if (head == NULL) ptr_return (API, GMT_OPTION_LIST_NULL, NULL);	/* No list of options was given */
+	if (API  == NULL) return_null (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
+	if (head == NULL) return_null (API, GMT_OPTION_LIST_NULL);	/* No list of options was given */
 
 	*argc = 0;	/* Start off with no arguments */
 
-	if ((txt = GMT_memory (G, NULL, n_alloc, char *)) == NULL) ptr_return (API, GMT_MEMORY_ERROR, NULL);
+	if ((txt = GMT_memory (G, NULL, n_alloc, char *)) == NULL) return_null (API, GMT_MEMORY_ERROR);
 
 	for (opt = head; opt; opt = opt->next) {	/* Loop over all options in the linked list */
 		if (!opt->option) continue;			/* Skip all empty options */
@@ -209,7 +211,7 @@ char ** GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, struct GMT_OPT
 
 		if ((txt[arg] = GMT_memory (G, NULL, strlen (buffer)+1, char)) == NULL) {	/* Failed to allocate memory; free what we got and cry foul */
 			(void) GMT_Destroy_Args (API, arg, txt);	/* Free list content built so far, as well as the list.  We ignore the OK return since this is an error */
-			ptr_return (API, GMT_MEMORY_ERROR, NULL);	/* Report the error */
+			return_null (API, GMT_MEMORY_ERROR);	/* Report the error */
 		}
 		/* OK, got the memory we so boldly requested.  Copy over the buffer contents */
 		strcpy (txt[arg], buffer);
@@ -218,7 +220,7 @@ char ** GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, struct GMT_OPT
 			n_alloc += GMT_SMALL_CHUNK;
 			if ((txt = GMT_memory (G, txt, n_alloc, char *)) == NULL) {	/* Failed to extend the list; free what we got and cry foul */
 				(void) GMT_Destroy_Args (API, arg, txt);	/* Free list content built so far, as well as the list.  We ignore the OK return since this is an error */
-				ptr_return (API, GMT_MEMORY_ERROR, NULL);	/* Report the error */
+				return_null (API, GMT_MEMORY_ERROR);	/* Report the error */
 			}
 		}
 	}
@@ -229,24 +231,24 @@ char ** GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, struct GMT_OPT
 	else if (arg < n_alloc) {	/* Trim back on the list to fit what we want */
 		if ((txt = GMT_memory (G, txt, arg, char *)) == NULL) {	/* Failed to shrink the list; free what we got and cry foul */
 			(void) GMT_Destroy_Args (API, arg, txt);	/* Free list content built so far, as well as the list.  We ignore the OK return since this is an error */
-			ptr_return (API, GMT_MEMORY_ERROR, NULL);	/* Report the error */
+			return_null (API, GMT_MEMORY_ERROR);	/* Report the error */
 		}
 	}
 	
 	*argc = arg;	/* Pass back the number of items created */
-	ptr_return (API, GMT_OK, txt);	/* Pass back the char* array to the calling module */
+	API->error = GMT_OK;	/* No error encountered */
+	return (txt);		/* Pass back the char* array to the calling module */
 }
 
 GMT_LONG GMT_Destroy_Args (struct GMTAPI_CTRL *API, GMT_LONG argc, char *args[])
 {	/* Delete all text arguments, perhaps those created by GMT_Create_Args */
 
-	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));		/* GMT_Create_Session has not been called */
-
-	if (argc == 0 || !args) return (GMT_Report_Error (API, GMT_ARGV_LIST_NULL));	/* We were given no args to destroy, so there! */
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
+	if (argc == 0 || !args) return_error (API, GMT_ARGV_LIST_NULL);	/* We were given no args to destroy, so there! */
 	/* Just deallocate the space taken by the list of arguments */
 	while (argc--) GMT_free (API->GMT, args[argc]);
 	GMT_free (API->GMT, args);
-	return (GMT_Report_Error (API, GMT_OK));
+	return (API->error = GMT_OK);	/* No error encountered */
 }
 
 char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
@@ -259,10 +261,10 @@ char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *G = API->GMT;	/* GMT control structure */
 
-	if (API == NULL) ptr_return (API, GMT_NOT_A_SESSION, NULL);	/* GMT_Create_Session has not been called */
-	if (head == NULL) ptr_return (API, GMT_OPTION_LIST_NULL, NULL);	/* No list of options was given */
+	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
+	if (head == NULL) return_null (API, GMT_OPTION_LIST_NULL);	/* No list of options was given */
 
-	if ((txt = GMT_memory (G, NULL, n_alloc, char)) == NULL) ptr_return (API, GMT_MEMORY_ERROR, NULL);
+	if ((txt = GMT_memory (G, NULL, n_alloc, char)) == NULL) return_null (API, GMT_MEMORY_ERROR);
 
 	for (opt = head; opt; opt = opt->next) {	/* Loop over all options in the linked list */
 		if (!opt->option) continue;			/* Skip all empty options */
@@ -278,7 +280,7 @@ char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 		inc = strlen (buffer);
 		if (!first) inc++;	/* Count the space */
 		if ((length + inc) >= n_alloc) {
-			if ((txt = GMT_memory (G, NULL, n_alloc *= 2, char)) == NULL) ptr_return (API, GMT_MEMORY_ERROR, NULL);
+			if ((txt = GMT_memory (G, NULL, n_alloc *= 2, char)) == NULL) return_null (API, GMT_MEMORY_ERROR);
 		}
 		if (!first) strcat (txt, " ");
 		strcat (txt, buffer);
@@ -292,18 +294,21 @@ char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	}
 	else if (length < n_alloc) {	/* Trim back on the list to fit what we want */
 		if ((txt = GMT_memory (G, txt, length, char)) == NULL) {	/* Failed to shrink the list; free what we got and cry foul */
-			ptr_return (API, GMT_MEMORY_ERROR, NULL);	/* Report the error */
+			return_null (API, GMT_MEMORY_ERROR);	/* Report the error */
 		}
 	}
 
-	ptr_return (API, GMT_OK, txt);	/* Pass back the results to the calling module */
+	API->error = GMT_OK;	/* No error encountered */
+	return (txt);		/* Pass back the results to the calling module */
 }
 
 struct GMT_OPTION * GMT_Prep_Options (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* Either we passed an option struct list or we passed argc, argv and must convert to get option list */
 	struct GMT_OPTION *options = NULL;
-	if (mode < 0) options = args;	/* Gave a list of options already */	
-	else if ((options = GMT_Create_Options (API, mode, args)) == NULL) exit (EXIT_FAILURE);
+	if (mode < 0)	/* Gave a list of options already */	
+		options = args;
+	else		/* Build them from text arguments */
+		options = GMT_Create_Options (API, mode, args);
 	return (options);
 }
 
@@ -312,11 +317,11 @@ struct GMT_OPTION * GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char 
 	/* Create a structure option given the option character and the optional argument arg */
 	struct GMT_OPTION *new = NULL;
 
-	if (API == NULL) ptr_return (API, GMT_NOT_A_SESSION, NULL);	/* GMT_Create_Session has not been called */
+	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 
 	/* Here we have a program-specific option or a file name.  In either case we create a new option structure */
 
-	if ((new = GMT_memory (API->GMT, NULL, 1, struct GMT_OPTION)) == NULL) ptr_return (API, GMT_MEMORY_ERROR, NULL);
+	if ((new = GMT_memory (API->GMT, NULL, 1, struct GMT_OPTION)) == NULL) return_null (API, GMT_MEMORY_ERROR);
 
 	if (option == GMTAPI_OPT_INFILE) {	/* Distinguish between filenames and numbers */
 		/* Note: Numbers (e.g., -0.544, 135, -1.8e+10, 133:30:23W, and 1766-12-09T12:15:11) have all been assigned as "files"; here we fix this */
@@ -334,7 +339,8 @@ struct GMT_OPTION * GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char 
 		GMT_chop (API->GMT, new->arg);		/* Get rid of any trailing \n \r from cross-binary use in Cygwin/Windows */
 	}
 
-	ptr_return (API, GMT_OK, new);	/* Pass back the pointer to the allocated option structure */
+	API->error = GMT_OK;	/* No error encountered */
+	return (new);		/* Pass back the pointer to the allocated option structure */
 }
 
 struct GMT_OPTION * GMT_Find_Option (struct GMTAPI_CTRL *API, char option, struct GMT_OPTION *head)
@@ -343,9 +349,9 @@ struct GMT_OPTION * GMT_Find_Option (struct GMTAPI_CTRL *API, char option, struc
 
 	struct GMT_OPTION *current = NULL;
 
-	if (API == NULL) ptr_return (API, GMT_NOT_A_SESSION, NULL);	/* GMT_Create_Session has not been called */
-
-	if (head == NULL) ptr_return (API, GMT_OPTION_LIST_NULL, NULL);	/* Hard to find something in a non-existant list */
+	if (API ==  NULL) return_null (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
+	if (head == NULL) return_null (API, GMT_OPTION_LIST_NULL);	/* Hard to find something in a non-existant list */
+	
 	for (current = head; current && current->option != option; current = current->next);	/* Linearly search for the specified option */
 	API->error = (current) ? GMT_OK : GMT_OPTION_NOT_FOUND;	/* Set error code explicitly since it is not a fatal error */
 	return (current);
@@ -357,18 +363,16 @@ GMT_LONG GMT_Update_Option (struct GMTAPI_CTRL *API, char option, char *arg, str
 	 * we create a new option and append it to the end of the list.
 	 * Note: The option order may be changed by this function. */
 
-	GMT_LONG error;
 	struct GMT_OPTION *old = NULL, *new = NULL;
 
-	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));		/* GMT_Create_Session has not been called */
-
-	if (head == NULL) return (GMT_Report_Error (API, GMT_OPTION_LIST_NULL));	/* We were given no list to update */
-	if ((new = GMT_Make_Option (API, option, arg)) == NULL) return (GMT_Report_Error (API, API->error));	/* new holds what the updated option should be */
-	if ((old = GMT_Find_Option (API, option, head)) == NULL) return (GMT_Report_Error (API, API->error));	/* Try to see if it already exists */
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
+	if (head == NULL) return_error (API, GMT_OPTION_LIST_NULL);	/* We were given no list to update */
+	if ((new = GMT_Make_Option (API, option, arg)) == NULL) return_error (API, API->error);		/* new holds what the updated option should be */
+	if ((old = GMT_Find_Option (API, option, head)) == NULL) return_error (API, API->error);	/* Try to see if it already exists */
 	GMT_Delete_Option (API, old);	/* Option is present in the list - remove it first */
-	if ((head = GMT_Append_Option (API, new, head)) == NULL) return (GMT_Report_Error (API, error));	/* Append revised option to list */
+	if ((head = GMT_Append_Option (API, new, head)) == NULL) return_error (API, API->error);	/* Append revised option to list */
 
-	return (GMT_Report_Error (API, GMT_OK));
+	return (API->error = GMT_OK);	/* No error encountered */
 }
 
 struct GMT_OPTION * GMT_Append_Option (struct GMTAPI_CTRL *API, struct GMT_OPTION *new, struct GMT_OPTION *head)
@@ -376,9 +380,9 @@ struct GMT_OPTION * GMT_Append_Option (struct GMTAPI_CTRL *API, struct GMT_OPTIO
 	/* Append this entry to the end of the linked list */
 	struct GMT_OPTION *current = NULL;
 
-	if (API == NULL) ptr_return (API, GMT_NOT_A_SESSION, NULL);	/* GMT_Create_Session has not been called */
-	if (!new) ptr_return (API, GMT_OPTION_IS_NULL, NULL);		/* No option was passed */
-	if (!new->arg) ptr_return (API, GMT_ARG_IS_NULL, NULL);		/* Option argument must not be null pointer */
+	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
+	if (!new) return_null (API, GMT_OPTION_IS_NULL);	/* No option was passed */
+	if (!new->arg) return_null (API, GMT_ARG_IS_NULL);	/* Option argument must not be null pointer */
 
 	if (head == NULL) ptr_return (API, GMT_OK, new);	/* No list yet, let new become the start of the list */
 
@@ -387,7 +391,7 @@ struct GMT_OPTION * GMT_Append_Option (struct GMTAPI_CTRL *API, struct GMT_OPTIO
 	if (new->option == GMTAPI_OPT_OUTFILE) {	/* Only allow one output file on command line */
 		/* Search for existing output option */
 		for (current = head; current->next && current->option != GMTAPI_OPT_OUTFILE; current = current->next);
-		if (current->option == GMTAPI_OPT_OUTFILE) ptr_return (API, GMT_ONLY_ONE_ALLOWED, NULL);	/* Cannot have > 1 output file */
+		if (current->option == GMTAPI_OPT_OUTFILE) return_null (API, GMT_ONLY_ONE_ALLOWED);	/* Cannot have > 1 output file */
 		/* Here current is at end so no need to loop again */
 	}
 	else {	/* Not an output file name so just go to end of list */
@@ -397,7 +401,8 @@ struct GMT_OPTION * GMT_Append_Option (struct GMTAPI_CTRL *API, struct GMT_OPTIO
 	current->next = new;
 	new->previous = current;
 
-	ptr_return (API, GMT_OK, head);
+	API->error = GMT_OK;	/* No error encountered */
+	return (head);		/* Return head of list */
 }
 
 GMT_LONG GMT_Delete_Option (struct GMTAPI_CTRL *API, struct GMT_OPTION *current)
@@ -405,8 +410,8 @@ GMT_LONG GMT_Delete_Option (struct GMTAPI_CTRL *API, struct GMT_OPTION *current)
 	/* Remove the specified entry from the linked list.  It is assumed that current
 	 * points to the correct option in the linked list. */
 
-	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));		/* GMT_Create_Session has not been called */
-	if (!current) return (GMT_Report_Error (API, GMT_OPTION_IS_NULL));		/* No option was passed */
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
+	if (!current) return_error (API, GMT_OPTION_IS_NULL);		/* No option was passed */
 
 	/* Remove the current option and bypass via the enx/prev pointers in the linked list */
 	if (current->previous) current->previous->next = current->next;
@@ -414,7 +419,7 @@ GMT_LONG GMT_Delete_Option (struct GMTAPI_CTRL *API, struct GMT_OPTION *current)
 	if (current->arg) free (current->arg);	/* Option arguments were created by strdup, so we must use free */
 	GMT_free (API->GMT, current);		/* Option structure was created by GMT_memory, hence GMT_free */
 
-	return (GMT_Report_Error (API, GMT_OK));
+	return (API->error = GMT_OK);	/* No error encountered */
 }
 
 GMT_LONG GMT_Parse_Common (struct GMTAPI_CTRL *API, char *sorted, char *unsorted, struct GMT_OPTION *options)
@@ -431,12 +436,12 @@ GMT_LONG GMT_Parse_Common (struct GMTAPI_CTRL *API, char *sorted, char *unsorted
 	char list[2] = {0, 0};
 	GMT_LONG i, n_errors = 0;
 
-	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));	/* GMT_Create_Session has not been called */
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 
 	/* Check if there are short-hand commands present (e.g., -J with no arguments); if so complete these to full options
 	 * by consulting the current GMT history machinery.  If not possible then we have an error to report */
 
-	if (GMT_Complete_Options (API->GMT, options)) return (GMT_Report_Error (API, GMT_OPTION_HISTORY_ERROR));	/* Replace shorthand failed */
+	if (GMT_Complete_Options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
 
 	/* Parse the common options in the order they appear in "sorted" */
 
@@ -449,5 +454,5 @@ GMT_LONG GMT_Parse_Common (struct GMTAPI_CTRL *API, char *sorted, char *unsorted
 
 	for (opt = options; opt; opt = opt->next) n_errors += GMT_parse_common_options (GMT, unsorted, opt->option, opt->arg);
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return ((API->error = (n_errors) ? GMT_PARSE_ERROR : GMT_OK));
 }

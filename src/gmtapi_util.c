@@ -73,7 +73,7 @@ static char *GMTAPI_errstr[] = {
 
 /* Macros that report error, then return NULL pointer or TRUE, respectively */
 #define return_null(API,err) { GMT_Report_Error(API,err); return (NULL);}
-#define return_error(API,err) { GMT_Report_Error(API,err); return (FALSE);}
+#define return_error(API,err) { GMT_Report_Error(API,err); return (TRUE);}
 #define return_value(API,err,val) { GMT_Report_Error(API,err); return (val);}
 
 /* Misc. local text strings needed in this file only */
@@ -2237,6 +2237,15 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, GMT_LONG level)
 	}
 }
 
+GMT_LONG Already_Registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction, void *resource) {
+	/* Determine if resource is a filename and that it has already been registered */
+	GMT_LONG object_ID, item;
+	
+	if ((object_ID = GMTAPI_Decode_ID (resource)) == GMTAPI_NOTSET) return (GMTAPI_NOTSET);	/* Not a registered resource */
+	if ((item = GMTAPI_Validate_ID (API, family, object_ID, direction)) == GMTAPI_NOTSET) return (GMTAPI_NOTSET);	/* Not the right attributes */
+	return (object_ID);	/* resource is a registered and valid item */
+}
+
 /*========================================================================================================
  *          HERE ARE THE PUBLIC GMT API UTILITY FUNCTIONS, WITH THEIR FORTRAN BINDINGS
  *========================================================================================================
@@ -2317,7 +2326,7 @@ GMT_LONG GMT_Destroy_Session (struct GMTAPI_CTRL **C)
  	free (API);		/* Not GMT_free since this item was allocated before GMT was initialized */
 	*C = NULL;		/* Return this pointer to its NULL state */
 	
-	return (FALSE);
+	return (GMT_OK);
 }
 
 #ifdef FORTRAN_API
@@ -2340,7 +2349,7 @@ GMT_LONG GMT_Report_Error (struct GMTAPI_CTRL *API, GMT_LONG error)
 	}
 	else if (error)
 		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Report_Error: Warning returned from GMT API: %" GMT_LL "d\n", error);
-	if (API) API->error = error;	/* Update API error value */
+	if (API) API->error = error;	/* Update API error value of API exists */
 	return (error);
 }
 
@@ -2355,10 +2364,10 @@ GMT_LONG GMT_Encode_ID (struct GMTAPI_CTRL *API, char *filename, GMT_LONG object
 {
 	/* Creates a filename with the embedded GMTAPI Object ID.  Space must exist */
 	
-	if (!filename) return (GMT_Report_Error (API, GMT_MEMORY_ERROR));	/* Oops, not allocated space */
+	if (!filename) return_error (API, GMT_MEMORY_ERROR);	/* Oops, not allocated space */
 	
 	sprintf (filename, "@GMTAPI@-%6.6" GMT_LL "d", object_ID);	/* Place the object ID in the special GMT API format */
-	return (GMT_Report_Error (API, FALSE));
+	return (API->error = GMT_OK);	/* No error encountered */
 }
 
 #ifdef FORTRAN_API
@@ -2408,15 +2417,6 @@ GMT_LONG GMT_Encode_ID_ (char *filename, GMT_LONG *object_ID, int len)
  * calling GMT_Put_Data (all in one go).  For record-by-record output the modules will use
  * GMT_Put_Record.  This keeps data i/o in the modules uniform and simple across GMT.
  */
-
-GMT_LONG Already_Registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction, void *resource) {
-	/* Determine if resource is a filename and that it has already been registered */
-	GMT_LONG object_ID, item;
-	
-	if ((object_ID = GMTAPI_Decode_ID (resource)) == GMTAPI_NOTSET) return (GMTAPI_NOTSET);	/* Not a registered resource */
-	if ((item = GMTAPI_Validate_ID (API, family, object_ID, direction)) == GMTAPI_NOTSET) return (GMTAPI_NOTSET);	/* Not the right attributes */
-	return (object_ID);	/* resource is a registered and valid item */
-}
 
 GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, GMT_LONG direction, void *resource, double wesn[])
 {
@@ -2616,13 +2616,13 @@ GMT_LONG GMT_Init_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG geometr
 	 *
 	 * Returns:	FALSE if successfull, TRUE if error.
 	 */
-	GMT_LONG object_ID;
+	GMT_LONG object_ID;	/* ID of first object [only for debug purposes - not used in this function] */
 
-	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	API->error = GMT_OK;		/* No error yet */
-	if (geometry < GMT_IS_TEXT || geometry > GMT_IS_SURFACE) return (GMT_Report_Error (API, GMT_BAD_GEOMETRY));
-	if (!(direction == GMT_IN || direction == GMT_OUT)) return (GMT_Report_Error (API, GMT_NOT_A_VALID_DIRECTION));
-	if (mode < 1 || mode > 5) return (GMT_Report_Error (API, GMT_NOT_A_VALID_MODE));
+	if (geometry < GMT_IS_TEXT || geometry > GMT_IS_SURFACE) return_error (API, GMT_BAD_GEOMETRY);
+	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
+	if (mode < 1 || mode > 5) return_error (API, GMT_NOT_A_VALID_MODE);
 
 	GMT_io_banner (API->GMT, direction);	/* Message for binary i/o */
 	if (direction == GMT_IN)
@@ -2669,8 +2669,7 @@ GMT_LONG GMT_Begin_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direct
 	API->GMT->current.io.segment_header[0] = API->GMT->current.io.current_record[0] = 0;
 	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled\n", GMT_direction[direction]);
 
-	API->error = GMT_OK;	/* No error encountered */
-	return (FALSE);		/* Return happy status */
+	return (API->error = GMT_OK);	/* No error encountered */
 }
 
 #ifdef FORTRAN_API
@@ -2723,8 +2722,7 @@ GMT_LONG GMT_End_IO (struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode)
 			
 	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_End_IO: %s resource access is now disabled\n", GMT_direction[direction]);
 
-	API->error = GMT_OK;	/* No error encountered */
-	return (FALSE);		/* Return happy status */
+	return (API->error = GMT_OK);	/* No error encountered */
 }
 
 #ifdef FORTRAN_API
@@ -2750,7 +2748,6 @@ void * GMT_Get_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method, 
 	void *new = NULL;
 	
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
-	API->error = GMT_OK;		/* No error yet */
 	if (!API->io_enabled[GMT_IN]) return_null (API, GMT_ACCESS_NOT_ENABLED);
 	
 	if (input) {	/* Case 1: Load from a single, given source. Register it first. */
@@ -2769,7 +2766,8 @@ void * GMT_Get_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method, 
 	if ((item = GMTAPI_Validate_ID (API, family, in_ID, GMT_IN)) == GMTAPI_NOTSET) return_null (API, API->error);
 	API->object[item]->data = new;	/* Save address to memory where we put the data */
 
-	return (new);	/* Return status */
+	API->error = GMT_OK;	/* No error encountered */
+	return (new);		/* Return pointer to the data container */
 }
 
 #ifdef FORTRAN_API
@@ -2815,8 +2813,7 @@ GMT_LONG GMT_Put_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method
 	if ((item = GMTAPI_Validate_ID (API, family, out_ID, GMT_OUT)) == GMTAPI_NOTSET) return_error (API, API->error);
 	if (!API->object[item]->data) API->object[item]->data = data;	/* Save pointer to memory we wrote to */
 	
-	API->error = GMT_OK;	/* No error encountered */
-	return (FALSE);		/* Return happy status */
+	return (API->error = GMT_OK);	/* No error encountered */
 }
 
 #ifdef FORTRAN_API
@@ -3006,7 +3003,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 	if (!(*retval == EOF || *retval == GMT_IO_NEXT_FILE)) API->current_rec[GMT_IN]++;	/* Increase record count, unless EOF */
 
 	API->error = GMT_OK;	/* No error encountered */
-	return (record);		
+	return (record);	/* Return pointer to current record */		
 }
 
 #ifdef FORTRAN_API
@@ -3067,6 +3064,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 					break;
 				default:
 					GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal mode\n");
+					return_error (API, GMT_NOT_A_VALID_IO_MODE);	
 					break;
 			}
 			break;
@@ -3108,6 +3106,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 					break;
 				default:
 					GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal mode\n");
+					return_error (API, GMT_NOT_A_VALID_IO_MODE);	
 					break;
 			}
 			break;			
@@ -3156,6 +3155,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 
 		default:
 			GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal method\n");
+			return_error (API, GMT_NOT_A_VALID_METHOD);	
 			break;
 	}
 

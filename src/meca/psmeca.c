@@ -561,7 +561,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_psmeca_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_psmeca_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -569,7 +569,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_psmeca", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJR:", "BHKOPUVXhixYyc>", options))) Return (error);
+	if (GMT_Parse_Common (API, "-VJR:", "BHKOPUVXhixYyc>", options)) Return (API->error);
 	Ctrl = New_psmeca_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psmeca_parse (API, Ctrl, options))) Return (error);
  	PSL = GMT->PSL;		/* This module also needs PSL */

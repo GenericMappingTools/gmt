@@ -297,7 +297,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_img2grd_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_img2grd_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -305,7 +305,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_img2grd", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRf", GMT_OPT("m"), options))) Return (error);
+	if (GMT_Parse_Common (API, "-VRf", GMT_OPT("m"), options)) Return (API->error);
 	Ctrl = New_img2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_img2grd_parse (API, Ctrl, options))) Return (error);
 	
@@ -614,17 +614,17 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Undo the implicit spherical Mercator -Jm1i projection.\n");
 	/* Preparing source and destination for GMT_grdproject */
 	/* a. Register the Mercator grid to be the source read by GMT_grdproject by passing a pointer */
-	if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Merc, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
-	GMT_Encode_ID (API, s_in_ID, in_ID);	/* Make filename with embedded object ID */
+	if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Merc, NULL)) == GMTAPI_NOTSET) Return (API->error);
+	if (GMT_Encode_ID (API, s_in_ID, in_ID) Return (API->error);	/* Make filename with embedded object ID */
 	/* b. If -E: Register a grid struct Geo to be the destination allocated and written to by GMT_grdproject, else write to -G<file> */
 	if (Ctrl->E.active) {	/* Since we will resample again, register a memory location for the result */
-		if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &Geo, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
-		GMT_Encode_ID (API, s_out_ID, out_ID);	/* Make filename with embedded object ID */
+		if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &Geo, NULL)) == GMTAPI_NOTSET) Return (API->error);
+		if (GMT_Encode_ID (API, s_out_ID, out_ID) Return (API->error);	/* Make filename with embedded object ID */
 	}
 	else	/* The output here is the final result */
 		strcpy (s_out_ID, Ctrl->G.file);
 	sprintf (cmd, "-R%g/%g/%g/%g -Jm1 -I %s -G%s --PROJ_ELLIPSOID=Sphere --PROJ_LENGTH_UNIT=inch", west, east, south2, north2, s_in_ID, s_out_ID);
-	if ((status = GMT_grdproject (API, 0, cmd))) Return (GMT_RUNTIME_ERROR);	/* Inverse project the grid or fail */
+	if ((status = GMT_grdproject (API, 0, cmd))) Return (status);	/* Inverse project the grid or fail */
 	if (GMT_Destroy_Data (API, GMT_CLOBBER, &Merc)) Return (API->error);	/* Clobber since we know we allocated this grid */
 	if (Ctrl->E.active) {	/* Resample again using the given -R and the dx/dy in even minutes */
 		/* Preparing source and destination for GMT_grdsample */
@@ -633,8 +633,8 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		strcpy (Geo->header->z_units, z_units);
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
-		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Geo, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
-		GMT_Encode_ID (API, s_in_ID, in_ID);	/* Make filename with embedded object ID */
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Geo, NULL)) == GMTAPI_NOTSET) Return (API->error);
+		if (GMT_Encode_ID (API, s_in_ID, in_ID) Return (API->error);	/* Make filename with embedded object ID */
 		sprintf (cmd, "-R%g/%g/%g/%g -I%gm %s -G%s -fg", west, east, south, north, Ctrl->I.value, s_in_ID, Ctrl->G.file);
 		if ((status = GMT_grdsample (API, 0, cmd))) Return (GMT_RUNTIME_ERROR);	/* Resample the grid or fail */
 		if (GMT_Destroy_Data (API, GMT_CLOBBER, &Geo)) Return (API->error);	/* Clobber since we know we allocated this grid */

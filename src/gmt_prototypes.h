@@ -515,6 +515,5 @@ EXTERN_MSC void GMT_check_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct G
 /* From gmtapi_parse.c */
 /* This macro is called via each modules Return macro so API and options are set */
 #define GMT_Free_Options(mode) {if (mode >= 0 && GMT_Destroy_Options (API, &options)) exit (EXIT_FAILURE);}
-EXTERN_MSC struct GMT_OPTION * GMT_Prep_Options (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args);
 
 #endif /* _GMT_PROTOTYPES_H */
