@@ -258,7 +258,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == '?') return (GMT_mgd77info_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77info_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
@@ -266,10 +266,10 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77info", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
+	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
 	Ctrl = New_mgd77info_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);		/* Initialize MGD77 Machinery */
-	if ((error = GMT_mgd77info_parse (API, Ctrl, options, &M))) Return ((int)error);
+	if ((error = GMT_mgd77info_parse (API, Ctrl, options, &M))) Return (error);
 
 	/*---------------------------- This is the mgd77info main code ----------------------------*/
 

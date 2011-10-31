@@ -307,7 +307,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_xyz2grd_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_xyz2grd_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -315,7 +315,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_xyz2grd", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "hirs" GMT_OPT("FH"), options))) Return (error);
+	if (GMT_Parse_Common (API, "-VRbf:", "hirs" GMT_OPT("FH"), options)) Return (API->error);
 	Ctrl = New_xyz2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_xyz2grd_parse (API, Ctrl, &io, options))) Return (error);
 
@@ -333,19 +333,20 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Swapping data bytes only\n");
 		if (Ctrl->S.active) io.swab = TRUE;	/* Need to pass swabbing down to the gut level */
 
-		if (!Ctrl->S.file)
-			in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->S.file, NULL);
+		if (!Ctrl->S.file) {
+			if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->S.file, NULL)) == GMTAPI_NOTSET) Return (API->error);
+		}
 		else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
 		
 		GMT->current.io.input = save_i;			/* Reset input pointer */
 		GMT->common.b.active[GMT_IN] = previous;	/* Reset input binary */
-		save_o = GMT->current.io.output;			/* Save previous output parameters */
+		save_o = GMT->current.io.output;		/* Save previous output parameters */
 		previous = GMT->common.b.active[GMT_OUT];
 		GMT->current.io.output = GMT_z_output;		/* Override output writer */
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
 		while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
 
-		GMT->current.io.output = save_o;			/* Reset output pointer */
+		GMT->current.io.output = save_o;		/* Reset output pointer */
 		GMT->common.b.active[GMT_OUT] = previous;	/* Reset output binary */
 
 		Return (EXIT_SUCCESS);	/* We are done here */

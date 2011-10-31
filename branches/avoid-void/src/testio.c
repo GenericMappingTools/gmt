@@ -57,8 +57,8 @@ int main (int argc, char *argv[]) {
 
 	/* 4. Create command options for GMT_mapproject */
 
-	GMT_Encode_ID (API, i_string, in_ID);	/* Make filename with embedded object ID */
-	GMT_Encode_ID (API, o_string, out_ID);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, i_string, in_ID)) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, o_string, out_ID)) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-<%s -R0/5/0/5 -Jm1 -Fk -bi3 ->%s", i_string, o_string);
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
@@ -68,8 +68,8 @@ int main (int argc, char *argv[]) {
 
 	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, &Vi, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &G, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
-	GMT_Encode_ID (API, i_string, in_ID);	/* Make filename with embedded object ID */
-	GMT_Encode_ID (API, o_string, out_ID);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, i_string, in_ID)) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, o_string, out_ID)) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-<%s -R0/3/0/3 -I1 -G%s", i_string, o_string);
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
@@ -94,8 +94,8 @@ int main (int argc, char *argv[]) {
 	Vo->alloc_mode = GMT_REFERENCE;	/* To tell gmtselect to allocate as needed */
 	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, &Vi, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_COPY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, &Vo, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
-	GMT_Encode_ID (API, i_string, in_ID);	/* Make filename with embedded object ID */
-	GMT_Encode_ID (API, o_string, out_ID);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, i_string, in_ID)) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, o_string, out_ID)) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-<%s -R0/3/0/3 ->%s", i_string, o_string);
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */

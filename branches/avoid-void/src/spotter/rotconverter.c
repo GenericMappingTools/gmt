@@ -264,7 +264,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	/* Special preprocessing since online rotations like -144/34/-9 and -.55/33/2 will
 	 * have been decoded as options -4 and option -., respectively.  Here we simply
@@ -295,7 +295,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_rotconverter", &GMT_cpy);				/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vf:", "h>", options))) Return (error);
+	if (GMT_Parse_Common (API, "-Vf:", "h>", options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_rotconverter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_rotconverter_parse (API, Ctrl, options))) Return (error);

@@ -41,7 +41,7 @@ int main (int argc, char *argv[]) {
 	if ((options = GMT_Create_Options (API, (GMT_LONG)(argc-1), (argv+1))) == NULL) exit (EXIT_FAILURE);
 
 	/* 3. Parse the common GMT options (e.g., -h -V) */
-	if ((error = GMT_Parse_Common (API, "-VJRbf:", "BKOPUXYcghp", options))) exit (EXIT_FAILURE);
+	if (GMT_Parse_Common (API, "-VJRbf:", "BKOPUXYcghp", options)) exit (EXIT_FAILURE);
 
 	/* 4. Initializing data input via stdin */
 	

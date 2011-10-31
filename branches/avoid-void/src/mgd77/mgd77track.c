@@ -551,7 +551,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77track", &GMT_cpy);	/* Save current state */
 	Ctrl = New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -560,8 +560,8 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	if ((error = GMT_Parse_Common (API, "-VJRbf", "BKOPUXYcp>", options))) Return ((int)error);
-	if ((error = GMT_mgd77track_parse (API, Ctrl, options))) Return ((int)error);
+	if (GMT_Parse_Common (API, "-VJRbf", "BKOPUXYcp>", options)) Return (API->error);
+	if ((error = GMT_mgd77track_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the mgd77track main code ----------------------------*/

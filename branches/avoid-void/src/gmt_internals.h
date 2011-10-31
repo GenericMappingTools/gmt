@@ -255,6 +255,11 @@ EXTERN_MSC double Cabs (double A[]);
 /* From gmt_fft.c */
 EXTERN_MSC void GMT_fft_initialization (struct GMT_CTRL *C);
 
+/* From gmtapi_util.c */
+/* Sub function needed by GMT_end to free memory used in modules and at end of session */
+
+EXTERN_MSC void GMT_Garbage_Collection (struct GMTAPI_CTRL *C, GMT_LONG level);
+
 /* For supplements */
 #ifdef GMT_COMPAT
 	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);

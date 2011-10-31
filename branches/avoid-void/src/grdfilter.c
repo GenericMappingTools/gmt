@@ -520,7 +520,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdfilter_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdfilter_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -528,7 +528,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdfilter", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRf:", "", options))) Return (error);
+	if (GMT_Parse_Common (API, "-VRf:", "", options)) Return (API->error);
 	Ctrl = New_grdfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdfilter_parse (API, Ctrl, options))) Return (error);
 
@@ -954,16 +954,16 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_LONG object_ID, status = 0;			/* Status code from GMT API */
 			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[GMT_BUFSIZ];
 			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Gout, NULL)) == GMTAPI_NOTSET) Return (EXIT_FAILURE);
-			GMT_Encode_ID (API, in_string, object_ID);	/* Make filename with embedded object ID for grid Gout */
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &L, NULL)) == GMTAPI_NOTSET) Return (EXIT_FAILURE);
-			GMT_Encode_ID (GMT->parent, out_string, object_ID);	/* Make filename with embedded object ID for result grid L */
+			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Gout, NULL)) == GMTAPI_NOTSET) Return (API->error);
+			if (GMT_Encode_ID (API, in_string, object_ID)) Return (API->error);	/* Make filename with embedded object ID for grid Gout */
+			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &L, NULL)) == GMTAPI_NOTSET) Return (API->error);
+			if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) Return (API->error);	/* Make filename with embedded object ID for result grid L */
 			sprintf (cmd, "%s -G%s -R%s -V%ld", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Highpass requires us to resample the lowpass result via grdsample %s\n", cmd);
 			if ((status = GMT_grdsample (GMT->parent, 0, cmd))) {	/* Resample the file */
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample the lowpass result - exiting\n");
-				GMT_exit (EXIT_FAILURE);
+				GMT_exit (API->error);
 			}
 			Gout->alloc_mode = L->alloc_mode = GMT_ALLOCATED;	/* So we may destroy it */
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Gout)) Return (API->error);

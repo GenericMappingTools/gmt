@@ -572,7 +572,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdblend_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdblend_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -580,7 +580,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdblend", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRf:", "r", options))) Return (error);
+	if (GMT_Parse_Common (API, "-VRf:", "r", options)) Return (API->error);
 	GMT_grd_init (GMT, &S.header, options, FALSE);
 	Ctrl = New_grdblend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdblend_parse (API, Ctrl, &S, options))) Return (error);

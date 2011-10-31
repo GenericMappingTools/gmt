@@ -999,7 +999,10 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 		struct GMTAPI_CTRL *API = C->parent;
 		GMT_LONG argc = 0; char **argv = NULL;
 		
-		argv = GMT_Create_Args (API, &argc, options);
+		if ((argv = GMT_Create_Args (API, &argc, options)) == NULL) {
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not create argc, argv from linked structure options!\n");
+			return;
+		}
 		strcpy (header->command, C->init.progname);
 		len = strlen (header->command);
 		for (i = 0; len < GRD_COMMAND_LEN320 && i < argc; i++) {

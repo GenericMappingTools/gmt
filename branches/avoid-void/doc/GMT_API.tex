@@ -284,6 +284,8 @@ Users who wish to create their own \GMT\ applications based on the API
 must make sure their program goes through the steps below; details
 for each step will be revealed in the sections to follow.  We have kept the
 API simple: In addition to the \GMT\ modules, there are only 14 public functions to become familiar with.
+All functions sets the variable \texttt{API->error} to the appropriate error code (when things go wrong);
+otherwise it is set to GMT\_OK (0).
 The layout here assumes you wish to use data in memory as input sources; if the data are simply
 command-line files then things simplify considerably.
 
@@ -378,7 +380,7 @@ The basic registration machinery involves a direct or indirect call to
 \index{GMT\_Register\_IO}
 
 \begin{verbatim}
-GMT_Register_IO (struct GMTAPI_CTRL *API, long family, long method, \
+long GMT_Register_IO (struct GMTAPI_CTRL *API, long family, long method, \
    long geometry, long direction, void *ptr, double wesn[])
 \end{verbatim}
 where \texttt{family} specifies what kind of resource is to be registered
@@ -391,7 +393,8 @@ the geometry of the data (see Table \ref{tbl:geometry} for recognized geometries
 For GMT\_IS\_GMTGRID resources you may request to obtain a subset via the \texttt{wesn}
 array (see Table~\ref{tbl:wesn} for information); otherwise, pass NULL to obtain the entire grid.
 The \texttt{direction} indicates input or output and is either GMT\_IN (0) or GMT\_OUT (1).
-Finally, the function returns a unique resource ID, or -1 if failure.
+Finally, the function returns a unique resource ID, or GMTAPI\_NOTSET (-1) if there was an
+error (with error code returned via \texttt{API->error}).
 
 If registered resources are to be given as program arguments you will need to pass them via
 a text string that represents a special file name.  We ensure proper formatting by using the
@@ -399,10 +402,12 @@ function
 \index{GMT\_Encode\_ID}
 
 \begin{verbatim}
-GMT_Encode_ID (struct GMTAPI_CTRL *API, char *filename, long ID)
+long GMT_Encode_ID (struct GMTAPI_CTRL *API, char *filename, long ID)
 \end{verbatim}
 which accepts the unique \texttt{ID} and writes the \texttt{filename} that
 you can use as argument to a program option.  \texttt{filename} must have enough space to hold 16 bytes.
+The function returns TRUE (1) if there is an error (which is passed back with \texttt{API->error}),
+otherwise it returns FALSE (0).
 
 
 \begin{table}[h]
@@ -498,7 +503,7 @@ The prototype for this function is
 \index{GMT\_Init\_IO}
 
 \begin{verbatim}
-GMT_Init_IO (struct GMTAPI_CTRL *API, long family, long geometry, \
+long GMT_Init_IO (struct GMTAPI_CTRL *API, long family, long geometry, \
     long direction, long mode, struct GMT_OPTION *head)
 \end{verbatim}
 where \texttt{family} specifies what kind of resource is to be registered,
@@ -521,6 +526,8 @@ Many programs will register an export location to hold the results of a \GMT\ fu
 a filtered grid), but then wish to use that location as an \emph{input} resource in the next
 step.  This is accomplished by first un-registering the export resource and then re-registering the same array
 location as an import source, thereby changing the \emph{direction} of the data set.
+The function returns TRUE (1) if there is an error (which is passed back with \texttt{API->error}),
+otherwise it returns FALSE (0).
 
 \subsection{Dimension parameters for user column vectors}
 We refer to Table~\ref{tbl:vector}.  The \texttt{type} array must hold the
@@ -589,6 +596,9 @@ In all cases the data entries are initialized to zero (NULL in the case of text)
 Note: if you need to
 duplicate an existing data structure the simplest way is to use \texttt{GMT\_Get\_Data}
 after registering the original structure as the data source.
+The function returns a pointer to the data container. In case of an error we return a
+NULL pointer and pass an error code via \texttt{API->error}.
+
 \index{Duplicate!Data}
 \index{Data!Duplicate}
 
@@ -622,7 +632,7 @@ phase and are ready to start the actual data import.  We do so by calling \textt
 function enables data import and prepares the registered sources for the upcoming import.  The prototype is
 
 \begin{verbatim}
-GMT_Begin_IO (struct GMTAPI_CTRL *API, long family, long direction, \
+long GMT_Begin_IO (struct GMTAPI_CTRL *API, long family, long direction, \
 	long mode)
 \end{verbatim}
 where \texttt{family} specifies what kind of resources is about to be read or written (see Table \ref{tbl:family}
@@ -635,6 +645,8 @@ No input functions will be able to read any data before \texttt{GMT\_Begin\_IO} 
 guess, there is a companion \texttt{GMT\_End\_IO} function that disables data access.  You can use these several
 times to switch modes between registering data resources, doing the importing/exporting, and disabling further
 data access, perhaps to do more registration.  We will discuss \texttt{GMT\_End\_IO} once we are done with the data import.
+The function returns TRUE (1) if there is an error (which is passed back with \texttt{API->error}),
+otherwise it returns FALSE (0).
 
 \subsection{Import a data set}
 \index{Import!Data set}
@@ -664,7 +676,7 @@ with \texttt{GMT\_Register\_IO} or gather the sources with \texttt{GMT\_Init\_IO
 you pass \texttt{geometry} = 0.
 \end{enumerate}
 Space will be allocated to hold the results, if needed, and a pointer to the object is returned.
-If there are errors we simply return NULL.
+If there are errors we simply return NULL and pass back the error code via \texttt{API->error}.
 The \texttt{mode} parameter takes on different meanings for the different data types.
 \begin{description}
 \item [CPT table]:  \texttt{mode} are bit-flags that controls how the CPT file's back-, fore-, and NaN-colors
@@ -704,7 +716,13 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, long mode, long *nfields)
 \end{verbatim}
 where the returned value is either a pointer to a double array with the current row
 or a pointer to a character string with the current row, depending on \texttt{mode}.
-In either case these pointers point to memory internal to \GMT\ and should be considered read-only
+In either case these pointers point to memory internal to \GMT\ and should be considered read-only.
+When we reach end-of-file, encounter conversion problems, read header comments, or identify
+segment headers we return a NULL pointer, with the status of the current record returned via
+\texttt{API->GMT->current.io.status}.  Typically, this status is examined using macros that
+return TRUE or FALSE depending on the particular check.  There are 11 macros available to
+programmers; for a list see Table~\ref{tbl:iomacros}.
+
 
 Normally (\texttt{mode} == GMT\_READ\_DOUBLE or 0), we return a pointer to the double array.
 \index{GMT\_READ\_DOUBLE}
@@ -740,6 +758,29 @@ hence, it is a bad record (see \GMT's IO\_NAN\_RECORD defaults).
 Developers who need to import data on a record-by-record basis should consult the source
 code of, say, \filename{blockmean\_func.c} or \filename{pstext\_func.c}.
 
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{ll} \hline
+\multicolumn{2}{l}{\texttt{struct GMT\_VECTOR \{}} \\ 
+\texttt{GMT_REC_IS_TBL_HEADER(API)}	&       TRUE if we read a table header \\
+\texttt{GMT_REC_IS_SEG_HEADER(API)}	&       TRUE if we read a segment header \\
+\texttt{GMT_REC_IS_ANY_HEADER(API)}	&       TRUE if we read either header type \\
+\texttt{GMT_REC_IS_ERROR(API)}		&       TRUE if we had a read or conversion failure \\
+\texttt{GMT_REC_IS_EOF(API)}		&       TRUE if we reached the end of the file (EOF) \\
+\texttt{GMT_REC_IS_NAN(API)}		&       TRUE if we only read NaNs \\
+\texttt{GMT_REC_IS_GAP(API)}		&       TRUE if this record implies a data gap \\
+\texttt{GMT_REC_IS_NEW_SEGMENT(API)}	&       TRUE if we enter a new segment \\
+\texttt{GMT_REC_IS_LINE_BREAK(API)}	&       TRUE if we encountered a segment header, EOF, NaNs or gap \\
+\texttt{GMT_REC_IS_FILE_BREAK(API)}	&       TRUE if we finished one file but not the last \\
+\texttt{GMT_REC_IS_DATA(API)}		&       TRUE if we read a data record \\
+\texttt{\};}	&        \\  \hline
+\end{tabular}
+\caption{Macros used to determine status of current data record.  The gap macro depends on the current \Opt{g} settings.}
+\label{tbl:iomacros}
+\index{Record!Status}
+\end{table}
+
 \subsection{Disable Data Import}
 \index{Import!Disable}
 \index{Data!Import}
@@ -750,12 +791,14 @@ reading from occurring (due to poor program structure, bugs, etc.).  We do so by
 function disables further data import and its prototype is
 
 \begin{verbatim}
-GMT_End_IO (struct GMTAPI_CTRL *API, long direction, long mode)
+long GMT_End_IO (struct GMTAPI_CTRL *API, long direction, long mode)
 \end{verbatim}
 
 \noindent
 and we specify \texttt{direction} = GMT\_IN.  At the moment, \texttt{mode} is not used.  This call
 will also reallocate any arrays obtained into their proper lengths.
+The function returns TRUE (1) if there is an error (which is passed back with \texttt{API->error}),
+otherwise it returns FALSE (0).
 
 \section{Prepare program options}
 \index{Program options!Prepare}
@@ -763,7 +806,7 @@ will also reallocate any arrays obtained into their proper lengths.
 The module prototype interface is
 
 \begin{verbatim}
-GMT_module (struct GMTAPI_CTRL *API, long mode, void *args)
+long GMT_module (struct GMTAPI_CTRL *API, long mode, void *args)
 \end{verbatim}
 All GMT modules may be called with one of three sets of \texttt{args} depending on \texttt{mode}.
 The three modes differ in how the options are passed to the module:
@@ -775,6 +818,8 @@ for the current program.
 \item [$mode == 0$]: Expects \texttt{args} to be a single text string with all required options.
 \end{description}
 Here, \texttt{GMT\_module} stands for any of the \GMT\ modules, such as \texttt{GMT\_psxy}.
+All modules returns FALSE (o) if they returned successfully; otherwise they return an error code
+back to the calling environment.
 
 \subsection{Set program options via text array arguments}
 \index{Set program options via text array arguments}
@@ -838,7 +883,9 @@ struct GMT_OPTIONS * GMT_Create_Options (struct GMTAPI_CTRL *API, \
 \index{GMT\_Create\_Options}
 This function accepts your array of text arguments (cast via a void pointer), allocates the necessary
 space, performs the conversion, and returns a pointer to the
-head of the linked list of program options.  This may now be passed to the
+head of the linked list of program options.  However, in case of an error
+we return a NULL pointer and set \texttt{API->error} to indicate the nature of the problem.
+Otherwise, the pointer may now be passed to the
 relevant \texttt{GMT\_module}.  Note that if your list of text arguments
 were obtained from a C \texttt{main()} function then \texttt{argv[0]} will
 contain the name of the calling program.  To avoid passing this as a file
@@ -847,10 +894,13 @@ and \texttt{argv+1}.  If, you wish to pass a single text string with
 multiple options (in lieu of an array of text strings), then pass \texttt{arg} = 0.
 When no longer needed you can remove the entire list by calling
 \begin{verbatim}
-GMT_Destroy_Options (struct GMTAPI_CTRL *API, \
+long GMT_Destroy_Options (struct GMTAPI_CTRL *API, \
     struct GMT_OPTION **list)
 \end{verbatim}
 \index{GMT\_Destroy\_Options}
+The function returns TRUE (1) if there is an error (which is passed back with \texttt{API->error}),
+otherwise it returns FALSE (0).
+
 The inverse function prototype is
 \begin{verbatim}
 char ** GMT_Create_Args (struct GMTAPI_CTRL *API, long *argc, \
@@ -859,14 +909,18 @@ char ** GMT_Create_Args (struct GMTAPI_CTRL *API, long *argc, \
 \index{GMT\_Create\_Args}
 which allocates space for the text strings and performs the conversion;
 it passes back the count of the arguments via \texttt{argc} and returns a pointer to the text array.
+In the case of an error we return a NULL pointer and set \texttt{API->error} to reflect the error type.
 Note that \texttt{argv[0]} will not contain the name of the program as
 is the case the arguments presented by a C \texttt{main()} function.
 When you no longer have any use for the text array, call
 \begin{verbatim}
-GMT_Destroy_Args (struct GMTAPI_CTRL *API, long argc, char *argv[])
+long GMT_Destroy_Args (struct GMTAPI_CTRL *API, long argc, char *argv[])
 \end{verbatim}
 \index{GMT\_Destroy\_Args}
-to deallocate the space used.
+to deallocate the space used.  This function returns TRUE (1) if there is an error
+(which is passed back with \texttt{API->error}),
+otherwise it returns FALSE (0).
+
 Finally, to convert the linked list of option structures to a single
 text string command, use
 \begin{verbatim}
@@ -874,7 +928,9 @@ char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *list)
 \end{verbatim}
 \index{GMT\_Create\_Cmd}
 Developers who plan to import and export \GMT\ shell scripts might find it
-convenient to use these functions.
+convenient to use these functions.  In case of an error we return a NULL pointer
+and set \texttt{API->error}, otherwise a pointer to an allocated string is returned.
+It 
 
 \subsection{Manage the linked list of options}
 \index{Manage the linked list of options}
@@ -904,7 +960,7 @@ struct GMT_OPTION *GMT_Make_Option (struct GMTAPI_CTRL *API, char option, \
     char *arg)
 \end{verbatim}
 Should memory allocation fail the function will print an error message
-set an error code, and return NULL.
+set an error code via \texttt{API->error}, and return NULL.
 
 \subsubsection{Append an option to the linked list}
 \index{Append an option to the linked list}
@@ -919,13 +975,15 @@ struct GMT_OPTION * GMT_Append_Option (struct GMTAPI_CTRL *API, \
     struct GMT_OPTION *option, struct GMT_OPTION *list)
 \end{verbatim}
 We return the list back, and if \texttt{list} is given as NULL we return \texttt{option} as the start of the new list.
+Any errors results in a NULL pointer with \texttt{API->error} holding the error type.
 
 \subsubsection{Find an option in the linked list}
 \index{Find an option in the linked list}
 \index{Option!Find}
 
 \texttt{GMT\_Find\_Option} will return a pointer \texttt{ptr} to the first option in the linked list starting
-at \texttt{list} whose option character equals \texttt{option}.  If not found we return NULL.
+at \texttt{list} whose option character equals \texttt{option}.  If not found we return NULL.  While this is
+not necessarily an error we still set \texttt{API->error} accordingly.
 The prototype is
 \index{GMT\_Find\_Option}
 
@@ -955,6 +1013,9 @@ long GMT_Update_Option (struct GMTAPI_CTRL *API, char option, \
     char *arg, struct GMT_OPTION *list)
 \end{verbatim}
 An error will be reported if (a) \texttt{list} is NULL or (b) the option is not found.
+The function returns TRUE (1) if there is an error (i.e., \texttt{list} is NULL or the
+option is not found); the error code is passed back via \texttt{API->error}.
+Otherwise it returns FALSE (0).
 
 \subsubsection{Delete an existing option in the linked list}
 \index{Delete an existing option in the linked list}
@@ -968,8 +1029,8 @@ the linked \texttt{list}.  The prototype is
 long GMT_Delete_Option (struct GMTAPI_CTRL *API, \
     struct GMT_OPTION *current)
 \end{verbatim}
-We return an error if the option is not found in the list.  Note: Only the first
-occurrence of the specified option will be deleted.  If you need to delete all such
+We return TRUE if the option is not found in the list and set \texttt{API->error} accordingly.
+Note: Only the first occurrence of the specified option will be deleted.  If you need to delete all such
 options you will need to call this function in a loop until it returns a non-zero
 status.
 
@@ -1004,7 +1065,8 @@ long GMT_Parse_Common (struct GMTAPI_CTRL *API, \
     struct GMT_OPTION *list)
 \end{verbatim}
 
-An error will be reported if any of the common \GMT\ options fail to parse.  All other options,
+An error will be reported via \texttt{API->error) if any of the common \GMT\ options fail to parse,
+and if so we return TRUE; if not errors we return FALSE.  All other options,
 including file names, will be silently ignored.  The parsing will update the internal \GMT\
 information structure that affects program operations.
 
@@ -1057,7 +1119,7 @@ The prototype is:
 \index{GMT\_Put\_Data}
 
 \begin{verbatim}
-GMT_Put_Data (struct GMTAPI_CTRL *API, long family, long method, \
+long GMT_Put_Data (struct GMTAPI_CTRL *API, long family, long method, \
     long geometry, double wesn[], long mode, void *output, void *data)
 \end{verbatim}
 where \texttt{data} is a pointer to any of the four structures
@@ -1107,7 +1169,7 @@ the grid header by adding GMT\_GRID\_NO\_HEADER (16); this setting is ignored fo
 \index{GMT\_GRID\_COMPLEX\_IMAG}
 \index{GMT\_GRID\_NO\_HEADER}
 \end{description}
-
+If successful the function returns FALSE (0); otherwise we return TRUE (1) and set \texttt{API->error} to reflect to cause.
 \subsection{Exporting a data record}
 \index{Exporting a data record}
 \index{Data!Export data record}
@@ -1118,7 +1180,7 @@ If your program must write data table records one-by-one you will instead use th
 \index{GMT\_Put\_Record}
 
 \begin{verbatim}
-GMT_Put_Record (struct GMTAPI_CTRL *API, long mode, void *rec)
+long GMT_Put_Record (struct GMTAPI_CTRL *API, long mode, void *rec)
 \end{verbatim}
 where \texttt{rec} is a pointer to either (a) a double-precision array with the current row.
 Then, \texttt{rec} is expected to hold at least as many items as the current setting of
@@ -1146,6 +1208,8 @@ If \texttt{rec} is NULL then we use the current (last read) segment header recor
 If binary output mode instead we write a record composed of NaNs [1].
 \index{GMT\_WRITE\_SEGHEADER}
 \end{description}
+The function returns TRUE (1) if there was an error associated with the writing (which is passed back with \texttt{API->error}),
+otherwise it returns FALSE (0).
 
 \subsection{Disable Data Export}
 \index{Export!Disable}
@@ -1166,7 +1230,7 @@ This is done with the \texttt{GMT\_Destroy\_Data} function, whose prototype is
 \index{GMT\_Destroy\_Data}
 
 \begin{verbatim}
-GMT_Destroy_Data (struct GMTAPI_CTRL *API, long mode, void *data)
+long GMT_Destroy_Data (struct GMTAPI_CTRL *API, long mode, void *data)
 \end{verbatim}
 where \texttt{data} is the address of the pointer to a data container.
 Pass \texttt{mode} either as GMT\_ALLOCATED or GMT\_REFERENCE.  The former
@@ -1178,6 +1242,8 @@ we also automatically free up memory.  Thus, \texttt{GMT\_Destroy\_Data} is ther
 generally only needed when you wish to directly free up memory to avoid running out of it.
 \index{GMT\_ALLOCATED}
 \index{GMT\_REFERENCE}
+The function returns TRUE (1) if there is an error when trying to free the memory
+(the error code is passed back with \texttt{API->error}), otherwise it returns FALSE (0).
 
 \section{Terminate a GMT session}
 \index{Terminate a GMT session}
@@ -1186,7 +1252,7 @@ generally only needed when you wish to directly free up memory to avoid running 
 Before your program exits it should properly terminate the \GMT\ session, which involves a call to
 
 \begin{verbatim}
-GMT_Destroy_Session (struct GMTAPI_CTRL **API)
+long GMT_Destroy_Session (struct GMTAPI_CTRL **API)
 \end{verbatim}
 \index{GMT\_Destroy\_Session}
 which simply takes the address of the pointer to the \GMT\ API control structure as its only arguments.  It terminates the \GMT\ machinery
@@ -1195,6 +1261,8 @@ requested PSL during creation then the PSL resources are freed as well.  It
 also unregisters any remaining resources previously registered with the session.
 The \GMT\ API will only close files that it was responsible for opening in the first place.
 Finally, the API structure itself is freed so your main program does not need to do so.
+The function returns TRUE (1) if there is an error when trying to free the memory
+(the error code is passed back with \texttt{API->error}), otherwise it returns FALSE (0).
 
 \section{Report errors}
 \index{Report errors}
@@ -1205,13 +1273,13 @@ moving to the next step.  All API functions will issue an error message before r
 to the calling program.  This function is
 
 \begin{verbatim}
-GMT_Report_Error (struct GMTAPI_CTRL *API, long error);
+long GMT_Report_Error (struct GMTAPI_CTRL *API, long error);
 \end{verbatim}
 \index{GMT\_Report\_Error}
 where \texttt{error} is the status code return by any API function.  Note: The error message is
 only issued if the verbosity level of the \GMT\ session is not set to 0 [Default is 1], and
 messages are normally written to \texttt{stderr} unless this stream has been redirected.
-
+Note that this function also updates \texttt{API->error} to the given value.
 \section{FORTRAN 77 interface} 
 \index{FORTRAN 77 interface}
 \index{Interface!FORTRAN 77}
