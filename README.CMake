@@ -86,7 +86,7 @@ simultaneously.
 
 TODO list
 ---------
-* Replace shell scripts in supplements with cmake macros: mgd77, sph
+* Test dependencies: find_program gm, replace lockfile
 
 * Turn into GMT module: potential/gravfft.c
 

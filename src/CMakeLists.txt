@@ -239,10 +239,19 @@ set (GMT_SUPPL_DIRS dbase gshhs imgsrc meca mgd77 potential segy sph spotter
 # other supplement directories
 set (GMT_OTHER_SUPPL_DIRS misc xgrid)
 
+# path to all binary dirs (used to set PATH in test scripts)
+set (GMT_BINARY_DIR_PATH ${CMAKE_CURRENT_BINARY_DIR})
+
 # process supplement directories
 foreach (_dir ${GMT_SUPPL_DIRS} ${GMT_OTHER_SUPPL_DIRS})
 	add_subdirectory (${_dir})
+	list (APPEND GMT_BINARY_DIR_PATH ${CMAKE_CURRENT_BINARY_DIR}/${_dir})
 endforeach (_dir)
+
+# make UNIX PATH variable
+string (REPLACE ";" ":" GMT_BINARY_DIR_PATH "${GMT_BINARY_DIR_PATH}")
+set (GMT_BINARY_DIR_PATH ${GMT_BINARY_DIR_PATH} CACHE INTERNAL
+	"UNIX PATH to all binary dirs")
 
 # supplement library files
 get_subdir_var_files (GMT_SUPPL_LIB_SRCS LIB_SRCS ${GMT_SUPPL_DIRS})

@@ -37,13 +37,13 @@ find_package (LATEX)
 
 if (PDFLATEX_COMPILER)
 	# Copy common TeX dependends
-	foreach (_input ${_common_inputs})
+	foreach (_input ${_docs_inputs} ${_common_inputs})
 		add_custom_command (OUTPUT ${_input}
 			COMMAND ${CMAKE_COMMAND}
 			-E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${_input} ${_input}
 			COMMENT "Copying ${_input}")
 	endforeach (_input ${_common_inputs})
-	add_custom_target (copy_tex_depends DEPENDS ${_common_inputs})
+	add_custom_target (copy_tex_depends DEPENDS ${_docs_inputs} ${_common_inputs})
 
 	set (_common_depends
 		copy_tex_depends
