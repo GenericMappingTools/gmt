@@ -59,12 +59,9 @@ passfail () {
 LANG=C
 
 # Use executables from GMT_BINARY_DIR
-GMT_BINARY_DIR=@GMT_BINARY_DIR@
-GMT_SOURCE_DIR=@GMT_SOURCE_DIR@
-SUPPLEMENTS_DIR=$(find ${GMT_BINARY_DIR}/src/* -maxdepth 0 -type d -and -not -name '*.dSYM' -print0 | tr '\0' ':')
-export PATH="${GMT_BINARY_DIR}/src:${SUPPLEMENTS_DIR}:${GMT_SOURCE_DIR}/src:${PATH}"
-export GMT_SHAREDIR="${GMT_SOURCE_DIR}/share"
-export GMT_USERDIR="${GMT_BINARY_DIR}/share"
+export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:${PATH}"
+export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
+export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 export HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
 export HAVE_OPENMP="@HAVE_OPENMP@"
 

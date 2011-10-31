@@ -128,7 +128,7 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 				add_custom_command (
 					OUTPUT ${_manfile}.html
 					COMMAND ${GMT_BINARY_DIR}/src/rman
-					-f HTML
+					-S -f HTML
 					< ${_manfile} > ${_manfile}.html
 					DEPENDS ${_manfile} rman
 					VERBATIM)
