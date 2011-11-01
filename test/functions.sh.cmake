@@ -70,7 +70,6 @@ export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 export HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
 export HAVE_OPENMP="@HAVE_OPENMP@"
 export GRAPHICSMAGICK="@GRAPHICSMAGICK@"
-export LOCKFILE="@LOCKFILE@"
 
 # Reset error count
 ERROR=0
@@ -78,9 +77,11 @@ ERROR=0
 # Make sure to cleanup at end
 function on_exit()
 {
-  rm -f .gmt* gmt.conf test.lock
+  set +e
+  trap - EXIT # Restore EXIT trap
+  rm -f .gmt* gmt.conf
+  lockfile.sh remove test
   echo "exit status: ${ERROR}"
-  trap - EXIT # Restore ERR trap
   exit ${ERROR}
 }
 trap on_exit EXIT
@@ -89,6 +90,8 @@ trap on_exit EXIT
 set -e
 function on_err()
 {
+  set +e
+  trap - EXIT ERR SIGSEGV SIGTRAP SIGBUS # Restore trap
   ((++ERROR))
   on_exit
 }
@@ -96,9 +99,7 @@ trap on_err ERR SIGSEGV SIGTRAP SIGBUS
 
 # Create lockfile (needed for running parallel tests).
 # Timeout and remove lockfile after 240 seconds.
-if [ "$LOCKFILE" ]; then
-  $LOCKFILE -5 -l 240 test.lock
-fi
+lockfile.sh test 48 5
 
 # Start with proper GMT defaults
 gmtset -Du

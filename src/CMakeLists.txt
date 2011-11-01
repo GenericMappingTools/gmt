@@ -342,6 +342,7 @@ install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
 if (UNIX)
 	install (PROGRAMS
 		${CMAKE_CURRENT_BINARY_DIR}/isogmt
+		lockfile.sh
 		gmtlogo
 		gmtswitch
 		gmt_shell_functions.sh
