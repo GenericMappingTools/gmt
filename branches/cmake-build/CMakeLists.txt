@@ -67,6 +67,10 @@ add_custom_target (check
 	COMMAND ${CMAKE_CTEST_COMMAND}
 	--force-new-ctest-process -j${N_TEST_JOBS})
 
+# Find test dependencies
+find_program (GRAPHICSMAGICK gm)
+find_program (LOCKFILE lockfile)
+
 # Add subdirectories
 set(_manfiles_ps "" CACHE INTERNAL "Global list of PS manpages")
 set(_manfiles_suppl_ps "" CACHE INTERNAL "Global list of supplement PS manpages")
