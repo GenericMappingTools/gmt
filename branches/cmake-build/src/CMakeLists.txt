@@ -325,14 +325,6 @@ target_link_libraries (psldemo pslib)
 
 # rman for converting html manpages
 add_executable (rman rman.c)
-set (_rman_prop
-	VOLLIST=\"1:2:3:4:5:6:7:8:9:o:l:n:p\"
-	"MANTITLEPRINTF=\"%s(%s) manual page\""
-	MANREFPRINTF=\"%s.%s.html\"
-	POLYGLOTMANVERSION=\"3.2\")
-set_target_properties (rman
-	PROPERTIES COMPILE_DEFINITIONS
-	"${_rman_prop}")
 
 # generate Mac debugging symbols
 create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS})

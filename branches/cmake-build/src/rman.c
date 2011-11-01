@@ -1,15 +1,3 @@
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wall"
-#pragma GCC diagnostic ignored "-Wextra"
-#pragma GCC diagnostic ignored "-Wchar-subscripts"
-#pragma GCC diagnostic ignored "-Wformat-security"
-#pragma GCC diagnostic ignored "-Wpointer-sign"
-#pragma GCC diagnostic ignored "-Wsign-compare"
-#endif
-#ifdef __clang__
-#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-#endif
-
 /*
 	 PolyglotMan by Thomas A. Phelps (phelps@ACM.org)
 
@@ -39,6 +27,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+
+#include "rman.h"
 
 /*** make #define's into consts? => can't because compilers not smart enough ***/
 /* maximum number of tags per line */
