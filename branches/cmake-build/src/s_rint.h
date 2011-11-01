@@ -15,8 +15,11 @@
 #ifndef _S_RINT_H_
 #define _S_RINT_H_
 
+#include "gmt_config.h"
+
+#ifdef HAVE_SYS_TYPES_H_
 #include <sys/types.h>
-#include <machine/endian.h>
+#endif
 
 /*
  * The original fdlibm code used statements like:
@@ -36,33 +39,31 @@
  * ints.
  */
 
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef HAVE_BIGENDIAN
 
 typedef union
 {
   double value;
   struct
   {
-    u_int32_t msw;
-    u_int32_t lsw;
+    uint32_t msw;
+    uint32_t lsw;
   } parts;
 } ieee_double_shape_type;
 
-#endif
-
-#if BYTE_ORDER == LITTLE_ENDIAN
+#else /* HAVE_BIGENDIAN */
 
 typedef union
 {
   double value;
   struct
   {
-    u_int32_t lsw;
-    u_int32_t msw;
+    uint32_t lsw;
+    uint32_t msw;
   } parts;
 } ieee_double_shape_type;
 
-#endif
+#endif /* HAVE_BIGENDIAN */
 
 /* Get two 32 bit ints from a double.  */
 
