@@ -28,7 +28,7 @@ set (GMT_SPH_EXAMPLE_PROGS
 	sph_ex_1.sh sph_ex_2.sh sph_ex_3.sh sph_ex_4.sh)
 
 # generate header file gmt_sph.h
-gmt_set_api_header(GMT_SPH_API_H "${GMT_SPH_PROGS_SRCS}")
+gmt_set_api_header(GMT_SPH_API_H ${GMT_SPH_PROGS_SRCS})
 
 # lib sources
 set (LIB_SRCS ${GMT_SPH_LIB_SRCS}

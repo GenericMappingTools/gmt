@@ -24,7 +24,7 @@ set (GMT_IMGSRC_PROGS_SRCS img2grd.c)
 set (GMT_IMGSRC_SHELL_SCRIPTS img2google)
 
 # generate header file gmt_imgsrc.h
-gmt_set_api_header(GMT_IMGSRC_API_H "${GMT_IMGSRC_PROGS_SRCS}")
+gmt_set_api_header(GMT_IMGSRC_API_H ${GMT_IMGSRC_PROGS_SRCS})
 
 # lib sources
 set (LIB_SRCS ${GMT_IMGSRC_LIB_SRCS}
