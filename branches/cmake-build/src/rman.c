@@ -18,17 +18,41 @@
 	 it under the terms of the "Artistic License".
 	 */
 
-#include <unistd.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
 #include "rman.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#ifdef HAVE_UNISTD_H_
+#	include <unistd.h>
+#endif
+
+#ifdef HAVE_IO_H_
+#	include <io.h>
+#endif
+
+#ifdef HAVE_CTYPE_H_
+#	include <ctype.h>
+#endif
+
+#ifdef HAVE_STAT_H_
+#	include <sys/stat.h>
+#endif
+
+#ifdef HAVE_SYS_TYPES_H_
+#	include <sys/types.h>
+#endif
+
+#ifdef HAVE_FCNTL_H_
+#	include <fcntl.h>
+#endif
+
+#ifdef HAVE_ASSERT_H_
+#	include <assert.h>
+#else
+#	define assert(e) ((void)0)
+#endif
 
 /*** make #define's into consts? => can't because compilers not smart enough ***/
 /* maximum number of tags per line */
