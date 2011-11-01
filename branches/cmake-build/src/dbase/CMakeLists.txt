@@ -21,7 +21,7 @@
 set (GMT_DBASE_PROGS_SRCS grdraster.c)
 
 # generate header file gmt_dbase.h
-gmt_set_api_header(GMT_DBASE_API_H "${GMT_DBASE_PROGS_SRCS}")
+gmt_set_api_header(GMT_DBASE_API_H ${GMT_DBASE_PROGS_SRCS})
 
 # lib sources
 set (LIB_SRCS ${GMT_DBASE_PROGS_SRCS} ${GMT_DBASE_API_H})

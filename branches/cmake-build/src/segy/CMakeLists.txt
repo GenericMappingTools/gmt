@@ -28,7 +28,7 @@ set (GMT_SEGY_EXAMPLE_PROGS segyprogs_1.sh segyprogs_2.sh segyprogs_3.sh
 	segyprogs_4.sh segyprogs_5.sh)
 
 # generate header file gmt_segy.h
-gmt_set_api_header(GMT_SEGY_API_H "${GMT_SEGY_PROGS_SRCS}")
+gmt_set_api_header(GMT_SEGY_API_H ${GMT_SEGY_PROGS_SRCS})
 
 # lib sources
 set (LIB_SRCS ${GMT_SEGY_LIB_SRCS}

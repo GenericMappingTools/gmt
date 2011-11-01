@@ -22,11 +22,13 @@ set (GMT_MGD77_LIB_SRCS mgd77.h mgd77_IGF_coeffs.h mgd77_codes.h mgd77_init.h
 	mgd77_recalc.h mgd77magref.h mgd77defaults.h mgd77_functions.h
 	cm4_functions.h mgd77.c mgd77_functions.c cm4_functions.c)
 set (GMT_MGD77_PROGS_SRCS mgd77convert.c mgd77info.c mgd77list.c
-	mgd77path.c mgd77manage.c mgd77magref.c mgd77sniffer.c)
+	mgd77magref.c mgd77manage.c mgd77path.c mgd77sniffer.c)
 set (GMT_MGD77_PROGSPS_SRCS mgd77track.c)
 
 # generate header file gmt_mgd77.h
-gmt_set_api_header(GMT_MGD77_API_H "${GMT_MGD77_PROGS_SRCS}")
+gmt_set_api_header(GMT_MGD77_API_H
+	${GMT_MGD77_PROGS_SRCS}
+	${GMT_MGD77_PROGSPS_SRCS})
 
 # lib sources
 set (LIB_SRCS

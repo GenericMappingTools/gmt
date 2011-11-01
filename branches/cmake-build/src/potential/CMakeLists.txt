@@ -22,7 +22,7 @@ set (GMT_POTENTIAL_PROGS_SRCS redpol.c xyzokb.c)
 set (GMT_POTENTIAL_PROGS2_SRCS gravfft.c)
 
 # generate header file gmt_potential.h
-gmt_set_api_header(GMT_POTENTIAL_API_H "${GMT_POTENTIAL_PROGS_SRCS}")
+gmt_set_api_header(GMT_POTENTIAL_API_H ${GMT_POTENTIAL_PROGS_SRCS})
 
 # lib sources
 set (LIB_SRCS ${GMT_POTENTIAL_PROGS_SRCS} ${GMT_POTENTIAL_API_H})

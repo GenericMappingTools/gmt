@@ -28,7 +28,7 @@ set (GMT_SPOTTER_EXAMPLE_FILES README.spotter
 set (GMT_SPOTTER_EXAMPLE_PROGS spotter.bat spotter.sh)
 
 # generate header file gmt_spotter.h
-gmt_set_api_header(GMT_SPOTTER_API_H "${GMT_SPOTTER_PROGS_SRCS}")
+gmt_set_api_header(GMT_SPOTTER_API_H ${GMT_SPOTTER_PROGS_SRCS})
 
 # lib sources
 set (LIB_SRCS ${GMT_SPOTTER_LIB_SRCS}

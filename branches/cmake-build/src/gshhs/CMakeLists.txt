@@ -22,7 +22,7 @@ set (GMT_GSHHS_PROGS_SRCS gshhs.c)
 set (GMT_GSHHS_PROGS2_SRCS gshhs_dp.c gshhstograss.c)
 
 # generate header file gmt_gshhs.h
-gmt_set_api_header(GMT_GSHHS_API_H "${GMT_GSHHS_PROGS_SRCS}")
+gmt_set_api_header(GMT_GSHHS_API_H ${GMT_GSHHS_PROGS_SRCS})
 
 # lib sources
 set (LIB_SRCS ${GMT_GSHHS_PROGS_SRCS} ${GMT_GSHHS_API_H})

@@ -28,7 +28,7 @@ set (GMT_X2SYS_EXAMPLE_FILES README.x2sys)
 set (GMT_X2SYS_EXAMPLE_PROGS test_x2sys.sh)
 
 # generate header file gmt_x2sys.h
-gmt_set_api_header(GMT_X2SYS_API_H "${GMT_X2SYS_PROGS_SRCS}")
+gmt_set_api_header(GMT_X2SYS_API_H ${GMT_X2SYS_PROGS_SRCS})
 
 # lib sources
 set (LIB_SRCS ${GMT_X2SYS_LIB_SRCS}
