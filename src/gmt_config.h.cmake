@@ -119,6 +119,8 @@
 
 #cmakedefine HAVE_MODE_T
 
+#cmakedefine HAVE_BIGENDIAN
+
 /* Math headers */
 
 #cmakedefine HAVE_FLOATINGPOINT_H_

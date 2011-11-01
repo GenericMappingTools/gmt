@@ -100,6 +100,8 @@ check_type_size (mode_t                 MODE_T)
 check_type_size (wchar_t                WCHAR_T)
 check_type_size (wint_t                 WINT_T)
 
+test_big_endian (HAVE_BIGENDIAN)
+
 #
 # Check math related stuff
 #
@@ -287,7 +289,6 @@ set (CMAKE_REQUIRED_DEFINITIONS)
 #check_type_size (int            SIZEOF_INT)
 #check_type_size (long           SIZEOF_LONG) 
 #check_type_size (short          SIZEOF_SHORT)
-#test_big_endian (WORDS_BIGENDIAN)
 
 if (NOT DEFINED STDC_HEADERS)
 	message (STATUS "Checking whether system has ANSI C header files")
