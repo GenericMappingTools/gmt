@@ -20,13 +20,12 @@ LANG=C
 
 # Use executables from GMT_BINARY_DIR
 export GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
-export PATH="@GMT_BINARY_DIR_PATH@:${PATH}"
+export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:${PATH}"
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 export EXTRA_FONTS_DIR="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 export CMP_FIG_PATH="@GMT_SOURCE_DIR@/doc/fig"
 export GRAPHICSMAGICK="@GRAPHICSMAGICK@"
-export LOCKFILE="@LOCKFILE@"
 
 # Reset error count
 ERROR=0
@@ -70,9 +69,9 @@ pscmp () {
 # Make sure to cleanup at end
 function cleanup()
 {
-  rm -f .gmt* gmt.conf example.lock
+  rm -f .gmt* gmt.conf
+  lockfile.sh remove example
   echo "exit status: ${ERROR}"
-  trap - EXIT # Restore ERR trap
   exit ${ERROR}
 }
 
@@ -80,6 +79,7 @@ function cleanup()
 function on_exit()
 {
   set +e
+  trap - EXIT # Restore EXIT trap
   make_pdf
   pscmp
   cleanup
@@ -90,16 +90,16 @@ trap on_exit EXIT
 set -e
 function on_err()
 {
+  set +e
+  trap - EXIT ERR SIGSEGV SIGTRAP SIGBUS # Restore trap
   ((++ERROR))
   cleanup
 }
 trap on_err ERR SIGSEGV SIGTRAP SIGBUS
 
 # Create lockfile (needed for running parallel tasks in the same directory).
-# Timeout and remove lockfile after 240 seconds.
-if [ "$LOCKFILE" ]; then
-  $LOCKFILE -5 -l 240 example.lock
-fi
+# Timeout after 240 seconds.
+lockfile.sh example 48 5
 
 # Start with proper GMT defaults
 gmtset -Du FORMAT_TIME_LOGO "Version 5"

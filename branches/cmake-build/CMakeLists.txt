@@ -69,7 +69,6 @@ add_custom_target (check
 
 # Find test dependencies
 find_program (GRAPHICSMAGICK gm)
-find_program (LOCKFILE lockfile)
 
 # Add subdirectories
 set(_manfiles_ps "" CACHE INTERNAL "Global list of PS manpages")
