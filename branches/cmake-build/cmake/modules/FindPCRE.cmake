@@ -92,6 +92,8 @@ find_library (PCRE_LIBRARY
 	${_pcre_libpath}
 	PATH_SUFFIXES lib64 lib
 	PATHS
+	~/Library/Frameworks/pcre.framework
+	/Library/Frameworks/pcre.framework
 	/sw
 	/opt/local
 	/opt/csw
