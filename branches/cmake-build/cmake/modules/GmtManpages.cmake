@@ -157,12 +157,14 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 			list (REMOVE_DUPLICATES _install_sections)
 			foreach (_man_section ${_install_sections})
 				install (FILES ${_manfilepaths_${_man_section}}
-					DESTINATION ${GMT_SHARE_PATH}/man/man${_man_section})
+					DESTINATION ${GMT_SHARE_PATH}/man/man${_man_section}
+					OPTIONAL)
 			endforeach (_man_section ${_install_sections})
 
 			# install html manpages
 			install (FILES ${_manfiles_html}
-				DESTINATION ${GMT_DOC_PATH}/html)
+				DESTINATION ${GMT_DOC_PATH}/html
+				OPTIONAL)
 
 			# remember _manfiles_ps
 			if (_tag)
