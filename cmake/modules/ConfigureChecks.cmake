@@ -5,16 +5,17 @@
 if(NOT DEFINED _INCLUDED_CHECK_MACROS_)
 	set(_INCLUDED_CHECK_MACROS_ "DEFINED")
 
-	include (CheckIncludeFile)
-	include (CheckIncludeFiles)
-	include (CheckSymbolExists)
-	include (CheckFunctionExists)
-	include (CheckLibraryExists)
-	include (CheckPrototypeExists)
-	include (CheckTypeExists)
-	include (CheckTypeSize)
+	include (CheckCCompilerFlag)
 	include (CheckCSourceCompiles)
 	include (CheckCSourceRuns)
+	include (CheckFunctionExists)
+	include (CheckIncludeFile)
+	include (CheckIncludeFiles)
+	include (CheckLibraryExists)
+	include (CheckPrototypeExists)
+	include (CheckSymbolExists)
+	include (CheckTypeExists)
+	include (CheckTypeSize)
 	include (TestBigEndian)
 
 endif(NOT DEFINED _INCLUDED_CHECK_MACROS_)
@@ -23,9 +24,28 @@ endif(NOT DEFINED _INCLUDED_CHECK_MACROS_)
 # Check if compiler supports -traditional-cpp
 #
 
-set (CMAKE_REQUIRED_FLAGS "-E -w -P -nostdinc -traditional-cpp")
-check_c_source_compiles ("#define TEST" HAVE_TRADITIONAL_CPP)
-set (CMAKE_REQUIRED_FLAGS)
+if (MSVC)
+	if (NOT HAVE_TRADITIONAL_CPP)
+		# Microsoft compiler
+		message (STATUS "Performing Test HAVE_TRADITIONAL_CPP")
+		execute_process (COMMAND ${CMAKE_C_COMPILER} /EP
+			${GMT_SOURCE_DIR}/config.h.cmake # can be any header file
+			RESULT_VARIABLE _mscl_ep
+			OUTPUT_QUIET ERROR_QUIET)
+		if (_mscl_ep EQUAL 0)
+			set (HAVE_TRADITIONAL_CPP TRUE CACHE INTERNAL "Test HAVE_TRADITIONAL_CPP")
+			message (STATUS "Performing Test HAVE_TRADITIONAL_CPP - Success")
+		else (_mscl_ep EQUAL 0)
+			set (HAVE_TRADITIONAL_CPP "" CACHE INTERNAL "Test HAVE_TRADITIONAL_CPP")
+			message (STATUS "Performing Test HAVE_TRADITIONAL_CPP - Failed")
+		endif (_mscl_ep EQUAL 0)
+	endif (NOT HAVE_TRADITIONAL_CPP)
+elseif (CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU)
+	# GCC or Clang
+	set (CMAKE_REQUIRED_FLAGS "-E -w -P -nostdinc -traditional-cpp")
+	check_c_source_compiles ("#define TEST" HAVE_TRADITIONAL_CPP)
+	set (CMAKE_REQUIRED_FLAGS)
+endif (MSVC)
 
 #
 # Check for windows header
@@ -54,9 +74,11 @@ check_function_exists (_fseeki64        HAVE__FSEEKI64)
 check_function_exists (ftello           HAVE_FTELLO)
 check_function_exists (ftello64         HAVE_FTELLO64)
 check_function_exists (_ftelli64        HAVE__FTELLI64)
+check_function_exists (getopt           HAVE_GETOPT)
 check_function_exists (getpwuid         HAVE_GETPWUID)
 check_function_exists (qsort_r          HAVE_QSORT_R)
 check_function_exists (qsort_s          HAVE_QSORT_S)
+check_function_exists (stricmp          HAVE_STRICMP)
 check_function_exists (strdup           HAVE_STRDUP)
 check_function_exists (strtod           HAVE_STRTOD)
 check_function_exists (strtok_r         HAVE_STRTOK_R)
@@ -158,17 +180,17 @@ check_symbol_exists (yn          "${_math_h}" HAVE_YN)
 # test if sincos is buggy
 if (HAVE_SINCOS)
 	check_c_source_runs (
-	"
-	#define _GNU_SOURCE
-	include <math.h>
-	int main () {
-	double s = 0.1, c = 0.2;
-	double s1, c1;
-	s1 = s; c1 = c;
-	sincos (0.5, &s, &c);
-	return !(s == s1 || c == c1);} /* return TRUE if sincos works ok */
-	"
-	HAVE_SINCOS)
+		"
+		#define _GNU_SOURCE
+		include <math.h>
+		int main () {
+		double s = 0.1, c = 0.2;
+		double s1, c1;
+		s1 = s; c1 = c;
+		sincos (0.5, &s, &c);
+		return !(s == s1 || c == c1);} /* return TRUE if sincos works ok */
+		"
+		HAVE_SINCOS)
 endif (HAVE_SINCOS)
 
 set (CMAKE_REQUIRED_DEFINITIONS)

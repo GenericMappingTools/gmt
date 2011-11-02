@@ -20,13 +20,12 @@
 #ifndef _RMAN_H
 #define _RMAN_H
 
-#include "gmt_config.h"
-
 #define VOLLIST             "1:2:3:4:5:6:7:8:9:o:l:n:p"
 #define MANTITLEPRINTF      "%s(%s) manual page"
 #define MANREFPRINTF        "%s.%s.html"
 #define POLYGLOTMANVERSION  "3.2"
 
+/* Suppress GNU C warnings */
 #ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wall"
 #pragma GCC diagnostic ignored "-Wextra"
@@ -37,6 +36,11 @@
 #endif
 #ifdef __clang__
 #pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+#endif
+
+/* Suppress Visual Studio deprecation warnings */
+#ifdef _MSC_VER
+#pragma warning( disable : 4996 )
 #endif
 
 #endif /* _RMAN_H */

@@ -313,7 +313,7 @@
 #		include <vld.h>
 #	endif
 
-	/* Suppress Visual Studio deprecation warnings */
+/* Suppress Visual Studio deprecation warnings */
 #	ifdef _MSC_VER
 #		pragma warning( disable : 4996 )
 #	endif

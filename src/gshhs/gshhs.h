@@ -40,11 +40,13 @@
 
 #ifndef _GSHHS
 #define _GSHHS
-#define _POSIX_SOURCE 1		/* GSHHS code is POSIX compliant */
+#include "gmt_config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
+#ifdef HAVE_CTYPE_H_
+#	include <ctype.h>
+#endif
 #include <math.h>
 
 #ifndef M_PI

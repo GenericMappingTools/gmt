@@ -227,6 +227,9 @@ endif (HAVE_M_LIBRARY)
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (pslib
 	PROPERTIES
+	OUTPUT_NAME ps
+	PREFIX lib
+	IMPORT_PREFIX lib
 	VERSION ${GMT_PACKAGE_VERSION}
 	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
@@ -283,6 +286,8 @@ endif (HAVE_M_LIBRARY)
 set_target_properties (gmtlib
 	PROPERTIES
 	OUTPUT_NAME gmt
+	PREFIX lib
+	IMPORT_PREFIX lib
 	VERSION ${GMT_PACKAGE_VERSION}
 	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
@@ -324,7 +329,11 @@ add_executable (psldemo psldemo.c)
 target_link_libraries (psldemo pslib)
 
 # rman for converting html manpages
-add_executable (rman rman.c)
+if (HAVE_GETOPT)
+	add_executable (rman rman.c)
+else (HAVE_GETOPT)
+	add_executable (rman rman.c getopt.c getopt.h)
+endif (HAVE_GETOPT)
 
 # generate Mac debugging symbols
 create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS})
