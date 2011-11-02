@@ -97,6 +97,7 @@
 #cmakedefine HAVE_QSORT_R
 #cmakedefine HAVE_QSORT_S
 #cmakedefine HAVE__SETMODE
+#cmakedefine HAVE_STRICMP
 #cmakedefine HAVE_STRDUP
 #cmakedefine HAVE_STRTOD
 #cmakedefine HAVE_STRTOK_R

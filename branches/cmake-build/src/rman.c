@@ -18,6 +18,8 @@
 	 it under the terms of the "Artistic License".
 	 */
 
+#include "gmt_config.h"
+
 #include "rman.h"
 
 #include <stdio.h>
@@ -26,6 +28,10 @@
 
 #ifdef HAVE_UNISTD_H_
 #	include <unistd.h>
+#endif
+
+#ifndef HAVE_GETOPT
+#	include "getopt.h"
 #endif
 
 #ifdef HAVE_IO_H_
@@ -297,6 +303,7 @@ int fIP = 0;
 
 /* case insensitive versions of strcmp and strncmp */
 
+#ifndef HAVE_STRICMP
 int stricmp(const char *s1, const char *s2)
 {
 	assert(s1 != NULL && s2 != NULL);
@@ -313,6 +320,7 @@ int stricmp(const char *s1, const char *s2)
 	else
 		return 1;
 }
+#endif /* HAVE_STRICMP */
 
 /*
 	 int lcexceptionscmp(const char **a, const char **b) {

@@ -39,7 +39,7 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 	#find_package (LATEX)
 
 	macro (GMT_CREATE_MANPAGES MAN_FILES)
-		if ((CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU) AND HAVE_TRADITIONAL_CPP)
+		if (HAVE_TRADITIONAL_CPP)
 			# parse arguments
 			set (_arg_is_man_file TRUE)
 			set (_man_files ${MAN_FILES})
@@ -63,6 +63,14 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 			set (_target_depends)
 			set (_manfiles_html)
 
+			# set preprocessor flags
+			if (MSVC)
+				set (_cpp_flags /EP /nologo)
+			else (MSVC)
+				# GNU C
+				set (_cpp_flags -E -w -P -nostdinc -traditional-cpp - <)
+			endif (MSVC)
+
 			foreach (_manfile ${_man_files})
 				# strip section number
 				string (REGEX MATCH "[1-8]$" _man_section ${_manfile})
@@ -78,11 +86,12 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 				# uncompressed manpage
 				add_custom_command (
 					OUTPUT ${_manfile}
-					COMMAND ${CMAKE_C_COMPILER} - -E -w -P -nostdinc -traditional-cpp
+					COMMAND ${CMAKE_C_COMPILER}
 					-I${GMT_SOURCE_DIR}/src
 					-I${GMT_BINARY_DIR}/src
 					-I${CMAKE_CURRENT_SOURCE_DIR}
-					< ${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
+					${_cpp_flags}
+					${CMAKE_CURRENT_SOURCE_DIR}/${_man_src}
 					> ${_manfile}
 					DEPENDS ${_man_src} ${_depends}
 					VERBATIM)
@@ -140,7 +149,7 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 			endforeach (_manfile)
 
 			# manpage target
-			add_custom_target (manpages${_tag} ALL DEPENDS ${_target_depends})
+			add_custom_target (manpages${_tag} DEPENDS ${_target_depends})
 			add_depend_to_target (manpages_all manpages${_tag})
 
 			# install manpages
@@ -164,7 +173,7 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 					"Global list of PS manpages")
 			endif (_tag)
 
-		endif ((CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU) AND HAVE_TRADITIONAL_CPP)
+		endif (HAVE_TRADITIONAL_CPP)
 	endmacro (GMT_CREATE_MANPAGES MAN_FILES)
 
 endif(NOT DEFINED _GMT_MANPAGES_CMAKE_)
