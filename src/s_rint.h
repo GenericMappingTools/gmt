@@ -18,7 +18,12 @@
 #include "gmt_config.h"
 
 #ifdef HAVE_SYS_TYPES_H_
-#include <sys/types.h>
+#	include <sys/types.h>
+#endif
+
+/* Suppress Visual Studio warnings */
+#ifdef _MSC_VER
+#	pragma warning( disable : 4146 )
 #endif
 
 /*
