@@ -102,11 +102,15 @@ find_path (GDAL_INCLUDE_DIR gdal.h
 find_library (GDAL_LIBRARY
 	NAMES ${_gdal_lib} gdal gdal_i gdal1.5.0 gdal1.4.0 gdal1.3.2 GDAL
 	HINTS
+	${GDAL_DIR}
+	${GDAL_ROOT}
 	$ENV{GDAL_DIR}
 	$ENV{GDAL_ROOT}
 	${_gdal_libpath}
 	PATH_SUFFIXES lib64 lib
 	PATHS
+	~/Library/Frameworks/gdal.framework
+	/Library/Frameworks/gdal.framework
 	/sw
 	/opt/local
 	/opt/csw
