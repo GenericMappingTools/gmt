@@ -446,11 +446,15 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	yy  = GMT_memory (GMT, NULL, n_alloc, double);
 	zz  = GMT_memory (GMT, NULL, n_alloc, double);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Register data input */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3))) Return (error);
-	if ((D = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, GMT_FILE_BREAK, NULL, NULL)) == NULL) Return (API->error);
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		Return (API->error);
+	}
+	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+		Return (error);
+	}
+	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, GMT_FILE_BREAK, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
 
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];

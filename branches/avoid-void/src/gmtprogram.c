@@ -42,7 +42,7 @@ int main (int argc, char *argv[]) {
 	status = (int)FUNC (API, (GMT_LONG)(argc-1), (argv+1));
 
 	/* 3. Destroy GMT session */
-	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);
+	if (GMT_Destroy_Session (&API) != GMT_OK) exit (EXIT_FAILURE);
 
 	exit (status);		/* Return the status from FUNC */
 }

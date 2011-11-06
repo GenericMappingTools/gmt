@@ -180,7 +180,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char *append[3] = {"", " via VECTOR", " via MATRIX"};
 	char *ifile[7] = {"dtesti.txt", "ttesti.txt", "gtesti.nc", "ctesti.cpt", "itesti.jpg", "vtesti.bin", "mtesti.bin"};
 	char *ofile[7] = {"dtesto.txt", "ttesto.txt", "gtesto.nc", "ctesto.cpt", "itesto.jpg", "vtesto.bin", "mtesto.bin"};
-	char string[GMTAPI_STRLEN], *input = NULL, *output = NULL;
+	char string[GMTAPI_STRLEN];
 
 	FILE *fp = NULL;
 	int *fdp = NULL, fd = 0;
@@ -246,19 +246,27 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read %s %s with method %s%s and write to %s with method %s%s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], method[Ctrl->I.mode], append[via[GMT_IN]], ofile[Ctrl->T.mode], method[Ctrl->W.mode], append[via[GMT_OUT]]);
 	
-	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_REG_FILES_IF_NONE, options)) Return (API->error);	/* Registers default input destination, unless already set */
-	if (GMT_Begin_IO (API, Ctrl->T.mode, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_REG_FILES_IF_NONE, options) != GMT_OK) {	/* Registers default input destination, unless already set */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, Ctrl->T.mode, GMT_IN, GMT_BY_SET) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
 	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, 0);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 	switch (Ctrl->I.mode) {
 		case GMT_IS_FILE:	/* Pass filename */
-			if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, ifile[Ctrl->T.mode], NULL)) == GMTAPI_NOTSET) Return (API->error);
+			if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, ifile[Ctrl->T.mode], NULL)) == GMTAPI_NOTSET) {
+				Return (API->error);
+			}
 			break;
 		case GMT_IS_STREAM:
 			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
 					fp = GMT_fopen (GMT, ifile[Ctrl->T.mode], "r");
-					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, fp, NULL)) == GMTAPI_NOTSET) Return (API->error);
+					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, fp, NULL)) == GMTAPI_NOTSET) {
+						Return (API->error);
+					}
 					break;
 				default:
 					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_STREAM only allows d, t, c!\n");
@@ -271,7 +279,9 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
 					fd = open (ifile[Ctrl->T.mode], O_RDONLY);
 					fdp = &fd;
-					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, fdp, NULL)) == GMTAPI_NOTSET) Return (API->error);
+					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, fdp, NULL)) == GMTAPI_NOTSET) {
+						Return (API->error);
+					}
 					break;
 				default:
 					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_FDESC only allows d, t, c!\n");
@@ -282,16 +292,30 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		case GMT_IS_COPY: case GMT_IS_REF:
 			switch (Ctrl->I.via) {
 				case GMT_VIA_MATRIX:	/* Get the dataset|grid via a user matrix */
-					if ((Intmp = GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], NULL, 0, M, NULL)) == NULL) Return (API->error);
+					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], GMT_IN, &M, NULL)) == GMTAPI_NOTSET) {
+						Return (API->error);
+					}
+					if ((Intmp = GMT_Get_Data (API, in_ID, 0, NULL)) == NULL) {
+						Return (API->error);
+					}
 					break;
 				case GMT_VIA_VECTOR:	/* Get the dataset|grid via a user vectors */
-					if ((Intmp = GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], NULL, 0, V, NULL)) == NULL) Return (API->error);
+					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], GMT_IN, &V, NULL)) == GMTAPI_NOTSET) {
+						Return (API->error);
+					}
+					if ((Intmp = GMT_Get_Data (API, in_ID, 0, NULL)) == NULL) {
+						Return (API->error);
+					}
 					break;
 				default:		/* Get directly from file */
-					if ((Intmp = GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, ifile[Ctrl->T.mode], NULL)) == NULL) Return (API->error);
+					if ((Intmp = GMT_Read_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, ifile[Ctrl->T.mode], NULL)) == NULL) {
+						Return (API->error);
+					}
 					break;
 			}
-			if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, &Intmp, NULL)) == GMTAPI_NOTSET) error++;
+			if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, &Intmp, NULL)) == GMTAPI_NOTSET) {
+				Return (API->error);
+			}
 			break;
 		default:
 			GMT_report (GMT, GMT_MSG_FATAL, "Bad Input mode\n");
@@ -299,21 +323,31 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			break;
 	}
 		
-	/* Now get the data from the source */
+	/* Now get the data from the registered source */
 	
-	if (GMT_Encode_ID (API, string, in_ID)) Return (API->error);	/* Make filename with embedded object ID */
-	input = strdup (string);
-	if ((In = GMT_Get_Data (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], NULL, 0, input, NULL)) == NULL) Return (API->error);
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if ((In = GMT_Get_Data (API, in_ID, 0, NULL)) == NULL) {
+		Return (API->error);
+	}
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
 	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, 2);	/* Reset to GMT default */
 	
 	if (Ctrl->T.mode == GMT_IS_IMAGE) {	/* Since writing is not supported we just make a plot via GMT_psimage */
 		char buffer[GMT_BUFSIZ];
-		if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_REF, geometry[Ctrl->T.mode], GMT_IN, &In, NULL)) == GMTAPI_NOTSET) Return (API->error);
-		if (GMT_Encode_ID (API, string, in_ID)) Return (API->error);	/* Make filename with embedded object ID */
+		if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_REF, geometry[Ctrl->T.mode], GMT_IN, &In, NULL)) == GMTAPI_NOTSET) {
+			Return (API->error);
+		}
+		if (GMT_Encode_ID (API, string, in_ID) != GMT_OK) {
+			Return (API->error);	/* Make filename with embedded object ID */
+		}
 		sprintf (buffer, "%s -W6i -P -F0.25p --PS_MEDIA=letter --PS_CHAR_ENCODING=Standard+", string);
-		error += GMT_psimage (API, 0, buffer);	/* Plot the image */
-		if (GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp)) Return (API->error);
+		if (GMT_psimage (API, 0, buffer) != GMT_OK) {	/* Plot the image */
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp) != GMT_OK) {
+			Return (API->error);
+		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 		Return (GMT_OK);
 	}
@@ -322,13 +356,17 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	switch (Ctrl->W.mode) {
 		case GMT_IS_FILE:	/* Pass filename */
-			if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, ofile[Ctrl->T.mode], NULL)) == GMTAPI_NOTSET) Return (API->error);
+			if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, ofile[Ctrl->T.mode], NULL)) == GMTAPI_NOTSET) {
+				Return (API->error);
+			}
 			break;
 		case GMT_IS_STREAM:
 			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
 					fp = GMT_fopen (GMT, ofile[Ctrl->T.mode], "w");
-					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, fp, NULL)) == GMTAPI_NOTSET) Return (API->error);
+					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, fp, NULL)) == GMTAPI_NOTSET) {
+						Return (API->error);
+					}
 					break;
 				default:
 					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_STREAM only allows d, t, c!\n");
@@ -346,7 +384,9 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					fd = open (ofile[Ctrl->T.mode], O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
 #endif
 					fdp = &fd;
-					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, fdp, NULL)) == GMTAPI_NOTSET) Return (API->error);
+					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, fdp, NULL)) == GMTAPI_NOTSET) {
+						Return (API->error);
+					}
 					break;
 				default:
 					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_FDESC only allows d, t, c!\n");
@@ -357,13 +397,19 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		case GMT_IS_COPY: case GMT_IS_REF:
 			switch (Ctrl->W.via) {
 				case GMT_VIA_MATRIX:	/* Put the dataset|grid via a user matrix */
-					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL)) == GMTAPI_NOTSET) Return (API->error);
+					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL)) == GMTAPI_NOTSET) {
+						Return (API->error);
+					}
 					break;
 				case GMT_VIA_VECTOR:	/* Put the dataset|grid via a user vector */
-					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL)) == GMTAPI_NOTSET) Return (API->error);
+					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL)) == GMTAPI_NOTSET) {
+						Return (API->error);
+					}
 					break;
 				default:
-					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL)) == GMTAPI_NOTSET) Return (API->error);
+					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL)) == GMTAPI_NOTSET) {
+						Return (API->error);
+					}
 					break;
 			}
 			break;
@@ -373,31 +419,43 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			break;
 	}
 			
-	/* Now put the data to the destination */
+	/* Now put the data to the registered destination */
 	
-	if (GMT_Encode_ID (API, string, out_ID)) Return (API->error);	/* Make filename with embedded object ID */
-	output = strdup (string);
-
-	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_OUT, GMT_REG_FILES_IF_NONE, options)) Return (API->error);	/* Registers default output destination, unless already set */
-	if (GMT_Begin_IO (API, Ctrl->T.mode, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], NULL, 0, output, In)) Return (API->error);
+	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_OUT, GMT_REG_FILES_IF_NONE, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		Return (API->error);
+	}
+	if (GMT_Put_Data (API, out_ID, 0, In) != GMT_OK) {
+		Return (API->error);
+	}
 	
 	if (Ctrl->W.mode == GMT_IS_COPY || Ctrl->W.mode == GMT_IS_REF) {	/* Must write out what is in memory to the file */
 		if (Ctrl->W.via) {	/* Must first read into proper GMT container, then write to file */
-			if ((Outtmp = GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->W.via, geometry[Ctrl->T.mode], NULL, 0, Out, NULL)) == NULL) Return (API->error);
-			if (GMT_Put_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, ofile[Ctrl->T.mode], Outtmp)) Return (API->error);
+			if ((Outtmp = GMT_Read_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->W.via, geometry[Ctrl->T.mode], NULL, 0, Out, NULL)) == NULL) {
+				Return (API->error);
+			}
+			if (GMT_Write_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, ofile[Ctrl->T.mode], Outtmp) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 		else {
-			if (GMT_Put_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, ofile[Ctrl->T.mode], Out)) Return (API->error);
+			if (GMT_Write_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, ofile[Ctrl->T.mode], Out) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
-	free (input);	free (output);
 	
-	if (GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp)) Return (API->error);
-	if (GMT_Destroy_Data (API, GMT_CLOBBER, &M)) Return (API->error);
-	if (GMT_Destroy_Data (API, GMT_CLOBBER, &V)) Return (API->error);
-	if (!(Ctrl->I.mode == GMT_IS_REF && Ctrl->W.mode == GMT_IS_REF) && GMT_Destroy_Data (API, GMT_CLOBBER, &Out)) Return (API->error);
+	if (GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp) != GMT_OK) {
+		Return (API->error);
+	}
+	if (GMT_Destroy_Data (API, GMT_CLOBBER, &M) != GMT_OK) {
+		Return (API->error);
+	}
+	if (GMT_Destroy_Data (API, GMT_CLOBBER, &V) != GMT_OK) {
+		Return (API->error);
+	}
+	if (!(Ctrl->I.mode == GMT_IS_REF && Ctrl->W.mode == GMT_IS_REF) && GMT_Destroy_Data (API, GMT_CLOBBER, &Out) != GMT_OK) {
+		Return (API->error);
+	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 	Return (GMT_OK);
 }

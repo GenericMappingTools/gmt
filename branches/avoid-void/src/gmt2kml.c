@@ -627,10 +627,16 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 	label[0] = '\0';
 	
-	if (Ctrl->C.active) {
-		if (GMT_Begin_IO (API, GMT_IS_CPT, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-		if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
-		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if (Ctrl->C.active) {	/* Process CPT file */
+		if (GMT_Begin_IO (API, GMT_IS_CPT, GMT_IN, GMT_BY_SET) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
+		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+			Return (API->error);
+		}
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
+		}
 		if (P->is_continuous) {
 			GMT_message (GMT, "Cannot use continuous color palette\n");
 			Return (EXIT_FAILURE);
@@ -738,8 +744,12 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		char *record = NULL, C[5][GMT_TEXT_LEN64];
 
 		ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
 		while ((record = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields))) {	/* Keep returning records until we have no more files */
 			if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table headers */
@@ -824,7 +834,9 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_rec++;
 			if (!(n_rec%10000)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed %ld points\n", n_rec);
 		}
-		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
+		}
 	}
 	else {	/* Read regular data table */
 		GMT_LONG tbl, seg, row;
@@ -835,10 +847,18 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #else
 		char *t_opt = "-T";
 #endif
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-		if ((Din = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
-		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
+		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
+		}
 		if (GMT->common.R.active && first) {	/* Issue Region tag as given on commmand line*/
 			place_region_tag (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->Z.min, Ctrl->Z.max, N);
 			first = FALSE;

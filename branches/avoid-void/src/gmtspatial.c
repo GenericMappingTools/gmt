@@ -794,17 +794,21 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read input data set */
 	
 	if (Ctrl->D.active) geometry = GMT_IS_LINE;
-	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default input sources, unless already set */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+		Return (API->error);
+	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read Input tables\n");
-	if ((D = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
 	
 	/* Allocate memory and read in all the files; each file can have many lines (-m) */
 	
 	if (D->n_records == 0) {	/* Empty files, nothing to do */
 		GMT_report (GMT, GMT_MSG_NORMAL, "No data records found.\n");
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D)) Return (API->error);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+			Return (API->error);
+		}
 		Return (EXIT_SUCCESS);
 	}
 	
@@ -853,7 +857,9 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 					
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D)) Return (API->error);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+			Return (API->error);
+		}
 		Return (EXIT_SUCCESS);
 	}
 	
@@ -872,8 +878,12 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			mode = GMT_IS_POINT;
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, mode, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default output destination, unless already set */
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);				/* Enables data output and sets access mode */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, mode, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
 		
 		for (k = 0; k < D->n_tables; k++) {
 			for (j = 0; j < D->table[k]->n_segments; j++) {
@@ -915,10 +925,16 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		/* Write out results */
 		if (Ctrl->M.active == 2) {
-			if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D)) Return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
+				Return (API->error);
+			}
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D)) Return (API->error);
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+			Return (API->error);
+		}
 		Return (EXIT_SUCCESS);
 	}
 	
@@ -931,10 +947,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct GMT_LINE_SEGMENT *S1 = NULL, *S2 = NULL;
 		
 		if (Ctrl->S.mode == POL_CLIP) {	/* Need to set up a separate table with the clip polygon */
-			if (Ctrl->T.file) {	/* Get it via a file */
-				if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-				if ((C = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->T.file, NULL)) == NULL) Return (API->error);
-				if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+			if (Ctrl->T.file && (C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->T.file, NULL)) == NULL) {
+				Return (API->error);
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
 				GMT_LONG dim[4] = {1, 1, 2, 5};
@@ -949,9 +963,15 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else
 			C = D;	/* Compare with itself */
 			
-		if ((error = GMT_set_cols (GMT, GMT_OUT, C->n_columns))) Return (error);
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default output destination, unless already set */
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
+		if ((error = GMT_set_cols (GMT, GMT_OUT, C->n_columns)) != GMT_OK) {
+			Return (error);
+		}
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
 
 		for (k1 = 0; k1 < C->n_tables; k1++) {
 			for (j1 = 0; j1 < C->table[k1]->n_segments; j1++) {
@@ -1080,11 +1100,17 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_free (GMT, ylist1);
 			}
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D)) Return (API->error);
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+			Return (API->error);
+		}
 		if (Ctrl->S.mode == POL_CLIP) {
 			if (Ctrl->T.file) {
-				if (GMT_Destroy_Data (API, GMT_ALLOCATED, &C)) Return (API->error);
+				if (GMT_Destroy_Data (API, GMT_ALLOCATED, &C) != GMT_OK) {
+					Return (API->error);
+				}
 			}
 			else
 				GMT_free_dataset (GMT, &C);
@@ -1102,9 +1128,9 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct DUP_INFO **Info = NULL, *I = NULL;
 		
 		if (Ctrl->D.file) {	/* Get trial features via a file */
-			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-			if ((C = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->D.file, NULL)) == NULL) Return (API->error);
-			if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->D.file, NULL)) == NULL) {
+				Return (API->error);
+			}
 			from = Ctrl->D.file;
 		}
 		else {
@@ -1117,8 +1143,12 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Info = GMT_memory (GMT, NULL, C->n_tables, struct DUP_INFO *);
 		for (tbl = 0; tbl < C->n_tables; tbl++) Info[tbl] = GMT_memory (GMT, NULL, C->table[tbl]->n_segments, struct DUP_INFO);
 			
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default output destination, unless already set */
-		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC)) Return (API->error);				/* Enables data output and sets access mode */
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {
+			Return (API->error);	/* Registers default output destination, unless already set */
+		}
+		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC) != GMT_OK) {
+			Return (API->error);				/* Enables data output and sets access mode */
+		}
 
 		GMT_init_distaz (GMT, Ctrl->D.unit, Ctrl->D.mode, GMT_MAP_DIST);
 
@@ -1164,9 +1194,15 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		for (tbl = 0; tbl < C->n_tables; tbl++) GMT_free (GMT, Info[tbl]);
 		GMT_free (GMT, Info);
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D)) Return (API->error);
-		if (Ctrl->D.file && GMT_Destroy_Data (API, GMT_ALLOCATED, &C)) Return (API->error);
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+			Return (API->error);
+		}
+		if (Ctrl->D.file && GMT_Destroy_Data (API, GMT_ALLOCATED, &C) != GMT_OK) {
+			Return (API->error);
+		}
 		Return (EXIT_SUCCESS);
 	}
 	
@@ -1193,9 +1229,9 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				S->n_rows = np;
 			}
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
-		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D)) Return (API->error);
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	
 	if (Ctrl->N.active) {	/* Report the polygons that contain the given features */
@@ -1205,16 +1241,21 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL, *S2 = NULL;
 		
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-		if ((C = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->N.file, NULL)) == NULL) Return (API->error);
-		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->N.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
-			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default output destination, unless already set */
-			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
+			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+				Return (API->error);
+			}
+			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+				Return (API->error);
+			}
 		}
 		else {	/* Regular data output */
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default output destination, unless already set */
-			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+				Return (API->error);
+			}
 		}
 		if (Ctrl->N.mode == 2) GMT_adjust_dataset (GMT, D, D->n_columns + 1);	/* Add one more output column */
 		
@@ -1278,12 +1319,20 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		for (p = n_inside = 0; p < D->n_segments; p++) if (count[p]) n_inside++;
 		if (Ctrl->N.mode != 1) {	/* Write out results */
-			if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D)) Return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
+				Return (API->error);
+			}
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			Return (API->error);
+		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "%ld segments found to be inside polygons, %ld were outside and skipped\n", n_inside, D->n_segments - n_inside);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D)) Return (API->error);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &C)) Return (API->error);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &C) != GMT_OK) {
+			Return (API->error);
+		}
 		Return (EXIT_SUCCESS);
 	}
 	if (Ctrl->S.active) {	/* Do geospatial operations */
@@ -1323,11 +1372,13 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Dout->table[tbl]->n_segments = seg;
 			Dout->n_segments += seg;
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
-		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, Dout)) Return (API->error);
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, Dout) != GMT_OK) {
+			Return (API->error);
+		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "%ld segments split across the Dateline\n", n_split);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dout)) Return (API->error);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dout) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	
 	Return (EXIT_SUCCESS);

@@ -342,8 +342,9 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->D.mode == 2) cpt_flags |= 2;		/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 
 	file = CPT_file;
-	if (GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET)) Return (API->error);				/* Enables data input and sets access mode */
-	if ((Pin = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, file, NULL)) == NULL) Return (API->error);
+	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, file, NULL)) == NULL) {
+		Return (API->error);
+	}
 
 	GMT_memset (wesn, 4, double);
 	if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Subset */
@@ -354,7 +355,9 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (opt = options, k = 0; opt; opt = opt->next) {
 		if (opt->option != '<') continue;	/* We are only processing input files here */
 
-		if ((G[k] = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, opt->arg, NULL)) == NULL) Return (API->error);
+		if ((G[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, opt->arg, NULL)) == NULL) {
+			Return (API->error);
+		}
 		grdfile[k] = strdup (opt->arg);
 		if (k && !(G[k]->header->nx == G[k-1]->header->nx && G[k]->header->ny == G[k-1]->header->ny)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Grids do not have the same domain!\n");
@@ -368,7 +371,6 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			grdfile = GMT_memory (GMT, grdfile, n_alloc, char *);
 		}
 	}
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);		/* Disables further data input */
 
 	ngrd = k;
 	if (ngrd < n_alloc) G = GMT_memory (GMT, G, ngrd, struct GMT_GRID *);
@@ -528,7 +530,6 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->Q.mode == 2) for (k = 0; k < Ctrl->E.levels; k++) z[k] = d_log10 (GMT, z[k]);	/* Make log10(z) values for interpolation step */
 
 	Pout = GMT_sample_cpt (GMT, Pin, z, -Ctrl->E.levels, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);	/* -ve to keep original colors */
-	if (GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
 
 	/* Determine mode flags for output */
 	cpt_flags = 0;
@@ -538,14 +539,17 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->A.active) GMT_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
-	if (GMT_Put_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, Ctrl->Out.file, Pout)) Return (API->error);
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, Ctrl->Out.file, Pout) != GMT_OK) {
+		Return (API->error);
+	}
 
 	GMT_free (GMT, cdf_cpt);
 	GMT_free (GMT, z);
 	for (k = 0; k < ngrd; k++) {
 		free (grdfile[k]);
-		if (GMT_Destroy_Data (API, GMT_CLOBBER, &G[k])) Return (API->error);
+		if (GMT_Destroy_Data (API, GMT_CLOBBER, &G[k]) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	GMT_free (GMT, G);
 	GMT_free (GMT, grdfile);

@@ -500,10 +500,13 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	trivial = (Ctrl->N.value < 5 && !weighted);
 
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-	if ((G = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) Return (API->error);
+	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {
+		Return (API->error);
+	}
 	if (GMT_is_subset (GMT, G->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) Return (API->error);	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) {	/* Get subset */
+		Return (API->error);
+	}
 
 	/* Check for NaNs (we include the pad for simplicity)  */
 	i = 0;
@@ -534,11 +537,15 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT_grd_init (GMT, W->header, options, TRUE);
 	if (weighted) {
 		if (!GMT_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
-			if ((W = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->W.file, NULL)) == NULL) Return (API->error);	/* Get header only */
+			if ((W = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->W.file, NULL)) == NULL) {	/* Get header only */
+				Return (API->error);
+			}
 			if (W->header->nx != G->header->nx || W->header->ny != G->header->ny)
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Input weight file does not match input data file.  Ignoring.\n");
 			else {
-				if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->W.file, W) == NULL) Return (API->error);	/* Get data */
+				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->W.file, W) == NULL) {	/* Get data */
+					Return (API->error);
+				}
 				set_ones = FALSE;
 			}
 		}
@@ -547,7 +554,6 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			GMT_setnval (W->data, G->header->size, 1.0);
 		}
 	}
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	/* End of weight set up.  */
 
@@ -610,28 +616,31 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	/* Get here when ready to do output */
 
-	if (GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) write_model_parameters (GMT, gtd, Ctrl->N.value);
 	if (Ctrl->T.file) {
 		strcpy (T->header->title, "trend surface");
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->T.file, T)) Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->T.file, T) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	else
 		GMT_free_grid (GMT, &T, TRUE);	/* Not written out */
 	if (Ctrl->D.file) {
 		strcpy (R->header->title, "trend residuals");
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->D.file, R)) Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->D.file, R) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	else if (Ctrl->D.active || Ctrl->N.robust)
 		GMT_free_grid (GMT, &R, TRUE);
 	if (Ctrl->W.file && Ctrl->N.robust) {
 		strcpy (W->header->title, "trend weights");
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->W.file, W)) Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->W.file, W) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	else if (set_ones)
 		GMT_free_grid (GMT, &W, TRUE);
-		
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 
 	/* That's all, folks!  */
 

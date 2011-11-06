@@ -350,11 +350,10 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Check limits and get data file */
 
-	if (GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-
 	if (Ctrl->In.file) {
-
-		if ((G = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get header only */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+			Return (API->error);
+		}
 
 		if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
 
@@ -368,18 +367,17 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	not_global = !global;
 	
-	if (!Ctrl->S.active) {
-		/* Read the input grid */
-
+	if (!Ctrl->S.active) {	/* Read the input grid */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Allocates memory and read grid file\n");
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT->common.R.wesn, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) Return (API->error);	/* Get header only */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT->common.R.wesn, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) {
+			Return (API->error);
+		}
 	}
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);			/* Disables further data input */
 	
 	if (Ctrl->F.active) {	/* Read the user's polygon file */
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);				/* Enables data input and sets access mode */
-		if ((D = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->F.file, NULL)) == NULL) Return (API->error);
-		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);				/* Disables further data input */
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->F.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		pol = D->table[0];	/* Since it is a single file */
 		registered_d = TRUE;
 	}
@@ -426,13 +424,13 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	GMT_set_tbl_minmax (GMT, pol);	/* Update table domain */
 	if (!Ctrl->N.active && not_global) {
-		if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
-		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->D.file, D)) Return (API->error);
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);				/* Disables further data output */
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->D.file, D) != GMT_OK) {
+			Return (API->error);
+		}
 		registered_d = TRUE;
 	}
 	if (Ctrl->S.active) {
-		if (Ctrl->F.active && GMT_Destroy_Data (API, GMT_ALLOCATED, &D)) {
+		if (Ctrl->F.active && GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
 			Return (API->error);
 		}
 		else if (not_global)
@@ -529,15 +527,15 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Write reconstructed grid\n");
 
 	sprintf (G_rot->header->remark, "Grid rotated using R[lon lat omega] = %g %g %g", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G_rot)) Return (API->error);
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G_rot) != GMT_OK) {
+		Return (API->error);
+	}
 
 	GMT_free (GMT, grd_x);
 	GMT_free (GMT, grd_y);
 	GMT_free (GMT, grd_yc);
 	
-	if (registered_d && GMT_Destroy_Data (API, GMT_ALLOCATED, &D)) {
+	if (registered_d && GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
 		Return (API->error);
 	}
 	else if (not_global)

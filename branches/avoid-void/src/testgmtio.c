@@ -46,8 +46,8 @@ int main (int argc, char *argv[]) {
 	/* 4. Initializing data input via stdin */
 	
 	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) exit (EXIT_FAILURE);
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options)) exit (EXIT_FAILURE);	/* Establishes data input */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) exit (EXIT_FAILURE);	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) exit (EXIT_FAILURE);	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) exit (EXIT_FAILURE);	/* Establishes data output */
 	
 	/* 5. Read individual records until end of data set */
 	/*    The GMT_FILE_BREAK in GMT_Get_Record means we will return a special EOF marker at the end of each
@@ -55,8 +55,8 @@ int main (int argc, char *argv[]) {
 	 *    This lets us do special processing after a file has been fully read. */
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) exit (error);				/* Enables data input and sets access mode */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) exit (error);				/* Enables data output and sets access mode */
+	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC)) != GMT_OK) exit (error);				/* Enables data input and sets access mode */
+	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) != GMT_OK) exit (error);				/* Enables data output and sets access mode */
 	
 	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, &n_fields))) {	/* Keep returning records until we reach EOF */
 		mode = GMT_WRITE_DOUBLE;	/* Normally we treat data as double precision values */
@@ -100,8 +100,8 @@ int main (int argc, char *argv[]) {
 		GMT_Put_Record (API, mode, in);
 	}
 	fprintf (stdout, "B: --- End of All Files ---\n");
-	if ((error = GMT_End_IO (API, GMT_IN,  0))) exit (error);				/* Disables further data input */
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) exit (error);				/* Disables further data output */
+	if ((error = GMT_End_IO (API, GMT_IN,  0)) != GMT_OK) exit (error);				/* Disables further data input */
+	if ((error = GMT_End_IO (API, GMT_OUT, 0)) != GMT_OK) exit (error);				/* Disables further data output */
 	
 	/* 5. Destroy local linked option list */
 	if (GMT_Destroy_Options (API, &options)) exit (EXIT_FAILURE);

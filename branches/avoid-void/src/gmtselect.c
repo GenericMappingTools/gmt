@@ -511,16 +511,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else	/* Cartesian data */
 		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
 	
-	/* Gather input/output  file names (or stdin/out) and enable i/o */
-	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data output */
-
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
-
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
-		if ((Cin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, GMT_IO_ASCII, Ctrl->C.file, NULL)) == NULL) Return (API->error);
+		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, GMT_IO_ASCII, Ctrl->C.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		if (Cin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
@@ -571,7 +565,9 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->L.active) {	/* Initialize lines structure used in test for proximity to lines [use Ctrl->L.dist, ] */
-		if ((Lin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, GMT_IO_ASCII, Ctrl->L.file, NULL)) == NULL) Return (API->error);
+		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, GMT_IO_ASCII, Ctrl->L.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		if (Lin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -L option: %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
 			Return (EXIT_FAILURE);
@@ -590,7 +586,9 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (Ctrl->F.active) {	/* Initialize polygon structure used in test for polygon in/out test */
 		GMT_skip_xy_duplicates (GMT, TRUE);	/* Avoid repeating x/y points in polygons */
-		if ((Fin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, GMT_IO_ASCII, Ctrl->F.file, NULL)) == NULL) Return (API->error);
+		if ((Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, GMT_IO_ASCII, Ctrl->F.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
 		if (Fin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
@@ -608,6 +606,21 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	
+	/* Gather input/output  file names (or stdin/out) and enable i/o */
+	
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
+
 	/* Now we are ready to take on some input values */
 
 	GMT->common.b.ncol[GMT_OUT] = -1;
@@ -766,8 +779,12 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
 		n_pass++;
 	}
-	if (GMT_End_IO (API, GMT_IN,  0)) Return (API->error);	/* Disables further data input */
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld records, passed %ld records\n", n_read, n_pass);
 

@@ -394,14 +394,14 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	n_grids = (Ctrl->In.do_rgb) ? 3 : 1;
 
-	if (GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET)) Return (API->error);		/* Enables data input and sets access mode */
-
 	/* Read the illumination grid header right away so we can use its region to set that of an image (if requested) */
 	if (Ctrl->I.active) {	/* Illumination wanted */
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Allocates memory and read intensity file\n");
 
-		if ((Intens_orig = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->I.file, NULL)) == NULL) Return (API->error);	/* Get header only */
+		if ((Intens_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
+			Return (API->error);
+		}
 	}
 
 #ifdef USE_GDAL
@@ -423,8 +423,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (!Ctrl->D.mode && Ctrl->I.active && !GMT->common.R.active)	/* Apply illumination to an image but no -R provided */
 			GMT_memcpy (GMT->common.R.wesn, Intens_orig->header->wesn, 4, double);
 
-		if ((I = GMT_Get_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, 
-			Ctrl->In.file[0], NULL)) == NULL) Return (API->error);
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file[0], NULL)) == NULL) {
+			Return (API->error);
+		}
 
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active)	/* No -R or -I. Use image dimensions as -R */
 			GMT_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
@@ -452,7 +453,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!Ctrl->In.do_rgb) {
 		if (Ctrl->C.active) {		/* Read palette file */
-			if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
+			if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+				Return (API->error);
+			}
 			gray_only = (P && P->is_gray);
 		}
 #ifdef USE_GDAL
@@ -486,8 +489,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!Ctrl->D.active) {
 		for (k = 0; k < n_grids; k++) {
-			if ((Grid_orig[k] = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[k], 
-				NULL)) == NULL) Return (API->error);	/* Get header only */
+			if ((Grid_orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
+				Return (API->error);
+			}
 		}
 	}
 
@@ -523,7 +527,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!GMT_grd_setregion (GMT, header_work, wesn, need_to_project * GMT->common.n.interpolant)) {
 		/* No grid to plot; just do empty map and bail */
-		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 		GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -555,8 +558,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read data */
 
 	for (k = 0; k < n_grids; k++) {
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file[k], 
-			Grid_orig[k]) == NULL) Return (API->error);	/* Get grid data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file[k], Grid_orig[k]) == NULL) {	/* Get grid data */
+			Return (API->error);
+		}
 	}
 
 	/* If given, get intensity file or compute intensities */
@@ -566,8 +570,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Allocates memory and read intensity file\n");
 
 		/* Remember, the illumination header was already read at the top */
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->I.file, 
-			Intens_orig) == NULL) Return (API->error);	/* Get grid data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->I.file, Intens_orig) == NULL) {
+			Return (API->error);	/* Get grid data */
+		}
 		if (n_grids && (Intens_orig->header->nx != Grid_orig[0]->header->nx || Intens_orig->header->ny != Grid_orig[0]->header->ny)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Intensity file has improper dimensions!\n");
 			Return (EXIT_FAILURE);
@@ -577,28 +582,34 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->D.active && (I->header->nx != Intens_orig->header->nx || I->header->ny != Intens_orig->header->ny)) {
 			/* Resize illumination grid to the image's size */
 
-			GMT_LONG object_ID, status = 0;			/* Status code from GMT API */
+			GMT_LONG object_ID;
 			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[GMT_BUFSIZ];
 			/* Create option list, register G as input source via reference */
 			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Intens_orig, NULL)) == GMTAPI_NOTSET) 
-				return (API->error);
-			if (GMT_Encode_ID (API, in_string, object_ID)) return (API->error);	/* Make filename with embedded object ID for grid G */
+				Return (API->error);
+			if (GMT_Encode_ID (API, in_string, object_ID) != GMT_OK) {
+				Return (API->error);	/* Make filename with embedded object ID for grid G */
+			}
 
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &G2, NULL)) == GMTAPI_NOTSET) 
-				return (API->error);
-			if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) return (API->error);	/* Make filename with embedded object ID for result grid G2 */
+			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &G2, NULL)) == GMTAPI_NOTSET) {
+				Return (API->error);
+			}
+			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_OK) {
+				Return (API->error);	/* Make filename with embedded object ID for result grid G2 */
+			}
 
 			sprintf (cmd, "%s -G%s -I%ld+/%ld+", in_string, out_string, nx, ny);
-			status = GMT_grdsample (GMT->parent, 0, cmd);	/* Do the resampling */
+			if (GMT_grdsample (GMT->parent, 0, cmd) != GMT_OK) return (API->error);	/* Do the resampling */
 			Intens_orig->alloc_mode = GMT_ALLOCATED;	/* So we may destroy it */
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig)) Return (API->error);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig) != GMT_OK) {
+				Return (API->error);
+			}
 			Intens_orig = G2;
 			Intens_orig->alloc_mode = GMT_ALLOCATED;	/* So we may destroy at the end */
 		}
 #endif
 
 	}
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	if (need_to_project) {	/* Need to resample the grd file */
 		GMT_LONG nx_proj = 0, ny_proj = 0;
@@ -611,7 +622,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 #ifdef USE_GDAL
 		if (Ctrl->D.active) { 
-			Img_proj = GMT_create_image (GMT);
+			if ((Img_proj = GMT_create_image (GMT)) == NULL) Return (API->error);
 			grid_registration = GMT_PIXEL_REG;	/* Force pixel */
 			GMT_set_proj_limits (GMT, Img_proj->header, I->header);
 			GMT_err_fail (GMT, GMT_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[0]);
@@ -619,7 +630,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
 			Img_proj->data = GMT_memory (GMT, NULL, Img_proj->header->size * Img_proj->header->n_bands, unsigned char);
 			GMT_img_project (GMT, I, Img_proj, FALSE);
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I)) Return (API->error);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 #endif
 		for (k = 0; k < n_grids; k++) {
@@ -630,7 +643,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_err_fail (GMT, GMT_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[k]);
 			Grid_proj[k]->data = GMT_memory (GMT, NULL, Grid_proj[k]->header->size, float);
 			GMT_grd_project (GMT, Grid_orig[k], Grid_proj[k], FALSE);
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_orig[k])) Return (API->error);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_orig[k]) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 		if (Ctrl->I.active) {
 			if ((Intens_proj = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
@@ -647,7 +662,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_err_fail (GMT, GMT_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
 			Intens_proj->data = GMT_memory (GMT, NULL, Intens_proj->header->size, float);
 			GMT_grd_project (GMT, Intens_orig, Intens_proj, FALSE);
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig)) Return (API->error);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 		resampled = TRUE;
 	}
@@ -949,7 +966,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (need_to_project)
 			GMT_free_image (GMT, &Img_proj, TRUE);
 		else {
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Img_proj)) Return (API->error);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Img_proj) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 	}
 	if (Ctrl->A.active) {

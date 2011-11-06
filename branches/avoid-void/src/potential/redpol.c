@@ -1168,9 +1168,6 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	
 	/*---------------------------- This is the redpol main code ----------------------------*/
 
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) 	/* Enables data input and sets access mode */
-		Return (API->error);
-
 	/* ... */
 	if (Ctrl->F.compute_n) {
 		aniso = Gin->header->inc[GMT_X] / Gin->header->inc[GMT_Y] * cos(Gin->header->wesn[YHI]*D2R);
@@ -1182,9 +1179,9 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT->current.io.pad[XLO] = GMT->current.io.pad[XHI] = n21-1;
 	GMT->current.io.pad[YLO] = GMT->current.io.pad[YHI] = m21-1;
 
-	if ((Gin = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, 	/* Get header only */
-			 Ctrl->In.file, NULL)) == NULL) 
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
+	}
 
 	if (!GMT->common.R.active) 
 		GMT_memcpy (wesn_new, Gin->header->wesn, 4, double);
@@ -1199,8 +1196,9 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT_grd_init (GMT, Gin->header, options, TRUE);
 
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, 
-			 Ctrl->In.file, Gin) == NULL) Return (API->error);	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
+		Return (API->error);
+	}
 
 	GMT_set_pad (GMT, 2);		/* Reset the default GMT pad */
 
@@ -1230,24 +1228,23 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* Section to deal with possible external grids with dip and dec for interpolation */
 
 	if (Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd) {
-		if ((Gdip = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 		/* Get header only */
-			 	  GMT_GRID_HEADER, Ctrl->E.dipfile, NULL)) == NULL) 
+		if ((Gdip = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->E.dipfile, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
+		}
 	
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, 
-			 	Ctrl->E.dipfile, Gdip) == NULL) 
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->E.dipfile, Gdip) == NULL) {
 			Return (API->error);
+		}
 	}
 	if (Ctrl->E.dip_dec_grd) {
-		if ((Gdec = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER,
-			 	Ctrl->E.decfile, NULL)) == NULL) 
+		if ((Gdec = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->E.decfile, NULL)) == NULL) {
 			Return (API->error);
+		}
 	
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, 
-			 	Ctrl->E.decfile, Gdec) == NULL) 
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->E.decfile, Gdec) == NULL) {
 			Return (API->error);
+		}
 	}
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);		/* Disables further data input */
 
 	n_coef = Ctrl->F.ncoef_row * Ctrl->F.ncoef_col;
        	cosphi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
@@ -1493,12 +1490,12 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	strcpy (Gout->header->title, "Anomaly reducted to the pole");
 	strcpy (Gout->header->z_units, "nT");
 
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) /* Enables data output and sets access mode */
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout) != GMT_OK) {
 		Return (API->error);
-
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout)) Return (API->error);
-	if (Ctrl->Z.active && GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->Z.file, Gfilt)) Return (API->error);
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	}
+	if (Ctrl->Z.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->Z.file, Gfilt) != GMT_OK) {
+		Return (API->error);
+	}
 
 	Return (GMT_OK);
 }

@@ -234,27 +234,33 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (io.binary) GMT->common.b.active[GMT_OUT] = TRUE;
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options)) Return (API->error);	/* Registers stdout, unless already set */
-	if (GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET)) Return (API->error);		/* Enables data input and sets access mode */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options) != GMT_OK) {	/* Registers stdout, unless already set */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 
 	GMT->common.b.ncol[GMT_OUT] = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : 3);
-	if ((error = GMT_set_cols (GMT, GMT_OUT, 0))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_OUT, 0)) != GMT_OK) Return (error);
 	out[3] = Ctrl->W.weight;
 		
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
 
 		if (opt->option != '<') continue;	/* We are only processing input files here */
 
-		if ((G = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, NULL)) == NULL) 
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, NULL)) == NULL) {
 			Return (API->error);
+		}
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Working on file %s\n", G->header->name);
 
 		if (GMT_is_subset (GMT, G->header, wesn))	/* Subset requested; make sure wesn matches header spacing */
 			GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, opt->arg, G) == NULL) Return (API->error);	/* Get subset */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, opt->arg, G) == NULL) {
+			Return (API->error);	/* Get subset */
+		}
 
 		n_total += G->header->nm;
 
@@ -344,7 +350,9 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 #endif
 		else {	/* Regular x,y,z[,w] output */
-			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options)) Return (API->error);	/* Establishes data output */
+			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options) != GMT_OK) {	/* Establishes data output */
+				Return (API->error);
+			}
 
 			x = GMT_memory (GMT, NULL, G->header->nx, double);
 			y = GMT_memory (GMT, NULL, G->header->ny, double);
@@ -378,8 +386,9 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	if (GMT_End_IO (API, GMT_IN,  0)) Return (API->error);	/* Disables further data input */
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "%ld values extracted\n", n_total - n_suppressed);
 	if (n_suppressed) {

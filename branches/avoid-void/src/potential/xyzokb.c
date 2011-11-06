@@ -431,9 +431,6 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	
 	/*---------------------------- This is the redpol main code ----------------------------*/
 
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) 	/* Enables data input and sets access mode */
-		Return (API->error);
-
 	if (!Ctrl->M.active) 
 		Ctrl->N.d_to_m = 1.;
 	else
@@ -696,12 +693,9 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			strcpy (Gout->header->z_units, "nT");
 		}
 
-		if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) /* Enables data output and sets access mode */
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout) != GMT_OK) {
 			Return (API->error);
-
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout)) Return (API->error);
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);			/* Disables further data output */
-
+		}
 	}
 	else {
 		for (k = 0; k < ndata_p; k++)

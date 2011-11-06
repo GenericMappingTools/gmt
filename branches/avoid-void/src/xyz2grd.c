@@ -334,9 +334,13 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->S.active) io.swab = TRUE;	/* Need to pass swabbing down to the gut level */
 
 		if (!Ctrl->S.file) {
-			if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->S.file, NULL)) == GMTAPI_NOTSET) Return (API->error);
+			if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->S.file, NULL)) == GMTAPI_NOTSET) {
+				Return (API->error);
+			}
 		}
-		else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
+		else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
 		
 		GMT->current.io.input = save_i;			/* Reset input pointer */
 		GMT->common.b.active[GMT_IN] = previous;	/* Reset input binary */
@@ -349,7 +353,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT->current.io.output = save_o;		/* Reset output pointer */
 		GMT->common.b.active[GMT_OUT] = previous;	/* Reset output binary */
 
-		Return (EXIT_SUCCESS);	/* We are done here */
+		Return (GMT_OK);	/* We are done here */
 	}
 
 	/* Here we will need a grid */
@@ -437,9 +441,9 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Expected %ld points, found only %ld\n", Grid->header->nm, Grid->header->nm - n_left);
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid)) Return (API->error);
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+			Return (API->error);
+		}
 		Return (EXIT_SUCCESS);
 	}
 #endif
@@ -485,10 +489,16 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT->current.setting.io_nan_records = FALSE;	/* Cannot have x,y as NaNs here */
 	}
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, Ctrl->Z.active ? 1 : Ctrl->A.mode == 'n' ? 2 : 3))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN, Ctrl->Z.active ? 1 : Ctrl->A.mode == 'n' ? 2 : 3)) != GMT_OK) {
+		Return (error);
+	}
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+		Return (API->error);	/* Establishes data input */
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC) != GMT_OK) {
+		Return (API->error);	/* Enables data input and sets access mode */
+	}
 	
 	n_read = 0;
 	ij = -1;	/* Will be incremented to 0 in -Z section or recomputed in the xyz section */
@@ -564,6 +574,9 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			n_used++;
 		}
+	}
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
 	}
 
 	if (Ctrl->Z.active) {
@@ -652,9 +665,9 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	GMT_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid)) Return (API->error);
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+		Return (API->error);
+	}
 
 	Return (GMT_OK);
 }

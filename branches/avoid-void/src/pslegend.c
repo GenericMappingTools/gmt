@@ -355,8 +355,12 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	save_EOF = GMT->current.setting.io_seg_marker[GMT_IN];
 	GMT->current.setting.io_seg_marker[GMT_IN] = '#';
 #endif
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Register data input */
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC)) Return (API->error);				/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
 		double wesn[4];
@@ -671,8 +675,12 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					F->coord[GMT_X][0] = x_off + off_ss-x;	F->coord[GMT_Y][0] = y0;
 					F->coord[GMT_X][1] = x_off + off_ss+x;	F->coord[GMT_Y][1] = y0;
 					Front->n_records = F->n_rows = 2;
-					if ((object_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_LINE, GMT_IN, &Front, NULL)) == GMTAPI_NOTSET) Return (API->error);
-					if (GMT_Encode_ID (API, string, object_ID)) Return (API->error);	/* Make filename with embedded object ID */
+					if ((object_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_LINE, GMT_IN, &Front, NULL)) == GMTAPI_NOTSET) {
+						Return (API->error);
+					}
+					if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {	/* Make filename with embedded object ID */
+						Return (API->error);
+					}
 					sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -S%s%s %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], symbol, &size[i], string);
 					if (txt_c[0] != '-') {strcat (buffer, " -G"); strcat (buffer, txt_c);}
 					if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
@@ -785,7 +793,9 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
 #ifdef GMT_COMPAT
 	/* Reset the flag */
 	GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
@@ -793,32 +803,50 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	Front->alloc_mode = GMT_ALLOCATED;	/* So we can free it */
 	if (!F) GMT_free_dataset (GMT, &Front);	/* Was unused so free explicitly */
-	else if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Front)) Return (API->error);
+	else if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Front) != GMT_OK) {
+		Return (API->error);
+	}
 	
 	/* Time to plot any symbols, text, and paragraphs we collected in the loop */
 
 	if (S[SYM] && S[SYM]->n_rows) {
 		/* Create option list, register D[SYM] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, &D[SYM], NULL)) == GMTAPI_NOTSET) Return (API->error);
-		if (GMT_Encode_ID (API, string, object_ID)) Return (API->error);	/* Make filename with embedded object ID */
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, &D[SYM], NULL)) == GMTAPI_NOTSET) {
+			Return (API->error);
+		}
+		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
+			Return (API->error);	/* Make filename with embedded object ID */
+		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		status = GMT_psxy (API, 0, buffer);	/* Plot the symbols */
+		if (GMT_psxy (API, 0, buffer) != GMT_OK) {
+			Return (API->error);	/* Plot the symbols */
+		}
 	}
 	else GMT_free_textset (GMT, &D[SYM]);	/* Free directly since never registered */
 	if (S[TXT] && S[TXT]->n_rows) {
 		/* Create option list, register D[TXT] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, &D[TXT], NULL)) == GMTAPI_NOTSET) Return (API->error);
-		if (GMT_Encode_ID (API, string, object_ID)) Return (API->error);	/* Make filename with embedded object ID */
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, &D[TXT], NULL)) == GMTAPI_NOTSET) {
+			Return (API->error);
+		}
+		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
+			Return (API->error);	/* Make filename with embedded object ID */
+		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -F+f+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		status = GMT_pstext (API, 0, buffer);	/* Plot the symbols */
+		if (GMT_pstext (API, 0, buffer) != GMT_OK) {
+			Return (API->error);	/* Plot the symbols */
+		}
 	}
 	else GMT_free_textset (GMT, &D[TXT]);	/* Free directly since never registered */
 	if (S[PAR] && S[PAR]->n_rows) {
 		/* Create option list, register D[PAR] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, &D[PAR], NULL)) == GMTAPI_NOTSET) Return (API->error);
-		if (GMT_Encode_ID (API, string, object_ID)) Return (API->error);	/* Make filename with embedded object ID */
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, &D[PAR], NULL)) == GMTAPI_NOTSET) {
+			Return (API->error);
+		}
+		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
+			Return (API->error);	/* Make filename with embedded object ID */
+		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -M -F+f+a+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		status = GMT_pstext (API, 0, buffer);	/* Plot the symbols */
+		if (GMT_pstext (API, 0, buffer) != GMT_OK) Return (API->error);	/* Plot the symbols */
 	}
 	else GMT_free_textset (GMT, &D[PAR]);	/* Free directly since never registered */
 

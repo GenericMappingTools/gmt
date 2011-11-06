@@ -606,13 +606,19 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Process blend parameters and populate blend structure and open input files and seek to first row inside the output grid */
 
 	if (Ctrl->In.n <= 1) {	/* Got a blend file (or stdin) */
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Register data input */
-		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC)) Return (API->error);				/* Enables data input and sets access mode */
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
 	}
 
 	n_blend = init_blend_job (GMT, Ctrl->In.file, Ctrl->In.n, &S.header, &blend);
 
-	if (Ctrl->In.n <= 1 && GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if (Ctrl->In.n <= 1 && GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
 
 	if (n_blend < 0) Return (EXIT_FAILURE);	/* Something went wrong in init_blend_job */
 	
@@ -735,9 +741,9 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Processed row %7ld\n", row);
 
 	if (Grid) {	/* Must write entire grid */
-		if (GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET)) Return (API->error);		/* Enables data output and sets access mode */
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Grid)) Return (API->error);
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);				/* Disables further data output */
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Grid) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	else {	/* Finish the line-by-line writing */
 		GMT_close_grd (GMT, &S);	/* Close the output gridfile */
