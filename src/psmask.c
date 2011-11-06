@@ -556,7 +556,6 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty table */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
 	}
 	
 	if (Ctrl->C.active)
@@ -614,9 +613,15 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your search radius is too small to have any effect and is ignored.\n");
 		}
 		
-		if ((error = GMT_set_cols (GMT, GMT_IN, 2))) Return (error);
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
+		if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
+			Return (error);
+		}
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
 
 		n_read = 0;
 		while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
@@ -661,7 +666,9 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 		}
-		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
+		}
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld data points\n", n_read);
 
@@ -723,8 +730,9 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_free (GMT, y);
 			if (Ctrl->D.active) {	/* Write the clip polygon file(s) */
 				D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, n_seg, struct GMT_LINE_SEGMENT *);
-				if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, io_mode, Ctrl->D.file, D)) Return (API->error);
-				if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, io_mode, Ctrl->D.file, D) != GMT_OK) {
+					Return (API->error);
+				}
 			}
 		}
 		else {	/* Just paint tiles */

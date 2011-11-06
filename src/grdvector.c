@@ -305,9 +305,8 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	d_col = d_row = 1;
 	col_0 = row_0 = 0;
 
-	if (GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-	if (Ctrl->C.active) {
-		if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
+	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+		Return (API->error);
 	}
 
 	if (!(strcmp (Ctrl->In.file[0], "=") || strcmp (Ctrl->In.file[1], "="))) {
@@ -316,7 +315,9 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	for (k = 0; k < 2; k++) {
-		if ((Grid[k] = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[k], NULL)) == NULL) Return (API->error);	/* Get header only */
+		if ((Grid[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
+			Return (API->error);
+		}
 		GMT_grd_init (GMT, Grid[k]->header, options, TRUE);
 	}
 
@@ -336,7 +337,9 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!GMT_grd_setregion (GMT, Grid[0]->header, wesn, BCR_BILINEAR)) {
 		/* No grid to plot; just do empty map and return */
-		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
+		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No data within specified region\n");
 		GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -349,8 +352,9 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Read data */
 
-	for (k = 0; k < 2; k++) if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file[k], Grid[k]) == NULL) Return (API->error);	/* Get data */
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	for (k = 0; k < 2; k++) if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file[k], Grid[k]) == NULL) {	/* Get data */
+		Return (API->error);
+	}
 
 	if (!Ctrl->S.constant) Ctrl->S.factor = 1.0 / Ctrl->S.factor;
 

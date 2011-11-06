@@ -308,10 +308,12 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-	if (GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-	if ((D[GMT_IN] = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);			/* Disables further data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
 
 	if (D[GMT_IN]->n_records == 0) {	/* Empty files, nothing to do */
 		GMT_report (GMT, GMT_MSG_NORMAL, "No data records found.\n");
@@ -416,7 +418,6 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		C->n_segments = C->table[0]->n_segments = n_closed;
 	}
 	
-	if (GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
 	if (Ctrl->C.active) {	/* With -C we only separate closed from open and then we are done */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Separated %ld closed and %ld open segments\n", n_closed, n_open);
 		wrap_up = 2;
@@ -430,13 +431,19 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (wrap_up == 2) {	/* Write n_open segments to D[OUT] and n_closed to C */
 			D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[CLOSED], n_closed, struct GMT_LINE_SEGMENT *);
 			D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = n_closed;
-			if (GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, C)) Return (API->error);
-			if (GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Out.file, D[GMT_OUT])) Return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, C) != GMT_OK) {
+				Return (API->error);
+			}
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 		if (Ctrl->Q.active) {
 			Q->table[CLOSED]->segment[0]->record = GMT_memory (GMT, QT[CLOSED]->record, QT[CLOSED]->n_rows, char *);
 			if (n_qfiles == 2) Q->table[OPEN]->segment[0]->record = GMT_memory (GMT, QT[OPEN]->record, QT[OPEN]->n_rows, char *);
-			if (GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, q_mode, Ctrl->Q.file, Q)) Return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, q_mode, Ctrl->Q.file, Q) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 		Return (GMT_OK);
 	}
@@ -568,8 +575,12 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			LNK->table[0]->segment[0]->record[i] = strdup (buffer);
 		}
 		LNK->table[0]->n_records = LNK->table[0]->segment[0]->n_rows = ns;
-		if (GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->L.file, LNK)) Return (API->error);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &LNK)) Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->L.file, LNK) != GMT_OK) {
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &LNK) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	
 	start_id = done = n_closed = 0;
@@ -716,7 +727,9 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->Q.active) {	/* Write out the list(s) with individual file names */
 		Q->table[CLOSED]->segment[0]->record = GMT_memory (GMT, QT[CLOSED]->record, QT[CLOSED]->n_rows, char *);
 		if (n_qfiles == 2) Q->table[OPEN]->segment[0]->record = GMT_memory (GMT, QT[OPEN]->record, QT[OPEN]->n_rows, char *);
-		if (GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, q_mode, Ctrl->Q.file, Q)) Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, q_mode, Ctrl->Q.file, Q) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 
 	/* Write out the new multisegment file with polygons and segments */
@@ -724,8 +737,9 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[OPEN], out_seg, struct GMT_LINE_SEGMENT *);
 	D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = out_seg;
 	ofile = (Ctrl->D.active) ? Ctrl->D.format : Ctrl->Out.file;
-	if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, io_mode, ofile, D[GMT_OUT])) Return (API->error);
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);			/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, io_mode, ofile, D[GMT_OUT]) != GMT_OK) {
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Segments in: %ld Segments out: %ld\n", ns + n_islands, chain + n_islands);
 	if (n_trouble) GMT_report (GMT, GMT_MSG_NORMAL, "%ld trouble spots\n", n_trouble);

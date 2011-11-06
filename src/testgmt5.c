@@ -43,10 +43,10 @@ int main (int argc, char *argv[]) {
 	/* 1. Initializing new GMT session */
 	if ((API = GMT_Create_Session ("TEST", GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
 
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN,  GMT_BY_SET)) exit (EXIT_FAILURE);				/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN,  GMT_BY_SET) != GMT_OK) exit (EXIT_FAILURE);				/* Enables data input and sets access mode */
 
 	/* 2. READING IN A GRID */
-	if ((Gin = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, in_grid, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, in_grid, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* 3. PREPARING SOURCE AND DESTINATION FOR GMT_grdcut */
 	/* 3a. Register the Gin grid to be the source read by grdcut by passing a pointer */
@@ -56,13 +56,13 @@ int main (int argc, char *argv[]) {
 
 	/* 4. Create linked options for GMT_grdcut equivalent to "grdcut t.nc -R2/4/2/4 -Gnew.nc -V" */
 
-	if (GMT_Encode_ID (API, string, in_grdcut_ID)) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, string, in_grdcut_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	if ((new = GMT_Make_Option (API, '<', string)) == NULL) exit (EXIT_FAILURE);
 	if ((head = GMT_Append_Option (API, new, NULL)) == NULL) exit (EXIT_FAILURE);
 	sprintf (string, "%g/%g/%g/%g", w, e, s, n);		/* Create argument for -R option */
 	if ((new = GMT_Make_Option (API, 'R', string)) == NULL) exit (EXIT_FAILURE);
 	if ((head = GMT_Append_Option (API, new, head)) == NULL) exit (EXIT_FAILURE);
-	if (GMT_Encode_ID (API, string, out_grdcut_ID)) exit (EXIT_FAILURE);	/* Make -Gfilename with embedded object ID */
+	if (GMT_Encode_ID (API, string, out_grdcut_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make -Gfilename with embedded object ID */
 	if ((new = GMT_Make_Option (API, 'G', string)) == NULL) exit (EXIT_FAILURE);
 	if ((head = GMT_Append_Option (API, new, head)) == NULL) exit (EXIT_FAILURE);
 	if ((new = GMT_Make_Option (API, 'V', NULL)) == NULL) exit (EXIT_FAILURE);	/* Add -V*/
@@ -75,11 +75,11 @@ int main (int argc, char *argv[]) {
 	if (GMT_Destroy_Options (API, &head)) exit (EXIT_FAILURE);
 
 	/* 7. WRITING THE RESULT TO FILE */
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) exit (EXIT_FAILURE);				/* Enables data input and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, out_grid, Gout)) exit (EXIT_FAILURE);
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET) != GMT_OK) exit (EXIT_FAILURE);				/* Enables data input and sets access mode */
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, out_grid, Gout) != GMT_OK) exit (EXIT_FAILURE);
 
-	if (GMT_End_IO (API, GMT_IN,  0)) exit (EXIT_FAILURE);		/* Disables further data output */
-	if (GMT_End_IO (API, GMT_OUT, 0)) exit (EXIT_FAILURE);		/* Disables further data output */
+	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) exit (EXIT_FAILURE);		/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) exit (EXIT_FAILURE);		/* Disables further data output */
 
 	/* 8. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);

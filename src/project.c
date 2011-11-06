@@ -785,9 +785,15 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*  Now we are ready to work  */
 
-	if ((error = GMT_set_cols (GMT, GMT_OUT, P.n_outputs))) Return (error);
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers data output */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
+	if ((error = GMT_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 
 	P.n_used = n_total_read = 0;
 
@@ -855,11 +861,17 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {	/* Must read input file */
 
 		/* Specify input and output expected columns */
-		if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
+		if ((error = GMT_set_cols (GMT, GMT_IN, 0)) != GMT_OK) {
+			Return (error);
+		}
 
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
 		rmode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
 		while ((in = GMT_Get_Record (API, rmode, &n_fields))) {	/* Keep returning records until we reach EOF */
@@ -942,9 +954,13 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_total_used += P.n_used;
 		}
 
-		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
+		}
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "%ld read, %ld used\n", n_total_read, n_total_used);
 

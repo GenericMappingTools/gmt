@@ -75,9 +75,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	GMT_grd_loop (API->GMT, G, row, col, gmt_ij) G->data[gmt_ij] = z[MEX_IJ(G,row,col)];
 	
 	/* 7. Write the grid */
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) mexErrMsgTxt ("Failure to Begin IO\n");
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, fileout, G)) mexErrMsgTxt ("Read failure\n");
-	if (GMT_End_IO (API, GMT_OUT, 0)) mexErrMsgTxt ("Failure to End IO\n");
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, fileout, G) != GMT_OK) mexErrMsgTxt ("Read failure\n");
 	
 	/* 8. Destroy the temporary grid */
 	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G)) mexErrMsgTxt ("Run-time error\n");

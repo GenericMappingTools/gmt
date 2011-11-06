@@ -360,17 +360,17 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		k_ads = Ctrl->E.ambient + Ctrl->E.diffuse + Ctrl->E.specular;
 	}
 	
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
-	if ((Surf = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) Return (API->error);
+	if ((Surf = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {
+		Return (API->error);
+	}
 	if (GMT_is_subset (GMT, Surf->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	GMT_grd_init (GMT, Surf->header, options, TRUE);
 
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, Surf) == NULL) Return (API->error);	/* Get subset */
-
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, Surf) == NULL) {	/* Get subset */
+		Return (API->error);
+	}
 
 	if (Ctrl->S.active) {	/* Want slope grid */
 		if ((Slope = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
@@ -597,14 +597,16 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			strcpy (Out->header->title, "Directions of maximum slopes");
 	}
 
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);		/* Enables data output and sets access mode */
-	if (Ctrl->G.active && GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Out)) Return (API->error);
+	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Out) != GMT_OK) {
+		Return (API->error);
+	}
 
 	if (Ctrl->S.active) {
 		strcpy (Slope->header->title, "Magnitude of maximum slopes");
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->S.file, Slope)) Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->S.file, Slope) != GMT_OK) {
+			Return (API->error);
+		}
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);				/* Disables further data output */
 
 	Return (EXIT_SUCCESS);
 }

@@ -4462,7 +4462,7 @@ void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, s
 
 GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 
-	GMT_LONG object_ID, status, seg1, seg2, k, row, col, seg, stop, n_reg, item, error = 0;
+	GMT_LONG object_ID, seg1, seg2, k, row, col, seg, stop, n_reg, item, error = 0;
 	char buffer[GMT_BUFSIZ], in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN];
 	struct GMT_TABLE *T = NULL;
 	struct GMT_DATASET *M = NULL;
@@ -4483,17 +4483,31 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	/* Determine w/e/s/n via GMT_minmax */
 
 	/* Create option list, register D[GMT_OUT] as input source via ref */
-	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D, NULL)) == GMTAPI_NOTSET) return (C->parent->error);
-	if (GMT_Encode_ID (C->parent, in_string, object_ID)) return (C->parent->error);	/* Make filename with embedded object ID */
-	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_COPY, GMT_IS_POINT, GMT_OUT, M, NULL)) == GMTAPI_NOTSET) return (C->parent->error);
-	if (GMT_Encode_ID (C->parent, out_string, object_ID)) return (C->parent->error);	/* Make filename with embedded object ID */
+	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D, NULL)) == GMTAPI_NOTSET) {
+		return (C->parent->error);
+	}
+	if (GMT_Encode_ID (C->parent, in_string, object_ID) != GMT_OK) {
+		return (C->parent->error);	/* Make filename with embedded object ID */
+	}
+	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_COPY, GMT_IS_POINT, GMT_OUT, M, NULL)) == GMTAPI_NOTSET) {
+		return (C->parent->error);
+	}
+	if (GMT_Encode_ID (C->parent, out_string, object_ID)) {
+		return (C->parent->error);	/* Make filename with embedded object ID */
+	}
 	sprintf (buffer, "-C -fg -<%s ->%s", in_string, out_string);
-	status = GMT_minmax (C->parent, 0, buffer);	/* Get the extent via minmax */
+	if (GMT_minmax (C->parent, 0, buffer) != GMT_OK) {	/* Get the extent via minmax */
+		return (C->parent->error);
+	}
 	
 	/* Time to reregister the original destination */
 	
-	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, D, NULL)) == GMTAPI_NOTSET) return (C->parent->error);
-	if ((error = GMTAPI_Validate_ID (C->parent, GMT_IS_DATASET, object_ID, GMT_OUT, &item)) != GMT_OK) return (GMT_Report_Error (C->parent, error));
+	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, D, NULL)) == GMTAPI_NOTSET) {
+		return (C->parent->error);
+	}
+	if ((error = GMTAPI_Validate_ID (C->parent, GMT_IS_DATASET, object_ID, GMT_OUT, &item)) != GMT_OK) {
+		return (GMT_Report_Error (C->parent, error));
+	}
 	GMT_memcpy (C->parent->object[item], &O, 1, struct GMTAPI_DATA_OBJECT);	/* Restore what we had before */
 	
 	T = D->table[0];

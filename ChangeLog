@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-05	pwessel
+	* gmtapi_util.c:	Added GMT_Write_Data and GMT_Read_Data which deals with
+				files/streams, and GMT_Get_Data, GMT_Put_Data now work
+				explicitly with registered object IDs.
+				Test all return codes from API and give proper errors.
 2011-10-29	pwessel
 	* gmtapi_parse.c:	API finalized.  Simplified by let all functions that
 				produce objects (Make, Find, Append) return a pointer to those objects.

@@ -347,9 +347,15 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the fitcircle main code ----------------------------*/
 
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT,  GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data output */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT,  GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 	
 	n_data = 0;	/* Initialize variables */
 	lonsum = latsum = 0.0;
@@ -367,7 +373,9 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (++n_data == n_alloc) data = GMT_memory (GMT, data, n_alloc <<= 1, struct FITCIRCLE_DATA);
 	}
-  	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);				/* Disables further data input */
+  	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {
+		Return (API->error);				/* Disables further data input */
+	}
 
  	if (n_data == 0) {	/* Blank/empty input files */
 		GMT_report (GMT, GMT_MSG_NORMAL, "No data records found; no output produced");
@@ -379,7 +387,9 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	allocate = (Ctrl->S.active && (Ctrl->L.norm%2));	/* Will need work array */
 	if (allocate) work = GMT_memory (GMT, NULL, n_data, double);
 
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC) != GMT_OK) {
+		Return (API->error);	/* Enables data output and sets access mode */
+	}
 
 	lonsum /= n_data;	latsum /= n_data;
 	sprintf (record, "%ld points read, Average Position (Flat Earth): ", n_data);
@@ -503,7 +513,9 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 	}
-  	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+  	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	if (allocate) GMT_free (GMT, work);
 	GMT_free (GMT, data);

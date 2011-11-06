@@ -245,9 +245,15 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Now we are ready to take on some input values */
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3))) Return (error);
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default input sources, unless already set */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
+	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
 	GMT_malloc4 (GMT, xx, yy, zz, ww, GMT_CHUNK, &n_alloc, double);
 	n = 0;
@@ -266,7 +272,9 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (++n == n_alloc) GMT_malloc4 (GMT, xx, yy, zz, ww, n, &n_alloc, double);
 	}
 	GMT_malloc4 (GMT, xx, yy, zz, ww, 0, &n, double);
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Do spherical interpolation using %ld points\n", n);
 
@@ -301,9 +309,9 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Write solution */
 	
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid)) Return (API->error);
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Gridding completed\n");
 

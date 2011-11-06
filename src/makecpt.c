@@ -288,16 +288,17 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	file = CPT_file;
 
-	if (GMT_Begin_IO (API, 0, GMT_IN,  GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-	if (GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
-
-	if ((Pin = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, file, NULL)) == NULL) Return (API->error);
+	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, file, NULL)) == NULL) {
+		Return (API->error);
+	}
 	if (Pin->categorical) Ctrl->W.active = TRUE;	/* Do not want to sample a categorical table */
 
 	/* Set up arrays */
 
 	if (Ctrl->T.file) {	/* Array passed as a data file */
-		if ((T = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->T.file, NULL)) == NULL) Return (API->error);
+		if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->T.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		if (T->n_tables != 1 || T->table[0]->n_segments != 1) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: More than one table or segment in file %s\n", Ctrl->T.file);
 			Return (GMT_RUNTIME_ERROR);
@@ -347,7 +348,6 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		z[i] = Pin->range[i-1].z_high;
 	}
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	if (Ctrl->Q.mode == 2) for (i = 0; i < nz; i++) z[i] = d_log10 (GMT, z[i]);	/* Make log10(z) values for interpolation step */
 
@@ -365,8 +365,9 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->D.mode == 1) cpt_flags |= 2;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 
-	if (GMT_Put_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, Ctrl->Out.file, Pout)) Return (API->error);
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, Ctrl->Out.file, Pout) != GMT_OK) {
+		Return (API->error);
+	}
 
 	Return (GMT_OK);
 }

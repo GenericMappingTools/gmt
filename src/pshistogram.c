@@ -493,12 +493,18 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!Ctrl->I.active && !GMT->common.R.active) automatic = TRUE;
 	if (GMT->common.R.active) GMT_memcpy (F.wesn, GMT->common.R.wesn, 4, double);
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 1))) Return (error);
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Register data input */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
+	if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
-	if (Ctrl->C.active) {
-		if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (GMT_DATA_READ_ERROR);
+	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+		Return (GMT_DATA_READ_ERROR);
 	}
 
 	data = GMT_memory (GMT, NULL, n_alloc , double);
@@ -523,7 +529,9 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			data = GMT_memory (GMT, data,  n_alloc, double);
 		}
 	}
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {
+		Return (API->error);	/* Disables further data input */
+	}
 
 	if (n == 0) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Fatal error, read only 0 points.\n");
@@ -580,10 +588,11 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			dim[3] = F.n_boxes;
 			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for spectrum\n");
-				return (API->error);
+				Return (API->error);
 			}
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
-			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
+			if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
+				Return (error);
+			}
 			S = D->table[0]->segment[0];	/* Only one table with one segment here, with 2 cols and F.n_boxes rows */
 			for (ibox = 0; ibox < F.n_boxes; ibox++) {
 				if (Ctrl->I.mode == 1 && F.boxh[ibox] == 0) continue;
@@ -604,10 +613,13 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				S->coord[GMT_X][ibox] = xx;
 				S->coord[GMT_Y][ibox] = yy;
 			}
-			if (GMT_Put_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, D->io_mode, Ctrl->Out.file, D)) return (API->error);
-			if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D)) Return (API->error);
+			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, D->io_mode, Ctrl->Out.file, D) != GMT_OK) {
+				Return (API->error);
+			}
+			if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D) != GMT_OK) {
+				Return (API->error);
+			}
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 		GMT_free (GMT, data);
 		GMT_free (GMT, F.boxh);
 		Return (EXIT_SUCCESS);

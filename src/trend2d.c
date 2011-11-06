@@ -544,14 +544,26 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	np = Ctrl->N.value;	/* Row dimension for matrices gtg and v  */
 	allocate_the_memory_2d (GMT,(GMT_LONG)np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active))) return (error);
-	if ((error = GMT_set_cols (GMT, GMT_OUT, Ctrl->n_outputs))) return (error);
-	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options)) return (API->error);	/* Establishes data input */
-	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) return (API->error);	/* Establishes data output */
+	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_OK) {
+		Return (error);
+	}
+	if ((error = GMT_set_cols (GMT, GMT_OUT, Ctrl->n_outputs)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 	if ((error = read_data_trend2d (GMT,&data, &n_data, &xmin, &xmax, &ymin, &ymax, Ctrl->W.active, &work))) Return (error);
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
 
 	if (xmin == xmax || ymin == ymax) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: Maximum and minimum input values are the same.\n");
@@ -682,9 +694,13 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	untransform_x_2d (data, n_data, xmin, xmax, ymin, ymax);
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 	write_output_trend2d (GMT,data, n_data, Ctrl->F.col, Ctrl->n_outputs);
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	free_the_memory_2d (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 

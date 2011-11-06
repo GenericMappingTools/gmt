@@ -573,10 +573,13 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Start to read input data */
 	
-	if (GMT_Init_IO (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) Return (API->error);				/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
 
-	if ((Z = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get data */
+	if ((Z = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {	/* Get data */
+		Return (API->error);
+	}
 	area = 111.195 * Z->header->inc[GMT_Y] * 111.195 * Z->header->inc[GMT_X];	/* In km^2 at Equator */
 	x_smt = GMT_memory (GMT, NULL, Z->header->nx, double);
 	for (i = 0; i < Z->header->nx; i++) x_smt[i] = D2R * GMT_grd_col_to_x (GMT, i, Z->header);
@@ -591,20 +594,28 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	y_cva = GMT_memory (GMT, NULL, G->header->ny, double);
 	for (j = 0; j < G->header->ny; j++) y_cva[j] = GMT_grd_row_to_y (GMT, j, G->header);
 	if (Ctrl->A.file) {
-		if ((A = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->A.file, NULL)) == NULL) Return (API->error);	/* Get header only */
+		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
+			Return (API->error);
+		}
 		if (!(A->header->nx == Z->header->nx && A->header->ny == Z->header->ny && A->header->wesn[XLO] == Z->header->wesn[XLO] && A->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Topo grid and age grid must coregister\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->A.file, A) == NULL) Return (API->error);	/* Get age data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->A.file, A) == NULL) {	/* Get age data */
+			Return (API->error);
+		}
 	}
 	if (Ctrl->L.file) {
-		if ((L = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->L.file, NULL)) == NULL) Return (API->error);	/* Get header only */
+		if ((L = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->L.file, NULL)) == NULL) {	/* Get header only */
+			Return (API->error);
+		}
 		if (!(L->header->nx == Z->header->nx && L->header->ny == Z->header->ny && L->header->wesn[XLO] == Z->header->wesn[XLO] && L->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Topo grid and ID grid must coregister\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->L.file, L) == NULL) Return (API->error);	/* Get ID data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->L.file, L) == NULL) {	/* Get ID data */
+			Return (API->error);
+		}
 		
 		/* Store IDs in a GMT_LONG array instead */
 		ID = GMT_memory (GMT, NULL, L->header->size, GMT_LONG);
@@ -643,8 +654,6 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		Ctrl->Q.mode = TRUE;
 	}
-
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	if (Ctrl->M.active) {
 		keep_flowlines = FALSE;	/* Do it the hard way to save memory */
@@ -754,8 +763,6 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* OK, Done processing, time to write out */
 
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
-
 	if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */		
 		GMT_report (GMT, GMT_MSG_NORMAL, "Normalize CVS grid to percentages of max CVA\n");
 		G->header->z_min = +DBL_MAX;
@@ -775,7 +782,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 	GMT_report (GMT, GMT_MSG_NORMAL, "Write CVA grid %s\n", Ctrl->G.file);
 
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G)) Return (API->error);
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G) != GMT_OK) {
+		Return (API->error);
+	}
 
 	if (Ctrl->Z.mode) {	/* Do CVA calculations for each z-slice using stored flowlines */
 		GMT_LONG nz;
@@ -834,7 +843,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sprintf (file, format, i);
 			G->data = CVA_inc;	/* Temporarily change the array pointer */
 			GMT_report (GMT, GMT_MSG_NORMAL, "Save z-slice CVA to file %s\n", file);
-			if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, file, G)) Return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, file, G) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 		G->data = old;	/* Reset the array pointer */
 		GMT_free (GMT, CVA_inc);
@@ -918,15 +929,18 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->D.active) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Write DI grid %s\n", Ctrl->D.file);
 			sprintf (DI->header->remark, "CVA maxima along flowlines from each node");
-			if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->D.file, DI)) Return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->D.file, DI) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 		if (Ctrl->PA.active) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Write PA grid %s\n", Ctrl->PA.file);
 			sprintf (PA->header->remark, "Predicted age for each node");
-			if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->PA.file, PA)) Return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->PA.file, PA) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);				/* Disables further data output */
 	
 	if (Ctrl->W.active) {	/* Use bootstrapping to estimate confidence region for CVA maxima */
 
@@ -937,9 +951,15 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_message (GMT, "Estimate %ld CVA max locations using bootstrapping\n", Ctrl->W.n_try);
 		}
 
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default output destination, unless already set */
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);				/* Enables data output and sets access mode */
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+			Return (error);
+		}
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
 
 		/* Now do bootstrap sampling of flowlines */
 	
@@ -983,7 +1003,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "Bootstrap try %ld\n", Ctrl->W.n_try);
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);				/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			Return (API->error);
+		}
 	}
 	
 	/* Clean up memory */

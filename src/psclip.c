@@ -249,9 +249,12 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 
 		if (!Ctrl->T.active) {
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Register data input */
-			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);				/* Enables data input and sets access mode */
-			if ((D = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+				Return (API->error);	/* Register data input */
+			}
+			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+				Return (API->error);
+			}
 
 			for (tbl = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
@@ -275,8 +278,9 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 				}
 			}
-			if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D)) Return (API->error);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 
 		/* Finalize the composite polygon clip path */

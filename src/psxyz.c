@@ -439,10 +439,8 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (j = n_cols_start; j < 7; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;			/* Since these may have units appended */
 	for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles or km, not dimensions */
 
-	if (Ctrl->C.active) {
-		if (GMT_Begin_IO (API, GMT_IS_CPT, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-		if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
-		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+		Return (API->error);
 	}
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (GMT_contlabel_prep (GMT, &S.G, NULL)) Return (EXIT_FAILURE);
@@ -513,7 +511,9 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	old_is_world = GMT->current.map.is_world;
 	geometry = not_line ? GMT_IS_POINT : (GMT_IS_LINE + polygon);
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed)) != GMT_OK) {
+		Return (error);
+	}
 
 	if (read_symbol) {	/* If symbol info is given we must process text records */
 		set_type = GMT_IS_TEXTSET;
@@ -526,8 +526,12 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	in = GMT->current.io.curr_rec;
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
-		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Register data input */
-		if (GMT_Begin_IO (API, set_type, GMT_IN, GMT_BY_REC)) Return (API->error);		/* Enables data input and sets access mode */
+		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, set_type, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		n = 0;
@@ -856,13 +860,19 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		GMT_free (GMT, data);
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
+		}
 	}
 	else {	/* Line/polygon part */
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT segment table(s) */
 
-		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-		if ((D = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
 
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			if (D->table[tbl]->n_headers && S.G.label_type == 2) GMT_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label);	/* Set first header as potential label */
@@ -897,7 +907,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_extract_label (GMT, L->header, S.G.label);
 
 #if 0
-				/* This should never happen, GMT_Get_Data should already take care of this */
+				/* This should never happen, GMT_Read_Data should already take care of this */
 
 				if (polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) {
 					/* Explicitly close polygon so that arc will work */
@@ -943,9 +953,10 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_free (GMT, yp);
 			}
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D)) Return (API->error);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+			Return (API->error);
+		}
 	}
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 
 	if (S.u_set) GMT->current.setting.proj_length_unit = save_u;	/* Reset unit */
 

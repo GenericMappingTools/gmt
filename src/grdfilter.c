@@ -284,9 +284,7 @@ GMT_LONG init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, GMT_LONG m
 #ifdef DEBUG
 	if (file) {	/* For debug purposes: Save the area weight grid */
 		GMT_LONG error;
-		if (GMT_Begin_IO (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) return (API->error);	/* Enables data output and sets access mode */
-		if (GMT_Put_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, file, A)) return (API->error);
-		if (GMT_End_IO (GMT->parent, GMT_OUT, 0)) return (API->error);	/* Disables further data output */
+		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, file, A) != GMT_OK) return (API->error);
 	}
 #endif
 	return (GMT_NOERROR);
@@ -534,9 +532,9 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the grdfilter main code ----------------------------*/
 
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-	if ((Gin = GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) Return (API->error);	/* Get entire grid */
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {	/* Get entire grid */
+		Return (API->error);
+	}
 
 	if (Ctrl->T.active)	/* Make output grid of the opposite registration */
 		one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 1 : 0;
@@ -951,22 +949,32 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->F.highpass) {
 		if (GMT->common.R.active || Ctrl->I.active || GMT->common.r.active) {	/* Must resample result */
-			GMT_LONG object_ID, status = 0;			/* Status code from GMT API */
+			GMT_LONG object_ID;			/* Status code from GMT API */
 			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[GMT_BUFSIZ];
 			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Gout, NULL)) == GMTAPI_NOTSET) Return (API->error);
-			if (GMT_Encode_ID (API, in_string, object_ID)) Return (API->error);	/* Make filename with embedded object ID for grid Gout */
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &L, NULL)) == GMTAPI_NOTSET) Return (API->error);
-			if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) Return (API->error);	/* Make filename with embedded object ID for result grid L */
+			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Gout, NULL)) == GMTAPI_NOTSET) {
+				Return (API->error);
+			}
+			if (GMT_Encode_ID (API, in_string, object_ID) != GMT_OK) {	/* Make filename with embedded object ID for grid Gout */
+				Return (API->error);
+			}
+			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &L, NULL)) == GMTAPI_NOTSET) {
+				Return (API->error);
+			}
+			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_OK) {
+				Return (API->error);	/* Make filename with embedded object ID for result grid L */
+			}
 			sprintf (cmd, "%s -G%s -R%s -V%ld", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Highpass requires us to resample the lowpass result via grdsample %s\n", cmd);
-			if ((status = GMT_grdsample (GMT->parent, 0, cmd))) {	/* Resample the file */
+			if (GMT_grdsample (GMT->parent, 0, cmd) != GMT_OK) {	/* Resample the file */
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample the lowpass result - exiting\n");
 				GMT_exit (API->error);
 			}
 			Gout->alloc_mode = L->alloc_mode = GMT_ALLOCATED;	/* So we may destroy it */
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Gout)) Return (API->error);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Gout) != GMT_OK) {
+				Return (API->error);
+			}
 			GMT_grd_loop (GMT, L, row_out, col_out, ij_out) L->data[ij_out] = Gin->data[ij_out] -L->data[ij_out];
 			GMT_grd_init (GMT, L->header, options, TRUE);	/* Update command history only */
 		}
@@ -977,30 +985,38 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* At last, that's it!  Output: */
 
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
 #ifdef DEBUG
 	if (Ctrl->A.active) {	/* Save the debug output instead */
 		FILE *fp = fopen ("n_conv.txt", "w");
 		fprintf (fp, "%ld\n", n_conv);
 		fclose (fp);
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gin)) Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gin) != GMT_OK) {
+			Return (API->error);
+		}
 		GMT_free_grid (GMT, &Gout, TRUE);	/* Was never used due to testing */
 	}
 	else if (Ctrl->F.highpass && L) {
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, L)) Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, L) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	else {
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout)) Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 #else
 	if (Ctrl->F.highpass && L) {
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, L)) Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, L) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	else {
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout)) Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 #endif
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
 
 	Return (EXIT_SUCCESS);
 }

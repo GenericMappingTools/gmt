@@ -157,9 +157,15 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memset (name, GMT_BUFSIZ, char);
 	GMT_memset (description, GMT_BUFSIZ, char);
 	
-	if ((error = GMT_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active))) Return (error);
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default output destination, unless already set */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);				/* Enables data output and sets access mode */
+	if ((error = GMT_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 
 	if (Ctrl->In.active) {
 		if ((fp = fopen (Ctrl->In.file, "r")) == NULL) {
@@ -240,7 +246,9 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	if (fp != stdin) fclose (fp);
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 	
 	Return (GMT_OK);
 }

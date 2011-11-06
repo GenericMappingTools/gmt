@@ -284,13 +284,15 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = mask_val[GMT_OUTSIDE];
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 2))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) Return (error);
 	gmode = (Ctrl->S.active) ? GMT_IS_POINT : GMT_IS_POLY;
 	GMT_skip_xy_duplicates (GMT, TRUE);	/* Avoid repeating x/y points in polygons */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Registers default input sources, unless already set */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-	if ((D = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+		Return (API->error);
+	}
+	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
 	GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
 
 	if (!Ctrl->S.active && GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample all polygons to desired resolution, once and for all */
@@ -381,9 +383,9 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Grid)) Return (API->error);
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Grid) != GMT_OK) {
+		Return (API->error);
+	}
 
 	if (Ctrl->S.active) {
 		GMT_free (GMT, d_col);

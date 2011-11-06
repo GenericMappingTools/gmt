@@ -410,7 +410,9 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->F.active) {	/* Get hotspot motion file */
-		if ((F = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->F.file, NULL)) == NULL) Return (API->error);
+		if ((F = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->F.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		H = F->table[0]->segment[0];	/* Only one table with one segment for histories */
 		for (j = 0; j < H->n_rows; j++) H->coord[GMT_Y][j] = GMT_lat_swap (GMT, H->coord[GMT_Y][j], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	}
@@ -425,17 +427,29 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->W.active) n_out = 5 + !(Ctrl->W.mode == 0);
 
 	/* Specify input and output expected columns */
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_expected_fields))) Return (error);
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
+		Return (error);
+	}
+	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
+		Return (error);
+	}
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
 
 	/* Read the seamount data from file or stdin */
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC)) Return (API->error);				/* Enables data input and sets access mode */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);				/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 
 	n = 0;
 	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
@@ -566,8 +580,12 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_points++;
 	}
 
-	if (GMT_End_IO (API, GMT_IN,  0)) Return (API->error);	/* Disables further data input */
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	if (make_path)
 		GMT_report (GMT, GMT_MSG_NORMAL, "%ld segments written\n", n_points);

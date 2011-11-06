@@ -1066,9 +1066,9 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the psscale main code ----------------------------*/
 
-	if (GMT_Begin_IO (API, GMT_IS_CPT, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
-	if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+		Return (API->error);
+	}
 
 	if (P->categorical) {
 		Ctrl->L.active = Ctrl->L.interval = TRUE;
@@ -1094,7 +1094,9 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	max_intens[1] = Ctrl->I.max;
 
 	if (Ctrl->Z.active) {
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, &D)) Return (API->error);
+		if (GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, &D)) {
+			Return (API->error);
+		}
 		z_width = D->table[0]->segment[0]->coord[GMT_X];
 		if (D->table[0]->segment[0]->n_rows < P->n_colors) {
 			GMT_report (GMT, GMT_MSG_FATAL, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);

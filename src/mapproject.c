@@ -584,11 +584,14 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	greenwich = (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO && proj_type == GMT_GEOGRAPHIC) ? (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0) : FALSE;
 
 	if (Ctrl->L.active) {
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
 		/* Initialize the i/o for doing table reading */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+			Return (API->error);
+		}
 
-		if ((Lin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, Ctrl->L.file, NULL)) == NULL) Return (API->error);
+		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, Ctrl->L.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		xyline = Lin->table[0];			/* Can only be one table since we read a single file */
 		if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */
 			for (i = 0; i < xyline->n_segments; i++) {
@@ -608,7 +611,6 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 		}
-		if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
 	}
 
 	/* Now we are ready to take on some input values */
@@ -628,8 +630,12 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN,  0))) Return (error);
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
 	rmode = (!GMT->common.b.active[GMT_IN] && !GMT->common.b.active[GMT_OUT] && !GMT->common.o.active && GMT_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
 	x_in_min = y_in_min = x_out_min = y_out_min = DBL_MAX;
@@ -653,8 +659,12 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	coord = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	if (Ctrl->N.active) lat_mode = Ctrl->N.mode + Ctrl->I.active;
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 	n_output = GMT_get_cols (GMT, GMT_OUT);
 
 	n = n_read_in_seg = 0;
@@ -937,8 +947,12 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Projected %ld points\r", n);
 		}
 	}
-	if (GMT_End_IO (API, GMT_IN,  0)) Return (API->error);	/* Disables further data input */
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && n_read > 0) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Projected %ld points\n", n);

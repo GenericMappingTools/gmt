@@ -635,12 +635,20 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the pscontour main code ----------------------------*/
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3))) Return (error);
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options)) Return (API->error);	/* Register data input */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC)) Return (API->error);	/* Enables data input and sets access mode */
+	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
 	if (Ctrl->C.cpt) {	/* Presumably got a cpt-file; read it here so we can crash if no-such-file before we process input data */
-		if ((P = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) Return (API->error);
+		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		if (Ctrl->I.active && P->is_continuous) {
 			GMT_report (GMT, GMT_MSG_FATAL, "-I option requires constant color between contours!\n");
 			Return (GMT_OK);
@@ -720,11 +728,15 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_TABLE *T = NULL;
 
-		if ((Tin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Q.file, NULL)) == NULL) Return (API->error);
+		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Q.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 
  		if (Tin->n_columns < 3) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q: %s does not have at least 3 columns with indices\n", Ctrl->Q.file);
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin)) Return (API->error);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin) != GMT_OK) {
+				Return (API->error);
+			}
 			Return (EXIT_FAILURE);
 		}
 		T = Tin->table[0];	/* Since we only have one table here */
@@ -735,7 +747,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (col = 0; col < 3; col++) ind[ij++] = irint (T->segment[seg]->coord[col][row]);
 			}
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin)) Return (API->error);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin) != GMT_OK) {
+			Return (API->error);
+		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld indices triplets from %s.\n", np, Ctrl->Q.file);
 	}
 	else {	/* Do our own Delaunay triangulation */
@@ -743,7 +757,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Obtained %ld indices triplets via Delauney triangulation [%s].\n", np, tri_algorithm[GMT->current.setting.triangulate]);
 	}
 
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
 
 	if (Ctrl->C.cpt) {	/* We already read the cpt-file */
 		/* Set up which contours to draw based on the CPT slices and their attributes */
@@ -775,10 +791,10 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
 		char *record = NULL;
-		GMT_LONG got, out_ID, NL, c_alloc = 0;
+		GMT_LONG got, in_ID, NL, c_alloc = 0;
 		double tmp;
 
-		if ((out_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, Ctrl->C.file, NULL)) == GMTAPI_NOTSET) {
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, Ctrl->C.file, NULL)) == GMTAPI_NOTSET) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error registering contour info file %s\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
@@ -859,7 +875,6 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 		n_seg = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET)) Return (API->error);	/* Enables data output and sets access mode */
 	}
 	
 	if (make_plot) {
@@ -1241,8 +1256,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_LINE_SEGMENT *);
-		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, io_mode, Ctrl->D.file, D)) Return (API->error);
-		if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, io_mode, Ctrl->D.file, D) != GMT_OK) {
+			Return (API->error);
+		}
 		GMT_free (GMT, n_seg_alloc);
 		GMT_free (GMT, n_seg);
 	}

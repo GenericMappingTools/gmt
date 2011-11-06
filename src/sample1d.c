@@ -260,13 +260,18 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = FALSE;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
 	GMT->current.io.skip_if_NaN[Ctrl->T.col] = TRUE;				/* ... But disallow NaN in "time" column */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data input */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options)) Return (API->error);	/* Establishes data output */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET)) Return (API->error);	/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
 
 	if (Ctrl->N.active) {	/* read file with abscissae */
 		struct GMT_DATASET *Cin = NULL;
-		if ((Cin = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->N.file, NULL)) == NULL) Return (API->error);
+		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->N.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		T = Cin->table[0];	/* Since we only have one table here */
 		t_supplied_out = GMT_memory (GMT, NULL, Cin->table[0]->n_records, double);
 		for (seg = 0; seg < T->n_segments; seg++) {
@@ -276,7 +281,9 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		m_supplied = m;
 		t_out = GMT_memory (GMT, NULL, m_supplied, double);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld knots from file\n", m_supplied);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Cin)) Return (API->error);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Cin) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 
 	if (Ctrl->I.mode) GMT_init_distaz (GMT, Ctrl->I.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
@@ -286,8 +293,9 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		inc_degrees = (Ctrl->I.inc / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Convert increment to spherical degrees */
 	}
 	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
-	if ((Din = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) Return (API->error);
-	if (GMT_End_IO (API, GMT_IN, 0)) Return (API->error);	/* Disables further data input */
+	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
 
 	Dout = GMT_memory (GMT, NULL, 1, struct GMT_DATASET);				/* Output dataset... */
 	Dout->table = GMT_memory (GMT, NULL, Din->n_tables, struct GMT_TABLE *);	/* with table array */
@@ -400,9 +408,9 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) Return (API->error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout->io_mode, Ctrl->Out.file, Dout)) Return (API->error);
-	if (GMT_End_IO (API, GMT_OUT, 0)) Return (API->error);	/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout->io_mode, Ctrl->Out.file, Dout) != GMT_OK) {
+		Return (API->error);
+	}
 
 	GMT_free (GMT, t_out);
 	if (nan_flag) GMT_free (GMT, nan_flag);
