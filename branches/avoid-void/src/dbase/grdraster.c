@@ -224,13 +224,15 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 	n_alloc = GMT_SMALL_CHUNK;
 	rasinfo = GMT_memory (GMT, NULL, n_alloc, struct GRDRASTER_INFO);
 
-	while ((record = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, &n_fields))) {	/* Keep returning records until we reach EOF */
-		if (GMT_REC_IS_ERROR (GMT)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Skipping record in grdraster.info (Cannot read data record).\n");
-			continue;
+	do {	/* Keep returning records until we reach EOF */
+		if ((record = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
 		}
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;		/* Skip segment headers */
 
 		/* Strip off trailing "\r\n" */
 		GMT_chop (GMT, record);
@@ -579,7 +581,8 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 			n_alloc <<= 1;
 			rasinfo = GMT_memory (GMT, rasinfo, n_alloc, struct GRDRASTER_INFO);
 		}
-	}
+	} while (TRUE);
+	
 	if (GMT_End_IO (GMT->parent, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		GMT_report (GMT, GMT_MSG_FATAL, "Error closing grdraster.info file. Error code = %ld.\n", GMT->parent->error);
 		return (GMT->parent->error);

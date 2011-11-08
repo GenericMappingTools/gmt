@@ -452,14 +452,25 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	n = 0;
-	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
 
-		if (GMT_REC_IS_ERROR (GMT) && n_fields < 2) continue;
+	do {	/* Keep returning records until we reach EOF */
+		n_read++;
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Skip all table headers */
+				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);
+				continue;
+			}
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+			else if (GMT_REC_IS_NEW_SEGMENT (GMT) && !make_path) {			/* Parse segment headers */
+				GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+				continue;
+			}
+		}
 
-		if (GMT_REC_IS_TBL_HEADER (GMT)) GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);	/* Echo table headers */
-
-		if (GMT_REC_IS_NEW_SEGMENT (GMT) && !make_path) GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;
+		/* Data record to process */
 	
 		if (Ctrl->e.active) {	/* Simple reconstruction, then exit */
 			in[GMT_Y] = GMT_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
@@ -578,7 +589,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		n_points++;
-	}
+	} while (TRUE);
 
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);

@@ -197,8 +197,18 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 		char *line = NULL, r_in[GMT_TEXT_LEN256], file[GMT_TEXT_LEN256];
 		double weight;
 		GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
-		while ((line = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, &n_fields))) {	/* Keep returning records until we have no more files */
-			if (line[0] == '#' || line[0] == '\n' || line[0] == '\r') continue;	/* Skip comment lines or blank lines */
+		do {	/* Keep returning records until we reach EOF */
+			if ((line = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+					continue;
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
+			}
+			
+			/* Data record to process */
+
 			nr = sscanf (line, "%s %s %lf", file, r_in, &weight);
 			if (nr < 1) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Read error for blending parameters near row %ld\n", n);
@@ -209,7 +219,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			L[n].region = strdup (r_in);
 			L[n].weight = (nr == 1) ? 1.0 : weight;	/* Default weight if not given */
 			n++;
-		}
+		} while (TRUE);
 		GMT_reset_meminc (GMT);
 		n_files = n;
 	}

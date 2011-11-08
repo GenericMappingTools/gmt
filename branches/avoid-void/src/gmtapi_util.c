@@ -3057,11 +3057,13 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 						p[0]++, p[1] = 0;
 						if (mode & GMT_FILE_BREAK) {			/* Return empty handed to indicate a break between files */
 							status = *retval = GMT_IO_NEXT_FILE;
+							record = NULL;
 						}
 					}
 					if (p[0] == DS->n_tables) {	/* End of entire data set */
 						status = GMT_IO_EOF;
 						*retval = EOF;
+						record = NULL;
 						S->status++;		/* Mark as read */
 					}
 					if (!status) {	/* OK get the record */
@@ -3083,6 +3085,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 					if (p[0] == DT->n_tables) {
 						*retval = EOF;
 						API->GMT->current.io.status = GMT_IO_EOF;
+						record = NULL;
 						S->status++;	/* Mark as read */
 					}
 					else {

@@ -750,9 +750,17 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
-		while ((record = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields))) {	/* Keep returning records until we have no more files */
-			if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table headers */
+		
+		do {	/* Keep returning records until we reach EOF */
+			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+					continue;
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
+			}
+
 			switch (n_coord) {
 				case 2:	/* Just lon, lat, label */
 					sscanf (record, "%s %s %[^\n]", C[ix], C[iy], label);
@@ -833,7 +841,8 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			tabs (--N); printf ("</Placemark>\n");
 			n_rec++;
 			if (!(n_rec%10000)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed %ld points\n", n_rec);
-		}
+		} while (TRUE);
+		
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
 		}

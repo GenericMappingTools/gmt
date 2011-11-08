@@ -874,25 +874,28 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		rmode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
-		while ((in = GMT_Get_Record (API, rmode, &n_fields))) {	/* Keep returning records until we reach EOF */
-
-			if (GMT_REC_IS_ERROR (GMT) && n_fields < 2) continue;
-
-			if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo out headers */
-				GMT_Put_Record (API, GMT_WRITE_HEADER, NULL);
-				continue;
-			}
-			if (GMT_REC_IS_SEG_HEADER (GMT)) {	/* Echo out results from previous segment and next segment header */
-				if (P.n_used) {	/* Write out previous segment */
-					if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P))) Return (error);
-					n_total_used += P.n_used;
-					P.n_used = 0;
+		do {	/* Keep returning records until we reach EOF */
+			if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo table headers */
+					GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);
+					continue;
 				}
-				GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
-				continue;
+				if (GMT_REC_IS_SEG_HEADER (GMT)) {			/* Echo segment headers */
+					if (P.n_used) {	/* Write out previous segment */
+						if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P))) Return (error);
+						n_total_used += P.n_used;
+						P.n_used = 0;
+					}
+					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+					continue;
+				}
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
 			}
 
-			/* We come here if we have data records */
+			/* Data record to process */
 
 			if (z_first) {
 				P.n_z = GMT_get_cols (GMT, GMT_IN) - 2;
@@ -947,7 +950,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				n_alloc <<= 1;
 				p_data = GMT_memory (GMT, p_data, n_alloc, struct PROJECT_DATA);
 			}
-		}
+		} while (TRUE);
 
 		if (P.n_used) {	/* Finish last segment output */
 			if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P))) Return (error);

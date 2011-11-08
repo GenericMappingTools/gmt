@@ -296,7 +296,7 @@ void * gmt_nc_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *retval
 		C->current.io.nrec++;
 		C->current.io.rec_no++;
 		status = gmt_process_binary_input (C, n_use);
-		if (status == 1) { *retval = 0; return (C->current.io.curr_rec); }		/* A segment header */
+		if (status == 1) { *retval = 0; return (NULL); }		/* A segment header */
 	} while (status == 2);	/* Continue reading when record is to be skipped */
 	if (gmt_gap_detected (C)) {
 		*retval = gmt_set_gap (C);
@@ -1158,7 +1158,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 			C->current.io.status = GMT_IO_TBL_HEADER;
 			C->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on table headers on output */
 			*status = 0;
-			return (C->current.io.current_record);
+			return (NULL);
 		}
 		/* Here we are done with any header records implied by -h */
 		if (C->current.setting.io_blankline[GMT_IN]) {	/* Treat blank lines as segment markers, so only read one line */
@@ -1173,7 +1173,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 			strcpy (C->current.io.current_record, line);
 			C->current.io.status = GMT_IO_TBL_HEADER;
 			*status = 0;
-			return (C->current.io.current_record);
+			return (NULL);
 		}
 		if (!p) {	/* Ran out of records, which can happen if file ends in a comment record */
 			C->current.io.status = GMT_IO_EOF;
@@ -1197,7 +1197,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 			else	/* Got a segment break instead - set header to NULL */
 				C->current.io.segment_header[0] = '\0';
 			*status = 0;
-			return (C->current.io.segment_header);
+			return (NULL);
 		}
 
 		/* Here we know we are processing a data record */
@@ -1274,7 +1274,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 
 	C->current.io.pt_no++;			/* Got a valid data record (which is true even if it was a gap) */
 	*status = n_ok;				/* Return the number of fields successfully read */
-	return (C->current.io.curr_rec);	/* Pass back pointer to data array */
+	return ((C->current.io.status) ? NULL : C->current.io.curr_rec);	/* Pass back pointer to data array */
 }
 
 char * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *status)
@@ -1299,7 +1299,7 @@ char * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG 
 		strcpy (C->current.io.current_record, line);
 		C->current.io.status = GMT_IO_TBL_HEADER;
 		*status = 0;
-		return (C->current.io.current_record);
+		return (NULL);
 	}
 	if (!p) {	/* Ran out of records */
 		C->current.io.status = GMT_IO_EOF;
@@ -1312,7 +1312,7 @@ char * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG 
 		C->current.io.status = GMT_IO_TBL_HEADER;
 		*n = 1;
 		*status = 0;
-		return (C->current.io.current_record);
+		return (NULL);
 	}
 
 	if (line[0] == C->current.setting.io_seg_marker[GMT_IN]) {	/* Got a segment header, take action and return */
@@ -1323,7 +1323,7 @@ char * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG 
 		strcpy (C->current.io.segment_header, &line[i]);
 		*n = 1;
 		*status = 0;
-		return (C->current.io.segment_header);
+		return (NULL);
 	}
 
 	/* Normal data record */
@@ -1406,7 +1406,7 @@ void * gmt_bin_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *retva
 		if (gmt_get_binary_input (C, fp, n_use)) { *retval = -1; return (NULL); }	/* EOF */
 		C->current.io.rec_no++;
 		status = gmt_process_binary_input (C, n_use);
-		if (status == 1) { *retval = 0; return (C->current.io.curr_rec); }		/* A segment header */
+		if (status == 1) { *retval = 0; return (NULL); }		/* A segment header */
 	} while (status == 2);	/* Continue reading when record is to be skipped */
 	if (C->common.i.active) *n = gmt_bin_colselect (C);
 	

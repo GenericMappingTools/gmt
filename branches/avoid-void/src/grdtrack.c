@@ -451,15 +451,23 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 		rmode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
-		while ((in = GMT_Get_Record (API, rmode, &n_fields))) {	/* Keep returning records until we reach EOF */
-
-			if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);	/* Bail on any i/o error */
-			if (GMT_REC_IS_TBL_HEADER (GMT)) continue;		/* Skip any table headers */
-		
-			if (GMT_REC_IS_SEG_HEADER (GMT)) {			/* Echo segment headers */
-				GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
-				continue;
+		do {	/* Keep returning records until we reach EOF */
+			if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo table headers */
+					GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);
+					continue;
+				}
+				if (GMT_REC_IS_SEG_HEADER (GMT)) {			/* Echo segment headers */
+					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+					continue;
+				}
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
 			}
+
+			/* Data record to process */
 
 			if (GMT->common.b.ncol[GMT_OUT] == 0) GMT->common.b.ncol[GMT_OUT] = GMT->common.b.ncol[GMT_IN] + Ctrl->G.n_grids;	/* Set # of output cols */
 			n_read++;
@@ -494,7 +502,8 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			}
 
 			n_points++;
-		}
+		} while (TRUE);
+		
 		if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
 		}

@@ -535,23 +535,28 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		n = 0;
-		while ((record = GMT_Get_Record (API, read_mode, &n_fields))) {	/* Keep returning records until we have no more files */
-
-			if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
-
-			if (GMT_REC_IS_TBL_HEADER (GMT)) continue;	/* Skip table headers */
-
-			while (GMT_REC_IS_SEG_HEADER (GMT) && !GMT_REC_IS_EOF (GMT)) {	/* Process segment headers */
-				PSL_comment (PSL, "%s\n", GMT->current.io.segment_header);
-				change = GMT_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, NULL);
-				if (Ctrl->I.active) {
-					GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
-					GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
+		do {	/* Keep returning records until we reach EOF */
+			if ((record = GMT_Get_Record (API, read_mode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Skip table headers */
+					continue;
 				}
-				if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
-				record = GMT_Get_Record (API, read_mode, &n_fields);
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
+				else if (GMT_REC_IS_SEG_HEADER (GMT)) {			/* Parse segment headers */
+					PSL_comment (PSL, "Segment header: %s\n", GMT->current.io.segment_header);
+					change = GMT_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, NULL);
+					if (Ctrl->I.active) {
+						GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+						GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
+					}
+					if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
+					continue;
+				}
 			}
-			if (GMT_REC_IS_EOF (GMT)) continue;	/* At EOF */
+
+			/* Data record to process */
 
 			n_total_read++;
 
@@ -692,12 +697,17 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->W.mode & 1) GMT_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
 			n++;
 			if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
+		} while (TRUE);
+		
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
 		}
+
 		data = GMT_malloc (GMT, data, 0, &n, struct PSXYZ_DATA);
 
 		/* Sort according to distance from viewer */
 
-		if (!Ctrl->Q.active) qsort (data, (size_t)n, sizeof (struct PSXYZ_DATA), dist_compare);
+		if (!Ctrl->Q.active) qsort (data, n, sizeof (struct PSXYZ_DATA), dist_compare);
 
 		/* Now plot these symbols one at the time */
 
@@ -860,9 +870,6 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		GMT_free (GMT, data);
-		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
-			Return (API->error);
-		}
 	}
 	else {	/* Line/polygon part */
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT segment table(s) */

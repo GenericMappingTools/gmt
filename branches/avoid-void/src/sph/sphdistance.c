@@ -336,22 +336,33 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 		
 		n = 0;
-		while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
-
-			if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_TBL_HEADER (GMT)) continue;	/* Skip table headers */
-
-			while (GMT_REC_IS_SEG_HEADER (GMT)) {	/* Segment header, get next record */
-				in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields);	
-				first_x = in[GMT_X];	first_y = in[GMT_Y];
-				first = TRUE;
+		do {	/* Keep returning records until we reach EOF */
+			n_read++;
+			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_TBL_HEADER (GMT)) 	/* Skip all table headers */
+					continue;
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
+				else if (GMT_REC_IS_SEG_HEADER (GMT)) {			/* Parse segment headers */
+					first = TRUE;
+					continue;
+				}
 			}
-			if (Ctrl->D.active && !first) {	/* Look for duplicate point at end of segments that replicate start point */
+
+			/* Data record to process */
+
+			if (first) {	/* Beginning of new segment; kep track of the very first coordinate in case of duplicates */
+				first_x = in[GMT_X];	first_y = in[GMT_Y];
+			}
+			else if (Ctrl->D.active) {	/* Look for duplicate point at end of segments that replicate start point */
 				if (in[GMT_X] == first_x && in[GMT_Y] == first_y) {	/* If any point after the first matches the first */
 					n_dup++;
 					continue;
 				}
 			}
+			
 			/* Convert lon,lat in degrees to Cartesian x,y,z triplets */
 			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, TRUE);
 			xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];
@@ -364,7 +375,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_malloc3 (GMT, xx, yy, zz, n, &n_alloc, double);
 			}
 			first = FALSE;
-		}
+		} while (TRUE);
 
 		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n, double);
 		GMT_malloc3 (GMT, xx, yy, zz, 0, &n, double);

@@ -625,23 +625,25 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT->common.b.ncol[GMT_OUT] = -1;
 	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
+	need_header = GMT->current.io.multi_segments[GMT_OUT];	/* Only need to break up segments */
 	
-	while ((in = GMT_Get_Record (API, r_mode, &n_fields))) {	/* Keep returning records until we reach EOF */
-
-		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);		/* Bail if there are io errors */
-
-		if (GMT_REC_IS_TBL_HEADER (GMT)) {
-			GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);	/* Echo table headers */
-			continue;
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (API, r_mode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo table headers */
+				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);
+				continue;
+			}
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+			else if (GMT_REC_IS_SEG_HEADER (GMT)) {
+				output_header = TRUE;
+				continue;
+			}
 		}
-
-		while (GMT_REC_IS_SEG_HEADER (GMT) && !GMT_REC_IS_EOF (GMT)) {
-			output_header = TRUE;
-			in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields);
-		}
-		if (GMT_REC_IS_EOF (GMT)) break;	/* At EOF */
-
-		need_header = GMT->current.io.multi_segments[GMT_OUT];	/* Only need to break up segments */
+		
+		/* Data record to process */
 
 		n_read++;
 		if (n_read%1000 == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld records, passed %ld records\r", n_read, n_pass);
@@ -778,7 +780,8 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
 		n_pass++;
-	}
+	} while (TRUE);
+	
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}
