@@ -2407,7 +2407,7 @@ void table_SKEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DAT
 }
 
 void table_SQR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *S[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG col)
-/*OPERATOR: SQRT 1 1 A^2.  */
+/*OPERATOR: SQR 1 1 A^2.  */
 {
 	GMT_LONG s, i;
 	double a = 0.0;

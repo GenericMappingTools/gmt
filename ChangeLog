@@ -2,6 +2,19 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-10-16	pwessel
+	* triangulate.c:	Added -S to write triangle polygons and -Z to control use
+				of z-column.
+
+2011-10-16	remko
+	* gmt_init.c:		Do not write "empty" .gmtcommands
+
+2011-10-14	pwessel
+	* test/meca:		Added new meca_5.sh test from Vala Hjorleifsdottir
+
+2011-10-11	fwobbe
+	* gmt2kml.c:		Fixed an array that was accessed past its end
+
 2011-10-10	remko
 	* xyz2grd.c:		Implemented -Am (mean, default) and -Ar (rms)
 
