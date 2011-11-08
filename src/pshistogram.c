@@ -512,10 +512,17 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n = 0;
 	x_min = DBL_MAX;	x_max = -DBL_MAX;
 
-	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we have no more files */
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR(GMT)) Return (EXIT_FAILURE);
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip all headers */
+		/* Data record to process */
 		
 		data[n] = in[GMT_X];
 		if (!GMT_is_dnan (data[n])) {
@@ -528,7 +535,8 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_alloc <<= 1;
 			data = GMT_memory (GMT, data,  n_alloc, double);
 		}
-	}
+	} while (TRUE);
+	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {
 		Return (API->error);	/* Disables further data input */
 	}
