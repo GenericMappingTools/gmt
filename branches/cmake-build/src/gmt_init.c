@@ -4936,7 +4936,7 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 
 GMT_LONG gmt_put_history (struct GMT_CTRL *C)
 {
-	GMT_LONG id;
+	GMT_LONG id, empty;
 	char hfile[GMT_BUFSIZ], cwd[GMT_BUFSIZ];
 	FILE *fp = NULL;	/* For .gmtcommands file */
 #ifdef FLOCK
@@ -4948,6 +4948,12 @@ GMT_LONG gmt_put_history (struct GMT_CTRL *C)
 	/* This is called once per GMT Session by GMT_end via GMT_Destroy_Session.
 	 * It writes out the known shorthands to the .gmtcommands file
 	 */
+
+	/* Do we even need to write? If empty, simply skip */
+	for (id = 0, empty = TRUE; id < GMT_N_UNIQUE && empty; id++) {
+		if (C->init.history[id]) empty = FALSE;	/* Have something to write */
+	}
+	if (empty) return (GMT_NOERROR);
 
 	/* If current directory is writable, use it; else use the home directory */
 
