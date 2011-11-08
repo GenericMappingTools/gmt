@@ -178,8 +178,8 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	PFL near_point_func;			/* Pointer to function returning distance to nearest point */
 	PFL wrap_around_check;			/* Does x or y wrap checks */
 	PFL jump;				/* TRUE if we jump in x or y */
-	PFB will_it_wrap;			/* TRUE if consecutive points indicate wrap */
-	PFB this_point_wraps;			/* Used in above */
+	PFL will_it_wrap;			/* TRUE if consecutive points indicate wrap */
+	PFL this_point_wraps;			/* Used in above */
 	PFV get_crossings;			/* Returns map crossings in x or y */
 	PFL truncate;				/* Truncate polygons agains boundaries */
 };

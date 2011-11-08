@@ -149,8 +149,8 @@ struct MGD77_cdf mgd77cdf[MGD77_N_DATA_EXTENDED] = {
 /* GMT_TIME */	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 1970-01-01 00:00:00 0", "UTC time, subtract TZ to get ship local time" }
 };
 
-PFB MGD77_column_test_double[9];
-PFB MGD77_column_test_string[9];
+PFL MGD77_column_test_double[9];
+PFL MGD77_column_test_string[9];
 unsigned int MGD77_this_bit[MGD77_SET_COLS];
 
 int MGD77_Write_File_asc (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
