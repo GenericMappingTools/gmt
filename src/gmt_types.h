@@ -49,7 +49,6 @@ typedef void (*PFV) ();		/* PFV declares a pointer to a function returning void 
 typedef void* (*PFP) ();	/* PFP declares a pointer to a function returning void* */
 typedef GMT_LONG (*PFL) ();	/* PFI declares a pointer to a function returning an GMT_LONG */
 typedef int (*PFI) (const void *, const void *);	/* PFI declares a pointer to a function returning an int */
-typedef GMT_LONG (*PFB) ();	/* PFB declares a pointer to a function returning a GMT_LONG */
 typedef double (*PFD) ();	/* PFD declares a pointer to a function returning a double */
 
 typedef struct {float x[2];} fpair;	/* Can be used to hold pairs of data, e.g. real, imag or x, weight */

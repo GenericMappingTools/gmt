@@ -3287,8 +3287,8 @@ GMT_LONG gmt_map_init_tm (struct GMT_CTRL *C) {
 
 	C->current.map.wrap_around_check = (PFL) gmt_wrap_around_check_tm;
 	C->current.map.jump = (PFL) gmt_map_jump_tm;
-	C->current.map.will_it_wrap = (PFB) gmt_will_it_wrap_tm;
-	C->current.map.this_point_wraps = (PFB) gmt_this_point_wraps_tm;
+	C->current.map.will_it_wrap = (PFL) gmt_will_it_wrap_tm;
+	C->current.map.this_point_wraps = (PFL) gmt_this_point_wraps_tm;
 	C->current.map.get_crossings = (PFV) gmt_get_crossings_tm;
 
 	if (C->current.setting.proj_scale_factor == -1.0) C->current.setting.proj_scale_factor = 1.0;	/* Select default map scale for TM */
@@ -7245,8 +7245,8 @@ GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 	C->current.map.n_lon_nodes = C->current.map.n_lat_nodes = 0;
 	C->current.map.wrap_around_check = (PFL) gmt_wrap_around_check_x;
 	C->current.map.jump = (PFL) gmt_map_jump_x;
-	C->current.map.will_it_wrap = (PFB) gmt_will_it_wrap_x;
-	C->current.map.this_point_wraps = (PFB) gmt_this_point_wraps_x;
+	C->current.map.will_it_wrap = (PFL) gmt_will_it_wrap_x;
+	C->current.map.this_point_wraps = (PFL) gmt_this_point_wraps_x;
 	C->current.map.get_crossings = (PFV) gmt_get_crossings_x;
 
 	C->current.map.lon_wrap = TRUE;
