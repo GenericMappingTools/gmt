@@ -603,12 +603,18 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 	if (GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
 		return (GMT->parent->error);
 	}
-	while ((in = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT)) return (GMT_RUNTIME_ERROR);
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
-
+		/* Data record to process */
+	
 		if (GMT_is_dnan (in[GMT_Z])) continue;
 		if (GMT_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue;	/* Outside y-range */
 		if (GMT_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI])) continue;	/* Outside x-range (or longitude) */
@@ -630,7 +636,8 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 			C->n_alloc <<= 1;
 			C->data = GMT_memory (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
 		}
-	}
+	} while (TRUE);
+	
 	if (GMT_End_IO (GMT->parent, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		return (GMT->parent->error);
 	}

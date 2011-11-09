@@ -1233,7 +1233,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 				}
 				else	/* Cannot have NaN in this column, flag record as bad */
 					bad_record = TRUE;
-				if (C->current.io.skip_if_NaN[col_pos]) set_nan_flag = TRUE;	/* Flate that we found NaN in a column that means we should skip */
+				if (C->current.io.skip_if_NaN[col_pos]) set_nan_flag = TRUE;	/* Flag that we found NaN in a column that means we should skip */
 			}
 			else {					/* Successful decode, assign the value to the input array */
 				gmt_convert_col (C->current.io.col[GMT_IN][col_no], val);
@@ -1263,7 +1263,6 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 			done = TRUE;	/* Success, we can get out of this loop and return what we got */
 	}
 	C->current.io.status = (n_ok == n_use || *n == GMT_MAX_COLUMNS) ? 0 : GMT_IO_MISMATCH;	/* Hopefully set status to 0 (OK) */
-	if (set_nan_flag) C->current.io.status |= GMT_IO_NAN;					/* But we might have to say we found NaNs */
 	if (*n == GMT_MAX_COLUMNS) *n = n_ok;							/* Update the number of expected fields */
 	if (GMT_REC_IS_ERROR (C)) GMT_report (C, GMT_MSG_FATAL, "Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", col_no, *n, C->current.io.rec_no);
 
@@ -1274,6 +1273,10 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 
 	C->current.io.pt_no++;			/* Got a valid data record (which is true even if it was a gap) */
 	*status = n_ok;				/* Return the number of fields successfully read */
+	if (set_nan_flag) {
+		C->current.io.status |= GMT_IO_NAN;	/* Say we found NaNs */
+		return (C->current.io.curr_rec);	/* Pass back pointer to data array */
+	}
 	return ((C->current.io.status) ? NULL : C->current.io.curr_rec);	/* Pass back pointer to data array */
 }
 
@@ -3983,7 +3986,7 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, GM
 
 	while (n_fields >= 0 && !GMT_REC_IS_EOF (C)) {	/* Not yet EOF */
 		while (header && ((C->current.io.io_header[GMT_IN] && n_read <= C->current.io.io_n_header_items) || GMT_REC_IS_TBL_HEADER (C))) { /* Process headers */
-			T->header[T->n_headers] = strdup (in);
+			T->header[T->n_headers] = strdup (C->current.io.current_record);
 			T->n_headers++;
 			if (T->n_headers == n_head_alloc) {
 				n_head_alloc <<= 1;

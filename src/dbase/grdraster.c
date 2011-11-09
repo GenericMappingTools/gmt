@@ -227,7 +227,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 	do {	/* Keep returning records until we reach EOF */
 		if ((record = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
-				Return (GMT_RUNTIME_ERROR);
+				return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
 				continue;
 			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */

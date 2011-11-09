@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-08	pwessel
+	* *.c:			All modules using GMT_Get_Data are now checking for a NULL
+				return, and only then checking status.  This minimizes the
+				number of checks during the processing of a data set.
+
 2011-11-05	pwessel
 	* gmtapi_util.c:	Added GMT_Write_Data and GMT_Read_Data which deals with
 				files/streams, and GMT_Get_Data, GMT_Put_Data now work

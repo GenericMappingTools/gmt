@@ -45,6 +45,11 @@ enum GMT_enum_fmt {GMT_COLUMN_FORMAT	= 1,	/* 2-D grid is Fortran-style with colu
 enum GMT_enum_iomode {GMT_BY_SET = 0,	/* Default is to read the entire set */
 	GMT_BY_REC		 = 1};	/* Means we will access the registere files on a record-by-record basis */
 
+/* Three different i/o status: unused, actively using, or used */
+enum GMT_enum_status {GMT_IS_UNUSED = 0,	/* We have not yet read from/written to this resource */
+	GMT_IS_USING,				/* Means we have started reading from/writing to this file */
+	GMT_IS_USED};				/* Means we are done reading from/writing to this file */
+
 /* These are the 6 methods for i/o */
 
 enum GMT_enum_methods {GMT_IS_FILE = 0, /* Entity is a filename */

@@ -424,12 +424,19 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	n_read = 0;
-	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
+	do {	/* Keep returning records until we reach EOF */
+		n_read++;
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT) && n_fields < 2) continue;
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Echo table headers */
-
+		/* Data record to process */
+	
 		if (n_input == 3) {	/* set constant r,t values */
 			in[3] = Ctrl->Q.r_fix;
 			in[4] = Ctrl->Q.t_fix;
@@ -581,7 +588,8 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		GMT_free (GMT, c);
 		n++;
-	}
+	} while (TRUE);
+	
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}

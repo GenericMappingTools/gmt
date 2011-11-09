@@ -121,12 +121,18 @@ GMT_LONG read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, GM
 	*data = GMT_memory (GMT, NULL, n_alloc, struct TREND1D_DATA);
 
 	i = 0;
-	while ((in = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT)) return (GMT_RUNTIME_ERROR);
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
-		
+		/* Data record to process */
+	
 		(*data)[i].x = in[GMT_X];
 		(*data)[i].y = in[GMT_Y];
 		(*data)[i].w = (weighted_input) ? in[GMT_Z] : 1.0;
@@ -144,7 +150,7 @@ GMT_LONG read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, GM
 			n_alloc <<= 1;
 			*data = GMT_memory (GMT, *data, n_alloc, struct TREND1D_DATA);
 		}
-	}
+	} while (TRUE);
 
 	*data = GMT_memory (GMT, *data, i, struct TREND1D_DATA);
 	*work = GMT_memory (GMT, NULL, i, double);

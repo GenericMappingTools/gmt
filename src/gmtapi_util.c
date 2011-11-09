@@ -85,6 +85,7 @@ static const char *GMT_family[GMT_N_FAMILIES] = {"Data Table", "Text Table", "GM
 static const char *GMT_via[2] = {"User Vector", "User Matrix"};
 static const char *GMT_direction[2] = {"Input", "Output"};
 static const char *GMT_stream[2] = {"Standard", "User-supplied"};
+static const char *GMT_status[3] = {"Unused", "In-use", "Used"};
 static const char *GMT_geometry[GMT_N_GEOMETRIES] = {"None", "Point", "Line", "Polygon", "Surface"};
 
 /*==================================================================================================
@@ -208,7 +209,7 @@ GMT_LONG GMTAPI_n_items (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG dire
 	for (i = n = 0; i < API->n_objects; i++) {
 		if (!API->object[i]) continue;				/* A freed object, skip */
 		if (API->object[i]->direction != direction) continue;	/* Wrong direction */
-		if (API->object[i]->status > 0) continue;		/* Already used */
+		if (API->object[i]->status != GMT_IS_UNUSED) continue;	/* Already used */
 		if (family != API->object[i]->family) continue;		/* Wrong data type */
 		n++;
 		if (*first_ID == GMTAPI_NOTSET) *first_ID = API->object[i]->ID;
@@ -442,7 +443,7 @@ GMT_LONG GMTAPI_Next_Data_Object (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_
 	API->error = GMT_OK;		/* No error yet */
 	k = API->current_item[direction] + 1;	/* Advance to next item, if possible */
 	while (k < API->n_objects && !found) {
-		if (API->object[k] && API->object[k]->status == 0 && API->object[k]->direction == direction && family == API->object[k]->family)
+		if (API->object[k] && API->object[k]->status == GMT_IS_UNUSED && API->object[k]->direction == direction && family == API->object[k]->family)
 			found = TRUE;	/* Got item that is unused, has correct direction and family */
 		else
 			k++;	/* No, keep looking */
@@ -517,7 +518,7 @@ GMT_LONG GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	API->error = GMT_OK;		/* No error yet */
 	for (i = 0, item = GMTAPI_NOTSET; item == GMTAPI_NOTSET && i < API->n_objects; i++) {
 		if (!API->object[i]) continue;	/* Empty object */
-		if (direction != GMTAPI_NOTSET && API->object[i]->status) continue;			/* Already used this object */
+		if (direction != GMTAPI_NOTSET && API->object[i]->status != GMT_IS_UNUSED) continue;	/* Already used this object */
 		if (!(family == GMTAPI_NOTSET || family == API->object[i]->family)) continue;		/* Not the required data type */
 		if (object_ID == GMTAPI_NOTSET && direction == API->object[i]->direction) item = i;	/* Pick the first object with the specified direction */
 		else if (direction == GMTAPI_NOTSET && API->object[i]->ID == object_ID) item = i;	/* Pick the requested object regardless of direction */
@@ -577,7 +578,7 @@ GMT_LONG GMTAPI_is_registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LON
 	
 	for (i = 0, item = GMTAPI_NOTSET; item == GMTAPI_NOTSET && i < API->n_objects; i++) {
 		if (!API->object[i]) continue;					/* Empty object */
-		if (API->object[i]->status) continue;				/* Finished with this one unless it is reset */
+		if (API->object[i]->status != GMT_IS_UNUSED) continue;		/* Finished with this one unless it is reset */
 		if (API->object[i]->direction != direction) continue;		/* Wrong direction */
 		if (API->object[i]->family != family) continue;			/* Wrong family */
 		if (API->object[i]->geometry != geometry) continue;		/* Wrong geometry */
@@ -630,9 +631,10 @@ struct GMT_PALETTE * GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GM
 	if ((item = GMTAPI_Validate_ID (API, GMT_IS_CPT, ID, GMT_IN)) == GMTAPI_NOTSET) return_null (API, API->error);
 	
 	S = API->object[item];	/* Use S as shorthand */
-	if (S->status && (S->method == GMT_IS_STREAM || S->method == GMT_IS_FDESC)) /* Already read this resource before and not allowed to re-read streams */
-		return_null (API, GMT_READ_ONCE);
-	if (S->status && !(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Already read this resource before and not authorized to re-read */
+	if (S->status != GMT_IS_UNUSED) { /* Already read this resource before; are we allowed to re-read? */
+		if (S->method == GMT_IS_STREAM || S->method == GMT_IS_FDESC) return_null (API, GMT_READ_ONCE); /* Not allowed to re-read streams */
+		if (!(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
+	}
 
 	switch (S->method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
@@ -668,7 +670,7 @@ struct GMT_PALETTE * GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GM
 			return_null (API, GMT_WRONG_KIND);
 			break;		
 	}
-	S->status++;	/* Mark as read */
+	S->status = GMT_IS_USED;	/* Mark as read */
 
 	return (D);	/* Pass back the palette */	
 }
@@ -688,7 +690,7 @@ GMT_LONG GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode,
 	if ((item = GMTAPI_Validate_ID (API, GMT_IS_CPT, ID, GMT_OUT)) == GMTAPI_NOTSET) return (GMT_Report_Error (API, API->error));
 
 	S = API->object[item];
-	if (S->status && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once, unless we override via mode */
+	if (S->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once, unless we override via mode */
 		return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));
 	switch (S->method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
@@ -730,7 +732,7 @@ GMT_LONG GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode,
 			return (GMT_Report_Error (API, GMT_WRONG_KIND));
 			break;		
 	}
-	S->status++;	/* Mark as written */
+	S->status = GMT_IS_USED;	/* Mark as written */
 	
 	return (GMT_Report_Error (API, GMT_OK));
 }
@@ -787,9 +789,10 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 		}
 		if (S->direction == GMT_OUT) continue;	/* We're doing reading here, so bugger off! */
 		if (S->family != GMT_IS_DATASET) continue;	/* We're doing datasets here, so skip other data types */
-		if (S->status && (S->method == GMT_IS_STREAM || S->method == GMT_IS_FDESC)) 
-			return_null (API, GMT_READ_ONCE);	/* Already read this resource before and not allowed to re-read streams */
-		if (S->status && !(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Already read this resource before and not authorized to re-read */
+		if (S->status != GMT_IS_UNUSED) { 	/* Already read this resource before; are we allowed to re-read? */
+			if (S->method == GMT_IS_STREAM || S->method == GMT_IS_FDESC) return_null (API, GMT_READ_ONCE);	/* Not allowed to re-read streams */
+			if (!(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
+		}
 		geometry = (API->GMT->common.a.output) ? API->GMT->common.a.geometry : S->geometry;	/* When reading GMT and writing OGR/GMT we must make sure we set this first */
 		poly = (geometry == GMT_IS_POLY || geometry == GMT_IS_MULTIPOLYGON );	/* To enable polar cap assessment in i/o */
 		switch (S->method) {	/* File, array, stream etc ? */
@@ -925,7 +928,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 		S->alloc_mode = D->alloc_mode;	/* Clarify allocation mode for this entity */
 		if (col_check (D->table[D->n_tables-1], &n_cols))	/* Different tables have different number of columns, which is not good */
 			return_null (API, GMT_N_COLS_VARY);
-		S->status++;	/* Mark as read */
+		S->status = GMT_IS_USED;	/* Mark as read */
 	}
 	if (D->n_tables == 0 && error == GMT_IO_EOF) {	/* Only found empty files (e.g., /dev/null) and we have nothing to show for our efforts.  Return an single empty table with no segments. */
 		D->table = GMT_memory (API->GMT, D->table, 1, struct GMT_TABLE *);	/* Reallocate table list to hold one only */
@@ -964,7 +967,7 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 	S = API->object[item];	/* S is the object whose data we will export */
 	if (S->family != GMT_IS_DATASET) return (GMT_Report_Error (API, GMT_WRONG_KIND));			/* Called with wrong data type */
 	if (mode > GMT_WRITE_DATASET && !S->filename) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));	/* Must have filename when segments are to be written */
-	if (S->status && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once unless overridden by mode */
+	if (S->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once unless overridden by mode */
 		return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));
 	default_method = GMT_IS_FILE;
 	if (S->filename)	/* Write to this file */
@@ -1059,7 +1062,7 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 			break;		
 	}
 	S->alloc_mode = D->alloc_mode;	/* Clarify allocation mode for this entity */
-	S->status++;	/* Mark as written */
+	S->status = GMT_IS_USED;	/* Mark as written */
 	
 	return (GMT_Report_Error (API, GMT_OK));
 }
@@ -1102,10 +1105,10 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID
 		}
 		if (S->direction == GMT_OUT) continue;	/* We're doing reading here, so bugger off! */
 		if (S->family != GMT_IS_TEXTSET) continue;	/* We're doing textsets here, so skip other things */
-		if (S->status && (S->method == GMT_IS_STREAM || S->method == GMT_IS_FDESC)) 
-			return_null (API, GMT_READ_ONCE);	/* Already read this resource before and not allowed to re-read streams */
-		if (S->status && !(mode & GMT_IO_RESET)) 
-			return_null (API, GMT_READ_ONCE);	/* Already read this resource before and not authorized to re-read */
+		if (S->status != GMT_IS_UNUSED) {	/* Already read this resource before; are we allowed to re-read? */
+			if (S->method == GMT_IS_STREAM || S->method == GMT_IS_FDESC) return_null (API, GMT_READ_ONCE);	/* Not allowed to re-read streams */
+			if (!(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
+		}
 		switch (S->method) {	/* File, array, stream etc ? */
 	 		case GMT_IS_STREAM:
 #ifdef SET_IO_MODE
@@ -1175,7 +1178,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID
 			T->table = GMT_memory (API->GMT, T->table, n_alloc, struct GMT_TEXT_TABLE *);
 		}
 		S->alloc_mode = T->alloc_mode;	/* Clarify allocation mode for this entity */
-		S->status++;	/* Mark as read */
+		S->status = GMT_IS_USED;	/* Mark as read */
 	}
 
 	if (T->n_tables == 0 && error == GMT_IO_EOF) {	/* Only found empty files (e.g., /dev/null) and we have nothing to show for our efforts.  Return an single empty table with no segments. */
@@ -1210,7 +1213,7 @@ GMT_LONG GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 
 	default_method = (mode > GMT_WRITE_DATASET) ? GMT_IS_FILE : GMT_IS_STREAM;
 	S = API->object[item];
-	if (S->status && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once, unless overridden by mode */
+	if (S->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once, unless overridden by mode */
 		return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));
 	default_method = GMT_IS_FILE;
 	if (S->filename)	/* Write to this file */
@@ -1272,7 +1275,7 @@ GMT_LONG GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 			break;		
 	}
 	S->alloc_mode = T->alloc_mode;	/* Clarify allocation mode for this entity */
-	S->status++;	/* Mark as read */
+	S->status = GMT_IS_USED;	/* Mark as read */
 	
 	return (GMT_Report_Error (API, GMT_OK));
 }
@@ -1304,7 +1307,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GM
 	
 	S = API->object[item];		/* Current data object */
 	reset = mode & GMT_IO_RESET;	/* Get GMT_IO_RESET bit, if set */
-	if (S->status && !reset) return_null (API, GMT_READ_ONCE);	/* Already read this resources before, so fail unless overridden by mode */
+	if (S->status != GMT_IS_UNUSED && !reset) return_null (API, GMT_READ_ONCE);	/* Already read this resources before, so fail unless overridden by mode */
 	S->alloc_mode = TRUE;
 	mode -= reset;			/* Remove GMT_IO_RESET bit, if set */
 	complex_mode = mode >> 2;	/* Yields 0 for normal data, 1 if real complex, and 2 if imag complex */
@@ -1481,7 +1484,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GM
 			break;
 	}
 
-	S->status += done;	/* Mark as read (unless we just got the header) */
+	if (done) S->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 	
 	return ((mode == GMT_GRID_DATA) ? NULL : I);	/* Pass back out what we have so far */
 }
@@ -1512,7 +1515,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_
 	
 	S = API->object[item];		/* Current data object */
 	reset = mode & GMT_IO_RESET;	/* Get GMT_IO_RESET bit, if set */
-	if (S->status && !reset) return_null (API, GMT_READ_ONCE);	/* Already read this resources before, so fail unless overridden by mode */
+	if (S->status != GMT_IS_UNUSED && !reset) return_null (API, GMT_READ_ONCE);	/* Already read this resources before, so fail unless overridden by mode */
 	S->alloc_mode = TRUE;
 	mode -= reset;			/* Remove GMT_IO_RESET bit, if set */
 	complex_mode = mode >> 2;	/* Yields 0 for normal data, 1 if real complex, and 2 if imag complex */
@@ -1700,7 +1703,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_
 			break;
 	}
 
-	S->status += done;	/* Mark as read (unless we just got the header) */
+	if (done) S->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 	
 	return (G);	/* Pass back out what we have so far */	
 }
@@ -1721,7 +1724,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 	if ((item = GMTAPI_Validate_ID (API, GMT_IS_GRID, ID, GMT_OUT)) == GMTAPI_NOTSET) return (GMT_Report_Error (API, API->error));
 
 	S = API->object[item];	/* The current object whose data we will export */
-	if (S->status && !(mode & GMT_IO_RESET)) return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));	/* Only allow writing of a data set once, unless overridden by mode */
+	if (S->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET)) return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));	/* Only allow writing of a data set once, unless overridden by mode */
 	mode &= (GMT_IO_RESET - 1);	/* Remove GMT_IO_RESET bit, if set */
 	complex_mode = mode >> 2;	/* Yields 0 for normal data, 1 if real complex, and 2 if imag complex */
 	mode &= 3;			/* Knock off any complex mode codes */
@@ -1835,7 +1838,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			break;
 	}
 
-	S->status += done;	/* Mark as written (unless we only updated header) */
+	if (done) S->status = GMT_IS_USED;	/* Mark as written (unless we only updated header) */
 	return (GMT_OK);		
 }
 
@@ -2237,8 +2240,8 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, GMT_LONG level)
 			i++;	continue;
 		}
 		/* Here we will try to free the memory pointed to by S->data */
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%ld A=%ld ID=%ld W=%s F=%s M=%s S=%ld P=%lx D=%lx N=%s\n",
-			S->close_file, S->alloc_mode, S->ID, GMT_direction[S->direction], GMT_family[S->family], GMT_method[S->method], S->status, (GMT_LONG)S->resource, (GMT_LONG)S->data, S->filename);
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%ld A=%ld ID=%ld W=%s F=%s M=%s S=%s P=%lx D=%lx N=%s\n",
+			S->close_file, S->alloc_mode, S->ID, GMT_direction[S->direction], GMT_family[S->family], GMT_method[S->method], GMT_status[S->status], (GMT_LONG)S->resource, (GMT_LONG)S->data, S->filename);
 		address = S->data;	/* Keep a record of what the address was (since S->data will be set to NULL when freed) */
 		error = GMT_destroy_data_ptr (API, S->family, API->object[i]->data);	/* Do the dirty deed */
 		
@@ -2730,7 +2733,7 @@ GMT_LONG GMT_End_IO (struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode)
 	if (direction == GMT_OUT) {		/* Finalize output issues */
 		S = API->object[API->current_item[GMT_OUT]];	/* Shorthand for the data source we are working on */
 		if (S) {	/* Dealt with file i/o */
-			S->status++;	/* Done writing to this destination */
+			S->status = GMT_IS_USED;	/* Done writing to this destination */
 			if (S->method == GMT_IS_COPY && S->family == GMT_IS_DATASET && API->io_mode[GMT_OUT]) {	/* GMT_Put_Record: Must realloc last segment and the tables segment array */
 				struct GMT_DATASET *D = gmt_get_dataset_ptr (S->resource);
 				if (D && D->table && D->table[0]) {
@@ -2965,7 +2968,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 	do {	/* We do this until we can secure the next record or we run out of records (and return EOF) */
 		get_next_record = FALSE;	/* We expect to read one data record and return */
 		API->GMT->current.io.status = 0;	/* Initialize status to OK */
-		if (S->status) {		/* Finished reading from this resource, go to next resource */
+		if (S->status == GMT_IS_USED) {		/* Finished reading from this resource, go to next resource */
 			if (API->GMT->current.io.ogr == 1) return_null (API, GMT_OGR_ONE_TABLE_ONLY);	/* Only allow single tables if GMT/OGR */
 			if (GMTAPI_Next_Data_Object (API, S->family, GMT_IN) == EOF)	/* That was the last source, return */
 				*retval = EOF;
@@ -2982,7 +2985,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 			 	record = S->import (API->GMT, S->fp, &(S->n_expected_fields), &(S->n_columns));	/* Get that next record */
 				*retval = S->n_columns;	/* Get that next record */
 				if (API->GMT->current.io.status & GMT_IO_EOF) {			/* End-of-file in current file (but there may be many files) */
-					S->status++;	/* Mark as read */
+					S->status = GMT_IS_USED;	/* Mark as read */
 					if (S->close_file) {	/* Close if it was a file that we opened earlier */
 						GMT_fclose (API->GMT, S->fp);
 						S->close_file = FALSE;
@@ -2999,6 +3002,9 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 					}
 					API->GMT->current.io.tbl_no++;				/* Update number of tables we have processed */
 				}
+				else
+					S->status = GMT_IS_USING;				/* Mark as being read */
+				
 				if (GMT_REC_IS_DATA (API->GMT) && S->n_expected_fields != GMT_MAX_COLUMNS) API->GMT->common.b.ncol[GMT_IN] = S->n_expected_fields;	/* Set the actual column count */
 				break;
 				
@@ -3007,10 +3013,12 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 			case GMT_IS_READONLY + GMT_VIA_MATRIX:
 				if (API->current_rec[GMT_IN] >= S->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows that was registered */
 					API->GMT->current.io.status = GMT_IO_EOF;
-					S->status++;	/* Mark as read */
+					S->status = GMT_IS_USED;	/* Mark as read */
 					*retval = EOF;
 					return (NULL);	/* Done with this array */
 				}
+				else
+					S->status = GMT_IS_USING;				/* Mark as being read */
 				M = gmt_get_matrix_ptr (S->resource);
 				GMT_2D_to_index = (M->shape == GMTAPI_ORDER_ROW) ? (PFL)GMTAPI_2D_to_index_C : (PFL)GMTAPI_2D_to_index_F;	/* Get C or F indexing */
 				for (col = n_nan = 0; col < S->n_columns; col++) {	/* We know the number of columns from registration */
@@ -3018,9 +3026,13 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 					API->GMT->current.io.curr_rec[col] = GMTAPI_get_val (API, &(M->data), ij, M->type);
 					if (GMT_is_dnan (API->GMT->current.io.curr_rec[col])) n_nan++;
 				}
-				if (n_nan == S->n_columns) API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
+				if (n_nan == S->n_columns) {
+					API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
+					record = NULL;
+				}
+				else
+					record = API->GMT->current.io.curr_rec;
 				*retval = S->n_columns;
-				record = API->GMT->current.io.curr_rec;
 				break;
 
 			 case GMT_IS_COPY + GMT_VIA_VECTOR:	/* Here we copy from a user memory location that points to an array of column vectors */
@@ -3028,18 +3040,24 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 			 case GMT_IS_READONLY + GMT_VIA_VECTOR:
 				if (API->current_rec[GMT_IN] >= S->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number or rows that was registered */
 					API->GMT->current.io.status = GMT_IO_EOF;
-					S->status++;	/* Mark as read */
+					S->status = GMT_IS_USED;	/* Mark as read */
 					*retval = EOF;
 					return (NULL);	/* Done with this array */
 				}
+				else
+					S->status = GMT_IS_USING;				/* Mark as being read */
 				V = gmt_get_vector_ptr (S->resource);
 				for (col = n_nan = 0; col < S->n_columns; col++) {	/* We know the number of columns from registration */
 					API->GMT->current.io.curr_rec[col] = GMTAPI_get_val (API, &(V->data[col]), API->current_rec[GMT_IN], V->type[col]);
 					if (GMT_is_dnan (API->GMT->current.io.curr_rec[col])) n_nan++;
 				}
-				if (n_nan == S->n_columns) API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
+				if (n_nan == S->n_columns) {
+					API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
+					record = NULL;
+				}
+				else
+					record = API->GMT->current.io.curr_rec;
 				*retval = S->n_columns;
-				record = API->GMT->current.io.curr_rec;
 				break;
 
 			case GMT_IS_REF:	/* Only for textsets and datasets */
@@ -3064,7 +3082,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 						status = GMT_IO_EOF;
 						*retval = EOF;
 						record = NULL;
-						S->status++;		/* Mark as read */
+						S->status = GMT_IS_USED;	/* Mark as read */
 					}
 					if (!status) {	/* OK get the record */
 						for (col = n_nan = 0; col < DS->n_columns; col++) {
@@ -3072,9 +3090,14 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 							if (GMT_is_dnan (API->GMT->current.io.curr_rec[col])) n_nan++;
 						}
 						p[2]++;
-						if (n_nan == S->n_columns) API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
 						*retval = API->GMT->common.b.ncol[GMT_IN] = DS->n_columns;
-						record = API->GMT->current.io.curr_rec;
+						if (n_nan == S->n_columns) {
+							API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
+							record = NULL;
+						}
+						else
+							record = API->GMT->current.io.curr_rec;
+						S->status = GMT_IS_USING;	/* Mark as read */
 					}
 					API->GMT->current.io.status = status;
 				}
@@ -3086,7 +3109,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 						*retval = EOF;
 						API->GMT->current.io.status = GMT_IO_EOF;
 						record = NULL;
-						S->status++;	/* Mark as read */
+						S->status = GMT_IS_USED;	/* Mark as read */
 					}
 					else {
 						t_record = DT->table[p[0]]->segment[p[1]]->record[p[2]++];
@@ -3095,12 +3118,14 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 							i = GMT_trim_segheader (API->GMT, t_record);
 							strcpy (API->GMT->current.io.segment_header, &t_record[i]);
 							API->GMT->current.io.status = GMT_IO_SEG_HEADER;
+							record = NULL;
 						}
 						else {	/* Regular record */
 							strcpy (API->GMT->current.io.current_record, t_record);
+							record = t_record;
 						}
 						*retval = 1;
-						record = t_record;
+						S->status = GMT_IS_USING;	/* Mark as read */
 					}
 				}
 				break;
@@ -3150,7 +3175,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 	if (!API->io_enabled[GMT_OUT]) return_error (API, GMT_ACCESS_NOT_ENABLED);
 
 	S = API->object[API->current_item[GMT_OUT]];	/* Shorthand for the data source we are working on */
-	if (S->status) return_error (API, GMT_WRITTEN_ONCE);	/* Only allow writing of a data set once [unless we reset status] */
+	if (S->status == GMT_IS_USED) return_error (API, GMT_WRITTEN_ONCE);	/* Only allow writing of a data set once [unless we reset status] */
 	switch (S->method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
 	 	case GMT_IS_STREAM:
@@ -3285,6 +3310,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 			if ((error = GMT_alloc_vectors (API->GMT, V, size)) != GMT_OK) return (error);
 		}
 	}
+	S->status = GMT_IS_USING;	/* Have started writing to this destination */
 	
 	return ((wrote) ? FALSE : TRUE);		
 }

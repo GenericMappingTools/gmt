@@ -534,7 +534,6 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n = 0;
 
 	do {	/* Keep returning records until we reach EOF */
-		n_read++;
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
@@ -553,7 +552,7 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (first) {	/* Beginning of new segment; kep track of the very first coordinate in case of duplicates */
 			first_x = in[GMT_X];	first_y = in[GMT_Y];
 		}
-		else if (Ctrl->D.activet) {	/* Look for duplicate point at end of segments that replicate start point */
+		else if (Ctrl->D.active) {	/* Look for duplicate point at end of segments that replicate start point */
 			if (in[GMT_X] == first_x && in[GMT_Y] == first_y) {	/* If any point after the first matches the first */
 				n_dup++;
 				continue;
