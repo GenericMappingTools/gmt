@@ -809,7 +809,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		c = 0;
 		do {	/* Keep returning records until we reach EOF */
-			if ((line = GMT_Get_Record (API, GMT_READ_TEXT, &NL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, &NL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
