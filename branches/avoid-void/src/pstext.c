@@ -599,11 +599,19 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		c_txt = GMT_memory (GMT, NULL, n_alloc, char *);
 	}
 	
-	while ((line = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields))) {	/* Keep returning records until we have no more files */
+	do {	/* Keep returning records until we have no more files */
+		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Keep returning records until we have no more files */
+			if (GMT_REC_IS_ERROR (GMT)) {
+				Return (EXIT_FAILURE);
+			}
+			if (GMT_REC_IS_TBL_HEADER (GMT)) {
+				continue;	/* Skip table headers */
+			}
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
-
-		if (GMT_REC_IS_TBL_HEADER (GMT)) continue;	/* Skip table headers */
+		/* Data record or segment header to process */
 
 		if (Ctrl->M.active) {	/* Paragraph mode */
 			if (GMT_REC_IS_SEG_HEADER (GMT)) {
@@ -850,7 +858,8 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->A.active) T.paragraph_angle = save_angle;	/* Restore original angle */
 		}
 
-	}
+	} while (TRUE);
+	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}

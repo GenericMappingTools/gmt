@@ -947,8 +947,10 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct GMT_LINE_SEGMENT *S1 = NULL, *S2 = NULL;
 		
 		if (Ctrl->S.mode == POL_CLIP) {	/* Need to set up a separate table with the clip polygon */
-			if (Ctrl->T.file && (C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->T.file, NULL)) == NULL) {
-				Return (API->error);
+			if (Ctrl->T.file) {
+				if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->T.file, NULL)) == NULL) {
+					Return (API->error);
+				}
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
 				GMT_LONG dim[4] = {1, 1, 2, 5};

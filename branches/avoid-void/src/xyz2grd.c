@@ -348,7 +348,20 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		previous = GMT->common.b.active[GMT_OUT];
 		GMT->current.io.output = GMT_z_output;		/* Override output writer */
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
-		while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
+		do {	/* Keep returning records until we reach EOF */
+			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+					continue;
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
+			}
+
+			/* Data record to process */
+
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
+		} while (TRUE);
 
 		GMT->current.io.output = save_o;		/* Reset output pointer */
 		GMT->common.b.active[GMT_OUT] = previous;	/* Reset output binary */
@@ -504,11 +517,18 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	ij = -1;	/* Will be incremented to 0 in -Z section or recomputed in the xyz section */
 	if (Ctrl->Z.active) for (i = 0; i < io.skip; i++) fread (&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
 
-	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
+	do {	/* Keep returning records until we reach EOF */
+		n_read++;
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
+		/* Data record to process */
 	
 		n_read++;
 		if (Ctrl->Z.active) {	/* Read separately because of all the possible formats */
@@ -574,7 +594,8 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			n_used++;
 		}
-	}
+	} while (TRUE);
+	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}

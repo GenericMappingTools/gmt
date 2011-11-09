@@ -283,7 +283,7 @@ Letting the \GMT\ module know you are passing a grid via a
 Users who wish to create their own \GMT\ applications based on the API
 must make sure their program goes through the steps below; details
 for each step will be revealed in the sections to follow.  We have kept the
-API simple: In addition to the \GMT\ modules, there are only 14 public functions to become familiar with.
+API simple: In addition to the \GMT\ modules, there are only 16 public functions to become familiar with.
 All functions sets the variable \texttt{API->error} to the appropriate error code (when things go wrong);
 otherwise it is set to GMT\_OK (0).
 The layout here assumes you wish to use data in memory as input sources; if the data are simply
@@ -608,17 +608,17 @@ NULL pointer and pass an error code via \texttt{API->error}.
 \index{Resources!Import data}
 
 If your main program needs to read any of the five recognized data types (CPT files, data tables, text tables, \GMT\ grids, or images)
-you will use the \texttt{GMT\_Get\_Data}. In the case of data and text tables, you may also consider the
+you will use the \texttt{GMT\_Get\_Data} or \texttt{GMT\_Read\_Data}. In the case of data and text tables, you may also consider the
 \texttt{GMT\_Get\_Record} function.
 As a general rule, your program organization will simplify if you can read the entire resource into memory with
-\texttt{GMT\_Get\_Data}.  However, if this leads to unacceptable waste of memory or if the program logic is particularly simple,
+\texttt{GMT\_Get\_Data} or \texttt{GMT\_Read\_Data}.  However, if this leads to unacceptable waste of memory or if the program logic is particularly simple,
 it may be better to obtain one data record at the time via \texttt{GMT\_Get\_Record}.
 
-Both of these input functions takes a parameter called \texttt{mode}.  The \texttt{mode} parameter generally
+All of these input functions takes a parameter called \texttt{mode}.  The \texttt{mode} parameter generally
 takes on different meanings for the different data types and will be discussed below.
 However, one bit setting is common to all types: By default, you are only allowed to read a
 data source once; the source is then flagged as having been read and subsequent attempts to read
-from the same source will quietly be ignored.  In the unlikely event you need to re-read a
+from the same source will result in a warning and no reading takes place.  In the unlikely event you need to re-read a
 source you can override this default behavior by adding GMT\_IO\_RESET to your \texttt{mode} parameter.
 Note that this override does not apply to sources that are streams or file handles.
 
@@ -628,7 +628,8 @@ Note that this override does not apply to sources that are streams or file handl
 \index{Resources!Import data}
 
 Once all input resources have been registered, we signal the API that we are done with the registration
-phase and are ready to start the actual data import.  We do so by calling \texttt{GMT\_Begin\_IO}.  This
+phase and are ready to start the actual data import.  This is only required when reading one record at the
+time.  We initialize record-by-record reading by calling \texttt{GMT\_Begin\_IO}.  This
 function enables data import and prepares the registered sources for the upcoming import.  The prototype is
 
 \begin{verbatim}
@@ -654,13 +655,15 @@ otherwise it returns FALSE (0).
 \index{Resources!Import data set}
 
 If your main program needs to import any of the five recognized data types (CPT table, data table, text table, \GMT\ grid, or image)
-you will use the \texttt{GMT\_Get\_Data} function.
-Because of the similarities of these four import functions we use
-an generic form:
-\index{GMT\_Get\_Data}
+you will use either the \texttt{GMT\_Read\_Data} or \texttt{GMT\_Get\_Data} functions.  The former is typically used when
+reading from files, streams (e.g., \texttt{stdin}), or an open file handle, while the latter is only used with a registered resource via
+its ID.
+Because of the similarities of these five import functions we use
+an generic form that covers all of them:
+\index{GMT\_Read\_Data}
 
 \begin{verbatim}
-void * GMT_Get_Data (struct GMTAPI_CTRL *API, long family, long method, \
+void * GMT_Read_Data (struct GMTAPI_CTRL *API, long family, long method, \
     long geometry, double wesn[], long mode, void *input, void *data)
 \end{verbatim}
 where \texttt{data} is usually NULL except when reading grids in two steps
@@ -669,7 +672,7 @@ Most of these arguments have been discussed earlier.  This function can
 be called in three different situations:
 \begin{enumerate}
 \item If you have a single source (filename, stream pointer, etc.) you can call
-\texttt{GMT\_Get\_Data} directly; there is no need to first register the source
+\texttt{GMT\_Read\_Data} directly; there is no need to first register the source
 with \texttt{GMT\_Register\_IO} or gather the sources with \texttt{GMT\_Init\_IO}.
 \item If you want to specify \texttt{stdin} as source then use \texttt{input} as NULL.
 \item If you already registered all available sources with \texttt{GMT\_Init\_IO} then
@@ -695,12 +698,30 @@ To get the entire grid and its header, pass GMT\_GRID\_ALL.  However, if you
 need to extract a sub-region you must first get the header only by passing
 GMT\_GRID\_HEADER, then use the header structure attributes \texttt{wesn},
 to specify a subset via the array \texttt{wesn}, and then call
-\texttt{GMT\_Get\_Data} a second time, with \texttt{mode} = GMT\_GRID\_DATA and passing your \texttt{wesn} array
+\texttt{GMT\_Read\_Data} a second time, with \texttt{mode} = GMT\_GRID\_DATA and passing your \texttt{wesn} array
 and the grid structure returned from the first call.
 In the event your data array should be allocated to hold both the real and imaginary parts of a
 complex data set you must add either GMT\_GRID\_COMPLEX\_REAL or GMT\_GRID\_COMPLEX\_IMAG to \texttt{mode}
 so as to allow for the extra space and to position the input values correctly.
 \end{description}
+
+However, if you are importing from memory locations or prefer to first register the source, then you
+should use \texttt{GMT\_Get\_Data} instead.  This function requires fewer arguments since you simply
+pass the unique ID number of the resource.  The function is described as follows:
+
+\index{GMT\_Get\_Data}
+
+\begin{verbatim}
+void * GMT_Get_Data (struct GMTAPI_CTRL *API, long ID, long mode, \
+	void *data)
+\end{verbatim}
+The \texttt{ID} is the unique object ID you received when registering the resource earlier,
+\texttt{mode} controls some aspects of the import (see \texttt{GMT\_Read\_Data} above),
+while \texttt{data} is usually NULL except when reading grids in two steps
+(i.e., first get a grid structure with a header, then read the data).
+Most of the other arguments have been discussed earlier.  
+Space will be allocated to hold the results, if needed, and a pointer to the object is returned.
+If there are errors we simply return NULL and pass back the error code via \texttt{API->error}.
 
 \subsection{Importing a data record}
 \index{Importing a data record}
@@ -761,20 +782,19 @@ code of, say, \filename{blockmean\_func.c} or \filename{pstext\_func.c}.
 \begin{table}[h]
 \small
 \centering
-\begin{tabular}{ll} \hline
-\multicolumn{2}{l}{\texttt{struct GMT\_VECTOR \{}} \\ 
-\texttt{GMT_REC_IS_TBL_HEADER(API)}	&       TRUE if we read a table header \\
-\texttt{GMT_REC_IS_SEG_HEADER(API)}	&       TRUE if we read a segment header \\
-\texttt{GMT_REC_IS_ANY_HEADER(API)}	&       TRUE if we read either header type \\
-\texttt{GMT_REC_IS_ERROR(API)}		&       TRUE if we had a read or conversion failure \\
-\texttt{GMT_REC_IS_EOF(API)}		&       TRUE if we reached the end of the file (EOF) \\
-\texttt{GMT_REC_IS_NAN(API)}		&       TRUE if we only read NaNs \\
-\texttt{GMT_REC_IS_GAP(API)}		&       TRUE if this record implies a data gap \\
-\texttt{GMT_REC_IS_NEW_SEGMENT(API)}	&       TRUE if we enter a new segment \\
-\texttt{GMT_REC_IS_LINE_BREAK(API)}	&       TRUE if we encountered a segment header, EOF, NaNs or gap \\
-\texttt{GMT_REC_IS_FILE_BREAK(API)}	&       TRUE if we finished one file but not the last \\
-\texttt{GMT_REC_IS_DATA(API)}		&       TRUE if we read a data record \\
-\texttt{\};}	&        \\  \hline
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{Macro}} & \multicolumn{1}{c|}{\emph{description}} \\ \hline
+\texttt{GMT\_REC\_IS\_TBL\_HEADER(API)}	&       TRUE if we read a table header \\ \hline
+\texttt{GMT\_REC\_IS\_SEG\_HEADER(API)}	&       TRUE if we read a segment header \\ \hline
+\texttt{GMT\_REC\_IS\_ANY\_HEADER(API)}	&       TRUE if we read either header type \\ \hline
+\texttt{GMT\_REC\_IS\_ERROR(API)}	&       TRUE if we had a read or conversion failure \\ \hline
+\texttt{GMT\_REC\_IS\_EOF(API)}		&       TRUE if we reached the end of the file (EOF) \\ \hline
+\texttt{GMT\_REC\_IS\_NAN(API)}		&       TRUE if we only read NaNs \\ \hline
+\texttt{GMT\_REC\_IS\_GAP(API)}		&       TRUE if this record implies a data gap \\ \hline
+\texttt{GMT\_REC\_IS\_NEW\_SEGMENT(API)}&       TRUE if we enter a new segment \\ \hline
+\texttt{GMT\_REC\_IS\_LINE\_BREAK(API)}	&       TRUE if we encountered a segment header, EOF, NaNs or gap \\ \hline
+\texttt{GMT\_REC\_IS\_FILE\_BREAK(API)}	&       TRUE if we finished one file but not the last \\ \hline
+\texttt{GMT\_REC\_IS\_DATA(API)}	&       TRUE if we read a data record \\ \hline
 \end{tabular}
 \caption{Macros used to determine status of current data record.  The gap macro depends on the current \Opt{g} settings.}
 \label{tbl:iomacros}
@@ -1065,7 +1085,7 @@ long GMT_Parse_Common (struct GMTAPI_CTRL *API, \
     struct GMT_OPTION *list)
 \end{verbatim}
 
-An error will be reported via \texttt{API->error) if any of the common \GMT\ options fail to parse,
+An error will be reported via \texttt{API->error} if any of the common \GMT\ options fail to parse,
 and if so we return TRUE; if not errors we return FALSE.  All other options,
 including file names, will be silently ignored.  The parsing will update the internal \GMT\
 information structure that affects program operations.
@@ -1103,7 +1123,8 @@ resource you can override this default behavior by adding GMT\_IO\_RESET to your
 \index{Resources!Export data}
 
 Similar to the data import procedures, once all output destinations have been registered, we signal the API that we are done with the registration
-phase and are ready to start the actual data export.  Again, we do so by calling \texttt{GMT\_Begin\_IO}, this time with \texttt{direction} = GMT\_OUT.
+phase and are ready to start the actual data export.  As for input, this step is only needed when dealing with record-by-record writing.
+Again, we enable record-by-record writing by calling \texttt{GMT\_Begin\_IO}, this time with \texttt{direction} = GMT\_OUT.
 This function enables data export and prepares the registered destinations for the upcoming writing.  
 
 
@@ -1113,13 +1134,13 @@ This function enables data export and prepares the registered destinations for t
 \index{Resources!Export data set}
 
 To have your program accept results from \GMT\ modules and write them
-separately requires you to use the \texttt{GMT\_Put\_Data} function.  It is
-very similar to the \texttt{GMT\_Get\_Data} function encountered earlier.
-The prototype is:
-\index{GMT\_Put\_Data}
+separately requires you to use the \texttt{GMT\_Write\_Data} or \texttt{GMT\_Put\_Data} functions.  They are
+very similar to the \texttt{GMT\_Read\_Data} and \texttt{GMT\_Get\_Data} functions encountered earlier.
+The prototype for writing to a file (via name, stream, or file handle) is:
+\index{GMT\_Write\_Data}
 
 \begin{verbatim}
-long GMT_Put_Data (struct GMTAPI_CTRL *API, long family, long method, \
+long GMT_Write_Data (struct GMTAPI_CTRL *API, long family, long method, \
     long geometry, double wesn[], long mode, void *output, void *data)
 \end{verbatim}
 where \texttt{data} is a pointer to any of the four structures
@@ -1170,6 +1191,23 @@ the grid header by adding GMT\_GRID\_NO\_HEADER (16); this setting is ignored fo
 \index{GMT\_GRID\_NO\_HEADER}
 \end{description}
 If successful the function returns FALSE (0); otherwise we return TRUE (1) and set \texttt{API->error} to reflect to cause.
+
+If writing to a memory destination you will want to first register that destination and then use the returned ID with
+\texttt{GMT\_Put\_Data} instead:
+
+\index{GMT\_Put\_Data}
+
+\begin{verbatim}
+long GMT_Put_Data (struct GMTAPI_CTRL *API, long ID, long mode, \
+	void *data)
+\end{verbatim}
+where \texttt{ID} is the unique ID of the registered destination, \texttt{mode}
+is specific to each data type (and controls aspects of the output structuring),
+and \texttt{data} is a pointer to any of the four structures
+discussed previously.  For more detail, see \texttt{GMT\_Write\_Data} above.
+If successful the function returns FALSE (0); otherwise we return TRUE (1) and set \texttt{API->error} to reflect to cause.
+
+
 \subsection{Exporting a data record}
 \index{Exporting a data record}
 \index{Data!Export data record}
@@ -1284,7 +1322,7 @@ Note that this function also updates \texttt{API->error} to the given value.
 \index{FORTRAN 77 interface}
 \index{Interface!FORTRAN 77}
 
-FORTRAN 77 developers who wish to use the \GMT\ API may use the same 14 API functions as discussed in Chapter 2.
+FORTRAN 77 developers who wish to use the \GMT\ API may use the same 16 API functions as discussed in Chapter 2.
 However, as pointers to structures and such are not available, the FORTRAN bindings provided simplifies the
 interface in two ways:
 \begin{itemize}
@@ -1294,7 +1332,7 @@ the C version of the functions.
 \item The resource arguments in \texttt{GMT\_Register\_IO} are not pointers to
 items but the items themselves.
 \end{itemize}
-The list of the basic 14 FORTRAN prototype functions thus becomes
+The list of the basic 16 FORTRAN prototype functions thus becomes
 \begin{verbatim}
 function GMT_Create_Session (tag, mode)
 function GMT_Destroy_Session ()
@@ -1304,11 +1342,13 @@ function GMT_Encode_ID (filename, ID)
 function GMT_Init_IO (family, geometry, direction, head)
 function GMT_Begin_IO (family, geometry, direction, mode)
 function GMT_Create_Data (family, geometry, ipar)
-function GMT_Get_Data (family, method, geometry, wesn, mode, \
+function GMT_Read_Data (family, method, geometry, wesn, mode, \
 	input, data)
+function GMT_Get_Data (ID, mode, data)
 function GMT_Get_Record (rec, mode, nfields)
-function GMT_Put_Data (family, method, geometry, wesn, mode, \
+function GMT_Write_Data (family, method, geometry, wesn, mode, \
 	output, data)
+function GMT_Put_Data (ID, mode, data)
 function GMT_Put_Record (mode, rec)
 function GMT_End_IO (direction, mode)
 function GMT_Destroy_Data (mode, ptr)

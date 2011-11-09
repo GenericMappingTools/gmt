@@ -419,13 +419,19 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	while ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields))) {	/* Keep returning records until we reach EOF */
+	do {	/* Keep returning records until we reach EOF */
 		n_read++;
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT) && n_fields < 2) continue;
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Echo table headers */
-
+		/* Data record to process */
+	
 		/* STEP 1: Read information about a single seamount from input record */
 
 		if (GMT_is_dnan (in[4]))	/* Age is NaN, assign value */
@@ -523,7 +529,8 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_smts++;	/* Go to next seamount */
 
 		if (!(n_smts%100)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed %5ld seamounts\r", n_smts);
-	}
+	} while (TRUE);
+	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}

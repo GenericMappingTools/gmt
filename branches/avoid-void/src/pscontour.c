@@ -804,9 +804,22 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Error registering contour info file %s\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
+		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables text input and sets access mode */
+			Return (API->error);
+		}
 		c = 0;
-		while ((record = GMT_Get_Record (API, GMT_READ_TEXT, &NL))) {
-			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
+		do {	/* Keep returning records until we reach EOF */
+			if ((line = GMT_Get_Record (API, GMT_READ_TEXT, &NL)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+					continue;
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
+			}
+
+			/* Data record to process */
+
 			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
 			if (cont[c].type == '\0') cont[c].type = 'C';
@@ -815,6 +828,10 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (got == 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
 			cont[c].do_tick = (char)Ctrl->T.active;
 			c++;
+		} while (TRUE);
+		
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
 		}
 		n_contours = c;
 	}
