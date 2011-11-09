@@ -185,7 +185,7 @@ char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, struct GMT_GRID **G, int n
 			mexErrMsgTxt ("Error: neither -G option nor left hand side output args.");
 	}
 	o_string = mxMalloc(GMTAPI_STRLEN);
-	if (GMT_Encode_ID (API, o_string, out_ID != GMT_OK) {	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_OK) {	/* Make filename with embedded object ID */
 		mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");
 	}
 	//o_string = strdup (buffer);
