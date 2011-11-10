@@ -360,7 +360,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_data = 0;	/* Initialize variables */
 	lonsum = latsum = 0.0;
 	n_alloc = GMT_CHUNK;
-	data = GMT_memory (GMT, NULL, n_alloc, struct FITCIRCLE_DATA);
+	if ((data = GMT_memory (GMT, NULL, n_alloc, struct FITCIRCLE_DATA)) == NULL) Return (GMT_MEMORY_ERROR);
 	sprintf (format, "%s\t%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
 	do {	/* Keep returning records until we reach EOF */
@@ -378,7 +378,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		lonsum += in[GMT_X];	latsum += in[GMT_Y];
 		GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], data[n_data].x, TRUE);
 
-		if (++n_data == n_alloc) data = GMT_memory (GMT, data, n_alloc <<= 1, struct FITCIRCLE_DATA);
+		if (++n_data == n_alloc && (data = GMT_memory (GMT, data, n_alloc <<= 1, struct FITCIRCLE_DATA)) == NULL) Return (GMT_MEMORY_ERROR);
 	} while (TRUE);
 	
   	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {
@@ -391,9 +391,9 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_SUCCESS);
 	}
      
-	if (n_data < n_alloc) data = GMT_memory (GMT, data, n_data, struct FITCIRCLE_DATA);
+	if (n_data < n_alloc && (data = GMT_memory (GMT, data, n_data, struct FITCIRCLE_DATA)) == NULL) Return (GMT_MEMORY_ERROR);
 	allocate = (Ctrl->S.active && (Ctrl->L.norm%2));	/* Will need work array */
-	if (allocate) work = GMT_memory (GMT, NULL, n_data, double);
+	if (allocate && (work = GMT_memory (GMT, NULL, n_data, double)) == NULL) Return (GMT_MEMORY_ERROR);
 
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC) != GMT_OK) {
 		Return (API->error);	/* Enables data output and sets access mode */
@@ -459,11 +459,11 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		double *a = NULL, *lambda = NULL, *v = NULL, *b = NULL, *z = NULL;	/* Matrix stuff */
 
 		n = np = 3;
-		a = GMT_memory (GMT, NULL, np*np, double);
-		lambda = GMT_memory (GMT, NULL, np, double);
-		b = GMT_memory (GMT, NULL, np, double);
-		z = GMT_memory (GMT, NULL, np, double);
-		v = GMT_memory (GMT, NULL, np*np, double);
+		if ((a = GMT_memory (GMT, NULL, np*np, double)) == NULL) Return (GMT_MEMORY_ERROR);
+		if ((lambda = GMT_memory (GMT, NULL, np, double)) == NULL) Return (GMT_MEMORY_ERROR);
+		if ((b = GMT_memory (GMT, NULL, np, double)) == NULL) Return (GMT_MEMORY_ERROR);
+		if ((z = GMT_memory (GMT, NULL, np, double)) == NULL) Return (GMT_MEMORY_ERROR);
+		if ((v = GMT_memory (GMT, NULL, np*np, double)) == NULL) Return (GMT_MEMORY_ERROR);
 
 		for (i = 0; i < n_data; i++) for (j = 0; j < n; j++) for (k = 0; k < n; k++)
 			a[j + k*np] += (data[i].x[j]*data[i].x[k]);

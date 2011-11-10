@@ -198,10 +198,10 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), "stdout");
 
 	use_xy = !Ctrl->C.active;	/* If not -C then we must keep track of x,y locations */
-	zw = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
-	if (use_xy) xy = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
-	if (Ctrl->E.active) slh = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_SLH);
-	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = GMT_memory (GMT, NULL, Grid->header->nm, GMT_LONG);
+	if ((zw = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR)) == NULL) Return (GMT_MEMORY_ERROR);
+	if (use_xy && (xy = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR)) == NULL) Return (GMT_MEMORY_ERROR);
+	if (Ctrl->E.active && (slh = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_SLH)) == NULL) Return (GMT_MEMORY_ERROR);
+	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active && (np = GMT_memory (GMT, NULL, Grid->header->nm, GMT_LONG)) == NULL) Return (GMT_MEMORY_ERROR);
 
 	/* Specify input and output expected columns */
 	if ((error = GMT_set_cols (GMT, GMT_IN,  3 + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {

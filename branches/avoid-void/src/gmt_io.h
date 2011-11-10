@@ -121,6 +121,10 @@ enum GMT_enum_gridio {GMT_GRID_ALL = 0,	/* Read|write both grid header and the e
 	GMT_GRID_COMPLEX_IMAG = 8,	/* Read|write the imaginary component to/from a complex grid */
 	GMT_GRID_NO_HEADER = 16};	/* Write a native grid without the leading grid header */
 
+enum GMT_enum_complex {GMT_IS_NORMAL = 0,	/* Normal floating point value */
+	GMT_IS_COMPLEX_REAL,			/* The real component of a complex value */
+	GMT_IS_COMPLEX_IMAG};			/* The imaginary component of a complex value */
+
 enum GMT_enum_read {GMT_READ_DOUBLE = 0,	/* Read ASCII data record and return double array */
 	GMT_READ_TEXT = 1,			/* Read ASCII data record and return text string */
 	GMT_READ_MIXED = 2,			/* Read ASCII data record and return double array but tolerate conversion errors */
