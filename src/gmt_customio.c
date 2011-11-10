@@ -328,7 +328,7 @@ GMT_LONG GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	n2 = (GMT_LONG) ceil (header->nx / 2.0) * 2;	/* Sun 8-bit rasters are stored using 16-bit words */
-	tmp = GMT_memory (C, NULL, n2, unsigned char);
+	if ((tmp = GMT_memory (C, NULL, n2, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
 
 	check = !GMT_is_dnan (header->nan_value);
 
@@ -417,7 +417,7 @@ GMT_LONG GMT_ras_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	h.maptype = h.maplength = 0;
 
 	n2 = (GMT_LONG) ceil (header->nx / 2.0) * 2;
-	tmp = GMT_memory (C, NULL, n2, unsigned char);
+	if ((tmp = GMT_memory (C, NULL, n2, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
 
 	check = !GMT_is_dnan (header->nan_value);
 
@@ -619,7 +619,7 @@ GMT_LONG GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	width_out *= inc;			/* Possibly twice is complex is TRUE */
 	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
-	tmp = GMT_memory (C, NULL, mx, unsigned int);
+	if ((tmp = GMT_memory (C, NULL, mx, unsigned int)) == NULL) return (GMT_MEMORY_ERROR);
 
 	if (piping) {	/* Skip data by reading it */
 		for (j = 0; j < first_row; j++) if (GMT_fread ( tmp, sizeof (unsigned int), (size_t)mx, fp) < (size_t)mx) return (GMT_GRDIO_READ_FAILED);
@@ -719,7 +719,7 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	if (do_header) GMT_err_trap (GMT_native_write_grd_header (fp, header));
 
 	mx = (GMT_LONG) ceil (width_out / 32.0);
-	tmp = GMT_memory (C, NULL, mx, unsigned int);
+	if ((tmp = GMT_memory (C, NULL, mx, unsigned int)) == NULL) return (GMT_MEMORY_ERROR);
 
 	i2 = first_col + pad[XLO];
 	for (j = 0, j2 = first_row + pad[YHI]; j < height_out; j++, j2++) {
@@ -855,7 +855,7 @@ GMT_LONG GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, flo
 
 	/* Allocate memory for one row of data (for reading purposes) */
 
-	tmp = GMT_memory (C, NULL, header->nx * size, char);
+	if ((tmp = GMT_memory (C, NULL, header->nx * size, char)) == NULL) return (GMT_MEMORY_ERROR);
 
 	/* Now deal with skipping */
 
@@ -977,7 +977,7 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 
 	/* Allocate memory for one row of data (for writing purposes) */
 
-	tmp =  GMT_memory (C, NULL, header->nx * size, char);
+	if ((tmp = GMT_memory (C, NULL, header->nx * size, char)) == NULL) return (GMT_MEMORY_ERROR);
 
 	i2 = first_col + pad[XLO];
 	for (j = 0, j2 = first_row + pad[YHI]; j < height_out; j++, j2++) {
@@ -1327,7 +1327,7 @@ GMT_LONG GMT_srf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 
 	/* Allocate memory for one row of data (for reading purposes) */
 
-	tmp =  GMT_memory (C, NULL, header->nx * size, char);
+	if ((tmp = GMT_memory (C, NULL, header->nx * size, char)) == NULL) return (GMT_MEMORY_ERROR);
 
 	/* Now deal with skipping */
 
@@ -1448,7 +1448,7 @@ GMT_LONG GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	/* Allocate memory for one row of data (for writing purposes) */
 
-	tmp =  GMT_memory (C, NULL, header->nx * size, char);
+	if ((tmp = GMT_memory (C, NULL, header->nx * size, char)) == NULL) return (GMT_MEMORY_ERROR);
 
 	i2 = first_col + pad[XLO];
 	for (j = 0, j2 = last_row + pad[YHI]; j < height_out; j++, j2--) {
@@ -1491,8 +1491,8 @@ GMT_LONG GMT_gdal_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header) 
 	}
 
 	/* Allocate new control structures */
-	to_gdalread = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL);
-	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
+	if ((to_gdalread = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL)) == NULL) return (GMT_MEMORY_ERROR);
 
 	to_gdalread->M.active = TRUE;		/* Metadata only */
 	if (GMT_gdalread (C, header->name, to_gdalread, from_gdalread)) {
@@ -1545,8 +1545,8 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	char strR[128];
 
 	/* Allocate new control structures */
-	to_gdalread = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL);
-	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
+	if ((to_gdalread = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL)) == NULL) return (GMT_MEMORY_ERROR);
 
 	if (complex_mode) {
 		to_gdalread->Z.active = TRUE;		/* Force reading into a compex array */
