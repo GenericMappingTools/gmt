@@ -20,7 +20,9 @@
  *
  * Author: 	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	1.0
+ * Version:	1.1
+ *
+ * The API consists of 16 functions plus all the GMT_<modules>.
  *
  * There are 2 public functions used for GMT API session handling.
  * This part of the API helps the developer create and delete GMT sessions:
@@ -33,7 +35,7 @@
  *
  * GMT_Report_Error	: Report an error given an error code
  *
- * There are 13 public functions used for GMT i/o activities:
+ * There are 13 further public functions used for GMT i/o activities:
  *
  * GMT_Encode_ID	: Encode a resource ID in a file name
  * GMT_Register_IO	: Register a source or destination for i/o use
@@ -65,7 +67,7 @@
 #include "gmt_internals.h"
 
 #ifdef FORTRAN_API
-static struct GMTAPI_CTRL *GMT_FORTRAN = NULL;	/* Global structure needed for FORTRAN-77 [not tested yet] */
+static struct GMTAPI_CTRL *GMT_FORTRAN = NULL;	/* Global structure needed for FORTRAN-77 [PW: not tested yet - is it even needed?] */
 #endif
 
 static GMT_LONG GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions for multi-session programs */
@@ -73,12 +75,12 @@ static char *GMTAPI_errstr[] = {
 #include "gmtapi_errstr.h"
 };
 
-/* Macros that report error, then return NULL pointer or TRUE, respectively */
+/* Macros that report error, then return NULL pointer, TRUE, or a value, respectively */
 #define return_null(API,err) { GMT_Report_Error(API,err); return (NULL);}
 #define return_error(API,err) { GMT_Report_Error(API,err); return (TRUE);}
 #define return_value(API,err,val) { GMT_Report_Error(API,err); return (val);}
 
-/* Misc. local text strings needed in this file only */
+/* Misc. local text strings needed in this file only, used when debug verbose is on (-V4) */
 
 static const char *GMT_method[GMT_N_METHODS] = {"File", "Stream", "File Descriptor", "Memory Copy", "Memory Reference", "Read-only Memory"};
 static const char *GMT_family[GMT_N_FAMILIES] = {"Data Table", "Text Table", "GMT Grid", "CPT Table", "GMT Image"};
@@ -133,6 +135,7 @@ void GMT_io_banner (struct GMT_CTRL *C, GMT_LONG direction)
 	char *letter = "chilfd", s[2] = {0, 0};
 	GMT_LONG col;
 	
+	if (GMT->current.setting.verbose < GMT_MSG_NORMAL) return;	/* Not in verbose mode anyway */
 	if (!C->common.b.active[direction]) return;	/* Not using binary i/o */
 	GMT_memset (message, GMT_TEXT_LEN256, char);	/* Start with a blank message */
 	for (col = 0; col < C->common.b.ncol[direction]; col++) {	/* For each binary column of data */
@@ -151,11 +154,11 @@ void GMT_io_banner (struct GMT_CTRL *C, GMT_LONG direction)
 }
 
 double GMTAPI_get_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, GMT_LONG row, GMT_LONG type)
-{	/* Returns a double value from the <type> colymn array pointed to by the union pointer *u, at row position row.
+{	/* Returns a double value from the <type> column array pointed to by the union pointer *u, at row position row.
  	 * Used in GMTAPI_Import_Dataset and GMTAPI_Import_Grid. */
 	double val;
 	
-	switch (type) {
+	switch (type) {	/* Use type to select the correct array from which to extract a value */
 		case GMTAPI_UCHAR:	val = u->uc1[row];	break;
 		case GMTAPI_CHAR:	val = u->sc1[row];	break;
 		case GMTAPI_USHORT:	val = u->ui2[row];	break;
@@ -180,7 +183,7 @@ void GMTAPI_put_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, double val
  	 * No check to see if the type can hold the value is performed.
  	 * Used in GMTAPI_Export_Dataset and GMTAPI_Export_Grid. */
 	
-	switch (type) {
+	switch (type) {/* Use type to select the correct array to which we will put a value */
 		case GMTAPI_UCHAR:	u->uc1[row] = (unsigned char)val;	break;
 		case GMTAPI_CHAR:	u->sc1[row] = (char)val;		break;
 		case GMTAPI_USHORT:	u->ui2[row] = (unsigned short int)val;	break;
