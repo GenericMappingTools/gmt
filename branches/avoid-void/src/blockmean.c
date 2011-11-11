@@ -159,7 +159,7 @@ GMT_LONG GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl
 
 GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, node, n_fields, w_col, error, use_xy, use_weight;
+	GMT_LONG row, col, node, w_col, error, use_xy, use_weight;
 	GMT_LONG n_cells_filled, n_read, n_lost, n_pitched, *np = NULL;
 
 	double weight, weighted_z, iw, wesn[4], out[7], *in = NULL;
@@ -250,7 +250,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read the input data */
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

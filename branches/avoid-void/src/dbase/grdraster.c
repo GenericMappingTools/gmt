@@ -194,7 +194,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 
 	Return 0 if cannot read files correctly, or nrasters if successful.  */
 
-	GMT_LONG i, j, length, stop_point, nfound = 0, ksize = 0, n_alloc, expected_size, object_ID, n_fields, delta;
+	GMT_LONG i, j, length, stop_point, nfound = 0, ksize = 0, n_alloc, expected_size, object_ID, delta;
 	double global_lon, lon_tol;
 	char path[GMT_BUFSIZ], buf[GRD_REMARK_LEN160], dir[GRD_REMARK_LEN160], *l = NULL, *record = NULL, *file = NULL;
 	struct GRDRASTER_INFO *rasinfo = NULL;
@@ -225,7 +225,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 	if ((rasinfo = GMT_memory (GMT, NULL, n_alloc, struct GRDRASTER_INFO)) == NULL) return (GMT_MEMORY_ERROR);
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((record = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((record = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

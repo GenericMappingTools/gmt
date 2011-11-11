@@ -233,7 +233,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
 	GMT_LONG brackets = FALSE, work_on_abs_value, do_report;
-	GMT_LONG i, j, ncol = 0, n = 0, n_fields, save_range, wmode, done;
+	GMT_LONG i, j, ncol = 0, n = 0, save_range, wmode, done;
 
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
 
@@ -308,7 +308,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	first_data_record = TRUE;
 	done = FALSE;
 	while (!done) {	/* Keep returning records until we reach EOF of last file */
-		in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, &n_fields);
+		in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, NULL);
 		do_report = FALSE;
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);

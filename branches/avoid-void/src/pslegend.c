@@ -294,7 +294,7 @@ void drawbase (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double x1, dou
 
 GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pslegend task */
-	GMT_LONG i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan, n_fields;
+	GMT_LONG i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
 	GMT_LONG flush_paragraph = FALSE, draw_vertical_line = FALSE, gave_label, gave_mapscale_options;
 	GMT_LONG dim[4] = {1, 1, 0, 2}, status, object_ID, did_old = FALSE;
 
@@ -452,7 +452,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #endif
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

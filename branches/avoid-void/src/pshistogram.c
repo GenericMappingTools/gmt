@@ -452,7 +452,7 @@ GMT_LONG GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *
 
 GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, automatic = FALSE, n_alloc = GMT_CHUNK, n, n_fields;
+	GMT_LONG error = FALSE, automatic = FALSE, n_alloc = GMT_CHUNK, n;
 
 	char format[GMT_BUFSIZ];
 	
@@ -513,7 +513,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	x_min = DBL_MAX;	x_max = -DBL_MAX;
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

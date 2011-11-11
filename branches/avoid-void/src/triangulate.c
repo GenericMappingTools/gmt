@@ -207,7 +207,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	int *link = NULL;	/* Must remain int and not GMT_LONG due to triangle function */
 	
 	GMT_LONG ij, ij1, ij2, ij3, np, n_alloc, n = 0, i, j, k, n_edge;
-	GMT_LONG col_min, col_max, row_min, row_max, p, n_fields, n_output;
+	GMT_LONG col_min, col_max, row_min, row_max, p, n_output;
 	GMT_LONG row, col, error = FALSE, map_them = FALSE;
 
 	double zj, zk, zl, zlj, zkj, xp, yp, a, b, c, f;
@@ -277,7 +277,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	n = 0;
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */

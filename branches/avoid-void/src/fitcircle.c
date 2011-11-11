@@ -317,7 +317,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_
 GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, greenwich = FALSE, allocate, n, np;
-	GMT_LONG imin, imax, nrots, n_fields, i, j, k, n_alloc, n_data;
+	GMT_LONG imin, imax, nrots, i, j, k, n_alloc, n_data;
 
 	char format[GMT_BUFSIZ], record[GMT_BUFSIZ], item[GMT_BUFSIZ];
 
@@ -364,7 +364,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	sprintf (format, "%s\t%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

@@ -339,7 +339,7 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 
 GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n_max_spots, n_input, n_fields, n_expected_fields, n_out, better;
+	GMT_LONG n_max_spots, n_input, n_expected_fields, n_out, better;
 	GMT_LONG i, j, k, n, kk, ns, nh, nc, np, n_read, n_skipped = 0, error = FALSE;
 
 	double x_smt, y_smt, z_smt, r_smt, t_smt, *c, *in = NULL, dist, dlon, out[5];
@@ -426,7 +426,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_read = 0;
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */

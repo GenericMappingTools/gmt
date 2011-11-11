@@ -253,7 +253,7 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG row, col, k, col_0, row_0, ij, n, n_alloc = GMT_CHUNK, n_set;
-	GMT_LONG d_row, sector, n_fields, ii, jj, ij0, n_read, *d_col = NULL;
+	GMT_LONG d_row, sector, ii, jj, ij0, n_read, *d_col = NULL;
 	GMT_LONG max_d_col, x_wrap, y_wrap, n_almost, n_none;
 	GMT_LONG error = FALSE, wrap_180, replicate_x, replicate_y, n_filled;
 
@@ -344,7 +344,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

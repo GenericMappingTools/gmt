@@ -740,7 +740,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->N.mode == GET_LABEL) { /* Special ASCII table processing */
-		GMT_LONG n_fields, ix, iy, n_rec = 0;
+		GMT_LONG ix, iy, n_rec = 0;
 		char *record = NULL, C[5][GMT_TEXT_LEN64];
 
 		ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
@@ -752,7 +752,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		
 		do {	/* Keep returning records until we reach EOF */
-			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

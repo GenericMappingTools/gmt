@@ -218,7 +218,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG error = FALSE, box_and_whisker = FALSE;
 	GMT_LONG nz, n_read, n_lost, node, first_in_cell, first_in_new_cell;
 	GMT_LONG n_alloc = 0, nz_alloc = 0, n_pitched, row, col, n_cells_filled;
-	GMT_LONG w_col, n_fields, n_output, n_quantiles = 1, go_quickly = 0;
+	GMT_LONG w_col, n_output, n_quantiles = 1, go_quickly = 0;
 
 	double out[7], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[3], weight, *in = NULL, *z_tmp = NULL;
 
@@ -304,7 +304,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read the input data */
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

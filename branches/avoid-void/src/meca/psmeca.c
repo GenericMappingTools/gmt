@@ -538,7 +538,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psmeca task */
 	GMT_LONG i, n, ix = 0, iy = 1, last = 0, form = 0;
-	GMT_LONG n_rec = 0, n_plane_old = 0, n_fields, error;
+	GMT_LONG n_rec = 0, n_plane_old = 0, error;
 	GMT_LONG no_size_needed, transparence_old = FALSE, not_defined = FALSE;
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz;
@@ -608,7 +608,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

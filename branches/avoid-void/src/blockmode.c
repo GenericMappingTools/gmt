@@ -187,7 +187,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, GMT_LONG n, GMT_LONG k)
 
 GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, mode_xy, col, row, n_fields, w_col, n_pitched;
+	GMT_LONG error = FALSE, mode_xy, col, row, w_col, n_pitched;
 	GMT_LONG node, first_in_cell, first_in_new_cell, n_lost, n_read;
 	GMT_LONG n_cells_filled, n_in_cell, n_alloc = 0, nz_alloc = 0, nz;
 
@@ -264,7 +264,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read the input data */
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

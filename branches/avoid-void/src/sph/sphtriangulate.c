@@ -476,7 +476,7 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char *tmode[2] = {"Delaunay", "Voronoi"}, header[GMT_BUFSIZ];
 
-	GMT_LONG n = 0, n_alloc, n_dup = 0, n_fields, do_authalic = FALSE;
+	GMT_LONG n = 0, n_alloc, n_dup = 0, do_authalic = FALSE;
 	GMT_LONG error = FALSE, first = FALSE, steradians = FALSE;
 
 	double first_x = 0.0, first_y = 0.0, X[3], *in = NULL;
@@ -534,7 +534,7 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n = 0;
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_TBL_HEADER (GMT)) 	/* Skip all table headers */

@@ -355,7 +355,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG get_rgb, read_symbol, clip_set = FALSE, fill_active;
 	GMT_LONG default_outline, outline_active, pos2x, pos2y, set_type;
 	GMT_LONG i, n, n_alloc = 0, n_total_read = 0, j, geometry, tbl, seg;
-	GMT_LONG n_cols_start = 3, n_fields, error = GMT_NOERROR;
+	GMT_LONG n_cols_start = 3, error = GMT_NOERROR;
 	GMT_LONG ex1, ex2, ex3, change, n_needed, read_mode, save_u = FALSE;
 
 	char *text_rec = NULL;
@@ -536,7 +536,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
-			if ((record = GMT_Get_Record (API, read_mode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((record = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Skip table headers */

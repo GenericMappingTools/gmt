@@ -3048,7 +3048,7 @@ GMT_LONG GMT_Put_Data_ (GMT_LONG *ID, GMT_LONG *mode, void *data)
 void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 {
 	/* Retrieves the next data record from the virtual input source and
-	 * returns the number of columns found via *retval.
+	 * returns the number of columns found via *retval (unless retval == NULL).
 	 * If current record is a segment header then we return 0.
 	 * If we reach EOF then we return EOF.
 	 * mode is either GMT_READ_DOUBLE (data columns), GMT_READ_TEXT (text string) or
@@ -3060,7 +3060,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 	 * If not a data record we return NULL, and pass status via API->GMT->current.io.status.
 	 */
 
-	GMT_LONG get_next_record, status, col, n_nan, ij, i, *p = NULL;
+	GMT_LONG get_next_record, status, col, n_nan, ij, i, n_fields = 0, *p = NULL;
 	char *t_record = NULL;
 	void *record = NULL;
 	PFL GMT_2D_to_index;
@@ -3070,7 +3070,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 	struct GMT_MATRIX *M = NULL;
 	struct GMT_VECTOR *V = NULL;
 	
-	*retval = 0;
+	if (retval) *retval = 0;
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
 	if (!API->io_enabled[GMT_IN]) return_null (API, GMT_ACCESS_NOT_ENABLED);
 
@@ -3082,7 +3082,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 		if (S->status == GMT_IS_USED) {		/* Finished reading from this resource, go to next resource */
 			if (API->GMT->current.io.ogr == 1) return_null (API, GMT_OGR_ONE_TABLE_ONLY);	/* Only allow single tables if GMT/OGR */
 			if (GMTAPI_Next_Data_Object (API, S->family, GMT_IN) == EOF)	/* That was the last source, return */
-				*retval = EOF;
+				n_fields = EOF;
 			else {
 				S = API->object[API->current_item[GMT_IN]];	/* Shorthand for the next data source to work on */
 				get_next_record = TRUE;				/* Since we haven't read the next record yet */
@@ -3094,7 +3094,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 		 	case GMT_IS_STREAM:
 		 	case GMT_IS_FDESC:
 			 	record = S->import (API->GMT, S->fp, &(S->n_expected_fields), &(S->n_columns));	/* Get that next record */
-				*retval = S->n_columns;	/* Get that next record */
+				n_fields = S->n_columns;	/* Get that next record */
 				if (API->GMT->current.io.status & GMT_IO_EOF) {			/* End-of-file in current file (but there may be many files) */
 					S->status = GMT_IS_USED;	/* Mark as read */
 					if (S->close_file) {	/* Close if it was a file that we opened earlier */
@@ -3102,9 +3102,9 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 						S->close_file = FALSE;
 					}
 					if (GMTAPI_Next_Data_Object (API, S->family, GMT_IN) == EOF)	/* That was the last source, return */
-						*retval = EOF;					/* EOF is ONLY returned when we reach the end of the LAST data file */
+						n_fields = EOF;					/* EOF is ONLY returned when we reach the end of the LAST data file */
 					else if (mode & GMT_FILE_BREAK) {			/* Return empty handed to indicate a break between files */
-						*retval = GMT_IO_NEXT_FILE;			/* We flag this situation with a special return value */
+						n_fields = GMT_IO_NEXT_FILE;			/* We flag this situation with a special return value */
 						API->GMT->current.io.status = GMT_IO_NEXT_FILE;
 					}
 					else {	/* Get ready to read the next data file */
@@ -3125,7 +3125,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 				if (API->current_rec[GMT_IN] >= S->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows that was registered */
 					API->GMT->current.io.status = GMT_IO_EOF;
 					S->status = GMT_IS_USED;	/* Mark as read */
-					*retval = EOF;
+					if (retval) *retval = EOF;
 					return (NULL);	/* Done with this array */
 				}
 				else
@@ -3143,7 +3143,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 				}
 				else
 					record = API->GMT->current.io.curr_rec;
-				*retval = S->n_columns;
+				n_fields = S->n_columns;
 				break;
 
 			 case GMT_IS_COPY + GMT_VIA_VECTOR:	/* Here we copy from a user memory location that points to an array of column vectors */
@@ -3152,7 +3152,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 				if (API->current_rec[GMT_IN] >= S->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number or rows that was registered */
 					API->GMT->current.io.status = GMT_IO_EOF;
 					S->status = GMT_IS_USED;	/* Mark as read */
-					*retval = EOF;
+					if (retval) *retval = EOF;
 					return (NULL);	/* Done with this array */
 				}
 				else
@@ -3168,7 +3168,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 				}
 				else
 					record = API->GMT->current.io.curr_rec;
-				*retval = S->n_columns;
+				n_fields = S->n_columns;
 				break;
 
 			case GMT_IS_REF:	/* Only for textsets and datasets */
@@ -3185,13 +3185,13 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 					if (p[1] == DS->table[p[0]]->n_segments) {		/* Also the end of a table ("file") */
 						p[0]++, p[1] = 0;
 						if (mode & GMT_FILE_BREAK) {			/* Return empty handed to indicate a break between files */
-							status = *retval = GMT_IO_NEXT_FILE;
+							status = n_fields = GMT_IO_NEXT_FILE;
 							record = NULL;
 						}
 					}
 					if (p[0] == DS->n_tables) {	/* End of entire data set */
 						status = GMT_IO_EOF;
-						*retval = EOF;
+						n_fields = EOF;
 						record = NULL;
 						S->status = GMT_IS_USED;	/* Mark as read */
 					}
@@ -3201,7 +3201,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 							if (GMT_is_dnan (API->GMT->current.io.curr_rec[col])) n_nan++;
 						}
 						p[2]++;
-						*retval = API->GMT->common.b.ncol[GMT_IN] = DS->n_columns;
+						n_fields = API->GMT->common.b.ncol[GMT_IN] = DS->n_columns;
 						if (n_nan == S->n_columns) {
 							API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
 							record = NULL;
@@ -3217,7 +3217,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 					if (p[2] == DT->table[p[0]]->segment[p[1]]->n_rows) {p[1]++, p[2] = 0;}
 					if (p[1] == DT->table[p[0]]->n_segments) {p[0]++, p[1] = 0;}
 					if (p[0] == DT->n_tables) {
-						*retval = EOF;
+						n_fields = EOF;
 						API->GMT->current.io.status = GMT_IO_EOF;
 						record = NULL;
 						S->status = GMT_IS_USED;	/* Mark as read */
@@ -3235,7 +3235,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 							strcpy (API->GMT->current.io.current_record, t_record);
 							record = t_record;
 						}
-						*retval = 1;
+						n_fields = 1;
 						S->status = GMT_IS_USING;	/* Mark as read */
 					}
 				}
@@ -3246,9 +3246,10 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 		}
 	} while (get_next_record);
 	
-	if (!(*retval == EOF || *retval == GMT_IO_NEXT_FILE)) API->current_rec[GMT_IN]++;	/* Increase record count, unless EOF */
+	if (!(n_fields == EOF || n_fields == GMT_IO_NEXT_FILE)) API->current_rec[GMT_IN]++;	/* Increase record count, unless EOF */
 
 	API->error = GMT_OK;	/* No error encountered */
+	if (retval) *retval = n_fields;	/* Requested we return the number of fields found */
 	return (record);	/* Return pointer to current record */		
 }
 

@@ -494,7 +494,7 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG ij, k, n, row, col, n_edges, *d_col = NULL, d_row = 0, ii, jj, make_plot, n_seg = 0;
-	GMT_LONG section, n_fields, n_read, n_alloc, closed, io_mode = 0, max_d_col = 0;
+	GMT_LONG section, n_read, n_alloc, closed, io_mode = 0, max_d_col = 0;
 	GMT_LONG error = FALSE, first = TRUE, node_only, n_seg_alloc = 0;
 	GMT_LONG fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
 
@@ -626,7 +626,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_read = 0;
 		do {	/* Keep returning records until we reach EOF */
 			n_read++;
-			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-09	pwessel
+	* gmtapi_util.c:	Let GMT_Get_Record's third argument (*n_fields) only return
+				the number of fields if it is not NULL.
+
 2011-11-08	pwessel
 	* *.c:			All modules using GMT_Get_Data are now checking for a NULL
 				return, and only then checking status.  This minimizes the
