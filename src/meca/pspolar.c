@@ -353,7 +353,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 
 GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n, ix, iy, n_fields, error = FALSE, greenwich, old_is_world;
+	GMT_LONG n, ix, iy, error = FALSE, greenwich, old_is_world;
    
 	double plot_x, plot_y, symbol_size2 = 0, plot_x0, plot_y0, azS = 0, si, co;
 	double new_plot_x0, new_plot_y0, radius, azimut = 0, ih = 0, plongement = 0.0;
@@ -430,7 +430,7 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

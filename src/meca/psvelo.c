@@ -273,7 +273,7 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, ix = 0, iy = 1, n_rec = 0, error = FALSE, old_is_world, justify;
-	GMT_LONG greenwich, des_ellipse = TRUE, n_fields, des_arrow = TRUE;
+	GMT_LONG greenwich, des_ellipse = TRUE, des_arrow = TRUE;
 
 	double xy[2], plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[7];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0;
@@ -334,7 +334,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_report (GMT, GMT_MSG_NORMAL, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

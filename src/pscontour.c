@@ -592,7 +592,7 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG nx, k2, k3, node1, node2, c, PSCONTOUR_SUM, cont_counts[2] = {0, 0};
-	GMT_LONG n_alloc, n_fields, n_contours = 0, io_mode = 0, id;
+	GMT_LONG n_alloc, n_contours = 0, io_mode = 0, id;
 	GMT_LONG add, last_entry, last_exit, make_plot, n_save = 0, n_save_alloc = 0;
 	GMT_LONG ij, n, np, k, i, low, high, *vert = NULL, *cind = NULL;
 	GMT_LONG error = FALSE, skip = FALSE, closed, *n_seg_alloc = NULL, *n_seg = NULL;
@@ -670,7 +670,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n = 0;
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

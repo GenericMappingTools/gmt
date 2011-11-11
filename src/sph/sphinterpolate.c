@@ -208,7 +208,7 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 
 GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, i, ij, ij_f, n = 0, n_alloc = 0, n_fields, error = FALSE;
+	GMT_LONG row, col, i, ij, ij_f, n = 0, n_alloc = 0, error = FALSE;
 
 	double w_min, w_max, sf = 1.0, X[3];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;
@@ -260,7 +260,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	w_min = DBL_MAX;	w_max = -DBL_MAX;
 	
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

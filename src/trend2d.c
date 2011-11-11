@@ -72,14 +72,14 @@ struct TREND2D_DATA {
 
 GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, GMT_LONG *n_data, double *xmin, double *xmax, double *ymin, double *ymax, GMT_LONG weighted_input, double **work)
 {
-	GMT_LONG i, n_alloc = GMT_CHUNK, n_fields;
+	GMT_LONG i, n_alloc = GMT_CHUNK;
 	double *in = NULL;
 
 	*data = GMT_memory (GMT, NULL, n_alloc, struct TREND2D_DATA);
 
 	i = 0;
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */

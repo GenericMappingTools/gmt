@@ -607,8 +607,7 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, n_total_read, n_total_used = 0, n_alloc = GMT_CHUNK;
-	GMT_LONG j, k, n_fields, rmode, error = FALSE;
-	GMT_LONG pure_ascii, skip, z_first = TRUE;
+	GMT_LONG j, k, rmode, error = FALSE, pure_ascii, skip, z_first = TRUE;
 
 	double xx, yy, cos_theta, sin_theta, sin_lat_to_pole = 1.0;
 	double theta = 0.0, d_along, sign = 1.0, s, c, *in = NULL;
@@ -875,7 +874,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		rmode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
 		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((in = GMT_Get_Record (API, rmode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo table headers */

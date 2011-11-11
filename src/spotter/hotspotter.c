@@ -292,7 +292,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG node_x_width;		/* Number of x-nodes covered by the seamount in question (y-dependent) */
 	GMT_LONG node_y_width;		/* Number of y-nodes covered by the seamount */
 	GMT_LONG node;			/* The current node index */
-	GMT_LONG n_fields, n_expected_fields;
+	GMT_LONG n_expected_fields;
 	GMT_LONG n_read = 0;		/* Number of records read */
 	GMT_LONG row, col, kx, ky, m, d_col, d_row, col_0, row_0, k0;
 	GMT_LONG error = FALSE;		/* TRUE when arguments are wrong */
@@ -421,7 +421,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */

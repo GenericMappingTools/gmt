@@ -1046,7 +1046,7 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, G
 
 GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, k, p, ii, n, m, nm, n_fields, error, dimension = 0;
+	GMT_LONG i, j, k, p, ii, n, m, nm, error, dimension = 0;
 	GMT_LONG n_expected_fields, normalize = 1, unit = 0, out_ID;
 	GMT_LONG old_n_alloc, n_alloc, ij, ji, nxy, n_ok = 0, way, new_grid = FALSE;
 	
@@ -1167,7 +1167,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	n = m = 0;
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

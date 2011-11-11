@@ -579,7 +579,7 @@ void new_initialize_grid (struct SURFACE_INFO *C)
 
 GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options)
 {
-	GMT_LONG i, j, k, kmax = 0, kmin = 0, n_fields, error;
+	GMT_LONG i, j, k, kmax = 0, kmin = 0, error;
 	double *in, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
 	struct GRD_HEADER *h = C->Grid->header;
 
@@ -604,7 +604,7 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 		return (GMT->parent->error);
 	}
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */

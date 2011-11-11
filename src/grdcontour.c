@@ -826,7 +826,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
 		char *record = NULL;
-		GMT_LONG got, in_ID, n_fields;
+		GMT_LONG got, in_ID;
 		double tmp;
 
 		n_contours = 0;
@@ -838,7 +838,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);
 		}
 		do {	/* Keep returning records until we reach EOF */
-			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

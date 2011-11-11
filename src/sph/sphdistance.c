@@ -232,7 +232,7 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG row, col, n = 0, n_dup = 0, n_set = 0, ij, ii, s_row, n_row, w_col, e_col, side;
-	GMT_LONG n_fields,  n_alloc, p_alloc = 0, nx1, error = FALSE, first = FALSE;
+	GMT_LONG n_alloc, p_alloc = 0, nx1, error = FALSE, first = FALSE;
 	GMT_LONG node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
 
 	double first_x = 0.0, first_y = 0.0, X[3], *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
@@ -337,7 +337,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (GMT_REC_IS_TBL_HEADER (GMT)) 	/* Skip all table headers */

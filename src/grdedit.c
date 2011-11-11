@@ -182,7 +182,7 @@ GMT_LONG GMT_grdedit_parse (struct GMTAPI_CTRL *C, struct GRDEDIT_CTRL *Ctrl, st
 GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* High-level function that implements the grdedit task */
 
-	GMT_LONG row, col, n_fields, error, n_data, k;
+	GMT_LONG row, col, error, n_data, k;
 	
 	double shift_amount = 0.0, *in = NULL;
 
@@ -282,7 +282,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 		n_data = 0;
 		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

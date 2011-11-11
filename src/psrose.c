@@ -297,7 +297,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, find_mean = FALSE, half_only = FALSE;
 	GMT_LONG automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
-	GMT_LONG n_bins, n_annot, n_alpha, n_modes, n_fields, form;
+	GMT_LONG n_bins, n_annot, n_alpha, n_modes, form;
 	GMT_LONG i, bin, n = 0, do_fill = FALSE, n_alloc = GMT_CHUNK;
 
 	char text[GMT_BUFSIZ], format[GMT_BUFSIZ];
@@ -377,7 +377,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

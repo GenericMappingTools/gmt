@@ -493,7 +493,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 
 GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG ix, iy, n_fields, n_rec = 0, n_plane_old = 0, form = 0, error;
+	GMT_LONG ix, iy, n_rec = 0, n_plane_old = 0, form = 0, error;
 	GMT_LONG no_size_needed, greenwich, old_is_world;
 	GMT_LONG i, transparence_old = 0, not_defined = 0;
 
@@ -576,7 +576,7 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */

@@ -743,7 +743,8 @@ segment headers we return a NULL pointer, with the status of the current record 
 \texttt{API->GMT->current.io.status}.  Typically, this status is examined using macros that
 return TRUE or FALSE depending on the particular check.  There are 11 macros available to
 programmers; for a list see Table~\ref{tbl:iomacros}.
-
+The \texttt{nfields} pointer will return the number of fields read; pass NULL if this is not
+of interest.
 
 Normally (\texttt{mode} == GMT\_READ\_DOUBLE or 0), we return a pointer to the double array.
 \index{GMT\_READ\_DOUBLE}

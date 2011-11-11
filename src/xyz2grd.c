@@ -286,7 +286,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, previous = 0;
-	GMT_LONG zcol, row, col, n_fields, *flag = NULL;
+	GMT_LONG zcol, row, col, *flag = NULL;
 	GMT_LONG i, ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;
 	GMT_LONG n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
 
@@ -349,7 +349,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT->current.io.output = GMT_z_output;		/* Override output writer */
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
 		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
@@ -519,7 +519,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */

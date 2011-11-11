@@ -174,7 +174,7 @@ GMT_LONG overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GR
 }
 
 GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
-	GMT_LONG n = 0, nr, one_or_zero = !h->registration, type, n_fields, do_sample, status, not_supported;
+	GMT_LONG n = 0, nr, one_or_zero = !h->registration, type, do_sample, status, not_supported;
 	struct GRDBLEND_INFO *B = NULL;
 	char *sense[2] = {"normal", "inverse"}, buffer[GMT_BUFSIZ];
 	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[GMT_BUFSIZ];
@@ -198,7 +198,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 		double weight;
 		GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
 		do {	/* Keep returning records until we reach EOF */
-			if ((line = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((line = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 					return (GMT_RUNTIME_ERROR);
 				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
