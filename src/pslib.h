@@ -253,7 +253,7 @@ struct PSL_CTRL {
 		double axis_limit[4];		/* The current xmin, xmax, ymin, ymax settings for axes */
 		double axis_pos[2];		/* Lower left placement for axes		*/
 		double axis_dim[2];		/* Lengths of axes 				*/
-		PSL_LONG verbose;		/* TRUE for verbose output, FALSE remains quiet	*/
+		PSL_LONG verbose;		/* Verbosity level (0-4): see PSL_MSG_*	*/
 		PSL_LONG comments;		/* TRUE for writing comments to output, FALSE strips all comments */
 		PSL_LONG overlay;		/* TRUE if overlay (-O)				*/
 		PSL_LONG landscape;		/* TRUE = Landscape, FALSE = Portrait		*/
