@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-11	remko
+	* pslib.c:		Fixed error in PSL_message (wrong verbosity handling)
+
 2011-10-16	pwessel
 	* triangulate.c:	Added -S to write triangle polygons and -Z to control use
 				of z-column.
