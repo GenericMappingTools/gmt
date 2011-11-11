@@ -2573,6 +2573,7 @@ struct GMT_PALETTE * GMT_sample_cpt (struct GMT_CTRL *C, struct GMT_PALETTE *Pin
 	if (log_mode) GMT_free (C, z_out);
 	P->model = Pin->model;
 	P->categorical = Pin->categorical;
+	P->is_continuous = continuous;
 
 	/* Background, foreground, and nan colors */
 

@@ -43,7 +43,7 @@ INCLUDES	= $(NETCDF_INC) $(GDAL_INC) $(PCRE_INC)
 # These three lines are temporarily here for the beta release
 PROGS2_O	= gmtaverage.o
 PROGSPS2_O	= testapi.o
-DEMOS2_O	= testgmt5.o testgmtio.o testio.o
+DEMOS2_O	= testgmt5.o testgmtio.o testio.o gmtmercmap.o
 
 DEMOS_O		= gmt.o $(DEMOS2_O)
 DEMOS		= $(DEMOS_O:.o=$(EXE))
@@ -221,6 +221,7 @@ gmt$(EXE):		gmt.o
 testgmt5$(EXE):		testgmt5.o
 testgmtio$(EXE):	testgmtio.o
 testio$(EXE):		testio.o
+gmtmercmap$(EXE):	gmtmercmap.o
 
 # PROGS
 blockmean$(EXE):	blockmean.o
