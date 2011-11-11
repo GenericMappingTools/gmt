@@ -4623,7 +4623,7 @@ int PSL_initerr (struct PSL_CTRL *C, char *format, ...) {
 
 int PSL_message (struct PSL_CTRL *C, PSL_LONG level, char *format, ...) {
 	va_list args;
-	if (level > C->internal.comments) return (0);
+	if (level > C->internal.verbose) return (0);
 #ifdef DEBUG
 	fprintf (C->init.err, "PSL:%s:%d: ", __FILE__, __LINE__);
 #else
