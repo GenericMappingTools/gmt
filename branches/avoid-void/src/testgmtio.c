@@ -55,8 +55,8 @@ int main (int argc, char *argv[]) {
 	 *    This lets us do special processing after a file has been fully read. */
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC)) != GMT_OK) exit (error);				/* Enables data input and sets access mode */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC)) != GMT_OK) exit (error);				/* Enables data output and sets access mode */
+	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN)) != GMT_OK) exit (error);				/* Enables data input and sets access mode */
+	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT)) != GMT_OK) exit (error);				/* Enables data output and sets access mode */
 	
 	do {	/* Keep returning records until we reach EOF */
 		mode = GMT_WRITE_DOUBLE;	/* Normally we treat data as double precision values */

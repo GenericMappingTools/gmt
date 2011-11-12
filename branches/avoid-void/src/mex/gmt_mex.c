@@ -140,9 +140,10 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 	return (i_string);
 }
 
-char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int nrhs, struct GMT_GRID **G)
+char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int nrhs)
 {	/* Used by programs that expect either an input file name or matrix with info or data vectors x, y */
 	char *i_string = NULL;
+	struct GMT_GRID *G = NULL;
 	if (nrhs == 2)		/* Gave a file name */
 		i_string = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
  	else {			/* Input via matrix and either info array or x,y arrays */
@@ -152,14 +153,14 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 		i_string = mxMalloc(GMT_BUFSIZ);
 
 		if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) mexErrMsgTxt ("Failure to create grid\n");
-		GMT_grd_init (API->GMT, (*G)->header, NULL, FALSE);
+		GMT_grd_init (API->GMT, G->header, NULL, FALSE);
 		
 		/*  Get the Z array and fill in the header info */
-		z = GMTMEX_info2grdheader (API, prhs, nrhs, *G);
+		z = GMTMEX_info2grdheader (API, prhs, nrhs, G);
 		/*  Allocate memory for the grid */
-		(*G)->data = GMT_memory (API->GMT, NULL, (*G)->header->size, float);
+		G->data = GMT_memory (API->GMT, NULL, G->header->size, float);
 		/* Transpose from Matlab orientation to grd orientation */
-		GMT_grd_loop (API->GMT, (*G), row, col, gmt_ij) (*G)->data[gmt_ij] = (float)z[MEX_IJ((*G),row,col)];
+		GMT_grd_loop (API->GMT, G, row, col, gmt_ij) G->data[gmt_ij] = (float)z[MEX_IJ(G,row,col)];
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, G, NULL)) == GMTAPI_NOTSET) {
 			mexErrMsgTxt ("Failure to register GMT source grid\n");
 		}
@@ -171,11 +172,10 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 	return (i_string);
 }
 
-char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, struct GMT_GRID **G, int nlhs, char *options)
+char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, GMT_LONG *out_ID, int nlhs, char *options)
 {	/* Associate output grid with Matlab grid */
-	GMT_LONG out_ID;
 	char buffer[GMTAPI_STRLEN], *o_string = NULL;
-	if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, G, NULL)) == GMTAPI_NOTSET) {
+	if ((*out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
 		mexErrMsgTxt ("Failure to register GMT destination grid\n");
 	}
 	if (nlhs == 0) {
@@ -185,7 +185,7 @@ char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, struct GMT_GRID **G, int n
 			mexErrMsgTxt ("Error: neither -G option nor left hand side output args.");
 	}
 	o_string = mxMalloc(GMTAPI_STRLEN);
-	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_OK) {	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, o_string, *out_ID) != GMT_OK) {	/* Make filename with embedded object ID */
 		mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");
 	}
 	//o_string = strdup (buffer);

@@ -198,10 +198,10 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), "stdout");
 
 	use_xy = !Ctrl->C.active;	/* If not -C then we must keep track of x,y locations */
-	if ((zw = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR)) == NULL) Return (GMT_MEMORY_ERROR);
-	if (use_xy && (xy = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR)) == NULL) Return (GMT_MEMORY_ERROR);
-	if (Ctrl->E.active && (slh = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_SLH)) == NULL) Return (GMT_MEMORY_ERROR);
-	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active && (np = GMT_memory (GMT, NULL, Grid->header->nm, GMT_LONG)) == NULL) Return (GMT_MEMORY_ERROR);
+	zw = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
+	if (use_xy) xy = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
+	if (Ctrl->E.active) slh = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_SLH);
+	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = GMT_memory (GMT, NULL, Grid->header->nm, GMT_LONG);
 
 	/* Specify input and output expected columns */
 	if ((error = GMT_set_cols (GMT, GMT_IN,  3 + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
@@ -239,7 +239,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 
@@ -320,7 +320,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Calculating block means\n");
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 

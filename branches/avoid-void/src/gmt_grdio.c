@@ -1516,8 +1516,8 @@ struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *C)
 {	/* Allocates space for a new grid container.  No space allocated for the float grid itself */
 	struct GMT_GRID *G = NULL;
 
-	if ((G = GMT_memory (C, NULL, 1, struct GMT_GRID)) == NULL) return (NULL);
-	if ((G->header = GMT_memory (C, NULL, 1, struct GRD_HEADER)) == NULL) return (NULL);
+	G = GMT_memory (C, NULL, 1, struct GMT_GRID);
+	G->header = GMT_memory (C, NULL, 1, struct GRD_HEADER);
 	GMT_grd_setpad (C, G->header, C->current.io.pad);	/* Use the system pad setting by default */
 	G->header->pocket = NULL;			/* Char pointer to hold whatever we may temporarilly need to store */
 	G->header->n_bands = 1;				/* Since all grids only have 1 layer */

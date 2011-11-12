@@ -659,10 +659,10 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	coord = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	if (Ctrl->N.active) lat_mode = Ctrl->N.mode + Ctrl->I.active;
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 	n_output = GMT_get_cols (GMT, GMT_OUT);

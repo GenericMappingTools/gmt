@@ -178,29 +178,31 @@ int main (int argc, char **argv)
 
 	/* 4. Compute the illumination grid */
 	
-	if ((z_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_READONLY, GMT_IS_SURFACE, GMT_IN,  &G, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
-	if ((i_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &I, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((z_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_READONLY, GMT_IS_SURFACE, GMT_IN, G, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((i_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, z_file, z_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	if (GMT_Encode_ID (API, i_file, i_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (cmd, "%s -G%s -Nt1 -A45 -fg", z_file, i_file);
 	if (GMT_grdgradient (API, 0, cmd) != GMT_OK) exit (EXIT_FAILURE);
+	if ((I = GMT_Retrieve_Data (API, i_ID)) == NULL) exit (EXIT_FAILURE);
 	
 	/* 5. Determine a reasonable color interval and get a CPT */
 	z_min = floor (G->header->z_min/500.0)*500.0;	z_max = floor (G->header->z_max/500.0)*500.0;
 	z = MAX (fabs (z_min), fabs (z_max));
-	if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_REF, GMT_IS_POINT, GMT_OUT, &P, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_REF, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, c_file, c_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (cmd, "-C%s -T%g/%g/500 -Z ->%s", Ctrl->C.file, -z, z, c_file);
 	sprintf (cmd, "-C%s -Z ->%s", Ctrl->C.file, c_file);
 	if (GMT_makecpt (API, 0, cmd) != GMT_OK) exit (EXIT_FAILURE);
+	if ((P = GMT_Retrieve_Data (API, c_ID)) == NULL) exit (EXIT_FAILURE);
 	
 	/* Now make the map */
 	
-	if ((z_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_READONLY, GMT_IS_SURFACE, GMT_IN,  &G, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((z_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_READONLY, GMT_IS_SURFACE, GMT_IN, G, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, z_file, z_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
-	if ((i_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_READONLY, GMT_IS_SURFACE, GMT_IN, &I, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((i_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_READONLY, GMT_IS_SURFACE, GMT_IN, I, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, i_file, i_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
-	if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_READONLY, GMT_IS_POINT, GMT_IN, &P, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_READONLY, GMT_IS_POINT, GMT_IN, P, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, c_file, c_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (cmd, "%s -I%s -C%s -JM%gi -BaWSne", z_file, i_file, c_file, Ctrl->W.width);
 	if (GMT->common.K.active) strcat (cmd, " -K");

@@ -511,11 +511,7 @@ GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, GMT_LONG m, GMT_LONG n, do
 	
 	/* allocate work space */
 		
-	rv1=calloc(n,sizeof(double));
-	if (rv1 == NULL) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error in GMT_svdcmp: Can't allocate work space\n");
-		return (EXIT_FAILURE);
-	}
+	rv1 = GMT_memory (GMT, NULL, n, double);
 	
 	/* do householder reduction to bidiagonal form */
 		
@@ -711,7 +707,7 @@ GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, GMT_LONG m, GMT_LONG n, do
 			w[k]=x;
 		}
 	}
-	free (rv1);
+	GMT_free (GMT, rv1);
 	return (GMT_NOERROR);
 }
 
@@ -753,12 +749,8 @@ GMT_LONG GMT_solve_svd (struct GMT_CTRL *GMT, double *u, GMT_LONG m, GMT_LONG n,
 	GMT_LONG i, j, n_use = 0;
 
 	/* allocate work space */
-		
-	ut = calloc(n*m,sizeof(double));	/* space for the transpose */
-	if (ut == NULL) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error in GMT_solve_svd: Can't allocate work space\n");
-		return (-1);
-	}
+	
+	ut = GMT_memory (GMT, NULL, n*m, double);	/* space for the transpose */
 	
 	/* find maximum singular value */
 	
@@ -794,7 +786,7 @@ GMT_LONG GMT_solve_svd (struct GMT_CTRL *GMT, double *u, GMT_LONG m, GMT_LONG n,
 
 	/* free work space */
 
-	free (ut);
+	GMT_free (GMT, ut);
 	
 	return (n_use);
 }

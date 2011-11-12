@@ -250,7 +250,7 @@ GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/* Load data row by row. The data in the file is stored in the same
 	 * "upside down" fashion as within GMT. The first row is the top row */
 
-	if ((tmp = GMT_memory (C, NULL, header->nx, float)) == NULL) return (GMT_MEMORY_ERROR);
+	tmp = GMT_memory (C, NULL, header->nx, float);
 
 	edge[0] = header->nx;
 	ij = pad[YHI] * width_out + i_0_out;
@@ -351,7 +351,7 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	/* Store z-variable */
 
 	if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-		if ((tmp_f = GMT_memory (C, NULL, width_in, float)) == NULL) return (GMT_MEMORY_ERROR);
+		tmp_f = GMT_memory (C, NULL, width_in, float);
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
@@ -373,7 +373,7 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		GMT_free (C, tmp_f);
 	}
 	else {
-		if ((tmp_i = GMT_memory (C, NULL, width_in, int)) == NULL) return (GMT_MEMORY_ERROR);
+		tmp_i = GMT_memory (C, NULL, width_in, int);
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {

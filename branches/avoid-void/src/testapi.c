@@ -249,9 +249,6 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_REG_FILES_IF_NONE, options) != GMT_OK) {	/* Registers default input destination, unless already set */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, Ctrl->T.mode, GMT_IN, GMT_BY_SET) != GMT_OK) {	/* Enables data input and sets access mode */
-		Return (API->error);
-	}
 
 	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, 0);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 	switch (Ctrl->I.mode) {
@@ -292,7 +289,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		case GMT_IS_COPY: case GMT_IS_REF:
 			switch (Ctrl->I.via) {
 				case GMT_VIA_MATRIX:	/* Get the dataset|grid via a user matrix */
-					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], GMT_IN, &M, NULL)) == GMTAPI_NOTSET) {
+					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], GMT_IN, M, NULL)) == GMTAPI_NOTSET) {
 						Return (API->error);
 					}
 					if ((Intmp = GMT_Get_Data (API, in_ID, 0, NULL)) == NULL) {
@@ -300,7 +297,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 					break;
 				case GMT_VIA_VECTOR:	/* Get the dataset|grid via a user vectors */
-					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], GMT_IN, &V, NULL)) == GMTAPI_NOTSET) {
+					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], GMT_IN, V, NULL)) == GMTAPI_NOTSET) {
 						Return (API->error);
 					}
 					if ((Intmp = GMT_Get_Data (API, in_ID, 0, NULL)) == NULL) {
@@ -313,7 +310,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 					break;
 			}
-			if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, &Intmp, NULL)) == GMTAPI_NOTSET) {
+			if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, Intmp, NULL)) == GMTAPI_NOTSET) {
 				Return (API->error);
 			}
 			break;
@@ -328,14 +325,11 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((In = GMT_Get_Data (API, in_ID, 0, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
-		Return (API->error);
-	}
 	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, 2);	/* Reset to GMT default */
 	
 	if (Ctrl->T.mode == GMT_IS_IMAGE) {	/* Since writing is not supported we just make a plot via GMT_psimage */
 		char buffer[GMT_BUFSIZ];
-		if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_REF, geometry[Ctrl->T.mode], GMT_IN, &In, NULL)) == GMTAPI_NOTSET) {
+		if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_REF, geometry[Ctrl->T.mode], GMT_IN, In, NULL)) == GMTAPI_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, in_ID) != GMT_OK) {
@@ -397,17 +391,17 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		case GMT_IS_COPY: case GMT_IS_REF:
 			switch (Ctrl->W.via) {
 				case GMT_VIA_MATRIX:	/* Put the dataset|grid via a user matrix */
-					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL)) == GMTAPI_NOTSET) {
+					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
 						Return (API->error);
 					}
 					break;
 				case GMT_VIA_VECTOR:	/* Put the dataset|grid via a user vector */
-					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL)) == GMTAPI_NOTSET) {
+					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
 						Return (API->error);
 					}
 					break;
 				default:
-					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL)) == GMTAPI_NOTSET) {
+					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
 						Return (API->error);
 					}
 					break;
@@ -429,6 +423,9 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->W.mode == GMT_IS_COPY || Ctrl->W.mode == GMT_IS_REF) {	/* Must write out what is in memory to the file */
+		if ((Out = GMT_Retrieve_Data (API, out_ID)) == NULL) {
+			Return (API->error);
+		}
 		if (Ctrl->W.via) {	/* Must first read into proper GMT container, then write to file */
 			if ((Outtmp = GMT_Read_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->W.via, geometry[Ctrl->T.mode], NULL, 0, Out, NULL)) == NULL) {
 				Return (API->error);

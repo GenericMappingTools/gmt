@@ -105,13 +105,13 @@ struct GMT_OPTION * GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
 		GMT_LONG pos = 0, new_n_args = 0, n_alloc = GMT_SMALL_CHUNK;
 		char p[GMT_BUFSIZ], *txt_in = in;	/* Passed a single text string */
-		if ((new_args = GMT_memory (G, NULL, n_alloc, char *)) == NULL) return_null (API, GMT_MEMORY_ERROR);
+		new_args = GMT_memory (G, NULL, n_alloc, char *);
 
 		while ((GMT_strtok (API->GMT, txt_in, " ", &pos, p))) {	/* Break up string into separate words */
 			new_args[new_n_args++] = strdup (p);
 			if (new_n_args == n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
-				if ((new_args = GMT_memory (G, new_args, n_alloc, char *)) == NULL) return_null (API, GMT_MEMORY_ERROR);
+				new_args = GMT_memory (G, new_args, n_alloc, char *);
 			}
 		}
 		args = new_args;
@@ -196,7 +196,7 @@ char ** GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, struct GMT_OPT
 
 	*argc = 0;	/* Start off with no arguments */
 
-	if ((txt = GMT_memory (G, NULL, n_alloc, char *)) == NULL) return_null (API, GMT_MEMORY_ERROR);
+	txt = GMT_memory (G, NULL, n_alloc, char *);
 
 	for (opt = head; opt; opt = opt->next) {	/* Loop over all options in the linked list */
 		if (!opt->option) continue;			/* Skip all empty options */
@@ -209,19 +209,14 @@ char ** GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, struct GMT_OPT
 		else							/* Regular -? commandline argument without argument */
 			sprintf (buffer, "-%c", opt->option);
 
-		if ((txt[arg] = GMT_memory (G, NULL, strlen (buffer)+1, char)) == NULL) {	/* Failed to allocate memory; free what we got and cry foul */
-			(void) GMT_Destroy_Args (API, arg, txt);	/* Free list content built so far, as well as the list.  We ignore the OK return since this is an error */
-			return_null (API, GMT_MEMORY_ERROR);	/* Report the error */
-		}
-		/* OK, got the memory we so boldly requested.  Copy over the buffer contents */
+		txt[arg] = GMT_memory (G, NULL, strlen (buffer)+1, char);	/* Get memory for this item */
+
+		/* Copy over the buffer contents */
 		strcpy (txt[arg], buffer);
 		arg++;	/* One more option added */
 		if (arg == n_alloc) {	/* Need more space for our growing list */
 			n_alloc += GMT_SMALL_CHUNK;
-			if ((txt = GMT_memory (G, txt, n_alloc, char *)) == NULL) {	/* Failed to extend the list; free what we got and cry foul */
-				(void) GMT_Destroy_Args (API, arg, txt);	/* Free list content built so far, as well as the list.  We ignore the OK return since this is an error */
-				return_null (API, GMT_MEMORY_ERROR);	/* Report the error */
-			}
+			txt = GMT_memory (G, txt, n_alloc, char *);
 		}
 	}
 	/* OK, done processing all options */
@@ -229,10 +224,7 @@ char ** GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, struct GMT_OPT
 		GMT_free (G, txt);
 	}
 	else if (arg < n_alloc) {	/* Trim back on the list to fit what we want */
-		if ((txt = GMT_memory (G, txt, arg, char *)) == NULL) {	/* Failed to shrink the list; free what we got and cry foul */
-			(void) GMT_Destroy_Args (API, arg, txt);	/* Free list content built so far, as well as the list.  We ignore the OK return since this is an error */
-			return_null (API, GMT_MEMORY_ERROR);	/* Report the error */
-		}
+		txt = GMT_memory (G, txt, arg, char *);
 	}
 	
 	*argc = arg;	/* Pass back the number of items created */
@@ -264,7 +256,7 @@ char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
 	if (head == NULL) return_null (API, GMT_OPTION_LIST_NULL);	/* No list of options was given */
 
-	if ((txt = GMT_memory (G, NULL, n_alloc, char)) == NULL) return_null (API, GMT_MEMORY_ERROR);
+	txt = GMT_memory (G, NULL, n_alloc, char);
 
 	for (opt = head; opt; opt = opt->next) {	/* Loop over all options in the linked list */
 		if (!opt->option) continue;			/* Skip all empty options */
@@ -279,9 +271,7 @@ char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 
 		inc = strlen (buffer);
 		if (!first) inc++;	/* Count the space */
-		if ((length + inc) >= n_alloc) {
-			if ((txt = GMT_memory (G, NULL, n_alloc *= 2, char)) == NULL) return_null (API, GMT_MEMORY_ERROR);
-		}
+		if ((length + inc) >= n_alloc) txt = GMT_memory (G, NULL, n_alloc *= 2, char);
 		if (!first) strcat (txt, " ");
 		strcat (txt, buffer);
 		length += inc;
@@ -293,9 +283,7 @@ char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 		GMT_free (G, txt);
 	}
 	else if (length < n_alloc) {	/* Trim back on the list to fit what we want */
-		if ((txt = GMT_memory (G, txt, length, char)) == NULL) {	/* Failed to shrink the list; free what we got and cry foul */
-			return_null (API, GMT_MEMORY_ERROR);	/* Report the error */
-		}
+		txt = GMT_memory (G, txt, length, char);
 	}
 
 	API->error = GMT_OK;	/* No error encountered */
@@ -321,7 +309,7 @@ struct GMT_OPTION * GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char 
 
 	/* Here we have a program-specific option or a file name.  In either case we create a new option structure */
 
-	if ((new = GMT_memory (API->GMT, NULL, 1, struct GMT_OPTION)) == NULL) return_null (API, GMT_MEMORY_ERROR);
+	new = GMT_memory (API->GMT, NULL, 1, struct GMT_OPTION);
 
 	if (option == GMTAPI_OPT_INFILE) {	/* Distinguish between filenames and numbers */
 		/* Note: Numbers (e.g., -0.544, 135, -1.8e+10, 133:30:23W, and 1766-12-09T12:15:11) have all been assigned as "files"; here we fix this */

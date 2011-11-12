@@ -27,7 +27,6 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	GMT_LONG status;
 	struct	GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct	GMT_VECTOR *Vi = NULL, *Vo = NULL;
-	struct	GMT_GRID *Gin = NULL;
 	float	*Z = NULL;
 	char	*input = NULL, *inputG = NULL, *output = NULL, *options = NULL, *cmd = NULL; 
 	int	n_cols, n_start;
@@ -53,7 +52,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	/* Set up input grid (actual or via Matlab matrix) */
 	if (!mxIsChar(prhs[0]) && mxGetM(prhs[0]) > 1 && mxGetN(prhs[0]) > 1) 
-		inputG = GMTMEX_src_grid_init (API, prhs, nrhs, &Gin);
+		inputG = GMTMEX_src_grid_init (API, prhs, nrhs);
 
 	/* Set up input file (actual or via Matlab vectors) */
 	n_cols = 2;	n_start = 2;

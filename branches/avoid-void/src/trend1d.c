@@ -638,7 +638,7 @@ GMT_LONG GMT_trend1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 	if ((error = read_data_trend1d (GMT, &data, &n_data, &xmin, &xmax, Ctrl->W.active, &work))) Return (error);
@@ -778,7 +778,7 @@ GMT_LONG GMT_trend1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	untransform_x_1d (data, n_data, Ctrl->N.mode, xmin, xmax);
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 
