@@ -1919,8 +1919,8 @@ struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors)
 {
 	/* Makes an empty palette table */
 	struct GMT_PALETTE *P = NULL;
-	if ((P = GMT_memory (C, NULL, 1, struct GMT_PALETTE)) == NULL) return (NULL);
-	if (n_colors > 0 && (P->range = GMT_memory (C, NULL, n_colors, struct GMT_LUT)) == NULL) return (NULL);
+	P = GMT_memory (C, NULL, 1, struct GMT_PALETTE);
+	if (n_colors > 0) P->range = GMT_memory (C, NULL, n_colors, struct GMT_LUT);
 	P->n_colors = n_colors;
 	P->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
 	

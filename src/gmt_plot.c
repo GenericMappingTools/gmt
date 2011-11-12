@@ -3043,7 +3043,7 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 	if ((error = GMT_set_cols (C, GMT_OUT, 1)) != GMT_OK) {
 		return (error);
 	}
-	if (GMT_Begin_IO (C->parent, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (C->parent, GMT_IS_TEXTSET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
 		return (C->parent->error);
 	}
 	free (name);

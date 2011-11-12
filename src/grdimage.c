@@ -585,13 +585,13 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_LONG object_ID;
 			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[GMT_BUFSIZ];
 			/* Create option list, register G as input source via reference */
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Intens_orig, NULL)) == GMTAPI_NOTSET) 
+			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, Intens_orig, NULL)) == GMTAPI_NOTSET) 
 				Return (API->error);
 			if (GMT_Encode_ID (API, in_string, object_ID) != GMT_OK) {
 				Return (API->error);	/* Make filename with embedded object ID for grid G */
 			}
 
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &G2, NULL)) == GMTAPI_NOTSET) {
+			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
 				Return (API->error);
 			}
 			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_OK) {
@@ -600,6 +600,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			sprintf (cmd, "%s -G%s -I%ld+/%ld+", in_string, out_string, nx, ny);
 			if (GMT_grdsample (GMT->parent, 0, cmd) != GMT_OK) return (API->error);	/* Do the resampling */
+			if ((G2 = GMT_Retrieve_Data (API, object_ID)) == NULL) {
+				Return (API->error);
+			}
 			Intens_orig->alloc_mode = GMT_ALLOCATED;	/* So we may destroy it */
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig) != GMT_OK) {
 				Return (API->error);

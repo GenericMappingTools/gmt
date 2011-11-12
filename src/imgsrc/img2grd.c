@@ -289,7 +289,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	struct GMT_IMG_COORD imgcoord;
 	struct GMT_IMG_RANGE imgrange = { GMT_IMG_MAXLON, GMT_IMG_MINLAT, GMT_IMG_MAXLAT, GMT_IMG_MPIXEL };
-	struct GMT_GRID *Merc = NULL, *Geo = NULL;
+	struct GMT_GRID *Merc = NULL;
 	struct IMG2GRD_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -614,7 +614,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Undo the implicit spherical Mercator -Jm1i projection.\n");
 	/* Preparing source and destination for GMT_grdproject */
 	/* a. Register the Mercator grid to be the source read by GMT_grdproject by passing a pointer */
-	if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Merc, NULL)) == GMTAPI_NOTSET) {
+	if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, Merc, NULL)) == GMTAPI_NOTSET) {
 		Return (API->error);
 	}
 	if (GMT_Encode_ID (API, s_in_ID, in_ID) != GMT_OK) {
@@ -622,7 +622,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	/* b. If -E: Register a grid struct Geo to be the destination allocated and written to by GMT_grdproject, else write to -G<file> */
 	if (Ctrl->E.active) {	/* Since we will resample again, register a memory location for the result */
-		if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, &Geo, NULL)) == GMTAPI_NOTSET) {
+		if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, s_out_ID, out_ID) != GMT_OK) {
@@ -641,11 +641,15 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->E.active) {	/* Resample again using the given -R and the dx/dy in even minutes */
 		/* Preparing source and destination for GMT_grdsample */
 		/* a. Register the Geographic grid returned by GMT_grdproject to be the source read by GMT_grdsample by passing a pointer */
+		struct GMT_GRID *Geo = NULL;
+		if ((Geo = GMT_Retrieve_Data (API, out_ID)) == NULL) {
+			Return (API->error);
+		}
 		strcpy (Geo->header->title, "Data from Altimetry");
 		strcpy (Geo->header->z_units, z_units);
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
-		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, &Geo, NULL)) == GMTAPI_NOTSET) {
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, Geo, NULL)) == GMTAPI_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, s_in_ID, in_ID) != GMT_OK) {	/* Make filename with embedded object ID */

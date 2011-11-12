@@ -4485,14 +4485,14 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 
 	/* Determine w/e/s/n via GMT_minmax */
 
-	/* Create option list, register D[GMT_OUT] as input source via ref */
+	/* Create option list, register D as input source via ref */
 	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D, NULL)) == GMTAPI_NOTSET) {
 		return (C->parent->error);
 	}
 	if (GMT_Encode_ID (C->parent, in_string, object_ID) != GMT_OK) {
 		return (C->parent->error);	/* Make filename with embedded object ID */
 	}
-	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_COPY, GMT_IS_POINT, GMT_OUT, M, NULL)) == GMTAPI_NOTSET) {
+	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_COPY, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
 		return (C->parent->error);
 	}
 	if (GMT_Encode_ID (C->parent, out_string, object_ID)) {
@@ -4500,6 +4500,9 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	}
 	sprintf (buffer, "-C -fg -<%s ->%s", in_string, out_string);
 	if (GMT_minmax (C->parent, 0, buffer) != GMT_OK) {	/* Get the extent via minmax */
+		return (C->parent->error);
+	}
+	if ((M = GMT_Retrieve_Data (C->parent, object_ID)) == NULL) {
 		return (C->parent->error);
 	}
 	
@@ -5008,18 +5011,18 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, 
 	struct GMT_TEXT_TABLE *T = NULL;
 	struct GMT_TEXTSET *D = NULL;
 	
-	if ((D = GMT_memory (C, NULL, 1, struct GMT_TEXTSET)) == NULL) return (NULL);
-	if ((D->table = GMT_memory (C, NULL, n_tables, struct GMT_TEXT_TABLE *)) == NULL) return (NULL);
+	D = GMT_memory (C, NULL, 1, struct GMT_TEXTSET);
+	D->table = GMT_memory (C, NULL, n_tables, struct GMT_TEXT_TABLE *);
 	D->n_tables = D->n_alloc = n_tables;
 	D->n_segments = n_tables * n_segments;
 	for (tbl = 0; tbl < n_tables; tbl++) {
-		if ((D->table[tbl] = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE)) == NULL) return (NULL);
+		D->table[tbl] = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE);
 		T = D->table[tbl];
-		if ((T->segment = GMT_memory (C, NULL, n_segments, struct GMT_TEXT_SEGMENT *)) == NULL) return (NULL);
+		T->segment = GMT_memory (C, NULL, n_segments, struct GMT_TEXT_SEGMENT *);
 		T->n_segments = T->n_alloc = n_segments;
 		for (seg = 0; seg < T->n_segments; seg++) {
-			if ((T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXT_SEGMENT)) == NULL) return (NULL);
-			if ((T->segment[seg]->record = GMT_memory (C, NULL, n_rows, char *)) == NULL) return (NULL);
+			T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXT_SEGMENT);
+			T->segment[seg]->record = GMT_memory (C, NULL, n_rows, char *);
 			T->segment[seg]->n_alloc = n_rows;
 		}
 	}
@@ -5156,9 +5159,9 @@ GMT_LONG GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, GMT_
  	 * If n_rows is negative then we do not set S->n_rows.  */
 	GMT_LONG col;
 	if (first && n_columns) {	/* First time we allocate the number of columns needed */
-		if ((S->coord = GMT_memory (C, NULL, n_columns, double *)) == NULL) return (GMT_MEMORY_ERROR);
-		if ((S->min = GMT_memory (C, NULL, n_columns, double)) == NULL) return (GMT_MEMORY_ERROR);
-		if ((S->max = GMT_memory (C, NULL, n_columns, double)) == NULL) return (GMT_MEMORY_ERROR);
+		S->coord = GMT_memory (C, NULL, n_columns, double *);
+		S->min = GMT_memory (C, NULL, n_columns, double);
+		S->max = GMT_memory (C, NULL, n_columns, double);
 		S->n_columns = n_columns;
 		for (col = 0; col < n_columns; col++) {	/* Initialize the min/max array */
 			S->min[col] = +DBL_MAX;
@@ -5168,7 +5171,7 @@ GMT_LONG GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, GMT_
 	if (n_rows > 0) S->n_rows = n_rows;
 	n_rows = GMT_abs (n_rows);
 	S->n_alloc = n_rows;
-	if (n_rows) for (col = 0; col < n_columns; col++) if ((S->coord[col] = GMT_memory (C, S->coord[col], n_rows, double)) == NULL) return (GMT_MEMORY_ERROR);
+	if (n_rows) for (col = 0; col < n_columns; col++) S->coord[col] = GMT_memory (C, S->coord[col], n_rows, double);
 	return (GMT_OK);
 }
 
@@ -5182,19 +5185,19 @@ struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, GMT_LONG n_segments, GM
 	GMT_LONG seg;
 	struct GMT_TABLE *T = NULL;
 	
-	if ((T = GMT_memory (C, NULL, 1, struct GMT_TABLE)) == NULL) return (NULL);
+	T = GMT_memory (C, NULL, 1, struct GMT_TABLE);
 	if (n_segments > 0) T->n_segments = n_segments;
 	n_segments = GMT_abs (n_segments);
 	T->n_alloc = n_segments;
 	T->n_columns = n_columns;
 	if (n_columns) {
-		if ((T->min = GMT_memory (C, NULL, n_columns, double)) == NULL) return (NULL);
-		if ((T->max = GMT_memory (C, NULL, n_columns, double)) == NULL) return (NULL);
+		T->min = GMT_memory (C, NULL, n_columns, double);
+		T->max = GMT_memory (C, NULL, n_columns, double);
 	}
 	if (n_segments) {
-		if ((T->segment = GMT_memory (C, NULL, n_segments, struct GMT_LINE_SEGMENT *)) == NULL) return (NULL);
+		T->segment = GMT_memory (C, NULL, n_segments, struct GMT_LINE_SEGMENT *);
 		for (seg = 0; n_columns && seg < n_segments; seg++) {
-			if ((T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT)) == NULL) return (NULL);
+			T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
 			if (GMT_alloc_segment (C, T->segment[seg], n_rows, n_columns, TRUE)) return (NULL);
 		}
 	}
@@ -5207,13 +5210,13 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, GMT_LONG n_tables, 
 	GMT_LONG tbl;
 	struct GMT_DATASET *D = NULL;
 	
-	if ((D = GMT_memory (C, NULL, 1, struct GMT_DATASET)) == NULL) return (NULL);
+	D = GMT_memory (C, NULL, 1, struct GMT_DATASET);
 	D->n_columns = n_columns;
 	if (n_columns) {
-		if ((D->min = GMT_memory (C, NULL, n_columns, double)) == NULL) return (NULL);
-		if ((D->max = GMT_memory (C, NULL, n_columns, double)) == NULL) return (NULL);
+		D->min = GMT_memory (C, NULL, n_columns, double);
+		D->max = GMT_memory (C, NULL, n_columns, double);
 	}
-	if ((D->table = GMT_memory (C, NULL, n_tables, struct GMT_TABLE *)) == NULL) return (NULL);
+	D->table = GMT_memory (C, NULL, n_tables, struct GMT_TABLE *);
 	D->n_tables = D->n_alloc = n_tables;
 	if (n_segments > 0) D->n_segments = D->n_tables * n_segments;
 	if (n_segments > 0) D->n_records = D->n_segments * n_rows;
@@ -5719,9 +5722,9 @@ struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *C, GMT_LONG n_columns)
 {	/* Allocates space for a new vector container.  No space allocated for the vectors themselves */
 	struct GMT_VECTOR *V = NULL;
 	
-	if ((V = GMT_memory (C, NULL, 1, struct GMT_VECTOR)) == NULL) return (NULL);
-	if ((V->data = GMT_memory (C, NULL, n_columns, union GMT_UNIVECTOR)) == NULL) return (NULL);
-	if ((V->type = GMT_memory (C, NULL, n_columns, GMT_LONG)) == NULL) return (NULL);
+	V = GMT_memory (C, NULL, 1, struct GMT_VECTOR);
+	V->data = GMT_memory (C, NULL, n_columns, union GMT_UNIVECTOR);
+	V->type = GMT_memory (C, NULL, n_columns, GMT_LONG);
 	V->n_columns = n_columns;
 	V->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
 	
@@ -5730,21 +5733,38 @@ struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *C, GMT_LONG n_columns)
 
 GMT_LONG GMT_alloc_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, GMT_LONG type, GMT_LONG n_rows)
 {	/* Allocate space for one univector according to data type */
-	GMT_LONG err = 0;
 	
 	switch (type) {
-		case GMTAPI_UCHAR:  if ((u->uc1 = GMT_memory (C, u->uc1, n_rows, unsigned char)) == NULL) err = GMT_MEMORY_ERROR;	break;
-		case GMTAPI_CHAR:   if ((u->sc1 = GMT_memory (C, u->sc1, n_rows, char)) == NULL) err = GMT_MEMORY_ERROR;		break;
-		case GMTAPI_USHORT: if ((u->ui2 = GMT_memory (C, u->ui2, n_rows, unsigned short int)) == NULL) err = GMT_MEMORY_ERROR;	break;
-		case GMTAPI_SHORT:  if ((u->si2 = GMT_memory (C, u->si2, n_rows, short int)) == NULL) err = GMT_MEMORY_ERROR;		break;
-		case GMTAPI_UINT:   if ((u->ui4 = GMT_memory (C, u->ui4, n_rows, unsigned int)) == NULL) err = GMT_MEMORY_ERROR;	break;
-		case GMTAPI_INT:    if ((u->si4 = GMT_memory (C, u->si4, n_rows, int)) == NULL) err = GMT_MEMORY_ERROR;			break;
-		case GMTAPI_ULONG:  if ((u->ui8 = GMT_memory (C, u->ui8, n_rows, GMT_ULONG)) == NULL) err = GMT_MEMORY_ERROR;		break;
-		case GMTAPI_LONG:   if ((u->si8 = GMT_memory (C, u->si8, n_rows, GMT_LONG)) == NULL) err = GMT_MEMORY_ERROR;		break;
-		case GMTAPI_FLOAT:  if ((u->f4  = GMT_memory (C, u->f4,  n_rows, float)) == NULL) err = GMT_MEMORY_ERROR;		break;
-		case GMTAPI_DOUBLE: if ((u->f8  = GMT_memory (C, u->f8,  n_rows, double)) == NULL) err = GMT_MEMORY_ERROR;		break;
+		case GMTAPI_UCHAR:  u->uc1 = GMT_memory (C, u->uc1, n_rows, unsigned char);		break;
+		case GMTAPI_CHAR:   u->sc1 = GMT_memory (C, u->sc1, n_rows, char);			break;
+		case GMTAPI_USHORT: u->ui2 = GMT_memory (C, u->ui2, n_rows, unsigned short int);	break;
+		case GMTAPI_SHORT:  u->si2 = GMT_memory (C, u->si2, n_rows, short int);			break;
+		case GMTAPI_UINT:   u->ui4 = GMT_memory (C, u->ui4, n_rows, unsigned int);		break;
+		case GMTAPI_INT:    u->si4 = GMT_memory (C, u->si4, n_rows, int);			break;
+		case GMTAPI_ULONG:  u->ui8 = GMT_memory (C, u->ui8, n_rows, GMT_ULONG);			break;
+		case GMTAPI_LONG:   u->si8 = GMT_memory (C, u->si8, n_rows, GMT_LONG);			break;
+		case GMTAPI_FLOAT:  u->f4  = GMT_memory (C, u->f4,  n_rows, float);			break;
+		case GMTAPI_DOUBLE: u->f8  = GMT_memory (C, u->f8,  n_rows, double);			break;
 	}
-	return (err);
+	return (GMT_OK);
+}
+
+GMT_LONG GMT_duplicate_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u_out, union GMT_UNIVECTOR *u_in, GMT_LONG type, GMT_LONG n_rows)
+{	/* Allocate space for one univector according to data type */
+	
+	switch (type) {
+		case GMTAPI_UCHAR:  GMT_memcpy (u_out->uc1, u_in->uc1, n_rows, unsigned char);		break;
+		case GMTAPI_CHAR:   GMT_memcpy (u_out->sc1, u_in->sc1, n_rows, char);			break;
+		case GMTAPI_USHORT: GMT_memcpy (u_out->ui2, u_in->ui2, n_rows, unsigned short int);	break;
+		case GMTAPI_SHORT:  GMT_memcpy (u_out->si2, u_in->si2, n_rows, short int);		break;
+		case GMTAPI_UINT:   GMT_memcpy (u_out->ui4, u_in->ui4, n_rows, unsigned int);		break;
+		case GMTAPI_INT:    GMT_memcpy (u_out->si4, u_in->si4, n_rows, int);			break;
+		case GMTAPI_ULONG:  GMT_memcpy (u_out->ui8, u_in->ui8, n_rows, GMT_ULONG);		break;
+		case GMTAPI_LONG:   GMT_memcpy (u_out->si8, u_in->si8, n_rows, GMT_LONG);		break;
+		case GMTAPI_FLOAT:  GMT_memcpy (u_out->f4,  u_in->f4,  n_rows, float);			break;
+		case GMTAPI_DOUBLE: GMT_memcpy (u_out->f8,  u_in->f8,  n_rows, double);			break;
+	}
+	return (GMT_OK);
 }
 
 GMT_LONG GMT_alloc_vectors (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_LONG n_rows)
@@ -5776,11 +5796,43 @@ void GMT_free_vector (struct GMT_CTRL *C, struct GMT_VECTOR **V, GMT_LONG free_v
 	GMT_free (C, *V);
 }
 
+struct GMT_VECTOR * GMT_duplicate_vector (struct GMT_CTRL *C, struct GMT_VECTOR *V_in, GMT_LONG duplicate_data)
+{	/* Duplicates a vector contrainer - optionally duplicates data arrays */
+	struct GMT_VECTOR *V = NULL;
+	
+	V = GMT_memory (C, NULL, 1, struct GMT_VECTOR);
+	GMT_memcpy (V, V_in, 1, struct GMT_MATRIX);
+	V->data = GMT_memory (C, NULL, V_in->n_columns, union GMT_UNIVECTOR);
+	V->type = GMT_memory (C, NULL, V_in->n_columns, GMT_LONG);
+	if (duplicate_data) {
+		GMT_LONG col;
+		for (col = 0; col < V_in->n_columns; col++) {
+			GMT_alloc_univector (C, &V->data[col], V->type[col], V->n_rows);
+			GMT_duplicate_univector (C, &V->data[col], &V_in->data[col], V->type[col], V->n_rows);
+		}
+	}
+	return (V);
+}
+
 struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *C)
 {	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
-	if ((M = GMT_memory (C, NULL, 1, struct GMT_MATRIX)) == NULL) return (NULL);
+	M = GMT_memory (C, NULL, 1, struct GMT_MATRIX);
 	M->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	return (M);
+}
+
+struct GMT_MATRIX * GMT_duplicate_matrix (struct GMT_CTRL *C, struct GMT_MATRIX *M_in, GMT_LONG duplicate_data)
+{	/* Duplicates a matrix container - optionally duplicates the data array */
+	struct GMT_MATRIX *M = NULL;
+	M = GMT_memory (C, NULL, 1, struct GMT_MATRIX);
+	GMT_memcpy (M, M_in, 1, struct GMT_MATRIX);
+	GMT_memset (&M->data, 1, union GMT_UNIVECTOR);
+	if (duplicate_data) {
+		GMT_LONG size = M->n_rows * M->n_columns;
+		GMT_alloc_univector (C, &(M->data), M->type, size);
+		GMT_duplicate_univector (C, &M->data, &M_in->data, M->type, size);
+	}
 	return (M);
 }
 

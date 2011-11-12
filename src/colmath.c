@@ -204,13 +204,7 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Read in the input tables */
 	
-	if (GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET) != GMT_OK) {	/* Enables data input and sets access mode */
-		Return (API->error);
-	}
 	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
-		Return (API->error);
-	}
-	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}
 
@@ -283,13 +277,7 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 	
-	if (GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET) != GMT_OK) {	/* Enables data output and sets access mode */
-		Return (API->error);
-	}
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, D[GMT_OUT]->io_mode, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
-		Return (API->error);
-	}
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
 	}
 	

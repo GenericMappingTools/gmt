@@ -2,6 +2,13 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-11	pwessel
+	* gmtapi_util.c:	Introduce GMT_Retrieve_Data to return a pointer to a container
+				that was allocated when a memory location was registered as the
+				output.  Reduced GMT_Begin_IO to only apply to rec-by-rec i/o,
+				hence we could remove the mode variable.  GMT_Register_IO now
+				expects the pointer to the resource, not the pointer address.
+
 2011-11-09	pwessel
 	* gmtapi_util.c:	Let GMT_Get_Record's third argument (*n_fields) only return
 				the number of fields if it is not NULL.

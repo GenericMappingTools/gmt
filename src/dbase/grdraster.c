@@ -212,7 +212,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		return (0);
 	}
 
-	if (GMT_Begin_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
 		GMT_report (GMT, GMT_MSG_FATAL, "Error reading grdraster.info. Error code = %ld\n", GMT->parent->error);
 		return (0);
 	}
@@ -222,7 +222,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 	if ((l = strstr (dir, "grdraster.info"))) *l = '\0';
 
 	n_alloc = GMT_SMALL_CHUNK;
-	if ((rasinfo = GMT_memory (GMT, NULL, n_alloc, struct GRDRASTER_INFO)) == NULL) return (GMT_MEMORY_ERROR);
+	rasinfo = GMT_memory (GMT, NULL, n_alloc, struct GRDRASTER_INFO);
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((record = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -579,7 +579,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 
 		if (nfound == n_alloc) {
 			n_alloc <<= 1;
-			if ((rasinfo = GMT_memory (GMT, rasinfo, n_alloc, struct GRDRASTER_INFO)) == NULL) return (GMT_MEMORY_ERROR);
+			rasinfo = GMT_memory (GMT, rasinfo, n_alloc, struct GRDRASTER_INFO);
 		}
 	} while (TRUE);
 	
@@ -590,7 +590,8 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 
 	if (!nfound)
 		GMT_report (GMT, GMT_MSG_FATAL, "No valid records or no existing grid files found in grdraster.info\n");
-	else if ((rasinfo = GMT_memory (GMT, rasinfo, nfound, struct GRDRASTER_INFO)) == NULL) return (GMT_MEMORY_ERROR);
+	else
+		rasinfo = GMT_memory (GMT, rasinfo, nfound, struct GRDRASTER_INFO);
 
 	*ras = rasinfo;
 	return (nfound);
@@ -935,27 +936,27 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Get space */
 	if (Ctrl->T.active) {	/* Need just space for one row */
-		if ((Grid->data = GMT_memory (GMT, NULL, Grid->header->nx, float)) == NULL) Return (GMT_MEMORY_ERROR);
-		if ((x = GMT_memory (GMT, NULL, Grid->header->nx, double)) == NULL) Return (GMT_MEMORY_ERROR);
+		Grid->data = GMT_memory (GMT, NULL, Grid->header->nx, float);
+		x = GMT_memory (GMT, NULL, Grid->header->nx, double);
 		for (i = 0; i < Grid->header->nx; i++) x[i] = GMT_col_to_x (GMT, i, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
-		if (GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_REC) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (error);
 		}
 	} else {	/* Need an entire (padded) grid */
-		if ((Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float)) == NULL) Return (GMT_MEMORY_ERROR);
+		Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 	}
 
 	ksize = get_byte_size (GMT, myras.type);
 	if (ksize == 0) {	/* Bits; Need to read the whole thing */
 		nmask = (GMT_LONG)ceil (myras.h.nx * myras.h.ny * 0.125);
-		if ((ubuffer = GMT_memory (GMT, NULL, nmask, unsigned char)) == NULL) Return (GMT_MEMORY_ERROR);
+		ubuffer = GMT_memory (GMT, NULL, nmask, unsigned char);
 	}
 	else {	/* Need to read by rows, and convert each row to float */
-		if ((buffer = GMT_memory (GMT, NULL, ksize * myras.h.nx, char)) == NULL) Return (GMT_MEMORY_ERROR);
-		if ((floatrasrow = GMT_memory (GMT, NULL, myras.h.nx, float)) == NULL) Return (GMT_MEMORY_ERROR);
+		buffer = GMT_memory (GMT, NULL, ksize * myras.h.nx, char);
+		floatrasrow = GMT_memory (GMT, NULL, myras.h.nx, float);
 	}
 
 	/* Now open file and do it */
