@@ -28,8 +28,8 @@ int main (int argc, char **argv) {
 	fp_fix = fopen ("/home/aa4/gmt/wvs/fix_3.lis", "w");
 	fp = fopen ("/home/aa4/gmt/wvs/headers2.b", "r");
 	fp_in = fopen ("/home/aa4/gmt/wvs/final_x_polygons.b", "r");
-	fread ((char *)&n_id, sizeof (int), 1, fp);
-	fread ((char *)poly, sizeof (struct CHECK), n_id, fp);
+	fread (&n_id, sizeof (int), 1, fp);
+	fread (poly, sizeof (struct CHECK), n_id, fp);
 	fclose (fp);
 	
 	i = 0;
@@ -50,7 +50,7 @@ int main (int argc, char **argv) {
 			fseek (fp_in, poly[id].pos, 0);
 		
 			for (k = 0; k < poly[id].h.n; k++) {
-				if (fread((char *)&p, sizeof(struct LONGPAIR), 1, fp_in) != 1) {
+				if (fread(&p, sizeof(struct LONGPAIR), 1, fp_in) != 1) {
 					fprintf(stderr,"polygon_extract: Error reading file.\n");
 					exit(-1);
 				}

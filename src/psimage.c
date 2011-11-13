@@ -80,12 +80,12 @@ void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	strcpy (C->C.justify, "LB");
 	C->G.f_rgb[0] = C->G.b_rgb[0] = C->G.t_rgb[0] = -2;
 	C->N.nx = C->N.ny = 1;	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psimage_Ctrl (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);
+	if (C->In.file) free (C->In.file);
 	GMT_free (GMT, C);
 }
 
@@ -272,7 +272,7 @@ GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
 		GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", file);
 		return (-1);
 	}
-	if (GMT_fread ((void *)c, (size_t)1, (size_t)4, fp) != (size_t)4) {
+	if (GMT_fread (c, (size_t)1, (size_t)4, fp) != (size_t)4) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Could not read 4 bytes from file %s\n", file);
 		return (-1);
 	}
@@ -310,7 +310,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_psimage_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_psimage_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -318,8 +318,8 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_psimage", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJR", "KOPUXxYycpt>", options))) Return (error);
-	Ctrl = (struct PSIMAGE_CTRL *)New_psimage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJR", "KOPUXxYycpt>", options)) Return (API->error);
+	Ctrl = New_psimage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psimage_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
@@ -343,10 +343,9 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef USE_GDAL
 	else  {	/* Read a raster image */
 		GMT_set_pad (GMT, 0);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
-		if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->In.file, (void **)&I)) 
-			Return (GMT_DATA_READ_ERROR);
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		GMT_set_pad (GMT, 2);	/* Reset to GMT default */
 
 		if (I->ColorMap != NULL) {
@@ -386,10 +385,13 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n = 3 * header.width * header.height;
 		buffer = psl_gray_encode (PSL, &n, picture);
 		header.depth = 8;
-		if (known) PSL_free (PSL, picture);	/* EPS or Sun raster file */
+		if (known) PSL_free (picture); /* EPS or Sun raster file */
 #ifdef USE_GDAL
-		else	/* Got it via GMT_Get_Data */
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&I);
+		else {	/* Got it via GMT_Read_Data */
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {
+				Return (API->error);
+			}
+		}
 #endif
 		picture = buffer;
 	}
@@ -405,9 +407,11 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)Ctrl->G.t_rgb[i];
 		GMT_memcpy (&(buffer[j]), picture, n, unsigned char);
 #ifdef USE_GDAL
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&I);	/* If I is NULL then nothing is done */
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {	/* If I is NULL then nothing is done */
+			Return (API->error);
+		}
 #else
-		PSL_free (PSL, picture);
+		PSL_free (picture);
 #endif
 		picture = buffer;
 		free_GMT = TRUE;
@@ -477,12 +481,15 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_plotend (GMT);
 
 #ifdef USE_GDAL
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&I);	/* If I is NULL then nothing is done */
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {
+		Return (API->error);	/* If I is NULL then nothing is done */
+	}
 #endif
-	if (free_GMT)
+	if (free_GMT) {
 		GMT_free (GMT, picture);
+	}
 	else if (known)
-		PSL_free (PSL, picture);
+		PSL_free (picture);
 
 	Return (GMT_OK);
 }

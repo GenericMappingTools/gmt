@@ -116,12 +116,12 @@ void *New_mgd77manage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	C->A.parameters[IMG_SCALE] = 1.0;	/* IMG data scaling */
 	C->C.mode = 2;
 	C->E.value = '9';
- 	return ((void *)C);
+ 	return (C);
 }
 
 void Free_mgd77manage_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	/* Deallocate control structure */
-	if (C->A.file) free ((void *)C->A.file);	
-	if (C->D.file) free ((void *)C->D.file);	
+	if (C->A.file) free (C->A.file);	
+	if (C->D.file) free (C->D.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -541,7 +541,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (options && options->option == '?') return (GMT_mgd77manage_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77manage_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -549,9 +549,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77manage", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
-	Ctrl = (struct MGD77MANAGE_CTRL *) New_mgd77manage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77manage_parse (API, Ctrl, options))) Return ((int)error);
+	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
+	Ctrl = New_mgd77manage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = GMT_mgd77manage_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mgd77manage main code ----------------------------*/
 
@@ -581,7 +581,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	MGD77_Set_Unit (GMT, Ctrl->N.code, &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 
-	memset ((void *)not_given, (int)Ctrl->E.value, (size_t)GMT_TEXT_LEN64);	/* Text representing "no text value" */
+	memset (not_given, (int)Ctrl->E.value, (size_t)GMT_TEXT_LEN64);	/* Text representing "no text value" */
 	not_given[GMT_TEXT_LEN64-1] = '\0';
 	fp_err = (In.verbose_dest == 1) ? GMT->session.std[GMT_OUT] : GMT->session.std[GMT_ERR];
 	
@@ -629,13 +629,13 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (Ctrl->A.mode == MODE_g) {	/* Read regular GMT grid */
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->A.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-	
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->A.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->A.file, NULL)) == NULL) {	/* Get data */
+			Return (API->error);
+		}
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}
 	else if (Ctrl->A.mode == MODE_i) {	/* Read Sandwell/Smith IMG file */
-		G = GMT_create_grid (GMT);
+		if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		GMT_read_img (GMT, Ctrl->A.file, G, NULL, Ctrl->A.parameters[IMG_SCALE], (GMT_LONG)irint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], TRUE);
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}
@@ -686,12 +686,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_expected_fields = 1;
 		}
 		
-		if (ok_to_read) n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in);
+		if (ok_to_read) in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields);
 
 		while (ok_to_read && !GMT_REC_IS_EOF (GMT)) {	/* Not yet EOF */
 
 			while (GMT_REC_IS_SEG_HEADER (GMT) && !GMT_REC_IS_EOF(GMT)) {
-				n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in);
+				in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields);
 			}
 			if ((GMT->current.io.status & GMT_IO_EOF)) continue;	/* At EOF */
 
@@ -732,7 +732,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (two_cols) coldnt = GMT_memory (GMT, coldnt, n_alloc, double);
 			}
 
-			n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in);
+			in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields);
 		}
 		GMT_fclose (GMT, fp);
 		if (two_cols && n_ave) { colvalue[n] = sum_z / n_ave; coldnt[n++] = last_dnt;}
@@ -875,9 +875,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((iy = skip_if_missing (GMT, "lat",  list[argno], &In, D)) == MGD77_NOT_SET) continue;
 			if ((it = skip_if_missing (GMT, "time", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
-			tvar = (double *)D->values[it];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
+			tvar = D->values[it];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (i = n_sampled = 0; i < D->H.n_records; i++) {
@@ -897,9 +897,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((iy = skip_if_missing (GMT, "lat",  list[argno], &In, D)) == MGD77_NOT_SET) continue;
 			if ((it = skip_if_missing (GMT, "time", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
-			tvar = (double *)D->values[it];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
+			tvar = D->values[it];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			MGD77_CM4_init (&In, &CM4);
 			
@@ -922,10 +922,10 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sprintf (field, "mtf%d", MTF_col);
 			if ((im = skip_if_missing (GMT, field, list[argno], &In, D)) == MGD77_NOT_SET) continue;
 
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
-			tvar = (double *)D->values[it];
-			mvar = (double *)D->values[im];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
+			tvar = D->values[it];
+			mvar = D->values[im];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (i = n_sampled = 0; i < D->H.n_records; i++) {
@@ -952,8 +952,8 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GF_version = MGD77_IGF_1980;
 				}
 			}
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (i = 0; i < D->H.n_records; i++) colvalue[i] = MGD77_Theoretical_Gravity (GMT, xvar[i], yvar[i], (int)GF_version);
@@ -967,9 +967,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 			if ((it = skip_if_missing (GMT, "twt", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
-			tvar = (double *)D->values[it];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
+			tvar = D->values[it];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (i = 0; i < D->H.n_records; i++) colvalue[i] = MGD77_carter_correction (GMT, xvar[i], yvar[i], 1000.0 * tvar[i], &Carter);
@@ -986,10 +986,10 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sprintf (field, "mtf%ld", MTF_col);
 			if ((im = skip_if_missing (GMT, field, list[argno], &In, D)) == MGD77_NOT_SET) continue;
 
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
-			tvar = (double *)D->values[it];
-			mvar = (double *)D->values[im];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
+			tvar = D->values[it];
+			mvar = D->values[im];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (i = n_sampled = 0; i < D->H.n_records; i++) {
@@ -1007,8 +1007,8 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 			if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 
-			xvar = (double *)D->values[ix];
-			yvar = (double *)D->values[iy];
+			xvar = D->values[ix];
+			yvar = D->values[iy];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (i = n_sampled = 0; i < D->H.n_records; i++) {
@@ -1056,14 +1056,14 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->A.mode == MODE_d) {	/* Must create distances in user's units */
 				if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, D)) == MGD77_NOT_SET) continue;
 				if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, D)) == MGD77_NOT_SET) continue;
-				x = (double *)D->values[ix];
-				y = (double *)D->values[iy];
-				GMT_err_fail (GMT, GMT_dist_array (GMT, x, y, D->H.n_records, dist_scale, Ctrl->C.mode, &d), "");
+				x = D->values[ix];
+				y = D->values[iy];
+				if ((d = GMT_dist_array (GMT, x, y, D->H.n_records, dist_scale, Ctrl->C.mode)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 				x = d;
 			}
 			else if (Ctrl->A.mode == MODE_t) {	/* Time */
 				if ((it = skip_if_missing (GMT, "time", list[argno], &In, D)) == MGD77_NOT_SET) continue;
-				x = (double *)D->values[it];
+				x = D->values[it];
 			}
 			if (Ctrl->A.interpolate) {	/* Using given table to interpolate the values at all mgd77 records */
 				y = GMT_memory (GMT, NULL, D->H.n_records, double);
@@ -1072,7 +1072,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_report (GMT, GMT_MSG_FATAL, "Error from GMT_intpol near row %ld!\n", result+1);
 					GMT_exit (EXIT_FAILURE);
 				}
-				memcpy ((void *)colvalue, (void *)y, (size_t)(D->H.n_records * sizeof (double)));
+				memcpy (colvalue, y, (size_t)(D->H.n_records * sizeof (double)));
 				GMT_free (GMT, y);
 			}
 			else if (strings && n < D->H.n_records) {	/* Only update the exact matching records */
@@ -1106,7 +1106,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						n_sampled++;
 					}
 				}
-				memcpy ((void *)colvalue, (void *)y, (size_t)(D->H.n_records * sizeof (double)));
+				memcpy (colvalue, y, (size_t)(D->H.n_records * sizeof (double)));
 				GMT_report (GMT, GMT_MSG_NORMAL, "Appended column data for %ld locations out of %ld for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 				GMT_free (GMT, y);
 			}
@@ -1360,7 +1360,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((it = skip_if_missing (GMT, "time", list[argno], &In, D)) == MGD77_NOT_SET)
 				has_time = FALSE;
 			else {	/* See if we really have time or if they are all NaN */
-				tvar = (double *)D->values[it];
+				tvar = D->values[it];
 				for (rec = 0, has_time = FALSE; !has_time && rec < D->H.n_records; rec++) if (!GMT_is_dnan (tvar[rec])) has_time = TRUE;
 			}
 			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {	/* Read until EOF */
@@ -1470,14 +1470,14 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (n_E77_flags) {	/* Add flags to netCDF file */
 				if (old_flags) {	/* Flag variable exists already - simply replace existing flags with the new ones */
 					if (D->flags[0])	/* Was allocated and read */
-						memcpy ((void *)D->flags[0], (void *)flags, (size_t)(D->H.n_records * sizeof (int)));
+						memcpy (D->flags[0], flags, (size_t)(D->H.n_records * sizeof (int)));
 					else	/* Was not allcoated */
 						D->flags[0] = flags;
 				}
 				else {	/* We need to define the flags for the first time */
 					dims[0] = In.nc_recid;
 					MGD77_nc_status (GMT, nc_def_var (In.nc_id, "MGD77_flags", NC_INT, 1, dims, &cdf_var_id));	/* Define an array variable */
-					memset ((void *)answer, 0, (size_t)GMT_BUFSIZ);	/* No default answer */
+					memset (answer, 0, (size_t)GMT_BUFSIZ);	/* No default answer */
 					strcpy (answer, "MGD77 flags (ON = Bad, OFF = Good) derived from E77 errata");
 					MGD77_nc_status (GMT, nc_put_att_text (In.nc_id, cdf_var_id, "comment", strlen (answer), answer));
 					D->flags[0] = flags;
@@ -1494,7 +1494,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_message (GMT, "If possible, recreate the MGD77+ file %s from the MGD77 original, then reapply E77.\n", list[argno]);
 				start[0] = 0;
 				count[0] = D->H.n_records;
-				memset ((void *)D->flags[0], 0, (size_t)(D->H.n_records * sizeof (int)));	/* Reset all flags to 0 (GOOD) */
+				memset (D->flags[0], 0, (size_t)(D->H.n_records * sizeof (int)));	/* Reset all flags to 0 (GOOD) */
 				MGD77_nc_status (GMT, nc_put_vara_int (In.nc_id, cdf_var_id, start, count, (int *)D->flags[0]));
 			}
 			

@@ -135,12 +135,12 @@ void *New_mgd77list_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->Q.max[Q_A] = 360.0;		/* Max azimuth limit */
 	C->T.mode = MGD77_NOT_SET;
 	C->W.value = 1.0;	/* Default weight */	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_mgd77list_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* Deallocate control structure */
-	if (C->F.flags) free ((void *)C->F.flags);
-	if (C->L.file) free ((void *)C->L.file);
+	if (C->F.flags) free (C->F.flags);
+	if (C->L.file) free (C->L.file);
 	GMT_free (GMT, C);	
 }
 
@@ -702,7 +702,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (options && options->option == '?') return (GMT_mgd77list_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77list_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -710,9 +710,9 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77list", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRb", "hm", options))) Return ((int)error);
-	Ctrl = (struct MGD77LIST_CTRL *) New_mgd77list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77list_parse (API, Ctrl, options))) Return ((int)error);
+	if (GMT_Parse_Common (API, "-VRb", "hm", options)) Return (API->error);
+	Ctrl = New_mgd77list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = GMT_mgd77list_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mgd77list main code ----------------------------*/
 
@@ -999,8 +999,8 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		for (i = 0; i < M.n_out_columns; i++) {
-			dvalue[i] = (double *)D->values[i];
-			tvalue[i] = (char *)D->values[i];
+			dvalue[i] = D->values[i];
+			tvalue[i] = D->values[i];
 		}
 
 		this_limit_on_time = Ctrl->D.active;	/* Since we might change it below */

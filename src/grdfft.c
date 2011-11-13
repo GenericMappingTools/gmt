@@ -146,16 +146,16 @@ void *New_grdfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
 	C->S.scale = 1.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->operation) GMT_free (GMT, C->operation);	
 	if (C->par) GMT_free (GMT, C->par);	
-	if (C->In.file[0]) free ((void *)C->In.file[0]);	
-	if (C->In.file[1]) free ((void *)C->In.file[1]);	
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->In.file[0]) free (C->In.file[0]);	
+	if (C->In.file[1]) free (C->In.file[1]);	
+	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -594,7 +594,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	 */
 
 	char format[GMT_TEXT_LEN64];
-	GMT_LONG k, nk, nused, ifreq, error, ID, dim[4] = {1, 1, 1, 0};
+	GMT_LONG k, nk, nused, ifreq, dim[4] = {1, 1, 1, 0};
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
 	PFD get_k;
 	float *datac = Grid->data;
@@ -648,9 +648,9 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	sprintf (format, "%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	powfactor = 4.0 / pow ((double)Grid->header->size, 2.0);
 	dim[2] = 3;	dim[3] = nk;
-	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D, -1, &ID))) {
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for spectrum\n");
-		return (GMT_RUNTIME_ERROR);
+		return (GMT->parent->error);
 	}
 	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 3 cols and nk rows */
 	for (k = 0; k < nk; k++) {
@@ -661,10 +661,12 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 		S->coord[GMT_Y][k] = power[k];
 		S->coord[GMT_Y][k] = eps_pow * power[k];
 	}
-	if ((error = GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) return (error);	/* Enables data output and sets access mode */
-	if ((error = GMT_Put_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, 0, (void **)&file, (void *)D))) return (error);
-	if ((error = GMT_End_IO (GMT->parent, GMT_OUT, 0))) return (error);			/* Disables further data output */
-	GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&D);
+	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, 0, file, D) != GMT_OK) {
+		return (GMT->parent->error);
+	}
+	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D) != GMT_OK) {
+		return (GMT->parent->error);
+	}
 	GMT_free (GMT, power);
 	return (2);	/* Number of parameters used */
 }
@@ -1130,6 +1132,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, stop, op_count = 0, par_count = 0, status;
 	GMT_LONG narray[2], i, j, i_data_start, j_data_start, new_grid;
+	
 
 	struct GMT_GRID *GridA = NULL, *Out = NULL;
 	struct F_INFO f_info;
@@ -1146,7 +1149,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdfft_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdfft_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -1154,21 +1157,22 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdfft", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vf", "", options))) Return (error);
-	Ctrl = (struct GRDFFT_CTRL *) New_grdfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vf", "", options)) Return (API->error);
+	Ctrl = New_grdfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdfft_parse (API, Ctrl, &f_info, options))) Return (error);
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file[0]), (void **)&GridA)) 
-		Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if ((GridA = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[0], NULL)) == NULL) {	/* Get header only */
+		Return (API->error);
+	}
 
 #ifdef NEW
 	if (Ctrl->In.file[1]) two_grids = TRUE;
 	if (two_grids) { 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file[1]), (void **)&GridB)) 
-			Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if ((GridB = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
+			Return (API->error);
+		}
 		if(GridA->header->registration != GridB->header->registration) {
 			GMT_report (GMT, GMT_MSG_FATAL, "The two grids have different registrations!\n");
 			Return (EXIT_FAILURE);
@@ -1197,8 +1201,9 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (j = 0; j < 4; j++) GridA->header->BC[j] = GMT_BC_IS_DATA;
 
 	/* Now read data into the real positions in the padded complex radix grid */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&(Ctrl->In.file), (void **)&GridA)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, Ctrl->In.file[0], GridA) == NULL) {	/* Get subset */
+		Return (API->error);
+	}
 
 	/* Check that no NaNs are present */
 	for (j = stop = 0; !stop && j < GridA->header->size; j++) if (GridA->data[j] == 15.0) stop = j;
@@ -1297,9 +1302,9 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* The data are in the middle of the padded array */
 
-		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&Ctrl->G.file, (void *)Out);
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);			/* Disables further data output */
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, Ctrl->G.file, Out) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Done\n");

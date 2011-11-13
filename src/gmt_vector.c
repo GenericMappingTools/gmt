@@ -290,14 +290,14 @@ void GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, GMT_LONG n_in, GMT_L
  *					multiple systems with same a
  */
 	static GMT_LONG l1;
-	GMT_LONG *line = NULL, *isub = NULL, i = 0, j, k, l, j2, n, nstore, iet, ieb;
+	GMT_LONG *line = NULL, *isub = NULL, i = 0, j, k, l, j2, n, nstore, iet, ieb, n_alloc = 0;
 	double big, testa, b, sum;
 
 	iet = 0;  /* initial error flags, one for triagularization*/
 	ieb = 0;  /* one for backsolving */
 	n = n_in;
 	nstore = nstore_in;
-	(void)GMT_malloc2 (C, line, isub, n, 0, GMT_LONG);
+	GMT_malloc2 (C, line, isub, n, &n_alloc, GMT_LONG);
 
 /* triangularize the matrix a */
 /* replacing the zero elements of the triangularized matrix */
@@ -511,11 +511,7 @@ GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, GMT_LONG m, GMT_LONG n, do
 	
 	/* allocate work space */
 		
-	rv1=(double *)calloc(n,sizeof(double));
-	if (rv1 == NULL) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error in GMT_svdcmp: Can't allocate work space\n");
-		return (EXIT_FAILURE);
-	}
+	rv1 = GMT_memory (GMT, NULL, n, double);
 	
 	/* do householder reduction to bidiagonal form */
 		
@@ -711,7 +707,7 @@ GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, GMT_LONG m, GMT_LONG n, do
 			w[k]=x;
 		}
 	}
-	free ((void *)rv1);
+	GMT_free (GMT, rv1);
 	return (GMT_NOERROR);
 }
 
@@ -753,12 +749,8 @@ GMT_LONG GMT_solve_svd (struct GMT_CTRL *GMT, double *u, GMT_LONG m, GMT_LONG n,
 	GMT_LONG i, j, n_use = 0;
 
 	/* allocate work space */
-		
-	ut = (double *)calloc(n*m,sizeof(double));	/* space for the transpose */
-	if (ut == NULL) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error in GMT_solve_svd: Can't allocate work space\n");
-		return (-1);
-	}
+	
+	ut = GMT_memory (GMT, NULL, n*m, double);	/* space for the transpose */
 	
 	/* find maximum singular value */
 	
@@ -794,7 +786,7 @@ GMT_LONG GMT_solve_svd (struct GMT_CTRL *GMT, double *u, GMT_LONG m, GMT_LONG n,
 
 	/* free work space */
 
-	free ((void *)ut);
+	GMT_free (GMT, ut);
 	
 	return (n_use);
 }
@@ -932,7 +924,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 	lon = *a_lon;	lat = *a_lat;
 
 	GMT_geo_to_cart (C, lat[0], lon[0], a, TRUE);
-	n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, 1, 0, double);
+	GMT_malloc2 (C, lon_tmp, lat_tmp, 1, &n_alloc, double);
 	lon_tmp[0] = lon[0];	lat_tmp[0] = lat[0];
 	n_tmp = 1;
 	if (step <= 0.0) step = C->current.map.path_step;	/* Based on C->current.setting.map_line_step converted to degrees */
@@ -947,7 +939,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 			n_step = irint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
 				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
 				lat_tmp[n_tmp] = lat[i-1];
 				n_tmp++;
@@ -956,7 +948,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 			n_step = irint (theta / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
 				lon_tmp[n_tmp] = lon[i];
 				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_tmp++;
@@ -969,7 +961,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 			n_step = irint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
 				lon_tmp[n_tmp] = lon[i-1];
 				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_tmp++;
@@ -978,7 +970,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 			n_step = irint (theta / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
 				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
 				lat_tmp[n_tmp] = lat[i];
 				n_tmp++;
@@ -1000,7 +992,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 				d = 1 - c;
 				for (k = 0; k < 3; k++) x[k] = a[k] * d + b[k] * c;
 				GMT_normalize3v (C, x);
-				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
 				GMT_cart_to_geo (C, &lat_tmp[n_tmp], &lon_tmp[n_tmp], x, TRUE);
 				if (meridian)
 					lon_tmp[n_tmp] = minlon;
@@ -1011,12 +1003,12 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 				n_tmp++;
 			}
 		}
-		if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, n_alloc, double);
+		if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
 		lon_tmp[n_tmp] = lon[i];	lat_tmp[n_tmp] = lat[i];
 		n_tmp++;
 		GMT_cpy3v (a, b);
 	}
-	n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, 0, n_tmp, double);
+	GMT_malloc2 (C, lon_tmp, lat_tmp, 0, &n_tmp, double);
 
 	/* Destroy old alocated memory and put the new none in place */
 	GMT_free (C, lon);
@@ -1042,7 +1034,7 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 
 	x = *a_x;	y = *a_y;
 
-	n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, 1, 0, double);
+	GMT_malloc2 (C, x_tmp, y_tmp, 1, &n_alloc, double);
 	x_tmp[0] = x[0];	y_tmp[0] = y[0];	n_tmp = 1;
 	if (step <= 0.0) step = 1.0;	/* Sanity valve; if step not given we set it to 1 */
 
@@ -1051,7 +1043,7 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 			n_step = irint (fabs (x[i] - x[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 				x_tmp[n_tmp] = x[i-1] * (1 - c) + x[i] * c;
 				y_tmp[n_tmp] = y[i-1];
 				n_tmp++;
@@ -1059,7 +1051,7 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 			n_step = irint (fabs (y[i]-y[i-1]) / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 				x_tmp[n_tmp] = x[i];
 				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
 				n_tmp++;
@@ -1070,7 +1062,7 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 			n_step = irint (fabs (y[i]-y[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 				x_tmp[n_tmp] = x[i-1];
 				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
 				n_tmp++;
@@ -1078,7 +1070,7 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 			n_step = irint (fabs (x[i]-x[i-1]) / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 				x_tmp[n_tmp] = x[i-1] * (1 - c) + x[i] * c;
 				y_tmp[n_tmp] = y[i];
 				n_tmp++;
@@ -1089,16 +1081,16 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 		else if ((n_step = irint (hypot (x[i]-x[i-1], y[i]-y[i-1]) / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 				x_tmp[n_tmp] = x[i-1] * (1 - c) + x[i] * c;
 				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
 				n_tmp++;
 			}
 		}
-		if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, n_alloc, double);
+		if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 		x_tmp[n_tmp] = x[i];	y_tmp[n_tmp] = y[i];	n_tmp++;
 	}
-	n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, 0, n_tmp, double);
+	GMT_malloc2 (C, x_tmp, y_tmp, 0, &n_tmp, double);
 
 	/* Destroy old alocated memory and put the knew none in place */
 	GMT_free (C, x);	GMT_free (C, y);

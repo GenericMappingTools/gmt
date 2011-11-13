@@ -124,16 +124,16 @@ void *New_grdcontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C->W.pen[1].width *= 3.0;
 	C->Z.scale = 1.0;
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdcontour_Ctrl (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);
-	if (C->C.file) free ((void *)C->C.file);
-	if (C->D.file) free ((void *)C->D.file);
-	if (C->T.txt[0]) free ((void *)C->T.txt[0]);
-	if (C->T.txt[1]) free ((void *)C->T.txt[1]);
+	if (C->In.file) free (C->In.file);
+	if (C->C.file) free (C->C.file);
+	if (C->D.file) free (C->D.file);
+	if (C->T.txt[0]) free (C->T.txt[0]);
+	if (C->T.txt[1]) free (C->T.txt[1]);
 	GMT_free (GMT, C);
 }
 
@@ -271,7 +271,7 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 				break;
 			case 'D':	/* Dump file name */
 				Ctrl->D.active = TRUE;
-				free ((void *)Ctrl->D.file);
+				free (Ctrl->D.file);
 				Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'F':	/* Orient dump contours */
@@ -341,8 +341,8 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 							n_errors++;
 						}
 						if (Ctrl->T.label) {	/* Replace defaults */
-							free ((void *)Ctrl->T.txt[0]);
-							free ((void *)Ctrl->T.txt[1]);
+							free (Ctrl->T.txt[0]);
+							free (Ctrl->T.txt[1]);
 							Ctrl->T.txt[0] = strdup (txt_a);
 							Ctrl->T.txt[1] = strdup (txt_b);
 						}
@@ -677,7 +677,7 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the grdcontour task */
 	GMT_LONG c, n_edges, n_alloc = 0, n_contours, id, cont_counts[2] = {0, 0}, need_proj;
-	GMT_LONG tbl_scl = 1, n_save = 0, i, n, nn, ij, closed, begin, error, io_mode = 0;
+	GMT_LONG tbl_scl = 1, n_save = 0, i, n, nn, ij, closed, begin, error, io_mode = 0, n_tmp;
 	GMT_LONG make_plot, fmt[3] = {0, 0, 0}, two_only = FALSE, n_tables = 1, tbl, extra;
 	GMT_LONG *n_seg_alloc = NULL, *n_seg = NULL, *edge = NULL;
 
@@ -700,7 +700,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdcontour_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdcontour_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -708,8 +708,8 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdcontour", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRbf", "BKOPUXhxYycpt" GMT_OPT("EMm"), options))) Return (error);
-	Ctrl = (struct GRDCONTOUR_CTRL *) New_grdcontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJRbf", "BKOPUXhxYycpt" GMT_OPT("EMm"), options)) Return (API->error);
+	Ctrl = New_grdcontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdcontour_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
@@ -720,8 +720,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->current.map.z_periodic = Ctrl->Z.periodic;	/* Phase data */
 	GMT_report (GMT, GMT_MSG_NORMAL, "Allocate memory and read data file\n");
 
-	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		Return (API->error);
+	}
 
 	make_plot = !Ctrl->D.active;	/* Turn off plotting if -D was used */
 	need_proj = !Ctrl->D.active || Ctrl->contour.save_labels;	/* Turn off mapping if -D was used, unless +t was set */
@@ -736,7 +737,6 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!GMT_grd_setregion (GMT, G->header, wesn, BCR_BILINEAR)) {
 		/* No grid to plot; just do empty map and return */
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No data within specified region\n");
 		if (make_plot) {
 			GMT_plotinit (GMT, options);
@@ -746,13 +746,17 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_plane_perspective (GMT, -1, 0.0);
 			GMT_plotend (GMT);
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+			Return (API->error);
+		}
 		Return (GMT_OK);
 	}
 
 	/* Read data */
 
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) {
+		Return (API->error);
+	}
 
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {	/* Must transform z grid */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Subtracting %g and multiplying grid by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
@@ -765,7 +769,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->L.high < G->header->z_max) G->header->z_max = Ctrl->L.high;
 	if (Ctrl->L.active && G->header->z_max < G->header->z_min) {	/* Specified contour range outside range of data - quit */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No contours within specified -L range\n");
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+			Return (API->error);
+		}
 		Return (GMT_OK);
 	}
 
@@ -783,14 +789,17 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		aval = G->header->z_max + 1.0;
 
 	if (Ctrl->C.cpt) {	/* Presumably got a cpt-file */
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
+		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		if (P->categorical) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
 		}
 		/* Set up which contours to draw based on the CPT slices and their attributes */
 		n_contours = P->n_colors + 1;	/* Since n_colors refer to slices */
-		(void)GMT_malloc2 (GMT, contour, cont_angle, n_contours, 0, double);
-		n_alloc = GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, 0, char);
+		n_tmp = 0;
+		GMT_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
+		GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 		for (i = c = 0; i < P->n_colors; i++) {
 			if (P->range[i].skip) continue;
 			contour[c] = P->range[i].z_low;
@@ -816,20 +825,34 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_contours = c + 1;
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
-		char record[GMT_BUFSIZ];
-		GMT_LONG got, out_ID;
+		char *record = NULL;
+		GMT_LONG got, in_ID;
 		double tmp;
 
 		n_contours = 0;
-		if (GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, (void **)&Ctrl->C.file, NULL, NULL, &out_ID)) {
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, Ctrl->C.file, NULL)) == GMTAPI_NOTSET) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error registering contour info file %s\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
-		while (GMT_Get_Record (API, GMT_READ_TEXT, (void **)&record) != EOF) {
-			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
+		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
+		do {	/* Keep returning records until we reach EOF */
+			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+					continue;
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
+			}
+
+			/* Data record to process */
+
 			if (n_contours == n_alloc) {
-				(void)GMT_malloc2 (GMT, contour, cont_angle, n_contours, n_alloc, double);
-				n_alloc = GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, n_alloc, char);
+				n_tmp = n_alloc;
+				GMT_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
+				GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 			}
 			got = sscanf (record, "%lf %c %lf", &contour[n_contours], &cont_type[n_contours], &tmp);
 			if (cont_type[n_contours] == '\0') cont_type[n_contours] = 'C';
@@ -837,6 +860,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			cont_angle[n_contours] = (got == 3) ? tmp : GMT->session.d_NaN;
 			if (got == 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
 			n_contours++;
+		} while (TRUE);
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further grid data input */
+			Return (API->error);
 		}
 	}
 	else {	/* Set up contour intervals automatically from Ctrl->C.interval and Ctrl->A.interval */
@@ -845,8 +871,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		max = ceil (G->header->z_max / Ctrl->C.interval) * Ctrl->C.interval; if (max > G->header->z_max) max -= Ctrl->C.interval;
 		for (c = irint (min/Ctrl->C.interval), n_contours = 0; c <= irint (max/Ctrl->C.interval); c++, n_contours++) {
 			if (n_contours == n_alloc) {
-				(void)GMT_malloc2 (GMT, contour, cont_angle, n_contours, n_alloc, double);
-				n_alloc = GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, n_alloc, char);
+				n_tmp = n_alloc;
+				GMT_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
+				GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 			}
 			contour[n_contours] = c * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (contour[n_contours] - aval) > GMT_SMALL) aval += Ctrl->A.interval;
@@ -858,7 +885,6 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT->current.map.z_periodic && n_contours > 1 && fabs (contour[n_contours-1] - contour[0] - 360.0) < GMT_SMALL) {	/* Get rid of redundant contour */
 		n_contours--;
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further grid data input */
 
 	if (n_contours == 0) {	/* No contours within range of data */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No contours found\n");
@@ -874,8 +900,12 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, cont_type);
 		GMT_free (GMT, cont_angle);
 		GMT_free (GMT, cont_do_tick);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
-		if (Ctrl->C.cpt) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+			Return (API->error);
+		}
+		if (Ctrl->C.cpt && GMT_Destroy_Data (API, GMT_ALLOCATED, &P) != GMT_OK) {
+			Return (API->error);
+		}
 		Return (EXIT_SUCCESS);
 	}
 
@@ -883,8 +913,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	z_range = G->header->z_max - G->header->z_min;
 	small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
-	(void)GMT_malloc2 (GMT, contour, cont_angle, 0, n_contours, double);
-	n_alloc = GMT_malloc2 (GMT, cont_type, cont_do_tick, 0, n_contours, char);
+	n_alloc = n_tmp = n_contours;
+	GMT_malloc2 (GMT, contour, cont_angle, 0, &n_tmp, double);
+	GMT_malloc2 (GMT, cont_type, cont_do_tick, 0, &n_contours, char);
 
 	GMT_grd_minmax (GMT, G, xyz);
 	if (GMT_contlabel_prep (GMT, &Ctrl->contour, xyz)) Return (EXIT_FAILURE);	/* Prep for crossing lines, if any */
@@ -899,6 +930,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);	/* Bit flags used to keep track of contours */
 
 	if (Ctrl->D.active) {
+		GMT_LONG dim[4] = {0, 0, 3, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_DATASET;
 		else {	/* Must determine the kind of output organization */
@@ -930,7 +962,8 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				two_only = TRUE;
 			}
 		}
-		D = GMT_create_dataset (GMT, n_tables, 0, 3, 0);	/* An empty table */
+		dim[0] = n_tables;
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty dataset */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 		n_seg = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 	}
@@ -994,9 +1027,10 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				if (make_plot && cont_do_tick[c] && closed) {	/* Must store the entire contour for later processing */
 					/* These are original coordinates that have not yet been projected */
-					if (n_save == n_alloc) n_alloc = GMT_malloc (GMT, save, n_save, n_alloc, struct SAVE);
+					if (n_save == n_alloc) save = GMT_malloc (GMT, save, n_save, &n_alloc, struct SAVE);
 					extra = (GMT_abs (closed) == 2);	/* Need extra slot to temporarily close half-polygons */
-					(void)GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, n + extra, 0, double);
+					n_alloc = 0;
+					GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, n + extra, &n_alloc, double);
 					GMT_memcpy (save[n_save].x, x, n, double);
 					GMT_memcpy (save[n_save].y, y, n, double);
 					GMT_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
@@ -1027,12 +1061,16 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
 		GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+			Return (error);
+		}
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_LINE_SEGMENT *);
-		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, io_mode, (void **)&(Ctrl->D.file), (void *)D))) Return (error);
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, io_mode, Ctrl->D.file, D) != GMT_OK) {
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+			Return (API->error);
+		}
 		GMT_free (GMT, n_seg_alloc);
 		GMT_free (GMT, n_seg);
 	}
@@ -1045,7 +1083,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->W.pen[0].style || Ctrl->W.pen[1].style) PSL_setdash (PSL, CNULL, 0.0);
 
 		if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours */
-			(void)GMT_malloc (GMT, save, 0, n_save, struct SAVE);
+			save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);
 
 			grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt);
 			for (i = 0; i < n_save; i++) {

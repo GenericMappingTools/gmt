@@ -48,7 +48,7 @@
 #define D2R (M_PI/180.0)
 #define F (D2R * 0.5 * 1.0e-6)
 #define FALSE 0
-#define VNULL (void *)NULL
+#define VNULL NULL
 
 void *get_memory (void *prev_addr, int n, size_t size, char *progname);
 
@@ -82,11 +82,11 @@ int main (int argc, char **argv)
 	
 	n_id = n_out = n_tot_in = n_tot_out = 0;
 	
-	x = (int *) get_memory (VNULL, 1, sizeof (int), "gshhs_dp");
-	y = (int *) get_memory (VNULL, 1, sizeof (int), "gshhs_dp");
-	index = (int *) get_memory (VNULL, 1, sizeof (int), "gshhs_dp");
+	x = get_memory (VNULL, 1, sizeof (int), "gshhs_dp");
+	y = get_memory (VNULL, 1, sizeof (int), "gshhs_dp");
+	index = get_memory (VNULL, 1, sizeof (int), "gshhs_dp");
 	
-	n_read = fread ((void *)&h, sizeof (struct GSHHS), (size_t)1, fp_in);
+	n_read = fread (&h, sizeof (struct GSHHS), (size_t)1, fp_in);
 	version = (h.flag >> 8) & 255;
 	flip = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 	
@@ -106,12 +106,12 @@ int main (int argc, char **argv)
 		}
 		if (verbose) fprintf (stderr, "Poly %6d", h.id);	
 		
-		x = (int *) get_memory ((void *)x, h.n, sizeof (int), "gshhs_dp");
-		y = (int *) get_memory ((void *)y, h.n, sizeof (int), "gshhs_dp");
-		index = (int *) get_memory ((void *)index, h.n, sizeof (int), "gshhs_dp");
+		x = get_memory (x, h.n, sizeof (int), "gshhs_dp");
+		y = get_memory (y, h.n, sizeof (int), "gshhs_dp");
+		index = get_memory (index, h.n, sizeof (int), "gshhs_dp");
 		
 		for (k = 0; k < h.n; k++) {
-			if (fread ((void *)&p, sizeof(struct POINT), (size_t)1, fp_in) != 1) {
+			if (fread (&p, sizeof(struct POINT), (size_t)1, fp_in) != 1) {
 				fprintf (stderr,"gshhs_dp: Error reading data point.\n");
 				exit (EXIT_FAILURE);
 			}
@@ -133,14 +133,14 @@ int main (int argc, char **argv)
 			redux = 100.0 * (double) n / (double) h.n;
 			h.id = n_out;
 			h.n = n;
-			if (fwrite ((void *)&h, sizeof (struct GSHHS), (size_t)1, fp_out) != 1) {
+			if (fwrite (&h, sizeof (struct GSHHS), (size_t)1, fp_out) != 1) {
 				fprintf(stderr,"gshhs_dp: Error writing file header.\n");
 				exit (EXIT_FAILURE);
 			}
 			for (k = 0; k < n; k++) {
 				p.x = x[index[k]];
 				p.y = y[index[k]];
-				if (fwrite((void *)&p, sizeof(struct POINT), (size_t)1, fp_out) != 1) {
+				if (fwrite(&p, sizeof(struct POINT), (size_t)1, fp_out) != 1) {
 					fprintf(stderr,"gshhs_dp: Error writing data point.\n");
 					exit (EXIT_FAILURE);
 				}
@@ -154,12 +154,12 @@ int main (int argc, char **argv)
 		
 		n_id++;
 
-		n_read = fread ((void *)&h, sizeof (struct GSHHS), (size_t)1, fp_in);
+		n_read = fread (&h, sizeof (struct GSHHS), (size_t)1, fp_in);
 	}
 		
-	free ((void *)x);	
-	free ((void *)y);	
-	free ((void *)index);	
+	free (x);	
+	free (y);	
+	free (index);	
 		
 	fclose (fp_in);
 	fclose (fp_out);
@@ -197,8 +197,8 @@ int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band
 
         /* more complex case. initialize stack */
 
- 	sig_start = (int *) get_memory (VNULL, n_source, sizeof (int), "Douglas_Peucker_i");
-	sig_end   = (int *) get_memory (VNULL, n_source, sizeof (int), "Douglas_Peucker_i");
+ 	sig_start = get_memory (VNULL, n_source, sizeof (int), "Douglas_Peucker_i");
+	sig_end   = get_memory (VNULL, n_source, sizeof (int), "Douglas_Peucker_i");
 	
 	band *= 360.0 / (2.0 * M_PI * 6371.007181);	/* Now in degrees */
 	band_sqr = sqr(band);
@@ -298,8 +298,8 @@ int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band
         index[n_dest] = n_source-1;
         n_dest++;
 
-	free ((void *)sig_start);
-	free ((void *)sig_end);
+	free (sig_start);
+	free (sig_end);
 	
         return (n_dest);
 }
@@ -311,7 +311,7 @@ void *get_memory (void *prev_addr, int n, size_t size, char *progname)
 	if (n == 0) return(VNULL); /* Take care of n = 0 */
 
 	if (prev_addr) {
-		if ((tmp = realloc ((void *) prev_addr, (size_t) (n * size))) == VNULL) {
+		if ((tmp = realloc ( prev_addr, (size_t) (n * size))) == VNULL) {
 			fprintf (stderr, "Error: %s could not reallocate more memory, n = %d\n", progname, n);
 			exit (EXIT_FAILURE);
 		}

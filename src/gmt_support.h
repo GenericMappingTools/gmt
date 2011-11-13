@@ -19,19 +19,10 @@
 #ifndef _GMT_SUPPORT_H
 #define _GMT_SUPPORT_H
 
-/* The 6 basic 1, 2, 4, 4|8, 4, 8-byte types */
-#define GMT_N_TYPES	6
-#define GMT_CHAR_TYPE	0
-#define GMT_SHORT_TYPE	1
-#define GMT_INT_TYPE	2
-#define GMT_LONG_TYPE	3
-#define GMT_FLOAT_TYPE	4
-#define GMT_DOUBLE_TYPE	5
-
 /* Return codes from GMT_inonout */
-#define GMT_OUTSIDE	0
-#define GMT_ONEDGE	1
-#define GMT_INSIDE	2
+enum GMT_enum_inside {GMT_OUTSIDE = 0,
+	GMT_ONEDGE,
+	GMT_INSIDE};
 
 /* Here are definition of MATH_MACRO and some functions used by grdmath and gmtmath */
 struct MATH_MACRO {
@@ -42,26 +33,27 @@ struct MATH_MACRO {
 
 /* Macros to reallocate memory for groups of 2, 3 or 4 arrays at a time of the same size/type */
 #ifdef DEBUG
-#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,(void **)&a,n,n_alloc,sizeof(type),__FILE__,__LINE__)
+#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),__FILE__,__LINE__)
 #else
-#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,(void **)&a,n,n_alloc,sizeof(type),"",0)
+#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),"",0)
 #endif
-#define GMT_malloc2(C,a,b,n,n_alloc,type) (GMT_malloc(C,a,n,n_alloc,type) | GMT_malloc(C,b,n,n_alloc,type))
-#define GMT_malloc3(C,a,b,c,n,n_alloc,type) (GMT_malloc(C,a,n,n_alloc,type) | GMT_malloc(C,b,n,n_alloc,type) | GMT_malloc(C,c,n,n_alloc,type))
-#define GMT_malloc4(C,a,b,c,d,n,n_alloc,type) (GMT_malloc(C,a,n,n_alloc,type) | GMT_malloc(C,b,n,n_alloc,type) | GMT_malloc(C,c,n,n_alloc,type) | GMT_malloc(C,d,n,n_alloc,type))
+/* The k = *n_alloc below is needed to ensure only the final GMT_malloc call changes n_alloc */
+#define GMT_malloc2(C,a,b,n,n_alloc,type) { GMT_LONG __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); b = GMT_malloc(C,b,n,n_alloc,type); }
+#define GMT_malloc3(C,a,b,c,n,n_alloc,type) { GMT_LONG __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); __k = *n_alloc; b = GMT_malloc(C,b,n,&__k,type); c = GMT_malloc(C,c,n,n_alloc,type); }
+#define GMT_malloc4(C,a,b,c,d,n,n_alloc,type) { GMT_LONG __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); __k = *n_alloc; b = GMT_malloc(C,b,n,&__k,type); __k = *n_alloc; c = GMT_malloc(C,c,n,&__k,type); d = GMT_malloc(C,d,n,n_alloc,type); }
 
 /* Convenience macro for GMT_memory_func */
 #ifdef DEBUG
-#define GMT_memory(C,ptr,n,type) (type*) GMT_memory_func(C,(void*)ptr,(GMT_LONG)(n),sizeof(type),__FILE__,__LINE__)
+#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),__FILE__,__LINE__)
 #else
-#define GMT_memory(C,ptr,n,type) (type*) GMT_memory_func(C,(void*)ptr,(GMT_LONG)(n),sizeof(type),"",0)
+#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),"",0)
 #endif
 
 /* Convenience macro for GMT_free_func */
 #ifdef DEBUG
-#define GMT_free(C,array) GMT_free_func(C,(void**)&(array),__FILE__,__LINE__)
+#define GMT_free(C,ptr) (GMT_free_func(C,ptr,__FILE__,__LINE__),(ptr)=NULL)
 #else
-#define GMT_free(C,array) GMT_free_func(C,(void**)&(array),"",0)
+#define GMT_free(C,ptr) (GMT_free_func(C,ptr,"",0),(ptr)=NULL)
 #endif
 
 #ifdef DEBUG
@@ -80,8 +72,8 @@ struct MEMORY_ITEM {
 };
 
 struct MEMORY_TRACKER {
-	GMT_LONG active;		/* Normally TRUE but can be changed to focus on just some allocations */
-	GMT_LONG search;		/* Normally TRUE but can be changed to skip searching when we know we add a new item */
+	GMT_LONG active;	/* Normally TRUE but can be changed to focus on just some allocations */
+	GMT_LONG search;	/* Normally TRUE but can be changed to skip searching when we know we add a new item */
 	GMT_LONG n_ptr;		/* Number of unique pointers to allocated memory */
 	GMT_LONG n_allocated;	/* Number of items allocated by GMT_memory */
 	GMT_LONG n_reallocated;	/* Number of items reallocated by GMT_memory */

@@ -301,16 +301,16 @@ void *New_grdview_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->Q.dpi = 100;
 	GMT_init_fill (GMT, &C->Q.fill, GMT->PSL->init.page_rgb[0], GMT->PSL->init.page_rgb[1], GMT->PSL->init.page_rgb[2]);
 	C->S.value = 1;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdview_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Deallocate control structure */
 	GMT_LONG i;
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->C.file) free ((void *)C->C.file);	
-	for (i = 0; i < 3; i++) if (C->G.file[i]) free ((void *)C->G.file[i]);	
-	if (C->I.file) free ((void *)C->I.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->C.file) free (C->C.file);	
+	for (i = 0; i < 3; i++) if (C->G.file[i]) free (C->G.file[i]);	
+	if (C->I.file) free (C->I.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -573,7 +573,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdview_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdview_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -581,8 +581,8 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdview", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJR", "BKOPUXxYycnpt>" GMT_OPT("E"), options))) Return (error);
-	Ctrl = (struct GRDVIEW_CTRL *) New_grdview_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJR", "BKOPUXxYycnpt>" GMT_OPT("E"), options)) Return (API->error);
+	Ctrl = New_grdview_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdview_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
@@ -590,10 +590,10 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 	
-	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-
 	if (Ctrl->C.active) {
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
+		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		if (P->is_bw) Ctrl->Q.monochrome = TRUE;
 		if (P->categorical && Ctrl->W.active) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
@@ -603,11 +603,17 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	n_drape = (Ctrl->G.image) ? 3 : 1;
 
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Topo)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-	if (Ctrl->I.active && GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->I.file), (void **)&Intens)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if ((Topo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		Return (API->error);
+	}
+	if (Ctrl->I.active && (Intens = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
+		Return (API->error);
+	}
 
 	if (Ctrl->G.active) {
-		for (i = 0; i < n_drape; i++) if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->G.file[i]), (void **)&Drape[i])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		for (i = 0; i < n_drape; i++) if ((Drape[i] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->G.file[i], NULL)) == NULL) {	/* Get header only */
+			Return (API->error);
+		}
 	}
 
 	/* Determine what wesn to pass to map_setup */
@@ -628,7 +634,6 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!GMT_grd_setregion (GMT, Topo->header, wesn, BCR_BILINEAR)) {
 		/* No grid to plot; just do empty map and bail */
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 		GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->current.plot.mode_3D |= 2;	/* Ensure that foreground axis is drawn */
@@ -643,14 +648,18 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Processing shape file\n");
 
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Topo)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, Topo) == NULL) {	/* Get topo data */
+		Return (API->error);
+	}
 	t_reg = GMT_change_grdreg (GMT, Topo->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 
 	if (Ctrl->G.active) {	/* Draping wanted */
 		for (i = 0; i < n_drape; i++) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Processing drape file %s\n", Ctrl->G.file[i]);
 
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->G.file[i]), (void **)&Drape[i])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->G.file[i], Drape[i]) == NULL) {	/* Get drape data */
+				Return (API->error);
+			}
 			if (Drape[i]->header->nx != Topo->header->nx || Drape[i]->header->ny != Topo->header->ny) drape_resample = TRUE;
 			d_reg[i] = GMT_change_grdreg (GMT, Drape[i]->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 		}
@@ -743,13 +752,21 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Go back to beginning and reread since grd has been destroyed */
 
 		if (Ctrl->G.active) {
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Drape[0]);
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, (void **)&(Ctrl->G.file[0]), (void **)&Drape[0])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Drape[0]) != GMT_OK) {
+				Return (API->error);
+			}
+			if ((Drape[0] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, Ctrl->G.file[0], NULL)) == NULL) {	/* Get drape data*/
+				Return (API->error);
+			}
 			Z = Drape[0];
 		}
 		else {
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Topo);
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, (void **)&(Ctrl->In.file), (void **)&Topo)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Topo) != GMT_OK) {
+				Return (API->error);
+			}
+			if ((Topo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {
+				Return (API->error);
+			}
 			Z = Topo;
 		}
 		GMT_change_grdreg (GMT, Z->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration, again */
@@ -759,14 +776,15 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Processing illumination file\n");
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->I.file), (void **)&Intens)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->I.file, Intens) == NULL) {	/* Get intensity grid */
+			Return (API->error);
+		}
 		if (Intens->header->nx != Topo->header->nx || Intens->header->ny != Topo->header->ny) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Intensity file has improper dimensions!\n");
 			Return (EXIT_FAILURE);
 		}
 		i_reg = GMT_change_grdreg (GMT, Intens->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	inc2[GMT_X] = 0.5 * Z->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * Z->header->inc[GMT_Y];
 
@@ -978,7 +996,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			layers = 1;
 			bitimage_8 = GMT_memory (GMT, NULL, nm_i, unsigned char);
 			gray = GMT_u255 (GMT_YIQ (GMT->current.setting.ps_page_rgb));
-			memset ((void *)bitimage_8, gray, nm_i * sizeof (unsigned char));
+			memset (bitimage_8, gray, nm_i * sizeof (unsigned char));
 		}
 		else {
 			nm_i = nx_i * ny_i * 3;

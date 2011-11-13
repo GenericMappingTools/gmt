@@ -47,19 +47,19 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 
 	/* 1. Initializing new GMT session */
-	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("Failure to create GMT Session\n");
+	if ((API = GMT_Create_Session ("GMT/MEX-API", GMTAPI_GMT)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. Prepare the GMT grid */
-	G = GMT_create_grid (API->GMT);
+	if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) mexErrMsgTxt ("Allocation failure\n");
 	GMT_grd_init (API->GMT, G->header, NULL, FALSE);
 
 	/* 3. Load the file name and title (if given) into char strings */
 	k = (nrhs >= 5) ? 3 : 2;
-	fileout = (char *) mxArrayToString (prhs[k]);	/* Load the file name into a char string */
+	fileout = mxArrayToString (prhs[k]);	/* Load the file name into a char string */
 
 	if (nrhs >= 4) {	/* Load the title into a char string */
 		k = (nrhs >= 5) ? 4 : 3;
-		title = (char *) mxArrayToString (prhs[k]);	/* Load the file name into a char string */
+		title = mxArrayToString (prhs[k]);	/* Load the file name into a char string */
 		strcpy (G->header->title, title);
 	}
 
@@ -75,12 +75,10 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	GMT_grd_loop (API->GMT, G, row, col, gmt_ij) G->data[gmt_ij] = z[MEX_IJ(G,row,col)];
 	
 	/* 7. Write the grid */
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) mexErrMsgTxt ("Failure to Begin IO\n");
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&fileout, (void *)G)) mexErrMsgTxt ("Read failure\n");
-	if (GMT_End_IO (API, GMT_OUT, 0)) mexErrMsgTxt ("Failure to End IO\n");
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, fileout, G) != GMT_OK) mexErrMsgTxt ("Read failure\n");
 	
 	/* 8. Destroy the temporary grid */
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G)) mexErrMsgTxt ("Run-time error\n");
 
 	/* 9. Destroy GMT API session */
 	if (GMT_Destroy_Session (&API)) mexErrMsgTxt ("Failure to destroy GMT Session\n");

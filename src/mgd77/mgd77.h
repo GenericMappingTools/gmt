@@ -369,8 +369,8 @@ struct MGD77_CONSTRAINT {
 	GMT_LONG exact;				/* If TRUE we MUST pass this test */
 	double d_constraint;			/* Value for testing */
 	char c_constraint[GMT_TEXT_LEN64];	/* String value for testing */
-	PFB double_test;			/* Pointer to function performing the chosen limit test on a double */
-	PFB string_test;			/* Pointer to function performing the chosen limit test on a string */
+	PFL double_test;			/* Pointer to function performing the chosen limit test on a double */
+	PFL string_test;			/* Pointer to function performing the chosen limit test on a string */
 };
 
 struct MGD77_PAIR {

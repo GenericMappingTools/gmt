@@ -41,9 +41,9 @@ void GMTMEX_grdxy (struct GMTAPI_CTRL *API, mxArray *plhs[], struct GMT_GRID *G,
 void GMTMEX_prep_mexgrd (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, struct GMT_GRID *G);
 void GMTMEX_prep_mextbl (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, struct GMT_VECTOR *V);
 double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], int nrhs, struct GMT_GRID *G);
-char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int nrhs, struct GMT_GRID **G);
+char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int nrhs);
 char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int n_cols, int n_start, struct GMT_VECTOR **V);
-char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, struct GMT_GRID **G, int nlhs, char *options);
+char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, GMT_LONG *ID, int nlhs, char *options);
 char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct GMT_VECTOR **V, int nlhs, char *options);
 char *GMTMEX_options_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int nrhs);
 char *GMTMEX_build_cmd (struct GMTAPI_CTRL *API, char *src, char *options, char *dest, GMT_LONG mode);

@@ -41,7 +41,7 @@ void *New_mgd77path_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_mgd77path_Ctrl (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *C) {	/* Deallocate control structure */
@@ -145,7 +145,7 @@ GMT_LONG GMT_mgd77path (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (options && options->option == '?') return (GMT_mgd77path_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77path_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -153,9 +153,9 @@ GMT_LONG GMT_mgd77path (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77path", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
-	Ctrl = (struct MGD77PATH_CTRL *) New_mgd77path_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77path_parse (API, Ctrl, options))) Return ((int)error);
+	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
+	Ctrl = New_mgd77path_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = GMT_mgd77path_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mgd77path main code ----------------------------*/
 

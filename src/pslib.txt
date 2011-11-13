@@ -132,7 +132,7 @@ that becomes fopen.
 .RE
 .br
 .sp
-BD(void PSL_free) (ARG(struct PS_CTRL,*PSL), ARG(void, *ptr))
+BD(void PSL_free) (ARG(void, *ptr))
 .RS 5
 This function frees up the memory allocated inside PSLIB.  Programmers using C/C++ should now this is a macro
 and there is no need to cast the pointer to IT(void *) as this will be done by the macro.  Fortran programmers

@@ -25,8 +25,8 @@ int main (int argc, char **argv) {
 	chdir ("/home/aa4/gmt/wvs/pol");
 	
 	fp = fopen ("/home/aa4/gmt/wvs/headers2.b", "r");
-	fread ((char *)&n_id, sizeof (int), 1, fp);
-	fread ((char *)poly, sizeof (struct CHECK), n_id, fp);
+	fread (&n_id, sizeof (int), 1, fp);
+	fread (poly, sizeof (struct CHECK), n_id, fp);
 	fclose (fp);
 
 	fp = fopen ("/home/aa4/gmt/wvs/x.lis2", "r");
@@ -78,7 +78,7 @@ int main (int argc, char **argv) {
 
 	fprintf (stderr, "np starts at %d. n_bad = %d, n_fix = %d, rest = %d\n", np, n_skip1, n_skip2, np - nk);
 
-	qsort ((char *)x, np, sizeof(struct BURP), sort_on_np);
+	qsort (x, np, sizeof(struct BURP), sort_on_np);
 	
 	do {
 	
@@ -113,7 +113,7 @@ int main (int argc, char **argv) {
 			fseek (fp_in, poly[id].pos, 0);
 		
 			for (k = 0; k < poly[id].h.n; k++) {
-				if (fread((char *)&p, sizeof(struct LONGPAIR), 1, fp_in) != 1) {
+				if (fread(&p, sizeof(struct LONGPAIR), 1, fp_in) != 1) {
 					fprintf(stderr,"polygon_extract: Error reading file.\n");
 					exit(-1);
 				}
@@ -142,7 +142,7 @@ int main (int argc, char **argv) {
 				}
 			}
 	
-			qsort ((char *)x, np, sizeof(struct BURP), sort_on_np);
+			qsort (x, np, sizeof(struct BURP), sort_on_np);
 			np -= n_bad;
 			fprintf (stderr, "rest now is %d\n", np - nk);
 		}

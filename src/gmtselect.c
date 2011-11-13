@@ -44,7 +44,7 @@
 #include "gmt.h"
 
 #define GMTSELECT_N_TESTS	6				/* Number of specific tests available */
-#define GMTSELECT_N_CLASSES	(GMT_MAX_GSHHS_LEVEL + 1)	/* Number of bands separated by the levels */
+#define GMTSELECT_N_CLASSES	(GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */
 
 #define F_ITEM	0
 #define N_ITEM	1
@@ -115,7 +115,7 @@ void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	
-	C->A.info.high = GMT_MAX_GSHHS_LEVEL;				/* Include all GSHHS levels */
+	C->A.info.high = GSHHS_MAX_LEVEL;				/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
 	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = GMT_ONEDGE;	/* Default is that points on a boundary are inside */
 	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = TRUE;	/* Default is to pass if we are inside */
@@ -123,14 +123,14 @@ void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->N.mask[1] = C->N.mask[3] = 1;				/* Default for "dry" areas = 1 (inside) */
 	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtselect_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) free ((void *)C->C.file);	
-	if (C->F.file) free ((void *)C->F.file);	
-	if (C->L.file) free ((void *)C->L.file);	
+	if (C->C.file) free (C->C.file);	
+	if (C->F.file) free (C->F.file);	
+	if (C->L.file) free (C->L.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -431,7 +431,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtselect_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmtselect_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -439,8 +439,8 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_gmtselect", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRbf:", "ghios>" GMT_OPT("HMm"), options))) Return (error);
-	Ctrl = (struct GMTSELECT_CTRL *) New_gmtselect_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJRbf:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
+	Ctrl = New_gmtselect_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtselect_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmtselect main code ----------------------------*/
@@ -511,16 +511,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else	/* Cartesian data */
 		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
 	
-	/* Gather input/output  file names (or stdin/out) and enable i/o */
-	
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
-
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
-
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, GMT_IO_ASCII, (void **)&Ctrl->C.file, (void **)&Cin)) Return ((error = GMT_DATA_READ_ERROR));
+		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, GMT_IO_ASCII, Ctrl->C.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		if (Cin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
@@ -557,7 +551,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			
 			/* Sort on x to speed up inside testing */
-			qsort ((void *)data, (size_t)point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
+			qsort (data, (size_t)point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
 			
 			for (i = k = 0; i < point->n_segments; i++) {	/* Put back the new order */
 				for (j = 0; j < point->segment[i]->n_rows; j++, k++) {
@@ -571,7 +565,9 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->L.active) {	/* Initialize lines structure used in test for proximity to lines [use Ctrl->L.dist, ] */
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, GMT_IO_ASCII, (void **)&Ctrl->L.file, (void **)&Lin)) Return ((error = GMT_DATA_READ_ERROR));
+		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, GMT_IO_ASCII, Ctrl->L.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		if (Lin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -L option: %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
 			Return (EXIT_FAILURE);
@@ -590,7 +586,9 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (Ctrl->F.active) {	/* Initialize polygon structure used in test for polygon in/out test */
 		GMT_skip_xy_duplicates (GMT, TRUE);	/* Avoid repeating x/y points in polygons */
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, GMT_IO_ASCII, (void **)&Ctrl->F.file, (void **)&Fin)) Return ((error = GMT_DATA_READ_ERROR));
+		if ((Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, GMT_IO_ASCII, Ctrl->F.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
 		if (Fin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
@@ -608,27 +606,44 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	
+	/* Gather input/output  file names (or stdin/out) and enable i/o */
+	
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
+
 	/* Now we are ready to take on some input values */
 
 	GMT->common.b.ncol[GMT_OUT] = -1;
 	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
+	need_header = GMT->current.io.multi_segments[GMT_OUT];	/* Only need to break up segments */
 	
-	while ((n_fields = GMT_Get_Record (API, r_mode, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
-
-		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);		/* Bail if there are io errors */
-
-		if (GMT_REC_IS_TBL_HEADER (GMT)) {
-			GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);	/* Echo table headers */
-			continue;
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (API, r_mode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo table headers */
+				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);
+				continue;
+			}
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+			else if (GMT_REC_IS_SEG_HEADER (GMT)) {
+				output_header = TRUE;
+				continue;
+			}
 		}
-
-		while (GMT_REC_IS_SEG_HEADER (GMT) && !GMT_REC_IS_EOF (GMT)) {
-			output_header = TRUE;
-			n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in);
-		}
-		if (GMT_REC_IS_EOF (GMT)) break;	/* At EOF */
-
-		need_header = GMT->current.io.multi_segments[GMT_OUT];	/* Only need to break up segments */
+		
+		/* Data record to process */
 
 		n_read++;
 		if (n_read%1000 == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld records, passed %ld records\r", n_read, n_pass);
@@ -763,11 +778,16 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (just_copy_record)
 			GMT_Put_Record (API, GMT_WRITE_TEXT, NULL);
 		else
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)in);
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
 		n_pass++;
+	} while (TRUE);
+	
+	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld records, passed %ld records\n", n_read, n_pass);
 

@@ -491,12 +491,12 @@ void *New_spectrum1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C->C.col[6] = 'g';
 	C->C.col[7] = 'o';
 	C->N.name = strdup ("spectrum");
-	return ((void *)C);
+	return (C);
 }
 
 void Free_spectrum1d_Ctrl (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->N.name) free ((void *)C->N.name);	
+	if (C->N.name) free (C->N.name);	
 	GMT_free (GMT, C);	
 }
 
@@ -575,7 +575,7 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 			case 'N':
 				Ctrl->N.active = TRUE;
 				if (opt->arg[0]) {
-					free ((void *)Ctrl->N.name);
+					free (Ctrl->N.name);
 					if (opt->arg[0] == '+') Ctrl->N.mode = 1;
 					Ctrl->N.name = strdup (&opt->arg[Ctrl->N.mode]);
 				}
@@ -623,7 +623,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_spectrum1d_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_spectrum1d_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -631,8 +631,8 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_spectrum1d", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vbf", "ghis", options))) Return (error);
-	Ctrl = (struct SPECTRUM1D_CTRL *) New_spectrum1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vbf", "ghis", options)) Return (API->error);
+	Ctrl = New_spectrum1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_spectrum1d_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the spectrum1d main code ----------------------------*/
@@ -651,11 +651,15 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Ctrl->C.active = TRUE;
 	}
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 1 + C.y_given))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return ((error = GMT_DATA_READ_ERROR));
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
+	if ((error = GMT_set_cols (GMT, GMT_IN, 1 + C.y_given)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
 
 	alloc_arrays (GMT, &C);
 
@@ -663,12 +667,10 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Dout = GMT_memory (GMT, NULL, 1, struct GMT_DATASET);				/* Output dataset... */
 		Dout->table = GMT_memory (GMT, NULL, Din->n_tables, struct GMT_TABLE *);	/* with table array */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, Din->n_columns))) Return (error);
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		if (one_table) {
-			GMT_create_table (GMT, &Tout, Din->table[tbl]->n_segments, Din->n_columns, 0);
-			Dout->table[tbl] = Tout;
+			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0);
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
@@ -689,9 +691,8 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	free_space_spectrum1d (GMT, &C);
 	
-	if (one_table) {
-		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout->io_mode, (void **)&(Ctrl->N.name), (void *)Dout))) Return (error);
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (one_table && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout->io_mode, Ctrl->N.name, Dout) != GMT_OK) {
+		Return (API->error);
 	}
 
 	Return (GMT_OK);

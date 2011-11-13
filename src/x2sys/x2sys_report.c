@@ -89,16 +89,16 @@ void *New_x2sys_report_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_report_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *C) {	/* Deallocate control structure */
-	if (C->In.file) free ((void *)C->In.file);
-	if (C->C.col) free ((void *)C->C.col);
-	if (C->I.file) free ((void *)C->I.file);
-	if (C->L.file) free ((void *)C->L.file);
-	if (C->S.file) free ((void *)C->S.file);
-	if (C->T.TAG) free ((void *)C->T.TAG);
+	if (C->In.file) free (C->In.file);
+	if (C->C.col) free (C->C.col);
+	if (C->I.file) free (C->I.file);
+	if (C->L.file) free (C->L.file);
+	if (C->S.file) free (C->S.file);
+	if (C->T.TAG) free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 
@@ -237,7 +237,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_x2sys_report_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_x2sys_report_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -245,8 +245,8 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_x2sys_report", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VR", ">", options))) Return (error);
-	Ctrl = (struct X2SYS_REPORT_CTRL *)New_x2sys_report_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VR", ">", options)) Return (API->error);
+	Ctrl = New_x2sys_report_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_report_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the x2sys_report main code ----------------------------*/
@@ -388,7 +388,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			adj[k].K[adj[k].n].c = 0.0;
 			adj[k].n++;
 			
-			qsort((void *)adj[k].K, (size_t)adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
+			qsort(adj[k].K, (size_t)adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
 			sprintf (file, "%s/%s/%s.%s.adj", X2SYS_HOME, Ctrl->T.TAG, trk_name[k], Ctrl->C.col);
 			if ((fp = GMT_fopen (GMT, file, "w")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create file %s!\n", file);

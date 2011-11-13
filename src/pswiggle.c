@@ -185,12 +185,12 @@ void *New_pswiggle_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	GMT_init_fill (GMT, &C->G.fill[0], GMT->current.setting.map_frame_pen.rgb[0], GMT->current.setting.map_frame_pen.rgb[1], GMT->current.setting.map_frame_pen.rgb[2]);
 	C->G.fill[1] = C->G.fill[0];
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pswiggle_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->S.label) free ((void *)C->S.label);	
+	if (C->S.label) free (C->S.label);	
 	GMT_free (GMT, C);	
 }
 
@@ -394,7 +394,7 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pswiggle_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pswiggle_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -402,8 +402,8 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_pswiggle", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRbf:", "BKOPUXxYycghipst>" GMT_OPT("EHMm"), options))) Return (error);
-	Ctrl = (struct PSWIGGLE_CTRL *)New_pswiggle_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJRbf:", "BKOPUXxYycghipst>" GMT_OPT("EHMm"), options)) Return (API->error);
+	Ctrl = New_pswiggle_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pswiggle_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
@@ -446,11 +446,15 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	yy  = GMT_memory (GMT, NULL, n_alloc, double);
 	zz  = GMT_memory (GMT, NULL, n_alloc, double);
 
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3))) Return (error);
-	if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, GMT_FILE_BREAK, NULL, (void **)&D))) Return (error);
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		Return (API->error);
+	}
+	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+		Return (error);
+	}
+	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, GMT_FILE_BREAK, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
 
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];

@@ -124,7 +124,6 @@
  */
  
 #include "spotter.h"
-#include "gmt_proj.h"
 
 struct HOTSPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
@@ -168,14 +167,14 @@ void *New_hotspotter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	
 	C->D.value = 0.5;	/* Sets how many points along flowline per node */
 	C->N.t_upper = 180.0;	/* Upper age assigned to seamounts on undated seafloor */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_hotspotter_Ctrl (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->E.file) free ((void *)C->E.file);	
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->S.file) free ((void *)C->S.file);	
+	if (C->E.file) free (C->E.file);	
+	if (C->G.file) free (C->G.file);	
+	if (C->S.file) free (C->S.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -293,7 +292,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG node_x_width;		/* Number of x-nodes covered by the seamount in question (y-dependent) */
 	GMT_LONG node_y_width;		/* Number of y-nodes covered by the seamount */
 	GMT_LONG node;			/* The current node index */
-	GMT_LONG n_fields, n_expected_fields;
+	GMT_LONG n_expected_fields;
 	GMT_LONG n_read = 0;		/* Number of records read */
 	GMT_LONG row, col, kx, ky, m, d_col, d_row, col_0, row_0, k0;
 	GMT_LONG error = FALSE;		/* TRUE when arguments are wrong */
@@ -331,7 +330,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_hotspotter_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_hotspotter_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -339,9 +338,9 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_hotspotter", &GMT_cpy);				/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghiors>" GMT_OPT("FHMm"), options))) Return (error);
-	if (GMT_Find_Option (API, 'f', options, &ptr)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
-	Ctrl = (struct HOTSPOTTER_CTRL *) New_hotspotter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VRbf:", "ghiors>" GMT_OPT("FHMm"), options)) Return (API->error);
+	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
+	Ctrl = New_hotspotter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_hotspotter_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the hotspotter main code ----------------------------*/
@@ -354,7 +353,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Initialize the CVA grid and structure */
 
-	G = GMT_create_grid (GMT);
+	if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, G->header, options, FALSE);	/* Initialize grid structure */
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
@@ -363,7 +362,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Assign grid-region variables in radians to avoid conversions inside convolution loop */
 
-	G_rad = GMT_create_grid (GMT);
+	if ((G_rad = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	G_rad->header->inc[GMT_X] = G->header->inc[GMT_X] * D2R;
 	G_rad->header->inc[GMT_Y] = G->header->inc[GMT_Y] * D2R;
 	G_rad->header->wesn[XLO]  = G->header->wesn[XLO] * D2R;
@@ -410,17 +409,29 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_smts = 0;
 
 	n_expected_fields = (GMT->common.b.ncol[GMT_IN]) ? GMT->common.b.ncol[GMT_IN] : 5;
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_expected_fields))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);				/* Enables data input and sets access mode */
+	if ((error = GMT_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	do {	/* Keep returning records until we reach EOF */
 		n_read++;
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT) && n_fields < 2) continue;
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Echo table headers */
-
+		/* Data record to process */
+	
 		/* STEP 1: Read information about a single seamount from input record */
 
 		if (GMT_is_dnan (in[4]))	/* Age is NaN, assign value */
@@ -518,8 +529,11 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_smts++;	/* Go to next seamount */
 
 		if (!(n_smts%100)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed %5ld seamounts\r", n_smts);
+	} while (TRUE);
+	
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
 	/* OK, Done processing, time to write out */
 
@@ -545,9 +559,9 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Write CVA grid %s\n", Ctrl->G.file);
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)G)) Return (GMT_DATA_WRITE_ERROR);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G) != GMT_OK) {
+		Return (API->error);
+	}
 
 	/* Clean up memory */
 

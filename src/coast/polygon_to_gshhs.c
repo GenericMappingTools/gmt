@@ -26,7 +26,7 @@ int main (int argc, char **argv)
 	}
 	if (argc == 3 && !strcmp (argv[1], "-l")) lines = 1;
 	fp_in = fopen(argv[1+lines], "r");
-	memset ((void *)&h, 0, sizeof (struct GSHHS));
+	memset (&h, 0, sizeof (struct GSHHS));
 		
 	while (pol_readheader (&h, fp_in) == 1) {
 		gshhs_header.west	= irint (h.west * GSHHS_INV_SCL);

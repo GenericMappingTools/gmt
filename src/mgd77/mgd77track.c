@@ -134,7 +134,7 @@ void *New_mgd77track_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	GMT_getfont (GMT, "Times-Italic", &C->T.marker[MGD77TRACK_MARK_SAMEDAY].font);
 	GMT_getfont (GMT, "Times-Roman", &C->T.marker[MGD77TRACK_MARK_DIST].font);
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_mgd77track_Ctrl (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *C) {	/* Deallocate control structure */
@@ -551,17 +551,17 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77track", &GMT_cpy);	/* Save current state */
-	Ctrl = (struct MGD77TRACK_CTRL *) New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77track_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
 	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77track_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
-	if ((error = GMT_Parse_Common (API, "-VJRbf", "BKOPUXYcp>", options))) Return ((int)error);
-	if ((error = GMT_mgd77track_parse (API, Ctrl, options))) Return ((int)error);
+	if (GMT_Parse_Common (API, "-VJRbf", "BKOPUXYcp>", options)) Return (API->error);
+	if ((error = GMT_mgd77track_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the mgd77track main code ----------------------------*/
@@ -636,7 +636,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		track_time = (double*)D.values[0];
 		lon = (double*)D.values[1];
 		lat = (double*)D.values[2];
-		GMT_err_fail (GMT, GMT_dist_array (GMT, lon, lat, D.H.n_records, 1.0, dist_flag, &track_dist), "");	/* Work internally in meters */
+		if ((track_dist = GMT_dist_array (GMT, lon, lat, D.H.n_records, 1.0, dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* Work internally in meters */
 		for (rec = 0; rec < D.H.n_records && bad_coordinates (lon[rec], lat[rec]) && track_time[rec] < Ctrl->D.start && track_dist[rec] < Ctrl->S.start; rec++);	/* Find first record of interest */
 		first_rec = rec;
 		for (rec = D.H.n_records - 1; rec && track_time[rec] > Ctrl->D.stop && bad_coordinates (lon[rec], lat[rec]) && track_dist[rec] > Ctrl->S.stop; rec--);	/* Find last record of interest */

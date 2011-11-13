@@ -137,7 +137,6 @@ extern "C" {
 #include "gmt_stat.h"      	/* extern functions defined in gmt_stat.c */
 #include "gmt_support.h"      	/* extern functions defined in gmt_support.c */
 #include "gmt_vector.h"      	/* extern functions defined in gmt_vector.c */
-#include "gmt_proj.h"      	/* Macros used in gmt_map.c and gmt_proj.c */
 
 #ifdef _OPENMP			/* Using open MP parallelization */
 #include "omp.h"
@@ -179,8 +178,8 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	PFL near_point_func;			/* Pointer to function returning distance to nearest point */
 	PFL wrap_around_check;			/* Does x or y wrap checks */
 	PFL jump;				/* TRUE if we jump in x or y */
-	PFB will_it_wrap;			/* TRUE if consecutive points indicate wrap */
-	PFB this_point_wraps;			/* Used in above */
+	PFL will_it_wrap;			/* TRUE if consecutive points indicate wrap */
+	PFL this_point_wraps;			/* Used in above */
 	PFV get_crossings;			/* Returns map crossings in x or y */
 	PFL truncate;				/* Truncate polygons agains boundaries */
 };
@@ -243,7 +242,7 @@ struct GMT_SESSION {
 	/* These are parameters that is set once at the start of a GMT session and
 	 * are essentially read-only constants for the duration of the session */
 	FILE *std[3];			/* Pointers for standard input, output, and error */
-	PFL input_ascii;		/* Pointer to function reading ascii tables only */
+	PFP input_ascii;		/* Pointer to function reading ascii tables only */
 	PFL output_ascii;		/* Pointer to function writing ascii tables only */
 	GMT_LONG n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
 	GMT_LONG n_user_media;		/* Total number of user media returned by gmt_load_user_media */
