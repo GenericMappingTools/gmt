@@ -168,7 +168,7 @@ GMT_LONG GMT_Destroy_Options (struct GMTAPI_CTRL *API, struct GMT_OPTION **head)
 	struct GMT_OPTION *current = NULL, *delete = NULL;
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
-	if (*head == NULL) return_error (API, GMT_OK);			/* Cannot delete a non-existant list */
+	if (*head == NULL) return (FALSE);				/* Cannot delete a non-existant list */
 
 	current = *head;
 	while (current) {	/* Start at head and loop over the list and delete the options, one by one. */

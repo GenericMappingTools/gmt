@@ -258,7 +258,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == '?') return (GMT_mgd77info_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77info_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
