@@ -12,7 +12,7 @@ echo GMT EXAMPLE 18
 set ps=..\example_18.ps
 
 REM Use spherical projection since SS data define on sphere
-gmtset PROJ_ELLIPSOID Sphere FORMAT_FLOAT_OUT %%lg
+gmtset PROJ_ELLIPSOID Sphere FORMAT_FLOAT_OUT %%g
 
 REM Define location of Pratt seamount
 echo -142.65 56.25 > pratt.d

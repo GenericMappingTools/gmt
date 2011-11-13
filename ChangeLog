@@ -8,6 +8,9 @@
 	* gmt_support.c:	Resampling of CPTs did not initialize the i_dz variables, resulting
 				in discontinuous colors for continuous color maps.
 
+2011-11-11	remko
+	* pslib.c:		Fixed error in PSL_message (wrong verbosity handling)
+
 2011-11-11	pwessel
 	* gmtapi_util.c:	Introduce GMT_Retrieve_Data to return a pointer to a container
 				that was allocated when a memory location was registered as the
@@ -45,6 +48,16 @@
 				casting to void * takes place, letting the compiler know what is
 				going on.  Memory alloc/free macros changed similarly.
 	* surface.c:		The -Lu<upperfile> instead applied the -Ll<lowerfile>.
+
+2011-10-16	pwessel
+	* triangulate.c:	Added -S to write triangle polygons and -Z to control use
+				of z-column.
+
+2011-10-16	remko
+	* gmt_init.c:		Do not write "empty" .gmtcommands
+
+2011-10-14	pwessel
+	* test/meca:		Added new meca_5.sh test from Vala Hjorleifsdottir
 
 2011-10-11	fwobbe
 	* gmt2kml.c:		Fixed an array that was accessed past its end

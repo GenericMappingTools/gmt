@@ -959,6 +959,7 @@ AC_MSG_CHECKING(for openMP)
 if test "X$enable_openmp" = "Xyes" ; then
 	CFLAGS="$CFLAGS -fopenmp"
 	LDFLAGS="$LDFLAGS -fopenmp"
+    LD_OPT="$LD_OPT -fopenmp"
 	if test ! "X$MEX_BLD" = "X" ; then
 		MEX_BLD="$MEX_BLD -fopenmp"
 	fi

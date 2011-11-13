@@ -2403,7 +2403,7 @@ void grd_SKEW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 }
 
 void grd_SQR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
-/*OPERATOR: SQRT 1 1 A^2.  */
+/*OPERATOR: SQR 1 1 A^2.  */
 {
 	GMT_LONG node;
 	double a = 0.0;
