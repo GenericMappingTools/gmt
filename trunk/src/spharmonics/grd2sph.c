@@ -154,7 +154,7 @@ int main (int argc, char **argv)
 
 	nm = header.nx * header.ny;
 
-	grd = (float *) GMT_memory (VNULL, (size_t) nm, sizeof (float), GMT->init.progname);
+	grd = GMT_memory (VNULL, (size_t) nm, sizeof (float), GMT->init.progname);
 
 	GMT_err_fail (GMT_read_grd (argv[f_arg], &header, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, FALSE), argv[f_arg]);
 	/* Do conversion to spherical harmonic coefficients */
@@ -174,7 +174,7 @@ int main (int argc, char **argv)
 
 	}
 
-	GMT_free ((void *)grd);
+	GMT_free (grd);
 	
 	if (GMT->current.setting.verbose) fprintf (stderr, "%s: Completed\n", GMT->init.progname);
 
@@ -194,9 +194,9 @@ void *New_grd2sph_Ctrl () {	/* Allocate and initialize a new control structure *
 	
 	C->N.mode = 'm';
 		
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grd2sph_Ctrl (struct grd2sph_CTRL *C) {	/* Deallocate control structure */
-	GMT_free ((void *)C);	
+	GMT_free (C);	
 }

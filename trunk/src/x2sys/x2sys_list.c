@@ -85,18 +85,18 @@ void *New_x2sys_list_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
 	C->A.value = 1.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_list_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *C) {	/* Deallocate control structure */
-	if (C->In.file) free ((void *)C->In.file);
-	if (C->C.col) free ((void *)C->C.col);
-	if (C->F.flags) free ((void *)C->F.flags);
-	if (C->I.file) free ((void *)C->I.file);
-	if (C->L.file) free ((void *)C->L.file);
-	if (C->S.file) free ((void *)C->S.file);
-	if (C->T.TAG) free ((void *)C->T.TAG);
-	if (C->W.file) free ((void *)C->W.file);
+	if (C->In.file) free (C->In.file);
+	if (C->C.col) free (C->C.col);
+	if (C->F.flags) free (C->F.flags);
+	if (C->I.file) free (C->I.file);
+	if (C->L.file) free (C->L.file);
+	if (C->S.file) free (C->S.file);
+	if (C->T.TAG) free (C->T.TAG);
+	if (C->W.file) free (C->W.file);
 	GMT_free (GMT, C);
 }
 
@@ -275,7 +275,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_x2sys_list_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_x2sys_list_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -283,8 +283,8 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_x2sys_list", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRb", ">", options))) Return (error);
-	Ctrl = (struct X2SYS_LIST_CTRL *)New_x2sys_list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VRb", ">", options)) Return (API->error);
+	Ctrl = New_x2sys_list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_list_parse (API, Ctrl, options))) Return (error);
 	
  	/*---------------------------- This is the x2sys_list main code ----------------------------*/
@@ -453,7 +453,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!GMT->common.b.active[GMT_OUT]) {	/* Write 3 header records */
 		char *cmd = NULL;
 		GMT_fprintf (GMT->session.std[GMT_OUT], "# Tag: %s %s\n", Ctrl->T.TAG, Ctrl->C.col);
-		GMT_Create_Cmd (API, &cmd, options);
+		cmd = GMT_Create_Cmd (API, options);
 		GMT_fprintf (GMT->session.std[GMT_OUT], "# Command: %s %s\n", GMT->init.progname, cmd);	/* Build command line argument string */
 		GMT_free (GMT, cmd);
 		

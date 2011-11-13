@@ -2472,8 +2472,8 @@ void cfft1d_fftpack (int *np, fcomplex *c, int *dir)
 	n = *np;
 
 	if ((n != nold) || (*dir == 0)) {
-		if (nold != 0) free((char *) work);
-		if ((work = (float *) malloc((4*n+30)*sizeof(float))) == NULL) {
+		if (nold != 0) free (work);
+		if ((work = malloc((4*n+30)*sizeof(float))) == NULL) {
 			fprintf (stderr, "Cannot allocate work memory\n");
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -2515,7 +2515,7 @@ void transpose_complex_NM (struct FCOMPLEX *in, int n, int m)
 	int i, j;
 	struct FCOMPLEX	*tmp;
 
-	tmp = (struct FCOMPLEX *) malloc(n * m * sizeof(struct FCOMPLEX));
+	tmp = malloc(n * m * sizeof(struct FCOMPLEX));
 
 	for (i=0; i<n; i++) {
 		for (j=0; j<m; j++) {
@@ -2525,7 +2525,7 @@ void transpose_complex_NM (struct FCOMPLEX *in, int n, int m)
 
 	for (i=0; i<(n*m); i++) in[i] = tmp[i];
 
-	free((char *) tmp);
+	free (tmp);
 }
 
 int cfft2d_fftpack (int *N, int *M, struct FCOMPLEX *cin, int *dir)
@@ -2674,8 +2674,8 @@ cfft1d_perflib (int *np,fcomplex *c,int *dir)
 
 	n = *np;
 	if ((n != nold) || (*dir == 0)) {
-		if(nold != 0) free ((char *) work);
-		if((work = (float *) malloc((4*n+30)*sizeof(float))) == NULL){
+		if(nold != 0) free (work);
+		if((work = malloc ((4*n+30)*sizeof(float))) == NULL){
 			fprintf(stderr,"Sorry, can't allocate mem.\n");
 			return(-1);
 		}

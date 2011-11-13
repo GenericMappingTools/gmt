@@ -24,7 +24,7 @@
 
 void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	GMT_LONG status;
+	GMT_LONG status, ID;
 	struct	GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct	GMT_GRID *G = NULL;
 	struct	GMT_VECTOR *V = NULL;
@@ -47,7 +47,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (!mxIsChar(prhs[nrhs-1])) mexErrMsgTxt ("Last input must contain the options string\n");
 
 	/* Initializing new GMT session */
-	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("Failure to create GMT Session\n");
+	if ((API = GMT_Create_Session ("GMT/MEX-API", GMTAPI_GMT)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* Make sure options are given, and get them */
 	options = GMTMEX_options_init (API, prhs, nrhs);
@@ -56,20 +56,23 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	n_cols = (nrhs == 2) ? 0 : nrhs - 1;
 	input = GMTMEX_src_vector_init (API, prhs, n_cols, 0, &V);
 
-	/* Register a grid struct G to be the destination, allocated and written to by the module */
-	output = GMTMEX_dest_grid_init (API, &G, nlhs, options);
+	/* Register a destination, allocated and written to by the module */
+	output = GMTMEX_dest_grid_init (API, &ID, nlhs, options);
 
 	/* Build module command from input, ouptput, and option strings */
 	cmd = GMTMEX_build_cmd (API, input, options, output, GMT_IS_GRID);
 
 	/* Run GMT_surface module, or give usage message if errors arise during parsing */
-	if ((status = GMT_surface (API, 0, (void *)cmd))) mexErrMsgTxt ("Run-time error\n");
+	if ((status = GMT_surface (API, 0, cmd))) mexErrMsgTxt ("Run-time error\n");
 	
+	/* Retrieve the allocated grid */
+	if ((G = GMT_Retrieve_Data (API, ID)) == NULL) mexErrMsgTxt ("Run-time error\n");
+
 	/* Pass output arguments to Matlab vectors Z, with optional (x, y) or hdr. */
 	if (nlhs) GMTMEX_prep_mexgrd (API, plhs, nlhs, G);
 
 	/* Destroy the main grid returned from the module  */
-	GMT_Destroy_Data (API, GMT_REFERENCE, (void **)&G);
+	if (GMT_Destroy_Data (API, GMT_REFERENCE, &G)) mexErrMsgTxt ("Run-time error\n");
 	
 	/* Free temporary local variables  */
 	GMTMEX_free (input, output, options, cmd);

@@ -61,7 +61,6 @@ src/gmt_notunix.h
 src/gmt_media_name.h
 src/gmt_media_size.h
 src/gmt_pennames.h
-src/gmt_proj.h
 src/gmt_project.h
 src/gmt_prognames.h
 src/gmt_progcases.h

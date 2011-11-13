@@ -98,14 +98,14 @@ void *New_segy2grd_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	C->N.f_value = GMT->session.f_NaN;
 	C->N.d_value = GMT->session.d_NaN;
 	C->Q.value[X_ID] = 1.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_segy2grd_Ctrl (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C && C->In.file) free ((void *)C->In.file);
-	if (C && C->D.text) free ((void *)C->D.text);
-	if (C && C->G.file) free ((void *)C->G.file);
+	if (C && C->In.file) free (C->In.file);
+	if (C && C->D.text) free (C->D.text);
+	if (C && C->G.file) free (C->G.file);
 	GMT_free (GMT, C);
 }
 
@@ -292,7 +292,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_segy2grd_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_segy2grd_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -300,15 +300,15 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_segy2grd", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRr", GMT_OPT("F"), options))) Return (error);
-	Ctrl = (struct SEGY2GRD_CTRL *)New_segy2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VRr", GMT_OPT("F"), options)) Return (API->error);
+	Ctrl = New_segy2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_segy2grd_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the segy2grd main code ----------------------------*/
 
 	read_cont = (Ctrl->S.mode != PLOT_CDP && Ctrl->S.mode != PLOT_OFFSET && !Ctrl->S.value);
 
-	Grid = GMT_create_grid (GMT);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
@@ -409,7 +409,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			 	header->sampleLength = GMT_swab2 (header->sampleLength);
 			}
 
-			data = (float *) get_segy_data (fpi, header); /* read a trace */
+			data = (float *)get_segy_data (fpi, header); /* read a trace */
 			/* get number of samples in _this_ trace or set to number in reel header */
 			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
 
@@ -417,7 +417,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (n_samp - ij0 > Grid->header->ny) n_samp = Grid->header->ny + ij0;
 
 			if (swap_bytes) { /* need to swap the order of the bytes in the data even though assuming IEEE format */
-				int *intdata = (int *) data;
+				int *intdata = (int *)data;
 				for (isamp = 0; isamp < n_samp; isamp++) intdata[isamp] = GMT_swab4 (intdata[isamp]);
 			}
 
@@ -442,7 +442,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				x0 = (double) cdpval;
 			}
 			else if (Ctrl->S.value) { /* ugly code - want to get value starting at Ctrl->S.value of header into a double... */
-				head = (char *) header;
+				head = (char *)header;
 				memcpy(&head2, &head[Ctrl->S.value], 4); /* edited to fix bug where 8bytes were copied from head.
                                                 Caused by casting to a long directly from char array*/ 
 				x0 = (double) ((swap_bytes)? GMT_swab4 (head2): head2);
@@ -461,13 +461,13 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				header->num_samps = GMT_swab4 (header->num_samps);
 			}
 
-			data = (float *) get_segy_data (fpi, header); /* read a trace */
+			data = (float *)get_segy_data (fpi, header); /* read a trace */
 			/* get number of samples in _this_ trace (e.g. OMEGA has strange ideas about SEGY standard)
 			   or set to number in reel header */
 			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
 
 			if (swap_bytes) { /* need to swap the order of the bytes in the data even though assuming IEEE format */
-				int *intdata = (int *) data;
+				int *intdata = (int *)data;
 				for (isamp = 0; isamp < n_samp; isamp++) intdata[isamp] = GMT_swab4 (intdata[isamp]);
 			}
 
@@ -523,9 +523,9 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	GMT_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+		Return (API->error);
+	}
 
 	GMT_free (GMT, flag);
 

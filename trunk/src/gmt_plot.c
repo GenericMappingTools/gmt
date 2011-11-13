@@ -507,7 +507,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 
 		if (nx) GMT_free (C, knots);
 		if (label_c) {
-			for (i = 0; i < nx; i++) if (label_c[i]) free ((void *)label_c[i]);
+			for (i = 0; i < nx; i++) if (label_c[i]) free (label_c[i]);
 			GMT_free (C, label_c);
 		}
 	}
@@ -1394,7 +1394,7 @@ GMT_LONG gmt_annot_too_crowded (struct GMT_CTRL *C, double x, double y, GMT_LONG
 
 	/* OK to plot and add to list */
 
-	if (GMT_n_annotations[side] == GMT_alloc_annotations[side]) GMT_alloc_annotations[side] = GMT_malloc2 (C, GMT_x_annotation[side], GMT_y_annotation[side], GMT_n_annotations[side], GMT_alloc_annotations[side], double);
+	if (GMT_n_annotations[side] == GMT_alloc_annotations[side]) GMT_malloc2 (C, GMT_x_annotation[side], GMT_y_annotation[side], GMT_n_annotations[side], &(GMT_alloc_annotations[side]), double);
 	GMT_x_annotation[side][GMT_n_annotations[side]] = x, GMT_y_annotation[side][GMT_n_annotations[side]] = y, GMT_n_annotations[side]++;
 
 	return (FALSE);
@@ -2891,7 +2891,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 			case GMT_SYMBOL_MOVE:	/* Flush existing polygon and start a new path */
 				if (flush) gmt_flush_symbol_piece (C, P, xx, yy, &n, p, f, this_outline, &flush);
 				n = 0;
-				if (n >= n_alloc) n_alloc = GMT_malloc2 (C, xx, yy, n, n_alloc, double);
+				if (n >= n_alloc) GMT_malloc2 (C, xx, yy, n, &n_alloc, double);
 				xx[n] = x, yy[n] = y, n++;
 				p = (s->pen) ? s->pen : current_pen;
 				f = (s->fill) ? s->fill : current_fill;
@@ -2905,7 +2905,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 
 			case GMT_SYMBOL_DRAW:	/* Append another point to the path */
 				flush = TRUE;
-				if (n >= n_alloc) n_alloc = GMT_malloc2 (C, xx, yy, n, n_alloc, double);
+				if (n >= n_alloc) GMT_malloc2 (C, xx, yy, n, &n_alloc, double);
 				xx[n] = x, yy[n] = y, n++;
 				break;
 
@@ -2913,7 +2913,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 				flush = TRUE;
 				na = GMT_get_arc (C, x, y, 0.5 * s->p[0] * size[0], s->p[1], s->p[2], &xp, &yp);
 				for (i = 0; i < na; i++) {
-					if (n >= n_alloc) n_alloc = GMT_malloc2 (C, xx, yy, n, n_alloc, double);
+					if (n >= n_alloc) GMT_malloc2 (C, xx, yy, n, &n_alloc, double);
 					xx[n] = xp[i], yy[n] = yp[i], n++;
 				}
 				GMT_free (C, xp);
@@ -3037,17 +3037,23 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 
 	/* Save the lon, lat, angle, text for each annotation to specified file*/
 
-	if (GMT_Register_IO (C->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_OUT, (void **)&name, NULL, NULL, &object_ID)) return (EXIT_FAILURE);
-	if ((error = GMT_set_cols (C, GMT_OUT, 1))) return (error);
-	if ((error = GMT_Begin_IO (C->parent, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC))) return (error);	/* Enables data output and sets access mode */
-	free ((void *)name);
+	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_OUT, name, NULL)) == GMTAPI_NOTSET) {
+		return (EXIT_FAILURE);
+	}
+	if ((error = GMT_set_cols (C, GMT_OUT, 1)) != GMT_OK) {
+		return (error);
+	}
+	if (GMT_Begin_IO (C->parent, GMT_IS_TEXTSET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+		return (C->parent->error);
+	}
+	free (name);
 	kind = GMT_is_geographic (C, GMT_IN);
 	if (G->save_labels == 2)
 		sprintf (record, "# %s%s%s%sangle%slabel", xname[kind], C->current.setting.io_col_separator, yname[kind],
 			C->current.setting.io_col_separator, C->current.setting.io_col_separator);
 	else 
 		sprintf (record, "# %s%s%s%slabel", xname[kind], C->current.setting.io_col_separator, yname[kind], C->current.setting.io_col_separator);
-	GMT_Put_Record (C->parent, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+	GMT_Put_Record (C->parent, GMT_WRITE_TEXT, record);	/* Write this to output */
 	for (i = 0; i < G->n_segments; i++) {
 		L = G->segment[i];	/* Pointer to current segment */
 		if (!L->annot || L->n_labels == 0) continue;
@@ -3067,10 +3073,12 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 				strcat (record, C->current.setting.io_col_separator);
 			}
 			strcat (record, L->L[k].label);
-			GMT_Put_Record (C->parent, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+			GMT_Put_Record (C->parent, GMT_WRITE_TEXT, record);	/* Write this to output */
 		}
 	}
-	if ((error = GMT_End_IO (C->parent, GMT_OUT, 0))) return (error);	/* Disables further data output */
+	if (GMT_End_IO (C->parent, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		return (C->parent->error);
+	}
 	return (GMT_NOERROR);
 }
 
@@ -3179,7 +3187,8 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 
 		if (mode == 0) {	/* Opaque so PSL_plottextclip is called for 1st time here */
 			/* Allocate temp space for everything that must be passed to PSL_plottextclip */
-			(void)GMT_malloc3 (C, angle, xt, yt, m, 0, double);
+			GMT_LONG n_alloc = 0;
+			GMT_malloc3 (C, angle, xt, yt, m, &n_alloc, double);
 			txt = GMT_memory (C, NULL, m, char *);
 			for (i = m = 0; i < G->n_segments; i++) {
 				L = G->segment[i];	/* Pointer to current segment */
@@ -3233,12 +3242,13 @@ void gmt_contlabel_clippath (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_
 		if (nseg == 1) G->box |= 8;	/* Special message to just repeate the labelline call */
 	}
 	else {				/* Save PS memory by doing it this way instead via PSL_plottextclip */
+		GMT_LONG n_alloc = 0;
 		if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
 			just = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
 		else
 			just = G->just;
 		/* Allocate temp space for everything that must be passed to PSL_plottextclip */
-		(void)GMT_malloc3 (C, angle, xt, yt, m, 0, double);
+		GMT_malloc3 (C, angle, xt, yt, m, &n_alloc, double);
 		txt = GMT_memory (C, NULL, m, char *);
 		for (i = m = 0; i < G->n_segments; i++) {
 			L = G->segment[i];	/* Pointer to current segment */
@@ -3446,7 +3456,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 #endif
 	PSL_setdefaults (P, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb, C->current.setting.ps_encoding.name);
 
-	if (!GMT_Find_Option (C->parent, '>', options, &Out)) {	/* Want to use a specific output file */
+	if ((Out = GMT_Find_Option (C->parent, '>', options))) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
 		if (C->common.O.active && k == 0) {
 			GMT_report (C, GMT_MSG_NORMAL, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
@@ -3483,7 +3493,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	fno[id++] = C->current.setting.font_annot[0].id;
 	fno[id++] = C->current.setting.font_annot[1].id;
 
-	GMT_sort_array (C, (void *)fno, id, GMT_LONG_TYPE);
+	GMT_sort_array (C, fno, id, GMTAPI_LONG);
 
 	last = -1;
 	for (k = n_fonts = 0; k < id; k++) {

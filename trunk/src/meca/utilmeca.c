@@ -636,11 +636,11 @@ void GMT_momten2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt,struct AXIS *T,str
 	double *a, *d, *b, *z, *v;
 	double az[3], pl[3];
 
-	a = (double *) GMT_memory (GMT, NULL, np*np, double);
-	d = (double *) GMT_memory (GMT, NULL, np, double);
-	b = (double *) GMT_memory (GMT, NULL, np, double);
-	z = (double *) GMT_memory (GMT, NULL, np, double);
-	v = (double *) GMT_memory (GMT, NULL, np*np, double);
+	a = GMT_memory (GMT, NULL, np*np, double);
+	d = GMT_memory (GMT, NULL, np, double);
+	b = GMT_memory (GMT, NULL, np, double);
+	z = GMT_memory (GMT, NULL, np, double);
+	v = GMT_memory (GMT, NULL, np*np, double);
 
 	a[0]=mt.f[0];	a[1]=mt.f[3];	a[2]=mt.f[4];
 	a[3]=mt.f[3];	a[4]=mt.f[1];	a[5]=mt.f[5];

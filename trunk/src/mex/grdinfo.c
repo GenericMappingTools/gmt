@@ -34,7 +34,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct GMT_GRID *G = NULL;
-	double *info = (double *)NULL;
+	double *info = NULL;
 	char *filein = NULL;
 
 	if (nrhs != 1) {
@@ -43,15 +43,13 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		return;
 	}
 
-	filein = (char *)mxArrayToString (prhs[0]);	/* Load the file name into a char string */
+	filein = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
 	
 	/* 1. Initializing new GMT session */
-	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("GMT: (grdinfo) Failure to create GMT Session\n");
+	if ((API = GMT_Create_Session ("GMT/MEX-API", GMTAPI_GMT)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. READING IN A GRID */
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) mexErrMsgTxt ("GMT: (grdinfo) Failure to Begin IO\n");
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&filein, (void **)&G)) mexErrMsgTxt ("GMT: (grdinfo) Read failure\n");
-	if (GMT_End_IO (API, GMT_IN, 0)) mexErrMsgTxt ("GMT: (grdinfo) Failure to End IO\n");
+	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, filein, NULL)) == NULL) mexErrMsgTxt ("GMT: (grdinfo) Read failure\n");
 	
 	mexPrintf("%s: Title: %s\n", filein, G->header->title);
 	mexPrintf("%s: Command: %s\n", filein, G->header->command);
@@ -73,7 +71,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	if (nlhs == 1) GMTMEX_grdheader2info (plhs, G, 0);	/* Return info array */
  	
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G)) mexErrMsgTxt ("Run-time error\n");
 
 	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (&API))  mexErrMsgTxt ("GMT: (grdinfo) Failure to destroy GMT Session\n");

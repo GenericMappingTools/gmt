@@ -35,8 +35,8 @@ int main (int argc, char **argv)
 	
 	area_init ();
 	n_alloc = GMT_CHUNK;
-	flon = (double *) GMT_memory ((void *)flon, n_alloc, sizeof(double), "polygon_restore");
-	flat = (double *) GMT_memory ((void *)flat, n_alloc, sizeof(double), "polygon_restore");
+	flon = (double *) GMT_memory (flon, n_alloc, sizeof(double), "polygon_restore");
+	flat = (double *) GMT_memory (flat, n_alloc, sizeof(double), "polygon_restore");
 
 	while (fgets (line, 80, fp_new)) {
 		sscanf (line, "%d", &i);
@@ -59,8 +59,8 @@ int main (int argc, char **argv)
 			k++;
 			if (k == n_alloc) {
 				n_alloc += GMT_CHUNK;
-				flon = (double *) GMT_memory ((void *)flon, n_alloc, sizeof(double), "polygon_restore");
-				flat = (double *) GMT_memory ((void *)flat, n_alloc, sizeof(double), "polygon_restore");
+				flon = (double *) GMT_memory (flon, n_alloc, sizeof(double), "polygon_restore");
+				flat = (double *) GMT_memory (flat, n_alloc, sizeof(double), "polygon_restore");
 			}
 		}
 		fclose (fp);

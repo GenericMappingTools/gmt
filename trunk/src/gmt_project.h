@@ -27,6 +27,34 @@
 #ifndef _GMT_PROJECT_H
 #define _GMT_PROJECT_H
 
+#define HALF_DBL_MAX (DBL_MAX/2.0)
+
+/* GMT_180 is used to see if a value really is exceeding it (beyond roundoff) */
+#define GMT_180	(180.0 + GMT_CONV_LIMIT)
+/* GMT_WIND_LON will remove central meridian value and adjust so lon fits between -180/+180 */
+#define GMT_WIND_LON(C,lon) {lon -= C->current.proj.central_meridian; while (lon < -GMT_180) lon += 360.0; while (lon > +GMT_180) lon -= 360.0;}
+
+enum GMT_enum_latswap {GMT_LATSWAP_G2A = 0,	/* input = geodetic;   output = authalic   */
+	GMT_LATSWAP_A2G,	/* input = authalic;   output = geodetic   */
+	GMT_LATSWAP_G2C,	/* input = geodetic;   output = conformal  */
+	GMT_LATSWAP_C2G,	/* input = conformal;  output = geodetic   */
+	GMT_LATSWAP_G2M,	/* input = geodetic;   output = meridional */
+	GMT_LATSWAP_M2G,	/* input = meridional; output = geodetic   */
+	GMT_LATSWAP_G2O,	/* input = geodetic;   output = geocentric */
+	GMT_LATSWAP_O2G,	/* input = geocentric; output = geodetic   */
+	GMT_LATSWAP_G2P,	/* input = geodetic;   output = parametric */
+	GMT_LATSWAP_P2G,	/* input = parametric; output = geodetic   */
+	GMT_LATSWAP_O2P,	/* input = geocentric; output = parametric */
+	GMT_LATSWAP_P2O,	/* input = parametric; output = geocentric */
+	GMT_LATSWAP_N};		/* number of defined swaps  */
+
+/* Some shorthand notation for GMT specific cases */
+
+#define GMT_latg_to_latc(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_G2C])
+#define GMT_latg_to_lata(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_G2A])
+#define GMT_latc_to_latg(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G])
+#define GMT_lata_to_latg(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_A2G])
+
 /* Macros returns TRUE if the two coordinates are lon/lat; way should be GMT_IN or GMT_OUT */
 #define GMT_x_is_lon(C,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON)
 #define GMT_y_is_lat(C,way) (C->current.io.col_type[way][GMT_Y] == GMT_IS_LAT)
@@ -42,55 +70,55 @@
 
 /* Linear projections tagged 0-99 */
 #define GMT_IS_LINEAR(C) (C->current.proj.projection / 100 == 0)
-#define GMT_LINEAR		0
-#define GMT_LOG10		1	/* These numbers are only used for GMT->current.proj.xyz_projection[3], */
-#define GMT_POW			2	/* while GMT->current.proj.projection = 0 */
-#define GMT_TIME		3
-#define GMT_ANNOT_CPT		4
-#define GMT_CUSTOM		5
+enum GMT_enum_annot {GMT_LINEAR = 0,
+	GMT_LOG10,	/* These numbers are only used for GMT->current.proj.xyz_projection[3], */
+	GMT_POW,	/* while GMT->current.proj.projection = 0 */
+	GMT_TIME,
+	GMT_ANNOT_CPT,
+	GMT_CUSTOM};
 
 #define GMT_ZAXIS		50
 
 /* Cylindrical projections tagged 100-199 */
 #define GMT_IS_CYLINDRICAL(C) (C->current.proj.projection / 100 == 1)
-#define GMT_MERCATOR		100
-#define	GMT_CYL_EQ		101
-#define	GMT_CYL_EQDIST		102
-#define GMT_CYL_STEREO		103
-#define GMT_MILLER		104
-#define GMT_TM			106
-#define GMT_UTM			107
-#define GMT_CASSINI		108
-#define GMT_OBLIQUE_MERC	150
-#define GMT_OBLIQUE_MERC_POLE	151
+enum GMT_enum_cyl {GMT_MERCATOR = 100,
+	GMT_CYL_EQ,
+	GMT_CYL_EQDIST,
+	GMT_CYL_STEREO,
+	GMT_MILLER,
+	GMT_TM,
+	GMT_UTM,
+	GMT_CASSINI,
+	GMT_OBLIQUE_MERC = 150,
+	GMT_OBLIQUE_MERC_POLE};
 
 /* Conic projections tagged 200-299 */
 #define GMT_IS_CONICAL(C) (C->current.proj.projection / 100 == 2)
-#define GMT_ALBERS		200
-#define GMT_ECONIC		201
-#define GMT_POLYCONIC		202
-#define GMT_LAMBERT		250
+enum GMT_enum_conic {GMT_ALBERS = 200,
+	GMT_ECONIC,
+	GMT_POLYCONIC,
+	GMT_LAMBERT = 250};
 
 /* Azimuthal projections tagged 300-399 */
 #define GMT_IS_AZIMUTHAL(C) (C->current.proj.projection / 100 == 3)
-#define GMT_STEREO		300
-#define GMT_LAMB_AZ_EQ		301
-#define GMT_ORTHO		302
-#define GMT_AZ_EQDIST		303
-#define GMT_GNOMONIC		304
-#define GMT_GENPER              305
-#define GMT_POLAR		350
+enum GMT_enum_azim {GMT_STEREO = 300,
+	GMT_LAMB_AZ_EQ,
+	GMT_ORTHO,
+	GMT_AZ_EQDIST,
+	GMT_GNOMONIC,
+	GMT_GENPER,
+	GMT_POLAR = 350};
 
 /* Misc projections tagged 400-499 */
 #define GMT_IS_MISC(C) (C->current.proj.projection / 100 == 4)
-#define GMT_MOLLWEIDE		400
-#define GMT_HAMMER		401
-#define GMT_SINUSOIDAL		402
-#define GMT_VANGRINTEN		403
-#define GMT_ROBINSON		404
-#define GMT_ECKERT4		405
-#define GMT_ECKERT6		406
-#define GMT_WINKEL		407
+enum GMT_enum_misc {GMT_MOLLWEIDE = 400,
+	GMT_HAMMER,
+	GMT_SINUSOIDAL,
+	GMT_VANGRINTEN,
+	GMT_ROBINSON,
+	GMT_ECKERT4,
+	GMT_ECKERT6,
+	GMT_WINKEL};
 
 /* GMT_IS_RECT_GRATICULE means parallels and meridians are orthogonal, but does not imply linear spacing */
 #define GMT_IS_RECT_GRATICULE(C) (C->current.proj.projection <= GMT_MILLER)
@@ -132,8 +160,6 @@
 /* Number of nodes in Robinson interpolation */
 
 #define GMT_N_ROBINSON	19
-
-#define GMT_LATSWAP_N	12	/* number of defined swaps  */
 
 struct GMT_LATSWAP_CONSTS {
 	double  c[GMT_LATSWAP_N][4];	/* Coefficients in 4-term series  */
@@ -353,20 +379,20 @@ struct GMT_PROJ {
 
 };
 
-#define GMT_IS_PLAIN	0	/* Plain baseframe */
-#define GMT_IS_INSIDE	1	/* Plain frame ticks/annotations on the inside of boundary */
-#define GMT_IS_GRAPH	2	/* Plain fram with arrow extensions on axes */
-#define GMT_IS_FANCY	4	/* Fancy baseframe */
-#define GMT_IS_ROUNDED	12	/* Fancy baseframe, rounded */
+enum GMT_enum_frame {GMT_IS_PLAIN = 0,	/* Plain baseframe */
+	GMT_IS_INSIDE	= 1,	/* Plain frame ticks/annotations on the inside of boundary */
+	GMT_IS_GRAPH	= 2,	/* Plain fram with arrow extensions on axes */
+	GMT_IS_FANCY	= 4,	/* Fancy baseframe */
+	GMT_IS_ROUNDED	= 12};	/* Fancy baseframe, rounded */
 
 /* Define the 6 axis items that each axis can have (some are mutually exclusive: only one ANNOT/INTV for upper and lower) */
 
-#define GMT_ANNOT_UPPER		0	/* Tick annotations closest to the axis */
-#define GMT_ANNOT_LOWER		1	/* Tick annotations farthest from the axis*/
-#define GMT_TICK_UPPER		2	/* Frame tick marks closest to the axis */
-#define GMT_TICK_LOWER		3	/* Frame tick marks closest to the axis */
-#define GMT_GRID_UPPER		4	/* Gridline spacing */
-#define GMT_GRID_LOWER		5	/* Gridline spacing */
+enum GMT_enum_tick {GMT_ANNOT_UPPER = 0,	/* Tick annotations closest to the axis */
+	GMT_ANNOT_LOWER,	/* Tick annotations farthest from the axis*/
+	GMT_TICK_UPPER,		/* Frame tick marks closest to the axis */
+	GMT_TICK_LOWER,		/* Frame tick marks closest to the axis */
+	GMT_GRID_UPPER,		/* Gridline spacing */
+	GMT_GRID_LOWER};	/* Gridline spacing */
 
 /* Some convenient macros for axis routines */
 

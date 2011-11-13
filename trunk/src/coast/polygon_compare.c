@@ -118,8 +118,8 @@ int main (int argc, char **argv)
 	fclose (fp_a);
 	fclose (fp_b);
 	
-	GMT_free ((void *)pa);
-	GMT_free ((void *)pb);
+	GMT_free (pa);
+	GMT_free (pb);
 
 	fprintf (stderr, "polygon_compare: Scanned: %d Headers differ: %d Points differ: %d\n", n_id, nh_bad, nd_bad);
 	

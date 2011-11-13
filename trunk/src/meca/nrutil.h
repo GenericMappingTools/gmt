@@ -5,11 +5,6 @@
 #define _NR_UTILS_H_
 
 #define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
-#ifndef _WIN64
-typedef unsigned long GMT_ULONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
-#else
-typedef unsigned __int64 GMT_ULONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
-#endif
 
 void nrerror(char error_text[]);
 float *vector(GMT_LONG nl, GMT_LONG nh);

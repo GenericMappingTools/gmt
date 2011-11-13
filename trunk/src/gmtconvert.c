@@ -90,14 +90,14 @@ void *New_gmtconvert_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtconvert_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free ((void *)C->Out.file);	
-	if (C->D.name) free ((void *)C->D.name);	
-	if (C->S.pattern) free ((void *)C->S.pattern);	
+	if (C->Out.file) free (C->Out.file);	
+	if (C->D.name) free (C->D.name);	
+	if (C->S.pattern) free (C->S.pattern);	
 	GMT_free (GMT, C);	
 }
 
@@ -277,7 +277,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtconvert_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmtconvert_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -285,19 +285,21 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_gmtconvert", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vbf:", "aghios>" GMT_OPT("HMm"), options))) Return (error);
-	Ctrl = (struct GMTCONVERT_CTRL *) New_gmtconvert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vbf:", "aghios>" GMT_OPT("HMm"), options)) Return (API->error);
+	Ctrl = New_gmtconvert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtconvert_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmtconvert main code ----------------------------*/
 
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+		Return (API->error);	/* Establishes data files or stdin */
+	}
 	
 	/* Read in the input tables */
 	
-	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&D[GMT_IN])) Return ((error = GMT_DATA_READ_ERROR));
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
 
 	if (Ctrl->T.active) GMT->current.io.multi_segments[GMT_OUT] = FALSE;	/* Turn off segment headers on output */
 
@@ -333,7 +335,9 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 	}
 	if (warn) GMT_report (GMT, GMT_MSG_NORMAL, "Some requested columns are outside the range of some tables and will be skipped.\n");
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_cols_out))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_OUT, n_cols_out)) != GMT_OK) {
+		Return (error);
+	}
 	
 	if (Ctrl->S.active && GMT->current.io.ogr == 1 && (p = strchr (Ctrl->S.pattern, '=')) != NULL) {	/* Want to search for an aspatial value */
 		*p = 0;	/* Skip the = sign */
@@ -347,7 +351,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* We now know the exact number of segments and columns and an upper limit on total records.
 	 * Allocate data set with a single table with those proportions. This copies headers as well */
 	
-	GMT_alloc_dataset (GMT, D[GMT_IN], &D[GMT_OUT], n_cols_out, 0, (Ctrl->A.active) ? GMT_ALLOC_HORIZONTAL : GMT_ALLOC_NORMAL);
+	D[GMT_OUT] = GMT_alloc_dataset (GMT, D[GMT_IN], n_cols_out, 0, (Ctrl->A.active) ? GMT_ALLOC_HORIZONTAL : GMT_ALLOC_NORMAL);
 	
 	n_horizontal_tbls = (Ctrl->A.active) ? D[GMT_IN]->n_tables : 1;	/* Only with pasting do we go horizontally */
 	n_vertical_tbls   = (Ctrl->A.active) ? 1 : D[GMT_IN]->n_tables;	/* Only for concatenation do we go vertically */
@@ -421,18 +425,18 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Reversing order of segments within each table.\n");
 			for (tbl = 0; tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
 				for (seg1 = 0, seg2 = D[GMT_OUT]->table[tbl]->n_segments-1; seg1 < D[GMT_OUT]->table[tbl]->n_segments/2; seg1++, seg2--) {	/* For each segment in the table */
-					p = (void *)D[GMT_OUT]->table[tbl]->segment[seg1];
+					p = D[GMT_OUT]->table[tbl]->segment[seg1];
 					D[GMT_OUT]->table[tbl]->segment[seg1] = D[GMT_OUT]->table[tbl]->segment[seg2];
-					D[GMT_OUT]->table[tbl]->segment[seg2] = (struct GMT_LINE_SEGMENT *)p;
+					D[GMT_OUT]->table[tbl]->segment[seg2] = p;
 				}
 			}
 		}
 		if (Ctrl->I.mode & INV_TBLS) {	/* Must reorder pointers to tables within dataset  */
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Reversing order of tables within the data set.\n");
 			for (tbl1 = 0, tbl2 = D[GMT_OUT]->n_tables-1; tbl1 < D[GMT_OUT]->n_tables/2; tbl1++, tbl2--) {	/* For each table */
-				p = (void *)D[GMT_OUT]->table[tbl1];
+				p = D[GMT_OUT]->table[tbl1];
 				D[GMT_OUT]->table[tbl1] = D[GMT_OUT]->table[tbl2];
-				D[GMT_OUT]->table[tbl2] = (struct GMT_TABLE *)p;
+				D[GMT_OUT]->table[tbl2] = p;
 			}
 		}
 	}
@@ -452,9 +456,9 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT->common.a.output) D[GMT_OUT]->io_mode = GMT_WRITE_OGR;
 	}
 	
-	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, D[GMT_OUT]->io_mode, (void **)&Ctrl->Out.file, (void *)D[GMT_OUT]))) Return (error);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, D[GMT_OUT]->io_mode, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+		Return (API->error);
+	}
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "%ld tables %s, %ld records passed (input cols = %ld; output cols = %ld)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
 	if (Ctrl->S.active) GMT_report (GMT, GMT_MSG_NORMAL, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->n_segments);

@@ -313,7 +313,7 @@ void *New_project_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
 	C->G.lat = 90.0;	/* Great circle path */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_project_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Deallocate control structure */
@@ -527,7 +527,7 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
 	char record[GMT_BUFSIZ], text[GMT_BUFSIZ];
 
-	if (Ctrl->S.active) qsort ((void *)p_data, (size_t)P->n_used, sizeof (struct PROJECT_DATA), compare_distances);
+	if (Ctrl->S.active) qsort (p_data, (size_t)P->n_used, sizeof (struct PROJECT_DATA), compare_distances);
 
 	/* Get here when all data are loaded with p,q and p is in increasing order if desired. */
 
@@ -581,7 +581,7 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 				}
 				(j == (P->n_outputs - 1)) ? strcat (record, "\n") : strcat (record, GMT->current.setting.io_col_separator);
 			}
-			GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+			GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, record);	/* Write this to output */
 		}
 	}
 	else {	/* Any other i/o combination */
@@ -594,7 +594,7 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 				else
 					out[k++] = p_data[i].a[P->output_choice[j]];
 			}
-			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 	}
 	GMT_free (GMT, out);
@@ -607,8 +607,7 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, n_total_read, n_total_used = 0, n_alloc = GMT_CHUNK;
-	GMT_LONG j, k, n_fields, rmode, error = FALSE;
-	GMT_LONG pure_ascii, skip, z_first = TRUE;
+	GMT_LONG j, k, rmode, error = FALSE, pure_ascii, skip, z_first = TRUE;
 
 	double xx, yy, cos_theta, sin_theta, sin_lat_to_pole = 1.0;
 	double theta = 0.0, d_along, sign = 1.0, s, c, *in = NULL;
@@ -623,7 +622,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_project_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_project_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -631,8 +630,8 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_project", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("HMm"), options))) Return (error);
-	Ctrl = (struct PROJECT_CTRL *) New_project_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("HMm"), options)) Return (API->error);
+	Ctrl = New_project_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_project_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the project main code ----------------------------*/
@@ -785,9 +784,15 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*  Now we are ready to work  */
 
-	if ((error = GMT_set_cols (GMT, GMT_OUT, P.n_outputs))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers data output */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+	if ((error = GMT_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 
 	P.n_used = n_total_read = 0;
 
@@ -848,39 +853,48 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			for (i = 0; i < P.n_used; i++) {
 				for (j = 0; j < P.n_outputs; j++) out[j] = p_data[i].a[P.output_choice[j]];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
 		}
 	}
 	else {	/* Must read input file */
 
 		/* Specify input and output expected columns */
-		if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
+		if ((error = GMT_set_cols (GMT, GMT_IN, 0)) != GMT_OK) {
+			Return (error);
+		}
 
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
 		rmode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
-		while ((n_fields = GMT_Get_Record (API, rmode, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
-
-			if (GMT_REC_IS_ERROR (GMT) && n_fields < 2) continue;
-
-			if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo out headers */
-				GMT_Put_Record (API, GMT_WRITE_HEADER, NULL);
-				continue;
-			}
-			if (GMT_REC_IS_SEG_HEADER (GMT)) {	/* Echo out results from previous segment and next segment header */
-				if (P.n_used) {	/* Write out previous segment */
-					if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P))) Return (error);
-					n_total_used += P.n_used;
-					P.n_used = 0;
+		do {	/* Keep returning records until we reach EOF */
+			if ((in = GMT_Get_Record (API, rmode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo table headers */
+					GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);
+					continue;
 				}
-				GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
-				continue;
+				if (GMT_REC_IS_SEG_HEADER (GMT)) {			/* Echo segment headers */
+					if (P.n_used) {	/* Write out previous segment */
+						if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P))) Return (error);
+						n_total_used += P.n_used;
+						P.n_used = 0;
+					}
+					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+					continue;
+				}
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
 			}
 
-			/* We come here if we have data records */
+			/* Data record to process */
 
 			if (z_first) {
 				P.n_z = GMT_get_cols (GMT, GMT_IN) - 2;
@@ -935,16 +949,20 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				n_alloc <<= 1;
 				p_data = GMT_memory (GMT, p_data, n_alloc, struct PROJECT_DATA);
 			}
-		}
+		} while (TRUE);
 
 		if (P.n_used) {	/* Finish last segment output */
 			if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P))) Return (error);
 			n_total_used += P.n_used;
 		}
 
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
+		}
 	}
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "%ld read, %ld used\n", n_total_read, n_total_used);
 

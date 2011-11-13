@@ -115,15 +115,15 @@ void *New_gmtmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->C.cols = GMT_memory (GMT, NULL, GMT_MAX_COLUMNS, GMT_LONG);
 	C->N.ncol = 2;
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtmath_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free ((void *)C->Out.file);
-	if (C->A.file) free ((void *)C->A.file);
+	if (C->Out.file) free (C->Out.file);
+	if (C->A.file) free (C->A.file);
 	GMT_free (GMT, C->C.cols);
-	if (C->T.file) free ((void *)C->T.file);
+	if (C->T.file) free (C->T.file);
 	GMT_free (GMT, C);
 }
 
@@ -1537,7 +1537,7 @@ void table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_D
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
-			GMT_sort_array (GMT, (void *)T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMTAPI_DOUBLE);
 			for (i = info->T->segment[s]->n_rows; GMT_is_dnan (T->segment[s]->coord[col][i-1]) && i > 1; i--);
 			if (i) {
 				GMT_mode (GMT, T->segment[s]->coord[col], i, i/2, 0, GMT_mode_selection, &GMT_n_multiples, &mode);
@@ -1555,7 +1555,7 @@ void table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_D
 		}
 	}
 	if (info->local) return;	/* Done with local */
-	GMT_sort_array (GMT, (void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, z, info->T->n_records, GMTAPI_DOUBLE);
 	for (i = info->T->n_records; GMT_is_dnan (z[i-1]) && i > 1; i--);
 	if (i) {
 		GMT_mode (GMT, z, i, i/2, 0, GMT_mode_selection, &GMT_n_multiples, &mode);
@@ -1699,7 +1699,7 @@ void table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 
 	for (s = k = 0; s < info->T->n_segments; s++) {
 		if (info->local) {
-			GMT_sort_array (GMT, (void *)T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMTAPI_DOUBLE);
 			for (i = info->T->segment[s]->n_rows; GMT_is_dnan (T->segment[s]->coord[col][i-1]) && i > 1; i--);
 			if (i) {
 				med = (i%2) ? T->segment[s]->coord[col][i/2] : 0.5 * (T->segment[s]->coord[col][(i-1)/2] + T->segment[s]->coord[col][i/2]);
@@ -1715,7 +1715,7 @@ void table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 		}
 	}
 	if (info->local) return;	/* Done with local */
-	GMT_sort_array (GMT, (void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, z, info->T->n_records, GMTAPI_DOUBLE);
 	for (i = info->T->n_records; GMT_is_dnan (z[i-1]) && i > 1; i--);
 	if (i) {
 		med = (i%2) ? z[i/2] : 0.5 * (z[(i-1)/2] + z[i/2]);
@@ -1786,7 +1786,7 @@ void table_MED (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 
 	for (s = k = 0; s < info->T->n_segments; s++) {
 		if (info->local) {
-			GMT_sort_array (GMT, (void *)T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMTAPI_DOUBLE);
 			for (i = info->T->segment[s]->n_rows; GMT_is_dnan (T->segment[s]->coord[col][i-1]) && i > 1; i--);
 			if (i)
 				med = (i%2) ? T->segment[s]->coord[col][i/2] : 0.5 * (T->segment[s]->coord[col][(i-1)/2] + T->segment[s]->coord[col][i/2]);
@@ -1801,7 +1801,7 @@ void table_MED (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 		}
 	}
 	if (info->local) return;	/* Done with local */
-	GMT_sort_array (GMT, (void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, z, info->T->n_records, GMTAPI_DOUBLE);
 	for (i = info->T->n_records; GMT_is_dnan (z[i-1]) && i > 1; i--);
 	if (i)
 		med = (i%2) ? z[i/2] : 0.5 * (z[(i-1)/2] + z[i/2]);
@@ -1858,7 +1858,7 @@ void table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DAT
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
-			GMT_sort_array (GMT, (void *)T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMTAPI_DOUBLE);
 			for (i = info->T->segment[s]->n_rows; GMT_is_dnan (T->segment[s]->coord[col][i-1]) && i > 1; i--);
 			if (i)
 				GMT_mode (GMT, T->segment[s]->coord[col], i, i/2, 0, GMT_mode_selection, &GMT_n_multiples, &mode);
@@ -1873,7 +1873,7 @@ void table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DAT
 			k += info->T->segment[s]->n_rows;
 		}
 	}
-	GMT_sort_array (GMT, (void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, z, info->T->n_records, GMTAPI_DOUBLE);
 	for (i = info->T->n_records; GMT_is_dnan (z[i-1]) && i > 1; i--);
 	if (i)
 		GMT_mode (GMT, z, i, i/2, 0, GMT_mode_selection, &GMT_n_multiples, &mode);
@@ -2096,7 +2096,7 @@ void table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_D
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
-			GMT_sort_array (GMT, (void *)T_prev->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, T_prev->segment[s]->coord[col], info->T->segment[s]->n_rows, GMTAPI_DOUBLE);
 			p = GMT_quantile (GMT, T_prev->segment[s]->coord[col], factor[last], info->T->segment[s]->n_rows);
 			for (i = 0; i < info->T->segment[s]->n_rows; i++) T_prev->segment[s]->coord[col][i] = p;
 		}
@@ -2106,7 +2106,7 @@ void table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_D
 		}
 	}
 	if (info->local) return;	/* Done with local */
-	GMT_sort_array (GMT, (void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, z, info->T->n_records, GMTAPI_DOUBLE);
 	p = GMT_quantile (GMT, z, factor[last], info->T->n_records);
 	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) T_prev->segment[s]->coord[col][i] = p;
 	GMT_free (GMT, z);
@@ -2122,12 +2122,12 @@ void table_PSI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 	x[1] = 0.0;	/* No imaginary part */
 	if (constant[last]) {
 		x[0] = factor[last];
-		a = GMT_psi (GMT, x, (double *)NULL);
+		a = GMT_psi (GMT, x, NULL);
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) {
 		if (!constant[last]) {
 			x[0] = T->segment[s]->coord[col][i];
-			a = GMT_psi (GMT, x, (double *)NULL);
+			a = GMT_psi (GMT, x, NULL);
 		}
 		T->segment[s]->coord[col][i] = a;
 	}
@@ -2762,8 +2762,8 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 #include "gmtmath.h"
 
 #define Free_Hash { for (i = 0; i < GMTMATH_N_OPERATORS; i++) { p = localhashnode[i].next; while ((current = p)) { p = p->next; GMT_free (GMT, current); } } }
-#define Free_Stack { for (i = 0; i < GMTMATH_STACK_SIZE; i++) if (alloc_mode[i] == 2) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&stack[i]); else if (alloc_mode[i] == 1) GMT_free_dataset (GMT, &stack[i]); }
-#define Free_Misc {if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&T_in); GMT_free_dataset (GMT, &Template); GMT_free_dataset (GMT, &Time); if (read_stdin) GMT_free_dataset (GMT, &D_stdin); }
+#define Free_Stack { for (i = 0; i < GMTMATH_STACK_SIZE; i++) if (alloc_mode[i] == 2) GMT_Destroy_Data (API, GMT_ALLOCATED, &stack[i]); else if (alloc_mode[i] == 1) GMT_free_dataset (GMT, &stack[i]); }
+#define Free_Misc {if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, &T_in); GMT_free_dataset (GMT, &Template); GMT_free_dataset (GMT, &Time); if (read_stdin) GMT_Destroy_Data (API, GMT_ALLOCATED, &D_stdin); }
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return1(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code); }
 #define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Hash; Free_Stack; Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
@@ -2830,7 +2830,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG i, j, k, kk, op = 0, nstack = 0, new_stack = -1, use_t_col = 0, status, n_macros;
 	GMT_LONG consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS];
 	GMT_LONG n_records, n_rows = 0, n_columns = 0, n_segments, seg, alloc_mode[GMTMATH_STACK_SIZE];
-	GMT_LONG constant[GMTMATH_STACK_SIZE], error = FALSE, set_equidistant_t = FALSE;
+	GMT_LONG constant[GMTMATH_STACK_SIZE], error = FALSE, set_equidistant_t = FALSE, dim[4] = {1, 1, 0, 0};
 	GMT_LONG read_stdin = FALSE, t_check_required = TRUE, got_t_from_file = FALSE, done;
 
 	double factor[GMTMATH_STACK_SIZE], t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
@@ -2854,7 +2854,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtmath_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmtmath_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -2862,8 +2862,8 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_gmtmath", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options))) Return1 (error);
-	Ctrl = (struct GMTMATH_CTRL *) New_gmtmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options)) Return1 (API->error);
+	Ctrl = New_gmtmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtmath_parse (API, Ctrl, options))) Return1 (error);
 
 	/*---------------------------- This is the gmtmath main code ----------------------------*/
@@ -2878,30 +2878,24 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (i = 0, opt = options; opt; opt = opt->next) {
 		if (opt->option == GMTAPI_OPT_INFILE && !strcmp (opt->arg, "=")) {	/* Found the output sequence */
 			if (opt->next) {	/* opt->next->arg may be NULL if stdout is implied */
-				GMT_Make_Option (API, GMTAPI_OPT_OUTFILE, opt->next->arg, &ptr);
+				ptr = GMT_Make_Option (API, GMTAPI_OPT_OUTFILE, opt->next->arg);
 				opt = opt->next;	/* Now we must skip that option */
 			}
 			else	/* Standard output */
-				GMT_Make_Option (API, GMTAPI_OPT_OUTFILE, NULL, &ptr);
+				ptr = GMT_Make_Option (API, GMTAPI_OPT_OUTFILE, NULL);
 		}
 		else if (opt->option == GMTAPI_OPT_INFILE && (k = gmt_find_macro (opt->arg, n_macros, M)) != GMTAPI_NOTSET) {
 			/* Add in the replacement commands from the macro */
 			for (kk = 0; kk < M[k].n_arg; kk++) {
-				GMT_Make_Option (API, GMTAPI_OPT_INFILE, M[k].arg[kk], &ptr);
-			 	if (list)
-					GMT_Append_Option (API, ptr, &list);
-				else
-					list = ptr;
+				ptr = GMT_Make_Option (API, GMTAPI_OPT_INFILE, M[k].arg[kk]);
+				if ((list = GMT_Append_Option (API, ptr, list)) == NULL) Return1 (EXIT_FAILURE);
 			}
 			continue;
 		}
 		else
-		 	GMT_Make_Option (API, opt->option, opt->arg, &ptr);
+			ptr = GMT_Make_Option (API, opt->option, opt->arg);
 
-		if (list)
-			GMT_Append_Option (API, ptr, &list);
-		else
-			list = ptr;
+		if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) Return1 (EXIT_FAILURE);
 		if (ptr->option == GMTAPI_OPT_OUTFILE) i++;
 	}
 	gmt_free_macros (GMT, n_macros, &M);
@@ -2929,8 +2923,6 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Read the first file we encounter so we may allocate space */
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-
 	/* Check sanity of all arguments and also look for an input file to get t from */
 	for (opt = list, got_t_from_file = 0; got_t_from_file == 0 && opt; opt = opt->next) {
 		if (!(opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_NUMBER))	continue;	/* Skip command line options and output */
@@ -2940,13 +2932,17 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (status != GMTMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
 		if (!got_t_from_file) {
 			if (!strcmp (opt->arg, "STDIN")) {	/* Special stdin name.  We store this input in a special struct since we may need it again and it can only be read once! */
-				if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, 0, NULL, (void **)&D_stdin)) Return ((error = GMT_DATA_READ_ERROR));
+				if ((D_stdin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, 0, NULL, NULL)) == NULL) {
+					Return (API->error);
+				}
 				read_stdin = TRUE;
 				D_in = D_stdin;
 				I = D_stdin->table[0];
 			}
 			else {
-				if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&(opt->arg), (void **)&D_in)) Return ((error = GMT_DATA_READ_ERROR));
+				if ((D_in = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, opt->arg, NULL)) == NULL) {
+					Return (API->error);
+				}
 			}
 			got_t_from_file = 1;
 		}
@@ -2966,9 +2962,9 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Cannot have data files when -A is specified\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&(Ctrl->A.file), (void **)&A_in)) {
+		if ((A_in = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->A.file, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s\n", Ctrl->A.file);
-			Return ((error = GMT_DATA_READ_ERROR));
+			Return (API->error);
 		}
 		rhs = A_in->table[0];	/* Only one table */
 		if (rhs->n_columns != 2) {
@@ -2994,9 +2990,9 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Cannot use -T when data files are specified\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&(Ctrl->T.file), (void **)&T_in)) {
+		if ((T_in = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->T.file, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s\n", Ctrl->T.file);
-			Return (EXIT_FAILURE);
+			Return (API->error);
 		}
 		use_t_col = 0;
 		got_t_from_file = 2;
@@ -3044,16 +3040,18 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 	if (D_in)	/* Obtained file structure from an input file, use this to create new stack entry */
-		GMT_alloc_dataset (GMT, D_in, &Template, n_columns, 0, GMT_ALLOC_NORMAL);
-	else		/* Must use -N -T etc to create single segment */
-		Template = GMT_create_dataset (GMT, 1, 1, n_columns, n_rows);
+		Template = GMT_alloc_dataset (GMT, D_in, n_columns, 0, GMT_ALLOC_NORMAL);
+	else {		/* Must use -N -T etc to create single segment */
+		dim[2] = n_columns;	dim[3] = n_rows;
+		if ((Template = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (GMT_MEMORY_ERROR);
+	}
 	alloc_mode[0] = 1;	/* Allocated locally */
 	Ctrl->N.ncol = n_columns;
 	if (!Ctrl->T.notime && n_columns > 1) Ctrl->C.cols[Ctrl->N.tcol] = (Ctrl->Q.active) ? FALSE : TRUE;
 	
 	/* Create the Time data structure with 2 cols: 0 is t, 1 is normalized tn */
 	if (D_in) {	/* Either D_in or D_stdin */
-		GMT_alloc_dataset (GMT, D_in, &Time, 2, 0, GMT_ALLOC_NORMAL);
+		Time = GMT_alloc_dataset (GMT, D_in, 2, 0, GMT_ALLOC_NORMAL);
 		info.T = Time->table[0];	D = D_in->table[0];
 		for (seg = 0, done = FALSE; seg < D->n_segments; seg++) {
 			GMT_memcpy (info.T->segment[seg]->coord[0], D->segment[seg]->coord[use_t_col], D->segment[seg]->n_rows, double);
@@ -3064,10 +3062,13 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			for (i = 1; i < info.T->segment[seg]->n_rows && !info.irregular; i++) if (fabs (fabs (info.T->segment[seg]->coord[0][i] - info.T->segment[seg]->coord[0][i-1]) - fabs (Ctrl->T.inc)) > t_noise) info.irregular = TRUE;
 		}
-		if (!read_stdin) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D_in);
+		if (!read_stdin && GMT_Destroy_Data (API, GMT_ALLOCATED, &D_in) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	else {	/* Create orderly output */
-		Time = GMT_create_dataset (GMT, 1, 1, 2, n_rows);
+		dim[2] = 2;	dim[3] = n_rows;
+		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
 		for (i = 0; i < info.T->segment[0]->n_rows; i++) info.T->segment[0]->coord[0][i] = (i == (info.T->segment[0]->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + i * Ctrl->T.inc;
 		t_noise = fabs (GMT_SMALL * Ctrl->T.inc);
@@ -3087,7 +3088,9 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->A.active) {
 		load_column (stack[0], n_columns-1, rhs, 1);	/* Put the r.h.s of the Ax = b equation in the last column of the item on the stack */
 		GMT_set_tbl_minmax (GMT, stack[0]->table[0]);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&A_in);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &A_in) != GMT_OK) {
+			Return (API->error);
+		}
 		nstack = 1;
 	}
 	else
@@ -3150,7 +3153,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					Return (EXIT_FAILURE);
 				}
 				if (!stack[nstack]) {
-					GMT_alloc_dataset (GMT, Template, &(stack[nstack]), n_columns, 0, GMT_ALLOC_NORMAL);
+					stack[nstack] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 					alloc_mode[nstack] = 1;
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "T ");
@@ -3163,7 +3166,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					Return (EXIT_FAILURE);
 				}
 				if (!stack[nstack]) {
-					GMT_alloc_dataset (GMT, Template, &(stack[nstack]), n_columns, 0, GMT_ALLOC_NORMAL);
+					stack[nstack] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 					alloc_mode[nstack] = 1;
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Tn ");
@@ -3174,7 +3177,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (!strcmp (opt->arg, "STDIN")) {	/* stdin file */
 					if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "<stdin> ");
 					if (!stack[nstack]) {
-						GMT_alloc_dataset (GMT, Template, &(stack[nstack]), n_columns, 0, GMT_ALLOC_NORMAL);
+						stack[nstack] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 						alloc_mode[nstack] = 1;
 					}
 					for (j = 0; j < n_columns; j++) load_column (stack[nstack], j, I, j);
@@ -3182,9 +3185,9 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				else {
 					if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s ", opt->arg);
-					if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&(opt->arg), (void **)&stack[nstack])) {
+					if ((stack[nstack] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, opt->arg, NULL)) == NULL) {
 						GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s\n", opt->arg);
-						Return (EXIT_FAILURE);
+						Return (API->error);
 					}
 					alloc_mode[nstack] = 2;
 				}
@@ -3225,7 +3228,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Must make space for more */
 
-			GMT_alloc_dataset (GMT, Template, &(stack[nstack+i-1]), n_columns, 0, GMT_ALLOC_NORMAL);
+			stack[nstack+i-1] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 			alloc_mode[nstack+i-1] = 1;
 		}
 
@@ -3233,7 +3236,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		for (j = 0, i = nstack - consumed_operands[op]; j < produced_operands[op]; j++, i++) {
 			if (constant[i] && !stack[i]) {
-				GMT_alloc_dataset (GMT, Template, &(stack[i]), n_columns, 0, GMT_ALLOC_NORMAL);
+				stack[i] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 				alloc_mode[i] = 1;
 			}
 		}
@@ -3253,15 +3256,13 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (i = 1; i <= produced_operands[op]; i++) if (stack[nstack-i]) constant[nstack-i] = FALSE;	/* Now filled with table */
 	}
 
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
-
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		(outfile) ? GMT_message (GMT, "= %s", outfile) : GMT_message (GMT,  "= <stdout>");
 	}
 
 	if (new_stack < 0 && constant[0]) {	/* Only a constant provided, set table accordingly */
 		if (!stack[0]) {
-			GMT_alloc_dataset (GMT, Template, &(stack[0]), n_columns, 0, GMT_ALLOC_NORMAL);
+			stack[0] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 			alloc_mode[0] = 1;
 		}
 		for (j = 0; j < n_columns; j++) {
@@ -3275,17 +3276,19 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "\n");
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);				/* Enables data output and sets access mode */
-
 	if (info.roots_found) {	/* Special treatment of root finding */
 		struct GMT_LINE_SEGMENT *S = stack[0]->table[0]->segment[0];
-		GMT_LONG dim[4] = {1, 1, 1, 0}, ID;
+		GMT_LONG dim[4] = {1, 1, 1, 0};
 		
 		dim[3] = info.n_roots;
-		if ((error = GMT_Create_Data (API, GMT_IS_DATASET, dim, (void **)&R, GMT_OUT, &ID))) Return (error)
+		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error)
 		for (i = 0; i < info.n_roots; i++) R->table[0]->segment[0]->coord[GMT_X][i] = S->coord[info.r_col][i];
-		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, stack[0]->io_mode, (void **)&(Ctrl->Out.file), (void *)R))) Return (error);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&R);
+		if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, stack[0]->io_mode, Ctrl->Out.file, R) != GMT_OK) {
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &R) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	else {	/* Regular table result */
 		if (stack[0])	/* There is an output stack, select it */
@@ -3301,21 +3304,27 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_LONG nr, r, c, row;
 			struct GMT_DATASET *N = NULL;
 			nr = (Ctrl->S.active) ? 1 : 0;
-			GMT_alloc_dataset (GMT, R, &N, n_columns, nr, GMT_ALLOC_NORMAL);
+			N = GMT_alloc_dataset (GMT, R, n_columns, nr, GMT_ALLOC_NORMAL);
 			for (seg = 0; seg < R->table[0]->n_segments; seg++) {
 				for (r = 0; r < N->table[0]->segment[seg]->n_rows; r++) {
 					row = (Ctrl->S.active) ? ((Ctrl->S.mode == -1) ? 0 : R->table[0]->segment[seg]->n_rows - 1) : r;
 					for (c = 0; c < n_columns; c++) N->table[0]->segment[seg]->coord[c][r] = R->table[0]->segment[seg]->coord[c][row];
 				}
 			}
-			if ((error = GMT_Put_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, N->io_mode, (void **)&(Ctrl->Out.file), (void *)N))) Return (error);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&N);
+			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, N->io_mode, Ctrl->Out.file, N) != GMT_OK) {
+				Return (API->error);
+			}
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &N) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 		else {	/* Write the whole enchilada */
-			if ((error = GMT_Put_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, R->io_mode, (void **)&(Ctrl->Out.file), (void *)R))) Return (error);
+			if (R != Template) alloc_mode[0] = 2;	/* Since GMT_Write_Data will register it */
+			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, R->io_mode, Ctrl->Out.file, R) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 	}
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 
 	/* Clean-up time */
 

@@ -72,18 +72,24 @@ struct TREND2D_DATA {
 
 GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, GMT_LONG *n_data, double *xmin, double *xmax, double *ymin, double *ymax, GMT_LONG weighted_input, double **work)
 {
-	GMT_LONG i, n_alloc = GMT_CHUNK, n_fields;
+	GMT_LONG i, n_alloc = GMT_CHUNK;
 	double *in = NULL;
 
 	*data = GMT_memory (GMT, NULL, n_alloc, struct TREND2D_DATA);
 
 	i = 0;
-	while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT)) return (GMT_RUNTIME_ERROR);
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
-		
+		/* Data record to process */
+	
 		(*data)[i].x = in[GMT_X];
 		(*data)[i].y = in[GMT_Y];
 		(*data)[i].z = in[GMT_Z];
@@ -106,7 +112,7 @@ GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, GM
 			n_alloc <<= 1;
 			*data = GMT_memory (GMT, *data, n_alloc, struct TREND2D_DATA);
 		}
-	}
+	} while (TRUE);
 	*data = GMT_memory (GMT, *data, i, struct TREND2D_DATA);
 	*work = GMT_memory (GMT, NULL, i, double);
 	*n_data = i;
@@ -154,7 +160,7 @@ void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, GMT_
 					break;
 			}
 		}
-		GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+		GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 	}
 }
 
@@ -233,7 +239,7 @@ void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, GMT_
 	   and compute chisq based on this.  */ 
 
 	for (i = 0; i < n_data; i++) work[i] = fabs(data[i].r);
-	GMT_sort_array (GMT, (void *)work, n_data, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, work, n_data, GMTAPI_DOUBLE);
 
 	if (n_data%2)
 		*scale = 1.4826 * work[n_data/2];
@@ -391,7 +397,7 @@ void *New_trend2d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->C.value = 1.0e06;		/* Condition number for matrix solution  */	
 	C->I.value = 0.51;		/* Confidence interval for significance test  */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_trend2d_Ctrl (struct GMT_CTRL *GMT, struct TREND2D_CTRL *C) {	/* Deallocate control structure */
@@ -524,7 +530,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_trend2d_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_trend2d_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -532,8 +538,8 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_trend2d", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vbf:", "his>" GMT_OPT("H"), options))) Return (error);
-	Ctrl = (struct TREND2D_CTRL *) New_trend2d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vbf:", "his>" GMT_OPT("H"), options)) Return (API->error);
+	Ctrl = New_trend2d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_trend2d_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the trend2d main code ----------------------------*/
@@ -544,14 +550,26 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	np = Ctrl->N.value;	/* Row dimension for matrices gtg and v  */
 	allocate_the_memory_2d (GMT,(GMT_LONG)np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active))) return (error);
-	if ((error = GMT_set_cols (GMT, GMT_OUT, Ctrl->n_outputs))) return (error);
-	if ((error = GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) return (error);	/* Establishes data input */
-	if ((error = GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) return (error);	/* Establishes data output */
+	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_OK) {
+		Return (error);
+	}
+	if ((error = GMT_set_cols (GMT, GMT_OUT, Ctrl->n_outputs)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 	if ((error = read_data_trend2d (GMT,&data, &n_data, &xmin, &xmax, &ymin, &ymax, Ctrl->W.active, &work))) Return (error);
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
 
 	if (xmin == xmax || ymin == ymax) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: Maximum and minimum input values are the same.\n");
@@ -682,9 +700,13 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	untransform_x_2d (data, n_data, xmin, xmax, ymin, ymax);
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 	write_output_trend2d (GMT,data, n_data, Ctrl->F.col, Ctrl->n_outputs);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	free_the_memory_2d (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 

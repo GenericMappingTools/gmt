@@ -136,16 +136,16 @@ void *New_pscontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
 	C->W.pen[1].width *= 3.0;
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pscontour_Ctrl (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) free ((void *)C->C.file);	
-	if (C->D.file) free ((void *)C->D.file);	
-	if (C->Q.file) free ((void *)C->Q.file);	
-	if (C->T.txt[0]) free ((void *)C->T.txt[0]);	
-	if (C->T.txt[1]) free ((void *)C->T.txt[1]);	
+	if (C->C.file) free (C->C.file);	
+	if (C->D.file) free (C->D.file);	
+	if (C->Q.file) free (C->Q.file);	
+	if (C->T.txt[0]) free (C->T.txt[0]);	
+	if (C->T.txt[1]) free (C->T.txt[1]);	
 	GMT_free (GMT, C);	
 }
 
@@ -457,7 +457,7 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 				break;
 			case 'D':	/* Dump contours */
 				Ctrl->D.active = TRUE;
-				free ((void *)Ctrl->D.file);
+				free (Ctrl->D.file);
 				Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'G':	/* contour annotation settings */
@@ -526,8 +526,8 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 							n_errors++;
 						}
 						if (Ctrl->T.label) {	/* Replace defaults */
-							free ((void *)Ctrl->T.txt[0]);
-							free ((void *)Ctrl->T.txt[1]);
+							free (Ctrl->T.txt[0]);
+							free (Ctrl->T.txt[1]);
 							Ctrl->T.txt[0] = strdup (txt_a);
 							Ctrl->T.txt[1] = strdup (txt_b);
 						}
@@ -592,7 +592,7 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG nx, k2, k3, node1, node2, c, PSCONTOUR_SUM, cont_counts[2] = {0, 0};
-	GMT_LONG n_alloc, n_fields, n_contours = 0, io_mode = 0, id;
+	GMT_LONG n_alloc, n_contours = 0, io_mode = 0, id;
 	GMT_LONG add, last_entry, last_exit, make_plot, n_save = 0, n_save_alloc = 0;
 	GMT_LONG ij, n, np, k, i, low, high, *vert = NULL, *cind = NULL;
 	GMT_LONG error = FALSE, skip = FALSE, closed, *n_seg_alloc = NULL, *n_seg = NULL;
@@ -620,7 +620,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pscontour_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pscontour_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -628,19 +628,27 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_pscontour", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRb:", "BKOPUXxYychipst>" GMT_OPT("EMm"), options))) Return (error);
-	Ctrl = (struct PSCONTOUR_CTRL *)New_pscontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJRb:", "BKOPUXxYychipst>" GMT_OPT("EMm"), options)) Return (API->error);
+	Ctrl = New_pscontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pscontour_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the pscontour main code ----------------------------*/
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
 	if (Ctrl->C.cpt) {	/* Presumably got a cpt-file; read it here so we can crash if no-such-file before we process input data */
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
+		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		if (Ctrl->I.active && P->is_continuous) {
 			GMT_report (GMT, GMT_MSG_FATAL, "-I option requires constant color between contours!\n");
 			Return (GMT_OK);
@@ -661,11 +669,17 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	xyz[0][GMT_Z] = DBL_MAX;	xyz[1][GMT_Z] = -DBL_MAX;
 	n = 0;
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we have no more files */
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
+		/* Data record to process */
 		
 		if (Ctrl->S.active) {	/* Must check if points are inside plot region */
 			GMT_map_outside (GMT, in[GMT_X], in[GMT_Y]);
@@ -703,7 +717,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				Return (EXIT_FAILURE);
 			}	
 		}
-	}
+	} while (TRUE);
 
 	x = GMT_memory (GMT, x, n, double);
 	y = GMT_memory (GMT, y, n, double);
@@ -720,11 +734,15 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_TABLE *T = NULL;
 
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->Q.file, (void **)&Tin)) Return ((error = GMT_DATA_READ_ERROR));
+		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Q.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 
  		if (Tin->n_columns < 3) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q: %s does not have at least 3 columns with indices\n", Ctrl->Q.file);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Tin);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin) != GMT_OK) {
+				Return (API->error);
+			}
 			Return (EXIT_FAILURE);
 		}
 		T = Tin->table[0];	/* Since we only have one table here */
@@ -735,7 +753,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (col = 0; col < 3; col++) ind[ij++] = irint (T->segment[seg]->coord[col][row]);
 			}
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Tin);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin) != GMT_OK) {
+			Return (API->error);
+		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld indices triplets from %s.\n", np, Ctrl->Q.file);
 	}
 	else {	/* Do our own Delaunay triangulation */
@@ -743,7 +763,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Obtained %ld indices triplets via Delauney triangulation [%s].\n", np, tri_algorithm[GMT->current.setting.triangulate]);
 	}
 
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
 
 	if (Ctrl->C.cpt) {	/* We already read the cpt-file */
 		/* Set up which contours to draw based on the CPT slices and their attributes */
@@ -774,18 +796,31 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_contours = c + 1;
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
-		char record[GMT_BUFSIZ];
-		GMT_LONG got, out_ID, c_alloc = 0;
+		char *record = NULL;
+		GMT_LONG got, in_ID, NL, c_alloc = 0;
 		double tmp;
 
-		if (GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, (void **)&Ctrl->C.file, NULL, NULL, &out_ID)) {
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, Ctrl->C.file, NULL)) == GMTAPI_NOTSET) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error registering contour info file %s\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
+		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables text input and sets access mode */
+			Return (API->error);
+		}
 		c = 0;
-		while (GMT_Get_Record (API, GMT_READ_TEXT, (void **)&record) != EOF) {
-			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
-			if (c == c_alloc) n_alloc = GMT_malloc (GMT, cont, c, c_alloc, struct PSCONTOUR);
+		do {	/* Keep returning records until we reach EOF */
+			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, &NL)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+					continue;
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
+			}
+
+			/* Data record to process */
+
+			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
 			if (cont[c].type == '\0') cont[c].type = 'C';
 			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? 1 : 0;
@@ -793,6 +828,10 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (got == 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
 			cont[c].do_tick = (char)Ctrl->T.active;
 			c++;
+		} while (TRUE);
+		
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
 		}
 		n_contours = c;
 	}
@@ -809,7 +848,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else	/* No annotations, set aval outside range */
 			aval = xyz[1][GMT_Z] + 1.0;
 		for (ic = irint (min/Ctrl->C.interval), c = 0; ic <= irint (max/Ctrl->C.interval); ic++, c++) {
-			if (c == c_alloc) n_alloc = GMT_malloc (GMT, cont, c, c_alloc, struct PSCONTOUR);
+			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			cont[c].val = ic * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_SMALL) aval += Ctrl->A.interval;
 			cont[c].type = (fabs (cont[c].val - aval) < GMT_SMALL) ? 'A' : 'C';
@@ -818,9 +857,10 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		n_contours = c;
 	}
-	GMT_malloc (GMT, cont, 0, n_contours, struct PSCONTOUR);
+	cont = GMT_malloc (GMT, cont, 0, &n_contours, struct PSCONTOUR);
 
 	if (Ctrl->D.active) {
+		GMT_LONG dim[4] = {0, 0, 3, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_DATASET;
 		else {	/* Must determine the kind of output organization */
@@ -853,11 +893,11 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
-		D = GMT_create_dataset (GMT, n_tables, 0, 3, 0);	/* An empty table */
+		dim[0] = n_tables;
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty dataset */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 		n_seg = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	}
 	
 	if (make_plot) {
@@ -1199,8 +1239,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				if (make_plot) {
 					if (cont[c].do_tick && closed) {	/* Must store the entire contour for later processing */
-						if (n_save == n_save_alloc) n_save_alloc = GMT_malloc (GMT, save, n_save, n_alloc, struct SAVE);
-						(void)GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, n, 0, double);
+						if (n_save == n_save_alloc) save = GMT_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
+						n_alloc = 0;
+						GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, n, &n_alloc, double);
 						GMT_memcpy (save[n_save].x, xp, n, double);
 						GMT_memcpy (save[n_save].y, yp, n, double);
 						save[n_save].n = n;
@@ -1222,7 +1263,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		if (make_plot) {
 			if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours */
-				(void)GMT_malloc (GMT, save, 0, n_save, struct SAVE);
+				save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);
 
 				sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt);
 				for (i = 0; i < n_save; i++) {
@@ -1238,8 +1279,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_LINE_SEGMENT *);
-		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, io_mode, (void **)&(Ctrl->D.file), (void *)D))) Return (error);
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, io_mode, Ctrl->D.file, D) != GMT_OK) {
+			Return (API->error);
+		}
 		GMT_free (GMT, n_seg_alloc);
 		GMT_free (GMT, n_seg);
 	}
@@ -1255,8 +1297,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, y);
 	GMT_free (GMT, z);
 	GMT_free (GMT, cont);
-	if (Ctrl->Q.active)
+	if (Ctrl->Q.active) {
 		GMT_free (GMT, ind);	/* Allocated above by GMT_memory */
+	}
 	else {
 #ifdef TRIANGLE_D
 #ifdef DEBUG

@@ -913,7 +913,7 @@ if test "$GCC" = "yes"; then		# GNU cc options
 	else				# MacOSX, Linux, ...
 		CFLAGS="$CFLAGS -Wall $GCC_64"
 	fi
-	CFLAGS="$CFLAGS -fPIC -fno-strict-aliasing"
+	CFLAGS="$CFLAGS -fPIC"
 elif test "$os" = "SunOS" ; then	# Sun Workshop CC options
 	CFLAGS="$CFLAGS -Xc"
 elif test "$os" = "HP-UX" ; then	# HP cc options

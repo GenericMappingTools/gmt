@@ -68,7 +68,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	nx = prhs->nx;
 	ny = prhs->ny;
 	n_bands = prhs->n_bands;
-	data = (void *)prhs->data;
+	data = prhs->data;
 
 	/* Find out in which data type was given the input array */
 	if (!strcmp(prhs->type,"byte")) {
@@ -189,7 +189,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, outByte, nx, ny, typeCLASS, 0, 0 );
 				break;
 			case GDT_Float32:
-				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, (float *)data, nx, ny, typeCLASS, 0, 0 );
+				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0 );
 				break;
 		}
 	}

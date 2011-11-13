@@ -6,11 +6,11 @@
 #ifndef _H_MGG_HEADER_2
 #define _H_MGG_HEADER_2
 
-#define MGG_MAGIC_NUM	1000000000
-#define MGG_VERSION	1
-#define MGG_NAN_VALUE	999999
-#define DEFAULT_PREC	10
-#define GRD98_N_UNUSED	10
+enum GMT_enum_grd98 {GRD98_MAGIC_NUM = 1000000000,
+	GRD98_VERSION		= 1,
+	GRD98_NAN_VALUE		= 999999,
+	GRD98_DEFAULT_PREC	= 10,
+	GRD98_N_UNUSED		= 10};
 
 typedef struct {
 	int	version;		/* 1,000,000,001 Magic_Num + Version */

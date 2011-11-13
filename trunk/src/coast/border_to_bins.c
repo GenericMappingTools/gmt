@@ -301,8 +301,8 @@ int main (int argc, char **argv) {
 			nn++;
 			if (nn > (n_alloc-5)) {
 				n_alloc += GMT_CHUNK;
-				xx = (int *) GMT_memory ((char *)xx, n_alloc, sizeof (int), "polygon_to_bins");
-				yy = (int *) GMT_memory ((char *)yy, n_alloc, sizeof (int), "polygon_to_bins");
+				xx = (int *) GMT_memory (xx, n_alloc, sizeof (int), "polygon_to_bins");
+				yy = (int *) GMT_memory (yy, n_alloc, sizeof (int), "polygon_to_bins");
 			}
 			i_x_1 = i_x_2;
 			i_y_1 = i_y_2;
@@ -344,10 +344,10 @@ int main (int argc, char **argv) {
 				s->p[k].dy = (ushort) test_long;
 			}
 			
-			free ((char *)xx);
-			free ((char *)yy);
-			free ((char *)ix);
-			free ((char *)iy);
+			free (xx);
+			free (yy);
+			free (ix);
+			free (iy);
 			
 			continue;
 		}
@@ -429,10 +429,10 @@ int main (int argc, char **argv) {
 			}
 		}
 		
-		free ((char *)xx);
-		free ((char *)yy);
-		free ((char *)ix);
-		free ((char *)iy);
+		free (xx);
+		free (yy);
+		free (ix);
+		free (iy);
 		
 		/* Now go back up and read next polygon */
 		
@@ -477,7 +477,7 @@ int main (int argc, char **argv) {
 	sprintf (file, "%s.pt", argv[3]);
 	fp_pt = fopen (file, "w");
 	
-	if (fwrite ((char *)&file_head, sizeof (struct GMT3_FILE_HEADER), 1, fp_bin) != 1) {
+	if (fwrite (&file_head, sizeof (struct GMT3_FILE_HEADER), 1, fp_bin) != 1) {
 		fprintf (stderr, "border_to_bins: Error writing file header\n");
 		exit (-1);
 	}
@@ -486,7 +486,7 @@ int main (int argc, char **argv) {
 	
 		if (b%100 == 0) fprintf(stderr,"border_to_bins: Working on bin number %d\r", b);
 		
-		if (fwrite ((char *)&bin_head[b], sizeof (struct GMT3_BIN_HEADER), 1, fp_bin) != 1) {
+		if (fwrite (&bin_head[b], sizeof (struct GMT3_BIN_HEADER), 1, fp_bin) != 1) {
 			fprintf (stderr, "border_to_bins: Error writing bin header for bin # %d\n", b);
 			exit (-1);
 		}
@@ -497,15 +497,15 @@ int main (int argc, char **argv) {
 			seg_head.first_p = np;
 			seg_head.n = s->n;
 			seg_head.level = s->level;
-			if (fwrite ((char *)&seg_head, sizeof (struct SEGMENT_HEADER), 1, fp_seg) != 1) {
+			if (fwrite (&seg_head, sizeof (struct SEGMENT_HEADER), 1, fp_seg) != 1) {
 				fprintf (stderr, "border_to_bins: Error writing a string header for bin # %d\n", b);
 				exit (-1);
 			}
-			if (fwrite ((char *)(s->p), sizeof (struct SHORT_PAIR), s->n, fp_pt) != s->n) {
+			if (fwrite ((s->p), sizeof (struct SHORT_PAIR), s->n, fp_pt) != s->n) {
 				fprintf (stderr, "border_to_bins: Error writing a string for bin # %d\n", b);
 				exit (-1);
 			}
-			free ((char *)s->p);
+			free (s->p);
 			np += s->n;
 			ns++;
 		}
@@ -515,9 +515,9 @@ int main (int argc, char **argv) {
 		while (next) {
 			s = next;
 			next = next->next_seg;
-			free ((char *)s);
+			free (s);
 		}
-		free ((char *)bin[b].first_seg);
+		free (bin[b].first_seg);
 	}
 
 	fclose(fp_pt);

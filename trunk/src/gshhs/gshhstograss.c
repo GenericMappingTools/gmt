@@ -200,7 +200,7 @@ int main (int argc, char **argv)
 	fprintf(att2_fp,"echo \"Inserting level numbers, might take some time...\"\n");
 
 	/* read lines from binary gshhs database */
-	n_read = fread((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
+	n_read = fread(&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
 	version = (h.flag >> 8) & 255;
 	flip = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 
@@ -242,7 +242,7 @@ int main (int argc, char **argv)
 
 			for (k = 0; k < h.n; k++) {
 
-				if (fread ((void *)&p, (size_t)sizeof(struct POINT), (size_t)1, fp) != 1) {
+				if (fread (&p, (size_t)sizeof(struct POINT), (size_t)1, fp) != 1) {
 					fprintf (stderr, "%s:  Error reading file %s.b.\n", progname, dataname);
 					exit(EXIT_FAILURE);
 				}
@@ -268,7 +268,7 @@ int main (int argc, char **argv)
 		}
 		max = 180000000;	/* Only Eurasia needs 270 */
 
-		n_read = fread((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
+		n_read = fread(&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
 	}
 	
 	/* don't print level names for borders and rivers */

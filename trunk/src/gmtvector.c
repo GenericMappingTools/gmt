@@ -85,14 +85,14 @@ void *New_gmtvector_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->A.conf = 0.95;	/* 95% conf level */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtvector_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.arg) free ((void *)C->In.arg);	
-	if (C->Out.file) free ((void *)C->Out.file);	
-	if (C->S.arg) free ((void *)C->S.arg);	
+	if (C->In.arg) free (C->In.arg);	
+	if (C->Out.file) free (C->Out.file);	
+	if (C->S.arg) free (C->S.arg);	
 	GMT_free (GMT, C);	
 }
 
@@ -447,7 +447,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtvector_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmtvector_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -455,8 +455,8 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_gmtvector", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options))) Return (error);
-	Ctrl = (struct GMTVECTOR_CTRL *) New_gmtvector_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
+	Ctrl = New_gmtvector_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtvector_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the gmtvector main code ----------------------------*/
@@ -487,14 +487,19 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memset (vector_1, 3, double);
 	GMT_memset (vector_3, 3, double);
 	if (Ctrl->A.active) {	/* Want a single primary vector */
+		GMT_LONG dim[4] = {1, 1, 3, 1};
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
-			if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
-			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-			if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return ((error = GMT_DATA_READ_ERROR));
-			if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+				Return (API->error);
+			}
+			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+				Return (API->error);
+			}
 			n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || GMT_is_geographic (GMT, GMT_IN))) ? 3 : 2;
 			mean_vector (GMT, Din, Ctrl->C.active[GMT_IN], Ctrl->A.conf, vector_1, E);	/* Get mean vector and confidence ellispe parameters */
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Din);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Din) != GMT_OK) {
+				Return (API->error);
+			}
 			add = 3;	/* Make space for angle major minor */
 		}
 		else {	/* Decode a single vector */
@@ -508,16 +513,18 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			n_out = (Ctrl->C.active[GMT_OUT] && n == 3) ? 3 : 2;
 		}
-		Din = GMT_create_dataset (GMT, 1, 1, 3, 1);
+		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);
 		nv = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
 		for (k = 0; k < nv; k++) Din->table[0]->segment[0]->coord[k][0] = vector_1[k];
 		single = TRUE;
 	}
 	else {	/* Read input files or stdin */
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return ((error = GMT_DATA_READ_ERROR));
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+			Return (API->error);
+		}
+		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
 		n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || GMT_is_geographic (GMT, GMT_IN))) ? 3 : 2;
 	}
 	
@@ -528,7 +535,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else if (Ctrl->C.active[GMT_OUT] || !GMT_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
 
-	GMT_alloc_dataset (GMT, Din, &Dout, n_out + add, 0, GMT_ALLOC_NORMAL);
+	Dout = GMT_alloc_dataset (GMT, Din, n_out + add, 0, GMT_ALLOC_NORMAL);
 	GMT_memset (out, 3, double);
 
 	/* OK, with data in hand we can do some damage */
@@ -612,10 +619,12 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Time to write out the results */
 	
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, (void **)&Ctrl->Out.file, (void **)Dout)) Return ((error = GMT_DATA_READ_ERROR));
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, Ctrl->Out.file, Dout) != GMT_OK) {
+		Return (API->error);
+	}
 	if (single) GMT_free_dataset (GMT, &Din);
 	
 	Return (EXIT_SUCCESS);

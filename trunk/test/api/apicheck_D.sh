@@ -51,5 +51,5 @@ dataset_check r d	# 5c. File descriptor
 dataset_check r c	# 5d. Copy
 dataset_check r r	# 5e. Reference
 
-rm -f dtest?.txt
+#rm -f dtest?.txt
 passfail apicheck_D

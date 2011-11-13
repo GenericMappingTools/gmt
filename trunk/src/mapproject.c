@@ -38,7 +38,6 @@
  */
 
 #include "gmt.h"
-#include "gmt_proj.h"
 
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
@@ -117,12 +116,12 @@ void *New_mapproject_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C->L.sph = 1;			/* Default is great-circle distances */
 	C->N.mode = GMT_LATSWAP_G2O;	/* Default is geodetic<->geocentric, if -N is used */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_mapproject_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->L.file) free ((void *)C->L.file);	
+	if (C->L.file) free (C->L.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -430,7 +429,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mapproject_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mapproject_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -438,9 +437,9 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mapproject", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRbf:", "ghios>" GMT_OPT("HMm"), options))) Return (error);
-	if (GMT_Find_Option (API, 'I', options, &ptr) && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Unless -I, implicitly set -fg unless already set */
-	Ctrl = (struct MAPPROJECT_CTRL *) New_mapproject_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJRbf:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
+	if ((ptr = GMT_Find_Option (API, 'I', options)) == NULL && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Unless -I, implicitly set -fg unless already set */
+	Ctrl = New_mapproject_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mapproject_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mapproject main code ----------------------------*/
@@ -585,11 +584,14 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	greenwich = (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO && proj_type == GMT_GEOGRAPHIC) ? (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0) : FALSE;
 
 	if (Ctrl->L.active) {
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 		/* Initialize the i/o for doing table reading */
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+			Return (API->error);
+		}
 
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, (void **)&Ctrl->L.file, (void **)&Lin)) Return ((error = GMT_DATA_READ_ERROR));
+		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, Ctrl->L.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		xyline = Lin->table[0];			/* Can only be one table since we read a single file */
 		if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */
 			for (i = 0; i < xyline->n_segments; i++) {
@@ -609,7 +611,6 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 		}
-		if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
 	}
 
 	/* Now we are ready to take on some input values */
@@ -629,8 +630,12 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN,  0))) Return (error);
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
 	rmode = (!GMT->common.b.active[GMT_IN] && !GMT->common.b.active[GMT_OUT] && !GMT->common.o.active && GMT_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
 	x_in_min = y_in_min = x_out_min = y_out_min = DBL_MAX;
@@ -654,21 +659,31 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	coord = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	if (Ctrl->N.active) lat_mode = Ctrl->N.mode + Ctrl->I.active;
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 	n_output = GMT_get_cols (GMT, GMT_OUT);
 
 	n = n_read_in_seg = 0;
-	while ((n_fields = GMT_Get_Record (API, rmode, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
-
-		if (GMT_REC_IS_ERROR (GMT) && n_fields < 2) continue;
-
-		if (GMT_REC_IS_TBL_HEADER (GMT)) GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);	/* Echo table headers */
-
-		if (GMT_REC_IS_NEW_SEGMENT (GMT)) {
-			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
-			line_start = TRUE;
-			n_read_in_seg = 0;
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo table headers */
+				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);
+				continue;
+			}
+			if (GMT_REC_IS_NEW_SEGMENT (GMT)) {			/* Echo segment headers */
+				GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+				line_start = TRUE;
+				n_read_in_seg = 0;
+				continue;
+			}
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
 		}
 		if (GMT_REC_IS_GAP (GMT)) {	/* Gap detected.  Write a segment header but continue on since record is actually data */
 			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
@@ -677,8 +692,8 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_read_in_seg = 0;
 		}
 		
-		if (!GMT_REC_IS_DATA (GMT)) continue;	/* Nothing more to do with this record */
-		
+		/* Data record to process */
+
 		n_read++;
 		n_read_in_seg++;
 
@@ -756,7 +771,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */
 				}
 				if (line[pos]) strcat (record, &line[pos]);	/* Append the remainder of the user text */
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 				
 			}
 			else {	/* Simply copy other columns and output */
@@ -765,7 +780,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					n_output = GMT_get_cols (GMT, GMT_OUT);
 				}
 				for (k = two; k < n_output; k++) out[k] = in[k];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
 			n++;
 			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Projected %ld points\r", n);
@@ -880,7 +895,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						GMT_add_to_record (GMT, record, xnear, fmt[0], 1);
 						GMT_add_to_record (GMT, record, ynear, fmt[1], 1);
 					}
-					GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 				}
 				else {	/* Simply copy other columns and output */
 					if (!GMT_get_cols (GMT, GMT_OUT)) {
@@ -893,7 +908,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						out[k++] = xnear;
 						out[k++] = ynear;
 					}
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}
 			}
 			else {
@@ -923,7 +938,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						GMT_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */
 					}
 					strcat (record, &line[pos]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 				}
 				else {	/* Simply copy other columns and output */
 					if (!GMT_get_cols (GMT, GMT_OUT)) {
@@ -931,15 +946,20 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						n_output = GMT_get_cols (GMT, GMT_OUT);
 					}
 					for (k = two; k < n_output; k++) out[k] = in[k];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}
 			}
 			n++;
 			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Projected %ld points\r", n);
 		}
+	} while (TRUE);
+	
+	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && n_read > 0) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Projected %ld points\n", n);

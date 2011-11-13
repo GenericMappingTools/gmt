@@ -84,13 +84,13 @@ void *New_gshhs_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new c
 
 	C = GMT_memory (GMT, NULL, 1, struct GSHHS_CTRL);
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gshhs_Ctrl (struct GMT_CTRL *GMT, struct GSHHS_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->Out.file) free ((void *)C->Out.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->Out.file) free (C->Out.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -198,7 +198,7 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG k, seg_no = 0, is_line = 0, n_alloc = 0, n_seg = 0, max_east = 270000000;
-	GMT_LONG error, ID, n_read, m, gmode, level, version, greenwich, is_river, src;
+	GMT_LONG error, n_read, m, gmode, level, version, greenwich, is_river, src;
 	GMT_LONG must_swab, dim[4] = {1, 0, 2, 0}, OK, first = TRUE;
 
 	double w, e, s, n, area, f_area, scale = 10.0;
@@ -220,7 +220,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gshhs_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gshhs_usage (API, GMTAPI_SYNOPSIS));		/* Return the synopsis */
@@ -231,9 +231,9 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
 	GMT = GMT_begin_module (API, "GMT_gshhs", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vbfo:", "m", options))) Return (error);
+	if (GMT_Parse_Common (API, "-Vbfo:", "m", options)) Return (API->error);
 	if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg unless already set */
-	Ctrl = (struct GSHHS_CTRL *) New_gshhs_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_gshhs_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gshhs_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the gshhs main code ----------------------------*/
@@ -257,16 +257,16 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
 		dim[1] = 1;
 		dim[2] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHS_MAXPOL;
-		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim, (void **)&X, -1, &ID))) {
+		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, dim)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for GSHHS header features.\n");
-			return (GMT_RUNTIME_ERROR);
+			return (API->error);
 		}
 	}
 	else {
 		dim[1] = n_alloc = 0;
-		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D, -1, &ID))) {
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for GSHHS features.\n");
-			return (GMT_RUNTIME_ERROR);
+			return (API->error);
 		}
 	}
 	sprintf (header, "# Data extracted from GSHHS file %s", Ctrl->In.file);
@@ -284,7 +284,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		D->table[0]->segment = GMT_memory (GMT, T, n_alloc, struct GMT_LINE_SEGMENT *);
 		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
 	}
-	n_read = fread ((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
+	n_read = fread (&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
 	version = (h.flag >> 8) & 255;
 	must_swab = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 	
@@ -332,7 +332,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (OK && Ctrl->N.active && Ctrl->N.level != level) OK = 0;		/* Skip if not the right level (-N) */
 		if (!OK) {	/* Not what we are looking for, skip to next */
 			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
-			n_read = fread ((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
+			n_read = fread (&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
 			continue;	/* Back to top of loop */
 		}
 		
@@ -380,7 +380,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Allocate h.n number of data records */
 			GMT_alloc_segment (GMT, T[seg_no], dim[3], dim[2], TRUE);
 			for (k = 0; k < h.n; k++) {
-				if (fread ((void *)&p, (size_t)sizeof(struct POINT), (size_t)1, fp) != 1) {
+				if (fread (&p, (size_t)sizeof(struct POINT), (size_t)1, fp) != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s for %s %d, point %ld.\n", Ctrl->In.file, name[is_line], h.id, k);
 					Return (EXIT_FAILURE);
 				}
@@ -397,7 +397,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		seg_no++;
 		max_east = 180000000;	/* Only Eurasia (the first polygon) needs 270 */
-		n_read = fread((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
+		n_read = fread(&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
 	}
 	GMT_fclose (GMT, fp);
 	
@@ -406,8 +406,9 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			TX->record = GMT_memory (GMT, TX->record, seg_no, char *);
 		}
 		X->n_records = X->table[0]->n_records = TX->n_rows;
-		if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		if ((error = GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, NULL, 0, (void **)&Ctrl->Out.file, (void *)X))) Return (error);
+		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, NULL, 0, Ctrl->Out.file, X) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	else {
 		if (seg_no < n_alloc) {	/* Allocate to final size table */
@@ -415,10 +416,10 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		D->n_segments = D->table[0]->n_segments = seg_no;
 		gmode = (is_line) ? GMT_IS_LINE : GMT_IS_POLY;
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, gmode, NULL, 0, (void **)&Ctrl->Out.file, (void *)D))) Return (error);
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, gmode, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
+			Return (API->error);
+		}
 	}
-  	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "%s in: %ld %s out: %ld\n", name[is_line], n_seg, name[is_line], seg_no);
 

@@ -73,17 +73,17 @@
 
 /* FRONT symbols */
 
-#define GMT_FRONT_FAULT		0
-#define GMT_FRONT_TRIANGLE	1
-#define GMT_FRONT_SLIP		2
-#define GMT_FRONT_CIRCLE	3
-#define GMT_FRONT_BOX		4
+enum GMT_enum_front {GMT_FRONT_FAULT = 0,
+	GMT_FRONT_TRIANGLE,
+	GMT_FRONT_SLIP,
+	GMT_FRONT_CIRCLE,
+	GMT_FRONT_BOX};
 
 /* Direction of FRONT symbols: */
 
-#define GMT_FRONT_LEFT		+1
-#define GMT_FRONT_CENTERED	0
-#define GMT_FRONT_RIGHT		-1
+enum GMT_enum_frontdir {GMT_FRONT_RIGHT = -1,
+	GMT_FRONT_CENTERED,
+	GMT_FRONT_LEFT};
 
 struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
 	double f_gap;		/* Gap between front symbols in inches */

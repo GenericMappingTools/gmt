@@ -24,35 +24,36 @@
 
 #define GMTAPI_STRLEN		16	/* Bytes needed to hold the @GMTAPI@-###### resource names */
 
-	/* Index parameters used to access the information arrays */
+/* Index parameters used to access the information arrays */
 
-/* The 8 parameters are all GMT_LONG */
-#define GMTAPI_TYPE		0	/* ipar[0] = data type (GMTAPI_{BYTE|SHORT|FLOAT|INT|DOUBLE}) */
-#define GMTAPI_NDIM		1	/* ipar[1] = dimensionality of data (1, 2, or 3) (GMT grids = 2 yet stored internally as 1D) */
-#define GMTAPI_NROW		2	/* ipar[2] = number_of_rows (or length of 1-D array) */
-#define GMTAPI_NCOL		3	/* ipar[3] = number_of_columns (1 for 1-D array) */
-#define GMTAPI_KIND		4	/* ipar[4] = arrangment of rows/col (0 = rows (C), 1 = columns (Fortran)) */
-#define GMTAPI_DIML		5	/* ipar[5] = length of dimension for row (C) or column (Fortran) */
-#define GMTAPI_FREE		6	/* ipar[6] = 1 to free array after use (IN) or before filling with output (OUT), 0 to leave alone */
-#define GMTAPI_NODE		7	/* ipar[7] = 1 for pixel registration, 0 for node */
+enum GMT_enum_pars {GMTAPI_TYPE = 0,	/* ipar[0] = data type (GMTAPI_{BYTE|SHORT|FLOAT|INT|DOUBLE}) */
+	GMTAPI_NDIM,		/* ipar[1] = dimensionality of data (1, 2, or 3) (GMT grids = 2 yet stored internally as 1D) */
+	GMTAPI_NROW,		/* ipar[2] = number_of_rows (or length of 1-D array) */
+	GMTAPI_NCOL,		/* ipar[3] = number_of_columns (1 for 1-D array) */
+	GMTAPI_KIND,		/* ipar[4] = arrangment of rows/col (0 = rows (C), 1 = columns (Fortran)) */
+	GMTAPI_DIML,		/* ipar[5] = length of dimension for row (C) or column (Fortran) */
+	GMTAPI_FREE,		/* ipar[6] = 1 to free array after use (IN) or before filling with output (OUT), 0 to leave alone */
+	GMTAPI_NODE};		/* ipar[7] = 1 for pixel registration, 0 for node */
 
-	/* Data primitive identifiers */
+/* These data primitive identifiers are as follows: */
+enum GMT_enum_type {GMTAPI_UCHAR = 0,	/* The 1-byte unsigned integer type */
+	GMTAPI_CHAR,			/* The 1-byte signed integer type */
+	GMTAPI_USHORT,			/* The 2-byte unsigned integer type */
+	GMTAPI_SHORT,			/* The 2-byte signed integer type */
+	GMTAPI_UINT,			/* The 4-byte unsigned integer type */
+	GMTAPI_INT,			/* The 4-byte signed integer type */
+	GMTAPI_LONG,			/* The 8-byte unsigned integer type */
+	GMTAPI_ULONG,			/* The 8-byte signed integer type */
+	GMTAPI_FLOAT,			/* The 4-byte data float type */
+	GMTAPI_DOUBLE,			/* The 8-byte data float type */
+	GMTAPI_TEXT,			/* Arbitrarily long text string [OGR/GMT use only] */
+	GMTAPI_TIME,			/* string with date/time info [OGR/GMT use only] */
+	GMTAPI_N_TYPES};		/* The number of supported data types above */
 
-#define GMTAPI_N_TYPES		8	/* The number of supported data types (below) */
-#define GMTAPI_BYTE		0	/* The 1-byte data integer type */
-#define GMTAPI_SHORT		1	/* The 2-byte data integer type */
-#define GMTAPI_INT		2	/* The 4-byte data integer type */
-#define GMTAPI_LONG		3	/* The 8-byte data integer type */
-#define GMTAPI_FLOAT		4	/* The 4-byte data float type */
-#define GMTAPI_DOUBLE		5	/* The 8-byte data float type */
-/* These two are only for OGR/GMT use */
-#define GMTAPI_TEXT		6	/* Arbitrarily long text string */
-#define GMTAPI_TIME		7	/* string with date/time info */
-
-	/* Array ordering constants */
+/* Array ordering constants */
 	
-#define GMTAPI_ORDER_ROW	0	/* C-style array order: as index increase we move across rows */
-#define GMTAPI_ORDER_COL	1	/* Fortran-style array order: as index increase we move down columns */
+enum GMT_enum_order {GMTAPI_ORDER_ROW = 0,	/* C-style array order: as index increase we move across rows */
+	GMTAPI_ORDER_COL};			/* Fortran-style array order: as index increase we move down columns */
 
 #define GMTAPI_USAGE		0	/* Want to report full program usage message */
 #define GMTAPI_SYNOPSIS		1	/* Just want the synopsis of usage */

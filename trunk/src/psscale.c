@@ -104,14 +104,14 @@ void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	for (k = 0; k < 2; k++) C->T.off[k] = H_BORDER * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Default is 8p padding */
 	for (k = 2; k < 4; k++) C->T.off[k] = V_BORDER * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Default is 8p padding */
 	GMT_init_fill (GMT, &C->T.fill, -1.0, -1.0, -1.0);	/* No fill */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psscale_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) free ((void *)C->C.file);
-	if (C->E.text) free ((void *)C->E.text);
-	if (C->Z.file) free ((void *)C->Z.file);
+	if (C->C.file) free (C->C.file);
+	if (C->E.text) free (C->E.text);
+	if (C->Z.file) free (C->Z.file);
 	GMT_free (GMT, C);	
 }
 
@@ -1049,7 +1049,7 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_psscale_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_psscale_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -1059,24 +1059,16 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT = GMT_begin_module (API, "GMT_psscale", &GMT_cpy);	/* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 3;
-	if ((error = GMT_Parse_Common (API, "-VJR", "BKOPUXxYycpt>", options))) Return (error);
-	Ctrl = (struct PSSCALE_CTRL *)New_psscale_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJR", "BKOPUXxYycpt>", options)) Return (API->error);
+	Ctrl = New_psscale_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psscale_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the psscale main code ----------------------------*/
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_CPT, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-
-	if (Ctrl->C.file) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Reading CPT file %s.", Ctrl->C.file);
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
+	if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+		Return (API->error);
 	}
-	else {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Reading standard input.");
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, NULL, (void **)&P)) Return (GMT_DATA_READ_ERROR);
-	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (P->categorical) {
 		Ctrl->L.active = Ctrl->L.interval = TRUE;
@@ -1102,7 +1094,9 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	max_intens[1] = Ctrl->I.max;
 
 	if (Ctrl->Z.active) {
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->Z.file, (void **)&D)) Return (GMT_DATA_READ_ERROR);
+		if (GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, &D)) {
+			Return (API->error);
+		}
 		z_width = D->table[0]->segment[0]->coord[GMT_X];
 		if (D->table[0]->segment[0]->n_rows < P->n_colors) {
 			GMT_report (GMT, GMT_MSG_FATAL, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
