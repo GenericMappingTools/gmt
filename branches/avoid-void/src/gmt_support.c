@@ -2566,6 +2566,12 @@ struct GMT_PALETTE * GMT_sample_cpt (struct GMT_CTRL *C, struct GMT_PALETTE *Pin
 			if (P->range[i].hsv_diff[0] < -180.0) P->range[i].hsv_diff[0] += 360.0;
 			if (P->range[i].hsv_diff[0] >  180.0) P->range[i].hsv_diff[0] -= 360.0;
 		}
+		f = P->range[i].z_high - P->range[i].z_low;
+		if (f == 0.0) {
+			GMT_report (C, GMT_MSG_FATAL, "Error: Z-slice with dz = 0\n");
+			return (NULL);
+		}
+		P->range[i].i_dz = 1.0 / f;
 	}
 
 	GMT_free (C, x);

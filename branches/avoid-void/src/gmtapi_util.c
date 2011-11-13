@@ -707,6 +707,11 @@ struct GMT_PALETTE * GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GM
 			if ((P = S->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			P->alloc_mode = GMT_REFERENCE;	/* Tell GMT_* modules not to free this memory since we did not allocate */
 			break;
+		case GMT_IS_READONLY:	/* Just pass memory location, so nothing is allocated */
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing read-only CPT table from GMT_PALETTE memory location\n");
+			if ((P = S->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+			P->alloc_mode = GMT_READONLY;	/* Tell GMT_* modules not to free this memory since we did not allocate */
+			break;
 		default:	/* Barking up the wrong tree here... */
 			GMT_report (API->GMT, GMT_MSG_FATAL, "Wrong method used to import CPT tables\n");
 			return_null (API, GMT_WRONG_KIND);
