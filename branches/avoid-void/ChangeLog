@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-12	pwessel
+	* gmtmercmap.c:		New example of API use: Create a shaded-relief Mercator map using
+				Etopo 1|2|5m global relief, with optional colorbar.
+	* gmt_support.c:	Resampling of CPTs did not initialize the i_dz variables, resulting
+				in discontinuous colors for continuous color maps.
+
 2011-11-11	pwessel
 	* gmtapi_util.c:	Introduce GMT_Retrieve_Data to return a pointer to a container
 				that was allocated when a memory location was registered as the
