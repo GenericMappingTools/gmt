@@ -1,3 +1,0 @@
-.TP
-GMT_bo_OPT (*)
-Select binary output.

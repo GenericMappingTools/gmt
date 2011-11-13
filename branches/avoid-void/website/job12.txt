@@ -1,6 +1,0 @@
-$Id$
-Example 12.   This figure shows the results of optimal (Delaunay) triangulation on
-a data sets with uniformly distributed (x,y,z) values.  GMT allows for direct
-contouring and imaging of the raw data by way of triangulation.  Here, the program
-triangulate found the optimal triangle configuration, psxy drew the lines,
-pxtext took care of annotations, and pscontour colored the triangulations directly.

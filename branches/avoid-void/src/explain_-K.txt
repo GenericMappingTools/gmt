@@ -1,3 +1,0 @@
-.TP
-OPT(K) (*)
-Do not finalize the PS plot.

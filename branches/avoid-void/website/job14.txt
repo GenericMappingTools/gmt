@@ -1,9 +1,0 @@
-$Id$
-Example 14.   GMT supports several gridding algorithms.  Perhaps the most used is
-the continuous curvature splines in tension algorithm which was used in this
-example to grid the data shown in example 12.  Also shown is a comparison of
-the gridded surface and a low order polynomial trend surface.  Several GMT
-modules were used to make this figure: blockmean and surface prepared the
-grid from non-uniformly spaced data, psxy and pstext drew points, lines, and
-text, grdcontour did the contouring, grdtrend determined a bicubic trend surface,
-and grdtrack sampled both the grid and trend surface along an arbitrary track.
