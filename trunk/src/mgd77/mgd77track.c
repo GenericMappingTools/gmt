@@ -551,7 +551,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	if ((options = GMT_Prep_Options (API, mode, args)) == NULL) return (API->error);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77track", &GMT_cpy);	/* Save current state */
 	Ctrl = New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
