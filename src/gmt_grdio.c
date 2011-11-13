@@ -844,8 +844,10 @@ GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, ch
 		G->start[1] = 0;
 	}
 	else {				/* Regular binary file with/w.o standard GMT header */
-		if (r_w == 0 && (G->fp = GMT_fopen (C, G->header.name, bin_mode[0])) == NULL)
-			return (GMT_GRDIO_OPEN_FAILED);
+		if (r_w == 0) {	/* Open for plain reading */ 
+			if ((G->fp = GMT_fopen (C, G->header.name, bin_mode[0])) == NULL)
+				return (GMT_GRDIO_OPEN_FAILED);
+		}
 		else if ((G->fp = GMT_fopen (C, G->header.name, bin_mode[r_w])) == NULL)
 			return (GMT_GRDIO_CREATE_FAILED);
 		if (header && GMT_fseek (G->fp, (long)GRD_HEADER_SIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);

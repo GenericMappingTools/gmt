@@ -283,8 +283,7 @@ GMT_LONG init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, GMT_LONG m
 	}
 #ifdef DEBUG
 	if (file) {	/* For debug purposes: Save the area weight grid */
-		GMT_LONG error;
-		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, file, A) != GMT_OK) return (API->error);
+		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, file, A) != GMT_OK) return (GMT->parent->error);
 	}
 #endif
 	return (GMT_NOERROR);
