@@ -48,8 +48,9 @@ struct GRDINFO_CTRL {
 		GMT_LONG active;
 		GMT_LONG norm;
 	} L;
-	struct T {	/* -T<dz> */
+	struct T {	/* -T[s]<dz> */
 		GMT_LONG active;
+		GMT_LONG mode;
 		double inc;
 	} T;
 };
@@ -73,7 +74,7 @@ GMT_LONG GMT_grdinfo_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "grdinfo %s [API] - Extract information from grids\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdinfo <grid> [-C] [-F] [-I[<dx>[/<dy>]]] [-L[0|1|2]] [-M]\n");
-	GMT_message (GMT, "	[%s] [-T<dz>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "	[%s] [-T[s]<dz>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -94,6 +95,7 @@ GMT_LONG GMT_grdinfo_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-M Search for the global min and max locations (x0,y0) and (x1,y1).\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-T Given increment dz, return global -Tzmin/zmax/dz in multiples of dz.\n");
+	GMT_message (GMT, "\t   To get a symmetrical range about zero, use -Ts<dz> insteda.\n");
 	GMT_explain_options (GMT, "Vf.");
 	
 	return (EXIT_FAILURE);
@@ -156,7 +158,12 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 				break;
 			case 'T':	/* CPT range */
 				Ctrl->T.active = TRUE;
-				Ctrl->T.inc = atof (opt->arg);
+				if (opt->arg[0] == 's') {	/* Want symmetrical range about 0, i.e., -3500/3500/500 */
+					Ctrl->T.mode = 1;
+					Ctrl->T.inc = atof (&opt->arg[1]);
+				}
+				else
+					Ctrl->T.inc = atof (opt->arg);
 				break;
 
 			default:	/* Report bad options */
@@ -513,8 +520,16 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_zmax, GMT_Z);	GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
 	}
 	else if (Ctrl->T.active) {
-		global_zmin = floor (global_zmin / Ctrl->T.inc) * Ctrl->T.inc;
-		global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
+		if (Ctrl->T.mode) {	/* Get a symemtrical range */
+			global_zmin = floor (global_zmin / Ctrl->T.inc) * Ctrl->T.inc;
+			global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
+			global_zmax = MAX (fabs (global_zmin), fabs (global_zmax));
+			global_zmin = -global_zmax;
+		}
+		else {
+			global_zmin = floor (global_zmin / Ctrl->T.inc) * Ctrl->T.inc;
+			global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
+		}
 		GMT_fprintf (GMT->session.std[GMT_OUT], "-T");
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_zmin, GMT_Z);
 		GMT_fprintf (GMT->session.std[GMT_OUT], "/");

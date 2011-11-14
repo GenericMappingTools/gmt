@@ -493,17 +493,14 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 
 	GMT_err_trap ((*C->session.readgrd[header->type]) (C, header, grid, P.wesn, P.pad, complex_mode));
 	
-	if (expand) {	/* Must undo the region extension and reset nx, ny */
-		header->nx -= (int)(P.pad[XLO] + P.pad[XHI]);
-		header->ny -= (int)(P.pad[YLO] + P.pad[YHI]);
+	if (expand) {	/* Must undo the region extension and reset nx, ny using original pad  */
 		GMT_memcpy (header->wesn, wesn, 4, double);
-		header->nm = GMT_get_nm (C, header->nx, header->ny);
 		for (k = 0; k < 4; k++) if (P.pad[k] == 0) header->BC[k]= GMT_BC_IS_DATA;
-		GMT_grd_zminmax (C, header, grid);	/* Reset min/max since current values includes the padded region */
 	}
 	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0.\n");
-	GMT_grd_setpad (C, header, pad);		/* Copy the pad to the header */
+	GMT_grd_setpad (C, header, pad);	/* Copy the pad to the header */
 	GMT_set_grddim (C, header);		/* Update all dimensions */
+	if (expand) GMT_grd_zminmax (C, header, grid);	/* Reset min/max since current extrema includes the padded region */
 	GMT_grd_do_scaling (C, grid, header->size, header->z_scale_factor, header->z_add_offset);
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
@@ -1625,12 +1622,13 @@ void GMT_grd_zminmax (struct GMT_CTRL *C, struct GRD_HEADER *h, float *z)
 	
 	h->z_min = DBL_MAX;	h->z_max = -DBL_MAX;
 	for (row = 0; row < h->ny; row++) {
-		for (col = 0, node = GMT_IJP (h, row, 0); col < h->nx; col++, node++)
-		if (GMT_is_fnan (z[node])) continue;
-		/* Update z_min, z_max */
-		h->z_min = MIN (h->z_min, (double)z[node]);
-		h->z_max = MAX (h->z_max, (double)z[node]);
-		n++;
+		for (col = 0, node = GMT_IJP (h, row, 0); col < h->nx; col++, node++) {
+			if (GMT_is_fnan (z[node])) continue;
+			/* Update z_min, z_max */
+			h->z_min = MIN (h->z_min, (double)z[node]);
+			h->z_max = MAX (h->z_max, (double)z[node]);
+			n++;
+		}
 	}
 	if (n == 0) h->z_min = h->z_max = C->session.d_NaN;	/* No non-NaNs in the entire grid */
 }
