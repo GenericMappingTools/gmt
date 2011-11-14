@@ -57,7 +57,7 @@ EXTERN_MSC void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG
 EXTERN_MSC void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G);
 EXTERN_MSC void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G);
 EXTERN_MSC void GMT_grd_do_scaling (struct GMT_CTRL *C, float *grid, GMT_LONG nm, double scale, double offset);
-EXTERN_MSC void GMT_grd_zminmax (struct GMT_CTRL *C, struct GMT_GRID *G);
+EXTERN_MSC void GMT_grd_zminmax (struct GMT_CTRL *C, struct GRD_HEADER *h, float *z);
 EXTERN_MSC GMT_LONG GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_write_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, GMT_LONG *pad, GMT_LONG complex);

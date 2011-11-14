@@ -1864,7 +1864,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data to GMT_GRID memory location\n");
 			if (GMTAPI_need_grdpadding (G->header, API->GMT->current.io.pad)) GMT_grd_pad_on (API->GMT, G, API->GMT->current.io.pad);	/* Adjust pad */
 			G->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this later */
-			GMT_grd_zminmax (API->GMT, G);	/* Must set zmin/zmax since we are not writing */
+			GMT_grd_zminmax (API->GMT, G->header, G->data);	/* Must set zmin/zmax since we are not writing */
 			GMT_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S->resource = G;	/* Set resource pointer to the grid */
