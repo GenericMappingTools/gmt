@@ -129,7 +129,7 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	char format[GMT_BUFSIZ];
 
-	double x_noise, y_noise, west, east;
+	double x_noise, y_noise;
 
 	struct GMT_GRID *A = NULL, *B = NULL, *C = NULL;
 	struct GRDPASTE_CTRL *Ctrl = NULL;
@@ -184,14 +184,24 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	x_noise = GMT_SMALL * C->header->inc[GMT_X];
 	y_noise = GMT_SMALL * C->header->inc[GMT_Y];
 
-	west = B->header->wesn[XLO];	east = B->header->wesn[XHI];	/* Get copies */
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must be careful in determining a match */
-		west -= 360.0;	east -= 360.0;	/* Wind to left first */
-		while ((A->header->wesn[XLO] - west) > x_noise) {	/* Wind back to match grid A if possible */
-			west += 360.0;
-			east += 360.0;
+		double del;
+		del = A->header->wesn[XLO] - B->header->wesn[XHI];
+		if (fabs (del - 360.0) < GMT_CONV_LIMIT) {	/* A 360-degree offset between grids */
+			B->header->wesn[XLO] += 360.0;	B->header->wesn[XHI] += 360.0;
 		}
-		B->header->wesn[XLO] = west;	B->header->wesn[XHI] = east;	/* Possibly update lon range */
+		else if (fabs (del + 360.0) < GMT_CONV_LIMIT) {	/* A -360-degree offset between grids */
+			A->header->wesn[XLO] += 360.0;	A->header->wesn[XHI] += 360.0;
+		}
+		else {
+			del = A->header->wesn[XHI] - B->header->wesn[XLO];
+			if (fabs (del - 360.0) < GMT_CONV_LIMIT) {	/* A 360-degree offset between grids */
+				B->header->wesn[XLO] += 360.0;	B->header->wesn[XHI] += 360.0;
+			}
+			else if (fabs (del + 360.0) < GMT_CONV_LIMIT) {	/* A -360-degree offset between grids */
+				A->header->wesn[XLO] += 360.0;	A->header->wesn[XHI] += 360.0;
+			}
+		}
 	}
 
 	GMT_memcpy (C->header->wesn, A->header->wesn, 4, double);	/* Output region is set as the same as A... */
