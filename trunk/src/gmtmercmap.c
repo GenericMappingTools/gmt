@@ -34,6 +34,9 @@ struct GMTMERCMAP_CTRL {
 		GMT_LONG active;
 		char *file;
 	} C;
+	struct D {	/* -D */
+		GMT_LONG active;
+	} D;
 	struct W {	/* -W<width> */
 		GMT_LONG active;
 		double width;
@@ -63,12 +66,13 @@ GMT_LONG GMT_gmtmercmap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "gmtmercmap %s [API] - Make a Mercator color map from ETOPO[1|2|5] global relief grids\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: gmtmercmap [-C<cpt>] [-K] [-O] [-P] [-R<w/e/s/n>] [-S] [-W<width>]\n");
+	GMT_message (GMT, "usage: gmtmercmap [-C<cpt>] [-D] [-K] [-O] [-P] [-R<w/e/s/n>] [-S] [-W<width>]\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Color palette to use [relief].\n");
+	GMT_message (GMT, "\t-D Dry-run: Only print GMT commands instead; no map is made.\n");
 	GMT_explain_options (GMT, "KOP");
 	GMT_message (GMT, "\t-R sets the map region [Default is -180/180/-75/75].\n");
 	GMT_message (GMT, "\t-S plot a color scale beneath the map [none].\n");
@@ -100,6 +104,9 @@ GMT_LONG GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ct
 				Ctrl->C.active = TRUE;
 				free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
+				break;
+			case 'D':	/* Just issue equivalent GMT commands */
+				Ctrl->D.active = TRUE;
 				break;
 			case 'W':	/* Map width */
 				Ctrl->W.active = TRUE;
@@ -172,6 +179,34 @@ int main (int argc, char **argv)
 	/* 3. Load in the subset from the selected etopo?m.nc grid */
 	
 	sprintf (file, "etopo%ldm_grd.nc", min);	/* Make the selected file name */
+	
+	if (Ctrl->D.active) {
+		printf ("#!/bin/sh\n");
+		printf ("ps=merc_map.ps\n");
+		printf ("grdcut %s -R%g/%g/%g/%g -G$$_topo.nc\n", file, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		printf ("grdgradient $$_topo.nc -Nt1 -A45 -fg -G$$_int.nc\n");
+		printf ("T_opt=`grdinfo $$_topo.nc -Ts500`\n");
+		printf ("makecpt -C%s $T_opt -Z > $$_color.cpt\n", Ctrl->C.file);
+		printf ("grdimage $$_topo.nc -I$$_int.nc -C$$_color.cpt -JM%gi -BaWSne", Ctrl->W.width);
+		if (GMT->common.O.active) printf (" -O");	/* Add optional user options */
+		if (GMT->common.P.active) printf (" -P");	/* Add optional user options */
+		if (Ctrl->S.active || GMT->common.K.active) printf (" -K");	/* Either gave -K or implicit via -S */
+		if (Ctrl->S.active) {	/* May need to add some vertical offset to account for the colro scale */
+			if (!GMT->common.Y.active && !GMT->common.K.active) printf (" -Y1.75i");	/* User gave neither -K nor -Y so we add 0.75i offset to fit the scale */
+		}
+		printf (" > $ps\n");
+		if (Ctrl->S.active) {
+			double x, y;
+			x = 0.5 * Ctrl->W.width;	/* Centered beneath the map */
+			y = -0.4;			/* Offset vertically 0.4i downwards */
+			printf ("psscale -C$$_color.cpt -D%gi/%gi/%gi/0.1ih -Ba/:m: -O", x, y, 0.9*Ctrl->W.width);	/* The psscale command line */
+			if (GMT->common.K.active) printf (" -K");		/* dd optional user options */
+			printf (" >> $ps\n");
+		}
+		printf ("rm -f $$_*\n");
+		Return (EXIT_SUCCESS);
+	}
+	
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT->common.R.wesn, GMT_GRID_ALL, file, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* 4. Compute the illumination grid via GMT_grdgradient */
