@@ -2325,9 +2325,6 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, GMT_LONG level)
 		if (!(level == GMTAPI_NOTSET || S->level == level)) {	/* Not the right module level (or not end of session) */
 			i++;	continue;
 		}
-		if (S->method < GMT_IS_COPY) {	/* No data containers assigned to resource */
-			i++;	continue;
-		}
 		if (!S->data) {	/* No memory to free (probably freed earlier); handle trashing of object after this loop */
 			i++;	continue;
 		}
