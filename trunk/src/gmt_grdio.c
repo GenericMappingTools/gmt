@@ -499,6 +499,7 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 		GMT_memcpy (header->wesn, wesn, 4, double);
 		header->nm = GMT_get_nm (C, header->nx, header->ny);
 		for (k = 0; k < 4; k++) if (P.pad[k] == 0) header->BC[k]= GMT_BC_IS_DATA;
+		GMT_grd_zminmax (C, header, grid);	/* Reset min/max since current values includes the padded region */
 	}
 	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0.\n");
 	GMT_grd_setpad (C, header, pad);		/* Copy the pad to the header */
@@ -1618,19 +1619,20 @@ GMT_LONG GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *header, GMT_L
 	return (old_registration);
 }
 
-void GMT_grd_zminmax (struct GMT_CTRL *C, struct GMT_GRID *G)
+void GMT_grd_zminmax (struct GMT_CTRL *C, struct GRD_HEADER *h, float *z)
 {	/* Reset the xmin/zmax values in the header */
 	GMT_LONG row, col, node, n = 0;
 	
-	G->header->z_min = DBL_MAX;	G->header->z_max = -DBL_MAX;
-	GMT_grd_loop (C, G, row, col, node) {
-		if (GMT_is_fnan (G->data[node])) continue;
+	h->z_min = DBL_MAX;	h->z_max = -DBL_MAX;
+	for (row = 0; row < h->ny; row++) {
+		for (col = 0, node = GMT_IJP (h, row, 0); col < h->nx; col++, node++)
+		if (GMT_is_fnan (z[node])) continue;
 		/* Update z_min, z_max */
-		G->header->z_min = MIN (G->header->z_min, (double)G->data[node]);
-		G->header->z_max = MAX (G->header->z_max, (double)G->data[node]);
+		h->z_min = MIN (h->z_min, (double)z[node]);
+		h->z_max = MAX (h->z_max, (double)z[node]);
 		n++;
 	}
-	if (n == 0) G->header->z_min = G->header->z_max = C->session.d_NaN;
+	if (n == 0) h->z_min = h->z_max = C->session.d_NaN;	/* No non-NaNs in the entire grid */
 }
 
 GMT_LONG GMT_init_complex (GMT_LONG complex_mode, GMT_LONG *inc, GMT_LONG *off)

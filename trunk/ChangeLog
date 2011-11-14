@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-13	pwessel
+	* gmt_grdio.c:		Need to reset zmin/zmax when region was temporarily expanded to
+				include data boundary rows/cols.
+				
 2011-11-12	pwessel
 	* gmtmercmap.c:		New example of API use: Create a shaded-relief Mercator map using
 				Etopo 1|2|5m global relief, with optional colorbar.
