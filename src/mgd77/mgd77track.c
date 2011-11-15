@@ -539,7 +539,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	double factor = 0.001, c_angle, tick_time[2] = {0, 0};
 	
 	struct MGD77_CONTROL M;
-	struct MGD77_DATASET D;
+	struct MGD77_DATASET *D = NULL;
 	struct MGD77TRACK_LEG_ANNOT *cruise_id = NULL;
 	struct GMT_gcal calendar;
 	struct MGD77TRACK_ANNOT *info[2] = {NULL, NULL};
@@ -608,11 +608,12 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	for (argno = 0; argno < n_paths; argno++) {		/* Process each ID */
 	
+		D = MGD77_Create_Dataset (GMT);	/* Get data structure w/header */
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Now processing cruise %s\n", list[argno]);
 		
-		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &D.H)) {
+		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error reading header sequence for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);
 		}
@@ -620,7 +621,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		last_julian = -1;
 		
 		if (GMT_abs (Ctrl->A.mode) == 2)	/* Use MGD77 cruise ID */
-			strcpy (name, D.H.mgd77[use]->Survey_Identifier);
+			strcpy (name, D->H.mgd77[use]->Survey_Identifier);
 		else {			/* Use file name prefix */
 			strcpy (name, list[argno]);
 			for (i = 0; i < (int)strlen (name); i++) if (name[i] == '.') name[i] = '\0';
@@ -628,20 +629,20 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 		/* Start reading data from file */
 	
-		if (MGD77_Read_Data (GMT, list[argno], &M, &D)) {
+		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error reading data set for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);
 		}
 		MGD77_Close_File (GMT, &M);
-		track_time = (double*)D.values[0];
-		lon = (double*)D.values[1];
-		lat = (double*)D.values[2];
-		if ((track_dist = GMT_dist_array (GMT, lon, lat, D.H.n_records, 1.0, dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* Work internally in meters */
-		for (rec = 0; rec < D.H.n_records && bad_coordinates (lon[rec], lat[rec]) && track_time[rec] < Ctrl->D.start && track_dist[rec] < Ctrl->S.start; rec++);	/* Find first record of interest */
+		track_time = (double*)D->values[0];
+		lon = (double*)D->values[1];
+		lat = (double*)D->values[2];
+		if ((track_dist = GMT_dist_array (GMT, lon, lat, D->H.n_records, 1.0, dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* Work internally in meters */
+		for (rec = 0; rec < D->H.n_records && bad_coordinates (lon[rec], lat[rec]) && track_time[rec] < Ctrl->D.start && track_dist[rec] < Ctrl->S.start; rec++);	/* Find first record of interest */
 		first_rec = rec;
-		for (rec = D.H.n_records - 1; rec && track_time[rec] > Ctrl->D.stop && bad_coordinates (lon[rec], lat[rec]) && track_dist[rec] > Ctrl->S.stop; rec--);	/* Find last record of interest */
+		for (rec = D->H.n_records - 1; rec && track_time[rec] > Ctrl->D.stop && bad_coordinates (lon[rec], lat[rec]) && track_dist[rec] > Ctrl->S.stop; rec--);	/* Find last record of interest */
 		last_rec = rec;
-		GMT_report (GMT, GMT_MSG_NORMAL, "mgd77track: Plotting %s [%s]\n", list[argno], D.H.mgd77[use]->Survey_Identifier);
+		GMT_report (GMT, GMT_MSG_NORMAL, "mgd77track: Plotting %s [%s]\n", list[argno], D->H.mgd77[use]->Survey_Identifier);
 		PSL_comment (PSL, "Tracking %s", list[argno]);
 		
 		/* First draw the track line, clip segments outside the area */
@@ -665,7 +666,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		else {	/* Plot the whole shabang */
-			GMT_geo_line (GMT, lon, lat, D.H.n_records);
+			GMT_geo_line (GMT, lon, lat, D->H.n_records);
 		}
 
 		first = TRUE;
@@ -677,7 +678,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_geo_to_xy (GMT, lon[rec], lat[rec], &x, &y);
 			if (first) {
 				if (Ctrl->A.mode > 0) {
-					c_angle = get_heading (GMT, rec, lon, lat, D.H.n_records);
+					c_angle = get_heading (GMT, rec, lon, lat, D->H.n_records);
 					if (Ctrl->N.active) {	/* Keep these in a list to plot after clipping is turned off */
 						cruise_id[n_id].x = x;
 						cruise_id[n_id].y = y;
@@ -725,7 +726,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			if (annot_tick[ANNOT]) {
-				angle = get_heading (GMT, rec, lon, lat, D.H.n_records);
+				angle = get_heading (GMT, rec, lon, lat, D->H.n_records);
 				if (angle < 0.0)
 					angle += 90.0;
 				else
@@ -778,7 +779,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			if (annot_tick[ANNOT] || draw_tick[ANNOT]) annot_tick[ANNOT] = draw_tick[ANNOT] = FALSE;
 			if (annot_tick[LABEL]) {
-				angle = get_heading (GMT, rec, lon, lat, D.H.n_records);
+				angle = get_heading (GMT, rec, lon, lat, D->H.n_records);
 				if (angle < 0.0)
 					angle += 90.0;
 				else
@@ -787,6 +788,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				annot_tick[LABEL] = FALSE;
 			}
 		}
+		MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File */
 		GMT_free (GMT, track_dist);
 		n_cruises++;
 	}
