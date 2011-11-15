@@ -87,7 +87,7 @@ static char *GMT_keywords[GMT_N_KEYS] = {		/* Names of all parameters in gmt.con
 #include "gmt_keywords.h"
 };
 
-static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line options */
+static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line options [ just the subset that accepts arguments (e.g., -O is not listed) ] */
 #include "gmt_unique.h"
 };
 
@@ -1077,9 +1077,7 @@ GMT_LONG GMT_default_error (struct GMT_CTRL *C, char option)
 		case 'R': error += C->common.R.active == 0; break;
 		case 'U': error += C->common.U.active == 0; break;
 		case 'V': error += C->common.V.active == 0; break;
-		case 'x':
 		case 'X': error += C->common.X.active == 0; break;
-		case 'y':
 		case 'Y': error += C->common.Y.active == 0; break;
 		case 'a': error += C->common.a.active == 0; break;
 		case 'b': error += C->common.b.active[GMT_IN] + C->common.b.active[GMT_OUT] == 0; break;
@@ -7289,13 +7287,11 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 				C->current.setting.verbose = GMT_MSG_NORMAL;
 			break;
 
-		case 'x':
 		case 'X':
 			error += (GMT_more_than_once (C, C->common.X.active) || gmt_parse_XY_option (C, GMT_X, item));
 			C->common.X.active = TRUE;
 			break;
 
-		case 'y':
 		case 'Y':
 			error += (GMT_more_than_once (C, C->common.Y.active) || gmt_parse_XY_option (C, GMT_Y, item));
 			C->common.Y.active = TRUE;
