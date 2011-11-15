@@ -12,7 +12,7 @@
 2011-11-12	pwessel
 	* gmtmercmap.c:		New example of API use: Create a shaded-relief Mercator map using
 				Etopo 1|2|5m global relief, with optional color bar.  Option -D
-				makes no map but writes equivalent shell script.
+				makes no map but writes equivalent Bourne shell or cshell script.
 
 	* gmt_support.c:	Resampling of CPTs did not initialize the i_dz variables, resulting
 				in discontinuous colors for continuous color maps.

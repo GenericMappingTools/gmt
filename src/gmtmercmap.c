@@ -34,8 +34,9 @@ struct GMTMERCMAP_CTRL {
 		GMT_LONG active;
 		char *file;
 	} C;
-	struct D {	/* -D */
+	struct D {	/* -D[c] */
 		GMT_LONG active;
+		GMT_LONG mode;
 	} D;
 	struct W {	/* -W<width> */
 		GMT_LONG active;
@@ -72,7 +73,8 @@ GMT_LONG GMT_gmtmercmap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Color palette to use [relief].\n");
-	GMT_message (GMT, "\t-D Dry-run: Only print GMT commands instead; no map is made.\n");
+	GMT_message (GMT, "\t-D Dry-run: Only print GMT shell commands instead; no map is made.\n");
+	GMT_message (GMT, "\t   Append c for cshell syntax [Default is Bourne shell].\n");
 	GMT_explain_options (GMT, "KOP");
 	GMT_message (GMT, "\t-R sets the map region [Default is -180/180/-75/75].\n");
 	GMT_message (GMT, "\t-S plot a color scale beneath the map [none].\n");
@@ -107,6 +109,10 @@ GMT_LONG GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ct
 				break;
 			case 'D':	/* Just issue equivalent GMT commands */
 				Ctrl->D.active = TRUE;
+				switch (opt->arg[0]) {
+					case 'c':  Ctrl->D.mode = 1; break;
+					default: Ctrl->D.mode = 0; break;
+				}
 				break;
 			case 'W':	/* Map width */
 				Ctrl->W.active = TRUE;
@@ -180,12 +186,18 @@ int main (int argc, char **argv)
 	
 	sprintf (file, "etopo%ldm_grd.nc", min);	/* Make the selected file name */
 	
-	if (Ctrl->D.active) {
-		printf ("#!/bin/sh\n");
-		printf ("ps=merc_map.ps\n");
+	if (Ctrl->D.active) {	/* Just return equivalent GMT shell script */
+		char *marker = "|!";	/* Clobber characters for csh and bash, respectively */
+		if (Ctrl->D.mode)
+			printf ("#!/bin/csh\nset ps = merc_map.ps\n");
+		else
+			printf ("#!/bin/sh\nps=merc_map.ps\n");
 		printf ("grdcut %s -R%g/%g/%g/%g -G$$_topo.nc\n", file, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		printf ("grdgradient $$_topo.nc -Nt1 -A45 -fg -G$$_int.nc\n");
-		printf ("T_opt=`grdinfo $$_topo.nc -Ts500`\n");
+		if (Ctrl->D.mode)
+			printf ("set T_opt = `grdinfo $$_topo.nc -Ts500`\n");
+		else
+			printf ("T_opt=`grdinfo $$_topo.nc -Ts500`\n");
 		printf ("makecpt -C%s $T_opt -Z > $$_color.cpt\n", Ctrl->C.file);
 		printf ("grdimage $$_topo.nc -I$$_int.nc -C$$_color.cpt -JM%gi -BaWSne", Ctrl->W.width);
 		if (GMT->common.O.active) printf (" -O");	/* Add optional user options */
@@ -194,7 +206,7 @@ int main (int argc, char **argv)
 		if (Ctrl->S.active) {	/* May need to add some vertical offset to account for the colro scale */
 			if (!GMT->common.Y.active && !GMT->common.K.active) printf (" -Y1.75i");	/* User gave neither -K nor -Y so we add 0.75i offset to fit the scale */
 		}
-		printf (" > $ps\n");
+		printf (" >%c $ps\n", marker[Ctrl->D.mode]);
 		if (Ctrl->S.active) {
 			double x, y;
 			x = 0.5 * Ctrl->W.width;	/* Centered beneath the map */
