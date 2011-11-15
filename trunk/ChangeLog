@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-15	pwessel
+	* gmt_unique.h:		Updated with the new common options.
+	* gmt_init.c:		No longer accept lower case -x -y as in GMT 4 (inadvertently).
+
 2011-11-13	pwessel
 	* gmt_grdio.c:		Need to reset zmin/zmax when region was temporarily expanded to
 				include data boundary rows/cols.
