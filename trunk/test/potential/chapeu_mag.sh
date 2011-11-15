@@ -28,7 +28,7 @@ paste chapeu_xyz.dat m.dat > chapeu_xyzm.dat
 # Compute the mag anomaly using a F dec=10,dip=60 & M dec=-10,dip=40. Intensity came from mag.nc grid
 xyzokb -Gchapeu_mag.nc -R-15/15/-15/15 -I1.0 -E2 -H10/60/0/-10/40 -Tdchapeu_xyzm.dat/chapeu_tri.dat/m
 
-grd2cpt chapeu_mag.nc -E20 > m.cpt
+grd2cpt chapeu_mag.nc -E20 -D > m.cpt
 grdimage chapeu_mag.nc -Cm.cpt -JX12c -Ba -P > $ps
 
 rm -f half_*.nc mag.nc chapeu_mag.nc chapeu.nc chapeu*.dat m.dat m.cpt
