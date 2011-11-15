@@ -340,7 +340,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->M.mode == HIST_HEADER) {	/* Dump of MGD77+ history */
 			fprintf (GMT->session.std[GMT_OUT], "%s: %s", list[argno], D->H.history);
 			MGD77_Close_File (GMT, &M);
-			MGD77_Free (GMT, D);
+			MGD77_Free_Dataset (GMT, &D);
 			continue;
 		}
 		if (Ctrl->M.mode == E77_HEADER) {	/* Dump of e77 header status */
@@ -349,13 +349,13 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else
 				fprintf (GMT->session.std[GMT_OUT], "%s: E77 not applied\n", list[argno]);
 			MGD77_Close_File (GMT, &M);
-			MGD77_Free (GMT, D);
+			MGD77_Free_Dataset (GMT, &D);
 			continue;
 		}
 		if (Ctrl->M.mode == FORMATTED_HEADER) {	/* Dump of header items, one per line */
 			MGD77_Dump_Header_Params (GMT, &M, D->H.mgd77[use]);	
 			MGD77_Close_File (GMT, &M);
-			MGD77_Free (GMT, D);
+			MGD77_Free_Dataset (GMT, &D);
 			continue;
 		}
 		t_col = MGD77_Get_Column (GMT, "time", &M);
@@ -383,7 +383,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (first) fprintf (GMT->session.std[GMT_OUT], "No columns matching selection found!");
 			fprintf (GMT->session.std[GMT_OUT], "\n");
 			MGD77_Close_File (GMT, &M);
-			MGD77_Free (GMT, D);
+			MGD77_Free_Dataset (GMT, &D);
 			continue;
 		}
 			
@@ -545,10 +545,10 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			fprintf (GMT->session.std[GMT_OUT],"\n");
 		}
-		MGD77_Free (GMT, D);
+		MGD77_Free_Dataset (GMT, &D);
 	}
 		
-	MGD77_Path_Free (GMT, (int)n_paths, list);
+	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
 
 	Return (GMT_OK);

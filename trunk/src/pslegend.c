@@ -829,7 +829,6 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);	/* Plot the symbols */
 		}
 	}
-	else GMT_free_textset (GMT, &D[SYM]);	/* Free directly since never registered */
 	if (S[TXT] && S[TXT]->n_rows) {
 		/* Create option list, register D[TXT] as input source */
 		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D[TXT], NULL)) == GMTAPI_NOTSET) {
@@ -843,7 +842,6 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);	/* Plot the symbols */
 		}
 	}
-	else GMT_free_textset (GMT, &D[TXT]);	/* Free directly since never registered */
 	if (S[PAR] && S[PAR]->n_rows) {
 		/* Create option list, register D[PAR] as input source */
 		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D[PAR], NULL)) == GMTAPI_NOTSET) {
@@ -855,7 +853,8 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -M -F+f+a+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		if (GMT_pstext (API, 0, buffer) != GMT_OK) Return (API->error);	/* Plot the symbols */
 	}
-	else GMT_free_textset (GMT, &D[PAR]);	/* Free directly since never registered */
+
+	for (id = 0; id < 3; id++) GMT_free_textset (GMT, &D[id]);	/* Free directly since never used in Get|Put statements */
 
 	GMT_map_basemap (GMT);
 	GMT_plotend (GMT);

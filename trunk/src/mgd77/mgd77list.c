@@ -895,7 +895,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_FATAL, "One or more requested columns not present in cruise %s - skipping\n", list[argno]);
 			else
 				GMT_report (GMT, GMT_MSG_FATAL, "Error reading header sequence for cruise %s - skipping\n", list[argno]);
-			MGD77_Free (GMT, D);
+			MGD77_Free_Dataset (GMT, &D);
 			continue;
 		}
 
@@ -909,7 +909,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (auxlist[MGD77_AUX_ID].requested) string_output = TRUE;
 			if (string_output && GMT->common.b.active[1]) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot specify binary output with text fields\n");
-				MGD77_Free (GMT, D);
+				MGD77_Free_Dataset (GMT, &D);
 				Return (EXIT_FAILURE);
 			}
 			first_cruise = FALSE;
@@ -919,7 +919,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error reading data set for cruise %s\n", list[argno]);
-			MGD77_Free (GMT, D);
+			MGD77_Free_Dataset (GMT, &D);
 			Return (EXIT_FAILURE);
 		}
 		MGD77_Close_File (GMT, &M);
@@ -1299,7 +1299,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			n_out++;
 		}
-		MGD77_Free (GMT, D);
+		MGD77_Free_Dataset (GMT, &D);
 		n_cruises++;
 	}
 	
@@ -1307,7 +1307,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Returned %ld output records from %ld cruises\n", n_out, n_cruises);
 	
-	MGD77_Path_Free (GMT, (int)n_paths, list);
+	MGD77_Path_Free (GMT, n_paths, list);
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_paths);
 #ifdef USE_CM4
 	if (auxlist[MGD77_AUX_CM].requested) MGD77_CM4_end (GMT, &CM4);	/* Free up CM4 structure */

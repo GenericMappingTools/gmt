@@ -2677,7 +2677,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, iMaxDiff);
 	}
 
-	MGD77_Path_Free (GMT, (int)n_paths, list);
+	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
 #ifdef DEBUG
 	GMT_memtrack_on (GMT, GMT_mem_keeper);

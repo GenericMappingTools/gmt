@@ -7,6 +7,7 @@
 				include data boundary rows/cols.
 	* grdinfo.c:		Modifier -Ts<dz> returns a symmetrical range about zero.
 	* grdpaste.c:		Had trouble shuffling longitudes correctly for geographic grids.
+	* *.c:			Improved freeing of allocated memory as reported under --enable-devdebug
 			
 2011-11-12	pwessel
 	* gmtmercmap.c:		New example of API use: Create a shaded-relief Mercator map using

@@ -998,8 +998,8 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 	else {	/* Found one or more tables */
 		if (allocate && D->n_tables < n_alloc) D->table = GMT_memory (API->GMT, D->table, D->n_tables, struct GMT_TABLE *);
 		D->n_columns = D->table[0]->n_columns;
-		D->min = GMT_memory (API->GMT, NULL, D->n_columns, double);
-		D->max = GMT_memory (API->GMT, NULL, D->n_columns, double);
+		if (!D->min) D->min = GMT_memory (API->GMT, NULL, D->n_columns, double);
+		if (!D->max) D->max = GMT_memory (API->GMT, NULL, D->n_columns, double);
 	}
 
 	API->object[first_item]->data = D;		/* Retain pointer to the allocated data so we use garbage collection later */

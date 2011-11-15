@@ -2717,9 +2717,9 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 	return ((int)n);
 }
 
-void MGD77_Path_Free (struct GMT_CTRL *C, int n, char **list)
+void MGD77_Path_Free (struct GMT_CTRL *C, GMT_LONG n, char **list)
 {	/* Free list of cruise IDs */
-	int i;
+	GMT_LONG i;
 #ifdef DEBUG
 #endif
 	if (n == 0) return;
@@ -3730,13 +3730,18 @@ int MGD77_Remove_E77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	return (nc_inq_varid (F->nc_id, "MGD77_flags", &var_id) == NC_NOERR);	/* TRUE if there are old E77 bitflags */
 }
 
-void MGD77_Free (struct GMT_CTRL *C, struct MGD77_DATASET *S)
+void MGD77_Free_Dataset (struct GMT_CTRL *C, struct MGD77_DATASET **D)
 {
 	int i;
+	struct MGD77_DATASET *S = *D;
 
 	for (i = 0; i < S->n_fields; i++) GMT_free (C, S->values[i]);
 	for (i = 0; i < MGD77_N_SETS; i++) if (S->flags[i]) GMT_free (C, S->flags[i]);
 	for (i = 0; i < 2; i++) if (S->H.mgd77[i]) GMT_free (C, S->H.mgd77[i]);
+	GMT_free (C, S->H.author);
+	GMT_free (C, S->H.history);
+	GMT_free (C, S);
+	D = NULL;
 }
 
 struct MGD77_DATASET *MGD77_Create_Dataset (struct GMT_CTRL *C)
