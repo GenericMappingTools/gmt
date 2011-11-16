@@ -28,6 +28,7 @@
 #include "gmt.h"
 
 EXTERN_MSC GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd);
+EXTERN_MSC char * gmt_get_char_ptr (char **ptr);
 
 /* Control structure for psxyz */
 
@@ -91,13 +92,13 @@ void *New_psxyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new c
 	C->W.pen = GMT->current.setting.map_default_pen;
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	C->A.step = GMT->current.setting.map_line_step;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psxyz_Ctrl (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) free ((void *)C->C.file);
-	if (C && C->S.arg) free ((void *)C->S.arg);
+	if (C->C.file) free (C->C.file);
+	if (C && C->S.arg) free (C->S.arg);
 	GMT_free (GMT, C);
 }
 
@@ -354,12 +355,12 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG get_rgb, read_symbol, clip_set = FALSE, fill_active;
 	GMT_LONG default_outline, outline_active, pos2x, pos2y, set_type;
 	GMT_LONG i, n, n_alloc = 0, n_total_read = 0, j, geometry, tbl, seg;
-	GMT_LONG n_cols_start = 3, n_fields, error = GMT_NOERROR;
+	GMT_LONG n_cols_start = 3, error = GMT_NOERROR;
 	GMT_LONG ex1, ex2, ex3, change, n_needed, read_mode, save_u = FALSE;
 
-	char buffer[GMT_BUFSIZ], *text_rec = NULL;
+	char *text_rec = NULL;
 
-	void **record = NULL;	/* Opaque pointer to either a text or double record */
+	void *record = NULL;	/* Opaque pointer to either a text or double record */
 
 	double dim[7], rgb[3][4] = {{-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}};
 	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL;
@@ -379,7 +380,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_psxyz_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_psxyz_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -387,7 +388,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_psxyz", &GMT_cpy);				/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRbf:", "BKOPUXxYyacghipst>" GMT_OPT("EZHMm"), options))) Return (error);
+	if (GMT_Parse_Common (API, "-VJRbf:", "BKOPUXxYyacghipst>" GMT_OPT("EZHMm"), options)) Return (API->error);
 	/* Initialize GMT_SYMBOL structure */
 
 	GMT_memset (&S, 1, struct GMT_SYMBOL);
@@ -400,7 +401,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	S.h_width  = VECTOR_HEAD_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
 	S.h_length = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 
-	Ctrl = (struct PSXYZ_CTRL *)New_psxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_psxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psxyz_parse (API, Ctrl, options, &S))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
@@ -438,10 +439,8 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (j = n_cols_start; j < 7; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;			/* Since these may have units appended */
 	for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles or km, not dimensions */
 
-	if (Ctrl->C.active) {
-		if ((error = GMT_Begin_IO (API, GMT_IS_CPT, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+		Return (API->error);
 	}
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (GMT_contlabel_prep (GMT, &S.G, NULL)) Return (EXIT_FAILURE);
@@ -512,48 +511,57 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	old_is_world = GMT->current.map.is_world;
 	geometry = not_line ? GMT_IS_POINT : (GMT_IS_LINE + polygon);
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed)) != GMT_OK) {
+		Return (error);
+	}
 
 	if (read_symbol) {	/* If symbol info is given we must process text records */
 		set_type = GMT_IS_TEXTSET;
 		read_mode = GMT_READ_TEXT;
-		record = (void **)buffer;
-		in = GMT->current.io.curr_rec;
 	}
 	else {	/* Here we can process data records (ASCII or binary) */
 		set_type = GMT_IS_DATASET;
 		read_mode = GMT_READ_DOUBLE;
-		record = (void **)&in;
 	}
+	in = GMT->current.io.curr_rec;
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
-		if ((error = GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-		if ((error = GMT_Begin_IO (API, set_type, GMT_IN, GMT_BY_REC))) Return (error);		/* Enables data input and sets access mode */
+		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, set_type, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		n = 0;
-		while ((n_fields = GMT_Get_Record (API, read_mode, record)) != EOF) {	/* Keep returning records until we have no more files */
-
-			if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
-
-			if (GMT_REC_IS_TBL_HEADER (GMT)) continue;	/* Skip table headers */
-
-			while (GMT_REC_IS_SEG_HEADER (GMT) && !GMT_REC_IS_EOF (GMT)) {	/* Process segment headers */
-				PSL_comment (PSL, "%s\n", GMT->current.io.segment_header);
-				change = GMT_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, NULL);
-				if (Ctrl->I.active) {
-					GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
-					GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
+		do {	/* Keep returning records until we reach EOF */
+			if ((record = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Skip table headers */
+					continue;
 				}
-				if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
-				n_fields = GMT_Get_Record (API, read_mode, record);
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
+				else if (GMT_REC_IS_SEG_HEADER (GMT)) {			/* Parse segment headers */
+					PSL_comment (PSL, "Segment header: %s\n", GMT->current.io.segment_header);
+					change = GMT_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, NULL);
+					if (Ctrl->I.active) {
+						GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+						GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
+					}
+					if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
+					continue;
+				}
 			}
-			if (GMT_REC_IS_EOF (GMT)) continue;	/* At EOF */
+
+			/* Data record to process */
 
 			n_total_read++;
 
 			if (read_symbol) {	/* Must do special processing */
-				text_rec = (char *)(*record);	/* Get current text record */
+				text_rec = (char *)record;
 				/* First establish the symbol type given at the end of the record */
 				GMT_chop (GMT, text_rec);	/* Get rid of \n \r */
 				i = strlen (text_rec) - 1;
@@ -583,7 +591,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (P->skip) continue;	/* Chosen cpt file indicates skip for this t */
 			}
 
-			if (n == n_alloc) n_alloc = GMT_malloc (GMT, data, n, n_alloc, struct PSXYZ_DATA);
+			if (n == n_alloc) data = GMT_malloc (GMT, data, n, &n_alloc, struct PSXYZ_DATA);
 
 			if (GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || GMT_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
 			data[n].z = GMT_z_to_zz (GMT, in[GMT_Z]);
@@ -689,12 +697,17 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->W.mode & 1) GMT_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
 			n++;
 			if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
+		} while (TRUE);
+		
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
 		}
-		n_alloc = GMT_malloc (GMT, data, 0, n, struct PSXYZ_DATA);
+
+		data = GMT_malloc (GMT, data, 0, &n, struct PSXYZ_DATA);
 
 		/* Sort according to distance from viewer */
 
-		if (!Ctrl->Q.active) qsort ((void *)data, (size_t)n, sizeof (struct PSXYZ_DATA), dist_compare);
+		if (!Ctrl->Q.active) qsort (data, n, sizeof (struct PSXYZ_DATA), dist_compare);
 
 		/* Now plot these symbols one at the time */
 
@@ -861,9 +874,12 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {	/* Line/polygon part */
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT segment table(s) */
 
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-		if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&D))) Return (error);
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
 
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			if (D->table[tbl]->n_headers && S.G.label_type == 2) GMT_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label);	/* Set first header as potential label */
@@ -898,7 +914,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_extract_label (GMT, L->header, S.G.label);
 
 #if 0
-				/* This should never happen, GMT_Get_Data should already take care of this */
+				/* This should never happen, GMT_Read_Data should already take care of this */
 
 				if (polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) {
 					/* Explicitly close polygon so that arc will work */
@@ -944,9 +960,10 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_free (GMT, yp);
 			}
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+			Return (API->error);
+		}
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (S.u_set) GMT->current.setting.proj_length_unit = save_u;	/* Reset unit */
 

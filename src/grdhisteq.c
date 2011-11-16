@@ -68,14 +68,14 @@ void *New_grdhisteq_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = GMT_memory (GMT, NULL, 1, struct GRDHISTEQ_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdhisteq_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->D.file) free ((void *)C->D.file);	
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->D.file) free (C->D.file);	
+	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -192,7 +192,7 @@ float get_cell (float x, struct CELL *cell, GMT_LONG n_cells_m1, GMT_LONG last_c
 
 GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, GMT_LONG n_cells, GMT_LONG quadratic, GMT_LONG dump_intervals)
 {	/* Do basic histogram equalization */
-	GMT_LONG last_cell, n_cells_m1 = 0, current_cell, i, j, nxy, error, pad[4];
+	GMT_LONG last_cell, n_cells_m1 = 0, current_cell, i, j, nxy, pad[4];
 	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
@@ -204,7 +204,7 @@ GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char
 	GMT_memcpy (pad, Grid->header->pad, 4, GMT_LONG);	/* Save the original pad */
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
 	if (outfile) Orig = GMT_duplicate_grid (GMT, Grid, TRUE); /* Must keep original if readonly */
-	GMT_sort_array (GMT, (void *)Grid->data, Grid->header->nm, GMT_FLOAT_TYPE);
+	GMT_sort_array (GMT, Grid->data, Grid->header->nm, GMTAPI_FLOAT);
 	
 	nxy = Grid->header->nm;
 	while (nxy > 0 && GMT_is_fnan (Grid->data[nxy-1])) nxy--;	/* Only deal with real numbers */
@@ -231,13 +231,15 @@ GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char
 
 		if (dump_intervals) {	/* Write records to file or stdout */
 			out[GMT_X] = (double)Grid->data[i]; out[GMT_Y] = (double)Grid->data[j]; out[GMT_Z] = (double)current_cell;
-			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, (void *)out);
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
 		}
 
 		i = j;
 		current_cell++;
 	}
-	if (dump_intervals && (error = GMT_End_IO (GMT->parent, GMT_OUT, 0))) return (error);	/* Disables further data ioutput */
+	if (dump_intervals && GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_OK) {	/* Disables further data ioutput */
+		return (GMT->parent->error);
+	}
 	
 	if (outfile) {	/* Must re-read the grid and evaluate since it got sorted and trodden on... */
 		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (GMT_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
@@ -287,7 +289,7 @@ GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double
 
 	/* Sort on data value  */
 
-	qsort ((void *)indexed_data, (size_t)nxy, sizeof (struct INDEXED_DATA), compare_indexed_floats);
+	qsort (indexed_data, (size_t)nxy, sizeof (struct INDEXED_DATA), compare_indexed_floats);
 
 	dnxy = 1.0 / (nxy + 1);
 
@@ -300,7 +302,7 @@ GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double
 
 	/* Sort on data index  */
 
-	qsort ((void *)indexed_data, (size_t)Grid->header->nm, sizeof (struct INDEXED_DATA), compare_indices);
+	qsort (indexed_data, (size_t)Grid->header->nm, sizeof (struct INDEXED_DATA), compare_indices);
 
 	i = 0;
 	GMT_grd_loop (GMT, Grid, row, col, ij) Grid->data[ij] = indexed_data[i++].x;	/* Load up the grid */
@@ -326,7 +328,7 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdhisteq_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdhisteq_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -334,18 +336,20 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdhisteq", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VR", "", options))) Return (error);
-	Ctrl = (struct GRDHISTEQ_CTRL *) New_grdhisteq_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VR", "", options)) Return (API->error);
+	Ctrl = New_grdhisteq_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdhisteq_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdhisteq main code ----------------------------*/
 
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);
+	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {
+		Return (API->error);
+	}
 	if (GMT_is_subset (GMT, Grid->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Grid->header), "");	/* Subset requested; make sure wesn matches header spacing */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, Grid) == NULL) {	/* Get subset */
+		Return (API->error);
+	}
 	new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array */
 	GMT_grd_init (GMT, Out->header, options, TRUE);
 
@@ -354,18 +358,25 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {
 		if (Ctrl->D.active) {	/* Initialize file/stdout for table output */
 			GMT_LONG out_ID;
-			if (Ctrl->D.file && (error = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, (void **)&Ctrl->D.file, NULL, NULL, &out_ID))) Return (EXIT_FAILURE);
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
-			if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
-			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);		/* Enables data output and sets access mode */
+			if (Ctrl->D.file && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->D.file, NULL)) == GMTAPI_NOTSET) {
+				Return (EXIT_FAILURE);
+			}
+			if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+				Return (error);
+			}
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+				Return (API->error);
+			}
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+				Return (API->error);
+			}
 		}
 		if ((error = do_hist_equalization (GMT, Out, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active))) Return (EXIT_FAILURE);	/* Read error */
 		/* do_hist_equalization will also call GMT_End_IO if Ctrl->D.active was TRUE */
 	}
-	/* Initialize grid output */
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if (Ctrl->G.active && GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&(Ctrl->G.file), (void *)Out)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Out) != GMT_OK) {
+		Return (API->error);
+	}
 
 	Return (EXIT_SUCCESS);
 }

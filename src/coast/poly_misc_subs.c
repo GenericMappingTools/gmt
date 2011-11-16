@@ -38,8 +38,8 @@ void crude_init (double *X[N_CONTINENTS][2], double *Y[N_CONTINENTS][2], int N[N
 				i++;
 			}
 			fclose (fp);
-			x = (double *) GMT_memory ((void *)x, i, sizeof (double), "coast");
-			y = (double *) GMT_memory ((void *)y, i, sizeof (double), "coast");
+			x = (double *) GMT_memory (x, i, sizeof (double), "coast");
+			y = (double *) GMT_memory (y, i, sizeof (double), "coast");
 			N[c][t] = i;
 			X[c][t] = x;
 			Y[c][t] = y;
@@ -52,8 +52,8 @@ void crude_free (double *X[N_CONTINENTS][2], double *Y[N_CONTINENTS][2], int N[N
 	int c, t;
 	for (c = 0; c < N_CONTINENTS; c++) {	/* For each continent */
 		for (t = 0; t < 2; t++) {	/* For both outside and inside polygons */
-			GMT_free ((void *)X[c][t]);
-			GMT_free ((void *)Y[c][t]);
+			GMT_free (X[c][t]);
+			GMT_free (Y[c][t]);
 		}
 	}
 }
@@ -85,8 +85,8 @@ void crude_free_int (int *IX[N_CONTINENTS][2], int *IY[N_CONTINENTS][2], int N[N
 	int c, t;
 	for (c = 0; c < 5; c++) {	/* For each continent */
 		for (t = 0; t < 2; t++) {	/* For both outside and inside polygons */
-			GMT_free ((void *)IX[c][t]);
-			GMT_free ((void *)IY[c][t]);
+			GMT_free (IX[c][t]);
+			GMT_free (IY[c][t]);
 		}
 	}
 }

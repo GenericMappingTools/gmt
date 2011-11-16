@@ -109,9 +109,9 @@ check_symbol_exists (_setmode  io.h     HAVE__SETMODE)
 check_include_file (ctype.h             HAVE_CTYPE_H_)
 check_include_file (inttypes.h          HAVE_INTTYPES_H_)
 check_include_file (machine/endian.h    HAVE_MACHINE_ENDIAN_H_)
-check_include_file (stddef.h            HAVE_STDDEF_H_)
-check_include_file (stdint.h            HAVE_STDINT_H_)
-check_include_file (sys/types.h         HAVE_SYS_TYPES_H_)
+#check_include_file (stddef.h            HAVE_STDDEF_H_)
+#check_include_file (stdint.h            HAVE_STDINT_H_)
+#check_include_file (sys/types.h         HAVE_SYS_TYPES_H_)
 
 # set HAVE_SYS_TYPES_H, HAVE_STDINT_H, and HAVE_STDDEF_H
 # and check in <sys/types.h>, <stdint.h>, and <stddef.h>:
@@ -122,7 +122,15 @@ check_type_size (mode_t                 MODE_T)
 check_type_size (wchar_t                WCHAR_T)
 check_type_size (wint_t                 WINT_T)
 
-test_big_endian (HAVE_BIGENDIAN)
+# add suffix to prevent name clash with GDAL
+set (HAVE_STDDEF_H_ "${HAVE_STDDEF_H}"
+	CACHE INTERNAL "Have include stddef.h")
+set (HAVE_STDINT_H_ "${HAVE_STDINT_H}"
+	CACHE INTERNAL "Have include stdinf.h")
+set (HAVE_SYS_TYPES_H_ "${HAVE_SYS_TYPES_H}"
+	CACHE INTERNAL "Have include sys/types.h")
+
+test_big_endian (WORDS_BIGENDIAN)
 
 #
 # Check math related stuff

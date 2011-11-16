@@ -147,17 +147,17 @@ void *New_greenspline_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->S.mode = SANDWELL_1987_2D;
 	C->S.rval[0] = -1.0;	C->S.rval[1] = 1.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_greenspline_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->A.file) free ((void *)C->A.file);	
-	if (C->C.file) free ((void *)C->C.file);	
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->N.file) free ((void *)C->N.file);	
-	if (C->T.file) free ((void *)C->T.file);	
-	if (C->S.arg)  free ((void *)C->S.arg);	
+	if (C->A.file) free (C->A.file);	
+	if (C->C.file) free (C->C.file);	
+	if (C->G.file) free (C->G.file);	
+	if (C->N.file) free (C->N.file);	
+	if (C->T.file) free (C->T.file);	
+	if (C->S.arg)  free (C->S.arg);	
 	GMT_free (GMT, C);	
 }
 
@@ -241,7 +241,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_items, k, j, dimension, error;
+	GMT_LONG n_errors = 0, n_items, k, j, dimension;
 	char txt[6][GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -268,16 +268,18 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 				}
 				if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file, presumably a grid */
 					struct GMT_GRID *G = NULL;	
-					if ((error = GMT_Begin_IO (C, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) return (error);				/* Enables data input and sets access mode */
-					if (GMT_Get_Data (C, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&opt->arg, (void **)&G)) return (GMT_DATA_READ_ERROR);	/* Get header only */
-					if ((error = GMT_End_IO (C, GMT_IN, 0))) return (error);				/* Disables further data input */
+					if ((G = GMT_Read_Data (C, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, NULL)) == NULL) {	/* Get header only */
+						return (C->error);
+					}
 					Ctrl->R3.range[0] = G->header->wesn[XLO]; Ctrl->R3.range[1] = G->header->wesn[XHI];
 					Ctrl->R3.range[2] = G->header->wesn[YLO]; Ctrl->R3.range[3] = G->header->wesn[YHI];
 					Ctrl->R3.inc[GMT_X] = G->header->inc[GMT_X];	Ctrl->R3.inc[GMT_Y] = G->header->inc[GMT_Y];
 					Ctrl->R3.offset = G->header->registration;
 					Ctrl->R3.dimension = 2;
 					Ctrl->R3.mode = 1;
-					GMT_Destroy_Data (C, GMT_ALLOCATED, (void **)&G);
+					if (GMT_Destroy_Data (C, GMT_ALLOCATED, &G) != GMT_OK) {
+						return (C->error);
+					}
 					break;
 				}
 
@@ -785,7 +787,7 @@ void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], double *z,
 		if (grad) g[i] = gradspline2d_Wessel_Becker (GMT, x, par, NULL);
 #ifdef DUMP
 		out[0] = x;	out[1] = z[i];	if (grad) out[2] = g[i];
-		fwrite ((void *)out, sizeof (double), n_out, fp);
+		fwrite (out, sizeof (double), n_out, fp);
 #endif
 	}
 #ifdef DUMP
@@ -1044,7 +1046,7 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, G
 
 GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, k, p, ii, n, m, nm, n_fields, error, dimension = 0;
+	GMT_LONG i, j, k, p, ii, n, m, nm, error, dimension = 0;
 	GMT_LONG n_expected_fields, normalize = 1, unit = 0, out_ID;
 	GMT_LONG old_n_alloc, n_alloc, ij, ji, nxy, n_ok = 0, way, new_grid = FALSE;
 	
@@ -1083,7 +1085,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_greenspline_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_greenspline_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -1091,8 +1093,8 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_greenspline", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vb:", "ghiors>" GMT_OPT("FH"), options))) Return (error);
-	Ctrl = (struct GREENSPLINE_CTRL *) New_greenspline_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vb:", "ghiors>" GMT_OPT("FH"), options)) Return (API->error);
+	Ctrl = New_greenspline_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_greenspline_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the greenspline main code ----------------------------*/
@@ -1149,7 +1151,9 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Now we are ready to take on some input values */
 
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
 
 	n_expected_fields = (GMT->common.b.ncol[GMT_IN]) ? GMT->common.b.ncol[GMT_IN] : dimension + 1;
 
@@ -1158,13 +1162,21 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (k = 0; k < n_alloc; k++) X[k] = GMT_memory (GMT, NULL, dimension, double);
 	obs = GMT_memory (GMT, NULL, n_alloc, double);
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 	n = m = 0;
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
+		/* Data record to process */
 
 		for (k = 0; k < dimension; k++) X[n][k] = in[k];
 		obs[n++] = in[dimension];
@@ -1173,11 +1185,14 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			old_n_alloc = n_alloc;
 			n_alloc <<= 1;
 			X = GMT_memory (GMT, X, n_alloc, double *);
-			for (k = old_n_alloc; k < n_alloc; k++) X[k] = GMT_memory (GMT, (void *)X[k], dimension, double);
+			for (k = old_n_alloc; k < n_alloc; k++) X[k] = GMT_memory (GMT, X[k], dimension, double);
 			obs = GMT_memory (GMT, obs, n_alloc, double);
 		}
+	} while (TRUE);
+	
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	for (k = n; k < (GMT_LONG)n_alloc; k++) GMT_free (GMT, X[k]);	/* Remove what was not used */
 	X = GMT_memory (GMT, X, n, double *);
@@ -1188,9 +1203,9 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct GMT_DATASET *Din = NULL;
 		struct GMT_TABLE *S = NULL;
 		if (GMT->common.b.active[GMT_IN]) GMT->common.b.ncol[GMT_IN]++;	/* Must assume it is just one extra column */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->A.file, (void **)&Din)) return ((error = GMT_DATA_READ_ERROR));
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->A.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		S = Din->table[0];	/* Can only be one table */
 		m = S->n_records;	/* Total number of gradient constraints */
 		nm += m;		/* New total of linear equations to solve */
@@ -1268,7 +1283,9 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Din);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Din) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	
 	if (m > 0 && normalize > 1) {
@@ -1282,9 +1299,9 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld data points and %ld gradients, yielding a %ld by %ld set of linear equations\n", n, m, nm, nm);
 		
 	if (Ctrl->T.file) {	/* Existing grid that will have zeros and NaNs, only */
-		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->T.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
+		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->T.file, NULL)) == NULL) {	/* Get header only */
+			Return (API->error);
+		}
 		if (! (Grid->header->wesn[XLO] == Ctrl->R3.range[0] && Grid->header->wesn[XHI] == Ctrl->R3.range[1] && Grid->header->wesn[YLO] == Ctrl->R3.range[2] && Grid->header->wesn[YHI] == Ctrl->R3.range[3])) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: The mask grid does not match your specified region\n");
 			Return (EXIT_FAILURE);
@@ -1297,19 +1314,21 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: The mask grid registration does not match your specified grid registration\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->T.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->T.file, Grid) == NULL) {	/* Get data */
+			Return (API->error);
+		}
 		new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array; otherwise Out is just a pointer to Grid */
 		nxy = n_ok = Grid->header->size;
 		for (ij = 0; ij < nxy; ij++) if (GMT_is_fnan (Grid->data[ij])) n_ok--;
 	}
 	else if (Ctrl->N.active) {	/* Read output locations from file */
-		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->N.file, (void **)&Nin)) return ((error = GMT_DATA_READ_ERROR));
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->N.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		T = Nin->table[0];
 	}
 	else {	/* Fill in an equidistant output table or grid */
-		Grid = GMT_create_grid (GMT);
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		Grid->header->wesn[XLO] = Ctrl->R3.range[0];	Grid->header->wesn[XHI] = Ctrl->R3.range[1];
 		Grid->header->registration = (int)GMT->common.r.active;
 		Grid->header->inc[GMT_X] = Ctrl->I.inc[GMT_X];
@@ -1523,7 +1542,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			sprintf (format, "%%d\t%s\n", GMT->current.setting.format_float_out);
 			/* Sort eigenvalues into ascending order */
-			GMT_sort_array (GMT, (void *)eig, nm, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, eig, nm, GMTAPI_DOUBLE);
 			eig_max = eig[nm-1];
 			for (i = 0, j = nm-1; i < nm; i++, j--) fprintf (fp, format, i, eig[j] / eig_max);
 			GMT_fclose (GMT, fp);
@@ -1552,8 +1571,12 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->N.file) {	/* Specified nodes only */
 		double out[4];
 	
-		if (Ctrl->G.active) GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, (void **)&Ctrl->G.file, NULL, NULL, &out_ID);
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);				/* Enables data output and sets access mode */
+		if (Ctrl->G.active && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->G.file, NULL)) == GMTAPI_NOTSET) {
+			Return (error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
 	
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 		GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate spline at %ld given locations\n", T->n_records);
@@ -1574,11 +1597,15 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					out[dimension] += alpha[p] * part;
 				}
 				out[dimension] = undo_normalization (out, out[dimension], normalize, norm);
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
 		}
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Nin);
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Nin) != GMT_OK) {
+			Return (API->error);
+		}
 		GMT_fclose (GMT, fp);
 	}
 	else {
@@ -1595,11 +1622,15 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		nxy = Grid->header->size;
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 		if (dimension != 2) {	/* Write ascii table to named file or stdout */
-			if (Ctrl->G.active)
-				GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, (void **)&Ctrl->G.file, NULL, NULL, &out_ID);
-			else
-				if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes std output */
-			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+			if (Ctrl->G.active && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->G.file, NULL)) == GMTAPI_NOTSET) {
+				Return (error);
+			}
+			else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes std output */
+				Return (API->error);
+			}
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+				Return (API->error);
+			}
 		}
 		for (k = nz_off = 0; k < Z.nz; k++, nz_off += nxy) {
 			if (dimension == 3) V[GMT_Z] = GMT_col_to_x (GMT, k, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
@@ -1626,20 +1657,25 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (dimension == 2)	/* Special 2-D grid output */
 						Out->data[ij] = (float)V[dimension];
 					else	/* Crude dump for now for both 1-D and 3-D */
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)V);
+						GMT_Put_Record (API, GMT_WRITE_DOUBLE, V);
 				}
 			}
 		}
 		if (dimension == 2) {
 			GMT_grd_init (GMT, Out->header, options, TRUE);
 			sprintf (Out->header->remark, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
-			if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-			if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Out)) Return (GMT_DATA_WRITE_ERROR);
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Out) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 		else
 			GMT_free_grid (GMT, &Grid, FALSE);
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
-		if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Out);
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			Return (API->error);
+		}
+		if (new_grid && GMT_Destroy_Data (API, GMT_ALLOCATED, &Out) != GMT_OK) {
+			Return (API->error);
+		}
 			
 		GMT_free (GMT, xp);
 		if (dimension > 1) GMT_free (GMT, yp);

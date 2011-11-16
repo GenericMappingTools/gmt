@@ -54,10 +54,11 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 /* Number of PostScript points in one inch */
 
 #define PSL_POINTS_PER_INCH	72.0
-
-#define PSL_DOTS_PER_INCH	1200.0		/* Effective dots per inch resolution */
-
-#define PSL_BUFSIZ	4096	/* To match GMT_BUFSIZ and be consistent across all platforms */
+#define PSL_DOTS_PER_INCH	1200.0	/* Effective dots per inch resolution */
+#define PSL_BUFSIZ		4096	/* To match GMT_BUFSIZ and be consistent across all platforms */
+#define PSL_N_PATTERNS		91	/* Current number of predefined patterns + 1, # 91 is user-supplied */
+#define PSL_MAX_EPS_FONTS	6
+#define PSL_ALL_CLIP		INT_MAX	/* Terminates all clipping */
 
 /* PSL codes for geometric symbols as expected by PSL_plotsymbol */
 
@@ -85,87 +86,84 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 
 /* PSL codes for arguments of PSL_beginplot and other routines */
 
-#define PSL_CM			0
-#define PSL_INCH		1
-#define PSL_METER		2
-#define PSL_PT			3
-#define PSL_FINALIZE		1
-#define PSL_OVERLAY		1
-#define PSL_INIT		0
-#define PSL_LANDSCAPE		0
-#define PSL_PORTRAIT		1
-#define PSL_ASCII85		0
-#define PSL_HEX			1
-#define PSL_NONE		0
-#define PSL_RLE			1
-#define PSL_LZW			2
-#define PSL_NO			0
-#define PSL_YES			1
-#define PSL_FWD			0
-#define PSL_INV			1
-#define PSL_OUTLINE		1
+enum PSL_enum_const {PSL_CM	= 0,
+	PSL_INCH		= 1,
+	PSL_METER		= 2,
+	PSL_PT			= 3,
+	PSL_FINALIZE		= 1,
+	PSL_OVERLAY		= 1,
+	PSL_INIT		= 0,
+	PSL_LANDSCAPE		= 0,
+	PSL_PORTRAIT		= 1,
+	PSL_ASCII85		= 0,
+	PSL_HEX			= 1,
+	PSL_NONE		= 0,
+	PSL_RLE			= 1,
+	PSL_LZW			= 2,
+	PSL_NO			= 0,
+	PSL_YES			= 1,
+	PSL_FWD			= 0,
+	PSL_INV			= 1,
+	PSL_OUTLINE		= 1};
 
 /* PSL codes for pen movements (used by PSL_plotpoint, PSL_plotline, PSL_plotarc) */
 
-#define PSL_DRAW		0
-#define PSL_MOVE		1
-#define PSL_STROKE		2
-#define PSL_REL			4
-#define PSL_CLOSE		8
+enum PSL_enum_move {PSL_DRAW	= 0,
+	PSL_MOVE		= 1,
+	PSL_STROKE		= 2,
+	PSL_REL			= 4,
+	PSL_CLOSE		= 8};
 
-/* PSL codes for text justification */
+/* PSL codes for text and paragraph justification */
 
-#define PSL_BL			1
-#define PSL_BC			2
-#define PSL_BR			3
-#define PSL_ML			5
-#define PSL_MC			6
-#define PSL_MR			7
-#define PSL_TL			9
-#define PSL_TC			10
-#define PSL_TR			11
-
-/* PSL code for paragraph justification */
-
-#define PSL_JUST		4
+enum PSL_enum_just {PSL_BL	= 1,
+	PSL_BC			= 2,
+	PSL_BR			= 3,
+	PSL_ML			= 5,
+	PSL_MC			= 6,
+	PSL_MR			= 7,
+	PSL_TL			= 9,
+	PSL_TC			= 10,
+	PSL_TR			= 11,
+	PSL_JUST		= 4};
 
 /* PSL code for rectangle shapes */
 
-#define PSL_RECT_STRAIGHT	0
-#define PSL_RECT_ROUNDED	1
-#define PSL_RECT_CONVEX		2
-#define PSL_RECT_CONCAVE	3
+enum PSL_enum_rect {PSL_RECT_STRAIGHT	= 0,
+	PSL_RECT_ROUNDED,
+	PSL_RECT_CONVEX,
+	PSL_RECT_CONCAVE};
 
 /* PSL codes for line settings */
 
-#define PSL_BUTT_CAP		0
-#define PSL_ROUND_CAP		1
-#define PSL_SQUARE_CAP		2
-#define PSL_MITER_JOIN		0
-#define PSL_ROUND_JOIN		1
-#define PSL_BEVEL_JOIN		2
-#define PSL_MITER_DEFAULT	35
+enum PSL_enum_line {PSL_BUTT_CAP	= 0,
+	PSL_ROUND_CAP			= 1,
+	PSL_SQUARE_CAP			= 2,
+	PSL_MITER_JOIN			= 0,
+	PSL_ROUND_JOIN			= 1,
+	PSL_BEVEL_JOIN			= 2,
+	PSL_MITER_DEFAULT		= 35};
 
 /* Verbosity levels */
 
-#define PSL_MSG_SILENCE		0	/* No messages whatsoever */
-#define PSL_MSG_FATAL		1	/* Fatal messages */
-#define PSL_MSG_NORMAL		2	/* Warnings level -V */
-#define PSL_MSG_VERBOSE		3	/* Longer verbose, -Vl in some programs */
-#define PSL_MSG_DEBUG		4	/* Debug messages for developers mostly */
+enum PSL_enum_verbose {PSL_MSG_SILENCE = 0,	/* No messages whatsoever */
+	PSL_MSG_FATAL,		/* Fatal messages */
+	PSL_MSG_NORMAL,		/* Warnings level -V */
+	PSL_MSG_VERBOSE,	/* Longer verbose, -Vl in some programs */
+	PSL_MSG_DEBUG};		/* Debug messages for developers mostly */
 
 /* Color spaces */
 
-#define PSL_RGB			0
-#define PSL_CMYK		1
-#define PSL_HSV			2
-#define PSL_GRAY		3
+enum PSL_enum_color {PSL_RGB = 0,
+	PSL_CMYK,
+	PSL_HSV,
+	PSL_GRAY};
 
 /* Color types */
 
-#define PSL_IS_STROKE		0
-#define PSL_IS_FILL		1
-#define PSL_IS_FONT		2
+enum PSL_enum_fill {PSL_IS_STROKE = 0,
+	PSL_IS_FILL,
+	PSL_IS_FONT};
 
 #if 0
 /* Positioning types for origin */
@@ -173,32 +171,25 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 #define PSL_ABS			1
 #endif
 
-/* Clipping types */
-
-#define PSL_ALL_CLIP	INT_MAX	/* Terminates all clipping */
-
 /* PSL error codes */
 
-#define PSL_NO_ERROR		 0	/* No errors, all is OK */
-#define PSL_NO_SESSION		-1	/* No active session */
-#define PSL_BAD_FLAG		-2	/* A flag is outside required range */
-#define PSL_BAD_RANGE		-3	/* Range defined by min/max exceeds limit */
-#define PSL_BAD_SIZE		-4	/* Size is negative */
-#define PSL_BAD_SYMBOL		-5	/* Unknown symbol type */
-#define PSL_NO_PATH		-6	/* Less than 2 points given as path */
-#define PSL_BAD_WIDTH		-7	/* Negative line width */
-#define PSL_BAD_TEXT		-8	/* Text is too long */
-#define PSL_NO_POLYGON		-9	/* Less than 3 points */
-#define PSL_READ_FAILURE	-10	/* Less than 3 points */
-#define PSL_BAD_JUST		-11	/* Bad text or paragraph justification */
-#define PSL_BAD_VALUE		-12	/* Bad value */
+enum PSL_enum_err {PSL_BAD_VALUE = -99,	/* Bad value */
+	PSL_BAD_JUST,		/* Bad text or paragraph justification */
+	PSL_READ_FAILURE,	/* Less than 3 points */
+	PSL_NO_POLYGON,		/* Less than 3 points */
+	PSL_BAD_TEXT,		/* Text is too long */
+	PSL_BAD_WIDTH,		/* Negative line width */
+	PSL_NO_PATH,		/* Less than 2 points given as path */
+	PSL_BAD_SYMBOL,		/* Unknown symbol type */
+	PSL_BAD_SIZE,		/* Size is negative */
+	PSL_BAD_RANGE,		/* Range defined by min/max exceeds limit */
+	PSL_BAD_FLAG,		/* A flag is outside required range */
+	PSL_NO_SESSION,		/* No active session */
+	PSL_NO_ERROR = 0};	/* No errors, all is OK */
 
 /*--------------------------------------------------------------------
  *			PSL PARAMETERS DEFINITIONS
  *--------------------------------------------------------------------*/
-
-#define PSL_N_PATTERNS		91	/* Current number of predefined patterns + 1, # 91 is user-supplied */
-#define PSL_MAX_EPS_FONTS	6
 
 struct PSL_CTRL {
 	struct INIT {	/* Parameters set by user via PSL_beginplot() */
@@ -340,13 +331,13 @@ EXTERN_MSC PSL_LONG PSL_setmiterlimit (struct PSL_CTRL *P, PSL_LONG limit);
 EXTERN_MSC PSL_LONG PSL_setorigin (struct PSL_CTRL *P, double x, double y, double angle, PSL_LONG mode);
 EXTERN_MSC PSL_LONG PSL_setparagraph (struct PSL_CTRL *P, double line_space, double par_width, PSL_LONG par_just);
 EXTERN_MSC PSL_LONG PSL_setpattern (struct PSL_CTRL *P, PSL_LONG image_no, char *imagefile, PSL_LONG image_dpi, double f_rgb[], double b_rgb[]);
-EXTERN_MSC PSL_LONG PSL_settransparencymode (struct PSL_CTRL *PSL, char *mode);
-EXTERN_MSC PSL_LONG PSL_definteger (struct PSL_CTRL *P, char *param, PSL_LONG value);
-EXTERN_MSC PSL_LONG PSL_defpen (struct PSL_CTRL *P, char *param, double width, char *style, double offset, double rgb[]);
-EXTERN_MSC PSL_LONG PSL_defpoints (struct PSL_CTRL *P, char *param, double fontsize);
-EXTERN_MSC PSL_LONG PSL_defcolor (struct PSL_CTRL *P, char *param, double rgb[]);
-EXTERN_MSC PSL_LONG PSL_deftextdim (struct PSL_CTRL *P, char *dim, double fontsize, char *text);
-EXTERN_MSC PSL_LONG PSL_defunits (struct PSL_CTRL *P, char *param, double value);
+EXTERN_MSC PSL_LONG PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode);
+EXTERN_MSC PSL_LONG PSL_definteger (struct PSL_CTRL *P, const char *param, PSL_LONG value);
+EXTERN_MSC PSL_LONG PSL_defpen (struct PSL_CTRL *P, const char *param, double width, char *style, double offset, double rgb[]);
+EXTERN_MSC PSL_LONG PSL_defpoints (struct PSL_CTRL *P, const char *param, double fontsize);
+EXTERN_MSC PSL_LONG PSL_defcolor (struct PSL_CTRL *P, const char *param, double rgb[]);
+EXTERN_MSC PSL_LONG PSL_deftextdim (struct PSL_CTRL *P, const char *dim, double fontsize, char *text);
+EXTERN_MSC PSL_LONG PSL_defunits (struct PSL_CTRL *P, const char *param, double value);
 EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, PSL_LONG *nbytes, unsigned char *input);
 
 /* Other deep level routines that could be useful */
@@ -356,20 +347,19 @@ EXTERN_MSC PSL_LONG psl_iz (struct PSL_CTRL *P, double value);
 EXTERN_MSC PSL_LONG psl_ip (struct PSL_CTRL *P, double value);
 
 /* Used indirectly by macro PSL_free and FORTRAN wrapper PSL_free_ . */
-EXTERN_MSC PSL_LONG PSL_free_nonmacro (struct PSL_CTRL *P, void *addr);
+EXTERN_MSC PSL_LONG PSL_free_nonmacro (void *addr);
 
 /* Definition for printing a message. When DEBUG is on, also print source file and line number.
  * Use this for various progress statements, debugging to see certain variables, and even fatal
  * error messages. */
 /* For FORTRAN there is PSL_command_ that only accepts one text argument */
-EXTERN_MSC int PSL_command (struct PSL_CTRL *C, char *format, ...);
-EXTERN_MSC int PSL_comment (struct PSL_CTRL *C, char *format, ...);
-EXTERN_MSC int PSL_initerr (struct PSL_CTRL *C, char *format, ...);
-EXTERN_MSC int PSL_message (struct PSL_CTRL *C, PSL_LONG level, char *format, ...);
+EXTERN_MSC int PSL_command (struct PSL_CTRL *C, const char *format, ...);
+EXTERN_MSC int PSL_comment (struct PSL_CTRL *C, const char *format, ...);
+EXTERN_MSC int PSL_initerr (struct PSL_CTRL *C, const char *format, ...);
+EXTERN_MSC int PSL_message (struct PSL_CTRL *C, PSL_LONG level, const char *format, ...);
 EXTERN_MSC FILE *PSL_fopen (char *file, char *mode);
 
-/* Convenience macro for PSL_free_nonmacro */
-#define PSL_free(C,ptr) (PSL_free_nonmacro(C,ptr),(ptr)=NULL)
+#define PSL_free(ptr) (PSL_free_nonmacro(ptr),(ptr)=NULL) /* Cleanly set the freed pointer to NULL */
 
 #ifdef __cplusplus
 }

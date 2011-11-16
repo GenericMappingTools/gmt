@@ -86,7 +86,7 @@ int main (int argc, char **argv)
 	
 	fprintf (stderr, "linemaker: Process header file\n");
 
-	if (fread ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {
+	if (fread (&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {
 		fprintf (stderr, "linemaker: Error reading file header\n");
 		exit (EXIT_FAILURE);
 	}
@@ -103,7 +103,7 @@ int main (int argc, char **argv)
 	
 	for (i = 0; i < s.n_bin; i++) {
 	
-		if (fread ((void *)&bin_head, sizeof (struct GMT3_BIN_HEADER), (size_t)1, fp_bin) != 1) {
+		if (fread (&bin_head, sizeof (struct GMT3_BIN_HEADER), (size_t)1, fp_bin) != 1) {
 			fprintf (stderr, "linemaker: Error reading bin header %d\n", i);
 			exit (EXIT_FAILURE);
 		}
@@ -122,7 +122,7 @@ int main (int argc, char **argv)
 
 	for (i = 0; i < s.n_seg; i++) {
 	
-		if (fread ((void *)&seg_head, sizeof (struct SEGMENT_HEADER), (size_t)1, fp_seg) != 1) {
+		if (fread (&seg_head, sizeof (struct SEGMENT_HEADER), (size_t)1, fp_seg) != 1) {
 			fprintf (stderr, "linemaker: Error reading seg header %d\n", i);
 			exit (EXIT_FAILURE);
 		}
@@ -168,7 +168,7 @@ int main (int argc, char **argv)
 
 	for (i = 0; i < s.n_pt; i++) {
 	
-		if (fread ((void *)&p, sizeof (struct SHORT_PAIR), (size_t)1, fp_pt) != 1) {
+		if (fread (&p, sizeof (struct SHORT_PAIR), (size_t)1, fp_pt) != 1) {
 			fprintf (stderr, "linemaker: Error reading point %d\n", i);
 			exit (-1);
 		}
@@ -248,15 +248,15 @@ int main (int argc, char **argv)
 				
         GMT_err_fail (nc_close (s.cdfid), file);
 	
-	GMT_free ((void *)bin_firstseg);
-	GMT_free ((void *)bin_nseg);
+	GMT_free (bin_firstseg);
+	GMT_free (bin_nseg);
 	
-	GMT_free ((void *)seg_n);
-	GMT_free ((void *)seg_level);
-	GMT_free ((void *)seg_start);
+	GMT_free (seg_n);
+	GMT_free (seg_level);
+	GMT_free (seg_start);
 	
-	GMT_free ((void *)pt_dx);
-	GMT_free ((void *)pt_dy);
+	GMT_free (pt_dx);
+	GMT_free (pt_dy);
 
 	for (i = 0; i < 16; i++) {
 		if (counts[i]) fprintf (stderr, "linemaker: Level %2d: %d items\n", i, counts[i]);

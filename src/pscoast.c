@@ -80,8 +80,8 @@ struct PSCOAST_CTRL {
 	} G;
 	struct I {	/* -I<feature>[/<pen>] */
 		GMT_LONG active;
-		GMT_LONG use[GMT_N_RLEVELS], n_rlevels;
-		struct GMT_PEN pen[GMT_N_RLEVELS];
+		GMT_LONG use[GSHHS_N_RLEVELS], n_rlevels;
+		struct GMT_PEN pen[GSHHS_N_RLEVELS];
 	} I;
 	struct L {	/* -L */
 		GMT_LONG active;
@@ -92,8 +92,8 @@ struct PSCOAST_CTRL {
 	} M;
 	struct N {	/* -N<feature>[/<pen>] */
 		GMT_LONG active;
-		GMT_LONG use[GMT_N_BLEVELS], n_blevels;
-		struct GMT_PEN pen[GMT_N_BLEVELS];
+		GMT_LONG use[GSHHS_N_BLEVELS], n_blevels;
+		struct GMT_PEN pen[GSHHS_N_BLEVELS];
 	} N;
 	struct Q {	/* -Q */
 		GMT_LONG active;
@@ -109,8 +109,8 @@ struct PSCOAST_CTRL {
 	} T;
 	struct W {	/* -W[<feature>/]<pen> */
 		GMT_LONG active;
-		GMT_LONG use[GMT_MAX_GSHHS_LEVEL];
-		struct GMT_PEN pen[GMT_MAX_GSHHS_LEVEL];
+		GMT_LONG use[GSHHS_MAX_LEVEL];
+		struct GMT_PEN pen[GSHHS_MAX_LEVEL];
 	} W;
 #ifdef DEBUG
 	struct DBG {	/* -+<bin> */
@@ -126,7 +126,7 @@ void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	C->A.info.high = GMT_MAX_GSHHS_LEVEL;			/* Include all GSHHS levels */
+	C->A.info.high = GSHHS_MAX_LEVEL;			/* Include all GSHHS levels */
 	C->D.set = 'l';						/* Low-resolution coastline data */
 	if (GMT->current.map.frame.paint)	/* Default Ocean color = Frame background color */
 		C->S.fill = GMT->current.map.frame.fill;
@@ -134,13 +134,13 @@ void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 		GMT_init_fill (GMT, &C->S.fill, 1.0, 1.0, 1.0);		/* Default Ocean color = white */
 	C->C.fill[LAKE] = C->C.fill[RIVER] = C->S.fill;		/* Default Lake/Riverlake color = Ocean color */
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);		/* Default Land color = black */
-	for (k = 0; k < GMT_N_RLEVELS; k++) C->I.pen[k] = GMT->current.setting.map_default_pen;		/* Default river pens */
-	for (k = 0; k < GMT_N_BLEVELS; k++) C->N.pen[k] = GMT->current.setting.map_default_pen;		/* Default border pens */
-	for (k = 0; k < GMT_MAX_GSHHS_LEVEL; k++) C->W.pen[k] = GMT->current.setting.map_default_pen;	/* Default coastline pens */
+	for (k = 0; k < GSHHS_N_RLEVELS; k++) C->I.pen[k] = GMT->current.setting.map_default_pen;		/* Default river pens */
+	for (k = 0; k < GSHHS_N_BLEVELS; k++) C->N.pen[k] = GMT->current.setting.map_default_pen;		/* Default border pens */
+	for (k = 0; k < GSHHS_MAX_LEVEL; k++) C->W.pen[k] = GMT->current.setting.map_default_pen;	/* Default coastline pens */
 	GMT_memset (&C->L.item, 1, struct GMT_MAP_SCALE);
 	GMT_memset (&C->T.item, 1, struct GMT_MAP_ROSE);
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pscoast_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deallocate control structure */
@@ -308,26 +308,26 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 				}
 				switch (opt->arg[0]) {
 					case 'a':
-						for (k = 0; k < GMT_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = 0; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
 						break;
 					case 'A':
-						for (k = 1; k < GMT_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = 1; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
 						break;
 					case 'r':
-						for (k = 0; k < GMT_RIV_INTERMITTENT; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = 0; k < GSHHS_RIVER_INTERMITTENT; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
 						break;
 					case 'R':
-						for (k = 1; k < GMT_RIV_INTERMITTENT; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = 1; k < GSHHS_RIVER_INTERMITTENT; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
 						break;
 					case 'i':
-						for (k = GMT_RIV_INTERMITTENT; k < GMT_RIV_CANALS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = GSHHS_RIVER_INTERMITTENT; k < GSHHS_RIVER_CANALS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
 						break;
 					case 'c':
-						for (k = GMT_RIV_CANALS; k < GMT_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = GSHHS_RIVER_CANALS; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
 						break;
 					default:
 						k = atoi (opt->arg);
-						if (k < 0 || k >= GMT_N_RLEVELS) {
+						if (k < 0 || k >= GSHHS_N_RLEVELS) {
 							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option: Feature not in list!\n");
 							n_errors++;
 						}
@@ -363,11 +363,11 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 				}
 				switch (opt->arg[0]) {
 					case 'a':
-						for (k = 0; k < GMT_N_BLEVELS; k++) Ctrl->N.use[k] = TRUE, Ctrl->N.pen[k] = pen;
+						for (k = 0; k < GSHHS_N_BLEVELS; k++) Ctrl->N.use[k] = TRUE, Ctrl->N.pen[k] = pen;
 						break;
 					default:
 						k = opt->arg[0] - '1';
-						if (k < 0 || k >= GMT_N_BLEVELS) {
+						if (k < 0 || k >= GSHHS_N_BLEVELS) {
 							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Feature not in list!\n");
 							n_errors++;
 						}
@@ -409,11 +409,11 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 						n_errors++;
 					}
 					else {
-						for (k = 1; k < GMT_MAX_GSHHS_LEVEL; k++) Ctrl->W.pen[k] = Ctrl->W.pen[0], Ctrl->W.use[k] = TRUE;
+						for (k = 1; k < GSHHS_MAX_LEVEL; k++) Ctrl->W.pen[k] = Ctrl->W.pen[0], Ctrl->W.use[k] = TRUE;
 					}
 				}
 				else {	/* Accept default pen for all features */
-					for (k = 0; k < GMT_MAX_GSHHS_LEVEL; k++) Ctrl->W.use[k] = TRUE;
+					for (k = 0; k < GSHHS_MAX_LEVEL; k++) Ctrl->W.use[k] = TRUE;
 				}
 				break;
 #ifdef DEBUG
@@ -443,7 +443,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
-	for (k = 0; k < GMT_MAX_GSHHS_LEVEL; k++) {
+	for (k = 0; k < GSHHS_MAX_LEVEL; k++) {
 		n_errors += GMT_check_condition (GMT, Ctrl->W.pen[k].width < 0.0, "Syntax error -W option: Pen thickness for feature %ld cannot be negative\n", k);
 	}
 	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
@@ -455,7 +455,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1, "Syntax error -M: Must specify one of -I, -N, and -W\n");
 
 	if (Ctrl->I.active) {
-		for (k = Ctrl->I.n_rlevels = 0; k < GMT_N_RLEVELS; k++) {
+		for (k = Ctrl->I.n_rlevels = 0; k < GSHHS_N_RLEVELS; k++) {
 			if (!Ctrl->I.use[k]) continue;
 			n_errors += GMT_check_condition (GMT, Ctrl->I.pen[k].width < 0.0, "Syntax error -I option: Pen thickness cannot be negative\n");
 			Ctrl->I.use[Ctrl->I.n_rlevels] = k;
@@ -465,7 +465,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 	}
 
 	if (Ctrl->N.active) {
-		for (k = Ctrl->N.n_blevels = 0; k < GMT_N_BLEVELS; k++) {
+		for (k = Ctrl->N.n_blevels = 0; k < GSHHS_N_BLEVELS; k++) {
 			if (!Ctrl->N.use[k]) continue;
 			n_errors += GMT_check_condition (GMT, Ctrl->N.pen[k].width < 0.0, "Syntax error -N option: Pen thickness cannot be negative\n");
 			Ctrl->N.use[Ctrl->N.n_blevels] = k + 1;
@@ -500,7 +500,7 @@ void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, GMT_LONG k0, GM
 
 	GMT_LONG k;
 	
-	if (level > GMT_MAX_GSHHS_LEVEL) return;
+	if (level > GSHHS_MAX_LEVEL) return;
 	for (k = k0 + 1; k < np; k++) {
 		if (p[k].n == 0 || p[k].level < level) continue;
 		if (add_this_polygon_to_path (GMT, k0, p, level, k)) {	/* Add this to the current path */
@@ -552,7 +552,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pscoast_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pscoast_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -560,8 +560,8 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_pscoast", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRb", "BKOPUXxYycpt>" GMT_OPT("EZ"), options))) Return (error);
-	Ctrl = (struct PSCOAST_CTRL *) New_pscoast_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
+	if (GMT_Parse_Common (API, "-VJRb", "BKOPUXxYycpt>" GMT_OPT("EZ"), options)) Return (API->error);
+	Ctrl = New_pscoast_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = GMT_pscoast_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
@@ -625,13 +625,19 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		char header[GMT_BUFSIZ], *kind[3] = {"Coastlines", "Political boundaries", "Rivers"};
 		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2; 
 		GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
+			Return (error);
+		}
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
 		sprintf (header, "# %s extracted from the %s resolution GSHHS version %s database\n", kind[id], shore_resolution[base], c.version);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)header);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, header);
 		sprintf (header, "# %s\n# %s\n", c.title, c.source);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)header);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, header);
 	}
 	else {
 		if (Ctrl->Q.active)
@@ -781,7 +787,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			np_new = GMT_prep_shore_polygons (GMT, &p, np, donut_hell, 0.0, bin_trouble);
 
 			if (clipping) {
-				for (k = level_to_be_painted; k < GMT_MAX_GSHHS_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, NULL);
+				for (k = level_to_be_painted; k < GSHHS_MAX_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, NULL);
 
 				for (k = 0; k < np_new; k++) {	/* Do any remaining interior polygons */
 					if (p[k].n == 0) continue;
@@ -792,7 +798,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else if (recursive) {	/* Must avoid pointing anything but the polygons inside */
 
-				for (k = level_to_be_painted; k < GMT_MAX_GSHHS_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, fill);
+				for (k = level_to_be_painted; k < GSHHS_MAX_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, fill);
 
 				for (k = 0; k < np_new; k++) {	/* Do any remaining interior polygons */
 					if (p[k].n == 0) continue;
@@ -834,7 +840,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+						GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 					}
 				}
 				else if (Ctrl->W.use[p[i].level-1]) {
@@ -895,7 +901,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+						GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 					}
 				}
 				else {
@@ -956,7 +962,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+						GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 					}
 				}
 				else {
@@ -994,8 +1000,8 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_plane_perspective (GMT, -1, 0.0);
 		GMT_plotend (GMT);
 	}
-	else {
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	else if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {
+		Return (API->error);	/* Disables further data output */
 	}
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done\n");

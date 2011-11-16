@@ -116,13 +116,13 @@ void *New_pssegyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->A.active = !GMT_BIGENDIAN;
 	C->M.value = 10000;
 	C->Q.value[X_ID] = 1.0; /* Ctrl->Q.value[X_ID], Ctrl->Q.value[Z_ID] are trace and sample interval */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pssegyz_Ctrl (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C && C->In.file) free ((void *)C->In.file);
-	if (C && C->T.file) free ((void *)C->T.file);
+	if (C && C->In.file) free (C->In.file);
+	if (C && C->T.file) free (C->T.file);
 	GMT_free (GMT, C);
 }
 
@@ -595,7 +595,7 @@ GMT_LONG GMT_pssegyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pssegyz_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pssegyz_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -603,8 +603,8 @@ GMT_LONG GMT_pssegyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_pssegyz", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJR", "BKOPUXYcpt>", options))) Return (error);
-	Ctrl = (struct PSSEGYZ_CTRL *)New_pssegyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJR", "BKOPUXYcpt>", options)) Return (API->error);
+	Ctrl = New_pssegyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pssegyz_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
@@ -702,7 +702,7 @@ use a few of these*/
 			x0 = (double) cdpval;
 		}
 		else if (Ctrl->S.value[GMT_X]) { /* ugly code - want to get value starting at Ctrl->S.value[GMT_X] of header into a double... */
-			head = (char *) header;
+			head = (char *)header;
 			memcpy (&head2, &head[Ctrl->S.value[GMT_X]], 4); /* edited to fix bug where 8bytes were copied from head.
                                                 Caused by casting to a long directly from char array*/
 			x0 = (double) ((Ctrl->A.active)? GMT_swab4 (head2) : head2);
@@ -722,7 +722,7 @@ use a few of these*/
 			y0 = (double) cdpval;
 		}
 		else if (Ctrl->S.value[GMT_Y]) {
-			head =  (char *) header;
+			head = (char *)header;
 			memcpy (&head2, &head[Ctrl->S.value[GMT_Y]], 4); /* edited to fix bug where 8bytes were copied from head.
                                                 Caused by casting to a long directly from char array*/
 			y0 = (double) ((Ctrl->A.active)? GMT_swab4 (head2) : head2);
@@ -751,13 +751,13 @@ use a few of these*/
 			GMT_report (GMT, GMT_MSG_NORMAL, "time shifted by %f\n", toffset);
 		}
 
-		data = (float *) get_segy_data (fpi, header);	/* read a trace */
+		data = (float *)get_segy_data (fpi, header);	/* read a trace */
 		/* get number of samples in _this_ trace (e.g. OMEGA has strange ideas about SEGY standard)
 		   or set to number in reel header */
                 if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
 
 		if (Ctrl->A.active) {	/* need to swap the order of the bytes in the data even though assuming IEEE format */
-			int *intdata = (int *) data;
+			int *intdata = (int *)data;
 			for (iz = 0; iz < n_samp; iz++) intdata[iz] = GMT_swab4 (intdata[iz]);
 		}
 

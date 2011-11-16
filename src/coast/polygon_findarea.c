@@ -30,8 +30,8 @@ int main (int argc, char **argv) {
 	while (pol_readheader (&h, fp) == 1) {
 		if (h.n > n_alloc) {
 			n_alloc = h.n;
-			flon = (double *) GMT_memory ((void *)flon, n_alloc, sizeof(double), "polygon_findarea");
-			flat = (double *) GMT_memory ((void *)flat, n_alloc, sizeof(double), "polygon_findarea");
+			flon = (double *) GMT_memory (flon, n_alloc, sizeof(double), "polygon_findarea");
+			flat = (double *) GMT_memory (flat, n_alloc, sizeof(double), "polygon_findarea");
 		}
 		if (h.id == 315) {
 			k = 9;
@@ -52,8 +52,8 @@ int main (int argc, char **argv) {
 	
 	fclose (fp);
 	
-	free ((void *)flon);
-	free ((void *)flat);
+	free (flon);
+	free (flat);
 	
 	exit (0);
 }	

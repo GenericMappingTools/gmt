@@ -91,7 +91,7 @@ static char *GMT_keywords[GMT_N_KEYS] = {		/* Names of all parameters in gmt.con
 #include "gmt_keywords.h"
 };
 
-static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line options */
+static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line options [ just the subset that accepts arguments (e.g., -O is not listed) ] */
 #include "gmt_unique.h"
 };
 
@@ -1081,9 +1081,7 @@ GMT_LONG GMT_default_error (struct GMT_CTRL *C, char option)
 		case 'R': error += C->common.R.active == 0; break;
 		case 'U': error += C->common.U.active == 0; break;
 		case 'V': error += C->common.V.active == 0; break;
-		case 'x':
 		case 'X': error += C->common.X.active == 0; break;
-		case 'y':
 		case 'Y': error += C->common.Y.active == 0; break;
 		case 'a': error += C->common.a.active == 0; break;
 		case 'b': error += C->common.b.active[GMT_IN] + C->common.b.active[GMT_OUT] == 0; break;
@@ -1176,11 +1174,13 @@ GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	}
 	if (!GMT_access (C, item, R_OK)) {	/* Gave a readable file, presumably a grid */
 		struct GMT_GRID *G = NULL;
-		if ((error = GMT_Begin_IO (C->parent, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (C->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&item, (void **)&G)) return (GMT_DATA_READ_ERROR);
-		if ((error = GMT_End_IO (C->parent, GMT_IN, 0))) return (error);	/* Disables further data input */
+		if ((G = GMT_Read_Data (C->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, item, NULL)) == NULL) {	/* Read header */
+			return (C->parent->error);
+		}
 		GMT_memcpy (&(C->current.io.grd_info.grd), G->header, 1, struct GRD_HEADER);
-		GMT_Destroy_Data (C->parent, GMT_ALLOCATED, (void **)&G);
+		if (GMT_Destroy_Data (C->parent, GMT_ALLOCATED, &G) != GMT_OK) {
+			return (C->parent->error);
+		}
 		GMT_memcpy (C->common.R.wesn, C->current.io.grd_info.grd.wesn, 4, double);
 		C->common.R.wesn[ZLO] = C->current.io.grd_info.grd.z_min;	C->common.R.wesn[ZHI] = C->current.io.grd_info.grd.z_max;
 		C->current.io.grd_info.active = TRUE;
@@ -1268,7 +1268,7 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 	char p[GMT_BUFSIZ], name[GMT_BUFSIZ], A[64], *s = NULL, *c = NULL;
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -a requires an argument */
 	if ((s = strstr (arg, "+g")) || (s = strstr (arg, "+G"))) {	/* Also got +g|G<geometry> */
-		C->common.a.geometry = gmt_ogr_get_geometry ((char *)(s+2));
+		C->common.a.geometry = gmt_ogr_get_geometry (s+2);
 		if (s[1] == 'G') C->common.a.clip = TRUE;	/* Clip features at Dateline */
 		s[0] = '\0';	/* Temporarily truncate off the geometry */
 		C->common.a.output = TRUE;	/* We are producing, not reading an OGR/GMT file */
@@ -1283,7 +1283,7 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 	}
 	while ((GMT_strtok (C, arg, ",", &pos, p))) {	/* Another col=name argument */
 		if ((c = strchr (p, ':'))) {	/* Also got :<type> */
-			C->common.a.type[C->common.a.n_aspatial] = gmt_ogr_get_type ((char *)(c+1));
+			C->common.a.type[C->common.a.n_aspatial] = gmt_ogr_get_type (c+1);
 			c[0] = '\0';	/* Truncate off the type */
 		}
 		else
@@ -1304,7 +1304,7 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 		}
 		C->common.a.col[C->common.a.n_aspatial] = col;
 		if (col < 0 && col != GMT_IS_Z) C->common.a.type[C->common.a.n_aspatial] = GMTAPI_TEXT;
-		if (C->common.a.name[C->common.a.n_aspatial]) free ((void *)C->common.a.name[C->common.a.n_aspatial]);	/* Free any previous names */
+		if (C->common.a.name[C->common.a.n_aspatial]) free (C->common.a.name[C->common.a.n_aspatial]);	/* Free any previous names */
 		C->common.a.name[C->common.a.n_aspatial] = strdup (name);
 		C->common.a.n_aspatial++;
 		if (C->common.a.n_aspatial == MAX_ASPATIAL) return (GMT_PARSE_ERROR);	/* Too many items */
@@ -1604,7 +1604,7 @@ GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 			C->current.io.col[GMT_IN][k].offset = offset;
 		}
 	}
-	qsort ((void *)C->current.io.col[GMT_IN], (size_t)k, sizeof (struct GMT_COL_INFO), gmt_compare_cols);
+	qsort (C->current.io.col[GMT_IN], (size_t)k, sizeof (struct GMT_COL_INFO), gmt_compare_cols);
 	C->common.i.n_cols = k;
 	return (GMT_NOERROR);
 }
@@ -2397,7 +2397,7 @@ void gmt_free_user_media (struct GMT_CTRL *C) {	/* Free any user-specified media
 
 	if (C->session.n_user_media == 0) return;	/* Nothing to free */
 	
-	for (i = 0; i < C->session.n_user_media; i++) free ((void *)C->session.user_media_name[i]);
+	for (i = 0; i < C->session.n_user_media; i++) free (C->session.user_media_name[i]);
 	GMT_free (C, C->session.user_media_name);
 	GMT_free (C, C->session.user_media);
 	C->session.n_user_media = 0;
@@ -2425,8 +2425,9 @@ GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified m
 		GMT_str_tolower (media);	/* Convert string to lower case */
 
 		if (n == n_alloc) {
-			(void)GMT_malloc (C, C->session.user_media, n, n_alloc, struct GMT_MEDIA);
-			n_alloc = GMT_malloc (C, C->session.user_media_name, n, n_alloc, char *);
+			GMT_LONG k = n_alloc;	/* So we don't update n_alloc in the first GMT_malloc call */
+			C->session.user_media = GMT_malloc (C, C->session.user_media, n, &k, struct GMT_MEDIA);
+			C->session.user_media_name = GMT_malloc (C, C->session.user_media_name, n, &n_alloc, char *);
 		}
 		C->session.user_media_name[n] = strdup (media);
 		C->session.user_media[n].width  = w;
@@ -2435,8 +2436,8 @@ GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified m
 	}
 	fclose (fp);
 
-	(void)GMT_malloc (C, C->session.user_media, 0, n, struct GMT_MEDIA);
-	(void)GMT_malloc (C, C->session.user_media_name, 0, n, char *);
+	C->session.user_media = GMT_malloc (C, C->session.user_media, 0, &n, struct GMT_MEDIA);
+	C->session.user_media_name = GMT_malloc (C, C->session.user_media_name, 0, &n, char *);
 	GMT_reset_meminc (C);
 
 	C->session.n_user_media = n;
@@ -2546,7 +2547,7 @@ void gmt_parse_format_float_out (struct GMT_CTRL *C, char *value)
 				error++;
 			p++;	/* Move to format */
 			for (k = start; k <= stop; k++, col++) {
-				if (C->current.io.o_format[k]) free ((void *)C->current.io.o_format[k]);
+				if (C->current.io.o_format[k]) free (C->current.io.o_format[k]);
 				C->current.io.o_format[k] = strdup (p);
 			}
 		}
@@ -3501,13 +3502,13 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 
 		case GMTCASE_DIR_TMP:
 			if (value[0]) {	/* Replace the session temp dir from the environment, if any */
-				if (C->session.TMPDIR) free ((void *)C->session.TMPDIR);
+				if (C->session.TMPDIR) free (C->session.TMPDIR);
 				C->session.TMPDIR = strdup (value);
 			}
 			break;
 		case GMTCASE_DIR_USER:
 			if (value[0]) {	/* Replace the session user dir from the environment, if any */
-				if (C->session.USERDIR) free ((void *)C->session.USERDIR);
+				if (C->session.USERDIR) free (C->session.USERDIR);
 				C->session.USERDIR = strdup (value);
 			}
 			break;
@@ -4809,7 +4810,7 @@ void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and init
 			GMT_exit (EXIT_FAILURE);
 		}
 
-		if (n == n_alloc) n_alloc = GMT_malloc (C, C->session.shorthand, n, n_alloc, struct GMT_SHORTHAND);
+		if (n == n_alloc) C->session.shorthand = GMT_malloc (C, C->session.shorthand, n, &n_alloc, struct GMT_SHORTHAND);
 
 		C->session.shorthand[n].suffix = strdup (a);
 		C->session.shorthand[n].id = GMT_grd_format_decoder (C, b);
@@ -4822,7 +4823,7 @@ void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and init
 
 	C->session.n_shorthands = n;
 	GMT_reset_meminc (C);
-	(void)GMT_malloc (C, C->session.shorthand, 0, n, struct GMT_SHORTHAND);
+	C->session.shorthand = GMT_malloc (C, C->session.shorthand, 0, &n, struct GMT_SHORTHAND);
 }
 
 void gmt_freeshorthand (struct GMT_CTRL *C) {/* Free memory used by shorthand arrays */
@@ -4830,7 +4831,7 @@ void gmt_freeshorthand (struct GMT_CTRL *C) {/* Free memory used by shorthand ar
 
 	if (C->session.n_shorthands == 0) return;
 
-	for (i = 0; i < C->session.n_shorthands; i++) free ((void *)C->session.shorthand[i].suffix);
+	for (i = 0; i < C->session.n_shorthands; i++) free (C->session.shorthand[i].suffix);
 	GMT_free (C, C->session.shorthand);
 }
 
@@ -4919,7 +4920,7 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 			continue;
 		}
 		if ((id = GMT_hash_lookup (C, option, unique_hashnode, GMT_N_UNIQUE, GMT_N_UNIQUE)) < 0) continue;	/* Quietly skip malformed lines */
-		if (C->init.history[id]) free ((void *)C->init.history[id]);
+		if (C->init.history[id]) free (C->init.history[id]);
 		C->init.history[id] = strdup (value);
 	}
 
@@ -4991,7 +4992,7 @@ GMT_LONG gmt_put_history (struct GMT_CTRL *C)
 
 void Free_GMT_Ctrl (struct GMT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;	/* Never was allocated */
-	free ((void *)C);
+	free (C);
 }
 
 void GMT_end (struct GMT_CTRL *C)
@@ -5004,7 +5005,7 @@ void GMT_end (struct GMT_CTRL *C)
 
 	/* Remove allocated hash structures */
 	gmt_free_hash (C, C->session.rgb_hashnode, GMT_N_COLOR_NAMES);
-	for (i = 0; i < C->session.n_fonts; i++) free ((void *)C->session.font[i].name);
+	for (i = 0; i < C->session.n_fonts; i++) free (C->session.font[i].name);
 	GMT_free (C, C->session.font);
 #ifdef __FreeBSD__
 #ifdef _i386_
@@ -5013,12 +5014,12 @@ void GMT_end (struct GMT_CTRL *C)
 #endif
 #endif
 
-	free ((void *)C->session.SHAREDIR);
-	free ((void *)C->session.HOMEDIR);
-	if (C->session.USERDIR) free ((void *)C->session.USERDIR);
-	if (C->session.DATADIR) free ((void *)C->session.DATADIR);
-	if (C->session.TMPDIR) free ((void *)C->session.TMPDIR);
-	for (i = 0; i < GMT_N_PROJ4; i++) free ((void *)C->current.proj.proj4[i].name);
+	free (C->session.SHAREDIR);
+	free (C->session.HOMEDIR);
+	if (C->session.USERDIR) free (C->session.USERDIR);
+	if (C->session.DATADIR) free (C->session.DATADIR);
+	if (C->session.TMPDIR) free (C->session.TMPDIR);
+	for (i = 0; i < GMT_N_PROJ4; i++) free (C->current.proj.proj4[i].name);
 	GMT_free (C, C->current.proj.proj4);
 
 	if (C->current.setting.io_gridfile_shorthand) gmt_freeshorthand (C);
@@ -5050,7 +5051,7 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 	GMT_LONG i;
 	struct GMT_CTRL *C = API->GMT, *Csave = NULL;
 
-	Csave = (struct GMT_CTRL *) calloc ((size_t)1, sizeof (struct GMT_CTRL));
+	Csave = calloc ((size_t)1, sizeof (struct GMT_CTRL));
 
 	/* First memcpy over everything; this will include pointer addresses we will have to fix below */
 
@@ -5120,17 +5121,17 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 	GMT_memset (hist_cpy, GMT_N_UNIQUE, char *);
 	for (i = 0; i < GMT_N_UNIQUE; i++) if (C->init.history[i]) {
 		hist_cpy[i] = strdup (C->init.history[i]);	/* Copy what we have so far */
-		free ((void *)C->init.history[i]);		/* Free pointers in local GMT structure */
+		free (C->init.history[i]);		/* Free pointers in local GMT structure */
 	}
 #else
 	for (i = 0; i < GMT_N_UNIQUE; i++) {
 		/*if (Ccopy->init.history[i] && Ccopy->init.history[i] != C->init.history[i])
-			free ((void *)Ccopy->init.history[i]);*/
+			free (Ccopy->init.history[i]);*/
 		Ccopy->init.history[i] = C->init.history[i];
 	}
 #endif
-	free ((void *)Ccopy->init.progname);
-	/*free ((void *)C->init.progname);	Needs to be freed but can't be done blindly like this as it makes readwrite_withgdal test crash */
+	free (Ccopy->init.progname);
+	/*free (C->init.progname);	Needs to be freed but can't be done blindly like this as it makes readwrite_withgdal test crash */
 
 	/* GMT_CURRENT */
 
@@ -5138,7 +5139,7 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 
 	/* GMT_COMMON */
 
-	if (Ccopy->common.U.label && Ccopy->common.U.label != C->common.U.label) free ((void *)Ccopy->common.U.label);
+	if (Ccopy->common.U.label && Ccopy->common.U.label != C->common.U.label) free (Ccopy->common.U.label);
 	Ccopy->common.U.label = C->common.U.label;
 
 	/* GMT_PLOT */
@@ -5160,18 +5161,18 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 #if 0
 	for (i = 0; i < GMT_N_UNIQUE; i++) if (hist_cpy[i]) {	/* Update the cumulative history list */
 		C->init.history[i] = strdup (hist_cpy[i]);
-		free ((void *)hist_cpy[i]);
+		free (hist_cpy[i]);
 	}
 
 	/* GMT_COMMON */
-	if (C->common.U.label) free ((void *)C->common.U.label);
+	if (C->common.U.label) free (C->common.U.label);
 	if (Ccopy->common.U.label) {
 		C->common.U.label = strdup (Ccopy->common.U.label);
-		free ((void *)Ccopy->common.U.label);
+		free (Ccopy->common.U.label);
 	}
 #endif
 
-	free ((void *)Ccopy);	/* Good riddance */
+	free (Ccopy);	/* Good riddance */
 }
 
 void GMT_set_env (struct GMT_CTRL *C)
@@ -5213,7 +5214,7 @@ void GMT_set_env (struct GMT_CTRL *C)
 		C->session.USERDIR = strdup (path);
 	}
 	if (access (C->session.USERDIR, R_OK)) {	/* If we cannot access this dir then we won't use it */
-		free ((void *)C->session.USERDIR);
+		free (C->session.USERDIR);
 		C->session.USERDIR = CNULL;
 	}
 #ifdef WIN32
@@ -5290,7 +5291,7 @@ GMT_LONG GMT_Complete_Options (struct GMT_CTRL *C, struct GMT_OPTION *options)
 				str[1] = opt->arg[0];
 				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
 				if (str[1] != 'Z' && str[1] != 'z' && remember) {
-					if (C->init.history[id]) free ((void *)C->init.history[id]);
+					if (C->init.history[id]) free (C->init.history[id]);
 					C->init.history[id] = strdup (&str[1]);
 				}
 				if (opt->arg[1]) update = TRUE;	/* Gave -J<code><args> so we want to update history and continue */
@@ -5310,7 +5311,7 @@ GMT_LONG GMT_Complete_Options (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		}
 		if (update) {	/* Gave -J<code><args>, -R<args>, -B<args> etc. so we update history and continue */
 			if (remember) {
-				if (C->init.history[id]) free ((void *)C->init.history[id]);
+				if (C->init.history[id]) free (C->init.history[id]);
 				C->init.history[id] = strdup (opt->arg);
 			}
 		}
@@ -5592,7 +5593,7 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *i
 		GMT_LONG k, n_int[4];
 		char *list = "aifg";
 		if (!(GMT_access (C, &in[1], R_OK))) {
-			if (A->file_custom) free ((void *)A->file_custom);
+			if (A->file_custom) free (A->file_custom);
 			A->file_custom = strdup (&in[1]);
 			A->special = GMT_CUSTOM;
 			if (gmt_init_custom_annot (C, A, n_int)) return (-1);	/* See what ticks, anots, gridlines etc are requested */
@@ -6533,7 +6534,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 		s[0] = '\0';		/* Temporarily separate this modifer from the rest of the symbol option (restored at end of function) */
 		p->convert_size = (text[k] == 'l') ? 2 : 1;		/* If last char is l we want log10 conversion */
 		if (p->convert_size == 2) text[k] = '\0';		/* Temporarily remove the l */
-		n = sscanf ((char *)(s+2), "%[^,],%[^l]", txt_a, txt_b);	/* Get the 1-2 pieces */
+		n = sscanf (s+2, "%[^,],%[^l]", txt_a, txt_b);	/* Get the 1-2 pieces */
 		if (n == 0) GMT_report (C, GMT_MSG_FATAL, "-S...+s contains bad scale info\n");
 		p->scale = GMT_to_inch (C, txt_a);	/* The scale may have units */
 		if (n == 2) p->origin = atof (txt_b);	/* Origin is in data units */
@@ -7294,13 +7295,11 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 				C->current.setting.verbose = GMT_MSG_NORMAL;
 			break;
 
-		case 'x':
 		case 'X':
 			error += (GMT_more_than_once (C, C->common.X.active) || gmt_parse_XY_option (C, GMT_X, item));
 			C->common.X.active = TRUE;
 			break;
 
-		case 'y':
 		case 'Y':
 			error += (GMT_more_than_once (C, C->common.Y.active) || gmt_parse_XY_option (C, GMT_Y, item));
 			C->common.Y.active = TRUE;
@@ -7574,7 +7573,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 	GMT_set_meminc (C, GMT_SMALL_CHUNK);	/* Only allocate a small amount */
 	while (fgets (buf, GMT_BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-		if (i == n_alloc) n_alloc = GMT_malloc (C, C->session.font, i, n_alloc, struct GMT_FONTSPEC);
+		if (i == n_alloc) C->session.font = GMT_malloc (C, C->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 		if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding font info for font %ld\n", i);
 			GMT_exit (EXIT_FAILURE);
@@ -7594,7 +7593,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 
 		while (fgets (buf, GMT_BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-			if (i == n_alloc) n_alloc = GMT_malloc (C, C->session.font, i, n_alloc, struct GMT_FONTSPEC);
+			if (i == n_alloc) C->session.font = GMT_malloc (C, C->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 			if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
 				GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding custom font info for font %ld\n", i - n_GMT_fonts);
 				GMT_exit (EXIT_FAILURE);
@@ -7604,7 +7603,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 		fclose (in);
 		C->session.n_fonts = i;
 	}
-	(void)GMT_malloc (C, C->session.font, 0, i, struct GMT_FONTSPEC);
+	C->session.font = GMT_malloc (C, C->session.font, 0, &i, struct GMT_FONTSPEC);
 	GMT_reset_meminc (C);
 	return (GMT_NOERROR);
 }
@@ -7660,7 +7659,7 @@ struct GMT_CTRL *New_GMT_Ctrl () {	/* Allocate and initialize a new common contr
 	};
 
 	/* Alloc using calloc since GMT_memory may use resources not yet initialized */
-	C = (struct GMT_CTRL *) calloc ((size_t)1, sizeof (struct GMT_CTRL));
+	C = calloc ((size_t)1, sizeof (struct GMT_CTRL));
 	GMT_memcpy (C->current.setting.ref_ellipsoid, ref_ellipsoid, 1, ref_ellipsoid);
 	GMT_memcpy (C->current.setting.proj_datum, datum, 1, datum);
 
@@ -7769,13 +7768,13 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 	fpsetmask (fpgetmask () & ~(FP_X_DZ | FP_X_INV));
 #endif
 #endif
-	C = (struct GMT_CTRL *)New_GMT_Ctrl ();		/* Allocate and initialize a new common control structure */
-	if (C->init.progname) free ((void *)C->init.progname);		/* Free up any prior program name */
+	C = New_GMT_Ctrl ();		/* Allocate and initialize a new common control structure */
+	if (C->init.progname) free (C->init.progname);		/* Free up any prior program name */
 	C->init.progname = strdup (session);		/* We use the calling programs session name as program name */
 	C->init.module_name = module_name;		/* This will be reset by the GMT modules we call */
 
 	if (mode == GMTAPI_GMTPSL) {			/* The application will need PSL */
-		C->PSL = (struct PSL_CTRL *)New_PSL_Ctrl (session);	/* Allocate a PSL control structure */
+		C->PSL = New_PSL_Ctrl (session);	/* Allocate a PSL control structure */
 		if (!C->PSL) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Could not initialize PSL - Aborting.\n");
 			GMT_exit (EXIT_FAILURE);
@@ -7865,7 +7864,7 @@ void GMT_setmode (struct GMT_CTRL *C, int direction)
 
 #endif	/* SET_IO_MODE */
 
-int GMT_message (struct GMT_CTRL *C, char *format, ...) {
+GMT_LONG GMT_message (struct GMT_CTRL *C, char *format, ...) {
 #ifdef GMT_MATLAB
 	char line[GMT_BUFSIZ];
 #endif
@@ -7882,7 +7881,7 @@ int GMT_message (struct GMT_CTRL *C, char *format, ...) {
 	return (0);
 }
 
-int GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
+GMT_LONG GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
 #ifdef GMT_MATLAB
 	char line[GMT_BUFSIZ];
 #endif

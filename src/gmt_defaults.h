@@ -122,7 +122,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	GMT_LONG map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
 	char map_frame_axes[5];			/* Which axes to draw and annotate ["WESN"]  */
 	char map_annot_ortho[5];		/* Which axes have orthogonal annotations in linear projections ["we"] */
-	enum gmt_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } map_degree_symbol;
+	enum GMT_enum_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } map_degree_symbol;
 	/* PROJ group */
 	double proj_scale_factor;		/* Central mapscale factor, typically 0.9996-1 (or -1 for default action) */
 	GMT_LONG proj_ellipsoid;		/* Which ellipsoid to use [0 = GRS 80] */

@@ -69,11 +69,11 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 };
 
 #if defined(BLOCKMEAN)	/* Only used by blockmean */
-#define BLK_Z	0
-#define BLK_W	1
-#define BLK_S	0
-#define BLK_L	1
-#define BLK_H	2
+enum GMT_enum_blks {BLK_Z	= 0,
+	BLK_W		= 1,
+	BLK_S		= 0,
+	BLK_L		= 1,
+	BLK_H		= 2};
 struct BLK_PAIR {	/* Used for weighted mean location */
 	double a[2];	/* a[0] = x, a[1] = y */
 };
@@ -81,8 +81,8 @@ struct BLK_SLH {	/* Holds std, low, and high values */
 	double a[3];	/* a[0] = w.std, a[1] = min, a[2] = max */
 };
 #else	/* Only used by blockmedian and blockmode */
-#define BLK_Z	2
-#define BLK_W	3
+enum GMT_enum_blks {BLK_Z	= 2,
+	BLK_W		= 3};
 struct BLK_DATA {
 	double a[4];	/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
 	GMT_LONG i;	/* Index to data value */
@@ -100,7 +100,7 @@ void * NEW_BLK (struct GMT_CTRL *G) {	/* Allocate and initialize a new control s
 #if defined(BLOCKMEDIAN)	/* Initialize default to 0.5, i.e., the median */
 	C->T.quantile = 0.5;
 #endif
-	return ((void *)C);
+	return (C);
 }
 
 void FREE_BLK (struct GMT_CTRL *G, struct  BLOCK_CTRL *C) {	/* Deallocate control structure */

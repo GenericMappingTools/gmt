@@ -80,21 +80,21 @@ void *New_x2sys_init_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_init_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *C) {	/* Deallocate control structure */
-	if (C->In.TAG) free ((void *)C->In.TAG);
-	if (C->C.string) free ((void *)C->C.string);
-	if (C->D.file) free ((void *)C->D.file);
-	if (C->E.string) free ((void *)C->E.string);
-	if (C->G.string) free ((void *)C->G.string);
-	if (C->I.string) free ((void *)C->I.string);
-	if (C->m.string) free ((void *)C->m.string);
-	if (C->N.string[0]) free ((void *)C->N.string[0]);
-	if (C->N.string[1]) free ((void *)C->N.string[1]);
-	if (C->W.string[0]) free ((void *)C->W.string[0]);
-	if (C->W.string[1]) free ((void *)C->W.string[1]);
+	if (C->In.TAG) free (C->In.TAG);
+	if (C->C.string) free (C->C.string);
+	if (C->D.file) free (C->D.file);
+	if (C->E.string) free (C->E.string);
+	if (C->G.string) free (C->G.string);
+	if (C->I.string) free (C->I.string);
+	if (C->m.string) free (C->m.string);
+	if (C->N.string[0]) free (C->N.string[0]);
+	if (C->N.string[1]) free (C->N.string[1]);
+	if (C->W.string[0]) free (C->W.string[0]);
+	if (C->W.string[1]) free (C->W.string[1]);
 	GMT_free (GMT, C);
 }
 
@@ -270,7 +270,7 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_x2sys_init_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_x2sys_init_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -278,8 +278,8 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_x2sys_init", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VR", ">", options))) Return (error);
-	Ctrl = (struct X2SYS_INIT_CTRL *)New_x2sys_init_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VR", ">", options)) Return (API->error);
+	Ctrl = New_x2sys_init_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_init_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the x2sys_init main code ----------------------------*/

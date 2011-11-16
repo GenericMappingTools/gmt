@@ -369,8 +369,8 @@ struct MGD77_CONSTRAINT {
 	GMT_LONG exact;				/* If TRUE we MUST pass this test */
 	double d_constraint;			/* Value for testing */
 	char c_constraint[GMT_TEXT_LEN64];	/* String value for testing */
-	PFB double_test;			/* Pointer to function performing the chosen limit test on a double */
-	PFB string_test;			/* Pointer to function performing the chosen limit test on a string */
+	PFL double_test;			/* Pointer to function performing the chosen limit test on a double */
+	PFL string_test;			/* Pointer to function performing the chosen limit test on a string */
 };
 
 struct MGD77_PAIR {
@@ -461,7 +461,7 @@ EXTERN_MSC void MGD77_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F);						/
 EXTERN_MSC void MGD77_Reset (struct GMT_CTRL *C, struct MGD77_CONTROL *F);									/* Reset after finishing a file */
 EXTERN_MSC void MGD77_end (struct GMT_CTRL *C, struct MGD77_CONTROL *F);				/* Free up MGD77-related variables */
 EXTERN_MSC int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_OPTION *options, char ***list);				/* Returns the full list of IDs */
-EXTERN_MSC void MGD77_Path_Free (struct GMT_CTRL *C, int n, char **list);	/* Free the list of IDs */
+EXTERN_MSC void MGD77_Path_Free (struct GMT_CTRL *C, GMT_LONG n, char **list);	/* Free the list of IDs */
 EXTERN_MSC void MGD77_Cruise_Explain (struct GMT_CTRL *C);										/* Explains how to specify IDs */
 EXTERN_MSC int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MGD77_CONTROL *F);					/* Returns full path to cruise */
 EXTERN_MSC int MGD77_Open_File (struct GMT_CTRL *C, char *leg, struct MGD77_CONTROL *F, int rw);						/* Opens a MGD77[+] file */
@@ -475,7 +475,7 @@ EXTERN_MSC int MGD77_Read_Data (struct GMT_CTRL *C, char *file, struct MGD77_CON
 EXTERN_MSC int MGD77_Write_Data (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Write all data (all columns); Header already written */
 EXTERN_MSC int MGD77_Read_Data_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Read a single data record (selected columns only) */
 EXTERN_MSC int MGD77_Write_Data_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Write a single data record (selected columns only) */
-EXTERN_MSC void MGD77_Free (struct GMT_CTRL *C, struct MGD77_DATASET *S);									/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
+EXTERN_MSC void MGD77_Free_Dataset (struct GMT_CTRL *C, struct MGD77_DATASET **S);								/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
 EXTERN_MSC void MGD77_Select_Columns (struct GMT_CTRL *C, char *string, struct MGD77_CONTROL *F, int option);					/* Decode the -F option specifying the desired columns */
 EXTERN_MSC int MGD77_Get_Column (struct GMT_CTRL *C, char *word, struct MGD77_CONTROL *F);							/* Get column number from column name (or -1 if not present) */
 EXTERN_MSC int MGD77_Info_from_Abbrev (struct GMT_CTRL *C, char *name, struct MGD77_HEADER *H, GMT_LONG *set, GMT_LONG *item);

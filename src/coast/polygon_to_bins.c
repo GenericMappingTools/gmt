@@ -256,8 +256,8 @@ int main (int argc, char **argv) {
 			nn++;
 			if (nn > (n_alloc-5)) {
 				n_alloc += GMT_CHUNK;
-				xx = (int *) GMT_memory ((void *)xx, n_alloc, sizeof (int), "polygon_to_bins");
-				yy = (int *) GMT_memory ((void *)yy, n_alloc, sizeof (int), "polygon_to_bins");
+				xx = (int *) GMT_memory (xx, n_alloc, sizeof (int), "polygon_to_bins");
+				yy = (int *) GMT_memory (yy, n_alloc, sizeof (int), "polygon_to_bins");
 			}
 			i_x_1 = i_x_2;
 			i_y_1 = i_y_2;
@@ -270,8 +270,8 @@ int main (int argc, char **argv) {
 		   
 		if ((nn+start_i+1) > n_alloc) {	
 			n_alloc = nn + start_i + 1;
-			xx = (int *) GMT_memory ((void *)xx, n_alloc, sizeof (int), "polygon_to_bins");
-			yy = (int *) GMT_memory ((void *)yy, n_alloc, sizeof (int), "polygon_to_bins");
+			xx = (int *) GMT_memory (xx, n_alloc, sizeof (int), "polygon_to_bins");
+			yy = (int *) GMT_memory (yy, n_alloc, sizeof (int), "polygon_to_bins");
 		}
 
 		for (i = 1, j = nn; i <= start_i; i++, j++) {	/* Append beginning to tail */
@@ -451,10 +451,10 @@ int main (int argc, char **argv) {
 		
 		add += n_seg;
 		
-		free ((void *)xx);
-		free ((void *)yy);
-		free ((void *)ix);
-		free ((void *)iy);
+		free (xx);
+		free (yy);
+		free (ix);
+		free (iy);
 		
 		/* Now go back up and read next polygon */
 		
@@ -478,11 +478,11 @@ int main (int argc, char **argv) {
 	
 	sprintf (file, "%s.par", argv[4]);
 	fp_par = fopen (file, "w");
-	if (fwrite ((void *)&n_id, sizeof (int), 1, fp_par) != 1) {
+	if (fwrite (&n_id, sizeof (int), 1, fp_par) != 1) {
 		fprintf (stderr, "polygon_to_bins: Error writing # of GSHHS parents\n");
 		exit (EXIT_FAILURE);
 	}
-	if (fwrite ((void *)GSHHS_parent, sizeof (int), n_id, fp_par) != n_id) {
+	if (fwrite (GSHHS_parent, sizeof (int), n_id, fp_par) != n_id) {
 		fprintf (stderr, "polygon_to_bins: Error writing GSHHS parents\n");
 		exit (EXIT_FAILURE);
 	}
@@ -514,7 +514,7 @@ int main (int argc, char **argv) {
 		}
 		file_head.n_segments += bin_head[b].n_segments;
 	}
-	free ((void *) node);
+	free ( node);
 	
 	fprintf (stderr, "polygon_to_bins: Start writing file %s\n", argv[4]);
 
@@ -531,7 +531,7 @@ int main (int argc, char **argv) {
 	sprintf (file, "%s.pt", argv[4]);
 	fp_pt = fopen (file, "w");
 	
-	if (fwrite ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), 1, fp_bin) != 1) {
+	if (fwrite (&file_head, sizeof (struct GMT3_FILE_HEADER), 1, fp_bin) != 1) {
 		fprintf (stderr, "polygon_to_bins: Error writing file header\n");
 		exit (-1);
 	}
@@ -540,7 +540,7 @@ int main (int argc, char **argv) {
 	
 		if (b%100 == 0) fprintf(stderr,"polygon_to_bins: Working on bin number %d\r", b);
 		
-		if (fwrite ((void *)&bin_head[b], sizeof (struct GMT3_BIN_HEADER), 1, fp_bin) != 1) {
+		if (fwrite (&bin_head[b], sizeof (struct GMT3_BIN_HEADER), 1, fp_bin) != 1) {
 			fprintf (stderr, "polygon_to_bins: Error writing bin header for bin # %d\n", b);
 			exit (-1);
 		}
@@ -557,7 +557,7 @@ int main (int argc, char **argv) {
 				n++;
 			}
 		}
-		qsort ((void *)ss, n, sizeof (struct SEGMENT *), comp_segments);
+		qsort (ss, n, sizeof (struct SEGMENT *), comp_segments);
 		ns += n;
 		
 		for (i = 0; i < n; i++) {
@@ -566,19 +566,19 @@ int main (int argc, char **argv) {
 			seg_head.p_area = ss[i]->p_area;
 			seg_head.p_area_fraction = ss[i]->p_area_fraction;
 			seg_head.info = (ss[i]->n << 9) + (ss[i]->level << 6) + (ss[i]->entry << 3) + ss[i]->exit;
-			if (fwrite ((void *)&seg_head, sizeof (struct SEGMENT_HEADER), 1, fp_seg) != 1) {
+			if (fwrite (&seg_head, sizeof (struct SEGMENT_HEADER), 1, fp_seg) != 1) {
 				fprintf (stderr, "polygon_to_bins: Error writing a string header for bin # %d\n", b);
 				exit (-1);
 			}
-			if (fwrite ((void *)(ss[i]->p), sizeof (struct SHORT_PAIR), ss[i]->n, fp_pt) != ss[i]->n) {
+			if (fwrite ((ss[i]->p), sizeof (struct SHORT_PAIR), ss[i]->n, fp_pt) != ss[i]->n) {
 				fprintf (stderr, "polygon_to_bins: Error writing a string for bin # %d\n", b);
 				exit (-1);
 			}
 			np += ss[i]->n;
-			free ((void *)ss[i]->p);
-			free ((void *)ss[i]);
+			free (ss[i]->p);
+			free (ss[i]);
 		}
-		free ((void *)ss);
+		free (ss);
 	}
 	fprintf(stderr,"polygon_to_bins: Working on bin number %d\r", b);
 

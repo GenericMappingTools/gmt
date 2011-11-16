@@ -108,12 +108,12 @@
 	(((data) >> 8) & 0x0000ff00) | ((unsigned int)(data) >> 24))
 
 /* Macro to simplify call to memcpy when duplicating values and memset when zeroing out */
-#define GMT_memcpy(to,from,n,type) memcpy((void *)to, (void *)from, (n)*sizeof(type))
-#define GMT_memset(array,n,type) memset((void *)array, 0, (n)*sizeof(type))
+#define GMT_memcpy(to,from,n,type) memcpy(to, from, (n)*sizeof(type))
+#define GMT_memset(array,n,type) memset(array, 0, (n)*sizeof(type))
 /* Macro to set all items in an array to the given value */
 #define GMT_setnval(array,n,value) {int k; for (k = 0; k < n; k++) array[k] = value;}
 /* Macro to simplify assignment of one 3-vector to another */
-#define GMT_cpy3v(to,from) memcpy((void *)to, (void *)from, 3*sizeof(double))
+#define GMT_cpy3v(to,from) memcpy(to, from, 3*sizeof(double))
 
 /* Macro for exit since this should be returned when called from Matlab */
 

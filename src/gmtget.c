@@ -43,12 +43,12 @@ void *New_gmtget_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	struct GMTGET_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct GMTGET_CTRL);
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtget_Ctrl (struct GMT_CTRL *GMT, struct GMTGET_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);
+	if (C->G.file) free (C->G.file);
 	GMT_free (GMT, C);	
 }
 
@@ -124,7 +124,7 @@ GMT_LONG GMT_gmtget (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (options) {
 		if (options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtget_usage (API, GMTAPI_USAGE));		/* Return the usage message */
@@ -134,8 +134,8 @@ GMT_LONG GMT_gmtget (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_gmtget", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return (error);
-	Ctrl = (struct GMTGET_CTRL *) New_gmtget_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
+	Ctrl = New_gmtget_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtget_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmtget main code ----------------------------*/

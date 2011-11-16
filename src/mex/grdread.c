@@ -44,16 +44,14 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	/* Load the file name into a char string */
 
-	filein = (char *) mxArrayToString (prhs[0]);	/* Load the file name into a char string */
+	filein = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
 
 	/* 1. Initializing new GMT session */
-	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("GMT: (grdread) Failure to create GMT Session\n");
+	if ((API = GMT_Create_Session ("GMT/MEX-API", GMTAPI_GMT)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. READING IN A GRID */
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) mexErrMsgTxt ("GMT: (grdinfo) Failure to Begin IO\n");
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&filein, (void **)&G))
+	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, filein, NULL)) == NULL)
 		mexErrMsgTxt ("GMT: (grdread) Read failure\n");
-	if (GMT_End_IO (API, GMT_IN, 0)) mexErrMsgTxt ("GMT: (grdinfo) Failure to End IO\n");
 	
 	/* Create a matrix for the return array */
 
@@ -62,7 +60,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (nlhs > 2) {px = 0; py = 1;}
 
 	plhs[pz] = mxCreateNumericMatrix (G->header->ny, G->header->nx, mxSINGLE_CLASS, mxREAL);
-	z = (float *)mxGetData (plhs[pz]);
+	z = mxGetData (plhs[pz]);
 	
 	/*  Load the real grd array into a double matlab array
 	    by transposing from padded GMT grd format to unpadded matlab format */
@@ -74,7 +72,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (pi >= 0) GMTMEX_grdheader2info (plhs, G, pi);	/* Also return info array */
 	if (px >= 0) GMTMEX_grdxy (API, plhs, G, px, py);	/* Return x,y arrays also */
 	
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G)) mexErrMsgTxt ("Run-time error\n");
 	
 	/* 10. Destroy GMT API session */
 	if (GMT_Destroy_Session (&API)) mexErrMsgTxt ("GMT: (surface) Failure to destroy GMT Session\n");

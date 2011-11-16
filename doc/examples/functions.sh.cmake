@@ -33,13 +33,13 @@ ERROR=0
 # Convert PS to PDF
 function make_pdf()
 {
-  test -f ${1:-$ps} || return 1
+  test -f "${1:-$ps}" || return 1
   ps2raster -Tf -A -P -C-sFONTPATH=${EXTRA_FONTS_DIR} ${1:-$ps} || ((++ERROR))
 }
 
 # Compare the ps file with its original.
 pscmp () {
-  test -f ${1:-$ps} || return 1
+  test -f "${1:-$ps}" || return 1
   f=${1:-$(basename $ps .ps)}
   d=$(basename $PWD)
   if [ -z "$GRAPHICSMAGICK" ]; then

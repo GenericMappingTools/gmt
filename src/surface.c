@@ -378,7 +378,7 @@ void set_index (struct SURFACE_INFO *C) {
 			C->data[k].index = i * C->block_ny + j;
 	}
 
-	qsort ((void *)C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
+	qsort (C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 
 	C->npoints -= k_skipped;
 
@@ -579,7 +579,7 @@ void new_initialize_grid (struct SURFACE_INFO *C)
 
 GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options)
 {
-	GMT_LONG i, j, k, kmax = 0, kmin = 0, n_fields, error;
+	GMT_LONG i, j, k, kmax = 0, kmin = 0, error;
 	double *in, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
 	struct GRD_HEADER *h = C->Grid->header;
 
@@ -587,8 +587,12 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 
 	/* Read in xyz data and computes index no and store it in a structure */
 	
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3))) return (error);
-	if ((error = GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) return (error);	/* Establishes data input */
+	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+		return (error);
+	}
+	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		return (GMT->parent->error);
+	}
 
 	k = 0;
 	C->z_mean = 0.0;
@@ -596,13 +600,21 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 	wesn_lim[XLO] = h->wesn[XLO] - C->grid_xinc;	wesn_lim[XHI] = h->wesn[XHI] + C->grid_xinc;
 	wesn_lim[YLO] = h->wesn[YLO] - C->grid_yinc;	wesn_lim[YHI] = h->wesn[YHI] + C->grid_yinc;
 
-	if ((error = GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) return (error);	/* Enables data input and sets access mode */
-	while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	if (GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		return (GMT->parent->error);
+	}
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT)) return (GMT_RUNTIME_ERROR);
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
-
+		/* Data record to process */
+	
 		if (GMT_is_dnan (in[GMT_Z])) continue;
 		if (GMT_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue;	/* Outside y-range */
 		if (GMT_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI])) continue;	/* Outside x-range (or longitude) */
@@ -624,8 +636,11 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 			C->n_alloc <<= 1;
 			C->data = GMT_memory (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
 		}
+	} while (TRUE);
+	
+	if (GMT_End_IO (GMT->parent, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		return (GMT->parent->error);
 	}
-	if ((error = GMT_End_IO (GMT->parent, GMT_IN, 0))) return (error);	/* Disables further data input */
 
 	C->npoints = k;
 
@@ -661,26 +676,25 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 
 GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG transform)
 {
-	GMT_LONG i, j, ij, error;
+	GMT_LONG i, j, ij;
 	double yy;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	/* Load lower/upper limits, verify range, deplane, and rescale */
 
-	if ((C->set_low == 3 || C->set_high == 3) && (error = GMT_Begin_IO (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) return (error);	/* Enables grid input and sets access mode */
-	
 	if (C->set_low > 0) {
 		if (C->set_low < 3) {
-			C->Low = GMT_create_grid (GMT);
+			if ((C->Low = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) return (API->error);
 			C->Low->data = GMT_memory (GMT, NULL, C->mxmy, float);
 			for (i = 0; i < C->mxmy; i++) C->Low->data[i] = (float)C->low_limit;
 		}
 		else {
-			if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(C->low_file), (void **)&C->Low)) return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if ((C->Low = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, C->low_file, NULL)) == NULL) return (API->error);	/* Get header only */
 			if (C->Low->header->nx != C->nx || C->Low->header->ny != C->ny) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Lower limit file not of proper dimension!\n");
 				return (EXIT_FAILURE);
 			}
-			if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(C->low_file), (void **)&C->Low)) return (GMT_DATA_READ_ERROR);
+			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, C->low_file, C->Low) == NULL) return (API->error);
 		}
 		if (transform) {
 			for (j = 0; j < C->ny; j++) {
@@ -697,17 +711,17 @@ GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LON
 	}
 	if (C->set_high > 0) {
 		if (C->set_high < 3) {
-			C->High = GMT_create_grid (GMT);
+			if ((C->High = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) return (API->error);
 			C->High->data = GMT_memory (GMT, NULL, C->mxmy, float);
 			for (i = 0; i < C->mxmy; i++) C->High->data[i] = (float)C->high_limit;
 		}
 		else {
-			if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(C->low_file), (void **)&C->High)) return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if ((C->High = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, C->high_file, NULL)) == NULL) return (API->error);	/* Get header only */
 			if (C->High->header->nx != C->nx || C->High->header->ny != C->ny) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Upper limit file not of proper dimension!\n");
 				return (EXIT_FAILURE);
 			}
-			if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(C->low_file), (void **)&C->High)) return (GMT_DATA_READ_ERROR);
+			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, C->high_file, C->High) == NULL) return (API->error);
 		}
 		if (transform) {
 			for (j = 0; j < C->ny; j++) {
@@ -722,7 +736,6 @@ GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LON
 		}
 		C->constrained = TRUE;
 	}
-	if ((C->set_low == 3 || C->set_high == 3) && (error = GMT_End_IO (GMT->parent, GMT_IN, 0))) return (error);	/* Disables further data input */
 
 	return (0);
 }
@@ -755,7 +768,9 @@ GMT_LONG write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, cha
 	}
 	GMT_free (GMT, C->Grid->data);
 	C->Grid->data = v2;
-	if (GMT_Put_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&grdfile, (void *)(C->Grid))) return (GMT_DATA_WRITE_ERROR);
+	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, grdfile, C->Grid) != GMT_OK) {
+		return (GMT->parent->error);
+	}
 	if (C->set_low) GMT_free (GMT, C->lower);
 	if (C->set_high) GMT_free (GMT, C->upper);
 	return (0);
@@ -1222,7 +1237,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 
 	/* Sort the data  */
 
-	qsort ((void *)C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
+	qsort (C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 
 	/* If more than one datum is indexed to same node, only the first should be kept.
 		Mark the additional ones as SURFACE_OUTSIDE
@@ -1239,7 +1254,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	}
 	
 	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be thrown away  */
-		qsort ((void *)C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
+		qsort (C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 		C->npoints -= n_outside;
 		C->data = GMT_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 		GMT_report (GMT, GMT_MSG_NORMAL, "%ld unusable points were supplied; these will be ignored.\n", n_outside);
@@ -1422,7 +1437,7 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LO
 	}
 
 	if (n_sug) {
-		qsort ((void *)sug, (size_t)n_sug, sizeof(struct SURFACE_SUGGESTION), compare_sugs);
+		qsort (sug, (size_t)n_sug, sizeof(struct SURFACE_SUGGESTION), compare_sugs);
 		for (i = 0; i < n_sug && i < 10; i++) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Hint: Choosing nx = %ld, ny = %ld might cut run time by a factor of %.8g\n",
 				sug[i].nx, sug[i].ny, sug[i].factor);
@@ -1565,15 +1580,15 @@ void *New_surface_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->A.value = 1.0;
 	C->Z.value = 1.4;
 		
-	return ((void *)C);
+	return (C);
 }
 
 void Free_surface_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->D.file) free ((void *)C->D.file);	
-	if (C->L.low)  free ((void *)C->L.low);	
-	if (C->L.high) free ((void *)C->L.high);	
+	if (C->G.file) free (C->G.file);	
+	if (C->D.file) free (C->D.file);	
+	if (C->L.low)  free (C->L.low);	
+	if (C->L.high) free (C->L.high);	
 	GMT_free (GMT, C);	
 }
 
@@ -1789,7 +1804,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_surface_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_surface_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -1797,8 +1812,8 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_surface", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "hirs" GMT_OPT("FH"), options))) Return (error);
-	Ctrl = (struct SURFACE_CTRL *) New_surface_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VRbf:", "hirs" GMT_OPT("FH"), options)) Return (API->error);
+	Ctrl = New_surface_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_surface_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the surface main code ----------------------------*/
@@ -1810,7 +1825,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	C.mode_type[0] = 'I';
 	C.mode_type[1] = 'D';	/* D means include data points when iterating */
 
-	C.Grid = GMT_create_grid (GMT);
+	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, C.Grid->header, options, FALSE);
 	GMT_memcpy (C.Grid->header->wesn, GMT->common.R.wesn, 4, double);
 
@@ -1867,8 +1882,8 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->D.active) {
 		greenwich = (C.Grid->header->wesn[XLO] < 0.0 && C.Grid->header->wesn[XHI] > 0.0);
 
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, (void **)&Ctrl->D.file, (void **)&Lin))
-			Return ((error = GMT_DATA_READ_ERROR));
+		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, Ctrl->D.file, NULL)) == NULL)
+			Return (API->error);
 		xyzline = Lin->table[0];			/* Can only be one table since we read a single file */
 
 		interp_breakline (GMT, &C, xyzline);
@@ -1877,8 +1892,6 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	remove_planar_trend (&C);
 	key = rescale_z_values (GMT, &C);
 	
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-
 	if (key == 1) {	/* Data lies exactly on a plane; just return the plane grid */
 		GMT_free (GMT, C.data);
 		C.Grid->data = GMT_memory (GMT, NULL, C.mxmy, float);
@@ -1942,7 +1955,6 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (C.set_high) GMT_free (GMT, C.upper);
 
 	if ((error = write_output_surface (GMT, &C, Ctrl->G.file))) Return (error);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	Return (GMT_OK);
 }

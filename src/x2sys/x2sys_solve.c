@@ -157,16 +157,16 @@ void *New_x2sys_solve_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_solve_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/* Deallocate control structure */
-	if (C->In.file) free ((void *)C->In.file);
-	if (C->C.col) free ((void *)C->C.col);
+	if (C->In.file) free (C->In.file);
+	if (C->C.col) free (C->C.col);
 #ifdef SAVEFORLATER
-	if (C->I.file) free ((void *)C->I.file);
+	if (C->I.file) free (C->I.file);
 #endif
-	if (C->T.TAG) free ((void *)C->T.TAG);
+	if (C->T.TAG) free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 
@@ -299,7 +299,7 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		GMT_chop (GMT, line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %s", name, date);
-		p[n] = (char *) strdup (name);
+		p[n] = strdup (name);
 		if (date[strlen(date)-1] != 'T') strcat (date, "T");
 		if (GMT_scanf (GMT, date, GMT_IS_ABSTIME, &T[n]) == GMT_IS_NAN) T[n] = GMT->session.d_NaN;
 		
@@ -350,7 +350,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_x2sys_solve_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_x2sys_solve_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -358,8 +358,8 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_x2sys_solve", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vb", ">", options))) Return (error);
-	Ctrl = (struct X2SYS_SOLVE_CTRL *)New_x2sys_solve_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vb", ">", options)) Return (API->error);
+	Ctrl = New_x2sys_solve_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_solve_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the x2sys_solve main code ----------------------------*/
@@ -458,7 +458,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		min_ID = INT_MAX;	max_ID = -INT_MAX;
 		n_expected_fields = n_active + Ctrl->W.active;
-		while ((n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in)) >= 0 && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
+		while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 			for (i = 0; i < 2; i++) {	/* Get IDs and keept track of min/max values */
 				ID[i][n_COE] = irint (in[i]);
 				if (ID[i][n_COE] < min_ID) min_ID = ID[i][n_COE];

@@ -129,7 +129,7 @@ void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->S.pen = GMT->current.setting.map_default_pen;
 #endif
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pstext_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Deallocate control structure */
@@ -520,7 +520,7 @@ GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG
 GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pstext task */
 
-	GMT_LONG i, nscan, length = 0, n_paragraphs = 0, n_add, n_fields, fmode, n_alloc = 0, m = 0;
+	GMT_LONG i, nscan, length = 0, n_paragraphs = 0, n_add, fmode, n_alloc = 0, m = 0;
 	GMT_LONG n_read = 0, n_processed = 0, txt_alloc = 0, old_is_world, add, n_expected_cols;
 	GMT_LONG error = FALSE, master_record = FALSE, skip_text_records = FALSE, pos, text_col;
 
@@ -542,7 +542,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pstext_usage (API, GMTAPI_USAGE, FALSE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pstext_usage (API, GMTAPI_SYNOPSIS, FALSE));	/* Return the synopsis */
@@ -550,8 +550,8 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_pstext", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRf:", "BKOPUXxYyachpt>" GMT_OPT("E"), options))) Return (error);
-	Ctrl = (struct PSTEXT_CTRL *)New_pstext_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJRf:", "BKOPUXxYyachpt>" GMT_OPT("E"), options)) Return (API->error);
+	Ctrl = New_pstext_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pstext_parse (API, Ctrl, options))) Return (error);
 	if (Ctrl->L.active) Return (GMT_pstext_usage (API, GMTAPI_SYNOPSIS, TRUE));	/* Return the synopsis with font listing */
 	PSL = GMT->PSL;		/* This module also needs PSL */
@@ -586,20 +586,32 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	old_is_world = GMT->current.map.is_world;
 	GMT->current.map.is_world = TRUE;
 
-	if ((error = GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
 	if (Ctrl->G.mode) {
-		n_alloc = GMT_SMALL_CHUNK;
-		(void)GMT_malloc3 (GMT, c_angle, c_x, c_y, n_alloc, 0, double);
+		n_alloc = 0;
+		GMT_malloc3 (GMT, c_angle, c_x, c_y, GMT_SMALL_CHUNK, &n_alloc, double);
 		c_txt = GMT_memory (GMT, NULL, n_alloc, char *);
 	}
 	
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_TEXT, (void **)&line)) != EOF) {	/* Keep returning records until we have no more files */
+	do {	/* Keep returning records until we have no more files */
+		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Keep returning records until we have no more files */
+			if (GMT_REC_IS_ERROR (GMT)) {
+				Return (EXIT_FAILURE);
+			}
+			if (GMT_REC_IS_TBL_HEADER (GMT)) {
+				continue;	/* Skip table headers */
+			}
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
-
-		if (GMT_REC_IS_TBL_HEADER (GMT)) continue;	/* Skip table headers */
+		/* Data record or segment header to process */
 
 		if (Ctrl->M.active) {	/* Paragraph mode */
 			if (GMT_REC_IS_SEG_HEADER (GMT)) {
@@ -827,7 +839,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			fmode = GMT_setfont (GMT, &T.font);
 			if (Ctrl->G.mode) {
 				if (m <= n_alloc) {
-					n_alloc = GMT_malloc3 (GMT, c_angle, c_x, c_y, m, n_alloc, double);
+					GMT_malloc3 (GMT, c_angle, c_x, c_y, m, &n_alloc, double);
 					c_txt = GMT_memory (GMT, c_txt, n_alloc, char *);
 				}
 				c_angle[m] = T.paragraph_angle;
@@ -846,8 +858,11 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->A.active) T.paragraph_angle = save_angle;	/* Restore original angle */
 		}
 
+	} while (TRUE);
+	
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (Ctrl->M.active) {
 		if (n_processed) {	/* Must output the last paragraph */

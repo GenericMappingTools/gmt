@@ -108,17 +108,17 @@ void *New_psrose_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->M.v_width  = VECTOR_LINE_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 2p */
 	C->M.h_width  = VECTOR_HEAD_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
 	C->M.h_length = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psrose_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->C.file) free ((void *)C->C.file);	
-	if (C->L.w) free ((void *)C->L.w);	
-	if (C->L.e) free ((void *)C->L.e);	
-	if (C->L.s) free ((void *)C->L.s);	
-	if (C->L.n) free ((void *)C->L.n);	
+	if (C->In.file) free (C->In.file);	
+	if (C->C.file) free (C->C.file);	
+	if (C->L.w) free (C->L.w);	
+	if (C->L.e) free (C->L.e);	
+	if (C->L.s) free (C->L.s);	
+	if (C->L.n) free (C->L.n);	
 	GMT_free (GMT, C);	
 }
 
@@ -297,7 +297,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, find_mean = FALSE, half_only = FALSE;
 	GMT_LONG automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
-	GMT_LONG n_bins, n_annot, n_alpha, n_modes, n_fields, form;
+	GMT_LONG n_bins, n_annot, n_alpha, n_modes, form;
 	GMT_LONG i, bin, n = 0, do_fill = FALSE, n_alloc = GMT_CHUNK;
 
 	char text[GMT_BUFSIZ], format[GMT_BUFSIZ];
@@ -320,7 +320,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_psrose_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_psrose_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -328,8 +328,8 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_psrose", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRb:", "BKOPUXxYychipst>" GMT_OPT("E"), options))) Return (error);
-	Ctrl = (struct PSROSE_CTRL *)New_psrose_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VRb:", "BKOPUXxYychipst>" GMT_OPT("E"), options)) Return (API->error);
+	Ctrl = New_psrose_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psrose_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
@@ -366,14 +366,27 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read data and do some stats */
 
 	n = 0;
-	if ((error = GMT_set_cols (GMT, GMT_IN, 2))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+	if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);	/* Bail for any i/o error */
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;		/* Skip all table and segment headers */
+		/* Data record to process */
 
 		length[n]  = in[GMT_X];
 		azimuth[n] = in[GMT_Y];
@@ -404,7 +417,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			azimuth = GMT_memory (GMT, azimuth, n_alloc, double);
 			length = GMT_memory (GMT, length, n_alloc, double);
 		}
-	}
+	} while (TRUE);
 
 	if (Ctrl->A.inc > 0.0) {	/* Sum up sector diagram info */
 		for (i = 0; i < n; i++) {
@@ -581,7 +594,9 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			mode_length[0] = mean_radius;
 		}
 		else {	/* Get mode parameters from separate file */
-			if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&Cin)) Return ((error = GMT_DATA_READ_ERROR));
+			if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+				Return (API->error);
+			}
 			P = Cin->table[0];	/* Can only be one table since we read a single file; We also only use the first segment */
 			n_modes = P->n_records;
 			mode_direction = P->segment[0]->coord[GMT_X];
@@ -603,7 +618,9 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
 
 	if (Ctrl->L.active) {	/* Deactivate those with - */
 		if (Ctrl->L.w[0] == '-' && Ctrl->L.w[1] == '\0') Ctrl->L.w[0] = '\0';
@@ -639,7 +656,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (half_only) {
 			char text[GMT_TEXT_LEN64];
 			if (!Ctrl->L.active) {	/* Use default labels */
-				free ((void *)Ctrl->L.w);	free ((void *)Ctrl->L.e);	free ((void *)Ctrl->L.n);
+				free (Ctrl->L.w);	free (Ctrl->L.e);	free (Ctrl->L.n);
 				if (GMT->current.setting.map_degree_symbol == gmt_none) {
 					Ctrl->L.w = strdup ("90W");
 					Ctrl->L.e = strdup ("90E");

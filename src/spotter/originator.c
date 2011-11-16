@@ -105,7 +105,6 @@
  */
  
 #include "spotter.h"
-#include "gmt_proj.h"
 
 EXTERN_MSC double GMT_great_circle_dist_degree (struct GMT_CTRL *C, double x0, double y0, double x1, double y1);
 EXTERN_MSC GMT_LONG GMT_great_circle_intersection (struct GMT_CTRL *T, double A[], double B[], double C[], double X[], double *CX_dist);
@@ -179,13 +178,13 @@ void *New_originator_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C->N.t_upper = 180.0;
 	C->S.n = 1;
 	C->W.dist = 1.0e100;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_originator_Ctrl (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->E.file) free ((void *)C->E.file);	
-	if (C->F.file) free ((void *)C->F.file);	
+	if (C->E.file) free (C->E.file);	
+	if (C->F.file) free (C->F.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -340,7 +339,7 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 
 GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n_max_spots, n_input, n_fields, n_expected_fields, n_out, better;
+	GMT_LONG n_max_spots, n_input, n_expected_fields, n_out, better;
 	GMT_LONG i, j, k, n, kk, ns, nh, nc, np, n_read, n_skipped = 0, error = FALSE;
 
 	double x_smt, y_smt, z_smt, r_smt, t_smt, *c, *in = NULL, dist, dlon, out[5];
@@ -359,7 +358,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_originator_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_originator_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -367,9 +366,9 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_originator", &GMT_cpy);				/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("HMm"), options))) Return (error);
-	if (GMT_Find_Option (API, 'f', options, &ptr)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
-	Ctrl = (struct ORIGINATOR_CTRL *) New_originator_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("HMm"), options)) Return (API->error);
+	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
+	Ctrl = New_originator_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_originator_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the originator main code ----------------------------*/
@@ -405,20 +404,39 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_FLOAT;
 		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT; /* NO lon/lat out */
 	}
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_out))) Return (error);
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_expected_fields))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+	if ((error = GMT_set_cols (GMT, GMT_IN, n_out)) != GMT_OK) {
+		Return (error);
+	}
+	if ((error = GMT_set_cols (GMT, GMT_OUT, n_expected_fields)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 
 	n_read = 0;
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	do {	/* Keep returning records until we reach EOF */
+		n_read++;
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT) && n_fields < 2) continue;
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Echo table headers */
-
+		/* Data record to process */
+	
 		if (n_input == 3) {	/* set constant r,t values */
 			in[3] = Ctrl->Q.r_fix;
 			in[4] = Ctrl->Q.t_fix;
@@ -527,7 +545,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (hot[j].stage == 0) hot[j].stage++;
 		}
 
-		if (nh > 1) qsort ((void *)hot, (size_t)nh, sizeof(struct HOTSPOT_ORIGINATOR), comp_hs);
+		if (nh > 1) qsort (hot, (size_t)nh, sizeof(struct HOTSPOT_ORIGINATOR), comp_hs);
 
 		if (hot[0].np_dist < Ctrl->W.dist) {
 			if (Ctrl->L.mode == 1) {	/* Want time, dist, z output */
@@ -564,15 +582,20 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					strcat (record, buffer);
 				}
 				strcat (record, "\n");
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 		}
 
 		GMT_free (GMT, c);
 		n++;
+	} while (TRUE);
+	
+	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Working on seamount # %5ld\n", n);
 

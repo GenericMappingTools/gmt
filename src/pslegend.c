@@ -84,12 +84,12 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	C->F.dx = C->C.dx;	C->F.dy = -C->C.dy;			/* Default is (4p, -4p) */
 	GMT_init_fill (GMT, &C->F.fill, 0.5, 0.5, 0.5);			/* Default is gray shade if used */
 	C->L.spacing = 1.1;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pslegend_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->S.file) free ((void *)C->S.file);
+	if (C->S.file) free (C->S.file);
 	GMT_free (GMT, C);
 }
 
@@ -290,7 +290,7 @@ void drawbase (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double x1, dou
 
 GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pslegend task */
-	GMT_LONG i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan, n_fields;
+	GMT_LONG i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
 	GMT_LONG flush_paragraph = FALSE, draw_vertical_line = FALSE, gave_label, gave_mapscale_options;
 	GMT_LONG dim[4] = {1, 1, 0, 2}, status, object_ID, did_old = FALSE;
 
@@ -330,7 +330,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pslegend_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pslegend_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -338,8 +338,8 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_pslegend", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJR", "BKOPXYcpt>", options))) Return (error);
-	Ctrl = (struct PSLEGEND_CTRL *)New_pslegend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJR", "BKOPXYcpt>", options)) Return (API->error);
+	Ctrl = New_pslegend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pslegend_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
@@ -351,8 +351,12 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	save_EOF = GMT->current.setting.io_seg_marker[GMT_IN];
 	GMT->current.setting.io_seg_marker[GMT_IN] = '#';
 #endif
-	if ((error = GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) Return (error);				/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
 		double wesn[4];
@@ -364,8 +368,8 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
 	else {
-		GMT_Find_Option (API, 'R', options, &r_ptr);
-		GMT_Find_Option (API, 'J', options, &j_ptr);
+		r_ptr = GMT_Find_Option (API, 'R', options);
+		j_ptr = GMT_Find_Option (API, 'J', options);
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 	}
 	GMT_plotinit (GMT, options);
@@ -427,15 +431,15 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	txtcolor[0] = 0;
 
 	dim[2] = 2;	/* We will a 2-row data set for fronts */
-	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&Front, -1, &object_ID))) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for pslegend\n");
-		return (GMT_RUNTIME_ERROR);
+	if ((Front = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) {
+		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a Front text set for pslegend\n");
+		return (API->error);
 	}
 	dim[2] = GMT_SMALL_CHUNK;	/* We will allocate 3 more textsets; one for text, paragraph text, symbols */
 	for (id = 0; id < N_CMD; id++) {
-		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim, (void **)&D[id], -1, &object_ID))) {
+		if ((D[id] = GMT_Create_Data (API, GMT_IS_TEXTSET, dim)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for pslegend\n");
-			Return (GMT_RUNTIME_ERROR);
+			Return (API->error);
 		}
 	}
 
@@ -443,10 +447,17 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (guide) drawbase (GMT, PSL, Ctrl->D.lon, Ctrl->D.lon + Ctrl->D.width, y0);
 #endif
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_TEXT, (void **)&line)) != EOF) {	/* Keep returning records until we have no more files */
+	do {	/* Keep returning records until we reach EOF */
+		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
-		if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
+		/* Data record to process */
 
 		if (line[0] != 'T' && flush_paragraph) {	/* Flush contents of pending paragraph [Call GMT_pstext] */
 			flush_paragraph = FALSE;
@@ -459,7 +470,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sscanf (&line[2], "%s %s %s %[^\n]", bar_cpt, bar_gap, bar_height, bar_opts);
 				x_off = GMT_to_inch (GMT, bar_gap);
 				sprintf (buffer, "-C%s -O -K -D%gi/%gi/%gi/%sh %s", bar_cpt, Ctrl->D.lon + 0.5 * Ctrl->D.width, y0, Ctrl->D.width - 2 * x_off, bar_height, bar_opts);
-				status = GMT_psscale (API, 0, (void *)buffer);	/* Plot the colorbar */
+				status = GMT_psscale (API, 0, buffer);	/* Plot the colorbar */
 				y0 -= GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 				column_number = 0;
 				API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psscale */
@@ -518,7 +529,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				x_off = Ctrl->D.lon;
 				x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width - Ctrl->C.dx : 0.5 * Ctrl->D.width);
 				sprintf (buffer, "-O -K %s -W%s -C%gi/%gi/%s", image, size, x_off, y0, key);
-				status = GMT_psimage (API, 0, (void *)buffer);	/* Plot the image */
+				status = GMT_psimage (API, 0, buffer);	/* Plot the image */
 				y0 -= GMT_to_inch (GMT, size) * (double)header.height / (double)header.width;
 				column_number = 0;
 				break;
@@ -585,7 +596,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 					sprintf (buffer, "-R%s -J%s -O -K -L%s", r_ptr->arg, j_ptr->arg, &mapscale[k]);
 				}
-				status = GMT_psbasemap (API, 0, (void *)buffer);	/* Plot the scale */
+				status = GMT_psbasemap (API, 0, buffer);	/* Plot the scale */
 				if (gave_label && just == 'b') y0 -= d_off;
 				y0 -= GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
 				column_number = 0;
@@ -667,12 +678,16 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					F->coord[GMT_X][0] = x_off + off_ss-x;	F->coord[GMT_Y][0] = y0;
 					F->coord[GMT_X][1] = x_off + off_ss+x;	F->coord[GMT_Y][1] = y0;
 					Front->n_records = F->n_rows = 2;
-					if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_LINE, GMT_IN, (void **)&Front, NULL, (void *)Front, &object_ID)) Return (EXIT_FAILURE);
-					GMT_Encode_ID (API, string, object_ID);	/* Make filename with embedded object ID */
+					if ((object_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_LINE, GMT_IN, Front, NULL)) == GMTAPI_NOTSET) {
+						Return (API->error);
+					}
+					if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {	/* Make filename with embedded object ID */
+						Return (API->error);
+					}
 					sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -S%s%s %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], symbol, &size[i], string);
 					if (txt_c[0] != '-') {strcat (buffer, " -G"); strcat (buffer, txt_c);}
 					if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
-					status = GMT_psxy (API, 0, (void *)buffer);	/* Plot the front */
+					status = GMT_psxy (API, 0, buffer);	/* Plot the front */
 					API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psxy */
 				}
 				else {	/* Regular symbols */
@@ -779,9 +794,11 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				Return (GMT_RUNTIME_ERROR);
 			break;
 		}
-	}
+	} while (TRUE);
 
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
 #ifdef GMT_COMPAT
 	/* Reset the flag */
 	GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
@@ -789,40 +806,51 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	Front->alloc_mode = GMT_ALLOCATED;	/* So we can free it */
 	if (!F) GMT_free_dataset (GMT, &Front);	/* Was unused so free explicitly */
-	else GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Front);
+	else if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Front) != GMT_OK) {
+		Return (API->error);
+	}
 	
 	/* Time to plot any symbols, text, and paragraphs we collected in the loop */
 
 	if (S[SYM] && S[SYM]->n_rows) {
 		/* Create option list, register D[SYM] as input source */
-		if (GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, (void **)&D[SYM], NULL, (void *)D[SYM], &object_ID)) Return (EXIT_FAILURE);
-		GMT_Encode_ID (API, string, object_ID);	/* Make filename with embedded object ID */
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D[SYM], NULL)) == GMTAPI_NOTSET) {
+			Return (API->error);
+		}
+		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
+			Return (API->error);	/* Make filename with embedded object ID */
+		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		status = GMT_psxy (API, 0, (void *)buffer);	/* Plot the symbols */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[SYM]);
+		if (GMT_psxy (API, 0, buffer) != GMT_OK) {
+			Return (API->error);	/* Plot the symbols */
+		}
 	}
-	else
-		GMT_free_textset (GMT, &D[SYM]);
 	if (S[TXT] && S[TXT]->n_rows) {
 		/* Create option list, register D[TXT] as input source */
-		if (GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, (void **)&D[TXT], NULL, (void *)D[TXT], &object_ID)) Return (EXIT_FAILURE);
-		GMT_Encode_ID (API, string, object_ID);	/* Make filename with embedded object ID */
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D[TXT], NULL)) == GMTAPI_NOTSET) {
+			Return (API->error);
+		}
+		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
+			Return (API->error);	/* Make filename with embedded object ID */
+		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -F+f+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		status = GMT_pstext (API, 0, (void *)buffer);	/* Plot the symbols */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[TXT]);
+		if (GMT_pstext (API, 0, buffer) != GMT_OK) {
+			Return (API->error);	/* Plot the symbols */
+		}
 	}
-	else
-		GMT_free_textset (GMT, &D[TXT]);
 	if (S[PAR] && S[PAR]->n_rows) {
 		/* Create option list, register D[PAR] as input source */
-		if (GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, (void **)&D[PAR], NULL, (void *)D[PAR], &object_ID)) Return (EXIT_FAILURE);
-		GMT_Encode_ID (API, string, object_ID);	/* Make filename with embedded object ID */
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D[PAR], NULL)) == GMTAPI_NOTSET) {
+			Return (API->error);
+		}
+		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
+			Return (API->error);	/* Make filename with embedded object ID */
+		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -M -F+f+a+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		status = GMT_pstext (API, 0, (void *)buffer);	/* Plot the symbols */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[PAR]);
+		if (GMT_pstext (API, 0, buffer) != GMT_OK) Return (API->error);	/* Plot the symbols */
 	}
-	else
-		GMT_free_textset (GMT, &D[PAR]);
+
+	for (id = 0; id < 3; id++) GMT_free_textset (GMT, &D[id]);	/* Free directly since never used in Get|Put statements */
 
 	GMT_map_basemap (GMT);
 	GMT_plotend (GMT);

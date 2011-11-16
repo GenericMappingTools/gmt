@@ -149,16 +149,16 @@ void *New_gmt2kml_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->Z.max[ALT] = -1.0;
 	C->W.pen = GMT->current.setting.map_default_pen; C->W.pen.width = 1.0;		/* Default pen width = 1p */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmt2kml_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deallocate control structure */
-	if (C->C.file) free ((void *)C->C.file);
-	if (C->D.file) free ((void *)C->D.file);
-	if (C->I.file) free ((void *)C->I.file);
-	if (C->N.fmt) free ((void *)C->N.fmt);
-	if (C->T.title) free ((void *)C->T.title);
-	if (C->T.folder) free ((void *)C->T.folder);
+	if (C->C.file) free (C->C.file);
+	if (C->D.file) free (C->D.file);
+	if (C->I.file) free (C->I.file);
+	if (C->N.fmt) free (C->N.fmt);
+	if (C->T.title) free (C->T.title);
+	if (C->T.folder) free (C->T.folder);
 	GMT_free (GMT, C->L.ext);
 	GMT_free (GMT, C);
 }
@@ -351,7 +351,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				break;
 			case 'I':	/* Custom icon */
 	 			Ctrl->I.active = TRUE;
-				free ((void *)Ctrl->I.file);
+				free (Ctrl->I.file);
 				if (opt->arg[0] == '+')
 					sprintf (buffer, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
 				else if (opt->arg[0])
@@ -608,7 +608,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmt2kml_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmt2kml_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -616,8 +616,8 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_gmt2kml", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghiOK>" GMT_OPT("HMm"), options))) Return (error);
-	Ctrl = (struct GMT2KML_CTRL *) New_gmt2kml_Ctrl (GMT);		/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vbf:", "ghiOK>" GMT_OPT("HMm"), options)) Return (API->error);
+	Ctrl = New_gmt2kml_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmt2kml_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmt2kml main code ----------------------------*/
@@ -627,10 +627,10 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 	label[0] = '\0';
 	
-	if (Ctrl->C.active) {
-		if ((error = GMT_Begin_IO (API, GMT_IS_CPT, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (Ctrl->C.active) {	/* Process CPT file */
+		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		if (P->is_continuous) {
 			GMT_message (GMT, "Cannot use continuous color palette\n");
 			Return (EXIT_FAILURE);
@@ -734,15 +734,27 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->N.mode == GET_LABEL) { /* Special ASCII table processing */
-		GMT_LONG n_fields, ix, iy, n_rec = 0;
+		GMT_LONG ix, iy, n_rec = 0;
 		char *record = NULL, C[5][GMT_TEXT_LEN64];
 
 		ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
-		if ((error = GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-		if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
-		while ((n_fields = GMT_Get_Record (API, GMT_READ_TEXT, (void **)&record)) != EOF) {	/* Keep returning records until we have no more files */
-			if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table headers */
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
+		
+		do {	/* Keep returning records until we reach EOF */
+			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+					continue;
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
+			}
+
 			switch (n_coord) {
 				case 2:	/* Just lon, lat, label */
 					sscanf (record, "%s %s %[^\n]", C[ix], C[iy], label);
@@ -823,8 +835,11 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			tabs (--N); printf ("</Placemark>\n");
 			n_rec++;
 			if (!(n_rec%10000)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed %ld points\n", n_rec);
+		} while (TRUE);
+		
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
 		}
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	}
 	else {	/* Read regular data table */
 		GMT_LONG tbl, seg, row;
@@ -835,10 +850,12 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #else
 		char *t_opt = "-T";
 #endif
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return ((error = GMT_DATA_READ_ERROR));
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
 		if (GMT->common.R.active && first) {	/* Issue Region tag as given on commmand line*/
 			place_region_tag (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->Z.min, Ctrl->Z.max, N);
 			first = FALSE;

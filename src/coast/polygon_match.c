@@ -136,7 +136,7 @@ int main (int argc, char **argv) {
 			
 			new_P[id1].brother = id2;
 			old_P[id2].brother = id1;
-			memset ((void *)alarm, 0, 32);
+			memset (alarm, 0, 32);
 			if (new_P[id1].h.id != old_P[id2].h.id) strcat (alarm, " I");			/* I = Id mismatch */
 			if (new_P[id1].h.n != old_P[id2].h.n) strcat (alarm, " #");			/* # = number of points mismatch */
 			if ((new_P[id1].h.greenwich & 1) != (old_P[id2].h.greenwich & 1)) strcat (alarm, " G");	/* G = greenwich mismatch */
@@ -174,14 +174,14 @@ int main (int argc, char **argv) {
 	/* Free all polygons and report if something is missing */
 	for (id1 = 0; id1 < n_A; id1++) {
 		if (new_P[id1].brother == NOT_PRESENT) printf ("New %d not in old file\n", id1);
-		GMT_free ((void *)new_P[id1].p);
+		GMT_free (new_P[id1].p);
 	}
 	for (id2 = 0; id2 < n_B; id2++) {
 		if (old_P[id2].brother == NOT_PRESENT) printf ("Old %d not in new file\n", id2);
-		GMT_free ((void *)old_P[id2].p);
+		GMT_free (old_P[id2].p);
 	}
-	GMT_free ((void *)new_P);
-	GMT_free ((void *)old_P);
+	GMT_free (new_P);
+	GMT_free (old_P);
 	crude_free_int (IX, IY, N);
 	
 #ifdef DEBUG
@@ -195,7 +195,7 @@ int main (int argc, char **argv) {
 int pol_readheader_old (struct GMT3_POLY_OLD *h, FILE *fp)
 {
 	int n;
-	n = fread ((void *)h, sizeof (struct GMT3_POLY_OLD), 1, fp);
+	n = fread (h, sizeof (struct GMT3_POLY_OLD), 1, fp);
 #ifndef WORDS_BIGENDIAN
 	swab_polheader_old (h);
 #endif

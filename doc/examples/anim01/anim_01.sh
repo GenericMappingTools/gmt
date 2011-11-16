@@ -16,6 +16,7 @@ height=2i
 dpi=125
 n_frames=18
 name=`basename $0 '.sh'`
+ps=../${name}.ps
 # 1b) Do frame-independent calculations and setup
 angle_step=`gmtmath -Q 360 $n_frames DIV =`
 angle_inc=`gmtmath -Q $angle_step 10 DIV =`
@@ -44,7 +45,7 @@ while [ $frame -le $n_frames ]; do
 		-N -Dj0.1i/0.05i >> $$.ps
 	psxy -R -J -O -T >> $$.ps
 	if [ $# -eq 0 ]; then
-		mv $$.ps ../$name.ps
+		mv $$.ps $ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"
 	fi

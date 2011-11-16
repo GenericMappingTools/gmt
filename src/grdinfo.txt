@@ -5,7 +5,7 @@ grdinfo \- Extract information from grids
 .SH SYNOPSIS
 BD(grdinfo) IT(grdfiles) [ OPT(C) ] [ OPT(F) ] 
 [ OPT(I)[IT(dx)[/IT(dy)]] ] [ OPT(L)[BD(0)|BD(1)|)2)] ] 
-[ OPT(M) ] [ GMT_Rgeo_OPT ] [ OPT(T)IT(dz) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+[ OPT(M) ] [ GMT_Rgeo_OPT ] [ OPT(T)[BD(s)IT(dz) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 BD(grdinfo) reads a 2-D binary grid file and reports various statistics for
 the (IT(x),IT(y),IT(z)) data in the grid file(s).  The output information contains the
@@ -59,7 +59,8 @@ boundaries of the grid, only the common region will be extracted.
 .TP
 OPT(T)IT(dz)
 Determine min and max z-value, round off to multiples of IT(dz), and report as the text string
-OPT(T)IT(zmin/zmax/dz) for use by BD(makecpt).
+OPT(T)IT(zmin/zmax/dz) for use by BD(makecpt). To get a symmetrical range about zero, using the
+max absolute multiple of IT(dz), use OPT(Ts)IT(dz) instead.
 #include "explain_-V.txt" 
 #include "explain_-f.txt"
 #include "explain_help.txt"

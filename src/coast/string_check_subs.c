@@ -403,7 +403,7 @@ int new_stringcheck (struct LONGPAIR p[], int *n, double x[], double y[], int id
 		free((char *)c.y);
 		free((char *)c.xnode[0]);
 		free((char *)c.xnode[1]);
-		free ((void *)ylist);
+		free (ylist);
 		return(0);
 	}
 
@@ -469,7 +469,7 @@ int new_stringcheck (struct LONGPAIR p[], int *n, double x[], double y[], int id
 			p[i].y = pp[i].y;
 		}
 		free ((char *)pp);
-		free ((void *)ylist);
+		free (ylist);
 		
 	}
 	return(nx);

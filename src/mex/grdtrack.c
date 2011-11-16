@@ -27,7 +27,6 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	GMT_LONG status;
 	struct	GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct	GMT_VECTOR *Vi = NULL, *Vo = NULL;
-	struct	GMT_GRID *Gin = NULL;
 	float	*Z = NULL;
 	char	*input = NULL, *inputG = NULL, *output = NULL, *options = NULL, *cmd = NULL; 
 	int	n_cols, n_start;
@@ -46,14 +45,14 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (!mxIsChar(prhs[nrhs-1]) && nrhs != 4) mexErrMsgTxt ("Last input must contain the options string\n");
 
 	/* Initializing new GMT session */
-	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("Failure to create GMT Session\n");
+	if ((API = GMT_Create_Session ("GMT/MEX-API", FUNC_MODE)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* Make sure options are given, and get them */
 	options = GMTMEX_options_init (API, prhs, nrhs);
 
 	/* Set up input grid (actual or via Matlab matrix) */
 	if (!mxIsChar(prhs[0]) && mxGetM(prhs[0]) > 1 && mxGetN(prhs[0]) > 1) 
-		inputG = GMTMEX_src_grid_init (API, prhs, nrhs, &Gin);
+		inputG = GMTMEX_src_grid_init (API, prhs, nrhs);
 
 	/* Set up input file (actual or via Matlab vectors) */
 	n_cols = 2;	n_start = 2;
@@ -75,7 +74,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	mexPrintf ("cmd = (%s)\n", cmd);
 
 	/* Run blockmean module, and give usage message if errors arise during parsing */
-	if ((status = GMT_grdtrack (API, 0, (void *)cmd))) mexErrMsgTxt ("Run-time error\n");
+	if ((status = GMT_grdtrack (API, 0, cmd))) mexErrMsgTxt ("Run-time error\n");
 	
 	/* Pass output arguments to Matlab column vectors. */
 	if (nlhs) GMTMEX_prep_mextbl (API, plhs, nlhs, Vo);

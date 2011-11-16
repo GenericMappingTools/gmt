@@ -41,45 +41,40 @@ int main (int argc, char *argv[]) {
 	struct GMT_GRID *Gin = NULL, *Gout = NULL;
 
 	/* 1. Initializing new GMT session */
-	if (GMT_Create_Session (&API, "TEST", GMTAPI_GMT)) exit (EXIT_FAILURE);
-
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN,  GMT_BY_SET)) exit (EXIT_FAILURE);				/* Enables data input and sets access mode */
+	if ((API = GMT_Create_Session ("TEST", GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. READING IN A GRID */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&in_grid, (void **)&Gin)) exit (EXIT_FAILURE);
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, in_grid, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* 3. PREPARING SOURCE AND DESTINATION FOR GMT_grdcut */
 	/* 3a. Register the Gin grid to be the source read by grdcut by passing a pointer */
-	if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_COPY, GMT_IS_SURFACE, GMT_IN, (void **)&Gin, NULL, (void *)Gin, &in_grdcut_ID)) exit (EXIT_FAILURE);
+	if ((in_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_COPY, GMT_IS_SURFACE, GMT_IN, Gin, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	/* 3b. Register a grid struct Gout to be the destination allocated and written to by grdcut */
-	if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, (void **)&Gout, NULL, (void *)Gout, &out_grdcut_ID)) exit (EXIT_FAILURE);
+	if ((out_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 
 	/* 4. Create linked options for GMT_grdcut equivalent to "grdcut t.nc -R2/4/2/4 -Gnew.nc -V" */
 
-	GMT_Encode_ID (API, string, in_grdcut_ID);	/* Make filename with embedded object ID */
-	if (GMT_Make_Option (API, '<', string, &new)) exit (EXIT_FAILURE);
-	if (GMT_Append_Option (API, new, &head)) exit (EXIT_FAILURE);
+	if (GMT_Encode_ID (API, string, in_grdcut_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+	if ((new = GMT_Make_Option (API, '<', string)) == NULL) exit (EXIT_FAILURE);
+	if ((head = GMT_Append_Option (API, new, NULL)) == NULL) exit (EXIT_FAILURE);
 	sprintf (string, "%g/%g/%g/%g", w, e, s, n);		/* Create argument for -R option */
-	if (GMT_Make_Option (API, 'R', string, &new)) exit (EXIT_FAILURE);
-	if (GMT_Append_Option (API, new, &head)) exit (EXIT_FAILURE);
-	GMT_Encode_ID (API, string, out_grdcut_ID);	/* Make -Gfilename with embedded object ID */
-	if (GMT_Make_Option (API, 'G', string, &new)) exit (EXIT_FAILURE);
-	if (GMT_Append_Option (API, new, &head)) exit (EXIT_FAILURE);
-	if (GMT_Make_Option (API, 'V', NULL, &new)) exit (EXIT_FAILURE);	/* Add -V*/
-	if (GMT_Append_Option (API, new, &head)) exit (EXIT_FAILURE);
+	if ((new = GMT_Make_Option (API, 'R', string)) == NULL) exit (EXIT_FAILURE);
+	if ((head = GMT_Append_Option (API, new, head)) == NULL) exit (EXIT_FAILURE);
+	if (GMT_Encode_ID (API, string, out_grdcut_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make -Gfilename with embedded object ID */
+	if ((new = GMT_Make_Option (API, 'G', string)) == NULL) exit (EXIT_FAILURE);
+	if ((head = GMT_Append_Option (API, new, head)) == NULL) exit (EXIT_FAILURE);
+	if ((new = GMT_Make_Option (API, 'V', NULL)) == NULL) exit (EXIT_FAILURE);	/* Add -V*/
+	if ((head = GMT_Append_Option (API, new, head)) == NULL) exit (EXIT_FAILURE);
 
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = GMT_grdcut (API, -1, (void *)head);	/* This allocates memory for the export grid associated with the -G option */
+	status = GMT_grdcut (API, -1, head);	/* This allocates memory for the export grid associated with the -G option */
+	if ((Gout = GMT_Retrieve_Data (API, out_grdcut_ID)) == NULL) exit (EXIT_FAILURE);
 
 	/* 6. Destroy local linked option list */
 	if (GMT_Destroy_Options (API, &head)) exit (EXIT_FAILURE);
 
 	/* 7. WRITING THE RESULT TO FILE */
-	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) exit (EXIT_FAILURE);				/* Enables data input and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&out_grid, Gout)) exit (EXIT_FAILURE);
-
-	if (GMT_End_IO (API, GMT_IN,  0)) exit (EXIT_FAILURE);		/* Disables further data output */
-	if (GMT_End_IO (API, GMT_OUT, 0)) exit (EXIT_FAILURE);		/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, out_grid, Gout) != GMT_OK) exit (EXIT_FAILURE);
 
 	/* 8. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);

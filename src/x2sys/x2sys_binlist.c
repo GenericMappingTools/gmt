@@ -56,11 +56,11 @@ void *New_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *C) {	/* Deallocate control structure */
-	if (C->T.TAG) free ((void *)C->T.TAG);
+	if (C->T.TAG) free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 
@@ -192,7 +192,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_x2sys_binlist_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_x2sys_binlist_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -200,8 +200,8 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_x2sys_binlist", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vf", ">", options))) Return (error);
-	Ctrl = (struct X2SYS_BINLIST_CTRL *)New_x2sys_binlist_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vf", ">", options)) Return (API->error);
+	Ctrl = New_x2sys_binlist_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_binlist_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the x2sys_binlist main code ----------------------------*/
@@ -278,7 +278,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_memset (B.binflag, B.nm_bin, unsigned int);
 		if (Ctrl->D.active) {
 			GMT_memset (dist_bin, B.nm_bin, double);
-			GMT_err_fail (GMT, GMT_dist_array (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -s->dist_flag, &dist_km), "");	/* -ve gives increments */
+			if ((dist_km = GMT_dist_array (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -s->dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 		}
 
 		last_bin_ij = last_bin_i = last_bin_j = -1;
@@ -374,7 +374,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				
 				/* Here we have 1 or more intersections */
 				
-				qsort ((void *)X, (size_t)nx, sizeof (struct BINCROSS), comp_bincross);
+				qsort (X, (size_t)nx, sizeof (struct BINCROSS), comp_bincross);
 				
 				for (k = 1, k1 = 0; k < nx; k++, k1++) {	/* Process the intervals, getting mid-points and using that to get bin */
 					dx = X[k].x - X[k1].x;

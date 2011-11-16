@@ -48,7 +48,7 @@ void * New_gmtaverage_Ctrl (struct GMT_CTRL *G) {	/* Allocate and initialize a n
 	C = GMT_memory (G, NULL, 1, struct  GMTAVERAGE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtaverage_Ctrl (struct GMT_CTRL *G, struct  GMTAVERAGE_CTRL *C) {	/* Deallocate control structure */
@@ -185,7 +185,7 @@ GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtaverage_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmtaverage_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -193,15 +193,15 @@ GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_gmtaverage", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "aghior>" GMT_OPT("H"), options))) Return (error);
-	Ctrl = (struct GMTAVERAGE_CTRL *) New_gmtaverage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VRbf:", "aghior>" GMT_OPT("H"), options)) Return (API->error);
+	Ctrl = New_gmtaverage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtaverage_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmtaverage main code ----------------------------*/
 
 	/* Determine which value to report and use that to select correct GMT module */
 	
-	GMT_Find_Option (API, 'T', options, &t_ptr);	/* Find the required -T option */
+	t_ptr = GMT_Find_Option (API, 'T', options);	/* Find the required -T option */
 	
 	switch (t_ptr->arg[0]) {	/* Determine what GMT_block* module we need */
 		case 'm': case 'n': case 's': case 'w':	/* Call blockmean */

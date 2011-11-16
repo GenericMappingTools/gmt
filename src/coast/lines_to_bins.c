@@ -167,10 +167,10 @@ int main (int argc, char **argv)
 					n_int++;
 					if (kk == n_alloc) {
 						n_alloc += GMT_SMALL_CHUNK;
-						ix = (int *) GMT_memory ((char *)ix, n_alloc, sizeof (int), "lines_to_bins");
-						iy = (int *) GMT_memory ((char *)iy, n_alloc, sizeof (int), "lines_to_bins");
-						xx = (int *) GMT_memory ((char *)xx, n_alloc, sizeof (int), "lines_to_bins");
-						yy = (int *) GMT_memory ((char *)yy, n_alloc, sizeof (int), "lines_to_bins");
+						ix = (int *) GMT_memory (ix, n_alloc, sizeof (int), "lines_to_bins");
+						iy = (int *) GMT_memory (iy, n_alloc, sizeof (int), "lines_to_bins");
+						xx = (int *) GMT_memory (xx, n_alloc, sizeof (int), "lines_to_bins");
+						yy = (int *) GMT_memory (yy, n_alloc, sizeof (int), "lines_to_bins");
 					}
 				}
 			}
@@ -187,10 +187,10 @@ int main (int argc, char **argv)
 					n_int++;
 					if (kk == n_alloc) {
 						n_alloc += GMT_SMALL_CHUNK;
-						ix = (int *) GMT_memory ((char *)ix, n_alloc, sizeof (int), "lines_to_bins");
-						iy = (int *) GMT_memory ((char *)iy, n_alloc, sizeof (int), "lines_to_bins");
-						xx = (int *) GMT_memory ((char *)xx, n_alloc, sizeof (int), "lines_to_bins");
-						yy = (int *) GMT_memory ((char *)yy, n_alloc, sizeof (int), "lines_to_bins");
+						ix = (int *) GMT_memory (ix, n_alloc, sizeof (int), "lines_to_bins");
+						iy = (int *) GMT_memory (iy, n_alloc, sizeof (int), "lines_to_bins");
+						xx = (int *) GMT_memory (xx, n_alloc, sizeof (int), "lines_to_bins");
+						yy = (int *) GMT_memory (yy, n_alloc, sizeof (int), "lines_to_bins");
 					}
 				}
 			}
@@ -199,10 +199,10 @@ int main (int argc, char **argv)
 			kk++;
 			if (kk == n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
-				ix = (int *) GMT_memory ((char *)ix, n_alloc, sizeof (int), "lines_to_bins");
-				iy = (int *) GMT_memory ((char *)iy, n_alloc, sizeof (int), "lines_to_bins");
-				xx = (int *) GMT_memory ((char *)xx, n_alloc, sizeof (int), "lines_to_bins");
-				yy = (int *) GMT_memory ((char *)yy, n_alloc, sizeof (int), "lines_to_bins");
+				ix = (int *) GMT_memory (ix, n_alloc, sizeof (int), "lines_to_bins");
+				iy = (int *) GMT_memory (iy, n_alloc, sizeof (int), "lines_to_bins");
+				xx = (int *) GMT_memory (xx, n_alloc, sizeof (int), "lines_to_bins");
+				yy = (int *) GMT_memory (yy, n_alloc, sizeof (int), "lines_to_bins");
 			}
 		}
 		
@@ -324,8 +324,8 @@ int main (int argc, char **argv)
 			nn++;
 			if (nn > (n_alloc-5)) {
 				n_alloc += GMT_CHUNK;
-				xx = (int *) GMT_memory ((char *)xx, n_alloc, sizeof (int), "polygon_to_bins");
-				yy = (int *) GMT_memory ((char *)yy, n_alloc, sizeof (int), "polygon_to_bins");
+				xx = (int *) GMT_memory (xx, n_alloc, sizeof (int), "polygon_to_bins");
+				yy = (int *) GMT_memory (yy, n_alloc, sizeof (int), "polygon_to_bins");
 			}
 			i_x_1 = i_x_2;
 			i_y_1 = i_y_2;
@@ -370,10 +370,10 @@ int main (int argc, char **argv)
 				s->p[k].dy = (ushort) test_long;
 			}
 			
-			free ((void *)xx);
-			free ((void *)yy);
-			free ((void *)ix);
-			free ((void *)iy);
+			free (xx);
+			free (yy);
+			free (ix);
+			free (iy);
 			
 			continue;
 		}
@@ -455,10 +455,10 @@ int main (int argc, char **argv)
 			}
 		}
 		
-		free ((void *)xx);
-		free ((void *)yy);
-		free ((void *)ix);
-		free ((void *)iy);
+		free (xx);
+		free (yy);
+		free (ix);
+		free (iy);
 		
 		/* Now go back up and read next polygon */
 		
@@ -503,7 +503,7 @@ int main (int argc, char **argv)
 	sprintf (file, "%s.pt", argv[3]);
 	fp_pt = fopen (file, "wb");
 	
-	if (fwrite ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {
+	if (fwrite (&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {
 		fprintf (stderr, "lines_to_bins: Error writing file header\n");
 		exit (EXIT_FAILURE);
 	}
@@ -512,7 +512,7 @@ int main (int argc, char **argv)
 	
 		if (b%100 == 0) fprintf(stderr,"lines_to_bins: Working on bin number %d\r", b);
 		
-		if (fwrite ((void *)&bin_head[b], sizeof (struct GMT3_BIN_HEADER), (size_t)1, fp_bin) != 1) {
+		if (fwrite (&bin_head[b], sizeof (struct GMT3_BIN_HEADER), (size_t)1, fp_bin) != 1) {
 			fprintf (stderr, "lines_to_bins: Error writing bin header for bin # %d\n", b);
 			exit (EXIT_FAILURE);
 		}
@@ -523,15 +523,15 @@ int main (int argc, char **argv)
 			seg_head.first_p = np;
 			seg_head.n = s->n;
 			seg_head.level = s->level;
-			if (fwrite ((void *)&seg_head, sizeof (struct SEGMENT_HEADER), (size_t)1, fp_seg) != 1) {
+			if (fwrite (&seg_head, sizeof (struct SEGMENT_HEADER), (size_t)1, fp_seg) != 1) {
 				fprintf (stderr, "lines_to_bins: Error writing a string header for bin # %d\n", b);
 				exit (EXIT_FAILURE);
 			}
-			if (fwrite ((void *)(s->p), sizeof (struct SHORT_PAIR), (size_t) s->n, fp_pt) != s->n) {
+			if (fwrite ((s->p), sizeof (struct SHORT_PAIR), (size_t) s->n, fp_pt) != s->n) {
 				fprintf (stderr, "lines_to_bins: Error writing a string for bin # %d\n", b);
 				exit (EXIT_FAILURE);
 			}
-			free ((void *)s->p);
+			free (s->p);
 			np += s->n;
 			ns++;
 		}
@@ -541,9 +541,9 @@ int main (int argc, char **argv)
 		while (next) {
 			s = next;
 			next = next->next_seg;
-			free ((void *)s);
+			free (s);
 		}
-		free ((void *)bin[b].first_seg);
+		free (bin[b].first_seg);
 	}
 
 	fclose(fp_pt);

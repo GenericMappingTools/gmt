@@ -205,9 +205,9 @@ void gmt_shore_prepare_sides (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG 
 	
 	for (i = 0; i < 4; i++)	{	/* sort on position */
 		if (dir == 1)
-			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), gmt_shore_asc_sort);
+			qsort (c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), gmt_shore_asc_sort);
 		else
-			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), gmt_shore_desc_sort);
+			qsort (c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), gmt_shore_desc_sort);
 	}
 }
 
@@ -283,8 +283,8 @@ void GMT_set_levels (struct GMT_CTRL *C, char *info, struct GMT_SHORE_SELECT *I)
 {	/* Decode GMT's -A option for coastline levels */
 	int n;
 	char *p = NULL;
-	if (strstr (info, "+l"))  I->flag = GMT_NO_RIVERLAKES;
-	if (strstr (info, "+r"))  I->flag = GMT_NO_LAKES;
+	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
+	if (strstr (info, "+r"))  I->flag = GSHHS_NO_LAKES;
 	if ((p = strstr (info, "+p"))) {	/* Requested percentage limit on small features */
 		I->fraction = irint (1e6 * 0.01 * atoi (&p[2]));	/* Convert to integer microfraction */
 	}
@@ -293,7 +293,7 @@ void GMT_set_levels (struct GMT_CTRL *C, char *info, struct GMT_SHORE_SELECT *I)
 		GMT_report (C, GMT_MSG_FATAL, "Syntax error -A option: No area given\n");
 		GMT_exit (EXIT_FAILURE);
 	}
-	if (n == 1) I->low = 0, I->high = GMT_MAX_GSHHS_LEVEL;
+	if (n == 1) I->low = 0, I->high = GSHHS_MAX_LEVEL;
 }
 
 GMT_LONG GMT_set_resolution (struct GMT_CTRL *C, char *res, char opt)
@@ -413,7 +413,7 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 	c->skip_feature = info->flag;
 	c->min_area = info->area;	/* Limit the features */
 	c->min_level = info->low;	
-	c->max_level = (info->low == info->high && info->high == 0) ? GMT_MAX_GSHHS_LEVEL : info->high;	/* Default to all if not set */
+	c->max_level = (info->low == info->high && info->high == 0) ? GSHHS_MAX_LEVEL : info->high;	/* Default to all if not set */
 	c->flag = info->flag;
 
 	c->scale = (c->bin_size / 60.0) / 65535.0;
@@ -552,13 +552,13 @@ GMT_LONG GMT_get_shore_bin (struct GMT_CTRL *C, GMT_LONG b, struct GMT_SHORE *c)
 		level = get_level (seg_info[i]);
 		if (level < c->min_level) continue;
 		if (level > c->max_level) continue;
-		if (level == 2 && c->GSHHS_area[seg_ID[i]] < 0 && c->flag == GMT_NO_RIVERLAKES) continue;
-		if (level == 2 && c->GSHHS_area[seg_ID[i]] > 0 && c->flag == GMT_NO_LAKES) continue;
+		if (level == 2 && c->GSHHS_area[seg_ID[i]] < 0 && c->flag == GSHHS_NO_RIVERLAKES) continue;
+		if (level == 2 && c->GSHHS_area[seg_ID[i]] > 0 && c->flag == GSHHS_NO_LAKES) continue;
 		seg_skip[i] = FALSE;	/* OK, so this was needed afterall */
 	}
 	if (c->skip_feature) {	/* Must ensure that we skip all features inside a skipped riverlake/lake */
 		int j, feature;
-		if (c->flag == GMT_NO_LAKES && c->node_level[0] == c->node_level[1] && c->node_level[2] == c->node_level[3] && c->node_level[0] == c->node_level[3] && c->node_level[0] == 2) {	/* Bin is entirely inside a lake */
+		if (c->flag == GSHHS_NO_LAKES && c->node_level[0] == c->node_level[1] && c->node_level[2] == c->node_level[3] && c->node_level[0] == c->node_level[3] && c->node_level[0] == 2) {	/* Bin is entirely inside a lake */
 			for (i = 0; i < c->bin_nseg[b]; i++) seg_skip[i] = TRUE;	/* Must skip all segments in the lake */
 			c->node_level[0] = c->node_level[1] = c->node_level[2] = c->node_level[3] = 1;	/* Bin is now entirely inside land */
 		}
@@ -794,8 +794,8 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 /* edge: Edge test for shifting */
 {
 	struct GMT_GSHHS_POL *p = NULL;
-	GMT_LONG start_side, next_side, id, P = 0, more, p_alloc, wet_or_dry, use_this_level, high_seg_level = GMT_MAX_GSHHS_LEVEL;
-	GMT_LONG n_alloc, cid, nid, add, first_pos, entry_pos, n, low_level, high_level, fid, nseg_at_level[GMT_MAX_GSHHS_LEVEL+1];
+	GMT_LONG start_side, next_side, id, P = 0, more, p_alloc, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL;
+	GMT_LONG n_alloc, cid, nid, add, first_pos, entry_pos, n, low_level, high_level, fid, nseg_at_level[GSHHS_MAX_LEVEL+1];
 	GMT_LONG completely_inside;
 	double *xtmp = NULL, *ytmp = NULL, plon, plat;
 	
@@ -819,9 +819,9 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 	
 	/* Check the consistency of node levels in case some features are dropped */
 	
-	GMT_memset (nseg_at_level, GMT_MAX_GSHHS_LEVEL + 1, GMT_LONG);
+	GMT_memset (nseg_at_level, GSHHS_MAX_LEVEL + 1, GMT_LONG);
 	for (id = 0; id < c->ns; id++) if (c->seg[id].entry != 4) nseg_at_level[c->seg[id].level]++;	/* Only count segments that crosses the bin */
-	for (n = 0; n <= GMT_MAX_GSHHS_LEVEL; n++) if (nseg_at_level[n]) high_seg_level = n;
+	for (n = 0; n <= GSHHS_MAX_LEVEL; n++) if (nseg_at_level[n]) high_seg_level = n;
 	
 	if (c->ns == 0) for (n = 0; n < 4; n++) high_seg_level = MIN (c->node_level[n], high_seg_level);	/* Initialize to lowest when there are no segments */
 	for (n = high_level = 0; n < 4; n++) {
@@ -843,11 +843,11 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 	p_alloc = (c->ns == 0) ? 1 : GMT_SMALL_CHUNK;
 	p = GMT_memory (C, NULL, p_alloc, struct GMT_GSHHS_POL);
 	
-	low_level = GMT_MAX_GSHHS_LEVEL;
+	low_level = GSHHS_MAX_LEVEL;
 	
 	if (completely_inside && use_this_level) {	/* Must include path of this bin outline as first polygon */
 		p[0].n = GMT_graticule_path (C, &p[0].lon, &p[0].lat, dir, c->lon_corner[3], c->lon_corner[1], c->lat_corner[0], c->lat_corner[2]);
-		p[0].level = (c->node_level[0] == 2 && c->flag == GMT_NO_LAKES) ? 1 : c->node_level[0];	/* Any corner will do */
+		p[0].level = (c->node_level[0] == 2 && c->flag == GSHHS_NO_LAKES) ? 1 : c->node_level[0];	/* Any corner will do */
 		p[0].fid = p[0].level;	/* Assumes no riverlake is that big to contain an entire bin */
 		p[0].interior = FALSE;
 		P = 1;
@@ -855,7 +855,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 	
 	while (c->n_entries > 0) {	/* More segments to connect */
 	
-		low_level = GMT_MAX_GSHHS_LEVEL;
+		low_level = GSHHS_MAX_LEVEL;
 		start_side = 0;
 		id = gmt_shore_get_first_entry (c, dir, &start_side);
 		next_side = c->seg[id].exit;

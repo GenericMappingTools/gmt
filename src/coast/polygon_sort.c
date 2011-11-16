@@ -109,8 +109,8 @@ int main (int argc, char **argv)
 	fclose(fp_out);
 	fclose(fp);
 	if (do_a) {
-		GMT_free ((void *)flon);
-		GMT_free ((void *)flat);
+		GMT_free (flon);
+		GMT_free (flat);
 	}
 	exit(0);
 }

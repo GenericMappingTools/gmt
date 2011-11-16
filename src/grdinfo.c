@@ -48,8 +48,9 @@ struct GRDINFO_CTRL {
 		GMT_LONG active;
 		GMT_LONG norm;
 	} L;
-	struct T {	/* -T<dz> */
+	struct T {	/* -T[s]<dz> */
 		GMT_LONG active;
+		GMT_LONG mode;
 		double inc;
 	} T;
 };
@@ -61,7 +62,7 @@ void *New_grdinfo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdinfo_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Deallocate control structure */
@@ -73,7 +74,7 @@ GMT_LONG GMT_grdinfo_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "grdinfo %s [API] - Extract information from grids\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdinfo <grid> [-C] [-F] [-I[<dx>[/<dy>]]] [-L[0|1|2]] [-M]\n");
-	GMT_message (GMT, "	[%s] [-T<dz>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "	[%s] [-T[s]<dz>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -94,6 +95,7 @@ GMT_LONG GMT_grdinfo_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-M Search for the global min and max locations (x0,y0) and (x1,y1).\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-T Given increment dz, return global -Tzmin/zmax/dz in multiples of dz.\n");
+	GMT_message (GMT, "\t   To get a symmetrical range about zero, use -Ts<dz> insteda.\n");
 	GMT_explain_options (GMT, "Vf.");
 	
 	return (EXIT_FAILURE);
@@ -156,7 +158,12 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 				break;
 			case 'T':	/* CPT range */
 				Ctrl->T.active = TRUE;
-				Ctrl->T.inc = atof (opt->arg);
+				if (opt->arg[0] == 's') {	/* Want symmetrical range about 0, i.e., -3500/3500/500 */
+					Ctrl->T.mode = 1;
+					Ctrl->T.inc = atof (&opt->arg[1]);
+				}
+				else
+					Ctrl->T.inc = atof (opt->arg);
 				break;
 
 			default:	/* Report bad options */
@@ -198,7 +205,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdinfo_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdinfo_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -206,8 +213,8 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdinfo", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRf", ">", options))) Return (error);
-	Ctrl = (struct GRDINFO_CTRL *)New_grdinfo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VRf", ">", options)) Return (API->error);
+	Ctrl = New_grdinfo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdinfo_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdinfo main code ----------------------------*/
@@ -217,15 +224,20 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	global_xmin = global_ymin = global_zmin = +DBL_MAX;
 	global_xmax = global_ymax = global_zmax = -DBL_MAX;
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);				/* Enables data output and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
 
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&opt->arg, (void **)&G)) Return (GMT_DATA_READ_ERROR);
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, NULL)) == NULL) {
+			Return (API->error);
+		}
 		subset = GMT_is_subset (GMT, G->header, wesn);	/* Subset requested */
 		if (subset) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
 
@@ -237,7 +249,9 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (Ctrl->M.active || Ctrl->L.active || subset) {	/* Must determine the location of global min and max values */
 			GMT_LONG ij_min, ij_max, col, row;
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&opt->arg, (void **)&G)) Return (GMT_DATA_READ_ERROR);
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, opt->arg, G) == NULL) {
+				Return (API->error);
+			}
 
 			z_min = DBL_MAX;	z_max = -DBL_MAX;
 			mean = median = sum2 = 0.0;
@@ -277,10 +291,10 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			 * the grid in the calling program is no longer the original values */
 			new_grid = GMT_set_outgrid (GMT, G, &G2);	/* TRUE if input is a read-only array */
 			GMT_grd_pad_off (GMT, G2);	/* Undo pad if one existed */
-			GMT_sort_array (GMT, (void *)G2->data, G2->header->nm, GMT_FLOAT_TYPE);
+			GMT_sort_array (GMT, G2->data, G2->header->nm, GMTAPI_FLOAT);
 			median = (n%2) ? G2->data[n/2] : 0.5*(G2->data[n/2-1] + G2->data[n/2]);
 			for (ij = 0; ij < n; ij++) G2->data[ij] = (float)fabs (G2->data[ij] - median);
-			GMT_sort_array (GMT, (void *)G2->data, n, GMT_FLOAT_TYPE);
+			GMT_sort_array (GMT, G2->data, n, GMTAPI_FLOAT);
 			scale = (n%2) ? 1.4826 * G2->data[n/2] : 0.7413 * (G2->data[n/2-1] + G2->data[n/2]);
 			if (new_grid) {	/* Now preserve info and free the temporary grid */
 				/* copy over stat info to G */
@@ -484,9 +498,10 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (G->header->wesn[YLO] < global_ymin) global_ymin = G->header->wesn[YLO];
 			if (G->header->wesn[YHI] > global_ymax) global_ymax = G->header->wesn[YHI];
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+			Return (API->error);
+		}
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (global_zmin == -DBL_MAX) global_zmin = GMT->session.d_NaN;	/* Never got set */
 	if (global_zmax == +DBL_MAX) global_zmax = GMT->session.d_NaN;
@@ -505,8 +520,16 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_zmax, GMT_Z);	GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
 	}
 	else if (Ctrl->T.active) {
-		global_zmin = floor (global_zmin / Ctrl->T.inc) * Ctrl->T.inc;
-		global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
+		if (Ctrl->T.mode) {	/* Get a symemtrical range */
+			global_zmin = floor (global_zmin / Ctrl->T.inc) * Ctrl->T.inc;
+			global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
+			global_zmax = MAX (fabs (global_zmin), fabs (global_zmax));
+			global_zmin = -global_zmax;
+		}
+		else {
+			global_zmin = floor (global_zmin / Ctrl->T.inc) * Ctrl->T.inc;
+			global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
+		}
 		GMT_fprintf (GMT->session.std[GMT_OUT], "-T");
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_zmin, GMT_Z);
 		GMT_fprintf (GMT->session.std[GMT_OUT], "/");
@@ -526,7 +549,9 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_ymin, GMT_Y);	GMT_fputs ("/", GMT->session.std[GMT_OUT]);
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], global_ymax, GMT_Y);	GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
 	}
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 	Return (GMT_OK);

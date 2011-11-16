@@ -103,13 +103,13 @@ void *New_gmtdigitize_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	
 	C->L.LPI = DIG_LPI;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_gmtdigitize_Ctrl (struct GMT_CTRL *GMT, struct GMTDIGITIZE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.device) free ((void *)C->C.device);	
-	if (C->N.name) free ((void *)C->N.name);	
+	if (C->C.device) free (C->C.device);	
+	if (C->N.name) free (C->N.name);	
 	GMT_free (GMT, C);	
 }
 
@@ -270,7 +270,7 @@ GMT_LONG GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *
 
 #define Return(code) {Free_gmtdigitize_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
 
-GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, ok, multi_files, n_segments = 0;
 	GMT_LONG i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, digunit;
@@ -296,19 +296,21 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMTDIGITIZE_INFO	C;
 	struct GMTDIGITIZE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_OPTION *options = NULL;	/* Linked list of options */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+        options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);   /* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_gmtdigitize_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_gmtdigitize_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
-	if ((error = GMT_Parse_Common (API, "-VJRbf:", "h>" GMT_OPT("HMm"), options))) Return (error);
+	if (GMT_Parse_Common (API, "-VJRbf:", "h>" GMT_OPT("HMm"), options)) Return (API->error);
 	GMT = GMT_begin_module (API, "GMT_gmtdigitize", &GMT_cpy);				/* Save current state */
-	Ctrl = (struct GMTDIGITIZE_CTRL *) New_gmtdigitize_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_gmtdigitize_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtdigitize_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the gmtdigitize main code ----------------------------*/
@@ -618,22 +620,15 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 int main (int argc, char *argv[]) {
 
 	int status = 0;			/* Status code from GMT API */
-	struct GMT_OPTION *options = NULL;	/* Linked list of options */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 
 	/* 1. Initializing new GMT session */
-	if (GMT_Create_Session (&API, argv[0], GMTAPI_GMT)) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session (argv[0], GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
 
-	/* 2. Convert command line arguments to local linked option list */
-	if (GMT_Create_Options (API, (GMT_LONG)(argc-1), (void *)(argv+1), &options)) exit (EXIT_FAILURE);
+	/* 2. Run GMT cmd function, or give usage message if errors arise during parsing */
+	status = (int)GMT_gmtdigitize (API, (GMT_LONG)(argc-1), (argv+1));
 
-	/* 3. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = (int)GMT_gmtdigitize (API, options);
-
-	/* 4. Destroy local linked option list */
-	if (GMT_Destroy_Options (API, &options)) exit (EXIT_FAILURE);
-
-	/* 5. Destroy GMT session */
+	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);
 
 	exit (status);		/* Return the status from FUNC */

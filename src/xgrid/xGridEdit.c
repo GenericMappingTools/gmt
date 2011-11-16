@@ -46,9 +46,7 @@ static void quitGridEdit (w, call, client)
   done = True;
 }
 
-int main (argc, argv)
-  int argc;
-  String argv[];
+int main (int argc, String argv[])
 {
   XtAppContext self;
   String gridFileName;
@@ -62,7 +60,7 @@ int main (argc, argv)
   struct GMT_CTRL *GMT = NULL;
 
   /* 1. Initializing new GMT session */
-  if (GMT_Create_Session (&API, argv[0], GMTAPI_GMT)) exit (EXIT_FAILURE);
+  if ((API = GMT_Create_Session (argv[0], GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
 
   GMT = API->GMT;
   /* This is a pretty simple application, so don't bother

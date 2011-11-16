@@ -277,7 +277,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct GMT_OPTION *options = NULL;
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77sniffer_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77sniffer_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -285,7 +285,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77sniffer", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRb", "n" GMT_OPT("Q"), options))) bailout (error);
+	if (GMT_Parse_Common (API, "-VRb", "n" GMT_OPT("Q"), options)) bailout (API->error);
 
 #ifdef DEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
@@ -2677,7 +2677,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, iMaxDiff);
 	}
 
-	MGD77_Path_Free (GMT, (int)n_paths, list);
+	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
 #ifdef DEBUG
 	GMT_memtrack_on (GMT, GMT_mem_keeper);
@@ -2861,7 +2861,7 @@ double median (struct GMT_CTRL *GMT, double *x, GMT_LONG n)
 
 	sorted = GMT_memory (GMT, NULL, n, double);
 	GMT_memcpy (sorted, x, n, double);
-	qsort ((void *) sorted, n, sizeof(double), gmt_comp_double_asc);
+	qsort ( sorted, n, sizeof(double), gmt_comp_double_asc);
 	med = (n%2) ? sorted[n/2] : 0.5*(sorted[(n-1)/2]+sorted[n/2]);
 	GMT_free (GMT, sorted);
 	return med;
@@ -2873,18 +2873,21 @@ void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[
 	if (strlen (info->fname) == 0) return;	/* No name */
 
 	if (info->format == 0) {	/* GMT geographic grid with header */
-		if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(info->fname), (void **)&(info->G))) return;	/* Get header only */
+		if ((info->G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, info->fname, NULL)) == NULL) {	/* Get header only */
+			return;
+		}
 
 		/* Get grid dimensions */
 		info->one_or_zero = (info->G->header->registration) ? 0 : 1;
 		info->nx = irint ( (info->G->header->wesn[XHI] - info->G->header->wesn[XLO]) / info->G->header->inc[GMT_X]) + info->one_or_zero;
 		info->ny = irint ( (info->G->header->wesn[YHI] - info->G->header->wesn[YLO]) / info->G->header->inc[GMT_Y]) + info->one_or_zero;
 
-		if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(info->fname), (void **)&(info->G))) return;	/* Get subset */
+		if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, info->fname, info->G) == NULL) {	/* Get subset */
+			return;
+		}
 	}
 	else {	/* Read a Mercator grid Sandwell/Smith style */
-		info->G = GMT_create_grid (GMT);
-
+		if ((info->G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL)) == NULL) return;
 		GMT_read_img (GMT, info->fname, info->G, wesn, info->scale, info->mode, info->max_lat, TRUE);
 	}
 	info->mx = info->G->header->nx + 4;

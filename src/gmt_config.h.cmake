@@ -120,7 +120,7 @@
 
 #cmakedefine HAVE_MODE_T
 
-#cmakedefine HAVE_BIGENDIAN
+#cmakedefine WORDS_BIGENDIAN
 
 /* Math headers */
 

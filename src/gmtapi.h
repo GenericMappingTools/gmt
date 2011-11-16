@@ -30,13 +30,6 @@
 #define _GMTAPI_H
 
 /*=====================================================================================
- *	GMT API CONSTANTS DEFINITIONS
- *===================================================================================*/
-
-#include "gmtapi_errno.h"			/* All error return values are defined here */
-#include "gmtapi_define.h"			/* All constant values are defined here */
-
-/*=====================================================================================
  *	GMT API STRUCTURE DEFINITIONS
  *===================================================================================*/
 
@@ -47,30 +40,30 @@ struct GMTAPI_DATA_OBJECT {
 	GMT_LONG alloc_mode;			/* GMTAPI_REFERENCE or GMTAPI_ALLOCATED */
 	GMT_LONG ID;				/* Unique identifier which is > 0 */
 	GMT_LONG direction;			/* GMT_IN or GMT_OUT */
-	GMT_LONG family;			/* One of GMT_IS_{DATASET|TEXTSET|CPT|GMTGRID} */
-	GMT_LONG method;			/* One of GMT_IS_{FILE,STREAM,FDESC,ARRAY,GRID,COPY,REF} */
-	GMT_LONG status;			/* 0 when first registered, increment by one once read or written */
-	GMT_LONG n_columns;			/* Number of columns to process in this dataset */
-	GMT_LONG n_rows;			/* Number or rows in this array */
-	GMT_LONG n_expected_fields;		/* Number of expected columns for this dataset */
-	GMT_LONG n_alloc;			/* 0 if output array is preallocated, else number of records allocated so far */
+	GMT_LONG family;			/* One of GMT_IS_{DATASET|TEXTSET|CPT|IMAGE|GMTGRID} */
+	GMT_LONG method;			/* One of GMT_IS_{FILE,STREAM,FDESC,ARRAY,GRID,COPY,REF|READONLY} */
+	GMT_LONG status;			/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
+	GMT_LONG n_columns;			/* Number of columns to process in this dataset [GMT_DATASET only] */
+	GMT_LONG n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET only] */
+	GMT_LONG n_expected_fields;		/* Number of expected columns for this dataset [GMT_DATASET only] */
+	GMT_LONG n_alloc;			/* Number of memory allocated so far if writing to memory */
 	GMT_LONG geometry;			/* One of GMT_POINT, GMT_LINE, GMT_POLY, GMT_SURF */
 	GMT_LONG region;			/* 1 if wesn was passed, 0 otherwise */
 	GMT_LONG level;				/* Nested module level when object was allocated */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
-	void **ptr;				/* Points to the source|destination (typically filenames) */
-	void *data;				/* Points to the memory location of the data (i.e., a GMT_GRID, GMT_DATASET structs) */
-	FILE *fp;				/* Pointer to source/destination stream [NULL if memory location] */
-	char *filename;				/* Locally allocated copy of a filename (or NULL) */
-	PFL import;				/* Pointer to input function (for DATASET/TEXTSET only) */
+	void *resource;				/* Points to registered data container (if appropriate) */
+	void *data;				/* Points to container associated with this object [for garbage collection purposes] */
+	FILE *fp;				/* Pointer to source/destination stream [For rec-by-rec procession, NULL if memory location] */
+	char *filename;				/* Filename, stream, of file handle (otherwise NULL) */
+	PFP import;				/* Pointer to input function (for DATASET/TEXTSET only) */
 };
 
 struct GMTAPI_CTRL {
 	/* Master controller which holds all GMT API related information at run-time for a single session.
 	 * Users can run several GMT sessions concurrently; each session requires its own structure.
-	 * Use GMTAPI_Create_Session to initialize a new session and GMTAPI_Destroy_Session to end it.
-	 */
+	 * Use GMTAPI_Create_Session to initialize a new session and GMTAPI_Destroy_Session to end it. */
 	
+	GMT_LONG error;				/* Error code from latest API call [GMT_OK] */
 	GMT_LONG n_objects;			/* Number of currently active input and output data objects */
 	GMT_LONG n_objects_alloc;		/* Allocation counter for data objects */
 	GMT_LONG unique_ID;			/* Used to create unique IDs for duration of session */
@@ -80,15 +73,12 @@ struct GMTAPI_CTRL {
 	GMT_LONG registered[2];			/* TRUE if at least one source/destination has been registered (in and out) */
 	GMT_LONG io_enabled[2];			/* TRUE if access has been allowed (in and out) */
 	GMT_LONG io_mode[2];			/* 1 if access as set, 0 if record-by-record */
-	GMT_LONG GMTAPI_size[GMTAPI_N_TYPES];	/* Size of byte, short, int, long, float, double */	
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
-	PFL GMT_2D_to_index[2];			/* Pointers to the row or column-order index functions */
-	PFV GMT_index_to_2D[2];			/* Pointers to the inverse index functions */
 	char *session_tag;			/* Name tag for this session (or NULL) */
 };
 
-struct GMT_OPTION {
+struct GMT_OPTION {	/* Structure for a single GMT command option */
 	char option;			/* 1-char command line -<option> (e.g. D in -D) identifying the option (* if file) */
 	char *arg;			/* If not NULL, contains the argument for this option */
 	struct GMT_OPTION *next;	/* Pointer to next option in a linked list */
@@ -100,39 +90,44 @@ struct GMT_OPTION {
  *=====================================================================================
  */
 
-/* 14 Primary API functions */
-EXTERN_MSC GMT_LONG GMT_Create_Session	(struct GMTAPI_CTRL **C, char *tag, GMT_LONG mode);
-EXTERN_MSC GMT_LONG GMT_Destroy_Session	(struct GMTAPI_CTRL **C);
-EXTERN_MSC GMT_LONG GMT_Register_IO	(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, GMT_LONG direction, void **resource, double wesn[], void *data, GMT_LONG *object_ID);
-EXTERN_MSC GMT_LONG GMT_Init_IO		(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG geometry, GMT_LONG direction, GMT_LONG mode, struct GMT_OPTION *head);
-EXTERN_MSC GMT_LONG GMT_Begin_IO	(struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction, GMT_LONG mode);
-EXTERN_MSC GMT_LONG GMT_End_IO		(struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode);
-EXTERN_MSC GMT_LONG GMT_Report_Error	(struct GMTAPI_CTRL *C, GMT_LONG error);
-EXTERN_MSC GMT_LONG GMT_Create_Data	(struct GMTAPI_CTRL *C, GMT_LONG type, GMT_LONG par[], void **data, GMT_LONG direction, GMT_LONG *ID);
-EXTERN_MSC GMT_LONG GMT_Get_Data	(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, void **input,  void **data);
-EXTERN_MSC GMT_LONG GMT_Put_Data	(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, void **output, void  *data);
-EXTERN_MSC GMT_LONG GMT_Destroy_Data	(struct GMTAPI_CTRL *C, GMT_LONG mode, void **X);
-EXTERN_MSC GMT_LONG GMT_Get_Record	(struct GMTAPI_CTRL *C, GMT_LONG mode, void **record);
-EXTERN_MSC GMT_LONG GMT_Put_Record	(struct GMTAPI_CTRL *C, GMT_LONG mode, void  *record);
-EXTERN_MSC GMT_LONG GMT_Encode_ID	(struct GMTAPI_CTRL *C, char *string, GMT_LONG object_ID);
+/* 17 Primary API functions */
+EXTERN_MSC struct GMTAPI_CTRL * GMT_Create_Session	(char *tag, GMT_LONG mode);
+EXTERN_MSC void * GMT_Create_Data			(struct GMTAPI_CTRL *C, GMT_LONG type, GMT_LONG par[]);
+EXTERN_MSC void * GMT_Get_Data				(struct GMTAPI_CTRL *C, GMT_LONG ID, GMT_LONG mode, void *data);
+EXTERN_MSC void * GMT_Read_Data				(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, char *input, void *data);
+EXTERN_MSC void * GMT_Retrieve_Data			(struct GMTAPI_CTRL *API, GMT_LONG ID);
+EXTERN_MSC void * GMT_Get_Record			(struct GMTAPI_CTRL *C, GMT_LONG mode, GMT_LONG *retval);
+EXTERN_MSC GMT_LONG GMT_Destroy_Session			(struct GMTAPI_CTRL **C);
+EXTERN_MSC GMT_LONG GMT_Register_IO			(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, GMT_LONG direction, void *resource, double wesn[]);
+EXTERN_MSC GMT_LONG GMT_Init_IO				(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG geometry, GMT_LONG direction, GMT_LONG mode, struct GMT_OPTION *head);
+EXTERN_MSC GMT_LONG GMT_Begin_IO			(struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction);
+EXTERN_MSC GMT_LONG GMT_End_IO				(struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode);
+EXTERN_MSC GMT_LONG GMT_Report_Error			(struct GMTAPI_CTRL *C, GMT_LONG error);
+EXTERN_MSC GMT_LONG GMT_Put_Data			(struct GMTAPI_CTRL *C, GMT_LONG ID, GMT_LONG mode, void *data);
+EXTERN_MSC GMT_LONG GMT_Write_Data			(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, char *output, void *data);
+EXTERN_MSC GMT_LONG GMT_Destroy_Data			(struct GMTAPI_CTRL *C, GMT_LONG mode, void *X);
+EXTERN_MSC GMT_LONG GMT_Put_Record			(struct GMTAPI_CTRL *C, GMT_LONG mode, void *record);
+EXTERN_MSC GMT_LONG GMT_Encode_ID			(struct GMTAPI_CTRL *C, char *string, GMT_LONG object_ID);
 
-/* 11 functions argument and option parsing */
+/* 12 functions argument and option parsing */
 
-EXTERN_MSC GMT_LONG GMT_Create_Options	(struct GMTAPI_CTRL *C, GMT_LONG argc, void *in, struct GMT_OPTION **head);
-EXTERN_MSC GMT_LONG GMT_Destroy_Options	(struct GMTAPI_CTRL *C, struct GMT_OPTION **head);
-EXTERN_MSC GMT_LONG GMT_Create_Args	(struct GMTAPI_CTRL *C, GMT_LONG *argc, char **argv[], struct GMT_OPTION *head);
-EXTERN_MSC GMT_LONG GMT_Destroy_Args	(struct GMTAPI_CTRL *C, GMT_LONG argc, char *argv[]);
-EXTERN_MSC GMT_LONG GMT_Create_Cmd	(struct GMTAPI_CTRL *C, char **cmd, struct GMT_OPTION *head);
-EXTERN_MSC GMT_LONG GMT_Make_Option	(struct GMTAPI_CTRL *C, char option, char *arg, struct GMT_OPTION **ptr);
-EXTERN_MSC GMT_LONG GMT_Find_Option	(struct GMTAPI_CTRL *C, char option, struct GMT_OPTION *head, struct GMT_OPTION **ptr);
-EXTERN_MSC GMT_LONG GMT_Append_Option	(struct GMTAPI_CTRL *C, struct GMT_OPTION *current, struct GMT_OPTION **head);
-EXTERN_MSC GMT_LONG GMT_Update_Option	(struct GMTAPI_CTRL *C, char option, char *arg, struct GMT_OPTION *head);
-EXTERN_MSC GMT_LONG GMT_Delete_Option	(struct GMTAPI_CTRL *C, struct GMT_OPTION *current);
-EXTERN_MSC GMT_LONG GMT_Parse_Common	(struct GMTAPI_CTRL *C, char *sorted, char *unsorted, struct GMT_OPTION *options);
+EXTERN_MSC struct GMT_OPTION * GMT_Create_Options	(struct GMTAPI_CTRL *C, GMT_LONG argc, void *in);
+EXTERN_MSC struct GMT_OPTION * GMT_Prep_Options		(struct GMTAPI_CTRL *C, GMT_LONG mode, void *in);
+EXTERN_MSC struct GMT_OPTION * GMT_Make_Option		(struct GMTAPI_CTRL *C, char option, char *arg);
+EXTERN_MSC struct GMT_OPTION * GMT_Find_Option		(struct GMTAPI_CTRL *C, char option, struct GMT_OPTION *head);
+EXTERN_MSC struct GMT_OPTION * GMT_Append_Option	(struct GMTAPI_CTRL *C, struct GMT_OPTION *current, struct GMT_OPTION *head);
+EXTERN_MSC char ** GMT_Create_Args			(struct GMTAPI_CTRL *C, GMT_LONG *argc, struct GMT_OPTION *head);
+EXTERN_MSC char * GMT_Create_Cmd			(struct GMTAPI_CTRL *C, struct GMT_OPTION *head);
+EXTERN_MSC GMT_LONG GMT_Destroy_Options			(struct GMTAPI_CTRL *C, struct GMT_OPTION **head);
+EXTERN_MSC GMT_LONG GMT_Destroy_Args			(struct GMTAPI_CTRL *C, GMT_LONG argc, char *argv[]);
+EXTERN_MSC GMT_LONG GMT_Update_Option			(struct GMTAPI_CTRL *C, char option, char *arg, struct GMT_OPTION *head);
+EXTERN_MSC GMT_LONG GMT_Delete_Option			(struct GMTAPI_CTRL *C, struct GMT_OPTION *current);
+EXTERN_MSC GMT_LONG GMT_Parse_Common			(struct GMTAPI_CTRL *C, char *sorted, char *unsorted, struct GMT_OPTION *options);
 
-/* Sub function needed by GMT_end to free memory used in modules and at end of session */
-
-EXTERN_MSC void GMT_Garbage_Collection (struct GMTAPI_CTRL *C, GMT_LONG level);
+#ifdef DEBUG
+/* This function is available for testing purposes if --enable-debug was used during configuration */
+EXTERN_MSC GMT_LONG GMT_List_Args			(struct GMTAPI_CTRL *API, struct GMT_OPTION *head);
+#endif
 
 /* Macro to test if filename is a special name indicating memory location */
 

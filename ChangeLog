@@ -2,8 +2,65 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-15	pwessel
+	* gmt_unique.h:		Updated with the new common options.
+	* gmt_init.c:		No longer accept lower case -x -y as in GMT 4 (inadvertently).
+
+2011-11-13	pwessel
+	* gmt_grdio.c:		Need to reset zmin/zmax when region was temporarily expanded to
+				include data boundary rows/cols.
+	* grdinfo.c:		Modifier -Ts<dz> returns a symmetrical range about zero.
+	* grdpaste.c:		Had trouble shuffling longitudes correctly for geographic grids.
+	* *.c:			Improved freeing of allocated memory as reported under --enable-devdebug
+			
+2011-11-12	pwessel
+	* gmtmercmap.c:		New example of API use: Create a shaded-relief Mercator map using
+				Etopo 1|2|5m global relief, with optional color bar.  Option -D
+				makes no map but writes equivalent Bourne shell or cshell script.
+
+	* gmt_support.c:	Resampling of CPTs did not initialize the i_dz variables, resulting
+				in discontinuous colors for continuous color maps.
+
 2011-11-11	remko
 	* pslib.c:		Fixed error in PSL_message (wrong verbosity handling)
+
+2011-11-11	pwessel
+	* gmtapi_util.c:	Introduce GMT_Retrieve_Data to return a pointer to a container
+				that was allocated when a memory location was registered as the
+				output.  Reduced GMT_Begin_IO to only apply to rec-by-rec i/o,
+				hence we could remove the mode variable.  GMT_Register_IO now
+				expects the pointer to the resource, not the pointer address.
+
+2011-11-09	pwessel
+	* gmtapi_util.c:	Let GMT_Get_Record's third argument (*n_fields) only return
+				the number of fields if it is not NULL.
+
+2011-11-08	pwessel
+	* *.c:			All modules using GMT_Get_Data are now checking for a NULL
+				return, and only then checking status.  This minimizes the
+				number of checks during the processing of a data set.
+
+2011-11-05	pwessel
+	* gmtapi_util.c:	Added GMT_Write_Data and GMT_Read_Data which deals with
+				files/streams, and GMT_Get_Data, GMT_Put_Data now work
+				explicitly with registered object IDs.
+				Test all return codes from API and give proper errors.
+2011-10-29	pwessel
+	* gmtapi_parse.c:	API finalized.  Simplified by let all functions that
+				produce objects (Make, Find, Append) return a pointer to those objects.
+
+2011-10-28	pwessel
+	* gmtapi_util.c:	API finalized.  Simplified by eliminating unneeded arguments
+				to GMT_Create_Data, GMT_Register_IO, and let all functions that
+				produce objects (Create, Get) return a pointer to those objects.
+	* grdpaste.c:		Must change both the grid pad and the default pad in this application.
+
+2011-10-17	pwessel
+	* gmtapi*.[ch]:		API modified to eliminate any void ** references or variables.
+				API abstraction-layer functions now take void * instead and no
+				casting to void * takes place, letting the compiler know what is
+				going on.  Memory alloc/free macros changed similarly.
+	* surface.c:		The -Lu<upperfile> instead applied the -Ll<lowerfile>.
 
 2011-10-16	pwessel
 	* triangulate.c:	Added -S to write triangle polygons and -Z to control use

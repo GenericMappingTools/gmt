@@ -55,7 +55,7 @@ void *New_mgd77convert_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 	
 	C->F.format = C->T.format = MGD77_NOT_SET;
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_mgd77convert_Ctrl (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *C) {	/* Deallocate control structure */
@@ -194,7 +194,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (options && options->option == '?') return (GMT_mgd77convert_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77convert_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -202,9 +202,9 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77convert", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
-	Ctrl = (struct MGD77CONVERT_CTRL *) New_mgd77convert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77convert_parse (API, Ctrl, options))) Return ((int)error);
+	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
+	Ctrl = New_mgd77convert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = GMT_mgd77convert_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mgd77convert main code ----------------------------*/
 
@@ -258,14 +258,14 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (remove (file)) {	/* Oops, removal failed */
 					GMT_report (GMT, GMT_MSG_FATAL, "Unable to remove existing file %s - skipping the conversion\n", file);
 					MGD77_Close_File (GMT, &M);
-					MGD77_Free (GMT, D);	/* Free memory allocated by MGD77_Read_File */
+					MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File */
 					continue;
 				}
 			}
 			else {	/* Cowardly refuse to do this */
 				GMT_report (GMT, GMT_MSG_FATAL, "\nOutput file already exists.  Use -T+%c to force overwriting\n", fcode[Ctrl->T.format]);
 				MGD77_Close_File (GMT, &M);
-				MGD77_Free (GMT, D);	/* Free memory allocated by MGD77_Read_File */
+				MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File */
 				continue;
 			}
 		}
@@ -291,6 +291,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		M.format = (int)Ctrl->T.format;				/* Change the format to the desired output format and write new file in current directory */
 		M.original = TRUE;					/* Always write to original attributes */
 		for (i = 0; i < MGD77_N_FORMATS; i++) MGD77_format_allowed[i] = (M.format == i) ? TRUE : FALSE;	/* Only allow the specified output format */
+		if (D->H.author) GMT_free (GMT, D->H.author);	/* Make sure author is blank so it is reset below */
 		D->H.author = GMT_memory (GMT, NULL, strlen (M.user)+1, char);	/* Allocate space for author */
 		strcpy (D->H.author, M.user);									/* Pass current user login id as author */
 		if (D->H.history) GMT_free (GMT, D->H.history);	/* Make sure history is blank so it is reset by MGD77_Write_File */
@@ -303,13 +304,13 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (D->errors) GMT_report (GMT, GMT_MSG_NORMAL, " [%d data errors]", D->errors);
 		GMT_report (GMT, GMT_MSG_NORMAL, "\n");
 
-		MGD77_Free (GMT, D);	/* Free memory allocated by MGD77_Read_File */
+		MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File */
 		n_cruises++;
 	}
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Converted %ld MGD77 files\n", n_cruises);
 	
-	MGD77_Path_Free (GMT, (int)n_paths, list);
+	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
 
 	Return (GMT_OK);

@@ -52,8 +52,8 @@ int main (int argc, char **argv)
 	if (get_area) {
 		area_init ();
 		n_alloc = GMT_CHUNK;
-		flon = (double *) GMT_memory ((void *)flon, n_alloc, sizeof(double), "polygon_findarea");
-		flat = (double *) GMT_memory ((void *)flat, n_alloc, sizeof(double), "polygon_findarea");
+		flon = (double *) GMT_memory (flon, n_alloc, sizeof(double), "polygon_findarea");
+		flat = (double *) GMT_memory (flat, n_alloc, sizeof(double), "polygon_findarea");
 	}
 	n_id = 0;	
 	while (pol_readheader (&h, fp_in) == 1) {
@@ -97,8 +97,8 @@ int main (int argc, char **argv)
 					k++;
 					if (k == n_alloc) {
 						n_alloc += GMT_CHUNK;
-						flon = (double *) GMT_memory ((void *)flon, n_alloc, sizeof(double), "polygon_findarea");
-						flat = (double *) GMT_memory ((void *)flat, n_alloc, sizeof(double), "polygon_findarea");
+						flon = (double *) GMT_memory (flon, n_alloc, sizeof(double), "polygon_findarea");
+						flat = (double *) GMT_memory (flat, n_alloc, sizeof(double), "polygon_findarea");
 					}
 				}
 				else

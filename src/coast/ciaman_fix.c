@@ -121,7 +121,7 @@ int main (int argc, char **argv) {
 		
 	fprintf (stderr, "np starts at %d. n_bad = %d, n_fix = %d, rest = %d\n", np, n_skip1, n_skip2, np - nk);
 
-	qsort ((char *)x, np, sizeof(struct BURP), sort_on_np);
+	qsort (x, np, sizeof(struct BURP), sort_on_np);
 	
 	do {
 	
@@ -210,7 +210,7 @@ int main (int argc, char **argv) {
 				}
 			}
 	
-			qsort ((char *)x, np, sizeof(struct BURP), sort_on_np);
+			qsort (x, np, sizeof(struct BURP), sort_on_np);
 			np -= n_bad;
 			fprintf (stderr, "rest now is %d\n", np - nk);
 		}
@@ -228,7 +228,7 @@ int main (int argc, char **argv) {
 				}
 			}
 	
-			qsort ((char *)x, np, sizeof(struct BURP), sort_on_np);
+			qsort (x, np, sizeof(struct BURP), sort_on_np);
 			np -= n_bad;
 			fprintf (stderr, "rest now is %d\n", np - nk);
 		}

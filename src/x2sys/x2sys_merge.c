@@ -45,12 +45,12 @@ void *New_x2sys_merge_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_merge_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *C) {	/* Deallocate control structure */
-	if (C->A.file) free ((void *)C->A.file);
-	if (C->M.file) free ((void *)C->M.file);
+	if (C->A.file) free (C->A.file);
+	if (C->M.file) free (C->M.file);
 	GMT_free (GMT, C);
 }
 
@@ -131,7 +131,7 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_x2sys_merge_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_x2sys_merge_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -139,8 +139,8 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_x2sys_merge", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", ">", options))) Return (error);
-	Ctrl = (struct X2SYS_MERGE_CTRL *)New_x2sys_merge_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-V", ">", options)) Return (API->error);
+	Ctrl = New_x2sys_merge_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_merge_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the x2sys_merge main code ----------------------------*/

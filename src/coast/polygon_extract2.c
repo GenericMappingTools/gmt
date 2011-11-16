@@ -32,7 +32,7 @@ int main (int argc, char **argv)
 	id = atoi (argv[6]);
 		
 	/* n_id = pos = 0;
-	while (fread((char *)&poly[n_id].h, sizeof (struct GMT3_POLY), 1, fp_in) == 1) {
+	while (fread(&poly[n_id].h, sizeof (struct GMT3_POLY), 1, fp_in) == 1) {
 		pos += sizeof (struct GMT3_POLY);
 		poly[n_id].pos = pos;
 		fseek (fp_in, poly[n_id].h.n * sizeof(struct LONGPAIR), 1);
@@ -41,12 +41,12 @@ int main (int argc, char **argv)
 		n_id++;
 	}
 	fp = fopen ("/home/aa4/gmt/wvs/headers.b", "w");
-	fwrite ((char *)&n_id, sizeof (int), 1, fp);
-	fwrite ((char *)poly, sizeof (struct CHECK), n_id, fp);
+	fwrite (&n_id, sizeof (int), 1, fp);
+	fwrite (poly, sizeof (struct CHECK), n_id, fp);
 	fclose (fp); */
 	fp = fopen ("/home/aa4/gmt/wvs/headers.b", "r");
-	fread ((char *)&n_id, sizeof (int), 1, fp);
-	fread ((char *)poly, sizeof (struct CHECK), n_id, fp);
+	fread (&n_id, sizeof (int), 1, fp);
+	fread (poly, sizeof (struct CHECK), n_id, fp);
 	fclose (fp);
 	
 	/* Start extraction */
