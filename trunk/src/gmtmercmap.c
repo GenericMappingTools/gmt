@@ -67,14 +67,14 @@ GMT_LONG GMT_gmtmercmap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "gmtmercmap %s [API] - Make a Mercator color map from ETOPO[1|2|5] global relief grids\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: gmtmercmap [-C<cpt>] [-D] [-K] [-O] [-P] [-R<w/e/s/n>] [-S] [-W<width>]\n");
+	GMT_message (GMT, "usage: gmtmercmap [-C<cpt>] [-D[b|c]] [-K] [-O] [-P] [-R<w/e/s/n>] [-S] [-W<width>]\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Color palette to use [relief].\n");
 	GMT_message (GMT, "\t-D Dry-run: Only print GMT shell commands instead; no map is made.\n");
-	GMT_message (GMT, "\t   Append c for cshell syntax [Default is Bourne shell].\n");
+	GMT_message (GMT, "\t   Append c for cshell or b for Bourne shell syntax [Default]].\n");
 	GMT_explain_options (GMT, "KOP");
 	GMT_message (GMT, "\t-R sets the map region [Default is -180/180/-75/75].\n");
 	GMT_message (GMT, "\t-S plot a color scale beneath the map [none].\n");
@@ -107,9 +107,10 @@ GMT_LONG GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ct
 				free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
-			case 'D':	/* Just issue equivalent GMT commands */
+			case 'D':	/* Just issue equivalent GMT commands in a script */
 				Ctrl->D.active = TRUE;
 				switch (opt->arg[0]) {
+					case 'b':  Ctrl->D.mode = 0; break;
 					case 'c':  Ctrl->D.mode = 1; break;
 					default: Ctrl->D.mode = 0; break;
 				}
@@ -156,9 +157,9 @@ int main (int argc, char **argv)
 
 	/* Initializing new GMT session */
 	if ((API = GMT_Create_Session ("TEST", GMTAPI_GMTPSL)) == NULL) exit (EXIT_FAILURE);
-	if ((options = GMT_Prep_Options (API, argc-1, argv+1)) == NULL) exit (EXIT_FAILURE);	/* Set or get option list */
-	if (!options || options->option == GMTAPI_OPT_USAGE) Return (GMT_gmtmercmap_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) Return (GMT_gmtmercmap_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	options = GMT_Prep_Options (API, argc-1, argv+1);	if (API->error) return (API->error);	/* Set or get option list */
+	if (!options || options->option == GMTAPI_OPT_USAGE) exit (GMT_gmtmercmap_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) exit (GMT_gmtmercmap_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
