@@ -135,12 +135,12 @@ void *New_mgd77list_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->Q.max[Q_A] = 360.0;		/* Max azimuth limit */
 	C->T.mode = MGD77_NOT_SET;
 	C->W.value = 1.0;	/* Default weight */	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_mgd77list_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* Deallocate control structure */
-	if (C->F.flags) free ((void *)C->F.flags);
-	if (C->L.file) free ((void *)C->L.file);
+	if (C->F.flags) free (C->F.flags);
+	if (C->L.file) free (C->L.file);
 	GMT_free (GMT, C);	
 }
 
@@ -702,7 +702,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (options && options->option == '?') return (GMT_mgd77list_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77list_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -710,9 +710,9 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77list", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRb", "hm", options))) Return ((int)error);
-	Ctrl = (struct MGD77LIST_CTRL *) New_mgd77list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77list_parse (API, Ctrl, options))) Return ((int)error);
+	if (GMT_Parse_Common (API, "-VRb", "hm", options)) Return (API->error);
+	Ctrl = New_mgd77list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = GMT_mgd77list_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mgd77list main code ----------------------------*/
 
@@ -895,7 +895,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_FATAL, "One or more requested columns not present in cruise %s - skipping\n", list[argno]);
 			else
 				GMT_report (GMT, GMT_MSG_FATAL, "Error reading header sequence for cruise %s - skipping\n", list[argno]);
-			MGD77_Free (GMT, D);
+			MGD77_Free_Dataset (GMT, &D);
 			continue;
 		}
 
@@ -909,7 +909,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (auxlist[MGD77_AUX_ID].requested) string_output = TRUE;
 			if (string_output && GMT->common.b.active[1]) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot specify binary output with text fields\n");
-				MGD77_Free (GMT, D);
+				MGD77_Free_Dataset (GMT, &D);
 				Return (EXIT_FAILURE);
 			}
 			first_cruise = FALSE;
@@ -919,7 +919,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error reading data set for cruise %s\n", list[argno]);
-			MGD77_Free (GMT, D);
+			MGD77_Free_Dataset (GMT, &D);
 			Return (EXIT_FAILURE);
 		}
 		MGD77_Close_File (GMT, &M);
@@ -999,8 +999,8 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		for (i = 0; i < M.n_out_columns; i++) {
-			dvalue[i] = (double *)D->values[i];
-			tvalue[i] = (char *)D->values[i];
+			dvalue[i] = D->values[i];
+			tvalue[i] = D->values[i];
 		}
 
 		this_limit_on_time = Ctrl->D.active;	/* Since we might change it below */
@@ -1299,7 +1299,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			n_out++;
 		}
-		MGD77_Free (GMT, D);
+		MGD77_Free_Dataset (GMT, &D);
 		n_cruises++;
 	}
 	
@@ -1307,7 +1307,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Returned %ld output records from %ld cruises\n", n_out, n_cruises);
 	
-	MGD77_Path_Free (GMT, (int)n_paths, list);
+	MGD77_Path_Free (GMT, n_paths, list);
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_paths);
 #ifdef USE_CM4
 	if (auxlist[MGD77_AUX_CM].requested) MGD77_CM4_end (GMT, &CM4);	/* Free up CM4 structure */

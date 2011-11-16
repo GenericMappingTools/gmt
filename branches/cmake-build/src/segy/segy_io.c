@@ -114,7 +114,7 @@ char *get_segy_data(FILE *file_ptr, SEGYHEAD *head_ptr) {
   size_of_data = 4;
   num_bytes = size_of_data * num_samps;
 
-  data_ptr = (char *) calloc(num_bytes, sizeof(char));
+  data_ptr = calloc(num_bytes, sizeof(char));
   if (data_ptr == NULL) {
     fprintf(stderr, "Error: Out of memory for SEGY data ");
     return (NULL);

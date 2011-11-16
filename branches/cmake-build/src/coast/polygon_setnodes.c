@@ -221,8 +221,8 @@ int main (int argc, char **argv)
 	crude_free_int (IX, IY, N);
 	
 	fclose (fp);
-	free ((void *)lon);
-	free ((void *)lat);
+	free (lon);
+	free (lat);
 
 	GMT_err_fail (GMT_write_grd (argv[3], &grdh, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, FALSE), argv[3]);
 	

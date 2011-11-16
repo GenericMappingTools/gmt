@@ -111,7 +111,7 @@ void *New_pspolar_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	GMT_init_fill (GMT, &C->S2.fill, -1.0, -1.0, -1.0); 
 	C->T.justify = 5;
 	C->T.fontsize = 12.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_pspolar_Ctrl (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *C) {	/* Deallocate control structure */
@@ -353,7 +353,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 
 GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n, ix, iy, n_fields, error = FALSE, greenwich, old_is_world;
+	GMT_LONG n, ix, iy, error = FALSE, greenwich, old_is_world;
    
 	double plot_x, plot_y, symbol_size2 = 0, plot_x0, plot_y0, azS = 0, si, co;
 	double new_plot_x0, new_plot_y0, radius, azimut = 0, ih = 0, plongement = 0.0;
@@ -369,7 +369,7 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pspolar_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pspolar_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -377,8 +377,8 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_pspolar", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJR:", "BHKOPUVXhixYyc>", options))) Return (error);
-	Ctrl = (struct PSPOLAR_CTRL *)New_pspolar_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJR:", "BHKOPUVXhixYyc>", options)) Return (API->error);
+	Ctrl = New_pspolar_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pspolar_parse (API, Ctrl, options))) Return (error);
  	PSL = GMT->PSL;		/* This module also needs PSL */
   
@@ -422,13 +422,24 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
 
-	if ((error = GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) Return (error);				/* Enables data input and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_TEXT, (void **)&line)) != EOF) {	/* Keep returning records until we have no more files */
+	do {	/* Keep returning records until we reach EOF */
+		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 
- 		if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
+		/* Data record to process */
  
 		switch (Ctrl->Q.active) {
 			case 0 :
@@ -535,8 +546,11 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				PSL_plotsegment (PSL, plot_x - Ctrl->S2.size*si, plot_y - Ctrl->S2.size*co, plot_x + Ctrl->S2.size*si, plot_y + Ctrl->S2.size*co); 
 			}
 		}
+	} while (TRUE);
+	
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
     
 	GMT->current.map.is_world = old_is_world;
     

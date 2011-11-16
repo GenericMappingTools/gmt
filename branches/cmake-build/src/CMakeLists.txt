@@ -106,7 +106,7 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHS_FOUND)
 # These three lines are temporarily here for the beta release
 set (GMT_PROGS2_SRCS gmtaverage.c)
 set (GMT_PROGSPS2_SRCS testapi.c)
-set (GMT_DEMOS2_SRCS testgmt5.c testgmtio.c testio.c)
+set (GMT_DEMOS2_SRCS gmtmercmap.c testgmt5.c testgmtio.c testio.c)
 
 # source files
 set (GMT_DEMOS_SRCS gmt.c ${GMT_DEMOS2_SRCS})
@@ -336,7 +336,7 @@ else (HAVE_GETOPT)
 endif (HAVE_GETOPT)
 
 # generate Mac debugging symbols
-create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS})
+create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS})
 
 # Tests depend on GMT progs and supplements:
 add_dependencies (check ${GMT_PROGSPS} ${GMT_PROGS} ${GMT_DEMOS} psldemo

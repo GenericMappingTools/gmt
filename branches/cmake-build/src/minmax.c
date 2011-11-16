@@ -81,7 +81,7 @@ void *New_minmax_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_minmax_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallocate control structure */
@@ -233,7 +233,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
 	GMT_LONG brackets = FALSE, work_on_abs_value, do_report;
-	GMT_LONG i, j, ncol = 0, n = 0, n_fields, save_range, wmode, done;
+	GMT_LONG i, j, ncol = 0, n = 0, save_range, wmode, done;
 
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
 
@@ -248,7 +248,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (options && options->option == GMTAPI_OPT_USAGE) bailout (GMT_minmax_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_minmax_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -256,8 +256,8 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_minmax", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("HMm"), options))) Return (error);
-	Ctrl = (struct MINMAX_CTRL *) New_minmax_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("HMm"), options)) Return (API->error);
+	Ctrl = New_minmax_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_minmax_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the minmax main code ----------------------------*/
@@ -284,11 +284,19 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);	/* Enables data output and sets access mode */
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {
+		Return (API->error);
+	}
 
 	if (Ctrl->C.active) {	/* Must set output column types since each input col will take up two output cols. */
 		GMT_LONG col_type[GMT_MAX_COLUMNS];
@@ -300,7 +308,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	first_data_record = TRUE;
 	done = FALSE;
 	while (!done) {	/* Keep returning records until we reach EOF of last file */
-		n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, (void **)&in);
+		in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, NULL);
 		do_report = FALSE;
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
@@ -385,11 +393,11 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			if (Ctrl->C.active) {	/* Plain data record */
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)GMT->current.io.curr_rec);	/* Write data record to output destination */
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, GMT->current.io.curr_rec);	/* Write data record to output destination */
 			}
 			else {
 				strcat (record, "\n");
-				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write text record to output destination */
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
 			}
 			got_stuff = TRUE;		/* We have at least reported something */
 			for (i = 0; i < ncol; i++) {	/* Reset counters for next block */
@@ -399,8 +407,9 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_quad_reset (GMT, Q, ncol);
 			n = 0;
 			file[0] = '\0';
-			if (done || do_report) continue;	/* We are done OR have no data record to process yet */
+			if (done || do_report || GMT_REC_IS_FILE_BREAK (GMT)) continue;	/* We are done OR have no data record to process yet */
 		}
+		if (GMT_REC_IS_FILE_BREAK (GMT)) continue;
 
 		/* We get here once we have read a data record */
 		
@@ -478,8 +487,12 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (file[0] == 0) strcpy (file, GMT->current.io.current_filename[GMT_IN]);	/* Grab name of current file while we can */
 		
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
+	}
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 	
 	if (!got_stuff) GMT_report (GMT, GMT_MSG_FATAL, "No input data found!\n");
 

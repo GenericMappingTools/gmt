@@ -173,7 +173,7 @@ PSL_LONG PSL_comment_ (char *text, int len)
 
 PSL_LONG PSL_free_ (void *ptr)
 {
-	return (PSL_free_nonmacro (PSL_FORTRAN, &ptr));
+	return (PSL_free_nonmacro (ptr);
 }
 
 PSL_LONG PSL_beginaxes_ (double *llx, double *lly, double *width, double *height, double *x0, double *y0, double *x1, double *y1)

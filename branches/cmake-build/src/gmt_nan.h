@@ -42,11 +42,11 @@
 #define GMT_make_fnan(x) (x = FLT_MAX)
 #define GMT_make_dnan(x) (x = DBL_MAX)
 #elif defined(WIN32)
-#define GMT_make_fnan(x) { void *v; unsigned int *i; v = (void *)&x; i = (unsigned int *)v; *i = 0x7fffffff;}
-#define GMT_make_dnan(x) { void *v; unsigned int *i; v = (void *)&x; i = (unsigned int *)v; i[0] = 0xffffffff; i[1] = 0x7fffffff;}
+#define GMT_make_fnan(x) { void *v; unsigned int *i; v = &x; i = (unsigned int *)v; *i = 0x7fffffff;}
+#define GMT_make_dnan(x) { void *v; unsigned int *i; v = &x; i = (unsigned int *)v; i[0] = 0xffffffff; i[1] = 0x7fffffff;}
 #else
-#define GMT_make_fnan(x) { void *v; unsigned int *i; v = (void *)&x; i = (unsigned int *)v; *i = 0xffffffff;}
-#define GMT_make_dnan(x) { void *v; unsigned int *i; v = (void *)&x; i = (unsigned int *)v; i[0] = 0xffffffff; i[1] = 0xffffffff;}
+#define GMT_make_fnan(x) { void *v; unsigned int *i; v = &x; i = (unsigned int *)v; *i = 0xffffffff;}
+#define GMT_make_dnan(x) { void *v; unsigned int *i; v = &x; i = (unsigned int *)v; i[0] = 0xffffffff; i[1] = 0xffffffff;}
 #endif
 
 #if defined(NO_IEEE)

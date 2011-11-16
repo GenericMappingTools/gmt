@@ -116,7 +116,7 @@ int main (int argc, char **argv) {
 	
 	/* Free all polygons */
 	for (res = 0; res < 5; res++) {
-		for (id1 = 0; id1 < n_id[res]; id1++) GMT_free ((void *)P[res][id1].p);
+		for (id1 = 0; id1 < n_id[res]; id1++) GMT_free (P[res][id1].p);
 	}
 	for (res = 1; res < 5; res++) GMT_free ((void*)link[res]);
 	for (res = 1; res < 5; res++) GMT_free ((void*)level[res]);

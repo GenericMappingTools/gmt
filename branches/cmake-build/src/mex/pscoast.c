@@ -37,7 +37,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (!mxIsChar(prhs[nrhs-1])) mexErrMsgTxt ("Last input must contain the options string\n");
 
 	/* Initializing new GMT session */
-	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMTPSL)) mexErrMsgTxt ("Failure to create GMT/PSL Session\n");
+	if ((API = GMT_Create_Session ("GMT/MEX-API", GMTAPI_GMTPSL)) == NULL) mexErrMsgTxt ("Failure to create GMT/PSL Session\n");
 
 	/* Make sure options are given, and get them */
 	options = GMTMEX_options_init (API, prhs, nrhs);
@@ -46,7 +46,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	cmd = GMTMEX_build_cmd (API, NULL, options, NULL, GMT_IS_PS);
 	
 	/* Run pscoast module, or give usage message if errors arise during parsing */
-	if ((status = GMT_pscoast (API, 0, (void *)cmd))) mexErrMsgTxt ("Run-time error\n");
+	if ((status = GMT_pscoast (API, 0, cmd))) mexErrMsgTxt ("Run-time error\n");
 		
 	/* Free temporary local variables  */
 	mxFree (cmd);

@@ -326,12 +326,12 @@ void *New_psmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
 		
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psmask_Ctrl (struct GMT_CTRL *GMT, struct PSMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->D.file) free ((void *)C->D.file);	
+	if (C->D.file) free (C->D.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -494,7 +494,7 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG ij, k, n, row, col, n_edges, *d_col = NULL, d_row = 0, ii, jj, make_plot, n_seg = 0;
-	GMT_LONG section, n_fields, n_read, n_alloc, closed, io_mode = 0, max_d_col = 0;
+	GMT_LONG section, n_read, n_alloc, closed, io_mode = 0, max_d_col = 0;
 	GMT_LONG error = FALSE, first = TRUE, node_only, n_seg_alloc = 0;
 	GMT_LONG fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
 
@@ -515,7 +515,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_psmask_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_psmask_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -523,8 +523,8 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_psmask", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRb:", "BKOPUXxYychipst>" GMT_OPT("E"), options))) Return (error);
-	Ctrl = (struct PSMASK_CTRL *)New_psmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJRb:", "BKOPUXxYychipst>" GMT_OPT("E"), options)) Return (API->error);
+	Ctrl = New_psmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psmask_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
@@ -540,6 +540,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!Ctrl->C.active && make_plot && GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
+		GMT_LONG dim[4] = {1, 0, 2, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_DATASET;
 		else {	/* Must determine the kind of output organization */
@@ -553,9 +554,8 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			if (fmt[1]) io_mode = GMT_WRITE_SEGMENTS;	/* d: Want individual files with running numbers */
 		}
-		D = GMT_create_dataset (GMT, 1, 0, 2, 0);	/* An empty table */
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty table */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	}
 	
 	if (Ctrl->C.active)
@@ -575,7 +575,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_memset (&info, 1, struct PSMASK_INFO);
 		info.first_dump = TRUE;
 
-		Grid = GMT_create_grid (GMT);
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		GMT_setnval (GMT->current.io.pad, 4, 1);		/* Change default pad to 1 only */
 		GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, Ctrl->F.active);
 		
@@ -613,20 +613,32 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your search radius is too small to have any effect and is ignored.\n");
 		}
 		
-		if ((error = GMT_set_cols (GMT, GMT_IN, 2))) Return (error);
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+		if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
+			Return (error);
+		}
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
 
 		n_read = 0;
-		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
-
-			if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
-
-			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
+		do {	/* Keep returning records until we reach EOF */
 			n_read++;
+			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+					continue;
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
+			}
 
 			if (GMT_y_is_outside (GMT, in[GMT_Y], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
 			if (GMT_x_is_outside (GMT, &in[GMT_X], Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
+
+			/* Data record to process */
 
 			/* Determine the node closest to the data point */
 
@@ -659,8 +671,11 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 				}
 			}
+		} while (TRUE);
+		
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
 		}
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld data points\n", n_read);
 
@@ -722,8 +737,9 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_free (GMT, y);
 			if (Ctrl->D.active) {	/* Write the clip polygon file(s) */
 				D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, n_seg, struct GMT_LINE_SEGMENT *);
-				if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, io_mode, (void **)&(Ctrl->D.file), (void *)D))) Return (error);
-				if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, io_mode, Ctrl->D.file, D) != GMT_OK) {
+					Return (API->error);
+				}
 			}
 		}
 		else {	/* Just paint tiles */

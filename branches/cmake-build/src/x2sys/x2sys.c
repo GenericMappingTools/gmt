@@ -315,7 +315,7 @@ void x2sys_end (struct GMT_CTRL *C, struct X2SYS_INFO *X)
 	if (!X) return;
 	if (X->out_order) GMT_free (C, X->out_order);
 	if (X->use_column) GMT_free (C, X->use_column);
-	free ((void *)X->TAG);	/* free since allocated by strdup */
+	free (X->TAG);	/* free since allocated by strdup */
 	x2sys_free_info (C, X);
 	for (id = 0; id < n_x2sys_paths; id++) GMT_free (C, x2sys_datadir[id]);
 	MGD77_end (C, &M);
@@ -504,37 +504,37 @@ GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X
 				break;
 
 			case 'c':	/* Binary signed 1-byte character */
-				n_read += fread ((void *)&c, sizeof (char), (size_t)1, fp);
+				n_read += fread (&c, sizeof (char), (size_t)1, fp);
 				data[j] = (double)c;
 				break;
 
 			case 'u':	/* Binary unsigned 1-byte character */
-				n_read += fread ((void *)&u, sizeof (unsigned char), (size_t)1, fp);
+				n_read += fread (&u, sizeof (unsigned char), (size_t)1, fp);
 				data[j] = (double)u;
 				break;
 
 			case 'h':	/* Binary signed 2-byte integer */
-				n_read += fread ((void *)&h, sizeof (short int), (size_t)1, fp);
+				n_read += fread (&h, sizeof (short int), (size_t)1, fp);
 				data[j] = (double)h;
 				break;
 
 			case 'i':	/* Binary signed 4-byte integer */
-				n_read += fread ((void *)&i, sizeof (int), (size_t)1, fp);
+				n_read += fread (&i, sizeof (int), (size_t)1, fp);
 				data[j] = (double)i;
 				break;
 
 			case 'l':	/* Binary signed 4/8-byte integer (long) */
-				n_read += fread ((void *)&L, sizeof (long), (size_t)1, fp);
+				n_read += fread (&L, sizeof (long), (size_t)1, fp);
 				data[j] = (double)L;
 				break;
 
 			case 'f':	/* Binary signed 4-byte float */
-				n_read += fread ((void *)&f, sizeof (float), (size_t)1, fp);
+				n_read += fread (&f, sizeof (float), (size_t)1, fp);
 				data[j] = (double)f;
 				break;
 
 			case 'd':	/* Binary signed 8-byte float */
-				n_read += fread ((void *)&data[j], sizeof (double), (size_t)1, fp);
+				n_read += fread (&data[j], sizeof (double), (size_t)1, fp);
 				break;
 
 			default:
@@ -655,7 +655,7 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
   		return (-1);
 	}
 
-	if (fread ((void *)&year, sizeof (int), (size_t)1, fp) != 1) {
+	if (fread (&year, sizeof (int), (size_t)1, fp) != 1) {
 		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_gmtfile: Could not read leg year from %s\n", path);
 		return (-1);
 	}
@@ -664,14 +664,14 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 	t_off = GMT_rdc2dt (C, rata_day, 0.0);		/* Secs to start of day */
 
 
-	if (fread ((void *)&n_records, sizeof (int), (size_t)1, fp) != 1) {
+	if (fread (&n_records, sizeof (int), (size_t)1, fp) != 1) {
 		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_gmtfile: Could not read n_records from %s\n", path);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	p->n_rows = (GMT_LONG)n_records;
 	GMT_memset (p->name, 32, char);
 
-	if (fread ((void *)p->name, (size_t)10, sizeof (char), fp) != 1) {
+	if (fread (p->name, (size_t)10, sizeof (char), fp) != 1) {
 		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_gmtfile: Could not read agency from %s\n", path);
 		return (GMT_GRDIO_READ_FAILED);
 	}
@@ -681,7 +681,7 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 
 	for (j = 0; j < p->n_rows; j++) {
 
-		if (fread ((void *)&record, (size_t)18, (size_t)1, fp) != 1) {
+		if (fread (&record, (size_t)18, (size_t)1, fp) != 1) {
 			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_gmtfile: Could not read record %ld from %s\n", j, path);
 			return (GMT_GRDIO_READ_FAILED);
 		}
@@ -818,7 +818,7 @@ GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data
 	MGD77_Close_File (C, &M);
 
 	z = GMT_memory (C, NULL, M.n_out_columns, double *);
-	for (i = 0; i < M.n_out_columns; i++) z[i] = (double *) S->values[i];
+	for (i = 0; i < M.n_out_columns; i++) z[i] = S->values[i];
 
 	strncpy (p->name, fname, (size_t)32);
 	p->n_rows = S->H.n_records;
@@ -863,7 +863,7 @@ GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, str
 	for (i = 0; i < s->n_out_columns; i++) z[i] = GMT_memory (C, NULL, C->current.io.ndim, double);
 
 	for (j = 0; j < (GMT_LONG)C->current.io.ndim; j++) {
-		if ((n_fields = C->current.io.input (C, fp, &n_expect, &in)) != s->n_out_columns) {
+		if ((in = C->current.io.input (C, fp, &n_expect, &n_fields)) == NULL || n_fields != s->n_out_columns) {
 			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_ncfile: Error reading file %s at record %ld\n", fname, (GMT_LONG)j);
 	     		return (GMT_GRDIO_READ_FAILED);
 		}
@@ -959,7 +959,7 @@ GMT_LONG x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, doubl
 void x2sys_free_list (struct GMT_CTRL *C, char **list, GMT_LONG n)
 {	/* Properly free memory allocated by x2sys_read_list */
 	GMT_LONG i;
-	for (i = 0; i < n; i++) free ((void *)list[i]);
+	for (i = 0; i < n; i++) free (list[i]);
 	if (list) GMT_free (C, list);
 }
 
@@ -1247,8 +1247,8 @@ GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct 
 #endif
 	B->base = GMT_memory (C, NULL, B->nm_bin, struct X2SYS_BIX_DATABASE);
 
-	while ((fread ((void *)(&index), sizeof (int), (size_t)1, fbin)) == 1) {
-		not_used = fread ((void *)(&no_of_tracks), sizeof (int), (size_t)1, fbin);
+	while ((fread ((&index), sizeof (int), (size_t)1, fbin)) == 1) {
+		not_used = fread ((&no_of_tracks), sizeof (int), (size_t)1, fbin);
 		if (!swap && (index < 0 || no_of_tracks < 0)) swap = TRUE;	/* A negative index or no_of_tracks must mean that swapping is needed */
 		if (swap) {
 			index = GMT_swab4 (index);
@@ -1256,8 +1256,8 @@ GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct 
 		}
 		B->base[index].first_track = B->base[index].last_track = x2sys_bix_make_track (C, 0, 0);
 		for (i = 0; i < no_of_tracks; i++) {
-			not_used = fread ((void *)(&id), sizeof (int), (size_t)1, fbin);
-			not_used = fread ((void *)(&flag), sizeof (int), (size_t)1, fbin);
+			not_used = fread ((&id), sizeof (int), (size_t)1, fbin);
+			not_used = fread ((&flag), sizeof (int), (size_t)1, fbin);
 			if (swap) {
 				id = GMT_swab4 (id);
 				flag = GMT_swab4 (flag);

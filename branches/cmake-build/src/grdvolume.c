@@ -282,11 +282,11 @@ void *New_grdvolume_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->L.value = GMT->session.d_NaN;
 	C->Z.scale = 1.0;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdvolume_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* Deallocate control structure */
-	if (C->In.file) free ((void *)C->In.file);	
+	if (C->In.file) free (C->In.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -410,7 +410,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdvolume_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdvolume_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -418,14 +418,15 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdvolume", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRf", "", options))) Return (error);
-	Ctrl = (struct GRDVOLUME_CTRL *) New_grdvolume_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ( GMT_Parse_Common (API, "-VRf", "", options)) Return (API->error);
+	Ctrl = New_grdvolume_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdvolume_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdvolume main code ----------------------------*/
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		Return (API->error);
+	}
 	if (Ctrl->L.active && Ctrl->L.value >= Grid->header->z_min) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Selected base value exceeds the minimum grid z value - aborting\n");
 		Return (EXIT_FAILURE);
@@ -434,8 +435,9 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, Grid->header->wesn, 4, double);	/* No -R, use grid domain */
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
 
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, Grid) == NULL) {
+		Return (API->error);
+	}
 
 	new_grid = GMT_set_outgrid (GMT, Grid, &Work);	/* TRUE if input is a read-only array */
 	GMT_grd_init (GMT, Work->header, options, TRUE);
@@ -594,22 +596,30 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Print out final estimates */
 
- 	if ((error = GMT_set_cols (GMT, GMT_OUT, 4))) Return (error);
- 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+	if ((error = GMT_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 
 	if (Ctrl->T.active) {	/* Determine the best contour value and return the corresponding information for that contour only */
 		c = ors_find_kink (GMT, height, n_contours, Ctrl->T.mode);
 		out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c];	out[3] = height[c];
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 	}
 	else {			/* Return information for all contours (possibly one if -C<val> was used) */
 		for (c = 0; c < n_contours; c++) {
 			out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c];	out[3] = height[c];
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 	}
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	GMT_free (GMT, area);
 	GMT_free (GMT, vol);

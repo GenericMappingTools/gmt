@@ -175,9 +175,9 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
       PARAMETER (NTAY_MG=1,NTAY_OR=1)
  ======================================================================= */
 
-	bkpo = (double *) calloc((size_t)(12415), sizeof(double));
-	gamf = (double *) calloc((size_t)(8840), sizeof(double));
-	f107x = (double *) calloc((size_t)(1200), sizeof(double));
+	bkpo = calloc((size_t)(12415), sizeof(double));
+	gamf = calloc((size_t)(8840), sizeof(double));
+	f107x = calloc((size_t)(1200), sizeof(double));
 
 	if ((fp = fopen(Ctrl->CM4_M.path, "r")) == NULL) {
 		fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->CM4_M.path);
@@ -202,7 +202,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	i_unused = fscanf (fp, "%d %d", &lcmg, &lsmg);
 	i_unused = fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
 	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm);
-	gpmg = (double *) calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
+	gpmg = calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
 	for (k = 0; k < 2; ++k)
 		for (j = 0; j < lsmg; ++j) {
 			n = (j + k * 5) * 1356;
@@ -210,7 +210,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				i_unused = fscanf (fp, "%lf", &gpmg[i + n]);
 		}
 
-	gsmg = (double *) calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
+	gsmg = calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
 	for (k = 0; k < 2; ++k)
 		for (j = 0; j < lsmg; ++j) {
 			n = (j + k * 5) * 1356;
@@ -221,7 +221,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	i_unused = fscanf (fp, "%d %d", &lcsq, &lssq);
 	i_unused = fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
 	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &hion);
-	gpsq = (double *) calloc((size_t)(2 * lssq * lcsq), sizeof(double));
+	gpsq = calloc((size_t)(2 * lssq * lcsq), sizeof(double));
 	for (k = 0; k < 2; ++k)
 		for (j = 0; j < lssq; ++j) {
 			n = (j + k * 5) * 13680;
@@ -229,7 +229,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				i_unused = fscanf (fp, "%lf", &gpsq[i + n]);
 		}
 
-	gssq = (double *) calloc((size_t)(lssq * lcsq), sizeof(double));
+	gssq = calloc((size_t)(lssq * lcsq), sizeof(double));
 	for (j = 0; j < lssq; ++j) {
 		n = j * 13680;
 		for (i = 0; i < lcsq; ++i)
@@ -240,7 +240,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	i_unused = fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
 	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_dw, &rtay_dk);
 	if (Ctrl->CM4_DATA.pred[3]) { 	/* In other cases the next coefficients are not used, so no waist time/memory with them */
-		gcto_mg = (double *) calloc((size_t)(2 * lrto * lsto * lcto), sizeof(double));
+		gcto_mg = calloc((size_t)(2 * lrto * lsto * lcto), sizeof(double));
 		for (l = 0; l < 2; ++l)
 			for (k = 0; k < lrto; ++k)
 				for (j = 0; j < lsto; ++j) {
@@ -257,7 +257,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	i_unused = fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
 	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_or);
 	if (Ctrl->CM4_DATA.pred[3] && !Ctrl->CM4_DATA.pred[4]) { 	/* In other cases the next coefficients are not used, so no waist time/memory with them */
-		gcto_or = (double *) calloc((size_t)(lrto * lsto * lcto), sizeof(double));
+		gcto_or = calloc((size_t)(lrto * lsto * lcto), sizeof(double));
 		for (k = 0; k < lrto; ++k)
 			for (j = 0; j < lsto; ++j) {
 				n = (j + k * 5) * 13680;
@@ -273,9 +273,9 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	sincos(epol, &semp, &cemp);
 	rion = rm + hion;
 
-	mut = (double *) calloc((size_t)(Ctrl->CM4_DATA.n_times), sizeof(double));
-	msec = (int *) calloc((size_t)(Ctrl->CM4_DATA.n_times), sizeof(int));
-	mjdy = (int *) calloc((size_t)(Ctrl->CM4_DATA.n_times), sizeof(int));
+	mut = calloc((size_t)(Ctrl->CM4_DATA.n_times), sizeof(double));
+	msec = calloc((size_t)(Ctrl->CM4_DATA.n_times), sizeof(int));
+	mjdy = calloc((size_t)(Ctrl->CM4_DATA.n_times), sizeof(int));
 	for (n = 0; n < Ctrl->CM4_DATA.n_times; ++n) {		/* If time is not constant compute the mut array */
 		iyr = (int)(p_date[n]);
 		fyr = p_date[n] - (double) iyr;
@@ -300,7 +300,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			jaft = 0;
 			n = 0;
 			n_Dst_rows = 18262;	/* Current (13-05-2009) number of lines in Dst_all.wdc file */
-			dstx = (double *) calloc((size_t)(n_Dst_rows * 24), sizeof(double));
+			dstx = calloc((size_t)(n_Dst_rows * 24), sizeof(double));
 			/* One improvment would be to compute year_min/year_max and retain only the needed data in dstx */
 
 			while (fgets (line, GMT_BUFSIZ, fp)) {
@@ -317,7 +317,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				}
 				if (n > n_Dst_rows) {
 					n_Dst_rows += 1000;
-					dstx = (double *) realloc(dstx, (size_t)(n_Dst_rows * 24) * sizeof(double));
+					dstx = realloc(dstx, (size_t)(n_Dst_rows * 24) * sizeof(double));
 				}
 				k = (jmjd - mjdl) * 24;
 				for (j = 0; j < 24; ++j)
@@ -328,13 +328,13 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			mjdh = jmjd;
     		}
 		if (Ctrl->CM4_DATA.n_times > 1)	/* Need to re-allocate memory for all n_times in dst array */
-			Ctrl->CM4_D.dst = (double *) realloc(Ctrl->CM4_D.dst, (size_t)(Ctrl->CM4_DATA.n_times) * sizeof(double));
+			Ctrl->CM4_D.dst = realloc(Ctrl->CM4_D.dst, (size_t)(Ctrl->CM4_DATA.n_times) * sizeof(double));
 
 		/* Get only one dst first so that we can test (and abort if needed) if date is out of bounds */
 		Ctrl->CM4_D.dst[0] = intdst(mjdl, mjdh, mjdy[0], msec[0], dstx, &cerr);
 		if (cerr > 49) {
-			free((void *) dstx);
-			if (Ctrl->CM4_DATA.n_times > 1) free((void *) Ctrl->CM4_D.dst);
+			free( dstx);
+			if (Ctrl->CM4_DATA.n_times > 1) free( Ctrl->CM4_D.dst);
 			return 1;
 		}
 
@@ -342,7 +342,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		for (n = 1; n < Ctrl->CM4_DATA.n_times; ++n)
 			Ctrl->CM4_D.dst[n] = intdst(mjdl, mjdh, mjdy[n], msec[n], dstx, &cerr);
 
-		free((void *) dstx);
+		free( dstx);
 		if (cerr > 49) return 1;
 	}
 	if (Ctrl->CM4_I.index) {
@@ -371,23 +371,23 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		Ctrl->CM4_I.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
 		if (cerr > 49) return 1;
 	}
-	free ((void *) msec);
-	free ((void *) mjdy);
+	free ( msec);
+	free ( mjdy);
 
 	/* On Windows, either this or declare them as "static", otherwise ... BOOM */
-	hysq = (double *) calloc((size_t)(82080), sizeof(double));
-	epsq = (double *) calloc((size_t)(13680), sizeof(double));
-	essq = (double *) calloc((size_t)(13680), sizeof(double));
-	ecto = (double *) calloc((size_t)(16416), sizeof(double));
-	hyto = (double *) calloc((size_t)(49248), sizeof(double));
-	hq = (double *) calloc((size_t)(53040), sizeof(double));
-	ht = (double *) calloc((size_t)(17680), sizeof(double));
-	ws = (double *) calloc((size_t)(4355), sizeof(double));
-	epmg = (double *) calloc((size_t)(1356), sizeof(double));
-	esmg = (double *) calloc((size_t)(1356), sizeof(double));
-	hymg = (double *) calloc((size_t)(8136), sizeof(double));
-	pleg = (double *) calloc((size_t)(4422), sizeof(double));
-	rcur = (double *) calloc((size_t)(9104), sizeof(double));
+	hysq = calloc((size_t)(82080), sizeof(double));
+	epsq = calloc((size_t)(13680), sizeof(double));
+	essq = calloc((size_t)(13680), sizeof(double));
+	ecto = calloc((size_t)(16416), sizeof(double));
+	hyto = calloc((size_t)(49248), sizeof(double));
+	hq = calloc((size_t)(53040), sizeof(double));
+	ht = calloc((size_t)(17680), sizeof(double));
+	ws = calloc((size_t)(4355), sizeof(double));
+	epmg = calloc((size_t)(1356), sizeof(double));
+	esmg = calloc((size_t)(1356), sizeof(double));
+	hymg = calloc((size_t)(8136), sizeof(double));
+	pleg = calloc((size_t)(4422), sizeof(double));
+	rcur = calloc((size_t)(9104), sizeof(double));
 
 	/* LOOP over number of input points (many computations below are useless repeated - room for improvment */
 	for (n = 0; n < Ctrl->CM4_DATA.n_pts; ++n) {
@@ -742,16 +742,16 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		}
 	}
 
-	free ((void *) mut);
-	free ((void *) gpsq);	free ((void *) gssq);	free ((void *) gpmg);
-	free ((void *) gsmg);	free ((void *) hysq);	free ((void *) epsq);
-	free ((void *) essq);	free ((void *) ecto);	free ((void *) hyto);
-	free ((void *) hq);	free ((void *) ht);	free ((void *) bkpo);
-	free ((void *) ws);	free ((void *) gamf);	free ((void *) epmg);
-	free ((void *) esmg);	free ((void *) hymg);	free ((void *) f107x);
-	free ((void *) pleg);	free ((void *) rcur);
-	if (gcto_or) free((void *) gcto_or);
-	if (gcto_mg) free((void *) gcto_mg);
+	free ( mut);
+	free ( gpsq);	free ( gssq);	free ( gpmg);
+	free ( gsmg);	free ( hysq);	free ( epsq);
+	free ( essq);	free ( ecto);	free ( hyto);
+	free ( hq);	free ( ht);	free ( bkpo);
+	free ( ws);	free ( gamf);	free ( epmg);
+	free ( esmg);	free ( hymg);	free ( f107x);
+	free ( pleg);	free ( rcur);
+	if (gcto_or) free( gcto_or);
+	if (gcto_mg) free( gcto_mg);
 	return 0;
 }
 

@@ -36,20 +36,20 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	char *cmd = NULL;
 	char *key = KEY;
 
-	cmd = (char *) mxArrayToString (prhs[0]);	/* First argument is the command string, e.g., '$ -R0/5/0/5 -I1' */
+	cmd = mxArrayToString (prhs[0]);	/* First argument is the command string, e.g., '$ -R0/5/0/5 -I1' */
 
 	/* 1. Initializing new GMT session */
-	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("Failure to create GMT Session\n");
+	if ((API = GMT_Create_Session ("GMT/MEX-API", FUNC_MODE)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. Convert command line arguments to local linked option list */
-	if (GMT_Create_Options (API, 0L, (void *)cmd, &options)) mexErrMsgTxt ("Failure to parse GMT command options\n");
-	free ((void *)cmd);
+	if (GMT_Create_Options (API, 0L, cmd, &options)) mexErrMsgTxt ("Failure to parse GMT command options\n");
+	free (cmd);
 
 	/* 3. Parse the mex command, update GMT option lists, register in/out resources */
 	if (GMTMEX_parser (API, plhs, nlhs, prhs, nrhs, key, n_keys, options)) mexErrMsgTxt ("Failure to parse mex command options\n");
 	
 	/* 3. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = (int)FUNC (API, -1, (void *)options);
+	status = (int)FUNC (API, -1, options);
 
 	/* 4. Destroy local linked option list */
 	if (GMT_Destroy_Options (API, &options)) mexErrMsgTxt ("Failure to destroy GMT options\n");

@@ -51,7 +51,7 @@ void *New_psbasemap_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	GMT_memset (&C->L.item, 1, struct GMT_MAP_SCALE);
 	GMT_memset (&C->T.item, 1, struct GMT_MAP_ROSE);
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_psbasemap_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deallocate control structure */
@@ -150,7 +150,7 @@ GMT_LONG GMT_psbasemap (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_psbasemap_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_psbasemap_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -158,8 +158,8 @@ GMT_LONG GMT_psbasemap (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_psbasemap", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycpt>" GMT_OPT("EZ"), options))) Return (error);
-	Ctrl = (struct PSBASEMAP_CTRL *)New_psbasemap_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycpt>" GMT_OPT("EZ"), options)) Return (API->error);
+	Ctrl = New_psbasemap_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psbasemap_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 

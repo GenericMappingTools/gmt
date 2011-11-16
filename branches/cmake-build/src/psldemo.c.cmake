@@ -145,7 +145,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	/* Plot an image by itself */
 	PSL_loadimage (PSL, PSL_IMAGE, &h, &picture);
 	PSL_plotcolorimage (PSL, 5.0, 8.2, 1.5, 0.0, PSL_TL, picture, h.width, h.height, h.depth);
-	PSL_free (PSL, picture);
+	PSL_free (picture);
 
 	PSL_endplot (PSL, PSL_FINALIZE);
 	PSL_endsession (PSL);

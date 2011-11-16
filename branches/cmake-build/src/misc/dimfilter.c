@@ -90,14 +90,14 @@ void *New_dimfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->F.filter = C->N.filter = C->D.mode = -1;
 	C->N.n_sectors = 1;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_dimfilter_Ctrl (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->S.file) free ((void *)C->S.file);	
+	if (C->In.file) free (C->In.file);	
+	if (C->G.file) free (C->G.file);	
+	if (C->S.file) free (C->S.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -355,7 +355,7 @@ void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GRD_HEADER *h, doub
 
 #define Return(code) {Free_dimfilter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
 
-GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	short int **sector = NULL;
 	
@@ -388,19 +388,21 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct DIMFILTER_INFO F;
 	struct DIMFILTER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+        struct GMT_OPTION *options = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+        options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);   /* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_dimfilter_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_dimfilter_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
-	if ((error = GMT_Parse_Common (API, "-VRf:", "", options))) Return (error);
+	if (GMT_Parse_Common (API, "-VRf:", "", options)) Return (API->error);
 	GMT = GMT_begin_module (API, "GMT_dimfilter", &GMT_cpy);	/* Save current state */
-	Ctrl = (struct DIMFILTER_CTRL *) New_dimfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_dimfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_dimfilter_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the dimfilter main code ----------------------------*/
@@ -410,9 +412,9 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (!Ctrl->Q.active) {
 	
-		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&(Ctrl->In.file), (void **)&Gin)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
+		if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+			Return (API->error);
+		}
 		GMT_grd_init (GMT, Gin->header, options, TRUE);	/* Update command history only */
 
 		slow  = (Ctrl->F.filter == 3 || Ctrl->F.filter == 4);	/* Will require sorting etc */
@@ -423,7 +425,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else
 			one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 0 : 1;
 		
-		Gout = GMT_create_grid (GMT);
+		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		/* Use the -R region for output if set; otherwise match grid domain */
 		GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 		full_360 = (Ctrl->D.mode && GMT_360_RANGE (Gin->header->wesn[XHI], Gin->header->wesn[XLO]));	/* Periodic geographic grid */
@@ -468,7 +470,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 #ifdef OBSOLETE						
 		if (Ctrl->S.active) {
-			Sout = GMT_create_grid (GMT);
+			if ((Sout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 			GMT_err_fail (GMT, GMT_init_newgrid (GMT, Sout, wesn, inc, !one_or_zero), Ctrl->S.file);
 			Sout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 		}
@@ -875,7 +877,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef OBSOLETE								
 				if (Ctrl->S.active) {	/* Now assess a measure of deviation about this value */
 					if (slow) {	/* Get MAD! */
-						GMT_sort_array (GMT, (void *)work_array2, n, GMT_DOUBLE_TYPE);
+						GMT_sort_array (GMT, work_array2, n, GMTAPI_DOUBLE);
 						GMT_getmad (GMT, work_array2, n, z, &scale);
 					}
 					else {		/* Get weighted stdev. */
@@ -897,15 +899,17 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld multiple modes found\n", GMT_n_multiples);
 				
 		GMT_report (GMT, GMT_MSG_NORMAL, "Write filtered grid\n");
-		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Gout);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout) != GMT_OK) {
+			Return (API->error);
+		}
 #ifdef OBSOLETE						
 		if (Ctrl->S.active) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Write scale grid\n");
-			GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->S.file, (void *)Sout);
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->S.file, Sout) != GMT_OK) {
+				Return (API->error);
+			}
 		}
 #endif	
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Done\n");
 		
 		GMT_free (GMT, F. weight);
@@ -949,8 +953,10 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Return (EXIT_FAILURE);
 		}
 
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);				/* Enables data output and sets access mode */
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))!= GMT_OK) Return (error);
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;		/* No coordinates here */
 
 		/* read depths from each column until EOF */
@@ -985,14 +991,16 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			out[2] = (Ctrl->Q.err_cols) ? err_sum / Ctrl->Q.err_cols : 0.0;
 		  
 			/* print out the results */
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		  
 			GMT_report (GMT, GMT_MSG_DEBUG, "line %ld passed\n", err_l);
 			err_l++;
 		}
 		/* close the input */
 		fclose (ip);
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {
+			Return (API->error);	/* Disables further data output */
+		}
 	}
 	
 	Return (GMT_OK);
@@ -1001,22 +1009,15 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 int main (int argc, char *argv[]) {
 
 	int status = 0;			/* Status code from GMT API */
-	struct GMT_OPTION *options = NULL;	/* Linked list of options */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 
 	/* 1. Initializing new GMT session */
-	if (GMT_Create_Session (&API, argv[0], GMTAPI_GMT)) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session (argv[0], GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
 
-	/* 2. Convert command line arguments to local linked option list */
-	if (GMT_Create_Options (API, (GMT_LONG)(argc-1), (void *)(argv+1), &options)) exit (EXIT_FAILURE);
+	/* 2. Run GMT cmd function, or give usage message if errors arise during parsing */
+	status = (int)GMT_dimfilter (API, (GMT_LONG)(argc-1), (argv+1));
 
-	/* 3. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = (int)GMT_dimfilter (API, options);
-
-	/* 4. Destroy local linked option list */
-	if (GMT_Destroy_Options (API, &options)) exit (EXIT_FAILURE);
-
-	/* 5. Destroy GMT session */
+	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);
 
 	exit (status);		/* Return the status from FUNC */

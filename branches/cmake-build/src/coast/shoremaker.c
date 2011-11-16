@@ -63,7 +63,7 @@ int main (int argc, char **argv) {
 	
 	fprintf (stderr, "shoremaker: Process header file\n");
 
-	if (fread ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {
+	if (fread (&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {
 		fprintf (stderr, "shoremaker: Error reading file header\n");
 		exit (EXIT_FAILURE);
 	}
@@ -81,7 +81,7 @@ int main (int argc, char **argv) {
 	
 	for (i = 0; i < s.n_bin; i++) {
 	
-		if (fread ((void *)&bin_head, sizeof (struct GMT3_BIN_HEADER), (size_t)1, fp_bin) != 1) {
+		if (fread (&bin_head, sizeof (struct GMT3_BIN_HEADER), (size_t)1, fp_bin) != 1) {
 			fprintf (stderr, "shoremaker: Error reading bin header %d\n", i);
 			exit (-1);
 		}
@@ -103,7 +103,7 @@ int main (int argc, char **argv) {
 
 	for (i = 0; i < s.n_seg; i++) {
 	
-		if (fread ((void *)&seg_head, sizeof (struct SEGMENT_HEADER), (size_t)1, fp_seg) != 1) {
+		if (fread (&seg_head, sizeof (struct SEGMENT_HEADER), (size_t)1, fp_seg) != 1) {
 			fprintf (stderr, "shoremaker: Error reading seg header %d\n", i);
 			exit (-1);
 		}
@@ -124,7 +124,7 @@ int main (int argc, char **argv) {
 
 	for (i = 0; i < s.n_pt; i++) {
 	
-		if (fread ((void *)&p, sizeof (struct SHORT_PAIR), (size_t)1, fp_pt) != 1) {
+		if (fread (&p, sizeof (struct SHORT_PAIR), (size_t)1, fp_pt) != 1) {
 			fprintf (stderr, "shoremaker: Error reading point %d\n", i);
 			exit (-1);
 		}
@@ -137,12 +137,12 @@ int main (int argc, char **argv) {
 	
 	fprintf (stderr, "shoremaker: Process parent file\n");
 
-	if (fread ((void *)&n_id, sizeof (int), 1, fp_par) != 1) {
+	if (fread (&n_id, sizeof (int), 1, fp_par) != 1) {
 		fprintf (stderr, "shoremaker: Error reading # of GSHHS parents\n");
 		exit (EXIT_FAILURE);
 	}
 	GSHHS_parent = (int *) GMT_memory(VNULL, n_id, sizeof(int), "shoremaker");
-	if (fread ((void *)GSHHS_parent, sizeof (int), n_id, fp_par) != n_id) {
+	if (fread (GSHHS_parent, sizeof (int), n_id, fp_par) != n_id) {
 		fprintf (stderr, "shoremaker: Error writing GSHHS parents\n");
 		exit (EXIT_FAILURE);
 	}
@@ -236,20 +236,20 @@ int main (int argc, char **argv) {
 				
         GMT_err_fail (nc_close (s.cdfid), file);
 	
-	GMT_free ((void *)GSHHS_parent);
+	GMT_free (GSHHS_parent);
 	
-	GMT_free ((void *)bin_firstseg);
-	GMT_free ((void *)bin_info);
-	GMT_free ((void *)bin_nseg);
+	GMT_free (bin_firstseg);
+	GMT_free (bin_info);
+	GMT_free (bin_nseg);
 	
-	GMT_free ((void *)seg_info);
-	GMT_free ((void *)seg_area);
-	GMT_free ((void *)seg_frac);
-	GMT_free ((void *)seg_start);
-	GMT_free ((void *)seg_GSHHS_id);
+	GMT_free (seg_info);
+	GMT_free (seg_area);
+	GMT_free (seg_frac);
+	GMT_free (seg_start);
+	GMT_free (seg_GSHHS_id);
 	
-	GMT_free ((void *)pt_dx);
-	GMT_free ((void *)pt_dy);
+	GMT_free (pt_dx);
+	GMT_free (pt_dy);
 
 	GMT_end (argc, argv);
 	

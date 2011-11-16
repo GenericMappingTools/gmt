@@ -194,7 +194,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 
 	Return 0 if cannot read files correctly, or nrasters if successful.  */
 
-	GMT_LONG i, j, length, stop_point, nfound = 0, ksize = 0, n_alloc, expected_size, object_ID, n_fields, delta, error = 0;
+	GMT_LONG i, j, length, stop_point, nfound = 0, ksize = 0, n_alloc, expected_size, object_ID, delta;
 	double global_lon, lon_tol;
 	char path[GMT_BUFSIZ], buf[GRD_REMARK_LEN160], dir[GRD_REMARK_LEN160], *l = NULL, *record = NULL, *file = NULL;
 	struct GRDRASTER_INFO *rasinfo = NULL;
@@ -208,10 +208,12 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 	}
 	file = dir;
 
-	if (GMT_Register_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, (void **)&file, NULL, NULL, &object_ID)) return (0);
+	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, file, NULL)) == GMTAPI_NOTSET) {
+		return (0);
+	}
 
-	if ((error = GMT_Begin_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) {	/* Enables data input and sets access mode */
-		GMT_report (GMT, GMT_MSG_FATAL, "Error reading grdraster.info. Error code = %ld\n", error);
+	if (GMT_Begin_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		GMT_report (GMT, GMT_MSG_FATAL, "Error reading grdraster.info. Error code = %ld\n", GMT->parent->error);
 		return (0);
 	}
 
@@ -222,13 +224,15 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 	n_alloc = GMT_SMALL_CHUNK;
 	rasinfo = GMT_memory (GMT, NULL, n_alloc, struct GRDRASTER_INFO);
 
-	while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, (void **)&record)) != EOF) {	/* Keep returning records until we reach EOF */
-		if (GMT_REC_IS_ERROR (GMT)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Skipping record in grdraster.info (Cannot read data record).\n");
-			continue;
+	do {	/* Keep returning records until we reach EOF */
+		if ((record = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
 		}
-
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;		/* Skip segment headers */
 
 		/* Strip off trailing "\r\n" */
 		GMT_chop (GMT, record);
@@ -577,9 +581,11 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 			n_alloc <<= 1;
 			rasinfo = GMT_memory (GMT, rasinfo, n_alloc, struct GRDRASTER_INFO);
 		}
-	}
-	if ((error = GMT_End_IO (GMT->parent, GMT_IN, 0))) {	/* Disables further data input */
-		GMT_report (GMT, GMT_MSG_FATAL, "Error closing grdraster.info file. Error code = %ld.\n", error);
+	} while (TRUE);
+	
+	if (GMT_End_IO (GMT->parent, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		GMT_report (GMT, GMT_MSG_FATAL, "Error closing grdraster.info file. Error code = %ld.\n", GMT->parent->error);
+		return (GMT->parent->error);
 	}
 
 	if (!nfound)
@@ -596,14 +602,14 @@ void *New_grdraster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	C = GMT_memory (GMT, NULL, 1, struct GRDRASTER_CTRL);
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdraster_Ctrl (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free ((void *)C->In.file);
-	if (C->G.file) free ((void *)C->G.file);
-	if (C->T.file) free ((void *)C->T.file);
+	if (C->In.file) free (C->In.file);
+	if (C->G.file) free (C->G.file);
+	if (C->T.file) free (C->T.file);
 	GMT_free (GMT, C);
 }
 
@@ -737,7 +743,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdraster_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdraster_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -745,8 +751,8 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdraster", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRb", "", options))) Return (error);
-	Ctrl = (struct GRDRASTER_CTRL *) New_grdraster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VJRb", "", options)) Return (API->error);
+	Ctrl = New_grdraster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdraster_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdraster main code ----------------------------*/
@@ -756,7 +762,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Since load_rasinfo processed -R options we need to re-parse the main -R */
 
-	GMT_Find_Option (GMT->parent, 'R', options, &r_opt);
+	r_opt = GMT_Find_Option (GMT->parent, 'R', options);
 	GMT->common.R.active = FALSE;	/* Forget that -R was used before */
 	if (GMT_parse_common_options (GMT, "R", 'R', r_opt->arg)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error reprocessing -R?.\n");
@@ -813,7 +819,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* OK, here we have a recognized dataset ID */
 
-	Grid = GMT_create_grid (GMT);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	GMT_memcpy (Grid->header->wesn, GMT->common.R.wesn, 4, double);
@@ -933,11 +939,14 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->nx, float);
 		x = GMT_memory (GMT, NULL, Grid->header->nx, double);
 		for (i = 0; i < Grid->header->nx; i++) x[i] = GMT_col_to_x (GMT, i, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
-		if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_REC))) Return (error);			/* Enables data output and sets access mode */
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+			Return (error);
+		}
 	} else {	/* Need an entire (padded) grid */
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
-		if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);			/* Enables data output and sets access mode */
 	}
 
 	ksize = get_byte_size (GMT, myras.type);
@@ -964,7 +973,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (myras.swap_me) GMT_report (GMT, GMT_MSG_NORMAL, "Data from %s will be byte-swapped\n", myras.h.remark);
 
 	if (myras.type == 'b') {	/* Must handle bit rasters a bit differently */
-		if ( (GMT_fread ((void *)ubuffer, sizeof (unsigned char), (size_t)nmask, fp)) != (size_t)nmask) {
+		if ( (GMT_fread (ubuffer, sizeof (unsigned char), (size_t)nmask, fp)) != (size_t)nmask) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Failure to read a bitmap raster from %s.\n", myras.h.remark);
 			GMT_free (GMT, ubuffer);
 			GMT_fclose (GMT, fp);
@@ -1002,7 +1011,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (i = 0; i < Grid->header->nx; i++) {
 					out[0] = x[i];
 					out[2] = Grid->data[i];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
 			}
 		}
@@ -1034,7 +1043,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_free (GMT, buffer);
 					Return (EXIT_FAILURE);
 				}
-				if ( (GMT_fread((void *)buffer, (size_t)ksize, (size_t)myras.h.nx, fp)) != (size_t)myras.h.nx) {
+				if ( (GMT_fread(buffer, (size_t)ksize, (size_t)myras.h.nx, fp)) != (size_t)myras.h.nx) {
 					GMT_report (GMT, GMT_MSG_FATAL, "ERROR reading in %s\n", myras.h.remark);
 					GMT_fclose (GMT, fp);
 					GMT_free (GMT, buffer);
@@ -1051,7 +1060,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						convert_c_row (GMT, myras, floatrasrow, buffer);
 						break;
 					case 'd':
-						convert_d_row (GMT, myras, floatrasrow, (unsigned short int *)buffer);
+						convert_d_row (GMT, myras, floatrasrow, (short unsigned int *)buffer);
 						break;
 					case 'i':
 						convert_i_row (GMT, myras, floatrasrow, (short int *)buffer);
@@ -1080,7 +1089,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (i = 0; i < Grid->header->nx; i++) {
 					out[0] = x[i];
 					out[2] = Grid->data[i];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
 			}
 		}
@@ -1095,12 +1104,15 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (n_nan == Grid->header->nx * Grid->header->ny) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your grid file is entirely full of NaNs.\n");
 
-	if (Ctrl->T.active)
+	if (Ctrl->T.active) {
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			Return (API->error);
+		}
 		GMT_free (GMT, x);
-	else if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid))
-		Return (GMT_DATA_WRITE_ERROR);
-
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
+	}
+	else if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+		Return (API->error);
+	}
 
 	Return (GMT_OK);
 }

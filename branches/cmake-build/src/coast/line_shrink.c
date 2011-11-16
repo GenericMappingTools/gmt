@@ -84,9 +84,9 @@ int main (int argc, char **argv)
 		n_id++;
 	}
 		
-	free ((void *)x);	
-	free ((void *)y);	
-	free ((void *)index);	
+	free (x);	
+	free (y);	
+	free (index);	
 		
 	fclose (fp_in);
 	fclose (fp_out);

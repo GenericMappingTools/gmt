@@ -17,6 +17,7 @@ dpi=72
 n_frames=36
 TDIR=../../tutorial
 name=`basename $0 '.sh'`
+ps=../${name}.ps
 # 1b) setup
 del_angle=`gmtmath -Q 360 $n_frames DIV =`
 makecpt -Crainbow -T500/4500/5000 -Z > $$.cpt
@@ -34,7 +35,7 @@ while [ $frame -lt $n_frames ]; do
 	psxy -R$TDIR/us.nc -J -O -K -Sc0.8i -Gwhite -Wthin >> $$.ps <<< "256.25 35.6"
 	psxy -R$TDIR/us.nc -J -O -Sv0.02i/0.05i/0.05i -Gred -Wthin >> $$.ps <<< "256.25 35.6 $dir 0.37"
 	if [ $# -eq 0 ]; then
-		mv $$.ps ../$name.ps
+		mv $$.ps $ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"
 	fi

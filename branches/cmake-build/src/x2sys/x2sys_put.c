@@ -58,12 +58,12 @@ void *New_x2sys_put_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_put_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *C) {	/* Deallocate control structure */
-	if (C->In.file) free ((void *)C->In.file);
-	if (C->T.TAG) free ((void *)C->T.TAG);
+	if (C->In.file) free (C->In.file);
+	if (C->T.TAG) free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 
@@ -171,7 +171,7 @@ struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, GMT_LONG *found
 	
 	struct X2SYS_BIX_TRACK_INFO *this_info;
 	for (this_info = B->head; this_info->next_info && strcmp (this_info->next_info->trackname, track) < 0; this_info = this_info->next_info);
-	*found_it = (this_info->next_info != (struct X2SYS_BIX_TRACK_INFO *)NULL && !strcmp (this_info->next_info->trackname, track));
+	*found_it = (this_info->next_info != NULL && !strcmp (this_info->next_info->trackname, track));
 	return (this_info);
 }
 
@@ -207,7 +207,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) 
 		return (GMT_x2sys_put_usage (API, GMTAPI_USAGE));	/* Return the usage message */
@@ -217,8 +217,8 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_x2sys_put", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VR", ">", options))) Return (error);
-	Ctrl = (struct X2SYS_PUT_CTRL *)New_x2sys_put_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VR", ">", options)) Return (API->error);
+	Ctrl = New_x2sys_put_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_put_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the x2sys_put main code ----------------------------*/
@@ -378,11 +378,11 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (bin = 0; bin < B.nm_bin; bin++) {
 		if (B.base[bin].n_tracks == 0) continue;
 
-		s_unused = fwrite ((void *)(&bin), (size_t)4, (size_t)1, fbin);
-		s_unused = fwrite ((void *)(&B.base[bin].n_tracks), (size_t)4, (size_t)1, fbin);
+		s_unused = fwrite ((&bin), (size_t)4, (size_t)1, fbin);
+		s_unused = fwrite ((&B.base[bin].n_tracks), (size_t)4, (size_t)1, fbin);
 		for (this_track = B.base[bin].first_track->next_track; this_track; this_track = this_track->next_track) {
-			s_unused = fwrite ((void *)(&this_track->track_id), (size_t)4, (size_t)1, fbin);
-			s_unused = fwrite ((void *)(&this_track->track_flag), (size_t)4, (size_t)1, fbin);
+			s_unused = fwrite ((&this_track->track_id), (size_t)4, (size_t)1, fbin);
+			s_unused = fwrite ((&this_track->track_flag), (size_t)4, (size_t)1, fbin);
 		}
 	}
 	fclose (fbin);

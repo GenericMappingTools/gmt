@@ -12,7 +12,7 @@ header () {
 # Convert PS to PDF
 function make_pdf()
 {
-  test -f ${1:-$ps} || return 1
+  test -f "${1:-$ps}" || return 1
   ps2raster -Tf -A -P ${1:-$ps} || ((++ERROR))
 }
 

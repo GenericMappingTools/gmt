@@ -40,8 +40,8 @@
 
 /* Nodes that are unconstrained are assumed to be set to NaN */
 
-#define GMT_GRIDLINE_REG	0
-#define GMT_PIXEL_REG		1
+enum GMT_enum_reg {GMT_GRIDLINE_REG = 0,
+	GMT_PIXEL_REG};
 
 /* These 4 lengths must NOT be changed as they are part of grd definition */
 #define GRD_COMMAND_LEN320	320
@@ -52,7 +52,7 @@
 #define GRD_VARNAME_LEN80	80
 
 struct GRD_HEADER {
-/* Do not change the first three items. They are copied verbatim to the native grid header */
+/* ===== Do not change the first three items. They are copied verbatim to the native grid header */
 	int nx;				/* Number of columns */
 	int ny;				/* Number of rows */
 	int registration;		/* 0 for node grids, 1 for pixel grids */
@@ -87,7 +87,7 @@ struct GRD_HEADER {
 	GMT_LONG gn;			/* TRUE if top    edge will be set as N pole  */
 	GMT_LONG gs;			/* TRUE if bottom edge will be set as S pole  */
 	
-/* The following elements must not be changed. They are copied verbatim to the native grid header */
+/* ===== The following elements must not be changed. They are copied verbatim to the native grid header */
 	double wesn[4];			/* Min/max x and y coordinates */
 	double z_min;			/* Minimum z value */
 	double z_max;			/* Maximum z value */
@@ -121,17 +121,13 @@ struct GRD_HEADER {
 
 /* The array wesn in the header has a name that indicates the order (west, east, south, north).
  * However, to avoid using confusing indices 0-3 we define very brief constants XLO, XHI, YLO, YHI
- * that should be used instead. */
-#ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
-enum GMT_wesnIDs {XLO, XHI, YLO, YHI, ZLO, ZHI};
-#else
-#define XLO 0
-#define XHI 1
-#define YLO 2
-#define YHI 3
-#define ZLO 4
-#define ZHI 5
-#endif
+ * that should be used instead: */
+enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
+	XHI,			/* Index for east or xmax value */
+	YLO,			/* Index for south or ymin value */
+	YHI,			/* Index for north or ymax value */
+	ZLO, 			/* Index for zmin value */
+	ZHI};			/* Index for zmax value */
 
 /* These macros should be used to convert between (column,row) and (x,y).  It will eliminate
  * one source of typos and errors, and since macros are done at compilation time there is no
@@ -174,7 +170,7 @@ enum GMT_wesnIDs {XLO, XHI, YLO, YHI, ZLO, ZHI};
 
 /* GMT_grd_setpad copies the given pad into the header */
 
-#define GMT_grd_setpad(C,h,newpad) memcpy ((void *)(h)->pad, (void *)newpad, 4*sizeof(GMT_LONG))
+#define GMT_grd_setpad(C,h,newpad) memcpy ((h)->pad, newpad, 4*sizeof(GMT_LONG))
 
 /* gmt_grd_get_size computes grid size including the padding, and doubles it if complex values */
 

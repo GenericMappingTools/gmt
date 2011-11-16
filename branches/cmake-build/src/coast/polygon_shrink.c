@@ -43,9 +43,9 @@ int main (int argc, char **argv)
 		if (verbose) fprintf (stderr, "Poly %6d", h.id);	
 		
 		if (n_id == 5) {	
-			x = (int *) GMT_memory ((void *)x, h.n, sizeof (int), "polygon_shrink");
-			y = (int *) GMT_memory ((void *)y, h.n, sizeof (int), "polygon_shrink");
-			index = (int *) GMT_memory ((void *)index, h.n, sizeof (int), "polygon_shrink");
+			x = (int *) GMT_memory (x, h.n, sizeof (int), "polygon_shrink");
+			y = (int *) GMT_memory (y, h.n, sizeof (int), "polygon_shrink");
+			index = (int *) GMT_memory (index, h.n, sizeof (int), "polygon_shrink");
 		}
 		
 		for (k = 0; k < h.n; k++) {
@@ -88,9 +88,9 @@ int main (int argc, char **argv)
 		n_id++;
 	}
 		
-	free ((void *)x);	
-	free ((void *)y);	
-	free ((void *)index);	
+	free (x);	
+	free (y);	
+	free (index);	
 		
 	fclose (fp_in);
 	fclose (fp_out);

@@ -44,7 +44,7 @@
  * ints.
  */
 
-#ifdef HAVE_BIGENDIAN
+#ifdef WORDS_BIGENDIAN
 
 typedef union
 {
@@ -56,7 +56,7 @@ typedef union
   } parts;
 } ieee_double_shape_type;
 
-#else /* HAVE_BIGENDIAN */
+#else /* WORDS_BIGENDIAN */
 
 typedef union
 {
@@ -68,7 +68,7 @@ typedef union
   } parts;
 } ieee_double_shape_type;
 
-#endif /* HAVE_BIGENDIAN */
+#endif /* WORDS_BIGENDIAN */
 
 /* Get two 32 bit ints from a double.  */
 

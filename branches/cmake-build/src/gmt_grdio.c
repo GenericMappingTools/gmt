@@ -493,16 +493,14 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 
 	GMT_err_trap ((*C->session.readgrd[header->type]) (C, header, grid, P.wesn, P.pad, complex_mode));
 	
-	if (expand) {	/* Must undo the region extension and reset nx, ny */
-		header->nx -= (int)(P.pad[XLO] + P.pad[XHI]);
-		header->ny -= (int)(P.pad[YLO] + P.pad[YHI]);
+	if (expand) {	/* Must undo the region extension and reset nx, ny using original pad  */
 		GMT_memcpy (header->wesn, wesn, 4, double);
-		header->nm = GMT_get_nm (C, header->nx, header->ny);
 		for (k = 0; k < 4; k++) if (P.pad[k] == 0) header->BC[k]= GMT_BC_IS_DATA;
 	}
 	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0.\n");
-	GMT_grd_setpad (C, header, pad);		/* Copy the pad to the header */
+	GMT_grd_setpad (C, header, pad);	/* Copy the pad to the header */
 	GMT_set_grddim (C, header);		/* Update all dimensions */
+	if (expand) GMT_grd_zminmax (C, header, grid);	/* Reset min/max since current extrema includes the padded region */
 	GMT_grd_do_scaling (C, grid, header->size, header->z_scale_factor, header->z_add_offset);
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
@@ -844,8 +842,10 @@ GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, ch
 		G->start[1] = 0;
 	}
 	else {				/* Regular binary file with/w.o standard GMT header */
-		if (r_w == 0 && (G->fp = GMT_fopen (C, G->header.name, bin_mode[0])) == NULL)
-			return (GMT_GRDIO_OPEN_FAILED);
+		if (r_w == 0) {	/* Open for plain reading */ 
+			if ((G->fp = GMT_fopen (C, G->header.name, bin_mode[0])) == NULL)
+				return (GMT_GRDIO_OPEN_FAILED);
+		}
 		else if ((G->fp = GMT_fopen (C, G->header.name, bin_mode[r_w])) == NULL)
 			return (GMT_GRDIO_CREATE_FAILED);
 		if (header && GMT_fseek (G->fp, (long)GRD_HEADER_SIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
@@ -997,9 +997,12 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 
 	if (options) {
 		struct GMTAPI_CTRL *API = C->parent;
-		GMT_LONG argc; char **argv;
+		GMT_LONG argc = 0; char **argv = NULL;
 		
-		GMT_Create_Args (API, &argc, &argv, options);
+		if ((argv = GMT_Create_Args (API, &argc, options)) == NULL) {
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not create argc, argv from linked structure options!\n");
+			return;
+		}
 		strcpy (header->command, C->init.progname);
 		len = strlen (header->command);
 		for (i = 0; len < GRD_COMMAND_LEN320 && i < argc; i++) {
@@ -1406,7 +1409,7 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 
 	i2 = GMT_memory (C, NULL, n_cols, short int);
 	for (j = 0; j < Grid->header->ny; j++) {	/* Read all the rows, offset by 2 boundary rows and cols */
-		if (GMT_fread ((void *)i2, sizeof (short int), (size_t)n_cols, fp) != (size_t)n_cols)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
+		if (GMT_fread (i2, sizeof (short int), (size_t)n_cols, fp) != (size_t)n_cols)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 #if !defined(WORDS_BIGENDIAN)
 		for (i = 0; i < n_cols; i++) i2[i] = GMT_swab2 (i2[i]);
 #endif
@@ -1509,7 +1512,7 @@ void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G)
 	GMT_memset (G->header->BC, 4, GMT_LONG);				/* BCs no longer set for this grid */
 }
 
-struct GMT_GRID *GMT_create_grid (struct GMT_CTRL *C)
+struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *C)
 {	/* Allocates space for a new grid container.  No space allocated for the float grid itself */
 	struct GMT_GRID *G = NULL;
 
@@ -1518,7 +1521,7 @@ struct GMT_GRID *GMT_create_grid (struct GMT_CTRL *C)
 	GMT_grd_setpad (C, G->header, C->current.io.pad);	/* Use the system pad setting by default */
 	G->header->pocket = NULL;			/* Char pointer to hold whatever we may temporarilly need to store */
 	G->header->n_bands = 1;				/* Since all grids only have 1 layer */
-
+	G->alloc_mode = GMT_ALLOCATED;			/* So GMT_* modules can free this memory. */
 	return (G);
 }
 
@@ -1544,11 +1547,16 @@ struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, GMT
 	return (Gnew);
 }
 
+void GMT_free_grid_ptr (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG free_grid)
+{	/* By taking a reference to the grid pointer we can set it to NULL when done */
+	if (!G) return;	/* Nothing to deallocate */
+	if (G->data && free_grid) GMT_free (C, G->data);
+	if (G->header) GMT_free (C, G->header);
+}
+
 void GMT_free_grid (struct GMT_CTRL *C, struct GMT_GRID **G, GMT_LONG free_grid)
 {	/* By taking a reference to the grid pointer we can set it to NULL when done */
-	if (!(*G)) return;	/* Nothing to deallocate */
-	if ((*G)->data && free_grid) GMT_free (C, (*G)->data);
-	if ((*G)->header) GMT_free (C, (*G)->header);
+	GMT_free_grid_ptr (C, *G, free_grid);
 	GMT_free (C, *G);
 }
 
@@ -1608,19 +1616,21 @@ GMT_LONG GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *header, GMT_L
 	return (old_registration);
 }
 
-void GMT_grd_zminmax (struct GMT_CTRL *C, struct GMT_GRID *G)
+void GMT_grd_zminmax (struct GMT_CTRL *C, struct GRD_HEADER *h, float *z)
 {	/* Reset the xmin/zmax values in the header */
 	GMT_LONG row, col, node, n = 0;
 	
-	G->header->z_min = DBL_MAX;	G->header->z_max = -DBL_MAX;
-	GMT_grd_loop (C, G, row, col, node) {
-		if (GMT_is_fnan (G->data[node])) continue;
-		/* Update z_min, z_max */
-		G->header->z_min = MIN (G->header->z_min, (double)G->data[node]);
-		G->header->z_max = MAX (G->header->z_max, (double)G->data[node]);
-		n++;
+	h->z_min = DBL_MAX;	h->z_max = -DBL_MAX;
+	for (row = 0; row < h->ny; row++) {
+		for (col = 0, node = GMT_IJP (h, row, 0); col < h->nx; col++, node++) {
+			if (GMT_is_fnan (z[node])) continue;
+			/* Update z_min, z_max */
+			h->z_min = MIN (h->z_min, (double)z[node]);
+			h->z_max = MAX (h->z_max, (double)z[node]);
+			n++;
+		}
 	}
-	if (n == 0) G->header->z_min = G->header->z_max = C->session.d_NaN;
+	if (n == 0) h->z_min = h->z_max = C->session.d_NaN;	/* No non-NaNs in the entire grid */
 }
 
 GMT_LONG GMT_init_complex (GMT_LONG complex_mode, GMT_LONG *inc, GMT_LONG *off)

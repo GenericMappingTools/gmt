@@ -36,10 +36,10 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 	double *z = NULL;
 	if (nrhs == 3) {	/* Gave Z, info */
 		double *hdr = NULL;
-		z = (double *)mxGetData (prhs[0]);
+		z = mxGetData (prhs[0]);
 		G->header->nx = mxGetN (prhs[0]);
 		G->header->ny = mxGetM (prhs[0]);
-		hdr = (double *)mxGetData (prhs[1]);
+		hdr = mxGetData (prhs[1]);
 		GMT_memcpy (G->header->wesn, hdr, 4, double);
 		G->header->z_min = hdr[4];
 		G->header->z_max = hdr[5];
@@ -50,9 +50,9 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 	else {	/* Gave x, y, Z [reg] */
 		double *r = NULL, *x = NULL, *y = NULL;
 		GMT_LONG col, row, error = 0;
-		x = (double *)mxGetData (prhs[0]);
-		y = (double *)mxGetData (prhs[1]);
-		z = (double *)mxGetData (prhs[2]);
+		x = mxGetData (prhs[0]);
+		y = mxGetData (prhs[1]);
+		z = mxGetData (prhs[2]);
 		G->header->nx = mxGetN (prhs[2]);
 		G->header->ny = mxGetM (prhs[2]);
 		G->header->inc[GMT_X] = x[1] - x[0];
@@ -65,7 +65,7 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 			mexErrMsgTxt ("grdwrite: x and/or y not equidistant");
 		}
 		if (nrhs == 5) {
-			r = (double *)mxGetData (prhs[3]);
+			r = mxGetData (prhs[3]);
 			G->header->registration = (GMT_LONG)irint (r[0]);
 		}
 		else
@@ -96,81 +96,98 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 {	/* Used by programs that expect either an input file name or data vectors x, y[, other cols] */
 	char *i_string = NULL;
 	if (mxIsChar(prhs[0]))		/* Gave a file name */
-		i_string = (char *) mxArrayToString (prhs[0]);	/* Load the file name into a char string */
+		i_string = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
  	else {				/* Input via two or more column vectors */
-		GMT_LONG col, in_ID;
+		GMT_LONG col, in_ID, dim[1] = {n_cols};
 		//char buffer[GMT_BUFSIZ];
-		i_string = (char *) mxMalloc (GMT_BUFSIZ);
-		*V = GMT_create_vector (API->GMT, n_cols);
+		i_string = mxMalloc (GMT_BUFSIZ);
+		if ((*V = GMT_Create_Data (API, GMT_IS_VECTOR, dim)) == NULL) mexErrMsgTxt ("Failure to alloc GMT source vectors\n");
 		for (col = n_start; col < n_cols+n_start; col++) {	/* Hook up one vector per column and determine data type */
-			(*V)->data[col] = mxGetData (prhs[col]);
-			if (mxIsDouble(prhs[col]))
+			if (mxIsDouble(prhs[col])) {
 				(*V)->type[col] = GMTAPI_DOUBLE;
-			else if (mxIsSingle(prhs[col]))
+				(*V)->data[col].f8 = mxGetData (prhs[col]);
+			}
+			else if (mxIsSingle(prhs[col])) {
 				(*V)->type[col] = GMTAPI_FLOAT;
-			else if (mxIsInt32(prhs[col]))
+				(*V)->data[col].f4 = (float *)mxGetData (prhs[col]);
+			}
+			else if (mxIsInt32(prhs[col])) {
 				(*V)->type[col] = GMTAPI_INT;
-			else if (mxIsInt16(prhs[col]))
+				(*V)->data[col].si4 = (int *)mxGetData (prhs[col]);
+			}
+			else if (mxIsInt16(prhs[col])) {
 				(*V)->type[col] = GMTAPI_SHORT;
-			else if (mxIsInt8(prhs[col]))
-				(*V)->type[col] = GMTAPI_BYTE;
+				(*V)->data[col].si2 = (short int *)mxGetData (prhs[col]);
+			}
+			else if (mxIsInt8(prhs[col])) {
+				(*V)->type[col] = GMTAPI_CHAR;
+				(*V)->data[col].sc1 = (char *)mxGetData (prhs[col]);
+			}
 			else
 				mexErrMsgTxt ("Unsupported data type in GMT input.");
 		}
 
 		(*V)->n_rows = MAX (mxGetM (prhs[0]), mxGetN (prhs[0]));	/* So it works for both column or row vectors */
 		(*V)->n_columns = n_cols;
-		if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, 
-				     GMT_IS_POINT, GMT_IN, (void **)V, NULL, NULL, &in_ID)) 
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, V, NULL)) == GMTAPI_NOTSET) {
 			mexErrMsgTxt ("Failure to register GMT source vectors\n");
-		GMT_Encode_ID (API, i_string, in_ID);		/* Make filename with embedded object ID */
+		}
+		if (GMT_Encode_ID (API, i_string, in_ID) != GMT_OK) {		/* Make filename with embedded object ID */
+			mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");
+		}
 		//i_string = strdup (buffer);
 	}
 	return (i_string);
 }
 
-char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int nrhs, struct GMT_GRID **G)
+char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int nrhs)
 {	/* Used by programs that expect either an input file name or matrix with info or data vectors x, y */
 	char *i_string = NULL;
+	struct GMT_GRID *G = NULL;
 	if (nrhs == 2)		/* Gave a file name */
-		i_string = (char *) mxArrayToString (prhs[0]);	/* Load the file name into a char string */
+		i_string = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
  	else {			/* Input via matrix and either info array or x,y arrays */
 		GMT_LONG row, col, gmt_ij, in_ID;
 		double *z = NULL;
 		//char buffer[GMT_BUFSIZ];
-		i_string = (char *) mxMalloc(GMT_BUFSIZ);
+		i_string = mxMalloc(GMT_BUFSIZ);
 
-		*G = GMT_create_grid (API->GMT);
-		GMT_grd_init (API->GMT, (*G)->header, NULL, FALSE);
+		if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) mexErrMsgTxt ("Failure to create grid\n");
+		GMT_grd_init (API->GMT, G->header, NULL, FALSE);
 		
 		/*  Get the Z array and fill in the header info */
-		z = GMTMEX_info2grdheader (API, prhs, nrhs, *G);
+		z = GMTMEX_info2grdheader (API, prhs, nrhs, G);
 		/*  Allocate memory for the grid */
-		(*G)->data = GMT_memory (API->GMT, NULL, (*G)->header->size, float);
+		G->data = GMT_memory (API->GMT, NULL, G->header->size, float);
 		/* Transpose from Matlab orientation to grd orientation */
-		GMT_grd_loop (API->GMT, (*G), row, col, gmt_ij) (*G)->data[gmt_ij] = (float)z[MEX_IJ((*G),row,col)];
-		if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, (void **)G, NULL, (void *)*G, &in_ID)) 
+		GMT_grd_loop (API->GMT, G, row, col, gmt_ij) G->data[gmt_ij] = (float)z[MEX_IJ(G,row,col)];
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, G, NULL)) == GMTAPI_NOTSET) {
 			mexErrMsgTxt ("Failure to register GMT source grid\n");
-		GMT_Encode_ID (API, i_string, in_ID);	/* Make filename with embedded object ID */
+		}
+		if (GMT_Encode_ID (API, i_string, in_ID) != GMT_OK) {	/* Make filename with embedded object ID */
+			mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");
+		}
 		//i_string = strdup (buffer);
 	}
 	return (i_string);
 }
 
-char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, struct GMT_GRID **G, int nlhs, char *options)
+char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, GMT_LONG *out_ID, int nlhs, char *options)
 {	/* Associate output grid with Matlab grid */
-	GMT_LONG out_ID;
 	char buffer[GMTAPI_STRLEN], *o_string = NULL;
-	if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, (void **)G, NULL, (void *)*G, &out_ID)) 
+	if ((*out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
 		mexErrMsgTxt ("Failure to register GMT destination grid\n");
+	}
 	if (nlhs == 0) {
 		if (strstr (options, "-G")) 	/* User gave -G<file> among the options */
 			return (NULL);		/* No output will be send to Matlab */
 		else
 			mexErrMsgTxt ("Error: neither -G option nor left hand side output args.");
 	}
-	o_string = (char *) mxMalloc(GMTAPI_STRLEN);
-	GMT_Encode_ID (API, o_string, out_ID);	/* Make filename with embedded object ID */
+	o_string = mxMalloc(GMTAPI_STRLEN);
+	if (GMT_Encode_ID (API, o_string, *out_ID) != GMT_OK) {	/* Make filename with embedded object ID */
+		mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");
+	}
 	//o_string = strdup (buffer);
 	return (o_string);
 }
@@ -181,7 +198,7 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 	GMT_LONG out_ID, col;
 	//char buffer[GMTAPI_STRLEN];
 
-	o_string = (char *) mxMalloc(GMTAPI_STRLEN);
+	o_string = mxMalloc(GMTAPI_STRLEN);
 	if (nlhs == 0) {
 		if (strstr (options, ">")) 	/* User gave > file among the options */
 			return (NULL);		/* No output will be send to Matlab */
@@ -189,14 +206,16 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 			mexErrMsgTxt ("Error: neither output file name with the '>' "
 					"redirection operator nor left hand side output args.");
 	}
-	*V = GMT_create_vector (API->GMT, n_cols);
+	if ((*V = GMT_Create_Data (API, GMT_IS_VECTOR, &n_cols)) == NULL) mexErrMsgTxt ("Failure to alloc GMT source vectors\n");
 	for (col = 0; col < n_cols; col++) (*V)->type[col] = GMTAPI_DOUBLE;
 	(*V)->alloc_mode = GMT_REFERENCE;
-	if (GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF + GMT_VIA_VECTOR, 
-			     GMT_IS_POINT, GMT_OUT, (void **)V, NULL, (void *)*V, &out_ID)) 
+	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, V, NULL)) == GMTAPI_NOTSET) {
 		mexErrMsgTxt ("Failure to register GMT destination vectors\n");
+	}
 		
-	GMT_Encode_ID (API, o_string, out_ID);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_OK) {	/* Make filename with embedded object ID */
+		mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");
+	}
 	//o_string = strdup (buffer);
 	return (o_string);
 }
@@ -212,7 +231,7 @@ void GMTMEX_prep_mexgrd (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, str
 
 	/* A. Create 2-D matrices for the return matrix */
 	plhs[pz] = mxCreateNumericMatrix (G->header->ny, G->header->nx, mxSINGLE_CLASS, mxREAL);
-	z = (float *)mxGetData (plhs[pz]);
+	z = mxGetData (plhs[pz]);
 
 	/* B. Load the real grd array into a double matlab array by
               transposing from padded GMT grd format to unpadded matlab format */
@@ -231,8 +250,8 @@ void GMTMEX_prep_mextbl (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, str
 	double *z = NULL;
 	for (p = 0; p < nlhs; p++) {
 		plhs[p] = mxCreateNumericMatrix (V->n_rows, 1, mxDOUBLE_CLASS, mxREAL);
-		z = (double *)mxGetData (plhs[p]);
-		GMT_memcpy (z, ((double *)V->data[p]), V->n_rows, double);
+		z = mxGetData (plhs[p]);
+		GMT_memcpy (z, V->data[p].f8, V->n_rows, double);
 	}
 }
 
@@ -242,7 +261,7 @@ char *GMTMEX_options_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int n
 	char *options = NULL, *s = NULL;
 
 	if (!mxIsChar(prhs[nrhs-1])) return (NULL);	/* No options in this case */
-	options = (char *) mxArrayToString (prhs[nrhs-1]);
+	options = mxArrayToString (prhs[nrhs-1]);
 
 	if ((s = strstr (options, "-V"))) {	/* User gave -V[level] among the options */
 		GMT_LONG level;
@@ -279,7 +298,7 @@ char *GMTMEX_options_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int n
 char *GMTMEX_build_cmd (struct GMTAPI_CTRL *API, char *src, char *options, char *dest, GMT_LONG mode)
 {	/* Create the command based on options, src, and dist, which depends slightly on output type */
 	char *cmd;
-	cmd = (char *)mxMalloc (GMT_BUFSIZ);
+	cmd = mxMalloc (GMT_BUFSIZ);
 	if (mode == GMT_IS_GRID) {
 		if (dest)
 			sprintf (cmd, "%s %s -G%s", src, options, dest);
@@ -299,8 +318,8 @@ char *GMTMEX_build_cmd (struct GMTAPI_CTRL *API, char *src, char *options, char 
 
 void GMTMEX_free (char *input, char *output, char *options, char *cmd) {
 	/* Free temporary local variables */
-	if (input) mxFree ((void *)input);
-	if (output) mxFree ((void *)output);	
+	if (input) mxFree (input);
+	if (output) mxFree (output);	
 	if (options) mxFree (options);	
 	mxFree (cmd);
 }
@@ -429,7 +448,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 	char name[GMTAPI_STRLEN];	/* Used to hold the GMT API embedded file name, e.g., @GMTAPI@-###### */
 	char buffer[GMT_BUFSIZ];		/* Temp buffer */
 	struct GMT_OPTIONS *opt;	/* Pointer to a GMT option structure */
-	void **ptr = NULL;		/* Void pointer used to point to either L or R side pointer argument */
+	void *ptr = NULL;		/* Void pointer used to point to either L or R side pointer argument */
 	
 	get_key_pos (key, n_keys, head, def);	/* Determine if we must add the primary in and out arguments to the option list */
 	for (direction = GMT_IN; direction <= GMT_OUT; direction++) {
@@ -438,10 +457,13 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		(void)get_arg_dir (key[def[direction]][0], key, n_keys, &data_type, &geometry);		/* Get info about the data set */
 		ptr = (direction == GMT_IN) ? prhs[lr_pos[direction]] : lrhs[lr_pos[direction]];	/* Pick the next left or right side pointer */
 		/* Register a Matlab/Octave entity as a source or destination */
-		if (GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, (void **)ptr, NULL, (void *)*ptr, &ID)) 
+		if ((ID = GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, ptr, NULL)) == GMTAPI_NOTSET) {
 			mexErrMsgTxt ("GMTMEX_parser: Failure to register GMT source or destination\n");
+		}
 		lr_pos[direction]++;		/* Advance counter for next time */
-		GMT_Encode_ID (API, name, ID);	/* Make filename with embedded object ID */
+		if (GMT_Encode_ID (API, name, ID) != GMT_OK) {	/* Make filename with embedded object ID */
+			mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");
+		}
 		GMT_Make_Option (API, key[def[direction]][0], name, &new_ptr);	/* Create the missing (implicit) GMT option */
 		GMT_Append_Option (API, new_ptr, head);				/* Append it to the option list */
 	}
@@ -454,16 +476,19 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		direction == get_arg_dir (opt->option, key, n_keys, &data_type, &geometry);
 		ptr = (direction == GMT_IN) ? prhs[lr_pos[direction]] : lrhs[lr_pos[direction]];	/* Pick the next left or right side pointer */
 		/* Register a Matlab/Octave entity as a source or destination */
-		if (GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, (void **)ptr, NULL, (void *)*ptr, &ID)) 
+		if ((ID = GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, ptr, NULL)) == GMTAPI_NOTSET) {
 			mexErrMsgTxt ("GMTMEX_parser: Failure to register GMT source or destination\n");
-		GMT_Encode_ID (API, name, ID);	/* Make filename with embedded object ID */
+		}
+		if (GMT_Encode_ID (API, name, ID) != GMT_OK) {	/* Make filename with embedded object ID */
+			mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");
+		}
 		lr_pos[direction]++;		/* Advance counter for next time */
 		
 		/* Replace the option argument with the embedded file */
 		opt->arg[pos] = '\0';		/* Chop off the stuff starting at the $ sign */
 		sprintf (buffer, "%s%s", opt->arg, name);	/* Make a new option argument that replaces the $ with name */
 		opt->arg[pos] = '$';		/* Restore the $ sign in the old argument */
-		free ((void *))opt->arg);	/* Free the old option argument */
+		free ()opt->arg);	/* Free the old option argument */
 		opt->arg = strdup (buffer);	/* Allocate and set the new argument with the embedded filename */
 	}
 }

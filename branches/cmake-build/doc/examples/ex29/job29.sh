@@ -29,7 +29,7 @@ grdmath mars2.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars2.nc
 makecpt -Crainbow -T-7/15/22 -Z > mars.cpt
 grdgradient mars2.nc -fg -Ne0.75 -A45 -Gmars2_i.nc
 grdimage mars2.nc -Imars2_i.nc -Cmars.cpt -B30g30Wsne -JH0/7i -P -K -E200 \
-	-U"Example 29 in Cookbook" --FONT_ANNOT_PRIMARY=12p -Xc > $ps
+	-U/-0.5i/-0.75i/"Example 29 in Cookbook" --FONT_ANNOT_PRIMARY=12p -X0.75i > $ps
 grdcontour mars2.nc -J -O -K -C1 -A5 -Glz+/z- >> $ps
 psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.in  >> $ps
 echo "0 90 b)" | pstext -R -J -O -K -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB >> $ps

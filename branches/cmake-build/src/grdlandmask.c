@@ -28,7 +28,7 @@
  
 #include "gmt.h"
 
-#define GRDLANDMASK_N_CLASSES	(GMT_MAX_GSHHS_LEVEL + 1)	/* Number of bands separated by the levels */
+#define GRDLANDMASK_N_CLASSES	(GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */
 
 struct GRDLANDMASK_CTRL {	/* All control options for this program (except common args) */
 	/* ctive is TRUE if the option has been activated */
@@ -67,18 +67,18 @@ void *New_grdlandmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	
-	C->A.info.high = GMT_MAX_GSHHS_LEVEL;				/* Include all GSHHS levels */
+	C->A.info.high = GSHHS_MAX_LEVEL;				/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
 	C->E.inside = GMT_ONEDGE;					/* Default is that points on a boundary are inside */
 	GMT_memset (C->N.mask, GRDLANDMASK_N_CLASSES, double);		/* Default "wet" value = 0 */
 	C->N.mask[1] = C->N.mask[3] = 1.0;				/* Default for "dry" areas = 1 (inside) */
 	
-	return ((void *)C);
+	return (C);
 }
 
 void Free_grdlandmask_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->G.file) free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -225,7 +225,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdlandmask_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdlandmask_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -233,13 +233,13 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdlandmask", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRr", GMT_OPT("F"), options))) Return (error);
-	Ctrl = (struct GRDLANDMASK_CTRL *) New_grdlandmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VRr", GMT_OPT("F"), options)) Return (API->error);
+	Ctrl = New_grdlandmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdlandmask_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdlandmask main code ----------------------------*/
 
-	Grid = GMT_create_grid (GMT);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
@@ -433,9 +433,9 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Grid->header->wesn[XHI] -= 360.0;
 	}
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);				/* Enables data output and sets access mode */
-	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Grid);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Grid) != GMT_OK) {
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 

@@ -106,14 +106,14 @@ void *New_sphdistance_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	C = GMT_memory (GMT, NULL, 1, struct SPHDISTANCE_CTRL);
 	C->L.unit = 'e';	/* Default is meter distances */
-	return ((void *)C);
+	return (C);
 }
 
 void Free_sphdistance_Ctrl (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);	
-	if (C->N.file) free ((void *)C->N.file);	
-	if (C->Q.file) free ((void *)C->Q.file);	
+	if (C->G.file) free (C->G.file);	
+	if (C->N.file) free (C->N.file);	
+	if (C->Q.file) free (C->Q.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -232,7 +232,7 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG row, col, n = 0, n_dup = 0, n_set = 0, ij, ii, s_row, n_row, w_col, e_col, side;
-	GMT_LONG n_fields,  n_alloc, p_alloc = 0, nx1, error = FALSE, first = FALSE;
+	GMT_LONG n_alloc, p_alloc = 0, nx1, error = FALSE, first = FALSE;
 	GMT_LONG node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
 
 	double first_x = 0.0, first_y = 0.0, X[3], *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
@@ -251,7 +251,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_sphdistance_usage (API, GMTAPI_USAGE));/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_sphdistance_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -259,15 +259,15 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_sphdistance", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRb:", "himrs" GMT_OPT("F"), options))) Return (error);
+	if (GMT_Parse_Common (API, "-VRb:", "himrs" GMT_OPT("F"), options)) Return (API->error);
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
-	Ctrl = (struct SPHDISTANCE_CTRL *) New_sphdistance_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_sphdistance_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_sphdistance_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the sphdistance main code ----------------------------*/
 
 	GMT_memset (&T, 1, struct STRIPACK);
-	Grid = GMT_create_grid (GMT);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	GMT_init_distaz (GMT, Ctrl->L.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
@@ -279,9 +279,10 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Now we are ready to take on some input values */
 
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read Volonoi polygons from %s ...", Ctrl->Q.file);
-		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&Ctrl->Q.file, (void **)&Qin)) Return ((error = GMT_DATA_READ_ERROR));
+		if ((Qin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Q.file, NULL)) == NULL) {
+			Return (API->error);
+		}
 		Table = Qin->table[0];	/* Only one table in a file */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld segments\n", Table->n_segments);
 	 	lon = GMT_memory (GMT, NULL, Table->n_segments, double);
@@ -289,9 +290,13 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->N.active) {	/* Must get nodes from separate file */
 			struct GMT_DATASET *Nin = NULL;
 			struct GMT_TABLE *NTable = NULL;
-			if ((error = GMT_set_cols (GMT, GMT_IN, 3))) Return (error);
+			if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+				Return (error);
+			}
 			GMT_report (GMT, GMT_MSG_NORMAL, "Read Nodes from %s ...", Ctrl->N.file);
-			if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->N.file, (void **)&Nin)) Return ((error = GMT_DATA_READ_ERROR));
+			if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->N.file, NULL)) == NULL) {
+				Return (API->error);
+			}
 			NTable = Nin->table[0];	/* Only one table in a file with a single segment */
 			if (NTable->n_segments != 1) {
 				GMT_report (GMT, GMT_MSG_FATAL, "File %s can only have 1 segment!\n", Ctrl->N.file);
@@ -303,7 +308,9 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			GMT_memcpy (lon, NTable->segment[0]->coord[GMT_X], NTable->n_records, double);
 			GMT_memcpy (lat, NTable->segment[0]->coord[GMT_Y], NTable->n_records, double);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Nin);
+			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Nin) != GMT_OK) {
+				Return (API->error);
+			}
 			GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld records\n", NTable->n_records);
 		}
 		else {	/* Get extract them from the segment header */
@@ -313,30 +320,48 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	else {	/* Must process input point/line data */
-		if ((error = GMT_set_cols (GMT, GMT_IN, 2))) Return (error);
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+		if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
+			Return (error);
+		}
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {
+			Return (API->error);	/* Enables data input and sets access mode */
+		}
 
-		if (!Ctrl->C.active) (void)GMT_malloc2 (GMT, lon, lat, 0, 0, double);
-		n_alloc = GMT_malloc3 (GMT, xx, yy, zz, 0, 0, double);
+		n_alloc = 0;
+		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
+		n_alloc = 0;
+		GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 		
 		n = 0;
-		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
-
-			if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_TBL_HEADER (GMT)) continue;	/* Skip table headers */
-
-			while (GMT_REC_IS_SEG_HEADER (GMT)) {	/* Segment header, get next record */
-				n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in);	
-				first_x = in[GMT_X];	first_y = in[GMT_Y];
-				first = TRUE;
+		do {	/* Keep returning records until we reach EOF */
+			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+					Return (GMT_RUNTIME_ERROR);
+				if (GMT_REC_IS_TBL_HEADER (GMT)) 	/* Skip all table headers */
+					continue;
+				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+					break;
+				else if (GMT_REC_IS_SEG_HEADER (GMT)) {			/* Parse segment headers */
+					first = TRUE;
+					continue;
+				}
 			}
-			if (Ctrl->D.active && !first) {	/* Look for duplicate point at end of segments that replicate start point */
+
+			/* Data record to process */
+
+			if (first) {	/* Beginning of new segment; kep track of the very first coordinate in case of duplicates */
+				first_x = in[GMT_X];	first_y = in[GMT_Y];
+			}
+			else if (Ctrl->D.active) {	/* Look for duplicate point at end of segments that replicate start point */
 				if (in[GMT_X] == first_x && in[GMT_Y] == first_y) {	/* If any point after the first matches the first */
 					n_dup++;
 					continue;
 				}
 			}
+			
 			/* Convert lon,lat in degrees to Cartesian x,y,z triplets */
 			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, TRUE);
 			xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];
@@ -345,14 +370,15 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			
 			if (++n == n_alloc) {	/* Get more memory */
-				if (!Ctrl->C.active) (void)GMT_malloc2 (GMT, lon, lat, n, n_alloc, double);
-				n_alloc = GMT_malloc3 (GMT, xx, yy, zz, n, n_alloc, double);
+				if (!Ctrl->C.active) { GMT_LONG n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
+				GMT_malloc3 (GMT, xx, yy, zz, n, &n_alloc, double);
 			}
 			first = FALSE;
-		}
+		} while (TRUE);
 
-		if (!Ctrl->C.active) (void)GMT_malloc2 (GMT, lon, lat, 0, n, double);
-		n_alloc = GMT_malloc3 (GMT, xx, yy, zz, 0, n, double);
+		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n, double);
+		GMT_malloc3 (GMT, xx, yy, zz, 0, &n, double);
+		n_alloc = n;
 
 		if (Ctrl->D.active && n_dup) GMT_report (GMT, GMT_MSG_NORMAL, "Skipped %ld duplicate points in segments\n", n_dup);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Do Voronoi construction using %ld points\n", n);
@@ -366,8 +392,10 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			lat = yy;
 		}
 		GMT_free (GMT,  zz);
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
+		}
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	
 	/* OK, time to create and work on the distance grid */
 	
@@ -391,7 +419,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		P->min = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold min lon/lat */
 		P->max = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold max lon/lat */
 
-		p_alloc = GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], GMT_TINY_CHUNK, 0, double);
+		GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], GMT_TINY_CHUNK, &p_alloc, double);
 	
 		V = &T.V;
 	}
@@ -420,13 +448,13 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (P->coord[GMT_X][vertex] < 0.0) P->coord[GMT_X][vertex] += 360.0;
 				if (P->coord[GMT_X][vertex] == 360.0) P->coord[GMT_X][vertex] = 0.0;
 				vertex++;
-				if (vertex == p_alloc) p_alloc = GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, p_alloc, double);
+				if (vertex == p_alloc) GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
 
 				/* When we reach the vertex where we started, we are done with this polygon */
 			} while (node_new != node_stop);
 			P->coord[GMT_X][vertex] = P->coord[GMT_X][0];	/* Close polygon explicitly */
 			P->coord[GMT_Y][vertex] = P->coord[GMT_Y][0];
-			if (++vertex == p_alloc) p_alloc = GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, p_alloc, double);
+			if (++vertex == p_alloc) GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
 			P->n_rows = vertex;
 		}
 		
@@ -473,9 +501,9 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, lat);
 	}
 	
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Spherical distance calculation completed, %ld nodes visited (at least once)\n", n_set);
 	

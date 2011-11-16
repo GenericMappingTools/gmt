@@ -180,12 +180,12 @@ void *New_xyzokb_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->D.dir = -1;
 	C->S.radius = 50000;
 	C->S.active = TRUE;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_xyzokb_Ctrl (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);
+	if (C->G.file) free (C->G.file);
 	GMT_free (GMT, C);
 }
 
@@ -415,7 +415,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) 
 		bailout (GMT_xyzokb_usage (API, GMTAPI_USAGE));		/* Return the usage message */
@@ -425,14 +425,11 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_xyzokb", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VR:", "", options))) Return (error);
-	Ctrl = (struct XYZOKB_CTRL *) New_xyzokb_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VR:", "", options)) Return (API->error);
+	Ctrl = New_xyzokb_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_xyzokb_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the redpol main code ----------------------------*/
-
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) 	/* Enables data input and sets access mode */
-		Return (error);
 
 	if (!Ctrl->M.active) 
 		Ctrl->N.d_to_m = 1.;
@@ -487,7 +484,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 /* ---------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {
-		Gout = GMT_create_grid (GMT);
+		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		GMT_grd_init (GMT, Gout->header, options, FALSE);
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, GMT->common.R.wesn, Ctrl->I.inc, FALSE), Ctrl->G.file);
@@ -696,12 +693,9 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			strcpy (Gout->header->z_units, "nT");
 		}
 
-		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) /* Enables data output and sets access mode */
-			Return (error);
-
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Gout);
-		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);			/* Disables further data output */
-
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 	else {
 		for (k = 0; k < ndata_p; k++)

@@ -61,13 +61,13 @@ void *New_x2sys_datalist_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initializ
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_x2sys_datalist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *C) {	/* Deallocate control structure */
-	if (C->F.flags) free ((void *)C->F.flags);
-	if (C->L.file) free ((void *)C->L.file);
-	if (C->T.TAG) free ((void *)C->T.TAG);
+	if (C->F.flags) free (C->F.flags);
+	if (C->L.file) free (C->L.file);
+	if (C->T.TAG) free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 
@@ -162,7 +162,7 @@ GMT_LONG x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, cha
 	adj->d = GMT_memory (GMT, NULL, n_alloc, double);
 	adj->c = GMT_memory (GMT, NULL, n_alloc, double);
 	for (k = 0; k < 2; k++) l_swap (type[k], GMT->current.io.col_type[GMT_IN][k]);	/* Save original input type setting */
-	while ((n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in)) >= 0 && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
+	while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) != NULL && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		adj->d[n] = in[0];
 		adj->c[n] = in[1];
 		n++;
@@ -212,7 +212,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_x2sys_datalist_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_x2sys_datalist_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -220,8 +220,8 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_x2sys_datalist", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VfRb", ">", options))) Return (error);
-	Ctrl = (struct X2SYS_DATALIST_CTRL *)New_x2sys_datalist_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VfRb", ">", options)) Return (API->error);
+	Ctrl = New_x2sys_datalist_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_datalist_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the x2sys_datalist main code ----------------------------*/

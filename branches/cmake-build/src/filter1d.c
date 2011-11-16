@@ -156,12 +156,12 @@ void *New_filter1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	return ((void *)C);
+	return (C);
 }
 
 void Free_filter1d_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->F.file) free ((void *)C->F.file);
+	if (C->F.file) free (C->F.file);
 	GMT_free (GMT, C);
 }
 
@@ -631,7 +631,7 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 				else
 					data_sum[i_col] = GMT->session.d_NaN;
 			}
-			if (n_good_ones) GMT_Put_Record (C, GMT_WRITE_DOUBLE, (void *)data_sum);
+			if (n_good_ones) GMT_Put_Record (C, GMT_WRITE_DOUBLE, data_sum);
 		}
 		else {
 			if (F->robust) for (i_col = 0; i_col < F->n_cols; ++i_col) F->n_this_col[i_col] = 0;
@@ -691,7 +691,7 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 					else
 						outval[i_col] = GMT->session.d_NaN;
 				}
-				GMT_Put_Record (C, GMT_WRITE_DOUBLE, (void *)outval);
+				GMT_Put_Record (C, GMT_WRITE_DOUBLE, outval);
 			}
 		}
 
@@ -803,7 +803,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_filter1d_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_filter1d_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -811,8 +811,8 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_filter1d", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghi>" GMT_OPT("HMm"), options))) Return (error, "Error parsing filter1d options\n");
-	Ctrl = (struct FILTER1D_CTRL *)New_filter1d_Ctrl (GMT);		/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-Vbf:", "ghi>" GMT_OPT("HMm"), options)) Return (API->error, "Error parsing filter1d options\n");
+	Ctrl = New_filter1d_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = GMT_filter1d_parse (API, Ctrl, options))) Return (error, "Error parsing filter1d options\n");
 
 	/*---------------------------- This is the filter1d main code ----------------------------*/
@@ -822,10 +822,12 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	F.equidist = TRUE;
 
 	/* Read the input data into memory */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT,  options))) Return (error, "Error initializing input\n");	/* Register data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error, "Error in Begin_IO\n");				/* Enables data input and sets access mode */
-	if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&D))) Return (error, "Error Reading input\n");	/* Get header only */
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error, "Error in End_IO\n");		/* Disables further data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		Return (API->error, "Error initializing input\n");
+	}
+	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+		Return (API->error, "Error Reading input\n");
+	}
 	
 	load_parameters_filter1d (&F, Ctrl, D->n_columns);	/* Pass parameters from Control structure to Filter structure */
 
@@ -876,9 +878,9 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		case 'f':
 			F.filter_type = FILTER1D_CUSTOM;
 			if ((error = GMT_set_cols (GMT, GMT_IN, 1))) Return (error, "Error in GMT_set_cols");
-			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error, "Error in Begin_IO\n");	/* Enables data input and sets access mode */
-			if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, (void **)&Ctrl->F.file, (void **)&F.Fin))) Return (error, "Error Reading input\n");	/* Get header only */
-			if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error, "Error in End_IO\n");	/* Disables further data input */
+			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, Ctrl->F.file, NULL)) == NULL) {
+				Return (API->error, "Error Reading input\n");
+			}
 			GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
 	}
@@ -887,8 +889,12 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = FALSE;	/* Turn off default GMT NaN-handling */
 	GMT->current.io.skip_if_NaN[F.t_col] = TRUE;			/* ... But disallow NaN in "time" column */
 	GMT->common.b.ncol[GMT_OUT] = F.n_cols;
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error, "Error initializing input\n");	/* Establishes data output */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error, "Error in Begin_IO\n");	/* Enables data output and sets access mode */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error, "Error initializing input\n");
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error, "Error in Begin_IO\n");
+	}
 
 	allocate_space (GMT, &F);	/* Gets column-specific flags and counter space */
 	for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
@@ -946,7 +952,9 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error, "Error in End_IO\n");				/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error, "Error in End_IO\n");
+	}
 
 	if (F.n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld multiple modes found\n", F.n_multiples);
 

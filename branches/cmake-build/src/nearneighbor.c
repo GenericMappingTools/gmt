@@ -82,12 +82,12 @@ void *New_nearneighbor_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->N.sectors = NN_DEF_SECTORS;
 	C->N.min_sectors = NN_MIN_SECTORS;
-	return ((void *)C);
+	return (C);
 }
 
 void Free_nearneighbor_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free ((void *)C->G.file);
+	if (C->G.file) free (C->G.file);
 	GMT_free (GMT, C);
 }
 
@@ -253,7 +253,7 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG row, col, k, col_0, row_0, ij, n, n_alloc = GMT_CHUNK, n_set;
-	GMT_LONG d_row, sector, n_fields, ii, jj, ij0, n_read, *d_col = NULL;
+	GMT_LONG d_row, sector, ii, jj, ij0, n_read, *d_col = NULL;
 	GMT_LONG max_d_col, x_wrap, y_wrap, n_almost, n_none;
 	GMT_LONG error = FALSE, wrap_180, replicate_x, replicate_y, n_filled;
 
@@ -272,7 +272,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_nearneighbor_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_nearneighbor_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -280,13 +280,13 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_nearneighbor", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "hinrs" GMT_OPT("FH"), options))) Return (error);
-	Ctrl = (struct NEARNEIGHBOR_CTRL *) New_nearneighbor_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VRbf:", "hinrs" GMT_OPT("FH"), options)) Return (API->error);
+	Ctrl = New_nearneighbor_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_nearneighbor_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
 
-	Grid = GMT_create_grid (GMT);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
@@ -296,8 +296,12 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_BC_init (GMT, Grid->header);
 
 	/* Initialize the input since we are doing record-by-record reading/writing */
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
+	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Grid dimensions are nx = %d, ny = %d\n", Grid->header->nx, Grid->header->ny);
 
@@ -334,18 +338,26 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
-
-		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
-
+	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
 		
 		if (GMT_is_dnan (in[GMT_Z])) continue;					/* Skip if z = NaN */
 		if (GMT_y_is_outside (GMT, in[GMT_Y], y_bottom, y_top)) continue;	/* Outside y-range */
 		if (GMT_x_is_outside (GMT, &in[GMT_X], x_left, x_right)) continue;	/* Outside x-range (or longitude) */
+
+		/* Data record to process */
 
 		/* Store this point in memory */
 		
@@ -415,11 +427,20 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n++;
 		if (!(n%1000)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed record %10ld\r", n);
 		if (n == n_alloc) {
+#ifdef DEBUG
+			GMT_memtrack_on (GMT, GMT_mem_keeper);
+#endif
 			n_alloc <<= 1;
 			point = GMT_memory (GMT, point, n_alloc, struct NEARNEIGHBOR_POINT);
+#ifdef DEBUG
+			GMT_memtrack_off (GMT, GMT_mem_keeper);
+#endif
 		}
+	} while (TRUE);
+	
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	GMT_report (GMT, GMT_MSG_NORMAL, "Processed record %10ld\n", n);
 
 #ifdef DEBUG
@@ -476,9 +497,9 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef DEBUG
 	GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+		Return (API->error);
+	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		char line[GMT_BUFSIZ];

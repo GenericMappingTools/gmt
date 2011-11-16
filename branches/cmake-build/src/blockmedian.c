@@ -196,13 +196,13 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_i
 
 	weight_half = quantile[k_for_xy] * weight_sum;	/* We want the same quantile for locations as was used for z */
 
-	if (n_in_cell > 2) qsort((void *)&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
+	if (n_in_cell > 2) qsort(&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
 	node = first_in_cell;
 	weight_count = data[first_in_cell].a[BLK_W];
 	while (weight_count < weight_half) weight_count += data[++node].a[BLK_W];
 	out[GMT_X] = (weight_count == weight_half) ?  0.5 * (data[node].a[GMT_X] + data[node + 1].a[GMT_X]) : data[node].a[GMT_X];
 
-	if (n_in_cell > 2) qsort ((void *)&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
+	if (n_in_cell > 2) qsort (&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
 	node = first_in_cell;
 	weight_count = data[first_in_cell].a[BLK_W];
 	while (weight_count < weight_half) weight_count += data[++node].a[BLK_W];
@@ -218,7 +218,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG error = FALSE, box_and_whisker = FALSE;
 	GMT_LONG nz, n_read, n_lost, node, first_in_cell, first_in_new_cell;
 	GMT_LONG n_alloc = 0, nz_alloc = 0, n_pitched, row, col, n_cells_filled;
-	GMT_LONG w_col, n_fields, n_output, n_quantiles = 1, go_quickly = 0;
+	GMT_LONG w_col, n_output, n_quantiles = 1, go_quickly = 0;
 
 	double out[7], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[3], weight, *in = NULL, *z_tmp = NULL;
 
@@ -233,7 +233,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_blockmedian_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_blockmedian_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
@@ -241,14 +241,14 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_blockmedian", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghior>" GMT_OPT("FH"), options))) Return (error);
-	Ctrl = (struct BLOCKMEDIAN_CTRL *) New_blockmedian_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, "-VRbf:", "ghior>" GMT_OPT("FH"), options)) Return (API->error);
+	Ctrl = New_blockmedian_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_blockmedian_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the blockmedian main code ----------------------------*/
 
 	GMT_set_pad (GMT, 0);	/* We are using grid indexing but have no actual grid so no padding is needed */
-	Grid = GMT_create_grid (GMT);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
@@ -279,27 +279,44 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 
 	/* Specify input and output expected columns */
-	if ((error = GMT_set_cols (GMT, GMT_IN,  3 + Ctrl->W.weighted[GMT_IN]))) Return (error);
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN,  3 + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
+		Return (error);
+	}
+	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) {
+		Return (error);
+	}
 
 	/* Register likely data sources unless the caller has already done so */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		Return (API->error);
+	}
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
 
 	n_read = n_pitched = 0;	/* Initialize counters */
 
 	/* Read the input data */
 
-	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				Return (GMT_RUNTIME_ERROR);
+			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				continue;
+			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				break;
+		}
+		
+		if (GMT_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
+			continue;
 
-		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);	/* Bail if there are any read errors */
-		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;		/* Skip all table and segment headers */
-		if (GMT_is_dnan (in[GMT_Z])) continue;			/* Skip if z = NaN */
-
-		/* Data record to process */
+		/* Clean data record to process */
 
 		n_read++;						/* Number of records read */
 
@@ -317,7 +334,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		node = GMT_IJP (Grid->header, row, col);	/* Bin node */
 
-		if (n_pitched == n_alloc) n_alloc = GMT_malloc (GMT, data, n_pitched, n_alloc, struct BLK_DATA);
+		if (n_pitched == n_alloc) data = GMT_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
 		data[n_pitched].i = node;
 		data[n_pitched].a[BLK_W] = ((Ctrl->W.weighted[GMT_IN]) ? in[3] : 1.0);
 		if (!Ctrl->C.active) {	/* Need to store (x,y) so we can compute median location later */
@@ -327,8 +344,11 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		data[n_pitched].a[BLK_Z] = in[GMT_Z];
 
 		n_pitched++;
+	} while (TRUE);
+	
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		Return (API->error);
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	
 	if (n_read == 0) {	/* Blank/empty input files */
 		GMT_report (GMT, GMT_MSG_NORMAL, "No data records found; no output produced");
@@ -339,17 +359,22 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_SUCCESS);
 	}
 
-	if (n_pitched < n_alloc) n_alloc = GMT_malloc (GMT, data, 0, n_pitched, struct BLK_DATA);
+	if (n_pitched < n_alloc) {
+		n_alloc = n_pitched;
+		data = GMT_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
+	}
 
 	/* Ready to go. */
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
 
 	w_col = GMT_get_cols (GMT, GMT_OUT) - 1;	/* Weights always reported in last output column */
 
 	/* Sort on node and Z value */
 
-	qsort ((void *)data, (size_t)n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
+	qsort (data, (size_t)n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
 
 	/* Find n_in_cell and write appropriate output  */
 
@@ -357,7 +382,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	while (first_in_cell < n_pitched) {
 		weight = data[first_in_cell].a[BLK_W];
 		if (Ctrl->E.active) {
-			if (nz == nz_alloc) nz_alloc = GMT_malloc (GMT, z_tmp, nz, nz_alloc, double);
+			if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 			z_tmp[0] = data[first_in_cell].a[BLK_Z];
 			nz = 1;
 		}
@@ -365,7 +390,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		while ((first_in_new_cell < n_pitched) && (data[first_in_new_cell].i == data[first_in_cell].i)) {
 			weight += data[first_in_new_cell].a[BLK_W];
 			if (Ctrl->E.active) {	/* Must get a temporary copy of the sorted z array */
-				if (nz == nz_alloc) nz_alloc = GMT_malloc (GMT, z_tmp, nz, nz_alloc, double);
+				if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 				z_tmp[nz++] = data[first_in_new_cell].a[BLK_Z];
 			}
 			first_in_new_cell++;
@@ -387,7 +412,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Turn z_tmp into absolute deviations from the median (out[GMT_Z]) */
 			if (nz > 1) {
 				for (node = 0; node < nz; node++) z_tmp[node] = fabs (z_tmp[node] - out[GMT_Z]);
-				GMT_sort_array (GMT, (void *)z_tmp, nz, GMT_DOUBLE_TYPE);
+				GMT_sort_array (GMT, z_tmp, nz, GMTAPI_DOUBLE);
 				out[3] = (nz%2) ? z_tmp[nz/2] : 0.5 * (z_tmp[(nz-1)/2] + z_tmp[nz/2]);
 				out[3] *= 1.4826;	/* This will be L1 MAD-based scale */
 			}
@@ -396,12 +421,14 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = weight;
 
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 
 		n_cells_filled++;
 		first_in_cell = first_in_new_cell;
 	}
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
+	}
 
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
 	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);
