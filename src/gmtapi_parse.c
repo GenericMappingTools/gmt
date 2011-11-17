@@ -69,7 +69,7 @@ GMT_LONG GMT_List_Args (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 		if (opt != head) fprintf (stderr, " ");
 		if (opt->option == GMTAPI_OPT_SYNOPSIS)			/* Produce special - command for synopsis */
 			fprintf (stderr, "-");
-		else if (opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_NUMBER)		/* Option for input filename or number */
+		else if (opt->option == GMTAPI_OPT_INFILE)		/* Option for input filename [or number] */
 			fprintf (stderr, "%s", opt->arg);
 		else if (opt->arg && opt->arg[0])			/* Regular -?arg commandline argument */
 			fprintf (stderr, "-%c%s", opt->option, opt->arg);
@@ -147,7 +147,6 @@ struct GMT_OPTION * GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args
 			}
 		}
 
-		/* GMT_Make_Option will separate numbers from files and turn option to GMTAPI_OPT_NUMBER if file is not found and arg has valid numeric structure */
 		if ((new = GMT_Make_Option (API, option, &args[arg][first_char])) == NULL) return_null (API, error);	/* Create the new option structure given the args, or return the error */
 
 		head = GMT_Append_Option (API, new, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
@@ -202,7 +201,7 @@ char ** GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, struct GMT_OPT
 		if (!opt->option) continue;			/* Skip all empty options */
 		if (opt->option == GMTAPI_OPT_SYNOPSIS)		/* Produce special - option for synopsis */
 			sprintf (buffer, "-");
-		else if (opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_NUMBER)		/* Option for input filename or numbers */
+		else if (opt->option == GMTAPI_OPT_INFILE)		/* Option for input filename [or numbers] */
 			sprintf (buffer, "%s", opt->arg);
 		else if (opt->arg && opt->arg[0])			/* Regular -?arg commandline option with argument for some ? */
 			sprintf (buffer, "-%c%s", opt->option, opt->arg);
@@ -262,7 +261,7 @@ char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 		if (!opt->option) continue;			/* Skip all empty options */
 		if (opt->option == GMTAPI_OPT_SYNOPSIS)		/* Produce special - option for synopsis */
 			sprintf (buffer, "-");
-		else if (opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_NUMBER)		/* Option for input filename or numbers */
+		else if (opt->option == GMTAPI_OPT_INFILE)		/* Option for input filename [or numbers] */
 			sprintf (buffer, "%s", opt->arg);
 		else if (opt->arg && opt->arg[0])			/* Regular -?arg commandline option with argument for some ? */
 			sprintf (buffer, "-%c%s", opt->option, opt->arg);
@@ -311,13 +310,6 @@ struct GMT_OPTION * GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char 
 
 	new = GMT_memory (API->GMT, NULL, 1, struct GMT_OPTION);
 
-	if (option == GMTAPI_OPT_INFILE) {	/* Distinguish between filenames and numbers */
-		/* Note: Numbers (e.g., -0.544, 135, -1.8e+10, 133:30:23W, and 1766-12-09T12:15:11) have all been assigned as "files"; here we fix this */
-		if (GMT_access (API->GMT, arg, F_OK) && !GMT_not_numeric (API->GMT, arg)) {	/* It is a number only if (1) we cannot find a file by that name and (2) it has a valid number syntax */
-			option = GMTAPI_OPT_NUMBER;	/* Reassign as a "number option -#" (Note: There is no -# since # means comment in most shells; we just use -# internally) */
-		}
-		/* Note: Programs (like g**math) that may expect both numbers and files should check if an argument can be both and give appropriate warnings */
-	}
 	new->option = option;		/* Assign which option character was used */
 	if (!arg)				/* If arg is a NULL pointer: */
 		new->arg = strdup ("");		/* Copy an empty string, such that new->arg[0] = '\0', which avoids */
