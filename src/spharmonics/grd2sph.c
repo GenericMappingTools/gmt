@@ -145,7 +145,7 @@ int main (int argc, char **argv)
 	GMT_grd_init (&header, 0, NULL, FALSE);
 	GMT_err_fail (GMT_read_grd_info (argv[f_arg], &header), argv[f_arg]);
 
-	if (!(GMT_360_RANGE (header.x_min, header.x_max) && GMT_180_RANGE (header.y_min, header.y_max))) {
+	if (!(GMT_grd_is_global (&header) && GMT_180_RANGE (header.y_min, header.y_max))) {
 		fprintf (stderr, "%s: File %s is not a global grid (it has -R%g/%g/%g/%g)\n", GMT->init.progname, argv[f_arg], header.x_min, header.x_max, header.y_min, header.y_max);
 		exit (EXIT_FAILURE);
 	}

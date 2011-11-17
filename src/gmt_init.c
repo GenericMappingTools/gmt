@@ -1763,7 +1763,7 @@ GMT_LONG gmt_parse_colon_option (struct GMT_CTRL *C, char *item) {
 			C->current.setting.io_lonlat_toggle[way] = TRUE;
 		else if (C->current.io.col_type[way][GMT_X] == GMT_IS_FLOAT && C->current.io.col_type[way][GMT_Y] == GMT_IS_FLOAT)	/* Cartesian x/y vs y/x cannot be identified */
 			C->current.setting.io_lonlat_toggle[way] = TRUE;
-		else if (C->current.io.col_type[way][GMT_X] == GMT_IS_LON && C->current.io.col_type[way][GMT_Y] == GMT_IS_LAT)	/* Lon/lat becomes lat/lon */
+		else if (GMT_is_geographic (C, way))	/* Lon/lat becomes lat/lon */
 			C->current.setting.io_lonlat_toggle[way] = TRUE;
 		else if (C->current.io.col_type[way][GMT_X] == GMT_IS_LAT && C->current.io.col_type[way][GMT_Y] == GMT_IS_LON)	/* Already lat/lon! */
 			GMT_report (C, GMT_MSG_FATAL, "Warning: -:%s given but %s order already set by -f; -:%s ignored.\n", mode[way+off], dir[way], mode[way+off]);
@@ -1878,7 +1878,7 @@ GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 			C->common.g.col[i] = GMT_Y;
 			break;
 		case 'd':	/* Great circle (if geographic data) or Cartesian distance used for test */
-			C->common.g.method[i] = (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && C->current.io.col_type[GMT_IN][GMT_Y] == GMT_IS_LAT) ? GMT_GAP_IN_GDIST : GMT_GAP_IN_CDIST;
+			C->common.g.method[i] = (GMT_is_geographic (C, GMT_IN)) ? GMT_GAP_IN_GDIST : GMT_GAP_IN_CDIST;
 			C->common.g.col[i] = -1;
 			break;
 		case 'D':	/* Cartesian mapped distance used for test */

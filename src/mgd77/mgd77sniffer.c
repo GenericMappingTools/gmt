@@ -2917,7 +2917,7 @@ int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD7
 		g[n_grid][rec] = MGD77_NaN;	/* Default value if we are outside the grid domain */
 		if (y < info->G->header->wesn[YLO] || y > info->G->header->wesn[YHI]) continue;	/* Outside latitude range */
 
-		if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {
+		if (GMT_x_is_lon (GMT, GMT_IN)) {
 			while (x > info->G->header->wesn[XHI]) x -= 360.0;
 			while (x < info->G->header->wesn[XLO]) x += 360.0;
 		}
