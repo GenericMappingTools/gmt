@@ -262,7 +262,7 @@ PFL GMTAPI_get_2D_to_index (GMT_LONG shape, GMT_LONG mode)
 	 * shape is either GMTAPI_ORDER_ROW (C) or GMTAPI_ORDER_COL (FORTRAN);
 	 * mode is either 0 (regular grid), 1 (complex real) or 2 (complex imag)
 	 */
-	PFL p;
+	PFL p = NULL;
 	
 	switch (mode) {
 		case GMT_IS_NORMAL:
@@ -274,6 +274,9 @@ PFL GMTAPI_get_2D_to_index (GMT_LONG shape, GMT_LONG mode)
 		case GMT_IS_COMPLEX_IMAG:
 			p = (shape == GMTAPI_ORDER_ROW) ? GMTAPI_2D_to_index_C_cplx_imag : GMTAPI_2D_to_index_F_cplx_imag;
 			break;
+		default:
+			fprintf (stderr, "GMTAPI_get_2D_to_index: Illegal mode passed - aborting\n");
+			GMT_exit (-1);
 	}
 	return (p);
 }
