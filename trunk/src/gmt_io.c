@@ -5007,6 +5007,10 @@ void GMT_adjust_dataset (struct GMT_CTRL *C, struct GMT_DATASET *D, GMT_LONG n_c
 
 struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_segments, GMT_LONG n_rows)
 {	/* Create an empty text set structure with the required number of empty tables, all set to hold n_segments with n_rows */
+	/* Allocate the new textset structure given the specified dimensions.
+	 * If n_segments or n_rows are negative we use the abs value to allocate
+	 * and set the n_alloc values but we do NOT set the corresponding
+	 * counters (i.e., n_rows, n_segments).  */
 	GMT_LONG tbl, seg;
 	struct GMT_TEXT_TABLE *T = NULL;
 	struct GMT_TEXTSET *D = NULL;
@@ -5014,12 +5018,13 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, 
 	D = GMT_memory (C, NULL, 1, struct GMT_TEXTSET);
 	D->table = GMT_memory (C, NULL, n_tables, struct GMT_TEXT_TABLE *);
 	D->n_tables = D->n_alloc = n_tables;
-	D->n_segments = n_tables * n_segments;
+	if (n_segments > 0) D->n_segments = n_tables * n_segments;
 	for (tbl = 0; tbl < n_tables; tbl++) {
 		D->table[tbl] = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE);
 		T = D->table[tbl];
-		T->segment = GMT_memory (C, NULL, n_segments, struct GMT_TEXT_SEGMENT *);
-		T->n_segments = T->n_alloc = n_segments;
+		T->n_alloc = GMT_abs (n_segments);
+		T->segment = GMT_memory (C, NULL, T->n_alloc, struct GMT_TEXT_SEGMENT *);
+		if (n_segments > 0) T->n_segments = n_segments;
 		for (seg = 0; seg < T->n_segments; seg++) {
 			T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXT_SEGMENT);
 			T->segment[seg]->record = GMT_memory (C, NULL, n_rows, char *);
