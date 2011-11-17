@@ -273,7 +273,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG navgsq, error = FALSE;
 	GMT_LONG navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
 	GMT_LONG iout, jout, iinstart, iinstop, jinstart, jinstop, k, kk, ion, jin, jj, iin, ii, kstart;
-	GMT_LONG ij, in_ID, out_ID, *ix = NULL;
+	GMT_LONG ij, in_ID, out_ID = GMTAPI_NOTSET, *ix = NULL;
 	
 	int tempint;
 	
