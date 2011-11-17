@@ -27,6 +27,10 @@
 #include "pslib.h"
 #include "gmt.h"
 
+enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
+	GMT_CSH_MODE,				/* Write C-shell script */
+	GMT_DOS_MODE};				/* Write DOS script */
+	
 /* Control structure for gmtmercmap */
 
 struct GMTMERCMAP_CTRL {
@@ -34,7 +38,7 @@ struct GMTMERCMAP_CTRL {
 		GMT_LONG active;
 		char *file;
 	} C;
-	struct D {	/* -D[c] */
+	struct D {	/* -D[b|c|d] */
 		GMT_LONG active;
 		GMT_LONG mode;
 	} D;
@@ -67,14 +71,14 @@ GMT_LONG GMT_gmtmercmap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "gmtmercmap %s [API] - Make a Mercator color map from ETOPO[1|2|5] global relief grids\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: gmtmercmap [-C<cpt>] [-D[b|c]] [-K] [-O] [-P] [-R<w/e/s/n>] [-S] [-W<width>]\n");
+	GMT_message (GMT, "usage: gmtmercmap [-C<cpt>] [-D[b|c|d]] [-K] [-O] [-P] [-R<w/e/s/n>] [-S] [-W<width>]\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Color palette to use [relief].\n");
-	GMT_message (GMT, "\t-D Dry-run: Only print GMT shell commands instead; no map is made.\n");
-	GMT_message (GMT, "\t   Append c for cshell or b for Bourne shell syntax [Default]].\n");
+	GMT_message (GMT, "\t-D Dry-run: Only print equivalent GMT commands instead; no map is made.\n");
+	GMT_message (GMT, "\t   Append b, c, or d for Bourne shell, C-shell, or DOS syntax [Default is Bourne].\n");
 	GMT_explain_options (GMT, "KOP");
 	GMT_message (GMT, "\t-R sets the map region [Default is -180/180/-75/75].\n");
 	GMT_message (GMT, "\t-S plot a color scale beneath the map [none].\n");
@@ -110,9 +114,10 @@ GMT_LONG GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ct
 			case 'D':	/* Just issue equivalent GMT commands in a script */
 				Ctrl->D.active = TRUE;
 				switch (opt->arg[0]) {
-					case 'b':  Ctrl->D.mode = 0; break;
-					case 'c':  Ctrl->D.mode = 1; break;
-					default: Ctrl->D.mode = 0; break;
+					case 'b':  Ctrl->D.mode = GMT_BASH_MODE; break;
+					case 'c':  Ctrl->D.mode = GMT_CSH_MODE;  break;
+					case 'd':  Ctrl->D.mode = GMT_DOS_MODE;  break;
+					default:   Ctrl->D.mode = GMT_BASH_MODE; break;
 				}
 				break;
 			case 'W':	/* Map width */
@@ -139,15 +144,16 @@ GMT_LONG GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ct
 
 int main (int argc, char **argv)
 {
-	GMT_LONG error, min, z_ID, i_ID, c_ID;
+	GMT_LONG error, min, z_ID, i_ID, c_ID, t_ID;
 	
 	double area, z, z_min, z_max;
 	
-	char file[GMT_TEXT_LEN256], z_file[GMTAPI_STRLEN], i_file[GMTAPI_STRLEN], c_file[GMTAPI_STRLEN];
+	char file[GMT_TEXT_LEN256], z_file[GMTAPI_STRLEN], i_file[GMTAPI_STRLEN], c_file[GMTAPI_STRLEN], t_file[GMTAPI_STRLEN];
 	char cmd[GMT_BUFSIZ];
 
 	struct GMT_GRID *G = NULL, *I = NULL;
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_TEXTSET *T = NULL;
 	struct GMTMERCMAP_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -188,35 +194,64 @@ int main (int argc, char **argv)
 	sprintf (file, "etopo%ldm_grd.nc", min);	/* Make the selected file name */
 	
 	if (Ctrl->D.active) {	/* Just return equivalent GMT shell script */
-		char *marker = "|!";	/* Clobber characters for csh and bash, respectively */
-		if (Ctrl->D.mode)
-			printf ("#!/bin/csh\nset ps = merc_map.ps\n");
-		else
-			printf ("#!/bin/sh\nps=merc_map.ps\n");
-		printf ("grdcut %s -R%g/%g/%g/%g -G$$_topo.nc\n", file, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
-		printf ("grdgradient $$_topo.nc -Nt1 -A45 -fg -G$$_int.nc\n");
-		if (Ctrl->D.mode)
-			printf ("set T_opt = `grdinfo $$_topo.nc -Ts500`\n");
-		else
-			printf ("T_opt=`grdinfo $$_topo.nc -Ts500`\n");
-		printf ("makecpt -C%s $T_opt -Z > $$_color.cpt\n", Ctrl->C.file);
-		printf ("grdimage $$_topo.nc -I$$_int.nc -C$$_color.cpt -JM%gi -BaWSne", Ctrl->W.width);
+		char *marker = "|! ";	/* Clobber characters for csh, bash and DOS [none], respectively */
+		char *comment[3] = {"#", "#", "REM"};	/* Comment for csh, bash and DOS [none], respectively */
+		char ps[5], prefix[4];
+		if (Ctrl->D.mode == GMT_DOS_MODE) {
+			sprintf (ps, "%%ps%%");	sprintf (prefix, "tmp");
+		} else {
+			sprintf (ps, "$ps"); sprintf (prefix, "$$");
+		}
+		switch (Ctrl->D.mode) {
+			case GMT_BASH_MODE: printf ("#!/bin/sh\n"); break;
+			case GMT_CSH_MODE:  printf ("#!/bin/csh\n"); break;
+			case GMT_DOS_MODE:  printf ("REM DOS script\n"); break;
+		}
+		printf ("%s Produced by gmtmercmap\n", comment[Ctrl->D.mode]);
+		switch (Ctrl->D.mode) {
+			case GMT_BASH_MODE: printf ("ps=merc_map.ps\n"); break;
+			case GMT_CSH_MODE:  printf ("set ps = merc_map.ps\n"); break;
+			case GMT_DOS_MODE:  printf ("set ps=merc_map.ps\n"); break;
+		}
+		printf ("%s Extract grid subset:\n", comment[Ctrl->D.mode]);
+		printf ("grdcut %s -R%g/%g/%g/%g -G%s_topo.nc\n", file, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], prefix);
+		printf ("%s Compute intensity grid for artificial illumination:\n", comment[Ctrl->D.mode]);
+		printf ("grdgradient %s_topo.nc -Nt1 -A45 -fg -G%s_int.nc\n", prefix, prefix);
+		printf ("%s Determine symmetric relief range and get suitable CPT file:\n", comment[Ctrl->D.mode]);
+		switch (Ctrl->D.mode) {
+			case GMT_BASH_MODE: printf ("T_opt=`grdinfo %s_topo.nc -Ts500`\n", prefix); break;
+			case GMT_CSH_MODE:  printf ("set T_opt = `grdinfo %s_topo.nc -Ts500`\n", prefix); break;
+			case GMT_DOS_MODE: /* Must determine the grdinfo result directly */
+				if ((t_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_COPY, GMT_IS_TEXT, GMT_OUT, T, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+				if (GMT_Encode_ID (API, t_file, t_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+				sprintf (cmd, "%s -R%g/%g/%g/%g -Ts500 ->%s", file, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], t_file);			/* The grdinfo command line */
+				if (GMT_grdinfo (API, 0, cmd) != GMT_OK) exit (EXIT_FAILURE);	/* This will return the -T<string> back via the T textset */
+				if ((T = GMT_Retrieve_Data (API, t_ID)) == NULL) exit (EXIT_FAILURE);	/* Get pointer to that container with the input textset */
+				printf ("set T_opt=%s\n", T->table[0]->segment[0]->record[0]);
+				printf ("makecpt -C%s %%T_opt%% -Z > %s_color.cpt\n", Ctrl->C.file, prefix);
+				break;
+		}
+		if (Ctrl->D.mode != GMT_DOS_MODE) printf ("makecpt -C%s $T_opt -Z > %s_color.cpt\n", Ctrl->C.file, prefix);
+		printf ("%s Make the color map:\n", comment[Ctrl->D.mode]);
+		printf ("grdimage %s_topo.nc -I%s_int.nc -C%s_color.cpt -JM%gi -BaWSne", prefix, prefix, prefix, Ctrl->W.width);
 		if (GMT->common.O.active) printf (" -O");	/* Add optional user options */
 		if (GMT->common.P.active) printf (" -P");	/* Add optional user options */
 		if (Ctrl->S.active || GMT->common.K.active) printf (" -K");	/* Either gave -K or implicit via -S */
 		if (Ctrl->S.active) {	/* May need to add some vertical offset to account for the colro scale */
 			if (!GMT->common.Y.active && !GMT->common.K.active) printf (" -Y1.75i");	/* User gave neither -K nor -Y so we add 0.75i offset to fit the scale */
 		}
-		printf (" >%c $ps\n", marker[Ctrl->D.mode]);
+		printf (" >%c %s\n", marker[Ctrl->D.mode], ps);
 		if (Ctrl->S.active) {
 			double x, y;
 			x = 0.5 * Ctrl->W.width;	/* Centered beneath the map */
 			y = -0.4;			/* Offset vertically 0.4i downwards */
-			printf ("psscale -C$$_color.cpt -D%gi/%gi/%gi/0.1ih -Ba/:m: -O", x, y, 0.9*Ctrl->W.width);	/* The psscale command line */
+			printf ("%s Overlay color scale:\n", comment[Ctrl->D.mode]);
+			printf ("psscale -C%s_color.cpt -D%gi/%gi/%gi/0.1ih -Ba/:m: -O", prefix, x, y, 0.9*Ctrl->W.width);	/* The psscale command line */
 			if (GMT->common.K.active) printf (" -K");		/* dd optional user options */
-			printf (" >> $ps\n");
+			printf (" >> %s\n", ps);
 		}
-		printf ("rm -f $$_*\n");
+		printf ("%s Remove temporary files:\n", comment[Ctrl->D.mode]);
+		if (Ctrl->D.mode == GMT_DOS_MODE) printf ("del %s_*.*\n", prefix); else printf ("rm -f %s_*\n", prefix);
 		Return (EXIT_SUCCESS);
 	}
 	
