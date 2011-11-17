@@ -303,7 +303,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			if (col < 0 || col >= G->header->nx) continue;
 			k = GMT_IJP (G->header, row, col);
 			G->data[k] = (float)in[GMT_Z];
-			if (G->header->registration == GMT_GRIDLINE_REG && GMT_is_geographic (GMT, GMT_IN) && GMT_360_RANGE (G->header->wesn[XLO], G->header->wesn[XHI])) {
+			if (GMT_grd_duplicate_column (GMT, G->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 				/* Possibly need to replicate e/w value */
 				if (col == 0) {k = GMT_IJP (G->header, row, G->header->nx-1); G->data[k] = (float)in[GMT_Z]; }
 				if (col == (G->header->nx-1)) {k = GMT_IJP (G->header, row, 0); G->data[k] = (float)in[GMT_Z]; }

@@ -540,7 +540,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else
 		one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 0 : 1;
 
-	full_360 = (Ctrl->D.mode && GMT_360_RANGE (Gin->header->wesn[XHI], Gin->header->wesn[XLO]));	/* Periodic geographic grid */
+	full_360 = (Ctrl->D.mode && GMT_grd_is_global (GMT, Gin->header));	/* Periodic geographic grid */
 
 	if (Ctrl->D.mode == -1) {	/* Special case where widths are given in pixels */
 		if (!GMT_IS_ZERO (fmod (Ctrl->F.width, 2.0) - 1.0)) {

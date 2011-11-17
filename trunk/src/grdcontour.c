@@ -619,8 +619,8 @@ void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_
 			GMT_xy_to_geo (GMT, &x_on, &y_on, C->L[k].x, C->L[k].y);	/* Retrieve original coordinates */
 			row = GMT_grd_y_to_row (GMT, y_on, Grid->header);
 			if (row < 0 || row >= Grid->header->ny) continue;		/* Somehow, outside y range */
-			while (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && x_on < Grid->header->wesn[XLO]) x_on += 360.0;
-			while (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && x_on > Grid->header->wesn[XHI]) x_on -= 360.0;
+			while (GMT_x_is_lon (GMT, GMT_IN) && x_on < Grid->header->wesn[XLO]) x_on += 360.0;
+			while (GMT_x_is_lon (GMT, GMT_IN) && x_on > Grid->header->wesn[XHI]) x_on -= 360.0;
 			col = GMT_grd_x_to_col (GMT, x_on, Grid->header);
 			if (col < 0 || col >= Grid->header->nx) continue;		/* Somehow, outside x range */
 			angle = fmod (2.0 * C->L[k].angle, 360.0) * 0.5;	/* 0-180 range */
@@ -655,7 +655,7 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 		closed = 1;
 		x[n-1] = x[0];	y[n-1] = y[0];	/* Force exact closure */
 	}
-	else if (GMT_is_geographic (GMT, GMT_IN) && GMT_360_RANGE (G->header->wesn[XLO], G->header->wesn[XHI])) {
+	else if (GMT_is_geographic (GMT, GMT_IN) && GMT_grd_is_global (GMT, G->header)) {	/* Global geographic grids are special */
 		if (fabs (x[0] - G->header->wesn[XLO]) < small_x && fabs (x[n-1] - G->header->wesn[XLO]) < small_x) {	/* Split periodic boundary contour */
 			closed = -2;	/* Left periodic */
 			x[0] = x[n-1] = G->header->wesn[XLO];	/* Force exact closure */
