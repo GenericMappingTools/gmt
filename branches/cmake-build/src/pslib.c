@@ -359,8 +359,8 @@ void psl_path_fix (char *dir)
 		if (dir[k] == '\\') dir[k] = '/';	/* Replace dumb backslashes with slashes */
 	}
 	
-	for (k = 0; k < 2; k++) {
-		if (dir[k] == '/' && isalpha ((int)dir[k+1]) && dir[k+2] == '/') {
+	for (k = 1; k < n-2; k++) {
+		if (dir[k-1] == ';' && dir[k] == '/' && isalpha ((int)dir[k+1]) && dir[k+2] == '/') {
 			dir[k] = dir[k+1];
 			dir[k+1] = ':';
 		}
