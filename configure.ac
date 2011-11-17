@@ -701,7 +701,7 @@ fi
 dnl
 dnl -----------------------------------------------------------------
 dnl Test if CFLAGS variable was already set
-dnl If unset, AC_PROG_CC will set it to -g -O2 for gcc and leave 
+dnl If unset, AC_PROG_CC will set it to -g -O2 for gcc and leave
 dnl ac_save_CFLAGS empty. Otherwise ac_save_CFLAGS == CFLAGS.
 dnl -----------------------------------------------------------------
 dnl
@@ -722,10 +722,11 @@ AC_MSG_CHECKING(if we should compile with debugging switch -g)
 if test "X$enable_cflags_setting" = "Xyes" ; then
 	if test "X$enable_debug" = "Xyes" ; then
 		AC_MSG_RESULT(yes)
-	else
+        CFLAGS="-g"
+      else
 		AC_MSG_RESULT(no)
 		dnl Remove -g:
-		CFLAGS=`echo "$CFLAGS " | sed -e "s/-g //"`
+		CFLAGS=`echo "$CFLAGS " | sed -e "s/-g[ ]*//"`
 		dnl Do not mess up gcc defaults (I suppose this can be cleaned up):
 		if ! test "$GCC" = "yes" ; then
 			if test "$os" = "AIX"; then
