@@ -2315,7 +2315,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG so
 			i = n_alloc;
 			n_alloc <<= 1;
 			X->range = GMT_memory (C, X->range, n_alloc, struct GMT_LUT);
-			GMT_memset (&X->range[i], GMT_SMALL_CHUNK, struct GMT_LUT);	/* Initialize new structs to zero */
+			GMT_memset (&X->range[i], n_alloc - i, struct GMT_LUT);	/* Initialize new structs to zero */
 		}
 	}
 
@@ -6870,13 +6870,13 @@ void GMT_set_xy_domain (struct GMT_CTRL *C, double wesn_extended[], struct GRD_H
 	 */
 
 	off = 0.5 * (1 - h->registration);
-	if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && GMT_360_RANGE (h->wesn[XHI], h->wesn[XLO]))	/* Global longitude range */
+	if (GMT_x_is_lon (C, GMT_IN) && GMT_grd_is_global (C, h))	/* Global longitude range */
 		wesn_extended[XLO] = h->wesn[XLO], wesn_extended[XHI] = h->wesn[XHI];
 	else
 		wesn_extended[XLO] = h->wesn[XLO] - off * h->inc[GMT_X], wesn_extended[XHI] = h->wesn[XHI] + off * h->inc[GMT_X];
 	/* Latitudes can be extended provided we are not at the poles */
 	wesn_extended[YLO] = h->wesn[YLO] - off * h->inc[GMT_Y], wesn_extended[YHI] = h->wesn[YHI] + off * h->inc[GMT_Y];
-	if (C->current.io.col_type[GMT_IN][GMT_Y] == GMT_IS_LAT) {
+	if (GMT_y_is_lat (C, GMT_IN)) {
 		if (wesn_extended[YLO] < -90.0) wesn_extended[YLO] = -90.0;
 		if (wesn_extended[YHI] > +90.0) wesn_extended[YHI] = +90.0;
 	}
@@ -6890,7 +6890,7 @@ GMT_LONG GMT_x_is_outside (struct GMT_CTRL *C, double *x, double left, double ri
 	 * wrap-arounds by 360 degrees, and x may be modified accordingly.
 	 */
 	if (GMT_is_dnan (*x)) return (TRUE);
-	if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {	/* Periodic longitude test */
+	if (GMT_x_is_lon (C, GMT_IN)) {	/* Periodic longitude test */
 		while ((*x) > left) (*x) -= 360.0;	/* Make sure we start west or west */
 		while ((*x) < left) (*x) += 360.0;	/* See if we are outside east */
 		return (((*x) > right) ? TRUE : FALSE);
