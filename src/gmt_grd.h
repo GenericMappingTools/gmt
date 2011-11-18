@@ -221,4 +221,7 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 /* GMT_y_is_outside is TRUE if y is outside the given range */
 #define GMT_y_is_outside(C,y,bottom,top) ((GMT_is_dnan(y) || (y) < bottom || (y) > top) ? TRUE : FALSE)
 
+/* GMT_grd_duplicate_column is TRUE for geographical global grid where first and last data columns are identical */
+#define GMT_grd_duplicate_column(C,h,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON && GMT_360_RANGE (h->wesn[XHI], h->wesn[XLO]) && h->registration == GMT_GRIDLINE_REG)
+
 #endif /* _GMT_GRD_H */

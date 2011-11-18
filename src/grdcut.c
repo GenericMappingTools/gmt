@@ -240,7 +240,7 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (wesn_new[YLO] < G->header->wesn[YLO] || wesn_new[YLO] > G->header->wesn[YHI]) error++;
 	if (wesn_new[YHI] < G->header->wesn[YLO] || wesn_new[YHI] > G->header->wesn[YHI]) error++;
 
-	if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {	/* Geographic data */
+	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Geographic data */
 		if (wesn_new[XLO] < G->header->wesn[XLO] && wesn_new[XHI] < G->header->wesn[XLO]) {
 			G->header->wesn[XLO] -= 360.0;
 			G->header->wesn[XHI] -= 360.0;
@@ -249,7 +249,7 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			G->header->wesn[XLO] += 360.0;
 			G->header->wesn[XHI] += 360.0;
 		}
-		if (!GMT_360_RANGE (G->header->wesn[XLO], G->header->wesn[XHI]) && (wesn_new[XLO] < G->header->wesn[XLO] || wesn_new[XHI] > G->header->wesn[XHI])) error++;
+		if (!GMT_grd_is_global (GMT, G->header) && (wesn_new[XLO] < G->header->wesn[XLO] || wesn_new[XHI] > G->header->wesn[XHI])) error++;
 	}
 	else if (wesn_new[XLO] < G->header->wesn[XLO] || wesn_new[XHI] > G->header->wesn[XHI])
 		error++;

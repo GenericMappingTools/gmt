@@ -2909,7 +2909,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read the first file we encounter so we may allocate space */
 
 	for (opt = list; !G_in && opt; opt = opt->next) {	/* Look for a grid file, if given */
-		if (!(opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_NUMBER))	continue;	/* Skip command line options and output file */
+		if (!(opt->option == GMTAPI_OPT_INFILE))	continue;	/* Skip command line options and output file */
 		if (opt->next && !(strncmp (opt->next->arg, "LDIST", (size_t)5) && strncmp (opt->next->arg, "PDIST", (size_t)5) && strncmp (opt->next->arg, "INSIDE", (size_t)6))) continue;	/* Not grids */
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
 		status = decode_grd_argument (GMT, opt, &value, localhashnode);		/* Determine what this is */

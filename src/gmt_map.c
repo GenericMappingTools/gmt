@@ -5623,7 +5623,7 @@ GMT_LONG GMT_graticule_path (struct GMT_CTRL *C, double **x, double **y, GMT_LON
 		GMT_malloc2 (C, xx, yy, 0, &np, double);
 	}
 
-	if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {
+	if (GMT_x_is_lon (C, GMT_IN)) {
 		GMT_LONG straddle;
 		GMT_LONG i;
 		straddle = (C->common.R.wesn[XLO] < 0.0 && C->common.R.wesn[XHI] > 0.0);
@@ -5992,7 +5992,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 			GMT_row_loop  (C, O, row_out) GMT_xy_to_geo (C, &x_proj, &y_out_proj[row_out], I->header->wesn[YLO], y_out[row_out]);
 			GMT_col_loop2 (C, O, col_out) {	/* Here we must also align longitudes properly */
 				GMT_xy_to_geo (C, &x_out_proj[col_out], &y_proj, x_out[col_out], I->header->wesn[YLO]);
-				if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && !GMT_is_dnan (x_out_proj[col_out])) {
+				if (GMT_x_is_lon (C, GMT_IN) && !GMT_is_dnan (x_out_proj[col_out])) {
 					while (x_out_proj[col_out] < I->header->wesn[XLO] - GMT_SMALL) x_out_proj[col_out] += 360.0;
 					while (x_out_proj[col_out] > I->header->wesn[XHI] + GMT_SMALL) x_out_proj[col_out] -= 360.0;
 				}
@@ -6052,7 +6052,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 
 				/* On 17-Sep-2007 the slack of GMT_SMALL was added to allow for round-off
 				   errors in the grid limits. */
-				if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && !GMT_is_dnan (x_proj)) {
+				if (GMT_x_is_lon (C, GMT_IN) && !GMT_is_dnan (x_proj)) {
 					while (x_proj < I->header->wesn[XLO] - GMT_SMALL) x_proj += 360.0;
 					while (x_proj > I->header->wesn[XHI] + GMT_SMALL) x_proj -= 360.0;
 				}
@@ -6154,7 +6154,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 			GMT_row_loop  (C, O, row_out) GMT_xy_to_geo (C, &x_proj, &y_out_proj[row_out], I->header->wesn[YLO], y_out[row_out]);
 			GMT_col_loop2 (C, O, col_out) {	/* Here we must also align longitudes properly */
 				GMT_xy_to_geo (C, &x_out_proj[col_out], &y_proj, x_out[col_out], I->header->wesn[YLO]);
-				if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && !GMT_is_dnan (x_out_proj[col_out])) {
+				if (GMT_x_is_lon (C, GMT_IN) && !GMT_is_dnan (x_out_proj[col_out])) {
 					while (x_out_proj[col_out] < I->header->wesn[XLO] - GMT_SMALL) x_out_proj[col_out] += 360.0;
 					while (x_out_proj[col_out] > I->header->wesn[XHI] + GMT_SMALL) x_out_proj[col_out] -= 360.0;
 				}
@@ -6219,7 +6219,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 
 				/* On 17-Sep-2007 the slack of GMT_SMALL was added to allow for round-off
 				   errors in the grid limits. */
-				if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && !GMT_is_dnan (x_proj)) {
+				if (GMT_x_is_lon (C, GMT_IN) && !GMT_is_dnan (x_proj)) {
 					while (x_proj < I->header->wesn[XLO] - GMT_SMALL) x_proj += 360.0;
 					while (x_proj > I->header->wesn[XHI] + GMT_SMALL) x_proj -= 360.0;
 				}

@@ -308,7 +308,7 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 
 	if (GMT_is_geographic (GMT, GMT_IN)) {
 		all_lats = GMT_180_RANGE (g->wesn[YHI], g->wesn[YLO]);
-		all_lons = GMT_360_RANGE (g->wesn[XHI], g->wesn[XLO]);
+		all_lons = GMT_grd_is_global (GMT, g);
 		if (all_lons && all_lats) return;	/* Whole globe */
 	}
 	

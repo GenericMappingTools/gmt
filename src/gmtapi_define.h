@@ -67,6 +67,5 @@ enum GMT_enum_order {GMTAPI_ORDER_ROW = 0,	/* C-style array order: as index incr
 #define GMTAPI_OPT_SYNOPSIS	'^'
 #define GMTAPI_OPT_INFILE	'<'
 #define GMTAPI_OPT_OUTFILE	'>'
-#define GMTAPI_OPT_NUMBER	'#'
 
 #endif /* _GMTAPI_DEFINE_H */
