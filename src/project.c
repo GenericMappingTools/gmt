@@ -951,6 +951,8 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		} while (TRUE);
 
+		p_data = GMT_memory (GMT, p_data, P.n_used, struct PROJECT_DATA);
+
 		if (P.n_used) {	/* Finish last segment output */
 			if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P))) Return (error);
 			n_total_used += P.n_used;
@@ -969,7 +971,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef DEBUG
 	if (P.n_z) GMT_memtrack_off (GMT, GMT_mem_keeper);	/* Free pointers that were allocated when tracking was off */
 #endif
-	for (i = 0; i < n_alloc; i++) {
+	for (i = 0; i < P.n_used; i++) {
 		if (p_data[i].t) GMT_free (GMT, p_data[i].t);
 		if (p_data[i].z) GMT_free (GMT, p_data[i].z);
 	}
