@@ -281,7 +281,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		D->table[0]->header[0] = strdup (header);
 		D->table[0]->n_headers = 1;
 		n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHS_MAXPOL;
-		D->table[0]->segment = GMT_memory (GMT, T, n_alloc, struct GMT_LINE_SEGMENT *);
+		D->table[0]->segment = GMT_memory (GMT, NULL, n_alloc, struct GMT_LINE_SEGMENT *);
 		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
 	}
 	n_read = fread (&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
@@ -346,8 +346,10 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else {
 			dim[3] = h.n + Ctrl->G.active;	/* Number of data records to allocate for this segment/polygon*/
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
-				n_alloc <<= 2;
+				GMT_LONG old_n_alloc = n_alloc;
+				n_alloc <<= 1;
 				T = GMT_memory (GMT, T, n_alloc, struct GMT_LINE_SEGMENT *);
+				GMT_memset (&(T[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
 			}
 		}
 

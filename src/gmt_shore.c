@@ -920,8 +920,10 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 		p[P].fid = (p[P].level == 2 && fid == RIVERLAKE) ? RIVERLAKE : p[P].level;	/* Not sure about this yet */
 		P++;
 		if (P == p_alloc) {
+			GMT_LONG old_p_alloc = p_alloc;
 			p_alloc <<= 1;
 			p = GMT_memory (C, p, p_alloc, struct GMT_GSHHS_POL);
+			GMT_memset (&(p[old_p_alloc]), p_alloc - old_p_alloc, struct GMT_GSHHS_POL);	/* Set to NULL/0 */
 		}
 		
 	}
@@ -939,8 +941,10 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 		p[P].fid = c->seg[id].fid;
 		P++;
 		if (P == p_alloc) {
+			GMT_LONG old_p_alloc = p_alloc;
 			p_alloc <<= 1;
 			p = GMT_memory (C, p, p_alloc, struct GMT_GSHHS_POL);
+			GMT_memset (&(p[old_p_alloc]), p_alloc - old_p_alloc, struct GMT_GSHHS_POL);	/* Set to NULL/0 */
 		}
 	}
 	

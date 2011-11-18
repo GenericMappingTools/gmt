@@ -407,8 +407,10 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				seg[id].buddy[0].dist = seg[id].buddy[1].dist = seg[id].buddy[0].next_dist = seg[id].buddy[1].next_dist = DBL_MAX;
 				id++;
 				if (id == n_id_alloc) {
+					GMT_LONG old_n_id_alloc = n_id_alloc;
 					n_id_alloc <<= 1;
 					seg = GMT_memory (GMT, seg, n_id_alloc, struct LINK);
+					GMT_memset (&(seg[old_n_id_alloc]), n_id_alloc - old_n_id_alloc, struct LINK);	/* Set to NULL/0 */
 				}
 			}
 		}

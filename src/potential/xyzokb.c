@@ -459,7 +459,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			return (EXIT_FAILURE);
 		}
 
-		t_center = GMT_memory (GMT, NULL, (size_t) ndata_t, struct TRI_CENTER);
+		t_center = GMT_memory (GMT, NULL, ndata_t, struct TRI_CENTER);
 		/* compute aproximate center of each triangle */
 		n_swap = check_triang_cw (ndata_t, 0);
 		set_center (ndata_t);
@@ -493,8 +493,8 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 
 		/* Build observation point vectors */
-		x = GMT_memory (GMT, NULL, (size_t) Gout->header->nx, double);
-		y = GMT_memory (GMT, NULL, (size_t) Gout->header->ny, double);
+		x = GMT_memory (GMT, NULL, Gout->header->nx, double);
+		y = GMT_memory (GMT, NULL, Gout->header->ny, double);
 		for (i = 0; i < Gout->header->nx; i++) 
 			x[i] = (i == (Gout->header->nx-1)) ? Gout->header->wesn[XHI] : 
 				(Gout->header->wesn[XLO] + i * Gout->header->inc[GMT_X]);
@@ -506,26 +506,26 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	nx_p = (!Ctrl->F.active) ? Gout->header->nx : ndata_p;
 	ny_p = (!Ctrl->F.active) ? Gout->header->ny : ndata_p;
 	nm   = (!Ctrl->F.active) ? Gout->header->nm : ndata_p;
-	x_obs = GMT_memory (GMT, NULL, (size_t) nx_p, double);
-	y_obs = GMT_memory (GMT, NULL, (size_t) ny_p, double);
-	z_obs = GMT_memory (GMT, NULL, (size_t) nx_p, double);
+	x_obs = GMT_memory (GMT, NULL, nx_p, double);
+	y_obs = GMT_memory (GMT, NULL, ny_p, double);
+	z_obs = GMT_memory (GMT, NULL, nx_p, double);
 
 	if (Ctrl->F.active) { /* Need to compute observation coords only once */
 		for (i = 0; i < ndata_p; i++) {
 			x_obs[i] = (Ctrl->M.active) ? (data[i].x-central_long)*Ctrl->N.d_to_m*cos(data[i].y*D2R) : data[i].x;
 			y_obs[i] = (Ctrl->M.active) ? -(data[i].y-central_lat)*Ctrl->N.d_to_m : data[i].y; /* - because y positive 'south' */
 		}
-		g = GMT_memory (GMT, NULL, (size_t) nm, float); 
+		g = GMT_memory (GMT, NULL, nm, float); 
 	}
 
 	if (Ctrl->T.triangulate) {
 		n_triang = ndata_t;
 		bd_desc.n_f = 5;		/* Number of prism facets */
-		bd_desc.n_v = GMT_memory (GMT, NULL, (size_t) (bd_desc.n_f), GMT_LONG);
+		bd_desc.n_v = GMT_memory (GMT, NULL, (bd_desc.n_f), GMT_LONG);
 		bd_desc.n_v[0] = 3;	bd_desc.n_v[1] = 3;
 		bd_desc.n_v[2] = 4;	bd_desc.n_v[3] = 4;
 		bd_desc.n_v[4] = 4;
-		bd_desc.ind = GMT_memory (GMT, NULL, (size_t) (bd_desc.n_v[0] + bd_desc.n_v[1] +
+		bd_desc.ind = GMT_memory (GMT, NULL, (bd_desc.n_v[0] + bd_desc.n_v[1] +
 			bd_desc.n_v[2] + bd_desc.n_v[3] + bd_desc.n_v[4]), GMT_LONG);
 		bd_desc.ind[0] = 0;	bd_desc.ind[1] = 1; 	bd_desc.ind[2] = 2;	/* top triang */
 		bd_desc.ind[3] = 3;	bd_desc.ind[4] = 5; 	bd_desc.ind[5] = 4;	/* bot triang */
@@ -536,9 +536,9 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	else if (Ctrl->T.raw || Ctrl->T.stl) {
 		n_triang = (Ctrl->T.raw) ? ndata_r : ndata_s;
 		bd_desc.n_f = 1;
-		bd_desc.n_v = GMT_memory (GMT, NULL, (size_t) (bd_desc.n_f), GMT_LONG);
+		bd_desc.n_v = GMT_memory (GMT, NULL, (bd_desc.n_f), GMT_LONG);
 		bd_desc.n_v[0] = 3;
-		bd_desc.ind = GMT_memory (GMT, NULL, (size_t) (bd_desc.n_v[0]), GMT_LONG);
+		bd_desc.ind = GMT_memory (GMT, NULL, (bd_desc.n_v[0]), GMT_LONG);
 		bd_desc.ind[0] = 0;	bd_desc.ind[1] = 1; 	bd_desc.ind[2] = 2;
 	}
 	else
@@ -550,7 +550,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	for (i = 1; i < bd_desc.n_f; i++) {
 		n_vert_max = MAX(bd_desc.n_v[i], n_vert_max);
 	}
-	loc_or = GMT_memory (GMT, CNULL, (size_t) (n_vert_max+1), struct LOC_OR);
+	loc_or = GMT_memory (GMT, NULL, (n_vert_max+1), struct LOC_OR);
 
 	if (Ctrl->H.active) { /* 1e2 is a factor to obtain nT from magnetization in A/m */
 		cc_t = cos(Ctrl->H.m_dip*D2R)*cos((Ctrl->H.m_dec - 90.)*D2R);
@@ -569,7 +569,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			mag_var[0].rk[2] = Ctrl->H.m_int * s_t;
 		}
 		else { /* The triangles have a non-constant magnetization */
-			mag_var = GMT_memory (GMT, NULL, (size_t) n_triang, struct MAG_VAR);
+			mag_var = GMT_memory (GMT, NULL, n_triang, struct MAG_VAR);
 			if (Ctrl->T.m_var1) {		/* Only the mag intensity changes, Dec & Dip are the same as the Field */
 				for (i = 0; i < n_triang; i++) {
 					t_mag = (Ctrl->N.mag_int[vert[i].a] + Ctrl->N.mag_int[vert[i].b] + Ctrl->N.mag_int[vert[i].c])/3.;
@@ -598,7 +598,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 				}
 			}
 			else {			/* Everything varies. */ 
-				mag_param = GMT_memory (GMT, NULL, (size_t) n_triang, struct MAG_PARAM);
+				mag_param = GMT_memory (GMT, NULL, n_triang, struct MAG_PARAM);
 				for (i = 0; i < n_triang; i++) {
 					Ctrl->H.t_dec = (mag_var4[vert[i].a].t_dec + mag_var4[vert[i].b].t_dec + mag_var4[vert[i].c].t_dec)/3.;
 					Ctrl->H.t_dip = (mag_var4[vert[i].a].t_dip + mag_var4[vert[i].b].t_dip + mag_var4[vert[i].c].t_dip)/3.;
@@ -621,7 +621,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	s_rad2 = Ctrl->S.radius*Ctrl->S.radius;
 
 	if (Ctrl->G.active) {		/* Compute the cos(lat) vector only once */
-		cos_vec = GMT_memory (GMT, NULL, (size_t) Gout->header->ny, double);
+		cos_vec = GMT_memory (GMT, NULL, Gout->header->ny, double);
 		for (i = 0; i < Gout->header->ny; i++)
 			cos_vec[i] = (Ctrl->M.active) ? cos(y[i]*D2R): 1;
 	}
@@ -742,15 +742,15 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
        	n_alloc = GMT_CHUNK;
 	ndata_xyz = 0;
 	*central_long = 0.;	*central_lat = 0.;
-        triang = GMT_memory (GMT, NULL, (size_t)n_alloc, struct TRIANG);
+        triang = GMT_memory (GMT, NULL, n_alloc, struct TRIANG);
 	if (Ctrl->T.m_var1)
-        	Ctrl->N.mag_int = GMT_memory (GMT, NULL, (size_t)n_alloc, double);
+        	Ctrl->N.mag_int = GMT_memory (GMT, NULL, n_alloc, double);
 	else if (Ctrl->T.m_var2)
-        	mag_var2 = GMT_memory (GMT, NULL, (size_t)n_alloc, struct MAG_VAR2);
+        	mag_var2 = GMT_memory (GMT, NULL, n_alloc, struct MAG_VAR2);
 	else if (Ctrl->T.m_var3)
-        	mag_var3 = GMT_memory (GMT, NULL, (size_t)n_alloc, struct MAG_VAR3);
+        	mag_var3 = GMT_memory (GMT, NULL, n_alloc, struct MAG_VAR3);
 	else if (Ctrl->T.m_var4)
-        	mag_var4 = GMT_memory (GMT, NULL, (size_t)n_alloc, struct MAG_VAR4);
+        	mag_var4 = GMT_memory (GMT, NULL, n_alloc, struct MAG_VAR4);
 	
 	if (Ctrl->M.active) {	/* take a first read just to compute the central logitude */
 		while (fgets (line, GMT_TEXT_LEN256, fp)) { 
@@ -787,15 +787,15 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 		}
 		if (ndata_xyz == n_alloc) {
 			n_alloc <<= 1;
-			triang = GMT_memory (GMT, triang, (size_t)n_alloc, struct TRIANG);
+			triang = GMT_memory (GMT, triang, n_alloc, struct TRIANG);
 			if (Ctrl->T.m_var1)
-				Ctrl->N.mag_int = GMT_memory (GMT, Ctrl->N.mag_int, (size_t)n_alloc, double);
+				Ctrl->N.mag_int = GMT_memory (GMT, Ctrl->N.mag_int, n_alloc, double);
 			else if (Ctrl->T.m_var2)
-				mag_var2 = GMT_memory (GMT, mag_var2, (size_t)n_alloc, struct MAG_VAR2);
+				mag_var2 = GMT_memory (GMT, mag_var2, n_alloc, struct MAG_VAR2);
 			else if (Ctrl->T.m_var3)
-				mag_var3 = GMT_memory (GMT, mag_var3, (size_t)n_alloc, struct MAG_VAR3);
+				mag_var3 = GMT_memory (GMT, mag_var3, n_alloc, struct MAG_VAR3);
 			else
-				mag_var4 = GMT_memory (GMT, mag_var4, (size_t)n_alloc, struct MAG_VAR4);
+				mag_var4 = GMT_memory (GMT, mag_var4, n_alloc, struct MAG_VAR4);
 		}
 		triang[ndata_xyz].x = (Ctrl->M.active) ? (in[0] - *central_long) * Ctrl->N.d_to_m * cos(in[1]*D2R) : in[0];
 		triang[ndata_xyz].y = (Ctrl->M.active) ? -(in[1] - *central_lat) * Ctrl->N.d_to_m : -in[1]; /* - because y must be positive 'south'*/
@@ -836,14 +836,14 @@ GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname) {
 
 	n_alloc = GMT_CHUNK;
 	ndata_t = 0;
-	vert = GMT_memory (GMT, NULL, (size_t) n_alloc, struct VERT);
+	vert = GMT_memory (GMT, NULL, n_alloc, struct VERT);
 	
 	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
 		if(sscanf (line, "%d %d %d", &in[0], &in[1], &in[2]) !=3)
 			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_t+1, fname);
 		if (ndata_t == n_alloc) {
 			n_alloc <<= 1;
-			vert = GMT_memory (GMT, vert, (size_t)n_alloc, struct VERT);
+			vert = GMT_memory (GMT, vert, n_alloc, struct VERT);
                	}
 		vert[ndata_t].a = in[0];
 		vert[ndata_t].b = in[1];
@@ -866,7 +866,7 @@ GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 
 	n_alloc = GMT_CHUNK;
 	ndata_r = 0;
-	raw_mesh = GMT_memory (GMT, NULL, (size_t) n_alloc, struct RAW);
+	raw_mesh = GMT_memory (GMT, NULL, n_alloc, struct RAW);
 	
 	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
 		if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg %lg", 
@@ -874,7 +874,7 @@ GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_r+1, fname);
               	if (ndata_r == n_alloc) {
 			n_alloc <<= 1;
-			raw_mesh = GMT_memory (GMT, raw_mesh, (size_t)n_alloc, struct RAW);
+			raw_mesh = GMT_memory (GMT, raw_mesh, n_alloc, struct RAW);
 		}
 		raw_mesh[ndata_r].t1[0] = in[0];
 		raw_mesh[ndata_r].t1[1] = -in[1];
@@ -903,7 +903,7 @@ GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 
 	n_alloc = GMT_CHUNK;
 	ndata_s = 0;
-	raw_mesh = GMT_memory (GMT, NULL, (size_t) n_alloc, struct RAW);
+	raw_mesh = GMT_memory (GMT, NULL, n_alloc, struct RAW);
 	
 	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
 		sscanf (line, "%s", text);
@@ -929,7 +929,7 @@ GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 			ndata_s++;
               		if (ndata_s == n_alloc) { /* with bad luck we have a flaw here */
 				n_alloc <<= 1;
-				raw_mesh = GMT_memory (GMT, raw_mesh, (size_t)n_alloc, struct RAW);
+				raw_mesh = GMT_memory (GMT, raw_mesh, n_alloc, struct RAW);
 			}
 		}
 		else
@@ -953,14 +953,14 @@ GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_LONG switch_xy) {
 	ndata = 0;
 	if (switch_xy) {iy = 0; ix = 1;}
 
-	data = GMT_memory (GMT, NULL, (size_t) n_alloc, struct DATA);
+	data = GMT_memory (GMT, NULL, n_alloc, struct DATA);
 
 	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
 		if(sscanf (line, "%lg %lg", &in[0], &in[1]) !=2)
 			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of polygon file\n", ndata+1);
                	if (ndata == n_alloc) {
 			n_alloc <<= 1;
-			data = GMT_memory (GMT, data, (size_t)n_alloc, struct DATA);
+			data = GMT_memory (GMT, data, n_alloc, struct DATA);
                	}
 		data[ndata].x = in[ix];
 		data[ndata].y = in[iy];
