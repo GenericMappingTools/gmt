@@ -2312,10 +2312,10 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG so
 
 		n++;
 		if (n == n_alloc) {
-			i = n_alloc;
+			GMT_LONG old_n_alloc = n_alloc;
 			n_alloc <<= 1;
 			X->range = GMT_memory (C, X->range, n_alloc, struct GMT_LUT);
-			GMT_memset (&X->range[i], n_alloc - i, struct GMT_LUT);	/* Initialize new structs to zero */
+			GMT_memset (&(X->range[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LUT);	/* Initialize new structs to zero */
 		}
 	}
 
@@ -2341,7 +2341,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG so
 		return (NULL);
 	}
 
-	X->range = GMT_memory (C, X->range, n, struct GMT_LUT);
+	if (n < n_alloc) X->range = GMT_memory (C, X->range, n, struct GMT_LUT);
 	X->n_colors = n;
 
 	if (X->categorical) {	/* Set up fake ranges so CPT is continuous */
@@ -3705,14 +3705,13 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double x
 			}
 			G->xp->n_segments++;
 			if (G->xp->n_segments == n_alloc) {
+				GMT_LONG old_n_alloc = n_alloc;
 				n_alloc <<= 1;
 				G->xp->segment = GMT_memory (C, G->xp->segment, n_alloc, struct GMT_LINE_SEGMENT *);
+				GMT_memset (&(G->xp->segment[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
 			}
 		}
-		if (G->xp->n_segments < n_alloc) {
-			n_alloc <<= 1;
-			G->xp->segment = GMT_memory (C, G->xp->segment, G->xp->n_segments, struct GMT_LINE_SEGMENT *);
-		}
+		if (G->xp->n_segments < n_alloc) G->xp->segment = GMT_memory (C, G->xp->segment, G->xp->n_segments, struct GMT_LINE_SEGMENT *);
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
 		G->xp = GMT_read_table (C, G->file, GMT_IS_FILE, FALSE, FALSE, FALSE);
@@ -4807,9 +4806,11 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 						new_label->node = i - 1;
 						gmt_contlabel_angle (xx, yy, i - 1, i, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
-						if (G->n_label == (GMT_LONG)n_alloc) {
+						if (G->n_label == n_alloc) {
+							GMT_LONG old_n_alloc = n_alloc;
 							n_alloc <<= 1;
 							G->L = GMT_memory (C, G->L, n_alloc, struct GMT_LABEL *);
+							GMT_memset (&(G->L[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LABEL *);	/* Set to NULL */
 						}
 					}
 					else	/* All in vain... */
@@ -4872,9 +4873,11 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 						gmt_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
 						if (G->number_placement) new_label->end = e_val;
 						G->L[G->n_label++] = new_label;
-						if (G->n_label == (GMT_LONG)n_alloc) {
+						if (G->n_label == n_alloc) {
+							GMT_LONG old_n_alloc = n_alloc;
 							n_alloc <<= 1;
 							G->L = GMT_memory (C, G->L, n_alloc, struct GMT_LABEL *);
+							GMT_memset (&(G->L[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LABEL *);	/* Set to NULL */
 						}
 					}
 					last_dist = new_label->dist;
@@ -4920,8 +4923,10 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 						gmt_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (GMT_LONG)n_alloc) {
+							GMT_LONG old_n_alloc = n_alloc;
 							n_alloc <<= 1;
 							G->L = GMT_memory (C, G->L, n_alloc, struct GMT_LABEL *);
+							GMT_memset (&(G->L[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LABEL *);	/* Set to NULL */
 						}
 					}
 					else	/* All in vain... */
@@ -4956,8 +4961,10 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 						gmt_contlabel_angle (xx, yy, start, start, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (GMT_LONG)n_alloc) {
+							GMT_LONG old_n_alloc = n_alloc;
 							n_alloc <<= 1;
 							G->L = GMT_memory (C, G->L, n_alloc, struct GMT_LABEL *);
+							GMT_memset (&(G->L[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LABEL *);	/* Set to NULL */
 						}
 					}
 					else	/* All in vain... */
@@ -9790,7 +9797,11 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 					ID, Tin->segment[seg]->coord[GMT_X][row], Tin->segment[seg]->coord[GMT_Y][row], orientation);
 				S->header = strdup (buffer);
 
-				if (n_x_seg == n_x_seg_alloc) Tout->segment = GMT_memory (GMT, Tout->segment, (n_x_seg_alloc += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
+				if (n_x_seg == n_x_seg_alloc) {
+					GMT_LONG old_n_x_seg_alloc = n_x_seg_alloc;
+					Tout->segment = GMT_memory (GMT, Tout->segment, (n_x_seg_alloc += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
+					GMT_memset (&(Tout->segment[old_n_x_seg_alloc]), n_x_seg_alloc - old_n_x_seg_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+				}
 				Tout->segment[n_x_seg++] = S;
 				Tout->n_segments++;	Xout->n_segments++;
 				Tout->n_records += np_cross;	Xout->n_records += np_cross;
@@ -9891,7 +9902,11 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 					ID, Tin->segment[seg]->coord[GMT_X][row], Tin->segment[seg]->coord[GMT_Y][row], orientation);
 				S->header = strdup (buffer);
 
-				if (n_x_seg == n_x_seg_alloc) Tout->segment = GMT_memory (GMT, Tout->segment, (n_x_seg_alloc += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
+				if (n_x_seg == n_x_seg_alloc) {
+					GMT_LONG old_n_x_seg_alloc = n_x_seg_alloc;
+					Tout->segment = GMT_memory (GMT, Tout->segment, (n_x_seg_alloc += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
+					GMT_memset (&(Tout->segment[old_n_x_seg_alloc]), n_x_seg_alloc - old_n_x_seg_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+				}
 				Tout->segment[n_x_seg++] = S;
 				Tout->n_segments++;	Xout->n_segments++;
 				Tout->n_records += np_cross;	Xout->n_records += np_cross;

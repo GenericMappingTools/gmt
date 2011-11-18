@@ -810,8 +810,10 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			P.n_used++;
 			d_along = Ctrl->L.min + P.n_used * Ctrl->G.inc;
 			if (P.n_used == (n_alloc-1)) {
+				GMT_LONG old_n_alloc = n_alloc;
 				n_alloc <<= 1;
 				p_data = GMT_memory (GMT, p_data, n_alloc, struct PROJECT_DATA);
+				GMT_memset (&(p_data[old_n_alloc]), n_alloc - old_n_alloc, struct PROJECT_DATA);	/* Set to NULL/0 */
 			}
 		}
 		p_data[P.n_used].a[2] = Ctrl->L.max;
@@ -946,12 +948,14 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			P.n_used++;
 			if (P.n_used == n_alloc) {
+				GMT_LONG old_n_alloc = n_alloc;
 				n_alloc <<= 1;
 				p_data = GMT_memory (GMT, p_data, n_alloc, struct PROJECT_DATA);
+				GMT_memset (&(p_data[old_n_alloc]), n_alloc - old_n_alloc, struct PROJECT_DATA);	/* Set to NULL/0 */
 			}
 		} while (TRUE);
 
-		p_data = GMT_memory (GMT, p_data, P.n_used, struct PROJECT_DATA);
+		if (P.n_used < n_alloc) p_data = GMT_memory (GMT, p_data, P.n_used, struct PROJECT_DATA);
 
 		if (P.n_used) {	/* Finish last segment output */
 			if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P))) Return (error);

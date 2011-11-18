@@ -429,11 +429,13 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n++;
 		if (!(n%1000)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed record %10ld\r", n);
 		if (n == n_alloc) {
+			GMT_LONG old_n_alloc = n_alloc;
 #ifdef DEBUG
 			GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
 			n_alloc <<= 1;
 			point = GMT_memory (GMT, point, n_alloc, struct NEARNEIGHBOR_POINT);
+			GMT_memset (&(point[old_n_alloc]), n_alloc - old_n_alloc, struct NEARNEIGHBOR_POINT);	/* Set to NULL/0 */
 #ifdef DEBUG
 			GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
@@ -448,7 +450,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef DEBUG
 	GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
-	point = GMT_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
+	if (n < n_alloc) point = GMT_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 #ifdef DEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
