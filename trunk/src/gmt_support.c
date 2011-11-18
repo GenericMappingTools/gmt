@@ -2315,7 +2315,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG so
 			i = n_alloc;
 			n_alloc <<= 1;
 			X->range = GMT_memory (C, X->range, n_alloc, struct GMT_LUT);
-			GMT_memset (&X->range[i], GMT_SMALL_CHUNK, struct GMT_LUT);	/* Initialize new structs to zero */
+			GMT_memset (&X->range[i], n_alloc - i, struct GMT_LUT);	/* Initialize new structs to zero */
 		}
 	}
 
