@@ -438,10 +438,11 @@ FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 	else if (strchr (filename, '?'))	/* Definitely netCDF */
 		return (gmt_nc_fopen (C, filename, mode));
 #ifdef WIN32
-	else if (!strcmp (filename, "NUL")) {	/* Special case of /dev/null under Windows */
+	else if (!strcmp (filename, "NUL"))	/* Special case of /dev/null under Windows */
 #else
-	else if (!strcmp (filename, "/dev/null")) {	/* The Unix null device; catch here to avoid gmt_nc_fopen */
+	else if (!strcmp (filename, "/dev/null"))	/* The Unix null device; catch here to avoid gmt_nc_fopen */
 #endif
+	{
 		return (fopen (GMT_getdatapath(C, filename, path), mode));
 	}
 	else {	/* Maybe netCDF */
@@ -713,13 +714,15 @@ char *GMT_getsharepath (struct GMT_CTRL *C, const char *subdir, const char *stem
 int GMT_access (struct GMT_CTRL *C, const char* filename, int mode)
 {	/* Like access but also checks the GMT_*DIR places */
 	char file[GMT_BUFSIZ];
+	printf("%s\n", filename);
 
 	file[0] = '\0';		/* 'Initialize' it so we can test if it's still 'empty' after the sscanf below */
 	if (!filename || !filename[0]) return (-1);	/* No file given */
 	sscanf (filename, "%[^=?]", file);		/* Exclude netcdf 3/-D grid extensions to make sure we get a valid file name */
 	if (file[0] == '\0') return(-1);		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
 
-	if (mode == W_OK) return (access (file, mode));	/* When writing, only look in current directory */
+	if (mode == W_OK)
+		return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existance */
 		char path[GMT_BUFSIZ];
 		return (GMT_getdatapath (C, file, path) ? 0 : -1);

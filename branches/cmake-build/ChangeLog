@@ -2,6 +2,15 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-17	pwessel
+	* grdlandmask.c:	Now recognizes a global grid when nx*dx == 360 also.
+	* nearneighbor.c:	--"--
+	* grdcut.c:		--"--
+	* grdfilter.c:		--"--
+	* grdinfo.c:		--"--
+	* grdimage.c:		--"--
+	* misc/dimfilter.c:	--"--
+
 2011-11-15	pwessel
 	* gmt_unique.h:		Updated with the new common options.
 	* gmt_init.c:		No longer accept lower case -x -y as in GMT 4 (inadvertently).

@@ -300,7 +300,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection so the shore machinery will work */
 	GMT_err_fail (GMT, GMT_map_setup (GMT, Grid->header->wesn), "");
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
-	wrap = GMT_360_RANGE (Grid->header->wesn[XHI], Grid->header->wesn[XLO]);
+	wrap = GMT->current.map.is_world = GMT_grd_is_global (GMT, Grid->header);
 	
 	/* Fill out gridnode coordinates and apply the implicit linear projection */
 

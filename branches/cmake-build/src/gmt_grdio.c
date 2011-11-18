@@ -678,7 +678,7 @@ GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double 
 		GMT_memcpy (wesn, header->wesn, 4, double);
 	}
 	else {				/* Must deal with a subregion */
-		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON)
+		if (GMT_x_is_lon (C, GMT_IN))
 			geo = TRUE;	/* Geographic data for sure */
 		else if (wesn[XLO] < header->wesn[XLO] || wesn[XHI] > header->wesn[XHI])
 			geo = TRUE;	/* Probably dealing with periodic grid */
@@ -1192,7 +1192,7 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 
 	/* Shift a geographic grid 360 degrees up or down to maximize the amount of longitude range */
 
-	if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {
+	if (GMT_x_is_lon (C, GMT_IN)) {
 		x_range = MIN (wesn[XLO], h->wesn[XHI]) - MAX (wesn[XHI], h->wesn[XLO]);
 		if (MIN (wesn[XLO], h->wesn[XHI] + 360.0) - MAX (wesn[XHI], h->wesn[XLO] + 360.0) > x_range)
 			shift_x = 360.0;
@@ -1252,7 +1252,7 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	global = GMT_grd_is_global (C, header);
 
 	if (!global) {
-		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {
+		if (GMT_x_is_lon (C, GMT_IN)) {
 			/* If longitudes are all west of range or all east of range, try moving them by 360 degrees east or west */
 #if 0
 			if (header->wesn[XHI] < wesn[XLO])
@@ -1273,12 +1273,12 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	if (wesn[YHI] - header->wesn[YHI] > GMT_SMALL) wesn[YHI] = header->wesn[YHI], error = TRUE;
 	if (error) GMT_report (C, GMT_MSG_FATAL, "Warning: Region exceeds grid domain. Region reduced to grid domain.\n");
 
-	if (!(C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && GMT_360_RANGE (wesn[XLO], wesn[XHI]) && global)) {    /* Do this unless a 360 longitude wrap */
+	if (!(GMT_x_is_lon (C, GMT_IN) && GMT_360_RANGE (wesn[XLO], wesn[XHI]) && global)) {    /* Do this unless a 360 longitude wrap */
 		small = GMT_SMALL * header->inc[GMT_X];
 
 		val = header->wesn[XLO] + irint ((wesn[XLO] - header->wesn[XLO]) * header->r_inc[GMT_X]) * header->inc[GMT_X];
 		dx = fabs (wesn[XLO] - val);
-		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) dx = fmod (dx, 360.0);
+		if (GMT_x_is_lon (C, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
 			wesn[XLO] = val;
 			GMT_report (C, GMT_MSG_FATAL, "Warning: (w - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);
@@ -1287,7 +1287,7 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 
 		val = header->wesn[XLO] + irint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) * header->inc[GMT_X];
 		dx = fabs (wesn[XHI] - val);
-		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) dx = fmod (dx, 360.0);
+		if (GMT_x_is_lon (C, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > GMT_SMALL) {
 			wesn[XHI] = val;
 			GMT_report (C, GMT_MSG_FATAL, "Warning: (e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);

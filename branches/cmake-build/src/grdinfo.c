@@ -312,7 +312,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (GMT_is_geographic (GMT, GMT_IN)) {
-			if (GMT_360_RANGE (G->header->wesn[XHI], G->header->wesn[XLO]))
+			if (GMT_grd_is_global (GMT, G->header))
 				GMT->current.io.geo.range = (G->header->wesn[XLO] < 0.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_0_TO_P360_RANGE;
 			else if (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] >= 0.0)
 				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
@@ -417,7 +417,8 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_X);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 				strcat (record, " x_inc: ");	strcat (record, text);
-				sprintf (text, " name: %s nx: %d", G->header->x_units, G->header->nx);	strcat (record, text);
+				strcat (record, " name: ");	strcat (record, G->header->x_units);
+				sprintf (text, " nx: %d", G->header->nx);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 				sprintf (text, "%s: y_min: ", G->header->name);	strcat (record, text);
 				GMT_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_Y);	strcat (record, text);
@@ -426,7 +427,8 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_Y);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 				strcat (record, " y_inc: ");	strcat (record, text);
-				sprintf (text, " name: %s ny: %d", G->header->y_units, G->header->ny);	strcat (record, text);
+				strcat (record, " name: ");	strcat (record, G->header->y_units);
+				sprintf (text, " ny: %d", G->header->ny);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 

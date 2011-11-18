@@ -611,7 +611,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_check_z_io (GMT, &io, Grid);	/* This fills in missing periodic row or column */
 	}
 	else {	/* xyz data could have resulted in duplicates */
-		if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && GMT_360_RANGE (Grid->header->wesn[XHI], Grid->header->wesn[XLO]) && Grid->header->registration == GMT_GRIDLINE_REG) {	/* Make sure longitudes got replicated */
+		if (GMT_grd_duplicate_column (GMT, Grid->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 			GMT_LONG ij_west, ij_east, first_bad = TRUE;
 
 			for (row = 0; row < Grid->header->ny; row++) {	/* For each row, look at west and east bin */

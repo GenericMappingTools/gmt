@@ -2928,7 +2928,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Check sanity of all arguments and also look for an input file to get t from */
 	for (opt = list, got_t_from_file = 0; got_t_from_file == 0 && opt; opt = opt->next) {
-		if (!(opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_NUMBER))	continue;	/* Skip command line options and output */
+		if (!(opt->option == GMTAPI_OPT_INFILE))	continue;	/* Skip command line options and output */
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
 		status = decode_gmt_argument (GMT, opt->arg, &value, localhashnode);	/* Determine what this is */
 		if (status == GMTMATH_ARG_IS_BAD) Return (EXIT_FAILURE);		/* Horrible */

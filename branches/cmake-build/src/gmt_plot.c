@@ -1685,9 +1685,9 @@ GMT_LONG gmt_set_do_seconds (struct GMT_CTRL *C, double inc)
 
 void gmt_label_trim (char *label, GMT_LONG stage)
 {
-	GMT_LONG i;
+	GMT_LONG i, n;
 	if (!label) return;	/* No label given */
-	n = length (label);
+	n = strlen (label);
 	if (stage && n) {	/* Must remove leading stuff for 2ndary annotations */
 		for (i = 0; stage && label[i]; i++) if (!isdigit((int)label[i])) stage--;
 		while (label[i]) label[stage++] = label[i++];	/* Chop of beginning */

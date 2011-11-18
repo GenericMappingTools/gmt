@@ -591,18 +591,20 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {	/* read traces one by one */
 
 		if (Ctrl->S.mode == PLOT_OFFSET) { /* plot traces by offset, cdp, or input order */
-			int32_t offset = ((Ctrl->A.active)? GMT_swab4 (header->sourceToRecDist): header->sourceToRecDist);
+			int32_t offset = ((Ctrl->A.active) ? (int32_t)GMT_swab4 (header->sourceToRecDist) : header->sourceToRecDist);
 			x0 = (double) offset;
 		}
 		else if (Ctrl->S.mode == PLOT_CDP) {
-			int32_t cdpval = ((Ctrl->A.active)? GMT_swab4 (header->cdpEns): header->cdpEns);
+			int32_t cdpval = ((Ctrl->A.active) ? (int32_t) GMT_swab4 (header->cdpEns) : header->cdpEns);
 			x0 = (double) cdpval;
 		}
 		else if (Ctrl->S.value) { /* ugly code - want to get value starting at Ctrl->S.value of header into a double... */
+			int32_t tmp;
 			head = (char *)header;
 			memcpy(&head2, &head[Ctrl->S.value], 4); /* edited to fix bug where 8bytes were copied from head.
 												Caused by casting to a long directly from char array*/
-			x0 = (double) ((Ctrl->A.active)? GMT_swab4 (head2): head2);
+			tmp = (Ctrl->A.active) ? (int32_t) GMT_swab4 (head2) : head2;
+			x0 = (double) tmp;
 		}
 		else
 			x0 = (1.0 + (double) ix);

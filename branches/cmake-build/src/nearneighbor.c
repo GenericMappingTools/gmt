@@ -317,13 +317,15 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	factor = Ctrl->N.sectors / (2.0 * M_PI);
 
-	x_left = Grid->header->wesn[XLO];	x_right = Grid->header->wesn[XHI];
-	if (!GMT_is_geographic (GMT, GMT_IN) || !GMT_360_RANGE (x_left, x_right)) {
-		x_left  -= max_d_col * Grid->header->inc[GMT_X];
+	/* To allow data points falling outside -R but within the search radius we extend the data domain in all directions */
+	
+	x_left = Grid->header->wesn[XLO];	x_right = Grid->header->wesn[XHI];	/* This is what -R says */
+	if (!GMT_is_geographic (GMT, GMT_IN) || !GMT_grd_is_global (GMT, Grid->header)) {
+		x_left  -= max_d_col * Grid->header->inc[GMT_X];	/* OK to extend x-domain since not a periodic geographic grid */
 		x_right += max_d_col * Grid->header->inc[GMT_X];
 	}
 	y_top = Grid->header->wesn[YHI] + d_row * Grid->header->inc[GMT_Y];	y_bottom = Grid->header->wesn[YLO] - d_row * Grid->header->inc[GMT_Y];
-	if (GMT_is_geographic (GMT, GMT_IN)) {
+	if (GMT_is_geographic (GMT, GMT_IN)) {	/* For geographic grids we must ensure the extended y-domain is physically possible */
 		if (y_bottom < -90.0) y_bottom = -90.0;
 		if (y_top > 90.0) y_top = 90.0;
 	}
