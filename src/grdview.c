@@ -300,7 +300,6 @@ void *New_grdview_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->W.pen[2].width *= 3.0;	/* Facade pen */
 	C->Q.dpi = 100;
 	GMT_init_fill (GMT, &C->Q.fill, GMT->PSL->init.page_rgb[0], GMT->PSL->init.page_rgb[1], GMT->PSL->init.page_rgb[2]);
-	C->S.value = 1;
 	return (C);
 }
 
@@ -350,7 +349,7 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   -Qc. As -Qi but use PS Level 3 colormasking for nodes with z = NaN.  Append effective dpi [100].\n");
 	GMT_message (GMT, "\t   To force a monochrome image using the GMT_YIQ transformation, append g.\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Smooth contours first (see grdview for <smooth> value info).\n");
+	GMT_message (GMT, "\t-S Smooth contours first (see grdview for <smooth> value info) [no smoothing].\n");
 	GMT_pen_syntax (GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n\t   Append s to skip tiles for nodes with z = NaN [Default paints all tiles].\n\t   Append o[<pen>] to draw tile outline [Default uses no outline]");
 	GMT_message (GMT, "\t   Cannot be used with -Jz|Z as it produces a flat image.\n");
 	GMT_explain_options (GMT, "UV");
@@ -555,7 +554,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG PS_colormask_off = 0, way, *edge = NULL;
 
 	double cval, x_left, x_right, y_top, y_bottom, small = GMT_SMALL, z_ave;
-	double inc2[2], take_out, wesn[4], z_val, x_pixel_size, y_pixel_size;
+	double inc2[2], wesn[4], z_val, x_pixel_size, y_pixel_size;
 	double this_intensity = 0.0, next_up = 0.0, xmesh[4], ymesh[4], rgb[4];
 	double *x_imask = NULL, *y_imask = NULL, x_inc[4], y_inc[4], *x = NULL, *y = NULL;
 	double *z = NULL, *v = NULL, *xx = NULL, *yy = NULL, *xval = NULL, *yval = NULL;
@@ -697,26 +696,29 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	y_inc[0] = y_inc[1] = 0.0;	y_inc[2] = y_inc[3] = Z->header->inc[GMT_Y];
 
 	if (get_contours) {	/* Need to find contours */
+		struct GMT_GRID *Z_orig = NULL;
 		GMT_report (GMT, GMT_MSG_NORMAL, "Find contours\n");
 		n_edges = Z->header->ny * (GMT_LONG )ceil (Z->header->nx / 16.0);
 		edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);
 		binij = GMT_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
 		small = GMT_SMALL * (Z->header->z_max - Z->header->z_min);
+		Z_orig = GMT_duplicate_grid (GMT, Z, TRUE);	/* Original copy of grid used for contouring */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Trace and bin contours...\n");
 		first = TRUE;
 		for (c = 0; c < P->n_colors+1; c++) {	/* For each color change */
 
-			/* Reset markers and set up new zero-contour*/
+			/* Reset markers and set up new zero-contour */
 
 			cval = (c == P->n_colors) ? P->range[c-1].z_high : P->range[c].z_low;
 
 			if (cval < Z->header->z_min || cval > Z->header->z_max) continue;
 
 			GMT_report (GMT, GMT_MSG_NORMAL, "Now tracing contour interval %8g\r", cval);
-			take_out = (first) ? cval : cval - P->range[c-1].z_low;
 			first = FALSE;
+			/* Old version of loop below could give round-off since we kept subtracting the increments between successive contours.
+			 * The safer way is to always start with original grid and subtract current contour value instead, as in grdcontour. PW, 11/18/2011 */
 			GMT_grd_loop (GMT, Topo, row, col, ij) {
-				if (!GMT_is_fnan (Z->data[ij])) Z->data[ij] -= (float)take_out;
+				if (!GMT_is_fnan (Z_orig->data[ij])) Z->data[ij] = Z_orig->data[ij] - (float)cval;
 				if (Z->data[ij] == 0.0) Z->data[ij] += (float)small;
 			}
 
@@ -748,6 +750,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Remove temporary variables */
 
 		GMT_free (GMT, edge);
+		GMT_free_grid (GMT, &Z_orig, TRUE);
 
 		/* Go back to beginning and reread since grd has been destroyed */
 

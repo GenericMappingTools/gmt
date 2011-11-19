@@ -4071,8 +4071,10 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, GM
 		}
 
 		if (seg == (n_seg_alloc-1)) {
+			GMT_LONG n_old_alloc = n_seg_alloc;
 			n_seg_alloc <<= 1;
 			T->segment = GMT_memory (C, T->segment, n_seg_alloc, struct GMT_TEXT_SEGMENT *);
+			GMT_memset (&(T->segment[n_old_alloc]), n_seg_alloc - n_old_alloc, struct GMT_TEXT_SEGMENT *);	/* Set to NULL */
 		}
 	}
 	if (close_file) GMT_fclose (C, fp);
@@ -4082,7 +4084,7 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, GM
 		GMT_free (C, T->segment[seg]);
 	else
 		seg++;
-	T->segment = GMT_memory (C, T->segment, seg, struct GMT_TEXT_SEGMENT *);
+	if (seg < n_seg_alloc) T->segment = GMT_memory (C, T->segment, seg, struct GMT_TEXT_SEGMENT *);
 	T->n_segments = seg;
 
 	return (T);
@@ -5447,8 +5449,10 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 		}
 
 		if (seg == (T->n_alloc-1)) {	/* Need to allocate more segments */
+			GMT_LONG n_old_alloc = T->n_alloc;
 			T->n_alloc <<= 1;
 			T->segment = GMT_memory (C, T->segment, T->n_alloc, struct GMT_LINE_SEGMENT *);
+			GMT_memset (&(T->segment[n_old_alloc]), T->n_alloc - n_old_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
 		}
 
 		/* If a gap was detected, forget about it now, so we can use the data for the next segment */

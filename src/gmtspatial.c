@@ -1357,8 +1357,10 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				n_split = (crossing) ? GMT_split_poly_at_dateline (GMT, S, &L) : 1;
 				Dout->table[tbl]->n_segments += n_split;
 				if (Dout->table[tbl]->n_segments > n_segs) {
+					GMT_LONG old_n_segs = n_segs;
 					n_segs = Dout->table[tbl]->n_segments;
 					T->segment = GMT_memory (GMT, T->segment, n_segs, struct GMT_LINE_SEGMENT *);	/* Allow more space for new segments */
+					GMT_memset (&(T->segment[old_n_segs]), n_segs - old_n_segs,  struct GMT_LINE_SEGMENT *);	/* Set to NULL */
 				}
 				if (crossing) {
 					for (k = 0; k < n_split; k++) {

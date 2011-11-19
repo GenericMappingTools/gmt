@@ -1015,7 +1015,11 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					S = GMT_dump_contour (GMT, x, y, n, cval);
 					/* Select which table this segment should be added to */
 					tbl = (io_mode == GMT_WRITE_TABLES) ? ((two_only) ? closed : tbl_scl * c) : 0;
-					if (n_seg[tbl] == n_seg_alloc[tbl]) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
+					if (n_seg[tbl] == n_seg_alloc[tbl]) {
+						GMT_LONG old_n_alloc = n_seg_alloc[tbl];
+						D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
+						GMT_memset (&(D->table[tbl]->segment[old_n_alloc]), n_seg_alloc[tbl] - old_n_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+					}
 					D->table[tbl]->segment[n_seg[tbl]++] = S;
 					D->table[tbl]->n_segments++;	D->n_segments++;
 					D->table[tbl]->n_records += n;	D->n_records += n;
