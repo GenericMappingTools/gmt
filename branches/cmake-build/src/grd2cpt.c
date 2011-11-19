@@ -366,14 +366,20 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		k++;
 		if (k == n_alloc) {
+			GMT_LONG old_n_alloc = n_alloc;
 			n_alloc += GMT_TINY_CHUNK;
 			G = GMT_memory (GMT, G, n_alloc, struct GMT_GRID *);
+			GMT_memset (&(G[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_GRID *);	/* Set to NULL */
 			grdfile = GMT_memory (GMT, grdfile, n_alloc, char *);
+			GMT_memset (&(grdfile[old_n_alloc]), n_alloc - old_n_alloc, char *);	/* Set to NULL */
 		}
 	}
 
 	ngrd = k;
-	if (ngrd < n_alloc) G = GMT_memory (GMT, G, ngrd, struct GMT_GRID *);
+	if (ngrd < n_alloc) {
+		G = GMT_memory (GMT, G, ngrd, struct GMT_GRID *);
+		grdfile = GMT_memory (GMT, grdfile, ngrd, char *);
+	}
 
 	nxyg = G[0]->header->nm * ngrd;
 

@@ -511,8 +511,10 @@ GMT_LONG GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	API->error = GMT_OK;		/* No error yet */
 	API->n_objects++;		/* Add one more entry to the tally */
 	if (API->n_objects == API->n_objects_alloc) {	/* Must allocate more space for more data descriptors */
+		GMT_LONG old_n_alloc = API->n_objects_alloc;
 		API->n_objects_alloc += GMT_SMALL_CHUNK;
 		API->object = GMT_memory (API->GMT, API->object, API->n_objects_alloc, struct GMTAPI_DATA_OBJECT *);
+		GMT_memset (&(API->object[old_n_alloc]), API->n_objects_alloc - old_n_alloc, struct GMTAPI_DATA_OBJECT *);	/* Set to NULL */
 		if (!(API->object)) {	/* Failed to allocate more memory */
 			API->n_objects--;	/* Undo our premature increment */
 			return_value (API, GMT_MEMORY_ERROR, GMTAPI_NOTSET);
@@ -983,8 +985,10 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 				for (seg = 0; seg < D->table[D->n_tables-1]->n_segments; seg++) 
 					D->table[D->n_tables-1]->segment[seg]->id += D->table[D->n_tables-2]->n_segments;
 			if (allocate && D->n_tables == n_alloc) {	/* Must allocate space for more tables */
+				GMT_LONG old_n_alloc = n_alloc;
 				n_alloc += GMT_TINY_CHUNK;
 				D->table = GMT_memory (API->GMT, D->table, n_alloc, struct GMT_TABLE *);
+				GMT_memset (&(D->table[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_TABLE *);	/* Set to NULL */
 			}
 		}
 		S->alloc_mode = D->alloc_mode;	/* Clarify allocation mode for this entity */
@@ -1250,8 +1254,10 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID
 			T->n_tables++;
 		}
 		if (allocate && T->n_tables == n_alloc) {	/* Must allocate space for more tables */
+			GMT_LONG old_n_alloc = n_alloc;
 			n_alloc += GMT_TINY_CHUNK;
 			T->table = GMT_memory (API->GMT, T->table, n_alloc, struct GMT_TEXT_TABLE *);
+			GMT_memset (&(T->table[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_TEXT_TABLE *);	/* Set to NULL */
 		}
 		S->alloc_mode = T->alloc_mode;	/* Clarify allocation mode for this entity */
 		S->status = GMT_IS_USED;	/* Mark as read */

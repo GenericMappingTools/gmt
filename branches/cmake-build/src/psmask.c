@@ -715,7 +715,11 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (Ctrl->D.active && n > Ctrl->Q.min) {	/* Save the contour as output data */
 					S = GMT_dump_contour (GMT, x, y, n, GMT->session.d_NaN);
 					/* Select which table this segment should be added to */
-					if (n_seg == n_seg_alloc) D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, (n_seg_alloc += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
+					if (n_seg == n_seg_alloc) {
+						GMT_LONG n_old_alloc = n_seg_alloc;
+						D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, (n_seg_alloc += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
+						GMT_memset (&(D->table[0]->segment[n_old_alloc]), n_seg_alloc - n_old_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+					}
 					D->table[0]->segment[n_seg++] = S;
 					D->table[0]->n_segments++;	D->n_segments++;
 					D->table[0]->n_records += n;	D->n_records += n;
