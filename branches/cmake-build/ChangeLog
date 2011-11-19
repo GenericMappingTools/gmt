@@ -2,6 +2,14 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-18	pwessel
+	* *.c:			Make sure that incrementally allocated memory for structures
+				that contain pointers is initialized to NULL before use.
+	* grdview.c:		The contouring could suffer from the same round-off issues that
+				affected grdcontour (and fixed back in 2004).  Now same fix is
+				applied in grdview.  Also set -S to 0 as stated in man page;
+				this matches default in grdcontour as well.
+
 2011-11-17	pwessel
 	* grdlandmask.c:	Now recognizes a global grid when nx*dx == 360 also.
 	* nearneighbor.c:	--"--
