@@ -537,7 +537,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				D->H.mgd77[use]->Survey_Departure_Year, D->H.mgd77[use]->Survey_Departure_Month, D->H.mgd77[use]->Survey_Departure_Day, GMT->current.setting.io_col_separator,
 				D->H.mgd77[use]->Survey_Arrival_Year, D->H.mgd77[use]->Survey_Arrival_Month, D->H.mgd77[use]->Survey_Arrival_Day, GMT->current.setting.io_col_separator);
 			}
-			fprintf (GMT->session.std[GMT_OUT], "%ld%s%ld", (GMT_LONG)irint (this_dist), GMT->current.setting.io_col_separator, D->H.n_records);
+			fprintf (GMT->session.std[GMT_OUT], "%d%s%ld", irint (this_dist), GMT->current.setting.io_col_separator, D->H.n_records);
 			for (i = 1; i < M.n_out_columns; i++) {
 				if (i == id_col || i == t_col || i == x_col || i == y_col) continue;
 				if (((Ctrl->E.mode & 1) && M.order[i].set == 0) || ((Ctrl->E.mode & 2) && M.order[i].set == 1))

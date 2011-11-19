@@ -2435,7 +2435,7 @@ double GMT_left_robinson (struct GMT_CTRL *C, double y)
 	y -= C->current.proj.origin[GMT_Y];
 	y *= C->current.proj.i_scale[GMT_Y];
 	Y = fabs (y * C->current.proj.n_i_cy);
-	if (GMT_intpol (C, C->current.proj.n_Y, C->current.proj.n_X, (GMT_LONG)19, (GMT_LONG)1, &Y, &X, C->current.setting.interpolant)) {
+	if (GMT_intpol (C, C->current.proj.n_Y, C->current.proj.n_X, (GMT_LONG)GMT_N_ROBINSON, (GMT_LONG)1, &Y, &X, C->current.setting.interpolant)) {
 		GMT_message (C, "GMT Internal error in GMT_left_robinson!\n");
 		GMT_exit (EXIT_FAILURE);
 	}
@@ -2451,7 +2451,7 @@ double GMT_right_robinson (struct GMT_CTRL *C, double y)
 	y -= C->current.proj.origin[GMT_Y];
 	y *= C->current.proj.i_scale[GMT_Y];
 	Y = fabs (y * C->current.proj.n_i_cy);
-	if (GMT_intpol (C, C->current.proj.n_Y, C->current.proj.n_X, (GMT_LONG)19, (GMT_LONG)1, &Y, &X, C->current.setting.interpolant)) {
+	if (GMT_intpol (C, C->current.proj.n_Y, C->current.proj.n_X, (GMT_LONG)GMT_N_ROBINSON, (GMT_LONG)1, &Y, &X, C->current.setting.interpolant)) {
 		GMT_message (C, "GMT Internal error in GMT_right_robinson!\n");
 		GMT_exit (EXIT_FAILURE);
 	}
