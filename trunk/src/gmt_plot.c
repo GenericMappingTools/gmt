@@ -352,7 +352,8 @@ GMT_LONG gmt_skip_second_annot (GMT_LONG item, double x, double x2[], GMT_LONG n
 	if (!x2) return (FALSE);			/* None given */
 
 	small = (x2[1] - x2[0]) * GMT_SMALL;
-	for (i = 0, found = FALSE; !found && i < n; i++) found = (fabs (x2[i] - x) < small);
+	for (i = 0, found = FALSE; !found && i < n; i++) 
+		found = (fabs (x2[i] - x) < small);
 	return (found);
 }
 
@@ -507,7 +508,8 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 
 		if (nx) GMT_free (C, knots);
 		if (label_c) {
-			for (i = 0; i < nx; i++) if (label_c[i]) free (label_c[i]);
+			for (i = 0; i < nx; i++) 
+				if (label_c[i]) free (label_c[i]);
 			GMT_free (C, label_c);
 		}
 	}
@@ -610,19 +612,22 @@ void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 		yn = n;
 	}
 	nx = GMT_linear_array (C, w, e, dval, C->current.map.frame.axis[GMT_X].phase, &x);
-	for (i = 0; i < nx - idup; i++) gmt_map_lonline (C, P, x[i], ys, yn);
+	for (i = 0; i < nx - idup; i++) 
+		gmt_map_lonline (C, P, x[i], ys, yn);
 	if (nx) GMT_free (C, x);
 
 	if (cap) {	/* Also draw the polar cap(s) */
 		nx = 0;
 		if (s < -C->current.setting.map_polar_cap[0]) {	/* Must draw some or all of the S polar cap */
 			nx = GMT_linear_array (C, w, e, C->current.setting.map_polar_cap[1], C->current.map.frame.axis[GMT_X].phase, &x);
-			for (i = 0; i < nx - idup; i++) gmt_map_lonline (C, P, x[i], cap_start[0], cap_stop[0]);
+			for (i = 0; i < nx - idup; i++) 
+				gmt_map_lonline (C, P, x[i], cap_start[0], cap_stop[0]);
 			gmt_map_latline (C, P, -p_cap, w, e);
 		}
 		if (n > C->current.setting.map_polar_cap[0]) {	/* Must draw some or all of the N polar cap */
 			if (nx == 0) nx = GMT_linear_array (C, w, e, C->current.setting.map_polar_cap[1], C->current.map.frame.axis[GMT_X].phase, &x);
-			for (i = 0; i < nx - idup; i++) gmt_map_lonline (C, P, x[i], cap_start[1], cap_stop[1]);
+			for (i = 0; i < nx - idup; i++) 
+				gmt_map_lonline (C, P, x[i], cap_start[1], cap_stop[1]);
 			gmt_map_latline (C, P, p_cap, w, e);
 		}
 		if (nx) GMT_free (C, x);
@@ -637,11 +642,13 @@ void gmt_lineary_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 
 	if (C->current.proj.z_down) {
 		ny = GMT_linear_array (C, 0.0, n-s, dval, C->current.map.frame.axis[GMT_Y].phase, &y);
-		for (i = 0; i < ny; i++) y[i] = C->common.R.wesn[YHI] - y[i];	/* These are the radial values needed for positioning */
+		for (i = 0; i < ny; i++) 
+			y[i] = C->common.R.wesn[YHI] - y[i];	/* These are the radial values needed for positioning */
 	}
 	else
 		ny = GMT_linear_array (C, s, n, dval, C->current.map.frame.axis[GMT_Y].phase, &y);
-	for (i = 0; i < ny; i++) gmt_map_latline (C, P, y[i], w, e);
+	for (i = 0; i < ny; i++) 
+		gmt_map_latline (C, P, y[i], w, e);
 	if (ny) GMT_free (C, y);
 
 }
@@ -1018,28 +1025,32 @@ void gmt_wesn_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, do
 
 	if (C->current.map.frame.side[W_SIDE]) {	/* West */
 		np = GMT_map_path (C, w, s, w, n, &xx, &yy);
-		for (i = 0; i < np; i++) GMT_geo_to_xy (C, xx[i], yy[i], &xx[i], &yy[i]);
+		for (i = 0; i < np; i++) 
+			GMT_geo_to_xy (C, xx[i], yy[i], &xx[i], &yy[i]);
 		PSL_plotline (P, xx, yy, np, PSL_MOVE + PSL_STROKE);
 		GMT_free (C, xx);
 		GMT_free (C, yy);
 	}
 	if (C->current.map.frame.side[E_SIDE]) {	/* East */
 		np = GMT_map_path (C, e, s, e, n, &xx, &yy);
-		for (i = 0; i < np; i++) GMT_geo_to_xy (C, xx[i], yy[i], &xx[i], &yy[i]);
+		for (i = 0; i < np; i++) 
+			GMT_geo_to_xy (C, xx[i], yy[i], &xx[i], &yy[i]);
 		PSL_plotline (P, xx, yy, np, PSL_MOVE + PSL_STROKE);
 		GMT_free (C, xx);
 		GMT_free (C, yy);
 	}
 	if (C->current.map.frame.side[S_SIDE]) {	/* South */
 		np = GMT_map_path (C, w, s, e, s, &xx, &yy);
-		for (i = 0; i < np; i++) GMT_geo_to_xy (C, xx[i], yy[i], &xx[i], &yy[i]);
+		for (i = 0; i < np; i++) 
+			GMT_geo_to_xy (C, xx[i], yy[i], &xx[i], &yy[i]);
 		PSL_plotline (P, xx, yy, np, PSL_MOVE + PSL_STROKE);
 		GMT_free (C, xx);
 		GMT_free (C, yy);
 	}
 	if (C->current.map.frame.side[N_SIDE]) {	/* North */
 		np = GMT_map_path (C, w, n, e, n, &xx, &yy);
-		for (i = 0; i < np; i++) GMT_geo_to_xy (C, xx[i], yy[i], &xx[i], &yy[i]);
+		for (i = 0; i < np; i++) 
+			GMT_geo_to_xy (C, xx[i], yy[i], &xx[i], &yy[i]);
 		PSL_plotline (P, xx, yy, np, PSL_MOVE + PSL_STROKE);
 		GMT_free (C, xx);
 		GMT_free (C, yy);
@@ -1367,7 +1378,8 @@ void gmt_map_lontick (struct GMT_CTRL *C, struct PSL_CTRL *P, double lon, double
 	struct GMT_XINGS *xings = NULL;
 
 	nc = GMT_map_loncross (C, lon, south, north, &xings);
-	for (i = 0; i < nc; i++) gmt_map_tick (C, P, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, xings[i].nx, 0, len);
+	for (i = 0; i < nc; i++) 
+		gmt_map_tick (C, P, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, xings[i].nx, 0, len);
 	if (nc) GMT_free (C, xings);
 }
 
@@ -1378,7 +1390,8 @@ void gmt_map_lattick (struct GMT_CTRL *C, struct PSL_CTRL *P, double lat, double
 	struct GMT_XINGS *xings = NULL;
 
 	nc = GMT_map_latcross (C, lat, west, east, &xings);
-	for (i = 0; i < nc; i++) gmt_map_tick (C, P, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, xings[i].nx, 1, len);
+	for (i = 0; i < nc; i++) 
+		gmt_map_tick (C, P, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, xings[i].nx, 1, len);
 	if (nc) GMT_free (C, xings);
 }
 
@@ -1389,7 +1402,8 @@ GMT_LONG gmt_annot_too_crowded (struct GMT_CTRL *C, double x, double y, GMT_LONG
 
 	if (C->current.setting.map_annot_min_spacing <= 0.0) return (FALSE);
 
-	for (i = 0, d_min = DBL_MAX; i < GMT_n_annotations[side]; i++) d_min = MIN (d_min, hypot (GMT_x_annotation[side][i] - x, GMT_y_annotation[side][i] - y));
+	for (i = 0, d_min = DBL_MAX; i < GMT_n_annotations[side]; i++) 
+		d_min = MIN (d_min, hypot (GMT_x_annotation[side][i] - x, GMT_y_annotation[side][i] - y));
 	if (d_min < C->current.setting.map_annot_min_spacing) return (TRUE);
 
 	/* OK to plot and add to list */
@@ -1450,7 +1464,8 @@ void gmt_map_symbol_ew (struct GMT_CTRL *C, struct PSL_CTRL *P, double lat, char
 	struct GMT_XINGS *xings = NULL;
 
 	nc = GMT_map_latcross (C, lat, west, east, &xings);
-	for (i = 0; i < nc; i++) gmt_map_symbol (C, P, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 1, annot, level, form);
+	for (i = 0; i < nc; i++) 
+		gmt_map_symbol (C, P, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 1, annot, level, form);
 	if (nc) GMT_free (C, xings);
 }
 
@@ -1460,7 +1475,8 @@ void gmt_map_symbol_ns (struct GMT_CTRL *C, struct PSL_CTRL *P, double lon, char
 	struct GMT_XINGS *xings = NULL;
 
 	nc = GMT_map_loncross (C, lon, south, north, &xings);
-	for (i = 0; i < nc; i++) gmt_map_symbol (C, P, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 0, annot, level, form);
+	for (i = 0; i < nc; i++) 
+		gmt_map_symbol (C, P, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 0, annot, level, form);
 	if (nc) GMT_free (C, xings);
 }
 
@@ -1519,7 +1535,8 @@ void gmt_map_gridcross (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 	double x0, y0, x1, y1, xa, xb, ya, yb, xi, yj, *x = NULL, *y = NULL;
 	double x_angle, y_angle, Ca, Sa, L;
 
-	for (k = i = 0; k < 2; k++) if (C->current.setting.map_grid_cross_size[k] > 0.0) i++;
+	for (k = i = 0; k < 2; k++) 
+		if (C->current.setting.map_grid_cross_size[k] > 0.0) i++;
 
 	if (i == 0) return;	/* No grid ticks requested */
 
@@ -1638,18 +1655,21 @@ void gmt_map_tickitem (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 
 	if (do_x) {	/* Draw grid lines that go E to W */
 		nx = GMT_linear_array (C, w, e, dx, C->current.map.frame.axis[GMT_X].phase, &val);
-		for (i = 0; i < nx; i++) gmt_map_lontick (C, P, val[i], s, n, len);
+		for (i = 0; i < nx; i++) 
+			gmt_map_lontick (C, P, val[i], s, n, len);
 		if (nx) GMT_free (C, val);
 	}
 
 	if (do_y) {	/* Draw grid lines that go S to N */
 		if (C->current.proj.z_down) {
 			ny = GMT_linear_array (C, 0.0, n-s, dy, C->current.map.frame.axis[GMT_Y].phase, &val);
-			for (i = 0; i < ny; i++) val[i] = C->common.R.wesn[YHI] - val[i];	/* These are the radial values needed for positioning */
+			for (i = 0; i < ny; i++) 
+				val[i] = C->common.R.wesn[YHI] - val[i];	/* These are the radial values needed for positioning */
 		}
 		else
 			ny = GMT_linear_array (C, s, n, dy, C->current.map.frame.axis[GMT_Y].phase, &val);
-		for (i = 0; i < ny; i++) gmt_map_lattick (C, P, val[i], w, e, len);
+		for (i = 0; i < ny; i++) 
+			gmt_map_lattick (C, P, val[i], w, e, len);
 		if (ny) GMT_free (C, val);
 	}
 
@@ -1689,7 +1709,8 @@ void gmt_label_trim (char *label, GMT_LONG stage)
 	if (!label) return;	/* No label given */
 	n = strlen (label);
 	if (stage && n) {	/* Must remove leading stuff for 2ndary annotations */
-		for (i = 0; stage && label[i]; i++) if (!isdigit((int)label[i])) stage--;
+		for (i = 0; stage && label[i]; i++) 
+			if (!isdigit((int)label[i])) stage--;
 		while (label[i]) label[stage++] = label[i++];	/* Chop of beginning */
 		label[stage] = '\0';
 		i = strlen (label) - 1;
@@ -1816,7 +1837,8 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 			if (C->current.proj.z_down) {	/* Want to annotate depth rather than radius */
 				ny = GMT_linear_array (C, 0.0, n-s, dy[k], C->current.map.frame.axis[GMT_Y].phase, &tval);
 				val = GMT_memory (C, NULL, ny, double);
-				for (i = 0; i < ny; i++) val[i] = C->common.R.wesn[YHI] - tval[i];	/* These are the radial values needed for positioning */
+				for (i = 0; i < ny; i++) 
+					val[i] = C->common.R.wesn[YHI] - tval[i];	/* These are the radial values needed for positioning */
 			}
 			else {				/* Annotate radius */
 				ny = GMT_linear_array (C, s, n, dy[k], C->current.map.frame.axis[GMT_Y].phase, &val);
@@ -3094,7 +3116,8 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 	GMT_setpen (C, &C->current.setting.map_default_pen);
 	if (G->fixed) {	/* Place a small open circle at each fixed point */
 		PSL_setfill (P, C->session.no_rgb, PSL_OUTLINE);
-		for (i = 0; i < G->f_n; i++) PSL_plotsymbol (P, G->f_xy[0][i], G->f_xy[1][i], size, PSL_CIRCLE);
+		for (i = 0; i < G->f_n; i++) 
+			PSL_plotsymbol (P, G->f_xy[0][i], G->f_xy[1][i], size, PSL_CIRCLE);
 	}
 	else if (G->crossing) {	/* Draw a thin line */
 		for (j = 0; j < G->xp->n_segments; j++) {
