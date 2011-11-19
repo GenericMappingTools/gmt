@@ -5297,7 +5297,7 @@ void	MGD77_dt2rdc (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double t, GMT_LO
 	double t_sec;
 	t_sec = (t * F->utime.scale + F->utime.epoch_t0 * GMT_DAY2SEC_F);
 	i = GMT_splitinteger (t_sec, 86400, s) + F->utime.rata_die;
-	*rd = (GMT_LONG)(i);
+	*rd = i;
 }
 
 
