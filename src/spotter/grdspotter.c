@@ -749,9 +749,11 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_nodes++;	/* Go to next node */
 
 		if (keep_flowlines && n_nodes == n_alloc) {
+			GMT_LONG old_n_alloc = n_alloc;
 			inc_alloc *= 2;
 			n_alloc += inc_alloc;
 			flowline = GMT_memory (GMT, flowline, n_alloc, struct FLOWLINE);
+			GMT_memset (&(flowline[old_n_alloc]), n_alloc - old_n_alloc, struct FLOWLINE);	/* Set to NULL/0 */
 		}
 		
 		if (!(n_nodes%100)) GMT_report (GMT, GMT_MSG_NORMAL, "Row %5ld Processed %5ld nodes [%5ld/%.1f]\r", row, n_nodes, n_flow, mem * B_TO_MB);
@@ -759,7 +761,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Row %5ld Processed %5ld nodes [%5ld/%.1f]\n", row, n_nodes, n_flow, mem * B_TO_MB);
 	GMT_report (GMT, GMT_MSG_NORMAL, "On average, each node was visited %g times\n", n_more_than_once / n_unique_nodes);
 
-	if (keep_flowlines && n_nodes != (GMT_LONG)n_alloc) flowline = GMT_memory (GMT, flowline, n_nodes, struct FLOWLINE);
+	if (keep_flowlines && n_nodes != n_alloc) flowline = GMT_memory (GMT, flowline, n_nodes, struct FLOWLINE);
 	
 	/* OK, Done processing, time to write out */
 

@@ -533,7 +533,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 		if (invert) for (i = 0; i < n; i++) {e[i].omega = -e[i].omega; e[i].omega_r = - e[i].omega_r;}
 		invert = FALSE;	/* Since we have taken care of this now */
 	}
-	e = GMT_memory (C, e, n, struct EULER);
+	if (n < n_alloc) e = GMT_memory (C, e, n, struct EULER);
 
 	if (invert) {	/* If TRUE this means we read stage rotations and want stage rotations out.  We must take a detour */
 		spotter_stages_to_total (C, e, n, TRUE, TRUE);	/* Convert forward stage poles to total reconstruction poles */
@@ -600,7 +600,7 @@ GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_LONG geocentr
 		}
 	}
 	GMT_fclose (C, fp);
-	e = GMT_memory (C, e, i, struct HOTSPOT);
+	if (i < n_alloc) e = GMT_memory (C, e, i, struct HOTSPOT);
 	*p = e;
 
 	return (i);
