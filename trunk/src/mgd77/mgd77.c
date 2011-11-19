@@ -522,7 +522,7 @@ int MGD77_Read_Header_Record_asc (struct GMT_CTRL *C, char *file, struct MGD77_C
 	/* Read Sequences No 01-24: */
 
 	for (sequence = 0; sequence < MGD77_N_HEADER_RECORDS; sequence++) {
-		MGD77_header[sequence] = GMT_memory (C, NULL, MGD77_HEADER_LENGTH + 1, char);
+		MGD77_header[sequence] = GMT_memory (C, NULL, MGD77_HEADER_LENGTH + 2, char);
 		if ((err = MGD77_Read_Header_Sequence (C, F->fp, MGD77_header[sequence], sequence+1))) return (err);
 	}
 	if (F->format == MGD77_FORMAT_TBL) not_used = fgets (line, GMT_BUFSIZ, F->fp);			/* Skip the column header for tables */
@@ -2090,7 +2090,7 @@ int MGD77_Read_Header_Sequence (struct GMT_CTRL *C, FILE *fp, char *record, int 
 			return (MGD77_NO_HEADER_REC);
 		}
 	}
-	if (fgets (record, MGD77_RECORD_LENGTH, fp) == NULL) {
+	if (fgets (record, MGD77_HEADER_LENGTH + 2, fp) == NULL) {
 		GMT_report (C, GMT_MSG_NORMAL, "MGD77_Read_Header: Failure to read header sequence %2.2d\n", seq);
 		return (MGD77_ERROR_READ_HEADER_ASC);
 	}
@@ -3209,7 +3209,7 @@ int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct MGD77_
 		k = strlen (string);
 		for (j = 0; j < k; j++) if (string[j] == '\n') string[j] = ' ';	/* Remove the \n returned by ctime() */
 		string[k++] = '\n';	string[k] = '\0';	/* Add LF at end of line */
-		H->history = GMT_memory (C, NULL, k, char);
+		H->history = GMT_memory (C, NULL, k + 1, char);		/* Don't understand why by I need the +1 JL */
 		strcpy (H->history, string);
 	}
 	/* else, history already filled out, use as is */
