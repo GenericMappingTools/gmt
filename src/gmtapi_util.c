@@ -808,7 +808,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 	 */
 	
 	GMT_LONG item, col, row, seg, n_cols = 0, ij, first_item = 0, last_item, geometry;
-	GMT_LONG allocate = FALSE, update = FALSE, error = 0, n_alloc, all_D, use_GMT_io, poly;
+	GMT_LONG allocate = FALSE, update = FALSE, n_alloc, all_D, use_GMT_io, poly;
 	PFL GMT_2D_to_index;
 	struct GMT_DATASET *D = NULL, *Din = NULL;
 	struct GMT_MATRIX *M = NULL;
@@ -997,7 +997,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 		}
 		S->status = GMT_IS_USED;	/* Mark as read */
 	}
-	if (D->n_tables == 0 && error == GMT_IO_EOF) {	/* Only found empty files (e.g., /dev/null) and we have nothing to show for our efforts.  Return an single empty table with no segments. */
+	if (D->n_tables == 0) {	/* Only found empty files (e.g., /dev/null) and we have nothing to show for our efforts.  Return an single empty table with no segments. */
 		D->table = GMT_memory (API->GMT, D->table, 1, struct GMT_TABLE *);
 		D->table[0] = GMT_memory (API->GMT, NULL, 1, struct GMT_TABLE);
 		D->n_tables = 1;	/* But we must indicate we found one (empty) table */
@@ -1146,7 +1146,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID
 	 * Note: Memory is allocated for the Dataset except for GMT_IS_DATASET_REF.
 	 */
 	
-	GMT_LONG item, row, seg, first_item = 0, last_item, error = 0, n_alloc, update = FALSE, allocate = FALSE;
+	GMT_LONG item, row, seg, first_item = 0, last_item, n_alloc, update = FALSE, allocate = FALSE;
 	char *t = NULL;
 	struct GMT_TEXTSET *T = NULL;
 	struct GMT_MATRIX *M = NULL;
@@ -1263,7 +1263,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID
 		S->status = GMT_IS_USED;	/* Mark as read */
 	}
 
-	if (T->n_tables == 0 && error == GMT_IO_EOF) {	/* Only found empty files (e.g., /dev/null) and we have nothing to show for our efforts.  Return an single empty table with no segments. */
+	if (T->n_tables == 0) {	/* Only found empty files (e.g., /dev/null) and we have nothing to show for our efforts.  Return an single empty table with no segments. */
 		T->table = GMT_memory (API->GMT, T->table, 1, struct GMT_TEXT_TABLE *);
 		T->table[0] = GMT_memory (API->GMT, NULL, 1, struct GMT_TEXT_TABLE);
 		T->n_tables = 1;	/* But we must indicate we found one (empty) table */

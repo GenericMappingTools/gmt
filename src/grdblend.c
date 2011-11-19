@@ -776,7 +776,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				strcpy (empty, "NaN");
 			else
 				sprintf (empty, "%g", no_data_f);
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld nodes assigned values, %ld set to %s\n", (GMT_LONG)n_fill, (GMT_LONG)(n_tot - n_fill), empty);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%ld nodes assigned values, %ld set to %s\n", n_fill, n_tot - n_fill, empty);
 		}
 	}
 

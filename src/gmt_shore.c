@@ -865,7 +865,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 		p[P].lon = GMT_memory (C, NULL, n_alloc, double);
 		p[P].lat = GMT_memory (C, NULL, n_alloc, double);
 		n = gmt_copy_to_shore_path (p[P].lon, p[P].lat, c, id);
-		if ((GMT_LONG)c->seg[id].level < low_level) low_level = (GMT_LONG)c->seg[id].level;
+		if ((GMT_LONG)c->seg[id].level < low_level) low_level = c->seg[id].level;
 		
 		more = TRUE;
 		first_pos = gmt_shore_get_position (start_side, c->seg[id].dx[0], c->seg[id].dy[0]);
@@ -885,7 +885,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 					n += add;
 				}
 				next_side = ((id + 4) + dir + 4) % 4;
-				if ((GMT_LONG)c->node_level[nid] < low_level) low_level = (GMT_LONG)c->node_level[nid];
+				if ((GMT_LONG)c->node_level[nid] < low_level) low_level = c->node_level[nid];
 			}
 			else {
 				gmt_shore_to_degree (c, c->seg[id].dx[0], c->seg[id].dy[0], &plon, &plat);
@@ -906,7 +906,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 					p[P].lat = GMT_memory (C, p[P].lat, n_alloc, double);
 					n += gmt_copy_to_shore_path (&p[P].lon[n], &p[P].lat[n], c, id);
 					next_side = c->seg[id].exit;
-					if ((GMT_LONG)c->seg[id].level < low_level) low_level = (GMT_LONG)c->seg[id].level;
+					if ((GMT_LONG)c->seg[id].level < low_level) low_level = c->seg[id].level;
 				}
 			}
 			if (add) {

@@ -1252,11 +1252,11 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				if (field[0] == 'H') {
 					type = E77_HEADER_MODE;
-					number = (GMT_LONG)atoi (&field[1]);
+					number = atoi (&field[1]);
 				}
 				else {
 					type = 1;
-					number = (GMT_LONG)item;
+					number = item;
 				}
 				if (Ctrl->A.e77_skip_mode[type]) continue;
 				if (!Ctrl->A.e77_skip_mode[type] && YorN == 'N') continue;
