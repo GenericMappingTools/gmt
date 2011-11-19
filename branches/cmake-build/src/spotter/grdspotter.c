@@ -619,7 +619,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		/* Store IDs in a GMT_LONG array instead */
 		ID = GMT_memory (GMT, NULL, L->header->size, GMT_LONG);
-		for (i = 0; i < L->header->size; i++) ID[i] = (GMT_LONG) rint ((double)L->data[i]);
+		for (i = 0; i < L->header->size; i++) ID[i] = irint ((double)L->data[i]);
 		GMT_free (GMT, L->data);	/* Just free the array since we use ID; Grid stuct is destroyed at end */
 		
 		ID_info = GMT_memory (GMT, NULL, rint (L->header->z_max) + 1, struct ID);
@@ -949,7 +949,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			GMT_message (GMT, "Preprocessed %5ld flowlines\n", n_nodes);
 			GMT_message (GMT, "%ld of %ld total flowlines entered CVA region\n", n_nodes, n_flow);
-			GMT_message (GMT, "Flowlines consumed %ld Mb of memory\n", (GMT_LONG)irint (mem * B_TO_MB));
+			GMT_message (GMT, "Flowlines consumed %d Mb of memory\n", irint (mem * B_TO_MB));
 			GMT_message (GMT, "Estimate %ld CVA max locations using bootstrapping\n", Ctrl->W.n_try);
 		}
 
