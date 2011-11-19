@@ -1202,8 +1202,10 @@ GMT_LONG x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct
 		sscanf (line, "%s %ld %ld", name, &id, &flag);
 		if (mode == 1) {
 			if (id >= n_alloc) {
+				GMT_LONG old_n_alloc = n_alloc;
 				while (id >= n_alloc) n_alloc += GMT_CHUNK;
 				B->head = GMT_memory (C, B->head, n_alloc, struct X2SYS_BIX_TRACK_INFO);
+				GMT_memset (&(B->head[old_n_alloc]), n_alloc - old_n_alloc, struct X2SYS_BIX_TRACK_INFO);	/* Set to NULL */
 			}
 			B->head[id].track_id = id;
 			B->head[id].flag = flag;
@@ -1602,8 +1604,10 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 		}
 		n_pairs++;
 		if (n_pairs == n_alloc_p) {
+			GMT_LONG old_n_alloc = n_alloc_p;
 			n_alloc_p <<= 1;
 			P = GMT_memory (C, P, n_alloc_p, struct X2SYS_COE_PAIR);
+			GMT_memset (&(P[old_n_alloc]), n_alloc_p - old_n_alloc, struct X2SYS_COE_PAIR);	/* Set to NULL/0 */
 		}
 		n_alloc_x = GMT_SMALL_CHUNK;
 		P[p].COE = GMT_memory (C, NULL, n_alloc_x, struct X2SYS_COE);
@@ -1660,8 +1664,10 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 				k++;
 			}
 			if (k == n_alloc_x) {
+				GMT_LONG old_n_alloc = n_alloc_x;
 				n_alloc_x <<= 1;
 				P[p].COE = GMT_memory (C, P[p].COE, n_alloc_x, struct X2SYS_COE);
+				GMT_memset (&(P[p].COE[old_n_alloc]), n_alloc_x - old_n_alloc, struct X2SYS_COE);	/* Set to NULL/0 */
 			}
 		}
 		more = (t != NULL);
