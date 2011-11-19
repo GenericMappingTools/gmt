@@ -390,7 +390,7 @@ GMT_LONG write_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *heade
 		GMT_report (C, GMT_MSG_NORMAL, "Warning: ESRI Arc/Info ASCII Interchange file must use proxy for NaN; default to -9999\n");
 		header->nan_value = -9999.0;
 	}
-	sprintf (record, "nodata_value %ld\n", (GMT_LONG)irint (header->nan_value));
+	sprintf (record, "nodata_value %d\n", irint (header->nan_value));
 	GMT_fputs (record, fp);		/* Write a text record */
 
 	return (GMT_NOERROR);
@@ -465,7 +465,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 		ij = pad[YHI] * width_out + i_0_out;
 
-		for (row = first_row; row <= last_row; row++, ij += (size_t)width_out) {
+		for (row = first_row; row <= last_row; row++, ij += width_out) {
 			if (nBits == 32) {		/* Get one row */
 				if (GMT_fread (tmp, 4, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 			}
@@ -583,13 +583,13 @@ GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 			if (i == last) c[0] = '\n';
 			kk = inc * (ij+k[i]) + off;
 			if (GMT_is_fnan (grid[kk]))
-				sprintf (item, "%ld%c", (GMT_LONG)irint (header->nan_value), c[0]);
+				sprintf (item, "%d%c", irint (header->nan_value), c[0]);
 			else if (floating) {
 				sprintf (item, C->current.setting.format_float_out, grid[kk]);
 				strcat (item, c);
 			}
 			else
-				sprintf (item, "%ld%c", (GMT_LONG)irint ((double)grid[kk]), c[0]);
+				sprintf (item, "%d%c", irint ((double)grid[kk]), c[0]);
 			GMT_fputs (item, fp);
 		}
 	}

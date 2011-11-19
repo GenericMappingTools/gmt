@@ -1604,7 +1604,7 @@ GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 			C->current.io.col[GMT_IN][k].offset = offset;
 		}
 	}
-	qsort (C->current.io.col[GMT_IN], (size_t)k, sizeof (struct GMT_COL_INFO), gmt_compare_cols);
+	qsort (C->current.io.col[GMT_IN], k, sizeof (struct GMT_COL_INFO), gmt_compare_cols);
 	C->common.i.n_cols = k;
 	return (GMT_NOERROR);
 }
@@ -5338,7 +5338,7 @@ GMT_LONG gmt_strip_colonitem (struct GMT_CTRL *C, GMT_LONG axis, const char *in,
 	if ((s = strstr (in, pattern))) {		/* OK, found what we are looking for */
 		GMT_LONG i, j, k;
 		k = (GMT_LONG)(s - in);			/* Start index of item */
-		strncpy (out, in, (size_t)k);			/* Copy everything up to the pattern */
+		strncpy (out, in, (size_t)k);		/* Copy everything up to the pattern */
 		i = k + strlen (pattern);		/* Now go to beginning of item */
 		j = 0;
 		while (in[i] && in[i] != ':') item[j++] = in[i++];	/* Copy the item... */

@@ -235,7 +235,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 				break;
 			case 'Z':
 				Ctrl->Z.active = TRUE;
-				n_errors += (GMT_LONG)GMT_parse_z_io (GMT, opt->arg, &Ctrl->Z);
+				n_errors += GMT_parse_z_io (GMT, opt->arg, &Ctrl->Z);
 				break;
 
 			default:	/* Report bad options */

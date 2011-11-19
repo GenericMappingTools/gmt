@@ -93,9 +93,9 @@ void gmt_expand_filename (struct GMT_CTRL *C, char *file, char *fname)
 	GMT_LONG i, length, f_length, found, start;
 
 	if (C->current.setting.io_gridfile_shorthand) {	/* Look for matches */
-		f_length = (GMT_LONG) strlen (file);
+		f_length = strlen (file);
 		for (i = found = 0; !found && i < C->session.n_shorthands; i++) {
-			length = (GMT_LONG) strlen (C->session.shorthand[i].suffix);
+			length = strlen (C->session.shorthand[i].suffix);
 			start = f_length - length;
 			found = (start < 0) ? FALSE : !strncmp (&file[start], C->session.shorthand[i].suffix, (size_t)length);
 		}
