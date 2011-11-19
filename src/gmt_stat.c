@@ -1297,8 +1297,8 @@ double GMT_Fcrit (struct GMT_CTRL *C, double alpha, double nu1, double nu2)
 	p = 1.0 - alpha;
 	F_low = 0.0;
 	gmt_F_to_ch1_ch2 (C, F_high, nu1, nu2, &chisq1, &chisq2);
-	NU1 = (GMT_LONG)irint (nu1);
-	NU2 = (GMT_LONG)irint (nu2);
+	NU1 = irint (nu1);
+	NU2 = irint (nu2);
 	GMT_f_q (C, chisq1, NU1, chisq2, NU2, &p_high);
 	while (p_high > p) {	/* Must pick higher starting point */
 		F_high *= 2.0;

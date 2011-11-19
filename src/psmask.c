@@ -128,8 +128,8 @@ GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 			/* Skip edge already has been used */
 
 			ij0 = GMT_IJ0 (h, j + info->j_off[k], i + info->i_off[k]);
-			edge_word = (GMT_LONG)(ij0 / 32 + info->k_off[k] * info->offset);
-			edge_bit = (GMT_LONG)(ij0 % 32);
+			edge_word = ij0 / 32 + info->k_off[k] * info->offset;
+			edge_bit = ij0 % 32;
 			if (edge[edge_word] & info->bit[edge_bit]) continue;
 
 			/* Skip if no zero-crossing on this edge */
@@ -211,8 +211,8 @@ GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 		}
 		if (more) {	/* Mark this edge as used */
 			ij0 = GMT_IJ0 (h, j + info->j_off[kk], i + info->i_off[kk]);
-			edge_word = (GMT_LONG)(ij0 / 32 + info->k_off[kk] * info->offset);
-			edge_bit = (GMT_LONG)(ij0 % 32);
+			edge_word = ij0 / 32 + info->k_off[kk] * info->offset;
+			edge_bit = ij0 % 32;
 			edge[edge_word] |= info->bit[edge_bit];
 		}
 
@@ -258,8 +258,8 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 		for (j = j0; go_on && j < h->ny; j++) {
 			ij = GMT_IJP (h, j, i0);
 			for (i = i0; go_on && i < h->nx-1; i++, ij++) {	/* nx-1 since the last bin starts at nx-2 and ends at nx-1 */
-				edge_word = (GMT_LONG)(ij / 32 + info->offset);
-				edge_bit = (GMT_LONG)(ij % 32);
+				edge_word = ij / 32 + info->offset;
+				edge_bit = ij % 32;
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij-h->nx]) == 1)) { /* Start tracing contour */
 					*x[0] = GMT_grd_col_to_x (GMT, i, h);
 					*y[0] = GMT_grd_row_to_y (GMT, j, h);
@@ -282,8 +282,8 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 		for (j = j0; go_on && j < h->ny; j++) {
 			ij = GMT_IJP (h, j, i0);
 			for (i = i0; go_on && i < h->nx-1; i++, ij++) {
-				edge_word = (GMT_LONG)(ij / 32 + info->offset);
-				edge_bit = (GMT_LONG)(ij % 32);
+				edge_word = ij / 32 + info->offset;
+				edge_bit = ij % 32;
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij+1]) == 1)) { /* Start tracing contour */
 					*x[0] = GMT_grd_col_to_x (GMT, i, h);
 					*y[0] = GMT_grd_row_to_y (GMT, j, h);

@@ -443,7 +443,7 @@ GMT_LONG GMT_get_prime_factors (struct GMT_CTRL *C, GMT_LONG n, GMT_LONG *f)
 
 	/* Get here when all factors up to floor(sqrt(n)) have been tried.  */
 
-	if (m > 1) f[n_factors++] = (GMT_LONG)m;	/* m is an additional prime factor of n  */
+	if (m > 1) f[n_factors++] = m;	/* m is an additional prime factor of n  */
 
 	return (n_factors);
 }
@@ -8207,7 +8207,7 @@ GMT_LONG GMT_time_array (struct GMT_CTRL *C, double min, double max, struct GMT_
 	if (!T->active) return (0);
 	val = GMT_memory (C, NULL, n_alloc, double);
 	I.unit = T->unit;
-	I.step = (GMT_LONG)T->interval;
+	I.step = T->interval;
 	interval = (T->type == 'i' || T->type == 'I');	/* Only for i/I axis items */
 	GMT_moment_interval (C, &I, min, TRUE);	/* First time we pass TRUE for initialization */
 	while (I.dt[0] <= max) {		/* As long as we are not gone way past the end time */
@@ -8364,13 +8364,13 @@ GMT_LONG GMT_get_coordinate_label (struct GMT_CTRL *C, char *string, struct GMT_
 			sprintf (string, format, coord);
 			break;
 		case GMT_LOG10:
-			sprintf (string, "%ld", (GMT_LONG)irint (d_log10 (C, coord)));
+			sprintf (string, "%d", irint (d_log10 (C, coord)));
 			break;
 		case GMT_POW:
 			if (C->current.proj.xyz_projection[T->parent] == GMT_POW)
 				sprintf (string, format, coord);
 			else
-				sprintf (string, "10@+%ld@+", (GMT_LONG)irint (d_log10 (C, coord)));
+				sprintf (string, "10@+%d@+", irint (d_log10 (C, coord)));
 			break;
 		case GMT_TIME:
 			GMT_get_time_label (C, string, P, T, coord);

@@ -121,7 +121,7 @@ GMT_LONG fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *d
 	if (F->cumulative) {
 		for (ibox = count_sum = b0 = 0; ibox < F->n_boxes; ibox++) {
 			count_sum += F->boxh[ibox];
-			F->boxh[ibox] = (GMT_LONG)count_sum;
+			F->boxh[ibox] = count_sum;
 		}
 		b1 = count_sum;
 	}

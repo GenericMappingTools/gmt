@@ -363,9 +363,9 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (n_outputs == 0) {	/* Generate default -Q setting (all) */
 		n_outputs = 5 - Ctrl->Z.active;
-		for (i = 0; i < 2; i++) output_choice[i] = (GMT_LONG)i;
+		for (i = 0; i < 2; i++) output_choice[i] = i;
 		if (!Ctrl->Z.active) output_choice[2] = 2;
-		for (i = 3-Ctrl->Z.active; i < n_outputs; i++) output_choice[i] = (GMT_LONG)i;
+		for (i = 3-Ctrl->Z.active; i < n_outputs; i++) output_choice[i] = i;
 	}
 
 	Ctrl->A.tolerance *= D2R;

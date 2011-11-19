@@ -115,7 +115,7 @@ GMT_LONG gmt_cal_imod (GMT_LONG x, GMT_LONG y) {
 GMT_LONG gmt_kday_on_or_before (GMT_LONG date, GMT_LONG kday) {
 	/* Given date and kday, return the date of the nearest kday
 	   on or before the given date. */
-	return ((GMT_LONG)(date - gmt_cal_imod ((GMT_LONG)(date-kday), 7)));
+	return (date - gmt_cal_imod (date-kday, 7));
 }
 
 GMT_LONG gmt_kday_after (GMT_LONG date, GMT_LONG kday) {
@@ -135,9 +135,9 @@ GMT_LONG gmt_nth_kday (GMT_LONG n, GMT_LONG kday, GMT_LONG date) {
 	   kday before or after the given date, according to the
 	   sign of n. */
 	if (n > 0)
-		return ((GMT_LONG) (7*n + gmt_kday_before (date, kday)));
+		return (7*n + gmt_kday_before (date, kday));
 	else
-		return ((GMT_LONG) (7*n + gmt_kday_after (date, kday)));
+		return (7*n + gmt_kday_after (date, kday));
 }
 
 GMT_LONG GMT_gmonth_length (GMT_LONG year, GMT_LONG month) {
@@ -192,7 +192,7 @@ GMT_LONG GMT_rd_from_gymd (struct GMT_CTRL *C, GMT_LONG gy, GMT_LONG gm, GMT_LON
 	rd = day_offset + gd + 365 * yearm1;
 	s = floor (yearm1/4.0) - floor (yearm1/100.0) + floor (yearm1/400.0);
 	s += floor ((367 * gm - 362)/12.0);
-	rd += (GMT_LONG)irint (s);
+	rd += irint (s);
 	return (rd);
 }
 
@@ -201,7 +201,7 @@ GMT_LONG gmt_gyear_from_rd (GMT_LONG date) {
 
 	GMT_LONG d0, d1, d2, d3, n400, n100, n4, n1, year;
 	
-	d0 = (GMT_LONG)date - 1;
+	d0 = date - 1;
 	n400 = (GMT_LONG) floor (d0 / 146097.0);
 	d1 = gmt_cal_imod (d0, 146097);
 	n100 = (GMT_LONG) floor (d1 / 36524.0);
@@ -240,13 +240,13 @@ void GMT_gcal_from_rd (struct GMT_CTRL *C, GMT_LONG date, struct GMT_gcal *gcal)
 	
 	/* Day of the week in 0 thru 6:  */
 	
-	gcal->day_w = gmt_cal_imod ((GMT_LONG)date, 7);
+	gcal->day_w = gmt_cal_imod (date, 7);
 	
 	/* proleptic Gregorian operations:  */
 
 	gcal->year = gmt_gyear_from_rd (date);
 	prior_days = date - GMT_rd_from_gymd (C, gcal->year, 1, 1);
-	gcal->day_y = (GMT_LONG)prior_days + 1;
+	gcal->day_y = prior_days + 1;
 	
 	tempdate = GMT_rd_from_gymd (C, gcal->year, 3, 1);
 	if (date < tempdate)
@@ -258,7 +258,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *C, GMT_LONG date, struct GMT_gcal *gcal)
 	
 	tempdate = GMT_rd_from_gymd (C, gcal->year, gcal->month, 1);
 	
-	gcal->day_m = (GMT_LONG)(date - tempdate) + 1;
+	gcal->day_m = date - tempdate + 1;
 	
 	/* ISO operations:  */
 	
@@ -965,7 +965,7 @@ void GMT_get_time_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCL
 			GMT_report (C, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
 #endif
 		case 's':	/* 2-digit seconds */
-			(P->date.compact) ? sprintf (string, "%ld", (GMT_LONG)irint(calendar.sec)) : sprintf (string, "%2.2ld", (GMT_LONG)irint(calendar.sec));
+			(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%2.2d", irint(calendar.sec));
 			break;
 		default:
 			GMT_report (C, GMT_MSG_FATAL, "Error: wrong unit passed to GMT_get_time_label\n");

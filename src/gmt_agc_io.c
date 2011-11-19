@@ -68,19 +68,19 @@ GMT_LONG ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT])
 	GMT_LONG nitems;
 	float garbage[PREHEADSIZE];
 
-	if (GMT_fread (garbage, sizeof(float), (size_t)PREHEADSIZE, fpi) < (size_t)PREHEADSIZE) return (GMT_GRDIO_READ_FAILED);
-	nitems = GMT_fread (z, sizeof(float), (size_t)(ZBLOCKWIDTH * ZBLOCKHEIGHT), fpi);
+	if (GMT_fread (garbage, sizeof(float), PREHEADSIZE, fpi) < (size_t)PREHEADSIZE) return (GMT_GRDIO_READ_FAILED);
+	nitems = GMT_fread (z, sizeof(float), (ZBLOCKWIDTH * ZBLOCKHEIGHT), fpi);
 
 	if (nitems != (ZBLOCKWIDTH * ZBLOCKHEIGHT) && !feof(fpi)) return (GMT_GRDIO_READ_FAILED);	/* Bad stuff */
-	if (GMT_fread (garbage, sizeof(float), (size_t)POSTHEADSIZE, fpi) < (size_t)POSTHEADSIZE) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (garbage, sizeof(float), POSTHEADSIZE, fpi) < (size_t)POSTHEADSIZE) return (GMT_GRDIO_READ_FAILED);
 	return (GMT_NOERROR);
 }
 
 GMT_LONG WriteRecord (FILE *file, float rec[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec)
 {	/* Writes one block of data, including pre- and post-headers */
-	if (GMT_fwrite (prerec, sizeof(float), (size_t)PREHEADSIZE, file) < (size_t)PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite (rec, sizeof(float), (size_t)(ZBLOCKWIDTH * ZBLOCKHEIGHT), file) < (size_t)(ZBLOCKWIDTH * ZBLOCKHEIGHT)) return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite (postrec, sizeof(float), (size_t)POSTHEADSIZE, file) < (size_t)POSTHEADSIZE)  return (GMT_GRDIO_WRITE_FAILED); 
+	if (GMT_fwrite (prerec, sizeof(float), PREHEADSIZE, file) < (size_t)PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite (rec, sizeof(float), (ZBLOCKWIDTH * ZBLOCKHEIGHT), file) < (size_t)(ZBLOCKWIDTH * ZBLOCKHEIGHT)) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite (postrec, sizeof(float), POSTHEADSIZE, file) < (size_t)POSTHEADSIZE)  return (GMT_GRDIO_WRITE_FAILED); 
 	return (GMT_NOERROR);
 }
 
@@ -120,7 +120,7 @@ GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
 	if (!strcmp (file, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
 	if (GMT_STAT (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
 	if ((fp = GMT_fopen (C, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
-	if (GMT_fread (recdata, sizeof(float), (size_t)RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
 	
 	y_min = recdata[0];	y_max = recdata[1];
 	if (y_min >= y_max) return (GMT_GRDIO_BAD_VAL);
@@ -153,7 +153,7 @@ GMT_LONG GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	else if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	if (GMT_fread (recdata, sizeof(float), (size_t)RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
 	
 	header->registration = GMT_GRIDLINE_REG;	/* Hardwired since no info about this in the header */
 	header->wesn[XLO] = (double)recdata[2];
@@ -192,7 +192,7 @@ GMT_LONG GMT_agc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	
 	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
-	if (GMT_fwrite (prez, sizeof(float), (size_t)PREHEADSIZE, fp) < PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite (prez, sizeof(float), PREHEADSIZE, fp) < PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
 
 	GMT_fclose (C, fp);
 

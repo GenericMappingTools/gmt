@@ -738,7 +738,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					else if (logscl) {
 						p_val = irint (P->range[i].z_low);
 						if (GMT_IS_ZERO (P->range[i].z_low - (double)p_val))
-							sprintf (text, "10@+%ld@+", (GMT_LONG)irint (P->range[i].z_low));
+							sprintf (text, "10@+%d@+", irint (P->range[i].z_low));
 						else
 							do_annot = FALSE;
 					}

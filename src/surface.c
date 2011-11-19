@@ -632,7 +632,7 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 		if (zmax < in[GMT_Z]) zmax = in[GMT_Z], kmax = k;
 		k++;
 		C->z_mean += in[GMT_Z];
-		if (k == (GMT_LONG)C->n_alloc) {
+		if (k == C->n_alloc) {
 			C->n_alloc <<= 1;
 			C->data = GMT_memory (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
 		}
@@ -1348,11 +1348,11 @@ double guess_surface_time (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LONG nx
 	double t_sum;		/* Sum of values of T at each grid cycle  */
 	double length;		/* Current propagation distance.  */
 
-	gcd = gcd_euclid ((GMT_LONG)nx, (GMT_LONG)ny);
+	gcd = gcd_euclid (nx, ny);
 	if (gcd > 1) {
 		nfactors = GMT_get_prime_factors (GMT, gcd, factors);
-		nxg = (GMT_LONG)(nx/gcd);
-		nyg = (GMT_LONG)(ny/gcd);
+		nxg = nx/gcd;
+		nyg = ny/gcd;
 		if (nxg < 3 || nyg < 3) {
 			factor = factors[nfactors - 1];
 			nfactors--;

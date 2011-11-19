@@ -1087,8 +1087,8 @@ void grd_FDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 	if (constant[last] && factor[last] == 0.0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning, operand three == 0 for FDIST!\n");
 	for (node = 0; node < info->size; node++) {
 		F = (constant[prev2]) ? factor[prev2] : stack[prev2]->data[node];
-		nu1 = (GMT_LONG)(irint ((double)((constant[prev1]) ? factor[prev1] : stack[prev1]->data[node])));
-		nu2 = (GMT_LONG)(irint ((double)((constant[last]) ? factor[last] : stack[last]->data[node])));
+		nu1 = irint ((double)((constant[prev1]) ? factor[prev1] : stack[prev1]->data[node]));
+		nu2 = irint ((double)((constant[last]) ? factor[last] : stack[last]->data[node]));
 		/* Since GMT_f_q needs chisq1 and chisq2, we set chisq2 = 1 and solve for chisq1 */
 		chisq1 = F * nu1 / nu2;
 		(void) GMT_f_q (GMT, chisq1, nu1, chisq2, nu2, &prob);
@@ -2209,7 +2209,7 @@ void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 
 	if (constant[prev] || !shift) return;	/* Trivial since A is a constant or shift is zero */
 	if (shift < 0) shift += info->G->header->nx;	/* Same thing */
-	nx = (size_t) info->G->header->nx;
+	nx = info->G->header->nx;
 	/* Set up permutation vector */
 
 	new_col = GMT_memory (GMT, NULL, nx, GMT_LONG);
@@ -2240,7 +2240,7 @@ void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 
 	if (constant[prev] || !shift) return;	/* Trivial since A is a constant or shift is zero */
 	if (shift < 0) shift += info->G->header->ny;	/* Same thing */
-	nx = (size_t) info->G->header->nx;
+	nx = info->G->header->nx;
 	/* Set up permutation vector */
 
 	new_row = GMT_memory (GMT, NULL, info->G->header->ny, GMT_LONG);

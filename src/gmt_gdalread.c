@@ -689,12 +689,12 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 		hBand = GDALGetRasterBand( hDataset, nBand+1 );
 
 		if (!got_R) {		/* Not sure about what will realy happen in this case */
-			Ctrl->band_field_names[nBand].XSize = (GMT_LONG)GDALGetRasterBandXSize( hBand );
-			Ctrl->band_field_names[nBand].YSize = (GMT_LONG)GDALGetRasterBandYSize( hBand );
+			Ctrl->band_field_names[nBand].XSize = GDALGetRasterBandXSize( hBand );
+			Ctrl->band_field_names[nBand].YSize = GDALGetRasterBandYSize( hBand );
 		}
 		else {
-			Ctrl->band_field_names[nBand].XSize = (GMT_LONG)nXSize;
-			Ctrl->band_field_names[nBand].YSize = (GMT_LONG)nYSize;
+			Ctrl->band_field_names[nBand].XSize = nXSize;
+			Ctrl->band_field_names[nBand].YSize = nYSize;
 		}
 
 		Ctrl->band_field_names[nBand].DataType = strdup( GDALGetDataTypeName( GDALGetRasterDataType ( hBand )) );
