@@ -594,7 +594,7 @@ GMT_LONG x2sys_read_file (struct GMT_CTRL *C, char *fname, double ***data, struc
 		if (s->multi_segment && s->ms_next) p->n_segments++;
 		p->ms_rec[j] = p->n_segments;
 		j++;
-		if (j == (GMT_LONG)n_alloc) {	/* Get more */
+		if (j == n_alloc) {	/* Get more */
 			n_alloc <<= 1;
 			for (i = 0; i < s->n_fields; i++) z[i] = GMT_memory (C, z[i], n_alloc, double);
 			p->ms_rec = GMT_memory (C, p->ms_rec, n_alloc, GMT_LONG);
@@ -659,7 +659,7 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_gmtfile: Could not read leg year from %s\n", path);
 		return (-1);
 	}
-	p->year = (GMT_LONG)year;
+	p->year = year;
 	rata_day = GMT_rd_from_gymd (C, year, 1, 1);	/* Get the rata day for start of cruise year */
 	t_off = GMT_rdc2dt (C, rata_day, 0.0);		/* Secs to start of day */
 
@@ -668,7 +668,7 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_gmtfile: Could not read n_records from %s\n", path);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	p->n_rows = (GMT_LONG)n_records;
+	p->n_rows = n_records;
 	GMT_memset (p->name, 32, char);
 
 	if (fread (p->name, (size_t)10, sizeof (char), fp) != 1) {
@@ -864,7 +864,7 @@ GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, str
 
 	for (j = 0; j < (GMT_LONG)C->current.io.ndim; j++) {
 		if ((in = C->current.io.input (C, fp, &n_expect, &n_fields)) == NULL || n_fields != s->n_out_columns) {
-			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_ncfile: Error reading file %s at record %ld\n", fname, (GMT_LONG)j);
+			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_ncfile: Error reading file %s at record %d\n", fname, j);
 	     		return (GMT_GRDIO_READ_FAILED);
 		}
 		for (i = 0; i < s->n_out_columns; i++) z[i][j] = in[i];
