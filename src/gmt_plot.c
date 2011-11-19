@@ -1705,13 +1705,14 @@ GMT_LONG gmt_set_do_seconds (struct GMT_CTRL *C, double inc)
 
 void gmt_label_trim (char *label, GMT_LONG stage)
 {
-	GMT_LONG i, n;
+	GMT_LONG i;
 	if (!label) return;	/* No label given */
-	n = strlen (label);
-	if (stage && n) {	/* Must remove leading stuff for 2ndary annotations */
+	if (stage) {	/* Must remove leading stuff for 2ndary annotations */
 		for (i = 0; stage && label[i]; i++) 
-			if (!isdigit((int)label[i])) stage--;
-		while (label[i]) label[stage++] = label[i++];	/* Chop of beginning */
+			/* (unsigned char) instead of (int) so that on Win & debug we don't rise and assert failure when checking the degree symb JL */
+			if (!isdigit((unsigned char)label[i])) stage--;
+		while (label[i]) 
+			label[stage++] = label[i++];	/* Chop of beginning */
 		label[stage] = '\0';
 		i = strlen (label) - 1;
 		if (strchr ("WESN", label[i])) label[i] = '\0';
