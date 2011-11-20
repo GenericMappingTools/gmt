@@ -42,7 +42,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	if ((API = GMT_Create_Session ("GMT/MEX-API", FUNC_MODE)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. Convert command line arguments to local linked option list */
-	if (GMT_Create_Options (API, 0L, cmd, &options)) mexErrMsgTxt ("Failure to parse GMT command options\n");
+	if (GMT_Create_Options (API, 0, cmd, &options)) mexErrMsgTxt ("Failure to parse GMT command options\n");
 	free (cmd);
 
 	/* 3. Parse the mex command, update GMT option lists, register in/out resources */
