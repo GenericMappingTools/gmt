@@ -291,7 +291,7 @@ int main (int argc, char **argv)
 	}
 	
 	/* now fix up the number of categories */
-	fseek (att2_fp, 0L, 0);
+	fseek (att2_fp, 0, 0);
 	fprintf(att2_fp,"#!/bin/sh\n\n");
 	fprintf(att2_fp,"# %6d categories, starting at 0\n\n",max_id + 1);
 
