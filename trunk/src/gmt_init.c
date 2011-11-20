@@ -6460,7 +6460,7 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			mod = (char)toupper ((int)txt_a[strlen(txt_a)-1]);	/* Check if UTM zone has a valid latitude modifier */
 			error = 0;
 			if (mod >= 'A' && mod <= 'Z') {	/* Got fully qualified UTM zone, e.g., 33N */
-				C->current.proj.utm_zoney = (GMT_LONG)mod;
+				C->current.proj.utm_zoney = mod;
 				C->current.proj.utm_hemisphere = -1;
 				if (mod >= 'N') C->current.proj.utm_hemisphere = +1;
 				if (mod == 'I' || mod == 'O') error++;	/* No such zones */

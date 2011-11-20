@@ -1805,7 +1805,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *ctable
 		col_name = GMT_memory (C, NULL, n_cols, char *);
 		for (i = 0; i < n_cols; i++) col_name[i] = strdup (S->info[S->out_order[i]].name);
 	}
-	n_items = MGD77_Scan_Corrtable (C, ctable, trk_name, ntracks, n_cols, col_name, &item_names, (GMT_LONG)0);
+	n_items = MGD77_Scan_Corrtable (C, ctable, trk_name, ntracks, n_cols, col_name, &item_names, 0);
 	if (aux && (n_aux = separate_aux_columns2 (C, n_items, item_names, aux, auxlist))) {	/* Determine which auxillary columns are requested (if any) */
 		aux_name = GMT_memory (C, NULL, n_aux, char *);
 		for (i = 0; i < n_aux; i++) aux_name[i] = strdup (auxlist[aux[i].type].name);
@@ -1822,7 +1822,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *ctable
 	}
 	MGD77_Free_Table (C, n_items, item_names);
 	x2sys_free_list (C, aux_name, n_aux);
-	if (!missing) MGD77_Parse_Corrtable (C, ctable, trk_name, ntracks, n_cols, col_name, (GMT_LONG)0, CORR);
+	if (!missing) MGD77_Parse_Corrtable (C, ctable, trk_name, ntracks, n_cols, col_name, 0, CORR);
 	x2sys_free_list (C, col_name, n_cols);
 	if (missing) exit (EXIT_FAILURE);
 }

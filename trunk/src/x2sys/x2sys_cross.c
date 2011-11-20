@@ -671,7 +671,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							/* Ok, got enough data to interpolate at xover */
 
 							first = Ctrl->W.width - n_left;
-							n_errors = GMT_intpol (GMT, &t[first], &y[first], (n_left + n_right), (GMT_LONG)1, &time_x[k], &xdata[k][col], GMT->current.setting.interpolant);
+							n_errors = GMT_intpol (GMT, &t[first], &y[first], (n_left + n_right), 1, &time_x[k], &xdata[k][col], GMT->current.setting.interpolant);
 							if (n_errors == 0) {	/* OK */
 								ok[j]++;
 								n_ok++;

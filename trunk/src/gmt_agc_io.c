@@ -61,7 +61,7 @@ void SaveAGCHeader (char *remark, float *agchead)
 # define RECORDLENGTH 	(ZBLOCKWIDTH*ZBLOCKHEIGHT + PREHEADSIZE + POSTHEADSIZE)
 
 # define AGCHEADINDICATOR	"agchd:"
-# define PARAMSIZE		(GMT_LONG)((GRD_REMARK_LEN160 - HEADINDSIZE) / BUFFHEADSIZE)
+# define PARAMSIZE		((GRD_REMARK_LEN160 - HEADINDSIZE) / BUFFHEADSIZE)
 
 GMT_LONG ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT])
 {	/* Reads one block of data, including pre- and post-headers */

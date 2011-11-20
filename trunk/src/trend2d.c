@@ -548,7 +548,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT->common.R.wesn[XLO] = 0;	GMT->common.R.wesn[XHI] = 360.0;	/* For -L not to cause trouble in GMT->current.io.input */
 	np = Ctrl->N.value;	/* Row dimension for matrices gtg and v  */
-	allocate_the_memory_2d (GMT,(GMT_LONG)np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
+	allocate_the_memory_2d (GMT, np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
 
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_OK) {
 		Return (error);

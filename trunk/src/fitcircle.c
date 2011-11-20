@@ -441,7 +441,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		if (Ctrl->S.active) {	/* Determine small circle pole */
 			GMT_report (GMT, GMT_MSG_NORMAL, "Fitting small circle using L1 norm.\n");
-			rad = get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, (GMT_LONG)1, work, Ctrl->S.mode, Ctrl->S.lat);
+			rad = get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, 1, work, Ctrl->S.mode, Ctrl->S.lat);
 			if (rad >= 0.0) {
 				GMT_cart_to_geo (GMT, &latsum, &lonsum, scpole, TRUE);
 				if (greenwich && lonsum < 0.0) lonsum += 360.0;

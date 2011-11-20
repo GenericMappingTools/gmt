@@ -1389,9 +1389,9 @@ PSL_LONG PSL_setdash (struct PSL_CTRL *PSL, char *pattern, double offset)
 	if (PSL_eq(offset,PSL->current.offset) && ((pattern && !strcmp (pattern, PSL->current.style)) || (!pattern && PSL->current.style[0] == '\0'))) return (PSL_NO_ERROR);
 	PSL->current.offset = offset;
 	if (pattern)
-		strncpy (PSL->current.style, pattern, 512L);
+		strncpy (PSL->current.style, pattern, 512);
 	else
-		memset (PSL->current.style, 0, 512L);
+		memset (PSL->current.style, 0, 512);
 	PSL_command (PSL, "%s\n", psl_putdash (PSL, pattern, offset));
 	return (PSL_NO_ERROR);
 }
@@ -2770,7 +2770,7 @@ PSL_LONG PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, u
 		PSL_message (PSL, PSL_MSG_FATAL, "Error reading magic number of image file %s!\n", file);
 		PSL_exit (EXIT_FAILURE);
 	}
-	fseek (fp, 0L, SEEK_SET);
+	fseek (fp, 0, SEEK_SET);
 
 	/* Which file type */
 
@@ -2797,7 +2797,7 @@ PSL_LONG PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, u
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading magic number of image file %s!\n", tmp_file);
 			PSL_exit (EXIT_FAILURE);
 		}
-		fseek (fp, 0L, SEEK_SET);
+		fseek (fp, 0, SEEK_SET);
 		if (h->magic != RAS_MAGIC) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Unrecognised magic number 0x%x in file %s!\n", h->magic, tmp_file);
 			PSL_exit (EXIT_FAILURE);
@@ -3287,7 +3287,7 @@ PSL_LONG psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, unsi
 	/* Rewind and load into buffer */
 
 	n=0;
-	fseek (fp, 0L, SEEK_SET);
+	fseek (fp, 0, SEEK_SET);
 	buffer = PSL_memory (PSL, NULL, BLOCKSIZE, unsigned char);
 	while ((p = fread ((unsigned char *)buffer + n, (size_t)1, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE)
 	{
@@ -3529,9 +3529,9 @@ psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char *buffe
 
 	npixels = PSL_abs (nx) * ny;
 
-	colormap = psl_memory (PSL, NULL, 1L, sizeof (*colormap));
+	colormap = psl_memory (PSL, NULL, 1, sizeof (*colormap));
 	colormap->ncolors = 0;
-	image = psl_memory (PSL, NULL, 1L, sizeof (*image));
+	image = psl_memory (PSL, NULL, 1, sizeof (*image));
 	image->buffer = psl_memory (PSL, NULL, npixels, sizeof (*image->buffer));
 	image->colormap = colormap;
 
@@ -3840,7 +3840,7 @@ unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, PSL_LONG *nbytes, unsigned 
 	unsigned char *buffer = NULL;
 
 	i = MAX (512, *nbytes) + 8;	/* Maximum output length */
-	output = (psl_byte_stream_t)psl_memory (PSL, NULL, 1L, sizeof (*output));
+	output = (psl_byte_stream_t)psl_memory (PSL, NULL, 1, sizeof (*output));
 	output->buffer = PSL_memory (PSL, NULL, i, unsigned char);
 	code = PSL_memory (PSL, NULL, ncode, short int);
 

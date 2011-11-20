@@ -2356,14 +2356,14 @@ void GMT_vrobinson (struct GMT_CTRL *C, double lon0)
 	C->current.proj.n_phi[17] = 85;	C->current.proj.n_X[17] = 0.5722;	C->current.proj.n_Y[17] = 0.9761;
 	C->current.proj.n_phi[18] = 90;	C->current.proj.n_X[18] = 0.5322;	C->current.proj.n_Y[18] = 1.0000;
 	if (C->current.setting.interpolant == 2) {	/* Natural cubic spline */
-		err_flag = GMT_cspline (C, C->current.proj.n_phi, C->current.proj.n_X, (GMT_LONG)GMT_N_ROBINSON, C->current.proj.n_x_coeff);
-		err_flag = GMT_cspline (C, C->current.proj.n_phi, C->current.proj.n_Y, (GMT_LONG)GMT_N_ROBINSON, C->current.proj.n_y_coeff);
-		err_flag = GMT_cspline (C, C->current.proj.n_Y, C->current.proj.n_phi, (GMT_LONG)GMT_N_ROBINSON, C->current.proj.n_iy_coeff);
+		err_flag = GMT_cspline (C, C->current.proj.n_phi, C->current.proj.n_X, GMT_N_ROBINSON, C->current.proj.n_x_coeff);
+		err_flag = GMT_cspline (C, C->current.proj.n_phi, C->current.proj.n_Y, GMT_N_ROBINSON, C->current.proj.n_y_coeff);
+		err_flag = GMT_cspline (C, C->current.proj.n_Y, C->current.proj.n_phi, GMT_N_ROBINSON, C->current.proj.n_iy_coeff);
 	}
 	else {	/* Akimas spline */
-		err_flag = GMT_akima (C, C->current.proj.n_phi, C->current.proj.n_X, (GMT_LONG)GMT_N_ROBINSON, C->current.proj.n_x_coeff);
-		err_flag = GMT_akima (C, C->current.proj.n_phi, C->current.proj.n_Y, (GMT_LONG)GMT_N_ROBINSON, C->current.proj.n_y_coeff);
-		err_flag = GMT_akima (C, C->current.proj.n_Y, C->current.proj.n_phi, (GMT_LONG)GMT_N_ROBINSON, C->current.proj.n_iy_coeff);
+		err_flag = GMT_akima (C, C->current.proj.n_phi, C->current.proj.n_X, GMT_N_ROBINSON, C->current.proj.n_x_coeff);
+		err_flag = GMT_akima (C, C->current.proj.n_phi, C->current.proj.n_Y, GMT_N_ROBINSON, C->current.proj.n_y_coeff);
+		err_flag = GMT_akima (C, C->current.proj.n_Y, C->current.proj.n_phi, GMT_N_ROBINSON, C->current.proj.n_iy_coeff);
 	}
 }
 
@@ -2435,7 +2435,7 @@ double GMT_left_robinson (struct GMT_CTRL *C, double y)
 	y -= C->current.proj.origin[GMT_Y];
 	y *= C->current.proj.i_scale[GMT_Y];
 	Y = fabs (y * C->current.proj.n_i_cy);
-	if (GMT_intpol (C, C->current.proj.n_Y, C->current.proj.n_X, (GMT_LONG)GMT_N_ROBINSON, (GMT_LONG)1, &Y, &X, C->current.setting.interpolant)) {
+	if (GMT_intpol (C, C->current.proj.n_Y, C->current.proj.n_X, GMT_N_ROBINSON, 1, &Y, &X, C->current.setting.interpolant)) {
 		GMT_message (C, "GMT Internal error in GMT_left_robinson!\n");
 		GMT_exit (EXIT_FAILURE);
 	}
@@ -2451,7 +2451,7 @@ double GMT_right_robinson (struct GMT_CTRL *C, double y)
 	y -= C->current.proj.origin[GMT_Y];
 	y *= C->current.proj.i_scale[GMT_Y];
 	Y = fabs (y * C->current.proj.n_i_cy);
-	if (GMT_intpol (C, C->current.proj.n_Y, C->current.proj.n_X, (GMT_LONG)GMT_N_ROBINSON, (GMT_LONG)1, &Y, &X, C->current.setting.interpolant)) {
+	if (GMT_intpol (C, C->current.proj.n_Y, C->current.proj.n_X, GMT_N_ROBINSON, 1, &Y, &X, C->current.setting.interpolant)) {
 		GMT_message (C, "GMT Internal error in GMT_right_robinson!\n");
 		GMT_exit (EXIT_FAILURE);
 	}

@@ -1015,7 +1015,7 @@ int main (int argc, char *argv[]) {
 	if ((API = GMT_Create_Session (argv[0], GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = (int)GMT_dimfilter (API, (GMT_LONG)(argc-1), (argv+1));
+	status = (int)GMT_dimfilter (API, argc-1, (argv+1));
 
 	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);

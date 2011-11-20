@@ -3340,7 +3340,7 @@ int MGD77_Write_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *
 				transform = (! (scale == 1.0 && offset == 0.0));	/* TRUE if we must transform before writing */
 				values = S->values[entry];			/* Pointer to current double array */
 				if (S->H.info[set].col[id].constant) {	/* Only write a single value (after possibly transforming) */
-					n_bad = MGD77_do_scale_offset_before_write (C, &single_val, values, (GMT_LONG)1, scale, offset, S->H.info[set].col[id].type);
+					n_bad = MGD77_do_scale_offset_before_write (C, &single_val, values, 1, scale, offset, S->H.info[set].col[id].type);
 					MGD77_nc_status (C, nc_put_var1_double (F->nc_id, S->H.info[set].col[id].var_id, start, &single_val));
 				}
 				else {	/* Must write the entire array */
@@ -3599,7 +3599,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 
 	if (apply_bits[MGD77_M77_SET] || apply_bits[MGD77_CDF_SET]) {
 		unsigned int bad_nav_bits;
-		GMT_LONG n_bad = 0L;
+		GMT_LONG n_bad = 0;
 		bad_nav_bits = (set_bit(NCPOS_LON) | set_bit(NCPOS_LAT));	/* If flags has these bits turned on we must remove the record (no nav) */
 		for (rec = 0; rec < S->H.n_records; rec++) {	/* Apply bit flags and count how many bad records (i.e., no lon, lat) we found */
 			MGD77_Apply_Bitflags (C, F, S, rec, apply_bits);
@@ -3649,7 +3649,7 @@ double *MGD77_Read_Column (struct GMT_CTRL *C, int id, size_t start[], size_t co
 	values = GMT_memory (C, NULL, count[0], double);
 	if (col->constant) {	/* Scalar, must read one value and then replicate */
 		MGD77_nc_status (C, nc_get_var1_double (id, col->var_id, start, values));
-		MGD77_do_scale_offset_after_read (C, values, (GMT_LONG)1, scale, offset, MGD77_NaN_val[col->type]);	/* Just modify one point */
+		MGD77_do_scale_offset_after_read (C, values, 1, scale, offset, MGD77_NaN_val[col->type]);	/* Just modify one point */
 		for (k = 1; k < count[0]; k++) values[k] = values[0];
 	}
 	else {	/* Read entire array */
@@ -3678,7 +3678,7 @@ int MGD77_Read_Data_Record_cdf (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 		}
 		else {
 			MGD77_nc_status (C, nc_get_var1_double (F->nc_id, H->info[c].col[id].var_id, &start, &dvals[n_val]));
-			MGD77_do_scale_offset_after_read (C, &dvals[n_val], (GMT_LONG)1, H->info[c].col[id].factor, H->info[c].col[id].offset, MGD77_NaN_val[H->info[c].col[id].type]);
+			MGD77_do_scale_offset_after_read (C, &dvals[n_val], 1, H->info[c].col[id].factor, H->info[c].col[id].offset, MGD77_NaN_val[H->info[c].col[id].type]);
 			n_val++;
 		}
 		/* if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = MGD77_utime2time (C, F, dvals[n_val]); */
@@ -3705,7 +3705,7 @@ int MGD77_Write_Data_Record_cdf (struct GMT_CTRL *C, struct MGD77_CONTROL *F, st
 		}
 		else {
 			single_val = dvals[n_val++];
-			MGD77_do_scale_offset_before_write (C, &single_val, &single_val, (GMT_LONG)1, H->info[c].col[id].factor, H->info[c].col[id].offset, H->info[c].col[id].type);
+			MGD77_do_scale_offset_before_write (C, &single_val, &single_val, 1, H->info[c].col[id].factor, H->info[c].col[id].offset, H->info[c].col[id].type);
 			MGD77_nc_status (C, nc_put_var1_double (F->nc_id, H->info[c].col[id].var_id, &start, &single_val));
 		}
 	}

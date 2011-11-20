@@ -232,11 +232,11 @@ GMT_LONG plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALE
 					GMT_setfill (GMT, f, draw_outline);
 				else
 					PSL_setfill (PSL, rgb, draw_outline);
-				PSL_plotpolygon (PSL, px, py, (GMT_LONG)4);
+				PSL_plotpolygon (PSL, px, py, 4);
 			}
 			else {
 				GMT_setfill (GMT, fill, draw_outline);
-				PSL_plotpolygon (PSL, px, py, (GMT_LONG)4);
+				PSL_plotpolygon (PSL, px, py, 4);
 			}
 		}
 	}
