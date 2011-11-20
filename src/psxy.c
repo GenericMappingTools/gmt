@@ -181,7 +181,7 @@ void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, do
 		yp[5] = yp[6] = yp[8] = yp[9] = yy[2];
 		yp[2] = yy[0] - 0.5 * error_width2;
 		yp[7] = yy[0] + 0.5 * error_width2;
-		PSL_plotpolygon (PSL, xp, yp, (GMT_LONG)10);
+		PSL_plotpolygon (PSL, xp, yp, 10);
 		PSL_plotsegment (PSL, x, yp[7], x, yp[2]);		/* Median line */
 	}
 	else {
@@ -224,7 +224,7 @@ void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, do
 		yp[2] = yp[7] = y;
 		yp[4] = yp[5] = yy[2];
 		yp[3] = yp[6] = ((p = (y + s)) > yp[4]) ? yp[4] : p;
-		PSL_plotpolygon (PSL, xp, yp, (GMT_LONG)10);
+		PSL_plotpolygon (PSL, xp, yp, 10);
 		PSL_plotsegment (PSL, xp[7], y, xp[2], y);		/* Median line */
 	}
 	else {

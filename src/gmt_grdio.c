@@ -918,7 +918,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 			if (G->check && row[i] == G->header.nan_value) row[i] = C->session.f_NaN;
 		}
 	}
-	GMT_grd_do_scaling (C, row, (GMT_LONG)G->header.nx, G->scale, G->offset);
+	GMT_grd_do_scaling (C, row, G->header.nx, G->scale, G->offset);
 	G->row++;
 	return (GMT_NOERROR);
 }
@@ -932,7 +932,7 @@ GMT_LONG GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, float *ro
 	size = GMT_grd_data_size (C, G->header.type, &G->header.nan_value);
 	tmp = GMT_memory (C, NULL, G->header.nx * size, char);
 
-	GMT_grd_do_scaling (C, row, (GMT_LONG)G->header.nx, G->scale, G->offset);
+	GMT_grd_do_scaling (C, row, G->header.nx, G->scale, G->offset);
 	for (i = 0; i < G->header.nx; i++) if (GMT_is_fnan (row[i]) && G->check) row[i] = (float)G->header.nan_value;
 
 	switch (C->session.grdformat[G->header.type][0]) {

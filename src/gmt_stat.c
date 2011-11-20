@@ -1219,7 +1219,7 @@ double GMT_tcrit (struct GMT_CTRL *C, double alpha, double nu)
 	}
 	t_low = GMT_zcrit (C, alpha);
 	t_high = 5.0;
-	NU = (GMT_LONG)irint(nu);
+	NU = irint(nu);
 	GMT_student_t_a (C, t_high, NU, &p_high);
 	while (p_high < p) {	/* Must pick higher starting point */
 		t_high *= 2.0;
@@ -1465,15 +1465,15 @@ GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, GMT_LONG n, double xmin, dou
 	GMT_LONG i, n_above, n_below, n_equal, n_lub, n_glb, one;	/* These must be signed integers */
 	GMT_LONG iteration = 0, finished = FALSE;
 
-	if (n == (GMT_LONG)0) {
+	if (n == 0) {
 		*med = m_initial;
 		return (1);
 	}
-	if (n == (GMT_LONG)1) {
+	if (n == 1) {
 		*med = x[0];
 		return (1);
 	}
-	if (n == (GMT_LONG)2) {
+	if (n == 2) {
 		*med = 0.5 * (x[0] + x[1]);
 		return (1);
 	}
@@ -1481,14 +1481,14 @@ GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, GMT_LONG n, double xmin, dou
 	m_guess = m_initial;
 	lower_bound = xmin;
 	upper_bound = xmax;
-	one = (GMT_LONG)1;
+	one = 1;
 	t_0 = 0.0;
 	t_1 = (double)(n - one);
 	t_middle = 0.5 * t_1;
 
 	do {
 
-		n_above = n_below = n_equal = n_lub = n_glb = (GMT_LONG)0;
+		n_above = n_below = n_equal = n_lub = n_glb = 0;
 		lub = xmax;
 		glb = xmin;
 

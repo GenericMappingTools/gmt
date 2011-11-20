@@ -1189,7 +1189,7 @@ GMT_LONG GMT_srf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	if (GMT_fread (id, sizeof (char), (size_t)4, fp) < (size_t)4) return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fseek(fp, 0L, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+	if (GMT_fseek(fp, 0, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 	if (strncmp (id, "DSBB", (size_t)4) && strncmp (id, "DSRB", (size_t)4)) return (GMT_GRDIO_NOT_SURFER);
 
 	GMT_memset (&h6, 1, struct srf_header6);
