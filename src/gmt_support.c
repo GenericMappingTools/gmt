@@ -3651,7 +3651,7 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double x
 		pos = 0;
 		while ((GMT_strtok (C, G->option, ",", &pos, p))) {
 			G->xp->segment[G->xp->n_segments] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
-			GMT_alloc_segment (C, G->xp->segment[G->xp->n_segments], (GMT_LONG)2, 2, TRUE);
+			GMT_alloc_segment (C, G->xp->segment[G->xp->n_segments], 2, 2, TRUE);
 			G->xp->segment[G->xp->n_segments]->n_rows = G->xp->segment[G->xp->n_segments]->n_columns = 2;
 			n = sscanf (p, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 			if (n == 4) {	/* Easy, got lon0/lat0/lon1/lat1 */
@@ -4801,7 +4801,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 						this_value_dist = value_dist[i-1] + f * (value_dist[i] - value_dist[i-1]);
 					}
 					this_dist = G->label_dist_spacing - dist_offset + last_label_dist;
-					if (gmt_label_is_OK (C, new_label, this_label, label, this_dist, this_value_dist, (GMT_LONG)(-1), (GMT_LONG)(-1), G)) {
+					if (gmt_label_is_OK (C, new_label, this_label, label, this_dist, this_value_dist, -1, -1, G)) {
 						gmt_place_label (C, new_label, this_label, G, !(G->label_type == 0 || G->label_type == 3));
 						new_label->node = i - 1;
 						gmt_contlabel_angle (xx, yy, i - 1, i, cangle, nn, new_label, G);
@@ -4867,7 +4867,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 				}
 				if ((new_label->dist - last_dist) >= G->min_dist) {	/* OK to accept this label */
 					this_dist = dist;
-					if (gmt_label_is_OK (C, new_label, this_label, label, this_dist, this_value_dist, (GMT_LONG)(-1), (GMT_LONG)(-1), G)) {
+					if (gmt_label_is_OK (C, new_label, this_label, label, this_dist, this_value_dist, -1, -1, G)) {
 						gmt_place_label (C, new_label, this_label, G, !(G->label_type == 0));
 						new_label->node = (j == 0) ? 0 : j - 1;
 						gmt_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
@@ -4918,7 +4918,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 						new_label->dist = map_dist[right] - f * (map_dist[right] - map_dist[left]);
 						this_value_dist = value_dist[right] - f * (value_dist[right] - value_dist[left]);
 					}
-					if (gmt_label_is_OK (C, new_label, this_label, label, this_dist, this_value_dist, line_no, (GMT_LONG)(-1), G)) {
+					if (gmt_label_is_OK (C, new_label, this_label, label, this_dist, this_value_dist, line_no, -1, G)) {
 						gmt_place_label (C, new_label, this_label, G, !(G->label_type == 0));
 						gmt_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
@@ -4956,7 +4956,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 					this_dist = track_dist[start];
 					new_label->dist = map_dist[start];
 					this_value_dist = value_dist[start];
-					if (gmt_label_is_OK (C, new_label, this_label, label, this_dist, this_value_dist, (GMT_LONG)(-1), j, G)) {
+					if (gmt_label_is_OK (C, new_label, this_label, label, this_dist, this_value_dist, -1, j, G)) {
 						gmt_place_label (C, new_label, this_label, G, !(G->label_type == 0));
 						gmt_contlabel_angle (xx, yy, start, start, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
@@ -8846,7 +8846,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 		if (col[last][0] == '-' && col[last][1] == 'G') fill_p = &col[last][2], do_fill = TRUE, last--;	/* Check again for -G since perhaps -G -W was given */
 		if (last < 0) error++;
 
-		s->action = (GMT_LONG)col[last][0];
+		s->action = col[last][0];
 		if (s->conditional == 4) s->action = '}';	/* The {, }, E, and F are dummy actions */
 		if (s->conditional == 6) s->action = 'E';
 		if (s->conditional == 8) s->action = 'F';

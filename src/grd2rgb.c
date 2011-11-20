@@ -131,9 +131,9 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 		return (EXIT_FAILURE);
 	}
 
-	GMT_fseek (fp, 0L, SEEK_END);
+	GMT_fseek (fp, 0, SEEK_END);
 	img_size = GMT_ftell (fp);
-	GMT_fseek (fp, 0L, SEEK_SET);
+	GMT_fseek (fp, 0, SEEK_SET);
 
 	n_pix = img_size / byte_per_pixel;
 

@@ -201,7 +201,7 @@ int compare_arc (const void *p1, const void *p2)
 
 void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double *w, GMT_LONG n, GMT_LONG mode, double *par, GMT_LONG vartens, struct GRD_HEADER *h, double *f)
 {
-	GMT_LONG ierror, nm, k, i, j, n_sig, nxp, ist, ij, iflgs, iter, itgs, plus = (GMT_LONG)1, minus = (GMT_LONG)-1, nx = (GMT_LONG)h->nx, ny = (GMT_LONG)h->ny;
+	GMT_LONG ierror, nm, k, i, j, n_sig, nxp, ist, ij, iflgs, iter, itgs, plus = 1, minus = -1, nx = (GMT_LONG)h->nx, ny = (GMT_LONG)h->ny;
 	double *sigma = NULL, *grad = NULL, *plon = NULL, *plat = NULL, tol = 0.01, dsm, dgmx;
 	struct STRIPACK P;
 	

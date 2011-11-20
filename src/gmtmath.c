@@ -2599,7 +2599,7 @@ void table_TDIST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) {
 		a = (constant[prev]) ? factor[prev] : T_prev->segment[s]->coord[col][i];
 		b = irint ((constant[last]) ? factor[last] : T->segment[s]->coord[col][i]);
-		(void) GMT_student_t_a (GMT, a, (GMT_LONG)b, &T_prev->segment[s]->coord[col][i]);
+		(void) GMT_student_t_a (GMT, a, b, &T_prev->segment[s]->coord[col][i]);
 	}
 }
 

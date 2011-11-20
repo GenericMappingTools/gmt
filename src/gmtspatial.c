@@ -332,7 +332,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 				dist = DBL_MAX;	/* Reset for each line to find distance to that line */
 				status = GMT_near_a_line (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], seg, D->table[tbl]->segment[seg], mode3, &dist, &f_seg, &f_pt);
 				if (!status && I->inside) continue;	/* Only consider points that project perpendicularly within the line segment */
-				pt = (GMT_LONG)irint (f_pt);	/* We know f_seg == seg so no point assigning that */
+				pt = irint (f_pt);	/* We know f_seg == seg so no point assigning that */
 				if (dist < I->distance) {	/* Keep track of the single closest feature */
 					I->point = pt;
 					I->segment = seg;
@@ -362,7 +362,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 				dist = DBL_MAX;		/* Reset for each line to find distance to that line */
 				status = GMT_near_a_line (GMT, Sp->coord[GMT_X][row], Sp->coord[GMT_Y][row], seg, S, mode3, &dist, &f_seg, &f_pt);
 				if (!status && I->inside) continue;	/* Only consider points that project perpendicularly within the line segment */
-				pt = (GMT_LONG)irint (f_pt);
+				pt = irint (f_pt);
 				if (dist < I->distance) {	/* Keep track of the single closest feature */
 					I->point = pt;
 					I->segment = seg;
