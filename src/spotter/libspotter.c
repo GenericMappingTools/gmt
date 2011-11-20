@@ -1337,7 +1337,7 @@ GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, doubl
 	 * rotate from now to the past (e.g., move a hotspot up the chain).
 	 */
 
-	GMT_LONG matrix_dim = 3L;
+	GMT_LONG matrix_dim = 3;
 	GMT_LONG i, j, k, kk = 3, nrots;
 	double R[3][3], x[3], y[3], M[3][3], RMt[3][3], Rt[3][3], MRt[3][3], cov[3][3], tmp[3][3], C[9];
 	double z_unit_vector[3], EigenValue[3], EigenVector[9], work1[3], work2[3], x_in_plane[3], y_in_plane[3];

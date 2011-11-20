@@ -461,7 +461,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* STEP 2: Calculate this seamount's flowline */
 
-		n_chunk = spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, (GMT_LONG)1, p, n_stages, sampling_int_in_km, 0.0, FALSE, NULL, &c);
+		n_chunk = spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, n_stages, sampling_int_in_km, 0.0, FALSE, NULL, &c);
 
 		/* STEP 3: Convolve this flowline with seamount shape and add to CVA grid */
 
