@@ -38,7 +38,7 @@ int main (int argc, char *argv[]) {
 	GMT = API->GMT;
 
 	/* 2. Convert command line arguments to local linked option list */
-	if ((options = GMT_Create_Options (API, (GMT_LONG)(argc-1), (argv+1))) == NULL) exit (EXIT_FAILURE);
+	if ((options = GMT_Create_Options (API, argc-1, (argv+1))) == NULL) exit (EXIT_FAILURE);
 
 	/* 3. Parse the common GMT options (e.g., -h -V) */
 	if (GMT_Parse_Common (API, "-VJRbf:", "BKOPUXYcghp", options)) exit (EXIT_FAILURE);

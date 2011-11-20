@@ -284,7 +284,7 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		/* Finalize the composite polygon clip path */
-		PSL_beginclipping (PSL, NULL, NULL, (GMT_LONG)0, GMT->session.no_rgb, 2 + first);
+		PSL_beginclipping (PSL, NULL, NULL, 0, GMT->session.no_rgb, 2 + first);
 	}
 
 	GMT_plane_perspective (GMT, -1, 0.0);

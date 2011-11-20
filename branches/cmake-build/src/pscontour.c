@@ -954,7 +954,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					zzz += zz[k];
 					kzz++;
 				}
-				if (kzz) paint_it_pscontour (GMT, PSL, P, xx, yy, (GMT_LONG)3, zzz / kzz);
+				if (kzz) paint_it_pscontour (GMT, PSL, P, xx, yy, 3, zzz / kzz);
 			}
 			else {	/* Must paint all those slices separately */
 

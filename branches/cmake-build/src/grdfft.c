@@ -888,7 +888,7 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 			for (k = 0; k < 4; k++) Gin->header->BC[k] = GMT_BC_IS_DATA;	/* This bypasses BC pad checking later since there is no pad */
 		}
 		else {
-			suggest_fft (GMT, (GMT_LONG)Gin->header->nx, (GMT_LONG)Gin->header->ny, fft_sug, (GMT_is_verbose (GMT, GMT_MSG_NORMAL) || Ctrl->N.suggest_narray));
+			suggest_fft (GMT, Gin->header->nx, Gin->header->ny, fft_sug, (GMT_is_verbose (GMT, GMT_MSG_NORMAL) || Ctrl->N.suggest_narray));
 			if (fft_sug[1].totalbytes < fft_sug[0].totalbytes) {
 				/* The most accurate solution needs same or less storage
 				 * as the fastest solution; use the most accurate's dimensions */

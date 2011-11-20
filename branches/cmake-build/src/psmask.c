@@ -734,7 +734,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				section++;
 			}
 
-			if (make_plot) draw_clip_contours (GMT, PSL, x, y, (GMT_LONG)0, Ctrl->G.fill.rgb, section, 2);	/* Activate clip-path */
+			if (make_plot) draw_clip_contours (GMT, PSL, x, y, 0, Ctrl->G.fill.rgb, section, 2);	/* Activate clip-path */
 
 			GMT_free (GMT, edge);
 			GMT_free (GMT, x);

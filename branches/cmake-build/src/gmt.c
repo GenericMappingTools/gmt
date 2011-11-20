@@ -85,7 +85,7 @@ int main (int argc, char *argv[]) {
 	if ((API = GMT_Create_Session (argv[0], mode)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. Run selected GMT cmd function, or give usage message if errors arise during parsing */
-	status = func (API, (GMT_LONG)(argc-2), argv+2);
+	status = func (API, argc-2, argv+2);
 
 	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);

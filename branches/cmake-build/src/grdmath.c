@@ -2067,7 +2067,7 @@ void grd_PQUANT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRI
 		GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
 		GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
 		GMT_sort_array (GMT, stack[prev]->data, info->nm, GMTAPI_FLOAT);
-		p = (float) GMT_quantile_f (GMT, stack[prev]->data, factor[last], (GMT_LONG)info->nm);
+		p = (float) GMT_quantile_f (GMT, stack[prev]->data, factor[last], info->nm);
 		GMT_memset (stack[last]->data, info->size, float);	/* Wipes everything */
 		GMT_grd_pad_on (GMT, stack[last], pad);			/* Reinstate the original pad */
 	}
@@ -2584,7 +2584,7 @@ void grd_TDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 	for (node = 0; node < info->size; node++) {
 		a = (constant[prev]) ? factor[prev] : stack[prev]->data[node];
 		b = irint ((double)((constant[last]) ? factor[last] : stack[last]->data[node]));
-		(void) GMT_student_t_a (GMT, a, (GMT_LONG)b, &prob);
+		(void) GMT_student_t_a (GMT, a, b, &prob);
 		stack[prev]->data[node] = (float)prob;
 	}
 }

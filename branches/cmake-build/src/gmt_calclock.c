@@ -83,7 +83,7 @@ void GMT_dt2rdc (struct GMT_CTRL *C, double t, GMT_LONG *rd, double *s) {
 	in rd and the seconds since the start of that day in s.  */
 	double t_sec;
 	t_sec = (t * C->current.setting.time_system.scale + C->current.setting.time_system.epoch_t0 * GMT_DAY2SEC_F);
-	*rd = GMT_splitinteger (t_sec, (GMT_LONG)GMT_DAY2SEC_F, s) + C->current.setting.time_system.rata_die;
+	*rd = GMT_splitinteger (t_sec, GMT_DAY2SEC_I, s) + C->current.setting.time_system.rata_die;
 }
 
 /* Modulo functions.  The C operation "x%y" and the POSIX 
