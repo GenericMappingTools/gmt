@@ -385,7 +385,7 @@ GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, st
 	double *c = NULL, *f = NULL;
 
 	/* Get the flowline from this point back to time tt, restricted to the given wesn box */
-	n_chunk = spotter_forthtrack (GMT, &xx, &yy, &tt, (GMT_LONG)1, p, n_stages, d_km, 0.0, flag, wesn, &c);
+	n_chunk = spotter_forthtrack (GMT, &xx, &yy, &tt, 1, p, n_stages, d_km, 0.0, flag, wesn, &c);
 
 	n_track = irint (c[0]);				/* Number of point pairs making up this flowline */
 

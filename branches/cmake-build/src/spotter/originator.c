@@ -465,9 +465,9 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (!(n % 10)) GMT_report (GMT, GMT_MSG_NORMAL, "Working on seamount # %5ld\r", n);
 
-		nc = spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, (GMT_LONG)1, p, ns, Ctrl->D.value, 0.0, TRUE, NULL, &c);
+		nc = spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, ns, Ctrl->D.value, 0.0, TRUE, NULL, &c);
 
-		np = (GMT_LONG) c[0];
+		np = c[0];
 
 		GMT_memcpy (hot, hotspot, nh, struct HOTSPOT_ORIGINATOR);
 
