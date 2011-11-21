@@ -575,9 +575,10 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
  	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the psmeca main code ----------------------------*/
-
+	
 	GMT_memset (event_title, GMT_BUFSIZ, char);
 	GMT_memset (&meca, 1, st_me);
+	string[0] = '\0';
 
 	no_size_needed = (Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || \
 		Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_TENSOR || Ctrl->S.readmode == READ_AXIS);
@@ -674,7 +675,6 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		else
 			strcpy (event_title, string);
-		if (strlen (event_title) <= 0) sprintf (event_title, "\n");
 
 		/* Gather and transform the input records, depending on type */
 
@@ -872,6 +872,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->a2.size, Ctrl->a2.P_symbol);
 			}
 		}
+		event_title[0] = string[0] = '\0';		/* Reset these two in case next record misses "string" */
 	} while (TRUE);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
