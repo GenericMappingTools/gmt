@@ -349,12 +349,10 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) {
 			sscanf (line, "%s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6], station_name);
-			if (strlen (station_name) <= 0) sprintf(station_name,"\n");
 		}
 		else {
 			sscanf (line, "%s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7], col[8], station_name);
-			if (strlen (station_name) <= 0) sprintf(station_name,"\n");
 		}
 
 		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
@@ -458,16 +456,6 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						PSL_plottext (PSL, plot_x, plot_y - 1. / 25.4, Ctrl->S.fontsize, station_name, ANGLE, justify, FORM);
 					}
 					/*  1 inch = 2.54 cm */
-				}
-				i = 0;
-				while (col[7][i] != '\0') {
-					col[7][i] = ' ';
-					i++;
-				}
-				i = 0;
-				while (station_name[i] != '\0') {
-					station_name[i] = ' ';
-					i++;
 				}
 				break;
 			case ANISO:
