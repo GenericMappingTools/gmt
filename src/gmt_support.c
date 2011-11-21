@@ -2107,7 +2107,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG so
 			if (n_hdr_alloc == 0) X->header = GMT_memory (C, X->header, (n_hdr_alloc = GMT_TINY_CHUNK), char *);
 			X->header[X->n_headers] = strdup (line);
 			X->n_headers++;
-			if (X->n_headers > n_hdr_alloc) X->header = GMT_memory (C, X->header, (n_hdr_alloc += GMT_TINY_CHUNK), char *);
+			if (X->n_headers >= n_hdr_alloc) X->header = GMT_memory (C, X->header, (n_hdr_alloc += GMT_TINY_CHUNK), char *);
 			continue;
 		}
 		if (c == '\n') continue;	/* Comment or blank */
