@@ -345,7 +345,8 @@ add_dependencies (check ${GMT_PROGSPS} ${GMT_PROGS} ${GMT_DEMOS} psldemo
 # add the install targets
 install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
 	LIBRARY DESTINATION lib
-	RUNTIME DESTINATION bin)
+	RUNTIME DESTINATION bin
+	COMPONENT Runtime)
 
 # install extra files
 if (UNIX)
@@ -355,11 +356,13 @@ if (UNIX)
 		gmtlogo
 		gmtswitch
 		gmt_shell_functions.sh
-		DESTINATION bin)
+		DESTINATION bin
+		COMPONENT Runtime)
 elseif (WIN32)
 	install (PROGRAMS
 		gmtswitch.bat
-		DESTINATION bin)
+		DESTINATION bin
+		COMPONENT Runtime)
 endif (UNIX)
 
 # Generate manpages

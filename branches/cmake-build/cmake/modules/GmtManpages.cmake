@@ -152,18 +152,26 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 			add_custom_target (manpages${_tag} DEPENDS ${_target_depends})
 			add_depend_to_target (manpages_all manpages${_tag})
 
+			# install path must be relative
+			file (RELATIVE_PATH _install_path_share ${CMAKE_INSTALL_PREFIX}
+				${GMT_SHARE_PATH})
+			file (RELATIVE_PATH _install_path_doc ${CMAKE_INSTALL_PREFIX}
+				${GMT_DOC_PATH})
+
 			# install manpages
 			list (SORT _install_sections)
 			list (REMOVE_DUPLICATES _install_sections)
 			foreach (_man_section ${_install_sections})
 				install (FILES ${_manfilepaths_${_man_section}}
-					DESTINATION ${GMT_SHARE_PATH}/man/man${_man_section}
+					DESTINATION ${_install_path_share}/man/man${_man_section}
+					COMPONENT Runtime
 					OPTIONAL)
 			endforeach (_man_section ${_install_sections})
 
 			# install html manpages
 			install (FILES ${_manfiles_html}
-				DESTINATION ${GMT_DOC_PATH}/html
+				DESTINATION ${_install_path_doc}/html
+				COMPONENT Documentation
 				OPTIONAL)
 
 			# remember _manfiles_ps

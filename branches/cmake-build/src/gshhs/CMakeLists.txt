@@ -18,45 +18,46 @@
 #
 
 # source files
-set (GMT_GSHHS_PROGS_SRCS gshhs.c)
-set (GMT_GSHHS_PROGS2_SRCS gshhs_dp.c gshhstograss.c)
+set (SUPPL_PROGS_SRCS gshhs.c)
+set (SUPPL_PROGS2_SRCS gshhs_dp.c gshhstograss.c)
 
 # generate header file gmt_gshhs.h
-gmt_set_api_header(GMT_GSHHS_API_H ${GMT_GSHHS_PROGS_SRCS})
+gmt_set_api_header(SUPPL_API_H ${SUPPL_PROGS_SRCS})
 
 # lib sources
-set (LIB_SRCS ${GMT_GSHHS_PROGS_SRCS} ${GMT_GSHHS_API_H})
+set (LIB_SRCS ${SUPPL_PROGS_SRCS} ${SUPPL_API_H})
 
 # create build targets
-string (REPLACE ".c" "" GMT_GSHHS_PROGS "${GMT_GSHHS_PROGS_SRCS}")
-foreach (prog ${GMT_GSHHS_PROGS})
+string (REPLACE ".c" "" SUPPL_PROGS "${SUPPL_PROGS_SRCS}")
+foreach (prog ${SUPPL_PROGS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
 		PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
 	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 
-string (REPLACE ".c" "" GMT_GSHHS_PROGS2 "${GMT_GSHHS_PROGS2_SRCS}")
-foreach (_prog ${GMT_GSHHS_PROGS2})
+string (REPLACE ".c" "" SUPPL_PROGS2 "${SUPPL_PROGS2_SRCS}")
+foreach (_prog ${SUPPL_PROGS2})
 	add_executable (${_prog} ${_prog}.c)
 	target_link_libraries (${_prog} gmtlib)
 endforeach (_prog)
 
 # generate Mac debugging symbols
-create_debug_sym (${GMT_GSHHS_PROGS} ${GMT_GSHHS_PROGS2})
+create_debug_sym (${SUPPL_PROGS} ${SUPPL_PROGS2})
 
 # add the install targets
-install (TARGETS ${GMT_GSHHS_PROGS} ${GMT_GSHHS_PROGS2}
-	RUNTIME DESTINATION bin)
+install (TARGETS ${SUPPL_PROGS} ${SUPPL_PROGS2}
+	RUNTIME DESTINATION bin
+	COMPONENT Runtime)
 
 # add to gmt_suppl target
 add_depend_to_target (gmt_suppl
-	${GMT_GSHHS_PROGS}
-	${GMT_GSHHS_PROGS2})
+	${SUPPL_PROGS}
+	${SUPPL_PROGS2})
 
 # Generate manpages
-string (REPLACE ".c" ".1" GMT_GSHHS_MAN_1
-	"${GMT_GSHHS_PROGS_SRCS};${GMT_GSHHS_PROGS2_SRCS}")
-gmt_create_manpages ("${GMT_GSHHS_MAN_1}")
+string (REPLACE ".c" ".1" SUPPL_MAN_1
+	"${SUPPL_PROGS_SRCS};${SUPPL_PROGS2_SRCS}")
+gmt_create_manpages ("${SUPPL_MAN_1}")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

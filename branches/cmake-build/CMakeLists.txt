@@ -74,9 +74,10 @@ find_program (GRAPHICSMAGICK gm)
 set(_manfiles_ps "" CACHE INTERNAL "Global list of PS manpages")
 set(_manfiles_suppl_ps "" CACHE INTERNAL "Global list of supplement PS manpages")
 add_subdirectory (src)
-add_subdirectory (share) # share must be processed *after* src (GSHHS_PATH)
-add_subdirectory (doc)   # share must be processed *after* src (PDF manpages)
+add_subdirectory (share)      # share must be processed *after* src (GSHHS_PATH)
+add_subdirectory (doc)        # share must be processed *after* src (PDF manpages)
 add_subdirectory (test)
+add_subdirectory (cmake/dist) # make distribution bundles (always last)
 
 # Configuration done
 message(

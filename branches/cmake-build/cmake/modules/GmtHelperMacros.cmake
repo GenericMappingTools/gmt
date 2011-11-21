@@ -22,6 +22,7 @@
 # add_depend_to_target (TARGET DEPEND [ DEPEND [ DEPEND ... ]])
 # add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
 # gmt_set_api_header (API_HEADER FUNCTIONS)
+# get_subdir_var (VARIABLE VAR_NAME DIR [ DIR ... ])
 # get_subdir_var_files (VARIABLE VAR_NAME DIR [ DIR ... ])
 
 if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
@@ -83,6 +84,17 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		set (${_API_HEADER} gmt_${GMT_SUPPL_STRING}.h)
 		set (GMT_SUPPL_STRING) # reset GMT_SUPPL_STRING
 	endmacro (GMT_SET_API_HEADER _API_HEADER _FUNCTIONS)
+
+	# get_subdir_var (VARIABLE VAR_NAME DIR [ DIR ... ])
+	# example: get_subdir_var (SUB_TARGETS PROGS ${SUB_DIRS})
+	macro (GET_SUBDIR_VAR VARIABLE VAR_NAME DIR_NAME)
+		set (${VARIABLE}) # clear VARIABLE
+		foreach (_dir ${DIR_NAME} ${ARGN})
+			# get value of variable ${VAR_NAME} in dir ${_dir}:
+			get_directory_property (_value DIRECTORY ${_dir} DEFINITION ${VAR_NAME})
+			list (APPEND ${VARIABLE} "${_value}")
+		endforeach(_dir)
+	endmacro (GET_SUBDIR_VAR VARIABLE VAR_NAME DIR_NAME)
 
 	# get_subdir_var_files (VARIABLE VAR_NAME DIR [ DIR ... ])
 	# example: get_subdir_var_files (SUB_LIB_SRCS LIB_SRCS ${SUB_DIRS})

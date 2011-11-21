@@ -109,7 +109,9 @@ add_custom_target (pdf_figures DEPENDS ${_pdf_figures})
 # Install pdf figures (if found)
 foreach (_fig ${_pdf_fig_install})
 	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_fig}
-		DESTINATION ${GMT_DOC_PATH}/pdf OPTIONAL)
+		DESTINATION ${GMT_DOC_PATH}/pdf
+		COMPONENT Documentation
+		OPTIONAL)
 endforeach (_fig ${_pdf_fig_install})
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
