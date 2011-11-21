@@ -50,6 +50,8 @@ set (GMT_CONFIG_FILES
 	${CMAKE_CURRENT_BINARY_DIR}/gmt_SI.conf
 )
 
-install (FILES ${GMT_CONFIG_FILES} DESTINATION ${GMT_SHARE_PATH}/conf)
+install (FILES ${GMT_CONFIG_FILES}
+	DESTINATION ${GMT_SHARE_PATH}/conf
+	COMPONENT Runtime)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

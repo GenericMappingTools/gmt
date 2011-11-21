@@ -18,23 +18,23 @@
 #
 
 # source files
-set (GMT_MECA_LIB_SRCS utilmeca.c nrutil.c submeca.c distaz.c)
-set (GMT_MECA_PROGS_SRCS psmeca.c pspolar.c psvelo.c pscoupe.c)
+set (SUPPL_LIB_SRCS utilmeca.c nrutil.c submeca.c distaz.c)
+set (SUPPL_PROGS_SRCS psmeca.c pspolar.c psvelo.c pscoupe.c)
 
 # example files
-set (GMT_MECA_EXAMPLE_FILES README.meca)
-set (GMT_MECA_EXAMPLE_PROGS meca_1.bat meca_1.csh meca_2.csh meca_3.csh meca_4.csh)
+set (SUPPL_EXAMPLE_FILES README.meca)
+set (SUPPL_EXAMPLE_PROGS meca_1.bat meca_1.csh meca_2.csh meca_3.csh meca_4.csh)
 
 # generate header file gmt_meca.h
-gmt_set_api_header(GMT_MECA_API_H ${GMT_MECA_PROGS_SRCS})
+gmt_set_api_header(SUPPL_API_H ${SUPPL_PROGS_SRCS})
 
 # lib sources
-set (LIB_SRCS ${GMT_MECA_LIB_SRCS}
-	${GMT_MECA_PROGS_SRCS} ${GMT_MECA_API_H})
+set (LIB_SRCS ${SUPPL_LIB_SRCS}
+	${SUPPL_PROGS_SRCS} ${SUPPL_API_H})
 
 # create build targets
-string (REPLACE ".c" "" GMT_MECA_PROGS "${GMT_MECA_PROGS_SRCS}")
-foreach (prog ${GMT_MECA_PROGS})
+string (REPLACE ".c" "" SUPPL_PROGS "${SUPPL_PROGS_SRCS}")
+foreach (prog ${SUPPL_PROGS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
 	PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMTPSL;FUNC=GMT_${prog}")
@@ -42,25 +42,26 @@ foreach (prog ${GMT_MECA_PROGS})
 endforeach (prog)
 
 # generate Mac debugging symbols
-create_debug_sym (${GMT_MECA_PROGS})
+create_debug_sym (${SUPPL_PROGS})
 
 # add the install targets
-install (TARGETS ${GMT_MECA_PROGS}
-	RUNTIME DESTINATION bin)
+install (TARGETS ${SUPPL_PROGS}
+	RUNTIME DESTINATION bin
+	COMPONENT Runtime)
 
 # add to gmt_suppl target
-add_depend_to_target (gmt_suppl ${GMT_MECA_PROGS})
+add_depend_to_target (gmt_suppl ${SUPPL_PROGS})
 
 # Generate manpages
-string (REPLACE ".c" ".1" GMT_MECA_MAN_1 "${GMT_MECA_PROGS_SRCS}")
-gmt_create_manpages ("${GMT_MECA_MAN_1}")
+string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGS_SRCS}")
+gmt_create_manpages ("${SUPPL_MAN_1}")
 
 # install example data
-install (FILES ${GMT_MECA_EXAMPLE_FILES}
-	DESTINATION
-	${GMT_DOC_PATH}/supplements/meca)
-install (PROGRAMS ${GMT_MECA_EXAMPLE_PROGS}
-	DESTINATION
-	${GMT_DOC_PATH}/supplements/meca)
+install (FILES ${SUPPL_EXAMPLE_FILES}
+	DESTINATION ${GMT_DOC_PATH}/supplements/meca
+	COMPONENT Documentation)
+install (PROGRAMS ${SUPPL_EXAMPLE_PROGS}
+	DESTINATION ${GMT_DOC_PATH}/supplements/meca
+	COMPONENT Documentation)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

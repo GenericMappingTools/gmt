@@ -52,7 +52,11 @@ if (X11_FOUND AND X11_Xt_FOUND AND XAW_LIBRARY)
 
 	# add the install targets
 	install (TARGETS xgridedit
-		RUNTIME DESTINATION bin)
+		RUNTIME DESTINATION bin
+		COMPONENT Runtime)
+
+	# add to gmt_suppl target
+	add_depend_to_target (gmt_suppl xgridedit)
 
 endif (X11_FOUND AND X11_Xt_FOUND AND XAW_LIBRARY)
 
