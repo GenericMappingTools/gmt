@@ -1543,7 +1543,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					/* Now paint the polygon piece */
 
 					for (k = 0; k < 4; k++) GMT_geoz_to_xy (GMT, X_vert[k], Y_vert[k], (double)(Topo->data[ij+ij_inc[k]]), &xmesh[k], &ymesh[k]);
-					paint_it_grdview (GMT, PSL, P, xmesh, ymesh, 4, z_ave, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, Ctrl->Q.outline);
+					paint_it_grdview (GMT, PSL, P, xmesh, ymesh, 4, z_ave+small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, Ctrl->Q.outline);
 				}
 			}
 		}
