@@ -420,7 +420,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				strcat (record, " name: ");	strcat (record, G->header->x_units);
 				sprintf (text, " nx: %d", G->header->nx);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-				sprintf (text, "%s: y_min: ", G->header->name);	strcat (record, text);
+				sprintf (record, "%s: y_min: ", G->header->name);
 				GMT_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_Y);	strcat (record, text);
 				strcat (record, " y_max: ");
 				GMT_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_Y);	strcat (record, text);
