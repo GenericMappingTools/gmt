@@ -135,7 +135,7 @@ void *New_pscoupe_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	GMT_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	GMT_init_fill (GMT, &C->E2.fill, 1.0, 1.0, 1.0);
-	GMT_init_fill (GMT, &C->G2.fill, 1.0, 1.0, 1.0);
+	GMT_init_fill (GMT, &C->G2.fill, 0.0, 0.0, 0.0);
 	C->S.fontsize = DEFAULT_FONTSIZE;
 	C->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 	C->S.justify = DEFAULT_JUSTIFY;
@@ -860,7 +860,7 @@ Definition of scalar moment.
 				GMT_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
 				PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A.size, Ctrl->a2.P_symbol);
 				GMT_setpen (GMT, &Ctrl->T2.pen);
-				GMT_setfill (GMT, &Ctrl->E2.fill, Ctrl->E2.active);
+				GMT_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active);
 				PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A.size, Ctrl->a2.T_symbol);
 			}
 		}
