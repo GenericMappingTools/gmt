@@ -22,9 +22,7 @@
 #include "pslib.h"	/* to have pslib environment */
 #include "gmt_meca.h"	/* to have gmt_meca supplements */
 
-#define DEFAULT_POINTSIZE	0.005
-#define DEFAULT_FONTSIZE	9.0
-#define DEFAULT_OFFSET		3.0      /* In points */
+#define DEFAULT_FONTSIZE	9.0	/* In points */
 
 /* Control structure for pspolar */
 
@@ -104,7 +102,7 @@ void *New_pspolar_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
         C->E.pen = C->F.pen = C->G.pen  = GMT->current.setting.map_default_pen;
     
-	C->C.size = DEFAULT_POINTSIZE;
+	C->C.size = GMT_DOT_SIZE;
 	GMT_init_fill (GMT, &C->E.fill, 250.0 / 255.0, 250.0 / 255.0, 250.0 / 255.0);
 	GMT_init_fill (GMT, &C->F.fill, -1.0, -1.0, -1.0); 
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
@@ -513,7 +511,7 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					break;
 			}
 		}
-		if (Ctrl->S.symbol == GMT_SYMBOL_DOT) symbol_size2 = DEFAULT_POINTSIZE;
+		if (Ctrl->S.symbol == GMT_SYMBOL_DOT) symbol_size2 = GMT_DOT_SIZE;
 
 		if (pol == 'u' || pol == 'U' || pol == 'c' || pol == 'C' || pol == '+') {
 			GMT_setpen (GMT, &Ctrl->G.pen);

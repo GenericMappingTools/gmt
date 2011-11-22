@@ -25,10 +25,9 @@ PostScript code is written to stdout.
 #include "meca.h"
 #include "utilmeca.h"
 
-#define DEFAULT_POINTSIZE 0.005
-#define DEFAULT_FONTSIZE 9.0
-#define DEFAULT_OFFSET 3.0	/* In points */
-#define DEFAULT_JUSTIFY 2
+#define DEFAULT_FONTSIZE	9.0	/* In points */
+#define DEFAULT_OFFSET		3.0	/* In points */
+#define DEFAULT_JUSTIFY		2	/* Center-bottom */
 
 #define READ_CMT	0
 #define READ_AKI	1
@@ -137,7 +136,7 @@ void *New_psmeca_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	C->C.size = DEFAULT_POINTSIZE;
+	C->C.size = GMT_DOT_SIZE;
 	C->C.pen = C->L.pen = C->T.pen = C->Z2.pen = C->P2.pen = GMT->current.setting.map_default_pen;
 	C->L.active = TRUE;
 	C->D.depmax = 900.0;
@@ -147,7 +146,7 @@ void *New_psmeca_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	GMT_init_fill (GMT, &C->E2.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G2.fill, 0.0, 0.0, 0.0);
 	C->S.fontsize = DEFAULT_FONTSIZE;
-	C->S.offset = DEFAULT_OFFSET;
+	C->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 	C->S.justify = 2;
 	C->a2.size = GMT->session.d_NaN;
 	C->O2.mode = 1;
@@ -334,7 +333,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 					sscanf (p, "/%lf/%lf", &Ctrl->S.fontsize, &Ctrl->S.offset);
 					if (GMT_IS_ZERO (Ctrl->S.fontsize)) Ctrl->S.fontsize = DEFAULT_FONTSIZE;
 					if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = TRUE;
-					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET;
+					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 					if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = 10;
 				}
 				switch (Ctrl->S.type) {
