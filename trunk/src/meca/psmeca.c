@@ -147,7 +147,7 @@ void *New_psmeca_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	GMT_init_fill (GMT, &C->E2.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G2.fill, 0.0, 0.0, 0.0);
 	C->S.fontsize = DEFAULT_FONTSIZE;
-	C->S.offset = DEFAULT_OFFSET;
+	C->S.offset = DEFAULT_OFFSET  * GMT->session.u2u[GMT_PT][GMT_INCH];
 	C->a2.size = GMT->session.d_NaN;
 	C->O2.mode = 1;
 	return (C);
@@ -333,7 +333,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 					sscanf (p, "/%lf/%lf", &Ctrl->S.fontsize, &Ctrl->S.offset);
 					if (GMT_IS_ZERO (Ctrl->S.fontsize)) Ctrl->S.fontsize = DEFAULT_FONTSIZE;
 					if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = TRUE;
-					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET;
+					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 					if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = 10;
 				}
 				switch (Ctrl->S.type) {
