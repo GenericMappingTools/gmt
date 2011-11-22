@@ -1,6 +1,16 @@
 -----------------------------------------------------------------------------------------
 	$Id$
 -----------------------------------------------------------------------------------------
+2011-11-21	pwessel
+	* grdview.c:		Also, when nodes are adjusted by small to avoid matching a
+				contour value exactly (during contouring), the same adjustment
+				must be made later when those nodes are used to determine how
+				to stitch together polygons for fill.
+
+2011-11-19	jluis
+	* mgd77/mgd77.c:	Fix memory allocation bug in MGD77_Read_Header_Sequence() where 
+				it was reading MGD77_RECORD_LENGTH records into a shorter 
+				MGD77_HEADER_LENGTH longer variable.
 
 2011-11-18	pwessel
 	* *.c:			Make sure that incrementally allocated memory for structures
