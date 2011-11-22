@@ -8,7 +8,7 @@ ps=meca_2c.ps
 
 gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
 
-psmeca -R128/130/10/11.1 -JX2i -a0.2/cc -Sc0.4 -B1 -Y8.5 -K << EOF > $ps
+psmeca -R128/130/10/11.1 -JX2i -a0.1i/cc -Sc0.4i -B1 -Y8.5i -P -K << EOF > $ps
 # lon   lat  dep str dip rake str dip rake m ex nx ny 
 129.5  10.5  0  0   90   0  90   90 180  1 24  0  0 10km
 128.5  10.5  0  0   45  90 180   45  90  1 24  0  0 40km
