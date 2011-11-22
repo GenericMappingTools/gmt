@@ -65,9 +65,6 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 
 #define PSL_POINTS_PER_INCH	72.0
 #define PSL_DOTS_PER_INCH	1200.0	/* Effective dots per inch resolution */
-#define PSL_BUFSIZ		4096	/* To match GMT_BUFSIZ and be consistent across all platforms */
-#define PSL_N_PATTERNS		91	/* Current number of predefined patterns + 1, # 91 is user-supplied */
-#define PSL_MAX_EPS_FONTS	6
 #define PSL_ALL_CLIP		INT_MAX	/* Terminates all clipping */
 
 /* PSL codes for geometric symbols as expected by PSL_plotsymbol */
@@ -114,7 +111,10 @@ enum PSL_enum_const {PSL_CM	= 0,
 	PSL_YES			= 1,
 	PSL_FWD			= 0,
 	PSL_INV			= 1,
-	PSL_OUTLINE		= 1};
+	PSL_OUTLINE		= 1,
+	PSL_MAX_EPS_FONTS	= 6,
+	PSL_N_PATTERNS		= 91,		/* Current number of predefined patterns + 1, # 91 is user-supplied */
+	PSL_BUFSIZ		= 4096};	/* To match GMT_BUFSIZ and be consistent across all platforms */
 
 /* PSL codes for pen movements (used by PSL_plotpoint, PSL_plotline, PSL_plotarc) */
 

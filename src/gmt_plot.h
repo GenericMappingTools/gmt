@@ -69,7 +69,7 @@
 #define GMT_SYMBOL_NONE		((GMT_LONG)' ')
 #define GMT_SYMBOL_NOT_SET	((GMT_LONG)'*')
 
-#define GMT_DOT_SIZE 0.005	/* Size of a "dot" on a GMT PS map */
+#define GMT_DOT_SIZE 0.005	/* Size of a "dot" on a GMT PS map [in inches] */
 
 /* FRONT symbols */
 

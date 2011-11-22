@@ -26,11 +26,11 @@
 #ifndef _GMT_COLORS_H
 #define _GMT_COLORS_H
 
-#define GMT_RGB		0
-#define GMT_CMYK	1
-#define GMT_HSV		2
-#define GMT_COLORINT	4
-#define GMT_NO_COLORNAMES	8
+enum GMT_enum_color {GMT_RGB	= 0,
+	GMT_CMYK		= 1,
+	GMT_HSV			= 2,
+	GMT_COLORINT		= 4,
+	GMT_NO_COLORNAMES	= 8};
 
 enum GMT_enum_bfn {GMT_BGD, GMT_FGD, GMT_NAN};
 

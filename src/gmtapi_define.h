@@ -19,10 +19,18 @@
 #ifndef _GMTAPI_DEFINE_H
 #define _GMTAPI_DEFINE_H
 
-#define GMTAPI_N_ARRAY_ARGS	8	/* Minimum size of information array used to specify array parameters */
-#define GMTAPI_N_GRID_ARGS	4	/* Minimum size of information array used to specify grid parameters */
-
-#define GMTAPI_STRLEN		16	/* Bytes needed to hold the @GMTAPI@-###### resource names */
+enum GMT_enum_api {
+	GMTAPI_NOTSET		= -1,	/* Object ID when not set */
+	GMTAPI_ORDER_ROW 	= 0,	/* C-style array order: as index increase we move across rows */
+	GMTAPI_ORDER_COL	= 1,	/* Fortran-style array order: as index increase we move down columns */
+	GMTAPI_USAGE		= 0,	/* Want to report full program usage message */
+	GMTAPI_SYNOPSIS		= 1,	/* Just want the synopsis of usage */
+	GMTAPI_GMT		= 0,	/* Want GMT but not PSL initialized */
+	GMTAPI_GMTPSL		= 1,	/* Want GMT and PSL initialized */
+	GMTAPI_N_GRID_ARGS	= 4,	/* Minimum size of information array used to specify grid parameters */
+	GMTAPI_N_ARRAY_ARGS	= 8,	/* Minimum size of information array used to specify array parameters */
+	GMTAPI_STRLEN		= 16	/* Bytes needed to hold the @GMTAPI@-###### resource names */
+};
 
 /* Index parameters used to access the information arrays */
 
@@ -49,19 +57,6 @@ enum GMT_enum_type {GMTAPI_UCHAR = 0,	/* The 1-byte unsigned integer type */
 	GMTAPI_TEXT,			/* Arbitrarily long text string [OGR/GMT use only] */
 	GMTAPI_TIME,			/* string with date/time info [OGR/GMT use only] */
 	GMTAPI_N_TYPES};		/* The number of supported data types above */
-
-/* Array ordering constants */
-	
-enum GMT_enum_order {GMTAPI_ORDER_ROW = 0,	/* C-style array order: as index increase we move across rows */
-	GMTAPI_ORDER_COL};			/* Fortran-style array order: as index increase we move down columns */
-
-#define GMTAPI_USAGE		0	/* Want to report full program usage message */
-#define GMTAPI_SYNOPSIS		1	/* Just want the synopsis of usage */
-
-#define GMTAPI_NOTSET		-1	/* Object ID when not set */
-
-#define GMTAPI_GMT		0	/* Want GMT but not PSL initialized */
-#define GMTAPI_GMTPSL		1	/* Want GMT and PSL initialized */
 
 #define GMTAPI_OPT_USAGE	'?'
 #define GMTAPI_OPT_SYNOPSIS	'^'
