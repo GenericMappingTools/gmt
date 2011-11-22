@@ -132,12 +132,14 @@ void *New_pscoupe_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
 	C->L.pen = C->T.pen = C->P2.pen = GMT->current.setting.map_default_pen;
+	C->L.active = TRUE;
 	GMT_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	GMT_init_fill (GMT, &C->E2.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G2.fill, 1.0, 1.0, 1.0);
 	C->S.fontsize = DEFAULT_FONTSIZE;
 	C->S.offset = DEFAULT_OFFSET;
+	C->S.justify = DEFAULT_JUSTIFY;
 	C->A.size = GMT->session.d_NaN;
 	return (C);
 }
@@ -340,15 +342,19 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 				switch (opt->arg[0]) {
 					case 'c':
 						Ctrl->S.readmode = READ_CMT;
+						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 'a':
 						Ctrl->S.readmode = READ_AKI;
+						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 'p':
 						Ctrl->S.readmode = READ_PLANES;
+						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 'x':
 						Ctrl->S.readmode = READ_AXIS;
+						Ctrl->S.plotmode = PLOT_TENSOR;
 						break;
 					case 'y':
 						Ctrl->S.readmode = READ_AXIS;

@@ -148,6 +148,7 @@ void *New_psmeca_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	GMT_init_fill (GMT, &C->G2.fill, 0.0, 0.0, 0.0);
 	C->S.fontsize = DEFAULT_FONTSIZE;
 	C->S.offset = DEFAULT_OFFSET;
+	C->S.justify = 2;
 	C->a2.size = GMT->session.d_NaN;
 	C->O2.mode = 1;
 	return (C);
