@@ -43,13 +43,12 @@
 enum GMT_enum_reg {GMT_GRIDLINE_REG = 0,
 	GMT_PIXEL_REG};
 
-/* These 4 lengths must NOT be changed as they are part of grd definition */
-#define GRD_COMMAND_LEN320	320
-#define GRD_REMARK_LEN160	160
-#define GRD_TITLE_LEN80	 	80
-#define GRD_UNIT_LEN80	 	80
-
-#define GRD_VARNAME_LEN80	80
+/* These lengths (except GRD_VARNAME_LEN80) must NOT be changed as they are part of grd definition */
+enum GMT_enum_grdlen {	GRD_UNIT_LEN80	= 80,
+			GRD_TITLE_LEN80	= 80,
+		GRD_VARNAME_LEN80	= 80,
+		GRD_COMMAND_LEN320	= 320,
+		GRD_REMARK_LEN160	= 160};
 
 struct GRD_HEADER {
 /* ===== Do not change the first three items. They are copied verbatim to the native grid header */
