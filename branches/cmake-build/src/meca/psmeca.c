@@ -139,6 +139,7 @@ void *New_psmeca_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C->C.size = DEFAULT_POINTSIZE;
 	C->C.pen = C->L.pen = C->T.pen = C->Z2.pen = C->P2.pen = GMT->current.setting.map_default_pen;
+	C->L.active = TRUE;
 	C->D.depmax = 900.0;
 	GMT_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
