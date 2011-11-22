@@ -16,7 +16,7 @@ EOF
  
 # and polarities observed
 pspolar -R -J -D87/35 -M4i -N -Sc0.3i -e -O \
-    -B:".Tibet earthquake (1997) - polarities distribution": << EOF >> $ps
+    -B0:".Tibet earthquake (1997) - polarities distribution": << EOF >> $ps
 1 147.8 53 c
 2 318.6 53 c
 3 311.9 53 c
