@@ -265,7 +265,7 @@ void add_node (struct GMT_CTRL *GMT, double x[], double y[], double z[], double 
 	x[*k] = X_vert[node];
 	y[*k] = Y_vert[node];
 	z[*k] = topo[ij];
-	v[*k] = zgrd[ij];
+	v[*k] = zgrd[node];
 	(*k)++;
 }
 
@@ -702,6 +702,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);
 		binij = GMT_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
 		small = GMT_SMALL * (Z->header->z_max - Z->header->z_min);
+		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */
 		Z_orig = GMT_duplicate_grid (GMT, Z, TRUE);	/* Original copy of grid used for contouring */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Trace and bin contours...\n");
 		first = TRUE;
@@ -1206,7 +1207,31 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_LONG start_side, entry_side, exit_side, next_side, low, ncont, nw_se_diagonal, check;
 		GMT_LONG corner[2], bad_side[2][2], p, p1, p2, saddle_sign;
 		double *xcont = NULL, *ycont = NULL, *zcont = NULL, *vcont = NULL, X_vert[4], Y_vert[4], saddle_small;
+		float Z_vert[4];
 
+		/* PW: Bugs fixed in Nov, 2011: Several problems worth remembering:
+			1) Earlier [2004] we had fixed grdcontour but not grdview in dealing with the current zero contour.  Because
+			   of float precision we cannot take the grid and repeatedly subtract the difference in contour values.
+			   Instead for each contour value cval, we must subtract cval from the original grid to get the tmp grid.
+			2) To avoid never to have contours go through nodes EXACTLY, we check if there are nodes that equal zero.
+			   If so, we add small (a small amount to make it different from zero).  We then get contours.  However,
+			   for -Qs we again use the grid node values to determine which way to loop around a polygon piece when
+			   stitching it together from pieces of contours and node values. Thus it is important that we use node
+			   values that have been adjusted as above and not the original nodes.
+			3) We should make sure that the small value exceeeds single-precision EPS (~ 1.2e-7), otherwise adding small
+			   will not make the node non-zero.  This does not seem to have been a problem yet but I added a new check
+			   just in case and if so set small to 1.0e-7.
+			4) Given zgrd is float, there is a difference between zgrd[node] -= (float)cval and zgrd[node] -= cval,
+			   since cval is double precision.  We had the cast during the contouring but here under -Qs we had some
+			   comparisions without the cast, the result being both sides got promoted to double prior to the test and
+			   we can get a different result.
+			5) In the case of no contour we paint the entire tile.  However, in the case of discontinuous CPT files we
+			   based the color on the lower-left node value (since it should not matter which corner we pick).  But it
+			   does: If that node HAPPENS to be one that had small added to it and as a result no contour goes through,
+			   we have no way of adjusting the node accordingly.  Consequently, it is safer to always take the average
+			   of the 4 nodes as the other 3 will pull the average into the middle somewhere.
+		*/
+			
 		xcont = GMT_memory (GMT, NULL, max, double);
 		ycont = GMT_memory (GMT, NULL, max, double);
 		zcont = GMT_memory (GMT, NULL, max, double);
@@ -1243,6 +1268,11 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				X_vert[0] = X_vert[3] = x_left;		X_vert[1] = X_vert[2] = x_right;
 				Y_vert[0] = Y_vert[1] = y_bottom;	Y_vert[2] = Y_vert[3] = y_top;
+				
+				/* Also get z-values at the 4 nodes.  Because some nodes may have been adjusted by small during
+				 * the contouring stage we need to make the same adjustments below */
+				
+				for (k = 0; k < 4; k++) Z_vert[k] = Z->data[ij+ij_inc[k]];	/* First a straight copy */
 
 				if (get_contours && binij[bin].first_cont) {	/* Contours go thru here */
 
@@ -1256,6 +1286,13 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						else
 							this_cont = this_cont->next_cont;
 					}
+					for (k = 0; k < 4; k++) {	/* Deal with the fact that some nodes may have had small added to them */
+						Z_vert[k] -= (float)this_cont->value;	/* Note we cast to float to get the same precision as for contours */
+						if (Z_vert[k] == 0.0) Z_vert[k] += small;
+						Z_vert[k] += (float)this_cont->value;
+					}
+					/* Here, Z_vert reflects what the grid was when contouring was determined */
+
 					if (saddle) {	/* Must deal with this separately */
 
 						this_point = this_cont->first_point;
@@ -1264,15 +1301,15 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						exit_side  = get_side (GMT, this_point->x, this_point->y, x_left, y_bottom, Z->header->inc, inc2);
 
 
-						if (MIN (Z->data[ij+ij_inc[1]], Z->data[ij+ij_inc[3]]) > MAX (Z->data[ij], Z->data[ij+ij_inc[2]])) {
+						if (MIN (Z_vert[1], Z_vert[3]) > MAX (Z_vert[0], Z_vert[2])) {
 							saddle_sign = +1;
 							check = TRUE;
 						}
-						else if (MAX (Z->data[ij+ij_inc[1]], Z->data[ij+ij_inc[3]]) < MIN (Z->data[ij], Z->data[ij+ij_inc[2]])) {
+						else if (MAX (Z_vert[1], Z_vert[3]) < MIN (Z_vert[0], Z_vert[2])) {
 							saddle_sign = -1;
 							check = TRUE;
 						}
-						else if (MIN (Z->data[ij], Z->data[ij+ij_inc[2]]) > MAX (Z->data[ij+ij_inc[1]], Z->data[ij+ij_inc[3]])) {
+						else if (MIN (Z_vert[0], Z_vert[2]) > MAX (Z_vert[1], Z_vert[3])) {
 							saddle_sign = +1;
 							check = FALSE;
 						}
@@ -1298,7 +1335,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 							low = corner[p];
 							n = 0;
-							add_node (GMT, x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z->data, ij+ij_inc[low]);
+							add_node (GMT, x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
 							start_side = next_side = low;
 							way = 0;
 
@@ -1351,7 +1388,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 								copy_points_fw (GMT, x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 								next_side = exit_side;
 								start_side = entry_side;
-								way = (Z->data[bin+bin_inc[low]] < this_cont->value) ? -1 : 1;
+								way = (Z_vert[low] < (float)this_cont->value) ? -1 : 1;
 							}
 
 							/* Final contour needs to add diagonal */
@@ -1364,8 +1401,8 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 								p1 = (next_side % 3) ? 2 : 0;
 								p2 = (next_side % 3) ? 0 : 2;
 							}
-							add_node (GMT, x, y, z, v, &n, p1, X_vert, Y_vert, Topo->data, Z->data, ij+ij_inc[p1]);
-							add_node (GMT, x, y, z, v, &n, p2, X_vert, Y_vert, Topo->data, Z->data, ij+ij_inc[p2]);
+							add_node (GMT, x, y, z, v, &n, p1, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p1]);
+							add_node (GMT, x, y, z, v, &n, p2, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p2]);
 
 							/* Compute the xy from the xyz triplets */
 
@@ -1385,12 +1422,12 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 						/* Find lowest corner (id = low) */
 
-						for (k = 1, low = 0; k < 4; k++) if (Z->data[ij+ij_inc[k]] < Z->data[ij+ij_inc[low]]) low = k;
+						for (k = 1, low = 0; k < 4; k++) if (Z_vert[k] < Z_vert[low]) low = k;
 
 						/* Set this points as the start anchor */
 
 						n = 0;
-						add_node (GMT, x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z->data, ij+ij_inc[low]);
+						add_node (GMT, x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
 						start_side = next_side = low;
 						way = 1;
 
@@ -1415,7 +1452,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 							while (!(next_side == entry_side || next_side == exit_side)) {	/* Must add intervening corner */
 								if (way == 1) next_side = (next_side + 1) % 4;
-								add_node (GMT, x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z->data, ij+ij_inc[next_side]);
+								add_node (GMT, x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 								if (way == -1) next_side = (next_side - 1 + 4) % 4;
 							}
 							if (next_side == entry_side) {	/* Just hook up */
@@ -1430,7 +1467,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 							while (!(start_side == next_side)) {	/* Must add intervening corner */
 								if (way == 1) next_side = (next_side + 1) % 4;
-								add_node (GMT, x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z->data, ij+ij_inc[next_side]);
+								add_node (GMT, x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 								if (way == -1) next_side = (next_side - 1 + 4) % 4;
 							}
 
@@ -1449,7 +1486,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							copy_points_fw (GMT, x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 							next_side = exit_side;
 							start_side = entry_side;
-							way = (Z->data[ij+ij_inc[start_side]] < this_cont->value) ? -1 : 1;
+							way = (Z_vert[start_side] < (float)this_cont->value) ? -1 : 1;
 
 							this_cont = this_cont->next_cont;	/* Goto next contour */
  						}
@@ -1458,7 +1495,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 						while (!(start_side == next_side)) {	/* Must add intervening corner */
 							if (way == 1) next_side = (next_side +1) % 4;
-							add_node (GMT, x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z->data, ij+ij_inc[next_side]);
+							add_node (GMT, x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 							if (way == -1) next_side = (next_side - 1 + 4) % 4;
 						}
 
@@ -1500,12 +1537,8 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				else {	/* No Contours */
 
-					if (P->is_continuous) {	/* Take the color corresponding to the average value of the four corners */
-						for (n = 0, z_ave = 0.0; n < 4; n++) z_ave += Z->data[ij+ij_inc[n]];
-						z_ave *= 0.25;
-					}
-					else	/* Take the value of any corner */
-						z_ave = Z->data[ij];
+					/* For stability, take the color corresponding to the average value of the four corners */
+					z_ave = 0.25 * (Z_vert[0] + Z_vert[1] + Z_vert[2] + Z_vert[3]);
 
 					/* Now paint the polygon piece */
 
