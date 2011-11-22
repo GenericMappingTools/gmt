@@ -27,10 +27,9 @@ PostScript code is written to stdout.
 #include "utilmeca.h"
 #include "submeca.h"
 
-#define DEFAULT_POINTSIZE	0.005
-#define DEFAULT_FONTSIZE	9.0
+#define DEFAULT_FONTSIZE	9.0	/* In points */
 #define DEFAULT_OFFSET		3.0	/* In points */
-#define DEFAULT_JUSTIFY		2
+#define DEFAULT_JUSTIFY		2	/* Center-bottom */
 
 #define READ_CMT	0
 #define READ_AKI	1
@@ -138,7 +137,7 @@ void *New_pscoupe_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	GMT_init_fill (GMT, &C->E2.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G2.fill, 1.0, 1.0, 1.0);
 	C->S.fontsize = DEFAULT_FONTSIZE;
-	C->S.offset = DEFAULT_OFFSET;
+	C->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 	C->S.justify = DEFAULT_JUSTIFY;
 	C->A.size = GMT->session.d_NaN;
 	return (C);
@@ -335,7 +334,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 					sscanf (p, "/%lf/%lf", &Ctrl->S.fontsize, &Ctrl->S.offset);
 					if (GMT_IS_ZERO (Ctrl->S.fontsize)) Ctrl->S.fontsize = DEFAULT_FONTSIZE;
 					if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = TRUE;
-					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET;
+					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 					if (opt->arg[strlen (opt->arg)-1] == 'u') Ctrl->S.justify = 10;
 				}
 
@@ -395,7 +394,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 					sscanf (p, "/%lf/%lf", &Ctrl->S.fontsize, &Ctrl->S.offset);
 					if (GMT_IS_ZERO (Ctrl->S.fontsize)) Ctrl->S.fontsize = DEFAULT_FONTSIZE;
 					if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = TRUE;
-					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET;
+					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 					if (opt->arg[strlen (opt->arg)-1] == 'u') Ctrl->S.justify = 10;
 				}
 				if (GMT_IS_ZERO (Ctrl->S.scale)) Ctrl->S.read_size = TRUE;

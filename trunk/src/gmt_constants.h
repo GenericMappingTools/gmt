@@ -70,22 +70,25 @@
 
 #define GMT_CONV_LIMIT	1.0e-8		/* Fairly tight convergence limit or "close to zero" limit */
 #define GMT_SMALL	1.0e-4		/* Needed when results aren't exactly zero but close */
-#define GMT_MIN_MEMINC	2048		/* E.g., 16 kb of 8-byte doubles */
-#define GMT_MAX_MEMINC	67108864	/* E.g., 512 Mb of 8-byte doubles */
 
-#define GMT_CHUNK	2048
-#define GMT_SMALL_CHUNK	64
-#define GMT_TINY_CHUNK	8
-#define GMT_TEXT_LEN64	64
-#define GMT_TEXT_LEN256	256
-#define GMT_MAX_COLUMNS	4096		/* Limit on number of columns in data tables (not grids) */
-#define GMT_BUFSIZ	4096		/* Size of char record for i/o */
+/* Various allocation-length parameters */
+enum GMT_enum_length {	GMT_TINY_CHUNK	= 8,
+			GMT_SMALL_CHUNK	= 64,
+			GMT_CHUNK	= 2048,
+			GMT_TEXT_LEN64	= 64,		/* Intermediate length of texts */
+			GMT_TEXT_LEN256	= 256,		/* Max size of some text items */
+			GMT_MAX_COLUMNS	= 4096,		/* Limit on number of columns in data tables (not grids) */
+			GMT_BUFSIZ	= 4096,		/* Size of char record for i/o */
+			GMT_MIN_MEMINC	= 2048,		/* E.g., 16 kb of 8-byte doubles */
+			GMT_MAX_MEMINC	= 67108864};	/* E.g., 512 Mb of 8-byte doubles */
+			
+/* The four plot length units [m just used internally] */		
+enum GMT_enum_unit {GMT_CM = 0,
+	GMT_INCH,
+	GMT_M,
+	GMT_PT};
+
 #define CNULL		((char *)NULL)
-#define GMT_CM		0
-#define GMT_INCH	1
-#define GMT_M		2	/* No longer used */
-#define GMT_PT		3
-
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
 #define GMT_LEN_UNITS2	"efkMn"		/* Distances in meter, feet, km, Miles, nautical miles */
 #define GMT_LEN_UNITS	"dmsefkMn"	/* Distances in arc-{degree,minute,second} or meter, feet, km, Miles, nautical miles */

@@ -45,9 +45,6 @@ PostScript code is written to stdout.
 /* parameters for writing text */
 #define ANGLE		0.0
 #define FORM		0
-#define TIRET_WIDTH	3
-#define TEXT		14
-#define POINTSIZE	0.005
 
 /* Control structure for psvelo */
 
@@ -449,7 +446,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				else {
 					GMT_setfill (GMT, &Ctrl->G.fill, 1);
-					ssize = POINTSIZE;
+					ssize = GMT_DOT_SIZE;
 					PSL_plotsymbol (PSL, plot_x, plot_y, &ssize, GMT_SYMBOL_CIRCLE);
 					justify = 10;
 					if (Ctrl->S.fontsize > 0.0 && strlen (station_name) > 0) {
