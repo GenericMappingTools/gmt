@@ -12,12 +12,9 @@ if (GSHHS_PATH)
 	list (APPEND _gmt_share_dirs ${GSHHS_PATH})
 endif (GSHHS_PATH)
 
-# install path must be relative
-file (RELATIVE_PATH _install_path ${CMAKE_INSTALL_PREFIX} ${GMT_SHARE_PATH})
-
 # install target for data
 install (DIRECTORY ${_gmt_share_dirs}
-	DESTINATION ${_install_path}
+	DESTINATION ${GMT_SHARE_PATH}
 	COMPONENT Runtime
 	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE

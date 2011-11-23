@@ -84,14 +84,22 @@ endif (TRIANGLE_D)
 # GMT paths used in the code
 if (NOT GMT_SHARE_PATH)
 	# do not reset user setting
-	set (GMT_SHARE_PATH
-      "${CMAKE_INSTALL_PREFIX}/share/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
+	if (GMT_INSTALL_MONOLITHIC)
+		set (GMT_SHARE_PATH "share")
+	else(GMT_INSTALL_MONOLITHIC)
+		set (GMT_SHARE_PATH
+			"share/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
+	endif(GMT_INSTALL_MONOLITHIC)
 endif (NOT GMT_SHARE_PATH)
 
 if (NOT GMT_DOC_PATH)
 	# do not reset user setting
-	set (GMT_DOC_PATH
-      "${CMAKE_INSTALL_PREFIX}/share/doc/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
+	if (GMT_INSTALL_MONOLITHIC)
+		set (GMT_DOC_PATH "share/doc")
+	else(GMT_INSTALL_MONOLITHIC)
+		set (GMT_DOC_PATH
+			"share/doc/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
+	endif(GMT_INSTALL_MONOLITHIC)
 endif (NOT GMT_DOC_PATH)
 
 

@@ -30,6 +30,10 @@
 # Installation path [auto]:
 #set (CMAKE_INSTALL_PREFIX "prefix_path")
 
+# Install monolithic tree instead of distribution type layout (doc and share
+# separated) [off]:
+#set (GMT_INSTALL_MONOLITHIC ON)
+
 # Set share installation path [${CMAKE_INSTALL_PREFIX}/share/gmt-<version>]:
 #set (GMT_SHARE_PATH "share_path")
 

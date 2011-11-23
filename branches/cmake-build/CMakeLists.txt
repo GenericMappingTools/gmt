@@ -82,8 +82,8 @@ add_subdirectory (cmake/dist) # make distribution bundles (always last)
 # Configuration done
 message(
 	"*  Installing GMT in    : ${CMAKE_INSTALL_PREFIX}\n"
-	"*  GMT_SHARE_PATH       : ${GMT_SHARE_PATH}\n"
-	"*  GMT_DOC_PATH         : ${GMT_DOC_PATH}\n"
+	"*  GMT_SHARE_PATH       : ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}\n"
+	"*  GMT_DOC_PATH         : ${CMAKE_INSTALL_PREFIX}/${GMT_DOC_PATH}\n"
 	"*  NetCDF library       : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir   : ${NETCDF_INCLUDE_DIR}\n"
 	"*  GDAL library         : ${GDAL_LIBRARY}\n"

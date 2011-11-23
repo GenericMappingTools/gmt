@@ -345,6 +345,7 @@ add_dependencies (check ${GMT_PROGSPS} ${GMT_PROGS} ${GMT_DEMOS} psldemo
 # add the install targets
 install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
 	LIBRARY DESTINATION lib
+	COMPONENT Runtime
 	RUNTIME DESTINATION bin
 	COMPONENT Runtime)
 
