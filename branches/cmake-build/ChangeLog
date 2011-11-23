@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
 	$Id$
 -----------------------------------------------------------------------------------------
+2011-11-22	pwessel
+	* meca/utilmeca.c:	Use PSL_setfill and not PSL_setcolor to change fills
+	* test/meca/meca_4.sh:	Need -B0 to just draw axes.
+	* grdinfo.c:		Now report if grid is Geographic or Cartesian as part of registration message.
+
 2011-11-21	pwessel
 	* grdview.c:		Also, when nodes are adjusted by small to avoid matching a
 				contour value exactly (during contouring), the same adjustment
