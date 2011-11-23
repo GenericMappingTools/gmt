@@ -269,7 +269,7 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, ix = 0, iy = 1, n_rec = 0, error = FALSE, old_is_world, justify;
+	GMT_LONG ix = 0, iy = 1, n_rec = 0, error = FALSE, old_is_world, justify;
 	GMT_LONG greenwich, des_ellipse = TRUE, des_arrow = TRUE;
 
 	double xy[2], plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[7];
