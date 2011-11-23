@@ -361,7 +361,7 @@ double ps_meca (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0
 
 	/*  argument is DIAMETER!!*/
 	ssize[0] = radius_size*2.0;
-	PSL_setcolor (PSL, GMT->session.no_rgb, PSL_IS_STROKE);
+	PSL_setfill (PSL, GMT->session.no_rgb, PSL_IS_STROKE);
 	PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 
 	i = -1;
@@ -408,7 +408,7 @@ double ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,double y0,
 
 	/*  argument is DIAMETER!!*/
 	ssize[0] = radius_size*2.0;
-	PSL_setcolor (PSL, GMT->session.no_rgb, PSL_IS_STROKE);
+	PSL_setfill (PSL, GMT->session.no_rgb, PSL_IS_STROKE);
 	PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 
 	switch (num_of_plane) {
@@ -1432,7 +1432,7 @@ void paint_ellipse (struct PSL_CTRL *PSL, double x0, double y0, double angle, do
 
 	for (i = 0; i < npoints - 2; i++) transform_local (x0, y0, dxe[i], dye[i], scale, t11, t12, t21, t22, &axe[i], &aye[i]);
 	if (polygon) {
-		PSL_setcolor (PSL, rgb, PSL_IS_STROKE);
+		PSL_setfill (PSL, rgb, PSL_IS_STROKE);
 		PSL_plotpolygon (PSL, axe, aye, npoints - 2);
 	}
 	else
@@ -1712,7 +1712,7 @@ void paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, doubl
 	for (i = 0; i <= npoints - 1; i++) transform_local (x0, y0, dxe[i], dye[i], sscale, t11, t12, t21, t22, &axe[i], &aye[i]);
 
 	if (polygon) {
-		PSL_setcolor (PSL, rgb, PSL_IS_STROKE);
+		PSL_setfill (PSL, rgb, PSL_IS_STROKE);
 		PSL_plotpolygon (PSL, axe, aye, npoints);
 	}
 	else
@@ -1725,7 +1725,7 @@ void paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, doubl
 	for (i = 0; i < npoints - 1; i++) transform_local (x0, y0, dxe[i], dye[i], sscale, t11, t12, t21, t22, &axe[i], &aye[i]);
 
 	if (epolygon) {
-		PSL_setcolor (PSL, ergb, PSL_IS_STROKE);
+		PSL_setfill (PSL, ergb, PSL_IS_STROKE);
 		PSL_plotpolygon (PSL, axe, aye, npoints - 1);
 	}
 	else
