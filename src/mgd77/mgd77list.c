@@ -878,7 +878,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			Ctrl->L.file = path;
 		}
-		MGD77_Parse_Corrtable (GMT, Ctrl->L.file, list, n_paths, (GMT_LONG)M.n_out_columns, (char **)M.desired_column, (GMT_LONG)2, &CORR);
+		MGD77_Parse_Corrtable (GMT, Ctrl->L.file, list, n_paths, M.n_out_columns, (char **)M.desired_column, 2, &CORR);
 	}
 
 	for (argno = 0; argno < n_paths; argno++) {		/* Process each ID */
