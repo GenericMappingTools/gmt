@@ -71,6 +71,18 @@ tests the version (gshhs_version.c).
 
 IMPORTANT: add getenv("GSHHS_PATH") to gmt_init.c and do min version checks.
 
+Packaging:
+~~~~~~~~~~
+
+Currently, packaging with CPack works on MacOSX (Bundle, TGZ, TBZ2) and
+Windows (ZIP, NSIS). On Windows you need to install NSIS
+(http://nsis.sourceforge.net/). After building GMT run either one of these:
+
+  $ [n]make package
+  $ cpack -G <TGZ|TBZ2|Bundle|ZIP|NSIS>
+
+You probably also want to run cmake with _-DGMT_INSTALL_MONOLITHIC=ON_.
+
 In-build-dir tests:
 ~~~~~~~~~~~~~~~~~~~
 

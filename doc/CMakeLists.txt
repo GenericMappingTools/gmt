@@ -32,9 +32,6 @@ set (_docs_inputs GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex
 
 set (_common_inputs GMT.ist GMT.sty GMT_macros.tex GMT_Cover.tex)
 
-# install path must be relative
-file (RELATIVE_PATH _install_path ${CMAKE_INSTALL_PREFIX} ${GMT_DOC_PATH})
-
 # Find LaTeX
 find_package (LATEX)
 
@@ -91,7 +88,7 @@ if (PDFLATEX_COMPILER)
 
 		# Install pdf file (if available)
 		install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_pdf_file}
-			DESTINATION ${_install_path}/pdf
+			DESTINATION ${GMT_DOC_PATH}/pdf
 			COMPONENT Documentation
 			OPTIONAL)
 	endforeach (_pdf_file)
@@ -99,7 +96,7 @@ endif (PDFLATEX_COMPILER)
 
 # Install target for examples
 install (DIRECTORY examples
-	DESTINATION ${_install_path}
+	DESTINATION ${GMT_DOC_PATH}
 	COMPONENT Documentation
 	USE_SOURCE_PERMISSIONS
 	PATTERN ".svn" EXCLUDE
@@ -140,7 +137,7 @@ if (_manfiles_ps AND PS2PDF_CONVERTER)
 	install (FILES
 		${CMAKE_CURRENT_BINARY_DIR}/GMT_Manpages.pdf
 		${CMAKE_CURRENT_BINARY_DIR}/GMT_Manpages_suppl.pdf
-		DESTINATION ${_install_path}/pdf
+		DESTINATION ${GMT_DOC_PATH}/pdf
 		COMPONENT Documentation
 		OPTIONAL)
 endif (_manfiles_ps AND PS2PDF_CONVERTER)

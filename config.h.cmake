@@ -30,10 +30,10 @@
 #define GMT_LONG_VERSION_STRING "@GMT_LONG_VERSION_STRING@"
 
 /* path to shared files */
-#define GMT_SHARE_PATH "@GMT_SHARE_PATH@"
+#define GMT_SHARE_PATH "@CMAKE_INSTALL_PREFIX@/@GMT_SHARE_PATH@"
 
 /* path to documentation */
-#define GMT_DOC_PATH "@GMT_DOC_PATH@"
+#define GMT_DOC_PATH "@CMAKE_INSTALL_PREFIX@/@GMT_DOC_PATH@"
 
 /* path to GSHHS Shoreline Database */
 #define GSHHS_PATH "@GSHHS_PATH@"
