@@ -7,13 +7,13 @@ RUNDIR=$(dirname "$0")
 cd "${RUNDIR}/.."
 BUNDLE_RESOURCES="${PWD}/Resources"
 
-GMT_SHAREDIR=$(echo ${BUNDLE_RESOURCES}/share/gmt-*)
+GMT_SHAREDIR=$(echo ${BUNDLE_RESOURCES}/@GMT_SHARE_PATH@)
 
 # run terminal, set path, and run gmt
 osascript << EOF
   tell application "Terminal"
     activate
-    do script with command "export PATH=\"${BUNDLE_RESOURCES}/bin:\${PATH}\" GMT_SHAREDIR=\"${GMT_SHAREDIR}\"; gmt"
+    do script with command "export PATH=\"${BUNDLE_RESOURCES}/@GMT_BINDIR@:\${PATH}\" GMT_SHAREDIR=\"${GMT_SHAREDIR}\"; gmt"
   end tell
 EOF
 
