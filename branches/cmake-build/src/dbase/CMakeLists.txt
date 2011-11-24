@@ -40,7 +40,7 @@ create_debug_sym (${SUPPL_PROGS})
 
 # add the install targets
 install (TARGETS ${SUPPL_PROGS}
-	RUNTIME DESTINATION bin
+	RUNTIME DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 
 # add to gmt_suppl target

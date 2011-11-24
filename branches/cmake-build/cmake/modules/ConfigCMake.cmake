@@ -63,9 +63,11 @@ if (NOT "@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@")
 		# The 'svnversion' command can output a range of revisions with a colon separator - but this causes problems
 		# with filenames so we'll remove the colon and the end revision after it.
 		string (REGEX REPLACE ":.*$" "" SVN_VERSION ${SVN_VERSION_OUTPUT})
-		# Set the updated package version.
-		set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION "@GMT_PACKAGE_VERSION@_r${SVN_VERSION}")
-		set (HAVE_SVN_VERSION 1)
+		if (NOT SVN_VERSION STREQUAL exported)
+			# Set the updated package version.
+			set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION "@GMT_PACKAGE_VERSION@_r${SVN_VERSION}")
+			set (HAVE_SVN_VERSION 1)
+		endif (NOT SVN_VERSION STREQUAL exported)
 	endif (SVN_VERSION_RESULT)
 endif (NOT "@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@")
 
@@ -102,6 +104,14 @@ if (NOT GMT_DOC_PATH)
 	endif(GMT_INSTALL_MONOLITHIC)
 endif (NOT GMT_DOC_PATH)
 
+# Install path for GMT binaries ans libraries
+if (GMT_INSTALL_MONOLITHIC)
+	set (GMT_LIBDIR lib)
+	set (GMT_BINDIR bin)
+else (GMT_INSTALL_MONOLITHIC)
+	set (GMT_LIBDIR lib/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
+	set (GMT_BINDIR ${GMT_LIBDIR})
+endif (GMT_INSTALL_MONOLITHIC)
 
 # add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH
@@ -115,10 +125,12 @@ set (CMAKE_SKIP_BUILD_RPATH FALSE)
 set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 # the RPATH to be used when installing
-set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}")
 if (APPLE)
 	# on OSX make rpath relative to executable dir:
-	set (CMAKE_INSTALL_NAME_DIR @loader_path/../lib)
+	file (RELATIVE_PATH _rpath ${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}
+		${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR})
+	set (CMAKE_INSTALL_NAME_DIR @loader_path/${_rpath})
 endif (APPLE)
 
 # add the automatically determined parts of the RPATH

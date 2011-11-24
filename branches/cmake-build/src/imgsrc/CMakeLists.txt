@@ -44,7 +44,7 @@ create_debug_sym (${SUPPL_PROGS})
 
 # add the install targets
 install (TARGETS ${SUPPL_PROGS}
-	RUNTIME DESTINATION bin
+	RUNTIME DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 
 # add to gmt_suppl target
@@ -57,7 +57,7 @@ gmt_create_manpages ("${SUPPL_MAN_1}")
 # install shell script
 if (UNIX)
 	install (PROGRAMS ${SUPPL_SHELL_SCRIPTS}
-		DESTINATION bin
+		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
 endif (UNIX)
 
