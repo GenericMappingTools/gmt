@@ -99,19 +99,23 @@ if (WIN32 AND NOT CYGWIN)
 	install (CODE "
 	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages\")
 		include(BundleUtilities)
-		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/bin/gmt${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
+		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmtset${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
 	endif ()
 	" COMPONENT Runtime)
 endif(WIN32 AND NOT CYGWIN)
 
 # MacOSX:
 if (APPLE)
-	set (CPACK_GENERATOR Bundle TGZ TBZ2)
+	# Generate startup script:
+	configure_file (startup_macosx.sh.cmake startup_macosx.sh @ONLY)
+	configure_file (Info.plist.cmake Info.plist @ONLY)
 
+	# Configure CPack:
+	set (CPACK_GENERATOR Bundle TGZ TBZ2)
 	set (CPACK_BUNDLE_NAME ${CPACK_PACKAGE_NAME})
-	set (CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist")
 	set (CPACK_BUNDLE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/GMT.icns")
-	set (CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/startup_macosx.sh")
+	set (CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_BINARY_DIR}/Info.plist")
+	set (CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_CURRENT_BINARY_DIR}/startup_macosx.sh")
 
 	# Fix bundle:
 	install (CODE "
@@ -119,7 +123,7 @@ if (APPLE)
 		\"make bundle items writable before invoking install_name_tool\")
 	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages.+[.]app/Contents/Resources\")
 		include(BundleUtilities)
-		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/bin/gmt${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
+		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmtset${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
 	endif ()
 	" COMPONENT Runtime)
 endif (APPLE)
