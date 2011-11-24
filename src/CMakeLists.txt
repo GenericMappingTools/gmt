@@ -359,16 +359,14 @@ install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
 # Non-monolithic installs: put gmt-wrapper in bin
 if (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 	get_target_property(_gmt_wrapper_name gmt OUTPUT_NAME)
-	file (RELATIVE_PATH _rpath ${CMAKE_INSTALL_PREFIX}/bin
-		${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/${_gmt_wrapper_name})
+	file (RELATIVE_PATH _rpath /bin /${GMT_LIBDIR}/${_gmt_wrapper_name})
 	install (CODE "
 	execute_process (COMMAND ${CMAKE_COMMAND} -E make_directory
-		${CMAKE_INSTALL_PREFIX}/bin
+		\${CMAKE_INSTALL_PREFIX}/bin)
+	execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink
+		${_rpath} \${CMAKE_INSTALL_PREFIX}/bin/${_gmt_wrapper_name}
 		COMMAND ${CMAKE_COMMAND} -E create_symlink
-		${_rpath} ${CMAKE_INSTALL_PREFIX}/bin/${_gmt_wrapper_name}
-		COMMAND ${CMAKE_COMMAND} -E create_symlink
-		${_gmt_wrapper_name} ${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/gmt
-		)
+		${_gmt_wrapper_name} \${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/gmt)
 	")
 endif (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 
