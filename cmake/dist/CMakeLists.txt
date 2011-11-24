@@ -17,17 +17,6 @@
 #-------------------------------------------------------------------------------
 #
 
-#	set (CMAKE_MODULE_PATH \"${CMAKE_SOURCE_DIR}/cmake/modules/\"
-#	CACHE INTERNAL \"Location of our custom CMake modules.\")
-
-#include (InstallRequiredSystemLibraries)
-
-# install dependent libraries
-#set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
-# ${NETCDF_LIBRARIES}
-# ${GMT_OPTIONAL_LIBRARIES}
-# CACHE INTERNAL "Dependent libraries")
-
 # Common CPack settings:
 set (CPACK_PACKAGE_NAME "GMT")
 set (CPACK_PACKAGE_VENDOR "The GMT Team")
@@ -61,14 +50,21 @@ set(CPACK_COMPONENTS_GROUPING "IGNORE")
 # Enable component install for archive generators:
 set (CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 
-#set (CPACK_STRIP_FILES FALSE)
-#set (CPACK_SOURCE_STRIP_FILES FALSE)
-
-#set (CPACK_GENERATOR "DEB")
-#set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Dr. No")
+# Debian:
+set (CPACK_DEBIAN_PACKAGE_MAINTAINER "GMT Team <gmt-help@lists.hawaii.edu>")
+set (CPACK_DEBIAN_PACKAGE_SECTION science)
+#set (CPACK_PACKAGE_DESCRIPTION_SUMMARY ${CPACK_PACKAGE_DESCRIPTION_SUMMARY})
+#set (CPACK_PACKAGE_DESCRIPTION "GMT is an open source collection of ~65 tools
+#for manipulating geographic and Cartesian data sets (including filtering,
+#trend fitting, gridding, projecting, etc.) and producing Encapsulated
+#PostScript File (EPS) illustrations ranging from simple x-y plots via contour
+#maps to artificially illuminated surfaces and 3-D perspective views; the GMT
+#supplements add another ~70 more specialized tools. GMT supports over 30 map
+#projections and transformations and comes with support data such as GSHHS
+#coastlines, rivers, and political boundaries.")
 
 #set (CPACK_MONOLITHIC_INSTALL TRUE)
-#set (CPACK_RPM_COMPONENT_INSTALL ON)
+set (CPACK_RPM_COMPONENT_INSTALL ON)
 
 #set(CPACK_COMPONENT_RUNTIME_GROUP "Runtime")
 #set(CPACK_COMPONENT_LEFTOVER_GROUP "Documentation")
@@ -104,10 +100,11 @@ if (WIN32 AND NOT CYGWIN)
 	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages\")
 		include(BundleUtilities)
 		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/bin/gmt${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
-	endif()
+	endif ()
 	" COMPONENT Runtime)
 endif(WIN32 AND NOT CYGWIN)
 
+# MacOSX:
 if (APPLE)
 	set (CPACK_GENERATOR Bundle TGZ TBZ2)
 
@@ -123,9 +120,14 @@ if (APPLE)
 	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages.+[.]app/Contents/Resources\")
 		include(BundleUtilities)
 		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/bin/gmt${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
-	endif()
+	endif ()
 	" COMPONENT Runtime)
-endif(APPLE)
+endif (APPLE)
+
+# Linux, Cygwin & Co:
+if (UNIX AND NOT APPLE)
+	set (CPACK_GENERATOR TGZ TBZ2)
+endif (UNIX AND NOT APPLE)
 
 # This must always be last:
 include (CPack)

@@ -342,12 +342,35 @@ create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS})
 add_dependencies (check ${GMT_PROGSPS} ${GMT_PROGS} ${GMT_DEMOS} psldemo
 	gmt_suppl)
 
+# Rename gmt target on non-monolithic installs to prevent version clash
+if (NOT GMT_INSTALL_MONOLITHIC)
+	set_target_properties (gmt
+		PROPERTIES
+		OUTPUT_NAME gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
+endif (NOT GMT_INSTALL_MONOLITHIC)
+
 # add the install targets
 install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
-	LIBRARY DESTINATION lib
+	LIBRARY DESTINATION ${GMT_LIBDIR}
 	COMPONENT Runtime
-	RUNTIME DESTINATION bin
+	RUNTIME DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
+
+# Non-monolithic installs: put gmt-wrapper in bin
+if (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
+	get_target_property(_gmt_wrapper_name gmt OUTPUT_NAME)
+	file (RELATIVE_PATH _rpath ${CMAKE_INSTALL_PREFIX}/bin
+		${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/${_gmt_wrapper_name})
+	install (CODE "
+	execute_process (COMMAND ${CMAKE_COMMAND} -E make_directory
+		${CMAKE_INSTALL_PREFIX}/bin
+		COMMAND ${CMAKE_COMMAND} -E create_symlink
+		${_rpath} ${CMAKE_INSTALL_PREFIX}/bin/${_gmt_wrapper_name}
+		COMMAND ${CMAKE_COMMAND} -E create_symlink
+		${_gmt_wrapper_name} ${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/gmt
+		)
+	")
+endif (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 
 # install extra files
 if (UNIX)
@@ -357,12 +380,12 @@ if (UNIX)
 		gmtlogo
 		gmtswitch
 		gmt_shell_functions.sh
-		DESTINATION bin
+		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
 elseif (WIN32)
 	install (PROGRAMS
 		gmtswitch.bat
-		DESTINATION bin
+		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
 endif (UNIX)
 
