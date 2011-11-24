@@ -136,12 +136,6 @@ test_big_endian (WORDS_BIGENDIAN)
 # Check math related stuff
 #
 
-# check if -lm is needed
-check_function_exists (cos HAVE_M_FUNCTIONS)
-if (NOT HAVE_M_FUNCTIONS)
-	check_library_exists (m cos "" HAVE_M_LIBRARY)
-endif (NOT HAVE_M_FUNCTIONS)
-
 # extra math headers
 
 check_include_file (floatingpoint.h     HAVE_FLOATINGPOINT_H_)
@@ -157,6 +151,17 @@ endif (HAVE_IEEEFP_H_)
 
 # sincos is a GNU extension:
 set (CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
+
+# Check if -lm is needed
+check_function_exists (cos HAVE_M_FUNCTIONS)
+if (NOT HAVE_M_FUNCTIONS)
+	check_library_exists (m cos "" HAVE_M_LIBRARY)
+endif (NOT HAVE_M_FUNCTIONS)
+
+# If necessary compile with -lm
+if (HAVE_M_LIBRARY)
+	set (CMAKE_REQUIRED_LIBRARIES "-lm")
+endif (HAVE_M_LIBRARY)
 
 # check symbols
 check_symbol_exists (acosh       "${_math_h}" HAVE_ACOSH)
@@ -202,6 +207,7 @@ if (HAVE_SINCOS)
 endif (HAVE_SINCOS)
 
 set (CMAKE_REQUIRED_DEFINITIONS)
+set (CMAKE_REQUIRED_LIBRARIES)
 
 #check_symbol_exists (intptr_t "stdint.h" HAVE_STDINT_H_WITH_INTPTR)
 #check_symbol_exists (intptr_t "unistdint.h" HAVE_UNISTD_H_WITH_INTPTR)
