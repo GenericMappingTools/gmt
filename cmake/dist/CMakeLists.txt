@@ -87,17 +87,20 @@ if (WIN32 AND NOT CYGWIN)
 
 	set (CPACK_GENERATOR Bundle ZIP NSIS)
 	set (CPACK_NSIS_DISPLAY_NAME ${CPACK_PACKAGE_NAME})
-	set (CPACK_NSIS_INSTALL_ROOT "C:\${CPACK_PACKAGE_INSTALL_DIRECTORY}")
+	set (CPACK_NSIS_INSTALL_ROOT "C:")
 	set (CPACK_NSIS_MODIFY_PATH ON)
+	string(REPLACE "/" "\\\\" _native_share_path "${GMT_SHARE_PATH}")
 	set (CPACK_NSIS_ADD_ENVVAR1 "GMT5_SHAREDIR")
-	file (TO_NATIVE_PATH "${GMT_SHARE_PATH}" CPACK_NSIS_ADD_ENVVAL1)
+	set (CPACK_NSIS_ADD_ENVVAL1 "\\\$INSTDIR\\\\${_native_share_path}")
 
 	# StartMenu items:
-	set (CPACK_NSIS_MENU_LINKS "bin/startup_win.bat" "GMT Command Prompt")
+	set (CPACK_NSIS_MENU_LINKS
+		"${GMT_BINDIR}/startup_win.bat" "GMT Command Prompt"
+		"${GMT_DOC_PATH}" "Documentation")
 
 	# Install startup batch file:
 	install (PROGRAMS startup_win.bat
-		DESTINATION bin
+		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
 
 	# Fix bundle:
@@ -117,7 +120,8 @@ if (APPLE)
 
 	# Configure CPack:
 	set (CPACK_GENERATOR Bundle TGZ TBZ2)
-	set (CPACK_BUNDLE_NAME ${CPACK_PACKAGE_NAME})
+	set (CPACK_BUNDLE_NAME
+		"${CPACK_PACKAGE_NAME}-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
 	set (CPACK_BUNDLE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/GMT.icns")
 	set (CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_BINARY_DIR}/Info.plist")
 	set (CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_CURRENT_BINARY_DIR}/startup_macosx.sh")
@@ -127,10 +131,21 @@ if (APPLE)
 	set (BU_CHMOD_BUNDLE_ITEMS TRUE CACHE INTERNAL
 		\"make bundle items writable before invoking install_name_tool\")
 	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages.+[.]app/Contents/Resources\")
-		include(BundleUtilities)
+		cmake_policy (SET CMP0009 NEW)
+		cmake_policy (SET CMP0011 NEW)
+		include(BundleUtilities NO_POLICY_SCOPE)
 		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmtset${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
 	endif ()
 	" COMPONENT Runtime)
+
+	# Workaround: move documentation:
+	install (CODE "
+	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages.+[.]app/Contents/Resources\")
+		execute_process (COMMAND ${CMAKE_COMMAND} -E rename
+			\${CMAKE_INSTALL_PREFIX}/${GMT_DOC_PATH}
+			\${CMAKE_INSTALL_PREFIX}/../../../Documentation)
+	endif ()
+	" COMPONENT Documentation)
 endif (APPLE)
 
 # Linux, Cygwin & Co:

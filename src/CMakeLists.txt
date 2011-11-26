@@ -356,17 +356,36 @@ install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
 	RUNTIME DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 
-# Non-monolithic installs: put gmt-wrapper in bin
+# Install public headers
+install (FILES declspec.h gmtapi.h
+	DESTINATION ${GMT_INCDIR}
+	COMPONENT Runtime)
+
+# Non-monolithic installs:
 if (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
+	# symlink to gmt-wrapper in bindir and libdir:
 	get_target_property(_gmt_wrapper_name gmt OUTPUT_NAME)
-	file (RELATIVE_PATH _rpath /bin /${GMT_LIBDIR}/${_gmt_wrapper_name})
+	file (RELATIVE_PATH _rpath /bin /${GMT_BINDIR}/${_gmt_wrapper_name})
 	install (CODE "
-	execute_process (COMMAND ${CMAKE_COMMAND} -E make_directory
+	execute_process (
+		COMMAND ${CMAKE_COMMAND} -E make_directory
 		\${CMAKE_INSTALL_PREFIX}/bin)
-	execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink
+	execute_process (
+		COMMAND ${CMAKE_COMMAND} -E create_symlink
 		${_rpath} \${CMAKE_INSTALL_PREFIX}/bin/${_gmt_wrapper_name}
 		COMMAND ${CMAKE_COMMAND} -E create_symlink
-		${_gmt_wrapper_name} \${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/gmt)
+		${_gmt_wrapper_name} \${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt)
+	")
+
+	# create symlinks in libdir/..:
+	file (RELATIVE_PATH _rpath /${GMT_LIBDIR} /${GMT_SHARE_PATH})
+	string (REGEX REPLACE "^[.][.]/(.*)" "\\1" _rpath "${_rpath}")
+	install (CODE "
+	execute_process (
+		COMMAND ${CMAKE_COMMAND} -E create_symlink
+		${_rpath} \${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/../share
+		COMMAND ${CMAKE_COMMAND} -E create_symlink
+		${_rpath}/man \${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/../man)
 	")
 endif (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 
