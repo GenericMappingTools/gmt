@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>GMT</string>
+	<string>GMT-@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@</string>
 	<key>CFBundleGetInfoString</key>
 	<string>GMT is an open source collection of ~65 tools for manipulating geographic and cartesian data sets.</string>
 	<key>CFBundleIconFile</key>
-	<string>GMT.icns</string>
+	<string>GMT-@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>edu.hawaii.soest.gmt5</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -29,6 +29,7 @@
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>
-    <string>Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\nSee LICENSE.TXT file for copying and redistribution conditions.\n\nThis program is free software; you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation; version 2 or any later version.</string>
+    <string>Copyright (c) 1991-@GMT_VERSION_YEAR@ by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 or any later version.</string>
 </dict>
 </plist>

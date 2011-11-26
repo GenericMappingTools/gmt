@@ -29,6 +29,13 @@
 #ifndef _GMTAPI_H
 #define _GMTAPI_H
 
+#ifdef __cplusplus /* Basic C++ support */
+extern "C" {
+#endif
+
+/* Declaration modifiers for DLL support (MSC et al) */
+#include "declspec.h"
+
 /*=====================================================================================
  *	GMT API STRUCTURE DEFINITIONS
  *===================================================================================*/
@@ -132,5 +139,9 @@ EXTERN_MSC GMT_LONG GMT_List_Args			(struct GMTAPI_CTRL *API, struct GMT_OPTION 
 /* Macro to test if filename is a special name indicating memory location */
 
 #define GMT_File_Is_Memory(file) (file && !strncmp (file, "@GMTAPI@-", 9))
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _GMTAPI_H */

@@ -853,9 +853,9 @@ Section "-Core installation"
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
   ;Read a value from an InstallOptions INI file
-  !insertmacro MUI_INSTALLOPTIONS_READ $DO_NOT_ADD_TO_PATH "NSIS.InstallOptions.ini" "Field 2" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_ALL_USERS "NSIS.InstallOptions.ini" "Field 3" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_CURRENT_USER "NSIS.InstallOptions.ini" "Field 4" "State"
+  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_ALL_USERS "NSIS.InstallOptions.ini" "Field 2" "State"
+  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_CURRENT_USER "NSIS.InstallOptions.ini" "Field 3" "State"
+  !insertmacro MUI_INSTALLOPTIONS_READ $DO_NOT_ADD_TO_PATH "NSIS.InstallOptions.ini" "Field 4" "State"
 
   ; Write special uninstall registry entries
   Push "StartMenu"
@@ -883,11 +883,19 @@ SectionEnd
 Section "-Add to path"
   StrCmp "@CPACK_NSIS_MODIFY_PATH@" "ON" 0 doNotAddToPath
   StrCmp $DO_NOT_ADD_TO_PATH "1" doNotAddToPath 0
-    Push $INSTDIR\bin
+    Push "$INSTDIR\bin"
     Call AddToPath
 
-    Push @CPACK_NSIS_ADD_ENVVAR1@
-    Push $INSTDIR\@CPACK_NSIS_ADD_ENVVAL1@
+    Push "@CPACK_NSIS_ADD_ENVVAR1@"
+    Push "@CPACK_NSIS_ADD_ENVVAL1@"
+    Call AddToEnvVar
+
+    Push "@CPACK_NSIS_ADD_ENVVAR2@"
+    Push "@CPACK_NSIS_ADD_ENVVAL2@"
+    Call AddToEnvVar
+
+    Push "@CPACK_NSIS_ADD_ENVVAR3@"
+    Push "@CPACK_NSIS_ADD_ENVVAL3@"
     Call AddToEnvVar
 
   doNotAddToPath:
@@ -1046,9 +1054,23 @@ Section "Uninstall"
 
   DeleteRegKey /ifempty SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
 
-  Push $INSTDIR\bin
+  Push "$INSTDIR\bin"
   StrCmp $DO_NOT_ADD_TO_PATH_ "1" doNotRemoveFromPath 0
+    Push "$INSTDIR\bin"
     Call un.RemoveFromPath
+
+    Push "@CPACK_NSIS_ADD_ENVVAR1@"
+    Push "@CPACK_NSIS_ADD_ENVVAL1@"
+    Call un.RemoveFromEnvVar
+
+    Push "@CPACK_NSIS_ADD_ENVVAR2@"
+    Push "@CPACK_NSIS_ADD_ENVVAL2@"
+    Call un.RemoveFromEnvVar
+
+    Push "@CPACK_NSIS_ADD_ENVVAR3@"
+    Push "@CPACK_NSIS_ADD_ENVVAL3@"
+    Call un.RemoveFromEnvVar
+
   doNotRemoveFromPath:
 SectionEnd
 

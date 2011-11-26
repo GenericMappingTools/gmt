@@ -47,15 +47,14 @@ endif (CMAKE_BUILD_TYPE MATCHES "Debug|RelWithDebInfo")
 set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION "@GMT_PACKAGE_VERSION@")
 # Add the Subversion version number to the package filename if this is a non-public release.
 # A non-public release has an empty 'GMT_SOURCE_CODE_CONTROL_VERSION_STRING' variable in 'ConfigDefault.cmake'.
-set (HAVE_SVN_VERSION 0)
+set (HAVE_SVN_VERSION)
 if (NOT "@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@")
 	# Get the location, inside the staging area location, to copy the application bundle to.
 	execute_process (
 		COMMAND svnversion @CMAKE_SOURCE_DIR@
 		RESULT_VARIABLE SVN_VERSION_RESULT
 		OUTPUT_VARIABLE SVN_VERSION_OUTPUT
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 	if (SVN_VERSION_RESULT)
 		message (STATUS "Unable to determine svn version number for non-public release - ignoring.")
@@ -66,7 +65,7 @@ if (NOT "@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@")
 		if (NOT SVN_VERSION STREQUAL exported)
 			# Set the updated package version.
 			set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION "@GMT_PACKAGE_VERSION@_r${SVN_VERSION}")
-			set (HAVE_SVN_VERSION 1)
+			set (HAVE_SVN_VERSION TRUE)
 		endif (NOT SVN_VERSION STREQUAL exported)
 	endif (SVN_VERSION_RESULT)
 endif (NOT "@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@")
@@ -104,13 +103,15 @@ if (NOT GMT_DOC_PATH)
 	endif(GMT_INSTALL_MONOLITHIC)
 endif (NOT GMT_DOC_PATH)
 
-# Install path for GMT binaries ans libraries
+# Install path for GMT binaries, headers and libraries
 if (GMT_INSTALL_MONOLITHIC)
+	set (GMT_INCDIR include)
 	set (GMT_LIBDIR lib)
 	set (GMT_BINDIR bin)
 else (GMT_INSTALL_MONOLITHIC)
-	set (GMT_LIBDIR lib/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
-	set (GMT_BINDIR ${GMT_LIBDIR})
+	set (GMT_INCDIR include/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
+	set (GMT_LIBDIR lib/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}/lib)
+	set (GMT_BINDIR lib/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}/bin)
 endif (GMT_INSTALL_MONOLITHIC)
 
 # add the automatically determined parts of the RPATH
@@ -128,8 +129,9 @@ set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}")
 if (APPLE)
 	# on OSX make rpath relative to executable dir:
-	file (RELATIVE_PATH _rpath ${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}
-		${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR})
+	file (RELATIVE_PATH _rpath /${GMT_BINDIR} /${GMT_LIBDIR})
+	# remove trailing /:
+	string (REGEX REPLACE "/$" "" _rpath "${_rpath}")
 	set (CMAKE_INSTALL_NAME_DIR @loader_path/${_rpath})
 endif (APPLE)
 
