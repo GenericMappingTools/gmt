@@ -32,7 +32,6 @@
 /* General definitions */
 #define IT(x) \fI/**/x\fP
 #define BD(x) \fB/**/x\fP
-#define PS IT(PostScript)
 
 /* Generic option, yields -letter in bold */
 #define OPT(letter)	BD(\-letter)

@@ -3,26 +3,26 @@
 #define ARG(kind,name) BD(kind) IT(name)
 .TH PSL 3 MANDATE GMT_STRING "PSL: The PostScript Library"
 .SH NAME
-PSL 5.0 \- A PS based plotting library
+PSL 5.0 \- A IT(PostScript) based plotting library
 .SH DESCRIPTION
 .LP
-PSLIB was created to make the generation of PS page description code easier.
+PSLIB was created to make the generation of IT(PostScript) page description code easier.
 PS is a page description language developed by the Adobe for specifying how a
 printer should render a page of text or graphics.
 It uses a reverse Polish notation that puts and gets items from a stack to draws
 lines, text, and images and even performs calculations.
 PSLIB is a self-contained library that presents a series of functions that can
-be used to create plots.  The resulting PS code is ASCII text (with some
+be used to create plots.  The resulting IT(PostScript) code is ASCII text (with some
 exceptions for images if so desired) and can thus be edited using any text editor.  Thus,
 it is possible to modify a plot file even after it has been created, e.g.,
 to change text strings, set new gray shades or colors, experiment with various
-pen widths, etc.  Furthermore, various tools exist that can parse PS and let you make such edits via
+pen widths, etc.  Furthermore, various tools exist that can parse IT(PostScript) and let you make such edits via
 a graphical user interface (e.g., Adobe Illustrator).
 PSLIB is written in C but includes FORTRAN bindings
 and can therefore be called from both C and FORTRAN programs.
 To use this library, you must link your plotting program with
 PSLIB.  PSLIB is used by the BD(GMT) graphics programs to generate PS.
-PSLIB output is freeform PS that conforms to the Adobe PostScript
+PSLIB output is freeform IT(PostScript) that conforms to the Adobe IT(PostScript)
 File Specification Version 3.0.
 .LP
 Before any PSLIB calls can be issued, the plotting system must be
@@ -39,9 +39,9 @@ PS code will be written.  Normally, the plot code is written
 to IT(stdout).  When all plotting to this file is done, you finalize the plot
 by calling BD(PSL_endplot).
 .LP
-A wide variety of output devices that support PS exist, including many printers
-and large-format plotters.  Many tools exists to display PS on a computer screen.
-Open source tools such as ghostscript can be used to convert PS into PDF or raster
+A wide variety of output devices that support IT(PostScript) exist, including many printers
+and large-format plotters.  Many tools exists to display IT(PostScript) on a computer screen.
+Open source tools such as ghostscript can be used to convert IT(PostScript) into PDF or raster
 images (e.g., TIFF, JPEG) at a user-defined resolution (DPI).  In particular, the
 GMT tool ps2raster is a front-end to ghostscript and pre-selects the optimal options
 for ghostscript that will render quality PDF and images.
@@ -103,13 +103,13 @@ allocate a new PSLIB control structure and initialize the session parameters to 
 Here, IT(err) is a stream pointer indicating where error messages should go (if NULL we will use IT(stderr)),
 IT(unit) indicates the units of the coordinates used in this session and must be one of PSL_CM (0), PSL_INCH (1), PSL_METER (2), or PSL_PT (3).
 This setting tells the PSLIB session what units are used for coordinates, distances and dimensions.
-The IT(verbose) setting indicates the PS verbosity level (PSL_MSG_SILENCE = silence (0), PSL_MSG_FATAL = fatal errors (1),
+The IT(verbose) setting indicates the IT(PostScript) verbosity level (PSL_MSG_SILENCE = silence (0), PSL_MSG_FATAL = fatal errors (1),
 PSL_MSG_NORMAL = warnings and progress (2), PSL_MSG_VERBOSE = extensive progress reports (3), or PSL_MSG_DEBUG = debugging (4)).
-Set IT(comments) to indicate if you want PS comments to be written (PSL_YES = 1) or not (PSL_NO = 0).
+Set IT(comments) to indicate if you want IT(PostScript) comments to be written (PSL_YES = 1) or not (PSL_NO = 0).
 The IT(compression) parameter controls image compression (all are lossless).  Choose from PSL_NONE = none (0),
 PSL_RLE = Run-length encoding (1), or PSL_LZW = Lempel-Ziv-Welch compression (2).
 Use IT(imgtype) to indicate whether images should be written in ASCII (PSL_ASCII = 0) or BINARY (PSL_BINARY = 2) format.
-Note: if you use PSL_BINARY you may not be able to manually edit the PS file or use it with GMT's ps2raster.
+Note: if you use PSL_BINARY you may not be able to manually edit the IT(PostScript) file or use it with GMT's ps2raster.
 Finally, use IT(encoding) to select the character encoding used.  Choose from Standard [Default if NULL is given],
 Standard+, ISOLatin1, ISOLatin1+, ISO-8859-X (with X = 1-10, 13-15).  See GMT Appendix F for the enhanced Standard+
 and ISOLatin1+ encodings.
@@ -144,7 +144,7 @@ BD(void PSL_beginaxes) (ARG(struct PS_CTRL,*PSL), ARG(double, llx), ARG(double, 
 ARG(double, height), ARG(double, x0), ARG(double, y0), ARG(double, x1), ARG(double, y1))
 .RS 5
 This function sets up the mapping that takes the users data coordinates and converts them to the positions
-on the plot in PS units.  This should be used when plotting data coordinates and is terminated with BD(PSL_endaxes),
+on the plot in IT(PostScript) units.  This should be used when plotting data coordinates and is terminated with BD(PSL_endaxes),
 which returns PSLIB to the default measurement units and scaling. Here, IT(llx) and IT(lly) sets the lower left
 position of the mapping region, while IT(width) and IT(height) sets the dimension of the plot area in user units.  Finally,
 IT(x0), IT(x1) and IT(y0), IT(y1) indicate the range of the users x- and y-coordinates, respectively.
@@ -164,12 +164,12 @@ BD(long PSL_beginplot) (ARG(struct PSL_CTRL,*P), ARG(FILE,*fp), ARG(long,orienta
 ARG(char,origin)[], ARG(double,offset)[], ARG(double,page_size)[], ARG(char,*title), ARG(long,font_no)[])
 .RS 5
 Controls the initiation (or continuation) of a particular plot within the current session.
-Pass file pointer IT(fp) where the PS code will be written; if NULL then the output is written to IT(stdout).
+Pass file pointer IT(fp) where the IT(PostScript) code will be written; if NULL then the output is written to IT(stdout).
 The Fortran interface always sends to IT(stdout).
 The IT(orientation) may be landscape (PSL_LANDSCAPE or 0) or portrait (PSL_PORTRAIT or 1).
-Set IT(overlay) to PSL_OVERLAY (0) if the following PS code should be appended to an existing plot;
+Set IT(overlay) to PSL_OVERLAY (0) if the following IT(PostScript) code should be appended to an existing plot;
 otherwise pass PSL_INIT (1) to start a new plot. Let IT(colormode) be one of PSL_RGB (0), PSL_CMYK (1), PSL_HSV (2) or PSL_GRAY (3);
-this setting controls how colors are presented in the PS code.
+this setting controls how colors are presented in the IT(PostScript) code.
 The IT(origin) setting determines for x and y separately the origin of the specified offsets (next
 argument). Each of the two characters are either
 'r' for an offset relative to the current origin,
@@ -179,16 +179,16 @@ argument). Each of the two characters are either
 The array IT(offset) specifies the offset of the new origin relative to the position indicated by BD(origin).
 IT(page_size) means the physical width and height of the plotting media in points (typically 612 by 792 for
 Letter or 595 by 842 for A4 format). 
-The character string IT(title) can be used to specify the BD(%%Title:) header in the PS file (or use NULL for the default).
+The character string IT(title) can be used to specify the BD(%%Title:) header in the IT(PostScript) file (or use NULL for the default).
 The array IT(font_no) specifies all fonts used in the plot (by number), or use NULL to leave out the
-BD(%%DocumentNeededResources:) comment in the PS file.
+BD(%%DocumentNeededResources:) comment in the IT(PostScript) file.
 .RE
 .br
 .sp
 BD(long PSL_endplot) (ARG(struct PSL_CTRL,*P), ARG(long,last_page))
 .RS 5
 Terminates the plotting sequence and closes plot file (if other than IT(stdout)). If
-IT(last_page) == PSL_FINALIZE (1), then a PS IT(showpage) command is issued, which initiates
+IT(last_page) == PSL_FINALIZE (1), then a IT(PostScript) IT(showpage) command is issued, which initiates
 the printing process on hardcopy devices.  Otherwise, pass PSL_OVERLAY (0).
 .RE
 .br
@@ -206,16 +206,16 @@ fill attributes.
 .sp
 BD(long PSL_define_pen) (ARG(struct PSL_CTRL,*P), ARG(char,*name), ARG(long,width), ARG(char,*style), ARG(double,offset), ARG(double,rgb)[])
 .RS 5
-Stores the specified pen characteristics in a PS variable called IT(name).  This can be used to place
-certain pen attributes in the PS file and then retrieve them later with BD(PSL_load_pen).  This makes
+Stores the specified pen characteristics in a IT(PostScript) variable called IT(name).  This can be used to place
+certain pen attributes in the IT(PostScript) file and then retrieve them later with BD(PSL_load_pen).  This makes
 the stored pen the current pen.
 .RE
 .br
 .sp
 BD(long PSL_define_rgb) (ARG(struct PSL_CTRL,*P), ARG(char,*name), ARG(double,rgb)[])
 .RS 5
-Stores the specified color in a PS variable called IT(name).  This can be used to place
-certain color values in the PS file and then retrieve them later with BD(PSL_load_rgb).
+Stores the specified color in a IT(PostScript) variable called IT(name).  This can be used to place
+certain color values in the IT(PostScript) file and then retrieve them later with BD(PSL_load_rgb).
 This makes the stored color the current color.
 .RE
 .br
@@ -304,7 +304,7 @@ combinations.
 BD(long PSL_setlinewidth) (ARG(struct PSL_CTRL,*P), ARG(double,linewidth))
 .RS 5
 Changes the current line width in points.  Specifying 0 gives the thinnest
-line possible, but this is implementation-dependent (seems to work fine on most PS printers).
+line possible, but this is implementation-dependent (seems to work fine on most IT(PostScript) printers).
 .RE
 .br
 .sp
@@ -355,13 +355,13 @@ Finally, pass the name of the character set encoding (if NULL we select Standard
 .sp
 BD(long PSL_defunits) (ARG(struct PSL_CTRL,*P), ARG(char,*name), ARG(double,value))
 .RS 5
-Creates a PS variable called IT(name) and initializes it to the equivalent of IT(value) user units.
+Creates a IT(PostScript) variable called IT(name) and initializes it to the equivalent of IT(value) user units.
 .RE
 .br
 .sp
 BD(long PSL_defpoints) (ARG(struct PSL_CTRL,*P), ARG(char,*name), ARG(double,fontsize))
 .RS 5
-Creates a PS variable called IT(name) and initializes it to the value that corresponds to the font size (in points) given by
+Creates a IT(PostScript) variable called IT(name) and initializes it to the value that corresponds to the font size (in points) given by
 IT(fontsize).
 .RE
 .SH PLOTTING LINES AND POLYGONS
@@ -387,7 +387,7 @@ To continue an existing line, use IT(type) = PSL_DRAW (0), or if this is
 the first segment in a multisegment path, set IT(type) = PSL_MOVE (1).  To end
 the segments and draw the lines, add PSL_STROKE (2).  Thus, for a single
 segment, IT(type) must be PSL_MOVE + PSL_STROKE (3).  The line is drawn using the current pen attributes.
-Add PSL_CLOSE (8) to IT(type) to close the first and last point by the PS operators.
+Add PSL_CLOSE (8) to IT(type) to close the first and last point by the IT(PostScript) operators.
 .RE
 .br
 .sp
@@ -474,7 +474,7 @@ You may replace the foreground color (the set bits) with the
 IT(f_rgb) color and the background color (the unset bits) with IT(b_rgb).  Alternatively, pass either color with
 the red component set to -1.0 and we will instead issue an image mask that is see-through for the specified
 fore- or background component.
-See the Adobe Systems PS Reference Manual for more details.
+See the Adobe Systems IT(PostScript) Reference Manual for more details.
 .RE
 .br
 .sp
@@ -485,7 +485,7 @@ Plots a 1-, 2-, 4-, 8-, or 24-bit deep image at plot coordinates (IT(x), IT(y)) 
 BD(JUSTIFICATION) for details).
 The target size of the image is given by IT(xsize) and IT(ysize) in user units. If one of these is specified as zero, the
 corresponding size is adjusted to the other such that the aspect ratio of the original image is retained.
-This functions sets up a call to the PS colorimage or image operators.
+This functions sets up a call to the IT(PostScript) colorimage or image operators.
 The pixel values are stored in IT(buffer), an unsigned character array in scanline orientation with gray shade or r/g/b
 values (0-255).  IT(buffer)[0] is the upper left corner.
 IT(depth) is number of bits per pixel (24, 8, 4, 2, or 1).
@@ -497,19 +497,19 @@ When IT(-depth) is passed instead then "hardware" interpolation of the image is 
 If IT(-nx) is passed with 8- (or 24-) bit images then the first one (or three) bytes of IT(buffer)
 holds the gray (or r/g/b) color for pixels that are to be masked out using the PS
 Level 3 Color Mask method.
-See the Adobe Systems PS Reference Manual for more details.
+See the Adobe Systems IT(PostScript) Reference Manual for more details.
 .RE
 .br
 .sp
 BD(long PSL_plotepsimage) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(double,xsize), ARG(double,ysize),
 ARG(int,justify), ARG(unsigned char,*buffer), ARG(long,size), ARG(long,nx), ARG(long,ny), ARG(long,ox), ARG(long,oy))
 .RS 5
-Plots an Encapsulated PS (EPS) image at plot coordinates (IT(x), IT(y)) justified as per the argument IT(justify) (see BD(JUSTIFICATION)
+Plots an Encapsulated IT(PostScript) (EPS) image at plot coordinates (IT(x), IT(y)) justified as per the argument IT(justify) (see BD(JUSTIFICATION)
 for details).
 The target size of the image is given by IT(xsize) and IT(ysize) in user units. If one of these is specified as zero, the
 corresponding size is adjusted to the other such that the aspect ratio of the original image is retained.
 The EPS file is stored in IT(buffer) and has IT(size) bytes.
-This function simply includes the image in the PS output stream within an appropriate wrapper.
+This function simply includes the image in the IT(PostScript) output stream within an appropriate wrapper.
 Specify position of lower left corner and size of image.
 IT(nx), IT(ny), IT(ox), IT(oy) refers to the width, height and origin (lower left corner) of the BoundingBox in points.
 .RE
@@ -518,13 +518,13 @@ IT(nx), IT(ny), IT(ox), IT(oy) refers to the width, height and origin (lower lef
 BD(long PSL_loadimage) (ARG(struct PSL_CTRL,*P), ARG(FILE,*fp), ARG(struct imageinfo,*header), ARG(unsigned char,**image))
 .RS 5
 Reads the image contents of the EPS file or a raster image pointed to by the open file pointer IT(fp).
-The routine can handle Encapsulated PS files or 1-, 8-, 24-, or 32-bit raster images in old, standard,
+The routine can handle Encapsulated IT(PostScript) files or 1-, 8-, 24-, or 32-bit raster images in old, standard,
 run-length encoded, or RGB-style Sun format.  Non-Sun rasters are automatically reformatted to Sun rasters
 via a system call to ImageMagick's BD(convert), if installed.  The image is returned via the IT(image) pointer.\"'
 .RE
 .SH PLOTTING TEXT
 Here are functions used to read and plot text strings and paragraphs.  This can be somewhat complicated since
-we rely on the PS interpreter to determine the exact dimensions of text items given the font chosen.  For
+we rely on the IT(PostScript) interpreter to determine the exact dimensions of text items given the font chosen.  For
 perfect alignment you may have to resort to calculate offsets explicitly using BD(long PSL_deftextdim), BD(PSL_set_height) and others
 and issue calculations with BD(PSL_setcommand).
 .br
@@ -570,7 +570,7 @@ text box in distance units. The smaller of the two determined the radius of the 
 BD(long PSL_plottextclip) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(long,n), ARG(double,fontsize),
 ARG(char,*text)[], ARG(double,angle)[], ARG(long,justify), ARG(double,offset)[], ARG(long,mode))
 .RS 5
-This function is called twice: First time we pass the text strings and other parameters and use PS to compute
+This function is called twice: First time we pass the text strings and other parameters and use IT(PostScript) to compute
 clip paths so that no feature plotted after this call will be visible in areas where text will be plotted.
 The second call actually plots the texts in the predetermined locations (NULL may be passed for all arrays for
 the second call).  All labels have a straight baseline (for plotting along curved text, see BD(PSL_plottextpath)).
@@ -584,9 +584,9 @@ controls how the function does its work; pass IT(mode) as the sum of the values 
 1 = place the text, 2 = turn off clipping, 4 = draw the IT(x-y) line (useful for debugging), 8 = reuse the previous
 parameters (so pass NULL as args), 16 = construct rounded text boxes [Default is rectangular], 
 128 = fill the text box (this requires you to first define the text box rgb color with BD(PSL_define_rgb) by setting
-a local PS variable that must be called PSL_setboxrgb), and 256 = draw the text box outlines (this requires you to
-first define the text box pen with BD(PSL_define_pen) by setting a local PS variable that must be called PSL_setboxpen).
-For font color you must use BD(PSL_define_rgb) and create a PS variable called PSL_settxtrgb.  If not set we default
+a local IT(PostScript) variable that must be called PSL_setboxrgb), and 256 = draw the text box outlines (this requires you to
+first define the text box pen with BD(PSL_define_pen) by setting a local IT(PostScript) variable that must be called PSL_setboxpen).
+For font color you must use BD(PSL_define_rgb) and create a IT(PostScript) variable called PSL_settxtrgb.  If not set we default
 to black.
 .RE
 .br
@@ -594,12 +594,12 @@ to black.
 BD(long PSL_deftextdim) (ARG(struct PSL_CTRL,*P), ARG(char,*prefix), ARG(double,fontsize), ARG(char,*text))
 .RS 5
 Computes the dimensions (width and height) required by the selected IT(text) given the current font and its IT(fontsize) (in points).
-The values are stored as PS variables called IT(prefix)_w and IT(prefix)_h, respectively.  This function can be
+The values are stored as IT(PostScript) variables called IT(prefix)_w and IT(prefix)_h, respectively.  This function can be
 used to compute dimensions and, via BF(PSL_setcommand), calculate chances to position a particular item should be
 plotted.  For instance, if you compute a position this way and wish to plot the text there, pass the coordinates
 to BD(PSL_plottext) as NaNs.
-If IT(prefix) is BF(-w), BF(-h), BF(-d) or BF(-b), no PS variables will be assigned, but the values of
-width, height, depth, or both width and height will be left on the PS stack.
+If IT(prefix) is BF(-w), BF(-h), BF(-d) or BF(-b), no IT(PostScript) variables will be assigned, but the values of
+width, height, depth, or both width and height will be left on the IT(PostScript) stack.
 .RE
 .br
 .sp
@@ -643,7 +643,8 @@ See BD(PSL_plotparagraphbox) for laying down the surrounding text rectangle firs
 BD(long PSL_plottextpath) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(long,n), ARG(long,node)[],
 ARG(double,fontsize), ARG(char,*text)[], ARG(long,m), ARG(double,angle)[], ARG(long,justify), ARG(double,offset)[], ARG(long,mode))
 .RS 5
-Please text along a curved path.  This function is also called twice: First time we pass the text strings and locations and PS will compute
+Please text along a curved path.  This function is also called twice: First time we pass the text strings and locations
+and IT(PostScript) will compute
 clip paths so that no features plotted after this call will be visible in areas where text will be plotted.
 The second call actually plots the texts in the predetermined locations (NULL may be passed for all arrays for
 the second call).  All labels will follow the path specified by the plot coordinates in the IT(x), IT(y) arrays
@@ -659,9 +660,9 @@ controls how the function does its work; pass IT(mode) as the sum of the values 
 parameters (so pass NULL as args), 16 = construct rounded text boxes [Default is rectangular], 32 = set the first time BD(PSL_plottextpath) is
 called (if you are placing text several times), 64 = set the last time BD(PSL_plottextpath) is called,
 128 = fill the text box (this requires you to first define the text box rgb color with BD(PSL_define_rgb) by setting
-a local PS variable that must be called PSL_setboxrgb), and 256 = draw the text box outlines (this requires you to
-first define the text box pen with BD(PSL_define_pen) by setting a local PS variable that must be called PSL_setboxpen).
-For font color you must use BD(PSL_define_rgb) and create a PS variable called PSL_settxtrgb.  If not set we default
+a local IT(PostScript) variable that must be called PSL_setboxrgb), and 256 = draw the text box outlines (this requires you to
+first define the text box pen with BD(PSL_define_pen) by setting a local IT(PostScript) variable that must be called PSL_setboxpen).
+For font color you must use BD(PSL_define_rgb) and create a IT(PostScript) variable called PSL_settxtrgb.  If not set we default
 to black.
 .RE
 .SH CLIPPING
@@ -689,21 +690,21 @@ levels of text-based clipping, and PSL_ALL_CLIP_POL will undo all levels of
 polygon-based clipping.
 .RE
 .SH MISCELLANEOUS FUNCTIONS
-Here are functions used to issue comments or to pass custom PS commands directly to the output PS file.
+Here are functions used to issue comments or to pass custom IT(PostScript) commands directly to the output IT(PostScript) file.
 In C these functions are declared as macros and they can accept a variable
 number of arguments.  However, from FORTRAN only a single text argument may be passed.
 .br
 .sp
 BD(long PSL_setcommand) (ARG(struct PSL_CTRL,*P), ARG(char,*text))
 .RS 5
-Writes a raw PS command to the PS output file,
+Writes a raw IT(PostScript) command to the IT(PostScript) output file,
 e.g. "1 setlinejoin\n".
 .RE
 .br
 .sp
 BD(long PSL_comment) (ARG(struct PSL_CTRL,*P), ARG(char,*text))
 .RS 5
-Writes a comment (IT(text)) to the PS output file, e.g. "Start of graph 2\n".
+Writes a comment (IT(text)) to the IT(PostScript) output file, e.g. "Start of graph 2\n".
 The comment are prefixed with with %% .
 .RE
 .SH AUTHORS
@@ -716,5 +717,5 @@ caused by correct BD(or) incorrect use of PSLIB.  If you find bugs, please repor
 them to the authors by electronic mail.  Be sure to provide enough detail so that we
 can recreate the problem.
 .SH REFERENCES
-Adobe Systems Inc., 1990, PS language reference manual, 2nd edition,
+Adobe Systems Inc., 1990, IT(PostScript) language reference manual, 2nd edition,
 Addison-Wesley, (ISBN 0-201-18127-4).
