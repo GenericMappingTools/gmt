@@ -27,7 +27,6 @@ PostScript code is written to stdout.
 
 #define DEFAULT_FONTSIZE	9.0	/* In points */
 #define DEFAULT_OFFSET		3.0	/* In points */
-#define DEFAULT_JUSTIFY		2	/* Center-bottom */
 
 #define READ_CMT	0
 #define READ_AKI	1
@@ -125,7 +124,6 @@ struct PSMECA_CTRL {
 	} T2;
  	struct O2 {	/* -o */
 		GMT_LONG active;
-		GMT_LONG mode;
 	} O2;
 };
 
@@ -137,9 +135,11 @@ void *New_psmeca_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
 	C->C.size = GMT_DOT_SIZE;
-	C->C.pen = C->L.pen = C->T.pen = C->Z2.pen = C->P2.pen = GMT->current.setting.map_default_pen;
-	C->L.active = TRUE;
+	C->C.pen = C->L.pen = C->T.pen = C->T2.pen = C->P2.pen = C->Z2.pen = C->W.pen = GMT->current.setting.map_default_pen;
+	/* Set width temporarily to -1. This will indicate later that we need to replace by W.pen */
+	C->C.pen.width = C->L.pen.width = C->T.pen.width = C->T2.pen.width = C->P2.pen.width = C->Z2.pen.width = -1.0;
 	C->D.depmax = 900.0;
+	C->L.active = TRUE;
 	GMT_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	GMT_init_fill (GMT, &C->R2.fill, 1.0, 1.0, 1.0);
@@ -147,8 +147,8 @@ void *New_psmeca_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	GMT_init_fill (GMT, &C->G2.fill, 0.0, 0.0, 0.0);
 	C->S.fontsize = DEFAULT_FONTSIZE;
 	C->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+	C->S.justify = PSL_BC;
 	C->a2.size = GMT->session.d_NaN;
-	C->O2.mode = 1;
 	return (C);
 }
 
@@ -172,8 +172,8 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t[-K] [-L<pen>] [-M] [-N] [-O] [-P] [-r]\n");
 	GMT_message (GMT, "\t[-T<nplane>[/<pen>]] [%s]\n", GMT_U_OPT);
 	GMT_message (GMT, "\t[-V] [-W<pen>] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[-Z<cpt>] [-z] [-a[<size>[/<Psymbol>[<Tsymbol>]]]\n\n");
-	GMT_message (GMT, "\t[-p<pen>] [-t<pen>] [-e<fill>] -g<fill>]\n\n");
+	GMT_message (GMT, "\t[-Z<cpt>] [-z[<pen>]] [-a[<size>[/<Psymbol>[<Tsymbol>]]]\n\n");
+	GMT_message (GMT, "\t[-p[<pen>]] [-t[<pen>]] [-e<fill>] -g<fill>]\n\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s] [-o] [%s]\n", GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -181,17 +181,16 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<b");
-	GMT_message (GMT, "\t-C<pen attributes>\n");
-	GMT_message (GMT, "\t  offset focal mechanisms to the latitude and longitude specified in the last two columns of the input file before label.\n");
-	GMT_message (GMT, "\t  Default pen attributes is default pen.\n");
-	GMT_message (GMT, "\t  A line is plotted between both positions.\n");
-	GMT_message (GMT, "\t  A small circle is plotted at the initial location. Add P<pointsize value> to change the size of the circle.\n");
+	GMT_message (GMT, "\t-C Offset focal mechanisms to the latitude and longitude specified in the last two columns of the input file before label.\n");
+	GMT_message (GMT, "\t   Default pen attributes are set by -W.\n");
+	GMT_message (GMT, "\t   A line is plotted between both positions.\n");
+	GMT_message (GMT, "\t   A small circle is plotted at the initial location. Add P<pointsize> to change the size of the circle.\n");
 	GMT_message (GMT, "\t-D Plot events between <depmin> and <depmax> deep.\n");
 	GMT_message (GMT, "\t-E Set color used for extensive parts [default is white].\n");
 	GMT_message (GMT, "\t-G Set color used for compressive parts [default is black].\n");
 	GMT_message (GMT, "\t   <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
 	GMT_explain_options (GMT, "K");
-	GMT_message (GMT, "\t-L Draw line or symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
+	GMT_message (GMT, "\t-L Sets pen attribute for outline other than the default set by -W.\n");
 	GMT_message (GMT, "\t-M Same size for any magnitude. Size is given with -S.\n");
 	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
 	GMT_explain_options (GMT, "OP");
@@ -221,8 +220,8 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t (y) Best double couple defined from principal axis:\n");
 	GMT_message (GMT, "\t     X, Y, depth, T_value, T_azim, T_plunge, N_value, N_azim, N_plunge\n");
 	GMT_message (GMT, "\t     P_value, P_azim, P_plunge, exp, newX, newY, event_title\n");
-	GMT_message (GMT, "\t Use -o option for old (psvelomeca) format (not depth in third column).\n");
-	GMT_message (GMT, "\t Optionally add /fontsize[/offset][u]\n");
+	GMT_message (GMT, "\t   Use -o option for old (psvelomeca) format (no depth in third column).\n");
+	GMT_message (GMT, "\t   Optionally add /fontsize[/offset][u]\n");
 	GMT_message (GMT, "\t   Default values are /%g/%fp\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
 	GMT_message (GMT, "\t   fontsize < 0 : no label written;\n");
 	GMT_message (GMT, "\t   offset is from the limit of the beach ball.\n");
@@ -232,8 +231,8 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   n = 1 the only first nodal plane is plotted.\n");
 	GMT_message (GMT, "\t   n = 2 the only second nodal plane is plotted.\n");
 	GMT_message (GMT, "\t   n = 0 both nodal planes are plotted.\n");
-	GMT_message (GMT, "\t If moment tensor is required, nodal planes overlay moment tensor.\n");
-	GMT_message (GMT, "\t-z Overlay zero trace moment tensor.\n");
+	GMT_message (GMT, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
+	GMT_message (GMT, "\t-z Overlay zero trace moment tensor using default pen (see -W) or sets outline pen.\n");
 	GMT_explain_options (GMT, "UV");
 	GMT_message (GMT, "\t-W Set pen attributes [%s].\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
 	GMT_message (GMT, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column.\n");
@@ -333,7 +332,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 					if (GMT_IS_ZERO (Ctrl->S.fontsize)) Ctrl->S.fontsize = DEFAULT_FONTSIZE;
 					if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = TRUE;
 					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
-					if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = 10;
+					if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC;
 				}
 				switch (Ctrl->S.type) {
 					case 'c':
@@ -513,7 +512,6 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 				break;
 			case 'o':	/* use psvelomeca format (without depth in 3rd column) */
 				Ctrl->O2.active = TRUE;
-				Ctrl->O2.mode = 0;
 				break;
 
 			default:	/* Report bad options */
@@ -527,7 +525,16 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 	no_size_needed = (Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_TENSOR || Ctrl->S.readmode == READ_AXIS);
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.active > 1 && Ctrl->S.scale <= 0.0), "Syntax error: -S must specify scale\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->O2.mode, "Syntax error: -Z cannot be combined with -o\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->O2.active, "Syntax error: -Z cannot be combined with -o\n");
+
+	/* Set to default pen where needed */
+
+	if (Ctrl->C.pen.width  < 0.0) Ctrl->C.pen  = Ctrl->W.pen;
+	if (Ctrl->L.pen.width  < 0.0) Ctrl->L.pen  = Ctrl->W.pen;
+	if (Ctrl->T.pen.width  < 0.0) Ctrl->T.pen  = Ctrl->W.pen;
+	if (Ctrl->T2.pen.width < 0.0) Ctrl->T2.pen = Ctrl->W.pen;
+	if (Ctrl->P2.pen.width < 0.0) Ctrl->P2.pen = Ctrl->W.pen;
+	if (Ctrl->Z2.pen.width < 0.0) Ctrl->Z2.pen = Ctrl->W.pen;
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -537,7 +544,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psmeca task */
-	GMT_LONG i, n, ix = 0, iy = 1, last = 0, form = 0;
+	GMT_LONG i, n, ix = 0, iy = 1, last = 0, form = 0, new;
 	GMT_LONG n_rec = 0, n_plane_old = 0, error;
 	GMT_LONG no_size_needed, transparence_old = FALSE, not_defined = FALSE;
 
@@ -594,7 +601,6 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_plotinit (GMT, options);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
-	GMT_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
@@ -667,7 +673,8 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* In new (psmeca) input format, third column is depth.
 		   Skip record when depth is out of range. Also read an extra column. */
 
-		if (Ctrl->O2.mode) {
+		new = Ctrl->O2.active ? 0 : 1;
+		if (new) {
 			depth = atof (col[GMT_Z]);
 			if (depth < Ctrl->D.depmin || depth > Ctrl->D.depmax) continue;
 			if (Ctrl->Z.active) GMT_get_rgb_from_z (GMT, CPT, depth, Ctrl->G.fill.rgb);
@@ -679,30 +686,30 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Gather and transform the input records, depending on type */
 
 		if (Ctrl->S.readmode == READ_CMT) {
-			meca.NP1.str = atof (col[2+Ctrl->O2.mode]);
-			meca.NP1.dip = atof (col[3+Ctrl->O2.mode]);
-			meca.NP1.rake = atof (col[4+Ctrl->O2.mode]);
-			meca.NP2.str = atof (col[5+Ctrl->O2.mode]);
-			meca.NP2.dip = atof (col[6+Ctrl->O2.mode]);
-			meca.NP2.rake = atof (col[7+Ctrl->O2.mode]);
-			meca.moment.mant = atof (col[8+Ctrl->O2.mode]);
-			meca.moment.exponent = atoi(col[9+Ctrl->O2.mode]);
-			if (meca.moment.exponent == 0) meca.magms = atof (col[8+Ctrl->O2.mode]);
+			meca.NP1.str = atof (col[2+new]);
+			meca.NP1.dip = atof (col[3+new]);
+			meca.NP1.rake = atof (col[4+new]);
+			meca.NP2.str = atof (col[5+new]);
+			meca.NP2.dip = atof (col[6+new]);
+			meca.NP2.rake = atof (col[7+new]);
+			meca.moment.mant = atof (col[8+new]);
+			meca.moment.exponent = atoi(col[9+new]);
+			if (meca.moment.exponent == 0) meca.magms = atof (col[8+new]);
 		}
 		else if (Ctrl->S.readmode == READ_AKI) {
-			meca.NP1.str = atof (col[2+Ctrl->O2.mode]);
-			meca.NP1.dip = atof (col[3+Ctrl->O2.mode]);
-			meca.NP1.rake = atof (col[4+Ctrl->O2.mode]);
-			meca.magms = atof (col[5+Ctrl->O2.mode]);
+			meca.NP1.str = atof (col[2+new]);
+			meca.NP1.dip = atof (col[3+new]);
+			meca.NP1.rake = atof (col[4+new]);
+			meca.magms = atof (col[5+new]);
 			meca.moment.exponent = 0;
 			define_second_plane (meca.NP1, &meca.NP2);
 		}
 		else if (Ctrl->S.readmode == READ_PLANES) {
-			meca.NP1.str = atof (col[2+Ctrl->O2.mode]);
-			meca.NP1.dip = atof (col[3+Ctrl->O2.mode]);
-			meca.NP2.str = atof (col[4+Ctrl->O2.mode]);
-			fault = atof (col[5+Ctrl->O2.mode]);
-			meca.magms = atof (col[6+Ctrl->O2.mode]);
+			meca.NP1.str = atof (col[2+new]);
+			meca.NP1.dip = atof (col[3+new]);
+			meca.NP2.str = atof (col[4+new]);
+			fault = atof (col[5+new]);
+			meca.magms = atof (col[6+new]);
 			meca.moment.exponent = 0;
 			meca.NP2.dip = computed_dip2(meca.NP1.str, meca.NP1.dip, meca.NP2.str);
 			if (meca.NP2.dip == 1000.0) {
@@ -719,20 +726,20 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			meca.NP2.rake = computed_rake2(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip, fault);
 		}
 		else if (Ctrl->S.readmode == READ_AXIS) {
-			T.val = atof (col[2+Ctrl->O2.mode]);
-			T.str = atof (col[3+Ctrl->O2.mode]);
-			T.dip = atof (col[4+Ctrl->O2.mode]);
-			T.e = atoi(col[11+Ctrl->O2.mode]);
+			T.val = atof (col[2+new]);
+			T.str = atof (col[3+new]);
+			T.dip = atof (col[4+new]);
+			T.e = atoi(col[11+new]);
 
-			N.val = atof (col[5+Ctrl->O2.mode]);
-			N.str = atof (col[6+Ctrl->O2.mode]);
-			N.dip = atof (col[7+Ctrl->O2.mode]);
-			N.e = atoi(col[11+Ctrl->O2.mode]);
+			N.val = atof (col[5+new]);
+			N.str = atof (col[6+new]);
+			N.dip = atof (col[7+new]);
+			N.e = atoi(col[11+new]);
 
-			P.val = atof (col[8+Ctrl->O2.mode]);
-			P.str = atof (col[9+Ctrl->O2.mode]);
-			P.dip = atof (col[10+Ctrl->O2.mode]);
-			P.e = atoi(col[11+Ctrl->O2.mode]);
+			P.val = atof (col[8+new]);
+			P.str = atof (col[9+new]);
+			P.dip = atof (col[10+new]);
+			P.e = atoi(col[11+new]);
 			/*
 			F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998, p.167.
 			Definition of scalar moment.
@@ -749,7 +756,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) axe2dc(T, P, &meca.NP1, &meca.NP2);
 		}
 		else if (Ctrl->S.readmode == READ_TENSOR) {
-			for (i=2+Ctrl->O2.mode, n=0; i<8+Ctrl->O2.mode; i++, n++) mt.f[n] = atof (col[i]);
+			for (i=2+new, n=0; i<8+new; i++, n++) mt.f[n] = atof (col[i]);
 			mt.expo = atoi(col[i]);
 			/*
 			F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998, p.167.
@@ -774,12 +781,12 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* If option -C is used, read the new position */
 
 		if (Ctrl->C.active) {
-			xynew[ix] = atof (col[last-1+Ctrl->O2.mode]);
-			xynew[iy] = atof (col[last+Ctrl->O2.mode]);
+			xynew[ix] = atof (col[last-1+new]);
+			xynew[iy] = atof (col[last+new]);
 			if (fabs (xynew[ix]) > EPSIL || fabs (xynew[iy]) > EPSIL) {
 				GMT_setpen (GMT, &Ctrl->C.pen);
 				GMT_geo_to_xy (GMT, xynew[0], xynew[1], &plot_xnew, &plot_ynew);
-				GMT_setfill (GMT, &Ctrl->G.fill, 1);
+				GMT_setfill (GMT, &Ctrl->G.fill, TRUE);
 				PSL_plotsymbol (PSL, plot_x, plot_y, &Ctrl->C.size, GMT_SYMBOL_CIRCLE);
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_xnew, plot_ynew);
 				plot_x = plot_xnew;
@@ -823,14 +830,10 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			meca.NP1.str = zero_360(meca.NP1.str + delaz);
 			meca.NP2.str = zero_360(meca.NP2.str + delaz);
 			GMT_setpen (GMT, &Ctrl->T.pen);
-			switch (Ctrl->T.n_plane) {
-				case 0:
-					ps_meca (GMT, PSL, plot_x, plot_y, meca, size);
-					break;
-				default:
-					ps_plan (GMT, PSL, plot_x, plot_y, meca, size, Ctrl->T.n_plane);
-					break;
-			}
+			if (Ctrl->T.n_plane)
+				ps_plan (GMT, PSL, plot_x, plot_y, meca, size, Ctrl->T.n_plane);
+			else
+				ps_meca (GMT, PSL, plot_x, plot_y, meca, size);
 			if (not_defined) {
 				not_defined = FALSE;
 				Ctrl->T.active = transparence_old;
@@ -847,12 +850,12 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (!Ctrl->S.no_label) {
 			GMT_setpen (GMT, &Ctrl->W.pen);
 			switch (Ctrl->S.justify) {
-				case 2 :
+				case PSL_BC :
 					PSL_setfill (PSL, Ctrl->R2.fill.rgb, FALSE);
 					if (Ctrl->R2.active) PSL_plotbox (PSL, plot_x - size * 0.5, plot_y + size * 0.5 + Ctrl->S.offset + (Ctrl->S.fontsize / PSL_POINTS_PER_INCH), plot_x + size * 0.5, plot_y + size * 0.5 + Ctrl->S.offset);
 					PSL_plottext (PSL, plot_x, plot_y + size * 0.5 + Ctrl->S.offset, Ctrl->S.fontsize, event_title, angle, Ctrl->S.justify, form);
 					break;
-				case 10 :
+				case PSL_TC :
 					PSL_setfill (PSL, Ctrl->R2.fill.rgb, FALSE);
 					if (Ctrl->R2.active) PSL_plotbox (PSL, plot_x - size * 0.5, plot_y - size * 0.5 - Ctrl->S.offset - (Ctrl->S.fontsize / PSL_POINTS_PER_INCH), plot_x + size * 0.5, plot_y - size * 0.5 - Ctrl->S.offset);
 					PSL_plottext (PSL, plot_x, plot_y - size * 0.5 - Ctrl->S.offset, Ctrl->S.fontsize, event_title, angle, Ctrl->S.justify, form);
