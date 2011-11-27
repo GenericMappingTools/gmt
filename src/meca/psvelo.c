@@ -101,6 +101,7 @@ void *New_psvelo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	C->S.wedge_amp = 1.e7;
 	C->S.conrad = 1.0;
+	C->W.pen = GMT->current.setting.map_default_pen;
 	return (C);
 }
 
@@ -312,7 +313,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
-        if (Ctrl->E.active) Ctrl->L.active = TRUE;
+	if (Ctrl->E.active) Ctrl->L.active = TRUE;
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
