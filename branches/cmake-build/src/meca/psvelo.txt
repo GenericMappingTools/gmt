@@ -3,33 +3,27 @@
 .SH NAME
 psvelo \- Plot velocity vectors, crosses, and wedges on maps
 .SH SYNOPSIS
-.br
 BD(psvelo) [ IT(table) ] GMT_J_OPT GMT_Rgeo_OPT [ OPT(A)IT(Arrow_width/Head_length/Head_width) ] [ GMT_B_OPT ] 
 [ OPT(D)IT(sigma_scale) ] [ OPT(F)IT(color) ] 
 [ OPT(E)IT(color) ] [ OPT(G)IT(fill) ] [ GMT_K_OPT ] [ OPT(L) ] [ OPT(N) ] 
 [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S)IT(symbol)/IT(scale)/IT(conf)/IT(font_size) ] [ GMT_U_OPT ] 
 [ GMT_V_OPT ] [ OPT(W)IT(pen) ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-.br
 BD(psvelo) reads data values from IT(files) [or standard input]
 and generates IT(PostScript) code that will plot 
 velocity arrows on a map.  Most options are the same as for BD(psxy),
 except OPT(S).  The IT(PostScript) code is written to standard
 output. The previous version (BD(psvelomeca)) is now obsolete. It has
 been replaced by BD(psvelo) and BD(psmeca).
-.br
-.sp
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_intables.txt"
 #include "explain_-J.txt"
 #include "explain_-Rgeo.txt"
-.br
-.sp
-OPT(S)Selects the meaning of the columns in the data file and the
+.TP
+OPT(S)
+Selects the meaning of the columns in the data file and the
 figure to be plotted.
-.br
-.sp
 .TP
 OPT(Se)IT(velscale/confidence/fontsize).
 Velocity ellipses in
@@ -42,38 +36,37 @@ the color or shade specified by the OPT(G) option [default
 transparent].  The arrow and the circumference of the ellipse will be
 drawn with the pen attributes specified by the OPT(W) option.
 Parameters are expected to be in the following columns:
+.RS
 .TP
-.B 1,2
+BD(1),BD(2):
 longitude, latitude of station (OPT(:) option interchanges order)
 .TP
-.B 3,4
+BD(3),BD(4):
 eastward, northward velocity (OPT(:) option interchanges order)
 .TP
-.B 5,6
+BD(5),BD(6):
 uncertainty of eastward, northward velocities (1-sigma) (OPT(:)
 option interchanges order)
 .TP
-.B 7
+BD(7):
 correlation between eastward and northward components
 .TP
-.B 8
+BD(8):
 name of station (optional).
-.br
-.sp
+.RE
 .TP
 OPT(Sn)IT(barscale.)
 Anisotropy bars.  IT(Barscale) sets the scaling of the bars
 This scaling gives inches (unless BD(c), BD(i), BD(m), or BD(p) is appended).
 Parameters are expected to be in the following columns:
+.RS
 .TP
-.B 1,2
+BD(1),BD(2):
 longitude, latitude of station (OPT(:) option interchanges order)
 .TP
-.B 3,4
+BD(3),BD(4):
 eastward, northward components of anisotropy vector (OPT(:) option interchanges order)
-.br
-.br
-.sp
+.RE
 .TP
 OPT(Sr)IT(velscale/confidence/fontsize)
 Velocity ellipses in rotated convention.  IT(Vscale) sets the scaling of the velocity
@@ -86,23 +79,23 @@ The ellipse will be filled with the color or shade specified by the OPT(G) optio
 be drawn with the pen attributes specified by the OPT(W) option.
 Parameters are expected to be in
 the following columns:
+.RS
 .TP
-.B 1,2
+BD(1),BD(2):
 longitude, latitude, of station (OPT(:) option interchanges order)
 .TP
-.B 3,4
+BD(3),BD(4):
 eastward, northward velocity (OPT(:) option interchanges order)
 .TP
-.B 5,6
+BD(5),BD(6):
 semi-major, semi-minor axes
 .TP
-.B 7
+BD(7):
 counter-clockwise angle, in degrees, from horizontal axis to major axis of ellipse.
 .TP
-.B 8
+BD(8):
 name of station (optional)
-.br
-.sp
+.RE
 .TP
 OPT(Sw)IT(wedge_scale/wedge_mag).
 Rotational wedges.
@@ -113,38 +106,37 @@ IT(Wedge_mag) to 1.e7 works well for rotations of the order of 100
 nanoradians/yr.  Use OPT(G) to set the fill color or shade for the
 wedge, and OPT(E) to set the color or shade for the uncertainty.
 Parameters are expected to be in the following columns:
+.RS
 .TP
-.B 1,2
+BD(1),BD(2):
 longitude, latitude, of station (OPT(:) option interchanges order)
 .TP
-.B 3
+BD(3):
 rotation in radians
 .TP
-.B 4
+BD(4):
 rotation uncertainty in radians
-.br
-.sp
+.RE
 .TP
 OPT(Sx)IT(cross_scale)
 gives Strain crosses.  IT(Cross_scale) sets the
 size of the cross in inches (unless BD(c), BD(i), BD(m), or BD(p) 
 is appended).  Parameters are expected to be in the
 following columns:
+.RS
 .TP
-.B 1,2
+BD(1),BD(2):
 longitude, latitude, of station (OPT(:) option interchanges order)
 .TP
-.B 3
+BD(3):
 eps1, the most extensional eigenvalue of strain tensor, with extension taken positive.
 .TP
-.B 4
+BD(4):
 eps2, the most compressional eigenvalue of strain tensor, with extension taken positive.
 .TP
-.B 5
+BD(5):
 azimuth of eps2 in degrees CW from North.
-.br
-.sp
-.br
+.RE
 .SH OPTIONAL ARGUMENTS
 .TP
 OPT(A)
@@ -156,17 +148,14 @@ OPT(D)IT(Sigma_scale )
 can be used to rescale the uncertainties of velocities (OPT(Se) and
 OPT(Sr)) and rotations (OPT(Sw)).  Can be combined with the
 IT(confidence ) variable.
-.br
 .TP
 OPT(F)IT(fill)
 Sets the color or shade used for frame and annotation. [Default is black]
-.br
 .TP
 OPT(E)IT(fill)
 Sets the color or shade used for filling uncertainty wedges (OPT(Sw))
 or velocity error ellipses (OPT(Se) or OPT(Sr)).  [If OPT(E) is not
 specified, the uncertainty regions will be transparent.]
-.br
 .TP
 OPT(G)IT(fill)
 Specify color (for symbols/polygons) or pattern (for polygons) [Default is black].
@@ -180,7 +169,6 @@ patterns.
 .TP
 OPT(L)
 Draw lines.  Ellipses and fault planes will have their outlines drawn using current pen (see OPT(W)).
-.br
 .TP
 OPT(N)
 Do BD(NOT) skip symbols that fall outside the frame boundary specified by OPT(R).
@@ -256,14 +244,11 @@ OPT(Jm)2.2 OPT(R)240./243./32.5/34.75 OPT(B)f10ma60m/WeSn OPT(P) > test.ps
 241.1084 34.2565  2.17E-08 3.53E-08
 .br
 END
-.br
-.sp
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR psbasemap (1),
 .IR psxy (1)
 .SH REFERENCES
-.br
 Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
 .SH AUTHORS
 Kurt Feigl

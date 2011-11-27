@@ -3,7 +3,6 @@
 .SH NAME
 psmeca \- Plot focal mechanisms on maps
 .SH SYNOPSIS
-.br
 psmeca [ IT(table) ] GMT_J_OPT GMT_Rgeo_OPT
 [ GMT_B_OPT ] [ OPT(C)[IT(pen)][BD(P)IT(pointsize)] ] [ OPT(D)IT(depmin)/IT(depmax) ]
 [ OPT(E)IT(fill)] [ OPT(G)IT(fill)]
@@ -44,21 +43,27 @@ quadrants can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .RS
-.TP BD(1),BD(2):
+.TP
+BD(1),BD(2):
 longitude, latitude of event (OPT(:) option interchanges order)
-.TP BD(3):
+.TP
+BD(3):
 depth of event in kilometers
-.TP BD(4),BD(5),BD(6):
+.TP
+BD(4),BD(5),BD(6):
 strike, dip and rake in degrees
-.TP BD(7):
+.TP
+BD(7):
 magnitude
-.TP BD(8),BD(9):
+.TP
+BD(8),BD(9):
 longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the OPT(C) option.  Using 0,0 in columns
 8 and 9 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (8,9).
-.TP BD(10):
+.TP
+BD(10):
 Text string to appear above the beach ball (optional).
 .RE
 .TP
@@ -75,23 +80,30 @@ can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .RS
-.TP BD(1),BD(2):
+.TP
+BD(1),BD(2):
 longitude, latitude of event (OPT(:) option interchanges order)
-.TP BD(3):
+.TP
+BD(3):
 depth of event in kilometers
-.TP BD(4),BD(5),BD(6):
+.TP
+BD(4),BD(5),BD(6):
 strike, dip, and rake of plane 1
-.TP BD(7),BD(8),BD(9):
+.TP
+BD(7),BD(8),BD(9):
 strike, dip, and rake of plane 2
-.TP BD(10),BD(11):
+.TP
+BD(10),BD(11):
 mantissa and exponent of moment in dyne-cm
-.TP BD(12),BD(13):
+.TP
+BD(12),BD(13):
 longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the OPT(C) option.  Using (0,0) in columns
 12 and 13 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (12,13).
-.TP BD(14):
+.TP
+BD(14):
 Text string to appear above the beach ball (optional).
 .RE
 .TP
@@ -110,21 +122,27 @@ can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .RS
-.TP BD(1),BD(2):
+.TP
+BD(1),BD(2):
 longitude, latitude of event (OPT(:) option interchanges order)
-.TP BD(3):
+.TP
+BD(3):
 depth of event in kilometers
-.TP BD(4),BD(5),BD(6),BD(7),BD(8),BD(9):
+.TP
+BD(4),BD(5),BD(6),BD(7),BD(8),BD(9):
 mrr, mtt, mff, mrt, mrf, mtf in 10*exponent dynes-cm
-.TP BD(10):
+.TP
+BD(10):
 exponent
-.TP BD(11),BD(12):
+.TP
+BD(11),BD(12):
 longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the OPT(C) option.  Using (0,0) in columns
 11 and 12 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (11,12).
-.TP BD(13):
+.TP
+BD(13):
 Text string to appear above the beach ball (optional).
 .RE
 .TP
@@ -138,25 +156,33 @@ can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .RS
-.TP BD(1),BD(2):
+.TP
+BD(1),BD(2):
 longitude, latitude of event (OPT(:) option interchanges order)
-.TP BD(3):
+.TP
+BD(3):
 depth of event in kilometers
-.TP BD(4),BD(5):
+.TP
+BD(4),BD(5):
 strike, dip of plane 1
-.TP BD(6):
+.TP
+BD(6):
 strike of plane 2
-.TP BD(7):
+.TP
+BD(7):
 must be -1/+1 for a normal/inverse fault
-.TP BD(8):
+.TP
+BD(8):
 magnitude
-.TP BD(9),BD(10):
+.TP
+BD(9),BD(10):
 longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the OPT(C) option.  Using (0,0) in columns
 9 and 10 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (9,10).
-.TP BD(11):
+.TP
+BD(11):
 Text string to appear above the beach ball (optional).
 .RE
 .TP
@@ -175,21 +201,27 @@ can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .RS
-.TP BD(1),BD(2):
+.TP
+BD(1),BD(2):
 longitude, latitude of event (OPT(:) option interchanges order)
-.TP BD(3):
+.TP
+BD(3):
 depth of event in kilometers
-.TP BD(4),BD(5),BD(6),BD(7),BD(8),BD(9),BD(10),BD(11),BD(12):
+.TP
+BD(4),BD(5),BD(6),BD(7),BD(8),BD(9),BD(10),BD(11),BD(12):
 value (in 10*exponent dynes-cm), azimuth, plunge of T, N, P axis.
-.TP BD(13):
+.TP
+BD(13):
 exponent
-.TP BD(14),BD(15):
+.TP
+BD(14),BD(15):
 longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the OPT(C) option.  Using (0,0) in columns
 14 and 15 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (14,15).
-.TP BD(16):
+.TP
+BD(16):
 Text string to appear above the beach ball (optional).
 .RE
 .LP
@@ -201,8 +233,7 @@ Offsets focal mechanisms to the longitude, latitude specified in the last
 two columns of the input file before the (optional) text string.  A small
 circle is plotted at the initial location and a line connects the beachball
 to the circle.  Specify IT(pen) and/or IT(pointsize) to change the line
-style and/or size of the circle. [Defaults: IT(pen) width = 1, color = black,
-style = solid; IT(pointsize) 0].
+style and/or size of the circle. [Defaults: IT(pen) as given by OPT(W); IT(pointsize) 0].
 .TP
 OPT(D)IT(depmin/depmax)
 Plots events between depmin and depmax.
@@ -210,7 +241,6 @@ Plots events between depmin and depmax.
 OPT(E)IT(fill)
 Selects filling of extensive quadrants. Usually white.
 Set the color [Default is white].
-.br
 .TP
 OPT(G)IT(fill)
 Selects filling of focal mechanisms.  By
@@ -218,13 +248,11 @@ convention, the compressional quadrants of the focal mechanism beach
 balls are shaded.  Set the color [Default is black]. 
 #include "explain_-K.txt"
 .TP
-OPT(L)[IT(pen)]
-Draws the "beach ball" outline with IT(pen) attributes.
-[Defaults width = 1, color = black, style = solid].
+OPT(L)IT(pen)
+Draws the "beach ball" outline with IT(pen) attributes instead of with the default pen set by OPT(W).
 .TP
 OPT(M)
 Use the same size for any magnitude. Size is given with OPT(S).
-.br
 .TP
 OPT(N)
 Does BD(not) skip symbols that fall outside frame boundary specified by
@@ -232,25 +260,29 @@ OPT(R) [Default plots symbols inside frame only].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-OPT(T)[IT(num_of_planes)]
+OPT(T)[IT(num_of_planes)][BD(/)IT(pen)]
 Plots the nodal planes and outlines the bubble which is transparent.
 If IT(num_of_planes) is
 .br
-      IT(0): both nodal planes are plotted;
-      IT(1): only the first nodal plane is plotted;
-      IT(2): only the second nodal plane is plotted.
+IT(0): both nodal planes are plotted;
+.br
+IT(1): only the first nodal plane is plotted;
+.br
+IT(2): only the second nodal plane is plotted.
+.br
+Append BD(/)IT(pen) to set the pen attributes for this feature. Default pen is as set by OPT(W).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-OPT(W)
+OPT(W)IT(pen)
+Set pen attributes for all lines and the outline of symbols [Defaults: width = default, color = black, style = solid].
+This setting applies to OPT(C), OPT(L), OPT(T), OPT(p), OPT(t), and OPT(z), unless overruled by options to those
+arguments.
 #include "explain_-XY.txt"
 .TP
 OPT(Z)IT(cptfile)
 Give a color palette file and let compressive part color be determined by the z-value in the
 third column. 
-.TP
-OPT(z)
-Overlay zero trace moment tensor.
 .TP
 OPT(a)[IT(size)/[IT(P_axis_symbol)[IT(T_axis_symbol)]]]
 Computes and plots P and T axes with symbols. Optionally specify IT(size)
@@ -269,17 +301,19 @@ OPT(g)IT(fill)
 Selects filling of P axis symbol.
 Set the color. [Default is black]
 #include "explain_-h.txt"
+#include "explain_-icols.txt"
 .TP
 OPT(o)
 Use the BD(psvelomeca) input format without depth in the third column.
 .TP
 OPT(p)[IT(pen)]
-Draws the P axis outline using default pen (see OPT(W)), or sets
-pen attributes.
+Draws the P axis outline using default pen (see OPT(W)), or sets pen attributes.
+.TP
 OPT(t)[IT(pen)]
-Draws the T axis outline using default pen (see OPT(W)), or sets 
-pen attributes.
-#include "explain_-icols.txt"
+Draws the T axis outline using default pen (see OPT(W)), or sets pen attributes.
+.TP
+OPT(z)[IT(pen)]
+Overlay zero trace moment tensor using default pen (see OPT(W)), or sets pen attributes.
 #include "explain_colon.txt"
 #include "explain_help.txt"
 .SH EXAMPLES

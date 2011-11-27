@@ -50,7 +50,7 @@ or use OPT(Gc) for clipping [Default is no fill].
 .TP
 OPT(I)IT(river)[/IT(pen)]
 Draw rivers.  Specify the type of rivers and [optionally] append pen attributes  [Default pen:
-width = 1, color = black, style = solid].
+width = default, color = black, style = solid].
 .br
 Choose from the list of river types below; repeat option OPT(I) as often as necessary.
 .br
@@ -100,7 +100,7 @@ Specify any combination of OPT(W), OPT(I), OPT(N).
 .TP
 OPT(N)IT(border)[/IT(pen)]
 Draw political boundaries.  Specify the type of boundary and [optionally] append pen attributes  [Default pen:
-width = 1, color = black, style = solid].
+width = default, color = black, style = solid].
 .br
 Choose from the list of boundaries below.
 Repeat option OPT(N) as often as necessary.
@@ -129,7 +129,7 @@ or use OPT(Sc) for clipping [Default is no fill].
 .TP
 OPT(W)[IT(level)/]IT(pen)
 Draw shorelines [Default is no shorelines].  Append pen attributes  [Defaults:
-width = 1, color = black, style = solid] which apply to all four levels.  To set
+width = default, color = black, style = solid] which apply to all four levels.  To set
 the pen for each level differently, prepend IT(level)/, where IT(level) is 1-4
 and represent coastline, lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
 Repeat OPT(W) as needed.  When specific level pens are set, those not listed will not

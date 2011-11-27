@@ -361,7 +361,7 @@ double ps_meca (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0
 
 	/*  argument is DIAMETER!!*/
 	ssize[0] = radius_size*2.0;
-	PSL_setfill (PSL, GMT->session.no_rgb, PSL_IS_STROKE);
+	PSL_setfill (PSL, GMT->session.no_rgb, TRUE);
 	PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 
 	i = -1;
@@ -676,7 +676,7 @@ void GMT_momten2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt,struct AXIS *T,str
 double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, GMT_LONG outline, GMT_LONG plot_zerotrace)
 {
 	GMT_LONG d, b = 1, m, i, ii, n = 0, j = 1, j2 = 0, j3 = 0;
-	GMT_LONG npoints, lineout = 1, big_iso = 0;
+	GMT_LONG big_iso = 0;
 	GMT_LONG djp, mjp, jp_flag;
 
 	double a[3], p[3], v[3], azi[3][2];
@@ -705,12 +705,12 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 		ssize[0] = radius_size*2.0;
 		if (vi > 0.) {
 			ssize[0] = radius_size*2.0;
-			GMT_setfill (GMT, C, lineout);
+			GMT_setfill (GMT, C, TRUE);
 			PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 		}
 		if (vi < 0.) {
 			ssize[0] = radius_size*2.0;
-			GMT_setfill (GMT, E, lineout);
+			GMT_setfill (GMT, E, TRUE);
 			PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 		}
 		return (radius_size*2.);
@@ -740,15 +740,15 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 
 	if (iso < -1) {
 		ssize[0] = radius_size*2.0;
-		GMT_setfill (GMT, E, lineout);
+		GMT_setfill (GMT, E, TRUE);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
-		return(ssize[0]);
+		return (ssize[0]);
 	}
-	else if (iso > 1-f) {
+	else if (iso > 1 - f) {
 		ssize[0] = radius_size*2.0;
-		GMT_setfill (GMT, C, lineout);
+		GMT_setfill (GMT, C, TRUE);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
-		return(ssize[0]);
+		return (ssize[0]);
 	}
 
 	sincosd (p[d], &spd, &cpd);
@@ -758,7 +758,7 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 	sincosd (a[b], &sab, &cab);
 	sincosd (a[m], &sam, &cam);
 
-	for (i=0; i<360; i++) {
+	for (i = 0; i < 360; i++) {
 		fir = (double) i * D2R;
 		s2alphan = (2. + 2. * iso) / (3. + (1. - 2. * f) * cos(2. * fir));
 		if (s2alphan > 1.) {
@@ -768,13 +768,12 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 
    second case added Dec. 2010 */
 
-			if ( d == 0 && m == 2 ) {
+			if (d == 0 && m == 2) {
 				jp_flag = 1;
 				djp = 2;
 				mjp = 0;
 			}
-
-			if ( d == 2 && m == 0 ) {
+			if (d == 2 && m == 0) {
 				jp_flag = 2;
 				djp = 0;
 				mjp = 2;
@@ -916,46 +915,41 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 	}
 	azi[n][1] = az;
 
-	if (v[1] < 0.) {
-		F1 = C;	F2 = E;
-	}
-	else {
-		F1 = E;	F2 = C;
-	}
-/* patch to fix big_iso case plotting problems. JP, NOV 2010 */
-	if (big_iso){
-		fprintf(stderr, "Warning: big isotropic component, case not fully tested! \n");
-		if (jp_flag == 1){
-			ssize[0] = radius_size*2.0;
-			GMT_setfill (GMT, F1, lineout);
-			PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
-			F1 = E; F2 = C;
-		}
-		/* second case added. JP, DEC 2010 */
-		if (jp_flag == 2){
-			ssize[0] = radius_size*2.0;
-			GMT_setfill (GMT, F1, lineout);
-			PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
-			F2 = E; F1 = C;
-		}
-	}
-	else {
-/* end patch to fix big_iso case plotting problems.  */
+	if (v[1] < 0.)
+		F1 = C,	F2 = E;
+	else
+		F1 = E,	F2 = C;
+
+	if (!big_iso) {
 		ssize[0] = radius_size*2.0;
-		GMT_setfill (GMT, F2, lineout);
+		GMT_setfill (GMT, F2, TRUE);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 	}
+	else if (jp_flag == 1) {
+		fprintf(stderr, "Warning: big isotropic component, case not fully tested! \n");
+		ssize[0] = radius_size*2.0;
+		GMT_setfill (GMT, F1, TRUE);
+		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
+		F1 = E, F2 = C;
+	}
+	else if (jp_flag == 2) {
+		fprintf(stderr, "Warning: big isotropic component, case not fully tested! \n");
+		ssize[0] = radius_size*2.0;
+		GMT_setfill (GMT, F1, TRUE);
+		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
+		F2 = E, F1 = C;
+	}
+
+	GMT_setfill (GMT, F1, FALSE);
 	switch (n) {
 		case 0 :
-			for (i=0; i<360; i++) {
+			for (i = 0; i < 360; i++) {
 				xp1[i] = x[i]; yp1[i] = y[i];
 			}
-			npoints = i;
-			GMT_setfill (GMT, F1, outline);
-			PSL_plotpolygon (PSL, xp1, yp1, npoints);
+			PSL_plotpolygon (PSL, xp1, yp1, i);
 			break;
 		case 1 :
-			for (i=0; i<j; i++) {
+			for (i = 0; i < j; i++) {
 				xp1[i] = x[i]; yp1[i] = y[i];
 			}
 			if (azi[0][0] - azi[0][1] > M_PI) azi[0][0] -= M_PI * 2.;
@@ -970,9 +964,7 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 				xp1[i] = x0 + radius_size * si;
 				yp1[i++] = y0 + radius_size * co;
 			}
-			npoints = i;
-			GMT_setfill (GMT, F1, outline);
-			PSL_plotpolygon (PSL, xp1, yp1, npoints);
+			PSL_plotpolygon (PSL, xp1, yp1, i);
 			for (i=0; i<j2; i++) {
 				xp2[i] = x2[i]; yp2[i] = y2[i];
 			}
@@ -988,65 +980,57 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 				xp2[i] = x0 + radius_size * si;
 				yp2[i++] = y0 + radius_size * co;
 			}
-			npoints = i;
-			GMT_setfill (GMT, F1, outline);
-			PSL_plotpolygon (PSL, xp2, yp2, npoints);
+			PSL_plotpolygon (PSL, xp2, yp2, i);
 			break;
 		case 2 :
-			for (i=0; i<j3; i++) {
+			for (i = 0; i < j3; i++) {
 				xp1[i] = x3[i]; yp1[i] = y3[i];
 			}
-			for (ii=0; ii<j; ii++) {
+			for (ii = 0; ii < j; ii++) {
 				xp1[i] = x[ii]; yp1[i++] = y[ii];
 			}
 
-#if 0
-remove original big_iso plotting code.
-Have not found a case where this works properly.  JP, NOV. 2010
-
-			if (big_iso) {
-				for (ii=j2-1; ii>=0; ii--) {
-					xp1[i] = x2[ii]; yp1[i++] = y2[ii];
+			if (azi[2][0] - azi[0][1] > M_PI)
+				azi[2][0] -= M_PI * 2.;
+			else if (azi[0][1] - azi[2][0] > M_PI)
+				azi[2][0] += M_PI * 2.;
+			if (azi[2][0] < azi[0][1]) {
+				for (az = azi[0][1] - D2R; az > azi[2][0]; az -= D2R) {
+					sincos (az, &si, &co);
+					xp1[i] = x0 + radius_size * si;
+					yp1[i++] = y0 + radius_size * co;
 				}
-				npoints = i;
-				GMT_setfill (GMT, F1, outline);
-				PSL_plotpolygon (PSL, xp1, yp1, npoints);
-				break;
 			}
-#endif
-			if (azi[2][0] - azi[0][1] > M_PI) azi[2][0] -= M_PI * 2.;
-			else if (azi[0][1] - azi[2][0] > M_PI) azi[2][0] += M_PI * 2.;
-			if (azi[2][0] < azi[0][1]) for (az = azi[0][1] - D2R; az > azi[2][0]; az -= D2R) {
-				sincos (az, &si, &co);
-				xp1[i] = x0+ radius_size * si;
-				yp1[i++] = y0+ radius_size * co;
+			else {
+				for (az = azi[0][1] + D2R; az < azi[2][0]; az += D2R) {
+					sincos (az, &si, &co);
+					xp1[i] = x0 + radius_size * si;
+					yp1[i++] = y0 + radius_size * co;
+				}
 			}
-			else for (az = azi[0][1] + D2R; az < azi[2][0]; az += D2R) {
-				sincos (az, &si, &co);
-				xp1[i] = x0+ radius_size * si;
-				yp1[i++] = y0+ radius_size * co;
-			}
-			npoints = i;
-			GMT_setfill (GMT, F1, outline);
-			PSL_plotpolygon (PSL, xp1, yp1, npoints);
-			for (i=0; i<j2; i++) {
+			PSL_plotpolygon (PSL, xp1, yp1, i);
+			for (i = 0; i < j2; i++) {
 				xp2[i] = x2[i]; yp2[i] = y2[i];
 			}
-			if (azi[1][0] - azi[1][1] > M_PI) azi[1][0] -= M_PI * 2.;
-			else if (azi[1][1] - azi[1][0] > M_PI) azi[1][0] += M_PI * 2.;
-			if (azi[1][0] < azi[1][1]) for (az = azi[1][1] - D2R; az > azi[1][0]; az -= D2R) {
-				sincos (az, &si, &co);
-				xp2[i] = x0+ radius_size * si;
-				yp2[i++] = y0+ radius_size * co;
+			if (azi[1][0] - azi[1][1] > M_PI)
+				azi[1][0] -= M_PI * 2.;
+			else if (azi[1][1] - azi[1][0] > M_PI)
+				azi[1][0] += M_PI * 2.;
+			if (azi[1][0] < azi[1][1]) {
+				for (az = azi[1][1] - D2R; az > azi[1][0]; az -= D2R) {
+					sincos (az, &si, &co);
+					xp2[i] = x0 + radius_size * si;
+					yp2[i++] = y0 + radius_size * co;
+				}
 			}
-			else for (az = azi[1][1] + D2R; az < azi[1][0]; az += D2R) {
-				sincos (az, &si, &co);
-				xp2[i] = x0+ radius_size * si;
-				yp2[i++] = y0+ radius_size * co;
+			else {
+				for (az = azi[1][1] + D2R; az < azi[1][0]; az += D2R) {
+					sincos (az, &si, &co);
+					xp2[i] = x0 + radius_size * si;
+					yp2[i++] = y0 + radius_size * co;
+				}
 			}
-			npoints = i;
-			GMT_setfill (GMT, F1, outline);
-			PSL_plotpolygon (PSL, xp2, yp2, npoints);
+			PSL_plotpolygon (PSL, xp2, yp2, i);
 			break;
 	}
 	return (radius_size*2.);
@@ -1432,7 +1416,7 @@ void paint_ellipse (struct PSL_CTRL *PSL, double x0, double y0, double angle, do
 
 	for (i = 0; i < npoints - 2; i++) transform_local (x0, y0, dxe[i], dye[i], scale, t11, t12, t21, t22, &axe[i], &aye[i]);
 	if (polygon) {
-		PSL_setfill (PSL, rgb, PSL_IS_STROKE);
+		PSL_setfill (PSL, rgb, TRUE);
 		PSL_plotpolygon (PSL, axe, aye, npoints - 2);
 	}
 	else

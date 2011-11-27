@@ -74,7 +74,7 @@ Means azimuth should be converted to angles based on the selected map projection
 #include "explain_-V.txt"
 .TP
 OPT(W)IT(pen)
-Set pen attributes used for vector outlines [Default: width = 1, color = black, style = solid].
+Set pen attributes used for vector outlines [Default: width = default, color = black, style = solid].
 #include "explain_-XY.txt"
 .TP
 OPT(Z)
