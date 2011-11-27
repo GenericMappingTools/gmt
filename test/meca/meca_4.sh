@@ -42,9 +42,9 @@ pscoast -O -R238.5/242/32.5/35.5 -Jm1.3i -W0.25p -Di -K >> $ps
 #     of dimension Esig by Nsig.
  
 #
-psvelo -Y-4.5i -R-10/10/-10/10 -W5p,red \
- -Se0.2/0.39/12 -B1g1/WeSn -Jx0.2i/0.2i -Ggreen -Eblue -L -N \
--A0.1i/0.76c/0.3i -O -K << EOF >> $ps    
+psvelo -Y-4.5i -R-10/10/-10/10 -Wthick,red \
+	-Se0.2/0.39/12 -B1g1/WeSn -Jx0.2i/0.2i -Ggreen -Eblue -L -N \
+	-A0.1i/0.76c/0.3i -O -K << EOF >> $ps    
 # Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
 # (deg)  (deg)    (mm/yr)        (mm/yr)
   -10.    0.     5.0    0.0     4.0    6.0  0.500  4x6

@@ -23,14 +23,14 @@ EOF
 y_offset=-2.5
 x_offset=0
 for a in 0 40 80 ; do
-    pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Ba100f10/a50f10WesN \
+    pscoupe -R0/250/0/100 -JX1.5i/-1.5i -Ba100f10/a50f10WesN \
         -L -Sc0.4 -Ab128/10/$a/250/90/200/0/100f -G200 -a0.1i/cc \
         -Y$y_offset -X$x_offset -O -K << EOF >> $ps
 # lon   lat  dep str dip rake str dip rake m ex nx ny 
 129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10-$a
 128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40-$a
 EOF
-    pstext -R -F+f18p,Helvetica-Bold+jBR -J -O -K >> $ps <<< "200 90 $a"
+    pstext -R -F+f18p,Helvetica-Bold+jBR -J -O -K >> $ps <<< "240 90 $a"
     y_offset=0
     x_offset=2.5
 done
@@ -44,7 +44,7 @@ for a in 120 160 200 ; do
 129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10-$a
 128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40-$a
 EOF
-    pstext -R -F+f18p,Helvetica-Bold+jBR -J -O -K >> $ps <<< "200 90 $a"
+    pstext -R -F+f18p,Helvetica-Bold+jBR -J -O -K >> $ps <<< "240 90 $a"
     y_offset=0
     x_offset=2.5
 done
@@ -58,7 +58,7 @@ for a in 240 280 320 ; do
 129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10-$a
 128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40-$a
 EOF
-    pstext -R -F+f18p,Helvetica-Bold+jBR -J -O -K >> $ps <<< "200 90 $a"
+    pstext -R -F+f18p,Helvetica-Bold+jBR -J -O -K >> $ps <<< "240 90 $a"
     y_offset=0
     x_offset=2.5
 done

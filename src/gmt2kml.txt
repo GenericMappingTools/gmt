@@ -115,7 +115,7 @@ this allows you, with OPT(O), OPT(K), to group features into folders within the 
 .TP
 OPT(W)[BD(-)|BD(+)]IT(pen)
 Set pen attributes for lines or polygon outlines.  Append pen attributes to use
-[Defaults: width = 1, color = black, style = solid].  If OPT(C) is given you may
+[Defaults: width = default, color = black, style = solid].  If OPT(C) is given you may
 optionally use OPT(W-) to apply the cpt color to the polygon outline only (fill
 determined by OPT(G)) or OPT(W+) to use the cpt color for both polygon fill and
 outline.  Note that for KML the pen width is given as integer pixel
