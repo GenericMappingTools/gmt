@@ -71,7 +71,7 @@ If IT(ny) is omitted, it will be identical to IT(nx) [Default is 1/1].
 #include "explain_perspective.txt"
 .P
 These options are for 1-bit images only.
-They have no effect when plotting other images or PostScript files.
+They have no effect when plotting other images or IT(PostScript) files.
 .TP
 OPT(G)[BD(b)|BD(f)|BD(t)]IT(color)
 .TP
@@ -88,7 +88,7 @@ Invert 1-bit image before plotting. This is what is done
 when you use OPT(GP) in other GMT programs.
 .P
 These options are for 8-, 24-, and 32-bit raster images only.
-They have no effect when plotting 1-bit images or PostScript files.
+They have no effect when plotting 1-bit images or IT(PostScript) files.
 .TP
 OPT(Gt)
 Assigns the color that is to be made transparent.
