@@ -290,7 +290,7 @@ If IT(num_of_planes) is
 .br
 .TP
 OPT(W)
-set pen attributes for text string or default pen attributes for fault plane edges. [Defaults: width = 1, color =
+set pen attributes for text string or default pen attributes for fault plane edges. [Defaults: width = default, color =
 black, style = solid]. 
 #include "explain_-XY.txt"
 .TP
