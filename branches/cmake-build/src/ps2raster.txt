@@ -9,7 +9,7 @@ BD(ps2raster) IT(psfile(s)) [ OPT(A)[BD(u)[IT(margins)]|-] ] [ OPT(C)IT(gs_optio
 [ OPT(Tb)|BD(e)|BD(E)|BD(f)|BD(F)|BD(j)|BD(g)|BD(G)|BD(m)|BD(t) ] [ OPT(V) ] 
 [ OPT(W)[BD(+g)][BD(+t)IT(docname)][BD(+n)IT(layername)][BD(+o)IT(foldername)][BD(+a)IT(altmode)[IT(alt)]][BD(+l)IT(minLOD/maxLOD)][BD(+f)IT(minfade/maxfade)][BD(+u)IT(URL)] ]
 .SH DESCRIPTION
-BD(ps2raster) converts one or more PS files to other formats (BMP, EPS, JPEG, PDF, PNG, PPM, TIFF)
+BD(ps2raster) converts one or more IT(PostScript) files to other formats (BMP, EPS, JPEG, PDF, PNG, PPM, TIFF)
 using GhostScript. Input file names are read from the command line or from a file that lists them.
 The size of the resulting images is determined by the BoundingBox (or HiResBoundingBox, if present).
 As an option, a tight (HiRes)BoundingBox may be computed first. As another option, it can compute 
