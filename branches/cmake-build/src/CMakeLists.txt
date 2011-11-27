@@ -390,21 +390,20 @@ if (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 endif (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 
 # install extra files
-if (UNIX)
-	install (PROGRAMS
-		${CMAKE_CURRENT_BINARY_DIR}/isogmt
-		lockfile.sh
-		gmtlogo
-		gmtswitch
-		gmt_shell_functions.sh
-		DESTINATION ${GMT_BINDIR}
-		COMPONENT Runtime)
-elseif (WIN32)
+install (PROGRAMS
+	${CMAKE_CURRENT_BINARY_DIR}/isogmt
+	lockfile.sh
+	gmtlogo
+	gmtswitch
+	gmt_shell_functions.sh
+	DESTINATION ${GMT_BINDIR}
+	COMPONENT Runtime)
+if (WIN32)
 	install (PROGRAMS
 		gmtswitch.bat
 		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
-endif (UNIX)
+endif (WIN32)
 
 # Generate manpages
 gmt_create_manpages (${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5}

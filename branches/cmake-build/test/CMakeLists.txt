@@ -17,7 +17,7 @@
 #-------------------------------------------------------------------------------
 
 # run tests
-if (DO_TESTS AND UNIX)
+if (DO_TESTS)
 	# list of test dirs
 	set (GMT_TEST_DIRS api blockmean filter1d fitcircle genper gmtconvert gmtdp
 		gmtmath gmtselect gmtspatial gmtstitch gmtvector grd2rgb grd2xyz grdblend
@@ -56,6 +56,15 @@ if (DO_TESTS AND UNIX)
 
 	configure_file (functions.sh.cmake functions.sh @ONLY)
 
+	# Workaround cmake bug 3957: CRLF line ending
+	find_package (UnixCommands)
+	if (CYGWIN_INSTALL_PATH)
+		find_program (D2U d2u
+			${CYGWIN_INSTALL_PATH}/bin)
+		execute_process (COMMAND ${D2U}
+			${CMAKE_CURRENT_BINARY_DIR}/functions.sh)
+	endif (CYGWIN_INSTALL_PATH)
+
 	# add tests
 	foreach (_test_dir ${GMT_TEST_DIRS})
 		file(GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -63,9 +72,9 @@ if (DO_TESTS AND UNIX)
 		foreach (_test ${_test_scripts})
 			add_test(NAME ${_test}
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_test_dir}
-				COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_test})
+				COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${_test})
 		endforeach (_test ${_test_scripts})
 	endforeach (_test_dir ${GMT_TEST_DIRS})
-endif (DO_TESTS AND UNIX)
+endif (DO_TESTS)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

@@ -77,18 +77,27 @@ macro (SETUP)
 	add_custom_target (verbatim_examples DEPENDS ${_all_verbatim})
 
 	# run examples (test)
-	if (DO_EXAMPLES AND UNIX)
+	if (DO_EXAMPLES) # AND UNIX)
 		# this file takes care of setting up the test environment
 		configure_file (functions.sh.cmake functions.sh @ONLY)
+
+		# Workaround cmake bug 3957: CRLF line ending
+		find_package (UnixCommands)
+		if (CYGWIN_INSTALL_PATH)
+			find_program (D2U d2u
+				${CYGWIN_INSTALL_PATH}/bin)
+			execute_process (COMMAND ${D2U}
+				${CMAKE_CURRENT_BINARY_DIR}/functions.sh)
+		endif (CYGWIN_INSTALL_PATH)
 
 		foreach (_job ${_all_jobs})
 			get_filename_component (_job_path
 				${CMAKE_CURRENT_BINARY_DIR}/${_job} PATH)
 			add_test(NAME ${_job}
 				WORKING_DIRECTORY ${_job_path}
-				COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_job})
+				COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${_job})
 		endforeach (_job)
-	elseif (DO_EXAMPLES AND WIN32)
+	elseif (DO_EXAMPLES_WIN_BATCH_DISABLED) # (DO_EXAMPLES AND WIN32)
 		# only supporting examples with installed GMT in %path%
 		string (REPLACE ".sh" ".bat" _example_jobs_win "${_example_jobs}")
 		foreach (_job ${_example_jobs_win})
@@ -98,7 +107,7 @@ macro (SETUP)
 				WORKING_DIRECTORY ${_job_path}
 				COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_job})
 		endforeach (_job)
-	endif(DO_EXAMPLES AND UNIX)
+	endif(DO_EXAMPLES) # AND UNIX)
 endmacro (SETUP)
 
 # Get something done
