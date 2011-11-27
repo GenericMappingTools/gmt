@@ -1,6 +1,15 @@
 -----------------------------------------------------------------------------------------
 	$Id$
 -----------------------------------------------------------------------------------------
+
+2011-11-27	remko
+	* meca/*.txt:		Numerous improvements and error fixes.
+	* meca/utilmeca.c:	Fixed superfluous and missing outlines in various routines.
+	* meca/psvelo.c:	Properly set default pen.
+	* meca/psmeca.c:	Fixed error in plotting event titles above. Properly set
+				default pen for all elements to the one set by -W.
+	* test/meca/*.sh:	Many minor improvements.
+
 2011-11-22	pwessel
 	* meca/utilmeca.c:	Use PSL_setfill and not PSL_setcolor to change fills
 	* test/meca/meca_4.sh:	Need -B0 to just draw axes.
