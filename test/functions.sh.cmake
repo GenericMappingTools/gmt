@@ -12,8 +12,11 @@ header () {
 # Convert PS to PDF
 function make_pdf()
 {
-  test -f "${1:-$ps}" || return 1
-  ps2raster -Tf -A -P ${1:-$ps} || ((++ERROR))
+  psfile="${1:-$ps}"
+  pdfile="${psfile%.ps}.pdf"
+  test -f "${psfile}" || return 1
+  ps2raster -Tf -A -P -Ggs "${psfile}" || ((++ERROR))
+  test -f "${pdfile}" || ((++ERROR))
 }
 
 # Compare the ps file with its original. Check $1.ps (if $1 given) or $ps
@@ -62,9 +65,9 @@ passfail () {
 # Temporary change LANG to C
 LANG=C
 
-# Use executables from GMT_BINARY_DIR
+# Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
 export GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
-export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:${PATH}"
+export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 export HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"

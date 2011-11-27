@@ -33,8 +33,11 @@ ERROR=0
 # Convert PS to PDF
 function make_pdf()
 {
-  test -f "${1:-$ps}" || return 1
-  ps2raster -Tf -A -P -C-sFONTPATH=${EXTRA_FONTS_DIR} ${1:-$ps} || ((++ERROR))
+  psfile="${1:-$ps}"
+  pdfile="${psfile%.ps}.pdf"
+  test -f "${psfile}" || return 1
+  ps2raster -Tf -A -P -Ggs -C-sFONTPATH=${EXTRA_FONTS_DIR} ${psfile} || ((++ERROR))
+  test -f "${pdfile}" || ((++ERROR))
 }
 
 # Compare the ps file with its original.
