@@ -50,7 +50,7 @@ name of the color palette table (for IT(grd_z) only).
 .SH OPTIONAL ARGUMENTS
 .TP
 OPT(A)IT(out_img)BD(=)IT(driver)
-With GDAL aware versions: save image in a raster format instead of postscript. Append IT(out_img)BD(=)IT(driver) to select the
+With GDAL aware versions: save image in a raster format instead of IT(PostScript). Append IT(out_img)BD(=)IT(driver) to select the
 file name and image format. The IT(driver) is the driver code name used by GDAL. For example, OPT(A)img.tif=GTiff will write a GeoTiff
 image if the subset of GMT syntax projections that is currently possible to translate into the PROJ4 syntax allows it,
 or a plain tiff file otherwise. Note: any vector elements are lost. 
