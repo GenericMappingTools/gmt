@@ -62,7 +62,7 @@ OPT(E)[BD(x)|BD(y)|BD(X)|BD(Y)][BD(n)][IT(cap)][/[BD(-)|BD(+)]IT(pen)]
 Draw error bars.  Append BD(x) and/or BD(y) to indicate which bars you want to draw (Default is both x and y).  The x and/or
 y errors must be stored in the columns after the (x,y) pair [or (x,y,size) triplet].  The
 IT(cap) parameter indicates the length of the end-cap on the error bars [CAP].  Pen
-attributes for error bars may also be set [Defaults: width = 1, color = black, style = solid].
+attributes for error bars may also be set [Defaults: width = default, color = black, style = solid].
 A leading BD(+) will use the lookup color (via OPT(C)) for both symbol fill and error pen color, while a leading
 BD(-) will set error pen color and turn off symbol fill.
 If upper case BD(X) and/or BD(Y) is used we will instead draw "box-and-whisker" (or "stem-and-leaf") symbols.  The x (or y)
@@ -104,7 +104,7 @@ BD(GMT) plotting commands without producing any plotting output.
 #include "explain_-V.txt"
 .TP
 OPT(W)[BD(-)|BD(+)][IT(pen)]
-Set pen attributes for lines or the outline of symbols [Defaults: width = 1, color = black, style = solid].
+Set pen attributes for lines or the outline of symbols [Defaults: width = default, color = black, style = solid].
 A leading BD(+) will use the lookup color (via OPT(C)) for both symbol fill and outline pen color, while a leading
 BD(-) will set outline pen color and turn off symbol fill.
 #include "explain_-XY.txt"
