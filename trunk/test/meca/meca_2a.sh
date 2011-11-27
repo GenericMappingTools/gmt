@@ -39,7 +39,7 @@ for d in 10 20 30 ; do
 129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10-$d
 128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40-$d
 EOF
-    pstext -R -J -F+f18p,Helvetica-Bold+jBL -O -K >> $ps <<< "10 5 $d"
+    pstext -R -J -F+f18p,Helvetica-Bold+jBL -O -K >> $ps <<< "10 15 $d"
     y_offset=0
     x_offset=2.5
 done
@@ -53,7 +53,7 @@ for d in 40 50 60 ; do
 129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10-$d
 128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40-$d
 EOF
-    pstext -R -J -F+f18p,Helvetica-Bold+jBL -O -K >> $ps <<< "10 5 $d"
+    pstext -R -J -F+f18p,Helvetica-Bold+jBL -O -K >> $ps <<< "10 15 $d"
     let d=$d+10
     y_offset=0
     x_offset=2.5
@@ -68,7 +68,7 @@ for d in 70 80 90 ; do
 129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10-$d
 128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40-$d
 EOF
-    pstext -R -J -F+f18p,Helvetica-Bold+jBL -O -K >> $ps <<< "10 5 $d"
+    pstext -R -J -F+f18p,Helvetica-Bold+jBL -O -K >> $ps <<< "10 15 $d"
     y_offset=0
     x_offset=2.5
 done
