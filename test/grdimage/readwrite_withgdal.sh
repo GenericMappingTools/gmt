@@ -33,6 +33,6 @@ makecpt -T-25/25/1 > lixo.cpt
 grdimage lixo.grd -Alixo.png=PNG -JX4c -Clixo.cpt
 grdimage -D lixo.png -JX4c -Y-5c -O >> $ps
 
-rm -f somb.nc illum.nc lixo.png lixo.cpt lixo.grd
+rm -f somb.nc illum.nc lixo.png lixo.cpt lixo.grd lixo.png.aux.xml
 
 pscmp
