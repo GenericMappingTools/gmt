@@ -194,7 +194,6 @@ int main (int argc, char **argv)
 	sprintf (file, "etopo%ldm_grd.nc", min);	/* Make the selected file name */
 	
 	if (Ctrl->D.active) {	/* Just return equivalent GMT shell script */
-		char *marker = "|! ";	/* Clobber characters for csh, bash and DOS [none], respectively */
 		char *comment[3] = {"#", "#", "REM"};	/* Comment for csh, bash and DOS [none], respectively */
 		char ps[5], prefix[4];
 		if (Ctrl->D.mode == GMT_DOS_MODE) {
@@ -209,8 +208,8 @@ int main (int argc, char **argv)
 		}
 		printf ("%s Produced by gmtmercmap\n", comment[Ctrl->D.mode]);
 		switch (Ctrl->D.mode) {
-			case GMT_BASH_MODE: printf ("ps=merc_map.ps\n"); break;
-			case GMT_CSH_MODE:  printf ("set ps = merc_map.ps\n"); break;
+			case GMT_BASH_MODE: printf ("set +o noclobber\nps=merc_map.ps\n"); break;
+			case GMT_CSH_MODE:  printf ("unset noclobber\nset ps = merc_map.ps\n"); break;
 			case GMT_DOS_MODE:  printf ("set ps=merc_map.ps\n"); break;
 		}
 		printf ("%s Extract grid subset:\n", comment[Ctrl->D.mode]);
@@ -240,7 +239,7 @@ int main (int argc, char **argv)
 		if (Ctrl->S.active) {	/* May need to add some vertical offset to account for the colro scale */
 			if (!GMT->common.Y.active && !GMT->common.K.active) printf (" -Y1.75i");	/* User gave neither -K nor -Y so we add 0.75i offset to fit the scale */
 		}
-		printf (" >%c %s\n", marker[Ctrl->D.mode], ps);
+		printf (" > %s\n", ps);
 		if (Ctrl->S.active) {
 			double x, y;
 			x = 0.5 * Ctrl->W.width;	/* Centered beneath the map */
