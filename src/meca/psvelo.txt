@@ -180,7 +180,7 @@ Do BD(NOT) skip symbols that fall outside the frame boundary specified by OPT(R)
 .TP
 OPT(W)
 Set pen attributes for velocity arrows, ellipse circumference and fault plane edges.
- [Defaults: width = 0.25p, color = black, style = solid].
+ [Defaults: width = default, color = black, style = solid].
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
 #include "explain_-h.txt"
