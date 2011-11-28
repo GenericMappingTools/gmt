@@ -5596,6 +5596,7 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *i
 				gmt_set_titem (C, A, 0.0, 0.0, flag, 0);	/* Store the findings for this segment */
 			}
 			if (n_int[1]) A->item[GMT_ANNOT_UPPER+!C->current.map.frame.primary].special = TRUE;
+			C->current.map.frame.draw = TRUE;
 		}
 		else
 			GMT_report (C, GMT_MSG_FATAL, "ERROR: Cannot access custom file in -B string %c-component %s\n", str[axis], in);
