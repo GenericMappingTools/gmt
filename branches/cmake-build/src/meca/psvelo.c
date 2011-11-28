@@ -36,6 +36,8 @@ PostScript code is written to stdout.
 #define WEDGE 3
 #define CROSS 4
 
+#define DEFAULT_FONTSIZE	9.0	/* In points */
+
 #define READ_ELLIPSE	0
 #define READ_ROTELLIPSE	1
 #define READ_ANISOTROPY	2
@@ -76,7 +78,6 @@ struct PSVELO_CTRL {
 		GMT_LONG active;
 		GMT_LONG symbol;
 		GMT_LONG readmode;
-		char type;
 		double scale, wedge_amp, conrad;
 		double fontsize, confidence;
 		struct GMT_FILL fill;
@@ -101,6 +102,7 @@ void *New_psvelo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	C->S.wedge_amp = 1.e7;
 	C->S.conrad = 1.0;
+	C->S.fontsize = DEFAULT_FONTSIZE;
 	C->W.pen = GMT->current.setting.map_default_pen;
 	return (C);
 }
@@ -199,23 +201,24 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 				Ctrl->N.active = TRUE;
 				break;
 			case 'S':	/* Get symbol [and size] */
- 				Ctrl->S.type = opt->arg[0];
- 				if (Ctrl->S.type == 'e' || Ctrl->S.type == 'r') {
+ 				txt_b[0] = '\0';
+ 				if (opt->arg[0] == 'e' || opt->arg[0] == 'r') {
 					strcpy (txt, &opt->arg[1]);
 					n = 0; while (txt[n] && txt[n] != '/') n++; txt[n] = 0;
 					Ctrl->S.scale = GMT_to_inch (GMT, txt);
-					sscanf (strchr(&opt->arg[1],'/')+1, "%lf/%lf", &Ctrl->S.confidence, &Ctrl->S.fontsize);
+					sscanf (strchr(&opt->arg[1],'/')+1, "%lf/%s", &Ctrl->S.confidence, txt_b);
 					/* confidence scaling */
 					Ctrl->S.conrad = sqrt (-2.0 * log (1.0 - Ctrl->S.confidence));
+					if (txt_b[0]) Ctrl->S.fontsize = GMT_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 				}
-				if (Ctrl->S.type == 'n' || Ctrl->S.type == 'x' ) Ctrl->S.scale = GMT_to_inch (GMT, &opt->arg[1]);
-				if (Ctrl->S.type == 'w' && strlen(opt->arg) > 3) {
+				if (opt->arg[0] == 'n' || opt->arg[0] == 'x' ) Ctrl->S.scale = GMT_to_inch (GMT, &opt->arg[1]);
+				if (opt->arg[0] == 'w' && strlen(opt->arg) > 3) {
 					strcpy(txt, &opt->arg[1]);
 					n=0; while (txt[n] && txt[n] != '/') n++; txt[n]=0;
 					Ctrl->S.scale = GMT_to_inch (GMT, txt);
 					sscanf(strchr(&opt->arg[1],'/')+1, "%lf", &Ctrl->S.wedge_amp);
 				}
-				switch (Ctrl->S.type) {
+				switch (opt->arg[0]) {
 					case 'e':
 						Ctrl->S.symbol = CINE;
 						Ctrl->S.readmode = READ_ELLIPSE;
@@ -441,7 +444,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 					
-					justify = plot_vx - plot_x > 0. ? 7 : 5;
+					justify = plot_vx - plot_x > 0. ? PSL_MR : PSL_ML;
 					if (Ctrl->S.fontsize > 0.0 && strlen(station_name) > 0)	/* 1 inch = 2.54 cm */
 						PSL_plottext (PSL, plot_x + (6 - justify) / 25.4 , plot_y, Ctrl->S.fontsize, station_name, ANGLE, justify, FORM);
 				}
@@ -449,7 +452,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_setfill (GMT, &Ctrl->G.fill, 1);
 					ssize = GMT_DOT_SIZE;
 					PSL_plotsymbol (PSL, plot_x, plot_y, &ssize, GMT_SYMBOL_CIRCLE);
-					justify = 10;
+					justify = PSL_TC;
 					if (Ctrl->S.fontsize > 0.0 && strlen (station_name) > 0) {
 						PSL_plottext (PSL, plot_x, plot_y - 1. / 25.4, Ctrl->S.fontsize, station_name, ANGLE, justify, FORM);
 					}

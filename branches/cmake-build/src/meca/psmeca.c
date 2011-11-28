@@ -78,7 +78,6 @@ struct PSMECA_CTRL {
 		GMT_LONG plotmode;
 		GMT_LONG justify;
 		GMT_LONG no_label;
-		char type;
 		double scale;
 		double fontsize, offset;
 		struct GMT_FILL fill;
@@ -257,7 +256,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 	 */
 
 	GMT_LONG n_errors = 0, no_size_needed;
-	char txt[GMT_TEXT_LEN256], *p = NULL;
+	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -323,18 +322,18 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 				break;
 			case 'S':	/* Get symbol [and size] */
 				Ctrl->S.active = TRUE;
-				Ctrl->S.type = opt->arg[0];
+				txt_b[0] = txt_c[0] = '\0';
 				p = NULL;	strcpy (txt, &opt->arg[1]);
 				if ((p = strchr (txt, '/'))) p[0] = '\0';
 				Ctrl->S.scale = GMT_to_inch (GMT, txt);
 				if ((p = strstr (opt->arg, "/"))) {
-					sscanf (p, "/%lf/%lf", &Ctrl->S.fontsize, &Ctrl->S.offset);
-					if (GMT_IS_ZERO (Ctrl->S.fontsize)) Ctrl->S.fontsize = DEFAULT_FONTSIZE;
+					if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
+					sscanf (p, "/%[^/]/%s", txt_b, txt_c);
+					if (txt_b[0]) Ctrl->S.fontsize = GMT_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
+					if (txt_c[0]) Ctrl->S.offset = GMT_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
 					if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = TRUE;
-					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
-					if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC;
 				}
-				switch (Ctrl->S.type) {
+				switch (opt->arg[0]) {
 					case 'c':
 						Ctrl->S.readmode = READ_CMT;
 						break;

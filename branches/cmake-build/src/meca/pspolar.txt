@@ -91,7 +91,7 @@ To write station code. [Default is 0.0/0/5/12].
 .TP
 OPT(W)IT(pen)
 Set current pen attributes 
- [Defaults: width = 0.25p, color = black, style = solid].
+ [Defaults: width = default, color = black, style = solid].
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
 .TP
