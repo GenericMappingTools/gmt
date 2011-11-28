@@ -1725,6 +1725,7 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 	GMT_LONG do_minutes, do_seconds, done_Greenwich, done_Dateline;
 	GMT_LONG full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual, annot, is_world_save, lon_wrap_save;
 	char label[GMT_TEXT_LEN256];
+	char **label_c = NULL;
 	double *val = NULL, dx[2], dy[2], w2, s2, del;
 
 	if (!(GMT_x_is_lon (C, GMT_IN) || GMT_y_is_lat (C, GMT_IN) || C->current.proj.projection == GMT_POLAR)) return;	/* Annotations and header already done by gmt_linear_map_boundary */
@@ -1798,11 +1799,18 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 			do_minutes = (fabs (fmod (dx[k], 1.0)) > GMT_SMALL);
 			do_seconds = gmt_set_do_seconds (C, dx[k]);
 
-			nx = GMT_linear_array (C, w, e, dx[k], C->current.map.frame.axis[GMT_X].phase, &val);
+			if (C->current.map.frame.axis[GMT_X].file_custom)
+				nx = GMT_coordinate_array (C, w, e, &C->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER], &val, &label_c);
+			else
+				nx = GMT_linear_array (C, w, e, dx[k], C->current.map.frame.axis[GMT_X].phase, &val);
+			
 			for (i = 0; i < nx; i++) {	/* Worry that we do not try to plot 0 and 360 OR -180 and +180 on top of each other */
 				if (GMT_IS_ZERO (val[i])) done_Greenwich = TRUE;		/* OK, want to plot 0 */
 				if (GMT_IS_ZERO (180.0 + val[i])) done_Dateline = TRUE;	/* OK, want to plot -180 */
-				GMT_get_annot_label (C, val[i], label, do_minutes, do_seconds, 0, is_world_save);
+				if (label_c && label_c[i] && label_c[i][0])
+					strcpy (label, label_c[i]);
+				else
+					GMT_get_annot_label (C, val[i], label, do_minutes, do_seconds, 0, is_world_save);
 				/* Only annotate val[i] if
 				 *	(1) projection is such that 0/360 or -180/180 are in different x/y locations, OR
 				 *	(2) Plot 360 if 0 hasn't been plotted, OR
@@ -1820,6 +1828,10 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 				gmt_map_symbol_ns (C, P, val[i], label, s, n, annot, k, form);
 			}
 			if (nx) GMT_free (C, val);
+			if (label_c) {
+				for (i = 0; i < nx; i++) if (label_c[i]) free (label_c[i]);
+				GMT_free (C, label_c);
+			}
 		}
 
 		if (dy[k] > 0.0 && (GMT_y_is_lat (C, GMT_IN) || C->current.proj.projection == GMT_POLAR)) {	/* Annotate W and E boundaries */
@@ -1836,18 +1848,27 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 				lonlat = 2;
 			}
 			if (C->current.proj.z_down) {	/* Want to annotate depth rather than radius */
-				ny = GMT_linear_array (C, 0.0, n-s, dy[k], C->current.map.frame.axis[GMT_Y].phase, &tval);
+				if (C->current.map.frame.axis[GMT_Y].file_custom)
+					ny = GMT_coordinate_array (C, 0.0, n-s, &C->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &val, &label_c);
+				else
+					ny = GMT_linear_array (C, 0.0, n-s, dy[k], C->current.map.frame.axis[GMT_Y].phase, &tval);
 				val = GMT_memory (C, NULL, ny, double);
 				for (i = 0; i < ny; i++) 
 					val[i] = C->common.R.wesn[YHI] - tval[i];	/* These are the radial values needed for positioning */
 			}
 			else {				/* Annotate radius */
-				ny = GMT_linear_array (C, s, n, dy[k], C->current.map.frame.axis[GMT_Y].phase, &val);
+				if (C->current.map.frame.axis[GMT_Y].file_custom)
+					ny = GMT_coordinate_array (C, s, n, &C->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &val, &label_c);
+				else
+					ny = GMT_linear_array (C, s, n, dy[k], C->current.map.frame.axis[GMT_Y].phase, &val);
 				tval = val;	/* Same thing */
 			}
 			for (i = 0; i < ny; i++) {
 				if ((C->current.proj.polar || C->current.proj.projection == GMT_VANGRINTEN) && GMT_IS_ZERO (fabs (val[i]) - 90.0)) continue;
-				GMT_get_annot_label (C, tval[i], label, do_minutes, do_seconds, lonlat, is_world_save);
+				if (label_c && label_c[i] && label_c[i][0])
+					strcpy (label, label_c[i]);
+				else
+					GMT_get_annot_label (C, tval[i], label, do_minutes, do_seconds, lonlat, is_world_save);
 				annot = TRUE;
 				if (dual && k == 0) {
 					del = fmod (val[i] - s2, dy[1]);
@@ -1859,6 +1880,10 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 				gmt_map_symbol_ew (C, P, val[i], label, w, e, annot, k, form);
 			}
 			if (ny) GMT_free (C, val);
+			if (label_c) {
+				for (i = 0; i < nx; i++) if (label_c[i]) free (label_c[i]);
+				GMT_free (C, label_c);
+			}
 			if (C->current.proj.z_down) GMT_free (C, tval);
 		}
 	}
