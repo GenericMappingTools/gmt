@@ -41,6 +41,7 @@ to render the beach ball transparent by drawing only the nodal planes
 and the circumference.  The color or shade of the compressive
 quadrants can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
+Append BD(u) to have the text appear below the beach ball (default is above).
 Parameters are expected to be in the following columns:
 .RS
 .TP
@@ -64,7 +65,7 @@ columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (8,9).
 .TP
 BD(10):
-Text string to appear above the beach ball (optional).
+Text string to appear above or below the beach ball (optional).
 .RE
 .TP
 OPT(Sc)IT(scale[/fontsize[/offset)[BD(u)]]]
@@ -78,6 +79,7 @@ to render the beach ball transparent by drawing only the nodal planes
 and the circumference. The color or shade of the compressive quadrants
 can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
+Append BD(u) to have the text appear below the beach ball (default is above).
 Parameters are expected to be in the following columns:
 .RS
 .TP
@@ -104,7 +106,7 @@ columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (12,13).
 .TP
 BD(14):
-Text string to appear above the beach ball (optional).
+Text string to appear above or below the beach ball (optional).
 .RE
 .TP
 OPT(Sm|d|z)IT(scale[/fontsize[/offset)[BD(u)]]]
@@ -120,6 +122,7 @@ Use OPT(Sz) to plot the anisotropic part of moment tensor (zero trace).
 The color or shade of the compressive quadrants
 can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
+Append BD(u) to have the text appear below the beach ball (default is above).
 Parameters are expected to be in the following columns:
 .RS
 .TP
@@ -143,7 +146,7 @@ columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (11,12).
 .TP
 BD(13):
-Text string to appear above the beach ball (optional).
+Text string to appear above or below the beach ball (optional).
 .RE
 .TP
 OPT(Sp)IT(scale[/fontsize[/offset)[BD(u)]]]
@@ -154,6 +157,7 @@ for magnitude = 5 in inch (unless BD(c), BD(i), BD(m), or BD(p) is appended).
 The color or shade of the compressive quadrants
 can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
+Append BD(u) to have the text appear below the beach ball (default is above).
 Parameters are expected to be in the following columns:
 .RS
 .TP
@@ -183,7 +187,7 @@ columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (9,10).
 .TP
 BD(11):
-Text string to appear above the beach ball (optional).
+Text string to appear above or below the beach ball (optional).
 .RE
 .TP
 OPT(Sx|y|t)IT(scale[/fontsize[/offset)[BD(u)]]]
@@ -199,6 +203,7 @@ Use OPT(St) to plot zero trace moment tensor.
 The color or shade of the compressive quadrants
 can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
+Append BD(u) to have the text appear below the beach ball (default is above).
 Parameters are expected to be in the following columns:
 .RS
 .TP
@@ -222,7 +227,7 @@ columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (14,15).
 .TP
 BD(16):
-Text string to appear above the beach ball (optional).
+Text string to appear above or below the beach ball (optional).
 .RE
 .LP
 .SH OPTIONAL ARGUMENTS
