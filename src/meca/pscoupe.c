@@ -29,7 +29,6 @@ PostScript code is written to stdout.
 
 #define DEFAULT_FONTSIZE	9.0	/* In points */
 #define DEFAULT_OFFSET		3.0	/* In points */
-#define DEFAULT_JUSTIFY		2	/* Center-bottom */
 
 #define READ_CMT	0
 #define READ_AKI	1
@@ -138,7 +137,7 @@ void *New_pscoupe_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	GMT_init_fill (GMT, &C->G2.fill, 0.0, 0.0, 0.0);
 	C->S.fontsize = DEFAULT_FONTSIZE;
 	C->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
-	C->S.justify = DEFAULT_JUSTIFY;
+	C->S.justify = PSL_BC;
 	C->A.size = GMT->session.d_NaN;
 	return (C);
 }
@@ -248,7 +247,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 	 */
 
 	GMT_LONG n_errors = 0, no_size_needed, syscoord;
-	char txt[GMT_TEXT_LEN256], *p = NULL;
+	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 	double lon1, lat1, lon2, lat2, tmp1, tmp2, tmp3, tmp4, tmp5;
@@ -327,15 +326,16 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 				break;
 			case 'S':	/* Mechanisms : get format [and size] */
 				Ctrl->S.active = TRUE;
+				txt_b[0] = txt_c[0] = '\0';
 				p = NULL;	strcpy (txt, &opt->arg[1]);
 				if ((p = strchr (txt, '/'))) p[0] = '\0';
 				Ctrl->S.scale = GMT_to_inch (GMT, txt);
 				if ((p = strstr (opt->arg, "/"))) {
-					sscanf (p, "/%lf/%lf", &Ctrl->S.fontsize, &Ctrl->S.offset);
-					if (GMT_IS_ZERO (Ctrl->S.fontsize)) Ctrl->S.fontsize = DEFAULT_FONTSIZE;
+					if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
+					sscanf (p, "/%[^/]/%s", txt_b, txt_c);
+					if (txt_b[0]) Ctrl->S.fontsize = GMT_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
+					if (txt_c[0]) Ctrl->S.offset = GMT_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
 					if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = TRUE;
-					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
-					if (opt->arg[strlen (opt->arg)-1] == 'u') Ctrl->S.justify = 10;
 				}
 
 				switch (opt->arg[0]) {
@@ -391,11 +391,11 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 				if ((p = strchr (txt, '/'))) p[0] = '\0';
 				Ctrl->S.scale = GMT_to_inch (GMT, txt);
 				if ((p = strstr (opt->arg, "/"))) {
-					sscanf (p, "/%lf/%lf", &Ctrl->S.fontsize, &Ctrl->S.offset);
-					if (GMT_IS_ZERO (Ctrl->S.fontsize)) Ctrl->S.fontsize = DEFAULT_FONTSIZE;
+					if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
+					sscanf (p, "/%[^/]/%s", txt_b, txt_c);
+					if (txt_b[0]) Ctrl->S.fontsize = GMT_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
+					if (txt_c[0]) Ctrl->S.offset = GMT_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
 					if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = TRUE;
-					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
-					if (opt->arg[strlen (opt->arg)-1] == 'u') Ctrl->S.justify = 10;
 				}
 				if (GMT_IS_ZERO (Ctrl->S.scale)) Ctrl->S.read_size = TRUE;
 				Ctrl->S.size = Ctrl->S.scale;
@@ -868,10 +868,10 @@ Definition of scalar moment.
 		if (!Ctrl->S.no_label) {
 			GMT_setpen (GMT, &Ctrl->W.pen);
 			switch (Ctrl->S.justify) {
-				case 2 :
+				case PSL_BC :
 					PSL_plottext (PSL, plot_x, plot_y + Ctrl->S.size * 0.5 + Ctrl->S.offset, Ctrl->S.fontsize, event_title, angle, Ctrl->S.justify, form);
 					break;
-				case 10 :
+				case PSL_TC :
 					PSL_plottext (PSL, plot_x, plot_y - Ctrl->S.size * 0.5 - Ctrl->S.offset, Ctrl->S.fontsize, event_title, angle, Ctrl->S.justify, form);
 					break;
 			}
