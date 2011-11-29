@@ -57,7 +57,7 @@ endforeach (prog)
 create_debug_sym (${SUPPL_PROGS})
 
 # add the install targets
-install (TARGETS ${SUPPL_PROGS}
+install (TARGETS ${SUPPL_PROGS} ${SUPPL_PROGSPS}
 	RUNTIME DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 
