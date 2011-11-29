@@ -392,10 +392,11 @@ endif (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 # install extra files
 install (PROGRAMS
 	${CMAKE_CURRENT_BINARY_DIR}/isogmt
-	lockfile.sh
 	gmtlogo
 	gmtswitch
 	gmt_shell_functions.sh
+	lockfile.sh
+	ncdeflate.sh
 	DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 if (WIN32)
