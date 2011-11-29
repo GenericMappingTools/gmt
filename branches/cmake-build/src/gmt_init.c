@@ -7769,6 +7769,12 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 	fpsetmask (fpgetmask () & ~(FP_X_DZ | FP_X_INV));
 #endif
 #endif
+
+#ifdef WIN32
+	/* Set "stdout" to binary mode */
+	_setmode(_fileno(stdout), _O_BINARY);
+#endif
+
 	C = New_GMT_Ctrl ();		/* Allocate and initialize a new common control structure */
 	if (C->init.progname) free (C->init.progname);		/* Free up any prior program name */
 	C->init.progname = strdup (session);		/* We use the calling programs session name as program name */
