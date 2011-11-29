@@ -1654,7 +1654,10 @@ void gmt_map_tickitem (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 	C->current.map.on_border_is_outside = TRUE;	/* Temporarily, points on the border are outside */
 
 	if (do_x) {	/* Draw grid lines that go E to W */
-		nx = GMT_linear_array (C, w, e, dx, C->current.map.frame.axis[GMT_X].phase, &val);
+		if (C->current.map.frame.axis[GMT_X].file_custom)
+			nx = GMT_coordinate_array (C, w, e, &C->current.map.frame.axis[GMT_X].item[item], &val, NULL);
+		else
+			nx = GMT_linear_array (C, w, e, dx, C->current.map.frame.axis[GMT_X].phase, &val);
 		for (i = 0; i < nx; i++) 
 			gmt_map_lontick (C, P, val[i], s, n, len);
 		if (nx) GMT_free (C, val);
@@ -1662,12 +1665,19 @@ void gmt_map_tickitem (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 
 	if (do_y) {	/* Draw grid lines that go S to N */
 		if (C->current.proj.z_down) {
-			ny = GMT_linear_array (C, 0.0, n-s, dy, C->current.map.frame.axis[GMT_Y].phase, &val);
-			for (i = 0; i < ny; i++) 
+			if (C->current.map.frame.axis[GMT_Y].file_custom)
+				ny = GMT_coordinate_array (C, 0.0, n-s, &C->current.map.frame.axis[GMT_Y].item[item], &val, NULL);
+			else
+				ny = GMT_linear_array (C, 0.0, n-s, dy, C->current.map.frame.axis[GMT_Y].phase, &val);
+			for (i = 0; i < ny; i++)
 				val[i] = C->common.R.wesn[YHI] - val[i];	/* These are the radial values needed for positioning */
 		}
-		else
-			ny = GMT_linear_array (C, s, n, dy, C->current.map.frame.axis[GMT_Y].phase, &val);
+		else {
+			if (C->current.map.frame.axis[GMT_Y].file_custom)
+				ny = GMT_coordinate_array (C, s, n, &C->current.map.frame.axis[GMT_Y].item[item], &val, NULL);
+			else
+				ny = GMT_linear_array (C, s, n, dy, C->current.map.frame.axis[GMT_Y].phase, &val);
+		}
 		for (i = 0; i < ny; i++) 
 			gmt_map_lattick (C, P, val[i], w, e, len);
 		if (ny) GMT_free (C, val);
