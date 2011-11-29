@@ -750,27 +750,26 @@ double gmt_convert_aspatial_value (struct GMT_CTRL *C, GMT_LONG type, char *V)
 }
 
 GMT_LONG gmt_ogr_decode_aspatial_values (struct GMT_CTRL *C, char *record, struct GMT_OGR *S)
-{	/* Parse aspatial values; this is done once per feature (segment).  We store
- 	 * both the text representation (value) and attempt to convert to double in dvalue. */
-	GMT_LONG pos = 0, col = 0, n_alloc;
+{	/* Parse @D<vals> aspatial values; this is done once per feature (segment).  We store
+ 	 * both the text representation (value) and attempt to convert to double in dvalue.
+ 	 * We use S->n_aspatial to know how many values there are .*/
+	GMT_LONG pos = 0, col = 0;
 	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ];
 
-	n_alloc = (S->value) ? GMT_BUFSIZ : 0;	/* Prevent alloc a second time */
+	if (S->n_aspatial == 0) return (0);	/* Nothing to do */
+	if (S->value == NULL) {			/* First time, allocate space */
+		S->value  = GMT_memory (C, S->value,  S->n_aspatial, char *);
+		S->dvalue = GMT_memory (C, S->dvalue, S->n_aspatial, double);
+	}
 	strcpy (buffer, record);
 	while ((GMT_strtok1 (buffer, '|', &pos, p))) {
-		if (col == n_alloc) {
-			S->value = GMT_memory (C, S->value, n_alloc + GMT_TINY_CHUNK, char *);
-			GMT_memset (&S->value[n_alloc], GMT_TINY_CHUNK, char *);	/* Explicitly set new items to NULL */
-			S->dvalue = GMT_memory (C, S->dvalue, n_alloc += GMT_TINY_CHUNK, double);
-		}
 		if (S->value[col]) free (S->value[col]);	/* Free previous item */
-		S->value[col] = strdup (p);
+		S->value[col]  = strdup (p);
 		S->dvalue[col] = gmt_convert_aspatial_value (C, S->type[col], p);
 		col++;
 	}
-	if (n_alloc < GMT_BUFSIZ && col < n_alloc) {
-		S->value = GMT_memory (C, S->value, col, char *);
-		S->dvalue = GMT_memory (C, S->dvalue, col, double);
+	if (col == (S->n_aspatial-1)) {	/* Last item was blank */
+		S->value[col] = strdup ("");	/* Allocate space for blank string */
 	}
 	return (col);
 }
@@ -862,9 +861,7 @@ GMT_LONG gmt_ogr_data_parser (struct GMT_CTRL *C, char *record)
 			case 'D':	/* Aspatial data values, store in segment header  */
 				if (!S->geometry) { GMT_report (C, GMT_MSG_FATAL, "Bad OGR/GMT: @D given but no geometry set\n"); return (0);}
 				n_aspatial = gmt_ogr_decode_aspatial_values (C, &p[1], S);
-				if (S->n_aspatial == 0)
-					S->n_aspatial = n_aspatial;
-				else if (S->n_aspatial != n_aspatial) {
+				if (S->n_aspatial != n_aspatial) {
 					GMT_report (C, GMT_MSG_VERBOSE, "OGR/GMT: Some @D items not specified (set to NULL)\n");
 				}
 				break;

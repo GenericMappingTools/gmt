@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-28	pwessel
+	* gmt_plot.c:		Extended the custom axis annotation to any map projection.
+
 2011-11-28	remko
 	* meca/*.c:		Reading fontsizes better.
 
