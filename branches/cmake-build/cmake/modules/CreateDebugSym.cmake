@@ -21,15 +21,13 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 
-set (_apple_debug_build)
-if (APPLE)
-	string(TOLOWER ${CMAKE_BUILD_TYPE} _build_type)
-	if (DEBUG_BUILD OR _build_type STREQUAL "relwithdebinfo")
-		set (_apple_debug_build TRUE)
-	endif (DEBUG_BUILD OR _build_type STREQUAL "relwithdebinfo")
-endif (APPLE)
+set (_debug_build)
+string(TOLOWER ${CMAKE_BUILD_TYPE} _build_type)
+if (DEBUG_BUILD OR _build_type STREQUAL "relwithdebinfo")
+	set (_debug_build TRUE)
+endif (DEBUG_BUILD OR _build_type STREQUAL "relwithdebinfo")
 
-if (_apple_debug_build)
+if (APPLE AND _debug_build)
 
 	# usefull macros
 	include (GmtHelperMacros)
@@ -65,10 +63,32 @@ if (_apple_debug_build)
 		endif (DSYMUTIL AND "${CMAKE_GENERATOR}" MATCHES "Make")
 	endmacro (CREATE_DEBUG_SYM _TARGETS)
 
-else (_apple_debug_build)
+elseif (MSVC AND _debug_build)
+	# Macro for installing MSVC debugging symbol files
+	macro (CREATE_DEBUG_SYM _TARGETS)
+		foreach (target ${ARGV}) # instead of _TARGETS we use ARGV to get all args
+			install (FILES ${target}.pdb
+				DESTINATION ${GMT_BINDIR}
+				COMPONENT Debug
+				OPTIONAL)
+		endforeach (target)
+
+		# create tag from current dirname
+		tag_from_current_source_dir (_tag "_")
+
+		# clean target
+		add_custom_target (pdb_clean${_tag}
+			COMMAND ${CMAKE_COMMAND} remove *.pdb
+			COMMENT "Removing .pdb files")
+
+		# register with spotless target
+		add_depend_to_spotless (_clean${_tag})
+	endmacro (CREATE_DEBUG_SYM _TARGETS)
+
+else (APPLE AND _debug_build)
 	macro (CREATE_DEBUG_SYM _TARGETS)
 		# do nothing
 	endmacro (CREATE_DEBUG_SYM _TARGETS)
-endif (_apple_debug_build)
+endif (APPLE AND _debug_build)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
