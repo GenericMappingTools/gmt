@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-11-30	pwessel
+	* gmt_support.c:	GMT_getfill got confused when a Windows path C:\etc was
+				given as an pattern file (mixed up with :F and :B mechanism).
+
 2011-11-29	pwessel
 	* pslegend.c:		Fixed so we can mix filled and non-filled symbols.
 
