@@ -41,6 +41,8 @@
 
 #include "gmt.h"
 
+/* MEX: <DI DDi GGO LGi */
+
 int compare_sugs (const void *point_1, const void *point_2);	/* Sort suggestions decreasing  */
 
 struct SURFACE_CTRL {
