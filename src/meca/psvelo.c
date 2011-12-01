@@ -29,8 +29,6 @@ PostScript code is written to stdout.
 #include "meca.h"
 #include "utilmeca.h"
 
-#define EPSIL 0.0001
-
 #define CINE 1
 #define ANISO 2
 #define WEDGE 3

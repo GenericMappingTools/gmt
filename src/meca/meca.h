@@ -59,7 +59,3 @@ struct M_TENSOR {
 
 typedef struct MOMENT st_mo;
 typedef struct MECHANISM st_me;
-
-double datan2 (double y,double x);
-double zero_360  (double str);
-void dc_to_axe(st_me meca,struct AXIS *T,struct AXIS *N,struct AXIS *P);

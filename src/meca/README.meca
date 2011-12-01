@@ -36,16 +36,13 @@ psvelo plots velocity ellipses, strain crosses and strain wedges.
 It is a part of the GMT supplemental archive, so it can be installed
 automatically via install_gmt.
 
-The scripts meca_1.csh (psmeca) meca_2.csh (pscoupe) meca_3.csh
-(pspolar) and meca_4.csh (psvelo) will generate meca_1.ps,
-meca_2.ps, meca_3.ps and meca_4.ps.
-
-
 Psmeca plots seismic moment tensor and/or double couples on a map.
 Pscoupe plots seismic moment tensor and/or double couples on a 
 cross-section. 
 Pspolar plots polarities on the lower half-sphere.
 Psvelo plots velocity ellipses, strain crosses, or strain wedges on a map.
+
+For examples, see the directory test/meca.
 
 
 Genevieve Patau  

@@ -723,13 +723,12 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 					else
 						sprintf (sarg, "%g %g", x_off + off_ss, y0);
-					if (txt_c[0] != '-' || txt_d[0] != '-') {
-						sprintf (buffer, ">");
-						if (txt_c[0] != '-') {strcat (buffer, " -G"); strcat (buffer, txt_c); }
-						if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d); }
-						S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
-						if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
-					}
+					/* Place pen and fill colors in segment header */
+					sprintf (buffer, ">");
+					strcat (buffer, " -G"); strcat (buffer, txt_c);
+					strcat (buffer, " -W"); strcat (buffer, txt_d);
+					S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
+					if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
 					sprintf (buffer, "%s %s", sarg, sub);
 					S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
 					if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);

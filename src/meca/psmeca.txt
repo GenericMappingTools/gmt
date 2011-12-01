@@ -11,9 +11,9 @@ psmeca [ IT(table) ] GMT_J_OPT GMT_Rgeo_OPT
 [ OPT(S)IT(<format><scale>)[/BD(d)]] [ OPT(T)IT(num_of_plane)[IT(pen)] ]
 [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)IT(pen) ] [ GMT_X_OPT ]
 [ GMT_Y_OPT ] [ OPT(Z)IT(cptfile)] [ OPT(z) ] 
-[ OPT(a)[IT(size)[IT(P_symbol)[IT(T_symbol)]]] ] [ GMT_c_OPT ]
-[ OPT(e)IT(fill) ] [ OPT(g)IT(fill) ] [ GMT_H_OPT ] [ GMT_i_OPT ] [ OPT(o) ] [ OPT(p)IT(pen) ]
-[ OPT(t)IT(pen) ] [ GMT_colon_OPT ]
+[ OPT(a)[IT(size)][/IT(P_symbol)[IT(T_symbol)]] ] [ GMT_c_OPT ]
+[ OPT(e)IT(fill) ] [ OPT(g)IT(fill) ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ OPT(o) ]
+[ OPT(p)[IT(pen)] ] [ OPT(t)[IT(pen)] ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(psmeca) reads data values from IT(files) [or standard input]
 and generates IT(PostScript) code that will plot focal mechanisms
@@ -289,22 +289,20 @@ OPT(Z)IT(cptfile)
 Give a color palette file and let compressive part color be determined by the z-value in the
 third column. 
 .TP
-OPT(a)[IT(size)/[IT(P_axis_symbol)[IT(T_axis_symbol)]]]
+OPT(a)[IT(size)][/IT(P_axis_symbol)[IT(T_axis_symbol)]]
 Computes and plots P and T axes with symbols. Optionally specify IT(size)
 and (separate) P and T axis symbols from the following:
 (BD(c)) circle, (BD(d)) diamond, (BD(h)) hexagon,
 (BD(i)) inverse triangle,
 (BD(p)) point, (BD(s)) square, (BD(t)) triangle,
-(BD(x)) cross. [Defaults: 0.2BD(c)/BD(cc) or 0.08BD(i)/BD(cc).]
+(BD(x)) cross. [Default: 6BD(p)/BD(cc)]
 #include "explain_-c.txt"
 .TP
 OPT(e)IT(fill)
-Selects filling of T axis symbol.
-Set the color. [Default is white]  
+Sets the color or fill pattern for the T axis symbol. [Default as set by OPT(E)]
 .TP
 OPT(g)IT(fill)
-Selects filling of P axis symbol.
-Set the color. [Default is black]
+Sets the color or fill pattern for the P axis symbol. [Default as set by OPT(G)]
 #include "explain_-h.txt"
 #include "explain_-icols.txt"
 .TP
@@ -313,6 +311,9 @@ Use the BD(psvelomeca) input format without depth in the third column.
 .TP
 OPT(p)[IT(pen)]
 Draws the P axis outline using default pen (see OPT(W)), or sets pen attributes.
+.TP
+OPT(r)[IT(fill)]
+Draw a box behind the label (if any). [Default fill is white]
 .TP
 OPT(t)[IT(pen)]
 Draws the T axis outline using default pen (see OPT(W)), or sets pen attributes.

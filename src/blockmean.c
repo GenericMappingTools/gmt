@@ -32,6 +32,8 @@
 #include "gmt.h"
 #include "block_subs.h"
 
+/* MEX: <DI >DO */
+
 GMT_LONG GMT_blockmean_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;

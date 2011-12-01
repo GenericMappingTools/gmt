@@ -18,12 +18,11 @@
 #
 
 # source files
-set (SUPPL_LIB_SRCS utilmeca.c nrutil.c submeca.c distaz.c)
+set (SUPPL_LIB_SRCS utilmeca.c nrutil.c)
 set (SUPPL_PROGS_SRCS psmeca.c pspolar.c psvelo.c pscoupe.c)
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.meca)
-set (SUPPL_EXAMPLE_PROGS meca_1.bat meca_1.csh meca_2.csh meca_3.csh meca_4.csh)
 
 # generate header file gmt_meca.h
 gmt_set_api_header(SUPPL_API_H ${SUPPL_PROGS_SRCS})
