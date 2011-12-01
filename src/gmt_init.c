@@ -2487,7 +2487,7 @@ GMT_LONG gmt_load_encoding (struct GMT_CTRL *C)
 
 GMT_LONG gmt_decode_wesnz (struct GMT_CTRL *C, const char *in, GMT_LONG side[], GMT_LONG *draw_box) {
 	/* Scans the WESNZwesnz+ flags at the end of string "in" and sets the side/drawbox parameters
-	 * and returns the length of the remaining string.
+	 * and returns the length of the remaining string.  Assumes any +g<fill> ahs been removed from in.
 	 */
 
 	GMT_LONG i, k, go = TRUE;
@@ -5363,6 +5363,9 @@ GMT_LONG gmt_strip_colonitem (struct GMT_CTRL *C, GMT_LONG axis, const char *in,
 		GMT_report (C, GMT_MSG_FATAL, "ERROR: More than one label string in  -B component %s\n", in);
 		return (TRUE);
 	}
+#ifdef _WIN32
+	gmt_handle_dosfile (C, item, 1);	/* Undo any DOS files like X;/ back to X:/ */
+#endif
 	return (GMT_NOERROR);
 }
 
@@ -5638,6 +5641,26 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *i
 	return (0);
 }
 
+#ifdef _WIN32
+void gmt_handle_dosfile (struct GMT_CTRL *C, char *in, GMT_LONG this)
+{
+	/* Because (1) we use colons to indicate start/stop of text labels and
+	 * (2) under Windows, a colon can be part of a path (e.g., C:\dir\file)
+	 * we need to temporarily replace <drive>:\ with <drive>;\ so that this
+	 * path colon does not interfere with the rest of the parsing.  Once the
+	 * colon items have been parsed, we replace the ; back to : */
+	GMT_LONG i, len, other = 1 - this;
+	char mark[2] = {':', ';'};
+	
+	if (!in) return;	/* Nothing to work on */
+	if ((len = strlen (in)) < 2) return;	/* Nothing to work on */
+	len--;	/* Since this use of : cannot be at the end anyway and we need to check the next character */
+	for (i = 1; i < len; i++) {	/* Start at position 1 since we need the position before.  Look for "X:/" pattern, with X = A-Z */
+		if (in[i] == mark[this] && (in[i-1] >= 'A' && in[i-1] <= 'Z') && (in[i+1] == '/' || in[i+1] == '\\')) in[i] = mark[other];
+	}
+}
+#endif
+
 GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	/* gmt_parse_B_option scans an argument string and extract parameters that
 	 * set the interval for tickmarks and annotations on the boundary.
@@ -5700,11 +5723,19 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		C->current.map.frame.draw = FALSE;
 	}
 
+#ifdef _WIN32
+	gmt_handle_dosfile (C, in, 0);	/* Temporarily replace DOS files like X:/ with X;/ to avoid colon trouble */
+#endif
+
 	for (i = strlen (in) - 1, ignore = FALSE; !C->current.map.frame.paint && !error && i >= 0; i--) {	/** Look for +g<fill */
 		if (in[i] == ':') ignore = !ignore;
 		if (ignore) continue;	/* Not look inside text items */
 		if (in[i] == '+' && in[i+1] == 'g') {	/* Found +g<fill> */
-			error += GMT_getfill (C, &in[i+2], &C->current.map.frame.fill);
+			strcpy (out1, &in[i+2]);	/* Make a copy of the fill argument */
+#ifdef _WIN32
+			gmt_handle_dosfile (C, out1, 1);	/* Undo any DOS files like X;/ back to X:/ */
+#endif
+			error += GMT_getfill (C, out1, &C->current.map.frame.fill);
 			if (!error) {
 				C->current.map.frame.paint = TRUE;
 				g = i;
@@ -5712,7 +5743,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 			}
 		}
 	}
-	
+	/* Note that gmt_strip_colonitem calls gmt_handle_dosfile so that the item return has been processed for DOS path restoration */
 	error += gmt_strip_colonitem (C, 0, &in[k], ":.", C->current.map.frame.header, out1);	/* Extract header string, if any */
 	GMT_enforce_rgb_triplets (C, C->current.map.frame.header, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 
