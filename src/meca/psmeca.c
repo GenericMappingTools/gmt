@@ -27,6 +27,7 @@ PostScript code is written to stdout.
 
 #define DEFAULT_FONTSIZE	9.0	/* In points */
 #define DEFAULT_OFFSET		3.0	/* In points */
+#define DEFAULT_SIZE		6.0 /* In points */
 
 #define READ_CMT	0
 #define READ_AKI	1
@@ -68,10 +69,6 @@ struct PSMECA_CTRL {
 	struct N {	/* -N */
 		GMT_LONG active;
 	} N;
-	struct R2 {	/* -r<fill> */
-		GMT_LONG active;
-		struct GMT_FILL fill;
-	} R2;
 	struct S {	/* -S<format><scale>[/fontsize[/justify/offset/angle/form]] */
 		GMT_LONG active;
 		GMT_LONG readmode;
@@ -99,12 +96,12 @@ struct PSMECA_CTRL {
 		GMT_LONG active;
 		char *file;
 	} Z;
-	struct a2 {	/* -r<fill> */
+	struct A2 {	/* -a[size][/Psymbol[Tsymbol]] */
 		GMT_LONG active;
 		char P_sym_type, T_sym_type;
 		char P_symbol, T_symbol;
 		double size;
-	} a2;
+	} A2;
  	struct E2 {	/* -e<fill> */
 		GMT_LONG active;
 		struct GMT_FILL fill;
@@ -113,11 +110,15 @@ struct PSMECA_CTRL {
 		GMT_LONG active;
 		struct GMT_FILL fill;
 	} G2;
- 	struct P2 {	/* -p<pen> */
+ 	struct P2 {	/* -p[<pen>] */
 		GMT_LONG active;
 		struct GMT_PEN pen;
 	} P2;
- 	struct T2 {	/* -t<pen> */
+	struct R2 {	/* -r[<fill>] */
+		GMT_LONG active;
+		struct GMT_FILL fill;
+	} R2;
+ 	struct T2 {	/* -t[<pen>] */
 		GMT_LONG active;
 		struct GMT_PEN pen;
 	} T2;
@@ -142,12 +143,11 @@ void *New_psmeca_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	GMT_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	GMT_init_fill (GMT, &C->R2.fill, 1.0, 1.0, 1.0);
-	GMT_init_fill (GMT, &C->E2.fill, 1.0, 1.0, 1.0);
-	GMT_init_fill (GMT, &C->G2.fill, 0.0, 0.0, 0.0);
 	C->S.fontsize = DEFAULT_FONTSIZE;
 	C->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 	C->S.justify = PSL_BC;
-	C->a2.size = GMT->session.d_NaN;
+	C->A2.size = DEFAULT_SIZE * GMT->session.u2u[GMT_PT][GMT_INCH];
+	C->A2.P_symbol = C->A2.T_symbol = GMT_SYMBOL_CIRCLE;
 	return (C);
 }
 
@@ -168,11 +168,11 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]\n");
 	GMT_message (GMT, "\t[%s] [-C[<pen>][P<pointsize>]]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-D<depmin>/<depmax>] [-E<fill>] [-G<fill>]\n");
-	GMT_message (GMT, "\t[-K] [-L<pen>] [-M] [-N] [-O] [-P] [-r]\n");
+	GMT_message (GMT, "\t[-K] [-L<pen>] [-M] [-N] [-O] [-P]\n");
 	GMT_message (GMT, "\t[-T<nplane>[/<pen>]] [%s]\n", GMT_U_OPT);
 	GMT_message (GMT, "\t[-V] [-W<pen>] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[-Z<cpt>] [-z[<pen>]] [-a[<size>[/<Psymbol>[<Tsymbol>]]]\n\n");
-	GMT_message (GMT, "\t[-p[<pen>]] [-t[<pen>]] [-e<fill>] -g<fill>]\n\n");
+	GMT_message (GMT, "\t[-Z<cpt>] [-z[<pen>]] [-a[<size>[/<Psymbol>[<Tsymbol>]]]\n");
+	GMT_message (GMT, "\t[-e<fill>] [-g<fill>] [-r<fill>] [-p[<pen>]] [-t[<pen>]]\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s] [-o] [%s]\n", GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -236,11 +236,12 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-W Set pen attributes [%s].\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
 	GMT_message (GMT, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column.\n");
 	GMT_message (GMT, "\t-a Plot axis. Default symbols are circles.\n");
+	GMT_message (GMT, "\t-g Set color used for P_symbol [default as set by -G].\n");
+	GMT_message (GMT, "\t-e Set color used for T_symbol [default as set by -E].\n");
 	GMT_message (GMT, "\t-p Draw P_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
 	GMT_message (GMT, "\t-t Draw T_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
-	GMT_message (GMT, "\t-g Set color used for P_symbol [default is compressive parts color].\n");
-	GMT_message (GMT, "\t-e Set color used for T_symbol [default is extensive parts color].\n");
 	GMT_message (GMT, "\t-o Use psvelomeca format (Without depth in third column).\n");
+	GMT_message (GMT, "\t-r Draw box behind labels.\n");
 	GMT_explain_options (GMT, "Xchi:.");
 
 	return (EXIT_FAILURE);
@@ -272,7 +273,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 			case 'C':	/* Change position [set line attributes] */
 				Ctrl->C.active = TRUE;
 				if (!opt->arg[0]) break;
-				p = NULL;	strcpy (txt, opt->arg);
+				strcpy (txt, opt->arg);
 				if ((p = strchr (txt, 'P'))) Ctrl->C.size = GMT_to_inch (GMT, (p+1));
 				if (txt[0] != 'P') {	/* Have a pen up front */
 					if (p) p[0] = '\0';
@@ -313,26 +314,16 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 			case 'N':	/* Do not skip points outside border */
 				Ctrl->N.active = TRUE;
 				break;
-			case 'r':	/* draw box around text */
-				Ctrl->R2.active = TRUE;
-				if (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->R2.fill)) {
-					GMT_fill_syntax (GMT, 'r', " ");
-					n_errors++;
-				}
-				break;
 			case 'S':	/* Get symbol [and size] */
 				Ctrl->S.active = TRUE;
-				txt_b[0] = txt_c[0] = '\0';
-				p = NULL;	strcpy (txt, &opt->arg[1]);
-				if ((p = strchr (txt, '/'))) p[0] = '\0';
-				Ctrl->S.scale = GMT_to_inch (GMT, txt);
-				if ((p = strstr (opt->arg, "/"))) {
-					if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
-					sscanf (p, "/%[^/]/%s", txt_b, txt_c);
-					if (txt_b[0]) Ctrl->S.fontsize = GMT_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
-					if (txt_c[0]) Ctrl->S.offset = GMT_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
-					if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = TRUE;
-				}
+				if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
+				txt[0] = txt_b[0] = txt_c[0] = '\0';
+				sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
+				if (txt[0]) Ctrl->S.scale = GMT_to_inch (GMT, txt);
+				if (txt_b[0]) Ctrl->S.fontsize = GMT_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
+				if (txt_c[0]) Ctrl->S.offset = GMT_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
+				if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = TRUE;
+
 				switch (opt->arg[0]) {
 					case 'c':
 						Ctrl->S.readmode = READ_CMT;
@@ -378,13 +369,6 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 					n_errors++;
 				}
 				break;
-			case 'z':	/* overlay zerotrace moment tensor */
-				Ctrl->Z2.active = TRUE;
-				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->Z2.pen)) { /* Set pen attributes */
-					GMT_pen_syntax (GMT, 'z', " ");
-					n_errors++;
-				}
-				break;
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = TRUE;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
@@ -397,100 +381,30 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 				Ctrl->Z.file = strdup (opt->arg);
 				break;
 			case 'a':	/* plot axis */
-				Ctrl->a2.active = TRUE;
-				if (!opt->arg[0]) {	/* Set defaults */
-					strcpy (txt,"0.2c");
-					Ctrl->a2.size = GMT_to_inch (GMT, txt);
-					Ctrl->a2.P_symbol = GMT_SYMBOL_CIRCLE;
-					Ctrl->a2.T_symbol = GMT_SYMBOL_CIRCLE;
-					break;
-				}
-				else {
-					strcpy (txt, &opt->arg[1]);
-					p = NULL;	strcpy (txt, &opt->arg[1]);
-					if ((p = strchr (txt, '/'))) p[0] = '\0';
-					Ctrl->a2.size = GMT_to_inch (GMT, txt);
-					if ((p = strstr (opt->arg, "/"))) {
-						strcpy (txt, p);
-						switch (strlen (txt)) {
-							case 1:
-								Ctrl->a2.P_sym_type = 'c';
-								Ctrl->a2.T_sym_type = 'c';
-								break;
-							case 2:
-								Ctrl->a2.P_sym_type = txt[1];
-								Ctrl->a2.T_sym_type = txt[1];
-								break;
-							case 3:
-								Ctrl->a2.P_sym_type = txt[1];
-								Ctrl->a2.T_sym_type = txt[2];
-								break;
-						}
-					}
-				}
-				switch (Ctrl->a2.P_sym_type) {
-					case 'a':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_STAR;
+				Ctrl->A2.active = TRUE;
+				strcpy (txt, &opt->arg[1]);
+				if ((p = strchr (txt, '/'))) p[0] = '\0';
+				if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
+				p++;
+				switch (strlen (p)) {
+					case 1:
+						Ctrl->A2.P_symbol = Ctrl->A2.T_symbol = p[0];
 						break;
-					case 'c':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_CIRCLE;
-						break;
-					case 'd':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_DIAMOND;
-						break;
-					case 'h':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_HEXAGON;
-						break;
-					case 'i':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_INVTRIANGLE;
-						break;
-					case 's':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_SQUARE;
-						break;
-					case 't':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_TRIANGLE;
-						break;
-					case 'x':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_CROSS;
-						break;
-				}
-				switch (Ctrl->a2.T_sym_type) {
-					case 'a':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_STAR;
-						break;
-					case 'c':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_CIRCLE;
-						break;
-					case 'd':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_DIAMOND;
-						break;
-					case 'h':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_HEXAGON;
-						break;
-					case 'i':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_INVTRIANGLE;
-						break;
-					case 's':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_SQUARE;
-						break;
-					case 't':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_TRIANGLE;
-						break;
-					case 'x':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_CROSS;
+					case 2:
+						Ctrl->A2.P_symbol = p[0], Ctrl->A2.T_symbol = p[1];
 						break;
 				}
 				break;
 			case 'e':	/* Set color for T axis symbol */
 				Ctrl->E2.active = TRUE;
-				if (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->E2.fill)) {
+				if (GMT_getfill (GMT, opt->arg, &Ctrl->E2.fill)) {
 					GMT_fill_syntax (GMT, 'e', " ");
 					n_errors++;
 				}
 				break;
 			case 'g':	/* Set color for P axis symbol */
-				Ctrl->E2.active = TRUE;
-				if (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->G2.fill)) {
+				Ctrl->G2.active = TRUE;
+				if (GMT_getfill (GMT, opt->arg, &Ctrl->G2.fill)) {
 					GMT_fill_syntax (GMT, 'g', " ");
 					n_errors++;
 				}
@@ -499,6 +413,13 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 				Ctrl->P2.active = TRUE;
 				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->P2.pen)) {
 					GMT_pen_syntax (GMT, 'p', " ");
+					n_errors++;
+				}
+				break;
+			case 'r':	/* draw box around text */
+				Ctrl->R2.active = TRUE;
+				if (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->R2.fill)) {
+					GMT_fill_syntax (GMT, 'r', " ");
 					n_errors++;
 				}
 				break;
@@ -511,6 +432,13 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 				break;
 			case 'o':	/* use psvelomeca format (without depth in 3rd column) */
 				Ctrl->O2.active = TRUE;
+				break;
+			case 'z':	/* overlay zerotrace moment tensor */
+				Ctrl->Z2.active = TRUE;
+				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->Z2.pen)) { /* Set pen attributes */
+					GMT_pen_syntax (GMT, 'z', " ");
+					n_errors++;
+				}
 				break;
 
 			default:	/* Report bad options */
@@ -535,6 +463,11 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 	if (Ctrl->P2.pen.width < 0.0) Ctrl->P2.pen = Ctrl->W.pen;
 	if (Ctrl->Z2.pen.width < 0.0) Ctrl->Z2.pen = Ctrl->W.pen;
 
+	/* Default -e<fill> and -g<fill> to -E<fill> and -G<fill> */
+
+	if (!Ctrl->E2.active) Ctrl->E2.fill = Ctrl->E.fill;
+	if (!Ctrl->G2.active) Ctrl->G2.fill = Ctrl->G.fill;
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
@@ -545,7 +478,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psmeca task */
 	GMT_LONG i, n, ix = 0, iy = 1, last = 0, form = 0, new;
 	GMT_LONG n_rec = 0, n_plane_old = 0, error;
-	GMT_LONG no_size_needed, transparence_old = FALSE, not_defined = FALSE;
+	GMT_LONG transparence_old = FALSE, not_defined = FALSE;
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xy[2], xynew[2];
@@ -585,9 +518,6 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memset (event_title, GMT_BUFSIZ, char);
 	GMT_memset (&meca, 1, st_me);
 	string[0] = '\0';
-
-	no_size_needed = (Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || \
-		Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_TENSOR || Ctrl->S.readmode == READ_AXIS);
 
 	if (Ctrl->Z.active) {
 		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, NULL)) == NULL) {
@@ -752,10 +682,10 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			N.val /= meca.moment.mant;
 			P.val /= meca.moment.mant;
 
-			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) axe2dc(T, P, &meca.NP1, &meca.NP2);
+			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) axe2dc (T, P, &meca.NP1, &meca.NP2);
 		}
 		else if (Ctrl->S.readmode == READ_TENSOR) {
-			for (i=2+new, n=0; i<8+new; i++, n++) mt.f[n] = atof (col[i]);
+			for (i = 2+new, n = 0; i < 8+new; i++, n++) mt.f[n] = atof (col[i]);
 			mt.expo = atoi(col[i]);
 			/*
 			F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998, p.167.
@@ -768,7 +698,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* normalization by M0 */
 			for(i=0;i<=5;i++) mt.f[i] /= meca.moment.mant;
 
-			GMT_momten2axe (GMT, mt, &T, &N, &P);
+			moment2axe (GMT, mt, &T, &N, &P);
 
 			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) axe2dc (T, P, &meca.NP1, &meca.NP2);
 		}
@@ -829,10 +759,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			meca.NP1.str = zero_360(meca.NP1.str + delaz);
 			meca.NP2.str = zero_360(meca.NP2.str + delaz);
 			GMT_setpen (GMT, &Ctrl->T.pen);
-			if (Ctrl->T.n_plane)
-				ps_plan (GMT, PSL, plot_x, plot_y, meca, size, Ctrl->T.n_plane);
-			else
-				ps_meca (GMT, PSL, plot_x, plot_y, meca, size);
+			ps_plan (GMT, PSL, plot_x, plot_y, meca, size, Ctrl->T.n_plane);
 			if (not_defined) {
 				not_defined = FALSE;
 				Ctrl->T.active = transparence_old;
@@ -848,31 +775,22 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (!Ctrl->S.no_label) {
 			GMT_setpen (GMT, &Ctrl->W.pen);
-			switch (Ctrl->S.justify) {
-				case PSL_BC :
-					PSL_setfill (PSL, Ctrl->R2.fill.rgb, FALSE);
-					if (Ctrl->R2.active) PSL_plotbox (PSL, plot_x - size * 0.5, plot_y + size * 0.5 + Ctrl->S.offset + (Ctrl->S.fontsize / PSL_POINTS_PER_INCH), plot_x + size * 0.5, plot_y + size * 0.5 + Ctrl->S.offset);
-					PSL_plottext (PSL, plot_x, plot_y + size * 0.5 + Ctrl->S.offset, Ctrl->S.fontsize, event_title, angle, Ctrl->S.justify, form);
-					break;
-				case PSL_TC :
-					PSL_setfill (PSL, Ctrl->R2.fill.rgb, FALSE);
-					if (Ctrl->R2.active) PSL_plotbox (PSL, plot_x - size * 0.5, plot_y - size * 0.5 - Ctrl->S.offset - (Ctrl->S.fontsize / PSL_POINTS_PER_INCH), plot_x + size * 0.5, plot_y - size * 0.5 - Ctrl->S.offset);
-					PSL_plottext (PSL, plot_x, plot_y - size * 0.5 - Ctrl->S.offset, Ctrl->S.fontsize, event_title, angle, Ctrl->S.justify, form);
-					break;
-			}
+			i = (Ctrl->S.justify == PSL_BC ? 1 : -1);
+			PSL_setfill (PSL, Ctrl->R2.fill.rgb, FALSE);
+			if (Ctrl->R2.active) PSL_plotbox (PSL, plot_x - size * 0.5, plot_y + i * (size * 0.5 + Ctrl->S.offset + Ctrl->S.fontsize / PSL_POINTS_PER_INCH), plot_x + size * 0.5, plot_y + i * (size * 0.5 + Ctrl->S.offset));
+			PSL_plottext (PSL, plot_x, plot_y + i * (size * 0.5 + Ctrl->S.offset), Ctrl->S.fontsize, event_title, angle, 
+				Ctrl->S.justify, form);
+		}
 
-			if (Ctrl->a2.active) {
-				if (Ctrl->S.readmode == READ_AXIS || Ctrl->S.readmode == READ_TENSOR)
-					axis2xy(plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
-				else
-					ps_pt_axis(plot_x, plot_y, meca, size, &P.str, &P.dip, &T.str, &T.dip, &P_x, &P_y, &T_x, &T_y);
-				GMT_setpen (GMT, &Ctrl->P2.pen);
-				GMT_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
-				PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->a2.size, Ctrl->a2.P_symbol);
-				GMT_setpen (GMT, &Ctrl->T2.pen);
-				GMT_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active);
-				PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->a2.size, Ctrl->a2.P_symbol);
-			}
+		if (Ctrl->A2.active) {
+			if (Ctrl->S.readmode != READ_TENSOR && Ctrl->S.readmode != READ_AXIS) dc2axe (meca, &T, &N, &P);
+			axis2xy (plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
+			GMT_setpen (GMT, &Ctrl->P2.pen);
+			GMT_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
+			PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);
+			GMT_setpen (GMT, &Ctrl->T2.pen);
+			GMT_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active);
+			PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);
 		}
 		event_title[0] = string[0] = '\0';		/* Reset these two in case next record misses "string" */
 	} while (TRUE);

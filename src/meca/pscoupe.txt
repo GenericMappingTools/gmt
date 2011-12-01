@@ -7,24 +7,21 @@ BD(pscoupe) [ IT(files) ] GMT_J_OPT GMT_Rgeo_OPT
 OPT(A)IT(parameters) [ GMT_B_OPT ]  [ OPT(E)IT(fill) ]
 [ OPT(G)IT(fill) ]
 [ GMT_K_OPT ] [ OPT(L)IT([pen]) ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] 
-[ GMT_P_OPT ] [ OPT(S)IT(<symbol><scale>)[/BD(d)] ]
+[ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)IT(<symbol><scale>)[/BD(d)] ]
 [ OPT(s)IT(<format><size>)[/BD(d)] ] [ OPT(T)IT(n) ] [ GMT_U_OPT ]
 [ GMT_V_OPT ] [ OPT(W)IT(pen) ] [ GMT_X_OPT ]
 [ GMT_Y_OPT ] [ OPT(Z)IT(cpt) ]
-[ OPT(a)[IT(size)/[IT(P_symbol)/[IT(T_symbol)]]] ] [ GMT_c_OPT ]
-[ OPT(e)IT(fill) ] [ OPT(g)IT(fill) ] [ GMT_H_OPT ] [ GMT_i_OPT ] 
-[ OPT(p)IT(pen) ]
-[ OPT(t)IT(pen) ] [ GMT_colon_OPT ]
+[ OPT(a)[IT(size)][/IT(P_symbol)[IT(T_symbol)]] ] [ GMT_c_OPT ]
+[ OPT(e)IT(fill) ] [ OPT(g)IT(fill) ] [ GMT_h_OPT ] [ GMT_i_OPT ] 
+[ OPT(p)[IT(pen)] ] [ OPT(t)[IT(pen)] ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(pscoupe) reads data values from IT(files) [or standard input] and
 generates IT(PostScript) code that will plot symbols, lines or polygons on a cross-section.
 Focal mechanisms  may be specified and require additional columns of data.
 The IT(PostScript) code is written to standard output. 
-#include "explain_commonitems.txt"
-.SH REQUIRED ARGUMENTS
-#include "explain_intables.txt"
+.br
 .sp
-A IT(new file) is created with the new coordinates (BD(x), BD(y)) and the
+Unless OPT(Q) is used, new file is created with the new coordinates (BD(x), BD(y)) and the
 mechanism (from lower focal half-sphere for horizontal plane, to half-sphere
 behind a vertical plane).
 When the plane is not horizontal,
@@ -39,6 +36,10 @@ Axis angles are defined in the same way as in horizontal plane in the new system
 .br
 Moment tensor (initially in r, t, f system that is up, south, east)
 is defined in (-u^s, -u, s) system.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_intables.txt"
+.sp
 #include "explain_-J.txt"
 #include "explain_-Rgeo.txt"
 If frame is defined from cross-section parameters (see OPT(A)) this option is not taken into account,
@@ -104,7 +105,7 @@ BD(10):
 text string to appear above the beach ball (default) or under (add BD(u)).
 .RE
 .TP
-OPT(Sc)scale)
+OPT(Sc)IT(scale)
 Focal mechanisms in Harvard CMT convention.  
 IT(scale) adjusts the scaling of the radius of the "beach ball", which will
 be proportional to the magnitude. The IT(scale) is the size for magnitude = 5
@@ -275,18 +276,10 @@ Text string to appear above the beach ball (default) or under (add BD(u)).
 #include "explain_-B.txt"
 .TP
 OPT(E)IT(fill)
-Selects filling of extensive quadrants. Usually white.
-Set the color [Default is white].
+Sets color or fill pattern for extensive quadrants [Default is white].
 .TP
 OPT(G)IT(fill)
-Selects filling of focal mechanisms. By convention, the
-compressional quadrants are shaded.  Set the color
-[Default is black].  Optionally, specify
-OPT(Gp)IT(icon_size/pattern), where )pattern) gives the
-number of the image pattern (1-90) OR the name of a Sun rasterfile.
-)icon_size) sets the unit size in inches.  To invert black and
-white pixels, use OPT(GP) instead of OPT(Gp).  See
-Appendix E for information on individual patterns.
+Sets color or fill pattern for compressional quadrants [Default is black].
 #include "explain_-K.txt"
 .TP
 OPT(L)[IT(pen)]
@@ -299,6 +292,9 @@ OPT(N)
 Does BD(not) skip symbols that fall outside map border [Default plots points inside border only].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
+.TP
+OPT(Q)
+Suppress the production of files with cross-section and mechanism information.
 .TP
 OPT(T)[IT(num_of_planes)]
 Plots the nodal planes and outlines the bubble which is transparent.
@@ -323,29 +319,28 @@ OPT(Z)cptfile
 Give a color palette file and let compressive part color be determined by the z-value in the
 third column.
 .TP
-OPT(a)[IT(size)/[IT(P_axis_symbol)/[IT(T_axis_symbol)]]]
+OPT(a)[IT(size)][/IT(P_symbol)[IT(T_symbol)]]
 Computes and plots P and T axes with symbols. Optionally specify IT(size)
 and (separate) P and T axis symbols from the following:
 (BD(c)) circle, (BD(d)) diamond, (BD(h)) hexagon,
 (BD(i)) inverse triangle,
-(BD(p))point, (BD(s)) square, (BD(t)) triangle,
-(BD(x)) cross. [Defaults: 0.2BD(c)/BD(c)/BD(c) or 0.08BD(i)/BD(c)/BD(c).]
+(BD(p)) point, (BD(s)) square, (BD(t)) triangle,
+(BD(x)) cross. [Default: 6BD(p)/BD(cc)]
 .TP
 OPT(e)IT(fill)
-Selects filling of T axis symbol.
-Set the color [Default is color of extensive parts.] 
+Sets the color or fill pattern for the T axis symbol. [Default as set by OPT(E)]
 .TP
 OPT(g)IT(fill)
-Selects filling of P axis symbol.
-Set the color [Default is color of compressive parts.]
+Sets the color or fill pattern for the P axis symbol. [Default as set by OPT(G)]
 .TP
 OPT(p)[IT(pen)]
-Draws the P axis outline using current pen (see OPT(W)), or sets
-pen attributes.
+Draws the P axis outline using current pen (see OPT(W)), or sets pen attributes.
+.TP
+OPT(r)[IT(fill)]
+Draw a box behind the label (if any). [Default fill is white]
 .TP
 OPT(t)[IT(pen)]
-Draws the T axis outline using current pen (see OPT(W)), or sets
-pen attributes.
+Draws the T axis outline using current pen (see OPT(W)), or sets pen attributes.
 #include "explain_-c.txt"
 #include "explain_-h.txt"
 #include "explain_-icols.txt"

@@ -462,7 +462,7 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (strcmp (col[0], "000000")) {
-			plongement = (ih - 90.0) * M_PI / 180.0;
+			plongement = (ih - 90.0) * D2R;
 			if (plongement  < 0.0) {
 				plongement = -plongement;
 				azimut += 180.0;

@@ -16,10 +16,10 @@ INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 ALLLIB		= $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(PCRE_LIB) $(LIBS)
 
 API_H		= gmt_meca.h
-LIB_O		= utilmeca.o nrutil.o submeca.o distaz.o
+LIB_O		= utilmeca.o nrutil.o
 PROGS_O		= psmeca.o pspolar.o psvelo.o pscoupe.o
 
-LIB_H		= meca.h nrutil.h submeca.h utilmeca.h
+LIB_H		= meca.h nrutil.h utilmeca.h
 
 MAN1		= $(PROGS_O:.o=.1)
 
