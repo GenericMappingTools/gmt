@@ -2,6 +2,16 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-12-01	remko
+	* meca/pscoupe.c:	Added -Q option to suppress mechanism files
+				Incorporated distaz.c and submeca.c as they were unique to pscoupe.
+				Properly mention -a<size>/<P_symbol><T_symbol>
+				Properly set default pen for all elements to the one set by -W.
+	* meca/psmeca.c:	Let -e<fill> and -g<fill> default to -E<fill> and -G<fill>.
+				Set default size of T_symbol and P_symbol to 6p (not inch or cm)
+	* meca/pscoupe.c:	==="===
+	* meca/*.c:		Numerous bug fixes
+
 2011-11-30	pwessel
 	* gmt_support.c:	GMT_getfill got confused when a Windows path C:\etc was
 				given as an pattern file (mixed up with :F and :B mechanism).
