@@ -353,9 +353,9 @@ void GMTMEX_free (char *input, char *output, char *options, char *cmd) {
 #define GMT_MEX_EXPLICIT	-2
 #define GMT_MEX_IMPLICIT	-1
 
-GMT_LONG find_option (struct GMT_OPTIONS *opt, char *key[], GMT_LONG n_keys) {
+GMT_LONG find_option (char option, char *key[], GMT_LONG n_keys) {
 	GMT_LONG pos = -1, k;
-	for (k = 0; pos == -1 && k < n_keys; k++) if (key[k][0] == opt->option) pos = k;	/* First see if this option is one that might take $ */
+	for (k = 0; pos == -1 && k < n_keys; k++) if (key[k][0] == option) pos = k;	/* First see if this option is one that might take $ */
 	return (pos);
 }
 
@@ -383,7 +383,7 @@ void get_key_pos (char *key[], GMT_LONG n_keys, struct GMT_OPTIONS *head, GMT_LO
 	def[GMT_IN] = def[GMT_OUT] = GMT_MEX_IMPLICIT;	/* Initialize to setting the i/o implicitly */
 	
 	for (opt = head; opt; opt = opt->next) {	/* Loop over the module options to see if inputs and outputs are set explicitly or implicitly */
-		pos = find_option (opt, key, n_keys);	/* First see if this option is one that might take $ */
+		pos = find_option (opt->option, key, n_keys);	/* First see if this option is one that might take $ */
 		if (pos == -1) continue;		/* No, it was some other harmless option, e.g., -J, -O etc. */
 		/* OK, the current option is one that might take an input or output file. See if it matches
 		 * the UPPERCASE I or O [default source/dest] rather than the standard i|o (other input/output) */
@@ -399,12 +399,12 @@ void get_key_pos (char *key[], GMT_LONG n_keys, struct GMT_OPTIONS *head, GMT_LO
 
 GMT_LONG get_arg_dir (char option, char *key[], GMT_LONG n_keys, GMT_LONG *data_type, GMT_LONG *geometry)
 {
-	GMT_LONG k, item;
+	GMT_LONG item;
 	
 	/* 1. First determine if this option is one of the choices in key */
 	
 	/* First key char contains the option code */
-	for (k = 0, item = -1; item == -1 && k < n_keys; k++) if (key[k][0] == option) item = k;
+	item = find_option (option, key, n_keys);
 	if (item == -1) mexErrMsgTxt ("GMTMEX_parser: This option does not allow $ arguments\n");	/* This means a coding error we must fix */
 	
 	/* 2. Assign direction, data_type, and geometry */
@@ -463,7 +463,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 	GMT_LONG geometry;		/* Either GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, or GMT_IS_SURFACE */
 	GMT_LONG def[2];		/* Either GMT_MEX_EXPLICIT or the item number in the keys array */
 	char name[GMTAPI_STRLEN];	/* Used to hold the GMT API embedded file name, e.g., @GMTAPI@-###### */
-	char buffer[GMT_BUFSIZ];		/* Temp buffer */
+	char buffer[GMT_BUFSIZ];	/* Temp buffer */
 	struct GMT_OPTIONS *opt;	/* Pointer to a GMT option structure */
 	void *ptr = NULL;		/* Void pointer used to point to either L or R side pointer argument */
 	
