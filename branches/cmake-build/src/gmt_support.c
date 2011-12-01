@@ -822,7 +822,7 @@ void GMT_init_fill (struct GMT_CTRL *C, struct GMT_FILL *fill, double r, double 
 
 GMT_LONG GMT_getfill (struct GMT_CTRL *C, char *line, struct GMT_FILL *fill)
 {
-	GMT_LONG n, end, pos, i, error = 0;
+	GMT_LONG n, end, pos, i, len, error = 0;
 	double fb_rgb[4];
 	char f, word[GMT_TEXT_LEN256];
 
@@ -838,7 +838,9 @@ GMT_LONG GMT_getfill (struct GMT_CTRL *C, char *line, struct GMT_FILL *fill)
 	if ((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1])) {	/* Image specified */
 		n = sscanf (&line[1], "%" GMT_LL "d/%s", &fill->dpi, fill->pattern);
 		if (n != 2) error = 1;
-		for (i = 0, pos = -1; fill->pattern[i] && pos == -1; i++) if (fill->pattern[i] == ':') pos = i;
+		/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
+		len = strlen (fill->pattern);
+		for (i = 0, pos = -1; fill->pattern[i] && pos == -1; i++) if (fill->pattern[i] == ':' && i < len && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;
 		if (pos > -1) fill->pattern[pos] = '\0';
 		fill->pattern_no = atoi (fill->pattern);
 		if (fill->pattern_no == 0) fill->pattern_no = -1;
@@ -846,7 +848,8 @@ GMT_LONG GMT_getfill (struct GMT_CTRL *C, char *line, struct GMT_FILL *fill)
 
 		/* See if fore- and background colors are given */
 
-		for (i = 0, pos = -1; line[i] && pos == -1; i++) if (line[i] == ':') pos = i;
+		len = strlen (line);
+		for (i = 0, pos = -1; line[i] && pos == -1; i++) if (line[i] == ':' && i < len && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;
 		pos++;
 
 		if (pos > 0 && line[pos]) {	/* Gave colors */
