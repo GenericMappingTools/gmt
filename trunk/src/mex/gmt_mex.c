@@ -353,58 +353,58 @@ void GMTMEX_free (char *input, char *output, char *options, char *cmd) {
 #define GMT_MEX_EXPLICIT	-2
 #define GMT_MEX_IMPLICIT	-1
 
-GMT_LONG find_option (char option, char *key[], GMT_LONG n_keys) {
+GMT_LONG gmtmex_find_option (char option, char *key[], GMT_LONG n_keys) {
+	/* gmtmex_find_option determines if the given option is among the special options that might take $ as filename */
 	GMT_LONG pos = -1, k;
-	for (k = 0; pos == -1 && k < n_keys; k++) if (key[k][0] == option) pos = k;	/* First see if this option is one that might take $ */
-	return (pos);
+	for (k = 0; pos == -1 && k < n_keys; k++) if (key[k][0] == option) pos = k;
+	return (pos);	/* -1 if not found, otherwise the position in the key array */
 }
 
-GMT_LONG get_arg_pos (char *arg)
+GMT_LONG gmtmex_get_arg_pos (char *arg)
 {	/* Look for a $ in the arg; if found return position, else return -1. Skips $ inside quoted texts */
 	GMT_LONG pos, mute = FALSE, k;
 	for (k = 0, pos = -1; pos == -1 && k < strlen (arg); k++) {
 		if (arg[k] == '\"' || arg[k] == '\'') mute = !mute;	/* Do not consider $ inside quotes */
-		if (!mute && arg[k] == '$') pos = k;
+		if (!mute && arg[k] == '$') pos = k;	/* Found a $ sign */
 	}
 	return (pos);	/* Either -1 (not found) or in the 0-(strlen(arg)-1) range [position of $] */
 }
 
-void get_key_pos (char *key[], GMT_LONG n_keys, struct GMT_OPTIONS *head, GMT_LONG def[])
-{	/* Must determine if input and output have been set via program options or if they should be added explicitly.
+void gmtmex_get_key_pos (char *key[], GMT_LONG n_keys, struct GMT_OPTIONS *head, GMT_LONG def[])
+{	/* Must determine if default input and output have been set via program options or if they should be added explicitly.
  	 * As an example, consider the GMT command grdfilter in.nc -Fg200k -Gfilt.nc.  In Matlab this might be
 	 * filt = GMT_grdfilter ('$ -Fg200k -G$', in);
 	 * However, it is more natural not to specify the lame -G$, i.e.
-	 * filt = GMT_grdfilter ('$ -Fg200k ', in);
-	 * In that case we need to know that -G is the default way to specify output grid and if not given we
-	 * must associate -G with teh first left-hand-side item (here filt).
+	 * filt = GMT_grdfilter ('$ -Fg200k', in);
+	 * In that case we need to know that -G is the default way to specify the output grid and if -G is not given we
+	 * must associate -G with the first left-hand-side item (here filt).
 	 */
 	GMT_LONG pos, k;
 	struct GMT_OPTIONS *opt = NULL;
 	def[GMT_IN] = def[GMT_OUT] = GMT_MEX_IMPLICIT;	/* Initialize to setting the i/o implicitly */
 	
 	for (opt = head; opt; opt = opt->next) {	/* Loop over the module options to see if inputs and outputs are set explicitly or implicitly */
-		pos = find_option (opt->option, key, n_keys);	/* First see if this option is one that might take $ */
-		if (pos == -1) continue;		/* No, it was some other harmless option, e.g., -J, -O etc. */
-		/* OK, the current option is one that might take an input or output file. See if it matches
-		 * the UPPERCASE I or O [default source/dest] rather than the standard i|o (other input/output) */
+		pos = gmtmex_find_option (opt->option, key, n_keys);	/* First see if this option is one that might take $ */
+		if (pos == -1) continue;		/* No, it was some other harmless option, e.g., -J, -O ,etc. */
+		/* Here, the current option is one that might take an input or output file. See if it matches
+		 * the UPPERCASE I or O [default source/dest] rather than the standard i|o (optional input/output) */
 		if (key[pos][2] == 'I') def[GMT_IN]  = GMT_MEX_EXPLICIT;	/* Default input  is actually set explicitly via option setting now indicated by key[pos] */
 		if (key[pos][2] == 'O') def[GMT_OUT] = GMT_MEX_EXPLICIT;	/* Default output is actually set explicitly via option setting now indicated by key[pos] */
 	}
 	/* Here, if def[] == GMT_MEX_IMPLICIT (the default in/out option was NOT given), then we want to return the corresponding entry in key */
 	for (pos = 0; pos < n_keys; pos++) {	/* For all module options that might take a file */
-		if (key[pos][2] == 'I' && def[GMT_IN]  == GMT_MEX_IMPLICIT)  def[GMT_IN] = pos;	/* Must add implicit input; use def to determine option,type */
+		if (key[pos][2] == 'I' && def[GMT_IN]  == GMT_MEX_IMPLICIT) def[GMT_IN]  = pos;	/* Must add implicit input; use def to determine option,type */
 		if (key[pos][2] == 'O' && def[GMT_OUT] == GMT_MEX_IMPLICIT) def[GMT_OUT] = pos;	/* Must add implicit output; use def to determine option,type */
 	}
 }
 
-GMT_LONG get_arg_dir (char option, char *key[], GMT_LONG n_keys, GMT_LONG *data_type, GMT_LONG *geometry)
+GMT_LONG gmtmex_get_arg_dir (char option, char *key[], GMT_LONG n_keys, GMT_LONG *data_type, GMT_LONG *geometry)
 {
 	GMT_LONG item;
 	
 	/* 1. First determine if this option is one of the choices in key */
 	
-	/* First key char contains the option code */
-	item = find_option (option, key, n_keys);
+	item = gmtmex_find_option (option, key, n_keys);
 	if (item == -1) mexErrMsgTxt ("GMTMEX_parser: This option does not allow $ arguments\n");	/* This means a coding error we must fix */
 	
 	/* 2. Assign direction, data_type, and geometry */
@@ -467,11 +467,11 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 	struct GMT_OPTIONS *opt;	/* Pointer to a GMT option structure */
 	void *ptr = NULL;		/* Void pointer used to point to either L or R side pointer argument */
 	
-	get_key_pos (key, n_keys, head, def);	/* Determine if we must add the primary in and out arguments to the option list */
+	gmtmex_get_key_pos (key, n_keys, head, def);	/* Determine if we must add the primary in and out arguments to the option list */
 	for (direction = GMT_IN; direction <= GMT_OUT; direction++) {
 		if (def[direction] == GMT_MEX_EXPLICIT) continue;	/* Source or destination was set explicitly; skip */
 		/* Must add the primary input or output from prhs[0] or plhs[0] */
-		(void)get_arg_dir (key[def[direction]][0], key, n_keys, &data_type, &geometry);		/* Get info about the data set */
+		(void)gmtmex_get_arg_dir (key[def[direction]][0], key, n_keys, &data_type, &geometry);		/* Get info about the data set */
 		ptr = (direction == GMT_IN) ? prhs[lr_pos[direction]] : lrhs[lr_pos[direction]];	/* Pick the next left or right side pointer */
 		/* Register a Matlab/Octave entity as a source or destination */
 		if ((ID = GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, ptr, NULL)) == GMTAPI_NOTSET) {
@@ -487,10 +487,10 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		
 	for (opt = *head; opt; opt = opt->next) {	/* Loop over the module options given */
 		/* Determine if this option as a $ in its argument and if so return its position in pos; return -1 otherwise */
-		if ((pos = get_arg_pos (opt->arg)) == -1) continue;	/* No $ argument found or it is part of a text string */
+		if ((pos = gmtmex_get_arg_pos (opt->arg)) == -1) continue;	/* No $ argument found or it is part of a text string */
 		
 		/* Determine several things about this option, such as direction, data type, method, and geometry */
-		direction == get_arg_dir (opt->option, key, n_keys, &data_type, &geometry);
+		direction == gmtmex_get_arg_dir (opt->option, key, n_keys, &data_type, &geometry);
 		ptr = (direction == GMT_IN) ? prhs[lr_pos[direction]] : lrhs[lr_pos[direction]];	/* Pick the next left or right side pointer */
 		/* Register a Matlab/Octave entity as a source or destination */
 		if ((ID = GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, ptr, NULL)) == GMTAPI_NOTSET) {
@@ -502,10 +502,10 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		lr_pos[direction]++;		/* Advance counter for next time */
 		
 		/* Replace the option argument with the embedded file */
-		opt->arg[pos] = '\0';		/* Chop off the stuff starting at the $ sign */
+		opt->arg[pos] = '\0';	/* Chop off the stuff starting at the $ sign */
 		sprintf (buffer, "%s%s", opt->arg, name);	/* Make a new option argument that replaces the $ with name */
-		opt->arg[pos] = '$';		/* Restore the $ sign in the old argument */
-		free ()opt->arg);	/* Free the old option argument */
+		opt->arg[pos] = '$';	/* Restore the $ sign in the old argument */
+		free (opt->arg);	/* Free the old option argument */
 		opt->arg = strdup (buffer);	/* Allocate and set the new argument with the embedded filename */
 	}
 	/* Here, a command line '-F200k -G$ $ -L$ -P' has been changed to '-F200k -G@GMTAPI@-000001 @GMTAPI@-000002 -L@GMTAPI@-000003 -P'
