@@ -5318,6 +5318,32 @@ GMT_LONG GMT_Complete_Options (struct GMT_CTRL *C, struct GMT_OPTION *options)
 
 /* Here is the new -B parser with all its sub-functions */
 
+#ifdef WIN32
+void gmt_handle_dosfile (struct GMT_CTRL *C, char *in, int this)
+{
+	/* Because (1) we use colons to indicate start/stop of text labels and
+	 * (2) under Windows, a colon can be part of a path (e.g., C:\dir\file)
+	 * we need to temporarily replace <drive>:\ with <drive>;\ so that this
+	 * path colon does not interfere with the rest of the parsing.  Once the
+	 * colon items have been parsed, we replace the ; back to : */
+	int i, len, other = 1 - this;
+	char mark[2] = {':', ';'};
+
+	if (!in)
+		return;	/* Nothing to work on */
+	if ((len = strlen (in)) < 2)
+		return;	/* Nothing to work on */
+	--len; /* Since this use of : cannot be at the end anyway and we need to check the next character */
+	for (i = 1; i < len; ++i) {
+		/* Start at position 1 since we need the position before.
+		 * Look for "X:/" pattern, with X = A-Z */
+		if (in[i] == mark[this] && (in[i-1] >= 'A' && in[i-1] <= 'Z')
+				&& (in[i+1] == '/' || in[i+1] == '\\'))
+			in[i] = mark[other];
+	}
+}
+#endif
+
 GMT_LONG gmt_strip_colonitem (struct GMT_CTRL *C, GMT_LONG axis, const char *in, const char *pattern, char *item, char *out) {
 	/* Removes the searched-for item from in, returns it in item, with the rest in out.
 	 * pattern is usually ":." for title, ":," for unit, and ":" for label.
@@ -5640,26 +5666,6 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *i
 	
 	return (0);
 }
-
-#ifdef _WIN32
-void gmt_handle_dosfile (struct GMT_CTRL *C, char *in, GMT_LONG this)
-{
-	/* Because (1) we use colons to indicate start/stop of text labels and
-	 * (2) under Windows, a colon can be part of a path (e.g., C:\dir\file)
-	 * we need to temporarily replace <drive>:\ with <drive>;\ so that this
-	 * path colon does not interfere with the rest of the parsing.  Once the
-	 * colon items have been parsed, we replace the ; back to : */
-	GMT_LONG i, len, other = 1 - this;
-	char mark[2] = {':', ';'};
-	
-	if (!in) return;	/* Nothing to work on */
-	if ((len = strlen (in)) < 2) return;	/* Nothing to work on */
-	len--;	/* Since this use of : cannot be at the end anyway and we need to check the next character */
-	for (i = 1; i < len; i++) {	/* Start at position 1 since we need the position before.  Look for "X:/" pattern, with X = A-Z */
-		if (in[i] == mark[this] && (in[i-1] >= 'A' && in[i-1] <= 'Z') && (in[i+1] == '/' || in[i+1] == '\\')) in[i] = mark[other];
-	}
-}
-#endif
 
 GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	/* gmt_parse_B_option scans an argument string and extract parameters that
