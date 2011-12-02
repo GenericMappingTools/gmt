@@ -849,7 +849,7 @@ GMT_LONG GMT_getfill (struct GMT_CTRL *C, char *line, struct GMT_FILL *fill)
 		/* See if fore- and background colors are given */
 
 		len = strlen (line);
-		for (i = 0, pos = -1; line[i] && pos == -1; i++) if (line[i] == ':' && i < len && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;
+		for (i = 0, pos = -1; line[i] && pos == -1; i++) if (line[i] == ':' && i < len && (line[i+1] == 'B' || line[i+1] == 'F')) pos = i;
 		pos++;
 
 		if (pos > 0 && line[pos]) {	/* Gave colors */
@@ -8778,7 +8778,8 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 			continue;
 		}
 #endif
-		if (buffer[0] == '#' || buffer[0] == '\n' || buffer[0] == '\r') continue;	/* Skip comments or blank lines */
+		GMT_chop (C, buffer);	/* Get rid of \n \r */
+		if (buffer[0] == '#' || buffer[0] == '\0') continue;	/* Skip comments or blank lines */
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y stuff */
 			head->n_required = atoi (&buffer[2]);
 			continue;
