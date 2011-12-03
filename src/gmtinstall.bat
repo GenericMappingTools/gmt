@@ -34,7 +34,7 @@ REM it is necessary to build it first under Cygwin (or operate on a provided sou
 
 REM
 REM STEP a: Specify your compiler (Tested with MS CL and Intel ICL)
-SET CC=CL
+SET CC=ICL
 
 REM
 REM STEP b: Specify the "Bitage" and if building normal or debug version
@@ -54,6 +54,7 @@ REM STEP h must have been set to "yes" (Default)
 
 IF  "%2%" == "" (
 SET NETCDF_DIR=C:\progs_cygw\netcdf-3.6.3
+rem SET NETCDF_DIR=C:\programs\compa_libs\netcdf-4.1.2b\compileds\VC10_%BITS% 
 SET GDAL_DIR=C:\programs\GDALtrunk\gdal\compileds\VC10_%BITS%\
 ) ELSE (
 SET NETCDF_DIR=%1%
@@ -82,6 +83,7 @@ REM
 SET INCLUDE=%INCLUDE%;%NETCDF_DIR%\INCLUDE
 SET LIB=%LIB%;%NETCDF_DIR%\LIB
 SET lib_netcdf=libnetcdf_w%BITS%.lib
+rem SET lib_netcdf=libnetcdf.lib
 
 REM STEP  : Set the environment needed by GMT.  These are
 REM	    GMTHOME	Top dir of the GMT installation tree, e.g., C:\GMT
@@ -181,13 +183,13 @@ REM ----------------------------------------------------
 
 SET LDEBUG=
 IF  %DEBUG%=="yes" SET LDEBUG=/debug
-SET OPTIM=/O1 /DNDEBUG
+SET OPTIM=/O2 /DNDEBUG /MD /Ob2 /Zm1000
 IF  %DEBUG%=="yes" SET OPTIM=/Z7 /DDEBUG
 
 SET DLL_NETCDF=/DDLL_NETCDF
 SET TR=/DTRIANGLE_D
 
-SET COMPFLAGS=/W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0 /nologo
+SET COMPFLAGS=/W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_CRT_SECURE_NO_WARNINGS /D_SECURE_SCL=0 /nologo
 SET COPT=/I%cd% /DWIN32 %OPTIM% %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC% %TO_MATLAB% %COMPFLAGS% %COMPAT% %PCRE% %PCRE_INC% %VLD_INC% %USE_MEM_ALIGNED% /DWINBITAGE=%BITS%
 
 set LOPT=/nologo /dll /incremental:no %LDEBUG%
@@ -230,7 +232,7 @@ REM ----------------------------------- SUPPLEMENTS ----------------------------
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gshhs\gshhs.c
 REM %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gshhs\gshhs.c gshhs\gshhs_dp.c gshhs\gshhstograss.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% imgsrc\img2grd.c imgsrc\gmt_imgsubs.c
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% meca\nrutil.c meca\distaz.c meca\submeca.c meca\utilmeca.c 
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% meca\nrutil.c meca\utilmeca.c 
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% meca\psmeca.c meca\pspolar.c meca\psvelo.c meca\pscoupe.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% mgd77\mgd77.c mgd77\mgd77convert.c mgd77\mgd77info.c mgd77\mgd77list.c 
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% mgd77\mgd77path.c mgd77\mgd77manage.c mgd77\mgd77magref.c 
