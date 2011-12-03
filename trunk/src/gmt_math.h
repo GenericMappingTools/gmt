@@ -171,16 +171,8 @@ extern char *strdup(const char *s);
 EXTERN_MSC char *strdup(const char *s);
 #endif
 
-#if defined(strtod)
-/* Macro already takes care of strtod - probably from BSD */
-#elif defined(HAVE_STRTOD)
-#if defined(WIN32) && !defined(__MINGW32__)
-#pragma warning( disable : 4273 )	/* The annoying inconsistent dll linkage */
-#pragma warning( disable : 4706 )	/* assignment within conditional expression */
-#endif
-extern double strtod(const char *nptr, char **endptr);
-#else
-EXTERN_MSC double strtod(const char *nptr, char **endptr);
+#ifndef HAVE_STRTOD
+	EXTERN_MSC double strtod(const char *nptr, char **endptr);
 #endif
 
 /* On Dec Alpha OSF1 there is a sincos with different syntax.
