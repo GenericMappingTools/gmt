@@ -555,8 +555,6 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/*---------------------------- This is the mgd77manage main code ----------------------------*/
 
-	GMT_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));						/* MGD77+ uses GMT's Unix time epoch */
-	GMT_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
 	MGD77_Init (GMT, &In);			/* Initialize MGD77 Machinery */
 
 	/* Default e77_skip_mode will apply header and fix corrections if prefix is Y and set all data bits */

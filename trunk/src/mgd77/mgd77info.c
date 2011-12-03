@@ -279,9 +279,6 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (GMT_OK);
 	}
 
-	GMT_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));						/* MGD77+ uses GMT's Unix time epoch */
-	GMT_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
-	
 	/* Initialize MGD77 output order and other parameters*/
 	
 	MGD77_Init (GMT, &Out);		/* Initialize output MGD77 Machinery */

@@ -430,9 +430,6 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the mgd77magref main code ----------------------------*/
 
-	GMT_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));			/* MGD77+ uses GMT's Unix time epoch */
-	GMT_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
-
 	Ctrl->CM4->CM4_D.dst = calloc((size_t)(1), sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = GMT_IS_ABSTIME;	/* By default, time is in 4th input column */
 
