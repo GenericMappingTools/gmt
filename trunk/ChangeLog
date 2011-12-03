@@ -7,6 +7,9 @@
 				Added -Ginc[/colat][+] so if + is appended we get a
 				segment header with information about the pole for the circle.
 				Clarified that it is colatitude and not latitude we append.
+	* gmt_plot.c:		The mysterious trim_label function was called for both axes
+				even if only one had 2 levels of annotations.  Now check per
+				axes and document the function better.  This fixes the hovmuller test.
 
 2011-12-01	remko
 	* meca/pscoupe.c:	Added -Q option to suppress mechanism files

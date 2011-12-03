@@ -1714,26 +1714,31 @@ GMT_LONG gmt_set_do_seconds (struct GMT_CTRL *C, double inc)
 }
 
 void gmt_label_trim (char *label, GMT_LONG stage)
-{
+{	/* Used to shorten secondary annotations by eliminating the leading digits. E.g. if the
+	 * primary annotation is 30 degrees and the secondary is 30:05, 30:10, etc then we remove
+	 * the leading 1 (degrees) or 2 (degrees and minutes) part of the annotation.
+	 * This can only work if we are annotating with the ddd:mm:sss[.xx] format as for ddd.xxxxx
+	 * we cannot do so.  So if primary is 30:20 and secondary is 30:20:02, 30:20:04 etc we
+	 * end upremoving the leading 30:20 (stage = 2).
+	 */
 	GMT_LONG i;
 	if (!label) return;	/* No label given */
-	if (stage) {	/* Must remove leading stuff for 2ndary annotations */
-		for (i = 0; stage && label[i]; i++) 
-			/* (unsigned char) instead of (int) so that on Win & debug we don't rise and assert failure when checking the degree symb JL */
-			if (!isdigit((unsigned char)label[i])) stage--;
-		while (label[i]) 
-			label[stage++] = label[i++];	/* Chop of beginning */
-		label[stage] = '\0';
-		i = strlen (label) - 1;
-		if (strchr ("WESN", label[i])) label[i] = '\0';
-	}
+	if (!stage) return;	/* Not asked to do anything */
+	/* Must remove leading stuff (e.g., ddd<degree_sign>) for 2ndary annotations */
+	for (i = 0; stage && label[i]; i++) 
+		if (!strchr ("0123456789-+", label[i])) stage--;
+	while (label[i]) 
+		label[stage++] = label[i++];	/* Copy over the later part of the label to the beginning */
+	label[stage] = '\0';
+	i = strlen (label) - 1;
+	if (strchr ("WESN", label[i])) label[i] = '\0';	/* Strip off the trailing W|E|S|N, if found */
 }
 
 void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
 	GMT_LONG i, k, nx, ny, form, remove[2] = {0,0};
 	GMT_LONG do_minutes, do_seconds, done_Greenwich, done_Dateline;
-	GMT_LONG full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual, annot, is_world_save, lon_wrap_save;
+	GMT_LONG full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual[2], is_dual, annot, is_world_save, lon_wrap_save;
 	char label[GMT_TEXT_LEN256];
 	char **label_c = NULL;
 	double *val = NULL, dx[2], dy[2], w2, s2, del;
@@ -1784,7 +1789,9 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 
 	if (dx[0] <= 0.0 && dy[0] <= 0.0) return;
 
-	dual = (dx[1] > 0.0 || dy[1] > 0.0);
+	dual[GMT_X] = (dx[1] > 0.0);
+	dual[GMT_Y] = (dy[1] > 0.0);
+	is_dual = (dual[GMT_X] | dual[GMT_Y]);
 
 	PSL_comment (P, "Map annotations\n");
 
@@ -1799,11 +1806,10 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 	w2 = (dx[1] > 0.0) ? floor (w / dx[1]) * dx[1] : 0.0;
 	s2 = (dy[1] > 0.0) ? floor (s / dy[1]) * dy[1] : 0.0;
 
-	if (dual) {
-		remove[0] = (dx[0] < (1.0/60.0)) ? 2 : 1;
-		remove[1] = (dy[0] < (1.0/60.0)) ? 2 : 1;
-	}
-	for (k = 0; k < 1 + dual; k++) {
+	if (dual[GMT_X]) remove[GMT_X] = (dx[0] < (1.0/60.0)) ? 2 : 1;
+	if (dual[GMT_Y]) remove[GMT_Y] = (dy[0] < (1.0/60.0)) ? 2 : 1;
+
+	for (k = 0; k < 1 + is_dual; k++) {
 		if (dx[k] > 0.0 && (GMT_x_is_lon (C, GMT_IN) || C->current.proj.projection == GMT_POLAR)) {	/* Annotate the S and N boundaries */
 			done_Greenwich = done_Dateline = FALSE;
 			do_minutes = (fabs (fmod (dx[k], 1.0)) > GMT_SMALL);
@@ -1828,12 +1834,12 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 				 */
 
 				annot = annot_0_and_360 || !((done_Greenwich && GMT_IS_ZERO (val[i] - 360.0)) || (done_Dateline && GMT_IS_ZERO (val[i] - 180.0)));
-				if (dual && k == 0) {
+				if (dual[GMT_X] && k == 0) {
 					del = fmod (val[i] - w2, dx[1]);
 					if (GMT_IS_ZERO (del) || GMT_IS_ZERO (del - dx[1]))
 						annot = FALSE;
 					else
-						gmt_label_trim (label, remove[0]);
+						gmt_label_trim (label, remove[GMT_X]);
 				}
 				gmt_map_symbol_ns (C, P, val[i], label, s, n, annot, k, form);
 			}
@@ -1880,12 +1886,12 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 				else
 					GMT_get_annot_label (C, tval[i], label, do_minutes, do_seconds, lonlat, is_world_save);
 				annot = TRUE;
-				if (dual && k == 0) {
+				if (dual[GMT_Y] && k == 0) {
 					del = fmod (val[i] - s2, dy[1]);
 					if (GMT_IS_ZERO (del) || GMT_IS_ZERO (del - dy[1]))
 						annot = FALSE;
 					else
-						gmt_label_trim (label, remove[1]);
+						gmt_label_trim (label, remove[GMT_Y]);
 				}
 				gmt_map_symbol_ew (C, P, val[i], label, w, e, annot, k, form);
 			}
