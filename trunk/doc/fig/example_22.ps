@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 13 2011 16:10:43) [64-bit] [C4] Document from GMT_pscoast
+%%Title: GMT v5.0.0_r9428:9430M [64-bit] Document from GMT_pscoast
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 13 16:54:02 2011
+%%CreationDate: Fri Dec  2 12:48:44 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -63,6 +63,8 @@
 /Sp {N 3 -1 roll 0 360 arc F}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 /SV {0 exch M 0 D D D D D 0 D FO}!
@@ -143,7 +145,7 @@
 /oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
 /udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -183,6 +185,7 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -4857,6 +4860,7 @@ FO
 32 -6 22 -14 16 29 23 -17 24 4 -7 -14 29 -49 -27 18 -2 -7 -70 25 -10 16 -16 -4 -23 10 8 9 14 7244 4981 SP
 -66 24 17 10 51 -11 3 6809 5124 SP
 17 22 12 -9 -9 -11 3 7220 4964 SP
+-32 11 16 -1 2 7136 5044 SP
 -23 16 37 -10 2 7482 4661 SP
 3 -7 -13 14 10 -6 3 7039 5101 SP
 {0.678 0.847 0.902 C} FS
@@ -4991,6 +4995,7 @@ FO
 32 -6 22 -14 16 29 23 -17 24 4 -7 -14 29 -49 -27 18 -2 -7 -70 25 -10 16 -16 -4 -23 10 8 9 14 7244 4981 SP
 -66 24 17 10 51 -11 3 6809 5124 SP
 17 22 12 -9 -9 -11 3 7220 4964 SP
+-32 11 16 -1 2 7136 5044 SP
 -23 16 37 -10 2 7482 4661 SP
 3 -7 -13 14 10 -6 3 7039 5101 SP
 {0.678 0.847 0.902 C} FS
@@ -16636,8 +16641,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -R0/1/0/1 -Jx1i -O -K -N -S @GMTAPI@-000001
-%%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
+%%GMT:  1.05556 -1.88697 12p,Times-Italic,black BLB GMT guru @@ GMTbox -R0/7/0/1.7 -Jx1i -O -K -N -S @GMTAPI@-000001
+%%PROJ: xy 0.00000000 7.00000000 0.00000000 1.70000000 0.000 7.000 0.000 1.700 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -16649,6 +16654,7 @@ O1
 60 4187 -1023 Sc
 {0 0 1 C} FS
 60 6987 -1023 Sc
+FQ
 36 1387 -1298 Sc
 48 2587 -1298 Sc
 60 3787 -1298 Sc
@@ -16662,8 +16668,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -R0/1/0/1 -Jx1i -O -K -N -F+f+j @GMTAPI@-000002
-%%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
+%%GMT:   -R0/7/0/1.7 -Jx1i -O -K -N -F+f+j @GMTAPI@-000002
+%%PROJ: xy 0.00000000 7.00000000 0.00000000 1.70000000 0.000 7.000 0.000 1.700 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -16691,8 +16697,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -R0/1/0/1 -Jx1i -O -K -N -M -F+f+a+j @GMTAPI@-000003
-%%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
+%%GMT:   ÇÁBÙ -R0/7/0/1.7 -Jx1i -O -K -N -M -F+f+a+j @GMTAPI@-000003
+%%PROJ: xy 0.00000000 7.00000000 0.00000000 1.70000000 0.000 7.000 0.000 1.700 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
