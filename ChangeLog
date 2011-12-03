@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-12-02	pwessel
+	* project.c:		Fixed trouble with -G; this also fixes test cases.
+				Added -Ginc[/colat][+] so if + is appended we get a
+				segment header with information about the pole for the circle.
+				Clarified that it is colatitude and not latitude we append.
+
 2011-12-01	remko
 	* meca/pscoupe.c:	Added -Q option to suppress mechanism files
 				Incorporated distaz.c and submeca.c as they were unique to pscoupe.

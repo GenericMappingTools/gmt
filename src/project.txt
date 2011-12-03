@@ -4,7 +4,7 @@
 project \- Project table data onto lines or great circles, generate tracks, or translate coordinates
 .SH SYNOPSIS
 BD(project) [ IT(table) ] OPT(C)IT(cx)/IT(cy) [ OPT(A)IT(azimuth) ] 
-[ OPT(E)IT(bx)/IT(by) ] [ OPT(F)IT(flags) ] [ OPT(G)IT(dist)[/IT(lat)] ]
+[ OPT(E)IT(bx)/IT(by) ] [ OPT(F)IT(flags) ] [ OPT(G)IT(dist)[/IT(colat)][BD(+)] ]
 [ OPT(L)[BD(w)][IT(l_min)/IT(l_max)] ] [ OPT(N) ] [ OPT(Q) ] [ OPT(S) ] 
 [ OPT(T)IT(px)/IT(py) ] [ GMT_V_OPT ] [ OPT(W)IT(w_min)/IT(w_max) ]
 [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
@@ -66,6 +66,7 @@ lower case for the xyzpqrs letters in OPT(flags).
 OPT(C)IT(cx)/IT(cy)
 IT(cx/cy) sets the origin of the projection, in Definition 1 or 2.  If Definition 3 is used (OPT(T)), then
 IT(cx/cy) are the coordinates of a point through which the oblique zero meridian (IT(p) = 0) should pass.
+The IT(cx/cy) is not required to be 90 degrees from the pole.
 .SH OPTIONAL ARGUMENTS
 #include "explain_intables.txt"
 .TP
@@ -82,10 +83,12 @@ to IT(xyzpqrs) [Default].  If both input and output are using ASCII format then 
 textstring(s).
 If the OPT(G) option is selected, the output will be IT(rsp).
 .TP
-OPT(G)IT(dist)[/IT(lat)]
+OPT(G)IT(dist)[/IT(colat)]
 Generate mode.  No input is read.  Create (IT(r), IT(s), IT(p)) output points every IT(dist) units of IT(p).  See 
-OPT(Q) option. Alternatively, append BD(/)IT(lat) for a small circle that goes through the center (OPT(C)) and end points (OPT(E));
-requires OPT(C) and OPT(E).  Note, the center and end point cannot be farther apart than 2*|IT(lat)|.
+OPT(Q) option. Alternatively, append BD(/)IT(colat) for a small circle instead [Default is a colatitude of 90, i.e., a great circle].
+Use OPT(C) and OPT(E) to generate a circle that goes through the center and end point.
+Note, in this case the center and end point cannot be farther apart than 2*|IT(colat)|. Finally, if you append BD(+) the we
+will report the position of the pole as part of the segment header [no header].
 .TP
 OPT(L)[BD(w)][IT(l_min)/IT(l_max)]
 Length controls.  Project only those points whose IT(p) coordinate is within IT(l_min) < IT(p) < IT(l_max).  
@@ -125,6 +128,15 @@ To generate points every 10km along a great circle from 10N,50W to 30N,10W:
 project -C-50/10 -E-10/30 -G10 -Q > great_circle_points.xyp
 .sp
 (Note that great_circle_points.xyp could now be used as input for BD(grdtrack), etc. ).
+.sp
+To generate points every 10km along a small circle of colatitude 60 from 10N,50W to 30N,10W:
+.sp
+project -C-50/10 -E-10/30 -G10/60 -Q > small_circle_points.xyp
+.sp
+To create a partial small circle of colatitude 80 about a pole at 40E,85N, with extent of 45 degrees
+to either side of the meridian defined by the great circle from the pole to a point 15E,15N, try
+.sp
+project -C15/15 -T40/85 -G1/80 -L-45/45 > some_circle.xyp
 .sp
 To project the shiptrack gravity, magnetics, and bathymetry in c2610.xygmb along a great circle through an origin at 30S, 30W, the great circle having 
 an azimuth of N20W at the origin, keeping only the data from NE of the profile and within +/- 500 km of the origin, run:

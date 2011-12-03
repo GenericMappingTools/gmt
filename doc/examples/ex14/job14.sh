@@ -34,7 +34,7 @@ psxy -R -J mean.xyz -Ss0.05i -Gblack -O -K >> $ps
 # Fit bicubic trend to data and compare to gridded surface
 
 grdtrend data.nc -N10 -Ttrend.nc
-project -C0/0 -E7/7 -G0.1 > track
+project -C0/0 -E7/7 -G0.1 -N > track
 grdcontour trend.nc -J -B2f1wSne -C25 -A50 -Glct/cb -S4 -O -K -X3.25i >> $ps
 psxy -R -J track -Wthick,. -O -K >> $ps
 
