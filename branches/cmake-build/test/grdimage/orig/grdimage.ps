@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 13 2011 16:10:43) [64-bit] [C4] Document from GMT_grdimage
+%%Title: GMT v5.0.0_r9413 [64-bit] Document from GMT_grdimage
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 13 16:13:48 2011
+%%CreationDate: Sun Dec  4 16:36:36 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -63,6 +63,8 @@
 /Sp {N 3 -1 roll 0 360 arc F}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 /SV {0 exch M 0 D D D D D 0 D FO}!
@@ -1158,7 +1160,7 @@ O0
 1890 0 TM
 
 % PostScript produced by:
-%%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R0/2/0/2 -X4c
+%%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R0/2/0/2 -X4c -nl
 %%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1174,12 +1176,12 @@ V N 0 0 T 1200 1200 scale [/Indexed /DeviceRGB 12 <
 << /ImageType 1 /Decode [0 15] /Width 50 /Height 50 /BitsPerComponent 4
    /ImageMatrix [50 0 0 -50 0 50] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
 >> image
-J,fQm&;Z-1,8lH]KL.+eWb+%)cKB:9+VL2:Wh<0Z1a3YCLI<=`8@2h`"+nAJ0Xtp_,85sRj"\)<H<DDXaX0o1jJkErL`)q"L
-od%Z*JBCqE8n5kLIFn6J,fit8e"@gQ"dTM]b(hnWDs!W@231,9W(s,()j;[B1fM]XYNNQ:>9?hen]:dNCN;F[nl0'aXUo#.&
-:7IfL_AMHT$spjqq?FelRurAF[$Po\NkYY=99FbJh?GTVuPj<_G?BT3k:WY56n=ULCIDBl@%C%`\OM]\I:KpqlJMM9fdH8Y.
-h]+[DRTH+8h$A"t@7j7<-WB/>V!mUj#!NWttg`*N0jhJO@6^ZjYPpNpg#a*#8U;19FuQfI:8].C9&jX)Y`^?;_:e-tM%E(Y6
-V\r]9*#J_rZXOIh9JpR=%cZB0[6]X>lrO-SP3j1p>ZY9'O&L2>M6>3?b(G(Z4#Xh."C'ao$0"c6-_6Jr=%7cGb#p7!B<*2O+
-Os1>Ha`;32rl"A<;Z99!bbYk>En%9*]oU;;~>
+J,fQm&;Z-1,8lH]KL.+eWb+%)cKB:9+VL2:Wh<0Z1a3YCLI<=`8@2h`"+nAJ0Xtp_,85sRj"\)<H<DDXaX0o1jJkErO\@%,0
+E_q5#)%sZE8n5k-?tEf'0lmQ7ZJ[gd`SrG2*Rb&WRYbVOsMlRGGl]8<D#+kB1fJ\m.QoSMVW6X=)A]L%&,g6O@uBj(r]DO5+
+CK/;_0d!D1SA*Yd7"#rc*Raj(>e."Qp&Y=Bd9,HI[&LC=$XqG5X#<^S/8?24#=@mnp<tm&q3Ue^II%Z<hYCL#-SqM9+X8\P,
+I[4XK4KnbLtY?_`Y,AasK+^2GT\aY*<+4k@)h;=SD.Rn\%+e%jZ+[b]7NYBRCcHhTWCk7)V&\F+F<s1$?iW5ZQ4A#AW@:eRV
+N]EsN:loXW-/H<Gf>NE0/%o^XE4QJmkpce._7fC%SlYR<JO5o_eR;eY.j>lah!<YWMKOk/!kp1*I_/P5C+2Ld,/7q>3ZcoUE
+&(Fet`U[h$&&VpGV%6#>FKZ<KCYAg~>
 U
 PSL_cliprestore
 2 setlinecap
@@ -1258,10 +1260,65 @@ def
 0 A
 FQ
 O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R0/2/0/2 -O -K
+%%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+1200 0 D
+0 1200 D
+-1200 0 D
+PSL_eoclip N
+12 W
+60 0 M
+-60 300 D
+S
+180 0 M
+-180 900 D
+S
+300 0 M
+-240 1200 D
+S
+420 0 M
+-240 1200 D
+S
+540 0 M
+-240 1200 D
+S
+660 0 M
+-240 1200 D
+S
+780 0 M
+-240 1200 D
+S
+900 0 M
+-240 1200 D
+S
+1020 0 M
+-240 1200 D
+S
+1140 0 M
+-240 1200 D
+S
+1200 300 M
+-180 900 D
+S
+1200 900 M
+-60 300 D
+S
+PSL_cliprestore
+0 A
+FQ
+O0
 1890 0 TM
 
 % PostScript produced by:
-%%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-0.5/1.5/0/2 -X4c
+%%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-0.5/1.5/0/2 -X4c -nl
 %%PROJ: xy -0.50000000 1.50000000 0.00000000 2.00000000 -0.500 1.500 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1277,12 +1334,12 @@ V N 300 0 T 1200 1200 scale [/Indexed /DeviceRGB 12 <
 << /ImageType 1 /Decode [0 15] /Width 50 /Height 50 /BitsPerComponent 4
    /ImageMatrix [50 0 0 -50 0 50] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
 >> image
-J,fQm&;Z-1,8lH]KL.+eWb+%)cKB:9+VL2:Wh<0Z1a3YCLI<=`8@2h`"+nAJ0Xtp_,85sRj"\)<H<DDXaX0o1jJkErL`)q"L
-od%Z*JBCqE8n5kLIFn6J,fit8e"@gQ"dTM]b(hnWDs!W@231,9W(s,()j;[B1fM]XYNNQ:>9?hen]:dNCN;F[nl0'aXUo#.&
-:7IfL_AMHT$spjqq?FelRurAF[$Po\NkYY=99FbJh?GTVuPj<_G?BT3k:WY56n=ULCIDBl@%C%`\OM]\I:KpqlJMM9fdH8Y.
-h]+[DRTH+8h$A"t@7j7<-WB/>V!mUj#!NWttg`*N0jhJO@6^ZjYPpNpg#a*#8U;19FuQfI:8].C9&jX)Y`^?;_:e-tM%E(Y6
-V\r]9*#J_rZXOIh9JpR=%cZB0[6]X>lrO-SP3j1p>ZY9'O&L2>M6>3?b(G(Z4#Xh."C'ao$0"c6-_6Jr=%7cGb#p7!B<*2O+
-Os1>Ha`;32rl"A<;Z99!bbYk>En%9*]oU;;~>
+J,fQm&;Z-1,8lH]KL.+eWb+%)cKB:9+VL2:Wh<0Z1a3YCLI<=`8@2h`"+nAJ0Xtp_,85sRj"\)<H<DDXaX0o1jJkErO\@%,0
+E_q5#)%sZE8n5k-?tEf'0lmQ7ZJ[gd`SrG2*Rb&WRYbVOsMlRGGl]8<D#+kB1fJ\m.QoSMVW6X=)A]L%&,g6O@uBj(r]DO5+
+CK/;_0d!D1SA*Yd7"#rc*Raj(>e."Qp&Y=Bd9,HI[&LC=$XqG5X#<^S/8?24#=@mnp<tm&q3Ue^II%Z<hYCL#-SqM9+X8\P,
+I[4XK4KnbLtY?_`Y,AasK+^2GT\aY*<+4k@)h;=SD.Rn\%+e%jZ+[b]7NYBRCcHhTWCk7)V&\F+F<s1$?iW5ZQ4A#AW@:eRV
+N]EsN:loXW-/H<Gf>NE0/%o^XE4QJmkpce._7fC%SlYR<JO5o_eR;eY.j>lah!<YWMKOk/!kp1*I_/P5C+2Ld,/7q>3ZcoUE
+&(Fet`U[h$&&VpGV%6#>FKZ<KCYAg~>
 U
 PSL_cliprestore
 2 setlinecap
@@ -1356,10 +1413,59 @@ def
 0 A
 FQ
 O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R-0.5/1.5/0/2 -O -K
+%%PROJ: xy -0.50000000 1.50000000 0.00000000 2.00000000 -0.500 1.500 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+1200 0 D
+0 1200 D
+-1200 0 D
+PSL_eoclip N
+12 W
+360 0 M
+-60 300 D
+S
+480 0 M
+-180 900 D
+S
+600 0 M
+-240 1200 D
+S
+720 0 M
+-240 1200 D
+S
+840 0 M
+-240 1200 D
+S
+960 0 M
+-240 1200 D
+S
+1080 0 M
+-240 1200 D
+S
+1200 0 M
+-240 1200 D
+S
+1200 600 M
+-120 600 D
+S
+1200 1200 M
+0 0 D
+P S
+PSL_cliprestore
+0 A
+FQ
+O0
 1890 0 TM
 
 % PostScript produced by:
-%%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-1/3/-1/3 -X4c
+%%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-1/3/-1/3 -X4c -nl
 %%PROJ: xy -1.00000000 3.00000000 -1.00000000 3.00000000 -1.000 3.000 -1.000 3.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1375,9 +1481,9 @@ V N 300 300 T 600 600 scale [/Indexed /DeviceRGB 12 <
 << /ImageType 1 /Decode [0 15] /Width 25 /Height 25 /BitsPerComponent 4
    /ImageMatrix [25 0 0 -25 0 25] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
 >> image
-J,hn[+dgW6<APZA#aEJ^!<[q9+U3#)+r_%)#f_uO1f>n8J]=I>F1crC&eU)^7;4#M+X`Msjf+Ym7StWZQ(]UZ9Y:E>Je9@d\
-`a*E6(u/X.CFg9#mQ&\WKcTt*YSpY7O1hjX_'p>Xs,CDRfmoG]9l3JZH4S6d5IBGjgOD:,'>2#g*lQN\g$`8TM?saMp4.':o
-iPiR#"WpQ\Me:cPYbtC<I=6AYrTg?+t544.m]=~>
+J,hn[+dgW6<APZA#aEJ^!<Wpn#`s[!i=QNSLnZU[1fc7>Ld[u"BY["],8nGB`cJdu+V0dZ9!Z!BAmPKE5mW-AZm?9?S'GS$a
+n5W731WnmW0H#Q"U'HE+]QU+%LWMp_We=mgl2nMON/Ts#h4_n(/:so&rBSn^M8s:-?e]L*ec\Ib>EG_71SmE^"oYHqqY;H=G
+:0tom2bZ(s?#_/C@^O7`-InjK)JG?,C)g4.m]=~>
 U
 PSL_cliprestore
 2 setlinecap
@@ -1473,6 +1579,61 @@ def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1200 T
 0 setlinecap
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R-1/3/-1/3 -O -K
+%%PROJ: xy -1.00000000 3.00000000 -1.00000000 3.00000000 -1.000 3.000 -1.000 3.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+1200 0 D
+0 1200 D
+-1200 0 D
+PSL_eoclip N
+12 W
+330 300 M
+-30 150 D
+S
+390 300 M
+-90 450 D
+S
+450 300 M
+-120 600 D
+S
+510 300 M
+-120 600 D
+S
+570 300 M
+-120 600 D
+S
+630 300 M
+-120 600 D
+S
+690 300 M
+-120 600 D
+S
+750 300 M
+-120 600 D
+S
+810 300 M
+-120 600 D
+S
+870 300 M
+-120 600 D
+S
+900 450 M
+-90 450 D
+S
+900 750 M
+-30 150 D
+S
+PSL_cliprestore
 0 A
 FQ
 O0
@@ -2722,7 +2883,7 @@ O0
 1890 0 TM
 
 % PostScript produced by:
-%%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R0/2/0/2 -X4c
+%%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R0/2/0/2 -X4c -nl
 %%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2734,22 +2895,21 @@ clipsave
 -1200 0 D
 PSL_eoclip N
 V N -300 -300 T 1800 1800 scale [/Indexed /DeviceRGB 14 <
-0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31000A00FFFFFFFF6C00FFCE00FF000000>] setcolorspace
+0A00FF0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31006C00FFFFFFFFCE00FF000000>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 75 /Height 75 /BitsPerComponent 4
    /ImageMatrix [75 0 0 -75 0 75] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
 >> image
-J,g]g3"SOf+qY+#@ko;dW`:PeN5p"Mi=Ql"`a_T)d],F&JcK3JLfi(G&;`gcnT70:2'%`JTQ2028k:b%&L$Z]S5NKBN6EV(#
-V=PF3M"*IoB=-pKe\.pVSXc5S?#8Z94M\Dg@:RcR8I^A;BZet=I%?F/%]A=^I*QH+V:S`QHj*=g1s9KjgCM+\,\-XQs;Po=1
-hRD<m117Pu,:fm[.e'k'q0d>Hek_*_u*Yb>W>f`TqRDbf?`^Pq"nfGnc0;Ztm)8G>5#sfX8&b7/(1/g$NtVrEU>@37gc3\h%
-I@]%tj'5T7p2,C?ZW@lD"/h\O8RhG5sf^=PSfWSLu8\9gVL':@3nZ.[?e(I.:THdb+6hfI/cJh*>Wp+\'jo]DL\CS(?e98i*
-.ZDqFF`^):_E<a2i'Hl_PE15Ge[`mMI!4Q]9I-d22n_Eq"O%RM-3t7E''uVhBVW1,7j*n^3EFYg07kK(S)+3qhD]d"1!Zo];
-NW`tu5L!-TcTmHu4V^R#A4I(aP%5!r9+\H/cG4CX^AZ-YbV(Q];X<j'S^F7@%*bmOKSrS<1V4Gp;:Did:JnKM50ictiu^lj]
->!T-Z6]N>44,VX7o8`WO[Zf84XbMK;]Hl<5d,5`5Z=k^8LdEa'[]fP<A_5_e1]':37P1NaUQMfSN0a%eGWf+=&]V^8Pud9!F
-\h^*>mm.C?:LI:R59D@nnpN,3mW3NN#Okp.UZa>>aLC2+\NFb:cjm9rhIBPss)'5Be,nG22c8j)s4"V;6K(<Mf:kTs"ihFP-
-384`B(1)hEUp'NL!%1g"<@Dc7JfVS6M?mB7Yl$f3[&iRYtt+hq,2a_tG7`FG(b[G7N`jY[3l9U".HfmR2;=u2W))1Cb71b.(
-%IqRHOl[`_0hJE!Pq$oDZ4o-20OBG[YA#SLt[A0cMqNeOe:l\HHRVOm#X,A8q@2#V4%m=2Zb-?d8[Q41:!KkH65ol9Z]=!%g
--`bhmU.2XU?Gji^)&p<X]67S8A5P,Q[./NV$WCNIP#R_;]Or7Ec`BV<MK?DqLLKa(]F'N,L1`*eig`55dIk1s9^)13KMC!W#
-RC~>
+J,g]g0F1&j+qY+#@ko2=MH)-oN5fqLh%5B1VGetCjE<MUJ\`JULf?,M&;`h"d>6:u4Woi:+L$)a/fP=W`8\%Hb\g]+<NbI?3
+@*<S3L*AdZ0#UTQFih]VNP)pU3.uXdj_B@HL5,aK*7kZZ(s9#<f'7@&U;`=4'Sje.PN@^N+Z]G=m[S`=sD^>Xk.@84/e%YAh
+)LCeuN7lgo=C[)6LN:&0kZ%?1Ac5Ac!JfaO]%HgQd-eKu;be2nSJW+d-a)0QSZ_ekJ,gcK18W%6$eQW'I;NC98_'=kDl,],h
+I1VafHAl!)Df18Dae;>2r*?M0`$fl4C5SrG+ATXZeK]Xiie;4?$J0::OEVq8`YAa\0.eh?135-!Aep,6i9psm.(CHb`^cm/,
+*2)"8Vf0QUWkl!:k466W2.VYDs3H#:qU:0?nbiC^er'KPX%YRO9]<Du7lT@pi9&i!nUcfU6;/C.;\o0u\'tWiR>oZBf8XU+'
+mqaW_4qNqX$:f,Q$Of?U6mi/X;R@MDZYa49N_?TuT.iGb'EKs]ZSPB.8i"no/k9pB=X-H)PKr7,o<aDp33i\\d*K!CCD'H"e
+589Rd2Ro/;,N:<G>H^O*qI;_eGCmmnBAcQb]%,?G>j]QTaa^oV)L=ueGQcUeSqoj1eLU*fiZAHSNSgZ'4"$jd^4);(WS0tJO
+[]09MZMXnYLpacr=;?*mYU%1Lj=K%?j=cDP_n^e[=LG10aE^iD`m_V9<"H26B5Ce<`$g=&*\9f3I.<Q#-_-(=fI'>3pt?A7+
+uJMh,(ko`9SNj^na1>BhugLLE.h(Ptt4mD3l#QejTF<gV?(O562b`Hn;I-1R1)eb2unhK_:JK],m")'kL#VCe9I%RtMsiYX8
+(S7c"80;5jjG(4>kFM<j_,C3WDjlEt4>)b8jP\7#W0\`HulWU/eX(4n<1/D=3^:@P2XkqHAm9:XD2)2^k.CE?J4HPJtS$pkB
+B:=-k:?n?&!N0j_i=JKJg8=JWnN5nO`pi[D,)_Ng#Q~>
 U
 PSL_cliprestore
 2 setlinecap
@@ -2828,10 +2988,65 @@ def
 0 A
 FQ
 O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R0/2/0/2 -O -K
+%%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+1200 0 D
+0 1200 D
+-1200 0 D
+PSL_eoclip N
+12 W
+60 0 M
+-60 300 D
+S
+180 0 M
+-180 900 D
+S
+300 0 M
+-240 1200 D
+S
+420 0 M
+-240 1200 D
+S
+540 0 M
+-240 1200 D
+S
+660 0 M
+-240 1200 D
+S
+780 0 M
+-240 1200 D
+S
+900 0 M
+-240 1200 D
+S
+1020 0 M
+-240 1200 D
+S
+1140 0 M
+-240 1200 D
+S
+1200 300 M
+-180 900 D
+S
+1200 900 M
+-60 300 D
+S
+PSL_cliprestore
+0 A
+FQ
+O0
 1890 0 TM
 
 % PostScript produced by:
-%%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-0.5/1.5/0/2 -X4c
+%%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-0.5/1.5/0/2 -X4c -nl
 %%PROJ: xy -0.50000000 1.50000000 0.00000000 2.00000000 -0.500 1.500 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2843,22 +3058,21 @@ clipsave
 -1200 0 D
 PSL_eoclip N
 V N 0 -300 T 1800 1800 scale [/Indexed /DeviceRGB 14 <
-0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31000A00FFFFFFFF6C00FFCE00FF000000>] setcolorspace
+0A00FF0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31006C00FFFFFFFFCE00FF000000>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 75 /Height 75 /BitsPerComponent 4
    /ImageMatrix [75 0 0 -75 0 75] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
 >> image
-J,g]g3"SOf+qY+#@ko;dW`:PeN5p"Mi=Ql"`a_T)d],F&JcK3JLfi(G&;`gcnT70:2'%`JTQ2028k:b%&L$Z]S5NKBN6EV(#
-V=PF3M"*IoB=-pKe\.pVSXc5S?#8Z94M\Dg@:RcR8I^A;BZet=I%?F/%]A=^I*QH+V:S`QHj*=g1s9KjgCM+\,\-XQs;Po=1
-hRD<m117Pu,:fm[.e'k'q0d>Hek_*_u*Yb>W>f`TqRDbf?`^Pq"nfGnc0;Ztm)8G>5#sfX8&b7/(1/g$NtVrEU>@37gc3\h%
-I@]%tj'5T7p2,C?ZW@lD"/h\O8RhG5sf^=PSfWSLu8\9gVL':@3nZ.[?e(I.:THdb+6hfI/cJh*>Wp+\'jo]DL\CS(?e98i*
-.ZDqFF`^):_E<a2i'Hl_PE15Ge[`mMI!4Q]9I-d22n_Eq"O%RM-3t7E''uVhBVW1,7j*n^3EFYg07kK(S)+3qhD]d"1!Zo];
-NW`tu5L!-TcTmHu4V^R#A4I(aP%5!r9+\H/cG4CX^AZ-YbV(Q];X<j'S^F7@%*bmOKSrS<1V4Gp;:Did:JnKM50ictiu^lj]
->!T-Z6]N>44,VX7o8`WO[Zf84XbMK;]Hl<5d,5`5Z=k^8LdEa'[]fP<A_5_e1]':37P1NaUQMfSN0a%eGWf+=&]V^8Pud9!F
-\h^*>mm.C?:LI:R59D@nnpN,3mW3NN#Okp.UZa>>aLC2+\NFb:cjm9rhIBPss)'5Be,nG22c8j)s4"V;6K(<Mf:kTs"ihFP-
-384`B(1)hEUp'NL!%1g"<@Dc7JfVS6M?mB7Yl$f3[&iRYtt+hq,2a_tG7`FG(b[G7N`jY[3l9U".HfmR2;=u2W))1Cb71b.(
-%IqRHOl[`_0hJE!Pq$oDZ4o-20OBG[YA#SLt[A0cMqNeOe:l\HHRVOm#X,A8q@2#V4%m=2Zb-?d8[Q41:!KkH65ol9Z]=!%g
--`bhmU.2XU?Gji^)&p<X]67S8A5P,Q[./NV$WCNIP#R_;]Or7Ec`BV<MK?DqLLKa(]F'N,L1`*eig`55dIk1s9^)13KMC!W#
-RC~>
+J,g]g0F1&j+qY+#@ko2=MH)-oN5fqLh%5B1VGetCjE<MUJ\`JULf?,M&;`h"d>6:u4Woi:+L$)a/fP=W`8\%Hb\g]+<NbI?3
+@*<S3L*AdZ0#UTQFih]VNP)pU3.uXdj_B@HL5,aK*7kZZ(s9#<f'7@&U;`=4'Sje.PN@^N+Z]G=m[S`=sD^>Xk.@84/e%YAh
+)LCeuN7lgo=C[)6LN:&0kZ%?1Ac5Ac!JfaO]%HgQd-eKu;be2nSJW+d-a)0QSZ_ekJ,gcK18W%6$eQW'I;NC98_'=kDl,],h
+I1VafHAl!)Df18Dae;>2r*?M0`$fl4C5SrG+ATXZeK]Xiie;4?$J0::OEVq8`YAa\0.eh?135-!Aep,6i9psm.(CHb`^cm/,
+*2)"8Vf0QUWkl!:k466W2.VYDs3H#:qU:0?nbiC^er'KPX%YRO9]<Du7lT@pi9&i!nUcfU6;/C.;\o0u\'tWiR>oZBf8XU+'
+mqaW_4qNqX$:f,Q$Of?U6mi/X;R@MDZYa49N_?TuT.iGb'EKs]ZSPB.8i"no/k9pB=X-H)PKr7,o<aDp33i\\d*K!CCD'H"e
+589Rd2Ro/;,N:<G>H^O*qI;_eGCmmnBAcQb]%,?G>j]QTaa^oV)L=ueGQcUeSqoj1eLU*fiZAHSNSgZ'4"$jd^4);(WS0tJO
+[]09MZMXnYLpacr=;?*mYU%1Lj=K%?j=cDP_n^e[=LG10aE^iD`m_V9<"H26B5Ce<`$g=&*\9f3I.<Q#-_-(=fI'>3pt?A7+
+uJMh,(ko`9SNj^na1>BhugLLE.h(Ptt4mD3l#QejTF<gV?(O562b`Hn;I-1R1)eb2unhK_:JK],m")'kL#VCe9I%RtMsiYX8
+(S7c"80;5jjG(4>kFM<j_,C3WDjlEt4>)b8jP\7#W0\`HulWU/eX(4n<1/D=3^:@P2XkqHAm9:XD2)2^k.CE?J4HPJtS$pkB
+B:=-k:?n?&!N0j_i=JKJg8=JWnN5nO`pi[D,)_Ng#Q~>
 U
 PSL_cliprestore
 2 setlinecap
@@ -2932,10 +3146,59 @@ def
 0 A
 FQ
 O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R-0.5/1.5/0/2 -O -K
+%%PROJ: xy -0.50000000 1.50000000 0.00000000 2.00000000 -0.500 1.500 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+1200 0 D
+0 1200 D
+-1200 0 D
+PSL_eoclip N
+12 W
+360 0 M
+-60 300 D
+S
+480 0 M
+-180 900 D
+S
+600 0 M
+-240 1200 D
+S
+720 0 M
+-240 1200 D
+S
+840 0 M
+-240 1200 D
+S
+960 0 M
+-240 1200 D
+S
+1080 0 M
+-240 1200 D
+S
+1200 0 M
+-240 1200 D
+S
+1200 600 M
+-120 600 D
+S
+1200 1200 M
+0 0 D
+P S
+PSL_cliprestore
+0 A
+FQ
+O0
 1890 0 TM
 
 % PostScript produced by:
-%%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-1/3/-1/3 -X4c
+%%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-1/3/-1/3 -X4c -nl
 %%PROJ: xy -1.00000000 3.00000000 -1.00000000 3.00000000 -1.000 3.000 -1.000 3.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2947,15 +3210,15 @@ clipsave
 -1200 0 D
 PSL_eoclip N
 V N 150 150 T 900 900 scale [/Indexed /DeviceRGB 14 <
-0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31000A00FFFFFFFF6C00FFCE00FF000000>] setcolorspace
+0A00FF0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31006C00FFFFFFFFCE00FF000000>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 38 /Height 38 /BitsPerComponent 4
    /ImageMatrix [38 0 0 -38 0 38] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
 >> image
-J,g]W!/O061EmE'VIR0q&=J>$<D'(f!!3abN?Lc$4?=]"M8c4l0qf3r*J^LjCUR_&.2NR%jKa%$ATo\;73Id3S8dp-Q*/l)f
-W5cW#V)*uoD)AA].I#K!`XG&.[`T#bGnQ/.9[RE7+Nc/(b?^A?D#kaei:#T&K?J!B$7Z#YQJd&6LHckD*D;O]Z1O!.D>FqTU
-8:rfI21arJ6D+Z#Ybl]!FhsAErKn[1[[_UseHE`p7ZQ7\j%kH#5F%Vf/qE-$m_ahT]?0g7?huc*qV)_9KH5CW42DSAS^o4DZ
-A5+,QTN3>h\o7Qm9eZEkE#%:.fCmHSdkY5Xcq>OcpGRd0%T_r]J!\,2E9IsFoG>OPT'Y7GsWYUF6-q`4!FN<-T64.qS0"AB*
-I1+nH56p.Q_WiE%3EOu[sb_oAR-h--$p,36HmUehDKB2t>d/j@~>
+J,g]X&<M][6m@nTa)jWo1oc?]Q4P/I((U_*_dVi,@ki0AMaARWF2B4Z*+h^8?kA86BLODfjKa$r0t/6j9;W@O1ng;m?*#Ct0
+qf4hB07@bP*YEO-S;&iN7<_aqO:7m<+td>b%b]n!'pa,EiE0e>d$b*Z[2sMa%!C='iqAG&e-%D_ldgrD#aSO]>c"\X&]#t(Q
+lr1GM0pAB.oXo-aK(]!elZU:FUQm%-J^1Wb1T4$8!<_U8M+/3a/)K4-e=JXHsi*V;5pJm&h+PXj:p.[ph!Ep1E1k+i-XWfZX
+:>'9hHdB3?3U(HIiHk+dt)^3a"VmHc><Wh,j#UXeQch9@#HGO+/SIF_]claaO6i+.5=^E<+,Pu$[ak;uKQrlca(,AR<A%"&\
+`UsNS*n#7d8N:]5iU)IpeOMeee&HkE%~>
 U
 PSL_cliprestore
 2 setlinecap
@@ -3051,6 +3314,61 @@ def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1200 T
 0 setlinecap
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R-1/3/-1/3 -O -K
+%%PROJ: xy -1.00000000 3.00000000 -1.00000000 3.00000000 -1.000 3.000 -1.000 3.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+1200 0 D
+0 1200 D
+-1200 0 D
+PSL_eoclip N
+12 W
+330 300 M
+-30 150 D
+S
+390 300 M
+-90 450 D
+S
+450 300 M
+-120 600 D
+S
+510 300 M
+-120 600 D
+S
+570 300 M
+-120 600 D
+S
+630 300 M
+-120 600 D
+S
+690 300 M
+-120 600 D
+S
+750 300 M
+-120 600 D
+S
+810 300 M
+-120 600 D
+S
+870 300 M
+-120 600 D
+S
+900 450 M
+-90 450 D
+S
+900 750 M
+-30 150 D
+S
+PSL_cliprestore
 0 A
 FQ
 O0
