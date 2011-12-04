@@ -30,7 +30,7 @@ for a in $1 $2 $3 ; do
 129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10km
 128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40km
 EOF
-    pstext -R -J -F+f18p,Courier-Bold+jBR -O -K >> $ps <<< "240 85 $a"
+    pstext -R -J -F+f18p,Courier-Bold+jBR -O -K <<< "240 85 $a"
     y_offset=0i
     x_offset=2.5i
 done
