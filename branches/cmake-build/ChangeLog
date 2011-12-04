@@ -2,6 +2,21 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-12-03	pwessel
+	* mgd77/mgd77track.c:	Did not set GMT's time system to Unix before dealing
+				with dates.  Now done centrally by MGD77_Init.
+
+2011-12-02	pwessel
+	* project.c:		Fixed trouble with -G; this also fixes test cases.
+				Added -Ginc[/colat][+] so if + is appended we get a
+				segment header with information about the pole for the circle.
+				Clarified that it is colatitude and not latitude we append.
+				Furthermore, for -G<inc> -bo we failed to write any output;
+				this was an old bug also affecting GMT 4.
+	* gmt_plot.c:		The mysterious trim_label function was called for both axes
+				even if only one had 2 levels of annotations.  Now check per
+				axes and document the function better.  This fixes the hovmuller test.
+
 2011-12-01	remko
 	* meca/pscoupe.c:	Added -Q option to suppress mechanism files
 				Incorporated distaz.c and submeca.c as they were unique to pscoupe.
