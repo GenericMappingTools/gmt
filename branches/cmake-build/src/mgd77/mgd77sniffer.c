@@ -291,8 +291,6 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
 
-	GMT_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));						/* MGD77+ uses GMT's Unix time epoch */
-	GMT_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
 	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_TEXT_LEN64);
 	gmt_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
 
