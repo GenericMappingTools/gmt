@@ -222,7 +222,7 @@ This makes the stored color the current color.
 .sp
 BD(long PSL_setcolor) (ARG(struct PSL_CTRL,*P), ARG(double,rgb)[], ARG(long,mode))
 .RS 4
-Sets the current color for all stroked (mode = BD(PSL_IS_STROKE)) or filled (mode = BD(PSL_IS_FILL))
+Sets the current color for all stroked (mode = PSL_IS_STROKE (0)) or filled (mode = PSL_IS_FILL (1))
 material to follow (lines, symbol outlines, text).
 IT(rgb) is a triplet of red, green and blue values in the range 0.0 through 1.0.
 Set the red color to -3.0 and the green color to the pattern number returned by BD(PSL_setpattern)
@@ -261,7 +261,8 @@ where x is starting point of a line (The x is not plotted).  That is, the line i
 4 points long solid line and a 2 points long gap, starting 1 point after the x.  To reset to solid line,
 specify IT(pattern) = NULL ("") and IT(offset) = 0.
 .RE
-.IP
+.br
+.sp
 BD(long PSL_setfill) (ARG(struct PSL_CTRL,*P), ARG(double,rgb)[], ARG(long,outline))
 .RS 5
 Sets the current fill color and whether or not outline is needed for symbols.  Special cases
