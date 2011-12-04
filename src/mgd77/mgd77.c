@@ -2160,6 +2160,8 @@ void MGD77_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	MGD77_Init_Columns (C, F, NULL);
 	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = TRUE;		/* TRUE means programs will use error bitflags (if present) when returning data */
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = TRUE;	/* TRUE means we will apply correction factors (if present) when reading data */
+	GMT_get_time_system (C, "unix", &(C->current.setting.time_system));						/* MGD77+ uses GMT's Unix time epoch */
+	GMT_init_time_system_structure (C, &(C->current.setting.time_system));
 	GMT_get_time_system (C, "unix", &(F->utime));						/* MGD77+ uses GMT's Unix time epoch */
 	GMT_init_time_system_structure (C, &(F->utime));
 	if (strcmp (F->utime.epoch, C->current.setting.time_system.epoch)) F->adjust_time = TRUE;	/* Since MGD77+ uses unix time we must convert to new epoch */
