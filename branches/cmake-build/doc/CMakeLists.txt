@@ -39,9 +39,9 @@ if (PDFLATEX_COMPILER)
 	# Copy common TeX dependends
 	foreach (_input ${_docs_inputs} ${_common_inputs})
 		add_custom_command (OUTPUT ${_input}
-			COMMAND ${CMAKE_COMMAND}
-			-E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${_input} ${_input}
-			COMMENT "Copying ${_input}")
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			${CMAKE_CURRENT_SOURCE_DIR}/${_input} ${_input}
+			DEPENDS ${_input})
 	endforeach (_input ${_common_inputs})
 	add_custom_target (copy_tex_depends DEPENDS ${_docs_inputs} ${_common_inputs})
 
@@ -153,7 +153,8 @@ if (DO_EXAMPLES)
 			COMMAND ${CMAKE_COMMAND}
 			-E copy_if_different
 			${CMAKE_CURRENT_SOURCE_DIR}/${_file}
-			${CMAKE_CURRENT_BINARY_DIR}/${_file})
+			${CMAKE_CURRENT_BINARY_DIR}/${_file}
+			DEPENDS ${_file})
 		list (APPEND _test_files ${CMAKE_CURRENT_BINARY_DIR}/${_file})
 	endforeach (_file ${_example_files})
 

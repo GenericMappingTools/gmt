@@ -36,7 +36,8 @@ if (DO_TESTS)
 			COMMAND ${CMAKE_COMMAND}
 			-E copy_if_different
 			${CMAKE_CURRENT_SOURCE_DIR}/${_file}
-			${CMAKE_CURRENT_BINARY_DIR}/${_file})
+			${CMAKE_CURRENT_BINARY_DIR}/${_file}
+			DEPENDS ${_file})
 		list (APPEND _test_files ${CMAKE_CURRENT_BINARY_DIR}/${_file})
 	endforeach (_file ${_files})
 
