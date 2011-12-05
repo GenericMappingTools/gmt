@@ -57,6 +57,10 @@
 #include <stdarg.h>
 #include "gmt_internals.h"
 
+#ifdef GMT_MATLAB
+#	include <mex.h>
+#endif
+
 #define USER_MEDIA_OFFSET 1000
 
 #define GMT_def(case_val) * C->session.u2u[GMT_INCH][GMT_unit_lookup(C, C->current.setting.given_unit[case_val], C->current.setting.proj_length_unit)], C->current.setting.given_unit[case_val]
@@ -2228,7 +2232,7 @@ GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		rec++;
 		GMT_chop (C, line);	/* Get rid of [\r]\n */
-		if (rec == 1 && (strlen (line) < 7 || line[6] != '5')) {
+		if (rec == 2 && (strlen (line) < 7 || line[6] != '5')) {
 			GMT_message (C, "Warning: Your gmt.conf file may not be GMT 5 compatible\n");
 		}
 		if (line[0] == '#') continue;	/* Skip comments */
@@ -4357,8 +4361,11 @@ GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 
 	sprintf (line, "%s/conf/gmt.conf", C->session.SHAREDIR);
 	if (access (line, R_OK)) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
-		return (0);
+		/* Not found in SHAREDIR, try USERDIR instead */
+		if (GMT_getuserpath (C, "conf/gmt.conf", line) == NULL) {
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
+			GMT_exit (EXIT_FAILURE);
+		}
 	}
 	if ((fpi = fopen (line, "r")) == NULL) return (-1);
 
@@ -4369,7 +4376,7 @@ GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 	while (fgets (line, GMT_BUFSIZ, fpi)) {
 		rec++;
 		GMT_chop (C, line);	/* Get rid of [\r]\n */
-		if (rec == 1) {	/* Copy version from gmt.conf */
+		if (rec == 2) {	/* Copy version from gmt.conf */
 			sscanf (line, "# GMT %s", string);
 			fprintf (fpo, "# GMT %s Defaults file\n", string);
 			continue;
@@ -4603,6 +4610,7 @@ GMT_LONG GMT_unit_lookup (struct GMT_CTRL *C, GMT_LONG c, GMT_LONG unit)
 GMT_LONG GMT_hash (struct GMT_CTRL *C, char *v, GMT_LONG n_hash)
 {
 	GMT_LONG h;
+	assert (v!=NULL); /* We are in trouble if we get a NULL pointer here */
 	for (h = 0; *v != '\0'; v++) h = (64 * h + (*v)) % n_hash;
 	while (h < 0) h += n_hash;
 	return (h);
@@ -7798,6 +7806,12 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 	fpsetmask (fpgetmask () & ~(FP_X_DZ | FP_X_INV));
 #endif
 #endif
+
+#ifdef WIN32
+	/* Set "stdout" to binary mode */
+	_setmode(_fileno(stdout), _O_BINARY);
+#endif
+
 	C = New_GMT_Ctrl ();		/* Allocate and initialize a new common control structure */
 	if (C->init.progname) free (C->init.progname);		/* Free up any prior program name */
 	C->init.progname = strdup (session);		/* We use the calling programs session name as program name */
@@ -7821,8 +7835,11 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 
 	sprintf (path, "%s/conf/gmt.conf", C->session.SHAREDIR);
 	if (access (path, R_OK)) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
-		GMT_exit (EXIT_FAILURE);
+		/* Not found in SHAREDIR, try USERDIR instead */
+		if (GMT_getuserpath (C, "conf/gmt.conf", path) == NULL) {
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
+			GMT_exit (EXIT_FAILURE);
+		}
 	}
 	GMT_loaddefaults (C, path);	/* Load GMT system default settings [and PSL settings if selected] */
 	GMT_getdefaults (C, CNULL);	/* Override using local GMT default settings (if any) [and PSL if selected] */
@@ -7880,7 +7897,7 @@ void GMT_setmode (struct GMT_CTRL *C, int direction)
 
 		fp = (direction == 0) ? C->session.std[GMT_IN] : C->session.std[GMT_OUT];
 		fflush (fp);	/* Should be untouched but anyway... */
-#ifdef _WIN32
+#ifdef WIN32
 		GMT_report (C, GMT_MSG_DEBUG, "Set binary mode for %s\n", IO_direction[direction]);
 		setmode (fileno (fp), _O_BINARY);
 #else
@@ -7909,6 +7926,9 @@ GMT_LONG GMT_message (struct GMT_CTRL *C, char *format, ...) {
 }
 
 GMT_LONG GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
+#ifdef GMT_MATLAB
+	char line[GMT_BUFSIZ];
+#endif
 	va_list args;
 	if (level > C->current.setting.verbose) return (0);
 #ifdef DEBUG
@@ -7928,12 +7948,10 @@ GMT_LONG GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
 	return (1);
 }
 
-#if defined (WIN32) || defined (__MINGW32__)
+/* Due to the DLL boundary cross problem on Windows we
+ * are forced to have the following, otherwise defined
+ * as macro, implemented as a function. */
 #ifdef GMT_MATLAB
-#include "mex.h"
-#endif
-/* Due to the DLL boundary cross problem on Windows we are forced to have the following, otherwise
-   defined as macro, implemented as a function. */
 int GMT_fprintf (FILE *stream, char *format, ...) {
 	va_list args;
 	va_start (args, format);
@@ -7942,6 +7960,8 @@ int GMT_fprintf (FILE *stream, char *format, ...) {
 
 	return (0);
 }
+#endif
+
 #if 0
 /* Comment out for now since not used for now */
 int GMT_fscanf (FILE *stream, char *format, ...) {
@@ -7953,47 +7973,50 @@ int GMT_fscanf (FILE *stream, char *format, ...) {
 	return (0);
 }
 #endif
+
+#ifndef ABS
+#	define ABS(x) (((x) >= 0) ? (x) : -(x))
 #endif
 
 GMT_LONG GMT_equal_double (double A, double B, int maxUlps) {
+	/* Adapted from http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
+	 * Note: the original code breaks the strict aliasing requirement from C99.
+	 * The only safe way to avoid undefined behavior is via memcpy:
+	 * http://labs.qt.nokia.com/2011/06/10/type-punning-and-strict-aliasing/ */
+
+	int64_t aInt, bInt, intDiff;
+
 	/* Make sure maxUlps is non-negative and small enough that the */
 	/* default NAN won't compare as equal to anything. */
-	/* Adapted from http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm */
-#ifdef WIN32
-	__int64 aInt = *(__int64*)&A;
-	__int64 bInt = *(__int64*)&B;
-	__int64 intDiff;
-#else
-	long long int aInt = *(long long int*)&A;
-	long long int bInt = *(long long int*)&B;
-	long long int intDiff;
-#endif
-	
-	/*assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);*/
+	assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
+
+	memcpy(&aInt, &A, sizeof(double));
+	memcpy(&bInt, &B, sizeof(double));
+
 	/* Make aInt lexicographically ordered as a twos-complement int */
 	if (aInt < 0) aInt = 0x8000000000000000 - aInt;
 	/* Make bInt lexicographically ordered as a twos-complement int */
 	if (bInt < 0) bInt = 0x8000000000000000 - bInt;
-#ifdef WIN32
-	intDiff = _abs64(aInt - bInt);
-#else
-	intDiff = labs(aInt - bInt);
-#endif
+	intDiff = ABS (aInt - bInt);
 	if (intDiff <= maxUlps) return TRUE;
 	return FALSE;
 }
 
 GMT_LONG GMT_equal_float (float A, float B, int maxUlps) {
-	int aInt = *(int*)&A;
-	int bInt = *(int*)&B;
-	int intDiff;
+	int32_t aInt, bInt, intDiff;
 
-	/*assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);*/
+	/* Make sure maxUlps is non-negative and small enough that the */
+	/* default NAN won't compare as equal to anything. */
+	assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
+
+	memcpy(&aInt, &A, sizeof(float));
+	memcpy(&bInt, &B, sizeof(float));
+
 	/* Make aInt lexicographically ordered as a twos-complement int */
 	if (aInt < 0) aInt = 0x80000000 - aInt;
 	/* Make bInt lexicographically ordered as a twos-complement int */
 	if (bInt < 0) bInt = 0x80000000 - bInt;
-	intDiff = abs (aInt - bInt);
+	intDiff = ABS (aInt - bInt);
 	if (intDiff <= maxUlps) return TRUE;
 	return FALSE;
 }
