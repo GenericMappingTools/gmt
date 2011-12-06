@@ -64,12 +64,11 @@ struct SPHTRIANGULATE_CTRL {
 	} T;
 };
 
-void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET ***DD)
+void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET *Dout[])
 {	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
 	GMT_LONG i, ij, k, do_authalic, dim[4] = {1, 0, 0, 0};
 	double area_sphere = 0.0, area_triangle = GMT->session.d_NaN, V[3][3], R2, y, dist = GMT->session.d_NaN;
 	char segment_header[GMT_BUFSIZ];
-	struct GMT_DATASET *Dout[2] = {NULL, NULL};
 	struct GMT_LINE_SEGMENT *S[2] = {NULL, NULL};
 	if (get_area == 2) /* Return area in steradians */
 		R2 = GMT->current.map.dist[GMT_MAP_DIST].scale = 1.0;
@@ -169,10 +168,9 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 		}
 		GMT_free (GMT, arc);
 	}
-	*DD = Dout;
 }
 
-void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, double *lat, struct STRIPACK_VORONOI *V, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET ***DD)
+void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, double *lat, struct STRIPACK_VORONOI *V, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET *Dout[])
 {	/* Prints out the Voronoi polygons either as polygons (for filling) or arcs (lines) */
 	GMT_LONG i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
 	GMT_LONG n_alloc = GMT_CHUNK, p_alloc = GMT_TINY_CHUNK, do_authalic, dim[4] = {1, 0, 0, 0};
@@ -182,7 +180,6 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 	double area_sphere = 0.0, area_polygon, area_triangle, area_km2 = GMT->session.d_NaN, dist = GMT->session.d_NaN, y[3], V1[3], V2[3], V3[3];
 	double *plat = NULL, *plon = NULL, R2;
 
-	struct GMT_DATASET *Dout[2] = {NULL, NULL};
 	struct GMT_LINE_SEGMENT *S[2] = {NULL, NULL};
 	struct STRPACK_ARC *arc = NULL;
 
@@ -326,7 +323,6 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 		GMT_free (GMT, plat);
 		if (get_area) GMT_report (GMT, GMT_MSG_NORMAL, "Total surface area = %g\n", area_sphere * R2);
 	}
-	*DD = Dout;
 }
 
 char *unit_name (char unit, GMT_LONG arc) {
@@ -484,7 +480,7 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	struct SPHTRIANGULATE_CTRL *Ctrl = NULL;
 	struct STRIPACK T;
-	struct GMT_DATASET **Dout = NULL;
+	struct GMT_DATASET *Dout[2] = {NULL, NULL};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 
@@ -596,13 +592,13 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on table headers on output */
 	if (Ctrl->Q.mode == VORONOI) {	/* Selected Voronoi polygons */
-		stripack_voronoi_output (GMT, n, lon, lat, &T.V, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, &Dout);
+		stripack_voronoi_output (GMT, n, lon, lat, &T.V, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout);
 		GMT_free (GMT, T.V.lon);	GMT_free (GMT, T.V.lat);
 		GMT_free (GMT, T.V.lend);	GMT_free (GMT, T.V.listc);
 		GMT_free (GMT, T.V.lptr);
 	}
 	else {	/* Selected Delaunay triangles */
-		stripack_delaunay_output (GMT, lon, lat, &T.D, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, &Dout);
+		stripack_delaunay_output (GMT, lon, lat, &T.D, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout);
 	}
 
 	Dout[0]->table[0]->header = GMT_memory (GMT, NULL, 1, char *);	/* One header record only */
