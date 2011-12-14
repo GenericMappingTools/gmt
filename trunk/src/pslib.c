@@ -922,7 +922,6 @@ PSL_LONG PSL_setfill (struct PSL_CTRL *PSL, double rgb[], PSL_LONG outline)
 		PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
 	}
 	else {	/* Set new r/g/b fill, after possibly changing fill transparency */
-		if (!PSL_eq (rgb[3], PSL->current.rgb[PSL_IS_FILL][3])) PSL_command (PSL, "[ /ca %g /BM /%s /SetTransparency pdfmark\n", 1.0 - rgb[3], PSL->current.transparency_mode);
 		PSL_command (PSL, "{%s} FS\n", psl_putcolor (PSL, rgb));
 		PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
 	}
@@ -1146,8 +1145,7 @@ PSL_LONG PSL_endplot (struct PSL_CTRL *PSL, PSL_LONG lastpage)
 
 	psl_pattern_cleanup (PSL);
 	PSL_setdash (PSL, NULL, 0.0);
-	if (!PSL_eq (PSL->current.rgb[PSL_IS_FILL][3], 0.0)) PSL_command (PSL, "[ /ca 1 /BM /Normal /SetTransparency pdfmark\n");
-	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "[ /CA 1 /BM /Normal /SetTransparency pdfmark\n");
+	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "1 /Normal PSL_transp\n");
 
 	if (lastpage) {
 		PSL_command (PSL, "%%%%PageTrailer\n");
@@ -1438,7 +1436,6 @@ PSL_LONG PSL_setlinewidth (struct PSL_CTRL *PSL, double linewidth)
 
 PSL_LONG PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], PSL_LONG mode)
 {
-	const char *operator[2] = {"CA", "ca"};
 	/* Set the pen (PSL_IS_STROKE) color or fill (PSL_IS_FILL) color or pattern
 	 * rgb[0] = -3: set pattern, rgb[1] is pattern number setup by PSL_setpattern
 	 * rgb[0] = -2: ignore. Do not change pen color. Leave untouched.
@@ -1451,8 +1448,11 @@ PSL_LONG PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], PSL_LONG mode)
 	}
 	if (PSL_eq (rgb[0], -2.0) || PSL_eq (rgb[0], -1.0)) return (PSL_NO_ERROR);	/* Settings to be ignored */
 	if (PSL_same_rgb (rgb, PSL->current.rgb[mode])) return (PSL_NO_ERROR);	/* Same color as already set */
-	if (!PSL_eq (rgb[3], PSL->current.rgb[mode][3])) PSL_command (PSL, "[ /%s %g /BM /%s /SetTransparency pdfmark\n", operator[mode], 1.0 - rgb[3], PSL->current.transparency_mode);
 
+	/* Because psl_putcolor does not set transparency if it is 0%, we reset it here when needed */
+	if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0)) PSL_command (PSL, "1 /Normal PSL_transp ");
+
+	/* Then, finally, set the color using psl_putcolor */
 	PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb));
 
 	/* Update the current stroke/fill color information */
@@ -4377,6 +4377,10 @@ char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[])
 		double hsv[3];
 		psl_rgb_to_hsv (rgb, hsv);
 		sprintf (text, PSL->current.hsv_format, hsv[0], hsv[1], hsv[2]);
+	}
+	if (!PSL_eq (rgb[3], 0.0)) {
+		/* Transparency */
+		sprintf (&text[strlen(text)], " %g /%s PSL_transp", 1.0 - rgb[3], PSL->current.transparency_mode);
 	}
 	return (text);
 }
