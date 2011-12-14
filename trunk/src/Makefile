@@ -105,6 +105,9 @@ gmt_notposix.h:	gmt_notposix.h.in
 psldemo.ps:	$(PSLDEMO)
 		$(PSLDEMO) > $@
 
+psldemo.pdf:	psldemo.ps ps2raster$(EXE)
+		ps2raster$(EXE) -Tf -A -P psldemo.ps
+
 install:	all
 		$(INSTALL_DIR) $(bindir)
 		$(INSTALL) $(ALLPROGS) $(bindir)
