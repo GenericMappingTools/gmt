@@ -131,3 +131,8 @@
   countdictstack PSL_dict_count sub {end} repeat	% Clean up dict stack
   PSL_eps_state restore					% Restore saved state
 }!
+/PSL_transp {						% Set transparency
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{		% Using ghostscript
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}	% Or Adobe
+  {pop pop} ifelse} ifelse				% Or skip if neither are supported
+}!
