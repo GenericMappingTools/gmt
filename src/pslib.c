@@ -1220,7 +1220,7 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 		PSL_command (PSL, "%%%%EndComments\n\n");
 
 		PSL_command (PSL, "%%%%BeginProlog\n");
-		psl_bulkcopy (PSL, "PSL_prologue", 8899);	/* Version number should match that of PSL_prologue.ps */
+		psl_bulkcopy (PSL, "PSL_prologue", 9576);	/* Version number should match that of PSL_prologue.ps */
 		psl_bulkcopy (PSL, PSL->init.encoding, 0);
 
 		psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */

@@ -9,7 +9,7 @@
 	* psldemo.c:		Added transparency example
 
 2011-12-03	pwessel
-	* gmtmath.c:		Did not ceck that -Tmin/max has min >= max.
+	* gmtmath.c:		Did not check that -Tmin/max has min > max.
 	
 2011-12-03	pwessel
 	* mgd77/mgd77track.c:	Did not set GMT's time system to Unix before dealing

@@ -554,10 +554,9 @@ Global y-scale (> 0) to apply to plot-coordinates before plotting.  Normally use
 the entire output down to fit a specific height/width  [1.0].
 .TP
 .B PS_TRANSPARENCY
-Sets the transparency mode to use when preparing PS for rendering to PDF via Adobe Distiller.
+Sets the transparency mode to use when preparing PS for rendering to PDF.
 Choose from Color, ColorBurn, ColorDodge, Darken, Difference, Exclusion, HardLight, Hue,
 Lighten, Luminosity, Multiply, Normal, Overlay, Saturation, SoftLight, and Screen [Normal].
-For more information, see the Adobe pdfmark Reference Manual.
 .TP
 .B TIME_EPOCH
 Specifies the value of the calendar and clock at the origin (zero point) of relative time units (see BD(TIME_UNIT)).
