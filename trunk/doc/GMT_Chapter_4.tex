@@ -1099,11 +1099,10 @@ a comma-separated list of all columns or column ranges to consider for this NaN 
 \index{Transparency}
 \label{sec:ltransp}
 
-While the \PS\ language does not support transparency, PDF does, and via an Adobe \PS\ extension
+While the \PS\ language does not support transparency, PDF does, and via \PS\ extensions
 one can manipulate the transparency levels of objects.  The \Opt{t} option allows you to change
 the transparency level for the current overlay by appending a percentage in the 0--100 range; the
-default is 0, or opaque\footnote{At the moment, the transparency extension only works if
-using Adobe Distiller to convert the \PS\ to PDF.}.  Transparency may also be controlled
+default is 0, or opaque.  Transparency may also be controlled
 on a feature by feature basis when setting color or fill (see section~\ref{sec:fill}).
 
 \subsection{Latitude/Longitude or Longitude/Latitude?: The \Opt{:} option}
@@ -1572,8 +1571,8 @@ See Appendix G for a list of all fonts recognized by \GMT.
 \index{Pattern!transparency}%
 \label{sec:transp}
 
-The \PS\ language has no built-in mechanism for transparency.  However, the Adobe pdfmark
-extension makes it possible to request transparency, and tools that can render such extensions
+The \PS\ language has no built-in mechanism for transparency.  However, \PS\
+extensions make it possible to request transparency, and tools that can render such extensions
 will produce transparency effects.  We specify transparency in percent: 0 is opaque [Default]
 while 100 is fully transparent (i.e., nothing will show).  As noted in section~\ref{sec:ltransp}, we can control
 transparency on a layer-by-layer basis using the \Opt{t} option.  However, we may also set
@@ -1582,13 +1581,11 @@ appending @\emph{transparency} to colors or pattern fills.  The transparency \em
 by using the \GMT\ default parameter \textbf{PS\_TRANSPARENCY}; the default is Normal but you can choose among
 Color, ColorBurn, ColorDodge, Darken, Difference, Exclusion, HardLight, Hue,
 Lighten, Luminosity, Multiply, Normal, Overlay, Saturation, SoftLight, and Screen.
-For more information, see (search online for) the Adobe pdfmark Reference Manual.
-Most printers and \PS\ viewers can neither print nor show transparency. They will simply ignore your attempt to
-create transparency and will plot any material as opaque. \progname{GhostScript} and all its derivatives
-like \GMTprog{ps2raster}, Apple's \progname{Preview} and the CUPS printing system are currently among
-those programs incapable of dealing with transparency; this may change over time.
-If you want to view transparent material you need to use \progname{Acrobat Distiller} to create a
-PDF file. Note that the settings of \progname{Acrobat Distiller} must first be changed to make
+For more information, see for instance (search online for) the Adobe pdfmark Reference Manual.
+Most printers and many \PS\ viewers can neither print nor show transparency. They will simply ignore your attempt to
+create transparency and will plot any material as opaque. \progname{GhostScript} and its derivatives
+such as \GMT's \GMTprog{ps2raster} support transparency (if compiled with the correct build option).
+Note: If you use \progname{Acrobat Distiller} to create a PDF file you must first change some settings to make
 transparency effective: change the parameter /AllowTransparency to true in your *.joboptions file.
 
 \section{Color palette tables}
