@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-12-14	remko
+	* PSL_prologue.ps:	Introduced /PSL_transp to deal with transparency, supported
+				both by Adobe Illustrator and ghostscript.
+	* pslib.c, gmt_plot.c:	==="===
+	* psldemo.c:		Added transparency example
+
 2011-12-03	pwessel
 	* gmtmath.c:		Did not ceck that -Tmin/max has min >= max.
 	
