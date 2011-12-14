@@ -3601,10 +3601,8 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		free(pstr);
 	}
 
-	/* Set layer transparency, if requested. Note that /SetTransparency actually sets the opacity, which is (1 - transparency) */
-	if (C->common.t.active) {
-		PSL_command (P,  "[ /ca %g /CA %g /BM /%s /SetTransparency pdfmark\n", 1.0 - 0.01 * C->common.t.value, 1.0 - 0.01 * C->common.t.value, C->current.setting.ps_transpmode);
-	}
+	/* Set layer transparency, if requested. Note that PSL_transp actually sets the opacity alpha, which is (1 - transparency) */
+	if (C->common.t.active) PSL_command (P, "%g /%s PSL_transp\n", 1.0 - 0.01 * C->common.t.value, C->current.setting.ps_transpmode);
 
 	/* If requested, place the timestamp */
 
@@ -3643,7 +3641,7 @@ void GMT_plotcanvas (struct GMT_CTRL *C)
 
 GMT_LONG GMT_plotend (struct GMT_CTRL *C) {
 	struct PSL_CTRL *P = C->PSL;
-	if (C->common.t.active) PSL_command (P, "[ /ca 1 /CA 1 /BM /Normal /SetTransparency pdfmark\n"); /* Reset transparency to fully opague, if required */
+	if (C->common.t.active) PSL_command (P, "1 /Normal PSL_transp\n"); /* Reset transparency to fully opague, if required */
 
 	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */
 

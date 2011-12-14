@@ -336,6 +336,29 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
+#define SPOTTER_BACK -1
+#define SPOTTER_FWD  +1
+
+GMT_LONG spotter_track (struct GMT_CTRL *GMT, GMT_LONG way, double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, GMT_LONG do_time, double wesn[], double **c)
+{
+	GMT_LONG n = -1;
+	/* Call either spotter_forthtrack (way = 1) or spotter_backtrack (way = -1) */
+	
+	switch (way) {
+		case SPOTTER_BACK:
+			n = spotter_backtrack (GMT, xp, yp, tp, np, p, ns, d_km, t_zero, do_time, wesn, c);
+			break;
+		case SPOTTER_FWD:
+			n = spotter_forthtrack (GMT, xp, yp, tp, np, p, ns, d_km, t_zero, do_time, wesn, c);
+			break;
+		default:
+			GMT_report (GMT, GMT_MSG_FATAL, "Bad use of spotter_track\n");
+			break;
+	}
+		
+	return (n);
+}
+
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_backtracker_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -354,6 +377,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_out, error;
 	GMT_LONG i, j, k, n;			/* Misc. counters */
 	GMT_LONG make_path = FALSE;	/* TRUE means create continuous path, FALSE works on discrete points */
+	GMT_LONG spotter_way;		/* Either SPOTTER_FWD or SPOTTER_BACK */
 
 	double *c = NULL;		/* Array of track chunks returned by libeuler routines */
 	double lon, lat;		/* Seamounts location in decimal degrees */
@@ -366,7 +390,6 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char type[50];			/* What kind of line (flowline or hotspot track) */
 	char dir[8];			/* From or To */
 
-	PFL spot_func = NULL;			/* Pointer to the required forth/back track function */
 	struct GMT_OPTION *ptr = NULL;
 	struct GMT_DATASET *F = NULL;
 	struct GMT_LINE_SEGMENT *H = NULL;
@@ -399,7 +422,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {	/* Load in the stage poles */
 		n_stages = spotter_init (GMT, Ctrl->E.file, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.mode, &Ctrl->N.t_upper);
-		spot_func = ((Ctrl->L.mode + Ctrl->D.mode) == 1) ? spotter_forthtrack : spotter_backtrack;
+		spotter_way = ((Ctrl->L.mode + Ctrl->D.mode) == 1) ? SPOTTER_FWD : SPOTTER_BACK;
 
 		if (fabs (Ctrl->L.d_km) > GMT_SMALL) {		/* User wants to interpolate tracks rather than project individual points */
 			make_path = TRUE;
@@ -536,7 +559,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_X], H->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
-					n_chunk = (*spot_func) (&lon, &lat, &t, 1, p, n_stages, 0.0, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
+					n_chunk = spotter_track (GMT, spotter_way, &lon, &lat, &t, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
 					lat = GMT_lat_swap (GMT, lat, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					out[GMT_X] = lon * R2D;
 					out[GMT_Y] = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
@@ -549,7 +572,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_X], H->n_rows, 1, &t_end, &lon, GMT->current.setting.interpolant);
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t_end, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
-					n_chunk = (*spot_func) (&lon, &lat, &t_end, 1, p, n_stages, 0.0, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
+					n_chunk = spotter_track (GMT, spotter_way, &lon, &lat, &t_end, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
 					out[GMT_X] = lon * R2D;
 					out[GMT_Y] = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					out[GMT_Z] = t_end;
@@ -557,7 +580,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			else {
-				if (!Ctrl->W.active) n_chunk = (*spot_func) (GMT, &lon, &lat, &age, 1, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
+				if (!Ctrl->W.active) n_chunk = spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
 				
 				n_track = irint (c[0]);
 				for (j = 0, i = 1; j < n_track; j++, i += 3) {
@@ -579,7 +602,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			else {
-				n_chunk = (*spot_func) (GMT, &lon, &lat, &age, 1, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
+				n_chunk = spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
 				out[GMT_X] = lon * R2D;
 				out[GMT_Y] = lat * R2D;
 				for (k = 2; k < n_expected_fields; k++) out[k] = in[k];

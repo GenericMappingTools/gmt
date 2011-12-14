@@ -13,8 +13,8 @@
 int main (int argc, char **argv) {
 	struct PSL_CTRL *PSL = NULL;
 	double Letter[2] = {612.0, 792.0}, size[7];
-	double rgb[7][4] = {{1.0, 0.0, 0.0, 0.0}, {0.5, 0.7, 0.1, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 0.0},
-		{-3.0, -3.0, -3.0, 0.0}, {0.9, 0.9, 9.0, 0.0}};
+	double rgb[8][4] = {{1.0, 0.0, 0.0, 0.0}, {0.5, 0.7, 0.1, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 0.0},
+		{-3.0, -3.0, -3.0, 0.0}, {0.9, 0.9, 9.0, 0.0}, {0.5, 0.7, 0.1, 0.5}};
 	double offset[2] = {0.1, 0.1}, scales[2] = {1.0, 1.0};
 	double x[6] = {35.0, 50.0, 60., 90.0, 110.0, 132.0}, y[6] = {25.0, 10.0, 50.0, 87.0, 65.0, 75.0};
 	PSL_LONG outline[3] = {PSL_OUTLINE, PSL_NONE, PSL_OUTLINE};
@@ -72,6 +72,9 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	rgb[5][1] = (double)PSL_setpattern (PSL, 13, "", 100, rgb[3], rgb[2]);
 	PSL_setcolor (PSL, rgb[5], PSL_IS_STROKE);
 	PSL_plotsymbol (PSL, 80.0, 30.0, size, PSL_DOT);
+
+	PSL_setcolor (PSL, rgb[7], PSL_IS_STROKE);
+	PSL_plotsymbol (PSL, 90.0, 87.0, size, PSL_DOT);
 
 	PSL_setcolor (PSL, rgb[0], PSL_IS_STROKE);
 	PSL_setfill (PSL, rgb[5], PSL_OUTLINE);
