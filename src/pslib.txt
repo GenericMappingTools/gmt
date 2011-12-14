@@ -339,7 +339,6 @@ BD(long PSL_settransparencymode) (ARG(struct PSL_CTRL,*P), ARG(char,*mode))
 Changes the current PDF transparency rendering mode [Default is Normal].  Choose among
 Color, ColorBurn, ColorDodge, Darken, Difference, Exclusion, HardLight, Hue,
 Lighten, Luminosity, Multiply, Normal, Overlay, Saturation, SoftLight, and Screen.
-This option is only used by Adobe Distiller when converting PS to PDF.
 .RE
 .br
 .sp
