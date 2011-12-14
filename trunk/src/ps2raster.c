@@ -690,7 +690,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			continue;
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Processing %s:", ps_file);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Processing %s...", ps_file);
 		
 		if (Ctrl->A.strip) {	/* Must strip off the GMT timestamp stuff */
 			GMT_LONG dump = TRUE;
