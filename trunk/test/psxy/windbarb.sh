@@ -4,7 +4,7 @@
 # Test new custom symbol macros using a windbarb.def file
 
 . ../functions.sh
-header "Test psxy with multi-parameter custom symbol"
+header "Test psxy with multi-parameter windbarb symbol"
 
 ps=barb.ps
 cat << EOF > tmp
