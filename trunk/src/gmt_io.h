@@ -207,7 +207,8 @@ enum GMT_col_enum {GMT_IS_NAN   =   0,	/* Returned by GMT_scanf routines when re
 	GMT_IS_RATIME		=  24,	/* To see if time is either Relative or Absolute */
 	GMT_IS_ARGTIME		=  32,	/* To invoke GMT_scanf_argtime()  */
 	GMT_IS_DIMENSION	=  64,	/* A float with [optional] unit suffix, e.g., 7.5c, 0.4i; convert to inch  */
-	GMT_IS_UNKNOWN		= 128};	/* Input type is not knowable without -f */
+	GMT_IS_GEOANGLE		= 128,	/* An angle to be converted via map projection to angle on map  */
+	GMT_IS_UNKNOWN		= 256};	/* Input type is not knowable without -f */
 
 /* Various ways to report longitudes */
 
