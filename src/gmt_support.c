@@ -8780,8 +8780,17 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 #endif
 		GMT_chop (C, buffer);	/* Get rid of \n \r */
 		if (buffer[0] == '#' || buffer[0] == '\0') continue;	/* Skip comments or blank lines */
-		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y stuff */
-			head->n_required = atoi (&buffer[2]);
+		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
+			char flags[GMT_TEXT_LEN64];
+			nc = sscanf (&buffer[2], "%" GMT_LL "d %s", &head->n_required, flags);
+			head->type = GMT_memory (C, NULL, head->n_required, GMT_LONG);
+			for (k = 0; k < head->n_required; k++) {
+				switch (flags[k]) {
+					case 'a':	head->type[k] = GMT_IS_GEOANGLE; break;		/* Angle that needs to be converted via the map projection */
+					case 'l':	head->type[k] = GMT_IS_DIMENSION; break;	/* Length that will be in the current measure unit */
+					case 'o':	head->type[k] = GMT_IS_FLOAT; break;		/* Other, i.e, non-dimensional quantity not to be changed */
+				}
+			}
 			continue;
 		}
 #ifdef PS_MACRO
@@ -8984,6 +8993,12 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 		previous = s;
 	}
 	fclose (fp);
+	if (head->n_required == 0) {	/* No N: statement, default to N: 1 l */
+		head->n_required = 1;
+		head->type = GMT_memory (C, NULL, head->n_required, GMT_LONG);
+		head->type[0] = GMT_IS_DIMENSION;
+	}
+	
 	*S = head;
 	return (GMT_NOERROR);
 }
@@ -9020,6 +9035,7 @@ void GMT_free_custom_symbols (struct GMT_CTRL *C) {	/* Free the allocated list o
 			GMT_free (C, current);
 		}
 		GMT_free (C, C->init.custom_symbol[i]->PS_macro);
+		GMT_free (C, C->init.custom_symbol[i]->type);
 		GMT_free (C, C->init.custom_symbol[i]);
 	}
 	GMT_free (C, C->init.custom_symbol);
