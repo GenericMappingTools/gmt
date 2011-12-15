@@ -2,9 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
-2011-12-14	pwessel
-	* gmt_init.c:		Lay groundwork to allow multi-param symbols with geo-angles.
+2011-12-15	pwessel
+	* gmt_init.c:		Allow for multi-param symbols with geo-angles.
 	* gmt_support.c:	---"---
+	* psxy[z].c:		---"---
 
 2011-12-14	remko
 	* PSL_prologue.ps:	Introduced /PSL_transp to deal with transparency, supported

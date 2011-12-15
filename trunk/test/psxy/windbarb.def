@@ -4,7 +4,7 @@
 # [Timothy Hume <T.Hume@bom.gov.au>]
 
 # Two args: windspeed(knots) and plotangle(degrees)
-N:	2
+N:	2 oa
 # Rotate the coordinate system by the number of degrees specified by $2
 $2 R
 

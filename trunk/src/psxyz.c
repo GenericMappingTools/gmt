@@ -662,9 +662,8 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						data[n].dim[0] = in[ex1];	/* direction */
 					else if (!GMT_is_geographic (GMT, GMT_IN))
 						data[n].dim[0] = 90.0 - in[ex1];
-					else {
-						GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1], &(data[n].dim[0]));
-					}
+					else
+						data[n].dim[0] = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1]);
 					data[n].dim[1] = in[ex2];	/* length */
 					data[n].dim[2] = (data[n].dim[1] < S.v_norm) ? data[n].dim[1] * S.v_shrink : 1.0;
 					break;
@@ -679,8 +678,8 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						data[n].dim[2] = 90.0 - in[ex2+S.read_size];		/* Stop direction in degrees */
 					}
 					else {
-						GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size], &(data[n].dim[1]));
-						GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size], &(data[n].dim[2]));
+						data[n].dim[1] = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
+						data[n].dim[2] = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
 					}
 					break;
 				case GMT_SYMBOL_CUSTOM:
@@ -863,7 +862,9 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				case GMT_SYMBOL_CUSTOM:
 					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					dim[0] = data[i].dim[0];
-					for (j = 0; j < S.n_required; j++) dim[j+1] = data[i].dim[j];
+					for (j = 0; j < S.n_required; j++) {	/* Deal with any geo-angles first */
+						dim[j+1] = (S.custom->type[j] == GMT_IS_GEOANGLE) ? GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - data[i].dim[j]) : data[i].dim[j];
+					}
 					GMT_draw_custom_symbol (GMT, data[i].x, data[i].y, dim, data[i].custom, &data[i].p, &data[i].f, data[i].outline);
 					GMT_free (GMT, data[i].custom);
 					break;

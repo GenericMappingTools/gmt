@@ -911,7 +911,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					else if (!GMT_is_geographic (GMT, GMT_IN))
 						direction = 90.0 - in[ex1];
 					else
-						GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1], &direction);
+						direction = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1]);
 					if (S.v_just == 3) {
 						GMT_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (GMT_is_dnan (x_2) || GMT_is_dnan (y_2)) {
@@ -948,14 +948,16 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						dim[1] = 90.0 - in[ex2+S.read_size];
 					}
 					else {
-						GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex1+S.read_size], &(dim[2]));
-						GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex2+S.read_size], &(dim[1]));
+						dim[2] = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex1+S.read_size]);
+						dim[1] = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex2+S.read_size]);
 					}
 					dim[0] *= 0.5;
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
 					break;
 				case GMT_SYMBOL_CUSTOM:
-					for (j = 0; j < S.n_required; j++) dim[j+1] = in[ex1+S.read_size+j];
+					for (j = 0; j < S.n_required; j++) {	/* Deal with any geo-angles first */
+						dim[j+1] = (S.custom->type[j] == GMT_IS_GEOANGLE) ? GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex1+S.read_size+j]) : in[ex1+S.read_size+j];
+					}
 					GMT_draw_custom_symbol (GMT, plot_x, plot_y, dim, S.custom, &current_pen, &current_fill, outline_active);
 					break;
 			}

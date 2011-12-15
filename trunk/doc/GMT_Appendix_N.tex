@@ -54,14 +54,23 @@ clarify what your symbol does.
 \subsection{Symbol variables}
 
 Simple symbols, such as circles and triangles, only take a single parameter: the
-symbol size.  However, more complicated symbol, such as the ellipse or vector symbols,
-require more parameters.  If your custom symbol requires more than a single size parameter
+symbol size, which is either given on the command line (via \Opt{Sk}) or as part
+of the input data.  However, more complicated symbols, such as the ellipse or vector symbols,
+may require more parameters.  If your custom symbol requires more than the single size parameter
 you must include the line
 \begin{quote}
-	\textbf{N}: \emph{n\_extra\_parameters}
+	\textbf{N}: \emph{n\_extra\_parameters} [\emph{types}]
 \end{quote}
 before any other macro commands.  It is an optional statement in that \emph{n\_extra\_parameters} will
-default to 0 unless explicitly set.
+default to 0 unless explicitly set.  By default the extra parameters are considered to be quantities
+that should be passed directly to the symbol machinery.  However, you can use the \emph{types} argument
+to specify different types of parameters.  The available types are
+\begin{description}
+	\item [a]: Geographic angle, to be converted to map angle given the current map projection.
+	\item [l]: Length, i.e., an additional length scale (in cm, inch, or point as per {\bf PROJ\_LENGTH\_UNIT}) in addition to the given symbol size.
+	\item [o]: Other, i.e., a quantity to be passed to the custom symbol as is.
+\end{description}
+To use the extra parameters in your macro you address them as \$1, \$2, etc.
 
 \subsection{Macro commands}
 
@@ -105,7 +114,7 @@ y-dash		&	\textbf{y}	& Plot a square 			& $x, y$,\emph{size}  \\ \hline
 All angles are expected in degrees. The \textbf{S} macro is only used if you just want to draw a line and not close/fill it as
 a polygon [Default]; place it on its own line after your last path construction operator.}
 \end{table} 
-For \textbf{M}, \textbf{T}, and all the lower-case codes you may optionally append specific pens (with \Opt{W}\emph{pen})
+For \textbf{M}, \textbf{T}, and all the lower-case symbol codes you may optionally append specific pens (with \Opt{W}\emph{pen})
 and fills (with \Opt{G}\emph{pen}).  These settings will override the pens and fills you may have specified
 on the command line.  Passing \Opt{G}- or \Opt{W}- means no fill or outline, respectively.
 
