@@ -7077,7 +7077,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			p->symbol = GMT_SYMBOL_CUSTOM;
 			p->custom = GMT_get_custom_symbol (C, text_cp);
 			p->n_required = p->custom->n_required;
-			for (j = 0; j < p->n_required; j++) {
+			for (j = p->n_nondim = 0; j < p->n_required; j++) {	/* Flag input columns that are NOT lengths */
 				if (p->custom->type[j] != GMT_IS_DIMENSION) p->nondim_col[p->n_nondim++] = 2 + col_off + j;
 			}
 			break;

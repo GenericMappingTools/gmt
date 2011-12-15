@@ -2587,7 +2587,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 	/* Initialize fill structure */
 	GMT_init_fill (C, &f, C->current.setting.map_default_pen.rgb[0], C->current.setting.map_default_pen.rgb[1], C->current.setting.map_default_pen.rgb[2]);
 
-	GMT_azim_to_angle (C, mr->lon, mr->lat, DIST_TO_2ND_POINT, 90.0, &ew_angle);	/* Get angle of E-W direction at this location */
+	ew_angle = GMT_azim_to_angle (C, mr->lon, mr->lat, DIST_TO_2ND_POINT, 90.0);	/* Get angle of E-W direction at this location */
 
 	R[0] = 0.75 * 0.5 * mr->size;
 	R[1] = 0.5 * mr->size;
@@ -2710,7 +2710,7 @@ void gmt_draw_dir_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 	/* Initialize fill structure */
 	GMT_init_fill (C, &f, C->current.setting.map_default_pen.rgb[0], C->current.setting.map_default_pen.rgb[1], C->current.setting.map_default_pen.rgb[2]);
 
-	GMT_azim_to_angle (C, mr->lon, mr->lat, DIST_TO_2ND_POINT, 90.0, &angle);	/* Get angle of E-W direction at this location */
+	angle = GMT_azim_to_angle (C, mr->lon, mr->lat, DIST_TO_2ND_POINT, 90.0);	/* Get angle of E-W direction at this location */
 
 	GMT_setpen (C, &C->current.setting.map_tick_pen[0]);
 
@@ -3932,11 +3932,10 @@ void GMT_geo_rectangle (struct GMT_CTRL *C, double lon, double lat, double width
 	   and draws the rectangle using the chosen map projection */
 
 	double sin_azimuth, cos_azimuth, sinp, cosp, x, y, x_prime, y_prime, rho, c, dim[3];
-	double sin_c, cos_c, center, lon_w, lat_w, lon_h, lat_h, xp, yp, xw, yw, xh, yh, tmp;
+	double sin_c, cos_c, center, lon_w, lat_w, lon_h, lat_h, xp, yp, xw, yw, xh, yh;
 	struct PSL_CTRL *P = C->PSL;
 
-	GMT_azim_to_angle (C, lon, lat, 0.1, azimuth, &tmp);
-	azimuth = tmp;
+	azimuth = GMT_azim_to_angle (C, lon, lat, 0.1, azimuth);
 	GMT_geo_to_xy (C, lon, lat, &xp, &yp);		/* Center of rectangle */
 
 	width *= 500.0, height *= 500.0;	/* Convert to meters and get half the size */

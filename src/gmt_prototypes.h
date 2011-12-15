@@ -287,6 +287,7 @@ EXTERN_MSC void GMT_end_for_mex (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item);
 EXTERN_MSC double GMT_az_backaz (struct GMT_CTRL *C, double lonE, double latE, double lonS, double latS, GMT_LONG baz);
 EXTERN_MSC double GMT_distance (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE);
+EXTERN_MSC double GMT_azim_to_angle (struct GMT_CTRL *C, double lon, double lat, double c, double azim);
 EXTERN_MSC GMT_LONG GMT_clip_to_map (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG np, double **x, double **y);
 EXTERN_MSC GMT_LONG GMT_compact_line (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n, GMT_LONG pen_flag, int *pen);
 EXTERN_MSC GMT_LONG GMT_geo_to_xy_line (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n);
@@ -295,7 +296,6 @@ EXTERN_MSC GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, str
 EXTERN_MSC GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IMAGE *O, GMT_LONG inverse);
 EXTERN_MSC GMT_LONG GMT_map_clip_path (struct GMT_CTRL *C, double **x, double **y, GMT_LONG *donut);
 EXTERN_MSC GMT_LONG GMT_map_outside (struct GMT_CTRL *C, double lon, double lat);
-EXTERN_MSC void GMT_azim_to_angle (struct GMT_CTRL *C, double lon, double lat, double c, double azim, double *angle);
 EXTERN_MSC GMT_LONG GMT_geo_to_xy (struct GMT_CTRL *C, double lon, double lat, double *x, double *y);
 EXTERN_MSC void GMT_geoz_to_xy (struct GMT_CTRL *C, double x, double y, double z, double *x_out, double *y_out);
 EXTERN_MSC GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double *inc, GMT_LONG nx, GMT_LONG ny, GMT_LONG dpi, GMT_LONG offset);

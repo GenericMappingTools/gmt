@@ -689,7 +689,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				if (Ctrl->A.active) {
 					save_angle = T.paragraph_angle;	/* Since we might overwrite the default */
-					GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle, &tmp);
+					tmp = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle);
 					T.paragraph_angle = fmod (tmp + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
 					if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify = 4 * (T.block_justify/4) + 2 - (T.block_justify%4 - 2);	/* Flip any L/R code */
 				}
@@ -803,7 +803,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			if (Ctrl->A.active) {
 				save_angle = T.paragraph_angle;	/* Since we might overwrite the default */
-				GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle, &tmp);
+				tmp = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle);
 				T.paragraph_angle = fmod (tmp + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
 				if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify = 4 * (T.block_justify/4) + 2 - (T.block_justify%4 - 2);	/* Flip any L/R code */
 			}
