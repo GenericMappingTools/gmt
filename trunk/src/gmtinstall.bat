@@ -41,7 +41,7 @@ REM STEP b: Specify the "Bitage" and if building normal or debug version
 REM         Set DEBUG to "yes" or "no" and BITS = 32 or 64 (no quotes)
 REM	    NOTE: The value set here for BITS will be the default but it
 REM		  can be overriden by a third input arg.
-SET DEBUG="no"
+SET DEBUG="yes"
 SET BITS=64
 
 REM
@@ -262,7 +262,9 @@ REM ----------------------------------------------------
 
 set GMTLIB=gmt.lib %lib_netcdf% setargv.obj
 
-%CC% %COPT% testio.c %GMTLIB%
+%CC% %COPT% testio.c  %GMTLIB%
+%CC% %COPT% gmtmercmap.c  %GMTLIB%
+%CC% %COPT% psldemo.c %GMTLIB% psl.lib
 
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_blockmean    /Feblockmean    gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_blockmedian  /Feblockmedian  gmtprogram.c %GMTLIB%
