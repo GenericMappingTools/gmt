@@ -4,7 +4,7 @@
  */
 
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
 #include "pslib.h"
 
 int main (int argc, char **argv) {
