@@ -6,7 +6,7 @@
 . ../functions.sh
 header "Test psxy with multi-parameter windbarb symbol"
 
-ps=barb.ps
+ps=windbarb.ps
 cat << EOF > tmp
 150	-40	25	9.0
 150	-30	50	90.0
