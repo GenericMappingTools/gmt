@@ -6549,7 +6549,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = 1 when called to process command line options */
 	GMT_LONG decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon, check = TRUE, old_style, col_off = mode;
 	char symbol_type, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], text_cp[GMT_TEXT_LEN256], *c = NULL, *s = NULL;
-	static char *allowed_symbols[2] = {"-+AaBbCcDdEefGgHhIiJjmNnpqRrSsTtVvWwxy", "-+AabCcDdEefGgHhIiJjmNnOopqRrSsTtUuVvWwxy"};
+	static char *allowed_symbols[2] = {"=-+AaBbCcDdEefGgHhIiJjmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjmNnOopqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
 
 	p->n_required = p->convert_angles = p->n_nondim = 0;
@@ -6629,6 +6629,25 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 	else if (text[0] == 'm') {	/* mathangle gets separate treatment because of modifiers */
 		k = (strchr ("bfl", text[1])) ? 2 : 1;	/* Skip the modifier b, f, or l */
 		n = sscanf (text, "%c", &symbol_type);
+		if (!text[k]) {	/* No size nor unit */
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			col_off++;
+		}
+		else if (strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			if ((p->u = gmt_get_unit (text[k])) < 0) decode_error = TRUE; else p->u_set = TRUE;
+			col_off++;
+		}
+		else
+			p->size_x = p->given_size_x = GMT_to_inch (C, &text[k]);
+	}
+	else if (text[0] == '=') {	/* geovector gets separate treatment because of modifiers -S=<h|t|b|s><b|f|l>[<size>] */
+		n = sscanf (text, "%c", &symbol_type);
+		k = 1;
+		if (strchr ("bhst", text[k])) k++;	/* Found the h|t|b|s modifier */
+		if (k == 2 && strchr ("bfl", text[k])) k++;	/* Found the b|f|l modifier */
 		if (!text[k]) {	/* No size nor unit */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
@@ -7080,6 +7099,48 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			for (j = p->n_nondim = 0; j < p->n_required; j++) {	/* Flag input columns that are NOT lengths */
 				if (p->custom->type[j] != GMT_IS_DIMENSION) p->nondim_col[p->n_nondim++] = 2 + col_off + j;
 			}
+			break;
+		case '=':
+			p->symbol = GMT_SYMBOL_GEOVECTOR;
+			p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Angle [or longitude] */
+			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Arc length [or latitude] */
+			check = TRUE;
+			switch (text[1]) {	/* Check if s(egment), h(ead), b(alance center), or t(ail) have been specified */
+				case 's':	/* Input (x,y) refers to vector head (the tip)  */
+					p->v_just = 3;
+					break;
+				case 'h':	/* Input (x,y) refers to vector head (the tip) */
+					p->v_just = 2;
+					break;
+				case 'b':	/* Input (x,y) refers to balance point of vector */
+					p->v_just = 1;
+					break;
+				case 't':	/* Input (x,y) refers to tail of vector [Default] */
+					p->v_just = 0;
+					break;
+				default:	/* No modifier given, default to tail */
+					p->v_just = 0;
+					check = FALSE;	/* Did not find s|h|t|b */
+					break;
+			}
+			if (check) {	/* Did find s|h|t|b, now check for head code (if present) */
+				switch (text[2]) {	/* Check if f(irst), l(last), b(oth), or none [Default] arrow heads*/
+					case 'f':	/* Input (x,y) refers to vector head (the tip), double heads */
+						p->v_double_heads = 1;
+						break;
+					case 'l':	/* Input (x,y) refers to vector head (the tip), double heads */
+						p->v_double_heads = 2;
+						break;
+					case 'b':	/* Input (x,y) refers to balance point of vector, double heads */
+						p->v_double_heads = 3;
+						break;
+					default:	/* No modifier given, no head */
+						p->v_double_heads = 0;
+						break;
+				}
+			}
+			p->n_required = 2;
+			check = FALSE;
 			break;
 		default:
 			decode_error = TRUE;
