@@ -8794,8 +8794,26 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 #endif
 		GMT_chop (C, buffer);	/* Get rid of \n \r */
 		if (buffer[0] == '#' || buffer[0] == '\0') continue;	/* Skip comments or blank lines */
-		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y stuff */
-			head->n_required = atoi (&buffer[2]);
+		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
+			char flags[GMT_TEXT_LEN64];
+			nc = sscanf (&buffer[2], "%" GMT_LL "d %s", &head->n_required, flags);
+			head->type = GMT_memory (C, NULL, head->n_required, GMT_LONG);
+			if (nc == 2) {	/* Got optional types argument */
+				if (strlen (flags) != head->n_required) {
+					GMT_report (C, GMT_MSG_FATAL, "Error: Custom symbol %s has inconsistent N: <npar> [<types>] declaration\n", name);
+					GMT_exit (EXIT_FAILURE);
+				}
+				for (k = 0; k < head->n_required; k++) {	/* Determine the argument types */
+					switch (flags[k]) {
+						case 'a':	head->type[k] = GMT_IS_GEOANGLE; break;		/* Angle that needs to be converted via the map projection */
+						case 'l':	head->type[k] = GMT_IS_DIMENSION; break;	/* Length that will be in the current measure unit */
+						case 'o':	head->type[k] = GMT_IS_FLOAT; break;		/* Other, i.e, non-dimensional quantity not to be changed */
+					}
+				}
+			}
+			else {
+				for (k = 0; k < head->n_required; k++) head->type[k] = GMT_IS_DIMENSION;	/* Default is lenghts */
+			}
 			continue;
 		}
 #ifdef PS_MACRO
@@ -8998,6 +9016,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 		previous = s;
 	}
 	fclose (fp);
+	
 	*S = head;
 	return (GMT_NOERROR);
 }
@@ -9023,23 +9042,23 @@ void GMT_free_custom_symbols (struct GMT_CTRL *C) {	/* Free the allocated list o
 	GMT_LONG i;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *current = NULL;
 
-	if (C->init.n_custom_symbols > 0) {
-		for (i = 0; i < C->init.n_custom_symbols; i++) {
-			s = C->init.custom_symbol[i]->first;
-			while (s) {
-				current = s;
-				s = s->next;
-				GMT_free (C, current->fill);
-				GMT_free (C, current->pen);
-				GMT_free (C, current->string);
-				GMT_free (C, current);
-			}
-			GMT_free (C, C->init.custom_symbol[i]->PS_macro);
-			GMT_free (C, C->init.custom_symbol[i]);
+	if (C->init.n_custom_symbols == 0) return;
+	for (i = 0; i < C->init.n_custom_symbols; i++) {
+		s = C->init.custom_symbol[i]->first;
+		while (s) {
+			current = s;
+			s = s->next;
+			GMT_free (C, current->fill);
+			GMT_free (C, current->pen);
+			GMT_free (C, current->string);
+			GMT_free (C, current);
 		}
-		GMT_free (C, C->init.custom_symbol);
-		C->init.n_custom_symbols = 0;
+		GMT_free (C, C->init.custom_symbol[i]->PS_macro);
+		GMT_free (C, C->init.custom_symbol[i]->type);
+		GMT_free (C, C->init.custom_symbol[i]);
 	}
+	GMT_free (C, C->init.custom_symbol);
+	C->init.n_custom_symbols = 0;
 }
 
 GMT_LONG GMT_polygon_is_open (struct GMT_CTRL *C, double x[], double y[], GMT_LONG n)

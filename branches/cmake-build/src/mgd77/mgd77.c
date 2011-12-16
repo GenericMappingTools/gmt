@@ -424,7 +424,7 @@ int MGD77_Read_Data_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct 
 
 	switch (F->format) {
 		case MGD77_FORMAT_M77:		/* Will read a single MGD77 record */
-			if (error = MGD77_Read_Data_Record_m77 (C, F, &MGD77Record)) break;		/* EOF probably */
+			if ((error = MGD77_Read_Data_Record_m77 (C, F, &MGD77Record))) break;		/* EOF probably */
 			dvals[0] = MGD77Record.time;
 			for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) dvals[i] = MGD77Record.number[MGD77_pos[i]];
 			for (i = MGD77_N_NUMBER_FIELDS, k = 0; i < MGD77_N_DATA_FIELDS; i++, k++) strcpy (tvals[k], MGD77Record.word[k]);
@@ -433,7 +433,7 @@ int MGD77_Read_Data_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct 
 			error = MGD77_Read_Data_Record_cdf (C, F, H, dvals, tvals);
 			break;
 		case MGD77_FORMAT_TBL:		/* Will read a single ascii table record */
-			if (error = MGD77_Read_Data_Record_tbl (C, F, &MGD77Record)) break;		/* EOF probably */
+			if ((error = MGD77_Read_Data_Record_tbl (C, F, &MGD77Record))) break;		/* EOF probably */
 			dvals[0] = MGD77Record.time;
 			for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) dvals[i] = MGD77Record.number[MGD77_pos[i]];
 			dvals[MGD77_TIME] = MGD77Record.time;
