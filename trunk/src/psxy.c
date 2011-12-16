@@ -690,7 +690,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (S.symbol == GMT_SYMBOL_ELLIPSE) Ctrl->N.active = TRUE;	/* So we can see ellipses that have centers outside -R */
 	if (S.symbol == GMT_SYMBOL_BARX && !S.base_set && GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10) S.base = GMT->common.R.wesn[XLO];	/* Default to west level for horizontal log10 bars */
 	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set && GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
-	if (S.symbol == GMT_SYMBOL_VECTOR && S.v_just == 3) {
+	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v_just == 3) {
 		/* Reading 2nd coordinate so must set column types */
 		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
 		GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
@@ -912,18 +912,18 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						direction = 90.0 - in[ex1];
 					else
 						direction = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1]);
-					if (S.v_just == 3) {
+					if (S.v_just == 3) {	/* Got coordinates of tip instead of dir/length */
 						GMT_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (GMT_is_dnan (x_2) || GMT_is_dnan (y_2)) {
 							GMT_report (GMT, GMT_MSG_FATAL, "Warning: Vector head coordinates contain NaNs near line %ld. Skipped\n", n_total_read);
 							continue;
 						}
 					}
-					else {
+					else {	/* Compute tip from tail and length */
 						sincosd (direction, &s, &c);
 						x_2 = plot_x + length * c;
 						y_2 = plot_y + length * s;
-						if (S.v_just) {
+						if (S.v_just) {	/* Meant to center the vector at the given point */
 							dx = S.v_just * 0.5 * (x_2 - plot_x);	dy = S.v_just * 0.5 * (y_2 - plot_y);
 							plot_x -= dx;		plot_y -= dy;
 							x_2 -= dx;		y_2 -= dy;
@@ -934,6 +934,9 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					dim[2] = s * S.v_width, dim[3] = s * S.h_length, dim[4] = s * S.h_width;
 					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = S.v_double_heads ? 1.0 : 0.0;
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
+					break;
+				case GMT_SYMBOL_GEOVECTOR:
+					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex1], &S);
 					break;
 				case GMT_SYMBOL_MARC:
 					dim[4] = GMT->current.setting.map_vector_shape, dim[3] = (double)S.v_double_heads;
