@@ -6259,18 +6259,18 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 	return (GMT_NOERROR);
 }
 
-void GMT_azim_to_angle (struct GMT_CTRL *C, double lon, double lat, double c, double azim, double *angle)
-	/* All variables in degrees */
-{
-	double lon1, lat1, x0, x1, y0, y1, dx, width, sinaz, cosaz;
+double GMT_azim_to_angle (struct GMT_CTRL *C, double lon, double lat, double c, double azim)
+{	/* All variables in degrees */
+
+	double lon1, lat1, x0, x1, y0, y1, dx, width, sinaz, cosaz, angle;
 
 	if (GMT_IS_LINEAR (C)) {	/* Trivial case */
-		*angle = 90.0 - azim;
+		angle = 90.0 - azim;
 		if (C->current.proj.scale[GMT_X] != C->current.proj.scale[GMT_Y]) {	/* But allow for different x,y scaling */
-			sincosd (*angle, &sinaz, &cosaz);
-			*angle = d_atan2d (sinaz * C->current.proj.scale[GMT_Y], cosaz * C->current.proj.scale[GMT_X]);
+			sincosd (angle, &sinaz, &cosaz);
+			angle = d_atan2d (sinaz * C->current.proj.scale[GMT_Y], cosaz * C->current.proj.scale[GMT_X]);
 		}
-		return;
+		return (angle);
 	}
 
 	/* Find second point c spherical degrees away in the azim direction */
@@ -6293,7 +6293,8 @@ void GMT_azim_to_angle (struct GMT_CTRL *C, double lon, double lat, double c, do
 		else
 			x0 += width;
 	}
-	*angle = d_atan2d (y1 - y0, x1 - x0);
+	angle = d_atan2d (y1 - y0, x1 - x0);
+	return (angle);
 }
 
 GMT_LONG GMT_map_clip_path (struct GMT_CTRL *C, double **x, double **y, GMT_LONG *donut)

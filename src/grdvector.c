@@ -433,11 +433,9 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			if (Ctrl->T.active) {	/* Transform azimuths to plot angle */
 				if (!Ctrl->Z.active) vec_azim = 90.0 - vec_azim;
-				GMT_azim_to_angle (GMT, x, y, 0.1, vec_azim, &tmp);
-				vec_azim = tmp * D2R;
+				vec_azim = GMT_azim_to_angle (GMT, x, y, 0.1, vec_azim);
 			}
-			else
-				vec_azim *= D2R;
+			vec_azim *= D2R;
 			/* vec_azim is now in radians */
 			vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
 			/* vec_length is now in inches */

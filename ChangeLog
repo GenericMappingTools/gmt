@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-12-15	pwessel
+	* gmt_init.c:		Allow for multi-param symbols with geo-angles.
+	* gmt_support.c:	---"---
+	* psxy[z].c:		---"---
+	* psxy.c:		Testing out geovector symbol
+
 2011-12-14	remko
 	* PSL_prologue.ps:	Introduced /PSL_transp to deal with transparency, supported
 				both by Adobe Illustrator and ghostscript.
