@@ -9028,6 +9028,7 @@ void GMT_free_custom_symbols (struct GMT_CTRL *C) {	/* Free the allocated list o
 	GMT_LONG i;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *current = NULL;
 
+	if (C->init.n_custom_symbols == 0) return;
 	for (i = 0; i < C->init.n_custom_symbols; i++) {
 		s = C->init.custom_symbol[i]->first;
 		while (s) {
