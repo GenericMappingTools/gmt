@@ -677,6 +677,8 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				case GMT_SYMBOL_GEOVECTOR:
 					data[n].dim[0] = in[ex2];	/* length */
 					data[n].dim[1] = in[ex1];	/* direction */
+					data[n].x = in[GMT_X];	/* Revert to longitude and latitude */
+					data[n].y = in[GMT_Y];
 					break;
 				case GMT_SYMBOL_MARC:
 				case GMT_SYMBOL_WEDGE:
