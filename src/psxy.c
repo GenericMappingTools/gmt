@@ -283,7 +283,8 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   -(xdash), +(plus), st(a)r, (b|B)ar, (c)ircle, (d)iamond, (e)llipse,\n");
 	GMT_message (GMT, "\t   (f)ront, octa(g)on, (h)exagon, (i)nvtriangle, (j)rotated rectangle,\n");
 	GMT_message (GMT, "\t   (k)ustom, (l)etter, (m)athangle, pe(n)tagon, (p)oint, (q)uoted line, (r)ectangle\n");
-	GMT_message (GMT, "\t   (R)ounded rectangle, (s)quare, (t)riangle, (v)ector, (w)edge, (x)cross, or (y)dash.\n");
+	GMT_message (GMT, "\t   (R)ounded rectangle, (s)quare, (t)riangle, (v)ector, (w)edge, (x)cross, (y)dash.\n");
+	GMT_message (GMT, "\t   or =(geovector, i.e., great circle vectors).\n");
 	GMT_message (GMT, "\t   If no size is specified, then the 3rd column must have sizes and\n");
 	GMT_message (GMT, "\t   you may append +s<scale>[unit][/<origin>][l] to convert the given data\n");
 	GMT_message (GMT, "\t   as size = (data - origin) * scale, using log10 if l is appended.\n");
@@ -338,6 +339,12 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     Upper case H, B, T, S gives double-headed vector [Default is t].\n");
 	GMT_message (GMT, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
 	GMT_message (GMT, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
+	GMT_message (GMT, "\t   Geovectors: Azimuth and length (in km) must be in columns 3-4.\n");
+	GMT_message (GMT, "\t     Insert h(head), b(balance point), or t(ail) after -S= to\n");
+	GMT_message (GMT, "\t     justify vector w.r.t. input (x,y), or insert s(egment) if (x,y)\n");
+	GMT_message (GMT, "\t     is tail and columns 3 and 4 hold the head location (x,y).\n");
+	GMT_message (GMT, "\t     Next insert f for arrow at first point, l at last, or b for both [none].\n");
+	GMT_message (GMT, "\t     Finally, append <size> as length of vector head (use -W to set line thickness).\n");
 	GMT_message (GMT, "\t-T Ignore all input files.\n");
 	GMT_explain_options (GMT, "UV");
 	GMT_pen_syntax (GMT, 'W', "Set pen attributes [Default pen is %s]:");

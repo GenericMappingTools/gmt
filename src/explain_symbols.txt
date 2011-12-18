@@ -230,3 +230,18 @@ vertical
 OPT(Sz)
 zdash.  IT(size) is the length of a short vertical (z-dir) line segment.
 #endif
+.TP
+OPT(S=)
+geovector.  Azimuth (in degrees east from north) and length (in km) must be found in columns
+#ifdef THREE_D
+4 and 5.
+#else
+3 and 4.
+#endif
+To center vector on balance point, use OPT(S=b); to align point with the vector head,
+use OPT(S=h); to align point with the vector tail, use OPT(S=t), while
+to give the head point's coordinates\"'
+instead of azimuth and length, use OPT(S=s).  Next, append BD(f) to draw head at first point, BD(l) to
+draw head at last point, or BD(b) to draw vector heads at both ends [none].  Finally, append
+IT(size) which is the length of the vector head.
+
