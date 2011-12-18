@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-12-17	pwessel
+	* psxyz.c:		Testing out geovector symbol
+	* psxy.c:		Added usage/doc for -S= great-circle vector symbols
+				for both psxy and psxyz.
+
 2011-12-15	pwessel
 	* gmt_init.c:		Allow for multi-param symbols with geo-angles.
 	* gmt_support.c:	---"---

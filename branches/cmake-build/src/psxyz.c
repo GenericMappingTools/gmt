@@ -139,7 +139,8 @@ GMT_LONG GMT_psxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   (f)ront, octa(g)on, (h)exagon (i)nvtriangle, (j)rotated rectangle,\n");
 	GMT_message (GMT, "\t   (k)ustom, (l)etter, (m)athangle, pe(n)tagon, c(o)lumn, (p)oint,\n");
 	GMT_message (GMT, "\t   (q)uoted line, (r)ectangle, (R)ounded rectangle, (s)quare, (t)riangle,\n");
-	GMT_message (GMT, "\t   c(u)be, (v)ector, (w)edge, (x)cross, (y)dash, and (z)dash.\n");
+	GMT_message (GMT, "\t   c(u)be, (v)ector, (w)edge, (x)cross, (y)dash, (z)dash, or\n");
+	GMT_message (GMT, "\t   =(geovector, i.e., great circle vectors).\n");
 	GMT_message (GMT, "\t   If no size is specified, then the 4th column must have sizes and\n");
 	GMT_message (GMT, "\t   you may append +s<scale>[unit][/<origin>][l] to convert the given data\n");
 	GMT_message (GMT, "\t   as size = (data - origin) * scale, using log10 if l is appended.\n");
@@ -198,6 +199,12 @@ GMT_LONG GMT_psxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "U");
 	GMT_message (GMT, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
 	GMT_message (GMT, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
+	GMT_message (GMT, "\t   Geovectors: Azimuth and length (in km) must be in columns 3-4.\n");
+	GMT_message (GMT, "\t     Insert h(head), b(balance point), or t(ail) after -S= to\n");
+	GMT_message (GMT, "\t     justify vector w.r.t. input (x,y), or insert s(egment) if (x,y)\n");
+	GMT_message (GMT, "\t     is tail and columns 3 and 4 hold the head location (x,y).\n");
+	GMT_message (GMT, "\t     Next insert f for arrow at first point, l at last, or b for both [none].\n");
+	GMT_message (GMT, "\t     Finally, append <size> as length of vector head (use -W to set line thickness).\n");
 	GMT_explain_options (GMT, "V");
 	GMT_pen_syntax (GMT, 'W', "Set pen attributes [Default pen is %s]:");
 	GMT_message (GMT, "\t   Implicitly draws symbol outline with this pen.\n");
@@ -484,7 +491,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) GMT_setfont (GMT, &S.font);		/* Set the required font */
-	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_VECTOR) && S.v_just == 3) {
+	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v_just == 3) {
 		/* Reading 2nd coordinate so must set column types */
 		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
 		GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
@@ -667,6 +674,12 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					data[n].dim[1] = in[ex2];	/* length */
 					data[n].dim[2] = (data[n].dim[1] < S.v_norm) ? data[n].dim[1] * S.v_shrink : 1.0;
 					break;
+				case GMT_SYMBOL_GEOVECTOR:
+					data[n].dim[0] = in[ex2];	/* length */
+					data[n].dim[1] = in[ex1];	/* direction */
+					data[n].x = in[GMT_X];	/* Revert to longitude and latitude */
+					data[n].y = in[GMT_Y];
+					break;
 				case GMT_SYMBOL_MARC:
 				case GMT_SYMBOL_WEDGE:
 					if (!S.convert_angles) {
@@ -839,6 +852,10 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					dim[6] = S.v_double_heads ? 1.0 : 0.0;
 					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					PSL_plotsymbol (PSL, data[i].x, data[i].y, dim, PSL_VECTOR);
+					break;
+				case GMT_SYMBOL_GEOVECTOR:
+					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
+					GMT_geo_vector (GMT, data[i].x, data[i].y, data[i].dim[0], data[i].dim[1], &S);
 					break;
 				case GMT_SYMBOL_MARC:
 					dim[0] = data[i].dim[0] * 0.5;
