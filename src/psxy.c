@@ -965,7 +965,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
 					break;
 				case GMT_SYMBOL_CUSTOM:
-					for (j = 0; j < S.n_required; j++) {	/* Deal with any geo-angles first */
+					for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Deal with any geo-angles first */
 						dim[j+1] = (S.custom->type[j] == GMT_IS_GEOANGLE) ? GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex1+S.read_size+j]) : in[ex1+S.read_size+j];
 					}
 					GMT_draw_custom_symbol (GMT, plot_x, plot_y, dim, S.custom, &current_pen, &current_fill, outline_active);
