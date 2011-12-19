@@ -5500,12 +5500,41 @@ GMT_LONG gmt_init_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, GMT
 	return (n_errors);
 }
 
-GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, double val, double phase, char flag, char unit) {
+GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, char *in, char flag, char axis) {
 	/* Load the values into the appropriate GMT_PLOT_AXIS_ITEM structure */
 
 	struct GMT_PLOT_AXIS_ITEM *I = NULL;
-	char *format = NULL;
+	char *format = NULL, *t = NULL, *s = NULL, unit;
+	double phase, val;
 
+	t = in;
+
+	/* Here, t must point to a valid number.  If t[0] is not [+,-,.] followed by a digit we have an error */
+
+	/* Decode interval, get pointer to next segment */
+	if ((val = strtod (t, &s)) < 0.0 && C->current.proj.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
+		GMT_report (C, GMT_MSG_FATAL, "ERROR: Negative interval in -B option (%c-component, %c-info): %s\n", axis, flag, in);
+		return (3);
+	}
+	if (s[0] && (s[0] == '-' || s[0] == '+')) {	/* Phase shift information given */
+		t = s;
+		phase = strtod (t, &s);
+	}
+
+	/* Appended one of the allowed units, or l or p for log10/pow */
+#ifdef GMT_COMPAT
+	if (s[0] && strchr ("YyOoUuKkJjDdHhMmSsCcrRlp", s[0]))
+#else
+	if (s[0] && strchr ("YyOoUuKkJjDdHhMmSsrRlp", s[0]))
+#endif
+		unit = s[0];
+	else if (A->type == GMT_TIME)				/* Default time system unit implied */
+		unit = C->current.setting.time_system.unit;
+	else
+		unit = 0;	/* Not specified */
+
+	if (!C->current.map.frame.primary) flag = (char) toupper ((int)flag);
+	
 	if (A->type == GMT_TIME) {	/* Strict check on time intervals */
 		if (GMT_verify_time_step (C, irint (val), unit)) GMT_exit (EXIT_FAILURE);
 		if ((fmod (val, 1.0) > GMT_CONV_LIMIT)) {
@@ -5578,6 +5607,7 @@ GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, double val,
 	I->interval = val;
 	I->flavor = 0;
 	I->active = TRUE;
+	if (in[0] && val == 0.0) I->active = FALSE;
 	I->upper_case = FALSE;
 	format = (C->current.map.frame.primary) ? C->current.setting.format_time[0] : C->current.setting.format_time[1];
 	switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
@@ -5599,14 +5629,16 @@ GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, double val,
 		default:
 			break;
 	}
+
+	C->current.map.frame.draw = TRUE;
+
 	return (GMT_NOERROR);
 }
 
 GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *in, struct GMT_PLOT_AXIS *A) {
 	/* Decode the annot/tick segments of the clean -B string pieces */
 
-	char *t = NULL, *s = NULL, unit, *str = "xyz";
-	double val = 0.0, phase = 0.0;
+	char *str = "xyz";
 
 	if (!in) return (GMT_NOERROR);	/* NULL pointer passed */
 
@@ -5622,49 +5654,18 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *i
 				if (n_int[k] == 0) continue;
 				flag = list[k];
 				if (!C->current.map.frame.primary) flag = (char)toupper ((int)flag);
-				gmt_set_titem (C, A, 0.0, 0.0, flag, 0);	/* Store the findings for this segment */
+				gmt_set_titem (C, A, "0", flag, str[axis]);	/* Store the findings for this segment */
 			}
 			if (n_int[1]) A->item[GMT_ANNOT_UPPER+!C->current.map.frame.primary].special = TRUE;
 			C->current.map.frame.draw = TRUE;
 		}
 		else
 			GMT_report (C, GMT_MSG_FATAL, "ERROR: Cannot access custom file in -B string %c-component %s\n", str[axis], in);
-		return (GMT_NOERROR);
 	}
-	
-	t = in;
-
-	/* Here, t must point to a valid number.  If t[0] is not [+,-,.] followed by a digit we have an error */
-
-	/* Decode interval, get pointer to next segment */
-	if ((val = strtod (t, &s)) < 0.0 && C->current.proj.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: Negative interval in -B option (%c-component, %c-info): %s\n", str[axis], flag, in);
-		return (3);
-	}
-	if (s[0] && (s[0] == '-' || s[0] == '+')) {	/* Phase shift information given */
-		t = s;
-		phase = strtod (t, &s);
-	}
-
-	/* Appended one of the allowed units, or l or p for log10/pow */
-#ifdef GMT_COMPAT
-	if (s[0] && strchr ("YyOoUuKkJjDdHhMmSsCcrRlp", s[0]))
-#else
-	if (s[0] && strchr ("YyOoUuKkJjDdHhMmSsrRlp", s[0]))
-#endif
-		unit = s[0];
-	else if (A->type == GMT_TIME)				/* Default time system unit implied */
-		unit = C->current.setting.time_system.unit;
 	else
-		unit = 0;	/* Not specified */
+		gmt_set_titem (C, A, in, flag, str[axis]);
 
-	if (!C->current.map.frame.primary) flag = (char) toupper ((int)flag);
-
-	gmt_set_titem (C, A, val, phase, flag, unit);				/* Store the findings for this segment */
-
-	C->current.map.frame.draw = TRUE;
-	
-	return (0);
+	return (GMT_NOERROR);	
 }
 
 GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
