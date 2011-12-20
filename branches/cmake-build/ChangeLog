@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-12-19	remko
+	* gmt_init.c:		Honor -B0 (map frame only). Also -Ba0f0g0, etc.
+
 2011-12-17	pwessel
 	* psxyz.c:		Testing out geovector symbol
 	* psxy.c:		Added usage/doc for -S= great-circle vector symbols
