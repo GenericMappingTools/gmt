@@ -469,8 +469,19 @@ void DOS_path_fix (char *dir)
 		if (dir[k] == '\\') dir[k] = '/';	/* Replace dumb backslashes with slashes */
 	}
 
-	for (k = 1; k < n-2; k++) {
-		if (dir[k-1] == ';' && dir[k] == '/' && isalpha ((int)dir[k+1]) && dir[k+2] == '/') {
+	if ((n == 2) && dir[0] == '/') {
+		dir[0] = dir[1];
+		dir[1] = ':';
+		return;
+	}
+
+	/* Also take care that cases like c:/j/... (mine) don't turn into c:j:/... */
+	if (dir[0] == '/' && dir[2] == '/' && isalpha ((int)dir[1])) {
+		dir[0] = dir[1];
+		dir[1] = ':';
+	}
+	for (k = 4; k < n-2; k++) {
+		if ( (dir[k-1] == ';' && dir[k] == '/' && dir[k+2] == '/' && isalpha ((int)dir[k+1])) ) {
 			dir[k] = dir[k+1];
 			dir[k+1] = ':';
 		}
