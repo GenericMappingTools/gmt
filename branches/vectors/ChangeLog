@@ -2,6 +2,14 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2011-12-30	pwessel
+	* gmt_init.c:		Groundwork for new vector specifications
+	* gmt_io.c:		Fixed bug with empty segments with headers
+	* gmtapi_utils.c	Fixed bug in setting next input file
+	* psxy[z].c:		New syntax for vectors (straight, great-circle, math)
+	* pslib.c:		Revised vector functions
+	* gmtspatial.c:		Change -M option to -Q
+
 2011-12-19	remko
 	* gmt_init.c:		Honor -B0 (map frame only). Also -Ba0f0g0, etc.
 

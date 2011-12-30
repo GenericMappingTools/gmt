@@ -95,11 +95,6 @@ struct GMTSPATIAL_CTRL {
 		char unit;
 		double s_cutoff, path_noise, box_offset;
 	} L;
-	struct M {	/* -M[+] */
-		GMT_LONG active;
-		GMT_LONG mode;
-		char unit;
-	} M;
 	struct N {	/* -N<file>[+a][+p>ID>][+r][+z] */
 		GMT_LONG active;
 		GMT_LONG mode;	/* 0 for reporting ID in -Z<ID> header, 1 via data column, 2 just as a report */
@@ -108,6 +103,11 @@ struct GMTSPATIAL_CTRL {
 		GMT_LONG ID;	/* If 1 we use running numbers */
 		char *file;
 	} N;
+	struct Q {	/* -Q[+] */
+		GMT_LONG active;
+		GMT_LONG mode;
+		char unit;
+	} Q;
 	struct S {	/* -S[u|i|c] */
 		GMT_LONG active;
 		GMT_LONG mode;
@@ -524,9 +524,9 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "gmtspatial %s [API] - Do geospatial operations on lines and polygons\n\n", GMT_VERSION);
 #ifdef PW_TESTING
-	GMT_message (GMT, "usage: gmtspatial [<table>] [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-M[<unit>][+]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
+	GMT_message (GMT, "usage: gmtspatial [<table>] [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-Q[<unit>][+]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
 #else
-	GMT_message (GMT, "usage: gmtspatial [<table>] [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]] [%s] [-M[<unit>][+]] [-N<pfile>[+a][+p<ID>][+z]]\n", GMT_DIST_OPT);
+	GMT_message (GMT, "usage: gmtspatial [<table>] [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]] [%s] [-N<pfile>[+a][+p<ID>][+z]] [-Q[<unit>][+]]\n", GMT_DIST_OPT);
 #endif
 	GMT_message (GMT, "\t[%s] [-Su|i] [-T[<cpol>]] [-V[l]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
@@ -554,11 +554,6 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-L Remove tile Lines.  These are superfluous lines along the -R border.\n");
 	GMT_message (GMT, "\t   Append gap_dist (in m) [0], coordinate noise [1e-10], and max offset from gridline [1e-10].\n");
 #endif
-	GMT_message (GMT, "\t-M Measure area and handedness of polygon(s) or length of line segments.  If -fg is used\n");
-	GMT_message (GMT, "\t   you may append unit %s [k]; otherwise it will be based on the input data units.\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_message (GMT, "\t   We also compute polygon centroid or line mid-point.\n");
-	GMT_message (GMT, "\t   Use -M+ to place the (area, handedness) or length result in the segment header\n");
-	GMT_message (GMT, "\t   on output [Default only reports results to stdout].\n");
 	GMT_message (GMT, "\t-N Determine ID of polygon (in <pfile>) enclosing each input feature.  The ID is set as follows:\n");
 	GMT_message (GMT, "\t     a) If OGR/GMT polygons, get polygon ID via -a for Z column, else\n");
 	GMT_message (GMT, "\t     b) Interpret segment labels (-Z<value>) as polygon IDs, else\n");
@@ -567,6 +562,11 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   Modifier +a means all points of a feature (line, polygon) must be inside the ID polygon [mid point].\n");
 	GMT_message (GMT, "\t   Modifier +z means append the ID as a new output data column [Default adds -Z<ID> to segment header].\n");
 	GMT_message (GMT, "\t   Modifier +r means no table output; just reports which polygon a feature is inside.\n");
+	GMT_message (GMT, "\t-Q Measure area and handedness of polygon(s) or length of line segments.  If -fg is used\n");
+	GMT_message (GMT, "\t   you may append unit %s [k]; otherwise it will be based on the input data units.\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_message (GMT, "\t   We also compute polygon centroid or line mid-point.\n");
+	GMT_message (GMT, "\t   Use -Q+ to place the (area, handedness) or length result in the segment header\n");
+	GMT_message (GMT, "\t   on output [Default only reports results to stdout].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Spatial manipulation of polygons; choose among:\n");
 	GMT_message (GMT, "\t   i for intersection.\n");
@@ -593,7 +593,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
-	if (GMT_is_geographic (GMT, GMT_IN)) Ctrl->M.unit = 'k';	/* Default geographic distance unit is km */
+	if (GMT_is_geographic (GMT, GMT_IN)) Ctrl->Q.unit = 'k';	/* Default geographic distance unit is km */
 	
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -665,9 +665,9 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 				break;
 #endif
 			case 'M':	/* Measure area/length and handedness of polygons */
-				Ctrl->M.active = TRUE;
-				if (strchr (opt->arg, '+')) Ctrl->M.active = 2;
-				if (opt->arg[0] && opt->arg[0] != '+') Ctrl->M.unit = opt->arg[0];				
+				Ctrl->Q.active = TRUE;
+				if (strchr (opt->arg, '+')) Ctrl->Q.active = 2;
+				if (opt->arg[0] && opt->arg[0] != '+') Ctrl->Q.unit = opt->arg[0];				
 				break;
 			case 'N':	/* Determine containing polygons for features */
 				Ctrl->N.active = TRUE;
@@ -720,7 +720,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 		}
 	}
 
- 	if (Ctrl->E.active) Ctrl->M.active = TRUE;
+ 	if (Ctrl->E.active) Ctrl->Q.active = TRUE;
 	
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] == 0, "Syntax error: No input file specified\n");
@@ -863,15 +863,15 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_SUCCESS);
 	}
 	
-	if (Ctrl->M.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
+	if (Ctrl->Q.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
 		double out[3];
 		GMT_LONG handedness = 0, c, p, mode, poly, geo = GMT_is_geographic (GMT, GMT_IN);
 
 		char line[GMT_BUFSIZ];
 		
-		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->M.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
+		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->Q.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
-		if (Ctrl->M.active == 2) {
+		if (Ctrl->Q.active == 2) {
 			mode = GMT_IS_POLY;
 		}
 		else {
@@ -897,7 +897,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					handedness = area_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, out, &geo);
 					poly = TRUE;
 				}
-				if (Ctrl->M.active == 2) {
+				if (Ctrl->Q.active == 2) {
 					if (poly && Ctrl->E.active && handedness != Ctrl->E.mode) {	/* Must reverse line */
 						for (i = 0, p = S->n_rows - 1; i < S->n_rows/2; i++, p--) {
 							for (c = 0; c < S->n_columns; c++) d_swap (S->coord[c][i], S->coord[c][p]);
@@ -924,7 +924,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		/* Write out results */
-		if (Ctrl->M.active == 2) {
+		if (Ctrl->Q.active == 2) {
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
 				Return (API->error);
 			}

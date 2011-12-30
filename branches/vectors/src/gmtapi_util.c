@@ -807,7 +807,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 	 * Note: Memory is allocated for the Dataset except for method GMT_IS_DATASET_REF.
 	 */
 	
-	GMT_LONG item, col, row, seg, n_cols = 0, ij, first_item = 0, last_item, geometry;
+	GMT_LONG item, col, row, seg, n_cols = 0, ij, first_item = 0, this_item = GMTAPI_NOTSET, last_item, geometry;
 	GMT_LONG allocate = FALSE, update = FALSE, n_alloc, all_D, use_GMT_io, poly;
 	PFL GMT_2D_to_index;
 	struct GMT_DATASET *D = NULL, *Din = NULL;
@@ -847,6 +847,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 			if (S->method == GMT_IS_STREAM || S->method == GMT_IS_FDESC) return_null (API, GMT_READ_ONCE);	/* Not allowed to re-read streams */
 			if (!(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
 		}
+		if (this_item == GMTAPI_NOTSET) this_item = item;	/* First item that worked */
 		geometry = (API->GMT->common.a.output) ? API->GMT->common.a.geometry : S->geometry;	/* When reading GMT and writing OGR/GMT we must make sure we set this first */
 		poly = (geometry == GMT_IS_POLY || geometry == GMT_IS_MULTIPOLYGON );	/* To enable polar cap assessment in i/o */
 		switch (S->method) {	/* File, array, stream etc ? */
@@ -1009,7 +1010,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 		if (!D->max) D->max = GMT_memory (API->GMT, NULL, D->n_columns, double);
 	}
 
-	API->object[first_item]->data = D;		/* Retain pointer to the allocated data so we use garbage collection later */
+	API->object[this_item]->data = D;		/* Retain pointer to the allocated data so we use garbage collection later */
 	return (D);		
 }
 

@@ -16,7 +16,7 @@ pstext -R -J -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >> GMT_Defaults_1a.ps
 -62 -14 RT FORMAT_GEO_MAP
 -28  -8 LB MAP_DEGREE_SYMBOL
 EOF
-psxy -R -J -O -Svs0.005i/0.04i/0.03i -N -Gblue << EOF >> GMT_Defaults_1a.ps
+psxy -R -J -O -Sv0.04i+s -W0.5p,blue -N -Gblue << EOF >> GMT_Defaults_1a.ps
 -62 -7 -60 -5
 -37.7 -14 -31 -11
 -62 -2.75 -60.75 -0.25
