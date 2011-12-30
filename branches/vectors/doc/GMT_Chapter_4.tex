@@ -1,0 +1,2279 @@
+%------------------------------------------
+%	$Id$
+%
+%	The GMT Documentation Project
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+%------------------------------------------
+%
+\chapter{General features}
+\label{ch:4}
+\thispagestyle{headings}
+
+This section explains features common to all the programs
+in \GMT\ and summarizes the philosophy behind the system.  Some
+of the features described here may make more sense once you reach
+the cook-book section where we present actual examples of their use. 
+
+\section{\gmt\ units}
+\index{GMT@\GMT!units|(}
+\index{Dimensions|(}
+\index{Units|(}
+
+While \GMT\ has default units for both actual Earth distances and
+plot lengths (dimensions) of maps, it is recommended that you specifically indicate
+the units of your arguments by appending the unit character, as discussed below.
+This will aid you in debugging, let others understand your scripts, and remove
+any uncertainty as to what unit you thought you wanted.
+
+\subsection{Distance units}
+
+For Cartesian data and scaling the data units do not normally matter (they could be
+kg or Lumens for all we know) and are never entered.  Geographic data are different
+as distances can be specified in a variety of ways.  \GMT\ programs that accept actual
+Earth length scales like search radii or distances can therefore
+handle a variety of units.  These choices are listed in Table~\ref{tbl:distunits};
+simply append the desired unit to the distance value you supply.  A value without
+a unit suffix will be consider to be in meters.  For example, a distance of
+30 nautical miles should be given as 30\textbf{n}.
+\begin{table}[H]
+\centering
+\index{Distance units}%
+\index{Units, distance}%
+\begin{tabular}{|l|l||l|l|} \hline
+\multicolumn{1}{|c|}{\emph{Suffix}} & \multicolumn{1}{c|}{\emph{Distance unit}} & \multicolumn{1}{|c|}{\emph{Suffix}} & \multicolumn{1}{c|}{\emph{Distance unit}} \\ \hline
+\textbf{d}	&	Degrees of arc		& \textbf{m}	&	Minutes of arc  \\ \hline
+\textbf{e}	&	Meters [Default]	& \textbf{M}	&	Statute miles   \\ \hline
+\textbf{f}	&	Feet 			& \textbf{n}	&	Nautical miles  \\ \hline
+\textbf{k}	&	Kilometers		& \textbf{s}	&	Seconds of arc  \\ \hline
+\end{tabular}
+\caption{Distance units recognized by \gmt\ command line switches.}
+\label{tbl:distunits}
+\end{table} 
+
+\subsection{Distance calculations}
+
+The calculation of distances on Earth (or other planetary bodies) depends on the
+ellipsoidal parameters of the body and the method of computation.  \GMT\ offers
+three alternatives that trade off accuracy and computation time.
+
+\subsubsection{Flat Earth distances}
+Quick, but approximate ``Flat Earth'' calculations make a first-order correction
+for the spherical nature of a planetary body by computing the distance between
+two points A and B as
+\begin{equation}
+	d_f = R \sqrt{(\theta_A - \theta_B)^2 + \frac{\theta_A + \theta_B}{2}(\lambda_A - \lambda_B)^2},
+	\label{eq:flatearth}
+\end{equation}
+where $R$ is the mean (or spherical) radius of the planet, $\theta$ is latitude, and the difference in longitudes, $\Delta \lambda$,
+is adjusted for any jumps that might occur across Greenwich or the Dateline.  This approach is suitable
+when the points you use to compute $d_f$ do not greatly differ in latitude and computation
+speed is paramount. You can specify this mode of computation by using the \textbf{-} prefix to
+the specified distance (or to the unit itself in cases where no distance is required and only a unit is expected).
+For instance, a search radius of 50 statute miles using this mode of computation might be specified via \Opt{S-}50\textbf{M}.
+
+\subsubsection{Great circle distances}
+This is the default distance calculation, which will also approximate the planetary body by a sphere of mean
+radius $R$. However, we compute an exact distance between two points A and B on such a sphere via
+the Haversine equation
+\begin{equation}
+	d_g = 2R \sin^{-1}  {\sqrt{\sin^2\frac{\theta_A - \theta_B}{2} + \cos \theta_A \cos \theta_B \sin^2 \frac{\lambda_A - \lambda_B}{2}} },
+	\label{eq:greatcircle}
+\end{equation}
+This approach is suitable for most situations unless exact calculations for an ellipsoid
+is required (typically for a limited surface area).  For instance, a search radius of 5000 feet using this
+mode of computation would be specified as \Opt{S}5000\textbf{f}.
+
+\subsubsection{Geodesic distances}
+For the most accurate calculations we use a full ellipsoidal formulation.  Currently,
+we are using Rudoe's formula.  You select this mode of computation by using the \textbf{+} prefix to
+the specified distance (or to the unit itself in cases where no distance is required).
+For instance, a search radius of 20 km using this mode of computation would be set by \Opt{S+}20\textbf{k}.
+
+\subsection{Length units}
+
+\GMT\ programs can accept dimensional quantities and plot lengths
+in \textbf{c}m, \textbf{i}nch,
+or \textbf{p}oint (1/72 of an inch)\footnote{\PS\ definition.
+In the typesetting industry a slightly different definition of point
+(1/72.27 inch) is used.}.  There are two ways to ensure that \GMT\ understands
+which unit you intend to use:
+
+\begin{enumerate}
+\item Append the desired unit to the dimension you supply.  This
+way is explicit and clearly communicates what you intend, e.g.,
+\Opt{X}4\textbf{c} means the length being passed to the \Opt{X} switch is 4 cm.
+
+\item Set the parameter \textbf{PROJ\_LENGTH\_UNIT} to the desired unit.  Then, all
+dimensions without explicit unit will be interpreted accordingly.
+
+\end{enumerate}
+The latter method is less secure as other users may have a different unit
+set and your script may not work as intended.  We therefore recommend
+you always supply the desired unit explicitly.
+\index{GMT@\GMT!units|)}
+\index{Dimensions|)}
+\index{Units|)}
+
+\section{\gmt\ defaults}
+\label{sec:gmt.conf}
+\subsection{Overview and the \protect\filename{gmt.conf}\ file}
+
+\index{GMT@\GMT!defaults|(}
+\index{Default settings|(}
+
+\GMTfig[h]{GMT_Defaults_1a}{Some \gmt\ parameters that affect plot appearance.}
+
+There are about 100 parameters which can be adjusted individually
+to modify the appearance of plots or affect the manipulation of data.
+When a program is run, it initializes all parameters to the \GMT\
+defaults\footnote{Choose between SI and US default units by modifying
+\filename{gmt.conf} in the \GMT\ share directory.},
+then tries to open the file \filename{gmt.conf}
+in the current directory\footnote{To remain backwards compatible with \GMT\ 4.x
+we will also look for \filename{.gmtdefaults4} but only if \filename{gmt.conf}
+cannot be found.}.  If not found, it will look for that file in a sub-directory
+\filename{\~/.gmt} of your home directory, and finally in your home directory itself.  If successful, the program will read the
+contents and set the default values to those provided in the file.
+By editing this file you can affect features such as pen thicknesses
+used for maps, fonts and font sizes used for annotations and labels,
+color of the pens, dots-per-inch resolution of the hardcopy device,
+what type of spline interpolant to use, and many other choices
+(A complete list of all the parameters and their default values can
+be found in the \GMTprog{gmt.conf} manual pages).  Figures
+\ref{fig:GMT_Defaults_1a}, \ref{fig:GMT_Defaults_1b},
+and \ref{fig:GMT_Defaults_1c} show the parameters that affect plots). You may create
+your own \filename{gmt.conf} files by running \GMTprog{gmtdefaults}
+and then modify those parameters you want to change.  If you want
+to use the parameter settings in another file you can do so by
+specifying \texttt{+<defaultfile>} on the command line.
+This makes it easy to maintain several distinct parameter settings,
+corresponding perhaps to the unique styles required by different
+journals or simply reflecting font changes necessary to make
+readable overheads and slides.  Note that any arguments given on
+the command line (see below) will take precedent over the default
+values.  E.g., if your \filename{gmt.conf} file has \emph{x}
+offset = 1\textbf{i} as default, the \Opt{X}1.5\textbf{i} option will override the
+default and set the offset to 1.5 inches. 
+
+There are at least two good reasons why the \GMT\ default options
+are placed in a separate parameter file:
+
+\begin{enumerate}
+
+\item It would not be practical to allow for command-line syntax
+covering so many options, many of which are rarely or never
+changed (such as the ellipsoid used for map projections).
+
+\item It is convenient to keep separate \filename{gmt.conf}
+files for specific projects, so that one may achieve a special
+effect simply by running \GMT\ commands in the directory whose
+\filename{gmt.conf} file has the desired settings.  For example,
+when making final illustrations for a journal article one must often
+standardize on font sizes and font types, etc.  Keeping all those
+settings in a separate \filename{gmt.conf} file simplifies this
+process and will allow you to generate those illustrations with the same settings
+later on.  Likewise, \GMT\ scripts that make figures for PowerPoint
+presentations often use a different color scheme and font size than
+output intended for laser printers.  Organizing these various scenarios
+into separate \filename{gmt.conf} files will minimize headaches
+associated with micro-editing of illustrations.
+
+\GMTfig[h]{GMT_Defaults_1b}{More \gmt\ parameters that affect plot appearance.}
+
+\end{enumerate}
+
+\subsection{Changing \gmt\ defaults}
+
+As mentioned, \GMT\ programs will attempt to open a file named
+\filename{gmt.conf}.  At times it may be desirable to override
+that default.  There are several ways in which this can be accomplished.
+\begin{enumerate}
+\item One method is to start each script by saving a
+copy of the current \filename{gmt.conf}, then copying the desired
+\filename{gmt.conf} file to the current directory, and finally
+reverting the changes at the end of the script.  Possible side effects
+include premature ending of the script due to user error or bugs which
+means the final resetting does not take place (unless you write your
+script very carefully.)
+\item To permanently change some of the \GMT\ parameters on the fly
+inside a script the \GMTprog{gmtset} utility can be used.  E.g., to
+change the primary annotation font to 12 point Times-Bold in red we run \\
+
+\texttt{gmtset FONT\_ANNOT\_PRIMARY 12p,Times-Bold,red} \\
+
+These changes will remain in effect until they are overridden.
+\item If all you want to achieve is to change a few parameters during
+the execution of a single command but otherwise leave the environment intact, consider
+passing the parameter changes on the command line via the {--}{--}\emph{PAR=value}
+mechanism.  For instance, to temporarily set the output format for floating
+points to have lots of decimals, say, for map projection coordinate output,
+append {--}{--}\textbf{FORMAT\_FLOAT\_OUT}=\%.12lg to the command in question.
+\item Finally, \GMT\ provides to possibility to override the
+settings only  during the running of a single script, reverting to the original settings
+after the script is run, as if the script was run in ``isolation''. The isolation mode
+is discussed in Section~\ref{sec:isolationmode}.
+\end{enumerate}
+In addition to those parameters
+that directly affect the plot there are numerous parameters than
+modify units, scales, etc.  For a complete listing, see the
+\GMTprog{gmt.conf} man pages.  We suggest that you go through
+all the available parameters at least once so that you know what is
+available to change via one of the described mechanisms.
+
+\GMTfig[h]{GMT_Defaults_1c}{Even more \gmt\ parameters that affect plot appearance.}
+
+\index{GMT@\GMT!defaults|)}
+\index{Default settings|)}
+
+\section{Command line arguments} 
+\index{Command line!arguments}%
+\index{Arguments, command line}%
+
+Each program requires certain arguments specific to its operation.
+These are explained in the manual pages and in the usage messages.
+Most programs are ``case-sensitive''; almost all options must start
+with an upper-case letter.  We have tried to choose letters of the
+alphabet which stand for the argument so that they will be easy to
+remember.  Each argument specification begins with a hyphen
+(except input file names; see below), followed by a letter, and
+sometimes a number or character string immediately after the letter.
+\emph{Do not} space between the hyphen, letter, and number or string.
+\emph{Do} space between options.  Example:
+
+\vspace{\baselineskip} 
+
+\texttt{pscoast -R0/20/0/20 -Ggray -JM6i -Wthin -B5 -V -P $>$ map.ps}
+
+\section{Standardized command line options} 
+\index{Standardized command line options}%
+\index{Command line!standardized options|(}%
+\label{sec:stopt}
+
+Most of the programs take many of the same arguments like those
+related to setting the data region, the map projection, etc.
+The 24 switches in Table~\ref{tbl:switches} have the same meaning
+in all the programs (although some programs may not use all of them).
+These options will be described here as well as in the manual pages,
+as is vital that you understand how to use these options.  We will present
+these options in order of importance (some are use a lot more than others).
+
+\begin{table}
+\centering
+\index{Standardized command line options}%
+\index{\Opt{B} (set annotations and ticks)}%
+\index{\Opt{J} (set map projection)}%
+\index{\Opt{K} (continue plot)}%
+\index{\Opt{O} (overlay plot)}%
+\index{\Opt{P} (portrait orientation)}%
+\index{\Opt{R} (set region)}%
+\index{\Opt{U} (plot timestamp)}%
+\index{\Opt{V} (verbose mode)}%
+\index{\Opt{X} (shift plot in $x$)}%
+\index{\Opt{Y} (shift plot in $y$)}%
+\index{\Opt{a} (aspatial data)}%
+\index{\Opt{b} (binary i/o)}%
+\index{\Opt{c} (set \# of copies)}%
+\index{\Opt{f} (formatting of i/o)}%
+\index{\Opt{g} (detect data gaps)}%
+\index{\Opt{h} (header records)}%
+\index{\Opt{i} (select input columns)}%
+\index{\Opt{n} (control grid interpolation settings)}%
+\index{\Opt{o} (select output columns)}%
+\index{\Opt{p} (set perspective view)}%
+\index{\Opt{r} (set pixel registration)}%
+\index{\Opt{s} (NaN-record treatment)}%
+\index{\Opt{t} (layer transparency)}%
+\index{\Opt{:} (input and/or output is $y,x$, not $x,y$)}%
+
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{Option}}	&	\multicolumn{1}{c|}{\emph{Meaning}} \\ \hline
+\Opt{B}	&	Define tickmarks, annotations, and labels for basemaps and axes  \\ \hline
+\Opt{J}	&	Select a map projection or coordinate transformation  \\ \hline
+\Opt{K}	&	Allow more plot code to be appended to this plot later \\ \hline
+\Opt{O}	&	Allow this plot code to be appended to an existing plot \\ \hline
+\Opt{P}	&	Select Portrait plot orientation [Default is landscape] \\ \hline
+\Opt{R}	&	Define the extent of the map/plot region \\ \hline
+\Opt{U}	&	Plot a time-stamp, by default in the lower left corner of page  \\ \hline
+\Opt{V}	&	Select verbose operation; reporting on progress  \\ \hline
+\Opt{X}	&	Set the \emph{x}-coordinate for the plot origin on the page  \\ \hline
+\Opt{Y}	&	Set the \emph{y}-coordinate for the plot origin on the page  \\ \hline
+\Opt{a}	&	Associate aspatial data from OGR/GMT files with data columns  \\ \hline
+\Opt{b}	&	Select binary input and/or output  \\ \hline
+\Opt{c}	&	Specify the number of plot copies  \\ \hline
+\Opt{f}	&	Specify the data format on a per column basis  \\ \hline
+\Opt{g}	&	Identify data gaps based on supplied criteria  \\ \hline
+\Opt{h}	&	Specify that input/output tables have header record(s)  \\ \hline
+\Opt{i}	&	Specify which input columns to read  \\ \hline
+\Opt{n}	&	Specify grid interpolation settings  \\ \hline
+\Opt{o}	&	Specify which output columns to write  \\ \hline
+\Opt{p}	&	Control perspective views for plots  \\ \hline
+\Opt{r}	&	Set the grid registration to pixel [Default is gridline]  \\ \hline
+\Opt{s}	&	Control output of records containing one or more NaNs  \\ \hline
+\Opt{t}	&	Change layer PDF transparency  \\ \hline
+\Opt{:}	&	Assume input geographic data are (\emph{lat,lon}) and not (\emph{lon,lat})  \\ \hline
+\end{tabular}
+\caption{The 24 standardized \gmt\ command line switches.}
+\label{tbl:switches}
+\end{table} 
+
+\subsection{Data domain or map region: The \Opt{R} option}
+\index{\Opt{R} (set region)}
+\index{Region, specifying}
+\label{sec:R}
+\GMTfig[h]{GMT_-R}{The plot region can be specified in two different ways. (a) Extreme values
+for each dimension, or (b) coordinates of lower left and upper right corners.}
+
+The \Opt{R} option defines the map region or data domain of interest.  It may be specified
+in one of three ways (Figure~\ref{fig:GMT_-R}):
+\begin{enumerate}
+\item \Opt{R}\emph{xmin}/\emph{xmax}/\emph{ymin}/\emph{ymax}.  This is the standard way to specify
+Cartesian data domains and geographical regions when using map projections where meridians and
+parallels are rectilinear.
+\item \Opt{R}\emph{xlleft}/\emph{ylleft}/\emph{xuright}/\emph{yuright}\textbf{r}.
+This form is used with map projections that are oblique, making meridians and parallels poor
+choices for map boundaries.  Here, we instead specify the lower left corner and upper right
+corner geographic coordinates, followed by the suffix \textbf{r}.
+\item \Opt{R}\emph{gridfile}.  This will copy the domain settings found for the grid in specified
+file.  Note that depending on the nature of the calling program, this mechanism will also set grid spacing
+and possibly the grid registration (see Section~\ref{sec:grid_registration}).
+\end{enumerate}
+For rectilinear projections the first two forms give identical results.  Depending on the selected map
+projection (or the kind of expected input data), the boundary coordinates may take on three different
+formats:
+
+\begin{description}
+\item [Geographic coordinates:]  These are longitudes and latitudes and may be given in decimal degrees (e.g., -123.45417)
+or in the
+[\PM]\emph{ddd}[:\emph{mm}[:\emph{ss}[\emph{.xxx}]]][\textbf{W}$|$\textbf{E}$|$\textbf{S}$|$\textbf{N}]
+format (e.g., 123:27:15W).  Note that \Opt{Rg} and \Opt{Rd} are shorthands for ``global domain''
+\Opt{R}\emph{0}/\emph{360}/\emph{-90}/\emph{90}
+and  \Opt{R}\emph{-180}/\emph{180}/\emph{-90}/\emph{90}, respectively.
+
+When used in conjunction with the Cartesian Linear Transformation (\Opt{Jx} or \Opt{JX}) ---which can be used
+to map floating point data, geographical coordinates, as well as time coordinates--- it is prudent to indicate
+that you are using geographical coordinates in one of the following ways:
+\begin{itemize}
+\item Use \Opt{Rg} or \Opt{Rd} to indicate the global domain.
+\item Use \Opt{Rg}\emph{xmin}/\emph{xmax}/\emph{ymin}/\emph{ymax} to indicate a limited geographic domain.
+\item Add \textbf{W}, \textbf{E}, \textbf{S}, or \textbf{N} to the coordinate limits or add the generic \textbf{D} or
+\textbf{G}. Example: \Opt{R}\emph{0}/\emph{360G}/\emph{-90}/\emph{90N}.
+\end{itemize}
+Alternatively, you may indicate geographical coordinates by supplying \Opt{fg}; see Section \ref{sec:fg_option}.
+\item [Calendar time coordinates:]  These are absolute time coordinates referring to a Gregorian or ISO calendar.
+The general format is [\emph{date}]\textbf{T}[\emph{clock}], where \emph{date} must be in the
+\emph{yyyy}[\emph{-mm}[\emph{-dd}]] (year, month, day-of-month)
+or \emph{yyyy}[\emph{-jjj}] (year and day-of-year) for Gregorian calendars and
+\emph{yyyy}[\emph{-}\textbf{W}\emph{ww}[\emph{-d}]] (year, week, and
+day-of-week) for the ISO calendar.  If no \emph{date} is given we assume the present day.  Following the
+[optional] \emph{date} string we require the \textbf{T} flag.
+
+The optional \emph{clock} string is a 24-hour clock in \emph{hh}[\emph{:mm}[\emph{:ss}[\emph{.xxx}]]] format.
+If no \emph{clock} is given
+it implies 00:00:00, i.e., the start of the specified day.
+Note that not all of the specified entities need be present in the data.  All calendar date-clock strings are internally represented as double precision seconds since
+proleptic Gregorian date Monday January 1 00:00:00 0001.  Proleptic means we assume that the modern calendar
+can be extrapolated forward and backward; a year zero is used, and Gregory's reforms\footnote{The Gregorian Calendar
+is a revision of the Julian Calendar which was instituted in a papal bull by Pope Gregory XIII in 1582. The reason for the calendar
+change was to correct for drift in the dates of significant religious observations (primarily Easter) and to prevent further drift
+in the dates. The important effects of the change were (a) Drop 10 days from October 1582 to realign the Vernal Equinox with 21 March,
+(b) change leap year selection so that not all years ending in ``00'' are leap years, and (c) change the beginning of the year to
+1 January from 25 March.  Adoption of the new calendar was essentially immediate within Catholic countries. In the Protestant countries,
+where papal authority was neither recognized not appreciated, adoption came more slowly. 
+England finally adopted the new calendar in 1752, with eleven days removed from September. The additional day came because the old and
+new calendars disagreed on whether 1700 was a leap year, so the Julian calendar had to be adjusted by one more day.} are extrapolated
+backward.  Note that this is not historical.
+
+\item [Relative time coordinates:]  These are coordinates which count seconds, hours, days or years relative to a
+given epoch. A combination of the parameters \textbf{TIME\_EPOCH} and
+\textbf{TIME\_UNIT} define the epoch and time unit. The parameter \textbf{TIME\_SYSTEM} provides a few shorthands for common combinations
+of epoch and unit, like \textbf{j2000} for days since noon of 1 Jan 2000.
+Denote relative time coordinates by appending the optional lower case
+\textbf{t} after the value.  When it is otherwise apparent that the coordinate is relative time (for example by using
+the \Opt{f} switch), the \textbf{t} can be omitted.
+
+\item [Other coordinates:]  These are simply any coordinates that are not related to geographic or calendar time or relative
+time and are
+expected to be simple floating point values such as [\PM]\emph{xxx.xxx}[E$|$e$|$D$|$d[\PM]xx], i.e., regular or exponential
+notations, with the enhancement to understand FORTRAN double precision output which may use D instead of E for exponents.
+These values are simply converted as they are to internal representation.\footnote{While
+UTM coordinates clearly refer to points on the Earth, in this context they are considered ``other''.  Thus, when we
+refer to ``geographical'' coordinates herein we imply longitude, latitude.}
+\end{description}
+
+\subsection{Coordinate transformations and map projections: The \Opt{J} option}
+\index{\Opt{J} (set map projection)}
+\index{Map projections}
+
+This option selects the coordinate transformation or map projection.  The general format is
+\begin{itemize}
+\item \Opt{J}$\delta$[\emph{parameters}/]\emph{scale}.  Here, $\delta$ is a \emph{lower-case}
+letter of the alphabet that selects a particular map projection, the \emph{parameters}
+is zero or more slash-delimited projection parameter, and \emph{scale} is map scale given in
+distance units per degree or as 1:xxxxx.
+\item \Opt{J}$\Delta$[\emph{parameters}/]\emph{width}.  Here, $\Delta$ is an \emph{upper-case}
+letter of the alphabet that selects a particular map projection, the \emph{parameters}
+is zero or more slash-delimited projection parameter, and \emph{width} is map width (map
+height is automatically computed from the implied map scale and region).
+\end{itemize}
+Since \GMT\ version 4.3.0, there is an alternative way to specify the projections: use the same abbreviation as in the mapping package \progname{Proj4}. The options thus either look like:
+\begin{itemize}
+\item \Opt{J}\emph{abbrev}/[\emph{parameters}/]\emph{scale}.  Here, \textbf{abbrev} is a \emph{lower-case}
+abbreviation that selects a particular map projection, the \emph{parameters}
+is zero or more slash-delimited projection parameter, and \emph{scale} is map scale given in
+distance units per degree or as 1:xxxxx.
+\item \Opt{J}\emph{Abbrev}/[\emph{parameters}/]\emph{width}.  Here, \textbf{Abbrev} is an \emph{capitalized} abbreviation that selects a particular map projection, the \emph{parameters}
+is zero or more slash-delimited projection parameter, and \emph{width} is map width (map
+height is automatically computed from the implied map scale and region).
+\end{itemize}
+
+\GMTfig[h]{GMT_-J}{The 30+ map projections and coordinate transformations available in \gmt.}
+
+The projections available in \GMT\ are presented in Figure~\ref{fig:GMT_-J}.
+For details on all \GMT\ projections and the required parameters, see the \GMTprog{psbasemap} man page.
+We will also show examples of every projection in the next Chapters, and a quick
+summary of projection syntax was given in Chapter~\ref{ch:3}.
+
+\subsection{Map frame and axes annotations: The \Opt{B} option}
+\index{\Opt{B} (set annotations and ticks)}
+\index{Tickmarks}
+\index{Annotations}
+\index{Gridlines}
+\index{Frame}
+\index{Basemap}
+\label{sec:timeaxis}
+This is by far the most complicated option in \GMT, but most examples
+of its usage are actually quite simple.
+Given as \Opt{B}[\textbf{p}$|$\textbf{s}]\emph{xinfo}[/\emph{yinfo}[/\emph{zinfo}]][:."title
+string":][\textbf{W}$|$\textbf{w}][\textbf{E}$|$\textbf{e}][\textbf{S}$|$\textbf{s}][\textbf{N}$|$\textbf{n}][\textbf{Z}$|$\textbf{z}[\textbf{+}]][\textbf{+g}\emph{fill}],
+this switch specifies map boundaries (or plot axes) to be plotted by using the
+selected information. The optional flag following \Opt{B} selects \textbf{p}(rimary) [Default] or \textbf{s}(econdary)
+axes information (mostly used for time axes annotations; see examples below).
+The components \emph{xinfo}, \emph{yinfo} and \emph{zinfo} are of the form \\
+
+\par \emph{info}[:"axis label":][:="prefix":][:,"unit label":] \\
+
+\noindent
+where \emph{info} is one or more concatenated substrings of the form
+[\textbf{t}]\emph{stride}[\emph{phase}][\textbf{u}].  The \textbf{t} flag sets the axis item of interest; the
+available items are listed in Table~\ref{tbl:inttype}.
+
+By default, all 4 map boundaries (or plot axes) are plotted (denoted \textbf{W}, \textbf{E}, \textbf{S},
+\textbf{N}).  To change this selection, append the codes for those you want
+(e.g., \textbf{WSn}).  In this example, the lower case \textbf{n} denotes to draw the axis and (major and minor) tick marks on the ``northern'' (top) edge of the plot. The upper case \textbf{WS} will annotate the ``western'' and ''southern'' axes with numerals and plot the optional axis label in addition to
+draw axis/tick-marks.  The title, if given, will appear centered above the plot.  Unit label or prefix may start with a
+leading -- to suppress the space between it and the annotation.  Normally, equidistant annotations
+occur at multiples of \emph{stride}; you can phase-shift this by appending \emph{phase}, which can be a
+positive or negative number.  Finally, note you may paint the canvas by appending the \textbf{+g}\emph{fill} modifier.
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|l|} \hline
+\emph{Flag}	& \emph{Description} \\ \hline
+\textbf{a}	&	Annotation and major tick spacing \\ \hline
+\textbf{f}	&	Minor tick spacing \\ \hline
+\textbf{g}	&	Grid line spacing \\ \hline
+\end{tabular}
+\caption{Interval type codes.}
+\label{tbl:inttype}
+\end{table}
+\noindent
+Note that the appearance of certain time annotations (month-, week-, and day-names) may be affected
+by the \textbf{TIME\_LANGUAGE}, \textbf{FORMAT\_TIME\_PRIMARY\_MAP}, and \textbf{FORMAT\_TIME\_SECONDARY\_MAP} settings.
+
+For automated plots the region may not always be the same and thus it can be difficult to determine the appropriate \emph{stride} in advance. Here \GMT{} provides the opportunity to autoselect the spacing between the major and minor ticks and the grid lines, by not specifying the \emph{stride} value. For example, \Opt{Bafg} will select all three spacings automatically for both axes. In case of longitude-latitude plots, this will keep the spacing the same on both axes. You can also use \Opt{Bafg/afg} to autoselect them separately.
+
+In the case of automatic spacing, when the \emph{stride} argument is omitted after \textbf{g}, the grid line spacing is chosen the same as the minor tick spacing; unless \textbf{g} is used in consort with \textbf{a}, then the grid lines are spaced the same as the annotations.
+
+The unit flag \textbf{u} can take on one of 18 codes; these are listed in  Table~\ref{tbl:units}.
+Almost all of these units are time-axis specific.  However, the \textbf{m} and \textbf{s} units will be
+interpreted as arc minutes and arc seconds, respectively, when a map projection is in effect.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|l|l|} \hline
+\emph{Flag}	& \emph{Unit} & \emph{Description} \\ \hline
+\textbf{Y}	&	year		& Plot using all 4 digits \\ \hline
+\textbf{y}	&	year		& Plot using last 2 digits \\ \hline
+\textbf{O}	&	month		& Format annotation using \textbf{FORMAT\_DATE\_MAP} \\ \hline
+\textbf{o}	&	month		& Plot as 2-digit integer (1--12) \\ \hline
+\textbf{U}	&	ISO week	& Format annotation using \textbf{FORMAT\_DATE\_MAP} \\ \hline
+\textbf{u}	&	ISO week	& Plot as 2-digit integer (1--53) \\ \hline
+\textbf{r}	&	Gregorian week	& 7-day stride from start of week (see \textbf{TIME\_WEEK\_START}) \\ \hline
+\textbf{K}	&	ISO weekday	& Plot name of weekday in selected language \\ \hline
+\textbf{k}	&	weekday		& Plot number of day in the week (1-7)  (see \textbf{TIME\_WEEK\_START})\\ \hline
+\textbf{D}	&	date		& Format annotation using \textbf{FORMAT\_DATE\_MAP} \\ \hline
+\textbf{d}	&	day		& Plot day of month (1--31) or day of year (1--366) \\
+		&			& (see \bf{FORMAT\_DATE\_MAP} \\ \hline
+\textbf{R}	&	day		& Same as \textbf{d}; annotations aligned with week (see \textbf{TIME\_WEEK\_START})\\ \hline
+\textbf{H}	&	hour		& Format annotation using \textbf{FORMAT\_CLOCK\_MAP} \\ \hline
+\textbf{h}	&	hour		& Plot as 2-digit integer (0--24) \\ \hline
+\textbf{M}	&	minute		& Format annotation using \textbf{FORMAT\_CLOCK\_MAP} \\ \hline
+\textbf{m}	&	minute		& Plot as 2-digit integer (0--60) \\ \hline
+\textbf{S}	&	seconds		& Format annotation using \textbf{FORMAT\_CLOCK\_MAP} \\ \hline
+\textbf{s}	&	seconds		& Plot as 2-digit integer (0--60) \\ \hline
+\end{tabular}
+\caption{Interval unit codes.}
+\label{tbl:units}
+\end{table}
+
+There may be two levels of annotations.  Here, ``primary'' refers to the annotation
+that is closest to the axis (this is the primary annotation), while ``secondary'' refers to the secondary
+annotation that is plotted further from the axis.  The examples below
+will clarify what is meant.  Note that the terms ``primary'' and ``secondary'' do not reflect any hierarchical
+order of units: The ``primary'' annotation interval is usually smaller (e.g., days) while the
+``secondary'' annotation interval typically is larger (e.g., months).
+
+\subsubsection{Geographic basemaps}
+
+Geographic basemaps may differ from regular plot axis in that some projections support a
+``fancy'' form of axis and is selected by the \textbf{MAP\_FRAME\_TYPE} setting.  The annotations
+will be formatted according to the \textbf{FORMAT\_GEO\_MAP} template and \textbf{MAP\_DEGREE\_SYMBOL}
+setting.  A simple example of part of a basemap is shown in Figure~\ref{fig:GMT_-B_geo_1}.
+
+\GMTfig[h]{GMT_-B_geo_1}{Geographic map border using separate selections for annotation,
+frame, and grid intervals.  Formatting of the annotation is controlled by
+the parameter \textbf{FORMAT\_GEO\_MAP} in your \protect\filename{gmt.conf}\ file.}
+
+The machinery for primary and secondary annotations introduced for time-series axes can
+also be utilized for geographic basemaps.  This may be used to separate
+degree annotations from minutes- and seconds-annotations.  For a more complicated basemap
+example using several sets of intervals, including different intervals and pen attributes
+for grid lines and grid crosses, see Figure~\ref{fig:GMT_-B_geo_2}.
+
+\GMTfig[h]{GMT_-B_geo_2}{Geographic map border with both primary (P) and secondary (S) components.}
+
+
+\subsubsection{Cartesian linear axes}
+\index{linear axes}
+\index{Axes!linear}
+
+For non-geographic axes, the \textbf{MAP\_FRAME\_TYPE} setting is implicitly set to plain.  Other than that,
+cartesian linear axes are very similar to geographic axes.  The annotation format may be controlled with
+the \textbf{FORMAT\_FLOAT\_OUT} parameter.  By default, it is set to ``\%g'', which is a C language format statement
+for floating point numbers\footnote{Please consult the man page for \emph{printf} or any book on C .},
+and with this setting the various axis routines will automatically determine
+how many decimal points should be used by inspecting the \emph{stride} settings.  If \textbf{FORMAT\_FLOAT\_OUT} is set
+to another format it will be used directly (.e.g, ``\%.2f'' for a fixed, two decimals format).
+Note that for these axes you may use the \emph{unit} setting to
+add a unit string to each annotation (see Figure~\ref{fig:GMT_-B_linear}).
+
+\GMTfig[h]{GMT_-B_linear}{Linear Cartesian projection axis.  Long tickmarks accompany
+annotations, shorter ticks indicate frame interval.  The axis label is
+optional.  We used \Opt{R}0/12/0/1 \Opt{JX}3/0.4 \Opt{Ba}4\textbf{f}2\textbf{g}1:Frequency::,\protect\%:.}
+
+\subsubsection{Cartesian log$_{10}$ axes}
+\index{log$_{10}$ axes}
+\index{Logarithmic axes}
+\index{Axes!log$_{10}$}
+\index{Axes!Logarithmic}
+
+Due to the logarithmic nature of annotation spacings, the \emph{stride} parameter takes on specific
+meanings.  The following concerns are specific to log axes:
+
+\begin{enumerate}
+\item \emph{stride} must be 1, 2, 3, or a negative integer $-n$.  Annotations/ticks will
+then occur at 1, 1--2--5, or 1,2,3,4,...,9, respectively, for each magnitude range.
+For $-n$ the annotations will take place every \emph{n}'th magnitude.
+
+\item Append \textbf{l} to \emph{stride}. Then, log$_{10}$ of the annotation
+is plotted at every integer log$_{10}$ value (e.g., $x = 100$ will be annotated as ``2'')
+[Default annotates $x$ as is].
+
+\item Append \textbf{p} to \emph{stride}.  Then, annotations appear as 10
+raised to log$_{10}$ of the value (e.g., $10^{-5}$).
+
+\end{enumerate}
+
+\GMTfig[h]{GMT_-B_log}{Logarithmic projection axis using separate values for annotation,
+frame, and grid intervals.  (top) Here, we have chosen to annotate the actual
+values.  Interval = 1 means every whole power of 10, 2 means 1, 2, 5 times
+powers of 10, and 3 means every 0.1 times powers of 10.  We used
+\Opt{R}1/1000/0/1 \Opt{JX}3l/0.4 \Opt{Ba}1\textbf{f}2\textbf{g}3.
+(middle) Here, we have chosen to
+annotate log$_{10}$ of the actual values, with \Opt{Ba}1\textbf{f}2\textbf{g}3\textbf{l}. 
+(bottom) We annotate every power of 10 using log$_{10}$ of the actual values
+as exponents, with \Opt{Ba}1\textbf{f}2\textbf{g}3\textbf{p}.}
+
+\index{Exponential axis}
+\index{Axes!exponential}
+\index{Axes!power}
+\subsubsection{Cartesian exponential axes}
+Normally, \emph{stride} will be used to create equidistant (in the user's unit) annotations
+or ticks, but because of the exponential nature of the axis, such annotations may converge
+on each other at one end of the axis.  To avoid this problem, you can
+append \textbf{p }to \emph{stride}, and the annotation
+interval is expected to be in transformed units, yet the annotation itself will be plotted
+as un-transformed units.  E.g., if \emph{stride} = 1 and power = 0.5 (i.e., sqrt),
+then equidistant annotations labeled 1, 4, 9, ... will appear.
+
+\GMTfig[h]{GMT_-B_pow}{Exponential or power projection axis.  (top) Using an exponent of 0.5
+yields a $\sqrt{x}$ axis.  Here, intervals refer to actual data values, in
+\Opt{R}0/100/0/1 \Opt{JX}3\textbf{p}0.5/0.4\ \Opt{Ba}20\textbf{f}10\textbf{g}5.
+(bottom) Here, intervals refer to projected values, although the annotation
+uses the corresponding unprojected values, as in \Opt{Ba}3\textbf{f}2\textbf{g}1\textbf{p}.}
+
+\index{Time axis}
+\index{Axes!time}
+\subsubsection{Cartesian time axes}
+
+What sets time axis apart from the other kinds of plot axes is the numerous ways in which we
+may want to tick and annotate the axis.  Not only do we have both primary and secondary annotation
+items but we also have interval annotations versus tickmark annotations, numerous time units,
+and several ways in which to modify the plot.  We will demonstrate this flexibility with a
+series of examples.  While all our examples will only show a single $x$-axis, time-axis is supported for all axes.
+
+Our first example shows a time period of almost two months in Spring 2000.  We want to annotate the month
+intervals as well as the date at the start of each week:
+
+\script{GMT_-B_time1}
+
+These commands result in Figure~\ref{fig:GMT_-B_time1}.  Note the leading hyphen in the \textbf{FORMAT\_DATE\_MAP}
+removes leading zeros from calendar items (e.g., 02 becomes 2).
+\GMTfig[h]{GMT_-B_time1}{Cartesian time axis, example 1.}
+
+The next example shows two different ways to annotate an axis portraying 2 days in July 1969:
+
+\script{GMT_-B_time2}
+
+The lower example (Figure~\ref{fig:GMT_-B_time2}) chooses to annotate the weekdays (by specifying
+\textbf{a}1\textbf{K}) while the upper
+example choses dates (by specifying \textbf{a}1\textbf{D}).  Note how the clock format only selects hours and minutes (no seconds) and
+the date format selects a month name, followed by one space and a two-digit day-of-month number.
+
+\GMTfig[h!]{GMT_-B_time2}{Cartesian time axis, example 2.}
+
+The third example presents two years, annotating both the years and every 3rd month.
+
+\script{GMT_-B_time3}
+
+Note that while the year annotation is centered on the 1-year interval, the month annotations must be centered
+on the corresponding month and \emph{not} the 3-month interval.  The \textbf{FORMAT\_DATE\_MAP} selects month
+name only and \textbf{FORMAT\_TIME\_PRIMARY\_MAP} selects the 1-character, upper case abbreviation of month names using
+the current language (selected by \textbf{TIME\_LANGUAGE}).
+\GMTfig[h!]{GMT_-B_time3}{Cartesian time axis, example 3.}
+
+The fourth example (Figure~\ref{fig:GMT_-B_time4}) only shows a few hours of a day, using relative time by
+specifying \textbf{t} in the \Opt{R} option while the \textbf{TIME\_UNIT} is \textbf{d} (for days).
+We select both primary and
+secondary annotations, ask for a 12-hour clock, and let time go from right to left:
+
+\script{GMT_-B_time4}
+\GMTfig[h!]{GMT_-B_time4}{Cartesian time axis, example 4.}
+
+The fifth example shows a few weeks of time (Figure~\ref{fig:GMT_-B_time5}).  The lower axis shows ISO weeks with
+week numbers and abbreviated names of the weekdays.   The upper uses Gregorian weeks (which start at the day chosen
+by \textbf{TIME\_WEEK\_START}); they do not have numbers.
+
+\script{GMT_-B_time5}
+\GMTfig[h!]{GMT_-B_time5}{Cartesian time axis, example 5.}
+
+Our sixth example shows the first five months of 1996, and we have annotated each month with an abbreviated, upper case
+name and 2-digit year.  Only the primary axes information is specified.
+
+\script{GMT_-B_time6}
+
+\GMTfig[h!]{GMT_-B_time6}{Cartesian time axis, example 6.}
+
+Our seventh and final example illustrates annotation of year-days.  Unless we specify the formatting with a leading hyphen
+in  \textbf{FORMAT\_DATE\_MAP} we get 3-digit integer days.  Note that in order to have the two years
+annotated we need to allow for the annotation of small fractional intervals; normally such truncated interval must
+be at least half of a full interval.
+
+\script{GMT_-B_time7}
+
+\GMTfig[h!]{GMT_-B_time7}{Cartesian time axis, example 7.}
+
+\index{Custom axis}
+\index{Axes!custom}
+\subsubsection{Custom axes}
+\label{sec:custaxes}
+Irregularly spaced annotations or annotations based on look-up tables can be implemented using
+the \emph{custom} annotation mechanism.  Here, we given the \textbf{c} (custom) type to the \Opt{B}
+option followed by a filename that contains the annotations (and or tick/grid-lines) for one axis.
+The file can contain any number of comments (lines starting with \#) and any number of records of
+the format
+\\
+\emph{coord}\quad	\emph{type}\quad	[\emph{label}]
+\\
+The \emph{coord} is the location of the desired annotation, tick, or grid-line, whereas
+\emph{type} is a string composed of letters from \textbf{a} (annotation), \textbf{i} interval
+annotation, \textbf{f} frame tick, and \textbf{g} gridline.  You must use either \textbf{a} or \textbf{i}
+within one file; no mixing is allowed.  The coordinates should be arranged in increasing order.
+If \emph{label} is given it replaces the normal
+annotation based on the \emph{coord} value.  Our last example shows such a custom basemap
+with an interval annotations on the \emph{x}-axis and irregular annotations on the \emph{y}-axis.
+
+\script{GMT_-B_custom}
+
+\GMTfig[h!]{GMT_-B_custom}{Custom and irregular annotations, tick-marks, and gridlines.}
+
+\subsection{Portrait plot orientation: The \Opt{P} option} 
+\index{Orientation!of plot}
+\index{Plot!orientation}
+\index{Landscape orientation}
+\index{Orientation!landscape}
+\index{Portrait orientation \Opt{P}}
+\index{Orientation!portrait \Opt{P}}
+\index{\Opt{P} (portrait orientation)}
+
+\GMTfig[h]{GMT_-P}{Users can specify Landscape [Default] or Portrait (\Opt{P}) orientation.}
+
+\Opt{P} selects Portrait plotting mode\footnote{For historical reasons, the \GMT\
+Default is Landscape, see \GMTprog{gmt.conf} to change this.}.  In general,
+a plot has an \emph{x}-axis increasing from left to
+right and a \emph{y}-axis increasing from bottom to top.  If the
+paper is turned so that the long dimension of the paper is
+parallel to the \emph{x}-axis then the plot is said to have
+\emph{Landscape} orientation.  If the long dimension of
+the paper parallels the \emph{y}-axis the orientation is called
+\emph{Portrait} (think of taking pictures with a camera
+and these words make sense).  The
+default Landscape orientation is obtained by translating the origin in the
+\emph{x}-direction (by the width of the chosen paper \textbf{PAPER\_MEDIA)} and then rotating the
+coordinate system counterclockwise by 90\DS.  By default the \textbf{PS\_MEDIA} is
+set to Letter (or A4 if SI is chosen); this value must be changed
+when using different media, such as 11" x 17" or large format plotters
+(Figure~\ref{fig:GMT_-P}).
+
+
+\subsection{Plot overlays: The \Opt{K} \Opt{O} options}
+\index{Overlay plot \Opt{O} \Opt{K}}
+\index{Plot!overlay \Opt{O} \Opt{K}}
+\index{Plot!continue \Opt{O} \Opt{K}}
+\index{\Opt{K} (continue plot)}
+\index{\Opt{O} (overlay plot)}
+
+\GMTfig[h]{GMT_-OK}{A final \PS\ file consists of any number of individual pieces.}
+
+The \Opt{K} and \Opt{O} options control the generation of \PS\ code for multiple
+overlay plots.  All \PS\ files must have a header (for initializations),
+a body (drawing the figure), and a trailer (printing it out) (see
+Figure~\ref{fig:GMT_-OK}).  Thus,
+when overlaying several \GMT\ plots we must make sure that the first plot
+call omits the trailer, that all intermediate calls omit both header and
+trailer, and that the final overlay omits the header.
+\Opt{K} omits the trailer which implies that more \PS\ code will be appended
+later [Default terminates the plot system].  \Opt{O} selects Overlay plot
+mode and omits the header information [Default initializes a new plot system].
+Most unexpected results for multiple overlay plots can be traced to the
+incorrect use of these options.  If you run only one plot
+program, ignore both the \Opt{O} and \Opt{K} options; they are
+only used when stacking plots. 
+
+\subsection{Timestamps on plots: The \Opt{U} option} 
+\index{\Opt{U} (plot timestamp)}
+\index{Timestamp}
+\index{UNIX@\UNIX!timestamp}
+
+\Opt{U} draws \UNIX\ System time stamp.  Optionally, append an arbitrary
+text string (surrounded by double quotes), or the code \textbf{c}, which will
+plot the current command string (Figure~\ref{fig:GMT_-U}).
+
+\GMTfig[h]{GMT_-U}{The \Opt{U} option makes it easy to ``date'' a plot.}
+
+\subsection{Verbose feedback: The \Opt{V} option} 
+\index{\Opt{V} (verbose mode)}
+\index{Verbose (\Opt{V})}
+\label{sec:verbose}
+\Opt{V} selects verbose mode, which will send progress reports to
+\emph{stderr} [Default runs ``silently''].  The interpretation of
+this option can be toggled by changing the default \textbf{GMT\_VERBOSE}.
+
+\subsection{Plot positioning and layout: The \Opt{X} \Opt{Y} options}
+\index{\Opt{X} (shift plot in $x$)}
+\index{\Opt{Y} (shift plot in $y$)}
+\index{Plot!offset}
+\index{Offset, plot}
+\GMTfig[h]{GMT_-XY}{Plot origin can be translated freely with \Opt{X} \Opt{Y}.}
+
+\Opt{X} and \Opt{Y} shift origin of plot by (\emph{xoff},\emph{yoff})
+inches (Default is (\textbf{MAP\_ORIGIN\_X}, \textbf{MAP\_ORIGIN\_Y}) for new plots\footnote{Ensures that
+boundary annotations do not fall off the page.} and (0,0) for overlays (\Opt{O})).
+By default, all translations are relative to the previous origin
+(see Figure~\ref{fig:GMT_-XY}).  Supply offset as \textbf{c} to center the
+plot in that direction relative to the page margin.
+Absolute translations (i.e., relative to a fixed point (0,0) at the
+lower left corner of the paper) can be achieve by prepending ``a''
+to the offsets.  Subsequent overlays will be co-registered with the
+previous plot unless the origin is shifted using these options.
+The offsets are measured in the current coordinates system (which can
+be rotated using the initial \Opt{P} option; subsequent \Opt{P} options
+for overlays are ignored).
+
+\subsection{OGR/GMT GIS i/o: The \Opt{a} option}
+\index{Table!GIS}
+\index{Table!OGR}
+\index{GIS tables}
+\index{OGR/GIS tables}
+\index{Input!aspatial \Opt{a}}
+\index{\Opt{a} (process aspatial data)}
+
+\GMT\ relies on external tools to translate geospatial files such as shapefiles
+into a format we can read.  The tool \progname{ogr2ogr} in the GDAL package can do such
+translations and preserve the aspatial metadata via a new OGR/GMT format
+specification (See Appendix Q).  For this to be useful we need a mechanism
+to associate certain metadata values with required input and output columns expected
+by \GMT\ programs.  The \Opt{a} option allows you to supply one or more
+comma-separated associations \emph{col=name}, where
+\emph{name} is the name of an aspatial attribute field in a OGR/GMT file
+and whose value we wish to as data input for column \emph{col}.  The
+given aspatial field thus replaces any other value already set.  Note
+that \emph{col = 0} is the first data columns.  Note that if no aspatial attributes
+are needed then the \Opt{a} option is not needed -- \GMT\ will still process
+and read such data files.
+
+\subsubsection{OGR/GMT input with \Opt{a} option}
+If you need to populate GMT data columns with (constant) values specified by aspatial
+attributes, use \Opt{a} and append any number of comma-separated \emph{col=name}
+associations.  E.g., \emph{2=depth} will read the spatial \emph{x,y} columns from the
+file and add a third (\emph{z}) column based on the value of the aspatial field called
+\emph{depth}.  You can also associate aspatial fields with other settings such as
+labels, fill colors, pens, and values used to look-up colors.  Do so by letting
+the \emph{col} value be one of \textbf{D}, \textbf{G}, \textbf{L}, \textbf{T}, \textbf{W}, or \textbf{Z}.  This
+works analogously to how standard multi-segment files can pass such options via
+its segment headers (See Appendix B).
+
+\subsubsection{OGR/GMT output with \Opt{a} option}
+You can also make \GMT\ table-writing tools output the OGR/GMT format directly.
+Again, specify if certain \GMT\ data columns with constant values should be stored
+as aspatial metadata using the \emph{col=name}[:\emph{type}], where you can optionally
+specify what data type it should be (double, integer, string, logical, byte, or
+datetime) [double is default].  As for input, you can also use the special \emph{col}
+entries of \textbf{D}, \textbf{G}, \textbf{L}, \textbf{T}, \textbf{W}, or \textbf{Z} to have values stored
+as options in segment headers be used as the source for the name aspatial field.
+Finally, for output you must append +\textbf{g}\emph{geometry}, where \emph{geometry}
+can be any of [\textbf{M}]\textbf{POINT}$|$\textbf{LINE}$|$\textbf{POLY}; the \textbf{M} represent
+the multi-versions of these three geometries.  Use upper-case +\textbf{G} to signal that
+you want to split any line or polygon features that straddle the Dateline.
+
+\subsection{Binary table i/o: The \Opt{b} option}
+\index{Table!binary}
+\index{Table!netCDF}
+\index{Binary tables}
+\index{NetCDF tables}
+\index{Input!binary \Opt{bi}}
+\index{Output!binary \Opt{bo}}
+\index{\Opt{bi} (select binary input)}
+\index{\Opt{bo} (select binary output)}
+
+All \GMT\ programs that accept table data input may read ASCII, native binary, or netCDF data.
+When using native binary data the user must be aware
+of the fact that \GMT\ has no way of determining the actual
+number of columns in the file.  You must therefore pass that
+information to \GMT\ via the binary \Opt{bi}[\emph{n}]\textbf{t} option,
+where \emph{n} is the actual number of data columns and \textbf{t}
+must be one of \textbf{c} (signed 1-byte character), \textbf{u}
+(unsigned 1-byte character), \textbf{h} (signed 2-byte int), \textbf{H}
+(unsigned 2-byte int), \textbf{i} (signed 4-byte int), \textbf{I}
+(unsigned 4-byte int), \textbf{l} (signed 8-byte int), \textbf{K}
+(unsigned 8-byte int), \textbf{f} (4-byte single-precision float), and
+\textbf{d} (8-byte double-precision float).  For a mixed-type data record
+you can concatenate several [\emph{n}]\textbf{t} combinations,
+separated by commas.  You may append \textbf{w}
+to any of the items to force byte-swapping.  Alternatively, append
+\textbf{+L}$|$\textbf{B} to indicate that the entire data file
+should be read or written as little- or big-endian, respectively.
+Here, \emph{n} is the number of each items in your binary file.
+Note that \emph{n} may be larger than \emph{m}, the number of
+columns that the \GMT\ program requires to do its task.
+If \emph{n} is not given then it defaults to \emph{m} and all columns
+are assumed to be of the single specified type \textbf{t} [\textbf{d} (double), if not set].
+If \emph{n} $<$ \emph{m} an error is generated.
+
+For binary output, use the \Opt{bo}[\emph{n}]\textbf{t} option; see \Opt{bi} for further
+details.
+
+Because of its meta data, reading netCDF tables (i.e., netCDF files containing 1-dimensional arrays)
+is quite a bit less complex than reading native binary files. When feeding netCDF tables to programs
+like \GMTprog{psxy}, the program will automatically recognize the format and read whatever amount of
+columns are needed for that program. To steer which columns are to be read, the user can
+append the suffix \textbf{?}\emph{var1}\textbf{/}\emph{var2}\textbf{/}\emph{...} to the netCDF file name,
+where \emph{var1}, \emph{var2}, etc.\
+are the names of the variables to be processed. No \Opt{bi} option is needed in this case.
+
+Currently, netCDF tables can only be input, not output.
+For more information, see Appendix~\ref{app:B}.
+
+\subsection{Number of Copies: The \Opt{c} option}
+\index{\Opt{c} (set \# of copies)}
+\index{Number of copies}
+
+The \Opt{c} option specifies the number of plot copies [Default is 1].  This
+value is embedded in the \PS\ file and will make a printer issue the chosen
+number of copies without respooling.
+
+\subsection{Data type selection: The \Opt{f} option}
+\label{sec:fg_option}
+\index{Table!format}
+\index{Input!format \Opt{fi}}
+\index{Output!format \Opt{fo}}
+\index{\Opt{fi} (set input format)}
+\index{\Opt{fo} (set output format)}
+
+When map projections are not required we must explicitly state
+what kind of data each input or output column contains.  This is accomplished with
+the \Opt{f} option.  Following an optional \textbf{i} (for input only) or \textbf{o} (for output
+only), we append a text string with information about each column (or range of columns) separated by commas.
+Each string starts with the column number (0 is first column) followed by either
+\textbf{x} (longitude), \textbf{y} (latitude), \textbf{T} (absolute calendar time) or \textbf{t} (relative time).  If
+several consecutive columns have the same format you may specify a range of columns
+rather than a single column, i.e., 0--4 for the first 5 columns.  For example, if our
+input file has geographic coordinates (latitude, longitude) with absolute calendar
+coordinates in the columns 3 and 4, we would specify \textbf{fi}0\textbf{y},1\textbf{x},3-4\textbf{T}.  All other columns
+are assumed to have the default, floating point format and need not be set individually.
+The shorthand \Opt{f}[\textbf{i}$|$\textbf{o}]\textbf{g} means \Opt{f}[\textbf{i}$|$\textbf{o}]0x,1y (i.e., geographic coordinates).
+For more information, see Sections~\ref{sec:input data} and~\ref{sec:output data}.
+
+\subsection{Data gap detection: The \Opt{g} option}
+\index{\Opt{g} (activate data gap detection)}
+\label{sec:gap}
+\GMT\ has several mechanisms that can determine line segmentation.  Typically, data segments are
+separated by multiple segment header records (see Appendix B).  However, if key data
+columns contain a NaN we may also use that information to break lines into multiple
+segments.  This behavior is modified by the parameter \textbf{IO\_NAN\_RECORDS} which
+by default is set to \emph{skip}, meaning such records are considered bad and simply
+skipped.  If you wish such records to indicate a segment boundary then set this parameter
+to \emph{pass}.  Finally, you may wish to indicate gaps based on the data values themselves.
+The \Opt{g} option is used to detect gaps based on one or more criteria (use \Opt{g+} if
+\emph{all} the criteria must be met; otherwise only one of the specified criteria needs
+to be met to signify a data gap).  Gaps can be based on excessive jumps in the \emph{x}- or
+\emph{y}-coordinates (\Opt{gx} or \Opt{gy}), or on the distance between points (\Opt{gd}).
+Append the \emph{gap} distance and optionally a unit for actual distances.
+For geographic data the optional unit may be arc \textbf{d}egree, \textbf{m}inute, and \textbf{s}econd,
+or m\textbf{e}ter [Default], \textbf{f}eet, \textbf{k}ilometer, \textbf{M}iles, or \textbf{n}autical miles.
+For programs that map data to map coordinates you can optionally specify these criteria to apply to
+the projected coordinates (by using upper-case \Opt{gX}, \Opt{gY} or \Opt{gD}).
+In that case, choose from \textbf{c}entimeter, \textbf{i}nch or \textbf{p}oint
+[Default unit is controlled by \textbf{PROJ\_LENGTH\_UNIT}].
+Note: For \Opt{gx} or \Opt{gy} with time data the unit is instead controlled by \textbf{TIME\_UNIT}.
+
+\subsection{Header data records: The \Opt{h} option}
+\index{\Opt{h} (header records)}
+\index{Header records \Opt{h}}
+\label{sec:header}
+The \Opt{h}[\textbf{i}$|$\textbf{o}][\emph{n\_recs}] option lets \GMT\ know that input file(s) have
+one [Default] or more header records.  If there are more than one header
+record you must specify the number after the \Opt{h} option, e.g., \Opt{h}4.  The
+default number of header records if \Opt{h} is used is one of the many parameters
+in the \filename{gmt.conf} file (\textbf{IO\_N\_HEADER\_RECS}, by default 1),
+but can be overridden by \Opt{h}\emph{n\_header\_recs}.
+Note that blank lines and records that be start with the character \# are
+automatically skipped.  Normally, programs that both read and write tables will
+output the header records that are found on input.  Use \Opt{hi} to suppress the
+writing of header records.  Use \Opt{ho} to tell programs to output a header record
+identifying each data column.
+
+When \Opt{b} is used to indicate binary data the \Opt{h} takes on a slightly different meaning.
+Now, the \emph{n\_recs} argument is taken to mean how many \emph{bytes} should be
+skipped (on input) or padded with the space character (on output).
+
+\subsection{Input columns selection: The \Opt{i} option}
+\index{\Opt{i} (Input columns selection)}
+\index{Columns selection \Opt{i}}
+\label{sec:incols}
+The \Opt{i}\emph{columns} option allows you to specify which
+input file data columns to use and it what order.  By default, \GMT\ will
+read all the data columns in the file, starting with the first column (0).
+Using \Opt{i} modifies that process.  For instance, to use the 4th, 7th, and
+3rd data column as the required \emph{x,y,z} to \GMTprog{blockmean} you would
+specify \Opt{i}3,6,2 (since 0 is the first column). The chosen data columns
+will be used as is.  Optionally, you can specify that input columns should be
+transformed according to a linear or logarithmic conversion.  Do so by appending
+[\textbf{l}][\textbf{s}\emph{scale}][\textbf{o}\emph{offset}] to each column (or range
+of columns).  All items are optional: The \textbf{l} implies we should first take
+$\log_{10}$ of the data [leave as is]. Next, we may scale the result by the given \emph{scale} [1].
+Finally, we add in the specified \emph{offset} [0].
+
+\subsection{Grid interpolation parameters: The \Opt{n} option}
+\index{\Opt{n} (Grid resampling parameters)}
+\index{Resampling \Opt{n}}
+\label{sec:resample}
+The \Opt{n}\emph{type} option controls parameters 
+used for 2-D grids resampling.  You can select the type
+of spline used (\Opt{nb} for B-spline smoothing, \Opt{nc} for bicubic [Default],
+\Opt{nl} for bilinear, or \Opt{nn} for nearest-node value).
+For programs that support it, antialiasing is by default on;
+optionally, append \textbf{+a} to switch off antialiasing.
+By default, boundary conditions are set according to the grid type and extent.
+Change boundary conditions by appending \textbf{+b}\emph{BC},
+where \emph{BC} is either \textbf{g} for geographic boundary conditions
+or one (or both) of  \textbf{n} and \textbf{p} for natural or periodic boundary
+conditions, respectively.  Append \textbf{x} or \textbf{y} to only apply the condition
+in one dimension.  E.g., \Opt{nb+nxpy} would imply natural boundary conditions in
+the \emph{x} direction and periodic conditions in the \emph{y} direction.
+Finally, append \textbf{+t}\emph{threshold} to control
+how close to nodes with NaN the interpolation should go.  A
+\emph{threshold} of 1.0 requires all (4 or 16) nodes involved in the
+interpolation to be non-NaN. 0.5 will interpolate about half way from a
+non-NaN value; 0.1 will go about 90\% of the way, etc.
+
+\subsection{Output columns selection: The \Opt{o} option}
+\index{\Opt{o} (Output columns selection)}
+\index{Columns selection \Opt{o}}
+\label{sec:outcols}
+The \Opt{o}\emph{columns} option allows you to specify which
+columns to write on output and it what order.  By default, \GMT\ will
+write all the data columns produced by the program.
+Using \Opt{o} modifies that process.  For instance, to write just the 4th and
+2nd data column to the output you would use \Opt{o}3,1 (since 0 is the first column).
+
+\subsection{Perspective view: The \Opt{p} option}
+\index{\Opt{p} Perspective view}
+\index{Perspective view}
+
+All plotting programs that normally produce a flat, two-dimensional illustration can
+be told to view this flat illustration from a particular vantage point, resulting in
+a perspective view.  You can select perspective view with the \Opt{p} option by setting
+the azimuth and elevation of the viewpoint [Default is 180/90].
+When \Opt{p} is used in consort with \Opt{Jz} or \Opt{JZ}, a third value can be appended which indicates
+at which \emph{z}-level all 2D material, like the plot frame, is plotted (in perspective) 
+[Default is at the bottom of the z-axis].
+For frames used for animation, you may want to append \textbf{+} to fix the center
+of your data domain (or specify a particular world coordinate point with \textbf{+w}\emph{lon0/lat}[\emph{z}])
+which will project to the center of your page size (or you may specify the coordinates
+of the \emph{projected} view point with \textbf{+v}\emph{x0/y0}.
+When \Opt{p} is used without any further arguments, the values from the last use of \Opt{p} in a previous \GMT\
+command will be used.
+
+\subsection{Grid registration: The \Opt{r} option}
+\index{\Opt{r} Grid registration}
+\index{grid file!registration|(}
+\label{sec:grid_registration}
+All 2-D grids in \GMT\ have their nodes organized in one of two ways, known
+as \emph{gridline}- and \emph{pixel} registration.  The \GMT\ default is
+gridline registration; programs that allow for the creation of grids can
+use the \Opt{r} option to select pixel registration instead.
+
+\subsubsection{Gridline registration}
+\index{grid file!registration!grid line|(}
+
+In this registration, the nodes are centered on the grid line
+intersections and the data points represent the average value
+in a cell of dimensions ($x_{inc} \cdot y_{inc}$) centered on each
+node (Figure~\ref{fig:GMT_registration}).
+In the case of grid line registration the number of nodes are
+related to region and grid spacing by \\
+
+\[ \begin{array}{ccl} 
+nx & =  &       (x_{max} - x_{min}) / x_{inc} + 1       \\ 
+ny & =  &       (y_{max} - y_{min}) / y_{inc} + 1
+\end{array} \]
+which for the example in Figure~\ref{fig:GMT_registration} yields $nx = ny = 4$.
+
+\GMTfig[h]{GMT_registration}{Gridline- and pixel-registration of data nodes.}
+
+\index{grid file!registration!grid line|)}
+
+\subsubsection{Pixel registration}
+\index{grid file!registration!pixel|(}
+
+Here, the nodes are centered in the grid cells, i.e., the areas
+between grid lines, and the data points represent the average
+values within each cell (Figure~\ref{fig:GMT_registration}.
+In the case of pixel registration the number of nodes are related
+to region and grid spacing by \\
+
+\[ \begin{array}{ccl} 
+nx & =  &       (x_{max} - x_{min}) / x_{inc}   \\ 
+ny & =  &       (y_{max} - y_{min}) / y_{inc}
+\end{array} \]
+Thus, given the same region (\Opt{R}) and grid spacing, the pixel-registered grids have one less
+column and one less row than the gridline-registered grids; here we
+find $nx = ny = 3$.
+
+\index{grid file!registration!pixel|)}
+\index{grid file!registration|)}
+
+\subsection{NaN-record treatment: The \Opt{s} option}
+\index{\Opt{s} NaN-record treatment}
+\index{NaN}
+
+We can use this option to suppress output for records whose \emph{z}-value equals NaN
+(by default we output all records).  Alternatively, append \textbf{r} to reverse the suppression,
+i.e., only output the records whose \emph{z}-value equals NaN.  Use \Opt{sa} to suppress
+output records where one or more fields (and not necessarily \emph{z}) equal NaN.  Finally, you can supply
+a comma-separated list of all columns or column ranges to consider for this NaN test.
+
+\subsection{Layer PDF transparency: The \Opt{t} option}
+\index{\Opt{t} Layer PDF transparency}
+\index{Transparency}
+\label{sec:ltransp}
+
+While the \PS\ language does not support transparency, PDF does, and via \PS\ extensions
+one can manipulate the transparency levels of objects.  The \Opt{t} option allows you to change
+the transparency level for the current overlay by appending a percentage in the 0--100 range; the
+default is 0, or opaque.  Transparency may also be controlled
+on a feature by feature basis when setting color or fill (see section~\ref{sec:fill}).
+
+\subsection{Latitude/Longitude or Longitude/Latitude?: The \Opt{:} option}
+\index{\Opt{:} (input and/or output is $y,x$, not $x,y$)}
+\index{lat/lon input}
+
+For geographical data, the first column is expected to contain longitudes
+and the second to contain latitudes.  To reverse this expectation you must
+apply the \Opt{:} option.  Optionally, append \textbf{i} or \textbf{o} to restrict
+the effect to input or output only.  Note that command line arguments that may take
+geographic coordinates (e.g., \Opt{R}) \emph{always} expect longitude before
+latitude. Also, geographical grids are expected to have the longitude as
+first (minor) dimension.
+
+\index{Command line!standardized options|)}%
+
+\section{Command line history}
+\label{sec:gmtcommands}
+\index{Command line!history}
+\index{History, command line}
+
+\GMT\ programs ``remember'' the standardized command line options
+(See Section~\ref{sec:stopt}) given during their previous invocations
+and this provides a shorthand notation for complex options.
+For example, if a basemap was created with an oblique Mercator
+projection, specified as
+
+\vspace{\baselineskip} 
+
+\texttt{-Joc170W/25:30S/33W/56:20N/1:500000} \\ 
+
+\vspace{\baselineskip} 
+\noindent
+then a subsequent \GMTprog{psxy} command to plot symbols only needs
+to state \Opt{J}o in order to activate the same projection.  In
+contrast, note that \Opt{J} by itself will pick the most recently used projection.
+Previous commands are maintained in the file \filename{.gmtcomands},
+of which there will be one in each directory you run the programs
+from.  This is handy if you create separate directories for
+separate projects since chances are that data manipulations
+and plotting for each project will share many of the same options.
+Note that an option spelled out on the command line will always
+override the last entry in the \filename{.gmtcomands} file and,
+if execution is successful, will replace this entry as the
+previous option argument in the \filename{.gmtcomands} file.
+If you call several \GMT\ modules piped together then \GMT\ cannot
+guarantee that the \filename{.gmtcomands} file is processed
+in the intended order from left to right.  The only guarantee
+is that the file will not be clobbered since \GMT\ uses advisory
+file locking.  The uncertainty in processing order makes the use
+of shorthands in pipes unreliable.  We therefore recommend that you
+only use shorthands in single process command lines, and spell out
+the full command option when using chains of commands connected with
+pipes.
+
+\section{Usage messages, syntax- and general error messages}
+\index{Usage messages}
+\index{Messages!usage}
+\index{Syntax messages}
+\index{Messages!syntax}
+\index{Error messages}
+\index{Messages!error}
+
+Each program carries a usage message.  If you enter the program
+name without any arguments, the program will write the complete
+usage message to standard error (your screen, unless you
+redirect it).  This message explains in detail what all the
+valid arguments are.  If you enter the program name followed
+by a \emph{hyphen} (--) only you will get a shorter version
+which only shows the command line syntax and no detailed
+explanations.  If you incorrectly specify an option or omit
+a required option, the program will produce syntax errors and
+explain what the correct syntax for these options should be.
+If an error occurs during the running of a program, the
+program will in some cases recognize this and give you an
+error message.  Usually this will also terminate the run.
+The error messages generally begin with the name of the
+program in which the error occurred; if you have several
+programs piped together this tells you where the trouble is. 
+
+\section{Standard input or file, header records}
+\index{Standard input}
+\index{Input!standard}
+\index{Header records \Opt{h}}
+\index{Record, header \Opt{h}}
+\index{\Opt{h} (header records)}
+\index{GMT\_DATADIR}
+
+Most of the programs which expect table data input can read
+either standard input or input in one or several files.
+These programs will try to read \emph{stdin} unless you type
+the filename(s) on the command line without the above hyphens.
+(If the program sees a hyphen, it reads the next character
+as an instruction; if an argument begins without a hyphen,
+it tries to open this argument as a filename).
+This feature allows you to connect programs with pipes if
+you like.  If your input is ASCII and has one or more header
+records that do not begin with \#, you must use the \Opt{h}
+option (see Section~\ref{sec:header}).
+ASCII files may in many cases also contain segment-headers
+separating data segments.  These are called ``multi-segment files''.
+For binary table data the \Opt{h} option may specify how many bytes should
+be skipped before the data section is reached.
+Binary files may also contain segment-headers
+separating data segments.  These segment-headers are simply data records
+whose fields are all set to NaN;
+see Appendix~\ref{app:B} for complete documentation. 
+
+If filenames are given for reading, \GMT\ programs will first look for them in the
+current directory.  If the file is not found, the programs
+will look in two other directories pointed to by environmental
+parameters (if set).  These are \textbf{GMT\_USERDIR} and
+\textbf{GMT\_DATADIR}, and they may be set by the user to point to directories
+that contain data sets of general use.  Normally, the \textbf{GMT\_DATADIR} directory (or directories:
+add multiple paths by separating them with colons (semi-colons under Windows)) will
+hold data sets of a general nature (tables, grids), although a particular use
+is to make available large grids accessible via the supplemental programs \GMTprog{grdraster}
+or \GMTprog{img2grd}; see Appendix~\ref{app:A} for information
+about these supplemental programs.  The \textbf{GMT\_USERDIR} directory may hold miscellaneous
+data sets more specific to the user; this directory also stores \GMT\ defaults and other
+configuration files.  Any directory that ends in a trailing slash (/) will be searched
+recursively.  Data sets that the user finds are often needed
+may be placed in these directories, thus eliminating the need to specify
+a full path to the file.  Program output is always written to the
+current directory unless a full path has been specified.
+
+\section{Verbose operation}
+\index{Verbose (\Opt{V})}
+\index{\Opt{V} (verbose mode)}
+
+Most of the programs take an optional \Opt{V} argument
+which will run the program in the ``verbose'' mode (see Section~\ref{sec:verbose}).
+Verbose will write to standard error information about the progress
+of the operation you are running.  Verbose reports things
+such as counts of points read, names of data files
+processed, convergence of iterative solutions, and the like.
+Since these messages are written to \emph{stderr},  the
+verbose talk remains separate from your data output. 
+You may optionally choose among five levels of \emph{verbosity}; each level
+adds more messages with an increasing level of details.  The levels are
+\begin{description}
+	\item [0]: Complete silence, not even fatal error messages.
+	\item [1]: Fatal error messages.
+	\item [2]: Warnings and progress messages [Default].
+	\item [3]: Detailed progress messages.
+	\item [4]: Debugging messages.
+\end{description}
+The verbosity is cumulative, i.e., level 3 means all messages of levels 0--3
+will be reported.
+
+\section{Program output}
+\index{Output!standard}
+\index{Output!error}
+\index{grid file!formats!netCDF}
+
+Most programs write their results, including \PS\
+plots, to standard output.  The exceptions are those which may
+create binary netCDF grid files such as \GMTprog{surface} (due to
+the design of netCDF a filename must be provided; however,
+alternative binary output formats allowing piping are available; see Section~\ref{sec:grdformats}).
+With \UNIX\, you can redirect standard output to a file or pipe it
+into another process.  Error messages, usage messages, and
+verbose comments are written to standard error in all cases.
+You can use \UNIX\ to redirect standard error as well,
+if you want to create a log file of what you are doing.
+The syntax for redirection differ among the main shells (Bash and C-shell).
+
+\section{Input data formats}
+\label{sec:input data}
+\index{Input!format}
+
+Most of the time, \GMT\ will know what kind of $x$ and $y$ coordinates it is reading because you have selected
+a particular coordinate transformation or map projection.  However,
+there may be times when you must explicitly specify what you are
+providing as input using the \Opt{f} switch. When binary input data are expected (\Opt{bi}) you must
+specify exactly the format of the records.  However, for ASCII input there are numerous
+ways to encode data coordinates (which may be separated by white-space or commas).  Valid input data are generally
+of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}), with additional
+flexibility for calendar data.  Geographical coordinates, for example, can be given in decimal degrees
+(e.g., -123.45417) or in the
+[\PM]\emph{ddd}[:\emph{mm}[:\emph{ss}[\emph{.xxx}]]][\textbf{W}$|$\textbf{E}$|$\textbf{S}$|$\textbf{N}]
+format (e.g., 123:27:15W).
+
+Because of the widespread use of incompatible and ambiguous formats, the processing of input
+date components is guided by the template \textbf{FORMAT\_DATE\_IN} in your
+\filename{gmt.conf} file; it is by default set to \emph{yyyy-mm-dd}.  Y2K-challenged input data such as
+29/05/89 can be processed by setting \textbf{FORMAT\_DATE\_IN}
+to dd/mm/yy.  A complete description of possible formats is given in the \GMTprog{gmt.conf}
+man page.  The \emph{clock} string is more standardized but issues like 12- or 24-hour clocks complicate matters
+as well as the presence or absence of delimiters between fields.  Thus, the processing of input
+clock coordinates is guided by the template \textbf{FORMAT\_CLOCK\_IN} which defaults to \emph{hh:mm:ss.xxx}.
+
+\GMT\ programs that require a map projection argument will implicitly know what kind of data to expect, and the
+input processing is done accordingly.  However, some programs that simply report on minimum and maximum
+values or just do a reformatting of the data will in general not know what to expect, and furthermore there is
+no way for the programs to know what kind of data other columns (beyond the leading $x$ and $y$ columns) contain.
+In such instances we must
+explicitly tell \GMT\ that we are feeding it data in the specific geographic or calendar formats (floating point
+data are assumed by default).  We specify the data type via the \Opt{f} option (which sets both input and output
+formats; use \Opt{fi} and \Opt{fo} to set input and output separately).  For instance, to specify that the
+the first two columns are longitude and latitude, and that the third column (e.g., $z$) is absolute calendar time, we add
+\Opt{fi}0x,1y,2T to the command line.  For more details, see the man page for the program you need to use.
+
+\section{Output data formats}
+\label{sec:output data}
+\index{Output!format}
+
+The numerical output from \GMT\ programs can be binary (when \Opt{bo} is used) or ASCII [Default].
+In the latter case the issue of formatting becomes important.  \GMT\ provides extensive
+machinery for allowing just about any imaginable format to be used on output.  Analogous to
+the processing of input data, several templates guide the formatting process.  These are
+\textbf{FORMAT\_DATE\_OUT} and \textbf{FORMAT\_CLOCK\_OUT} for calendar-time coordinates,
+\textbf{FORMAT\_GEO\_OUT} for geographical coordinates, and \textbf{FORMAT\_FLOAT\_OUT} for generic
+floating point data.  In addition, the user have control over how columns are separated via
+the \textbf{FIELD\_SEPARATOR} parameter.  Thus, as an example, it is possible to create limited
+FORTRAN-style card records by setting \textbf{FORMAT\_FLOAT\_OUT} to \%7.3lf and \textbf{FIELD\_SEPARATOR} to
+none [Default is tab].
+
+\section{\PS\ features}
+\index{PostScript@\PS!features}
+\PS\ is a command language for driving graphics
+devices such as laser printers.  It is ASCII text which you
+can read and edit as you wish (assuming you have some knowledge
+of the syntax).  We prefer this to binary metafile plot
+systems since such files cannot easily be modified after they
+have been created.  \GMT\ programs also write many comments to
+the plot file which make it easier for users to orient
+themselves should they need to edit the file (e.g., \% Start
+of x-axis)\footnote{To keep \PS\ files small, such comments are by default
+turned off; see \textbf{PS\_COMMENTS} to enable them.}.  All \GMT\ programs create \PS\ code by
+calling the \textbf{PSL} plot library (The user may call these
+functions from his/her own C or FORTRAN plot programs. See the
+manual pages for \textbf{PSL} syntax).  Although \GMT\ programs
+can create very individualized plot code, there will always be
+cases not covered by these programs.  Some knowledge of
+\PS\ will enable the user to add such features
+directly into the plot file.  By default, \GMT\ will produce
+freeform \PS\ output with embedded printer directives.  To
+produce Encapsulated \PS\ (EPS) that can be imported into graphics programs such as
+\progname{CorelDraw}, \progname{Illustrator} or \progname{InkScape} for further
+embellishment, change the \textbf{PS\_MEDIA} setting in the \filename{gmt.conf}
+file.  See Appendix~\ref{app:C} and the \GMTprog{gmt.conf} man page for more details.
+
+\section{Specifying pen attributes}
+
+\index{Attributes!pen}%
+\index{Pen!setting attributes}%
+\label{sec:pen}
+A pen in \GMT\ has three attributes: \emph{width}, \emph{color},
+and \emph{style}.  Most programs will accept pen attributes in
+the form of an option argument, with commas separating the
+given attributes, e.g.,
+
+\vspace{\baselineskip} 
+
+\par \Opt{W}[\emph{width}[\textbf{c$|$i$|$p}]],[\emph{color}],[\emph{style}[\textbf{c$|$i$|$p$|$}]]\par 
+
+\begin{description}
+\index{Pen!width}
+\index{Width, pen}
+\index{Attributes!pen!width}%
+\item[$\rightarrow$]\emph{Width} is by default measured in points (1/72 of an inch).
+Append \textbf{c}, \textbf{i}, or \textbf{p} to specify pen width in cm, inch, or points,
+respectively.
+Minimum-thickness pens can be achieved by
+giving zero width, but the result is device-dependent.  Finally, a few
+predefined pen names can be used: default, faint, and \{thin, thick, fat\}[er$|$est],
+and obese.  Table~\ref{tbl:pennames} shows this list and the corresponding pen widths.
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c||l|c|} \hline
+\multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}{\emph{Width}}	&	\multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}{\emph{Width}} \\ \hline
+faint		&	0	&	thicker		&	1.5p \\ \hline 
+default		&	0.25p	&	thickest	&	2p \\ \hline
+thinnest	&	0.25p	&	fat		&	3p \\ \hline
+thinner		&	0.50p	&	fatter		&	6p \\ \hline 
+thin		&	0.75p	&	fattest		&	12p \\ \hline  
+thick		&	1.0p	&	obese		&	18p \\	\hline 
+\end{tabular}
+\caption{\gmt\ predefined pen widths.}
+\label{tbl:pennames}
+\end{table}
+
+\index{Pen!color}
+\index{Color!pen}
+\index{Color!RGB system}
+\index{Color!HSV system}
+\index{Color!CMYK system}
+\index{Attributes!pen!color}%
+\item[$\rightarrow$]The \emph{color} can be specified in five different ways:
+\begin{enumerate}
+\item Gray. Specify a \emph{gray} shade in the range 0--255 (linearly going from black [0] to white [255]).
+\item RGB. Specify \emph{r}/\emph{g}/\emph{b}, each ranging from 0--255.  Here 0/0/0 is black, 255/255/255 is white,
+255/0/0 is red, etc.
+\item HSV. Specify \emph{hue}-\emph{saturation}-\emph{value}, with the former in the 0--360 degree range while the latter
+two take on the range 0--1\footnote{For an overview of color systems such as HSV, see Appendix~\ref{app:I}.}.
+\item CMYK. Specify \emph{cyan}/\emph{magenta}/\emph{yellow}/\emph{black}, each ranging from 0--100\%.
+\item Name.  Specify one of 663 valid color names.  Use \progname{man gmtcolors} to list all valid names.
+A very small yet versatile subset consists of the 29 choices \emph{white}, \emph{black}, and
+[light$|$dark]\{\emph{red,
+orange, yellow, green, cyan, blue, magenta, gray$|$grey, brown}\}.
+The color names are case-insensitive, so mixed upper and lower case can be used (like
+\emph{DarkGreen}).
+\end{enumerate}
+
+\index{Pen!style}
+\index{Style, pen}
+\index{Attributes!pen!style}%
+\item[$\rightarrow$]The \emph{style} attribute controls the appearance
+of the line.  A ``.'' yields a dotted line, whereas a dashed pen is requested with ``-''.
+Also combinations of dots and dashes, like ``.-'' for a dot-dashed line, are allowed.
+The lengths of dots and dashes are scaled relative to the pen width (dots has
+a length that equals the pen width while dashes are 8 times as long; gaps between
+segments are 4 times the pen width).
+For more detailed attributes including exact dimensions you may specify \emph{string}:\emph{offset},
+where \emph{string} is a series of numbers separated by underscores.
+These numbers represent a pattern by indicating the length of line
+segments and the gap between segments.  The \emph{offset} phase-shifts the
+pattern from the beginning the line.  For example, if you want a yellow line of width
+0.1~cm that alternates between long dashes (4 points), an 8 point gap, then
+a 5 point dash, then another 8 point gap, with pattern offset by 2 points
+from the origin, specify \Opt{W}0.1c,yellow,4\_8\_5\_8:2p.
+Just as with pen width, the default style units are points, but can also be explicitly specified in cm, inch, or points
+(see \emph{width} discussion above). 
+\end{description} 
+Table~\ref{tbl:penex} contains additional examples of pen specifications suitable for, say, \GMTprog{psxy}.
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{Pen example}}	&	\multicolumn{1}{c|}{\emph{Comment}} \\ \hline
+\Opt{W}0.5p		&	0.5 point wide line of default color and style \\ \hline 
+\Opt{W}green		&	Green line with default width and style \\ \hline
+\Opt{W}thin,red,-	&	Dashed, thin red line \\ \hline 
+\Opt{W}fat,.		&	Fat dotted line with default color \\ \hline 
+\Opt{W}0.1c,120-1-1	&	Green (in h-s-v) pen, 1~mm thick \\ \hline 
+\Opt{W}faint,100/0/0/0,..-	&	Very thin, cyan (in c/m/y/k), dot-dot-dashed line \\ \hline 
+\end{tabular}
+\caption{A few examples of pen specifications. The default width, color and style are determined by the \textbf{MAP\_DEFAULT\_PEN} parameter.}
+\label{tbl:penex}
+\end{table}
+In addition to these pen settings there are several \PS\ settings that can affect the appearance of lines.
+These are controlled via the \GMT\ defaults settings \textbf{PS\_LINE\_CAP}, \textbf{PS\_LINE\_JOIN},
+and \textbf{PS\_MITER\_LIMIT}. They determine how a line segment ending is rendered, be it at the
+termination of a solid line or at the end of all dashed line segments making up a line, and how a
+straight lines of finite thickness should behave when joined at a common point.  By default, line segments
+have rectangular ends, but this can change to give rounded ends.  When \textbf{PS\_LINE\_CAP} is set to
+round the a segment length of zero will appear as a circle.  This can be used to created circular dotted
+lines, and by manipulating the phase shift in the \emph{style} attribute and plotting the same line twice
+one can even alternate the color of adjacent items.  Figure~\ref{fig:GMT_linecap} shows various lines made
+in this fashion.  See the \GMTprog{gmt.conf} man page for more information.
+\GMTfig[h]{GMT_linecap}{Line appearance can be varied by using \textbf{PS\_LINE\_CAP} and the \emph{style} attribute.}
+
+\section{Specifying area fill attributes}
+
+\index{Attributes!fill!color}%
+\index{Attributes!fill!pattern}%
+\index{Fill!attributes!color}%
+\index{Fill!attributes!pattern}%
+\index{Color!fill}%
+\index{Pattern!fill}%
+\index{Pattern!color}%
+\index{\Opt{GP} \Opt{Gp}}
+\label{sec:fill}
+
+Many plotting programs will allow the user to draw filled polygons or
+symbols.  The fill specification may take two forms: 
+
+\vspace{\baselineskip} 
+
+\par \Opt{G}\emph{fill}\par 
+
+\par \Opt{Gp}\emph{dpi/pattern}[:\textbf{B}\emph{color}[\textbf{F}\emph{color}]]\par 
+
+\vspace{\baselineskip} 
+\noindent
+\begin{description}
+\item [fill:]
+In the first case we may specify a \emph{gray} shade (0--255), RGB color
+(\emph{r}/\emph{g}/\emph{b} all in the 0--255 range or in hexadecimal \emph{\#rrggbb}), HSV color (\emph{hue}-\emph{saturation}-\emph{value}
+in the 0--360, 0--1, 0--1 range), CMYK color (\emph{cyan}/\emph{magenta}/\emph{yellow}/\emph{black},
+each ranging from 0--100\%), or a valid color \emph{name}; in that respect it is similar
+to specifying the pen color settings (see pen color discussion under Section~\ref{sec:pen}).
+\item [pattern:]
+The second form allows us to use a predefined bit-image pattern.
+\emph{pattern} can either be a number in the range 1--90 or the name of a 1-,
+8-, or 24-bit Sun raster file.  The former will result in one of the 90
+predefined 64 x 64 bit-patterns provided with \GMT\ and reproduced in Appendix~\ref{app:E}.
+The latter allows the user to create customized, repeating images using
+standard Sun raster files\footnote{Convert other graphics formats to Sun ras format using
+ImageMagick's \progname{convert} program.}.  The \emph{dpi} parameter sets the resolution of
+this image on the page;  the area fill is thus made up of a series of these
+``tiles''.  Specifying \emph{dpi} as 0 will result in highest resolution
+obtainable given the present dpi setting in \filename{gmt.conf}.
+By specifying upper case \Opt{GP} instead of \Opt{Gp} the image will be
+bit-reversed, i.e., white and black areas will be interchanged (only applies
+to 1-bit images or predefined bit-image patterns).  For these patterns and
+other 1-bit images one may specify alternative background and foreground
+colors (by appending :\textbf{B}\emph{color}[\textbf{F}\emph{color}]) that will
+replace the default white and black pixels, respectively.  Setting one of the
+fore- or background colors to -- yields a \emph{transparent} image where only the
+back- \emph{or} foreground pixels will be painted.
+\end{description}
+
+Due to \PS\ implementation limitations the raster images used with
+\Opt{G} must be less than 146 x 146 pixels in size; for larger images see
+\GMTprog{psimage}.  The format of Sun raster files is outlined in Appendix~\ref{app:B}.
+Note that under \PS\ Level 1 the patterns are filled by using
+the polygon as a \emph{clip path}.  Complex clip paths may require
+more memory than the \PS\ interpreter has been assigned.
+There is therefore the possibility that some \PS\ interpreters
+(especially those supplied with older laserwriters) will run out of memory
+and abort.  Should that occur we recommend that you use a regular gray-shade
+fill instead of the patterns.  Installing more memory in your printer
+\emph{may or may not} solve the problem! 
+
+Table~\ref{tbl:fillex} contains a few examples of fill specifications.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{Fill example}}	&	\multicolumn{1}{c|}{\emph{Comment}} \\ \hline
+\Opt{G}128		&	Solid gray \\ \hline
+\Opt{G}127/255/0	&	Chartreuse, R/G/B-style \\ \hline
+\Opt{G}\#00ff00 & Green, hexadecimal RGB code \\ \hline  
+\Opt{G}25-0.86-0.82	&	Chocolate, h-s-v -- style \\ \hline 
+\Opt{G}DarkOliveGreen1	&	One of the named colors \\ \hline 
+\Opt{Gp}300/7		&	Simple diagonal hachure pattern in b/w at 300 dpi\\ \hline 
+\Opt{Gp}300/7:Bred	&	Same, but with red lines on white \\ \hline 
+\Opt{Gp}300/7:BredF-	&	Now the gaps between red lines are transparent \\ \hline 
+\Opt{Gp}100/marble.ras	&	Using user image of marble as the fill at 100 dpi \\ \hline 
+\end{tabular}
+\caption{A few examples of fill specifications.}
+\label{tbl:fillex}
+\end{table}
+
+\index{Specifying fonts}
+\index{Fonts, specifying}
+\index{Font!attributes!size}%
+\index{Font!attributes!type}%
+\index{Font!attributes!fill}%
+\index{Font!attributes!transparency}%
+\index{Font!attributes!outline}%
+\label{sec:fonts}
+
+\section{Specifying Fonts}
+
+The fonts used by \GMT\ are typically set indirectly via the \GMT\ defaults parameters.
+However, some programs, like \GMTprog{pstext} may wish to have this information passed directly.
+A font is specified by a comma-delimited attribute list of \emph{size}, \emph{fonttype} and \emph{fill}, each of which is optional.
+The \emph{size} is the font size (usually in points) but \textbf{c}, \textbf{i} or \textbf{p} can be added to indicate a specific unit.
+The \emph{fonttype} is the name (case sensitive!) of the font or its equivalent numerical ID (e.g., Helvetica-Bold or 1).
+\emph{fill} specifies the gray shade, color or pattern of the text (see section~\ref{sec:fill} above).
+Optionally, you may append \textbf{=}\emph{pen} to the \emph{fill} value in order to draw the text outline with the specified
+\emph{pen};
+if used you may optionally skip the filling of the text by setting \emph{fill} to \textbf{-}.
+If any of the attributes is omitted their default or previous setting will be retained.
+See Appendix G for a list of all fonts recognized by \GMT.
+
+\section{Stroke, Fill and Font Transparency}
+
+\index{Attributes!transparency}%
+\index{Fill!attributes!transparency}%
+\index{Font!attributes!transparency}%
+\index{Color!transparency}%
+\index{Pattern!transparency}%
+\index{Pattern!transparency}%
+\label{sec:transp}
+
+The \PS\ language has no built-in mechanism for transparency.  However, \PS\
+extensions make it possible to request transparency, and tools that can render such extensions
+will produce transparency effects.  We specify transparency in percent: 0 is opaque [Default]
+while 100 is fully transparent (i.e., nothing will show).  As noted in section~\ref{sec:ltransp}, we can control
+transparency on a layer-by-layer basis using the \Opt{t} option.  However, we may also set
+transparency as an attribute of stroke or fill (including for fonts) settings.  Here, transparency is requested by
+appending @\emph{transparency} to colors or pattern fills.  The transparency \emph{mode} can be changed
+by using the \GMT\ default parameter \textbf{PS\_TRANSPARENCY}; the default is Normal but you can choose among
+Color, ColorBurn, ColorDodge, Darken, Difference, Exclusion, HardLight, Hue,
+Lighten, Luminosity, Multiply, Normal, Overlay, Saturation, SoftLight, and Screen.
+For more information, see for instance (search online for) the Adobe pdfmark Reference Manual.
+Most printers and many \PS\ viewers can neither print nor show transparency. They will simply ignore your attempt to
+create transparency and will plot any material as opaque. \progname{GhostScript} and its derivatives
+such as \GMT's \GMTprog{ps2raster} support transparency (if compiled with the correct build option).
+Note: If you use \progname{Acrobat Distiller} to create a PDF file you must first change some settings to make
+transparency effective: change the parameter /AllowTransparency to true in your *.joboptions file.
+
+\section{Color palette tables}
+
+\index{Color!palette tables|(}
+\index{CPT!file|(}
+
+Several programs, such as those which read 2-D gridded data sets and create
+colored images or shaded reliefs, need to be told what colors to use and
+over what \emph{z}-range each color applies.  This is the purpose of the
+color palette table (CPT file).  These files may also be used by \GMTprog{psxy}
+and \GMTprog{psxyz} to plot color-filled symbols.  For most applications, you
+will simply create a CPT file using the tool \GMTprog{makecpt} which will
+take an existing color table and resample it to fit your chosen data
+range, or use \GMTprog{grd2cpt} to build a CPT file based on the data distribution
+in one or more given grid files.  However, in some situations you will need to make a CPT file by
+hand or using text tools like \progname{awk} or \progname{perl}.
+
+Color palette tables (CPT) comes in two flavors: (1) Those designed to work with
+categorical data (e.g., data where interpolation of values is undefined) and
+(2) those designed for regular, continuously-varying data.  In both cases
+the \emph{fill} information follows the format given in Section \ref{sec:fill}.
+
+\subsection{Categorical CPT files}
+
+Categorical data are information on which normal numerical operations are not
+defined. As an example, consider various land classifications (desert, forest, glacier, etc.)
+and it is clear that even if we assigned a numerical value to these categories (e.g.,
+desert = 1, forest = 2, etc) it would be meaningless to compute average values (what would
+1.5 mean?).  For such data a special format of the CPT files are provided.  Here,
+each category is assigned a unique key, a color or pattern, and an optional
+label (usually the category name) marked by a leading semi-colon.  Keys must be
+monotonically increasing but do not need to be consecutive.  The format is
+
+\begin{center}
+\begin{tabular}{lll}
+key$_1$ &  \emph{fill} &  [;\emph{label}] \\ 
+\ldots & & \\ 
+key$_n$ &  \emph{fill} &  [;\emph{label}] \\ 
+\end{tabular} 
+\end{center}
+
+The \emph{fill} information follows the format given in Section \ref{sec:fill}.
+While not always applicable to categorical data, the background color (for
+\emph{key}-values $<$ \emph{key$_1$}), foreground color
+(for \emph{key}-values $>$ \emph{key$_{n}$}), and not-a-number (NaN) color (for
+\emph{key}-values = NaN) are all defined in the \filename{gmt.conf}
+file, but can be overridden by the statements
+
+\begin{center}
+\begin{tabular}{llll}
+B &  R$_{back}$ &  G$_{back}$ &  B$_{back}$ \\ 
+F &  R$_{fore}$ &  G$_{fore}$ &  B$_{fore}$ \\ 
+N &  R$_{nan}$ &  G$_{nan}$ &  B$_{nan}$ \\
+\end{tabular}
+\end{center}
+
+\subsection{Regular CPT files}
+
+Suitable for continuous data types and allowing for color interpolations, the
+format of the regular CPT files is: 
+
+\begin{center}
+\begin{tabular}{llllll}
+z$_0$ &  Color$_{min}$  &  z$_1$ & Color$_{max}$ &  [\bf{A}] & [;\emph{label}] \\ 
+\ldots & & & & & \\ 
+z$_{n-2}$ &  Color$_{min}$ &  z$_{n-1}$ &  Color$_{max}$ &  [\textbf{A}] & [;\emph{label}] \\
+\end{tabular} 
+\end{center}
+
+Thus, for each ``\emph{z}-slice'', defined as the interval between two boundaries
+(e.g., \emph{z$_0$} to \emph{z$_1$}), the color can be constant (by letting Color$_{max}$
+= Color$_{min}$ or -) or a continuous, linear function of \emph{z}.  If patterns are
+used then the second (max) pattern must be set to -.  The optional flag \textbf{A} is used to indicate annotation
+of the color scale when plotted using \GMTprog{psscale}.  The optional flag \textbf{A} may be \textbf{L},
+\textbf{U}, or \textbf{B} to select annotation of the lower, upper, or both limits
+of the particular $z$-slice, respectively.  However, the standard \Opt{B} option can be used
+by \GMTprog{psscale} to affect annotation and ticking of color scales. Just as other \GMT{} programs, the \emph{stride} can be omitted to determine the annotation and tick interval automatically (e.g., \Opt{Baf}).  The optional
+semicolon followed by a text label will make \GMTprog{psscale}, when used with the \Opt{L} option,
+place the supplied label instead of formatted \emph{z}-values.
+
+As for categorical tables, the background color (for \emph{z}-values $<$ \emph{z$_0$}), foreground color
+(for \emph{z}-values $>$ \emph{z$_{n-1}$}), and not-a-number (NaN) color (for
+\emph{z}-values = NaN) are all defined in the \filename{gmt.conf}
+file, but can be overridden by the statements
+
+\begin{center}
+\begin{tabular}{ll}
+B &  Color$_{back}$ \\ 
+F &  Color$_{fore}$ \\ 
+N &  Color$_{nan}$ \\
+\end{tabular}
+\end{center}
+
+\noindent
+which can be inserted into the beginning or end of the CPT file.  If
+you prefer the HSV system, set the
+\filename{gmt.conf} parameter accordingly and replace red, green,
+blue with hue, saturation, value.  Color palette tables that contain
+gray-shades only may replace the \emph{r/g/b} triplets with a single gray-shade
+in the 0--255 range.  For CMYK, give four values in the 0--100 range.
+Both the min and max color specifications in one \emph{z}-slice must use
+the same color system, i.e., you cannot mix ``red'' and 0/255/100 on the
+same line.
+
+A few programs (i.e., those that plot polygons such as \GMTprog{grdview},
+\GMTprog{psscale}, \GMTprog{psxy} and \GMTprog{psxyz}) can accept pattern fills instead
+of gray-shades.  You must specify the pattern as in Section~\ref{sec:fill} (no
+leading \Opt{G} of course), and only the first pattern (for low $z$) is used (we cannot
+interpolate between patterns).  
+Finally, some programs let you skip features whose $z$-slice in the CPT file has
+gray-shades set to --.  As an example, consider
+
+\begin{center}
+\begin{tabular}{lllll}
+30 &  p200/16 &  80 & -- \\ 
+80 &  -- &  100 &  -- \\
+100 &  200/0/0  &  200/255/255  &  0 \\
+200 &  yellow &  300 & green  \\ 
+\end{tabular} 
+\end{center}
+\noindent
+where slice $30 < z < 80$ is painted with pattern \# 16 at 200 dpi,
+slice $80 < z < 100$ is skipped, slice $100 < z < 200$ is
+painted in a range of dark red to yellow, whereas the slice $200 < z < 300$
+will linearly yield colors from yellow to green, depending on the actual value
+of $z$.
+
+\index{Color!palette tables|)}
+\index{CPT!file|)}
+
+\index{Artificial illumination}
+\index{Illumination, artificial}
+\index{Shaded relief}
+\index{Relief, shaded}
+
+Some programs like \GMTprog{grdimage} and \GMTprog{grdview} apply artificial
+illumination to achieve shaded relief maps.  This is typically done
+by finding the directional gradient in the direction of the artificial
+light source and scaling the gradients to have approximately a normal
+distribution on the interval [-1,+1].  These intensities are used
+to add ``white'' or ``black'' to the color as defined by the \emph{z}-values
+and the CPT file.  An intensity of zero leaves the color unchanged.
+Higher values will brighten the color, lower values will darken it,
+all without changing the original hue of the color (see Appendix~\ref{app:I}
+for more details).  The illumination is decoupled from the data
+grid file in that a separate grid file holding intensities in the
+[-1,+1] range must be provided.  Such intensity files can be
+derived from the data grid using \GMTprog{grdgradient} and modified
+with \GMTprog{grdhisteq}, but could equally well be a separate data set.
+E.g., some side-scan sonar systems collect both bathymetry and
+backscatter intensities, and one may want to use the latter information
+to specify the illumination of the colors defined by the former.
+Similarly, one could portray magnetic anomalies superimposed on
+topography by using the former for colors and the latter for shading. 
+
+\section{Character escape sequences}
+\label{sec:escape}
+\index{Characters!European}
+\index{Characters!escape sequences}
+\index{Characters!escape sequences!subscript}
+\index{Characters!escape sequences!superscript}
+\index{Characters!escape sequences!switch fonts}
+\index{Characters!escape sequences!composite character}
+\index{Characters!escape sequences!small caps}
+\index{Characters!escape sequences!octal character}
+\index{Escape sequences!characters}
+\index{European characters}
+\index{Text!European}
+\index{Text!escape sequences}
+\index{Text!subscript}
+\index{Subscripts}
+\index{Text!superscript}
+\index{Superscripts}
+\index{Characters!composite}
+\index{Composite characters}
+\index{Font!switching}
+\index{Font!symbol}
+\index{Symbol font}
+\index{"@, printing}
+\index{Small caps}
+\index{Characters!octal}
+\index{Octal characters}
+
+For annotation labels or text strings plotted with \GMTprog{pstext},
+\GMT\ provides several escape sequences that allow the user to
+temporarily switch to the symbol font, turn on sub- or superscript,
+etc., within words.  These conditions are toggled on/off by the
+escape sequence @\textbf{x}, where \textbf{x} can be one of several types.
+The escape sequences recognized in \GMT\ are listed in Table~\ref{tbl:escape}. 
+Only one level of sub- or superscript is supported.
+Note that under Windows the percent symbol indicates a batch variable,
+hence you must use two percent-signs for each one required in the escape sequence for font switching.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{Code}}	&	\multicolumn{1}{c|}{\emph{Effect}} \\ \hline
+@\~	&	Turns symbol font on or off \\ \hline 
+@+	&	Turns superscript on or off \\ \hline 
+@-	&	Turns subscript on or off \\ \hline 
+@\#	&	Turns small caps on or off \\ \hline 
+@\_	&	Turns underline on or off \\ \hline 
+@\%\emph{fontno}\%	&	Switches to another font; @\%\% resets to previous font \\ \hline 
+@:\emph{size}:	&	Switches to another font size; @:: resets to previous size \\ \hline 
+@;\emph{color};	&	Switches to another font color; @;; resets to previous color \\ \hline 
+@!	&	Creates one composite character of the next two characters \\ \hline 
+@@	&	Prints the @ sign itself \\ \hline 
+\end{tabular}
+\caption{\gmt\ text escape sequences.}
+\label{tbl:escape}
+\end{table}
+
+Shorthand notation for a few special European characters has also been
+added (Table~\ref{tbl:scand}):
+\index{Characters!escape sequences!European}
+\index{European characters}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l||l|l|} \hline
+\emph{Code} & \emph{Effect}  & \emph{Code} & \emph{Effect} \\ \hline
+@E &  \AE   & @e &  \ae   \\ \hline
+@O &  \O    & @o &  \o    \\ \hline
+@A &  \AA   & @a &  \aa   \\ \hline
+@C &  \c{C} & @c &  \c{c} \\ \hline
+@N &  \~{N} & @n &  \~{n} \\ \hline
+@U &  \"{U} & @u &  \"{u} \\ \hline
+@s &  \ss   &    &        \\ \hline
+\end{tabular}
+\caption{Shortcuts for some European characters.}
+\label{tbl:scand}
+\end{table}
+
+\PS\ fonts used in \GMT\ may be re-encoded to include
+several accented characters used in many European languages.  To
+access these, you must specify the full octal code $\backslash$xxx
+allowed for your choice of character encodings
+determined by the \textbf{PS\_CHAR\_ENCODING} setting described
+in the \GMTprog{gmt.conf} man page.  Only the special characters
+belonging to a particular encoding will
+be available.  Many characters not directly available by
+using single octal codes may be constructed with the composite
+character mechanism @!.
+ 
+Some examples of escape sequences and embedded octal codes in \GMT\ strings using the
+Standard+ encoding: 
+
+\begin{tabbing}
+XXX\=\verb|2@~p@~r@+2@+h@-0@- E\363tv\363s|XXXX \== XXXX\=text \kill 
+\>\verb|2@~p@~r@+2@+h@-0@- E\363tv\363s| \> = \> 2$\pi r^2h_0$ E\"{o}tv\"{o}s \\ 
+\>\verb|10@+-3 @Angstr@om|		 \> =	\> 10$^{-3}$ \AA ngstr\o m \\ 
+\>\verb|Se@nor Gar@con|	 \> = \> Se\~{n}or Gar\c{c}on \\ 
+\>\verb|M@!\305anoa stra@se|	 \> = \> M\={a}noa stra\ss e \\ 
+\>\verb|A@\#cceleration@\# (ms@+-2@+)|	 \> = \> \sc{Acceleration (ms$^{-2}$)}
+\end{tabbing} 
+
+The option in \GMTprog{pstext} to draw a rectangle surrounding the text
+will not work for strings with escape sequences.  A chart of characters
+and their octal codes is given in Appendix~\ref{app:F}. 
+
+\section{Grid file format specifications}
+\index{grid file!formats|(}
+\index{grid file!formats!netCDF}
+\index{grid file!formats!COARDS}
+\index{grid file!formats!floats}
+\index{grid file!formats!shorts}
+\index{grid file!formats!unsigned char}
+\index{grid file!formats!bits}
+\index{grid file!formats!raster file}
+\index{grid file!formats!custom format}
+\label{sec:grdformats}
+\GMT\ has the ability to read and write grids using more than one grid file
+format (see Table \ref{tbl:grdformats} for supported format and their IDs).  For
+reading, \GMT\ will automatically determine the format of grid files, while for writing
+you will normally have to append \emph{=ID} to the filename if you want \GMT\ to use a different format
+than the default.
+
+By default, \GMT\ will create new grid files using the \textbf{nf} format; however,
+this behavior can be overridden by setting the \textbf{GRID\_FORMAT} defaults parameter
+to any of the other recognized values (or by appending \emph{=ID}).
+
+\GMT\ can also read netCDF grid files produced by other software packages, provided the grid files
+satisfy the COARDS and Hadley Centre conventions for netCDF grids. Thus, products created under
+those conventions (provided the grid is 2-, 3-, 4-, or 5-dimensional) can be read directly by \GMT\ and the netCDF grids
+written by \GMT\ can be read by other programs that conform to those conventions. Three such programs are
+\htmladdnormallink{\progname{ncview}}{http://meteora.ucsd.edu/~pierce/ncview_home_page.html},
+\htmladdnormallink{\progname{Panoply}}{http://www.giss.nasa.gov/tools/panoply/}
+and
+\htmladdnormallink{\progname{ncBrowse}}{http://www.epic.noaa.gov/java/ncBrowse/}; others can be found
+on the \htmladdnormallink{netCDF website}{http://www.unidata.ucar.edu/software/netcdf/software.html}.
+
+In addition, users with some C-programming experience may add
+their own read/write functions and link them with the \GMT\ library
+to extend the number of predefined formats.  Technical information
+on this topic can be found in the source file \filename{gmt\_customio.c}. 
+Users who are considering this approach should contact the \GMT\ team.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{GMT 4 netCDF standard formats}} \\ \hline \hline
+nb & GMT netCDF format (byte)   (COARDS-compliant)		\\ \hline
+ns & GMT netCDF format (short)  (COARDS-compliant)		\\ \hline
+ni & GMT netCDF format (int)    (COARDS-compliant)		\\ \hline
+nf & GMT netCDF format (float)  (COARDS-compliant)		\\ \hline
+nd & GMT netCDF format (double) (COARDS-compliant) 		\\ \hline \hline
+\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{GMT 3 netCDF legacy formats}} \\ \hline \hline
+cb & GMT netCDF format (byte)	(depreciated) \\ \hline
+cs & GMT netCDF format (short)	(depreciated) \\ \hline
+ci & GMT netCDF format (int)	(depreciated) \\ \hline
+cf & GMT netCDF format (float)	(depreciated) \\ \hline
+cd & GMT netCDF format (double)	(depreciated) \\ \hline \hline
+\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{GMT native binary formats}} \\ \hline \hline
+bm & GMT native, C-binary format (bit-mask)	\\ \hline
+bb & GMT native, C-binary format (byte)		\\ \hline
+bs & GMT native, C-binary format (short)	\\ \hline
+bi & GMT native, C-binary format (int)		\\ \hline
+bf & GMT native, C-binary format (float)	\\ \hline
+bd & GMT native, C-binary format (double)	\\ \hline \hline
+\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{Miscellaneous grid formats}} \\ \hline \hline
+rb & SUN raster file format (8-bit standard)	\\ \hline
+rf & GEODAS grid format GRD98 (NGDC)		\\ \hline
+sf & Golden Software Surfer format 6 (float)	\\ \hline
+sd & Golden Software Surfer format 7 (double)	\\ \hline
+af & Atlantic Geoscience Center AGC (float)	\\ \hline
+ei & ESRI Arc/Info ASCII Grid Interchange format (integer)	\\ \hline
+ef & ESRI Arc/Info ASCII Grid Interchange format (float)	\\ \hline
+gd & Read-only via GDAL\footnote{Requires building \GMT\ with GDAL.} (float)	\\ \hline
+\end{tabular}
+\caption{\gmt\ grid file formats.}
+\label{tbl:grdformats}
+\end{table}
+
+Because some formats have limitations on the range of values they can store
+it is sometimes necessary to provide more
+than simply the name of the file and its ID on the command line.  For instance,
+a native short integer file may use a unique value to signify an empty node
+or NaN, and the data may need translation and scaling prior to use.
+Therefore, all \GMT\ programs that read or write grid files will decode
+the given filename as follows:
+
+\vspace{\baselineskip} 
+
+\par 	name[=\emph{ID}[/\emph{scale}/\emph{offset}[/\emph{nan}]]]\par 
+
+\vspace{\baselineskip} 
+
+\noindent
+where everything in brackets is optional.  If you are reading a grid
+then no options are needed: just continue to pass
+the name of the grid file.  However, if you write another format you must
+append the =\emph{ID} string, where \emph{ID} is the format code
+listed above.  In addition, should you want to (1) multiply the data by
+a scale factor, and (2) add a constant offset you must append the
+/\emph{scale}/\emph{offset} modifier.  Finally, if you need to indicate
+that a certain data value should be interpreted as a NaN (not-a-number)
+you must append the /\emph{nan} suffix to the scaling string (it cannot
+go by itself; note the nesting of the brackets!). 
+
+Some of the grid formats allow writing to standard output and reading
+from standard input which means you can connect \GMT\ programs that
+operate on grid files with pipes, thereby speeding up execution and
+eliminating the need for large, intermediate grid files.  You specify
+standard input/output by leaving out the filename entirely.
+That means the ``filename'' will begin with
+``=\emph{ID}\,'' since no \GMT\  netCDF format 
+allow piping (due to the design of netCDF). 
+
+Everything looks clearer after a few examples: 
+
+\begin{enumerate}
+\item To write a native binary float grid file, specify the name as \filename{my\_file.f4=bf}.
+
+\item To read a native short integer grid file, multiply the data by 10 and then
+add 32000, but first let values that equal 32767 be set to NaN,
+use the filename \filename{my\_file.i2=bs/10/32000/32767}. 
+
+\item To read a Golden Software ``surfer'' format 6 grid file, just pass the file name,
+e.g., \filename{my\_surferfile.grd}. 
+
+\item To read a 8-bit standard Sun raster file (with values in the 0--255 range)
+and convert it to a \PM 1 range, give the name as
+\filename{rasterfile=rb/7.84313725e-3/-1} (i.e., 1/127.5).
+
+\item To write a native binary short integer grid file to standard output after subtracting
+32000 and dividing its values by 10, give filename as \filename{=bs/0.1/-3200}. 
+
+\end{enumerate} 
+
+Programs that both read and/or write more than one grid file may
+specify different formats and/or scaling for the files involved.
+The only restriction with the embedded grid specification mechanism
+is that no grid files may actually use the ``=''
+character as part of their name (presumably, a small sacrifice). 
+
+\index{grid file!suffix}
+
+One can also define special file suffixes to imply a specific file
+format; this approach represents a more intuitive and user-friendly
+way to specify the various file formats.  The user may create a file
+called \filename{.gmt\_io} in the current directory, home directory
+or in the directory \filename{$\sim$/.gmt} and define any
+number of custom formats.  The following is an example of a
+\filename{.gmt\_io} file:
+\index{.gmt\_io}
+
+\vspace{\baselineskip} 
+
+\noindent
+\begin{tabbing}
+MMM\=\# suffix \=format\_id \=scale \=offset \=NaNxxx\=Comments \kill 
+\>\# GMT i/o shorthand file \\ 
+\>\# It can have any number of comment lines like this one anywhere \\
+\>\# suffix \> format\_id	\> scale \> offset \>NaN\>Comments \\ 
+\>grd \> nf \> - \> - \> - \>Default format \\ 
+\>b \> bf \> - \> - \> - \> Native binary floats \\ 
+\>i2 \> bs \> - \> - \> 32767 \> 2-byte integers with NaN value \\ 
+\>ras \> rb \> - \> - \> - \> Sun raster files \\ 
+\>byte \> bb \> - \> - \> 255 \> Native binary 1-byte grids \\ 
+\>bit \> bm \> - \> - \> - \> Native binary 0 or 1 grids \\ 
+\>mask \> bm \> - \> - \> 0 \> Native binary 1 or NaN masks \\ 
+\>faa \> bs \> 0.1 \> - \> 32767 \> Native binary gravity in 0.1 mGal
+\end{tabbing} 
+
+These suffices can be anything that makes sense to the user.  To
+activate this mechanism, set parameter \textbf{IO\_GRIDFILE\_SHORTHAND} to TRUE in
+your \filename{gmt.conf} file.  Then, using the filename
+\filename{stuff.i2} is equivalent to saying \filename{stuff.i2=bs/1/0/32767},
+and the filename \filename{wet.mask} means wet.mask=bm/1/0/0.  For a
+file intended for masking, i.e., the nodes are either 1 or NaN,
+the bit or mask format file may be as small as 1/32 the size of the
+corresponding grid float format file. 
+\index{grid file!formats|)}
+
+\section{Options for COARDS-compliant netCDF files}
+\label{sec:netcdf}
+\index{grid file!formats!netCDF|(}
+\index{grid file!formats!COARDS|(}
+
+When the netCDF file contains more than one 2-dimensional variable, \GMT\ programs
+will load the first such variable in the file and ignore all others. Alternatively,
+the user can select the
+required variable by adding the suffix ``?\emph{varname}'' to the file name. For example,
+to get information on the variable ``slp'' in file \filename{file.nc}, use:
+\begin{verbatim}
+	grdinfo "file.nc?slp"
+\end{verbatim}
+Since COARDS-compliant netCDF files are the default, the additional suffix ``=nf'' can be omitted.
+
+In case the named variable is 3-dimensional, \GMT\ will load the first (bottom) layer. If another
+layer is required, either add ``[\emph{index}]'' or ``(\emph{level})'', where \emph{index} is
+the index of the third (depth) variable (starting at 0 for the first layer) and \emph{level}
+is the numerical value of the third (depth) variable associated with the requested layer.
+To indicate the second layer of the 3-D variable ``slp'' use as file name: \filename{file.nc?slp[1]}.
+
+When you supply the numerical value for the third variable using ``(\emph{level})'',
+\GMT\ will pick the layer closest to that value. No interpolation is performed.
+
+Note that the question mark, brackets and parentheses have special meanings on Unix-based platforms. Therefore,
+you will need to either \emph{escape} these characters, by placing a backslash in front of them, or place the
+whole file name plus modifiers between single quotes or double quotes.
+
+A similar approach is followed for loading 4-dimensional grids. Consider a 4-dimensional grid with the following
+variables:
+\begin{verbatim}
+	lat(lat): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+	lon(lon): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+	depth(depth): 0, 10, 20, 30, 40, 50, 60, 70, 80, 90
+	time(time): 0, 12, 24, 36, 48
+	pressure(time,depth,lat,lon): (5000 values)
+\end{verbatim}
+To get information on the 10$\times$10 grid of pressure at depth 10 and at time 24, one would use:
+\begin{verbatim}
+	grdinfo "file.nc?pressure[2,1]"
+\end{verbatim}
+or (only in case the coordinates increase linearly):
+\begin{verbatim}
+	grdinfo "file.nc?pressure(24,10)"
+\end{verbatim}
+
+The COARDS conventions set restrictions on the names that can be used for the units of the variables
+and coordinates. For example, the units of longitude and latitude are ``degrees\_east'' and ``degrees\_north'',
+respectively. Here is an example of the header of a COARDS compliant netCDF file (to be obtained using
+\progname{ncdump}):
+\begin{verbatim}
+netcdf M2_fes2004 {
+dimensions:
+        lon = 2881 ;
+        lat = 1441 ;
+variables:
+        float lon(lon) ;
+                lon:long_name = "longitude" ;
+                lon:units = "degrees_east" ;
+                lon:actual_range = 0., 360. ;
+        float lat(lat) ;
+                lat:long_name = "latitude" ;
+                lat:units = "degrees_north" ;
+                lat:actual_range = -90., 90. ;
+        short amp(lat, lon) ;
+                amp:long_name = "amplitude" ;
+                amp:unit = "m" ;
+                amp:scale_factor = 0.0001 ;
+                amp:add_offset = 3. ;
+                amp:_FillValue = -32768s ;
+        short pha(lat, lon) ;
+                pha:long_name = "phase" ;
+                pha:unit = "degrees" ;
+                pha:scale_factor = 0.01 ;
+                pha:_FillValue = -32768s ;
+\end{verbatim}
+This file contains two grids, which can be plotted separately using the names \filename{M2\_fes2004.nc?amp}
+and \filename{M2\_fes2004.nc?pha}. The attributes \verb|long_name| and \verb|unit| for each variable are
+combined in \GMT\ to a single unit string. For example, after reading the grid \verb|y_unit| equals
+\verb|latitude [degrees_north]|. The same method can be used in reverse to set the proper variable names
+and units when writing a grid. However, when the coordinates are set properly as geographical or time axes,
+\GMT\ will take care of this. The user is, however, still responsible for setting the variable name and
+unit of the z-coordinate. The default is simply ``z''.
+
+\index{grid file!formats!netCDF|)}
+\index{grid file!formats!COARDS|)}
+
+\section{Options for grids and images read via GDAL}
+\label{sec:GDAL}
+\index{grid file!formats!GDAL|(}
+
+If the support has been configured during installation, then \GMT\ can read a variety
+of grid and image formats via GDAL. This extends the capability of \GMT\ to handle
+data sets from a variety of sources.
+
+\subsection{Reading multi-band images}
+
+\GMTprog{grdimage} and \GMTprog{psimage} both lets the user select individual bands
+in a multi-band image file and treats the result as an image (that is the values,
+in the 0--255 range, are treated as colors, not data). To select individual bands
+you use the \textbf{+b}{\it band-number} mechanism that must be appended to the image
+filename. Here, {\it band-number} can be the number of one individual band (the
+counting starts at zero), or it could be a comma-separated list of bands. For example
+\begin{verbatim}
+psimage jpeg_image_with_three_bands.jpg+b0
+\end{verbatim}
+will plot only the first band (i.e., the red band) of the jpeg image as a gray-scale image, and
+\begin{verbatim}
+psimage jpeg_image_with_three_bands.jpg+b2,1,0
+\end{verbatim}
+will plot the same image in color but where the RGB band order has been reversed.
+
+Instead of treating them as images, all other \GMT\ programs that process grids can
+read individual bands from an image but will consider the values to be regular data.
+For example, let \filename{multiband} be the name of a multi-band file with a near
+infrared component in band 4 and red in band 3. We will compute the NDVI (Normalized
+Difference Vegetation Index), which is defined as NDVI = (NIR - R) / (NIR + R), as
+\begin{verbatim}
+grdmath multiband=gd+b3 multiband=gd+b2 SUB multiband=gd+b3 \
+	multiband=gd+b2 ADD DIV = ndvi.nc
+\end{verbatim}
+The resulting grid \filename{ndvi.nc} can then be plotted as usual.
+
+\subsection{Reading more complex multi-band IMAGES or GRIDS}
+
+It is also possible to access to sub-datasets in a multi-band grid. The next example
+shows how we can extract the SST from the MODIS file \filename{A20030012003365.L3m\_YR\_NSST\_9}
+that is stored in the HDF ``format''. We need to run the GDAL program \GMTprog{gdalinfo} on the
+file because we first must extract the necessary metadata from the file:
+
+\begin{verbatim}
+gdalinfo A20030012003365.L3m_YR_NSST_9
+Driver: HDF4/Hierarchical Data Format Release 4
+Files: A20030012003365.L3m_YR_NSST_9
+Size is 512, 512
+Coordinate System is `'
+Metadata:
+ Product Name=A20030012003365.L3m_YR_NSST_9
+ Sensor Name=MODISA
+ Sensor=
+ Title=MODISA Level-3 Standard Mapped Image
+...
+ Scaling=linear
+ Scaling Equation=(Slope*l3m_data) + Intercept = Parameter value
+ Slope=0.000717185
+ Intercept=-2
+ Scaled Data Minimum=-2
+ Scaled Data Maximum=45
+ Data Minimum=-1.999999
+ Data Maximum=34.76
+Subdatasets:
+ SUBDATASET_1_NAME=HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":0
+ SUBDATASET_1_DESC=[2160x4320] l3m_data (16-bit unsigned integer)
+ SUBDATASET_2_NAME=HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":1
+ SUBDATASET_2_DESC=[2160x4320] l3m_qual (8-bit unsigned integer)
+\end{verbatim}
+
+Now, to access this file with \GMT\ we need to use the =gd mechanism and append the name
+of the sub-dataset that we want to extract. Here, a simple example using \GMTprog{grdinfo}
+would be
+
+\scriptsize
+\begin{verbatim}
+grdinfo A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0"
+
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Title: Grid imported via GDAL
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Command:
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Remark:
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Gridline node registration used
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Grid file format: gd = Import through GDAL (convert to float)
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: x_min: 0.5 x_max: 4319.5 x_inc: 1 name: x nx: 4320
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: y_min: 0.5 y_max: 2159.5 y_inc: 1 name: y ny: 2160
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: z_min: 0 z_max: 65535 name: z
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: scale_factor: 1 add_offset: 0
+\end{verbatim}
+\normalsize
+
+Be warned, however, that things are not yet completed because while the data are scaled
+according to the equation printed above (``Scaling Equation=(Slope*l3m\_data) + Intercept
+= Parameter value''), this scaling is not applied by GDAL on reading so it cannot be done
+automatically by \GMT. One solution is to do the reading and scaling via \GMTprog{grdmath}
+first, i.e.,
+
+\scriptsize
+\begin{verbatim}
+grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0" \
+	0.000717185 MUL -2 ADD = sst.nc
+\end{verbatim}
+\normalsize
+\noindent
+then plot the \filename{sst.nc} directly.
+
+\index{grid file!formats!GDAL|)}
+
+\section{The NaN data value}
+\index{NaN}
+\index{Not-a-Number}
+
+For a variety of data processing and plotting tasks there is a need to acknowledge that
+a data point is missing or unassigned.  In the ``old days'' such information was passed
+by letting a value like -9999.99 take on the special meaning of ``this is not really a
+value, it is missing''.  The problem with this scheme is that -9999.99 (or any other
+floating point value) may be a perfectly reasonable data value and in such a scenario
+would be skipped.  The solution adopted in \GMT\ is to use the IEEE concept Not-a-Number
+(NaN) for this purpose.  Mathematically, a NaN is what you get if you do an undefined
+mathematical operation like $0/0$; in ASCII data files they appear as the textstring NaN.
+This value is internally stored with a particular bit pattern
+defined by IEEE so that special action can be taken when it is encountered by programs.
+In particular, a standard library function called \texttt{isnan} is used to test if a floating point
+is a NaN.  \GMT\ uses these tests extensively to determine if a value is suitable for plotting
+or processing (if a NaN is used in a calculation the result would become NaN as well).  Data points
+whose values equal NaN are not normally plotted (or plotted with the special NaN color given in
+\filename{gmt.conf}).  Several tools such as \GMTprog{xyz2grd}, \GMTprog{gmtmath}, and
+\GMTprog{grdmath} can convert user data to NaN and vice versa, thus facilitating arbitrary
+masking and clipping of data sets.  Note that a few computers do not have native IEEE hardware
+support.  At this point, this applies to some of the older Cray super-computers.  Users on such
+machines may have to adopt the old `-9999.99'' scheme to achieve the desired results.
+
+Data records that contain NaN values for the \emph{x} or \emph{y} columns (or the \emph{z} column
+for cases when 3-D Cartesian data are expected) are usually skipped during reading.  However,
+the presence of these bad records can be interpreted in two different ways, and this behavior
+is controlled by the \textbf{IO\_NAN\_RECORDS} defaults parameter.  The default setting (\emph{gap})
+considers such records to indicate a gap in an otherwise continuous series of points (e.g., a line),
+and programs can act upon this information, e.g., not to draw a line across the gap or to break the line
+into separate segments.  The alternative setting (\emph{bad}) makes no such interpretation and
+simply reports back how many bad records were skipped during reading; see Section~\ref{sec:gap} for details.
+
+\section{\gmt\ environment parameters}
+\index{Environment parameters}
+
+\GMT\ relies on several environment parameters, in particular to find data files and program settings.
+\begin{description}
+\item [\$GMT\_SHAREDIR] points to the \GMT\ share directory where all run-time support files
+	such as coastlines, custom symbols, \PS\ macros, color tables, and much more reside.  If this
+	parameter is not set it defaults to the share sub-directory selected during the \GMT\
+	install process (i.e., your answer to question C.9 on the web install form, or specified by the
+	option \filename{--datarootdir} in the \filename{configure} step of the installation), which normally
+	is the share directory under the \GMT\ installation directory.
+\item [\$GMT\_DATADIR] points to one or more directories where large and/or widely used data files can
+	be placed.  All \GMT\ programs look in these directories when a file is specified on the
+	command line and it is not present in the current directory.  This allows maintainers to
+	consolidate large data files and to simplify scripting that use these files since the absolute path need not be specified.
+	Separate multiple directories with colons (:); under Windows you use semi-colons (;).  Any directory
+	name that ends in a trailing / will be search recursively (not under Windows).
+\item [\$GMT\_USERDIR] points to a directory where the user may place custom configuration files
+	(e.g., an alternate \filename{coastline.conf} file, preferred default settings in \filename{gmt.conf},
+	custom symbols and color palettes, and
+	shorthands for gridfile extensions via \filename{.gmt\_io}).  Users may also place their own
+	data files in this directory as \GMT\ programs will search for files given on the command
+	line in both \textbf{\$GMT\_DATADIR} and \textbf{\$GMT\_USERDIR}.
+\item [\$GMT\_TMPDIR] is where \GMT\ will write its state parameters via the two files
+	\filename{.gmtcommands} and \filename{gmt.conf}.  If \textbf{\$GMT\_TMPDIR} is not set,
+	these files are written to the current directory. See Appendix~\ref{app:P} for more on
+	the use of \textbf{\$GMT\_TMPDIR}.
+\end{description}
+Note that files whose full path is given will never be searched for in any of these directories.

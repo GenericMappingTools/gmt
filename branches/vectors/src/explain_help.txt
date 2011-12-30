@@ -1,0 +1,6 @@
+.TP
+OPT(^) (*)
+Print a short message about the syntax of the command, then exits.
+.TP
+OPT(?) (*)
+Print a full usage (help) message, including the explanation of options, then exits.

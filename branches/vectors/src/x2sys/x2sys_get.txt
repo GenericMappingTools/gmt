@@ -1,0 +1,83 @@
+#include "common_options.txt"
+.TH X2SYS_GET 1 MANDATE GMT_STRING "Generic Mapping Tools [x2sys supplement]"
+.SH NAME
+x2sys_get \- Get track listing from the x2sys track index databases
+.SH SYNOPSIS
+BD(x2sys_get) OPT(T)IT(TAG) [ OPT(C) ] [ OPT(F)IT(flags) ] [ OPT(G) ] 
+[ OPT(L)[BD(+)][IT(list)] ] [ OPT(N)IT(flags) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
+.SH DESCRIPTION
+BD(x2sys_get) will return the names of the track data files in the x2sys data
+base for this TAG that match the given
+requirements.  You may choose a specific region and optionally ask
+only for tracks that meet certain data criteria.  Finally, you may
+select an option to list all possible pairs that might generate crossovers.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_tag.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(C)
+Instead of reporting the track names, just output the coordinates of the
+center of each bin that has at least one track with the specified data.
+.TP
+OPT(F)IT(flags)
+Give a comma-separated list of column names (as described in the definition
+file) that should be present. [Default selects all data columns].
+.TP
+OPT(G)
+Report data flags (Y or N) for the entire track rather than just for the
+portion that is inside the region set by OPT(R) [Default].
+.TP
+OPT(L)[BD(+)][IT(list)]
+Crossover mode.  Return a list of track pairs that should be checked for possible
+crossovers.  The list is determined from the bin-index data base on the assumption
+that tracks occupying the same bin are very likely to intersect.  By default we
+return all possible pairs in the data base.  Append the name of a file with a
+list of tracks if you want to limit the output to those pairs that involve
+at least one of the track names in your list.  The output is suitable for the OPT(K)
+option in BD(x2sys_cross).  By default, only external crossover pairs are listed.
+Use OPT(L+) to include internal pairs in the list.
+.TP
+OPT(N)IT(flags)
+Give a comma-separated list of column names (as described in the definition
+file) that must be absent.
+#include "explain_-Rgeo.txt"
+For Cartesian data just give IT(xmin/xmax/ymin/ymax).  This option limits
+the tracks to those that fall at least partly inside the specified domain.
+#include "explain_-V.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To find all the tracks associated with the tag MGD77, restricted to occupy
+a certain region in the south Pacific, and have at least free air anomalies
+and bathymetry, try
+.br
+.sp
+BD(x2sys_get) OPT(V) OPT(T)MGD77 OPT(R)180/240/-60/-30 OPT(F)faa,depth 
+.br
+.sp
+To find all the tracks associated with the tag MGD77 that have depth but not
+twt, try
+.br
+.sp
+BD(x2sys_get) OPT(V) OPT(T)MGD77 OPT(F)depth OPT(N)twt
+.br
+.sp
+To find all the pairs associated with the tag MGD77 that might intersect each
+other, but only those pairs which involves tracks in your list new.lis, try
+.br
+.sp
+BD(x2sys_get) OPT(V) OPT(T)MGD77 OPT(L)new.lis > xpairs.lis 
+.SH NOTE
+The tracks that are returned all have the requested data (OPT(F)) within the
+specified region (OPT(R)).  Furthermore, the columns of Y and N for other data types
+also reflect the content of the track portion within the selected region, unless
+OPT(G) is set.
+.SH "SEE ALSO"
+.IR x2sys_binlist (1),
+.IR x2sys_cross (1),
+.IR x2sys_datalist (1),
+.IR x2sys_init (1),
+.IR x2sys_list (1),
+.IR x2sys_put (1),
+.IR x2sys_report (1),
+.IR x2sys_solve (1)

@@ -1,0 +1,16 @@
+Dump the (x,y,z) coordinates of each contour to one or more output files (or IT(stdout) if IT(template) is not given).
+No plotting will take place.  If IT(template) contains one or more of the C-format specifiers %d, %f, %c then
+line segments will be written to different files; otherwise all lines are written to the specified file (IT(template)).
+The use of the C-format specifiers controls how many files are created and how the contours are organized.
+If the float format %f is present (standard modifications to width and precision are allowed, e.g., %f7.3f), then
+the filenames will contain the contour value and lines are thus separated into files based on a common contour value.
+If the integer format %d is present (including modifications like %5.5d), then all contours are written to individual
+segment files; if any of the other specifiers are present they just affect the file names.  Finally, if the
+character format %c is present it is replaced with the letters C (for closed) or O (for open), reflecting the nature
+of each contour.  Any combination of one, two, or all three modifiers are valid, resulting in different filenames
+and number of files.  For instance, if %c appears by itself, then only two files are created, separating the open from
+the closed contours (assuming both kinds are present).  If just %f is used, then all segments for the same contour
+level will be written to the same file, resulting in IT(N) multi-segment files. If both %f and %c were combined then
+each contour level would be further subdivided into closed and open contours.  Any combination involving %d will
+result in one individual file for each segment; %c, %f only modifies the file names.
+The files are ASCII unless OPT(bo) is used.

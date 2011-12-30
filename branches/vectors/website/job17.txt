@@ -1,0 +1,7 @@
+$Id$
+Example 17.  It is often difficult to blend two different gridded
+data sets on one map.  A solution is to use coastline clipping.
+Here, a geoid grid is imaged in color, before pscoast is used to
+initiate clipping, followed by a gray-shaded topography.  Note that
+both images fill the entire map, but the coastline clipping only
+lets the images show where we want them to be valid.

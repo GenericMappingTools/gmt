@@ -1,0 +1,58 @@
+#include "common_options.txt"
+.TH GMTDEFAULTS 1 MANDATE GMT_STRING "Generic Mapping Tools"
+#define CODE_SI		ISOLatin1+
+#define PAPER_SI	a4
+#define CODE_US		Standard+
+#define PAPER_US	letter
+.SH NAME
+gmtdefaults \- List current BD(GMT) default parameters
+.SH SYNOPSIS
+BD(gmtdefaults) [ OPT(D)[BD(u)|BD(s)] ]
+.SH DESCRIPTION
+BD(gmtdefaults) lists the 
+BD(GMT) parameter defaults if the option OPT(D) is used.  There are three ways to change some of the settings:
+(1) Use the command BD(gmtset), (2) use any texteditor to edit the file BD(gmt.conf) in your home, ~/.gmt
+or current directory (if you do not have this file, run 
+BD(gmtset) OPT(D) to get one with the system default settings), or (3) override any parameter
+by specifying one or more PAR(PARAMETER,VALUE) statements on the commandline of any BD(GMT) command
+(BD(PARAMETER) and IT(VALUE) are any combination listed below).  The
+first two options are permanent changes until explicitly changed back, while the last option is ephemeral
+and only applies to the single BD(GMT) command that received the override.
+BD(GMT) can provide default values in US or SI units.  This choice is determined at compile time.
+.SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(D)
+Print the system BD(GMT) defaults to standard output.  Append BD(u) for US
+defaults or BD(s) for SI defaults.
+[OPT(D) alone gives the version selected at compile time;
+If OPT(D) is omitted, the user's currently active defaults are printed.]\"'
+#include "explain_help.txt"
+.br
+.sp
+Your currently active defaults come from the BD(gmt.conf) file in the 
+current working directory, if present; else from the BD(gmt.conf) file 
+in your home directory, if present; else from the file BD(~/.gmt/gmt.conf) if present;
+else from the system defaults set at the time BD(GMT) was compiled.
+.SH BD(GMT) PARAMETERS
+Read the BD(gmt.conf) man page for a full list of the
+parameters that are user-definable in BD(GMT).
+.SH EXAMPLES
+To get a copy of the BD(GMT) parameter defaults in your home directory, run
+.br
+.sp
+BD(gmtdefaults) OPT(D) > ~/gmt.conf
+.br
+.sp
+You may now change the settings by editing this file using a text editor of your choice, or
+use BD(gmtset) to change specified parameters on the command line.
+.SH BUGS
+If you have typographical errors in your BD(gmt.conf) file(s), a warning message will be
+issued, and the BD(GMT) defaults for the affected parameters will be used.
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmt.conf (5),
+.IR gmtcolors (5),
+.IR gmtget (1),
+.IR gmtset (1)

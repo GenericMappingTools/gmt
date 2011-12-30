@@ -1,0 +1,4 @@
+.TP
+IT(table)
+One or more ASCII (or binary, see GMT_bi_OPT) data table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.

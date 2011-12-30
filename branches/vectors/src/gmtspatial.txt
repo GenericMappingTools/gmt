@@ -1,0 +1,114 @@
+#include "common_options.txt"
+.TH GMTSPATIAL 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+gmtspatial \- Do geospatial operations on lines and polygons
+.SH SYNOPSIS
+BD(gmtspatial) [ IT(table) ] [ OPT(C) ] [ OPT(D)[BD(+f)IT(file)][BD(+a)IT(amax)][BD(+d)IT(dmax)][BD(+c|C)IT(cmax)][BD(+s)IT(fact)] ]
+[ OPT(E)BD(+)|BD(-) ] [ OPT(I)[BD(e)|BD(i)] ] [ OPT(M)[BD(+)[IT(unit)]] ] [ OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)][BD(+r)][BD(+z)] ] 
+[ GMT_Rgeo_OPT ] [ OPT(S)BD(i)|BD(u)|BD(s)|BD(j) ] [ OPT(T)[IT(clippolygon)] ] [[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_bo_OPT ] 
+[ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(gmtspatial) reads one or more data files (which may be multisegment files)
+that contains closed polygons and operates of these polygons in the specified way.
+Operations include area calculation, handedness reversals, and polygon intersections.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+.TP
+OPT(C)
+Clips polygons to the map region, including map boundary to the polygon as needed.  The
+result is a closed polygon (see OPT(T) for truncation instead).  Requires OPT(R).
+.TP
+OPT(D)[BD(+f)IT(file)][BD(+a)IT(amax)][BD(+d)IT(dmax)][BD(+c|C)IT(cmax)][BD(+s)IT(fact)]
+Check for duplicates among the input lines or polygons, or, if IT(file) is given via BD(+f), check if the input features
+already exist among the features in IT(file).  We consider the cases of exact (same number and coordinates)
+and approximate matches (average distance between nearest points of two features is less than a threshold).
+We also consider that some features may have been reversed.  Features are considered approximate matches
+if their minimum distance is less than IT(dmax) [0] (see UNITS) and their closeness (defined as the ratio between the
+average distance between the features divided by their average length) is less than IT(cmin) [0.01].
+For each duplicate found, the output record begins with the single letter Y (exact match) or ~ (approximate match).
+If the two matching segments differ in length by more than a factor of 2 then we consider the duplicate to be
+either a subset (-) or a superset (+).  For polygons we also consider the fractional difference in areas;
+duplicates must differ by less than IT(amax) [0.01].
+By default, we compute the mean line separation.  Use OPT(+C)IT(cmin) to instead compute the median line separation
+and therefore a robust closeness value.  Also by default we consider all distances between points on one line
+and another.  Append OPT(+p) to limit the comparison to points that project perpendicularly to points on the
+other line (and not its extension).
+.TP
+OPT(E)BD(+)|BD(-) ]
+Reset the handedness of all polygons to match the given BD(+) (counter-clockwise) or
+BD(-) (clockwise).  Implies OPT(M+).
+.TP
+OPT(I)[BD(e)|BD(i)]
+Determine the intersection locations between all pairs of polygons.  Append BD(i) to only compute
+internal (i.e., self-intersecting polygons) crossovers or BD(e) to only compute external
+(i.e., between paris of polygons) crossovers [Default is both].
+.TP
+OPT(M)[BD(+)[IT(unit)]]
+Measure the area of all polygons or length of line segments.  Use OPT(M+) to append the area to each polygons segment header
+[Default simply writes the area to stdout].  For polygons we also compute the centroid location while for line data we compute the
+mid-point (half-length) position.  Append a distance unit to select the unit used (see UNITS).  Note that the area will depend
+on the current setting of PROJ_ELLIPSOID; this should be a recent ellipsoid to get accurate results.
+.TP
+OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)][BD(+r)][BD(+z)]
+Determine if one (or all, with BD(+a)) points of each feature in the input data are inside any of the polygons
+given in the IT(pfile).  If inside, then report which polygon it is; the polygon ID is either taken from the
+aspatial value assigned to Z, the segment header (first OPT(Z), then OPT(L) are scanned), or it is assigned the
+running number that is initialized to IT(start) [0].  By default the input segment that are found to be inside
+a polygon are written to stdout with the polygon ID encoded in the segment header as OPT(Z)IT(ID).  Alternatively,
+append BD(+r) to just report which polygon contains a feature or BD(+z) to have the IDs added as an extra data
+column on output.  Segments that fail to be inside a polygon are not written out.  If more than one polygon contains
+the same segment we skip the second (and further) scenario.
+#include "explain_-Rgeo.txt"
+Clips polygons to the map region, including map boundary to the polygon as needed.  The
+result is a closed polygon.
+.TP
+OPT(S)BD(i)|BD(u)|BD(s)|BD(j)
+Spatial processing of polygons.  Choose from OPT(Si) which returns the intersection of
+polygons (closed), OPT(Sc) which returns the union of polygons (closed), OPT(Ss) which
+will split polygons that straddle the Dateline, and OPT(Sj) which will join polygons
+that were split by the Dateline.
+.TP
+OPT(T)[IT(clippolygon)]
+Truncate polygons against the specified polygon given, possibly resulting in open polygons.
+If no argument is given to OPT(T) we create a clipping polygon from OPT(R) which then
+is required.  Note that when the OPT(R) clipping is in effect we will also look for
+polygons of length 4 or 5 that exactly match the OPT(R) clipping polygon.
+#include "explain_-V.txt"
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-bo.txt"
+[Default is same as input].
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_distunits.txt"
+#include "explain_precision.txt"
+.SH EXAMPLE
+To compute the area of all geographic polygons in the multisegment file polygons.d, run 
+.br
+.sp
+gmtspatial polygons.d -M > areas.d
+.br
+.sp
+Same data, but now orient all polygons to go counter-clockwise and write their areas to
+the segment headers, run 
+.br
+.sp
+gmtspatial polygons.d -M+ -E+ > areas.d
+.br
+.sp
+To determine the intersections between the polygons A.d and B.d, run 
+.br
+.sp
+gmtspatial A.d B.d -Ce > crossovers.d
+.br
+.sp
+.SH "SEE ALSO"
+.IR gmt (1)

@@ -1,0 +1,87 @@
+#include "common_options.txt"
+.TH SEGY2GRD 1 MANDATE GMT_STRING "Generic Mapping Tools [segyprogs supplement]"
+.SH NAME
+segy2grd \- Converting SEGY data to a GMT grid
+.SH SYNOPSIS
+BD(segy2grd) IT(segyfile) OPT(G)IT(grdfile) GMT_I_OPT
+GMT_Rgeo_OPT [ OPT(A)[BD(n)|BD(z)] ] [ GMT_GRDEDIT ]
+[ OPT(M)[IT(flags)] ] [ OPT(N)IT(nodata) ] [ OPT(S)[IT(zfile)] ] [ GMT_V_OPT ]
+[ GMT_bi_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(segy2grd) reads an IEEE SEGY file and
+creates a binary grid file. Either a simple mapping (equivalent to xyz2grd -Z) or a more complicated
+averaging where a particular grid cell includes values from more than one sample in the SEGY file can be done.
+BD(segy2grd) will report if some of the nodes are not filled in with
+data. Such unconstrained nodes are set to a value specified by the user [Default is NaN].
+Nodes with more than one value will be set to the average value.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(segyfile) is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.
+.TP
+OPT(G)IT(grdfile)
+IT(grdfile) is the name of the binary output grid file.
+.TP
+OPT(I)
+IT(x_inc) [and optionally IT(y_inc)] is the grid spacing. Append BD(m) to indicate minutes or BD(c) to indicate seconds.
+#include "explain_-Rgeo.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)[BD(n)|BD(z)]
+Add up multiple values that belong to the same node (same as OPT(Az)).
+Append BD(n) to simply count the number of data points that were assigned to each node.
+[Default (no OPT(A) option) will calculate mean value]. Not used for simple mapping.
+.TP
+GMT_GRDEDIT
+Give values for IT(xname), IT(yname), IT(zname), IT(scale), IT(offset), IT(title), and IT(remark).
+To leave some of these values untouched, specify = as the value.
+.TP
+OPT(M)[IT(flags)]
+Fix number of traces to read in. Default tries to read 10000 traces.
+OPT(M)0 will read number in binary header, OPT(M)IT(n) will attempt to read only IT(n) traces.
+.TP
+OPT(N)IT(nodata)
+No data. Set nodes with no input sample to this value [Default is NaN].
+.TP
+OPT(S)[IT(zfile)]
+set variable spacing IT(header) is c for cdp, o for offset, b<number> for 4-byte float starting at byte number
+If -S not set, assumes even spacing of samples at the dx, dy supplied with -I
+.TP
+OPT(L)
+Override number of samples in each trace
+.TP
+OPT(X)
+applies scalar IT(x-scale) to coordinates in trace header to match the coordinates specified in -R
+.TP
+OPT(Y)
+Specifies sample interval as IT(s_int) if incorrect in the SEGY file
+#include "explain_-V.txt"
+#include "explain_nodereg.txt"
+#include "explain_help.txt"
+.TP
+.SH EXAMPLES
+To create a grid file from an even spaced SEGY file test.segy, try
+.br
+.sp
+segy2grd test.segy OPT(I)0.1/0.1
+OPT(G)test.nc OPT(R)198/208/18/25 OPT(V)
+.br
+.sp
+Note that this will read in 18-25s (or km) on each trace, but the first trace will be assumed to be at
+X=198
+.br
+.sp
+To create a grid file from the SEGY file test.segy, locating traces according to the CDP number, where
+there are 10 CDPs per km and the sample interval is 0.1, try
+.br
+.sp
+segy2grd test.segy  OPT(G)test.nc OPT(R)0/100/0/10 OPT(I)0.5/0.2 OPT(V) OPT(X)0.1  OPT(Y)0.1
+.br
+.sp
+Because the grid interval is larger than the SEGY file sampling, the individual samples will be averaged
+in bins 
+.SH "SEE ALSO"
+.IR GMT (1),
+.IR grd2xyz (1),
+.IR grdedit (1),
+.IR pssegy (1)

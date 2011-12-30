@@ -1,0 +1,139 @@
+#!/bin/csh
+#		$Id$
+#
+# newgmtguru is run to initiate a new guru site
+# and helps setting up the guru directory with
+# macros suitable for this site.
+#
+# Author:	P. Wessel
+# Date:		02-MAR-2001
+# Updated:	28-JUL-2011
+
+unalias cd
+set p = `pwd`
+
+set me = `whoami`
+cat << EOF
+===>>> INITIATION OF $me AS NEW gmt5 GURU  <<<===
+
+Given your input, this script will create the directory GMTdev and make
+it the current working directory.  We will then checkout the latest gmt5
+subversion trunk project directory which will be a subdirectory of your
+GMTdev directory.  It is convenient to keep earlier versions like GMT4.5.7
+as subdirectories of GMTdev.  These dirs should be considered READ-ONLY.
+Only edit files in the gmt5 work directory.
+
+
+STEP 1: CREATE GMTdev DIRECTORY
+
+EOF
+echo -n "==> Enter directory in which to install GMTdev [$p]: "
+set dir = $<
+if ($dir == "") then
+	set dir = $p
+endif
+echo "Making $dir/GMTdev"
+mkdir -p $dir/GMTdev
+if ($status) then
+	echo "Could not make directory $dir/GMTdev - aborting"
+	exit -1
+endif
+
+cd $dir/GMTdev
+
+cat << EOF
+
+STEP 2: GET CURRENT GMT PROJECT
+
+We are now ready to obtain the latest gmt5 project sources from the svn server.
+This may take a while depending your network connection and net traffic.
+EOF
+echo -n "==> Hit return to initiate the transfer: "
+set answer = $<
+
+svn checkout svn://gmtserver.soest.hawaii.edu/gmt5/trunk gmt5
+
+cd gmt5/guru
+
+cat << EOF
+
+STEP 3: SET GURU- AND SITE-SPECIFIC ENVIRONMENT
+
+You must edit the guru/guruenv.csh environment to work on `uname -n`.
+Follow instructions in the file.  The modified file will be saved
+using the name you provide below.  The contents of this file should
+be inserted into your .cshrc or .tcshrc file.  Make sure you login
+out/in again or source the changes before doing GMT work.
+EOF
+echo -n "==> Enter name for environment variables [${me}_env.csh]: "
+set myenv = $<
+if ($myenv == "") then
+	set myenv = ${me}_env.csh
+endif
+cp -f guruenv.csh ${me}_env.csh
+if ($?EDITOR) then
+	$EDITOR $myenv
+else
+	vi $myenv
+endif
+source $myenv
+cat << EOF
+
+STEP 4: SET GURU- AND SITE-SPECIFIC MAKE PARAMETERS
+
+You must edit the guru Makefile macros to work on `uname -n`.
+Follow instructions in the file.
+EOF
+echo -n "==> Hit return to start the editing: "
+set answer = $<
+cp -f gmtguru.macros.orig gmtguru.macros
+if ($?EDITOR) then
+	$EDITOR gmtguru.macros
+else
+	vi gmtguru.macros
+endif
+cd ..
+
+cat << EOF
+
+STEP 5: GET COASTLINE FILES VIA FTP
+
+The GMT coastline files are NOT under svn control since they are
+themselves created from other files and this process is not yet
+ready to be set up in svn.   Answering y below will initiate an
+anonymous ftp to your nearest GMT mirror site and obtain all the
+coastline files and install them in gmt5/share/coast.  If you already
+have these files on your system you could manually copy them to
+gmt5/share/coast and save some ftp time - answer n to do this later.
+
+EOF
+echo -n "==> Get the coastline files via ftp? (y/n) [y]: "
+set yn = $<
+if ($yn == "y" || $yn == "Y" || $yn == "") then
+	make -f GNUmakefile get_gshhs
+endif
+
+cat << EOF
+
+STEP 6: LEARN HOW TO UPDATE THE SVN SERVER
+
+If you are a gmt-team member with write privileges, you need to learn
+how to commit your changes.  This requires you to know svn quite a bit.
+If your have svn read access only, you send patches to gmt@soest.hawaii.edu.
+Some references for subversion are 
+
+"Version Control with Subversion" 2nd ed., by C. M. Pilato, B. Collins-Sussman, B. W. Fitzpatrick, O'Reilly.
+All the relevant chapters of this book are available for free on-line
+from http://svnbook.red-bean.com/.
+
+You really need to look through one of these to get a feel for how the
+subversion system works.  I won't grant write-access unless you know what you
+will be doing!
+
+STEP 7: REQUIRED 3RD PARTY TOOLS
+
+GMT guru script use several utilities to do their things, like converting
+man pages to html and generate gif files.  You need to make sure you have:
+
+ghostscript, pdflatex, autoconf 
+EOF

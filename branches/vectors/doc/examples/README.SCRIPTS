@@ -1,0 +1,29 @@
+	$Id$
+
+	README file for GMT Examples directory
+
+There are born-again shell (bash) and DOS (bat)
+versions of all example scripts.  To run all bash scripts,
+you can execute "make examples".
+To run all bat scripts, run do_examples.bat instead.
+
+Examples 2 and 17 show usage of grdraster.  However, because
+the user may not have these databases the grdraster calls are
+commented out and the extracted grdfiles supplied instead.
+
+Example 27 shows usage of img2grd.  Again, since the user may
+not have the img data installed the img2grd call is commented
+out and the extracted img grid is supplied.
+
+It is possible that the output you may generate with these
+script will differ in subtle ways from the figures shown
+in the GMT documentation.  This is most likely caused by
+different settings in the gmt.conf file that we used
+to generate the plots.
+
+The DOS versions may differ in subtle ways from the UNIX
+scripts since DOS is a brain-dead scripting language.  Example
+03 is only partly implemented in DOS.  Those who plan to use
+the .bat files should seriously ask themselves why they have
+not installed cygwin or SFU yet. (See Appendix L for more on
+that).

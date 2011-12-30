@@ -1,0 +1,3 @@
+.TP
+GMT_V_OPT (*)
+Select verbosity level [1].

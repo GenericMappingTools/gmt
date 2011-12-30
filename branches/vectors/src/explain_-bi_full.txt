@@ -1,0 +1,17 @@
+.TP
+GMT_bi_OPT
+Select binary input.  Append one or more comma-separated combinations of
+IT(n)IT(type), where IT(type) is one of BD(c) (signed byte),
+BD(u) (unsigned byte), BD(h) (signed 2-byte int), BD(H) (unsigned
+2-byte int), BD(i) (signed 4-byte int), BD(I) (unsigned 4-byte int),
+BD(l) (signed 8-byte int), BD(L) (unsigned 8-byte int), BD(f)
+(4-byte single-precision float), and BD(d) (8-byte double-precision
+float).  Append BD(w) to any item to force byte-swapping.
+Alternatively, append BD(+L)|BD(B) to indicate that the entire data file
+should be read as little- or big-endian, respectively.
+Here, IT(n) is the number of each item in your binary input file; the
+total number may exceeds the columns actually needed by the program.  If no
+IT(n) is specified we assume that IT(type) applies to all columns and
+that IT(n) is implied by the expectation of the program.
+If the input file is netCDF, no OPT(b) is needed; simply
+append IT(var1)BD(/)IT(var2)BD(/)IT(...) to the filename to specify the variables to be read.

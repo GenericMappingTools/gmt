@@ -1,0 +1,3 @@
+.TP
+GMT_n_OPT (*)
+Select interpolation mode for grids.

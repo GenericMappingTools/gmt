@@ -1,0 +1,7 @@
+$Id$
+Example 16.  There are several ways to interpolate (x,y,z) data
+in GMT.  The simplest method is triangulation, using linear triangular
+facets as building-blocks.  Gridding with minimum curvature splines is
+also a popular option; some of the ringing can be reduced by applying
+tension.  One could also use triangulation as a starting method and
+modify it later with filtering.

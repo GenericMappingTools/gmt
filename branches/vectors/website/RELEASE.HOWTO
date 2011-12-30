@@ -1,0 +1,69 @@
+#	$Id$
+#
+#		FOR 4.x SERIES
+
+PRE-RELEASE TASKS:
+
+1.  Decide on a future date at which point GMT is to be released.
+    Be prepared to change the date if the  bug-fixing workload is
+    too great.  Send email to gmt-team@hawaii.edu and tell
+    them the date and ask for updates.
+    
+RELEASE TASKS:
+
+When you are ready to officially release a new GMT version you
+must ensure you do all the steps listed below:
+
+0.  Make any changes to README, README.WIN32, and Changelog.
+    Finalize Announcements/Announce.4.*.  Make sure the macros
+    in the gmtsite.macros file points to the actual FTP and WWW dirs.
+    Check version number and release data in configure.ac
+
+1.  run make latest-config
+    get the latest config.sub and config.guess.  Make sure this worked
+    since sometimes we get blank files...
+    cd website
+    
+2.  Run svn commit from the main GMT directory to check in any
+    uncommitted changes.
+
+3.  Compile and make all to make sure it all works (check examples)
+    make site
+   
+4.  In GMT/ftp, update .message, README.GMT, and VERSION
+
+5.  In GMT/website:
+    a) Update gmt_arrrghh.html, gmt_faq.html,
+       gmt_install_form.html, gmt_news.html, gmt_releases.html
+    b) create web examples:
+       make web
+    c) test the update of ftp and web sites locally:
+       make update-version-local
+    d) If OK, update the remote TEST ftp and web sites:
+       make update-version-test
+       Have team members install from these sites.
+
+If still good to go:
+
+6.  List the svn version number in the ChangeLog
+
+7.  Prepare the archives:
+    make archive >& log
+
+8.  Determine file sizes of all archives and update these values
+    in guru/install_gmt and website/gmt_install_form.html
+
+9.  Run GMT_winbuild.bat under Parallels which will build
+    the three Windows installers and place them in GMT/ftp.
+
+10. Release the new version with make update-version-live.
+
+11. Send email notifications:
+    a) Alert the mirror sites (gmt-mirrors) that a new version has been posted.
+    b) Send email to gmt-help and gmt-group with the Announcement.
+
+#-------------------------------------------------------------------------------
+
+12. To make 4-up man page printouts, do
+	 groff -man *.l | mpage -4 | grep -v 'setduplexmode' > man4.ps
+	 lpr -Php834 man4.ps for duplex printing

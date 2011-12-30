@@ -1,0 +1,35 @@
+#-------------------------------------------------------------------------------
+#	$Id$
+#
+#	Original GMT Site Makefile Macro for makefile
+#-------------------------------------------------------------------------------
+#
+# The makefile for GMT/website is used by the Maintainer to update
+# the official web and ftp directories on the main server.  These are
+# then mirrored by other sites.
+#
+# Below, indicate the FTP and WWW directories.  There are three sets; one
+# for harmless off-line, testing, one for on-line testing and one for the
+# active and live sites.
+# The on-line sites use ssh so only those with account/password can do that.
+# The ftp and www test directories are created locally under GMT/website
+
+#-------------------------------------------------
+# THE ACTIVE WWW AND FTP SITES
+WEBSITE1	= www.soest.hawaii.edu/gmt5
+WEBSERVER1	= imina.soest.hawaii.edu
+LIVEWWWDIR1	= /export/imina2/httpd/htdocs/gmt5
+LIVECGIDIR1	= /export/imina2/httpd/cgi-bin/wessel
+# Live ftp server (now main SOEST ftp server)
+FTPSERVER1	= ftp.soest.hawaii.edu
+LIVEFTPDIR1	= /export/ftp1/ftp/pub/gmt5
+#-------------------------------------------------
+# THE BACKUP WWW AND FTP SITES FOR TESTING
+# Live GMT web server TEST dir (live2)
+WEBSITE2	= www.soest.hawaii.edu/gmttest/5
+WEBSERVER2	= imina.soest.hawaii.edu
+LIVEWWWDIR2	= /export/imina2/httpd/htdocs/gmttest/5
+LIVECGIDIR2	= /export/imina2/httpd/cgi-bin/wessel
+# Live ftp server TEST directory (live2)
+FTPSERVER2	= ftp.soest.hawaii.edu
+LIVEFTPDIR2	= /export/ftp1/ftp/pub/gmttest/5

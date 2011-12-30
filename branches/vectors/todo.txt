@@ -1,0 +1,63 @@
+#	$Id$
+
+List of unresolved bugs and desirable enhancements not yet implemented.
+If you fix or implement any of these please take them off the list and
+remember to add an entry in ChangeLog.
+
+------------------------------------------------------------------------
+BUGS or "FEATURES":
+
+psbasemap.c	Looks like the magnetic rose needs some alignment work(?)
+
+pshistogram.c:	Bug using -W with time data
+
+psxy[z]:	-Sb -So etc with time data; what is size; how to specify months etc.
+		If cpt uses date-clock z-values then automatically set -f2T or -f3T.
+
+GMT_time_array:	Should be able to handle phase shift passed from -B
+
+testing:	Need testing of supplements at some point
+
+gmtselect:	Should -M option cause selection by segment. I.e., if one point
+		in segment passes selection, shouldn't the whole segment pass?
+------------------------------------------------------------------------
+ENHANCEMENTS:
+
+gmt_init/plot..	Add TICK_LENGTH_SECONDARY (and _PRIMARY)
+
+grd|gmtmath.c	1) Add variable support:  _var will assign stack content to variable
+		var which can be used later in the expression.
+		
+pslegend: 	Add support for typesetting a table?
+
+gmt_plot.c:	Different phase shifts for a, f, g?
+		gridlines for x/z, y-z in 3-D (i.e. for the vertical walls in the background)
+		X_AXIS_TYPE: introduce new parameter to rotate x labels?
+
+grd2cpt.c	Knowledge of some color tables having a "hinge" at 0.  Many cpt files
+		are designed with a hinge for z = 0 (e.g. bathy vs topo).  When such
+		cpts are used it would be useful if programs like grd2cpt/makecpt
+		could know that z = 0 (or any other special z for that matter) is such
+		a hinge and that the color change at that z should still map to the
+		new z = 0 even if the new zmin/zmax is not symmetric about 0.  This
+		would require a flag in the CPT files, e.g. # HINGE = 0.  Several of
+		our cpt files would then acquire a HINGE comment.
+
+------------------------------------------------------------------------
+DISTANCES and INCREMENTS
+
+Goal is to harmonize the many ways we specify search radii, distances, "map units", etc.
+
+gmtdp:		-T<tolerance>.  Also need proper spherical treatment.
+grdfft:		-F units
+grdfilter:	-Fwidth units and -D
+grdinfo:	-M for global min/max
+grdproject:	-A[k|m|n|i|c|p]
+grdvolume:	-S[k] convert deg to m or km (like -M elsewhere) use -fg
+greenspline:	-St lengthscale units?
+project:	-Gdist[unit] -Lw[lvalues] -W[wvalues] 
+pswiggle:	-M -> -fg
+surface:	[-S<search_radius>[m|c]]
+
+backtracker:	-Lb|fd_km 
+originator:	-Dd_km

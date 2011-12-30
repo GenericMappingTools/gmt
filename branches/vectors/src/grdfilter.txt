@@ -1,0 +1,130 @@
+#include "common_options.txt"
+.TH GRDFILTER 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+grdfilter \- Filter a grid in the space (or time) domain
+.SH SYNOPSIS
+BD(grdfilter) IT(ingrid) OPT(D)IT(distance_flag) OPT(F)IT(<filtertype><width>)[/IT(width2)][IT(mode)][BD(+q)IT(quantile)] 
+OPT(G)IT(outgrid) [ GMT_I_OPT ] [ OPT(N)BD(i)|BD(p)|BD(r) ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+.SH DESCRIPTION
+BD(grdfilter) will filter a IT(.nc) file in the time domain using one
+of the selected convolution or non-convolution isotropic or rectangular filters and
+compute distances using Cartesian or Spherical geometries.
+The output IT(.nc) file can optionally be generated as a
+sub-region of the input (via OPT(R)) and/or with new increment (via OPT(I)) or
+registration (via OPT(T)).  In this
+way, one may have "extra space" in the input data so that the
+edges will not be used and the output can be within one-half-
+width of the input edges.  If the filter is low-pass, then the
+output may be less frequently sampled than the input.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(ingrid)
+The grid file of points to be filtered.
+(See GRID FILE FORMATS below).
+.TP
+OPT(D)IT(distance_flag)
+Distance IT(flag) tells how grid (x,y) relates to filter IT(width) as follows:
+.sp
+IT(flag) = p:  grid (px,py) with IT(width) an odd number of pixels; Cartesian distances.
+.sp
+IT(flag) = 0:  grid (x,y) same units as IT(width), Cartesian distances.
+.br
+IT(flag) = 1:  grid (x,y) in degrees, IT(width) in kilometers, Cartesian distances.
+.br
+IT(flag) = 2:  grid (x,y) in degrees, IT(width) in km, dx scaled by cos(middle y), Cartesian distances.
+.sp
+The above options are fastest because they allow weight matrix to be computed only once.
+The next three options are slower because they recompute weights for each latitude.
+.sp
+IT(flag) = 3:  grid (x,y) in degrees, IT(width) in km, dx scaled by cosine(y), Cartesian distance calculation.
+.br
+IT(flag) = 4:  grid (x,y) in degrees, IT(width) in km, Spherical distance calculation.
+.br
+IT(flag) = 5:  grid (x,y) in Mercator OPT(Jm)1 img units, IT(width) in km, Spherical distance calculation.
+.TP
+OPT(F)IT(<filtertype><width>)[/IT(width2)][IT(mode)]
+Sets the filter type.  Choose among convolution and non-convolution filters.  Use any
+IT(filtertype) (listed below) followed by the full diameter IT(width).  This gives
+an isotropic filter; append /IT(width2) for a rectangular filter (requires OPT(Dp) or OPT(D0)).
+.br
+Convolution filters are:
+.br
+(BD(b)) Boxcar: All weights are equal.
+.br
+(BD(c)) Cosine Arch: Weights follow a cosine arch curve.
+.br
+(BD(g)) Gaussian: Weights are given by the Gaussian function, where IT(width) is 6 times the
+conventional Gaussian sigma.
+.br
+Non-convolution filters are:
+.br
+(BD(m)) Median: Returns median value. To select another quantile append
+BD(+q)IT(quantile) in the 0-1 range [Default is 0.5, i.e., median].
+.br
+(BD(p)) Maximum likelihood probability (a mode estimator): Return modal value.
+If more than one mode is found we return their average value.  Append BD(-) or BD(+) to
+the filter width if you rather want to return the smallest or largest of the modal
+values.
+.br
+(BD(l)) Lower: Return the minimum of all values.
+.br
+(BD(L)) Lower: Return minimum of all positive values only.
+.br
+(BD(u)) Upper: Return maximum of all values.
+.br
+(BD(U)) Upper: Return maximum or all negative values only.
+.br
+In the case of BD(L)|BD(U) it is possible that no data passes the initial sign test; in that case
+the filter will return 0.0.
+.TP
+OPT(G)IT(outgrid)
+IT(outgrid) is the output grid file of the filter.
+(See GRID FILE FORMATS below).
+.SH OPTIONAL ARGUMENTS
+.TP
+GMT_I_OPT
+IT(x_inc) [and optionally IT(y_inc)] is the output Increment. Append BD(m) to indicate arc minutes, or BD(s) to indicate arc seconds.
+If  the new IT(x_inc), IT(y_inc) are NOT integer multiples of the old ones (in the input data), filtering will be considerably slower.
+[Default:  Same as input.]
+.TP
+OPT(N)BD(i)|BD(p)|BD(r)
+Determine how NaN-values in the input grid affects the filtered output:  Append BD(i) to ignore all NaNs in
+the calculation of filtered value [Default], BD(r) is same as BD(i) except if the input node was NaN then the
+output node will be set to NaN (only applies if both grids are co-registered), and BD(p) which will
+force the filtered value to be NaN if any grid-nodes with NaN-values are found inside the filter circle.
+.TP
+OPT(R)
+IT(west), IT(east), IT(south), and IT(north) defines the Region of the output points.  [Default:  Same as input.]
+.TP
+OPT(T)
+Toggle the node registration for the output grid so as to become the opposite of the input grid
+[Default gives the same registration as the input grid].
+#include "explain_-V.txt"
+#include "explain_-f.txt"
+#include "explain_help.txt"
+#include "explain_grd_inout.txt"
+#include "explain_grd_coord.txt"
+.SH EXAMPLES
+Suppose that north_pacific_etopo5.nc is a file of 5 minute bathymetry from 140E to 260E and 0N to 50N, and you want to find
+the medians of values within a 300km radius (600km full width) of the output points, which you choose to be from 150E to 250E
+and 10N to 40N, and you want the output values every 0.5 degree.  Using spherical distance calculations, you need:
+.sp
+grdfilter north_pacific_etopo5.nc -Gfiltered_pacific.nc -Fm600 -D4 -R150/250/10/40 -I0.5 -V
+.br
+.sp
+If we instead wanted a high-pass result then one can perform the corresponding low-pass filter using a coarse grid interval
+as grdfilter will resample the result to the same resolution as the input grid so we can compute the residuals, e.g.
+.br
+.sp
+grdfilter north_pacific_etopo5.nc -Gresidual_pacific.nc -Fm-600 -D4 -R150/250/10/40 -I0.5 -V
+.br
+.sp
+Here, the residual_pacific.nc grid will have the same 5 minute resolution as the original.
+.SH LIMITATIONS
+To use the OPT(D)5 option the input Mercator grid must be created by img2mercgrd using the OPT(C) option so the origin of the
+y-values is the Equator (i.e., x = y = 0 correspond to lon = lat = 0).
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR grdfft (1)
+.IR img2mercgrd (1)

@@ -1,0 +1,138 @@
+%-	$Id$
+%-	Make sure that the version number matches the one mentioned in pslib.c
+% Begin pslib header
+250 dict begin
+/! {bind def} bind def
+/# {load def}!
+/A /setgray #
+/B /setdash #
+/C /setrgbcolor #
+/D /rlineto #
+/E {dup stringwidth pop}!
+/F /fill #
+/G /rmoveto #
+/H /sethsbcolor #
+/I /setpattern #
+/K /setcmykcolor #
+/L /lineto #
+/M /moveto #
+/N /newpath #
+/P /closepath #
+/R /rotate #
+/S /stroke #
+/T /translate #
+/U /grestore #
+/V /gsave #
+/W /setlinewidth #
+/Y {findfont exch scalefont setfont}!
+/Z /show #
+/FP {true charpath flattenpath}!
+/MU {matrix setmatrix}!
+/MS {/SMat matrix currentmatrix def}!
+/MR {SMat setmatrix}!
+/edef {exch def}!
+% Path fill
+/FS {/fc edef /fs {V fc F U} def}!
+/FQ {/fs {} def}!
+% Outline off or on
+/O0 {/os {N} def}!
+/O1 {/os {P S} def}!
+% Set both fill and outline
+/FO {fs os}!
+% Star: radius xc yc
+/Sa {M MS dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop MR FO}!
+% Box: height width xll yll
+/Sb {M dup 0 D exch 0 exch D neg 0 D FO}!
+% Rounded box: height width radius xll yll
+/SB {MS T /BoxR edef /BoxW edef /BoxH edef BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
+% Circle: radius xc yc
+/Sc {N 3 -1 roll 0 360 arc FO}!
+% Diamond: radius xc yc
+/Sd {M 4 {dup} repeat 0 G neg dup dup D exch D D FO}!
+% Ellipse: major minor angle xc yc
+/Se {N MS T R scale 0 0 1 0 360 arc MR FO}!
+% Octagon: radius xc yc
+/Sg {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR FO}!
+% Hexagon: radius xc yc
+/Sh {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR FO}!
+% Inverted triangle: radius xc yc
+/Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
+% Rotated rectangle: height width angle xc yc
+/Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
+% Pentagon: radius xc yc
+/Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
+% Dot: radius xc yc
+/Sp {N 3 -1 roll 0 360 arc F}!
+% Patch fill: x1 y1 ... xn yn n
+/SP {M {D} repeat FO}!
+% Rectangle: height width xc yc
+/Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+% Rounded rectangle: height width radius xc yc
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
+% Square: radius xc yc
+/Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
+% Triangle: radius xc yc
+/St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
+% Single-headed vector
+/SV {0 exch M 0 D D D D D 0 D FO}!
+% Double-headed vector
+/Sv {0 0 M D D 0 D D D D D 0 D D FO}!
+% Pie Wedge: radius angle1 angle2 xc yc
+/Sw {2 copy M 5 2 roll arc FO}!
+% Cross: radius xc yc
+/Sx {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
+% Y-dash: radius xc yc
+/Sy {M dup 0 exch G dup -2 mul dup 0 exch D S}!
+% Plus: radius xc yc
+/S+ {M dup 0 G dup -2 mul dup 0 D exch dup G 0 exch D S}!
+% X-dash: radius xc yc
+/S- {M dup 0 G dup -2 mul dup 0 D S}!
+% String width, height, depth and total height (height-depth)
+/sw {stringwidth pop}!
+/sh {V MU 0 0 M FP pathbbox N 4 1 roll pop pop pop U}!
+/sd {V MU 0 0 M FP pathbbox N pop pop exch pop U}!
+/sH {V MU 0 0 M FP pathbbox N exch pop exch sub exch pop U}!
+/sb {E exch sh}!
+% To align text {bottom,middle,top}{left,center,right}
+/bl {}!
+/bc {E -2 div 0 G}!
+/br {E neg 0 G}!
+/ml {dup 0 exch sh -2 div G}!
+/mc {dup E -2 div exch sh -2 div G}!
+/mr {dup E neg exch sh -2 div G}!
+/tl {dup 0 exch sh neg G}!
+/tc {dup E -2 div exch sh neg G}!
+/tr {dup E neg exch sh neg G}!
+% Maximum of two numbers
+/mx {2 copy lt {exch} if pop}!
+% Translate and memorize advance
+/PSL_xorig 0 def /PSL_yorig 0 def
+/TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
+% To reencode one font with the provided encoding vector
+/PSL_reencode {findfont dup length dict begin
+  {1 index /FID ne {def}{pop pop} ifelse} forall
+  exch /Encoding edef currentdict end definefont pop
+}!
+/PSL_eps_begin {					% Marks begin of EPSF inclusion
+  /PSL_eps_state save def				% Save state for cleanup
+  /PSL_dict_count countdictstack def			% Count objects on dict stack
+  /PSL_op_count count 1 sub def				% Count objects on operand stack
+  userdict begin					% Push userdict stack
+  /showpage {} def					% Deactivate showpage command
+  0 setgray 0 setlinecap 1 setlinewidth			% Prepare clean graphics state
+  0 setlinejoin 10 setmiterlimit [] 0 setdash newpath
+  /languagelevel where	% If level != 1, set strokeadjust and overprint to their defaults
+  {pop languagelevel 1 ne {false setstrokeadjust false setoverprint} if} if
+}!
+/PSL_eps_end {						% Marks end of EPSF inclusion
+  count PSL_op_count sub {pop} repeat			% Clean up operand stack
+  countdictstack PSL_dict_count sub {end} repeat	% Clean up dict stack
+  PSL_eps_state restore					% Restore saved state
+}!
+/PSL_transp {						% Set transparency
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{		% Using ghostscript
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}	% Or Adobe
+  {pop pop} ifelse} ifelse				% Or skip if neither are supported
+}!
