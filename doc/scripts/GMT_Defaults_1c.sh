@@ -20,7 +20,7 @@ pstext -R0/2.25/0/2.25 -Jx1i -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >> GMT
 2.35   0.3 LB TIME_LANGUAGE
 2.1   -0.3 LM FONT_ANNOT_SECONDARY
 EOF
-psxy -R -J -O -Svs0.005i/0.04i/0.03i -N -Gblue << EOF >> GMT_Defaults_1c.ps
+psxy -R -J -O -Sv0.04i+s -N -W0.5p,blue -Gblue << EOF >> GMT_Defaults_1c.ps
 0.65 2.4 0.9 2.3
 -0.35 2.1 -0.05 2.1
 -0.35 1.9 -0.05 1.9

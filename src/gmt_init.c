@@ -6545,6 +6545,77 @@ GMT_LONG gmt_get_unit (char c)
 	return (i);
 }
 
+GMT_LONG gmt_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
+{
+	/* Parser for -Sv|V, -S=, and -Sm */
+	
+	GMT_LONG pos = 0, k, error = 0, len;
+	char p[GMT_BUFSIZ];
+	
+	S->v_double_heads = S->v_just = S->v_side = 0;	/* No vector heads or asymmetry */
+	S->v_angle = 30.0;
+	S->v_norm = -1.0;
+	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
+	strncpy (p, text, k); p[k] = 0;
+	
+	while ((GMT_strtok (C, &text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
+		switch (p[0]) {
+			case 'a':	S->v_angle = atof (&p[1]);	break;	/* Vector head opening angle [30] */
+			case 'b':	S->v_double_heads |= 1;	break;		/* Vector head at beginning point */
+			case 'e':	S->v_double_heads |= 2;	break;		/* Vector head at end point */
+			case 'l':	S->v_side = -1;	break;			/* Vector head on left half only */
+			case 'r':	S->v_side = +1;	break;			/* Vector head on right half only */
+			case 's':	S->v_just = 3;	break;			/* Input (angle,length) are vector end point (x,y) instead */
+			case 'j':	/* Vector justification */
+				if (text[0] == 'm') {
+					GMT_report (C, GMT_MSG_FATAL, "-Sm does not accept +j<just> modifiers.\n");
+					error++;
+				}
+				else {
+					switch (p[1]) {
+						case 'b':	S->v_just = 0;	break;	/* Input (x,y) refers to vector beginning point */
+						case 'c':	S->v_just = 1;	break;	/* Input (x,y) refers to vector center point */
+						case 'e':	S->v_just = 2;	break;	/* Input (x,y) refers to vector end point */
+						default:	/* Bad justifier code */
+							GMT_report (C, GMT_MSG_FATAL, "Bad +j<just> modifier %c\n", p[1]);
+							error++;
+							break;	
+					}
+				}
+				break;
+			case 'n':	/* Vector shrinking head [-Sv|V only] */
+				if (text[0] == 'v' || text[0] == 'V') {
+					len = strlen (p);
+					k = gmt_get_unit (p[len]);
+					if (k >= 0) { S->u = k; S->u_set = TRUE; }
+					S->v_norm = atof (&p[1]);
+					if (S->v_norm > 0.0)
+						S->v_shrink = 1.0 / S->v_norm;
+					else
+						S->v_norm = 0.0;
+				}
+				else {
+					GMT_report (C, GMT_MSG_FATAL, "-S%c does not accept +n<norm> modifier.\n", text[0]);
+					error++;
+				}
+				break;
+			default:
+				GMT_report (C, GMT_MSG_FATAL, "Bad -S%c modifier +%c\n", text[0], p[0]);
+				error++;
+				break;	
+		}
+	}
+	/* Set head parameters */
+	if (S->size_x > 0.0) {
+		S->h_length = S->size_x;
+		S->h_width = 2.0 * S->h_length * tand (0.5 * S->v_angle);
+	}
+	
+	return (error);
+}
+
+#define GMT_VECTOR_CODES "mvV="	/* The vector symbol codes */
+
 GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd)
 {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = 1 when called to process command line options */
@@ -6627,41 +6698,35 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			p->size_x = p->given_size_x = GMT_to_inch (C, txt_a);
 		}
 	}
-	else if (text[0] == 'm') {	/* mathangle gets separate treatment because of modifiers */
-		k = (strchr ("bfl", text[1])) ? 2 : 1;	/* Skip the modifier b, f, or l */
-		n = sscanf (text, "%c", &symbol_type);
-		if (!text[k]) {	/* No size nor unit */
-			if (p->size_x == 0.0) p->size_x = p->given_size_x;
-			if (p->size_y == 0.0) p->size_y = p->given_size_y;
-			col_off++;
-		}
-		else if (strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
-			if (p->size_x == 0.0) p->size_x = p->given_size_x;
-			if (p->size_y == 0.0) p->size_y = p->given_size_y;
-			if ((p->u = gmt_get_unit (text[k])) < 0) decode_error = TRUE; else p->u_set = TRUE;
-			col_off++;
-		}
-		else
-			p->size_x = p->given_size_x = GMT_to_inch (C, &text[k]);
-	}
-	else if (text[0] == '=') {	/* geovector gets separate treatment because of modifiers -S=<h|t|b|s><b|f|l>[<size>] */
-		n = sscanf (text, "%c", &symbol_type);
+	else if (strchr (GMT_VECTOR_CODES, text[0])) {	/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+r+a<angle>] */
+		char arg[GMT_TEXT_LEN64];
+		n = sscanf (text, "%c%[^+]", &symbol_type, arg);
+		if (n == 1) strcpy (arg, &text[1]);	/* No modifiers present */
 		k = 1;
-		if (strchr ("bhst", text[k])) k++;	/* Found the h|t|b|s modifier */
-		if (k == 2 && strchr ("bfl", text[k])) k++;	/* Found the b|f|l modifier */
-		if (!text[k]) {	/* No size nor unit */
-			if (p->size_x == 0.0) p->size_x = p->given_size_x;
-			if (p->size_y == 0.0) p->size_y = p->given_size_y;
-			col_off++;
+#ifdef GMT_COMPAT
+		p->v_double_heads = 2;	/* Default is head at end */
+		if (strchr (text, '/')) {	/* Gave old-style arrow dimensions */
+			p->size_y = p->given_size_y = 0.0;
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated; see -S%c syntax.\n", text[0]);
 		}
-		else if (strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
+		else if (strchr ("vV", symbol_type) && text[1] && strchr ("bhstBHST", text[1])) {	/* Old style */
+			k = 2;
+			strcpy (arg, &text[2]);
+		}	
+#endif
+		if (text[k] && strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
 			if ((p->u = gmt_get_unit (text[k])) < 0) decode_error = TRUE; else p->u_set = TRUE;
 			col_off++;
 		}
-		else
-			p->size_x = p->given_size_x = GMT_to_inch (C, &text[k]);
+		else if (!text[k] || text[k] == '+') {	/* No size nor unit */
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			col_off++;
+		}
+		else	/* Got arrow size (length) */
+			p->size_x = p->given_size_x = GMT_to_inch (C, arg);
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr (GMT_DIM_UNITS, (int) text[1])) {	/* Symbol, but no size given (size assumed given on command line), only unit information */
 		n = sscanf (text, "%c", &symbol_type);
@@ -6719,7 +6784,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			}
 		}
 	}
-	else {
+	else {	/* Everything else */
 		char s_upper;
 		n = sscanf (text, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 		s_upper = (char)toupper ((int)symbol_type);
@@ -6914,24 +6979,13 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			break;
 		case 'm':
 			p->symbol = GMT_SYMBOL_MARC;
-			p->n_required = k = 2;
-			switch (text[1]) {	/* Check if f(irst), l(last), b(oth), or none [Default] arrow heads*/
-				case 'f':	/* Input (x,y) refers to vector head (the tip), double heads */
-					p->v_double_heads = 1;
-					break;
-				case 'l':	/* Input (x,y) refers to vector head (the tip), double heads */
-					p->v_double_heads = 2;
-					break;
-				case 'b':	/* Input (x,y) refers to balance point of vector, double heads */
-					p->v_double_heads = 3;
-					break;
-				default:	/* No modifier given, default to tail, single head */
-					p->v_double_heads = 0;
-					k = 1;
-					break;
+			p->n_required = 3;	/* Need radius, angle1 and angle2 */
+			if (gmt_parse_vector (C, text, p)) {
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -Sm option\n");
+				decode_error++;
 			}
-			p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Angle */
 			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Angle */
+			p->nondim_col[p->n_nondim++] = 4 + col_off;	/* Angle */
 			break;
 		case 'N':
 			p->size_x *= 1.14948092619;	/* To equal area of circle with same diameter */
@@ -7002,74 +7056,87 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			p->convert_angles = 1;
 		case 'v':
 			p->symbol = GMT_SYMBOL_VECTOR;
-			switch (text[1]) {	/* Check if s(egment), h(ead), b(alance center), or t(ail) have been specified */
-				case 'S':	/* Input (x,y) refers to vector head (the tip), double heads */
-					p->v_double_heads = TRUE;
-				case 's':	/* Input (x,y) refers to vector head (the tip), single head  */
-					p->v_just = 3;
-					one = 2;
-					break;
-				case 'H':	/* Input (x,y) refers to vector head (the tip), double heads */
-					p->v_double_heads = TRUE;
-				case 'h':	/* Input (x,y) refers to vector head (the tip), single head */
-					p->v_just = 2;
-					one = 2;
-					p->nondim_col[p->n_nondim++] = 2 + mode;
-					break;
-				case 'B':	/* Input (x,y) refers to balance point of vector, double heads */
-					p->v_double_heads = TRUE;
-				case 'b':	/* Input (x,y) refers to balance point of vector, single head */
-					p->v_just = 1;
-					one = 2;
-					p->nondim_col[p->n_nondim++] = 2 + mode;
-					break;
-				case 'T':	/* Input (x,y) refers to tail of vector, double heads */
-					p->v_double_heads = TRUE;
-				case 't':	/* Input (x,y) refers to tail of vector [Default], single head */
-					p->v_just = 0;
-					one = 2;
-					p->nondim_col[p->n_nondim++] = 2 + mode;
-					break;
-				default:	/* No modifier given, default to tail, single head */
-					p->v_just = 0;
-					one = 1;
-					p->nondim_col[p->n_nondim++] = 2 + mode;
-					break;
-			}
-			for (j = one; text[j] && text[j] != 'n'; j++);
-			len = strlen(text) - 1;
-			if (text[j] == 'n') {	/* Normalize option used */
-				k = gmt_get_unit (text[len]);
-				if (k >= 0) { p->u = k; p->u_set = TRUE; }
-				p->v_norm = atof (&text[j+1]);
-				if (p->v_norm > 0.0)
-					p->v_shrink = 1.0 / p->v_norm;
-				else
-					p->v_norm = 0.0;
-				text[j] = 0;	/* Chop off the shrink part */
-			}
-			else
-				p->v_norm = -1.0;
-			if (text[one]) {
-				/* It is possible that the user have appended a unit modifier after
-				 * the <size> argument (which here are vector attributes).  We use that
-				 * to set the unit, but only if the vector attributes themselves have
-				 * units. (If not we would override MEASURE_UNIT without cause).
-				 * So, -SV0.1i/0.2i/0.3ic will expect 4th column to have length in cm
-				 * while SV0.1i/0.2i/0.3i expects data units in MEASURE_UNIT
-				 */
-
-				if (isalpha ((int)text[len]) && isalpha ((int)text[len-1])) {
-					p->u = gmt_get_unit (text[len]);
-					if (p->u >= 0) p->u_set = TRUE;
-					text[len] = 0;
+#ifdef GMT_COMPAT
+			if (strchr (text, '+')) {	/* Check if new syntax before decoding */
+#endif
+				if (gmt_parse_vector (C, text, p)) {	/* Error decoding new vector syntax */
+					GMT_report (C, GMT_MSG_FATAL, "Syntax error -S%c option\n", symbol_type);
+					decode_error++;
 				}
-				sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-				p->v_width  = GMT_to_inch (C, txt_a);
-				p->h_length = GMT_to_inch (C, txt_b);
-				p->h_width  = GMT_to_inch (C, txt_c);
+				if (p->v_just != 3) p->nondim_col[p->n_nondim++] = 2 + mode;
+#ifdef GMT_COMPAT
 			}
-			if (p->v_norm >= 0.0) text[j] = 'n';	/* Put back the n<shrink> part */
+			else {	/* Parse old-style vector specs */
+				switch (text[1]) {	/* Check if s(egment), h(ead), b(alance center), or t(ail) have been specified */
+					case 'S':	/* Input (x,y) refers to vector head (the tip), double heads */
+						p->v_double_heads = TRUE;
+					case 's':	/* Input (x,y) refers to vector head (the tip), single head  */
+						p->v_just = 3;
+						one = 2;
+						break;
+					case 'H':	/* Input (x,y) refers to vector head (the tip), double heads */
+						p->v_double_heads = TRUE;
+					case 'h':	/* Input (x,y) refers to vector head (the tip), single head */
+						p->v_just = 2;
+						one = 2;
+						p->nondim_col[p->n_nondim++] = 2 + mode;
+						break;
+					case 'B':	/* Input (x,y) refers to balance point of vector, double heads */
+						p->v_double_heads = TRUE;
+					case 'b':	/* Input (x,y) refers to balance point of vector, single head */
+						p->v_just = 1;
+						one = 2;
+						p->nondim_col[p->n_nondim++] = 2 + mode;
+						break;
+					case 'T':	/* Input (x,y) refers to tail of vector, double heads */
+						p->v_double_heads = TRUE;
+					case 't':	/* Input (x,y) refers to tail of vector [Default], single head */
+						p->v_just = 0;
+						one = 2;
+						p->nondim_col[p->n_nondim++] = 2 + mode;
+						break;
+					default:	/* No modifier given, default to tail, single head */
+						p->v_just = 0;
+						one = 1;
+						p->nondim_col[p->n_nondim++] = 2 + mode;
+						break;
+				}
+				for (j = one; text[j] && text[j] != 'n'; j++);
+				len = strlen(text) - 1;
+				if (text[j] == 'n') {	/* Normalize option used */
+					k = gmt_get_unit (text[len]);
+					if (k >= 0) { p->u = k; p->u_set = TRUE; }
+					p->v_norm = atof (&text[j+1]);
+					if (p->v_norm > 0.0)
+						p->v_shrink = 1.0 / p->v_norm;
+					else
+						p->v_norm = 0.0;
+					text[j] = 0;	/* Chop off the shrink part */
+				}
+				else
+					p->v_norm = -1.0;
+				if (text[one]) {
+					/* It is possible that the user have appended a unit modifier after
+					 * the <size> argument (which here are vector attributes).  We use that
+					 * to set the unit, but only if the vector attributes themselves have
+					 * units. (If not we would override MEASURE_UNIT without cause).
+					 * So, -SV0.1i/0.2i/0.3ic will expect 4th column to have length in cm
+					 * while SV0.1i/0.2i/0.3i expects data units in MEASURE_UNIT
+					 */
+
+					if (isalpha ((int)text[len]) && isalpha ((int)text[len-1])) {
+						p->u = gmt_get_unit (text[len]);
+						if (p->u >= 0) p->u_set = TRUE;
+						text[len] = 0;
+					}
+					sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+					p->v_width  = GMT_to_inch (C, txt_a);
+					p->h_length = GMT_to_inch (C, txt_b);
+					p->h_width  = GMT_to_inch (C, txt_c);
+				}
+				if (p->v_norm >= 0.0) text[j] = 'n';	/* Put back the n<shrink> part */
+			}
+#endif
 			p->n_required = 2;
 			check = FALSE;
 			break;
@@ -7103,45 +7170,14 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			break;
 		case '=':
 			p->symbol = GMT_SYMBOL_GEOVECTOR;
+			p->convert_angles = 1;
 			p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Angle [or longitude] */
 			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Arc length [or latitude] */
-			check = TRUE;
-			switch (text[1]) {	/* Check if s(egment), h(ead), b(alance center), or t(ail) have been specified */
-				case 's':	/* Input (x,y) refers to vector head (the tip)  */
-					p->v_just = 3;
-					break;
-				case 'h':	/* Input (x,y) refers to vector head (the tip) */
-					p->v_just = 2;
-					break;
-				case 'b':	/* Input (x,y) refers to balance point of vector */
-					p->v_just = 1;
-					break;
-				case 't':	/* Input (x,y) refers to tail of vector [Default] */
-					p->v_just = 0;
-					break;
-				default:	/* No modifier given, default to tail */
-					p->v_just = 0;
-					check = FALSE;	/* Did not find s|h|t|b */
-					break;
-			}
-			if (check) {	/* Did find s|h|t|b, now check for head code (if present) */
-				switch (text[2]) {	/* Check if f(irst), l(last), b(oth), or none [Default] arrow heads*/
-					case 'f':	/* Input (x,y) refers to vector head (the tip), double heads */
-						p->v_double_heads = 1;
-						break;
-					case 'l':	/* Input (x,y) refers to vector head (the tip), double heads */
-						p->v_double_heads = 2;
-						break;
-					case 'b':	/* Input (x,y) refers to balance point of vector, double heads */
-						p->v_double_heads = 3;
-						break;
-					default:	/* No modifier given, no head */
-						p->v_double_heads = 0;
-						break;
-				}
+			if (gmt_parse_vector (C, text, p)) {
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -S= option\n");
+				decode_error++;
 			}
 			p->n_required = 2;
-			check = FALSE;
 			break;
 		default:
 			decode_error = TRUE;

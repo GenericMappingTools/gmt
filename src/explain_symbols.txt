@@ -110,16 +110,16 @@ is done for different characters.  Remember to escape special characters like *.
 to select a particular font [Default is BD(FONT_ANNOT_PRIMARY)].
 .TP
 OPT(Sm)
-BD(m)ath angle arc, optionally with one or two arrow heads.  The IT(size) is the radius of the arc.
-Start and stop directions (in degrees counter-clockwise from horizontal) for arc
-must be found in columns
+BD(m)ath angle arc, optionally with one or two arrow heads [Default is no arrow heads].
+The IT(size) is the length of the vector head.  Arc width is set by OPT(W).
+The radius of the arc and its start and stop directions (in degrees counter-clockwise from horizontal)
+must be given in columns
 #ifdef THREE_D
-4 and 5.
+4-6.
 #else
-3 and 4.
+3-5.
 #endif
-Use OPT(Smf) to add arrow head at first angle, OPT(Sml) for arrow head at last angle, and OPT(Smb) for both
-[Default is no arrow heads].
+See VECTORS for specifying attributes.
 .TP
 OPT(Sn)
 peBD(n)tagon.  IT(size) is diameter of circumscribing circle.
@@ -185,21 +185,17 @@ BD(v)ector.  Direction (in degrees counter-clockwise from horizontal) and length
 #else
 3 and 4.
 #endif
-IT(size), if present, will be interpreted as IT(vectorwidth/headlength/headwidth)
-[Default attributes are PARAMS].
+The IT(size) is the length of the vector head. Vector width is set by OPT(W).
 By default arrow attributes remains invariant to the length
 of the arrow.  To have the size of the vector scale down with decreasing size,
-append BD(n)IT(norm), where vectors shorter than IT(norm) will have their
+append MOD(n)IT(norm), where vectors shorter than IT(norm) will have their
 attributes scaled by length/IT(norm).
-To center vector on balance point, use OPT(Svb); to align point with the vector head,
-use OPT(Svh); to align point with the vector tail, use OPT(Svt) [Default].
-To give the head point's coordinates\"'
-instead of direction and length, use OPT(Svs).  Upper case BD(B), BD(H), BD(T), BD(S) will draw a double-headed vector [Default is single head].
+See VECTORS for specifying attributes.
 .TP
 OPT(SV)
 Same as OPT(Sv), except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
-be mapped into an angle based on the chosen map projection (OPT(Sv) leaves the directions
-unchanged.)
+be mapped into an angle based on the chosen map projection (OPT(Sv) leaves the directions unchanged.)
+See VECTORS for specifying attributes.
 .TP
 OPT(Sw)
 pie BD(w)edge.  Start and stop directions (in degrees counter-clockwise from horizontal) for pie slice
@@ -238,10 +234,5 @@ geovector.  Azimuth (in degrees east from north) and length (in km) must be foun
 #else
 3 and 4.
 #endif
-To center vector on balance point, use OPT(S=b); to align point with the vector head,
-use OPT(S=h); to align point with the vector tail, use OPT(S=t), while
-to give the head point's coordinates\"'
-instead of azimuth and length, use OPT(S=s).  Next, append BD(f) to draw head at first point, BD(l) to
-draw head at last point, or BD(b) to draw vector heads at both ends [none].  Finally, append
-IT(size) which is the length of the vector head.
-
+The IT(size) is the length of the vector head. Vector width is set by OPT(W).
+See VECTORS for specifying attributes.

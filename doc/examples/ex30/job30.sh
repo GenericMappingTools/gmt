@@ -63,4 +63,4 @@ pstext -R -J -O -K -Dj0.05i -F+f+a+j << EOF >> $ps
 -0.33333 0.6 12p,Times-Roman 30 LB 120\\312
 EOF
 
-echo 0 0 0 120 | psxy -R -J -O -Sml1i -W1p -Gblack >> $ps
+echo 0 0 0.5i 0 120 | psxy -R -J -O -Sm0.15i+e -W1p -Gblack >> $ps

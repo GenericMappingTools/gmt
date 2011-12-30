@@ -513,7 +513,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	char *text_rec = NULL;
 
-	double dim[7], *in = NULL;
+	double dim[8], *in = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
 	double direction, length, dx, dy;
 
@@ -936,17 +936,25 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							x_2 -= dx;		y_2 -= dy;
 						}
 					}
+					S.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
 					s = (length < S.v_norm) ? length * S.v_shrink : 1.0;
 					dim[0] = x_2, dim[1] = y_2;
 					dim[2] = s * S.v_width, dim[3] = s * S.h_length, dim[4] = s * S.h_width;
-					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = S.v_double_heads ? 1.0 : 0.0;
+					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = S.v_double_heads, dim[7] = S.v_side;
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
 					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex1], &S);
 					break;
 				case GMT_SYMBOL_MARC:
-					dim[4] = GMT->current.setting.map_vector_shape, dim[3] = (double)S.v_double_heads;
+					S.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+					dim[0] = in[ex1+S.read_size];
+					dim[1] = in[ex2+S.read_size];
+					dim[2] = in[ex3+S.read_size];
+					dim[3] = S.h_length, dim[4] = S.h_width;
+					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = (double)S.v_double_heads, dim[7] = S.v_side;
+					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
+					break;
 				case GMT_SYMBOL_WEDGE:
 					if (!S.convert_angles) {
 						dim[1] = in[ex1+S.read_size];

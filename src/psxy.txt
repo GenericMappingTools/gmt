@@ -1,6 +1,5 @@
 #include "common_options.txt"
 .TH PSXY 1 MANDATE GMT_STRING "Generic Mapping Tools"
-#define PARAMS 2BD(p)/9BD(p)/7BD(p)
 #define CAP 7BD(p)
 #define LEN_1 0.25
 #define LEN_2 5
@@ -121,6 +120,7 @@ The OPT(g) option is ignored if OPT(S) is set.
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
+#include "explain_vectors.txt"
 .SH EXAMPLES
 To plot solid red circles (diameter = LEN_1 cm) at the positions listed in the file DSDP.xy on a
 Mercator map at LEN_2 cm/degree of the area 150E to 154E, 18N to 23N, with tickmarks every 1 degree

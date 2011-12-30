@@ -125,11 +125,13 @@ struct GMT_SYMBOL {
 	/* These apply to vectors */
 
 	GMT_LONG shrink;		/* If TRUE, shrink vector attributes for small lengths */
+	double v_angle;		/* Head angle */
 	double v_norm;		/* shrink when lengths are smaller than this */
 	double v_shrink;	/* Required scale factor */
 	double v_width;		/* Width of vector stem in inches */
 	double h_length;	/* Length of vector head in inches */
 	double h_width;		/* Width of vector head in inches */
+	GMT_LONG v_side;	/* 0 for normal head, -1 for left-half only, +1 for right-half only */
 	GMT_LONG v_just;		/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
 	GMT_LONG v_double_heads;		/* If TRUE, Add 8 (|= 8) to outline to specify double-headed vector (FALSE is single-headed) */
 

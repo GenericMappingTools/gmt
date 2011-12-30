@@ -48,16 +48,16 @@ for az in 30 135 200 290 ; do
 		makeaxis $az axes.$$ > $$.a
 		makeproj $az $x $y > $$.d
 		psbasemap -R-2/2/-2/2 -JX1.5i -B2g1${Bx}${By} -O -K -Xa$xpos -Ya$ypos >> $ps
-		echo "$cx $cy 0 $az" | psxy -R -J -O -K -SW0.2 -W0.25p -Xa$xpos -Ya$ypos >> $ps
+		echo "$cx $cy 0 $az" | psxy -R -J -O -K -SW0.2i -W0.25p -Xa$xpos -Ya$ypos >> $ps
 		psxy -R -J -O -K -W1p,red -Xa$xpos -Ya$ypos $$.a >> $ps
-		echo "$cx $cy $az 0.75" | psxy -R -J -O -K -SV0.01/0.15/0.1 -Gred -Xa$xpos -Ya$ypos >> $ps
-		echo "$cx $cy $az90 0.75" | psxy -R -J -O -K -SV0.01/0.15/0.1 -Gred -Xa$xpos -Ya$ypos >> $ps
+		echo "$cx $cy $az 0.75" | psxy -R -J -O -K -SV0.15i -W0.5p -Gred -Xa$xpos -Ya$ypos >> $ps
+		echo "$cx $cy $az90 0.75" | psxy -R -J -O -K -SV0.15i -W0.5p -Gred -Xa$xpos -Ya$ypos >> $ps
 		makeproj -$az 1.75 0 > $$.x
 		makeproj -$az 0 1.75 > $$.y
 		awk '{printf "%s %s P", $1, $2}' $$.x | pstext -R -J -F+f7p+a$az -O -K -A -Xa$xpos -Ya$ypos >> $ps
 		awk '{printf "%s %s Q", $1, $2}' $$.y | pstext -R -J -F+f7p+a$az90 -O -K -A -Xa$xpos -Ya$ypos >> $ps
-		echo "$cx $cy 0 0.75" | psxy -R -J -O -K -SV0.01/0.15/0.1 -Gblack -Xa$xpos -Ya$ypos >> $ps
-		echo "$cx $cy 90 0.75" | psxy -R -J -O -K -SV0.01/0.15/0.1 -Gblack -Xa$xpos -Ya$ypos >> $ps
+		echo "$cx $cy 0 0.75" | psxy -R -J -O -K -SV0.15i -W0.5p -Gblack -Xa$xpos -Ya$ypos >> $ps
+		echo "$cx $cy 90 0.75" | psxy -R -J -O -K -SV0.15i -W0.5p -Gblack -Xa$xpos -Ya$ypos >> $ps
 		pstext -R -J -O -K -F+f7p,white -Xa$xpos -Ya$ypos >> $ps <<< "1.75 0 x"
 		pstext -R -J -O -K -F+f7p,white -Xa$xpos -Ya$ypos >> $ps <<< "0 1.8 y"
 		(echo "$x $y"; cut -f3,4 $$.d) | psxy -R -J -O -K -W0.5p,- -Xa$xpos -Ya$ypos >> $ps
