@@ -854,23 +854,24 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					dim[2] = data[i].dim[2] * S.v_width;
 					dim[3] = data[i].dim[2] * S.h_length;
 					dim[4] = data[i].dim[2] * S.h_width;
-					dim[5] = GMT->current.setting.map_vector_shape;
-					dim[6] = S.v_double_heads ? 1.0 : 0.0;
+					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = S.v_double_heads, dim[7] = S.v_side;
 					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					PSL_plotsymbol (PSL, data[i].x, data[i].y, dim, PSL_VECTOR);
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
+					S.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
 					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					GMT_geo_vector (GMT, data[i].x, data[i].y, data[i].dim[0], data[i].dim[1], &S);
 					break;
 				case GMT_SYMBOL_MARC:
+					S.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
 					dim[0] = data[i].dim[0];
 					dim[1] = data[i].dim[1];
 					dim[2] = data[i].dim[2];
 					length = fabs (dim[2]-dim[1]);	/* Arc length in degrees */
 					s = (length < S.v_norm) ? length * S.v_shrink : 1.0;
 					dim[3] = s * S.h_length, dim[4] = s * S.h_width, dim[5] = s * S.v_width;
-					dim[6] = (double)S.v_double_heads, dim[7] = GMT->current.setting.map_vector_shape, dim[8] = S.v_side;
+					dim[6] = (double)(S.v_double_heads + 4*S.convert_angles), dim[7] = GMT->current.setting.map_vector_shape, dim[8] = S.v_side;
 					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					PSL_plotsymbol (PSL, data[i].x, data[i].y, dim, PSL_MARC);
 					break;
