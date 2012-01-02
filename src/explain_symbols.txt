@@ -121,6 +121,9 @@ must be given in columns
 #endif
 See VECTORS for specifying attributes.
 .TP
+OPT(SM)
+Same as OPT(Sm) but switches to straight angle symbol if angles subtend 90 degrees exactly.
+.TP
 OPT(Sn)
 peBD(n)tagon.  IT(size) is diameter of circumscribing circle.
 #ifdef THREE_D
@@ -186,10 +189,6 @@ BD(v)ector.  Direction (in degrees counter-clockwise from horizontal) and length
 3 and 4.
 #endif
 The IT(size) is the length of the vector head. Vector width is set by OPT(W).
-By default arrow attributes remains invariant to the length
-of the arrow.  To have the size of the vector scale down with decreasing size,
-append MOD(n)IT(norm), where vectors shorter than IT(norm) will have their
-attributes scaled by length/IT(norm).
 See VECTORS for specifying attributes.
 .TP
 OPT(SV)

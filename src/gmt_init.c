@@ -6583,21 +6583,17 @@ GMT_LONG gmt_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 					}
 				}
 				break;
-			case 'n':	/* Vector shrinking head [-Sv|V only] */
-				if (text[0] == 'v' || text[0] == 'V') {
-					len = strlen (p);
-					k = gmt_get_unit (p[len]);
-					if (k >= 0) { S->u = k; S->u_set = TRUE; }
-					S->v_norm = atof (&p[1]);
-					if (S->v_norm > 0.0)
-						S->v_shrink = 1.0 / S->v_norm;
-					else
-						S->v_norm = 0.0;
+			case 'n':	/* Vector shrinking head */
+				len = strlen (p);
+				k = (text[0] == 'v' || text[0] == 'V') ? gmt_get_unit (p[len]) : -1;	/* Only -Sv|V takes unit */
+				if (k >= 0) { S->u = k; S->u_set = TRUE; }
+				S->v_norm = atof (&p[1]);
+				if (S->v_norm > 0.0) {
+					S->shrink = TRUE;
+					S->v_shrink = 1.0 / S->v_norm;
 				}
-				else {
-					GMT_report (C, GMT_MSG_FATAL, "-S%c does not accept +n<norm> modifier.\n", text[0]);
-					error++;
-				}
+				else
+					S->v_norm = 0.0;
 				break;
 			default:
 				GMT_report (C, GMT_MSG_FATAL, "Bad -S%c modifier +%c\n", text[0], p[0]);
@@ -6614,16 +6610,19 @@ GMT_LONG gmt_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 	return (error);
 }
 
-#define GMT_VECTOR_CODES "mvV="	/* The vector symbol codes */
+#define GMT_VECTOR_CODES "mMvV="	/* The vector symbol codes */
 
 GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd)
 {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = 1 when called to process command line options */
-	GMT_LONG decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon, check = TRUE, old_style, col_off = mode;
-	char symbol_type, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], text_cp[GMT_TEXT_LEN256], *c = NULL, *s = NULL;
-	static char *allowed_symbols[2] = {"=-+AaBbCcDdEefGgHhIiJjmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjmNnOopqRrSsTtUuVvWwxy"};
+	GMT_LONG decode_error = 0, bset = 0, j, n, k, len, slash = 0, colon, check = TRUE, old_style, col_off = mode;
+	char symbol_type, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], text_cp[GMT_TEXT_LEN256], *c = NULL, *s = NULL;
+	static char *allowed_symbols[2] = {"=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
-
+#ifdef GMT_COMPAT
+	GMT_LONG one;
+	char txt_c[GMT_TEXT_LEN256];
+#endif
 	p->n_required = p->convert_angles = p->n_nondim = 0;
 	p->user_unit = p->shrink = p->read_size = p->base_set = p->u_set = FALSE;
 	p->font = C->current.setting.font_annot[0];
@@ -6977,11 +6976,13 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			}
 			p->string[k] = 0;
 			break;
+		case 'M':
+			p->convert_angles = 1;	/* Flag means we will plot right angle symbol if angles extend 90 exactly */
 		case 'm':
 			p->symbol = GMT_SYMBOL_MARC;
 			p->n_required = 3;	/* Need radius, angle1 and angle2 */
 			if (gmt_parse_vector (C, text, p)) {
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error -Sm option\n");
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -S%c option\n", symbol_type);
 				decode_error++;
 			}
 			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Angle */

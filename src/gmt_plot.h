@@ -124,7 +124,7 @@ struct GMT_SYMBOL {
 
 	/* These apply to vectors */
 
-	GMT_LONG shrink;		/* If TRUE, shrink vector attributes for small lengths */
+	GMT_LONG shrink;	/* If TRUE, shrink vector attributes for small lengths */
 	double v_angle;		/* Head angle */
 	double v_norm;		/* shrink when lengths are smaller than this */
 	double v_shrink;	/* Required scale factor */

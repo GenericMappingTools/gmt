@@ -369,9 +369,9 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	void *record = NULL;	/* Opaque pointer to either a text or double record */
 
-	double dim[7], rgb[3][4] = {{-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}};
+	double dim[9], rgb[3][4] = {{-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}};
 	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL;
-	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c;
+	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, length;
 
 	struct GMT_PEN default_pen, current_pen;
 	struct GMT_FILL default_fill, current_fill;
@@ -496,12 +496,14 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
 		GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	}
+#if 0
 	if (S.symbol == GMT_SYMBOL_MARC) {	/* Special treatment since it needs fill to draw heads */
 		if (!Ctrl->G.active) {
 			Ctrl->G.active = TRUE;
 			GMT_rgb_copy (current_fill.rgb, Ctrl->W.pen.rgb);
 		}
 	}
+#endif
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
 	if (not_line && !outline_active && !fill_active && !get_rgb) outline_active = TRUE;	/* If no fill nor outline for symbols then turn outline on */
@@ -677,10 +679,14 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				case GMT_SYMBOL_GEOVECTOR:
 					data[n].dim[0] = in[ex2];	/* length */
 					data[n].dim[1] = in[ex1];	/* direction */
-					data[n].x = in[GMT_X];	/* Revert to longitude and latitude */
+					data[n].x = in[GMT_X];		/* Revert to longitude and latitude */
 					data[n].y = in[GMT_Y];
 					break;
 				case GMT_SYMBOL_MARC:
+					data[n].dim[0] = in[ex1+S.read_size];			/* Radius */
+					data[n].dim[1] = in[ex2+S.read_size];			/* Start direction in degrees */
+					data[n].dim[2] = in[ex3+S.read_size];			/* Stop direction in degrees */
+					break;
 				case GMT_SYMBOL_WEDGE:
 					if (!S.convert_angles) {
 						data[n].dim[1] = in[ex1+S.read_size];			/* Start direction in degrees */
@@ -858,11 +864,13 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_geo_vector (GMT, data[i].x, data[i].y, data[i].dim[0], data[i].dim[1], &S);
 					break;
 				case GMT_SYMBOL_MARC:
-					dim[0] = data[i].dim[0] * 0.5;
+					dim[0] = data[i].dim[0];
 					dim[1] = data[i].dim[1];
 					dim[2] = data[i].dim[2];
-					dim[3] = GMT->current.setting.map_vector_shape;
-					dim[4] = (double)S.v_double_heads;
+					length = fabs (dim[2]-dim[1]);	/* Arc length in degrees */
+					s = (length < S.v_norm) ? length * S.v_shrink : 1.0;
+					dim[3] = s * S.h_length, dim[4] = s * S.h_width, dim[5] = s * S.v_width;
+					dim[6] = (double)S.v_double_heads, dim[7] = GMT->current.setting.map_vector_shape, dim[8] = S.v_side;
 					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					PSL_plotsymbol (PSL, data[i].x, data[i].y, dim, PSL_MARC);
 					break;
