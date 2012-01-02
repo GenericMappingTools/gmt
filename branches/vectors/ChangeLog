@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-01-01	pwessel
+	* gmt_plot.c:		Let +n<norm> be modifier for all vectors
+	* gmt_init.c:		---"---
+	* pslib.c:		Treat all vectors similarly regarding pen/fill
+
 2011-12-30	pwessel
 	* gmt_init.c:		Groundwork for new vector specifications
 	* gmt_io.c:		Fixed bug with empty segments with headers
