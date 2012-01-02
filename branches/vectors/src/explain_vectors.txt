@@ -1,5 +1,5 @@
 .SH VECTOR ATTRIBUTES
-Several modifiers may be appended to the OPT(Sm), OPT(Sv), OPT(SV), and OPT(S=) options
+Several modifiers may be appended to the OPT(Sm), OPT(SM), OPT(Sv), OPT(SV), and OPT(S=) options
 to specify vector heads, their shapes, and the justification of the vector:
 .br
 .sp
@@ -12,6 +12,10 @@ MOD(e) places a vector head at the end of the vector path [none].
 MOD(l) draws half-arrows, using only the left side [both].
 .br
 MOD(r) draws half-arrows, using only the right side [both].
+.br
+MOD(n)IT(norm) scales down vector attributes (pen thickness, head size) with decreasing length,
+where vectors shorter than IT(norm) will have their
+attributes scaled by length/IT(norm) [arrow attributes remains invariant to length].
 .br
 .sp
 In addition, OPT(Sm), OPT(Sv), OPT(SV) may also take these modifiers:
