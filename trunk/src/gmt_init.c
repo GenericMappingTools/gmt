@@ -5505,7 +5505,7 @@ GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, char *in, c
 
 	struct GMT_PLOT_AXIS_ITEM *I = NULL;
 	char *format = NULL, *t = NULL, *s = NULL, unit;
-	double phase, val;
+	double phase = 0, val;
 
 	t = in;
 
