@@ -822,6 +822,19 @@ void GMT_dist_syntax (struct GMT_CTRL *C, char option, char *string)
 	GMT_message (C, "\t   [Default is spherical great-circle calculations].\n");
 }
 
+void GMT_vector_syntax (struct GMT_CTRL *C, GMT_LONG mode)
+{
+	GMT_message (C, "\t   Append length of vector head, with optional modifiers:\n");
+	GMT_message (C, "\t     +a<angle> to set angle of the vector head apex [30]\n");
+	GMT_message (C, "\t     +b to place vector head at the beginning of the vector [none].\n");
+	GMT_message (C, "\t     +e to place vector head at the end of the vector [none].\n");
+	GMT_message (C, "\t     +l to only draw left side of heads [both].\n");
+	GMT_message (C, "\t     +r to only draw right side of heads [both].\n");
+	GMT_message (C, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
+	if (mode & 1) GMT_message (C, "\t     +j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.\n");
+	if (mode & 2) GMT_message (C, "\t     +s if input (angle,length) is instead (x),y) coordinates of tip.\n");
+}
+
 void GMT_syntax (struct GMT_CTRL *C, char option)
 {
 	/* The function print to stderr the syntax for the option indicated by
@@ -6545,14 +6558,21 @@ GMT_LONG gmt_get_unit (char c)
 	return (i);
 }
 
-GMT_LONG gmt_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
+void GMT_init_vector_param (struct GMT_CTRL *C, struct GMT_SYMBOL *S)
+{	/* Update vector head length and width parameters based on size_z and v_angle */
+	if (GMT_IS_ZERO (S->size_x)) return;	/* Not set yet */
+	S->h_length = S->size_x;
+	S->h_width = 2.0 * S->h_length * tand (0.5 * S->v_angle);
+}
+
+GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 {
 	/* Parser for -Sv|V, -S=, and -Sm */
 	
 	GMT_LONG pos = 0, k, error = 0, len;
 	char p[GMT_BUFSIZ];
 	
-	S->v_double_heads = S->v_just = S->v_side = 0;	/* No vector heads or asymmetry */
+	S->v_heads = S->v_just = S->v_side = S->v_outline = 0;	/* No vector heads or asymmetry */
 	S->v_angle = 30.0;
 	S->v_norm = -1.0;
 	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
@@ -6560,9 +6580,9 @@ GMT_LONG gmt_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 	
 	while ((GMT_strtok (C, &text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 		switch (p[0]) {
-			case 'a':	S->v_angle = atof (&p[1]);	break;	/* Vector head opening angle [30] */
-			case 'b':	S->v_double_heads |= 1;	break;		/* Vector head at beginning point */
-			case 'e':	S->v_double_heads |= 2;	break;		/* Vector head at end point */
+			case 'a':	S->v_angle = atof (&p[1]); break;	/* Vector head opening angle [30] */
+			case 'b':	S->v_heads |= 1; break;			/* Vector head at beginning point */
+			case 'e':	S->v_heads |= 2; break;			/* Vector head at end point */
 			case 'l':	S->v_side = -1;	break;			/* Vector head on left half only */
 			case 'r':	S->v_side = +1;	break;			/* Vector head on right half only */
 			case 's':	S->v_just = 3;	break;			/* Input (angle,length) are vector end point (x,y) instead */
@@ -6595,17 +6615,24 @@ GMT_LONG gmt_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 				else
 					S->v_norm = 0.0;
 				break;
+			case 'p':	/* Vector head outline [NOT USED YET] */
+				S->v_outline = 1;
+				if (p[1]) {
+					if (GMT_getpen (C, &p[1], &S->v_pen)) {
+						GMT_report (C, GMT_MSG_FATAL, "Bad +p<pen> modifier %c\n", &p[1]);
+						error++;
+					}
+					S->v_outline = 2;
+				}
+				break;
 			default:
-				GMT_report (C, GMT_MSG_FATAL, "Bad -S%c modifier +%c\n", text[0], p[0]);
+				GMT_report (C, GMT_MSG_FATAL, "Bad modifier +%c\n", p[0]);
 				error++;
 				break;	
 		}
 	}
 	/* Set head parameters */
-	if (S->size_x > 0.0) {
-		S->h_length = S->size_x;
-		S->h_width = 2.0 * S->h_length * tand (0.5 * S->v_angle);
-	}
+	GMT_init_vector_param (C, S);
 	
 	return (error);
 }
@@ -6697,13 +6724,13 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			p->size_x = p->given_size_x = GMT_to_inch (C, txt_a);
 		}
 	}
-	else if (strchr (GMT_VECTOR_CODES, text[0])) {	/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+r+a<angle>] */
+	else if (strchr (GMT_VECTOR_CODES, text[0])) {	/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+r+a<angle>+n<norm>] */
 		char arg[GMT_TEXT_LEN64];
-		n = sscanf (text, "%c%[^+]", &symbol_type, arg);
-		if (n == 1) strcpy (arg, &text[1]);	/* No modifiers present */
+		n = sscanf (text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbols size with no +<modifiers> at the end */
+		if (n == 1) strcpy (arg, &text[1]);	/* No modifiers present, set arg to text following symbol code */
 		k = 1;
 #ifdef GMT_COMPAT
-		p->v_double_heads = 2;	/* Default is head at end */
+		p->v_heads = 2;	/* Default is head at end */
 		if (strchr (text, '/')) {	/* Gave old-style arrow dimensions */
 			p->size_y = p->given_size_y = 0.0;
 			GMT_report (C, GMT_MSG_COMPAT, "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated; see -S%c syntax.\n", text[0]);
@@ -6981,7 +7008,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 		case 'm':
 			p->symbol = GMT_SYMBOL_MARC;
 			p->n_required = 3;	/* Need radius, angle1 and angle2 */
-			if (gmt_parse_vector (C, text, p)) {
+			if (GMT_parse_vector (C, text, p)) {
 				GMT_report (C, GMT_MSG_FATAL, "Syntax error -S%c option\n", symbol_type);
 				decode_error++;
 			}
@@ -7060,37 +7087,37 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 #ifdef GMT_COMPAT
 			if (strchr (text, '+')) {	/* Check if new syntax before decoding */
 #endif
-				if (gmt_parse_vector (C, text, p)) {	/* Error decoding new vector syntax */
+				if (GMT_parse_vector (C, text, p)) {	/* Error decoding new vector syntax */
 					GMT_report (C, GMT_MSG_FATAL, "Syntax error -S%c option\n", symbol_type);
 					decode_error++;
 				}
-				if (p->v_just != 3) p->nondim_col[p->n_nondim++] = 2 + mode;
+				if (p->v_just != 3) p->nondim_col[p->n_nondim++] = 2 + col_off;
 #ifdef GMT_COMPAT
 			}
 			else {	/* Parse old-style vector specs */
 				switch (text[1]) {	/* Check if s(egment), h(ead), b(alance center), or t(ail) have been specified */
 					case 'S':	/* Input (x,y) refers to vector head (the tip), double heads */
-						p->v_double_heads = TRUE;
+						p->v_heads = TRUE;
 					case 's':	/* Input (x,y) refers to vector head (the tip), single head  */
 						p->v_just = 3;
 						one = 2;
 						break;
 					case 'H':	/* Input (x,y) refers to vector head (the tip), double heads */
-						p->v_double_heads = TRUE;
+						p->v_heads = TRUE;
 					case 'h':	/* Input (x,y) refers to vector head (the tip), single head */
 						p->v_just = 2;
 						one = 2;
 						p->nondim_col[p->n_nondim++] = 2 + mode;
 						break;
 					case 'B':	/* Input (x,y) refers to balance point of vector, double heads */
-						p->v_double_heads = TRUE;
+						p->v_heads = TRUE;
 					case 'b':	/* Input (x,y) refers to balance point of vector, single head */
 						p->v_just = 1;
 						one = 2;
 						p->nondim_col[p->n_nondim++] = 2 + mode;
 						break;
 					case 'T':	/* Input (x,y) refers to tail of vector, double heads */
-						p->v_double_heads = TRUE;
+						p->v_heads = TRUE;
 					case 't':	/* Input (x,y) refers to tail of vector [Default], single head */
 						p->v_just = 0;
 						one = 2;
@@ -7139,7 +7166,6 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			}
 #endif
 			p->n_required = 2;
-			check = FALSE;
 			break;
 		case 'W':
 			p->convert_angles = 1;
@@ -7174,7 +7200,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			p->convert_angles = 1;
 			p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Angle [or longitude] */
 			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Arc length [or latitude] */
-			if (gmt_parse_vector (C, text, p)) {
+			if (GMT_parse_vector (C, text, p)) {
 				GMT_report (C, GMT_MSG_FATAL, "Syntax error -S= option\n");
 				decode_error++;
 			}

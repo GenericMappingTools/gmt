@@ -40,7 +40,7 @@ psxy -R -J -O -K G.txt -W1p,blue -A >> $ps
 psxy -R -J -O -K box.txt -W1p,red >> $ps
 echo 0 53 | psxy -R -J -O -K -Sc0.25i -Gred -N -W0.25p >> $ps
 echo 0 53 | psxy -R -J -O -K -Sc0.1i -Gblack -N >> $ps
-echo 0 53 0.5i -90 -30 | psxy -R -J -O -K -Sm0.15i+e -N -W1p >> $ps
+echo 0 53 0.5i -90 -30 | psxy -R -J -O -K -Sm0.15i+e -Gblack -N -W1p >> $ps
 # Rotating with constraining polygons
 grdrotater t.nc -FP.txt -e0/53/60 -Grot.nc > R.txt
 grdcontour -R-10/80/-5/56 -JM5i -B10WSne t.nc -A100 -C25 -O -K -Y5i >> $ps
@@ -51,7 +51,7 @@ psxy -R -J -O -K P.txt -W1p >> $ps
 psxy -R -J -O -K R.txt -W1p >> $ps
 echo 0 53 | psxy -R -J -O -K -Sc0.25i -Gred -N -W0.25p >> $ps
 echo 0 53 | psxy -R -J -O -K -Sc0.1i -Gblack -N >> $ps
-echo 0 53 0.5i -90 -30 | psxy -R -J -O -K -Sm0.15i+e -N -W1p >> $ps
+echo 0 53 0.5i -90 -30 | psxy -R -J -O -K -Sm0.15i+e -Gblack -N -W1p >> $ps
 psxy -R -J -O -T >> $ps
 rm -f [GPR].txt box.txt t.nc rot.nc 
 

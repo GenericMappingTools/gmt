@@ -307,7 +307,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	double x1, x2, y1, y2, total = 0.0, total_arc, off, max_radius, az_offset;
 	double asize, lsize, this_az, half_bin_width, wesn[4];
 	double *xx = NULL, *yy = NULL, *in = NULL, *sum = NULL, *azimuth = NULL;
-	double *length = NULL, *mode_direction = NULL, *mode_length = NULL, dim[7];
+	double *length = NULL, *mode_direction = NULL, *mode_length = NULL, dim[8];
 
 	struct PSROSE_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Cin = NULL;
@@ -612,7 +612,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_init_fill (GMT, &f, Ctrl->M.rgb[0], Ctrl->M.rgb[1], Ctrl->M.rgb[2]);       /* Initialize fill structure */
 			dim[0] = xr, dim[1] = yr;
 			dim[2] = Ctrl->M.v_width, dim[3] = Ctrl->M.h_length, dim[4] = Ctrl->M.h_width;
-			dim[5] = GMT->current.setting.map_vector_shape, dim[6] = 0.0;
+			dim[5] = GMT->current.setting.map_vector_shape, dim[6] = 2.0, dim[7] = 0.0;
 			GMT_setfill (GMT, &f, TRUE);       /* Use fill structure */
 			PSL_plotsymbol (PSL, 0.0, 0.0, dim, PSL_VECTOR);
 		}

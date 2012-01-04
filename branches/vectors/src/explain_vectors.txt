@@ -22,7 +22,7 @@ In addition, OPT(Sm), OPT(Sv), OPT(SV) may also take these modifiers:
 .br
 .sp
 MOD(j)IT(just) determines how the input IT(x),IT(y) point relates
-to the vector.  Choose from BD(b)eginning [default], BD(e)nd, BD(c)center.
+to the vector.  Choose from BD(b)eginning [default], BD(e)nd, or BD(c)enter.
 .br
-MOD(s) means the input IT(angle),IT(length) is instead the IT(x), IT(y) coordinates
+MOD(s) means the input IT(angle), IT(length) is instead the IT(x), IT(y) coordinates
 of the vector end point.

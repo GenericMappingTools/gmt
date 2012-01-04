@@ -29,8 +29,8 @@ psxyz -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -p155/35 -S1i -X1i -Y1i -K << EOF > 
 0.5	2.5	0	1	0.5	r
 1.5	2.5	0	s
 2.5	2.5	0	t
-> Blue arrow -Gblue
-3.5	2.5	0	30	1	vb
+> Blue wedges -Gblue
+3.5	2.5	0	80	30	w
 0.5	1.5	0	30	80	w
 > Fat red pen -W2p,red
 1.5	1.5	0	x

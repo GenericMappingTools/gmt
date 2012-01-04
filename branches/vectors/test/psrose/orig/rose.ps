@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0b (SVN Aug 20 2011 04:05:36) [64-bit] Document from GMT_psrose
+%%Title: GMT v5.0.0_r9611M [64-bit] Document from GMT_psrose
 %%Creator: GMT
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Aug 20 14:44:50 2011
+%%CreationDate: Tue Jan  3 17:32:50 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -611,7 +616,14 @@ O1
 0 401 D
 FO
 {0 A} FS
-V 0 0 T 62.8891 R -2044 0 -100 -150 117 150 117 0 -100 2044 -17 SV U
+33 W
+V 0 0 T 62.8891 R
+0 0 M 2044 0 D S
+10 setmiterlimit
+U
+V 1000 1953 T 62.8891 R 0 -234 -150 117 2 0 0 SP
+U
+3.32551 setmiterlimit
 4 W
 0 0 M 2400 0 D S
 0 0 M 2078 1200 D S
@@ -812,7 +824,14 @@ O0
 0 0 1000 85 90 arc S
 {0 A} FS
 O1
-V 0 0 T 62.8891 R -2044 0 -100 -150 117 150 117 0 -100 2044 -17 SV U
+33 W
+V 0 0 T 62.8891 R
+0 0 M 2044 0 D S
+10 setmiterlimit
+U
+V 1000 1953 T 62.8891 R 0 -234 -150 117 2 0 0 SP
+U
+3.32551 setmiterlimit
 4 W
 0 0 M 2400 0 D S
 0 0 M 2078 1200 D S

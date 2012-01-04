@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_grdcontour
+%%Title: GMT v5.0.0_r9611M [64-bit] Document from GMT_grdcontour
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 13:02:52 2011
+%%CreationDate: Tue Jan  3 17:35:49 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,6 +111,11 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -145,7 +150,7 @@
 /oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
 /udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -185,6 +190,7 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -2303,7 +2309,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-10/80/-5/56 -JM5i -O -K -Sml1i -N -W1p
+%%GMT:  psxy -R-10/80/-5/56 -JM5i -O -K -Sm0.15i+e -Gblack -N -W1p
 %%PROJ: merc -10.00000000 80.00000000 -5.00000000 56.00000000 -5009377.086 5009377.086 -553583.847 7522963.241 +proj=merc +lon_0=35 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2312,12 +2318,13 @@ O0
 {0 A} FS
 O1
 V 667 4493 T
-N 0 0 600 -90 -36.3662 arc S
-O0
-N -66 -168 600 -26.5076 -12.7454 arc
-116 144 600 -47.7789 -60.6929 arcn
-31 -28 D
+N 0 0 600 -90 -47.1887 arc S
+10 setmiterlimit
+N -60 -145 600 -15.0206 -33.4859 arcn
+-33 35 D
+99 128 600 -62.6404 -45.5215 arc
 P FO
+3.32551 setmiterlimit
 U 
 0 A
 FQ
@@ -3656,7 +3663,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-10/80/-5/56 -JM5i -O -K -Sml1i -N -W1p
+%%GMT:  psxy -R-10/80/-5/56 -JM5i -O -K -Sm0.15i+e -Gblack -N -W1p
 %%PROJ: merc -10.00000000 80.00000000 -5.00000000 56.00000000 -5009377.086 5009377.086 -553583.847 7522963.241 +proj=merc +lon_0=35 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3665,12 +3672,13 @@ O0
 {0 A} FS
 O1
 V 667 4493 T
-N 0 0 600 -90 -36.3662 arc S
-O0
-N -66 -168 600 -26.5076 -12.7454 arc
-116 144 600 -47.7789 -60.6929 arcn
-31 -28 D
+N 0 0 600 -90 -47.1887 arc S
+10 setmiterlimit
+N -60 -145 600 -15.0206 -33.4859 arcn
+-33 35 D
+99 128 600 -62.6404 -45.5215 arc
 P FO
+3.32551 setmiterlimit
 U 
 0 A
 FQ

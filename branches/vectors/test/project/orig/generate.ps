@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0_r9428:9430M [64-bit] Document from GMT_psxy
+%%Title: GMT v5.0.0_r9611M [64-bit] Document from GMT_psxy
 %%Creator: GMT
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Dec  2 14:24:43 2011
+%%CreationDate: Tue Jan  3 17:21:12 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -572,7 +577,7 @@ O0
 2400 1200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/25/0/25 -JX4i -P -K -X2i 12788.xy -W2p,red
+%%GMT:  psxy -R0/25/0/25 -JX4i -P -K -X2i 25903.xy -W2p,red
 %%PROJ: xy 0.00000000 25.00000000 0.00000000 25.00000000 0.000 25.000 0.000 25.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -609,7 +614,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/25/0/25 -JX4i -O -K -Smf0.75i -W0.75p,red -Gred
+%%GMT:  psxy -R0/25/0/25 -JX4i -O -K -Sm0.15i+b -W0.75p,red -Gred
 %%PROJ: xy 0.00000000 25.00000000 0.00000000 25.00000000 0.000 25.000 0.000 25.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -625,12 +630,13 @@ PSL_eoclip N
 {1 0 0 C} FS
 O1
 V 1920 1920 T
-N 0 0 450 6.3662 90 arc S
-O0
-N 20 133 450 -3.49236 -17.2546 arcn
-21 -137 450 17.7789 30.6929 arc
-30 7 D
+N 0 0 480 21.4859 90 arc S
+10 setmiterlimit
+N 16 125 480 -15.0561 8.23947 arc
+-45 -18 D
+18 -130 480 36.9125 15.7313 arcn
 P FO
+3.32551 setmiterlimit
 U 
 PSL_cliprestore
 0 A
@@ -683,7 +689,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/25/0/25 -JX4i -O -K 12788.xy -W2p,green
+%%GMT:  psxy -R0/25/0/25 -JX4i -O -K 25903.xy -W2p,green
 %%PROJ: xy 0.00000000 25.00000000 0.00000000 25.00000000 0.000 25.000 0.000 25.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -720,7 +726,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/25/0/25 -JX4i -O -K -Smf0.75i -W0.75p,green -Ggreen
+%%GMT:  psxy -R0/25/0/25 -JX4i -O -K -Sm0.15i+b -W0.75p,green -Ggreen
 %%PROJ: xy 0.00000000 25.00000000 0.00000000 25.00000000 0.000 25.000 0.000 25.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -736,12 +742,13 @@ PSL_eoclip N
 {0 1 0 C} FS
 O1
 V 960 960 T
-N 0 0 450 66.3662 90 arc S
-O0
-N -105 84 450 56.5076 42.7454 arcn
-130 -50 450 77.7789 90.6929 arc
-9 30 D
+N 0 0 480 81.4859 90 arc S
+10 setmiterlimit
+N -100 77 480 44.9439 68.2395 arc
+-7 -48 D
+122 -50 480 96.9125 75.7313 arcn
 P FO
+3.32551 setmiterlimit
 U 
 PSL_cliprestore
 0 A
@@ -794,7 +801,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/25/0/25 -JX4i -O -K 12788.xy -W2p,blue -B5g5WSne
+%%GMT:  psxy -R0/25/0/25 -JX4i -O -K 25903.xy -W2p,blue -B5g5WSne
 %%PROJ: xy 0.00000000 25.00000000 0.00000000 25.00000000 0.000 25.000 0.000 25.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -976,7 +983,7 @@ O0
 -600 5100 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JA0/0/5i -O -K -X-0.5i -Y4.25i 12788.xy -W2p,red
+%%GMT:  psxy -Rg -JA0/0/5i -O -K -X-0.5i -Y4.25i 25903.xy -W2p,red
 %%PROJ: laea 0.00000000 360.00000000 -90.00000000 90.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1359,7 +1366,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JA0/0/5i -O -K 12788.xy -W2p,green
+%%GMT:  psxy -Rg -JA0/0/5i -O -K 25903.xy -W2p,green
 %%PROJ: laea 0.00000000 360.00000000 -90.00000000 90.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1754,7 +1761,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JA0/0/5i -O -K 12788.xy -W2p,blue
+%%GMT:  psxy -Rg -JA0/0/5i -O -K 25903.xy -W2p,blue
 %%PROJ: laea 0.00000000 360.00000000 -90.00000000 90.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2029,7 +2036,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JA0/0/5i -O -K 12788.xy -W2p
+%%GMT:  psxy -Rg -JA0/0/5i -O -K 25903.xy -W2p
 %%PROJ: laea 0.00000000 360.00000000 -90.00000000 90.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
