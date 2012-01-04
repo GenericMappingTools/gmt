@@ -320,8 +320,8 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_list_custom_symbols (GMT);
 	GMT_message (GMT, "\t   Letter: append /<string> after symbol size, and optionally %%<font>.\n");
 	GMT_message (GMT, "\t   Mathangle: radius, start, and stop directions of math angle must be in columns 3-5.\n");
-	GMT_message (GMT, "\t     Use -Smf for arrow at first angle and -Sml for last, -Smb for both [none].\n");
 	GMT_message (GMT, "\t     If -SM rather than -Sm is used, we draw straight angle symbol if 90 degrees.\n");
+	GMT_vector_syntax (GMT, 0);
 	GMT_message (GMT, "\t   Quoted line: Give [d|f|n|l|x]<info>[:<labelinfo>].\n");
 	GMT_message (GMT, "\t     <code><info> controls placement of labels along lines.  Select\n");
 	GMT_cont_syntax (GMT, 7, 1);
@@ -330,22 +330,13 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Rectangles: x- and y-dimensions must be in columns 3-4.\n");
 	GMT_message (GMT, "\t   Rounded rectangles: x- and y-dimensions and corner radius must be in columns 3-5.\n");
 	GMT_message (GMT, "\t   Vectors: Direction and length must be in columns 3-4.\n");
-	GMT_message (GMT, "\t     Furthermore, <size> means vectorwidth/headlength/headwidth\n");
-	GMT_message (GMT, "\t     [Default attributes are %gp/%gp/%gp].\n", VECTOR_LINE_WIDTH, VECTOR_HEAD_LENGTH, VECTOR_HEAD_WIDTH);
-	GMT_message (GMT, "\t     If -SV rather than -Sv is used, psxy will expect azimuth and\n");
+	GMT_message (GMT, "\t     If -SV rather than -Sv is selected, psxy will expect azimuth and\n");
 	GMT_message (GMT, "\t     length and convert azimuths based on the chosen map projection.\n");
-	GMT_message (GMT, "\t     Insert h(head), b(balance point), or t(ail) after -Sv|V to \n");
-	GMT_message (GMT, "\t     justify vector w.r.t. input (x,y).  Insert s(egment) if (x,y)\n");
-	GMT_message (GMT, "\t     is tail and columns 3 and 4 hold the head location (x,y).\n");
-	GMT_message (GMT, "\t     Upper case H, B, T, S gives double-headed vector [Default is t].\n");
+	GMT_vector_syntax (GMT, 3);
 	GMT_message (GMT, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
 	GMT_message (GMT, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
 	GMT_message (GMT, "\t   Geovectors: Azimuth and length (in km) must be in columns 3-4.\n");
-	GMT_message (GMT, "\t     Insert h(head), b(balance point), or t(ail) after -S= to\n");
-	GMT_message (GMT, "\t     justify vector w.r.t. input (x,y), or insert s(egment) if (x,y)\n");
-	GMT_message (GMT, "\t     is tail and columns 3 and 4 hold the head location (x,y).\n");
-	GMT_message (GMT, "\t     Next insert f for arrow at first point, l at last, or b for both [none].\n");
-	GMT_message (GMT, "\t     Finally, append <size> as length of vector head (use -W to set line thickness).\n");
+	GMT_vector_syntax (GMT, 3);
 	GMT_message (GMT, "\t-T Ignore all input files.\n");
 	GMT_explain_options (GMT, "UV");
 	GMT_pen_syntax (GMT, 'W', "Set pen attributes [Default pen is %s]:");
@@ -552,10 +543,11 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	S.base = GMT->session.d_NaN;
 	S.font = GMT->current.setting.font_annot[0];
 	S.u = GMT->current.setting.proj_length_unit;
+#if 0
 	S.v_width  = VECTOR_LINE_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 2p */
 	S.h_width  = VECTOR_HEAD_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
 	S.h_length = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
-
+#endif
 	Ctrl = New_psxy_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psxy_parse (API, Ctrl, options, &S))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
@@ -832,7 +824,8 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_setfill (GMT, &current_fill, outline_active);
 			GMT_setpen (GMT, &current_pen);
 
-			dim[0] = (S.read_size) ? in[ex1] : S.size_x;
+			if (S.read_size) S.size_x = in[ex1];	/* Got size from input column */
+			dim[0] = S.size_x;
 			if (S.convert_size) dim[0] = ((S.convert_size == 2) ? log10 (dim[0]) : dim[0]) * S.scale - S.origin;
 
 			switch (S.symbol) {
@@ -915,13 +908,14 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					PSL_plottext (PSL, plot_x, plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, PSL_MC, outline_active);
 					break;
 				case GMT_SYMBOL_VECTOR:
-					length = in[ex2];
-					if (!S.convert_angles)
-						direction = in[ex1];
-					else if (!GMT_is_geographic (GMT, GMT_IN))
-						direction = 90.0 - in[ex1];
-					else
-						direction = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1]);
+					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
+					length = in[ex2+S.read_size];
+					if (!S.convert_angles)	/* Use direction as given */
+						direction = in[ex1+S.read_size];
+					else if (!GMT_is_geographic (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
+						direction = 90.0 - in[ex1+S.read_size];
+					else	/* Convert geo azimuth to map direction */
+						direction = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
 					if (S.v_just == 3) {	/* Got coordinates of tip instead of dir/length */
 						GMT_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (GMT_is_dnan (x_2) || GMT_is_dnan (y_2)) {
@@ -929,11 +923,11 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							continue;
 						}
 					}
-					else {	/* Compute tip from tail and length */
+					else {	/* Compute tip coordinates from tail and length */
 						sincosd (direction, &s, &c);
 						x_2 = plot_x + length * c;
 						y_2 = plot_y + length * s;
-						if (S.v_just) {	/* Meant to center the vector at the given point */
+						if (S.v_just) {	/* Meant to center the vector at center (1) or tip (2) */
 							dx = S.v_just * 0.5 * (x_2 - plot_x);	dy = S.v_just * 0.5 * (y_2 - plot_y);
 							plot_x -= dx;		plot_y -= dy;
 							x_2 -= dx;		y_2 -= dy;
@@ -943,14 +937,16 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					s = (length < S.v_norm) ? length * S.v_shrink : 1.0;
 					dim[0] = x_2, dim[1] = y_2;
 					dim[2] = s * S.v_width, dim[3] = s * S.h_length, dim[4] = s * S.h_width;
-					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = S.v_double_heads, dim[7] = S.v_side;
+					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = S.v_heads, dim[7] = S.v_side;
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
+					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
 					S.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
-					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex1], &S);
+					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex2+S.read_size], in[ex1+S.read_size], &S);
 					break;
 				case GMT_SYMBOL_MARC:
+					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
 					S.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
 					dim[0] = in[ex1+S.read_size];
 					dim[1] = in[ex2+S.read_size];
@@ -958,7 +954,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					length = fabs (dim[2]-dim[1]);	/* Arc length in degrees */
 					s = (length < S.v_norm) ? length * S.v_shrink : 1.0;
 					dim[3] = s * S.h_length, dim[4] = s * S.h_width, dim[5] = s * S.v_width;
-					dim[6] = (double)(S.v_double_heads + 4*S.convert_angles), dim[7] = GMT->current.setting.map_vector_shape, dim[8] = S.v_side;
+					dim[6] = (double)(S.v_heads + 4*S.convert_angles), dim[7] = GMT->current.setting.map_vector_shape, dim[8] = S.v_side;
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
 					break;
 				case GMT_SYMBOL_WEDGE:

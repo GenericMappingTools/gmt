@@ -3040,6 +3040,17 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 				PSL_plotsymbol (P, x, y, dim, PSL_ELLIPSE);
 				break;
 
+			case GMT_SYMBOL_MARC:
+				if (flush) gmt_flush_symbol_piece (C, P, xx, yy, &n, p, f, this_outline, &flush);
+				f = (s->fill) ? s->fill : current_fill;
+				p = (s->pen)  ? s->pen  : current_pen;
+				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
+				if (this_outline) GMT_setpen (C, p);
+				GMT_setfill (C, f, this_outline);
+				dim[1] = s->p[1], dim[2] = s->p[2];
+				PSL_plotsymbol (P, x, y, dim, PSL_MARC);
+				break;
+
 			case GMT_SYMBOL_WEDGE:
 				if (flush) gmt_flush_symbol_piece (C, P, xx, yy, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : current_fill;
@@ -4015,7 +4026,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 		head_length *= s;
 	}
 	
-	if (S->v_double_heads & 1) {	/* Placing head at A means we must shorten the arc and use Ax instead of A */
+	if (S->v_heads & 1) {	/* Placing head at A means we must shorten the arc and use Ax instead of A */
 		az[0] = GMT_az_backaz (C, lon0, lat0, lon1, lat1, FALSE);	/* Compute the azimuth from A to B at A */
 		GMT_get_point_from_r_az (C, lon0, lat0, 0.01 * r, az[0], &lon, &lat);	/* Arbitrary 2nd point near A */
 		GMT_geo_to_xy (C, lon0, lat0, &x0, &y0);	/* Get map position in inches for A and close point */
@@ -4027,7 +4038,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 	else
 		GMT_memcpy (Ax, A, 3, double);	/* No need to shorten arc at beginning */
 
-	if (S->v_double_heads & 2) { /* Place arrow head at B */
+	if (S->v_heads & 2) { /* Place arrow head at B */
 		az[1] = GMT_az_backaz (C, lon1, lat1, lon0, lat0, FALSE);	/* Compute the azimuth from B to A at B */
 		GMT_get_point_from_r_az (C, lon1, lat1, 0.01 * r, az[1], &lon, &lat);	/* 2nd point near B */
 		GMT_geo_to_xy (C, lon1, lat1, &x0, &y0);	/* Get map position in inches for B and close point */
@@ -4051,13 +4062,14 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 	GMT_geo_line (C, xp, yp, n1);	/* Draw the arc with current pen */
 	GMT_free (C, xp);	GMT_free (C, yp);	/* Done with arc */
 	
-	if (S->v_double_heads) { /* Temporarily use miter to get sharp points to arrow heads */
+	if (S->v_heads) { /* Temporarily use miter to get sharp points to arrow heads */
 		tmp_join = C->PSL->internal.line_join;		PSL_setlinejoin (C->PSL, 0);
 		tmp_limit = C->PSL->internal.miter_limit;	PSL_setmiterlimit (C->PSL, 0);
 		da = 0.5 * S->v_angle;	/* Half-opening angle at arrow head */
+		if (S->v_outline == 2) GMT_setpen (C, &S->v_pen);
 	}
 
-	if (S->v_double_heads & 1) { /* Place arrow head at A */
+	if (S->v_heads & 1) { /* Place arrow head at A */
 		if (longway) az[0] += 180.0;
 		GMT_get_point_from_r_az (C, lon0, lat0, 0.5*dr[0]*(2.0 - C->current.setting.map_vector_shape), az[0], &mlon, &mlat);	/* Mid point of arrow */
 		if (S->v_side != +1) {	/* Want to draw left side of arrow */
@@ -4088,7 +4100,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 		GMT_free (C, xp);	GMT_free (C, yp);
 		GMT_free (C, xp2);	GMT_free (C, yp2);
 	}
-	if (S->v_double_heads & 2) { /* Place arrow head at B */
+	if (S->v_heads & 2) { /* Place arrow head at B */
 		if (longway) az[1] += 180.0;
 		GMT_get_point_from_r_az (C, lon1, lat1, 0.5*dr[1]*(2.0 - C->current.setting.map_vector_shape), az[1], &mlon, &mlat);	/* Mid point of arrow */
 		if (S->v_side != +1) {	/* Want to draw left side of arrow */
@@ -4119,7 +4131,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 		GMT_free (C, xp);	GMT_free (C, yp);
 		GMT_free (C, xp2);	GMT_free (C, yp2);
 	}
-	if (S->v_double_heads) { /* Switch line join style back */
+	if (S->v_heads) { /* Switch line join style back */
 		PSL_setlinejoin (C->PSL, tmp_join);
 		PSL_setmiterlimit (C->PSL, tmp_limit);
 	}

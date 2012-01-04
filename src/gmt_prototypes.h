@@ -255,6 +255,7 @@ EXTERN_MSC void GMT_rgb_syntax (struct GMT_CTRL *C, char option, char *string);
 EXTERN_MSC void GMT_inc_syntax (struct GMT_CTRL *C, char option, GMT_LONG error);
 EXTERN_MSC void GMT_label_syntax (struct GMT_CTRL *C, GMT_LONG indent, GMT_LONG kind);
 EXTERN_MSC void GMT_dist_syntax (struct GMT_CTRL *C, char option, char *string);
+EXTERN_MSC void GMT_vector_syntax (struct GMT_CTRL *C, GMT_LONG mode);
 EXTERN_MSC void GMT_explain_options (struct GMT_CTRL *C, char *options);
 EXTERN_MSC void GMT_getdefaults (struct GMT_CTRL *C, char *this_file);
 EXTERN_MSC void GMT_putdefaults (struct GMT_CTRL *C, char *this_file);
@@ -267,6 +268,8 @@ EXTERN_MSC GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *v
 EXTERN_MSC char *GMT_putparameter (struct GMT_CTRL *C, char *keyword);
 EXTERN_MSC void GMT_set_pad (struct GMT_CTRL *C, GMT_LONG npad);
 EXTERN_MSC GMT_LONG GMT_get_ellipsoid (struct GMT_CTRL *C, char *name);
+EXTERN_MSC void GMT_init_vector_param (struct GMT_CTRL *C, struct GMT_SYMBOL *S);
+EXTERN_MSC GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S);
 
 EXTERN_MSC void GMT_pickdefaults (struct GMT_CTRL *C, GMT_LONG lines, struct GMT_OPTION *options);
 EXTERN_MSC void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options);

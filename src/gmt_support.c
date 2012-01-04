@@ -8955,6 +8955,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 
 			case 'e':		/* Draw ellipse symbol */
 			case 'j':		/* Draw rotated rect symbol */
+			case 'm':		/* Draw mathangle symbol */
 			case 'w':		/* Draw wedge (pie) symbol */
 				if (last != 5) error++;
 				s->p[0] = atof (col[2]);	/* Leave direction in degrees */

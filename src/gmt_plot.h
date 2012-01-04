@@ -132,8 +132,10 @@ struct GMT_SYMBOL {
 	double h_length;	/* Length of vector head in inches */
 	double h_width;		/* Width of vector head in inches */
 	GMT_LONG v_side;	/* 0 for normal head, -1 for left-half only, +1 for right-half only */
-	GMT_LONG v_just;		/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
-	GMT_LONG v_double_heads;		/* If TRUE, Add 8 (|= 8) to outline to specify double-headed vector (FALSE is single-headed) */
+	GMT_LONG v_just;	/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
+	GMT_LONG v_heads;	/* 1 for head at beginning, 2 for head at end, 3 for both */
+	GMT_LONG v_outline;	/* 1 to draw head outline with -W pen, 2 to draw with v_pen */
+	struct GMT_PEN v_pen;	/* Pen for outline of head */
 
 	struct GMT_FRONTLINE f;	/* parameters needed for a front */
 	struct GMT_CUSTOM_SYMBOL *custom;	/* pointer to a custom symbol */
