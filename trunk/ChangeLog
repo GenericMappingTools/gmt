@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-01-05	jluis
+	* gmt_customio.c:	Make nx and ny of 'unsigned short int' type in surfer6 header.
+				Note that original format specification by Golden Software
+				clearly say they are 'short int' but this change shouldn't
+				break anything and will allow dealing with larger grid sizes. 
+
 2011-12-19	remko
 	* gmt_init.c:		Honor -B0 (map frame only). Also -Ba0f0g0, etc.
 
