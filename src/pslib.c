@@ -314,7 +314,6 @@ PSL_LONG psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *head
 PSL_LONG psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, unsigned char **buffer);
 PSL_LONG psl_get_boundingbox (FILE *fp, PSL_LONG *llx, PSL_LONG *lly, PSL_LONG *trx, PSL_LONG *try);
 char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const char *stem, const char *suffix, char *path);
-PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]);
 PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[]);
 PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]);
 PSL_LONG psl_patch (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG np);
@@ -2942,9 +2941,9 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	 * add 4 to param[6] if you want to use a straight angle symbol if the opening is 90.
 	 * param[7] = vector-shape (0-1), and param[8] = asymmetry (-1 = left, +1 = right, 0 is normal) */
 
-	PSL_LONG status, i, side, miter, join;
-	double head_arc_length, head_half_width, arc_width, da, xt, yt, sa, ca, sb, cb, r, xr, yr, xl, yl, xo, yo, shape;
-	double angle[2], tangle[2], off[2], A, B, bo1, bo2, xi, yi, bi1, bi2, xv, yv, sign[2] = {+1.0, -1.0};
+	PSL_LONG status, i, side, sign[2] = {+1, -1};
+	double head_arc_length, head_half_width, arc_width, da, xt, yt, sa, ca, sb, cb, r, r2, xr, yr, xl, yl, xo, yo, shape;
+	double angle[2], tangle[2], off[2], A, B, bo1, bo2, xi, yi, bi1, bi2, xv, yv, rshift;
 
 	status = (PSL_LONG)irint (param[6]);
 	if (status & 4 && fabs (90.0 - fabs (param[2]-param[1])) < 1.0e-8) {	/* Right angle */
@@ -2957,6 +2956,10 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	head_half_width = 0.5 * param[4];	/* Head half-width in inch */
 	arc_width = param[5];			/* Arc width in inch */
 	da = head_arc_length * 180.0 / (M_PI * r);	/* Angle corresponding to the arc length */
+	/* rshift kicks in when we want a half-arrow head.  In that case we dont want it to be
+	 * exactly half since the vector line will then stick out 1/2 line thickness.  So we adjust
+	 * for this half-thickness by adding/subtracting from the radius accordingly, using r2 */
+	rshift = 0.5 * side * arc_width;
 
 	for (i = 0; i < 2; i++) {	/* Possibly shorten angular arc if arrow heads take up space */
 		tangle[i] = angle[i];	/* Angle if no head is present */
@@ -2967,41 +2970,36 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	PSL_plotarc (PSL, 0.0, 0.0, r, tangle[0], tangle[1], PSL_MOVE | PSL_STROKE);	/* Draw the (possibly shortened) arc */
 	if (status) {	/* Will draw at least one head */
 		PSL_setfill (PSL, PSL->current.rgb[PSL_IS_FILL], TRUE);	/* Set fill for head(s) */
-		/* Change to zero miter and use miter join for sharp arrows */
-		miter = PSL->internal.miter_limit;	PSL_setmiterlimit (PSL, 0);
-		join = PSL->internal.line_join;		PSL_setlinejoin (PSL, PSL_MITER_JOIN);
 	}
 	
 	for (i = 0; i < 2; i++) {	/* For both ends */
 		if (status & (i+1)) {	/* Add arrow head at this angle */
 			A = D2R * angle[i];	sa = sin (A);	ca = cos (A);
-			xt = r * ca;	yt = r * sa;	/* Tip coordinates */
+			r2 = r + sign[i] * rshift;
+			xt = r2 * ca;	yt = r2 * sa;	/* Tip coordinates */
 			B = D2R * (angle[i] + sign[i] * da);	sb = sin (B);	cb = cos (B);
-			if (side != -1) {	/* Need right side of arrow head */
-				xr = (r + head_half_width) * cb;	yr = (r + head_half_width) * sb;	/* Outer flank coordinates */
-				psl_get_origin (xt, yt, xr, yr, r, &xo, &yo, &bo1, &bo2);
-				PSL_plotarc (PSL, xo, yo, r, bo2, bo1, PSL_MOVE);	/* Draw the arrow arc from tip to outside flank */
+			PSL_command (PSL, "V ");	/* Do this inside gsave/resore since we are clipping */
+			if (side != +sign[i]) {	/* Need right side of arrow head */
+				xr = (r2 + head_half_width) * cb;	yr = (r2 + head_half_width) * sb;	/* Outer flank coordinates */
+				psl_get_origin (xt, yt, xr, yr, r2, &xo, &yo, &bo1, &bo2);
+				PSL_plotarc (PSL, xo, yo, r2, bo2, bo1, PSL_MOVE);	/* Draw the arrow arc from tip to outside flank */
 				A = D2R * (tangle[i]);	sa = sin (A);	ca = cos (A);
-				xv = r * ca - xr;	yv = r * sa - yr;	/* Back point coordinates */
+				xv = r2 * ca - xr;	yv = r2 * sa - yr;	/* Back point coordinates */
 				PSL_plotpoint (PSL, xv, yv, PSL_REL);		/* Connect to back point */
 			}
 			else {	/* Draw from tip to center back reduced by shape */
-				PSL_plotarc (PSL, 0.0, 0.0, r, angle[i], tangle[i], PSL_MOVE);
+				PSL_plotarc (PSL, 0.0, 0.0, r2, angle[i], tangle[i], PSL_MOVE);
 			}
-			if (side != +1) {	/* Need left side of arrow head */
-				xl = (r - head_half_width) * cb;	yl = (r - head_half_width) * sb;	/* Inner flank coordinates */
-				psl_get_origin (xt, yt, xl, yl, r, &xi, &yi, &bi1, &bi2);
-				PSL_plotarc (PSL, xi, yi, r, bi1, bi2, PSL_DRAW);		/* Draw the arrow arc from tip to outside flank */
+			if (side != -sign[i]) {	/* Need left side of arrow head */
+				xl = (r2 - head_half_width) * cb;	yl = (r2 - head_half_width) * sb;	/* Inner flank coordinates */
+				psl_get_origin (xt, yt, xl, yl, r2, &xi, &yi, &bi1, &bi2);
+				PSL_plotarc (PSL, xi, yi, r2, bi1, bi2, PSL_DRAW);		/* Draw the arrow arc from tip to outside flank */
 			}
 			else {	/* Draw from center back reduced by shape to tip */
-				PSL_plotarc (PSL, 0.0, 0.0, r, tangle[i], angle[i], PSL_DRAW);
+				PSL_plotarc (PSL, 0.0, 0.0, r2, tangle[i], angle[i], PSL_DRAW);
 			}
-			PSL_command (PSL, "P FO\n");
+			PSL_command (PSL, "P clip FO U\n");
 		}
-	}
-	if (status) {	/* Reset mitering (not really necessary due to the next U but in case we make changes later) */
-		PSL_setmiterlimit (PSL, miter);
-		PSL_setlinejoin (PSL, join);
 	}
 	
 	PSL_command (PSL, "U \n");
@@ -3062,8 +3060,8 @@ PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	 */
 
 	double angle, xtip, ytip, tailwidth, headlength, headwidth, headshape, off, length_inch;
-	double xx[4], yy[4];
-	PSL_LONG length, asymmetry, code, miter, join, n;
+	double xx[4], yy[4], yshift;
+	PSL_LONG length, asymmetry, code, n;
 
 	xtip = param[0];	ytip = param[1];
 	length_inch = hypot (x-xtip, y-ytip);					/* Vector length in inches */
@@ -3087,43 +3085,40 @@ PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 		return (PSL_NO_ERROR);	
 	}
 	asymmetry = irint (param[7]);
+	yshift = 0.5 * asymmetry * tailwidth;
 	
-	/* Change to zero miter and use miter join for sharp arrows */
-	miter = PSL->internal.miter_limit;	PSL_setmiterlimit (PSL, 0);
-	join = PSL->internal.line_join;		PSL_setlinejoin (PSL, PSL_MITER_JOIN);
 	if (code & 1) {	/* Need head at beginning, pointing backwards */
-		xx[0] = yy[0] = 0.0;	n = 1;	/* Vector tip */
+		xx[0] = 0.0; yy[0] = -yshift;	n = 1;	/* Vector tip */
 		if (asymmetry != +1) {	/* Need left side */
 			xx[n] = headlength; yy[n++] = -headwidth;
 		}
 		if (asymmetry || headshape != 0.0) {	/* Need center back of head */
-			xx[n] = 0.5 * (2.0 - headshape) * headlength; yy[n++] = 0.0;
+			xx[n] = 0.5 * (2.0 - headshape) * headlength; yy[n++] = -yshift;
 		}
 		if (asymmetry != -1) {	/* Need right side */
 			xx[n] = headlength; yy[n++] = headwidth;
 		}
-		psl_patch (PSL, xx, yy, n);	/* Small polygons can use the patch function */
+		PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
+		PSL_command (PSL, "P clip FO ");
+		
 	}
 	PSL_command (PSL, "U\n");
 	if (code & 2) {	/* Need head at end, pointing forwards */
 		PSL_command (PSL, "V %ld %ld T ", psl_ix (PSL, xtip), psl_iy (PSL, ytip));	/* Temporarily set tail point the local origin (0, 0) */
 		if (angle != 0.0) PSL_command (PSL, "%g R ", angle);			/* Rotate so vector is horizontal in local coordinate system */
-		xx[0] = yy[0] = 0.0;	n = 1;	/* Vector tip */
+		xx[0] = 0.0; yy[0] = yshift;	n = 1;	/* Vector tip */
 		if (asymmetry != +1) {	/* Need left side */
 			xx[n] = -headlength; yy[n++] = headwidth;
 		}
 		if (asymmetry || headshape != 0.0) {	/* Need center back of head */
-			xx[n] = -0.5 * (2.0 - headshape) * headlength; yy[n++] = 0.0;
+			xx[n] = -0.5 * (2.0 - headshape) * headlength; yy[n++] = yshift;
 		}
 		if (asymmetry != -1) {	/* Need right side */
 			xx[n] = -headlength; yy[n++] = -headwidth;
 		}
-		psl_patch (PSL, xx, yy, n);	/* Small polygons can use the patch function */
-		PSL_command (PSL, "U\n");
+		PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
+		PSL_command (PSL, "P clip FO U\n");
 	}
-	/* Reset mitering */
-	PSL_setmiterlimit (PSL, miter);
-	PSL_setlinejoin (PSL, join);
 	return (PSL_NO_ERROR);
 }
 #if 0

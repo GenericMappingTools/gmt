@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_pshistogram
+%%Title: GMT v5.0.0_r9611M [64-bit] Document from GMT_pshistogram
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:52:39 2011
+%%CreationDate: Wed Jan  4 18:22:21 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,6 +111,11 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -145,7 +150,7 @@
 /eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
 /oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -185,6 +190,7 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -571,7 +577,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  pshistogram 26438.d -R-0.75/0.75/0/20 -JX1.5/1 -B0.5/5f5WSne -W0.01 -P -K -Gblack -Z1
+%%GMT:  pshistogram 3655.d -R-0.75/0.75/0/20 -JX1.5/1 -B0.5/5f5WSne -W0.01 -P -K -Gblack -Z1
 %%PROJ: xy -0.75000000 0.75000000 0.00000000 20.00000000 -0.750 0.750 0.000 20.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -840,7 +846,7 @@ O0
 2220 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy 26438.d -R-5/5/-1/1 -JX1.5/1 -B2f1g1/1f0.5g0.25WSne -O -K -Wthick -X1.85
+%%GMT:  psxy 3655.d -R-5/5/-1/1 -JX1.5/1 -B2f1g1/1f0.5g0.25WSne -O -K -Wthick -X1.85
 %%PROJ: xy -5.00000000 5.00000000 -1.00000000 1.00000000 -5.000 5.000 -1.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1078,7 +1084,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-5/5/-1/1 -JX1.5/1 -O -K -Sv0.004/0.03/0.02 -Gblack
+%%GMT:  psxy -R-5/5/-1/1 -JX1.5/1 -O -K -Sv0.03i+e -Gblack -W0.5p
 %%PROJ: xy -5.00000000 5.00000000 -1.00000000 1.00000000 -5.000 5.000 -1.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1089,10 +1095,23 @@ clipsave
 0 1200 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 1440 1080 T 180 R -504 0 -22 -36 24 36 24 0 -22 504 -2 SV U
-V 1440 1080 T -90 R -444 0 -22 -36 24 36 24 0 -22 444 -2 SV U
+O1
+V 1440 1080 T 180 R
+0 0 M 504 0 D S
+U
+V 900 1080 T 180 R 0 0 M
+-36 19 D
+0 -38 D
+P clip FO U
+V 1440 1080 T -90 R
+0 0 M 444 0 D S
+U
+V 1440 600 T -90 R 0 0 M
+-36 19 D
+0 -38 D
+P clip FO U
 PSL_cliprestore
 0 A
 FQ
@@ -1118,7 +1137,7 @@ O0
 2220 0 TM
 
 % PostScript produced by:
-%%GMT:  pshistogram 26438.d -R-0.75/0.75/0/5 -JX1.5/1 -B0.5/2f1WSne -W0.01 -O -K -Gblack -X1.85 -Z1
+%%GMT:  pshistogram 3655.d -R-0.75/0.75/0/5 -JX1.5/1 -B0.5/2f1WSne -W0.01 -O -K -Gblack -X1.85 -Z1
 %%PROJ: xy -0.75000000 0.75000000 0.00000000 5.00000000 -0.750 0.750 0.000 5.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin

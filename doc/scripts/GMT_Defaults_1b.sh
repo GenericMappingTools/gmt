@@ -24,7 +24,7 @@ psxy -R -J -O -K -Sv0.04i+s+b+e -N -W0.5p,blue -Gblue << EOF >> GMT_Defaults_1b.
 0.25 0 0.25 -0.4
 2.3 0.1 2.3 0.9
 EOF
-psxy -R -J -O -K -Sv0.04i+s -N -W0.5p,blue -Gblue << EOF >> GMT_Defaults_1b.ps
+psxy -R -J -O -K -Sv0.04i+s+e -N -W0.5p,blue -Gblue << EOF >> GMT_Defaults_1b.ps
 -0.2 1.15 -0.03 1
 2.35 -0.2 2.0 -0.05
 2.35 1.2 1.95 1.1

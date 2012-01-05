@@ -41,9 +41,6 @@ struct GRDVECTOR_CTRL {
 		GMT_LONG active;
 		char *file;
 	} C;
-	struct E {	/* -E */
-		GMT_LONG active;
-	} E;
 	struct G {	/* -G<fill> */
 		GMT_LONG active;
 		struct GMT_FILL fill;
@@ -103,7 +100,7 @@ GMT_LONG GMT_grdvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdvector %s [API] - Plot vector field from two component grids\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdvector <gridx> <gridy> %s %s [-A]\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[%s] [-C<cpt>] [-E] [-G<fill>] [-I<dx>/<dy>] [-K] [-N] [-O] [-P] [-Q<size>[+<mods>]]\n", GMT_B_OPT);
+	GMT_message (GMT, "\t[%s] [-C<cpt>] [-G<fill>] [-I<dx>/<dy>] [-K] [-N] [-O] [-P] [-Q<params>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-S[l]<scale>[<unit>]] [-T] [%s] [%s] [-W<pen>]\n\t[%s] [%s] [-Z] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -114,13 +111,12 @@ GMT_LONG GMT_grdvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-A Grids have polar (r, theta) components [Default is Cartesian (x, y) components].\n");
 	GMT_explain_options (GMT, "b");
 	GMT_message (GMT, "\t-C Use cpt-file to assign colors based on vector length.\n");
-	GMT_message (GMT, "\t-E Center vectors on grid nodes [Default draws tail from grid node].\n");
 	GMT_fill_syntax (GMT, 'G', "Select vector fill [Default is outlines only].");
 	GMT_message (GMT, "\t-I Plot only those nodes that are <dx>/<dy> apart [Default is all nodes].\n");
 	GMT_explain_options (GMT, "K");
 	GMT_message (GMT, "\t-N Do Not clip vectors that exceed the map boundaries [Default will clip].\n");
 	GMT_explain_options (GMT, "OP");
-	GMT_message (GMT, "\t-Q Select vector plot [Default is stick-plot].\n");
+	GMT_message (GMT, "\t-Q Modify vector attributes [Default gives stick-plot].\n");
 	GMT_vector_syntax (GMT, 3);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Set scale for vector length in data units per %s [1].\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
@@ -168,9 +164,12 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 				Ctrl->C.active = TRUE;
 				Ctrl->C.file = strdup (opt->arg);
 				break;
-			case 'E':	/* Center vectors */
-				Ctrl->E.active = TRUE;
+#ifdef GMT_COMPAT
+			case 'E':	/* Center vectors [OBSOLETE; use modifier +jc in -Q ] */
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use modifier +jc in -Q instead.\n");
+				Ctrl->Q.S.v_just = 1;
 				break;
+#endif
 			case 'G':	/* Set fill for vectors */
 				Ctrl->G.active = TRUE;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
@@ -191,7 +190,8 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 			case 'Q':	/* Vector plots, with parameters */
 				Ctrl->Q.active = TRUE;
 #ifdef GMT_COMPAT
-				if (strchr (opt->arg, '/')) {	/* Old-style args */
+				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Vector arrowwidth/headlength/headwidth is deprecated; see -Q documentation.\n");
 					for (j = 0; opt->arg[j] && opt->arg[j] != 'n'; j++);
 					if (opt->arg[j]) {	/* Normalize option used */
 						Ctrl->Q.norm = GMT_to_inch (GMT, &opt->arg[j+1]);
@@ -203,20 +203,28 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option: Could not decode arrowwidth/headlength/headwidth\n");
 							n_errors++;
 						}
-						else {
-							Ctrl->Q.S.v_width  = GMT_to_inch (GMT, txt_a);
+						else {	/* Turn the old args into new +a<angle> and pen width */
+							Ctrl->Q.S.v_pen.width = GMT_to_points (GMT, txt_a);
 							Ctrl->Q.S.h_length = GMT_to_inch (GMT, txt_b);
-							Ctrl->Q.S.h_width  = GMT_to_inch (GMT, txt_c);
+							Ctrl->Q.S.h_width = GMT_to_inch (GMT, txt_c);
+							Ctrl->Q.S.v_angle = atan (0.5 * Ctrl->M.S.h_width / Ctrl->M.S.h_length);
 						}
 					}
 					if (Ctrl->Q.norm > 0.0) opt->arg[j] = 'n';	/* Restore the n<norm> string */
+					Ctrl->Q.S.v_heads = 2;
 				}
 				else {
 #endif
-					j = sscanf (opt->arg, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
-					if (j == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
-					Ctrl->Q.S.h_length = GMT_to_inch (GMT, txt_a);	/* Length of vector */
-					n_errors += GMT_parse_vector (GMT, txt_b, &Ctrl->Q.S);
+					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
+						Ctrl->Q.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
+						n_errors += GMT_parse_vector (GMT, opt->arg, &Ctrl->Q.S);
+					}
+					else {	/* Size, plus possible attributes */
+						j = sscanf (opt->arg, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
+						if (j == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
+						Ctrl->Q.S.size_x = GMT_to_inch (GMT, txt_a);	/* Length of vector */
+						n_errors += GMT_parse_vector (GMT, txt_b, &Ctrl->Q.S);
+					}
 #ifdef GMT_COMPAT
 				}
 #endif
@@ -378,6 +386,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			break;
 	}
 
+	Ctrl->Q.S.v_width = Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
 	if (Ctrl->Q.active) {	/* Prepare vector parameters */
 		GMT_init_vector_param (GMT, &Ctrl->Q.S);
 	}
@@ -447,13 +456,10 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			x2 = plot_x + vec_length * c;
 			y2 = plot_y + vec_length * s;
 
-			if (Ctrl->E.active) {	/* Center the arrows */
-				x_off = 0.5 * (x2 - plot_x);
-				y_off = 0.5 * (y2 - plot_y);
-				plot_x -= x_off;
-				plot_y -= y_off;
-				x2 -= x_off;
-				y2 -= y_off;
+			if (Ctrl->Q.S.v_just) {	/* Justify vector at center, or tip [beginning] */
+				x_off = Ctrl->Q.S.v_just * 0.5 * (x2 - plot_x);	y_off = Ctrl->Q.S.v_just * 0.5 * (y2 - plot_y);
+				plot_x -= x_off;	plot_y -= y_off;
+				x2 -= x_off;		y2 -= y_off;
 			}
 
 			if (!Ctrl->Q.active) {	/* Just a line segment */

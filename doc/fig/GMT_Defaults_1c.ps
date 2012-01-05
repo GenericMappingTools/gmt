@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psbasemap
+%%Title: GMT v5.0.0_r9611M [64-bit] Document from GMT_psbasemap
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:52:23 2011
+%%CreationDate: Wed Jan  4 18:22:02 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,6 +111,11 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -145,7 +150,7 @@
 /eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
 /oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -185,6 +190,7 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -921,32 +927,103 @@ O0
 2820 1080 M (FORMAT_DATE_MAP) Z
 2820 720 M (FORMAT_CLOCK_MAP) Z
 2820 360 M (TIME_LANGUAGE) Z
-2520 -360 M (FONT_ANNOT_SECONDARY) ml Z
+2880 -324 M (FONT_ANNOT_SECONDARY) ml Z
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/2.25/0/2.25 -Jx1i -O -Svs0.005i/0.04i/0.03i -N -Gblue
+%%GMT:  psxy -R0/2.25/0/2.25 -Jx1i -O -Sv0.04i+s+e -N -W0.5p,blue -Gblue
 %%PROJ: xy 0.00000000 2.25000000 0.00000000 2.25000000 0.000 2.250 0.000 2.250 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
+8 W
+0 0 1 C
 {0 0 1 C} FS
-V 780 2880 T -21.8014 R -275 0 -33 -48 36 48 36 0 -33 275 -3 SV U
-V -420 2520 T -312 0 -33 -48 36 48 36 0 -33 312 -3 SV U
-V -420 2280 T -312 0 -33 -48 36 48 36 0 -33 312 -3 SV U
-V -420 300 T -312 0 -33 -48 36 48 36 0 -33 312 -3 SV U
-V -1080 -360 T -74.7449 R -636 0 -33 -48 36 48 36 0 -33 636 -3 SV U
-V -840 -564 T -62.2415 R -210 0 -33 -48 36 48 36 0 -33 210 -3 SV U
-V 0 -744 T -33.0239 R -238 0 -33 -48 36 48 36 0 -33 238 -3 SV U
-V 2460 -600 T 180 R -252 0 -33 -48 36 48 36 0 -33 252 -3 SV U
-V 2760 1080 T -146.149 R -2322 0 -33 -48 36 48 36 0 -33 2322 -3 SV U
-V 2760 720 T -147.529 R -1517 0 -33 -48 36 48 36 0 -33 1517 -3 SV U
-V 2760 360 T -135 R -801 0 -33 -48 36 48 36 0 -33 801 -3 SV U
-V 2460 -360 T 180 R -252 0 -33 -48 36 48 36 0 -33 252 -3 SV U
+O1
+V 780 2880 T -21.8014 R
+0 0 M 275 0 D S
+U
+V 1080 2760 T -21.8014 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+V -420 2520 T 0 0 M 312 0 D S
+U
+V -60 2520 T 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+V -420 2280 T 0 0 M 312 0 D S
+U
+V -60 2280 T 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+V -420 300 T 0 0 M 312 0 D S
+U
+V -60 300 T 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+V -1080 -360 T -74.7449 R
+0 0 M 636 0 D S
+U
+V -900 -1020 T -74.7449 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+V -840 -564 T -62.2415 R
+0 0 M 210 0 D S
+U
+V -720 -792 T -62.2415 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+V 0 -744 T -33.0239 R
+0 0 M 238 0 D S
+U
+V 240 -900 T -33.0239 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+V 2460 -600 T 180 R
+0 0 M 252 0 D S
+U
+V 2160 -600 T 180 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+V 2760 1080 T -146.149 R
+0 0 M 2322 0 D S
+U
+V 792 -240 T -146.149 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+V 2760 720 T -147.529 R
+0 0 M 1517 0 D S
+U
+V 1440 -120 T -147.529 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+V 2760 360 T -135 R
+0 0 M 801 0 D S
+U
+V 2160 -240 T -135 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+V 2820 -324 T 180 R
+0 0 M 252 0 D S
+U
+V 2520 -324 T 180 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
 %%PageTrailer
 U
 showpage
