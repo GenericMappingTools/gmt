@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psbasemap
+%%Title: GMT v5.0.0_r9611M [64-bit] Document from GMT_psbasemap
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:52:19 2011
+%%CreationDate: Wed Jan  4 10:11:38 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,6 +111,11 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -145,7 +150,7 @@
 /eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
 /oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -185,6 +190,7 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -662,19 +668,53 @@ O0
 0 120 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/12/0/0.95 -JX3i/0.3i -O -K -Sv0.005i/0.02i/0.015i -Gblack -Y0.1i -N
+%%GMT:  psxy -R0/12/0/0.95 -JX3i/0.3i -O -K -Sv0.015i+e -W0.5p -Gblack -Y0.1i -N
 %%PROJ: xy 0.00000000 12.00000000 0.00000000 0.95000000 0.000 12.000 0.000 0.950 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
+8 W
 {0 A} FS
-V 600 0 T -576 0 -15 -24 18 24 18 0 -15 576 -3 SV U
-V 600 0 T 180 R -576 0 -15 -24 18 24 18 0 -15 576 -3 SV U
-V 2100 0 T -276 0 -15 -24 18 24 18 0 -15 276 -3 SV U
-V 2100 0 T 180 R -276 0 -15 -24 18 24 18 0 -15 276 -3 SV U
-V 2850 0 T -126 0 -15 -24 18 24 18 0 -15 126 -3 SV U
-V 2850 0 T 180 R -126 0 -15 -24 18 24 18 0 -15 126 -3 SV U
+O1
+V 600 0 T 0 0 M 582 0 D S
+10 setmiterlimit
+U
+V 1200 0 T 0 -20 -18 10 2 0 0 SP
+U
+3.32551 setmiterlimit
+V 600 0 T 180 R
+0 0 M 582 0 D S
+10 setmiterlimit
+U
+V 0 0 T 180 R 0 -20 -18 10 2 0 0 SP
+U
+3.32551 setmiterlimit
+V 2100 0 T 0 0 M 282 0 D S
+10 setmiterlimit
+U
+V 2400 0 T 0 -20 -18 10 2 0 0 SP
+U
+3.32551 setmiterlimit
+V 2100 0 T 180 R
+0 0 M 282 0 D S
+10 setmiterlimit
+U
+V 1800 0 T 180 R 0 -20 -18 10 2 0 0 SP
+U
+3.32551 setmiterlimit
+V 2850 0 T 0 0 M 132 0 D S
+10 setmiterlimit
+U
+V 3000 0 T 0 -20 -18 10 2 0 0 SP
+U
+3.32551 setmiterlimit
+V 2850 0 T 180 R
+0 0 M 132 0 D S
+10 setmiterlimit
+U
+V 2700 0 T 180 R 0 -20 -18 10 2 0 0 SP
+U
+3.32551 setmiterlimit
 0 A
 FQ
 O0

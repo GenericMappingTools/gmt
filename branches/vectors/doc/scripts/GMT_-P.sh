@@ -25,11 +25,11 @@ pstext -R -J -O -K -N -F+f+a+j << EOF >> GMT_-P.ps
 2.1	1.1	9p,Helvetica-Oblique	90	BL	x
 1.45	0.15	9p,Helvetica-Oblique	90	BL	y
 EOF
-psxy -R -J -O -K -Sv0.2i -W1p -Glightred << EOF >> GMT_-P.ps
+psxy -R -J -O -K -Sv0.2i+e+a50 -W8p,lightred -Glightred << EOF >> GMT_-P.ps
 0.5	1.35	90	0.3
 1.75	1.35	90	0.3
 EOF
-psxy -R -J -O -Sv0.015i -W0.5p -Gblack << EOF >> GMT_-P.ps
+psxy -R -J -O -Sv0.02i+e -W0.5p -Gblack << EOF >> GMT_-P.ps
 0.1	0.1	0	0.7
 0.1	0.1	90	1
 2.15	0.1	180	0.7

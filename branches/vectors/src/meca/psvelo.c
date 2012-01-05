@@ -51,8 +51,7 @@ PostScript code is written to stdout.
 struct PSVELO_CTRL {
 	struct A {	/* -A */
 		GMT_LONG active;
-		double width, length, head;
-		double vector_shape;
+		struct GMT_SYMBOL S;
 	} A;
 	struct D {	/* -D */
 		GMT_LONG active;
@@ -93,8 +92,10 @@ void *New_psvelo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	C->A.width = 0.01, C->A.length = 0.12, C->A.head = 0.03;
-	C->A.vector_shape = 0.4;
+	C->A.S.h_length = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
+#ifdef GMT_COMPAT
+	GMT->current.setting.map_vector_shape = 0.4;	/* Historical reasons */
+#endif
 	C->D.scale = 1.0;
 	GMT_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
@@ -127,8 +128,9 @@ GMT_LONG GMT_psvelo_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<b");
-	GMT_message (GMT, "\t-A Change the size of arrow head; specify arrow_width, head_length, head_width;");
-	GMT_message (GMT, "\t   [Default is 0.01i/0.12i/0.03i].");
+	GMT_message (GMT, "\t-A Specify arrow head attributes:");
+	GMT_vector_syntax (GMT, 0);
+	GMT_message (GMT, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
 	GMT_message (GMT, "\t-D Multiply uncertainties by sigscale. (Se and Sw only)i\n");
 	GMT_message (GMT, "\t-E Set color used for uncertainty wedges in -Sw option.\n");
 	GMT_message (GMT, "\t-G Specify color (for symbols/polygons) or pattern (for polygons). fill can be either\n");
@@ -175,10 +177,20 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change size of arrow head */
-				sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
-				Ctrl->A.width = GMT_to_inch (GMT, txt);
-				Ctrl->A.length = GMT_to_inch (GMT, txt_b);
-				Ctrl->A.head = GMT_to_inch (GMT, txt_c);
+#ifdef GMT_COMPAT
+				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
+					sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
+					Ctrl->A.S.v_pen.width = GMT_to_points (GMT, txt_a);
+					Ctrl->A.S.h_length = GMT_to_inch (GMT, txt_b);
+					Ctrl->A.S.h_width = GMT_to_inch (GMT, txt_c);
+					Ctrl->A.S.v_angle = atan (0.5 * Ctrl->A.S.h_width / Ctrl->A.S.h_length);
+				}
+				else {
+#endif
+					n_errors += GMT_parse_vector (GMT, opt->arg, &Ctrl->A.S);
+#ifdef GMT_COMPAT
+				}
+#endif
 				break;
 			case 'D':	/* Rescale Sigmas */
 				Ctrl->D.active = TRUE;
@@ -317,6 +329,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->E.active) Ctrl->L.active = TRUE;
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	GMT_init_vector_param (GMT, &Ctrl->A.S);
 
 	old_is_world = GMT->current.map.is_world;
 	station_name = GMT_memory (GMT, NULL, 64, char);
@@ -425,20 +438,20 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							t11,t12,t21,t22, Ctrl->E.active, Ctrl->G.fill.rgb, Ctrl->L.active);
 				}
 				if (des_arrow) {	/* verify that arrow is not ridiculously small */
-					if (hypot (plot_x-plot_vx, plot_y-plot_vy) <= 1.5 * Ctrl->A.length) {
+					if (hypot (plot_x-plot_vx, plot_y-plot_vy) <= 1.5 * Ctrl->A.S.h_length) {
 						hl = hypot (plot_x-plot_vx,plot_y-plot_vy) * 0.6;
-						hw = hl * Ctrl->A.head/Ctrl->A.length;
-						vw = hl * Ctrl->A.width/Ctrl->A.length;
+						hw = hl * Ctrl->A.S.h_width/Ctrl->A.S.h_length;
+						vw = hl * Ctrl->A.S.v_width/Ctrl->A.S.h_length;
 						if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2./PSL_DOTS_PER_INCH;
 					}
 					else {
-						hw = Ctrl->A.head;
-						hl = Ctrl->A.length;
-						vw = Ctrl->A.width;
+						hw = Ctrl->A.S.h_width;
+						hl = Ctrl->A.S.h_length;
+						vw = Ctrl->A.S.v_width;
 					}
 					dim[0] = plot_vx, dim[1] = plot_vy;
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
-					dim[5] = Ctrl->A.vector_shape, dim[6] = 0.0;
+					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = Ctrl->A.S.v_heads, dim[7] = Ctrl->A.S.v_side;
 					GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 					
@@ -462,8 +475,8 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_vx, plot_vy);
 				break;
 			case CROSS:
-				Ctrl->A.vector_shape = 0.1; /* triangular arrowheads */
-				trace_cross (GMT, xy[GMT_X],xy[GMT_Y],eps1,eps2,theta,Ctrl->S.scale,Ctrl->A.width,Ctrl->A.length,Ctrl->A.head,Ctrl->A.vector_shape,Ctrl->L.active,Ctrl->W.pen);
+				/* triangular arrowheads */
+				trace_cross (GMT, xy[GMT_X],xy[GMT_Y],eps1,eps2,theta,Ctrl->S.scale,Ctrl->A.S.v_width,Ctrl->A.S.h_length,Ctrl->A.S.h_width,0.1,Ctrl->L.active,Ctrl->W.pen);
 				break;
 			case WEDGE:
 				PSL_comment (PSL, "begin wedge number %li", n_rec);

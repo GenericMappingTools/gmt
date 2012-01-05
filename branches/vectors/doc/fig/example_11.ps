@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 13 2011 16:10:43) [64-bit] [C4] Document from GMT_psxy
+%%Title: GMT v5.0.0_r9611M [64-bit] Document from GMT_psxy
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 13 16:53:51 2011
+%%CreationDate: Wed Jan  4 18:19:19 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -63,6 +63,8 @@
 /Sp {N 3 -1 roll 0 360 arc F}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 /SV {0 exch M 0 D D D D D 0 D FO}!
@@ -109,6 +111,11 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -143,7 +150,7 @@
 /oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
 /udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -183,6 +190,7 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -3176,14 +3184,22 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -N -Svs -Gwhite -JX2.5i/-2.5i -R0/255/0/255 -K -O
+%%GMT:  psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -JX2.5i/-2.5i -R0/255/0/255 -K -O
 %%PROJ: xy 0.00000000 255.00000000 0.00000000 255.00000000 0.000 255.000 255.000 -0.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
+33 W
+1 A
 {1 A} FS
-V 0 3000 T -90 R -1356 0 -100 -150 117 150 117 0 -100 1356 -17 SV U
+O1
+V 0 3000 T -90 R
+0 0 M 1326 0 D S
+U
+V 0 1494 T -90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 0 A
 FQ
 O0
@@ -5722,28 +5738,43 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -N -Svs -Gwhite -JX2.5i/2.5i -R0/255/0/255 -K -O
+%%GMT:  psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -JX2.5i/2.5i -R0/255/0/255 -K -O
 %%PROJ: xy 0.00000000 255.00000000 0.00000000 255.00000000 0.000 255.000 0.000 255.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
+33 W
+1 A
 {1 A} FS
-V 0 0 T -1356 0 -100 -150 117 150 117 0 -100 1356 -17 SV U
+O1
+V 0 0 T 0 0 M 1326 0 D S
+U
+V 1506 0 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -N -Svs -Gwhite -JX2.5i/2.5i -R0/255/0/255 -K -O
+%%GMT:  psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -JX2.5i/2.5i -R0/255/0/255 -K -O
 %%PROJ: xy 0.00000000 255.00000000 0.00000000 255.00000000 0.000 255.000 0.000 255.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
+33 W
+1 A
 {1 A} FS
-V 0 0 T 45 R -1347 0 -100 -150 117 150 117 0 -100 1347 -17 SV U
+O1
+V 0 0 T 45 R
+0 0 M 1317 0 D S
+U
+V 1059 1059 T 45 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 0 A
 FQ
 O0
@@ -8281,28 +8312,44 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -N -Svs -Gwhite -JX-2.5i/2.5i -R0/255/0/255 -K -O
+%%GMT:  psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -JX-2.5i/2.5i -R0/255/0/255 -K -O
 %%PROJ: xy 0.00000000 255.00000000 0.00000000 255.00000000 255.000 -0.000 0.000 255.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
+33 W
+1 A
 {1 A} FS
-V 3000 0 T 90 R -1356 0 -100 -150 117 150 117 0 -100 1356 -17 SV U
+O1
+V 3000 0 T 90 R
+0 0 M 1326 0 D S
+U
+V 3000 1506 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -N -Svs -Gwhite -JX-2.5i/2.5i -R0/255/0/255 -K -O
+%%GMT:  psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -JX-2.5i/2.5i -R0/255/0/255 -K -O
 %%PROJ: xy 0.00000000 255.00000000 0.00000000 255.00000000 255.000 -0.000 0.000 255.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
+33 W
+1 A
 {1 A} FS
-V 3000 0 T 180 R -1356 0 -100 -150 117 150 117 0 -100 1356 -17 SV U
+O1
+V 3000 0 T 180 R
+0 0 M 1326 0 D S
+U
+V 1494 0 T 180 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 0 A
 FQ
 O0
@@ -13366,28 +13413,42 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -N -Svs -Gblack -JX2.5i/-2.5i -R0/255/0/255 -K -O
+%%GMT:  psxy -N -Sv0.15i+s+e -Gblack -W2p -JX2.5i/-2.5i -R0/255/0/255 -K -O
 %%PROJ: xy 0.00000000 255.00000000 0.00000000 255.00000000 0.000 255.000 255.000 -0.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
+33 W
 {0 A} FS
-V 0 3000 T -45 R -1347 0 -100 -150 117 150 117 0 -100 1347 -17 SV U
+O1
+V 0 3000 T -45 R
+0 0 M 1317 0 D S
+U
+V 1059 1941 T -45 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -N -Svs -Gblack -JX2.5i/-2.5i -R0/255/0/255 -K -O
+%%GMT:  psxy -N -Sv0.15i+s+e -Gblack -W2p -JX2.5i/-2.5i -R0/255/0/255 -K -O
 %%PROJ: xy 0.00000000 255.00000000 0.00000000 255.00000000 0.000 255.000 255.000 -0.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
+33 W
 {0 A} FS
-V 2400 600 T 90 R -1356 0 -100 -150 117 150 117 0 -100 1356 -17 SV U
+O1
+V 2400 600 T 90 R
+0 0 M 1326 0 D S
+U
+V 2400 2106 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 0 A
 FQ
 O0

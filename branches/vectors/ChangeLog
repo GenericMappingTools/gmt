@@ -2,6 +2,13 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-01-04	pwessel
+	* grdvector.c:		Updated -Q to take new vector specification format.
+				Made -E obsolete (since covered by modifier +jc) but
+				is still active under compatibility mode.
+	* psrose.c:		Updated -M to take new vector specification format.
+				Added -Wv<pen> to specify pen for vector (in -C).
+
 2012-01-01	pwessel
 	* gmt_plot.c:		Let +n<norm> be modifier for all vectors
 	* gmt_init.c:		---"---

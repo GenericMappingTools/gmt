@@ -6572,6 +6572,8 @@ GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 	GMT_LONG pos = 0, k, error = 0, len;
 	char p[GMT_BUFSIZ];
 	
+	S->v_pen = C->current.setting.map_default_pen;
+	GMT_init_fill (C, &S->v_fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	S->v_heads = S->v_just = S->v_side = S->v_outline = 0;	/* No vector heads or asymmetry */
 	S->v_angle = 30.0;
 	S->v_norm = -1.0;
@@ -6615,7 +6617,17 @@ GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 				else
 					S->v_norm = 0.0;
 				break;
-			case 'p':	/* Vector head outline [NOT USED YET] */
+			case 'g':	/* Vector head fill [USED IN PSROSE] */
+				S->v_paint = 1;
+				if (p[1]) {
+					if (GMT_getfill (C, &p[1], &S->v_fill)) {
+						GMT_report (C, GMT_MSG_FATAL, "Bad +g<fill> modifier %c\n", &p[1]);
+						error++;
+					}
+					S->v_paint = 2;
+				}
+				break;
+			case 'p':	/* Vector head outline [NOT USED YET - MAY GO AWAY] */
 				S->v_outline = 1;
 				if (p[1]) {
 					if (GMT_getpen (C, &p[1], &S->v_pen)) {
@@ -6654,10 +6666,10 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 	p->user_unit = p->shrink = p->read_size = p->base_set = p->u_set = FALSE;
 	p->font = C->current.setting.font_annot[0];
 
-	/* Col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
+	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
 	   However, if size is not given then that is requred too so col_off++ */
 	
-	if (text[0] != 'q' && (s = strstr (text, "+s"))) {	/* Gave a symbol size scaling relation */
+	if (!strchr (GMT_VECTOR_CODES "q", text[0]) && (s = strstr (text, "+s"))) {	/* Gave a symbol size scaling relation */
 		k = strlen (text) - 1;	/* Last character position */
 		s[0] = '\0';		/* Temporarily separate this modifer from the rest of the symbol option (restored at end of function) */
 		p->convert_size = (text[k] == 'l') ? 2 : 1;		/* If last char is l we want log10 conversion */

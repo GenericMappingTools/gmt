@@ -32,7 +32,7 @@ pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
 204  26 12p -90 0.8
 10  140 16p 180 G
 END
-echo 0 0 0 128 | psxy -N -Svs -Gwhite -J -R -K -O >> $ps
+echo 0 0 0 128 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
 
 grdimage x.nc c.nc y.nc -JX2.5i/2.5i -R -K -O -Y2.5i >> $ps
 psxy -Wthinner,white,- rays.dat -J -R -K -O -Bwesn >> $ps
@@ -43,8 +43,8 @@ pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
 140  10 16p -90 R
 100 100 16p -45 V
 END
-echo 0 0 128 0 | psxy -N -Svs -Gwhite -J -R -K -O >> $ps
-echo 0 0 90 90 | psxy -N -Svs -Gwhite -J -R -K -O >> $ps
+echo 0 0 128 0 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
+echo 0 0 90 90 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
 
 grdimage c.nc x.nc y.nc -JX-2.5i/2.5i -R -K -O -X-2.5i >> $ps
 psxy -Wthinner,white,- rays.dat -J -R -K -O -Bwesn >> $ps
@@ -54,8 +54,8 @@ pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
 204  26 12p  90 0.8
 10  140 16p   0 B
 END
-echo 0 0 0 128 | psxy -N -Svs -Gwhite -J -R -K -O >> $ps
-echo 0 0 128 0 | psxy -N -Svs -Gwhite -J -R -K -O >> $ps
+echo 0 0 0 128 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
+echo 0 0 128 0 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
 
 # Second, create grids of descending X and Y and constant 255.
 # These are to be used to represent R, G and B values of the lighter 3 faces of the cube.
@@ -81,8 +81,8 @@ pstext -J -R -K -O -F+f+a >> $ps << END
 100 100 16p  45 S
 204  66 16p  90 H
 END
-echo 0 0 90 90 | psxy -N -Svs -Gblack -J -R -K -O >> $ps
-echo 204 204 204 76 | psxy -N -Svs -Gblack -J -R -K -O >> $ps
+echo 0 0 90 90 | psxy -N -Sv0.15i+s+e -Gblack -W2p -J -R -K -O >> $ps
+echo 204 204 204 76 | psxy -N -Sv0.15i+s+e -Gblack -W2p -J -R -K -O >> $ps
 
 grdimage x.nc c.nc y.nc -JX-2.5i/2.5i -R -K -O -X-2.5i -Y2.5i >> $ps
 psxy -Wthinner,black,- rays.dat -J -R -K -O -Bwesn >> $ps

@@ -135,7 +135,9 @@ struct GMT_SYMBOL {
 	GMT_LONG v_just;	/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
 	GMT_LONG v_heads;	/* 1 for head at beginning, 2 for head at end, 3 for both */
 	GMT_LONG v_outline;	/* 1 to draw head outline with -W pen, 2 to draw with v_pen */
-	struct GMT_PEN v_pen;	/* Pen for outline of head */
+	GMT_LONG v_paint;	/* 1 to fill head with -G fill, 2 to fill with v_fill */
+	struct GMT_PEN v_pen;	/* Pen for outline of head [NOT USED YET] */
+	struct GMT_FILL v_fill;	/* Fill for head [USED IN PSROSE] */
 
 	struct GMT_FRONTLINE f;	/* parameters needed for a front */
 	struct GMT_CUSTOM_SYMBOL *custom;	/* pointer to a custom symbol */

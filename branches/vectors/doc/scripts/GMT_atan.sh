@@ -13,7 +13,7 @@ pstext -R -J -O -K -F+f9p+jLB << EOF >> GMT_atan.ps
 EOF
 gmtmath -T-5/5/0.01 T ATAN PI DIV 2 MUL = > $$.d
 psxy $$.d -R-5/5/-1/1 -JX1.5/1 -B2f1g1/1f0.5g0.25WSne -O -K -Wthick -X1.85 >> GMT_atan.ps
-psxy -R -J -O -K -Sv0.03i -Gblack -W1p << EOF >> GMT_atan.ps
+psxy -R -J -O -K -Sv0.03i+e -Gblack -W0.5p << EOF >> GMT_atan.ps
 3	0.8	180	0.45
 3	0.8	-90	0.4
 EOF

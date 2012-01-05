@@ -4,7 +4,7 @@
 . ./functions.sh
 
 psbasemap -R0/12/0/0.95 -JX3i/0.3i -Ba4f2g1:Frequency::,%:S -K -P > GMT_-B_linear.ps
-psxy -R -J -O -K -Sv0.015i -W0.5p -Gblack -Y0.1i -N << EOF >> GMT_-B_linear.ps
+psxy -R -J -O -K -Sv0.015i+e -W0.5p -Gblack -Y0.1i -N << EOF >> GMT_-B_linear.ps
 2 0 0 0.5
 2 0 180 0.5
 7 0 0 0.25
