@@ -144,6 +144,9 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 
 	GMT_LONG n_errors = 0, n_files = 0, j;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+#ifdef GMT_COMPAT
+	char txt_c[GMT_TEXT_LEN256];
+#endif
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -167,7 +170,7 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 #ifdef GMT_COMPAT
 			case 'E':	/* Center vectors [OBSOLETE; use modifier +jc in -Q ] */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use modifier +jc in -Q instead.\n");
-				Ctrl->Q.S.v_just = 1;
+				Ctrl->Q.S.v.status |= GMT_VEC_JUST_C;
 				break;
 #endif
 			case 'G':	/* Set fill for vectors */
@@ -194,8 +197,8 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Vector arrowwidth/headlength/headwidth is deprecated; see -Q documentation.\n");
 					for (j = 0; opt->arg[j] && opt->arg[j] != 'n'; j++);
 					if (opt->arg[j]) {	/* Normalize option used */
-						Ctrl->Q.norm = GMT_to_inch (GMT, &opt->arg[j+1]);
-						n_errors += GMT_check_condition (GMT, Ctrl->Q.norm <= 0.0, "Syntax error -Qn option: No reference length given\n");
+						Ctrl->Q.S.v.v_norm = GMT_to_inch (GMT, &opt->arg[j+1]);
+						n_errors += GMT_check_condition (GMT, Ctrl->Q.S.v.v_norm <= 0.0, "Syntax error -Qn option: No reference length given\n");
 						opt->arg[j] = '\0';	/* Temporarily chop of the n<norm> string */
 					}
 					if (opt->arg[0] && opt->arg[1] != 'n') {	/* We specified the three parameters */
@@ -204,14 +207,14 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 							n_errors++;
 						}
 						else {	/* Turn the old args into new +a<angle> and pen width */
-							Ctrl->Q.S.v_pen.width = GMT_to_points (GMT, txt_a);
-							Ctrl->Q.S.h_length = GMT_to_inch (GMT, txt_b);
-							Ctrl->Q.S.h_width = GMT_to_inch (GMT, txt_c);
-							Ctrl->Q.S.v_angle = atan (0.5 * Ctrl->M.S.h_width / Ctrl->M.S.h_length);
+							Ctrl->Q.S.v.pen.width = GMT_to_points (GMT, txt_a);
+							Ctrl->Q.S.v.h_length = GMT_to_inch (GMT, txt_b);
+							Ctrl->Q.S.v.h_width = GMT_to_inch (GMT, txt_c);
+							Ctrl->Q.S.v.v_angle = atan (0.5 * Ctrl->Q.S.v.h_width / Ctrl->Q.S.v.h_length);
 						}
 					}
-					if (Ctrl->Q.norm > 0.0) opt->arg[j] = 'n';	/* Restore the n<norm> string */
-					Ctrl->Q.S.v_heads = 2;
+					if (Ctrl->Q.S.v.v_norm > 0.0) opt->arg[j] = 'n';	/* Restore the n<norm> string */
+					Ctrl->Q.S.v.status |= GMT_VEC_JUST_E;		/* ALignt at end */
 				}
 				else {
 #endif
@@ -271,7 +274,7 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increments\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "Syntax error -S option: Scale must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "Syntax error -Sl option: Length must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.constant && Ctrl->Q.S.shrink, "Syntax error -Sl, -Q options: Cannot use -Q..n<size> with -Sl\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.constant && Ctrl->Q.S.v.v_norm > 0.0, "Syntax error -Sl, -Q options: Cannot use -Q..n<size> with -Sl\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->A.active, "Syntax error -Z option: Azimuths not valid input for Cartesian data\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C option: Must specify a color palette table\n");
 	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active), "Syntax error: Must specify at least one of -G, -W, -C\n");
@@ -285,10 +288,10 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 
 GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, col_0, row_0, d_col, d_row, k, ij, error = FALSE;
+	GMT_LONG row, col, col_0, row_0, d_col, d_row, k, ij, justify, error = FALSE;
 
 	double tmp, x, y, plot_x, plot_y, x_off, y_off;
-	double x2, y2, wesn[4], vec_length, vec_azim, c, s, dim[8];
+	double x2, y2, wesn[4], vec_length, vec_azim, c, s, dim[7];
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
 	struct GMT_PALETTE *P = NULL;
@@ -386,7 +389,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			break;
 	}
 
-	Ctrl->Q.S.v_width = Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+	Ctrl->Q.S.v.v_width = Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
 	if (Ctrl->Q.active) {	/* Prepare vector parameters */
 		GMT_init_vector_param (GMT, &Ctrl->Q.S);
 	}
@@ -456,8 +459,9 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			x2 = plot_x + vec_length * c;
 			y2 = plot_y + vec_length * s;
 
-			if (Ctrl->Q.S.v_just) {	/* Justify vector at center, or tip [beginning] */
-				x_off = Ctrl->Q.S.v_just * 0.5 * (x2 - plot_x);	y_off = Ctrl->Q.S.v_just * 0.5 * (y2 - plot_y);
+			justify = GMT_vec_justify (Ctrl->Q.S.v.status);	/* Return justification as 0-2 */
+			if (justify) {	/* Justify vector at center, or tip [beginning] */
+				x_off = justify * 0.5 * (x2 - plot_x);	y_off = justify * 0.5 * (y2 - plot_y);
 				plot_x -= x_off;	plot_y -= y_off;
 				x2 -= x_off;		y2 -= y_off;
 			}
@@ -469,11 +473,11 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			/* Must plot a vector */
 			dim[0] = x2; dim[1] = y2;
-			dim[2] = Ctrl->Q.S.v_width;	dim[3] = Ctrl->Q.S.h_length;
-			dim[4] = Ctrl->Q.S.h_width;	dim[5] = GMT->current.setting.map_vector_shape;
-			dim[6] = Ctrl->Q.S.v_heads;	dim[7] = Ctrl->Q.S.v_side;
-			if (Ctrl->Q.S.shrink && vec_length < Ctrl->Q.S.v_norm) {	/* Scale arrow attributes down with length */
-				for (k = 2; k <= 4; k++) dim[k] *= vec_length * Ctrl->Q.S.v_shrink;
+			dim[2] = Ctrl->Q.S.v.v_width;	dim[3] = Ctrl->Q.S.v.h_length;
+			dim[4] = Ctrl->Q.S.v.h_width;	dim[5] = GMT->current.setting.map_vector_shape;
+			dim[6] = Ctrl->Q.S.v.status;
+			if (vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
+				for (k = 2; k <= 4; k++) dim[k] *= vec_length / Ctrl->Q.S.v.v_norm;
 				PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 			}
 			else	/* Leave as specified */

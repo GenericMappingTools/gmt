@@ -2935,26 +2935,35 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	 * head that is composed of circular arcs. As a special case we can plot
 	 * the straight angle symbol when the angles subtend 90 degrees.
 	 *
+	 * param must hold up to 8 values:
 	 * param[0] = radius, param[1] = angle1, param[2] = angle2,
+	 * param[3] = headlength, param[4] = headwidth, param[5] = penwidth(inch)
+ 	 * param[6] = vector-shape (0-1), param[7] = status bit flags */
+
+	 /* param[0] = radius, param[1] = angle1, param[2] = angle2,
 	 * param[3] = headlength, param[4] = headwidth, param[5] = penwidth(inch)
  	 * param[6] = status: 1 = add arrowhead at az1, 2 = add arrowhead at az2, 3 = at both, 0 no arrows,
 	 * add 4 to param[6] if you want to use a straight angle symbol if the opening is 90.
 	 * param[7] = vector-shape (0-1), and param[8] = asymmetry (-1 = left, +1 = right, 0 is normal) */
 
-	PSL_LONG status, i, side, sign[2] = {+1, -1};
+	PSL_LONG status, i, side, heads, sign[2] = {+1, -1};
 	double head_arc_length, head_half_width, arc_width, da, xt, yt, sa, ca, sb, cb, r, r2, xr, yr, xl, yl, xo, yo, shape;
 	double angle[2], tangle[2], off[2], A, B, bo1, bo2, xi, yi, bi1, bi2, xv, yv, rshift;
 
-	status = (PSL_LONG)irint (param[6]);
-	if (status & 4 && fabs (90.0 - fabs (param[2]-param[1])) < 1.0e-8) {	/* Right angle */
+	status = (PSL_LONG)irint (param[7]);
+	if (status & PSL_VEC_MARC90 && fabs (90.0 - fabs (param[2]-param[1])) < 1.0e-8) {	/* Right angle */
 		return (psl_mathrightangle (PSL, x, y, param));
 	}
 	PSL_command (PSL, "V %ld %ld T\n", psl_ix (PSL, x), psl_iy (PSL, y));
-	r = param[0];	angle[0] = param[1];	angle[1] = param[2];
-	shape = param[7];	side = (PSL_LONG)irint (param[8]);
-	head_arc_length = param[3];		/* Head length in inch */
-	head_half_width = 0.5 * param[4];	/* Head half-width in inch */
-	arc_width = param[5];			/* Arc width in inch */
+	r = param[0];				  /* Radius of arc in inch */
+	angle[0] = param[1]; angle[1] = param[2]; /* Start/stop angles or arc */
+	head_arc_length = param[3];		  /* Head length in inch */
+	head_half_width = 0.5 * param[4];	  /* Head half-width in inch */
+	arc_width = param[5];			  /* Arc width in inch */
+	shape = param[6];			  /* Vector head shape (0-1) */
+	side = PSL_vec_side (status);		  /* -1 = left-only, +1 = right-only, 0 = normal head */
+	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
+	
 	da = head_arc_length * 180.0 / (M_PI * r);	/* Angle corresponding to the arc length */
 	/* rshift kicks in when we want a half-arrow head.  In that case we dont want it to be
 	 * exactly half since the vector line will then stick out 1/2 line thickness.  So we adjust
@@ -2964,16 +2973,16 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	for (i = 0; i < 2; i++) {	/* Possibly shorten angular arc if arrow heads take up space */
 		tangle[i] = angle[i];	/* Angle if no head is present */
 		off[i] = sign[i]*da*(1.0-0.5*shape);		/* Arc length from tip to backstop */
-		if (status & (i+1)) tangle[i] += off[i];	/* Change arc angle by headlength arc */
+		if (heads & (i+1)) tangle[i] += off[i];	/* Change arc angle by headlength arc */
 	}
 	PSL_setlinewidth (PSL, arc_width * PSL_POINTS_PER_INCH);
 	PSL_plotarc (PSL, 0.0, 0.0, r, tangle[0], tangle[1], PSL_MOVE | PSL_STROKE);	/* Draw the (possibly shortened) arc */
-	if (status) {	/* Will draw at least one head */
+	if (heads) {	/* Will draw at least one head */
 		PSL_setfill (PSL, PSL->current.rgb[PSL_IS_FILL], TRUE);	/* Set fill for head(s) */
 	}
 	
 	for (i = 0; i < 2; i++) {	/* For both ends */
-		if (status & (i+1)) {	/* Add arrow head at this angle */
+		if (heads & (i+1)) {	/* Add arrow head at this angle */
 			A = D2R * angle[i];	sa = sin (A);	ca = cos (A);
 			r2 = r + sign[i] * rshift;
 			xt = r2 * ca;	yt = r2 * sa;	/* Tip coordinates */
@@ -3006,62 +3015,18 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	return (PSL_NO_ERROR);
 }
 
-#if 0
-PSL_LONG psl_matharc_old (struct PSL_CTRL *PSL, double x, double y, double param[])
-{	/* param is radius, az1, az2, status: 1 = add arrowhead at az1, 2 = add arrowhead at az2, 3 = at both, 0 no arrows,
- 	 * and vector-shape (0-1) */
-	PSL_LONG status, i;
-	double head_arc_length, head_half_width, da, xt, yt, s, c, r, xr, yr, xl, yl, xo, yo, shape;
-	double angle[2], tangle[2], A, bo1, bo2, xi, yi, bi1, bi2, xv, yv, sign[2] = {+1.0, -1.0};
-
-	PSL_command (PSL, "V %ld %ld T\n", psl_ix (PSL, x), psl_iy (PSL, y));
-	r = param[0];	angle[0] = param[1];	angle[1] = param[2];
-	status = (PSL_LONG)irint (param[3]);	shape = param[4];
-	/* We let length of arrow head be 8 * penwidths and arrow width is 5 * pen widths */
-	head_arc_length = 8.0 * PSL->current.linewidth * PSL->internal.p2u;	/* Get dimensions in inch */
-	head_half_width = 2.5 * PSL->current.linewidth * PSL->internal.p2u;	/* Get dimensions in inch */
-	da = head_arc_length * 180.0 / (M_PI * r);	/* Angle corresponding to the arc length */
-
-	for (i = 0; i < 2; i++) {	/* Possibly shorten angular arc if arrow heads take up space */
-		tangle[i] = angle[i];
-		if (status & (i+1)) tangle[i] += 0.5 * sign[i] * da;
-	}
-	PSL_plotarc (PSL, 0.0, 0.0, r, tangle[0], tangle[1], 3);		/* Draw the (possibly shortened) arc */
-	for (i = 0; i < 2; i++) {
-		if (status & (i+1)) {	/* Add arrow head at this angle */
-			PSL_setfill (PSL, PSL->current.rgb[PSL_IS_FILL], FALSE);
-			A = D2R * angle[i];	s = sin (A);	c = cos (A);
-			xt = r * c;	yt = r * s;
-			A = D2R * (angle[i] + sign[i] * da);	s = sin (A);	c = cos (A);
-			xr = (r + head_half_width) * c;	yr = (r + head_half_width) * s;
-			xl = (r - head_half_width) * c;	yl = (r - head_half_width) * s;
-			psl_get_origin (xt, yt, xr, yr, r, &xo, &yo, &bo1, &bo2);
-			PSL_plotarc (PSL, xo, yo, r, bo1, bo2, 1);		/* Draw the arrow arc from tip to outside flank */
-			psl_get_origin (xt, yt, xl, yl, r, &xi, &yi, &bi1, &bi2);
-			PSL_plotarc (PSL, xi, yi, r, bi2, bi1, 0);		/* Draw the arrow arc from tip to outside flank */
-			A = D2R * (angle[i]+sign[i]*da*(1.0-0.5*shape));	s = sin (A);	c = cos (A);
-			xv = r * c - xl;	yv = r * s - yl;
-			PSL_plotpoint (PSL, xv, yv, PSL_REL);
-			PSL_command (PSL, "P FO\n");
-		}
-	}
-	PSL_command (PSL, "U \n");
-	return (PSL_NO_ERROR);
-}
-#endif
-
 PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 {
-	/* Will make sure that arrow has a finite width in PS coordinates */
-	/* param[0] = xtip;		param[1] = ytip;
+	/* Will make sure that arrow has a finite width in PS coordinates.
+	 * param must hold up to 7 values:
+	 * param[0] = xtip;		param[1] = ytip;
 	 * param[2] = tailwidth;	param[3] = headlength;	param[4] = headwidth;
-	 * param[5] = headshape;	param[6] = headcode (0 = none, 1 = beginning, 2 = end, 3 = both)
-	 * param[7] = head-asymmetry (-1 is left, +1 is right, 0 is normal)
+	 * param[5] = headshape;	param[6] = status bit flags)
 	 */
 
 	double angle, xtip, ytip, tailwidth, headlength, headwidth, headshape, off, length_inch;
 	double xx[4], yy[4], yshift;
-	PSL_LONG length, asymmetry, code, n;
+	PSL_LONG length, asymmetry, status, n, heads;
 
 	xtip = param[0];	ytip = param[1];
 	length_inch = hypot (x-xtip, y-ytip);					/* Vector length in inches */
@@ -3071,23 +3036,24 @@ PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	tailwidth = param[2];
 	headlength = param[3];	headwidth = param[4];	headshape = param[5];
 	off = 0.5 * (2.0 - headshape) * headlength;
-	code = irint (param[6]);
+	status = irint (param[6]);
+	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
 	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
 	
 	PSL_command (PSL, "V %ld %ld T ", psl_ix (PSL, x), psl_iy (PSL, y));	/* Temporarily set tail point the local origin (0, 0) */
 	if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
-	xx[0] = (code & 1) ? off : 0.0;
-	xx[1] = (code & 2) ? length_inch - off : length_inch;
+	xx[0] = (heads & 1) ? off : 0.0;
+	xx[1] = (heads & 2) ? length_inch - off : length_inch;
 	PSL_plotsegment (PSL, xx[0], 0.0, xx[1], 0.0);				/* Draw vector line body */
 
-	if (code == 0) {	/* No heads requested */
+	if (heads == 0) {	/* No heads requested */
 		PSL_command (PSL, "U\n");
 		return (PSL_NO_ERROR);	
 	}
-	asymmetry = irint (param[7]);
+	asymmetry = PSL_vec_side (status);		  /* -1 = left-only, +1 = right-only, 0 = normal head */
 	yshift = 0.5 * asymmetry * tailwidth;
 	
-	if (code & 1) {	/* Need head at beginning, pointing backwards */
+	if (heads & 1) {	/* Need head at beginning, pointing backwards */
 		xx[0] = 0.0; yy[0] = -yshift;	n = 1;	/* Vector tip */
 		if (asymmetry != +1) {	/* Need left side */
 			xx[n] = headlength; yy[n++] = -headwidth;
@@ -3103,7 +3069,7 @@ PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 		
 	}
 	PSL_command (PSL, "U\n");
-	if (code & 2) {	/* Need head at end, pointing forwards */
+	if (heads & 2) {	/* Need head at end, pointing forwards */
 		PSL_command (PSL, "V %ld %ld T ", psl_ix (PSL, xtip), psl_iy (PSL, ytip));	/* Temporarily set tail point the local origin (0, 0) */
 		if (angle != 0.0) PSL_command (PSL, "%g R ", angle);			/* Rotate so vector is horizontal in local coordinate system */
 		xx[0] = 0.0; yy[0] = yshift;	n = 1;	/* Vector tip */
@@ -3121,42 +3087,6 @@ PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	}
 	return (PSL_NO_ERROR);
 }
-#if 0
-PSL_LONG psl_vector_old (struct PSL_CTRL *PSL, double x, double y, double param[])
-{
-	/* Will make sure that arrow has a finite width in PS coordinates */
-
-	double angle, xtip, ytip, tailwidth, headlength, headwidth, headshape;
-	PSL_LONG w2, length, hw, hl, hl2, hw2, l2, dual;
-
-	xtip = param[0];	ytip = param[1];
-	tailwidth = param[2];	headlength = param[3];	headwidth = param[4];
-	headshape = param[5];	dual = (param[6] > 0.0);
-
-	length = psl_iz (PSL, hypot (x-xtip, y-ytip));				/* Vector length in PS units */
-	if (length == 0) return (PSL_NO_ERROR);					/* NULL vector */
-
-	angle = atan2 (ytip-y, xtip-x) * R2D;					/* Angle vector makes with horizontal, in radians */
-	PSL_command (PSL, "V %ld %ld T ", psl_ix (PSL, x), psl_iy (PSL, y));	/* Temporarily set tail point the local origin (0, 0) */
-	if (angle != 0.0) PSL_command (PSL, "%g R ", angle);			/* Rotate so vector is horizontal in local coordinate system */
-	w2 = MAX (1, psl_iz (PSL, 0.5 * tailwidth));				/* Half-width of vector tail */
-	hw = MAX (1, psl_iz (PSL, headwidth));					/* Width of vector head */
-	hl = psl_iz (PSL, headlength);						/* Length of vector head */
-	hl2 = psl_iz (PSL, 0.5 * headshape * headlength);			/* Cut-in distance due to slanted back-side of arrow head */
-	hw2 = hw - w2;								/* Distance from tail side to head side (vertically) */
-	if (dual) {	/* Double-headed vector */
-		l2 = length - 2 * hl + 2 * hl2;					/* Inside length between start of heads */
-		PSL_command (PSL, "%ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld Sv U\n",
-			hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw);
-	}
-	else {		/* Single-headed vector */
-		l2 = length - hl + hl2;						/* Length from tail to start of slanted head */
-		PSL_command (PSL, "%ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld SV U\n",
-			-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2);
-	}
-	return (PSL_NO_ERROR);
-}
-#endif
 
 PSL_LONG psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG n, PSL_LONG *ix, PSL_LONG *iy)
 {
