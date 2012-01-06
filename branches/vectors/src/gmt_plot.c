@@ -3986,7 +3986,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 	   we compute an arc length in degrees that is equivalent to the chosen symbol size.  With
 	   arrow heads we also shorten the vector arc so that unfilled vector heads are possible. */
 
-	GMT_LONG n1, n2, n, longway = FALSE, add, heads, side, justify, tmp_join, tmp_limit;
+	GMT_LONG n1, n2, n, longway = FALSE, add, heads, side, justify;
 	double lon[2], lat[2], tlon, tlat, mlon, mlat, r, r0, A[3], B[3], P[3], Ax[3], Bx[3];
 	double x, y, dr[2], az[2], oaz[2], off[2], scl[2], da, dshift, s, olon[2], olat[2], head_length, arc_width;
 	double *xp = NULL, *yp = NULL, *xp2 = NULL, *yp2 = NULL;
@@ -4047,7 +4047,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 	if (heads & 1) {	/* Placing head at A means we must shorten the arc and use Ax instead of A */
 		az[0] = GMT_az_backaz (C, lon[0], lat[0], lon[1], lat[1], FALSE);	/* Compute the azimuth from A to B at A */
 		scl[0] = gmt_get_local_scale (C, lon[0], lat[0], 0.01 * r, az[0]);	/* Get local deg/inch scale */
-		dr[0] = scl[0] * (head_length - dshift);	/* This is arrow head length in degrees, approximately */
+		dr[0] = scl[0] * (head_length - 2.0*dshift);	/* This is arrow head length in degrees, approximately */
 		GMT_get_point_from_r_az (C, lon[0], lat[0], 0.5*dr[0]*(2.0 - C->current.setting.map_vector_shape), az[0], &tlon, &tlat);	/* Back point of arrow */
 		GMT_geo_to_cart (C, tlat, tlon, Ax, TRUE);	/* Get Cartesian coordinates of this new start point for arc */
 	}
@@ -4057,7 +4057,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 	if (heads & 2) { /* Place arrow head at B */
 		az[1] = GMT_az_backaz (C, lon[1], lat[1], lon[0], lat[0], FALSE);	/* Compute the azimuth from B to A at B */
 		scl[1] = gmt_get_local_scale (C, lon[1], lat[1], 0.01 * r, az[1]);	/* Get local deg/inch scale */
-		dr[1] = scl[1] * (head_length - dshift);	/* This is arrow head length in degrees, approximately */
+		dr[1] = scl[1] * (head_length - 2.0*dshift);	/* This is arrow head length in degrees, approximately */
 		GMT_get_point_from_r_az (C, lon[1], lat[1], 0.5*dr[1]*(2.0 - C->current.setting.map_vector_shape), az[1], &tlon, &tlat);	/* Back point of arrow */
 		GMT_geo_to_cart (C, tlat, tlon, Bx, TRUE);	/* Get Cartesian coordinates of this new end point for arc */
 	}
@@ -4079,12 +4079,9 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 	GMT_free (C, xp);	GMT_free (C, yp);	/* Done with arc */
 	
 	if (heads) { /* Temporarily use miter to get sharp points to arrow heads */
-		tmp_join = C->PSL->internal.line_join;		PSL_setlinejoin (C->PSL, 0);
-		tmp_limit = C->PSL->internal.miter_limit;	PSL_setmiterlimit (C->PSL, 0);
 		da = 0.5 * S->v.v_angle;	/* Half-opening angle at arrow head */
 		if (S->v.status & GMT_VEC_OUTLINE2) GMT_setpen (C, &S->v.pen);
 	}
-	
 
 	if (heads & 1) { /* Place arrow head at A */
 		if (longway) az[0] += 180.0;
@@ -4171,10 +4168,6 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 		}
 		GMT_free (C, xp);	GMT_free (C, yp);
 		GMT_free (C, xp2);	GMT_free (C, yp2);
-	}
-	if (heads) { /* Switch line join style back */
-		PSL_setlinejoin (C->PSL, tmp_join);
-		PSL_setmiterlimit (C->PSL, tmp_limit);
 	}
 	PSL_command (C->PSL, "U\n");
 }
