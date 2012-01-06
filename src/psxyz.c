@@ -164,15 +164,15 @@ GMT_LONG GMT_psxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     If -SJ rather than -Sj is selected, psxy will expect azimuth, and\n");
 	GMT_message (GMT, "\t     dimensions in km and convert azimuths based on map projection.\n");
 	GMT_message (GMT, "\t     For linear projection we scale dimensions by the map scale.\n");
-	GMT_message (GMT, "\t   Fronts: Give tickgap/ticklen[dir][type][:offset], where\n");
-	GMT_message (GMT, "\t     dir    = Plot symbol to l(eft) or r(ight) of front [c=centered]\n");
-	GMT_message (GMT, "\t     type   =  b(ox), c(ircle), f(ault), s(lip), t(riangle) [f]\n");
+	GMT_message (GMT, "\t   Fronts: Give tickgap/ticklen[+l|+r][+<type>][+o<offset>], where\n");
+	GMT_message (GMT, "\t     +l or +r   : Plot symbol to left or right of front [centered]\n");
+	GMT_message (GMT, "\t     +<type>    :  +b(ox), +c(ircle), +f(ault), +s(lip), +t(riangle) [f]\n");
 	GMT_message (GMT, "\t       box      : square when centered, half-square otherwise.\n");
 	GMT_message (GMT, "\t       circle   : full when centered, half-circle otherwise.\n");
-	GMT_message (GMT, "\t       fault    : centered cross-tick or tick only in <dir> direction.\n");
+	GMT_message (GMT, "\t       fault    : centered cross-tick or tick only in specified direction.\n");
 	GMT_message (GMT, "\t       slip     : left-or right-lateral strike-slip arrows.\n");
-	GMT_message (GMT, "\t       triangle : diagonal square (c), directed triangle otherwise.\n");
-	GMT_message (GMT, "\t     offset = Plot first symbol when along-front distance is offset [0].\n");
+	GMT_message (GMT, "\t       triangle : diagonal square when centered, directed triangle otherwise.\n");
+	GMT_message (GMT, "\t     +<offset>  : Plot first symbol when along-front distance is offset [0].\n");
 	GMT_message (GMT, "\t   Kustom: Append <symbolname> immediately after 'k'; this will look for\n");
 	GMT_message (GMT, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
 	GMT_message (GMT, "\t     or in $GMT_SHAREDIR (searched in that order).\n");
@@ -655,18 +655,13 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					else	/* Convert geo azimuth to map direction */
 						data[n].dim[0] = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
 					data[n].dim[1] = in[ex2+S.read_size];	/* length */
-					s = (data[n].dim[1] < S.v.v_norm) ? data[n].dim[1] / S.v.v_norm : 1.0;
-					data[n].dim[2] = s * S.v.v_width;
-					data[n].dim[3] = s * S.v.h_length;
-					data[n].dim[4] = s * S.v.h_width;
-					data[n].dim[5] = GMT->current.setting.map_vector_shape;
-					data[n].dim[6] = S.v.status;
 					if (S.v.status & GMT_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
 						GMT_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (GMT_is_dnan (x_2) || GMT_is_dnan (y_2)) {
 							GMT_report (GMT, GMT_MSG_FATAL, "Warning: Vector head coordinates contain NaNs near line %ld. Skipped\n", n_total_read);
 							continue;
 						}
+						data[n].dim[1] = hypot (data[n].x - x_2, data[n].y - y_2);	/* Compute vector length in case of shrinking */
 					}
 					else {
 						sincosd (data[n].dim[0], &s, &c);
@@ -680,6 +675,12 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						}
 					}
 					data[n].dim[0] = x_2, data[n].dim[1] = y_2;
+					s = (data[n].dim[1] < S.v.v_norm) ? data[n].dim[1] / S.v.v_norm : 1.0;
+					data[n].dim[2] = s * S.v.v_width;
+					data[n].dim[3] = s * S.v.h_length;
+					data[n].dim[4] = s * S.v.h_width;
+					data[n].dim[5] = GMT->current.setting.map_vector_shape;
+					data[n].dim[6] = S.v.status;
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
 					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */

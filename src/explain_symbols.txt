@@ -64,12 +64,12 @@ unchanged.)  Furthermore, the axes lengths must be given in km instead of plot-d
 a linear projection in which we assume the ellipse axes are given in the same units as OPT(R).
 .TP
 OPT(Sf)
-BD(f)ront.  OPT(Sf)IT(gap/size)[IT(dir)][IT(type)][:IT(offset)].  Supply distance gap between symbols and symbol size.
-If IT(gap) is negative, it is interpreted to mean the number of symbols along the front instead.  Append IT(dir) to plot symbols
-on the BD(l)eft or BD(r)ight side of the front [Default is centered].  Append IT(type) to specify which symbol
-to plot: BD(b)ox, BD(c)ircle, BD(f)ault, BD(s)lip, or BD(t)riangle.  [Default is fault].
-Slip means left-lateral or right-lateral strike-slip arrows (centered is not an option).  Append :IT(offset) to offset
-the first symbol from the beginning of the front by that amount [Default is 0].
+BD(f)ront.  OPT(Sf)IT(gap/size)[BD(+l)|BD(+r)][BD(+b+c+f+s+t)][BD(+o)IT(offset)].  Supply distance gap between symbols and symbol size.
+If IT(gap) is negative, it is interpreted to mean the number of symbols along the front instead.  Append BD(+l) or BD+r) to plot symbols
+on the left or right side of the front [Default is centered].  Append BD(+)IT(type) to specify which symbol
+to plot: BD(b)ox, BD(c)ircle, BD(f)ault, BD(s)lip, or BD(t)riangle.  [Default is BD(f)ault].
+Slip means left-lateral or right-lateral strike-slip arrows (centered is not an option).  Append BD(+o)IT(offset) to offset
+the first symbol from the beginning of the front by that amount [0].
 .TP
 OPT(Sg)
 octaBD(g)on.  IT(size) is diameter of circumscribing circle.

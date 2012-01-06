@@ -6643,12 +6643,50 @@ GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 	return (error);
 }
 
+GMT_LONG GMT_parse_front (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
+{
+	/* Parser for -Sf */
+	
+	GMT_LONG pos = 0, k, error = 0, mods;
+	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+	
+	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
+	strncpy (p, text, k); p[k] = 0;
+	mods = (text[k] == '+');
+	if (mods) text[k] = 0;		/* Temporarily chop off the modifiers */
+	sscanf (&text[1], "%[^/]/%s", txt_a, txt_b);
+	if (mods) text[k] = '+';	/* Restore the modifiers */
+	S->f.f_gap = (txt_a[0] == '-') ? atof (txt_a) : GMT_to_inch (C, txt_a);
+	S->f.f_len = GMT_to_inch (C, txt_b);
+	
+	S->f.f_symbol = GMT_FRONT_FAULT;	/* Default is the fault symbol */
+	S->f.f_sense = GMT_FRONT_CENTERED;	/* Default is centered symbols unless +l or +r is found */
+	while ((GMT_strtok (C, &text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
+		switch (p[0]) {
+			case 'b':	S->f.f_symbol = GMT_FRONT_BOX;		break;	/* [half-]square front */
+			case 'c':	S->f.f_symbol = GMT_FRONT_CIRCLE;	break;	/* [half-]circle front */
+			case 'f':	S->f.f_symbol = GMT_FRONT_FAULT;	break;	/* Fault front */
+			case 'l':	S->f.f_sense = GMT_FRONT_LEFT;		break;	/* Symbols to the left */
+			case 'r':	S->f.f_sense = GMT_FRONT_RIGHT;		break;	/* Symbols to the right */
+			case 's':	S->f.f_symbol = GMT_FRONT_SLIP;		break;	/* Strike-slip front */
+			case 't':	S->f.f_symbol = GMT_FRONT_TRIANGLE;	break;	/* Triangle front */
+			case 'o':
+				S->f.f_off = GMT_to_inch (C, &p[1]);		break;	/* Symbol offset along line */
+			default:
+				GMT_report (C, GMT_MSG_FATAL, "Error option -Sf: Bad modifier +%c\n", p[0]);
+				error++;	break;	
+		}
+	}
+	
+	return (error);
+}
+
 #define GMT_VECTOR_CODES "mMvV="	/* The vector symbol codes */
 
 GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd)
 {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = 1 when called to process command line options */
-	GMT_LONG decode_error = 0, bset = 0, j, n, k, len, slash = 0, colon, check = TRUE, old_style, col_off = mode;
+	GMT_LONG decode_error = 0, bset = 0, j, n, k, len, slash = 0, colon, check = TRUE, col_off = mode;
 	char symbol_type, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], text_cp[GMT_TEXT_LEN256], *c = NULL, *s = NULL;
 	static char *allowed_symbols[2] = {"=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
@@ -6663,7 +6701,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
 	   However, if size is not given then that is requred too so col_off++ */
 	
-	if (!strchr (GMT_VECTOR_CODES "q", text[0]) && (s = strstr (text, "+s"))) {	/* Gave a symbol size scaling relation */
+	if (!strchr (GMT_VECTOR_CODES "fq", text[0]) && (s = strstr (text, "+s"))) {	/* Gave a symbol size scaling relation */
 		k = strlen (text) - 1;	/* Last character position */
 		s[0] = '\0';		/* Temporarily separate this modifer from the rest of the symbol option (restored at end of function) */
 		p->convert_size = (text[k] == 'l') ? 2 : 1;		/* If last char is l we want log10 conversion */
@@ -6883,91 +6921,79 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			check = FALSE;
 			break;
 
-		case 'f':	/* Fronts: -Sf<spacing>/<size>[dir][type][:<offset>]	*/
+		case 'f':	/* Fronts: -Sf<spacing>/<size>[+r+l][+f+t+s+c+b][+o<offset>]	[WAS: -Sf<spacing>/<size>[dir][type][:<offset>]	*/
 			p->symbol = GMT_SYMBOL_FRONT;
-			p->f.f_off = 0.0;
+			p->f.f_off = 0.0;	p->f.f_symbol = GMT_FRONT_FAULT;	p->f.f_sense = GMT_FRONT_CENTERED;
 			strcpy (text_cp, text);
-			if ((c = strchr (text_cp, ':'))) {	/* Gave :<offset>, set it and strip it off */
-				c++;	/* Skip over the colon */
-				p->f.f_off = GMT_to_inch (C, c);
-				c--;	/* Go back to colon */
-				*c = 0;	/* Effectively chops off the offset modifier */
-			}
-			len = strlen (text_cp) - 1;
-
-			old_style = FALSE;
-			switch (text_cp[len]) {
-				case 'f':	/* Fault front */
-					p->f.f_symbol = GMT_FRONT_FAULT;
-					len--;
-					break;
-				case 't':	/* Triangle front */
-					p->f.f_symbol = GMT_FRONT_TRIANGLE;
-					len--;
-					break;
-				case 's':	/* Strike-slip front */
-					p->f.f_symbol = GMT_FRONT_SLIP;
-					len--;
-					break;
-				case 'c':	/* [half-]circle front */
-					p->f.f_symbol = GMT_FRONT_CIRCLE;
-					len--;
-					break;
-				case 'b':	/* [half-]square front */
-					p->f.f_symbol = GMT_FRONT_BOX;
-					len--;
-					break;
-
 #ifdef GMT_COMPAT
-				/* Old style (backward compatibility) */
+			len = strlen (text_cp) - 1;
+			if (strchr (text_cp, ':') || (!strchr (text_cp, '+') && strchr ("bcflrst", text_cp[len]))) {	/* Old style */
+				GMT_report (C, GMT_MSG_COMPAT, "Warning in Option -Sf: Sf<spacing>/<size>[dir][type][:<offset>] is deprecated syntax\n");
+				if ((c = strchr (text_cp, ':'))) {	/* Gave :<offset>, set it and strip it off */
+					c++;	/* Skip over the colon */
+					p->f.f_off = GMT_to_inch (C, c);
+					c--;	/* Go back to colon */
+					*c = 0;	/* Effectively chops off the offset modifier */
+				}
+				len = strlen (text_cp) - 1;
 
-				case 'L':	/* Left triangle */
-					p->f.f_symbol = GMT_FRONT_TRIANGLE;
-				case 'l':	/* Left ticked fault */
-					p->f.f_sense = GMT_FRONT_LEFT;
-					old_style = TRUE;
-					break;
-				case 'R':	/* Right triangle */
-					p->f.f_symbol = GMT_FRONT_TRIANGLE;
-				case 'r':	/* Right ticked fault */
-					p->f.f_sense = GMT_FRONT_RIGHT;
-					old_style = TRUE;
-					break;
-#endif
-				default:
-					p->f.f_sense = GMT_FRONT_CENTERED;
-					break;
-			}
+				switch (text_cp[len]) {
+					case 'f':	/* Fault front */
+						p->f.f_symbol = GMT_FRONT_FAULT;	len--;	break;
+					case 't':	/* Triangle front */
+						p->f.f_symbol = GMT_FRONT_TRIANGLE;	len--;	break;
+					case 's':	/* Strike-slip front */
+						p->f.f_symbol = GMT_FRONT_SLIP;		len--;	break;
+					case 'c':	/* [half-]circle front */
+						p->f.f_symbol = GMT_FRONT_CIRCLE;	len--;	break;
+					case 'b':	/* [half-]square front */
+						p->f.f_symbol = GMT_FRONT_BOX;		len--;	break;
+					default:
+						p->f.f_sense = GMT_FRONT_CENTERED;	break;
+				}
 
-			if (old_style) {
-				GMT_report (C, GMT_MSG_COMPAT, "Warning in Option -Sf: Symbols l|L|r|R are deprecated in GMT 5\n");
-			}
-			else {
 				switch (text_cp[len]) {	/* Get sense - default is centered */
 					case 'l':
-						p->f.f_sense = GMT_FRONT_LEFT;
-						break;
+						p->f.f_sense = GMT_FRONT_LEFT;			break;
 					case 'r':
-						p->f.f_sense = GMT_FRONT_RIGHT;
-						break;
+						p->f.f_sense = GMT_FRONT_RIGHT;			break;
 					default:
-						len++;
-						p->f.f_sense = GMT_FRONT_CENTERED;
-						if (p->f.f_symbol == GMT_FRONT_SLIP) {
-							GMT_report (C, GMT_MSG_FATAL, "Error in Option -Sf: Must specify (l)eft-lateral or (r)ight-lateral slip\n");
-							GMT_exit (EXIT_FAILURE);
-						}
-						break;
+						p->f.f_sense = GMT_FRONT_CENTERED;	len++;	break;
+				}
+
+				text_cp[len] = 0;	/* Gets rid of the [dir][type] flags, if present */
+
+				/* Pull out and get spacing and size */
+
+				sscanf (&text_cp[1], "%[^/]/%s", txt_a, txt_b);
+				p->f.f_gap = (txt_a[0] == '-') ? atof (txt_a) : GMT_to_inch (C, txt_a);
+				p->f.f_len = GMT_to_inch (C, txt_b);
+			}
+			else {
+#endif
+				GMT_parse_front (C, text_cp, p);	/* Parse new -Sf syntax */
+#ifdef GMT_COMPAT
+			}
+#endif
+			if (p->f.f_sense == GMT_FRONT_CENTERED && p->f.f_symbol == GMT_FRONT_SLIP) {
+				GMT_report (C, GMT_MSG_FATAL, "Error in Option -Sf: Must specify (l)eft-lateral or (r)ight-lateral slip\n");
+				GMT_exit (EXIT_FAILURE);
+			}
+			if (GMT_IS_ZERO (p->f.f_gap) || GMT_IS_ZERO (p->f.f_len)) {
+				GMT_report (C, GMT_MSG_FATAL, "Error in Option -Sf: Neither <gap> nor <ticklength> can be zero!\n");
+				GMT_exit (EXIT_FAILURE);
+			}
+			if (p->f.f_gap < 0.0) {	/* Gave -# of ticks desired */
+				k = (GMT_LONG) irint (fabs (p->f.f_gap));
+				if (k == 0) {
+					GMT_report (C, GMT_MSG_FATAL, "Error in Option -Sf: Number of front ticks cannot be zero!\n");
+					GMT_exit (EXIT_FAILURE);
+				}
+				if (!GMT_IS_ZERO (p->f.f_off)) {
+					GMT_report (C, GMT_MSG_FATAL, "Error in Option -Sf: +<offset> cannot be used when number of ticks is specified!\n");
+					GMT_exit (EXIT_FAILURE);
 				}
 			}
-
-			text_cp[len] = 0;	/* Gets rid of the [dir][type] flags, if present */
-
-			/* Pull out and get spacing and size */
-
-			sscanf (&text_cp[1], "%[^/]/%s", txt_a, txt_b);
-			p->f.f_gap = (txt_a[0] == '-') ? atof (txt_a) : GMT_to_inch (C, txt_a);
-			p->f.f_len = GMT_to_inch (C, txt_b);
 			check = FALSE;
 			break;
 		case 'G':
