@@ -241,7 +241,7 @@ GMT_LONG GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, stru
 						Ctrl->W.pen[1].width = GMT_to_points (GMT, txt_a);
 						Ctrl->M.S.v.h_length = GMT_to_inch (GMT, txt_b);
 						Ctrl->M.S.v.h_width = GMT_to_inch (GMT, txt_c);
-						Ctrl->M.S.v.v_angle = atan (0.5 * Ctrl->M.S.v.h_width / Ctrl->M.S.v.h_length);
+						Ctrl->M.S.v.v_angle = atand (0.5 * Ctrl->M.S.v.h_width / Ctrl->M.S.v.h_length);
 						Ctrl->M.S.v.status |= (GMT_VEC_OUTLINE + GMT_VEC_FILL);
 					}
 				}

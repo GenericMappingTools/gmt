@@ -7186,7 +7186,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 					p->v.v_width  = GMT_to_inch (C, txt_a);
 					p->v.h_length = GMT_to_inch (C, txt_b);
 					p->v.h_width  = GMT_to_inch (C, txt_c);
-					p->v.v_angle = atan (0.5 * p->v.h_width / p->v.h_length);
+					p->v.v_angle = atand (0.5 * p->v.h_width / p->v.h_length);
 				}
 				if (p->v.v_norm >= 0.0) text[j] = 'n';	/* Put back the n<shrink> part */
 			}

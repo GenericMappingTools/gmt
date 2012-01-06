@@ -210,11 +210,11 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 							Ctrl->Q.S.v.pen.width = GMT_to_points (GMT, txt_a);
 							Ctrl->Q.S.v.h_length = GMT_to_inch (GMT, txt_b);
 							Ctrl->Q.S.v.h_width = GMT_to_inch (GMT, txt_c);
-							Ctrl->Q.S.v.v_angle = atan (0.5 * Ctrl->Q.S.v.h_width / Ctrl->Q.S.v.h_length);
+							Ctrl->Q.S.v.v_angle = atand (0.5 * Ctrl->Q.S.v.h_width / Ctrl->Q.S.v.h_length);
 						}
 					}
 					if (Ctrl->Q.S.v.v_norm > 0.0) opt->arg[j] = 'n';	/* Restore the n<norm> string */
-					Ctrl->Q.S.v.status |= GMT_VEC_JUST_E;		/* ALignt at end */
+					Ctrl->Q.S.v.status |= GMT_VEC_JUST_B;		/* Start vector at node location */
 				}
 				else {
 #endif

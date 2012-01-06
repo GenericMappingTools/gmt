@@ -92,7 +92,10 @@ void *New_psvelo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	C->A.S.v.h_length = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
+	C->A.S.v.h_length = C->A.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
+	C->A.S.v.v_angle = 30.0;
+	C->A.S.v.status = GMT_VEC_END;
+	C->A.S.v.pen = GMT->current.setting.map_default_pen;
 #ifdef GMT_COMPAT
 	GMT->current.setting.map_vector_shape = 0.4;	/* Historical reasons */
 #endif
@@ -162,7 +165,7 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n, no_size_needed, n_set;
+	GMT_LONG n_errors = 0, n, no_size_needed, n_set, got_A = FALSE;
 	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -177,17 +180,27 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change size of arrow head */
+				got_A = TRUE;
 #ifdef GMT_COMPAT
 				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
 					sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
 					Ctrl->A.S.v.pen.width = GMT_to_points (GMT, txt);
 					Ctrl->A.S.v.h_length = GMT_to_inch (GMT, txt_b);
 					Ctrl->A.S.v.h_width = GMT_to_inch (GMT, txt_c);
-					Ctrl->A.S.v.v_angle = atan (0.5 * Ctrl->A.S.v.h_width / Ctrl->A.S.v.h_length);
+					Ctrl->A.S.v.v_angle = atand (0.5 * Ctrl->A.S.v.h_width / Ctrl->A.S.v.h_length);
+					Ctrl->A.S.v.status |= GMT_VEC_OUTLINE2;
 				}
 				else {
 #endif
-					n_errors += GMT_parse_vector (GMT, opt->arg, &Ctrl->A.S);
+					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
+						n_errors += GMT_parse_vector (GMT, opt->arg, &Ctrl->A.S);
+					}
+					else {	/* Size, plus possible attributes */
+						n = sscanf (opt->arg, "%[^+]%s", txt, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
+						if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
+						Ctrl->A.S.size_x = GMT_to_inch (GMT, txt);	/* Length of vector */
+						n_errors += GMT_parse_vector (GMT, txt_b, &Ctrl->A.S);
+					}
 #ifdef GMT_COMPAT
 				}
 #endif
@@ -275,6 +288,8 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.symbol > 1 && Ctrl->S.scale <= 0.0), "Syntax error: Must specify symbol size.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && ! (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_WEDGE), "Syntax error: -D requres -Se|w.\n");
 
+	if (!got_A && Ctrl->W.active) Ctrl->A.S.v.pen = Ctrl->W.pen;	/* Set vector pen to that given by -W  */
+	if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2 && Ctrl->W.active) GMT_rgb_copy (Ctrl->A.S.v.pen.rgb, Ctrl->W.pen.rgb);	/* Set vector pen color from -W but not thickness */
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
@@ -344,6 +359,8 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_report (GMT, GMT_MSG_NORMAL, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
+
+	Ctrl->A.S.v.v_width = Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -453,7 +470,9 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
 					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = Ctrl->A.S.v.status;
 					GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
+					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->A.S.v.pen);
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
+					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->W.pen);
 					
 					justify = plot_vx - plot_x > 0. ? PSL_MR : PSL_ML;
 					if (Ctrl->S.fontsize > 0.0 && strlen(station_name) > 0)	/* 1 inch = 2.54 cm */
