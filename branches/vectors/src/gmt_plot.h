@@ -94,6 +94,41 @@ struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
 	GMT_LONG f_symbol;	/* Which symbol to draw along the front line */
 };
 
+enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head */
+	GMT_VEC_RIGHT		= 2,		/* Only draw right half of vector head */
+	GMT_VEC_BEGIN		= 4,		/* Place vector head at beginning of vector */
+	GMT_VEC_END		= 8,		/* Place vector head at end of vector */
+	GMT_VEC_JUST_B		= 0,		/* Align vector beginning at (x,y) */
+	GMT_VEC_JUST_C		= 16,		/* Align vector center at (x,y) */
+	GMT_VEC_JUST_E		= 32,		/* Align vector end at (x,y) */
+	GMT_VEC_JUST_S		= 64,		/* Align vector center at (x,y) */
+	GMT_VEC_OUTLINE		= 128,		/* Draw vector head outline using default pen */
+	GMT_VEC_OUTLINE2	= 256,		/* Draw vector head outline using supplied v_pen */
+	GMT_VEC_FILL		= 512,		/* Fill vector head using default fill */
+	GMT_VEC_FILL2		= 1024,		/* Fill vector head using supplied v_fill) */
+	GMT_VEC_MARC90		= 2048};	/* Matharc only: if angles subtend 90, draw straight angle symbol */
+
+#define GMT_vec_justify(status) ((status>>4)&3)			/* Return justification as 0-3 */
+#define GMT_vec_head(status) ((status>>2)&3)			/* Return head selection as 0-3 */
+#define GMT_vec_side(status) ((status&3) ? 2*(status&3)-3 : 0)	/* Return side selection as 0,-1,+1 */
+
+struct GMT_VECT_ATTR {
+	/* Container for common attributes for plot attributes of vectors */
+	GMT_LONG status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
+	//GMT_LONG side;		/* 0 for normal head, -1 for left-half only, +1 for right-half only */
+	//GMT_LONG just;		/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
+	//GMT_LONG heads;		/* 1 for head at beginning, 2 for head at end, 3 for both */
+	//GMT_LONG outline;	/* 1 to draw head outline with -W pen, 2 to draw with v_pen */
+	//GMT_LONG paint;		/* 1 to fill head with -G fill, 2 to fill with v_fill */
+	float v_angle;		/* Head angle */
+	float v_norm;		/* shrink when lengths are smaller than this */
+	float v_width;		/* Width of vector stem in inches */
+	float h_length;		/* Length of vector head in inches */
+	float h_width;		/* Width of vector head in inches */
+	struct GMT_PEN pen;	/* Pen for outline of head [NOT USED YET] */
+	struct GMT_FILL fill;	/* Fill for head [USED IN PSROSE] */
+};
+
 struct GMT_SYMBOL {
 	/* Voodoo: If next line is not the first member in this struct, psxy -Sl<size>/Text will have corrupt 'Text'
 		   in non-debug binaries compiled with VS2010 */
@@ -124,20 +159,7 @@ struct GMT_SYMBOL {
 
 	/* These apply to vectors */
 
-	GMT_LONG shrink;	/* If TRUE, shrink vector attributes for small lengths */
-	double v_angle;		/* Head angle */
-	double v_norm;		/* shrink when lengths are smaller than this */
-	double v_shrink;	/* Required scale factor */
-	double v_width;		/* Width of vector stem in inches */
-	double h_length;	/* Length of vector head in inches */
-	double h_width;		/* Width of vector head in inches */
-	GMT_LONG v_side;	/* 0 for normal head, -1 for left-half only, +1 for right-half only */
-	GMT_LONG v_just;	/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
-	GMT_LONG v_heads;	/* 1 for head at beginning, 2 for head at end, 3 for both */
-	GMT_LONG v_outline;	/* 1 to draw head outline with -W pen, 2 to draw with v_pen */
-	GMT_LONG v_paint;	/* 1 to fill head with -G fill, 2 to fill with v_fill */
-	struct GMT_PEN v_pen;	/* Pen for outline of head [NOT USED YET] */
-	struct GMT_FILL v_fill;	/* Fill for head [USED IN PSROSE] */
+	struct GMT_VECT_ATTR v;	/* All attributes for vector shapes etc. [see struct above] */
 
 	struct GMT_FRONTLINE f;	/* parameters needed for a front */
 	struct GMT_CUSTOM_SYMBOL *custom;	/* pointer to a custom symbol */

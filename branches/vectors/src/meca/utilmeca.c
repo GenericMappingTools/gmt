@@ -1228,7 +1228,7 @@ GMT_LONG trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 	/*   v_width, h_length,h_width,vector_shape: arrow characteristics */
 
 	/* local */
-	double dx, dy, x1, x2, y1, y2, hl, hw, vw, s, c, dim[8];
+	double dx, dy, x1, x2, y1, y2, hl, hw, vw, s, c, dim[7];
 
 	sincosd (theta, &s, &c);
 
@@ -1258,7 +1258,7 @@ GMT_LONG trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 
 	dim[0] = x2, dim[1] = y2;
 	dim[2] = vw, dim[3] = hl, dim[4] = hw;
-	dim[5] = vector_shape, dim[6] = 2.0;	dim[7] = 0.0;
+	dim[5] = vector_shape, dim[6] = GMT_VEC_END;
 	PSL_setcolor (GMT->PSL, pen.rgb, PSL_IS_STROKE);
 	PSL_plotsymbol (GMT->PSL, x1, x2, dim, PSL_VECTOR);
 
