@@ -1064,8 +1064,8 @@ float GMT_decode (struct GMT_CTRL *C, void *vptr, GMT_LONG k, GMT_LONG type)
 
 struct srf_header6 {	/* Surfer 6 file header structure */
 	char id[4];		/* ASCII Binary identifier (DSBB) */
-	short int nx;		/* Number of columns */
-	short int ny;		/* Number of rows */
+	unsigned short int nx;	/* Number of columns -- NOTE: original definition by GoldenSoft is "short int" */
+	unsigned short int ny;	/* Number of rows */
 	double wesn[4];		/* Min/maximum x/y coordinates */
 	double z_min;		/* Minimum z value */
 	double z_max;		/* Maximum z value */
