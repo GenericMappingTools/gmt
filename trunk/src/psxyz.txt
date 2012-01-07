@@ -1,6 +1,5 @@
 #include "common_options.txt"
 .TH PSXYZ 1 MANDATE GMT_STRING "Generic Mapping Tools"
-#define PARAMS 2BD(p)/9BD(p)/7BD(p)
 #define LEN_1 1.25
 #define OPT_1	OPT(Jx)1.25BD(c) OPT(Jz)0.125BD(c) OPT(So)1.25BD(c)
 .SH NAME
@@ -92,6 +91,7 @@ The OPT(g) option is ignored if OPT(S) is set.
 #include "explain_-t.txt"
 #include "explain_colon.txt"
 #include "explain_help.txt"
+#include "explain_vectors.txt"
 .SH EXAMPLES
 To plot blue columns (width = LEN_1 cm) at the positions listed in the file heights.xyz on a
 3-D projection of the space (0\-10), (0\-10), (0\-100),  with tickmarks every 2, 2, and 10,

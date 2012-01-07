@@ -1,6 +1,5 @@
 #include "common_options.txt"
 .TH GRDVECTOR 1 MANDATE GMT_STRING "Generic Mapping Tools"
-#define PARAMS	2BD(p)/9BD(p)/7BD(p)
 #define LEN1	5
 #define SCALE	OPT(Jx)5BD(c)
 #define LEN2	10
@@ -9,9 +8,9 @@
 grdvector \- Plot vector field from two component grids
 .SH SYNOPSIS
 BD(grdvector) IT(compx.nc) IT(compy.nc) GMT_J_OPT [ OPT(A) ] 
-[ GMT_B_OPT ] [ OPT(C)IT(cptfile) ] [ OPT(E) ]  
+[ GMT_B_OPT ] [ OPT(C)IT(cptfile) ] 
 [ OPT(G)IT(fill) ] [ GMT_I_OPT ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
-[ OPT(Q)[IT(parameters)] ] [ GMT_Rgeo_OPT ] [ OPT(S)[BD(l)]IT(scale) ] 
+[ OPT(Q)IT(parameters) ] [ GMT_Rgeo_OPT ] [ OPT(S)[BD(l)]IT(scale) ] 
 [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)IT(pen) ] [ GMT_X_OPT ] 
 [ GMT_Y_OPT ] [ OPT(Z) ] [ GMT_c_OPT ] [ GMT_f_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
@@ -40,9 +39,6 @@ Means grid files have polar (r, theta) components instead of Cartesian (x, y).
 OPT(C)IT(cptfile)
 Use IT(cptfile) to assign colors based on vector length.
 .TP
-OPT(E)
-Center vectors on grid nodes [Default draws from grid node].
-.TP
 OPT(G)IT(fill)
 Sets color or shade for vector interiors [Default is no fill].
 .TP
@@ -56,10 +52,27 @@ Do NOT clip vectors at map boundaries [Default will clip].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-OPT(Q)[IT(parameters)]
-Select vector plot [Default is stick-plot].  Optionally, specify IT(parameters) which
-are IT(vectorwidth/headlength/headwidth) [Defaults are PARAMS].  Append BD(n)IT(size)
-which will cause vectors shorter than IT(size) to have their appearance scaled by length/IT(size).
+OPT(Q)IT(parameters)
+Modify vector parameters.  For vector heads, append vector head IT(size) [Default is 0, i.e., stick-plot].  
+Several modifiers may be appended to specify placement of vector heads, their shapes, and the justification of the vector:
+.br
+MOD(a)IT(angle) sets the angle of the vector head apex [30].
+.br
+MOD(b) places a vector head at the beginning of the vector path [none].
+.br
+MOD(e) places a vector head at the end of the vector path [none].
+.br
+MOD(l) draws half-arrows, using only the left side [both].
+.br
+MOD(r) draws half-arrows, using only the right side [both].
+.br
+MOD(n)IT(norm) scales down vector attributes (pen thickness, head size) with decreasing length,
+where vectors shorter than IT(norm) will have their
+attributes scaled by length/IT(norm) [arrow attributes remains invariant to length].
+.br
+.sp
+MOD(j)IT(just) determines how the input IT(x),IT(y) point relates
+to the vector.  Choose from BD(b)eginning [default], BD(e)nd, or BD(c)enter.
 #include "explain_-R.txt"
 Specify a subset of the grid.
 .TP
@@ -88,11 +101,11 @@ Means the angles provided are azimuths rather than direction (requires OPT(A)).
 .SH EXAMPLES
 To draw the vector field given by the files r.nc and theta.nc on a linear plot
 with scale LEN1 cm per data unit,
-using vector rather than stick plot, and scale vector magnitudes so that LEN2 units
-equal 1 inch, run 
+using vector rather than stick plot, scale vector magnitudes so that LEN2 units
+equal 1 inch, and center vectors on the node locations, run 
 .br
 .sp
-grdvector r.nc theta.nc SCALE -A -Q SCL2 > gradient.ps
+grdvector r.nc theta.nc SCALE -A -Q0.1i+e+jc SCL2 > gradient.ps
 .br
 .sp
 .SH "SEE ALSO"

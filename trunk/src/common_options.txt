@@ -35,6 +35,8 @@
 
 /* Generic option, yields -letter in bold */
 #define OPT(letter)	BD(\-letter)
+/* Generic modifier, yields +letter in bold */
+#define MOD(letter)	BD(+letter)
 /* Generic parameter spec, yield --par=value in bold and italic */
 #define PAR(par,value)	BD(\-\-par)=IT(value)
 

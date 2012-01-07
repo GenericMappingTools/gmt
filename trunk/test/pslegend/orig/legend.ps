@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 21 2011 08:49:52) [64-bit] Document from GMT_pslegend
+%%Title: GMT v5.0.0_r9611M [64-bit] Document from GMT_pslegend
 %%Creator: GMT
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Jun 21 10:26:59 2011
+%%CreationDate: Tue Jan  3 17:24:10 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -617,7 +622,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -R0/10/0/10 -JM6i -O -K -Lfx3i/2.9i/5/5/600+u
+%%GMT:   -R0/10/0/10 -JM6i -O -K -Lfx3i/2.9i/5/5/600+u
 %%PROJ: merc 0.00000000 10.00000000 0.00000000 10.00000000 -556597.454 556597.454 -0.000 1111475.103 +proj=merc +lon_0=5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -659,7 +664,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -O -K SOEST_block4.ras -W3i -C3i/2.59444i/CT
+%%GMT:   -O -K SOEST_block4.ras -W3i -C3i/2.59444i/CT
 %%PROJ: xy 0.00000000 4.50000000 0.00000000 2.59444000 0.000 4.500 0.000 2.594 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -779,7 +784,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -C65273.cpt -O -K -D3i/1.94063i/4.6i/0.2ih -B0
+%%GMT:  26039.cpt -C26039.cpt -O -K -D3i/1.94063i/4.6i/0.2ih -B0
 %%PROJ: xy -8.00000000 8.00000000 0.00000000 0.20000000 -8.000 8.000 0.000 0.200 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -839,7 +844,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -R0/6/0/5.99073 -Jx1i -O -K -N -S @GMTAPI@-000003
+%%GMT:   ¾Á"Ö -R0/6/0/5.99073 -Jx1i -O -K -N -S @GMTAPI@-000003
 %%PROJ: xy 0.00000000 6.00000000 0.00000000 5.99073000 0.000 6.000 0.000 5.991 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -864,12 +869,20 @@ O1
 90 58 0 3840 4440 Se
 {0 1 0 C} FS
 90 -30 30 795 4200 Sw
+FQ
 [33 17] 0 B
 90 840 3960 S-
 {1 0 1 C} FS
+8 W
 [] 0 B
-V 3690 3960 T -228 0 -48 -72 60 72 60 0 -48 228 -12 SV U
+V 3690 3960 T 0 0 M 228 0 D S
+10 setmiterlimit
+U
+V 3990 3960 T 0 -78 -72 39 2 0 0 SP
+U
+3.32551 setmiterlimit
 {0 1 1 C} FS
+4 W
 90 840 3720 Si
 currentdict /image12 undef
 currentdict /pattern12 undef
@@ -879,7 +892,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -R0/6/0/5.99073 -Jx1i -O -K -N -F+f+j @GMTAPI@-000004
+%%GMT:  @¾Á"Ö -R0/6/0/5.99073 -Jx1i -O -K -N -F+f+j @GMTAPI@-000004
 %%PROJ: xy 0.00000000 6.00000000 0.00000000 5.99073000 0.000 6.000 0.000 5.991 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -907,7 +920,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -R0/6/0/5.99073 -Jx1i -O -K -N -M -F+f+a+j @GMTAPI@-000005
+%%GMT:   -R0/6/0/5.99073 -Jx1i -O -K -N -M -F+f+a+j @GMTAPI@-000005
 %%PROJ: xy 0.00000000 6.00000000 0.00000000 5.99073000 0.000 6.000 0.000 5.991 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin

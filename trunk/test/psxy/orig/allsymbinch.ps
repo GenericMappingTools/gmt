@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psxy
+%%Title: GMT v5.0.0_r9611M [64-bit] Document from GMT_psxy
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 13:01:43 2011
+%%CreationDate: Wed Jan  4 18:29:01 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,6 +111,11 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -145,7 +150,7 @@
 /oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
 /udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -185,6 +190,7 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -841,24 +847,31 @@ U
 1200 F0
 (HI) mc false charpath fs S
 V 2250 5250 T
-N 0 0 600 6.3662 113.634 arc S
-O0
-N 27 178 600 -3.49236 -17.2546 arcn
-29 -183 600 17.7789 30.6929 arc
-41 9 D
-P FO
-N 141 112 600 123.492 137.255 arc
--173 -67 600 102.221 89.3071 arcn
--12 40 D
-P FO
+N 0 0 600 17.1887 102.811 arc S
+V N 20 155 600 -14.9794 3.48594 arc
+-46 -14 D
+22 -161 600 32.6404 15.5215 arcn
+P clip FO U
+V N 124 95 600 134.979 116.514 arcn
+11 -47 D
+-150 -61 600 87.3596 104.478 arc
+P clip FO U
 U 
-O1
 600 3750 5250 Sn
-3 5250 5250 Sp
+600 5250 5250 Sp
 600 1200 750 6750 Sr
 600 2250 6750 Ss
 600 3750 6750 St
-V 4730 6450 T 30 R 0 100 -900 0 -100 -150 117 150 117 0 -100 900 0 100 150 -117 Sv U
+V 4730 6450 T 30 R
+180 0 M 840 0 D S
+0 0 M
+180 -96 D
+0 192 D
+P clip FO U
+V 5770 7050 T 30 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 600 0 70 750 8250 Sw
 600 2250 8250 Sx
 600 3750 8250 Sy
