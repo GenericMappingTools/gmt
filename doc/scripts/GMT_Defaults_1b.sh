@@ -19,12 +19,12 @@ pstext -R0/2.25/0/2 -Jx1i -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >> GMT_De
 1.5     1.8 LB FONT_ANNOT_PRIMARY
 EOF
 echo -0.4 -0.4 | psxy -R -J -O -K -Sc0.04 -Gblue -N >> GMT_Defaults_1b.ps
-psxy -R -J -O -K -SvS0.005i/0.04i/0.03i -N -Gblue << EOF >> GMT_Defaults_1b.ps
+psxy -R -J -O -K -Sv0.04i+s+b+e -N -W0.5p,blue -Gblue << EOF >> GMT_Defaults_1b.ps
 0 0.1 -0.4 0.1
 0.25 0 0.25 -0.4
 2.3 0.1 2.3 0.9
 EOF
-psxy -R -J -O -K -Svs0.005i/0.04i/0.03i -N -Gblue << EOF >> GMT_Defaults_1b.ps
+psxy -R -J -O -K -Sv0.04i+s+e -N -W0.5p,blue -Gblue << EOF >> GMT_Defaults_1b.ps
 -0.2 1.15 -0.03 1
 2.35 -0.2 2.0 -0.05
 2.35 1.2 1.95 1.1

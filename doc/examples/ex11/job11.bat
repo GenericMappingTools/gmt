@@ -28,7 +28,7 @@ echo 128 128 60\217 | pstext -J -R -F+fwhite+a-45 -K -O >> %ps%
 echo 102  26 0.4 | pstext -J -R -F+fwhite+a-90 -K -O >> %ps%
 echo 204  26 0.8 | pstext -J -R -F+fwhite+a-90 -K -O >> %ps%
 echo 10 140 G | pstext -J -R -F+f16p,white+a180 -K -O >> %ps%
-echo 0 0 0 128 | psxy -N -Svs -Gwhite -J -R -K -O >> %ps%
+echo 0 0 0 128 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> %ps%
 
 grdimage x.nc c.nc y.nc -JX2.5i/2.5i -R -K -O -Y2.5i >> %ps%
 psxy rays.dat -J -R -K -O -Bwesn >> %ps%
@@ -37,8 +37,8 @@ echo 26 102 0.4 | pstext -J -R -F+fwhite -K -O >> %ps%
 echo 26 204 0.8 | pstext -J -R -F+fwhite -K -O >> %ps%
 echo 140 10 R | pstext -J -R -F+f16p,white+a-90 -K -O >> %ps%
 echo 100 100 V | pstext -J -R -F+f16p,white+a-45 -K -O >> %ps%
-echo 0 0 128 0 | psxy -N -Svs -Gwhite -J -R -K -O >> %ps%
-echo 0 0 90 90 | psxy -N -Svs -Gwhite -J -R -K -O >> %ps%
+echo 0 0 128 0 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> %ps%
+echo 0 0 90 90 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> %ps%
 
 grdimage c.nc x.nc y.nc -JX-2.5i/2.5i -R -K -O -X-2.5i >> %ps%
 psxy rays.dat -J -R -K -O -Bwesn >> %ps%
@@ -46,8 +46,8 @@ echo 128 128 180\217 | pstext -J -R -F+fwhite+a135 -K -O >> %ps%
 echo 102 26 0.4 | pstext -J -R -F+fwhite+a90 -K -O >> %ps%
 echo 204 26 0.8 | pstext -J -R -F+fwhite+a90 -K -O >> %ps%
 echo 10 140 B | pstext --FONT=white -J -R -F+f16p,white -K -O >> %ps%
-echo 0 0 0 128 | psxy -N -Svs -Gwhite -J -R -K -O >> %ps%
-echo 0 0 128 0 | psxy -N -Svs -Gwhite -J -R -K -O >> %ps%
+echo 0 0 0 128 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> %ps%
+echo 0 0 128 0 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> %ps%
 
 REM Second, create grids of descending X and Y and constant 255.
 REM These are to be used to represent R, G and B values of the lighter 3 faces of the cube.
@@ -69,8 +69,8 @@ echo 26 102 0.4 | pstext -J -R -K -O >> %ps%
 echo 26 204 0.8 | pstext -J -R -K -O >> %ps%
 echo 100 100 S | pstext -J -R -F+f16p+a45 -K -O >> %ps%
 echo 204 66 H | pstext -J -R -F+f16p+a90 -K -O >> %ps%
-echo 0 0 90 90 | psxy -N -Svs -Gblack -J -R -K -O >> %ps%
-echo 204 204 204 76 | psxy -N -Svs -Gblack -J -R -K -O >> %ps%
+echo 0 0 90 90 | psxy -N -Sv0.15i+s+e -Gblack -W2p -J -R -K -O >> %ps%
+echo 204 204 204 76 | psxy -N -Sv0.15i+s+e -Gblack -W2p -J -R -K -O >> %ps%
 
 grdimage x.nc c.nc y.nc -JX-2.5i/2.5i -R -K -O -X-2.5i -Y2.5i >> %ps%
 psxy rays.dat -J -R -K -O -Bwesn >> %ps%

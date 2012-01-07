@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_pstext
+%%Title: GMT v5.0.0_r9611M [64-bit] Document from GMT_pstext
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 13:00:58 2011
+%%CreationDate: Wed Jan  4 18:27:59 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,6 +111,11 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -145,7 +150,7 @@
 /eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
 /oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -185,6 +190,7 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -709,7 +715,7 @@ O0
 900 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa0.75 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa0.75 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -731,7 +737,7 @@ O0
 900 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa0.75 -Ya1.25 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa0.75 -Ya1.25 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -751,7 +757,7 @@ O0
 900 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa0.75 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa0.75 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -762,9 +768,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 60 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 60 R
+0 0 M 720 0 D S
+U
+V 1350 1679 T 60 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -1500 TM
 0 A
@@ -773,7 +786,7 @@ O0
 900 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa0.75 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa0.75 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -784,9 +797,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -30 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -30 R
+0 0 M 720 0 D S
+U
+V 1679 450 T -30 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -1500 TM
 0 A
@@ -839,7 +859,7 @@ O0
 900 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa0.75 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa0.75 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -850,9 +870,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -1500 TM
 0 A
@@ -861,7 +888,7 @@ O0
 900 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa0.75 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa0.75 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -872,9 +899,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -1500 TM
 0 A
@@ -1136,7 +1169,7 @@ O0
 3180 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa2.65 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa2.65 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1158,7 +1191,7 @@ O0
 3180 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa2.65 -Ya1.25 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa2.65 -Ya1.25 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1178,7 +1211,7 @@ O0
 3180 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa2.65 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa2.65 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1189,9 +1222,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 60 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 60 R
+0 0 M 720 0 D S
+U
+V 1350 1679 T 60 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -1500 TM
 0 A
@@ -1200,7 +1240,7 @@ O0
 3180 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa2.65 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa2.65 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1211,9 +1251,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -30 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -30 R
+0 0 M 720 0 D S
+U
+V 1679 450 T -30 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -1500 TM
 0 A
@@ -1266,7 +1313,7 @@ O0
 3180 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa2.65 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa2.65 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1277,9 +1324,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -1500 TM
 0 A
@@ -1288,7 +1342,7 @@ O0
 3180 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa2.65 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa2.65 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1299,9 +1353,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -1500 TM
 0 A
@@ -1563,7 +1623,7 @@ O0
 5460 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa4.55 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa4.55 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1585,7 +1645,7 @@ O0
 5460 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa4.55 -Ya1.25 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa4.55 -Ya1.25 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1605,7 +1665,7 @@ O0
 5460 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa4.55 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa4.55 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1616,9 +1676,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 60 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 60 R
+0 0 M 720 0 D S
+U
+V 1350 1679 T 60 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -1500 TM
 0 A
@@ -1627,7 +1694,7 @@ O0
 5460 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa4.55 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa4.55 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1638,9 +1705,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -30 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -30 R
+0 0 M 720 0 D S
+U
+V 1679 450 T -30 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -1500 TM
 0 A
@@ -1693,7 +1767,7 @@ O0
 5460 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa4.55 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa4.55 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1704,9 +1778,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -1500 TM
 0 A
@@ -1715,7 +1796,7 @@ O0
 5460 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa4.55 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa4.55 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1726,9 +1807,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -1500 TM
 0 A
@@ -1990,7 +2077,7 @@ O0
 7740 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa6.45 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa6.45 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2012,7 +2099,7 @@ O0
 7740 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa6.45 -Ya1.25 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa6.45 -Ya1.25 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2032,7 +2119,7 @@ O0
 7740 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa6.45 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa6.45 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2043,9 +2130,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 60 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 60 R
+0 0 M 720 0 D S
+U
+V 1350 1679 T 60 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -1500 TM
 0 A
@@ -2054,7 +2148,7 @@ O0
 7740 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa6.45 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa6.45 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2065,9 +2159,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -30 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -30 R
+0 0 M 720 0 D S
+U
+V 1679 450 T -30 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -1500 TM
 0 A
@@ -2120,7 +2221,7 @@ O0
 7740 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa6.45 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa6.45 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2131,9 +2232,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -1500 TM
 0 A
@@ -2142,7 +2250,7 @@ O0
 7740 1500 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa6.45 -Ya1.25
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa6.45 -Ya1.25
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2153,9 +2261,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -1500 TM
 0 A
@@ -2418,7 +2532,7 @@ O0
 900 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa0.75 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa0.75 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2440,7 +2554,7 @@ O0
 900 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa0.75 -Ya3.5 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa0.75 -Ya3.5 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2460,7 +2574,7 @@ O0
 900 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa0.75 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa0.75 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2471,9 +2585,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -45 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -45 R
+0 0 M 720 0 D S
+U
+V 1536 264 T -45 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -4200 TM
 0 A
@@ -2482,7 +2603,7 @@ O0
 900 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa0.75 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa0.75 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2493,9 +2614,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -135 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -135 R
+0 0 M 720 0 D S
+U
+V 264 264 T -135 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -4200 TM
 0 A
@@ -2548,7 +2676,7 @@ O0
 900 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa0.75 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa0.75 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2559,9 +2687,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -4200 TM
 0 A
@@ -2570,7 +2705,7 @@ O0
 900 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa0.75 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa0.75 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2581,9 +2716,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -4200 TM
 0 A
@@ -2831,7 +2972,7 @@ O0
 3180 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa2.65 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa2.65 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2853,7 +2994,7 @@ O0
 3180 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa2.65 -Ya3.5 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa2.65 -Ya3.5 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2873,7 +3014,7 @@ O0
 3180 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa2.65 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa2.65 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2884,9 +3025,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -45 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -45 R
+0 0 M 720 0 D S
+U
+V 1536 264 T -45 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -4200 TM
 0 A
@@ -2895,7 +3043,7 @@ O0
 3180 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa2.65 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa2.65 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2906,9 +3054,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -135 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -135 R
+0 0 M 720 0 D S
+U
+V 264 264 T -135 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -4200 TM
 0 A
@@ -2961,7 +3116,7 @@ O0
 3180 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa2.65 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa2.65 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2972,9 +3127,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -4200 TM
 0 A
@@ -2983,7 +3145,7 @@ O0
 3180 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa2.65 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa2.65 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2994,9 +3156,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -4200 TM
 0 A
@@ -3244,7 +3412,7 @@ O0
 5460 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa4.55 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa4.55 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3266,7 +3434,7 @@ O0
 5460 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa4.55 -Ya3.5 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa4.55 -Ya3.5 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3286,7 +3454,7 @@ O0
 5460 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa4.55 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa4.55 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3297,9 +3465,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -45 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -45 R
+0 0 M 720 0 D S
+U
+V 1536 264 T -45 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -4200 TM
 0 A
@@ -3308,7 +3483,7 @@ O0
 5460 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa4.55 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa4.55 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3319,9 +3494,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -135 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -135 R
+0 0 M 720 0 D S
+U
+V 264 264 T -135 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -4200 TM
 0 A
@@ -3374,7 +3556,7 @@ O0
 5460 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa4.55 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa4.55 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3385,9 +3567,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -4200 TM
 0 A
@@ -3396,7 +3585,7 @@ O0
 5460 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa4.55 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa4.55 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3407,9 +3596,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -4200 TM
 0 A
@@ -3657,7 +3852,7 @@ O0
 7740 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa6.45 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa6.45 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3679,7 +3874,7 @@ O0
 7740 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa6.45 -Ya3.5 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa6.45 -Ya3.5 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3699,7 +3894,7 @@ O0
 7740 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa6.45 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa6.45 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3710,9 +3905,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -45 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -45 R
+0 0 M 720 0 D S
+U
+V 1536 264 T -45 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -4200 TM
 0 A
@@ -3721,7 +3923,7 @@ O0
 7740 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa6.45 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa6.45 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3732,9 +3934,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -135 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -135 R
+0 0 M 720 0 D S
+U
+V 264 264 T -135 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -4200 TM
 0 A
@@ -3787,7 +3996,7 @@ O0
 7740 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa6.45 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa6.45 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3798,9 +4007,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -4200 TM
 0 A
@@ -3809,7 +4025,7 @@ O0
 7740 4200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa6.45 -Ya3.5
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa6.45 -Ya3.5
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3820,9 +4036,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -4200 TM
 0 A
@@ -4085,7 +4307,7 @@ O0
 900 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa0.75 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa0.75 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4107,7 +4329,7 @@ O0
 900 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa0.75 -Ya5.75 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa0.75 -Ya5.75 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4127,7 +4349,7 @@ O0
 900 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa0.75 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa0.75 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4138,9 +4360,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -110 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -110 R
+0 0 M 720 0 D S
+U
+V 592 54 T -110 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -6900 TM
 0 A
@@ -4149,7 +4378,7 @@ O0
 900 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa0.75 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa0.75 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4160,9 +4389,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 160 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 160 R
+0 0 M 720 0 D S
+U
+V 54 1208 T 160 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -6900 TM
 0 A
@@ -4215,7 +4451,7 @@ O0
 900 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa0.75 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa0.75 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4226,9 +4462,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -6900 TM
 0 A
@@ -4237,7 +4480,7 @@ O0
 900 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa0.75 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa0.75 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4248,9 +4491,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -6900 TM
 0 A
@@ -4498,7 +4747,7 @@ O0
 3180 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa2.65 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa2.65 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4520,7 +4769,7 @@ O0
 3180 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa2.65 -Ya5.75 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa2.65 -Ya5.75 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4540,7 +4789,7 @@ O0
 3180 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa2.65 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa2.65 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4551,9 +4800,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -110 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -110 R
+0 0 M 720 0 D S
+U
+V 592 54 T -110 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -6900 TM
 0 A
@@ -4562,7 +4818,7 @@ O0
 3180 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa2.65 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa2.65 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4573,9 +4829,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 160 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 160 R
+0 0 M 720 0 D S
+U
+V 54 1208 T 160 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -6900 TM
 0 A
@@ -4628,7 +4891,7 @@ O0
 3180 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa2.65 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa2.65 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4639,9 +4902,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -6900 TM
 0 A
@@ -4650,7 +4920,7 @@ O0
 3180 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa2.65 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa2.65 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4661,9 +4931,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -6900 TM
 0 A
@@ -4911,7 +5187,7 @@ O0
 5460 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa4.55 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa4.55 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4933,7 +5209,7 @@ O0
 5460 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa4.55 -Ya5.75 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa4.55 -Ya5.75 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4953,7 +5229,7 @@ O0
 5460 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa4.55 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa4.55 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4964,9 +5240,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -110 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -110 R
+0 0 M 720 0 D S
+U
+V 592 54 T -110 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -6900 TM
 0 A
@@ -4975,7 +5258,7 @@ O0
 5460 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa4.55 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa4.55 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4986,9 +5269,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 160 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 160 R
+0 0 M 720 0 D S
+U
+V 54 1208 T 160 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -6900 TM
 0 A
@@ -5041,7 +5331,7 @@ O0
 5460 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa4.55 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa4.55 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5052,9 +5342,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -6900 TM
 0 A
@@ -5063,7 +5360,7 @@ O0
 5460 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa4.55 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa4.55 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5074,9 +5371,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -6900 TM
 0 A
@@ -5324,7 +5627,7 @@ O0
 7740 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa6.45 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa6.45 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5346,7 +5649,7 @@ O0
 7740 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa6.45 -Ya5.75 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa6.45 -Ya5.75 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5366,7 +5669,7 @@ O0
 7740 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa6.45 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa6.45 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5377,9 +5680,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T -110 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T -110 R
+0 0 M 720 0 D S
+U
+V 592 54 T -110 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -6900 TM
 0 A
@@ -5388,7 +5698,7 @@ O0
 7740 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa6.45 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa6.45 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5399,9 +5709,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 160 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 160 R
+0 0 M 720 0 D S
+U
+V 54 1208 T 160 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -6900 TM
 0 A
@@ -5454,7 +5771,7 @@ O0
 7740 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa6.45 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa6.45 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5465,9 +5782,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -6900 TM
 0 A
@@ -5476,7 +5800,7 @@ O0
 7740 6900 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa6.45 -Ya5.75
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa6.45 -Ya5.75
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5487,9 +5811,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -6900 TM
 0 A
@@ -5752,7 +6082,7 @@ O0
 900 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa0.75 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa0.75 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5774,7 +6104,7 @@ O0
 900 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa0.75 -Ya8 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa0.75 -Ya8 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5794,7 +6124,7 @@ O0
 900 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa0.75 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa0.75 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5805,9 +6135,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 160 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 160 R
+0 0 M 720 0 D S
+U
+V 54 1208 T 160 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -9600 TM
 0 A
@@ -5816,7 +6153,7 @@ O0
 900 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa0.75 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa0.75 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5827,9 +6164,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 70 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 70 R
+0 0 M 720 0 D S
+U
+V 1208 1746 T 70 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -9600 TM
 0 A
@@ -5882,7 +6226,7 @@ O0
 900 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa0.75 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa0.75 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5893,9 +6237,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -9600 TM
 0 A
@@ -5904,7 +6255,7 @@ O0
 900 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa0.75 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa0.75 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5915,9 +6266,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -900 -9600 TM
 0 A
@@ -6165,7 +6522,7 @@ O0
 3180 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa2.65 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa2.65 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -6187,7 +6544,7 @@ O0
 3180 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa2.65 -Ya8 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa2.65 -Ya8 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -6207,7 +6564,7 @@ O0
 3180 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa2.65 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa2.65 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -6218,9 +6575,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 160 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 160 R
+0 0 M 720 0 D S
+U
+V 54 1208 T 160 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -9600 TM
 0 A
@@ -6229,7 +6593,7 @@ O0
 3180 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa2.65 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa2.65 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -6240,9 +6604,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 70 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 70 R
+0 0 M 720 0 D S
+U
+V 1208 1746 T 70 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -9600 TM
 0 A
@@ -6295,7 +6666,7 @@ O0
 3180 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa2.65 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa2.65 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -6306,9 +6677,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -9600 TM
 0 A
@@ -6317,7 +6695,7 @@ O0
 3180 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa2.65 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa2.65 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -6328,9 +6706,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -3180 -9600 TM
 0 A
@@ -6578,7 +6962,7 @@ O0
 5460 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa4.55 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa4.55 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -6600,7 +6984,7 @@ O0
 5460 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa4.55 -Ya8 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa4.55 -Ya8 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -6620,7 +7004,7 @@ O0
 5460 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa4.55 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa4.55 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -6631,9 +7015,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 160 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 160 R
+0 0 M 720 0 D S
+U
+V 54 1208 T 160 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -9600 TM
 0 A
@@ -6642,7 +7033,7 @@ O0
 5460 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa4.55 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa4.55 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -6653,9 +7044,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 70 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 70 R
+0 0 M 720 0 D S
+U
+V 1208 1746 T 70 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -9600 TM
 0 A
@@ -6708,7 +7106,7 @@ O0
 5460 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa4.55 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa4.55 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -6719,9 +7117,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -9600 TM
 0 A
@@ -6730,7 +7135,7 @@ O0
 5460 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa4.55 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa4.55 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -6741,9 +7146,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -5460 -9600 TM
 0 A
@@ -6991,7 +7402,7 @@ O0
 7740 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2 -W0.25p -Xa6.45 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SW0.2i -W0.25p -Xa6.45 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -7013,7 +7424,7 @@ O0
 7740 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa6.45 -Ya8 32980.a
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -W1p,red -Xa6.45 -Ya8 8757.a
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -7033,7 +7444,7 @@ O0
 7740 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa6.45 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa6.45 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -7044,9 +7455,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 160 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 160 R
+0 0 M 720 0 D S
+U
+V 54 1208 T 160 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -9600 TM
 0 A
@@ -7055,7 +7473,7 @@ O0
 7740 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gred -Xa6.45 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gred -Xa6.45 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -7066,9 +7484,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {1 0 0 C} FS
-V 900 900 T 70 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 70 R
+0 0 M 720 0 D S
+U
+V 1208 1746 T 70 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -9600 TM
 0 A
@@ -7121,7 +7546,7 @@ O0
 7740 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa6.45 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa6.45 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -7132,9 +7557,16 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T 90 R -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 90 R
+0 0 M 720 0 D S
+U
+V 900 1800 T 90 R 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -9600 TM
 0 A
@@ -7143,7 +7575,7 @@ O0
 7740 9600 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.01/0.15/0.1 -Gblack -Xa6.45 -Ya8
+%%GMT:  psxy -R-2/2/-2/2 -JX1.5i -O -K -SV0.15i+e -W0.5p -Gblack -Xa6.45 -Ya8
 %%PROJ: xy -2.00000000 2.00000000 -2.00000000 2.00000000 -2.000 2.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -7154,9 +7586,15 @@ clipsave
 0 1800 D
 -1800 0 D
 PSL_eoclip N
-4 W
+8 W
 {0 A} FS
-V 900 900 T -720 0 -114 -180 120 180 120 0 -114 720 -6 SV U
+O1
+V 900 900 T 0 0 M 720 0 D S
+U
+V 1800 900 T 0 0 M
+-180 96 D
+0 -192 D
+P clip FO U
 PSL_cliprestore
 -7740 -9600 TM
 0 A

@@ -1,6 +1,5 @@
 #include "common_options.txt"
 .TH PSXY 1 MANDATE GMT_STRING "Generic Mapping Tools"
-#define PARAMS 2BD(p)/9BD(p)/7BD(p)
 #define CAP 7BD(p)
 #define LEN_1 0.25
 #define LEN_2 5
@@ -121,6 +120,7 @@ The OPT(g) option is ignored if OPT(S) is set.
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
+#include "explain_vectors.txt"
 .SH EXAMPLES
 To plot solid red circles (diameter = LEN_1 cm) at the positions listed in the file DSDP.xy on a
 Mercator map at LEN_2 cm/degree of the area 150E to 154E, 18N to 23N, with tickmarks every 1 degree
@@ -151,22 +151,30 @@ by the magnitude in the 4th column, and color based on the third column via the 
 BD(psxy) misc.d OPT(R)0/100/-50/100 OPT_2 OPT(S) OPT(C)cpt OPT(B)20 > map.ps
 .SH SEGMENT HEADER PARSING
 Segment header records may contain one of more of the following options:
-.br
-OPT(G)IT(fill)	Use the new IT(fill) and turn filling on
-.br
-OPT(G-)		Turn filling off
-.br
-OPT(G)		Revert to default fill (none if not set on command line)
-.br
-OPT(W)IT(pen)	Use the new IT(pen) and turn outline on
-.br
-OPT(W)		Revert to default pen BD(MAP_DEFAULT_PEN) (if not set on command line)
-.br
-OPT(W-)		Turn outline off
-.br
-OPT(Z)IT(zval)	Obtain fill via cpt lookup using z-value IT(zval)
-.br
-OPT(ZNaN)	Get the NaN color from the cpt file
+.TP 8
+OPT(G)IT(fill)
+Use the new IT(fill) and turn filling on
+.TP 8
+OPT(G-)
+Turn filling off
+.TP 8
+OPT(G)
+Revert to default fill (none if not set on command line)
+.TP 8
+OPT(W)IT(pen)
+Use the new IT(pen) and turn outline on
+.TP 8
+OPT(W)
+Revert to default pen BD(MAP_DEFAULT_PEN) (if not set on command line)
+.TP 8
+OPT(W-)
+Turn outline off
+.TP 8
+OPT(Z)IT(zval)
+Obtain fill via cpt lookup using z-value IT(zval)
+.TP 8
+OPT(ZNaN)
+Get the NaN color from the cpt file
 .SH CUSTOM SYMBOLS
 BD(psxy) allows users to define and plot their own custom symbols.
 This is done by encoding the symbol using our custom symbol macro code described in Appendix N.

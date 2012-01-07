@@ -1,6 +1,5 @@
 #include "common_options.txt"
 .TH PSROSE 1 MANDATE GMT_STRING "Generic Mapping Tools"
-#define PARAM 2BD(p)/9BD(p)/7BD(p)/black
 #define LEN_1	3
 #define SCALE_1	OPT(S)3BD(i)
 #define LEN_2	5
@@ -11,9 +10,9 @@ psrose \- Plot a polar histogram (rose, sector, windrose diagrams)
 BD(psrose) [ IT(table) ] [ OPT(A)IT(sector_width)[BD(r)] ] 
 [ GMT_B_OPT ] [ OPT(C)[IT(mode_file)] ] [ OPT(D) ] [ OPT(I) ] [ OPT(G)IT(fill) ] 
 [ OPT(I) ] [ GMT_K_OPT ] [ OPT(L)[IT(wlabel)/IT(elabel)/IT(slabel)/IT(nlabel)] ] 
-[ OPT(M)[IT(parameters) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(M)IT(parameters) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(R)IT(r0)/IT(r1)/IT(az_0)/IT(az_1) ] [ OPT(S)IT(radial_scale)[BD(n)] ] 
-[ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)IT(pen) ] [ GMT_X_OPT ] 
+[ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[BD(v)]IT(pen) ] [ GMT_X_OPT ] 
 [ GMT_Y_OPT ] [ OPT(Z)IT(scale) ] [ GMT_bi_OPT ] [ GMT_c_OPT ] [ GMT_h_OPT ] 
 [ GMT_i_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -37,7 +36,7 @@ Remember that "x" here is radial distance and
 .TP
 OPT(C)[IT(mode_file)]
 Plot vectors showing the principal directions given in the IT(modes) file.  If no file is
-given, compute and plot mean direction.
+given, compute and plot mean direction.  See OPT(M) to control vector attributes.
 .TP
 OPT(D)
 Shift sectors so that they are centered on the bin interval (e.g., first sector is centered on 0 degrees).
@@ -57,9 +56,22 @@ Specify labels for the 0, 90, 180, and 270 degree marks.  For full-circle plot t
 is WEST/EAST/SOUTH/NORTH and for half-circle the default is 90W/90E/-/0.  A - in any entry
 disables that label.  Use OPT(L) with no argument to disable all four labels
 .TP
-OPT(M)[IT(parameters)
-Specify new vector attributes vectorwidth/headlength/headwidth/color to change
-the appearance of arrows (Only if OPT(C) is set). [Default is PARAM].
+OPT(M)IT(parameters)
+Used with OPT(C) to modify vector parameters.  For vector heads, append vector head IT(size) [Default is 0, i.e., a line].  
+Several modifiers may be appended to specify placement of vector heads, their shapes, and the justification of the vector:
+.br
+MOD(a)IT(angle) sets the angle of the vector head apex [30].
+.br
+MOD(b) places a vector head at the beginning of the vector path [none].
+.br
+MOD(e) places a vector head at the end of the vector path [none].
+.br
+MOD(l) draws half-arrows, using only the left side [both].
+.br
+MOD(r) draws half-arrows, using only the right side [both].
+.br
+MOD(j)IT(just) determines how the input IT(x),IT(y) point relates
+to the vector.  Choose from BD(b)eginning [default], BD(e)nd, or BD(c)enter.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
@@ -78,6 +90,7 @@ Specifies that the input data is orientation data (has a 180 degree ambiguity) i
 .TP
 OPT(W)IT(pen)
 Set pen attributes for sector outline or rose plot.  [Default is no outline].
+Use OPT(Wv)IT(pen) to change pen used to draw vector (requires OPT(C)) [Default is same as sector outline].
 #include "explain_-XY.txt"
 .TP
 OPT(Z)IT(scale)

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psbasemap
+%%Title: GMT v5.0.0_r9624:9625 [64-bit] [C4] Document from GMT_psbasemap
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:52:23 2011
+%%CreationDate: Fri Jan  6 11:15:55 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,6 +111,11 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -145,7 +150,7 @@
 /eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
 /oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -185,6 +190,7 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -753,23 +759,104 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-60/-30/-10/10 -JM2.25i -O -Svs0.005i/0.04i/0.03i -N -Gblue
+%%GMT:  psxy -R-60/-30/-10/10 -JM2.25i -O -Sv0.04i+s+e -W0.5p,blue -N -Gblue
 %%PROJ: merc -60.00000000 -30.00000000 -10.00000000 10.00000000 -1669792.362 1669792.362 -1111475.103 1111475.103 +proj=merc +lon_0=-45 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-4 W
+8 W
+0 0 1 C
 {0 0 1 C} FS
-V -180 271 T 44.9685 R -254 0 0 0 1 0 1 0 0 254 -1 SV U
-V 2007 -366 T 24.5018 R -663 0 0 0 1 0 1 0 0 663 -1 SV U
-V -180 653 T 63.2905 R -202 0 -33 -48 36 48 36 0 -33 202 -3 SV U
-V -180 1234 T -67.2615 R -243 0 -33 -48 36 48 36 0 -33 243 -3 SV U
-V 1620 1979 T -37.2273 R -178 0 -33 -48 36 48 36 0 -33 178 -3 SV U
-V 450 1077 T 90 R -221 0 -33 -48 36 48 36 0 -33 221 -3 SV U
-V 2610 2255 T 180 R -402 0 -33 -48 36 48 36 0 -33 402 -3 SV U
-V -18 2048 T -90 R -167 0 -33 -48 36 48 36 0 -33 167 -3 SV U
-V -180 -366 T 27.0652 R -202 0 0 0 1 0 1 0 0 202 -1 SV U
-V 2853 181 T -115.723 R -353 0 0 0 1 0 1 0 0 353 -1 SV U
+O1
+8 W
+V -180 271 T 44.9685 R
+0 0 M 206 0 D S
+U
+V 0 451 T 44.9685 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+8 W
+8 W
+V 2007 -366 T 24.5018 R
+0 0 M 615 0 D S
+U
+V 2610 -91 T 24.5018 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+8 W
+8 W
+V -180 653 T 63.2905 R
+0 0 M 202 0 D S
+U
+V -67 876 T 63.2905 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+8 W
+8 W
+V -180 1234 T -67.2615 R
+0 0 M 243 0 D S
+U
+V -67 966 T -67.2615 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+8 W
+8 W
+V 1620 1979 T -37.2273 R
+0 0 M 178 0 D S
+U
+V 1800 1843 T -37.2273 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+8 W
+8 W
+V 450 1077 T 90 R
+0 0 M 221 0 D S
+U
+V 450 1346 T 90 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+8 W
+8 W
+V 2610 2255 T 180 R
+0 0 M 402 0 D S
+U
+V 2160 2255 T 180 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+8 W
+8 W
+V -18 2048 T -90 R
+0 0 M 167 0 D S
+U
+V -18 1834 T -90 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+8 W
+8 W
+V -180 -366 T 27.0652 R
+0 0 M 154 0 D S
+U
+V 0 -274 T 27.0652 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
+8 W
+8 W
+V 2853 181 T -115.723 R
+0 0 M 305 0 D S
+U
+V 2700 -137 T -115.723 R 0 0 M
+-48 26 D
+0 -52 D
+P clip FO U
 %%PageTrailer
 U
 showpage
