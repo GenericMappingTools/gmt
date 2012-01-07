@@ -6,6 +6,8 @@
 	* gmt_plot.c:		Made geo_vector properly adjust for half-head vectors
 	* pslib.c:		Made psl_vector and psl_matharc adjust for half-head vectors
 	* gmt_init.c:		Revised -Sf front syntax to use modifiers. Backwards compatible.
+	* gmt_plot.c:		In GMT_xy_axis, string[GMT_CALSTRING_LENGTH] was used to hold
+				labels that could be longer, leading to memory corruption.
 
 2012-01-04	pwessel
 	* grdvector.c:		Updated -Q to take new vector specification format.
