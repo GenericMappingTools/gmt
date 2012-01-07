@@ -9,6 +9,11 @@
 	* gmt_plot.c:		In GMT_xy_axis, string[GMT_CALSTRING_LENGTH] was used to hold
 				labels that could be longer, leading to memory corruption.
 
+2012-01-05	jluis
+	* gmt_customio.c:	Make nx and ny of 'unsigned short int' type in surfer6 header.
+				Note that original format specification by Golden Software
+				clearly say they are 'short int' but this change shouldn't
+				break anything and will allow dealing with larger grid sizes. 
 2012-01-04	pwessel
 	* grdvector.c:		Updated -Q to take new vector specification format.
 				Made -E obsolete (since covered by modifier +jc) but
