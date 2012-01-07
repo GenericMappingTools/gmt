@@ -5513,12 +5513,12 @@ GMT_LONG gmt_init_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, GMT
 	return (n_errors);
 }
 
-GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, char *in, char flag, char axis) {
+GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, char *in, char flag, char axis, GMT_LONG custom) {
 	/* Load the values into the appropriate GMT_PLOT_AXIS_ITEM structure */
 
 	struct GMT_PLOT_AXIS_ITEM *I = NULL;
-	char *format = NULL, *t = NULL, *s = NULL, unit;
-	double phase, val;
+	char *format = NULL, *t = NULL, *s = NULL, unit = 0;
+	double phase = 0.0, val = 0.0;
 
 	t = in;
 
@@ -5620,7 +5620,7 @@ GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, char *in, c
 	I->interval = val;
 	I->flavor = 0;
 	I->active = TRUE;
-	if (in[0] && val == 0.0) I->active = FALSE;
+	if (!custom && in[0] && val == 0.0) I->active = FALSE;
 	I->upper_case = FALSE;
 	format = (C->current.map.frame.primary) ? C->current.setting.format_time[0] : C->current.setting.format_time[1];
 	switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
@@ -5667,7 +5667,7 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *i
 				if (n_int[k] == 0) continue;
 				flag = list[k];
 				if (!C->current.map.frame.primary) flag = (char)toupper ((int)flag);
-				gmt_set_titem (C, A, "0", flag, str[axis]);	/* Store the findings for this segment */
+				gmt_set_titem (C, A, "0", flag, str[axis], TRUE);	/* Store the findings for this segment */
 			}
 			if (n_int[1]) A->item[GMT_ANNOT_UPPER+!C->current.map.frame.primary].special = TRUE;
 			C->current.map.frame.draw = TRUE;
@@ -5676,7 +5676,7 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *i
 			GMT_report (C, GMT_MSG_FATAL, "ERROR: Cannot access custom file in -B string %c-component %s\n", str[axis], in);
 	}
 	else
-		gmt_set_titem (C, A, in, flag, str[axis]);
+		gmt_set_titem (C, A, in, flag, str[axis], FALSE);
 
 	return (GMT_NOERROR);	
 }

@@ -664,7 +664,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 				if (n == 3) Ctrl->L.box_offset = atof (txt_c);
 				break;
 #endif
-			case 'M':	/* Measure area/length and handedness of polygons */
+			case 'Q':	/* Measure area/length and handedness of polygons */
 				Ctrl->Q.active = TRUE;
 				if (strchr (opt->arg, '+')) Ctrl->Q.active = 2;
 				if (opt->arg[0] && opt->arg[0] != '+') Ctrl->Q.unit = opt->arg[0];				
