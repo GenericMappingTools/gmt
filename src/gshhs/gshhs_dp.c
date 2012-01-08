@@ -1,6 +1,6 @@
 /*	$Id$
  *
- *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	Copyright (c) 1996-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  * gshhs_dp applies the Douglas-Peucker algorithm to simplify a line

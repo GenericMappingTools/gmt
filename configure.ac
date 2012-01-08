@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
 dnl $Id$
-dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+dnl 	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
 dnl
 dnl 	This program is free software; you can redistribute it and/or modify
@@ -28,9 +28,9 @@ dnl Also, fix the MANDATE and DOCDATE values.
 dnl For final version set SVN_VERSION to 0
 dnl
 AC_INIT(GMT, 5.0.0, gmt-help@lists.hawaii.edu)
-MANDATE="1 Nov 2011"
-DOCDATE="November 2011"
-DOCYEAR="2011"
+MANDATE="1 Mar 2012"
+DOCDATE="March 2012"
+DOCYEAR="2012"
 GSHHS_VERSION=2.2.0
 SVN_VERSION=1
 dnl see whether subversion is installed

@@ -3,7 +3,7 @@
 #
 #	GNUmakefile for GMT Version 5.x src directory
 #
-#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+#	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
 #
 #	!!! THIS MAKEFILE IS FOR GMT DEVELOPERS ONLY !!!
