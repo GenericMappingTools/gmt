@@ -6686,12 +6686,12 @@ GMT_LONG GMT_parse_front (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd)
 {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = 1 when called to process command line options */
-	GMT_LONG decode_error = 0, bset = 0, j, n, k, len, slash = 0, colon, check = TRUE, col_off = mode;
+	GMT_LONG decode_error = 0, bset = 0, j, n, k, slash = 0, colon, check = TRUE, col_off = mode;
 	char symbol_type, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], text_cp[GMT_TEXT_LEN256], *c = NULL, *s = NULL;
 	static char *allowed_symbols[2] = {"=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
 #ifdef GMT_COMPAT
-	GMT_LONG one;
+	GMT_LONG one, len;
 	char txt_c[GMT_TEXT_LEN256];
 #endif
 	p->n_required = p->convert_angles = p->n_nondim = 0;

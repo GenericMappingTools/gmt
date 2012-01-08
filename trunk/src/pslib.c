@@ -3034,7 +3034,7 @@ PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	if (length == 0) return (PSL_NO_ERROR);					/* NULL vector */
 	angle = atan2 (ytip-y, xtip-x) * R2D;					/* Angle vector makes with horizontal, in radians */
 	tailwidth = param[2];
-	headlength = param[3];	headwidth = param[4];	headshape = param[5];
+	headlength = param[3];	headwidth = 0.5 * param[4];	headshape = param[5];
 	off = 0.5 * (2.0 - headshape) * headlength;
 	status = irint (param[6]);
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */

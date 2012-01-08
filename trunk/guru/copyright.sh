@@ -18,7 +18,7 @@ find . -name '*.sh'   -exec grep -H Copyright {} \; | grep -v ${newyear} | awk -
 find . -name '*.mk'   -exec grep -H Copyright {} \; | grep -v ${newyear} | awk -F: '{print $1}' >> $$.tmp.lis
 find . -name 'README*' -exec grep -H Copyright {} \; | grep -v ${newyear} | awk -F: '{print $1}' >> $$.tmp.lis
 find . -name '*akefile' -exec grep -H Copyright {} \; | grep -v ${newyear} | awk -F: '{print $1}' >> $$.tmp.lis
-sort -u $$.tmp.lis | egrep -v '/include/|copyright.sh|triangle.c|triangle.h|README.TRIANGLE' > $$.progs.lis
+sort -u $$.tmp.lis | egrep -v '/guru|/include/|copyright.sh|triangle.c|triangle.h|README.TRIANGLE|text-base|fonts|s_rint.c' > $$.progs.lis
 
 # 2. Make sed substitution script
 let lastyear=newyear-1
