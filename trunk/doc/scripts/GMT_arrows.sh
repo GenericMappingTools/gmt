@@ -25,8 +25,8 @@ EOF
 # Geo arrows
 psxy -R0/90/-41.17/41.17 -JM1.75i -S -W1.5p -Gred -O -K -B0 --MAP_VECTOR_SHAPE=0.5 -X2i --MAP_FRAME_TYPE=plain << EOF >> $ps
 10	0	90	8000	=0.2i
-10	15	90	8000	=0.2i+e
-10	-15	90	8000	=0.2i+b
+10	13	90	8000	=0.2i+e
+10	-13	90	8000	=0.2i+b
 10	25	90	8000	=0.2i+b+e
 10	-25	90	8000	=0.2i+b+e
 10	35	90	8000	=0.2i+r+b
