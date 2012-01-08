@@ -133,7 +133,7 @@ void *return_address (void *data, GMT_LONG type) {
 void GMT_io_banner (struct GMT_CTRL *C, GMT_LONG direction)
 {	/* Write verbose message about binary record i/o format */
 	char message[GMT_TEXT_LEN256], skip[GMT_TEXT_LEN64];
-	char *letter = "chilfd", s[2] = {0, 0};
+	char *letter = "cuhHiIlLfditTn", s[2] = {0, 0};
 	GMT_LONG col;
 	
 	if (C->current.setting.verbose < GMT_MSG_NORMAL) return;	/* Not in verbose mode anyway */
