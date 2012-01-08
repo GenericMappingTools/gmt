@@ -290,8 +290,8 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG row, col, col_0, row_0, d_col, d_row, k, ij, justify, error = FALSE;
 
-	double tmp, x, y, plot_x, plot_y, x_off, y_off;
-	double x2, y2, wesn[4], vec_length, vec_azim, c, s, dim[7];
+	double tmp, x, y, plot_x, plot_y, x_off, y_off, f;
+	double x2, y2, wesn[4], vec_length, vec_azim, scaled_vec_length, c, s, dim[PSL_MAX_DIMS];
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
 	struct GMT_PALETTE *P = NULL;
@@ -420,6 +420,9 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		col_0 = irint ((tmp - Grid[0]->header->wesn[XLO]) * Grid[0]->header->r_inc[GMT_X]);
 	}
 
+	dim[5] = GMT->current.setting.map_vector_shape;	/* These do not change inside the loop */
+	dim[6] = Ctrl->Q.S.v.status;
+	
 	for (row = row_0; row < Grid[1]->header->ny; row += d_row) {
 		y = GMT_grd_row_to_y (GMT, row, Grid[0]->header);
 		for (col = col_0; col < Grid[1]->header->nx; col += d_col) {
@@ -442,8 +445,6 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				vec_azim = atan2d (Grid[1]->data[ij], Grid[0]->data[ij]);
 			}
 
-			if (Ctrl->C.active) GMT_get_rgb_from_z (GMT, P, vec_length, Ctrl->G.fill.rgb);
-
 			x = GMT_grd_col_to_x (GMT, col, Grid[0]->header);
 			GMT_geo_to_xy (GMT, x, y, &plot_x, &plot_y);
 
@@ -453,11 +454,11 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			vec_azim *= D2R;
 			/* vec_azim is now in radians */
-			vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
-			/* vec_length is now in inches */
+			scaled_vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
+			/* scaled_vec_length is now in inches */
 			sincos (vec_azim, &s, &c);
-			x2 = plot_x + vec_length * c;
-			y2 = plot_y + vec_length * s;
+			x2 = plot_x + scaled_vec_length * c;
+			y2 = plot_y + scaled_vec_length * s;
 
 			justify = GMT_vec_justify (Ctrl->Q.S.v.status);	/* Return justification as 0-2 */
 			if (justify) {	/* Justify vector at center, or tip [beginning] */
@@ -466,22 +467,25 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				x2 -= x_off;		y2 -= y_off;
 			}
 
+			if (Ctrl->C.active) {	/* Update pen and fill color based on the vector length */
+				GMT_get_rgb_from_z (GMT, P, vec_length, Ctrl->G.fill.rgb);
+				GMT_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
+				GMT_setpen (GMT, &Ctrl->W.pen);
+				if (Ctrl->Q.active) GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
+			}
+			
 			if (!Ctrl->Q.active) {	/* Just a line segment */
-				if (Ctrl->C.active) GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 				PSL_plotsegment (PSL, plot_x, plot_y, x2, y2);
 				continue;
 			}
 			/* Must plot a vector */
 			dim[0] = x2; dim[1] = y2;
-			dim[2] = Ctrl->Q.S.v.v_width;	dim[3] = Ctrl->Q.S.v.h_length;
-			dim[4] = Ctrl->Q.S.v.h_width;	dim[5] = GMT->current.setting.map_vector_shape;
-			dim[6] = Ctrl->Q.S.v.status;
-			if (vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
-				for (k = 2; k <= 4; k++) dim[k] *= vec_length / Ctrl->Q.S.v.v_norm;
-				PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
+			dim[2] = Ctrl->Q.S.v.v_width;	dim[3] = Ctrl->Q.S.v.h_length;	dim[4] = Ctrl->Q.S.v.h_width;
+			if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
+				f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
+				for (k = 2; k <= 4; k++) dim[k] *= f;
 			}
-			else	/* Leave as specified */
-				PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
+			PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 		}
 	}
 

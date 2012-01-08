@@ -24,7 +24,7 @@ S 0.1i e 0.15i yellow 0.25p 0.3i This ellipse is yellow
 S 0.1i w 0.15i green 0.25p 0.3i This wedge is green
 S 0.1i f 0.25i/-1/0.075i+l+b blue 0.25p 0.3i This is a fault
 S 0.1i - 0.15i - 0.25p,- 0.3i A contour
-S 0.1i v 0.25i/0.06i magenta 0.5p 0.3i This is a vector
+S 0.1i v 0.25i/0.075i magenta 0.5p 0.3i This is a vector
 S 0.1i i 0.15i cyan 0.25p 0.3i This triangle is boring
 V 0 1p
 N 1
