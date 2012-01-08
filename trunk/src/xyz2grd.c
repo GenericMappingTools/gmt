@@ -139,8 +139,8 @@ GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     a  Ascii (one value per record).\n");
 	GMT_message (GMT, "\t     c  signed 1-byte character.\n");
 	GMT_message (GMT, "\t     u  unsigned 1-byte character.\n");
-	GMT_message (GMT, "\t     h  signed short 2-byte integer.\n");
-	GMT_message (GMT, "\t     H  unsigned short 2-byte integer.\n");
+	GMT_message (GMT, "\t     h  signed 2-byte integer.\n");
+	GMT_message (GMT, "\t     H  unsigned 2-byte integer.\n");
 	GMT_message (GMT, "\t     i  signed 4-byte integer.\n");
 	GMT_message (GMT, "\t     I  unsigned 4-byte integer.\n");
 	if (sizeof (GMT_LONG) == 8) {
@@ -259,10 +259,13 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 		}
 	}
 
-	GMT_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
-	if (b_only && Ctrl->Z.active) {
-		GMT->common.b.active[GMT_IN] = FALSE;
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -Z overrides -bi\n");
+	if (Ctrl->Z.active) {
+		GMT_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
+		GMT->common.b.type[GMT_IN] = Ctrl->Z.type;
+		if (b_only) {
+			GMT->common.b.active[GMT_IN] = FALSE;
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: -Z overrides -bi\n");
+		}
 	}
 
 #ifdef GMT_COMPAT
