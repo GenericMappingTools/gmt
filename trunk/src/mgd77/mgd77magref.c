@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
+ *    Copyright (c) 2009-2012 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /*

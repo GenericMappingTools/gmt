@@ -11,6 +11,7 @@ fi
 newyear=`date '+%Y'`
 # 1. Find all GMT files with "Copyright" in it; exclude files in /include and this script
 find . -name '*.[ch]' -exec grep -H Copyright {} \; | grep -v ${newyear} | awk -F: '{print $1}' >| $$.tmp.lis
+find . -name '*.ac'   -exec grep -H Copyright {} \; | grep -v ${newyear} | awk -F: '{print $1}' >> $$.tmp.lis
 find . -name '*.in'   -exec grep -H Copyright {} \; | grep -v ${newyear} | awk -F: '{print $1}' >> $$.tmp.lis
 find . -name '*.tex'  -exec grep -H Copyright {} \; | grep -v ${newyear} | awk -F: '{print $1}' >> $$.tmp.lis
 find . -name '*.txt'  -exec grep -H Copyright {} \; | grep -v ${newyear} | awk -F: '{print $1}' >> $$.tmp.lis
