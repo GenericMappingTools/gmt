@@ -1,4 +1,0 @@
-.TP
-GMT_o_OPT
-Select specific data columns for output, in arbitrary order.  Columns not listed will be skipped.
-Give columns (or column ranges) separated by commas [Default writes all columns in order].

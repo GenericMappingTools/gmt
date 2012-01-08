@@ -1,9 +1,0 @@
-#	$Id$
-#
-# Simulates the JET colormap in Matlab
-#
-0.000	0/0/127	0.125	blue
-0.125	blue	0.375	cyan
-0.375	cyan	0.625	yellow
-0.625	yellow	0.875	red
-0.875	red	1.000	127/0/0

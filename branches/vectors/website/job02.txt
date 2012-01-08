@@ -1,6 +1,0 @@
-$Id$
-Example 2. Images of bathymetry and the marine geoid in the region surrounding the
-Hawaiian Islands.  The two images are oblique Mercator projections of data
-sampled on a geographical grid.  The data were extracted from global data sets
-available from the National Geophysical Data Center in Boulder, CO.  Separate
-calls to grdimage and psscale created the composite illustration.

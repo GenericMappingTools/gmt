@@ -1,5 +1,0 @@
-$Id$
-Example 23.  Distances on the Earth are easily calculated
-with grdmath, here contoured as distances from Rome.
-The contour labels are now fully justified (relative to
-the contours) by the PostScript interpreter.

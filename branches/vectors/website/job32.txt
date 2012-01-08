@@ -1,2 +1,0 @@
-$Id$
-Example 32.  Using an image as an overlay on top of a topographic surface.
