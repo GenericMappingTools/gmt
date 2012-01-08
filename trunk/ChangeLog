@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-01-08	pwessel
+	* grdcut.c:		The -Z would give incorrect -R for pixel grids.  Now also
+				print warning if output grid equals input grid (no change).
+
 2012-01-08      remko
 	* xyz2grd.txt:		Added missing 'H' and 'I' to -Z options.
 	* xyz2grd.c:		Bug fix: -Z..h etc needs to imply proper -bi setting.
