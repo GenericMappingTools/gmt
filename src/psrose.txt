@@ -58,20 +58,7 @@ disables that label.  Use OPT(L) with no argument to disable all four labels
 .TP
 OPT(M)IT(parameters)
 Used with OPT(C) to modify vector parameters.  For vector heads, append vector head IT(size) [Default is 0, i.e., a line].  
-Several modifiers may be appended to specify placement of vector heads, their shapes, and the justification of the vector:
-.br
-MOD(a)IT(angle) sets the angle of the vector head apex [30].
-.br
-MOD(b) places a vector head at the beginning of the vector path [none].
-.br
-MOD(e) places a vector head at the end of the vector path [none].
-.br
-MOD(l) draws half-arrows, using only the left side [both].
-.br
-MOD(r) draws half-arrows, using only the right side [both].
-.br
-MOD(j)IT(just) determines how the input IT(x),IT(y) point relates
-to the vector.  Choose from BD(b)eginning [default], BD(e)nd, or BD(c)enter.
+See VECTOR ATTRIBUTES for specifying additional attributes.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
@@ -106,6 +93,7 @@ Input file has (azimuth,radius) pairs rather than the expected (radius,azimuth).
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
+#include "explain_vectors.txt"
 .SH EXAMPLES
 To plot a half circle rose diagram of the data in the file fault_segments.az_r (containing
 pairs of (azimuth, length in meters), using a 10 degree bin sector width,
