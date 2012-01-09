@@ -1484,6 +1484,7 @@ GMT_LONG GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 GMT_LONG GMT_gdal_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
+	char strR[128];
 
 	if (!strcmp (header->name, "=")) {
 		GMT_report (C, GMT_MSG_FATAL, "Pipes cannot be used within the GDAL interface.\n");
@@ -1495,6 +1496,14 @@ GMT_LONG GMT_gdal_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header) 
 	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
 
 	to_gdalread->M.active = TRUE;		/* Metadata only */
+
+	if (C->common.R.wesn[XLO] != 0 || C->common.R.wesn[XHI] != 0) {	/* We have a Sub-region demand */
+		to_gdalread->R.active = TRUE;
+		sprintf(strR, "%.10f/%.10f/%.10f/%.10f", C->common.R.wesn[XLO], C->common.R.wesn[XHI], 
+												C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
+		to_gdalread->R.region = strR;
+	}
+
 	if (GMT_gdalread (C, header->name, to_gdalread, from_gdalread)) {
 		GMT_report (C, GMT_MSG_FATAL, "ERROR reading file with gdalread.\n");
 		return (GMT_GRDIO_OPEN_FAILED);
