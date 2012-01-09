@@ -5986,6 +5986,7 @@ GMT_LONG GMT_conv_intext2dbl (struct GMT_CTRL *C, char *record, GMT_LONG ncols)
 	char p[GMT_BUFSIZ];
 
 	while (k < ncols && GMT_strtok (C, record, " \t,", &pos, p)) {	/* Get each field in turn and bail when done */
+		if (!(p[0] == '+' || p[0] == '-' || p[0] == '.' || isdigit ((int)p[0]))) continue;	/* Numbers must be [+|-][.][<digits>] */
 		GMT_scanf (C, p, C->current.io.col_type[GMT_IN][k], &C->current.io.curr_rec[k]);	/* Be tolerant of errors */
 		k++;
 	}
