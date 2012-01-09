@@ -276,8 +276,8 @@ EXTERN_MSC void GMT_pickdefaults (struct GMT_CTRL *C, GMT_LONG lines, struct GMT
 EXTERN_MSC void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options);
 EXTERN_MSC GMT_LONG GMT_geo_C_format (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file);
-EXTERN_MSC GMT_LONG GMT_equal_double (double A, double B, int maxUlps);
-EXTERN_MSC GMT_LONG GMT_equal_float  (float A, float B, int maxUlps);
+EXTERN_MSC GMT_LONG GMT_equal_double (double A, double B, int64_t maxUlps);
+EXTERN_MSC GMT_LONG GMT_equal_float  (float A, float B, int32_t maxUlps);
 
 EXTERN_MSC GMT_LONG GMT_message (struct GMT_CTRL *C, char *format, ...);
 EXTERN_MSC GMT_LONG GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...);
