@@ -110,7 +110,7 @@ EXTERN_MSC GMT_LONG GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, GMT_LONG family
 /* Macro to apply columns log/scale/offset conversion on the fly */
 #define gmt_convert_col(S,x) {if (S.convert) x = ((S.convert == 2) ? log10 (x) : x) * S.scale + S.offset;}
 
-static const char *GMT_type[GMTAPI_N_TYPES] = {"byte", "integer", "integer", "integer", "double", "double", "string", "datetime"};
+static const char *GMT_type[GMTAPI_N_TYPES] = {"byte", "byte", "integer", "integer", "integer", "integer", "integer", "integer", "double", "double", "string", "datetime"};
 
 /* Library functions needed for Windows DLL to work properly.
  * These are only compiled under Windows - under other OS the
@@ -1995,7 +1995,7 @@ GMT_LONG gmt_h_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		d[i] = (double) GMT_swab2 (h);
+		d[i] = (short int) GMT_swab2 (h);
 	}
 	return (1);
 }
@@ -2023,7 +2023,7 @@ GMT_LONG gmt_H_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		d[i] = (double) GMT_swab2 (h);
+		d[i] = (unsigned short int) GMT_swab2 (h);
 	}
 	return (1);
 }
@@ -2051,7 +2051,7 @@ GMT_LONG gmt_i_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		d[i] = (double) GMT_swab4 (i4);
+		d[i] = (int) GMT_swab4 (i4);
 	}
 	return (1);
 }
@@ -2079,7 +2079,7 @@ GMT_LONG gmt_I_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		d[i] = (double) GMT_swab4 (i4);
+		d[i] = (unsigned int) GMT_swab4 (i4);
 	}
 	return (1);
 }
@@ -2528,10 +2528,10 @@ GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z
 			case 'a':	/* ASCII (1 per record) */
 			case 'c':	/* Binary signed char */
 			case 'u':	/* Binary unsigned char */
-			case 'h':	/* Binary short 2-byte integer */
-			case 'H':	/* Binary unsigned short 2-byte integer */
-			case 'i':	/* Binary 4-byte integer */
-			case 'I':	/* Binary 4-byte unsigned integer */
+			case 'h':	/* Binary signed 2-byte integer */
+			case 'H':	/* Binary unsigned 2-byte integer */
+			case 'i':	/* Binary signed 4-byte integer */
+			case 'I':	/* Binary unsigned 4-byte integer */
 			case 'f':	/* Binary 4-byte float */
 			case 'd':	/* Binary 8-byte double */
 				z->type = txt[i];
@@ -2552,14 +2552,14 @@ GMT_LONG GMT_get_io_type (struct GMT_CTRL *C, char type)
 	GMT_LONG t = -1;
 	switch (type) {	/* Set read pointer depending on data format */
 		case 'a': case 'A': t = -1; break;		/* ASCII */
-		case 'u': t = GMTAPI_UCHAR; break;	/* Binary unsigned char */
 		case 'c': t = GMTAPI_CHAR; break;	/* Binary signed char */
-		case 'H': t = GMTAPI_USHORT; break;	/* Binary unsigned short 2-byte integer */
-		case 'h': t = GMTAPI_SHORT; break;	/* Binary signed short 2-byte integer */
-		case 'I': t = GMTAPI_UINT; break;	/* Binary 4-byte unsigned integer */
+		case 'u': t = GMTAPI_UCHAR; break;	/* Binary unsigned char */
+		case 'h': t = GMTAPI_SHORT; break;	/* Binary 2-byte signed integer */
+		case 'H': t = GMTAPI_USHORT; break;	/* Binary 2-byte unsigned integer */
 		case 'i': t = GMTAPI_INT; break;	/* Binary 4-byte signed integer */
-		case 'L': t = GMTAPI_ULONG; break;	/* Binary 8-byte unsigned integer, 64-bit mode only */
+		case 'I': t = GMTAPI_UINT; break;	/* Binary 4-byte unsigned integer */
 		case 'l': t = GMTAPI_LONG; break;	/* Binary 8-byte signed integer, 64-bit mode only */
+		case 'L': t = GMTAPI_ULONG; break;	/* Binary 8-byte unsigned integer, 64-bit mode only */
 		case 'f': t = GMTAPI_FLOAT; break;		/* Binary 4-byte float */
 		case 'd': t = GMTAPI_DOUBLE; break;		/* Binary 8-byte double */
 		default:
@@ -2659,10 +2659,10 @@ GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_LONG repeat[], GM
 				if (first) r->format = GMT_ROW_FORMAT;
 				r->y_step = -1;	first = FALSE;	break;
 			case 'L':
-				if (first)r->format = GMT_COLUMN_FORMAT;
+				if (first) r->format = GMT_COLUMN_FORMAT;
 				r->x_step = 1;	first = FALSE;	break;
 			case 'R':
-				if (first)r->format = GMT_COLUMN_FORMAT;
+				if (first) r->format = GMT_COLUMN_FORMAT;
 				r->x_step = -1;	first = FALSE;	break;
 			default:
 				GMT_report (C, GMT_MSG_FATAL, "Syntax error -Z: %c not a valid format specifier!\n", format[k]);

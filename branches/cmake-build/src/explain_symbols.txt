@@ -119,7 +119,7 @@ must be given in columns
 #else
 3-5.
 #endif
-See VECTORS for specifying attributes.
+See VECTOR ATTRIBUTES for specifying attributes.
 .TP
 OPT(SM)
 Same as OPT(Sm) but switches to straight angle symbol if angles subtend 90 degrees exactly.
@@ -189,12 +189,12 @@ BD(v)ector.  Direction (in degrees counter-clockwise from horizontal) and length
 3 and 4.
 #endif
 The IT(size) is the length of the vector head. Vector width is set by OPT(W).
-See VECTORS for specifying attributes.
+See VECTOR ATTRIBUTES for specifying attributes.
 .TP
 OPT(SV)
 Same as OPT(Sv), except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
 be mapped into an angle based on the chosen map projection (OPT(Sv) leaves the directions unchanged.)
-See VECTORS for specifying attributes.
+See VECTOR ATTRIBUTES for specifying attributes.
 .TP
 OPT(Sw)
 pie BD(w)edge.  Start and stop directions (in degrees counter-clockwise from horizontal) for pie slice
@@ -234,4 +234,4 @@ geovector.  Azimuth (in degrees east from north) and length (in km) must be foun
 3 and 4.
 #endif
 The IT(size) is the length of the vector head. Vector width is set by OPT(W).
-See VECTORS for specifying attributes.
+See VECTOR ATTRIBUTES for specifying attributes.

@@ -223,11 +223,16 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					j1 = j;
 			}
 		}
-		/* Evaluate the new grid boundary */
-		wesn_new[XLO] = GMT_grd_col_to_x (GMT, i0, G->header);
-		wesn_new[XHI] = GMT_grd_col_to_x (GMT, i1, G->header);
-		wesn_new[YHI] = GMT_grd_row_to_y (GMT, j0, G->header);
-		wesn_new[YLO] = GMT_grd_row_to_y (GMT, j1, G->header);
+		if (i0 == 0 && j0 == 0 && i1 == (G->header->nx-1) && j1 == (G->header->ny-1)) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Your -Z limits produced no subset - output grid is identical to input grid\n");
+			GMT_memcpy (wesn_new, G->header->wesn, 4, double);
+		}
+		else {	/* Adjust boundaries inwards */
+			wesn_new[XLO] = G->header->wesn[XLO] + i0 * G->header->inc[GMT_X];
+			wesn_new[XHI] = G->header->wesn[XHI] - (G->header->nx - 1 - i1) * G->header->inc[GMT_X];
+			wesn_new[YLO] = G->header->wesn[YLO] + (G->header->ny - 1 - j1) * G->header->inc[GMT_Y];
+			wesn_new[YHI] = G->header->wesn[YHI] - j0 * G->header->inc[GMT_Y];
+		}
 		GMT_free (GMT, G->data);	/* Free the grid array only as we need the header below */
 	}
 	else {	/* Just the usual subset selection via -R */

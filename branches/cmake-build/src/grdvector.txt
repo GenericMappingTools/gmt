@@ -54,25 +54,7 @@ Do NOT clip vectors at map boundaries [Default will clip].
 .TP
 OPT(Q)IT(parameters)
 Modify vector parameters.  For vector heads, append vector head IT(size) [Default is 0, i.e., stick-plot].  
-Several modifiers may be appended to specify placement of vector heads, their shapes, and the justification of the vector:
-.br
-MOD(a)IT(angle) sets the angle of the vector head apex [30].
-.br
-MOD(b) places a vector head at the beginning of the vector path [none].
-.br
-MOD(e) places a vector head at the end of the vector path [none].
-.br
-MOD(l) draws half-arrows, using only the left side [both].
-.br
-MOD(r) draws half-arrows, using only the right side [both].
-.br
-MOD(n)IT(norm) scales down vector attributes (pen thickness, head size) with decreasing length,
-where vectors shorter than IT(norm) will have their
-attributes scaled by length/IT(norm) [arrow attributes remains invariant to length].
-.br
-.sp
-MOD(j)IT(just) determines how the input IT(x),IT(y) point relates
-to the vector.  Choose from BD(b)eginning [default], BD(e)nd, or BD(c)enter.
+See VECTOR ATTRIBUTES for specifying additional attributes.
 #include "explain_-R.txt"
 Specify a subset of the grid.
 .TP
@@ -98,6 +80,7 @@ Means the angles provided are azimuths rather than direction (requires OPT(A)).
 #include "explain_-t.txt"
 #include "explain_help.txt"
 #include "explain_grd_input.txt"
+#include "explain_vectors.txt"
 .SH EXAMPLES
 To draw the vector field given by the files r.nc and theta.nc on a linear plot
 with scale LEN1 cm per data unit,

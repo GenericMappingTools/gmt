@@ -1,6 +1,6 @@
 .SH VECTOR ATTRIBUTES
-Several modifiers may be appended to the OPT(Sm), OPT(SM), OPT(Sv), OPT(SV), and OPT(S=) options
-to specify placement of vector heads, their shapes, and the justification of the vector:
+Several modifiers may be appended to the vector-producing options
+to specify the placement of vector heads, their shapes, and the justification of the vector:
 .br
 .sp
 MOD(a)IT(angle) sets the angle of the vector head apex [30].
@@ -18,7 +18,7 @@ where vectors shorter than IT(norm) will have their
 attributes scaled by length/IT(norm) [arrow attributes remains invariant to length].
 .br
 .sp
-In addition, OPT(Sm), OPT(Sv), OPT(SV) may also take these modifiers:
+In addition, all but circular vectors may take these modifiers:
 .br
 .sp
 MOD(j)IT(just) determines how the input IT(x),IT(y) point relates
