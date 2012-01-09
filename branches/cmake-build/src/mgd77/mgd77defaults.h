@@ -1,5 +1,5 @@
 /* MGD-77 Data Record Field Defaults:
- *    Copyright (c) 2005-2011 by P. Wessel and M. T. Chandler *
+ *    Copyright (c) 2005-2012 by P. Wessel and M. T. Chandler *
  *      See LICENSE.TXT file for copying and redistribution conditions.
 		   Name,                          Abbrev,     Start,  Length,  FortranCode,   Factor,   readMGD77,   order,   printMGD77,   printVALS,   Not_given    */
 		{ "Data Record Type",                      "drt",         1,	   1,        "int",        1,       "%1d",       1,        "%1d",        NULL,           "9" },
