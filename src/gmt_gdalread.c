@@ -56,8 +56,9 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nXYSize, nBufXSize, nBufYSize;
+	int n, m;
 	GMT_LONG	fliplr;
-	GMT_LONG	n, m, nn, off, got_R = FALSE, got_r = FALSE, error = FALSE;
+	GMT_LONG	nn, off, got_R = FALSE, got_r = FALSE, error = FALSE;
 	GMT_LONG	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
 	GMT_LONG	n_alloc, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
 	GMT_LONG	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
@@ -173,7 +174,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		populate_metadata (C, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
 
 		/* Return registration based on data type of first band. Byte is pixel reg otherwise set grid registration */
-		if (!Ctrl->hdr[6]) {		/* Grid registration */
+		if (!Ctrl->hdr[6] && !prhs->R.active) {		/* Grid registration */
 			Ctrl->hdr[0] += Ctrl->hdr[7] / 2;	Ctrl->hdr[1] -= Ctrl->hdr[7] / 2;
 			Ctrl->hdr[2] += Ctrl->hdr[8] / 2;	Ctrl->hdr[3] -= Ctrl->hdr[8] / 2;
 		}
