@@ -8043,17 +8043,23 @@ int GMT_fscanf (FILE *stream, char *format, ...) {
 #	define ABS(x) (((x) >= 0) ? (x) : -(x))
 #endif
 
-GMT_LONG GMT_equal_double (double A, double B, int maxUlps) {
+GMT_LONG GMT_equal_double (double A, double B, int64_t maxUlps) {
 	/* Adapted from http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
 	 * Note: the original code breaks the strict aliasing requirement from C99.
 	 * The only safe way to avoid undefined behavior is via memcpy:
-	 * http://labs.qt.nokia.com/2011/06/10/type-punning-and-strict-aliasing/ */
+	 * http://labs.qt.nokia.com/2011/06/10/type-punning-and-strict-aliasing/
+	 *
+	 * A, B   : two floating-point numbers (double precision) to compare
+	 * maxUlps: maximum spacing between the floating-point numbers A and B.
+	 * ULP    = unit in the last place or unit of least precision.
+	 */
 
 	int64_t aInt, bInt, intDiff;
 
-	/* Make sure maxUlps is non-negative and small enough that the */
-	/* default NAN won't compare as equal to anything. */
-	assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
+	/* Make sure maxUlps is non-negative and small enough that the
+	 * default NaN won't compare as equal to anything.
+	 * Assumes that nan = 0xfff8000000000000 and -inf = 0xfff0000000000000 */
+	assert(maxUlps > 0 && maxUlps < 0x0008000000000000);
 
 	memcpy(&aInt, &A, sizeof(double));
 	memcpy(&bInt, &B, sizeof(double));
@@ -8062,17 +8068,21 @@ GMT_LONG GMT_equal_double (double A, double B, int maxUlps) {
 	if (aInt < 0) aInt = 0x8000000000000000 - aInt;
 	/* Make bInt lexicographically ordered as a twos-complement int */
 	if (bInt < 0) bInt = 0x8000000000000000 - bInt;
+
 	intDiff = ABS (aInt - bInt);
-	if (intDiff <= maxUlps) return TRUE;
+	if (intDiff <= maxUlps)
+		return TRUE;
 	return FALSE;
 }
 
-GMT_LONG GMT_equal_float (float A, float B, int maxUlps) {
+GMT_LONG GMT_equal_float (float A, float B, int32_t maxUlps) {
 	int32_t aInt, bInt, intDiff;
+	/* See description in GMT_equal_double() */
 
-	/* Make sure maxUlps is non-negative and small enough that the */
-	/* default NAN won't compare as equal to anything. */
-	assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
+	/* Make sure maxUlps is non-negative and small enough that the
+	 * default NaN won't compare as equal to anything.
+	 * Assumes that nan = 0xffc00000 and -inf = 0xff800000 */
+	assert(maxUlps > 0 && maxUlps < 0x00400000);
 
 	memcpy(&aInt, &A, sizeof(float));
 	memcpy(&bInt, &B, sizeof(float));
@@ -8081,7 +8091,9 @@ GMT_LONG GMT_equal_float (float A, float B, int maxUlps) {
 	if (aInt < 0) aInt = 0x80000000 - aInt;
 	/* Make bInt lexicographically ordered as a twos-complement int */
 	if (bInt < 0) bInt = 0x80000000 - bInt;
+
 	intDiff = ABS (aInt - bInt);
-	if (intDiff <= maxUlps) return TRUE;
+	if (intDiff <= maxUlps)
+		return TRUE;
 	return FALSE;
 }
