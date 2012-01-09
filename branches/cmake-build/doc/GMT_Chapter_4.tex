@@ -1742,6 +1742,35 @@ to specify the illumination of the colors defined by the former.
 Similarly, one could portray magnetic anomalies superimposed on
 topography by using the former for colors and the latter for shading. 
 
+\section{The Drawing of Vectors}
+\label{sec:vectors}
+\index{Vectors!Cartesian}
+\index{Vectors!Circular}
+\index{Vectors!Great-circle}
+
+\GMT\ supports plotting vectors in various forms.  Vectors is one of many symbols
+that may be plotted by \GMTprog{psxy} and \GMTprog{psxyz}, is the main feature
+in \GMTprog{grdvector}, and are indirectly used by others.  All vectors plotted by \GMT\ consist of two separate
+parts: The vector line (controlled by the chosen pen attributes) and the optional
+vector head(s) (controlled by the chosen fill).  We distinguish between three types of vectors:
+\begin{enumerate}
+	\item Cartesian vectors are plotted as straight lines.  They can be specified by a
+	start point and the direction and length (in map units) of the vector, or by the beginning and end point.
+	They may also be specified giving the azimuth and length (in km) instead.
+	
+	\item Circular vectors are (as the name implies) circular and can be used to indicate opening
+	angles.  It accepts an origin, a radius, and the beginning and end angles.
+	
+	\item Geo-vectors are drawn using great circle arcs.  They are specified by a beginning point
+	and the azimuth and length (in km) of the vector, or by the beginning and end point.
+\end{enumerate}
+\GMTfig[h]{GMT_arrows}{Examples of Cartesian (left), circular (middle), and geo-vectors (right) for different
+attribute specifications.  Note that both full and half arrow-heads can be specified, as well as no head at all.}
+There are numerous attributes you can modify for the vectors, including how the vector should be justified relative
+to the given point (beginning, center, or end), where heads (if any) should be placed, if the head should just be the
+left or right half, if the vector attributes should shrink for vectors whose length are less than a given cutoff
+length, and the size and shape of the head.  These attributes are detailed further in the relevant manual pages.
+
 \section{Character escape sequences}
 \label{sec:escape}
 \index{Characters!European}
