@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ * Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * gmt_imgsubs.c -- subroutines supporting the GMT supplement imgsrc,
