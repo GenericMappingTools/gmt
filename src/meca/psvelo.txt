@@ -142,6 +142,22 @@ azimuth of eps2 in degrees CW from North.
 OPT(A)
 IT(Arrow_width/Head_length/Head_width )
 Size of arrow in inches.  [Default is 0.03/0.12/0.09].
+OPT(A)IT(parameters)
+Modify vector parameters.  For vector heads, append vector head IT(size) [Default is 9p].  
+Several modifiers may be appended to specify placement of vector heads, their shapes, and the justification of the vector:
+.br
+MOD(a)IT(angle) sets the angle of the vector head apex [30].
+.br
+MOD(b) places a vector head at the beginning of the vector path [none].
+.br
+MOD(e) places a vector head at the end of the vector path [none].
+.br
+MOD(l) draws half-arrows, using only the left side [both].
+.br
+MOD(r) draws half-arrows, using only the right side [both].
+.br
+MOD(j)IT(just) determines how the input IT(x),IT(y) point relates
+to the vector.  Choose from BD(b)eginning [default], BD(e)nd, or BD(c)enter.
 #include "explain_-B.txt"
 .TP
 OPT(D)IT(Sigma_scale )

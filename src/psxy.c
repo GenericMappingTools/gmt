@@ -305,22 +305,23 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     If -SJ rather than -Sj is selected, psxy will expect azimuth, and\n");
 	GMT_message (GMT, "\t     dimensions in km and convert azimuths based on map projection.\n");
 	GMT_message (GMT, "\t     For linear projection we scale dimensions by the map scale.\n");
-	GMT_message (GMT, "\t   Fronts: Give tickgap/ticklen[dir][type][:offset], where\n");
-	GMT_message (GMT, "\t     dir    = Plot symbol to l(eft) or r(ight) of front [c=centered]\n");
-	GMT_message (GMT, "\t     type   =  b(ox), c(ircle), f(ault), s(lip), t(riangle) [f]\n");
+	GMT_message (GMT, "\t   Fronts: Give tickgap/ticklen[+l|+r][+<type>][+o<offset>], where\n");
+	GMT_message (GMT, "\t     +l or +r   : Plot symbol to left or right of front [centered]\n");
+	GMT_message (GMT, "\t     +<type>    :  +b(ox), +c(ircle), +f(ault), +s(lip), +t(riangle) [f]\n");
 	GMT_message (GMT, "\t       box      : square when centered, half-square otherwise.\n");
 	GMT_message (GMT, "\t       circle   : full when centered, half-circle otherwise.\n");
-	GMT_message (GMT, "\t       fault    : centered cross-tick or tick only in <dir> direction.\n");
+	GMT_message (GMT, "\t       fault    : centered cross-tick or tick only in specified direction.\n");
 	GMT_message (GMT, "\t       slip     : left-or right-lateral strike-slip arrows.\n");
-	GMT_message (GMT, "\t       triangle : diagonal square (c), directed triangle otherwise.\n");
-	GMT_message (GMT, "\t     offset = Plot first symbol when along-front distance is offset [0].\n");
+	GMT_message (GMT, "\t       triangle : diagonal square when centered, directed triangle otherwise.\n");
+	GMT_message (GMT, "\t     +<offset>  : Plot first symbol when along-front distance is offset [0].\n");
 	GMT_message (GMT, "\t   Kustom: Append <symbolname> immediately after 'k'; this will look for\n");
 	GMT_message (GMT, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
 	GMT_message (GMT, "\t     or in $GMT_SHAREDIR (searched in that order).\n");
 	GMT_list_custom_symbols (GMT);
 	GMT_message (GMT, "\t   Letter: append /<string> after symbol size, and optionally %%<font>.\n");
-	GMT_message (GMT, "\t   Mathangle: start/stop directions of math angle must be in columns 3-4.\n");
-	GMT_message (GMT, "\t     Use -Smf for arrow at first angle and -Sml for last, -Smb for both [none].\n");
+	GMT_message (GMT, "\t   Mathangle: radius, start, and stop directions of math angle must be in columns 3-5.\n");
+	GMT_message (GMT, "\t     If -SM rather than -Sm is used, we draw straight angle symbol if 90 degrees.\n");
+	GMT_vector_syntax (GMT, 0);
 	GMT_message (GMT, "\t   Quoted line: Give [d|f|n|l|x]<info>[:<labelinfo>].\n");
 	GMT_message (GMT, "\t     <code><info> controls placement of labels along lines.  Select\n");
 	GMT_cont_syntax (GMT, 7, 1);
@@ -329,22 +330,13 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Rectangles: x- and y-dimensions must be in columns 3-4.\n");
 	GMT_message (GMT, "\t   Rounded rectangles: x- and y-dimensions and corner radius must be in columns 3-5.\n");
 	GMT_message (GMT, "\t   Vectors: Direction and length must be in columns 3-4.\n");
-	GMT_message (GMT, "\t     Furthermore, <size> means vectorwidth/headlength/headwidth\n");
-	GMT_message (GMT, "\t     [Default attributes are %gp/%gp/%gp].\n", VECTOR_LINE_WIDTH, VECTOR_HEAD_LENGTH, VECTOR_HEAD_WIDTH);
-	GMT_message (GMT, "\t     If -SV rather than -Sv is use, psxy will expect azimuth and\n");
+	GMT_message (GMT, "\t     If -SV rather than -Sv is selected, psxy will expect azimuth and\n");
 	GMT_message (GMT, "\t     length and convert azimuths based on the chosen map projection.\n");
-	GMT_message (GMT, "\t     Insert h(head), b(balance point), or t(ail) after -Sv|V to \n");
-	GMT_message (GMT, "\t     justify vector w.r.t. input (x,y).  Insert s(egment) if (x,y)\n");
-	GMT_message (GMT, "\t     is tail and columns 3 and 4 hold the head location (x,y).\n");
-	GMT_message (GMT, "\t     Upper case H, B, T, S gives double-headed vector [Default is t].\n");
+	GMT_vector_syntax (GMT, 3);
 	GMT_message (GMT, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
 	GMT_message (GMT, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
 	GMT_message (GMT, "\t   Geovectors: Azimuth and length (in km) must be in columns 3-4.\n");
-	GMT_message (GMT, "\t     Insert h(head), b(balance point), or t(ail) after -S= to\n");
-	GMT_message (GMT, "\t     justify vector w.r.t. input (x,y), or insert s(egment) if (x,y)\n");
-	GMT_message (GMT, "\t     is tail and columns 3 and 4 hold the head location (x,y).\n");
-	GMT_message (GMT, "\t     Next insert f for arrow at first point, l at last, or b for both [none].\n");
-	GMT_message (GMT, "\t     Finally, append <size> as length of vector head (use -W to set line thickness).\n");
+	GMT_vector_syntax (GMT, 3);
 	GMT_message (GMT, "\t-T Ignore all input files.\n");
 	GMT_explain_options (GMT, "UV");
 	GMT_pen_syntax (GMT, 'W', "Set pen attributes [Default pen is %s]:");
@@ -507,15 +499,14 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG default_outline, outline_active, set_type, n_needed;
 	GMT_LONG error_x = FALSE, error_y = FALSE, def_err_xy = FALSE;
 	GMT_LONG i, n_total_read = 0, j, geometry, tbl, seg, read_mode;
-	GMT_LONG n_cols_start = 2, error = GMT_NOERROR;
+	GMT_LONG n_cols_start = 2, justify, error = GMT_NOERROR;
 	GMT_LONG ex1, ex2, ex3, change, pos2x, pos2y, save_u = FALSE;
 	GMT_LONG xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
 
 	char *text_rec = NULL;
 
-	double dim[7], *in = NULL;
+	double direction, length, dx, dy, dim[PSL_MAX_DIMS], *in = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
-	double direction, length, dx, dy;
 
 	struct GMT_PEN current_pen, default_pen;
 	struct GMT_FILL current_fill, default_fill;
@@ -551,10 +542,6 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	S.base = GMT->session.d_NaN;
 	S.font = GMT->current.setting.font_annot[0];
 	S.u = GMT->current.setting.proj_length_unit;
-	S.v_width  = VECTOR_LINE_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 2p */
-	S.h_width  = VECTOR_HEAD_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
-	S.h_length = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
-
 	Ctrl = New_psxy_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psxy_parse (API, Ctrl, options, &S))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
@@ -697,17 +684,19 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (S.symbol == GMT_SYMBOL_ELLIPSE) Ctrl->N.active = TRUE;	/* So we can see ellipses that have centers outside -R */
 	if (S.symbol == GMT_SYMBOL_BARX && !S.base_set && GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10) S.base = GMT->common.R.wesn[XLO];	/* Default to west level for horizontal log10 bars */
 	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set && GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
-	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v_just == 3) {
+	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & GMT_VEC_JUST_S) {
 		/* Reading 2nd coordinate so must set column types */
 		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
 		GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	}
+#if 0
 	if (S.symbol == GMT_SYMBOL_MARC) {	/* Special treatment since it needs fill to draw heads */
 		if (!Ctrl->G.active) {
 			Ctrl->G.active = TRUE;
 			GMT_rgb_copy (current_fill.rgb, Ctrl->W.pen.rgb);
 		}
 	}
+#endif
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
 	if (not_line && !outline_active && !fill_active && !get_rgb) outline_active = TRUE;	/* If no fill nor outline for symbols then turn outline on */
@@ -829,7 +818,8 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_setfill (GMT, &current_fill, outline_active);
 			GMT_setpen (GMT, &current_pen);
 
-			dim[0] = (S.read_size) ? in[ex1] : S.size_x;
+			if (S.read_size) S.size_x = in[ex1];	/* Got size from input column */
+			dim[0] = S.size_x;
 			if (S.convert_size) dim[0] = ((S.convert_size == 2) ? log10 (dim[0]) : dim[0]) * S.scale - S.origin;
 
 			switch (S.symbol) {
@@ -912,41 +902,57 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					PSL_plottext (PSL, plot_x, plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, PSL_MC, outline_active);
 					break;
 				case GMT_SYMBOL_VECTOR:
-					length = in[ex2];
-					if (!S.convert_angles)
-						direction = in[ex1];
-					else if (!GMT_is_geographic (GMT, GMT_IN))
-						direction = 90.0 - in[ex1];
-					else
-						direction = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1]);
-					if (S.v_just == 3) {	/* Got coordinates of tip instead of dir/length */
+					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
+					length = in[ex2+S.read_size];
+					if (!S.convert_angles)	/* Use direction as given */
+						direction = in[ex1+S.read_size];
+					else if (!GMT_is_geographic (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
+						direction = 90.0 - in[ex1+S.read_size];
+					else	/* Convert geo azimuth to map direction */
+						direction = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
+					if (S.v.status & GMT_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
 						GMT_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (GMT_is_dnan (x_2) || GMT_is_dnan (y_2)) {
 							GMT_report (GMT, GMT_MSG_FATAL, "Warning: Vector head coordinates contain NaNs near line %ld. Skipped\n", n_total_read);
 							continue;
 						}
+						length = hypot (plot_x - x_2, plot_y - y_2);	/* Compute vector length in case of shrinking */
 					}
-					else {	/* Compute tip from tail and length */
+					else {	/* Compute tip coordinates from tail and length */
 						sincosd (direction, &s, &c);
 						x_2 = plot_x + length * c;
 						y_2 = plot_y + length * s;
-						if (S.v_just) {	/* Meant to center the vector at the given point */
-							dx = S.v_just * 0.5 * (x_2 - plot_x);	dy = S.v_just * 0.5 * (y_2 - plot_y);
+						justify = GMT_vec_justify (S.v.status);	/* Return justification as 0-2 */
+						if (justify) {	/* Meant to center the vector at center (1) or tip (2) */
+							dx = justify * 0.5 * (x_2 - plot_x);	dy = justify * 0.5 * (y_2 - plot_y);
 							plot_x -= dx;		plot_y -= dy;
 							x_2 -= dx;		y_2 -= dy;
 						}
 					}
-					s = (length < S.v_norm) ? length * S.v_shrink : 1.0;
+					S.v.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
 					dim[0] = x_2, dim[1] = y_2;
-					dim[2] = s * S.v_width, dim[3] = s * S.h_length, dim[4] = s * S.h_width;
-					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = S.v_double_heads ? 1.0 : 0.0;
+					dim[2] = s * S.v.v_width, dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width;
+					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = S.v.status;
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
-					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex1], &S);
+					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
+					S.v.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex2+S.read_size], in[ex1+S.read_size], &S);
 					break;
 				case GMT_SYMBOL_MARC:
-					dim[4] = GMT->current.setting.map_vector_shape, dim[3] = (double)S.v_double_heads;
+					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
+					S.v.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+					dim[0] = in[ex1+S.read_size];
+					dim[1] = in[ex2+S.read_size];
+					dim[2] = in[ex3+S.read_size];
+					length = fabs (dim[2]-dim[1]);	/* Arc length in degrees */
+					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
+					dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width, dim[5] = s * S.v.v_width;
+					dim[6] = GMT->current.setting.map_vector_shape, dim[7] = S.v.status;
+					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
+					break;
 				case GMT_SYMBOL_WEDGE:
 					if (!S.convert_angles) {
 						dim[1] = in[ex1+S.read_size];

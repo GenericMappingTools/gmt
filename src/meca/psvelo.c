@@ -51,8 +51,7 @@ PostScript code is written to stdout.
 struct PSVELO_CTRL {
 	struct A {	/* -A */
 		GMT_LONG active;
-		double width, length, head;
-		double vector_shape;
+		struct GMT_SYMBOL S;
 	} A;
 	struct D {	/* -D */
 		GMT_LONG active;
@@ -93,8 +92,13 @@ void *New_psvelo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	C->A.width = 0.01, C->A.length = 0.12, C->A.head = 0.03;
-	C->A.vector_shape = 0.4;
+	C->A.S.v.h_length = C->A.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
+	C->A.S.v.v_angle = 30.0;
+	C->A.S.v.status = GMT_VEC_END;
+	C->A.S.v.pen = GMT->current.setting.map_default_pen;
+#ifdef GMT_COMPAT
+	GMT->current.setting.map_vector_shape = 0.4;	/* Historical reasons */
+#endif
 	C->D.scale = 1.0;
 	GMT_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
@@ -127,8 +131,9 @@ GMT_LONG GMT_psvelo_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<b");
-	GMT_message (GMT, "\t-A Change the size of arrow head; specify arrow_width, head_length, head_width;");
-	GMT_message (GMT, "\t   [Default is 0.01i/0.12i/0.03i].");
+	GMT_message (GMT, "\t-A Specify arrow head attributes:");
+	GMT_vector_syntax (GMT, 0);
+	GMT_message (GMT, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
 	GMT_message (GMT, "\t-D Multiply uncertainties by sigscale. (Se and Sw only)i\n");
 	GMT_message (GMT, "\t-E Set color used for uncertainty wedges in -Sw option.\n");
 	GMT_message (GMT, "\t-G Specify color (for symbols/polygons) or pattern (for polygons). fill can be either\n");
@@ -160,7 +165,7 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n, no_size_needed, n_set;
+	GMT_LONG n_errors = 0, n, no_size_needed, n_set, got_A = FALSE;
 	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -175,10 +180,30 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change size of arrow head */
-				sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
-				Ctrl->A.width = GMT_to_inch (GMT, txt);
-				Ctrl->A.length = GMT_to_inch (GMT, txt_b);
-				Ctrl->A.head = GMT_to_inch (GMT, txt_c);
+				got_A = TRUE;
+#ifdef GMT_COMPAT
+				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
+					sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
+					Ctrl->A.S.v.pen.width = GMT_to_points (GMT, txt);
+					Ctrl->A.S.v.h_length = GMT_to_inch (GMT, txt_b);
+					Ctrl->A.S.v.h_width = GMT_to_inch (GMT, txt_c);
+					Ctrl->A.S.v.v_angle = atand (0.5 * Ctrl->A.S.v.h_width / Ctrl->A.S.v.h_length);
+					Ctrl->A.S.v.status |= GMT_VEC_OUTLINE2;
+				}
+				else {
+#endif
+					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
+						n_errors += GMT_parse_vector (GMT, opt->arg, &Ctrl->A.S);
+					}
+					else {	/* Size, plus possible attributes */
+						n = sscanf (opt->arg, "%[^+]%s", txt, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
+						if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
+						Ctrl->A.S.size_x = GMT_to_inch (GMT, txt);	/* Length of vector */
+						n_errors += GMT_parse_vector (GMT, txt_b, &Ctrl->A.S);
+					}
+#ifdef GMT_COMPAT
+				}
+#endif
 				break;
 			case 'D':	/* Rescale Sigmas */
 				Ctrl->D.active = TRUE;
@@ -263,6 +288,8 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.symbol > 1 && Ctrl->S.scale <= 0.0), "Syntax error: Must specify symbol size.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && ! (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_WEDGE), "Syntax error: -D requres -Se|w.\n");
 
+	if (!got_A && Ctrl->W.active) Ctrl->A.S.v.pen = Ctrl->W.pen;	/* Set vector pen to that given by -W  */
+	if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2 && Ctrl->W.active) GMT_rgb_copy (Ctrl->A.S.v.pen.rgb, Ctrl->W.pen.rgb);	/* Set vector pen color from -W but not thickness */
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
@@ -317,6 +344,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->E.active) Ctrl->L.active = TRUE;
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	GMT_init_vector_param (GMT, &Ctrl->A.S);
 
 	old_is_world = GMT->current.map.is_world;
 	station_name = GMT_memory (GMT, NULL, 64, char);
@@ -331,6 +359,8 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_report (GMT, GMT_MSG_NORMAL, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
+
+	Ctrl->A.S.v.v_width = Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -425,22 +455,24 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							t11,t12,t21,t22, Ctrl->E.active, Ctrl->G.fill.rgb, Ctrl->L.active);
 				}
 				if (des_arrow) {	/* verify that arrow is not ridiculously small */
-					if (hypot (plot_x-plot_vx, plot_y-plot_vy) <= 1.5 * Ctrl->A.length) {
+					if (hypot (plot_x-plot_vx, plot_y-plot_vy) <= 1.5 * Ctrl->A.S.v.h_length) {
 						hl = hypot (plot_x-plot_vx,plot_y-plot_vy) * 0.6;
-						hw = hl * Ctrl->A.head/Ctrl->A.length;
-						vw = hl * Ctrl->A.width/Ctrl->A.length;
+						hw = hl * Ctrl->A.S.v.h_width/Ctrl->A.S.v.h_length;
+						vw = hl * Ctrl->A.S.v.v_width/Ctrl->A.S.v.h_length;
 						if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2./PSL_DOTS_PER_INCH;
 					}
 					else {
-						hw = Ctrl->A.head;
-						hl = Ctrl->A.length;
-						vw = Ctrl->A.width;
+						hw = Ctrl->A.S.v.h_width;
+						hl = Ctrl->A.S.v.h_length;
+						vw = Ctrl->A.S.v.v_width;
 					}
 					dim[0] = plot_vx, dim[1] = plot_vy;
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
-					dim[5] = Ctrl->A.vector_shape, dim[6] = 0.0;
+					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = Ctrl->A.S.v.status;
 					GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
+					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->A.S.v.pen);
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
+					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->W.pen);
 					
 					justify = plot_vx - plot_x > 0. ? PSL_MR : PSL_ML;
 					if (Ctrl->S.fontsize > 0.0 && strlen(station_name) > 0)	/* 1 inch = 2.54 cm */
@@ -462,8 +494,8 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_vx, plot_vy);
 				break;
 			case CROSS:
-				Ctrl->A.vector_shape = 0.1; /* triangular arrowheads */
-				trace_cross (GMT, xy[GMT_X],xy[GMT_Y],eps1,eps2,theta,Ctrl->S.scale,Ctrl->A.width,Ctrl->A.length,Ctrl->A.head,Ctrl->A.vector_shape,Ctrl->L.active,Ctrl->W.pen);
+				/* triangular arrowheads */
+				trace_cross (GMT, xy[GMT_X],xy[GMT_Y],eps1,eps2,theta,Ctrl->S.scale,Ctrl->A.S.v.v_width,Ctrl->A.S.v.h_length,Ctrl->A.S.v.h_width,0.1,Ctrl->L.active,Ctrl->W.pen);
 				break;
 			case WEDGE:
 				PSL_comment (PSL, "begin wedge number %li", n_rec);

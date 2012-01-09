@@ -3686,14 +3686,24 @@ GMT_LONG gmt_scanf_dim (struct GMT_CTRL *C, char *s, double *val)
 	in val.  s is a regular float with optional
 	unit info, e.g., 8.5i or 7.5c.  If a valid unit
 	is found we convert the number to inch.
+	We also skip any trailing modifiers like +<mods>, e.g.
+	vector specifications like 0.5i+jc+b+s
 
 	We return GMT_IS_FLOAT and pass val.
 	*/
 
 	if (isalpha ((int)s[0]) || (s[1] == 0 && (s[0] == '-' || s[0] == '+')))	/* Probably a symbol character; quietly return 0 */
 		*val = 0.0;
-	else
-		*val = GMT_to_inch (C, s);
+	else {	/* Probably a dimension with optional unit.  First check if there are modifiers to ignore here */
+		char *p = NULL;
+		if ((p = strchr (s, '+'))) { /* Found trailing +mod args */
+			*p = 0;	/* Chop off modifier */
+			*val = GMT_to_inch (C, s);	/* Get dimension */
+			*p = '+';	/* Restore modifier */
+		}
+		else
+			*val = GMT_to_inch (C, s);
+	}
 	return (GMT_IS_FLOAT);
 }
 
@@ -5362,6 +5372,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 			GMT_free (C, T->header);
 			T->header = NULL;
 		}
+		if (GMT_REC_IS_EOF (C)) continue;	/* Got EOF after headers */
 
 		no_segments = !GMT_REC_IS_SEG_HEADER (C);	/* Not a multi-segment file.  We then assume file has only one segment */
 
@@ -5379,8 +5390,8 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 			}
 			/* Segment initialization */
 			row = 0;
-			if (!no_segments) {	/* Read data if we read a segment header up front, but guard against headers which sets n_fields = 0 */
-				while (!GMT_REC_IS_EOF (C) && (in = C->current.io.input (C, fp, &n_expected_fields, &n_fields)) && n_fields == 0) n_read++;
+			if (!no_segments) {	/* Read data if we read a segment header up front, but guard against headers which sets in = NULL */
+				while (!GMT_REC_IS_EOF (C) && (in = C->current.io.input (C, fp, &n_expected_fields, &n_fields)) == NULL) n_read++;
 			}
 			T->segment[seg]->n_columns = n_expected_fields;
 			no_segments = FALSE;	/* This has now served its purpose */
@@ -5476,6 +5487,10 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 	if (close_file) GMT_fclose (C, fp);
 	if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 
+	if (seg == -1) {	/* Never saw any segment or data records */
+		GMT_free_table (C, T);
+		return (NULL);
+	}
 	if (T->segment[seg]->n_rows == 0)	/* Last segment was empty; we delete to avoid problems downstream in applications */
 		GMT_free (C, T->segment[seg]);
 	else
