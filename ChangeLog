@@ -2,6 +2,16 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-01-08	pwessel
+	* grdcut.c:		The -Z would give incorrect -R for pixel grids.  Now also
+				print warning if output grid equals input grid (no change).
+
+2012-01-08      remko
+	* xyz2grd.txt:		Added missing 'H' and 'I' to -Z options.
+	* xyz2grd.c:		Bug fix: -Z..h etc needs to imply proper -bi setting.
+	* gmt_io.c, gmtapi_util.c:	Bug fixes: now properly identifying all I/O types.
+				Fixed incorrect swapping of signed integers (short and long).
+
 2012-01-06	pwessel
 	* gmt_plot.c:		Made geo_vector properly adjust for half-head vectors
 	* pslib.c:		Made psl_vector and psl_matharc adjust for half-head vectors
@@ -14,6 +24,7 @@
 				Note that original format specification by Golden Software
 				clearly say they are 'short int' but this change shouldn't
 				break anything and will allow dealing with larger grid sizes. 
+
 2012-01-04	pwessel
 	* grdvector.c:		Updated -Q to take new vector specification format.
 				Made -E obsolete (since covered by modifier +jc) but
