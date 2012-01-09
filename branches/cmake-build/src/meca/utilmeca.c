@@ -1258,7 +1258,7 @@ GMT_LONG trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 
 	dim[0] = x2, dim[1] = y2;
 	dim[2] = vw, dim[3] = hl, dim[4] = hw;
-	dim[5] = vector_shape, dim[6] = 0.0;
+	dim[5] = vector_shape, dim[6] = GMT_VEC_END;
 	PSL_setcolor (GMT->PSL, pen.rgb, PSL_IS_STROKE);
 	PSL_plotsymbol (GMT->PSL, x1, x2, dim, PSL_VECTOR);
 
@@ -1285,7 +1285,6 @@ GMT_LONG trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 
 	dim[0] = x2, dim[1] = y2;
 	dim[2] = vw, dim[3] = hl, dim[4] = hw;
-	dim[5] = vector_shape, dim[6] = 0.0;
 	PSL_setcolor (GMT->PSL, pen.rgb, PSL_IS_STROKE);
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
@@ -1315,7 +1314,6 @@ GMT_LONG trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 
 	dim[0] = x2, dim[1] = y2;
 	dim[2] = vw, dim[3] = hl, dim[4] = hw;
-	dim[5] = vector_shape, dim[6] = 0.0;
 	PSL_setcolor (GMT->PSL, pen.rgb, PSL_IS_STROKE);
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
@@ -1344,7 +1342,6 @@ GMT_LONG trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 
 	dim[0] = x2, dim[1] = y2;
 	dim[2] = vw, dim[3] = hl, dim[4] = hw;
-	dim[5] = vector_shape, dim[6] = 0.0;
 	PSL_setcolor (GMT->PSL, pen.rgb, PSL_IS_STROKE);
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 

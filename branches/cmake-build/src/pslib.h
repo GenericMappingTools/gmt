@@ -81,6 +81,26 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 #define PSL_PLUS		((PSL_LONG)'+')
 #define PSL_XDASH		((PSL_LONG)'-')
 
+/* PSL codes for vector attributes - mirroring similar codes and macros in GMT */
+
+enum PSL_enum_vecattr {PSL_VEC_LEFT = 1,	/* Only draw left half of vector head */
+	PSL_VEC_RIGHT		= 2,		/* Only draw right half of vector head */
+	PSL_VEC_BEGIN		= 4,		/* Place vector head at beginning of vector */
+	PSL_VEC_END		= 8,		/* Place vector head at end of vector */
+	PSL_VEC_JUST_B		= 0,		/* Align vector beginning at (x,y) */
+	PSL_VEC_JUST_C		= 16,		/* Align vector center at (x,y) */
+	PSL_VEC_JUST_E		= 32,		/* Align vector end at (x,y) */
+	PSL_VEC_JUST_S		= 64,		/* Align vector center at (x,y) */
+	PSL_VEC_OUTLINE		= 128,		/* Draw vector head outline using default pen */
+	PSL_VEC_OUTLINE2	= 256,		/* Draw vector head outline using supplied v_pen */
+	PSL_VEC_FILL		= 512,		/* Fill vector head using default fill */
+	PSL_VEC_FILL2		= 1024,		/* Fill vector head using supplied v_fill) */
+	PSL_VEC_MARC90		= 2048};	/* Matharc only: if angles subtend 90, draw straight angle symbol */
+
+#define PSL_vec_justify(status) ((status>>4)&3)			/* Return justification as 0-3 */
+#define PSL_vec_head(status) ((status>>2)&3)			/* Return head selection as 0-3 */
+#define PSL_vec_side(status) ((status&3) ? 2*(status&3)-3 : 0)	/* Return side selection as 0,-1,+1 */
+
 /* PSL codes for arguments of PSL_beginplot and other routines */
 
 enum PSL_enum_const {PSL_CM	= 0,
@@ -103,6 +123,7 @@ enum PSL_enum_const {PSL_CM	= 0,
 	PSL_INV			= 1,
 	PSL_OUTLINE		= 1,
 	PSL_MAX_EPS_FONTS	= 6,
+	PSL_MAX_DIMS		= 8,		/* Max number of dim arguments to PSL_plot_symbol */
 	PSL_N_PATTERNS		= 91,		/* Current number of predefined patterns + 1, # 91 is user-supplied */
 	PSL_BUFSIZ		= 4096};	/* To match GMT_BUFSIZ and be consistent across all platforms */
 

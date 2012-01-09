@@ -65,10 +65,9 @@ struct PSROSE_CTRL {	/* All control options for this program (except common args
 		GMT_LONG active;
 		char *w, *e, *s, *n;
 	} L;
-	struct M {	/* -M<params> */
+	struct M {	/* -M[<size>][<modifiers>] */
 		GMT_LONG active;
-		double v_width, h_length, h_width;
-		double rgb[4];
+		struct GMT_SYMBOL S;
 	} M;
 	struct N {	/* -N */
 		GMT_LONG active;
@@ -81,9 +80,9 @@ struct PSROSE_CTRL {	/* All control options for this program (except common args
 	struct T {	/* -T */
 		GMT_LONG active;
 	} T;
-	struct W {	/* -W<pen> */
-		GMT_LONG active;
-		struct GMT_PEN pen;
+	struct W {	/* -W[v]<pen> */
+		GMT_LONG active[2];
+		struct GMT_PEN pen[2];
 	} W;
 	struct Z {	/* -Zscale */
 		GMT_LONG active;
@@ -97,17 +96,13 @@ void *New_psrose_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = GMT_memory (GMT, NULL, 1, struct PSROSE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	C->M.rgb[0] = C->M.rgb[1] = C->M.rgb[2] = 0;
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
-	C->W.pen = GMT->current.setting.map_default_pen;
+	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
 	C->S.scale = 3.0;
 	C->Z.scale = 1.0;
 	if (GMT->current.setting.proj_length_unit == GMT_CM) {
 		C->S.scale = 7.5 / 2.54;
 	}
-	C->M.v_width  = VECTOR_LINE_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 2p */
-	C->M.h_width  = VECTOR_HEAD_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
-	C->M.h_length = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 	return (C);
 }
 
@@ -132,9 +127,9 @@ GMT_LONG GMT_psrose_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "psrose %s [API] - Plot a polar histogram (rose, sector, windrose diagrams)\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: psrose [<table>] [-A<sector_angle>[r]] [%s] [-C[<modes>]] [-D] [-G<fill>] [-I]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[-K] [-L[<wlab>/<elab>/<slab>/<nlab>]] [-M<parameters>] [-N] [-O] [-P]\n");
+	GMT_message (GMT, "\t[-K] [-L[<wlab>/<elab>/<slab>/<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P]\n");
 	GMT_message (GMT, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S<scale>[n]] [-T] [%s]\n", GMT_U_OPT);
-	GMT_message (GMT, "\t[%s] [-W<pen>] [%s] [%s] [-Z<scale>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[%s] [-W[v]<pen>] [%s] [%s] [-Z<scale>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -152,8 +147,10 @@ GMT_LONG GMT_psrose_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "K");
 	GMT_message (GMT, "\t-L Override default labels [Default is WEST/EAST/SOUTH/NORTH for full circle and 90W/90E/-/0 for half-circle].\n");
 	GMT_message (GMT, "\t   If no argument is given then labels will be disabled.  Give - to disable an individual label.\n");
-	GMT_message (GMT, "\t-M Append <vectorwidth>/<headlength>/<headwidth>/<color> to set arrow attributes [%gp/%gp/%gp/black].\n", VECTOR_LINE_WIDTH, VECTOR_HEAD_LENGTH, VECTOR_HEAD_WIDTH);
-	GMT_message (GMT, "\t-N Normalize rose plots for area, i.e. takes sqrt(r) before plotting [FALSE].\n");
+	GMT_message (GMT, "\t-M Specify arrow attributes (requires -C).\n");
+	GMT_vector_syntax (GMT, 0);
+	GMT_message (GMT, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
+	GMT_message (GMT, "\t-N Normalize rose plots for area, i.e., take sqrt(r) before plotting [FALSE].\n");
 	GMT_message (GMT, "\t   Only applicable if normalization has been specified with -S<radius>n.\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-R Specifys the region.  (<r0> = 0, <r1> = max_radius.  For azimuth:\n");
@@ -164,6 +161,7 @@ GMT_LONG GMT_psrose_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-T Indicate that the vectors are oriented (two-headed), not directed [Default].\n");
 	GMT_explain_options (GMT, "UV");
 	GMT_pen_syntax (GMT, 'W', "Set pen attributes for outline of rose [Default is no outline].");
+	GMT_message (GMT, "\t   Use -Wv<pen> to set a different pen for the vector (requires -C) [Same as rose outline].\n");
 	GMT_explain_options (GMT, "X");
 	GMT_message (GMT, "\t-Z Multiply the radii by <scale> before plotting.\n");
 	GMT_explain_options (GMT, "c");
@@ -231,16 +229,37 @@ GMT_LONG GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, stru
 				break;
 			case 'M':	/* Get arrow parameters */
 				Ctrl->M.active = TRUE;
-				n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-				if (n != 4 || GMT_getrgb (GMT, txt_d, Ctrl->M.rgb)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
-					n_errors++;
+#ifdef GMT_COMPAT
+				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
+					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+					if (n != 4 || GMT_getrgb (GMT, txt_d, Ctrl->M.S.v.fill.rgb)) {
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
+						n_errors++;
+					}
+					else {	/* Turn the old args into new +a<angle> and pen width */
+						Ctrl->W.active[1] = TRUE;
+						Ctrl->W.pen[1].width = GMT_to_points (GMT, txt_a);
+						Ctrl->M.S.v.h_length = GMT_to_inch (GMT, txt_b);
+						Ctrl->M.S.v.h_width = GMT_to_inch (GMT, txt_c);
+						Ctrl->M.S.v.v_angle = atand (0.5 * Ctrl->M.S.v.h_width / Ctrl->M.S.v.h_length);
+						Ctrl->M.S.v.status |= (GMT_VEC_OUTLINE + GMT_VEC_FILL);
+					}
 				}
 				else {
-					Ctrl->M.v_width = GMT_to_inch (GMT, txt_a);
-					Ctrl->M.h_length = GMT_to_inch (GMT, txt_b);
-					Ctrl->M.h_width = GMT_to_inch (GMT, txt_c);
+#endif
+					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
+						n_errors += GMT_parse_vector (GMT, opt->arg, &Ctrl->M.S);
+					}
+					else {	/* Size, plus possible attributes */
+						n = sscanf (opt->arg, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
+						if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
+						Ctrl->M.S.size_x = GMT_to_inch (GMT, txt_a);	/* Length of vector */
+						n_errors += GMT_parse_vector (GMT, txt_b, &Ctrl->M.S);
+					}
+					Ctrl->M.S.v.status |= GMT_VEC_OUTLINE;
+#ifdef GMT_COMPAT
 				}
+#endif
 				break;
 			case 'N':	/* Make sectors area be proportional to frequency instead of radius */
 				Ctrl->N.active = TRUE;
@@ -259,8 +278,9 @@ GMT_LONG GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, stru
 				Ctrl->T.active = TRUE;
 				break;
 			case 'W':	/* Get pen width for outline */
-				Ctrl->W.active = TRUE;
-				if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
+				n = (opt->arg[0] == 'v') ? 1 : 0;
+				Ctrl->W.active[n] = TRUE;
+				if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen[n])) {
 					GMT_pen_syntax (GMT, 'W', " ");
 					n_errors++;
 				}
@@ -312,7 +332,6 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct PSROSE_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Cin = NULL;
 	struct GMT_TABLE *P = NULL;
-	struct GMT_FILL f;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
@@ -526,7 +545,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		PSL_plotsymbol (PSL, 0.0, 0.0, dim, symbol);
 	}
 
-	GMT_setpen (GMT, &Ctrl->W.pen);
+	GMT_setpen (GMT, &Ctrl->W.pen[0]);
 	if (windrose) {
 		for (i = 0; i < n; i++) {
 			sincosd (90.0 - azimuth[i], &s, &c);
@@ -560,11 +579,11 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			xx[i] = -xx[i-1];
 			yy[i++] = 0.0;
 		}
-		PSL_setfill (PSL, Ctrl->G.fill.rgb, Ctrl->W.active);
+		PSL_setfill (PSL, Ctrl->G.fill.rgb, Ctrl->W.active[0]);
 		PSL_plotpolygon (PSL, xx, yy, i);
 	}
 
-	if (sector_plot && Ctrl->W.active && !Ctrl->A.rose) {	/* Draw a line outlining the pie slices */
+	if (sector_plot && Ctrl->W.active[0] && !Ctrl->A.rose) {	/* Draw a line outlining the pie slices */
 		angle1 = ((half_only) ? 180.0 : 90.0) - half_bin_width;
 		angle2 = ((half_only) ?   0.0 : 90.0) - half_bin_width;
 		sincosd (angle1, &s, &c);
@@ -584,7 +603,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->C.active) {
-
+		if (!Ctrl->W.active[1]) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* No separate pen specified; use same as for rose outline */
 		if (!Ctrl->C.file) {	/* Not given, calculate and use mean direction only */
 			find_mean = TRUE;
 			n_modes = 1;
@@ -602,6 +621,20 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			mode_direction = P->segment[0]->coord[GMT_X];
 			mode_length = P->segment[0]->coord[GMT_Y];
 		}
+		if (!Ctrl->M.active) {	/* Must supply defaults for the vector attributes */
+			Ctrl->M.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
+			Ctrl->M.S.v.v_width  = VECTOR_LINE_WIDTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
+			Ctrl->M.S.v.v_angle  = 30.0;
+			Ctrl->M.S.v.status |= (GMT_VEC_OUTLINE2 + GMT_VEC_FILL2 + GMT_VEC_END);
+			GMT_init_pen (GMT, &Ctrl->M.S.v.pen, VECTOR_LINE_WIDTH);
+			GMT_init_fill (GMT, &Ctrl->M.S.v.fill, 0.0, 0.0, 0.0);		/* Default vector fill = black */
+		}
+		GMT_init_vector_param (GMT, &Ctrl->M.S);
+		Ctrl->M.S.v.v_width = Ctrl->W.pen[1].width * GMT->session.u2u[GMT_PT][GMT_INCH];
+		dim[2] = Ctrl->M.S.v.v_width, dim[3] = Ctrl->M.S.v.h_length, dim[4] = Ctrl->M.S.v.h_width;
+		dim[5] = GMT->current.setting.map_vector_shape, dim[6] = Ctrl->M.S.v.status;
+		if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->W.pen[1]);
+		if (Ctrl->M.S.v.status & GMT_VEC_FILL2) GMT_setfill (GMT, &Ctrl->M.S.v.fill, TRUE);       /* Use fill structure */
 		for (i = 0; i < n_modes; i++) {
 			if (Ctrl->N.active) mode_length[i] = sqrt (mode_length[i]);
 			if (half_only && mode_direction[i] > 90.0 && mode_direction[i] <= 270.0) mode_direction[i] -= 180.0;
@@ -609,11 +642,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sincosd (angle, &s, &c);
 			xr = Ctrl->S.scale * mode_length[i] * c;
 			yr = Ctrl->S.scale * mode_length[i] * s;
-			GMT_init_fill (GMT, &f, Ctrl->M.rgb[0], Ctrl->M.rgb[1], Ctrl->M.rgb[2]);       /* Initialize fill structure */
 			dim[0] = xr, dim[1] = yr;
-			dim[2] = Ctrl->M.v_width, dim[3] = Ctrl->M.h_length, dim[4] = Ctrl->M.h_width;
-			dim[5] = GMT->current.setting.map_vector_shape, dim[6] = 0.0;
-			GMT_setfill (GMT, &f, TRUE);       /* Use fill structure */
 			PSL_plotsymbol (PSL, 0.0, 0.0, dim, PSL_VECTOR);
 		}
 

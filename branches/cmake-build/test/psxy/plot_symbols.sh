@@ -29,8 +29,8 @@ psxy -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
 0.5	2.5	1	0.5	r
 1.5	2.5	s
 2.5	2.5	t
-> Blue arrow -Gblue
-3.5	2.5	30	1	vb
+> Blue wedges -Gblue
+3.5	2.5	80	30	w
 0.5	1.5	30	80	w
 > Fat red pen -W2p,red
 1.5	1.5	x

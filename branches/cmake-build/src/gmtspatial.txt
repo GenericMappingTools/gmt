@@ -4,8 +4,9 @@
 gmtspatial \- Do geospatial operations on lines and polygons
 .SH SYNOPSIS
 BD(gmtspatial) [ IT(table) ] [ OPT(C) ] [ OPT(D)[BD(+f)IT(file)][BD(+a)IT(amax)][BD(+d)IT(dmax)][BD(+c|C)IT(cmax)][BD(+s)IT(fact)] ]
-[ OPT(E)BD(+)|BD(-) ] [ OPT(I)[BD(e)|BD(i)] ] [ OPT(M)[BD(+)[IT(unit)]] ] [ OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)][BD(+r)][BD(+z)] ] 
-[ GMT_Rgeo_OPT ] [ OPT(S)BD(i)|BD(u)|BD(s)|BD(j) ] [ OPT(T)[IT(clippolygon)] ] [[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_bo_OPT ] 
+[ OPT(E)BD(+)|BD(-) ] [ OPT(I)[BD(e)|BD(i)] ] [ OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)][BD(+r)][BD(+z)] ] 
+[ OPT(Q)[BD(+)[IT(unit)]] ] [ GMT_Rgeo_OPT ] [ OPT(S)BD(i)|BD(u)|BD(s)|BD(j) ] [ OPT(T)[IT(clippolygon)] ] 
+[[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_bo_OPT ] 
 [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(gmtspatial) reads one or more data files (which may be multisegment files)
@@ -39,18 +40,12 @@ other line (and not its extension).
 .TP
 OPT(E)BD(+)|BD(-) ]
 Reset the handedness of all polygons to match the given BD(+) (counter-clockwise) or
-BD(-) (clockwise).  Implies OPT(M+).
+BD(-) (clockwise).  Implies OPT(Q+).
 .TP
 OPT(I)[BD(e)|BD(i)]
 Determine the intersection locations between all pairs of polygons.  Append BD(i) to only compute
 internal (i.e., self-intersecting polygons) crossovers or BD(e) to only compute external
 (i.e., between paris of polygons) crossovers [Default is both].
-.TP
-OPT(M)[BD(+)[IT(unit)]]
-Measure the area of all polygons or length of line segments.  Use OPT(M+) to append the area to each polygons segment header
-[Default simply writes the area to stdout].  For polygons we also compute the centroid location while for line data we compute the
-mid-point (half-length) position.  Append a distance unit to select the unit used (see UNITS).  Note that the area will depend
-on the current setting of PROJ_ELLIPSOID; this should be a recent ellipsoid to get accurate results.
 .TP
 OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)][BD(+r)][BD(+z)]
 Determine if one (or all, with BD(+a)) points of each feature in the input data are inside any of the polygons
@@ -61,6 +56,12 @@ a polygon are written to stdout with the polygon ID encoded in the segment heade
 append BD(+r) to just report which polygon contains a feature or BD(+z) to have the IDs added as an extra data
 column on output.  Segments that fail to be inside a polygon are not written out.  If more than one polygon contains
 the same segment we skip the second (and further) scenario.
+.TP
+OPT(Q)[BD(+)[IT(unit)]]
+Measure the area of all polygons or length of line segments.  Use OPT(Q+) to append the area to each polygons segment header
+[Default simply writes the area to stdout].  For polygons we also compute the centroid location while for line data we compute the
+mid-point (half-length) position.  Append a distance unit to select the unit used (see UNITS).  Note that the area will depend
+on the current setting of PROJ_ELLIPSOID; this should be a recent ellipsoid to get accurate results.
 #include "explain_-Rgeo.txt"
 Clips polygons to the map region, including map boundary to the polygon as needed.  The
 result is a closed polygon.
@@ -94,14 +95,14 @@ polygons of length 4 or 5 that exactly match the OPT(R) clipping polygon.
 To compute the area of all geographic polygons in the multisegment file polygons.d, run 
 .br
 .sp
-gmtspatial polygons.d -M > areas.d
+gmtspatial polygons.d -Q > areas.d
 .br
 .sp
 Same data, but now orient all polygons to go counter-clockwise and write their areas to
 the segment headers, run 
 .br
 .sp
-gmtspatial polygons.d -M+ -E+ > areas.d
+gmtspatial polygons.d -Q+ -E+ > areas.d
 .br
 .sp
 To determine the intersections between the polygons A.d and B.d, run 

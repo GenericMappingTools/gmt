@@ -699,19 +699,19 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						x = GMT_to_inch (GMT, size);
 						sprintf (sarg, "%g %g 0 %g %g", x_off + off_ss, y0, x, 0.65 * x);
 					}
-					else if (symbol[0] == 'V' || symbol[0] == 'v') {	/* Vector also need more args */
+					else if (symbol[0] == 'V' || symbol[0] == 'v') {	/* Vector needs a prepended length/ string */
 						i = 0;
 						while (size[i] != '/' && size[i]) i++;
 						if (size[i] != '/') {	/* The necessary arguments not supplied! */
-							sprintf (sub, "vb");
+							sprintf (sub, "v0.15i+jc+e");	/* Somewhat arbitrary default */
 							Return (GMT_RUNTIME_ERROR);
 						}
 						else {
 							size[i++] = '\0';	/* So GMT_to_inch won't complain */
-							sprintf (sub, "%sb%s", symbol, &size[i]);
+							sprintf (sub, "%s%s+jc+e", symbol, &size[i]);
 						}
 						x = GMT_to_inch (GMT, size);
-						sprintf (sarg, "%g %g 0 %g", x_off + off_ss, y0, x);
+						sprintf (sarg, "%g %g 0 %gi", x_off + off_ss, y0, x);
 					}
 					else if (symbol[0] == 'r') {	/* Rectangle also need more args, we use h = 0.65*w */
 						x = GMT_to_inch (GMT, size);

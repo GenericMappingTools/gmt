@@ -27,7 +27,7 @@ psxy -R -J -O -K mag_validate_1990.d -Sc0.1i -Gwhite -W0.25p  >> $ps
 psxy -R -J -O -K mag_validate_1990.d -Sc0.025i -Gblack >> $ps
 echo 104.50 59.92 | psxy -R -J -O -K -Sc0.1i -Gwhite -W0.25p >> $ps
 echo 104.50 59.92 | psxy -R -J -O -K -Sx0.1i -W1p >> $ps
-echo 104.50 59.92 -42 1.65 | psxy -R -J -O -K -SV0.02i/0.1i/0.08i -Gblack --MAP_VECTOR_SHAPE=0.5 >> $ps
+echo 104.50 59.92 -42 1.65 | psxy -R -J -O -K -SV0.1i+e -W1p -Gblack --MAP_VECTOR_SHAPE=0.5 >> $ps
 
 # Repeat for Wessel&Becker's solution with t = 0.99
 
