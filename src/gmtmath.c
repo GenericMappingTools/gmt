@@ -704,7 +704,7 @@ void table_COL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 /*OPERATOR: COL 1 1 Places column A on the stack.  */
 {
 	GMT_LONG s, i, k, prev = last - 1;
-	struct GMT_TABLE *T = (constant[last]) ? NULL : S[last]->table[0], *T_prev = S[prev]->table[0];
+	struct GMT_TABLE *T = S[last]->table[0], *T_prev = S[prev]->table[0];
 
 	if (!constant[last]) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error, argument to COL must be a constant column number (0 <= k < n_col)!\n");
@@ -3295,10 +3295,12 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	else {	/* Regular table result */
+		GMT_LONG template_used = FALSE;
 		if (stack[0])	/* There is an output stack, select it */
 			R = stack[0];
 		else {		/* Can happen if only -T [-N] was specified with no operators */
 			R = Template;
+			template_used = TRUE;
 			if (Ctrl->N.tcol < R->n_columns) {
 				load_column (R, Ctrl->N.tcol, info.T, COL_T);	/* Put T in the time column of the item on the stack if possible */
 				GMT_set_tbl_minmax (GMT, R->table[0]);
@@ -3328,6 +3330,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				Return (API->error);
 			}
 		}
+		if (template_used) Template = NULL;	/* This prevents it from being freed twice (once from API registration via GMT_Write_Data and then again in Free_Misc) */
 	}
 
 	/* Clean-up time */
