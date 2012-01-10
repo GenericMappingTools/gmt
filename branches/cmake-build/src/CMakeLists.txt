@@ -324,7 +324,6 @@ foreach (_gmtdemo ${GMT_DEMOS})
 	target_link_libraries (${_gmtdemo} gmtlib)
 endforeach (_gmtdemo)
 
-configure_file (psldemo.c.cmake psldemo.c @ONLY)
 add_executable (psldemo psldemo.c)
 target_link_libraries (psldemo pslib)
 
