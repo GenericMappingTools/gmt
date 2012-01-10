@@ -4589,11 +4589,11 @@ PSL_LONG psl_get_boundingbox (FILE *fp, PSL_LONG *llx, PSL_LONG *lly, PSL_LONG *
 char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const char *stem, const char *suffix, char *path)
 {
 	/* stem is the name of the file, e.g., CUSTOM_font_info.d
-	 * subdir is an optional subdirectory name in the $GMT->session.SHAREDIR directory.
+	 * subdir is an optional subdirectory name in the PSL->internal.SHAREDIR directory.
 	 * suffix is an optional suffix to append to name
 	 * path is the full path to the file in question
 	 * Returns the full pathname if a workable path was found
-	 * Looks for file stem in current directory, ~/.gmt and $GMT->session.SHAREDIR[/subdir]
+	 * Looks for file stem in current directory, ~/.gmt and PSL->internal.SHAREDIR[/subdir]
 	 */
 
 	/* First look in the current working directory */
@@ -4609,21 +4609,21 @@ char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const char *st
 	if (stem[0] == '/') return (NULL);
 #endif
 
-	/* Not found, see if there is a file in the user's GMT->session.USERDIR (~/.gmt) directory */
+	/* Not found, see if there is a file in the user's PSL->internal.USERDIR (~/.gmt) directory */
 
 	if (PSL->internal.USERDIR) {
 		sprintf (path, "%s/%s%s", PSL->internal.USERDIR, stem, suffix);
 		if (!access (path, R_OK)) return (path);
 	}
 
-	/* Try to get file from $GMT->session.SHAREDIR/subdir */
+	/* Try to get file from PSL->internal.SHAREDIR/subdir */
 
 	if (subdir) {
 		sprintf (path, "%s/%s/%s%s", PSL->internal.SHAREDIR, subdir, stem, suffix);
 		if (!access (path, R_OK)) return (path);
 	}
 
-	/* Finally try file in $GMT->session.SHAREDIR (for backward compatibility) */
+	/* Finally try file in PSL->internal.SHAREDIR (for backward compatibility) */
 
 	sprintf (path, "%s/%s%s", PSL->internal.SHAREDIR, stem, suffix);
 	if (!access (path, R_OK)) return (path);
