@@ -25,9 +25,9 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	int i, k;
 	struct imageinfo h;
 	unsigned char *picture;
-	
+
 	size[0] = 0.3;
-	
+
 	PSL = New_PSL_Ctrl (argv[0]);
 	PSL->init.unit = PSL_INCH;
 	PSL->internal.compress = PSL_LZW;
@@ -38,11 +38,11 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	PSL_beginplot (PSL, NULL, PSL_PORTRAIT, PSL_INIT, PSL_RGB, "rr", scales, Letter, NULL, NULL);
 
 	/* Plot rectangle below the symbols */
-	
+
 	PSL_setlinewidth (PSL, 2.0);
 	PSL_setfill (PSL, rgb[6], PSL_OUTLINE);
 	PSL_plotbox (PSL, 0.1, -0.4, 1.9, 8.2);
-	
+
 	/* Try some symbols */
 	for (k = 0; k < 3; k++) {
 		PSL_setfill (PSL, rgb[k], outline[k]);
@@ -61,7 +61,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	for (i = 0; i < 6; i++) PSL_plotsymbol (PSL, x[i], y[i], size, PSL_STAR);
 
 	/* Plot some patterns within the x-y axis */
-	rgb[5][1] = PSL_setpattern (PSL, -1, "../doc/examples/ex16/circuit.ras", 100, rgb[2], rgb[2]);
+	rgb[5][1] = PSL_setpattern (PSL, -1, GMT_DOC_PATH "/examples/ex16/circuit.ras", 100, rgb[2], rgb[2]);
 	PSL_setfill (PSL, rgb[5], PSL_NO);
 	PSL_plotbox (PSL, 80.0, 30.0, 140, 50);
 
@@ -91,7 +91,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 
 	/* Return to normal coordinates */
 	PSL_endaxes (PSL);
-	
+
 	/* Plot a range of lines with different attributes */
 	PSL_setcolor (PSL, rgb[3], PSL_IS_STROKE);
 	PSL_setlinewidth (PSL, 2.0);
@@ -143,7 +143,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	PSL_plotparagraph (PSL, 2.2, 8.1, 12.0, NULL, 0.0, PSL_TL);
 
 	/* Plot an image by itself */
-	PSL_loadimage (PSL, "vader.ras", &h, &picture);
+	PSL_loadimage (PSL, GMT_DOC_PATH "/examples/pslib/vader.ras", &h, &picture);
 	PSL_plotcolorimage (PSL, 5.0, 8.2, 1.5, 0.0, PSL_TL, picture, h.width, h.height, h.depth);
 	PSL_free (picture);
 
