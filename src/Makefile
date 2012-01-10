@@ -37,7 +37,7 @@
 include config.mk	# GMT-specific settings determined by user & configure
 include common.mk	# Dependencies
 
-DEFINES		= -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
+DEFINES		= -DGMT_SHARE_PATH=\"$(datadir)\" -DGMT_DOC_PATH=\"$(docdir)\" $(TRIANGLE_D)
 INCLUDES	= $(NETCDF_INC) $(GDAL_INC) $(PCRE_INC)
 
 # These three lines are temporarily here for the beta release
