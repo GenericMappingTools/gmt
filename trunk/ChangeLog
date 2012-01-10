@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-01-09	pwessel
+	* gmtmath.c:		The COL operator inadvertently set a pointer to NULL, then
+				tried to use it.  Also, with operands whatsoever we crashed
+				as the Template struct was deallocated twice.
+
 2012-01-08	pwessel
 	* grdcut.c:		The -Z would give incorrect -R for pixel grids.  Now also
 				print warning if output grid equals input grid (no change).

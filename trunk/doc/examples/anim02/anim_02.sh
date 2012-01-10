@@ -32,7 +32,7 @@ while [ $frame -lt $n_frames ]; do
 	grdimage $TDIR/us.nc -I$$.us_int.nc -JM3i -P -K -C$$.cpt -B1WSne -X0.35i -Y0.3i \
 	--PS_MEDIA=${width}x${height} --FONT_ANNOT_PRIMARY=9p > $$.ps
 	psxy -R$TDIR/us.nc -J -O -K -Sc0.8i -Gwhite -Wthin >> $$.ps <<< "256.25 35.6"
-	psxy -R$TDIR/us.nc -J -O -Sv0.05i+e -Gred -Wthick >> $$.ps <<< "256.25 35.6 $dir 0.37"
+	psxy -R$TDIR/us.nc -J -O -Sv0.1i+e -Gred -Wthick >> $$.ps <<< "256.25 35.6 $dir 0.37"
 	if [ $# -eq 0 ]; then
 		mv $$.ps ../$name.ps
 		gmt_cleanup .gmt
