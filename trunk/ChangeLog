@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-01-10	pwessel
+	* gmt_map.c:		-R0/360 and -JMlon/lat would not set global_map properly,
+				giving NaNs as scale.
+
 2012-01-09	pwessel
 	* gmtmath.c:		The COL operator inadvertently set a pointer to NULL, then
 				tried to use it.  Also, with operands whatsoever we crashed
