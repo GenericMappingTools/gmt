@@ -1664,6 +1664,7 @@ GMT_LONG GMT_check_url_name (char *fname) {
 		!strncmp(fname,"ftp:",4)      || 
 		!strncmp(fname,"/vsizip/",8)  || 
 		!strncmp(fname,"/vsigzip/",9) || 
+		!strncmp(fname,"/vsicurl/",9)  ||
 		!strncmp(fname,"/vsimem/",8)  || 
 		!strncmp(fname,"/vsitar/",8) )
 
