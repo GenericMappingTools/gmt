@@ -90,6 +90,10 @@ struct GDALREAD_CTRL {
 		int active;
 		char *region;
 	} r;
+	struct GD_reg {	/* Registration type. Used only when sending a sub-region request. Than we need to know this */
+		double x_inc, y_inc;	/* Grid increments */
+		int val;	/* 0 [default] means grid registration, 1 -> pixel registration */
+	} registration;
 };
 
 /* Structure to hold metadata info in a per bands basis read */
