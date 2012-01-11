@@ -2,6 +2,14 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-01-10	jluis
+	* gmt_customio.c:	GMT_gdal_read_grd was ignoring subregion requests like for
+				instances "grdcut -R..." Such request would cause a crash.
+	* gmt_gdalread.h:	Add members to inform GMT_gdalread on the coordinates
+				registration type used when subregion requests.
+	* gmt_grdio.c:		Recognize web located files hose name starts with /vsicurl/...
+	* gmt_io.c:				""
+
 2012-01-10	pwessel
 	* gmt_map.c:		-R0/360 and -JMlon/lat would not set global_map properly,
 				giving NaNs as scale.
