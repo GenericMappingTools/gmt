@@ -605,9 +605,18 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 		return (NULL);	/* Cannot read, give up */
 	}
 
-	/* If we got here and a full path is given, we give up */
+	/* If we got here and a full path is given, we give up ... unless it is one of those /vsi.../ files */
+	if (stem[0] == '/') {
+#ifdef USE_GDAL
+		if (GMT_check_url_name ((char *)stem))
+			return ((char *)stem);			/* With GDAL all the /vsi-stuff is given existence credit */
+		else
+			return (NULL);
+#else
+		return (NULL);
+#endif
+	}
 
-	if (stem[0] == '/') return (NULL);
 #ifdef WIN32
 	if (stem[1] == ':') return (NULL);
 #endif
