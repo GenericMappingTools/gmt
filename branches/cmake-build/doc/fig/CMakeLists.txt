@@ -32,7 +32,7 @@ set (_doc_figures GMT_-B_custom.ps GMT_-B_geo_1.ps GMT_-B_geo_2.ps
 	GMT_App_O_6.ps GMT_App_O_7.ps GMT_App_O_8.ps GMT_App_O_9.ps GMT_App_P_1.ps
 	GMT_App_P_2.ps GMT_Defaults_1a.ps GMT_Defaults_1b.ps GMT_Defaults_1c.ps
 	GMT_RGBchart_a4.ps GMT_RGBchart_letter.ps GMT_RGBchart_tabloid.ps GMT_TM.ps
-	GMT_albers.ps GMT_atan.ps GMT_az_equidistant.ps GMT_cassini.ps
+	GMT_albers.ps GMT_arrows.ps GMT_atan.ps GMT_az_equidistant.ps GMT_cassini.ps
 	GMT_color_interpolate.ps GMT_coverlogo.ps GMT_covertext.ps GMT_eckert4.ps
 	GMT_eckert6.ps GMT_equi_cyl.ps GMT_equidistant_conic.ps GMT_gall_stereo.ps
 	GMT_general_cyl.ps GMT_gnomonic.ps GMT_grinten.ps GMT_hammer.ps
