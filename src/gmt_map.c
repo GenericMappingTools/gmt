@@ -2642,8 +2642,8 @@ GMT_LONG gmt_map_init_merc (struct GMT_CTRL *C) {
 	(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
 	if (C->current.proj.units_pr_degree) C->current.proj.pars[2] /= (D * C->current.proj.M_PR_DEG);
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[2];
-	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[2]);
 	C->current.map.is_world = GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI]);
+	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[2]);
 	C->current.map.n_lat_nodes = 2;
 	C->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
 	C->current.map.outside = (PFL) gmt_wesn_outside;

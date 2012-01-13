@@ -56,12 +56,12 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nXYSize, nBufXSize, nBufYSize;
-	int n, m;
+	int n, m, incStep = 1;
 	GMT_LONG	fliplr;
 	GMT_LONG	nn, off, got_R = FALSE, got_r = FALSE, error = FALSE;
 	GMT_LONG	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
 	GMT_LONG	n_alloc, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
-	GMT_LONG	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
+	//GMT_LONG	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	char	*tmp = NULL;
 	float	*tmpF32 = NULL;
 	double	*tmpF64 = NULL, dfNoData, adfMinMax[2];
@@ -117,8 +117,15 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		C->common.R.active = FALSE;	/* Reset because -R was already parsed when reading header info */
 		error += GMT_parse_common_options (C, "R", 'R', prhs->R.region);
 		if (!error) {
-			dfULX = C->common.R.wesn[XLO];	dfLRX = C->common.R.wesn[XHI];
-			dfLRY = C->common.R.wesn[YLO];	dfULY = C->common.R.wesn[YHI];
+			double dx = 0, dy = 0;
+			if (!prhs->registration.val) {	/* Subregion coords are grid-reg. Need to convert to pix-reg */
+				dx = prhs->registration.x_inc / 2;
+				dy = prhs->registration.y_inc / 2;
+			}
+			dfULX = C->common.R.wesn[XLO] - dx;
+			dfLRX = C->common.R.wesn[XHI] + dx;
+			dfLRY = C->common.R.wesn[YLO] - dy;
+			dfULY = C->common.R.wesn[YHI] + dy;
 		}
 	}
 
@@ -174,7 +181,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		populate_metadata (C, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
 
 		/* Return registration based on data type of first band. Byte is pixel reg otherwise set grid registration */
-		if (!Ctrl->hdr[6] && !prhs->R.active) {		/* Grid registration */
+		if (!Ctrl->hdr[6]) {		/* Grid registration */
 			Ctrl->hdr[0] += Ctrl->hdr[7] / 2;	Ctrl->hdr[1] -= Ctrl->hdr[7] / 2;
 			Ctrl->hdr[2] += Ctrl->hdr[8] / 2;	Ctrl->hdr[3] -= Ctrl->hdr[8] / 2;
 		}
@@ -222,7 +229,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			anSrcWin[2] = (int) ((dfLRX - dfULX) / adfGeoTransform[1] + 0.5);
 			anSrcWin[3] = (int) ((dfLRY - dfULY) / adfGeoTransform[5] + 0.5);
 			if (GDAL_VERSION_NUM < 1700 && !strcmp(format,"netCDF")) {
-				/* PATCH against the never ending GDAL bug of reading netCDF files */
+				/* PATCH against the old GDAL bugs of reading netCDF files */
 				anSrcWin[1] = GDALGetRasterYSize(hDataset) - (anSrcWin[1] + anSrcWin[3]) - 1;
 			}
 		}
