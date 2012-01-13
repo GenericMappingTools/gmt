@@ -4,7 +4,7 @@
 %%Title: PSL v5.0 document
 %%Creator: PSL
 %%For: florian
-%%CreationDate: Wed Nov 16 14:18:15 2011
+%%CreationDate: Fri Jan 13 10:51:01 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -142,6 +142,11 @@
   count PSL_op_count sub {pop} repeat			% Clean up operand stack
   countdictstack PSL_dict_count sub {end} repeat	% Clean up dict stack
   PSL_eps_state restore					% Restore saved state
+}!
+/PSL_transp {						% Set transparency
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{		% Using ghostscript
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}	% Or Adobe
+  {pop pop} ifelse} ifelse				% Or skip if neither are supported
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -1160,7 +1165,9 @@ Ro<R5`8I3PXqVh+\7O>TX(Qa3ZV%Lal"9~>
 >> matrix makepattern U} def
 pattern13 I
 300 5207 2520 Sp
-1 0 0 C
+0.5 0.7 0.1 C 0.5 /Normal PSL_transp
+300 5625 468 Sp
+1 /Normal PSL_transp 1 0 0 C
 {pattern13 I} FS
 O1
 300 5833 2520 Ss
