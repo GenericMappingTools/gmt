@@ -324,7 +324,8 @@ foreach (_gmtdemo ${GMT_DEMOS})
 	target_link_libraries (${_gmtdemo} gmtlib)
 endforeach (_gmtdemo)
 
-add_executable (psldemo psldemo.c)
+configure_file (psldemo.h.cmake psldemo.h @ONLY)
+add_executable (psldemo psldemo.h psldemo.c)
 target_link_libraries (psldemo pslib)
 
 # rman for converting html manpages
@@ -349,7 +350,7 @@ if (NOT GMT_INSTALL_MONOLITHIC)
 endif (NOT GMT_INSTALL_MONOLITHIC)
 
 # add the install targets
-install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS} psldemo
+install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS}
 	LIBRARY DESTINATION ${GMT_LIBDIR}
 	COMPONENT Runtime
 	RUNTIME DESTINATION ${GMT_BINDIR}

@@ -1253,19 +1253,26 @@ U
 O0
 2640 6360 M PSL_font_encode 6 get 0 eq {Standard+_Encoding /Times-Italic /Times-Italic PSL_reencode PSL_font_encode 6 1 put} if	% Set this font
 367 F6
-(E = mc+, ) Z
+(E = mc) Z
+0 128 G
+257 F6 (2) Z
+0 -128 G
+367 F6 (, ) Z
 367 F12 (D) Z
 367 F6 (g = 2) Z
 367 F12 (pr) Z
 367 F6 (gh) Z
 7800 8400 M 300 F6
-V MU 0 0 M (E = mc+) FP 300 F6 ( + ) FP 300 F12 (e) FP 300 F6 (?) FP pathbbox N 4 1 roll exch pop add exch U neg exch neg exch G
-(E = mc+) Z
+V MU 0 0 M (E = mc) FP 210 F6 (2) FP 300 F6 ( + ) FP 300 F12 (e) FP 300 F6 (?) FP pathbbox N 4 1 roll exch pop add exch U neg exch neg exch G
+(E = mc) Z
+0 105 G
+210 F6 (2) Z
+0 -105 G
 1 0 0 C 300 F6 ( + ) Z
 300 F12 (e) Z
 0 A 300 F6 (?) Z
 7800 7800 M 300 F6
-(1 om) tr Z
+(1 \375ngstr\371m) tr Z
 3900 10500 M PSL_font_encode 33 get 0 eq {Standard+_Encoding /ZapfChancery-MediumItalic /ZapfChancery-MediumItalic PSL_reencode PSL_font_encode 33 1 put} if	% Set this font
 533 F33
 (PSL v5.0 Demonstration Page) tc Z
@@ -1544,9 +1551,9 @@ PSL_font_encode 5 get 0 eq {Standard+_Encoding /Times-Bold /Times-Bold PSL_reenc
 (was) (developed) (by) (Adobe) (for) (specifying) (how) (a) (printer) (should) (render)
 (a) (page) (of) (text) (or) (graphics.) (It) (uses) (a) (reverse) (Polish) (notation)
 (that) (puts) (and) (gets) (items) (from) (a) (stack) (to) (draw) (lines,) (text,) (and)
-(images) (and) (even) (perform) (calculations.) () () (PSL) (is) (a) (_) (library) (that)
-(presents) (a) (series) (of) (functions) (that) (can) (be) (used) (to) (create) (plots.)
-(The) (resulting) (PostScript) (code) (is) (ASCII) (text.)
+(images) (and) (even) (perform) (calculations.) () () (PSL) (is) (a) (self-contained)
+(library) (that) (presents) (a) (series) (of) (functions) (that) (can) (be) (used)
+(to) (create) (plots.) (The) (resulting) (PostScript) (code) (is) (ASCII) (text.)
 89 array astore def
 %
 % Define array of word font numbers:
@@ -1574,7 +1581,7 @@ PSL_font_encode 5 get 0 eq {Standard+_Encoding /Times-Bold /Times-Bold PSL_reenc
 /PSL_flag
 4 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1
 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1
-1 1 1 1 1 1 1 1 1 1 1 0 0 4 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 0 0 4 1 1 1 33 1 1 1 1 1 1 1
 1 1 1 1 1 1 2 1 1 1 1 1 1 0
 89 array astore def
 %

@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "pslib.h"
+#include "psldemo.h"
 
 int main (int argc, char **argv) {
 	struct PSL_CTRL *PSL = NULL;
@@ -61,7 +62,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	for (i = 0; i < 6; i++) PSL_plotsymbol (PSL, x[i], y[i], size, PSL_STAR);
 
 	/* Plot some patterns within the x-y axis */
-	rgb[5][1] = PSL_setpattern (PSL, -1, GMT_DOC_PATH "/examples/ex16/circuit.ras", 100, rgb[2], rgb[2]);
+	rgb[5][1] = PSL_setpattern (PSL, -1, PSL_PATTERN, 100, rgb[2], rgb[2]);
 	PSL_setfill (PSL, rgb[5], PSL_NO);
 	PSL_plotbox (PSL, 80.0, 30.0, 140, 50);
 
@@ -143,7 +144,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	PSL_plotparagraph (PSL, 2.2, 8.1, 12.0, NULL, 0.0, PSL_TL);
 
 	/* Plot an image by itself */
-	PSL_loadimage (PSL, GMT_DOC_PATH "/examples/pslib/vader.ras", &h, &picture);
+	PSL_loadimage (PSL, PSL_IMAGE, &h, &picture);
 	PSL_plotcolorimage (PSL, 5.0, 8.2, 1.5, 0.0, PSL_TL, picture, h.width, h.height, h.depth);
 	PSL_free (picture);
 
