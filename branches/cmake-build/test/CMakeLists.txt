@@ -24,8 +24,8 @@ if (DO_TESTS)
 		grdclip grdcontour grdcut grdedit grdfft grdfilter grdhisteq grdimage
 		grdlandmask grdmask grdpaste grdproject grdreformat grdsample grdtrend
 		grdview grdvolume greenspline kml mapproject meca mgd77 ogr potential
-		project psbasemap pscoast pscontour psimage pslegend psrose psscale pstext
-		psxy psxyz sph splitxyz spotter time trend2d triangulate x2sys)
+		project psbasemap pscoast pscontour psimage pslegend pslib psrose psscale
+		pstext psxy psxyz sph splitxyz spotter time trend2d triangulate x2sys)
 
 	# rules for copying test files to build dir
 	file (GLOB_RECURSE _files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
