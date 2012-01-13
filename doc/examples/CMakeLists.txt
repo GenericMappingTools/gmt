@@ -28,7 +28,7 @@ set (_example_jobs ex01/job01.sh ex02/job02.sh ex03/job03.sh ex04/job04.sh
 	ex24/job24.sh ex25/job25.sh ex26/job26.sh ex27/job27.sh ex28/job28.sh
 	ex29/job29.sh ex30/job30.sh ex31/job31.sh ex32/job32.sh)
 
-set (_all_jobs ${_animation_jobs} ${_example_jobs} pslib/psldemo.sh)
+set (_all_jobs ${_animation_jobs} ${_example_jobs})
 
 include (ManageString)
 
