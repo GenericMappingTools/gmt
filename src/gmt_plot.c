@@ -425,7 +425,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 		GMT_memset (dim, PSL_MAX_DIMS, double);
 		vector_width = rint (PSL_DOTS_PER_INCH * C->current.setting.map_frame_pen.width / PSL_POINTS_PER_INCH) / PSL_DOTS_PER_INCH;	/* Round off vector width same way as pen width */
 		dim[2] = vector_width; dim[3] = 10.0 * vector_width; dim[4] = 5.0 * vector_width;
-		dim[5] = C->current.setting.map_vector_shape; dim[6] = GMT_VEC_END;
+		dim[5] = C->current.setting.map_vector_shape; dim[6] = GMT_VEC_END | GMT_VEC_FILL;
 		if (horizontal) {
 			dim[0] = 1.075 * length; dim[1] = 0.0;
 			PSL_plotsymbol (P, length, 0.0, dim, PSL_VECTOR);
@@ -2665,7 +2665,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 		x[1] = mr->x0 + L * c, y[1] = mr->y0 + L * s;
 		dim[0] = x[1], dim[1] = y[1],
 		dim[2] = M_VW * mr->size, dim[3] = M_HL * mr->size, dim[4] = M_HW * mr->size,
-		dim[5] = C->current.setting.map_vector_shape, dim[6] = GMT_VEC_END;
+		dim[5] = C->current.setting.map_vector_shape, dim[6] = GMT_VEC_END | GMT_VEC_FILL;
 		GMT_setfill (C, &f, TRUE);
 		PSL_plotsymbol (P, x[0], y[0], dim, PSL_VECTOR);
 		t_angle = fmod (ew_angle + 90.0 - mr->declination + 360.0, 360.0);	/* Now in 0-360 range */
@@ -2683,7 +2683,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 		GMT_rotate2D (C, x, y, 5, mr->x0, mr->y0, ew_angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
 		dim[0] = xp[1], dim[1] = yp[1];
 		dim[2] = F_VW * mr->size, dim[3] = F_HL * mr->size, dim[4] = F_HW * mr->size;
-		dim[5] = C->current.setting.map_vector_shape, dim[6] = GMT_VEC_END;
+		dim[5] = C->current.setting.map_vector_shape, dim[6] = GMT_VEC_END | GMT_VEC_FILL;
 		GMT_setfill (C, &f, TRUE);
 		PSL_plotsymbol (P, xp[0], yp[0], dim, PSL_VECTOR);
 		s = 0.25 * mr->size;
@@ -2761,7 +2761,7 @@ void gmt_draw_dir_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 		GMT_rotate2D (C, x, y, 5, mr->x0, mr->y0, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
 		x[0] = xp[1], x[1] = yp[1];
 		x[2] = F_VW * mr->size, x[3] = F_HL * mr->size, x[4] = F_HW * mr->size;
-		x[5] = C->current.setting.map_vector_shape, x[6] = GMT_VEC_END;
+		x[5] = C->current.setting.map_vector_shape, x[6] = GMT_VEC_END | GMT_VEC_FILL;
 		GMT_setfill (C, &f, TRUE);
 		PSL_plotsymbol (P, xp[0], yp[0], x, PSL_VECTOR);
 		s = 0.25 * mr->size;
@@ -4091,7 +4091,8 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 	
 	if (heads) { /* Get half-angle at head and possibly change pen */
 		da = 0.5 * S->v.v_angle;	/* Half-opening angle at arrow head */
-		if (S->v.status & GMT_VEC_OUTLINE2) GMT_setpen (C, &S->v.pen);
+		if ((S->v.status & GMT_VEC_OUTLINE) == 0) PSL_command (C->PSL, "O0\n");	/* Turn off outline */
+		if ((S->v.status & GMT_VEC_FILL) == 0) PSL_command (C->PSL, "FQ\n");	/* Turn off vector head fill */
 	}
 
 	if (heads & 1) { /* Place arrow head at A */

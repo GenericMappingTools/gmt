@@ -94,7 +94,7 @@ void *New_psvelo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C->A.S.v.h_length = C->A.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 	C->A.S.v.v_angle = 30.0;
-	C->A.S.v.status = GMT_VEC_END;
+	C->A.S.v.status = GMT_VEC_END + GMT_VEC_FILL + GMT_VEC_OUTLINE;
 	C->A.S.v.pen = GMT->current.setting.map_default_pen;
 #ifdef GMT_COMPAT
 	GMT->current.setting.map_vector_shape = 0.4;	/* Historical reasons */
@@ -132,7 +132,7 @@ GMT_LONG GMT_psvelo_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<b");
 	GMT_message (GMT, "\t-A Specify arrow head attributes:");
-	GMT_vector_syntax (GMT, 0);
+	GMT_vector_syntax (GMT, 15);
 	GMT_message (GMT, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
 	GMT_message (GMT, "\t-D Multiply uncertainties by sigscale. (Se and Sw only)i\n");
 	GMT_message (GMT, "\t-E Set color used for uncertainty wedges in -Sw option.\n");

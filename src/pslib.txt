@@ -443,17 +443,27 @@ They are PSL_CROSS, PSL_DOT, PSL_PLUS, PSL_XDASH, and PSL_YDASH.
 Finally, more complicated symbols require more than one parameter to be passed via IT(size). These are
 PSL_ELLIPSE (IT(size) is expected to contain the three parameter IT(angle), IT(major), and IT(minor) axes,
 which defines an ellipse with its major axis rotated by IT(angle) degrees),
-PSL_MANGLE (IT(size) is expected to contain the four parameter IT(radius), IT(angle1), and IT(angle2) for the math angle specification,
-and IT(type) as 1 or 2 to place arrow head at angle 1 and 2; use 3 for both and 0 for none),
+PSL_MANGLE (IT(size) is expected to contain the 8 parameters IT(radius), IT(angle1), and IT(angle2) for the math angle specification,
+followed by IT(tailwidth), IT(headlength), IT(headwidth), IT(shape), and IT(status) (see PSL_VECTOR below for explanation),
 PSL_WEDGE (IT(size) is expected to contain the three parameter IT(radius), IT(angle1), and IT(angle2) for the sector specification),
 PSL_RECT (IT(size) is expected to contain the two dimensions IT(width) and IT(height)),
 PSL_RNDRECT (IT(size) is expected to contain the two dimensions IT(width) and IT(height) and the IT(radius) of the corners),
 PSL_ROTRECT (IT(size) is expected to contain the three parameter IT(angle), IT(width), and IT(height), with rotation relative to the horizontal), and
-PSL_VECTOR (IT(size) is expected to contain the IT(x_tip), IT(y_tip), IT(tailwidth), IT(headlength), IT(headwidth), IT(shape), and IT(dual).
+PSL_VECTOR (IT(size) is expected to contain the 7 parameters IT(x_tip), IT(y_tip), IT(tailwidth), IT(headlength), IT(headwidth), IT(shape), and IT(status).
 Here (IT(x_tip),IT(y_tip)) are the coordinates to the head of the vector, while (IT(x), IT(y)) are those of the tail.
 IT(shape) can take on values from 0-1 and specifies how far the intersection point between the base of a
 straight vector head and the vector line is moved toward the tip.  0.0 gives a triangular
-head, 1.0 gives an arrow shaped head. Specify IT(dual) = 1.0 for a double-headed vector and 0.0 for a single-headed vector.
+head, 1.0 gives an arrow shaped head. The IT(status) value is a bit-flag being the sum of several possible contributions:
+PSL_VEC_RIGHT (2) = only draw right half of vector head,
+PSL_VEC_BEGIN (4) = place vector head at beginning of vector,
+PSL_VEC_END (8) = place vector head at end of vector,
+PSL_VEC_JUST_B (0) = align vector beginning at (x,y),
+PSL_VEC_JUST_C (16) = align vector center at (x,y),
+PSL_VEC_JUST_E (32) = align vector end at (x,y),
+PSL_VEC_JUST_S (64) = align vector center at (x,y),
+PSL_VEC_OUTLINE (128) = draw vector head outline using default pen,
+PSL_VEC_FILL (512) = fill vector head using default fill,
+PSL_VEC_MARC90 (2048) = if angles subtend 90, draw straight angle symbol (PSL_MANGLE only).
 The symbol may be filled and its outline stroked depending on the current settings for fill and pen attributes.
 .RE
 .SH PLOTTING IMAGES

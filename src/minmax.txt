@@ -6,7 +6,7 @@ minmax \- Find extreme values in data tables
 BD(minmax) [ IT(table)] [ OPT(A)BD(a)|BD(f)|BD(s) ] [ OPT(C) ] [ OPT(EL)|BD(l)|BD(H)|BD(h)IT(col) ] 
 [ OPT(I)[BD(p)]IT(dx)[/IT(dy)[/IT(dz)...] ] 
 [ OPT(S)[BD(x)][BD(y)] ] [ OPT(T)IT(dz)[/IT(col)] ] [ GMT_V_OPT ] [ GMT_bi_OPT ] 
-[ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
+[ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(minmax) reads its standard input [or from files] and finds the
 extreme values in each of the columns.  It recognizes NaNs and
@@ -60,6 +60,7 @@ Only works when OPT(I) is selected.
 #include "explain_-g.txt"
 #include "explain_-h.txt"
 #include "explain_-icols.txt"
+#include "explain_nodereg.txt"
 #include "explain_colon.txt"
 #include "explain_help.txt"
 #include "explain_precision.txt"

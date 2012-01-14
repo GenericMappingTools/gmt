@@ -823,15 +823,17 @@ void GMT_dist_syntax (struct GMT_CTRL *C, char option, char *string)
 }
 
 void GMT_vector_syntax (struct GMT_CTRL *C, GMT_LONG mode)
-{
+{	/* Use mode to control which options are displayed */
 	GMT_message (C, "\t   Append length of vector head, with optional modifiers:\n");
 	GMT_message (C, "\t     +a<angle> to set angle of the vector head apex [30]\n");
 	GMT_message (C, "\t     +b to place vector head at the beginning of the vector [none].\n");
 	GMT_message (C, "\t     +e to place vector head at the end of the vector [none].\n");
-	GMT_message (C, "\t     +l to only draw left side of heads [both].\n");
-	GMT_message (C, "\t     +r to only draw right side of heads [both].\n");
-	GMT_message (C, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
+	if (mode & 8) GMT_message (C, "\t     +g<fill> to set head fill or use - to turn off fill [default fill].\n");
 	if (mode & 1) GMT_message (C, "\t     +j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.\n");
+	GMT_message (C, "\t     +l to only draw left side of heads [both].\n");
+	GMT_message (C, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
+	if (mode & 4) GMT_message (C, "\t     +p[-][<pen>] to set pen attributes, prepend - to turn off head outlines [default pen and outline].\n");
+	GMT_message (C, "\t     +r to only draw right side of heads [both].\n");
 	if (mode & 2) GMT_message (C, "\t     +s if input (angle,length) is instead (x),y) coordinates of tip.\n");
 }
 
@@ -6569,7 +6571,7 @@ GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 {
 	/* Parser for -Sv|V, -S=, and -Sm */
 	
-	GMT_LONG pos = 0, k, error = 0, len;
+	GMT_LONG pos = 0, k, j, error = 0, len, p_opt = FALSE, g_opt = FALSE;
 	char p[GMT_BUFSIZ];
 	
 	S->v.pen = C->current.setting.map_default_pen;
@@ -6607,11 +6609,13 @@ GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 				break;
 			case 'n':	/* Vector shrinking head */
 				len = strlen (p);
-				k = (text[0] == 'v' || text[0] == 'V') ? gmt_get_unit (p[len]) : -1;	/* Only -Sv|V takes unit */
-				if (k >= 0) { S->u = k; S->u_set = TRUE; }
+				j = (text[0] == 'v' || text[0] == 'V') ? gmt_get_unit (p[len]) : -1;	/* Only -Sv|V takes unit */
+				if (j >= 0) { S->u = j; S->u_set = TRUE; }
 				S->v.v_norm = atof (&p[1]);
 				break;
-			case 'g':	/* Vector head fill [USED IN PSROSE] */
+			case 'g':	/* Vector head fill [Used in psrose, for instance] */
+				g_opt = TRUE;	/* Marks that +g was used */
+				if (p[1] == '-') break; /* Do NOT turn on fill */
 				S->v.status |= GMT_VEC_FILL;
 				if (p[1]) {
 					if (GMT_getfill (C, &p[1], &S->v.fill)) {
@@ -6621,14 +6625,20 @@ GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 					S->v.status |= GMT_VEC_FILL2;
 				}
 				break;
-			case 'p':	/* Vector head outline [NOT USED YET - MAY GO AWAY] */
-				S->v.status |= GMT_VEC_OUTLINE;
-				if (p[1]) {
-					if (GMT_getpen (C, &p[1], &S->v.pen)) {
+			case 'p':	/* Vector pen and head outline +p[-][<pen>] */
+				p_opt = TRUE;	/* Marks that +p was used */
+				if (p[1] == '-')	/* Do NOT turn on outlines */
+					j = 2;
+				else {
+					j = 1;
+					S->v.status |= GMT_VEC_OUTLINE;
+				}
+				if (p[j]) {	/* Change default vector pen */
+					if (GMT_getpen (C, &p[j], &S->v.pen)) {
 						GMT_report (C, GMT_MSG_FATAL, "Bad +p<pen> modifier %c\n", &p[1]);
 						error++;
 					}
-					S->v.status |= GMT_VEC_OUTLINE2;
+					S->v.status |= GMT_VEC_OUTLINE2;	/* Flag that a pen specification was given */
 				}
 				break;
 			default:
@@ -6637,6 +6647,9 @@ GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 				break;	
 		}
 	}
+	if (!g_opt) S->v.status |= GMT_VEC_FILL;	/* Default is to fill vector head with current fill unless (a) no fill given or (b) turned off with +g- */
+	if (!p_opt) S->v.status |= GMT_VEC_OUTLINE;	/* Default is to draw vector head outline with current pen unless explicitly turned off with +p- */
+	
 	/* Set head parameters */
 	GMT_init_vector_param (C, S);
 	
