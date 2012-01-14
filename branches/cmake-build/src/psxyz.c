@@ -476,8 +476,6 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (S.symbol == GMT_SYMBOL_ELLIPSE) Ctrl->N.active = TRUE;
 
-	if (penset_OK) GMT_setpen (GMT, &current_pen);
-
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) GMT_setfont (GMT, &S.font);		/* Set the required font */
 	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & GMT_VEC_JUST_S) {
@@ -485,6 +483,12 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
 		GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	}
+	if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC ) {	/* One of the vector symbols */
+		if ((S.v.status & GMT_VEC_FILL) == 0) Ctrl->G.active = FALSE;	/* Want to fill so override -G*/
+		if (S.v.status & GMT_VEC_FILL2) current_fill = S.v.fill;	/* Override -G<fill> (if set) with specified head fill */
+		if (S.v.status & GMT_VEC_OUTLINE2) current_pen = S.v.pen, Ctrl->W.active = TRUE;	/* Override -W (if set) with specified vector pen */
+	}
+	if (penset_OK) GMT_setpen (GMT, &current_pen);
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
 	if (not_line && !outline_active && !fill_active && !get_rgb) outline_active = TRUE;	/* If no fill nor outline for symbols then turn outline on */
@@ -555,7 +559,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				/* First establish the symbol type given at the end of the record */
 				GMT_chop (GMT, text_rec);	/* Get rid of \n \r */
 				i = strlen (text_rec) - 1;
-				while (text_rec[i] && !strchr (" ,\t", (int)text_rec[i])) i--;
+				while (text_rec[i] && !strchr (" \t", (int)text_rec[i])) i--;
 				GMT_parse_symbol_option (GMT, &text_rec[i+1], &S, 1, FALSE);
 				for (j = n_cols_start; j < 7; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
 				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
@@ -563,6 +567,21 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (GMT_conv_intext2dbl (GMT, text_rec, 7)) {	/* Max 7 columns needs to be parsed */
 					GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had bad x and/or y coordinates, skipped)\n", n_total_read);
 					continue;
+				}
+				if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC) {	/* One of the vector symbols */
+					if (S.v.status & GMT_VEC_OUTLINE2) {
+						current_pen = S.v.pen, Ctrl->W.active = TRUE;	/* Override -W (if set) with specified pen */
+					}
+					else if (S.v.status & GMT_VEC_OUTLINE) {
+						current_pen = default_pen, Ctrl->W.active = TRUE;	/* Return to default pen */
+					}
+					if (S.v.status & GMT_VEC_FILL2) {
+						current_fill = S.v.fill;	/* Override -G<fill> with specified head fill */
+						if (S.v.status & GMT_VEC_FILL) Ctrl->G.active = TRUE;
+					}
+					else if (S.v.status & GMT_VEC_FILL) {
+						current_fill = default_fill, Ctrl->G.active = TRUE;	/* Return to default fill */
+					}
 				}
 			}
 

@@ -9,13 +9,19 @@ MOD(b) places a vector head at the beginning of the vector path [none].
 .br
 MOD(e) places a vector head at the end of the vector path [none].
 .br
-MOD(l) draws half-arrows, using only the left side [both].
+MOD(g)-|IT(fill) turns off vector head fill (if -) or sets the vector head fill
+[Default fill is used, which may be no fill].
 .br
-MOD(r) draws half-arrows, using only the right side [both].
+MOD(l) draws half-arrows, using only the left side [both].
 .br
 MOD(n)IT(norm) scales down vector attributes (pen thickness, head size) with decreasing length,
 where vectors shorter than IT(norm) will have their
 attributes scaled by length/IT(norm) [arrow attributes remains invariant to length].
+.br
+MOD(p)[-][IT(pen)] sets the vector pen attributes.  If IT(pen) has a leading - then
+the head outline is not drawn. [Default pen is used, and head outline is drawn]
+.br
+MOD(r) draws half-arrows, using only the right side [both].
 .br
 .sp
 In addition, all but circular vectors may take these modifiers:
