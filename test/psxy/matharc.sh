@@ -9,26 +9,32 @@ ps=matharc.ps
 psbasemap -R0/6/0/3 -Jx1i -P -B1g1WSne -K -Xc > $ps
 gmtset MAP_VECTOR_SHAPE 1
 # Math angle vectors
-echo 0	0	1i	30	80	| psxy -R -J -O -K -W1p -Gred -Sm0.2i >> $ps
-echo 1	0	1i	30	80	| psxy -R -J -O -K -W1p -Gred -Sm0.2i+b >> $ps
-echo 2	0	1i	30	80	| psxy -R -J -O -K -W1p -Gred -Sm0.2i+e >> $ps
-echo 3	0	1i	30	80	| psxy -R -J -O -K -W1p -Gred -Sm0.2i+b+e >> $ps
-echo 4	0	1i	30	80	| psxy -R -J -O -K -W1p -Gred -Sm0.2i+b+l >> $ps
-echo 5	0	1i	30	80	| psxy -R -J -O -K -W1p -Gred -Sm0.2i+e+r >> $ps
+psxy -R -J -O -K -W1p -Gred -S << EOF >> $ps
+0	0	1i	30	80	m0.2i
+1	0	1i	30	80	m0.2i+b
+2	0	1i	30	80	m0.2i+e+p-
+3	0	1i	30	80	m0.2i+b+e+gorange
+4	0	1i	30	80	m0.2i+b+l+p1p,blue
+5	0	1i	30	80	m0.2i+e+r
+EOF
 # Right angles
-echo 0.5	1.5	0.5i	0	90	| psxy -R -J -O -K -W1p -Gred -SM0.2i >> $ps
-echo 1.5	1.5	0.5i	60	150	| psxy -R -J -O -K -W1p -Gred -SM0.2i+b >> $ps
-echo 2.5	1.5	0.5i	120	210	| psxy -R -J -O -K -W1p -Gred -SM0.2i+e >> $ps
-echo 3.5	1.5	0.5i	180	270	| psxy -R -J -O -K -W1p -Gred -SM0.2i+b+e >> $ps
-echo 4.5	1.5	0.5i	240	330	| psxy -R -J -O -K -W1p -Gred -SM0.2i+b+l >> $ps
-echo 5.5	1.5	0.5i	300	390	| psxy -R -J -O -K -W1p -Gred -SM0.2i+e+r >> $ps
+psxy -R -J -O -K -W1p -Gred -S << EOF >> $ps
+0.5	1.5	0.5i	0	90	M0.2i
+1.5	1.5	0.5i	60	150	M0.2i+b
+2.5	1.5	0.5i	120	210	M0.2i+e
+3.5	1.5	0.5i	180	270	M0.2i+b+e
+4.5	1.5	0.5i	240	330	M0.2i+b+l
+5.5	1.5	0.5i	300	390	M0.2i+e+r
+EOF
 # Math angle vectors unfilled
-echo 0	2	1i	30	80	| psxy -R -J -O -K -W1p -Sm0.2i >> $ps
-echo 1	2	1i	30	80	| psxy -R -J -O -K -W1p -Sm0.2i+b >> $ps
-echo 2	2	1i	30	80	| psxy -R -J -O -K -W1p -Sm0.2i+e >> $ps
-echo 3	2	1i	30	80	| psxy -R -J -O -K -W1p -Sm0.2i+b+e >> $ps
-echo 4	2	1i	30	80	| psxy -R -J -O -K -W1p -Sm0.2i+b+l >> $ps
-echo 5	2	1i	30	80	| psxy -R -J -O -K -W1p -Sm0.2i+e+r >> $ps
+psxy -R -J -O -K -W1p -S << EOF >> $ps
+0	2	1i	30	80	m0.2i
+1	2	1i	30	80	m0.2i+b
+2	2	1i	30	80	m0.2i+e
+3	2	1i	30	80	m0.2i+b+e
+4	2	1i	30	80	m0.2i+b+l
+5	2	1i	30	80	m0.2i+e+r
+EOF
 # Normalized by angle below
 psbasemap -R0/4/0/4 -J -O -B1g1WSne -K -X1i -Y4i >> $ps
 psxy -R -J -O -K -W1p -Gblack -Sm0.3i+b+e+n90 << EOF >> $ps

@@ -478,7 +478,7 @@ GMT_LONG GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct G
 	/* Check that the options selected are mutually consistent */
 
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && GMT_parse_symbol_option (GMT, Ctrl->S.arg, S, 0, TRUE), "Syntax error -S option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && (S->symbol == GMT_SYMBOL_VECTOR || S->symbol == GMT_SYMBOL_ELLIPSE || S->symbol == GMT_SYMBOL_FRONT || S->symbol == GMT_SYMBOL_QUOTED_LINE || S->symbol == GMT_SYMBOL_ROTRECT), "Syntax error -E option: Incompatible with -Se, -Sf, -Sj, -Sq, -Sv\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && (S->symbol == GMT_SYMBOL_VECTOR || S->symbol == GMT_SYMBOL_GEOVECTOR || S->symbol == GMT_SYMBOL_MARC || S->symbol == GMT_SYMBOL_ELLIPSE || S->symbol == GMT_SYMBOL_FRONT || S->symbol == GMT_SYMBOL_QUOTED_LINE || S->symbol == GMT_SYMBOL_ROTRECT), "Syntax error -E option: Incompatible with -Se, -Sf, -Sj, -Sm|M, -Sq, -Sv|V, -S=\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Syntax error: Binary input data cannot have symbol information\n");
@@ -677,26 +677,23 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			clip_set = TRUE;
 		}
 	}
-	if (penset_OK) GMT_setpen (GMT, &current_pen);
-
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) GMT_setfont (GMT, &S.font);	/* Set the required font */
 	if (S.symbol == GMT_SYMBOL_ELLIPSE) Ctrl->N.active = TRUE;	/* So we can see ellipses that have centers outside -R */
 	if (S.symbol == GMT_SYMBOL_BARX && !S.base_set && GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10) S.base = GMT->common.R.wesn[XLO];	/* Default to west level for horizontal log10 bars */
 	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set && GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
-	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & GMT_VEC_JUST_S) {
+	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & GMT_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
 		/* Reading 2nd coordinate so must set column types */
 		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
 		GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	}
-#if 0
-	if (S.symbol == GMT_SYMBOL_MARC) {	/* Special treatment since it needs fill to draw heads */
-		if (!Ctrl->G.active) {
-			Ctrl->G.active = TRUE;
-			GMT_rgb_copy (current_fill.rgb, Ctrl->W.pen.rgb);
-		}
+	if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC ) {	/* One of the vector symbols */
+		if ((S.v.status & GMT_VEC_FILL) == 0) Ctrl->G.active = FALSE;	/* Want to fill so override -G*/
+		if (S.v.status & GMT_VEC_FILL2) current_fill = S.v.fill;	/* Override -G<fill> (if set) with specified head fill */
+		if (S.v.status & GMT_VEC_OUTLINE2) current_pen = S.v.pen, Ctrl->W.active = TRUE;	/* Override -W (if set) with specified vector pen */
 	}
-#endif
+	if (penset_OK) GMT_setpen (GMT, &current_pen);
+
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
 	if (not_line && !outline_active && !fill_active && !get_rgb) outline_active = TRUE;	/* If no fill nor outline for symbols then turn outline on */
@@ -757,7 +754,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				/* First establish the symbol type given at the end of the record */
 				GMT_chop (GMT, text_rec);	/* Get rid of \n \r */
 				i = strlen (text_rec) - 1;
-				while (text_rec[i] && !strchr (" ,\t", (int)text_rec[i])) i--;
+				while (text_rec[i] && !strchr (" \t", (int)text_rec[i])) i--;
 				GMT_parse_symbol_option (GMT, &text_rec[i+1], &S, 0, FALSE);
 				for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
 				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
@@ -765,6 +762,21 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (GMT_conv_intext2dbl (GMT, text_rec, 6)) {	/* Max 6 columns needs to be parsed */
 					GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had bad x and/or y coordinates, skipped)\n", n_total_read);
 					continue;
+				}
+				if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC) {	/* One of the vector symbols */
+					if (S.v.status & GMT_VEC_OUTLINE2) {
+						current_pen = S.v.pen, Ctrl->W.active = TRUE;	/* Override -W (if set) with specified pen */
+					}
+					else if (S.v.status & GMT_VEC_OUTLINE) {
+						current_pen = default_pen, Ctrl->W.active = TRUE;	/* Return to default pen */
+					}
+					if (S.v.status & GMT_VEC_FILL2) {
+						current_fill = S.v.fill;	/* Override -G<fill> with specified head fill */
+						if (S.v.status & GMT_VEC_FILL) Ctrl->G.active = TRUE;
+					}
+					else if (S.v.status & GMT_VEC_FILL) {
+						current_fill = default_fill, Ctrl->G.active = TRUE;	/* Return to default fill */
+					}
 				}
 			}
 

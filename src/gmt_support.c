@@ -4617,7 +4617,7 @@ char * GMT_make_filename (struct GMT_CTRL *C, char *template, GMT_LONG fmt[], do
 }
 
 GMT_LONG gmt_label_is_OK (struct GMT_CTRL *C, struct GMT_LABEL *L, char *this_label, char *label, double this_dist, double this_value_dist, GMT_LONG xl, GMT_LONG fj, struct GMT_CONTOUR *G)
-{
+{	/* Determines if the proposed label passes various tests.  Return TRUE if we should go ahead and add this label to the list */
 	GMT_LONG label_OK = TRUE, i, k;
 	char format[GMT_TEXT_LEN256];
 	struct GMT_CONTOUR_LINE *S = NULL;
@@ -4896,8 +4896,10 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_L
 							G->L = GMT_memory (C, G->L, n_alloc, struct GMT_LABEL *);
 							GMT_memset (&(G->L[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LABEL *);	/* Set to NULL */
 						}
+						last_dist = new_label->dist;
 					}
-					last_dist = new_label->dist;
+					else /* Label had no text */
+						GMT_free (C, new_label);
 				}
 				else	/* All in vain... */
 					GMT_free (C, new_label);

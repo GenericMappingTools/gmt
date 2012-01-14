@@ -117,7 +117,7 @@ GMT_LONG GMT_grdvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-N Do Not clip vectors that exceed the map boundaries [Default will clip].\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-Q Modify vector attributes [Default gives stick-plot].\n");
-	GMT_vector_syntax (GMT, 3);
+	GMT_vector_syntax (GMT, 15);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Set scale for vector length in data units per %s [1].\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   Append c, i, or p to indicate cm, inch, or points as the distance unit.\n");
@@ -214,7 +214,7 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 						}
 					}
 					if (Ctrl->Q.S.v.v_norm > 0.0) opt->arg[j] = 'n';	/* Restore the n<norm> string */
-					Ctrl->Q.S.v.status |= GMT_VEC_JUST_B;		/* Start vector at node location */
+					Ctrl->Q.S.v.status |= (GMT_VEC_JUST_B + GMT_VEC_FILL);	/* Start filled vector at node location */
 				}
 				else {
 #endif

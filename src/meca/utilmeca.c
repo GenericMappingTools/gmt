@@ -1258,7 +1258,7 @@ GMT_LONG trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 
 	dim[0] = x2, dim[1] = y2;
 	dim[2] = vw, dim[3] = hl, dim[4] = hw;
-	dim[5] = vector_shape, dim[6] = GMT_VEC_END;
+	dim[5] = vector_shape, dim[6] = GMT_VEC_END | GMT_VEC_FILL;
 	PSL_setcolor (GMT->PSL, pen.rgb, PSL_IS_STROKE);
 	PSL_plotsymbol (GMT->PSL, x1, x2, dim, PSL_VECTOR);
 

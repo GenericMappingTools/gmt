@@ -148,7 +148,7 @@ GMT_LONG GMT_psrose_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-L Override default labels [Default is WEST/EAST/SOUTH/NORTH for full circle and 90W/90E/-/0 for half-circle].\n");
 	GMT_message (GMT, "\t   If no argument is given then labels will be disabled.  Give - to disable an individual label.\n");
 	GMT_message (GMT, "\t-M Specify arrow attributes (requires -C).\n");
-	GMT_vector_syntax (GMT, 0);
+	GMT_vector_syntax (GMT, 15);
 	GMT_message (GMT, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
 	GMT_message (GMT, "\t-N Normalize rose plots for area, i.e., take sqrt(r) before plotting [FALSE].\n");
 	GMT_message (GMT, "\t   Only applicable if normalization has been specified with -S<radius>n.\n");
@@ -625,7 +625,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Ctrl->M.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 			Ctrl->M.S.v.v_width  = VECTOR_LINE_WIDTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 			Ctrl->M.S.v.v_angle  = 30.0;
-			Ctrl->M.S.v.status |= (GMT_VEC_OUTLINE2 + GMT_VEC_FILL2 + GMT_VEC_END);
+			Ctrl->M.S.v.status |= (GMT_VEC_OUTLINE + GMT_VEC_OUTLINE2 + GMT_VEC_FILL + GMT_VEC_FILL2 + GMT_VEC_END);
 			GMT_init_pen (GMT, &Ctrl->M.S.v.pen, VECTOR_LINE_WIDTH);
 			GMT_init_fill (GMT, &Ctrl->M.S.v.fill, 0.0, 0.0, 0.0);		/* Default vector fill = black */
 		}
