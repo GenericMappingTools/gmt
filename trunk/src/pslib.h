@@ -102,9 +102,7 @@ enum PSL_enum_vecattr {PSL_VEC_LEFT = 1,	/* Only draw left half of vector head *
 	PSL_VEC_JUST_E		= 32,		/* Align vector end at (x,y) */
 	PSL_VEC_JUST_S		= 64,		/* Align vector center at (x,y) */
 	PSL_VEC_OUTLINE		= 128,		/* Draw vector head outline using default pen */
-	PSL_VEC_OUTLINE2	= 256,		/* Draw vector head outline using supplied v_pen */
 	PSL_VEC_FILL		= 512,		/* Fill vector head using default fill */
-	PSL_VEC_FILL2		= 1024,		/* Fill vector head using supplied v_fill) */
 	PSL_VEC_MARC90		= 2048};	/* Matharc only: if angles subtend 90, draw straight angle symbol */
 
 #define PSL_vec_justify(status) ((status>>4)&3)			/* Return justification as 0-3 */

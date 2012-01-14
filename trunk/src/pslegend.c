@@ -714,6 +714,10 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							size[i++] = '\0';	/* So GMT_to_inch won't complain */
 							sprintf (sub, "%s%s+jc+e", symbol, &size[i]);
 						}
+						if (txt_c[0] == '-') strcat (sub, "+g-");
+						else { strcat (sub, "+g"); strcat (sub, txt_c);}
+						if (txt_d[0] == '-') strcat (sub, "+p-");
+						else { strcat (sub, "+p"); strcat (sub, txt_d);}
 						x = GMT_to_inch (GMT, size);
 						sprintf (sarg, "%g %g 0 %gi", x_off + off_ss, y0, x);
 					}

@@ -5,6 +5,15 @@
 2012-01-13	pwessel
 	* gmt_support.c:	The quoted line labeling would not free an allocated label
 				when the label had no text string.
+	* pslib.c:		Added support so that the bit-flags passed into psl_vector
+				and psl_mangle controls if vector heads are filled and
+				outlined.
+	* pslib.txt:		Updated documentation for the changes to vectors.
+	* gmt_plot.c:		Let geo_vector also use the bit-flags to change vector head
+				fill and outline.
+	* minmax.c:		Added the -r option so that users who have pixel-registered
+				xyz data can get correct -R via the -I option.
+	* psxy[z].c:		Make sure we process the vector modifiers when read via input.
 
 2012-01-10	jluis
 	* gmt_customio.c:	GMT_gdal_read_grd was ignoring subregion requests like for

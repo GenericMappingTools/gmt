@@ -2946,9 +2946,10 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	 * add 4 to param[6] if you want to use a straight angle symbol if the opening is 90.
 	 * param[7] = vector-shape (0-1), and param[8] = asymmetry (-1 = left, +1 = right, 0 is normal) */
 
-	PSL_LONG status, i, side, heads, sign[2] = {+1, -1};
+	PSL_LONG status, i, side, heads, outline, fill, sign[2] = {+1, -1};
 	double head_arc_length, head_half_width, arc_width, da, xt, yt, sa, ca, sb, cb, r, r2, xr, yr, xl, yl, xo, yo, shape;
 	double angle[2], tangle[2], off[2], A, B, bo1, bo2, xi, yi, bi1, bi2, xv, yv, rshift;
+	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
 
 	status = (PSL_LONG)irint (param[7]);
 	if (status & PSL_VEC_MARC90 && fabs (90.0 - fabs (param[2]-param[1])) < 1.0e-8) {	/* Right angle */
@@ -2963,6 +2964,8 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	shape = param[6];			  /* Vector head shape (0-1) */
 	side = PSL_vec_side (status);		  /* -1 = left-only, +1 = right-only, 0 = normal head */
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
+	outline = ((status & PSL_VEC_OUTLINE) > 0);
+	fill = ((status & PSL_VEC_FILL) > 0);
 	
 	da = head_arc_length * 180.0 / (M_PI * r);	/* Angle corresponding to the arc length */
 	/* rshift kicks in when we want a half-arrow head.  In that case we dont want it to be
@@ -2987,7 +2990,7 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 			r2 = r + sign[i] * rshift;
 			xt = r2 * ca;	yt = r2 * sa;	/* Tip coordinates */
 			B = D2R * (angle[i] + sign[i] * da);	sb = sin (B);	cb = cos (B);
-			PSL_command (PSL, "V ");	/* Do this inside gsave/resore since we are clipping */
+			PSL_command (PSL, "V\n");	/* Do this inside gsave/resore since we are clipping */
 			if (side != +sign[i]) {	/* Need right side of arrow head */
 				xr = (r2 + head_half_width) * cb;	yr = (r2 + head_half_width) * sb;	/* Outer flank coordinates */
 				psl_get_origin (xt, yt, xr, yr, r2, &xo, &yo, &bo1, &bo2);
@@ -3007,7 +3010,7 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 			else {	/* Draw from center back reduced by shape to tip */
 				PSL_plotarc (PSL, 0.0, 0.0, r2, tangle[i], angle[i], PSL_DRAW);
 			}
-			PSL_command (PSL, "P clip FO U\n");
+			PSL_command (PSL, "P clip %s %s U\n", dump[fill], line[outline]);
 		}
 	}
 	
@@ -3026,7 +3029,8 @@ PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 
 	double angle, xtip, ytip, tailwidth, headlength, headwidth, headshape, off, length_inch;
 	double xx[4], yy[4], yshift;
-	PSL_LONG length, asymmetry, status, n, heads;
+	PSL_LONG length, asymmetry, status, n, heads, outline, fill;
+	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
 
 	xtip = param[0];	ytip = param[1];
 	length_inch = hypot (x-xtip, y-ytip);					/* Vector length in inches */
@@ -3039,6 +3043,8 @@ PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	status = irint (param[6]);
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
 	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
+	outline = ((status & PSL_VEC_OUTLINE) > 0);
+	fill = ((status & PSL_VEC_FILL) > 0);
 	
 	PSL_command (PSL, "V %ld %ld T ", psl_ix (PSL, x), psl_iy (PSL, y));	/* Temporarily set tail point the local origin (0, 0) */
 	if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
@@ -3050,6 +3056,7 @@ PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 		PSL_command (PSL, "U\n");
 		return (PSL_NO_ERROR);	
 	}
+	
 	asymmetry = PSL_vec_side (status);		  /* -1 = left-only, +1 = right-only, 0 = normal head */
 	yshift = 0.5 * asymmetry * tailwidth;
 	
@@ -3065,13 +3072,13 @@ PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 			xx[n] = headlength; yy[n++] = headwidth;
 		}
 		PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
-		PSL_command (PSL, "P clip FO ");
+		PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
 		
 	}
 	PSL_command (PSL, "U\n");
 	if (heads & 2) {	/* Need head at end, pointing forwards */
 		PSL_command (PSL, "V %ld %ld T ", psl_ix (PSL, xtip), psl_iy (PSL, ytip));	/* Temporarily set tail point the local origin (0, 0) */
-		if (angle != 0.0) PSL_command (PSL, "%g R ", angle);			/* Rotate so vector is horizontal in local coordinate system */
+		if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
 		xx[0] = 0.0; yy[0] = yshift;	n = 1;	/* Vector tip */
 		if (asymmetry != +1) {	/* Need left side */
 			xx[n] = -headlength; yy[n++] = headwidth;
@@ -3083,7 +3090,7 @@ PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 			xx[n] = -headlength; yy[n++] = -headwidth;
 		}
 		PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
-		PSL_command (PSL, "P clip FO U\n");
+		PSL_command (PSL, "P clip %s %s U\n", dump[fill], line[outline]);	/* Finalize, then reset outline parameter */
 	}
 	return (PSL_NO_ERROR);
 }

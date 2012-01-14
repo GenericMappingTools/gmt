@@ -94,8 +94,8 @@ GMT_LONG GMT_minmax_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "minmax %s [API] - Find extreme values in data tables\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: minmax [<table>] [-Aa|f|s] [-C] [-E<L|l|H|h><col>] [-I[p]<dx>[/<dy>[/<dz>..]]\n");
-	GMT_message (GMT, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
-		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n",
+		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
      
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -117,7 +117,7 @@ GMT_LONG GMT_minmax_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   -S or -Sxy leaves space for both error bars using values in third&fourth (2&3) columns.\n");
 	GMT_message (GMT, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
 	GMT_message (GMT, "\t   Calculations are based on the first (0) column only.  Append /<col> to use another column.\n");
-	GMT_explain_options (GMT, "VC2fghi:.");
+	GMT_explain_options (GMT, "VC2fghiF:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -237,7 +237,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
 
-	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, value;
+	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, value, phase;
 	double west, east, south, north, low, high, e_min = DBL_MAX, e_max = -DBL_MAX;
 
 	struct GMT_QUAD *Q = NULL;
@@ -256,7 +256,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_minmax", &GMT_cpy);	/* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-Vbf:", "ghirs>" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_minmax_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_minmax_parse (API, Ctrl, options))) Return (error);
 
@@ -267,6 +267,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	delimeter[1] = '\0';
 	wmode = (Ctrl->C.active) ? GMT_WRITE_DOUBLE : GMT_WRITE_TEXT;
 	GMT_memset (file, GMT_BUFSIZ, char);
+	phase = (GMT->common.r.active) ? 0.5 : 0.0;
 	
 	brackets = !Ctrl->C.active;
 	work_on_abs_value = (Ctrl->E.active && Ctrl->E.abs);
@@ -332,10 +333,10 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				xyzmin[i] = Q[i].min[j];	xyzmax[i] = Q[i].max[j];
 			}
 			if (give_r_string) {	/* Return -R string */
-				west  = floor (xyzmin[GMT_X] / Ctrl->I.inc[0]) * Ctrl->I.inc[0];
-				east  = ceil  (xyzmax[GMT_X] / Ctrl->I.inc[0]) * Ctrl->I.inc[0];
-				south = floor (xyzmin[GMT_Y] / Ctrl->I.inc[1]) * Ctrl->I.inc[1];
-				north = ceil  (xyzmax[GMT_Y] / Ctrl->I.inc[1]) * Ctrl->I.inc[1];
+				west  = (floor (xyzmin[GMT_X] / Ctrl->I.inc[0]) + phase) * Ctrl->I.inc[0];
+				east  = (ceil  (xyzmax[GMT_X] / Ctrl->I.inc[0]) - phase) * Ctrl->I.inc[0];
+				south = (floor (xyzmin[GMT_Y] / Ctrl->I.inc[1]) + phase) * Ctrl->I.inc[1];
+				north = (ceil  (xyzmax[GMT_Y] / Ctrl->I.inc[1]) - phase) * Ctrl->I.inc[1];
 				if (east < west) east += 360.0;
 				sprintf (record, "-R");
 				i = strip_blanks_and_output (GMT, buffer, west, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
