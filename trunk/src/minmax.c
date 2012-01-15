@@ -232,12 +232,12 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
-	GMT_LONG brackets = FALSE, work_on_abs_value, do_report;
+	GMT_LONG brackets = FALSE, work_on_abs_value, do_report, fixed_phase[2] = {TRUE, TRUE};
 	GMT_LONG i, j, ncol = 0, n = 0, save_range, wmode, done;
 
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
 
-	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, value, phase;
+	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, value, last_phase[2] = {0.0, 0.0}, phase;
 	double west, east, south, north, low, high, e_min = DBL_MAX, e_max = -DBL_MAX;
 
 	struct GMT_QUAD *Q = NULL;
@@ -482,6 +482,12 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (in[i] < xyzmin[i]) xyzmin[i] = in[i];
 					if (in[i] > xyzmax[i]) xyzmax[i] = in[i];
 				}
+#if 0
+				if (give_r_string && i < GMT_Z && fixed_phase[i]) {
+					phase = mod (in[i], Ctrl->I.inc[i]);
+					if (GMT_IS_ZERO (last_phase[i] - phase))
+				}
+#endif
 			}
 			n++;	/* Number of records processed in current block (all/table/segment; see -A) */
 		}
