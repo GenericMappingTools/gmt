@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-01-15	pwessel
+	* minmax.c:		Determine if input data already lie on a regular lattice,
+				and use the phase shifts in x,y to determine -R when -I is given.
+
 2012-01-13	pwessel
 	* gmt_support.c:	The quoted line labeling would not free an allocated label
 				when the label had no text string.
