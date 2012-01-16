@@ -111,7 +111,8 @@ GMT_LONG GMT_minmax_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   given determines how many columns are rounded off to the nearest multiple.\n");
 	GMT_message (GMT, "\t   If only one increment is given we also use it for the second column (for backwards compatibility).\n");
 	GMT_message (GMT, "\t   To override this behaviour, use -Ip<dx>.\n");
-	GMT_message (GMT, "\t   If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift].\n");
+	GMT_message (GMT, "\t   If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift]\n");
+	GMT_message (GMT, "\t     and allow -r to change from gridline-registration to pixel-registration.\n");
 	GMT_message (GMT, "\t-S Add extra space for error bars. Useful together with -I.\n");
 	GMT_message (GMT, "\t   -Sx leaves space for horizontal error bar using value in third (2) column.\n");
 	GMT_message (GMT, "\t   -Sy leaves space for vertical error bar using value in third (2) column.\n");
@@ -338,10 +339,11 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (fixed_phase[GMT_X] && fixed_phase[GMT_Y]) {	/* Got xy[z] data that lined up on a grid, so use the common phase shift */
 					GMT_report (GMT, GMT_MSG_NORMAL, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n", phase[GMT_X], phase[GMT_Y]);
 				}
-				else {	/* Data not on grid, just return bounding box rounded off via inc, possibly adjusted via -r */
-					GMT_report (GMT, GMT_MSG_NORMAL, "Input (x,y) data are irregularly distributed; phase shifts set to 0/0.\n");
-					phase[GMT_X] = phase[GMT_Y] = 0.0;
-					off = -off;	/* Because logic is different so the +off sign below should be reversed */
+				else {	/* Data not on grid, just return bounding box rounded off to nearest inc */
+					buffer[0] = '.';	buffer[1] = 0;
+					if (GMT->common.r.active) strcpy (buffer, " (-r is ignored).");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Input (x,y) data are irregularly distributed; phase shifts set to 0/0%s\n", buffer);
+					phase[GMT_X] = phase[GMT_Y] = off = 0.0;
 				}
 				west  = (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
 				east  = (ceil  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];

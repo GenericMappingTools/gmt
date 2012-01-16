@@ -42,6 +42,9 @@ Report the min/max of the first IT(n) columns to the nearest multiple of the pro
 increments (separate the IT(n) increments by slashes), and output results in the form OPT(R)IT(w/e/s/n)
 (unless OPT(C) is set).  If only one increment is given we also use it for the second
 column (for backwards compatibility).  To override this behavior, use OPT(Ip)IT(dx).
+If the input IT(x)- and IT(y)-coordinates all have the same phase shift relative to the IT(dx) and IT(dy)
+increments then we use those phase shifts in determining the region, and you may use OPT(r) to switch from
+gridline-registration to pixel-registration.  For irregular data both phase shifts are set to 0 and the OPT(r) is ignored.
 .TP
 OPT(S)[BD(x)][BD(y)]
 Add extra space for error bars. Useful together with OPT(I) option and when later plotting with BD(psxy) OPT(E).
