@@ -968,7 +968,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Highpass requires us to resample the lowpass result via grdsample %s\n", cmd);
 			if (GMT_grdsample (GMT->parent, 0, cmd) != GMT_OK) {	/* Resample the file */
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample the lowpass result - exiting\n");
-				GMT_exit (API->error);
+				GMT_exit ((int)API->error);
 			}
 			if ((L = GMT_Retrieve_Data (API, object_ID)) == NULL) {
 				Return (API->error);
