@@ -109,7 +109,7 @@ test "$NC_DEFLATE" -ge 0 -a "$NC_DEFLATE" -le 9 || usage
 # remove options from $@
 shift $((OPTIND-1))
 
-test -z "$@" && usage
+test -z "$1" && usage
 
 for file in $@; do
   if ! [ -f "$file" ]; then
