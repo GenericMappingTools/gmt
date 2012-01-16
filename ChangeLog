@@ -3,8 +3,9 @@
 -----------------------------------------------------------------------------------------
 
 2012-01-15	pwessel
-	* minmax.c:		Determine if input data already lie on a regular lattice,
-				and use the phase shifts in x,y to determine -R when -I is given.
+	* minmax.c:		Determine if input data already lie on a regular lattice;
+				if so, use the phase shifts in x,y to determine -R when -I
+				is given, and allow -r to switch to pixel-registration.
 
 2012-01-13	pwessel
 	* gmt_support.c:	The quoted line labeling would not free an allocated label
