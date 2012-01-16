@@ -668,7 +668,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				else if (Amode == 'm')
 					Grid->data[ij] /= (float)flag[ij];
 				else if (Amode == 'r')
-					Grid->data[ij] = sqrt (Grid->data[ij] / (float)flag[ij]);
+					Grid->data[ij] = (float)(sqrt (Grid->data[ij] / (float)flag[ij]));
 				/* implicit else means return the sum of the values */
 				n_filled++;
 				n_stuffed++;

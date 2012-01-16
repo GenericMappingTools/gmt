@@ -3953,7 +3953,7 @@ GMT_LONG GMT_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, G
 		P[0] = -P[0], P[1] = -P[1], P[2] = -P[2];
 	}
 	if (GMT_IS_ZERO (step)) step = C->current.map.path_step;	/* Use default map-step if given as 0 */
-	n = ceil (c / step) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
+	n = (GMT_LONG)ceil (c / step) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * c / (n - 1);	/* Adjust step for exact fit, convert to radians */
 	GMT_malloc2 (C, xx, yy, n, &n_alloc, double);	/* Allocate space for arrays */
 	gmt_init_rot_matrix (R0, P);			/* Get partial rotation matrix since no actual angle is applied yet */
