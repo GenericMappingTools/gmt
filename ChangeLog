@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-01-25	remko
+	* gmt_io.c:		GMT_GRDIO_RI_NOREPEAT should not be fatal.
+
 2012-01-15	pwessel
 	* minmax.c:		Determine if input data already lie on a regular lattice;
 				if so, use the phase shifts in x,y to determine -R when -I
