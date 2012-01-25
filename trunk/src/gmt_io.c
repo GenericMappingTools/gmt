@@ -2703,8 +2703,9 @@ GMT_LONG GMT_z_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, void *data)
 	
 GMT_LONG GMT_set_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G)
 {
+	/* THIS SHOULD NOT BE FATAL!
 	if ((r->x_missing || r->y_missing) && G->header->registration == GMT_PIXEL_REG) return (GMT_GRDIO_RI_NOREPEAT);
-
+	*/
 	r->start_col = ((r->x_step == 1) ? 0 : G->header->nx - 1 - r->x_missing);
 	r->start_row = ((r->y_step == 1) ? r->y_missing : G->header->ny - 1);
 	r->get_gmt_ij = (r->format == GMT_COLUMN_FORMAT) ? gmt_col_ij : gmt_row_ij;
