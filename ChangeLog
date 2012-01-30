@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
 	$Id$
 -----------------------------------------------------------------------------------------
+2012-01-30	jluis
+	* ps2raster.c:		On Windows the default name of the ghostscript executable 
+				is now that of the 64 bits version (gswin64c).
 
 2012-01-25	remko
 	* gmt_io.c:		GMT_GRDIO_RI_NOREPEAT should not be fatal.
