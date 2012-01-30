@@ -212,7 +212,7 @@ void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 #ifdef WIN32
-	C->G.file = strdup ("gswin32c");
+	C->G.file = strdup ("gswin64c");
 #else
 	C->G.file = strdup ("gs");
 #endif
@@ -277,7 +277,7 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   NOTE: Under Unix systems this is generally not necessary.\n");
 	GMT_message (GMT, "\t   Under Windows, ghostscript is not added to the system's path.\n");
 	GMT_message (GMT, "\t   So either you do it yourself, or give the full path here.\n");
-	GMT_message (GMT, "\t   (e.g. -Gc:\\programs\\gs\\gs7.05\\bin\\gswin32c).\n");
+	GMT_message (GMT, "\t   (e.g. -Gc:\\programs\\gs\\gs9.02\\bin\\gswin64c).\n");
 	GMT_message (GMT, "\t-L The <listfile> is an ASCII file with names of files to be converted.\n");
 	GMT_message (GMT, "\t-P Force Portrait mode. All Landscape mode plots will be rotated back\n");
 	GMT_message (GMT, "\t   so that they show unrotated in Portrait mode.\n");
