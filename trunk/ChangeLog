@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
 	$Id$
 -----------------------------------------------------------------------------------------
+2012-01-31	pwessel
+	* pstext.c:		Enhanced -DJ option will shorten diagonal offsets by sqrt(2) to
+				maintain the same distance from point to annotation.
+
 2012-01-30	jluis
 	* ps2raster.c:		On Windows the default name of the ghostscript executable 
 				is now that of the 64 bits version (gswin64c).

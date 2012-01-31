@@ -512,7 +512,7 @@ void annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double
 	else
 		just = (angle >= 0.0) ? 3 : 11;
 	form = GMT_setfont (GMT, &GMT->current.setting.font_label);
-	GMT_smart_justify (GMT, just, angle, GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size, GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size, &x, &y);
+	GMT_smart_justify (GMT, just, angle, GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size, GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size, &x, &y, 1);
 	PSL_plottext (PSL, x, y, size, text, angle, just, form);
 }
 
@@ -749,7 +749,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), GMT_SYMBOL_CIRCLE);
 					form = GMT_setfont (GMT, &Ctrl->T.marker[mrk].font);
 					plot_x = x;	plot_y = y;
-					GMT_smart_justify (GMT, 5, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 * Ctrl->T.marker[mrk].font_size, &plot_x, &plot_y);
+					GMT_smart_justify (GMT, 5, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 * Ctrl->T.marker[mrk].font_size, &plot_x, &plot_y, 1);
 					PSL_plottext (PSL, plot_x, plot_y, GMT->session.u2u[GMT_INCH][GMT_PT] * Ctrl->T.marker[mrk].font_size, label, angle, 5, form);
 					last_julian = calendar.day_y;
 				}
@@ -760,7 +760,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), GMT_SYMBOL_SQUARE);
 					form = GMT_setfont (GMT, &Ctrl->T.marker[mrk].font);
 					plot_x = x;	plot_y = y;
-					GMT_smart_justify (GMT, 7, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 * Ctrl->T.marker[mrk].font_size, &plot_x, &plot_y);
+					GMT_smart_justify (GMT, 7, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 * Ctrl->T.marker[mrk].font_size, &plot_x, &plot_y, 1);
 					PSL_plottext (PSL, plot_x, plot_y, GMT->session.u2u[GMT_INCH][GMT_PT] * Ctrl->T.marker[mrk].font_size, label, angle, 7, form);
 				}
 			}
