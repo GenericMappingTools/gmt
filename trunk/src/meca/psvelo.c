@@ -166,7 +166,10 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	 */
 
 	GMT_LONG n_errors = 0, n, no_size_needed, n_set, got_A = FALSE;
-	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
+	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+#ifdef GMT_COMPAT
+	char txt_c[GMT_TEXT_LEN256];
+#endif
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
