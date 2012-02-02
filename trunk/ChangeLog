@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
 	$Id$
 -----------------------------------------------------------------------------------------
+2012-02-02	pwessel
+	* pslegend.c:	Did not process -U, and had usage message about obsolete -S
+
 2012-01-31	pwessel
 	* pstext.c:		Enhanced -DJ option will shorten diagonal offsets by sqrt(2) to
 				maintain the same distance from point to annotation.
