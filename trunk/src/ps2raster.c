@@ -1226,26 +1226,27 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	   and 	http://juknull.wordpress.com/tag/regenumkeyex-example */
 
 	HKEY hkey;              /* Handle to registry key */
-	char data[256], ver[8], bits[] = "64";
+	char data[256], ver[8];
 	char key[32] = "SOFTWARE\\GPL Ghostscript\\";
 	unsigned long datalen = 255;
 	unsigned long datatype;
 	long RegO, rc = 0;
 	int n = 0;
+	GMT_LONG bits64 = TRUE;
 	float maxVersion = 0;		/* In case more than one GS, hold the number of the highest version */
 
 #ifdef _WIN64
 	RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ, &hkey);	/* Read 64 bits Reg */
 	if (RegO != ERROR_SUCCESS) {		/* Try the 32 bits registry */
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ|KEY_WOW64_32KEY, &hkey);
-		bits[0] = '3';		bits[1] = '2';
+		bits64 = FALSE;
 	}
 #else
 	RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ, &hkey);	/* Read 32 bits Reg */
 	if (RegO != ERROR_SUCCESS)			/* Failed. Try the 64 bits registry */
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ|KEY_WOW64_64KEY, &hkey);
 	else {
-		bits[0] = '3';		bits[1] = '2';
+		bits64 = FALSE;
 	}
 #endif
 
@@ -1274,12 +1275,12 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	/* Open the HKLM key, key, from which we wish to get data.
 	   But now we already know the registry bitage */
 #ifdef _WIN64
-	if (bits[0] == '6')		
+	if (bits64)		
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
 	else
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE|KEY_WOW64_32KEY, &hkey);
 #else
-	if (bits[0] == '6')
+	if (bits64)		
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE|KEY_WOW64_64KEY, &hkey);
 	else
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
@@ -1308,9 +1309,10 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
  	n = datalen;
  	while (data[n] != '\\') n--;
  	data[n+1] = '\0';				/* Rip the "gsdllXX.dll" part */
- 	strcat(data, "gswin");
- 	strcat(data, bits);				/* Remember, these bits are those of the Ghost, not of GMT */
- 	strcat(data, "c.exe");
+ 	if (bits64)
+ 		strcat(data,"gswin64c.exe");	/* Remember, these bits are those of the Ghost, not of GMT */
+ 	else
+ 		strcat(data,"gswin32c.exe");
 
  	/* Now finally check that the gswinXXc.exe exists */
 	if (access (data, R_OK)) {
