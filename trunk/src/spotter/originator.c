@@ -467,7 +467,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		nc = spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, ns, Ctrl->D.value, 0.0, TRUE, NULL, &c);
 
-		np = c[0];
+		np = (GMT_LONG)c[0];
 
 		GMT_memcpy (hot, hotspot, nh, struct HOTSPOT_ORIGINATOR);
 
