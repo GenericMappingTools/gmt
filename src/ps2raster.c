@@ -1305,8 +1305,8 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 		return (EXIT_FAILURE);
 	}
 
-	data[ptr-data] = '\0';
-	strcat(data,bits64 ? "\\gswin64c.exe" : "\\gswin32c.exe");
+	*ptr = '\0';
+	strcat(data, bits64 ? "\\gswin64c.exe" : "\\gswin32c.exe");
 
  	/* Now finally check that the gswinXXc.exe exists */
 	if (access (data, R_OK)) {
