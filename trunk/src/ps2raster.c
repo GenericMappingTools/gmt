@@ -1226,7 +1226,7 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	   and 	http://juknull.wordpress.com/tag/regenumkeyex-example */
 
 	HKEY hkey;              /* Handle to registry key */
-	char data[256], ver[8];
+	char data[256], ver[8], *ptr;
 	char key[32] = "SOFTWARE\\GPL Ghostscript\\";
 	unsigned long datalen = 255;
 	unsigned long datatype;
@@ -1300,23 +1300,18 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 		return (EXIT_FAILURE);
 	}
 
- 	datalen = (unsigned long)strlen(data);
- 	if (!strstr(data,".dll")) {		/* It must be a "...\gsX.XX\bin\gsdllXX.dll" string */
+	if ( !(ptr = strstr(data,"\\gsdll")) ) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "GS_DLL value is screwed.\n");
 		return (EXIT_FAILURE);
- 	}
+	}
 
- 	n = datalen;
- 	while (data[n] != '\\') n--;
- 	data[n+1] = '\0';				/* Rip the "gsdllXX.dll" part */
- 	if (bits64)
- 		strcat(data,"gswin64c.exe");	/* Remember, these bits are those of the Ghost, not of GMT */
- 	else
- 		strcat(data,"gswin32c.exe");
+	data[ptr-data] = '\0';
+	strcat(data,bits64 ? "\\gswin64c.exe" : "\\gswin32c.exe");
 
  	/* Now finally check that the gswinXXc.exe exists */
 	if (access (data, R_OK)) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "gswinXXc.exe does not exist.\n");
+		fprintf(stderr,"MERDA_R_OK\n");
 		return (EXIT_FAILURE);
 	}
 
