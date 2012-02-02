@@ -887,7 +887,8 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		nav_error = TRUE;
 		overLandCount = overLandStart = n_bad = utc_offset = 0;
 		timeErrorStart = noTimeStart = distanceErrorStart = -1;
-		noTimeCount = timeErrorCount = distanceErrorCount = n_nan = bccCode = n_wrap = 0;
+		noTimeCount = timeErrorCount = distanceErrorCount = bccCode = 0;
+		n_nan = n_wrap = 0;
 		offsetArea = GMT_memory (GMT, NULL, n_grids, double);
 		offsetStart = GMT_memory (GMT, NULL, n_grids, GMT_LONG);
 		offsetLength = GMT_memory (GMT, NULL, n_grids, double);
