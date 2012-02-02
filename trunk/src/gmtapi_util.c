@@ -166,8 +166,8 @@ double GMTAPI_get_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, GMT_LONG
 		case GMTAPI_SHORT:	val = u->si2[row];	break;
 		case GMTAPI_UINT:	val = u->ui4[row];	break;
 		case GMTAPI_INT:	val = u->si4[row];	break;
-		case GMTAPI_ULONG:	val = u->ui8[row];	break;
-		case GMTAPI_LONG:	val = u->si8[row];	break;
+		case GMTAPI_ULONG:	val = (double)u->ui8[row];	break;
+		case GMTAPI_LONG:	val = (double)u->si8[row];	break;
 		case GMTAPI_FLOAT:	val = u->f4[row];	break;
 		case GMTAPI_DOUBLE:	val = u->f8[row];	break;
 		default:
