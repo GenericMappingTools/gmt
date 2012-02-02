@@ -40,6 +40,7 @@ EXTERN_MSC void GMT_str_toupper (char *string);
 #ifdef WIN32	/* Special for Windows */
 #include <process.h>
 #define getpid _getpid
+GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C);
 #endif
 
 #define N_GS_DEVICES		12	/* Number of supported GS output devices */
@@ -212,7 +213,9 @@ void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 #ifdef WIN32
-	C->G.file = strdup ("gswin64c");
+	if (ghostbuster(GMT, C)) {				/* Try first to find the gspath from registry */
+		C->G.file = strdup ("gswin64c");	/* Fall back to this default and expect a miracle */
+	}
 #else
 	C->G.file = strdup ("gs");
 #endif
@@ -1208,3 +1211,116 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	Return (GMT_OK);
 }
+
+#ifdef WIN32
+
+#include <windows.h>
+GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
+	/* Search the Windows registry for the directory containing the gswinXXc.exe
+	   We do this by finding the GS_DLL that is a value of the HKLM\SOFTWARE\GPL Ghostscript\X.XX\ key
+	   Things are further complicated because Win64 has TWO registries: one 32 and the other 64 bits.
+	   Add to this that the installed GS version may be 32 or 64 bits, so we have to check for the
+	   four GS_32|64 + GMT_32|64 combinations.
+	   
+	   Adapted from snipets at http://www.daniweb.com/software-development/c/code/217174
+	   and 	http://juknull.wordpress.com/tag/regenumkeyex-example */
+
+	HKEY hkey;              /* Handle to registry key */
+	char data[256], ver[8], bits[] = "64";
+	char key[32] = "SOFTWARE\\GPL Ghostscript\\";
+	unsigned long datalen = 255;
+	unsigned long datatype;
+	long RegO, rc = 0;
+	int n = 0;
+	float maxVersion = 0;		/* In case more than one GS, hold the number of the highest version */
+
+#ifdef _WIN64
+	RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ, &hkey);	/* Read 64 bits Reg */
+	if (RegO != ERROR_SUCCESS) {		/* Try the 32 bits registry */
+		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ|KEY_WOW64_32KEY, &hkey);
+		bits[0] = '3';		bits[1] = '2';
+	}
+#else
+	RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ, &hkey);	/* Read 32 bits Reg */
+	if (RegO != ERROR_SUCCESS)			/* Failed. Try the 64 bits registry */
+		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ|KEY_WOW64_64KEY, &hkey);
+	else {
+		bits[0] = '3';		bits[1] = '2';
+	}
+#endif
+
+	if (RegO != ERROR_SUCCESS) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Error opening HKLM key\n");
+		return (EXIT_FAILURE);
+	}
+
+	while (rc != ERROR_NO_MORE_ITEMS) {
+		rc  = RegEnumKeyEx (hkey, n++, data, &datalen, 0, NULL, NULL, NULL);
+		datalen = sizeof (data);
+		if (rc == ERROR_SUCCESS)
+			maxVersion = (float)MAX(maxVersion, atof(data));	/* If more than one GS, keep highest version number */
+	}
+
+	RegCloseKey(hkey);
+
+	if (maxVersion == 0) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Unknown version reported in registry\n");
+		return (EXIT_FAILURE);
+	}
+
+	sprintf(ver, "%.2f", maxVersion);
+	strcat(key, ver);
+
+	/* Open the HKLM key, key, from which we wish to get data.
+	   But now we already know the registry bitage */
+#ifdef _WIN64
+	if (bits[0] == '6')		
+		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
+	else
+		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE|KEY_WOW64_32KEY, &hkey);
+#else
+	if (bits[0] == '6')
+		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE|KEY_WOW64_64KEY, &hkey);
+	else
+		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
+#endif
+	if (RegO != ERROR_SUCCESS) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Error opening HKLM key\n");
+		return (EXIT_FAILURE);
+	}
+ 
+	/* Read the value for "GS_DLL" via the handle 'hkey' */
+	RegO = RegQueryValueEx(hkey, "GS_DLL", NULL, &datatype, (LPBYTE)data, &datalen);
+
+	RegCloseKey(hkey);
+
+	if (RegO != ERROR_SUCCESS) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Error reading the GS_DLL value contents\n");
+		return (EXIT_FAILURE);
+	}
+
+ 	datalen = (unsigned long)strlen(data);
+ 	if (!strstr(data,".dll")) {		/* It must be a "...\gsX.XX\bin\gsdllXX.dll" string */
+		GMT_report (GMT, GMT_MSG_VERBOSE, "GS_DLL value is screwed.\n");
+		return (EXIT_FAILURE);
+ 	}
+
+ 	n = datalen;
+ 	while (data[n] != '\\') n--;
+ 	data[n+1] = '\0';				/* Rip the "gsdllXX.dll" part */
+ 	strcat(data, "gswin");
+ 	strcat(data, bits);				/* Remember, these bits are those of the Ghost, not of GMT */
+ 	strcat(data, "c.exe");
+
+ 	/* Now finally check that the gswinXXc.exe exists */
+	if (access (data, R_OK)) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "gswinXXc.exe does not exist.\n");
+		return (EXIT_FAILURE);
+	}
+
+	C->G.file = strdup(data);
+
+	return (GMT_OK);
+}
+
+#endif		/* WIN32 */
