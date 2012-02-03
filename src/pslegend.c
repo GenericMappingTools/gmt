@@ -89,7 +89,6 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 void Free_pslegend_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->S.file) free (C->S.file);
 	GMT_free (GMT, C);
 }
 
