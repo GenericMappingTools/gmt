@@ -1830,8 +1830,12 @@ void GMT_azeqdist (struct GMT_CTRL *C, double lon, double lat, double *x, double
 
 	t = clat * clon;
 	cc = C->current.proj.sinp * slat + C->current.proj.cosp * t;
-	if (fabs (cc) >= 1.0)
+	if (GMT_IS_ZERO (cc - 1.0))		/* Center of projection */
 		*x = *y = 0.0;
+	else if (GMT_IS_ZERO (cc + 1.0)) {	/* Antipode is a circle, so flag x,y as NaN and increase counter */
+		*x = *y = C->session.d_NaN;
+		C->current.proj.n_antipoles++;
+	}
 	else {
 		c = d_acos (cc);
 		k = C->current.proj.EQ_RAD * c / sin (c);
