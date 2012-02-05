@@ -278,8 +278,9 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   extension. Extension is still determined automatically.\n");
 	GMT_message (GMT, "\t-G Full path to your ghostscript executable.\n");
 	GMT_message (GMT, "\t   NOTE: Under Unix systems this is generally not necessary.\n");
-	GMT_message (GMT, "\t   Under Windows, ghostscript is not added to the system's path.\n");
-	GMT_message (GMT, "\t   So either you do it yourself, or give the full path here.\n");
+	GMT_message (GMT, "\t   Under Windows, ghostscript path is fished from the registry.\n");
+	GMT_message (GMT, "\t   If this fails you can still add the GS path to system's path\n");
+	GMT_message (GMT, "\t   or give the full path here.\n");
 	GMT_message (GMT, "\t   (e.g. -Gc:\\programs\\gs\\gs9.02\\bin\\gswin64c).\n");
 	GMT_message (GMT, "\t-L The <listfile> is an ASCII file with names of files to be converted.\n");
 	GMT_message (GMT, "\t-P Force Portrait mode. All Landscape mode plots will be rotated back\n");
@@ -1311,10 +1312,16 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
  	/* Now finally check that the gswinXXc.exe exists */
 	if (access (data, R_OK)) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "gswinXXc.exe does not exist.\n");
-		fprintf(stderr,"MERDA_R_OK\n");
 		return (EXIT_FAILURE);
 	}
 
+	/* Wrap the path in double quotes to prevent troubles raised by dumb things like "Program Files" */
+	datalen = (unsigned long)strlen (data);
+	for (n = datalen; n > 0; n--)
+		data[n] = data[n-1];
+
+	data[0] = data[datalen+1] = '"';
+	data[datalen+2] = '\0';
 	C->G.file = strdup(data);
 
 	return (GMT_OK);
