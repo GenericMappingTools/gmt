@@ -5354,7 +5354,7 @@ void gmt_handle_dosfile (struct GMT_CTRL *C, char *in, int this)
 
 	if (!in)
 		return;	/* Nothing to work on */
-	if ((len = strlen (in)) < 2)
+	if ((len = (int)strlen (in)) < 2)
 		return;	/* Nothing to work on */
 	--len; /* Since this use of : cannot be at the end anyway and we need to check the next character */
 	for (i = 1; i < len; ++i) {
@@ -6571,8 +6571,8 @@ GMT_LONG gmt_get_unit (char c)
 void GMT_init_vector_param (struct GMT_CTRL *C, struct GMT_SYMBOL *S)
 {	/* Update vector head length and width parameters based on size_z and v_angle */
 	if (GMT_IS_ZERO (S->size_x)) return;	/* Not set yet */
-	S->v.h_length = S->size_x;
-	S->v.h_width = 2.0 * S->v.h_length * tand (0.5 * S->v.v_angle);
+	S->v.h_length = (float)S->size_x;
+	S->v.h_width = (float)(2.0 * S->v.h_length * tand (0.5 * S->v.v_angle));
 }
 
 GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
@@ -6592,9 +6592,9 @@ GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 	
 	while ((GMT_strtok (C, &text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 		switch (p[0]) {
-			case 'a':	S->v.v_angle = atof (&p[1]);	break;	/* Vector head opening angle [30] */
+			case 'a':	S->v.v_angle = (float)atof (&p[1]);	break;	/* Vector head opening angle [30] */
 			case 'b':	S->v.status |= GMT_VEC_BEGIN;	break;	/* Vector head at beginning point */
-			case 'e':	S->v.status |= GMT_VEC_END;	break;	/* Vector head at end point */
+			case 'e':	S->v.status |= GMT_VEC_END;		break;	/* Vector head at end point */
 			case 'l':	S->v.status |= GMT_VEC_LEFT;	break;	/* Vector head on left half only */
 			case 'r':	S->v.status |= GMT_VEC_RIGHT;	break;	/* Vector head on right half only */
 			case 's':	S->v.status |= GMT_VEC_JUST_S;	break;	/* Input (angle,length) are vector end point (x,y) instead */
@@ -6619,7 +6619,7 @@ GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 				len = strlen (p);
 				j = (text[0] == 'v' || text[0] == 'V') ? gmt_get_unit (p[len]) : -1;	/* Only -Sv|V takes unit */
 				if (j >= 0) { S->u = j; S->u_set = TRUE; }
-				S->v.v_norm = atof (&p[1]);
+				S->v.v_norm = (float)atof (&p[1]);
 				break;
 			case 'g':	/* Vector head fill [Used in psrose, for instance] */
 				g_opt = TRUE;	/* Marks that +g was used */
@@ -7186,7 +7186,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 				if (text[j] == 'n') {	/* Normalize option used */
 					k = gmt_get_unit (text[len]);
 					if (k >= 0) { p->u = k; p->u_set = TRUE; }
-					p->v.v_norm = atof (&text[j+1]);
+					p->v.v_norm = (float)atof (&text[j+1]);
 					text[j] = 0;	/* Chop off the shrink part */
 				}
 				if (text[one]) {
@@ -7204,10 +7204,10 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 						text[len] = 0;
 					}
 					sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-					p->v.v_width  = GMT_to_inch (C, txt_a);
-					p->v.h_length = GMT_to_inch (C, txt_b);
-					p->v.h_width  = GMT_to_inch (C, txt_c);
-					p->v.v_angle = atand (0.5 * p->v.h_width / p->v.h_length);
+					p->v.v_width  = (float)GMT_to_inch (C, txt_a);
+					p->v.h_length = (float)GMT_to_inch (C, txt_b);
+					p->v.h_width  = (float)GMT_to_inch (C, txt_c);
+					p->v.v_angle = (float)atand (0.5 * p->v.h_width / p->v.h_length);
 				}
 				if (p->v.v_norm >= 0.0) text[j] = 'n';	/* Put back the n<shrink> part */
 			}

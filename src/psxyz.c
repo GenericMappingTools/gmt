@@ -666,7 +666,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					break;
 				case GMT_SYMBOL_VECTOR:
 					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
-					S.v.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					if (!S.convert_angles)	/* Use direction as given */
 						data[n].dim[0] = in[ex1+S.read_size];	/* direction */
 					else if (!GMT_is_geographic (GMT, GMT_IN))	/* Cartesian azimuth; change to direction */
@@ -699,11 +699,11 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					data[n].dim[3] = s * S.v.h_length;
 					data[n].dim[4] = s * S.v.h_width;
 					data[n].dim[5] = GMT->current.setting.map_vector_shape;
-					data[n].dim[6] = S.v.status;
+					data[n].dim[6] = (double)S.v.status;
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
 					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
-					S.v.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					data[n].dim[0] = in[ex2+S.read_size];	/* length */
 					data[n].dim[1] = in[ex1+S.read_size];	/* direction */
 					data[n].x = in[GMT_X];			/* Revert to longitude and latitude */
@@ -712,7 +712,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					break;
 				case GMT_SYMBOL_MARC:
 					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
-					S.v.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					data[n].dim[0] = in[ex1+S.read_size];	/* Radius */
 					data[n].dim[1] = in[ex2+S.read_size];	/* Start direction in degrees */
 					data[n].dim[2] = in[ex3+S.read_size];	/* Stop direction in degrees */
@@ -722,7 +722,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					data[n].dim[4] = s * S.v.h_width;	/* Width of (shrunk) vector head */
 					data[n].dim[5] = s * S.v.v_width;	/* Thickness of (shrunk) vector */
 					data[n].dim[6] = GMT->current.setting.map_vector_shape;
-					data[n].dim[7] = S.v.status;		/* Vector tributes */
+					data[n].dim[7] = (double)S.v.status;	/* Vector tributes */
 					break;
 				case GMT_SYMBOL_WEDGE:
 					if (!S.convert_angles) {

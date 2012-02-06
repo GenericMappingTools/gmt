@@ -106,11 +106,13 @@ GMT_LONG GMT_minmax_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-E Return the record with extreme value in specified column <col> [last column].\n");
 	GMT_message (GMT, "\t   Specify l or h for min or max value, respectively.  Upper case L or H\n");
 	GMT_message (GMT, "\t   means we operate instead on the absolute values of the data.\n");
-	GMT_message (GMT, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes 2+ col data).\n");
+	GMT_message (GMT, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at least 2 columns).\n");
 	GMT_message (GMT, "\t   If -C is set then no -R string is issued.  Instead, the number of increments\n");
 	GMT_message (GMT, "\t   given determines how many columns are rounded off to the nearest multiple.\n");
 	GMT_message (GMT, "\t   If only one increment is given we also use it for the second column (for backwards compatibility).\n");
 	GMT_message (GMT, "\t   To override this behaviour, use -Ip<dx>.\n");
+	GMT_message (GMT, "\t   If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift]\n");
+	GMT_message (GMT, "\t     and allow -r to change from gridline-registration to pixel-registration.\n");
 	GMT_message (GMT, "\t-S Add extra space for error bars. Useful together with -I.\n");
 	GMT_message (GMT, "\t   -Sx leaves space for horizontal error bar using value in third (2) column.\n");
 	GMT_message (GMT, "\t   -Sy leaves space for vertical error bar using value in third (2) column.\n");
@@ -213,7 +215,7 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 	if (Ctrl->I.active && !special && Ctrl->I.ncol == 1) {		/* Special case of dy = dx if not given */
-		Ctrl->I.inc[1] = Ctrl->I.inc[0];
+		Ctrl->I.inc[GMT_Y] = Ctrl->I.inc[GMT_X];
 		Ctrl->I.ncol = 2;
 	}
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.active && Ctrl->I.ncol < 2, "Syntax error: -Ip requires -C\n");
@@ -232,13 +234,13 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
-	GMT_LONG brackets = FALSE, work_on_abs_value, do_report;
+	GMT_LONG brackets = FALSE, work_on_abs_value, do_report, fixed_phase[2] = {1, 1};
 	GMT_LONG i, j, ncol = 0, n = 0, save_range, wmode, done;
 
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
 
-	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, value, phase;
-	double west, east, south, north, low, high, e_min = DBL_MAX, e_max = -DBL_MAX;
+	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, phase[2] = {0.0, 0.0}, this_phase, off;
+	double west, east, south, north, low, high, value, e_min = DBL_MAX, e_max = -DBL_MAX;
 
 	struct GMT_QUAD *Q = NULL;
 	struct MINMAX_CTRL *Ctrl = NULL;
@@ -267,7 +269,8 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	delimeter[1] = '\0';
 	wmode = (Ctrl->C.active) ? GMT_WRITE_DOUBLE : GMT_WRITE_TEXT;
 	GMT_memset (file, GMT_BUFSIZ, char);
-	phase = (GMT->common.r.active) ? 0.5 : 0.0;
+	off = (GMT->common.r.active) ? 0.5 : 0.0;
+	
 	
 	brackets = !Ctrl->C.active;
 	work_on_abs_value = (Ctrl->E.active && Ctrl->E.abs);
@@ -333,10 +336,19 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				xyzmin[i] = Q[i].min[j];	xyzmax[i] = Q[i].max[j];
 			}
 			if (give_r_string) {	/* Return -R string */
-				west  = (floor (xyzmin[GMT_X] / Ctrl->I.inc[0]) + phase) * Ctrl->I.inc[0];
-				east  = (ceil  (xyzmax[GMT_X] / Ctrl->I.inc[0]) - phase) * Ctrl->I.inc[0];
-				south = (floor (xyzmin[GMT_Y] / Ctrl->I.inc[1]) + phase) * Ctrl->I.inc[1];
-				north = (ceil  (xyzmax[GMT_Y] / Ctrl->I.inc[1]) - phase) * Ctrl->I.inc[1];
+				if (fixed_phase[GMT_X] && fixed_phase[GMT_Y]) {	/* Got xy[z] data that lined up on a grid, so use the common phase shift */
+					GMT_report (GMT, GMT_MSG_NORMAL, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n", phase[GMT_X], phase[GMT_Y]);
+				}
+				else {	/* Data not on grid, just return bounding box rounded off to nearest inc */
+					buffer[0] = '.';	buffer[1] = 0;
+					if (GMT->common.r.active) strcpy (buffer, " (-r is ignored).");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Input (x,y) data are irregularly distributed; phase shifts set to 0/0%s\n", buffer);
+					phase[GMT_X] = phase[GMT_Y] = off = 0.0;
+				}
+				west  = (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
+				east  = (ceil  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
+				south = (floor ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+				north = (ceil  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
 				if (east < west) east += 360.0;
 				sprintf (record, "-R");
 				i = strip_blanks_and_output (GMT, buffer, west, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
@@ -408,6 +420,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_quad_reset (GMT, Q, ncol);
 			n = 0;
 			file[0] = '\0';
+			fixed_phase[GMT_X] = fixed_phase[GMT_Y] = 1;	/* Get ready for next batch */
 			if (done || do_report || GMT_REC_IS_FILE_BREAK (GMT)) continue;	/* We are done OR have no data record to process yet */
 		}
 		if (GMT_REC_IS_FILE_BREAK (GMT)) continue;
@@ -481,6 +494,11 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				else {	/* Plain column value */
 					if (in[i] < xyzmin[i]) xyzmin[i] = in[i];
 					if (in[i] > xyzmax[i]) xyzmax[i] = in[i];
+				}
+				if (give_r_string && i < GMT_Z && fixed_phase[i]) {
+					this_phase = MOD (in[i], Ctrl->I.inc[i]);
+					if (fixed_phase[i] == 1) phase[i] = this_phase, fixed_phase[i] = 2;	/* Initializes phase the first time */
+					if (!GMT_IS_ZERO (phase[i] - this_phase)) fixed_phase[i] = 0;	/* Phase not constant, not a grid */
 				}
 			}
 			n++;	/* Number of records processed in current block (all/table/segment; see -A) */

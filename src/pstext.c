@@ -253,7 +253,7 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 
 	GMT_message (GMT, "pstext %s [API] - Plot or typeset text on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pstext [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[-A] [%s] [-C<dx>/<dy>] [-D[j]<dx>[/<dy>][v[<pen>]]\n", GMT_B_OPT);
+	GMT_message (GMT, "\t[-A] [%s] [-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][v[<pen>]]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-F[a+<angle>][+f<font>][+j<justify>]] [-G<color>] [%s] [-K] [-L]\n", GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-M] [-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s]\n", GMT_U_OPT);
 	GMT_message (GMT, "\t[%s] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
@@ -296,6 +296,7 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	GMT_message (GMT, "\t   if -W has been set.  Append units {%s} or %% of fontsize [15%%].\n", GMT_DIM_UNITS_DISPLAY);
 	GMT_message (GMT, "\t-D Add <add_x>,<add_y> to the text origin AFTER projecting with -J [0/0].\n");
 	GMT_message (GMT, "\t   Use -Dj to move text origin away from point (direction determined by text's justification).\n");
+	GMT_message (GMT, "\t   Upper case -DJ will shorten diagonal shifts at corners by sqrt(2).\n");
 	GMT_message (GMT, "\t   Append v[<pen>] to draw line from text to original point.  If <add_y> is not given it equal <add_x>.\n");
 	GMT_message (GMT, "\t-F Specify values for text attributes that apply to all text records:\n");
 	GMT_message (GMT, "\t   +a<angle> specifies the baseline angle for all text [0].\n");
@@ -369,7 +370,8 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 			case 'D':
 				Ctrl->D.active = TRUE;
 				k = 0;
-				if (opt->arg[k] == 'j') Ctrl->D.justify = TRUE, k++;
+				if (opt->arg[k] == 'j') { Ctrl->D.justify = 1, k++; }
+				else if (opt->arg[k] == 'J') { Ctrl->D.justify = 2, k++; }
 				for (j = k; opt->arg[j] && opt->arg[j] != 'v'; j++);
 				if (opt->arg[j] == 'v') {
 					Ctrl->D.line = TRUE;
@@ -809,7 +811,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			if (add) {
 				if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
-					GMT_smart_justify (GMT, T.block_justify, T.paragraph_angle, T.x_offset, T.y_offset, &plot_x, &plot_y);
+					GMT_smart_justify (GMT, T.block_justify, T.paragraph_angle, T.x_offset, T.y_offset, &plot_x, &plot_y, Ctrl->D.justify);
 				else {	/* Default hard offset */
 					plot_x += T.x_offset;
 					plot_y += T.y_offset;

@@ -197,7 +197,7 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Vector arrowwidth/headlength/headwidth is deprecated; see -Q documentation.\n");
 					for (j = 0; opt->arg[j] && opt->arg[j] != 'n'; j++);
 					if (opt->arg[j]) {	/* Normalize option used */
-						Ctrl->Q.S.v.v_norm = GMT_to_inch (GMT, &opt->arg[j+1]);
+						Ctrl->Q.S.v.v_norm = (float)GMT_to_inch (GMT, &opt->arg[j+1]);
 						n_errors += GMT_check_condition (GMT, Ctrl->Q.S.v.v_norm <= 0.0, "Syntax error -Qn option: No reference length given\n");
 						opt->arg[j] = '\0';	/* Temporarily chop of the n<norm> string */
 					}
@@ -208,9 +208,9 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 						}
 						else {	/* Turn the old args into new +a<angle> and pen width */
 							Ctrl->Q.S.v.pen.width = GMT_to_points (GMT, txt_a);
-							Ctrl->Q.S.v.h_length = GMT_to_inch (GMT, txt_b);
-							Ctrl->Q.S.v.h_width = GMT_to_inch (GMT, txt_c);
-							Ctrl->Q.S.v.v_angle = atand (0.5 * Ctrl->Q.S.v.h_width / Ctrl->Q.S.v.h_length);
+							Ctrl->Q.S.v.h_length = (float)GMT_to_inch (GMT, txt_b);
+							Ctrl->Q.S.v.h_width = (float)GMT_to_inch (GMT, txt_c);
+							Ctrl->Q.S.v.v_angle = (float)atand (0.5 * Ctrl->Q.S.v.h_width / Ctrl->Q.S.v.h_length);
 						}
 					}
 					if (Ctrl->Q.S.v.v_norm > 0.0) opt->arg[j] = 'n';	/* Restore the n<norm> string */
@@ -389,7 +389,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			break;
 	}
 
-	Ctrl->Q.S.v.v_width = Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+	Ctrl->Q.S.v.v_width = (float)(Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 	if (Ctrl->Q.active) {	/* Prepare vector parameters */
 		GMT_init_vector_param (GMT, &Ctrl->Q.S);
 	}
@@ -421,7 +421,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	dim[5] = GMT->current.setting.map_vector_shape;	/* These do not change inside the loop */
-	dim[6] = Ctrl->Q.S.v.status;
+	dim[6] = (double)Ctrl->Q.S.v.status;
 	
 	for (row = row_0; row < Grid[1]->header->ny; row += d_row) {
 		y = GMT_grd_row_to_y (GMT, row, Grid[0]->header);

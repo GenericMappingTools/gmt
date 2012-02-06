@@ -48,7 +48,10 @@ OPT(G)IT(ghost_path)
 Full path to your GhostScript executable.
 NOTE: For Unix systems this is generally not necessary.
 However, under Windows, GhostScript is not added to the system's path. So either you do it yourself,\"'
-or give the full path here. (e.g., OPT(G)c:\\programs\\gs\\gs7.05\\bin\\gswin32c).
+or give the full path here. (e.g., OPT(G)c:\\programs\\gs\\gs9.02\\bin\\gswin64c). WARNING: because of
+the poor decision of embedding the bits on the gs exe name we cannot satisfy both the 32 and 64 bits
+ghostscript executable names. So on GMT5 the default name (that is, when no OPT(G) is used) is the one
+of the 64 bits version, or gswin64c
 .TP
 OPT(L)IT(listfile)
 The IT(listfile) is an ASCII file with the names of the IT(PostScript) files to be converted.

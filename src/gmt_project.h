@@ -231,8 +231,9 @@ struct GMT_PROJ {
 	GMT_LONG north_pole;		/* TRUE if projection is on northern hemisphere, FALSE on southern */
 	GMT_LONG edge[4];		/* TRUE if the edge is a map boundary */
 	GMT_LONG three_D;		/* Parameters for 3-D projections */
-	GMT_LONG JZ_set;			/* TRUE if -Jz|Z was set */
+	GMT_LONG JZ_set;		/* TRUE if -Jz|Z was set */
 	GMT_LONG GMT_convert_latitudes;	/* TRUE if using spherical code with authalic/conformal latitudes */
+	GMT_LONG n_antipoles;		/* Number of antipole coordinates so far [used for -JE only] */
 	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
 
 	double origin[3];		/* Projected values of the logical origin for the projection (x, y, z) */

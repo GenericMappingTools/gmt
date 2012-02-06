@@ -1288,7 +1288,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 					for (k = 0; k < 4; k++) {	/* Deal with the fact that some nodes may have had small added to them */
 						Z_vert[k] -= (float)this_cont->value;	/* Note we cast to float to get the same precision as for contours */
-						if (Z_vert[k] == 0.0) Z_vert[k] += small;
+						if (Z_vert[k] == 0.0) Z_vert[k] += (float)small;
 						Z_vert[k] += (float)this_cont->value;
 					}
 					/* Here, Z_vert reflects what the grid was when contouring was determined */
