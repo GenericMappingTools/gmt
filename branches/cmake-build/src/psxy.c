@@ -941,28 +941,30 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							x_2 -= dx;		y_2 -= dy;
 						}
 					}
-					S.v.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
 					dim[0] = x_2, dim[1] = y_2;
 					dim[2] = s * S.v.v_width, dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width;
-					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = S.v.status;
+					dim[5] = GMT->current.setting.map_vector_shape;
+					dim[6] = (double)S.v.status;
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
 					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
-					S.v.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex2+S.read_size], in[ex1+S.read_size], &S);
 					break;
 				case GMT_SYMBOL_MARC:
 					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
-					S.v.v_width = current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					dim[0] = in[ex1+S.read_size];
 					dim[1] = in[ex2+S.read_size];
 					dim[2] = in[ex3+S.read_size];
 					length = fabs (dim[2]-dim[1]);	/* Arc length in degrees */
 					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
 					dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width, dim[5] = s * S.v.v_width;
-					dim[6] = GMT->current.setting.map_vector_shape, dim[7] = S.v.status;
+					dim[6] = GMT->current.setting.map_vector_shape;
+					dim[7] = (double)S.v.status;
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
 					break;
 				case GMT_SYMBOL_WEDGE:

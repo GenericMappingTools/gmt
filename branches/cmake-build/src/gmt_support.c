@@ -7473,12 +7473,13 @@ GMT_LONG GMT_just_decode (struct GMT_CTRL *C, char *key, GMT_LONG def)
 	return (j * 4 + i);
 }
 
-void GMT_smart_justify (struct GMT_CTRL *C, GMT_LONG just, double angle, double dx, double dy, double *x_shift, double *y_shift)
-{
-	double s, c, xx, yy;
+void GMT_smart_justify (struct GMT_CTRL *C, GMT_LONG just, double angle, double dx, double dy, double *x_shift, double *y_shift, GMT_LONG mode)
+{	/* mode = 2: Assume a radius offset so that corner shifts are adjusted by 1/sqrt(2) */
+	double s, c, xx, yy, f;
+	f = (mode == 2) ? 1.0 / M_SQRT2 : 1.0;
 	sincosd (angle, &s, &c);
-	xx = (2 - (just%4)) * dx;	/* Smart shift in x */
-	yy = (1 - (just/4)) * dy;	/* Smart shift in x */
+	xx = (2 - (just%4)) * dx * f;	/* Smart shift in x */
+	yy = (1 - (just/4)) * dy * f;	/* Smart shift in x */
 	*x_shift += c * xx - s * yy;	/* Must account for angle of label */
 	*y_shift += s * xx + c * yy;
 }
@@ -8212,7 +8213,7 @@ GMT_LONG GMT_time_array (struct GMT_CTRL *C, double min, double max, struct GMT_
 	if (!T->active) return (0);
 	val = GMT_memory (C, NULL, n_alloc, double);
 	I.unit = T->unit;
-	I.step = T->interval;
+	I.step = (GMT_LONG)T->interval;
 	interval = (T->type == 'i' || T->type == 'I');	/* Only for i/I axis items */
 	GMT_moment_interval (C, &I, min, TRUE);	/* First time we pass TRUE for initialization */
 	while (I.dt[0] <= max) {		/* As long as we are not gone way past the end time */

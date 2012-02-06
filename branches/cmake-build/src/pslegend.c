@@ -61,10 +61,6 @@ struct PSLEGEND_CTRL {
 		GMT_LONG active;
 		double spacing;
 	} L;
-	struct S {	/* -C<script> */
-		GMT_LONG active;
-		char *file;
-	} S;
 };
 
 void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -89,7 +85,6 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 void Free_pslegend_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->S.file) free (C->S.file);
 	GMT_free (GMT, C);
 }
 
@@ -127,8 +122,6 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "jK");
 	GMT_message (GMT, "\t-L Set the linespacing factor in units of the current annotation font size [1.1].\n");
 	GMT_explain_options (GMT, "OPR");
-	GMT_message (GMT, "\t-S Dump legend script to stdout, or optionally to file <script>.\n");
-	GMT_message (GMT, "\t   [Default is to write PostScript output].\n");
 	GMT_explain_options (GMT, "UVXpt.");
 
 	return (EXIT_FAILURE);
@@ -338,7 +331,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_pslegend", &GMT_cpy);	/* Save current state */
-	if (GMT_Parse_Common (API, "-VJR", "BKOPXYcpt>", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VJR", "BKOPUXYcpt>", options)) Return (API->error);
 	Ctrl = New_pslegend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pslegend_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */

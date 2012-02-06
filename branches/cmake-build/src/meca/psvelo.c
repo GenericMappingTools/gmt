@@ -92,7 +92,8 @@ void *New_psvelo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	C->A.S.v.h_length = C->A.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
+	C->A.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
+	C->A.S.v.h_length = (float)C->A.S.size_x;	/* 9p */
 	C->A.S.v.v_angle = 30.0;
 	C->A.S.v.status = GMT_VEC_END + GMT_VEC_FILL + GMT_VEC_OUTLINE;
 	C->A.S.v.pen = GMT->current.setting.map_default_pen;
@@ -166,7 +167,10 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	 */
 
 	GMT_LONG n_errors = 0, n, no_size_needed, n_set, got_A = FALSE;
-	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
+	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+#ifdef GMT_COMPAT
+	char txt_c[GMT_TEXT_LEN256];
+#endif
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -185,9 +189,9 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
 					sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
 					Ctrl->A.S.v.pen.width = GMT_to_points (GMT, txt);
-					Ctrl->A.S.v.h_length = GMT_to_inch (GMT, txt_b);
-					Ctrl->A.S.v.h_width = GMT_to_inch (GMT, txt_c);
-					Ctrl->A.S.v.v_angle = atand (0.5 * Ctrl->A.S.v.h_width / Ctrl->A.S.v.h_length);
+					Ctrl->A.S.v.h_length = (float)GMT_to_inch (GMT, txt_b);
+					Ctrl->A.S.v.h_width = (float)GMT_to_inch (GMT, txt_c);
+					Ctrl->A.S.v.v_angle = (float)atand (0.5 * Ctrl->A.S.v.h_width / Ctrl->A.S.v.h_length);
 					Ctrl->A.S.v.status |= GMT_VEC_OUTLINE2;
 				}
 				else {
@@ -360,7 +364,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_report (GMT, GMT_MSG_NORMAL, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
 
-	Ctrl->A.S.v.v_width = Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+	Ctrl->A.S.v.v_width = (float)(Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -468,7 +472,8 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 					dim[0] = plot_vx, dim[1] = plot_vy;
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
-					dim[5] = GMT->current.setting.map_vector_shape, dim[6] = Ctrl->A.S.v.status;
+					dim[5] = GMT->current.setting.map_vector_shape;
+					dim[6] = (double)Ctrl->A.S.v.status;
 					GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->A.S.v.pen);
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);

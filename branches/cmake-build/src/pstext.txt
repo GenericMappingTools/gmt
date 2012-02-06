@@ -5,7 +5,7 @@ pstext \- Plot or typeset text on maps
 .SH SYNOPSIS
 BD(pstext) [ IT(textfiles) ] GMT_J_OPT GMT_Rgeoz_OPT 
 [ OPT(A) ] [ GMT_B_OPT ] [ OPT(C)IT(dx/dy) ]  
-[ OPT(D)[BD(j)]IT(dx)[/IT(dy)][BD(v)[IT(pen)]] ] [ OPT(F)[BD(+a)[IT(angle)]][BD(+f)[IT(font)]][BD(+j)[IT(justify)]] ] 
+[ OPT(D)[BD(j)|BD(J)]IT(dx)[/IT(dy)][BD(v)[IT(pen)]] ] [ OPT(F)[BD(+a)[IT(angle)]][BD(+f)[IT(font)]][BD(+j)[IT(justify)]] ] 
 [ OPT(G)IT(color) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)BD(l)|BD(u) ] 
 [ OPT(T)BD(o)|BD(O)|BD(c)|BD(C) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)IT(pen) ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z) ] [ GMT_a_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] 
@@ -59,11 +59,12 @@ Sets the clearance between the text and the surrounding box [15%].
 Only used if OPT(W) or OPT(G) are specified.  Append the unit you want (BD(c)m, BD(i)nch,
 or BD(p)oint; if not given we consult BD(PROJ_LENGTH_UNIT)) or % for a percentage of the font size.
 .TP
-OPT(D)[BD(j)]IT(dx)[/IT(dy)][BD(v)[IT(pen)]]
+OPT(D)[BD(j)|BD(J)]IT(dx)[/IT(dy)][BD(v)[IT(pen)]]
 Offsets the text from the projected (IT(x),IT(y)) point by IT(dx),IT(dy) [0/0].  If IT(dy) is not
 specified then it is set equal to IT(dx).
-Use BD(-Dj) to offset the text away from the point instead (i.e. the text justification
-will determine the direction of the shift).  Optionally, append BD(v) which will draw a line
+Use BD(-Dj) to offset the text away from the point instead (i.e., the text justification
+will determine the direction of the shift).  Using OPT(DJ) will shorten diagonal offsets at corners
+by sqrt(2).  Optionally, append BD(v) which will draw a line
 from the original point to the shifted point; append a IT(pen) to change the attributes for this line.
 .TP
 OPT(F)[BD(+a)[IT(angle)]][BD(+f)[IT(font)]][BD(+j)[IT(justify)]]

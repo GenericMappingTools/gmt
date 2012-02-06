@@ -37,6 +37,13 @@
 
 EXTERN_MSC void GMT_str_toupper (char *string);
 
+#ifdef WIN32	/* Special for Windows */
+#	include <windows.h>
+#	include <process.h>
+#	define getpid _getpid
+	GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C);
+#endif
+
 #define N_GS_DEVICES		12	/* Number of supported GS output devices */
 #define GS_DEV_EPS		0
 #define GS_DEV_PDF		1
@@ -207,7 +214,9 @@ void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 #ifdef WIN32
-	C->G.file = strdup ("gswin32c");
+	if ( ghostbuster(GMT, C) != GMT_OK ) { /* Try first to find the gspath from registry */
+		C->G.file = strdup ("gswin64c");     /* Fall back to this default and expect a miracle */
+	}
 #else
 	C->G.file = strdup ("gs");
 #endif
@@ -270,9 +279,10 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   extension. Extension is still determined automatically.\n");
 	GMT_message (GMT, "\t-G Full path to your ghostscript executable.\n");
 	GMT_message (GMT, "\t   NOTE: Under Unix systems this is generally not necessary.\n");
-	GMT_message (GMT, "\t   Under Windows, ghostscript is not added to the system's path.\n");
-	GMT_message (GMT, "\t   So either you do it yourself, or give the full path here.\n");
-	GMT_message (GMT, "\t   (e.g. -Gc:\\programs\\gs\\gs7.05\\bin\\gswin32c).\n");
+	GMT_message (GMT, "\t   Under Windows, ghostscript path is fished from the registry.\n");
+	GMT_message (GMT, "\t   If this fails you can still add the GS path to system's path\n");
+	GMT_message (GMT, "\t   or give the full path here.\n");
+	GMT_message (GMT, "\t   (e.g. -Gc:\\programs\\gs\\gs9.02\\bin\\gswin64c).\n");
 	GMT_message (GMT, "\t-L The <listfile> is an ASCII file with names of files to be converted.\n");
 	GMT_message (GMT, "\t-P Force Portrait mode. All Landscape mode plots will be rotated back\n");
 	GMT_message (GMT, "\t   so that they show unrotated in Portrait mode.\n");
@@ -1203,3 +1213,116 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	Return (GMT_OK);
 }
+
+#ifdef WIN32
+GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
+	/* Search the Windows registry for the directory containing the gswinXXc.exe
+	   We do this by finding the GS_DLL that is a value of the HKLM\SOFTWARE\GPL Ghostscript\X.XX\ key
+	   Things are further complicated because Win64 has TWO registries: one 32 and the other 64 bits.
+	   Add to this that the installed GS version may be 32 or 64 bits, so we have to check for the
+	   four GS_32|64 + GMT_32|64 combinations.
+
+		 Adapted from snipets at http://www.daniweb.com/software-development/c/code/217174
+	   and http://juknull.wordpress.com/tag/regenumkeyex-example */
+
+	HKEY hkey;              /* Handle to registry key */
+	char data[GMT_BUFSIZ], ver[8], *ptr;
+	char key[32] = "SOFTWARE\\GPL Ghostscript\\";
+	unsigned long datalen = GMT_BUFSIZ;
+	unsigned long datatype;
+	long RegO, rc = 0;
+	int n = 0;
+	GMT_LONG bits64 = TRUE;
+	float maxVersion = 0;		/* In case more than one GS, hold the number of the highest version */
+
+#ifdef _WIN64
+	RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ, &hkey);	/* Read 64 bits Reg */
+	if (RegO != ERROR_SUCCESS) {		/* Try the 32 bits registry */
+		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ|KEY_WOW64_32KEY, &hkey);
+		bits64 = FALSE;
+	}
+#else
+	RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ, &hkey);	/* Read 32 bits Reg */
+	if (RegO != ERROR_SUCCESS)			/* Failed. Try the 64 bits registry */
+		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ|KEY_WOW64_64KEY, &hkey);
+	else {
+		bits64 = FALSE;
+	}
+#endif
+
+	if (RegO != ERROR_SUCCESS) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Error opening HKLM key\n");
+		return (EXIT_FAILURE);
+	}
+
+	while (rc != ERROR_NO_MORE_ITEMS) {
+		rc  = RegEnumKeyEx (hkey, n++, data, &datalen, 0, NULL, NULL, NULL);
+		datalen = GMT_BUFSIZ; /* reset to buffer length (including terminating \0) */
+		if (rc == ERROR_SUCCESS)
+			maxVersion = (float)MAX(maxVersion, atof(data));	/* If more than one GS, keep highest version number */
+	}
+
+	RegCloseKey(hkey);
+
+	if (maxVersion == 0) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Unknown version reported in registry\n");
+		return (EXIT_FAILURE);
+	}
+
+	sprintf(ver, "%.2f", maxVersion);
+	strcat(key, ver);
+
+	/* Open the HKLM key, key, from which we wish to get data.
+	   But now we already know the registry bitage */
+#ifdef _WIN64
+	if (bits64)
+		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
+	else
+		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE|KEY_WOW64_32KEY, &hkey);
+#else
+	if (bits64)
+		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE|KEY_WOW64_64KEY, &hkey);
+	else
+		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
+#endif
+	if (RegO != ERROR_SUCCESS) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Error opening HKLM key\n");
+		return (EXIT_FAILURE);
+	}
+
+	/* Read the value for "GS_DLL" via the handle 'hkey' */
+	RegO = RegQueryValueEx(hkey, "GS_DLL", NULL, &datatype, (LPBYTE)data, &datalen);
+
+	RegCloseKey(hkey);
+
+	if (RegO != ERROR_SUCCESS) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Error reading the GS_DLL value contents\n");
+		return (EXIT_FAILURE);
+	}
+
+	if ( (ptr = strstr(data,"\\gsdll")) == NULL ) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "GS_DLL value is screwed.\n");
+		return (EXIT_FAILURE);
+	}
+
+	/* Truncate string and add affix gswinXXc.exe */
+	*ptr = '\0';
+	strcat(data, bits64 ? "\\gswin64c.exe" : "\\gswin32c.exe");
+
+ 	/* Now finally check that the gswinXXc.exe exists */
+	if (access (data, R_OK)) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "gswinXXc.exe does not exist.\n");
+		return (EXIT_FAILURE);
+	}
+
+	/* Wrap the path in double quotes to prevent troubles raised by dumb things like "Program Files" */
+	datalen = (unsigned long)strlen (data);
+	C->G.file = GMT_memory (GMT, NULL, datalen + 3, char); /* strlen + 2 * " + \0 */
+	strcpy (C->G.file, "\"");
+	strcat (C->G.file, data);
+	strcat (C->G.file, "\"");
+
+	return (GMT_OK);
+}
+
+#endif		/* WIN32 */
