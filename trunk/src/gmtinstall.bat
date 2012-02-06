@@ -34,7 +34,7 @@ REM it is necessary to build it first under Cygwin (or operate on a provided sou
 
 REM
 REM STEP a: Specify your compiler (Tested with MS CL and Intel ICL)
-SET CC=ICL
+SET CC=CL
 
 REM
 REM STEP b: Specify the "Bitage" and if building normal or debug version
@@ -53,8 +53,8 @@ REM two sub-dirs named 'lib' and 'include'. Still, for building with PCRE suppor
 REM STEP h must have been set to "yes" (Default)
 
 IF  "%2%" == "" (
-SET NETCDF_DIR=C:\progs_cygw\netcdf-3.6.3
-rem SET NETCDF_DIR=C:\programs\compa_libs\netcdf-4.1.2b\compileds\VC10_%BITS% 
+rem SET NETCDF_DIR=C:\progs_cygw\netcdf-3.6.3
+SET NETCDF_DIR=C:\programs\compa_libs\netcdf-4.1.2b\compileds\VC10_%BITS%
 SET GDAL_DIR=C:\programs\GDALtrunk\gdal\compileds\VC10_%BITS%\
 ) ELSE (
 SET NETCDF_DIR=%1%
@@ -80,10 +80,9 @@ REM	    NETCDF	Top dir of the netcdf installation tree
 REM	    lib_netcdf	Name of the netCDF .lib library
 REM
 REM
-SET INCLUDE=%INCLUDE%;%NETCDF_DIR%\INCLUDE
 SET LIB=%LIB%;%NETCDF_DIR%\LIB
-SET lib_netcdf=libnetcdf_w%BITS%.lib
-rem SET lib_netcdf=libnetcdf.lib
+rem SET lib_netcdf=libnetcdf_w%BITS%.lib
+SET lib_netcdf=libnetcdf.lib
 
 REM STEP  : Set the environment needed by GMT.  These are
 REM	    GMTHOME	Top dir of the GMT installation tree, e.g., C:\GMT
@@ -188,9 +187,10 @@ IF  %DEBUG%=="yes" SET OPTIM=/Z7 /DDEBUG
 
 SET DLL_NETCDF=/DDLL_NETCDF
 SET TR=/DTRIANGLE_D
+SET NETCDF_INC=/I%NETCDF_DIR%\include
 
 SET COMPFLAGS=/W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_CRT_SECURE_NO_WARNINGS /D_SECURE_SCL=0 /nologo
-SET COPT=/I%cd% /DWIN32 %OPTIM% %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC% %TO_MATLAB% %COMPFLAGS% %COMPAT% %PCRE% %PCRE_INC% %VLD_INC% %USE_MEM_ALIGNED% /DWINBITAGE=%BITS%
+SET COPT=/I%cd% /DWIN32 %OPTIM% %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC% %NETCDF_INC% %TO_MATLAB% %COMPFLAGS% %COMPAT% %PCRE% %PCRE_INC% %VLD_INC% %USE_MEM_ALIGNED% /DWINBITAGE=%BITS%
 
 set LOPT=/nologo /dll /incremental:no %LDEBUG%
 
@@ -251,7 +251,7 @@ REM %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% spharmonics\gr
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% /I%cd%\mgd77 x2sys\x2sys_solve.c x2sys\x2sys_merge.c
 REM ----------------------------------------------------------------------------------------------
 
-link %LOPT% /out:gmt.dll /implib:gmt.lib psl.lib %lib_netcdf% %GDAL_LIB% %MATLIB% %PCRE_LIB% %VLD_LIB% *.obj
+link %LOPT% /out:gmt.dll /implib:gmt.lib psl.lib %lib_netcdf% %GDAL_LIB% %MATLIB% %PCRE_LIB% %VLD_LIB% *.obj advapi32.lib
 
 IF %forMATLAB%=="yes" DEL *.obj *.lib *.exp psl.dll
 IF %forMATLAB%=="yes" GOTO fim
