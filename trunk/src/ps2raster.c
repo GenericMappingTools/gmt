@@ -38,9 +38,10 @@
 EXTERN_MSC void GMT_str_toupper (char *string);
 
 #ifdef WIN32	/* Special for Windows */
-#include <process.h>
-#define getpid _getpid
-GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C);
+#	include <windows.h>
+#	include <process.h>
+#	define getpid _getpid
+	GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C);
 #endif
 
 #define N_GS_DEVICES		12	/* Number of supported GS output devices */
@@ -213,8 +214,8 @@ void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 #ifdef WIN32
-	if (ghostbuster(GMT, C)) {				/* Try first to find the gspath from registry */
-		C->G.file = strdup ("gswin64c");	/* Fall back to this default and expect a miracle */
+	if ( ghostbuster(GMT, C) != GMT_OK ) { /* Try first to find the gspath from registry */
+		C->G.file = strdup ("gswin64c");     /* Fall back to this default and expect a miracle */
 	}
 #else
 	C->G.file = strdup ("gs");
@@ -1214,22 +1215,20 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 }
 
 #ifdef WIN32
-
-#include <windows.h>
 GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	/* Search the Windows registry for the directory containing the gswinXXc.exe
 	   We do this by finding the GS_DLL that is a value of the HKLM\SOFTWARE\GPL Ghostscript\X.XX\ key
 	   Things are further complicated because Win64 has TWO registries: one 32 and the other 64 bits.
 	   Add to this that the installed GS version may be 32 or 64 bits, so we have to check for the
 	   four GS_32|64 + GMT_32|64 combinations.
-	   
-	   Adapted from snipets at http://www.daniweb.com/software-development/c/code/217174
-	   and 	http://juknull.wordpress.com/tag/regenumkeyex-example */
+
+		 Adapted from snipets at http://www.daniweb.com/software-development/c/code/217174
+	   and http://juknull.wordpress.com/tag/regenumkeyex-example */
 
 	HKEY hkey;              /* Handle to registry key */
-	char data[256], ver[8], *ptr;
+	char data[GMT_BUFSIZ], ver[8], *ptr;
 	char key[32] = "SOFTWARE\\GPL Ghostscript\\";
-	unsigned long datalen = 255;
+	unsigned long datalen = GMT_BUFSIZ;
 	unsigned long datatype;
 	long RegO, rc = 0;
 	int n = 0;
@@ -1258,7 +1257,7 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 
 	while (rc != ERROR_NO_MORE_ITEMS) {
 		rc  = RegEnumKeyEx (hkey, n++, data, &datalen, 0, NULL, NULL, NULL);
-		datalen = sizeof (data);
+		datalen = GMT_BUFSIZ; /* reset to buffer length (including terminating \0) */
 		if (rc == ERROR_SUCCESS)
 			maxVersion = (float)MAX(maxVersion, atof(data));	/* If more than one GS, keep highest version number */
 	}
@@ -1276,12 +1275,12 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	/* Open the HKLM key, key, from which we wish to get data.
 	   But now we already know the registry bitage */
 #ifdef _WIN64
-	if (bits64)		
+	if (bits64)
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
 	else
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE|KEY_WOW64_32KEY, &hkey);
 #else
-	if (bits64)		
+	if (bits64)
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE|KEY_WOW64_64KEY, &hkey);
 	else
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
@@ -1290,7 +1289,7 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Error opening HKLM key\n");
 		return (EXIT_FAILURE);
 	}
- 
+
 	/* Read the value for "GS_DLL" via the handle 'hkey' */
 	RegO = RegQueryValueEx(hkey, "GS_DLL", NULL, &datatype, (LPBYTE)data, &datalen);
 
@@ -1301,11 +1300,12 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 		return (EXIT_FAILURE);
 	}
 
-	if ( !(ptr = strstr(data,"\\gsdll")) ) {
+	if ( (ptr = strstr(data,"\\gsdll")) == NULL ) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "GS_DLL value is screwed.\n");
 		return (EXIT_FAILURE);
 	}
 
+	/* Truncate string and add affix gswinXXc.exe */
 	*ptr = '\0';
 	strcat(data, bits64 ? "\\gswin64c.exe" : "\\gswin32c.exe");
 
@@ -1317,12 +1317,10 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 
 	/* Wrap the path in double quotes to prevent troubles raised by dumb things like "Program Files" */
 	datalen = (unsigned long)strlen (data);
-	for (n = datalen; n > 0; n--)
-		data[n] = data[n-1];
-
-	data[0] = data[datalen+1] = '"';
-	data[datalen+2] = '\0';
-	C->G.file = strdup(data);
+	C->G.file = GMT_memory (GMT, NULL, datalen + 3, char); /* strlen + 2 * " + \0 */
+	strcpy (C->G.file, "\"");
+	strcat (C->G.file, data);
+	strcat (C->G.file, "\"");
 
 	return (GMT_OK);
 }
