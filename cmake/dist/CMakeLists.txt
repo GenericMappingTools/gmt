@@ -85,7 +85,7 @@ if (WIN32 AND NOT CYGWIN)
 	# Install MSVC runtime DLLs:
 	include (InstallRequiredSystemLibraries)
 
-	set (CPACK_GENERATOR Bundle ZIP NSIS)
+	set (CPACK_GENERATOR ZIP NSIS)
 	set (CPACK_NSIS_DISPLAY_NAME ${CPACK_PACKAGE_NAME})
 	set (CPACK_NSIS_INSTALL_ROOT "C:")
 	set (CPACK_NSIS_MODIFY_PATH ON)
