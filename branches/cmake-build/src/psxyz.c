@@ -932,7 +932,18 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				if (P && P->skip) continue;	/* Chosen cpt file indicates skip for this z */
 
-				if (L->header && L->header[0]) PSL_comment (PSL, "%s", L->header);
+				if (L->header && L->header[0]) {
+					char s_args[GMT_BUFSIZ];
+					PSL_comment (PSL, "Segment header: %s\n", L->header);
+					if (GMT_parse_segment_item (GMT, L->header, "-S", s_args)) {	/* Found -S */
+						if ((S.symbol == GMT_SYMBOL_QUOTED_LINE && s_args[0] == 'q') || (S.symbol == GMT_SYMBOL_FRONT && s_args[0] == 'f')) { /* Update parameters */
+							GMT_parse_symbol_option (GMT, s_args, &S, 0, FALSE);
+							if (change & 1) change -= 1;	/* Don't want polygon to be TRUE later for these symbols */
+						}
+						else
+							GMT_report (GMT, GMT_MSG_FATAL, "Segment header tries to switch from -S%c to another symbol (%s) - ignored\n", S.symbol, s_args);
+					}
+				}
 
 				if (Ctrl->I.active) {
 					GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);

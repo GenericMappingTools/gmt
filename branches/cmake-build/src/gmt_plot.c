@@ -3583,7 +3583,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 
 	/* Get title */
 
-	sprintf (title, "GMT v%s Document from %s", GMT_VERSION, C->init.module_name);
+	sprintf (title, "GMT v%s Document from %s", GMT_VERSION, C->init.progname);
 	
 	PSL_beginplot (P, fp, C->current.setting.ps_orientation, C->common.O.active, C->current.setting.ps_color_mode, C->current.ps.origin, C->current.setting.map_origin, C->current.setting.ps_page_size, title, fno);
 

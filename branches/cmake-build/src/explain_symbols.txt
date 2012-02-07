@@ -70,6 +70,7 @@ on the left or right side of the front [Default is centered].  Append BD(+)IT(ty
 to plot: BD(b)ox, BD(c)ircle, BD(f)ault, BD(s)lip, or BD(t)riangle.  [Default is BD(f)ault].
 Slip means left-lateral or right-lateral strike-slip arrows (centered is not an option).  Append BD(+o)IT(offset) to offset
 the first symbol from the beginning of the front by that amount [0].
+Note: By placing OPT(Sf) options in the segment header you can change the front types on a segment-by-segment basis.
 .TP
 OPT(Sg)
 octaBD(g)on.  IT(size) is diameter of circumscribing circle.
@@ -151,6 +152,7 @@ The optional IT(labelinfo) controls the specifics of the label formatting and co
 made up of any of the following control arguments:
 .RE
 #include "explain_labelinfo.txt"
+Note: By placing OPT(Sq) options in the segment header you can change the quoted text attributes on a segment-by-segment basis.
 .TP
 OPT(Sr)
 BD(r)ectangle.  No size needs to be specified, but the x- and y-dimensions must be found in columns
