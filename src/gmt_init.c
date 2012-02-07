@@ -5071,7 +5071,6 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 	 * that were allocated via strdup since the structure only have a pointer allocated. */
 
 	/* GMT_INIT */
-	Csave->init.progname = strdup (C->init.progname);
 	if (C->session.n_user_media) {
 		Csave->session.n_user_media = C->session.n_user_media;
 		Csave->session.user_media = GMT_memory (C, NULL, C->session.n_user_media, struct GMT_MEDIA);
@@ -5098,6 +5097,7 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 
 	*Ccopy = Csave;				/* Pass back out for safe-keeping by the module until GMT_end_module is called */
 	C->init.module_name = mod_name;		/* Current module in charge */
+	C->init.progname = (C->hidden.func_level == 1) ? &mod_name[4] : mod_name;		/* Either top-level (program) or module call */
 	
 	return (C);
 }
@@ -5137,8 +5137,6 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 		Ccopy->init.history[i] = C->init.history[i];
 	}
 #endif
-	free (Ccopy->init.progname);
-	/*free (C->init.progname);	Needs to be freed but can't be done blindly like this as it makes readwrite_withgdal test crash */
 
 	/* GMT_CURRENT */
 
@@ -7966,8 +7964,7 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 #endif
 #endif
 	C = New_GMT_Ctrl ();		/* Allocate and initialize a new common control structure */
-	if (C->init.progname) free (C->init.progname);		/* Free up any prior program name */
-	C->init.progname = strdup (session);		/* We use the calling programs session name as program name */
+	C->init.progname = session;			/* We use the calling programs session name as program name */
 	C->init.module_name = module_name;		/* This will be reset by the GMT modules we call */
 
 	if (mode == GMTAPI_GMTPSL) {			/* The application will need PSL */
