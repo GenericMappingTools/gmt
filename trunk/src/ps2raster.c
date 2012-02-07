@@ -550,6 +550,7 @@ char *fgets2 (char *s, int n, FILE *stream)
 GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, found_proj = FALSE, setup, i_unused = 0;
+	GMT_LONG isGMT_PS = FALSE, excessK, got_outFile;
 	GMT_LONG i, j, k, len, r, pos_file, pos_ext, pix_w = 0, pix_h = 0;
 	GMT_LONG got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
 	
@@ -688,6 +689,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Loop over all input files */
 
 	for (k = 0; k < Ctrl->In.n_files; k++) {
+		excessK = FALSE;
 		GMT_memset (out_file, GMT_BUFSIZ, char);
 		strcpy (ps_file, ps_names[k]);
 		if ((fp = fopen (ps_file, "r")) == NULL) {
@@ -830,6 +832,10 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						got_HRBB = got_BB = TRUE;
 					}
 				}
+			}
+			else if ((p = strstr (line, "%%Creator:"))) {
+				sscanf (&p[10], "%s", c1);
+				if (!strncmp (c1, "GMT", (size_t)3)) isGMT_PS = TRUE;
 			}
 			else if ((p = strstr (line, "%%Orientation:"))) {
 				sscanf (&p[14], "%s", c1);
@@ -1009,6 +1015,11 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			fprintf (fpo, "%s", line);
 		}
 
+		fseek (fp, -6, SEEK_END);		/* receed a bit to test the contents of last line */
+		fgets2 (line, BUFSIZ, fp);
+		if ( strncmp (line, "%%EOF", (size_t)5) )	/* Possibly a non-closed GMT PS file. To be confirmed later */
+			excessK = TRUE;
+
 		fclose (fpo);
 		fclose (fp);
 
@@ -1032,9 +1043,27 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g%ldx%ld -r%ld -sOutputFile=%s -f%s", 
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
 				pix_w, pix_h, Ctrl->E.dpi, out_file, tmp_file);
-			i_unused = system (cmd);		/* Execute the GhostScript command */
-			if ((i_unused = access (out_file, R_OK)) != 0)
-				GMT_report (GMT, GMT_MSG_FATAL, "Warning: file\n\t%s\nwas not created. Maybe you forgot to close the PS file (a -K in excess?)\n", out_file);
+
+			if (isGMT_PS && excessK) {		/* We have a non-closed GMT PS file. Troubles ahead */
+				fprintf(stderr, "\nPS2RASTER WARNING: input GMT-PS file\n\t%s\nis not closed. This indicates that it was built it with an -K in excess.\n", ps_file);
+				if (Ctrl->T.device == GS_DEV_PDF && Ctrl->A.active) {
+					fprintf(stderr, "PDF file will be created but not cropped.\n");
+					i_unused = system (cmd);		/* Execute the GhostScript command */
+					got_outFile = !access (out_file, R_OK);
+				}
+				else {
+					fprintf(stderr, "In consequence no output file will be created.\n");
+					got_outFile = 1;	/* Just to jump the "if (!got_outFile)" test below */
+				}
+			}
+			else {		/* Either a good closed GMT PS file or one of unknown origin */
+				i_unused = system (cmd);		/* Execute the GhostScript command */
+				got_outFile = !access (out_file, R_OK);
+			}
+
+			if (!got_outFile)
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: file\n\t%s\nwas not created. Maybe an incomplete non-GMT PS.\n", out_file);
+
 			if (Ctrl->S.active) fprintf (stdout, "%s\n", cmd);
 		}
 		GMT_report (GMT, GMT_MSG_NORMAL, " Done.\n");
