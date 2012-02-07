@@ -98,15 +98,15 @@ int main (int argc, char **argv)
 				
 			}
 			else if (P[id].h.west < 180.0 && P[id].h.east > 180.0) {	/* Straddles dateline; must split into two parts thanx to GIS brilliance */
-				lon = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT->init.progname);
-				lat = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT->init.progname);
+				lon = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, "polygon_to_shape");
+				lat = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, "polygon_to_shape");
 				for (k = 0; k < P[id].h.n; k++) {	/* Set up lons that go -20 to + 192 */
 					x = (P[id].p[k].x > M270) ? P[id].p[k].x - M360 : P[id].p[k].x;
 					lon[k] = x * I_MILL;	lat[k] = P[id].p[k].y * I_MILL;
 				}
 				for (hemi = 0; hemi < 2; hemi++) {
 					if ((np = GMT_wesn_clip (lon, lat, P[id].h.n, &xx, &yy, &nx)) == 0) {
-						fprintf (stderr, "%s: Error: Straddling 180 but not two parts?\n", GMT->init.progname);
+						fprintf (stderr, "%s: Error: Straddling 180 but not two parts?\n", "polygon_to_shape");
 						continue;
 					}
 					fprintf (fp, "> GSHHS polygon Id = %d-%c Level = %d Area = %.12g\n# @P @D%d-%c|%d|%s|%d|%d|%.12g\n",
