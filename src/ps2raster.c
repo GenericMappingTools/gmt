@@ -1317,7 +1317,7 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 
 	/* Wrap the path in double quotes to prevent troubles raised by dumb things like "Program Files" */
 	datalen = (unsigned long)strlen (data);
-	C->G.file = GMT_memory (GMT, NULL, datalen + 3, char); /* strlen + 2 * " + \0 */
+	C->G.file = (char *)malloc (datalen + 3);	/* strlen + 2 * " + \0 */
 	strcpy (C->G.file, "\"");
 	strcat (C->G.file, data);
 	strcat (C->G.file, "\"");
