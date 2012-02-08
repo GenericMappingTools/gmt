@@ -2,13 +2,17 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-02-08	jluis
+	* ps2raster.c:		Improve tests to detect if the PS file is not closed (excess -K)
+				Now also warns when creating a PDF file from a unclosed PS
+
 2012-02-07	pwessel
 	* psxy[z]:		For the two mixed symbol/line options -Sf and -Sq, we now
 				examine the segment header for any changes to these options.
 
 2012-02-07	jluis
 	* ps2raster.c:		On Windows the ghostscript executable path is now fetch from
-				the registry. In caise it fails, fall back to the old "get
+				the registry. In case it fails, fall back to the old "get
 				it from the path" mechanism.
 
 2012-02-02	pwessel
