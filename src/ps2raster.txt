@@ -47,7 +47,7 @@ to provide a different name, but without extension. Extension is still determine
 OPT(G)IT(ghost_path)
 Full path to your GhostScript executable.
 NOTE: For Unix systems this is generally not necessary.
-Under Windows, ghostscript path is now fetch from the registry.
+Under Windows, the ghostscript path is now fetched from the registry.
 If this fails you can still add the GS path to system's path or give the full path here.
 (e.g., OPT(G)c:\\programs\\gs\\gs9.02\\bin\\gswin64c). WARNING: because of the poor decision
 of embedding the bits on the gs exe name we cannot satisfy both the 32 and 64 bits ghostscript
