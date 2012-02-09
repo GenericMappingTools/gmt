@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-02-09	jluis
+	* pslib.c, gmt_init.c:	On Windows DOS|psl_path_fix() test if the path has a leading
+				'/cygdrive' that may have been set for example by Cygwin on
+				declaring GMT_SHAREDIR. If yes chop it off. This makes easier
+				to use Windows binaries on Cygwin.
+
 2012-02-08	jluis
 	* ps2raster.c:		Improve tests to detect if the PS file is not closed (excess -K)
 				Now also warns when creating a PDF file from a unclosed PS
