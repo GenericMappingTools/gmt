@@ -22,64 +22,68 @@
  *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * GMT_support.c contains code used by most GMT programs
  *
- * Author:	Paul Wessel
- * Date:	1-JAN-2010
- * Version:	5
+ * Author:  Paul Wessel
+ * Date:    1-JAN-2010
+ * Version: 5
  *
  * Modules in this file:
  *
- *	GMT_akima		Akima's 1-D spline
- *	GMT_BC_init		Initialize BCs for a grid or image
- *	GMT_grd_BC_set		Set two rows of padding according to bound cond for grid
- *	GMT_image_BC_set	Set two rows of padding according to bound cond for image
- *	gmt_check_rgb		Check rgb for valid range
- *	GMT_chop		Chops off any CR or LF at end of string
- *	GMT_chop_ext		Chops off the trailing .xxx (file extension)
- *	gmt_cmyk_to_rgb		Corvert CMYK to RGB
- *	gmt_comp_double_asc	Used when sorting doubles into ascending order [checks for NaN]
- *	gmt_comp_float_asc	Used when sorting floats into ascending order [checks for NaN]
- *	gmt_comp_int_asc	Used when sorting ints into ascending order
- *	GMT_contours		Subroutine for contouring
- *	GMT_cspline		Natural cubic 1-D spline solver
- *	GMT_csplint		Natural cubic 1-D spline evaluator
- *	GMT_delaunay		Performs a Delaunay triangulation
- *	GMT_free		Memory deallocation
- *	GMT_get_annot_label	Construct degree/minute label
- *	GMT_get_annot_offset	Return offset in inches for text annotation
- *	GMT_get_index		Return color table entry for given z
- *	GMT_get_fill_from_z	Return fill type for given z
- *	GMT_get_format		Find # of decimals and create format string
- *	GMT_get_rgb_from_z	Return rgb for given z
- *	GMT_get_plot_array	Allocate memory for plotting arrays
- *	GMT_getfill		Decipher and check fill argument
- *	GMT_getinc		Decipher and check increment argument
- *	GMT_getpen		Decipher and check pen argument
- *	GMT_getrgb		Decipher and check color argument
- *	gmt_hsv_to_rgb		Convert HSV to RGB
- *	GMT_init_fill		Initialize fill attributes
- *	GMT_init_pen		Initialize pen attributes
- *	GMT_illuminate		Add illumination effects to rgb
- *	GMT_intpol		1-D interpolation
- *	gmt_lab_to_rgb		Corvert CIELAB LAB to RGB
- *	gmt_lab_to_xyz		Convert CIELAB LAB to XYZ
- *	GMT_malloc		Memory management
- *	GMT_memory		Memory allocation/reallocation
- *	GMT_non_zero_winding	Finds if a point is inside/outside a polygon
- *	GMT_putpen		Encode pen argument into textstring
- *	GMT_read_cpt		Read color palette file
- *	gmt_rgb_to_cmyk		Convert RGB to CMYK
- *	gmt_rgb_to_hsv		Convert RGB to HSV
- *	gmt_rgb_to_lab		Convert RGB to CMYK
- *	gmt_rgb_to_xyz		Convert RGB to CIELAB XYZ
- *	GMT_sample_cpt		Resamples the current cpt table based on new z-array
- *	gmt_smooth_contour	Use Akima's spline to smooth contour
- *	GMT_strlcmp		Compares strings (ignoring case) until first reaches null character
- *	GMT_strrcmp		Compares strings (ignoring case) from back to front
- *	GMT_strtok		Reiterant replacement of strtok
- *	gmt_trace_contour	Function that trace the contours in GMT_contours
- *	gmt_polar_adjust	Adjust label justification for polar projection
- *	gmt_xyz_to_rgb		Convert CIELAB XYZ to RGB
- *	gmt_xyz_to_lab		Convert CIELAB XYZ to LAB
+ *  GMT_akima               Akima's 1-D spline
+ *  GMT_BC_init             Initialize BCs for a grid or image
+ *  GMT_grd_BC_set          Set two rows of padding according to bound cond for grid
+ *  GMT_image_BC_set        Set two rows of padding according to bound cond for image
+ *  gmt_check_rgb           Check rgb for valid range
+ *  GMT_chop                Chops off any CR or LF at end of string
+ *  GMT_chop_ext            Chops off the trailing .xxx (file extension)
+ *  GMT_strstrip            Strip leading and trailing whitespace from string
+ *  GMT_cr2lf               Replace CR with LF and terminate string
+ *  GMT_strlshift           Left shift a string by n characters
+ *  GMT_strrepc             Replaces all occurrences of a char in the string
+ *  gmt_cmyk_to_rgb         Corvert CMYK to RGB
+ *  gmt_comp_double_asc     Used when sorting doubles into ascending order [checks for NaN]
+ *  gmt_comp_float_asc      Used when sorting floats into ascending order [checks for NaN]
+ *  gmt_comp_int_asc        Used when sorting ints into ascending order
+ *  GMT_contours            Subroutine for contouring
+ *  GMT_cspline             Natural cubic 1-D spline solver
+ *  GMT_csplint             Natural cubic 1-D spline evaluator
+ *  GMT_delaunay            Performs a Delaunay triangulation
+ *  GMT_free                Memory deallocation
+ *  GMT_get_annot_label     Construct degree/minute label
+ *  GMT_get_annot_offset    Return offset in inches for text annotation
+ *  GMT_get_index           Return color table entry for given z
+ *  GMT_get_fill_from_z     Return fill type for given z
+ *  GMT_get_format          Find # of decimals and create format string
+ *  GMT_get_rgb_from_z      Return rgb for given z
+ *  GMT_get_plot_array      Allocate memory for plotting arrays
+ *  GMT_getfill             Decipher and check fill argument
+ *  GMT_getinc              Decipher and check increment argument
+ *  GMT_getpen              Decipher and check pen argument
+ *  GMT_getrgb              Decipher and check color argument
+ *  gmt_hsv_to_rgb          Convert HSV to RGB
+ *  GMT_init_fill           Initialize fill attributes
+ *  GMT_init_pen            Initialize pen attributes
+ *  GMT_illuminate          Add illumination effects to rgb
+ *  GMT_intpol              1-D interpolation
+ *  gmt_lab_to_rgb          Corvert CIELAB LAB to RGB
+ *  gmt_lab_to_xyz          Convert CIELAB LAB to XYZ
+ *  GMT_malloc              Memory management
+ *  GMT_memory              Memory allocation/reallocation
+ *  GMT_non_zero_winding    Finds if a point is inside/outside a polygon
+ *  GMT_putpen              Encode pen argument into textstring
+ *  GMT_read_cpt            Read color palette file
+ *  gmt_rgb_to_cmyk         Convert RGB to CMYK
+ *  gmt_rgb_to_hsv          Convert RGB to HSV
+ *  gmt_rgb_to_lab          Convert RGB to CMYK
+ *  gmt_rgb_to_xyz          Convert RGB to CIELAB XYZ
+ *  GMT_sample_cpt          Resamples the current cpt table based on new z-array
+ *  gmt_smooth_contour      Use Akima's spline to smooth contour
+ *  GMT_strlcmp             Compares strings (ignoring case) until first reaches null character
+ *  GMT_strrcmp             Compares strings (ignoring case) from back to front
+ *  GMT_strtok              Reiterant replacement of strtok
+ *  gmt_trace_contour       Function that trace the contours in GMT_contours
+ *  gmt_polar_adjust        Adjust label justification for polar projection
+ *  gmt_xyz_to_rgb          Convert CIELAB XYZ to RGB
+ *  gmt_xyz_to_lab          Convert CIELAB XYZ to LAB
  */
 
 #define GMT_WITH_NO_PS
@@ -7220,34 +7224,93 @@ void GMT_str_setcase (struct GMT_CTRL *C, char *value, GMT_LONG mode)
 		GMT_report (C, GMT_MSG_FATAL, "Error: Bad mode in GMT_str_setcase (%ld)\n", mode);
 }
 
-char *GMT_chop_ext (struct GMT_CTRL *C, char *string)
-{
-	/* Chops off the extension (the .xxx ) in string and returns it, including the leading '.' */
-	GMT_LONG i, n, pos_ext = 0;
-	if (!string) return (NULL);	/* NULL pointer */
-	if ((n = (GMT_LONG)strlen (string)) == 0) return (NULL);	/* Empty string */
-
-	for (i = n - 1; i > 0; i--) {
-		if (string[i] == '.') {	/* Beginning of file extension */
-			pos_ext = i;
-			break;
-		}
+char *GMT_chop_ext (struct GMT_CTRL *C, char *string) {
+	/* Chops off the filename extension (e.g., .ps) in the string by replacing the last
+	 * '.' with '\0' and returns a pointer to the extension or NULL if not found. */
+	char *p;
+	assert (string != NULL); /* NULL pointer */
+	if ((p = strrchr(string, '.'))) {
+		*p = '\0';
+		return (p + 1);
 	}
-	if (pos_ext) {
-		string[pos_ext] = '\0';		/* Remove the extension */
-		return (strdup(&string[pos_ext]));
-	}
-	else
-		return (NULL);
+	return (NULL);
 }
 
-void GMT_chop (struct GMT_CTRL *C, char *string)
-{
-	/* Chops off any CR or LF at end of string and ensures it is null-terminated */
-	GMT_LONG i, n;
-	if (!string) return;	/* NULL pointer */
-	if ((n = (GMT_LONG)strlen (string)) == 0) return;	/* Empty string */
-	for (i = n - 1; i >= 0 && (string[i] == '\n' || string[i] == '\r'); i--) string[i] = '\0';	/* Overwrite CR or LF with terminate string */
+void GMT_chop (struct GMT_CTRL *C, char *string) {
+	/* Chops off any CR or LF and terminates string */
+	char *p;
+	assert (string != NULL); /* NULL pointer */
+  /* if (string == NULL) return; / NULL pointer */
+	if ((p = strpbrk (string, "\r\n")))
+		/* Overwrite 1st CR or LF with terminate string */
+		*p = '\0';
+}
+
+void GMT_strstrip(char *string, int strip_leading) {
+	/* Strip leading and trailing whitespace from string */
+	char *start = string;
+	char *end;
+
+	assert (string != NULL); /* NULL pointer */
+
+	if (strip_leading) {
+		/* Skip over leading whitespace */
+		while ((*start) && isspace(*start))
+			++start;
+		/* Is string just whitespace? */
+		if (!(*start)) {
+			*string = '\0'; /* Truncate entire string */
+			return;
+		}
+	}
+
+	/* Find end of string */
+	end = start;
+	while (*end)
+		++end;
+
+	/* Step backward until first non-whitespace */
+	while ((--end != start) && isspace(*end));
+
+	/* Chop off trailing whitespace */
+	*(end + 1) = '\0';
+
+	/* If leading whitespace, then move entire string back */
+	if (string != start)
+		memmove(string, start, end-start+2);
+}
+
+void GMT_cr2lf (char *string) {
+	/* Replace CR with LF and terminate string */
+	char *p;
+	assert (string != NULL); /* NULL pointer */
+	if ((p = strchr (string, '\r')))
+		/* Overwrite 1st CR with LF + \0 */
+		strcpy(p, "\n");
+}
+
+void GMT_strlshift (char *string, size_t n) {
+	/* Left shift a string by n characters */
+	size_t len;
+	assert (string != NULL); /* NULL pointer */
+
+	if ((len = strlen(string)) <= n ) {
+		/* String shorter than shift width */
+		*string = '\0'; /* Truncate entire string */
+		return;
+	}
+
+	/* Move entire string back */
+	memmove(string, string + n, len + 1);
+}
+
+void GMT_strrepc (char *string, int c, int r) {
+	/* Replaces all occurrences of c in the string with r */
+	assert (string != NULL); /* NULL pointer */
+	do {
+		if (*string == c)
+			*string = r;
+	} while (*(++string)); /* repeat until \0 reached */
 }
 
 GMT_LONG GMT_strlcmp (char *str1, char *str2)

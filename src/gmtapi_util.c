@@ -3101,7 +3101,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 	 * If not a data record we return NULL, and pass status via API->GMT->current.io.status.
 	 */
 
-	GMT_LONG get_next_record, status, col, n_nan, ij, i, n_fields = 0, *p = NULL;
+	GMT_LONG get_next_record, status, col, n_nan, ij, n_fields = 0, *p = NULL;
 	char *t_record = NULL;
 	void *record = NULL;
 	PFL GMT_2D_to_index;
@@ -3266,9 +3266,12 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 					else {
 						t_record = DT->table[p[0]]->segment[p[1]]->record[p[2]++];
 						API->GMT->current.io.status = 0;
-						if (t_record[0] == API->GMT->current.setting.io_seg_marker[GMT_IN]) {	/* Segment header */
-							i = GMT_trim_segheader (API->GMT, t_record);
-							strcpy (API->GMT->current.io.segment_header, &t_record[i]);
+						if (t_record[0] == API->GMT->current.setting.io_seg_marker[GMT_IN]) {
+							/* Segment header: Just save the header content, not the
+							 *                 marker and leading whitespace
+							 */
+							strcpy (API->GMT->current.io.segment_header,
+											GMT_trim_segheader (API->GMT, t_record));
 							API->GMT->current.io.status = GMT_IO_SEG_HEADER;
 							record = NULL;
 						}
@@ -3320,7 +3323,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	struct GMT_MATRIX *M = NULL;
 	struct GMT_VECTOR *V = NULL;
-	
+
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	API->error = GMT_OK;		/* No error yet */
 	if (!API->io_enabled[GMT_OUT]) return_error (API, GMT_ACCESS_NOT_ENABLED);
