@@ -137,22 +137,56 @@ void GMT_rewind (FILE *stream) { rewind (stream); }
  * i/o machinery ready for the next logical record.
  */
 
-char *GMT_fgets (struct GMT_CTRL *C, char *str, GMT_LONG size, FILE *stream)
+char *GMT_fgets (struct GMT_CTRL *C, char *str, int size, FILE *stream)
 {
-	char *result = NULL;
+	str[size-2] = '\0'; /* Set last but one record to 0 */
+	if (!fgets (str, size, stream))
+		return (NULL); /* Got nothing */
 
-	GMT_memset (str, size, char);	/* Sets entire record to 0s */
-	if (!(result = fgets (str, (int)size, stream))) return (NULL);	/* Got nothing */
 	/* fgets will always set str[size-1] = '\0' if more data than str can handle is found.
 	 * Thus, we examine str[size-2].  If this is neither '\0' nor '\n' then we have only
 	 * read a portion of a logical record that is longer than size.
 	 */
-	if (!(str[size-2] == '\n' || str[size-2] == '\0')) {	/* Only got part of a record */
+	if (!(str[size-2] == '\0' || str[size-2] == '\n')) {
+		/* Only got part of a record */
 		int c, n = 0;
-		while ((c = fgetc (stream)) != '\n' && c != EOF) n++;	/* Read char-by-char until newline is consumed */
-		GMT_report (C, GMT_MSG_FATAL, "Long input record (%ld bytes) was truncated to first %ld bytes!\n", size+n, size);
+		/* Read char-by-char until newline is consumed */
+		while ((c = fgetc (stream)) != '\n' && c != EOF)
+			(void) (isspace(c) || ++n); /* Do not count whitespace */
+		if (n)
+			GMT_report (C, GMT_MSG_FATAL, "Long input record (%d bytes) was truncated to first %d bytes!\n", size+n, size);
 	}
-	return (result);
+	return (str);
+}
+
+char *GMT_fgets_chop (struct GMT_CTRL *C, char *str, int size, FILE *stream)
+{
+	char *p;
+
+	/* fgets will always set str[size-1] = '\0' if more data than str can handle is found.
+	 * Thus, we examine str[size-2].  If this is neither '\0' nor '\n' then we have only
+	 * read a portion of a logical record that is longer than size.
+	 */
+	str[size-2] = '\0'; /* Set last but one record to 0 */
+	if (!fgets (str, size, stream))
+		return (NULL); /* Got nothing */
+
+	p = strpbrk (str, "\r\n");
+	if ( p == NULL || ((p-str+2 == size) && *p != '\n') ) {
+		/* If CR or LF not found, or last but one record not \n,
+		 * then only got part of a record */
+		int c, n = 0;
+		/* Read char-by-char until newline is consumed */
+		while ((c = fgetc (stream)) != '\n' && c != EOF)
+			(void) (isspace(c) || ++n); /* Do not count whitespace */
+		if (n)
+			GMT_report (C, GMT_MSG_FATAL, "Long input record (%d bytes) was truncated to first %d bytes!\n", size+n, size);
+	}
+	if (p)
+		/* Overwrite 1st CR or LF with terminate string */
+		*p = '\0';
+
+	return (str);
 }
 
 int GMT_fclose (struct GMT_CTRL *C, FILE *stream)
@@ -459,33 +493,37 @@ FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 }
 
 #ifdef WIN32
-/* Turn /c/dir/... paths into c:/dir/... 
+/* Turn /c/dir/... paths into c:/dir/...
  * Must do it in a loop since dir may be several ;-separated dirs
-*/
+ */
 void DOS_path_fix (char *dir)
 {
 	GMT_LONG k, n;
-	
-	if (!dir) return;	/* Given NULL */
-	n = strlen (dir);
-	if (dir[0] == '/' && strstr(dir, "/cygdrive/")) {
-		/* May happen for example when Cygwin sets GMT_SHAREDIR. Than chop it */
-		for (k = 0; k < n - 8; k++)	/* 8 to account also for the '\0' */
-			dir[k] = dir[k+9];
-		n -= 9;
-	}
 
-	for (k = 0; k < n; k++) {
-		if (dir[k] == '\\') dir[k] = '/';	/* Replace dumb backslashes with slashes */
-	}
+	if (!dir)
+		return; /* Given NULL */
 
-	if ((n == 2) && dir[0] == '/') {
+	if (!strncmp(dir, "/cygdrive/", 10))
+		/* May happen for example when Cygwin sets GMT_SHAREDIR */
+		GMT_strlshift (dir, 9); /* Chop "/cygdrive" */
+
+	/* Replace dumb backslashes with slashes */
+	GMT_strrepc (dir, '\\', '/');
+
+	if (dir[0] == '/' && dir[2] == '\0') {
 		dir[0] = dir[1];
 		dir[1] = ':';
 		return;
 	}
 
+	/* if you replace the for loop with while and check for \0 (e.g. GMT_strrep)
+	 * you can skip the extra iteration with strlen.
+	 *
+	 * the following is potentially dangerous: buffer/string could be of length < 3:
+	 */
+
 	/* Also take care that cases like c:/j/... (mine) don't turn into c:j:/... */
+	n = strlen (dir);
 	if (dir[0] == '/' && dir[2] == '/' && isalpha ((int)dir[1])) {
 		dir[0] = dir[1];
 		dir[1] = ':';
@@ -1112,27 +1150,16 @@ GMT_LONG gmt_assign_aspatial_cols (struct GMT_CTRL *C)
 	return (n);
 }
 
-GMT_LONG gmt_trim_line (struct GMT_CTRL *C, char *line, GMT_LONG add_linefeed) {
-	/* Get rid of trailing \r \n \t and spaces */
-	GMT_LONG i, len = strlen (line);
-#ifndef _WIN32
-	if (len >= (GMT_BUFSIZ-1)) {
-		GMT_report (C, GMT_MSG_FATAL, "This file appears to be in DOS format - reformat with dos2unix\n");
-		GMT_exit (EXIT_FAILURE);
-	}
-#endif
-	for (i = len - 1; i >= 0 && strchr (" \t\r\n", (int)line[i]); i--);	/* Chop off trailing whitespace and CR/LF */
-	if (add_linefeed) line[++i] = '\n';	/* Append linefeed \n at end */
-	line[++i] = '\0';			/* Now have clean C string with [\n]\0 at end */
-	return (i);				/* Return length of clean string */
-}
-
-GMT_LONG GMT_trim_segheader (struct GMT_CTRL *C, char *line) {
-	GMT_LONG i = 0;
-	/* Trim trailing junk and return position of first non-space/tab/> part of segment header */
-	(void)gmt_trim_line (C, line, FALSE);	/* Eliminate DOS endings and trailing white space; do not add linefeed */
-	while (line[i] && (line[i] == ' ' || line[i] == '\t' || line[i] == C->current.setting.io_seg_marker[GMT_IN])) i++;
-	return (i);
+char *GMT_trim_segheader (struct GMT_CTRL *C, char *line) {
+	/* Trim trailing junk and return pointer to first non-space/tab/> part of segment header
+	 * Do not try to free the returned pointer!
+	 */
+	GMT_strstrip (line, FALSE); /* Strip trailing whitespace */
+	/* Skip over leading whitespace and segment marker */
+	while (*line && (isspace(*line) || *line == C->current.setting.io_seg_marker[GMT_IN]))
+		++line;
+	/* Return header string */
+	return (line);
 }
 
 GMT_LONG GMT_is_a_NaN_line (struct GMT_CTRL *C, char *line)
@@ -1162,7 +1189,7 @@ GMT_LONG GMT_is_segment_header (struct GMT_CTRL *C, char *line)
 
 void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *status)
 {
-	GMT_LONG i, pos, col_no = 0, in_col, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
+	GMT_LONG pos, col_no = 0, in_col, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
 	GMT_LONG done = FALSE, bad_record, set_nan_flag = FALSE;
 	char line[GMT_BUFSIZ], *p = NULL, token[GMT_BUFSIZ];
 	double val;
@@ -1221,8 +1248,8 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 			C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on segment headers on output */
 			C->current.io.seg_no++;
 			if (kind == 1) {
-				i = GMT_trim_segheader (C, line);			/* Eliminate DOS endings and both leading and trailing white space, incl segment marker */
-				strcpy (C->current.io.segment_header, &line[i]);	/* Just save the header content, not the marker and leading whitespace */
+				/* Just save the header content, not the marker and leading whitespace */
+				strcpy (C->current.io.segment_header, GMT_trim_segheader (C, line));
 			}
 			else	/* Got a segment break instead - set header to NULL */
 				C->current.io.segment_header[0] = '\0';
@@ -1236,18 +1263,18 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 			GMT_report (C, GMT_MSG_FATAL, "Aspatial associations set with -a but file is not in OGR/GMT format!\n");
 			GMT_exit (EXIT_FAILURE);
 		}
-		
+
 		n_use = gmt_n_cols_needed_for_gaps (C, *n);	/* Gives is the actual columns we need (which may > *n if gap checking is active; if gap check we also update prev_rec) */
 
 		/* First chop off trailing whitespace and commas */
 
-		i = gmt_trim_line (C, line, FALSE);	/* Eliminate DOS endings and trailing white space, add linefeed */
+		GMT_strstrip (line, FALSE); /* Eliminate DOS endings and trailing white space, add linefeed */
 
 		bad_record = set_nan_flag = FALSE;		/* Initialize flags */
 		strcpy (C->current.io.current_record, line);	/* Keep copy of current record around */
 		col_no = pos = n_ok = 0;			/* Initialize counters */
 		in_col = -1;					/* Since we will increment right away inside the loop */
-		
+
 		while (!bad_record && col_no < n_use && (GMT_strtok (C, line, " \t,", &pos, token))) {	/* Get one field at the time until we run out or have issues */
 			in_col++;	/* This is the actual column number in the input file */
 			if (C->common.i.active) {	/* Must do special column-based processing since the -i option was set */
@@ -1312,7 +1339,6 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 
 char * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *status)
 {
-	GMT_LONG i;
 	char line[GMT_BUFSIZ], *p = NULL;
 
 	/* GMT_ascii_textinput will read one text line and return it, setting
@@ -1352,8 +1378,8 @@ char * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG 
 		C->current.io.status = GMT_IO_SEG_HEADER;
 		C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo */
 		C->current.io.seg_no++;
-		i = GMT_trim_segheader (C, line);	/* Eliminate DOS endings and both leading and trailing white space, incl segment marker */
-		strcpy (C->current.io.segment_header, &line[i]);
+		/* Just save the header content, not the marker and leading whitespace */
+		strcpy (C->current.io.segment_header, GMT_trim_segheader (C, line));
 		*n = 1;
 		*status = 0;
 		return (NULL);
@@ -1363,7 +1389,7 @@ char * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG 
 
 	/* First chop off trailing whitespace and commas */
 
-	i = gmt_trim_line (C, line, FALSE);	/* Eliminate DOS endings and trailing white space */
+	GMT_strstrip (line, FALSE); /* Eliminate DOS endings and trailing white space */
 
 	strcpy (C->current.io.current_record, line);
 
