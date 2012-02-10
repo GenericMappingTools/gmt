@@ -122,7 +122,8 @@ EXTERN_MSC struct GMT_QUAD * GMT_quad_init (struct GMT_CTRL *C, GMT_LONG n_items
 EXTERN_MSC void GMT_quad_reset (struct GMT_CTRL *C, struct GMT_QUAD *Q, GMT_LONG n_items);
 EXTERN_MSC void GMT_quad_add (struct GMT_CTRL *C, struct GMT_QUAD *Q, double x);
 EXTERN_MSC GMT_LONG GMT_quad_finalize (struct GMT_CTRL *C, struct GMT_QUAD *Q);
-EXTERN_MSC char *GMT_fgets (struct GMT_CTRL *C, char *line, GMT_LONG buf, FILE *fp);
+EXTERN_MSC char *GMT_fgets (struct GMT_CTRL *C, char *str, int size, FILE *stream);
+EXTERN_MSC char *GMT_fgets_chop (struct GMT_CTRL *C, char *str, int size, FILE *stream);
 EXTERN_MSC int GMT_fclose (struct GMT_CTRL *C, FILE *stream);
 EXTERN_MSC int GMT_access (struct GMT_CTRL *C, const char *filename, int mode);		/* access wrapper */
 EXTERN_MSC FILE * GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode);
@@ -173,7 +174,7 @@ EXTERN_MSC void GMT_skip_xy_duplicates (struct GMT_CTRL *C, GMT_LONG mode);
 EXTERN_MSC void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, struct GMT_LINE_SEGMENT *S_from);
 EXTERN_MSC GMT_LONG GMT_append_ogr_item (struct GMT_CTRL *C, char *name, GMT_LONG type, struct GMT_OGR *S);
 EXTERN_MSC void GMT_write_ogr_header (FILE *fp, struct GMT_OGR *G);
-EXTERN_MSC GMT_LONG GMT_trim_segheader (struct GMT_CTRL *C, char *line);
+EXTERN_MSC char *GMT_trim_segheader (struct GMT_CTRL *C, char *line);
 EXTERN_MSC GMT_LONG GMT_alloc_vectors (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_LONG n_rows);
 EXTERN_MSC GMT_LONG GMT_alloc_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, GMT_LONG type, GMT_LONG n_rows);
 
@@ -433,6 +434,10 @@ EXTERN_MSC GMT_LONG GMT_verify_expectations (struct GMT_CTRL *C, GMT_LONG wanted
 EXTERN_MSC void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_chop (struct GMT_CTRL *C, char *string);
 EXTERN_MSC char *GMT_chop_ext (struct GMT_CTRL *C, char *string);
+EXTERN_MSC void GMT_strstrip(char *string, int strip_leading);
+EXTERN_MSC void GMT_cr2lf (char *string);
+EXTERN_MSC void GMT_strlshift (char *string, size_t n);
+EXTERN_MSC void GMT_strrepc (char *string, int c, int r);
 EXTERN_MSC struct GMT_LINE_SEGMENT * GMT_dump_contour (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n, double z);
 EXTERN_MSC void GMT_get_plot_array (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_illuminate (struct GMT_CTRL *C, double intensity, double *rgb);

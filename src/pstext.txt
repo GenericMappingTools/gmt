@@ -29,7 +29,7 @@ BD(GMT) Technical Reference and Cookbook.  Note that BD(PS_CHAR_ENCODING) must b
 set to an extended character set in your BD(gmt.conf) file in order to use the accented characters.
 Using the OPT(G) or OPT(W) options, a rectangle underlying the text may
 be plotted (does not work for strings with sub/super scripts, symbols, or composite
-characters, except in paragraph mode (OPT(m))).
+characters, except in paragraph mode (OPT(M))).
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_-J.txt"

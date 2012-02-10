@@ -354,6 +354,13 @@ void psl_path_fix (char *dir)
 	
 	if (!dir) return;	/* Given NULL */
 	n = strlen (dir);
+	if (dir[0] == '/' && strstr(dir, "/cygdrive/")) {
+		/* May happen for example when Cygwin sets GMT_SHAREDIR. Than chop it */
+		for (k = 0; k < n - 8; k++)	/* 8 to account also for the '\0' */
+			dir[k] = dir[k+9];
+		n -= 9;
+	}
+
 	for (k = 0; k < n; k++) {
 		if (dir[k] == '\\') dir[k] = '/';	/* Replace dumb backslashes with slashes */
 	}
