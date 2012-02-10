@@ -186,7 +186,7 @@ Use OPT(SU) to disable such 3-D illumination.
 OPT(Sv)
 BD(v)ector.  Direction (in degrees counter-clockwise from horizontal) and length must be found in columns
 #ifdef THREE_D
-4 and 5.
+4 and 5 (this is a vector in the horizontal plane).
 #else
 3 and 4.
 #endif
