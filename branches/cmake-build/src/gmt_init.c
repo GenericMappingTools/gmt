@@ -7973,8 +7973,23 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 #endif
 
 #ifdef WIN32
-	/* Set "stdout" to binary mode */
-	_setmode(_fileno(stdout), _O_BINARY);
+	/* Set all I/O to binary mode */
+	if ( _setmode(_fileno(stdin), _O_BINARY) == -1 ) {
+		fprintf (stderr, "Could not set binary mode for stdin.\n");
+		GMT_exit (EXIT_FAILURE);
+	}
+	if ( _setmode(_fileno(stdout), _O_BINARY) == -1 ) {
+		fprintf (stderr, "Could not set binary mode for stdout.\n");
+		GMT_exit (EXIT_FAILURE);
+	}
+	if ( _setmode(_fileno(stderr), _O_BINARY) == -1 ) {
+		fprintf (stderr, "Could not set binary mode for stderr.\n");
+		GMT_exit (EXIT_FAILURE);
+	}
+  if ( _set_fmode(_O_BINARY) != 0 ) {
+    fprintf (stderr, "Could not set binary mode for file I/O.\n");
+    GMT_exit (EXIT_FAILURE);
+  }
 #endif
 
 	C = New_GMT_Ctrl ();		/* Allocate and initialize a new common control structure */
