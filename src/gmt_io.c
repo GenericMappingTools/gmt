@@ -152,9 +152,15 @@ char *GMT_fgets (struct GMT_CTRL *C, char *str, int size, FILE *stream)
 		int c, n = 0;
 		/* Read char-by-char until newline is consumed */
 		while ((c = fgetc (stream)) != '\n' && c != EOF)
-			(void) (isspace(c) || ++n); /* Do not count whitespace */
-		if (n)
-			GMT_report (C, GMT_MSG_FATAL, "Long input record (%d bytes) was truncated to first %d bytes!\n", size+n, size);
+			++n;
+		if (c == '\n')
+			/* We expect fgets to retain '\n', so add it */
+			str[size-2] = '\n';
+		else
+			/* EOF without '\n' */
+			--n;
+		/* This will report wrong lengths if last line has no '\n' but we don't care */
+		GMT_report (C, GMT_MSG_FATAL, "Long input record (%d bytes) was truncated to first %d bytes!\n", size+n, size-2);
 	}
 	return (str);
 }
@@ -180,7 +186,7 @@ char *GMT_fgets_chop (struct GMT_CTRL *C, char *str, int size, FILE *stream)
 		while ((c = fgetc (stream)) != '\n' && c != EOF)
 			(void) (isspace(c) || ++n); /* Do not count whitespace */
 		if (n)
-			GMT_report (C, GMT_MSG_FATAL, "Long input record (%d bytes) was truncated to first %d bytes!\n", size+n, size);
+			GMT_report (C, GMT_MSG_FATAL, "Long input record (%d bytes) was truncated to first %d bytes!\n", size+n-1, size);
 	}
 	if (p)
 		/* Overwrite 1st CR or LF with terminate string */
