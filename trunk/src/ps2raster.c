@@ -703,7 +703,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (dump && !strncmp (line, "% Begin GMT time-stamp", 22))
 					dump = FALSE;
 				if (dump)
-					fprintf (fp2, "%s", line);
+					fprintf (fp2, "%s\n", line);
 				if (!dump && !strncmp (line, "% End GMT time-stamp", 20))
 					dump = TRUE;
 			}
@@ -861,7 +861,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing /PageSize in the Setup block */
 				if (setup && strstr(line,"/PageSize") != NULL)
 					continue;
-				fprintf (fpo, "%s", line);
+				fprintf (fpo, "%s\n", line);
 				continue;
 			}
 			else if (Ctrl->W.active && !found_proj) {
@@ -953,7 +953,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else if (!strncmp (line, "%%PageTrailer", 13) && found_proj) {
 				GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fp);
 				fprintf (fpo, "%%%%PageTrailer\n");
-				fprintf (fpo, "%s", line);
+				fprintf (fpo, "%s\n", line);
 
 				/* Write a GeoPDF registration info */ 
 
@@ -1012,7 +1012,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				continue;
 			}
 #endif
-			fprintf (fpo, "%s", line);
+			fprintf (fpo, "%s\n", line);
 		}
 
 		fseek (fp, -6, SEEK_END);		/* receed a bit to test the contents of last line */
