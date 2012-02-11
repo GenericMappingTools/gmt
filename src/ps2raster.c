@@ -1015,7 +1015,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			fprintf (fpo, "%s\n", line);
 		}
 
-		fseek (fp, -6, SEEK_END);		/* receed a bit to test the contents of last line */
+		fseek (fp, -7, SEEK_END);	/* receed a bit to test the contents of last line. -7 for when PS has CRLF endings */
 		GMT_fgets (GMT, line, BUFSIZ, fp);
 		if ( strncmp (line, "%%EOF", 5) )
 			/* Possibly a non-closed GMT PS file. To be confirmed later */
