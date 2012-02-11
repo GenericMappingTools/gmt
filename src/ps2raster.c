@@ -575,14 +575,6 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 
-	/* set default file translation mode for file I/O operations on WIN32 */
-#ifdef WIN32XXX
-	if ( _set_fmode(_O_TEXT) != 0 ) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Could not set file translation mode for file I/O.\n");
-		Return (EXIT_FAILURE);
-	}
-#endif
-
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
