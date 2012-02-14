@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-02-13	pwessel
+	* gmt_proj.c:		Determine if N or S polar for conic projections by looking at the
+				selected region, not the central point [D. Scheirer report 2/9/2012].
+
 2012-02-10	fwobbe
 	* gmt_prototypes.h, gmt_io.c, gmt_support.c, gmtapi_util.c, ps2raster.c:
 				Function enhancements to better deal with CR and LF:

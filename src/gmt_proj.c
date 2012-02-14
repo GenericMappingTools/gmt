@@ -491,7 +491,7 @@ void GMT_vlamb (struct GMT_CTRL *C, double rlong0, double rlat0, double pha, dou
 	double sin_pha, cos_pha, sin_phb, cos_phb, t_pha, m_pha, t_phb, m_phb, t_rlat0;
 
 	gmt_check_R_J (C, &rlong0);
-	C->current.proj.north_pole = (rlat0 > 0.0);
+	C->current.proj.north_pole = (C->common.R.wesn[YHI] > 0.0 && (C->common.R.wesn[YLO] >= 0.0 || (-C->common.R.wesn[YLO]) < C->common.R.wesn[YHI]));
 	C->current.proj.pole = (C->current.proj.north_pole) ? 90.0 : -90.0;
 	sincosd (pha, &sin_pha, &cos_pha);
 	sincosd (phb, &sin_phb, &cos_phb);
@@ -2642,7 +2642,7 @@ void GMT_valbers (struct GMT_CTRL *C, double lon0, double lat0, double ph1, doub
 
 	gmt_check_R_J (C, &lon0);
 	C->current.proj.central_meridian = lon0;
-	C->current.proj.north_pole = (lat0 > 0.0);
+	C->current.proj.north_pole = (C->common.R.wesn[YHI] > 0.0 && (C->common.R.wesn[YLO] >= 0.0 || (-C->common.R.wesn[YLO]) < C->common.R.wesn[YHI]));
 	C->current.proj.pole = (C->current.proj.north_pole) ? 90.0 : -90.0;
 
 	s0 = sind (lat0);
@@ -2671,7 +2671,7 @@ void GMT_valbers_sph (struct GMT_CTRL *C, double lon0, double lat0, double ph1, 
 
 	gmt_check_R_J (C, &lon0);
 	C->current.proj.central_meridian = lon0;
-	C->current.proj.north_pole = (lat0 > 0.0);
+	C->current.proj.north_pole = (C->common.R.wesn[YHI] > 0.0 && (C->common.R.wesn[YLO] >= 0.0 || (-C->common.R.wesn[YLO]) < C->common.R.wesn[YHI]));
 	C->current.proj.pole = (C->current.proj.north_pole) ? 90.0 : -90.0;
 
 	sincosd (ph1, &s1, &c1);
@@ -2778,7 +2778,7 @@ void GMT_veconic (struct GMT_CTRL *C, double lon0, double lat0, double lat1, dou
 	double c1;
 
 	gmt_check_R_J (C, &lon0);
-	C->current.proj.north_pole = (lat0 > 0.0);
+	C->current.proj.north_pole = (C->common.R.wesn[YHI] > 0.0 && (C->common.R.wesn[YLO] >= 0.0 || (-C->common.R.wesn[YLO]) < C->common.R.wesn[YHI]));
 	c1 = cosd (lat1);
 	C->current.proj.d_n = (GMT_IS_ZERO (lat1 - lat2)) ? sind (lat1) : (c1 - cosd (lat2)) / (D2R * (lat2 - lat1));
 	C->current.proj.d_i_n = R2D / C->current.proj.d_n;	/* R2D put here instead of in lon for ieconic */
