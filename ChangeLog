@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-02-14	remko
+	* GNUmakefile, configure.ac:	Split off triangle code again into gmt-${version}-non-gpl.tar.bz2
+
 2012-02-13	pwessel
 	* gmt_proj.c:		Determine if N or S polar for conic projections by looking at the
 				selected region, not the central point [D. Scheirer report 2/9/2012].

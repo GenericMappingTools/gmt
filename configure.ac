@@ -341,7 +341,7 @@ dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(for universal binaries)
 if test "X$os" = "XDarwin" && test "X$enable_universal" = "Xyes" ; then
-	if test "$enable_64" = "yes" ; then
+	if test "X$enable_64" = "Xyes" ; then
 		ppc=ppc64
 		i386=x86_64
 	else
@@ -769,11 +769,14 @@ dnl Allow user to set --enable-triangle to use J. Shewchuk's triangulation
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(if the triangulation by Shewchuk should be used)
-if test "X$enable_triangle" = "Xyes" ; then
-	AC_MSG_RESULT(yes)
+if ! test -f src/triangle.c ; then
+	TRIANGULATE=Watson
+	AC_MSG_RESULT(source code not available)
+elif test "X$enable_triangle" = "Xyes" ; then
 	TRIANGLE_D=-DTRIANGLE_D
 	TRIANGLE_O=triangle.o
 	TRIANGULATE=Shewchuk
+	AC_MSG_RESULT(yes)
 else
 	TRIANGULATE=Watson
 	AC_MSG_RESULT(no)
@@ -868,7 +871,7 @@ else
 	AC_MSG_RESULT($SL_VERSION)
 fi
 AC_MSG_CHECKING(if shared libraries are requested)
-if test "$enable_shared" = "yes" ; then
+if test "X$enable_shared" = "Xyes" ; then
 	AC_MSG_RESULT(yes)
 	rpath="$rpath"':$(libdir)'
 	if test "X$enable_debug" = "Xyes" && test "$os" = "Darwin"; then
@@ -919,7 +922,7 @@ elif test "$os" = "SunOS" ; then	# Sun Workshop CC options
 	CFLAGS="$CFLAGS -Xc"
 elif test "$os" = "HP-UX" ; then	# HP cc options
 	CFLAGS="$CFLAGS -Aa +Ofltacc +O1 +Olibcalls"
-	if test "$enable_shared" = "yes" ; then
+	if test "X$enable_shared" = "Xyes" ; then
 		CFLAGS="$CFLAGS +z"
 	fi
 elif test "$os" = "OSF1" ; then		# Dec Alpha OSF cc options
@@ -1001,7 +1004,7 @@ dnl
 if test -f .gmtconfigure ; then
 	\rm -f .gmtconfigure
 fi
-if test "$shared_unknown" = "yes" ; then
+if test "X$shared_unknown" = "Xyes" ; then
 	cat << EOF > .gmtconfigure
 =============================================================
 Shared libraries for GMT under $os are not implemented.  This

@@ -1430,7 +1430,7 @@ int size;
 
   memptr = (VOID *) malloc((size_t) size);
   if (memptr == (VOID *) NULL) {
-    printf("error: Out of memory.\n");
+    printf("Error: Out of memory.\n");
     triexit(1);
   }
   return(memptr);
