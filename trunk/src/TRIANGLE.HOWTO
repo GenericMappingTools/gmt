@@ -1,5 +1,3 @@
-	$Id$
-
 GMT contains two programs (triangulate and pscontour) that
 directly or indirectly will do a Delaunay optimal triangulation
 of arbitrarily spaced (x,y,z) data.  By default, GMT uses
