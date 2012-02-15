@@ -237,12 +237,14 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 	if (gmt_bcr_reject (G->header, xx, yy)) return (C->session.d_NaN);	/* NaNs or outside */
 
 	/* Determine nearest node ij and set weights wx, wy */
-	
+
 	ij = gmt_bcr_prep (G->header, xx, yy, wx, wy);
 
 	retval = wsum = 0.0;
 	for (j = 0; j < G->header->bcr_n; j++) {
 		for (i = 0; i < G->header->bcr_n; i++) {
+			/* assure that index is inside bounds of the array G->data: */
+			assert (ij+i >= 0 && ij+i < G->header->size);
 			if (!GMT_is_fnan (G->data[ij+i])) {
 				w = wx[i] * wy[j];
 				retval += G->data[ij+i] * w;
