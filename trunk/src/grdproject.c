@@ -416,6 +416,9 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		Rect->header->inc[GMT_X] = GMT_get_inc (GMT, Rect->header->wesn[XLO], Rect->header->wesn[XHI], Rect->header->nx, Rect->header->registration);
 		Rect->header->inc[GMT_Y] = GMT_get_inc (GMT, Rect->header->wesn[YLO], Rect->header->wesn[YHI], Rect->header->ny, Rect->header->registration);
+		Rect->header->r_inc[GMT_X] = 1.0 / Rect->header->inc[GMT_X];	/* Get inverse increments to avoid divisions later */
+		Rect->header->r_inc[GMT_Y] = 1.0 / Rect->header->inc[GMT_Y];
+		
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 
@@ -494,6 +497,8 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		Rect->header->inc[GMT_X] = GMT_get_inc (GMT, Rect->header->wesn[XLO], Rect->header->wesn[XHI], Rect->header->nx, Rect->header->registration);
 		Rect->header->inc[GMT_Y] = GMT_get_inc (GMT, Rect->header->wesn[YLO], Rect->header->wesn[YHI], Rect->header->ny, Rect->header->registration);
+		Rect->header->r_inc[GMT_X] = 1.0 / Rect->header->inc[GMT_X];	/* Get inverse increments to avoid divisions later */
+		Rect->header->r_inc[GMT_Y] = 1.0 / Rect->header->inc[GMT_Y];
 		strcpy (Rect->header->x_units, unit_name);
 		strcpy (Rect->header->y_units, unit_name);
 
