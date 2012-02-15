@@ -92,6 +92,8 @@ extern "C" {
 #endif
 #endif
 
+#include <assert.h>
+
 #include "gmt_types.h"		/* All basic typedef declarations */
 #include "gmt_notunix.h"	/* Stuff for Windows */
 #include "gmt_notposix.h"	/* Non-POSIX extensions */
