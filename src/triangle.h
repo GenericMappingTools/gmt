@@ -248,10 +248,6 @@
 /*                                                                           */
 /*****************************************************************************/
 
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wuninitialized"
-#endif
-
 /* Suppress Visual Studio deprecation warnings */
 #ifdef _MSC_VER
 #pragma warning( disable : 4996 )
