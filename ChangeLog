@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-02-15	pwessel
+	* grdproject.c:		Changed header inc but not r_inc.
+
 2012-02-14	remko
 	* GNUmakefile, configure.ac:	Split off triangle code again into gmt-${version}-non-gpl.tar.bz2
 
