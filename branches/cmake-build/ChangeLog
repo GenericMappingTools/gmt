@@ -2,6 +2,16 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-02-15	pwessel
+	* grdproject.c:		Changed header inc but not r_inc.
+
+2012-02-14	remko
+	* GNUmakefile, configure.ac:	Split off triangle code again into gmt-${version}-non-gpl.tar.bz2
+
+2012-02-13	pwessel
+	* gmt_proj.c:		Determine if N or S polar for conic projections by looking at the
+				selected region, not the central point [D. Scheirer report 2/9/2012].
+
 2012-02-10	fwobbe
 	* gmt_prototypes.h, gmt_io.c, gmt_support.c, gmtapi_util.c, ps2raster.c:
 				Function enhancements to better deal with CR and LF:

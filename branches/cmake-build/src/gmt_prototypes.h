@@ -52,6 +52,7 @@ EXTERN_MSC void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, str
 EXTERN_MSC void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_close_grd (struct GMT_CTRL *C, struct GMT_GRDFILE *G);
 EXTERN_MSC void GMT_free_grid (struct GMT_CTRL *C, struct GMT_GRID **G, GMT_LONG free_grid);
+EXTERN_MSC void GMT_set_grdinc (struct GMT_CTRL *C, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_set_grddim (struct GMT_CTRL *C, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG *pad);
 EXTERN_MSC void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G);

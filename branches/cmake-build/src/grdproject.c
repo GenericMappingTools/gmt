@@ -414,8 +414,8 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Rect->header->wesn[YLO] += GMT->current.proj.origin[GMT_Y];
 			Rect->header->wesn[YHI] += GMT->current.proj.origin[GMT_Y];
 		}
-		Rect->header->inc[GMT_X] = GMT_get_inc (GMT, Rect->header->wesn[XLO], Rect->header->wesn[XHI], Rect->header->nx, Rect->header->registration);
-		Rect->header->inc[GMT_Y] = GMT_get_inc (GMT, Rect->header->wesn[YLO], Rect->header->wesn[YHI], Rect->header->ny, Rect->header->registration);
+		GMT_set_grdinc (GMT, Rect->header);	/* Update inc and r_inc given changes to wesn */
+		
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 
@@ -492,8 +492,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Rect->header->wesn[YHI] += Ctrl->C.northing;
 
 		}
-		Rect->header->inc[GMT_X] = GMT_get_inc (GMT, Rect->header->wesn[XLO], Rect->header->wesn[XHI], Rect->header->nx, Rect->header->registration);
-		Rect->header->inc[GMT_Y] = GMT_get_inc (GMT, Rect->header->wesn[YLO], Rect->header->wesn[YHI], Rect->header->ny, Rect->header->registration);
+		GMT_set_grdinc (GMT, Rect->header);	/* Update inc and r_inc given changes to wesn */
 		strcpy (Rect->header->x_units, unit_name);
 		strcpy (Rect->header->y_units, unit_name);
 
