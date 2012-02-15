@@ -1,7 +1,7 @@
 ////
 # $Id$
 #
-# Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,16 +26,17 @@ Information for building GMT 5 with CMake
 Quick start:
 ~~~~~~~~~~~~
 
-'svn switch' to cmake-build and cd into tree:
+'svn checkout' GMT5 and cd into tree. Then:
 
   $ mkdir build
   $ cd build
   $ cmake -DCMAKE_INSTALL_PREFIX=gmt5 -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
   $ make -j8
 
-will build out-of-source in the the directory build.
+will build out-of-source in the the directory _build_. 'CMAKE_BUILD_TYPE' can
+be one of: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 
-  $ make install
+  $ make -j8 install
 
 installs a basic gmt in build/gmt5
 
@@ -43,13 +44,13 @@ installs a basic gmt in build/gmt5
 In more detail:
 ~~~~~~~~~~~~~~~
 
-See http://www.cmake.org/cmake/help/cmake-2-8-docs.html
+The CMake manual is available online:
+http://www.cmake.org/cmake/help/cmake-2-8-docs.html
 
-'CMAKE_BUILD_TYPE' can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel
-
-To store the command line options, are to configure other options, copy
+To avoid CMake's lengthy command line options you should create your custom
+ConfigUser.cmake file in the cmake directory. Simply copy
 cmake/ConfigUserTemplate.cmake to cmake/ConfigUser.cmake and then make changes
-in cmake/ConfigUser.cmake. See comments in that file.
+in cmake/ConfigUser.cmake. See additional comments in that file.
 
 There are two configuration files:
 
@@ -60,7 +61,7 @@ There are two configuration files:
     template file, ConfigUserTemplate.cmake, that you should copy to
     ConfigUser.cmake and make your changes therein.
 
-NOTE: If you want to change CMake behaviour just for yourself then modify the
+NOTE: If you want to change CMake behaviour for your build then only modify the
       "ConfigUser.cmake" file (not "ConfigDefault.cmake").
 
 Finding GSHHS:
@@ -71,11 +72,36 @@ tests the version (gshhs_version.c).
 
 IMPORTANT: add getenv("GSHHS_PATH") to gmt_init.c and do min version checks.
 
+Documentation:
+~~~~~~~~~~~~~~
+
+Manpages are available in different formats and can be generated with:
+
+  $ make -j8 manpages_all
+
+To generate the PDF documentation you need LaTeX:
+
+  $ make -j8 gmt_doc
+
+Installing:
+~~~~~~~~~~~
+
+  $ make -j8 install
+
+will compile and install libps, libgmt, and all GMT modules. Optionally it
+will install the GSHHS shorelines (if found), manpages, and PDF documentation.
+You have to explicitly make the latter two beforehand or they will be omitted
+during installation. You have the choice between a monolithic installation
+(_-DGMT_INSTALL_MONOLITHIC=ON_) where everything goes into a common
+subdirectory or a distribution-like installation (PREFIX/bin/gmt-VERSION,
+PREFIX/lib/gmt-VERSION/, PREFIX/share/gmt-VERSION/,
+PREFIX/share/doc/gmt-VERSION/).
+
 Packaging:
 ~~~~~~~~~~
 
-Currently, packaging with CPack works on MacOSX (Bundle, TGZ, TBZ2) and
-Windows (ZIP, NSIS). On Windows you need to install NSIS
+Currently, packaging with CPack works on MacOSX (Bundle, TGZ, TBZ2),
+Windows (ZIP, NSIS), and UNIX (TGZ, TBZ2). On Windows you need to install NSIS
 (http://nsis.sourceforge.net/). After building GMT run either one of these:
 
   $ [n]make package
@@ -94,12 +120,13 @@ and/or _DO_TESTS_ in ConfigUser.cmake and do:
   $ make check
 
 Optionally set _N_TEST_JOBS_ to the number of ctest jobs to run
-simultaneously.
+simultaneously. You can also select individual tests using regexp with ctest:
+
+  $ ctest -R job1[3-6]
+
 
 TODO list
 ---------
-* Test dependencies: find_program gm, replace lockfile
-
 * Turn into GMT module: potential/gravfft.c
 
 * Fix segfault in xgridedit: tries to access grid outside bounds in
@@ -110,10 +137,6 @@ TODO list
 * Remove (void *) casts: perl -i -pe 's/(free.*[(])[(]void[ ]*[*][)][ ]*/$1/g' *.c
 
 * Remove macros GMT_fopen et al. and implement LFS support
-
-* Add further subtrees: follow example of CMakeLists.txt in src/meca, share
-  and share/conf. Problem: mgd77 still uses nonportable header generators,
-  x2sys depends on mgd77
 
 * Clean up config.h.cmake gmt_version.h.cmake gmt_notposix.h.cmake.
   Right now this is a mixture of partly redundant defines that can be
@@ -147,21 +170,7 @@ TODO list
 
 * Generate macros
   - to simplify copying files (http://www.vtk.org/Wiki/CMakeCopyIfDifferent)
-  - to simplify manpage creation *(done)*
-  - for LaTeX docu (http://www.vtk.org/Wiki/CMakeUserUseLATEX)
   - to build a release (including precompiled manpages, pdf docu, ...)
-
-* ps2raster: use gslib API (http://www.ghostscript.com/doc/9.04/API.htm)
-
-Done
-----
-* Replace shell scripts, grep, sed, awk, etc. by cmake macros (this
-  is necessary for cross platform compatibility). Basically port
-  cmake/generateExtraFilesNotPorted.sh to cmake. Sometimes it might be
-  easier to create new cmake macros if the layout of the underlying
-  source files would be altered a litte. If absolutely necessary write
-  a little C program that is build and run during configure pahase to
-  generate support files. *(almost done)*
 
 ////
 vim: ft=asciidoc tw=78 et ts=2 sts=2 sw=2 autoindent smartindent
