@@ -13,7 +13,7 @@ grdview \- Create 3-D perspective image or surface mesh from a grid
 BD(grdview) IT(relief_file) GMT_J_OPT 
 [ GMT_B_OPT ] [ OPT(C)IT(cptfile)]
 [ OPT(G)IT(drapefile) | OPT(G)IT(grd_r),IT(grd_g),IT(grd_b) ] [ OPT(I)IT(intensfile) ] 
-[ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L)[IT(flags)] ] [ OPT(N)IT(level)[/IT(color)] ] 
+[ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(N)IT(level)[/IT(color)] ] 
 [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)IT(type)[BD(g)] ] [ GMT_Rgeoz_OPT ] [ OPT(S)IT(smooth) ] 
 [ OPT(T)[BD(s)][BD(o)[IT(pen)]] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)BD(type)IT(pen) ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_n_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
@@ -49,12 +49,6 @@ and no cpt file is needed.  The IT(drapefile) may be of higher resolution than t
 OPT(I)IT(intensfile)
 Gives the name of a grid file with intensities in the (-1,+1) range. [Default is no illumination].
 #include "explain_-K.txt"
-.TP
-OPT(L)[IT(flags)]
-Boundary condition IT(flags) may be IT(x) or IT(y) or IT(xy) indicating data is periodic in range of
-x or y or both, or IT(flags) may be IT(g) indicating geographical conditions (x and y are
-lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero).]
-If no IT(flags) are set, use bilinear rather than the default bicubic resampling when draping is required.
 .TP
 OPT(N)IT(level)[/IT(color)]
 Draws a plane at this z-level.  If the optional IT(color) is provided, the frontal facade between

@@ -225,14 +225,15 @@ ftpdir:
 tar_all:	ftpdir
 		echo "make gmt-$(GMT_VERSION).tar.bz2"
 		grep -vh '#' guru/GMT_progs_files_{ascii,bin}.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
-		grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' >> tmp.lis
 		grep -vh '#' guru/GMT_share_files_{ascii,bin}.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' >> tmp.lis
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_www.lis >> tmp.lis
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples}.lis >> tmp.lis
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_tutorial.lis >> tmp.lis
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_suppl.lis >> tmp.lis
 		COPYFILE_DISABLE=true tar -cjf ftp/gmt-$(GMT_VERSION).tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
-#		rm -f tmp.lis
+		grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
+		COPYFILE_DISABLE=true tar -cjf ftp/gmt-$(GMT_VERSION)-non-gpl.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
+		rm -f tmp.lis
 
 # The tar_win target is for GMT Developers building GMT on a Windows platform without configure
 # and then building GMT installers with Inno Setup

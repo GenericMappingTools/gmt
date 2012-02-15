@@ -1015,8 +1015,11 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			fprintf (fpo, "%s\n", line);
 		}
 
-		fseek (fp, -6, SEEK_END);		/* receed a bit to test the contents of last line */
-		GMT_fgets (GMT, line, BUFSIZ, fp);
+		/* Recede a bit to test the contents of last line. -7 for when
+		 * PS has CRLF endings */
+		fseek (fp, -7, SEEK_END);
+		/* Read until last line is encountered */
+		while ( GMT_fgets (GMT, line, BUFSIZ, fp) );
 		if ( strncmp (line, "%%EOF", 5) )
 			/* Possibly a non-closed GMT PS file. To be confirmed later */
 			excessK = TRUE;
@@ -1094,11 +1097,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				 registration). So we'll move halph pixel inward. */ west  += x_inc /
 			2.0; north -= y_inc / 2.0;
 
-			if (Ctrl->D.active) sprintf (world_file, "%s/", Ctrl->D.dir);	/* Use
-																																			 specified
-																																			 output
-																																			 directory
-																																			 */
+			if (Ctrl->D.active) sprintf (world_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the world one */
 				for (i = (GMT_LONG)strlen(out_file) - 1; i > 0; i--) {
 					if (out_file[i] == '.') { 	/* Beginning of file extension */
