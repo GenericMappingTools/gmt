@@ -953,6 +953,15 @@ GMT_LONG GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, float *ro
 	return (GMT_NOERROR);
 }
 
+void GMT_set_grdinc (struct GMT_CTRL *C, struct GRD_HEADER *h)
+{
+	/* Update grid increments based on w/e/s/n, nx/ny, and registration */
+	h->inc[GMT_X] = GMT_get_inc (GMT, h->wesn[XLO], h->wesn[XHI], h->nx, h->registration);
+	h->inc[GMT_Y] = GMT_get_inc (GMT, h->wesn[YLO], h->wesn[YHI], h->ny, h->registration);
+	h->r_inc[GMT_X] = 1.0 / h->inc[GMT_X];	/* Get inverse increments to avoid divisions later */
+	h->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
+}
+
 void GMT_set_grddim (struct GMT_CTRL *C, struct GRD_HEADER *h)
 {	/* Assumes pad is set and then computes nx, ny, mx, my, nm, size, xy_off based on w/e/s/n.  */
 	h->nx = GMT_grd_get_nx (C, h);		/* Set nx, ny based on w/e/s/n and offset */
@@ -962,8 +971,7 @@ void GMT_set_grddim (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	h->nm = gmt_grd_get_nm (h);		/* Sets the number of actual data items */
 	h->size = gmt_grd_get_size (h);		/* Sets the number of items (not bytes!) needed to hold this array, which includes the padding (size >= nm) */
 	h->xy_off = 0.5 * h->registration;
-	h->r_inc[GMT_X] = 1.0 / h->inc[GMT_X];	/* Get inverse increments to avoid divisions later */
-	h->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
+	GMT_set_grdinc (C, h);
 }
 
 void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, GMT_LONG update)
