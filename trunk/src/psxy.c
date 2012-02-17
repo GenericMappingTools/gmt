@@ -19,7 +19,7 @@
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
  * Version:	5 API
- *
+ * 
  * Brief synopsis: psxy will read <x,y> points and plot symbols, lines,
  * or polygons on maps.
  */
