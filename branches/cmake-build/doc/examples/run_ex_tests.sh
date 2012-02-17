@@ -17,16 +17,14 @@ rm -f fail_count.d
 for o in $* ; do
         f=`basename $o .ps`
 	printf "%-32s" $f.ps
-	rms=`gm compare -density 100 -metric rmse -file $f.png $f.ps ../fig/$f.ps|grep Total|cut -c23-`
+	rms=`gm compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file $f.png $f.ps ../fig/$f.ps 2>&1`
 	if test $? -ne 0; then
         	echo "[FAIL]"
-		echo $f: $rms >> fail_count.d
-	elif test `echo 200 \> $rms|bc` -eq 1; then
-        	echo "[PASS]"
-        	rm -f $f.png
-	else
-        	echo "[FAIL]"
+		rms=`(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p'|cut -c-5) <<< "$rms"`
 		echo $f: RMS Error = $rms >> fail_count.d
+	else
+        	echo "[PASS]"
+        	rm -f $f.png $f.ps
 	fi
 done
 
