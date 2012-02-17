@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun  9 2011 13:00:40) [64-bit] [C4] Document from GMT_psxy
+%%Title: GMT v5.0.0_r9734:9735M [64-bit] Document from psxy
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun  9 13:22:39 2011
+%%CreationDate: Fri Feb 17 09:47:41 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -63,6 +63,8 @@
 /Sp {N 3 -1 roll 0 360 arc F}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 /SV {0 exch M 0 D D D D D 0 D FO}!
@@ -108,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -558,15 +565,15 @@ PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%Page: 1 1
 
 %%BeginPageSetup
-V 0.01 0.01 scale
+V 0.06 0.06 scale
 %%EndPageSetup
 
-/PSL_page_xsize 61200 def
-/PSL_page_ysize 79200 def
+/PSL_page_xsize 10200 def
+/PSL_page_ysize 13200 def
 0 A
 FQ
 O0
-14400 14400 TM
+2400 2400 TM
 
 % PostScript produced by:
 %%GMT:  psxy -R0/4/0/4 -Jx1i -P -W5p -S1i -X2i -Y2i
@@ -576,23 +583,23 @@ O0
 3.32551 setmiterlimit
 clipsave
 0 0 M
-28800 0 D
-0 28800 D
--28800 0 D
+4800 0 D
+0 4800 D
+-4800 0 D
 PSL_eoclip N
-500 W
+83 W
 O1
-3600 7200 7200 Sc
-5760 2880 0 7200 23040 Se
+600 1200 1200 Sc
+960 480 0 1200 3840 Se
 {0 1 0 C} FS
-300 W
+50 W
 0 0 1 C
-3600 -30 210 7200 14400 Sw
+600 -30 210 1200 2400 Sw
 /image7 {<~
 J085r3"QQ/#D3&N:q0=W*=mo0,#L=]_CZR^(aDnfdfMZSO$OnMLdX!9&;Wb!Obgqr3?XDSTQ3RcRMRB-b+`pt]Xg$UO3F9'5
 TJJs3!N-PZb_=k4$[1MO>KQ])NdUf;^o*=KgpbqUB.CeTZ(Z9@'8"\'l$1#c!72NW0SACAsm;7^d%~>
 /LZWDecode filter} def
-/pattern7 {V 4608 4608 scale
+/pattern7 {V 768 768 scale
 << /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc
    {begin [/Indexed /DeviceRGB 1 <FFFFFF00FF00>] setcolorspace
 << /ImageType 1 /Decode [0 1] /Width 64 /Height 64 /BitsPerComponent 1
@@ -600,18 +607,18 @@ TJJs3!N-PZb_=k4$[1MO>KQ])NdUf;^o*=KgpbqUB.CeTZ(Z9@'8"\'l$1#c!72NW0SACAsm;7^d%~>
 >> image end}
 >> matrix makepattern U} def
 {pattern7 I} FS
-500 W
+83 W
 1 0 0 C
-3600 30 90 7200 21600 Sw
+600 30 90 1200 3600 Sw
 {1 0 0 C} FS
 0 A
-7200 3600 -45 21600 7200 Se
+1200 600 -45 3600 1200 Se
 /image12 {<~
 J,is'-mSKes+A0qkQC`<*.M?,i\<1bJ3Og.#MoIUgiOV4"3;`QGMis(-NV$E:e4!_'+L<rU/O%A?>UO>:1LRIjGHYrPJLY2W
 )Pr&'T,@i1$J7i7jsToj`9U-`a^io:$2&HeFn5STMVIa8SoAS8=@o'eB,rrGu1-_V3X@M>%MAT<i6_RKmJ/dITW7E86spm=G
 Y\*f?!pe8RR_:TQNhSR/r,#?D@,7h7<';P<_A~>
 /LZWDecode filter} def
-/pattern12 {V 4608 4608 scale
+/pattern12 {V 768 768 scale
 << /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc
    {begin [/Indexed /DeviceRGB 1 <FFFF00FF0000>] setcolorspace
 << /ImageType 1 /Decode [0 1] /Width 64 /Height 64 /BitsPerComponent 1
@@ -620,7 +627,7 @@ Y\*f?!pe8RR_:TQNhSR/r,#?D@,7h7<';P<_A~>
 >> matrix makepattern U} def
 {pattern12 I} FS
 O0
-7200 3600 45 21600 21600 Se
+1200 600 45 3600 3600 Se
 PSL_cliprestore
 currentdict /image7 undef
 currentdict /pattern7 undef

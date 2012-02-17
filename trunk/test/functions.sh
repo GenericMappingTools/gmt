@@ -13,17 +13,15 @@ header () {
 pscmp () {
 	f=${1:-`basename $ps .ps`}
 	d=`basename $PWD`
-	rms=`gm compare -density 100 -metric rmse -file $f.png $f.ps orig/$f.ps|grep Total|cut -c23-`
-	if test $? -ne 0; then
-        	echo "[FAIL]"
-		echo $d/$f: $rms >> ../fail_count.d
-	elif test `echo 200 \> $rms|bc` -eq 1; then
-        	echo "[PASS]"
-        	rm -f $f.png $f.ps
-	else
-        	echo "[FAIL]"
-		echo $d/$f: RMS Error = $rms >> ../fail_count.d
-	fi
+	rms=`gm compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file $f.png $f.ps orig/$f.ps 2>&1`
+        if test $? -ne 0; then
+                echo "[FAIL]"
+                rms=`(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p'|cut -c-5) <<< "$rms"`
+                echo $d/$f: RMS Error = $rms >> ../fail_count.d
+        else
+                echo "[PASS]"
+                rm -f $f.png $f.ps
+        fi
 }
 
 passfail () {

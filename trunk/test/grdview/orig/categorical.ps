@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_grdview
+%%Title: GMT v5.0.0_r9734:9735M [64-bit] Document from grdview
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:59:10 2011
+%%CreationDate: Fri Feb 17 09:33:05 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,7 +576,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  grdview 31846.nc -C31846.cpt -JU31/2.75 -P -B5g5:.-Qs:WSne -Qs -K --MAP_TITLE_OFFSET=-1i
+%%GMT:  grdview 47457.nc -C47457.cpt -JU31/2.75 -P -B5g5:.-Qs:WSne -Qs -K --MAP_TITLE_OFFSET=-1i
 %%PROJ: utm 0.00000000 10.00000000 50.00000000 60.00000000 285015.763 1001451.269 5538630.703 6672079.495 +proj=utm +zone=31 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -620,9 +625,9 @@ PSL_eoclip N
 1 0 0 -1 2 1579 2571 SP
 1532 97 24 -854 -1471 -95 3 3051 2665 SP
 {0.000 0.000 1.000 C} FS
--1592 -98 83 -852 1532 97 3 1604 1716 SP
+-1592 -99 83 -852 1532 97 3 1604 1716 SP
 {1.000 1.000 0.000 C} FS
--1650 -100 81 -852 1592 98 3 1627 863 SP
+-1650 -100 81 -852 1592 99 3 1627 862 SP
 {0.647 0.165 0.165 C} FS
 0 -1 1650 100 2 1650 9 SP
 {1.000 0.000 0.000 C} FS
@@ -630,9 +635,9 @@ PSL_eoclip N
 {0.000 1.000 0.000 C} FS
 -24 854 1054 1712 550 -16 0 -1 -1579 -2549 5 1579 2570 SP
 {0.000 0.000 1.000 C} FS
--527 -863 23 -853 1054 1712 3 550 4 SP
+-527 -862 23 -854 1054 1712 3 550 4 SP
 {1.000 1.000 0.000 C} FS
-23 -854 527 863 2 1100 0 SP
+23 -853 527 862 2 1100 0 SP
 {0.647 0.165 0.165 C} FS
 PSL_cliprestore
 4 W
@@ -765,7 +770,7 @@ O0
 4200 0 TM
 
 % PostScript produced by:
-%%GMT:  grdview 31846.nc -C31846.cpt -JU31/2.75 -O -K -B5g5:.-T:WSne -T -X3.5 --MAP_TITLE_OFFSET=-1i
+%%GMT:  grdview 47457.nc -C47457.cpt -JU31/2.75 -O -K -B5g5:.-T:WSne -T -X3.5 --MAP_TITLE_OFFSET=-1i
 %%PROJ: utm 0.00000000 10.00000000 50.00000000 60.00000000 285015.763 1001451.269 5538630.703 6672079.495 +proj=utm +zone=31 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1088,7 +1093,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -C31846.cpt -D3/3/1.5/0.2 -O -K -L0.1i
+%%GMT:  psscale -C47457.cpt -D3/3/1.5/0.2 -O -K -L0.1i
 %%PROJ: xy 1.00000000 6.00000000 0.00000000 0.20000000 1.000 6.000 0.000 0.200 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1127,7 +1132,7 @@ O0
 -4200 6000 TM
 
 % PostScript produced by:
-%%GMT:  grdview 31846.nc -C31846.cpt -JU31/2.75 -O -K -B5g5:.-Qi100:WSne -Qi100 -X-3.5 -Y5.0 --MAP_TITLE_OFFSET=-1i
+%%GMT:  grdview 47457.nc -C47457.cpt -JU31/2.75 -O -K -B5g5:.-Qi100:WSne -Qi100 -X-3.5 -Y5.0 --MAP_TITLE_OFFSET=-1i
 %%PROJ: utm 0.00000000 10.00000000 50.00000000 60.00000000 285015.763 1001451.269 5538630.703 6672079.495 +proj=utm +zone=31 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2972,7 +2977,7 @@ O0
 4200 0 TM
 
 % PostScript produced by:
-%%GMT:  grdview 31846.nc -C31846.cpt -JU31/2.75 -O -B5g5:.-Qt100:WSne -Qt100 -X3.5 --MAP_TITLE_OFFSET=-1i
+%%GMT:  grdview 47457.nc -C47457.cpt -JU31/2.75 -O -B5g5:.-Qt100:WSne -Qt100 -X3.5 --MAP_TITLE_OFFSET=-1i
 %%PROJ: utm 0.00000000 10.00000000 50.00000000 60.00000000 285015.763 1001451.269 5538630.703 6672079.495 +proj=utm +zone=31 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
