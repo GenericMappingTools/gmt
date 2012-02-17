@@ -52,10 +52,6 @@ struct PSTEXT_CTRL {
 		double dx, dy;
 		struct GMT_PEN pen;
 	} D;
-	struct I {	/* -I<r> */
-		GMT_LONG active;
-		double value;
-	} I;
 	struct F {	/* -F[+f<fontinfo>+a<angle>+j<justification>] */
 		GMT_LONG active;
 		struct GMT_FONT font;
@@ -114,12 +110,6 @@ struct PSTEXT_INFO {
 	struct GMT_PEN boxpen;
 	struct GMT_PEN vecpen;
 	struct GMT_FILL boxfill;
-};
-
-struct PSTEXT_RECT {	/* For use in culling text that would overlap previously plotted text */
-	double rect[4];		/* Extreme min/max enclosing box coordinates of text rectangle */
-	double x_vert[4], y_vert[4];	/* Actual rectangle vertices */
-	struct PSTEXT_RECT *next, *prev;
 };
 
 void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -392,10 +382,6 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 				Ctrl->D.dx = GMT_to_inch (GMT, txt_a);
 				Ctrl->D.dy = (j == 2) ? GMT_to_inch (GMT, txt_b) : Ctrl->D.dx;
 				break;
-			case 'I':
-				Ctrl->I.active = TRUE;
-				Ctrl->I.value = (opt->arg[0]) ? GMT_to_inch (GMT, opt->arg) : 0.0;
-				break;
 			case 'F':
 				Ctrl->F.active = TRUE;
 				pos = 0;
@@ -530,56 +516,13 @@ GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG
 	return (nscan);
 }
 
-double get_text_length (struct GMT_CTRL *GMT, double size, char *text)
-{	/* Compute length of text string in inches */
-	double L;
-	L = size * 0.732 * strlen (text) / PSL_POINTS_PER_INCH;
-	return (L);
-}
-
-struct PSTEXT_RECT * new_text_block (struct GMT_CTRL *GMT, double x0, double y0, double limit, struct PSTEXT_INFO *T, char *text)
-{
-	GMT_LONG k;
-	double s, c, dx, dy, dx2, dy2, T_length, T_height, size[2];
-	struct PSTEXT_RECT *P = GMT_memory (GMT, NULL, 1, struct PSTEXT_RECT);
-	sincosd (T->paragraph_angle, &s, &c);
-	T_length = get_text_length (GMT, T->font.size, text);
-	T_height = GMT->session.font[T->font.id].height * T->font.size / PSL_POINTS_PER_INCH;
-	x0 += 0.5 * (T->block_justify%4 - 1) * T_length;
-	y0 += 0.5 * (T->block_justify/4) * T_height;
-	dx2 = c * limit;	dy2 = s * limit;
-	P->x_vert[0] = x0 - dx2;		P->y_vert[0] = y0;
-	P->x_vert[1] = x0 + c * T_length;	P->y_vert[1] = y0 + s * T_length;
-	sincosd (T->paragraph_angle+90.0, &s, &c);
-	dx = c * T_height;	dy = s * T_height;
-	P->x_vert[2] = P->x_vert[1] + dx;	P->y_vert[2] = P->y_vert[1] + dy;
-	P->x_vert[3] = P->x_vert[0] + dx;	P->y_vert[3] = P->y_vert[0] + dy;
-	P->rect[XLO] = P->rect[YLO] = DBL_MAX;	P->rect[XHI] = P->rect[YHI] = -DBL_MAX;
-	for (k = 0; k < 4; k++) {	/* Find circumscribing box */
-		if (P->x_vert[k] < P->rect[XLO]) P->rect[XLO] = P->x_vert[k];
-		if (P->x_vert[k] > P->rect[XHI]) P->rect[XHI] = P->x_vert[k];
-		if (P->y_vert[k] < P->rect[YLO]) P->rect[YLO] = P->y_vert[k];
-		if (P->y_vert[k] > P->rect[YHI]) P->rect[YHI] = P->y_vert[k];
-	}
-	size[0] = P->rect[XHI] - P->rect[XLO];	size[1] = P->rect[YHI] - P->rect[YLO];
-	PSL_plotsymbol (GMT->PSL, 0.5 * (P->rect[XLO] + P->rect[XHI]), 0.5 * (P->rect[YLO] + P->rect[YHI]), size, PSL_RECT);
-	
-	return (P);
-}
-
-GMT_LONG text_overlap (struct GMT_CTRL *GMT, struct PSTEXT_RECT *A, struct PSTEXT_RECT *B)
-{
-	/* Return TRUE if rectangles A and B overlap */
-	return (FALSE);
-}
-
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pstext_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pstext task */
 
-	GMT_LONG i, nscan, length = 0, n_paragraphs = 0, n_add, fmode, n_alloc = 0, m = 0, nP = 0, P_alloc = 0;
+	GMT_LONG i, nscan, length = 0, n_paragraphs = 0, n_add, fmode, n_alloc = 0, m = 0;
 	GMT_LONG n_read = 0, n_processed = 0, txt_alloc = 0, old_is_world, add, n_expected_cols;
 	GMT_LONG error = FALSE, master_record = FALSE, skip_text_records = FALSE, pos, text_col;
 
@@ -594,7 +537,6 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #endif
 	struct PSTEXT_INFO T;
 	struct PSTEXT_CTRL *Ctrl = NULL;
-	struct PSTEXT_RECT *P = NULL, **Plist = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
@@ -651,11 +593,6 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
-	}
-
-	if (Ctrl->I.active) {
-		Plist = GMT_malloc (GMT, Plist, GMT_SMALL_CHUNK, &P_alloc, struct PSTEXT_RECT *);
-		GMT_setfill (GMT, NULL, TRUE);
 	}
 
 	if (Ctrl->G.mode) {
@@ -882,23 +819,6 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				xx[1] = plot_x;	yy[1] = plot_y;
 			}
 			n_paragraphs++;
-
-			if (Ctrl->I.active) {	/* Want to ensure no text overlap */
-				GMT_LONG kk, stop = FALSE;
-				P = new_text_block (GMT, plot_x, plot_y, Ctrl->I.value, &T, in_txt);
-				for (kk = 0; !stop && kk < nP; kk++) if (text_overlap (GMT, P, Plist[kk])) stop = TRUE;
-				if (stop) {	/* Overlap, skip this text */
-					GMT_free (GMT, P);
-					continue;
-				}
-				else {
-					if (nP == P_alloc) {
-						P_alloc <<= 1;
-						Plist = GMT_memory (GMT, Plist, P_alloc, struct PSTEXT_RECT *);
-					}
-					Plist[nP++] = P;
-				}
-			}
 
 			PSL_setfont (PSL, T.font.id);
 			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, in[GMT_Z]);
