@@ -892,7 +892,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				two_only = TRUE;
 			}
 		}
-		GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
+		GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 		dim[0] = n_tables;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty dataset */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, GMT_LONG);

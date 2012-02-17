@@ -196,7 +196,7 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the colmath main code ----------------------------*/
 
-	if (Ctrl->T.active) GMT->current.io.multi_segments[GMT_OUT] = FALSE;	/* Turn off segment headers on output */
+	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, FALSE);	/* Turn off segment headers on output */
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data input */

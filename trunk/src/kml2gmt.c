@@ -152,7 +152,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
-	GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
+	GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 	GMT_memset (header, GMT_BUFSIZ, char);
 	GMT_memset (name, GMT_BUFSIZ, char);
 	GMT_memset (description, GMT_BUFSIZ, char);

@@ -1064,7 +1064,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
-		GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
+		GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (error);
 		}
