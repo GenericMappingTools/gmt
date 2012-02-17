@@ -439,8 +439,8 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	xdata[0] = GMT_memory (GMT, NULL, s->n_out_columns, double);
 	xdata[1] = GMT_memory (GMT, NULL, s->n_out_columns, double);
 
-	GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
-	GMT->current.io.io_header[GMT_OUT] = TRUE;		/* Turn on -ho explicitly */
+	GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
+	GMT->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on -ho explicitly */
 
 	if (GMT->common.R.active && GMT->current.proj.projection != GMT_NO_PROJ) {
 		do_project = TRUE;

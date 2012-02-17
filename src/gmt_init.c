@@ -1866,9 +1866,7 @@ GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 		return (1);
 	}
 
-	/* -g gap checking implies -mo if not already set */
-
-	C->current.io.multi_segments[GMT_OUT] = TRUE;
+	GMT_set_segmentheader (C, GMT_OUT, TRUE);	/* -g gap checking implies -mo if not already set */
 
 	if (txt[0] == 'a') {	/* For multiple criteria, specify that all criteria be met [default is any] */
 		k++;
@@ -7993,8 +7991,8 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 
 	/* There is no longer a -m option in GMT 5 so multi segments are now always TRUE.
 	   However, in GMT_COMPAT mode the -mi and -mo options WILL turn off multi in the other direction. */
-	C->current.io.multi_segments[GMT_IN] = TRUE;
-	C->current.io.multi_segments[GMT_OUT] = FALSE;	/* Will be turned TRUE when either of two situation arises: */
+	GMT_set_segmentheader (C, GMT_IN, TRUE);
+	GMT_set_segmentheader (C, GMT_OUT, FALSE);	/* Will be turned TRUE when either of two situation arises: */
 	/* 1. We read a multisegment header
 	   2. The -g option is set which will create gaps and thus multiple segments
 	 */

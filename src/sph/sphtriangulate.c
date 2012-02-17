@@ -615,13 +615,13 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	if (Ctrl->T.active) GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Must produce multisegment output files */
+	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Must produce multisegment output files */
 	
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout[0]->io_mode, NULL, Dout[0]) != GMT_OK) {
 		Return (API->error);
 	}
 	if (Ctrl->N.active) {
-		GMT->current.io.multi_segments[GMT_OUT] = FALSE;	/* Since we only have one segment */
+		GMT_set_segmentheader (GMT, GMT_OUT, FALSE);	/* Since we only have one segment */
 		if (Ctrl->A.active) sprintf (header, "# sphtriangulate nodes (lon, lat, area)"); else sprintf (header, "# sphtriangulate nodes (lon, lat)");
 		Dout[1]->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
 		Dout[1]->table[0]->n_headers = 1;

@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-02-17	pwessel
+	* gmt_io.c:		Added convenience function GMT_set_segmentheader to change
+				multi-seg header output to on or off; used by several GMT programs.
+	* grdtrack.c:		Did not turn on multi-segment output for -C when input was not
+				a multi-segment file.
+
 2012-02-15	pwessel
 	* grdproject.c:		Changed header inc but not r_inc.
 

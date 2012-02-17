@@ -869,7 +869,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (!GMT->common.b.active[GMT_OUT] && Ctrl->G.header) {	/* Want segment header on output */
 			GMT_LONG kind = (GMT_IS_ZERO (Ctrl->G.colat - 90.0)) ? 0 : 1;
 			char *type[2] = {"Great", "Small"};
-			GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
+			GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 			sprintf (GMT->current.io.segment_header, "%s-circle Pole at %g %g", type[kind], P.plon, P.plat);
 			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);	/* Write segment header */
 		}

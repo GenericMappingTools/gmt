@@ -301,7 +301,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	if (Ctrl->T.active) GMT->current.io.multi_segments[GMT_OUT] = FALSE;	/* Turn off segment headers on output */
+	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, FALSE);	/* Turn off segment headers on output */
 
 	if (GMT->common.a.active && D[GMT_IN]->n_tables > 1) {
 		GMT_report (GMT, GMT_MSG_FATAL, "The -a option requires a single table only.\n");
