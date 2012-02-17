@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_grdimage
+%%Title: GMT v5.0.0_r9734:9735M [64-bit] Document from grdimage
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:58:54 2011
+%%CreationDate: Fri Feb 17 09:32:38 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -1158,7 +1163,7 @@ clipsave
 0 3600 D
 -7200 0 D
 PSL_eoclip N
-V N 1 -10 T 7200 3620 scale [/Indexed /DeviceRGB 199 <
+V N -10 -10 T 7220 3620 scale [/Indexed /DeviceRGB 199 <
 FFFEFEFFFBFBFEFEFFFBFBFFFFF9F9FFF6F6F9F9FFF6F6FFFFF4F4FFF1F1F4F4FFF1F1FFFFEEEEEEEEFFFFECECFFE9E9
 ECECFFE9E9FFFFE7E7FFE4E4E7E7FFE4E4FFFFE2E2FFDFDFE2E2FFDFDFFFFFDDDDDDDDFFFFDADAFFD7D7DADAFFD7D7FF
 FFD5D5FFD2D2D5D5FFD2D2FFFFD0D0FFCDCDD0D0FFCDCDFFFFCBCBCBCBFFFFC8C8FFC6C6C8C8FFC6C6FFFFC3C3FFC1C1
