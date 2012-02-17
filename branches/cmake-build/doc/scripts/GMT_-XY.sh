@@ -4,7 +4,7 @@
 . ./functions.sh
 
 psbasemap -R0/1.5/0/1.7 -Jx1i -P -K -B0+glightyellow >| GMT_-XY.ps
-psxy -R -J -O -K -Sv0.025i+e -W0.5p -Gblack << EOF >> GMT_-XY.ps
+psxy -R -J -O -K -Sv5p+e -W0.5p -Gblack << EOF >> GMT_-XY.ps
 0.2	0.2	0	1.1
 0.2	0.2	90	1.4
 EOF

@@ -2875,7 +2875,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_macros = gmt_load_macros (GMT, ".gmtmath", &M);	/* Load in any macros */
 	if (n_macros) GMT_report (GMT, GMT_MSG_NORMAL, "Found and loaded %ld user macros.\n", n_macros);
 	
-	if (Ctrl->Q.active || Ctrl->S.active) GMT->current.io.multi_segments[GMT_OUT] = FALSE;	/* Turn off segment headers in calculator or one-record mode */
+	if (Ctrl->Q.active || Ctrl->S.active) GMT_set_segmentheader (GMT, GMT_OUT, FALSE);	/* Turn off segment headers in calculator or one-record mode */
 
 	/* Internally replace the = [file] sequence with a single output option ->file */
 

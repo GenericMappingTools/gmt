@@ -1853,7 +1853,7 @@ void GMT_iazeqdist (struct GMT_CTRL *C, double *lon, double *lat, double x, doub
 	x *= C->current.proj.i_EQ_RAD;
 	y *= C->current.proj.i_EQ_RAD;
 	rho = hypot (x, y);
-	if (rho > C->current.proj.f_horizon * D2R) {	/* Horizon */
+	if (rho > C->current.proj.rho_max) {	/* Horizon */
 		*lat = *lon = C->session.d_NaN;
 		return;
 	}

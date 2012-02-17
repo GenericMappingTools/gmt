@@ -379,7 +379,7 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENTS: GMT_WRITE_SEGMENTS;
 	}
 	else
-		GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
+		GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		Return (error);
@@ -534,7 +534,7 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Get here when all profiles have been found and written.  */
 
-	if (nprofiles > 1) GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
+	if (nprofiles > 1) GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 
 	dim[1] = seg2;	dim[2] = n_outputs;
 	if ((D[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty table */

@@ -428,7 +428,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "All segments already form closed polygons - no new segment file created\n");
 		wrap_up = 1;
 	}
-	if (n_open > 1 || n_closed > 1) GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
+	if (n_open > 1 || n_closed > 1) GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 	if (wrap_up) {	/* Write out results and return */
 		if (wrap_up == 2) {	/* Write n_open segments to D[OUT] and n_closed to C */
 			D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[CLOSED], n_closed, struct GMT_LINE_SEGMENT *);
@@ -725,7 +725,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		done = (start_id == ns);	/* No more unused segments */
 	}
 	
-	if (out_seg > 1) GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
+	if (out_seg > 1) GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 	if (Ctrl->Q.active) {	/* Write out the list(s) with individual file names */
 		Q->table[CLOSED]->segment[0]->record = GMT_memory (GMT, QT[CLOSED]->record, QT[CLOSED]->n_rows, char *);
 		if (n_qfiles == 2) Q->table[OPEN]->segment[0]->record = GMT_memory (GMT, QT[OPEN]->record, QT[OPEN]->n_rows, char *);

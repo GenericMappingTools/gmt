@@ -624,7 +624,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_LONG id = 0;
 		char header[GMT_BUFSIZ], *kind[3] = {"Coastlines", "Political boundaries", "Rivers"};
 		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2; 
-		GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
+		GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
 			Return (error);
 		}
