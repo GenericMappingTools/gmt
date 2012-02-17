@@ -5,7 +5,7 @@
 #
 . ./functions.sh
 
-grep -v '#' ../../share/conf/gmt_cpt.conf | cut -d: -f1 | sort -r > $$.lis
+grep -v '#' "${GMT_SHAREDIR}"/conf/gmt_cpt.conf | cut -d: -f1 | sort -r > $$.lis
 
 ps=GMT_App_M_1.ps
 n=`cat $$.lis | wc -l`
