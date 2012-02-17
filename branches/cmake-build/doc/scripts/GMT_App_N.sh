@@ -7,7 +7,7 @@
 #
 . ./functions.sh
 
-grep -v '^#' ../../share/conf/gmt_custom_symbols.conf | awk '{print $1}' > $$.lis
+grep -v '^#' "${GMT_SHAREDIR}"/share/conf/gmt_custom_symbols.conf | awk '{print $1}' > $$.lis
 n=`cat $$.lis | wc -l`
 
 # Because of text, the first page figure will contain less symbol rows than

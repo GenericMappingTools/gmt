@@ -28,7 +28,7 @@ let s=-80
 rm -f $$.y.d
 while [ $s -lt 72 ]; do
 	echo $s >> $$.L.d
-	let n=$s+8
+	n=$(($s+8))
 	cat <<- EOF >> $$.z.d
 	> Lat = $s
 	-180	$s
@@ -42,7 +42,7 @@ while [ $s -lt 72 ]; do
 	fi
 	awk '{printf "> \n%s\t%s\n%s\t%s\n", $1, "'$s'", $1, "'$n'"}' $$.sp.d >> $$.z.d
 	gmtmath -Q $s $n ADD 2 DIV = >> $$.y.d
-	let s=$n
+	s=$n
 done
 echo $n >> $$.L.d
 echo '84' >> $$.L.d

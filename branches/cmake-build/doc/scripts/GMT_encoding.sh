@@ -24,7 +24,7 @@ cat << EOF > $$.awk	# This awk script creates the $$.chart table of which entrie
 	printf "\n"
 }
 EOF
-egrep -v '\[|\]' ../../share/pslib/$1.ps | $AWK -f $$.awk > $$.chart
+egrep -v '\[|\]' "${GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f $$.awk > $$.chart
 cat << EOF > $$.awk	# This awk script creates a file for psxy to plot a rectangle for undefined entries
 {
 	for (i = 1; i <= 8; i++)
@@ -33,7 +33,7 @@ cat << EOF > $$.awk	# This awk script creates a file for psxy to plot a rectangl
 	}
 }
 EOF
-egrep -v '\[|\]' ../../share/pslib/$1.ps | $AWK -f $$.awk > $$.empty
+egrep -v '\[|\]' "${GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f $$.awk > $$.empty
 
 cat << EOF > $$.awk
 BEGIN {

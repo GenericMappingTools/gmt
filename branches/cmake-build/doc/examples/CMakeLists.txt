@@ -118,11 +118,6 @@ if (EXAMPLES_COMMAND)
 		set (_command_handled TRUE)
 	endif (${EXAMPLES_COMMAND} STREQUAL script_to_verbatim)
 
-	if (${EXAMPLES_COMMAND} STREQUAL copy_example_files)
-		copy_example_files ()
-		set (_command_handled TRUE)
-	endif (${EXAMPLES_COMMAND} STREQUAL copy_example_files)
-
 	if (NOT _command_handled)
 		message (SEND_ERROR "Unknown command: ${EXAMPLES_COMMAND}")
 	endif (NOT _command_handled)
