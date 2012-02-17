@@ -1825,14 +1825,16 @@ void GMT_azeqdist (struct GMT_CTRL *C, double lon, double lat, double *x, double
 
 	GMT_WIND_LON (C, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
+	if (GMT_IS_ZERO (lat-C->current.proj.pole) && GMT_IS_ZERO (lat-C->current.proj.central_meridian)) {	/* Center of projection */
+		*x = *y = 0.0;
+		return;
+	}
 	sincosd (lat, &slat, &clat);
 	sincosd (lon, &slon, &clon);
 
 	t = clat * clon;
 	cc = C->current.proj.sinp * slat + C->current.proj.cosp * t;
-	if (GMT_IS_ZERO (cc - 1.0))		/* Center of projection */
-		*x = *y = 0.0;
-	else if (GMT_IS_ZERO (cc + 1.0)) {	/* Antipode is a circle, so flag x,y as NaN and increase counter */
+	if (cc <= -1.0) {	/* Antipode is a circle, so flag x,y as NaN and increase counter */
 		*x = *y = C->session.d_NaN;
 		C->current.proj.n_antipoles++;
 	}
