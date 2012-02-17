@@ -247,7 +247,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 
-	GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
+	GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 	if (Ctrl->G.active) {
 		marker = GMT->current.setting.io_seg_marker[GMT_OUT];
 		GMT->current.setting.io_seg_marker[GMT_OUT] = '%';

@@ -264,6 +264,12 @@ void gmt_adjust_periodic (struct GMT_CTRL *C) {
 	/* Now it will be outside the region on the same side it started out at */
 }
 
+void GMT_set_segmentheader (struct GMT_CTRL *C, GMT_LONG direction, GMT_LONG true_false)
+{	/* Enable/Disable multi-segment headers for either input or output */
+		
+	C->current.io.multi_segments[direction] = true_false;
+}
+
 GMT_LONG gmt_process_binary_input (struct GMT_CTRL *C, GMT_LONG n_read) {
 	/* Process a binary record to determine what kind of record it is. Return values:
 	 * 0 = regular record; 1 = segment header (all NaNs); 2 = skip this record
@@ -284,7 +290,7 @@ GMT_LONG gmt_process_binary_input (struct GMT_CTRL *C, GMT_LONG n_read) {
 			GMT_report (C, GMT_MSG_VERBOSE, "Detected binary segment header near/at line # %ld\n", C->current.io.rec_no);
 			C->current.io.status = GMT_IO_SEG_HEADER;
 			C->current.io.segment_header[0] = '\0';
-			C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo */
+			GMT_set_segmentheader (C, GMT_OUT, TRUE);	/* Turn on "-mo" */
 			C->current.io.seg_no++;
 			C->current.io.pt_no = 0;
 			return (1);	/* 1 means segment header */
@@ -1264,7 +1270,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 
 		if ((kind = GMT_is_segment_header (C, line))) {	/* Got a segment header, take action and return */
 			C->current.io.status = GMT_IO_SEG_HEADER;
-			C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on segment headers on output */
+			GMT_set_segmentheader (C, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 			C->current.io.seg_no++;
 			if (kind == 1) {
 				/* Just save the header content, not the marker and leading whitespace */
@@ -1395,7 +1401,7 @@ char * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG 
 
 	if (line[0] == C->current.setting.io_seg_marker[GMT_IN]) {	/* Got a segment header, take action and return */
 		C->current.io.status = GMT_IO_SEG_HEADER;
-		C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo */
+		GMT_set_segmentheader (C, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 		C->current.io.seg_no++;
 		/* Just save the header content, not the marker and leading whitespace */
 		strcpy (C->current.io.segment_header, GMT_trim_segheader (C, line));
