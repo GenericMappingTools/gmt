@@ -2856,14 +2856,12 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	Ctrl = New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	GMT_memset (&info, 1, struct GRDMATH_INFO);		/* Initialize here to not crash when Return gets called */
 	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
+	GMT_memset (alloc_mode, GRDMATH_STACK_SIZE, GMT_LONG);
+	GMT_memset (stack, GRDMATH_STACK_SIZE, struct GMT_GRID *);
 	if (GMT_Parse_Common (API, "-VRbf:", "ghinrs" GMT_OPT("F"), options)) Return (API->error);
 	if ((error = GMT_grdmath_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/
-
-	//GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
-	GMT_memset (alloc_mode, GRDMATH_STACK_SIZE, GMT_LONG);
-	GMT_memset (stack, GRDMATH_STACK_SIZE, struct GMT_GRID *);
 
 	n_macros = gmt_load_macros (GMT, ".grdmath", &M);	/* Load in any macros */
 	if (n_macros) GMT_report (GMT, GMT_MSG_NORMAL, "Found and loaded %ld user macros.\n", n_macros);
