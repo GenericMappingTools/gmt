@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun  9 2011 15:28:31) [64-bit] Document from GMT_psxy
+%%Title: GMT v5.0.0_r9747M [64-bit] Document from psxy
 %%Creator: GMT
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun  9 17:35:48 2011
+%%CreationDate: Mon Feb 20 15:00:00 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -63,6 +63,8 @@
 /Sp {N 3 -1 roll 0 360 arc F}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 /SV {0 exch M 0 D D D D D 0 D FO}!
@@ -109,6 +111,11 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -143,7 +150,7 @@
 /eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
 /oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -183,7 +190,6 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
-/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -559,15 +565,15 @@ PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%Page: 1 1
 
 %%BeginPageSetup
-V 0.01 0.01 scale
+V 0.06 0.06 scale
 %%EndPageSetup
 
-/PSL_page_xsize 61200 def
-/PSL_page_ysize 79200 def
+/PSL_page_xsize 10200 def
+/PSL_page_ysize 13200 def
 0 A
 FQ
 O0
-7200 7200 TM
+1200 1200 TM
 
 % PostScript produced by:
 %%GMT:  psxy lines.txt -R-0.25/5.25/-0.2/1.4 -Jx1i -P -W4p -K
@@ -575,14 +581,14 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-400 W
-1800 1440 M
-36000 0 D
+67 W
+300 240 M
+6000 0 D
 S
 0 A
 FQ
 O0
-0 1440 TM
+0 240 TM
 
 % PostScript produced by:
 %%GMT:  psxy lines.txt -R-0.25/5.25/-0.2/1.4 -Jx1i -O -K -Y0.2i -W4p,orange,.
@@ -590,17 +596,17 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-400 W
-[400 1600] 0 B
+67 W
+[67 267] 0 B
 1 0.647 0 C
-1800 1440 M
-36000 0 D
+300 240 M
+6000 0 D
 S
 [] 0 B
 0 A
 FQ
 O0
-0 1440 TM
+0 240 TM
 
 % PostScript produced by:
 %%GMT:  psxy lines.txt -R-0.25/5.25/-0.2/1.4 -Jx1i -O -K -Y0.2i -W4p,red,9_4_2_4:2p
@@ -608,17 +614,17 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-400 W
-[900 400 200 400] 200 B
+67 W
+[150 67 33 67] 33 B
 1 0 0 C
-1800 1440 M
-36000 0 D
+300 240 M
+6000 0 D
 S
 [] 0 B
 0 A
 FQ
 O0
-0 1440 TM
+0 240 TM
 
 % PostScript produced by:
 %%GMT:  psxy lines.txt -R-0.25/5.25/-0.2/1.4 -Jx1i -O -K -Y0.2i -W4p,- --PS_LINE_CAP=round
@@ -626,16 +632,16 @@ O0
 1 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-400 W
-[3200 1600] 0 B
-1800 1440 M
-36000 0 D
+67 W
+[533 267] 0 B
+300 240 M
+6000 0 D
 S
 [] 0 B
 0 A
 FQ
 O0
-0 1440 TM
+0 240 TM
 
 % PostScript produced by:
 %%GMT:  psxy lines.txt -R-0.25/5.25/-0.2/1.4 -Jx1i -O -K -Y0.2i -W4p,orange,0_8:0p --PS_LINE_CAP=round
@@ -643,17 +649,17 @@ O0
 1 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-400 W
-[0 800] 0 B
+67 W
+[0 133] 0 B
 1 0.647 0 C
-1800 1440 M
-36000 0 D
+300 240 M
+6000 0 D
 S
 [] 0 B
 0 A
 FQ
 O0
-0 1440 TM
+0 240 TM
 
 % PostScript produced by:
 %%GMT:  psxy lines.txt -R-0.25/5.25/-0.2/1.4 -Jx1i -O -K -Y0.2i -W4p,red,0_16:0p --PS_LINE_CAP=round
@@ -661,11 +667,11 @@ O0
 1 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-400 W
-[0 1600] 0 B
+67 W
+[0 267] 0 B
 1 0 0 C
-1800 1440 M
-36000 0 D
+300 240 M
+6000 0 D
 S
 [] 0 B
 0 A
@@ -679,11 +685,11 @@ O0
 1 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-200 W
-[0 1600] 800 B
+33 W
+[0 267] 133 B
 0 1 0 C
-1800 1440 M
-36000 0 D
+300 240 M
+6000 0 D
 S
 [] 0 B
 0 A
