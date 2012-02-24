@@ -45,7 +45,7 @@ pscmp () {
   test -f "${1:-$ps}" || return 1
   f=${1:-$(basename $ps .ps)}
   d=$(basename $PWD)
-  if [ -z "$GRAPHICSMAGICK" ]; then
+  if ! [ -x "$GRAPHICSMAGICK" ]; then
     echo "[PASS] (without comparison)"
     return
   fi
