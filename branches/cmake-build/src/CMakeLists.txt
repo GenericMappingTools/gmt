@@ -28,6 +28,7 @@ include (GmtManpages)
 include (CreateDebugSym)
 
 # Find libraries
+message ("*  Searching dependent libraries. This may take a few minutes...")
 find_package (NETCDF REQUIRED)
 include_directories (${NETCDF_INCLUDE_DIR})
 add_definitions (${NETCDF_DEFINITIONS})

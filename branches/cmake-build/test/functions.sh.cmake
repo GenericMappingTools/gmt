@@ -24,7 +24,7 @@ pscmp () {
   make_pdf ${1:-$ps} # make pdf file
   f=${1:-$(basename $ps .ps)}
   d=$(basename $PWD)
-  if [ -z "$GRAPHICSMAGICK" ]; then
+  if ! [ -x "$GRAPHICSMAGICK" ]; then
     echo "[PASS] (without comparison)"
     rm -f ${f}.ps
     return

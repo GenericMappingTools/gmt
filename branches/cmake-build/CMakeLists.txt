@@ -69,6 +69,10 @@ add_custom_target (check
 
 # Find test dependencies
 find_program (GRAPHICSMAGICK gm)
+if (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
+	message (FATAL_ERROR "Cannot proceed without GraphicsMagick. "
+		"Need to either install GraphicsMagick or disable tests.")
+endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 
 # Add subdirectories
 set(_manfiles_ps "" CACHE INTERNAL "Global list of PS manpages")
