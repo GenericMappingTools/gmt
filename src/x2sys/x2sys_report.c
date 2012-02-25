@@ -216,7 +216,7 @@ int comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ struct
 
 GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	char **trk_name = NULL;
+	char **trk_name = NULL, *c = NULL;
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 	struct X2SYS_COE_PAIR *P = NULL;
@@ -251,6 +251,8 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/*---------------------------- This is the x2sys_report main code ----------------------------*/
 
+	c = GMT->current.setting.io_col_separator;
+	
 	/* Initialize system via the tag */
 	
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
@@ -335,18 +337,18 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_fprintf (GMT->session.std[GMT_OUT], "# Command: %s", GMT->init.progname);
 	if (!Ctrl->In.file) GMT_fprintf (GMT->session.std[GMT_OUT], " [stdin]");
 	for (opt = options; opt; opt = opt->next) (opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
-	GMT_fprintf (GMT->session.std[GMT_OUT], "\n#track\tN\tmean\tstdev\trms\tweight[%ld]\n", n_use);
+	GMT_fprintf (GMT->session.std[GMT_OUT], "\n#track%sN%smean%sstdev%srms%sweight[%ld]\n", c, c, c, c, c, n_use);
 	Tmean = (Tnx) ? Tsum / Tnx : GMT->session.d_NaN;
 	Tstdev = (Tnx > 1) ? sqrt ((Tnx * Tsum2 - Tsum * Tsum) / (Tnx * (Tnx - 1.0))) : GMT->session.d_NaN;
 	Trms = (Tnx) ? sqrt (Tsum2 / Tnx) : GMT->session.d_NaN;
-	printf ("TOTAL\t%ld\t%g\t%g\t%g\t1\n", Tnx, Tmean, Tstdev, Trms);
+	printf ("TOTAL%s%ld%s%g%s%g%s%g%s1\n", c, Tnx, c, Tmean, c, Tstdev, c, Trms, c);
 	for (k = 0; k < n_tracks; k++) {	/* For each track that generated crossovers */
 		if (R[k].nx <= Ctrl->N.min) continue;			/* Not enough COEs */
 		if (!GMT_is_dnan (R[k].W)) R[k].W *= scale;
 		R[k].mean = (R[k].nx) ? R[k].sum / R[k].nx : GMT->session.d_NaN;
 		R[k].stdev = (R[k].nx > 1) ? sqrt ((R[k].nx * R[k].sum2 - R[k].sum * R[k].sum) / (R[k].nx * (R[k].nx - 1.0))) : GMT->session.d_NaN;
 		R[k].rms = (R[k].nx) ? sqrt (R[k].sum2 / R[k].nx) : GMT->session.d_NaN;
-		printf ("%s\t%d\t%g\t%g\t%g\t%g\n", trk_name[k], R[k].nx, R[k].mean, R[k].stdev, R[k].rms, R[k].W);
+		printf ("%s%s%d%s%g%s%g%s%g%s%g\n", trk_name[k], c, R[k].nx, c, R[k].mean, c, R[k].stdev, c, R[k].rms, c, R[k].W);
 	}
 	
 	if (Ctrl->A.active) {	/* Create track adjustment spline files for each track */

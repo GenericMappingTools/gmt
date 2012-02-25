@@ -343,9 +343,9 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				n_pairs++;
 				/* OK, print out pair, with lega alphabetically lower than legb */
 				if (strcmp (B.head[id1].trackname, B.head[id2].trackname) < 0)
-					printf ("%s\t%s\n", B.head[id1].trackname, B.head[id2].trackname);
+					printf ("%s%s%s\n", B.head[id1].trackname, GMT->current.setting.io_col_separator, B.head[id2].trackname);
 				else
-					printf ("%s\t%s\n", B.head[id2].trackname, B.head[id1].trackname);
+					printf ("%s%s%s\n", B.head[id2].trackname, GMT->current.setting.io_col_separator, B.head[id1].trackname);
 			}
 		}
 		GMT_free (GMT, matrix);
@@ -360,8 +360,8 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 			printf ("# Search command: %s", GMT->init.progname);
 			for (opt = options; opt; opt = opt->next) (opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
-			printf ("\n#track_ID\t");
-			for (i = 0; i < (s->n_fields-1); i++) printf ("%s\t", s->info[i].name);
+			printf ("\n#track_ID%s", GMT->current.setting.io_col_separator);
+			for (i = 0; i < (s->n_fields-1); i++) printf ("%s%s", s->info[i].name, GMT->current.setting.io_col_separator);
 			printf ("%s\n", s->info[s->n_fields-1].name);
 			for (k = 0; k < n_tracks; k++) {
 				if (y_match[k] == 0 || n_match[k] == 1) continue;
@@ -371,7 +371,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				printf ("%s", B.head[k].trackname);
 				for (i = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) {
-					(((Ctrl->G.active) ? B.head[k].flag : in_bin_flag[k]) & bit) ? printf ("\tY") : printf ("\tN");
+					(((Ctrl->G.active) ? B.head[k].flag : in_bin_flag[k]) & bit) ? printf ("%sY", GMT->current.setting.io_col_separator) : printf ("%sN", GMT->current.setting.io_col_separator);
 				}
 				printf ("\n");
 			}

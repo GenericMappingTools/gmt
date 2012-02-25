@@ -1552,7 +1552,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_FATAL, "Error creating file %s\n", Ctrl->C.file);
 				Return (EXIT_FAILURE);
 			}
-			sprintf (format, "%%d\t%s\n", GMT->current.setting.format_float_out);
+			sprintf (format, "%%d%s%s\n", GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 			/* Sort eigenvalues into ascending order */
 			GMT_sort_array (GMT, eig, nm, GMTAPI_DOUBLE);
 			eig_max = eig[nm-1];

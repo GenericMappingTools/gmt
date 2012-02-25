@@ -370,10 +370,13 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (!G->header->y_units[0]) strcpy (G->header->y_units, "y");
 				if (!G->header->z_units[0]) strcpy (G->header->z_units, "z");
 				if (GMT->current.setting.io_lonlat_toggle[GMT_IN])
-					sprintf (header, "# %s\t%s\t%s", G->header->y_units, G->header->x_units, G->header->z_units);
+					sprintf (header, "# %s%s%s%s%s", G->header->y_units, GMT->current.setting.io_col_separator, G->header->x_units, GMT->current.setting.io_col_separator, G->header->z_units);
 				else
-					sprintf (header, "# %s\t%s\t%s", G->header->x_units, G->header->y_units, G->header->z_units);
-				if (Ctrl->W.active) strcat (header, "\tweight");
+					sprintf (header, "# %s%s%s%s%s", G->header->x_units, GMT->current.setting.io_col_separator, G->header->y_units, GMT->current.setting.io_col_separator, G->header->z_units);
+				if (Ctrl->W.active) {
+					strcat (header, GMT->current.setting.io_col_separator);
+					strcat (header, "weight");
+				}
 				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, header);	/* Write a header record */
 				first = FALSE;
 			}

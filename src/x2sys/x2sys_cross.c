@@ -735,7 +735,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 
 					if (first_header) {	/* Write the header record */
-						char *cmd = NULL;
+						char *cmd = NULL, *c = GMT->current.setting.io_col_separator;
 						t_or_i = (got_time) ? 't' : 'i';
 						sprintf (line, "# Tag: %s", Ctrl->T.TAG);
 						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, line);
@@ -743,14 +743,14 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						sprintf (line, "# Command: %s %s", GMT->init.progname, cmd);	/* Build command line argument string */
 						GMT_free (GMT, cmd);
 						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, line);
-						sprintf (line, "# %s\t%s\t%c_1\t%c_2\tdist_1\tdist_2\thead_1\thead_2\tvel_1\tvel_2",
-							s->info[s->out_order[s->x_col]].name, s->info[s->out_order[s->y_col]].name, t_or_i, t_or_i);
+						sprintf (line, "# %s%s%s%s%c_1%s%c_2%sdist_1%sdist_2%shead_1%shead_2%svel_1%svel_2",
+							s->info[s->out_order[s->x_col]].name, c, s->info[s->out_order[s->y_col]].name, c, t_or_i, c, t_or_i, c, c, c, c, c, c);
 						for (j = 0; j < n_data_col; j++) {
 							col = col_number[j];
 							if (Ctrl->Z.active)
-								sprintf (item, "\t%s_1\t%s_2", s->info[s->out_order[col]].name, s->info[s->out_order[col]].name);
+								sprintf (item, "%s%s_1%s%s_2", c, s->info[s->out_order[col]].name, c, s->info[s->out_order[col]].name);
 							else
-								sprintf (item, "\t%s_X\t%s_M", s->info[s->out_order[col]].name, s->info[s->out_order[col]].name);
+								sprintf (item, "%s%s_X%s%s_M", c, s->info[s->out_order[col]].name, c, s->info[s->out_order[col]].name);
 							strcat (line, item);
 						}
 						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, line);
