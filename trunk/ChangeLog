@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-02-25	pwessel
+	* *.c:		Did not consistently use COL_SEPARATOR and/or FORMAT_FLOAT_OUT for ascii output.
+
 2012-02-22	pwessel
 	* gmt_support.c:	gmt_inonout_sphpol_count did not properly handle line segments
 				that were exactly vertical in all cases, leading to errors as
