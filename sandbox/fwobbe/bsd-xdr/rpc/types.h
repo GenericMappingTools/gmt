@@ -65,7 +65,13 @@ typedef unsigned __int16  u_int16_t;
 typedef unsigned __int32  u_int32_t;
 typedef unsigned __int64  u_int64_t;
 typedef char             *caddr_t;
-typedef long              ssize_t;
+#ifdef _WIN64
+typedef unsigned __int64 size_t;
+typedef __int64 ssize_t;
+#else
+typedef unsigned int size_t;
+typedef int ssize_t;
+#endif
 #endif /* _MSC_VER */
 
 #ifndef _BSDTYPES_DEFINED

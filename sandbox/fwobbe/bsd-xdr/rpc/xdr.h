@@ -48,6 +48,25 @@ extern "C" {
 #endif
 
 /*
+ * When an application links to a DLL in Windows, the symbols that
+ * are imported have to be identified as such.
+ * Copyright (c) 2012, Florian Wobbe
+ */
+
+#ifdef _WIN32
+# ifdef LIBRARY_EXPORTS
+#   define LIBSPEC __declspec(dllexport)
+# else
+#   define LIBSPEC __declspec(dllimport)
+# endif /* ifdef LIBRARY_EXPORTS */
+#else /* ifdef _WIN32 */
+# define LIBSPEC
+#endif /* ifdef _WIN32 */
+
+/* By default, we use the standard "extern" declarations. */
+#define EXTERN extern LIBSPEC
+
+/*
  * XDR provides a conventional way for converting between C data
  * types and an external bit-string representation.  Library supplied
  * routines provide for the conversion on built-in C data types.  These
@@ -282,47 +301,47 @@ struct xdr_discrim
 /*
  * These are the "generic" xdr routines.
  */
-extern bool_t xdr_void (void);
-extern bool_t xdr_short (XDR *, short *);
-extern bool_t xdr_u_short (XDR *, u_short *);
-extern bool_t xdr_int (XDR *, int *);
-extern bool_t xdr_u_int (XDR *, u_int *);
-extern bool_t xdr_long (XDR *, long *);
-extern bool_t xdr_u_long (XDR *, u_long *);
-extern bool_t xdr_int8_t (XDR *, int8_t *);
-extern bool_t xdr_uint8_t (XDR *, uint8_t *);
-extern bool_t xdr_u_int8_t (XDR *, u_int8_t *);
-extern bool_t xdr_int16_t (XDR *, int16_t *);
-extern bool_t xdr_uint16_t (XDR *, uint16_t *);
-extern bool_t xdr_u_int16_t (XDR *, u_int16_t *);
-extern bool_t xdr_int32_t (XDR *, int32_t *);
-extern bool_t xdr_uint32_t (XDR *, uint32_t *);
-extern bool_t xdr_u_int32_t (XDR *, u_int32_t *);
-extern bool_t xdr_int64_t (XDR *, int64_t *);
-extern bool_t xdr_uint64_t (XDR *, uint64_t *);
-extern bool_t xdr_u_int64_t (XDR *, u_int64_t *);
-extern bool_t xdr_bool (XDR *, bool_t *);
-extern bool_t xdr_enum (XDR *, enum_t *);
-extern bool_t xdr_array (XDR *, char **, u_int *, u_int, u_int, xdrproc_t);
-extern bool_t xdr_bytes (XDR *, char **, u_int *, u_int);
-extern bool_t xdr_opaque (XDR *, char *, u_int);
-extern bool_t xdr_string (XDR *, char **, u_int);
-extern bool_t xdr_union (XDR *, enum_t *, char *,
+EXTERN bool_t xdr_void (void);
+EXTERN bool_t xdr_short (XDR *, short *);
+EXTERN bool_t xdr_u_short (XDR *, u_short *);
+EXTERN bool_t xdr_int (XDR *, int *);
+EXTERN bool_t xdr_u_int (XDR *, u_int *);
+EXTERN bool_t xdr_long (XDR *, long *);
+EXTERN bool_t xdr_u_long (XDR *, u_long *);
+EXTERN bool_t xdr_int8_t (XDR *, int8_t *);
+EXTERN bool_t xdr_uint8_t (XDR *, uint8_t *);
+EXTERN bool_t xdr_u_int8_t (XDR *, u_int8_t *);
+EXTERN bool_t xdr_int16_t (XDR *, int16_t *);
+EXTERN bool_t xdr_uint16_t (XDR *, uint16_t *);
+EXTERN bool_t xdr_u_int16_t (XDR *, u_int16_t *);
+EXTERN bool_t xdr_int32_t (XDR *, int32_t *);
+EXTERN bool_t xdr_uint32_t (XDR *, uint32_t *);
+EXTERN bool_t xdr_u_int32_t (XDR *, u_int32_t *);
+EXTERN bool_t xdr_int64_t (XDR *, int64_t *);
+EXTERN bool_t xdr_uint64_t (XDR *, uint64_t *);
+EXTERN bool_t xdr_u_int64_t (XDR *, u_int64_t *);
+EXTERN bool_t xdr_bool (XDR *, bool_t *);
+EXTERN bool_t xdr_enum (XDR *, enum_t *);
+EXTERN bool_t xdr_array (XDR *, char **, u_int *, u_int, u_int, xdrproc_t);
+EXTERN bool_t xdr_bytes (XDR *, char **, u_int *, u_int);
+EXTERN bool_t xdr_opaque (XDR *, char *, u_int);
+EXTERN bool_t xdr_string (XDR *, char **, u_int);
+EXTERN bool_t xdr_union (XDR *, enum_t *, char *,
                          const struct xdr_discrim *, xdrproc_t);
-extern bool_t xdr_char (XDR *, char *);
-extern bool_t xdr_u_char (XDR *, u_char *);
-extern bool_t xdr_vector (XDR *, char *, u_int, u_int, xdrproc_t);
-extern bool_t xdr_float (XDR *, float *);
-extern bool_t xdr_double (XDR *, double *);
-/* extern bool_t xdr_quadruple (XDR *, long double *); */
-extern bool_t xdr_reference (XDR *, char **, u_int, xdrproc_t);
-extern bool_t xdr_pointer (XDR *, char **, u_int, xdrproc_t);
-extern bool_t xdr_wrapstring (XDR *, char **);
-extern bool_t xdr_hyper (XDR *, quad_t *);
-extern bool_t xdr_u_hyper (XDR *, u_quad_t *);
-extern bool_t xdr_longlong_t (XDR *, quad_t *);
-extern bool_t xdr_u_longlong_t (XDR *, u_quad_t *);
-extern u_long xdr_sizeof (xdrproc_t, void *);
+EXTERN bool_t xdr_char (XDR *, char *);
+EXTERN bool_t xdr_u_char (XDR *, u_char *);
+EXTERN bool_t xdr_vector (XDR *, char *, u_int, u_int, xdrproc_t);
+EXTERN bool_t xdr_float (XDR *, float *);
+EXTERN bool_t xdr_double (XDR *, double *);
+/* EXTERN bool_t xdr_quadruple (XDR *, long double *); */
+EXTERN bool_t xdr_reference (XDR *, char **, u_int, xdrproc_t);
+EXTERN bool_t xdr_pointer (XDR *, char **, u_int, xdrproc_t);
+EXTERN bool_t xdr_wrapstring (XDR *, char **);
+EXTERN bool_t xdr_hyper (XDR *, quad_t *);
+EXTERN bool_t xdr_u_hyper (XDR *, u_quad_t *);
+EXTERN bool_t xdr_longlong_t (XDR *, quad_t *);
+EXTERN bool_t xdr_u_longlong_t (XDR *, u_quad_t *);
+EXTERN u_long xdr_sizeof (xdrproc_t, void *);
 
 /*
  * Common opaque bytes objects used by many rpc protocols;
@@ -335,7 +354,7 @@ struct netobj
   char *n_bytes;
 };
 typedef struct netobj netobj;
-extern bool_t xdr_netobj (XDR *, struct netobj *);
+EXTERN bool_t xdr_netobj (XDR *, struct netobj *);
 
 /*
  * These are the public routines for the various implementations of
@@ -343,28 +362,28 @@ extern bool_t xdr_netobj (XDR *, struct netobj *);
  */
 
 /* XDR using memory buffers */
-extern void xdrmem_create (XDR *, char *, u_int, enum xdr_op);
+EXTERN void xdrmem_create (XDR *, char *, u_int, enum xdr_op);
 
 /* XDR using stdio library */
-extern void xdrstdio_create (XDR *, FILE *, enum xdr_op);
+EXTERN void xdrstdio_create (XDR *, FILE *, enum xdr_op);
 
 /* XDR pseudo records for tcp */
-extern void xdrrec_create (XDR *, u_int, u_int, void *,
+EXTERN void xdrrec_create (XDR *, u_int, u_int, void *,
                            int (*)(void *, void *, int),
                            int (*)(void *, void *, int));
 
 /* make end of xdr record */
-extern bool_t xdrrec_endofrecord (XDR *, bool_t);
+EXTERN bool_t xdrrec_endofrecord (XDR *, bool_t);
 
 /* move to beginning of next record */
-extern bool_t xdrrec_skiprecord (XDR *);
+EXTERN bool_t xdrrec_skiprecord (XDR *);
 
 /* true if no more input */
-extern bool_t xdrrec_eof (XDR *);
-extern u_int xdrrec_readbytes (XDR *, caddr_t, u_int);
+EXTERN bool_t xdrrec_eof (XDR *);
+EXTERN u_int xdrrec_readbytes (XDR *, caddr_t, u_int);
 
 /* free memory buffers for xdr */
-extern void xdr_free (xdrproc_t, void *);
+EXTERN void xdr_free (xdrproc_t, void *);
 
 #ifdef __cplusplus
 }
