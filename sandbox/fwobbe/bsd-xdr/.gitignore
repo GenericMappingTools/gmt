@@ -1,0 +1,8 @@
+*.a
+*.o
+*.obj
+*.dll
+/cygwin/
+/mingw/
+/msvc80/
+stamp-*
