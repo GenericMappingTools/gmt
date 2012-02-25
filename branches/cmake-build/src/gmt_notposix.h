@@ -299,6 +299,9 @@
 #		define WIN32
 #	endif
 
+	/* Reduce the size of the Win32 header files and speed up compilation. */
+#	define WIN32_LEAN_AND_MEAN
+
 #	define PATH_SEPARATOR ';' /* Win uses ; while Unix uses : */
 
 	/* FLOCK is a pain. If cannot be used under Windows.
