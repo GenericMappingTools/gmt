@@ -1,0 +1,13 @@
+Dataset {
+    Structure {
+        Byte b;
+        Int32 i32;
+        UInt32 ui32;
+        Int16 i16;
+        UInt16 ui16;
+        Float32 f32;
+        Float64 f64;
+        String s;
+        Url u;
+    } types;
+} SimpleStructure;

@@ -1,0 +1,25 @@
+netcdf synth6 {
+types:
+  compound S1_t {
+    ubyte v1(4) ;
+    int v3(2) ;
+    double v5(2) ;
+  }; // S1_t
+  compound Q1_record_t {
+    short v2(4) ;
+    float v4(2) ;
+  }; // Q1_record_t
+  Q1_record_t(*) Q1_t ;
+dimensions:
+	S1_0 = 2 ;
+variables:
+	S1_t S1(S1_0) ;
+	Q1_t Q1 ;
+data:
+
+ S1 = {{97, 98, 99, 100}, {132, 232}, {1640, 2640}}, 
+    {{101, 102, 103, 104}, {332, 432}, {3640, 4640}} ;
+
+ Q1 = 
+    {{{116, 216, 316, 416}, {1320, 2320}}, {{516, 616, 716, 816}, {3320, 4320}}} ;
+}

@@ -1,0 +1,15 @@
+netcdf ref_tst_comp3 {
+types:
+  compound c_t {
+    float x ;
+    double y ;
+  }; // c_t
+  compound d_t {
+    c_t s1 ;
+  }; // d_t
+variables:
+	d_t x ;
+data:
+
+ x = {{1, -2}} ;
+}

@@ -1,0 +1,13 @@
+netcdf synth3 {
+types:
+  compound S1_t {
+    int v1(3) ;
+  }; // S1_t
+dimensions:
+	S1_0 = 2 ;
+variables:
+	S1_t S1(S1_0) ;
+data:
+
+ S1 = {{132, 232, 332}}, {{432, 532, 632}} ;
+}

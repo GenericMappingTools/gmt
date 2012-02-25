@@ -1,0 +1,50 @@
+netcdf test {
+dimensions:
+	LevelWritten = 5 ;
+	Sensor = 5 ;
+	maxStrlen64 = 64 ;
+variables:
+	byte Simple\%20Point.LevelWritten.LevelWritten.LevelWritten__0(LevelWritten) ;
+	double Simple\%20Point.Data\%20Vgroup.Sensor.Time.Time__0(Sensor) ;
+	double Simple\%20Point.Data\%20Vgroup.Sensor.Concentration.Concentration__0(Sensor) ;
+	double Simple\%20Point.Data\%20Vgroup.Sensor.Concentration.Concentration__1(Sensor) ;
+	double Simple\%20Point.Data\%20Vgroup.Sensor.Concentration.Concentration__2(Sensor) ;
+	double Simple\%20Point.Data\%20Vgroup.Sensor.Concentration.Concentration__3(Sensor) ;
+	char Simple\%20Point.Data\%20Vgroup.Sensor.Species.Species__0(Sensor, maxStrlen64) ;
+	byte FixedBuoy\%20Point.LevelWritten.LevelWritten.LevelWritten__0(LevelWritten) ;
+	byte FloatBuoy\%20Point.LevelWritten.LevelWritten.LevelWritten__0(LevelWritten) ;
+data:
+
+ Simple\%20Point.LevelWritten.LevelWritten.LevelWritten__0 = 0, 1, 2, 3, 4 ;
+
+ Simple\%20Point.Data\%20Vgroup.Sensor.Time.Time__0 = 1000, 998.750260394966, 
+    995.004165278026, 988.771077936042, 980.066577841242 ;
+
+ Simple\%20Point.Data\%20Vgroup.Sensor.Concentration.Concentration__0 = 
+    999.950000416665, 998.200539935204, 993.956097956697, 987.227283375627, 
+    978.030914724148 ;
+
+ Simple\%20Point.Data\%20Vgroup.Sensor.Concentration.Concentration__1 = 
+    999.800006666578, 997.55100025328, 992.808635853866, 985.584766909561, 
+    975.897449330605 ;
+
+ Simple\%20Point.Data\%20Vgroup.Sensor.Concentration.Concentration__2 = 
+    999.550033748988, 996.801706302619, 991.561893714788, 983.843692788121, 
+    973.666395005375 ;
+
+ Simple\%20Point.Data\%20Vgroup.Sensor.Concentration.Concentration__3 = 
+    999.200106660978, 995.952733011994, 990.215996212637, 982.00423511727, 
+    971.33797485203 ;
+
+ Simple\%20Point.Data\%20Vgroup.Sensor.Species.Species__0 =
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 1).",
+  "This is a data test string (pass 2).",
+  "This is a data test string (pass 3).",
+  "This is a data test string (pass 4)." ;
+
+ FixedBuoy\%20Point.LevelWritten.LevelWritten.LevelWritten__0 = 5, 6, 7, 8, 9 ;
+
+ FloatBuoy\%20Point.LevelWritten.LevelWritten.LevelWritten__0 = 10, 11, 12,
+    13, 14 ;
+}

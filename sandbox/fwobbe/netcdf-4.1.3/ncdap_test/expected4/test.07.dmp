@@ -1,0 +1,30 @@
+netcdf test {
+types:
+  compound person_record_t {
+    string name ;
+    int age ;
+  }; // person_record_t
+  person_record_t(*) person_t ;
+  compound types_record_t {
+    ubyte b ;
+    int i32 ;
+    uint ui32 ;
+    short i16 ;
+    ushort ui16 ;
+    float f32 ;
+    double f64 ;
+    string s ;
+    string u ;
+  }; // types_record_t
+  types_record_t(*) types_t ;
+variables:
+	person_t person ;
+	types_t types ;
+data:
+
+ person = 
+    {{"This is a data test string (pass 0).", 1}, {"This is a data test string (pass 1).", 2}, {"This is a data test string (pass 2).", 3}, {"This is a data test string (pass 3).", 5}, {"This is a data test string (pass 4).", 8}} ;
+
+ types = 
+    {{0, 13, 0, 0, 0, 0, 1000, "This is a data test string (pass 5).", "http://www.dods.org"}, {1, 21, 2, 16, 65520, 0.9999833, 999.950000416665, "This is a data test string (pass 6).", "http://www.dods.org"}, {2, 34, 6, 32, 65504, 1.999867, 999.800006666578, "This is a data test string (pass 7).", "http://www.dods.org"}, {3, 55, 12, 48, 65488, 2.99955, 999.550033748988, "This is a data test string (pass 8).", "http://www.dods.org"}, {4, 89, 20, 64, 65472, 3.998933, 999.200106660978, "This is a data test string (pass 9).", "http://www.dods.org"}} ;
+}

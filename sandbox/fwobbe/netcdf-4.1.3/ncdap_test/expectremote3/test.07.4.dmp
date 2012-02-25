@@ -1,0 +1,9 @@
+netcdf test {
+dimensions:
+	types = 5 ;
+variables:
+	float types.f32(types) ;
+data:
+
+ types.f32 = 0, 0.9999833, 1.999867, 2.99955, 3.998933 ;
+}

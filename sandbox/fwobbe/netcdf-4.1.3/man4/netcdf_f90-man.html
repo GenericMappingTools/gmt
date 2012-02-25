@@ -1,0 +1,1455 @@
+<!-- Creator     : groff version 1.20.1 -->
+<!-- CreationDate: Thu Jun 30 17:23:47 2011 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>NETCDF</title>
+
+</head>
+<body>
+
+<h1 align="center">NETCDF</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#LIBRARY VERSION">LIBRARY VERSION</a><br>
+<a href="#ROUTINE DESCRIPTIONS">ROUTINE DESCRIPTIONS</a><br>
+<a href="#COMMON ARGUMENT DESCRIPTIONS">COMMON ARGUMENT DESCRIPTIONS</a><br>
+<a href="#VARIABLE PREFILLING">VARIABLE PREFILLING</a><br>
+<a href="#MPP FUNCTION DESCRIPTIONS">MPP FUNCTION DESCRIPTIONS</a><br>
+<a href="#ENVIRONMENT VARIABLES">ENVIRONMENT VARIABLES</a><br>
+<a href="#MAILING-LISTS">MAILING-LISTS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">netcdf &minus;
+Unidata Network Common Data Form (netCDF) library, version 3
+interface</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>use
+netcdf</b></p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Most
+Systems:</b> <br>
+f90 ... -lnetcdf</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>CRAY PVP
+Systems:</b> <br>
+f90 -dp -i64 ... -lnetcdf</p>
+
+<h2>LIBRARY VERSION
+<a name="LIBRARY VERSION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">This document
+describes version 3 of Unidata netCDF data-access interface
+for the Fortran-90 programming language.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="47%">
+
+
+<p style="margin-top: 1em"><b>character*80
+nf90_inq_libvers()</b></p> </td>
+<td width="42%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;"><b>character(len=80) ::
+nf90_inq_libvers</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">Returns a
+string identifying the version of the netCDF library, and
+when it was built, like: &quot;3.1a of Aug 22 1996 12:57:47
+$&quot;.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The RCS
+<b>ident(1)</b> command will find a string like &quot;$Id:
+@(#) netcdf library version 3.1a of Sep 6 1996 15:56:26
+$&quot; in the library. The SCCS <b>what(1)</b> command will
+find a string like &quot;netcdf library version 3.1a of Aug
+23 1996 16:07:40 $&quot;.</p>
+
+<h2>ROUTINE DESCRIPTIONS
+<a name="ROUTINE DESCRIPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">All netCDF
+functions (except <b>nf90_inq_libvers()</b> and
+<b>nf90_strerror()</b>) return an integer status. This
+behavior replaces the <b>rcode</b> argument used in previous
+versions of the library. If this returned status value is
+not equal to <b>nf90_noerr</b> (zero), it indicates that an
+error occurred. The possible status values are defined in
+the module <b>netcdf</b>.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="44%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_strerror(</b><i>ncerr</i><b>)</b></p> </td>
+<td width="45%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncerr
+<br>
+character(len=80) :: nf90_strerror</p>
+
+<p style="margin-left:22%; margin-top: 1em">Returns a
+string textual translation of the <i>ncerr</i> value, like
+&quot;Attribute or variable name contains illegal
+characters&quot; or &quot;No such file or
+directory&quot;.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="60%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_create(</b><i>path</i><b>,</b> <i>cmode</i><b>,</b>
+<i>ncid</i><b>)</b></p> </td>
+<td width="29%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">character(len=*), intent(in) ::
+path <br>
+integer, intent(in) :: cmode <br>
+integer, optional, intent(in) :: initialsize <br>
+integer, optional, intent(inout) :: chunksize <br>
+integer, intent(out) :: ncid <br>
+integer :: nf90_create</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>nccre()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Creates a new
+netCDF dataset at <i>path</i>, returning a netCDF ID in
+<i>ncid</i>. The argument <i>cmode</i> may include the
+bitwise-or of the following flags: <b>nf90_noclobber</b> to
+protect existing datasets (default silently blows them
+away), <b>nf90_share</b> for synchronous dataset updates
+(default is to buffer accesses), and <b>nf90_lock</b> (not
+yet implemented). When a netCDF dataset is created, is is
+opened <b>nf90_write</b>. The new netCDF dataset is in
+define mode.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The optional
+argument <i>initialsize</i> sets the initial size of the
+file at creation time.</p>
+
+<p style="margin-left:22%; margin-top: 1em">See
+<b>nf__open()</b> below for an explanation of the optional
+<i>chunksize</i> argument.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="72%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_open(</b><i>path</i><b>,</b> <i>mode</i><b>,</b>
+<i>ncid</i><b>,</b> <i>chunksize</i><b>)</b></p></td>
+<td width="17%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">character(len=*), intent(in) ::
+path <br>
+integer, intent(in) :: mode <br>
+integer, intent(out) :: ncid <br>
+integer, optional, intent(inout) :: chunksize <br>
+integer :: nf90_open</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncopn()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Opens a
+existing netCDF dataset at <i>path</i> returning a netCDF ID
+in <i>ncid</i>. As of NetCDF version 4.1, and if DAP support
+was enabled when the library was built, the path may instead
+specify a DAP URL (refer to the NetCDF user&rsquo;s manual
+for details).</p>
+
+<p style="margin-left:22%; margin-top: 1em">The type of
+access is described by the <i>mode</i> parameter, which may
+include the bitwise-or of the following flags:
+<b>nf90_write</b> for read-write access (default read-only),
+<b>nf90_share</b> for synchronous dataset updates (default
+is to buffer accesses), and <b>nf90_lock</b> (not yet
+implemented).</p>
+
+<p style="margin-left:22%; margin-top: 1em">The optional
+argument referenced by <i>chunksize</i> controls a space
+versus time tradeoff, memory allocated in the netcdf library
+versus number of system calls. Because of internal
+requirements, the value may not be set to exactly the value
+requested. The actual value chosen is returned by reference.
+Using the value <b>nf90_sizehint_default</b> causes the
+library to choose a default. How the system choses the
+default depends on the system. On many systems, the
+&quot;preferred I/O block size&quot; is available from the
+<b>stat()</b> system call, <b>struct stat</b> member
+<b>st_blksize</b>. If this is available it is used. Lacking
+that, twice the system pagesize is used. Lacking a call to
+discover the system pagesize, we just set default chunksize
+to 8192.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The chunksize
+is a property of a given open netcdf descriptor <i>ncid</i>:
+it is not a persistent property of the netcdf dataset.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="74%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_set_fill(</b><i>ncid</i><b>,</b>
+<i>fillmode</i><b>,</b> <i>old_mode</i><b>)</b></p></td>
+<td width="15%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid,
+fillmode <br>
+integer, intent(out) :: old_mode <br>
+integer :: nf90_set_fill</p>
+
+<p style="margin-left:22%; margin-top: 1em">Sets the
+fill-mode for a netCDF dataset to optimize writes under some
+circumstances. The fill-mode argument, <i>fillmode</i>, can
+be either <b>nf90_fill</b> or <b>nf90_nofill</b>.
+<b>nf90_fill</b> causes fill-values to be written into
+non-record variables and into skipped-over records when
+writing beyond the last valid record. <b>nf90_nofill</b>
+suspends this behavior. The default behavior corresponds to
+<b>nf90_fill</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The previous
+fill-mode value is return in <i>old_mode</i>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The fill-mode
+is a property of a given open netcdf descriptor <i>ncid</i>:
+it is not a persistent property of the netcdf dataset.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="38%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_redef(</b><i>ncid</i><b>)</b></p> </td>
+<td width="51%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid
+<br>
+integer :: nf90_redef</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncredf()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Puts an open
+netCDF dataset into define mode, so dimensions, variables,
+and attributes can be added or renamed and attributes can be
+deleted.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_enddef(</b><i>ncid</i><b>,</b> <i>h_minfree</i><b>,</b>
+<i>v_align</i><b>,</b> <i>v_minfree</i><b>,</b>
+<i>r_align</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid
+<br>
+integer, optional, intent(in) :: h_minfree, v_align <br>
+integer, optional, intent(in) :: v_minfree, r_align <br>
+integer :: nf90_enddef</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncendf()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Takes an open
+netCDF dataset out of define mode. The changes made to the
+netCDF dataset while it was in define mode are checked and
+committed to disk if no problems occurred. Some data values
+may be written as well, see &quot;VARIABLE PREFILLING&quot;
+below. After a successful call, variable data can be read or
+written to the dataset.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The optional
+arguments are performance tuning parameters. They exposes
+internals of the netcdf version 1 file format and may not be
+available on future netcdf implementations.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The current
+netcdf file format has three sections, the
+&quot;header&quot; section, the data section for fixed size
+variables, and the data section for variables which have an
+unlimited dimension (record variables). The header begins at
+the beginning of the file. The index (offset) of the
+beginning of the other two sections is contained in the
+header. Typically, there is no space between the sections.
+This causes copying overhead to accrue if one wishes to
+change the size of the sections, as may happen when changing
+names of things, text attribute values, adding attributes or
+adding variables. Also, for buffered i/o, there may be
+advantages to aligning sections in certain ways.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The minfree
+parameters allow one to control costs of future calls to
+<b>nf90_redef()</b>, <b>nf90_enddef()</b> by requesting that
+<i>minfree</i> bytes be available at the end of the section.
+The <i>h_minfree</i> parameter sets the pad at the end of
+the &quot;header&quot; section. The <i>v_minfree</i>
+parameter sets the pad at the end of the data section for
+fixed size variables.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The align
+parameters allow one to set the alignment of the beginning
+of the corresponding sections. The beginning of the section
+is rounded up to an index which is a multiple of the align
+parameter. The flag value <b>nf90_align_chunk</b> tells the
+library to use the chunksize (see above) as the align
+parameter. The <i>v_align</i> parameter controls the
+alignment of the beginning of the data section for fixed
+size variables. The <i>r_align</i> parameter controls the
+alignment of the beginning of the data section for variables
+which have an unlimited dimension (record variables).</p>
+
+<p style="margin-left:22%; margin-top: 1em">The file format
+requires mod 4 alignment, so the align parameters are
+silently rounded up to multiples of 4. The usual call,
+<b>nf90_enddef(</b><i>ncid</i><b>)</b> is equivalent to
+<b>nf__enddef(</b><i>ncid</i><b>, 0, 4, 0, 4)</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The file format
+does not contain a &quot;record size&quot; value, this is
+calculated from the sizes of the record variables. This
+unfortunate fact prevents us from providing minfree and
+alignment control of the &quot;records&quot; in a netcdf
+file. If you add a variable which has an unlimited
+dimension, the third section will always be copied with the
+new variable added.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="37%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_sync(</b><i>ncid</i><b>)</b></p> </td>
+<td width="52%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid
+<br>
+integer :: nf90_sync</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncsnc()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Unless the
+<b>nf90_share</b> bit is set in <b>nf90_open()</b> or
+<b>nf90_create()</b>, accesses to the underlying netCDF
+dataset are buffered by the library. This function
+synchronizes the state of the underlying dataset and the
+library. This is done automatically by <b>nf90_close()</b>
+and <b>nf90_enddef()</b>.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="38%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_abort(</b><i>ncid</i><b>)</b></p> </td>
+<td width="51%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid
+<br>
+integer :: nf90_abort</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncabor()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">You don&rsquo;t
+need to call this function. This function is called
+automatically by <b>nf90_close()</b> if the netCDF dataset
+was in define mode and something goes wrong with the commit.
+If the netCDF dataset isn&rsquo;t in define mode, then this
+function is equivalent to <b>nf90_close()</b>. If it is
+called after <b>nf90_redef()</b>, but before
+<b>nf90_enddef()</b>, the new definitions are not committed
+and the dataset is closed. If it is called after
+<b>nf90_create()</b> but before <b>nf90_enddef()</b>, the
+dataset disappears.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="38%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_close(</b><i>ncid</i><b>)</b></p> </td>
+<td width="51%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid
+<br>
+integer :: nf90_close</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncclos()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Closes an open
+netCDF dataset. If the dataset is in define mode,
+<b>nf90_enddef()</b> will be called before closing. After a
+dataset is closed, its ID may be reassigned to another
+dataset.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_inquire(</b><i>ncid</i><b>,</b> <i>ndims</i><b>,</b>
+<i>nvars</i><b>,</b> <i>natts</i><b>,</b>
+<i>unlimdimid</i><b>,</b> <i>nformat</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid
+<br>
+integer, optional, intent(out) :: ndims, nvars <br>
+integer, optional, intent(out) :: natts, unlimdimid <br>
+integer, optional, intent(out) :: nformat <br>
+integer :: nf90_inquire</p>
+
+<p style="margin-left:22%; margin-top: 1em">Inquire about
+an open netCDF dataset. <i>ncid</i> is the netCDF ID of the
+open dataset. Upon successful return, <i>ndims</i> will
+contain the number of dimensions defined for this netCDF
+dataset, <i>nvars</i> will contain the number of variables,
+<i>natts</i> will contain the number of attributes, and
+<i>unlimdimid</i> will contain the dimension ID of the
+unlimited dimension if one exists, or 0 otherwise.
+<i>nformat</i> will contain the format version number,
+rarely needed because the library detects the format version
+and behaves appropriately.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="69%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_def_dim(</b><i>ncid</i><b>,</b> <i>name</i><b>,</b>
+<i>len</i><b>,</b> <i>dimid</i><b>)</b></p></td>
+<td width="20%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid
+<br>
+character(len=*), intent(in) :: name <br>
+integer, intent(in) :: len <br>
+integer, intent(out) :: dimid <br>
+integer :: nf90_def_dim</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncddef()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Adds a new
+dimension to an open netCDF dataset, which must be in define
+mode. <i>name</i> is the dimension name. <i>len</i> is the
+size of the new dimension or <b>nf90_unlimited</b> to define
+the unlimited dimension. On return, <i>dimid</i> will
+contain the dimension ID of the newly created dimension.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="64%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_inq_dimid(</b><i>ncid</i><b>,</b> <i>name</i><b>,</b>
+<i>dimid</i><b>)</b></p> </td>
+<td width="25%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid
+<br>
+character(len=*), intent(in) :: name <br>
+integer, intent(out) :: dimid <br>
+integer :: nf90_inq_dimid</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncdid()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Given an open
+netCDF dataset and dimension name, returns the dimension ID
+of the netCDF dimension in <i>dimid</i>.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="84%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_inquire_dimension(</b><i>ncid</i><b>,</b>
+<i>dimid</i><b>,</b> <i>name</i><b>,</b>
+<i>len</i><b>)</b></p> </td>
+<td width="5%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid,
+dimid <br>
+character(len=*), optional, intent(out) :: name <br>
+integer, optional, intent(out) :: len <br>
+integer :: nf90_inquire_dimension</p>
+
+<p style="margin-left:22%; margin-top: 1em">Inquire about a
+dimension. <i>name</i> should be big enough
+(<b>nf90_max_name</b>) to hold the dimension name as the
+name will be copied into your storage. The length return
+parameter, <i>len</i> will contain the size of the
+dimension. For the unlimited dimension, the returned length
+is the current maximum value used for writing into any of
+the variables which use the dimension.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="66%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_rename_dim(</b><i>ncid</i><b>,</b> <i>dimid</i><b>,</b>
+<i>name</i><b>)</b></p> </td>
+<td width="23%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid
+<br>
+character(len=*), intent(in) :: name <br>
+integer, intent(in) :: dimid <br>
+integer :: nf90_rename_dim</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncdren()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Renames an
+existing dimension in an open netCDF dataset. If the new
+name is longer than the old name, the netCDF dataset must be
+in define mode. You cannot rename a dimension to have the
+same name as another dimension.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="84%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_def_var(</b><i>ncid</i><b>,</b> <i>name</i><b>,</b>
+<i>xtype</i><b>,</b> <i>dimids</i><b>,</b>
+<i>varid</i><b>)</b></p> </td>
+<td width="5%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid
+<br>
+character(len=*), intent(in) :: name <br>
+integer, intent(in) :: xtype <br>
+integer, optional, dimension(:), intent(in) :: dimids <br>
+integer :: nf90_def_var</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncvdef()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Adds a new
+variable to a netCDF dataset. The netCDF must be in define
+mode. <i>name</i> will be the name of the netCDF variable.
+<i>xtype</i> is the external, netCDF type of the variable
+and should be one of <b>nf90_byte</b>, <b>nf90_char</b>,
+<b>nf90_short</b>, <b>nf90_int</b>, <b>nf90_float</b>, or
+<b>nf90_double</b>, The optional <i>dimids</i> argument
+contains the dimension ID-s of the domain of the netCDF
+variable and, consequently, determines the rank of the
+created variable: if <i>dimids</i> is omitted, then the
+netCDF variable will be a scalar; if <i>dimids</i> is a
+scalar, then the netCDF variable will be 1 dimensional; and
+if <i>dimids</i> is a vector, then the netCDF variable will
+have rank equal to the number of elements in <i>dimids</i>.
+<i>varid</i> will be set to the netCDF variable ID.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="64%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_inq_varid(</b><i>ncid</i><b>,</b> <i>name</i><b>,</b>
+<i>varid</i><b>)</b></p> </td>
+<td width="25%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid
+<br>
+character(len=*), intent(in) :: name <br>
+integer, intent(out) :: varid <br>
+integer :: nf90_inq_varid</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncvid()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Returns the ID
+of a netCDF variable in <i>varid</i> given an open netCDF
+dataset and the name of the variable.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_inquire_variable(</b><i>ncid</i><b>,</b>
+<i>varid</i><b>,</b> <i>name</i><b>,</b>
+<i>xtype</i><b>,</b> <i>ndims</i><b>,</b>
+<i>dimids</i><b>,</b> <i>natts</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid,
+varid <br>
+character(len=*), optional, intent(out) :: name <br>
+integer, optional, intent(out) :: xtype, ndims <br>
+integer, dimension(*), optional, intent(out) :: dimids <br>
+integer, optional, intent(out) :: natts <br>
+integer :: nf90_inquire_variable</p>
+
+<p style="margin-left:22%; margin-top: 1em">Inquire about a
+netCDF variable in an open netCDF dataset, given its
+variable ID. On return, <i>name</i> will contain the name of
+the variable and should be capacious enough
+(<b>nf90_max_name</b>). <i>xtype</i> will contain the
+external, netCDF type of the variable. <i>ndims</i> will
+contain the dimensionality of the netCDF variable: if the
+variable is a scalar, then size(<i>ndims</i>) will be zero;
+otherwise, size(<i>ndims</i>) will be the rank of the
+variable and <i>ndims</i> will contain the dimension ID-s of
+the netCDF dimensions that constitute the domain of the
+variable. <i>natts</i> will contain the number of attributes
+associated with the netCDF variable.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="66%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_rename_var(</b><i>ncid</i><b>,</b> <i>varid</i><b>,</b>
+<i>name</i><b>)</b></p> </td>
+<td width="23%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent9in) :: ncid,
+varid <br>
+character(len=*), intent(in) :: newname <br>
+integer :: nf90_rename_var</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncvren()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Changes the
+name of a netCDF variable. If the new name is longer than
+the old name, the netCDF must be in define mode. You cannot
+rename a variable to have the name of any existing
+variable.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_put_var(</b><i>ncid</i><b>,</b> <i>varid</i><b>,</b>
+<i>values</i><b>,</b> <i>start</i><b>,</b>
+<i>stride</i><b>,</b> <i>imap</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid,
+varid <br>
+&lt;&lt;whatever&gt;&gt;, intent(in) :: values <br>
+integer, dimension(:), optional, intent(in) :: start <br>
+integer, dimension(:), optional, intent(in) :: stride <br>
+integer, dimension(:), optional, intent(in) :: imap <br>
+integer :: nf90_put_var</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Replaces
+<b>ncvpt()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Writes a value
+or values to a netCDF variable. The netCDF dataset must be
+open and in data mode. <i>values</i> contains the value(s)
+what will be written to the netCDF variable identified by
+<i>ncid</i> and <i>varid</i>; it may be a scalar or an array
+and must be of type <b>character</b>,
+<b>integer(kind=OneByteInt)</b>,
+<b>integer(kind=TwoByteInt)</b>,
+<b>integer(kind=FourByteInt)</b>,
+<b>integer(kind=EightByteInt)</b>,
+<b>real(kind=FourByteReal)</b>, or
+<b>real(kind=EightByteReal)</b>. All values are converted to
+the external type of the netCDF variable, if possible;
+otherwise, an <b>nf90_erange</b> error is returned. The
+optional argument <i>start</i> specifies the starting index
+in the netCDF variable for writing for each dimension of the
+netCDF variable. The optional argument <i>stride</i>
+specifies the sampling stride (the interval between accessed
+values in the netCDF variable) for each dimension of the
+netCDF variable (see COMMON ARGUMENT DESCRIPTIONS below).
+The optional argument <i>imap</i> specifies the in-memory
+arrangement of the data values (see COMMON ARGUMENT
+DESCRIPTIONS below).</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_get_var(</b><i>ncid</i><b>,</b> <i>varid</i><b>,</b>
+<i>values</i><b>,</b> <i>start</i><b>,</b>
+<i>stride</i><b>,</b> <i>imap</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid,
+varid <br>
+&lt;&lt;whatever&gt;&gt;, intent(out) :: values <br>
+integer, dimension(:), optional, intent(in) :: start <br>
+integer, dimension(:), optional, intent(in) :: stride <br>
+integer, dimension(:), optional, intent(in) :: imap <br>
+integer :: nf90_get_var</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Replaces
+<b>ncvgt()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Reads a value
+or values from a netCDF variable. The netCDF dataset must be
+open and in data mode. <i>values</i> will receive the
+value(s) what will be read from the netCDF <br>
+variable identified by <i>ncid</i> and <i>varid</i>; it may
+be a scalar or an array and must be of type
+<b>character</b>, <b>integer(kind=OneByteInt)</b>,
+<b>integer(kind=TwoByteInt)</b>,
+<b>integer(kind=FourByteInt)</b>,
+<b>integer(kind=EightByteInt)</b>,
+<b>real(kind=FourByteReal)</b>, or
+<b>real(kind=EightByteReal)</b>. All values are converted
+from the external type of the netCDF variable, if possible;
+otherwise, an <b>nf90_erange</b> error is returned. The
+optional argument <i>start</i> specifies the starting index
+in the netCDF variable for reading for each dimension of the
+netCDF variable. The optional argument <i>stride</i>
+specifies the sampling stride (the interval between accessed
+values in the netCDF variable) for each dimension of the
+netCDF variable (see COMMON ARGUMENT DESCRIPTIONS below).
+The optional argument <i>imap</i> specifies the in-memory
+arrangement of the data values (see COMMON ARGUMENT
+DESCRIPTIONS below).</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_inquire_attribute(</b><i>ncid</i><b>,</b>
+<i>varid</i><b>,</b> <i>name</i><b>,</b>
+<i>xtype</i><b>,</b> <i>len</i><b>,</b>
+<i>attnum</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid,
+varid <br>
+character(len=*), intent(in) :: name <br>
+integer, optional, intent(out) :: xtype, len, attnum <br>
+integer :: nf90_inquire_attribute</p>
+
+<p style="margin-left:22%; margin-top: 1em">Inquires about
+the netCDF attribute named <i>name</i>, of variable
+<i>varid</i>, in the open netCDF dataset <i>ncid</i>.
+<i>xtype</i> will contain the external, netCDF type of the
+variable. <i>len</i> will contain the number of elements in
+the attribute. <i>attnum</i> will contain the attribute
+number.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="80%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_inq_attname(</b><i>ncid</i><b>,</b>
+<i>varid</i><b>,</b> <i>attnum</i><b>,</b>
+<i>name</i><b>)</b></p> </td>
+<td width="9%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid,
+varid, attnum <br>
+character(len=*), intent(out) :: name <br>
+integer :: nf90_inq_attname</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncanam()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Gets the name
+of an attribute, given its variable ID and attribute number.
+This function is useful in generic applications that need to
+get the names of all the attributes associated with a
+variable because attributes are accessed by name rather than
+number in all other attribute functions (the number of an
+attribute is more volatile than the name because it can
+change when other attributes of the same variable are
+deleted). The attributes for each variable are numbered from
+1 (the first attribute) to <i>natts</i>, where <i>natts</i>
+is the number of attributes for the variable, as returned
+from a call to <b>nf90_inquire_variable()</b>.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="74%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_put_att(</b><i>ncid</i><b>,</b> <i>varid</i><b>,</b>
+<i>name</i><b>,</b> <i>values</i><b>)</b></p></td>
+<td width="15%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid,
+varid <br>
+character(len=*), intent(in) :: name <br>
+&lt;&lt;whatever&gt;&gt;, intent(in) :: values <br>
+integer :: nf90_put_att</p>
+
+<p style="margin-left:22%; margin-top: 1em">Unlike
+variables, attributes do not have separate functions for
+defining and writing values. This function defines a new
+attribute with a value or changes the value of an existing
+attribute. If the attribute is new, or if the space required
+to store the attribute value is greater than before, the
+netCDF dataset must be in define mode. <i>values</i>
+contains the attribute values to be written; it may be a
+scalar or a vector and must be of type <b>character</b>,
+<b>integer(kind=OneByteInt)</b>,
+<b>integer(kind=TwoByteInt)</b>,
+<b>integer(kind=FourByteInt)</b>,
+<b>integer(kind=EightByteInt)</b>,
+<b>real(kind=FourByteReal)</b>, or
+<b>real(kind=EightByteReal)</b>.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="77%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_get_att(</b><i>ncid</i><b>,</b> <i>varid</i><b>,</b>
+<i>name</i><b>, fIvalues</b><i>)</i></p></td>
+<td width="12%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid,
+varid <br>
+character(len=*), intent(in) :: name <br>
+&lt;&lt;whatever&gt;&gt;, intent(out) :: values <br>
+integer :: nf90_get_att</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Replaces
+<b>ncagt()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Gets the
+value(s) of a netCDF attribute, given its variable ID and
+name. The values are returned in <i>values</i>, which must
+be of type <b>character</b>,
+<b>integer(kind=OneByteInt)</b>,
+<b>integer(kind=TwoByteInt)</b>,
+<b>integer(kind=FourByteInt)</b>,
+<b>integer(kind=EightByteInt)</b>,
+<b>real(kind=FourByteReal)</b>, or
+<b>real(kind=EightByteReal)</b>. Converts from the external
+type to the type of the receiving variable, if possible;
+otherwise returns an <b>nf90_erange</b> error. All values of
+the attribute are returned, so you must allocate enough
+space to hold them. If you don&rsquo;t know how much space
+to reserve, call <b>nf90_inquire_attribute()</b> first to
+find out the length of the attribute.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_copy_att(</b><i>ncid_in</i><b>,</b>
+<i>varid_in</i><b>,</b> <i>name</i><b>,</b>
+<i>ncid_out</i><b>,</b> <i>varid_out</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid_in,
+varid_in <br>
+character(len=*), intent(in) :: name <br>
+integer, intent(in) :: ncid_out, varid_out <br>
+integer :: nf90_copy_att</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncacpy()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Copies an
+attribute from one netCDF dataset to another. It can also be
+used to copy an attribute from one variable to another
+within the same netCDF dataset. <i>ncid_in</i> is the netCDF
+ID of an input netCDF dataset from which the attribute will
+be copied. <i>varid_in</i> is the ID of the variable in the
+input netCDF dataset from which the attribute will be
+copied, or <b>nf90_global</b> for a global attribute.
+<i>name</i> is the name of the attribute in the input netCDF
+dataset to be copied. <i>ncid_out</i> is the netCDF ID of
+the output netCDF dataset to which the attribute will be
+copied. It is permissible for the input and output netCDF
+ID&rsquo;s to be the same. The output netCDF dataset should
+be in define mode if the attribute to be copied does not
+already exist for the target variable, or if it would cause
+an existing target attribute to grow. <i>varid_out</i> is
+the ID of the variable in the output netCDF dataset to which
+the attribute will be copied, or <b>nf90_global</b> to copy
+to a global attribute.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="80%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_rename_att(</b><i>ncid</i><b>,</b> <i>varid</i><b>,</b>
+<i>name</i><b>,</b> <i>newname</i><b>)</b></p></td>
+<td width="9%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%;">integer, intent(in) :: ncid,
+varid <br>
+character(len=*), intent(in) :: name, newname <br>
+integer :: nf90_rename_att</p>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncaren()</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">Changes the
+name of an attribute. If the new name is longer than the
+original name, the netCDF must be in define mode. You cannot
+rename an attribute to have the same name as another
+attribute of the same variable. <i>name</i> is the original
+attribute name. <i>newname</i> is the new name to be
+assigned to the specified attribute. If the new name is
+longer than the old name, the netCDF dataset must be in
+define mode.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="61%">
+
+
+<p style="margin-top: 1em"><b>function
+nf90_del_att(</b><i>ncid</i><b>,</b> <i>varid</i><b>,</b>
+<i>name</i><b>)</b></p> </td>
+<td width="17%">
+</td></tr>
+</table>
+
+<p style="margin-left:32%;">integer, intent(in) :: ncid,
+varid <br>
+character(len=*), intent(in) :: name <br>
+integer :: nf90_del_att</p>
+
+<p style="margin-left:32%; margin-top: 1em">(Corresponds to
+<b>ncadel()</b> in version 2)</p>
+
+<p style="margin-left:32%; margin-top: 1em">Deletes an
+attribute from a netCDF dataset. The dataset must be in
+define mode.</p>
+
+<h2>COMMON ARGUMENT DESCRIPTIONS
+<a name="COMMON ARGUMENT DESCRIPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">In this section
+we define some common arguments which are used in the
+&quot;FUNCTION DESCRIPTIONS&quot; section. <br>
+integer <i>ncid</i></p>
+
+<p style="margin-left:22%;">is the netCDF ID returned from
+a previous, successful call to <b>nf90_open()</b> or
+<b>nf90_create()</b></p>
+
+<p style="margin-left:11%;">character(len=*)
+<i>name</i></p>
+
+<p style="margin-left:22%;">is the name of a dimension,
+variable, or attribute. It shall begin with an alphabetic
+character, followed by zero or more alphanumeric characters
+including the underscore (&lsquo;_&rsquo;) or hyphen
+(&lsquo;-&rsquo;). Case is significant. The maximum
+allowable number of characters is <b>nf90_max_name</b>.
+Names that begin with an underscore (&lsquo;_&rsquo;) are
+reserved for use by the netCDF interface.</p>
+
+<p style="margin-left:11%;">integer <i>xtype</i></p>
+
+<p style="margin-left:22%;">specifies the external data
+type of a netCDF variable or attribute and is one of the
+following: <b>nf90_byte</b>, <b>nf90_char</b>,
+<b>nf90_short</b>, <b>nf90_int</b>, <b>nf90_float</b>, or
+<b>nf90_double</b>. These are used to specify 8-bit
+integers, characters, 16-bit integers, 32-bit integers,
+32-bit IEEE floating point numbers, and 64-bit IEEE
+floating-point numbers, respectively.</p>
+
+<p style="margin-left:11%;">integer <i>dimids</i></p>
+
+<p style="margin-left:22%;">is a vector of dimension
+ID&rsquo;s and defines the shape of a netCDF variable. The
+size of the vector shall be greater than or equal to the
+rank (i.e. the number of dimensions) of the variable
+(<i>ndims</i>). The vector shall be ordered by the speed
+with which a dimension varies: <i>dimids</i>(1) shall be the
+dimension ID of the most rapidly varying dimension and
+<i>dimids</i>(<i>ndims</i>) shall be the dimension ID of the
+most slowly varying dimension. The maximum possible number
+of dimensions for a variable is given by the symbolic
+constant <b>nf90_max_var_dims</b>.</p>
+
+<p style="margin-left:11%;">integer <i>dimid</i></p>
+
+<p style="margin-left:22%;">is the ID of a netCDF
+dimension. netCDF dimension ID&rsquo;s are allocated
+sequentially from the positive integers beginning with
+1.</p>
+
+<p style="margin-left:11%;">integer <i>ndims</i></p>
+
+<p style="margin-left:22%;">is either the total number of
+dimensions in a netCDF dataset or the rank (i.e. the number
+of dimensions) of a netCDF variable. The value shall not be
+negative or greater than the symbolic constant
+<b>nf90_max_var_dims</b>.</p>
+
+<p style="margin-left:11%;">integer <i>varid</i></p>
+
+<p style="margin-left:22%;">is the ID of a netCDF variable
+or (for the attribute-access functions) the symbolic
+constant <b>nf90_global</b>, which is used to reference
+global attributes. netCDF variable ID&rsquo;s are allocated
+sequentially from the positive integers beginning with
+1.</p>
+
+<p style="margin-left:11%;">integer <i>natts</i></p>
+
+<p style="margin-left:22%;">is the number of global
+attributes in a netCDF dataset for the <b>nf90_inquire()</b>
+function or the number of attributes associated with a
+netCDF variable for the <b>nf90_varinq()</b> function.</p>
+
+<p style="margin-left:11%;">integer <i>start</i></p>
+
+<p style="margin-left:22%;">specifies the starting point
+for accessing a netCDF variable&rsquo;s data values in terms
+of the indicial coordinates of the corner of the array
+section. The indices start at 1; thus, the first data value
+of a variable is (1, 1, ..., 1). The size of the vector
+shall be at least the rank of the associated netCDF variable
+and its elements shall correspond, in order, to the
+variable&rsquo;s dimensions.</p>
+
+<p style="margin-left:11%;">integer <i>stride</i></p>
+
+<p style="margin-left:22%;">specifies the sampling interval
+along each dimension of the netCDF variable. The elements of
+the stride vector correspond, in order, to the netCDF
+variable&rsquo;s dimensions (<i>stride</i>(1)) gives the
+sampling interval along the most rapidly varying dimension
+of the netCDF variable). Sampling intervals are specified in
+type-independent units of elements (a value of 1 selects
+consecutive elements of the netCDF variable along the
+corresponding dimension, a value of 2 selects every other
+element, etc.).</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p><i>imap</i></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p>specifies the mapping between the dimensions of a netCDF
+variable and the in-memory structure of the internal data
+array. The elements of the index mapping vector correspond,
+in order, to the netCDF variable&rsquo;s dimensions
+(<i>imap</i>(1) gives the distance between elements of the
+internal array corresponding to the most rapidly varying
+dimension of the netCDF variable). Distances between
+elements are specified in type-independent units of elements
+(the distance between internal elements that occupy adjacent
+memory locations is 1 and not the element&rsquo;s
+byte-length as in netCDF 2).</p></td></tr>
+</table>
+
+<h2>VARIABLE PREFILLING
+<a name="VARIABLE PREFILLING"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">By default, the
+netCDF interface sets the values of all newly-defined
+variables of finite length (i.e. those that do not have an
+unlimited, dimension) to the type-dependent fill-value
+associated with each variable. This is done when
+<b>nf90_enddef()</b> is called. The fill-value for a
+variable may be changed from the default value by defining
+the attribute &lsquo;<b>_FillValue</b>&rsquo; for the
+variable. This attribute must have the same type as the
+variable and be of length one.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Variables with
+an unlimited dimension are also prefilled, but on an
+&lsquo;as needed&rsquo; basis. For example, if the first
+write of such a variable is to position 5, then positions 1
+through 4 (and no others) would be set to the fill-value at
+the same time.</p>
+
+<p style="margin-left:11%; margin-top: 1em">This default
+prefilling of data values may be disabled by or&rsquo;ing
+the <b>nf90_nofill</b> flag into the mode parameter of
+<b>nf90_open()</b> or <b>nf90_create()</b>, or, by calling
+the function <b>nf90_set_fill()</b> with the argument
+<b>nf90_nofill</b>. For variables that do not use the
+unlimited dimension, this call must be made before
+<b>nf90_enddef()</b>. For variables that use the unlimited
+dimension, this call may be made at any time.</p>
+
+<p style="margin-left:11%; margin-top: 1em">One can obtain
+increased performance of the netCDF interface by using this
+feature, but only at the expense of requiring the
+application to set every single data value. The performance
+enhancing behavior of this function is dependent on the
+particulars of the implementation and dataset format. The
+flag value controlled by <b>nf90_set_fill()</b> is per
+netCDF ID, not per variable or per write. Allowing this to
+change affects the degree to which a program can be
+effectively parallelized. Given all of this, we state that
+the use of this feature may not be available (or even
+needed) in future releases. Programmers are cautioned
+against heavy reliance upon this feature.</p>
+
+<h2>MPP FUNCTION DESCRIPTIONS
+<a name="MPP FUNCTION DESCRIPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Additional
+functions for use on SGI/Cray MPP machines (_CRAYMPP). These
+are used to set and inquire which PE is the base for MPP for
+a particular netCDF. These are only relevant when using the
+SGI/Cray &lsquo;&lsquo;global&rsquo;&rsquo; Flexible File
+I/O layer and desire to have only a subset of PEs to open
+the specific netCDF file. For technical reasons, these
+functions are available on all platforms. On a platform
+other than SGI/Cray MPP, it is as if only processor
+available were processor 0.</p>
+
+<p style="margin-left:11%; margin-top: 1em">To use this
+feature, you need to specify a communicator group and call
+<b>glio_group_mpi()</b> or <b>glio_group_shmem()</b> prior
+to the netCDF <b>nf90_open()</b> and <b>nf90_create()</b>
+calls.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Note that the
+routines described below are Fortran-77 routines rather than
+Fortran-90 routines (they have an &quot;nf_&quot; prefix
+rather than an &quot;nf90_&quot; prefix).</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>integer function
+nf__create_mp(character*(*)</b> <i>path</i><b>, integer</b>
+<i>cmode</i><b>, integer</b> <i>initialsize</i><b>,
+integer</b> <i>pe</i><b>, integer</b> <i>chunksize</i><b>,
+integer</b> <i>ncid</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Like
+<b>nf__create()</b> but allows the base PE to be set.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The argument
+<i>pe</i> sets the base PE at creation time. In the MPP
+environment, <b>nf__create()</b> and <b>nf90_create()</b>
+set the base PE to processor zero by default.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>integer function
+nf__open_mp(character*(*)</b> <i>path</i><b>, integer</b>
+<i>mode</i><b>, integer</b> <i>pe</i><b>, integer</b>
+<i>chunksize</i><b>, integer</b> <i>ncid</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Like
+<b>nf__open()</b> but allows the base PE to be set. The
+argument <i>pe</i> sets the base PE at creation time. In the
+MPP environment, <b>nf__open()</b> and <b>nf90_open()</b>
+set the base PE to processor zero by default.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="87%">
+
+
+<p style="margin-top: 1em"><b>integer function
+nf_inq_base_pe(integer</b> <i>ncid</i><b>, integer</b>
+<i>pe</i><b>)</b></p> </td>
+<td width="2%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Inquires of the
+netCDF dataset which PE is being used as the base for MPP
+use. This is safe to use at any time.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="87%">
+
+
+<p style="margin-top: 1em"><b>integer function
+nf_set_base_pe(integer</b> <i>ncid</i><b>, integer</b>
+<i>pe</i><b>)</b></p> </td>
+<td width="2%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Resets the base
+PE for the netCDF dataset. Only perform this operation when
+the affected communicator group synchronizes before and
+after the call. This operation is very risky and should only
+be contemplated under only the most extreme cases.</p>
+
+<h2>ENVIRONMENT VARIABLES
+<a name="ENVIRONMENT VARIABLES"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>NETCDF_FFIOSPEC</b></p>
+
+<p style="margin-left:17%;">Specifies the Flexible File I/O
+buffers for netCDF I/O when executing under the UNICOS
+operating system (the variable is ignored on other operating
+systems). An appropriate specification can greatly increase
+the efficiency of netCDF I/O -- to the extent that it can
+actually surpass FORTRAN binary I/O. This environment
+variable has been made a little more generalized, such that
+other FFIO option specifications can now be added. The
+default specification is <b>bufa:336:2</b>, unless a current
+FFIO specification is in operation, which will be honored.
+See UNICOS Flexible File I/O for more information.</p>
+
+<h2>MAILING-LISTS
+<a name="MAILING-LISTS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Both a mailing
+list and a digest are available for discussion of the netCDF
+interface and announcements about netCDF bugs, fixes, and
+enhancements. To begin or change your subscription to either
+the mailing-list or the digest, send one of the following in
+the body (not the subject line) of an email message to
+&quot;majordomo@unidata.ucar.edu&quot;. Use your email
+address in place of <i>jdoe@host.inst.domain</i>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">To subscribe to
+the netCDF mailing list:</p>
+
+<p style="margin-left:22%;"><b>subscribe netcdfgroup</b>
+<i>jdoe@host.inst.domain</i></p>
+
+<p style="margin-left:11%;">To unsubscribe from the netCDF
+mailing list:</p>
+
+<p style="margin-left:22%;"><b>unsubscribe netcdfgroup</b>
+<i>jdoe@host.inst.domain</i></p>
+
+<p style="margin-left:11%;">To subscribe to the netCDF
+digest:</p>
+
+<p style="margin-left:22%;"><b>subscribe netcdfdigest</b>
+<i>jdoe@host.inst.domain</i></p>
+
+<p style="margin-left:11%;">To unsubscribe from the netCDF
+digest:</p>
+
+<p style="margin-left:22%;"><b>unsubscribe netcdfdigest</b>
+<i>jdoe@host.inst.domain</i></p>
+
+<p style="margin-left:11%;">To retrieve the general
+introductory information for the mailing list:</p>
+
+<p style="margin-left:22%;"><b>info netcdfgroup</b></p>
+
+<p style="margin-left:11%;">To get a synopsis of other
+majordomo commands:</p>
+
+<p style="margin-left:22%;"><b>help</b></p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>ncdump</b>(1),
+<b>ncgen</b>(1), <b>netcdf</b>(3f).</p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>netCDF
+User&rsquo;s Guide</i>, published by the Unidata Program
+Center, University Corporation for Atmospheric Research,
+located in Boulder, Colorado.</p>
+<hr>
+</body>
+</html>

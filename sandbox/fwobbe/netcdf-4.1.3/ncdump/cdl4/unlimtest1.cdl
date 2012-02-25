@@ -1,0 +1,11 @@
+netcdf unlimtest1 {
+dimensions:
+	npractices = 7 ;
+	ncounty_ids = UNLIMITED ; // (0 currently)
+	nyears = 10 ;
+	ncrops = 3 ;
+variables:
+	int crop_harvest(ncounty_ids, nyears, npractices) ;
+data:
+crop_harvest = 111, 2011, 13, 1, 2, 3;
+}

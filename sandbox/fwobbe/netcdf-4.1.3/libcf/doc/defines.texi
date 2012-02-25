@@ -1,0 +1,61 @@
+@c This is part of the libcf documentation. See COPYRIGHT file
+@c for terms of use.
+
+@c This file is included by the texi file, and contains
+@c common definitions.
+
+@c $Id$
+
+@set libcf-man The NetCDF CF Library Users Guide and Reference
+
+@set libcf-support-email support-libcf@@unidata.ucar.edu
+
+@c URLs for CF stuff.
+@set cf-url http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html
+
+@c home pages for netcdf, netcdf-4, netcdf java, hdf5, Unidata
+@set hdf5-url http://hdf.ncsa.uiuc.edu/HDF5
+@set unidata-url http://www.unidata.ucar.edu
+@set netcdf-url @value{unidata-url}/software/netcdf
+@set netcdf-4-url @value{netcdf-url}/netcdf-4
+@set netcdf-java-url @value{unidata-url}/software/netcdf-java
+@set ucar-url http://www.ucar.edu
+@set udunits-url http://www.unidata.ucar.edu/software/udunits/
+
+@c urls for netcdf documents
+@set docs-url @value{netcdf-url}/docs
+
+@c urls to search on-line stuff
+@set libcf-support-search-url @value{unidata-url}/mailsearchform.php?archive=libcf&archivename=LibCF
+@set libcf-list-search-url @value{unidata-url}/mailsearchform.php?archive=libcfgroup-list&archivename=LibCF_Group
+
+@c places to get downloads
+@set ftp-site ftp://ftp.unidata.ucar.edu/pub/libcf
+
+@setchapternewpage odd
+@finalout
+@copying 
+Copyright @copyright{} 2006 University Corporation for
+Atmospheric Research
+
+@sp 2
+Permission is granted to make and distribute verbatim copies of this
+manual provided that the copyright notice and these paragraphs are
+preserved on all copies.  The software and any accompanying written 
+materials are provided ``as is'' without warranty of any kind.  UCAR 
+expressly disclaims all warranties of any kind, either expressed or 
+implied, including but not limited to the implied warranties of 
+merchantability and fitness for a particular purpose.  
+
+The Unidata Program Center is managed by the University 
+Corporation for Atmospheric Research and sponsored by the National 
+Science Foundation.  Any opinions, findings, conclusions, or 
+recommendations expressed in this publication are those of the 
+author(s) and do not necessarily reflect the views of the National 
+Science Foundation.
+
+Mention of any commercial company or product in this document 
+does not constitute an endorsement by the Unidata Program Center.  
+Unidata does not authorize any use of information from this 
+publication for advertising or publicity purposes.
+@end copying

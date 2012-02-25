@@ -1,0 +1,15 @@
+netcdf ref_tst_utf8 {
+dimensions:
+	xā = 2 ;
+	㼿y = 2 ;
+variables:
+	int 􍐪(xā, 㼿y) ;
+
+// global attributes:
+		:Gā = "ā㼿y􍐪" ;
+data:
+
+ 􍐪 =
+  1, 2,
+  3, 4 ;
+}

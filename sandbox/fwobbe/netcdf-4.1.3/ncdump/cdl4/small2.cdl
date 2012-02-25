@@ -1,0 +1,11 @@
+netcdf small2 {
+dimensions:
+	t = UNLIMITED ; // (1 currently)
+	m = 5 ;
+variables:
+	byte b(t, m) ;
+data:
+
+ b =
+  1, 2, 3, 4, 5 ;
+}

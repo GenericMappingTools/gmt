@@ -1,0 +1,2205 @@
+<html lang="en">
+<head>
+<title>NetCDF Installation and Porting Guide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="NetCDF Installation and Porting Guide">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="top" href="#Top">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 2005-2009 University Corporation for
+Atmospheric Research
+
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided that the copyright notice and these paragraphs are
+preserved on all copies.  The software and any accompanying written
+materials are provided ``as is'' without warranty of any kind.  UCAR
+expressly disclaims all warranties of any kind, either expressed or
+implied, including but not limited to the implied warranties of
+merchantability and fitness for a particular purpose.
+
+The Unidata Program Center is managed by the University
+Corporation for Atmospheric Research and sponsored by the National
+Science Foundation.  Any opinions, findings, conclusions, or
+recommendations expressed in this publication are those of the
+author(s) and do not necessarily reflect the views of the National
+Science Foundation.
+
+Mention of any commercial company or product in this document
+does not constitute an endorsement by the Unidata Program Center.
+Unidata does not authorize any use of information from this
+publication for advertising or publicity purposes.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<h1 class="settitle">NetCDF Installation and Porting Guide</h1>
+<div class="node">
+<a name="Top"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Binaries">Binaries</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#dir">(dir)</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#dir">(dir)</a>
+
+</div>
+
+<h2 class="unnumbered">NetCDF Installation and Porting Guide</h2>
+
+<p>This document describes how to build and install the netCDF library,
+version 4.1.3 on Unix and Windows systems. This document was
+last updated on 30 June 2011.
+
+   <p>The current stable release of netCDF, version 4.1.2, can be obtained
+from the netCDF web page at <a href="http://www.unidata.ucar.edu/netcdf">http://www.unidata.ucar.edu/netcdf</a>. Instructions
+for installing the current stable release version of netCDF can be
+found at <a href="http://www.unidata.ucar.edu/netcdf/docs">http://www.unidata.ucar.edu/netcdf/docs</a>.
+
+   <p>If netCDF does not build and pass all tests, and you don't find your
+computing platform addressed in this document, then try
+<a href="http://www.unidata.ucar.edu/netcdf/other-builds.html">http://www.unidata.ucar.edu/netcdf/other-builds.html</a> for reports of successful builds of
+this package in environments to which we had no access.
+
+   <p>For a brief introduction to the netCDF format and utilities see
+<a href="netcdf-tutorial.html#Top">The NetCDF Tutorial</a>.
+
+   <p>For a complete description of the netCDF format and utilities see
+<a href="netcdf.html#Top">The NetCDF Users Guide</a>.
+
+   <p>Programming guides are available for C (see <a href="netcdf-c.html#Top">The NetCDF C Interface Guide</a>), C++ (see <a href="netcdf-cxx.html#Top">The NetCDF C++ Interface Guide</a>), Fortran 77 (see <a href="netcdf-f77.html#Top">The NetCDF Fortran 77 Interface Guide</a>), and Fortran 90
+(see <a href="netcdf-f90.html#Top">The NetCDF Fortran 90 Interface Guide</a>). All of
+these documents are available from the netCDF-4 documentation page
+<a href="http://www.unidata.ucar.edu/netcdf/netcdf-4/newdocs">http://www.unidata.ucar.edu/netcdf/netcdf-4/newdocs</a>.
+
+   <p>Separate documentation for the netCDF Java library can be found at the
+netCDF-Java website, <a href="http://www.unidata.ucar.edu/software/netcdf-java">http://www.unidata.ucar.edu/software/netcdf-java</a>.
+
+   <p>To learn more about netCDF, see the netCDF website
+<a href="http://www.unidata.ucar.edu/netcdf">http://www.unidata.ucar.edu/netcdf</a>.
+
+<ul class="menu">
+<li><a accesskey="1" href="#Binaries">Binaries</a>:                     Getting NetCDF Binaries
+<li><a accesskey="2" href="#Quick-Instructions">Quick Instructions</a>:           How to Build, Quickly
+<li><a accesskey="3" href="#Building-on-Unix">Building on Unix</a>:             How to Build, with Details
+<li><a accesskey="4" href="#Using">Using</a>
+<li><a accesskey="5" href="#Building-on-Windows">Building on Windows</a>:          Building on Windows
+<li><a accesskey="6" href="#Build-Problems">Build Problems</a>:               What if it Doesn't Work? 
+<li><a accesskey="7" href="#Combined-Index">Combined Index</a>:               Index of Concepts
+
+</li></ul>
+<p>--- The Detailed Node Listing ---
+
+<p>Building and Installing NetCDF on Unix Systems
+
+</p>
+<ul class="menu">
+<li><a accesskey="8" href="#Requirements">Requirements</a>:                 What's Needed to Build NetCDF
+<li><a accesskey="9" href="#Environment">Environment</a>:                  Setting the Build Environment
+<li><a href="#g_t64-Bit">64 Bit</a>:                       Building on 64-bit Platforms
+<li><a href="#parallel">parallel</a>:                     Building with Parallel I/O
+<li><a href="#Configure">Configure</a>:                    Running configure
+<li><a href="#Make">Make</a>:                         Running make
+<li><a href="#Testing">Testing</a>:                      Testing the Build
+<li><a href="#Installation">Installation</a>:                 Installing Everything
+<li><a href="#Platform-Notes">Platform Notes</a>:               Specific Platform Notes
+<li><a href="#Porting-Notes">Porting Notes</a>:                Porting Notes for New Platforms
+<li><a href="#Source">Source</a>:                       Working with the Source Code
+
+</li></ul>
+<p>Using NetCDF on Unix Systems
+
+</p>
+<ul class="menu">
+<li><a href="#Linker-Flags">Linker Flags</a>
+<li><a href="#Compiler-Flags">Compiler Flags</a>
+<li><a href="#nc_002dconfig">nc-config</a>
+
+</li></ul>
+<p>Building and Installing NetCDF on Windows
+
+</p>
+<ul class="menu">
+<li><a href="#Prebuilt-DLL">Prebuilt DLL</a>:                 Getting the Prebuilt DLLs
+<li><a href="#Installing-DLL">Installing DLL</a>:               Installing the DLLs
+<li><a href="#Visual-Cplusplus">Visual Cplusplus</a>:             Building with VC++ 6.0
+<li><a href="#Using-DLL">Using DLL</a>:                    Using the DLLs with VC++ 6.0
+<li><a href="#Building-with-NET">Building with NET</a>:            Building with VC++ .NET
+<li><a href="#Using-with-NET">Using with NET</a>:               Using with VC++ .NET
+
+</li></ul>
+<p>If Something Goes Wrong
+
+</p>
+<ul class="menu">
+<li><a href="#Usual-Problems">Usual Problems</a>:               Problems which Occur Often
+<li><a href="#Troubleshooting">Troubleshooting</a>:              Finding the Problem
+<li><a href="#Finding-Help">Finding Help</a>:                 Getting Support
+<li><a href="#Reporting-Problems">Reporting Problems</a>:           What to Send to Support
+
+   </ul>
+
+<div class="node">
+<a name="Binaries"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Quick-Instructions">Quick Instructions</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Top">Top</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="chapter">1 Installing the NetCDF Binaries</h2>
+
+<p><a name="index-binary-install-1"></a><a name="index-installing-binary-distribution-2"></a><a name="index-shared-libraries_002c-using-3"></a>
+The easiest way to get netCDF is through a package management program,
+such as rpm, yum, adept, and others. NetCDF is available from many
+different repositories, including the default Red Hat and Ubuntu
+repositories.
+
+   <p>Another way to get netCDF is to get a pre-built binary
+distribution. To get them, see <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">http://www.unidata.ucar.edu/downloads/netcdf/index.jsp</a>.
+
+   <p>To install the binary distribution, uncompress and unpack the tar
+file. You will end up with 4 subdirectories, lib, include, man, and
+bin.
+
+   <p>The lib subdirectory holds the netCDF libraries (C, Fortran, and
+C++). The include directory holds the necessary netcdf.h file (for C),
+netcdf.inc (for Fortran), netcdfcpp.h (for C++), and the .mod files
+(for Fortran 90). The bin directory holds the ncgen and ncdump
+utilities, and the man directory holds the netCDF documentation.
+
+   <p>You can have these directories anywhere you like, and use netCDF. But
+when compiling a netCDF program, you will have to tell the linker
+where to find the library (e.g. with the -L option of most C
+compilers), and you will also have to tell the C pre-processor where
+to find the include file (e.g. with the -I option).
+
+   <p>If you are using shared libraries, you will also have to specify the
+library location for run-time dynamic linking. See your compiler
+documentation. For some general information see the netCDF FAQ &ldquo;How
+do I use shared libraries&rdquo; at <a href="http://www.unidata.ucar.edu/netcdf/faq.html#using_shared">http://www.unidata.ucar.edu/netcdf/faq.html#using_shared</a>.
+
+<div class="node">
+<a name="Quick-Instructions"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Building-on-Unix">Building on Unix</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Binaries">Binaries</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="chapter">2 Quick Instructions for Installing NetCDF on Unix</h2>
+
+<p><a name="index-quick-unix-instructions-4"></a><a name="index-shared-libraries_002c-building-5"></a>
+Who has time to read long installation manuals these days?
+
+   <p>When building netCDF-4, you must first decide whether to support the
+use of HDF5 as a storage format.
+
+<h3 class="section">2.1 Building NetCDF Without HDF5</h3>
+
+<p>If you don't want netCDF-4/HDF5, then build like this:
+
+<pre class="example">     ./configure --prefix=/home/ed/local --disable-netcdf-4
+     make check install
+</pre>
+   <p>(Replace &ldquo;/home/ed/local&rdquo; with the name of the directory where
+netCDF is to be installed.)
+
+   <p>If you get the message that netCDF installed correctly, then you are
+done!
+
+<h3 class="section">2.2 Building NetCDF With HDF5</h3>
+
+<p>If you want to use the HDF5 storage format, you must have the HDF5
+1.8.6 release. You must also have the zlib compression library,
+version 1.2.5. Both of these packages are available from the netCDF-4
+ftp site at <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4</a>.
+
+   <p>Make sure you run &ldquo;make check&rdquo; for the HDF5 and zlib
+distributions. They are very well-behaved distributions, but sometimes
+the build doesn't work (perhaps because of something subtly
+misconfigured on the target machine). If one of these libraries is not
+working, netCDF will have serious problems.
+
+   <p>Optionally, you can also build netCDF-4 with the szip 2.0 library
+(a.k.a. szlib). NetCDF cannot create szipped data files, but can read
+HDF5 data files that have used szip.
+
+   <p>There are license restrictions on the use of szip, see the HDF5 web
+page: <a href="http://hdf.ncsa.uiuc.edu/doc_resource/SZIP/Commercial_szip.html">http://hdf.ncsa.uiuc.edu/doc_resource/SZIP/Commercial_szip.html</a>. These license restrictions
+seem to apply to commercial users who are writing data. (Data readers
+are not restricted.) But here at NetCDF World Headquarters, in Sunny
+Boulder, Colorado, there are no lawyers, only programmers, so please
+read the szip documents for the license agreement to see how it
+applies to your situation.
+
+   <p>If you wish to use szip, get it from the HDF5 download page:
+<a href="http://hdfgroup.org/HDF5//HDF5/release/beta/obtain518.html">http://hdfgroup.org/HDF5//HDF5/release/beta/obtain518.html</a>.
+
+   <p>If &ldquo;make check&rdquo; fails for either zlib or HDF5, the problem must be
+resolved before the netCDF-4 installation can continue. For HDF5
+problems, send email to the HDF5 help desk:
+help@hdfgroup.org.
+
+   <p>Build zlib like this:
+
+<pre class="example">     ./configure --prefix=/home/ed/local
+     make check install
+</pre>
+   <p>Then you build HDF5, specifying the location of the zlib library:
+
+<pre class="example">     ./configure --with-zlib=/home/ed/local --prefix=/home/ed/local
+     make check install
+</pre>
+   <p>Note that for shared libraries, you may need to add the install
+directory to the LD_LIBRARY_PATH environment variable. See the FAQ for
+more details on using shared libraries: <a href="http://www.unidata.ucar.edu/netcdf/faq.html">http://www.unidata.ucar.edu/netcdf/faq.html</a>.
+
+   <p>If you are building HDF5 with szip, then include the &ndash;with-szlib=
+option, with the directory holding the szip library.
+
+   <p>After HDF5 is done, build netcdf, specifying the location of the
+HDF5, zlib, and (if built into HDF5) the szip header files and
+libraries in the CPPFLAGS and LDFLAGS environment variables.
+
+<pre class="example">     CPPFLAGS=-I/home/ed/local/include LDFLAGS=-L/home/ed/local/lib ./configure --prefix=/home/ed/local
+     make check install
+</pre>
+   <p>The configure script will try to find necessary tools in your
+path. When you run configure you may optionally use the &ndash;prefix
+argument to change the default installation directory. The above
+examples install the zlib, HDF5, and netCDF-4 libraries in
+/home/ed/local/lib, the header file in /home/ed/local/include, and the
+utilities in /home/ed/local/bin.
+
+   <p>The default install root is /usr/local (so there's no need to use the
+prefix argument if you want the software installed there).
+
+   <p>If HDF5 and zlib are found on your system, they will be used by netCDF
+in the build. To prevent this use the &ndash;disable-netcdf-4 argument to
+configure.
+
+   <p>For static build, to use netCDF-4 you must link to all the libraries,
+netCDF, HDF5, zlib, and (if used with HDF5 build) szip. This will mean
+-L options to your build for the locations of the libraries, and -l
+(lower-case L) for the names of the libraries.
+
+   <p>For example, one user reports that she can build other applications
+with netCDF-4 by setting the LIBS envoronment variable:
+
+<pre class="example">     LIBS='-L/X/netcdf-4.0/lib -lnetcdf -L/X/hdf5-1.8.6/lib -lhdf5_hl -lhdf5 -lz -lm -L/X/szip-2.1/lib -lsz'
+</pre>
+   <p>For shared builds, only -lnetcdf is needed. All other libraries will
+be found automatically.
+
+   <p>The nc-config command can be used to learn what options are needed for
+the local netCDF installation.
+
+<h3 class="section">2.3 Building with HDF4 Support</h3>
+
+<p>The netCDF-4 library can (since version 4.1) read HDF4 data files, if
+they were created with the SD (Scientific Data) API. To enable this
+feature, use the &ndash;enable-hdf4 option. The location for the HDF4
+header files and library must be set in the CPPFLAGS and LDFLAGS
+options.
+
+<div class="node">
+<a name="Building-on-Unix"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Using">Using</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Quick-Instructions">Quick Instructions</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="chapter">3 Building and Installing NetCDF on Unix Systems</h2>
+
+<p><a name="index-documents_002c-latest-version-6"></a><a name="index-binary-releases-7"></a><a name="index-earlier-netCDF-versions-8"></a>
+The latest version of this document is available at
+<a href="http://www.unidata.ucar.edu/netcdf/docs/netcdf-install">http://www.unidata.ucar.edu/netcdf/docs/netcdf-install</a>.
+
+   <p>This document contains instructions for building and installing the
+netCDF package from source on various platforms. Prebuilt binary
+releases are (or soon will be) available for various platforms from
+<a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">http://www.unidata.ucar.edu/downloads/netcdf/index.jsp</a>.
+
+   <p>A good general tutorial on how software is built from source on Linux
+platforms can me found at
+<a href="http://www.tuxfiles.org/linuxhelp/softinstall.html">http://www.tuxfiles.org/linuxhelp/softinstall.html</a>.
+
+<ul class="menu">
+<li><a accesskey="1" href="#Requirements">Requirements</a>:                 What's Needed to Build NetCDF
+<li><a accesskey="2" href="#Environment">Environment</a>:                  Setting the Build Environment
+<li><a accesskey="3" href="#g_t64-Bit">64 Bit</a>:                       Building on 64-bit Platforms
+<li><a accesskey="4" href="#parallel">parallel</a>:                     Building with Parallel I/O
+<li><a accesskey="5" href="#Configure">Configure</a>:                    Running configure
+<li><a accesskey="6" href="#Make">Make</a>:                         Running make
+<li><a accesskey="7" href="#Testing">Testing</a>:                      Testing the Build
+<li><a accesskey="8" href="#Installation">Installation</a>:                 Installing Everything
+<li><a accesskey="9" href="#Platform-Notes">Platform Notes</a>:               Specific Platform Notes
+<li><a href="#Porting-Notes">Porting Notes</a>:                Porting Notes for New Platforms
+<li><a href="#Source">Source</a>:                       Working with the Source Code
+</ul>
+
+<div class="node">
+<a name="Requirements"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Environment">Environment</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Building-on-Unix">Building on Unix</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Unix">Building on Unix</a>
+
+</div>
+
+<h3 class="section">3.1 Installation Requirements</h3>
+
+<p><a name="index-installation-requirements-9"></a><a name="index-large-file-tests-requirements-10"></a><a name="index-extra_005ftest-requirements-11"></a><a name="index-extra_005fcheck-requirements-12"></a><a name="index-enable_002dlarge_002dfile_002dtests-13"></a>
+If you wish to build from source on a Windows (Win32) platform,
+different instructions apply. See <a href="#Building-on-Windows">Building on Windows</a>.
+
+   <p>Depending on the platform, you may need up to 25 Mbytes of free space
+to unpack, build, and run the tests. You will also need a Standard C
+compiler. If you have compilers for FORTRAN 77, FORTRAN 90, or C++,
+the corresponding netCDF language interfaces may also be built and
+tested. Compilers and associated tools will only be found if they are
+in your path, or if you specify the path and compiler in the
+appropriate environment variable. (Example for csh: setenv
+CC /some/directory/cc).
+
+   <p>If you want to run the large file tests, you will need about 13 GB of
+free disk space, as some very large files are created. The created
+files are immediately deleted after the tests complete. These large
+file tests are not run unless the &ndash;enable-large-file-tests option is
+used with configure. (The &ndash;with-temp-large option may also be used to
+specify a directory to create the large files in).
+
+   <p>Unlike the output from other netCDF test programs, each large test
+program deletes its output before successfully exiting.
+
+   <p>To use the netCDF-4 features you will also need to have a
+HDF5-1.8.6 release installed. HDF5, in turn, must have been
+built with zlib, version 1.2.5.
+
+   <p>A tested version of HDF5 and zlib can be found at the netCDF-4 ftp
+site at <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4</a>.
+
+   <p>For more information about HDF5 see the HDF5 web site at
+<a href="http://hdfgroup.org/HDF5/">http://hdfgroup.org/HDF5/</a>. For more information about zlib see the zlib
+web site at <a href="http://www.zlib.net">http://www.zlib.net</a>.
+
+   <p>To use the DAP features you will also need to have a version of
+libcurl (version 7.18.0 or later) installed.  Depending on how this
+library was built, you may also need zib (version 1.2.5 or later). 
+Information about libcurl may be obtained at <a href="http://curl.haxx.se">http://curl.haxx.se</a>.
+
+<div class="node">
+<a name="Environment"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#g_t64-Bit">64 Bit</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Requirements">Requirements</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Unix">Building on Unix</a>
+
+</div>
+
+<h3 class="section">3.2 Specifying the Environment for Building</h3>
+
+<p>The netCDF configure script searches your path to find the compilers
+and tools it needed. To use compilers that can't be found in your
+path, set their environment variables.
+
+   <p>The configure script will use gcc and associated GNU tools if they are
+found. Many users, especially those with performance concerns, will
+wish to use a vendor supplied compiler.
+
+   <p>For example, on an AIX system, users may wish to use xlc (the AIX
+compiler) in one of its many flavors. Set environment variables
+before the build to achieve this.
+
+   <p>For example, to change the C compiler, set CC to xlc (in sh: export
+CC=xlc). (But don't forget to also set CXX to xlC, or else configure
+will try to use g++, the GNU C++ compiler to build the netCDF C++
+API. Similarly set FC to xlf90 so that the Fortran APIs are built
+properly.)
+
+   <p>By default, the netCDF library is built with assertions turned on. If
+you wish to turn off assertions, set CPPFLAGS to -DNDEBUG (csh ex:
+setenv CPPFLAGS -DNDEBUG).
+
+   <p>If GNU compilers are used, the configure script sets CPPFLAGS to &ldquo;-g
+-O2&rdquo;. If this is not desired, set CPPFLAGS to nothing, or to whatever
+other value you wish to use, before running configure.
+
+   <p>For cross-compiles, the following environment variables can be used to
+override the default fortran/C type settings like this (in sh):
+
+<pre class="example">     export NCBYTE_T=''integer(selected_int_kind(2))''
+     export NCSHORT_T=''integer*2''
+     export NF_INT1_T=''integer(selected_int_kind(2))''
+     export NF_INT2_T=''integer*2''
+     export NF_INT1_IS_C_SHORT=1
+     export NF_INT2_IS_C_SHORT=1
+     export NF_INT_IS_C_INT=1
+     export NF_REAL_IS_C_FLOAT=1
+     export NF_DOUBLEPRECISION_IS_C_DOUBLE=1
+</pre>
+   <p>In this case you will need to run configure with
+&ndash;disable-fortran-compiler-check and &ndash;disable-fortran-type-check.
+
+<h4 class="subsection">3.2.1 Variable Description Notes</h4>
+
+<p><table summary="">
+<tr align="left"><td valign="top" width="20%">CC
+</td><td valign="top" width="20%">C compiler
+</td><td valign="top" width="60%">If you don't specify this, the configure script will try to
+find a suitable C compiler. The default choice is gcc. If you wish to
+use a vendor compiler you must set CC to that compiler, and set other
+environment variables (as described below) to appropriate settings.
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%">FC
+</td><td valign="top" width="20%">Fortran compiler (if any)
+</td><td valign="top" width="60%">If you don't specify this, the configure script will try to find a
+suitable Fortran and Fortran 77 compiler. Set FC to "" explicitly, or
+provide the &ndash;disable-f77 option to configure, if no Fortran interface
+(neither F90 nor F77) is desired. Use &ndash;disable-f90 to disable the
+netCDF Fortran 90 API, but build the netCDF Fortran 77 API.
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%">F77
+</td><td valign="top" width="20%">Fortran 77 compiler (if any)
+</td><td valign="top" width="60%">Only specify this if your platform explicitly needs a different
+Fortran 77 compiler. Otherwise use FC to specify the Fortran compiler. 
+If you don't specify this, the configure script will try to find a
+suitable Fortran compiler. For vendor compilers, make sure you're
+using the same vendor's Fortran 90 compiler. Using Fortran compilers
+from different vendors, or mixing vendor compilers with g77, the GNU
+F77 compiler, is not supported and may not work.
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%">CXX
+</td><td valign="top" width="20%">C++ compiler
+</td><td valign="top" width="60%">If you don't specify this, the configure script will try to find a
+suitable C++ compiler. Set CXX to "" explicitly, or use the
+&ndash;disable-cxx configure option, if no C++ interface is desired. If
+using a vendor C++ compiler, use that vendor's C compiler to compile
+the C interface. Using different vendor compilers for C and C++ may
+not work.
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%">CFLAGS
+</td><td valign="top" width="20%">C compiler flags
+</td><td valign="top" width="60%">"-O" or "-g", for example.
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%">CPPFLAGS
+</td><td valign="top" width="20%">C preprocessor options
+</td><td valign="top" width="60%">"-DNDEBUG" to omit assertion checks, for example.
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%">FCFLAGS
+</td><td valign="top" width="20%">Fortran 90 compiler flags
+</td><td valign="top" width="60%">"-O" or "-g", for example. These flags will be used for FORTRAN
+90. If setting these you may also need to set FFLAGS for the FORTRAN
+77 test programs.
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%">FFLAGS
+</td><td valign="top" width="20%">Fortran 77 compiler flags
+</td><td valign="top" width="60%">"-O" or "-g", for example. If you need to pass the same arguments
+to the FORTRAN 90 build, also set FCFLAGS.
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%">CXXFLAGS
+</td><td valign="top" width="20%">C++ compiler flags
+</td><td valign="top" width="60%">"-O" or "-g", for example.
+
+<p><br></td></tr><tr align="left"><td valign="top" width="20%">ARFLAGS, NMFLAGS, FPP, M4FLAGS, LIBS, FLIBS, FLDFLAGS
+</td><td valign="top" width="20%">Miscellaneous
+</td><td valign="top" width="60%">One or more of these were needed for some platforms, as specified
+below. Unless specified, you should not set these environment
+variables, because that may interfere with the configure script.
+
+<br></td></tr></table>
+
+   <p>The section marked Tested Systems below contains a list of systems on
+which we have built this package, the environment variable settings we
+used, and additional commentary.
+
+<div class="node">
+<a name="g_t64-Bit"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#parallel">parallel</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Environment">Environment</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Unix">Building on Unix</a>
+
+</div>
+
+<h3 class="section">3.3 Building on 64 Bit Platforms</h3>
+
+<p><a name="index-g_t64_002dbit-platforms-14"></a><a name="index-SunOS-64_002dbit-build-15"></a><a name="index-AIX-64_002dbit-build-16"></a>
+The compiler options for SunOS, Irix, and AIX are listed below. The
+zlib and HDF5 libraries must also be built with 64-bit options.
+
+     <dl>
+<dt><code>AIX</code><dd>Set -q64 option in all compilers, and set NMFLAGS to -X64, and ARFLAGS
+to '-X64 cru'. Alternatively, set environment variable OBJECT_MODE to
+64 before running configure.
+
+     <br><dt><code>IRIX</code><dd>Set the -64 option in all compilers.
+
+     <br><dt><code>SunOS</code><dd>Use the -xarch=v9 or -m64 flag on all compilers for Sparc, or -m64 on
+x86 platforms.
+
+   </dl>
+
+<div class="node">
+<a name="parallel"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Configure">Configure</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#g_t64-Bit">64 Bit</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Unix">Building on Unix</a>
+
+</div>
+
+<h3 class="section">3.4 Building on Platforms with Parallel I/O</h3>
+
+<p><a name="index-parallel-platforms-17"></a><a name="index-MPICH2-18"></a><a name="index-g_t_002d_002denable_002dparallel_002dtests-19"></a>
+NetCDF makes available the parallel I/O features of HDF5 and the
+parallel-netcdf libraries, allowing parallel I/O from netCDF-4 linked
+programs.
+
+<h4 class="subsection">3.4.1 Building HDF5 for Parallel I/O</h4>
+
+<p>For parallel I/O to work, HDF5 must be installed with
+&ndash;enable-parallel, and an MPI library (and related libraries) must be
+made available to the HDF5 configure. This can be accomplished with
+the mpicc wrapper script, in the case of MPICH2.
+
+   <p>The following works to build HDF5 with parallel I/O on our netCDF
+testing system:
+
+<pre class="example">     CC=mpicc ./configure --enable-parallel --prefix=/shecky/local_par --with-zlib=/shecky/local_par --disable-shared &amp;&amp; make check install
+</pre>
+   <h4 class="subsection">3.4.2 The parallel-netcdf Library</h4>
+
+<p>Optionally, the parallel-netcdf library should also be installed, and
+the replacement for pnetcdf.h should be copied from
+ftp://ftp.unidata.ucar.edu/pub/netcdf/contrib/pnetcdf.h.
+
+<h4 class="subsection">3.4.3 Building NetCDF</h4>
+
+<p>To build netCDF with parallel I/O, build as usual, but point the
+configure at a version of HDF5 that has been built for parallel I/O.
+
+<pre class="example">     CPPFLAGS=-I/shecky/local_par/include
+     CXXFLAGS=-I/shecky/local_par/include
+     FFFLAGS=-I/shecky/local_par/include
+     FCFLAGS=-I/shecky/local_par/include LDFLAGS=-L/shecky/local_par/lib
+     FC=mpif90 CXX=mpicxx CC=mpicc ./configure
+     make check install
+</pre>
+   <p>To enable the parallel tests, specify &ndash;enable-parallel-tests as an
+option to configure. These tests will be run as mpiexec calls. This
+may not be appropriate on all systems, especially those which use some
+queue for jobs.
+
+   <p>To use parallel-netcdf to perform parallel I/O on classic and 64-bit
+offset files, use the &ndash;enable-pnetcdf option.
+
+   <p>For parallel builds the netCDF examples are not built. This is to
+avoid cluttering them with MPI_Init/Finalize calls.
+
+<div class="node">
+<a name="Configure"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Make">Make</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#parallel">parallel</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Unix">Building on Unix</a>
+
+</div>
+
+<h3 class="section">3.5 Running the configure Script</h3>
+
+<p><a name="index-configure_002c-running-20"></a><a name="index-running-configure-21"></a><a name="index-install-directory-22"></a><a name="index-prefix-argument-of-configure-23"></a><a name="index-config_002elog-24"></a>
+To create the Makefiles needed to build netCDF, you must run the
+provided configure script. Go to the top-level netCDF directory.
+
+   <p>Decide where you want to install this package. Use this for the
+"&ndash;prefix=" argument to the configure script below. The default
+installation prefix is &ldquo;/usr/local,&rdquo; which will install the
+package's files in usr/local/bin, usr/local/lib, and
+usr/local/man. The default can be overridden with the &ndash;prefix
+argument to configure.
+
+   <p>Here's how to execute the configure script with a different
+installation directory:
+
+<pre class="example">         ./configure --prefix=/whatever/you/decided
+</pre>
+   <p>The above would cause the netCDF libraries to be installed in
+/whatever/you/decided/lib, the header files in
+/whatever/you/decided/include, the utilities (ncdump/ncgen) in
+/whatever/you/decided/bin, and the man pages in
+/whatever/you/decided/man.
+
+   <p>If the configure script finds HDF5 in the system directories, it will
+(attempt to) build the netCDF-4 enhanced features. To turn this off
+use the &ndash;disable-netcdf-4 option.
+
+   <p>There are other options for the configure script. The most useful ones
+are listed below. Use the &ndash;help option to get the full list.
+
+     <dl>
+<dt><code>--prefix</code><a name="index-g_t_002d_002dprefix-25"></a><dd>Specify the directory under which netCDF will be
+installed. Subdirectories lib, bin, include, and man will be created
+there, if they don't already exist.
+
+     <br><dt><code>--disable-netcdf-4</code><a name="index-g_t_002d_002ddisable_002dnetcdf_002d4-26"></a><dd>Turn off netCDF-4 features, even if HDF5 library is found.
+
+     <br><dt><code>--disable-shared</code><a name="index-g_t_002d_002ddisable_002dshared-27"></a><dd>Build static libraries only.
+
+     <br><dt><code>--enable-dap</code><a name="index-g_t_002d_002denable_002ddap-28"></a><dd>Enable DAP support. This flag is set by default
+if the configure script can locate a usable
+instance of the curl-config program. 
+The curl-config program can be specified explicitly
+using &ndash;with-curl-config=/some/path/curl-config,
+or configure will attempt some heuristics to locate
+the curl-config program; typically by checking
+the PATH environment variable. 
+If the flag &ndash;enable-dap flag is not set to either &ndash;enable-dap or
+&ndash;disable-dap, and a usable curl library can be found,
+then DAP support will be enabled by default. 
+Note that when DAP is enabled, this can be tested for
+in a configure script by looking for the function
+&ldquo;nc__opendap&rdquo;.
+
+     <br><dt><code>--with-curl-config</code><a name="index-g_t_002d_002dwith_002dcurl_002dconfig-29"></a><dd>This flag may be used to specify the curl-config program
+so that DAP support can be enabled. 
+Note that it should specify the actual program
+using something like &ndash;with-curl-config=/some/path/curl-config.
+
+     <br><dt><code>--enable-dap-remote-tests</code><a name="index-g_t_002d_002denable_002ddap_002dremote_002dtests-30"></a><dd>If DAP support is enabled, then remote tests are
+run that utilize the test server at opendap.org. 
+This option is enabled by default. 
+Since that server may be inaccessible
+for a variety of reasons, these tests may fail,
+in which case this flag should be disabled.
+
+     <br><dt><code>--enable-dap-long-tests</code><a name="index-g_t_002d_002denable_002ddap_002dlong_002dtests-31"></a><dd>If &ndash;enable-dap-remote-tests is enabled, then this
+flag can also be enabled to add extra tests that may
+take signficant time to execute. 
+This flag is off by default.
+
+     <br><dt><code>--enable-hdf4</code><a name="index-g_t_002d_002denable_002dhdf4-32"></a><dd>Turns on the HDF4 read layer. This reads HDF4 files created with the
+SD (Scientific Data) API of HDF4.
+
+     <br><dt><code>--enable-hdf4-file-tests</code><a name="index-g_t_002d_002denable_002dhdf4_002dfile_002dtests-33"></a><dd>Causes make check to use wget to fetch some HDF4 data files from the
+Unidata FTP server, and check that they are properly understood. This
+is done as part of automatic netCDF testing, and should not be done by
+users.
+
+     <br><dt><code>--enable-pnetcdf</code><a name="index-g_t_002d_002denable_002dpnetcdf-34"></a><dd>Allows parallel I/O with classic and 64-bit offset format files, using
+the parallel-netcdf (formerly pnetcdf) library from
+Argonne/Northwestern. The parallel-netcdf library must be installed,
+and a specially modified pnetcdf.h must be used. (Get it at
+ftp://ftp.unidata.ucar.edu/pub/netcdf/user/contrib/pnetcdf.h)
+
+     <br><dt><code>--with-udunits</code><a name="index-g_t_002d_002dwith_002dudunits-35"></a><dd>Builds UDUNITS2 as well as netCDF. The UDUNITS2 package supports units
+of physical quantities (e.g., meters, seconds). Specifically, it
+supports conversion between string and binary representations of
+units, arithmetic manipulation of units, and conversion of numeric
+values between compatible units. For more information about UDUNITS,
+see: http://www.unidata.ucar.edu/software/udunits/
+
+     <br><dt><code>--disable-largefile</code><a name="index-g_t_002d_002ddisable_002dlargefile-36"></a><dd>This omits OS support for large files (i.e. files larger than 2 GB).
+
+     <br><dt><code>--disable-fortran</code><a name="index-g_t_002d_002ddisable_002dfortran-37"></a><dd>Turns off Fortran 77 and Fortran 90 API. (Same as &ndash;disable-f77.)
+
+     <br><dt><code>--disable-f77</code><a name="index-g_t_002d_002ddisable_002df77-38"></a><dd>This turns off building of the F77 and F90 APIs. (The F90 API cannot
+be built without the F77 API). This also disables some of the
+configure tests that relate to fortran, including the test of the F90
+compiler. Setting the environment variables FC or F77 to NULL will
+have the same effect as &ndash;disable-f77.
+
+     <br><dt><code>--disable-f90</code><a name="index-g_t_002d_002ddisable_002df90-39"></a><dd>This turns off the building of the F90 API. Setting the environment
+variable F90 to null for configure will have the same effect.
+
+     <br><dt><code>--disable-cxx</code><a name="index-g_t_002d_002ddisable_002dcxx-40"></a><dd>This turns off the building of the C++ API. Setting the environment
+variable CXX to null for configure will have the same effect.
+
+     <br><dt><code>--disable-v2</code><a name="index-g_t_002d_002ddisable_002dv2-41"></a><dd>This turns of the V2 API. The V2 API is completely replaced with the
+V3 API, but is usually built with netCDF for backwards compatibility,
+and also because the C++ API depends on the V2 API. Setting this has
+the effect of automatically turning off the CXX API, as if
+&ndash;disable-cxx had also been specified.
+
+     <br><dt><code>--enable-cxx4</code><a name="index-g_t_002d_002denable_002dcxx4-42"></a><dd>Turns on the new C++ API, which is currently under development, and
+will expose the full expanded model in the C++ API. The cxx4 API is
+experiemental, unfinished, and untested. It is provided for
+experiemental purposes only.
+
+     <br><dt><code>--enable-large-file-tests</code><a name="index-g_t_002d_002denable_002dlarge_002dfile_002dtests-43"></a><dd>Turn on tests for large files. These tests create files over 2 GB in
+size, and need about 13 GB of free disk space to run. These files are
+deleted after the test successfully completes. They will be created in
+the netCDF nc_test directory, unless the &ndash;with-temp-large option is
+used to specify another location (see below).
+
+     <br><dt><code>--with-temp-large</code><a name="index-g_t_002d_002dwith_002dtemp_002dlarge-44"></a><dd>Normally large files are not created during the netCDF build, but they
+will be if &ndash;enable-large-file-tests is specified (see above). In that
+case, this configure parameter can be used to specify a location to
+create these large files, for example: &ndash;with-large-files=/tmp/ed.
+
+     <br><dt><code>--enable-benchmarks</code><a name="index-g_t_002d_002denable_002dbenchmarks-45"></a><dd>Turn on tests of the speed of various netCDF operations. Some of these
+operations take a long time to run (minutes, on a reasonable
+workstation).
+
+     <br><dt><code>--enable-valgrind-tests</code><a name="index-g_t_002d_002denable_002dvalgrind_002dtests-46"></a><dd>Causes some tests to be re-run under valgrind, the memory testing
+tool. Valgrind must be present for this to work. Also HDF5 must be
+built with &ndash;enable-using-memchecker, and netCDF must be compiled
+without optimization (at least on the Unidata test platform where this
+is tested). The valgrind tests are run by shell script
+libsrc4/run_valgrind_tests.sh. It simply reruns the test programs in
+that directory, using valgrind, and with settings such that any error
+reported by valgrind will cause the &ldquo;make check&rdquo; to fail.
+
+     <br><dt><code>--disable-fortran-type-check</code><a name="index-g_t_002d_002ddisable_002dfortran_002dtype_002dcheck-47"></a><dd>The netCDF configure compiles and runs some programs to test fortran
+vs. C type sizes. Setting this option turns off those test, and uses a
+set of default values (which can be overridden by environment
+variables see <a href="#Environment">Environment</a>).
+
+     <br><dt><code>--disable-examples</code><a name="index-g_t_002d_002ddisable_002dexamples-48"></a><dd>Starting with version 3.6.2, netCDF comes with some examples in the
+&ldquo;examples&rdquo; directory. By default, the examples are all built during
+a &ldquo;make check&rdquo; unless the &ndash;disable-examples option is provided.
+
+     <br><dt><code>--enable-extra-tests</code><a name="index-g_t_002d_002denable_002dextra_002dtests-49"></a><dd>This option may turn on tests which are known to fail (i.e. bugs that
+we are currently working to fix).
+
+     <br><dt><code>--with-default-chunk-size</code><a name="index-g_t_002d_002dwith_002ddefault_002dchunk_002dsize-50"></a><dd>Change the size (in bytes) that will be used as a target size when
+computing default chunksizes for netCDF-4/HDF5 chunked variables.
+
+     <br><dt><code>--default-chunks-in-cache</code><a name="index-g_t_002d_002ddefault_002dchunks_002din_002dcache-51"></a><dd>Change the number of chunks that are accomodated in the per-variable
+chunk caches that are used by default.
+
+     <br><dt><code>--max-default-cache-size</code><a name="index-g_t_002d_002dmax_002ddefault_002dcache_002dsize-52"></a><dd>Change the maximum size of the per-variable chunk caches that are used
+by default.
+
+     <br><dt><code>--with-chunk-cache-size</code><a name="index-g_t_002d_002dwith_002dchunk_002dcache_002dsize-53"></a><dd>Change the size of the default file-level chunk cache size that will
+be used when opening netCDF-4/HDF5 files.
+
+     <br><dt><code>--with-chunk-cache-nelems</code><a name="index-g_t_002d_002dwith_002dchunk_002dcache_002dnelems-54"></a><dd>Change the size of the default file-level chunk cache number of
+elements that will be used when opening netCDF-4/HDF5 files. Should be
+a prime number.
+
+     <br><dt><code>--with-chunk-cache-preemption</code><a name="index-g_t_002d_002dwith_002dchunk_002dcache_002dpreemption-55"></a><dd>Change the default preemption of the file-level chunk cache that will
+be used when opening netCDF-4/HDF5 files. Must be a number between 0
+and 1 (inclusive).
+
+   </dl>
+
+   <p>The configure script will examine your computer system &ndash; checking for
+attributes that are relevant to building the netCDF package. It will
+print to standard output the checks that it makes and the results that
+it finds.
+
+   <p>The configure script will also create the file "config.log", which
+will contain error messages from the utilities that the configure
+script uses in examining the attributes of your system. Because such
+an examination can result in errors, it is expected that "config.log"
+will contain error messages. Therefore, such messages do not
+necessarily indicate a problem (a better indicator would be failure of
+the subsequent "make"). One exception, however, is an error message in
+"config.log" that indicates that a compiler could not be started. This
+indicates a severe problem in your compilation environment &ndash; one that
+you must fix. If this occurs, configure will not complete and will
+exit with an error message telling you about the problem.
+
+<div class="node">
+<a name="Make"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Testing">Testing</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Configure">Configure</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Unix">Building on Unix</a>
+
+</div>
+
+<h3 class="section">3.6 Running make</h3>
+
+<p><a name="index-make_002c-running-56"></a><a name="index-running-make-57"></a>
+Run "make". This will build one or more netCDF libraries. It will
+build the basic netCDF library libnetcdf.a. If you have Fortran 77 or
+Fortran 90 compilers, then the Fortran library will also be built
+(libnetcdff.a). If you have a C++ compiler, then the C++ interface
+will be built (libnetcdf_c++.a.)
+
+   <p>A &ldquo;make&rdquo; will also build the netCDF utilities ncgen(1) and
+ncdump(1).
+
+   <p>Run make like this:
+<pre class="example">     make
+</pre>
+   <div class="node">
+<a name="Testing"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Installation">Installation</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Make">Make</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Unix">Building on Unix</a>
+
+</div>
+
+<h3 class="section">3.7 Testing the Build</h3>
+
+<p><a name="index-tests_002c-running-58"></a><a name="index-make-test-59"></a><a name="index-make-check-60"></a><a name="index-large-file-tests-61"></a><a name="index-enable_002dlarge_002dfile_002dtests-62"></a><a name="index-testing-large-file-features-63"></a><a name="index-TEMP_005fLARGE-64"></a><a name="index-make-slow_005fcheck-65"></a><a name="index-make-lfs_005ftest-66"></a><a name="index-make-all_005flarge_005ftests-67"></a>
+Run &ldquo;make check&rdquo; to verify that the netCDF library and executables
+have been built properly (you can instead run &ldquo;make test&rdquo; which does
+the same thing).
+
+   <p>A make check will build and run various test programs that test the C,
+Fortran, and C++ interfaces as well as the "ncdump" and "ncgen"
+utility programs.
+
+   <p>Lines in the output beginning with "***" report on success or failure
+of the tests; any failures will be reported before halting the
+test. Compiler and linker warnings during the testing may be ignored.
+
+   <p>Run the tests like this:
+
+<pre class="example">     make check
+</pre>
+   <p>If you plan to use the 64-bit offset format (introduced in version
+3.6.0) or the netCDF-4/HDF5 format to create very large files
+(i.e. with variables larger than 2 GB), you should probably specify the
+&ndash;enable-large-file-tests to configure, which tests the large file
+features. You must have 13 GB of free disk space for these tests to
+successfully run.
+
+   <p>If you are running the large file tests, you may wish to use the
+&ndash;with-temp-large option to specify a temporary directory for the
+large files. (You may also set the environment variable TEMP_LARGE
+before running configure).
+
+   <p>The default is to create the large files in the nc_test subdirectory
+of the netCDF build.
+
+   <p>Run the large file tests like this:
+
+<pre class="example">     ./configure --enable-large-file-tests --with-temp-large=/home/ed/tmp
+     make check
+</pre>
+   <p>All of the large files are removed on successful completion of
+tests. If the test fails, you may wish to make sure that no large
+files have been left around.
+
+   <p>If any of the the large file tests test fail, check to ensure that
+your file system can handle files larger than 2 GiB by running the
+following command:
+
+<pre class="example">     	dd if=/dev/zero bs=1000000 count=3000 of=$(TEMP_LARGE)/largefile
+</pre>
+   <p>If your system does not have a /dev/zero, this test will fail. Then
+you need to find some other way to create a file larger than 2 GiB to
+ensure that your system can handle them.
+
+   <p>See <a href="#Build-Problems">Build Problems</a>.
+
+<div class="node">
+<a name="Installation"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Platform-Notes">Platform Notes</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Testing">Testing</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Unix">Building on Unix</a>
+
+</div>
+
+<h3 class="section">3.8 Installing NetCDF</h3>
+
+<p><a name="index-make-install-68"></a><a name="index-installing-netCDF-69"></a><a name="index-g_t_005fLARGE_005fFILES_002c-on-AIX-70"></a><a name="index-OBJECT_005fMODE_002c-on-AIX-71"></a>
+To install the libraries and executables, run "make install". This
+will install to the directory specified in the configure step.
+
+   <p>Run the installation like this:
+
+<pre class="example">     make install
+</pre>
+   <p>The install will put files in the following subdirectories of the
+directory you provided as a prefix, creating the subdirectories if
+needed:
+
+     <dl>
+<dt><code>lib</code><dd>Libraries will be installed here. If static libraries are built,
+without separate fortran libraries, then libnetcdf.a and libnetcdf.la
+will be installed. If the C++ API is built, libnetcdf_c++.a and
+libnetcdf_c++.la will be added. If separate fortran libraries are
+built, libnetcdff.a and libnetcdff.la will also be added.
+
+     <p>Static library users should ignore the .la files, and link to the .a
+files.
+
+     <p>Shared library builds will add some .so files to this directory, as
+well.
+
+     <br><dt><code>include</code><dd>Header files will be installed here. The C library header file is
+netcdf.h. If the C++ library is built, ntcdfcpp.h, ncvalues.h and
+netcdf.hh will be installed here. If the F77 API is built, netcdf.inc
+will be copied here. If the F90 API is built, the netcdf.mod and
+typesizes.mod files will be copied here as well.
+
+     <br><dt><code>bin</code><dd>Utilities ncdump and ncgen will be installed here.
+
+     <br><dt><code>man</code><dd>The ncdump/ncgen man pages will be installed in subdirectory man1, and
+the three man pages netcdf.3, netcdf_f77.3, and netcdf_f90.3 will be
+installed in the man3 subdirectory.
+
+     <br><dt><code>share</code><dd>If the configure is called with the &ndash;enable-docs option, the netCDF
+documentation set will be built, and will be installed under the share
+directory, under the netcdf subdirectory. This will include
+postscript, PDF, info and text versions of all netCDF manuals. These
+manuals are also available at the netCDF web site.
+
+   </dl>
+
+   <p>Try linking your applications. Let us know if you have problems
+(see <a href="#Reporting-Problems">Reporting Problems</a>).
+
+<div class="node">
+<a name="Platform-Notes"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Porting-Notes">Porting Notes</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Installation">Installation</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Unix">Building on Unix</a>
+
+</div>
+
+<h3 class="section">3.9 Platform Specific Notes</h3>
+
+<p><a name="index-Cygwin_002c-building-with-72"></a><a name="index-AIX_002c-building-on-73"></a><a name="index-HPUX_002c-building-on-74"></a><a name="index-Irix_002c-building-on-75"></a><a name="index-Linux_002c-building-on-76"></a><a name="index-Macintosh_002c-building-on-77"></a><a name="index-OSF1_002c-building-on-78"></a><a name="index-SunOS_002c-building-on-79"></a><a name="index-Intel-fortran-80"></a><a name="index-fortran_002c-Intel-81"></a><a name="index-Portland-Group-fortran-82"></a><a name="index-fortran_002c-Portland-Group-83"></a>
+The following platform-specific note may be helpful when building and
+installing netCDF. Consult your vendor manuals for information about
+the options listed here. Compilers can change from version to version;
+the following information may not apply to your platform.
+
+   <p>Full output from some of the platforms of the test platforms for
+netCDF 4.1.3 can be found at <a href="http://www.unidata.ucar.edu/netcdf/builds">http://www.unidata.ucar.edu/netcdf/builds</a>.
+
+<h4 class="subsection">3.9.1 AIX</h4>
+
+<p>We found the vendor compilers in /usr/vac/bin, and included this
+in our PATH. Compilers were xlc, xlf, xlf90, xlC.
+
+   <p>The F90 compiler requires the qsuffix option to believe that F90 code
+files can end with .f90. This is automatically turned on by configure
+when needed:
+
+<pre class="example">         FCFLAGS=-qsuffix=f=f90
+</pre>
+   <p>We had to use xlf for F77 code, and xlf90 for F90 code.
+
+   <p>To compile 64-bit code, set the appropriate environment variables
+(documented below).
+
+   <p>The environment variable OBJECT_MODE can be set to 64, or use the -q64
+option on all AIX compilers by setting CFLAGS, FFLAGS, and CXXFLAGS to
+-q64.
+
+   <p>The following is also necessary on an IBM AIX SP system for 64-bit
+mode:
+<pre class="example">         ARFLAGS='-X64 cru'
+         NMFLAGS='-X64'
+</pre>
+   <p>There are thread-safe versions of the AIX compilers. For example,
+xlc_r is the thread-safe C compiler. To use thread-safe compilers,
+override the configure script by setting CC to xlc_r; similarly for FC
+and CXX.
+
+   <p>For large file support, AIX requires that the macro _LARGE_FILES be
+defined. The configure script does this using
+AC_SYS_LARGEFILES. Unfortunately, this misfires when OBJECT_MODE is
+64, or the q64 option is used. The netCDF tries to fix this by turning
+on _LARGE_FILES anyway in these cases.
+
+   <p>The GNU C compiler does not mix successfully with the AIX fortran
+compilers.
+
+<h4 class="subsection">3.9.2 Cygwin</h4>
+
+<p>NetCDF builds under Cygwin tools on Windows just as with Linux.
+
+<h4 class="subsection">3.9.3 HPUX</h4>
+
+<p>The HP Fortran compiler (f77, a.k.a. fort77, also f90) requires FLIBS
+to include -lU77 for the fortran tests to work. The configure script
+does this automatically.
+
+   <p>For the c89 compiler to work, CPPFLAGS must include
+-D_HPUX_SOURCE. This isn't required for the cc compiler. The configure
+script adds this as necessary.
+
+   <p>For large file support, HP-UX requires _FILE_OFFSET_BITS=64. The
+configure script sets this automatically.
+
+   <p>The HPUX C++ compiler doesn't work on netCDF code. It's too old for
+that. So either use GNU to compile netCDF, or skip the C++ code by
+setting CXX to &rdquo; (in csh: setenv CXX &rdquo;).
+
+   <p>Building a 64 bit version may be possible with the following settings:
+<pre class="example">         CC=/bin/cc
+         CPPFLAGS='-D_HPUX_SOURCE -D_FILE_OFFSET_BITS=64'    # large file support
+         CFLAGS='-g +DD64'                           # 64-bit mode
+         FC=/opt/fortran90/bin/f90                   # Fortran-90 compiler
+         FFLAGS='-w +noppu +DA2.0W'                  # 64-bit mode, no "_" suffixes
+         FLIBS=-lU77
+         CXX=''                                      # no 64-bit mode C++ compiler
+</pre>
+   <p>Sometimes quotas or configuration causes HPUX disks to be limited to 2
+GiB files. In this cases, netCDF cannot create very large
+files. Rather confusingly, HPUX returns a system error that indicates
+that a value is too large to be stored in a type. This may cause
+scientists to earnestly check for attempts to write floats or doubles
+that are too large. In fact, the problem seems to be an internal
+integer problem, when the netCDF library attempts to read beyond the 2
+GiB boundary. To add to the confusion, the boundary for netCDF is
+slightly less than 2 GiB, since netCDF uses buffered I/O to improve
+performance.
+
+<h4 class="subsection">3.9.4 Irix</h4>
+
+<p>A 64-bit version can be built by setting the appropriate environment
+variables.
+
+   <p>Build 64-bit by setting CFLAGS, FFLAGS, and CXXFLAGS to -64.
+
+   <p>On our machine, there is a /bin/cc and a /usr/bin/cc, and the -64
+option only works with the former.
+
+<h4 class="subsection">3.9.5 Linux</h4>
+
+<p>The gFortran flag is required with GNU fortran:
+<pre class="example">         CPPFLAGS=-DgFortran
+</pre>
+   <p>For Portland Group Fortran, set pgiFortran instead:
+<pre class="example">         CPPFLAGS=-DpgiFortran
+</pre>
+   <p>Portland Group F90/F95 does not mix with GNU g77.
+
+   <p>The netCDF configure script should notice which fortran compiler is
+being used, and set these automatically.
+
+   <p>For large file support, _FILE_OFFSET_BITS must be set to 64. The
+netCDF configure script should set this automatically.
+
+<h4 class="subsection">3.9.6 Macintosh</h4>
+
+<p>The gFortran flag is required with GNU fortran
+(CPPFLAGS=-DgFortran). The NetCDF configure script should and set
+this automatically.
+
+   <p>For IBM compilers on the Mac, the following may work (we lack this
+test environment):
+<pre class="example">         CC=/usr/bin/cc
+         CPPFLAGS=-DIBMR2Fortran
+         F77=xlf
+         FC=xlf90
+         FCFLAGS=-qsuffix=cpp=f90
+</pre>
+   <h4 class="subsection">3.9.7 OSF1</h4>
+
+<p>NetCDF builds out of the box on OSF1.
+
+<h4 class="subsection">3.9.8 SunOS</h4>
+
+<p>PATH should contain /usr/ccs/bin to find make, nm, ar, etc.
+
+   <p>For large file support, _FILE_OFFSET_BITS must be 64, also
+_LARGEFILE64_SOURCE and _LARGEFILE_SOURCE must be set. Configure will
+turn this on automatically for netCDF, but not for HDF5. So when
+building HDF5, set these variables before running configure, or HDF5
+will not be capable of producing large files.
+
+   <p>To compile in 64-bit mode, set -m64 (formerly -xarch=v9, which works
+on SPARC platforms only) on all compilers (i.e. in CFLAGS, FFLAGS,
+FCFLAGS, and CXXFLAGS).
+
+   <p>When compiling with GNU Fortran (g77), the -DgFortran flag is
+required for the Fortran interface to work. The NetCDF configure
+script turns this on automatically if needed.
+
+<h4 class="subsection">3.9.9 Handling Fortran Compilers</h4>
+
+<p>Commercial fortran compilers will generally require at least one flag
+in the CPPFLAGS variable. The netCDF configure script tries to set
+this for you, but won't try if you have used &ndash;disable-flag-setting,
+or if you have already set CPPFLAGS, CFLAGS, CXXFLAGS, FCFLAGS, or
+FFLAGS yourself.
+
+   <p>The first thing to try is to set nothing and see if the netCDF
+configure script finds your fortran compiler, and sets the correct
+flags automatically.
+
+   <p>If it doesn't find the correct fortran compiler, you can next try
+setting the FC environment variable to the compiler you wish to use,
+and then see if the configure script can set the correct flags for
+that compiler.
+
+   <p>If all that fails, you must set the flags yourself.
+
+   <p>The Intel compiler likes the pgiFortran flag, as does the Portland
+Group compiler. (Automatically turned on if your fortran compiler is
+named &ldquo;ifort&rdquo; or &ldquo;pgf90&rdquo;).
+
+   <p>Alternatively, Intel has provided a web page on &ldquo;Building netCDF with
+the Intel compilers&rdquo; at
+<a href="http://www.intel.com/support/performancetools/sb/CS-027812.htm">http://www.intel.com/support/performancetools/sb/CS-027812.htm</a>,
+providing instructions for building netCDF (without using the
+pgiFortran flag).
+
+   <p>The Portland Group also has a &ldquo;PGI Guide to NetCDF&rdquo; at
+<a href="http://www.pgroup.com/resources/netcdf/netcdf362_pgi71.htm">http://www.pgroup.com/resources/netcdf/netcdf362_pgi71.htm</a>.
+
+<div class="node">
+<a name="Porting-Notes"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Source">Source</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Platform-Notes">Platform Notes</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Unix">Building on Unix</a>
+
+</div>
+
+<h3 class="section">3.10 Additional Porting Notes</h3>
+
+<p><a name="index-GNU-make-84"></a><a name="index-porting-notes_002c-additional-85"></a><a name="index-CRAY_002c-porting-to-86"></a><a name="index-ncconfig_002eh-87"></a><a name="index-ncconfig_002ein-88"></a><a name="index-ncconfig_002einc-89"></a><a name="index-ncio-90"></a><a name="index-ncx_002em4-91"></a><a name="index-ffio_002ec-92"></a><a name="index-posixio_002ec-93"></a><a name="index-big-endian-94"></a><a name="index-little-endian-95"></a>
+The configure and build system should work on any system which has a
+modern "sh" shell, "make", and so on. The configure and build system
+is less portable than the "C" code itself, however. You may run into
+problems with the "include" syntax in the Makefiles. You can use GNU
+make to overcome this, or simply manually include the specified files
+after running configure.
+
+   <p>Instruction for building netCDF on other platforms can be found at
+<a href="http://www.unidata.ucar.edu/netcdf/other-builds.html">http://www.unidata.ucar.edu/netcdf/other-builds.html</a>. If you build netCDF on a new
+platform, please send your environment variables and any other
+important notes to support-netcdf@unidata.ucar.edu and we will add the
+information to the other builds page, with a credit to you.
+
+   <p>If you can't run the configure script, you will need to create
+config.h and fortran/nfconfig.inc. Start with ncconfig.in and
+fortran/nfconfig.in and set the defines as appropriate for your
+system.
+
+   <p>Operating system dependency is isolated in the "ncio" module. We
+provide two versions. posixio.c uses POSIX system calls like "open()",
+"read()" and "write().  ffio.c uses a special library available on
+CRAY systems. You could create other versions for different operating
+systems. The program "t_ncio.c" can be used as a simple test of this
+layer.
+
+   <p>Note that we have not had a Cray to test on for some time. In
+particular, large file support is not tested with ffio.c.
+
+   <p>Numerical representation dependency is isolated in the "ncx"
+module. As supplied, ncx.m4 (ncx.c) supports IEEE floating point
+representation, VAX floating point, and CRAY floating
+point. BIG_ENDIAN vs LITTLE_ENDIAN is handled, as well as various
+sizes of "int", "short", and "long". We assume, however, that a "char"
+is eight bits.
+
+   <p>There is a separate implementation of the ncx interface available as
+ncx_cray.c which contains optimizations for CRAY vector
+architectures. Move the generic ncx.c out of the way and rename
+ncx_cray.c to ncx.c to use this module. By default, this module does
+not use the IEG2CRAY and CRAY2IEG library calls. When compiled with
+aggressive in-lining and optimization, it provides equivalent
+functionality with comparable speed and clearer error semantics. If
+you wish to use the IEG library functions, compile this module with
+-DUSE_IEG.
+
+<div class="node">
+<a name="Source"></a>
+<p><hr>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Porting-Notes">Porting Notes</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Unix">Building on Unix</a>
+
+</div>
+
+<h3 class="section">3.11 Contributing to NetCDF Source Code Development</h3>
+
+<p>Most users will not be interested in working directly with the netCDF
+source code. Rather, they will write programs which call netCDF
+functions, and delve no further. However some intrepid users may wish
+to dig into the netCDF code to study it, to try and spot bugs, or to
+make modifications for their own purposes.
+
+   <p>To work with the netCDF source code, several extra utilities are
+required to fully build everything from source. If you are going to
+modify the netCDF source code, you will need some or all of the
+following Unix tools.
+
+     <dl>
+<dt><code>m4</code><a name="index-m4-96"></a><dd>Macro processing language used heavily in libsrc, nc_test. Generates
+(in these cases) C code from m4 source. Version 1.4 works fine with
+release 3.5.1 through 3.6.2.
+
+     <br><dt><code>flex and yacc</code><a name="index-flex-and-yacc-97"></a><dd>Used in ncgen directory to parse CDL files. Generates C files from .y
+and .l files. You only need to use this to modify ncgen's understanding of
+CDL grammar.
+
+     <br><dt><code>makeinfo</code><a name="index-makeinfo-98"></a><dd>Generates all documentation formats (except man pages) from texinfo
+source. I'm using makeinfo version 4.8, as of release 3.6.2. If you
+have trouble with makeinfo, upgrade to this version and try again. You
+only need makeinfo if you want to modify the documentation.
+
+     <br><dt><code>tex</code><a name="index-tex-99"></a><dd>Knuth's venerable typesetting system. The version I am running (for
+netCDF release 3.6.2) is TeX 3.141592 (Web2C 7.5.4). I have found that
+some recent installations of TeX will not build the netCDF
+documentation - it's not clear to me why.
+
+     <p>The user generally will just want to download the latest version of
+netCDF documents at the netCDF website. <a href="http://www.unidata.ucar.edu/netcdf/docs">http://www.unidata.ucar.edu/netcdf/docs</a>.
+
+     <br><dt><code>autoconf</code><a name="index-autoconf-100"></a><dd>Generates the configure script. Version 2.59 or later is required.
+
+     <br><dt><code>automake</code><a name="index-automake-101"></a><dd>Since version 3.6.2 of netCDF, automake is used to generate the
+Makefile.in files needed by the configure script to build the
+Makefiles.
+
+     <br><dt><code>libtool</code><a name="index-libtool-102"></a><dd>Since version 3.6.2 of netCDF, libtool is used to help generate shared
+libraries platforms which support them. Version 2.1a of libtool is
+required.
+
+     <br><dt><code>sed</code><a name="index-sed-103"></a><dd>This text processing tool is used to process some of the netCDF
+examples before they are included in the tutorial. This is only needed
+to build the documentation, which the user generally will not need to
+do.
+
+   </dl>
+
+   <p>NetCDF has a large and enterprising user community, and a long history
+of accepting user modifications into the netCDF code base. Examples
+include the 64-bit offset format, and the F90 API.
+
+   <p>All suggested changes and additions to netCDF code can be sent to
+support-netcdf@unidata.ucar.edu.
+
+<div class="node">
+<a name="Using"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Building-on-Windows">Building on Windows</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Building-on-Unix">Building on Unix</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="chapter">4 Using NetCDF on Unix Systems</h2>
+
+<p><a name="index-link-options-104"></a><a name="index-compiler-flags-105"></a><a name="index-nc_002dconfig-106"></a>
+To use netCDF you must link to the netCDF library, and, if using the
+netCDF-4/HDF5 features, also two HDF5, at least one compression
+library, and (on some systems) the math library.
+
+<ul class="menu">
+<li><a accesskey="1" href="#Linker-Flags">Linker Flags</a>
+<li><a accesskey="2" href="#Compiler-Flags">Compiler Flags</a>
+<li><a accesskey="3" href="#nc_002dconfig">nc-config</a>
+</ul>
+
+<div class="node">
+<a name="Linker-Flags"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Compiler-Flags">Compiler Flags</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Using">Using</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Using">Using</a>
+
+</div>
+
+<h3 class="section">4.1 Using Linker Flags with NetCDF</h3>
+
+<p>For this to work, you have to tell the linker which libraries to link
+to (with the -l option), and where to find them (with the -L option).
+
+   <p>Use the -L option to your linker to pass the directories in which
+netCDF, HDF5, and zlib are installed.
+
+   <p>Use the -l (lower-case L) option to list the libraries, which must be
+listed in the correct order:
+
+<pre class="example">     -lnetcdf -lhdf5_hl -lhdf5 -lz -lm
+</pre>
+   <p>If szip was used when building HDF5, you must also use -lsz.
+
+   <p>On some systems you must also include -lm for the math library.
+
+   <p>If HDF4 was used when building netCDF, you must also use -lmfhdf -ldf
+-ljpeg.
+
+   <p>Finally, if you use the parallel-netcdf library, you must use
+-lpnetcdf.
+
+   <p>The worst case scenario is, using all of the above libraries:
+
+<pre class="example">     -lnetcdf -lpnetcdf -lmfhdf -ldf -ljpeg -lhdf5_hl -lhdf5 -lz -lsz -lm
+</pre>
+   <p>In such a case one also needs to provide the locations of the
+libraries, with the -L flag. If libraries are installed in the same
+directory, this is easier.
+
+   <p>Use the nc-config to learn the exact flags needed on your system
+(see <a href="#nc_002dconfig">nc-config</a>).
+
+<div class="node">
+<a name="Compiler-Flags"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#nc_002dconfig">nc-config</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Linker-Flags">Linker Flags</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Using">Using</a>
+
+</div>
+
+<h3 class="section">4.2 Using Compiler Flags with NetCDF</h3>
+
+<p>Depending on how netCDF was built, you may need to use compiler flags
+when building your code. For example, many systems build both 32-bit
+and 64-bit binaries. The GNU C compiler, for example, uses -m32 and
+-m64 as compiler flags for this purpose.
+
+   <p>If netCDF is built with the default compiler flags (i.e. no special
+flags are used), then no flags need to be used by the user.
+
+   <p>If netCDF is built using flags that control architecture or other
+important aspects of the binary output, then those flags may need to
+be set by all users as well.
+
+<div class="node">
+<a name="nc-config"></a>
+<a name="nc_002dconfig"></a>
+<p><hr>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Compiler-Flags">Compiler Flags</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Using">Using</a>
+
+</div>
+
+<h3 class="section">4.3 Using the nc-config Utility to Find Compiler and Linker Flags</h3>
+
+<p>To assist with the setting of compiler and linker flags, the nc-config
+utility is provided with netCDF. The nc-config utility is a very
+simple script which contains the settings of the C and Fortran flags
+used during the netCDF build.
+
+   <p>For example, the nc-config command can be used to get the command line
+options needed to link a C program to netCDF:
+
+<pre class="example">     nc-config --libs
+     -L/usr/local/lib -lnetcdf -L/shecky/local_post/lib -lhdf5_hl -lhdf5 -lz
+</pre>
+   <p>The nc-config utility can also be used to learn about the features of
+the current netCDF installation. For example, it can show whether
+netCDF-4 is available:
+
+<pre class="example">     ./nc-config --has-nc4
+     yes
+</pre>
+   <p>Use the &ndash;help option to nc-config for a full list of available
+information.
+
+<div class="node">
+<a name="Building-on-Windows"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Build-Problems">Build Problems</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Using">Using</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="chapter">5 Building and Installing NetCDF on Windows</h2>
+
+<p><a name="index-windows_002c-building-on-107"></a><a name="index-VC_002b_002b-108"></a><a name="index-NET-109"></a><a name="index-DLL-110"></a><a name="index-Microsoft-111"></a>
+NetCDF can be built and used from a variety of development
+environments on Windows. The netCDF library is implemented as a
+Windows dynamic link library (DLL). The simplest way to get started
+with netCDF under Windows is to download the pre-built DLL from the
+Unidata web site.
+
+   <p>Building under the Cygwin port of GNU tools is treated as a Unix
+install. See <a href="#Platform-Notes">Platform Notes</a>.
+
+   <p>Instructions are also given for building the netCDF DLL from the
+source code.
+
+   <p>VC++ documentation being so voluminous, finding the right information
+can be a chore. There's a good discussion of using DLLs called &ldquo;About
+Dynamic-Link Libraries&rdquo; at (perhaps)
+<a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/dynamic_link_libraries.asp">http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/dynamic_link_libraries.asp</a>.
+
+   <p>From the .NET point of view, the netCDF dll is unmanaged code. As a
+starting point, see the help topic &ldquo;Consuming Unmanaged DLL
+Functions&rdquo; which may be found at
+<a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpguide/html/cpconConsumingUnmanagedDLLFunctions.asp">http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpguide/html/cpconConsumingUnmanagedDLLFunctions.asp</a>,
+unless the page has been moved.
+
+<ul class="menu">
+<li><a accesskey="1" href="#Prebuilt-DLL">Prebuilt DLL</a>:                 Getting the Prebuilt DLLs
+<li><a accesskey="2" href="#Installing-DLL">Installing DLL</a>:               Installing the DLLs
+<li><a accesskey="3" href="#Visual-Cplusplus">Visual Cplusplus</a>:             Building with VC++ 6.0
+<li><a accesskey="4" href="#Using-DLL">Using DLL</a>:                    Using the DLLs with VC++ 6.0
+<li><a accesskey="5" href="#Building-with-NET">Building with NET</a>:            Building with VC++ .NET
+<li><a accesskey="6" href="#Using-with-NET">Using with NET</a>:               Using with VC++ .NET
+</ul>
+
+<div class="node">
+<a name="Prebuilt-DLL"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Installing-DLL">Installing DLL</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Building-on-Windows">Building on Windows</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Windows">Building on Windows</a>
+
+</div>
+
+<h3 class="section">5.1 Getting Prebuilt netcdf.dll</h3>
+
+<p><a name="index-binaries_002c-windows-112"></a><a name="index-dll_002c-getting-113"></a>
+We have pre-built Win32 binary versions of the netcdf dll and static
+library, as well as ncgen.exe and ncdump.exe (dll and static
+versions). You can get them from
+<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf/contrib/win32/netcdf-3.6.1-beta1-win32dll.zip">ftp://ftp.unidata.ucar.edu/pub/netcdf/contrib/win32/netcdf-3.6.1-beta1-win32dll.zip</a>. 
+(Note: we don't have a C++ interface here).
+
+<div class="node">
+<a name="Installing-DLL"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Visual-Cplusplus">Visual Cplusplus</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Prebuilt-DLL">Prebuilt DLL</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Windows">Building on Windows</a>
+
+</div>
+
+<h3 class="section">5.2 Installing the DLL</h3>
+
+<p><a name="index-netcdf_002edll_002c-location-114"></a><a name="index-netcdf_002elib-115"></a><a name="index-ncgen_002c-windows-location-116"></a><a name="index-ncdump_002c-windows-location-117"></a>
+Whether you get the pre-built DLL or build your own, you'll then have
+to install it somewhere so that your other programs can find it and
+use it.
+
+   <p>To install a DLL, you just have to leave it in some directory, and
+(possibly) tell your compiler in which directory to look for it.
+
+   <p>A DLL is a library, and functions just like libraries under the Unix
+operating system. As with any library, the point of the netCDF DLL is
+to provide functions that you can call from your own code. When you
+compile that code, the linker needs to be able to find the library,
+and then it pulls out the functions that it needs. In the Unix world,
+the -L option tells the compiler where to look for a library. In
+Windows, library search directories can be added to the project's
+property dialog.
+
+   <p>Similarly, you will need to put the header file, netcdf.h, somewhere
+that you compiler can find it. In the Unix world, the -I option tells
+the compiler to look in a certain directory to find header files. In
+the Windows world, you set this in the project properties dialog box
+of your integrated development environment.
+
+   <p>Therefore, installing the library means nothing more than copying the
+DLL somewhere that your compiler can find it, and telling the compiler
+where to look for them.
+
+   <p>The standard place to put DLLs is Windows\System32 folder (for
+Windows2000/XP) or the Windows\System folder (for Windows 98/ME). If
+you put the DLL there, along with the ncgen and ncdump executables,
+you will be able to use the DLL and utilities without further work,
+because compilers already look there for DLLs and EXEs.
+
+   <p>Instead of putting the DLL and EXEs into the system directory, you can
+leave them wherever you want, and every development project that uses
+the dll will have to be told to search the netCDF directory when it's
+linking, or, the chosen directory can be added to your path.
+
+   <p>On the .NET platform, you can also try to use the global assembly
+cache. (To learn how, see MSDN topic &ldquo;Global Assembly Cache&rdquo;, at
+<a href="www.msdn.microsoft.com">www.msdn.microsoft.com</a>).
+
+   <p>Following Windows conventions, the netCDF files belong in the
+following places:
+
+   <p><table summary="">
+<tr align="left"><td valign="top" width="25%">File(s) </td><td valign="top" width="50%">Description </td><td valign="top" width="25%">Location
+
+<p><br></td></tr><tr align="left"><td valign="top" width="25%">netcdf.dll </td><td valign="top" width="50%">C and Fortran function in DLL
+</td><td valign="top" width="25%">Windows\System (98/ME) or Windows\System32 (2000/XP)
+
+<p><br></td></tr><tr align="left"><td valign="top" width="25%">netcdf.lib </td><td valign="top" width="50%">Library file
+</td><td valign="top" width="25%">Windows\System (98/ME) or Windows\System32 (2000/XP)
+
+<p><br></td></tr><tr align="left"><td valign="top" width="25%">ncgen.exe, ncdump.exe </td><td valign="top" width="50%">NetCDF utilities
+</td><td valign="top" width="25%">Windows\System (98/ME) or Windows\System32 (2000/XP)
+
+<p><br></td></tr><tr align="left"><td valign="top" width="25%">netcdf-3 </td><td valign="top" width="50%">netCDF source code
+</td><td valign="top" width="25%">Program Files\Unidata
+
+   <br></td></tr></table>
+
+<div class="node">
+<a name="Visual-Cplusplus"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Using-DLL">Using DLL</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Installing-DLL">Installing DLL</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Windows">Building on Windows</a>
+
+</div>
+
+<h3 class="section">5.3 Building netcdf.dll with VC++ 6.0</h3>
+
+<p><a name="index-VC_002b_002b-6_002e0_002c-building-with-118"></a>
+The most recent releases of netCDF aren't tested under VC++ 6.0. (They
+are tested with VC++.NET). Older versions of the library, notably
+3.5.0, did compile with VC++ 6.0, and the instructions for doing so
+are presented below.
+
+   <p>Note that the introduction of better large file support (for files
+larger than 2 GiB) in version 3.6.0 and greater requires an off_t type
+of 8 bytes, and it's not clear how, or if, this can be found in VC++
+6.0.
+
+   <p>To build the library yourself, get the file
+ftp://ftp.unidata.ucar.edu/pub/netcdf/contrib/win32/netcdf-3.5.0.win32make.VC6.zip
+
+   <p>The makefiles there describe how to build netcdf-3.5
+using the using Microsoft Visual C++ 6.x and (optionally)
+Digital Visual Fortran 6.x. Because of difficulties in getting
+Microsoft Visual Studio to fall in line with our existing
+source directory scheme, we chose _not_ to build the system
+"inside" Visual Studio. Instead, we provide a simple group
+of "msoft.mak" files which can be used. If you
+wish to work in Visual Studio, go ahead. Read the
+section called "Macros" at the end of this discussion.
+
+   <p>As of this writing, we have not tried compiling the
+C++ interface in this environment.
+
+   <p>nmake is a Microsoft version of make, which comes with VC 6.0 (and VC
+7.0) in directory C:\Program Files\Microsoft Visual Studio\VC98\Bin
+(or, for VC 7.0, C:\Program Files\Microsoft Visual Studio .NET
+2003\Vc7\bin).
+
+   <p>To build netcdf, proceed as follows:
+
+     <dl>
+<dt><code>unpack source distribution.</code>
+<br><dt><code>copy netcdf-3.5.0.win32make.VC6.zip</code><dd>copy netcdf-3.5.0.win32make.VC6.zip into the netcdf-3.5.0/src
+directory, and unzip it from there.
+
+     <br><dt><code>cd src\libsrc; nmake /f msoft.mak</code><dd>Run this command in src\libsrc. This will build netcdf.lib and
+netcdf.dll Note: This makefiles make DLLs. To make static libraries
+see section on static libraries.
+
+     <br><dt><code>nmake /f msoft.mak test</code><dd>Optionally, in src\libsrc, make and run the simple test.
+
+     <br><dt><code>cd ..\fortran; nmake /f msoft.mak</code><dd>Optionally build the fortran interface and rebuild dll in ..\libsrc to
+include the fortran interface. Note Bene: We don't provide a .DEF
+file, so this step changes the "ordinals" by which entry points in the
+DLL found. Some sites may wish to modify the msoft.mak file(s) to
+produce a separate library for the fortran interface.
+
+     <br><dt><code>nmake /f msoft.mak test</code><dd>(necessary if you want to use fortran code) While you are in
+src\fortran; nmake /f msoft.mak test This tests the netcdf-2 fortran
+interface.
+
+     <br><dt><code>cd ..\nctest; nmake /f msoft.mak test</code><dd>(optional, but recommended) In src\nctest; nmake /f msoft.mak test
+This tests the netcdf-2 C interface.
+
+     <br><dt><code>cd ..\nc_test; nmake /f msoft.mak test</code><dd>(optional, but highly recommended) In src\nc_test; nmake /f msoft.mak
+test This tortures the netcdf-3 C interface.
+
+     <br><dt><code>cd ..\nf_test; nmake /f msoft.mak test</code><dd>(optional, but highly recommended if you built the fortran interface)
+In src\nf_test; nmake /f msoft.mak test This tortures the netcdf-3
+fortran interface.
+
+     <br><dt><code>..\ncdump; nmake /f msoft.mak</code><dd>In src\ncdump; nmake /f msoft.mak This makes ncdump.exe.
+
+     <br><dt><code>..\ncgen; nmake /f msoft.mak</code><dd>In src\ncgen; nmake /f msoft.mak This makes ncgen.exe.
+
+     <br><dt><code>..\ncdump; nmake /f msoft.mak test</code><dd>(optional) In src\ncdump; nmake /f msoft.mak test This tests
+ncdump. Both ncgen and ncdump need to be built prior to this
+test. Note the makefile sets the path so that ..\libsrc\netcdf.dll can
+be located.
+
+     <br><dt><code>..\ncgen; nmake /f msoft.mak test</code><dd>(optional) In src\ncgen; nmake /f msoft.mak test This tests
+ncgen. Both ncgen and ncdump need to be built prior to this test. Note
+the makefile sets the path so that ..\libsrc\netcdf.dll can be
+located.
+
+     <br><dt><code>To Install</code><dd>Copy libsrc\netcdf.lib to a LIBRARY directory. 
+Copy libsrc\netcdf.h and fortran/netcdf.inc to an INCLUDE directory. 
+Copy libsrc\netcdf.dll, ncdump/ncdump.exe, and ncgen/ncgen.exe to
+a BIN directory (someplace in your PATH).
+
+   </dl>
+
+<div class="node">
+<a name="Using-DLL"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Building-with-NET">Building with NET</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Visual-Cplusplus">Visual Cplusplus</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Windows">Building on Windows</a>
+
+</div>
+
+<h3 class="section">5.4 Using netcdf.dll with VC++ 6.0</h3>
+
+<p><a name="index-VC_002b_002b-6_002e0_002c-using-netcdf-with-119"></a>
+To use the netcdf.dll:
+
+   <p>1. Place these in your include directory:
+	netcdf.h		C include file
+	netcdf.inc		Fortran include file
+
+   <p>2a. To use the Dynamic Library (shared) version of the netcdf library:
+  Place these in a directory that's in your PATH:
+	netcdf.dll		library dll
+	ncgen.exe		uses the dll
+	ncdump.exe		uses the dll
+
+   <p>Place this in a library directory to link against:
+	netcdf.lib		library
+
+   <p>2b. Alternatively, to use a static version of the library
+
+   <p>Place this in a library directory to link against:
+	netcdfs.lib		library
+
+   <p>Place these in a directory that's in your PATH:
+	ncgens.exe		statically linked (no DLL needed)
+	ncdumps.exe		statically linked (no DLL needed)
+
+<div class="node">
+<a name="Building-with-NET"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Using-with-NET">Using with NET</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Using-DLL">Using DLL</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Windows">Building on Windows</a>
+
+</div>
+
+<h3 class="section">5.5 Building netcdf.dll with VC++.NET</h3>
+
+<p><a name="index-VC_002b_002b_002eNET_002c-building-with-120"></a><a name="index-release-directory_002c-windows-121"></a><a name="index-debug-directory_002c-windows-122"></a><a name="index-testing_002c-for-windows-123"></a><a name="index-windows-testing-124"></a><a name="index-windows-large-file-tests-125"></a><a name="index-large-file-tests_002c-for-windows-126"></a><a name="index-quick_005flarge_005ffiles_002c-in-VC_002b_002b_002eNET-127"></a>
+To build the netCDF dll with VC++.NET open the win32/NET/netcdf.sln
+file with Visual Studio. Both Debug and Release configurations are
+available - select one and build.
+
+   <p>The resulting netcdf.dll file will be in subdirectory Release or
+Debug.
+
+   <p>The netCDF tests will be built and run as part of the build
+process. The Fortran 77 interface will be built, but not the Fortran
+90 or C++ interfaces.
+
+   <p>Unfortunately, different fortran compilers require different flag
+settings in the netCDF configuration files. (In UNIX builds, this is
+handled by the configure script.)
+
+   <p>The quick_large_files test program is provided as an extra project,
+however it is not run during the build process, but can be run from
+the command line or the IDE. Note that, despite its name, it is not
+quick. On Unix systems, this program runs in a few seconds, because of
+some features of the Unix file system apparently not present in
+Windows. Nonetheless, the program does run, and creates (then deletes)
+some very large files. (So make sure you have at least 15 GiB of space
+available). It takes about 45 minutes to run this program on our
+Windows machines, so please be patient.
+
+<div class="node">
+<a name="Using-with-NET"></a>
+<p><hr>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Building-with-NET">Building with NET</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Building-on-Windows">Building on Windows</a>
+
+</div>
+
+<h3 class="section">5.6 Using netcdf.dll with VC++.NET</h3>
+
+<p><a name="index-VC_002b_002b_002eNET_002c-using-netcdf-with-128"></a><a name="index-visual-studio-2003-properties-129"></a>
+Load-time linking to the DLL is the most straightforward from
+C++. This means the netcdf.lib file has to end up on the compile
+command line. This being Windows, that's hidden by a GUI.
+
+   <p>In Visual Studio 2003 this can be done by modifying three of the
+project's properties.
+
+   <p>Open the project properties window from the project menu. Go to the
+linker folder and look at the general properties. Modify the property
+&ldquo;Additional Library Directories&rdquo; by adding the directory which
+contains the netcdf.dll and netcdf.lib files.  Now go to the linker
+input properties and set the property &ldquo;Additional Dependencies&rdquo; to
+netcdf.lib.
+
+   <p>Finally, still within the project properties window, go to the C/C++
+folder, and look at the general properties. Modify &ldquo;Additional
+Include Directories&rdquo; to add the directory with the netcdf.h file.
+
+   <p>Now use the netCDF functions in your C++ code. Of course any C or C++
+file that wants to use the functions will need:
+
+<pre class="example">     #include &lt;netcdf.h&gt;
+</pre>
+   <div class="node">
+<a name="Build-Problems"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Combined-Index">Combined Index</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Building-on-Windows">Building on Windows</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="chapter">6 If Something Goes Wrong</h2>
+
+<p>The netCDF package is designed to build and install on a wide variety
+of platforms, but doesn't always. It's a crazy old world out there,
+after all.
+
+<ul class="menu">
+<li><a accesskey="1" href="#Usual-Problems">Usual Problems</a>:               Problems which Occur Often
+<li><a accesskey="2" href="#Troubleshooting">Troubleshooting</a>:              Finding the Problem
+<li><a accesskey="3" href="#Finding-Help">Finding Help</a>:                 Getting Support
+<li><a accesskey="4" href="#Reporting-Problems">Reporting Problems</a>:           What to Send to Support
+</ul>
+
+<div class="node">
+<a name="Usual-Problems"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Troubleshooting">Troubleshooting</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Build-Problems">Build Problems</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Build-Problems">Build Problems</a>
+
+</div>
+
+<h3 class="section">6.1 The Usual Build Problems</h3>
+
+<h4 class="subsection">6.1.1 Taking the Easy Way Out</h4>
+
+<p>Why not take the easy way out if you can?
+
+   <p>Many Linux systems contain package management programs which allow
+netCDF to be installed easily. This is the prefered installation
+method for netCDF.
+
+   <p>Precompiled binaries for some platforms can be found at
+<a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">http://www.unidata.ucar.edu/downloads/netcdf/index.jsp</a>. Click on your platform, and copy
+the files from the bin, include, lib, and man directories into your
+own local equivalents (Perhaps /usr/local/bin, /usr/local/include,
+etc.).
+
+<h4 class="subsection">6.1.2 How to Clean Up the Mess from a Failed Build</h4>
+
+<p>If you are trying to get the configure or build to work, make sure you
+start with a clean distribution for each attempt. If netCDF failed in
+the &ldquo;make&rdquo; you must clean up the mess before trying again. To clean
+up the distribution:
+
+<pre class="example">     make distclean
+</pre>
+   <h4 class="subsection">6.1.3 Platforms On Which NetCDF is Known to Work</h4>
+
+<p>At NetCDF World Headquarters (in sunny Boulder, Colorado), as part of
+the wonderful Unidata organization, we have a wide variety of
+computers, operating systems, and compilers. At night, house elves
+test netCDF on all these systems.
+
+   <p>Output for the netCDF test platforms can be found at
+<a href="http://www.unidata.ucar.edu/netcdf/builds">http://www.unidata.ucar.edu/netcdf/builds</a>.
+
+   <p>Compare the output of your build attempt with ours. Are you using the
+same compiler? The same flags? Look for the configure output that
+lists the settings of CC, FC, CXX, CFLAGS, etc.
+
+   <p>On some systems you have to set environment variables to get the
+configure and build to work.
+
+   <p>For example, for a 64-bit IRIX install of the netCDF-3.6.2 release,
+the variables are set before netCDF is configured or built. In this
+case we set CFLAGS, CXXFLAGS, FCFLAGS, and FFLAGS.
+
+<pre class="example">     flip% uname -a
+     IRIX64 flip 6.5 07080050 IP30 mips
+     flip% setenv CFLAGS -64
+     flip% setenv CXXFLAGS -64
+     flip% setenv FFLAGS -64
+     flip% setenv FCFLAGS -64
+     flip% make distclean;./configure;make check
+</pre>
+   <h4 class="subsection">6.1.4 Platforms On Which NetCDF is Reported to Work</h4>
+
+<p>If your platform isn't listed on the successful build page, see if
+another friendly netCDF user has sent in values for environment
+variables that are reported to work:
+(<a href="http://www.unidata.ucar.edu/netcdf/other-builds.html">http://www.unidata.ucar.edu/netcdf/other-builds.html</a>).
+
+   <p>If you build on a system that we don't have at Unidata (particularly
+if it's something interesting and exotic), please send us the settings
+that work (and the entire build output would be nice too). Send them
+to support-netcdf@unidata.ucar.edu.
+
+<h4 class="subsection">6.1.5 If You Have a Broken Compiler</h4>
+
+<p>For netCDF to build correctly, you must be able to compile C from your
+environment, and, optionally, Fortran 77, Fortran 90, and C++. If
+C doesn't work, netCDF can't compile.
+
+   <p>What breaks a C compiler? Installation or upgrade mistakes when the C
+compiler was installed, or multiple versions or compilers installed on
+top of each other. Commercial compilers frequently require some
+environment variables to be set, and some directories to appear ahead
+of others in your path. Finally, if you have an expired or broken
+license, your C compiler won't work.
+
+   <p>If you have a broken C compiler and a working C compiler in your PATH,
+netCDF might only find the broken one. You can fix this by explicitly
+setting the CC environmental variable to a working C compiler, and
+then trying to build netCDF again. (Don't forget to do a &ldquo;make
+distclean&rdquo; first!)
+
+   <p>If you can't build a C program, you can't build netCDF. Sorry, but
+that's just the way it goes. (You can get the GNU C compiler - search
+the web for &ldquo;gcc&rdquo;).
+
+   <p>If netCDF finds a broken Fortran 90, Fortran 77, or C++ compiler, it
+will report the problem during the configure, and then drop the
+associated API. For example, if the C++ compiler can't compile a very
+simple test program, it will drop the C++ interface. If you really
+want the C++ API, set the CXX environment variable to a working C++
+compiler.
+
+<h4 class="subsection">6.1.6 What to Do If NetCDF Still Won't Build</h4>
+
+<p>If none of the above help, try our troubleshooting section:
+See <a href="#Troubleshooting">Troubleshooting</a>.
+
+   <p>Also check to see of your problem has already been solved by someone
+else (see <a href="#Finding-Help">Finding Help</a>).
+
+   <p>If you still can't get netCDF to build, report your problem to
+Unidata, but please make sure you submit all the information we need
+to help (see <a href="#Reporting-Problems">Reporting Problems</a>).
+
+<div class="node">
+<a name="Troubleshooting"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Finding-Help">Finding Help</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Usual-Problems">Usual Problems</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Build-Problems">Build Problems</a>
+
+</div>
+
+<h3 class="section">6.2 Troubleshooting</h3>
+
+<p><a name="index-troubleshooting-130"></a><a name="index-turning-off-C_002b_002b_002c-Fortran-interface-131"></a>
+
+<h4 class="subsection">6.2.1 Problems During Configuration</h4>
+
+<p>If the ./configure; make check fails, it's a good idea to turn off the
+C++ and Fortran interfaces, and try to build the C interface
+alone. All other interfaces depend on the C interface, so nothing else
+will work until the C interface works. To turn off C++ and Fortran,
+set environment variables CXX and FC to NULL before running the netCDF
+configure script (with csh: setenv FC &rdquo;;setenv CXX &rdquo;).
+
+   <p>Turning off the Fortran and C++ interfaces results in a much shorter
+build and test cycle, which is useful for debugging problems.
+
+   <p>If the netCDF configure fails, most likely the problem is with your
+development environment. The configure script looks through your path to
+find all the tools it needs to build netCDF, including C compiler and
+linker, the ar, ranlib, and others. The configure script will tell
+you what tools it found, and where they are on your system. Here's
+part of configure's output on a Linux machine:
+
+<pre class="example">     checking CPPFLAGS...
+     checking CC CFLAGS... cc -g -O2
+     checking type cc... cc is /usr/bin/cc
+     checking CXX... c++
+     checking CXXFLAGS... -g -O2
+     checking type c++... c++ is /usr/bin/c++
+     checking FC... gfortran
+     checking FFLAGS... -g -O2
+     checking type gfortran... gfortran is /usr/bin/gfortran
+     checking F90... gfortran
+     checking FCFLAGS... -g -O2
+     checking type gfortran... gfortran is /usr/bin/gfortran
+     checking AR... ar
+     checking AR_FLAGS... cru
+     checking type ar... ar is /usr/bin/ar
+     checking NM... /usr/bin/nm -B
+     checking NMFLAGS...
+     checking for /usr/bin/nm... /usr/bin/nm -B
+     checking nm flags...
+</pre>
+   <p>Make sure that the tools, directories, and flags are set to reasonable
+values, and compatible tools. For example the GNU tools may not
+inter-operate well with vendor tools. If you're using a vendor
+compiler, you may need to use the ar, nm, and ranlib that the vendor
+supplied.
+
+   <p>As configure runs, it creates a config.log file. If configure crashes,
+do a text search of config.log for thing it was checking before
+crashing. If you have a licensing or tool compatibility problem, it
+will be obvious in config.log.
+
+<h4 class="subsection">6.2.2 Problems During Compilation</h4>
+
+<p>If the configure script runs, but the compile step doesn't work, or
+the tests don't complete successfully, the problem is probably in your
+CFLAGS or CPPFLAGS.
+
+   <p>Frequently shared libraries are a rich source of problems. If your
+build is not working, and you are using the &ndash;enable-shared option to
+generate shared libraries, then try to build without &ndash;enable-shared,
+and see if the static library build works.
+
+<h4 class="subsection">6.2.3 Problems During Testing</h4>
+
+<p>If you are planning on using large files (i.e. &gt; 2 GiB), then you may
+wish to rerun configure with &ndash;enable-large-file-tests to ensure that
+large files work on your system.
+
+   <p>Some DAP tests (in the directory ncdap_test) attempt to access an
+external server at opendap.org.  It is possible that the DAP server
+may not be running at test time, or the network access may be
+faulty or that the output of the test server has changed. 
+In this case, the DAP tests may fail. Because of this,
+the use of these tests is controlled by the &ndash;enable-dap-remote-tests
+option.
+
+<div class="node">
+<a name="Finding-Help"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Reporting-Problems">Reporting Problems</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Troubleshooting">Troubleshooting</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Build-Problems">Build Problems</a>
+
+</div>
+
+<h3 class="section">6.3 Finding Help On-line</h3>
+
+<p><a name="index-mailing-lists-132"></a><a name="index-documentation-133"></a><a name="index-FAQ-for-netCDF-134"></a><a name="index-other-builds-document-135"></a><a name="index-successful-build-output_002c-on-web-136"></a><a name="index-known-problems-137"></a>
+The latest netCDF documentation (including this manual) can be found
+at <a href="http://www.unidata.ucar.edu/netcdf/docs">http://www.unidata.ucar.edu/netcdf/docs</a>.
+
+   <p>The output of successful build and test runs for recent versions of
+netCDF can be found at <a href="http://www.unidata.ucar.edu/netcdf/builds">http://www.unidata.ucar.edu/netcdf/builds</a>.
+
+   <p>A list of known problems with netCDF builds, and suggested fixes, can
+be found at <a href="http://www.unidata.ucar.edu/netcdf/docs/known_problems.html">http://www.unidata.ucar.edu/netcdf/docs/known_problems.html</a>.
+
+   <p>Reportedly successful settings for platforms unavailable for netCDF
+testing can be found at <a href="http://www.unidata.ucar.edu/netcdf/other-builds.html">http://www.unidata.ucar.edu/netcdf/other-builds.html</a>. If you
+build netCDF on a system that is not listed, please send your
+environment settings, and the full output of your configure, compile,
+and testing, to support-netcdf@unidata.ucar.edu. We will add the
+information to the other-builds page, with a credit to you.
+
+   <p>The replies to all netCDF support emails are on-line and can be
+searched. Before reporting a problem to Unidata, please search this
+on-line database to see if your problem has already been addressed in
+a support email. If you are having build problems it's usually useful
+to search on your system host name. On Unix systems, use the uname
+command to find it.
+
+   <p>The netCDF Frequently Asked Questions (FAQ) list can be found at
+<a href="http://www.unidata.ucar.edu/netcdf/faq.html">http://www.unidata.ucar.edu/netcdf/faq.html</a>.
+
+   <p>To search the support database, see <a href="/search.jsp?support&amp;netcdf">/search.jsp?support&amp;netcdf</a>.
+
+   <p>The netCDF mailing list also can be searched; see
+<a href="/search.jsp?netcdfgroup">/search.jsp?netcdfgroup</a>.
+
+<div class="node">
+<a name="Reporting-Problems"></a>
+<p><hr>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Finding-Help">Finding Help</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Build-Problems">Build Problems</a>
+
+</div>
+
+<h3 class="section">6.4 Reporting Problems</h3>
+
+<p><a name="index-bugs_002c-reporting-138"></a><a name="index-problems_002c-reporting-139"></a><a name="index-reporting-problems-140"></a><a name="index-support-email-141"></a>
+To help us solve your problem, please include the following
+information in your email to <a href="support-netcdf@unidata.ucar.edu">support-netcdf@unidata.ucar.edu</a>.
+
+   <p>Unfortunately, we can't solve build questions without this
+information; if you ask for help without providing it, we're just
+going to have to ask for it.
+
+   <p>So why not send it immediately, and save us both the extra trouble?
+
+     <ol type=1 start=1>
+
+     <li>the exact version of netCDF - see the VERSION file.
+
+     <li>the *complete* output of &ldquo;./configure&rdquo;, &ldquo;make&rdquo;, and &ldquo;make check. Yes,
+it's long, but it's all important.
+
+     <li>if the configure failed, the contents of config.log.
+
+     <li>if you are having problems with very large files (larger than
+2GiB), send the output of "make check" after first running "make
+distclean" and invoking the configure script with the
+&ndash;enable-large-file-tests option included.
+
+        </ol>
+
+   <p>Although responses to your email will be available in our support
+database, your email address is not included, to provide spammers with
+one less place to harvest it from.
+
+<div class="node">
+<a name="Combined-Index"></a>
+<p><hr>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Build-Problems">Build Problems</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Index</h2>
+
+<ul class="index-cp" compact>
+<li><a href="#index-g_t_002d_002ddefault_002dchunks_002din_002dcache-51"><code>--default-chunks-in-cache</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002ddisable_002dcxx-40"><code>--disable-cxx</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002ddisable_002dexamples-48"><code>--disable-examples</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002ddisable_002df77-38"><code>--disable-f77</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002ddisable_002df90-39"><code>--disable-f90</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002ddisable_002dfortran-37"><code>--disable-fortran</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002ddisable_002dfortran_002dtype_002dcheck-47"><code>--disable-fortran-type-check</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002ddisable_002dlargefile-36"><code>--disable-largefile</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002ddisable_002dnetcdf_002d4-26"><code>--disable-netcdf-4</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002ddisable_002dshared-27"><code>--disable-shared</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002ddisable_002dv2-41"><code>--disable-v2</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002denable_002dbenchmarks-45"><code>--enable-benchmarks</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002denable_002dcxx4-42"><code>--enable-cxx4</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002denable_002ddap-28"><code>--enable-dap</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002denable_002ddap_002dlong_002dtests-31"><code>--enable-dap-long-tests</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002denable_002ddap_002dremote_002dtests-30"><code>--enable-dap-remote-tests</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002denable_002dextra_002dtests-49"><code>--enable-extra-tests</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002denable_002dhdf4-32"><code>--enable-hdf4</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002denable_002dhdf4_002dfile_002dtests-33"><code>--enable-hdf4-file-tests</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002denable_002dlarge_002dfile_002dtests-43"><code>--enable-large-file-tests</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002denable_002dpnetcdf-34"><code>--enable-pnetcdf</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002denable_002dvalgrind_002dtests-46"><code>--enable-valgrind-tests</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002dmax_002ddefault_002dcache_002dsize-52"><code>--max-default-cache-size</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002dprefix-25"><code>--prefix</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002dwith_002dchunk_002dcache_002dnelems-54"><code>--with-chunk-cache-nelems</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002dwith_002dchunk_002dcache_002dpreemption-55"><code>--with-chunk-cache-preemption</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002dwith_002dchunk_002dcache_002dsize-53"><code>--with-chunk-cache-size</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002dwith_002dcurl_002dconfig-29"><code>--with-curl-config</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002dwith_002ddefault_002dchunk_002dsize-50"><code>--with-default-chunk-size</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002dwith_002dtemp_002dlarge-44"><code>--with-temp-large</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002dwith_002dudunits-35"><code>--with-udunits</code></a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-g_t_002d_002denable_002dparallel_002dtests-19">&ndash;enable-parallel-tests</a>: <a href="#parallel">parallel</a></li>
+<li><a href="#index-g_t64_002dbit-platforms-14">64-bit platforms</a>: <a href="#g_t64-Bit">64 Bit</a></li>
+<li><a href="#index-g_t_005fLARGE_005fFILES_002c-on-AIX-70">_LARGE_FILES, on AIX</a>: <a href="#Installation">Installation</a></li>
+<li><a href="#index-AIX-64_002dbit-build-16">AIX 64-bit build</a>: <a href="#g_t64-Bit">64 Bit</a></li>
+<li><a href="#index-AIX_002c-building-on-73">AIX, building on</a>: <a href="#Platform-Notes">Platform Notes</a></li>
+<li><a href="#index-autoconf-100"><code>autoconf</code></a>: <a href="#Source">Source</a></li>
+<li><a href="#index-automake-101"><code>automake</code></a>: <a href="#Source">Source</a></li>
+<li><a href="#index-big-endian-94">big endian</a>: <a href="#Porting-Notes">Porting Notes</a></li>
+<li><a href="#index-binaries_002c-windows-112">binaries, windows</a>: <a href="#Prebuilt-DLL">Prebuilt DLL</a></li>
+<li><a href="#index-binary-install-1">binary install</a>: <a href="#Binaries">Binaries</a></li>
+<li><a href="#index-binary-releases-7">binary releases</a>: <a href="#Building-on-Unix">Building on Unix</a></li>
+<li><a href="#index-bugs_002c-reporting-138">bugs, reporting</a>: <a href="#Reporting-Problems">Reporting Problems</a></li>
+<li><a href="#index-compiler-flags-105">compiler flags</a>: <a href="#Using">Using</a></li>
+<li><a href="#index-config_002elog-24">config.log</a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-configure_002c-running-20">configure, running</a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-CRAY_002c-porting-to-86">CRAY, porting to</a>: <a href="#Porting-Notes">Porting Notes</a></li>
+<li><a href="#index-Cygwin_002c-building-with-72">Cygwin, building with</a>: <a href="#Platform-Notes">Platform Notes</a></li>
+<li><a href="#index-debug-directory_002c-windows-122">debug directory, windows</a>: <a href="#Building-with-NET">Building with NET</a></li>
+<li><a href="#index-DLL-110">DLL</a>: <a href="#Building-on-Windows">Building on Windows</a></li>
+<li><a href="#index-dll_002c-getting-113">dll, getting</a>: <a href="#Prebuilt-DLL">Prebuilt DLL</a></li>
+<li><a href="#index-documentation-133">documentation</a>: <a href="#Finding-Help">Finding Help</a></li>
+<li><a href="#index-documents_002c-latest-version-6">documents, latest version</a>: <a href="#Building-on-Unix">Building on Unix</a></li>
+<li><a href="#index-earlier-netCDF-versions-8">earlier netCDF versions</a>: <a href="#Building-on-Unix">Building on Unix</a></li>
+<li><a href="#index-enable_002dlarge_002dfile_002dtests-62">enable-large-file-tests</a>: <a href="#Testing">Testing</a></li>
+<li><a href="#index-enable_002dlarge_002dfile_002dtests-13">enable-large-file-tests</a>: <a href="#Requirements">Requirements</a></li>
+<li><a href="#index-extra_005fcheck-requirements-12">extra_check requirements</a>: <a href="#Requirements">Requirements</a></li>
+<li><a href="#index-extra_005ftest-requirements-11">extra_test requirements</a>: <a href="#Requirements">Requirements</a></li>
+<li><a href="#index-FAQ-for-netCDF-134">FAQ for netCDF</a>: <a href="#Finding-Help">Finding Help</a></li>
+<li><a href="#index-ffio_002ec-92">ffio.c</a>: <a href="#Porting-Notes">Porting Notes</a></li>
+<li><a href="#index-flex-and-yacc-97"><code>flex and yacc</code></a>: <a href="#Source">Source</a></li>
+<li><a href="#index-fortran_002c-Intel-81">fortran, Intel</a>: <a href="#Platform-Notes">Platform Notes</a></li>
+<li><a href="#index-fortran_002c-Portland-Group-83">fortran, Portland Group</a>: <a href="#Platform-Notes">Platform Notes</a></li>
+<li><a href="#index-GNU-make-84">GNU make</a>: <a href="#Porting-Notes">Porting Notes</a></li>
+<li><a href="#index-HPUX_002c-building-on-74">HPUX, building on</a>: <a href="#Platform-Notes">Platform Notes</a></li>
+<li><a href="#index-install-directory-22">install directory</a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-installation-requirements-9">installation requirements</a>: <a href="#Requirements">Requirements</a></li>
+<li><a href="#index-installing-binary-distribution-2">installing binary distribution</a>: <a href="#Binaries">Binaries</a></li>
+<li><a href="#index-installing-netCDF-69">installing netCDF</a>: <a href="#Installation">Installation</a></li>
+<li><a href="#index-Intel-fortran-80">Intel fortran</a>: <a href="#Platform-Notes">Platform Notes</a></li>
+<li><a href="#index-Irix_002c-building-on-75">Irix, building on</a>: <a href="#Platform-Notes">Platform Notes</a></li>
+<li><a href="#index-known-problems-137">known problems</a>: <a href="#Finding-Help">Finding Help</a></li>
+<li><a href="#index-large-file-tests-61">large file tests</a>: <a href="#Testing">Testing</a></li>
+<li><a href="#index-large-file-tests-requirements-10">large file tests requirements</a>: <a href="#Requirements">Requirements</a></li>
+<li><a href="#index-large-file-tests_002c-for-windows-126">large file tests, for windows</a>: <a href="#Building-with-NET">Building with NET</a></li>
+<li><a href="#index-libtool-102"><code>libtool</code></a>: <a href="#Source">Source</a></li>
+<li><a href="#index-link-options-104">link options</a>: <a href="#Using">Using</a></li>
+<li><a href="#index-Linux_002c-building-on-76">Linux, building on</a>: <a href="#Platform-Notes">Platform Notes</a></li>
+<li><a href="#index-little-endian-95">little endian</a>: <a href="#Porting-Notes">Porting Notes</a></li>
+<li><a href="#index-m4-96"><code>m4</code></a>: <a href="#Source">Source</a></li>
+<li><a href="#index-Macintosh_002c-building-on-77">Macintosh, building on</a>: <a href="#Platform-Notes">Platform Notes</a></li>
+<li><a href="#index-mailing-lists-132">mailing lists</a>: <a href="#Finding-Help">Finding Help</a></li>
+<li><a href="#index-make-all_005flarge_005ftests-67">make all_large_tests</a>: <a href="#Testing">Testing</a></li>
+<li><a href="#index-make-check-60">make check</a>: <a href="#Testing">Testing</a></li>
+<li><a href="#index-make-install-68">make install</a>: <a href="#Installation">Installation</a></li>
+<li><a href="#index-make-lfs_005ftest-66">make lfs_test</a>: <a href="#Testing">Testing</a></li>
+<li><a href="#index-make-slow_005fcheck-65">make slow_check</a>: <a href="#Testing">Testing</a></li>
+<li><a href="#index-make-test-59">make test</a>: <a href="#Testing">Testing</a></li>
+<li><a href="#index-make_002c-running-56">make, running</a>: <a href="#Make">Make</a></li>
+<li><a href="#index-makeinfo-98"><code>makeinfo</code></a>: <a href="#Source">Source</a></li>
+<li><a href="#index-Microsoft-111">Microsoft</a>: <a href="#Building-on-Windows">Building on Windows</a></li>
+<li><a href="#index-MPICH2-18">MPICH2</a>: <a href="#parallel">parallel</a></li>
+<li><a href="#index-nc_002dconfig-106">nc-config</a>: <a href="#Using">Using</a></li>
+<li><a href="#index-ncconfig_002eh-87">ncconfig.h</a>: <a href="#Porting-Notes">Porting Notes</a></li>
+<li><a href="#index-ncconfig_002ein-88">ncconfig.in</a>: <a href="#Porting-Notes">Porting Notes</a></li>
+<li><a href="#index-ncconfig_002einc-89">ncconfig.inc</a>: <a href="#Porting-Notes">Porting Notes</a></li>
+<li><a href="#index-ncdump_002c-windows-location-117">ncdump, windows location</a>: <a href="#Installing-DLL">Installing DLL</a></li>
+<li><a href="#index-ncgen_002c-windows-location-116">ncgen, windows location</a>: <a href="#Installing-DLL">Installing DLL</a></li>
+<li><a href="#index-ncio-90">ncio</a>: <a href="#Porting-Notes">Porting Notes</a></li>
+<li><a href="#index-ncx_002em4-91">ncx.m4</a>: <a href="#Porting-Notes">Porting Notes</a></li>
+<li><a href="#index-NET-109">NET</a>: <a href="#Building-on-Windows">Building on Windows</a></li>
+<li><a href="#index-netcdf_002edll_002c-location-114">netcdf.dll, location</a>: <a href="#Installing-DLL">Installing DLL</a></li>
+<li><a href="#index-netcdf_002elib-115">netcdf.lib</a>: <a href="#Installing-DLL">Installing DLL</a></li>
+<li><a href="#index-OBJECT_005fMODE_002c-on-AIX-71">OBJECT_MODE, on AIX</a>: <a href="#Installation">Installation</a></li>
+<li><a href="#index-OSF1_002c-building-on-78">OSF1, building on</a>: <a href="#Platform-Notes">Platform Notes</a></li>
+<li><a href="#index-other-builds-document-135">other builds document</a>: <a href="#Finding-Help">Finding Help</a></li>
+<li><a href="#index-parallel-platforms-17">parallel platforms</a>: <a href="#parallel">parallel</a></li>
+<li><a href="#index-porting-notes_002c-additional-85">porting notes, additional</a>: <a href="#Porting-Notes">Porting Notes</a></li>
+<li><a href="#index-Portland-Group-fortran-82">Portland Group fortran</a>: <a href="#Platform-Notes">Platform Notes</a></li>
+<li><a href="#index-posixio_002ec-93">posixio.c</a>: <a href="#Porting-Notes">Porting Notes</a></li>
+<li><a href="#index-prefix-argument-of-configure-23">prefix argument of configure</a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-problems_002c-reporting-139">problems, reporting</a>: <a href="#Reporting-Problems">Reporting Problems</a></li>
+<li><a href="#index-quick-unix-instructions-4">quick unix instructions</a>: <a href="#Quick-Instructions">Quick Instructions</a></li>
+<li><a href="#index-quick_005flarge_005ffiles_002c-in-VC_002b_002b_002eNET-127">quick_large_files, in VC++.NET</a>: <a href="#Building-with-NET">Building with NET</a></li>
+<li><a href="#index-release-directory_002c-windows-121">release directory, windows</a>: <a href="#Building-with-NET">Building with NET</a></li>
+<li><a href="#index-reporting-problems-140">reporting problems</a>: <a href="#Reporting-Problems">Reporting Problems</a></li>
+<li><a href="#index-running-configure-21">running configure</a>: <a href="#Configure">Configure</a></li>
+<li><a href="#index-running-make-57">running make</a>: <a href="#Make">Make</a></li>
+<li><a href="#index-sed-103"><code>sed</code></a>: <a href="#Source">Source</a></li>
+<li><a href="#index-shared-libraries_002c-building-5">shared libraries, building</a>: <a href="#Quick-Instructions">Quick Instructions</a></li>
+<li><a href="#index-shared-libraries_002c-using-3">shared libraries, using</a>: <a href="#Binaries">Binaries</a></li>
+<li><a href="#index-successful-build-output_002c-on-web-136">successful build output, on web</a>: <a href="#Finding-Help">Finding Help</a></li>
+<li><a href="#index-SunOS-64_002dbit-build-15">SunOS 64-bit build</a>: <a href="#g_t64-Bit">64 Bit</a></li>
+<li><a href="#index-SunOS_002c-building-on-79">SunOS, building on</a>: <a href="#Platform-Notes">Platform Notes</a></li>
+<li><a href="#index-support-email-141">support email</a>: <a href="#Reporting-Problems">Reporting Problems</a></li>
+<li><a href="#index-TEMP_005fLARGE-64">TEMP_LARGE</a>: <a href="#Testing">Testing</a></li>
+<li><a href="#index-testing-large-file-features-63">testing large file features</a>: <a href="#Testing">Testing</a></li>
+<li><a href="#index-testing_002c-for-windows-123">testing, for windows</a>: <a href="#Building-with-NET">Building with NET</a></li>
+<li><a href="#index-tests_002c-running-58">tests, running</a>: <a href="#Testing">Testing</a></li>
+<li><a href="#index-tex-99"><code>tex</code></a>: <a href="#Source">Source</a></li>
+<li><a href="#index-troubleshooting-130">troubleshooting</a>: <a href="#Troubleshooting">Troubleshooting</a></li>
+<li><a href="#index-turning-off-C_002b_002b_002c-Fortran-interface-131">turning off C++, Fortran interface</a>: <a href="#Troubleshooting">Troubleshooting</a></li>
+<li><a href="#index-VC_002b_002b-108">VC++</a>: <a href="#Building-on-Windows">Building on Windows</a></li>
+<li><a href="#index-VC_002b_002b-6_002e0_002c-building-with-118">VC++ 6.0, building with</a>: <a href="#Visual-Cplusplus">Visual Cplusplus</a></li>
+<li><a href="#index-VC_002b_002b-6_002e0_002c-using-netcdf-with-119">VC++ 6.0, using netcdf with</a>: <a href="#Using-DLL">Using DLL</a></li>
+<li><a href="#index-VC_002b_002b_002eNET_002c-building-with-120">VC++.NET, building with</a>: <a href="#Building-with-NET">Building with NET</a></li>
+<li><a href="#index-VC_002b_002b_002eNET_002c-using-netcdf-with-128">VC++.NET, using netcdf with</a>: <a href="#Using-with-NET">Using with NET</a></li>
+<li><a href="#index-visual-studio-2003-properties-129">visual studio 2003 properties</a>: <a href="#Using-with-NET">Using with NET</a></li>
+<li><a href="#index-windows-large-file-tests-125">windows large file tests</a>: <a href="#Building-with-NET">Building with NET</a></li>
+<li><a href="#index-windows-testing-124">windows testing</a>: <a href="#Building-with-NET">Building with NET</a></li>
+<li><a href="#index-windows_002c-building-on-107">windows, building on</a>: <a href="#Building-on-Windows">Building on Windows</a></li>
+</ul></body></html>
+

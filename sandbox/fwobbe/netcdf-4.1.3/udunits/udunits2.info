@@ -1,0 +1,394 @@
+This is udunits2.info, produced by makeinfo version 4.13 from
+udunits2.texi.
+
+INFO-DIR-SECTION Science
+START-INFO-DIR-ENTRY
+* udunits-2: (udunits2).  The Unidata package for units of physical quantities.
+END-INFO-DIR-ENTRY
+   Copyright 2008, 2009 University Corporation for Atmospheric Research
+
+   Access and use of this software shall impose the following
+obligations and understandings on the user. The user is granted the
+right, without any fee or cost, to use, copy, modify, alter, enhance
+and distribute this software, and any derivative works thereof, and its
+supporting documentation for any purpose whatsoever, provided that this
+entire notice appears in all copies of the software, derivative works
+and supporting documentation. Further, UCAR requests that the user
+credit UCAR/Unidata in any publications that result from the use of this
+software or in any product that includes this software, although this is
+not an obligation. The names UCAR and/or Unidata, however, may not be
+used in any advertising or publicity to endorse or promote any products
+or commercial entity unless specific written permission is obtained from
+UCAR/Unidata. The user also understands that UCAR/Unidata is not
+obligated to provide the user with any support, consulting, training or
+assistance of any kind with regard to the use, operation and performance
+of this software nor to provide the user with any updates, revisions,
+new versions or "bug fixes."
+
+   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+
+
+File: udunits2.info,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (dir)
+
+UDUNITS-2
+*********
+
+This manual describes the UDUNITS-2 package, which contains a C library
+for units of physical quantities and a unit-definition and
+value-conversion utility.
+
+   Copyright 2008, 2009 University Corporation for Atmospheric Research
+
+   Access and use of this software shall impose the following
+obligations and understandings on the user. The user is granted the
+right, without any fee or cost, to use, copy, modify, alter, enhance
+and distribute this software, and any derivative works thereof, and its
+supporting documentation for any purpose whatsoever, provided that this
+entire notice appears in all copies of the software, derivative works
+and supporting documentation. Further, UCAR requests that the user
+credit UCAR/Unidata in any publications that result from the use of this
+software or in any product that includes this software, although this is
+not an obligation. The names UCAR and/or Unidata, however, may not be
+used in any advertising or publicity to endorse or promote any products
+or commercial entity unless specific written permission is obtained from
+UCAR/Unidata. The user also understands that UCAR/Unidata is not
+obligated to provide the user with any support, consulting, training or
+assistance of any kind with regard to the use, operation and performance
+of this software nor to provide the user with any updates, revisions,
+new versions or "bug fixes."
+
+   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+
+* Menu:
+
+* Introduction::        Introduction
+* Differences::		How this package differs from the original UDUNITS
+* Obtain::              Obtaining this package
+* Install::             Installing this package
+* Support::             Support for this package
+* Database::            The unit database
+* Complete Index::      Complete index
+
+
+File: udunits2.info,  Node: Introduction,  Next: Differences,  Prev: Top,  Up: Top
+
+1 Introduction
+**************
+
+The UDUNITS-2 package provides support for units of physical quantities.
+Its three main components are: 1) *note a C library: (udunits2lib)Top.
+for units of physical quantities; 2) *note a utility:
+(udunits2prog)Top.; for obtaining the definition of a unit and for
+converting numeric values between compatible units; and 3) an extensive
+database of units.
+
+
+File: udunits2.info,  Node: Differences,  Next: Obtain,  Prev: Introduction,  Up: Top
+
+2 How This Package Differs from the Original `UDUNITS' Package
+**************************************************************
+
+The `UDUNIT-2' package differs from the original `UDUNITS' package in
+the following ways:
+   * *Support for non-ASCII characters:* The original `UDUNITS' package
+     only supports the ASCII character set.  The `UDUNITS-2' package
+     supports the following character sets: ASCII, ISO 8859-1 (Latin-1),
+     and the UTF-8 encoding of ISO 10646 (Unicode).  This means that
+     unit string specifications like "`µ°F·Ω⁻¹'" are now supported (your
+     viewer must support UTF-8 to display this string correctly).
+
+   * *Support for logarithmic units:*  The unit string specification
+     "`0.1 lg(re 1 mW)'" specifies a deciBel unit with a one milliwatt
+     reference level.  Such units are fully integrated into the package
+     and all meaningful operations and conversions are supported.
+
+   * *Persistent value converters:* It is now possible to obtain a
+     _converter_ data-object, which can be used to convert numeric
+     values in one unit to numeric values in another, compatible unit.
+     The values can be `float', `double', or one-dimensional arrays of
+     `float's or `double's.
+
+   * *Improved API:*  Due to the above changes, it was not possible to
+     keep the application programming interface (API) of the original
+     `UDUNITS' package.  The new interface, however, is easily
+     understood and easy to use.  To support backward comptibility, the
+     package does contain a version 1 C API, which uses the version 2
+     library.
+
+   * *XML unit database:*  The unit database is encoded using
+     human-readable XML rather than a custom format.  The XML parser
+     included in the package supports an _<import>_ element to allow
+     easy and convenient customization.
+
+   * *No Fortran or Perl API:*  Interfaces for these languages have not
+     yet been created.  Contact <support-udunits@unidata.ucar.edu> if
+     you are interested in helping to create these interfaces.
+
+
+   One thing that has not changed is that almost all unit string
+specifications understood by the original `UDUNITS' package are also
+understood by the new `UDUNITS-2' package.  The one exception is the
+symbol `g', which in the original package was associated with standard
+free fall (a unit of accelleration) but which is associated with gram
+in the new package.
+
+
+File: udunits2.info,  Node: Obtain,  Next: Install,  Prev: Differences,  Up: Top
+
+3 Obtaining this Package
+************************
+
+Get this package from its download-page at
+`http://www.unidata.ucar.edu/downloads/udunits/' and unpack it in an
+appropriate place, e.g.,
+
+     cd /usr/local/src
+     gunzip -c udunits-2.1.21.tar.gz | pax -r
+
+
+File: udunits2.info,  Node: Install,  Next: Database,  Prev: Obtain,  Up: Top
+
+4 Installing this Package
+*************************
+
+* Menu:
+
+* Short::        Short intallation instructions
+* Long::         Long installation instructions
+* What::         What gets installed
+
+
+File: udunits2.info,  Node: Short,  Next: Long,  Up: Install
+
+4.1 Short Installation Instructions
+===================================
+
+Not all development enviroments can build and install this package.
+See the long instructions in the next section for details.
+
+   The following assumes that you are familiar with autoconf-based
+package-installation.  If you're not, then follow the long instructions
+in the next section.
+
+     ./configure [--prefix=ROOT] [--disable-shared] [CC=PATH]
+     make
+     make check                      # optional; requires CUNIT installation
+     make install                    # also installs INFO documentation
+     make install-html install-pdf   # optional
+     make clean
+
+   By default, the installation root is `/usr/local'.
+
+   If you encounter problems, then follow the instructions in the next
+section.
+
+
+File: udunits2.info,  Node: Long,  Next: What,  Prev: Short,  Up: Install
+
+4.2 Long Installation Instructions
+==================================
+
+  1. Go to the top-level source-directory of this package, e.g.,
+          cd udunits-2.1.21
+
+  2. Because some `make' utilities cannot build this package correctly,
+     locate the operating system that is closest to yours in the
+     following table and determine the MAKE utility that you will use.
+
+          O/S                            `make' Utility
+          ------------------------------------------------------- 
+
+  3. If necessary, clean-up from a previous installation attempt by
+     making the `distclean' target using the MAKE utility from step 2:
+          MAKE distclean
+
+  4. Because some compilers cannot build this package correctly, locate
+     the operating system closest to yours in the following table and
+     determine the compiler that you will use and any required option
+     for the `configure' script.
+
+          O/S                            Compiler                  `configure' Option
+          ------------------------------------------------------------------------------ 
+
+     The option `--disable-shared' causes the build process to create a
+     static library only: a sharable library is not created.  This
+     option is necessary if the `libtool' utility that's included in
+     this package can't build a sharable library using the given
+     compiler.
+
+     The following table lists the build environments that do not work
+     -- so don't use them:
+
+          O/S                            Compiler                  `configure' Option
+          ------------------------------------------------------------------------------ 
+
+  5. Execute the `configure' script.  Specify the installation prefix,
+     the compiler from the previous step, and any required option.  For
+     example, if you are on an HP-UX system and want to use the
+     `/bin/c89' compiler and install under `/opt', then the following
+     command is appropriate:
+
+          ./configure --prefix=/opt --disable-shared CC=/bin/c89
+
+     If the installation prefix is not specified, then the default is
+     to install under `/usr/local'.
+
+     If the compiler isn't specified, then the default is to use `gcc'.
+
+  6. Build this package by making the default target using the MAKE
+     utility from step 2:
+          MAKE
+
+  7. If you wish to verify that this package works correctly, then make
+     the `check' target using the MAKE utility from step 2:
+          MAKE check
+     This step is only effective if the `configure' script found an
+     installed `CUNIT' unit-testing package.  If that package wasn't
+     found, then the above command will quickly exit without testing
+     this package.
+
+  8. Install the *note library: (udunits2lib)Top, *note utility:
+     (udunits2prog)Top, header-files, units-database, and INFO
+     documentation files by making the `install' target using the MAKE
+     utility from step 2:
+          MAKE install
+
+  9. If desired, install the HTML and PDF documentation files by making
+     one or more of the following targets using the MAKE utility from
+     step 2:
+          MAKE install-html install-pdf
+
+ 10. Clean up by making the `clean' target using the MAKE utility from
+     step 2:
+          MAKE clean
+
+
+File: udunits2.info,  Node: What,  Prev: Long,  Up: Install
+
+4.3 What Gets Installed
+=======================
+
+The following files are created or installed under the installation
+directory:
+
+     bin/:
+     udunits2                # Unit *note utility: (udunits2prog)Top.
+
+     include/:
+     converter.h             # API for value converters
+     udunits2.h              # API for units
+
+     lib/:
+     libudunits2.a           # Static unit *note library: (udunits2lib)Top.
+     libudunits2.la          # libtool(1) reference for unit *note library: (udunits2lib)Top.
+     libudunits2.so          # Link to shared *note library: (udunits2lib)Top.
+     libudunits2.so.0        # Link to shared *note library: (udunits2lib)Top.
+     libudunits2.so.0.0.0    # Shared *note library: (udunits2lib)Top.
+
+     share/:
+     doc                     # Directory. Created if it doesn't exist
+     info                    # Directory. Created if it doesn't exist
+     udunits                 # Directory. Created if it doesn't exist
+
+     share/doc:
+     udunits                 # Directory. Created if it doesn't exist
+
+     share/doc/udunits:
+     udunits2.html           # HTML documentation on this package
+     udunits2lib.html        # HTML documentation on the unit *note library: (udunits2lib)Top.
+     udunits2lib.pdf         # PDF documentation on the unit *note library: (udunits2lib)Top.
+     udunits2.pdf            # PDF documentation on this package
+     udunits2prog.html       # HTML documentation on the unit *note utility: (udunits2prog)Top.
+     udunits2prog.pdf        # PDF documentation on the unit *note utility: (udunits2prog)Top.
+
+     share/info:
+     dir                     # Top-level "info" file.  Created if it doesn't exist
+     udunits2.info           # INFO documentation on this package
+     udunits2lib.info        # INFO documentation on the unit *note library: (udunits2lib)Top.
+     udunits2prog.info       # INFO documentation on the unit *note utility: (udunits2prog)Top.
+
+     share/udunits:
+     udunits2.xml            # Default unit database
+     udunits2-accepted.xml   # Units accepted for use with the SI
+     udunits2-base.xml       # SI base units
+     udunits2-common.xml     # Common, non-SI units
+     udunits2-derived.xml    # Derived units of the SI
+     udunits2-prefixes.xml   # SI unit prefixes
+
+
+File: udunits2.info,  Node: Database,  Next: Support,  Prev: Install,  Up: Top
+
+5 The Units Database
+********************
+
+The database for the UDUNITS-2 package comprises one XML file containing
+unit prefixes and four XML files containing unit definitions:
+
+   * SI unit prefixes (../../udunits/udunits2-prefixes.xml)
+
+   * SI base units (../../udunits/udunits2-base.xml)
+
+   * SI derived units (../../udunits/udunits2-derived.xml)
+
+   * Units accepted for use with the SI
+     (../../udunits/udunits2-accepted.xml)
+
+   * Non-SI units (../../udunits/udunits2-common.xml)
+
+
+File: udunits2.info,  Node: Support,  Next: Complete Index,  Prev: Database,  Up: Top
+
+6 Support for this Package
+**************************
+
+The home-page for this package can be found at
+`http://www.unidata.ucar.edu/software/udunits/'.
+
+   Bug reports should be sent to <support-udunits@unidata.ucar.edu>.
+
+
+File: udunits2.info,  Node: Complete Index,  Prev: Support,  Up: Top
+
+Index
+*****
+
+ [index ]
+* Menu:
+
+* database:                              Database.              (line 6)
+* installing this package:               Install.               (line 6)
+* Introduction:                          Introduction.          (line 6)
+* obtaining this package:                Obtain.                (line 6)
+* package, support:                      Support.               (line 6)
+* support:                               Support.               (line 6)
+
+
+
+Tag Table:
+Node: Top1986
+Node: Introduction4350
+Node: Differences4824
+Node: Obtain7318
+Node: Install7661
+Node: Short7938
+Node: Long8786
+Node: What12107
+Node: Database14454
+Node: Support15029
+Node: Complete Index15340
+
+End Tag Table

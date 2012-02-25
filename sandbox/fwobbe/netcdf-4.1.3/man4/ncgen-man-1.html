@@ -1,0 +1,1687 @@
+<!-- Creator     : groff version 1.20.1 -->
+<!-- CreationDate: Thu Jun 30 17:23:46 2011 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>NCGEN</title>
+
+</head>
+<body>
+
+<h1 align="center">NCGEN</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#USAGE">USAGE</a><br>
+<a href="#BUGS">BUGS</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">ncgen &minus;
+From a CDL file generate a netCDF-3 file, a netCDF-4 file or
+a C program</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em">ncgen [-b] [-c] [-f] [-k <i>file
+format</i>] [-l <i>output language</i>] [-n] [-o
+<i>netcdf_filename</i>] [-x] <i>input_file</i></p></td></tr>
+</table>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><b>ncgen</b></i>
+generates either a netCDF-3 (i.e. classic) binary .nc file,
+a netCDF-4 (i.e. enhanced) binary .nc file or a file in some
+source language that when executed will construct the
+corresponding binary .nc file. The input to <b>ncgen</b> is
+a description of a netCDF file in a small language known as
+CDL (network Common Data form Language), described below. If
+no options are specified in invoking <b>ncgen</b>, it merely
+checks the syntax of the input CDL file, producing error
+messages for any violations of CDL syntax. Other options can
+be used, for example, to create the corresponding netCDF
+file, or to generate a C program that uses the netCDF C
+interface to create the netCDF file.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Note that this
+version of ncgen was originally called ncgen4. The older
+ncgen program has been renamed to ncgen3.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>ncgen</b>
+may be used with the companion program <b>ncdump</b> to
+perform some simple operations on netCDF files. For example,
+to rename a dimension in a netCDF file, use <b>ncdump</b> to
+get a CDL version of the netCDF file, edit the CDL file to
+change the name of the dimensions, and use <b>ncgen</b> to
+generate the corresponding netCDF file from the edited CDL
+file.</p>
+
+<h2>OPTIONS
+<a name="OPTIONS"></a>
+</h2>
+
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top: 1em"><b>-b</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em">Create a (binary) netCDF file.
+If the <b>-o</b> option is absent, a default file name will
+be constructed from the netCDF name (specified after the
+<b>netcdf</b> keyword in the input) by appending the
+&lsquo;.nc&rsquo; extension. If a file already exists with
+the specified name, it will be overwritten.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>-c</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>Generate <b>C</b> source code that will create a netCDF
+file matching the netCDF specification. The C source code is
+written to standard output; equivalent to -lc.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>-f</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>Generate <b>FORTRAN 77</b> source code that will create
+a netCDF file matching the netCDF specification. The source
+code is written to standard output; equivalent to -lf77.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>-o</b> netcdf_file</p>
+
+<p style="margin-left:22%;">Name for the binary netCDF file
+created. If this option is specified, it implies the
+&quot;<b>-b</b>&quot; option. (This option is necessary
+because netCDF files cannot be written directly to standard
+output, since standard output is not seekable.)</p>
+
+<p style="margin-left:11%;"><b>-k</b> file_format</p>
+
+<p style="margin-left:22%;">The -k flag specifies the
+format of the file to be created and, by inference, the data
+model accepted by ncgen (i.e. netcdf-3 (classic) versus
+netcdf-4). The possible arguments are as follows.</p>
+
+<p style="margin-left:32%;">&rsquo;1&rsquo;,
+&rsquo;classic&rsquo; =&gt; netcdf classic file format,
+netcdf-3 <br>
+type model. <br>
+&rsquo;2&rsquo;, &rsquo;64-bit-offset&rsquo;, &rsquo;64-bit
+offset&rsquo; =&gt; netcdf 64 bit <br>
+classic file format, netcdf-3 type model. <br>
+&rsquo;3&rsquo;, &rsquo;hdf5&rsquo;, &rsquo;netCDF-4&rsquo;,
+&rsquo;enhanced&rsquo; =&gt; netcdf-4 file <br>
+format, netcdf-4 type model. <br>
+&rsquo;4&rsquo;, &rsquo;hdf5-nc3&rsquo;, &rsquo;netCDF-4
+classic model&rsquo;, &rsquo;enhanced-nc3&rsquo; <br>
+=&gt; netcdf-4 file format, netcdf-3 type model.</p>
+
+<p style="margin-left:11%;">If no -k is specified then it
+defaults to -k1 (i.e. classic). Note also that -v is
+accepted to mean the same thing as -k for backward
+compatibility, but -k is preferred, to match the
+corresponding ncdump option.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>-x</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>Don&rsquo;t initialize data with fill values. This can
+speed up creation of large netCDF files greatly, but later
+attempts to read unwritten data from the generated file will
+not be easily detectable.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>-l</b> output_language</p>
+
+<p style="margin-left:22%;">The -l flag specifies the
+output language to use when generating source code that will
+create or define a netCDF file matching the netCDF
+specification. The output is written to standard output. The
+currently supported languages have the following flags.</p>
+
+<p style="margin-left:32%;">c|C&rsquo; =&gt; C language
+output. <br>
+f77|fortran77&rsquo; =&gt; FORTRAN 77 language output</p>
+
+<p style="margin-left:43%;">; note that currently only the
+classic model is supported.</p>
+
+<p style="margin-left:32%;">j|java&rsquo; =&gt;
+(experimental) Java language output</p>
+
+<p style="margin-left:43%;">; targets the existing Unidata
+Java interface, which means that only the classic model is
+supported.</p>
+
+<h2>EXAMPLES
+<a name="EXAMPLES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Check the
+syntax of the CDL file &lsquo;<b>foo.cdl</b>&rsquo;:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="20%">
+
+
+<p style="margin-top: 1em">ncgen foo.cdl</p></td>
+<td width="58%">
+</td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">From the CDL
+file &lsquo;<b>foo.cdl</b>&rsquo;, generate an equivalent
+binary netCDF file named &lsquo;<b>x.nc</b>&rsquo;:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="32%">
+
+
+<p style="margin-top: 1em">ncgen -o x.nc foo.cdl</p></td>
+<td width="46%">
+</td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">From the CDL
+file &lsquo;<b>foo.cdl</b>&rsquo;, generate a C program
+containing the netCDF function invocations necessary to
+create an equivalent binary netCDF file named
+&lsquo;<b>x.nc</b>&rsquo;:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="36%">
+
+
+<p style="margin-top: 1em">ncgen -c -o x.nc foo.cdl</p></td>
+<td width="42%">
+</td></tr>
+</table>
+
+<h2>USAGE
+<a name="USAGE"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>CDL Syntax
+Overview</b> <br>
+Below is an example of CDL syntax, describing a netCDF file
+with several named dimensions (lat, lon, and time),
+variables (Z, t, p, rh, lat, lon, time), variable attributes
+(units, long_name, valid_range, _FillValue), and some data.
+CDL keywords are in boldface. (This example is intended to
+illustrate the syntax; a real CDL file would have a more
+complete set of attributes so that the data would be more
+completely self-describing.)</p>
+
+<p style="margin-left:22%;">netcdf foo { // an example
+netCDF specification in CDL</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>types</b>:
+<i><br>
+ubyte enum</i> enum_t {Clear = 0, Cumulonimbus = 1, Stratus
+= 2}; <i><br>
+opaque</i>(11) opaque_t; <i><br>
+int</i>(*) vlen_t;</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>dimensions</b>:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p>lat = 10, lon = 5, time = <i>unlimited</i> ;</p></td></tr>
+</table>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>variables</b>:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p><i>long</i> lat(lat), lon(lon), time(time);</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p><i>float</i> Z(time,lat,lon), t(time,lat,lon);</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p><i>double</i> p(time,lat,lon);</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p><i>long</i> rh(time,lat,lon);</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p><i>string</i> country(time,lat,lon);</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p><i>ubyte</i> tag;</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p>// variable attributes</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p>lat:long_name = &quot;latitude&quot;;</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p>lat:units = &quot;degrees_north&quot;;</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p>lon:long_name = &quot;longitude&quot;;</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p>lon:units = &quot;degrees_east&quot;;</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p>time:units = &quot;seconds since 1992-1-1
+00:00:00&quot;;</p> </td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p>// typed variable attributes</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p><i>string</i> Z:units = &quot;geopotential
+meters&quot;;</p> </td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p><i>float</i> Z:valid_range = 0., 5000.;</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p><i>double</i> p:_FillValue = -9999.;</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p><i>long</i> rh:_FillValue = -1;</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p><i>vlen_t</i> :globalatt = {17, 18, 19};</p></td></tr>
+</table>
+
+<p style="margin-left:22%;"><b>data</b>:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p>lat = 0, 10, 20, 30, 40, 50, 60, 70, 80, 90;</p></td></tr>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p>lon = -140, -118, -96, -84, -52;</p></td></tr>
+</table>
+
+<p style="margin-left:22%;"><b>group</b>: g { <b><br>
+types</b>: <i><br>
+compound</i> cmpd_t { <i>vlen_t</i> f1; <i>enum_t</i> f2;};
+<br>
+} // group g <b><br>
+group</b>: h { <b><br>
+variables</b>:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p>/g/<i>cmpd_t</i> compoundvar;</p></td></tr>
+</table>
+
+<p style="margin-left:22%;"><b>data</b>: <br>
+compoundvar = { {3,4,5}, Stratus } ; <br>
+} // group h <br>
+}</p>
+
+<p style="margin-left:11%; margin-top: 1em">All CDL
+statements are terminated by a semicolon. Spaces, tabs, and
+newlines can be used freely for readability. Comments may
+follow the characters &lsquo;//&rsquo; on any line.</p>
+
+<p style="margin-left:11%; margin-top: 1em">A CDL
+description consists of five optional parts: <i>types</i>,
+<i>dimensions</i>, <i>variables</i>, <i>data</i>, beginning
+with the keyword <b>&lsquo;types:&rsquo;</b>,
+<b>&lsquo;dimensions:&rsquo;</b>,
+<b>&lsquo;variables:&rsquo;</b>, and
+<b>&lsquo;data:&rsquo;,</b> respectively. Note several
+things: (1) the keyword includes the trailing colon, so
+there must not be any space before the colon character, and
+(2) the keywords are required to be lower case.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>variables:</b> section may contain <i>variable
+declarations</i> and <i>attribute assignments</i>. All
+sections may contain global attribute assignments.</p>
+
+<p style="margin-left:11%; margin-top: 1em">In addition,
+after the <b>data:</b> section, the user may define a series
+of groups (see the example above). Groups themselves can
+contain types, dimensions, variables, data, and other
+(nested) groups.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The netCDF
+<b>types:</b> section declares the user defined types. These
+may be constructed using any of the following types:
+<b>enum</b>, <b>vlen</b>, <b>opaque</b>, or
+<b>compound</b>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">A netCDF
+<i>dimension</i> is used to define the shape of one or more
+of the multidimensional variables contained in the netCDF
+file. A netCDF dimension has a name and a size. A dimension
+can have the <b>unlimited</b> size, which means a variable
+using this dimension can grow to any length in that
+dimension.</p>
+
+<p style="margin-left:11%; margin-top: 1em">A
+<i>variable</i> represents a multidimensional array of
+values of the same type. A variable has a name, a data type,
+and a shape described by its list of dimensions. Each
+variable may also have associated <i>attributes</i> (see
+below) as well as data values. The name, data type, and
+shape of a variable are specified by its declaration in the
+<i>variable</i> section of a CDL description. A variable may
+have the same name as a dimension; by convention such a
+variable is one-dimensional and contains coordinates of the
+dimension it names. Dimensions need not have corresponding
+variables.</p>
+
+<p style="margin-left:11%; margin-top: 1em">A netCDF
+<i>attribute</i> contains information about a netCDF
+variable or about the whole netCDF dataset. Attributes are
+used to specify such properties as units, special values,
+maximum and minimum valid values, scaling factors, offsets,
+and parameters. Attribute information is represented by
+single values or arrays of values. For example,
+&quot;units&quot; is an attribute represented by a character
+array such as &quot;celsius&quot;. An attribute has an
+associated variable, a name, a data type, a length, and a
+value. In contrast to variables that are intended for data,
+attributes are intended for metadata (data about data).
+Unlike netCDF-3, attribute types can be any user defined
+type as well as the usual built-in types.</p>
+
+<p style="margin-left:11%; margin-top: 1em">In CDL, an
+attribute is designated by a a type, a variable, a
+&rsquo;:&rsquo;, and then an attribute name. The type is
+optional and if missing, it will be inferred from the values
+assigned to the attribute. It is possible to assign
+<i>global</i> attributes not associated with any variable to
+the netCDF as a whole by omitting the variable name in the
+attribute declaration. Notice that there is a potential
+ambiguity in a specification such as <br>
+x : a = ... <br>
+In this situation, x could be either a type for a global
+attribute, or the variable name for an attribute. Since
+there could both be a type named x and a variable named x,
+there is an ambiguity. The rule is that in this situation, x
+will be interpreted as a type if possible, and otherwise as
+a variable.</p>
+
+<p style="margin-left:11%; margin-top: 1em">If not
+specified, the data type of an attribute in CDL is derived
+from the type of the value(s) assigned to it. The length of
+an attribute is the number of data values assigned to it, or
+the number of characters in the character string assigned to
+it. Multiple values are assigned to non-character attributes
+by separating the values with commas. All values assigned to
+an attribute must be of the same type.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The names for
+CDL dimensions, variables, attributes, types, and groups may
+contain any non-control utf-8 character except the forward
+slash character (&lsquo;/&rsquo;). However, certain
+characters must escaped if they are used in a name, where
+the escape character is the backward slash &lsquo;\&rsquo;.
+In particular, if the leading character off the name is a
+digit (0-9), then it must be preceded by the escape
+character. In addition, the characters &lsquo;
+!&quot;#$%&amp;()*,:;&lt;=&gt;?[]^&lsquo;&acute;{}|~\&rsquo;
+must be escaped if they occur anywhere in a name.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Note also that
+the words &lsquo;variable&rsquo;, &lsquo;dimension&rsquo;,
+&lsquo;data&rsquo;, &lsquo;group&rsquo;, and
+&lsquo;types&rsquo; are legal CDL names, but be careful that
+there is a space between them and any following colon
+character. This is mostly an issue with attribute
+declarations. For example, consider this.</p>
+
+<p style="margin-left:22%; margin-top: 1em">netcdf ... {
+<br>
+variables: <br>
+int dimensions; <br>
+dimensions: attribute=0 ; // this will cause an error <br>
+dimensions : attribute=0 ; // this is ok. <br>
+}</p>
+
+<p style="margin-left:11%; margin-top: 1em">The optional
+<b>data:</b> section of a CDL specification is where netCDF
+variables may be initialized. The syntax of an
+initialization is simple: a variable name, an equals sign,
+and a comma-delimited list of constants (possibly separated
+by spaces, tabs and newlines) terminated with a semicolon.
+For multi-dimensional arrays, the last dimension varies
+fastest. Thus row-order rather than column order is used for
+matrices. If fewer values are supplied than are needed to
+fill a variable, it is extended with a type-dependent
+&lsquo;fill value&rsquo;, which can be overridden by
+supplying a value for a distinguished variable attribute
+named &lsquo;_FillValue&rsquo;. The types of constants need
+not match the type declared for a variable; coercions are
+done to convert integers to floating point, for example. The
+constant &lsquo;_&rsquo; can be used to designate the fill
+value for a variable.</p>
+
+<p><b>Primitive Data Types</b></p></table>
+
+<p style="margin-left:22%;"><b>char</b> characters</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>byte</b></p></td>
+<td width="8%">
+
+
+<p>8-bit data</p></td>
+<td width="66%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>short</b></p></td>
+<td width="8%"></td>
+<td width="66%">
+
+
+<p>16-bit signed integers</p></td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>int</b></p></td>
+<td width="8%">
+
+
+<p>32-bit signed integers</p></td>
+<td width="66%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>long</b></p></td>
+<td width="8%">
+
+
+<p>(synonymous with <b>int</b>)</p></td>
+<td width="66%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>int64</b></p></td>
+<td width="8%"></td>
+<td width="66%">
+
+
+<p>64-bit signed integers</p></td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>float</b></p></td>
+<td width="8%"></td>
+<td width="66%">
+
+
+<p>IEEE single precision floating point (32 bits)</p></td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>real</b></p></td>
+<td width="8%">
+
+
+<p>(synonymous with <b>float</b>)</p></td>
+<td width="66%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>double</b></p></td>
+<td width="8%"></td>
+<td width="66%">
+
+
+<p>IEEE double precision floating point (64 bits)</p></td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>ubyte</b></p></td>
+<td width="8%"></td>
+<td width="66%">
+
+
+<p>unsigned 8-bit data</p></td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>ushort</b></p></td>
+<td width="8%"></td>
+<td width="66%">
+
+
+<p>16-bit unsigned integers</p></td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>uint</b></p></td>
+<td width="8%">
+
+
+<p>32-bit unsigned integers</p></td>
+<td width="66%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>uint64</b></p></td>
+<td width="8%"></td>
+<td width="66%">
+
+
+<p>64-bit unsigned integers</p></td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p><b>string</b></p></td>
+<td width="8%"></td>
+<td width="66%">
+
+
+<p>arbitrary length strings</p></td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">CDL supports a
+superset of the primitive data types of C. The names for the
+primitive data types are reserved words in CDL, so the names
+of variables, dimensions, and attributes must not be
+primitive type names. In declarations, type names may be
+specified in either upper or lower case.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Bytes differ
+from characters in that they are intended to hold a full
+eight bits of data, and the zero byte has no special
+significance, as it does for character data. <b>ncgen</b>
+converts <b>byte</b> declarations to <b>char</b>
+declarations in the output C code and to the nonstandard
+<b>BYTE</b> declaration in output Fortran code.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Shorts can hold
+values between -32768 and 32767. <b>ncgen</b> converts
+<b>short</b> declarations to <b>short</b> declarations in
+the output C code and to the nonstandard <b>INTEGER*2</b>
+declaration in output Fortran code.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Ints can hold
+values between -2147483648 and 2147483647. <b>ncgen</b>
+converts <b>int</b> declarations to <b>int</b> declarations
+in the output C code and to <b>INTEGER</b> declarations in
+output Fortran code. <b>long</b> is accepted as a synonym
+for <b>int</b> in CDL declarations, but is deprecated since
+there are now platforms with 64-bit representations for C
+longs.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Int64 can hold
+values between -9223372036854775808 and 9223372036854775807.
+<b>ncgen</b> converts <b>int64</b> declarations to
+<b>longlong</b> declarations in the output C code.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Floats can hold
+values between about -3.4+38 and 3.4+38. Their external
+representation is as 32-bit IEEE normalized single-precision
+floating point numbers. <b>ncgen</b> converts <b>float</b>
+declarations to <b>float</b> declarations in the output C
+code and to <b>REAL</b> declarations in output Fortran code.
+<b>real</b> is accepted as a synonym for <b>float</b> in CDL
+declarations.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Doubles can
+hold values between about -1.7+308 and 1.7+308. Their
+external representation is as 64-bit IEEE standard
+normalized double-precision floating point numbers.
+<b>ncgen</b> converts <b>double</b> declarations to
+<b>double</b> declarations in the output C code and to
+<b>DOUBLE PRECISION</b> declarations in output Fortran
+code.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The unsigned
+counterparts of the above integer types are mapped to the
+corresponding unsigned C types. Their ranges are suitably
+modified to start at zero.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>CDL
+Constants</b> <br>
+Constants assigned to attributes or variables may be of any
+of the basic netCDF types. The syntax for constants is
+similar to C syntax, except that type suffixes must be
+appended to shorts and floats to distinguish them from longs
+and doubles.</p>
+
+<p style="margin-left:11%; margin-top: 1em">A <i>byte</i>
+constant is represented by a single character or multiple
+character escape sequence enclosed in single quotes. For
+example,</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+
+
+<p>&rsquo;a&rsquo;</p><td width="23%"></td>
+<td width="-5%"></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="8%">
+
+
+<p>// ASCII &lsquo;a&rsquo; <br>
+&rsquo;\0&rsquo;</p></td>
+<td width="58%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="-5%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="58%">
+
+
+<p>// a zero byte <br>
+&rsquo;\n&rsquo;</p></td></tr>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="-5%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="58%">
+
+
+<p>// ASCII newline character <br>
+&rsquo;\33&rsquo;</p></td></tr>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="-5%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="58%">
+
+
+<p>// ASCII escape character (33 octal) <br>
+&rsquo;\x2b&rsquo;</p></td></tr>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="-5%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p>// ASCII plus (2b hex) <br>
+&rsquo;\377&rsquo;</p></td>
+<td width="58%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="-5%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p>// 377 octal = 255 decimal, non-ASCII</p></td>
+<td width="58%">
+</td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">Character
+constants are enclosed in double quotes. A character array
+may be represented as a string enclosed in double quotes.
+The usual C string escape conventions are honored. For
+example</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p>&quot;a&quot;</p></td>
+<td width="8%">
+</td>
+<td width="8%">
+
+
+<p>// ASCII &lsquo;a&rsquo;</p></td>
+<td width="58%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p>&quot;Two\nlines\n&quot;</p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="58%">
+
+
+<p>// a 10-character string with two embedded newlines</p></td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p>&quot;a bell:\007&quot;</p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="58%">
+
+
+<p>// a string containing an ASCII bell</p></td></tr>
+</table>
+
+<p style="margin-left:11%;">Note that the netCDF character
+array &quot;a&quot; would fit in a one-element variable,
+since no terminating NULL character is assumed. However, a
+zero byte in a character array is interpreted as the end of
+the significant characters by the <b>ncdump</b> program,
+following the C convention. Therefore, a NULL byte should
+not be embedded in a character string unless at the end: use
+the <i>byte</i> data type instead for byte arrays that
+contain the zero byte.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>short</i>
+integer constants are intended for representing 16-bit
+signed quantities. The form of a <i>short</i> constant is an
+integer constant with an &lsquo;s&rsquo; or &lsquo;S&rsquo;
+appended. If a <i>short</i> constant begins with
+&lsquo;0&rsquo;, it is interpreted as octal, except that if
+it begins with &lsquo;0x&rsquo;, it is interpreted as a
+hexadecimal constant. For example:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p>-2s</p></td>
+<td width="8%">
+
+
+<p>// a short -2</p></td>
+<td width="66%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p>0123s</p></td>
+<td width="8%"></td>
+<td width="66%">
+
+
+<p>// octal</p></td></tr>
+</table>
+
+<p style="margin-left:22%;">0x7ffs //hexadecimal</p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>int</i>
+integer constants are intended for representing 32-bit
+signed quantities. The form of an <i>int</i> constant is an
+ordinary integer constant, although it is acceptable to
+append an optional &lsquo;l&rsquo; or &lsquo;L&rsquo;
+(again, deprecated). If an <i>int</i> constant begins with
+&lsquo;0&rsquo;, it is interpreted as octal, except that if
+it begins with &lsquo;0x&rsquo;, it is interpreted as a
+hexadecimal constant (but see opaque constants below).
+Examples of valid <i>int</i> constants include:</p>
+
+<p style="margin-left:22%;">-2 <br>
+1234567890L</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p>0123</p></td>
+<td width="8%">
+</td>
+<td width="8%">
+
+
+<p>// octal</p></td>
+<td width="58%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p>0x7ff</p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="58%">
+
+
+<p>// hexadecimal</p></td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><i>int64</i>
+integer constants are intended for representing 64-bit
+signed quantities. The form of an <i>int64</i> constant is
+an integer constant with an &lsquo;ll&rsquo; or
+&lsquo;LL&rsquo; appended. If an <i>int64</i> constant
+begins with &lsquo;0&rsquo;, it is interpreted as octal,
+except that if it begins with &lsquo;0x&rsquo;, it is
+interpreted as a hexadecimal constant. For example:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p>-2ll</p></td>
+<td width="8%">
+
+
+<p>// an unsigned -2</p></td>
+<td width="66%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p>0123LL</p></td>
+<td width="8%"></td>
+<td width="66%">
+
+
+<p>// octal</p></td></tr>
+</table>
+
+<p style="margin-left:22%;">0x7ffLL //hexadecimal</p>
+
+<p style="margin-left:11%; margin-top: 1em">Floating point
+constants of type <i>float</i> are appropriate for
+representing floating point data with about seven
+significant digits of precision. The form of a <i>float</i>
+constant is the same as a C floating point constant with an
+&lsquo;f&rsquo; or &lsquo;F&rsquo; appended. For example the
+following are all acceptable <i>float</i> constants:</p>
+
+<p style="margin-left:22%;">-2.0f</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%">
+
+
+<p>3.14159265358979f</p></td>
+<td width="24%"></td>
+<td width="7%"></td>
+<td width="51%">
+
+
+<p>// will be truncated to less precision</p></td></tr>
+</table>
+
+<p style="margin-left:22%;">1.f</p>
+
+<p style="margin-left:11%; margin-top: 1em">Floating point
+constants of type <i>double</i> are appropriate for
+representing floating point data with about sixteen
+significant digits of precision. The form of a <i>double</i>
+constant is the same as a C floating point constant. An
+optional &lsquo;d&rsquo; or &lsquo;D&rsquo; may be appended.
+For example the following are all acceptable <i>double</i>
+constants:</p>
+
+<p style="margin-left:22%;">-2.0 <br>
+3.141592653589793 <br>
+1.0e-20 <br>
+1.d</p>
+
+<p style="margin-left:11%; margin-top: 1em">Unsigned
+integer constants can be created by appending the character
+&rsquo;U&rsquo; or &rsquo;u&rsquo; between the constant and
+any trailing size specifier. Thus one could say 10U, 100us,
+100000ul, or 1000000ull, for example.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>String</i>
+constants are, like character constants, represented using
+double quotes. This represents a potential ambiguity since a
+multi-character string may also indicate a dimensioned
+character value. Disambiguation usually occurs by context,
+but care should be taken to specify the<i>string</i> type to
+ensure the proper choice.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>Opaque</i>
+constants are represented as sequences of hexadecimal digits
+preceded by 0X or 0x: 0xaa34ffff, for example. These
+constants can still be used as integer constants and will be
+either truncated or extended as necessary.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Compound
+Constant Expressions</b> <br>
+In order to assign values to variables (or attributes) whose
+type is user-defined type, the constant notation has been
+extended to include sequences of constants enclosed in curly
+brackets (e.g. &quot;{&quot;...&quot;}&quot;). Such a
+constant is called a compound constant, and compound
+constants can be nested.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Given a type
+&quot;T(*) vlen_t&quot;, where T is some other arbitrary
+base type, constants for this should be specified as
+follows. <br>
+vlen_t var[2] = {t11,t12,...t1N}, {t21,t22,...t2m}; <br>
+The values tij, are assumed to be constants of type T.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Given a type
+&quot;compound cmpd_t {T1 f1; T2 f2...Tn fn}&quot;, where
+the Ti are other arbitrary base types, constants for this
+should be specified as follows. <br>
+cmpd_t var[2] = {t11,t12,...t1N}, {t21,t22,...t2n}; <br>
+The values tij, are assumed to be constants of type Ti. If
+the fields are missing, then they will be set using any
+specified or default fill value for the field&rsquo;s base
+type.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The general set
+of rules for using braces are defined in the <b>Specifying
+Datalists</b> section below.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Scoping
+Rules</b> <br>
+With the addition of groups, the name space for defined
+objects is no longer flat. References (names) of any type,
+dimension, or variable may be prefixed with the absolute
+path specifying a specific declaration. Thus one might say
+<br>
+variables: <br>
+/g1/g2/t1 v1; <br>
+The type being referenced (t1) is the one within group g2,
+which in turn is nested in group g1. The similarity of this
+notation to Unix file paths is deliberate, and one can
+consider groups as a form of directory structure.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em">1. When name is not prefixed,
+then scope rules are applied to locate the specified
+declaration. Currently, there are three rules: one for
+dimensions, one for types and enumeration constants, and one
+for all others.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em">2. When an unprefixed name of a
+dimension is used (as in a variable declaration), ncgen
+first looks in the immediately enclosing group for the
+dimension. If it is not found there, then it looks in the
+group enclosing this group. This continues up the group
+hierarchy until the dimension is found, or there are no more
+groups to search.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em">3. For all other names, only the
+immediately enclosing group is searched.</p></td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">When an
+unprefixed name of a type or an enumeration constant is
+used, ncgen searches the group tree using a pre-order
+depth-first search. This essentially means that it will find
+the matching declaration that precedes the reference
+textually in the cdl file and that is &quot;highest&quot; in
+the group hierarchy.</p>
+
+<p style="margin-left:11%; margin-top: 1em">One final note.
+Forward references are not allowed. This means that
+specifying, for example, /g1/g2/t1 will fail if this
+reference occurs before g1 and/or g2 are defined.</p>
+
+<p><b>Special Attributes</b></p></table>
+
+<p style="margin-left:11%;">Special, virtual, attributes
+can be specified to provide performance-related information
+about the file format and about variable properties. The
+file must be a netCDF-4 file for these to take effect.</p>
+
+<p style="margin-left:11%; margin-top: 1em">These special
+virtual attributes are not actually part of the file, they
+are merely a convenient way to set miscellaneous properties
+of the data in CDL</p>
+
+<p style="margin-left:11%; margin-top: 1em">The special
+attributes currently supported are as follows:
+&lsquo;_Format&rsquo;, &lsquo;_Fletcher32,
+&lsquo;_ChunkSizes&rsquo;, &lsquo;_Endianness&rsquo;,
+&lsquo;_DeflateLevel&rsquo;, &lsquo;_Shuffle&rsquo;, and
+&lsquo;_Storage&rsquo;.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em">&lsquo;_Format&rsquo;
+is a global attribute specifying the netCDF format variant.
+Its value must be a single string matching one of
+&lsquo;classic&rsquo;, &lsquo;64-bit offset&rsquo;,
+&lsquo;netCDF-4&rsquo;, or &lsquo;netCDF-4 classic
+model&rsquo;.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The rest of the
+special attributes are all variable attributes. Essentially
+all of then map to some corresponding
+&lsquo;nc_def_var_XXX&rsquo; function as defined in the
+netCDF-4 API. For the atttributes that are essentially
+boolean (_Fletcher32, _Shuffle, and _NOFILL), the value true
+can be specified by using the strings &lsquo;true&rsquo; or
+&lsquo;1&rsquo;, or by using the integer 1. The value false
+expects either &lsquo;false&rsquo;, &lsquo;0&rsquo;, or the
+integer 0. The actions associated with these attributes are
+as follows.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>1.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p>&lsquo;_Fletcher32 sets the &lsquo;fletcher32&rsquo;
+property for a variable.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>2.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p>&lsquo;_Endianness&rsquo; is either &lsquo;little&rsquo;
+or &lsquo;big&rsquo;, depending on how the variable is
+stored when first written.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>3.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p>&lsquo;_DeflateLevel&rsquo; is an integer between 0 and
+9 inclusive if compression has been specified for the
+variable.</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>4.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p>&lsquo;_Shuffle&rsquo; specifies if the the shuffle
+filter should be used.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>5.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p>&lsquo;_Storage&rsquo; is &lsquo;contiguous&rsquo; or
+&lsquo;chunked&rsquo;.</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>6.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p>&lsquo;_ChunkSizes&rsquo; is a list of chunk sizes for
+each dimension of the variable</p></td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Specifying
+Datalists</b> <br>
+Specifying datalists for variables in the
+&lsquo;data:&lsquo; section can be somewhat complicated.
+There are some rules that must be followed to ensure that
+datalists are parsed correctly by ncgen.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top: 1em">1.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p style="margin-top: 1em">The top level is automatically
+assumed to be a list of items, so it should not be inside
+{...}.</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>2.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p>Instances of UNLIMITED dimensions (other than the first
+dimension) must be surrounded by {...} in order to specify
+the size.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>3.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p>Instances of vlens must be surrounded by {...} in order
+to specify the size.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>4.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p>Compound instances must be embedded in {...}</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>5.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p>Non-scalar fields of compound instances must be embedded
+in {...}.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>6.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p>Datalists associated with attributes are implicitly a
+vector (i.e., a list) of values of the type of the attribute
+and the above rules must apply with that in mind.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>7.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p>No other use of braces is allowed.</p></td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">Note that one
+consequence of these rules is that arrays of values cannot
+have subarrays within braces. Consider, for example, int
+var(d1)(d2)...(dn), where none of d2...dn are unlimited. A
+datalist for this variable must be a single list of
+integers, where the number of integers is no more than
+D=d1*d2*...dn values; note that the list can be less than D,
+in which case fill values will be used to pad the list.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Rule 6 about
+attribute datalist has the following consequence. If the
+type of the attribute is a compound (or vlen) type, and if
+the number of entries in the list is one, then the compound
+instances must be enclosed in braces.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Specifying
+Character Datalists</b> <br>
+Specifying datalists for variables of type char also has
+some complications. consider, for example</p>
+
+<p style="margin-left:22%;">dimensions: u=UNLIMITED; d1=1;
+d2=2; d3=3; <br>
+d4=4; d5=5; u2=UNLIMITED; <br>
+variables: char var(d3,d4); <br>
+datalist: var=&quot;1&quot;, &quot;two&quot;,
+&quot;three&quot;;</p>
+
+<p style="margin-left:11%; margin-top: 1em">We have twenty
+elements of var to fill (d5 X d4) and we have three strings
+of length 1, 3, 5. How do we assign the characters in the
+strings to the twenty elements?</p>
+
+<p style="margin-left:11%; margin-top: 1em">The basic rule
+is &quot;greedy&quot; plus &quot;right dimension
+rules&quot;. By this we mean the following.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top: 1em">1.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p style="margin-top: 1em">Use the size of the rightmost
+dimension (d4=4) and modify the constant list so that every
+string is less than or equal to this dimension size. Longer
+strings are decomposed. For our example, we get this.</p></td></tr>
+</table>
+
+<p style="margin-left:23%;">datalist: var= &quot;1&quot;,
+&quot;two&quot;, &quot;thre&quot;, &quot;e&quot;;</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top: 1em">2.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p style="margin-top: 1em">Pad any short strings to the
+length of the right dimension. This produces the
+following.</p> </td></tr>
+</table>
+
+<p style="margin-left:23%;">datalist: var=
+&quot;1\0\0\0&quot;, &quot;two\0&quot;, &quot;thre&quot;,
+&quot;e\0\0\0&quot;;</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top: 1em">3.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p style="margin-top: 1em">Move the the next to the
+rightmost dimension (d5 in this case) and add fill values as
+needed, producing this.</p></td></tr>
+</table>
+
+<p style="margin-left:23%;">datalist: var=
+&quot;1\0\0\0&quot;, &quot;two\0&quot;, &quot;thre&quot;,
+&quot;e\0\0\0&quot;, &quot;\0\0\0\0&quot;;</p>
+
+<p style="margin-left:15%; margin-top: 1em">4. Repeat step
+3 for successively more left dimensions until the first
+dimension is reached. If the first dimension is UNLIMITED,
+and has not had any previous value assigned to it, then do
+not pad, but instead use the length at that point as the
+unlimited length. In all other cases, pad to the specified
+length.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Note that the
+term &quot;greedy&quot; is used because the above algorithm
+causes the strings to be assigned to the &quot;front&quot;
+of the variable and fill values to the end.</p>
+
+<p style="margin-left:11%; margin-top: 1em">There are
+several additional edge cases that must be dealt with.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top: 1em">1.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p style="margin-top: 1em">Suppose we have only an
+unlimited dimension such as this case.</p></td></tr>
+</table>
+
+<p style="margin-left:23%;">variables: char var(u); <br>
+datalist: var=&quot;1&quot;, &quot;two&quot;,
+&quot;three&quot;;</p>
+
+<p style="margin-left:15%;">In this case, we treat it like
+it was defined as this.</p>
+
+<p style="margin-left:23%;">variables: char var(u,d1); <br>
+datalist:
+var=&quot;1&quot;,&quot;t&quot;,&quot;w&quot;,&quot;o&quot;,&quot;t&quot;,&quot;h&quot;,&quot;r&quot;,&quot;e&quot;,&quot;e&quot;;</p>
+
+<p style="margin-left:15%;">This means that u will have the
+length of nine.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top: 1em">2.</p></td>
+<td width="1%"></td>
+<td width="85%">
+
+
+<p style="margin-top: 1em">In netcdf-4, dimensions other
+than the first can be unlimited. Of course by the rules
+above, the interior unlimited instances must be delimited by
+{...}. For example.</p></td></tr>
+</table>
+
+<p style="margin-left:23%;">variables: char var(u,u2); <br>
+datalist: var={&quot;1&quot;, &quot;two&quot;},
+{&quot;three&quot;};</p>
+
+<p style="margin-left:15%; margin-top: 1em">In this case u
+will have the effective length of two. Within each instance
+of u2, the rules above will apply, leading to this.</p>
+
+<p style="margin-left:23%;">datalist:
+var={&quot;1&quot;,&quot;t&quot;,&quot;w&quot;,&quot;o&quot;},
+{&quot;t&quot;,&quot;h&quot;,&quot;r&quot;,&quot;e&quot;,&quot;e&quot;};</p>
+
+<p style="margin-left:15%; margin-top: 1em">The effective
+size of u2 will be the max of the two instance lengths (five
+in this case) and the shorter will be padded to produce
+this.</p>
+
+<p style="margin-left:23%;">datalist:
+var={&quot;1&quot;,&quot;t&quot;,&quot;w&quot;,&quot;o&quot;,&quot;\0&quot;},
+{&quot;t&quot;,&quot;h&quot;,&quot;r&quot;,&quot;e&quot;,&quot;e&quot;};</p>
+
+<h2>BUGS
+<a name="BUGS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The programs
+generated by <b>ncgen</b> when using the <b>-c</b> flag use
+initialization statements to store data in variables, and
+will fail to produce compilable programs if you try to use
+them for large datasets, since the resulting statements may
+exceed the line length or number of continuation statements
+permitted by the compiler.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The CDL syntax
+makes it easy to assign what looks like an array of
+variable-length strings to a netCDF variable, but the
+strings may simply be concatenated into a single array of
+characters. Specific use of the <i>string</i> type specifier
+may solve the problem</p>
+<hr>
+</body>
+</html>

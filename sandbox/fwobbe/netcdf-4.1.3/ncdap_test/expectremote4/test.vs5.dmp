@@ -1,0 +1,38 @@
+netcdf test {
+types:
+  compound Array_Vgroup_t {
+    int SDS_Array(5) ;
+  }; // Array_Vgroup_t
+  compound SDS_Grid_t {
+    int SDS_Grid(5) ;
+    int fakeDim1(5) ;
+  }; // SDS_Grid_t
+  compound Grid_Vgroup_t {
+    SDS_Grid_t SDS_Grid ;
+  }; // Grid_Vgroup_t
+  compound GR_Vgroup_t {
+    int GRaster(5, 5) ;
+  }; // GR_Vgroup_t
+  compound Field_t {
+    int Field__0 ;
+  }; // Field_t
+  compound Vdata_record_t {
+    Field_t Field ;
+  }; // Vdata_record_t
+  Vdata_record_t(*) Vdata_t ;
+  compound Vdata_Vgroup_t {
+    Vdata_t Vdata ;
+  }; // Vdata_Vgroup_t
+  compound Main_Vgroup_t {
+    Array_Vgroup_t Array_Vgroup ;
+    Grid_Vgroup_t Grid_Vgroup ;
+    GR_Vgroup_t GR_Vgroup ;
+    Vdata_Vgroup_t Vdata_Vgroup ;
+  }; // Main_Vgroup_t
+variables:
+	Main_Vgroup_t Main_Vgroup ;
+data:
+
+ Main_Vgroup = 
+    {{{0, 2048, 4096, 6144, 8192}}, {{{0, 2048, 4096, 6144, 8192}, {0, 2048, 4096, 6144, 8192}}}, {{0, 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 34816, 36864, 38912, 40960, 43008, 45056, 47104, 49152}}, {{{{1}}, {{2}}, {{3}}, {{5}}, {{8}}}}} ;
+}

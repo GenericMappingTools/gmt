@@ -1,0 +1,11 @@
+Dataset {
+    Byte b[25];
+    Int32 i32[25];
+    UInt32 ui32[25];
+    Int16 i16[25];
+    UInt16 ui16[25];
+    Float32 f32[25];
+    Float64 f64[25];
+    String s[25];
+    Url u[25];
+} OneDimensionalSimpleArrays;

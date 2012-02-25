@@ -1,0 +1,5 @@
+Dataset {
+      Structure {
+        Int32   v1[3];
+      } S1;
+    } ITEST1;

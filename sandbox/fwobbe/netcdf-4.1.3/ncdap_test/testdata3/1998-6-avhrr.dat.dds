@@ -1,0 +1,11 @@
+Dataset {
+    Sequence {
+        String satellite;
+        Int32 year;
+        Int32 day_num;
+        Int32 hh;
+        Int32 mm;
+        Int32 ss;
+        String DODS_URL;
+    } GSO_AVHRR;
+} 1998-6-avhrr.dat;

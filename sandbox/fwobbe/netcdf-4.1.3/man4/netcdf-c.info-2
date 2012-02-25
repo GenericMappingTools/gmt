@@ -1,0 +1,3104 @@
+This is netcdf-c.info, produced by makeinfo version 4.13 from
+/machine/netcdf/nc_test_5366/man4//defines.texi.
+
+Copyright (C) 2005-2009 University Corporation for Atmospheric Research
+
+
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided that the copyright notice and these paragraphs are
+preserved on all copies.  The software and any accompanying written
+materials are provided "as is" without warranty of any kind.  UCAR
+expressly disclaims all warranties of any kind, either expressed or
+implied, including but not limited to the implied warranties of
+merchantability and fitness for a particular purpose.
+
+   The Unidata Program Center is managed by the University Corporation
+for Atmospheric Research and sponsored by the National Science
+Foundation.  Any opinions, findings, conclusions, or recommendations
+expressed in this publication are those of the author(s) and do not
+necessarily reflect the views of the National Science Foundation.
+
+   Mention of any commercial company or product in this document does
+not constitute an endorsement by the Unidata Program Center.  Unidata
+does not authorize any use of information from this publication for
+advertising or publicity purposes.
+
+INFO-DIR-SECTION netCDF scientific data format
+START-INFO-DIR-ENTRY
+* netcdf-c: (netcdf-c).         The NetCDF C Interface Guide
+END-INFO-DIR-ENTRY
+
+
+File: netcdf-c.info,  Node: nc_get_varm_ type,  Next: Strings,  Prev: nc_get_vars_ type,  Up: Variables
+
+6.30 Read a Mapped Array of Values: nc_get_varm_ TYPE
+=====================================================
+
+The nc_get_varm_ TYPE family of functions reads a mapped array section
+of values from a netCDF variable of an open netCDF dataset. The mapped
+array section is specified by giving a corner, a vector of edge
+lengths, a stride vector, and an index mapping vector. The index
+mapping vector is a vector of integers that specifies the mapping
+between the dimensions of a netCDF variable and the in-memory structure
+of the internal data array. No assumptions are made about the ordering
+or length of the dimensions of the data array. The netCDF dataset must
+be in data mode.
+
+   The functions for types ubyte, ushort, uint, longlong, ulonglong, and
+string are only available for netCDF-4/HDF5 files.
+
+   The nc_get_varm() function will read a variable of any type,
+including user defined type. For this function, the type of the data in
+memory must match the type of the variable - no data conversion is done.
+
+Usage
+=====
+
+     int nc_get_varm_text  (int ncid, int varid, const size_t start[],
+                            const size_t count[], const ptrdiff_t stride[],
+                            const ptrdiff_t imap[], char *tp);
+     int nc_get_varm_uchar (int ncid, int varid, const size_t start[],
+                            const size_t count[], const ptrdiff_t stride[],
+                            const ptrdiff_t imap[], unsigned char *up);
+     int nc_get_varm_schar (int ncid, int varid, const size_t start[],
+                            const size_t count[], const ptrdiff_t stride[],
+                            const ptrdiff_t imap[], signed char *cp);
+     int nc_get_varm_short (int ncid, int varid, const size_t start[],
+                            const size_t count[], const ptrdiff_t stride[],
+                            const ptrdiff_t imap[], short *sp);
+     int nc_get_varm_int   (int ncid, int varid, const size_t start[],
+                            const size_t count[], const ptrdiff_t stride[],
+                            const ptrdiff_t imap[], int *ip);
+     int nc_get_varm_long  (int ncid, int varid, const size_t start[],
+                            const size_t count[], const ptrdiff_t stride[],
+                            const ptrdiff_t imap[], long *lp);
+     int nc_get_varm_float (int ncid, int varid, const size_t start[],
+                            const size_t count[], const ptrdiff_t stride[],
+                            const ptrdiff_t imap[], float *fp);
+     int nc_get_varm_double(int ncid, int varid, const size_t start[],
+                            const size_t count[], const ptrdiff_t stride[],
+                            const ptrdiff_t imap[], double *dp);
+     int nc_get_varm_ushort(int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t * imapp, unsigned short *ip);
+     int nc_get_varm_uint  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t * imapp, unsigned int *ip);
+     int nc_get_varm_longlong (int ncid, int varid, const size_t *startp,
+                               const size_t *countp, const ptrdiff_t *stridep,
+                               const ptrdiff_t * imapp, long long *ip);
+     int nc_get_varm_ulonglong(int ncid, int varid, const size_t *startp,
+                               const size_t *countp, const ptrdiff_t *stridep,
+                               const ptrdiff_t * imapp, unsigned long long *ip);
+     int nc_get_varm_string(int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t * imapp, char **ip);
+     int nc_get_varm       (int ncid, int varid,  const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, void *ip);
+
+`ncid'
+     NetCDF ID, from a previous call to nc_open or nc_create.
+
+`varid'
+     Variable ID.
+
+`start'
+     A vector of size_t integers specifying the index in the variable
+     where the first of the data values will be read. The indices are
+     relative to 0, so for example, the first data value of a variable
+     would have index (0, 0, ... , 0). The elements of start
+     correspond, in order, to the variable's dimensions. Hence, if the
+     variable is a record variable, the first index corresponds to the
+     starting record number for reading the data values.
+
+`count'
+     A vector of size_t integers specifying the number of indices
+     selected along each dimension. To read a single value, for
+     example, specify count as (1, 1, ... , 1). The elements of count
+     correspond, in order, to the variable's dimensions. Hence, if the
+     variable is a record variable, the first element of count
+     corresponds to a count of the number of records to read.
+
+     Note: setting any element of the count array to zero causes the
+     function to exit without error, and without doing anything.
+
+`stride'
+     A vector of ptrdiff_t integers specifying, for each dimension, the
+     interval between selected indices. The elements of the stride
+     vector correspond, in order, to the variable's dimensions. A value
+     of 1 accesses adjacent values of the netCDF variable in the
+     corresponding dimension; a value of 2 accesses every other value
+     of the netCDF variable in the corresponding dimension; and so on.
+     A NULL stride argument is treated as (1, 1, ... , 1).
+
+`imap'
+     A vector of integers that specifies the mapping between the
+     dimensions of a netCDF variable and the in-memory structure of the
+     internal data array. imap[0] gives the distance between elements of
+     the internal array corresponding to the most slowly varying
+     dimension of the netCDF variable. imap[n-1] (where n is the rank
+     of the netCDF variable) gives the distance between elements of the
+     internal array corresponding to the most rapidly varying dimension
+     of the netCDF variable. Intervening imap elements correspond to
+     other dimensions of the netCDF variable in the obvious way.
+     Distances between elements are specified in type-independent units
+     of elements (the distance between internal elements that occupy
+     adjacent memory locations is 1 and not the element's byte-length
+     as in netCDF 2).
+
+`tp'
+`up'
+`cp'
+`sp'
+`ip'
+`lp'
+`fp'
+`dp'
+     Pointer to the location used for computing where the data values
+     are read; the data should be of the type appropriate for the
+     function called. If the type of data value differs from the netCDF
+     variable type, type conversion will occur. *Note Type Conversion:
+     (netcdf)Type Conversion.
+
+
+Return Codes
+============
+
+   * NC_NOERR No error.
+
+   * NC_EHDFERR Error reported by HDF5 layer.
+
+   * NC_ENOTVAR The variable ID is invalid for the specified netCDF
+     dataset.
+
+   * NC_EINVALCOORDS The specified corner indices were out of range for
+     the rank of the specified variable. For example, a negative index,
+     or an index that is larger than the corresponding dimension length
+     will cause an error.
+
+   * NC_EEDGE The specified edge lengths added to the specified corner
+     would have referenced data out of range for the rank of the
+     specified variable. For example, an edge length that is larger
+     than the corresponding dimension length minus the corner index
+     will cause an error.
+
+   * NC_ERANGE One or more of the specified values are out of the range
+     of values representable by the external data type of the variable.
+     (Does not apply to the nc_get_vars() function).
+
+   * NC_EINDEFINE The specified netCDF is in define mode rather than
+     data mode.
+
+   * NC_EBADID The specified netCDF ID does not refer to an open netCDF
+     dataset.
+
+   * NC_ECHAR Attempt to convert to or from char.
+
+   * NC_ENOMEM Out of memory.
+
+
+Example
+=======
+
+The following imap vector maps in the trivial way a 4x3x2 netCDF
+variable and an internal array of the same shape:
+
+     float a[4][3][2];       /* same shape as netCDF variable */
+     size_t imap[3] = {6, 2, 1};
+                             /* netCDF dimension       inter-element distance */
+                             /* ----------------       ---------------------- */
+                             /* most rapidly varying       1                  */
+                             /* intermediate               2 (=imap[2]*2)     */
+                             /* most slowly varying        6 (=imap[1]*3)     */
+
+   Using the imap vector above with nc_get_varm_float obtains the same
+result as simply using nc_get_var_float.
+
+   Here is an example of using nc_get_varm_float to transpose a netCDF
+variable named rh which is described by the C declaration float
+rh[6][4] (note the size and order of the dimensions):
+
+     #include <netcdf.h>
+        ...
+     #define NDIM 2                /* rank of netCDF variable */
+     int ncid;                     /* netCDF ID */
+     int status;                   /* error status */
+     int rhid;                     /* variable ID */
+     static size_t start[NDIM]     /* netCDF variable start point: */
+                      = {0, 0};    /* first element */
+     static size_t count[NDIM]     /* size of internal array: entire netCDF */
+                      = {6, 4};    /* variable; order corresponds to netCDF */
+                                   /* variable -- not internal array */
+     static ptrdiff_t stride[NDIM] /* variable subsampling intervals: */
+                      = {1, 1};    /* sample every netCDF element */
+     static ptrdiff_t imap[NDIM]   /* internal array inter-element distances; */
+                      = {1, 6};    /* would be {4, 1} if not transposing */
+     float rh[4][6];               /* note transposition of netCDF variable */
+                                   /* dimensions */
+        ...
+     status = nc_open("foo.nc", NC_WRITE, &ncid);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_inq_varid(ncid, "rh", &rhid);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_get_varm_float(ncid, rhid, start, count, stride, imap, rh);
+     if (status != NC_NOERR) handle_error(status);
+
+   Here is another example of using nc_get_varm_float to simultaneously
+transpose and subsample the same netCDF variable, by accessing every
+other point of the netCDF variable:
+
+     #include <netcdf.h>
+        ...
+     #define NDIM 2               /* rank of netCDF variable */
+     int ncid;                    /* netCDF ID */
+     int status;                  /* error status */
+     int rhid;                    /* variable ID */
+     static size_t start[NDIM]    /* netCDF variable start point: */
+                      = {0, 0};   /* first element */
+     static size_t count[NDIM]    /* size of internal array: entire */
+                        = {3, 2}; /* (subsampled) netCDF variable; order of */
+                                  /* dimensions corresponds to netCDF */
+                                  /* variable -- not internal array */
+     static ptrdiff_t stride[NDIM]/* variable subsampling intervals: */
+                      = {2, 2};   /* sample every other netCDF element */
+     static ptrdiff_t imap[NDIM]  /* internal array inter-element distances; */
+                      = {1, 3};   /* would be {2, 1} if not transposing */
+     float rh[2][3];              /* note transposition of (subsampled) */
+                                  /* netCDF variable dimensions */
+        ...
+     status = nc_open("foo.nc", NC_WRITE, &ncid);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_inq_varid(ncid, "rh", &rhid);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_get_varm_float(ncid, rhid, start, count, stride, imap, rh);
+     if (status != NC_NOERR) handle_error(status);
+
+
+File: netcdf-c.info,  Node: Strings,  Next: nc_free_string,  Prev: nc_get_varm_ type,  Up: Variables
+
+6.31 Reading and Writing Character String Values
+================================================
+
+Prior to version 4.0, strings could only be stored as simple arrays of
+characters. Users may still wish to store strings this way, as it
+ensures maximum compatibility with other software.
+
+   Starting in netCDF-4.0, the atomic string type allows a new way to
+store strings, as a variable length array in the underlying HDF5 layer.
+This allows arrays of strings to be stored compactly.
+
+   For more information of classic models strings *note Classic
+Strings::. For more information on the netCDF-4.0 string type *note
+Arrays of Strings::.
+
+* Menu:
+
+* Classic Strings::
+* Arrays of Strings::
+
+
+File: netcdf-c.info,  Node: Classic Strings,  Next: Arrays of Strings,  Prev: Strings,  Up: Strings
+
+6.31.1 Reading and Writing Character String Values in the Classic Model
+-----------------------------------------------------------------------
+
+Character strings are not a primitive netCDF external data type, in
+part because FORTRAN does not support the abstraction of
+variable-length character strings (the FORTRAN LEN function returns the
+static length of a character string, not its dynamic length). As a
+result, a character string cannot be written or read as a single object
+in the netCDF interface. Instead, a character string must be treated as
+an array of characters, and array access must be used to read and write
+character strings as variable data in netCDF datasets. Furthermore,
+variable-length strings are not supported by the netCDF interface
+except by convention; for example, you may treat a zero byte as
+terminating a character string, but you must explicitly specify the
+length of strings to be read from and written to netCDF variables.
+
+   Character strings as attribute values are easier to use, since the
+strings are treated as a single unit for access. However, the value of
+a character-string attribute is still an array of characters with an
+explicit length that must be specified when the attribute is defined.
+
+   When you define a variable that will have character-string values,
+use a character-position dimension as the most quickly varying dimension
+for the variable (the last dimension for the variable in C). The length
+of the character-position dimension will be the maximum string length
+of any value to be stored in the character-string variable. Space for
+maximum-length strings will be allocated in the disk representation of
+character-string variables whether you use the space or not. If two or
+more variables have the same maximum length, the same
+character-position dimension may be used in defining the variable
+shapes.
+
+   To write a character-string value into a character-string variable,
+use either entire variable access or array access. The latter requires
+that you specify both a corner and a vector of edge lengths. The
+character-position dimension at the corner should be zero for C. If the
+length of the string to be written is n, then the vector of edge
+lengths will specify n in the character-position dimension, and one for
+all the other dimensions:(1, 1, ... , 1, n).
+
+   In C, fixed-length strings may be written to a netCDF dataset without
+the terminating zero byte, to save space. Variable-length strings
+should be written with a terminating zero byte so that the intended
+length of the string can be determined when it is later read.
+
+   Here is an example that defines a record variable, tx, for character
+strings and stores a character-string value into the third record using
+nc_put_vara_text. In this example, we assume the string variable and
+data are to be added to an existing netCDF dataset named foo.nc that
+already has an unlimited record dimension time.
+
+     #include <netcdf.h>
+        ...
+     int  ncid;            /* netCDF ID */
+     int  chid;            /* dimension ID for char positions */
+     int  timeid;          /* dimension ID for record dimension */
+     int  tx_id;           /* variable ID */
+     #define TDIMS 2       /* rank of tx variable */
+     int tx_dims[TDIMS];   /* variable shape */
+     size_t tx_start[TDIMS];
+     size_t tx_count[TDIMS];
+     static char tx_val[] =
+             "example string"; /* string to be put */
+        ...
+     status = nc_open("foo.nc", NC_WRITE, &ncid);
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_redef(ncid);       /* enter define mode */
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     /* define character-position dimension for strings of max length 40 */
+     status = nc_def_dim(ncid, "chid", 40L, &chid);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     /* define a character-string variable */
+     tx_dims[0] = timeid;
+     tx_dims[1] = chid;    /* character-position dimension last */
+     status = nc_def_var (ncid, "tx", NC_CHAR, TDIMS, tx_dims, &tx_id);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_enddef(ncid);       /* leave define mode */
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     /* write tx_val into tx netCDF variable in record 3 */
+     tx_start[0] = 3;      /* record number to write */
+     tx_start[1] = 0;      /* start at beginning of variable */
+     tx_count[0] = 1;      /* only write one record */
+     tx_count[1] = strlen(tx_val) + 1;  /* number of chars to write */
+     status = nc_put_vara_text(ncid, tx_id, tx_start, tx_count, tx_val);
+     if (status != NC_NOERR) handle_error(status);
+
+
+File: netcdf-c.info,  Node: Arrays of Strings,  Prev: Classic Strings,  Up: Strings
+
+6.31.2 Reading and Writing Arrays of Strings
+--------------------------------------------
+
+In netCDF-4, the NC_STRING type is introduced. It can store arrays of
+strings compactly.
+
+   By using the NC_STRING type, arrays of strings (char **) can be read
+and written to the file.
+
+   This allows attributes to hold more than one string. Since attributes
+are one-dimensional, using the classic model, an attribute could only
+hold one string, as an array of char. With the NC_STRING type, an array
+of strings can be stored in one attribute.
+
+   When reading data of type NC_STRING, the HDF5 layer will allocate
+memory to hold the data. It is up to the user to free this memory with
+the nc_free_string function. *Note nc_free_string::.
+
+        int ncid, varid, i, dimids[NDIMS];
+        char *data[DIM_LEN] = {"Let but your honour know",
+                           "Whom I believe to be most strait in virtue",
+                           "That, in the working of your own affections",
+                           "Had time cohered with place or place with wishing",
+                           "Or that the resolute acting of your blood",
+                           "Could have attain'd the effect of your own purpose",
+                           "Whether you had not sometime in your life",
+                           "Err'd in this point which now you censure him",
+                           "And pull'd the law upon you."};
+        char *data_in[DIM_LEN];
+
+        printf("*** testing string attribute...");
+        {
+           size_t att_len;
+           int ndims, nvars, natts, unlimdimid;
+           nc_type att_type;
+
+           if (nc_create(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
+           if (nc_put_att(ncid, NC_GLOBAL, ATT_NAME, NC_STRING, DIM_LEN, data)) ERR;
+           if (nc_inq(ncid, &ndims, &nvars, &natts, &unlimdimid)) ERR;
+           if (ndims != 0 || nvars != 0 || natts != 1 || unlimdimid != -1) ERR;
+           if (nc_inq_att(ncid, NC_GLOBAL, ATT_NAME, &att_type, &att_len)) ERR;
+           if (att_type != NC_STRING || att_len != DIM_LEN) ERR;
+           if (nc_close(ncid)) ERR;
+           nc_exit();
+
+           /* Check it out. */
+           if (nc_open(FILE_NAME, NC_NOWRITE, &ncid)) ERR;
+           if (nc_inq(ncid, &ndims, &nvars, &natts, &unlimdimid)) ERR;
+           if (ndims != 0 || nvars != 0 || natts != 1 || unlimdimid != -1) ERR;
+           if (nc_inq_att(ncid, NC_GLOBAL, ATT_NAME, &att_type, &att_len)) ERR;
+           if (att_type != NC_STRING || att_len != DIM_LEN) ERR;
+           if (nc_get_att(ncid, NC_GLOBAL, ATT_NAME, data_in)) ERR;
+           for (i=0; i<att_len; i++)
+              if (strcmp(data_in[i], data[i])) ERR;
+           if (nc_free_string(att_len, (char **)data_in)) ERR;
+           if (nc_close(ncid)) ERR;
+           nc_exit();
+        }
+
+
+File: netcdf-c.info,  Node: nc_free_string,  Next: Fill Values,  Prev: Strings,  Up: Variables
+
+6.32 Releasing Memory for a NC_STRING: nc_free_string
+=====================================================
+
+When a STRING is read into user memory from the file, the HDF5 library
+performs memory allocations for each of the variable length character
+arrays contained within the STRING structure. This memory must be freed
+by the user to avoid memory leaks.
+
+   This violates the normal netCDF expectation that the user is
+responsible for all memory allocation. But, with NC_STRING arrays, the
+underlying HDF5 library allocates the memory for the user, and the user
+is responsible for deallocating that memory.
+
+   To save the user the trouble calling free() on each element of the
+NC_STRING array (i.e. the array of arrays), the nc_free_string function
+is provided.
+
+Usage
+=====
+
+     int nc_free_string(size_t len, char **data);
+
+`len'
+     The number of character arrays in the array.
+
+`**data'
+     The pointer to the data array.
+
+
+Return Codes
+============
+
+`NC_NOERR'
+     No error.
+
+
+Example
+=======
+
+           if (nc_get_att(ncid, NC_GLOBAL, ATT_NAME, data_in)) ERR;
+           ...
+           if (nc_free_string(att_len, (char **)data_in)) ERR;
+
+
+File: netcdf-c.info,  Node: Fill Values,  Next: nc_rename_var,  Prev: nc_free_string,  Up: Variables
+
+6.33 Fill Values
+================
+
+What happens when you try to read a value that was never written in an
+open netCDF dataset? You might expect that this should always be an
+error, and that you should get an error message or an error status
+returned. You do get an error if you try to read data from a netCDF
+dataset that is not open for reading, if the variable ID is invalid for
+the specified netCDF dataset, or if the specified indices are not
+properly within the range defined by the dimension lengths of the
+specified variable. Otherwise, reading a value that was not written
+returns a special fill value used to fill in any undefined values when
+a netCDF variable is first written.
+
+   You may ignore fill values and use the entire range of a netCDF
+external data type, but in this case you should make sure you write all
+data values before reading them. If you know you will be writing all
+the data before reading it, you can specify that no prefilling of
+variables with fill values will occur by calling nc_set_fill before
+writing. This may provide a significant performance gain for netCDF
+writes.
+
+   The variable attribute _FillValue may be used to specify the fill
+value for a variable. Their are default fill values for each type,
+defined in the include file netcdf.h: NC_FILL_CHAR, NC_FILL_BYTE,
+NC_FILL_SHORT, NC_FILL_INT, NC_FILL_FLOAT, and NC_FILL_DOUBLE.
+
+   The netCDF byte and character types have different default fill
+values. The default fill value for characters is the zero byte, a
+useful value for detecting the end of variable-length C character
+strings. If you need a fill value for a byte variable, it is
+recommended that you explicitly define an appropriate _FillValue
+attribute, as generic utilities such as ncdump will not assume a
+default fill value for byte variables.
+
+   Type conversion for fill values is identical to type conversion for
+other values: attempting to convert a value from one type to another
+type that can't represent the value results in a range error. Such
+errors may occur on writing or reading values from a larger type (such
+as double) to a smaller type (such as float), if the fill value for the
+larger type cannot be represented in the smaller type.
+
+
+File: netcdf-c.info,  Node: nc_rename_var,  Next: nc_copy_var,  Prev: Fill Values,  Up: Variables
+
+6.34 Rename a Variable: nc_rename_var
+=====================================
+
+The function nc_rename_var changes the name of a netCDF variable in an
+open netCDF dataset. If the new name is longer than the old name, the
+netCDF dataset must be in define mode. You cannot rename a variable to
+have the name of any existing variable.
+
+Usage
+=====
+
+int nc_rename_var(int ncid, int varid, const char* name);
+
+   ncid  NetCDF ID, from a previous call to nc_open or nc_create.
+
+   varid  Variable ID.
+
+   name  New name for the specified variable.
+
+Errors
+======
+
+nc_rename_var returns the value NC_NOERR if no errors occurred.
+Otherwise, the returned status indicates an error. Possible causes of
+errors include:
+
+   The new name is in use as the name of another variable.  The
+variable ID is invalid for the specified netCDF dataset.  The specified
+netCDF ID does not refer to an open netCDF dataset.
+
+Example
+=======
+
+Here is an example using nc_rename_var to rename the variable rh to
+rel_hum in an existing netCDF dataset named foo.nc:
+
+     #include <netcdf.h>
+        ...
+     int  status;              /* error status */
+     int  ncid;                /* netCDF ID */
+     int  rh_id;               /* variable ID */
+        ...
+     status = nc_open("foo.nc", NC_WRITE, &ncid);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_redef(ncid);  /* put in define mode to rename variable */
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_inq_varid (ncid, "rh", &rh_id);
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_rename_var (ncid, rh_id, "rel_hum");
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_enddef(ncid); /* leave define mode */
+     if (status != NC_NOERR) handle_error(status);
+
+
+File: netcdf-c.info,  Node: nc_copy_var,  Next: nc_var_par_access,  Prev: nc_rename_var,  Up: Variables
+
+6.35 Copy a Variable from One File to Another: nc_copy_var
+==========================================================
+
+This function will copy a variable from one file to another.
+
+   It works even if the files are different formats, (i.e. classic vs.
+netCDF-4/HDF5.)
+
+   If you're copying into a netCDF-3 file, from a netCDF-4 file, you
+must be copying a var of one of the six netCDF-3 types. Similarly for
+the attributes.
+
+   For large netCDF-3 files, this can be a very inefficient way to copy
+data from one file to another, because adding a new variable to the
+target file may require more space in the header and thus result in
+moving data for other variables in the target file.  This is not a
+problem for netCDF-4 files, which support efficient addition of
+variables without moving data for other variables.
+
+Usage
+=====
+
+     nc_copy_var(int ncid_in, int varid_in, int ncid_out)
+
+   * ncid_in The file ID for the file that contains the variable to be
+     copied.
+
+   * varid_in The variable ID for the variable to be copied.
+
+   * ncid_out The file ID for the file where the variable should be
+     copied to.
+
+
+Return Codes
+============
+
+   * NC_NOERR No error.
+
+   * NC_EBADID Bad ncid.
+
+   * NC_EBADVAR Bad varid.
+
+   * NC_EHDFERR HDF5 layer error.
+
+   * NC_ENOMEM Out of memory.
+
+   * NC_ERANGE One or more values out of range.
+
+
+Example
+=======
+
+
+
+File: netcdf-c.info,  Node: nc_var_par_access,  Next: nc_var_ubyte,  Prev: nc_copy_var,  Up: Variables
+
+6.36 Change between Collective and Independent Parallel Access: nc_var_par_access
+=================================================================================
+
+The function nc_var_par_access changes whether read/write operations on
+a parallel file system are performed collectively or independently (the
+default) on the variable. This function can only be called if the file
+was created with nc_create_par (see *note nc_create_par::) or opened
+with nc_open_par (see *note nc_open_par::).
+
+   Calling this function affects only the open file - information about
+whether a variable is to be accessed collectively or independently is
+not written to the data file. Every time you open a file on a parallel
+file system, all variables default to independent operations. The
+change a variable to collective I/O lasts only as long as that file is
+open.
+
+   The variable can be changed from collective to independent, and back,
+as often as desired.
+
+   Note that classic and 64-bit offset files are access using the
+parallel-netcdf library, which does not allow per-variable setting of
+the parallel access mode. For these files, calling nc_var_par_access
+sets the access for all of the variables in the file.
+
+Usage
+=====
+
+int nc_var_par_access(int ncid, int varid, int access);
+
+`ncid'
+     NetCDF ID, from a previous call to nc_open_par (see *note
+     nc_open_par::) or nc_create_par (see *note nc_create_par::).
+
+`varid'
+     Variable ID.
+
+`access'
+     NC_INDEPENDENT to set this variable to independent
+     operations.NC_COLLECTIVE to set it to collective operations.
+
+
+Return Values
+=============
+
+`NC_NOERR'
+     No error.
+
+
+Example
+=======
+
+Here is an example using nc_var_par_access:
+
+     #include <netcdf.h>
+
+         ...
+         int ncid, v1id, dimids[NDIMS];
+         int data[DIMSIZE*DIMSIZE], j, i, res;
+         ...
+
+         /* Create a parallel netcdf-4 file. */
+         if ((res = nc_create_par(FILE, NC_NETCDF4|NC_MPIIO, comm, info, &ncid)))
+             BAIL(res);
+
+         /* Create two dimensions. */
+         if ((res = nc_def_dim(ncid, "d1", DIMSIZE, dimids)))
+            BAIL(res);
+         if ((res = nc_def_dim(ncid, "d2", DIMSIZE, &dimids[1])))
+            BAIL(res);
+
+         /* Create one var. */
+         if ((res = nc_def_var(ncid, "v1", NC_INT, NDIMS, dimids, &v1id)))
+            BAIL(res);
+
+         if ((res = nc_enddef(ncid)))
+            BAIL(res);
+
+         /* Tell HDF5 to use independent parallel access for this var. */
+         if ((res = nc_var_par_access(ncid, v1id, NC_INDEPENDENT)))
+            BAIL(res);
+
+         /* Write slabs of phony data. */
+         if ((res = nc_put_vara_int(ncid, v1id, start, count,
+                                    &data[mpi_rank*QTR_DATA])))
+            BAIL(res);
+
+
+File: netcdf-c.info,  Node: nc_var_ubyte,  Prev: nc_var_par_access,  Up: Variables
+
+6.37 Deprecated "_ubyte" variable functions
+===========================================
+
+Note: the following functions are also defined but deprecated, as they
+are identical in arguments and behavior to the corresponding functions
+with "uchar" substituted for "ubyte" in the function name.
+
+     int nc_put_var1_ubyte (int ncid, int varid, const size_t index[],
+                            const unsigned char *up);
+     int nc_put_var_ubyte (int ncid, int varid, const unsigned char *op);
+     int nc_put_vara_ubyte (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const unsigned char *op);
+     int nc_put_vars_ubyte (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const unsigned char *op);
+     int nc_put_varm_ubyte (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t * imapp, const unsigned char *op);
+     int nc_get_var1_ubyte (int ncid, int varid, const size_t *indexp,
+                            unsigned char *ip);
+     int nc_get_var_ubyte (int ncid, int varid, unsigned char *ip);
+     int nc_get_vara_ubyte (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, unsigned char *ip);
+     int nc_get_vars_ubyte (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            unsigned char *ip);
+     int nc_get_varm_ubyte (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t * imapp, unsigned char *ip);
+
+
+File: netcdf-c.info,  Node: Attributes,  Next: Summary of C Interface,  Prev: Variables,  Up: Top
+
+7 Attributes
+************
+
+* Menu:
+
+* Attributes Introduction::
+* nc_put_att_ type::
+* nc_inq_att Family::
+* nc_get_att_ type::
+* nc_copy_att::
+* nc_rename_att::
+* nc_del_att::
+* nc_att_ubyte::                Deprecated attribute ``_ubyte'' functions
+
+
+File: netcdf-c.info,  Node: Attributes Introduction,  Next: nc_put_att_ type,  Prev: Attributes,  Up: Attributes
+
+7.1 Introduction
+================
+
+Attributes may be associated with each netCDF variable to specify such
+properties as units, special values, maximum and minimum valid values,
+scaling factors, and offsets. Attributes for a netCDF dataset are
+defined when the dataset is first created, while the netCDF dataset is
+in define mode. Additional attributes may be added later by reentering
+define mode. A netCDF attribute has a netCDF variable to which it is
+assigned, a name, a type, a length, and a sequence of one or more
+values. An attribute is designated by its variable ID and name. When an
+attribute name is not known, it may be designated by its variable ID
+and number in order to determine its name, using the function
+nc_inq_attname.
+
+   The attributes associated with a variable are typically defined
+immediately after the variable is created, while still in define mode.
+The data type, length, and value of an attribute may be changed even
+when in data mode, as long as the changed attribute requires no more
+space than the attribute as originally defined.
+
+   It is also possible to have attributes that are not associated with
+any variable. These are called global attributes and are identified by
+using NC_GLOBAL as a variable pseudo-ID. Global attributes are usually
+related to the netCDF dataset as a whole and may be used for purposes
+such as providing a title or processing history for a netCDF dataset.
+
+   Operations supported on attributes are:
+   * Create an attribute, given its variable ID, name, data type,
+     length, and value.
+
+   * Get attribute's data type and length from its variable ID and name.
+
+   * Get attribute's value from its variable ID and name.
+
+   * Copy attribute from one netCDF variable to another.
+
+   * Get name of attribute from its number.
+
+   * Rename an attribute.
+
+   * Delete an attribute.
+
+
+File: netcdf-c.info,  Node: nc_put_att_ type,  Next: nc_inq_att Family,  Prev: Attributes Introduction,  Up: Attributes
+
+7.2 Create an Attribute: nc_put_att_ TYPE
+=========================================
+
+The function nc_put_att_ TYPE adds or changes a variable attribute or
+global attribute of an open netCDF dataset. If this attribute is new,
+or if the space required to store the attribute is greater than before,
+the netCDF dataset must be in define mode.
+
+Usage
+=====
+
+With netCDF-4 files, nc_put_att will notice if you are writing a
+_Fill_Value_ attribute, and will tell the HDF5 layer to use the
+specified fill value for that variable.
+
+   Although it's possible to create attributes of all types, text and
+double attributes are adequate for most purposes.
+
+   Use the nc_put_att function to create attributes of any type,
+including user-defined types. We recommend using the type safe versions
+of this function whenever possible.
+
+     int nc_put_att_text      (int ncid, int varid, const char *name,
+                               size_t len, const char *tp);
+     int nc_put_att_uchar     (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len, const unsigned char *up);
+     int nc_put_att_schar     (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len, const signed char *cp);
+     int nc_put_att_short     (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len, const short *sp);
+     int nc_put_att_int       (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len, const int *ip);
+     int nc_put_att_long      (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len, const long *lp);
+     int nc_put_att_float     (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len, const float *fp);
+     int nc_put_att_double    (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len, const double *dp);
+     int nc_put_att_ushort    (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len, const unsigned short *op);
+     int nc_put_att_uint      (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len, const unsigned int *op);
+     int nc_put_att_longlong  (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len, const long long *op);
+     int nc_put_att_ulonglong (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len,
+                               const unsigned long long *op);
+     int nc_put_att_string    (int ncid, int varid, const char *name, size_t len,
+                               const char **op);
+     int nc_put_att           (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len, const void *op);
+
+`ncid'
+     NetCDF ID, from a previous call to nc_open or nc_create.
+
+`varid'
+     Variable ID of the variable to which the attribute will be
+     assigned or NC_GLOBAL for a global attribute.
+
+`name'
+     Attribute name.  Attribute name conventions are assumed by some
+     netCDF generic applications, e.g., `units' as the name for a string
+     attribute that gives the units for a netCDF variable. For examples
+     of attribute conventions see *note Attribute Conventions:
+     (netcdf)Attribute Conventions.
+
+`xtype'
+     One of the set of predefined netCDF external data types. The type
+     of this parameter, nc_type, is defined in the netCDF header file.
+     The valid netCDF external data types are NC_BYTE, NC_CHAR,
+     NC_SHORT, NC_INT, NC_FLOAT, and NC_DOUBLE. Although it's possible
+     to create attributes of all types, NC_CHAR and NC_DOUBLE
+     attributes are adequate for most purposes.
+
+`len'
+     Number of values provided for the attribute.
+
+`tp, up, cp, sp, ip, lp, fp, or dp'
+     Pointer to one or more values. If the type of values differs from
+     the netCDF attribute type specified as xtype, type conversion will
+     occur. *Note Type Conversion: (netcdf)Type Conversion.
+
+Errors
+======
+
+nc_put_att_ TYPE returns the value NC_NOERR if no errors occurred.
+Otherwise, the returned status indicates an error. Possible causes of
+errors include:
+
+   * The variable ID is invalid for the specified netCDF dataset.
+
+   * The specified netCDF type is invalid.
+
+   * The specified length is negative.
+
+   * The specified open netCDF dataset is in data mode and the specified
+     attribute would expand.
+
+   * The specified open netCDF dataset is in data mode and the specified
+     attribute does not already exist.
+
+   * The specified netCDF ID does not refer to an open netCDF dataset.
+
+   * The number of attributes for this variable exceeds NC_MAX_ATTRS.
+
+
+Return Codes
+============
+
+`NC_NOERR'
+     No error.
+
+`NC_EINVAL'
+     Trying to set global _FillValue. (NetCDF-4 files only).
+
+`NC_ENOTVAR'
+     Couldn't find varid.
+
+`NC_EBADTYPE'
+     Fill value must be same type as variable. (NetCDF-4 files only).
+
+`NC_ENOMEM'
+     Out of memory
+
+`NC_EFILLVALUE'
+     Fill values must be written while the file is still in initial
+     define mode, that is, after the file is created, but before it
+     leaves define mode for the first time. NC_EFILLVALUE is returned
+     when the user attempts to set the fill value after it's too late.
+
+
+Example
+=======
+
+Here is an example using nc_put_att_double to add a variable attribute
+named valid_range for a netCDF variable named rh and a global attribute
+named title to an existing netCDF dataset named foo.nc:
+
+     #include <netcdf.h>
+        ...
+     int  status;                            /* error status */
+     int  ncid;                              /* netCDF ID */
+     int  rh_id;                             /* variable ID */
+     static double rh_range[] = {0.0, 100.0};/* attribute vals */
+     static char title[] = "example netCDF dataset";
+        ...
+     status = nc_open("foo.nc", NC_WRITE, &ncid);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_redef(ncid);                /* enter define mode */
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_inq_varid (ncid, "rh", &rh_id);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_put_att_double (ncid, rh_id, "valid_range",
+                                 NC_DOUBLE, 2, rh_range);
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_put_att_text (ncid, NC_GLOBAL, "title",
+                               strlen(title), title)
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_enddef(ncid);               /* leave define mode */
+     if (status != NC_NOERR) handle_error(status);
+
+
+File: netcdf-c.info,  Node: nc_inq_att Family,  Next: nc_get_att_ type,  Prev: nc_put_att_ type,  Up: Attributes
+
+7.3 Get Information about an Attribute: nc_inq_att Family
+=========================================================
+
+This family of functions returns information about a netCDF attribute.
+All but one of these functions require the variable ID and attribute
+name; the exception is nc_inq_attname. Information about an attribute
+includes its type, length, name, and number. See the nc_get_att family
+for getting attribute values.
+
+   The function nc_inq_attname gets the name of an attribute, given its
+variable ID and number. This function is useful in generic applications
+that need to get the names of all the attributes associated with a
+variable, since attributes are accessed by name rather than number in
+all other attribute functions. The number of an attribute is more
+volatile than the name, since it can change when other attributes of
+the same variable are deleted. This is why an attribute number is not
+called an attribute ID.
+
+   The function nc_inq_att returns the attribute's type and length. The
+other functions each return just one item of information about an
+attribute.
+
+Usage
+=====
+
+     int nc_inq_att    (int ncid, int varid, const char *name,
+                        nc_type *xtypep, size_t *lenp);
+     int nc_inq_atttype(int ncid, int varid, const char *name,
+                        nc_type *xtypep);
+     int nc_inq_attlen  (int ncid, int varid, const char *name, size_t *lenp);
+     int nc_inq_attname(int ncid, int varid, int attnum, char *name);
+     int nc_inq_attid   (int ncid, int varid, const char *name, int *attnump);
+
+`ncid'
+     NetCDF ID, from a previous call to nc_open or nc_create.
+
+`varid'
+     Variable ID of the attribute's variable, or NC_GLOBAL for a global
+     attribute.
+
+`name'
+     Attribute name. For nc_inq_attname, this is a pointer to the
+     location for the returned attribute name.
+
+`xtypep'
+     Pointer to location for returned attribute type, one of the set of
+     predefined netCDF external data types. The type of this parameter,
+     nc_type, is defined in the netCDF header file. The valid netCDF
+     external data types are NC_BYTE, NC_CHAR, NC_SHORT, NC_INT,
+     NC_FLOAT, and NC_DOUBLE. If this parameter is given as '0' (a null
+     pointer), no type will be returned so no variable to hold the type
+     needs to be declared.
+
+`lenp'
+     Pointer to location for returned number of values currently stored
+     in the attribute. For attributes of type NC_CHAR, you should not
+     assume that this includes a trailing zero byte; it doesn't if the
+     attribute was stored without a trailing zero byte, for example
+     from a FORTRAN program. Before using the value as a C string, make
+     sure it is null-terminated. If this parameter is given as '0' (a
+     null pointer), no length will be returned so no variable to hold
+     this information needs to be declared.
+
+`attnum'
+     For nc_inq_attname, attribute number. The attributes for each
+     variable are numbered from 0 (the first attribute) to natts-1,
+     where natts is the number of attributes for the variable, as
+     returned from a call to nc_inq_varnatts.
+
+`attnump'
+     For nc_inq_attid, pointer to location for returned attribute number
+     that specifies which attribute this is for this variable (or which
+     global attribute). If you already know the attribute name, knowing
+     its number is not very useful, because accessing information about
+     an attribute requires its name.
+
+
+Errors
+======
+
+Each function returns the value NC_NOERR if no errors occurred.
+Otherwise, the returned status indicates an error. Possible causes of
+errors include:
+   * The variable ID is invalid for the specified netCDF dataset.
+
+   * The specified attribute does not exist.
+
+   * The specified netCDF ID does not refer to an open netCDF dataset.
+
+   * For nc_inq_attname, the specified attribute number is negative or
+     more than the number of attributes defined for the specified
+     variable.
+
+Example
+=======
+
+Here is an example using nc_inq_att to find out the type and length of
+a variable attribute named valid_range for a netCDF variable named rh
+and a global attribute named title in an existing netCDF dataset named
+foo.nc:
+
+     #include <netcdf.h>
+        ...
+     int  status;               /* error status */
+     int  ncid;                 /* netCDF ID */
+     int  rh_id;                /* variable ID */
+     nc_type vr_type, t_type;   /* attribute types */
+     size_t  vr_len, t_len;     /* attribute lengths */
+
+        ...
+     status = nc_open("foo.nc", NC_NOWRITE, &ncid);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_inq_varid (ncid, "rh", &rh_id);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_inq_att (ncid, rh_id, "valid_range", &vr_type, &vr_len);
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_inq_att (ncid, NC_GLOBAL, "title", &t_type, &t_len);
+     if (status != NC_NOERR) handle_error(status);
+
+
+File: netcdf-c.info,  Node: nc_get_att_ type,  Next: nc_copy_att,  Prev: nc_inq_att Family,  Up: Attributes
+
+7.4 Get Attribute's Values:nc_get_att_ TYPE
+===========================================
+
+Members of the nc_get_att_ TYPE family of functions get the value(s) of
+a netCDF attribute, given its variable ID and name.
+
+   The nc_get_att() functions works for any type of attribute, and must
+be used to get attributes of user-defined type. We recommend that they
+type safe versions of this function be used where possible.
+
+Usage
+=====
+
+     int nc_get_att_text      (int ncid, int varid, const char *name, char *tp);
+     int nc_get_att_uchar     (int ncid, int varid, const char *name, unsigned char *up);
+     int nc_get_att_schar     (int ncid, int varid, const char *name, signed char *cp);
+     int nc_get_att_short     (int ncid, int varid, const char *name, short *sp);
+     int nc_get_att_int       (int ncid, int varid, const char *name, int *ip);
+     int nc_get_att_long      (int ncid, int varid, const char *name, long *lp);
+     int nc_get_att_float     (int ncid, int varid, const char *name, float *fp);
+     int nc_get_att_double    (int ncid, int varid, const char *name, double *dp);
+     int nc_get_att_ushort    (int ncid, int varid, const char *name, unsigned short *ip);
+     int nc_get_att_uint      (int ncid, int varid, const char *name, unsigned int *ip);
+     int nc_get_att_longlong  (int ncid, int varid, const char *name, long long *ip);
+     int nc_get_att_ulonglong (int ncid, int varid, const char *name, unsigned long long *ip);
+     int nc_get_att_string    (int ncid, int varid, const char *name, char **ip);
+     int nc_get_att           (int ncid, int varid, const char *name, void *ip);
+
+`ncid'
+     NetCDF ID, from a previous call to nc_open or nc_create.
+
+`varid'
+     Variable ID of the attribute's variable, or NC_GLOBAL for a global
+     attribute.
+
+`name'
+     Attribute name.
+
+`tp'
+`up'
+`cp'
+`sp'
+`ip'
+`lp'
+`fp'
+`dp'
+     Pointer to location for returned attribute value(s). All elements
+     of the vector of attribute values are returned, so you must
+     allocate enough space to hold them. For attributes of type
+     NC_CHAR, you should not assume that the returned values include a
+     trailing zero byte; they won't if the attribute was stored without
+     a trailing zero byte, for example from a FORTRAN program. Before
+     using the value as a C string, make sure it is null-terminated. If
+     you don't know how much space to reserve, call nc_inq_attlen first
+     to find out the length of the attribute.
+
+
+Errors
+======
+
+nc_get_att_ TYPE returns the value NC_NOERR if no errors occurred.
+Otherwise, the returned status indicates an error. Possible causes of
+errors include:
+   * The variable ID is invalid for the specified netCDF dataset.
+
+   * The specified attribute does not exist.
+
+   * The specified netCDF ID does not refer to an open netCDF dataset.
+
+   * One or more of the attribute values are out of the range of values
+     representable by the desired type.
+
+Example
+=======
+
+Here is an example using nc_get_att_double to determine the values of a
+variable attribute named valid_range for a netCDF variable named rh and
+a global attribute named title in an existing netCDF dataset named
+foo.nc. In this example, it is assumed that we don't know how many
+values will be returned, but that we do know the types of the
+attributes. Hence, to allocate enough space to store them, we must
+first inquire about the length of the attributes.
+
+     #include <netcdf.h>
+        ...
+     int  status;               /* error status */
+     int  ncid;                 /* netCDF ID */
+     int  rh_id;                /* variable ID */
+     int  vr_len, t_len;        /* attribute lengths */
+     double *vr_val;            /* ptr to attribute values */
+     char *title;               /* ptr to attribute values */
+     extern char *malloc();     /* memory allocator */
+
+        ...
+     status = nc_open("foo.nc", NC_NOWRITE, &ncid);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_inq_varid (ncid, "rh", &rh_id);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     /* find out how much space is needed for attribute values */
+     status = nc_inq_attlen (ncid, rh_id, "valid_range", &vr_len);
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_inq_attlen (ncid, NC_GLOBAL, "title", &t_len);
+     if (status != NC_NOERR) handle_error(status);
+
+     /* allocate required space before retrieving values */
+     vr_val = (double *) malloc(vr_len * sizeof(double));
+     title = (char *) malloc(t_len + 1);  /* + 1 for trailing null */
+
+     /* get attribute values */
+     status = nc_get_att_double(ncid, rh_id, "valid_range", vr_val);
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_get_att_text(ncid, NC_GLOBAL, "title", title);
+     if (status != NC_NOERR) handle_error(status);
+     title[t_len] = '\0';       /* null terminate */
+        ...
+
+
+File: netcdf-c.info,  Node: nc_copy_att,  Next: nc_rename_att,  Prev: nc_get_att_ type,  Up: Attributes
+
+7.5 Copy Attribute from One NetCDF to Another: nc_copy_att
+==========================================================
+
+The function nc_copy_att copies an attribute from one open netCDF
+dataset to another. It can also be used to copy an attribute from one
+variable to another within the same netCDF.
+
+   If used to copy an attribute of user-defined type, then that
+user-defined type must already be defined in the target file. In the
+case of user-defined attributes, enddef/redef is called for ncid_in and
+ncid_out if they are in define mode. (This is the ensure that all
+user-defined types are committed to the file(s) before the copy is
+attempted.)
+
+Usage
+=====
+
+     int nc_copy_att (int ncid_in, int varid_in, const char *name,
+                      int ncid_out, int varid_out);
+
+`ncid_in'
+     The netCDF ID of an input netCDF dataset from which the attribute
+     will be copied, from a previous call to nc_open or nc_create.
+
+`varid_in'
+     ID of the variable in the input netCDF dataset from which the
+     attribute will be copied, or NC_GLOBAL for a global attribute.
+
+`name'
+     Name of the attribute in the input netCDF dataset to be copied.
+
+`ncid_out'
+     The netCDF ID of the output netCDF dataset to which the attribute
+     will be copied, from a previous call to nc_open or nc_create. It is
+     permissible for the input and output netCDF IDs to be the same. The
+     output netCDF dataset should be in define mode if the attribute to
+     be copied does not already exist for the target variable, or if it
+     would cause an existing target attribute to grow.
+
+`varid_out'
+     ID of the variable in the output netCDF dataset to which the
+     attribute will be copied, or NC_GLOBAL to copy to a global
+     attribute.
+
+Errors
+======
+
+nc_copy_att returns the value NC_NOERR if no errors occurred.
+Otherwise, the returned status indicates an error. Possible causes of
+errors include:
+
+   * The input or output variable ID is invalid for the specified netCDF
+     dataset.
+
+   * The specified attribute does not exist.
+
+   * The output netCDF is not in define mode and the attribute is new
+     for the output dataset is larger than the existing attribute.
+
+   * The input or output netCDF ID does not refer to an open netCDF
+     dataset.
+
+Example
+=======
+
+Here is an example using nc_copy_att to copy the variable attribute
+units from the variable rh in an existing netCDF dataset named foo.nc
+to the variable avgrh in another existing netCDF dataset named bar.nc,
+assuming that the variable avgrh already exists, but does not yet have
+a units attribute:
+
+     #include <netcdf.h>
+        ...
+     int  status;               /* error status */
+     int  ncid1, ncid2;         /* netCDF IDs */
+     int  rh_id, avgrh_id;      /* variable IDs */
+        ...
+     status = nc_open("foo.nc", NC_NOWRITE, ncid1);
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_open("bar.nc", NC_WRITE, ncid2);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_inq_varid (ncid1, "rh", &rh_id);
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_inq_varid (ncid2, "avgrh", &avgrh_id);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_redef(ncid2);  /* enter define mode */
+     if (status != NC_NOERR) handle_error(status);
+     /* copy variable attribute from "rh" to "avgrh" */
+     status = nc_copy_att(ncid1, rh_id, "units", ncid2, avgrh_id);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_enddef(ncid2); /* leave define mode */
+     if (status != NC_NOERR) handle_error(status);
+
+
+File: netcdf-c.info,  Node: nc_rename_att,  Next: nc_del_att,  Prev: nc_copy_att,  Up: Attributes
+
+7.6 Rename an Attribute: nc_rename_att
+======================================
+
+The function nc_rename_att changes the name of an attribute. If the new
+name is longer than the original name, the netCDF dataset must be in
+define mode. You cannot rename an attribute to have the same name as
+another attribute of the same variable.
+
+Usage
+=====
+
+     int nc_rename_att (int ncid, int varid, const char* name,
+                        const char* newname);
+
+`ncid'
+     NetCDF ID, from a previous call to nc_open or nc_create
+
+`varid'
+     ID of the attribute's variable, or NC_GLOBAL for a global attribute
+
+`name'
+     The current attribute name.
+
+`newname'
+     The new name to be assigned to the specified attribute. If the new
+     name is longer than the current name, the netCDF dataset must be in
+     define mode.
+
+Errors
+======
+
+nc_rename_att returns the value NC_NOERR if no errors occurred.
+Otherwise, the returned status indicates an error. Possible causes of
+errors include:
+   * The specified variable ID is not valid.
+
+   * The new attribute name is already in use for another attribute of
+     the specified variable.
+
+   * The specified netCDF dataset is in data mode and the new name is
+     longer than the old name.
+
+   * The specified attribute does not exist.
+
+   * The specified netCDF ID does not refer to an open netCDF dataset.
+
+Example
+=======
+
+Here is an example using nc_rename_att to rename the variable attribute
+units to Units for a variable rh in an existing netCDF dataset named
+foo.nc:
+
+     #include <netcdf.h>
+        ...
+     int  status;      /* error status */
+     int  ncid;        /* netCDF ID */
+     int  rh_id;       /* variable id */
+        ...
+     status = nc_open("foo.nc", NC_NOWRITE, &ncid);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_inq_varid (ncid, "rh", &rh_id);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     /* rename attribute */
+     status = nc_rename_att(ncid, rh_id, "units", "Units");
+     if (status != NC_NOERR) handle_error(status);
+
+
+File: netcdf-c.info,  Node: nc_del_att,  Next: nc_att_ubyte,  Prev: nc_rename_att,  Up: Attributes
+
+7.7 Delete an Attribute: nc_del_att
+===================================
+
+The function nc_del_att deletes a netCDF attribute from an open netCDF
+dataset. The netCDF dataset must be in define mode.
+
+Usage
+=====
+
+int nc_del_att (int ncid, int varid, const char* name);
+
+`ncid'
+     NetCDF ID, from a previous call to nc_open or nc_create.
+
+`varid'
+     ID of the attribute's variable, or NC_GLOBAL for a global
+     attribute.
+
+`name'
+     The name of the attribute to be deleted.
+
+Errors
+======
+
+nc_del_att returns the value NC_NOERR if no errors occurred. Otherwise,
+the returned status indicates an error. Possible causes of errors
+include:
+
+   * The specified variable ID is not valid.
+
+   * The specified netCDF dataset is in data mode.
+
+   * The specified attribute does not exist.
+
+   * The specified netCDF ID does not refer to an open netCDF dataset.
+
+Example
+=======
+
+Here is an example using nc_del_att to delete the variable attribute
+Units for a variable rh in an existing netCDF dataset named foo.nc:
+
+     #include <netcdf.h>
+        ...
+     int  status;      /* error status */
+     int  ncid;        /* netCDF ID */
+     int  rh_id;       /* variable ID */
+        ...
+     status = nc_open("foo.nc", NC_WRITE, &ncid);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     status = nc_inq_varid (ncid, "rh", &rh_id);
+     if (status != NC_NOERR) handle_error(status);
+        ...
+     /* delete attribute */
+     status = nc_redef(ncid);        /* enter define mode */
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_del_att(ncid, rh_id, "Units");
+     if (status != NC_NOERR) handle_error(status);
+     status = nc_enddef(ncid);       /* leave define mode */
+     if (status != NC_NOERR) handle_error(status);
+
+
+File: netcdf-c.info,  Node: nc_att_ubyte,  Prev: nc_del_att,  Up: Attributes
+
+   Note: the following functions are also defined but deprecated, as
+they are identical in arguments and behavior to the corresponding
+functions with "uchar" substituted for "ubyte" in the function name.
+
+     int nc_put_att_ubyte     (int ncid, int varid, const char *name, nc_type xtype,
+                               size_t len, const unsigned char *op);
+     int nc_get_att_ubyte     (int ncid, int varid, const char *name, unsigned char *ip);
+
+
+File: netcdf-c.info,  Node: Summary of C Interface,  Next: NetCDF 3 Transition Guide,  Prev: Attributes,  Up: Top
+
+Appendix A Summary of C Interface
+*********************************
+
+     const char* nc_inq_libvers (void);
+     const char* nc_strerror    (int ncerr);
+
+     int nc_create         (const char *path, int cmode, int *ncidp);
+     int nc_open           (const char *path, int mode, int *ncidp);
+     int nc_set_fill       (int ncid, int fillmode, int *old_modep);
+     int nc_redef          (int ncid);
+     int nc_enddef         (int ncid);
+     int nc_sync           (int ncid);
+     int nc_abort          (int ncid);
+     int nc_close          (int ncid);
+     int nc_inq            (int ncid, int *ndimsp, int *nvarsp,
+                            int *ngattsp, int *unlimdimidp);
+     int nc_inq_ndims      (int ncid, int *ndimsp);
+     int nc_inq_nvars      (int ncid, int *nvarsp);
+     int nc_inq_natts      (int ncid, int *ngattsp);
+     int nc_inq_unlimdim   (int ncid, int *unlimdimidp);
+
+     int nc_def_dim        (int ncid, const char *name, size_t len,
+                            int *idp);
+     int nc_inq_dimid      (int ncid, const char *name, int *idp);
+     int nc_inq_dim        (int ncid, int dimid, char *name, size_t *lenp);
+     int nc_inq_dimname    (int ncid, int dimid, char *name);
+     int nc_inq_dimlen     (int ncid, int dimid, size_t *lenp);
+     int nc_rename_dim     (int ncid, int dimid, const char *name);
+
+     int nc_def_var        (int ncid, const char *name, nc_type xtype,
+                            int ndims, const int *dimidsp, int *varidp);
+     int nc_inq_var        (int ncid, int varid, char *name,
+                            nc_type *xtypep, int *ndimsp, int *dimidsp,
+                            int *nattsp);
+     int nc_inq_varid      (int ncid, const char *name, int *varidp);
+     int nc_inq_varname    (int ncid, int varid, char *name);
+     int nc_inq_vartype    (int ncid, int varid, nc_type *xtypep);
+     int nc_inq_varndims   (int ncid, int varid, int *ndimsp);
+     int nc_inq_vardimid   (int ncid, int varid, int *dimidsp);
+     int nc_inq_varnatts   (int ncid, int varid, int *nattsp);
+     int nc_rename_var     (int ncid, int varid, const char *name);
+     int nc_put_var_text   (int ncid, int varid, const char *op);
+     int nc_get_var_text   (int ncid, int varid,       char *ip);
+     int nc_put_var_uchar  (int ncid, int varid, const unsigned char *op);
+     int nc_get_var_uchar  (int ncid, int varid,       unsigned char *ip);
+     int nc_put_var_schar  (int ncid, int varid, const signed char *op);
+     int nc_get_var_schar  (int ncid, int varid,       signed char *ip);
+     int nc_put_var_short  (int ncid, int varid, const short *op);
+     int nc_get_var_short  (int ncid, int varid,       short *ip);
+     int nc_put_var_int    (int ncid, int varid, const int *op);
+     int nc_get_var_int    (int ncid, int varid,       int *ip);
+     int nc_put_var_long   (int ncid, int varid, const long *op);
+     int nc_get_var_long   (int ncid, int varid,       long *ip);
+     int nc_put_var_float  (int ncid, int varid, const float *op);
+     int nc_get_var_float  (int ncid, int varid,       float *ip);
+     int nc_put_var_double (int ncid, int varid, const double *op);
+     int nc_get_var_double (int ncid, int varid,       double *ip);
+     int nc_put_var1_text  (int ncid, int varid, const size_t *indexp,
+                            const char *op);
+     int nc_get_var1_text  (int ncid, int varid, const size_t *indexp,
+                            char *ip);
+     int nc_put_var1_uchar (int ncid, int varid, const size_t *indexp,
+                            const unsigned char *op);
+     int nc_get_var1_uchar (int ncid, int varid, const size_t *indexp,
+                            unsigned char *ip);
+     int nc_put_var1_schar (int ncid, int varid, const size_t *indexp,
+                            const signed char *op);
+     int nc_get_var1_schar (int ncid, int varid, const size_t *indexp,
+                            signed char *ip);
+     int nc_put_var1_short (int ncid, int varid, const size_t *indexp,
+                            const short *op);
+     int nc_get_var1_short (int ncid, int varid, const size_t *indexp,
+                            short *ip);
+     int nc_put_var1_int   (int ncid, int varid, const size_t *indexp,
+                            const int *op);
+     int nc_get_var1_int   (int ncid, int varid, const size_t *indexp,
+                            int *ip);
+     int nc_put_var1_long  (int ncid, int varid, const size_t *indexp,
+                            const long *op);
+     int nc_get_var1_long  (int ncid, int varid, const size_t *indexp,
+                            long *ip);
+     int nc_put_var1_float (int ncid, int varid, const size_t *indexp,
+                            const float *op);
+     int nc_get_var1_float (int ncid, int varid, const size_t *indexp,
+                            float *ip);
+     int nc_put_var1_double(int ncid, int varid, const size_t *indexp,
+                            const double *op);
+     int nc_get_var1_double(int ncid, int varid, const size_t *indexp,
+                            double *ip);
+     int nc_put_vara_text  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const char *op);
+     int nc_get_vara_text  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, char *ip);
+     int nc_put_vara_uchar (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const unsigned char *op);
+     int nc_get_vara_uchar (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, unsigned char *ip);
+     int nc_put_vara_schar (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const signed char *op);
+     int nc_get_vara_schar (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, signed char *ip);
+     int nc_put_vara_short (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const short *op);
+     int nc_get_vara_short (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, short *ip);
+     int nc_put_vara_int   (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const int *op);
+     int nc_get_vara_int   (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, int *ip);
+     int nc_put_vara_long  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const long *op);
+     int nc_get_vara_long  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, long *ip);
+     int nc_put_vara_float (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const float *op);
+     int nc_get_vara_float (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, float *ip);
+     int nc_put_vara_double(int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const double *op);
+     int nc_get_vara_double(int ncid, int varid, const size_t *startp,
+                            const size_t *countp, double *ip);
+     int nc_put_vars_text  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const char *op);
+     int nc_get_vars_text  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            char *ip);
+     int nc_put_vars_uchar (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const unsigned char *op);
+     int nc_get_vars_uchar (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            unsigned char *ip);
+     int nc_put_vars_schar (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const signed char *op);
+     int nc_get_vars_schar (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            signed char *ip);
+     int nc_put_vars_short (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const short *op);
+     int nc_get_vars_short (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            short *ip);
+     int nc_put_vars_int   (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const int *op);
+     int nc_get_vars_int   (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            int *ip);
+     int nc_put_vars_long  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const long *op);
+     int nc_get_vars_long  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            long *ip);
+     int nc_put_vars_float (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const float *op);
+     int nc_get_vars_float (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            float *ip);
+     int nc_put_vars_double(int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const double *op);
+     int nc_get_vars_double(int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            double *ip);
+     int nc_put_varm_text  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, const char *op);
+     int nc_get_varm_text  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, char *ip);
+     int nc_put_varm_uchar (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, const unsigned char *op);
+     int nc_get_varm_uchar (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, unsigned char *ip);
+     int nc_put_varm_schar (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, const signed char *op);
+     int nc_get_varm_schar (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, signed char *ip);
+     int nc_put_varm_short (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, const short *op);
+     int nc_get_varm_short (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, short *ip);
+     int nc_put_varm_int   (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, const int *op);
+     int nc_get_varm_int   (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, int *ip);
+     int nc_put_varm_long  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, const long *op);
+     int nc_get_varm_long  (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, long *ip);
+     int nc_put_varm_float (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, const float *op);
+     int nc_get_varm_float (int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, float *ip);
+     int nc_put_varm_double(int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t *imapp, const double *op);
+     int nc_get_varm_double(int ncid, int varid, const size_t *startp,
+                            const size_t *countp, const ptrdiff_t *stridep,
+                            const ptrdiff_t * imap, double *ip);
+
+     int nc_inq_att        (int ncid, int varid, const char *name,
+                            nc_type *xtypep, size_t *lenp);
+     int nc_inq_attid      (int ncid, int varid, const char *name, int *idp);
+     int nc_inq_atttype    (int ncid, int varid, const char *name,
+                            nc_type *xtypep);
+     int nc_inq_attlen     (int ncid, int varid, const char *name,
+                            size_t *lenp);
+     int nc_inq_attname    (int ncid, int varid, int attnum, char *name);
+     int nc_copy_att       (int ncid_in, int varid_in, const char *name,
+                            int ncid_out, int varid_out);
+     int nc_rename_att     (int ncid, int varid, const char *name,
+                            const char *newname);
+     int nc_del_att        (int ncid, int varid, const char *name);
+     int nc_put_att_text   (int ncid, int varid, const char *name, size_t len,
+                            const char *op);
+     int nc_get_att_text   (int ncid, int varid, const char *name, char *ip);
+     int nc_put_att_uchar  (int ncid, int varid, const char *name,
+                            nc_type xtype, size_t len, const unsigned char *op);
+     int nc_get_att_uchar  (int ncid, int varid, const char *name,
+                            unsigned char *ip);
+     int nc_put_att_schar  (int ncid, int varid, const char *name,
+                            nc_type xtype, size_t len, const signed char *op);
+     int nc_get_att_schar  (int ncid, int varid, const char *name,
+                            signed char *ip);
+     int nc_put_att_short  (int ncid, int varid, const char *name,
+                            nc_type xtype, size_t len, const short *op);
+     int nc_get_att_short  (int ncid, int varid, const char *name, short *ip);
+     int nc_put_att_int    (int ncid, int varid, const char *name,
+                            nc_type xtype,size_t len, const int *op);
+     int nc_get_att_int    (int ncid, int varid, const char *name, int *ip);
+     int nc_put_att_long   (int ncid, int varid, const char *name,
+                            nc_type xtype, size_t len, const long *op);
+     int nc_get_att_long   (int ncid, int varid, const char *name, long *ip);
+     int nc_put_att_float  (int ncid, int varid, const char *name,
+                             nc_type xtype, size_t len, const float *op);
+     int nc_get_att_float  (int ncid, int varid, const char *name, float *ip);
+     int nc_put_att_double (int ncid, int varid, const char *name,
+                            nc_type xtype, size_t len, const double *op);
+     int nc_get_att_double (int ncid, int varid, const char *name,
+                            double *ip);
+
+
+File: netcdf-c.info,  Node: NetCDF 3 Transition Guide,  Next: NetCDF 2 C Transition Guide,  Prev: Summary of C Interface,  Up: Top
+
+Appendix B NetCDF 3 to NetCDF 4 Transition Guide
+************************************************
+
+B.1 Introduction
+================
+
+The release of netCDF-4 represents a substantial increase in the
+capabilities of the netCDF C and Fortran APIs.
+
+   The netCDF-4.0 release (June, 2008) allows the use of the popular
+HDF5 data format as a storage layer. The HDF5 format has many features,
+and only a subset of them are exposed in the netCDF-4 API. This
+represents a deliberate selection process by netCDF-4 developers to
+choose the most useful features of the HDF5 model, while retaining the
+simplicity of the netCDF APIs.
+
+   Despite many new features, full backward compatibility is assured
+(and extensively tested). Existing software and data files will
+continue to work with netCDF-4.0, just as with previous releases of the
+netCDF library.
+
+   The use of netCDF-4 files allows the use of the expanded data model,
+including user-defined types, groups, the new unsigned, 64-bit, and
+string types.
+
+   Using netCDF-4 files also allows the use of such features as
+endianness control, per-variable data compression, chunking, parallel
+I/O, and checksums. These features fit neatly within the classic netCDF
+data model.
+
+   Although the expanded data model offers many exciting new features,
+we expect and encourage users to proceed with care - it also allows the
+creation of needlessly, even horribly complex files. This would
+decrease interoperability and increase the work of the poor programmers
+trying to use the data file.
+
+   There are many netCDF-4 features which fit comfortably within the
+classic netCDF model. Existing programs can be very quickly converted
+to use features such as compression, endianness control, and chunking.
+This allows users to gain immediate performance pay off, with minimal
+software development effort.
+
+B.2 NetCDF-4 and HDF5
+=====================
+
+NetCDF-4 depends on HDF5 to deliver the new features of the expanded
+data model, as well as the features required to support the classic
+data model.
+
+   NetCDF-4 users must have at least HDF5 version 1.8.1 (and at least
+zlib-1.2.3) to use HDF5 with netCDF-4.0. If these packages are not
+found when netCDF is built, then the netCDF library may still be built
+(without the -enable-netcdf-4 option), but will not allow users to
+create netCDF-4/HDF5 files, or use the expanded data model. Only
+classic and 64-bit offset format netCDF files will be created or
+readable. (*note Configure: (netcdf-install)Configure.).
+
+   The HDF5 files created by netCDF-4 will be readable (and writable) by
+any HDF5 application. However, netCDF-4.0 cannot read any HDF5 file,
+only those created by netCDF-4.
+
+B.3 Backward Compatibility
+==========================
+
+In the context of netCDF, backward compatibility has several meanings.
+
+`Data Compatibility'
+     NetCDF-4 provides backward compatibility for existing data. All
+     netCDF data files remain readable and writable to the netCDF
+     library. When a file is opened, the library detects the underlying
+     format of the file; this is transparent to the programmer and user.
+
+`Code Compatibility'
+     NetCDF-4 provides backward compatibility for existing software.
+     Programs using the 4.0 release can use it as a drop-in replacement
+     for netCDF-3.x. Existing programs will continue to create netCDF
+     classic or 64-bit offset files.
+
+`Model Compatibility'
+     NetCDF-4 introduces an expanded model of a netCDF data file
+     (include such new elements as groups, user-defined types,
+     multiple-unlimited dimensions, etc.) This expanded model is a
+     super-set of the classic netCDF model. Everything that works in
+     the classic model works in the expanded model as well. (The
+     reverse is not true - code using the expanded data model will fail
+     if run on classic model netCDF files.)
+
+
+B.4 The Classic and the Expanded NetCDF Data Models
+===================================================
+
+The classic netCDF data model consists of variables, dimensions, and
+attributes.
+
+   The netCDF-4.0 release introduces an expanded data model, which
+offers many new features. These features will only work on files which
+have been created with the NC_NETCDF4 flag, and without the
+NC_CLASSIC_MODEL flag (*note nc_create::).
+
+`New Types'
+     New data types are introduced: NC_UBYTE, NC_USHORT, NC_UINT,
+     NC_INT64, NC_UINT64, and NC_STRING. These types many be used for
+     attributes and variables. *Note nc_def_var::.
+
+`Groups'
+     NetCDF objects may now be organizes into a hierarchical set of
+     groups. Groups are organized much line a UNIX file system, with
+     each group capable of containing more groups.  Within each group a
+     classic model netCDF "file" exists, with its own dimensions,
+     variables, and attributes. *Note nc_def_grp::.
+
+`User Defined Types'
+     NetCDF-4 allows the user to define new data types, including a
+     compound type (*note nc_def_compound::), a variable length array
+     type (*note nc_def_vlen::), an enumerated type (*note
+     nc_def_enum::), and an opaque type (*note nc_def_opaque::).
+
+`Multiple Unlimited Dimensions'
+     NetCDF-4/HDF5 data files may use multiple unlimited dimensions
+     with a file, and even within a variable.
+
+
+B.5 Using NetCDF-4.0 with the Classic and 64-bit Offset Formats
+===============================================================
+
+Prior to the 4.0 release, two underlying data formats were available
+for the netCDF user, the classic, and the 64-bit offset format. (The
+64-bit offset format was introduced in the 3.6.0 release, and allows
+the use of larger variables and files).
+
+   Software using netCDF, relinked against the netCDF-4.0 library, will
+continue to work exactly as before. Since the default create mode in
+nc_create is to create a classic format file, using unmodified netCDF-3
+code with the netCDF-4 library will result in the exact same output - a
+classic netCDF file or 64-bit offset file.
+
+   When writing or reading classic and 64-bit offset files, the
+netCDF-4.0 library relies on the core netCDF-3.x code.
+
+B.6 Creating a NetCDF-4/HDF5 File
+=================================
+
+The extra features of netCDF-4 can only be accessed by adding the
+NC_NETCDF4 flag to the create mode of nc_create. Files created with the
+NC_NETCDF4 flag can have multiple unlimited dimensions, use the new
+atomic types, use compound and opaque types, and take advantage of the
+other features of netCDF-4. (*note nc_create::).
+
+B.7 Using NetCDF-4.0 with the Classic Model
+===========================================
+
+By changing your nc_create call to create a netCDF-4/HDF5 file you gain
+access to many new features - perhaps too many! Using groups or
+user-defined types will make the file unreadable to existing netCDF
+applications, until they are updated to handle the new netCDF-4 model.
+
+   Using the NC_CLASSIC_MODEL flag with the NC_NETCDF4 flag tells the
+library to create a netCDF-4/HDF5 file which must abide by the rules of
+the classic netCDF data model. Such a file many not contain groups,
+user defined types, multiple unlimited dimensions, etc.
+
+   But a classic model file is guaranteed to be compatible with existing
+netCDF software, once relinked to the netCDF 4.0 library.
+
+   Some features of netCDF-4 are transparent to the user when the file
+is read. For example, a netCDF-4/HDF5 file may contain compressed data.
+When such a file is read, the decompression of the data takes place
+transparently. This means that data may use the data compression
+feature, and still conform to the classic netCDF data model, and thus
+retain compatibility with existing netCDF software (*note
+nc_def_var_deflate::). The same applies for control of endianness
+(*note nc_def_var_endian::), chunking (*note nc_def_var_chunking::),
+checksums (*note nc_def_var_fletcher32::), and parallel I/O, if
+netCDF-4 was built on a system with the MPI libraries.
+
+   To use these feature, change your nc_create calls to use the
+NC_NETCDF4 and NC_CLASSIC_MODEL flags. Then call the appropriate
+nc_dev_var_* function after the variable is defined, but before the
+next call to nc_enddef.
+
+B.8 Use of the Expanded Model Impacts Fortran Portability
+=========================================================
+
+Using expanded model features impacts portability for Fortran
+programmers.
+
+   Fortran compilers do not always agree as to how data should be laid
+out in memory. This makes handling compound and variable length array
+types compiler and platform dependant.
+
+   (This is also true for C, but the clever HDF5 configuration has
+solved this problem for C. Alas, not for Fortran.)
+
+   Despite this, Fortran programs can take advantage of the new data
+model. The portability challenge is no different from that which
+Fortran programmers already deal with when doing data I/O.
+
+B.9 The C++ API Does Not Handle Expanded Model in this Release
+==============================================================
+
+Unfortunately, the C++ API does not support the netCDF-4 expanded data
+model. A new C++ API is being developed and may be built by adventurous
+users using the -enable-cxx4 option to configure (*note Configure:
+(netcdf-install)Configure.).
+
+
+File: netcdf-c.info,  Node: NetCDF 2 C Transition Guide,  Next: NetCDF-3 Error Codes,  Prev: NetCDF 3 Transition Guide,  Up: Top
+
+Appendix C NetCDF 2 to NetCDF 3 C Transition Guide
+**************************************************
+
+C.1 Overview of C interface changes
+===================================
+
+NetCDF version 3 includes a complete rewrite of the netCDF library. It
+is about twice as fast as the previous version. The netCDF file format
+is unchanged, so files written with version 3 can be read with version
+2 code and vice versa.
+
+   The core library is now written in ANSI C. For example, prototypes
+are used throughout as well as const qualifiers where appropriate. You
+must have an ANSI C compiler to compile this version.
+
+   Rewriting the library offered an opportunity to implement improved C
+and FORTRAN interfaces that provide some significant benefits:
+
+   type safety, by eliminating the need to use generic void* pointers;
+
+   automatic type conversions, by eliminating the undesirable coupling
+between the language-independent external netCDF types (NC_BYTE, ...,
+NC_DOUBLE) and language-dependent internal data types (char, ...,
+double);
+
+   support for future enhancements, by eliminating obstacles to the
+clean addition of support for packed data and multithreading;
+
+   more standard error behavior, by uniformly communicating an error
+status back to the calling program in the return value of each function.
+
+   It is not necessary to rewrite programs that use the version 2 C
+interface, because the netCDF-3 library includes a backward
+compatibility interface that supports all the old functions, globals,
+and behavior. We are hoping that the benefits of the new interface will
+be an incentive to use it in new netCDF applications. It is possible to
+convert old applications to the new interface incrementally, replacing
+netCDF-2 calls with the corresponding netCDF-3 calls one at a time. If
+you want to check that only netCDF-3 calls are used in an application,
+a preprocessor macro (NO_NETCDF_2) is available for that purpose.
+
+   Other changes in the implementation of netCDF result in improved
+portability, maintainability, and performance on most platforms. A
+clean separation between I/O and type layers facilitates
+platform-specific optimizations. The new library no longer uses a
+vendor-provided XDR library, which simplifies linking programs that use
+netCDF and speeds up data access significantly in most cases.
+
+C.2 The New C Interface
+=======================
+
+First, here's an example of C code that uses the netCDF-2 interface:
+
+     void *bufferp;
+     nc_type xtype;
+     ncvarinq(ncid, varid, ..., &xtype, ...
+     ...
+     /* allocate bufferp based on dimensions and type */
+     ...
+     if (ncvarget(ncid, varid, start, count, bufferp) == -1) {
+         fprintf(stderr, "Can't get data, error code = %d\n",ncerr);
+         /* deal with it */
+         ...
+     }
+     switch(xtype) {
+         /* deal with the data, according to type */
+     ...
+     case  NC_FLOAT:
+         fanalyze((float *)bufferp);
+         break;
+     case NC_DOUBLE:
+         danalyze((double *)bufferp);
+         break;
+     }
+
+   Here's how you might handle this with the new netCDF-3 C interface:
+
+     /*
+      * I want to use doubles for my analysis.
+      */
+     double dbuf[NDOUBLES];
+     int status;
+
+     /* So, I use the function that gets the data as doubles. */
+     status = nc_get_vara_double(ncid, varid, start, count, dbuf)
+     if (status != NC_NOERR) {
+        fprintf(stderr, "Can't get data: %s\n", nc_strerror(status));
+         /* deal with it */
+         ...
+     }
+     danalyze(dbuf);
+
+   The example above illustrates changes in function names, data type
+conversion, and error handling, discussed in detail in the sections
+below.
+
+C.3 Function Naming Conventions
+===============================
+
+The netCDF-3 C library employs a new naming convention, intended to
+make netCDF programs more readable. For example, the name of the
+function to rename a variable is now nc_rename_var instead of the
+previous ncvarrename.
+
+   All netCDF-3 C function names begin with the nc_ prefix. The second
+part of the name is a verb, like get, put, inq (for inquire), or open.
+The third part of the name is typically the object of the verb: for
+example dim, var, or att for functions dealing with dimensions,
+variables, or attributes. To distinguish the various I/O operations for
+variables, a single character modifier is appended to var:
+
+var
+     entire variable access
+
+var1
+     single value access
+
+vara
+     array or array section access
+
+vars
+     strided access to a subsample of values
+
+varm
+     mapped access to values not contiguous in memory
+
+
+   At the end of the name for variable and attribute functions, there is
+a component indicating the type of the final argument: text, uchar,
+schar, short, int, long, float, or double. This part of the function
+name indicates the type of the data container you are using in your
+program: character string, unsigned char, signed char, and so on.
+
+   Also, all macro names in the public C interface begin with the prefix
+NC_. For example, the macro which was formerly MAX_NC_NAME is now
+NC_MAX_NAME, and the former FILL_FLOAT is now NC_FILL_FLOAT.
+
+   As previously mentioned, all the old names are still supported for
+backward compatibility.
+
+C.4 Type Conversion
+===================
+
+With the new interface, users need not be aware of the external type of
+numeric variables, since automatic conversion to or from any desired
+numeric type is now available. You can use this feature to simplify
+code, by making it independent of external types. The elimination of
+void* pointers provides detection of type errors at compile time that
+could not be detected with the previous interface. Programs may be made
+more robust with the new interface, because they need not be changed to
+accommodate a change to the external type of a variable.
+
+   If conversion to or from an external numeric type is necessary, it is
+handled by the library. This automatic conversion and separation of
+external data representation from internal data types will become even
+more important in netCDF version 4, when new external types will be
+added for packed data for which there is no natural corresponding
+internal type, for example, arrays of 11-bit values.
+
+   Converting from one numeric type to another may result in an error if
+the target type is not capable of representing the converted value. (In
+netCDF-2, such overflows can only happen in the XDR layer.)  For
+example, a float may not be able to hold data stored externally as an
+NC_DOUBLE (an IEEE floating-point number). When accessing an array of
+values, an NC_ERANGE error is returned if one or more values are out of
+the range of representable values, but other values are converted
+properly.
+
+   Note that mere loss of precision in type conversion does not return
+an error. Thus, if you read double precision values into an int, for
+example, no error results unless the magnitude of the double precision
+value exceeds the representable range of ints on your platform.
+Similarly, if you read a large integer into a float incapable of
+representing all the bits of the integer in its mantissa, this loss of
+precision will not result in an error. If you want to avoid such
+precision loss, check the external types of the variables you access to
+make sure you use an internal type that has a compatible precision.
+
+   The new interface distinguishes arrays of characters intended to
+represent text strings from arrays of 8-bit bytes intended to represent
+small integers. The interface supports the internal types text, uchar,
+and schar, intended for text strings, unsigned byte values, and signed
+byte values.
+
+   The _uchar and _schar functions were introduced in netCDF-3 to
+eliminate an ambiguity, and support both signed and unsigned byte data.
+In netCDF-2, whether the external NC_BYTE type represented signed or
+unsigned values was left up to the user. In netcdf-3, we treat NC_BYTE
+as signed for the purposes of conversion to short, int, long, float, or
+double. (Of course, no conversion takes place when the internal type is
+signed char.) In the _uchar functions, we treat NC_BYTE as if it were
+unsigned. Thus, no NC_ERANGE error can occur converting between NC_BYTE
+and unsigned char.  The _uchar and _schar functions will behave
+differently when writing data or attribute values to a larger type,
+because the type conversion is from unsigned or signed to the larger
+type, respectively.
+
+C.5 Error handling
+==================
+
+The new interface handles errors differently than netCDF-2. In the old
+interface, the default behavior when an error was detected was to print
+an error message and exit. To get control of error handling, you had to
+set flag bits in a global variable, ncopts, and to determine the cause
+of an error, you had to test the value of another global variable ncerr.
+
+   In the new interface, functions return an integer status that
+indicates not only success or failure, but also the cause of the error.
+The global variables ncerr and ncopt have been eliminated. The library
+will never try to print anything, nor will it call exit (unless you are
+using the netCDF version 2 compatibility functions). You will have to
+check the function return status and do this yourself. We eliminated
+these globals in the interest of supporting parallel (multiprocessor)
+execution cleanly, as well as reducing the number of assumptions about
+the environment where netCDF is used. The new behavior should provide
+better support for using netCDF as a hidden layer in applications that
+have their own GUI interface.
+
+C.6 NC_LONG and NC_INT
+======================
+
+Where the netCDF-2 interface used NC_LONG to identify an external data
+type corresponding to 32-bit integers, the new interface uses NC_INT
+instead. NC_LONG is defined to have the same value as NC_INT for
+backward compatibility, but it should not be used in new code. With new
+64-bit platforms using long for 64-bit integers, we would like to
+reduce the confusion caused by this name clash. Note that there is
+still no netCDF external data type corresponding to 64-bit integers.
+
+C.7 What's Missing?
+===================
+
+The new C interface omits three "record I/O" functions, ncrecput,
+ncrecget, and ncrecinq, from the netCDF-2 interface, although these
+functions are still supported via the netCDF-2 compatibility interface.
+
+   This means you may have to replace one record-oriented call with
+multiple type-specific calls, one for each record variable. For
+example, a single call to ncrecput can always be replaced by multiple
+calls to the appropriate nc_put_var functions, one call for each
+variable accessed. The record-oriented functions were omitted, because
+there is no simple way to provide type-safety and automatic type
+conversion for such an interface.
+
+   There is no function corresponding to the nctypelen function from the
+version 2 interface. The separation of internal and external types and
+the new type-conversion interfaces make nctypelen unnecessary. Since
+users read into and write out of native types, the sizeof operator is
+perfectly adequate to determine how much space to allocate for a value.
+
+   In the previous library, there was no checking that the characters
+used in the name of a netCDF object were compatible with CDL
+restrictions. The ncdump and ncgen utilities now properly escape and
+handle escaped special characters in names, so that all valid netCDF
+names are representable in CDL.
+
+C.8 Other Changes
+=================
+
+There are two new functions in netCDF-3 that don't correspond to any
+netCDF-2 functions: nc_inq_libvers and nc_strerror. The version of the
+netCDF library in use is returned as a string by nc_inq_libvers. An
+error message corresponding to the status returned by a netCDF function
+call is returned as a string by the nc_strerror function.
+
+   A new NC_SHARE flag is available for use in an nc_open or nc_create
+call, to suppress the default buffering of accesses. The use of
+NC_SHARE for concurrent access to a netCDF dataset means you don't have
+to call nc_sync after every access to make sure that disk updates are
+synchronous. It is important to note that changes to ancillary data,
+such as attribute values, are not propagated automatically by use of
+the NC_SHARE flag. Use of the nc_sync function is still required for
+this purpose.
+
+   The version 2 interface had a single inquiry function, ncvarinq for
+getting the name, type, and shape of a variable. Similarly, only a
+single inquiry function was available for getting information about a
+dimension, an attribute, or a netCDF dataset. When you only wanted a
+subset of this information, you had to provide NULL arguments as
+placeholders for the unneeded information. The new interface includes
+additional inquire functions that return each item separately, so
+errors are less likely from miscounting arguments.
+
+   The previous implementation returned an error when 0-valued count
+components were specified in ncvarput and ncvarget calls. This
+restriction has been removed, so that now functions in the nc_put_var
+and nc_get_var families may be called with 0-valued count components,
+resulting in no data being accessed. Although this may seem useless, it
+simplifies some programs to not treat 0-valued counts as a special case.
+
+   The previous implementation returned an error when the same dimension
+was used more than once in specifying the shape of a variable in
+ncvardef. This restriction is relaxed in the netCDF-3 implementation,
+because an auto-correlation matrix is a good example where using the
+same dimension twice makes sense.
+
+   In the new interface, units for the imap argument to the nc_put_varm
+and nc_get_varm families of functions are now in terms of the number of
+data elements of the desired internal type, not in terms of bytes as in
+the netCDF version-2 mapped access interfaces.
+
+   Following is a table of netCDF-2 function names and names of the
+corresponding netCDF-3 functions. For parameter lists of netCDF-2
+functions, see the netCDF-2 User's Guide.
+
+`ncabort'
+     nc_abort
+
+`ncattcopy'
+     nc_copy_att
+
+`ncattdel'
+     nc_del_att
+
+`ncattget'
+     nc_get_att_double, nc_get_att_float, nc_get_att_int,
+     nc_get_att_long, nc_get_att_schar, nc_get_att_short,
+     nc_get_att_text, nc_get_att_uchar
+
+`ncattinq'
+     nc_inq_att, nc_inq_attid, nc_inq_attlen, nc_inq_atttype
+
+`ncattname'
+     nc_inq_attname
+
+`ncattput'
+     nc_put_att_double, nc_put_att_float, nc_put_att_int,
+     nc_put_att_long, nc_put_att_schar, nc_put_att_short,
+     nc_put_att_text, nc_put_att_uchar
+
+`ncattrename'
+     nc_rename_att
+
+`ncclose'
+     nc_close
+
+`nccreate'
+     nc_create
+
+`ncdimdef'
+     nc_def_dim
+
+`ncdimid'
+     nc_inq_dimid
+
+`ncdiminq'
+     nc_inq_dim, nc_inq_dimlen, nc_inq_dimname
+
+`ncdimrename'
+     nc_rename_dim
+
+`ncendef'
+     nc_enddef
+
+`ncinquire'
+     nc_inq, nc_inq_natts, nc_inq_ndims, nc_inq_nvars, nc_inq_unlimdim
+
+`ncopen'
+     nc_open
+
+`ncrecget'
+     (none)
+
+`ncrecinq'
+     (none)
+
+`ncrecput'
+     (none)
+
+`ncredef'
+     nc_redef
+
+`ncsetfill'
+     nc_set_fill
+
+`ncsync'
+     nc_sync
+
+`nctypelen'
+     (none)
+
+`ncvardef'
+     nc_def_var
+
+`ncvarget'
+     nc_get_vara_double, nc_get_vara_float, nc_get_vara_int,
+     nc_get_vara_long, nc_get_vara_schar, nc_get_vara_short,
+     nc_get_vara_text, nc_get_vara_uchar
+
+`ncvarget1'
+     nc_get_var1_double, nc_get_var1_float, nc_get_var1_int,
+     nc_get_var1_long, nc_get_var1_schar, nc_get_var1_short,
+     nc_get_var1_text, nc_get_var1_uchar
+
+`ncvargetg'
+     nc_get_varm_double, nc_get_varm_float, nc_get_varm_int,
+     nc_get_varm_long, nc_get_varm_schar, nc_get_varm_short,
+     nc_get_varm_text, nc_get_varm_uchar, nc_get_vars_double,
+     nc_get_vars_float, nc_get_vars_int, nc_get_vars_long,
+     nc_get_vars_schar, nc_get_vars_short, nc_get_vars_text,
+     nc_get_vars_uchar
+
+`ncvarid'
+     nc_inq_varid
+
+`ncvarinq'
+     nc_inq_var, nc_inq_vardimid, nc_inq_varname, nc_inq_varnatts,
+     nc_inq_varndims, nc_inq_vartype
+
+`ncvarput'
+     nc_put_vara_double, nc_put_vara_float, nc_put_vara_int,
+     nc_put_vara_long, nc_put_vara_schar, nc_put_vara_short,
+     nc_put_vara_text, nc_put_vara_uchar
+
+`ncvarput1'
+     nc_put_var1_double, nc_put_var1_float, nc_put_var1_int,
+     nc_put_var1_long, nc_put_var1_schar, nc_put_var1_short,
+     nc_put_var1_text, nc_put_var1_uchar
+
+`ncvarputg'
+     nc_put_varm_double, nc_put_varm_float, nc_put_varm_int,
+     nc_put_varm_long, nc_put_varm_schar, nc_put_varm_short,
+     nc_put_varm_text, nc_put_varm_uchar, nc_put_vars_double,
+     nc_put_vars_float, nc_put_vars_int, nc_put_vars_long,
+     nc_put_vars_schar, nc_put_vars_short, nc_put_vars_text,
+     nc_put_vars_uchar
+
+`ncvarrename'
+     nc_rename_var
+
+`(none)'
+     nc_inq_libvers
+
+`(none)'
+     nc_strerror
+
+
+
+File: netcdf-c.info,  Node: NetCDF-3 Error Codes,  Next: NetCDF-4 Error Codes,  Prev: NetCDF 2 C Transition Guide,  Up: Top
+
+Appendix D NetCDF-3 Error Codes
+*******************************
+
+     #define NC_NOERR        0       /* No Error */
+
+     #define NC_EBADID       (-33)   /* Not a netcdf id */
+     #define NC_ENFILE       (-34)   /* Too many netcdfs open */
+     #define NC_EEXIST       (-35)   /* netcdf file exists && NC_NOCLOBBER */
+     #define NC_EINVAL       (-36)   /* Invalid Argument */
+     #define NC_EPERM        (-37)   /* Write to read only */
+     #define NC_ENOTINDEFINE (-38)   /* Operation not allowed in data mode */
+     #define NC_EINDEFINE    (-39)   /* Operation not allowed in define mode */
+     #define NC_EINVALCOORDS (-40)   /* Index exceeds dimension bound */
+     #define NC_EMAXDIMS     (-41)   /* NC_MAX_DIMS exceeded */
+     #define NC_ENAMEINUSE   (-42)   /* String match to name in use */
+     #define NC_ENOTATT      (-43)   /* Attribute not found */
+     #define NC_EMAXATTS     (-44)   /* NC_MAX_ATTRS exceeded */
+     #define NC_EBADTYPE     (-45)   /* Not a netcdf data type */
+     #define NC_EBADDIM      (-46)   /* Invalid dimension id or name */
+     #define NC_EUNLIMPOS    (-47)   /* NC_UNLIMITED in the wrong index */
+     #define NC_EMAXVARS     (-48)   /* NC_MAX_VARS exceeded */
+     #define NC_ENOTVAR      (-49)   /* Variable not found */
+     #define NC_EGLOBAL      (-50)   /* Action prohibited on NC_GLOBAL varid */
+     #define NC_ENOTNC       (-51)   /* Not a netcdf file */
+     #define NC_ESTS         (-52)   /* In Fortran, string too short */
+     #define NC_EMAXNAME     (-53)   /* NC_MAX_NAME exceeded */
+     #define NC_EUNLIMIT     (-54)   /* NC_UNLIMITED size already in use */
+     #define NC_ENORECVARS   (-55)   /* nc_rec op when there are no record vars */
+     #define NC_ECHAR        (-56)   /* Attempt to convert between text & numbers */
+     #define NC_EEDGE        (-57)   /* Edge+start exceeds dimension bound */
+     #define NC_ESTRIDE      (-58)   /* Illegal stride */
+     #define NC_EBADNAME     (-59)   /* Attribute or variable name
+                                              contains illegal characters */
+     /* N.B. following must match value in ncx.h */
+     #define NC_ERANGE       (-60)   /* Math result not representable */
+     #define NC_ENOMEM       (-61)   /* Memory allocation (malloc) failure */
+
+     #define NC_EVARSIZE     (-62)   /* One or more variable sizes violate
+                                        format constraints */
+     #define NC_EDIMSIZE     (-63)   /* Invalid dimension size */
+     #define NC_ETRUNC       (-64)   /* File likely truncated or possibly corrupted */
+
+
+File: netcdf-c.info,  Node: NetCDF-4 Error Codes,  Next: DAP Error Codes,  Prev: NetCDF-3 Error Codes,  Up: Top
+
+Appendix E NetCDF-4 Error Codes
+*******************************
+
+NetCDF-4 uses all error codes from NetCDF-3 (*note NetCDF-3 Error
+Codes::). The following additional error codes were added for new
+errors unique to netCDF-4.
+
+     #define NC_EHDFERR       (-101)
+     #define NC_ECANTREAD     (-102)
+     #define NC_ECANTWRITE    (-103)
+     #define NC_ECANTCREATE   (-104)
+     #define NC_EFILEMETA     (-105)
+     #define NC_EDIMMETA      (-106)
+     #define NC_EATTMETA      (-107)
+     #define NC_EVARMETA      (-108)
+     #define NC_ENOCOMPOUND   (-109)
+     #define NC_EATTEXISTS    (-110)
+     #define NC_ENOTNC4       (-111) /* Attempting netcdf-4 operation on netcdf-3 file. */
+     #define NC_ESTRICTNC3    (-112) /* Attempting netcdf-4 operation on strict nc3 netcdf-4 file. */
+     #define NC_EBADGRPID     (-113) /* Bad group id. Bad! */
+     #define NC_EBADTYPEID    (-114) /* Bad type id. */
+     #define NC_EBADFIELDID   (-115) /* Bad field id. */
+     #define NC_EUNKNAME      (-116)
+
+
+File: netcdf-c.info,  Node: DAP Error Codes,  Next: Combined Index,  Prev: NetCDF-4 Error Codes,  Up: Top
+
+Appendix F DAP Error Codes
+**************************
+
+If the DAP client is enabled, then the following additional error codes
+may occur.
+
+     #define NC_EDAP         (-66)   /* Generic DAP error */
+     #define NC_ECURL        (-67)   /* Generic libcurl error */
+     #define NC_EIO          (-68)   /* Generic IO error */
+     #define NC_ENODATA      (-69)   /* Attempt to access variable with no data */
+     #define NC_EDAPSVC      (-70)   /* DAP Server side error */
+     #define NC_EDAS         (-71)   /* Malformed or inaccessible DAS */
+     #define NC_EDDS         (-72)   /* Malformed or inaccessible DDS */
+     #define NC_EDATADDS     (-73)   /* Malformed or inaccessible DATADDS */
+     #define NC_EDAPURL      (-74)   /* Malformed DAP URL */
+     #define NC_EDAPCONSTRAINT (-75) /* Malformed DAP Constraint*/
+     #define NC_EDAP         (-66)   /* Generic DAP error */
+     #define NC_ECURL        (-67)   /* Generic libcurl error */
+     #define NC_EIO          (-68)   /* Generic IO error */
+     #define NC_ENODATA      (-69)   /* Attempt to access variable with no data */
+     #define NC_EDAPSVC      (-70)   /* DAP Server side error */
+     #define NC_EDAS         (-71)   /* Malformed or inaccessible DAS */
+     #define NC_EDDS         (-72)   /* Malformed or inaccessible DDS */
+     #define NC_EDATADDS     (-73)   /* Malformed or inaccessible DATADDS */
+     #define NC_EDAPURL      (-74)   /* Malformed DAP URL */
+     #define NC_EDAPCONSTRAINT (-75) /* Malformed DAP Constraint*/
+
+
+File: netcdf-c.info,  Node: Combined Index,  Prev: DAP Error Codes,  Up: Top
+
+7 Index
+*******
+
+ [index ]
+* Menu:
+
+* abnormal termination:                  Use of the NetCDF Library.
+                                                               (line  6)
+* aborting define mode:                  Adding.               (line  6)
+* aborting definitions:                  Adding.               (line  6)
+* adding attributes:                     Adding.               (line  6)
+* adding attributes using nc_redef:      nc_redef.             (line  6)
+* adding dimensions:                     Adding.               (line  6)
+* adding dimensions using nc_redef:      nc_redef.             (line  6)
+* adding variables:                      Adding.               (line  6)
+* adding variables using nc_redef:       nc_redef.             (line  6)
+* API, C summary:                        Summary of C Interface.
+                                                               (line  6)
+* appending data to variable:            Variable Introduction.
+                                                               (line  6)
+* array section, reading mapped:         nc_get_vara_ type.    (line  6)
+* array section, reading subsampled:     nc_get_vars_ type.    (line  6)
+* array section, writing:                nc_put_vara_ type.    (line  6)
+* array section, writing mapped:         nc_get_vara_ type.    (line  6)
+* array section, writing subsampled:     nc_get_vars_ type.    (line  6)
+* array, writing mapped:                 nc_put_varm_ type.    (line  6)
+* attnum:                                nc_inq_att Family.    (line 66)
+* attnump:                               nc_inq_att Family.    (line 72)
+* attributes, adding:                    Adding.               (line  6)
+* attributes, array of strings:          Strings.              (line  6)
+* attributes, character string:          Classic Strings.      (line  6)
+* attributes, copying:                   nc_copy_att.          (line  6)
+* attributes, creating:                  nc_put_att_ type.     (line  6)
+* attributes, deleting:                  nc_del_att.           (line  6)
+* attributes, deleting, introduction:    Adding.               (line  6)
+* attributes, finding length:            nc_inq_att Family.    (line  6)
+* attributes, getting information about: nc_inq_att Family.    (line  6)
+* attributes, ID:                        nc_inq_att Family.    (line  6)
+* attributes, inquiring about:           nc_inq_att Family.    (line  6)
+* attributes, introduction:              Attributes Introduction.
+                                                               (line  6)
+* attributes, number of:                 nc_inq Family.        (line  6)
+* attributes, operations on:             Attributes Introduction.
+                                                               (line  6)
+* attributes, reading:                   nc_get_att_ type.     (line  6)
+* attributes, renaming:                  nc_rename_att.        (line  6)
+* attributes, writing:                   nc_put_att_ type.     (line  6)
+* backing out of definitions:            nc_abort.             (line  6)
+* backward compatibility with v2 API:    NetCDF 2 C Transition Guide.
+                                                               (line  6)
+* big-endian:                            nc_def_var_endian.    (line  6)
+* bit lengths of data types:             Variable Types.       (line  6)
+* bit lengths of netcdf-3 data types:    NetCDF-3 Variable Types.
+                                                               (line  6)
+* bit lengths of netcdf-4 data types:    NetCDF-4 Atomic Types.
+                                                               (line  6)
+* byte vs. char fill values:             Fill Values.          (line  6)
+* byte, zero:                            Classic Strings.      (line  6)
+* C API summary:                         Summary of C Interface.
+                                                               (line  6)
+* call sequence, typical:                Use of the NetCDF Library.
+                                                               (line  6)
+* canceling definitions:                 nc_abort.             (line  6)
+* character-string data, writing:        Classic Strings.      (line  6)
+* checksum:                              nc_def_var_fletcher32.
+                                                               (line  6)
+* chunking:                              nc_def_var_chunking.  (line  6)
+* code templates:                        Use of the NetCDF Library.
+                                                               (line  6)
+* compiling with netCDF library:         Compiling.            (line  6)
+* compound types, overview:              Compound Types.       (line  6)
+* compression, setting parameters:       nc_def_var_deflate.   (line  6)
+* contiguous:                            nc_def_var_chunking.  (line  6)
+* copying attributes:                    nc_copy_att.          (line  6)
+* create flag, setting default:          nc_set_default_format.
+                                                               (line  6)
+* creating a dataset:                    Use of the NetCDF Library.
+                                                               (line  6)
+* creating variables:                    nc_def_var.           (line  6)
+* DAP error codes:                       DAP Error Codes.      (line  6)
+* datasets, overview:                    Datasets.             (line  6)
+* deflate:                               nc_def_var_deflate.   (line  6)
+* deleting attributes:                   nc_del_att.           (line  6)
+* dimensions, adding:                    Adding.               (line  6)
+* dimensions, number of:                 nc_inq Family.        (line  6)
+* endianness:                            nc_def_var_endian.    (line  6)
+* entire variable, reading:              nc_get_var_ type.     (line  6)
+* entire variable, writing:              nc_put_var_ type.     (line  6)
+* enum type:                             Enum Type.            (line  6)
+* error codes:                           nc_strerror.          (line  6)
+* error codes, DAP:                      DAP Error Codes.      (line  6)
+* error codes, netcdf-3:                 NetCDF-3 Error Codes. (line  6)
+* error codes, netcdf-4:                 NetCDF-4 Error Codes. (line  6)
+* error handling:                        Errors.               (line  6)
+* file name:                             nc_inq Family.        (line  6)
+* file path:                             nc_inq Family.        (line  6)
+* fill:                                  nc_def_var_fill.      (line  6)
+* fill values:                           Fill Values.          (line  6)
+* fletcher32:                            nc_def_var_fletcher32.
+                                                               (line  6)
+* format version:                        nc_inq Family.        (line  6)
+* groups, overview:                      Groups.               (line  6)
+* handle_err:                            nc_strerror.          (line  6)
+* HDF5 chunk cache <1>:                  nc_get_var_chunk_cache.
+                                                               (line  6)
+* HDF5 chunk cache <2>:                  nc_get_chunk_cache.   (line  6)
+* HDF5 chunk cache:                      nc_set_chunk_cache.   (line  6)
+* HDF5 chunk cache, per-variable:        nc_set_var_chunk_cache.
+                                                               (line  6)
+* HDF5 errors, first create <1>:         nc_open.              (line  6)
+* HDF5 errors, first create:             nc_create.            (line  6)
+* inquiring about attributes:            nc_inq_att Family.    (line  6)
+* inquiring about variables:             nc_inq_varid.         (line  6)
+* interface descriptions:                Interface Descriptions.
+                                                               (line  6)
+* length of attributes:                  nc_inq_att Family.    (line  6)
+* lenp:                                  nc_inq_att Family.    (line 56)
+* linking to netCDF library:             Compiling.            (line  6)
+* little-endian:                         nc_def_var_endian.    (line  6)
+* mapped array section, writing:         nc_get_varm_ type.    (line  6)
+* mapped array, writing:                 nc_put_varm_ type.    (line  6)
+* name:                                  nc_inq_att Family.    (line 43)
+* NC_64BIT_OFFSET <1>:                   nc__create.           (line  6)
+* NC_64BIT_OFFSET:                       nc_create.            (line  6)
+* nc__create:                            nc__create.           (line  6)
+* nc__create, example:                   nc__create.           (line  6)
+* nc__create, flags:                     nc__create.           (line  6)
+* nc__enddef:                            nc__enddef.           (line  6)
+* nc__enddef, example:                   nc__enddef.           (line  6)
+* nc__open:                              nc__open.             (line  6)
+* nc__open, example:                     nc__open.             (line  6)
+* nc_abort:                              nc_abort.             (line  6)
+* nc_abort, example:                     nc_abort.             (line  6)
+* NC_CLOBBER <1>:                        nc_create_par.        (line  6)
+* NC_CLOBBER <2>:                        nc__create.           (line  6)
+* NC_CLOBBER:                            nc_create.            (line  6)
+* nc_close:                              nc_close.             (line  6)
+* nc_close, example:                     nc_close.             (line  6)
+* nc_close, root group:                  nc_close.             (line  6)
+* nc_close, typical use:                 Use of the NetCDF Library.
+                                                               (line  6)
+* nc_copy_att:                           nc_copy_att.          (line  6)
+* nc_copy_att, example:                  nc_copy_att.          (line  6)
+* nc_copy_var:                           nc_copy_var.          (line  6)
+* nc_create:                             nc_create.            (line  6)
+* nc_create, example:                    nc_create.            (line  6)
+* nc_create, flags:                      nc_create.            (line  6)
+* nc_create, typical use:                Use of the NetCDF Library.
+                                                               (line  6)
+* nc_create_par:                         nc_create_par.        (line  6)
+* nc_create_par, example:                nc_create_par.        (line  6)
+* nc_create_par, flags:                  nc_create_par.        (line  6)
+* nc_def_compound:                       nc_def_compound.      (line  6)
+* nc_def_dim:                            nc_def_dim.           (line  6)
+* nc_def_dim, example:                   nc_def_dim.           (line  6)
+* nc_def_dim, typical use <1>:           Adding.               (line  6)
+* nc_def_dim, typical use:               Use of the NetCDF Library.
+                                                               (line  6)
+* nc_def_enum:                           nc_def_enum.          (line  6)
+* nc_def_grp:                            nc_def_grp.           (line  6)
+* nc_def_opaque:                         nc_def_opaque.        (line  6)
+* nc_def_var:                            nc_def_var.           (line  6)
+* nc_def_var, example:                   nc_def_var.           (line  6)
+* nc_def_var, typical use:               Use of the NetCDF Library.
+                                                               (line  6)
+* nc_def_var_chunking:                   nc_def_var_chunking.  (line  6)
+* nc_def_var_deflate:                    nc_def_var_deflate.   (line  6)
+* nc_def_var_endian:                     nc_def_var_endian.    (line  6)
+* nc_def_var_fill:                       nc_def_var_fill.      (line  6)
+* nc_def_var_fletcher32:                 nc_def_var_fletcher32.
+                                                               (line  6)
+* nc_def_vlen <1>:                       nc_inq_vlen.          (line  6)
+* nc_def_vlen:                           nc_def_vlen.          (line  6)
+* nc_del_att:                            nc_del_att.           (line  6)
+* nc_del_att, example:                   nc_del_att.           (line  6)
+* nc_enddef:                             nc_enddef.            (line  6)
+* nc_enddef, example:                    nc_enddef.            (line  6)
+* nc_enddef, typical use:                Use of the NetCDF Library.
+                                                               (line  6)
+* nc_free_string:                        nc_free_string.       (line  6)
+* nc_free_vlen <1>:                      nc_free_vlens.        (line  6)
+* nc_free_vlen:                          nc_free_vlen.         (line  6)
+* nc_get_att, typical use <1>:           Reading Unknown.      (line  6)
+* nc_get_att, typical use:               Reading Known.        (line  6)
+* nc_get_att_ type:                      nc_get_att_ type.     (line  6)
+* nc_get_att_ type, example:             nc_get_att_ type.     (line  6)
+* nc_get_att_ubyte:                      nc_att_ubyte.         (line  3)
+* nc_get_chunk_cache <1>:                nc_get_var_chunk_cache.
+                                                               (line  6)
+* nc_get_chunk_cache:                    nc_get_chunk_cache.   (line  6)
+* nc_get_var:                            nc_get_var_ type.     (line  6)
+* nc_get_var, typical use <1>:           Reading Unknown.      (line  6)
+* nc_get_var, typical use:               Reading Known.        (line  6)
+* nc_get_var1:                           nc_get_var1_ type.    (line  6)
+* nc_get_var1_ type:                     nc_get_var1_ type.    (line  6)
+* nc_get_var1_ type, example:            nc_get_var1_ type.    (line  6)
+* nc_get_var1_double:                    nc_get_var1_ type.    (line  6)
+* nc_get_var1_float:                     nc_get_var1_ type.    (line  6)
+* nc_get_var1_int:                       nc_get_var1_ type.    (line  6)
+* nc_get_var1_long:                      nc_get_var1_ type.    (line  6)
+* nc_get_var1_longlong:                  nc_get_var1_ type.    (line  6)
+* nc_get_var1_schar:                     nc_get_var1_ type.    (line  6)
+* nc_get_var1_short:                     nc_get_var1_ type.    (line  6)
+* nc_get_var1_string:                    nc_get_var1_ type.    (line  6)
+* nc_get_var1_text:                      nc_get_var1_ type.    (line  6)
+* nc_get_var1_ubyte:                     nc_var_ubyte.         (line  6)
+* nc_get_var1_uchar:                     nc_get_var1_ type.    (line  6)
+* nc_get_var1_uint:                      nc_get_var1_ type.    (line  6)
+* nc_get_var1_ulonglong:                 nc_get_var1_ type.    (line  6)
+* nc_get_var1_ushort:                    nc_get_var1_ type.    (line  6)
+* nc_get_var_ type:                      nc_get_var_ type.     (line  6)
+* nc_get_var_ type, example:             nc_get_var_ type.     (line  6)
+* nc_get_var_double:                     nc_get_var_ type.     (line  6)
+* nc_get_var_float:                      nc_get_var_ type.     (line  6)
+* nc_get_var_int:                        nc_get_var_ type.     (line  6)
+* nc_get_var_long:                       nc_get_var_ type.     (line  6)
+* nc_get_var_longlong:                   nc_get_var_ type.     (line  6)
+* nc_get_var_schar:                      nc_get_var_ type.     (line  6)
+* nc_get_var_short:                      nc_get_var_ type.     (line  6)
+* nc_get_var_string:                     nc_get_var_ type.     (line  6)
+* nc_get_var_text:                       nc_get_var_ type.     (line  6)
+* nc_get_var_ubyte:                      nc_var_ubyte.         (line  6)
+* nc_get_var_uchar:                      nc_get_var_ type.     (line  6)
+* nc_get_var_uint:                       nc_get_var_ type.     (line  6)
+* nc_get_var_ulonglong:                  nc_get_var_ type.     (line  6)
+* nc_get_var_ushort:                     nc_get_var_ type.     (line  6)
+* nc_get_vara:                           nc_get_vara_ type.    (line  6)
+* nc_get_vara_ type:                     nc_get_vara_ type.    (line  6)
+* nc_get_vara_ type, example:            nc_get_vara_ type.    (line  6)
+* nc_get_vara_double:                    nc_get_vara_ type.    (line  6)
+* nc_get_vara_float:                     nc_get_vara_ type.    (line  6)
+* nc_get_vara_int:                       nc_get_vara_ type.    (line  6)
+* nc_get_vara_long:                      nc_get_vara_ type.    (line  6)
+* nc_get_vara_longlong:                  nc_get_vara_ type.    (line  6)
+* nc_get_vara_schar:                     nc_get_vara_ type.    (line  6)
+* nc_get_vara_short:                     nc_get_vara_ type.    (line  6)
+* nc_get_vara_string:                    nc_get_vara_ type.    (line  6)
+* nc_get_vara_text:                      nc_get_vara_ type.    (line  6)
+* nc_get_vara_ubyte:                     nc_var_ubyte.         (line  6)
+* nc_get_vara_uchar:                     nc_get_vara_ type.    (line  6)
+* nc_get_vara_uint:                      nc_get_vara_ type.    (line  6)
+* nc_get_vara_ulonglong:                 nc_get_vara_ type.    (line  6)
+* nc_get_vara_ushort:                    nc_get_vara_ type.    (line  6)
+* nc_get_varm:                           nc_get_varm_ type.    (line  6)
+* nc_get_varm_ type:                     nc_get_varm_ type.    (line  6)
+* nc_get_varm_ type, example:            nc_get_varm_ type.    (line  6)
+* nc_get_varm_double:                    nc_get_varm_ type.    (line  6)
+* nc_get_varm_float:                     nc_get_varm_ type.    (line  6)
+* nc_get_varm_int:                       nc_get_varm_ type.    (line  6)
+* nc_get_varm_long:                      nc_get_varm_ type.    (line  6)
+* nc_get_varm_longlong:                  nc_get_varm_ type.    (line  6)
+* nc_get_varm_schar:                     nc_get_varm_ type.    (line  6)
+* nc_get_varm_short:                     nc_get_varm_ type.    (line  6)
+* nc_get_varm_string:                    nc_get_varm_ type.    (line  6)
+* nc_get_varm_text:                      nc_get_varm_ type.    (line  6)
+* nc_get_varm_ubyte:                     nc_var_ubyte.         (line  6)
+* nc_get_varm_uchar:                     nc_get_varm_ type.    (line  6)
+* nc_get_varm_uint:                      nc_get_varm_ type.    (line  6)
+* nc_get_varm_ulonglong:                 nc_get_varm_ type.    (line  6)
+* nc_get_varm_ushort:                    nc_get_varm_ type.    (line  6)
+* nc_get_vars:                           nc_get_vars_ type.    (line  6)
+* nc_get_vars_ type:                     nc_get_vars_ type.    (line  6)
+* nc_get_vars_ type, example:            nc_get_vars_ type.    (line  6)
+* nc_get_vars_double:                    nc_get_vars_ type.    (line  6)
+* nc_get_vars_float:                     nc_get_vars_ type.    (line  6)
+* nc_get_vars_int:                       nc_get_vars_ type.    (line  6)
+* nc_get_vars_long:                      nc_get_vars_ type.    (line  6)
+* nc_get_vars_longlong:                  nc_get_vars_ type.    (line  6)
+* nc_get_vars_schar:                     nc_get_vars_ type.    (line  6)
+* nc_get_vars_short:                     nc_get_vars_ type.    (line  6)
+* nc_get_vars_string:                    nc_get_vars_ type.    (line  6)
+* nc_get_vars_text:                      nc_get_vars_ type.    (line  6)
+* nc_get_vars_ubyte:                     nc_var_ubyte.         (line  6)
+* nc_get_vars_uchar:                     nc_get_vars_ type.    (line  6)
+* nc_get_vars_uint:                      nc_get_vars_ type.    (line  6)
+* nc_get_vars_ulonglong:                 nc_get_vars_ type.    (line  6)
+* nc_get_vars_ushort:                    nc_get_vars_ type.    (line  6)
+* nc_inq Family:                         nc_inq Family.        (line  6)
+* nc_inq Family, example:                nc_inq Family.        (line  6)
+* nc_inq, typical use:                   Reading Unknown.      (line  6)
+* nc_inq_att Family:                     nc_inq_att Family.    (line  6)
+* nc_inq_att Family, example:            nc_inq_att Family.    (line  6)
+* nc_inq_att, typical use:               Reading Unknown.      (line  6)
+* nc_inq_compound:                       nc_inq_compound.      (line  6)
+* nc_inq_compound_field:                 nc_inq_compound_field.
+                                                               (line  6)
+* nc_inq_compound_fielddim_sizes:        nc_inq_compound_fielddim_sizes.
+                                                               (line  6)
+* nc_inq_compound_fieldindex:            nc_inq_compound_fieldindex.
+                                                               (line  6)
+* nc_inq_compound_fieldname:             nc_inq_compound_fieldname.
+                                                               (line  6)
+* nc_inq_compound_fieldndims:            nc_inq_compound_fieldndims.
+                                                               (line  6)
+* nc_inq_compound_fieldoffset:           nc_inq_compound_fieldoffset.
+                                                               (line  6)
+* nc_inq_compound_fieldtype:             nc_inq_compound_fieldtype.
+                                                               (line  6)
+* nc_inq_compound_name:                  nc_inq_compound_name. (line  6)
+* nc_inq_compound_nfields:               nc_inq_compound_nfields.
+                                                               (line  6)
+* nc_inq_compound_size:                  nc_inq_compound_size. (line  6)
+* nc_inq_dim:                            nc_inq_dim Family.    (line  6)
+* nc_inq_dim Family:                     nc_inq_dim Family.    (line  6)
+* nc_inq_dim Family, example:            nc_inq_dim Family.    (line  6)
+* nc_inq_dim, typical use:               Reading Unknown.      (line  6)
+* nc_inq_dimid <1>:                      nc_inq_dim Family.    (line  6)
+* nc_inq_dimid:                          nc_inq_dimid.         (line  6)
+* nc_inq_dimid, example:                 nc_inq_dimid.         (line  6)
+* nc_inq_dimid, typical use:             Reading Known.        (line  6)
+* nc_inq_dimids <1>:                     nc_inq_dim Family.    (line  6)
+* nc_inq_dimids:                         nc_inq_dimids.        (line  6)
+* nc_inq_dimlen:                         nc_inq_dim Family.    (line  6)
+* nc_inq_dimname:                        nc_inq_dim Family.    (line  6)
+* nc_inq_enum:                           nc_inq_enum.          (line  6)
+* nc_inq_enum_ident:                     nc_inq_enum_ident.    (line  6)
+* nc_inq_enum_member:                    nc_inq_enum_member.   (line  6)
+* nc_inq_format:                         nc_inq Family.        (line  6)
+* nc_inq_grp_parent <1>:                 nc_inq_grp_full_ncid. (line  6)
+* nc_inq_grp_parent <2>:                 nc_inq_grp_ncid.      (line  6)
+* nc_inq_grp_parent:                     nc_inq_grp_parent.    (line  6)
+* nc_inq_grpname:                        nc_inq_grpname.       (line  6)
+* nc_inq_grpname_full:                   nc_inq_grpname_full.  (line  6)
+* nc_inq_grpname_len:                    nc_inq_grpname_len.   (line  6)
+* nc_inq_grps:                           nc_inq_grps.          (line  6)
+* nc_inq_libvers:                        nc_inq_libvers.       (line  6)
+* nc_inq_libvers, example:               nc_inq_libvers.       (line  6)
+* nc_inq_natts:                          nc_inq Family.        (line  6)
+* nc_inq_ncid:                           nc_inq_ncid.          (line  6)
+* nc_inq_ndims:                          nc_inq Family.        (line  6)
+* nc_inq_nvars:                          nc_inq Family.        (line  6)
+* nc_inq_opaque:                         nc_inq_opaque.        (line  6)
+* nc_inq_path:                           nc_inq Family.        (line  6)
+* nc_inq_type:                           nc_inq_type.          (line  6)
+* nc_inq_typeid:                         nc_inq_typeid.        (line  6)
+* nc_inq_typeids:                        nc_inq_typeids.       (line  6)
+* nc_inq_unlimdim:                       nc_inq Family.        (line  6)
+* nc_inq_unlimdims:                      nc_inq_unlimdims.     (line  6)
+* nc_inq_user_type:                      nc_inq_user_type.     (line  6)
+* nc_inq_var:                            nc_inq_var.           (line  6)
+* nc_inq_var, example:                   nc_inq_var.           (line  6)
+* nc_inq_var, typical use:               Reading Unknown.      (line  6)
+* nc_inq_var_chunking:                   nc_inq_var_chunking.  (line  6)
+* nc_inq_var_deflate:                    nc_inq_var_deflate.   (line  6)
+* nc_inq_var_endian:                     nc_inq_var_endian.    (line  6)
+* nc_inq_var_fill:                       nc_inq_var_fill.      (line  6)
+* nc_inq_var_fletcher32:                 nc_inq_var_fletcher32.
+                                                               (line  6)
+* nc_inq_var_szip:                       nc_inq_var_szip.      (line  6)
+* nc_inq_varid:                          nc_inq_varid.         (line  6)
+* nc_inq_varid, example:                 nc_inq_varid.         (line  6)
+* nc_inq_varid, typical use:             Reading Known.        (line  6)
+* nc_inq_varids:                         nc_inq_varids.        (line  6)
+* nc_inq_varname:                        nc_inq_var.           (line  6)
+* nc_inq_varnatts:                       nc_inq_var.           (line  6)
+* nc_inq_varndims:                       nc_inq_var.           (line  6)
+* nc_inq_vartype:                        nc_inq_var.           (line  6)
+* nc_insert_array_compound:              nc_insert_array_compound.
+                                                               (line  6)
+* nc_insert_compound:                    nc_insert_compound.   (line  6)
+* nc_insert_enum:                        nc_insert_enum.       (line  6)
+* NC_MPIIO:                              nc_create_par.        (line  6)
+* NC_MPIPOSIX:                           nc_create_par.        (line  6)
+* NC_NETCDF4:                            nc_open_par.          (line  6)
+* NC_NOCLOBBER <1>:                      nc_create_par.        (line  6)
+* NC_NOCLOBBER <2>:                      nc__create.           (line  6)
+* NC_NOCLOBBER:                          nc_create.            (line  6)
+* NC_NOWRITE <1>:                        nc_open_par.          (line  6)
+* NC_NOWRITE <2>:                        nc__open.             (line  6)
+* NC_NOWRITE:                            nc_open.              (line  6)
+* nc_open:                               nc_open.              (line  6)
+* nc_open, example:                      nc_open.              (line  6)
+* nc_open_par:                           nc_open_par.          (line  6)
+* nc_put_att, typical use <1>:           Adding.               (line  6)
+* nc_put_att, typical use:               Use of the NetCDF Library.
+                                                               (line  6)
+* nc_put_att_ type:                      nc_put_att_ type.     (line  6)
+* nc_put_att_ type, example:             nc_put_att_ type.     (line  6)
+* nc_put_att_ubyte:                      nc_att_ubyte.         (line  3)
+* nc_put_var:                            nc_put_var_ type.     (line  6)
+* nc_put_var, typical use:               Use of the NetCDF Library.
+                                                               (line  6)
+* nc_put_var1:                           nc_put_var1_ type.    (line  6)
+* nc_put_var1_ type:                     nc_put_var1_ type.    (line  6)
+* nc_put_var1_ type, example:            nc_put_var1_ type.    (line  6)
+* nc_put_var1_double:                    nc_put_var1_ type.    (line  6)
+* nc_put_var1_float:                     nc_put_var1_ type.    (line  6)
+* nc_put_var1_int:                       nc_put_var1_ type.    (line  6)
+* nc_put_var1_long:                      nc_put_var1_ type.    (line  6)
+* nc_put_var1_longlong:                  nc_put_var1_ type.    (line  6)
+* nc_put_var1_schar:                     nc_put_var1_ type.    (line  6)
+* nc_put_var1_short:                     nc_put_var1_ type.    (line  6)
+* nc_put_var1_string:                    nc_put_var1_ type.    (line  6)
+* nc_put_var1_text:                      nc_put_var1_ type.    (line  6)
+* nc_put_var1_ubyte:                     nc_var_ubyte.         (line  6)
+* nc_put_var1_uchar:                     nc_put_var1_ type.    (line  6)
+* nc_put_var1_uint:                      nc_put_var1_ type.    (line  6)
+* nc_put_var1_ulonglong:                 nc_put_var1_ type.    (line  6)
+* nc_put_var1_ushort:                    nc_put_var1_ type.    (line  6)
+* nc_put_var_ type:                      nc_put_var_ type.     (line  6)
+* nc_put_var_ type, example:             nc_put_var_ type.     (line  6)
+* nc_put_var_double:                     nc_put_var_ type.     (line  6)
+* nc_put_var_float:                      nc_put_var_ type.     (line  6)
+* nc_put_var_int:                        nc_put_var_ type.     (line  6)
+* nc_put_var_long:                       nc_put_var_ type.     (line  6)
+* nc_put_var_longlong:                   nc_put_var_ type.     (line  6)
+* nc_put_var_schar:                      nc_put_var_ type.     (line  6)
+* nc_put_var_short:                      nc_put_var_ type.     (line  6)
+* nc_put_var_string:                     nc_put_var_ type.     (line  6)
+* nc_put_var_text:                       nc_put_var_ type.     (line  6)
+* nc_put_var_ubyte:                      nc_var_ubyte.         (line  6)
+* nc_put_var_uchar:                      nc_put_var_ type.     (line  6)
+* nc_put_var_uint:                       nc_put_var_ type.     (line  6)
+* nc_put_var_ulonglong:                  nc_put_var_ type.     (line  6)
+* nc_put_var_ushort:                     nc_put_var_ type.     (line  6)
+* nc_put_vara:                           nc_put_vara_ type.    (line  6)
+* nc_put_vara_ type:                     nc_put_vara_ type.    (line  6)
+* nc_put_vara_ type, example:            nc_put_vara_ type.    (line  6)
+* nc_put_vara_double:                    nc_put_vara_ type.    (line  6)
+* nc_put_vara_float:                     nc_put_vara_ type.    (line  6)
+* nc_put_vara_int:                       nc_put_vara_ type.    (line  6)
+* nc_put_vara_long:                      nc_put_vara_ type.    (line  6)
+* nc_put_vara_longlong:                  nc_put_vara_ type.    (line  6)
+* nc_put_vara_schar:                     nc_put_vara_ type.    (line  6)
+* nc_put_vara_short:                     nc_put_vara_ type.    (line  6)
+* nc_put_vara_string:                    nc_put_vara_ type.    (line  6)
+* nc_put_vara_text:                      nc_put_vara_ type.    (line  6)
+* nc_put_vara_ubyte:                     nc_var_ubyte.         (line  6)
+* nc_put_vara_uchar:                     nc_put_vara_ type.    (line  6)
+* nc_put_vara_uint:                      nc_put_vara_ type.    (line  6)
+* nc_put_vara_ulonglong:                 nc_put_vara_ type.    (line  6)
+* nc_put_vara_ushort:                    nc_put_vara_ type.    (line  6)
+* nc_put_varm:                           nc_put_varm_ type.    (line  6)
+* nc_put_varm_ type:                     nc_put_varm_ type.    (line  6)
+* nc_put_varm_ type, example:            nc_put_varm_ type.    (line  6)
+* nc_put_varm_double:                    nc_put_varm_ type.    (line  6)
+* nc_put_varm_float:                     nc_put_varm_ type.    (line  6)
+* nc_put_varm_int:                       nc_put_varm_ type.    (line  6)
+* nc_put_varm_long:                      nc_put_varm_ type.    (line  6)
+* nc_put_varm_longlong:                  nc_put_varm_ type.    (line  6)
+* nc_put_varm_schar:                     nc_put_varm_ type.    (line  6)
+* nc_put_varm_short:                     nc_put_varm_ type.    (line  6)
+* nc_put_varm_string:                    nc_put_varm_ type.    (line  6)
+* nc_put_varm_text:                      nc_put_varm_ type.    (line  6)
+* nc_put_varm_ubyte:                     nc_var_ubyte.         (line  6)
+* nc_put_varm_uchar:                     nc_put_varm_ type.    (line  6)
+* nc_put_varm_uint:                      nc_put_varm_ type.    (line  6)
+* nc_put_varm_ulonglong:                 nc_put_varm_ type.    (line  6)
+* nc_put_varm_ushort:                    nc_put_varm_ type.    (line  6)
+* nc_put_vars:                           nc_put_vars_ type.    (line  6)
+* nc_put_vars_ type:                     nc_put_vars_ type.    (line  6)
+* nc_put_vars_ type, example:            nc_put_vars_ type.    (line  6)
+* nc_put_vars_double:                    nc_put_vars_ type.    (line  6)
+* nc_put_vars_float:                     nc_put_vars_ type.    (line  6)
+* nc_put_vars_int:                       nc_put_vars_ type.    (line  6)
+* nc_put_vars_long:                      nc_put_vars_ type.    (line  6)
+* nc_put_vars_longlong:                  nc_put_vars_ type.    (line  6)
+* nc_put_vars_schar:                     nc_put_vars_ type.    (line  6)
+* nc_put_vars_short:                     nc_put_vars_ type.    (line  6)
+* nc_put_vars_string:                    nc_put_vars_ type.    (line  6)
+* nc_put_vars_text:                      nc_put_vars_ type.    (line  6)
+* nc_put_vars_ubyte:                     nc_var_ubyte.         (line  6)
+* nc_put_vars_uchar:                     nc_put_vars_ type.    (line  6)
+* nc_put_vars_uint:                      nc_put_vars_ type.    (line  6)
+* nc_put_vars_ulonglong:                 nc_put_vars_ type.    (line  6)
+* nc_put_vars_ushort:                    nc_put_vars_ type.    (line  6)
+* nc_redef:                              nc_redef.             (line  6)
+* nc_redef, example:                     nc_redef.             (line  6)
+* nc_redef, typical use:                 Adding.               (line  6)
+* nc_rename_att:                         nc_rename_att.        (line  6)
+* nc_rename_att, example:                nc_rename_att.        (line  6)
+* nc_rename_dim:                         nc_rename_dim.        (line  6)
+* nc_rename_dim, example:                nc_rename_dim.        (line  6)
+* nc_rename_var:                         nc_rename_var.        (line  6)
+* nc_rename_var, example:                nc_rename_var.        (line  6)
+* nc_set_chunk_cache:                    nc_set_chunk_cache.   (line  6)
+* nc_set_default_format:                 nc_set_default_format.
+                                                               (line  6)
+* nc_set_default_format, example:        nc_set_default_format.
+                                                               (line  6)
+* nc_set_fill:                           nc_set_fill.          (line  6)
+* nc_set_fill, example:                  nc_set_fill.          (line  6)
+* nc_set_var_chunk_cache:                nc_set_var_chunk_cache.
+                                                               (line  6)
+* NC_SHARE <1>:                          nc__create.           (line  6)
+* NC_SHARE <2>:                          nc_create.            (line  6)
+* NC_SHARE:                              Adding.               (line  6)
+* NC_SHARE, and buffering:               Use of the NetCDF Library.
+                                                               (line  6)
+* NC_SHARE, in nc__open:                 nc__open.             (line  6)
+* NC_SHARE, in nc_open:                  nc_open.              (line  6)
+* nc_strerror:                           nc_strerror.          (line  6)
+* nc_strerror, example:                  nc_strerror.          (line  6)
+* nc_strerror, introduction:             Errors.               (line  6)
+* NC_STRING, freeing:                    nc_free_string.       (line  6)
+* NC_STRING, using:                      Arrays of Strings.    (line  6)
+* nc_sync:                               nc_sync.              (line  6)
+* nc_sync, example:                      nc_sync.              (line  6)
+* nc_var_par_access:                     nc_var_par_access.    (line  6)
+* nc_var_par_access, example:            nc_var_par_access.    (line  6)
+* NC_WRITE <1>:                          nc_open_par.          (line  6)
+* NC_WRITE <2>:                          nc__open.             (line  6)
+* NC_WRITE:                              nc_open.              (line  6)
+* ncid:                                  nc_inq_att Family.    (line 36)
+* netCDF 2 transition guide:             NetCDF 2 C Transition Guide.
+                                                               (line  6)
+* netCDF library version:                nc_inq_libvers.       (line  6)
+* netcdf-3 error codes:                  NetCDF-3 Error Codes. (line  6)
+* netcdf-4 error codes:                  NetCDF-4 Error Codes. (line  6)
+* opaque type:                           Opaque Type.          (line  6)
+* parallel access:                       parallel access.      (line  6)
+* parallel example:                      parallel access.      (line  6)
+* path:                                  nc_inq Family.        (line  6)
+* reading attributes:                    nc_get_att_ type.     (line  6)
+* reading entire variable:               nc_get_var_ type.     (line  6)
+* reading netCDF dataset with known names: Reading Known.      (line  6)
+* reading netCDF dataset with unknown names: Reading Unknown.  (line  6)
+* reading single value:                  nc_get_var1_ type.    (line  6)
+* renaming attributes:                   nc_rename_att.        (line  6)
+* renaming variable:                     nc_rename_var.        (line  6)
+* single value, reading:                 nc_get_var1_ type.    (line  6)
+* string arrays:                         Strings.              (line  6)
+* strings in classic model:              Classic Strings.      (line  6)
+* subsampled array, writing:             nc_put_vars_ type.    (line  6)
+* templates, code:                       Use of the NetCDF Library.
+                                                               (line  6)
+* transition guide, netCDF 2:            NetCDF 2 C Transition Guide.
+                                                               (line  6)
+* URL:                                   nc_inq Family.        (line  6)
+* user defined types:                    User Defined Data Types.
+                                                               (line  6)
+* user defined types, overview:          User Defined Types.   (line  6)
+* variable length array type, overview:  User Defined Data Types.
+                                                               (line  6)
+* variable length arrays:                Variable Length Array.
+                                                               (line  6)
+* variable, copying:                     nc_copy_var.          (line  6)
+* variable, renaming:                    nc_rename_var.        (line  6)
+* variable, writing entire:              nc_put_var_ type.     (line  6)
+* variables, adding:                     Adding.               (line  6)
+* variables, checksum:                   nc_def_var_fletcher32.
+                                                               (line  6)
+* variables, chunking:                   nc_def_var_chunking.  (line  6)
+* variables, contiguous:                 nc_def_var_chunking.  (line  6)
+* variables, creating:                   nc_def_var.           (line  6)
+* variables, endian:                     nc_def_var_endian.    (line  6)
+* variables, fill:                       nc_def_var_fill.      (line  6)
+* variables, fletcher32:                 nc_def_var_fletcher32.
+                                                               (line  6)
+* variables, getting name:               nc_inq_var.           (line  6)
+* variables, inquiring about:            nc_inq_varid.         (line  6)
+* variables, number of:                  nc_inq Family.        (line  6)
+* variables, setting deflate:            nc_def_var_deflate.   (line  6)
+* varid:                                 nc_inq_att Family.    (line 39)
+* version of netCDF, discovering:        nc_inq_libvers.       (line  6)
+* version, format:                       nc_inq Family.        (line  6)
+* VLEN:                                  Variable Length Array.
+                                                               (line  6)
+* VLEN, defining <1>:                    nc_free_vlens.        (line  6)
+* VLEN, defining <2>:                    nc_free_vlen.         (line  6)
+* VLEN, defining <3>:                    nc_inq_vlen.          (line  6)
+* VLEN, defining:                        nc_def_vlen.          (line  6)
+* write errors:                          Errors.               (line  6)
+* write fill mode, setting:              nc_set_fill.          (line  6)
+* writing array section:                 nc_put_vara_ type.    (line  6)
+* writing attributes:                    nc_put_att_ type.     (line  6)
+* writing character-string data:         Classic Strings.      (line  6)
+* writing entire variable:               nc_put_var_ type.     (line  6)
+* writing mapped array:                  nc_put_varm_ type.    (line  6)
+* writing mapped array section:          nc_get_varm_ type.    (line  6)
+* writing single value:                  nc_put_var1_ type.    (line  6)
+* writing subsampled array:              nc_put_vars_ type.    (line  6)
+* XDR library:                           NetCDF 2 C Transition Guide.
+                                                               (line  6)
+* xtypep:                                nc_inq_att Family.    (line 47)
+* zero byte:                             Classic Strings.      (line  6)
+* zero length edge:                      NetCDF 2 C Transition Guide.
+                                                               (line  6)
+* zero valued count vector:              NetCDF 2 C Transition Guide.
+                                                               (line  6)
+
+

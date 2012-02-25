@@ -1,0 +1,17 @@
+netcdf ref_tst_unlim2 {
+dimensions:
+	Dr = UNLIMITED ; // (2 currently)
+	D1 = 1 ;
+	D2 = 2 ;
+	D3 = 3 ;
+	U = UNLIMITED ; // (4 currently)
+variables:
+	char cuu(Dr, D2, U) ;
+data:
+
+ cuu =
+  "adef",
+  "",
+  "xy",
+  "" ;
+}

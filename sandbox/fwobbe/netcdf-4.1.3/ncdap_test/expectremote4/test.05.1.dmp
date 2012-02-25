@@ -1,0 +1,14 @@
+netcdf test {
+types:
+  compound floats_t {
+    float f32 ;
+  }; // floats_t
+  compound types_t {
+    floats_t floats ;
+  }; // types_t
+variables:
+	types_t types ;
+data:
+
+ types = {{0}} ;
+}

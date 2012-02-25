@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="tst_ncml.nc">
+  <dimension name="m" length="2" />
+  <dimension name="t" length="0" isUnlimited="true" />
+  <attribute name="gtatt" value="&lt;, &gt;, ', &quot;, and &amp;" />
+  <attribute name="gnatt" type="int" value="3 4" />
+  <variable name="var" shape="t m" type="float">
+    <attribute name="tatt" value="text attribute value" />
+    <attribute name="natt" type="int" value="1 2" />
+  </variable>
+</netcdf>

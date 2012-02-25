@@ -1,0 +1,9 @@
+netcdf test {
+types:
+  float(*) types_t ;
+variables:
+	types_t types ;
+data:
+
+ types = {0, 0.9999833, 1.999867, 2.99955, 3.998933} ;
+}

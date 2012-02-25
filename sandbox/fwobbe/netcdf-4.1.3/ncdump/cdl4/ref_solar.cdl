@@ -1,0 +1,23 @@
+netcdf ref_solar {
+types:
+  compound observation { 
+    int64 timestamp;
+    double value;
+    double error;
+  };
+  
+dimensions:
+  time = unlimited;
+
+variables:
+    observation board_voltage(time);
+    observation board_temperature(time);
+
+data:
+      
+ board_voltage = {1280590702000, 0.0}, 
+    {1280594218000, 0.0, 0.01} ;
+
+ board_temperature = {1280594217000, 10.75, 0.5}, 
+    {1280594217000, 10.75} ;
+}

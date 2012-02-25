@@ -1,0 +1,85 @@
+netcdf test0 {
+dimensions:
+	i = 2 ;
+	j = 3 ;
+	k = UNLIMITED ; // (0 currently)
+	l = 3 ;
+variables:
+	char broiled(i, j, l) ;
+		broiled:act = "text string\n\t123" ;
+		broiled:acb = 10b ;
+		broiled:acs = -200s ;
+		broiled:acl = 17000 ;
+		broiled:acf = -2.f, 1.f, 0.f ;
+		broiled:acd = -1., 2.71828182845905 ;
+	byte the_bullet(i, j) ;
+	short order(i, j) ;
+	int rigue(i, j) ;
+	float a_loan(i, j) ;
+	double entendre(i, j) ;
+	char cscalar ;
+	double dscalar ;
+	char cnodata(i) ;
+	byte bnodata(i) ;
+	short snodata(i) ;
+	int inodata(i) ;
+	float fnodata(i) ;
+	double dnodata(i) ;
+	int i(i) ;
+	float j(j) ;
+	byte l(l) ;
+
+// global attributes:
+		:glob = "Global attribute" ;
+data:
+
+ broiled =
+  "ind",
+  "ist",
+  "ing",
+  "uis",
+  "hab",
+  "le" ;
+
+ the_bullet =
+  -127, 0, 127,
+  -128, -1, -127 ;
+
+ order =
+  1, 2, 3,
+  4, 5, 6 ;
+
+ rigue =
+  2, 3, 4,
+  5, 6, 7 ;
+
+ a_loan =
+  3, 4, 5,
+  6, 7, 1e+12 ;
+
+ entendre =
+  4, 5, 6,
+  7, 8, 1e+30 ;
+
+ cscalar = "" ;
+
+ dscalar = _ ;
+
+ cnodata = "" ;
+
+ bnodata = -127, -127 ;
+
+ snodata = _, _ ;
+
+ inodata = _, _ ;
+
+ fnodata = _, _ ;
+
+ dnodata = _, _ ;
+
+ i = 10, 20 ;
+
+ j = 2, 4, 6 ;
+
+ l = 10, 9, 8 ;
+}

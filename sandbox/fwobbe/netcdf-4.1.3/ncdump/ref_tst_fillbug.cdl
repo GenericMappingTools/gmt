@@ -1,0 +1,17 @@
+netcdf tst_fillbug {
+dimensions:
+	Time = UNLIMITED ; // (1 currently)
+	X = 4 ;
+	Y = 3 ;
+variables:
+	double Time(Time) ;
+	float P(Time, Y, X) ;
+data:
+
+ Time = 3.14159 ;
+
+ P =
+  _, _, _, _,
+  _, _, _, _,
+  _, _, _, _ ;
+}

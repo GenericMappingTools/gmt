@@ -1,0 +1,53 @@
+netcdf \123 {
+types:
+  compound bears_t {
+    string bears(2, 3) ;
+    int i(2) ;
+    float j(3) ;
+  }; // bears_t
+  compound order_t {
+    short order(2, 3) ;
+    int i(2) ;
+    float j(3) ;
+  }; // order_t
+  compound shot_t {
+    int shot(2, 3) ;
+    int i(2) ;
+    float j(3) ;
+  }; // shot_t
+  compound aloan_t {
+    float aloan(2, 3) ;
+    int i(2) ;
+    float j(3) ;
+  }; // aloan_t
+  compound cross_t {
+    double cross(2, 3) ;
+    int i(2) ;
+    float j(3) ;
+  }; // cross_t
+dimensions:
+	l = 3 ;
+variables:
+	bears_t bears ;
+	order_t order ;
+	shot_t shot ;
+	aloan_t aloan ;
+	cross_t cross ;
+	short l(l) ;
+
+// global attributes:
+		string :history = "This is an example of a multi-line global\\012attribute.  It could be used for representing the\\012processing history of the data, for example." ;
+data:
+
+ bears = {{"ind", "ist", "ing", "uis", "hab", "le"}, {10, 20}, {2, 4, 6}} ;
+
+ order = {{1, 2, 3, 4, 5, 6}, {10, 20}, {2, 4, 6}} ;
+
+ shot = {{2, 3, 4, 5, 6, 7}, {10, 20}, {2, 4, 6}} ;
+
+ aloan = {{3, 4, 5, 6, 7, 1e+12}, {10, 20}, {2, 4, 6}} ;
+
+ cross = {{4, 5, 0.000244140625, 7, 8, 10000000000}, {10, 20}, {2, 4, 6}} ;
+
+ l = 10, 9, 8 ;
+}

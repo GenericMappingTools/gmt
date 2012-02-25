@@ -1,0 +1,1742 @@
+\input texinfo  @c -*-texinfo-*-
+@c %**start of header
+@setfilename udunits2lib.info
+@settitle The UDUNITS-2 C API Guide
+@c %**end of header
+@dircategory Software libraries
+@direntry
+* UDUNITS-2: (udunits2lib).     The Unidata units library.
+@end direntry
+@syncodeindex fn cp
+@syncodeindex tp cp
+@copying
+@include LICENSE
+@end copying
+
+@titlepage
+@title The UDUNITS-2 C API
+@author Steven R. Emmerson
+
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@contents
+
+@ifnottex
+@node Top, Synopsis, (dir), (dir)
+@top UDUNITS-2
+This manual describes how to use the C API of the UDUNITS-2 library.
+Among other things, the library allows C code to obtain a binary
+representation of a unit of a physical quantity, to
+operate on such units, and to convert numeric values between compatible
+units.
+
+The library comes with an extensive database of units all referenced to the
+SI system of units.
+
+@insertcopying
+@end ifnottex
+
+@menu
+* Synopsis::            Terse usage display
+* Why::                 What's a unit package good for?
+* Unit-Systems::        Explanation of unit-systems and how to get one
+* Parsing::             Converting strings into units
+* Syntax::              Syntax for string representation of units
+* Formatting::          Converting units into strings
+* Value Conversion::    Converting values between units
+* Prefixes::            Defining unit prefixes
+* Mapping::             Mapping between units and identifiers
+* Operations::          Operations on units
+* Time::                Handling time
+* Errors::              Error-handling
+* Database::            The units database
+* Types::               Data types
+* Complete Index::      Complete index
+@end menu
+
+@node Synopsis, Why, Top, Top
+@chapter Synopsis
+@cindex synopsis
+
+Coding:
+@example
+#include <udunits2.h>
+@quotation
+@multitable {ut_error_message_handler} {ut_get_dimensionless_unit_one(}
+@item ut_system* @tab ut_read_xml(const char* @var{path});
+@item ut_system* @tab ut_new_system(void);
+@item void      @tab ut_free_system(ut_system* @var{system});
+@item ut_system* @tab ut_get_system(const ut_unit* @var{unit});
+@item ut_unit*   @tab ut_get_dimensionless_unit_one(const ut_system* @var{system});
+@item ut_unit*   @tab ut_get_unit_by_name(const ut_system* @var{system}, const char* @var{name});
+@item ut_unit*   @tab ut_get_unit_by_symbol(const ut_system* @var{system}, const char* @var{symbol});
+@item ut_status @tab  ut_set_second(const ut_unit* @var{second});
+@item ut_status @tab  ut_add_name_prefix(ut_system* @var{system}, const char* @var{name}, double @var{value});
+@item ut_status @tab  ut_add_symbol_prefix(ut_system* @var{system}, const char* @var{symbol}, double @var{value});
+@item ut_unit*   @tab ut_new_base_unit(ut_system* @var{system});
+@item ut_unit*   @tab ut_new_dimensionless_unit(ut_system* @var{system});
+@item ut_unit*   @tab ut_clone(const ut_unit* @var{unit});
+@item void      @tab ut_free(ut_unit* @var{unit});
+@item const char* @tab ut_get_name(const ut_unit* @var{unit}, ut_encoding @var{encoding});
+@item ut_status @tab ut_map_name_to_unit(const char* @var{name}, const ut_encoding @var{encoding}, const ut_unit* @var{unit});
+@item ut_status @tab ut_unmap_name_to_unit(ut_system* @var{system}, const char* @var{name}, const ut_encoding @var{encoding});
+@item ut_status @tab ut_map_unit_to_name(const ut_unit* @var{unit}, const char* @var{name}, ut_encoding @var{encoding});
+@item ut_status @tab ut_unmap_unit_to_name(const ut_unit* @var{unit}, ut_encoding @var{encoding});
+@item const char* @tab ut_get_symbol(const ut_unit* @var{unit}, ut_encoding @var{encoding});
+@item ut_status @tab ut_map_symbol_to_unit(const char* @var{symbol}, const ut_encoding @var{encoding}, const ut_unit* @var{unit});
+@item ut_status @tab ut_unmap_symbol_to_unit(ut_system* @var{system}, const char* @var{symbol}, const ut_encoding @var{encoding});
+@item ut_status @tab ut_map_unit_to_symbol(const ut_unit* @var{unit}, const char* @var{symbol}, ut_encoding @var{encoding});
+@item ut_status @tab ut_unmap_unit_to_symbol(const ut_unit* @var{unit}, ut_encoding @var{encoding});
+@item int @tab ut_is_dimensionless(const ut_unit* @var{unit});
+@item int @tab ut_same_system(const ut_unit* @var{unit1}, const ut_unit* @var{unit2});
+@item int @tab ut_compare(const ut_unit* @var{unit1}, const ut_unit* @var{unit2});
+@item int @tab ut_are_convertible(const ut_unit* @var{unit1}, const ut_unit* @var{unit2});
+@item cv_converter* @tab ut_get_converter(ut_unit* @var{from}, ut_unit* @var{to});
+@item ut_unit* @tab ut_scale(double @var{factor}, const ut_unit* @var{unit});
+@item ut_unit* @tab ut_offset(const ut_unit* @var{unit}, double @var{offset});
+@item ut_unit* @tab ut_offset_by_time(const ut_unit* @var{unit}, double @var{origin});
+@item ut_unit* @tab ut_multiply(const ut_unit* @var{unit1}, const ut_unit* @var{unit2});
+@item ut_unit* @tab ut_invert(const ut_unit* @var{unit});
+@item ut_unit* @tab ut_divide(const ut_unit* @var{numer}, const ut_unit* @var{denom});
+@item ut_unit* @tab ut_raise(const ut_unit* @var{unit}, int @var{power});
+@item ut_unit* @tab ut_root(const ut_unit* @var{unit}, int @var{root});
+@item ut_unit* @tab ut_log(double @var{base}, const ut_unit* @var{reference});
+@item ut_unit* @tab ut_parse(const ut_system* @var{system}, const char* @var{string}, ut_encoding @var{encoding});
+@item char*   @tab ut_trim(char* @var{string}, ut_encoding @var{encoding});
+@item int @tab ut_format(const ut_unit* @var{unit}, char* @var{buf}, size_t @var{size}, unsigned @var{opts});
+@item ut_status @tab ut_accept_visitor(const ut_unit* @var{unit}, const ut_visitor* @var{visitor}, void* @var{arg});
+@item double @tab ut_encode_date(int @var{year}, int @var{month}, int @var{day});
+@item double @tab ut_encode_clock(int @var{hours}, int @var{minutes}, double @var{seconds});
+@item double @tab ut_encode_time(int @var{year}, int @var{month}, int @var{day}, int @var{hour}, int @var{minute}, double @var{second});
+@item void @tab ut_decode_time(double @var{value}, int* @var{year}, int* @var{month}, int* @var{day}, int* @var{hour}, int* @var{minute}, double* @var{second}, double* @var{resolution});
+@item ut_status @tab ut_get_status(void);
+@item void @tab ut_set_status(ut_status @var{status});
+@item int @tab ut_handle_error_message(const char* @var{fmt}, ...);
+@item ut_error_message_handler@tab ut_set_error_message_handler(ut_error_message_handler @var{handler});
+@item int @tab ut_write_to_stderr(const char* @var{fmt}, va_list @var{args});
+@item int @tab ut_ignore(const char* @var{fmt}, va_list @var{args});
+@item 
+@item float @tab cv_convert_float(const cv_converter* @var{converter}, float @var{value});
+@item double @tab cv_convert_double(const cv_converter* @var{converter}, double @var{value});
+@item float* @tab cv_convert_floats(const cv_converter* @var{converter}, const float* @var{in}, size_t @var{count}, float* @var{out});
+@item double* @tab cv_convert_doubles(const cv_converter* @var{converter}, const double* @var{const} in, @var{size_t} count, @var{double}* out);
+@item void @tab cv_free(cv_converter* @var{conv});
+@end multitable
+@end quotation
+@end example
+
+Compiling:
+@example
+c89 -I @emph{includedir} ...
+@end example
+
+Where @emph{includedir} is the installation-directory for C header
+files (e.g., @code{/usr/local/include}).
+
+Linking:
+@example
+c89 ... -L@emph{libdir} -ludunits2 -lexpat ... -lm
+@end example
+
+Where @emph{libdir} is the installation-directory for object code
+libraries (e.g., @code{/usr/local/lib}).
+
+@node Why, Unit-Systems, Synopsis, Top
+@chapter What's a Unit Package Good For?
+
+The existance of a software package is justified by what you can do with it.
+The three main things you can do with the UDUNIT-2 package are
+@enumerate
+@item
+@ref{Value Conversion,
+Convert numeric values between compatible units}.
+@item
+Convert a string representation of a unit into a binary one --- enabling
+the programatic manipulation of units.
+There are three ways to do this:
+@itemize
+@item
+@ref{Extracting,Get the unit} from a @ref{unit-system}.
+This requires that
+you know the unit's name or symbol and that the unit is in a unit-system.  
+@item
+@ref{Parsing,Parse a string representation of the unit into its binary
+representation}.
+This requires that the string be parsable by @code{@ref{ut_parse()}}.
+@item
+@ref{Operations,Explicity construct the unit from subcomponent units
+using unit operations}.
+@end itemize
+@item
+@ref{Formatting,Convert a binary representation of a unit into a string} ---
+enabling the printing and storing of units in a human-readable form.
+@end enumerate
+While the above might seem to be trivial activities, their 
+general availability at the time might have helped prevent
+the @uref{http://en.wikipedia.org/wiki/Mars_Climate_Orbiter,
+Mars Climate Orbiter} fiasco.
+
+@anchor{unit-system}
+@node Unit-Systems, Value Conversion, Why, Top
+@chapter Unit-Systems
+@cindex unit-system
+@cindex system of units
+
+A unit-system is a set of units that are all defined in terms of the same
+set of
+@cindex unit, base
+@cindex base unit
+base units.
+In the SI system of units, for example, the base units are the
+meter, kilogram, second, ampere, kelvin, mole, and candela.
+(For definitions of these base units, see
+@uref{http://@/physics.nist.gov/@/cuu/@/Units/@/current.html}.)
+
+In the UDUNITS-2 package, every accessible unit belongs to one and only one
+unit-system.  It is not possible to convert numeric values between units
+of different unit-systems.  Similarly, units belonging to different
+unit-systems always compare unequal.
+
+There are several categories of operations on unit-systems:
+
+@menu
+* Obtaining::   How to obtain a unit-system.
+* Extracting::  Getting a unit from a unit-system.
+* Adding::      Adding new units to a unit-system.
+* Prefixes::    Add new unit-prefixes to a unit-system.
+* Misc::        Miscelaneous unit-system operations.
+@end menu
+
+@node Obtaining, Extracting, , Unit-Systems
+@section Obtaining a Unit-System
+@cindex database, unit, obtaining predefined
+@cindex unit database, obtaining predefined
+@cindex unit-system, obtaining predefined
+@cindex units, obtaining predefined
+@cindex @code{ut_read_xml()}, discussion of
+Typically, you would obtain a unit-system of predefined units by reading
+the default unit database using @code{@ref{ut_read_xml()}}
+with a @code{NULL} pathname argument.
+If this doesn't quite match your needs, then there are alternatives.
+Together with the typical solution, the means for obtaining a useful
+unit-system are (in order of increasing difficulty):
+
+@itemize @bullet
+@item
+Obtain the default unit-system using @code{@ref{ut_read_xml(),ut_read_xml}(NULL)}.
+@item
+Copy and customize the unit database and then
+call @code{@ref{ut_read_xml()}} with the pathname of the customized
+database to obtain a customized unit-system.
+@item
+Same as either of the above but then adding new units to the unit-system using
+@code{@ref{ut_new_base_unit()}} and
+@code{@ref{ut_new_dimensionless_unit()}}.
+@item
+Same as the above but also deriving new units using
+@ref{Operations, unit operations}
+and then adding them to the unit-system using
+@ref{Mapping, unit mapping}.
+@item
+Same as the above but starting with an empty unit-system obtained from
+@code{@ref{ut_new_system()}},
+in which case you will definitely have to start with
+@code{@ref{ut_new_base_unit()}} and
+@code{@ref{ut_new_dimensionless_unit()}}.
+@end itemize
+
+You should pass every unit-system pointer to @code{@ref{ut_free_system()}}
+when you no longer need the corresponding unit-system.
+
+@anchor{ut_read_xml()}
+@deftypefun @code{ut_system*} ut_read_xml @code{(const char* @var{path})}
+Reads the XML-formatted unit-database specified by @var{path}
+and returns the corresponding unit-sytem.
+If @var{path} is @code{NULL}, then the pathname specified by the
+environment variable @code{UDUNITS2_XML_PATH} is used if set; otherwise,
+the compile-time pathname of the installed, default, unit database is
+used.
+You should pass the returned pointer to @code{ut_free_system()} when you
+no longer need the unit-system.
+If an error occurs,
+then this function writes an error-message using
+@code{@ref{ut_handle_error_message()}}
+and returns @code{NULL}.
+Also, @code{@ref{ut_get_status()}} will return one of the following:
+
+@table @code
+@item UT_OPEN_ARG
+@var{path} is non-@code{NULL} but the file couldn't be opened.
+See @code{errno} for the reason.
+@item UT_OPEN_ENV
+@var{path} is @code{NULL} and environment variable
+@code{UDUNITS2_XML_PATH} is set but the file couldn't be opened.
+See @code{errno} for the reason.
+@item UT_OPEN_DEFAULT
+@var{path} is @code{NULL}, environment variable
+@code{UDUNITS2_XML_PATH} is unset, and the installed, default, unit
+database couldn't be opened.
+See @code{errno} for the reason.
+@item UT_OS
+Operating-system error.  See @code{errno}.
+@item UT_PARSE
+The database file couldn't be parsed.
+@end table
+@end deftypefun
+
+@anchor{ut_new_system()}
+@deftypefun @code{ut_system*} ut_new_system @code{(void)}
+Creates and returns a new unit-system.
+On success, the unit-system will be empty
+except for the dimensionless unit one.
+You should pass the returned pointer to @code{ut_free_system()} when you
+no longer need the unit-system.
+If an error occurs,
+then this function writes an error-message using
+@code{@ref{ut_handle_error_message()}}
+and returns @code{NULL}.
+Also, @code{@ref{ut_get_status()}} will return the following:
+
+@table @code
+@item UT_OS
+Operating-system error.  See @code{errno}.
+@end table
+@end deftypefun
+
+@node Extracting, Adding, Obtaining, Unit-Systems
+@section Extracting Units from a Unit-System
+
+@strong{NOTE:} This section covers low-level access to the indidual units of a
+@ref{unit-system}.
+General parsing of arbitrary unit specifications is coverted in
+the section @ref{Parsing}.
+
+A @ref{unit-system} contains mappings from identifiers to units (and
+vice versa).
+Consequently, once you have a unit-system, you can easily
+obtain a unit for which you know the name or symbol using
+the function @code{@ref{ut_get_unit_by_name()}} or
+@code{@ref{ut_get_unit_by_symbol()}}.
+
+@cindex getting a unit by its name
+@cindex unit, getting by name
+@anchor{ut_get_unit_by_name()}
+@deftypefun @code{ut_unit*} ut_get_unit_by_name @code{(const ut_system* @var{system}, const char* @var{name})}
+Returns the unit to which @var{name} maps from the unit-system referenced by
+@var{system} or @code{NULL} if no such unit exists.
+Name comparisons are case-insensitive.
+If this function returns @code{NULL}, then
+@code{@ref{ut_get_status()}} will return 
+one of the following:
+
+@table @code
+@item UT_SUCCESS
+@var{name} doesn't map to a unit of @var{system}.
+@item UT_BAD_ARG
+@var{system} or @var{name} is @code{NULL}.
+@end table
+@end deftypefun
+
+@cindex getting a unit by its symbol
+@cindex unit, getting by symbol
+@anchor{ut_get_unit_by_symbol()}
+@deftypefun @code{ut_unit*} ut_get_unit_by_symbol @code{(const ut_system* @var{system}, const char* @var{symbol})}
+Returns the unit to which @var{symbol} maps from the unit-system referenced by
+@var{system} or @code{NULL} if no such unit exists.
+Symbol comparisons are case-sensitive.
+If this function returns @code{NULL}, then
+@code{@ref{ut_get_status()}} will return 
+one of the following:
+
+@table @code
+@item UT_SUCCESS
+@var{symbol} doesn't map to a unit of @var{system}.
+@item UT_BAD_ARG
+@var{system} or @var{symbol} is @code{NULL}.
+@end table
+@end deftypefun
+
+@anchor{ut_get_dimensionless_unit_one()}
+@deftypefun @code{ut_unit*} ut_get_dimensionless_unit_one @code{(const ut_system* @var{system})}
+Returns the dimensionless unit one of the unit-system referenced by
+@var{system}.
+While not necessary, the returned pointer may be passed to @code{ut_free()}
+when you no longer need the unit.
+If @var{system} is @code{NULL}, then this function writes an error-message 
+using @code{@ref{ut_handle_error_message()}}
+and returns @code{NULL}.
+Also, @code{@ref{ut_get_status()}} will return @code{UT_BAD_ARG}.
+@end deftypefun
+
+@node Adding, Prefixes, Extracting, Unit-Systems
+@section Adding Units to a Unit-System
+@cindex adding units to a unit-system
+@cindex unit, adding to a unit-system
+@cindex unit-system, adding a unit to
+
+If you use @code{@ref{ut_read_xml()}}, then you should not normally need to
+add any new units to a unit-system.
+
+Because you get units via their names or symbols, adding a unit to a
+unit-system actually means mapping one or more identifiers (i.e., names
+or symbols) to the unit.
+Thereafter, you can use @code{@ref{ut_get_unit_by_name()}} and
+@code{@ref{ut_get_unit_by_symbol()}} to retrieve the unit.
+The mapping of identifiers to units is covered @ref{Mapping,here}.
+
+Having said that, it is possible to create a new base or dimensionless
+unit within a unit-system using @code{@ref{ut_new_base_unit()}} or
+@code{@ref{ut_new_dimensionless_unit()}}---you'll just also have to map
+identifiers to the newly-created unit in order to be able to retrieve
+it later by identifier.
+
+@anchor{ut_new_base_unit()}
+@deftypefun @code{ut_unit*} ut_new_base_unit @code{(ut_system* @var{system})}
+Creates and adds a new base-unit to the unit-system referenced by @var{system}.
+This function returns the new base-unit.
+You should pass the returned pointer to @code{ut_free()} when you
+no longer need the unit.
+If an error occurs,
+then this function writes an error-message using
+@code{@ref{ut_handle_error_message()}}
+and returns @code{NULL}.
+Also, @code{@ref{ut_get_status()}} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{system} is @code{NULL}.
+@item UT_OS
+Operating-system failure.  See @code{errno}.
+@end table
+If you use @code{@ref{ut_read_xml()}}, then you should not normally need to call this
+function.
+@end deftypefun
+
+@anchor{ut_new_dimensionless_unit()}
+@deftypefun @code{ut_unit*} ut_new_dimensionless_unit @code{(ut_system* @var{system})}
+Creates and adds a new dimensionless-unit to the unit-system referenced by @var{system}.
+This function returns the new dimensionless-unit.
+You should pass the returned pointer to @code{ut_free()} when you
+no longer need the unit.
+If an error occurs,
+then this function writes an error-message using
+@code{@ref{ut_handle_error_message()}}
+and returns @code{NULL}.
+Also, @code{@ref{ut_get_status()}} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{system} is @code{NULL}.
+@item UT_OS
+Operating-system failure.  See @code{errno}.
+@end table
+If you use @code{@ref{ut_read_xml()}}, then you should not normally need to call this
+function.
+@end deftypefun
+
+@node Prefixes, Misc, Adding, Unit-Systems
+@section Adding Unit-Prefixes to a Unit-System
+@cindex prefixes, adding to a unit-system
+@cindex adding prefixes to a unit-system
+@cindex unit-system, adding prefixes to a
+
+A prefix is a word or symbol that is appended to the beginning of a word or
+symbol that represents a unit in order to modify the value of that unit.  For
+example, the prefix ``kilo'' in the word ``kiloamperes'' changes the value
+from one ampere to one-thousand amperes.
+
+If you use @code{@ref{ut_read_xml()}}, then you should not normally need to
+add any new prefixes to a unit-system.
+
+@anchor{ut_add_name_prefix()}
+@deftypefun @code{@ref{ut_status}} ut_add_name_prefix @code{(ut_system* @var{system}, const char* @var{name}, double @var{value})}
+Adds the name-prefix @var{name} with the value @var{value}
+to the unit-system @var{system}.
+A name-prefix is something like ``mega'' or ``milli''.
+Comparisons between name-prefixes are case-insensitive.
+This function returns one of the following:
+
+@table @code
+@item UT_SUCCESS
+Success.
+@item UT_BAD_ARG
+@var{system} or @var{name} is @code{NULL}, or @var{value} is @code{0}.
+@item UT_EXISTS
+@var{name} already maps to a different value.
+@item UT_OS
+Operating-system failure.  See @code{errno}.
+@end table
+@end deftypefun
+
+@anchor{ut_add_symbol_prefix()}
+@deftypefun @code{@ref{ut_status}} ut_add_symbol_prefix @code{(ut_system* @var{system}, const char* @var{symbol}, double @var{value})}
+Adds the symbol-prefix @var{symbol} with the value @var{value}
+to the unit-system @var{system}.
+A symbol-prefix is something like ``M'' or ``m''.
+Comparisons between symbol-prefixes are case-sensitive.
+This function returns one of the following:
+
+@table @code
+@item UT_SUCCESS
+Success.
+@item UT_BAD_ARG
+@var{system} or @var{symbol} is @code{NULL}, or @var{value} is @code{0}.
+@item UT_EXISTS
+@var{symbol} already maps to a different value.
+@item UT_OS
+Operating-system failure.  See @code{errno}.
+@end table
+@end deftypefun
+
+@node Misc, , Prefixes, Unit-Systems
+@section Miscelaneous Operations on Unit-Systems
+
+@anchor{ut_free_system()}
+@deftypefun @code{void} ut_free_system @code{(ut_system* @var{system})}
+Frees the unit-system referenced by @var{system}.  All unit-to-identifier and
+identifier-to-unit mappings are removed.  Use of @code{system} after this
+function returns results in undefined behavior.
+@end deftypefun
+
+@anchor{ut_set_second()}
+@deftypefun @code{@ref{ut_status}} ut_set_second @code{(const ut_unit* @var{second})}
+Sets the ``second'' unit of a unit-system.  This function must be called before
+the first call to @code{ut_offset_by_time()} for a unit in the same unit-system.
+@code{@ref{ut_read_xml()}} calls this function if the
+unit-system it's reading contains a unit named ``second''.
+This function returns one of the following:
+
+@table @code
+@item UT_SUCCESS
+The ``second'' unit of @var{system} was successfully set.
+@item UT_EXISTS
+The ``second'' unit of @var{system} is set to a different unit.
+@item UT_BAD_ARG
+@var{second} is @code{NULL}.
+@end table
+@end deftypefun
+
+@node Value Conversion, Parsing, Unit-Systems, Top
+@chapter Converting Values Between Units
+@cindex converting values between units
+@cindex unit conversion
+
+You can convert numeric values in one unit to equivalent values in
+another, compatible unit by means of a converter.
+For example
+
+@example
+#include <udunits2.h>
+...
+    ut_unit*      from = ...;
+    ut_unit*      to = ...;
+    cv_converter* converter = ut_get_converter(from, to);
+    double       fromValue = ...;
+    double       toValue = cv_convert_double(converter, fromValue);
+
+    cv_free(converter);
+@end example
+
+The converter API is declared in the header-file @code{<converter.h>},
+which is automatically included by the UDUNITS-2 header-file
+(@code{<udunits2.h>}) so you don't need to explicitly include it.
+
+@anchor{ut_are_convertible()}
+@deftypefun @code{int} ut_are_convertible @code{(const ut_unit* @var{unit1}, uconst t_unit* @var{unit2})}
+Indicates if numeric values in unit @var{unit1} are convertible to numeric
+values in unit @var{unit2} via @ref{ut_get_converter()}.
+In making this determination, dimensionless units are ignored.
+This function returns a non-zero value if conversion is possible;
+otherwise, @code{0} is returned and @ref{ut_get_status()} will return one
+of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{unit1} or @var{unit2} is @code{NULL}.
+@item UT_NOT_SAME_SYSTEM
+@var{unit1} and @var{unit2} belong to different @ref{unit-system}s.
+@item UT_SUCCESS
+Conversion between the units is not possible (e.g., @var{unit1} refers
+to a meter and @var{unit2} refers to a kilogram.
+@end table
+@end deftypefun
+
+@anchor{ut_get_converter()}
+@deftypefun @code{cv_converter*} ut_get_converter @code{(ut_unit* const @var{from}, ut_unit* const @var{to})}
+Creates and returns a converter of numeric values in the @var{from} unit
+to equivalent values in the @var{to} unit.
+You should pass the returned pointer to @code{cv_free()} when you
+no longer need the converter.
+If an error occurs,
+then this function writes an error-message using
+@code{@ref{ut_handle_error_message()}}
+and returns @code{NULL}.
+Also, @code{@ref{ut_get_status()}} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{from} or @var{to} is @code{NULL}.
+@item UT_NOT_SAME_SYSTEM
+The units @var{from} and @var{to} don't belong to the same unit-system.
+@item UT_MEANINGLESS
+The units belong to the same unit-system but conversion between them is
+meaningless (e.g., conversion between seconds and kilograms is meaningless).
+@item UT_OS
+Operating-system failure.  See @code{errno}.
+@end table
+@end deftypefun
+
+@anchor{cv_convert_float()}
+@deftypefun @code{float} cv_convert_float @code{(const cv_converter* @var{converter}, const float @var{value})}
+Converts the single floating-point value @var{value} and
+returns the new value.
+@end deftypefun
+
+@anchor{cv_convert_double()}
+@deftypefun @code{double} cv_convert_double @code{(const cv_converter* @var{converter}, const double @var{value})}
+Converts the single double-precision value @var{value} and
+returns the new value.
+@end deftypefun
+
+@anchor{cv_convert_floats()}
+@deftypefun @code{float*} cv_convert_floats @code{(const cv_converter* @var{converter}, const float* @var{in}, size_t @var{count}, float* @var{out})}
+Converts the @var{count} floating-point values starting at @var{in}, writing
+the new values starting at @var{out} and, as a convenience,
+returns @var{out}.
+The input and output arrays may overlap or be identical.
+@end deftypefun
+
+@anchor{cv_convert_doubles()}
+@deftypefun @code{double*} cv_convert_doubles @code{(const cv_converter* @var{converter}, const double* @var{in}, size_t @var{count}, double* @var{out})}
+Converts the @var{count} double-precision values starting at @var{in}, writing
+the new values starting at @var{out} and, as a convenience,
+returns @var{out}.
+The input and output arrays may overlap or be identical.
+@end deftypefun
+
+@anchor{cv_free()}
+@deftypefun @code{void} cv_free @code{(cv_converter* @var{conv})};
+Frees resources associated with the converter referenced by @var{conv}.
+You should call this function when you no longer need the converter.
+Use of @var{conv} upon return results in undefined behavior.
+@end deftypefun
+
+@node Parsing, Syntax, Value Conversion, Top
+@chapter Parsing a String into a Unit
+@cindex parsing a string into a unit
+@cindex string, parsing into a unit
+
+Here's an example of parsing a string representation of a unit into
+its binary representation:
+
+@example
+#include <stdlib.h>
+#include <udunits2.h>
+...
+    ut_system*   unitSystem = @ref{ut_read_xml(),ut_read_xml(NULL)};
+    const char* string = "kg.m2/s3";
+    ut_unit*     watt = @ref{ut_parse(),ut_parse}(unitSystem, string, UT_ASCII);
+
+    if (watt == NULL) @{
+        /* Unable to parse string. */
+    @}
+    else @{
+        /* Life is good. */
+    @}
+@end example
+
+@anchor{ut_parse()}
+@deftypefun @code{ut_unit*} ut_parse @code{(const ut_system* @var{system}, const char* @var{string}, ut_encoding @var{encoding})}
+Returns the binary unit representation corresponding to the string unit
+representation @var{string} in the character-set @var{encoding} using the
+unit-system @var{system}.
+@var{string} must have no leading or trailing whitespace (see
+@code{@ref{ut_trim()}}).
+If an error occurs, then this function returns @code{NULL} and
+@code{@ref{ut_get_status()}} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{system} or @var{string} is @code{NULL}.
+@item UT_SYNTAX
+@var{string} contained a syntax error.
+@item UT_UNKNOWN
+@var{string} contained an unknown identifier.
+@item UT_OS
+Operating-system failure.  See @code{errno} for the reason.
+@end table
+@end deftypefun
+
+@anchor{ut_trim()}
+@deftypefun @code{size_t} ut_trim @code{(char* @var{string}, ut_encoding @var{encoding})}
+Removes all leading and trailing whitespace from the NUL-terminated string
+@var{string}.  Returns @var{string}, which is modified if it contained leading
+or trailing whitespace.
+@end deftypefun
+
+@node Syntax, Formatting, Parsing, Top
+@chapter Unit Syntax
+@cindex unit syntax
+@cindex syntax, unit
+
+For the most part, the UDUNITS-2 package follows the syntax for unit-strings
+promulgated by the US National Institute for Standards and Technology (NIST).
+Details, of which, can be found at @uref{http://physics.nist.gov/cuu/Units/index.html}.
+The one general exception to this is the invention of a syntax for
+``offset''-units (e.g., the definition of the degree Celsius is ``K @@
+273.15'').
+
+@menu
+* Examples::  Examples of unit specifications
+* Grammar::   Formal unit grammar
+@end menu
+
+@node Examples, Grammar, , Syntax
+@section Unit Specification Examples
+@cindex unit specification examples
+@cindex examples, unit specification
+
+@quotation
+@multitable {Logarithmic} {(5 meter)/(30 second)} {lg(re mW)} {"lg" is base 10, "ln" is base e, and "lb" is base 2}
+@headitem String Type @tab Using Names @tab Using Symbols @tab Comment
+@item Simple @tab meter @tab m
+@item Raised @tab meter^2 @tab m2 @tab higher precedence than multiplying or
+dividing
+@item Product @tab newton meter @tab N.m
+@item Quotient @tab meter per second @tab m/s
+@item Scaled @tab 60 second @tab 60 s
+@item Prefixed @tab kilometer @tab km
+@item Offset @tab kelvin from 273.15 @tab K @@ 273.15 @tab lower
+precedence than multiplying or dividing
+@item Logarithmic @tab lg(re milliwatt) @tab lg(re mW) @tab "lg" is base 10, 
+"ln" is base e, and "lb" is base 2
+@item Grouped @tab (5 meter)/(30 second) @tab (5 m)/(30 s)
+@end multitable
+@end quotation
+
+The above may be combined, e.g., "0.1 lg(re m/(5 s)^2) @@ 50".
+
+You may also look at the @code{<def>} elements in @ref{Database,the
+units database} to see examples of string unit specifications.
+
+You may use the @code{@ref{Top, , udunits2, udunits2prog}} utility 
+to experiment with string unit specifications.
+
+@node Grammar, , Examples, Syntax
+@section Unit Grammar
+@cindex unit grammar
+@cindex grammar, unit
+
+Here is the unit-syntax understood by the UDUNITS-2 package.  Words printed
+@emph{Thusly} indicate non-terminals; words printed THUSLY indicate terminals;
+and words printed <thusly> indicate lexical elements.
+
+@example
+@emph{Unit-Spec: one of}
+        nothing
+        @emph{Shift-Spec}
+
+@emph{Shift-Spec: one of}
+        @emph{Product-Spec}
+        @emph{Product-Spec} SHIFT REAL
+        @emph{Product-Spec} SHIFT INT
+        @emph{Product-Spec} SHIFT @emph{Timestamp}
+
+@emph{Product-Spec: one of}
+        @emph{Power-Spec}
+        @emph{Product-Spec} @emph{Power-Spec}
+        @emph{Product-Spec} MULTIPLY @emph{Power-Spec}
+        @emph{Product-Spec} DIVIDE @emph{Power-Spec}
+
+@emph{Power-Spec: one of}
+        @emph{Basic-Spec}
+        @emph{Basic-Spec} INT
+        @emph{Basic-Spec} EXPONENT
+        @emph{Basic-Spec} RAISE INT
+
+@emph{Basic-Spec: one of}
+        ID
+        "(" @emph{Shift-Spec} ")"
+        LOGREF @emph{Product_Spec} ")"
+        @emph{Number}
+
+@emph{Number: one of}
+        INT
+        REAL
+
+@emph{Timestamp: one of}
+        DATE
+        DATE CLOCK
+        DATE CLOCK CLOCK
+        DATE CLOCK INT
+        DATE CLOCK ID
+        TIMESTAMP
+        TIMESTAMP INT
+        TIMESTAMP ID
+
+SHIFT:
+        <space>* <shift_op> <space>*
+
+<shift_op>: one of
+        "@@"
+        "after"
+        "from"
+        "since"
+        "ref"
+
+REAL:
+        the usual floating-point format
+
+INT:
+        the usual integer format
+
+MULTIPLY: one of
+        "-"
+        "."
+        "*"
+        <space>+
+        <centered middot>
+
+DIVIDE:
+        <space>* <divide_op> <space>*
+
+<divide_op>: one of
+        per
+        PER
+        "/"
+
+EXPONENT:
+        ISO-8859-9 or UTF-8 encoded exponent characters
+
+RAISE: one of
+        "^"
+        "**"
+
+ID: one of
+        <id>
+        "%"
+        "'"
+        "\""
+        degree sign
+        greek mu character
+
+<id>:
+        <alpha> <alphanum>*
+
+<alpha>:
+        [A-Za-z_]
+        ISO-8859-1 alphabetic characters
+        non-breaking space
+
+<alphanum>: one of
+        <alpha>
+        <digit>
+
+<digit>:
+        [0-9]
+
+LOGREF:
+        <log> <space>* <logref>
+
+<log>: one of
+        "log"
+        "lg"
+        "ln"
+        "lb"
+
+<logref>:
+        "(" <space>* <re> ":"? <space>*
+
+DATE:
+        <year> "-" <month> ("-" <day>)?
+
+<year>:
+        [+-]?[0-9]@{1,4@}
+
+<month>:
+        "0"?[1-9]|1[0-2]
+
+<day>:
+        "0"?[1-9]|[1-2][0-9]|"30"|"31"
+
+CLOCK:
+        <hour> ":" <minute> (":" <second>)?
+
+TIMSTAMP:
+        <year> (<month> <day>?)? "T" <hour> (<minute> <second>?)?
+
+<hour>:
+        [+-]?[0-1]?[0-9]|2[0-3]
+
+<minute>:
+        [0-5]?[0-9]
+
+<second>:
+        (<minute>|60) (\.[0-9]*)?
+
+@end example
+
+@node Formatting, Operations, Syntax, Top
+@chapter Formatting a Unit into a String
+@cindex formatting a unit into a string
+@cindex unit, formatting into a string
+@cindex string, formatting a unit into a
+
+Use the @code{@ref{ut_format()}} function to obtain the string representation
+of a binary unit.
+For example, the following gets the definition of the unit "watt" in
+ASCII characters using unit-symbols rather than unit-names:
+
+@example
+ut_unit*     watt = ...;
+char        buf[128];
+unsigned    opts = @ref{ut_encoding,UT_ASCII} | UT_DEFINITION;
+int         len = @ref{ut_format(),ut_format}(watt, buf, sizeof(buf), opts);
+
+if (len == -1) @{
+    /* Couldn't get string */
+@}
+else if (len == sizeof(buf)) @{
+    /* Entire buffer used: no terminating NUL */
+@}
+else @{
+    /* Have string with terminating NUL */
+@}
+@end example
+
+@anchor{ut_format()}
+@deftypefun @code{int} ut_format @code{(const ut_unit* @var{unit}, char* @var{buf}, size_t @var{size}, unsigned @var{opts})}
+Formats the unit @var{unit} (i.e., returns its string representation)
+into the buffer pointed-to by @var{buf} of size @var{size}.
+The argument @var{opts} specifies how the formatting is to be done and
+is a bitwise OR of a @ref{ut_encoding} value and zero or more of the following:
+
+@table @code
+@item UT_NAMES
+Use unit names instead of symbols.
+@item UT_DEFINITION
+The formatted string should be the definition of @var{unit} in terms
+of basic-units instead of stopping any expansion at the highest level
+possible.
+@end table
+
+On succes, this function returns the number of characters written into
+@var{buf}, which will be less than or equal to @var{size}.
+If the number is equal to @var{size}, then the buffer is too small to
+have a terminating @code{NUL} character.
+
+On failure, this function returns @code{-1} and @ref{ut_get_status()} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{unit} or @var{buf} is @code{NULL}, or 
+@var{opts} contains the bit patterns of both @code{UT_LATIN1} and
+@code{UT_UTF8}.
+@item UT_CANT_FORMAT
+@var{unit} can't be formatted in the desired manner (e.g., @var{opts}
+contains @code{UT_ASCII} but @var{unit} doesn't have an identifier in
+that character-set or @var{opts} doesn't contain UT_NAMES and a necessary
+symbol doesn't exist).
+@end table
+@end deftypefun
+
+@node Operations, Mapping, Formatting, Top
+@chapter Unit Operations
+@cindex unit operations
+@cindex operations, unit
+
+You can use unit operations to construct new units, get information
+about units, or compare units.
+
+@menu
+* Unary::       Operations on a single unit
+* Binary::      Operations on pairs of units
+@end menu
+
+@node Unary, Binary, , Operations
+@section Unary Unit Operations
+@cindex unary unit operations
+
+@anchor{ut_free()}
+@deftypefun @code{void} ut_free @code{(ut_unit* @var{unit})}
+Frees resources associated with @var{unit}.
+You should invoke this function on every unit that you no longer need.
+Use of @var{unit} upon
+return from this function results in undefined behavior.
+@end deftypefun
+
+@anchor{ut_scale()}
+@deftypefun @code{ut_unit*} ut_scale @code{(double @var{factor}, const ut_unit* @var{unit})}
+Returns a unit equivalent to another unit scaled by a numeric factor.
+For example:
+@example
+const ut_unit*   meter = ...
+const ut_unit*   kilometer = ut_scale(1000, meter);
+@end example
+The returned unit is equivalent to @var{unit} multiplied by
+@var{factor}.
+You should pass the returned pointer to @code{@ref{ut_free()}} when you
+no longer need the unit.
+@end deftypefun
+
+@anchor{ut_offset()}
+@deftypefun @code{ut_unit*} ut_offset @code{(const ut_unit* @var{unit}, double @var{offset})}
+Returns a unit equivalent to another unit relative to a particular
+origin.
+For example:
+@example
+const ut_unit*   kelvin = ...
+const ut_unit*   celsius = ut_offset(kelvin, 273.15);
+@end example
+The returned unit is equivalent to @var{unit} with an origin of
+@var{offset}.
+You should pass the returned pointer to @code{@ref{ut_free()}} when you
+no longer need the unit.
+If an error occurs, then this function returns @code{NULL} and
+@code{@ref{ut_get_status()}} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{unit} is @code{NULL}.
+@item UT_OS
+Operating-system error.  See @code{errno} for the reason.
+@end table
+@end deftypefun
+
+@anchor{ut_offset_by_time()}
+@deftypefun @code{ut_unit*} ut_offset_by_time @code{(const ut_unit* const @var{unit}, const double @var{origin})}
+Returns a timestamp-unit equivalent to the time unit @var{unit}
+referenced to the time-origin @var{origin} (as returned by
+@code{@ref{ut_encode_time()}}).
+For example:
+@example
+const ut_unit*   second = ...
+const ut_unit*   secondsSinceTheEpoch =
+    ut_offset_by_time(second, ut_encode_time(1970, 1, 1, 0, 0, 0.0));
+@end example
+Leap seconds are not taken into account.
+You should pass the returned pointer to @code{@ref{ut_free()}} when you
+no longer need the unit.
+If an error occurs, then this function returns @code{NULL} and
+@code{@ref{ut_get_status()}} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{unit} is @code{NULL}.
+@item UT_OS
+Operating-system error.  See @code{errno} for the reason.
+@item UT_MEANINGLESS
+Creation of a timestamp unit based on @var{unit} is not meaningful.  It
+might not be a time-unit, for example.
+@item UT_NO_SECOND
+The associated unit-system doesn't contain a ``second'' unit.  See
+@code{@ref{ut_set_second()}}.
+@end table
+
+@strong{CAUTION:}
+The timestamp-unit was created to be analogous to, for example, the degree
+celsius---but for the time dimension.
+I've come to believe, however, that creating
+such a unit was a mistake, primarily because users try to use the unit in
+ways for which it was not designed (such as converting dates in a
+calendar whose year is exactly 365 days long).
+Such activities are much better handled by a dedicated calendar package.
+Please be careful about using timestamp-units.
+See also the section on @ref{Time, The Handling of Time}.
+
+@end deftypefun
+
+@anchor{ut_invert()}
+@deftypefun @code{ut_unit*} ut_invert @code{(const ut_unit* @var{unit})}
+Returns the inverse (i.e., reciprocal) of the unit @var{unit}.
+This convenience function is equal to 
+@code{@ref{ut_raise(),ut_raise(@var{unit}@comma{}-1)}}.
+You should pass the returned pointer to @code{@ref{ut_free()}} when you
+no longer need the unit.
+If an error occurs,
+then this function writes an error-message using
+@code{@ref{ut_handle_error_message()}}
+and returns @code{NULL}.
+Also, @code{@ref{ut_get_status()}} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{unit} is @code{NULL}.
+@item UT_OS
+Operating-system error. See @code{errno} for the reason.
+@end table
+@end deftypefun
+
+@anchor{ut_raise()}
+@deftypefun @code{ut_unit*} ut_raise @code{(const ut_unit* @var{unit}, int @var{power})}
+Returns the unit equal to unit @var{unit} raised to the power @var{power}.
+You should pass the returned pointer to @code{ut_free()} when you
+no longer need the unit.
+If an error occurs,
+then this function writes an error-message using
+@code{@ref{ut_handle_error_message()}}
+and returns @code{NULL}.
+Also, @code{@ref{ut_get_status()}} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{unit} is @code{NULL}.
+@item UT_OS
+Operating-system error. See @code{errno} for the reason.
+@end table
+@end deftypefun
+
+@anchor{ut_root()}
+@deftypefun @code{ut_unit*} ut_root @code{(const ut_unit* @var{unit}, int @var{root})}
+Returns the unit equal to the @var{root} root of unit @var{unit}.
+You should pass the returned pointer to @code{ut_free()} when you
+no longer need the unit.
+If an error occurs,
+then this function writes an error-message using
+@code{@ref{ut_handle_error_message()}}
+and returns @code{NULL}.
+Also, @code{@ref{ut_get_status()}} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{unit} is @code{NULL}.
+@item UT_MEANINGLESS
+It's meaningless to take the given root of the given unit.
+This could be because the
+resulting unit would have fractional (i.e., non-integral) dimensionality,
+or because the unit is, for example, a logarithmic unit.
+@item UT_OS
+Operating-system error. See @code{errno} for the reason.
+@end table
+@end deftypefun
+
+@anchor{ut_log()}
+@deftypefun @code{ut_unit*} ut_log @code{(double @var{base}, const ut_unit* @var{reference})}
+Returns the logarithmic unit corresponding to the logarithmic base
+@var{base} and a reference level specified as the unit @var{reference}.
+For example, the following creates a decibel unit with a
+one milliwatt reference level:
+@example
+     const ut_unit* milliWatt = ...;
+     const ut_unit* bel_1_mW = ut_log(10.0, milliWatt);
+
+     if (bel_1_mW != NULL) @{
+         const ut_unit* decibel_1_mW = @ref{ut_scale(),ut_scale}(0.1, bel_1_mW);
+
+         @ref{ut_free(),ut_free}(bel_1_mW);   /* no longer needed */
+
+         if (decibel_1_mW != NULL) @{
+             /* Have decibel unit with 1 mW reference */
+             ...
+             @ref{ut_free(),ut_free}(decibel_1_mW);
+         @}                 /* "decibel_1_mW" allocated */
+     @}
+@end example
+You should pass the returned pointer to @code{ut_free()} when you
+no longer need the unit.
+If an error occurs,
+then this function writes an error-message using
+@code{@ref{ut_handle_error_message()}}
+and returns @code{NULL}.
+Also, @code{@ref{ut_get_status()}} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{reference} is @code{NULL}.
+@item UT_OS
+Operating-system error. See @code{errno} for the reason.
+@item UT_BAD_ARG
+@var{base} is invalid (e.g., it must be greater than one).
+@end table
+@end deftypefun
+
+@anchor{ut_get_name()}
+@deftypefun @code{const char*} ut_get_name @code{(const ut_unit* @var{unit}, ut_encoding @var{encoding})}
+Returns the name to which the unit referenced by @var{unit} maps in the
+character-encoding specified by @var{encoding}.
+If this function returns @code{NULL}, then
+@code{@ref{ut_get_status()}} will return
+one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{name} is @code{NULL}.
+@item UT_SUCCESS
+@var{unit} doesn't map to a name in the given character-set.
+@end table
+@end deftypefun
+
+@anchor{ut_get_symbol()}
+@deftypefun @code{const char*} ut_get_symbol @code{(const ut_unit* @var{unit}, ut_encoding @var{encoding})}
+Returns the symbol to which the unit referenced by @var{unit} maps in the
+character-encoding specified by @var{encoding}.
+If this function returns @code{NULL}, then
+@code{@ref{ut_get_status()}} will return
+one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{symbol} is @code{NULL}.
+@item UT_SUCCESS
+@var{unit} doesn't map to a symbol in the given character-set.
+@end table
+@end deftypefun
+
+@anchor{ut_get_system()}
+@deftypefun @code{ut_system*} ut_get_system @code{(const ut_unit* @var{unit})}
+Returns the unit-system to which the unit referenced by @var{unit} belongs.
+If @var{unit} is @code{NULL}, then this function writes an error-message
+using @code{@ref{ut_handle_error_message()}}
+and returns @code{NULL}.
+Also, @code{@ref{ut_get_status()}} will return @code{UT_BAD_ARG}.
+@end deftypefun
+
+@anchor{ut_is_dimensionless()}
+@deftypefun @code{int} ut_is_dimensionless @code{(const ut_unit* @var{unit})}
+Indicates if unit @var{unit} is dimensionless (like ``radian'').
+This function returns a non-zero value if the unit is dimensionfull;
+otherwise, @code{0} is returned and
+@ref{ut_get_status()} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{unit1} is @code{NULL}.
+@item UT_SUCCESS
+The unit is dimensionless.
+@end table
+@end deftypefun
+
+@anchor{ut_clone()}
+@deftypefun @code{ut_unit*} ut_clone @code{(const ut_unit* @var{unit})}
+Returns a copy of the unit referenced by @var{unit}.
+You should pass the returned pointer to @code{ut_free()} when you
+no longer need the unit.
+If an error occurs,
+then this function writes an error-message using
+@code{@ref{ut_handle_error_message()}}
+and returns @code{NULL}.
+Also, @code{@ref{ut_get_status()}} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{unit} is @code{NULL}.
+@item UT_OS
+Operating-system failure.  See @code{errno}.
+@end table
+If you use @code{@ref{ut_read_xml()}}, then you should not normally
+need to call this function.
+@end deftypefun
+
+@anchor{ut_accept_visitor()}
+@deftypefun @code{@ref{ut_status}} ut_accept_visitor @code{(const ut_unit* @var{unit}, const @ref{ut_visitor,ut_visitor}* @var{visitor}, void* @var{arg})}
+Accepts the visitor @var{visitor} to the unit @var{unit}.
+The argument @var{arg} is passed to the visitor's functions.
+This function returns one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{visitor} or @var{unit} is @code{NULL}.
+@item UT_VISIT_ERROR
+An error occurred in @var{visitor} while visiting @var{unit}.
+@item UT_SUCCESS
+Success.
+@end table
+@end deftypefun
+
+@anchor{ut_visitor}
+@deftp {Data type} {ut_visitor} {int foo(int)} {int bar(int, int)}
+You pass a pointer to a data object of this type if and when you call
+@code{@ref{ut_accept_visitor()}}.
+It contains the following pointers to functions that implement your
+unit-visitor:
+
+@table @code
+@item @ref{ut_status} (*visit_basic)(const ut_unit* @var{unit}, void* @var{arg}); 
+Visits the basic-unit @var{unit}.  A basic-unit is a base unit like
+``meter'' or a non-dimensional but named unit like ``radian''.
+This function returns @code{@ref{ut_status,UT_SUCCESS}} on and only on success.
+@item @ref{ut_status} (*visit_product)(const ut_unit* @var{unit}, int @var{count}, const ut_unit* const* @var{basicUnits}, const int* @var{powers}, void* @var{arg}); 
+Visits the product-unit @var{unit}.
+The product-unit is a product of the @var{count}
+basic-units referenced by @var{basicUnits}, each raised to their respective,
+non-zero power in @var{powers}.
+This function returns @code{@ref{ut_status,UT_SUCCESS}} on and only on success.
+@item @ref{ut_status} (*visit_galilean)(const ut_unit* @var{unit}, double @var{scale}, const ut_unit* @var{underlyingUnit}, double @var{origin}, void* arg); 
+Visits the Galilean-unit @var{unit}.
+The Galilean-unit has the underlying unit @var{underlyingUnit} and either the
+non-unity scale factor @var{scale} or the non-zero origin @var{origin}, or both.
+This function returns @code{@ref{ut_status,UT_SUCCESS}} on and only on success.
+@item @ref{ut_status} (*visit_timestamp)(const ut_unit* @var{unit}, const ut_unit* @var{timeUnit}, double @var{origin}, void* @var{arg}); 
+Visits the timestamp-unit @var{unit}.
+The timestamp-unit has the underlying unit of time @var{timeUnit}
+and the @code{@ref{ut_encode_time()}}-encoded time-origin @var{origin}.
+This function returns @code{@ref{ut_status,UT_SUCCESS}} on and only on success.
+@item @ref{ut_status} (*visit_logarithmic)(const ut_unit* @var{unit}, double @var{base}, const ut_unit* @var{reference}, void* @var{arg}); 
+Visits the logarithmic-unit @var{unit}.
+The logarithmic-unit has the logarithmic base @var{base} and
+the reference-level is specified by the unit @var{reference}.
+This function returns @code{@ref{ut_status,UT_SUCCESS}} on and only on success.
+@end table
+@end deftp
+
+@node Binary, , Unary, Operations
+@section Binary Unit Operations
+@cindex binary unit operations
+
+Binary unit operations act on two units.
+
+@strong{NOTE:} The functions
+@code{@ref{ut_are_convertible()}} and @code{@ref{ut_get_converter()}} are also
+binary unit operations but are documented elsewhere.
+
+@anchor{ut_multiply()}
+@deftypefun @code{ut_unit*} ut_multiply @code{(const ut_unit* @var{unit1}, const ut_unit* @var{unit2})}
+Returns the result of multiplying unit @var{unit1} by unit @var{unit2}.
+You should pass the pointer to @ref{ut_free()} when you no longer need the unit
+On failure, this function returns @code{NULL} and @ref{ut_get_status()}
+will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{unit1} or @var{unit2} is @code{NULL}.
+@item UT_NOT_SAME_SYSTEM
+@var{unit1} and @var{unit2} belong to different @ref{unit-system}s.
+@item UT_OS
+Operating-system error. See @var{errno} for the reason.
+@end table
+@end deftypefun
+
+@anchor{ut_divide}
+@deftypefun @code{ut_unit*} ut_divide @code{(const ut_unit* @var{numer}, const ut_unit* @var{denom})}
+Returns the result of dividing unit @var{numer} by unit @var{denom}.
+You should pass the pointer to @ref{ut_free()} when you no longer need the unit
+On failure, this function returns @code{NULL} and @ref{ut_get_status()} 
+will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{numer} or @var{denom} is @code{NULL}.
+@item UT_NOT_SAME_SYSTEM
+@var{unit1} and @var{unit2} belong to different @ref{unit-system}s.
+@item UT_OS
+Operating-system error. See @code{errno} for the reason.
+@end table
+@end deftypefun
+
+@anchor{ut_compare()}
+@deftypefun @code{int} ut_compare @code{(const ut_unit* @var{unit1}, const ut_unit* @var{unit2})}
+Compares two units.  Returns a value less than, equal to, or greater than
+zero as @var{unit1} is considered less than, equal to, or greater than
+@var{unit2}, respectively.
+Units from different @ref{unit-system}s never compare equal.
+The value zero is also returned if both unit pointers are @code{NULL}.
+@end deftypefun
+
+@anchor{ut_same_system()}
+@deftypefun @code{int} ut_same_system @code{(const ut_unit* @var{unit1}, const ut_unit* @var{unit2})}
+Indicates if two units belong to the same unit-system.
+This function returns a non-zero value if the two units belong to the
+same @ref{unit-system}; otherwise, @code{0} is returned and
+@ref{ut_get_status()} will return one of the following:
+
+@table @code
+@item UT_BAD_ARG
+@var{unit1} or @var{unit2} is @code{NULL}.
+@item UT_SUCCESS
+The units belong to different @ref{unit-system}s.
+@end table
+@end deftypefun
+
+@node Mapping, Time, Operations, Top
+@chapter Mapping Between Identifiers and Units
+@cindex mapping units
+@cindex mapping identifiers
+@cindex units, mapping to identifiers
+
+Within a unit-system, you can map an identifier to a unit and vice
+versa.
+If an identifier maps to a unit, then the unit can be retrieved from the
+unit-system via the identifier.
+Similarly, if a unit maps to an identifier, then the unit can be printed
+using the identifier.
+
+There a two kinds of identifiers: names and symbols.
+
+@menu
+* Names::       Mapping between units and names.
+* Symbols::     Mapping between units and symbols.
+@end menu
+
+@node Names, Symbols, , Mapping
+@section Names
+@cindex names
+
+You can map a name to a unit and vice versa.  If you use
+@code{@ref{ut_read_xml()}}, then you shouldn't normally need to do this.
+
+@anchor{ut_map_name_to_unit()}
+@deftypefun @code{@ref{ut_status}} ut_map_name_to_unit @code{(const char* @var{name}, const ut_encoding @var{encoding}, const ut_unit* @var{unit})}
+Maps the name referenced by @var{name}, in character-set @var{encoding},
+to the unit referenced by @var{unit}
+in the unit-system that contains @var{unit}.
+This function returns one of the following:
+
+@table @code
+@item UT_SUCCESS
+Success.
+@item UT_BAD_ARG
+@var{name} or @var{unit} is @code{NULL}.
+@item UT_OS
+Operating-system failure.  See @code{errno}.
+@item UT_EXISTS
+@var{name} already maps to a different unit.
+@end table
+@end deftypefun
+
+@anchor{ut_unmap_name_to_unit()}
+@deftypefun @code{@ref{ut_status}} ut_unmap_name_to_unit @code{(ut_system* @var{system}, const char* @var{name}, const ut_encoding @var{encoding})}
+Removes any mapping from name @var{name}, in character-set @var{encoding}, to a unit in unit-system @var{system}.
+This function returns one of the following:
+
+@table @code
+@item UT_SUCCESS
+Success.
+@item UT_BAD_ARG
+@var{system} or @var{name} is @code{NULL}.
+@end table
+@end deftypefun
+
+@anchor{ut_map_unit_to_name()}
+@deftypefun @code{@ref{ut_status}} ut_map_unit_to_name @code{(const ut_unit* @var{unit}, const char* @var{name}, ut_encoding @var{encoding})}
+Maps the unit @var{unit} to the name @var{name}, which is in character-set
+@var{encoding}, in the unit-system that contains the unit.
+This function returns one of the following:
+
+@table @code
+@item UT_SUCCESS
+Success.
+@item UT_BAD_ARG
+@var{unit} or @var{name} is @code{NULL}, or @var{name} is not in the
+character-set @var{encoding}.
+@item UT_OS
+Operating-system failure.  See @code{errno}.
+@item UT_EXISTS
+@var{unit} already maps to a different name.
+@end table
+@end deftypefun
+
+@anchor{ut_unmap_unit_to_name()}
+@deftypefun @code{@ref{ut_status}} ut_unmap_unit_to_name @code{(const ut_unit* @var{unit}, ut_encoding @var{encoding})}
+Removes any mapping from unit @var{unit} to a name in character-set
+@var{encoding} from the unit-system that contains the unit.
+This function returns one of the following:
+
+@table @code
+@item UT_SUCCESS
+Success.
+@item UT_BAD_ARG
+@var{unit} is @code{NULL}.
+@end table
+@end deftypefun
+
+@node Symbols, , Names, Mapping
+@section Symbols
+@cindex symbols
+
+You can map a symbol to a unit and vice versa.  If you use
+@code{@ref{ut_read_xml()}}, then you shouldn't normally need to do this.
+
+@anchor{ut_map_symbol_to_unit()}
+@deftypefun @code{@ref{ut_status}} ut_map_symbol_to_unit @code{(const char* @var{symbol}, const ut_encoding @var{encoding}, const ut_unit* @var{unit})}
+Maps the symbol referenced by @var{symbol}, in character-set @var{encoding},
+to the unit referenced by @var{unit}
+in the unit-system that contains @var{unit}.
+This function returns one of the following:
+
+@table @code
+@item UT_SUCCESS
+Success.
+@item UT_BAD_ARG
+@var{symbol} or @var{unit} is @code{NULL}.
+@item UT_OS
+Operating-system failure.  See @code{errno}.
+@item UT_EXISTS
+@var{symbol} already maps to a different unit.
+@end table
+@end deftypefun
+
+@anchor{ut_unmap_symbol_to_unit()}
+@deftypefun @code{@ref{ut_status}} ut_unmap_symbol_to_unit @code{(ut_system* @var{system}, const char* @var{symbol}, const ut_encoding @var{encoding})}
+Removes any mapping from symbol @var{symbol}, in character-set @var{encoding}, to a unit in unit-system @var{system}.
+This function returns one of the following:
+
+@table @code
+@item UT_SUCCESS
+Success.
+@item UT_BAD_ARG
+@var{system} or @var{symbol} is @code{NULL}.
+@end table
+@end deftypefun
+
+@anchor{ut_map_unit_to_symbol()}
+@deftypefun @code{@ref{ut_status}} ut_map_unit_to_symbol @code{(const ut_unit* @var{unit}, const char* @var{symbol}, ut_encoding @var{encoding})}
+Maps the unit @var{unit} to the symbol @var{symbol}, which is in character-set
+@var{encoding}, in the unit-system that contains the unit.
+This function returns one of the following:
+
+@table @code
+@item UT_SUCCESS
+Success.
+@item UT_BAD_ARG
+@var{unit} or @var{symbol} is @code{NULL}.
+@item UT_BAD_ARG
+Symbol @var{symbol} is not in the character-set @var{encoding}.
+@item UT_OS
+Operating-system failure.  See @code{errno}.
+@item UT_EXISTS
+@var{unit} already maps to a different symbol.
+@end table
+@end deftypefun
+
+@anchor{ut_unmap_unit_to_symbol()}
+@deftypefun @code{@ref{ut_status}} ut_unmap_unit_to_symbol @code{(const ut_unit* @var{unit}, ut_encoding @var{encoding})}
+Removes any mapping from unit @var{unit} to a symbol in character-set
+@var{encoding} from the unit-system that contains the unit.
+This function returns one of the following:
+
+@table @code
+@item UT_SUCCESS
+Success.
+@item UT_BAD_ARG
+@var{unit} is @code{NULL}.
+@end table
+@end deftypefun
+
+@node Time, Errors, Mapping, Top
+@chapter The Handling of Time
+@cindex time, handling of
+
+You should use a true calendar package rather than the UDUNITS-2 package 
+to handle time.  Having said that, many people use the time-handling
+capabilities of the UDUNITS-2 package because it supports "units" like
+"@code{seconds since 1970-01-01}".  You should be aware, however, that the
+hybrid Gregorian/Julian calendar used by the UDUNITS-2 package @emph{cannot be
+changed}.  Dates on or after 1582-10-15 are assumed to be Gregorian dates;
+dates before that are assumed to be Julian dates.  In particular,
+the year 1 BCE is immediately followed by the year 1 CE.
+
+In general, the UDUNITS-2 package handles time by encoding it as
+double-precision value, which can then be acted upon arithmetically.
+
+@anchor{ut_encode_time()}
+@deftypefun @code{double} ut_encode_time @code{(int @var{year}, int @var{month}, int @var{day}, int @var{hour}, int @var{minute}, double @var{second})}
+Encodes a time as a double-precision value.
+This convenience function is equivalent to
+@example
+@ref{ut_encode_date(),ut_encode_date}(@var{year},@var{month},@var{day}) + @ref{ut_encode_clock(),ut_encode_clock}(@var{hour},@var{minute},@var{second})
+@end example
+@end deftypefun
+
+@anchor{ut_encode_date()}
+@deftypefun @code{double} ut_encode_date @code{(int @var{year}, int @var{month}, int @var{day})}
+Encodes a date as a double-precision value.
+You probably won't use this function.
+Dates on or after 1582-10-15 are assumed to be Gregorian dates;
+dates before that are assumed to be Julian dates.  In particular,
+the year 1 BCE is immediately followed by the year 1 CE.
+@end deftypefun
+
+@anchor{ut_encode_clock()}
+@deftypefun @code{double} ut_encode_clock @code{(int @var{hour}, int @var{minute}, double @var{second})}
+Encodes a clock-time as a double-precision value.
+You probably won't use this function.
+@end deftypefun
+
+@anchor{ut_decode_time()}
+@deftypefun @code{void} ut_decode_time @code{(double @var{time}, int* @var{year}, int* @var{month}, int* @var{day}, int* @var{hour}, int* @var{minute}, double* @var{second}, double* @var{resolution})}
+Decodes a time from a double-precision value into its individual components.
+The variable referenced by @var{resolution} will be set to the resolution
+(i.e., uncertainty) of the time in seconds.
+@end deftypefun
+
+@node Errors, Database, Time, Top
+@chapter Error Handling
+@cindex error handling
+
+Error-handling in the units module has two aspects: the status of
+the last operation performed by the module and the handling of error-messages:
+
+@menu
+* Status::      The status of the last operation.
+* Messages::    The handling of error-messages.
+@end menu
+
+@node Status, Messages, , Errors
+@section Status of Last Operation
+@cindex status of last operation
+@cindex module status
+
+UDUNITS-2 functions set their status by calling @code{@ref{ut_set_status()}}.
+You can use the function @code{@ref{ut_get_status()}} to retrieve that
+status.
+
+@anchor{ut_get_status()}
+@deftypefun @code{@ref{ut_status}} ut_get_status @code{(void)}
+Returns the value specified in the last call to
+@code{@ref{ut_set_status()}}
+@end deftypefun
+
+@anchor{ut_set_status()}
+@deftypefun @code{void} ut_set_status @code{(@ref{ut_status} @var{status})}
+Set the status of the units module to @var{status}.
+@end deftypefun
+
+@anchor{ut_status}
+@deftp {Data type} {ut_status}
+This enumeration has the following values:
+
+@table @code
+@item UT_SUCCESS
+Success
+@item UT_BAD_ARG
+An argument violates the the function's contract (e.g., it's @code{NULL}).
+@item UT_EXISTS
+Unit, prefix, or identifier already exists
+@item UT_NO_UNIT
+No such unit exists
+@item UT_OS
+Operating-system error.  See @code{errno} for the reason.
+@item UT_NOT_SAME_SYSTEM
+The units belong to different unit-systems
+@item UT_MEANINGLESS
+The operation on the unit or units is meaningless
+@item UT_NO_SECOND
+The unit-system doesn't have a unit named ``second''
+@item UT_VISIT_ERROR
+An error occurred while visiting a unit
+@item UT_CANT_FORMAT
+A unit can't be formatted in the desired manner
+@item UT_SYNTAX
+String unit representation contains syntax error
+@item UT_UNKNOWN
+String unit representation contains unknown word
+@item UT_OPEN_ARG
+Can't open argument-specified unit database
+@item UT_OPEN_ENV
+Can't open environment-specified unit database
+@item UT_OPEN_DEFAULT
+Can't open installed, default, unit database
+@item UT_PARSE
+Error parsing unit database
+@end table
+@end deftp
+
+@node Messages, , Status, Errors
+@section Error-Messages
+@cindex messages, error
+@cindex error-messages
+
+@anchor{ut_handle_error_message()}
+@deftypefun @code{int} ut_handle_error_message @code{(const char* @var{fmt}, ...)}
+Handles the error-message corresponding to the format-string @var{fmt} and
+any subsequent arguments referenced by it.
+The interpretation of the formatting-string is identical to that of
+the UNIX function @code{printf()}.
+On success, this function returns the number of bytes in the
+error-message; otherwise, this function returns @code{-1}.
+
+Use the function @code{@ref{ut_set_error_message_handler()}} to change how
+error-messages are handled.
+@end deftypefun
+
+@anchor{ut_set_error_message_handler()}
+@deftypefun @code{@ref{ut_error_message_handler}} ut_set_error_message_handler @code{(@ref{ut_error_message_handler} @var{handler})}
+Sets the function that handles error-messages and returns the previous
+error-message handler.
+The initial error-message handler is @code{@ref{ut_write_to_stderr()}}.
+@end deftypefun
+
+@anchor{ut_write_to_stderr()}
+@deftypefun @code{int} ut_write_to_stderr @code{(const char* @var{fmt}, va_list @var{args})}
+Writes the variadic error-message
+corresponding to formatting-string @var{fmt} and arguments @var{args}
+to the standard-error stream and appends a newline.
+The interpretation of the formatting-string is identical to that of
+the UNIX function @code{printf()}.
+On success, this function returns the number of bytes in the
+error-message; otherwise, this function returns @code{-1}.
+@end deftypefun
+
+@anchor{ut_ignore()}
+@deftypefun @code{int} ut_ignore @code{(const char* @var{fmt}, va_list @var{args})}
+Does nothing.
+In particular, it ignores the variadic error-message
+corresponding to formatting-string @var{fmt} and arguments @var{args}.
+Pass this function to @code{@ref{ut_set_error_message_handler()}} 
+when you don't want the unit module to print any error-messages.
+@end deftypefun
+
+@anchor{ut_error_message_handler}
+@deftp {Data type} {ut_error_message_handler}
+This is the type of an error-message handler.
+It's definition is
+@example
+typedef int (*ut_error_message_handler)(const char* fmt, va_list args);
+@end example
+@end deftp
+
+@node Database, Types, Errors, Top
+@chapter The Units Database
+@cindex units database
+@cindex database, units
+
+The database of units that comes with the UDUNITS-2 package is an
+XML-formatted file that is based on the SI system of units.
+It contains the names and symbols of most of the units that you will ever
+encounter.
+The pathname of the installed file is
+@code{@emph{datadir}/udunits2.xml}, where @emph{datadir} is the
+installation-directory for read-only, architecture-independent data
+(e.g., @code{/usr/local/share}).
+This pathname is the default that @code{@ref{ut_read_xml()}} uses.
+
+Naturally, because the database is a regular file, it can be edited
+to add new units or remove existing ones.
+Be very careful about doing this, however, because you might lose
+the benefit of exchanging unit-based information with others who
+haven't modified their database.
+
+@node Types, Complete Index, Database, Top
+@chapter Data Types
+@cindex data types
+@cindex types, data
+
+The data types @code{@ref{ut_visitor}}, @code{@ref{ut_status}}, and
+@code{@ref{ut_error_message_handler}} are documented elsewhere.
+
+@anchor{ut_encoding}
+@deftp {Data type} {ut_encoding}
+This enumeration has the following values:
+
+@table @code
+@item UT_ASCII
+@uref{http://en.wikipedia.org/wiki/Ascii,US ASCII} character-set.
+@item UT_ISO_8859_1
+The @uref{http://en.wikipedia.org/wiki/Iso-8859-1,ISO-8859-1} character-set.
+@item UT_LATIN1
+Synonym for @code{UT_ISO_8859_1}.
+@item UT_UTF8
+The @uref{http://en.wikipedia.org/wiki/Utf-8,UTF-8} encoding of the Unicode
+character-set.
+@end table
+@end deftp
+
+@node Complete Index, , Types, Top
+@unnumbered Index
+
+@printindex cp
+
+@bye

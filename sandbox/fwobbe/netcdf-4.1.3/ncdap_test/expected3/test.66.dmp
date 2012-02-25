@@ -1,0 +1,64 @@
+netcdf test {
+variables:
+	int long_names_one.long_one ;
+	int long_names_one.long_two ;
+	int long_names_one.long_three ;
+	int long_names_one.long_four ;
+	int long_names_one.long_five ;
+	int long_names_one.long_six ;
+	double long_names_one.long_one_float ;
+	double long_names_one.long_two_float ;
+	double long_names_one.long_three_float ;
+	int long_names_one_and_a_half.long_one_float1 ;
+	int long_names_one_and_a_half.long_two_float1 ;
+	int long_names_one_and_a_half.long_three_float3 ;
+	int long_names_one_and_a_half.long_four ;
+	int long_names_one_and_a_half.long_five ;
+	int long_names_one_and_a_half.long_six ;
+	double long_names_one_and_a_half.long_one_float ;
+	double long_names_one_and_a_half.long_two_float ;
+	double long_names_one_and_a_half.long_three_float ;
+	int long_names_two.a_very_long_name_given_what_it_accomplishes ;
+	int long_names_two.another_name_nearly_as_pointless ;
+data:
+
+ long_names_one.long_one = 1 ;
+
+ long_names_one.long_two = 2 ;
+
+ long_names_one.long_three = 3 ;
+
+ long_names_one.long_four = 5 ;
+
+ long_names_one.long_five = 8 ;
+
+ long_names_one.long_six = 13 ;
+
+ long_names_one.long_one_float = 1000 ;
+
+ long_names_one.long_two_float = 999.950000416665 ;
+
+ long_names_one.long_three_float = 999.800006666578 ;
+
+ long_names_one_and_a_half.long_one_float1 = 21 ;
+
+ long_names_one_and_a_half.long_two_float1 = 34 ;
+
+ long_names_one_and_a_half.long_three_float3 = 55 ;
+
+ long_names_one_and_a_half.long_four = 89 ;
+
+ long_names_one_and_a_half.long_five = 144 ;
+
+ long_names_one_and_a_half.long_six = 233 ;
+
+ long_names_one_and_a_half.long_one_float = 999.550033748988 ;
+
+ long_names_one_and_a_half.long_two_float = 999.200106660978 ;
+
+ long_names_one_and_a_half.long_three_float = 998.750260394966 ;
+
+ long_names_two.a_very_long_name_given_what_it_accomplishes = 377 ;
+
+ long_names_two.another_name_nearly_as_pointless = 610 ;
+}

@@ -1,0 +1,16 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+ccompiler=@CC@
+cppcompiler=@CXX@
+fcompiler=@FC@
+fflags=@FFLAGS@ -I${includedir}
+flibs=@NC_FLIBS@
+
+Name: @PACKAGE@
+Description: NetCDF Client Library
+Version: @PACKAGE_VERSION@
+Libs: -L${libdir} @NC_LIBS@
+Cflags: -I${includedir}
+

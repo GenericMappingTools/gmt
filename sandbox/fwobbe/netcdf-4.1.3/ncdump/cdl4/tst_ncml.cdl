@@ -1,0 +1,14 @@
+netcdf tst_ncml {
+dimensions:
+   m = 2;
+	t = UNLIMITED ; // (0 currently)
+variables:
+   float var (t, m);
+     var:tatt = "text attribute value" ;
+     var:natt = 1, 2;
+
+// global attributes:
+   :gtatt = "<, >, \', \", and &" ;
+   :gnatt = 3, 4;
+data:
+}

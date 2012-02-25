@@ -1,0 +1,17 @@
+netcdf bigf3 {
+                // fixed-size variables only, large last variable
+                // should fail with classic format due to 4.3 GB var
+                // should fail with 64-bit offset format because huge var not last
+dimensions:
+	x = 1025 ;
+	y = 1025 ;
+	z = 1025 ;
+variables:
+	float x(x) ;
+	float y(y) ;
+	float z(z) ;
+	float fvar(x, y, z) ; // 4.308 GB variable
+	float flast ;
+data:
+	flast = 42;
+}

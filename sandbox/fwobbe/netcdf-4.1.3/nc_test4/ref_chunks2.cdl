@@ -1,0 +1,19 @@
+netcdf tst_chunks {
+dimensions:
+	dim1 = 32 ;
+	dim2 = 90 ;
+	dim3 = 91 ;
+variables:
+	float var_contiguous(dim1, dim2, dim3) ;
+		var_contiguous:_Storage = "contiguous" ;
+	float var_chunked(dim1, dim2, dim3) ;
+		var_chunked:_Storage = "chunked" ;
+		var_chunked:_ChunkSizes = 8, 10, 13 ;
+	float var_compressed(dim1, dim2, dim3) ;
+		var_compressed:_Storage = "chunked" ;
+		var_compressed:_ChunkSizes = 8, 10, 13 ;
+		var_compressed:_DeflateLevel = 1 ;
+
+// global attributes:
+		:_Format = "netCDF-4 classic model" ;
+}

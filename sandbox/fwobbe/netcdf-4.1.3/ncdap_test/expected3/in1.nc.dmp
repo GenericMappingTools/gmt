@@ -1,0 +1,1338 @@
+netcdf in1 {
+dimensions:
+	time = UNLIMITED ; // (10 currently)
+	bnd = 2 ;
+	char_dmn_lng = 80 ;
+	char_dmn_sml = 4 ;
+	dgn = 1 ;
+	fl_dmn = 3 ;
+	lat = 2 ;
+	lat_T42 = 64 ;
+	lev = 3 ;
+	lon = 4 ;
+	lon_T42 = 128 ;
+	lsmlev = 6 ;
+	maxStrlen64 = 64 ;
+	rlev = 3 ;
+	time_udunits = 3 ;
+	wvl = 2 ;
+variables:
+	float lat(lat) ;
+		lat:long_name = "Latitude" ;
+		lat:units = "degrees_north" ;
+	float lon_T42(lon_T42) ;
+	float lat_T42(lat_T42) ;
+	float lev(lev) ;
+		lev:purpose = "Monotonically increasing coordinate pressure" ;
+		lev:units = "hybrid_sigma_pressure" ;
+		lev:positive = "down" ;
+		lev:A_var = "hyam" ;
+		lev:B_var = "hybm" ;
+		lev:P0_var = "P0" ;
+		lev:PS_var = "PS" ;
+		lev:bounds = "ilev" ;
+	float rlev(rlev) ;
+		rlev:purpose = "Monotonically decreasing coordinate pressure" ;
+	float lon(lon) ;
+		lon:long_name = "Latitude" ;
+		lon:units = "degrees_north" ;
+	double time(time) ;
+	float lsmlev(lsmlev) ;
+		lsmlev:purpose = "Homebrew level coordinate for LSM" ;
+		lsmlev:long_name = "Soil depth" ;
+		lsmlev:units = "meter" ;
+	float wvl(wvl) ;
+		wvl:long_name = "Wavelength" ;
+		wvl:units = "meter" ;
+	float P0 ;
+		P0:long_name = "reference pressure" ;
+		P0:units = "pascal" ;
+	char fl_dmn(fl_dmn, maxStrlen64) ;
+		fl_dmn:long_name = "Character coordinate" ;
+		fl_dmn:units = "[chr]" ;
+	int nbdate ;
+		nbdate:long_name = "base date as 6 or 8 digit integer (YYMMDD or YYYYMMDD)" ;
+	float mss_val_scl ;
+		mss_val_scl:long_name = "scalar missing value" ;
+		mss_val_scl:missing_value = 1.e+36f ;
+	short pck ;
+		pck:long_name = "Packed scalar variable" ;
+		pck:note = "Original packed value was 1s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value should be 3.0 = 2.0d*1s + 1.0d. NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 3.0d." ;
+		pck:scale_factor = 2. ;
+		pck:add_offset = 1. ;
+	double upk ;
+		upk:long_name = "Unpacked scalar variable" ;
+		upk:note = "Unpacked value is 3.0d0, upk=unpack(pck)= 2.0d0*1s + 1.0d0 = 3.0d0. Packing this variable should create an NC_SHORT scalar = 0s with packing attribute add_offset=3.0d and either no scale_factor (ncap) or scale_factor = 0.0d (ncpdq)." ;
+	int val_one_int ;
+		val_one_int:long_name = "scalar equal to 1" ;
+		val_one_int:missing_value = -99 ;
+	float val_half ;
+		val_half:long_name = "Scalar with value 0.5" ;
+		val_half:missing_value = 1.e+36f ;
+	float scalar_var ;
+		scalar_var:long_name = "scalar variable" ;
+		scalar_var:units = "Fraction" ;
+	float float_var ;
+		float_var:long_name = "float" ;
+	double double_var ;
+		double_var:long_name = "double" ;
+	double double_var2 ;
+		double_var2:long_name = "double" ;
+		double_var2:missing_value = 1.e+36 ;
+	int int_var ;
+		int_var:long_name = "int" ;
+	short short_var ;
+		short_var:long_name = "short" ;
+	char char_var(maxStrlen64) ;
+		char_var:long_name = "char" ;
+	char char_var_space(maxStrlen64) ;
+		char_var_space:long_name = "Character variable with whitespace on ends" ;
+	char char_var_nul(maxStrlen64) ;
+		char_var_nul:long_name = "Character variable containing one NUL" ;
+	char fl_nm(char_dmn_lng, maxStrlen64) ;
+		fl_nm:long_name = "Variable contains a file name" ;
+	char fl_nm_arr(fl_dmn, char_dmn_lng, maxStrlen64) ;
+		fl_nm_arr:long_name = "Variable that contains a short array of file names" ;
+		fl_nm_arr:units = "[sng]" ;
+	char non_nul_trm_char_one_dmn(char_dmn_sml, maxStrlen64) ;
+		non_nul_trm_char_one_dmn:long_name = "Variable contains a one-dimensional array of characters that is not NUL-terminated" ;
+		non_nul_trm_char_one_dmn:units = "[chr]" ;
+	char non_nul_trm_char_two_dmn(fl_dmn, char_dmn_sml, maxStrlen64) ;
+		non_nul_trm_char_two_dmn:long_name = "Variable contains a two-dimensional array of characters that are not NUL-terminated" ;
+		non_nul_trm_char_two_dmn:units = "[chr]" ;
+	byte byte_var ;
+		byte_var:long_name = "byte" ;
+	byte byte_var_neg ;
+		byte_var_neg:long_name = "negative byte" ;
+	float zero ;
+		zero:long_name = "zero" ;
+	float one ;
+		one:long_name = "one" ;
+	float two ;
+		two:long_name = "two" ;
+	double e_dbl ;
+		e_dbl:long_name = "e, natural logarithm base" ;
+	float e_flt ;
+		e_flt:long_name = "e, natural logarithm base" ;
+	float three ;
+		three:long_name = "three" ;
+	float four ;
+		four:long_name = "four" ;
+	float negative_one ;
+		negative_one:long_name = "negative one" ;
+	float g ;
+		g:long_name = "g" ;
+	float one_dmn_var(bnd) ;
+	float att_var ;
+		att_var:byte_att = 0b ;
+		att_var:char_att = "Sentence one.\n",
+			"Sentence two.\n",
+			"" ;
+		att_var:short_att = 37s ;
+		att_var:int_att = 73 ;
+		att_var:float_att = 73.f, 72.f, 71.f ;
+		att_var:double_att = 73. ;
+	int bnd_var(lev, bnd) ;
+		bnd_var:byte_att = 0b ;
+		bnd_var:char_att = "Sentence one.\n",
+			"Sentence two.\n",
+			"" ;
+		bnd_var:short_att = 37s ;
+		bnd_var:int_att = 73 ;
+		bnd_var:float_att = 73.f ;
+		bnd_var:double_att = 73. ;
+	float td(time, dgn) ;
+		td:long_name = "two dimensional record variable stored in td (time,dgn) order (dgn means degenerate, i.e., of size 1)" ;
+	double time_udunits(time_udunits) ;
+		time_udunits:units = "hours since 1900-01-01 00:00:0.0" ;
+		time_udunits:delta_t = "0000-00-00 06:00:0.0" ;
+	float lat_var(lat) ;
+	float lat_wgt(lat) ;
+	float hyam(lev) ;
+		hyam:long_name = "hybrid A coefficient at layer midpoints" ;
+	float hybm(lev) ;
+		hybm:long_name = "hybrid B coefficient at layer midpoints" ;
+	float PS(time, lat, lon) ;
+		PS:long_name = "surface pressure" ;
+		PS:units = "pascal" ;
+	int date(time) ;
+		date:long_name = "current date as 6 or 8 digit integer (YYMMDD or YYYYMMDD)" ;
+	float lon_wgt(lon) ;
+		lon_wgt:long_name = "Gaussian weights" ;
+		lon_wgt:purpose = "Gaussian weights which sum to two for n = 4. These weights are all have floor of 0.0 so should cause SIGFPE when applied to integer types in weighted average." ;
+	float msk_prt_mss_prt(lon) ;
+		msk_prt_mss_prt:long_name = "partial mask, partial missing value example" ;
+		msk_prt_mss_prt:missing_value = 1.e+36f ;
+	float mss_val(lon) ;
+		mss_val:long_name = "partial missing value example" ;
+		mss_val:missing_value = 1.e+36f ;
+	float mss_val_fst(lon) ;
+		mss_val_fst:long_name = "offset partial missing value example" ;
+		mss_val_fst:missing_value = -999.f ;
+	float fll_val(lon) ;
+		fll_val:long_name = "_FillValue example" ;
+		fll_val:_FillValue = -999.f ;
+	float no_mss_val(lon) ;
+		no_mss_val:long_name = "no missing value" ;
+	float val_one_mss(lat) ;
+		val_one_mss:long_name = "one regular value, one missing value" ;
+		val_one_mss:missing_value = 1.e+36f ;
+	short pck_arr(lon) ;
+		pck_arr:long_name = "Packed array" ;
+		pck_arr:note = "Packed value is -32767s, 0s, 1s, 32767s, unpacked is same in double" ;
+		pck_arr:scale_factor = 1. ;
+		pck_arr:add_offset = 0. ;
+	double upk_arr(lon) ;
+		upk_arr:long_name = "Unpacked array" ;
+		upk_arr:note = "Unpacked value is -32767.d, 0.d, 1.d, 32767.d, packed is same in short. Packing algorithm should yield an NC_SHORT array = [] with packing attributes scale_factor=1.0d, add_offset=0.0d" ;
+	int val_one_one_int(lat) ;
+		val_one_one_int:long_name = "1, 1" ;
+		val_one_one_int:missing_value = -99 ;
+	short val_max_max_sht(lat) ;
+		val_max_max_sht:long_name = "17000, 17000" ;
+		val_max_max_sht:missing_value = -99s ;
+	int val_one_mss_int(lat) ;
+		val_one_mss_int:long_name = "1, mss_val" ;
+		val_one_mss_int:missing_value = -99 ;
+	float val_half_half(lat) ;
+		val_half_half:long_name = "0.5,0.5" ;
+		val_half_half:missing_value = 1.e+36f ;
+	float wgt_one(lat) ;
+		wgt_one:long_name = "all values are one" ;
+	float mss_val_all(lon) ;
+		mss_val_all:long_name = "all missing values example" ;
+		mss_val_all:missing_value = 1.e+36f ;
+	char char_var_multinul(lev, maxStrlen64) ;
+		char_var_multinul:long_name = "Character variable containing multiple NULs" ;
+	float lev_var(lev) ;
+		lev_var:long_name = "lev_var" ;
+	float lev_wgt(lev) ;
+		lev_wgt:long_name = "lev_wgt" ;
+	float z(lev) ;
+		z:long_name = "Height" ;
+		z:units = "meter" ;
+		z:purpose = "Height stored with a monotonically increasing coordinate" ;
+	float rz(rlev) ;
+		rz:long_name = "Height" ;
+		rz:units = "meter" ;
+		rz:purpose = "Height stored with a monotonically decreasing coordinate" ;
+	int one_dmn_int_val_one(lat) ;
+	int one_dmn_int_val_two(lat) ;
+	float three_dmn_var(lat, lev, lon) ;
+		three_dmn_var:long_name = "three dimensional variable with CCM coordinate convention C=[lat,lev,lon], Fortran=(lon,lev,lat)" ;
+		three_dmn_var:units = "Fraction" ;
+	float three_dmn_var_crd(lev, lat, lon) ;
+		three_dmn_var_crd:long_name = "three dimensional variable with COORDS coordinate convention C=[lev,lat,lon], Fortran=(lon,lat,lev)" ;
+		three_dmn_var_crd:units = "Fraction" ;
+	float prs_sfc(time, lat, lon) ;
+		prs_sfc:long_name = "Surface pressure" ;
+		prs_sfc:units = "pascal" ;
+	float two_dmn_var(lat, lev) ;
+		two_dmn_var:long_name = "two dimensional variable" ;
+		two_dmn_var:units = "Fraction" ;
+	float mask(lat, lon) ;
+		mask:long_name = "mask variable like ORO" ;
+		mask:units = "Fraction" ;
+	float ORO(lat, lon) ;
+		ORO:long_name = "Orography" ;
+		ORO:units = "Fraction" ;
+	float weight(lat) ;
+		weight:long_name = "Gaussian weight" ;
+		weight:units = "Fraction" ;
+	float gw(lat) ;
+		gw:long_name = "gw variable like gw" ;
+		gw:units = "Fraction" ;
+	float gw_T42(lat_T42) ;
+		gw_T42:long_name = "gw variable like gw_T42" ;
+		gw_T42:units = "Fraction" ;
+	float rec_var_flt(time) ;
+		rec_var_flt:long_name = "record variable, float" ;
+	double rec_var_dbl(time) ;
+		rec_var_dbl:long_name = "record variable, double" ;
+	int one_dmn_rec_var(time) ;
+		one_dmn_rec_var:long_name = "one dimensional record variable" ;
+		one_dmn_rec_var:units = "second" ;
+	float tpt(time) ;
+		tpt:long_name = "Temperature" ;
+		tpt:units = "kelvin" ;
+		tpt:hieght = "Leave hieght mispelled for NCO User\'s guide example" ;
+	double rec_var_dbl_mss_val_dbl_upk(time) ;
+		rec_var_dbl_mss_val_dbl_upk:long_name = "record variable, double, with double missing values" ;
+		rec_var_dbl_mss_val_dbl_upk:purpose = "This variable is used to generate the packed variable rec_var_dbl_mss_val_dbl_pck, so its missing_value should not be too far out of range, i.e., it should be representable by a short. However, the missing_value should itself be the same type as the unpacked variable, NC_DOUBLE in this case." ;
+		rec_var_dbl_mss_val_dbl_upk:missing_value = -999. ;
+	short rec_var_dbl_mss_val_dbl_pck(time) ;
+		rec_var_dbl_mss_val_dbl_pck:long_name = "record variable, double, with double missing values, packed" ;
+		rec_var_dbl_mss_val_dbl_pck:purpose = "Packed version of rec_var_dbl_mss_val_dbl_upk" ;
+		rec_var_dbl_mss_val_dbl_pck:missing_value = -999. ;
+		rec_var_dbl_mss_val_dbl_pck:scale_factor = -9.15541313801785e-05 ;
+		rec_var_dbl_mss_val_dbl_pck:add_offset = 5. ;
+	float rec_var_flt_mss_val_flt(time) ;
+		rec_var_flt_mss_val_flt:long_name = "record variable, float, with float missing values" ;
+		rec_var_flt_mss_val_flt:missing_value = 1.e+36f ;
+	short rec_var_flt_pck(time) ;
+		rec_var_flt_pck:long_name = "record variable, float, packed" ;
+		rec_var_flt_pck:purpose = "Demonstrate that rounding of means of packed data are handled correctly" ;
+		rec_var_flt_pck:scale_factor = 0.1f ;
+		rec_var_flt_pck:add_offset = 100.f ;
+	short rec_var_dbl_pck(time) ;
+		rec_var_dbl_pck:long_name = "record variable, double, packed" ;
+		rec_var_dbl_pck:purpose = "Demonstrate that rounding of means of packed data are handled correctly" ;
+		rec_var_dbl_pck:scale_factor = 0.1 ;
+		rec_var_dbl_pck:add_offset = 100. ;
+	float rec_var_flt_mss_val_dbl(time) ;
+		rec_var_flt_mss_val_dbl:long_name = "record variable, float, with double missing values" ;
+		rec_var_flt_mss_val_dbl:missing_value = 1.e+36 ;
+		rec_var_flt_mss_val_dbl:note = "The correct average of this variable is 5.0" ;
+	float rec_var_flt_mss_val_int(time) ;
+		rec_var_flt_mss_val_int:long_name = "record variable, float, with integer missing values" ;
+		rec_var_flt_mss_val_int:missing_value = -999 ;
+	int rec_var_int_mss_val_int(time) ;
+		rec_var_int_mss_val_int:long_name = "record variable, integer, with integer missing values" ;
+		rec_var_int_mss_val_int:missing_value = -999 ;
+	int rec_var_int_mss_val_flt(time) ;
+		rec_var_int_mss_val_flt:long_name = "record variable, integer, with float missing values" ;
+		rec_var_int_mss_val_flt:missing_value = -999.f ;
+	int rec_var_int_mss_val_dbl(time) ;
+		rec_var_int_mss_val_dbl:long_name = "record variable, integer, with double missing values" ;
+		rec_var_int_mss_val_dbl:missing_value = -999. ;
+	int rec_var_dbl_mss_val_dbl_pck_lng(time) ;
+		rec_var_dbl_mss_val_dbl_pck_lng:long_name = "record variable, double packed as long, with double missing values" ;
+		rec_var_dbl_mss_val_dbl_pck_lng:purpose = "although not usual, packing doubles into longs (rather than shorts) is still a considerable cost savings" ;
+		rec_var_dbl_mss_val_dbl_pck_lng:missing_value = -999. ;
+		rec_var_dbl_mss_val_dbl_pck_lng:scale_factor = -9.15541313801785e-05 ;
+		rec_var_dbl_mss_val_dbl_pck_lng:add_offset = 5. ;
+	char one_dmn_rec_var_sng(time, maxStrlen64) ;
+		one_dmn_rec_var_sng:long_name = "one dimensional record variable of string" ;
+	float time_lon(time, lon) ;
+		time_lon:long_name = "Record variable of longitude coordinate" ;
+	char two_dmn_rec_var_sng(time, lev, maxStrlen64) ;
+		two_dmn_rec_var_sng:long_name = "two dimensional record variable of string" ;
+	float two_dmn_rec_var(time, lev) ;
+		two_dmn_rec_var:long_name = "two dimensional record variable" ;
+		two_dmn_rec_var:units = "watt meter-2" ;
+	float three_dmn_rec_var(time, lat, lon) ;
+		three_dmn_rec_var:long_name = "three dimensional record variable" ;
+		three_dmn_rec_var:units = "watt meter-2" ;
+	double three_dmn_var_dbl(time, lat, lon) ;
+		three_dmn_var_dbl:long_name = "three dimensional record variable of type double" ;
+		three_dmn_var_dbl:units = "watt meter-2" ;
+		three_dmn_var_dbl:missing_value = -99. ;
+	int three_dmn_var_int(time, lat, lon) ;
+		three_dmn_var_int:long_name = "three dimensional record variable of type int" ;
+		three_dmn_var_int:units = "watt meter-2" ;
+		three_dmn_var_int:missing_value = -99 ;
+	short three_dmn_var_sht(time, lat, lon) ;
+		three_dmn_var_sht:long_name = "three dimensional record variable" ;
+		three_dmn_var_sht:units = "watt meter-2" ;
+		three_dmn_var_sht:missing_value = -99s ;
+	float tx(time, lon) ;
+		tx:long_name = "two dimensional record variable stored in tx (time,lon) order" ;
+	float ty(time, lat) ;
+		ty:long_name = "two dimensional record variable stored in ty (time,lat) order" ;
+	float tz(time, lev) ;
+		tz:long_name = "two dimensional record variable stored in tz (time,lev) order" ;
+	float txyz(time, lon, lat, lev) ;
+		txyz:long_name = "four dimensional record variable stored in txyz (time,lon,lat,lev) order" ;
+	float four_dmn_rec_var(time, lat, lev, lon) ;
+		four_dmn_rec_var:long_name = "four dimensional record variable" ;
+		four_dmn_rec_var:units = "watt meter-2" ;
+	float u(time) ;
+		u:long_name = "Zonal wind speed" ;
+		u:units = "meter second-1" ;
+	float v(time) ;
+		v:long_name = "Meridional wind speed" ;
+		v:units = "meter second-1" ;
+
+// global attributes:
+		:Conventions = "NCAR-CSM" ;
+		:history = "History global attribute.\n",
+			"" ;
+		:julian_day = 200000.04 ;
+data:
+
+ lat = -90, 90 ;
+
+ lon_T42 = 0, 2.8125, 5.625, 8.4375, 11.25, 14.0625, 16.875, 19.6875, 22.5, 
+    25.3125, 28.125, 30.9375, 33.75, 36.5625, 39.375, 42.1875, 45, 47.8125, 
+    50.625, 53.4375, 56.25, 59.0625, 61.875, 64.6875, 67.5, 70.3125, 73.125, 
+    75.9375, 78.75, 81.5625, 84.375, 87.1875, 90, 92.8125, 95.625, 98.4375, 
+    101.25, 104.0625, 106.875, 109.6875, 112.5, 115.3125, 118.125, 120.9375, 
+    123.75, 126.5625, 129.375, 132.1875, 135, 137.8125, 140.625, 143.4375, 
+    146.25, 149.0625, 151.875, 154.6875, 157.5, 160.3125, 163.125, 165.9375, 
+    168.75, 171.5625, 174.375, 177.1875, 180, 182.8125, 185.625, 188.4375, 
+    191.25, 194.0625, 196.875, 199.6875, 202.5, 205.3125, 208.125, 210.9375, 
+    213.75, 216.5625, 219.375, 222.1875, 225, 227.8125, 230.625, 233.4375, 
+    236.25, 239.0625, 241.875, 244.6875, 247.5, 250.3125, 253.125, 255.9375, 
+    258.75, 261.5625, 264.375, 267.1875, 270, 272.8125, 275.625, 278.4375, 
+    281.25, 284.0625, 286.875, 289.6875, 292.5, 295.3125, 298.125, 300.9375, 
+    303.75, 306.5625, 309.375, 312.1875, 315, 317.8125, 320.625, 323.4375, 
+    326.25, 329.0625, 331.875, 334.6875, 337.5, 340.3125, 343.125, 345.9375, 
+    348.75, 351.5625, 354.375, 357.1875 ;
+
+ lat_T42 = -88.24009, -85.09245, -82.31198, -79.52525, -76.73673, -73.94742, 
+    -71.1577, -68.36772, -65.57758, -62.78733, -59.99701, -57.20662, 
+    -54.41619, -51.62573, -48.83524, -46.04472, -43.25419, -40.46365, 
+    -37.67309, -34.88252, -32.09194, -29.30136, -26.51077, -23.72017, 
+    -20.92957, -18.13897, -15.34836, -12.55776, -9.767145, -6.976533, 
+    -4.185921, -1.395307, 1.395307, 4.185921, 6.976533, 9.767145, 12.55776, 
+    15.34836, 18.13897, 20.92957, 23.72017, 26.51077, 29.30136, 32.09194, 
+    34.88252, 37.67309, 40.46365, 43.25419, 46.04472, 48.83524, 51.62573, 
+    54.41619, 57.20662, 59.99701, 62.78733, 65.57758, 68.36772, 71.1577, 
+    73.94742, 76.73673, 79.52525, 82.31198, 85.09245, 88.24009 ;
+
+ lev = 100, 500, 1000 ;
+
+ rlev = 1000, 500, 100 ;
+
+ lon = 0, 90, 180, 270 ;
+
+ time = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ;
+
+ lsmlev = 0.05, 0.1, 0.2, 0.5, 1, 3 ;
+
+ wvl = 5e-07, 1e-06 ;
+
+ P0 = 100000 ;
+
+ fl_dmn =
+  "a",
+  "b",
+  "3" ;
+
+ nbdate = 640312 ;
+
+ mss_val_scl = 1e+36 ;
+
+ pck = 1 ;
+
+ upk = 3 ;
+
+ val_one_int = 1 ;
+
+ val_half = 0.5 ;
+
+ scalar_var = 10 ;
+
+ float_var = 10 ;
+
+ double_var = 10 ;
+
+ double_var2 = 10 ;
+
+ int_var = 10 ;
+
+ short_var = 10 ;
+
+ char_var = "z" ;
+
+ char_var_space = " " ;
+
+ char_var_nul = "" ;
+
+ fl_nm =
+  "/",
+  "h",
+  "o",
+  "m",
+  "e",
+  "/",
+  "z",
+  "e",
+  "n",
+  "d",
+  "e",
+  "r",
+  "/",
+  "n",
+  "c",
+  "o",
+  "/",
+  "d",
+  "a",
+  "t",
+  "a",
+  "/",
+  "i",
+  "n",
+  ".",
+  "c",
+  "d",
+  "l",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "" ;
+
+ fl_nm_arr =
+  "/",
+  "d",
+  "a",
+  "t",
+  "a",
+  "/",
+  "z",
+  "e",
+  "n",
+  "d",
+  "e",
+  "r",
+  "/",
+  "d",
+  "s",
+  "t",
+  "c",
+  "c",
+  "m",
+  "0",
+  "4",
+  "/",
+  "d",
+  "s",
+  "t",
+  "c",
+  "c",
+  "m",
+  "0",
+  "4",
+  "_",
+  "8",
+  "5",
+  "8",
+  "9",
+  "_",
+  "0",
+  "1",
+  ".",
+  "n",
+  "c",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "/",
+  "d",
+  "a",
+  "t",
+  "a",
+  "/",
+  "z",
+  "e",
+  "n",
+  "d",
+  "e",
+  "r",
+  "/",
+  "d",
+  "s",
+  "t",
+  "c",
+  "c",
+  "m",
+  "0",
+  "4",
+  "/",
+  "d",
+  "s",
+  "t",
+  "c",
+  "c",
+  "m",
+  "0",
+  "4",
+  "_",
+  "8",
+  "5",
+  "8",
+  "9",
+  "_",
+  "0",
+  "2",
+  ".",
+  "n",
+  "c",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "/",
+  "d",
+  "a",
+  "t",
+  "a",
+  "/",
+  "z",
+  "e",
+  "n",
+  "d",
+  "e",
+  "r",
+  "/",
+  "d",
+  "s",
+  "t",
+  "c",
+  "c",
+  "m",
+  "0",
+  "4",
+  "/",
+  "d",
+  "s",
+  "t",
+  "c",
+  "c",
+  "m",
+  "0",
+  "4",
+  "_",
+  "8",
+  "5",
+  "8",
+  "9",
+  "_",
+  "0",
+  "3",
+  ".",
+  "n",
+  "c",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "" ;
+
+ non_nul_trm_char_one_dmn =
+  "a",
+  "b",
+  "",
+  "" ;
+
+ non_nul_trm_char_two_dmn =
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k",
+  "m" ;
+
+ byte_var = 122 ;
+
+ byte_var_neg = -122 ;
+
+ zero = 0 ;
+
+ one = 1 ;
+
+ two = 2 ;
+
+ e_dbl = 2.71828182846 ;
+
+ e_flt = 2.718282 ;
+
+ three = 3 ;
+
+ four = 4 ;
+
+ negative_one = -1 ;
+
+ g = 9.8 ;
+
+ one_dmn_var = 1, 10 ;
+
+ att_var = 10 ;
+
+ bnd_var =
+  1, 2,
+  3, 4,
+  5, 6 ;
+
+ td =
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10 ;
+
+ time_udunits = 876012, 876018, 876024 ;
+
+ lat_var = 1, 2 ;
+
+ lat_wgt = 1, 2 ;
+
+ hyam = 0.0802583, 0.0438226, 0 ;
+
+ hybm = 0.0187849, 0.457453, 0.992528 ;
+
+ PS =
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325,
+  101325, 101325, 101325, 101325 ;
+
+ date = 640312, 640313, 640314, 640315, 640316, 640317, 640318, 640319, 
+    640320, 640321 ;
+
+ lon_wgt = 0.347855, 0.652145, 0.652145, 0.347855 ;
+
+ msk_prt_mss_prt = 0.5, 1e+36, 1.5, 1e+36 ;
+
+ mss_val = 73, 1e+36, 73, 1e+36 ;
+
+ mss_val_fst = -999, 73, -999, 73 ;
+
+ fll_val = 73, _, 73, _ ;
+
+ no_mss_val = 73, 1e+36, 73, 1e+36 ;
+
+ val_one_mss = 1, 1e+36 ;
+
+ pck_arr = _, 0, 1, 32767 ;
+
+ upk_arr = -32767, 0, 1, 32767 ;
+
+ val_one_one_int = 1, 1 ;
+
+ val_max_max_sht = 17000, 17000 ;
+
+ val_one_mss_int = 1, -99 ;
+
+ val_half_half = 0.5, 0.5 ;
+
+ wgt_one = 1, 1 ;
+
+ mss_val_all = 1e+36, 1e+36, 1e+36, 1e+36 ;
+
+ char_var_multinul =
+  "\b",
+  "\n",
+    "",
+  "" ;
+
+ lev_var = 100, 500, 1000 ;
+
+ lev_wgt = 10, 2, 1 ;
+
+ z = 17000, 5000, 0 ;
+
+ rz = 0, 5000, 17000 ;
+
+ one_dmn_int_val_one = 1, 1 ;
+
+ one_dmn_int_val_two = 2, 2 ;
+
+ three_dmn_var =
+  0, 1, 2, 3,
+  4, 5, 6, 7,
+  8, 9, 10, 11,
+  12, 13, 14, 15,
+  16, 17, 18, 19,
+  20, 21, 22, 23 ;
+
+ three_dmn_var_crd =
+  0, 1, 2, 3,
+  12, 13, 14, 15,
+  4, 5, 6, 7,
+  16, 17, 18, 19,
+  8, 9, 10, 11,
+  20, 21, 22, 23 ;
+
+ prs_sfc =
+  1, 2, 3, 4,
+  5, 6, 7, 8,
+  9, 10, 11, 12,
+  13, 14, 15, 16,
+  17, 18, 19, 20,
+  21, 22, 23, 24,
+  25, 26, 27, 28,
+  29, 30, 31, 32,
+  33, 34, 35, 36,
+  37, 38, 39, 40,
+  41, 42, 43, 44,
+  45, 46, 47, 48,
+  49, 50, 51, 52,
+  53, 54, 55, 56,
+  57, 58, 59, 60,
+  61, 62, 63, 64,
+  65, 66, 67, 68,
+  69, 70, 71, 72,
+  73, 74, 75, 76,
+  77, 78, 79, 80 ;
+
+ two_dmn_var =
+  1.5, 5.5, 9.5,
+  13.5, 17.5, 21.5 ;
+
+ mask =
+  0, 1, 0, 0,
+  1, 1, 0, 2 ;
+
+ ORO =
+  1, 1, 1, 1,
+  1, 1, 1, 1 ;
+
+ weight = 10, 10 ;
+
+ gw = 10, 10 ;
+
+ gw_T42 = -87.8638, -85.09653, -82.31291, -79.5256, -76.7369, -73.94752, 
+    -71.15775, -68.36776, -65.57761, -62.78735, -59.99702, -57.20663, 
+    -54.4162, -51.62573, -48.83524, -46.04473, -43.2542, -40.46365, 
+    -37.67309, -34.88252, -32.09195, -29.30136, -26.51077, -23.72017, 
+    -20.92957, -18.13897, -15.34836, -12.55776, -9.767146, -6.976534, 
+    -4.185921, -1.395307, 1.395307, 4.185921, 6.976534, 9.767146, 12.55776, 
+    15.34836, 18.13897, 20.92957, 23.72017, 26.51077, 29.30136, 32.09195, 
+    34.88252, 37.67309, 40.46365, 43.2542, 46.04473, 48.83524, 51.62573, 
+    54.4162, 57.20663, 59.99702, 62.78735, 65.57761, 68.36776, 71.15775, 
+    73.94752, 76.7369, 79.5256, 82.31291, 85.09653, 87.8638 ;
+
+ rec_var_flt = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ;
+
+ rec_var_dbl = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ;
+
+ one_dmn_rec_var = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ;
+
+ tpt = 273.1, 273.2, 273.3, 273.4, 273.5, 273.6, 273.7, 273.8, 273.9, 274 ;
+
+ rec_var_dbl_mss_val_dbl_upk = -999, 2, 3, 4, 5, 6, 7, 8, -999, -999 ;
+
+ rec_var_dbl_mss_val_dbl_pck = -999, 32767, 21845, 10922, 0, -10922, -21845, 
+    _, -999, -999 ;
+
+ rec_var_flt_mss_val_flt = 1e+36, 2, 3, 4, 5, 6, 7, 8, 1e+36, 1e+36 ;
+
+ rec_var_flt_pck = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ;
+
+ rec_var_dbl_pck = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ;
+
+ rec_var_flt_mss_val_dbl = 1e+36, 2, 3, 4, 5, 6, 7, 8, 1e+36, 1e+36 ;
+
+ rec_var_flt_mss_val_int = -999, 2, 3, 4, 5, 6, 7, 8, -999, -999 ;
+
+ rec_var_int_mss_val_int = -999, 2, 3, 4, 5, 6, 7, 8, -999, -999 ;
+
+ rec_var_int_mss_val_flt = -999, 2, 3, 4, 5, 6, 7, 8, -999, -999 ;
+
+ rec_var_int_mss_val_dbl = -999, 2, 3, 4, 5, 6, 7, 8, -999, -999 ;
+
+ rec_var_dbl_mss_val_dbl_pck_lng = -999, 32767, 21845, 10922, 0, -10922, 
+    -21845, -32767, -999, -999 ;
+
+ one_dmn_rec_var_sng =
+  "H",
+  "e",
+  "l",
+  "l",
+  "o",
+  " ",
+  "W",
+  "o",
+  "r",
+  "" ;
+
+ time_lon =
+  0, 90, 180, 270,
+  0, 90, 180, 270,
+  0, 90, 180, 270,
+  0, 90, 180, 270,
+  0, 90, 180, 270,
+  0, 90, 180, 270,
+  0, 90, 180, 270,
+  0, 90, 180, 270,
+  0, 90, 180, 270,
+  0, 90, 180, 270 ;
+
+ two_dmn_rec_var_sng =
+  "a",
+  "b",
+  "c",
+  "b",
+  "c",
+  "d",
+  "c",
+  "d",
+  "e",
+  "d",
+  "e",
+  "f",
+  "e",
+  "f",
+  "g",
+  "f",
+  "g",
+  "h",
+  "g",
+  "h",
+  "i",
+  "h",
+  "i",
+  "j",
+  "j",
+  "k",
+  "l",
+  "k",
+  "l",
+  "m" ;
+
+ two_dmn_rec_var =
+  1, 2, 3,
+  1, 2.1, 3,
+  1, 2.2, 3,
+  1, 2.3, 3,
+  1, 2.4, 3,
+  1, 2.5, 3,
+  1, 2.6, 3,
+  1, 2.7, 3,
+  1, 2.8, 3,
+  1, 2.9, 3 ;
+
+ three_dmn_rec_var =
+  1, 2, 3, 4,
+  5, 6, 7, 8,
+  9, 10, 11, 12,
+  13, 14, 15, 16,
+  17, 18, 19, 20,
+  21, 22, 23, 24,
+  25, 26, 27, 28,
+  29, 30, 31, 32,
+  33, 34, 35, 36,
+  37, 38, 39, 40,
+  41, 42, 43, 44,
+  45, 46, 47, 48,
+  49, 50, 51, 52,
+  53, 54, 55, 56,
+  57, 58, 59, 60,
+  61, 62, 63, 64,
+  65, 66, 67, 68,
+  69, 70, 71, 72,
+  73, 74, 75, 76,
+  77, 78, 79, 80 ;
+
+ three_dmn_var_dbl =
+  1, 2, 3, 4,
+  5, 6, 7, 8,
+  9, 10, 11, 12,
+  13, 14, 15, 16,
+  17, 18, 19, 20,
+  21, 22, 23, 24,
+  -99, -99, -99, -99,
+  -99, -99, -99, -99,
+  33, 34, 35, 36,
+  37, 38, 39, 40,
+  41, 42, 43, 44,
+  45, 46, 47, 48,
+  49, 50, 51, 52,
+  53, 54, 55, 56,
+  -99, 58, 59, 60,
+  61, 62, 63, 64,
+  65, 66, 67, 68,
+  69, 70, 71, 72,
+  -99, 74, 75, 76,
+  77, 78, 79, -99 ;
+
+ three_dmn_var_int =
+  1, 2, 3, 4,
+  5, 6, 7, 8,
+  9, 10, 11, 12,
+  13, 14, 15, 16,
+  -99, -99, -99, -99,
+  -99, -99, -99, -99,
+  25, 26, 27, 28,
+  29, 30, 31, 32,
+  33, 34, 35, 36,
+  37, 38, 39, 40,
+  41, -99, 43, 44,
+  45, 46, 47, 48,
+  49, 50, 51, 52,
+  53, 54, 55, 56,
+  -99, 58, 59, 60,
+  -99, 62, 63, 64,
+  65, -99, 67, 68,
+  69, 70, 71, 72,
+  -99, 74, 75, -99,
+  77, 78, 79, 80 ;
+
+ three_dmn_var_sht =
+  1, 2, 3, 4,
+  5, 6, 7, 8,
+  -99, 10, 11, 12,
+  13, 14, 15, 16,
+  17, 18, 19, 20,
+  21, 22, 23, 24,
+  25, 26, 27, 28,
+  29, 30, 31, 32,
+  -99, 34, 35, -99,
+  37, 38, 39, 40,
+  41, 42, 43, 44,
+  -99, 46, 47, 48,
+  49, 50, 51, 52,
+  53, 54, 55, 56,
+  57, 58, 59, -99,
+  61, 62, 63, 64,
+  65, 66, 67, 68,
+  69, 70, 71, 72,
+  -99, -99, -99, -99,
+  -99, -99, -99, -99 ;
+
+ tx =
+  1, 2, 3, 4,
+  5, 6, 7, 8,
+  9, 10, 11, 12,
+  13, 14, 15, 16,
+  17, 18, 19, 20,
+  21, 22, 23, 24,
+  25, 26, 27, 28,
+  29, 30, 31, 32,
+  33, 34, 35, 36,
+  37, 38, 39, 40 ;
+
+ ty =
+  1, 2,
+  3, 4,
+  5, 6,
+  7, 8,
+  9, 10,
+  11, 12,
+  13, 14,
+  15, 16,
+  17, 18,
+  19, 20 ;
+
+ tz =
+  1, 2, 3,
+  4, 5, 6,
+  7, 8, 9,
+  10, 11, 12,
+  13, 14, 15,
+  16, 17, 18,
+  19, 20, 21,
+  22, 23, 24,
+  25, 26, 27,
+  28, 29, 30 ;
+
+ txyz =
+  1, 2, 3,
+  4, 5, 6,
+  7, 8, 9,
+  10, 11, 12,
+  13, 14, 15,
+  16, 17, 18,
+  19, 20, 21,
+  22, 23, 24,
+  25, 26, 27,
+  28, 29, 30,
+  31, 32, 33,
+  34, 35, 36,
+  37, 38, 39,
+  40, 41, 42,
+  43, 44, 45,
+  46, 47, 48,
+  49, 50, 51,
+  52, 53, 54,
+  55, 56, 57,
+  58, 59, 60,
+  61, 62, 63,
+  64, 65, 66,
+  67, 68, 69,
+  70, 71, 72,
+  73, 74, 75,
+  76, 77, 78,
+  79, 80, 81,
+  82, 83, 84,
+  85, 86, 87,
+  88, 89, 90,
+  91, 92, 93,
+  94, 95, 96,
+  97, 98, 99,
+  100, 101, 102,
+  103, 104, 105,
+  106, 107, 108,
+  109, 110, 111,
+  112, 113, 114,
+  115, 116, 117,
+  118, 119, 120,
+  121, 122, 123,
+  124, 125, 126,
+  127, 128, 129,
+  130, 131, 132,
+  133, 134, 135,
+  136, 137, 138,
+  139, 140, 141,
+  142, 143, 144,
+  145, 146, 147,
+  148, 149, 150,
+  151, 152, 153,
+  154, 155, 156,
+  157, 158, 159,
+  160, 161, 162,
+  163, 164, 165,
+  166, 167, 168,
+  169, 170, 171,
+  172, 173, 174,
+  175, 176, 177,
+  178, 179, 180,
+  181, 182, 183,
+  184, 185, 186,
+  187, 188, 189,
+  190, 191, 192,
+  193, 194, 195,
+  196, 197, 198,
+  199, 200, 201,
+  202, 203, 204,
+  205, 206, 207,
+  208, 209, 210,
+  211, 212, 213,
+  214, 215, 216,
+  217, 218, 219,
+  220, 221, 222,
+  223, 224, 225,
+  226, 227, 228,
+  229, 230, 231,
+  232, 233, 234,
+  235, 236, 237,
+  238, 239, 240 ;
+
+ four_dmn_rec_var =
+  1, 2, 3, 4,
+  5, 6, 7, 8,
+  9, 10, 11, 12,
+  13, 14, 15, 16,
+  17, 18, 19, 20,
+  21, 22, 23, 24,
+  25, 26, 27, 28,
+  29, 30, 31, 32,
+  33, 34, 35, 36,
+  37, 38, 39, 40,
+  41, 42, 43, 44,
+  45, 46, 47, 48,
+  49, 50, 51, 52,
+  53, 54, 55, 56,
+  57, 58, 59, 60,
+  61, 62, 63, 64,
+  65, 66, 67, 68,
+  69, 70, 71, 72,
+  73, 74, 75, 76,
+  77, 78, 79, 80,
+  81, 82, 83, 84,
+  85, 86, 87, 88,
+  89, 90, 91, 92,
+  93, 94, 95, 96,
+  97, 98, 99, 100,
+  101, 102, 103, 104,
+  105, 106, 107, 108,
+  109, 110, 111, 112,
+  113, 114, 115, 116,
+  117, 118, 119, 120,
+  121, 122, 123, 124,
+  125, 126, 127, 128,
+  129, 130, 131, 132,
+  133, 134, 135, 136,
+  137, 138, 139, 140,
+  141, 142, 143, 144,
+  145, 146, 147, 148,
+  149, 150, 151, 152,
+  153, 154, 155, 156,
+  157, 158, 159, 160,
+  161, 162, 163, 164,
+  165, 166, 167, 168,
+  169, 170, 171, 172,
+  173, 174, 175, 176,
+  177, 178, 179, 180,
+  181, 182, 183, 184,
+  185, 186, 187, 188,
+  189, 190, 191, 192,
+  193, 194, 195, 196,
+  197, 198, 199, 200,
+  201, 202, 203, 204,
+  205, 206, 207, 208,
+  209, 210, 211, 212,
+  213, 214, 215, 216,
+  217, 218, 219, 220,
+  221, 222, 223, 224,
+  225, 226, 227, 228,
+  229, 230, 231, 232,
+  233, 234, 235, 236,
+  237, 238, 239, 240 ;
+
+ u = 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 ;
+
+ v = 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ;
+}

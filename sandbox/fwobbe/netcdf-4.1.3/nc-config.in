@@ -1,0 +1,212 @@
+#! /bin/sh
+#
+# This forms the basis for the nc-config utility, which tells you
+# various things about the netCDF installation. This code was
+# contributed by netCDF user Arlindo DaSilva. Thanks Arlindo!
+#
+# $Id$
+
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+cc="@CC@"
+cxx="@CXX@"
+fc="@FC@"
+cflags=" -I${includedir} @CPPFLAGS@" 
+fflags="@FFLAGS@ @MOD_FLAG@${includedir}"
+libs="-L${libdir} @NC_LIBS@"
+flibs="-L${libdir} @NC_FLIBS@"
+has_dap="@HAS_DAP@"
+has_nc2="@HAS_NC2@"
+has_nc4="@HAS_NC4@"
+has_hdf4="@HAS_HDF4@"
+has_pnetcdf="@HAS_PNETCDF@"
+has_hdf5="@HAS_HDF5@"
+has_f77="@HAS_F77@"
+has_f90="@HAS_F90@"
+has_cxx="@HAS_CXX@"
+has_szlib="@HAS_SZLIB@"
+version="@PACKAGE_NAME@ @PACKAGE_VERSION@"
+
+usage()
+{
+    cat <<EOF
+Usage: nc-config [OPTION]
+
+Available values for OPTION include:
+
+  --help        display this help message and exit
+  --all         display all options
+  --cc          C compiler
+  --cxx         C++ compiler
+  --fc          Fortran compiler
+  --cflags      pre-processor and compiler flags
+  --fflags      flags needed to compile a Fortran program
+  --has-dap     whether OPeNDAP is enabled in this build
+  --has-nc2     whether NetCDF-2 API is enabled
+  --has-nc4     whether NetCDF-4/HDF-5 is enabled in this build
+  --has-hdf5    whether HDF5 is used in build (always the same as --has-nc4)
+  --has-hdf4    whether HDF4 was used in build
+  --has-pnetcdf whether parallel-netcdf (a.k.a. pnetcdf) was used in build
+  --has-f77     whether Fortran 77 API is enabled in this build
+  --has-f90     whether Fortran 90 API is enabled in this build
+  --has-c++     whether C++ API is enabled in this build
+  --has-szlib   whether szlib is included in build
+  --libs        library linking information for netcdf
+  --flibs       libraries needed to link a Fortran program
+  --prefix      Install prefix
+  --includedir  Include directory
+  --version     Library version
+
+EOF
+
+    exit $1
+}
+
+all()
+{
+        echo
+        echo "This $version has been built with the following features: "
+        echo
+        echo "  --cc        -> $cc"
+        echo "  --cflags    -> $cflags"
+        echo "  --libs      -> $libs"
+        echo
+        echo "  --cxx       -> $cxx"
+        echo "  --has-c++   -> $has_cxx"
+        echo
+        echo "  --fc        -> $fc"
+        echo "  --fflags    -> $fflags"
+        echo "  --flibs     -> $flibs"
+        echo "  --has-f77   -> $has_f77"
+        echo "  --has-f90   -> $has_f90"
+        echo
+        echo "  --has-dap   -> $has_dap"
+        echo "  --has-nc2   -> $has_nc2"
+        echo "  --has-nc4   -> $has_nc4"
+        echo "  --has-hdf5  -> $has_hdf5"
+        echo "  --has-hdf4  -> $has_hdf4"
+        echo "  --has-pnetcdf-> $has_pnetcdf"
+        echo "  --has-szlib -> $has_szlib"
+	echo
+        echo "  --prefix    -> $prefix"
+        echo "  --includedir-> $includedir"
+        echo "  --version   -> $version"
+        echo
+}
+
+if test $# -eq 0; then
+    usage 1
+fi
+
+while test $# -gt 0; do
+    case "$1" in
+    # this deals with options in the style
+    # --option=value and extracts the value part
+    # [not currently used]
+    -*=*) value=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+    *) value= ;;
+    esac
+
+    case "$1" in
+
+    --help)
+	usage 0
+	;;
+
+    --all)
+	all
+	;;
+
+    --cc)
+	echo $cc
+	;;
+
+    --cxx)
+	echo $cxx
+	;;
+
+    --fc)
+	echo $fc
+	;;
+
+    --cflags)
+	echo $cflags
+	;;
+
+    --fflags)
+	echo $fflags
+	;;
+
+     --libs)
+       	echo $libs
+       	;;
+
+    --flibs)
+       	echo $flibs
+       	;;
+
+    --has-dap)
+       	echo $has_dap
+       	;;
+
+    --has-nc2)
+       	echo $has_nc2
+       	;;
+
+    --has-nc4)
+       	echo $has_nc4
+       	;;
+
+    --has-hdf4)
+       	echo $has_hdf4
+       	;;
+
+    --has-pnetcdf)
+       	echo $has_pnetcdf
+       	;;
+
+    --has-hdf5)
+       	echo $has_hdf5
+       	;;
+
+    --has-f77)
+       	echo $has_f77
+       	;;
+
+    --has-f90)
+       	echo $has_f90
+       	;;
+
+    --has-c++)
+       	echo $has_cxx
+       	;;
+
+    --has-szlib)
+       	echo $has_szlib
+       	;;
+
+    --prefix)
+       	echo "${prefix}"
+       	;;
+
+    --includedir)
+       	echo "${includedir}"
+       	;;
+
+    --version)
+	echo $version
+	;;
+
+    *)
+        echo "unknown option: $1"
+	usage
+	exit 1
+	;;
+    esac
+    shift
+done
+
+exit 0

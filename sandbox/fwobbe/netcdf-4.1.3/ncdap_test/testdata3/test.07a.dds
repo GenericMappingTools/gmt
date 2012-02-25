@@ -1,0 +1,10 @@
+Dataset {
+    Structure {
+        String name;
+        Int32 age;
+    } person1;
+    Structure {
+        String name;
+        Int32 age;
+    } person2;
+} SimpleSequences;

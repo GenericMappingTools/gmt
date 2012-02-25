@@ -1,0 +1,19 @@
+netcdf bigr3 {
+                // large last record variable
+                // should fail with classic format
+                // should fail with 64-bit offset format
+dimensions:
+	x = 1025 ;
+	y = 1025 ;
+	z = 1025 ;
+	t = UNLIMITED ;
+variables:
+	float x(x) ;
+	float y(y) ;
+	float z(z) ;
+	float t(t) ;
+	float var2(t, x, y, z) ;  // 4.308 GB in each record
+	float var1(t) ;
+data:
+	var1 = 42 ;
+}
