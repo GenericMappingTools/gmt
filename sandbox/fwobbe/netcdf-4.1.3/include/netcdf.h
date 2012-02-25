@@ -371,6 +371,9 @@ EXTERNL int ncerr;
 EXTERNL int ncopts;
 #endif
 
+EXTERNL int
+nc__testurl(const char* path, char** basenamep);
+
 EXTERNL const char *
 nc_inq_libvers(void);
 

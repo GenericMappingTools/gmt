@@ -39,12 +39,17 @@
 
 /* Must be a better way to do this */
 #ifndef INFINITE
-#define NANF (0.0f/0.0f)
-#define NAN (0.0/0.0)
-#define INFINITEF (1.0f/0.0f)
+static unsigned long long _NAND = 0x7ff8000000000000;
+static unsigned long long _INFD = 0x7ff0000000000000;
+static unsigned long _NANF = 0x7fc00000;
+static unsigned long _INFF = 0x7f800000;
+
+#define NANF (*(float*)&_NANF)
+#define NAN (*(double*)&_NAND)
+#define INFINITEF (*(float*)&_INFF)
 #define NEGINFINITEF (-INFINITEF)
-#define INFINITE (1.0/0.0)
-#define NEGINFINITE (-INFINITEF)
+#define INFINITE (*(double*)&_INFD)
+#define NEGINFINITE (-INFINITE)
 #endif
 
 /* nc_class is one of:

@@ -27,7 +27,7 @@ ocset_curl_flags(OCstate* state)
     struct OCcurlflags* flags = &state->curlflags;
 #ifdef CURLOPT_ENCODING
     if (flags->compress) {
-	cstat = curl_easy_setopt(curl, CURLOPT_ENCODING, 'deflate, gzip');
+	cstat = curl_easy_setopt(curl, CURLOPT_ENCODING, "deflate, gzip");
 	if(cstat != CURLE_OK) goto fail;
 	OCDBG(1,"CURLOP_ENCODING=deflat, gzip");
     }
