@@ -1,3 +1,5 @@
+$Id$
+
 == HOWTO build XDR with CMake and MSVC ==
 
 Probably only works with MSVC. All other compilers untested.
