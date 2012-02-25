@@ -77,7 +77,7 @@ include, lib and bin respectively.
    cd <path-to-xdr-source-dir>
    mkdir build
    cd build
-   cmake ..
+   cmake -G "NMake Makefiles" ..
 
 - If everything went fine you can now build and install XDR:
    nmake
@@ -93,7 +93,7 @@ Once we have installed and build all the library dependencies we can
 attempt to deploy netCDF.
 
 - Get the CMake bundled sources of netCDF via subversion from
-  svn://pohaku.soest.hawaii.edu/gmt5/sandbox/fwobbe/netcdf-4.1.3
+  svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/fwobbe/netcdf-4.1.3
 
 - Edit cmake/ConfigUser.cmake and set correct paths to HDF, xdr etc.
 
@@ -102,7 +102,7 @@ attempt to deploy netCDF.
   cd \software\src\netcdf-4.1.3
   mkdir build
   cd build
-  cmake ..
+  cmake -G "NMake Makefiles" ..
   nmake
   nmake install
 
