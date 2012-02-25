@@ -75,6 +75,8 @@ find_path (NETCDF_INCLUDE_DIR netcdf.h
 	$ENV{NETCDF_ROOT}
 	PATH_SUFFIXES
 	include/netcdf
+    include/netcdf-4
+    include/netcdf-3
 	include
 	PATHS
 	/sw # Fink

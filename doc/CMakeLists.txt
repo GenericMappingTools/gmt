@@ -35,6 +35,9 @@ set (_common_inputs GMT.ist GMT.sty GMT_macros.tex GMT_Cover.tex)
 # Find LaTeX
 find_package (LATEX)
 
+# Add tests and make verbatim copies from scripts
+add_subdirectory (scripts)
+
 if (PDFLATEX_COMPILER)
 	# Copy common TeX dependends
 	foreach (_input ${_docs_inputs} ${_common_inputs})
@@ -63,9 +66,6 @@ if (PDFLATEX_COMPILER)
 
 	# Find LaTeX
 	include (UseLATEX)
-
-	# Make verbatim copies from scripts
-	add_subdirectory (scripts)
 
 	# Make PDF figures
 	add_subdirectory (fig)

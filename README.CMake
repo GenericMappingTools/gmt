@@ -38,7 +38,7 @@ be one of: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 
   $ make -j8 install
 
-installs a basic gmt in build/gmt5
+installs a basic gmt in _build/gmt5_.
 
 
 In more detail:
@@ -116,7 +116,7 @@ Examples and tests can be build inside GMT_BINARY_DIR *without* installing.
 This is very convenient for testing. Just _enable_testing()_, set _DO_EXAMPLES_
 and/or _DO_TESTS_ in ConfigUser.cmake and do:
 
-  $ make -j6
+  $ make -j8
   $ make check
 
 Optionally set _N_TEST_JOBS_ to the number of ctest jobs to run
@@ -167,7 +167,6 @@ TODO list
   - WIN32: test for USE_MEM_ALIGNED, defined in src/gmt_config.h.cmake
 
 * Generate macros
-  - to simplify copying files (http://www.vtk.org/Wiki/CMakeCopyIfDifferent)
   - to build a release (including precompiled manpages, pdf docu, ...)
 
 ////

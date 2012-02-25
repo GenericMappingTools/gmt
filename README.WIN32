@@ -1,46 +1,172 @@
-	$Id$
+////
+$Id$
+////
 
-#	Copyright (c) 1991-2012, P. Wessel, W. H. F. Smith, R. Scharroo, & J. Luis
+** HOWTO install GMT5 on Windows using CMake **
 
-README file for installing GMT5 from scratch (i.e., compiling the
-source) under Windows.  If you only want to install executables,
-follow the GMT website link to our GMT Windows Installers.
+== Runtime dependencies
 
-INSTALLATION:
-=============
+Ghostscript
+===========
 
-To compile GMT for your Windows you must
+Install a recent Ghostscript version. We recommend the 32 bit version from
+http://www.ghostscript.com/download/gsdnld.html
 
-1  Obtain precompiled netCDF files (netcdf.lib, netcdf.dll) and the
-   netcdf.h include file from the netCDF home page.
-2  Add HOME (your home directory, or C:\), GMTHOME (the top directory
-   where you install GMT), and GMT_SHAREDIR (where you plan to store
-   the run-time share files, typically %GMTHOME%\share) and modify
-   PATH in the environmental parameters via the system settings so
-   that %GMTHOME%\bin is included.
-   
-3  Read the src\gmtinstall.bat file instructions
-   and make whatever modifications you need to (e.g., if you want to
-   use static libraries or the optional TRIANGLE function.)
+== Build dependencies
 
-4  Run gmtinstall.bat
+Microsoft Windows SDK
+=====================
+
+Note: You don't need Visual Studio 2010. Be aware, that Visual Studio 2010
+Express cannot compile x64 binaries. You need the Windows SDK for that.
+
+Download and install Microsofts free SDK for Windows, e.g. v7.1:
+http://www.microsoft.com/download/en/details.aspx?id=8279
+
+CMake
+=====
+
+Install CMake and select option to add CMake to the system PATH.
+http://www.cmake.org/cmake/resources/software.html
+
+Subversion
+==========
+
+You need to install Subversion in order to fetch the sources. Make sure svn is
+in the PATH. A Windows version is available here: http://alagazam.net/
+
+NetCDF
+======
+
+Compiling NetCDF from scratch on Windows is not an easy task since you need a
+lot of dependencies. You could either install a prepackaged development build
+from http://www.gfd-dennou.org/arch/ucar/netcdf/contrib/win32/. For instance
+netcdf-4.1.1-win32-bin.zip, and hope that it works. Most certainly it will
+just not. Hence, we sugest you build netCDF yourself.
+
+Note: In the following examples we assume that dependent libraries are
+installed in sudirectories of z:\software\ any other directory is fine
+though.
+
+Obtain the CMake bundled sources of netCDF via subversion from
+svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/fwobbe/netcdf-4.1.3 and follow
+the instructions in README.CMake in the netcdf-4.1.3 directory.
+
+[...]
+
+OK, well done. You successfully finished installing all required dependencies
+for GMT. If you don't need PCRE and GDAL than you are all ready to build GMT!
 
 
-ADDITIONAL MATERIAL:
-====================
+PCRE (optional)
+===============
 
-For complete GMT Documentation, including a Cookbook and Technical
-Reference Manual, a Tutorial and Short Course Manual, all examples,
-and UNIX man pages, all in HTML and PDF format, get the GMT5_doc.bz2
-archive.  After installing, make a bookmark for the file
+http://www.pcre.org/
 
-	GMT\doc\html\gmt_sevices.html.
+Extract pcre-8.30.zip in z:\software\src\pcre-8.30\
 
-If you want the high and/or full resolution GSHHS 2.0 coastlines,
-political borders, and rivers you must obtain GSHHS_high.bz2 and
-GSHHS_full.bz2 as well. Extract from the directory that contains GMT.
+- Open the SDK Command Prompt:
 
-To view your GMT PostScript or EPS plots, we recommend you install gsview
-(see www.cs.wisc.edu/~ghost/gsview). It is required to run the do_view script.
+  cd z:\software\src\pcre-8.30\
+  mkdir build
+  cd build
+  cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=z:\software -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON ..
+  nmake install
+
+- Check if you can run 'pcregrep' from the command prompt.
+
+
+GDAL (optional)
+===============
+
+We assume that you already installed HDF4, HDF5, cURL, netCDF to z:\software.
+If that is not the case get the sources of netCDF for Windows from
+svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/fwobbe/netcdf-4.1.3
+and follow the instructions in README.CMake in the netcdf-4.1.3 directory.
+
+Now that all dependent libraries are available we can proceed with GDAL. In
+the following we assume that the target install directory for GDAL is
+z:\software as well.
+
+- Get the GDAL sources from http://trac.osgeo.org/gdal/wiki/DownloadSource
+
+- Extract gdal190.zip in z:\software\src\gdal-1.9.0
+
+- Create a file z:\software\src\gdal-1.9.0\nmake.local with the following
+  content:
+
+--------8<-------------------------------------------------------
+
+MSVC_VER       = 1600
+WARNFLAGS      = /w
+WIN64          = YES
+
+GDAL_HOME      = z:\software
+
+HDF4_PLUGIN    = NO
+HDF4_DIR       = "c:\Program Files\HDF Group\HDF4\4.2.7"
+HDF4_LIB       = /LIBPATH:$(HDF4_DIR)\lib hdfdll.lib mfhdfdll.lib
+
+HDF5_PLUGIN    = NO
+HDF5_DIR       = "c:\Program Files\HDF Group\HDF5\1.8.8"
+HDF5_LIB       = /LIBPATH:$(HDF5_DIR)\lib hdf5dll.lib
+
+PCIDSK_SETTING = OLD
+
+NETCDF_PLUGIN  = NO
+NETCDF_SETTING = yes
+NETCDF_LIB     = z:\software\lib\netcdf.lib
+NETCDF_INC_DIR = z:\software\include
+NETCDF_HAS_NC4 = yes
+
+CURL_DIR       = z:\software
+CURL_INC       = -I$(CURL_DIR)\include
+CURL_LIB       = $(CURL_DIR)\lib\libcurl_imp.lib Ws2_32.lib
+
+------------------------------------------------------->8--------
+
+Change the options according to your local setup. If unsure check the defaults
+in nmake.opt.
+
+- Open Windows SDK Command Prompt
+
+  cd z:\software\src\gdal-1.9.0\
+  nmake /f makefile.vc
+  nmake /f makefile.vc devinstall
+
+- Make sure z:\software\bin is in the PATH and type 'ogr2ogr'.
+  It should greet you with usage information if everything is fine.
+
+
+== Building GMT5
+
+Finally we are ready to compile GMT5.
+
+- Get GMT from svn://gmtserver.soest.hawaii.edu/gmt5/branches/cmake-build
+
+- In the source tree copy cmake/ConfigUserTemplate.cmake to
+  cmake/ConfigUser.cmake and edit the file according to your demands.
+
+- Open Windows SDK Command Prompt
+
+  set PATH=%PATH%;z:\software\bin
+  mkdir build
+  cd build
+
+  cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=Z:\software\gmt5msc -DCMAKE_BUILD_TYPE=Release -DNETCDF_ROOT=Z:\software -DGDAL_ROOT=Z:\software -DPCRE_ROOT=Z:\software ..
+
+  nmake
+  nmake manpages_all
+  nmake install
+
+- Typing 'gmt' should geet you with a short message.
+
+Congratulations you managed to install GMT5 on your machine.
+
+Enjoy!
 
 The GMT Team
+
+////
+vim: ft=asciidoc tw=78 et ts=2 sts=2 sw=2 autoindent smartindent
+////

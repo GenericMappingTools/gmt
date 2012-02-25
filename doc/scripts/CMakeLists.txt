@@ -49,7 +49,7 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 set (_all_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other})
 string (REGEX REPLACE "GMT_App_O_[0-9].sh" "" _all_tests "${_all_tests}")
 
-# todo:
+# todo: remove redundancy
 set (_all_scripts ${_scr_nostrip} ${_scr_strip})
 string (REPLACE ".sh" ".txt" _all_verbatim "${_all_scripts}")
 
@@ -69,31 +69,33 @@ macro (SCRIPT_TO_VERBATIM)
 endmacro (SCRIPT_TO_VERBATIM)
 
 macro (SETUP)
-	foreach (_script ${_scr_nostrip})
-		string (REPLACE ".sh" ".txt" _verbatim_file ${_script})
-		# Add command that triggers generator macro when output does not exist
-		add_custom_command (OUTPUT ${_verbatim_file}
-			COMMAND ${CMAKE_COMMAND}
-			-D SCRIPTS_COMMAND=script_to_verbatim
-			-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
-			-D no_strip=TRUE
-			-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-			-P ${CMAKE_CURRENT_LIST_FILE}
-			DEPENDS ${_all_scripts})
-	endforeach (_script)
+	if (PDFLATEX_COMPILER)
+		foreach (_script ${_scr_nostrip})
+			string (REPLACE ".sh" ".txt" _verbatim_file ${_script})
+			# Add command that triggers generator macro when output does not exist
+			add_custom_command (OUTPUT ${_verbatim_file}
+				COMMAND ${CMAKE_COMMAND}
+				-D SCRIPTS_COMMAND=script_to_verbatim
+				-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
+				-D no_strip=TRUE
+				-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
+				-P ${CMAKE_CURRENT_LIST_FILE}
+				DEPENDS ${_all_scripts})
+		endforeach (_script)
 
-	foreach (_script ${_scr_strip})
-		string (REPLACE ".sh" ".txt" _verbatim_file ${_script})
-		add_custom_command (OUTPUT ${_verbatim_file}
-			COMMAND ${CMAKE_COMMAND}
-			-D SCRIPTS_COMMAND=script_to_verbatim
-			-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
-			-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-			-P ${CMAKE_CURRENT_LIST_FILE}
-			DEPENDS ${_all_scripts})
-	endforeach (_script)
+		foreach (_script ${_scr_strip})
+			string (REPLACE ".sh" ".txt" _verbatim_file ${_script})
+			add_custom_command (OUTPUT ${_verbatim_file}
+				COMMAND ${CMAKE_COMMAND}
+				-D SCRIPTS_COMMAND=script_to_verbatim
+				-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
+				-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
+				-P ${CMAKE_CURRENT_LIST_FILE}
+				DEPENDS ${_all_scripts})
+		endforeach (_script)
 
-	add_custom_target (verbatim_scripts DEPENDS ${_all_verbatim})
+		add_custom_target (verbatim_scripts DEPENDS ${_all_verbatim})
+	endif (PDFLATEX_COMPILER)
 
 	# run tests
 	if (DO_TESTS)
