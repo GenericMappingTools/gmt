@@ -35,14 +35,14 @@ Subversion
 You need to install Subversion in order to fetch the sources. Make sure svn is
 in the PATH. A Windows version is available here: http://alagazam.net/
 
-NetCDF
+netCDF
 ======
 
-Compiling NetCDF from scratch on Windows is not an easy task since you need a
+Compiling netCDF from scratch on Windows is not an easy task since you need a
 lot of dependencies. You could either install a prepackaged development build
 from http://www.gfd-dennou.org/arch/ucar/netcdf/contrib/win32/. For instance
 netcdf-4.1.1-win32-bin.zip, and hope that it works. Most certainly it will
-just not. Hence, we sugest you build netCDF yourself.
+just not. Hence, we suggest you build netCDF yourself.
 
 Note: In the following examples we assume that dependent libraries are
 installed in sudirectories of z:\software\ any other directory is fine
@@ -61,9 +61,8 @@ for GMT. If you don't need PCRE and GDAL than you are all ready to build GMT!
 PCRE (optional)
 ===============
 
-http://www.pcre.org/
-
-Extract pcre-8.30.zip in z:\software\src\pcre-8.30\
+Get PCRE from http://www.pcre.org/ and extract pcre-8.30.zip in
+z:\software\src\pcre-8.30\
 
 - Open the SDK Command Prompt:
 
@@ -82,7 +81,7 @@ GDAL (optional)
 We assume that you already installed HDF4, HDF5, cURL, netCDF to z:\software.
 If that is not the case get the sources of netCDF for Windows from
 svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/fwobbe/netcdf-4.1.3
-and follow the instructions in README.CMake in the netcdf-4.1.3 directory.
+and follow the instructions in README.CMake in the source directory.
 
 Now that all dependent libraries are available we can proceed with GDAL. In
 the following we assume that the target install directory for GDAL is
@@ -179,7 +178,7 @@ Finally we are ready to compile GMT5.
   nmake manpages_all
   nmake install
 
-- Typing 'gmt' should geet you with a short message. You need to set your PATH
+- Typing 'gmt' should get you with a short message. You need to set your PATH
   to the directory specified in CMAKE_INSTALL_PREFIX:
 
   set PATH=%PATH%;z:\software\gmt5msc\bin

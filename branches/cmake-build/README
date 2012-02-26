@@ -1,47 +1,18 @@
-#	Information for installing GMT 5
-#
-#	$Id$
-#
-#	Copyright (c) 1991-2012, P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis
-#
-#	See LICENSE.TXT file for copying and redistribution conditions.
-#
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; version 2 or any later version.
-#
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
-#
-#	Contact info: http://gmt.soest.hawaii.edu
+$Id$
 
-Permission to use, copy, modify, and distribute (with no more than a
-reasonable redistribution fee) this software and its documentation
-for any purpose is hereby granted, provided that the above copyright
-notice appear in all copies, that both that copyright notice and this
-permission notice appear in supporting documentation, and that the name
-of GMT not be used in advertising or publicity pertaining to distribution
-of the software without specific, written prior permission.  The GMT
-package may be included in a bundled distribution of software for which
-a fee may be charged.
-The University of Hawaii (UH) and the National Oceanic and Atmospheric
-Administration (NOAA) make no representations about the suitability of
-this software for any purpose.  It is provided "as is" without expressed
-or implied warranty.  It is provided with no support and without
-obligation on the part of UH or NOAA, to assist in its use, correction,
-modification, or enhancement.
+== Information for installing GMT 5 ==
 
-0. Introduction
----------------
+Note: The build system has recently been switched to CMake which is a
+cross-platform system for managing the build process. If you are familiar
+with the old GNU Build Tools (automake, autoconf, and configure) you can
+probably skip over to the CMake quick start guide in README.CMake.
 
-If you obtained GMT using the install_gmt.sh script then you have
-already completed the installation unless something went wrong.
-You do not need to read these instructions unless you plan to
-install and make the programs manually.
 
-Visit gmt.soest.hawaii.edu and click DOWNLOAD to do the simple installation.
+Introduction
+------------
+
+You do not need to read these instructions unless you plan to build and
+install the programs manually.
 
 GMT has been installed successfully under Unix/Linux/OS X on workstations
 from Sun, Silicon Graphics, Cray, DEC, HP, Data General, IBM, Apple, NEXT,
@@ -56,171 +27,97 @@ and installation details.
 
 Note there are two GMT tar archives available:
 
-1. gmt-5.0.0b.tar.bz2	: The GMT distribution
-2. gshhs-2.2.0.tar.bz2	: All five resolutions of GSHHS coastline data
+1. gmt-5.0.0b.tar.bz2:  The GMT distribution
+2. gshhs-2.2.0.tar.bz2: All five resolutions of GSHHS coastline data
 
 The archives are available in bzip2 (*.bz2) format.
 If you do not have bzip2 installed you can obtain source or executables
 from http://www.bzip.org.
+
 For Windows users there are separate Windows installers available; this
-discussion only considers UNIX/Linux/OS X installations.
+discussion only considers UNIX/Linux/OS X installations. Windows users who
+which to build GMT from the sources refer to README.WIN32.
 
-1. Install netCDF library
--------------------------
 
-GMT uses several functions in the netCDF library.  Copy the file
-netcdf.tar.Z from
+CMake
+-----
 
-	ftp.unidata.ucar.edu
+Install CMake (>=2.8.5) from http://www.cmake.org/cmake/resources/software.html
 
-using anonymous ftp.  Then uncompress/tar and follow their
-instructions for installation.  Make sure you have netcdf version
-3 or higher.  See the file VERSION in the netcdf/src directory.
-Note that on some systems, particularly Linux or others using the
-gcc compiler, you may run into two problems that normally are
-taken care of by our install script:
-  a) Due to a bug(?) in lex, the ncgen/ncgen.c file tries to
-     include values.h which does not exist.  The workaround is
-     to type "touch ncgen/values.h" from the src directory
-     before running make.
-  b) Unless you have an actual Fortran compiler installed you will
-     need to define the environmental variable DEFINES and set it
-     to "-Df2cFortran".  Under a Bourne shell this becomes
-     EXPORT DEFINES="-Df2cFortran" while under csh it becomes
-     setenv DEFINES "-Df2cFortran".
 
-After install, place the line
+Install netCDF library
+----------------------
 
-	setenv NETCDFHOME /path_to_netcdf_directory
+Get and install netCDF from http://www.unidata.ucar.edu/downloads/netcdf/.
+You need at least version 3.6.3 but we recommend installing version 4.
 
-in your .login file.  This path is usually something like
-/usr/local/netcdf-3.6.3 depending on where you put it.
-The GMT makefiles will use $NETCDFHOME to find the library.
+For all major Linux distributions there are prepackaged development binaries
+available. netCDF is also available on MacOSX trough the macports and fink
+package managers.
 
-PS! On some newer platforms, in particular MacOS X, you may have
-to get a very recent version of netCDF. Version 3.6.3 available on the
-Unidata web site or through Fink (unstable) works well.
 
-1b. OPTIONAL GDAL support
------------------------
+GDAL (optional)
+---------------
 
-To use the experimental GDAL interface (ability to provide grids
-or images to be imported via gdal) you must have the GDAL library
-and include files installed and configure with --enable-gdal[=dir].
-Either use the dir modifier for the parent dir to include and lib,
-or setenv GDAL_INC and GDAL_LIB prior to running configure.
-Please report any problems or limitations that you might experience
-as this is an optional and experimental feature.
+To use the GDAL interface (ability to provide grids or images to be imported
+via gdal) you must have the GDAL library and include files installed. Please
+report any problems or limitations that you might experience as this is an
+optional and experimental feature.
 
-2. Install support data
------------------------
+Like netCDF, GDAL is available through your favorite package manager on many
+*NIX systems.
 
-At run-time, GMT programs will expect to find its databases
-in the "share" directory pointed to by the environment variable
-GMT_SHAREDIR. The appropriate default value is set at compilation
-time, so users need not set this environment variable, unless they
-moved the "share" directory elsewhere.
 
-You may ftp GMT from pub/gmt on any of the following sites.  Try
-the site that is closest to you to minimize transmission times:
+Install support data
+--------------------
 
-	Site				FTP address
+You can optain GMT from gmt.soest.hawaii.edu. Alternatively you may ftp GMT
+from pub/gmt on any of the following sites. Try the site that is closest to
+you to minimize transmission times:
+
+Site                                    FTP address
 --------------------------------------------------------------
-SOEST, U. of Hawaii			gmt.soest.hawaii.edu
-Lab for Satellite Altimetry, NOAA	ibis.grdl.noaa.gov
-IRIS, Washington, US			ftp.iris.washington.edu
-IAG-USP, U. of Sao Paulo, BRAZIL	ftp.iag.usp.br
-Dep. Geology, U. in Oslo, NORWAY	ftp.geologi.uio.no
-ISV, Hokkaido U, Sapporo, JAPAN		ftp.eos.hokudai.ac.jp
-U of Sydney, Sydney, AUSTRALIA		mirror.geosci.usyd.edu.au
-GDS, Vienna U. of Technology, AUSTRIA	gd.tuwien.ac.at
-TENET, Tertiary Education & Research Networks, SOUTH AFRICA	gmt.mirror.ac.za
+SOEST, U. of Hawaii                     gmt.soest.hawaii.edu
+Lab for Satellite Altimetry, NOAA       ibis.grdl.noaa.gov
+IRIS, Washington, US                    ftp.iris.washington.edu
+IAG-USP, U. of Sao Paulo, BRAZIL        ftp.iag.usp.br
+Dep. Geology, U. in Oslo, NORWAY        ftp.geologi.uio.no
+ISV, Hokkaido U, Sapporo, JAPAN         ftp.eos.hokudai.ac.jp
+U of Sydney, Sydney, AUSTRALIA          mirror.geosci.usyd.edu.au
+GDS, Vienna U. of Technology, AUSTRIA   gd.tuwien.ac.at
+TENET, Tertiary Education & Research Networks, SOUTH AFRICA
+                                        gmt.mirror.ac.za
 
-Extract the files and put them in separate directory (need not be
+The development sources are available from the subversion repository at
+svn://gmtserver.soest.hawaii.edu/gmt5/trunk
+
+Extract the files and put them in a separate directory (need not be
 where you eventually want to install GMT).
 
-If your connection is such that you are unable to obtain these files
-you may order a CD-ROM from Geoware.  See section 15 below for details.
 
-3. Configure
-------------
+Configuring
+-----------
 
-You must first create the files src/config.mk, src/GMT,
-src/isogmt, src/gmt_notposix.h and src/gmt_version.h
-by running the configure script.  If you have several C compilers on your
-system, or using one that is not called cc or gcc, you should first do a
+GMT can be build on any platform supported by CMake. CMake is a cross-platform,
+open-source system for managing the build process. Refer to the documentation
+at http://www.cmake.org/ for further details. In the source tree copy
+cmake/ConfigUserTemplate.cmake to cmake/ConfigUser.cmake and edit the file
+according to your demands.
 
-setenv CC <compilername, including path if unusual>
-
-(this is in csh, other shells have different syntax).
-
-If you want to specify your own CFLAGS setting, use
-setenv CFLAGS <your options>
-otherwise configure will provide the option known to
-work on your system.  You should know what you are doing if
-you want to override the defaults.
-If your standard POSIX Bourne shell is NOT /bin/sh you
-may need to do
-setenv CONFIG_SHELL <path_to_your_shell>
-Finally, if you plan to install the Matlab extensions you
-need to
-setenv MATLAB <path to Matlab dir>
-unless it is /usr/local/matlab [the default].
-For building the mex supplement for Octave instead
-you select --enable-octave.  Optionally specify where
-the mex and .m files should be placed with
---mex-enable-mdir and --mex-enable-xdir.
-You can disable Matlab/Octave mex compilation by using the
---disable-mex option
-One supplement (xgrid) requires X11.  You can disable the
-compilation of this supplement by using the option
---disable-xgrid
-
-For a summary of configure options, type configure --help.
-
-If you want to override the default directories for the GMT
-main directory (current dir) and executable directory (cwd/bin)
-you should pass these directories on the configure command line.
-
-	--prefix=your-main-GMT-dir	Set main GMT directory [cwd]
-	--bindir=your-bindir		Set bin directory [PREFIX/bin]
-	--libdir=your-libdir		Set lib directory [PREFIX/lib]
-	--includedir=your-includedir	Set include directory [PREFIX/include]
-	--mandir=your-mandir		Set man directory [PREFIX/man]
-	--datadir=your-datadir		Set GMT share directory for coastlines [PREFIX/share]
-	--docdir=your-docdir		Set directory for documentation [PREFIX/share]
-
-There are a few GMT-specific options in configure.  They are
-
-	--enable-netcdf=dir     Specify netCDF directory [/usr/local/netcdf]
-	--enable-matlab=dir     Specify Matlab directory [/usr/local/matlab]
-	--enable-octave		Select Octave interface (disables Matlab interface)
-	--enable-mex-mdir	Override where to place *.m functions for Matlab or Octave
-	--enable-mex-xdir	Override where to place *.mex functions for Matlab or Octave
-	--enable-shared		To make shared (dynamic) libraries
-	--enable-triangle	To use J. Shewchuk's fast triangulation
-	--enable-US		To use US (inch) instead of SI (cm) units
-	--enable-eps		Make Encapsulated PostScript by default [Freeform PS]
-	--enable-flock		Use file locking on .gmtcommands4 files
-	--disable-mex           Disable compilation of mex supplement which requires Matlab or Octave
-	--disable-xgrid         Disable compilation of xgrid supplement which requires X11
-
-By default, GMT will be made with static libraries.  If you system
-supports shared (dynamic) libraries you can select the option
---enable-shared which will try to assemble shared libraries.
-
-By default, GMT will use Dave Watson's Delaunay triangulation
-routine.  However, a much faster alternative is available from
-Jonathan Shewchuk, but his routine is not distributed under the GNU
-Public License.  If you work for a for-profit organization you should read
-Shewchuk's copyright statement (in src/README.TRIANGLE) first.  If you can
-use his routine you should append --enable-triangle.
+By default, GMT will use Dave Watson's Delaunay triangulation routine.
+However, a much faster alternative is available from Jonathan Shewchuk, but
+his routine is not distributed under the GNU Public License.  If you work for
+a for-profit organization you should read Shewchuk's copyright statement (in
+src/triangle.c) first.  If you agree with the license terms you can enable
+Shewchuk's triangulation routine cmake/ConfigUser.cmake.
 
 At run-time, GMT will initialize all default variables by reading
 either the share/gmtdefaults_SI or the share/gmtdefaults_US file.
 Both are installed, and the one that is read is given by the file
 share/gmt.conf.  This file will have either SI or US as the first
-two columns on a line.  SI is default, use --enable-US to switch.
+two columns on a line.  SI is default. You can configure the default
+at build time in cmake/ConfigUser.cmake.
+
 The default values differ slightly between SI and US, mostly because
 it is inconvenient to convert, say, 1" to 2.54 cm; we use 2.5 cm
 instead.  Although strongly discouraged, if you want to make
@@ -238,8 +135,8 @@ advisory file locking scheme and sets and releases locks on these
 files.  Under GNU/Linux, this does not work when the files reside
 in directories mounted with NFS.  Since it works with NFS under
 other UNIX systems we suspect this is a [temporary] limitation of GNU
-NSF.  If you want to activate file locking you may enable it by
-supplying the --enable-flock flag to configure.
+NSF.  If you want to activate file locking you may enable it in
+cmake/ConfigUser.cmake.
 
 GMT can produce either Freeform PostScript (suitable to be sent to
 various printers) or Encapsulated PostScript (suitable to be included
@@ -253,116 +150,91 @@ are not allowed to use setpagedevice.  To simplify printing, EPS files
 are allowed to contain a showpage operator which means EPS files will
 print if sent to a printer.  The PAPER_MEDIA setting in .gmtdefaults4
 can be set to one or the other format (see man gmtdefaults).  By
-default GMT will produce PS files.  If you do not need to take
-advantage of paper tray manipulations or expect to make mostly EPS
-files you may want to use --enable-eps to make EPS the default.  Note
-that this can be changed at any time via the PAPER_MEDIA parameter.
+default GMT will produce PS files.
 
-	In the main GMT directory, type
+We provide two install modes via CMake: You have the choice between a
+monolithic installation (GMT_INSTALL_MONOLITHIC=ON) where everything goes
+into a common subdirectory, or a distribution-like installation
+(PREFIX/bin/gmt-VERSION, PREFIX/lib/gmt-VERSION/, PREFIX/share/gmt-VERSION/,
+PREFIX/share/doc/gmt-VERSION/).
 
-./configure [options]
+The top-level installation directory is configured with the variable
+CMAKE_INSTALL_PREFIX.
 
-Append any of the options as you see fit.  If configure cannot figure
-out all the required compiler and linker flags it will give you a message
-and you will be asked to edit src/config.mk to set macros manually.
+Now that you made your configuration choices it is time for invoking CMake.
+In the source tree, create a subdirectory where the build files will be
+generated, e.g., 'mkdir build'.
 
-Once this step is completed you may move on to the Makefile section.
+In the build subdirectory, type
 
-If for some reason the configure step fails on your system, you may
-have to manually create the files from above from the *.in templates
-If you run into this problem, pls let us know so we may improve this
-processes further.
-[Note: For PCs running WIN?? or DOS you must copy the file
-gmt_math_win32.h to gmt_math.h instead; see Appendix L in the docs]
+  cmake [options] ..
 
-4. Makefile preparation
------------------------
+Append any of the options explained above as you see fit.  If CMake cannot
+figure out all the dependent libraries or required compiler and linker flags
+it will give you a message and you will be asked to edit
+cmake/ConfigUser.cmake.
 
-	If you are one a system without IEEE floating point support (some
-Crays we know of) you must add -DNO_IEEE to the CC_OPT flags as well.
 
-It is pretty easy to make netcdf a shared library after the fact. Simply
-cd to where libnetcdf.a is and do
+Build GMT
+---------
 
-	$(AR) x libnetcdf.a
-	$(LD) $(LD_OPT) *.o -o libnetcdf.$(SL)
-	\rm -f *.o
+In the build directory, type
 
-(substitute the macros with actual values for your system as listed in the
-config.mk file).  See the linker options for the GMT libraries on how
-to store the run-time path to the shared netCDF library in the executables.
+	make -jx
+  make -jx manpages_all
 
-5. Compile/link
----------------
+which will compile all the programs and create the manual pages. You can
+define the number of jobs to run simultaneously by make with the -jx option,
+where x is typically the number of CPUs. After a successful compilation you
+may install the executables in the designated bin directory with the command
 
-From the main GMT directory (all make calls herein refers to the main
-GMT directory), type
+	make -jx install
 
-	make	(or make all)
-
-which will compile/link all the programs.  After a successful
-compilation you may install the executables in the designated
-bin directory with the command
-
-	make install-gmt
-
-Place the support data and coastline files in the correct
-directory by saying
-
-	make install-data
-
-After a successful install you can have *.o files and the local
+After a successful install you can have the object files and the local
 executables removed by saying
 
 	make clean
 
-PS.  Should you need to start from scratch again, for instance
-to reinstall under another OS from the same directory, you should
-first say
+or just remove the entire build directory.
 
-	make spotless
 
-and run configure again before returning to step 5.
+Documentation
+_____________
 
-6. Man pages
-------------
+The documentation is available online at http://gmt.soest.hawaii.edu/
+or as platform independent package that you can install along with GMT.
 
-GMT man pages are stored in man/manl.  You can either
-install the entire set of man pages to the chosen directory with
+The development sources from subversion does not contain the precompiled
+documentation in PDF format. The PDFs have to be created from source with
+LaTeX (e.g., TeX Live).
 
-	make install-man
-
-or set the environment variable MANPATH in your .login file to
-include the man directory that holds the desired gmt man pages.
-
-7. Documentation
-____________________
-
-In the directory doc/html you will find html files for online
-browsing of GMT documentation (Cookbook) and manual pages.
-The Documentation also contains the GMT_Tutorial.pdf
-file which is a short course in how to use GMT.  It can be
+The GMT documentation includes HTML files for online browsing, user guide,
+cookbook, and manual pages. The Documentation also contains the
+GMT_Tutorial.pdf file which is a short course in how to use GMT.  It can be
 followed individually or in a lab setting by a group of users.
-While these are available from the main GMT home page in
-Hawaii, users may find it convenient to install these
-pages locally for added speed.  The subdirectories
-contain both HTML and PDF versions of the cookbook, and
-HTML versions of the manual pages.  All users need to do
-is to add a browser bookmark to the top-level file
-doc/html/gmt_services.html.
-To install all documentation in your chosen directory, type
 
-	make install-doc
+While these are available from the main GMT home page in Hawaii, users may
+find it convenient to install these pages locally for added speed.  The
+subdirectories contain both HTML and PDF versions of the cookbook, and HTML
+versions of the manual pages.  All users need to do is to add a browser
+bookmark to the top-level file doc/html/gmt_services.html. To install all
+documentation in your chosen directory, type
 
-8. Set path
------------
+  make gmt_doc
+  make gmt_pdf_manpages
+  make install
+
+
+Set path
+--------
 
 Make sure users set their PATH to include the directory containing
 the GMT executables (BINDIR) if this is not a standard directory
 like /usr/local/bin.  You should now be able to run GMT programs.
 
-9. GMT supplemental Code
--------------------------
+
+GMT supplemental Code
+---------------------
 
 GMT users elsewhere have developed programs that utilize the GMT
 libraries and produce PostScript code compatible with the rest of
@@ -370,39 +242,41 @@ GMT or simply perform data manipulation.  In addition, misc.
 code developed by us depend on GMT libraries.
 Currently, the supplemental archive include the directories:
 
-	dbase	  - Data extractor for global gridded data sets such
-		    as those on CD-ROM from NGDC.
-	gshhs	  - Data extractor for GSHHS shoreline polygons.
-	imgsrc	  - Data extractor for Smith/Sandwell altimetry grids.
-	meca 	  - Plotting of focal mechanisms, velocity arrows,
-		    and error ellipses on maps.
-	mex	  - Matlab or Octave mex files for grid file I/O.
-	mgg	  - Programs for MGD-77 data in .gmt format.
-	mgd77	  - Programs for handling of native MGD77 files.
-	misc	  - psmegaplot, makepattern, gmtdigitize,
-		    gmtstitch, gmtdp, and nc2xy
-	segyprogs - Plotting SEGY seismic data sets.
-	sph	  - Spherical interpolation and triangulation.
-	spotter	  - Plate tectonic & kinematics applications.
-	x2sys	  - Track intersection (crossover) tools.
-	x_system  - Track intersection (crossover) tools (old version).
-	xgrid	  - X11 editor for grid files.
+        dbase     - Data extractor for global gridded data sets such
+                    as those on CD-ROM from NGDC.
+        gshhs     - Data extractor for GSHHS shoreline polygons.
+        imgsrc    - Data extractor for Smith/Sandwell altimetry grids.
+        meca      - Plotting of focal mechanisms, velocity arrows,
+                    and error ellipses on maps.
+        mex       - Matlab or Octave mex files for grid file I/O.
+        mgg       - Programs for MGD-77 data in .gmt format.
+        mgd77     - Programs for handling of native MGD77 files.
+        misc      - psmegaplot, makepattern, gmtdigitize,
+                    gmtstitch, gmtdp, and nc2xy
+        segyprogs - Plotting SEGY seismic data sets.
+        sph       - Spherical interpolation and triangulation.
+        spotter   - Plate tectonic & kinematics applications.
+        x2sys     - Track intersection (crossover) tools.
+        x_system  - Track intersection (crossover) tools (old version).
+        xgrid     - X11 editor for grid files.
 
 These are installed automatically, except for mex and xgrid which
 requires more configuration as they depend on non-GMT libraries.
 
-10. Example Scripts
--------------------
+
+Example Scripts
+---------------
 
 	A complete set of the example scripts used to create all the
 example plots, including all necessary data files, are provided by
 the installation; you can run all the examples from the
-src directory using
+src directory using CTest (enable in cmake/ConfigUser.cmake)
 
-	make examples
+	make check
 
-11. Misc
---------
+
+Misc
+----
 
 Before running programs, there are a few things you should do/know:
 
@@ -419,8 +293,9 @@ Before running programs, there are a few things you should do/know:
     are NOT distributed with the GMT-system!  [However, programs that
     deal with gmt-files can be found in the supplemental tar archive.
 
-13. A reminder
---------------
+
+A reminder
+----------
 
    If you think it is appropriate, you may consider paying us back
 by including our latest EOS article (Wessel, P. and W. H. F. Smith,
@@ -431,12 +306,13 @@ curvature splines in tension, Geophysics, 55, 293-305, 1990) in the
 reference list of your future publications that will benefit from the
 availability of GMT.
 
-14. Software support
---------------------
+
+Software support
+----------------
 
    You haven't bought anything so you cannot expect full service.
 However, if you find a bug in any of the programs, please report
-it to us (gmt-bugs@hawaii.edu) rather than trying to fix it yourself
+it to us (gmtrac.soest.hawaii.edu) rather than trying to fix it yourself
 so that we, and through us, other users may benefit from your find.
 Make sure you provide us with enough information so that we can recreate
 the problem.
@@ -455,8 +331,9 @@ You may post messages to gmt-help while gmt-group is more of a one-way street
 for us to inform users of bug fixes and upgrades.  The online registration
 also lets you subscribe to the two mailinglists.
 
-15. Ordering the GMT package on CD/DVD-Rs
------------------------------------------
+
+Ordering the GMT package on CD/DVD-Rs
+-------------------------------------
 
 Should you or someone you know without net-access need to obtain GMT:
 Geoware makes and distributes CD/DVD-Rs with the GMT package and many
@@ -467,3 +344,5 @@ sets (up to 60 Gb of data!) visit www.geoware-online.com
 Good luck!
 
 The GMT Team.
+
+vim: tw=78 et ts=2 sts=2 sw=2 autoindent smartindent
