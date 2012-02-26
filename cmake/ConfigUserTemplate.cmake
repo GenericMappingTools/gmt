@@ -64,6 +64,9 @@
 # Use fast, non-GPL triangulation routine by J. Shewchuk [FALSE]:
 #set (TRIANGLE_D TRUE)
 
+# Configure default units (possible values are SI and US) [SI]:
+#set (UNITS "US")
+
 # Enable Matlab API [FALSE]:
 #set (GMT_MATLAB TRUE)
 # If Matlab is not found, point MATLAB_ROOT to its installation path, e.g.:
