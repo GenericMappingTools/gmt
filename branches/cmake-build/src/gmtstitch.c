@@ -544,15 +544,17 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (Ctrl->L.active) {	/* Write out the link information */
 		struct GMT_TEXTSET *LNK = NULL;
-		char name[GMT_BUFSIZ], name0[GMT_BUFSIZ], name1[GMT_BUFSIZ], *pp = NULL;
+		char name[GMT_BUFSIZ], name0[GMT_BUFSIZ], name1[GMT_BUFSIZ], fmt[GMT_BUFSIZ], *pp = NULL, *s = GMT->current.setting.io_col_separator;
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtstitch_link.txt");	/* Use default output filename */
 		dim_tscr[0] = 1;	dim_tscr[1] = 1;	dim_tscr[2] = ns;
 		if ((LNK = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim_tscr)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for link lists\n");
 			return (GMT->parent->error);
 		}
+		sprintf (fmt, "%%s%s%%s%s%%c%s%s%s%s%s%%s%s%%c%s%s%s%%d", s, s, s, GMT->current.setting.format_float_out, s, GMT->current.setting.format_float_out, s, s, s, GMT->current.setting.format_float_out, s);
+		
 		GMT->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on table headers on output */
-		sprintf (buffer, "# segid\tbegin_id\tb_pt\tb_dist\tb_nndist\tend_id\te_pt\te_dist\te_nndist");
+		sprintf (buffer, "# segid%sbegin_id%sb_pt%sb_dist%sb_nndist%send_id%se_pt%se_dist%se_nndist", s, s, s, s, s, s, s, s);
 		LNK->table[0]->n_headers = 1;
 		LNK->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
 		LNK->table[0]->header[0] = strdup (buffer);
@@ -572,7 +574,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				strcpy (name1, &pp[2]);
 				for (j = 0; name1[j]; j++) if (name1[j] == ' ') name1[j] = '\0';	/* Just truncate after 1st word */
 			} else sprintf (name1, "%ld", seg[i].buddy[1].orig_id);
-			sprintf (buffer, "%s\t%s\t%c\t%g\t%g\t%s\t%c\t%g\t%g", name, name0, BE[seg[i].buddy[0].end_order], seg[i].buddy[0].dist, seg[i].buddy[0].next_dist, name1, \
+			sprintf (buffer, fmt, name, name0, BE[seg[i].buddy[0].end_order], seg[i].buddy[0].dist, seg[i].buddy[0].next_dist, name1, \
 				BE[seg[i].buddy[1].end_order], seg[i].buddy[1].dist, seg[i].buddy[1].next_dist);
 			LNK->table[0]->segment[0]->record[i] = strdup (buffer);
 		}

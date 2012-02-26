@@ -345,7 +345,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	double x_smt, y_smt, z_smt, r_smt, t_smt, *c, *in = NULL, dist, dlon, out[5];
 	double hx_dist, hx_dist_km, dist_NA, dist_NX, del_dist, dt = 0.0, A[3], H[3], N[3], X[3];
 
-	char record[GMT_BUFSIZ], buffer[GMT_BUFSIZ];
+	char record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], fmt1[GMT_BUFSIZ], fmt2[GMT_BUFSIZ];
 
 	struct EULER *p = NULL;
 	struct HOTSPOT *orig_hotspot = NULL;
@@ -392,6 +392,11 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	hot = GMT_memory (GMT, NULL, nh, struct HOTSPOT_ORIGINATOR);
 
+	sprintf (fmt1, "%s%s%s%s%s%s%s%s%s", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
+	if (Ctrl->Z.active)
+		sprintf (fmt2, "%s%%ld%s%%ld%s%s%s%s", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
+	else
+		sprintf (fmt2, "%s%%s%s%%ld%s%s%s%s", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 	n_input = (Ctrl->Q.active) ? 3 : 5;
 	n_expected_fields = (GMT->common.b.ncol[GMT_IN]) ? GMT->common.b.ncol[GMT_IN] : n_input;
 	n = 0;
@@ -573,12 +578,12 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					strcpy (buffer, "NaN");
 				else
 					sprintf (buffer, "%g", t_smt);
-				sprintf (record, "%g\t%g\t%g\t%g\t%s", in[GMT_X], in[GMT_Y], z_smt, r_smt, buffer);
+				sprintf (record, fmt1, in[GMT_X], in[GMT_Y], z_smt, r_smt, buffer);
 				for (j = 0; j < n_max_spots; j++) {
 					if (Ctrl->Z.active)
-						sprintf (buffer, "\t%ld\t%ld\t%g\t%g", hot[j].h->id, hot[j].stage, hot[j].np_time, hot[j].np_dist);
+						sprintf (buffer, fmt2, hot[j].h->id, hot[j].stage, hot[j].np_time, hot[j].np_dist);
 					else
-						sprintf (buffer, "\t%s\t%ld\t%g\t%g", hot[j].h->abbrev, hot[j].stage, hot[j].np_time, hot[j].np_dist);
+						sprintf (buffer, fmt2, hot[j].h->abbrev, hot[j].stage, hot[j].np_time, hot[j].np_dist);
 					strcat (record, buffer);
 				}
 				strcat (record, "\n");

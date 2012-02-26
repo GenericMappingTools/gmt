@@ -942,7 +942,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_LONG k1, k2, j1, j2, nx, same;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
-		char T1[GMT_BUFSIZ], T2[GMT_BUFSIZ];
+		char T1[GMT_BUFSIZ], T2[GMT_BUFSIZ], fmt[GMT_BUFSIZ];
 		struct GMT_DATASET *C = NULL;
 		struct GMT_LINE_SEGMENT *S1 = NULL, *S2 = NULL;
 		
@@ -974,6 +974,10 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
+
+		sprintf (fmt, "%s%s%s%s%s%s%s%s%%s%s%%s\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, \
+			GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, \
+			GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
 
 		for (k1 = 0; k1 < C->n_tables; k1++) {
 			for (j1 = 0; j1 < C->table[k1]->n_segments; j1++) {
@@ -1072,7 +1076,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 									strcpy (T1, C->table[k1]->file[GMT_IN]);
 									strcpy (T2, D->table[k2]->file[GMT_IN]);
 								}
-								for (i = 0; i < nx; i++) printf ("%g\t%g\t%f\t%f\t%s\t%s\n", XC.x[i], XC.y[i], XC.xnode[0][i], XC.xnode[1][i], T1, T2);
+								for (i = 0; i < nx; i++) printf (fmt, XC.x[i], XC.y[i], (double)XC.xnode[0][i], (double)XC.xnode[1][i], T1, T2);
 							}
 							GMT_x_free (GMT, &XC);
 						}

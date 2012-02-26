@@ -490,9 +490,9 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	n_expected_fields = 2 + Ctrl->Z.active[V_ID] + Ctrl->Z.active[K_ID];
 	if (Ctrl->Z.active[V_ID])
-		sprintf (format, "%s\t%s\t%s\t%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "%s%s%s%s%s%s%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 	else
-		sprintf (format, "%s\t%s\t%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "%s%s%s%s%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 	
 	x_in_min = y_in_min = x_out_min = y_out_min = DBL_MAX;
 	x_in_max = y_in_max = x_out_max = y_out_max = -DBL_MAX;

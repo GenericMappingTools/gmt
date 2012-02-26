@@ -135,7 +135,8 @@ struct ZGRID {
 	double z_min, z_max, z_inc;
 };
 
-#ifdef TEST
+GMT_LONG TEST = FALSE;	/* Global variable used for undocumented testing [under -DDEBUG only] */
+#ifdef DEBUG
 void dump_green (PFD G, PFD D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg);
 #endif
 
@@ -420,7 +421,11 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 				Ctrl->T.active = TRUE;
 				Ctrl->T.file = strdup (opt->arg);
 				break;
-
+#ifdef DEBUG
+			case '+':	/* Turn on TEST mode */
+				TEST = TRUE;
+				break;
+#endif
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -458,8 +463,8 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#ifdef TEST
-/* Dump a table of x, G, dGdx for test purposes */
+#ifdef DEBUG
+/* Dump a table of x, G, dGdx for test purposes [requires option -+ and compilation with -DDEBUG]  */
 void dump_green (PFD G, PFD D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg)
 {
 	GMT_LONG i;
@@ -706,9 +711,11 @@ double spline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], dou
 	GMT_PvQv (GMT, -x, par, pq, &n);	/* Get P_nu(-x) */
 	gmt_Cdiv (pq, &par[4], z);		/* Get P_nu(-x) / sin (nu*M_PI) */
 	pq[0] = M_PI * z[0] - log (1.0 - x);
-#ifdef TEST
-	pq[1] = M_PI * z[1];
-	if (fabs (pq[1]) > 1.0e-6) GMT_message (GMT, "Im{G(%g)} = %g\n", x, pq[1]);
+#ifdef DEBUG
+	if (TEST) {
+		pq[1] = M_PI * z[1];
+		if (fabs (pq[1]) > 1.0e-6) GMT_report (GMT, GMT_MSG_DEBUG, "Im{G(%g)} = %g\n", x, pq[1]);
+	}
 #endif
 	
 	return ((pq[0] - par[2]) * par[6]);	/* Normalizes to yield 0-1 */
@@ -730,9 +737,11 @@ double gradspline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[],
 	gmt_Cmul (pq, v1, z);				/* Mul by nu + 1 */
 	s = M_PI / sqrt (1.0 - x*x);			/* Mul by pi/sin(theta) */
 	z[0] *= s;
-#ifdef TEST
-	z[1] *= s;;
-	if (fabs (z[1]) > 1.0e-6) GMT_message (GMT, "Im{G(%g)} = %g\n", x, z[1]);
+#ifdef DEBUG
+	if (TEST) {
+		z[1] *= s;
+		if (fabs (z[1]) > 1.0e-6) GMT_report (GMT, GMT_MSG_DEBUG, "Im{G(%g)} = %g\n", x, z[1]);
+	}
 #endif
 	z[0] += sqrt ((1.0 + x)/(1.0 - x));		/* Add in last term */
 	
@@ -1065,7 +1074,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *WB_z = NULL, *WB_g = NULL, *in = NULL;
 	double mem, part, C, p_val, r, par[11], norm[7], az, grad;
 	double *A = NULL;
-#ifdef TEST
+#ifdef DEBUG
 	double x0 = 0.0, x1 = 5.0;
 #endif
 	
@@ -1413,8 +1422,8 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			par[0] = 6.0 / (M_PI*M_PI);
 			G = spline2d_Parker;
 			dGdr = gradspline2d_Parker;
-#ifdef TEST
-			x0 = -1.0;	x1 = 1.0;
+#ifdef DEBUG
+			if (TEST) x0 = -1.0, x1 = 1.0;
 #endif
 			break;
 		case WESSEL_BECKER_2008:
@@ -1463,16 +1472,19 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				G = spline2d_Wessel_Becker;
 				dGdr = gradspline2d_Wessel_Becker;
 			}
-#ifdef TEST
-			x0 = -1.0;	x1 = 1.0;
+#ifdef DEBUG
+			if (TEST) x0 = -1.0, x1 = 1.0;
 #endif
 			break;
 	}
 
-#ifdef TEST
-	printf ("# %s\n", method[Ctrl->S.mode]);
-	dump_green (G, dGdr, par, x0, x1, 10001, WB_z, WB_g);
-	Return (0);
+#ifdef DEBUG
+	if (TEST) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "greenspline running in TEST mode for %s\n", method[Ctrl->S.mode]);
+		printf ("# %s\n#x\tG\tdG/dx\tt\n", method[Ctrl->S.mode]);
+		dump_green (G, dGdr, par, x0, x1, 10001, WB_z, WB_g);
+		Return (0);
+	}
 #endif
 
 	/* Remove mean (or LS plane) from data (we will add it back later) */
@@ -1540,7 +1552,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_FATAL, "Error creating file %s\n", Ctrl->C.file);
 				Return (EXIT_FAILURE);
 			}
-			sprintf (format, "%%d\t%s\n", GMT->current.setting.format_float_out);
+			sprintf (format, "%%d%s%s\n", GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 			/* Sort eigenvalues into ascending order */
 			GMT_sort_array (GMT, eig, nm, GMTAPI_DOUBLE);
 			eig_max = eig[nm-1];
