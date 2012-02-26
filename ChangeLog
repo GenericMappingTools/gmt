@@ -2,6 +2,16 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-02-25	pwessel
+	* *.c:		Did not consistently use COL_SEPARATOR and/or FORMAT_FLOAT_OUT for ascii output.
+
+2012-02-22	pwessel
+	* gmt_support.c:	gmt_inonout_sphpol_count did not properly handle line segments
+				that were exactly vertical in all cases, leading to errors as
+				to a point being inside or outside a spherical polygon.  Also,
+				points exactly on a vertical segment were not flagged as being
+				ON the line but INSIDE. Added test/grdmask/sphinout.sh as check.
+
 2012-02-17	pwessel
 	* gmt_io.c:		Added convenience function GMT_set_segmentheader to change
 				multi-seg header output to on or off; used by several GMT programs.

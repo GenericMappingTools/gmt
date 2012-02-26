@@ -2741,6 +2741,7 @@ void grd_ZDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 #include "grdmath.h"
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return1(code) {GMT_Destroy_Options (API, &list); Free_grdmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 #define Return(code) {GMT_Destroy_Options (API, &list); Free_grdmath_Ctrl (GMT, Ctrl); grdmath_free (GMT, stack, alloc_mode, &info, localhashnode); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LONG decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *value, struct GMT_HASH *H)
@@ -2858,17 +2859,15 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT = GMT_begin_module (API, "GMT_grdmath", &GMT_cpy);	/* Save current state */
 	Ctrl = New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	GMT_memset (&info, 1, struct GRDMATH_INFO);		/* Initialize here to not crash when Return gets called */
-	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
-	if (GMT_Parse_Common (API, "-VRbf:", "ghinrs" GMT_OPT("F"), options)) Return (API->error);
-	if ((error = GMT_grdmath_parse (API, Ctrl, options))) Return (error);
+	if (GMT_Parse_Common (API, "-VRbf:", "ghinrs" GMT_OPT("F"), options)) Return1 (API->error);
+	if ((error = GMT_grdmath_parse (API, Ctrl, options))) Return1 (error);
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/
 
-	//GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
+	GMT_memset (&info, 1, struct GRDMATH_INFO);		/* Initialize here to not crash when Return gets called */
+	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
 	GMT_memset (alloc_mode, GRDMATH_STACK_SIZE, GMT_LONG);
 	GMT_memset (stack, GRDMATH_STACK_SIZE, struct GMT_GRID *);
-
 	n_macros = gmt_load_macros (GMT, ".grdmath", &M);	/* Load in any macros */
 	if (n_macros) GMT_report (GMT, GMT_MSG_NORMAL, "Found and loaded %ld user macros.\n", n_macros);
 	

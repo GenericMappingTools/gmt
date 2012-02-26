@@ -5311,9 +5311,22 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 	return ((crossing_count) ? GMT_INSIDE: GMT_OUTSIDE);
 }
 
+GMT_LONG gmt_getprevpoint (double plon, double lon[], GMT_LONG n, GMT_LONG this)
+{	/* Return the previous point that does NOT equal plon */
+	GMT_LONG ip = (this == 0) ? n - 2 : this - 1;	/* Previous point (-2 because last is a duplicate of first) */
+	while (GMT_IS_ZERO (plon - lon[ip]) || GMT_IS_ZERO (fabs(plon - lon[ip]) - 360.0)) {	/* Same as plon */
+		ip--;
+		if (ip == -1) ip = n - 2;
+	}
+	return (ip);
+}
+
+#define GMT_SAME_LONGITUDE(A,B) (GMT_IS_ZERO (fmod (A - B, 360.0)))	/* A and B are the same longitude */
+#define GMT_SAME_LATITUDE(A,B)  (GMT_IS_ZERO (A - B))			/* A and B are the same latitude */
+
 GMT_LONG gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SEGMENT *P, GMT_LONG count[])
 {	/* Case of a polar cap */
-	GMT_LONG i, in, ip, cut;
+	GMT_LONG i, in, ip, prev, cut;
 	double W, E, S, N, lon, lon1, lon2, dlon, x_lat;
 
 	/* Draw meridian through P and count all the crossings with the line segments making up the polar cap S */
@@ -5328,21 +5341,24 @@ GMT_LONG gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LI
 		 * Since we want to obtain either ONE or ZERO intersections per segment we will skip to next
 		 * point if case (2) occurs: this avoids counting a crossing twice for consequtive segments.
 		 */
+		if (GMT_SAME_LONGITUDE (plon, P->coord[GMT_X][i]) && GMT_SAME_LATITUDE (plat, P->coord[GMT_Y][i])) return (1);	/* Point is on the perimeter */
 		in = i + 1;			/* Next point index */
-		/* First skip duplicate consecutive points */
-		/* if (GMT_IS_ZERO (P->coord[GMT_X][i] - P->coord[GMT_X][in]) && GMT_IS_ZERO (P->coord[GMT_Y][i] - P->coord[GMT_Y][in])) continue; */
 		/* First skip segments that have no actual length: consecutive points with both latitudes == -90 or +90 */
 		if (fabs (P->coord[GMT_Y][i]) == 90.0 && GMT_IS_ZERO (P->coord[GMT_Y][i] - P->coord[GMT_Y][in])) continue;
-		/* First deal with case when the longitude of P goes ~right through the second of the line nodes */
-		lon2 = P->coord[GMT_X][in];	/* Copy the second of two longitudes since we may need to mess with them */
-		if (GMT_IS_ZERO (plon - lon2) || GMT_IS_ZERO (fabs(plon - lon2) - 360.0)) continue;	/* Line goes through the 2nd node - ignore */
+		/* Next deal with case when the longitude of P goes ~right through the second of the line nodes */
+		if (GMT_SAME_LONGITUDE (plon, P->coord[GMT_X][in])) continue;	/* Line goes through the 2nd node - ignore */
 		lon1 = P->coord[GMT_X][i];	/* Copy the first of two longitudes since we may need to mess with them */
-		if (GMT_IS_ZERO (plon - lon1) || GMT_IS_ZERO (fabs(plon - lon1) - 360.0)) {		/* Line goes through the 1st node */
+		lon2 = P->coord[GMT_X][in];	/* Copy the second of two longitudes since we may need to mess with them */
+		if (GMT_SAME_LONGITUDE (plon, lon1)) {	/* Line goes through the 1st node */
 			/* Must check that the two neighboring points are on either side; otherwise it is just a tangent line */
-			ip = (i == 0) ? P->n_rows - 2 : i - 1;	/* Previous point (-2 because last is a duplicate of first) */
+			ip = gmt_getprevpoint (plon, P->coord[GMT_X], P->n_rows, i);	/* Index of previous point != plon */
 			if ((lon2 >= lon1 && P->coord[GMT_X][ip] > lon1) || (lon2 <= lon1 && P->coord[GMT_X][ip] < lon1)) continue;	/* Both on same side */
 			cut = (P->coord[GMT_Y][i] > plat) ? 0 : 1;	/* node is north (0) or south (1) of P */
 			count[cut]++;
+			prev = ip + 1;	/* Always exists because ip is <= n-2 */
+			/* If prev < i then we have a vertical segment of 2 or more points; prev points to the other end of the segment.
+			 * We must then check if our points plat is within that range, meaning the point lies on the segment */
+			if (prev < i && ((plat <= P->coord[GMT_Y][prev] && plat >= P->coord[GMT_Y][i]) || (plat <= P->coord[GMT_Y][i] && plat >= P->coord[GMT_Y][prev]))) return (1);	/* P is on segment boundary; we are done*/
 			continue;
 		}
 		/* OK, not exactly on a node, deal with crossing a line */
@@ -5376,6 +5392,7 @@ GMT_LONG gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LI
 			return (1);	/* P is on segment boundary; we are done*/
 		}
 		/* Calculate latitude at intersection */
+		if (GMT_SAME_LATITUDE (P->coord[GMT_Y][i], P->coord[GMT_Y][in]) && GMT_SAME_LATITUDE (plat, P->coord[GMT_Y][in])) return (1);	/* P is on S boundary */
 		x_lat = P->coord[GMT_Y][i] + ((P->coord[GMT_Y][in] - P->coord[GMT_Y][i]) / (lon2 - lon1)) * (lon - lon1);
 		if (GMT_IS_ZERO (x_lat - plat)) return (1);	/* P is on S boundary */
 
@@ -5388,7 +5405,8 @@ GMT_LONG gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LI
 
 GMT_LONG GMT_inonout_sphpol (struct GMT_CTRL *C, double plon, double plat, const struct GMT_LINE_SEGMENT *P)
 /* This function is used to see if some point P is located inside, outside, or on the boundary of the
- * spherical polygon S read by GMT_read_table.
+ * spherical polygon S read by GMT_import_table.  Note C->current.io.skip_duplicates must be TRUE when the polygon
+ * was read so there are NO duplicate (repeated) points.
  * Returns the following values:
  *	0:	P is outside of S
  *	1:	P is inside of S

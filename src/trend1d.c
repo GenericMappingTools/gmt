@@ -661,10 +661,10 @@ GMT_LONG GMT_trend1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		sprintf (format,"Read %%ld data with X values from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, n_data, xmin, xmax);
-		GMT_report (GMT, GMT_MSG_NORMAL, "N_model\tRank\tChi_Squared\tSignificance\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "N_model%sRank%sChi_Squared%sSignificance\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
 	}
 
-	sprintf (format, "%%ld\t%%ld\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	sprintf (format, "%%ld%s%%ld%s%s%s%s\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 
 	if (Ctrl->I.active) {
 		n_model = 1;
@@ -767,7 +767,7 @@ GMT_LONG GMT_trend1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		sprintf (format, "Final model stats: N model parameters %%ld.  Rank %%ld.  Chi-Squared: %s\n", GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Model Coefficients  (Chebyshev):");
-		sprintf (format, "\t%s", GMT->current.setting.format_float_out);
+		sprintf (format, "%s%s", GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 		for (i = 0; i < n_model; i++) GMT_message (GMT, format, c_model[i]);
 		GMT_message (GMT, "\n");
 		GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
@@ -788,7 +788,7 @@ GMT_LONG GMT_trend1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
 		sprintf (format, "%s", GMT->current.setting.format_float_out);
 		for (i = 0; i < n_model - 1; i++) {
-			fprintf(stdout, GMT->current.setting.format_float_out, c_model[i]);	fprintf(stdout, "\t");
+			fprintf(stdout, GMT->current.setting.format_float_out, c_model[i]);	fprintf(stdout, "%s", GMT->current.setting.io_col_separator);
 		}
 		fprintf(stdout, GMT->current.setting.format_float_out, c_model[n_model-1]);
 		fprintf(stdout, "\n");
