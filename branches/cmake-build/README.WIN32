@@ -138,14 +138,34 @@ in nmake.opt.
   It should greet you with usage information if everything is fine.
 
 
+NSIS  (optional)
+================
+
+You also need to install NSIS (Nullsoft Scriptable Install System) if you want
+to bundle GMT with all dependent DLLs and create a Windows intaller.
+
+Download from http://nsis.sourceforge.net/
+
+
 == Building GMT5
 
 Finally we are ready to compile GMT5.
 
 - Get GMT from svn://gmtserver.soest.hawaii.edu/gmt5/branches/cmake-build
+- Get GSHHS (Shoreline Database) from http://www.soest.hawaii.edu/wessel/gshhs/
 
 - In the source tree copy cmake/ConfigUserTemplate.cmake to
-  cmake/ConfigUser.cmake and edit the file according to your demands.
+  cmake/ConfigUser.cmake and edit the file according to your demands. This is
+  an example:
+
+  set (CMAKE_INSTALL_PREFIX z:/software/gmt5msc)
+  set (GMT_INSTALL_MONOLITHIC ON)
+  set (GSHHS_ROOT z:/software/src/coast)
+  set (NETCDF_DIR z:/software)
+  set (GDAL_DIR z:/software)
+  set (PCRE_DIR z:/software)
+  set (FLOCK TRUE)
+  set (TRIANGLE_D TRUE)
 
 - Open Windows SDK Command Prompt
 
@@ -153,15 +173,46 @@ Finally we are ready to compile GMT5.
   mkdir build
   cd build
 
-  cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=Z:\software\gmt5msc -DCMAKE_BUILD_TYPE=Release -DNETCDF_ROOT=Z:\software -DGDAL_ROOT=Z:\software -DPCRE_ROOT=Z:\software ..
+  cmake -G "NMake Makefiles" ..
 
   nmake
   nmake manpages_all
   nmake install
 
-- Typing 'gmt' should geet you with a short message.
+- Typing 'gmt' should geet you with a short message. You need to set your PATH
+  to the directory specified in CMAKE_INSTALL_PREFIX:
 
-Congratulations you managed to install GMT5 on your machine.
+  set PATH=%PATH%;z:\software\gmt5msc\bin
+
+Congratulations you managed to install GMT5 on your machine!
+
+
+Packaging with NSIS (optional)
+==============================
+
+Note: If you just want to create a GMT package you do not need to 'nmake
+install' above.
+
+CPack supports stand-alone ZIP archives and NSIS installers on Windows. After
+building GMT run:
+
+  nmake package
+
+This will create both a ZIP archive and NSIS installer. If there are no issues
+then you will obtain three files, e.g.:
+
+GMT-5.0.0-win64-Documentation.zip
+GMT-5.0.0-win64-Runtime.zip
+GMT-5.0.0-win64.exe
+
+Dependency walking takes a long time so be patient. You can save some time if
+you are only interested in one of the two package options. Invoke CPack
+instead:
+
+  cpack -G <ZIP|NSIS>
+
+The software packages are self contained and already include all dependent
+DLLs (netCDF, GDAL, PCRE, ...).
 
 Enjoy!
 
