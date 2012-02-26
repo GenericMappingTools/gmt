@@ -52,6 +52,9 @@
 # Set location of GDAL (can be root directory, path to header file or path to gdal-config) [auto]:
 #set (GDAL_DIR "gdal_install_prefix")
 
+# Set location of PCRE (can be root directory, path to header file or path to pcre-config) [auto]:
+#set (PCRE_DIR "pcre_install_prefix")
+
 # Enable compatibility mode [FALSE]:
 #set (GMT_COMPAT TRUE)
 
