@@ -38,7 +38,7 @@ c:\Program Files\HDF Group\HDF<major-version>\<version>\bin to z:\software\bin.
 
 - extract files in z:\software\src
 
-- patch the file curl-<version>/CMakeLists.txt:
+- cURL versions greater than 7.21.7 have a bug in the CMakeLists.txt. You need to patch the file curl-<version>/CMakeLists.txt:
 
 --------8<-------------------------------------------------------
 
