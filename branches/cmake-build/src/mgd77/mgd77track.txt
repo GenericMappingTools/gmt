@@ -109,4 +109,4 @@ BD(mgd77track) 01010007 OPT(R)70W/20E/40S/20N SCALE2 OPT(B)10BD(g)5 OPT(A)10 OPT
 .IR mgd77list (1)
 #include "refs.i"
 The Marine Geophysical Data Exchange Format - MGD77, see
-IT(http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt)
+\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
