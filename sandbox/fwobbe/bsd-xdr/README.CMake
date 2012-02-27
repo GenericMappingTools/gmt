@@ -24,7 +24,7 @@ include, lib and bin respectively.
 3. cd <path-to-xdr-source-dir>
    mkdir build
    cd build
-   cmake ..
+   cmake -G "NMake Makefiles" ..
 
 4. If everything went fine you can now build and install XDR:
    nmake
