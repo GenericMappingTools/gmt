@@ -94,6 +94,13 @@
 # allocatable but non-writable sections" problems:
 #set (USER_GMTLIB_LINK_FLAGS -mimpure-text)
 
+# Do not warn when building with Windows SDK or Visual Studio Express:
+#set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS ON)
+
+# Manually select runtime library when compiling with Windows SDK or Visual
+# Studio Express:
+#set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS c:/Windows/System32/msvcr100.dll)
+
 # If your NetCDF library is static (not recommended, applies to Windows only)
 #set (NETCDF_STATIC TRUE)
 

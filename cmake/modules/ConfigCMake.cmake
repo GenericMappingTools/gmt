@@ -59,14 +59,19 @@ if (NOT "@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@")
 	if (SVN_VERSION_RESULT)
 		message (STATUS "Unable to determine svn version number for non-public release - ignoring.")
 	else (SVN_VERSION_RESULT)
-		# The 'svnversion' command can output a range of revisions with a colon separator - but this causes problems
-		# with filenames so we'll remove the colon and the end revision after it.
-		string (REGEX REPLACE ":.*$" "" SVN_VERSION ${SVN_VERSION_OUTPUT})
-		if (NOT SVN_VERSION STREQUAL exported)
-			# Set the updated package version.
-			set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION "@GMT_PACKAGE_VERSION@_r${SVN_VERSION}")
-			set (HAVE_SVN_VERSION TRUE)
-		endif (NOT SVN_VERSION STREQUAL exported)
+		if (SVN_VERSION_OUTPUT MATCHES "Unversioned")
+			message (STATUS "Unversioned source tree, non-public release.")
+		else (SVN_VERSION_OUTPUT MATCHES "Unversioned")
+			# The 'svnversion' command can output a range of revisions with a colon
+			# separator - but this causes problems with filenames so we'll remove the
+			# colon and the end revision after it.
+			string (REGEX REPLACE ":.*$" "" SVN_VERSION ${SVN_VERSION_OUTPUT})
+			if (NOT SVN_VERSION STREQUAL exported)
+				# Set the updated package version.
+				set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION "@GMT_PACKAGE_VERSION@_r${SVN_VERSION}")
+				set (HAVE_SVN_VERSION TRUE)
+			endif (NOT SVN_VERSION STREQUAL exported)
+		endif (SVN_VERSION_OUTPUT MATCHES "Unversioned")
 	endif (SVN_VERSION_RESULT)
 endif (NOT "@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@")
 
@@ -74,6 +79,29 @@ endif (NOT "@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@")
 set (GMT_VERSION_STRING "${GMT_PACKAGE_NAME} ${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
 
 set (GMT_LONG_VERSION_STRING "${GMT_PACKAGE_NAME} - ${GMT_PACKAGE_DESCRIPTION_SUMMARY}, Version ${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
+
+# Get date
+if (WIN32)
+	execute_process (COMMAND "${GMT_SOURCE_DIR}/getdate.bat" OUTPUT_VARIABLE _today)
+	#string (REGEX REPLACE "(..)/(..)/(....).*" "\3-\2-\1" _today ${_today})
+elseif (UNIX)
+	set(ENV{LANG} en_US)
+	execute_process (COMMAND "date" "+%Y %m %d %B" OUTPUT_VARIABLE _today)
+else (WIN32)
+	message (WARNING "Date not implemented")
+	set(_today "2013 13 13 Undecember")
+endif (WIN32)
+if (_today)
+	string (REPLACE "\n" "" _today ${_today})
+	string (REPLACE " " ";" _today ${_today})
+	list(GET _today 0 YEAR)
+	list(GET _today 1 MONTH)
+	list(GET _today 2 DAY)
+	list(GET _today 3 MONTHNAME)
+	list(GET _today 0 1 2 DATE)
+	string (REPLACE ";" "-" DATE "${DATE}")
+	set (_today)
+endif ()
 
 # set triangulation method
 if (TRIANGLE_D)
