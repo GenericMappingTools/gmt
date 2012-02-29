@@ -116,3 +116,6 @@ set (CMAKE_FIND_STATIC LAST)
 
 # File locking off
 set (FLOCK off)
+
+# Monolithic install on
+set (GMT_INSTALL_MONOLITHIC ON)
