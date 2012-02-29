@@ -307,7 +307,7 @@ Choose between BD(inside), BD(plain) and BD(fancy) (thick boundary, alternating 
 For some map projections (e.g., Oblique Mercator), plain is the only option even if fancy is set as default.
 In general, fancy only applies to situations where the projected x and y directions parallel the lon and lat
 directions (e.g., rectangular projections, polar projections).  For situations where all boundary ticks and annotations
-must be inside the maps (e.g., for preparing geotiffs), chose BD()inside).
+must be inside the maps (e.g., for preparing geotiffs), chose BD(inside).
 .TP
 .B MAP_FRAME_WIDTH
 Width (> 0) of map borders for fancy map frame [5p].
