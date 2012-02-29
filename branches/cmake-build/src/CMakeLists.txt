@@ -359,6 +359,17 @@ install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS}
 	RUNTIME DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 
+if (WIN32 AND _debug_build)
+	# install program database files
+	set (_pdb_files)
+	foreach (_target libps libgmt ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS})
+		list (APPEND _pdb_files "${CMAKE_CURRENT_BINARY_DIR}/${_target}.pdb")
+	endforeach ()
+	install (FILES ${_pdb_files}
+		DESTINATION ${GMT_BINDIR}
+		COMPONENT Runtime)
+endif (WIN32 AND _debug_build)
+
 # Install public headers
 install (FILES declspec.h gmtapi.h
 	DESTINATION ${GMT_INCDIR}
