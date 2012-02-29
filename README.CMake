@@ -73,17 +73,20 @@ NOTE: If you want to change CMake behaviour for your build then only modify the
 Invoking CMake:
 ~~~~~~~~~~~~~~~
 
-extract, cd, md build, explain default smart finding, configure extra
-locations in config file
-
-dependencies pcre, netcdf, gdal
-
+CMake supports out-of-source builds and puts generated files in a completely
+separate directory, so that the source tree is unchanged. Trying to run CMake
+in the source tree will result in an error. CMake will first check for the
+minimal required version and then search for required and optional libraries
+(netCDF, PCRE, GDAL) in the default locations. The configuration step will
+fail if dependencies are not met. You have to ensure that CMake can find the
+required resources by configuring *cmake/ConfigUser.cmake*.
 
 Finding GSHHS:
 ~~~~~~~~~~~~~~
 
 GSHHS shorelines are searched in FindGSHHS.cmake and a little helper programm
-tests the version (gshhs_version.c).
+tests the version (gshhs_version.c). If CMake cannot find the shorelines you
+have to configure _GSHHS_ROOT_ in cmake/ConfigUser.cmake.
 
 Documentation:
 ~~~~~~~~~~~~~~
