@@ -27,6 +27,9 @@
 # Where netcdf will be installed:
 set (CMAKE_INSTALL_PREFIX z:/software)
 
+# Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel
+set (CMAKE_BUILD_TYPE Release)
+
 if(MSVC)
 	# Automatically adds compiler definitions to all subdirectories too.
 	add_definitions(/D_CRT_SECURE_NO_DEPRECATE /DWIN32_LEAN_AND_MEAN)

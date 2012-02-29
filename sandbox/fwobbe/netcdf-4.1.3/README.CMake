@@ -24,7 +24,7 @@ its subdirectories bin, include, lib, src.
 
 1. Copy HDF4 and HDF5 DLLs to z:\software\bin
 
-The HDF Group files are usualy located in c:\Program Files\HDF Group. This is OK but
+The HDF Group files are usually located in c:\Program Files\HDF Group. This is OK but
 to avoid setting up complicated PATHs to all the DLLs we simply copy all DLLs from
 c:\Program Files\HDF Group\HDF<major-version>\<version>\bin to z:\software\bin.
 
