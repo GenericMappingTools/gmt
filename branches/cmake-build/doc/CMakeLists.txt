@@ -73,6 +73,7 @@ if (PDFLATEX_COMPILER)
 
 	foreach (_pdf_file ${_docs_output})
 		string (REPLACE ".pdf" ".tex" _tex_file ${_pdf_file})
+		string (REPLACE ".pdf" "_press.pdf" _shrink_file ${_pdf_file})
 		string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
 
 		add_latex_document (${_tex_file}
@@ -85,6 +86,16 @@ if (PDFLATEX_COMPILER)
 
 		# Make sure PS figures are converted to PDF before LaTeX runs
 		add_dependencies (${_pdf_target} ${_common_depends})
+
+		# Shrink PDF files
+		add_custom_target (${_pdf_target}_shrink
+			COMMAND gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4
+			-dPDFSETTINGS=/prepress -dNOPAUSE -dQUIET -dBATCH
+			-sOutputFile=${_shrink_file} ${_pdf_file}
+			COMMAND ${CMAKE_COMMAND} -E rename
+			${_shrink_file} ${_pdf_file}
+			DEPENDS ${_pdf_file})
+		add_depend_to_target (gmt_doc_shrink ${_pdf_target}_shrink)
 
 		# Install pdf file (if available)
 		install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_pdf_file}
