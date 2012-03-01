@@ -103,7 +103,26 @@ if (_today)
 	set (_today)
 endif ()
 
-# set triangulation method
+# apply license restrictions
+if (LICENSE_RESTRICTED) # on
+	if (LICENSE_RESTRICTED STREQUAL GPL)
+		# restrict to GPL
+	elseif (LICENSE_RESTRICTED STREQUAL LGPL)
+		# restrict to LGPL
+	else (LICENSE_RESTRICTED STREQUAL GPL)
+		# unknown license
+		message (WARNING "unknown license: ${LICENSE_RESTRICTED}")
+	endif (LICENSE_RESTRICTED STREQUAL GPL)
+	# restrictions that apply to any of the above licenses
+	# disable Shewchuk's triangle routine
+	set (TRIANGLE_D OFF)
+else (LICENSE_RESTRICTED) # off
+	# no restrictions at all
+	# enable Shewchuk's triangle routine
+	set (TRIANGLE_D ON)
+endif (LICENSE_RESTRICTED)
+
+# set default triangulation method
 if (TRIANGLE_D)
 	set (GMT_TRIANGULATE "Shewchuk")
 else (TRIANGLE_D)
