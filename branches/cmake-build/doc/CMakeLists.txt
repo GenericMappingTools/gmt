@@ -114,6 +114,13 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 				DESTINATION ${GMT_DOC_PATH}/pdf
 				COMPONENT Documentation
 				OPTIONAL)
+
+			# Install target realease documentation
+			add_custom_target (${_pdf_target}_release
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different
+				${_pdf_file} ${GMT_RELEASE_PREFIX}/doc_release/pdf/${_pdf_file}
+				DEPENDS ${_pdf_file})
+			add_depend_to_target (gmt_release ${_pdf_target}_release)
 		endforeach (_pdf_file)
 	endif (PDFLATEX_COMPILER)
 
@@ -154,6 +161,17 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 			DESTINATION ${GMT_DOC_PATH}/pdf
 			COMPONENT Documentation
 			OPTIONAL)
+
+		# Install target for realease documentation
+		add_custom_target (gmt_pdf_manpages_release
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			GMT_Manpages.pdf
+			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Manpages.pdf
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			GMT_Manpages_suppl.pdf
+			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Manpages_suppl.pdf
+			DEPENDS gmt_pdf_manpages)
+		add_depend_to_target (gmt_release gmt_pdf_manpages_release)
 	endif (_manfiles_ps AND PS2PDF_CONVERTER)
 
 endif (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})

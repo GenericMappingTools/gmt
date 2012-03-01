@@ -44,14 +44,14 @@ endif (CMAKE_BUILD_TYPE MATCHES "Debug|RelWithDebInfo")
 
 # Here we change it to add the SVN revision number for non-public releases - see Package.cmake for
 # why this has to be done here.
-set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION "@GMT_PACKAGE_VERSION@")
+set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION ${GMT_PACKAGE_VERSION})
 # Add the Subversion version number to the package filename if this is a non-public release.
 # A non-public release has an empty 'GMT_SOURCE_CODE_CONTROL_VERSION_STRING' variable in 'ConfigDefault.cmake'.
 set (HAVE_SVN_VERSION)
-if (NOT "@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@")
+if (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
 	# Get the location, inside the staging area location, to copy the application bundle to.
 	execute_process (
-		COMMAND svnversion @CMAKE_SOURCE_DIR@
+		COMMAND svnversion ${GMT_SOURCE_DIR}
 		RESULT_VARIABLE SVN_VERSION_RESULT
 		OUTPUT_VARIABLE SVN_VERSION_OUTPUT
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -68,12 +68,12 @@ if (NOT "@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@")
 			string (REGEX REPLACE ":.*$" "" SVN_VERSION ${SVN_VERSION_OUTPUT})
 			if (NOT SVN_VERSION STREQUAL exported)
 				# Set the updated package version.
-				set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION "@GMT_PACKAGE_VERSION@_r${SVN_VERSION}")
+				set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION "${GMT_PACKAGE_VERSION}_r${SVN_VERSION}")
 				set (HAVE_SVN_VERSION TRUE)
 			endif (NOT SVN_VERSION STREQUAL exported)
 		endif (SVN_VERSION_OUTPUT MATCHES "Unversioned")
 	endif (SVN_VERSION_RESULT)
-endif (NOT "@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@")
+endif (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
 
 # The current GMT version.
 set (GMT_VERSION_STRING "${GMT_PACKAGE_NAME} ${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
@@ -102,6 +102,11 @@ if (_today)
 	string (REPLACE ";" "-" DATE "${DATE}")
 	set (_today)
 endif ()
+
+# set package date
+if (NOT GMT_VERSION_YEAR)
+	set (GMT_VERSION_YEAR ${YEAR})
+endif (NOT GMT_VERSION_YEAR)
 
 # apply license restrictions
 if (LICENSE_RESTRICTED) # on

@@ -83,6 +83,12 @@ add_subdirectory (doc)        # share must be processed *after* src (PDF manpage
 add_subdirectory (test)
 add_subdirectory (cmake/dist) # make distribution bundles (always last)
 
+# Source release target (export svn working tree)
+add_custom_target (svn_export_release
+	COMMAND svn --force export
+	${GMT_SOURCE_DIR} ${GMT_RELEASE_PREFIX})
+add_depend_to_target (gmt_release svn_export_release)
+
 # Configuration done
 message(
 	"*  Installing GMT in    : ${CMAKE_INSTALL_PREFIX}\n"
