@@ -160,9 +160,9 @@ Finally we are ready to compile GMT5.
   set (CMAKE_INSTALL_PREFIX z:/software/gmt5msc)
   set (GMT_INSTALL_MONOLITHIC ON)
   set (GSHHS_ROOT z:/software/src/coast)
-  set (NETCDF_DIR z:/software)
-  set (GDAL_DIR z:/software)
-  set (PCRE_DIR z:/software)
+  set (NETCDF_ROOT z:/software)
+  set (GDAL_ROOT z:/software)
+  set (PCRE_ROOT z:/software)
   set (FLOCK TRUE)
 
 - Open Windows SDK Command Prompt
