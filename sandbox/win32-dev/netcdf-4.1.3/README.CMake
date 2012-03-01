@@ -14,7 +14,7 @@ Probably only works with MSVC. All other compilers untested.
     HDF4.2.7-win764-vs10shared.zip (Windows 64-bit CMake VS 2010, Intel Fortran 12)
     HDF5188-win64-shared.zip (Windows 64-bit CMake VS 2008 C, C++, IVF 11.1)
 
-* Get XDR from svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/fwobbe/bsd-xdr/
+* Get XDR from svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/win32-dev/bsd-xdr/
 * Get cURL from http://curl.haxx.se/download.html
 
 -- Building Prerequisites --
@@ -91,7 +91,7 @@ include, lib and bin respectively.
 
 - Get the sources:
    cd \software\src
-   svn co svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/fwobbe/bsd-xdr bsd-xdr
+   svn co svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/win32-dev/bsd-xdr bsd-xdr
 
 - Read README.CMake if you like
 
@@ -116,7 +116,7 @@ Once we have installed and build all the library dependencies we can
 attempt to deploy netCDF.
 
 - Get the CMake bundled sources of netCDF via subversion from
-  svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/fwobbe/netcdf-4.1.3
+  svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/win32-dev/netcdf-4.1.3
 
 - Edit cmake/ConfigUser.cmake and set correct paths to HDF, xdr etc.
 
