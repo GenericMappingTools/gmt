@@ -32,78 +32,131 @@ set (_docs_inputs GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex
 
 set (_common_inputs GMT.ist GMT.sty GMT_macros.tex GMT_Cover.tex)
 
-# Find LaTeX
-find_package (LATEX)
+if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
+	# Install documentation files from external location without creating PDF
+	# documentation first
 
-# Add tests and make verbatim copies from scripts
-add_subdirectory (scripts)
+	install (DIRECTORY ${GMT_INSTALL_EXTERNAL_DOC}/
+		DESTINATION ${GMT_DOC_PATH}
+		COMPONENT Documentation
+		USE_SOURCE_PERMISSIONS)
 
-if (PDFLATEX_COMPILER)
-	# Copy common TeX dependends
-	foreach (_input ${_docs_inputs} ${_common_inputs})
-		add_custom_command (OUTPUT ${_input}
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			${CMAKE_CURRENT_SOURCE_DIR}/${_input} ${_input}
-			DEPENDS ${_input})
-	endforeach (_input ${_common_inputs})
-	add_custom_target (copy_tex_depends DEPENDS ${_docs_inputs} ${_common_inputs})
-
-	set (_common_depends
-		copy_tex_depends
-		pdf_figures
-		copy_other_figures
-		verbatim_examples
-		verbatim_scripts)
-
-	# Generate GMT_version.tex
-	configure_file (GMT_version.tex.cmake GMT_version.tex)
-
-	# Set TeX FLAGS
-	set (MAKEINDEX_COMPILER_FLAGS "-s GMT.ist"
-		CACHE STRING "Flags passed to makeindex.")
-	set (PDFLATEX_COMPILER_FLAGS "--interaction=batchmode"
-		CACHE STRING "Silence latex warnings.")
+else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
+	# Create PDF documentation from scratch if possible
 
 	# Find LaTeX
-	include (UseLATEX)
+	find_package (LATEX)
 
-	# Make PDF figures
-	add_subdirectory (fig)
-	add_subdirectory (ppt) # must be added after fig
+	# Add tests and make verbatim copies from scripts
+	add_subdirectory (scripts)
 
-	foreach (_pdf_file ${_docs_output})
-		string (REPLACE ".pdf" ".tex" _tex_file ${_pdf_file})
-		string (REPLACE ".pdf" "_press.pdf" _shrink_file ${_pdf_file})
-		string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
+	if (PDFLATEX_COMPILER)
+		# Copy common TeX dependends
+		foreach (_input ${_docs_inputs} ${_common_inputs})
+			add_custom_command (OUTPUT ${_input}
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different
+				${CMAKE_CURRENT_SOURCE_DIR}/${_input} ${_input}
+				DEPENDS ${_input})
+		endforeach (_input ${_common_inputs})
+		add_custom_target (copy_tex_depends DEPENDS ${_docs_inputs} ${_common_inputs})
 
-		add_latex_document (${_tex_file}
-			USE_INDEX
-			DEFAULT_PDF
-			MANGLE_TARGET_NAMES)
+		set (_common_depends
+			copy_tex_depends
+			pdf_figures
+			copy_other_figures
+			verbatim_examples
+			verbatim_scripts)
 
-		# Add pdf to gmt_doc target
-		add_depend_to_target (gmt_doc ${_pdf_target})
+		# Generate GMT_version.tex
+		configure_file (GMT_version.tex.cmake GMT_version.tex)
 
-		# Make sure PS figures are converted to PDF before LaTeX runs
-		add_dependencies (${_pdf_target} ${_common_depends})
+		# Set TeX FLAGS
+		set (MAKEINDEX_COMPILER_FLAGS "-s GMT.ist"
+			CACHE STRING "Flags passed to makeindex.")
+		set (PDFLATEX_COMPILER_FLAGS "--interaction=batchmode"
+			CACHE STRING "Silence latex warnings.")
 
-		# Shrink PDF files
-		add_custom_target (${_pdf_target}_shrink
-			COMMAND gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4
-			-dPDFSETTINGS=/prepress -dNOPAUSE -dQUIET -dBATCH
-			-sOutputFile=${_shrink_file} ${_pdf_file}
-			COMMAND ${CMAKE_COMMAND} -E rename
-			${_shrink_file} ${_pdf_file}
-			DEPENDS ${_pdf_file})
-		add_depend_to_target (gmt_doc_shrink ${_pdf_target}_shrink)
+		# Find LaTeX
+		include (UseLATEX)
 
-		# Install pdf file (if available)
-		install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_pdf_file}
+		# Make PDF figures
+		add_subdirectory (fig)
+		add_subdirectory (ppt) # must be added after fig
+
+		foreach (_pdf_file ${_docs_output})
+			string (REPLACE ".pdf" ".tex" _tex_file ${_pdf_file})
+			string (REPLACE ".pdf" "_press.pdf" _shrink_file ${_pdf_file})
+			string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
+
+			add_latex_document (${_tex_file}
+				USE_INDEX
+				DEFAULT_PDF
+				MANGLE_TARGET_NAMES)
+
+			# Add pdf to gmt_doc target
+			add_depend_to_target (gmt_doc ${_pdf_target})
+
+			# Make sure PS figures are converted to PDF before LaTeX runs
+			add_dependencies (${_pdf_target} ${_common_depends})
+
+			# Shrink PDF files
+			add_custom_target (${_pdf_target}_shrink
+				COMMAND gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4
+				-dPDFSETTINGS=/prepress -dNOPAUSE -dQUIET -dBATCH
+				-sOutputFile=${_shrink_file} ${_pdf_file}
+				COMMAND ${CMAKE_COMMAND} -E rename
+				${_shrink_file} ${_pdf_file}
+				DEPENDS ${_pdf_file})
+			add_depend_to_target (gmt_doc_shrink ${_pdf_target}_shrink)
+
+			# Install pdf file (if available)
+			install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_pdf_file}
+				DESTINATION ${GMT_DOC_PATH}/pdf
+				COMPONENT Documentation
+				OPTIONAL)
+		endforeach (_pdf_file)
+	endif (PDFLATEX_COMPILER)
+
+	# Create and install pdf manpages file (if available)
+	if (_manfiles_ps AND PS2PDF_CONVERTER)
+		# create file with list of PS manpages
+		set (_manfiles_ps_relative)
+		foreach (_manfile ${_manfiles_ps})
+			file(RELATIVE_PATH _rel_path ${CMAKE_CURRENT_BINARY_DIR} ${_manfile})
+			list (APPEND _manfiles_ps_relative ${_rel_path})
+		endforeach (_manfile ${_manfiles_ps})
+		foreach (_manfile ${_manfiles_suppl_ps})
+			file(RELATIVE_PATH _rel_path ${CMAKE_CURRENT_BINARY_DIR} ${_manfile})
+			list (APPEND _manfiles_suppl_ps_relative ${_rel_path})
+		endforeach (_manfile ${_manfiles_suppl_ps})
+		string (REPLACE ";" "\n" _manfiles_ps_relative "${_manfiles_ps_relative}")
+		string (REPLACE ";" "\n" _manfiles_suppl_ps_relative "${_manfiles_suppl_ps_relative}")
+		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/manfiles_ps.list ${_manfiles_ps_relative})
+		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/manfiles_suppl_ps.list ${_manfiles_suppl_ps_relative})
+
+		# using the list, concatenate PS manpages and convert to PDF
+		add_custom_command (OUTPUT GMT_Manpages.pdf
+			COMMAND xargs cat < manfiles_ps.list |
+			${PS2PDF_CONVERTER} - GMT_Manpages.pdf
+			DEPENDS manpages_all
+			VERBATIM)
+		add_custom_command (OUTPUT GMT_Manpages_suppl.pdf
+			COMMAND xargs cat < manfiles_suppl_ps.list |
+			${PS2PDF_CONVERTER} - GMT_Manpages_suppl.pdf
+			DEPENDS manpages_all
+			VERBATIM)
+		add_custom_target (gmt_pdf_manpages
+			DEPENDS GMT_Manpages.pdf GMT_Manpages_suppl.pdf)
+		add_depend_to_target (gmt_doc gmt_pdf_manpages)
+		install (FILES
+			${CMAKE_CURRENT_BINARY_DIR}/GMT_Manpages.pdf
+			${CMAKE_CURRENT_BINARY_DIR}/GMT_Manpages_suppl.pdf
 			DESTINATION ${GMT_DOC_PATH}/pdf
 			COMPONENT Documentation
 			OPTIONAL)
-	endforeach (_pdf_file)
-endif (PDFLATEX_COMPILER)
+	endif (_manfiles_ps AND PS2PDF_CONVERTER)
+
+endif (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
 # Install target for examples
 install (DIRECTORY examples
@@ -113,45 +166,6 @@ install (DIRECTORY examples
 	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
 	REGEX ".cmake$" EXCLUDE)
-
-# Create and install pdf manpages file (if available)
-if (_manfiles_ps AND PS2PDF_CONVERTER)
-	# create file with list of PS manpages
-	set (_manfiles_ps_relative)
-	foreach (_manfile ${_manfiles_ps})
-		file(RELATIVE_PATH _rel_path ${CMAKE_CURRENT_BINARY_DIR} ${_manfile})
-		list (APPEND _manfiles_ps_relative ${_rel_path})
-	endforeach (_manfile ${_manfiles_ps})
-	foreach (_manfile ${_manfiles_suppl_ps})
-		file(RELATIVE_PATH _rel_path ${CMAKE_CURRENT_BINARY_DIR} ${_manfile})
-		list (APPEND _manfiles_suppl_ps_relative ${_rel_path})
-	endforeach (_manfile ${_manfiles_suppl_ps})
-	string (REPLACE ";" "\n" _manfiles_ps_relative "${_manfiles_ps_relative}")
-	string (REPLACE ";" "\n" _manfiles_suppl_ps_relative "${_manfiles_suppl_ps_relative}")
-	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/manfiles_ps.list ${_manfiles_ps_relative})
-	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/manfiles_suppl_ps.list ${_manfiles_suppl_ps_relative})
-
-	# using the list, concatenate PS manpages and convert to PDF
-	add_custom_command (OUTPUT GMT_Manpages.pdf
-		COMMAND xargs cat < manfiles_ps.list |
-		${PS2PDF_CONVERTER} - GMT_Manpages.pdf
-		DEPENDS manpages_all
-		VERBATIM)
-	add_custom_command (OUTPUT GMT_Manpages_suppl.pdf
-		COMMAND xargs cat < manfiles_suppl_ps.list |
-		${PS2PDF_CONVERTER} - GMT_Manpages_suppl.pdf
-		DEPENDS manpages_all
-		VERBATIM)
-	add_custom_target (gmt_pdf_manpages
-		DEPENDS GMT_Manpages.pdf GMT_Manpages_suppl.pdf)
-	add_depend_to_target (gmt_doc gmt_pdf_manpages)
-	install (FILES
-		${CMAKE_CURRENT_BINARY_DIR}/GMT_Manpages.pdf
-		${CMAKE_CURRENT_BINARY_DIR}/GMT_Manpages_suppl.pdf
-		DESTINATION ${GMT_DOC_PATH}/pdf
-		COMPONENT Documentation
-		OPTIONAL)
-endif (_manfiles_ps AND PS2PDF_CONVERTER)
 
 # Run examples (test)
 if (DO_EXAMPLES)
