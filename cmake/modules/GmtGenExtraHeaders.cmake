@@ -352,9 +352,9 @@ macro (GMT_GEN_GMT_MATH_H)
 		MATCHES_ONLY)
 	string (REPLACE ";" "\n" _op_man "${_op_man}")
 	string_unescape (_op_man "${_op_man}" NOESCAPE_SEMICOLON)
-	set(_op_man "Choose among the following ${GMTMATH_N_OPERATORS} operators.
-	\"args\" are the number of input and output arguments.
-	.TS\nl l l .\nOperator\targs\tReturns\n${_op_man}\n.TE\n")
+	set(_op_man "Choose among the following ${GMTMATH_N_OPERATORS} operators.\n"
+	"\"args\" are the number of input and output arguments.\n"
+	".TS\nl l l .\nOperator\targs\tReturns\n${_op_man}\n.TE\n")
 	file(WRITE gmtmath_man.i ${_op_man})
 endmacro (GMT_GEN_GMT_MATH_H)
 
@@ -427,9 +427,9 @@ macro (GMT_GEN_GRD_MATH_H)
 		MATCHES_ONLY)
 	string (REPLACE ";" "\n" _op_man "${_op_man}")
 	string_unescape (_op_man "${_op_man}" NOESCAPE_SEMICOLON)
-	set(_op_man "Choose among the following ${GRDMATH_N_OPERATORS} operators.
-	\"args\" are the number of input and output arguments.
-	.TS\nl l l .\nOperator\targs\tReturns\n${_op_man}\n.TE\n")
+	set(_op_man "Choose among the following ${GRDMATH_N_OPERATORS} operators.\n"
+	"\"args\" are the number of input and output arguments.\n"
+	".TS\nl l l .\nOperator\targs\tReturns\n${_op_man}\n.TE\n")
 	file(WRITE grdmath_man.i ${_op_man})
 endmacro (GMT_GEN_GRD_MATH_H)
 
