@@ -119,3 +119,12 @@ set (FLOCK off)
 
 # Monolithic install on
 set (GMT_INSTALL_MONOLITHIC ON)
+
+# Enforce GPL conformity per default. This disables routines that cannot
+# be redistributed under the terms of the GPL such as Shewchuk's
+# triangulation.
+set (LICENSE_RESTRICTED GPL)
+
+# Default location of realease documentation. If the directory exists it
+# will be installed in GMT_DOC_PATH instead of creating PDFs from scratch:
+set (GMT_INSTALL_EXTERNAL_DOC ${GMT_SOURCE_DIR}/doc_release)

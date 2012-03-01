@@ -27,10 +27,10 @@
 # booleans.
 #
 
-# Enforce GPL or LGPL conformity. Use this to disable routines that cannot be
+# Enforce GPL or LGPL conformity. Use this to enable routines that cannot be
 # redistributed under the terms of the GPL or LGPL such as Shewchuk's
-# triangulation (valid values are GPL and LGPL) [off]:
-#set (LICENSE_RESTRICTED GPL)
+# triangulation (valid values are GPL, LGPL and off) [GPL]:
+#set (LICENSE_RESTRICTED off)
 
 # Installation path [auto]:
 #set (CMAKE_INSTALL_PREFIX "prefix_path")
@@ -47,6 +47,10 @@
 
 # Set path to GSHHS Shoreline Database [auto]:
 #set (GSHHS_ROOT "gshhs_path")
+
+# Install documentation files from this external location instead of creating
+# the documentation from scratch [${GMT_SOURCE_DIR}/doc_release]:
+#set (GMT_INSTALL_EXTERNAL_DOC OFF)
 
 # Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel [Release]:
 #set (CMAKE_BUILD_TYPE Debug)
