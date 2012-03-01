@@ -56,13 +56,13 @@
 #set (CMAKE_BUILD_TYPE Debug)
 
 # Set location of NetCDF (can be root directory, path to header file or path to nc-config) [auto]:
-#set (NETCDF_DIR "netcdf_install_prefix")
+#set (NETCDF_ROOT "netcdf_install_prefix")
 
 # Set location of GDAL (can be root directory, path to header file or path to gdal-config) [auto]:
-#set (GDAL_DIR "gdal_install_prefix")
+#set (GDAL_ROOT "gdal_install_prefix")
 
 # Set location of PCRE (can be root directory, path to header file or path to pcre-config) [auto]:
-#set (PCRE_DIR "pcre_install_prefix")
+#set (PCRE_ROOT "pcre_install_prefix")
 
 # Enable compatibility mode [FALSE]:
 #set (GMT_COMPAT TRUE)
