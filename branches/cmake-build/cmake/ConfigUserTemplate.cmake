@@ -27,6 +27,11 @@
 # booleans.
 #
 
+# Enforce GPL or LGPL conformity. Use this to disable routines that cannot be
+# redistributed under the terms of the GPL or LGPL such as Shewchuk's
+# triangulation (valid values are GPL and LGPL) [off]:
+#set (LICENSE_RESTRICTED GPL)
+
 # Installation path [auto]:
 #set (CMAKE_INSTALL_PREFIX "prefix_path")
 
@@ -60,9 +65,6 @@
 
 # Enable file locking [FALSE]:
 #set (FLOCK TRUE)
-
-# Use fast, non-GPL triangulation routine by J. Shewchuk [FALSE]:
-#set (TRIANGLE_D TRUE)
 
 # Configure default units (possible values are SI and US) [SI]:
 #set (UNITS "US")

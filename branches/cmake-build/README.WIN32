@@ -164,7 +164,6 @@ Finally we are ready to compile GMT5.
   set (GDAL_DIR z:/software)
   set (PCRE_DIR z:/software)
   set (FLOCK TRUE)
-  set (TRIANGLE_D TRUE)
 
 - Open Windows SDK Command Prompt
 
