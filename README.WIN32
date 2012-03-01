@@ -49,7 +49,7 @@ installed in sudirectories of z:\software\ any other directory is fine
 though.
 
 Obtain the CMake bundled sources of netCDF via subversion from
-svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/fwobbe/netcdf-4.1.3 and follow
+svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/win32-dev/netcdf-4.1.3 and follow
 the instructions in README.CMake in the netcdf-4.1.3 directory.
 
 [...]
@@ -80,7 +80,7 @@ GDAL (optional)
 
 We assume that you already installed HDF4, HDF5, cURL, netCDF to z:\software.
 If that is not the case get the sources of netCDF for Windows from
-svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/fwobbe/netcdf-4.1.3
+svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/win32-dev/netcdf-4.1.3
 and follow the instructions in README.CMake in the source directory.
 
 Now that all dependent libraries are available we can proceed with GDAL. In
