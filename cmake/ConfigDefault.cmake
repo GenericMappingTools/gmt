@@ -49,7 +49,9 @@ set (GMT_PACKAGE_VERSION_PATCH "0")
 # The GMT package version.
 set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
 
-set (GMT_VERSION_YEAR "2011")
+# GMT_VERSION_YEAR set to current date in cmake/modules/ConfigCMake.cmake
+# if not specified here:
+#set (GMT_VERSION_YEAR "2012")
 #set (GSHHS_VERSION "2.2.0")
 #set (MANDATE "")
 
@@ -125,6 +127,12 @@ set (GMT_INSTALL_MONOLITHIC ON)
 # triangulation.
 set (LICENSE_RESTRICTED GPL)
 
-# Default location of realease documentation. If the directory exists it
-# will be installed in GMT_DOC_PATH instead of creating PDFs from scratch:
+# Default location of realease documentation. If the directory exists in the
+# source tree, the files will be copied to GMT_DOC_PATH instead of creating
+# PDFs from source:
 set (GMT_INSTALL_EXTERNAL_DOC ${GMT_SOURCE_DIR}/doc_release)
+
+# Directory in which to install the release sources per default
+set (GMT_RELEASE_PREFIX ${GMT_BINARY_DIR}/GMT-${GMT_PACKAGE_VERSION}-src)
+
+# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

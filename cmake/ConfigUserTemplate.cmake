@@ -49,7 +49,7 @@
 #set (GSHHS_ROOT "gshhs_path")
 
 # Install documentation files from this external location instead of creating
-# the documentation from scratch [${GMT_SOURCE_DIR}/doc_release]:
+# new PDF and HTML documents from scratch [${GMT_SOURCE_DIR}/doc_release]:
 #set (GMT_INSTALL_EXTERNAL_DOC OFF)
 
 # Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel [Release]:
@@ -87,6 +87,10 @@
 #set (DO_TESTS TRUE)
 # Number of parallel test jobs:
 #set (N_TEST_JOBS 4)
+
+# Directory in which to install the release sources per default
+# [${GMT_BINARY_DIR}/GMT-${GMT_PACKAGE_VERSION}-src]:
+#set (GMT_RELEASE_PREFIX "release-src-prefix")
 
 # Extra debugging for developers:
 #add_definitions(-DDEBUG)

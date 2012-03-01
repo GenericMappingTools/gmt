@@ -142,6 +142,15 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 					DEPENDS ${_manfile} rman
 					VERBATIM)
 
+				# install target for realease documentation
+				add_custom_target (gmt_manfiles_html_release_${_manfile}
+					COMMAND ${CMAKE_COMMAND} -E copy_if_different
+					${_manfile}.html
+					${GMT_RELEASE_PREFIX}/doc_release/html/${_manfile}.html
+					DEPENDS ${_manfile}.html)
+				add_depend_to_target (gmt_release
+					gmt_manfiles_html_release_${_manfile})
+
 				# append to list of html manfiles
 				list (APPEND _manfiles_html
 					"${CMAKE_CURRENT_BINARY_DIR}/${_manfile}.html")

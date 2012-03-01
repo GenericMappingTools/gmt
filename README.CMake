@@ -99,6 +99,10 @@ To generate the PDF documentation you need LaTeX:
 
   $ make -j8 gmt_doc
 
+You can choose to install documentation files from an external location instead
+of generating the PDF and HTML files from the sources. This is convenient if
+LaTeX is not available. Set GMT_INSTALL_EXTERNAL_DOC in cmake/ConfigUser.cmake.
+
 Installing:
 ~~~~~~~~~~~
 
@@ -140,6 +144,19 @@ Windows (ZIP, NSIS), and UNIX (TGZ, TBZ2). On Windows you need to install NSIS
 
 You probably also want to run cmake with _-DGMT_INSTALL_MONOLITHIC=ON_ before
 creating packages.
+
+Creating a source package:
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Set GMT_RELEASE_PREFIX in cmake/ConfigUser.cmake and run cmake. Then do
+
+  $ make gmt_doc
+  $ make gmt_release
+
+You should then edit ${GMT_RELEASE_PREFIX}/cmake/ConfigDefault.cmake and
+set GMT_PACKAGE_VERSION_MAJOR, GMT_PACKAGE_VERSION_MINOR, and
+GMT_PACKAGE_VERSION_PATCH. Also uncomment and set
+GMT_SOURCE_CODE_CONTROL_VERSION_STRING to the current svn version.
 
 In-build-dir tests:
 ~~~~~~~~~~~~~~~~~~~
