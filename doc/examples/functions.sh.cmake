@@ -61,11 +61,12 @@ pscmp () {
     now=$(date "+%F %T")
     echo "RMS Error = $rms [FAIL]"
     echo "$now ${d}/${f}: RMS Error = $rms" >> ../fail_count.d
+    make_pdf ${1:-$ps} # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
     echo "RMS Error = $rms [PASS]"
-    rm -f ${f}.png
+    rm -f ${f}.png ${f}.pdf
   fi
 }
 
@@ -83,7 +84,7 @@ function on_exit()
 {
   set +e
   trap - EXIT # Restore EXIT trap
-  make_pdf
+  #make_pdf
   pscmp
   cleanup
 }
