@@ -1,3 +1,0 @@
-$Id$
-Example 30.  Simple graphing of mathematical functions can be done by using
-the graph mode; note how the mathangle symbol is used to show a particular angle.

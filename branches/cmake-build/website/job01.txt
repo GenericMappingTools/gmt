@@ -1,4 +1,0 @@
-$Id$
-Example 1.   Contour maps of the low-order geoid using a Hammer equal-area projection
-with shaded continents as background.  The complete illustration is a superposition
-of 4 plots generated with the programs pscoast and grdcontour.
