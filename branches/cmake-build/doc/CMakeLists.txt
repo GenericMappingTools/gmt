@@ -106,7 +106,7 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 				-sOutputFile=${_shrink_file} ${_pdf_file}
 				COMMAND ${CMAKE_COMMAND} -E rename
 				${_shrink_file} ${_pdf_file}
-				DEPENDS ${_pdf_file})
+				DEPENDS gmt_doc)
 			add_depend_to_target (gmt_doc_shrink ${_pdf_target}_shrink)
 
 			# Install pdf file (if available)
