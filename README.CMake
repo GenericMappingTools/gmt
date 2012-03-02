@@ -150,8 +150,9 @@ Creating a source package:
 
 Set GMT_RELEASE_PREFIX in cmake/ConfigUser.cmake and run cmake. Then do
 
-  $ make gmt_doc
-  $ make gmt_release
+  $ make gmt_doc         # make PDF and HTML documentation
+  $ make gmt_doc_shrink  # reduce the size of the PDFs
+  $ make gmt_release     # export the source tree and install doc
 
 You should then edit ${GMT_RELEASE_PREFIX}/cmake/ConfigDefault.cmake and
 set GMT_PACKAGE_VERSION_MAJOR, GMT_PACKAGE_VERSION_MINOR, and

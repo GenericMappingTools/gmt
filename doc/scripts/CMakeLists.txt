@@ -37,8 +37,9 @@ set (_scr_strip GMT_-B_custom.sh GMT_-B_time1.sh GMT_-B_time2.sh
 	GMT_TM.sh GMT_transverse_merc.sh GMT_winkel.sh)
 
 # Other scripts that are only used in tests
+# do not include GMT_-U.sh as this would always fail
 set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
-	GMT_-B_pow.sh GMT_-J.sh GMT_-OK.sh GMT_-P.sh GMT_-R.sh GMT_-U.sh GMT_-XY.sh
+	GMT_-B_pow.sh GMT_-J.sh GMT_-OK.sh GMT_-P.sh GMT_-R.sh GMT_-XY.sh
 	GMT_App_E.sh GMT_App_F.sh GMT_App_G.sh GMT_App_J.sh GMT_App_M_1.sh
 	GMT_App_N.sh GMT_App_O.sh GMT_arrows.sh GMT_atan.sh GMT_color_interpolate.sh
 	GMT_coverlogo.sh GMT_Defaults_1a.sh GMT_Defaults_1b.sh GMT_Defaults_1c.sh
@@ -46,11 +47,8 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_pstext_clearance.sh GMT_pstext_justify.sh GMT_registration.sh
 	GMT_RGBchart.sh GMT_utm_zones.sh GMT_volcano.sh)
 
-# 
-
 set (_all_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other})
 string (REGEX REPLACE "GMT_App_O_[0-9].sh" "" _all_tests "${_all_tests}")
-string (REPLACE "GMT_-U.sh" "" _all_tests "${_all_tests}")
 
 # todo: remove redundancy
 set (_all_scripts ${_scr_nostrip} ${_scr_strip})
