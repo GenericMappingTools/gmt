@@ -1,4 +1,0 @@
-$Id$
-Example 6.   Two different types of histograms can be made in GMT.  The top
-illustration shows the conventional variety (drawn with pshistogram), while the bottom presents a polar
-histogram used for angular data (drawn with psrose).

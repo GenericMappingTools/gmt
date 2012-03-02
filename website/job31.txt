@@ -1,3 +1,0 @@
-$Id$
-Example 31.  Demonstration of how you can include non-standard PostScript fonts
-in your illustrations.

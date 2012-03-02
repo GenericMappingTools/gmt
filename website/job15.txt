@@ -1,9 +1,0 @@
-$Id$
-Example 15.  Gridding data with large unconstrained regions can cause problems.
-There are several techniques that can be used in GMT; this example illustrates
-some of them.  Lower left panel shows contours of the surface generated with
-nearneighbor based on available ship bathymetry.  Being a local procedure it will
-not extrapolate the surface far away from the control data.  surface, on the
-other hand (lower right), will.  One can deal with this by either imposing a
-clip mask based on the data distribution (upper left), or simply overlay
-the continents to mask out the unwanted contours.
