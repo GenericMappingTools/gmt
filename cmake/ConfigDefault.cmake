@@ -38,7 +38,7 @@ set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 # The GMT package version.
 set (GMT_PACKAGE_VERSION_MAJOR "5")
 set (GMT_PACKAGE_VERSION_MINOR "0")
-set (GMT_PACKAGE_VERSION_PATCH "0")
+set (GMT_PACKAGE_VERSION_PATCH "1b")
 
 # The subversion revision of the GMT source code.
 # This is manually set when making GMT *public* releases.
@@ -55,8 +55,41 @@ set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MIN
 #set (GSHHS_VERSION "2.2.0")
 #set (MANDATE "")
 
+
 # Use SI units per default
-set (UNITS "SI")
+if (NOT UNITS)
+	set (UNITS "SI")
+endif (NOT UNITS)
+
+# File locking off
+if (NOT FLOCK)
+	set (FLOCK off)
+endif (NOT FLOCK)
+
+# Monolithic install on
+if (NOT GMT_INSTALL_MONOLITHIC)
+	set (GMT_INSTALL_MONOLITHIC ON)
+endif (NOT GMT_INSTALL_MONOLITHIC)
+
+# Enforce GPL conformity per default. This disables routines that cannot
+# be redistributed under the terms of the GPL such as Shewchuk's
+# triangulation.
+if (NOT LICENSE_RESTRICTED)
+	set (LICENSE_RESTRICTED GPL)
+endif (NOT LICENSE_RESTRICTED)
+
+# Default location of realease documentation. If the directory exists in the
+# source tree, the files will be copied to GMT_DOC_PATH instead of creating
+# PDFs from source:
+if (NOT GMT_INSTALL_EXTERNAL_DOC)
+	set (GM_INSTALL_EXTERNAL_DOC ${GMT_SOURCE_DIR}/doc_release)
+endif (NOT GMT_INSTALL_EXTERNAL_DOC)
+
+# Directory in which to install the release sources per default
+if (NOT GMT_RELEASE_PREFIX)
+	set (GMT_RELEASE_PREFIX ${GMT_BINARY_DIR}/GMT-${GMT_PACKAGE_VERSION}-src)
+endif (NOT GMT_RELEASE_PREFIX)
+
 
 # The GMT copyright - string version to be used in a source file.
 set (GMT_COPYRIGHT_STRING "")
@@ -102,37 +135,23 @@ endif (NOT CMAKE_CONFIGURATION_TYPES)
 
 
 # Turn this on if you want to...
-#       Unix: see compiler commands echoed to console and messages about make entering and leaving directories.
-#       VisualStudio: see compiler commands.
+#  Unix: see compiler commands echoed to console and messages about make
+#  entering and leaving directories.
+#  VisualStudio: see compiler commands.
 # Setting CMAKE_VERBOSE_MAKEFILE to 'true'...
-#       Unix: puts 'VERBOSE=1' in the top Makefile.
-#       VisualStudio: sets SuppressStartupBanner to FALSE.
-# If CMAKE_VERBOSE_MAKEFILE is set to 'false' and you want to turn on verbosity temporarily you can...
-#       Unix: type 'make VERBOSE=1'  on the command-line when building.
-#       VisualStudio: change SuppressStartupBanner to 'no' in "project settings->configuration properties->*->general".
-set (CMAKE_VERBOSE_MAKEFILE false)
+#  Unix: puts 'VERBOSE=1' in the top Makefile.
+#  VisualStudio: sets SuppressStartupBanner to FALSE.
+# If CMAKE_VERBOSE_MAKEFILE is set to 'false' and you want to turn on
+# verbosity temporarily you can...
+#  Unix: type 'make VERBOSE=1'  on the command-line when building.
+#  VisualStudio: change SuppressStartupBanner to 'no' in "project
+#  settings->configuration properties->*->general".
+if (NOT CMAKE_VERBOSE_MAKEFILE)
+	set (CMAKE_VERBOSE_MAKEFILE false)
+endif (NOT CMAKE_VERBOSE_MAKEFILE)
 
 # prefer shared libs over static
 set (BUILD_SHARED_LIBS true)
 set (CMAKE_FIND_STATIC LAST)
-
-# File locking off
-set (FLOCK off)
-
-# Monolithic install on
-set (GMT_INSTALL_MONOLITHIC ON)
-
-# Enforce GPL conformity per default. This disables routines that cannot
-# be redistributed under the terms of the GPL such as Shewchuk's
-# triangulation.
-set (LICENSE_RESTRICTED GPL)
-
-# Default location of realease documentation. If the directory exists in the
-# source tree, the files will be copied to GMT_DOC_PATH instead of creating
-# PDFs from source:
-set (GMT_INSTALL_EXTERNAL_DOC ${GMT_SOURCE_DIR}/doc_release)
-
-# Directory in which to install the release sources per default
-set (GMT_RELEASE_PREFIX ${GMT_BINARY_DIR}/GMT-${GMT_PACKAGE_VERSION}-src)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
