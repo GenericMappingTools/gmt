@@ -21,7 +21,7 @@ function make_pdf()
 
 # Compare the ps file with its original. Check $1.ps (if $1 given) or $ps
 pscmp () {
-  make_pdf ${1:-$ps} # make pdf file
+  #make_pdf ${1:-$ps} # make pdf file
   f=${1:-$(basename $ps .ps)}
   d=$(basename $PWD)
   if ! [ -x "$GRAPHICSMAGICK" ]; then
@@ -41,11 +41,12 @@ pscmp () {
     now=$(date "+%F %T")
     echo "RMS Error = $rms [FAIL]"
     echo "$now ${d}/${f}: RMS Error = $rms" >> ../fail_count.d
+    make_pdf ${1:-$ps} # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
     echo "RMS Error = $rms [PASS]"
-    rm -f ${f}.png ${f}.ps
+    rm -f ${f}.png ${f}.ps ${f}.pdf
   fi
 }
 
