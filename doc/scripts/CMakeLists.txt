@@ -46,8 +46,11 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_pstext_clearance.sh GMT_pstext_justify.sh GMT_registration.sh
 	GMT_RGBchart.sh GMT_utm_zones.sh GMT_volcano.sh)
 
+# 
+
 set (_all_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other})
 string (REGEX REPLACE "GMT_App_O_[0-9].sh" "" _all_tests "${_all_tests}")
+string (REPLACE "GMT_-U.sh" "" _all_tests "${_all_tests}")
 
 # todo: remove redundancy
 set (_all_scripts ${_scr_nostrip} ${_scr_strip})
