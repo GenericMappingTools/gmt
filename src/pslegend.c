@@ -29,10 +29,6 @@
 #include "gmt.h"
 #include "gmt_modules.h"
 
-#ifdef WIN32
-#include <process.h>
-#endif
-
 #define FRAME_CLEARANCE	4.0	/* In points */
 #define FRAME_GAP	2.0	/* In points */
 #define FRAME_RADIUS	6.0	/* In points */

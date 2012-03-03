@@ -8,6 +8,9 @@
 \usepackage{color}
 \usepackage{mathptmx}
 \usepackage{verbatim}
+\usepackage{moreverb} % do not ignore tabs in verbatiminput
+\let\verbatiminput=\verbatimtabinput
+\def\verbatimtabsize{2\relax}
 \usepackage{tocbibind}
 \usepackage{hyperref}
 
@@ -59,10 +62,10 @@
 
 \newcommand{\GMTprog}[1]{\GMTprogi{#1}\index{#1@\textsfbf{#1}}}
 
-\newcommand{\script}[2][fig]{%
+\newcommand{\script}[1]{%
    \begingroup
    \scriptsize\vspace{0.25\baselineskip}\noindent\hrulefill\vspace{-0.75\baselineskip}%
-   \verbatiminput{#1/#2.tex}%
+   \verbatiminput{scripts/#1.txt}%
    \vspace{-1.25\baselineskip}\noindent\hrulefill\vspace{0.25\baselineskip}%
    \endgroup
 }

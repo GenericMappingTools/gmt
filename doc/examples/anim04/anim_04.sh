@@ -22,6 +22,7 @@ px=7.2
 py=4.8
 dpi=100
 name=`basename $0 '.sh'`
+ps=../${name}.ps
 
 # Set up flight path
 project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q > $$.path.d
@@ -38,7 +39,7 @@ while read lon lat dist; do
 	psxy -R -J -O -K -W1p $$.path.d >> $$.ps
 	pstext -R0/$px/0/$py -Jx1i -F+f14p,Helvetica-Bold+jTL -O >> $$.ps <<< "0 4.6 $ID"
 	if [ $# -eq 0 ]; then
-		mv $$.ps ../$name.ps
+		mv $$.ps $ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"
 	fi

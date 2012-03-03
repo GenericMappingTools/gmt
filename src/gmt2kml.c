@@ -933,7 +933,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						if (Ctrl->C.active) index = GMT_get_index (GMT, P, out[GMT_Z]);
 						out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
 					}
-					if (Ctrl->F.mode < LINE && GMT_is_fnan (out[GMT_Z])) continue;	/* Symbols with NaN height are not plotted anyhow */
+					if (Ctrl->F.mode < LINE && GMT_is_dnan (out[GMT_Z])) continue;	/* Symbols with NaN height are not plotted anyhow */
 
 					if (Ctrl->F.mode < LINE) {	/* Print the information for this point */
 						tabs (N++); printf ("<Placemark>\n");
@@ -991,7 +991,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						tabs (--N); printf ("</Placemark>\n");
 					}
 					else {	/* For lines and polygons we just output the coordinates */
-						if (GMT_is_fnan (out[GMT_Z])) out[GMT_Z] = 0.0;	/* Google Earth can not handle lines at NaN altitude */
+						if (GMT_is_dnan (out[GMT_Z])) out[GMT_Z] = 0.0;	/* Google Earth can not handle lines at NaN altitude */
 						tabs (N);
 						ascii_output_one (GMT, out[GMT_X], GMT_X);	printf (",");
 						ascii_output_one (GMT, out[GMT_Y], GMT_Y);	printf (",");

@@ -1015,7 +1015,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			fprintf (fpo, "%s\n", line);
 		}
 
-		/* Receed a bit to test the contents of last line. -7 for when
+		/* Recede a bit to test the contents of last line. -7 for when
 		 * PS has CRLF endings */
 		fseek (fp, -7, SEEK_END);
 		/* Read until last line is encountered */

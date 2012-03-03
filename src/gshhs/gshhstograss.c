@@ -47,12 +47,19 @@
 
 #include "gshhs.h"
 #include <string.h>
-#include <sys/types.h>
-#ifdef WIN32
-#include <io.h>
-#else
-#include <unistd.h>
+
+#ifdef HAVE_SYS_TYPES_H_
+#	include <sys/types.h>
 #endif
+
+#ifdef HAVE_UNISTD_H_
+#	include <unistd.h>
+#endif
+
+#ifdef HAVE_IO_H_
+#	include <io.h>
+#endif
+
 #include <time.h>
 
 void help_msg(char *progname);

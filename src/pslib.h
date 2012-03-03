@@ -31,7 +31,15 @@
 extern "C" {
 #endif
 
+/* CMake definitions: This must be first! */
+#include "gmt_config.h"
+
+/* Declaration modifiers for DLL support (MSC et al) */
+#include "declspec.h"
+
 #include <stdio.h>
+#include <stdlib.h>
+#include "gmt_notposix.h"
 
 /* Declaration of type PSL_LONG */
 
@@ -41,24 +49,6 @@ typedef __int64 PSL_LONG;	/* A signed 8-byte integer */
 #else
 typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 #define PSL_LL "l"
-#endif
-
-/* Declaration modifiers for DLL support (MSC et al) */
-
-#if defined(DLL_PSL)		/* define when library is a DLL */
-#if defined(DLL_EXPORT)		/* define when building the library */
-#define MSC_EXTRA_PSL __declspec(dllexport)
-#else
-#define MSC_EXTRA_PSL __declspec(dllimport)
-#endif
-#else
-#define MSC_EXTRA_PSL
-#endif				/* defined(DLL_PSL) */
-
-/* Unless DLL_PSL is defined, EXTERN_MSC is simply extern */
-
-#ifndef EXTERN_MSC
-#define EXTERN_MSC extern MSC_EXTRA_PSL
 #endif
 
 /* Number of PostScript points in one inch */

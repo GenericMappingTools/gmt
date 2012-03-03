@@ -24,8 +24,11 @@
  *        	a substantial difference is that all is need is one single call to the 
  *        	function (with location arrays transmitted in input), and all selected 
  *        	field sources contribution add up to the final result.
- * 
+ *
  *-------------------------------------------------------------------------*/
+
+#include "mgd77.h"
+#include "cm4_functions.h"
 
 #define I_DIM(x, y) (((x) > (y)) ? (x) - (y) : 0)
 

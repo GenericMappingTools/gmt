@@ -12,9 +12,9 @@ if [ $GDAL -eq 0 ]; then exit; fi
 cp ../grdimage/gdal/needle.jpg itesti.jpg
 # Fake three identical PS files via temporary links
 cd orig
-ln -s itesti.ps im_f.ps
-ln -s itesti.ps im_c.ps
-ln -s itesti.ps im_r.ps
+ln -sf itesti.ps im_f.ps
+ln -sf itesti.ps im_c.ps
+ln -sf itesti.ps im_r.ps
 cd ..
 header "Test the API for passing IMAGE via file (GDAL only)"
 ps=im_f.ps

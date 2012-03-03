@@ -454,4 +454,4 @@ BD(mgd77sniffer) 08010001 OPT(G)depth,/data/GRIDS/etopo5_hdr.i2 OPT(g)faa,/data/
 .IR x2sys_init (1)
 #include "refs.i"
 The Marine Geophysical Data Exchange Format - MGD77, see
-IT(http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt)
+\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP.

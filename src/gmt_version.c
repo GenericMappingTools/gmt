@@ -25,7 +25,7 @@
 
 #include "gmt.h"
 
-#if HAVE_SVN_VERSION
+#ifdef HAVE_SVN_VERSION
 #define SVN_SUFFIX "_r" SVN_VERSION_STRING
 #else
 #define SVN_SUFFIX ""

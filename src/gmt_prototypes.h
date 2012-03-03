@@ -180,6 +180,10 @@ EXTERN_MSC char *GMT_trim_segheader (struct GMT_CTRL *C, char *line);
 EXTERN_MSC GMT_LONG GMT_alloc_vectors (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_LONG n_rows);
 EXTERN_MSC GMT_LONG GMT_alloc_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, GMT_LONG type, GMT_LONG n_rows);
 
+#ifdef WIN32
+EXTERN_MSC void DOS_path_fix (char *dir);
+#endif
+
 /* gmt_proj.c: */
 
 EXTERN_MSC double GMT_lat_swap_quick (struct GMT_CTRL *C, double lat, double c[]);
@@ -278,11 +282,15 @@ EXTERN_MSC void GMT_pickdefaults (struct GMT_CTRL *C, GMT_LONG lines, struct GMT
 EXTERN_MSC void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options);
 EXTERN_MSC GMT_LONG GMT_geo_C_format (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file);
-EXTERN_MSC GMT_LONG GMT_equal_double (double A, double B, int maxUlps);
-EXTERN_MSC GMT_LONG GMT_equal_float  (float A, float B, int maxUlps);
+EXTERN_MSC GMT_LONG GMT_equal_double (double A, double B, int64_t maxUlps);
+EXTERN_MSC GMT_LONG GMT_equal_float  (float A, float B, int32_t maxUlps);
 
 EXTERN_MSC GMT_LONG GMT_message (struct GMT_CTRL *C, char *format, ...);
 EXTERN_MSC GMT_LONG GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...);
+
+#ifdef WIN32
+EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
+#endif
 
 #ifdef MIRONE 
 EXTERN_MSC struct GMT_CTRL * GMT_short_begin (int argc, char **argv);

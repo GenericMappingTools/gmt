@@ -356,7 +356,7 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
 				value = grid[inc*(ij+k[i])+off];
-				if (GMT_is_fnan (value))
+				if (GMT_is_dnan (value))
 					tmp_f[i] = (float)header->nan_value;
 				else if (fabs(value) > FLT_MAX) {
 					tmp_f[i] = (float)header->nan_value;
@@ -378,7 +378,7 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
 				value = grid[inc*(ij+k[i])+off];
-				if (GMT_is_fnan (value))
+				if (GMT_is_dnan (value))
 					tmp_i[i] = irint (header->nan_value);
 				else if (value <= limit[0] || value >= limit[1]) {
 					tmp_i[i] = irint (header->nan_value);

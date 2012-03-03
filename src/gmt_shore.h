@@ -26,6 +26,12 @@
 #ifndef _GMT_SHORE_H
 #define _GMT_SHORE_H
 
+/* Declaration modifier for netcdf DLL support
+ * annoying: why can't netcdf.h do this on its own? */
+#if defined WIN32 && ! defined NETCDF_STATIC
+#define DLL_NETCDF
+#endif
+
 #include "netcdf.h"
 
 enum GMT_enum_gshhs {GSHHS_MAX_DELTA = 65535,	/* Largest value to store in a unsigned short, used as largest dx or dy in bin  */

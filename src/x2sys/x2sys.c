@@ -744,7 +744,7 @@ GMT_LONG x2sys_read_mgd77file (struct GMT_CTRL *C, char *fname, double ***data, 
 	while (!MGD77_Read_Data_Record (C, &M, &H, dvals, tvals)) {		/* While able to read a data record */
 		GMT_lon_range_adjust (s->geodetic, &dvals[MGD77_LONGITUDE]);
 		for (i = 0; i < s->n_out_columns; i++) z[i][j] = dvals[col[i]];
-		if (p->year == 0 && !GMT_is_fnan (dvals[0])) p->year = get_first_year (C, dvals[0]);
+		if (p->year == 0 && !GMT_is_dnan (dvals[0])) p->year = get_first_year (C, dvals[0]);
 		j++;
 		if (j == n_alloc) {
 			n_alloc <<= 1;
