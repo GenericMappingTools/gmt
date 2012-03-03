@@ -112,9 +112,10 @@ set (GMT_DEMOS2_SRCS gmtmercmap.c testgmt5.c testgmtio.c testio.c)
 # source files
 set (GMT_DEMOS_SRCS gmt.c ${GMT_DEMOS2_SRCS})
 
-if (TRIANGLE_D)
+if (NOT LICENSE_RESTRICTED)
 	set (GMT_TRIANGLE_SRCS triangle.c triangle.h)
-endif (TRIANGLE_D)
+	set (GMT_EXTRA_LICENSE_TERMS ${CMAKE_CURRENT_DIR}/README.TRIANGLE)
+endif (NOT LICENSE_RESTRICTED)
 
 set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c
 	colmath.c filter1d.c fitcircle.c gmt2kml.c

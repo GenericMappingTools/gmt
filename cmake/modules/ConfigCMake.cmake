@@ -125,6 +125,7 @@ else (LICENSE_RESTRICTED) # off
 	# no restrictions at all
 	# enable Shewchuk's triangle routine
 	set (TRIANGLE_D ON)
+	set (GMT_EXTRA_LICENSE_FILES ${GMT_SOURCE_DIR}/src/README.TRIANGLE)
 endif (LICENSE_RESTRICTED)
 
 # set default triangulation method

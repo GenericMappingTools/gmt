@@ -27,7 +27,43 @@ set (CPACK_PACKAGE_VERSION_PATCH ${GMT_PACKAGE_VERSION_PATCH})
 set (CPACK_PACKAGE_VERSION ${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
 set (CPACK_PACKAGE_INSTALL_DIRECTORY GMT-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
 set (CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
-set (CPACK_RESOURCE_FILE_LICENSE "${GMT_SOURCE_DIR}/COPYING.LESSERv3")
+set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED")
+
+
+# Read GPL and LGPL license files
+file(READ ${GMT_SOURCE_DIR}/COPYINGv3 _license_gpl)
+file(READ ${GMT_SOURCE_DIR}/COPYING.LESSERv3 _license_lgpl)
+
+set (_license_extra)
+if (NOT LICENSE_RESTRICTED)
+	# Read extra license files
+	foreach (_license_file ${GMT_EXTRA_LICENSE_FILES})
+		file(READ ${_license_file} _license_string)
+		set (_license_extra
+			"${_license_extra}\n---------------------------------------------------------------------------\n\n${_license_string}")
+	endforeach (_license_file ${GMT_EXTRA_LICENSE_FILES})
+
+	# Copy combined license template
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy
+		${CMAKE_CURRENT_SOURCE_DIR}/COPYING.RESTRICTED.template
+		${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED)
+else (NOT LICENSE_RESTRICTED)
+	# Clear contents of license file if it exists
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f
+		${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED)
+endif (NOT LICENSE_RESTRICTED)
+
+# Append GPL, LGPL, and licenses from GMT_EXTRA_LICENSE_FILES
+set (_license_combined "${_license_gpl}")
+if (NOT LICENSE_RESTRICTED STREQUAL GPL)
+	set (_license_combined
+		"${_license_combined}\n---------------------------------------------------------------------------\n\n${_license_lgpl}")
+endif (NOT LICENSE_RESTRICTED STREQUAL GPL)
+set (_license_combined "${_license_combined}\n${_license_extra}")
+
+# Append to COPYING.COMBINED or create new combined license file
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED "${_license_combined}")
+
 
 # Install components:
 set (CPACK_COMPONENTS_ALL Runtime Documentation)
