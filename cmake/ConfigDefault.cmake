@@ -82,7 +82,7 @@ endif (NOT DEFINED LICENSE_RESTRICTED)
 # source tree, the files will be copied to GMT_DOC_PATH instead of creating
 # PDFs from source:
 if (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
-	set (GM_INSTALL_EXTERNAL_DOC ${GMT_SOURCE_DIR}/doc_release)
+	set (GMT_INSTALL_EXTERNAL_DOC ${GMT_SOURCE_DIR}/doc_release)
 endif (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
 
 # Directory in which to install the release sources per default
