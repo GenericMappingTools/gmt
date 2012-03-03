@@ -133,7 +133,7 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 			add_custom_target (${_pdf_target}_release
 				COMMAND ${CMAKE_COMMAND} -E copy_if_different
 				${_pdf_file} ${GMT_RELEASE_PREFIX}/doc_release/pdf/${_pdf_file}
-				DEPENDS ${_pdf_file})
+				DEPENDS svn_export_release ${_pdf_file})
 			add_depend_to_target (gmt_release ${_pdf_target}_release)
 		endforeach (_pdf_file)
 	endif (PDFLATEX_COMPILER)
@@ -184,7 +184,7 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			GMT_Manpages_suppl.pdf
 			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Manpages_suppl.pdf
-			DEPENDS gmt_pdf_manpages)
+			DEPENDS gmt_pdf_manpages svn_export_release)
 		add_depend_to_target (gmt_release gmt_pdf_manpages_release)
 	endif (_manfiles_ps AND PS2PDF_CONVERTER)
 
