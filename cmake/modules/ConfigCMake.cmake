@@ -128,6 +128,10 @@ else (LICENSE_RESTRICTED) # off
 	set (GMT_EXTRA_LICENSE_FILES ${GMT_SOURCE_DIR}/src/README.TRIANGLE)
 endif (LICENSE_RESTRICTED)
 
+# location of GNU license files
+set (COPYING_GPL ${GMT_SOURCE_DIR}/COPYINGv3)
+set (COPYING_LGPL ${GMT_SOURCE_DIR}/COPYING.LESSERv3)
+
 # set default triangulation method
 if (TRIANGLE_D)
 	set (GMT_TRIANGULATE "Shewchuk")
