@@ -1,0 +1,94 @@
+#include "common_options.txt"
+.TH SAMPLE1D 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+sample1d \- Resample 1-D table data using splines
+.SH SYNOPSIS
+BD(sample1d) [ IT(table) ] [ OPT(A)BD(m)|BD(p) ] [ OPT(Fl)|BD(a)|BD(c)|BD(n) ] [ OPT(I)IT(inc)[IT(unit)] ] 
+[ OPT(N)IT(knotfile) ] [ OPT(S)IT(start)[/IT(stop)] ] [ OPT(T)IT(col) ] 
+[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ]
+.SH DESCRIPTION
+BD(sample1d) reads a multi-column ASCII [or binary] data set from file [or standard input] and interpolates the
+timeseries/profile at locations where the user needs the values.  The user must provide
+the column number of the independent (monotonically increasing BD(or) decreasing) variable.  Equidistant or arbitrary sampling can
+be selected.  All columns are resampled based on the new sampling interval.
+Several interpolation schemes are available.  Extrapolation outside the range of the input data is not supported.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
+.TP
+IT(table)
+This is one or more ASCII [of binary, see GMT_bi_OPT] files with one column containing the independent variable (which must
+be monotonically in/de-creasing) and the remaining columns holding other data values.
+If no file is provided, BD(sample1d) reads from standard input.
+.TP
+OPT(A)BD(m)|BD(p)
+For spherical surface resampling (see OPT(I)) we resample along great circle arcs.
+Alternatively, use OPT(Am) to resample by first following a meridian,
+then a parallel. Or use OPT(Ap) to start following a parallel, then a meridian.
+(This can be practical for resampling lines along parallels, for example).
+.TP
+OPT(Fl)|BD(a)|BD(c)|BD(n)
+Choose from BD(l) (Linear), BD(a) (Akima spline), BD(c) (natural cubic spline),
+and BD(n) (no interpolation: nearest point) [Default is OPT(Fa)].
+You may change the default interpolant; see BD(GMT_INTERPOLANT) in your BD(gmt.conf) file.
+.TP
+OPT(I)IT(inc)[IT(unit)]
+IT(inc) defines the sampling interval [Default is the separation between the first and
+second abscissa point in the IT(infile)].
+Append a distance unit (see UNITS) to indicate that the first two columns contain
+longitude, latitude and you wish to resample this path using spherical segments with a nominal spacing of
+IT(inc) in the chosen units.  See OPT(Am)|BD(p) to only sample along meridians and parallels.
+.TP
+OPT(N)IT(knotfile)
+IT(knotfile) is an optional ASCII file with the x locations where the data set will be resampled in the first column.
+Note: if OPT(H) is selected it applies to both IT(infile) and IT(knotfile).
+.TP
+OPT(S)IT(start)
+For equidistant sampling, IT(start) indicates the location of the first output value. [Default
+is the smallest even multiple of IT(inc) inside the range of IT(infile)].  Optionally,
+append /IT(stop) to indicate the location of the last output value [Default is the
+largest even multiple of IT(inc) inside the range of IT(infile)].
+.TP
+OPT(T)IT(col)
+Sets the column number of the independent variable [Default is 0 (first)].
+#include "explain_-V.txt"
+#include "explain_-bi.txt"
+[Default is 2 (or at least the number of columns implied by OPT(T))].
+#include "explain_-bo.txt"
+[Default is same as input].
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_help.txt"
+#include "explain_distunits.txt"
+#include "explain_precision.txt"
+.SH CALENDAR TIME SAMPLING
+If the abscissa are calendar times then you must use the OPT(f) option to indicate this.  Furthermore,
+OPT(I) then expects an increment in the current BD(TIME_UNIT) units.  There is not yet support for
+variable intervals such as months.
+.SH EXAMPLES
+To resample the file profiles.tdgmb, which contains (time,distance,gravity,magnetics,bathymetry) records,
+at 1km equidistant intervals using Akima's spline, use\"'
+.br
+.sp
+sample1d profiles.tdgmb -I1 -Fa -T1 > profiles_equi_d.tdgmb
+.br
+.sp
+To resample the file depths.dt at positions listed in the file grav_pos.dg, using a cubic spline
+for the interpolation, use
+.br
+.sp
+sample1d depths.dt -Ngrav_pos.dg -Fc > new_depths.dt
+.br
+.sp
+To resample the file track.txt which contains lon, lat, depth every 2 nautical miles, use
+.br
+.sp
+sample1d track.txt -I2n > new_track.dt
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmt.conf (5),
+.IR filter1d (1)

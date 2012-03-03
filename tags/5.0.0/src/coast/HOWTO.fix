@@ -1,0 +1,139 @@
+	$Id$
+	
+How to fix mistakes in the GSHHS database
+
+This section describes the specific actions taken to fix portions of the
+Puget Sound, including islands, lakes, and coastline.
+This brought the polygon database from v3.3_final_dbase.b to the latest
+v3.4_final_dbase.b.  herein I call the old dbase for OLD.B and the final
+new one for NEW.b.
+
+Background: Steve Malone, UWash, provided updated files for a portion of
+the coastline near Tacoma, as well as polygons for several islands and
+lakes in the region that were either completely in error (islands appearing
+as lakes because coastline was wrong) or of very poor quality (Mercer Isl).
+
+Steps taken:
+
+1. Prepare the new polygons so that there are no headers.  Then, plot with the
+   arrow.sh script (e.g. arrow.sh polygon.d n (n may be 3-9 range) and determine
+   if the handedness is correct.  Looking down arrow, land must be on the left
+   side.  If it is not, run reverse.sh polygon.d
+2. Identify the IDs of the polygons in the binary database (OLD.b) using
+   polygon_id OLD.b lon lat  where lon lat is a point on or very close to the
+   polygon boundary of a polygon to identify.  Place the IDs of polygons that
+   you want to replace in the file del.lis.  Polygons that you will edit and
+   update (in this case the North America coastline polygon, ID = 1): place
+   their IDs in the file fix.lis.
+3. Identify the starting point on the line segment you want to insert into the
+   coastline (note it must also be oriented correctly first; see step 1) and
+   write down the lon, lat.  Now find the line number in the coastline that is
+   closest to that point using
+   
+   mapproject polygon.1 -G237.59/47.6745 | awk '{if ($3 < 200) print NR, $0}'
+
+   This will echo out all points within 200 m of the given coordinate in -G.
+   Edit polygon.1, goto the line in question.  Then, use zoom.sh to make a
+   plot of the area that shows each point as a dot.  Visually identify which
+   points to replace and where to insert the new segment, and then identify
+   those points in the polygon.1 file.  Remove & insert accordingly, and save
+   polygon.1.  Now move polygon.1 to the sub-directory pol.
+4. Run polygon_update OLD.b del.lis fix.lis UPDATED.b
+   This will be an intermediate database which lacks the deleted features.
+   We need to replace those with the new polygon lakes and islands.
+5. Call all the polygon files for new lakes Lakes_#.d (# = increasing number)
+   and the same thing for Island_#.d.  Convert to a single binary segment file:
+   	polygon_restore -L1 Islands_*.d > new_island_seg.b
+   	polygon_restore -L2 Lakes_*.d > new_lakes_seg.b
+   then add them into one file:
+   	cat new_island_seg.b new_lakes_seg.b > new_segments.b
+6. Convert from segment format to polygon format:
+	segment_final_dump new_egments.b new_polygons.b
+7. Combine UPDATED.b with these new polygons, sorting them according to size:
+	polygon_sort UPDATED.b new_polygons.b NEW.b
+   This is the final, corrected polygon database.
+   
+UPDATE: Old email suggested there are still crossovers in the full polygon file.
+I wrote polygon_consistency.c to check for that and for lack of closure.  Found
+40 polygons with crossings and ~50 with no closure.  Used polygon_extract to
+pull out those polygons with xings into pol/, and then used the view.sh script
+there to aid in finding the problems.  cross.lis has cross list and close.lis
+had all those that did not close. With cat close.lis cross.lis > fix.lis, we now
+must again run 
+polygon_update NEW.b /dev/null fix.lis FINAL.b
+
+8. Now you must calculate new node levels [this takes 30-45 min at home]:
+	polygon_setnodes FINAL.b 1 newnodes.grd
+	(see nodes_job.csh)
+9. Do the binning:
+	polygon_to_bins FINAL.b newnodes.grd binned_GSHHS_f
+10. and reformat to netcdf:
+	shoremaker binned_GSHHS_f
+	(see bin_job.csh)
+For the lower resolutions you need to use the DP algorithm to get decimated
+databases (see shrink_job.csh) and then repeat steps 8-10.
+	
+MAY 2, 2006
+
+Several internal crossovers were still present and I updated polygon_consistency.c to
+determine these problems.  Once the polygons where found I used polygon_extract
+to make polygon.* files and then ran the Matlab function fix_coast.m which let
+me manually delete, move, or insert points, then save the result to a new file
+polygon.<ID>.new.  After comparing and making sure the problem was fixed I used
+polygon_update to update the binary file, now incremented to v4.1.
+I deleted the three fake islands in -R269/270/25/26 per Walter Smith's advice in
+full, high, and int (they are too small to show in low & crude)
+polygon_consistency also found problems (mostly the same polygons found in full) in
+high and intermediate resolutions.
+To summarize, there are new v4.1 version of full, high, and intermediate, whereas
+low and crude saw now changes - however since they form one set we increse even these
+to 4.1
+
+MARCH 27, 2007
+
+Updated version 4.2 has been made, just in time for GMT 4.2.0.
+1) Tom Krazte found several instances of non-area peninsulas (i.e., an isolated point
+connected to a duplicated point).  There were 5 such instances in high and one in
+intermediate.  The outlier and one of the duplicate points have been removed.
+2) Several polygon headers had negative west and west.  This caused polygon_xover
+to make shifts in lon by +-360 and thus missing obvious crossovers.  New tool
+polygon_fixnegwesn corrects these headers and polygon_xover has been rerun which
+found a few previously-missed crossovers.  These have now been fixed:
+res_f: No problems found. 4.1 copied to 4.2
+res_h: 8 headers with negative w/e corrected.  No new crossovers generated.
+res_i: 23 headers with negative w/e corrected.  Once fixed some crossovers were found:
+	Pol 2825 vs 6098 nx = 4
+	Pol 13570 37470 nx = 4
+	Manually modified coordinates in 6098 to prevent crossings.  Deleted pol
+	37470.  Reran check and no new crossings found.
+res_l: 5 headers with negative w/e corrected.  No new crossovers generated.
+res_c: 1 header with negative w/e corrected.  No new crossovers generated.
+New gshhs_?.b files generated as well.
+Then, Tom pointed out another crossing.  These turned out to be similar but did not
+involve duplicate points.  Instead, three points formed a triangle of no area.
+I added tests in polygon_consistency.c to check for these case and found (6, 3, 0, 0, 0)
+cases in (f, h, i, l, c), respectively.  The middle offending points were removed
+and new zips made.
+Finally, 1 crossover involving Antarctica and a small island was found in intermediate.
+This lead me to add crossover checking for Antarctica by doing a simple r,theta
+transformation first.  Now all are fixed.
+
+JULY 11. 2008
+
+Tom Krazte again found some problem polygons; these seem to be cases were three points
+form a triangle with no area.  These were generally fixed in March 27, 2008 but the
+code failed to check when this case involves the first and last point in the polygon.
+Thus a few more polygons need to be fixed.  Tom also found crossovers that on careful
+examination did not cross (7 mm short!); probably round-off on his end.  I seem to
+remember that an email pointed out a few polygons with the wrong level (lake instead
+of island or similar).  Need to rerun the inside testing and verify the results.
+At this point I have run out of time before my Norway-trip; these notes will hopefully
+get be on track once back.  THe polygon_consistency code now checks for the new case
+and I suggest you start with the 4.3_* polygons and rediscover the trouble cases Tom is
+listing in his emails.  Need to avoid duplicating efforts with the GSHHS+WDBII data base
+and remember to update the final gshhs.b files properly.  Also, might take this opportunity
+to add more info to the gshhs files: Useful to know which polygon a given polygon is inside
+so that proper hierarchies can be derived.  Perhaps GSHHS v 2.0? Perhaps try to catch ugly
+things like the near-crossing Tom though was a crossing by computing nearest distance from
+each point to the polygon?, or examine triangles with very little area or acute angles.
+Also, there are some issues with the river database.  Check with Remko.

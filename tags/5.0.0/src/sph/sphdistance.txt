@@ -1,0 +1,85 @@
+#include "common_options.txt"
+.TH SPHDISTANCE 1 MANDATE GMT_STRING "Generic Mapping Tools [sph supplement]"
+#define LEN 15
+#define SCALE OPT(JM)15BD(c)
+.SH NAME
+sphdistance \- Make grid of distances to nearest points on a sphere
+.SH SYNOPSIS
+BD(sphdistance) [ IT(table) ] OPT(G)IT(grdfile) [ OPT(C) ] [ OPT(D) ] 
+[ OPT(E) ] [ GMT_I_OPT ] [ OPT(L)IT(unit) ] [ OPT(Q)IT(voronoi.d) ] 
+[ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(sphdistance) reads one or more ASCII [or binary] files (or standard input) containing lon, lat and
+performs the construction of Voronoi polygons.  These polygons are then processed to calculate the nearest
+distance to each node of the lattice and written to the specified grid.  The Voronoi algorithm used is STRIPACK.
+As an option, you may provide pre-calculated Voronoi polygon file in the format written by BD(sphtriangulate),
+thus bypassing the memory- and time-consuming triangularization.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(G)IT(grdfile)
+Name of the output grid to hold the computed distances.
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+.TP
+OPT(C)
+For large data set you can save some memory (at the expense of more processing) by only storing one form of
+location coordinates (geographic or Cartesian 3-D vectors) at any given time, translating from one form to
+the other when necessary [Default keeps both arrays in memory]. Not applicable with OPT(Q).
+.TP
+OPT(D)
+Used with OPT(m) to skip the last (repeated) input vertex at the end of a closed segment if it
+equals the first point in the segment.  Requires OPT(m) [Default uses all points].
+.TP
+OPT(E)
+Instead of computing distances, return the ID numbers of the Voronoi polygons that each grid node is inside
+[Default computes distances].
+#include "explain_-I.txt"
+.TP
+OPT(L)IT(unit)
+Specify the unit used for distance calculations.  Choose among BD(d) (spherical degree), BD(e) (m),
+BD(f) (feet), BD(k) (km), BD(M) (mile), or BD(n) (nautical mile).  A spherical approximation is used unless
+BD(PROJ_ELLIPSOID) is set to an actual ellipsoid.
+OPT(N)
+Read the information pertaining to each Voronoi polygon (the unique node lon, lat and polygon area) from
+a separate file [Default acquires this information from the ASCII segment headers of the output file].
+Required if binary input via OPT(Q) is used.
+.TP
+OPT(Q)IT(voronoi.d)
+Append the name of a file with pre-calculated Voronoi polygons [Default performs the Voronoi construction on input data].
+For binary data GMT_bi_OPT you must specify the node information separately (via OPT(N)).
+#include "explain_-Rgeo.txt"
+#include "explain_-V.txt"
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-bo.txt"
+[Default is same as input].
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_nodereg.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_precision.txt"
+#include "explain_float.txt"
+.SH EXAMPLES
+To construct Voronoi polygons from the points in the file testdata.txt and
+then calculate distances from the data to a global 1x1 degree grid, use
+.br
+.sp
+BD(sphdistance) testdata.txt OPT(Rg) OPT(I)1 OPT(G)globedist.nc
+.br
+.sp
+To generate the same grid in two steps using BD(sphtriangulate) separately, try
+.br
+.sp
+BD(sphtriangulate) testdata.txt OPT(Qv) > voronoi.d
+.br
+BD(sphdistance) OPT(Q)voronoi.d OPT(Rg) OPT(I)1 OPT(G)globedist.nc
+.SH "SEE ALSO"
+.IR GMT (1),
+.IR sphinterpolate (1)
+.IR sphtriangulate (1)
+.IR triangulate (1)
+.SH REFERENCES
+Renka, R, J., 1997, Algorithm 772: STRIPACK: Delaunay Triangulation and Voronoi Diagram on the Surface of a Sphere, 
+IT(AMC Trans. Math. Software), BD(23)(3), 416\-434.

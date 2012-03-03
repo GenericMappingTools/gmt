@@ -1,0 +1,5 @@
+#	$Id$
+#
+# GMT_progs_files_bin.lis contains all the binary files that should go into the
+# GMT_progs tar/zip files.  See GMT_progs_files_ascii.lis for ascii files
+#

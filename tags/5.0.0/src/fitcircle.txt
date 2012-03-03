@@ -1,0 +1,74 @@
+#include "common_options.txt"
+.TH FITCIRCLE 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+fitcircle \- find mean position and pole of best-fit great [or small] circle to points on a sphere.
+.SH SYNOPSIS
+BD(fitcircle) [ IT(table) ] OPT(L)IT(norm) [ OPT(S)[IT(lat)] ] [ GMT_V_OPT ]
+[ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ] 
+.SH DESCRIPTION
+BD(fitcircle) reads lon,lat [or lat,lon] values from the first two columns on standard input 
+[or IT(xyfile)].  These are converted to Cartesian three-vectors on the unit sphere.  Then two 
+locations are found:  the mean of the input positions, and the pole to the great circle which 
+best fits the input positions.  The user may choose one or both of two possible solutions to this 
+problem.  The first is called OPT(L1) and the second is called OPT(L2).  When the data are 
+closely grouped along a great circle both solutions are similar.  If the data have large dispersion, 
+the pole to the great circle will be less well determined than the mean.  Compare both solutions as 
+a qualitative check.
+.br
+.sp
+The OPT(L1) solution is so called because it approximates the minimization of the sum of absolute 
+values of cosines of angular distances.  This solution finds the mean position as the Fisher average 
+of the data, and the pole position as the Fisher average of the cross-products between the mean and 
+the data.  Averaging cross-products gives weight to points in proportion to their distance from the 
+mean, analogous to the "leverage" of distant points in linear regression in the plane.
+.br
+.sp
+The OPT(L2) solution is so called because it approximates the minimization of the sum of squares 
+of cosines of angular distances.  It creates a 3 by 3 matrix of sums of squares of components of the 
+data vectors.  The eigenvectors of this matrix give the mean and pole locations.  This method may 
+be more subject to roundoff errors when there are thousands of data.  The pole is given by the eigenvector 
+corresponding to the smallest eigenvalue; it is the least-well represented factor in the data and is 
+not easily estimated by either method.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(L)IT(norm)
+Specify the desired IT(norm) as 1 or 2, or use OPT(L) or  OPT(L3) to see both solutions.
+.SH OPTIONAL ARGUMENTS
+.TP
+IT(table)
+One or more ASCII [or binary, see GMT_bi_OPT] files containing lon,lat [or lat,lon; see GMT_colon_OPT]
+values in the first 2 columns.
+If no file is specified, BD(fitcircle) will read from standard input.
+.TP
+OPT(S)[IT(lat)]
+Attempt to fit a small circle instead of a great circle.  The pole will be
+constrained to lie on the great circle connecting the pole of the best-fit great circle
+and the mean location of the data.  Optionally append the desired fixed latitude of
+the small circle [Default will determine the latitude].
+#include "explain_-V.txt"
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_precision.txt"
+.SH EXAMPLES
+Suppose you have lon,lat,grav data along a twisty ship track in the file ship.xyg.  You want to 
+project this data onto a great circle and resample it in distance, in order to filter it or check its spectrum.  Do the following:
+.br
+.sp
+fitcircle ship.xyg -L2 
+.sp
+project ship.xyg -Cox/oy -Tpx/py -S -Fpz | sample1d -S-100 -I1 > output.pg
+.sp
+Here, IT(ox)/IT(oy) is the lon/lat of the mean from BD(fitcircle), and IT(px)/IT(py) is the lon/lat 
+of the pole.  The file output.pg has distance, gravity data sampled every 1 km along the great circle which best fits ship.xyg
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR project (1),
+.IR sample1d (1)

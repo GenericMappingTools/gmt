@@ -1,0 +1,20 @@
+Dear GMT user-
+
+We are pleased to announce the release of GMT version 4.3.0.
+For a complete list of enhancements and features, please
+see Chapter 1 in the Technical Reference & Cookbook online
+(http://gmt.soest.hawaii.edu).  GMT 4.3.0 is a recommended
+upgrade for all users.  It also is required if you plan to
+take advantage of GMT's 64-bit support or use GMT with Octave.
+GMT 4.3.0 also uses the revised GSHHS v.1.10 coastlines. We
+now also distribute Windows Installers rather than zip files.
+
+At this point, all mirrors but Tokai appear to have synced up.
+We are also pleased to announce a new Australia mirror at
+the University of Sydney.
+
+
+Sincerely,
+
+The GMT Team
+May-3-2008

@@ -1,0 +1,79 @@
+#include "common_options.txt"
+.TH X2SYS_REPORT 1 MANDATE GMT_STRING "Generic Mapping Tools [x2sys supplement]"
+.SH NAME
+x2sys_report \- Report statistics from crossover data base
+.SH SYNOPSIS
+BD(x2sys_report) OPT(C)IT(column) OPT(T)IT(TAG) [ IT(coedbase.txt) ] [ OPT(A) ] 
+[ OPT(I)[IT(list)] ] [ OPT(L)[IT(corrtable)] ] [ OPT(N)IT(nx_min) ] [ OPT(Qe)|BD(i) ] 
+[ GMT_Rgeo_OPT ] [ OPT(S)IT(track) ] [ GMT_V_OPT ]
+.SH DESCRIPTION
+BD(x2sys_report) will read the input crossover ASCII data base IT(coedbase.txt) (or IT(stdin))
+and report on the statistics of crossovers (IT(n), IT(mean), IT(stdev), IT(rms), IT(weight)) for each track.  Options are
+available to let you exclude tracks and limit the output.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+.I coedbase.txt
+The name of the input ASCII crossover error data base as produced by BD(x2sys_cross).
+If not given we read standard input instead.
+.TP
+OPT(C)IT(column)
+Specify which data column you want to process.  Crossovers related to this column name must be
+present in the crossover data base.
+#include "explain_tag.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)
+Eliminate COEs by distributing the COE between the two tracks in proportion to track weight and producing
+(dist, adjustment) spline knots files for each track (for the selected IT(column)).  Such adjustments
+may be used by BD(x2sys_datalist).  The adjustment files are called IT(track.column).adj and are
+placed in the BD($X2SYS_HOME)/IT(TAG) directory. For background information on how these adjustments
+are designed, see IT(Mittal) [1984].
+.TP
+OPT(I)[IT(list)]
+Name of ASCII file with a list of track names (one per record) that should be excluded from consideration
+[Default includes all tracks].
+.TP
+OPT(L)[IT(corrtable)]
+Apply optimal corrections to the chosen observable.  Append the correction
+table to use [Default uses the correction table IT(TAG)_corrections.txt which is expected to reside
+in the BD($X2SYS_HOME)/IT(TAG) directory].
+For the format of this file, see BD(x2sys_solve).
+.TP
+OPT(N)IT(nx_min)
+Only report data from tracks involved in at least IT(nx_min) crossovers [all tracks].
+.TP
+OPT(Qe)|BD(i)
+Append BD(e) for external crossovers or BD(i) for internal crossovers only [Default is external].
+#include "explain_-Rgeo.txt"
+For Cartesian data just give IT(xmin/xmax/ymin/ymax).  This option bases the statistics
+on those COE that fall inside the specified domain.
+.TP
+OPT(S)IT(track)
+Name of a single track.  If given we restrict output to those crossovers involving this track [Default
+output is crossovers involving any track pair].
+#include "explain_-V.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To report statistics of all the external magnetic crossovers associated with the tag MGD77 from the file COE_data.txt,
+restricted to occupy a certain region in the south Pacific, try
+.br
+.sp
+BD(x2sys_report) COE_data.txt OPT(V) OPT(T)MGD77 OPT(R)180/240/-60/-30 OPT(C)mag > mag_report.txt
+.br
+.sp
+To report on the faa crossovers globally that involves track 12345678, try
+.br
+.sp
+BD(x2sys_report) COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(S)12345678  > faa_report.txt
+.SH REFERENCES
+Mittal, P. K. (1984), Algorithm for error adjustment of potential field data along a survey network, IT(Geophysics), BD(49)(4), 467-469.
+.SH "SEE ALSO"
+.IR x2sys_binlist (1)
+.IR x2sys_cross (1)
+.IR x2sys_datalist (1)
+.IR x2sys_get (1)
+.IR x2sys_init (1)
+.IR x2sys_list (1)
+.IR x2sys_put (1)
+.IR x2sys_solve (1)

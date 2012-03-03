@@ -1,0 +1,203 @@
+	$Id$
+
+README file for GMT supplemental x2sys programs
+Distributed under the GNU Public License (see file ../LICENSE.TXT)
+
+AUTHOR:		Paul Wessel
+DATE:		1-JAN-2011
+INSTALL INFO:	The x2sys directory should install under GMT/src
+
+1.4 UPDATE [3-AUG-2010]
+
+Modularized as part of new GMT5-style design.
+Make any old mgg .gmt involvement subject to GMT_COMPAT compile mode
+
+1.3 UPDATE [24-JULY-2009]
+
+Added x2sys_merge.c which merges an updated COEs table (smaller) into
+a main one (bigger). The new COEs should only contain updated values
+of already existing tracks crossings.
+
+1.2 UPDATE [1-OCT-2008]
+
+Added x2sys_list.c which replaces the purpose of old x_list,
+x2sys_solve.c which replaces x_solve_dc_drift.c, and
+x2sys_report which replaces x_report.c.  These are all
+experimental and should not be relied upon; syntax and use may
+change without notice!  Furthermore, x2sys can now read COARDS
+1-D netCDF data files.
+
+1.1 UPDATE
+Added x2sys_binlist.c which replicates the purpose of the old gmt2bin.c
+program, but this version is data-format independent.  Also added are
+x2sys_put.c (old binlegs functionality) and x2sys_get.c (old gmtlegs.c
+functionality) as well as x2sys_init.c (initializes a track data base
+and eventually a crossover database).  x2sys is actively undergoing
+revisions and will be unstable for a while.
+
+1.0 INFORMATION
+
+X2SYS is a set of tools for the calculation of track crossovers.
+Crossovers occur when spatial time-series tracks intersect themselves or
+other tracks.  At these crossover points one would ideally find that
+the data measurements agree, but due to navigational uncertainties,
+instrument imprecision or drift, or temporal changes in the fields,
+this is rarely the case.  Studying these discrepancies, then, may allow
+one to learn more about the processes that causes these errors (and possibly
+allow one to reduce them) and about the precision of the observed data.
+
+X2SYS is built from scratch but inherits much philosophy from its
+predecessor, the XSYSTEM [Wessel, 1989].  Unlike XSYSTEM, X2SYS was written
+to meet additional criteria:
+
+* It should be POSIX, ANSI-C, and Y2K compliant.
+
+* It should take advantage of the GMT libraries.
+
+* It should be released under the GNU Public License.
+
+* It should be abstracted away from the underlying track data structure.
+
+* It should be backwards compatible with the old XOVER.
+
+Advantages of the new tools derive from these criteria: X2SYS is easy to
+install on a wide range of computers, it can be used with any type of data
+file structure (within reason), may produce the same output as the old XOVER
+program, and is freely distributable yet covered by copyright.  The core
+algorithm for calculating crossovers have been replaced with the principles
+discussed the the book on C algorithms by Sedgewick [1990].  The result is
+that X2SYS calculates crossovers faster than its predecessor, although this
+may be to some extend dependent on the track layout.
+
+Input data and description files
+--------------------------------
+
+The data files that can be understood by X2SYS can either be ASCII
+or binary files.  Common for both formats is the need for a logical
+structure.  Data files may consist of a header block that can be
+any number of ASCII record or BINARY bytes, followed by any number
+of data records.  For ASCII files, the data columns are separated
+by tabs, spaces, or commas, or they are given in the old-style FORTRAN
+card format.  In that format, all the columns are given back to back
+with no intervening spaces (Such files were usually written
+back in the dark ages when nobody put much emphasis on human
+readability).  One example of such a format is the MGD-77 format for
+marine underway geophysical data from NGDC.  For BINARY files, 
+each column can be of stored as any of the standard data types
+(e.g., int, char, short int, double, float).  Regardless of format,
+the structure of the input spatial time-series track data files
+must be conveyed to the X2SYS programs (using the -D switch) via
+an X2SYS definition file.  A few definition files are provided with
+the package; from these, users can design their own based on the format
+of their particular data sets.  Definition files should be given
+the suffix .def and must be prepared according to the following
+specifications:
+
+1. You may have any number of comment lines starting with #.  They
+   can appear anywhere in the file.
+
+2. Three special comments are defined:
+
+  a) #ASCII   The track data file is an ASCII file.
+  b) #BINARY  The track data file is a binary file.
+  c) #SKIP n  Here, n is the number of header records (if ASCII)
+     or header bytes (if BINARY) to skip before reading data records.
+
+     Default values are ASCII format with no header records.
+
+3. Each data column must have a record describing the data type.
+   You may have any number of column descriptors records.  Each record
+   must have the following entries separated by spaces or tabs:
+
+name	The actual name of each data column.  Some names are
+	given special meaning.  For instance, use lon and lat for
+	geographic coordinates, x and y for Cartesian coordinates,
+	and time for the time column.  Other column names have no
+	restrictions.
+
+type	A 1-char code to indicate what data type we have.  Choose
+	among:
+
+	ASCII data:
+
+	a	ASCII word
+	A	ASCII word in FORTRAN card format (all columns must have A)
+
+	BINARY data:
+
+	c	signed 1-byte character
+	u	unsigned 1-byte character
+	h	signed 2-byte integer
+	i	signed 4-byte integer
+	l	signed 4- or 8-byte integer (long)
+	f	4-byte floating point single precision
+	d	8-byte floating point double precision
+
+Note that a/A is the only type used when the file format is ASCII,
+and that only the other types are allowed with BINARY files.
+
+NaN-proxy?	This is either Y or N, indicating whether this column
+	has a special value that should be treated as a NaN (Not-a-Number
+	or missing value).  For instance, if your data uses -99999 to
+	indicate lack of data, then this flag should be Y.
+
+NaN-proxy	The special value that represents NaN for this column.
+	It is only used if NaN-proxy? is set to Y. Then, all occurrences
+	of column values that equal the proxy are reset to NaN.
+
+scale	Factor to multiply each value with.
+
+offset	Amount to subtract from the column value after scaling.
+
+oformat	C-style format statement describing how you want this column
+	to be formatted when ASCII output has been selected.
+
+cardform	This optional entry is only used with FORTRAN card formats
+	and is necessary to describe which positional columns in the input
+	record constitute this logical column.  The entry is given as a
+	range of position.  For instance, 15-24 indicates that this data
+	column are to be decoded from the FORTRAN card record from column
+	position 15 through 24.
+
+Below is an example of a definition file that describes the data format of
+the old Lamont GMT MGG binary files:
+
+#
+# Define file for X2SYS processing of GMT/MGG files
+#
+# This file applies to the GMT MGG file format.
+# This format was developed by P. Wessel and
+# Walter H.F. Smith at Lamont in the late 1980ies
+# Utilities to deal with these files are supplied
+# in the GMT supplemental package mgg.
+#
+#---------------------------------------------------------------------
+#BINARY		# The input file is binary
+#SKIP 18	# The number of header bytes to skip
+#---------------------------------------------------------------------
+#name	intype	NaN-proxy?	NaN-proxy	scale	offset	oformat
+time	i	N		0		1	0	%10.0lf
+lat	i	N		0		1.0e-6	0	%9.5lf
+lon	i	N		0		1.0e-6	0	%10.5lf
+faa	h	Y		-32000		0.1	0	%6.1lf
+mag	h	Y		-32000		1	32000	%6.0lf
+top	h	Y		-32000		1	0	%6.0lf
+#---------------------------------------------------------------------
+
+Note, however, that due to the wide use of the MGD77 and GMT MGG formats,
+specifying -Dgmt or -Dmgd77 will bypass the generic reading routines and
+use special i/o-functions that knows about these formats.
+
+The program x2sys_datalist will simply produce a listing of the
+contents of your data file.  Your first step after designing a definition
+file is to try it out with x2sys_datalist to make sure it is correct.
+
+The program x2sys_cross calculates crossovers between tracks and within
+tracks.  The -O option ensures that output is compatible with that of the
+old XOVER program.
+
+References:
+
+Sedgewick, R., 1990, Algorithms in C. Addison-Wesley.
+Wessel, P. 1989, XOVER: A Cross-over Error Detector for Track Data, Computers
+   & Geosciences, 15, 333-346.

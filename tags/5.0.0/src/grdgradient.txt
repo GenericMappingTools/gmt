@@ -1,0 +1,179 @@
+#include "common_options.txt"
+.TH GRDGRADIENT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+grdgradient \- Compute directional derivative or gradient from a grid
+.SH SYNOPSIS
+BD(grdgradient) IT(in_grdfile) OPT(G)IT(out_grdfile) 
+[ OPT(A)IT(azim)[/IT(azim2)] ] [ OPT(D)[BD(c)][BD(o)][BD(n)] ] 
+[ OPT(E)[BD(s|p)]IT(azim/elev)[/IT(ambient)/IT(diffuse)/IT(specular)/IT(shine)] ] 
+[ OPT(L)IT(flag) ] [ OPT(N)[BD(e)][BD(t)][IT(amp)][/IT(sigma)[/IT(offset)]] ]
+[ GMT_Rgeo_OPT ] [ OPT(S)IT(slopefile) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+.SH DESCRIPTION
+BD(grdgradient) may be used to compute the directional derivative  
+in a given direction (OPT(A)),
+or the direction (OPT(S)) [and the magnitude (OPT(D))] of the  
+vector gradient of the data.
+.br
+Estimated values in the first/last row/column of output depend on  
+boundary conditions (see OPT(L)).
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(in_grdfile)
+2-D grid file from which to compute directional derivative.
+(See GRID FILE FORMATS below).
+.TP
+OPT(G)IT(out_grdfile)
+Name of the output grid file for the directional derivative.
+(See GRID FILE FORMATS below).
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)IT(azim)[/IT(azim2)]
+Azimuthal direction for a directional derivative; IT(azim) is the  
+angle in the x,y plane
+measured in degrees positive clockwise from north (the +y direction)  
+toward east (the +x direction).
+The negative of the directional derivative, \-[dz/dx*sin(IT(azim))  
++ dz/dy*cos(IT(azim))], is
+found; negation yields positive values when the slope of z(x,y) is  
+downhill in the IT(azim) direction,
+the correct sense for shading the illumination of an image (see  
+BD(grdimage) and BD(grdview)) by a
+light source above the x,y plane shining from the IT(azim)  
+direction.  Optionally, supply two azimuths, OPT(A)IT(azim)/IT(azim2),
+in which case the gradients in each of these directions  
+are calculated
+and the one larger in magnitude is retained; this is useful for  
+illuminating data with two directions of
+lineated structures, e.g. OPT(A)IT(0)/IT(270) illuminates from  
+the north (top) and west (left).
+.TP
+OPT(D)[BD(c)][BD(o)][BD(n)]
+Find the direction of the gradient of the data.  By default, the  
+directions
+are measured clockwise from north, as IT(azim) in OPT(A) above.   
+Append
+BD(c) to use conventional Cartesian angles measured  
+counterclockwise from
+the positive x (east) direction.  Append BD(o) to report  
+orientations (0-180)
+rather than directions (0-360).  Append BD(n) to add 90 degrees to  
+all angles
+(e.g., to give orientation of lineated features).
+.TP
+OPT(E)[BD(s|p)]IT(azim/elev)[/IT(ambient)/IT(diffuse)/IT(specular)/IT(shine)]
+Compute Lambertian radiance appropriate to use with BD(grdimage)  
+and BD(grdview).
+The Lambertian Reflection assumes an ideal surface that reflects all  
+the light that
+strikes it and the surface appears equally bright from all viewing  
+directions.
+IT(azim) and IT(elev) are the azimuth and elevation of light  
+vector. Optionally, supply
+IT(ambient) IT(diffuse) IT(specular) IT(shine) which are  
+parameters that control the
+reflectance properties of the surface. Default values are: IT(0.55)/ 
+IT(0.6)/IT(0.4)/IT(10)
+To leave some of the values untouched, specify = as the new value.  
+For example
+OPT(E)IT(60)/IT(30)/IT(=)/IT(0.5) sets the IT(azim)  
+IT(elev) and IT(diffuse) to 60, 30
+and 0.5 and leaves the other reflectance parameters untouched.
+Append BD(s) to use a simpler Lambertian algorithm. Note that with  
+this form
+you only have to provide the azimuth and elevation parameters.
+Append BD(p) to use the Peucker piecewise linear  approximation  
+(simpler but faster algorithm;
+in this case the IT(azim) and IT(elev) are hardwired to 315 and  
+45 degrees.
+This means that even if you provide other values they will be ignored.)
+.TP
+OPT(L)IT(flag)
+Boundary condition IT(flag) may be IT(x) or IT(y) or IT(xy)  
+indicating data is periodic in range of
+x or y or both, or IT(flag) may be IT(g) indicating geographical  
+conditions (x and y are
+lon and lat).  [Default uses "natural" conditions (second partial  
+derivative normal to edge is zero).]
+.TP
+OPT(N)[BD(e)][BD(t)][IT(amp)][/IT(sigma)[/IT(offset)]]
+Normalization.  [Default:  no normalization.]  The actual gradients  
+IT(g)
+are offset and scaled to produce normalized gradients IT(gn) with a  
+maximum
+output magnitude of IT(amp).  If IT(amp) is not given, default  
+IT(amp) = 1.
+If IT(offset) is not given, it is set to the average of IT(g).   
+OPT(N)
+yields IT(gn) = IT(amp) * (IT(g) - IT(offset))/max(abs(IT(g 
+) - IT(offset))).
+OPT(Ne) normalizes using a cumulative Laplace distribution yielding
+IT(gn) = IT(amp) * (1.0 - exp(sqrt(2) * (IT(g) - IT(offset))/ 
+IT(sigma)))
+where IT(sigma) is estimated using the L1 norm of (IT(g) -  
+IT(offset)) if it is
+not given.   OPT(Nt) normalizes using a cumulative Cauchy  
+distribution yielding
+IT(gn) = (2 * IT(amp) / PI) * atan( (IT(g) - IT(offset))/ 
+IT(sigma))
+where IT(sigma) is estimated using the L2 norm of (IT(g) -  
+IT(offset)) if it is
+not given.
+#include "explain_-R.txt" 
+Using the OPT(R) option will select a subsection of IT(in_grdfile) grid. If this subsection exceeds the
+boundaries of the grid, only the common region will be extracted.
+.TP
+OPT(S)IT(slopefile)
+Name of output grid file with scalar magnitudes of gradient vectors.   
+Requires OPT(D) but makes OPT(G) optional.
+#include "explain_-V.txt"
+#include "explain_-f.txt"
+#include "explain_help.txt"
+.SH HINTS
+If you don't know what \fB\-N\fP options to use to make an intensity file for\"'
+BD(grdimage) or BD(grdview), a good first try is OPT(Ne)0.6.
+.br
+.sp
+If you want to make several illuminated maps of subregions of a large  
+data set,
+and you need the illumination effects to be consistent across all the  
+maps, use
+the OPT(N) option and supply the same value of IT(sigma) and  
+IT(offset)
+to BD(grdgradient) for each map.  A good guess is IT(offset) = 0  
+and IT(sigma)
+found by BD(grdinfo) OPT(L2) or OPT(L1) applied to an unnormalized  
+gradient grd.
+.br
+.sp
+If you simply need the IT(x)- or IT(y)-derivatives of the grid, use
+BD(grdmath).
+#include "explain_grd_inout.txt"
+.SH EXAMPLES
+To make a file for illuminating the data in geoid.nc using exp- 
+normalized gradients
+imitating light sources in the north and west directions:
+.br
+.sp
+grdgradient geoid.nc -A0/270 -Ggradients.nc -Ne0.6 -V
+.br
+.sp
+To find the azimuth orientations of seafloor fabric in the file  
+topo.nc:
+.br
+.sp
+grdgradient topo.nc -Dno -Gazimuths.nc -V
+.br
+.sp
+.SH REFERENCES
+Horn, B.K.P., Hill-Shading and the Reflectance Map, Proceedings of  
+the IEEE,
+Vol. 69, No. 1, January 1981, pp. 14-47. (http://people.csail.mit.edu/ 
+bkph/papers/Hill-Shading.pdf)
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmt.conf (5),
+.IR grdhisteq (1),
+.IR grdimage (1),
+.IR grdview (1),
+.IR grdvector (1)

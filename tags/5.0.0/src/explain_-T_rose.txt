@@ -1,0 +1,15 @@
+.TP
+GMT_TROSE
+Draws a simple map directional rose centered on IT(lon0/lat0).  Use OPT(Tx) to specify x/y position instead.
+The IT(size) is the diameter of the rose, and optional label information can be specified to override
+the default values of W, E, S, and N (Give BD(::) to suppress all labels).  The default [plain] map rose only labels north.  Use
+OPT(Tf) to get a "fancy" rose, and specify in IT(info) what you want drawn.  The default [BD(1)] draws the two principal E-W,
+N-S orientations, BD(2) adds the two intermediate NW-SE and NE-SW orientations, while BD(3) adds the eight minor
+orientations WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW.  For a magnetic compass rose, specify OPT(Tm).  If given,
+IT(info) must be the two parameters IT(dec/dlabel), where IT(dec) is the magnetic declination and IT(dlabel)
+is a label for the magnetic compass needle (specify BD(-) to format a label from IT(dec)).  Then, both directions
+to geographic and magnetic north are plotted [Default is geographic only].  If the north label is BD(*) then a north
+star is plotted instead of the north label.  Annotation and two levels of tick intervals for geographic and magnetic
+directions are 10/5/1 and 30/5/1 degrees, respectively; override these settings by appending BD(+)IT(gints)[/IT(mints)].
+Color and pen attributes for the rose are taken from BD(COLOR_BACKGROUND) and BD(MAP_TICK_PEN), respectively, while 
+label fonts, colors and sizes follow BD(FONT_TITLE) for the four major directions and BD(FONT_LABEL) for minor directions.

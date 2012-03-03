@@ -1,0 +1,148 @@
+#include "common_options.txt"
+.TH PSXYZ 1 MANDATE GMT_STRING "Generic Mapping Tools"
+#define LEN_1 1.25
+#define OPT_1	OPT(Jx)1.25BD(c) OPT(Jz)0.125BD(c) OPT(So)1.25BD(c)
+.SH NAME
+psxyz \- Plot lines, polygons, and symbols in 3-D
+.SH SYNOPSIS
+BD(psxyz) [ IT(table) ] GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT
+[ GMT_B_OPT ] [ OPT(C)IT(cptfile) ] [ OPT(D)IT(dx)/IT(dy)[IT(dz)] ]
+[ OPT(G)IT(fill) ] [ OPT(I)IT(intens) ] [ GMT_K_OPT ] [ OPT(L) ]
+[ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)[IT(symbol)][IT(size)|BD(+s)IT(scaling)] ] [ GMT_U_OPT ]
+[ GMT_V_OPT ] [ OPT(W)[BD(-)|BD(+)][IT(pen)] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_a_OPT ] 
+[ GMT_bi_OPT ] [ GMT_c_OPT ] [ GMT_fi_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ]
+[ GMT_p_OPT ] [ GMT_t_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(psxyz) reads (x,y,z) triplets from IT(files) [or standard input] and
+generates IT(PostScript) code that will plot lines, polygons, or symbols at those locations in 3-D.
+If a symbol is selected and no symbol size given, then BD(psxyz) will interpret the fourth column of the
+input data as symbol size.  Symbols whose IT(size) is <= 0 are skipped.
+If no symbols are specified then the symbol code (see OPT(S) below)
+must be present as last column in the input.
+If OPT(S) is not used, a line connecting the data points will be drawn instead.
+To explicitly close polygons, use OPT(L).  Select a fill with OPT(G).
+If OPT(G) is set, OPT(W) will control whether the polygon outline is drawn or not.
+If a symbol is selected, OPT(G) and OPT(W) determines the fill and outline/no outline, respectively.
+The IT(PostScript) code is written to standard output.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_-J.txt"
+#include "explain_-Jz.txt"
+#include "explain_-R.txt"
+#include "explain_-Rz.txt"
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+#include "explain_-B.txt"
+.TP
+OPT(C)IT(cptfile)
+Give a color palette file.  If OPT(S) is set, let symbol fill color be determined by the
+t-value in the fourth column. Additional fields are shifted over by one column
+(optional size would be in 5th rather than 4th field, etc.).
+If OPT(S) is not set, then BD(psxyz) expects the user to supply a multisegment file
+(where each segment header contains a OPT(Z)IT(val) string.  The IT(val)
+will control the color of the line or polygon (if OPT(L) is set) via the cpt file.
+.TP
+OPT(D)IT(dx)/IT(dy)[IT(dz)]
+Offset the plot symbol or line locations by the given amounts IT(dx/dy)[IT(dz)] [Default is no offset].
+.TP
+OPT(G)IT(fill)
+Select color or pattern for filling of symbols or polygons [Default is no fill].
+.br
+Note that BD(psxyz) will search for OPT(G) and OPT(W)
+strings in all the segment headers and let any values thus found over-ride the command line settings.
+.TP
+OPT(I)IT(intens)
+Use the supplied IT(intens) value (nominally in the -1 to + 1 range) to modulate the fill color by simulating illumination [none].
+#include "explain_-K.txt"
+.TP
+OPT(L)
+Force closed polygons: connect the endpoints of the line-segment(s) and draw polygons.
+Also, in concert with OPT(C) and any OPT(Z) settings in the headers will use the implied
+color for polygon fill [Default is polygon pen color].
+OPT(N)
+Do NOT skip symbols that fall outside map border [Default plots points inside border only].
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+OPT(Q)
+Turn off the automatic sorting of items based on their distance from the viewer.  The default is
+to sort the items so that items in the foreground are plotted after items in the background.
+#define THREE_D
+#include "explain_symbols.txt"
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+.TP
+OPT(W)[BD(-)|BD(+)][IT(pen)]
+Set pen attributes for lines or the outline of symbols [Defaults: width = default, color = black, style = solid].
+A leading BD(+) will use the lookup color (via OPT(C)) for both symbol fill and outline pen color, while a leading
+BD(-) will set outline pen color and turn off symbol fill.
+#include "explain_-XY.txt"
+#include "explain_-aspatial.txt"
+#include "explain_-bi.txt"
+[Default is the required number of columns given the chosen settings].
+#include "explain_-c.txt"
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+The OPT(g) option is ignored if OPT(S) is set.
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+.TP
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_vectors.txt"
+.SH EXAMPLES
+To plot blue columns (width = LEN_1 cm) at the positions listed in the file heights.xyz on a
+3-D projection of the space (0\-10), (0\-10), (0\-100),  with tickmarks every 2, 2, and 10,
+viewing it from the southeast at 30 degree elevation, use:
+.br
+.sp
+psxyz heights.xyz -R0/10/0/10/0/100 OPT_1
+-Gblue -B2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 -p135/30 -Uc -W -P > heights.ps
+.SH SEGMENT HEADER PARSING
+Segment header records may contain one of more of the following options:
+.br
+OPT(G)IT(fill) Use the new IT(fill) and turn filling on
+.br
+OPT(G-) Turn filling off
+.br
+OPT(G) Revert to default fill (none if not set on command line)
+.br
+OPT(W)IT(pen) Use the new IT(pen) and turn outline on
+.br
+OPT(W) Revert to default pen ()MAP_DEFAULT_PENBD( if not set on command line)
+.br
+OPT(W-) Turn outline off
+.br
+OPT(Z)IT(zval) Obtain fill via cpt lookup using z-value IT(zval)
+.br
+OPT(ZNaN) Get the NaN color from the cpt file
+.SH CUSTOM SYMBOLS
+BD(psxyz) allows users to define and plot their own custom symbols.
+This is done by encoding the symbol using our custom symbol macro code described in Appendix N.
+Put all the macro codes for your new symbol in a file whose extension must be .def; you may then address
+the symbol without giving the extension (e.g., the symbol file tsunami.def is used by specifying OPT(Sk)IT(tsunami/size).
+The definition file can contain any number of plot code records, as well as blank lines and comment lines (starting with #).
+BD(psxyz) will look for the definition files in (1) the current directory, (2) the ~/.gmt
+directory, and (3) the BD($GMT_SHAREDIR)/custom directory, in that order.
+Freeform polygons (made up of straight line segments and arcs of circles) can be designed - these polygons can be
+painted and filled with a pattern.  Other standard geometric symbols can also be used.  See Appendix N for macro definitions.
+.SH BUGS
+No hidden line removal is employed for polygons and lines.  Symbols, however, are first sorted
+according to their distance from the viewpoint so that nearby symbols will overprint more distant
+ones should they project to the same x,y position.
+.br
+BD(psxyz) cannot handle filling of polygons that contain the south or north pole.  For such a polygon,
+make a copy and split it into two and make each explicitly contain the polar point.  The two polygons
+will combine to give the desired effect when filled; to draw outline use the original polygon.
+.br
+The OPT(N) option does not adjust the BoundingBox information so you may
+have to post-process the IT(PostScript) output with BD(ps2raster) OPT(A) to obtain
+the correct BoundingBox.
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmt.conf (5),
+.IR gmtcolors (5),
+.IR psbasemap (1),
+.IR psxy (1)

@@ -1,0 +1,3 @@
+.TP
+GMT_h_OPT (*)
+Skip or produce header record(s).
