@@ -1,8 +1,8 @@
 ////
 $Id$
 
-Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
-See COPYING file for copying and redistribution conditions.
+Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis,
+and F. Wobbe. See LICENSE.TXT file for copying and redistribution conditions.
 
 Contact info: gmt.soest.hawaii.edu
 ////

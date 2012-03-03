@@ -31,8 +31,8 @@ set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED")
 
 
 # Read GPL and LGPL license files
-file(READ ${GMT_SOURCE_DIR}/COPYINGv3 _license_gpl)
-file(READ ${GMT_SOURCE_DIR}/COPYING.LESSERv3 _license_lgpl)
+file(READ ${COPYING_GPL} _license_gpl)
+file(READ ${COPYING_LGPL} _license_lgpl)
 
 set (_license_extra)
 if (NOT LICENSE_RESTRICTED)

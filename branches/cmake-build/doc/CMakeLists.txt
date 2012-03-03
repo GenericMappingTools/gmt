@@ -35,15 +35,16 @@ set (_common_inputs GMT.ist GMT.sty GMT_macros.tex GMT_Cover.tex)
 # Install license files
 if (NOT LICENSE_RESTRICTED STREQUAL GPL)
 	install (FILES
-		${GMT_SOURCE_DIR}/COPYING.LESSERv3
-		DESTINATION ${GMT_DOC_PATH}
-		COMPONENT Documentation)
+		${COPYING_LGPL}
+		DESTINATION ${GMT_DOC_PATH}/copying
+		COMPONENT Runtime)
 endif (NOT LICENSE_RESTRICTED STREQUAL GPL)
 install (FILES
-	${GMT_SOURCE_DIR}/COPYINGv3
+	${GMT_SOURCE_DIR}/LICENSE.TXT
+	${COPYING_GPL}
 	${GMT_EXTRA_LICENSE_FILES}
-	DESTINATION ${GMT_DOC_PATH}
-	COMPONENT Documentation)
+	DESTINATION ${GMT_DOC_PATH}/copying
+	COMPONENT Runtime)
 
 if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	# Install documentation files from external location without creating PDF
