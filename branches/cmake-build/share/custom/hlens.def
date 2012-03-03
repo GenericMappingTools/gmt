@@ -1,7 +1,0 @@
-#	$Id$
-#
-#	Definition file for a horizontal lens symbol.
-#
--0.5	0	M
-0	0.5	1.41421356237309504880	225	315	A
-0	-0.5	1.41421356237309504880	45	135	A

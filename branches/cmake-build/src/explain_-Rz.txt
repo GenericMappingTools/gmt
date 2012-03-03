@@ -1,2 +1,0 @@
-.br
-For perspective view (OPT(p)), optionally append /IT(zmin)/IT(zmax).
