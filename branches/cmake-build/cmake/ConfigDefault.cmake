@@ -62,37 +62,37 @@ if (NOT UNITS)
 endif (NOT UNITS)
 
 # File locking off
-if (NOT FLOCK)
+if (NOT DEFINED FLOCK)
 	set (FLOCK off)
-endif (NOT FLOCK)
+endif (NOT DEFINED FLOCK)
 
 # Monolithic install on
-if (NOT GMT_INSTALL_MONOLITHIC)
+if (NOT DEFINED GMT_INSTALL_MONOLITHIC)
 	set (GMT_INSTALL_MONOLITHIC ON)
-endif (NOT GMT_INSTALL_MONOLITHIC)
+endif (NOT DEFINED GMT_INSTALL_MONOLITHIC)
 
 # Enforce GPL conformity per default. This disables routines that cannot
 # be redistributed under the terms of the GPL such as Shewchuk's
 # triangulation.
-if (NOT LICENSE_RESTRICTED)
+if (NOT DEFINED LICENSE_RESTRICTED)
 	set (LICENSE_RESTRICTED GPL)
-endif (NOT LICENSE_RESTRICTED)
+endif (NOT DEFINED LICENSE_RESTRICTED)
 
 # Default location of realease documentation. If the directory exists in the
 # source tree, the files will be copied to GMT_DOC_PATH instead of creating
 # PDFs from source:
-if (NOT GMT_INSTALL_EXTERNAL_DOC)
+if (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
 	set (GM_INSTALL_EXTERNAL_DOC ${GMT_SOURCE_DIR}/doc_release)
-endif (NOT GMT_INSTALL_EXTERNAL_DOC)
+endif (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
 
 # Directory in which to install the release sources per default
-if (NOT GMT_RELEASE_PREFIX)
+if (NOT DEFINED GMT_RELEASE_PREFIX)
 	set (GMT_RELEASE_PREFIX ${GMT_BINARY_DIR}/GMT-${GMT_PACKAGE_VERSION}-src)
-endif (NOT GMT_RELEASE_PREFIX)
+endif (NOT DEFINED GMT_RELEASE_PREFIX)
 
 
 # The GMT copyright - string version to be used in a source file.
-set (GMT_COPYRIGHT_STRING "")
+set (GMT_COPYRIGHT_STRING)
 set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}Copyright 1991-${GMT_VERSION_YEAR} Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis\\n")
 set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}This program comes with NO WARRANTY, to the extent permitted by law.\\n")
 set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}You may redistribute copies of this program under the terms of the\\n")
@@ -122,16 +122,16 @@ set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}\\n")
 # set it (and use CMAKE_BUILD_TYPE).  If CMAKE_CONFIGURATION_TYPES is not
 # already set, don't set it."
 #
-if (NOT CMAKE_CONFIGURATION_TYPES)
-	if (NOT CMAKE_BUILD_TYPE)
+if (NOT DEFINED CMAKE_CONFIGURATION_TYPES)
+	if (NOT DEFINED CMAKE_BUILD_TYPE)
 		# Should we set build type to RelWithDebInfo for developers and
 		# to release for general public (ie when GPLATES_SOURCE_RELEASE is true) ?
 		# Currently it's Release for both.
 		set (CMAKE_BUILD_TYPE Release CACHE STRING
 		"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel ${extra_build_configurations}."
 		FORCE)
-	endif (NOT CMAKE_BUILD_TYPE)
-endif (NOT CMAKE_CONFIGURATION_TYPES)
+	endif (NOT DEFINED CMAKE_BUILD_TYPE)
+endif (NOT DEFINED CMAKE_CONFIGURATION_TYPES)
 
 
 # Turn this on if you want to...
@@ -146,9 +146,9 @@ endif (NOT CMAKE_CONFIGURATION_TYPES)
 #  Unix: type 'make VERBOSE=1'  on the command-line when building.
 #  VisualStudio: change SuppressStartupBanner to 'no' in "project
 #  settings->configuration properties->*->general".
-if (NOT CMAKE_VERBOSE_MAKEFILE)
+if (NOT DEFINED CMAKE_VERBOSE_MAKEFILE)
 	set (CMAKE_VERBOSE_MAKEFILE false)
-endif (NOT CMAKE_VERBOSE_MAKEFILE)
+endif (NOT DEFINED CMAKE_VERBOSE_MAKEFILE)
 
 # prefer shared libs over static
 set (BUILD_SHARED_LIBS true)
