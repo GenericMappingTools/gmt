@@ -24,7 +24,7 @@ Quick start:
 
 Checkout GMT5 from its subversion repository:
 
-  $ svn co svn://gmtserver.soest.hawaii.edu/gmt5/branches/cmake-build gmt5-dev
+  $ svn co svn://gmtserver.soest.hawaii.edu/gmt5/tunk gmt5-dev
   $ cd gmt5-dev
   $ cp cmake/ConfigUserTemplate.cmake cmake/ConfigUser.cmake
 
