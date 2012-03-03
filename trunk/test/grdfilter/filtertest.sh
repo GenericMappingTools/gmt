@@ -7,10 +7,8 @@
 . ../functions.sh
 header "Test grdfilter for filter weights (-DDEBUG only)"
 
-grep DEBUG ../../src/config.mk > tmp
-if [ ! -s tmp ]; then
+if [ -z "$HAVE_GMT_DEBUG_SYMBOLS" ]; then
 	echo "[N/A]"
-	rm -f tmp
 	exit
 fi
 FILT=g			# Gaussian filter

@@ -260,11 +260,11 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely outside the polygons will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[GMT_OUTSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_OUTSIDE]);
+			(GMT_is_dnan (Ctrl->N.mask[GMT_OUTSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_OUTSIDE]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[GMT_INSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_INSIDE]);
+			(GMT_is_dnan (Ctrl->N.mask[GMT_INSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_INSIDE]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes on the polygons boundary will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_ONEDGE]);
+			(GMT_is_dnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_ONEDGE]);
 		}
 	}
 

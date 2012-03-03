@@ -1,18 +1,23 @@
 /*---------------------------------------------------------------------------
- *	$Id$
+ *  $Id$
  *
  *
- *  File:	cm4_functions.h
+ *  File:       cm4_functions.h
  *
  *  Functions required to compute CM4 magnetic components
  *
  *  Authors:    J. Luis translated from original Fortran code
- *		P. Wessel further massaged it into this form
- *		
- *  Version:	1.0
- *  Revised:	1-MAY-2009
- * 
+ *              P. Wessel further massaged it into this form
+ *
+ *  Version:    1.0
+ *  Revised:    1-MAY-2009
+ *
  *-------------------------------------------------------------------------*/
+
+#ifndef _CM4_FUNCTIONS_H
+#define _CM4_FUNCTIONS_H
+
+#include "gmt.h"
 
 struct MGD77_CM4 {
 	struct CM4_L {	/*  */
@@ -66,3 +71,5 @@ struct MGD77_CM4 {
 
 int MGD77_cm4field (struct GMT_CTRL *C, struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date);
 EXTERN_MSC void MGD77_CM4_init (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4);
+
+#endif /* _CM4_FUNCTIONS_H */

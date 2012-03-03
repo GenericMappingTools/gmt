@@ -3162,10 +3162,11 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 			return (NULL);
 		}
 #if defined(WIN32) && defined(USE_MEM_ALIGNED)
-		if ((tmp = _aligned_realloc ( prev_addr, (size_t)(nelem * size), alignment)) == NULL) {
+		if ((tmp = _aligned_realloc ( prev_addr, (size_t)(nelem * size), alignment)) == NULL)
 #else
-		if ((tmp = realloc ( prev_addr, (size_t)(nelem * size))) == NULL) {
+		if ((tmp = realloc ( prev_addr, (size_t)(nelem * size))) == NULL)
 #endif
+		{
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
@@ -3182,10 +3183,11 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 		tmp = _aligned_malloc ((size_t)(nelem * size), alignment);
 		if (tmp != NULL)
 			tmp = memset(tmp, 0, (size_t)(nelem * size));
-		else {
+		else
 #else
-		if ((tmp = calloc ((size_t)nelem, size)) == NULL) {
+		if ((tmp = calloc ((size_t)nelem, size)) == NULL)
 #endif
+		{
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
@@ -3204,7 +3206,19 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 
 void GMT_free_func (struct GMT_CTRL *C, void *addr, const char *fname, const GMT_LONG line)
 {
-	if (!addr) return;	/* Do not try to free a NULL pointer! */
+	if (addr==NULL)
+	{
+		/* report freeing unallocated memory */
+#ifdef DEBUG
+		GMT_report (C, GMT_MSG_NORMAL,
+		    "GMT_free_func: %s from file %s on line %ld tried to free unallocated memory\n",
+		    C->init.progname, fname, line);
+#else
+		GMT_report (C, GMT_MSG_DEBUG,
+		    "GMT_free_func: %s tried to free unallocated memory\n");
+#endif
+		return; /* Do not free a NULL pointer, although allowed */
+	}
 #ifdef DEBUG
 	gmt_memtrack_sub (C, GMT_mem_keeper, (char *)fname, line, addr);
 #endif

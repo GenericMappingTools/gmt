@@ -55,36 +55,24 @@ Only used with OPT(R) OPT(I).
 .SH SYMBOLS
 The following symbols have special meaning:
 .br
-.sp
+.TS
+l l .
 BD(PI)	3.1415926...
-.br
-BD(E )	2.7182818...
-.br
-BD(EULER )	0.5772156...
-.br
-BD(XMIN )	Minimum x value
-.br
-BD(XMAX )	Maximum x value
-.br
-BD(XINC )	x increment
-.br
-BD(NX )	The number of x nodes
-.br
-BD(YMIN )	Minimum y value
-.br
-BD(YMAX )	Maximum y value
-.br
-BD(YINC )	y increment
-.br
-BD(NY )	The number of y nodes
-.br
-BD(X )	Grid with x-coordinates
-.br
-BD(Y )	Grid with y-coordinates
-.br
-BD(Xn )	Grid with normalized [-1 to +1] x-coordinates
-.br
-BD(Yn )	Grid with normalized [-1 to +1] y-coordinates
+BD(E)	2.7182818...
+BD(EULER)	0.5772156...
+BD(XMIN)	Minimum x value
+BD(XMAX)	Maximum x value
+BD(XINC)	x increment
+BD(NX)	The number of x nodes
+BD(YMIN)	Minimum y value
+BD(YMAX)	Maximum y value
+BD(YINC)	y increment
+BD(NY)	The number of y nodes
+BD(X)	Grid with x-coordinates
+BD(Y)	Grid with y-coordinates
+BD(Xn)	Grid with normalized [-1 to +1] x-coordinates
+BD(Yn)	Grid with normalized [-1 to +1] y-coordinates
+.TE
 .SH NOTES ON OPERATORS
 (1) The operator BD(SDIST) calculates spherical distances between the (lon, lat)
 point on the stack and all node positions in the grid.  The grid domain

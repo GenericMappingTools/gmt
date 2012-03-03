@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id$
+# $Id$
 #
-#	test script for GMT/test directory
+# test script for GMT/test directory
 #
 # Specify the scripts to be run and its result compared to the archive.
 
@@ -27,6 +27,7 @@ for o in $* ; do
 		olddir=$dir
 	fi
 	bash $script
+    echo "==> exit status: $?"
 done
 cd $here
 

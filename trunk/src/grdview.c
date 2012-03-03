@@ -954,7 +954,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			bin = 0;
 			GMT_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
 				value = GMT_get_bcr_z (GMT, Topo, x_drape[col], y_drape[row]);
-				if (GMT_is_fnan (value))	/* Outside -R or NaNs not used */
+				if (GMT_is_dnan (value))	/* Outside -R or NaNs not used */
 					ix[bin] = iy[bin] = -1;
 				else {
 					GMT_geoz_to_xy (GMT, x_drape[col], y_drape[row], value, &xp, &yp);

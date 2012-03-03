@@ -32,7 +32,7 @@
 #define DUMP_DECIMATE 0
 */
 
-#if OUTPUT_TEST == 1
+#if defined ( OUTPUT_TEST ) && OUTPUT_TEST == 1
 #define OR_TRUE || 1
 #define AND_FALSE && 0
 #else

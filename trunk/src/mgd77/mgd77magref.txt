@@ -163,7 +163,7 @@ echo -28 38 0 2001-05-01T12:00:00 | BD(mgd77magref) OPT(F)tdi/13456
 .IR mgd77track (1)
 #include "refs.i"
 Comprehensive Modeling of the Geomagnetic Field, see
-IT(http://denali.gsfc.nasa.gov/cm/).
+\fIhttp://denali.gsfc.nasa.gov/cm/\fP.
 .br
 The International Geomagnetic Reference Field (IGRF), see
-IT(http://www.iugg.org/IAGA/iaga_pages/pubs_prods/igrf.htm).
+\fIhttp://www.iugg.org/IAGA/iaga_pages/pubs_prods/igrf.htm\fP.

@@ -36,7 +36,8 @@ makegrd -R0/2/0/2 "-C0/0.8/0.4"
 
 testcase > grdvolume.log
 
-diff grdvolume.log grdvolume.out --strip-trailing-cr > log
+# Note: a non-zero exit status of diff is not an error
+diff grdvolume.log grdvolume.out --strip-trailing-cr > log || true
 
 if [ $? != 0 ]; then
 	touch fail

@@ -95,14 +95,16 @@ EXTERN_MSC GMT_LONG GMTAPI_n_items (struct GMTAPI_CTRL *API, GMT_LONG family, GM
 EXTERN_MSC GMT_LONG GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG direction);
 EXTERN_MSC GMT_LONG GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG object_ID, GMT_LONG direction, GMT_LONG *item_no);
 
-#ifndef WIN32
-#include <dirent.h>
-#if !(defined(__CYGWIN__) || defined(__MINGW32__) || defined(__sun__)) /* Cygwin and Solaris don't have dir.h */
-#include <sys/dir.h>
+#ifdef HAVE_DIRENT_H_
+#	include <dirent.h>
 #endif
+
+#ifdef HAVE_SYS_DIR_H_
+#	include <sys/dir.h>
+#endif
+
 #ifndef DT_DIR
-#define DT_DIR           4
-#endif
+#	define DT_DIR 4
 #endif
 
 /* Macro to apply columns log/scale/offset conversion on the fly */
@@ -488,10 +490,11 @@ FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 	else if (strchr (filename, '?'))	/* Definitely netCDF */
 		return (gmt_nc_fopen (C, filename, mode));
 #ifdef WIN32
-	else if (!strcmp (filename, "NUL")) {	/* Special case of /dev/null under Windows */
+	else if (!strcmp (filename, "NUL"))	/* Special case of /dev/null under Windows */
 #else
-	else if (!strcmp (filename, "/dev/null")) {	/* The Unix null device; catch here to avoid gmt_nc_fopen */
+	else if (!strcmp (filename, "/dev/null"))	/* The Unix null device; catch here to avoid gmt_nc_fopen */
 #endif
+	{
 		return (fopen (GMT_getdatapath(C, filename, path), mode));
 	}
 	else {	/* Maybe netCDF */
@@ -598,10 +601,11 @@ char *GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path)
 	/* If a full path is given, we only look for that file directly */
 
 #ifdef WIN32
-	if (stem[0] == '/' || stem[1] == ':') {
+	if (stem[0] == '/' || stem[1] == ':')
 #else
-	if (stem[0] == '/') {
+	if (stem[0] == '/')
 #endif
+	{
 		if (!access (stem, R_OK)) return (strcpy (path, stem));	/* Yes, found it */
 		return (NULL);	/* No file found, give up */
 	}
@@ -642,10 +646,10 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	GMT_LONG d, pos, L, found;
 	char *udir[2] = {C->session.USERDIR, C->session.DATADIR}, dir[GMT_BUFSIZ];
 	char path_separator[2] = {PATH_SEPARATOR, '\0'};
-#ifndef WIN32
+#ifdef HAVE_DIRENT_H_
 	GMT_LONG N;
 	GMT_LONG gmt_traverse_dir (const char *file, char *path);
-#endif
+#endif /* HAVE_DIRENT_H_ */
 	GMT_LONG gmt_file_is_readable (struct GMT_CTRL *C, char *path);
 
 	/* First look in the current working directory */
@@ -681,24 +685,24 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 		found = pos = 0;
 		while (!found && (GMT_strtok (C, udir[d], path_separator, &pos, dir))) {
 			L = strlen (dir);
-#ifndef WIN32
+#ifdef HAVE_DIRENT_H_
 #ifdef GMT_COMPAT
 			if (dir[L-1] == '*' || dir[L-1] == '/') {	/* Must search recursively from this dir */
 				N = (dir[L-1] == '/') ? L - 1 : L - 2;
 #else
 			if (dir[L-1] == '/') {	/* Must search recursively from this dir */
 				N = L - 1;
-#endif
+#endif /* GMT_COMPAT */
 				strncpy (path, dir, N);	path[N] = 0;
 				found = gmt_traverse_dir (stem, path);
 			}
 			else {
-#endif
+#endif /* HAVE_DIRENT_H_ */
 				sprintf (path, "%s/%s", dir, stem);
 				found = (!access (path, F_OK));
-#ifndef WIN32
+#ifdef HAVE_DIRENT_H_
 			}
-#endif
+#endif /* HAVE_DIRENT_H_ */
 		}
 		if (found && gmt_file_is_readable (C, path)) return (path);	/* Yes, can read it */
 	}
@@ -714,7 +718,7 @@ GMT_LONG gmt_file_is_readable (struct GMT_CTRL *C, char *path)
 	return (FALSE);	/* Cannot read, give up */
 }
 
-#ifndef WIN32
+#ifdef HAVE_DIRENT_H_
 GMT_LONG gmt_traverse_dir (const char *file, char *path) {
 	/* Look for file in the directory pointed to by path, recursively */
 	DIR *D = NULL;
@@ -731,7 +735,7 @@ GMT_LONG gmt_traverse_dir (const char *file, char *path) {
 		d_namlen = strlen (F->d_name);
 		if (d_namlen == 1 && F->d_name[0] == '.') continue;				/* Skip current dir */
 		if (d_namlen == 2 && F->d_name[0] == '.' && F->d_name[1] == '.') continue;	/* Skip parent dir */
-#if !(defined(__CYGWIN__) || defined(__MINGW32__) || defined(__sun__))
+#ifdef HAVE_SYS_DIR_H_
 		if (F->d_type == DT_DIR) {	/* Entry is a directory; must search this directory recursively */
 			sprintf (path, "%s/%s", savedpath, F->d_name);
 			ok = gmt_traverse_dir (file, path);
@@ -740,12 +744,12 @@ GMT_LONG gmt_traverse_dir (const char *file, char *path) {
 			sprintf (path, "%s/%s", savedpath, file);
 			ok = TRUE;
 		}
-#endif
+#endif /* HAVE_SYS_DIR_H_ */
 	}
 	(void)closedir (D);
 	return (ok);	/* did or did not find file */
 }
-#endif
+#endif /* HAVE_DIRENT_H_ */
 
 char *GMT_getsharepath (struct GMT_CTRL *C, const char *subdir, const char *stem, const char *suffix, char *path)
 {
@@ -772,7 +776,11 @@ char *GMT_getsharepath (struct GMT_CTRL *C, const char *subdir, const char *stem
 	/* Not found, see if there is a file in the user's GMT_USERDIR (~/.gmt) directory */
 
 	if (C->session.USERDIR) {
+		/* Try to get file from $GMT_USERDIR */
 		sprintf (path, "%s/%s%s", C->session.USERDIR, stem, suffix);
+		if (!access (path, R_OK)) return (path);
+		/* Try to get file from $GMT_USERDIR/subdir */
+		sprintf (path, "%s/%s/%s%s", C->session.USERDIR, subdir, stem, suffix);
 		if (!access (path, R_OK)) return (path);
 	}
 
@@ -790,10 +798,15 @@ int GMT_access (struct GMT_CTRL *C, const char* filename, int mode)
 {	/* Like access but also checks the GMT_*DIR places */
 	char file[GMT_BUFSIZ];
 
-	if (!filename || !filename[0]) return (-1);	/* No file given */
+	file[0] = '\0';		/* 'Initialize' it so we can test if it's still 'empty' after the sscanf below */
+	if (!filename || !filename[0])
+		return (-1);	/* No file given */
 	sscanf (filename, "%[^=?]", file);		/* Exclude netcdf 3/-D grid extensions to make sure we get a valid file name */
+	if (file[0] == '\0')
+		return(-1);		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
 
-	if (mode == W_OK) return (access (file, mode));	/* When writing, only look in current directory */
+	if (mode == W_OK)
+		return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existance */
 		char path[GMT_BUFSIZ];
 		return (GMT_getdatapath (C, file, path) ? 0 : -1);

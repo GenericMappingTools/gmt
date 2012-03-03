@@ -312,7 +312,7 @@
 /*   compiler is smarter, feel free to replace the "int" with "void".        */
 /*   Not that it matters.                                                    */
 
-#define VOID int
+#define VOID void
 
 /* Two constants for algorithms based on random sampling.  Both constants    */
 /*   have been chosen empirically to optimize their respective algorithms.   */
@@ -347,9 +347,7 @@
 #ifndef NO_TIMER
 #include <sys/time.h>
 #endif /* not NO_TIMER */
-#ifdef CPU86
 #include <float.h>
-#endif /* CPU86 */
 #ifdef LINUX
 #include <fpu_control.h>
 #endif /* LINUX */
@@ -629,13 +627,13 @@ struct memorypool {
   VOID *deaditemstack;
   VOID **pathblock;
   VOID *pathitem;
-  int alignbytes;
-  int itembytes;
-  int itemsperblock;
-  int itemsfirstblock;
+  size_t alignbytes;
+  size_t itembytes;
+  size_t itemsperblock;
+  size_t itemsfirstblock;
   long items, maxitems;
-  int unallocateditems;
-  int pathitemsleft;
+  size_t unallocateditems;
+  size_t pathitemsleft;
 };
 
 
@@ -1419,16 +1417,16 @@ int status;
 }
 
 #ifdef ANSI_DECLARATORS
-VOID *trimalloc(int size)
+VOID *trimalloc(size_t size)
 #else /* not ANSI_DECLARATORS */
 VOID *trimalloc(size)
-int size;
+size_t size;
 #endif /* not ANSI_DECLARATORS */
 
 {
   VOID *memptr;
 
-  memptr = (VOID *) malloc((size_t) size);
+  memptr = (VOID *) malloc(size);
   if (memptr == (VOID *) NULL) {
     printf("Error: Out of memory.\n");
     triexit(1);
@@ -3933,15 +3931,15 @@ struct memorypool *pool;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void poolinit(struct memorypool *pool, int bytecount, int itemcount,
-              int firstitemcount, int alignment)
+void poolinit(struct memorypool *pool, size_t bytecount, size_t itemcount,
+              size_t firstitemcount, size_t alignment)
 #else /* not ANSI_DECLARATORS */
 void poolinit(pool, bytecount, itemcount, firstitemcount, alignment)
 struct memorypool *pool;
-int bytecount;
-int itemcount;
-int firstitemcount;
-int alignment;
+size_t bytecount;
+size_t itemcount;
+size_t firstitemcount;
+size_t alignment;
 #endif /* not ANSI_DECLARATORS */
 
 {
@@ -4297,7 +4295,7 @@ struct behavior *b;
   /* Initialize the pool of vertices. */
   poolinit(&m->vertices, vertexsize, VERTEXPERBLOCK,
            m->invertices > VERTEXPERBLOCK ? m->invertices : VERTEXPERBLOCK,
-           (int)sizeof(REAL));
+           sizeof(REAL));
 }
 
 /*****************************************************************************/
@@ -4320,7 +4318,7 @@ struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
 
 {
-  int trisize;
+  unsigned int trisize;
 
   /* The index within each triangle at which the extra nodes (above three)  */
   /*   associated with high order elements are found.  There are three      */
@@ -4578,12 +4576,12 @@ struct mesh *m;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-vertex getvertex(struct mesh *m, struct behavior *b, int number)
+vertex getvertex(struct mesh *m, struct behavior *b, unsigned int number)
 #else /* not ANSI_DECLARATORS */
 vertex getvertex(m, b, number)
 struct mesh *m;
 struct behavior *b;
-int number;
+unsigned int number;
 #endif /* not ANSI_DECLARATORS */
 
 {
@@ -8220,7 +8218,7 @@ int triflaws;
   struct otri newbotleft, newbotright;
   struct otri newtopright;
   struct otri botlcasing, botrcasing;
-  struct otri toplcasing, toprcasing;
+  struct otri toplcasing, toprcasing = {NULL, 0}; /* silence -Wuninitialized */
   struct otri testtri;
   struct osub botlsubseg, botrsubseg;
   struct osub toplsubseg, toprsubseg;
@@ -13022,7 +13020,7 @@ int regions;
   if (((holes > 0) && !b->noholes) || !b->convex || (regions > 0)) {
     /* Initialize a pool of viri to be used for holes, concavities, */
     /*   regional attributes, and/or regional area constraints.     */
-    poolinit(&m->viri, (int)sizeof(triangle *), VIRUSPERBLOCK, VIRUSPERBLOCK, 0);
+    poolinit(&m->viri, sizeof(triangle *), VIRUSPERBLOCK, VIRUSPERBLOCK, 0);
   }
 
   if (!b->convex) {

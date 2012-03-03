@@ -105,7 +105,7 @@ may be extracted via OPT(N).
 .SH REFERENCES
 Douglas, D. H., and T. K. Peucker, 1973, Algorithms for the reduction
 of the number of points required to represent a digitized line
-of its caricature, IT(Can. Cartogr., 10), 112-122.
+of its caricature, \fICan. Cartogr., 10\fP, 112-122.
 .br
 Gorny, A. J., 1977, \fIWorld Data Bank II General User GuideRep. PB 271869\fP, 10pp,
 Central Intelligence Agency, Washington, DC.

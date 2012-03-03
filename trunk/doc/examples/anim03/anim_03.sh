@@ -21,6 +21,7 @@ py=2.5
 el=35
 az=0
 name=`basename $0 '.sh'`
+ps=../${name}.ps
 mkdir -p $$
 frame=0
 grdclip -Sb0/-1 -G$$_above.nc Iceland.nc
@@ -34,7 +35,7 @@ while [ $az -lt 360 ]; do
 	grdview $$_above.nc -R-26/-12/63/67 -JM2.5i -C$$.cpt -Qi$dpi -B5g10/5g5 -P -X0.5i -Y0.5i \
 		-p$az/${el}+w$lon/${lat}+v$x0/$y0 --PS_MEDIA=${px}ix${py}i > $$.ps
 	if [ $# -eq 0 ]; then
-		mv $$.ps ../$name.ps
+		mv $$.ps $ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"
 	fi

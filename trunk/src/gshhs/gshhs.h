@@ -40,16 +40,14 @@
 
 #ifndef _GSHHS
 #define _GSHHS
-#define _POSIX_SOURCE 1		/* GSHHS code is POSIX compliant */
+#include "gmt_config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
-#include <math.h>
-
-#ifdef WIN32
-#pragma warning( disable : 4996 )
+#ifdef HAVE_CTYPE_H_
+#	include <ctype.h>
 #endif
+#include <math.h>
 
 #ifndef M_PI
 #define M_PI          3.14159265358979323846

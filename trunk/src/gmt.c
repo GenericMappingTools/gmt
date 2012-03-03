@@ -90,5 +90,5 @@ int main (int argc, char *argv[]) {
 	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);
 
-	exit (status);		/* Return the status from FUNC */
+	exit ((int)status);		/* Return the status from FUNC */
 }

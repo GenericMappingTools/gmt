@@ -1,29 +1,29 @@
 /*---------------------------------------------------------------------------
- *	$Id$
+ *  $Id$
  *
- *    Copyright (c) 2005-2012 by P. Wessel
- *    See README file for copying and redistribution conditions.
+ *  Copyright (c) 2005-2012 by P. Wessel
+ *  See README file for copying and redistribution conditions.
  *
- *  File:	mgd77.c
+ *  File:       mgd77.c
  *
  *  Function library for programs that plan to read/write MGD77[+] files
  *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
- *				Michael Chandler, Ph.D. Student, SOEST, U. of Hawaii
+ *                              Michael Chandler, Ph.D. Student, SOEST, U. of Hawaii
  *
- *  Version:	 1.2
- *  Revised:	 1-MAR-2006
- *  Revised:	21-JAN-2010	IGRF2010
+ *  Version:     1.2
+ *  Revised:     1-MAR-2006
+ *  Revised:    21-JAN-2010     IGRF2010
  *
  *-------------------------------------------------------------------------*/
-
 
 #include "mgd77.h"
 #include "mgd77_IGF_coeffs.h"
 #include "mgd77_init.h"
 #include "mgd77_recalc.h"
-#ifndef WIN32
-#include <dirent.h>
+
+#ifdef HAVE_DIRENT_H_
+#	include <dirent.h>
 #endif
 
 #define MGD77_CDF_CONVENTION	"CF-1.0"	/* MGD77+ files are CF-1.0 and hence COARDS-compliant */
@@ -165,8 +165,6 @@ void MGD77_Write_Sequence (struct GMT_CTRL *C, FILE *fp, int seq);
 int get_quadrant (int x, int y);
 int MGD77_Free_Header_Record_asc (struct GMT_CTRL *C, struct MGD77_HEADER *H);
 int MGD77_Free_Header_Record_cdf (struct GMT_CTRL *C, struct MGD77_HEADER *H);
-
-#include "mgd77_functions.c"	/* Get netCDF MGD77 header attribute i/o functions */
 
 int MGD77_Param_Key (struct GMT_CTRL *C, GMT_LONG record, int item) {
 	GMT_LONG i, status = MGD77_BAD_HEADER_RECNO;
@@ -504,7 +502,6 @@ int MGD77_Read_Header_Record_asc (struct GMT_CTRL *C, char *file, struct MGD77_C
 		H->n_records = n - 24;					/* 24 is the header size */
 		rewind (F->fp);					/* Go back to beginning of file */
 #else
-
 		/* Test if we need to use +2 because of \r\n. We could use the above solution but this one looks more (time) efficient. */
 		not_used = fgets (line, GMT_BUFSIZ, F->fp);
 		rewind (F->fp);					/* Go back to beginning of file */
@@ -1271,7 +1268,7 @@ void MGD77_Verify_Prep_m77 (struct GMT_CTRL *G, struct MGD77_CONTROL *F, struct 
 
 	/* Get the cruise time period for later checking against IGRF used, etc. */
 
-	if (!GMT_is_fnan (D[0].time)) {	/* We have  time - obtain yyyy/mm/dd of departure and arrival days */
+	if (!GMT_is_dnan (D[0].time)) {	/* We have  time - obtain yyyy/mm/dd of departure and arrival days */
 		C->Departure[0] = irint (D[0].number[MGD77_YEAR]);
 		C->Departure[1] = irint (D[0].number[MGD77_MONTH]);
 		C->Departure[2] = irint (D[0].number[MGD77_DAY]);
@@ -1340,7 +1337,7 @@ void MGD77_Verify_Prep (struct GMT_CTRL *G, struct MGD77_CONTROL *F, struct MGD7
 	C->s = irint (ymin);
 	C->n = irint (ymax);
 
-	if (!GMT_is_fnan (values[0][0])) {	/* We have time - obtain yyyy/mm/dd of departure and arrival days */
+	if (!GMT_is_dnan (values[0][0])) {	/* We have time - obtain yyyy/mm/dd of departure and arrival days */
 		struct GMT_gcal CAL;
 		MGD77_gcal_from_dt (G, F, values[0][0], &CAL);
 		C->Departure[0] = (int)CAL.year;
@@ -2596,11 +2593,11 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 	GMT_LONG i, j, k, n = 0, n_dig, length, all, NGDC_ID_likely, n_alloc = 0;
 	struct GMT_OPTION *opt = NULL;
 	char **L = NULL, *d_name = NULL, line[GMT_BUFSIZ], this_arg[GMT_BUFSIZ], *flist = NULL;
-#ifdef WIN32
-	FILE *fp = NULL;
-#else
+#ifdef HAVE_DIRENT_H_
 	DIR *dir = NULL;
 	struct dirent *entry = NULL;
+#else
+	FILE *fp = NULL;
 #endif
 #ifdef DEBUG
 	/* Since the sorting throws this machinery off */
@@ -2664,17 +2661,8 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 		}
 
 		/* Here we have either <agency> or <agency><vessel> code or blank for all */
-		for (i = 0; NGDC_ID_likely && i < F->n_MGD77_paths; i++) {	/* Examine all directories */
-#ifdef WIN32
-			/* We simulate Unix opendir/readdir/closedir by listing the directory to a temp file */
-			sprintf (line, "dir /b %s > .tmpdir", F->MGD77_datadir[i]);
-			system (line);
-			fp = fopen (".tmpdir", "r");
-			while (fgets (line, GMT_BUFSIZ, fp)) {
-				GMT_chop (C, line);	/* Get rid of CR/LF issues */
-				d_name = line;
-#else
-			/* The directory search is only supported on Unix-like systems for now */
+		for (i = 0; NGDC_ID_likely && i < F->n_MGD77_paths; i++) { /* Examine all directories */
+#ifdef HAVE_DIRENT_H_
 			/* Here we have either <agency> or <agency><vessel> code or blank for all */
 			if ((dir = opendir (F->MGD77_datadir[i])) == NULL) {
 				GMT_report (C, GMT_MSG_FATAL, "Warning: Unable to open directory %s\n", F->MGD77_datadir[i]);
@@ -2682,7 +2670,15 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 			}
 			while ((entry = readdir (dir)) != NULL) {
 				d_name = entry->d_name;
-#endif
+#else
+			/* We simulate POSIX opendir/readdir/closedir by listing the directory to a temp file */
+			sprintf (line, "dir /b %s > .tmpdir", F->MGD77_datadir[i]);
+			system (line);
+			fp = fopen (".tmpdir", "r");
+			while (fgets (line, GMT_BUFSIZ, fp)) {
+				GMT_chop (C, line); /* Get rid of CR/LF issues */
+				d_name = line;
+#endif /* HAVE_DIRENT_H_ */
 				if (length && strncmp (d_name, this_arg, (size_t)length)) continue;
 				k = strlen (d_name) - 1;
 				while (k && d_name[k] != '.') k--;	/* Strip off file extension */
@@ -2692,12 +2688,12 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 				strncpy (L[n], d_name, (size_t)k);
 				L[n++][k] = '\0';
 			}
-#ifdef WIN32
+#ifdef HAVE_DIRENT_H_
+			closedir (dir);
+#else
 			fclose (fp);
 			remove (".tmpdir");
-#else
-			closedir (dir);
-#endif
+#endif /* HAVE_DIRENT_H_ */
 		}
 		all = FALSE;	/* all is only TRUE once (or never) inside this loop */
 	}
@@ -5379,5 +5375,3 @@ void MGD77_CM4_init (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_C
 	CM4->CM4_DATA.pred[0] = CM4->CM4_DATA.pred[1] = CM4->CM4_DATA.pred[2] = CM4->CM4_DATA.pred[3] = TRUE;
 	CM4->CM4_DATA.pred[4] = CM4->CM4_DATA.pred[5] = FALSE;
 }
-
-#include "cm4_functions.c"

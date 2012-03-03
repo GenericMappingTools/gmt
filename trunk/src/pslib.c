@@ -98,62 +98,21 @@
  *
  */
 
-/*  PSL is POSIX COMPLIANT  */
-
-#define _POSIX_SOURCE 1
-#define _POSIX_C_SOURCE 199506L
-
-/* Declaration modifiers for DLL support (MSC et al) */
-
-#if defined(DLL_PSL)		/* define when library is a DLL */
-#if defined(DLL_EXPORT)		/* define when building the library */
-#define MSC_EXTRA_PSL __declspec(dllexport)
-#else
-#define MSC_EXTRA_PSL __declspec(dllimport)
-#endif
-#else
-#define MSC_EXTRA_PSL
-#endif				/* defined(DLL_PSL) */
-
-#ifndef EXTERN_MSC
-#define EXTERN_MSC extern MSC_EXTRA_PSL
-#endif
-
-/* So unless DLL_PSL is defined, EXTERN_MSC is simply extern */
-
-#ifdef WIN32
-#include <process.h>
-#define getpid _getpid
-#else
-#include <unistd.h>
-#endif
-
 /*--------------------------------------------------------------------
  *			SYSTEM HEADER FILES
  *--------------------------------------------------------------------*/
 
-#include <ctype.h>
+#include "gmt_config.h" /* must be first */
+
 #include <float.h>
 #include <limits.h>
 #include <math.h>
-#include <stddef.h>
-#ifdef __MACHTEN__
-/* Kludge to fix a Machten POSIX bug */
-#include <sys/types.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <stdarg.h>
 #include "pslib.h"
-#include "gmt_notunix.h"
-#include "gmt_notposix.h"
-#include "gmt_math.h"
-
-#ifndef WIN32
-#include <unistd.h>
-#endif
 
 /* Macro for exit since this should be returned when called from Matlab */
 #ifdef DO_NOT_EXIT
@@ -335,7 +294,7 @@ const char *PDF_transparency_modes[N_PDF_TRANSPARENCY_MODES] = {
 	"Overlay", "Saturation", "SoftLight", "Screen"
 };
 
-#if !defined(HAVE_STRTOK_R)
+#if !defined(HAVE_STRTOK_R) && !defined(HAVE_STRTOK_S)
 /* Lame compiler that does not support reentrant strtok */
 /*
  * Copyright (c) 1995, 1996, 1997 Kungliga Tekniska Hgskolan
@@ -1282,7 +1241,7 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 		PSL_command (PSL, "%%%%EndComments\n\n");
 
 		PSL_command (PSL, "%%%%BeginProlog\n");
-		psl_bulkcopy (PSL, "PSL_prologue", 9574);	/* Version number should match that of PSL_prologue.ps */
+		psl_bulkcopy (PSL, "PSL_prologue", 9576);	/* Version number should match that of PSL_prologue.ps */
 		psl_bulkcopy (PSL, PSL->init.encoding, 0);
 
 		psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */

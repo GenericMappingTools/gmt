@@ -130,9 +130,10 @@ GMT_LONG GMT_gmtset_parse (struct GMTAPI_CTRL *C, struct GMTSET_CTRL *Ctrl, stru
 GMT_LONG GMT_gmtset (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = 0;
-	
+
 	char path[GMT_TEXT_LEN256];
-	
+	char* gmtconf_file;
+
 	struct GMTSET_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -159,7 +160,20 @@ GMT_LONG GMT_gmtset (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read the supplied default file or the users defaults to override system settings */
 
 	if (Ctrl->D.active) {
-		GMT_getsharepath (GMT, "conf", "gmt", (Ctrl->D.mode == 's') ? "_SI.conf" : (Ctrl->D.mode == 'u') ? "_US.conf" : ".conf", path);
+		switch (Ctrl->D.mode) {
+			case 's':
+				gmtconf_file = "gmt_SI.conf";
+				break;
+			case 'u':
+				gmtconf_file = "gmt_US.conf";
+				break;
+			default:
+				gmtconf_file = "gmt.conf";
+				break;
+		}
+
+		if (! GMT_getsharepath (GMT, "conf", "", gmtconf_file, path))
+			GMT_report (GMT, GMT_MSG_FATAL, "Cannot find GMT configuration file: %s (%s)\n", gmtconf_file, path);
 		GMT_getdefaults (GMT, path);
 	}
 	else if (Ctrl->C.active)

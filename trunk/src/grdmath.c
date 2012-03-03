@@ -108,41 +108,45 @@ GMT_LONG GMT_grdmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdmath %s [API] - Reverse Polish Notation (RPN) calculator for grids (element by element)\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdmath [%s] [%s]\n\t[-M] [-N] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
-		GMT_Rgeo_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT);
-	GMT_message (GMT, "	A B op C op D op ... = outfile\n\n");
+	GMT_message (GMT, "usage: grdmath [%s] [%s]\n\t[-M] [-N] [%s] [%s] [%s]\n\t[%s] [%s]\n"
+		"\t[%s]\n\t[%s] [%s]\n",	GMT_Rgeo_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT,
+		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT);
+	GMT_message (GMT, "\tA B op C op D op ... = outfile\n\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tA, B, etc are grid files, constants, or symbols (see below).\n");
-	GMT_message (GMT, "\tThe stack can hold up to %d entries (given enough memory).\n", GRDMATH_STACK_SIZE);
-	GMT_message (GMT, "\tTrigonometric operators expect radians.\n");
-	GMT_message (GMT, "\tThe operators and number of input and output arguments are:\n\n");
-	GMT_message (GMT, "\tName    #args   Returns\n");
-	GMT_message (GMT, "\t-----------------------\n");
+	GMT_message (GMT,
+		"\tA, B, etc are grid files, constants, or symbols (see below).\n"
+		"\tThe stack can hold up to %d entries (given enough memory).\n", GRDMATH_STACK_SIZE);
+	GMT_message (GMT,
+		"\tTrigonometric operators expect radians.\n"
+		"\tThe operators and number of input and output arguments are:\n\n"
+		"\tName       #args   Returns\n"
+		"\t--------------------------\n");
 #include "grdmath_explain.h"
-	GMT_message (GMT, "\n\tThe special symbols are:\n\n");
-	GMT_message (GMT, "\t  PI	= 3.1415926...\n");
-	GMT_message (GMT, "\t  E	= 2.7182818...\n");
-	GMT_message (GMT, "\t  EULER	= 0.5772156...\n");
-	GMT_message (GMT, "\t  XMIN, XMAX, XINC or NX	= the corresponding constants.\n");
-	GMT_message (GMT, "\t  YMIN, YMAX, YINC or NY	= the corresponding constants.\n");
-	GMT_message (GMT, "\t  X	= grid with x-coordinates.\n");
-	GMT_message (GMT, "\t  Y	= grid with y-coordinates.\n");
-	GMT_message (GMT, "\t  Xn	= grid with normalized [-1|+1] x-coordinates.\n");
-	GMT_message (GMT, "\t  Yn	= grid with normalized [-1|+1] y-coordinates.\n");
-	GMT_message (GMT, "\n\tOPTIONS: (only used if no grid files are passed as arguments).\n\n");
+	GMT_message (GMT,
+		"\n\tThe special symbols are:\n\n"
+		"\tPI                     = 3.1415926...\n"
+		"\tE                      = 2.7182818...\n"
+		"\tEULER                  = 0.5772156...\n"
+		"\tXMIN, XMAX, XINC or NX = the corresponding constants.\n"
+		"\tYMIN, YMAX, YINC or NY = the corresponding constants.\n"
+		"\tX                      = grid with x-coordinates.\n"
+		"\tY                      = grid with y-coordinates.\n"
+		"\tXn                     = grid with normalized [-1|+1] x-coordinates.\n"
+		"\tYn                     = grid with normalized [-1|+1] y-coordinates.\n"
+		"\n\tOPTIONS: (only used if no grid files are passed as arguments).\n\n");
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_message (GMT, "\t-M Handle map units in derivatives.  In this case, dx,dy of grid\n");
-	GMT_message (GMT, "\t   will be converted from degrees lon,lat into meters (Flat-earth approximation).\n");
-	GMT_message (GMT, "\t   Default computes derivatives in units of data/grid_distance.\n");
-	GMT_message (GMT, "\t-N Do not perform strict domain check if several grids are involved.\n");
-	GMT_message (GMT, "\t   [Default checks that domain is within %g * [xinc or yinc] of each other].\n", GMT_SMALL);
+	GMT_message (GMT, "\t-M Handle map units in derivatives.  In this case, dx,dy of grid\n"
+		"\t   will be converted from degrees lon,lat into meters (Flat-earth approximation).\n"
+		"\t   Default computes derivatives in units of data/grid_distance.\n"
+		"\t-N Do not perform strict domain check if several grids are involved.\n"
+		"\t   [Default checks that domain is within %g * [xinc or yinc] of each other].\n", GMT_SMALL);
 	GMT_explain_options (GMT, "RV");
 	GMT_explain_options (GMT, "fghi");
 	GMT_message (GMT, "\t   (Only applies to the input files for operators LDIST, PDIST, and INSIDE).\n");
 	GMT_explain_options (GMT, "nF.");
-	
+
 	return (EXIT_FAILURE);
 }
 

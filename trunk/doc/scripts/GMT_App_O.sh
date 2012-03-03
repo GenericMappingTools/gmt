@@ -47,8 +47,9 @@ echo "# Geoid Extrema Separation is $dist km" > transect.d
 grdtrack $$.d -Ggeoid.nc | grdtrack -GApp_O.nc >> transect.d
 rm -f $$.d
 
+lockfile.sh remove script
 for n in 1 2 3 4 5 6 7 8 9; do
-	bash GMT_App_O_$n.sh
+  bash GMT_App_O_$n.sh
 done
 
 rm -f fix.d fix2.d cross.d geoid.nc transect.d great_NY_*.d ttt.cpt topo5_int.nc

@@ -37,7 +37,7 @@
  *   point is the product of the weight function in x and y direction
  *   (wx and wy) who have the same form and depend on the projected distance
  *   |t| between the interpolation point and each vertex.
- *   
+ *
  *   wx = 1 - |t|	for 0 <= |t| <= 1
  *	= 0		for 1 <= |t|
  *
@@ -83,9 +83,9 @@
 GMT_LONG gmt_bcr_reject (struct GRD_HEADER *h, double xx, double yy)
 {
 	/* First check that xx,yy are not Nan - if so return NaN */
-	
+
 	if (GMT_is_dnan (xx) || GMT_is_dnan (yy)) return (1);
-	
+
 	/* First check if the xx and yy are within the grid.
 	   16-Sep-2007: Added some slack (GMT_SMALL) here to avoid setting to NaN points
 	   that are really on the edge but because of rounding errors are regarded outside.
@@ -102,7 +102,7 @@ GMT_LONG gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], 
 {
 	GMT_LONG i, j, ij;
 	double x, y, wp, wq, w;
-	
+
 	/* Compute the normalized real indices (x,y) of the point (xx,yy) within the grid.
 	   Note that the y axis points down from the upper left corner of the grid. */
 
@@ -202,7 +202,7 @@ GMT_LONG gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], 
 		wy[2] = 3 * wy[0] + y + wp;
 		break;
 	}
-	
+
 	return (ij);
 }
 
@@ -233,7 +233,7 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 	double retval, wsum, wx[4], wy[4], w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
-	
+
 	if (gmt_bcr_reject (G->header, xx, yy)) return (C->session.d_NaN);	/* NaNs or outside */
 
 	/* Determine nearest node ij and set weights wx, wy */
@@ -266,11 +266,11 @@ GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, do
 	double retval[4], wsum, wx[4], wy[4], w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
-	
+
 	if (gmt_bcr_reject (G->header, xx, yy)) return (1);	/* NaNs or outside */
 
 	/* Determine nearest node ij and set weights wx wy */
-	
+
 	ij = gmt_bcr_prep (G->header, xx, yy, wx, wy);
 
 	GMT_memset (retval, 4, double);

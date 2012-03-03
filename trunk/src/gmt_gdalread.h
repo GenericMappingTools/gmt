@@ -16,10 +16,10 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
-#include "gdal.h"
-#include "ogr_srs_api.h"
-#include "cpl_string.h"
-#include "cpl_conv.h"
+#include <gdal.h>
+#include <ogr_srs_api.h>
+#include <cpl_string.h>
+#include <cpl_conv.h>
 
 /* Structure to control which options are transmited to GMT_gdalwrite */
 struct GDALWRITE_CTRL {

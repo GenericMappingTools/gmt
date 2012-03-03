@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-03-03	fwobbe
+	*			Reintegrated branch cmake-build back into the trunk
+	*			Tagged release 5.0.0 (before reintegration into trunk)
+
 2012-02-25	pwessel
 	* *.c:		Did not consistently use COL_SEPARATOR and/or FORMAT_FLOAT_OUT for ascii output.
 
@@ -205,6 +209,9 @@
 
 2011-11-29	pwessel
 	* pslegend.c:		Fixed so we can mix filled and non-filled symbols.
+
+2011-11-28	pwessel
+	* gmt_plot.c:		Extended the custom axis annotation to any map projection.
 
 2011-11-28	pwessel
 	* gmt_plot.c:		Extended the custom axis annotation to any map projection.
