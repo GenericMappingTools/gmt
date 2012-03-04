@@ -237,6 +237,11 @@ set_target_properties (pslib
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
 	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
+# If a renaming of the psl dll has been set in ConfigUser.cmake
+if (WIN32 AND PSL_DLL_RENAME)
+	set_target_properties (pslib PROPERTIES RUNTIME_OUTPUT_NAME ${PSL_DLL_RENAME})
+endif ()
+
 # supplement directories (only those, which are to be included in gmtlib)
 set (GMT_SUPPL_DIRS dbase gshhs imgsrc meca mgd77 potential segy sph spotter
 	x2sys)
@@ -295,6 +300,11 @@ set_target_properties (gmtlib
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
 	LINK_FLAGS "${USER_GMTLIB_LINK_FLAGS}"
 	DEFINE_SYMBOL "LIBRARY_EXPORTS")
+
+# If a renaming of the gmt dll has been set in ConfigUser.cmake
+if (WIN32 AND GMT_DLL_RENAME)
+	set_target_properties (gmtlib PROPERTIES RUNTIME_OUTPUT_NAME ${GMT_DLL_RENAME})
+endif ()
 
 # create build targets for gmt progs
 string (REPLACE ".c" "" GMT_PROGS "${GMT_PROGS_SRCS}")
