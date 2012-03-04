@@ -6,9 +6,9 @@
 % P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %-----------------------------------------------------------------
 %
-\newcommand{\SVNVERSION}{@SVN_VERSION@}
+\def \SVNVERSION {@SVN_VERSION@}
 \newcommand{\SVNVERSIONSTRING}{%
-\ifx\SVNVERSION\@empty% no svn version
+\ifx\SVNVERSION\empty% no svn version
 \else\ (r\SVNVERSION)% print svn version
 \fi}
 \newcommand{\GMTDOCVERSION}{@GMT_PACKAGE_VERSION@\SVNVERSIONSTRING}
