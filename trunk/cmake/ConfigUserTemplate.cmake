@@ -114,4 +114,15 @@
 # If your NetCDF library is static (not recommended, applies to Windows only)
 #set (NETCDF_STATIC TRUE)
 
+# If want to rename the DLLs to something else than the default (e.g. to append the bitness - Windows only)
+# if (WIN32)
+#	set (BITAGE 32)
+#	# Detect if we are building a 32 or 64 bits version
+#	if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+#		set(BITAGE 64)
+#	endif ()
+#	set (GMT_DLL_RENAME gmt_w${BITAGE})
+#	set (PSL_DLL_RENAME psl_w${BITAGE})
+# endif(WIN32)
+
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
