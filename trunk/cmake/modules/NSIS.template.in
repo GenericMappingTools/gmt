@@ -888,7 +888,12 @@ Section "-Add to path"
 
     Push "@CPACK_NSIS_ADD_ENVVAR1@"
     Push "@CPACK_NSIS_ADD_ENVVAL1@"
-    Call AddToEnvVar
+;   Call AddToEnvVar
+;   Because it only applies to Current User this is not the perfect solution to the drawback of
+;   relying on AddToEnvVar that appends instead of replacing which is unacceptable,
+;   but waiting for better days.
+    WriteRegExpandStr HKCU "Environment" "@CPACK_NSIS_ADD_ENVVAR1@" "@CPACK_NSIS_ADD_ENVVAL1@"
+    SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 
     Push "@CPACK_NSIS_ADD_ENVVAR2@"
     Push "@CPACK_NSIS_ADD_ENVVAL2@"
