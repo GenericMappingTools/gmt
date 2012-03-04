@@ -103,6 +103,7 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 			string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
 
 			add_latex_document (${_tex_file}
+				DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/GMT_version.tex
 				USE_INDEX
 				DEFAULT_PDF
 				MANGLE_TARGET_NAMES)
