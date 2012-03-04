@@ -45,12 +45,19 @@
 # Set doc installation path [${CMAKE_INSTALL_PREFIX}/share/doc/gmt-<version>]:
 #set (GMT_DOC_PATH "doc_path")
 
+# Set manpage installation path [${CMAKE_INSTALL_PREFIX}/share/doc/gmt-<version>/man]:
+#set (GMT_MAN_PATH "man_path")
+
 # Set path to GSHHS Shoreline Database [auto]:
 #set (GSHHS_ROOT "gshhs_path")
 
 # Install documentation files from this external location instead of creating
 # new PDF and HTML documents from scratch [${GMT_SOURCE_DIR}/doc_release]:
 #set (GMT_INSTALL_EXTERNAL_DOC OFF)
+
+# Install manual pages from this external location instead of creating the
+# manpages from scratch [${GMT_SOURCE_DIR}/man_release]:
+#set (GMT_INSTALL_EXTERNAL_MAN OFF)
 
 # Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel [Release]:
 #set (CMAKE_BUILD_TYPE Debug)

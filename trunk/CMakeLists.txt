@@ -91,10 +91,7 @@ add_depend_to_target (gmt_release svn_export_release)
 
 # Configuration done
 message(
-	"*  Installing GMT in    : ${CMAKE_INSTALL_PREFIX}\n"
-	"*  GMT_SHARE_PATH       : ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}\n"
-	"*  GMT_DOC_PATH         : ${CMAKE_INSTALL_PREFIX}/${GMT_DOC_PATH}\n"
-	"*  GSHHS database       : ${GSHHS_PATH}\n"
+	"*  Found GSHHS database : ${GSHHS_PATH}\n"
 	"*  NetCDF library       : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir   : ${NETCDF_INCLUDE_DIR}\n"
 	"*  GDAL library         : ${GDAL_LIBRARY}\n"
@@ -102,6 +99,10 @@ message(
 	"*  Regex support        : ${GMT_CONFIG_REGEX_MESSAGE}\n"
 	"*  Triangulation method : ${GMT_TRIANGULATE}\n"
 	"*  File locking         : ${FLOCK}\n"
-	"*  Build Matlab API     : ${GMT_MATLAB}")
+	"*  Build Matlab API     : ${GMT_MATLAB}\n*\n"
+	"*  Installing GMT in    : ${CMAKE_INSTALL_PREFIX}\n"
+	"*  GMT_SHARE_PATH       : ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}\n"
+	"*  GMT_DOC_PATH         : ${CMAKE_INSTALL_PREFIX}/${GMT_DOC_PATH}\n"
+	"*  GMT_MAN_PATH         : ${CMAKE_INSTALL_PREFIX}/${GMT_MAN_PATH}")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

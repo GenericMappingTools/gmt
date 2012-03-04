@@ -35,11 +35,23 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 	# Find groff front-end
 	find_program (GROFF groff)
 
-	# Find ps2pdf
-	#find_package (LATEX)
+	# Only create manpages if HAVE_TRADITIONAL_CPP is set and
+	# GMT_INSTALL_EXTERNAL_MAN is OFF. Otherwise install precompiled manpages
+	# from man_release.
+	if (EXISTS ${GMT_INSTALL_EXTERNAL_MAN})
+		# Install manpages from external location
+		set (_HAVE_EXTERNAL_MAN TRUE)
+		install (DIRECTORY ${GMT_INSTALL_EXTERNAL_MAN}/
+			DESTINATION ${GMT_MAN_PATH}
+			COMPONENT Runtime
+			USE_SOURCE_PERMISSIONS)
+	elseif (EXISTS ${GMT_INSTALL_EXTERNAL_MAN})
+		# No external manpages available
+		set (_HAVE_EXTERNAL_MAN FALSE)
+	endif (EXISTS ${GMT_INSTALL_EXTERNAL_MAN})
 
 	macro (GMT_CREATE_MANPAGES MAN_FILES)
-		if (HAVE_TRADITIONAL_CPP)
+		if (HAVE_TRADITIONAL_CPP AND NOT _HAVE_EXTERNAL_MAN)
 			# parse arguments
 			set (_arg_is_man_file TRUE)
 			set (_man_files ${MAN_FILES})
@@ -147,7 +159,10 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 					COMMAND ${CMAKE_COMMAND} -E copy_if_different
 					${_manfile}.html
 					${GMT_RELEASE_PREFIX}/doc_release/html/${_manfile}.html
-					DEPENDS ${_manfile}.html)
+					COMMAND ${CMAKE_COMMAND} -E copy_if_different
+					${_manfile}${_gz}
+					${GMT_RELEASE_PREFIX}/man_release/man${_man_section}/${_manfile}${_gz}
+					DEPENDS ${_manfile}${_gz} ${_manfile}.html)
 				add_depend_to_target (gmt_release
 					gmt_manfiles_html_release_${_manfile})
 
@@ -166,7 +181,7 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 			list (REMOVE_DUPLICATES _install_sections)
 			foreach (_man_section ${_install_sections})
 				install (FILES ${_manfilepaths_${_man_section}}
-					DESTINATION ${GMT_SHARE_PATH}/man/man${_man_section}
+					DESTINATION ${GMT_MAN_PATH}/man${_man_section}
 					COMPONENT Runtime
 					OPTIONAL)
 			endforeach (_man_section ${_install_sections})
@@ -186,7 +201,7 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 					"Global list of PS manpages")
 			endif (_tag)
 
-		endif (HAVE_TRADITIONAL_CPP)
+		endif (HAVE_TRADITIONAL_CPP AND NOT _HAVE_EXTERNAL_MAN)
 	endmacro (GMT_CREATE_MANPAGES MAN_FILES)
 
 endif(NOT DEFINED _GMT_MANPAGES_CMAKE_)

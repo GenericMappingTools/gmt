@@ -150,15 +150,27 @@ if (NOT GMT_SHARE_PATH)
 	endif(GMT_INSTALL_MONOLITHIC)
 endif (NOT GMT_SHARE_PATH)
 
+# Install path GMT_DOC_PATH
 if (NOT GMT_DOC_PATH)
 	# do not reset user setting
 	if (GMT_INSTALL_MONOLITHIC)
-		set (GMT_DOC_PATH "share/doc")
+		set (GMT_DOC_PATH "${GMT_SHARE_PATH}/doc")
 	else(GMT_INSTALL_MONOLITHIC)
 		set (GMT_DOC_PATH
 			"share/doc/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
 	endif(GMT_INSTALL_MONOLITHIC)
 endif (NOT GMT_DOC_PATH)
+
+# Install path GMT_MAN_PATH
+if (NOT GMT_MAN_PATH)
+	# do not reset user setting
+	if (GMT_INSTALL_MONOLITHIC)
+		set (GMT_MAN_PATH "${GMT_SHARE_PATH}/man")
+	else(GMT_INSTALL_MONOLITHIC)
+		set (GMT_MAN_PATH
+			"${GMT_DOC_PATH}/man")
+	endif(GMT_INSTALL_MONOLITHIC)
+endif (NOT GMT_MAN_PATH)
 
 # Install path for GMT binaries, headers and libraries
 if (GMT_INSTALL_MONOLITHIC)

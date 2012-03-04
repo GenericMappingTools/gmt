@@ -78,12 +78,19 @@ if (NOT DEFINED LICENSE_RESTRICTED)
 	set (LICENSE_RESTRICTED GPL)
 endif (NOT DEFINED LICENSE_RESTRICTED)
 
-# Default location of realease documentation. If the directory exists in the
+# Default location of release documentation. If the directory exists in the
 # source tree, the files will be copied to GMT_DOC_PATH instead of creating
 # PDFs from source:
 if (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
 	set (GMT_INSTALL_EXTERNAL_DOC ${GMT_SOURCE_DIR}/doc_release)
 endif (NOT DEFINED GMT_INSTALL_EXTERNAL_DOC)
+
+# Default location of release manpages. If the directory exists in the source
+# tree, the files will be copied to GMT_MAN_PATH instead of creating manpages
+# from source:
+if (NOT DEFINED GMT_INSTALL_EXTERNAL_MAN)
+	set (GMT_INSTALL_EXTERNAL_MAN ${GMT_SOURCE_DIR}/man_release)
+endif (NOT DEFINED GMT_INSTALL_EXTERNAL_MAN)
 
 # Directory in which to install the release sources per default
 if (NOT DEFINED GMT_RELEASE_PREFIX)
