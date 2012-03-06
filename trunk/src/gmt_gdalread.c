@@ -1039,7 +1039,7 @@ int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *whichBands, 
 	GMT_LONG n = 0, i, start, stop, pos = 0;
 	char p[1024];
 
-	while ((GMT_strtok (GMT, txt, ",", &pos, p))) {
+	while ((GMT_strtok (txt, ",", &pos, p))) {
 		if (strchr (p, '-'))
 			sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
 		else {

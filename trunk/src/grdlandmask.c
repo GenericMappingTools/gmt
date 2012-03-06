@@ -173,7 +173,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 				}
 #endif
 				j = pos = 0;
-				while (j < 5 && (GMT_strtok (GMT, line, "/", &pos, ptr))) {
+				while (j < 5 && (GMT_strtok (line, "/", &pos, ptr))) {
 					Ctrl->N.mask[j] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (float)atof (ptr);
 					j++;
 				}

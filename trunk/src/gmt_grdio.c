@@ -751,7 +751,7 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 		pos = 1;
 	}
 
-	while ((GMT_strtok (C, input, sep, &pos, ptr))) {
+	while ((GMT_strtok (input, sep, &pos, ptr))) {
 		if (ptr[0] != '=') {
 			switch (entry) {
 				case 0:

@@ -180,10 +180,6 @@ EXTERN_MSC char *GMT_trim_segheader (struct GMT_CTRL *C, char *line);
 EXTERN_MSC GMT_LONG GMT_alloc_vectors (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_LONG n_rows);
 EXTERN_MSC GMT_LONG GMT_alloc_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, GMT_LONG type, GMT_LONG n_rows);
 
-#ifdef WIN32
-EXTERN_MSC void DOS_path_fix (char *dir);
-#endif
-
 /* gmt_proj.c: */
 
 EXTERN_MSC double GMT_lat_swap_quick (struct GMT_CTRL *C, double lat, double c[]);
@@ -430,16 +426,9 @@ EXTERN_MSC GMT_LONG GMT_just_decode (struct GMT_CTRL *C, char *key, GMT_LONG def
 EXTERN_MSC GMT_LONG GMT_minmaxinc_verify (struct GMT_CTRL *C, double min, double max, double inc, double slop);
 EXTERN_MSC GMT_LONG GMT_get_arc (struct GMT_CTRL *C, double x0, double y0, double r, double dir1, double dir2, double **x, double **y);
 EXTERN_MSC GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double *x, double *y, GMT_LONG n_path);
-EXTERN_MSC GMT_LONG GMT_strtok (struct GMT_CTRL *C, const char *string, const char *sep, GMT_LONG *start, char *token);
 EXTERN_MSC GMT_LONG GMT_getmodopt (struct GMT_CTRL *C, const char *string, const char *sep, GMT_LONG *pos, char *token);
 EXTERN_MSC GMT_LONG GMT_verify_expectations (struct GMT_CTRL *C, GMT_LONG wanted, GMT_LONG got, char *item);
 EXTERN_MSC void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h);
-EXTERN_MSC void GMT_chop (struct GMT_CTRL *C, char *string);
-EXTERN_MSC char *GMT_chop_ext (struct GMT_CTRL *C, char *string);
-EXTERN_MSC void GMT_strstrip(char *string, int strip_leading);
-EXTERN_MSC void GMT_cr2lf (char *string);
-EXTERN_MSC void GMT_strlshift (char *string, size_t n);
-EXTERN_MSC void GMT_strrepc (char *string, int c, int r);
 EXTERN_MSC struct GMT_LINE_SEGMENT * GMT_dump_contour (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n, double z);
 EXTERN_MSC void GMT_get_plot_array (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_illuminate (struct GMT_CTRL *C, double intensity, double *rgb);

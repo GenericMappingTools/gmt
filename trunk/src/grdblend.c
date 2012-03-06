@@ -122,7 +122,7 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	/* Needed to decode the inner region -Rw/e/s/n string */
 
 	i = pos = 0;
-	while (!error && (GMT_strtok (GMT, string, "/", &pos, text))) {
+	while (!error && (GMT_strtok (string, "/", &pos, text))) {
 		error += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][i/2], GMT_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][i/2], &wesn[i]), text);
 		i++;
 	}

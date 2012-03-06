@@ -299,7 +299,7 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 				Ctrl->W.active = TRUE;
 				guess = TRUE;
 				entry = pos = 0;
-				while ((GMT_strtok (GMT, opt->arg, "/", &pos, ptr))) {
+				while ((GMT_strtok (opt->arg, "/", &pos, ptr))) {
 					if (ptr[0] != '=') {
 						switch (entry) {
 							case 0:

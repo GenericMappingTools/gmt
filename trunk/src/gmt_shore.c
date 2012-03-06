@@ -233,7 +233,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 		fp = fopen (path, "r");
 		while (fgets (dir, GMT_BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
 			if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
-			GMT_chop (C, dir);		/* Chop off LF or CR/LF */
+			GMT_chop (dir);		/* Chop off LF or CR/LF */
 			sprintf (path, "%s/%s%s", dir, stem, ".cdf");
 			if (!access (path, R_OK)) {
 				fclose (fp);

@@ -29,8 +29,12 @@
 #define GMT_VERSION_STRING "@GMT_VERSION_STRING@"
 #define GMT_LONG_VERSION_STRING "@GMT_LONG_VERSION_STRING@"
 
+/* path to executables */
+#define GMT_BINDIR_RELATIVE "@GMT_BINDIR@"
+
 /* path to shared files */
 #define GMT_SHARE_PATH "@CMAKE_INSTALL_PREFIX@/@GMT_SHARE_PATH@"
+#define GMT_SHAREDIR_RELATIVE "@GMT_SHARE_PATH@"
 
 /* path to documentation */
 #define GMT_DOC_PATH "@CMAKE_INSTALL_PREFIX@/@GMT_DOC_PATH@"

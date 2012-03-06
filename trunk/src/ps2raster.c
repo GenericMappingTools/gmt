@@ -142,7 +142,7 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 	
 	C->W.active = TRUE;
 	strcpy (txt, arg);
-	while (!error && (GMT_strtok (GMT, txt, "+", &pos, p))) {
+	while (!error && (GMT_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Altitude setting */
 				switch (p[1]) {	/* Check which altitude mode we selected */
@@ -419,7 +419,7 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 			case 'F':	/* Set explicitly the output file name */
 				Ctrl->F.active = TRUE;
 				Ctrl->F.file = strdup (opt->arg);
-				GMT_chop_ext (GMT, Ctrl->F.file);	/* Make sure file name has no extension */
+				GMT_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
 				break;
 			case 'G':	/* Set GS path */
 				Ctrl->G.active = TRUE;
@@ -879,7 +879,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					found_proj = TRUE;
 					if ((ptmp = strstr (&line[2], "+proj")) != NULL) {  /* Search for the +proj in the comment line */
 						proj4_cmd = strdup (&line[(int)(ptmp - &line[0])]);
-						GMT_chop (GMT, proj4_cmd);		/* Remove the new line char */
+						GMT_chop (proj4_cmd);		/* Remove the new line char */
 					}
 					if (!strcmp (proj4_name,"latlong") || !strcmp (proj4_name,"xy") ||
 						!strcmp (proj4_name,"eqc") ) {		/* Linear case, use original coords */

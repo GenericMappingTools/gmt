@@ -199,7 +199,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (i = start; i < (GMT_LONG)strlen (line) && line[i] != '<'; i++);	/* Find start of </name> */
 			line[i] = '\0';
 			strcpy (name, &line[start]);
-			GMT_chop (GMT, name);
+			GMT_chop (name);
 			if (first) {
 				sprintf (buffer, "# %s\n", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, buffer);	/* Write this to output */
@@ -212,7 +212,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (i = start; i < (GMT_LONG)strlen (line) && line[i] != '<'; i++);	/* Find start of </description> */
 			line[i] = '\0';
 			strcpy (description, &line[start]);
-			GMT_chop (GMT, description);
+			GMT_chop (description);
 			if (first) {
 				sprintf (buffer, "# %s\n", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, buffer);	/* Write this to output */

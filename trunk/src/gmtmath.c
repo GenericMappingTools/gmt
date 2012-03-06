@@ -155,7 +155,7 @@ void decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *skip, GMT_LONG n
 	else {	/* Set the selected columns */
 		for (i = 0; i < n_col; i++) skip[i] = TRUE;
 		pos = col = 0;
-		while ((GMT_strtok (GMT, txt, ",", &pos, p))) {
+		while ((GMT_strtok (txt, ",", &pos, p))) {
 			if (strchr (p, '-'))
 				sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
 			else {

@@ -651,7 +651,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					in_txt = buffer;
 				else {	/* Must pick up 1-3 attributes from data file */
 					for (i = 0; i < Ctrl->F.nread; i++) {
-						nscan += GMT_strtok (GMT, buffer, " \t", &pos, text);
+						nscan += GMT_strtok (buffer, " \t", &pos, text);
 						switch (Ctrl->F.read[i]) {
 							case 'f':
 								T.font = Ctrl->F.font;
@@ -703,7 +703,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_report (GMT, GMT_MSG_FATAL, "Text record line %ld not preceded by paragraph information, skipped)\n", n_read);
 					continue;
 				}
-				GMT_chop (GMT, line);	/* Chop of line feed */
+				GMT_chop (line);	/* Chop of line feed */
 				GMT_enforce_rgb_triplets (GMT, line, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 
 				if (line[0] == 0) {	/* Blank line marked by single NULL character, replace by \r */
@@ -757,7 +757,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				in_txt = buffer;
 			else {	/* Must pick up 1-3 attributes from data file */
 				for (i = 0; i < Ctrl->F.nread; i++) {
-					nscan += GMT_strtok (GMT, buffer, " \t", &pos, text);
+					nscan += GMT_strtok (buffer, " \t", &pos, text);
 					switch (Ctrl->F.read[i]) {
 						case 'f':
 							T.font = Ctrl->F.font;
