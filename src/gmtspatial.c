@@ -613,7 +613,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 			case 'D':	/* Look for duplications */
 				Ctrl->D.active = TRUE;
 				pos = 0;
-				while (GMT_strtok (GMT, opt->arg, "+", &pos, p)) {
+				while (GMT_strtok (opt->arg, "+", &pos, p)) {
 					switch (p[0]) {
 						case 'a':	/* Gave a new +a<dmax> value */
 							GMT_report (GMT, GMT_MSG_FATAL, "+a not implemented yet\n");
@@ -677,7 +677,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 				}
 				s[0] = '\0';	Ctrl->N.file = strdup (opt->arg);	s[0] = '+';
 				pos = 0;
-				while (GMT_strtok (GMT, s, "+", &pos, p)) {
+				while (GMT_strtok (s, "+", &pos, p)) {
 					switch (p[0]) {
 						case 'a':	/* All points must be inside polygon */
 							Ctrl->N.all = TRUE;

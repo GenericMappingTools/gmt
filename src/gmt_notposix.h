@@ -48,6 +48,10 @@
 #	define assert(e) ((void)0)
 #endif
 
+#ifdef HAVE_BASENAME
+#	include <libgen.h>
+#endif
+
 #ifdef HAVE_CTYPE_H_
 #	include <ctype.h>
 #endif
@@ -227,6 +231,11 @@
 #	define access _access
 #endif
 
+/* basename -- extract the base portion of a pathname */
+#ifndef HAVE_BASENAME
+	EXTERN_MSC char* basename (char* path);
+#endif
+
 /* fileno is usually in stdio.h; we use a macro here
  * since the same function under WIN32 is prefixed with _
  * and defined in stdio.h */
@@ -271,14 +280,6 @@
 #elif !defined HAVE_STRTOK_R
 /* define custom function */
 #endif
-
-/* GMT normally gets these macros from unistd.h */
-#ifndef HAVE_UNISTD_H_
-#	define R_OK 04
-#	define W_OK 02
-#	define X_OK 01
-#	define F_OK 00
-#endif /* !HAVE_UNISTD_H_ */
 
 /*
  * Make sure Cygwin does not use Windows related tweaks
@@ -333,5 +334,17 @@
 	EXTERN_MSC void GMT_qsort (void *a, size_t n, size_t es, int (*cmp) (const void *, const void *));
 #	define qsort GMT_qsort
 #endif /* GMT_QSORT */
+
+/* GMT normally gets these macros from unistd.h */
+#ifndef HAVE_UNISTD_H_
+#	define R_OK 4
+#	define W_OK 2
+#	ifdef WIN32
+#		define X_OK R_OK /* X_OK == 1 crashes on Windows */
+#	else
+#		define X_OK 1
+#	endif
+#	define F_OK 0
+#endif /* !HAVE_UNISTD_H_ */
 
 #endif /* _GMT_NOTPOSIX_H */

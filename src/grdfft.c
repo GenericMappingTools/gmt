@@ -510,7 +510,7 @@ GMT_LONG parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	fourvals[0] = fourvals[1] = fourvals[2] = fourvals[3] = -1.0;
 	
 	n_tokens = pos = 0;
-	while ((GMT_strtok (GMT, &line[i], "/", &pos, p))) {
+	while ((GMT_strtok (&line[i], "/", &pos, p))) {
 		if (n_tokens > 3) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Too many slashes in -F.\n");
 			return (TRUE);

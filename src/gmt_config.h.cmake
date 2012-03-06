@@ -80,6 +80,7 @@
 
 #cmakedefine HAVE_ACCESS
 #cmakedefine HAVE__ACCESS
+#cmakedefine HAVE_BASENAME
 #cmakedefine HAVE_FILENO
 #cmakedefine HAVE__FILENO
 #cmakedefine HAVE_FOPEN64

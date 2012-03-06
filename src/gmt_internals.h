@@ -73,8 +73,6 @@ EXTERN_MSC GMT_LONG GMT_map_loncross (struct GMT_CTRL *C, double lon, double sou
 EXTERN_MSC void GMT_rotate2D (struct GMT_CTRL *C, double x[], double y[], GMT_LONG n, double x0, double y0, double angle, double xp[], double yp[]);
 EXTERN_MSC void GMT_set_bin_input (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG * GMT_split_line (struct GMT_CTRL *C, double **xx, double **yy, GMT_LONG *nn, GMT_LONG add_crossings);
-EXTERN_MSC GMT_LONG GMT_strlcmp (char *str1, char *str2);
-EXTERN_MSC GMT_LONG GMT_strrcmp (char *str1, char *str2);
 EXTERN_MSC GMT_LONG GMT_unit_lookup (struct GMT_CTRL *C, GMT_LONG c, GMT_LONG default_unit);
 EXTERN_MSC GMT_LONG GMT_verify_time_step (struct GMT_CTRL *C, GMT_LONG step, char unit);	/* Check that time step and unit for time axis are OK  */
 EXTERN_MSC double GMT_xx_to_x (struct GMT_CTRL *C, double xx);

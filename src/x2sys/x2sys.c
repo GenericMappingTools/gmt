@@ -261,7 +261,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 			}
 			continue;
 		}
-		GMT_chop (C, line);	/* Remove trailing CR or LF */
+		GMT_chop (line);	/* Remove trailing CR or LF */
 
 		sscanf (line, "%s %c %c %lf %lf %lf %s %s", X->info[i].name, &X->info[i].intype, &yes_no, &X->info[i].nan_proxy, &X->info[i].scale, &X->info[i].offset, X->info[i].format, cardcol);
 		if (X->info[i].intype == 'A') {	/* ASCII Card format */
@@ -379,7 +379,7 @@ GMT_LONG x2sys_pick_fields (struct GMT_CTRL *C, char *string, struct X2SYS_INFO 
 	strncpy (line, string, (size_t)GMT_BUFSIZ);	/* Make copy for later use */
 	GMT_memset (s->use_column, s->n_fields, GMT_LONG);
 
-	while ((GMT_strtok (C, line, ",", &pos, p))) {
+	while ((GMT_strtok (line, ",", &pos, p))) {
 		j = 0;
 		while (j < s->n_fields && strcmp (p, s->info[j].name)) j++;
 		if (j < s->n_fields) {
@@ -479,7 +479,7 @@ GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X
 						if (!fgets (line, GMT_BUFSIZ, fp)) return (-1);
 						if (s->multi_segment) s->ms_next = TRUE;
 					}
-					GMT_chop (C, line);	/* Remove trailing CR or LF */
+					GMT_chop (line);	/* Remove trailing CR or LF */
 				}
 				strncpy (buffer, &line[s->info[j].start_col], (size_t)s->info[j].n_cols);
 				buffer[s->info[j].n_cols] = 0;
@@ -494,9 +494,9 @@ GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X
 					if (!fgets (line, GMT_BUFSIZ, fp)) return (-1);
 					if (s->multi_segment) s->ms_next = TRUE;
 				}
-				GMT_chop (C, line);	/* Remove trailing CR or LF */
+				GMT_chop (line);	/* Remove trailing CR or LF */
 				pos = 0;
-				while ((GMT_strtok (C, line, " ,\t\n", &pos, p)) && k < s->n_fields) {
+				while ((GMT_strtok (line, " ,\t\n", &pos, p)) && k < s->n_fields) {
 					if (GMT_scanf (C, p, G->col_type[GMT_IN][k], &data[k]) == GMT_IS_NAN) data[k] = C->session.d_NaN;
 					k++;;
 				}
@@ -897,7 +897,7 @@ GMT_LONG x2sys_read_list (struct GMT_CTRL *C, char *file, char ***list, GMT_LONG
 	p = GMT_memory (C, NULL, n_alloc, char *);
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
-		GMT_chop (C, line);	/* Remove trailing CR or LF */
+		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s", name);
 		p[n] = strdup (name);
 		n++;
@@ -930,7 +930,7 @@ GMT_LONG x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, doubl
 	W = GMT_memory (C, NULL, n_alloc, double);
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
-		GMT_chop (C, line);	/* Remove trailing CR or LF */
+		GMT_chop (line);	/* Remove trailing CR or LF */
 		if (sscanf (line, "%s %lg", name, &this_w) != 2) {
 			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_weights : Error parsing file %s near line %ld\n", file, n);
 			return (GMT_GRDIO_FILE_NOT_FOUND);
@@ -990,9 +990,9 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 	}
 
 	while (fgets (line, GMT_BUFSIZ, fp) && line[0] == '#');	/* Skip comment records */
-	GMT_chop (C, line);	/* Remove trailing CR or LF */
+	GMT_chop (line);	/* Remove trailing CR or LF */
 
-	while ((GMT_strtok (C, line, " \t", &pos, p))) {	/* Process the -C -D -G -I -N -m -R -W arguments from the header */
+	while ((GMT_strtok (line, " \t", &pos, p))) {	/* Process the -C -D -G -I -N -m -R -W arguments from the header */
 		if (p[0] == '-') {
 			switch (p[1]) {
 				/* Common parameters */
@@ -1198,7 +1198,7 @@ GMT_LONG x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct
 
 	unused = fgets (line, GMT_BUFSIZ, ftrack);	/* Skip header record */
 	while (fgets (line, GMT_BUFSIZ, ftrack)) {
-		GMT_chop (C, line);	/* Remove trailing CR or LF */
+		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %ld %ld", name, &id, &flag);
 		if (mode == 1) {
 			if (id >= n_alloc) {
@@ -1331,7 +1331,7 @@ void x2sys_path_init (struct GMT_CTRL *C, struct X2SYS_INFO *S)
 	while (fgets (line, GMT_BUFSIZ, fp) && n_x2sys_paths < MAX_DATA_PATHS) {
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line */
-		GMT_chop (C, line);	/* Remove trailing CR or LF */
+		GMT_chop (line);	/* Remove trailing CR or LF */
 #ifdef WIN32
 		DOS_path_fix (line);
 #endif
@@ -1471,7 +1471,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 	P = GMT_memory (C, NULL, n_alloc_p, struct X2SYS_COE_PAIR);
 
 	while (fgets (line, GMT_BUFSIZ, fp) && line[0] == '#') {	/* Process header recs */
-		GMT_chop (C, line);	/* Get rid of [CR]LF */
+		GMT_chop (line);	/* Get rid of [CR]LF */
 		/* Looking to process these two [three] key lines:
 		 * # Tag: MGD77
 		   # Command: x2sys_cross ... [in later versions only]
@@ -1494,7 +1494,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 				GMT_LONG pos = 0, item = 0;
 				no_time = !strcmp (kind, "i_1");	/* No time in this database */
 				if (txt[strlen(txt)-1] == '1') two_values = TRUE;	/* Option -2 was used */
-				while (our_item == -1 && (GMT_strtok (C, &line[2], " \t", &pos, ptr))) {    /* Process all tokens */
+				while (our_item == -1 && (GMT_strtok (&line[2], " \t", &pos, ptr))) {    /* Process all tokens */
 					item++;
 					i = strlen (ptr) - 1;
 					while (i >= 0 && ptr[i] != '_') i--;	/* Start at end and find last underscore */
@@ -1533,7 +1533,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 	more = TRUE;
 	n_pairs = *nx = 0;
 	while (more) {	/* Read dbase until EOF */
-		GMT_chop (C, line);	/* Get rid of [CR]LF */
+		GMT_chop (line);	/* Get rid of [CR]LF */
 		if (line[0] == '#') {	/* Skip a comment lines */
 			while (fgets (line, GMT_BUFSIZ, fp) && line[0] == '#');	/* Skip header recs */
 			continue;	/* Return to top of while loop */
@@ -1613,7 +1613,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 		P[p].COE = GMT_memory (C, NULL, n_alloc_x, struct X2SYS_COE);
 		k = 0;
 		while ((t = fgets (line, GMT_BUFSIZ, fp)) && !(line[0] == '>' || line[0] == '#')) {	/* As long as we are reading data records */
-			GMT_chop (C, line);	/* Get rid of [CR]LF */
+			GMT_chop (line);	/* Get rid of [CR]LF */
 			sscanf (line, fmt, x_txt, y_txt, t_txt[0], t_txt[1], d_txt[0], d_txt[1], h_txt[0], h_txt[1], v_txt[0], v_txt[1], z_txt[0], z_txt[1]);
 			if (GMT_scanf (C, x_txt, GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = C->session.d_NaN;
 			P[p].COE[k].data[0][COE_X] = d_val;

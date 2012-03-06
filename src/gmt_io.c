@@ -507,51 +507,6 @@ FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 	}
 }
 
-#ifdef WIN32
-/* Turn /c/dir/... paths into c:/dir/...
- * Must do it in a loop since dir may be several ;-separated dirs
- */
-void DOS_path_fix (char *dir)
-{
-	GMT_LONG k, n;
-
-	if (!dir)
-		return; /* Given NULL */
-
-	if (!strncmp(dir, "/cygdrive/", 10))
-		/* May happen for example when Cygwin sets GMT_SHAREDIR */
-		GMT_strlshift (dir, 9); /* Chop "/cygdrive" */
-
-	/* Replace dumb backslashes with slashes */
-	GMT_strrepc (dir, '\\', '/');
-
-	if (dir[0] == '/' && dir[2] == '\0') {
-		dir[0] = dir[1];
-		dir[1] = ':';
-		return;
-	}
-
-	/* if you replace the for loop with while and check for \0 (e.g. GMT_strrep)
-	 * you can skip the extra iteration with strlen.
-	 *
-	 * the following is potentially dangerous: buffer/string could be of length < 3:
-	 */
-
-	/* Also take care that cases like c:/j/... (mine) don't turn into c:j:/... */
-	n = strlen (dir);
-	if (dir[0] == '/' && dir[2] == '/' && isalpha ((int)dir[1])) {
-		dir[0] = dir[1];
-		dir[1] = ':';
-	}
-	for (k = 4; k < n-2; k++) {
-		if ( (dir[k-1] == ';' && dir[k] == '/' && dir[k+2] == '/' && isalpha ((int)dir[k+1])) ) {
-			dir[k] = dir[k+1];
-			dir[k+1] = ':';
-		}
-	}
-}
-#endif
-
 /* Table I/O routines for ascii and binary io */
 
 GMT_LONG GMT_set_cols (struct GMT_CTRL *C, GMT_LONG direction, GMT_LONG expected)
@@ -683,7 +638,7 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	for (d = 0; d < 2; d++) {	/* Loop over USER and DATA dirs */
 		if (!udir[d]) continue;	/* This directory was not set */
 		found = pos = 0;
-		while (!found && (GMT_strtok (C, udir[d], path_separator, &pos, dir))) {
+		while (!found && (GMT_strtok (udir[d], path_separator, &pos, dir))) {
 			L = strlen (dir);
 #ifdef HAVE_DIRENT_H_
 #ifdef GMT_COMPAT
@@ -887,7 +842,7 @@ GMT_LONG gmt_ogr_decode_aspatial_types (struct GMT_CTRL *C, char *record, struct
 
 	n_alloc = (S->type) ? GMT_BUFSIZ : 0;
 	gmt_copy_and_truncate (buffer, record);
-	while ((GMT_strtok (C, buffer, "|", &pos, p))) {
+	while ((GMT_strtok (buffer, "|", &pos, p))) {
 		if (col == n_alloc) S->type = GMT_memory (C, S->type, n_alloc += GMT_TINY_CHUNK, GMT_LONG);
 		S->type[col++] = gmt_ogr_get_type (p);
 	}
@@ -902,7 +857,7 @@ GMT_LONG gmt_ogr_decode_aspatial_names (struct GMT_CTRL *C, char *record, struct
 
 	n_alloc = (S->type) ? GMT_BUFSIZ : 0;
 	gmt_copy_and_truncate (buffer, record);
-	while ((GMT_strtok (C, buffer, "|", &pos, p))) {
+	while ((GMT_strtok (buffer, "|", &pos, p))) {
 		if (col == n_alloc) S->name = GMT_memory (C, S->name, n_alloc += GMT_TINY_CHUNK, char *);
 		S->name[col++] = strdup (p);
 	}
@@ -946,7 +901,7 @@ GMT_LONG gmt_ogr_data_parser (struct GMT_CTRL *C, char *record)
 
 	/* Here we are reasonably sure that @? strings are OGR/GMT feature specifications */
 
-	GMT_chop (C, record);	/* Get rid of linefeed etc */
+	GMT_chop (record);	/* Get rid of linefeed etc */
 
 	S = C->current.io.OGR;	/* Set S shorthand */
 	quote = FALSE;
@@ -1047,7 +1002,7 @@ GMT_LONG gmt_ogr_header_parser (struct GMT_CTRL *C, char *record)
 
 	/* Here we are reasonably sure that @? strings are OGR/GMT header specifications */
 
-	GMT_chop (C, record);	/* Get rid of linefeed etc */
+	GMT_chop (record);	/* Get rid of linefeed etc */
 
 	/* Allocate S the first time we get here */
 	
@@ -1192,7 +1147,7 @@ GMT_LONG GMT_is_a_NaN_line (struct GMT_CTRL *C, char *line)
 	GMT_LONG pos = 0;
 	char p[GMT_TEXT_LEN256];
 	
-	while ((GMT_strtok (C, line, " \t,", &pos, p))) {
+	while ((GMT_strtok (line, " \t,", &pos, p))) {
 		GMT_str_tolower (p);
 		if (strncmp (p, "nan", (size_t)3)) return (FALSE);
 	}
@@ -1300,7 +1255,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 		col_no = pos = n_ok = 0;			/* Initialize counters */
 		in_col = -1;					/* Since we will increment right away inside the loop */
 
-		while (!bad_record && col_no < n_use && (GMT_strtok (C, line, " \t,", &pos, token))) {	/* Get one field at the time until we run out or have issues */
+		while (!bad_record && col_no < n_use && (GMT_strtok (line, " \t,", &pos, token))) {	/* Get one field at the time until we run out or have issues */
 			in_col++;	/* This is the actual column number in the input file */
 			if (C->common.i.active) {	/* Must do special column-based processing since the -i option was set */
 				if (C->current.io.col_skip[in_col]) continue;		/* Just skip and not even count this column */
@@ -5183,9 +5138,9 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 			for (tbl = len = 0; tbl < Din->n_tables; tbl++) len += (strlen (Din->table[tbl]->header[hdr]) + 2);
 			D->table[0]->header[hdr] = calloc (len, sizeof (char));
 			strcpy (D->table[0]->header[hdr], Din->table[0]->header[hdr]);
-			if (Din->n_tables > 1) GMT_chop (C, D->table[0]->header[hdr]);	/* Remove newline */
+			if (Din->n_tables > 1) GMT_chop (D->table[0]->header[hdr]);	/* Remove newline */
 			for (tbl = 1; tbl < Din->n_tables; tbl++) {	/* Now go across tables to paste */
-				if (tbl < (Din->n_tables - 1)) GMT_chop (C, Din->table[tbl]->header[hdr]);
+				if (tbl < (Din->n_tables - 1)) GMT_chop (Din->table[tbl]->header[hdr]);
 				strcat (D->table[0]->header[hdr], "\t");
 				strcat (D->table[0]->header[hdr], Din->table[tbl]->header[hdr]);
 			}
@@ -5621,9 +5576,9 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 			for (tbl = len = 0; tbl < Din->n_tables; tbl++) len += (strlen (Din->table[tbl]->header[hdr]) + 2);
 			D->table[0]->header[hdr] = calloc (len, sizeof (char));
 			strcpy (D->table[0]->header[hdr], Din->table[0]->header[hdr]);
-			if (Din->n_tables > 1) GMT_chop (C, D->table[0]->header[hdr]);	/* Remove newline */
+			if (Din->n_tables > 1) GMT_chop (D->table[0]->header[hdr]);	/* Remove newline */
 			for (tbl = 1; tbl < Din->n_tables; tbl++) {	/* Now go across tables to paste */
-				if (tbl < (Din->n_tables - 1)) GMT_chop (C, Din->table[tbl]->header[hdr]);
+				if (tbl < (Din->n_tables - 1)) GMT_chop (Din->table[tbl]->header[hdr]);
 				strcat (D->table[0]->header[hdr], "\t");
 				strcat (D->table[0]->header[hdr], Din->table[tbl]->header[hdr]);
 			}
@@ -6040,7 +5995,7 @@ GMT_LONG GMT_conv_intext2dbl (struct GMT_CTRL *C, char *record, GMT_LONG ncols)
 	GMT_LONG k = 0, pos = 0;
 	char p[GMT_BUFSIZ];
 
-	while (k < ncols && GMT_strtok (C, record, " \t,", &pos, p)) {	/* Get each field in turn and bail when done */
+	while (k < ncols && GMT_strtok (record, " \t,", &pos, p)) {	/* Get each field in turn and bail when done */
 		if (!(p[0] == '+' || p[0] == '-' || p[0] == '.' || isdigit ((int)p[0]))) continue;	/* Numbers must be [+|-][.][<digits>] */
 		GMT_scanf (C, p, C->current.io.col_type[GMT_IN][k], &C->current.io.curr_rec[k]);	/* Be tolerant of errors */
 		k++;

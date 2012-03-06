@@ -344,7 +344,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				}
 #endif
 				j = pos = 0;
-				while (j < GMTSELECT_N_CLASSES && (GMT_strtok (GMT, buffer, "/", &pos, ptr))) {
+				while (j < GMTSELECT_N_CLASSES && (GMT_strtok (buffer, "/", &pos, ptr))) {
 					switch (ptr[0]) {
 						case 's':	/* Skip points in this level */
 							Ctrl->N.mask[j] = 0;

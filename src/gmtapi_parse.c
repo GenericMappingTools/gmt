@@ -107,7 +107,7 @@ struct GMT_OPTION * GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args
 		char p[GMT_BUFSIZ], *txt_in = in;	/* Passed a single text string */
 		new_args = GMT_memory (G, NULL, n_alloc, char *);
 
-		while ((GMT_strtok (API->GMT, txt_in, " ", &pos, p))) {	/* Break up string into separate words */
+		while ((GMT_strtok (txt_in, " ", &pos, p))) {	/* Break up string into separate words */
 			new_args[new_n_args++] = strdup (p);
 			if (new_n_args == n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
@@ -316,7 +316,7 @@ struct GMT_OPTION * GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char 
 						/* segfaults later on since few functions check for NULL pointers  */
 	else {					/* If arg is set to something (may be an empty string): */
 		new->arg = strdup (arg);	/* Allocate space for the argument and duplicate it in the option structure */
-		GMT_chop (API->GMT, new->arg);		/* Get rid of any trailing \n \r from cross-binary use in Cygwin/Windows */
+		GMT_chop (new->arg);		/* Get rid of any trailing \n \r from cross-binary use in Cygwin/Windows */
 	}
 
 	API->error = GMT_OK;	/* No error encountered */

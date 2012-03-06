@@ -344,47 +344,6 @@ char *strtok_r (char *s1, const char *s2, char **lasts)
 }
 #endif /* HAVE_STRTOK_R */
 
-#ifdef WIN32
-/* Turn /c/dir/... paths into c:/dir/... 
- * Must do it in a loop since dir may be several ;-separated dirs
-*/
-void psl_path_fix (char *dir)
-{
-	PSL_LONG k, n;
-	
-	if (!dir) return;	/* Given NULL */
-	n = strlen (dir);
-	if (dir[0] == '/' && strstr(dir, "/cygdrive/")) {
-		/* May happen for example when Cygwin sets GMT_SHAREDIR. Than chop it */
-		for (k = 0; k < n - 8; k++)	/* 8 to account also for the '\0' */
-			dir[k] = dir[k+9];
-		n -= 9;
-	}
-
-	for (k = 0; k < n; k++) {
-		if (dir[k] == '\\') dir[k] = '/';	/* Replace dumb backslashes with slashes */
-	}
-	
-	if ((n == 2) && dir[0] == '/') {
-		dir[0] = dir[1];
-		dir[1] = ':';
-		return;
-	}
-
-	/* Also take care that cases like c:/j/... (mine) don't turn into c:j:/... */
-	if (dir[0] == '/' && dir[2] == '/' && isalpha ((int)dir[1])) {
-		dir[0] = dir[1];
-		dir[1] = ':';
-	}
-	for (k = 4; k < n-2; k++) {
-		if ( (dir[k-1] == ';' && dir[k] == '/' && dir[k+2] == '/' && isalpha ((int)dir[k+1])) ) {
-			dir[k] = dir[k+1];
-			dir[k+1] = ':';
-		}
-	}
-}
-#endif
-
 /*------------------- PUBLIC PSL API FUNCTIONS--------------------- */
 
 struct PSL_CTRL *New_PSL_Ctrl (char *session)
@@ -426,26 +385,34 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 	if (PSL->init.page_rgb[0] < 0.0) for (i = 0; i < 3; i++) PSL->init.page_rgb[i] = 1.0;		/* Default paper color */
 
 	/* Determine SHAREDIR (directory containing PSL and pattern subdirectories) */
-
+	PSL->internal.SHAREDIR = PSL_memory (PSL, NULL, PATH_MAX + 1, char);
 	if ((this = getenv ("PSL_SHAREDIR")) != NULL) {	/* PSL_SHAREDIR was set */
-		PSL->internal.SHAREDIR = PSL_memory (PSL, NULL, strlen (this) + 1, char);
-		strcpy (PSL->internal.SHAREDIR, this);
+		strncpy (PSL->internal.SHAREDIR, this, PATH_MAX);
 	}
 	else if ((this = getenv ("GMT5_SHAREDIR")) != NULL) {	/* GMT5_SHAREDIR was set */
-		PSL->internal.SHAREDIR = PSL_memory (PSL, NULL, strlen (this) + 1, char);
-		strcpy (PSL->internal.SHAREDIR, this);
+		strncpy (PSL->internal.SHAREDIR, this, PATH_MAX);
 	}
 	else if ((this = getenv ("GMT_SHAREDIR")) != NULL) {	/* GMT_SHAREDIR was set */
-		PSL->internal.SHAREDIR = PSL_memory (PSL, NULL, strlen (this) + 1, char);
-		strcpy (PSL->internal.SHAREDIR, this);
+		strncpy (PSL->internal.SHAREDIR, this, PATH_MAX);
 	}
 	else {	/* Default is GMT_SHARE_PATH */
-		PSL->internal.SHAREDIR = PSL_memory (PSL, NULL, strlen (GMT_SHARE_PATH) + 1, char);
-		strcpy (PSL->internal.SHAREDIR, GMT_SHARE_PATH);
+		strncpy (PSL->internal.SHAREDIR, GMT_SHARE_PATH, PATH_MAX);
 	}
 #ifdef WIN32
-	psl_path_fix (PSL->internal.SHAREDIR);
+	DOS_path_fix (PSL->internal.SHAREDIR);
 #endif
+
+	/* TODO: smart test if session.SHAREDIR contains files of correct version
+	 * for now we just check if it exists: */
+	if ( access (PSL->internal.SHAREDIR, R_OK|X_OK) ) {
+		/* C->session.SHAREDIR is not accessible */
+		char runpath[PATH_MAX+1]; /* Directory in which the executable resides */
+		GMT_runpath (runpath, PSL->init.session); /* Set runpath */
+		/* Make a smart guess based on runpath */
+		if ( ! GMT_guess_sharedir (PSL->internal.SHAREDIR, runpath) )
+			/* Still not found */
+			PSL_message (PSL, PSL_MSG_FATAL, "Warning: Could not locate PSL_SHAREDIR.\n");
+	}
 
 	/* Determine USERDIR (directory containing user replacements contents in SHAREDIR) */
 
@@ -471,7 +438,7 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 #endif
 	}
 #ifdef WIN32
-	psl_path_fix (PSL->internal.USERDIR);
+	DOS_path_fix (PSL->internal.USERDIR);
 #endif
 	if (access (PSL->internal.USERDIR, R_OK)) PSL->internal.USERDIR = NULL;	/* If we cannot read it we might as well not try */
 

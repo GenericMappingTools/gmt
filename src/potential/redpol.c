@@ -1044,7 +1044,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 				break;
 			case 'E':
 				j = 0;
-				while (GMT_strtok (GMT, opt->arg, "/", &pos, p)) {
+				while (GMT_strtok (opt->arg, "/", &pos, p)) {
 					switch (j) {
 						case 0:
 							Ctrl->E.dipfile = strdup (p);

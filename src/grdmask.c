@@ -169,7 +169,7 @@ GMT_LONG GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, st
 						break;
 					default:	/* Standard out/on/in constant values */
 						j = pos = 0;
-						while (j < GRDMASK_N_CLASSES && (GMT_strtok (GMT, opt->arg, "/", &pos, ptr))) {
+						while (j < GRDMASK_N_CLASSES && (GMT_strtok (opt->arg, "/", &pos, ptr))) {
 							Ctrl->N.mask[j] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (float)atof (ptr);
 							j++;
 						}

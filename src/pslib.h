@@ -40,6 +40,8 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmt_notposix.h"
+#include "common_string.h"
+#include "common_runpath.h"
 
 /* Declaration of type PSL_LONG */
 

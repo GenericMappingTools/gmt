@@ -387,14 +387,14 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (i = 0; i < 4; i++) {
 				GMT_message (GMT, "Please Enter %s of %s point: ", xname[type], control[i]);
 				not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN]);
-				GMT_chop (GMT, line);
+				GMT_chop (line);
 				if (!(GMT_scanf (GMT, line, GMT->current.io.col_type[GMT_IN][GMT_X], &LON[i]))) {
 					GMT_message (GMT, "Conversion error for %sx [%s]\n", xname[type], line);
 					exit (EXIT_FAILURE);
 				}
 				GMT_message (GMT, "Please Enter %s of %s point: ", yname[type], control[i]);
 				not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN]);
-				GMT_chop (GMT, line);
+				GMT_chop (line);
 				if (!(GMT_scanf (GMT, line, GMT->current.io.col_type[GMT_IN][GMT_Y], &LAT[i]))) {
 					GMT_message (GMT, "Conversion error for %s [%s]\n", yname[type], line);
 					exit (EXIT_FAILURE);
@@ -509,7 +509,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		do {
 			GMT_message (GMT, "==> Please enter comment records, end with blank line: ");
 			not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, stdin);
-			GMT_chop (GMT, line);
+			GMT_chop (line);
 			if (line[0] != '\0' && !GMT->common.b.active[GMT_OUT]) fprintf (fp, "# %s\n", line);
 		} while (line[0] != '\0');
 	}
@@ -546,7 +546,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (Ctrl->Z.active[V_ID]) {
 					GMT_message (GMT, "Enter z-value for next segment: ");
 					not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN]);
-					GMT_chop (GMT, line);
+					GMT_chop (line);
 					z_val = atof (line);
 				}
 				if (button == MULTISEG_BUTTON1) {	/* Just write blank segment header */
@@ -555,7 +555,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				else {	/* Ask for what to write out */
 					GMT_message (GMT, "Enter segment header: ");
 					not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN]);
-					GMT_chop (GMT, line);
+					GMT_chop (line);
 					sprintf (GMT->current.io.segment_header, "%ld %s", n_segments, line);
 				}
 				GMT_write_segmentheader (GMT, fp, n_expected_fields);

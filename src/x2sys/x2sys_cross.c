@@ -378,7 +378,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		while (fgets (line, GMT_BUFSIZ, fp)) {
 
 			if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments and blanks */
-			GMT_chop (GMT, line);	/* Get rid of CR, LF stuff */
+			GMT_chop (line);	/* Get rid of CR, LF stuff */
 
 			if (sscanf (line, "%s %s", name1, name2) != 2) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Error decoding combinations file for pair %ld!\n", n_pairs);

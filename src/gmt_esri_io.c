@@ -45,7 +45,7 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 		/* If it got here, see if a companion .hdr file exists (must test upper & lower cases names) */
 		file = strdup (header->name);
-		GMT_chop_ext (C, file);
+		GMT_chop_ext (file);
 		name_len = strlen (header->name);
 		if (isupper ((unsigned char) header->name[name_len - 1]))
 			strcat (file, ".HDR");
@@ -77,7 +77,7 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 			   for GTOPO30 (e.g W020N90.DEM) or N|SxxxW|Eyy.hgt for SRTM1|3 (e.g. N00E006.hgt)  */
 			size_t len;
 
-			while (GMT_chop_ext (C, file));	/* Remove all extensions so we know exactly where to look */
+			while (GMT_chop_ext (file));	/* Remove all extensions so we know exactly where to look */
 			len = strlen (file);
 			if ((file[len-3] == 'N' || file[len-3] == 'n' || file[len-3] == 'S' || file[len-3] == 's') &&
 				(file[len-7] == 'W' || file[len-7] == 'w' || file[len-7] == 'E' || file[len-7] == 'e')) {

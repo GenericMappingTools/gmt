@@ -361,7 +361,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 			case 'L':	/* Extended data */
  				Ctrl->L.active = TRUE;
 				pos = Ctrl->L.n_cols = 0;
-				while ((GMT_strtok (GMT, opt->arg, ",", &pos, p))) {
+				while ((GMT_strtok (opt->arg, ",", &pos, p))) {
 					for (k = 0; p[k] && p[k] != ':'; k++);	/* Find position of colon */
 					p[k] = ' ';
 					if (Ctrl->L.n_cols == n_alloc) Ctrl->L.ext = GMT_memory (GMT, Ctrl->L.ext, n_alloc += GMT_TINY_CHUNK, struct EXT_COL);
@@ -426,7 +426,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 			case 'Z':	/* Visibility control */
 				Ctrl->Z.active = TRUE;
 				pos = 0;
-				while ((GMT_strtok (GMT, &opt->arg[1], "+", &pos, p))) {
+				while ((GMT_strtok (&opt->arg[1], "+", &pos, p))) {
 				switch (p[0]) {
 					case 'a':	/* Altitude range */
 						if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {

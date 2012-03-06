@@ -296,7 +296,7 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 			case 'T':
 				Ctrl->T.active = TRUE;
 				pos = 0;
-				while (GMT_strtok (GMT, opt->arg, "+", &pos, p)) {
+				while (GMT_strtok (opt->arg, "+", &pos, p)) {
 					switch (p[0]) {
 						case 'l':	/* Left nudge */
 							Ctrl->T.off[XLO] = atof (&p[1]);

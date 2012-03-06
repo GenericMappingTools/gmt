@@ -208,7 +208,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 						Ctrl->E.mode = 3;	/* "full" Lambertian case */
 						n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) < 2, "Syntax error -E option: Must give at least azimuth and elevation\n");
 						entry = pos = 0;
-						while (entry < 6 && (GMT_strtok (GMT, opt->arg, "/", &pos, ptr))) {
+						while (entry < 6 && (GMT_strtok (opt->arg, "/", &pos, ptr))) {
 							switch (entry) {
 								case 2:
 									if (ptr[0] != '=') Ctrl->E.ambient = atof (ptr);

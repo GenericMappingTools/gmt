@@ -33,12 +33,6 @@
  *  GMT_grd_BC_set          Set two rows of padding according to bound cond for grid
  *  GMT_image_BC_set        Set two rows of padding according to bound cond for image
  *  gmt_check_rgb           Check rgb for valid range
- *  GMT_chop                Chops off any CR or LF at end of string
- *  GMT_chop_ext            Chops off the trailing .xxx (file extension)
- *  GMT_strstrip            Strip leading and trailing whitespace from string
- *  GMT_cr2lf               Replace CR with LF and terminate string
- *  GMT_strlshift           Left shift a string by n characters
- *  GMT_strrepc             Replaces all occurrences of a char in the string
  *  gmt_cmyk_to_rgb         Corvert CMYK to RGB
  *  gmt_comp_double_asc     Used when sorting doubles into ascending order [checks for NaN]
  *  gmt_comp_float_asc      Used when sorting floats into ascending order [checks for NaN]
@@ -77,9 +71,6 @@
  *  gmt_rgb_to_xyz          Convert RGB to CIELAB XYZ
  *  GMT_sample_cpt          Resamples the current cpt table based on new z-array
  *  gmt_smooth_contour      Use Akima's spline to smooth contour
- *  GMT_strlcmp             Compares strings (ignoring case) until first reaches null character
- *  GMT_strrcmp             Compares strings (ignoring case) from back to front
- *  GMT_strtok              Reiterant replacement of strtok
  *  gmt_trace_contour       Function that trace the contours in GMT_contours
  *  gmt_polar_adjust        Adjust label justification for polar projection
  *  gmt_xyz_to_rgb          Convert CIELAB XYZ to RGB
@@ -836,7 +827,7 @@ GMT_LONG GMT_getfill (struct GMT_CTRL *C, char *line, struct GMT_FILL *fill)
 	/* Note, <rgb> can be r/g/b, gray, or - for masks.  optionally, append @<transparency> [0] */
 
 	GMT_init_fill (C, fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
-	GMT_chop (C, line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
+	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 	if (!line[0]) return (FALSE);	/* No argument given: we are out of here */
 
 	if ((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1])) {	/* Image specified */
@@ -1236,7 +1227,7 @@ GMT_LONG GMT_getfont (struct GMT_CTRL *C, char *buffer, struct GMT_FONT *F)
 	}
 
 	strcpy (line, buffer);	/* Work on a copy of the arguments */
-	GMT_chop (C, line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
+	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 
 	/* Processes font settings given as [size][,name][,fill][=pen] */
 
@@ -1435,7 +1426,7 @@ GMT_LONG gmt_getpenstyle (struct GMT_CTRL *C, char *line, struct GMT_PEN *P) {
 
 		GMT_memset (string, GMT_BUFSIZ, char);
 		pos = 0;
-		while ((GMT_strtok (C, P->style, " ", &pos, ptr))) {
+		while ((GMT_strtok (P->style, " ", &pos, ptr))) {
 			sprintf (tmp, "%g ", (atof (ptr) * C->session.u2u[unit][GMT_PT]));
 			strcat (string, tmp);
 		}
@@ -1496,7 +1487,7 @@ GMT_LONG GMT_getpen (struct GMT_CTRL *C, char *buffer, struct GMT_PEN *P)
 	if (!buffer || !buffer[0]) return (FALSE);		/* Nothing given: return silently, leaving P in tact */
 
 	strcpy (line, buffer);	/* Work on a copy of the arguments */
-	GMT_chop (C, line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
+	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 	if (!line[0]) return (FALSE);		/* Nothing given: return silently, leaving P in tact */
 
 	/* Processes pen specifications given as [width[<unit>][,<color>[,<style>[t<unit>]]][@<transparency>] */
@@ -1656,7 +1647,7 @@ GMT_LONG GMT_getincn (struct GMT_CTRL *C, char *line, double inc[], GMT_LONG n)
 
 	i = pos = C->current.io.inc_code[GMT_X] = C->current.io.inc_code[GMT_Y] = 0;
 
-	while (i < n && (GMT_strtok (C, line, "/", &pos, p))) {
+	while (i < n && (GMT_strtok (line, "/", &pos, p))) {
 		last = strlen (p) - 1;
 		if (p[last] == '=') {	/* Let -I override -R */
 			p[last] = 0;
@@ -2192,7 +2183,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG so
 			k -= (GMT_LONG)line;	/* Position of the column */
 			X->range[n].label = GMT_memory (C, NULL, strlen (line) - k, char);
 			strcpy (X->range[n].label, &line[k+1]);
-			GMT_chop (C, X->range[n].label);	/* Strip off trailing return */
+			GMT_chop (X->range[n].label);	/* Strip off trailing return */
 			line[k] = '\0';				/* Chop label off from line */
 		}
 
@@ -3328,7 +3319,7 @@ GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR 
 
 	G->nudge_flag = 0;
 	specs = &txt[k+1];
-	while ((GMT_strtok (C, specs, "+", &pos, p))) {
+	while ((GMT_strtok (specs, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Angle specification */
 				if (p[1] == 'p' || p[1] == 'P')	{	/* Line-parallel label */
@@ -3670,7 +3661,7 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double x
 		G->xp = GMT_memory (C, NULL, 1, struct GMT_TABLE);
 		G->xp->segment = GMT_memory (C, NULL, n_alloc, struct GMT_LINE_SEGMENT *);
 		pos = 0;
-		while ((GMT_strtok (C, G->option, ",", &pos, p))) {
+		while ((GMT_strtok (G->option, ",", &pos, p))) {
 			G->xp->segment[G->xp->n_segments] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
 			GMT_alloc_segment (C, G->xp->segment[G->xp->n_segments], 2, 2, TRUE);
 			G->xp->segment[G->xp->n_segments]->n_rows = G->xp->segment[G->xp->n_segments]->n_columns = 2;
@@ -7026,7 +7017,7 @@ GMT_LONG GMT_getscale (struct GMT_CTRL *C, char *text, struct GMT_MAP_SCALE *ms)
 	if (options > 0) {	/* Gave +?<args> which now must be processed */
 		char p[GMT_BUFSIZ];
 		GMT_LONG pos = 0, bad = 0;
-		while ((GMT_strtok (C, txt_cpy, "+", &pos, p))) {
+		while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 			switch (p[0]) {
 				case 'f':	/* Fill specification */
 					if (GMT_getfill (C, &p[1], &ms->fill)) bad++;
@@ -7130,7 +7121,7 @@ GMT_LONG GMT_getrose (struct GMT_CTRL *C, char *text, struct GMT_MAP_ROSE *ms)
 		strncpy (tmpstring, &text[colon], (size_t)(k-colon));
 		tmpstring[k-colon] = '\0';
 		k = pos = 0;
-		while (k < 4 && (GMT_strtok (C, tmpstring, ",", &pos, p))) {	/* Get the four labels */
+		while (k < 4 && (GMT_strtok (tmpstring, ",", &pos, p))) {	/* Get the four labels */
 			if (strcmp (p, "-")) strcpy (ms->label[order[k]], p);
 			k++;
 		}
@@ -7254,191 +7245,6 @@ void GMT_str_setcase (struct GMT_CTRL *C, char *value, GMT_LONG mode)
 		GMT_str_toupper (value);
 	else
 		GMT_report (C, GMT_MSG_FATAL, "Error: Bad mode in GMT_str_setcase (%ld)\n", mode);
-}
-
-char *GMT_chop_ext (struct GMT_CTRL *C, char *string) {
-	/* Chops off the filename extension (e.g., .ps) in the string by replacing the last
-	 * '.' with '\0' and returns a pointer to the extension or NULL if not found. */
-	char *p;
-	assert (string != NULL); /* NULL pointer */
-	if ((p = strrchr(string, '.'))) {
-		*p = '\0';
-		return (p + 1);
-	}
-	return (NULL);
-}
-
-void GMT_chop (struct GMT_CTRL *C, char *string) {
-	/* Chops off any CR or LF and terminates string */
-	char *p;
-	assert (string != NULL); /* NULL pointer */
-  /* if (string == NULL) return; / NULL pointer */
-	if ((p = strpbrk (string, "\r\n")))
-		/* Overwrite 1st CR or LF with terminate string */
-		*p = '\0';
-}
-
-void GMT_strstrip(char *string, int strip_leading) {
-	/* Strip leading and trailing whitespace from string */
-	char *start = string;
-	char *end;
-
-	assert (string != NULL); /* NULL pointer */
-
-	if (strip_leading) {
-		/* Skip over leading whitespace */
-		while ((*start) && isspace(*start))
-			++start;
-		/* Is string just whitespace? */
-		if (!(*start)) {
-			*string = '\0'; /* Truncate entire string */
-			return;
-		}
-	}
-
-	/* Find end of string */
-	end = start;
-	while (*end)
-		++end;
-
-	/* Step backward until first non-whitespace */
-	while ((--end != start) && isspace(*end));
-
-	/* Chop off trailing whitespace */
-	*(end + 1) = '\0';
-
-	/* If leading whitespace, then move entire string back */
-	if (string != start)
-		memmove(string, start, end-start+2);
-}
-
-void GMT_cr2lf (char *string) {
-	/* Replace CR with LF and terminate string */
-	char *p;
-	assert (string != NULL); /* NULL pointer */
-	if ((p = strchr (string, '\r')))
-		/* Overwrite 1st CR with LF + \0 */
-		strcpy(p, "\n");
-}
-
-void GMT_strlshift (char *string, size_t n) {
-	/* Left shift a string by n characters */
-	size_t len;
-	assert (string != NULL); /* NULL pointer */
-
-	if ((len = strlen(string)) <= n ) {
-		/* String shorter than shift width */
-		*string = '\0'; /* Truncate entire string */
-		return;
-	}
-
-	/* Move entire string back */
-	memmove(string, string + n, len + 1);
-}
-
-void GMT_strrepc (char *string, int c, int r) {
-	/* Replaces all occurrences of c in the string with r */
-	assert (string != NULL); /* NULL pointer */
-	do {
-		if (*string == c)
-			*string = r;
-	} while (*(++string)); /* repeat until \0 reached */
-}
-
-GMT_LONG GMT_strlcmp (char *str1, char *str2)
-{
-	/* Compares str1 with str2 but only until str1 reaches the
-	 * null-terminator character while case is ignored.
-	 * When the strings match until that point, the routine returns the
-	 * length of str1, otherwise it returns 0.
-	 */
-	GMT_LONG i = 0;
-	while (str1[i] && tolower((unsigned char) str1[i]) == tolower((unsigned char) str2[i])) ++i;
-	if (str1[i]) return 0;
-	return i;
-}
-
-GMT_LONG GMT_strrcmp (char *str1, char *str2)
-{
-	/* Compares str1 with str2 starting at the right of each string
-	 * until the front of str1 is reached while case is ignored.
-	 * When the strings match until that point, the routine returns the
-	 * length of str1, otherwise it returns 0.
-	 */
-	GMT_LONG i, j, l;
-	l = i = strlen (str1), j = strlen (str2);
-	if (j < i) return 0;
-	--i, --j;
-	while (i >= 0 && tolower((unsigned char) str1[i]) == tolower((unsigned char) str2[j])) --i, --j;
-	if (i >= 0) return 0;
-	return l;
-}
-
-GMT_LONG GMT_strtok (struct GMT_CTRL *C, const char *string, const char *sep, GMT_LONG *pos, char *token)
-{
-	/* Reentrant replacement for strtok that uses no static variables.
-	 * Breaks string into tokens separated by one of more separator
-	 * characters (in sep).  Set *pos to 0 before first call.  Unlike
-	 * strtok, always pass the original string as first argument.
-	 * Returns 1 if it finds a token and 0 if no more tokens left.
-	 * pos is updated and token is returned.  char *token must point
-	 * to memory of length >= strlen (string).
-	 * string is not changed by GMT_strtok.
-	 */
-
-	GMT_LONG i, j, string_len;
-
-	string_len = strlen (string);
-
-	/* Wind up *pos to first non-separating character: */
-	while (string[*pos] && strchr (sep, (int)string[*pos])) (*pos)++;
-
-	token[0] = 0;	/* Initialize token to NULL in case we are at end */
-
-	if (*pos >= string_len || string_len == 0) return 0;	/* Got NULL string or no more string left to search */
-
-	/* Search for next non-separating character */
-	i = *pos; j = 0;
-	while (string[i] && !strchr (sep, (int)string[i])) token[j++] = string[i++];
-	token[j] = 0;	/* Add terminating \0 */
-
-	/* Wind up *pos to next non-separating character */
-	while (string[i] && strchr (sep, (int)string[i])) i++;
-	*pos = i;
-
-	return 1;
-}
-
-GMT_LONG GMT_strtok1 (const char *string, const char sep, GMT_LONG *pos, char *token)
-{
-	/* strtok-like function that retrieves tokens separate by a single character sep.
-	 * Unlike strtok, a token returned may be NULL (if two sep are found in sequence).
-	 * Breaks string into tokens separated by the character seg.  Set *pos to 0
-	 * before first call.  Unlike strtok, always pass the original string as first argument.
-	 * Returns 1 if it finds a token and 0 if no more tokens left.
-	 * pos is updated and token is returned.  char *token must point
-	 * to memory of length >= strlen (string).
-	 * string is not changed by GMT_strtok1.
-	 */
-
-	GMT_LONG i, j, string_len;
-
-	string_len = strlen (string);
-
-	token[0] = 0;	/* Initialize token to NULL in case we are at end */
-
-	if (*pos >= string_len || string_len == 0) return 0;	/* Got NULL string or no more string left to search */
-
-	/* Search for next non-separating character */
-	i = *pos; j = 0;
-	while (string[i] && string[i] != sep) token[j++] = string[i++];
-	token[j] = 0;	/* Add terminating \0 */
-
-	/* Increase *pos to next non-separating character */
-	if (string[i] == sep) i++;
-	*pos = i;
-
-	return 1;
 }
 
 GMT_LONG GMT_getmodopt (struct GMT_CTRL *C, const char *string, const char *sep, GMT_LONG *pos, char *token)
@@ -8876,7 +8682,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 			continue;
 		}
 #endif
-		GMT_chop (C, buffer);	/* Get rid of \n \r */
+		GMT_chop (buffer);	/* Get rid of \n \r */
 		if (buffer[0] == '#' || buffer[0] == '\0') continue;	/* Skip comments or blank lines */
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
 			char flags[GMT_TEXT_LEN64];
@@ -9257,15 +9063,15 @@ GMT_LONG gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO *
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;
-		GMT_chop (GMT, line);
+		GMT_chop (line);
 		sscanf (line, "%s = %[^:]", name, args);
 		if (n == n_alloc) macro = GMT_memory (GMT, macro, n_alloc += GMT_TINY_CHUNK, struct MATH_MACRO);
 		macro[n].name = strdup (name);
 		pos = 0;
-		while (GMT_strtok (GMT, args, " \t", &pos, item)) macro[n].n_arg++;		/* Count the arguments */
+		while (GMT_strtok (args, " \t", &pos, item)) macro[n].n_arg++;		/* Count the arguments */
 		macro[n].arg = GMT_memory (GMT, macro[n].arg, macro[n].n_arg, char *);	/* Allocate pointers for args */
 		pos = k = 0;
-		while (GMT_strtok (GMT, args, " \t", &pos, item)) macro[n].arg[k++] = strdup (item);	/* Assign arguments */
+		while (GMT_strtok (args, " \t", &pos, item)) macro[n].arg[k++] = strdup (item);	/* Assign arguments */
 		n++;
 	}
 	fclose (fp);

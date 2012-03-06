@@ -562,7 +562,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					char txt_cpy[GMT_BUFSIZ], p[GMT_TEXT_LEN256];
 					GMT_LONG pos = 0;
 					strcpy (txt_cpy, opt);
-					while ((GMT_strtok (GMT, txt_cpy, "+", &pos, p))) {
+					while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 						switch (p[0]) {
 							case 'u':	/* Label put behind annotation */
 								gave_label = FALSE;

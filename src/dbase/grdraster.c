@@ -235,7 +235,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		}
 
 		/* Strip off trailing "\r\n" */
-		GMT_chop (GMT, record);
+		GMT_chop (record);
 		length = strlen(record);
 		if (length == 0) continue;	/* Skip blank lines */
 
