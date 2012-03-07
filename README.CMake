@@ -24,7 +24,7 @@ Quick start:
 
 Checkout GMT5 from its subversion repository:
 
-  $ svn co svn://gmtserver.soest.hawaii.edu/gmt5/tunk gmt5-dev
+  $ svn co svn://gmtserver.soest.hawaii.edu/gmt5/trunk gmt5-dev
   $ cd gmt5-dev
   $ cp cmake/ConfigUserTemplate.cmake cmake/ConfigUser.cmake
 
@@ -126,7 +126,7 @@ working directory is the build directory this is just as simple as
   $ cd ..
   $ svn up
   $ cd -
-  $ mane -j8 install
+  $ make -j8 install
 
 CMake will detect any changes to the source files and will automatically
 reconfigure. If you deleted all files inside the build directory you have to

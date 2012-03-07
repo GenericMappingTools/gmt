@@ -71,7 +71,7 @@ Like netCDF, GDAL is available through your favorite package manager on many
 Install support data
 --------------------
 
-You can optain GMT from gmt.soest.hawaii.edu. Alternatively you may ftp GMT
+You can obtain GMT from gmt.soest.hawaii.edu. Alternatively you may ftp GMT
 from pub/gmt on any of the following sites. Try the site that is closest to
 you to minimize transmission times:
 

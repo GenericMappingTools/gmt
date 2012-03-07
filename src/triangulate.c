@@ -492,7 +492,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_fprintf (GMT->session.std[GMT_OUT], "%c Polygon %d-%d-%d\n", GMT->current.setting.io_seg_marker[GMT_OUT], link[ij], link[ij+1], link[ij+2]);
 			for (k = 0; k < 3; k++) {	/* Three vertices */
 				out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij+k]];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
 		}
 	}
