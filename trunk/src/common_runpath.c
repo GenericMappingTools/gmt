@@ -30,6 +30,9 @@
  *  GMT_guess_sharedir   Determine GMT_SHAREDIR relative to current runpath
  */
 
+/* CMake definitions: This must be first! */
+#include "gmt_config.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -44,11 +47,12 @@
 #	include <windows.h>
 #endif
 
-#include "gmt_config.h"
 #include "gmt_notposix.h"
 #include "common_string.h"
 
 #include "common_runpath.h"
+
+/* #define DEBUG_RUNPATH */
 
 /*
  * Directory where the executable resides (absolute path, global variable)
@@ -67,13 +71,14 @@ char* GMT_runpath_osx (char *result) {
 	if (_NSGetExecutablePath (path, &size) != 0)
 		return NULL;
 	else {
-		/* Truncate full path to dirname */
-		if ( (c = strrchr (path, '/')) )
-			*c = '\0';
-		else
-			return NULL;
 		/* Resolve symlinks */
 		realpath (path, result);
+		/* Truncate full path to dirname */
+		if ( (c = strrchr (result, '/')) )
+			*c = '\0';
+#ifdef DEBUG_RUNPATH
+		printf("executable is in '%s' (from _NSGetExecutablePath).\n", result);
+#endif
 	}
 	return result;
 }
@@ -108,13 +113,16 @@ char* GMT_runpath_win32 (char *result) {
 		wcstombs (result, path, MAX_PATH);
 #endif
 
-
 	/* Replace backslashes */
 	GMT_strrepc (result, '\\', '/');
 
 	/* Truncate full path to dirname */
 	if ( (c = strrchr (result, '/')) )
 		*c = '\0';
+
+#ifdef DEBUG_RUNPATH
+	printf("executable is in '%s' (from GetModuleFileName).\n", result);
+#endif
 
 	return result;
 }
@@ -123,7 +131,9 @@ char* GMT_runpath_win32 (char *result) {
 
 /* Generic *NIX function */
 char* GMT_runpath (char *result, const char *candidate) {
-	char *c, *path, *dir;
+	char *c, *path, *dir, *save_ptr;
+	char candidate_abs[PATH_MAX+1];
+	*result = '\0';
 
 	/* If candidate is NULL or empty */
 	if ( candidate == NULL || *candidate == '\0' )
@@ -131,46 +141,55 @@ char* GMT_runpath (char *result, const char *candidate) {
 
 	/* Handle absolute paths */
 	if (*candidate == '/') {
-		/* Truncate absolute path to dirname */
-		if ( (c = strrchr (candidate, '/')) )
-			*c = '\0';
-		else
-			return NULL;
 		/* Resolve symlinks */
 		realpath (candidate, result);
+		/* Truncate absolute path to dirname */
+		if ( (c = strrchr (result, '/')) )
+			*c = '\0';
 #ifdef DEBUG_RUNPATH
 		printf("executable is in '%s' (from /).\n", result);
 #endif
 		return result;
 	}
+
 	/* Test if candidate was path from cwd */
-	if ((c = strrchr (candidate, '/')) != NULL) {
-		*c = '\0'; /* Truncate path to dirname */
+	if (strchr (candidate, '/')) {
 		/* Get the real path */
 		realpath (candidate, result);
+		/* Truncate absolute path to dirname */
+		if ( (c = strrchr (result, '/')) )
+			*c = '\0';
 #ifdef DEBUG_RUNPATH
 		printf("executable is in '%s' (from cwd).\n", result);
 #endif
 		return result;
 	}
+
 	/* Search candidate in the PATH */
 	path = getenv ("PATH");
 	if (path != NULL) {
+		/* Must copy string because changing pointers returned by getenv it is not allowed: */
 		path = strdup (path);
-		for (dir = strtok (path, ":"); dir != NULL; dir = strtok (NULL, ":")) {
-			strcpy (result, dir);
-			strcat (result, "/");
-			strcat (result, candidate);
-			if ( access (result, X_OK) == 0 ) {
+		for (dir = strtok_r (path, ":", &save_ptr);
+				 dir != NULL;
+				 dir = strtok_r (NULL, ":", &save_ptr)) {
+			strcpy (candidate_abs, dir);
+			strcat (candidate_abs, "/");
+			strcat (candidate_abs, candidate);
+			if ( access (candidate_abs, X_OK) == 0 ) {
 				/* Get real dirname */
-				realpath (dir, result);
+				realpath (candidate_abs, result);
+				/* Truncate absolute path to dirname */
+				if ( (c = strrchr (result, '/')) )
+					*c = '\0';
 #ifdef DEBUG_RUNPATH
 				printf("executable is in '%s' (from PATH).\n", result);
 #endif
+				free (path);
 				return result;
 			}
 		}
-		free(path);
+		free (path);
 	}
 	return NULL;
 }

@@ -183,10 +183,6 @@ else (GMT_INSTALL_MONOLITHIC)
 	set (GMT_BINDIR lib/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}/bin)
 endif (GMT_INSTALL_MONOLITHIC)
 
-# add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
-#set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
 # use, i.e. don't skip the full RPATH for the build tree
 set (CMAKE_SKIP_BUILD_RPATH FALSE)
 
@@ -196,13 +192,21 @@ set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 # the RPATH to be used when installing
 set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}")
-if (APPLE)
-	# on OSX make rpath relative to executable dir:
+
+# make executables relocatable on supported platforms
+if (UNIX AND NOT CYGWIN)
+	# find relative libdir from executable dir
 	file (RELATIVE_PATH _rpath /${GMT_BINDIR} /${GMT_LIBDIR})
-	# remove trailing /:
+	# remove trailing /
 	string (REGEX REPLACE "/$" "" _rpath "${_rpath}")
-	set (CMAKE_INSTALL_NAME_DIR @loader_path/${_rpath})
-endif (APPLE)
+	if (APPLE)
+		# relative RPATH on osx
+		set (CMAKE_INSTALL_NAME_DIR @loader_path/${_rpath})
+	else (APPLE)
+		# relative RPATH on Linux, Solaris, etc.
+		set (CMAKE_INSTALL_RPATH "\$ORIGIN/${_rpath}")
+	endif (APPLE)
+endif (UNIX AND NOT CYGWIN)
 
 # add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH

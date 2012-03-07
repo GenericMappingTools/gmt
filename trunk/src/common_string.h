@@ -53,6 +53,10 @@ EXTERN_MSC void DOS_path_fix (char *dir);
 # define DOS_path_fix(e) ((void)0) /* dummy function */
 #endif
 
+#if !defined(HAVE_STRTOK_R) && !defined(HAVE_STRTOK_S)
+EXTERN_MSC char *strtok_r (char *s, const char *delim, char **save_ptr);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

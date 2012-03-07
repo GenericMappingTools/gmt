@@ -3,6 +3,9 @@
  * psldemo.c: Test all PSL functions at least once
  */
 
+/* CMake definitions: This must be first! */
+#include "gmt_config.h"
+
 #include <stdio.h>
 #include <string.h>
 #include "pslib.h"
