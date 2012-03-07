@@ -2619,7 +2619,10 @@ void gmt_draw_mag_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 			angle = 90.0 - (offset + val[i]);	/* Since val is azimuth */
 			sincosd (ew_angle + angle, &s, &c);
 			x[0] = mr->x0 + (R[level] + C->current.setting.map_annot_offset[level]) * c, y[0] = mr->y0 + (R[level] + C->current.setting.map_annot_offset[level]) * s;
-			sprintf (label, "%d", irint (val[i]));
+			if (C->current.setting.map_degree_symbol == gmt_none)
+				sprintf (label, "%d", irint (val[i]));
+			else
+				sprintf (label, "%d%c", irint (val[i]), (int)C->current.setting.ps_encoding.code[C->current.setting.map_degree_symbol]);
 			t_angle = fmod ((double)(-val[i] - offset) + 360.0, 360.0);	/* Now in 0-360 range */
 			if (t_angle > 180.0) t_angle -= 180.0;	/* Now in -180/180 range */
 			if (t_angle > 90.0 || t_angle < -90.0) t_angle -= copysign (180.0, t_angle);

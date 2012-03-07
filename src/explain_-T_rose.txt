@@ -9,7 +9,7 @@ orientations WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW.  For a magnetic compass ros
 IT(info) must be the two parameters IT(dec/dlabel), where IT(dec) is the magnetic declination and IT(dlabel)
 is a label for the magnetic compass needle (specify BD(-) to format a label from IT(dec)).  Then, both directions
 to geographic and magnetic north are plotted [Default is geographic only].  If the north label is BD(*) then a north
-star is plotted instead of the north label.  Annotation and two levels of tick intervals for geographic and magnetic
-directions are 10/5/1 and 30/5/1 degrees, respectively; override these settings by appending BD(+)IT(gints)[/IT(mints)].
+star is plotted instead of the north label.  Annotation and two levels of tick intervals for both geographic and magnetic
+directions are 30/5/1 degrees; override these settings by appending BD(+)IT(gints)[/IT(mints)].
 Color and pen attributes for the rose are taken from BD(COLOR_BACKGROUND) and BD(MAP_TICK_PEN), respectively, while 
 label fonts, colors and sizes follow BD(FONT_TITLE) for the four major directions and BD(FONT_LABEL) for minor directions.

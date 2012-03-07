@@ -814,7 +814,7 @@ void GMT_maprose_syntax (struct GMT_CTRL *C, char option, char *string)
 	GMT_message (C, "\t   the magnetic declination and <dlabel> is a label for the magnetic compass needle) to plot\n");
 	GMT_message (C, "\t   directions to both magnetic and geographic north [Default is just geographic].\n");
 	GMT_message (C, "\t   If the North label = \'*\' then a north star is plotted instead of the label.\n");
-	GMT_message (C, "\t   Append +<gints>/<mints> to override default annotation/tick interval(s) [10/5/1/30/5/1].\n");
+	GMT_message (C, "\t   Append +<gints>[/<mints>] to override default annotation/tick interval(s) [30/5/1].\n");
 }
 
 void GMT_dist_syntax (struct GMT_CTRL *C, char option, char *string)
