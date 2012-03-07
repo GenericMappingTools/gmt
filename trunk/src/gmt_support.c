@@ -7078,7 +7078,7 @@ GMT_LONG GMT_getrose (struct GMT_CTRL *C, char *text, struct GMT_MAP_ROSE *ms)
 
 	ms->fancy = ms->gave_xy = FALSE;
 	ms->size = 0.0;
-	ms->a_int[0] = 10.0;	ms->f_int[0] = 5.0;	ms->g_int[0] = 1.0;
+	ms->a_int[0] = 30.0;	ms->f_int[0] = 5.0;	ms->g_int[0] = 1.0;
 	ms->a_int[1] = 30.0;	ms->f_int[1] = 5.0;	ms->g_int[1] = 1.0;
 	strcpy (ms->label[0], "S");
 	strcpy (ms->label[1], "E");

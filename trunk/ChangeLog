@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-03-07	pwessel
+	* psbasemap.c:		The -Tm option now places degree symbols.  Changed default magnetic
+				declination annotation interval from 10 to 30.
+
 2012-03-03	fwobbe
 	*			Reintegrated branch cmake-build back into the trunk
 	*			Tagged release 5.0.0 (before reintegration into trunk)
