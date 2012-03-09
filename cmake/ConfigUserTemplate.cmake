@@ -107,9 +107,13 @@
 #set (CMAKE_C_FLAGS_RELEASE "-ggdb3 -O2 -Wuninitialized")  # check uninitialized variables
 #set (CMAKE_LINK_DEPENDS_DEBUG_MODE TRUE)                  # debug link dependencies
 
-# This is for gcc on Solaris to avoid "relocations remain against
+# This is for GCC on Solaris to avoid "relocations remain against
 # allocatable but non-writable sections" problems:
 #set (USER_GMTLIB_LINK_FLAGS -mimpure-text)
+
+# This may be needed to enable strdup and extended math functions with GCC and
+# Suncc on Solaris:
+#set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__EXTENSIONS__")
 
 # Do not warn when building with Windows SDK or Visual Studio Express:
 #set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS ON)

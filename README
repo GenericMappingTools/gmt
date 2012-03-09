@@ -180,7 +180,7 @@ Build GMT
 
 In the build directory, type
 
-	make -jx
+  make -jx
   make -jx manpages_all
 
 which will compile all the programs and create the manual pages. You can
@@ -188,12 +188,12 @@ define the number of jobs to run simultaneously by make with the -jx option,
 where x is typically the number of CPUs. After a successful compilation you
 may install the executables in the designated bin directory with the command
 
-	make -jx install
+  make -jx install
 
 After a successful install you can have the object files and the local
 executables removed by saying
 
-	make clean
+  make clean
 
 or just remove the entire build directory.
 
@@ -243,23 +243,23 @@ GMT or simply perform data manipulation.  In addition, misc.
 code developed by us depend on GMT libraries.
 Currently, the supplemental archive include the directories:
 
-        dbase     - Data extractor for global gridded data sets such
-                    as those on CD-ROM from NGDC.
-        gshhs     - Data extractor for GSHHS shoreline polygons.
-        imgsrc    - Data extractor for Smith/Sandwell altimetry grids.
-        meca      - Plotting of focal mechanisms, velocity arrows,
-                    and error ellipses on maps.
-        mex       - Matlab or Octave mex files for grid file I/O.
-        mgg       - Programs for MGD-77 data in .gmt format.
-        mgd77     - Programs for handling of native MGD77 files.
-        misc      - psmegaplot, makepattern, gmtdigitize,
-                    gmtstitch, gmtdp, and nc2xy
-        segyprogs - Plotting SEGY seismic data sets.
-        sph       - Spherical interpolation and triangulation.
-        spotter   - Plate tectonic & kinematics applications.
-        x2sys     - Track intersection (crossover) tools.
-        x_system  - Track intersection (crossover) tools (old version).
-        xgrid     - X11 editor for grid files.
+  dbase     - Data extractor for global gridded data sets such
+              as those on CD-ROM from NGDC.
+  gshhs     - Data extractor for GSHHS shoreline polygons.
+  imgsrc    - Data extractor for Smith/Sandwell altimetry grids.
+  meca      - Plotting of focal mechanisms, velocity arrows,
+              and error ellipses on maps.
+  mex       - Matlab or Octave mex files for grid file I/O.
+  mgg       - Programs for MGD-77 data in .gmt format.
+  mgd77     - Programs for handling of native MGD77 files.
+  misc      - psmegaplot, makepattern, gmtdigitize,
+              gmtstitch, gmtdp, and nc2xy
+  segyprogs - Plotting SEGY seismic data sets.
+  sph       - Spherical interpolation and triangulation.
+  spotter   - Plate tectonic & kinematics applications.
+  x2sys     - Track intersection (crossover) tools.
+  x_system  - Track intersection (crossover) tools (old version).
+  xgrid     - X11 editor for grid files.
 
 These are installed automatically, except for mex and xgrid which
 requires more configuration as they depend on non-GMT libraries.
@@ -268,7 +268,7 @@ requires more configuration as they depend on non-GMT libraries.
 Example Scripts
 ---------------
 
-	A complete set of the example scripts used to create all the
+   A complete set of the example scripts used to create all the
 example plots, including all necessary data files, are provided by
 the installation; you can run all the examples from the
 src directory using CTest (enable in cmake/ConfigUser.cmake)

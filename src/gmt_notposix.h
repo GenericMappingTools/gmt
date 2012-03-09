@@ -182,7 +182,7 @@
 #endif
 
 #ifndef HAVE_JN
-	EXTERN_MSC double jn(double x);
+	EXTERN_MSC double jn(int n, double x);
 #endif
 
 #ifndef HAVE_LOG1P
@@ -217,7 +217,7 @@
 #endif
 
 #ifndef HAVE_YN
-	EXTERN_MSC double yn(double x);
+	EXTERN_MSC double yn(int n, double x);
 #endif
 
 /*

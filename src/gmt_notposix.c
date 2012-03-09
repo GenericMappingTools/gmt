@@ -426,6 +426,7 @@ double j1 (double x)
 #define ACC 40.0
 #define BIGNO 1.0e10
 #define BIGNI 1.0e-10
+#define IS_ZERO(x) (fabs (x) < GMT_CONV_LIMIT)
 
 /* Alternative jn coded from Numerical Recipes by Press et al */
 
@@ -518,6 +519,13 @@ void sincos (double a, double *s, double *c)
 #endif /* !defined(HAVE_SINCOS) && !defined(HAVE_ALPHASINCOS) */
 
 #ifndef HAVE_Y0
+
+#ifdef d_log
+#undef d_log
+#endif
+
+#define d_log(x) ((x) <= 0.0 ? NAN : log (x))
+
 /* Alternative y0, y1, yn coded from Numerical Recipes by Press et al */
 
 double y0 (double x)

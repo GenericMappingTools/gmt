@@ -16,6 +16,7 @@ if(NOT DEFINED _INCLUDED_CHECK_MACROS_)
 	include (CheckSymbolExists)
 	include (CheckTypeExists)
 	include (CheckTypeSize)
+	include (CMakePushCheckState)
 	include (TestBigEndian)
 
 endif(NOT DEFINED _INCLUDED_CHECK_MACROS_)
@@ -42,9 +43,10 @@ if (MSVC)
 	endif (NOT HAVE_TRADITIONAL_CPP)
 elseif (CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU)
 	# GCC or Clang
+	cmake_push_check_state() # save state of CMAKE_REQUIRED_*
 	set (CMAKE_REQUIRED_FLAGS "-E -w -P -nostdinc -traditional-cpp")
 	check_c_source_compiles ("#define TEST" HAVE_TRADITIONAL_CPP)
-	set (CMAKE_REQUIRED_FLAGS)
+	cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
 endif (MSVC)
 
 #
@@ -58,6 +60,13 @@ check_include_file (process.h           HAVE_PROCESS_H_)
 #
 # Check for C90, C99 and POSIX conformity
 #
+
+# Since glibc 2.12 strdup is only declared if
+# _POSIX_C_SOURCE >= 200809L || _XOPEN_SOURCE >= 500
+# and sincos is a GNU extension:
+cmake_push_check_state()
+set (CMAKE_REQUIRED_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
+	-D_POSIX_C_SOURCE=200809L -D_GNU_SOURCE)
 
 check_include_file (assert.h            HAVE_ASSERT_H_)
 check_include_file (dirent.h            HAVE_DIRENT_H_)
@@ -150,9 +159,6 @@ if (HAVE_IEEEFP_H_)
 	list (APPEND _math_h ieeefp.h)
 endif (HAVE_IEEEFP_H_)
 
-# sincos is a GNU extension:
-set (CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
-
 # Check if -lm is needed
 check_function_exists (cos HAVE_M_FUNCTIONS)
 if (NOT HAVE_M_FUNCTIONS)
@@ -161,7 +167,7 @@ endif (NOT HAVE_M_FUNCTIONS)
 
 # If necessary compile with -lm
 if (HAVE_M_LIBRARY)
-	set (CMAKE_REQUIRED_LIBRARIES "-lm")
+	set (CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} "-lm")
 endif (HAVE_M_LIBRARY)
 
 # check symbols
@@ -207,8 +213,8 @@ if (HAVE_SINCOS)
 		HAVE_SINCOS)
 endif (HAVE_SINCOS)
 
-set (CMAKE_REQUIRED_DEFINITIONS)
-set (CMAKE_REQUIRED_LIBRARIES)
+# restore state of CMAKE_REQUIRED_*
+cmake_pop_check_state()
 
 #check_symbol_exists (intptr_t "stdint.h" HAVE_STDINT_H_WITH_INTPTR)
 #check_symbol_exists (intptr_t "unistdint.h" HAVE_UNISTD_H_WITH_INTPTR)
