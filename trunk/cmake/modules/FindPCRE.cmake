@@ -47,13 +47,17 @@ if (UNIX AND NOT PCRE_FOUND)
     /opt)
 
   if (PCRE_CONFIG)
-    exec_program (${PCRE_CONFIG} ARGS --cflags OUTPUT_VARIABLE PCRE_CONFIG_CFLAGS)
+    execute_process (COMMAND ${PCRE_CONFIG} --cflags
+      ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
+      OUTPUT_VARIABLE PCRE_CONFIG_CFLAGS)
     if (PCRE_CONFIG_CFLAGS)
       string (REGEX MATCHALL "-I[^ ]+" _pcre_dashI ${PCRE_CONFIG_CFLAGS})
       string (REGEX REPLACE "-I" "" _pcre_includepath "${_pcre_dashI}")
       string (REGEX REPLACE "-I[^ ]+" "" _pcre_cflags_other ${PCRE_CONFIG_CFLAGS})
     endif (PCRE_CONFIG_CFLAGS)
-    exec_program (${PCRE_CONFIG} ARGS --libs OUTPUT_VARIABLE PCRE_CONFIG_LIBS)
+    execute_process (COMMAND ${PCRE_CONFIG} --libs
+      ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
+      OUTPUT_VARIABLE PCRE_CONFIG_LIBS)
     if (PCRE_CONFIG_LIBS)
       string (REGEX MATCHALL "-l[^ ]+" _pcre_dashl ${PCRE_CONFIG_LIBS})
       string (REGEX REPLACE "-l" "" _pcre_lib "${_pcre_dashl}")
