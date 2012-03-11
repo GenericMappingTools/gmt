@@ -554,8 +554,9 @@ GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	GMT_LONG i, ij, width_in, *k = NULL;
 	char item[GMT_TEXT_LEN64], c[2] = {0, 0};
 	FILE *fp = NULL;
-	
-	if (!GMT_IS_ZERO (1.0 - (header->inc[GMT_X] / header->inc[GMT_Y]))) return (GMT_GRDIO_ESRI_NONSQUARE);	/* Only square pixels allowed */
+
+	if (!doubleAlmostEqual ((header->inc[GMT_X] / header->inc[GMT_Y]), 1.0))
+		return (GMT_GRDIO_ESRI_NONSQUARE);	/* Only square pixels allowed */
 	if (!strcmp (header->name, "="))	/* Write to pipe */
 		fp = C->session.std[GMT_OUT];
 	else if ((fp = GMT_fopen (C, header->name, C->current.io.w_mode)) == NULL)

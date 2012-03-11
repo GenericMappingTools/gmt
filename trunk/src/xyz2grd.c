@@ -433,7 +433,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		fscanf (fp, "%s", line);	GMT_str_tolower (line);
 		if (!strcmp (line, "nodata_value")) {	/* Found the optional nodata word */
 			fscanf (fp, "%f", &value);
-			if (Ctrl->E.set && !GMT_IS_ZERO (value - Ctrl->E.nodata)) {
+			if (Ctrl->E.set && !doubleAlmostEqualZero (value, Ctrl->E.nodata)) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Your -E%g overrides the nodata_value of %g found in the ESRI file\n", Ctrl->E.nodata, value);
 			}
 			else

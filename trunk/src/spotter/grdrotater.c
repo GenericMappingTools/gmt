@@ -363,7 +363,8 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "No grid values inside selected region - aborting\n");
 			Return (EXIT_FAILURE);
 		}
-		global = (GMT_IS_ZERO (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO] - 360.0) && GMT_IS_ZERO (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO] - 180.0));
+		global = (doubleAlmostEqual (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO], 360.0)
+							&& doubleAlmostEqual (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO], 180.0));
 	}
 	not_global = !global;
 	

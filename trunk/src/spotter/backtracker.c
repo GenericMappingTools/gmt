@@ -568,7 +568,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					t += Ctrl->L.d_km;	/* dt, actually */
 				}
 				t -= Ctrl->L.d_km;	/* Last time used in the loop */
-				if (!(GMT_IS_ZERO (t_end - t))) {	/* One more point since t_end was not a multiple of d_km from t_start */
+				if (!(doubleAlmostEqualZero (t_end, t))) {	/* One more point since t_end was not a multiple of d_km from t_start */
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_X], H->n_rows, 1, &t_end, &lon, GMT->current.setting.interpolant);
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t_end, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;

@@ -386,7 +386,7 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !(strchr (GMT_LEN_UNITS2, Ctrl->S.unit)), "Syntax error option -S: Must append one of %s\n", GMT_LEN_UNITS2_DISPLAY);
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT_is_dnan (Ctrl->L.value), "Syntax error option -L: Must specify base\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->C.active, "Syntax error option -T: Must also specify -Clow/high/delta\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->C.active && GMT_IS_ZERO (Ctrl->C.high - Ctrl->C.low), "Syntax error option -T: Must specify -Clow/high/delta\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->C.active && doubleAlmostEqualZero (Ctrl->C.high, Ctrl->C.low), "Syntax error option -T: Must specify -Clow/high/delta\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

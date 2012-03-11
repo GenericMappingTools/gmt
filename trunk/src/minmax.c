@@ -497,8 +497,10 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				if (give_r_string && i < GMT_Z && fixed_phase[i]) {
 					this_phase = MOD (in[i], Ctrl->I.inc[i]);
-					if (fixed_phase[i] == 1) phase[i] = this_phase, fixed_phase[i] = 2;	/* Initializes phase the first time */
-					if (!GMT_IS_ZERO (phase[i] - this_phase)) fixed_phase[i] = 0;	/* Phase not constant, not a grid */
+					if (fixed_phase[i] == 1)
+						phase[i] = this_phase, fixed_phase[i] = 2;	/* Initializes phase the first time */
+					if (!doubleAlmostEqualZero (phase[i], this_phase))
+						fixed_phase[i] = 0;	/* Phase not constant, not a grid */
 				}
 			}
 			n++;	/* Number of records processed in current block (all/table/segment; see -A) */

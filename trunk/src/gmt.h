@@ -250,6 +250,7 @@ struct GMT_CTRL {
 
 #include "gmtapi.h"			/* All GMT high-level API */
 #include "gmt_prototypes.h"      	/* All GMT low-level API */
+#include "common_math.h" /* Shared math functions */
 #include "common_string.h" /* All code shared between GMT and PSL */
 
 #include "gmt_modules.h"     	 	/* All GMT_* modules */

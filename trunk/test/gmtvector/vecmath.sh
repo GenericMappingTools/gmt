@@ -26,6 +26,9 @@ cat << EOF > vecg.txt
 -30	-60
 EOF
 
+# Use fixed format floats (number of digits of default %lg is unpredictable)
+gmtset FORMAT_FLOAT_OUT "%.6e"
+
 # Normalize the 2-D vectors
 echo "# gmtvector vec2d.txt -C -N" > result
 gmtvector vec2d.txt -C -N >> result

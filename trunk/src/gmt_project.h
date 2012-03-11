@@ -136,9 +136,9 @@ enum GMT_enum_misc {GMT_MOLLWEIDE = 400,
 /* Return 0 for Flat Earth, 1 for Great-circles, and 2 for geodesics */
 #define GMT_sph_mode(C) (GMT_IS_FLATEARTH (C) ? 0 : (GMT_IS_SPHERICAL (C) ? 1 : 2))
 
-#define GMT_360_RANGE(w,e) (fabs (fabs((e) - (w)) - 360.0) < GMT_CONV_LIMIT)
-#define GMT_180_RANGE(s,n) (fabs (fabs((n) - (s)) - 180.0) < GMT_CONV_LIMIT)
-#define GMT_IS_POLE(y) (fabs (fabs(y) - 90.0) < GMT_CONV_LIMIT)
+#define GMT_360_RANGE(w,e) (doubleAlmostEqual (fabs((e) - (w)), 360.0))
+#define GMT_180_RANGE(s,n) (doubleAlmostEqual (fabs((n) - (s)), 180.0))
+#define GMT_IS_POLE(y) (doubleAlmostEqual (fabs(y), 90.0))
 #define GMT_IS_ZERO(x) (fabs (x) < GMT_CONV_LIMIT)
 
 #ifndef D2R

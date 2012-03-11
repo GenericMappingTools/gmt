@@ -466,7 +466,7 @@ void GMT_stereo2_sph (struct GMT_CTRL *C, double lon, double lat, double *x, dou
 	double dlon, s, c, clon, slon, A;
 
 	dlon = lon - C->current.proj.central_meridian;
-	if (GMT_IS_ZERO (dlon - 180.0)) {
+	if (doubleAlmostEqual (dlon, 180.0)) {
 		*x = *y = 0.0;
 	}
 	else {
@@ -506,7 +506,7 @@ void GMT_vlamb (struct GMT_CTRL *C, double rlong0, double rlat0, double pha, dou
 		pow ((1.0 - C->current.proj.ECC * sind (rlat0)) /
 		(1.0 + C->current.proj.ECC * sind (rlat0)), C->current.proj.half_ECC);
 
-	if (GMT_IS_ZERO (pha - phb))
+	if (doubleAlmostEqualZero (pha, phb))
 		C->current.proj.l_N = sin (pha);
 	else
 		C->current.proj.l_N = (d_log (C, m_pha) - d_log (C, m_phb))/(d_log (C, t_pha) - d_log (C, t_phb));
@@ -678,7 +678,7 @@ void GMT_tm (struct GMT_CTRL *P, double lon, double lat, double *x, double *y)
 {	/* Convert lon/lat to TM x/y */
 	double N, T, T2, C, A, M, dlon, tan_lat, A2, A3, A5, s, c, s2, c2;
 
-	if (GMT_IS_ZERO (fabs (lat) - 90.0)) {
+	if (doubleAlmostEqual (fabs (lat), 90.0)) {
 		M = P->current.proj.EQ_RAD * P->current.proj.t_c1 * M_PI_2;
 		*x = 0.0;
 		*y = P->current.setting.proj_scale_factor * M;
@@ -1883,7 +1883,7 @@ void GMT_mollweide (struct GMT_CTRL *C, double lon, double lat, double *x, doubl
 	GMT_LONG i;
 	double phi, delta, psin_lat, c, s;
 
-	if (GMT_IS_ZERO (fabs (lat) - 90.0)) {	/* Special case */
+	if (doubleAlmostEqual (fabs (lat), 90.0)) {	/* Special case */
 		*x = 0.0;
 		*y = copysign (C->current.proj.w_y, lat);
 		return;
@@ -1939,7 +1939,7 @@ void GMT_hammer (struct GMT_CTRL *C, double lon, double lat, double *x, double *
 {	/* Convert lon/lat to Hammer-Aitoff Equal-Area x/y */
 	double slat, clat, slon, clon, D;
 
-	if (GMT_IS_ZERO (fabs (lat) - 90.0)) {	/* Save time */
+	if (doubleAlmostEqual (fabs (lat), 90.0)) {	/* Save time */
 		*x = 0.0;
 		*y = M_SQRT2 * copysign (C->current.proj.EQ_RAD, lat);
 		return;
@@ -1995,7 +1995,7 @@ void GMT_grinten (struct GMT_CTRL *C, double lon, double lat, double *x, double 
 		*y = M_PI * copysign (C->current.proj.EQ_RAD, lat);
 		return;
 	}
-	if (GMT_IS_ZERO (lon - C->current.proj.central_meridian)) {	/* Save time */
+	if (doubleAlmostEqualZero (lon, C->current.proj.central_meridian)) {	/* Save time */
 		theta = d_asin (2.0 * fabs (lat) / 180.0);
 		*x = 0.0;
 		*y = M_PI * copysign (C->current.proj.EQ_RAD, lat) * tan (0.5 * theta);
@@ -2491,7 +2491,7 @@ void GMT_isinusoidal (struct GMT_CTRL *C, double *lon, double *lat, double x, do
 {	/* Convert Sinusoidal Equal-Area x/y to lon/lat */
 
 	*lat = y * C->current.proj.i_EQ_RAD;
-	*lon = (GMT_IS_ZERO (fabs (*lat) - M_PI)) ? 0.0 : R2D * x / (C->current.proj.EQ_RAD * cos (*lat));
+	*lon = (doubleAlmostEqual (fabs (*lat), M_PI)) ? 0.0 : R2D * x / (C->current.proj.EQ_RAD * cos (*lat));
 	if (fabs (*lon) > 180.0) {	/* Horizon */
 		*lat = *lon = C->session.d_NaN;
 		return;
@@ -2587,7 +2587,7 @@ void GMT_icassini (struct GMT_CTRL *C, double *lon, double *lat, double x, doubl
 	u2 = 2.0 * u1;
 	sincos (u2, &s, &c);
 	phi1 = u1 + s * (C->current.proj.c_i2 + c * (C->current.proj.c_i3 + c * (C->current.proj.c_i4 + c * C->current.proj.c_i5)));
-	if (GMT_IS_ZERO (fabs (phi1) - M_PI_2)) {
+	if (doubleAlmostEqual (fabs (phi1), M_PI_2)) {
 		*lat = copysign (M_PI_2, phi1);
 		*lon = C->current.proj.central_meridian;
 	}
@@ -2657,7 +2657,7 @@ void GMT_valbers (struct GMT_CTRL *C, double lon0, double lat0, double ph1, doub
 	q1 = (GMT_IS_ZERO (C->current.proj.ECC)) ? 2.0 * s1 : C->current.proj.one_m_ECC2 * (s1 / (1.0 - C->current.proj.ECC2 * s1 * s1) - C->current.proj.i_half_ECC * log ((1.0 - C->current.proj.ECC * s1) / (1.0 + C->current.proj.ECC * s1)));
 	q2 = (GMT_IS_ZERO (C->current.proj.ECC)) ? 2.0 * s2 : C->current.proj.one_m_ECC2 * (s2 / (1.0 - C->current.proj.ECC2 * s2 * s2) - C->current.proj.i_half_ECC * log ((1.0 - C->current.proj.ECC * s2) / (1.0 + C->current.proj.ECC * s2)));
 
-	C->current.proj.a_n = (GMT_IS_ZERO (ph1 - ph2)) ? s1 : (m1 - m2) / (q2 - q1);
+	C->current.proj.a_n = (doubleAlmostEqualZero (ph1, ph2)) ? s1 : (m1 - m2) / (q2 - q1);
 	C->current.proj.a_i_n = 1.0 / C->current.proj.a_n;
 	C->current.proj.a_C = m1 + C->current.proj.a_n * q1;
 	C->current.proj.a_rho0 = C->current.proj.EQ_RAD * sqrt (C->current.proj.a_C - C->current.proj.a_n * q0) * C->current.proj.a_i_n;
@@ -2718,7 +2718,7 @@ void GMT_ialbers (struct GMT_CTRL *C, double *lon, double *lat, double x, double
 	rho = hypot (x, C->current.proj.a_rho0 - y);
 	q = (C->current.proj.a_C - rho * rho * C->current.proj.a_n2ir2) * C->current.proj.a_i_n;
 
-	if (GMT_IS_ZERO (fabs (q) - C->current.proj.a_test))
+	if (doubleAlmostEqualZero (fabs (q), C->current.proj.a_test))
 		*lat = copysign (90.0, q);
 	else {
 		phi = d_asin (0.5 * q);
@@ -2782,7 +2782,7 @@ void GMT_veconic (struct GMT_CTRL *C, double lon0, double lat0, double lat1, dou
 	gmt_check_R_J (C, &lon0);
 	C->current.proj.north_pole = (C->common.R.wesn[YHI] > 0.0 && (C->common.R.wesn[YLO] >= 0.0 || (-C->common.R.wesn[YLO]) < C->common.R.wesn[YHI]));
 	c1 = cosd (lat1);
-	C->current.proj.d_n = (GMT_IS_ZERO (lat1 - lat2)) ? sind (lat1) : (c1 - cosd (lat2)) / (D2R * (lat2 - lat1));
+	C->current.proj.d_n = (doubleAlmostEqualZero (lat1, lat2)) ? sind (lat1) : (c1 - cosd (lat2)) / (D2R * (lat2 - lat1));
 	C->current.proj.d_i_n = R2D / C->current.proj.d_n;	/* R2D put here instead of in lon for ieconic */
 	C->current.proj.d_G = (c1 / C->current.proj.d_n) + lat1 * D2R;
 	C->current.proj.d_rho0 = C->current.proj.EQ_RAD * (C->current.proj.d_G - lat0 * D2R);

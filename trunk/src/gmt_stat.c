@@ -946,7 +946,8 @@ double GMT_erfinv (struct GMT_CTRL *C, double y)
 
 	if (fy > 1.0) return (C->session.d_NaN);	/* Outside domain */
 
-	if (GMT_IS_ZERO (1.0 - fy)) return (copysign (DBL_MAX, y));	/* Close to +- Inf */
+	if (doubleAlmostEqual (fy, 1.0))
+		return (copysign (DBL_MAX, y));	/* Close to +- Inf */
 
 	if (y > 0.7) {		/* Near upper range */
 		z = sqrt (-log (0.5 * (1.0 - y)));
@@ -1232,7 +1233,7 @@ double GMT_tcrit (struct GMT_CTRL *C, double alpha, double nu)
 	while (!done) {
 		t_mid = 0.5 * (t_low + t_high);
 		GMT_student_t_a (C, t_mid, NU, &p_mid);
-		if (GMT_IS_ZERO (p_mid - p)) {
+		if (doubleAlmostEqualZero (p_mid, p)) {
 			done = TRUE;
 		}
 		else if (p_mid > p) {	/* Too high */
@@ -1267,7 +1268,7 @@ double GMT_chi2crit (struct GMT_CTRL *C, double alpha, double nu)
 	while (!done) {
 		chi2_mid = 0.5 * (chi2_low + chi2_high);
 		GMT_chi2 (C, chi2_mid, nu, &p_mid);
-		if (GMT_IS_ZERO (p_mid - p)) {
+		if (doubleAlmostEqualZero (p_mid, p)) {
 			done = TRUE;
 		}
 		else if (p_mid < p) {	/* Too high */
@@ -1313,7 +1314,7 @@ double GMT_Fcrit (struct GMT_CTRL *C, double alpha, double nu1, double nu2)
 		F_mid = 0.5 * (F_low + F_high);
 		gmt_F_to_ch1_ch2 (C, F_mid, nu1, nu2, &chisq1, &chisq2);
 		GMT_f_q (C, chisq1, NU1, chisq2, NU2, &p_mid);
-		if (GMT_IS_ZERO (p_mid - p)) {
+		if (doubleAlmostEqualZero (p_mid, p)) {
 			done = TRUE;
 		}
 		else if (p_mid < p) {	/* Too high */

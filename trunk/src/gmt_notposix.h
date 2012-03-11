@@ -56,6 +56,12 @@
 #	include <ctype.h>
 #endif
 
+#ifdef HAVE_STDBOOL_H_
+#	include <stdbool.h>
+#else
+#	include "compat/stdbool.h"
+#endif
+
 #ifdef HAVE_STAT_H_
 #	include <sys/stat.h>
 #endif
@@ -85,12 +91,17 @@
 #ifdef HAVE_UNISTD_H_
 #	include <unistd.h>
 #endif
-#if defined(HAVE_INTTYPES_H_)
-#	include <inttypes.h>        /* Exact-width integer types */
-#elif defined(HAVE_STDINT_H_)  /* VS 2010 has stdint.h */
+
+#ifdef HAVE_STDINT_H_          /* VS 2010 has stdint.h */
 #	include <stdint.h>
 #else
-#	include "pstdint.h"         /* Free portable implementation */
+#	include "compat/stdint.h"    /* msinttypes for VC++ */
+#endif /* HAVE_STDINT_H_ */
+
+#ifdef HAVE_INTTYPES_H_
+#	include <inttypes.h>         /* Exact-width integer types */
+#else
+#	include "compat/inttypes.h"  /* msinttypes for VC++ */
 #endif /* HAVE_INTTYPES_H_ */
 
 /*

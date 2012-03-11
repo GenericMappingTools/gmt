@@ -543,13 +543,13 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	full_360 = (Ctrl->D.mode && GMT_grd_is_global (GMT, Gin->header));	/* Periodic geographic grid */
 
 	if (Ctrl->D.mode == -1) {	/* Special case where widths are given in pixels */
-		if (!GMT_IS_ZERO (fmod (Ctrl->F.width, 2.0) - 1.0)) {
+		if (!doubleAlmostEqual (fmod (Ctrl->F.width, 2.0), 1.0)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "ERROR: -Dp requires filter width given as an odd number of pixels\n");
 			Return (EXIT_FAILURE);
 		}
 		Ctrl->F.width *= Gin->header->inc[GMT_X];	/* Scale up to give width */
 		if (Ctrl->F.rect) {
-			if (!GMT_IS_ZERO (fmod (Ctrl->F.width2, 2.0) - 1.0)) {
+			if (!doubleAlmostEqual (fmod (Ctrl->F.width2, 2.0), 1.0)) {
 				GMT_report (GMT, GMT_MSG_FATAL, "ERROR: -Dp requires filter width given as an odd number of pixels\n");
 				Return (EXIT_FAILURE);
 			}

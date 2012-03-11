@@ -151,7 +151,7 @@ Download from http://nsis.sourceforge.net/
 Finally we are ready to compile GMT5.
 
 - Get GMT from svn://gmtserver.soest.hawaii.edu/gmt5/tunk
-- Get GSHHS (Shoreline Database) from http://www.soest.hawaii.edu/wessel/gshhs/
+- Get GSHHS (Shoreline Database) from ftp://ftp.soest.hawaii.edu/gmt5/
 
 - In the source tree copy cmake/ConfigUserTemplate.cmake to
   cmake/ConfigUser.cmake and edit the file according to your demands. This is

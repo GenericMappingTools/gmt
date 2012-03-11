@@ -305,7 +305,9 @@ GMT_LONG same_domain (struct GMT_DATASET *A, GMT_LONG t_col, struct GMT_TABLE *B
 {	/* Are the two dataset the same domain */
 	GMT_LONG seg;
 	for (seg = 0; seg < A->table[0]->n_segments; seg++) {
-		if (!(GMT_IS_ZERO (A->table[0]->min[t_col] - B->min[COL_T]) && GMT_IS_ZERO (A->table[0]->max[t_col] - B->max[COL_T]))) return (FALSE);
+		if (!(doubleAlmostEqualZero (A->table[0]->min[t_col], B->min[COL_T])
+					&& doubleAlmostEqualZero (A->table[0]->max[t_col], B->max[COL_T])))
+			return (FALSE);
 	}
 	return (TRUE);
 }

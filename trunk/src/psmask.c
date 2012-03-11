@@ -172,10 +172,10 @@ GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 			/* if (fmod ((*xx[0] - inc2[GMT_X]), h->inc[GMT_X]) == 0.0) */	/* On side 1 or 3 */
 			if (GMT_IS_ZERO (fmod ((*xx[0] - inc2[GMT_X]), h->inc[GMT_X])))	/* On side 1 or 3 */
 				/* first_k = ((*xx[0] - x0) == 0.0) ? 3 : 1; */
-				first_k = GMT_IS_ZERO (*xx[0] - x0) ? 3 : 1;
+				first_k = doubleAlmostEqualZero (*xx[0], x0) ? 3 : 1;
 			else 	/* On side 0 or 2 */
 				/* first_k = ((*yy[0] - y0) == 0.0) ? 0 : 2; */
-				first_k = GMT_IS_ZERO (*yy[0] - y0) ? 0 : 2;
+				first_k = doubleAlmostEqualZero (*yy[0], y0) ? 0 : 2;
 			kk_opposite = (first_k + 2) % 4;
 			if (k0 != kk_opposite) {
 				(*xx)[n] = x0 + 0.5*h->inc[GMT_X];

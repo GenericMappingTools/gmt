@@ -737,7 +737,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 						sprintf (text, format, P->range[i].z_low, P->range[i].z_high);
 					else if (logscl) {
 						p_val = irint (P->range[i].z_low);
-						if (GMT_IS_ZERO (P->range[i].z_low - (double)p_val))
+						if (doubleAlmostEqualZero (P->range[i].z_low, (double)p_val))
 							sprintf (text, "10@+%d@+", irint (P->range[i].z_low));
 						else
 							do_annot = FALSE;
@@ -760,7 +760,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					do_annot = TRUE;
 					if (logscl) {
 						p_val = irint (P->range[i].z_high);
-						if (GMT_IS_ZERO (P->range[i].z_high - (double)p_val))
+						if (doubleAlmostEqualZero (P->range[i].z_high, (double)p_val))
 							sprintf (text, "10@+%ld@+", p_val);
 						else
 							do_annot = FALSE;
@@ -958,7 +958,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 						sprintf (text, format, P->range[i].z_low, P->range[i].z_high);
 					else if (logscl) {
 						p_val = irint (P->range[i].z_low);
-						if (GMT_IS_ZERO (P->range[i].z_low - (double)p_val))
+						if (doubleAlmostEqualZero (P->range[i].z_low, (double)p_val))
 							sprintf (text, "10@+%ld@+", p_val);
 						else
 							do_annot = FALSE;
@@ -982,7 +982,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					do_annot = TRUE;
 					if (logscl) {
 						p_val = irint (P->range[i].z_high);
-						if (GMT_IS_ZERO (P->range[i].z_high - (double)p_val))
+						if (doubleAlmostEqualZero (P->range[i].z_high, (double)p_val))
 							sprintf (text, "10@+%ld@+", p_val);
 						else
 							do_annot = FALSE;

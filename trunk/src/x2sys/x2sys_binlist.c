@@ -233,7 +233,8 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		double mid;
 		char proj[80];
 		/* Do the equal area map projection so W = 360 and H = 180 */
-		if (!(GMT_IS_ZERO (B.wesn[XHI] - B.wesn[XLO] - 360.0) && GMT_IS_ZERO (B.wesn[YHI] - B.wesn[YLO] - 180.0))) {
+		if (!(doubleAlmostEqual (B.wesn[XHI] - B.wesn[XLO], 360.0)
+					&& doubleAlmostEqualZero (B.wesn[YHI] - B.wesn[YLO], 180.0))) {
 			GMT_report (GMT, GMT_MSG_FATAL, "-E requires a global region (-Rg or -Rd)");
 			Return (EXIT_FAILURE);
 		}

@@ -882,7 +882,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Grid->header->nx = irint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) / Grid->header->inc[GMT_X]);
 		Grid->header->ny = irint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) / Grid->header->inc[GMT_Y]);
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your -R option does not create a region divisible by inc[GMT_X], inc[GMT_Y].\n");
-		if (GMT_IS_ZERO (rint (Grid->header->inc[GMT_X] * 60.0) - Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
+		if (doubleAlmostEqualZero (rint (Grid->header->inc[GMT_X] * 60.0), Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
 			GMT_LONG w, e, s, n, wm, em, sm, nm;
 			w = (GMT_LONG) floor (Grid->header->wesn[XLO]);	wm = irint ((Grid->header->wesn[XLO] - w) * 60.0);
 			e = (GMT_LONG) floor (Grid->header->wesn[XHI]);	em = irint ((Grid->header->wesn[XHI] - e) * 60.0);

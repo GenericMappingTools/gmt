@@ -5305,15 +5305,15 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 GMT_LONG gmt_getprevpoint (double plon, double lon[], GMT_LONG n, GMT_LONG this)
 {	/* Return the previous point that does NOT equal plon */
 	GMT_LONG ip = (this == 0) ? n - 2 : this - 1;	/* Previous point (-2 because last is a duplicate of first) */
-	while (GMT_IS_ZERO (plon - lon[ip]) || GMT_IS_ZERO (fabs(plon - lon[ip]) - 360.0)) {	/* Same as plon */
+	while (doubleAlmostEqualZero (plon, lon[ip]) || doubleAlmostEqual (fabs(plon - lon[ip]), 360.0)) {	/* Same as plon */
 		ip--;
 		if (ip == -1) ip = n - 2;
 	}
 	return (ip);
 }
 
-#define GMT_SAME_LONGITUDE(A,B) (GMT_IS_ZERO (fmod (A - B, 360.0)))	/* A and B are the same longitude */
-#define GMT_SAME_LATITUDE(A,B)  (GMT_IS_ZERO (A - B))			/* A and B are the same latitude */
+#define GMT_SAME_LONGITUDE(A,B) (doubleAlmostEqualZero (fmod(A,360.0),fmod(B,360.0)))	/* A and B are the same longitude */
+#define GMT_SAME_LATITUDE(A,B)  (doubleAlmostEqualZero (A,B))			/* A and B are the same latitude */
 
 GMT_LONG gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SEGMENT *P, GMT_LONG count[])
 {	/* Case of a polar cap */
@@ -5335,7 +5335,8 @@ GMT_LONG gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LI
 		if (GMT_SAME_LONGITUDE (plon, P->coord[GMT_X][i]) && GMT_SAME_LATITUDE (plat, P->coord[GMT_Y][i])) return (1);	/* Point is on the perimeter */
 		in = i + 1;			/* Next point index */
 		/* First skip segments that have no actual length: consecutive points with both latitudes == -90 or +90 */
-		if (fabs (P->coord[GMT_Y][i]) == 90.0 && GMT_IS_ZERO (P->coord[GMT_Y][i] - P->coord[GMT_Y][in])) continue;
+		if (fabs (P->coord[GMT_Y][i]) == 90.0 && doubleAlmostEqualZero (P->coord[GMT_Y][i], P->coord[GMT_Y][in]))
+			continue;
 		/* Next deal with case when the longitude of P goes ~right through the second of the line nodes */
 		if (GMT_SAME_LONGITUDE (plon, P->coord[GMT_X][in])) continue;	/* Line goes through the 2nd node - ignore */
 		lon1 = P->coord[GMT_X][i];	/* Copy the first of two longitudes since we may need to mess with them */
@@ -5385,7 +5386,8 @@ GMT_LONG gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LI
 		/* Calculate latitude at intersection */
 		if (GMT_SAME_LATITUDE (P->coord[GMT_Y][i], P->coord[GMT_Y][in]) && GMT_SAME_LATITUDE (plat, P->coord[GMT_Y][in])) return (1);	/* P is on S boundary */
 		x_lat = P->coord[GMT_Y][i] + ((P->coord[GMT_Y][in] - P->coord[GMT_Y][i]) / (lon2 - lon1)) * (lon - lon1);
-		if (GMT_IS_ZERO (x_lat - plat)) return (1);	/* P is on S boundary */
+		if (doubleAlmostEqualZero (x_lat, plat))
+			return (1);	/* P is on S boundary */
 
 		cut = (x_lat > plat) ? 0 : 1;	/* Cut is north (0) or south (1) of P */
 		count[cut]++;
@@ -6123,8 +6125,9 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 
 		if (G->header->nyp > 0) {	/* y is periodic  */
 
-			for (i = iw, bok = 0; i <= ie; i++) {
-				if (G->header->registration == GMT_GRIDLINE_REG && !GMT_IS_ZERO (G->data[jn+i] - G->data[js+i])) bok++;
+			for (i = iw, bok = 0; i <= ie; ++i) {
+				if (G->header->registration == GMT_GRIDLINE_REG && !doubleAlmostEqualZero (G->data[jn+i], G->data[js+i]))
+					++bok;
 				if (set[YHI]) {
 					G->data[jno1 + i] = G->data[jno1k + i];
 					G->data[jno2 + i] = G->data[jno2k + i];
@@ -6248,7 +6251,8 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 		if (set[XLO]) G->header->BC[XLO] = GMT_BC_IS_PERIODIC;
 		if (set[XHI]) G->header->BC[XHI] = GMT_BC_IS_PERIODIC;
 		for (jmx = jn, bok = 0; jmx <= js; jmx += mx) {
-			if (G->header->registration == GMT_GRIDLINE_REG && !GMT_IS_ZERO (G->data[jmx+iw] - G->data[jmx+ie])) bok++;
+			if (G->header->registration == GMT_GRIDLINE_REG && !doubleAlmostEqualZero (G->data[jmx+iw], G->data[jmx+ie]))
+				++bok;
 			if (set[XLO]) {
 				G->data[iwo1 + jmx] = G->data[iwo1k + jmx];
 				G->data[iwo2 + jmx] = G->data[iwo2k + jmx];
@@ -6261,8 +6265,9 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 		if (bok > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %ld (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->ny);
 
 		if (G->header->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
-			for (i = iwo2, bok = 0; i <= ieo2; i++) {
-				if (G->header->registration == GMT_GRIDLINE_REG && !GMT_IS_ZERO (G->data[jn+i] - G->data[js+i])) bok++;
+			for (i = iwo2, bok = 0; i <= ieo2; ++i) {
+				if (G->header->registration == GMT_GRIDLINE_REG && !doubleAlmostEqualZero (G->data[jn+i], G->data[js+i]))
+					++bok;
 				if (set[YHI]) {
 					G->data[jno1 + i] = G->data[jno1k + i];
 					G->data[jno2 + i] = G->data[jno2k + i];
@@ -8001,7 +8006,8 @@ GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta
 
 	/* Because min and max may be tiny values (e.g., 10^-20) we must do all calculations on the log10 (value) */
 
-	if (GMT_IS_ZERO (delta)) return (0);
+	if (GMT_IS_ZERO (delta))
+		return (0);
 	min = d_log10 (C, min);
 	max = d_log10 (C, max);
 	first = (GMT_LONG) floor (min);
@@ -8318,10 +8324,11 @@ GMT_LONG gmt_polar_adjust (struct GMT_CTRL *C, GMT_LONG side, double angle, doub
 	else {
 		if (C->current.map.frame.horizontal) {
 			if (side == low)
-				justify = (GMT_IS_ZERO (angle - 180.0)) ? bottom : top;
+				justify = (doubleAlmostEqual (angle, 180.0)) ? bottom : top;
 			else
 				justify = (GMT_IS_ZERO (angle)) ? top : bottom;
-			if (C->current.proj.got_elevations && (GMT_IS_ZERO (angle - 180.0) || GMT_IS_ZERO (angle))) justify = (justify + 8) % 16;
+			if (C->current.proj.got_elevations && (doubleAlmostEqual (angle, 180.0) || GMT_IS_ZERO (angle)))
+				justify = (justify + 8) % 16;
 		}
 		else {
 			if (x >= x0)
@@ -8477,8 +8484,10 @@ void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_LONG 
 	}
 
 	if (lonlat < 2) {	/* i.e., for geographical data */
-		if (GMT_IS_ZERO (val - 360.0) && !worldmap) val = 0.0;
-		if (GMT_IS_ZERO (val - 360.0) && worldmap && C->current.proj.projection == GMT_OBLIQUE_MERC) val = 0.0;
+		if (doubleAlmostEqual (val, 360.0) && !worldmap)
+			val = 0.0;
+		if (doubleAlmostEqual (val, 360.0) && worldmap && C->current.proj.projection == GMT_OBLIQUE_MERC)
+			val = 0.0;
 	}
 
 	GMT_memset (hemi, 3, char);
@@ -8495,7 +8504,7 @@ void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_LONG 
 					hemi[h_pos] = (GMT_IS_ZERO (val)) ? 0 : 'W';
 					break;
 				default:
-					hemi[h_pos] = (GMT_IS_ZERO (val) || GMT_IS_ZERO (val - 180.0) || GMT_IS_ZERO (val + 180.0)) ? 0 : ((val < 0.0) ? 'W' : 'E');
+					hemi[h_pos] = (GMT_IS_ZERO (val) || doubleAlmostEqual (val, 180.0) || doubleAlmostEqual (val, -180.0)) ? 0 : ((val < 0.0) ? 'W' : 'E');
 					break;
 			}
 		}
@@ -8550,13 +8559,11 @@ void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_LONG 
 
 double gmt_get_angle (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2)
 {
-	double x1, y1, x2, y2, dx, dy, angle, direction;
+	double x1, y1, x2, y2, angle, direction;
 
 	GMT_geo_to_xy (C, lon1, lat1, &x1, &y1);
 	GMT_geo_to_xy (C, lon2, lat2, &x2, &y2);
-	dx = x2 - x1;
-	dy = y2 - y1;
-	if (GMT_IS_ZERO (dy) && GMT_IS_ZERO (dx)) {	/* Special case that only(?) occurs at N or S pole or r=0 for GMT_POLAR */
+	if (doubleAlmostEqualZero (y1, y2) && doubleAlmostEqualZero (x1, x2)) {	/* Special case that only(?) occurs at N or S pole or r=0 for GMT_POLAR */
 		if (fabs (fmod (lon1 - C->common.R.wesn[XLO] + 360.0, 360.0)) > fabs (fmod (lon1 - C->common.R.wesn[XHI] + 360.0, 360.0))) {	/* East */
 			GMT_geo_to_xy (C, C->common.R.wesn[XHI], C->common.R.wesn[YLO], &x1, &y1);
 			GMT_geo_to_xy (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &x2, &y2);
@@ -8571,7 +8578,7 @@ double gmt_get_angle (struct GMT_CTRL *C, double lon1, double lat1, double lon2,
 		if (C->current.proj.got_azimuths) angle += 180.0;
 	}
 	else
-		angle = d_atan2d (dy, dx);
+		angle = d_atan2d (y2 - y1, x2 - x1);
 
 	if (GMT_abs (C->current.map.prev_x_status) == 2 && GMT_abs (C->current.map.prev_y_status) == 2)	/* Last point outside */
 		direction = angle + 180.0;
@@ -8955,8 +8962,10 @@ void GMT_free_custom_symbols (struct GMT_CTRL *C) {	/* Free the allocated list o
 GMT_LONG GMT_polygon_is_open (struct GMT_CTRL *C, double x[], double y[], GMT_LONG n)
 {	/* Returns TRUE if the first and last point is not identical */
 	if (n < 2) return FALSE;	/*	A point is closed */
-	if (!GMT_IS_ZERO (x[0] - x[n-1])) return TRUE;	/* x difference exceeds threshold */
-	if (!GMT_IS_ZERO (y[0] - y[n-1])) return TRUE;	/* y difference exceeds threshold */
+	if (!doubleAlmostEqualZero (x[0], x[n-1]))
+		return TRUE;	/* x difference exceeds threshold */
+	if (!doubleAlmostEqualZero (y[0], y[n-1]))
+		return TRUE;	/* y difference exceeds threshold */
 	/* Here, first and last are ~identical - to be safe we enforce exact closure */
 	x[n-1] = x[0];	y[n-1] = y[0];
 	return FALSE;
