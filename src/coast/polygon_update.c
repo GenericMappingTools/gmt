@@ -114,7 +114,7 @@ int main (int argc, char **argv)
 					reverse = 1;
 				else
 					reverse = 0;
-				if (!GMT_IS_ZERO (size - h.area)) {
+				if (!doubleAlmostEqualZero (size, h.area)) {
 					fprintf (stderr, "polygon_update: Area revised for polygon %d [From %g to %g]\n", h.id, h.area, size);
 					h.area = size;
 				}

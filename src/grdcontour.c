@@ -637,7 +637,7 @@ void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_
 			}
 			ij = GMT_IJP (Grid->header, row, col);
 			dz = Grid->data[ij] - C->z;
-			if (GMT_IS_ZERO (dz)) {
+			if (doubleAlmostEqualZero (Grid->data[ij], C->z)) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to adjust hill label contour orientation (node value = contour value)\n");
 				continue;
 			}

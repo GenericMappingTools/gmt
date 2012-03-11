@@ -94,6 +94,7 @@
 #cmakedefine HAVE_GETPID
 #cmakedefine HAVE__GETPID
 #cmakedefine HAVE_GETPWUID
+#cmakedefine HAVE_LLABS
 #cmakedefine HAVE__MKDIR
 #cmakedefine HAVE_QSORT_R
 #cmakedefine HAVE_QSORT_S
@@ -113,11 +114,20 @@
 /* C types; C99 exact-width integer types <inttypes.h>, <stdint.h>; etc */
 
 #cmakedefine HAVE_CTYPE_H_
-#cmakedefine HAVE_INTTYPES_H_
 #cmakedefine HAVE_MACHINE_ENDIAN_H_
-#cmakedefine HAVE_STDINT_H_
 #cmakedefine HAVE_STDDEF_H_
 #cmakedefine HAVE_SYS_TYPES_H_
+
+#cmakedefine HAVE_INTTYPES_H_
+#ifdef HAVE_INTTYPES_H_
+	/* avoid redefining msinttypes for VC++ */
+#	define _MSC_INTTYPES_H_
+#endif
+#cmakedefine HAVE_STDINT_H_
+#ifdef HAVE_STDINT_H_
+	/* avoid redefining msinttypes for VC++ */
+#	define _MSC_STDINT_H_
+#endif
 
 #cmakedefine HAVE_MODE_T
 
@@ -155,6 +165,18 @@
 #cmakedefine HAVE_Y0
 #cmakedefine HAVE_Y1
 #cmakedefine HAVE_YN
+
+/* Sizes */
+#cmakedefine SIZEOF__BOOL       @SIZEOF__BOOL@
+#cmakedefine SIZEOF_BOOL        @SIZEOF_BOOL@
+#cmakedefine SIZEOF_INT         @SIZEOF_INT@
+#cmakedefine SIZEOF_LONG        @SIZEOF_LONG@
+#cmakedefine SIZEOF_LONG_LONG   @SIZEOF_LONG_LONG@
+#cmakedefine SIZEOF_LONG_DOUBLE @SIZEOF_LONG_DOUBLE@
+#cmakedefine SIZEOF_INTMAX_T    @SIZEOF_INTMAX_T@
+#cmakedefine SIZEOF_MODE_T      @SIZEOF_MODE_T@
+#cmakedefine SIZEOF_WCHAR_T     @SIZEOF_WCHAR_T@
+#cmakedefine SIZEOF_WINT_T      @SIZEOF_WINT_T@
 
 /* Since glibc 2.12 strdup is only declared if
  * _POSIX_C_SOURCE >= 200809L || _XOPEN_SOURCE >= 500 */

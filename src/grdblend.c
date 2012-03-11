@@ -259,7 +259,8 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			GMT_report (GMT, GMT_MSG_NORMAL, "File %s has different registration than the output grid - must resample\n", B[n].file);
 			do_sample |= 1;
 		}
-		if (!(GMT_IS_ZERO (B[n].G.header.inc[GMT_X] - h->inc[GMT_X]) && GMT_IS_ZERO (B[n].G.header.inc[GMT_Y] - h->inc[GMT_Y]))) {
+		if (!(doubleAlmostEqualZero (B[n].G.header.inc[GMT_X], h->inc[GMT_X])
+					&& doubleAlmostEqualZero (B[n].G.header.inc[GMT_Y], h->inc[GMT_Y]))) {
 			sprintf (Iargs, "-I%g/%g", h->inc[GMT_X], h->inc[GMT_Y]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "File %s has different increments (%g/%g) than the output grid (%g/%g) - must resample\n",
 				B[n].file, B[n].G.header.inc[GMT_X], B[n].G.header.inc[GMT_Y], h->inc[GMT_X], h->inc[GMT_Y]);

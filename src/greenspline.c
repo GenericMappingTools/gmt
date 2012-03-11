@@ -699,14 +699,16 @@ double gradspline2d_Parker (struct GMT_CTRL *GMT, double x, double par[], double
  * par[6] = 1 / (par[3] - par[2])
  * par[7-9] is used by the lookup macinery
  */
- 
+
 double spline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], double *G)
 {	/* g = M_PI * Pv(-x)/sin (v*x) - log (1-x) normalized to 0-1 */
 	GMT_LONG n;
 	double z[2], pq[4];
-	
-	if (GMT_equal_double(x, 1.0, 5))  return (1.0);
-	if (GMT_equal_double(x, -1.0, 5)) return (0.0);
+
+	if (doubleAlmostEqual(x, 1.0))
+		return (1.0);
+	if (doubleAlmostEqual(x, -1.0))
+		return (0.0);
 
 	GMT_PvQv (GMT, -x, par, pq, &n);	/* Get P_nu(-x) */
 	gmt_Cdiv (pq, &par[4], z);		/* Get P_nu(-x) / sin (nu*M_PI) */
@@ -717,7 +719,7 @@ double spline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], dou
 		if (fabs (pq[1]) > 1.0e-6) GMT_report (GMT, GMT_MSG_DEBUG, "Im{G(%g)} = %g\n", x, pq[1]);
 	}
 #endif
-	
+
 	return ((pq[0] - par[2]) * par[6]);	/* Normalizes to yield 0-1 */
 }
 

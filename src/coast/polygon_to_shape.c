@@ -114,7 +114,8 @@ int main (int argc, char **argv)
 					for (k = 0; k < np; k++) GMT_xy_to_geo (&xx[k], &yy[k], xx[k], yy[k]);	/* Undo projection first */
 					fprintf (fp, "%.6f\t%.6f\n", xx[0], yy[0]);
 					for (k = 1; k < np; k++) {
-						if (!( GMT_IS_ZERO(xx[k]-xx[k-1]) && GMT_IS_ZERO(yy[k]-yy[k-1]))) fprintf (fp, "%.6f\t%.6f\n", xx[k], yy[k]);
+						if (!( doubleAlmostEqualZero(xx[k], xx[k-1]) && doubleAlmostEqualZero(yy[k], yy[k-1])))
+							fprintf (fp, "%.6f\t%.6f\n", xx[k], yy[k]);
 					}
 					GMT_free (xx);	GMT_free (yy);
 					for (k = 0; k < P[id].h.n; k++) lon[k] -= 360.0;	/* Set up lons that go -360 to -tiny */

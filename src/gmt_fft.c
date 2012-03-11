@@ -2777,7 +2777,7 @@ GMT_LONG GMT_fft_1d_accelerate (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT
 
 /* C-callable wrapper for BRENNER_fourt_ */
 
-#define GMT_radix2(n) GMT_IS_ZERO(log2 ((double)n)-floor(log2 ((double)n)))
+#define GMT_radix2(n) doubleAlmostEqualZero(log2 ((double)n), floor(log2 ((double)n)))
 
 GMT_LONG GMT_fft_1d_brenner (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
 {

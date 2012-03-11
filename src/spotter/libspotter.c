@@ -1297,7 +1297,7 @@ GMT_LONG spotter_get_rotation (struct GMT_CTRL *G, struct EULER *p, GMT_LONG np,
 	double R[3][3], dR[3][3], X[3][3], omega;
 	
 	for (i = 0; i < np && t > p[i].t_start; i++);	/* Wind to first partial rotation stage */
-	if (GMT_IS_ZERO (t - p[i].t_start)) {	/* Hit an exact finite rotation, just return those parameters */
+	if (doubleAlmostEqualZero (t, p[i].t_start)) {	/* Hit an exact finite rotation, just return those parameters */
 		*lon = p[i].lon;
 		*lat = p[i].lat;
 		*w = p[i].omega * p[i].duration;
@@ -1345,7 +1345,8 @@ GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, doubl
 
 	/* Find the unique rotation in question */
 
-	for (i = 0, k = -1; k < 0 && i < np; i++) if (GMT_IS_ZERO (p[i].t_start - t)) k = i;
+	for (i = 0, k = -1; k < 0 && i < np; ++i) if (doubleAlmostEqualZero (p[i].t_start, t))
+		k = i;
 	if (k == -1) return (1);	/* Did not match finite rotation time */
 
 	/* Make M(x), the skew-symmetric matrix needed to compute cov of rotated point */

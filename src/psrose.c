@@ -358,7 +358,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	lsize = GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 
 	max_radius = GMT->common.R.wesn[XHI];
-	half_only = GMT_IS_ZERO (GMT->common.R.wesn[YLO] + 90.0);
+	half_only = doubleAlmostEqual (GMT->common.R.wesn[YLO], -90.0);
 	if (Ctrl->A.rose) windrose = FALSE;
 	sector_plot = (Ctrl->A.inc > 0.0);
 	if (sector_plot) windrose = FALSE;	/* Draw rose diagram instead of sector diagram */

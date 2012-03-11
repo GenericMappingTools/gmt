@@ -986,7 +986,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 			fraction = 1.0 / (double)n_step;
 			minlon = MIN (lon[i-1],lon[i]);
 			maxlon = MAX (lon[i-1],lon[i]);
-			meridian = GMT_IS_ZERO (maxlon - minlon);	/* A meridian; make a gap so tests below will give right range */
+			meridian = doubleAlmostEqualZero (maxlon, minlon);	/* A meridian; make a gap so tests below will give right range */
 			for (j = 1; j < n_step; j++) {
 				c = j * fraction;
 				d = 1 - c;

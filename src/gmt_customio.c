@@ -524,7 +524,8 @@ GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	if (nm <= 0) return (GMT_GRDIO_BAD_VAL);			/* Overflow for nx * ny? */
 	item_size = (double)((buf.st_size - GRD_HEADER_SIZE) / nm);	/* Estimate size of elements */
 	size = irint (item_size);
-	if (!GMT_IS_ZERO (item_size - (double)size)) return (GMT_GRDIO_BAD_VAL);	/* Size not an integer */
+	if (!doubleAlmostEqualZero (item_size, (double)size))
+		return (GMT_GRDIO_BAD_VAL);	/* Size not an integer */
 
 	switch (size) {
 		case 0:	/* Possibly bit map; check some more */

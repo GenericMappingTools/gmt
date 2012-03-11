@@ -589,7 +589,7 @@ void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 	GMT_LONG i, nx, idup = FALSE, cap = FALSE;
 
 	/* Do we have duplicate e and w boundaries ? */
-	idup = (GMT_IS_AZIMUTHAL(C) && GMT_IS_ZERO(e-w-360.0));
+	idup = (GMT_IS_AZIMUTHAL(C) && doubleAlmostEqual(e-w, 360.0));
 
 	if (GMT_POLE_IS_POINT(C)) {	/* Might have two separate domains of gridlines */
 		if (C->current.proj.projection == GMT_POLAR) {	/* Different for polar graphs since "lat" = 0 is at the center */
@@ -606,7 +606,7 @@ void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 			cap_start[1] = p_cap;
 			cap_stop[1]  = n;
 		}
-		cap = !GMT_IS_ZERO (C->current.setting.map_polar_cap[0] - 90.0);
+		cap = !doubleAlmostEqual (C->current.setting.map_polar_cap[0], 90.0);
 	}
 	else {
 		ys = s;
@@ -1005,11 +1005,11 @@ void gmt_rounded_framecorners (struct GMT_CTRL *C, struct PSL_CTRL *P, double w,
 			PSL_plotarc (P, x, y, (k+1)*width, 270.0+anglew, 360.0+anglew, PSL_MOVE + PSL_STROKE);
 		}
 		if ((GMT_IS_AZIMUTHAL(C) || GMT_IS_CONICAL(C)) && C->current.map.frame.side[W_SIDE] && C->current.map.frame.side[E_SIDE]) {	/* Round off the pointy head? */
-			if (GMT_IS_ZERO (C->common.R.wesn[YHI] - 90.0)) {
+			if (doubleAlmostEqual (C->common.R.wesn[YHI], 90.0)) {
 				GMT_geo_to_xy (C, w, n, &x, &y);
 				PSL_plotarc (P, x, y, (k+1)*width, anglee, 180.0+anglew, PSL_MOVE + PSL_STROKE);
 			}
-			else if (GMT_IS_ZERO (C->common.R.wesn[YLO] + 90.0)) {
+			else if (doubleAlmostEqual (C->common.R.wesn[YLO], -90.0)) {
 				GMT_geo_to_xy (C, w, s, &x, &y);
 				PSL_plotarc (P, x, y, (k+1)*width, anglew-90.0, anglee-90.0, PSL_MOVE + PSL_STROKE);
 			}
@@ -1132,7 +1132,7 @@ void gmt_polar_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, d
 		C->current.map.frame.side[S_SIDE] = 0;
 	if (C->current.proj.north_pole && n >= 90.0) /* Cannot have northern boundary */
 		C->current.map.frame.side[N_SIDE] = 0;
-	if (GMT_360_RANGE (w,e) || GMT_IS_ZERO (e - w))
+	if (GMT_360_RANGE (w, e) || doubleAlmostEqualZero (e, w))
 		C->current.map.frame.side[E_SIDE] = C->current.map.frame.side[W_SIDE] = 0;
 
 	if (!(C->current.setting.map_frame_type & GMT_IS_FANCY)) {	/* Draw plain boundary and return */
@@ -1308,12 +1308,14 @@ void gmt_theta_r_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w,
 	GMT_setpen (C, &C->current.setting.map_frame_pen);
 
 	if (C->current.proj.got_elevations) {
-		if (GMT_IS_ZERO (n - 90.0)) C->current.map.frame.side[N_SIDE] = 0;	/* No donuts, please */
+		if (doubleAlmostEqual (n, 90.0))
+			C->current.map.frame.side[N_SIDE] = 0;	/* No donuts, please */
 	}
 	else {
-		if (GMT_IS_ZERO (s)) C->current.map.frame.side[S_SIDE] = 0;		/* No donuts, please */
+		if (GMT_IS_ZERO (s))
+			C->current.map.frame.side[S_SIDE] = 0;		/* No donuts, please */
 	}
-	if (GMT_360_RANGE (w,e) || GMT_IS_ZERO (e - w))
+	if (GMT_360_RANGE (w, e) || doubleAlmostEqualZero (e, w))
 		C->current.map.frame.side[E_SIDE] = C->current.map.frame.side[W_SIDE] = 0;
 	nr = C->current.map.n_lon_nodes;
 	while (nr > C->current.plot.n_alloc) GMT_get_plot_array (C);
@@ -1560,7 +1562,7 @@ void gmt_map_gridcross (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 
 				if (!GMT_map_outside (C, x[i], y[j])) {	/* Inside map */
 					yj = y[j];
-					if (GMT_POLE_IS_POINT(C) && GMT_IS_ZERO (fabs (yj) - 90.0)) {	/* Only place one grid cross at the poles for maps where the poles are points */
+					if (GMT_POLE_IS_POINT(C) && doubleAlmostEqual (fabs (yj), 90.0)) {	/* Only place one grid cross at the poles for maps where the poles are points */
 						xi = C->current.proj.central_meridian;
 						i = nx;	/* This ends the loop for this particular latitude */
 					}
@@ -1822,8 +1824,10 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 				nx = GMT_linear_array (C, w, e, dx[k], C->current.map.frame.axis[GMT_X].phase, &val);
 			
 			for (i = 0; i < nx; i++) {	/* Worry that we do not try to plot 0 and 360 OR -180 and +180 on top of each other */
-				if (GMT_IS_ZERO (val[i])) done_Greenwich = TRUE;		/* OK, want to plot 0 */
-				if (GMT_IS_ZERO (180.0 + val[i])) done_Dateline = TRUE;	/* OK, want to plot -180 */
+				if (GMT_IS_ZERO (val[i]))
+					done_Greenwich = TRUE;		/* OK, want to plot 0 */
+				if (doubleAlmostEqual (val[i], -180.0))
+					done_Dateline = TRUE;	/* OK, want to plot -180 */
 				if (label_c && label_c[i] && label_c[i][0])
 					strcpy (label, label_c[i]);
 				else
@@ -1834,10 +1838,10 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 				 *	(3) plot +180 if -180 hasn't been plotted
 				 */
 
-				annot = annot_0_and_360 || !((done_Greenwich && GMT_IS_ZERO (val[i] - 360.0)) || (done_Dateline && GMT_IS_ZERO (val[i] - 180.0)));
+				annot = annot_0_and_360 || !((done_Greenwich && doubleAlmostEqual (val[i], 360.0)) || (done_Dateline && doubleAlmostEqual (val[i], 180.0)));
 				if (dual[GMT_X] && k == 0) {
 					del = fmod (val[i] - w2, dx[1]);
-					if (GMT_IS_ZERO (del) || GMT_IS_ZERO (del - dx[1]))
+					if (GMT_IS_ZERO (del) || doubleAlmostEqual (del, dx[1]))
 						annot = FALSE;
 					else
 						gmt_label_trim (label, remove[GMT_X]);
@@ -1881,7 +1885,8 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 				tval = val;	/* Same thing */
 			}
 			for (i = 0; i < ny; i++) {
-				if ((C->current.proj.polar || C->current.proj.projection == GMT_VANGRINTEN) && GMT_IS_ZERO (fabs (val[i]) - 90.0)) continue;
+				if ((C->current.proj.polar || C->current.proj.projection == GMT_VANGRINTEN) && doubleAlmostEqual (fabs (val[i]), 90.0))
+					continue;
 				if (label_c && label_c[i] && label_c[i][0])
 					strcpy (label, label_c[i]);
 				else
@@ -1889,7 +1894,7 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 				annot = TRUE;
 				if (dual[GMT_Y] && k == 0) {
 					del = fmod (val[i] - s2, dy[1]);
-					if (GMT_IS_ZERO (del) || GMT_IS_ZERO (del - dy[1]))
+					if (GMT_IS_ZERO (del) || doubleAlmostEqual (del, dy[1]))
 						annot = FALSE;
 					else
 						gmt_label_trim (label, remove[GMT_Y]);
@@ -2627,8 +2632,10 @@ void gmt_draw_mag_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 			if (t_angle > 180.0) t_angle -= 180.0;	/* Now in -180/180 range */
 			if (t_angle > 90.0 || t_angle < -90.0) t_angle -= copysign (180.0, t_angle);
 			just = (y[0] <= mr->y0) ? 10 : 2;
-			if (level == 1 && GMT_IS_ZERO (val[i]-90.0)) t_angle = -90.0, just = 2;
-			if (level == 1 && GMT_IS_ZERO (val[i]-270.0)) t_angle = 90.0, just = 2;
+			if (level == 1 && doubleAlmostEqual (val[i], 90.0))
+				t_angle = -90.0, just = 2;
+			if (level == 1 && doubleAlmostEqual (val[i], 270.0))
+				t_angle = 90.0, just = 2;
 			PSL_plottext (P, x[0], y[0], C->current.setting.font_annot[level].size, label, t_angle, just, form);
 		}
 		GMT_free (C, val);

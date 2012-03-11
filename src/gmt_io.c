@@ -1570,7 +1570,7 @@ void gmt_format_geo_output (struct GMT_CTRL *C, GMT_LONG is_lat, double geo, cha
 		if (is_lat)
 			hemi[h_pos] = (GMT_IS_ZERO (geo)) ? 0 : ((geo < 0.0) ? 'S' : 'N');
 		else
-			hemi[h_pos] = (GMT_IS_ZERO (geo) || GMT_IS_ZERO (geo - 180.0)) ? 0 : ((geo < 0.0) ? 'W' : 'E');
+			hemi[h_pos] = (GMT_IS_ZERO (geo) || doubleAlmostEqual (geo, 180.0)) ? 0 : ((geo < 0.0) ? 'W' : 'E');
 		geo = fabs (geo);
 		if (hemi[h_pos] == 0) hemi[0] = 0;
 	}
@@ -4589,7 +4589,10 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 			for (k = 0; k < T->ogr->n_aspatial; k++) {	/* For each column to turn into a constant aspatial value */
 				col = C->common.a.col[k];
 				if (col < 0) continue;	/* Multisegment header entry instead */
-				for (row = 1, stop = FALSE; !stop && row < S->n_rows; row++) if (!GMT_IS_ZERO (S->coord[col][row] - S->coord[col][row-1])) stop = TRUE;
+				for (row = 1, stop = FALSE; !stop && row < S->n_rows; ++row) {
+					if (!doubleAlmostEqualZero (S->coord[col][row], S->coord[col][row-1]))
+						stop = TRUE;
+				}
 				if (stop) {
 					GMT_report (C, GMT_MSG_FATAL, "The -a option specified a constant column but its contents vary!\n");
 					return (GMT_RUNTIME_ERROR);

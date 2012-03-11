@@ -95,7 +95,7 @@ int main (int argc, char **argv)
 		}
 		this_n = (cont_no == ANTARCTICA) ? h.n - 1 : h.n;
 		GMT_init_track (lat, this_n, &ylist);
-		if (!GMT_IS_ZERO (h.east - h.west)) {
+		if (!doubleAlmostEqualZero (h.east, h.west)) {
 			nx = found = GMT_crossover (lon, lat, NULL, ylist, this_n, lon, lat, NULL, ylist, this_n, TRUE, &XC);
 			GMT_free (ylist);
 			for (i = end = 0; i < nx; i++) {
@@ -123,7 +123,7 @@ int main (int argc, char **argv)
 		for (i = 0; i < (h.n-1); i++) {
 			left = (i) ? i - 1 : h.n - 2;	/* Skip around and avoid duplicate end point */
 			right = i + 1;			/* Never wrap since we dont go to the end point */
-			if (GMT_IS_ZERO (lon[left]-lon[right]) && GMT_IS_ZERO (lat[left]-lat[right])) {
+			if (doubleAlmostEqualZero (lon[left], lon[right]) && doubleAlmostEqualZero (lat[left], lat[right])) {
 				printf ("%d\tNon-area excursion on line %d-%d-%d\n", h.id, left, i, right);
 				n_s_problems++;
 			}
@@ -145,10 +145,8 @@ int main (int argc, char **argv)
 				}
 			}
 			else {
-				double t;
 				cos_a = (dx1 * dx2 + dy1 * dy2) / (hypot (dx1, dy1) * hypot (dx2, dy2));	/* Normalized dot product of vectors from center node to the 2 neightbors */
-				t = 1.0 - cos_a;
-				if (GMT_IS_ZERO (fabs (t))) {
+				if (doubleAlmostEqual (fabs (cos_a), 1.0)) {
 					printf ("%d\tZero-angle excursion on line %d-%d-%d\n", h.id, left, i, right);
 					n_a_problems++;
 				}
