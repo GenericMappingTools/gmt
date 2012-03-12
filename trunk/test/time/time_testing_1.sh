@@ -11,7 +11,7 @@
 # and convert to relative time using the new TIME_SYSTEM rata.  The values
 # should match the new rata die + day fraction for each epoch.
 
-. ../functions.sh
+. functions.sh
 header "Test time conversions (rata die)"
 
 ( gmtconvert --TIME_SYSTEM=rata -fi0T -fo0t --FORMAT_FLOAT_OUT=%.12g | grep -v ">" | awk '{if ($1 != $2) print $0}' > fail ) <<%

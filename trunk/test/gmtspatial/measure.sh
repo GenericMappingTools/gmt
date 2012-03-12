@@ -2,7 +2,7 @@
 # $Id$
 #
 
-. ../functions.sh
+. functions.sh
 header "Test gmtspatial by calculating area"
 cat << EOF > area.txt
 0	0
@@ -20,5 +20,5 @@ diff -q --strip-trailing-cr answer result >> fail
 echo "0.5	0.500019038226	12308.3096995" > answer
 gmtspatial -Q area.txt  -fg > result
 diff -q --strip-trailing-cr answer result >> fail
+
 passfail measure
-rm -f answer result area.txt

@@ -2,7 +2,7 @@
 #	$Id$
 # Test of projection
 
-. ../functions.sh
+. functions.sh
 header "Test -JG (US East Coast 20000 km)"
 
 EARTH_MODEL=e

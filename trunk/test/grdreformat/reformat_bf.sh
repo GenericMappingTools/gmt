@@ -3,7 +3,7 @@
 #
 # Convert grids between netcdf and several of the other "native" formats
 
-. ../functions.sh
+. functions.sh
 header "Convert between netcdf and native float format"
 
 log=reformat_bf.log
@@ -22,7 +22,5 @@ grd2xyz lixo_dif.nc -ZTLa >> $log
 
 res=`minmax -C $log`
 echo ${res[0]} ${res[1]} | awk '{if($1 != 0 || $2 != 0) print 1}' > fail
-
-rm -f lixo*
 
 passfail reformat_bf

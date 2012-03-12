@@ -2,7 +2,7 @@
 #	$Id$
 # Test that symbols pick up correct -W -G from command line or header
 
-. ../functions.sh
+. functions.sh
 header "Test psxy and operation of -W -G in headers"
 
 ps=headercheck.ps
@@ -56,7 +56,5 @@ psxy -R -J -O -Y4.75i -Gred -L -B2g1 -C$$.cpt << EOF >> $ps
 9	9
 6	9
 EOF
-
-rm -f $$.*
 
 pscmp

@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. ../functions.sh
+. functions.sh
 header "Test grdimage for rendering issues"
 
 ps=rendering.ps
@@ -42,7 +42,5 @@ render -nl -Y2i >> $ps
 render -nb -Y2i >> $ps
 render -nc -Y2i >> $ps
 psxy -R -J -T -O >> $ps
-
-rm -f t.nc t.cpt
 
 pscmp

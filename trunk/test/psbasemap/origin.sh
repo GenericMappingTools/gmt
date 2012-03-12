@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. ../functions.sh
+. functions.sh
 header "Test positioning with -X and -Y"
 
 ps=origin.ps

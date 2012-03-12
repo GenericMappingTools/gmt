@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. ../functions.sh
+. functions.sh
 header "Testing grdrotater for rotating a grid"
 
 ps=spotter_4.ps
@@ -53,7 +53,5 @@ echo 0 53 | psxy -R -J -O -K -Sc0.25i -Gred -N -W0.25p >> $ps
 echo 0 53 | psxy -R -J -O -K -Sc0.1i -Gblack -N >> $ps
 echo 0 53 0.5i -90 -30 | psxy -R -J -O -K -Sm0.15i+e -Gblack -N -W1p >> $ps
 psxy -R -J -O -T >> $ps
-rm -f [GPR].txt box.txt t.nc rot.nc 
 
 pscmp
-

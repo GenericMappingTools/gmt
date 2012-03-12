@@ -3,7 +3,7 @@
 #
 # Check vector symbols
 
-. ../functions.sh
+. functions.sh
 header "Test psxyz with math angle vector symbols"
 ps=matharc.ps
 psbasemap -R0/6/0/3 -Jx1i -P -B1g1WSne -K -Xc -p155/35 > $ps

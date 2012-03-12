@@ -8,7 +8,7 @@
 # Next we use unix which uses seconds.  Hence the output should cover the
 # first 5 seconds in year 1970:
 
-. ../functions.sh
+. functions.sh
 header "Test time conversions (rel time & Unix)"
 
 sample1d -I0.5 << EOF > $$.d
@@ -29,7 +29,5 @@ EOF
 gmtconvert $$.d -fi0t -fo0T --TIME_SYSTEM=unix --FORMAT_CLOCK_OUT=hh:mm:ss.x > $$.result
 
 diff $$.result $$.answer --strip-trailing-cr > fail
-
-rm -f $$.*
 
 passfail time_testing_3

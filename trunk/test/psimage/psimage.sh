@@ -1,9 +1,9 @@
 #!/bin/bash
-#	$id: $
+#	$Id$
 #
 ps=psimage.ps
 
-. ../functions.sh
+. functions.sh
 header "Test psimage with different pattern options"
 
 cat > $$.in <<%
@@ -18,7 +18,7 @@ cat > $$.in <<%
 0 4 :FredByellow
 1 4 :FyellowBred
 %
-psxy -R0/3/0/5 -Jx1.5i -Gp128/${GMT_SOURCE_DIR}/doc/examples/ex16/circuit.ras -P -K > $ps <<%
+psxy -R0/3/0/5 -Jx1.5i -Gp128/${GMT_SOURCE_DIR}/share/psldemo/circuit.ras -P -K > $ps <<%
 0 0
 2 0
 3 1
@@ -46,6 +46,5 @@ awk '{ x0=$1+0.5;y0=$2+0.5;c=$3; \
 	| pstext -F+f7p,Helvetica-Bold,purple+j -R -J -O -K >> $ps
 psimage -E80 -C3i/3i/BL ${GMT_SOURCE_DIR}/share/pattern/ps_pattern_10.ras -Gfred -Gb- -O -K >> $ps
 psimage -E80 -C3i/3i/TL ${GMT_SOURCE_DIR}/share/pattern/ps_pattern_10.ras -O >> $ps
-rm -f $$.in
 
 pscmp

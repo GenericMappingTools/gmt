@@ -3,7 +3,7 @@
 #
 # Testing pslegend fancy frames
 
-. ../functions.sh
+. functions.sh
 header "Test pslegend frame options"
 
 ps=fancy.ps
@@ -37,6 +37,5 @@ pslegend -R -J -O -K -Dx6.25i/4.75i/2.75i/2.0i/TR -C0.1i/0.1i -Gwhite -L1.2 -F+p
 pslegend -R -J -O -K -Dx0.25i/2.25i/2.75i/2.0i/TL -C0.1i/0.1i -Gwhite -L1.2 -F+i2p,blue+p0.5p,blue $$.txt >> $ps
 pslegend -R -J -O -K -Dx6.25i/2.25i/2.75i/2.0i/TR -C0.1i/0.1i -Gcornsilk -L1.2 -F+i2p+p0.5p+s-5p/-3p/orange+r $$.txt >> $ps
 psxy -R -J -O -T >> $ps
-rm -f $$.cpt $$.txt
 
 pscmp

@@ -3,7 +3,7 @@
 #
 # Check clipping of grids on a global conic plot
 
-. ../functions.sh
+. functions.sh
 header "Test grdimage for clipping grids"
 
 ps=grdclip.ps
@@ -25,7 +25,5 @@ plot2 -R340/380/50/70 -K >> $ps
 plot2 -R-20/20/30/50 -K >> $ps
 plot1 -R-120/-80/40/60 -K >> $ps
 plot1 -R160/200/40/60 >> $ps
-
-rm -f t.nc t.cpt
 
 pscmp

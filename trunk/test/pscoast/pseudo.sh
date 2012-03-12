@@ -5,7 +5,7 @@
 
 ps=pseudo.ps
 
-. ../functions.sh
+. functions.sh
 header "Test placement of pseudo perspective projections"
 
 coast () {

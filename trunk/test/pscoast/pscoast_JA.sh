@@ -5,7 +5,7 @@
 
 ps=pscoast_JA.ps
 
-. ../functions.sh
+. functions.sh
 header "Test pscoast for JA plot of Germany"
 
 pscoast -JA13:25/52:31/10/7i -Rg -Gred -Sblue -Dl -P > $ps

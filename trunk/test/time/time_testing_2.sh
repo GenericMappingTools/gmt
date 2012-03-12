@@ -12,7 +12,7 @@
 # First we use J2000 which uses days.  Hence the output should cover the
 # first 5 days in year 2000, starting at noon:
 
-. ../functions.sh
+. functions.sh
 header "Test time conversions (rel time & j2000)"
 
 cat << EOF > $$.answer
@@ -33,7 +33,5 @@ sample1d -I0.5 << EOF > $$.d
 EOF
 gmtconvert $$.d -fi0t -fo0T --TIME_SYSTEM=j2000 > $$.result
 diff $$.result $$.answer --strip-trailing-cr > fail
-
-rm -f $$.*
 
 passfail time_testing_2

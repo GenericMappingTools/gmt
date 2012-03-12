@@ -3,7 +3,7 @@
 #
 # Check psmeca for plotting beach balls
 
-. ../functions.sh
+. functions.sh
 header "Test psmeca for plotting focal mechanisms (5)"
 
 ps=psmeca.ps

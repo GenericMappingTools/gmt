@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. ../functions.sh
+. functions.sh
 header "Test psbasemap's annotation alignment"
 
 ps=position1.ps

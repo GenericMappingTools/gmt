@@ -3,7 +3,7 @@
 #
 # Tests project in generating lines
 
-. ../functions.sh
+. functions.sh
 header "Test project's ability to generate lines"
 
 # First Cartesian lines
@@ -63,6 +63,5 @@ echo 85 40 | psxy -R -J -O -K -Sa0.1i -Gblack >> $ps
 pstext -R -J -F+f12p,Helvetica-Bold+jTR -O -K >> $ps <<< "85 35 P"
 # The end
 psbasemap -R -J -O -B30g30 >> $ps
-rm  -f $$.xy
 
 pscmp

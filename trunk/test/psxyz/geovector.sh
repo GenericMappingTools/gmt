@@ -3,7 +3,7 @@
 #
 # Check geovector symbols
 
-. ../functions.sh
+. functions.sh
 header "Test psxyz with geovector symbols"
 ps=geovector.ps
 
@@ -29,5 +29,4 @@ EOF
 psxyz -R -J -W0.5p,black -S=0.4i+je+e+a20+l --MAP_VECTOR_SHAPE=1 t.txt -O -K -p155/35 >> $ps
 psxyz -R -J -Sc0.05i -Gblack t.txt -O -p155/35 >> $ps
 
-rm -f t.txt
 pscmp

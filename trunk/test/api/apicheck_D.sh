@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test the C API for i/o involving datasets
 
-. ../functions.sh
+. functions.sh
 function dataset_check {
 	testapi -I$1 -W$2 -Td
 	diff -q --strip-trailing-cr dtest[io].txt >> fail
@@ -51,5 +51,4 @@ dataset_check r d	# 5c. File descriptor
 dataset_check r c	# 5d. Copy
 dataset_check r r	# 5e. Reference
 
-rm -f dtest?.txt
 passfail apicheck_D

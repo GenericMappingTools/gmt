@@ -11,7 +11,7 @@
 # points near the line if they project inside the
 # line's endpoints
 
-. ../functions.sh
+. functions.sh
 header "Test gmtselect's new -L[p] option on given data"
 
 ps=near_a_line.ps
@@ -46,6 +46,5 @@ psxy -R -J -O -K $$.d -W1p >> $ps
 psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -X3.75i >> $ps
 gmtselect $$.xyz -Lp${D}/$$.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
 psxy -R -J -O $$.d -W1p >> $ps
-rm -f $$.nc $$.xyz $$.d
 
 pscmp

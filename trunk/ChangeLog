@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-03-11	remko
+	* test/functions.sh.cmake test/*/*.sh test/CMakeLists.txt:
+				Changed so that testing occurs in build directory without copying
+				files.
+	* test/*/orig/*.ps:	Moved to test/*/*.ps
+
 2012-03-07	pwessel
 	* psbasemap.c:		The -Tm option now places degree symbols.  Changed default magnetic
 				declination annotation interval from 10 to 30.

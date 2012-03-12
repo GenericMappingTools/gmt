@@ -3,7 +3,7 @@
 #
 # Basic stitching of Cartesian and geographic data
 
-. ../functions.sh
+. functions.sh
 header "Test gmtstitch for assembling segments to polygon"
 
 ps=stitch.ps
@@ -16,5 +16,5 @@ psxy piece?? -R -J -O -W1p -B2g1WSne -X3.5i -K >> $ps
 gmtstitch piece?? -T0.6 | psxy -R -J -O -W1p -Gorange -B2g1WSne -X-3.5i -Y-3.5i -K >> $ps
 gmtstitch piece?? -T60k -fg | psxy -R -JM3i -O -W1p -Gred -B2g1WSne -X3.5i -K >> $ps
 psxy -R -J -O -T >> $ps
-rm -f t.txt piece??
+
 pscmp

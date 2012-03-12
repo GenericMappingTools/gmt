@@ -2,7 +2,7 @@
 #	$Id$
 #
 
-. ../functions.sh
+. functions.sh
 header "Test psmeca for plotting focal mechanisms (4)"
 
 ps=meca_4.ps

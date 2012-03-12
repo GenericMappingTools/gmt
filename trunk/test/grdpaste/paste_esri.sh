@@ -1,9 +1,9 @@
 #!/bin/bash
-#	$Id: $
+#	$Id$
 #
 # Paste esri ascii grids along Y
 
-. ../functions.sh
+. functions.sh
 header "Test grdpaste with ESRI ASCII files"
 
 #ps=paste_esri.ps
@@ -18,5 +18,5 @@ n=`grd2xyz tmp.nc -Z | uniq | wc -l | awk '{print $1}'`
 if [ $n -gt 1 ]; then
 	echo "Found $n different results instead of just 1" > fail
 fi
-rm -f lixo* answer.nc tmp.nc
+
 passfail paste_esri

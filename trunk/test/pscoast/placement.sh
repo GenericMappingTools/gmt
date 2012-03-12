@@ -6,7 +6,7 @@
 
 ps=placement.ps
 
-. ../functions.sh
+. functions.sh
 header "Test placement of some projections"
 
 coast () {

@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. ../functions.sh
+. functions.sh
 header "Test grdvolume for various grid registrations"
 
 makegrd () {
@@ -42,7 +42,5 @@ diff grdvolume.log grdvolume.out --strip-trailing-cr > log || true
 if [ $? != 0 ]; then
 	touch fail
 fi
-
-rm -f t.nc log
 
 passfail grdvolume

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test the C API for i/o involving grids
 
-. ../functions.sh
+. functions.sh
 function gridset_check {
 	testapi -I$1 -W$2 -Tg
 	grdmath gtesti.nc gtesto.nc SUB = tmp.nc
@@ -28,5 +28,4 @@ gridset_check r f	# 5a. File
 gridset_check r c	# 5d. Copy
 gridset_check r r	# 5e. Reference
 
-rm -f gtest?.nc tmp.nc
 passfail apicheck_G

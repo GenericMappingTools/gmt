@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. ../functions.sh
+. functions.sh
 header "Test grdimage for use of color masking"
 
 ps=colormasking.ps
@@ -27,6 +27,5 @@ psxy -R -J -Gp50/10:FwhiteB- -O >> $ps <<%
 2 1
 1 1
 %
-rm -f t.nc t.cpt
 
 pscmp

@@ -10,7 +10,7 @@
 # the historic Apollo 11 moon-landing; these 24-hour periods crosses
 # normal day boundaries:
 
-. ../functions.sh
+. functions.sh
 header "Test time conversions (rel time & custom)"
 
 sample1d -I0.5 << EOF > $$.d
@@ -31,7 +31,5 @@ EOF
 gmtconvert $$.d -fi0t -fo0T --TIME_EPOCH=1969-07-21T02:56:00 --TIME_UNIT=d > $$.result
 
 diff $$.result $$.answer --strip-trailing-cr > fail
-
-rm -f $$.*
 
 passfail time_testing_4

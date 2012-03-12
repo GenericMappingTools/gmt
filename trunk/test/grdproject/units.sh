@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. ../functions.sh
+. functions.sh
 header "Test grdproject with SI and US units"
 
 # Make a small geographic grid
@@ -15,5 +15,5 @@ err=`gmtmath -Q $w_inch $w_cm NEQ =`
 if [ $err -eq 1 ]; then
 	echo "cm gave $w_cm cm and inch gave $w_inch inc" > fail
 fi
+
 passfail test
-rm -f tmp.nc c.nc i.nc

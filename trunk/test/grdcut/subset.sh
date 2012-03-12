@@ -1,8 +1,8 @@
 #!/bin/sh
-#	$Id$
+#	$Id: subset.sh 8899 2011-07-27 01:59:56Z pwessel $
 # Testing grdcut -Z
 
-. ../functions.sh
+. functions.sh
 header "Test grdcut for subset extraction based on data range"
 
 ps=subset.ps
@@ -18,5 +18,5 @@ psscale -D3i/-0.4i/6i/0.15ih -O -K -Ct.cpt -E >> $ps
 grdcut tmp.nc -Z0/5 -Gout.nc
 grd2xyz out.nc | psxy -R -J -Sc0.25c -W0.5p -O -K -B10f5WSne:."Rectangular subset with z <= 5": >> $ps
 psxy -R$Rp -J -O -T >> $ps
+
 pscmp
-rm -f tmp.nc out.nc t.cpt

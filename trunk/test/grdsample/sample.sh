@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grdsample
 
-. ../functions.sh
+. functions.sh
 header "Test grdsample for basic resampling"
 
 ps=sample.ps
@@ -17,6 +17,5 @@ psscale -D5i/4.75i/6i/0.15i -O -K -Ct.cpt -E+n >> $ps
 grdsample tmp.nc -I0.2 -Gout.nc
 grdimage out.nc -JX4.5i -Ct.cpt -O -K -B10f5WSne -Xc -Y5i >> $ps
 psxy -R$Rp -J -O -T >> $ps
-rm -f tmp.nc out.nc t.cpt
 
 pscmp
