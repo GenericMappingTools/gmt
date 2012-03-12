@@ -19,7 +19,6 @@ cat << EOF > nodes.xy
 5.27815	1.15172
 EOF
 
-ps=trivor.ps
 triangulate nodes.xy -M | psxy -R0/10/0/10 -JX6 -P -K -W0.25p,red > $ps
 psxy -R -J -O -B2g1 -Sc0.2 -Gwhite -W0.25p nodes.xy -K >> $ps
 awk '{printf "%s %s %d\n", $1, $2, NR-1}' nodes.xy | pstext -R -J -F+f8p -O -K >> $ps

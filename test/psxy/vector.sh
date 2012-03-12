@@ -5,7 +5,7 @@
 
 . functions.sh
 header "Test psxy with straight vector symbols"
-ps=vector.ps
+
 psbasemap -R0/6/0/3 -Jx1i -P -B1g1WSne -K -Xc > $ps
 gmtset MAP_VECTOR_SHAPE 0.5
 # Center justified vectors

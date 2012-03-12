@@ -6,7 +6,6 @@
 . functions.sh
 header "Test pslegend and its various items"
 
-ps=legend.ps
 makecpt -Cpanoply -T-8/8/1 > tt.cpt
 gmtset FONT_ANNOT_PRIMARY 12p
 

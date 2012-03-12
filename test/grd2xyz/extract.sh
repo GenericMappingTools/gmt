@@ -5,7 +5,6 @@
 . functions.sh
 header "Test grd2xyz for subset and NaN-reversal"
 
-ps=extract.ps
 Rp=-21/11/-21/21
 Rg=-20/10/-20/20
 # Create geographic grid with NaNs inside a circle and 1 outside

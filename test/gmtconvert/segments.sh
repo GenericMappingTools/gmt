@@ -4,8 +4,6 @@
 . functions.sh
 header "Let gmtconvert handle different segment markers"
 
-ps=segments.ps
-
 cat << EOF > gmt_i.txt
 > Some header
 1	1

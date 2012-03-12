@@ -18,7 +18,6 @@ image () {
 		echo "50 50 Spike" | pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f18p -W1p -Gwhite
 	fi
 }
-ps=spikes.ps
 echo 25 25 100 | xyz2grd -R0/50/0/50 -I0.5 -N0 -Gt.nc
 makecpt -Crainbow -T0/1/0.1 -Z > t.cpt
 psscale -D3.25i/-0.35i/6i/0.1ih -P -K -Ct.cpt -Y1.2i > $ps

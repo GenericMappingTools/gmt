@@ -5,7 +5,6 @@
 . functions.sh
 header "Test gmtspatial for polygon intersection"
 
-ps=intersect.ps
 cat << EOF > A.txt
 0	0
 0.6	-0.3

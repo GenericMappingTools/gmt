@@ -6,8 +6,6 @@
 . functions.sh
 header "Test gmtstitch for assembling segments to polygon"
 
-ps=stitch.ps
-
 # Make a polygon file
 gmtmath -T0/360/5 T -C0 COSD -C1 SIND -Ca T 5 MUL COSD 3 ADD MUL = t.txt
 split -l 11 t.txt piece

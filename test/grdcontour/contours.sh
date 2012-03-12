@@ -9,7 +9,7 @@ header "Test grdcontour for oriented contours with -Fl/r"
 
 color_contour () {
 	rm -f contour_*.txt
-	grdcontour $src/BigIsland.nc -C1000 -Dcontour_%d.txt -F$1 -S8
+	grdcontour "$src"/BigIsland.nc -C1000 -Dcontour_%d.txt -F$1 -S8
 
 	for name in contour_*.txt; do
 		# For each contour we compute distance a
@@ -19,7 +19,6 @@ color_contour () {
 	done
 }
 
-ps=contours.ps
 makecpt -Cseis -T0/1/0.1 -Z > contour.cpt
 
 # The bottom map will have contours oriented so that as you move along
@@ -27,7 +26,7 @@ makecpt -Cseis -T0/1/0.1 -Z > contour.cpt
 # your right (-Fr).
 
 psbasemap -R204/206/19/21 -JM4i -P -B1WSne -K -X2.5i -Y1.25i > $ps
-grdcontour $src/BigIsland.nc -J -C1000 -T0.1i/0.02i:-+ -S8 -O -K --FONT_ANNOT_PRIMARY=9p >> $ps
+grdcontour "$src"/BigIsland.nc -J -C1000 -T0.1i/0.02i:-+ -S8 -O -K --FONT_ANNOT_PRIMARY=9p >> $ps
 
 color_contour r
 
@@ -38,7 +37,7 @@ psscale -Ccontour.cpt -D2i/-0.35i/4i/0.1ih -B1 -O -K >> $ps
 # your left (-Fl).
 
 psbasemap -R -J -O -B1WsNe -K -Y4.5i >> $ps
-grdcontour $src/BigIsland.nc -J -O -C1000 -T0.1i/0.02i:-+ -S8 -K --FONT_ANNOT_PRIMARY=9p >> $ps
+grdcontour "$src"/BigIsland.nc -J -O -C1000 -T0.1i/0.02i:-+ -S8 -K --FONT_ANNOT_PRIMARY=9p >> $ps
 
 color_contour l
 

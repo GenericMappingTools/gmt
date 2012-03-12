@@ -6,8 +6,6 @@
 . functions.sh
 header "Test psmeca for plotting focal mechanisms (5)"
 
-ps=meca_5.ps
-
 size=1.0c
 
 #THOUGHTS:

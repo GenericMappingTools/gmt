@@ -5,7 +5,6 @@
 . functions.sh
 header "Let gmtconvert make gaps in series"
 
-ps=new_gaps2.ps
 cat << EOF >> tt.d
 1	1
 2	1

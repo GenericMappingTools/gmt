@@ -6,8 +6,6 @@
 . functions.sh
 header "Test psmeca for plotting focal mechanisms (5)"
 
-ps=psmeca.ps
-
 # Right lateral Strike Slip
 echo 0.0 5.0 0.0 0 90 0 5 0 0   Right Strike Slip | psmeca -Sa2.5c -Gblack -R-1/4/0/6 -JM14c -P -B2 -K > $ps
 

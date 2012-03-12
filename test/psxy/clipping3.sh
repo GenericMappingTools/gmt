@@ -6,8 +6,6 @@
 . functions.sh
 header "Test psxy -JM for clipping polygons straddling dateline"
 
-ps=clipping3.ps
-
 cat << EOF > a.txt
 150 -65
 150 -55

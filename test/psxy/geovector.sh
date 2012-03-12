@@ -5,7 +5,6 @@
 
 . functions.sh
 header "Test psxy with geovector symbols"
-ps=geovector.ps
 
 # Vector from point with head at end
 cat << EOF > t.txt

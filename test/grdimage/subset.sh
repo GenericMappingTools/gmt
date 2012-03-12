@@ -5,8 +5,6 @@
 . functions.sh
 header "Test grdimage for 360 offset in header and region"
 
-ps=subset.ps
-
 # Grid is negative longitudes
 grdmath -R-179.2/-176.5/-5/-3 -I0.01 X = t.nc
 grdmath -R-179.2/-176.5/-5/-3 -I0.01 X 100 MUL COSD Y 50 MUL SIND MUL = int.nc

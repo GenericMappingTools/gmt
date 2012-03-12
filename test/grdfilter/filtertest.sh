@@ -14,7 +14,6 @@ fi
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output
 DATA="${src}/../genper/etopo10.nc" # Test on ETOP10 data
-ps=filtertest.ps
 pdf=`basename $ps ".ps"`.pdf
 if [ $# -ne 4 ]; then
 	lon=150

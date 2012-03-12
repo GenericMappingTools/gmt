@@ -2,8 +2,6 @@
 #
 #	$Id$
 
-ps=annotations3.ps
-
 . functions.sh
 header "Test orthogonal annotations in psbasemap"
 

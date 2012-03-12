@@ -5,8 +5,6 @@
 . functions.sh
 header "Test grdview for categorical grid plots"
 
-ps=categorical.ps
-
 # The cpt
 cat << EOF > tt.cpt
 1	red	2	red	;A

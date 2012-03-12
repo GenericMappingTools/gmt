@@ -6,7 +6,6 @@
 . functions.sh
 header "Test grdlandmask when wrapping over 0-360"
 
-ps=mask.ps
 echo "-10000 white +10000 white" > tt.cpt
 echo "N black" >> tt.cpt
 # Must split a 5x5 degree shore bin across L and R boundary

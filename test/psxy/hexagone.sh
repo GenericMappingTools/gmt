@@ -6,8 +6,6 @@
 . functions.sh
 header "Test psxy and -A resampling crossing Greenwich"
 
-ps=hexagone.ps
-
 cat > hexagone.dat <<%
 -4.5 48.5
 -2 43.5

@@ -5,7 +5,6 @@
 . functions.sh
 header "Test grdimage for wrapping of global grid"
 
-ps=grdwrap.ps
 grdmath -Rg -I1 X SIND Y COSD MUL = t.nc=ns/0.0001
 makecpt -Cpolar -T-1/1/0.01 > t.cpt
 

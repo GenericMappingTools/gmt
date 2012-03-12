@@ -4,8 +4,6 @@
 . functions.sh
 header "Test psmeca for plotting focal mechanisms (2b)"
 
-ps=meca_2b.ps
-
 gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
 
 # Plotting 2 mechanisms on map

@@ -9,12 +9,11 @@
 . functions.sh
 header "Reproduce Wessel (2010) Comp. & Geosci., Figure 4"
 
-ps=x2sys_4.ps
 OLDX=$X2SYS_HOME
 export X2SYS_HOME=.
 
 rm -rf TEST
-ln -fs $src/bad $src/data .
+ln -fs "$src"/bad "$src"/data .
 (cd bad; ls *.xyg) > bad.lis
 (cd data; ls *.xyg) > data.lis
 

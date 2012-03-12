@@ -2,8 +2,6 @@
 #
 #	$Id$
 
-ps=annotations1.ps
-
 . functions.sh
 header "Test psbasemap's ddd:mm:ssF annotation formats"
 

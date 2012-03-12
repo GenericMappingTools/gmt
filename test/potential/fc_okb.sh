@@ -6,11 +6,10 @@
 . functions.sh
 header "Compute gravity anom of a seamount with Okabe method"
 
-ps=fc_okb.ps
 lim=-41:50/-41:20/47:30/47:50 
 
 # Get rough surface description
-grd2xyz $src/../genper/etopo10.nc -R$lim -fg > fc.dat
+grd2xyz "$src"/../genper/etopo10.nc -R$lim -fg > fc.dat
 
 # Calculate the triangles
 triangulate fc.dat > fc_tri.dat

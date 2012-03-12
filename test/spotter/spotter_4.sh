@@ -5,8 +5,6 @@
 . functions.sh
 header "Testing grdrotater for rotating a grid"
 
-ps=spotter_4.ps
-
 # Build a grid
 grdmath -R0/30/0/30 -I0.25 X Y MUL = t.nc
 # Design a multi-polygon area of interest

@@ -5,7 +5,6 @@
 . functions.sh
 header "Test pscontour for clip path set by annotations"
 
-ps=clipannot.ps
 # Make a grid, annotate every 20 and use those as clip paths
 # Then draw some lines intersection the annotations and draw
 # a dense gridline set.  Text should not have lines through them.

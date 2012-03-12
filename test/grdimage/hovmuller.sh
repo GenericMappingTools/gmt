@@ -5,7 +5,6 @@
 . functions.sh
 header "Test grdimage for making Hovmuller plots"
 
-ps=hovmuller.ps
 gmtset TIME_EPOCH 2000-01-01T00 TIME_UNIT y
 gmtset FORMAT_DATE_MAP o FORMAT_TIME_PRIMARY_MAP c FONT_ANNOT_PRIMARY 10p FONT_ANNOT_SECONDARY 12p
 gmtset MAP_ANNOT_ORTHO ""

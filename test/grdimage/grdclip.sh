@@ -6,8 +6,6 @@
 . functions.sh
 header "Test grdimage for clipping grids"
 
-ps=grdclip.ps
-
 plot1 () {
 grdmath $1 -fg -I10 Xn Yn 0.2 MUL ADD = t.nc
 grdedit -T t.nc

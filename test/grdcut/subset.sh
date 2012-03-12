@@ -5,7 +5,6 @@
 . functions.sh
 header "Test grdcut for subset extraction based on data range"
 
-ps=subset.ps
 Rp=-21/21/-21/21
 Rg=-20/20/-20/20
 # Create  grid by evaluating a Kelvin-Bessel * sqrt(r) function

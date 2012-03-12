@@ -5,7 +5,6 @@
 . functions.sh
 header "Test trend2 by removing a robust quadratic plane"
 
-ps=trend.ps
 makecpt -Crainbow -T690/960/10 > z.cpt
 makecpt -Cjet -T-60/120/10 > r.cpt
 makecpt -Chot -T0.7/1/0.02 > w.cpt

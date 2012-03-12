@@ -35,7 +35,6 @@ project -N -C$cx/$cy -A-$1 -Fpq $2
 
 gmtset PS_CHAR_ENCODING ISOLatin1+
 
-ps=cartesian.ps
 pstext -R0/8.5/0/11 -Jx1i -F+jCB -P -Xa0 -Ya0 -K > $ps \
 <<< "4.25 10.25 [x,y] (black dot). 2nd pair is (p,q) and third is (r,s) [plotted as red dot]"
 ypos=1.25

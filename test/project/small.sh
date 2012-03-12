@@ -6,8 +6,6 @@
 . functions.sh
 header "Test project's ability to generate small/great circles"
 
-ps=small.ps
-
 # P is the rotation pole and C is the center.  The great circle through
 # P and C defines the zero-meridian.  C is not necessarily 90 degrees
 # from P; in our case it is 65.2 degrees from P.  We verify that C lies

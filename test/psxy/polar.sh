@@ -7,8 +7,6 @@
 . functions.sh
 header "Test psxy by plotting boxes in polar stereographic projection"
 
-ps=polar.ps
-
 pscoast -R315/20/135/20r -JS0/90/15c -Dl -B45g45WESN -A15000 -W0.25p -Slightblue -Gyellow -P -K > $ps
 
 # Pan-Arctic domain

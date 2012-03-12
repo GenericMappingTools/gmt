@@ -2,8 +2,6 @@
 #	$Id$
 #
 
-ps=pscoast_JS.ps
-
 . functions.sh
 header "Test pscoast for JS plot for Arctic"
 

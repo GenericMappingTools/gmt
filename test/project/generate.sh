@@ -7,7 +7,6 @@
 header "Test project's ability to generate lines"
 
 # First Cartesian lines
-ps=generate.ps
 
 # E-W line
 project -C10/10 -A90 -G1 -L-9/11 -N > tt.xy

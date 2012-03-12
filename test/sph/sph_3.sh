@@ -5,12 +5,10 @@
 . functions.sh
 header "Testing sphtriangulate and sphdistance"
 
-ps=sph_3.ps
-
 # Get the crude GSHHS data, select GMT format, and decimate to ~20%:
 # gshhs $GMTHOME/src/coast/gshhs/gshhs_c.b | awk '{if ($1 == ">" || NR%5 == 0) print $0}' > gshhs_c.txt
 # Get Voronoi polygons
-sphtriangulate $src/gshhs_c.txt -Qv -D > tt.pol
+sphtriangulate "$src"/gshhs_c.txt -Qv -D > tt.pol
 # Compute distances in km
 sphdistance -Rg -I1 -Qtt.pol -Gtt.nc -Lk
 # Make a basic contour plot and overlay voronoi polygons and coastlines

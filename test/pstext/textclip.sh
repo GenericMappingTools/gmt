@@ -1,8 +1,8 @@
 #!/bin/bash
 # $Id$
 # Test pstext with text path clipping
+
 . functions.sh
-ps=textclip.ps
 header "Test text clip paths and delayed annotations"
 FONT=16p,Helvetica
 

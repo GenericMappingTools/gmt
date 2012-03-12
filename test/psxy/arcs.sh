@@ -6,7 +6,6 @@
 . functions.sh
 header "Test psxy with various circles, ellipses and wedges"
 
-ps=arcs.ps
 psxy -R0/4/0/4 -Jx1i -P -W5p -S1i -X2i -Y2i << EOF > $ps
 1 1 1 c
 1 3.2 0 1.6 0.8 e

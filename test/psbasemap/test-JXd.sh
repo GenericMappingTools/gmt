@@ -22,7 +22,6 @@ annot () {
 . functions.sh
 header "Test various specifications of -Jx w/wo trailing d"
 
-ps=test-JXd.ps
 psxy -T -R-60/60/-60/60 -JX8c/8c -K -X4c -Y13c > $ps
 plot1 8c/8c >> $ps
 plot1 8cd/8c -X12c >> $ps

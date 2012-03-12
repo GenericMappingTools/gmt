@@ -7,13 +7,12 @@
 header "Compute gravity anom of a sphere with Okabe method"
 
 r=10; z0=-15; ro=1000;
-ps=spheres.ps
 
 echo -50 0 > li
 echo  50 0 >> li
 sample1d li -Fl -I1 > li1.dat
 
-xyzokb -Tr$src/sphere.raw -C$ro -Fli1.dat > ptodos_g.dat
+xyzokb -Tr"$src"/sphere.raw -C$ro -Fli1.dat > ptodos_g.dat
 
 # xyzokb solution
 awk '{print $1, $3}' ptodos_g.dat | psxy -R-50/50/0/0.125 -JX14c/10c -B10f5/.01WSne:."Anomaly (mGal)": -W1p -P -K > $ps

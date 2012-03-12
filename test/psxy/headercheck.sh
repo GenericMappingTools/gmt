@@ -5,7 +5,6 @@
 . functions.sh
 header "Test psxy and operation of -W -G in headers"
 
-ps=headercheck.ps
 psxy -R-1/10/-1/10 -JX6/4 -P -B2g1 -Sc0.2i -Gyellow -W2.5p,cyan -K << EOF > $ps
 > -Ggreen -W1p,black
 0	0

@@ -3,8 +3,6 @@
 #	$Id$
 # Make sure when fixed it works for all resolutions -D?
 
-ps=pscoast_JA.ps
-
 . functions.sh
 header "Test pscoast for JA plot of Germany"
 

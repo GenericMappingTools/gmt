@@ -5,7 +5,6 @@
 . functions.sh
 header "Test psbasemap's annotation alignment"
 
-ps=position1.ps
 font=Helvetica
 
 gmtset FONT_ANNOT_PRIMARY 24p,$font

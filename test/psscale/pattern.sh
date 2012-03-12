@@ -5,7 +5,6 @@
 
 header "Test psscale with patterns"
 
-ps=pattern.ps
 gmtset FONT_ANNOT_PRIMARY 10p
 
 cat << EOF > patt.cpt

@@ -5,8 +5,6 @@
 . functions.sh
 header "Test grdcontour for a problem with saddle points"
 
-ps=saddle.ps
-
 xyz2grd -Z -R36/45/50/59 -I1 -Gtmp.nc <<EOF
 29527.5605469
 18648.4960938

@@ -5,7 +5,6 @@
 . functions.sh
 header "Test grdimage for use of color masking"
 
-ps=colormasking.ps
 xyz2grd -R-0.5/2.5/-0.5/2.5 -I1 -r -Gt.nc <<%
 0 0 0.0
 0 1 0.2
