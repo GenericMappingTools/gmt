@@ -13,11 +13,11 @@
 . functions.sh
 header "Test time conversions (rel time & custom)"
 
-sample1d -I0.5 << EOF > $$.d
+sample1d -I0.5 << EOF > tt.d
 0	0
 4	1
 EOF
-cat << EOF > $$.answer
+cat << EOF > tt.answer
 1969-07-21T02:56:00	0
 1969-07-21T14:56:00	0.125
 1969-07-22T02:56:00	0.25
@@ -28,8 +28,8 @@ cat << EOF > $$.answer
 1969-07-24T14:56:00	0.875
 1969-07-25T02:56:00	1
 EOF
-gmtconvert $$.d -fi0t -fo0T --TIME_EPOCH=1969-07-21T02:56:00 --TIME_UNIT=d > $$.result
+gmtconvert tt.d -fi0t -fo0T --TIME_EPOCH=1969-07-21T02:56:00 --TIME_UNIT=d > tt.result
 
-diff $$.result $$.answer --strip-trailing-cr > fail
+diff tt.result tt.answer --strip-trailing-cr > fail
 
 passfail time_testing_4

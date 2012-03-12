@@ -31,7 +31,7 @@ psxy -R -J -O -T
 # First test with ASCII input
 header "Test sample1d and psxy with NaNs indicating line gaps (ASCII)"
 ps=gaps.ps
-tmp=$$.txt
+tmp=tt.txt
 gmtconvert $src/gaps.nc > $tmp
 makeps > $ps
 pscmp
