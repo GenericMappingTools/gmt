@@ -5,7 +5,6 @@
 
 header "Test psscale and makecpt combinations"
 
-ps=seis.ps
 gmtset FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm
 
 makecpt -T-6/6/1 -Cseis -D > tmp.cpt

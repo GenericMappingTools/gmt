@@ -5,7 +5,6 @@
 . functions.sh
 header "Test grdclip for NaN and value clipping"
 
-ps=limits.ps
 Rp=-21/21/-21/21
 Rg=-20/20/-20/20
 # Create  grid by evaluating a Kelvin-Bessel * sqrt(r) function

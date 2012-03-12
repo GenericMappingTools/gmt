@@ -5,17 +5,15 @@
 . functions.sh
 header "Testing hotspotter to build CVA grids"
 
-ps=spotter_2.ps
-
 # Example 2 - Using hotspotter
 #
 # We will use hotspotter to create a CVA image for the Pacific.
 # It will look similar to the ones we have published but we will
 # here use only seamounts with a VGG amplitude of at least 100 Eotvos.
 
-POLES=$src/WK97.d			# Rotation poles to use
+POLES="$src"/WK97.d			# Rotation poles to use
 
-hotspotter $src/seamounts.d -I10m -R130/260/-66/60 -E${POLES} -Gspotter_2.nc -T -N145
+hotspotter "$src"/seamounts.d -I10m -R130/260/-66/60 -E${POLES} -Gspotter_2.nc -T -N145
 
 # Make a suitable color table
 

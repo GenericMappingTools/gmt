@@ -7,7 +7,6 @@
 header "Test psxyz and the rotated rectangle option"
 
 # Bottom case tests -SJ with azimuths and dimensions in km
-ps=rotrectangle.ps
 cat << EOF > tt.rects.d
 -65 15 0 90 500 200
 -70 20 0 0 500 200

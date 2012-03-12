@@ -5,7 +5,6 @@
 . functions.sh
 header "Test grdsample for basic resampling"
 
-ps=sample.ps
 Rg=-20/20/-20/20
 # Create  grid by evaluating a Kelvin-Bessel * sqrt(r) function
 grdmath -R$Rg -I1 0 0 CDIST 0.1 MUL KEI 0 0 CDIST 0.1 MUL SQRT ADD DUP UPPER DIV 10 MUL = tmp.nc

@@ -20,7 +20,6 @@ $psscale -D18/05/8/0.5h -Aa -O -K
 $psscale -D18/08/8/0.5h -O $2
 }
 
-ps=psscale.ps
 psscale="psscale -E -Ctmp.cpt -B:Range:/:m:"
 plot -Y2 -K > $ps
 psscale="psscale -E -Ctmp.cpt -Ac -B1:Range:/:m:"

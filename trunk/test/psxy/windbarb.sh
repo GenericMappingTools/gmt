@@ -6,13 +6,12 @@
 . functions.sh
 header "Test psxy with multi-parameter windbarb symbol"
 
-ps=windbarb.ps
 cat << EOF > tmp
 150	-40	25	9.0
 150	-30	50	90.0
 EOF
 
-ln -fs $src/windbarb.def .
+ln -fs "$src"/windbarb.def .
 
 # Mercator
 pscoast -JM5i -R110/165/-45/-10 -Gwheat -Sazure1 -Wthin,black -BafgWSen -K -P -Xc > $ps

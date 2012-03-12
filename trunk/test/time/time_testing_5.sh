@@ -14,8 +14,6 @@
 . functions.sh
 header "Test time conversions (abs & rel time)"
 
-ps=time_testing_5.ps
-
 sample1d -I0.5 << EOF > tt.d
 0	0
 4	1

@@ -6,7 +6,6 @@
 . functions.sh
 header "Test psxyz and all the symbols with fill"
 
-ps=plot_symbols.ps
 psxyz -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -p155/35 -S1i -X1i -Y1i -K << EOF > $ps
 > Fat pen -W2p
 0.5	5.5	0	-

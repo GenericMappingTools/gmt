@@ -14,7 +14,6 @@
 . functions.sh
 header "Test gmtselect's new -L[p] option on given data"
 
-ps=near_a_line.ps
 # Some test data
 grdmath -R0/5/0/5 -I0.1 0 = tt.nc
 cat << EOF > tt.d

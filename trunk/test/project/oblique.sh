@@ -6,8 +6,6 @@
 . functions.sh
 header "Test project to make oblique lines"
 
-ps=oblique.ps
-
 # Since GMT4 project has no option for small circle we must do it differently
 gmtmath -T0/360/1 45 = t.txt
 cat << EOF | project -T30/60 -C0/0 -Fpq > p.txt

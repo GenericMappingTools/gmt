@@ -5,10 +5,6 @@
 . functions.sh
 header "Testing backtracker fwd/back-ward"
 
-ps=spotter_1.ps
-
-POLES=$src/WK97.d	# Rotation poles to use
-
 # Example 1 - Using backtracker
 #
 # We will use backtracker to test all four functions.  We will
@@ -16,6 +12,8 @@ POLES=$src/WK97.d	# Rotation poles to use
 # 2. forthtrack where Loihi will be in 80 m.y
 # 3. Plot flowline from Suiko back until paleoridge (100 Ma)
 # 4. Backtrack the location of Suiko using an age of 64.7 Ma
+
+POLES="$src"/WK97.d	# Rotation poles to use
 
 echo "205 20 80.0" > loihi.d
 echo "170 44 100" > suiko.d

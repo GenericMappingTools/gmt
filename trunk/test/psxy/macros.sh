@@ -8,7 +8,6 @@
 
 . functions.sh
 header "Test psxy for multi-parameter custom symbols"
-ps=macros.ps
 
 cat << EOF > seis.def
 # Circle of variable size and color for seismicity

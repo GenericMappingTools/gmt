@@ -10,7 +10,7 @@ log=convert.log
 
 OLD=$MGD77_HOME
 export MGD77_HOME=${GMT_SOURCE_DIR}/share/mgd77
-ln -fs $src/dummy.mgd77 12345678.mgd77
+ln -fs "$src"/dummy.mgd77 12345678.mgd77
 
 # Make cdf file
 mgd77convert 12345678 -Fa -Tc

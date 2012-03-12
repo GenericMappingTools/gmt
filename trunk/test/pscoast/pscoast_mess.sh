@@ -2,8 +2,6 @@
 #	$Id$
 #
 
-ps=pscoast_mess.ps
-
 . functions.sh
 header "Test pscoast for correct polygon assembly"
 

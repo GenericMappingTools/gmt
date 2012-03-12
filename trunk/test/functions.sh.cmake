@@ -5,6 +5,7 @@
 
 # Print the shell script name and purpose and fill out to 72 characters
 # and make sure to use US system defaults
+
 scriptname=$(basename "$0")
 header () {
   printf "%-72s\n" "${scriptname}: $1"
@@ -28,7 +29,7 @@ pscmp () {
     return
   fi
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file ${f}.png $src/${f}.ps ${f}.ps) || pscmpfailed="yes"
+  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file ${f}.png "$src"/${f}.ps ${f}.ps) || pscmpfailed="yes"
   rms=$(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p' <<< "$rms")
   if [ -z "$rms" ]; then
     rms="NA"
@@ -110,5 +111,8 @@ cd "${exec_dir}"
 
 # Start with proper GMT defaults
 gmtset -Du
+
+# Convert script name to PS filename
+ps="${scriptname%.sh}.ps"
 
 # vim: ft=sh

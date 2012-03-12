@@ -7,8 +7,6 @@
 . functions.sh
 header "Test psxy quoted lines with clipping and delayed text"
 
-ps=quotedclip.ps
-
 psbasemap -R0/10/0/10 -JX15c/10c -K -P -B:."Clip path from straight text":+ggray70 --MAP_TITLE_OFFSET=0 --FONT_TITLE=24p > $ps
 
 psxy -R -J -W1p,red -Sqn1:+Lh+e+f18p -O -K << EOF >> $ps

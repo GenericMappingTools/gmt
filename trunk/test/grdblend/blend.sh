@@ -5,7 +5,6 @@
 . functions.sh
 header "Test grdblend for blending overlapping grids"
 
-ps=blend.ps
 # Make 4 constant grids
 grdmath -R0/6/0/6 -I0.1 0 = a.nc
 grdmath -R4/10/0/5 -I0.1 2 = b.nc

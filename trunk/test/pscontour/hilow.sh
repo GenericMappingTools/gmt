@@ -4,7 +4,7 @@
 
 . functions.sh
 header "Test pscontour for ticked contours"
-ps=hilow.ps
+
 cat << EOF > t.txt
 0	2	5
 1	4	5

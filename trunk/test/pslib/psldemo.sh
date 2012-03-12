@@ -8,6 +8,5 @@
 #
 . functions.sh
 header "Test pslib capabilities"
-ps=psldemo.ps
 psldemo > $ps
 pscmp

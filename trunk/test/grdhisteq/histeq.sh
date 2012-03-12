@@ -5,10 +5,8 @@
 . functions.sh
 header "Test grdhisteq for equalizing/normalization"
 
-ps=histeq.ps
-
 #
-ln -fs $src/../grdfft/topo.nc .
+ln -fs "$src"/../grdfft/topo.nc .
 makecpt -Crainbow -T0/1700/100 -Z > t.cpt
 makecpt -Crainbow -T0/15/1 > c.cpt
 grdgradient topo.nc -Nt1 -fg -A45 -Gitopo.nc

@@ -5,7 +5,7 @@
 
 . functions.sh
 header "Test psxyz with front symbols"
-ps=front.ps
+
 psbasemap -R0/7/0/8 -Jx1i -P -B0 -K -Xc > $ps
 cat << EOF > t.txt
 0	0	0

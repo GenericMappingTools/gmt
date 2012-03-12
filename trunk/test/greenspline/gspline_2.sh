@@ -5,8 +5,6 @@
 . functions.sh
 header "greenspline: Testing Cartesian 2-D interpolation I"
 
-ps=gspline_2.ps
-
 # Figure 3 in Wessel, P. (2009), A general-purpose Green's function-based
 #	interpolator, Computers & Geosciences, 35, 1247–1254.
 

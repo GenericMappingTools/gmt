@@ -6,7 +6,6 @@
 . functions.sh
 header "Test psxy error bar colors"
 
-ps=plot_errbars.ps
 cat << EOF > tt.d
 1	1	1	1
 2	2	2	1

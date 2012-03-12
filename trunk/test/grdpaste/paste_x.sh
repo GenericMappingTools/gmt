@@ -6,7 +6,6 @@
 . functions.sh
 header "Test grdpaste to paste grids horizontal and vertically"
 
-ps=paste_x.ps
 # The final grid is just f(x,y) = x
 grdmath -R-15/15/-15/15 -I0.5 X = lixo.nc
 # The 4 pieces to assemble into final grid

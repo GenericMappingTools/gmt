@@ -6,7 +6,6 @@
 . functions.sh
 header "Test grdpaste to paste overlaping pixel registered grids horizontal and vertically"
 
-ps=paste_pixreg_overlap.ps
 # The final grid is just f(x,y) = x*y
 grdmath -R-15.25/15.25/-15.25/15.25 -I0.5 X Y MUL -r = lixo.nc
 # The 4 pieces to assemble into final grid

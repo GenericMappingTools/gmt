@@ -6,8 +6,6 @@
 . functions.sh
 header "Compute magnetic anomaly of the Mexican hat"
 
-ps=sombrero_mag.ps
-
 # Create two half sobreros 
 grdmath -R-15/15/-15/15 -I1 X Y HYPOT DUP 2 MUL PI MUL 8 DIV COS EXCH NEG 10 DIV EXP MUL -5 ADD = sombrero.nc
 grdmath -R-15/0/-15/15 -I1 -10 = half_neg.nc

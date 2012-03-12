@@ -5,12 +5,10 @@
 . functions.sh
 header "greenspline: Testing Cartesian 3-D interpolation"
 
-ps=gspline_4.ps
-
 # Figure 5 in Wessel, P. (2009), A general-purpose Green's function-based
 #	interpolator, Computers & Geosciences, 35, 1247–1254.
 
-T=$src/Table_5_23.d
+T="$src"/Table_5_23.d
 R3D=5/40/-5/10/5/16
 R2D=12/32/0/6
 Z=5/10

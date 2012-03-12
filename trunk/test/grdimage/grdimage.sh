@@ -5,7 +5,6 @@
 . functions.sh
 header "Test grdimage for grid and pixel plots"
 
-ps=grdimage.ps
 grdimage="grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p"
 grdcontour="grdcontour t.nc -Ct.cpt -J -R -O"
 

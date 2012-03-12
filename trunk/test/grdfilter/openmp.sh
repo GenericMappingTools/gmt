@@ -12,9 +12,7 @@ fi
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output
 D=1000			# 1000 km filter width
-DATA=$src/../genper/etopo10.nc	# Test on ETOP10 data
-
-ps=openmp.ps
+DATA="$src"/../genper/etopo10.nc	# Test on ETOP10 data
 
 # Run grdfilter as specified
 grdfilter -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg -V

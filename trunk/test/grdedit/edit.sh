@@ -5,7 +5,6 @@
 . functions.sh
 header "Test grdedit to change region and replace node values"
 
-ps=edit.ps
 Rp=-21/21/-21/21
 Rg=-20/20/-20/20
 # Create grid by evaluating a Kelvin-Bessel * sqrt(r) function

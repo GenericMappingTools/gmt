@@ -1,7 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-ps=psimage.ps
 
 . functions.sh
 header "Test psimage with different pattern options"

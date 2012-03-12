@@ -8,7 +8,6 @@ header "Test psxy global projections for clipping ellipses"
 
 gmtset MAP_FRAME_TYPE plain
 
-ps=clip_ellipse.ps
 echo 180 0 0 4000 4000 > ellipse.d
 psxy ellipse.d -P -K -JM3i -R-180/180/-60/60 -Bg180 -Wthin -SE -Gred -X1i -Y0.75i > $ps 
 psxy ellipse.d -O -K -JH0/3i -Rg -Bg180 -Wthin -SE -Gred -X3.5i >> $ps

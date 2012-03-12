@@ -6,7 +6,6 @@
 . functions.sh
 header "Test grdpaste to paste pixel registered grids horizontal and vertically"
 
-ps=paste_pixreg.ps
 # The final grid is just f(x,y) = x*y
 grdmath -R-15/15/-15/15 -I0.5 X Y MUL -r = lixo.nc
 # The 4 pieces to assemble into final grid
