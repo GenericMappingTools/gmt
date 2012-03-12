@@ -9,7 +9,7 @@
 
 dy=-0.2222
 y0=4.3
-grep -v '^#' "${GMT_SHAREDIR}"/pslib/PS_font_info.d | $AWK '{print $1}' > $$.d
+grep -v '^#' "${GMT_SHAREDIR}"/pslib/PS_font_info.d | $AWK '{print $1}' > tt.d
 gmtset MAP_FRAME_PEN thinner
 psxy -R0/5.4/0/$y0 -Jx1i -P -K -B0 <<EOF > GMT_App_G.ps
 >
@@ -42,8 +42,8 @@ do
 	k1=$i
 	k2=`echo "$i + 17" | bc`
 
-	f1=`sed -n ${k1}p $$.d`
-	f2=`sed -n ${k2}p $$.d`
+	f1=`sed -n ${k1}p tt.d`
+	f2=`sed -n ${k2}p tt.d`
 
 	if [ $i1 -eq "12" ]; then
 		f1="Symbol @%0%(Symbol)@%%"

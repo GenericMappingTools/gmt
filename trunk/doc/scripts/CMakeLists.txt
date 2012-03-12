@@ -41,14 +41,13 @@ set (_scr_strip GMT_-B_custom.sh GMT_-B_time1.sh GMT_-B_time2.sh
 set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_-B_pow.sh GMT_-J.sh GMT_-OK.sh GMT_-P.sh GMT_-R.sh GMT_-XY.sh
 	GMT_App_E.sh GMT_App_F.sh GMT_App_G.sh GMT_App_J.sh GMT_App_M_1.sh
-	GMT_App_N.sh GMT_App_O.sh GMT_arrows.sh GMT_atan.sh GMT_color_interpolate.sh
+	GMT_App_N.sh GMT_arrows.sh GMT_atan.sh GMT_color_interpolate.sh
 	GMT_coverlogo.sh GMT_Defaults_1a.sh GMT_Defaults_1b.sh GMT_Defaults_1c.sh
 	GMT_dummydata.sh GMT_encoding.sh GMT_linecap.sh GMT_nearneighbor.sh
 	GMT_pstext_clearance.sh GMT_pstext_justify.sh GMT_registration.sh
 	GMT_RGBchart.sh GMT_utm_zones.sh GMT_volcano.sh)
 
 set (_all_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other})
-string (REGEX REPLACE "GMT_App_O_[0-9].sh" "" _all_tests "${_all_tests}")
 
 # todo: remove redundancy
 set (_all_scripts ${_scr_nostrip} ${_scr_strip})
@@ -103,20 +102,20 @@ macro (SETUP)
 		# rules for copying test files to build dir
 		file (GLOB_RECURSE _files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
 		list_regex_get ("[.]svn/|[.]cmake|CMakeLists.txt" _files ${_files} INVERT)
-		set (_test_files)
-		foreach (_file ${_files})
-			add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_file}
-				COMMAND ${CMAKE_COMMAND}
-				-E copy_if_different
-				${CMAKE_CURRENT_SOURCE_DIR}/${_file}
-				${CMAKE_CURRENT_BINARY_DIR}/${_file})
-			list (APPEND _test_files ${CMAKE_CURRENT_BINARY_DIR}/${_file})
-		endforeach (_file ${_files})
+#		set (_test_files)
+#		foreach (_file ${_files})
+#			add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_file}
+#				COMMAND ${CMAKE_COMMAND}
+#				-E copy_if_different
+#				${CMAKE_CURRENT_SOURCE_DIR}/${_file}
+#				${CMAKE_CURRENT_BINARY_DIR}/${_file})
+#			list (APPEND _test_files ${CMAKE_CURRENT_BINARY_DIR}/${_file})
+#		endforeach (_file ${_files})
 
-		# add file dependencies to check target
-		add_custom_target (copy_script_files
-			DEPENDS ${_test_files})
-		add_dependencies (check copy_script_files)
+#		# add file dependencies to check target
+#		add_custom_target (copy_script_files
+#			DEPENDS ${_test_files})
+#		add_dependencies (check copy_script_files)
 
 		# this file takes care of setting up the test environment
 		configure_file (functions.sh.cmake functions.sh @ONLY)
@@ -131,11 +130,11 @@ macro (SETUP)
 		endif (CYGWIN_INSTALL_PATH)
 
 		foreach (_job ${_all_tests})
-			get_filename_component (_job_path
-				${CMAKE_CURRENT_BINARY_DIR}/${_job} PATH)
+#			get_filename_component (_job_path
+#				"${CMAKE_CURRENT_SOURCE_DIR}/${_job}" PATH)
 			add_test(NAME ${_job}
-				WORKING_DIRECTORY ${_job_path}
-				COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${_job})
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/${_job})
 		endforeach (_job)
 	endif(DO_TESTS)
 endmacro (SETUP)

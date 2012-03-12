@@ -60,7 +60,7 @@
 #
 # I tried to compute the Hankel transform numerically on the HP, and
 # found that the -lm library routines j0(x) and j1(x) give wrong answers.
-# I used an old Sun to compute "$$.r_tr_fns" for plotting here.
+# I used an old Sun to compute "tt.r_tr_fns" for plotting here.
 # PW: I included that file into the script below
 #
 #
@@ -75,9 +75,9 @@
 #
 #---------------------------------------------------
 . ./functions.sh
-# Here is the $$.r_tr_fns file:
+# Here is the tt.r_tr_fns file:
 
-cat << EOF > $$.r_tr_fns
+cat << EOF > tt.r_tr_fns
 0	1	1	1
 0.01	0.99987664	0.99994254	0.99994517
 0.02	0.9995066	0.99977019	0.9997807
@@ -582,14 +582,14 @@ cat << EOF > $$.r_tr_fns
 EOF
 #---------------------------------------------------
 
-echo "-0.5	0" > $$.tmp
-gmtmath -T-0.5/0.5/0.01 1 = >> $$.tmp
-echo "0.5	0" >> $$.tmp
+echo "-0.5	0" > tt.tmp
+gmtmath -T-0.5/0.5/0.01 1 = >> tt.tmp
+echo "0.5	0" >> tt.tmp
 #
 #
 #
 gmtset FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
-psxy $$.tmp -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -Wthick > GMT_App_J_1.ps
+psxy tt.tmp -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -Wthick > GMT_App_J_1.ps
 gmtmath -T-0.5/0.5/0.01 T PI 2 MUL MUL COS 1 ADD 0.5 MUL = | psxy -R -J -O -K -Wthick,- >> GMT_App_J_1.ps
 gmtmath -T-0.5/0.5/0.01 T T MUL 18 MUL NEG EXP = | psxy -R -J -O -K -Wthick,. >> GMT_App_J_1.ps
 pstext -R -J -O -F+f9p,Times-Roman+j << END >> GMT_App_J_1.ps
@@ -618,9 +618,9 @@ END
 # These were pre-computed because of the need to do a numerical Hankel transform.
 # Also, I found that j0(x) and j1(x) are not reliable on some machines....
 #
-cut -f1,2 $$.r_tr_fns | psxy -R -J -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -Wthick > GMT_App_J_3.ps
-cut -f1,3 $$.r_tr_fns | psxy -R -J -O -K -Wthick,- >> GMT_App_J_3.ps
-cut -f1,4 $$.r_tr_fns | psxy -R -J -O -K -Wthick,. >> GMT_App_J_3.ps
+cut -f1,2 tt.r_tr_fns | psxy -R -J -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -Wthick > GMT_App_J_3.ps
+cut -f1,3 tt.r_tr_fns | psxy -R -J -O -K -Wthick,- >> GMT_App_J_3.ps
+cut -f1,4 tt.r_tr_fns | psxy -R -J -O -K -Wthick,. >> GMT_App_J_3.ps
 pstext -R -J -O -F+f9p,Times-Roman+j << END >> GMT_App_J_3.ps
 2.2	0.6	LM	Solid Line:
 2.2	0.5	LM	Dotted Line:

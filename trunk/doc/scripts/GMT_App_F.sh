@@ -14,7 +14,7 @@ gmtset PS_CHAR_ENCODING Standard MAP_FRAME_PEN thick FONT_TITLE 14p
 # First col is row number, the remaining cols are col number in table
 # that has a printable character
 
-cat << EOF > $$.txt
+cat << EOF > tt.txt
 3		1	2	3	4	5	6	7
 4	0	1	2	3	4	5	6	7
 5	0	1	2	3	4	5	6	7
@@ -49,7 +49,7 @@ EOF
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column
 
-cat << EOF > $$.awk
+cat << EOF > tt.awk
 BEGIN {
 	printf "0.5 2.5 10p,4 octal\n"
 	for (i = 0; i < 8; i++)
@@ -66,7 +66,7 @@ BEGIN {
 }
 EOF
 
-$AWK -f $$.awk $$.txt > $$.d
+$AWK -f tt.awk tt.txt > tt.d
 gmtset PS_CHAR_ENCODING Standard+
 # Then for Standard+
 # First mark uncoded entries
@@ -190,7 +190,7 @@ psxy -R -J -O -K -Glightgreen << EOF >> GMT_App_F_stand+.ps
 9	31
 5	31
 EOF
-pstext $$.d -R -J -O -K -F+f >> GMT_App_F_stand+.ps
+pstext tt.d -R -J -O -K -F+f >> GMT_App_F_stand+.ps
 psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_stand+.ps
 >
 0	3
@@ -244,7 +244,7 @@ psxy -R -J -O -K -Glightgreen << EOF >> GMT_App_F_iso+.ps
 6	19
 5	19
 EOF
-pstext $$.d -R -J -O -K -F+f >> GMT_App_F_iso+.ps
+pstext tt.d -R -J -O -K -F+f >> GMT_App_F_iso+.ps
 psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_iso+.ps
 >
 0	3
@@ -259,7 +259,7 @@ EOF
 # First col is row number, the remaining cols are col number in table
 # that has a printable character
 
-cat << EOF > $$.txt
+cat << EOF > tt.txt
 4	0	1	2	3	4	5	6	7
 5	0	1	2	3	4	5	6	7
 6	0	1	2	3	4	5	6	7
@@ -277,7 +277,7 @@ EOF
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column
 
-cat << EOF > $$.awk
+cat << EOF > tt.awk
 BEGIN {
 	printf "0.5 3.5 10p,4 octal\n"
 	for (i = 0; i < 8; i++)
@@ -294,7 +294,7 @@ BEGIN {
 }
 EOF
 
-$AWK -f $$.awk $$.txt > $$.d
+$AWK -f tt.awk tt.txt > tt.d
 psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:.Symbol:N -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_symbol.ps
 >
 8	16
@@ -302,7 +302,7 @@ psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:.Symbol:N -P -K -Glightgreen -Y2.58i << EOF 
 9	15
 8	15
 EOF
-pstext $$.d -R -J -O -K -F+f >> GMT_App_F_symbol.ps
+pstext tt.d -R -J -O -K -F+f >> GMT_App_F_symbol.ps
 psxy -R -J -O -K -Bg1 -Wthick << EOF >> GMT_App_F_symbol.ps
 >
 0	4
@@ -312,7 +312,7 @@ psxy -R -J -O -K -Bg1 -Wthick << EOF >> GMT_App_F_symbol.ps
 1	16
 EOF
 
-cat << EOF > $$.txt
+cat << EOF > tt.txt
 20	0	1	2	3	4	5	6	7
 21	0	1	2	3	4	5	6	7
 22	0	1	2	3	4	5	6	7
@@ -327,7 +327,7 @@ cat << EOF > $$.txt
 31	0	1	2	3	4	5	6
 EOF
 
-cat << EOF > $$.awk
+cat << EOF > tt.awk
 {
 	printf "0.5 %g 10p,4 \\\\\\\%2.2ox\n", \$1+0.5, \$1
 	for (i = 2; i <= NF; i++)
@@ -337,7 +337,7 @@ cat << EOF > $$.awk
 }
 EOF
 
-$AWK -f $$.awk $$.txt > $$.d
+$AWK -f tt.awk tt.txt > tt.d
 psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_symbol.ps
 >
 1	21
@@ -350,7 +350,7 @@ psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_symbol.ps
 9	31
 8	31
 EOF
-pstext $$.d -R -J -O -K -F+f >> GMT_App_F_symbol.ps
+pstext tt.d -R -J -O -K -F+f >> GMT_App_F_symbol.ps
 psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_symbol.ps
 >
 1	20
@@ -362,7 +362,7 @@ EOF
 # First col is row number, the remaining cols are col number in table
 # that has a printable character
 
-cat << EOF > $$.txt
+cat << EOF > tt.txt
 4	0	1	2	3	4	5	6	7
 5	0	1	2	3	4	5	6	7
 6	0	1	2	3	4	5	6	7
@@ -380,7 +380,7 @@ EOF
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column
 
-cat << EOF > $$.awk
+cat << EOF > tt.awk
 BEGIN {
 	printf "0.5 3.5 10p,4 octal\n"
 	for (i = 0; i < 8; i++)
@@ -397,7 +397,7 @@ BEGIN {
 }
 EOF
 
-$AWK -f $$.awk $$.txt > $$.d
+$AWK -f tt.awk tt.txt > tt.d
 psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:.ZapfDingbats:N -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_dingbats.ps
 >
 8	16
@@ -405,7 +405,7 @@ psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:.ZapfDingbats:N -P -K -Glightgreen -Y2.58i <
 9	15
 8	15
 EOF
-pstext $$.d -R -J -O -K -F+f >> GMT_App_F_dingbats.ps
+pstext tt.d -R -J -O -K -F+f >> GMT_App_F_dingbats.ps
 psxy -R -J -O -Bg1 -K -Wthick << EOF >> GMT_App_F_dingbats.ps
 >
 0	4
@@ -415,7 +415,7 @@ psxy -R -J -O -Bg1 -K -Wthick << EOF >> GMT_App_F_dingbats.ps
 1	16
 EOF
 
-cat << EOF > $$.txt
+cat << EOF > tt.txt
 20		1	2	3	4	5	6	7
 21	0	1	2	3	4	5	6	7
 22	0	1	2	3	4	5	6	7
@@ -430,7 +430,7 @@ cat << EOF > $$.txt
 31	0	1	2	3	4	5	6
 EOF
 
-cat << EOF > $$.awk
+cat << EOF > tt.awk
 {
 	printf "0.5 %g 10p,4 \\\\\\\%2.2ox\n", \$1+0.5, \$1
 	for (i = 2; i <= NF; i++)
@@ -440,7 +440,7 @@ cat << EOF > $$.awk
 }
 EOF
 
-$AWK -f $$.awk $$.txt > $$.d
+$AWK -f tt.awk tt.txt > tt.d
 psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_dingbats.ps
 >
 1	21
@@ -453,7 +453,7 @@ psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_dingbats.ps
 9	31
 8	31
 EOF
-pstext $$.d -R -J -O -K -F+f >> GMT_App_F_dingbats.ps
+pstext tt.d -R -J -O -K -F+f >> GMT_App_F_dingbats.ps
 psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_dingbats.ps
 >
 1	20

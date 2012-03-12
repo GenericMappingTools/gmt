@@ -17,7 +17,7 @@ y=0.05		# Initial offset in x
 x=0.05		# Initial offset in y
 back=-5.20	# Amount to translate to left after 1 row
 
-cat << END > $$.App_E.d
+cat << END > tt.App_E.d
 0	0
 $xwidth	0
 $xwidth	$ywidth
@@ -30,10 +30,10 @@ do
 	for ix in 1 2 3 4 5 6
 	do
 		p=`echo "$iy * 6 + $ix" | bc`
-		psxy -R0/$xwidth/0/$ywidth -Jx1i -Gp300/$p -O -K $$.App_E.d -X${x}i -Y${y}i >> $ps
-		psxy -R -J -Wthinner -L -O -K $$.App_E.d >> $ps
-		psxy -R -J -GP300/$p -O -K $$.App_E.d -X${xwidth}i >> $ps
-		psxy -R -J -Wthinner -L -O -K $$.App_E.d >> $ps
+		psxy -R0/$xwidth/0/$ywidth -Jx1i -Gp300/$p -O -K tt.App_E.d -X${x}i -Y${y}i >> $ps
+		psxy -R -J -Wthinner -L -O -K tt.App_E.d >> $ps
+		psxy -R -J -GP300/$p -O -K tt.App_E.d -X${xwidth}i >> $ps
+		psxy -R -J -Wthinner -L -O -K tt.App_E.d >> $ps
 		echo "0 0.225" | psxy -R0/$w/0/$ywidth -J -O -K -N -Sc0.17i -Wthinnest -Gwhite >> $ps
 		echo "0 0.225 $p" | pstext -R0/$w/0/$ywidth -J -O -K -N -F+f9p,Helvetica-Bold >> $ps
 		y=0.0

@@ -5,10 +5,10 @@
 #
 . ./functions.sh
 
-grep -v '#' "${GMT_SHAREDIR}"/conf/gmt_cpt.conf | cut -d: -f1 | sort -r > $$.lis
+grep -v '#' "${GMT_SHAREDIR}"/conf/gmt_cpt.conf | cut -d: -f1 | sort -r > tt.lis
 
 ps=GMT_App_M_1.ps
-n=`cat $$.lis | wc -l`
+n=`cat tt.lis | wc -l`
 
 # dy is line spacing and y0 is total box height
 
@@ -22,16 +22,16 @@ dy=0.52
 while [ $i -le 26 ]
 do
 	j=`expr $i + 1`
-	left=`sed -n ${j}p $$.lis`
-	right=`sed -n ${i}p $$.lis`
-	makecpt -C$left -Z > $$.left.cpt
-	makecpt -C$left -T-1/1/0.25 > $$.left2.cpt
-	makecpt -C$right -Z > $$.right.cpt
-	makecpt -C$right -T-1/1/0.25 > $$.right2.cpt
-	psscale -D1.55/$y/2.70/0.125h -C$$.left.cpt -B0 -O -K >> $ps
-	psscale -D4.50/$y/2.70/0.125h -C$$.right.cpt -B0 -O -K >> $ps
-	psscale -D1.55/$y2/2.70/0.125h -C$$.left2.cpt -Bf0.25 -O -K >> $ps
-	psscale -D4.50/$y2/2.70/0.125h -C$$.right2.cpt -Bf0.25 -O -K >> $ps
+	left=`sed -n ${j}p tt.lis`
+	right=`sed -n ${i}p tt.lis`
+	makecpt -C$left -Z > tt.left.cpt
+	makecpt -C$left -T-1/1/0.25 > tt.left2.cpt
+	makecpt -C$right -Z > tt.right.cpt
+	makecpt -C$right -T-1/1/0.25 > tt.right2.cpt
+	psscale -D1.55/$y/2.70/0.125h -Ctt.left.cpt -B0 -O -K >> $ps
+	psscale -D4.50/$y/2.70/0.125h -Ctt.right.cpt -B0 -O -K >> $ps
+	psscale -D1.55/$y2/2.70/0.125h -Ctt.left2.cpt -Bf0.25 -O -K >> $ps
+	psscale -D4.50/$y2/2.70/0.125h -Ctt.right2.cpt -Bf0.25 -O -K >> $ps
 	pstext -R -J -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC >> $ps <<- END
 	1.55 $y ${left}
 	4.50 $y ${right}

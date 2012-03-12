@@ -12,7 +12,7 @@ if [ $# -eq 0 ]; then
 	exit
 fi
 
-cat << EOF > $$.awk	# This awk script creates the $$.chart table of which entries are defined
+cat << EOF > tt.awk	# This awk script creates the tt.chart table of which entries are defined
 {
 	printf "%d\t", NR-1
 	for (i = 1; i < 8; i++)
@@ -24,8 +24,8 @@ cat << EOF > $$.awk	# This awk script creates the $$.chart table of which entrie
 	printf "\n"
 }
 EOF
-egrep -v '\[|\]' "${GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f $$.awk > $$.chart
-cat << EOF > $$.awk	# This awk script creates a file for psxy to plot a rectangle for undefined entries
+egrep -v '\[|\]' "${GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f tt.awk > tt.chart
+cat << EOF > tt.awk	# This awk script creates a file for psxy to plot a rectangle for undefined entries
 {
 	for (i = 1; i <= 8; i++)
 	{
@@ -33,9 +33,9 @@ cat << EOF > $$.awk	# This awk script creates a file for psxy to plot a rectangl
 	}
 }
 EOF
-egrep -v '\[|\]' "${GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f $$.awk > $$.empty
+egrep -v '\[|\]' "${GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f tt.awk > tt.empty
 
-cat << EOF > $$.awk
+cat << EOF > tt.awk
 BEGIN {
 	printf "0.5 -0.5 octal\n"
 	for (i = 0; i < 8; i++)
@@ -53,8 +53,8 @@ BEGIN {
 EOF
 
 gmtset PS_CHAR_ENCODING $1
-psxy -R0/9/-1/32 -Jx0.345/-0.21 -Bg1:."Octal codes for $1": -P -K -Ggray -X3 -Sr $$.empty
-$AWK -f $$.awk $$.chart | pstext -R -J -O -K -F+f10p,Times-Roman
+psxy -R0/9/-1/32 -Jx0.345/-0.21 -Bg1:."Octal codes for $1": -P -K -Ggray -X3 -Sr tt.empty
+$AWK -f tt.awk tt.chart | pstext -R -J -O -K -F+f10p,Times-Roman
 psxy -R -J -O -Wthick << EOF
 >
 0	0

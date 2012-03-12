@@ -3,6 +3,8 @@
 #
 # Functions to be used with test scripts
 
+scriptname=$(basename "$0")
+
 # Determine if awk is buggy
 result=`echo 1 | awk '{print sin($1)}'`
 if [ $result = 1 ]; then # awk is rotten
@@ -38,33 +40,33 @@ export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 # Define variables that are needed *within* test scripts
 GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 EXTRA_FONTS_DIR="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
-CMP_FIG_PATH="@GMT_SOURCE_DIR@/doc/fig"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
 
 # Reset error count
 ERROR=0
 
+# Where the current script resides (need absolute path)
+cd "$(dirname "$0")"
+src="${PWD}"
+
 # Convert PS to PDF
 function make_pdf()
 {
-  psfile="${1:-$ps}"
-  pdfile="${psfile%.ps}.pdf"
-  test -f "${psfile}" || return 1
-  ps2raster -Tf -A -P -Ggs -C-sFONTPATH=${EXTRA_FONTS_DIR} ${psfile} || ((++ERROR))
-  test -f "${pdfile}" || ((++ERROR))
+  pdf="${ps%.ps}.pdf"
+  test -f "$ps" || return 1
+  ps2raster -Tf -A -P -Ggs -C-sFONTPATH=${EXTRA_FONTS_DIR} "$ps" || ((++ERROR))
+  test -f "$pdf" || ((++ERROR))
 }
 
-# Compare the ps file with its original.
+# Compare the ps file with its original. Check $ps against original $ps or against $1.ps (if $1 given)
 pscmp () {
-  test -f "${1:-$ps}" || return 1
-  f=${1:-$(basename $ps .ps)}
-  d=$(basename $PWD)
+  test -f "$ps" || return 1
   if ! [ -x "$GRAPHICSMAGICK" ]; then
     echo "[PASS] (without comparison)"
     return
   fi
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file ${f}.png ${CMP_FIG_PATH}/${f}.ps ${1:-$ps}) || pscmpfailed="yes"
+  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/../fig/${1:-$ps}") || pscmpfailed="yes"
   rms=$(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p' <<< "$rms")
   if [ -z "$rms" ]; then
     rms="NA"
@@ -74,21 +76,20 @@ pscmp () {
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
     echo "RMS Error = $rms [FAIL]"
-    echo "$now ${d}/${f}: RMS Error = $rms" >> ../fail_count.d
-    make_pdf ${1:-$ps} # try to make pdf file
+    echo "$now ${src##*/}/${ps%.ps}: RMS Error = $rms" >> ../fail_count.d
+    make_pdf "$ps" # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
     echo "RMS Error = $rms [PASS]"
-    rm -f ${f}.png ${f}.pdf
   fi
 }
 
 # Make sure to cleanup at end
 function cleanup()
 {
-  rm -f .gmt* gmt.conf
-  lockfile.sh remove script
+  cd "@GMT_BINARY_DIR@" # get out of exec_dir before removing it
+  test "${ERROR}" -eq 0 && rm -rf "${exec_dir}"
   echo "exit status: ${ERROR}"
   exit ${ERROR}
 }
@@ -98,7 +99,6 @@ function on_exit()
 {
   set +e
   trap - EXIT # Restore EXIT trap
-  #make_pdf
   pscmp
   cleanup
 }
@@ -115,14 +115,16 @@ function on_err()
 }
 trap on_err ERR SIGSEGV SIGTRAP SIGBUS
 
-# Create lockfile (needed for running parallel tasks in the same directory).
-# Timeout after 240 seconds.
-lockfile.sh script 48 5
+# Create a temporary directory exec_dir in the build dir
+# and run remainder of this GMT script there
+exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${scriptname%.sh}"
+mkdir -p "${exec_dir}"
+cd "${exec_dir}"
 
 # Start with proper GMT defaults
 gmtset -Du PS_CHAR_ENCODING ISOLatin1+
 
 # Convert script name to PS filename
-ps=$(basename $0 .sh).ps
+ps="${scriptname%.sh}.ps"
 
 # vim: ft=sh
