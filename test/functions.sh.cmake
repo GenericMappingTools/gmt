@@ -23,7 +23,6 @@ function make_pdf()
 # Compare the ps file with its original. Check $1.ps (if $1 given) or $ps
 pscmp () {
   f=${1:-$(basename $ps .ps)}
-  d=$(basename $PWD)
   if ! [ -x "$GRAPHICSMAGICK" ]; then
     echo "[PASS] (without comparison)"
     return
@@ -39,8 +38,8 @@ pscmp () {
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
     echo "RMS Error = $rms [FAIL]"
-    echo "$now ${d}/${f}: RMS Error = $rms" >> ../fail_count.d
-    make_pdf ${1:-$ps} # try to make pdf file
+    echo "$now ${src##*/}/${f}.ps: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
+    make_pdf ${f}.ps # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
@@ -52,7 +51,7 @@ passfail () {
   if [ -s fail ]; then
     now=$(date "+%F %T")
     echo "[FAIL]"
-    echo "$now $d/$1: $(wc -l fail)ed lines" >> ../fail_count.d
+    echo "$now ${src##*/}/$1: $(wc -l fail)ed lines" >>"@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
     mv -f fail $1.log
     ((++ERROR))
   else
@@ -74,7 +73,7 @@ HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
 HAVE_OPENMP="@HAVE_OPENMP@"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
 # Where the current script resides (need absolute path)
-cd $(dirname "$0")
+cd "$(dirname "$0")"
 src="${PWD}"
 
 # Reset error count
