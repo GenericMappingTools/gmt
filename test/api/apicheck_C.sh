@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test the C API for i/o involving CPTs
 
-. ../functions.sh
+. functions.sh
 
 function cpt_check {
 	testapi -I$1 -W$2 -Tc
@@ -43,5 +43,4 @@ cpt_check r d	# 5c. File descriptor
 cpt_check r c	# 5d. Copy
 cpt_check r r	# 5e. Reference
 
-rm -f ctest?.cpt
 passfail apicheck_C

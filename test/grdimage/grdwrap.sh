@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. ../functions.sh
+. functions.sh
 header "Test grdimage for wrapping of global grid"
 
 ps=grdwrap.ps
@@ -11,7 +11,5 @@ makecpt -Cpolar -T-1/1/0.01 > t.cpt
 
 grdimage t.nc -Ct.cpt -JQ-147/6i -Ct.cpt -B30 -K > $ps
 grdimage t.nc -Ct.cpt -JQ-147.533/6i -Ct.cpt -B30 -O -Y3.75i >> $ps
-
-rm -f t.nc t.cpt
 
 pscmp

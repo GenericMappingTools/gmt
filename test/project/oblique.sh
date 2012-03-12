@@ -3,7 +3,7 @@
 #
 # Tests project to make oblique lines
 
-. ../functions.sh
+. functions.sh
 header "Test project to make oblique lines"
 
 ps=oblique.ps
@@ -21,6 +21,5 @@ echo 30 50 | psxy -R -J -O -K -Sa0.2i -Gred -W0.25p >> $ps
 echo 0 0 | psxy -R -J -O -K -Sc0.1i -Gblack >> $ps
 project t.txt -T$ppole -C$centr -Fpq | psxy -R -J -O -K -W3p >> $ps
 psxy -R -J -O -T >> $ps
-rm -f [pt].txt
 
 pscmp

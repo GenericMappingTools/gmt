@@ -1,6 +1,6 @@
 #!/bin/bash
 # Test sample1d interpolation with NaNs
-. ../functions.sh
+. functions.sh
 
 makeps () {
 
@@ -32,13 +32,12 @@ psxy -R -J -O -T
 header "Test sample1d and psxy with NaNs indicating line gaps (ASCII)"
 ps=gaps.ps
 tmp=$$.txt
-gmtconvert gaps.nc > $tmp
+gmtconvert $src/gaps.nc > $tmp
 makeps > $ps
 pscmp
 
 # Do the same with netCDF input
 header "Test sample1d and psxy with NaNs indicating line gaps (netCDF)"
-tmp=gaps.nc
+tmp=$src/gaps.nc
 makeps > $ps
 pscmp
-rm -f $$.txt

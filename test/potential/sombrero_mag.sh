@@ -3,7 +3,7 @@
 #
 # Compute the magnetic anomaly of our Mexican hat split in two halves
 
-. ../functions.sh
+. functions.sh
 header "Compute magnetic anomaly of the Mexican hat"
 
 ps=sombrero_mag.ps
@@ -30,7 +30,5 @@ xyzokb -Gsombrero_mag.nc -R-15/15/-15/15 -I1.0 -E2 -H10/60/0/-10/40 -Tdsombrero_
 
 grd2cpt sombrero_mag.nc -E20 -D > m.cpt
 grdimage sombrero_mag.nc -Cm.cpt -JX12c -Ba -P > $ps
-
-rm -f half_*.nc mag.nc sombrero_mag.nc sombrero.nc sombrero*.dat m.dat m.cpt
 
 pscmp

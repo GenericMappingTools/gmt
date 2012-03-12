@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 
-. ../functions.sh
+. functions.sh
 header "Test -JG (Pacific 35000 km specific pnt image)"
 
 EARTH_MODEL=e

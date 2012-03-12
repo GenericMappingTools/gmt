@@ -23,7 +23,7 @@ blabber () {
 	echo "${sf[*]} ${gi[*]} ${si[*]} ${gf[*]} $p" | awk -f test.awk
 }
 
-. ../functions.sh
+. functions.sh
 
 blabber=0
 if [ $# -gt 0 ] ; then

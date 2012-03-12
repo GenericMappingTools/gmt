@@ -2,7 +2,7 @@
 #	$Id$
 # Testing gmtspatial intersection
 
-. ../functions.sh
+. functions.sh
 header "Test gmtspatial for polygon intersection"
 
 ps=intersect.ps
@@ -69,4 +69,3 @@ gmtspatial Bg.txt -C -R-2/11/-4/9 -fg | psxy $R -J -O -K -W3p,blue >> $ps
 psxy $R -J -O -T >> $ps
 
 pscmp
-rm -f [AB].txt [AB]g.txt

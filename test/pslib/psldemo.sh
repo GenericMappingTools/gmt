@@ -6,7 +6,7 @@
 # GMT progs:    libpslib, psldemo
 # Unix progs:   -
 #
-. ../functions.sh
+. functions.sh
 header "Test pslib capabilities"
 ps=psldemo.ps
 psldemo > $ps

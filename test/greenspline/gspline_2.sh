@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. ../functions.sh
+. functions.sh
 header "greenspline: Testing Cartesian 2-D interpolation I"
 
 ps=gspline_2.ps
@@ -20,6 +20,5 @@ grdcontour -R raws5.grd -Jx0.9i -P -K -C25 -A50+jCB -Ba2f1WSne -Y2i -GlLB/CT  > 
 grdcontour -R WB1998.grd -J -O -K -C25 -A50+jCB -Wa0.75p,- -Wc0.25p,-  -GlCT/RB >> $ps
 grdcontour -R MM1993.grd -J -O -K -C25 -Wa0.75p,. -Wc0.25p,. >> $ps
 psxy -R -J -O $T -Sc0.1 -G0 >> $ps
-rm -f WB1998.grd raws5.grd MM1993.grd
 
 pscmp

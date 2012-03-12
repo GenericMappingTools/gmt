@@ -3,7 +3,7 @@
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
-. ../functions.sh
+. functions.sh
 header "Test psxyz and all the symbols with fill"
 
 ps=plot_symbols.ps

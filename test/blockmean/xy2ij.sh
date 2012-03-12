@@ -7,7 +7,7 @@
 # fall exactly on tile boundaries.  One point will fall outside -R
 # but should be considered for the gridline registrated case.
 
-. ../functions.sh
+. functions.sh
 header "Test blockmean's (x,y) <--> (i,j) conversions (numerical)"
 
 ps=xy2ij.ps
@@ -44,10 +44,10 @@ EOF
 blockmean -R0/5/0/5 -I1 -C grid.d > grid_ij.d
 blockmean -R0/5/0/5 -I1 grid.d > grid_xy.d
 
-diff pixel_xy.d orig/pixel_xy.d --strip-trailing-cr  > fail
-diff pixel_ij.d orig/pixel_ij.d --strip-trailing-cr >> fail
-diff grid_xy.d  orig/grid_xy.d --strip-trailing-cr  >> fail
-diff grid_ij.d  orig/grid_ij.d --strip-trailing-cr  >> fail
+diff pixel_xy.d $src/pixel_xy.d --strip-trailing-cr  > fail
+diff pixel_ij.d $src/pixel_ij.d --strip-trailing-cr >> fail
+diff grid_xy.d  $src/grid_xy.d --strip-trailing-cr  >> fail
+diff grid_ij.d  $src/grid_ij.d --strip-trailing-cr  >> fail
 
 passfail xy2ij_numerical
 
@@ -70,7 +70,5 @@ psxy -R -J grid.d -Sc0.125 -Gwhite -Wfaint -O -K -N >> $ps
 pstext -R -J grid.d -F+f8p -O -K -N >> $ps
 psxy -R -J grid_ij.d -Sc0.15 -Gblack -O -K -N >> $ps
 pstext -R -J grid_ij.d -F+f8p,white -O -N >> $ps
-
-rm -f grid*.d pixel*.d
 
 pscmp

@@ -30,20 +30,20 @@ if (DO_TESTS)
 	# rules for copying test files to build dir
 	file (GLOB_RECURSE _files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
 	list_regex_get ("[.]svn/|[.]cmake|CMakeLists.txt" _files ${_files} INVERT)
-	set (_test_files)
-	foreach (_file ${_files})
-		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_file}
-			COMMAND ${CMAKE_COMMAND}
-			-E copy_if_different
-			${CMAKE_CURRENT_SOURCE_DIR}/${_file}
-			${CMAKE_CURRENT_BINARY_DIR}/${_file})
-		list (APPEND _test_files ${CMAKE_CURRENT_BINARY_DIR}/${_file})
-	endforeach (_file ${_files})
+#	set (_test_files)
+#	foreach (_file ${_files})
+#		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_file}
+#			COMMAND ${CMAKE_COMMAND}
+#			-E copy_if_different
+#			${CMAKE_CURRENT_SOURCE_DIR}/${_file}
+#			${CMAKE_CURRENT_BINARY_DIR}/${_file})
+#		list (APPEND _test_files ${CMAKE_CURRENT_BINARY_DIR}/${_file})
+#	endforeach (_file ${_files})
 
-	# add file dependencies to check target
-	add_custom_target (copy_test_files
-		DEPENDS ${_test_files})
-	add_dependencies (check copy_test_files)
+#	# add file dependencies to check target
+#	add_custom_target (copy_test_files
+#		DEPENDS ${_test_files})
+#	add_dependencies (check copy_test_files)
 
 	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property(_dir_defs COMPILE_DEFINITIONS)
@@ -67,12 +67,12 @@ if (DO_TESTS)
 
 	# add tests
 	foreach (_test_dir ${GMT_TEST_DIRS})
-		file(GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		file(GLOB _test_scripts
 			"${CMAKE_CURRENT_SOURCE_DIR}/${_test_dir}/*.sh")
 		foreach (_test ${_test_scripts})
 			add_test(NAME ${_test}
-				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_test_dir}
-				COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${_test})
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				COMMAND bash ${_test})
 		endforeach (_test ${_test_scripts})
 	endforeach (_test_dir ${GMT_TEST_DIRS})
 endif (DO_TESTS)

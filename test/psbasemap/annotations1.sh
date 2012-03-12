@@ -4,7 +4,7 @@
 
 ps=annotations1.ps
 
-. ../functions.sh
+. functions.sh
 header "Test psbasemap's ddd:mm:ssF annotation formats"
 
 psbasemap="psbasemap -JX3id/2.5id --FONT_ANNOT_PRIMARY=10p"

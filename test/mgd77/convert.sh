@@ -3,14 +3,14 @@
 #
 # Tests mgd77convert
 
-. ../functions.sh
+. functions.sh
 header "Test mgd77convert conversions between mgd77-dat-nc"
 
 log=convert.log
 
 OLD=$MGD77_HOME
 export MGD77_HOME=${GMT_SOURCE_DIR}/share/mgd77
-cp dummy.mgd77 12345678.mgd77
+ln -fs $src/dummy.mgd77 12345678.mgd77
 
 # Make cdf file
 mgd77convert 12345678 -Fa -Tc
@@ -32,7 +32,6 @@ diff 12345678.mgd77 dummy.mgd77 --strip-trailing-cr | tee -a fail >> $log
 echo "Test if mgd77 from dat matches original:" >> $log
 diff $$.mgd77 dummy.mgd77 --strip-trailing-cr | tee -a fail >> $log
 
-rm -f $$.* 12345678.*
 export MGD77_HOME=$OLD
 
 passfail convert

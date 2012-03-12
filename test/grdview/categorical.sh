@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. ../functions.sh
+. functions.sh
 header "Test grdview for categorical grid plots"
 
 ps=categorical.ps
@@ -40,7 +40,5 @@ psscale -C$$.cpt -D3/3/1.5/0.2 -O -K -L0.1i >> $ps
 grdview $$.nc -C$$.cpt -J -O -K -B5g5:."-Qi100":WSne -Qi100 -X-3.5 -Y5.0 --MAP_TITLE_OFFSET=-1i >> $ps
 # Finally plot as texture image -Qt100
 grdview $$.nc -C$$.cpt -J -O -B5g5:."-Qt100":WSne -Qt100 -X3.5 --MAP_TITLE_OFFSET=-1i >> $ps
-
-rm -f $$.*
 
 pscmp

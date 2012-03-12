@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grdclip
 
-. ../functions.sh
+. functions.sh
 header "Test grdclip for NaN and value clipping"
 
 ps=limits.ps
@@ -18,5 +18,5 @@ psscale -D5i/4.75i/6i/0.15i -O -K -Ct.cpt -E+n >> $ps
 grdclip tmp.nc -Sa7/NaN -Sb0/-6 -Gout.nc
 grd2xyz out.nc | psxy -R -J -Sc0.25c -W0.25p -Ct.cpt -O -K -B10f5WSne -Y5i >> $ps
 psxy -R$Rp -J -O -T >> $ps
+
 pscmp
-rm -f tmp.nc out.nc t.cpt

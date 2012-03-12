@@ -3,7 +3,7 @@
 #
 # Remove a bilinear trend
 
-. ../functions.sh
+. functions.sh
 header "Test grdtrend to remove a bilinear trend"
 
 grdmath -R-15/15/-15/15 -I0.1 X Y ADD = lixo1.grd
@@ -12,7 +12,5 @@ grdinfo lixo2.grd -C -L2 | gmtconvert -o11 > lixo1.dat
 echo 0 > lixo2.dat
 
 diff lixo1.dat lixo1.dat --strip-trailing-cr > fail
-
-rm -f lixo*
 
 passfail trend_linear

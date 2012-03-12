@@ -3,7 +3,7 @@
 #
 # Test that psxyz properly plots rotatable rectangles -Sj and -SJ
 
-. ../functions.sh
+. functions.sh
 header "Test psxyz and the rotated rectangle option"
 
 # Bottom case tests -SJ with azimuths and dimensions in km
@@ -31,7 +31,5 @@ cat << EOF > $$.rects.d
 EOF
 psxyz -JZ -p135/30 -R-10/25/-5/15/0/4 -Jx0.15i -O -K -B10g5WSne -SJ $$.rects.d -Gbrown -W0.25p,green -Y3i >> $ps
 psxyz -JZ -p135/30 -R -J -O -Sc0.05i $$.rects.d -Gblack >> $ps
-
-rm -f $$.*
 
 pscmp

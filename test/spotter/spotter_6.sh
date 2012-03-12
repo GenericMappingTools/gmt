@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. ../functions.sh
+. functions.sh
 header "Testing rotconverter for adding rotations"
 
 # We are testing a few examples from Cox and Hart, Plate Tectonics - How it works.
@@ -16,4 +16,3 @@ rotconverter 351.4/80.8/-22.5 + 62.26/85.36/11.14 --FORMAT_GEO_OUT=D --FORMAT_FL
 
 diff -q --strip-trailing-cr results.txt answers.txt >> fail
 passfail spotter_6
-rm -f results.txt answers.txt

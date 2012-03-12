@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 #
-. ../functions.sh
+. functions.sh
 
 header "Test psscale with patterns"
 
@@ -20,7 +20,5 @@ grdmath -R-5/5/-5/5 -I1 0 0 CDIST 2.5 DIV DUP MUL NEG EXP 30 MUL = t.nc
 grdview t.nc -JX5i -P -Xc -Yc -K -Cpatt.cpt -Qs -B1 > $ps
 psscale -Cpatt.cpt -D2.5i/-0.5i/4.5i/0.25ih -O -K >> $ps
 psscale -Cpatt.cpt -D5.5i/2.5i/4.5i/0.25i -O >> $ps
-
-rm -f patt.cpt t.nc
 
 pscmp pattern

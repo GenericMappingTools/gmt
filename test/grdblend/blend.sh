@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. ../functions.sh
+. functions.sh
 header "Test grdblend for blending overlapping grids"
 
 ps=blend.ps
@@ -90,5 +90,4 @@ psxy -Rblend.nc lines.txt -J -O -K -W1p >> $ps
 echo 10 10 high | pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f14p >> $ps
 psscale -Ct.cpt -D3.25i/1.5i/2.8i/0.15i -O -B1 >> $ps
 
-rm -f *.nc *.txt *.cpt
 pscmp

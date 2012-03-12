@@ -4,7 +4,7 @@
 # Check plotting of boxes in stereographic polar projection
 # Original script by Bruce Raup.
 
-. ../functions.sh
+. functions.sh
 header "Test psxy by plotting boxes in polar stereographic projection"
 
 ps=polar.ps

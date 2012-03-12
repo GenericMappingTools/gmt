@@ -4,7 +4,7 @@
 #
 #	$Id$
 
-. ../functions.sh
+. functions.sh
 header "Test grdimage for wrapping global grids"
 
 ps=globalgrid.ps
@@ -32,7 +32,5 @@ $plot $R1 -Y6i -X5i -O -K >> $ps
 $plot $R2 -Y-2i -O -K >> $ps
 $plot $R3 -Y-2i -O -K >> $ps
 $plot $R4 -Y-2i -O >> $ps
-
-rm -f tmp.cpt tmp.nc
 
 pscmp

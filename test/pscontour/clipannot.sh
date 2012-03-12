@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. ../functions.sh
+. functions.sh
 header "Test pscontour for clip path set by annotations"
 
 ps=clipannot.ps
@@ -23,6 +23,5 @@ EOF
 psbasemap -R -J -O -K -Bg0.2 >> $ps
 psclip -Cs -O -K  >> $ps
 psbasemap -R -J -O -B2WSne:."Delayed Annotations": >> $ps
-rm -f tmp.nc tmp.xyz
 
 pscmp

@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. ../functions.sh
+. functions.sh
 header "Test grdimage for grid and pixel plots"
 
 ps=grdimage.ps
@@ -48,7 +48,5 @@ plots "-P -X4c -Y24c" -K "" > $ps
 makegrd -R-0.5/2.5/-0.5/2.5 -r
 
 plots "-O -X-12c -Y-4c" "" -r >> $ps
-
-rm -f t.nc t.cpt
 
 pscmp

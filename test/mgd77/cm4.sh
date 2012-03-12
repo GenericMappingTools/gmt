@@ -2,14 +2,14 @@
 #	$Id$
 #
 
-. ../functions.sh
+. functions.sh
 
 header "Test mgd77magref with 1 day data at a magnetic observatory"
 
 ps=cm4.ps
 
 gmtset FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
-dia=clf20010501d.min
+dia=$src/clf20010501d.min
 
 # Get Station location
 lon=`tail -n +6 $dia | head -1 | awk '{print $3}'`
@@ -50,7 +50,5 @@ echo ${m1[0]} ${t[0]} IGRF = $IGRF | pstext -F+f15p,Bookman-Demi+jCT -R -J -N -X
 
 # Plot histogram of differences with mean removed
 gmtmath dif_T.dat $mean SUB = | pshistogram -F -W2 -G0 -JX4c/3c -BWN -Xa11.5c -O >> $ps
-
-rm -f zz1.dat zz2.dat dif_T.dat
 
 pscmp

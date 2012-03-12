@@ -2,7 +2,7 @@
 #	$Id$
 # Testing trend2d
 
-. ../functions.sh
+. functions.sh
 header "Test trend2 by removing a robust quadratic plane"
 
 ps=trend.ps
@@ -21,5 +21,5 @@ psscale -Cz.cpt -D1.5i/-0.5i/3i/0.1ih -O -K -Ba >> $ps
 pscontour -R trend.txt -Cw.cpt -J -Baf:.Weights: -I -O -K -X3.5i -i0,1,4 >> $ps
 psscale -Cw.cpt -D1.5i/-0.5i/3i/0.1ih -O -K -Ba >> $ps
 psxy -R$Rp -J -O -T >> $ps
+
 pscmp
-rm -f trend.txt ?.cpt

@@ -1,9 +1,9 @@
 #!/bin/bash
-#	$Id: $
+#	$Id$
 #
 # Paste overlaping pixel registered grids along X & Y
 
-. ../functions.sh
+. functions.sh
 header "Test grdpaste to paste overlaping pixel registered grids horizontal and vertically"
 
 ps=paste_pixreg_overlap.ps
@@ -20,7 +20,5 @@ grdpaste lixo_x.nc lixo_y.nc -Glixo_xy.nc
 # Top is single source, bottom is assembled
 grdcontour lixo_xy.nc -JX10c -C10 -B5 -P -K -Xc > $ps
 grdcontour lixo.nc -J -C10 -B5 -O -Y12c >> $ps
-
-rm -f lixo*.nc
 
 pscmp

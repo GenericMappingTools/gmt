@@ -21,16 +21,14 @@ function make_pdf()
 
 # Compare the ps file with its original. Check $1.ps (if $1 given) or $ps
 pscmp () {
-  #make_pdf ${1:-$ps} # make pdf file
   f=${1:-$(basename $ps .ps)}
   d=$(basename $PWD)
   if ! [ -x "$GRAPHICSMAGICK" ]; then
     echo "[PASS] (without comparison)"
-    rm -f ${f}.ps
     return
   fi
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file ${f}.png orig/${f}.ps ${f}.ps) || pscmpfailed="yes"
+  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file ${f}.png $src/${f}.ps ${f}.ps) || pscmpfailed="yes"
   rms=$(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p' <<< "$rms")
   if [ -z "$rms" ]; then
     rms="NA"
@@ -46,7 +44,6 @@ pscmp () {
   else
     test -z "$rms" && rms=NA
     echo "RMS Error = $rms [PASS]"
-    rm -f ${f}.png ${f}.ps ${f}.pdf
   fi
 }
 
@@ -59,7 +56,6 @@ passfail () {
     ((++ERROR))
   else
     echo "[PASS]"
-    rm -f fail ${1}.log ${1}.png
   fi
 }
 
@@ -67,6 +63,7 @@ passfail () {
 LANG=C
 
 # Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
+export GMT_BINARY_DIR="@GMT_BINARY_DIR@"
 export GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
@@ -83,9 +80,8 @@ function on_exit()
 {
   set +e
   trap - EXIT # Restore EXIT trap
-  rm -f .gmt* gmt.conf
-  lockfile.sh remove test
   echo "exit status: ${ERROR}"
+  [[ ${ERROR} == 0 ]] && rm -rf $dest
   exit ${ERROR}
 }
 trap on_exit EXIT
@@ -101,9 +97,13 @@ function on_err()
 }
 trap on_err ERR SIGSEGV SIGTRAP SIGBUS
 
-# Create lockfile (needed for running parallel tests).
-# Timeout and remove lockfile after 240 seconds.
-lockfile.sh test 48 5
+# Create a temporary directory on the binary side
+dir=`dirname $0`
+testdir=test/`basename $dir`
+export src=$GMT_SOURCE_DIR/$testdir
+export dest=$GMT_BINARY_DIR/$testdir/`basename $0 .sh`
+mkdir -p $dest
+cd $dest
 
 # Start with proper GMT defaults
 gmtset -Du

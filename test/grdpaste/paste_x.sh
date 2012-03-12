@@ -3,7 +3,7 @@
 #
 # Paste grids along X & Y
 
-. ../functions.sh
+. functions.sh
 header "Test grdpaste to paste grids horizontal and vertically"
 
 ps=paste_x.ps
@@ -20,7 +20,5 @@ grdpaste lixo_x.nc lixo_y.nc -Glixo_xy.nc
 # Top is single source, bottom is assembled
 grdcontour lixo_xy.nc -JX10c -C2 -B5 -P -K -Xc > $ps
 grdcontour lixo.nc -J -C2 -B5 -O -Y12c >> $ps
-
-rm -f lixo*.nc
 
 pscmp

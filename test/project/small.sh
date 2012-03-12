@@ -3,7 +3,7 @@
 #
 # Tests project in generating small and great circles
 
-. ../functions.sh
+. functions.sh
 header "Test project's ability to generate small/great circles"
 
 ps=small.ps
@@ -56,7 +56,6 @@ grep Pole tmp | awk '{print $5, $6}' | psxy -R -J -O -K -Sc0.1i -Gtan >> $ps
 project -C$C -E$P -G1/33+ -L-90/90 > tmp
 psxy -R -J -O -K -W2p,brown tmp >> $ps
 grep Pole tmp | awk '{print $5, $6}' | psxy -R -J -O -K -Sc0.1i -Gbrown >> $ps
-rm -f tmp
 # Plot P and C and create circle through P and C
 project -C$C -E$P -G1 -L-180/180 | psxy -R -J -O -K -W2p,- >> $ps
 echo 85 40 | psxy -R -J -O -K -Sa0.3i -Gblack >> $ps
