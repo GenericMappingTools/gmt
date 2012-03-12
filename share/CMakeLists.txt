@@ -5,7 +5,7 @@
 #
 
 set (_gmt_share_dirs conf cpt custom dbase mgd77 mgg pattern
-	psldemo pslib time x2sys)
+	pslib time x2sys)
 
 if (GSHHS_PATH)
 	# only attempt to install shorelines when path is known
