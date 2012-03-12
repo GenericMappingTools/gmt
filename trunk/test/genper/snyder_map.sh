@@ -9,6 +9,7 @@ DEBUG=
 X0=-Xc
 Y0=-Yc
 REGION=-Rg
+TITLE=:.${ps%.ps}:
 latitude=41.5
 longitude=-74.0
 altitude=160.0
@@ -18,11 +19,8 @@ twist=0
 Width=30.0
 Height=30.0
 
-PSFILE=snyder_map
-TITLE=:.${PSFILE}:
-
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+
 
-pscoast ${GMT_VERBOSE} $REGION $PROJ -P -Yc -Xc -B5g1/5g1${TITLE} -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $PSFILE.ps
+pscoast ${GMT_VERBOSE} $REGION $PROJ -P -Yc -Xc -B5g1/5g1${TITLE} -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $ps
 
-pscmp $PSFILE
+pscmp
