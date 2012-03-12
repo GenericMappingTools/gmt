@@ -25,4 +25,3 @@ psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bp25f5g25:,Ma:/cyannots.txt,WS+glig
 	-P -K > GMT_-B_custom.ps
 psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bscxannots.txt/0,WS -O \
 	--MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p >> GMT_-B_custom.ps
-rm -f [xy]annots.txt

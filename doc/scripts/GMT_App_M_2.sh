@@ -42,5 +42,3 @@ psscale -Ef -Cyears.cpt -D08/04/-8/0.5 -O -K -L0.0  >> $ps
 psscale -Ef -Cyears.cpt -D12/04/-8/0.5 -O -K -L0.1  >> $ps
 psscale -Ef -Cyears.cpt -D16/04/-8/0.5 -O -K -Li    >> $ps
 psscale -Ef -Cyears.cpt -D20/04/-8/0.5 -O    -Li0.1 >> $ps
-
-rm -f ages.cpt years.cpt

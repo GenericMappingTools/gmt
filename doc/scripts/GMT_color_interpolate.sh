@@ -34,4 +34,3 @@ pstext -R -J -O -F+f14p,Helvetica-Bold+jBC >> $ps <<END
 5.1 1.7 rainbow (HSV)
 5.1 0.8 rainbow (RGB)
 END
-rm -f tmp.cpt

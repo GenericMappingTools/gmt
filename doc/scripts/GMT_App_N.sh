@@ -7,8 +7,8 @@
 #
 . ./functions.sh
 
-grep -v '^#' "${GMT_SHAREDIR}"/share/conf/gmt_custom_symbols.conf | awk '{print $1}' > $$.lis
-n=`cat $$.lis | wc -l`
+grep -v '^#' "${GMT_SHAREDIR}"/share/conf/gmt_custom_symbols.conf | awk '{print $1}' > tt.lis
+n=`cat tt.lis | wc -l`
 
 # Because of text, the first page figure will contain less symbol rows than
 # subsequent pages.
@@ -36,11 +36,11 @@ while [ $p -lt $n_pages ]; do
 	
 	n_rows_to_go=`gmtmath -Q $n $s SUB $n_cols DIV CEIL $max_rows MIN =`
 	H=`gmtmath -Q $n_rows_to_go 1 $dy ADD MUL =`
-	touch $$.lines $$.symbols $$.text $$.bars
+	touch tt.lines tt.symbols tt.text tt.bars
 	c=0
 	while [ $c -lt $n_cols ]; do
 		c=`expr $c + 1`
-		cat << EOF >> $$.lines
+		cat << EOF >> tt.lines
 > vertical line
 $c	0
 $c	$H
@@ -53,7 +53,7 @@ EOF
 		ys=`gmtmath -Q $yt 1.0 $dy ADD 0.5 MUL ADD =`
 		ysb=`gmtmath -Q $ys 0.5 SUB =`
 		ytb=`gmtmath -Q $yt 0.5 $dy MUL SUB =`
-		cat << EOF >> $$.lines
+		cat << EOF >> tt.lines
 > base of symbol line
 0	$ysb
 $n_cols	$ysb
@@ -66,18 +66,18 @@ EOF
 			c=`expr $c + 1`
 			s=`expr $s + 1`
 			x=`gmtmath -Q $c 1 SUB 0.5 ADD =`
-			symbol=`sed -n ${s}p $$.lis`
-			echo "$x $ys k${symbol}" >> $$.symbols
+			symbol=`sed -n ${s}p tt.lis`
+			echo "$x $ys k${symbol}" >> tt.symbols
 			name=`echo $symbol | tr 'a-z' 'A-Z'`
-			echo "$x $yt $name" >> $$.text
-			echo "$x $yt $width $dy" >> $$.bars
+			echo "$x $yt $name" >> tt.text
+			echo "$x $yt $width $dy" >> tt.bars
 		done
 	done
-	psxy -R0/$n_cols/0/$H -Jx${width}i -P -K $$.lines -Wthick -B0 > GMT_App_N_$p.ps
-	psxy -R -J -O -K -S${width}i -Wthinnest $$.symbols >> GMT_App_N_$p.ps
-	psxy -R -J -O -K -Sr -Gblack $$.bars >> GMT_App_N_$p.ps
-	pstext -R -J -O $$.text -F+f${fs}p,white >> GMT_App_N_$p.ps
-	rm -f $$.lines $$.symbols $$.text $$.bars
+	psxy -R0/$n_cols/0/$H -Jx${width}i -P -K tt.lines -Wthick -B0 > GMT_App_N_$p.ps
+	psxy -R -J -O -K -S${width}i -Wthinnest tt.symbols >> GMT_App_N_$p.ps
+	psxy -R -J -O -K -Sr -Gblack tt.bars >> GMT_App_N_$p.ps
+	pstext -R -J -O tt.text -F+f${fs}p,white >> GMT_App_N_$p.ps
+	rm -f tt.lines tt.symbols tt.text tt.bars
 done
 
 if ! test -s GMT_Appendix_N_inc.tex ; then

@@ -6,7 +6,7 @@
 . ./functions.sh
 
 R=-R-85/5/10/55
-grdgradient topo5.nc -Nt1 -A45 -Gtopo5_int.nc
+grdgradient "$src"/topo5.nc -Nt1 -A45 -Gtopo5_int.nc
 gmtset FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p FONT_TITLE 22p
 project -E-74/41 -C-17/28 -G10 -Q > great_NY_Canaries.d
 project -E-74/41 -C2.33/48.87 -G100 -Q > great_NY_Paris.d
@@ -16,8 +16,8 @@ cat << EOF > ttt.cpt
 3	lightyellow	6	lightyellow
 6	lightgreen	100	lightgreen
 EOF
-grdimage ttt_atl.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -P -K -nc+t1 > GMT_App_O_9.ps
-grdcontour ttt_atl.nc -R -J -O -K -C0.5 -A1+u"hour"+v+f8p,Bookman-Demi -GL80W/31N/17W/26N,17W/28N/17W/50N \
+grdimage "$src"/ttt_atl.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -P -K -nc+t1 > GMT_App_O_9.ps
+grdcontour "$src"/ttt_atl.nc -R -J -O -K -C0.5 -A1+u"hour"+v+f8p,Bookman-Demi -GL80W/31N/17W/26N,17W/28N/17W/50N \
 	-S2 >> GMT_App_O_9.ps
 psxy -R -J -Wfatter,white great_NY_Canaries.d -O -K  >> GMT_App_O_9.ps
 pscoast -R -J -B20f5:."Tsunami travel times from the Canaries":WSne -N1/thick -O -K -Glightgray \

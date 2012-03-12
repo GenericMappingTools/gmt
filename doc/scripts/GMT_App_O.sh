@@ -7,7 +7,7 @@
 . ./functions.sh
 
 gmtset MAP_FRAME_WIDTH 0.04i FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p
-grdcut ../examples/ex01/osu91a1f_16.nc -R50/160/-15/15 -Ggeoid.nc
+grdcut "$src"/../examples/ex01/osu91a1f_16.nc -R50/160/-15/15 -Ggeoid.nc
 # fixed algorithm points
 cat << EOF > fix.d
 80	-8.5
@@ -40,16 +40,13 @@ x0=`echo $info | cut -f12 -d ' '`
 y0=`echo $info | cut -f13 -d ' '`
 x1=`echo $info | cut -f14 -d ' '`
 y1=`echo $info | cut -f15 -d ' '`
-project -C$x0/$y0 -E$x1/$y1 -G10 -Q > $$.d
-dist=`gmtconvert $$.d --FORMAT_FLOAT_OUT=%.0lf -El -o2`
-R=`minmax -I1 $$.d`
+project -C$x0/$y0 -E$x1/$y1 -G10 -Q > tt.d
+dist=`gmtconvert tt.d --FORMAT_FLOAT_OUT=%.0lf -El -o2`
+R=`minmax -I1 tt.d`
 echo "# Geoid Extrema Separation is $dist km" > transect.d
-grdtrack $$.d -Ggeoid.nc | grdtrack -GApp_O.nc >> transect.d
-rm -f $$.d
+grdtrack tt.d -Ggeoid.nc | grdtrack -G"$src"/App_O.nc >> transect.d
 
-lockfile.sh remove script
 for n in 1 2 3 4 5 6 7 8 9; do
-  bash GMT_App_O_$n.sh
+	cd ${exec_dir}/..
+	bash "$src"/GMT_App_O_$n.sh
 done
-
-rm -f fix.d fix2.d cross.d geoid.nc transect.d great_NY_*.d ttt.cpt topo5_int.nc
