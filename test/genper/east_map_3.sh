@@ -9,8 +9,7 @@ DEBUG=
 X0=-Xc
 Y0=-Yc
 REGION=-Rg
-PSFILE=east_map_3
-TITLE=:.${PSFILE}:
+TITLE=:.${ps%.ps}:
 latitude=41.5
 longitude=-74.0
 altitude=160.0
@@ -24,6 +23,6 @@ Height=30.0
 
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+
 
-pscoast ${GMT_VERBOSE} $REGION $PROJ -P -Yc -Xc -B5g5/5g5${TITLE} -G128/255/128 -S128/128/255 -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $PSFILE.ps
+pscoast ${GMT_VERBOSE} $REGION $PROJ -P -Yc -Xc -B5g5/5g5${TITLE} -G128/255/128 -S128/128/255 -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $ps
 
-pscmp $PSFILE
+pscmp
