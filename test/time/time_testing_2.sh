@@ -15,7 +15,7 @@
 . functions.sh
 header "Test time conversions (rel time & j2000)"
 
-cat << EOF > $$.answer
+cat << EOF > tt.answer
 2000-01-01T12:00:00	0
 2000-01-02T00:00:00	0.125
 2000-01-02T12:00:00	0.25
@@ -27,11 +27,11 @@ cat << EOF > $$.answer
 2000-01-05T12:00:00	1
 EOF
 
-sample1d -I0.5 << EOF > $$.d
+sample1d -I0.5 << EOF > tt.d
 0	0
 4	1
 EOF
-gmtconvert $$.d -fi0t -fo0T --TIME_SYSTEM=j2000 > $$.result
-diff $$.result $$.answer --strip-trailing-cr > fail
+gmtconvert tt.d -fi0t -fo0T --TIME_SYSTEM=j2000 > tt.result
+diff tt.result tt.answer --strip-trailing-cr > fail
 
 passfail time_testing_2

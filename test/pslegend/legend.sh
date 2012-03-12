@@ -7,7 +7,7 @@
 header "Test pslegend and its various items"
 
 ps=legend.ps
-makecpt -Cpanoply -T-8/8/1 > $$.cpt
+makecpt -Cpanoply -T-8/8/1 > tt.cpt
 gmtset FONT_ANNOT_PRIMARY 12p
 
 pslegend -R0/10/0/10 -JM6i -Dx0.5i/0.5i/5i/3.8i/BL -C0.1i/0.1i -Gazure1 -L1.2 -F+r -B5f1 > $ps <<EOF
@@ -34,7 +34,7 @@ M 5 5 600+u f
 G 0.05i
 I $src/SOEST_block4.ras 3i CT
 G 0.05i
-B $$.cpt 0.2i 0.2i -B0
+B tt.cpt 0.2i 0.2i -B0
 G 0.05i
 L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 G 0.1i

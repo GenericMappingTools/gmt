@@ -25,11 +25,11 @@ psxy -R-1/10/-1/10 -JX6/4 -P -B2g1 -Sc0.2i -Gyellow -W2.5p,cyan -K << EOF > $ps
 EOF
 #
 # Now test that lines/polygons are OK
-cat << EOF > $$.cpt
+cat << EOF > tt.cpt
 3	p100/9	6	-
 6	cyan	9	yellow
 EOF
-psxy -R -J -O -Y4.75i -Gred -L -B2g1 -C$$.cpt << EOF >> $ps
+psxy -R -J -O -Y4.75i -Gred -L -B2g1 -Ctt.cpt << EOF >> $ps
 > -Ggreen -W
 0	0
 2	2

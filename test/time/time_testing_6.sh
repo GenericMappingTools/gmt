@@ -14,7 +14,7 @@ header "Test time conversions (abs & rel time)"
 
 ps=time_testing_6.ps
 
-grdmath -R0/90/0/90 -I1 X Y ADD = $$.nc
-grdcontour $$.nc -JX6t/6 -C5 -A10 --TIME_EPOCH=2004-01-01T --TIME_UNIT=d  -Bpa7Rf1d/10 -Bsa1O/ -P --FORMAT_DATE_MAP="-o-yy" --FONT_ANNOT_PRIMARY=9p > $ps
+grdmath -R0/90/0/90 -I1 X Y ADD = tt.nc
+grdcontour tt.nc -JX6t/6 -C5 -A10 --TIME_EPOCH=2004-01-01T --TIME_UNIT=d  -Bpa7Rf1d/10 -Bsa1O/ -P --FORMAT_DATE_MAP="-o-yy" --FONT_ANNOT_PRIMARY=9p > $ps
 
 pscmp

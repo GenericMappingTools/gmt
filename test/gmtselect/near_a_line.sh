@@ -16,35 +16,35 @@ header "Test gmtselect's new -L[p] option on given data"
 
 ps=near_a_line.ps
 # Some test data
-grdmath -R0/5/0/5 -I0.1 0 = $$.nc
-cat << EOF > $$.d
+grdmath -R0/5/0/5 -I0.1 0 = tt.nc
+cat << EOF > tt.d
 > line 1
 1 1
 2 2.2
 3 2.8
 3.7 4
 EOF
-grd2xyz $$.nc > $$.xyz
+grd2xyz tt.nc > tt.xyz
 # Do test both with Cartesian and spherical data
 # CARTESIAN DATA: distance D = 1 unit
 D=1
 # Old behavior
-psxy -R0/5/0/5 -JX3.25i -P -B1g1WSne -K -Sc0.02 -Gred $$.xyz -X0.75i -Y1i > $ps
-gmtselect $$.xyz -L${D}/$$.d | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
-psxy -R -J -O -K $$.d -W1p >> $ps
+psxy -R0/5/0/5 -JX3.25i -P -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X0.75i -Y1i > $ps
+gmtselect tt.xyz -L${D}/tt.d | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
+psxy -R -J -O -K tt.d -W1p >> $ps
 # New behavior
-psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -X3.75i >> $ps
-gmtselect $$.xyz -Lp${D}/$$.d | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
-psxy -R -J -O -K $$.d -W1p >> $ps
+psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X3.75i >> $ps
+gmtselect tt.xyz -Lp${D}/tt.d | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
+psxy -R -J -O -K tt.d -W1p >> $ps
 # SPHERICAL DATA (-fg): distance D = 1 degree
 D=1d
 # Old behavior
-psxy -R -JM3.25i -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -X-3.75i -Y4i >> $ps
-gmtselect $$.xyz -L${D}/$$.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
-psxy -R -J -O -K $$.d -W1p >> $ps
+psxy -R -JM3.25i -O -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X-3.75i -Y4i >> $ps
+gmtselect tt.xyz -L${D}/tt.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
+psxy -R -J -O -K tt.d -W1p >> $ps
 # New behavior
-psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -X3.75i >> $ps
-gmtselect $$.xyz -Lp${D}/$$.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
-psxy -R -J -O $$.d -W1p >> $ps
+psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X3.75i >> $ps
+gmtselect tt.xyz -Lp${D}/tt.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
+psxy -R -J -O tt.d -W1p >> $ps
 
 pscmp
