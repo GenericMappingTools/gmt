@@ -13,7 +13,7 @@ if [ -z "$HAVE_GMT_DEBUG_SYMBOLS" ]; then
 fi
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output
-DATA=../genper/etopo10.nc	# Test on ETOP10 data
+DATA="${src}/../genper/etopo10.nc" # Test on ETOP10 data
 ps=filtertest.ps
 pdf=`basename $ps ".ps"`.pdf
 if [ $# -ne 4 ]; then
