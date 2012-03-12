@@ -67,12 +67,13 @@ if (DO_TESTS)
 
 	# add tests
 	foreach (_test_dir ${GMT_TEST_DIRS})
-		file(GLOB _test_scripts
+		# find files RELATIVE so that test NAMEs are not absolute paths
+		file(GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 			"${CMAKE_CURRENT_SOURCE_DIR}/${_test_dir}/*.sh")
 		foreach (_test ${_test_scripts})
 			add_test(NAME ${_test}
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				COMMAND bash ${_test})
+				COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/${_test})
 		endforeach (_test ${_test_scripts})
 	endforeach (_test_dir ${GMT_TEST_DIRS})
 endif (DO_TESTS)

@@ -5,8 +5,9 @@
 
 # Print the shell script name and purpose and fill out to 72 characters
 # and make sure to use US system defaults
+scriptname=$(basename "$0")
 header () {
-  printf "%-72s\n" "$0: $1"
+  printf "%-72s\n" "${scriptname}: $1"
 }
 
 # Convert PS to PDF
@@ -63,14 +64,18 @@ passfail () {
 LANG=C
 
 # Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
-export GMT_BINARY_DIR="@GMT_BINARY_DIR@"
-export GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
-export HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
-export HAVE_OPENMP="@HAVE_OPENMP@"
-export GRAPHICSMAGICK="@GRAPHICSMAGICK@"
+
+# Define variables that are needed *within* test scripts
+GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
+HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
+HAVE_OPENMP="@HAVE_OPENMP@"
+GRAPHICSMAGICK="@GRAPHICSMAGICK@"
+# Where the current script resides (need absolute path)
+cd $(dirname "$0")
+src="${PWD}"
 
 # Reset error count
 ERROR=0
@@ -80,8 +85,9 @@ function on_exit()
 {
   set +e
   trap - EXIT # Restore EXIT trap
+  cd "@GMT_BINARY_DIR@" # get out of exec_dir before removing it
+  test "${ERROR}" -eq 0 && rm -rf "${exec_dir}"
   echo "exit status: ${ERROR}"
-  [[ ${ERROR} == 0 ]] && rm -rf $dest
   exit ${ERROR}
 }
 trap on_exit EXIT
@@ -97,13 +103,11 @@ function on_err()
 }
 trap on_err ERR SIGSEGV SIGTRAP SIGBUS
 
-# Create a temporary directory on the binary side
-dir=`dirname $0`
-testdir=test/`basename $dir`
-export src=$GMT_SOURCE_DIR/$testdir
-export dest=$GMT_BINARY_DIR/$testdir/`basename $0 .sh`
-mkdir -p $dest
-cd $dest
+# Create a temporary directory exec_dir in the build dir
+# and run remainder of this GMT script there
+exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${src##*/}/${scriptname%.sh}"
+mkdir -p "${exec_dir}"
+cd "${exec_dir}"
 
 # Start with proper GMT defaults
 gmtset -Du

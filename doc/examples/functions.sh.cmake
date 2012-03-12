@@ -18,14 +18,16 @@ fi
 # Temporary change LANG to C
 LANG=C
 
-# Use executables from GMT_BINARY_DIR
-export GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
-export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:${PATH}"
+# Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
+export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
-export EXTRA_FONTS_DIR="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
-export CMP_FIG_PATH="@GMT_SOURCE_DIR@/doc/fig"
-export GRAPHICSMAGICK="@GRAPHICSMAGICK@"
+
+# Define variables that are needed *within* test scripts
+GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
+EXTRA_FONTS_DIR="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
+CMP_FIG_PATH="@GMT_SOURCE_DIR@/doc/fig"
+GRAPHICSMAGICK="@GRAPHICSMAGICK@"
 
 # Reset error count
 ERROR=0
