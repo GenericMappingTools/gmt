@@ -2,6 +2,14 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-03-12	remko
+	* scripts/CMakeLists.txt:
+				Scripts now run in build directory without copying files.
+	* scripts/CMakeLists.txt examples/CMakeLists.txt:
+				No more "dark magic" with recursive calling of CMakeLists.txt.
+	* cmake/modules/ScriptToVerbatim:
+				Introduced to handle .sh to .txt conversion.
+
 2012-03-11	remko
 	* test/functions.sh.cmake test/*/*.sh test/CMakeLists.txt:
 				Changed so that testing occurs in build directory without copying
