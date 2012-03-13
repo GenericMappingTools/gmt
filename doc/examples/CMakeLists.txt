@@ -33,7 +33,7 @@ set (_all_jobs ${_animation_jobs} ${_example_jobs})
 include (ManageString)
 
 # Convert scripts to verbatim text for inclusion in TeX documentation
-macro (SCRIPT_TO_VERBATIM)
+macro (script_to_verbatim)
 		grep ("[$]Id:|functions[.]sh" _file_content ${script} INVERT)
 		string (REPLACE ";" "\n" _file_content "${_file_content}")
 		string_unescape (_verbatim_txt "${_file_content}" NOESCAPE_SEMICOLON)
@@ -46,7 +46,7 @@ macro (SCRIPT_TO_VERBATIM)
 				_verbatim_file ${_verbatim_file})
 		endif (_verbatim_file MATCHES anim)
 		file (WRITE ${_verbatim_file} "${_verbatim_txt}")
-endmacro (SCRIPT_TO_VERBATIM)
+endmacro (script_to_verbatim)
 
 macro (SETUP)
 	# List of output verbatime files for inclusion in LaTeX doc
@@ -93,7 +93,7 @@ macro (SETUP)
 		foreach (_job ${_all_jobs})
 			get_filename_component (_job_path
 				${CMAKE_CURRENT_BINARY_DIR}/${_job} PATH)
-			add_test(NAME ${_job}
+			add_test (NAME ${_job}
 				WORKING_DIRECTORY ${_job_path}
 				COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${_job})
 		endforeach (_job)
@@ -103,11 +103,11 @@ macro (SETUP)
 		foreach (_job ${_example_jobs_win})
 			get_filename_component (_job_path
 				${CMAKE_CURRENT_BINARY_DIR}/${_job} PATH)
-			add_test(NAME ${_job}
+			add_test (NAME ${_job}
 				WORKING_DIRECTORY ${_job_path}
 				COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_job})
 		endforeach (_job)
-	endif(DO_EXAMPLES) # AND UNIX)
+	endif (DO_EXAMPLES) # AND UNIX)
 endmacro (SETUP)
 
 # Get something done
@@ -123,7 +123,7 @@ if (EXAMPLES_COMMAND)
 	endif (NOT _command_handled)
 else (EXAMPLES_COMMAND)
 	# Must be part of the actual configure (included from CMakeLists.txt).
-	SETUP()
+	SETUP ()
 endif (EXAMPLES_COMMAND)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

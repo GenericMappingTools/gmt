@@ -27,13 +27,9 @@ if (DO_TESTS)
 		project psbasemap pscoast pscontour psimage pslegend pslib psrose psscale
 		pstext psxy psxyz sph splitxyz spotter time trend2d triangulate x2sys)
 
-	# rules for copying test files to build dir
-	file (GLOB_RECURSE _files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
-	list_regex_get ("[.]svn/|[.]cmake|CMakeLists.txt" _files ${_files} INVERT)
-
 	# export HAVE_GMT_DEBUG_SYMBOLS
-	get_directory_property(_dir_defs COMPILE_DEFINITIONS)
-	list(FIND _dir_defs DEBUG HAVE_GMT_DEBUG_SYMBOLS)
+	get_directory_property (_dir_defs COMPILE_DEFINITIONS)
+	list (FIND _dir_defs DEBUG HAVE_GMT_DEBUG_SYMBOLS)
 	if (HAVE_GMT_DEBUG_SYMBOLS EQUAL -1)
 		set (HAVE_GMT_DEBUG_SYMBOLS)
 	else (HAVE_GMT_DEBUG_SYMBOLS EQUAL -1)
@@ -54,10 +50,10 @@ if (DO_TESTS)
 	# add tests
 	foreach (_test_dir ${GMT_TEST_DIRS})
 		# find files RELATIVE so that test NAMEs are not absolute paths
-		file(GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		file (GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 			"${CMAKE_CURRENT_SOURCE_DIR}/${_test_dir}/*.sh")
 		foreach (_test ${_test_scripts})
-			add_test(NAME ${_test}
+			add_test (NAME ${_test}
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/${_test})
 		endforeach (_test ${_test_scripts})
