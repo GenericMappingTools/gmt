@@ -74,7 +74,7 @@ macro (SETUP)
 			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 	endforeach (_script ${_animation_jobs} ${_example_jobs})
 
-	add_custom_target (verbatim_examples DEPENDS ${_all_verbatim})
+	add_custom_target (examples_txt DEPENDS ${_all_verbatim})
 
 	# run examples (test)
 	if (DO_EXAMPLES) # AND UNIX)

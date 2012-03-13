@@ -17,21 +17,20 @@
 #-------------------------------------------------------------------------------
 
 # Figure files
-set (_copy_only_figures formatpicture.png formatting.png highres.png
+set (_ppt_fig formatpicture.png formatting.png highres.png
 	noantialias.png rendering.png withantialias.png)
 
 # Copy figures without converting
-foreach (_fig ${_copy_only_figures})
+foreach (_fig ${_ppt_fig})
 	add_custom_command (OUTPUT ${_fig}
 		COMMAND ${CMAKE_COMMAND}
 		-E copy_if_different
 		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 		${_fig}
 		DEPENDS ${_fig})
-endforeach (_fig ${_copy_only_figures})
+endforeach (_fig ${_ppt_fig})
 
 # Add build target
-add_custom_target (copy_ppt_figures DEPENDS ${_copy_only_figures})
-add_dependencies (copy_other_figures copy_ppt_figures)
+add_custom_target (ppt_fig DEPENDS ${_ppt_fig})
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

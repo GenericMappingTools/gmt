@@ -76,10 +76,13 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
 		set (_common_depends
 			copy_tex_depends
-			pdf_figures
-			copy_other_figures
-			verbatim_examples
-			verbatim_scripts)
+			fig_pdf
+			fig_fig
+			ppt_fig
+			scripts_pdf
+			scripts_txt
+			examples_txt
+		)
 
 		# Generate GMT_version.tex
 		configure_file (GMT_version.tex.cmake GMT_version.tex)
