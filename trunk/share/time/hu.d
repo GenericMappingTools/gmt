@@ -3,26 +3,26 @@
 #	$Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
-M	1	Január		Jan	J
-M	2	Február		Febr	F
-M	3	Március		Márc	M
-M	4	Április		Ápr	Á
-M	5	Május		Máj	M
-M	6	Június		Jún	J
-M	7	Július		Júl	J
+M	1	JanuÃ¡r		Jan	J
+M	2	FebruÃ¡r		Febr	F
+M	3	MÃ¡rcius		MÃ¡rc	M
+M	4	Ãprilis		Ãpr	Ã
+M	5	MÃ¡jus		MÃ¡j	M
+M	6	JÃºnius		JÃºn	J
+M	7	JÃºlius		JÃºl	J
 M	8	Augusztus	Aug	A
 M	9	Szeptember	Szept	Sz
-M	10	Október		Okt	O
+M	10	OktÃ³ber		Okt	O
 M	11	November	Nov	N
 M	12	December	Dec	D
 # Name and abbreviations for the word Week in this language
-U	1	Hét		Hét	H
+U	1	HÃ©t		HÃ©t	H
 # Weeknames, with 3-char and 1-char abbreviations
 # (List starts on Sunday regardless of TIME_WEEK_START)
-W	1	Vasárnap	Vas	V
-W	2	Hétfö		Hét	H
+W	1	VasÃ¡rnap	Vas	V
+W	2	HÃ©tfÃ¶		HÃ©t	H
 W	3	Kedd		Ked	K
 W	4	Szerda		Sze	Sz
-W	5	Csütörtök	Csü	Cs
-W	6	Péntek		Pén	P
+W	5	CsÃ¼tÃ¶rtÃ¶k	CsÃ¼	Cs
+W	6	PÃ©ntek		PÃ©n	P
 W	7	Szombat		Szo	Sz

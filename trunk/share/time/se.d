@@ -19,10 +19,10 @@ M	12	December	Dec	D
 U	1	Vecka		Vec	V
 # Weeknames, with 3-char and 1-char abbreviations
 # (List starts on Sunday regardless of TIME_WEEK_START)
-W	1	Söndag		Sön	S
-W	2	Måndag		Mån	M
+W	1	SÃ¶ndag		SÃ¶n	S
+W	2	MÃ¥ndag		MÃ¥n	M
 W	3	Tisdag		Tis	T
 W	4	Onsdag		Ons	O
 W	5	Torsdag		Tor	T
 W	6	Fredag		Fre	F
-W	7	Lördag		Lör	S
+W	7	LÃ¶rdag		LÃ¶r	S

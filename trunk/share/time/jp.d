@@ -3,26 +3,26 @@
 #	$Id$
 #-------------------------------------------------
 #
-M	1	办奉		办	J
-M	2	企奉		企	F
-M	3	话奉		话	M
-M	4	煌奉		煌	A
-M	5	皋奉		皋	M
-M	6	匣奉		匣	J
-M	7	挤奉		挤	J
-M	8	痊奉		痊	A
-M	9	跺奉		跺	S
-M	10	浇奉		浇	O
-M	11	浇办奉		浇办	N
-M	12	浇企奉		浇企	D
+M	1	掳矛路卯		掳矛	J
+M	2	脝贸路卯		脝贸	F
+M	3	禄掳路卯		禄掳	M
+M	4	禄脥路卯		禄脥	A
+M	5	啪脼路卯		啪脼	M
+M	6	脧禄路卯		脧禄	J
+M	7	艗路路卯		艗路	J
+M	8	脠卢路卯		脠卢	A
+M	9	露氓路卯		露氓	S
+M	10	艙艙路卯		艙艙	O
+M	11	艙艙掳矛路卯		艙艙掳矛	N
+M	12	艙艙脝贸路卯		艙艙脝贸	D
 # Week Days
-U	1	降		降	W
+U	1	艙碌		艙碌	W
 # Weeknames, with 3-char and 1-char abbreviations
 # (List starts on Sunday regardless of TIME_WEEK_START)
-W	1	泣退泣		泣	S
-W	2	奉退泣		奉	M
-W	3	残退泣		残	T
-W	4	垮退泣		垮	W
-W	5	腾退泣		腾	T
-W	6	垛退泣		垛	F
-W	7	炮退泣		炮	S
+W	1	脝眉脥脣脝眉		脝眉	S
+W	2	路卯脥脣脝眉		路卯	M
+W	3	虏脨脥脣脝眉		虏脨	T
+W	4	驴氓脥脣脝眉		驴氓	W
+W	5	脤脷脥脣脝眉		脤脷	T
+W	6	露芒脥脣脝眉		露芒	F
+W	7	脜脷脥脣脝眉		脜脷	S

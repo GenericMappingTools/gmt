@@ -22,7 +22,7 @@ U	1	Semana		Sem	S
 W	1	Domingo		Dgo	D
 W	2	Lunes		Lun	L
 W	3	Martes		Mar	M
-W	4	Miércoles	Mie	M
+W	4	MiÃ©rcoles	Mie	M
 W	5	Jueves		Jue	J
 W	6	Viernes		Vie	V
-W	7	Sábado		Sab	S
+W	7	SÃ¡bado		Sab	S

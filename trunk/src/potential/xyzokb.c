@@ -57,7 +57,7 @@
  *	17-02-04
  *	No seguimento da mixordice voltei a por o z0 *= z_dir. Isto faz a coisa mais
  *	coerente. Assim, na opcao -Z o <level> deve obedecer ao sinal. Ou seja, -Z-2300
- *	significa que a base est· a -2300 m de prof.
+ *	significa que a base est√° a -2300 m de prof.
  *
  */
 

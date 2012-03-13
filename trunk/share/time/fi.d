@@ -8,8 +8,8 @@ M	2	Helmikuu	Hel	H
 M	3	Maaliskuu	Maa	M
 M	4	Huhtikuu	Huh	H
 M	5	Toukokuu	Tou	T
-M	6	Kes‰kuu		Kes	K
-M	7	Hein‰kuu	Hei	H
+M	6	Kes√§kuu		Kes	K
+M	7	Hein√§kuu	Hei	H
 M	8	Elokuu		Elo	E
 M	9	Syyskuu		Syy	S
 M	10	Lokakuu		Lok	L
