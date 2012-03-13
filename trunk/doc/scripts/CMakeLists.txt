@@ -56,8 +56,8 @@ set (_all_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other} ${_scr_test})
 set (_all_scripts ${_scr_nostrip} ${_scr_strip})
 string (REPLACE ".sh" ".txt" _all_verbatim "${_all_scripts}")
 
-set (_all_figures ${_scr_nostrip} ${_scr_strip} ${_scr_other})
-#	GMT_-U.ps GMT_RGBchart_a4.ps GMT_RGBchart_letter.ps GMT_RGBchart_tabloid.ps)
+set (_all_figures ${_scr_nostrip} ${_scr_strip} ${_scr_other}
+	GMT_-U.ps GMT_RGBchart_a4.ps GMT_RGBchart_letter.ps GMT_RGBchart_tabloid.ps)
 string (REPLACE ".sh" ".ps" _all_ps "${_all_figures}")
 string (REPLACE ".ps" ".pdf" _all_pdf "${_all_ps}")
 
@@ -66,20 +66,20 @@ set (_pdf_fig_install GMT_RGBchart_a4.pdf GMT_RGBchart_tabloid.pdf GMT_RGBchart_
 include (ManageString)
 
 # Convert figures to PDF
-#foreach (_fig ${_all_ps})
-#	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
-#	list (APPEND _all_pdf ${_pdf_fig})
-#	add_custom_command (
-##		OUTPUT ${_fig}.pdf
-#		COMMAND
-#		GMT_USERDIR=${GMT_BINARY_DIR}/share
-##		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-#		${GMT_BINARY_DIR}/src/ps2raster -A -P -Tf
-#		-D${CMAKE_CURRENT_BINARY_DIR}
-#		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-#		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-#		DEPENDS ps2raster ${_fig})
-#endforeach (_fig ${_all_ps})
+foreach (_fig ${_all_ps})
+	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
+	list (APPEND _all_pdf ${_pdf_fig})
+	add_custom_command (
+		OUTPUT ${_fig}.pdf
+		COMMAND
+		GMT_USERDIR=${GMT_BINARY_DIR}/share
+		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+		${GMT_BINARY_DIR}/src/ps2raster -A -P -Tf
+		-D${CMAKE_CURRENT_BINARY_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS ps2raster ${_fig})
+endforeach (_fig ${_all_ps})
 
 macro (SCRIPT_TO_VERBATIM)
 	# Convert scripts to verbatim text for inclusion in TeX documentation
