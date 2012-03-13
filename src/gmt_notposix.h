@@ -70,7 +70,7 @@
 #	include <sys/types.h>
 #endif
 
-#ifndef HAVE_MODE_T
+#ifndef SIZEOF_MODE_T
   /* MSC does not define mode_t */
 	typedef unsigned int mode_t;
 #endif
