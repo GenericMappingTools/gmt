@@ -3,7 +3,7 @@
 #
 # Test the Mercator map maker
 
-. functions.sh
+. ./functions.sh
 header "Test Mercator relief image made by gmtmercmap"
 
 ln -fs "$src"/etopo2m_grd.nc .

@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. functions.sh
+. ./functions.sh
 header "Test grdimage for use of color masking"
 
 xyz2grd -R-0.5/2.5/-0.5/2.5 -I1 -r -Gt.nc <<%

@@ -4,7 +4,7 @@
 #
 #	$Id$
 
-. functions.sh
+. ./functions.sh
 header "Test grdview, psclip, grdcontour, psxyz in 3D"
 
 ### Plot options

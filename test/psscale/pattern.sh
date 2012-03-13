@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 #
-. functions.sh
+. ./functions.sh
 
 header "Test psscale with patterns"
 
@@ -20,4 +20,4 @@ grdview t.nc -JX5i -P -Xc -Yc -K -Cpatt.cpt -Qs -B1 > $ps
 psscale -Cpatt.cpt -D2.5i/-0.5i/4.5i/0.25ih -O -K >> $ps
 psscale -Cpatt.cpt -D5.5i/2.5i/4.5i/0.25i -O >> $ps
 
-pscmp pattern
+pscmp

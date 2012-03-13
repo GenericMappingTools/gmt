@@ -3,7 +3,7 @@
 #
 # Tests project in generating small and great circles
 
-. functions.sh
+. ./functions.sh
 header "Test project's ability to generate small/great circles"
 
 # P is the rotation pole and C is the center.  The great circle through

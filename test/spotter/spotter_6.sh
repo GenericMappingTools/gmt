@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "Testing rotconverter for adding rotations"
 
 # We are testing a few examples from Cox and Hart, Plate Tectonics - How it works.

@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 #
-. functions.sh
+. ./functions.sh
 
 header "Test psscale and makecpt combinations"
 
@@ -24,4 +24,4 @@ makecpt -T-6/6/1 -Cseis -D -Z | grep -v ^0 | sed 's/^1/0/' > tmp.cpt
 psscale -Ctmp.cpt -D20/04/8/0.5 -O -K       >> $ps
 psscale -Ctmp.cpt -D20/13/8/0.5 -O    -I -N100 >> $ps
 
-pscmp seis
+pscmp

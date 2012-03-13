@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "Testing sphinterpolate I"
 
 makecpt -Crainbow -T-7000/15000/1000 -Z > tt.cpt

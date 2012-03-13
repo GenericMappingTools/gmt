@@ -4,7 +4,7 @@
 # Test that contours are oriented correctly
 # grdraster 5 -R204/206/19/21 -GBigIsland.nc
 
-. functions.sh
+. ./functions.sh
 header "Test grdcontour for oriented contours with -Fl/r"
 
 color_contour () {

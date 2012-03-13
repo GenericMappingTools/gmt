@@ -3,7 +3,7 @@
 #
 # Testing pslegend capabilities
 
-. functions.sh
+. ./functions.sh
 header "Test pslegend and its various items"
 
 makecpt -Cpanoply -T-8/8/1 > tt.cpt

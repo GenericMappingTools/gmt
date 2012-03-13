@@ -3,7 +3,7 @@
 # Testing grdfilter's isotropic and rectangular filter
 # on a spike, using both -D0 and -Dp for pixel widths.
 
-. functions.sh
+. ./functions.sh
 header "Test grdfilter for isotropic and rectangular filters"
 
 filter () {

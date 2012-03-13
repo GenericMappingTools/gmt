@@ -7,7 +7,7 @@
 # fall exactly on tile boundaries.  One point will fall outside -R
 # but should be considered for the gridline registrated case.
 
-. functions.sh
+. ./functions.sh
 header "Test blockmean's (x,y) <--> (i,j) conversions (numerical)"
 
 cat << EOF > pixel.d

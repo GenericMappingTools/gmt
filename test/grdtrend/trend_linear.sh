@@ -3,7 +3,7 @@
 #
 # Remove a bilinear trend
 
-. functions.sh
+. ./functions.sh
 header "Test grdtrend to remove a bilinear trend"
 
 grdmath -R-15/15/-15/15 -I0.1 X Y ADD = lixo1.grd

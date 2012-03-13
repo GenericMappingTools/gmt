@@ -3,7 +3,7 @@
 # GMT 5 test script for pseudo perspective on some projections. By Ken McLean.
 # Create normal plot, 180 deg rotation, and oblique pseudo perspective of each.
 
-. functions.sh
+. ./functions.sh
 header "Test placement of pseudo perspective projections"
 
 coast () {

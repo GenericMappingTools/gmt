@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "Testing grdspotter for NW Pacific grid"
 
 # coarser (5m vs 2m) reproduction of Fig 3 in Wessel, P. (2008),

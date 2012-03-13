@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test the gmt2kml application
 
-. functions.sh
+. ./functions.sh
 
 header "Test gmt2kml by plotting coastline of UK"
 

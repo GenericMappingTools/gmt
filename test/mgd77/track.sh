@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "Testing mgd77track for mapping"
 
 ln -fs "$src"/01010221.mgd77 .

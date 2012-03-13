@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 #
-. functions.sh
+. ./functions.sh
 
 header "Test horizontal/vertical color bar with/without flipping"
 
@@ -25,4 +25,4 @@ plot -Y2 -K > $ps
 psscale="psscale -E -Ctmp.cpt -Ac -B1:Range:/:m:"
 plot "-Y9 -O" >> $ps
 
-pscmp psscale
+pscmp

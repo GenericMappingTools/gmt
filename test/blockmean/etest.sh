@@ -6,7 +6,7 @@
 # in a -R0/2/0/2 -I2 -r situation (2x2 blocks)
 # In all blocks mean = median = mode = 5.
 
-. functions.sh
+. ./functions.sh
 header "Test blockmean's new -E option on given data"
 
 log=etest.log

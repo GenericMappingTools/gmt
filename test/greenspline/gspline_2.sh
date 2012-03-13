@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "greenspline: Testing Cartesian 2-D interpolation I"
 
 # Figure 3 in Wessel, P. (2009), A general-purpose Green's function-based

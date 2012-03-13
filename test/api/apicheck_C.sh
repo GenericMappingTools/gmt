@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test the C API for i/o involving CPTs
 
-. functions.sh
+. ./functions.sh
 
 function cpt_check {
 	testapi -I$1 -W$2 -Tc

@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grdfft
 
-. functions.sh
+. ./functions.sh
 header "Test grdfft for Gaussian filtering"
 
 # Do a 100 km Gaussian filter on some topography

@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "Testing grdpmodeler for evaluating APM model"
 
 POLES="$src"/WK97.d

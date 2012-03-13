@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "greenspline: Testing Spherical 3-D interpolation"
 
 # Figures 2+3 in Wessel, P., and J. M. Becker (2008), Interpolation using a

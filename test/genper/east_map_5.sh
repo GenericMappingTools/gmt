@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 
-. functions.sh
+. ./functions.sh
 header "Test -JG (US East Coast 160 km w/tilt+twist)"
 
 EARTH_MODEL=e

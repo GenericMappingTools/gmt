@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "Testing hotspotter to build CVA grids"
 
 # Example 2 - Using hotspotter

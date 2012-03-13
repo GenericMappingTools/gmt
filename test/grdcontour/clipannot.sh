@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. functions.sh
+. ./functions.sh
 header "Test grdcontour for clip path set by annotations"
 
 # Make a grid, annotate every 20 and use those as clip paths

@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. functions.sh
+. ./functions.sh
 header "Test grdcontour for closed contours"
 
 # Make a grid with closed contours at N pole, one crossing the periodic boundary, and one safely in middle

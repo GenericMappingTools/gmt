@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test pstext with filled and outline fonts
 
-. functions.sh
+. ./functions.sh
 header "Test plotting filled and outline fonts"
 
 ln -fs ${GMT_SOURCE_DIR}/share/psldemo/circuit.ras .

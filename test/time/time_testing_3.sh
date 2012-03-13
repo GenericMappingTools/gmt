@@ -8,7 +8,7 @@
 # Next we use unix which uses seconds.  Hence the output should cover the
 # first 5 seconds in year 1970:
 
-. functions.sh
+. ./functions.sh
 header "Test time conversions (rel time & Unix)"
 
 sample1d -I0.5 << EOF > tt.d

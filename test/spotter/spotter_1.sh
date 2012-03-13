@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "Testing backtracker fwd/back-ward"
 
 # Example 1 - Using backtracker

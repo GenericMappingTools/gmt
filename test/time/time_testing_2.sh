@@ -12,7 +12,7 @@
 # First we use J2000 which uses days.  Hence the output should cover the
 # first 5 days in year 2000, starting at noon:
 
-. functions.sh
+. ./functions.sh
 header "Test time conversions (rel time & j2000)"
 
 cat << EOF > tt.answer

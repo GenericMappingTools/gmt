@@ -10,7 +10,7 @@
 # the historic Apollo 11 moon-landing; these 24-hour periods crosses
 # normal day boundaries:
 
-. functions.sh
+. ./functions.sh
 header "Test time conversions (rel time & custom)"
 
 sample1d -I0.5 << EOF > tt.d

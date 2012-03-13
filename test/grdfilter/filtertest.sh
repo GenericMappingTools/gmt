@@ -4,7 +4,7 @@
 # filter diameter.  Specify which output you want (a|c|r|w).
 # Change args below to pick another filter.
 
-. functions.sh
+. ./functions.sh
 header "Test grdfilter for filter weights (-DDEBUG only)"
 
 if [ -z "$HAVE_GMT_DEBUG_SYMBOLS" ]; then

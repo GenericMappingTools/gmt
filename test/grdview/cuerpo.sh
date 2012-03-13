@@ -3,7 +3,7 @@
 #	$Id$
 # This test is based on a query by Eduardo Suarez
 
-. functions.sh
+. ./functions.sh
 header "Test grdview in combination with psxyz"
 
 makecpt -Crainbow -T65/130/20 > cuerpo.cpt

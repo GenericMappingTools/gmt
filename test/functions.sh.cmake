@@ -14,23 +14,21 @@ header () {
 # Convert PS to PDF
 function make_pdf()
 {
-  psfile="${1:-$ps}"
-  pdfile="${psfile%.ps}.pdf"
-  test -f "${psfile}" || return 1
-  ps2raster -Tf -A -P -Ggs "${psfile}" || ((++ERROR))
-  test -f "${pdfile}" || ((++ERROR))
+  pdf="${ps%.ps}.pdf"
+  test -f "$ps" || return 1
+  ps2raster -Tf -A -P -Ggs "$psf" || ((++ERROR))
+  test -f "$pdf" || ((++ERROR))
 }
 
-# Compare the ps file with its original. Check $1.ps (if $1 given) or $ps
+# Compare the ps file with its original. Check $ps against original $ps or against $1.ps (if $1 given)
 pscmp () {
-  f=${1:-${ps%.ps}}
-  g=${2:-$f}
+  test -f "$ps" || return 1
   if ! [ -x "$GRAPHICSMAGICK" ]; then
     echo "[PASS] (without comparison)"
     return
   fi
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file ${f}.png ${f}.ps "$src"/${g}.ps) || pscmpfailed="yes"
+  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/${1:-$ps}") || pscmpfailed="yes"
   rms=$(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p' <<< "$rms")
   if [ -z "$rms" ]; then
     rms="NA"
@@ -40,8 +38,8 @@ pscmp () {
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
     echo "RMS Error = $rms [FAIL]"
-    echo "$now ${src##*/}/${f}.ps: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
-    make_pdf ${f}.ps # try to make pdf file
+    echo "$now ${src##*/}/${ps%.ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
+    make_pdf "$ps" # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
@@ -74,6 +72,7 @@ GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
 HAVE_OPENMP="@HAVE_OPENMP@"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
+
 # Where the current script resides (need absolute path)
 cd "$(dirname "$0")"
 src="${PWD}"

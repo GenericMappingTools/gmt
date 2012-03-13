@@ -3,7 +3,7 @@
 #
 # Test grdmask for proper handling of perimeter and holes [OGR].
 
-. functions.sh
+. ./functions.sh
 header "Test grdmask for OGR perimeter/hole compliance"
 
 # 1. make a regular mask from a perimeter+hole file

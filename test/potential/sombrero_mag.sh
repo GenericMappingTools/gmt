@@ -3,7 +3,7 @@
 #
 # Compute the magnetic anomaly of our Mexican hat split in two halves
 
-. functions.sh
+. ./functions.sh
 header "Compute magnetic anomaly of the Mexican hat"
 
 # Create two half sobreros 

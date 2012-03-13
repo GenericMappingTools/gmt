@@ -3,7 +3,7 @@
 #
 # Check geovector symbols
 
-. functions.sh
+. ./functions.sh
 header "Test psxyz with geovector symbols"
 
 # Vector from point with head at end
