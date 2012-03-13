@@ -50,125 +50,93 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 # Scripts that are only used for testing, figures are not in the documentation
 set (_scr_test GMT_RGBchart.sh)
 
-set (_all_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other} ${_scr_test})
+set (_scripts_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other} ${_scr_test})
 
-set (_all_scripts ${_scr_nostrip} ${_scr_strip})
-string (REPLACE ".sh" ".txt" _scripts_txt "${_all_scripts}")
+set (_scripts_txt ${_scr_nostrip} ${_scr_strip})
+string (REPLACE ".sh" ".txt" _scripts_txt "${_scripts_txt}")
 
-set (_all_figures ${_scr_nostrip} ${_scr_strip} ${_scr_other}
+set (_scripts_ps ${_scr_nostrip} ${_scr_strip} ${_scr_other}
 	GMT_-U.ps GMT_RGBchart_a4.ps GMT_RGBchart_letter.ps GMT_RGBchart_tabloid.ps)
-string (REPLACE ".sh" ".ps" _scripts_ps "${_all_figures}")
+string (REPLACE ".sh" ".ps" _scripts_ps "${_scripts_ps}")
 
 set (_scripts_pdf)
 set (_install_pdf GMT_RGBchart_a4.pdf GMT_RGBchart_tabloid.pdf GMT_RGBchart_letter.pdf)
 
-include (ManageString)
+# Convert figures to PDF
+foreach (_fig ${_scripts_ps})
+	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
+	list (APPEND _scripts_pdf ${_pdf_fig})
+	add_custom_command (
+		OUTPUT ${_pdf_fig}
+		COMMAND
+		GMT_USERDIR=${GMT_BINARY_DIR}/share
+		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+		${GMT_BINARY_DIR}/src/ps2raster -A -P -Tf
+		-D${CMAKE_CURRENT_BINARY_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS ps2raster ${_fig})
+endforeach (_fig ${_scripts_ps})
 
-macro (script_to_verbatim)
-	# Convert scripts to verbatim text for inclusion in TeX documentation
-	if (no_strip)
-		grep ("[$]Id:|functions[.]sh" _file_content ${script} INVERT)
-	else (no_strip)
-		grep ("^#|functions.sh" _file_content ${script} INVERT)
-	endif (no_strip)
-	string (REPLACE ";" "\n" _file_content "${_file_content}")
-	string_unescape (_verbatim_txt "${_file_content}" NOESCAPE_SEMICOLON)
-	get_filename_component (_verbatim_file ${script} NAME_WE)
-	file (WRITE ${_verbatim_file}.txt "${_verbatim_txt}")
-endmacro (script_to_verbatim)
+if (PDFLATEX_COMPILER)
+	foreach (_script ${_scr_nostrip})
+		string (REPLACE ".sh" ".txt" _txt ${_script})
+		# Add command that triggers generator macro when output does not exist
+		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_txt}
+			COMMAND ${CMAKE_COMMAND}
+			-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
+			-D txt=${CMAKE_CURRENT_BINARY_DIR}/${_txt}
+			-D no_strip=TRUE
+			-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
+			-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
+			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script} ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake)
+	endforeach (_script)
 
-macro (SETUP)
-	# Convert figures to PDF
-	foreach (_fig ${_scripts_ps})
-		string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
-		list (APPEND _scripts_pdf ${_pdf_fig})
-		add_custom_command (
-			OUTPUT ${_pdf_fig}
-			COMMAND
-			GMT_USERDIR=${GMT_BINARY_DIR}/share
-			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/src/ps2raster -A -P -Tf
-			-D${CMAKE_CURRENT_BINARY_DIR}
-			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+	foreach (_script ${_scr_strip})
+		string (REPLACE ".sh" ".txt" _txt ${_script})
+		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_txt}
+			COMMAND ${CMAKE_COMMAND}
+			-D SCRIPTS_COMMAND=script_to_verbatim
+			-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
+			-D txt=${CMAKE_CURRENT_BINARY_DIR}/${_txt}
+			-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
+			-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
+			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script} ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake)
+	endforeach (_script)
+
+	add_custom_target (scripts_txt DEPENDS ${_scripts_txt})
+endif (PDFLATEX_COMPILER)
+
+# run tests
+if (DO_TESTS)
+	# this file takes care of setting up the test environment
+	configure_file (functions.sh.cmake functions.sh @ONLY)
+
+	# Workaround cmake bug 3957: CRLF line ending
+	find_package (UnixCommands)
+	if (CYGWIN_INSTALL_PATH)
+		find_program (D2U d2u
+			${CYGWIN_INSTALL_PATH}/bin)
+		execute_process (COMMAND ${D2U}
+			${CMAKE_CURRENT_BINARY_DIR}/functions.sh)
+	endif (CYGWIN_INSTALL_PATH)
+
+	foreach (_job ${_scripts_tests})
+		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS ps2raster ${_fig})
-	endforeach (_fig ${_scripts_ps})
+			COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/${_job})
+	endforeach (_job)
+endif (DO_TESTS)
 
-	if (PDFLATEX_COMPILER)
-		foreach (_script ${_scr_nostrip})
-			string (REPLACE ".sh" ".txt" _verbatim_file ${_script})
-			# Add command that triggers generator macro when output does not exist
-			add_custom_command (OUTPUT ${_verbatim_file}
-				COMMAND ${CMAKE_COMMAND}
-				-D SCRIPTS_COMMAND=script_to_verbatim
-				-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
-				-D no_strip=TRUE
-				-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-				-P ${CMAKE_CURRENT_LIST_FILE}
-				DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
-		endforeach (_script)
+# Add build target
+add_custom_target (scripts_pdf DEPENDS ${_scripts_pdf})
 
-		foreach (_script ${_scr_strip})
-			string (REPLACE ".sh" ".txt" _verbatim_file ${_script})
-			add_custom_command (OUTPUT ${_verbatim_file}
-				COMMAND ${CMAKE_COMMAND}
-				-D SCRIPTS_COMMAND=script_to_verbatim
-				-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
-				-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-				-P ${CMAKE_CURRENT_LIST_FILE}
-				DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
-		endforeach (_script)
-
-		add_custom_target (scripts_txt DEPENDS ${_scripts_txt})
-	endif (PDFLATEX_COMPILER)
-
-	# run tests
-	if (DO_TESTS)
-		# this file takes care of setting up the test environment
-		configure_file (functions.sh.cmake functions.sh @ONLY)
-
-		# Workaround cmake bug 3957: CRLF line ending
-		find_package (UnixCommands)
-		if (CYGWIN_INSTALL_PATH)
-			find_program (D2U d2u
-				${CYGWIN_INSTALL_PATH}/bin)
-			execute_process (COMMAND ${D2U}
-				${CMAKE_CURRENT_BINARY_DIR}/functions.sh)
-		endif (CYGWIN_INSTALL_PATH)
-
-		foreach (_job ${_all_tests})
-			add_test (NAME ${_job}
-				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/${_job})
-		endforeach (_job)
-	endif (DO_TESTS)
-
-	# Add build target
-	add_custom_target (scripts_pdf DEPENDS ${_scripts_pdf})
-
-	# Install pdf figures (if found)
-	foreach (_fig ${_install_pdf})
-		install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_fig}
-			DESTINATION ${GMT_DOC_PATH}/pdf
-			COMPONENT Documentation
-			OPTIONAL)
-	endforeach (_fig ${_install_pdf})
-endmacro (SETUP)
-
-# Get something done
-if (SCRIPTS_COMMAND)
-	set (_command_handled)
-	if (${SCRIPTS_COMMAND} STREQUAL script_to_verbatim)
-		script_to_verbatim ()
-		set (_command_handled TRUE)
-	endif (${SCRIPTS_COMMAND} STREQUAL script_to_verbatim)
-
-	if (NOT _command_handled)
-		message (SEND_ERROR "Unknown command: ${SCRIPTS_COMMAND}")
-	endif (NOT _command_handled)
-else (SCRIPTS_COMMAND)
-	# Must be part of the actual configure (included from CMakeLists.txt).
-	SETUP ()
-endif (SCRIPTS_COMMAND)
+# Install pdf figures (if found)
+foreach (_fig ${_install_pdf})
+	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_fig}
+		DESTINATION ${GMT_DOC_PATH}/pdf
+		COMPONENT Documentation
+		OPTIONAL)
+endforeach (_fig ${_install_pdf})
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
