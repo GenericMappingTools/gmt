@@ -21,8 +21,8 @@
 
 include (ManageString)
 
-# GMT_MAKE_PURPOSE_STRING (var file [file...])
-macro (GMT_MAKE_PURPOSE_H _PURPOSES _FILE)
+# gen_gmt_progpurpose.h
+macro (gen_gmt_progpurpose_h _PURPOSES _FILE)
 	grep (
 		#"GMT_message[^%]+%s [[]API[]]"
 		"%s [API] -"
@@ -39,23 +39,23 @@ macro (GMT_MAKE_PURPOSE_H _PURPOSES _FILE)
 	set (${_PURPOSES} "${_purpose_list}")
 
 	configure_file (gmt_progpurpose.h.cmake gmt_progpurpose.h)
-endmacro(GMT_MAKE_PURPOSE_H _PURPOSES _FILE)
+endmacro (gen_gmt_progpurpose_h _PURPOSES _FILE)
 
 # gmt_datums.h
-macro (GMT_GEN_GMT_DATUMS_H)
+macro (gen_gmt_datums_h)
 	file2list (_datums_file ${GMT_SRC}/src/Datums.txt)
 	list_regex_replace (
 		"^([^#\t]+)[\t]+([^\t]+)[\t]+([^\t]+)[\t]+([^\t]+)[\t]+([^\t]+)[\t]+(.+)"
 		"\t\t{\"\\\\1\", \"\\\\2\", \"\\\\6\", {\\\\3, \\\\4, \\\\5}}"
 		_datums ${_datums_file}
 		MATCHES_ONLY)
-	list(REMOVE_DUPLICATES _datums)
+	list (REMOVE_DUPLICATES _datums)
 	string (REPLACE ";" ",\n" _datums "${_datums}")
 	string_unescape (_datums "${_datums}" NOESCAPE_SEMICOLON)
-	file(WRITE gmt_datums.h "${_datums}\n")
-endmacro (GMT_GEN_GMT_DATUMS_H)
+	file (WRITE gmt_datums.h "${_datums}\n")
+endmacro (gen_gmt_datums_h)
 
-macro (GMT_GEN_GMT_PROGS_H)
+macro (gen_gmt_progs_h)
 	# gmt_prognames.h
 	file2list (_prognames_file ${GMT_SRC}/src/GMTprogs.txt)
 	list_regex_replace (
@@ -63,9 +63,9 @@ macro (GMT_GEN_GMT_PROGS_H)
 		"{\"\\\\1\", \\\\2}"
 		_prognames ${_prognames_file}
 		MATCHES_ONLY)
-	list(REMOVE_DUPLICATES _prognames)
+	list (REMOVE_DUPLICATES _prognames)
 	string (REPLACE ";" ",\n" _prognames "${_prognames}")
-	file(WRITE gmt_prognames.h "${_prognames}\n")
+	file (WRITE gmt_prognames.h "${_prognames}\n")
 
 	# gmt_progcases.h
 	list_regex_replace (
@@ -73,19 +73,19 @@ macro (GMT_GEN_GMT_PROGS_H)
 		"\t\t\tfunc = (PFL)GMT_\\\\1#S\n\t\t\t*mode = \\\\2#S\n\t\t\tbreak#S"
 		_raw_progcases ${_prognames_file}
 		MATCHES_ONLY)
-	list(REMOVE_DUPLICATES _raw_progcases)
-	set(_progcases)
-	set(_casenum 0)
+	list (REMOVE_DUPLICATES _raw_progcases)
+	set (_progcases)
+	set (_casenum 0)
 	foreach (_case ${_raw_progcases})
 		list (APPEND _progcases "\t\tcase ${_casenum}:\n${_case}")
-		math(EXPR _casenum "${_casenum} + 1")
+		math (EXPR _casenum "${_casenum} + 1")
 	endforeach (_case ${_raw_progcases})
 	string (REPLACE ";" "\n" _progcases "${_progcases}")
 	string_unescape (_progcases "${_progcases}" NOESCAPE_SEMICOLON)
-	file(WRITE gmt_progcases.h "${_progcases}\n")
-endmacro (GMT_GEN_GMT_PROGS_H)
+	file (WRITE gmt_progcases.h "${_progcases}\n")
+endmacro (gen_gmt_progs_h)
 
-macro (GMT_GEN_GMT_COLORS_H)
+macro (gen_gmt_colors_h)
 	# gmt_colornames.h
 	file2list (_color_file ${GMT_SRC}/src/Colors.txt)
 	list_regex_replace (
@@ -94,7 +94,7 @@ macro (GMT_GEN_GMT_COLORS_H)
 		_color_names ${_color_file}
 		MATCHES_ONLY)
 	string (REPLACE ";" ",\n" _color_names "${_color_names}")
-	file(WRITE gmt_colornames.h "${_color_names}\n")
+	file (WRITE gmt_colornames.h "${_color_names}\n")
 
 	# gmt_color_rgb.h
 	list_regex_replace (
@@ -103,7 +103,7 @@ macro (GMT_GEN_GMT_COLORS_H)
 		_colors_rgb ${_color_file}
 		MATCHES_ONLY)
 	string (REPLACE ";" ",\n" _colors_rgb "${_colors_rgb}")
-	file(WRITE gmt_color_rgb.h "${_colors_rgb}\n")
+	file (WRITE gmt_color_rgb.h "${_colors_rgb}\n")
 
 	# Colors.i
 	list_regex_replace (
@@ -112,28 +112,28 @@ macro (GMT_GEN_GMT_COLORS_H)
 		_colors_man ${_color_file}
 		MATCHES_ONLY)
 	string (REPLACE ";" "\n.br\n" _colors_man "${_colors_man}")
-	file(WRITE Colors.i ".br\n${_colors_man}\n")
-endmacro (GMT_GEN_GMT_COLORS_H)
+	file (WRITE Colors.i ".br\n${_colors_man}\n")
+endmacro (gen_gmt_colors_h)
 
 # Fonts.i
-macro (GMT_GEN_PS_FONT_INFO)
+macro (gen_ps_font_info)
 	file2list (_fonts_file ${GMT_SRC}/share/pslib/PS_font_info.d)
 	list_regex_replace (
 		"^([^# \t]+).*"
 		"\\\\1"
 		_fonts_list ${_fonts_file}
 		MATCHES_ONLY)
-	set(_fonts_man)
-	set(_fontnum 0)
+	set (_fonts_man)
+	set (_fontnum 0)
 	foreach (_font ${_fonts_list})
 		list (APPEND _fonts_man "${_fontnum}\t${_font}")
-		math(EXPR _fontnum "${_fontnum} + 1")
+		math (EXPR _fontnum "${_fontnum} + 1")
 	endforeach (_font ${_fonts_list})
 	string (REPLACE ";" "\n.br\n" _fonts_man "${_fonts_man}")
-	file(WRITE Fonts.i ".br\n${_fonts_man}\n")
-endmacro (GMT_GEN_PS_FONT_INFO)
+	file (WRITE Fonts.i ".br\n${_fonts_man}\n")
+endmacro (gen_ps_font_info)
 
-macro (GMT_GEN_GMT_ELLIPSOIDS)
+macro (gen_gmt_ellipsoids)
 	# gmt_ellipsoids.h
 	file2list (_ellipsnames_file ${GMT_SRC}/src/Ellipsoids.txt)
 	list_regex_replace (
@@ -141,10 +141,10 @@ macro (GMT_GEN_GMT_ELLIPSOIDS)
 		"\t\t{\"\\\\1\", \\\\2, \\\\3, 1.0/\\\\4}"
 		_ellipsnames ${_ellipsnames_file}
 		MATCHES_ONLY)
-	list(REMOVE_DUPLICATES _ellipsnames)
+	list (REMOVE_DUPLICATES _ellipsnames)
 	string (REPLACE "1.0/0}" "0}" _ellipsnames "${_ellipsnames}")
 	string (REPLACE ";" ",\n" _ellipsnames "${_ellipsnames}")
-	file(WRITE gmt_ellipsoids.h "${_ellipsnames}\n")
+	file (WRITE gmt_ellipsoids.h "${_ellipsnames}\n")
 
 	# Ellipsoids.i
 	list_regex_replace (
@@ -152,12 +152,12 @@ macro (GMT_GEN_GMT_ELLIPSOIDS)
 		"\\\\1: \\\\3 (\\\\2)"
 		_ellipsnames ${_ellipsnames_file}
 		MATCHES_ONLY)
-	list(REMOVE_DUPLICATES _ellipsnames)
+	list (REMOVE_DUPLICATES _ellipsnames)
 	string (REPLACE ";" "\n.br\n" _ellipsnames "${_ellipsnames}")
-	file(WRITE Ellipsoids.i "${_ellipsnames}\n")
-endmacro (GMT_GEN_GMT_ELLIPSOIDS)
+	file (WRITE Ellipsoids.i "${_ellipsnames}\n")
+endmacro (gen_gmt_ellipsoids)
 
-macro (GMT_GEN_GMT_GRDKEYS_H)
+macro (gen_gmt_grdkeys_h)
 	# gmt_grdkeys.h
 	grep (
 		"C->session.grdformat[id]"
@@ -174,16 +174,16 @@ macro (GMT_GEN_GMT_GRDKEYS_H)
 		"\\\\1"
 		_grdkeys ${_raw_grdkeys_list}
 		MATCHES_ONLY)
-	list(REMOVE_DUPLICATES _grdkeys)
-	string(TOUPPER "${_grdkeys}" _grdkeys)
-	set(_grdkeydef)
-	set(_keynum 0)
+	list (REMOVE_DUPLICATES _grdkeys)
+	string (TOUPPER "${_grdkeys}" _grdkeys)
+	set (_grdkeydef)
+	set (_keynum 0)
 	foreach (_key ${_grdkeys})
 		list (APPEND _grdkeydef "#define GMT_GRD_IS_${_key} ${_keynum}")
-		math(EXPR _keynum "${_keynum} + 1")
+		math (EXPR _keynum "${_keynum} + 1")
 	endforeach (_key ${_grdkeys})
 	string (REPLACE ";" "\n" _grdkeydef "${_grdkeydef}")
-	file(WRITE gmt_grdkeys.h "${_grdkeydef}\n")
+	file (WRITE gmt_grdkeys.h "${_grdkeydef}\n")
 
 	# grdreformat_man.i
 	list_regex_replace (
@@ -192,10 +192,10 @@ macro (GMT_GEN_GMT_GRDKEYS_H)
 		_grdreformat_man ${_raw_grdkeys_list}
 		MATCHES_ONLY)
 	string (REPLACE ";" "\n.br\n" _grdreformat_man "${_grdreformat_man}")
-	file(WRITE grdreformat_man.i "${_grdreformat_man}\n.br\n")
-endmacro (GMT_GEN_GMT_GRDKEYS_H)
+	file (WRITE grdreformat_man.i "${_grdreformat_man}\n.br\n")
+endmacro (gen_gmt_grdkeys_h)
 
-macro (GMT_GEN_GMT_KEYWORDS_H)
+macro (gen_gmt_keywords_h)
 	# gmt_keycases.h
 	file2list (_gmtkeywords_file
 		${GMT_SRC}/src/gmt_keywords.txt
@@ -205,16 +205,16 @@ macro (GMT_GEN_GMT_KEYWORDS_H)
 		"\\\\1 "
 		_gmtkeycases ${_gmtkeywords_file}
 		MATCHES_ONLY)
-	list(SORT _gmtkeycases)
-	list(REMOVE_DUPLICATES _gmtkeycases)
-	set(_gmtkeycasedef)
-	set(_casenum 0)
+	list (SORT _gmtkeycases)
+	list (REMOVE_DUPLICATES _gmtkeycases)
+	set (_gmtkeycasedef)
+	set (_casenum 0)
 	foreach (_case ${_gmtkeycases})
 		list (APPEND _gmtkeycasedef "#define GMTCASE_${_case}${_casenum}")
-		math(EXPR _casenum "${_casenum} + 1")
+		math (EXPR _casenum "${_casenum} + 1")
 	endforeach (_case ${_gmtkeycases})
 	string (REPLACE ";" "\n" _gmtkeycasedef "${_gmtkeycasedef}")
-	file(WRITE gmt_keycases.h "${_gmtkeycasedef}\n")
+	file (WRITE gmt_keycases.h "${_gmtkeycasedef}\n")
 
 	# gmt_keywords.h
 	list_regex_replace (
@@ -222,10 +222,10 @@ macro (GMT_GEN_GMT_KEYWORDS_H)
 		"\"\\\\1\""
 		_gmtkeywords ${_gmtkeycases})
 	string (REPLACE ";" ",\n" _gmtkeywords "${_gmtkeywords}")
-	file(WRITE gmt_keywords.h "${_gmtkeywords}\n")
-endmacro (GMT_GEN_GMT_KEYWORDS_H)
+	file (WRITE gmt_keywords.h "${_gmtkeywords}\n")
+endmacro (gen_gmt_keywords_h)
 
-macro (GMT_GEN_GMTAPI_ERR_H)
+macro (gen_gmtapi_err_h)
 	# gmtapi_errno.h
 	file2list (_gmtapierr_file ${GMT_SRC}/src/gmtapi_errors.d)
 	list_regex_replace (
@@ -233,16 +233,16 @@ macro (GMT_GEN_GMTAPI_ERR_H)
 		"\\\\1 "
 		_gmtapierr ${_gmtapierr_file}
 		MATCHES_ONLY)
-	list(REMOVE_DUPLICATES _gmtapierr)
-	set(_gmtapierrnodef)
-	set(_errno 0)
+	list (REMOVE_DUPLICATES _gmtapierr)
+	set (_gmtapierrnodef)
+	set (_errno 0)
 	foreach (_err ${_gmtapierr})
 		list (APPEND _gmtapierrnodef "#define ${_err}${_errno}")
-		math(EXPR _errno "0${_errno} - 1")
-		#set(_errno "${_errno}")
+		math (EXPR _errno "0${_errno} - 1")
+		#set (_errno "${_errno}")
 	endforeach (_err ${_gmtapierr})
 	string (REPLACE ";" "\n" _gmtapierrnodef "${_gmtapierrnodef}")
-	file(WRITE gmtapi_errno.h "${_gmtapierrnodef}\n")
+	file (WRITE gmtapi_errno.h "${_gmtapierrnodef}\n")
 
 	# gmtapi_errstr.h
 	list_regex_replace (
@@ -250,43 +250,43 @@ macro (GMT_GEN_GMTAPI_ERR_H)
 		"\"\\\\1\""
 		_gmtapierrstr ${_gmtapierr})
 	string (REPLACE ";" ",\n" _gmtapierrstr "${_gmtapierrstr}")
-	file(WRITE gmtapi_errstr.h "${_gmtapierrstr}\n")
-endmacro (GMT_GEN_GMTAPI_ERR_H)
+	file (WRITE gmtapi_errstr.h "${_gmtapierrstr}\n")
+endmacro (gen_gmtapi_err_h)
 
 # gmt_media_name.h gmt_pennames.h gmt_unique.h
-macro (GMT_GEN_GMT_DIMENSIONS_H)
+macro (gen_gmt_dimensions_h)
 	file2list (_file_lines ${GMT_SRC}/src/gmt_media_name.h)
-	list(REMOVE_DUPLICATES _file_lines)
-	list(LENGTH _file_lines GMT_N_MEDIA)
+	list (REMOVE_DUPLICATES _file_lines)
+	list (LENGTH _file_lines GMT_N_MEDIA)
 	file2list (_file_lines ${GMT_SRC}/src/gmt_pennames.h)
-	list(REMOVE_DUPLICATES _file_lines)
-	list(LENGTH _file_lines GMT_N_PEN_NAMES)
+	list (REMOVE_DUPLICATES _file_lines)
+	list (LENGTH _file_lines GMT_N_PEN_NAMES)
 	file2list (_file_lines ${GMT_SRC}/src/gmt_unique.h)
-	list(REMOVE_DUPLICATES _file_lines)
-	list(LENGTH _file_lines GMT_N_UNIQUE)
+	list (REMOVE_DUPLICATES _file_lines)
+	list (LENGTH _file_lines GMT_N_UNIQUE)
 
 	# count lines in generated heders
 	file2list (_file_lines gmt_datums.h)
-	list(LENGTH _file_lines GMT_N_DATUMS)
+	list (LENGTH _file_lines GMT_N_DATUMS)
 	file2list (_file_lines gmt_ellipsoids.h)
-	list(LENGTH _file_lines GMT_N_ELLIPSOIDS)
+	list (LENGTH _file_lines GMT_N_ELLIPSOIDS)
 	file2list (_file_lines gmt_colornames.h)
-	list(LENGTH _file_lines GMT_N_COLOR_NAMES)
+	list (LENGTH _file_lines GMT_N_COLOR_NAMES)
 	file2list (_file_lines gmt_grdkeys.h)
-	list(LENGTH _file_lines GMT_N_GRD_FORMATS)
+	list (LENGTH _file_lines GMT_N_GRD_FORMATS)
 	file2list (_file_lines gmt_keycases.h)
-	list(LENGTH _file_lines GMT_N_KEYS)
+	list (LENGTH _file_lines GMT_N_KEYS)
 	file2list (_file_lines gmt_prognames.h)
-	list(LENGTH _file_lines GMT_N_PROGRAMS)
+	list (LENGTH _file_lines GMT_N_PROGRAMS)
 
 	# gmt_dimensions.h
 	configure_file (${GMT_SRC}/src/gmt_dimensions.h.cmake gmt_dimensions.h)
-endmacro (GMT_GEN_GMT_DIMENSIONS_H)
+endmacro (gen_gmt_dimensions_h)
 
 # gmtmath.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i
 # GMTMATH_OPERATOR_INIT GMTMATH_OPERATOR_ARRAY GMTMATH_OPERATOR_EXPLAIN
 # GMTMATH_N_OPERATORS
-macro (GMT_GEN_GMT_MATH_H)
+macro (gen_gmt_math_h)
 	grep (
 		"^/[* ]+OPERATOR:"
 		_raw_op_descriptions
@@ -298,13 +298,13 @@ macro (GMT_GEN_GMT_MATH_H)
 		"\tops[OP_NUM] = table_\\\\1#S\tn_args[OP_NUM] = \\\\2#S\tn_out[OP_NUM] = \\\\3#S"
 		_raw_op_init ${_raw_op_descriptions}
 		MATCHES_ONLY)
-	list(LENGTH _raw_op_init GMTMATH_N_OPERATORS)
-	set(_op_init)
-	set(_opnum 0)
+	list (LENGTH _raw_op_init GMTMATH_N_OPERATORS)
+	set (_op_init)
+	set (_opnum 0)
 	foreach (_op ${_raw_op_init})
 		string (REPLACE "OP_NUM" "${_opnum}" _op ${_op})
 		list (APPEND _op_init ${_op})
-		math(EXPR _opnum "${_opnum} + 1")
+		math (EXPR _opnum "${_opnum} + 1")
 	endforeach (_op ${_raw_op_init})
 	string (REPLACE ";" "\n" _op_init "${_op_init}")
 	string_unescape (GMTMATH_OPERATOR_INIT "${_op_init}" NOESCAPE_SEMICOLON)
@@ -317,12 +317,12 @@ macro (GMT_GEN_GMT_MATH_H)
 		"\t\"\\\\1\",\t/* id = OP_NUM */"
 		_raw_op_array ${_raw_op_descriptions}
 		MATCHES_ONLY)
-	set(_op_array)
-	set(_opnum 0)
+	set (_op_array)
+	set (_opnum 0)
 	foreach (_op ${_raw_op_array})
 		string (REPLACE "OP_NUM" "${_opnum}" _op ${_op})
 		list (APPEND _op_array ${_op})
-		math(EXPR _opnum "${_opnum} + 1")
+		math (EXPR _opnum "${_opnum} + 1")
 	endforeach (_op ${_raw_op_array})
 	string (REPLACE ";" "\n" GMTMATH_OPERATOR_ARRAY "${_op_array}")
 
@@ -352,16 +352,16 @@ macro (GMT_GEN_GMT_MATH_H)
 		MATCHES_ONLY)
 	string (REPLACE ";" "\n" _op_man "${_op_man}")
 	string_unescape (_op_man "${_op_man}" NOESCAPE_SEMICOLON)
-	set(_op_man "Choose among the following ${GMTMATH_N_OPERATORS} operators.\n"
+	set (_op_man "Choose among the following ${GMTMATH_N_OPERATORS} operators.\n"
 	"\"args\" are the number of input and output arguments.\n"
 	".TS\nl l l .\nOperator\targs\tReturns\n${_op_man}\n.TE\n")
-	file(WRITE gmtmath_man.i ${_op_man})
-endmacro (GMT_GEN_GMT_MATH_H)
+	file (WRITE gmtmath_man.i ${_op_man})
+endmacro (gen_gmt_math_h)
 
 # grdmath.h grdmath_op.h grdmath_explain.h grdmath_man.i
 # GRDMATH_OPERATOR_INIT GRDMATH_OPERATOR_ARRAY GRDMATH_OPERATOR_EXPLAIN
 # GRDMATH_N_OPERATORS
-macro (GMT_GEN_GRD_MATH_H)
+macro (gen_grd_math_h)
 	grep (
 		"^/[* ]+OPERATOR:"
 		_raw_op_descriptions
@@ -373,13 +373,13 @@ macro (GMT_GEN_GRD_MATH_H)
 		"\tops[OP_NUM] = grd_\\\\1#S\tn_args[OP_NUM] = \\\\2#S\tn_out[OP_NUM] = \\\\3#S"
 		_raw_op_init ${_raw_op_descriptions}
 		MATCHES_ONLY)
-	list(LENGTH _raw_op_init GRDMATH_N_OPERATORS)
-	set(_op_init)
-	set(_opnum 0)
+	list (LENGTH _raw_op_init GRDMATH_N_OPERATORS)
+	set (_op_init)
+	set (_opnum 0)
 	foreach (_op ${_raw_op_init})
 		string (REPLACE "OP_NUM" "${_opnum}" _op ${_op})
 		list (APPEND _op_init ${_op})
-		math(EXPR _opnum "${_opnum} + 1")
+		math (EXPR _opnum "${_opnum} + 1")
 	endforeach (_op ${_raw_op_init})
 	string (REPLACE ";" "\n" _op_init "${_op_init}")
 	string_unescape (GRDMATH_OPERATOR_INIT "${_op_init}" NOESCAPE_SEMICOLON)
@@ -392,12 +392,12 @@ macro (GMT_GEN_GRD_MATH_H)
 		"\t\"\\\\1\",\t/* id = OP_NUM */"
 		_raw_op_array ${_raw_op_descriptions}
 		MATCHES_ONLY)
-	set(_op_array)
-	set(_opnum 0)
+	set (_op_array)
+	set (_opnum 0)
 	foreach (_op ${_raw_op_array})
 		string (REPLACE "OP_NUM" "${_opnum}" _op ${_op})
 		list (APPEND _op_array ${_op})
-		math(EXPR _opnum "${_opnum} + 1")
+		math (EXPR _opnum "${_opnum} + 1")
 	endforeach (_op ${_raw_op_array})
 	string (REPLACE ";" "\n" GRDMATH_OPERATOR_ARRAY "${_op_array}")
 
@@ -427,17 +427,17 @@ macro (GMT_GEN_GRD_MATH_H)
 		MATCHES_ONLY)
 	string (REPLACE ";" "\n" _op_man "${_op_man}")
 	string_unescape (_op_man "${_op_man}" NOESCAPE_SEMICOLON)
-	set(_op_man "Choose among the following ${GRDMATH_N_OPERATORS} operators.\n"
+	set (_op_man "Choose among the following ${GRDMATH_N_OPERATORS} operators.\n"
 	"\"args\" are the number of input and output arguments.\n"
 	".TS\nl l l .\nOperator\targs\tReturns\n${_op_man}\n.TE\n")
-	file(WRITE grdmath_man.i ${_op_man})
-endmacro (GMT_GEN_GRD_MATH_H)
+	file (WRITE grdmath_man.i ${_op_man})
+endmacro (gen_grd_math_h)
 
 # Add commands that trigger generator macros when output does not exist
 macro (SETUP)
 	add_custom_command (OUTPUT gmt_datums.h
 		COMMAND ${CMAKE_COMMAND}
-		-D GENERATE_COMMAND=gmt_gen_gmt_datums_h
+		-D GENERATE_COMMAND=gen_gmt_datums_h
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-D GMT_SRC=${GMT_SOURCE_DIR}
 		-P ${CMAKE_CURRENT_LIST_FILE}
@@ -445,7 +445,7 @@ macro (SETUP)
 
 	add_custom_command (OUTPUT gmt_prognames.h gmt_progcases.h
 		COMMAND ${CMAKE_COMMAND}
-		-D GENERATE_COMMAND=gmt_gen_gmt_progs_h
+		-D GENERATE_COMMAND=gen_gmt_progs_h
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-D GMT_SRC=${GMT_SOURCE_DIR}
 		-P ${CMAKE_CURRENT_LIST_FILE}
@@ -453,7 +453,7 @@ macro (SETUP)
 
 	add_custom_command (OUTPUT gmt_colornames.h gmt_color_rgb.h Colors.i
 		COMMAND ${CMAKE_COMMAND}
-		-D GENERATE_COMMAND=gmt_gen_gmt_colors_h
+		-D GENERATE_COMMAND=gen_gmt_colors_h
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-D GMT_SRC=${GMT_SOURCE_DIR}
 		-P ${CMAKE_CURRENT_LIST_FILE}
@@ -461,7 +461,7 @@ macro (SETUP)
 
 	add_custom_command (OUTPUT Fonts.i
 		COMMAND ${CMAKE_COMMAND}
-		-D GENERATE_COMMAND=gmt_gen_ps_font_info
+		-D GENERATE_COMMAND=gen_ps_font_info
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-D GMT_SRC=${GMT_SOURCE_DIR}
 		-P ${CMAKE_CURRENT_LIST_FILE}
@@ -469,7 +469,7 @@ macro (SETUP)
 
 	add_custom_command (OUTPUT gmt_ellipsoids.h Ellipsoids.i
 		COMMAND ${CMAKE_COMMAND}
-		-D GENERATE_COMMAND=gmt_gen_gmt_ellipsoids
+		-D GENERATE_COMMAND=gen_gmt_ellipsoids
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-D GMT_SRC=${GMT_SOURCE_DIR}
 		-P ${CMAKE_CURRENT_LIST_FILE}
@@ -477,7 +477,7 @@ macro (SETUP)
 
 	add_custom_command (OUTPUT gmt_grdkeys.h grdreformat_man.i
 		COMMAND ${CMAKE_COMMAND}
-		-D GENERATE_COMMAND=gmt_gen_gmt_grdkeys_h
+		-D GENERATE_COMMAND=gen_gmt_grdkeys_h
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-D GMT_SRC=${GMT_SOURCE_DIR}
 		-P ${CMAKE_CURRENT_LIST_FILE}
@@ -485,7 +485,7 @@ macro (SETUP)
 
 	add_custom_command (OUTPUT gmt_keycases.h gmt_keywords.h
 		COMMAND ${CMAKE_COMMAND}
-		-D GENERATE_COMMAND=gmt_gen_gmt_keywords_h
+		-D GENERATE_COMMAND=gen_gmt_keywords_h
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-D GMT_SRC=${GMT_SOURCE_DIR}
 		-P ${CMAKE_CURRENT_LIST_FILE}
@@ -493,7 +493,7 @@ macro (SETUP)
 
 	add_custom_command (OUTPUT gmtapi_errno.h gmtapi_errstr.h
 		COMMAND ${CMAKE_COMMAND}
-		-D GENERATE_COMMAND=gmt_gen_gmtapi_err_h
+		-D GENERATE_COMMAND=gen_gmtapi_err_h
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-D GMT_SRC=${GMT_SOURCE_DIR}
 		-P ${CMAKE_CURRENT_LIST_FILE}
@@ -501,7 +501,7 @@ macro (SETUP)
 
 	add_custom_command (OUTPUT gmt_dimensions.h
 		COMMAND ${CMAKE_COMMAND}
-		-D GENERATE_COMMAND=gmt_gen_gmt_dimensions_h
+		-D GENERATE_COMMAND=gen_gmt_dimensions_h
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-D GMT_SRC=${GMT_SOURCE_DIR}
 		-P ${CMAKE_CURRENT_LIST_FILE}
@@ -513,7 +513,7 @@ macro (SETUP)
 	add_custom_command (OUTPUT gmtmath.h
 		gmtmath_op.h gmtmath_explain.h gmtmath_man.i
 		COMMAND ${CMAKE_COMMAND}
-		-D GENERATE_COMMAND=gmt_gen_gmt_math_h
+		-D GENERATE_COMMAND=gen_gmt_math_h
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-D GMT_SRC=${GMT_SOURCE_DIR}
 		-P ${CMAKE_CURRENT_LIST_FILE}
@@ -522,7 +522,7 @@ macro (SETUP)
 	add_custom_command (OUTPUT grdmath.h
 		grdmath_op.h grdmath_explain.h grdmath_man.i
 		COMMAND ${CMAKE_COMMAND}
-		-D GENERATE_COMMAND=gmt_gen_grd_math_h
+		-D GENERATE_COMMAND=gen_grd_math_h
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-D GMT_SRC=${GMT_SOURCE_DIR}
 		-P ${CMAKE_CURRENT_LIST_FILE}
@@ -531,69 +531,34 @@ endmacro (SETUP)
 
 # Get something done
 if (GENERATE_COMMAND)
-	set (_command_handled)
-
-	if (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_datums_h)
-		gmt_gen_gmt_datums_h ()
-		set (_command_handled TRUE)
-	endif (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_datums_h)
-
-	if (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_progs_h)
-		gmt_gen_gmt_progs_h ()
-		set (_command_handled TRUE)
-	endif (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_progs_h)
-
-	if (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_colors_h)
-		gmt_gen_gmt_colors_h ()
-		set (_command_handled TRUE)
-	endif (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_colors_h)
-
-	if (${GENERATE_COMMAND} STREQUAL gmt_gen_ps_font_info)
-		gmt_gen_ps_font_info ()
-		set (_command_handled TRUE)
-	endif (${GENERATE_COMMAND} STREQUAL gmt_gen_ps_font_info)
-
-	if (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_ellipsoids)
-		gmt_gen_gmt_ellipsoids ()
-		set (_command_handled TRUE)
-	endif (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_ellipsoids)
-
-	if (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_grdkeys_h)
-		gmt_gen_gmt_grdkeys_h ()
-		set (_command_handled TRUE)
-	endif (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_grdkeys_h)
-
-	if (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_keywords_h)
-		gmt_gen_gmt_keywords_h ()
-		set (_command_handled TRUE)
-	endif (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_keywords_h)
-
-	if (${GENERATE_COMMAND} STREQUAL gmt_gen_gmtapi_err_h)
-		gmt_gen_gmtapi_err_h ()
-		set (_command_handled TRUE)
-	endif (${GENERATE_COMMAND} STREQUAL gmt_gen_gmtapi_err_h)
-
-	if (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_dimensions_h)
-		gmt_gen_gmt_dimensions_h ()
-		set (_command_handled TRUE)
-	endif (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_dimensions_h)
-
-	if (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_math_h)
-		gmt_gen_gmt_math_h ()
-		set (_command_handled TRUE)
-	endif (${GENERATE_COMMAND} STREQUAL gmt_gen_gmt_math_h)
-
-	if (${GENERATE_COMMAND} STREQUAL gmt_gen_grd_math_h)
-		gmt_gen_grd_math_h ()
-		set (_command_handled TRUE)
-	endif (${GENERATE_COMMAND} STREQUAL gmt_gen_grd_math_h)
-
-	if (NOT _command_handled)
+	if (${GENERATE_COMMAND} STREQUAL gen_gmt_datums_h)
+		gen_gmt_datums_h ()
+	elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_progs_h)
+		gen_gmt_progs_h ()
+	elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_colors_h)
+		gen_gmt_colors_h ()
+	elseif (${GENERATE_COMMAND} STREQUAL gen_ps_font_info)
+		gen_ps_font_info ()
+	elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_ellipsoids)
+		gen_gmt_ellipsoids ()
+	elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_grdkeys_h)
+		gen_gmt_grdkeys_h ()
+	elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_keywords_h)
+		gen_gmt_keywords_h ()
+	elseif (${GENERATE_COMMAND} STREQUAL gen_gmtapi_err_h)
+		gen_gmtapi_err_h ()
+	elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_dimensions_h)
+		gen_gmt_dimensions_h ()
+	elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_math_h)
+		gen_gmt_math_h ()
+	elseif (${GENERATE_COMMAND} STREQUAL gen_grd_math_h)
+		gen_grd_math_h ()
+	else (${GENERATE_COMMAND} STREQUAL gen_gmt_datums_h)
 		message (SEND_ERROR "Unknown command: ${GENERATE_COMMAND}")
-	endif (NOT _command_handled)
+	endif (${GENERATE_COMMAND} STREQUAL gen_gmt_datums_h)
 else (GENERATE_COMMAND)
 	# Must be part of the actual configure (included from CMakeLists.txt).
-	setup()
+	setup ()
 endif (GENERATE_COMMAND)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

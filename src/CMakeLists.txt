@@ -103,7 +103,6 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT GSHHS_FOUND)
 		"Need to either set GSHHS_ROOT or disable tests.")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHS_FOUND)
 
-
 # These three lines are temporarily here for the beta release
 set (GMT_PROGS2_SRCS gmtaverage.c)
 set (GMT_PROGSPS2_SRCS testapi.c)
@@ -204,10 +203,7 @@ set (GMT_MAN_DEPS ${GMT_MAN_DEPS} Colors.i Fonts.i Ellipsoids.i
 include (GmtGenExtraHeaders)
 
 # generate gmt_progpurpose.h
-gmt_make_purpose_h (
-	GMT_PROG_PURPOSE
-	${GMT_PROGS_SRCS}
-	${GMT_PROGSPS_SRCS})
+gen_gmt_progpurpose_h (GMT_PROG_PURPOSE ${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS})
 
 configure_file (gmt_config.h.cmake gmt_config.h)
 configure_file (gmt_version.h.cmake gmt_version.h)
