@@ -36,12 +36,13 @@ set (_scr_strip GMT_-B_custom.sh GMT_-B_time1.sh GMT_-B_time2.sh
 	GMT_stereographic_polar.sh GMT_stereographic_rect.sh GMT_stereonets.sh
 	GMT_TM.sh GMT_transverse_merc.sh GMT_winkel.sh)
 
-# Other scripts that are only used in tests
+# Scripts that are not used in the documentation (but the figures are)
 # do not include GMT_-U.sh as this would always fail
 set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_-B_pow.sh GMT_-J.sh GMT_-OK.sh GMT_-P.sh GMT_-R.sh GMT_-XY.sh
-	GMT_App_E.sh GMT_App_F.sh GMT_App_G.sh GMT_App_J.sh GMT_App_M_1.sh
-	GMT_App_N.sh GMT_arrows.sh GMT_atan.sh GMT_color_interpolate.sh
+	GMT_App_E.sh GMT_App_F_dingbats.sh GMT_App_F_iso+.sh GMT_App_F_stand+.sh
+	GMT_App_F_symbol.sh GMT_App_G.sh GMT_App_J_1.sh GMT_App_J_2.sh GMT_App_J_3.sh
+	GMT_App_M_1.sh GMT_App_N_1.sh GMT_arrows.sh GMT_atan.sh GMT_color_interpolate.sh
 	GMT_coverlogo.sh GMT_Defaults_1a.sh GMT_Defaults_1b.sh GMT_Defaults_1c.sh
 	GMT_dummydata.sh GMT_encoding.sh GMT_linecap.sh GMT_nearneighbor.sh
 	GMT_pstext_clearance.sh GMT_pstext_justify.sh GMT_registration.sh

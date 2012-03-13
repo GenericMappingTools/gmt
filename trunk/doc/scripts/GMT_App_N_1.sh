@@ -7,7 +7,7 @@
 #
 . ./functions.sh
 
-grep -v '^#' "${GMT_SHAREDIR}"/share/conf/gmt_custom_symbols.conf | awk '{print $1}' > tt.lis
+grep -v '^#' "${GMT_SOURCE_DIR}"/share/conf/gmt_custom_symbols.conf | awk '{print $1}' > tt.lis
 n=`cat tt.lis | wc -l`
 
 # Because of text, the first page figure will contain less symbol rows than
@@ -36,6 +36,7 @@ while [ $p -lt $n_pages ]; do
 	
 	n_rows_to_go=`gmtmath -Q $n $s SUB $n_cols DIV CEIL $max_rows MIN =`
 	H=`gmtmath -Q $n_rows_to_go 1 $dy ADD MUL =`
+	rm -f tt.lines tt.symbols tt.text tt.bars
 	touch tt.lines tt.symbols tt.text tt.bars
 	c=0
 	while [ $c -lt $n_cols ]; do
@@ -77,7 +78,6 @@ EOF
 	psxy -R -J -O -K -S${width}i -Wthinnest tt.symbols >> GMT_App_N_$p.ps
 	psxy -R -J -O -K -Sr -Gblack tt.bars >> GMT_App_N_$p.ps
 	pstext -R -J -O tt.text -F+f${fs}p,white >> GMT_App_N_$p.ps
-	rm -f tt.lines tt.symbols tt.text tt.bars
 done
 
 if ! test -s GMT_Appendix_N_inc.tex ; then
