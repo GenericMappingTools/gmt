@@ -3,7 +3,7 @@
 #
 # Basic stitching of Cartesian and geographic data
 
-. functions.sh
+. ./functions.sh
 header "Test gmtstitch for assembling segments to polygon"
 
 # Make a polygon file

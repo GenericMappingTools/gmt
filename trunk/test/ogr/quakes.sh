@@ -6,7 +6,7 @@
 # use that as input cols 2 and 3, then scale col 3 (mag) by a log10
 # transform to get symbol sizes.
 
-. functions.sh
+. ./functions.sh
 header "Test psxy and pstext and their use of aspatial data"
 
 makecpt -Crainbow -T0/300/25 -Z > t.cpt

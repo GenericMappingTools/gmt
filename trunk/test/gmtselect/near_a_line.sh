@@ -11,7 +11,7 @@
 # points near the line if they project inside the
 # line's endpoints
 
-. functions.sh
+. ./functions.sh
 header "Test gmtselect's new -L[p] option on given data"
 
 # Some test data

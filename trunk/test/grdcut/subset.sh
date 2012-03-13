@@ -2,7 +2,7 @@
 #	$Id: subset.sh 8899 2011-07-27 01:59:56Z pwessel $
 # Testing grdcut -Z
 
-. functions.sh
+. ./functions.sh
 header "Test grdcut for subset extraction based on data range"
 
 Rp=-21/21/-21/21

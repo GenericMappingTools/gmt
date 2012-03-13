@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "Testing sphtriangulate and sphdistance"
 
 # Get the crude GSHHS data, select GMT format, and decimate to ~20%:

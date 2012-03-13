@@ -3,7 +3,7 @@
 #
 # Tests fitcircle on spherical data points
 
-. functions.sh
+. ./functions.sh
 header "Test fitcircle for finding great and small circles"
 
 # Fit great circle to red points and small circle to green points

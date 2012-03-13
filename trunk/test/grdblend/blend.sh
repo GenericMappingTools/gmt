@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. functions.sh
+. ./functions.sh
 header "Test grdblend for blending overlapping grids"
 
 # Make 4 constant grids

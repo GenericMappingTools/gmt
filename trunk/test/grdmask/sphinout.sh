@@ -3,7 +3,7 @@
 #
 # Test grdmask for proper handling of inside/outside for spherical polygons
 
-. functions.sh
+. ./functions.sh
 header "Test grdmask with spherical polygon in/on/out"
 
 # 2k.dat contains many repeat points but no point are integer lon,lat

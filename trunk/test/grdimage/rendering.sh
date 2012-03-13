@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. functions.sh
+. ./functions.sh
 header "Test grdimage for rendering issues"
 
 xyz2grd -R0/360/0/90 -r -I60/30 -Gt.nc <<%

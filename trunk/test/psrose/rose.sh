@@ -1,6 +1,6 @@
 #!/bin/bash
 # Test psrose with -C and basemap
-. functions.sh
+. ./functions.sh
 
 header "Test psrose for rose diagram with mean direction"
 

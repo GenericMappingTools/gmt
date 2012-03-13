@@ -3,7 +3,7 @@
 #
 # Computes the gravity anomaly of a sphere both analytical and descrete triangles
 
-. functions.sh
+. ./functions.sh
 header "Compute gravity anom of a sphere with Okabe method"
 
 r=10; z0=-15; ro=1000;

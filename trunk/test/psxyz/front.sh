@@ -3,7 +3,7 @@
 #
 # Check front symbols
 
-. functions.sh
+. ./functions.sh
 header "Test psxyz with front symbols"
 
 psbasemap -R0/7/0/8 -Jx1i -P -B0 -K -Xc > $ps

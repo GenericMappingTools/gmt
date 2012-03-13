@@ -2,7 +2,7 @@
 #	$Id$
 #
 
-. functions.sh
+. ./functions.sh
 
 header "Test mgd77magref with 1 day data at a magnetic observatory"
 

@@ -2,7 +2,7 @@
 # $Id$
 #
 
-. functions.sh
+. ./functions.sh
 header "Test gmtspatial by calculating area"
 cat << EOF > area.txt
 0	0

@@ -3,7 +3,7 @@
 #
 # Check clipping of line for a global conic plot
 
-. functions.sh
+. ./functions.sh
 header "Test psxy for clipping lines with periodic conic boundary"
 
 pscoast -R0/360/30/70 -JL180/50/40/60/6i -Gred -Dc -B30g30 -P -K > $ps

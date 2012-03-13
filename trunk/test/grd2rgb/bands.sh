@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "Mapping color bands with grd2rgb"
 
 grd2rgb "$src"/Uluru.ras -Gband_%c.nc 

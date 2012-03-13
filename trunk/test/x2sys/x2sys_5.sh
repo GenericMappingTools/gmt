@@ -2,7 +2,7 @@
 # $Id$
 #
 
-. functions.sh
+. ./functions.sh
 header "Test x2sys_binlist on cruise C2308"
 
 ln -fs "$src"/../mgd77/01010221.mgd77 .

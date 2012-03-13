@@ -3,7 +3,7 @@
 #
 # Tests mgd77convert
 
-. functions.sh
+. ./functions.sh
 header "Test mgd77convert conversions between mgd77-dat-nc"
 
 log=convert.log

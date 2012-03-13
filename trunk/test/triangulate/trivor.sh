@@ -3,7 +3,7 @@
 #
 # Test Delauney and Voronoi for Cartesian data
 
-. functions.sh
+. ./functions.sh
 header "Test triangulate for generating Delaunay and Voronoi edges"
 
 cat << EOF > nodes.xy

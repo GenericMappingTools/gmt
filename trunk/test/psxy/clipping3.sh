@@ -3,7 +3,7 @@
 #
 # Check clipping of polygons outside region and with dateline
 
-. functions.sh
+. ./functions.sh
 header "Test psxy -JM for clipping polygons straddling dateline"
 
 cat << EOF > a.txt

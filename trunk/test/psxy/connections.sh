@@ -3,7 +3,7 @@
 #
 # Plot a lot of line segments
 
-. functions.sh
+. ./functions.sh
 header "Test psxy with a lot of line segments"
 
 pscoast -R-71.6/-57.4/37.4/46.2 -JM20c -Dh -Glightgreen -Wdarkgreen -K > $ps

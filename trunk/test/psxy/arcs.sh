@@ -3,7 +3,7 @@
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
-. functions.sh
+. ./functions.sh
 header "Test psxy with various circles, ellipses and wedges"
 
 psxy -R0/4/0/4 -Jx1i -P -W5p -S1i -X2i -Y2i << EOF > $ps

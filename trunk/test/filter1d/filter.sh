@@ -2,7 +2,7 @@
 #       $Id$
 # Testing filter1d
 
-. functions.sh
+. ./functions.sh
 header "Test filter1d with or without -E option"
 
 # Make some random noise with a data gap, then save this in CVS as otherwise it would differ each time.

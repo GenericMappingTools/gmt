@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grdfilter if openmp is used.
 
-. functions.sh
+. ./functions.sh
 header "Test grdfilter for parallel operations (-fopenmp only)"
 
 if [ -z "$HAVE_OPENMP" ]; then

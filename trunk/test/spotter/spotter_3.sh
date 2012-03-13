@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "Testing originator to determine nearest origin"
 
 # Example 3 - Using originator

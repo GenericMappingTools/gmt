@@ -2,7 +2,7 @@
 #	$Id$
 # Test gmtconvert with mixed format binary input
 
-. functions.sh
+. ./functions.sh
 header "Let gmtconvert convert mixed binary records"
 
 # This is what the output should look like

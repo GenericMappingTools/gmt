@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-. functions.sh
+. ./functions.sh
 header "Testing sphtriangulate II"
 
 # Use the locations of a global hotspot file

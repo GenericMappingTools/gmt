@@ -4,7 +4,7 @@
 # Tests mgd77magref against the values of the original FORTRAN version 
 # Because the second term (lithospheric) does not agree it is not included in the comparison
 
-. functions.sh
+. ./functions.sh
 header "Test mgd77magref vs original CM4 Fortran version"
 
 data=2000.08700533

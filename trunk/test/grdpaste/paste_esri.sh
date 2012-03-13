@@ -3,7 +3,7 @@
 #
 # Paste esri ascii grids along Y
 
-. functions.sh
+. ./functions.sh
 header "Test grdpaste with ESRI ASCII files"
 
 # The final grid is just f(x,y) = x

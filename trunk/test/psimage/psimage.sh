@@ -2,7 +2,7 @@
 #	$Id$
 #
 
-. functions.sh
+. ./functions.sh
 header "Test psimage with different pattern options"
 
 cat > tt.in <<%

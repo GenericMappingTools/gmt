@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test the gmtvector application
 
-. functions.sh
+. ./functions.sh
 
 header "Test gmtvector with basic vector math"
 

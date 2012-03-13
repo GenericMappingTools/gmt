@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. functions.sh
+. ./functions.sh
 header "Test grdimage for 360 offset in header and region"
 
 # Grid is negative longitudes

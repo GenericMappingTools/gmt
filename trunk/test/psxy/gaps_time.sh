@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test psxy plotting with gaps
 
-. functions.sh
+. ./functions.sh
 header "Test plotting time series with NaNs indicating line gaps"
 
 gmtset IO_NAN_RECORDS pass TIME_UNIT y TIME_EPOCH 2000-01-01 FORMAT_DATE_MAP mm

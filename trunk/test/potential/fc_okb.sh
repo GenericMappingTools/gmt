@@ -3,7 +3,7 @@
 #
 # Compute the gravity anomaly of the Flemish Cap Guyot
 
-. functions.sh
+. ./functions.sh
 header "Compute gravity anom of a seamount with Okabe method"
 
 lim=-41:50/-41:20/47:30/47:50 

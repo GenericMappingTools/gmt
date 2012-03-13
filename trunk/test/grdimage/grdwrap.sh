@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. functions.sh
+. ./functions.sh
 header "Test grdimage for wrapping of global grid"
 
 grdmath -Rg -I1 X SIND Y COSD MUL = t.nc=ns/0.0001

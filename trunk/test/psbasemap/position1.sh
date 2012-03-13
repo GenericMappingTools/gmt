@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. functions.sh
+. ./functions.sh
 header "Test psbasemap's annotation alignment"
 
 font=Helvetica

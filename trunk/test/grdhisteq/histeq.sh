@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grdhisteq
 
-. functions.sh
+. ./functions.sh
 header "Test grdhisteq for equalizing/normalization"
 
 #

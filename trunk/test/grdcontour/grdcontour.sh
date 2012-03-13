@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-. functions.sh
+. ./functions.sh
 header "Test grdcontour for a problem on region selection"
 
 grdcontour="grdcontour -A200 -C100 -Gd4 "$src"/xz-temp.nc -Jx0.4c/0.4c -Ba5f1/a5f1WNse -Gd4 -Wathin,grey -Wcdefault,grey"

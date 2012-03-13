@@ -3,7 +3,7 @@
 #
 # Split a polyline into chunks
 
-. functions.sh
+. ./functions.sh
 header "Test splitxyz for splitting a polyline"
 
 psxy "$src"/data.dat -R-15/-12/35/37.5 -JM10c -W5p,gray -B1 -P -K > $ps

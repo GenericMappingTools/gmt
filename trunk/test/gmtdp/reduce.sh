@@ -2,7 +2,7 @@
 #	$Id$
 # Testing gmtdp on GSHHS high Australia polygon.
 
-. functions.sh
+. ./functions.sh
 header "Test gmtdp for D-P reduction"
 
 psxy "$src"/GSHHS_h_Australia.txt -R112/154/-40/-10 -JM5.5i -P -Sc0.01c -Gred -K -B20WSne -Xc > $ps

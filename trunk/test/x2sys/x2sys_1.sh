@@ -6,7 +6,7 @@
 # Computers & Geosciences, 36, 348–354.
 # Here used as a test for the x2sys suite.
 
-. functions.sh
+. ./functions.sh
 header "Reproduce Wessel (2010) Comp. & Geosci., Figure 1"
 
 R=181/185/0/3

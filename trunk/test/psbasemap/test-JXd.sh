@@ -19,7 +19,7 @@ annot () {
    pstext -R -J -F+f20p,Helvetica-Bold+jBC -O -K <<< "0 2 -JX$1"
 }
 
-. functions.sh
+. ./functions.sh
 header "Test various specifications of -Jx w/wo trailing d"
 
 psxy -T -R-60/60/-60/60 -JX8c/8c -K -X4c -Y13c > $ps

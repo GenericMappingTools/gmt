@@ -1,6 +1,6 @@
 #!/bin/bash
 # Test sample1d interpolation with NaNs
-. functions.sh
+. ./functions.sh
 
 makeps () {
 

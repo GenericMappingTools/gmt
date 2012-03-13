@@ -3,7 +3,7 @@
 #
 # Plot error bars and test [+|-]<epen>
 
-. functions.sh
+. ./functions.sh
 header "Test psxy error bar colors"
 
 cat << EOF > tt.d

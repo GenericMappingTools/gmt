@@ -3,7 +3,7 @@
 #
 # Test that psxyz properly plots rotatable rectangles -Sj and -SJ
 
-. functions.sh
+. ./functions.sh
 header "Test psxyz and the rotated rectangle option"
 
 # Bottom case tests -SJ with azimuths and dimensions in km
