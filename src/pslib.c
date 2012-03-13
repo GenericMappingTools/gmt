@@ -1158,12 +1158,12 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 		PSL_command (PSL, "%%%%EndComments\n\n");
 
 		PSL_command (PSL, "%%%%BeginProlog\n");
-		psl_bulkcopy (PSL, "PSL_prologue", 9574);	/* Version number should match that of PSL_prologue.ps */
+		psl_bulkcopy (PSL, "PSL_prologue", 9865);	/* Version number should match that of PSL_prologue.ps */
 		psl_bulkcopy (PSL, PSL->init.encoding, 0);
 
 		psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */
 
-		psl_bulkcopy (PSL, "PSL_label", 8899);	/* Place code for label line annotations and clipping */
+		psl_bulkcopy (PSL, "PSL_label", 9865);	/* Place code for label line annotations and clipping */
 		PSL_command (PSL, "%%%%EndProlog\n\n");
 
 		PSL_command (PSL, "%%%%BeginSetup\n");
