@@ -69,7 +69,7 @@ level, and both contour maps should show the continents in
 light gray in the background.  Finally, we want a rectangular
 frame surrounding the two maps.  This is how it is done:
 
-\script{example_01} 
+\script[examples]{example_01} 
 
 The first command draws a box surrounding the maps.  This is
 followed by two sequences of
@@ -82,9 +82,9 @@ with a solid pen [Default].  The \Opt{T} option causes tickmarks
 pointing in the downhill direction to be drawn on the innermost,
 closed contours.  For the upper panel we also added - and + to
 the local lows and highs.  You can find this illustration as
-Figure~\ref{fig:GMT_example_01}.
+Figure~\ref{fig:example_01}.
 
-\GMTexample{01}{Contour maps of gridded data.}
+\GMTex{example_01}{Contour maps of gridded data.}
 
 \index{Example!contour maps|)}
 
@@ -109,7 +109,7 @@ and upper right corner of region.  In our case we choose
 (160\DS , 20\DS ) and (220\DS , 30\DS ) as the
 corners.  We use \GMTprog{grdimage} to make the illustration:
 
-\script{example_02} 
+\script[examples]{example_02} 
 
 The first step extracts the 2-D data sets from the local
 data base using \GMTprog{grdraster}, which is a supplemental
@@ -137,9 +137,9 @@ color legend to the right of the image with \GMTprog{psscale}.
 Similarly, we run \GMTprog{grdimage} but specify \Opt{Y}4.5i
 to plot above the previous image.  Adding scale and label
 the two plots a) and b) completes the illustration
-(Figure~\ref{fig:GMT_example_02}).
+(Figure~\ref{fig:example_02}).
 \index{Example!image presentations|)}
-\GMTexample{02}{Color images from gridded data.}
+\GMTex{example_02}{Color images from gridded data.}
 
 \section{Spectral estimation and xy-plots}
 \index{Example!spectral estimation|(}
@@ -178,13 +178,13 @@ the plots.  For that purpose we often use \Opt{Jx}1i and specify
 positions in inches directly.  Thus, the complete automated
 script reads:
 
-\script{example_03} 
+\script[examples]{example_03} 
 
-The final illustration (Figure~\ref{fig:GMT_example_03}) shows that the ship gravity
+The final illustration (Figure~\ref{fig:example_03}) shows that the ship gravity
 anomalies have more power than altimetry derived gravity for
 short wavelengths and that the coherency between the two
 signals improves dramatically for wavelengths $>$ 20 km.
-\GMTexample{03}{Spectral estimation and $x/y$-plots.}
+\GMTex{example_03}{Spectral estimation and $x/y$-plots.}
 
 \index{Example!spectral estimation|)}
 \index{Example!xy plots|)}
@@ -203,17 +203,17 @@ superposed, and a second layer showing the 3-D mesh plot of
 the topography.  We also add an arrow pointing north and some
 text.  This is how to do it:
 
-\script{example_04} 
+\script[examples]{example_04} 
 
 The purpose of the color palette file \filename{zero.cpt} is to have
 the positive topography mesh painted light gray (the remainder
-is white). The left side of Figure~\ref{fig:GMT_example_04} shows the complete illustration.
+is white). The left side of Figure~\ref{fig:example_04} shows the complete illustration.
 
 \begin{figure}[ht]
    \includegraphics[scale=0.42]{example_04}\hfill
    \includegraphics[scale=0.42]{example_04c}
    \caption{3-D perspective mesh plot (left) and colored version (right).}
-   \label{fig:GMT_example_04}
+   \label{fig:example_04}
 \end{figure}
 
 The color version of this figure was used in our first article in \emph{EOS
@@ -233,7 +233,7 @@ the dpi chosen for the scanline conversion.  A higher value
 for dpi in \Opt{Qc} would have resulted in a much larger
 output file.  The CPT files were taken from Section~\ref{sec:example_02}.
 
-\script{example_04c} 
+\script[examples]{example_04c} 
 
 \index{Example!3-D mesh plot|)}
 
@@ -255,7 +255,7 @@ variations in shade are entirely due to variations in gradients,
 or illuminations.  We choose to illuminate from the SW and view
 the surface from SE:
 
-\script{example_05} 
+\script[examples]{example_05} 
 
 The variations in intensity could be made more dramatic by
 using \GMTprog{grdmath} to scale the intensity file before
@@ -263,9 +263,9 @@ running \GMTprog{grdview}.  For very rough data sets one may
 improve the smoothness of the intensities by passing the
 output of \GMTprog{grdgradient} to \GMTprog{grdhisteq}.  The
 shell-script above will result in a plot like the one in
-Figure~\ref{fig:GMT_example_05}.
+Figure~\ref{fig:example_05}.
 
-\GMTexample{05}{3-D illuminated surface.}
+\GMTex{example_05}{3-D illuminated surface.}
 
 \index{Example!3-D illuminated surface|)}
 
@@ -280,11 +280,11 @@ example that involves both programs.  The file \filename{fractures.yx}
 contains a compilation of fracture lengths and directions as
 digitized from geological maps.  The file \filename{v3206.t} contains
 all the bathymetry measurements from \emph{Vema} cruise 3206.
-Our complete figure (Figure~\ref{fig:GMT_example_06}) was made running
+Our complete figure (Figure~\ref{fig:example_06}) was made running
 this script:
 
-\script{example_06} 
-\GMTexample{06}{Two kinds of histograms.}
+\script[examples]{example_06} 
+\GMTex{example_06}{Two kinds of histograms.}
 
 \index{Example!histograms|)}
 
@@ -305,10 +305,10 @@ fracture zone traces (\filename{fz.xy}) and isochrons (0 isochron as
 \filename{ridge.xy}, the rest as \filename{isochrons.xy}) were digitized from
 available maps\footnote{These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).}.
 We create the final location map
-(Figure~\ref{fig:GMT_example_07}) with the following script:
+(Figure~\ref{fig:example_07}) with the following script:
 
-\script{example_07} 
-\GMTexample{07}{A typical location map.}
+\script[examples]{example_07} 
+\GMTex{example_07}{A typical location map.}
 
 The same figure could equally well be made in color, which
 could be rasterized and made into a slide for a meeting
@@ -328,11 +328,11 @@ ASCII $xyz$ table and use the height information to draw a
 2-D histogram in a 3-D perspective view.  Our gridded
 bathymetry file is called \filename{guinea\_bay.nc} and covers the region
 from 0 to 5 \DS E and 0 to 5 \DS N.  Depth ranges from
--5000 meter to sea-level.  We produce the Figure~\ref{fig:GMT_example_08} by
+-5000 meter to sea-level.  We produce the Figure~\ref{fig:example_08} by
 running this script:
 
-\script{example_08} 
-\GMTexample{08}{A 3-D histogram.}
+\script[examples]{example_08} 
+\GMTex{example_08}{A 3-D histogram.}
 
 \index{Example!3-D histogram|)}
 
@@ -364,12 +364,12 @@ format needed for \GMTprog{pstext}.  Note we offset the positions
 by -0.05 inch with \Opt{D} in order to have a small gap
 between the profile and the label:
 
-\script{example_09} 
+\script[examples]{example_09} 
 
 The output shows the sea-surface slopes along 42 descending
 Geosat tracks in the Eltanin and Udintsev fracture zone
-region in a Mercator projection (Figure~\ref{fig:GMT_example_09}).
-\GMTexample{09}{Time-series as ``wiggles'' along a track.}
+region in a Mercator projection (Figure~\ref{fig:example_09}).
+\GMTex{example_09}{Time-series as ``wiggles'' along a track.}
 
 \index{Example!wiggles|)}
 
@@ -386,10 +386,10 @@ each continent with a height that is proportional to the
 logarithm of the membership.  A log$_{10}$-scale is
 used since the memberships vary by almost 3 orders of
 magnitude.  We choose a plain linear projection for the
-basemap and add the columns and text on top. Our script that produces Figure~\ref{fig:GMT_example_10} reads:
+basemap and add the columns and text on top. Our script that produces Figure~\ref{fig:example_10} reads:
 
-\script{example_10}
-\GMTexample{10}{Geographical bar graph.}
+\script[examples]{example_10}
+\GMTex{example_10}{Geographical bar graph.}
 
 \index{Example!bar graph|)}
 
@@ -419,10 +419,10 @@ to 1 (in black font). On these 3 faces the brightness is a constant value of 1.
 On the other 3 faces of the cube, around the black corner, the white decimal numbers indicate
 brightnesses between 0 and 1, with saturation fixed at 1.
 
-Here is the shell script to generate the RGB cube in Figure~\ref{fig:GMT_example_11}:
+Here is the shell script to generate the RGB cube in Figure~\ref{fig:example_11}:
 
-\script{example_11} 
-\GMTexample[width=\textwidth]{11}{The RGB color cube.}
+\script[examples]{example_11} 
+\GMTex[width=\textwidth]{example_11}{The RGB color cube.}
 
 \index{Example!3-D RGB color cube|)}
 
@@ -430,7 +430,7 @@ Here is the shell script to generate the RGB cube in Figure~\ref{fig:GMT_example
 \label{sec:example_12}
 \index{Example!triangulation|(}
 
-Our next example (Figure~\ref{fig:GMT_example_12})
+Our next example (Figure~\ref{fig:example_12})
 operates on a data set of topographic
 readings non-uniformly distributed in the plane (Table
 5.11 in Davis: \emph{Statistics and Data Analysis in Geology},
@@ -444,8 +444,8 @@ are able to contour and image the data.  We use a color
 palette table \filename{topo.cpt} (created via \GMTprog{minmax} and \GMTprog{makecpt}).
 The script becomes:
 
-\script{example_12} 
-\GMTexample{12}{Optimal triangulation of data.}
+\script[examples]{example_12} 
+\GMTex{example_12}{Optimal triangulation of data.}
 
 \index{Example!triangulation|)}
 
@@ -465,10 +465,10 @@ We superpose the gradient vector field and the surface
 \emph{z} and also plot the components of the gradient
 in separate windows.
 A \GMTprog{pstext} call to place a header finishes the plot
-(Figure~\ref{fig:GMT_example_13}:
+(Figure~\ref{fig:example_13}:
 
-\script{example_13} 
-\GMTexample{13}{Display of vector fields in \gmt.}
+\script[examples]{example_13} 
+\GMTex{example_13}{Display of vector fields in \gmt.}
 
 \index{Example!vector fields|)}
 
@@ -493,10 +493,10 @@ surface to the gridded data, contour it as well, and sample
 both grid files along a diagonal transect using \GMTprog{grdtrack}.
 The bottom panel compares the gridded (solid line) and bicubic
 trend (dashed line) along the transect using \GMTprog{psxy}
-(Figure~\ref{fig:GMT_example_14}):
+(Figure~\ref{fig:example_14}):
 
-\script{example_14} 
-\GMTexample[scale=0.6]{14}{Gridding of data and trend surfaces.}
+\script[examples]{example_14} 
+\GMTex[scale=0.6]{example_14}{Gridding of data and trend surfaces.}
 
 \index{Example!gridding and trend surfaces|)}
 
@@ -504,7 +504,7 @@ trend (dashed line) along the transect using \GMTprog{psxy}
 \label{sec:example_15}
 \index{Example!gridding, contouring, and masking|(}
 
-This example (Figure~\ref{fig:GMT_example_15}) demonstrates
+This example (Figure~\ref{fig:example_15}) demonstrates
 some off the different ways one
 can use to grid data in \GMT, and how to deal with unconstrained
 areas.  We first convert a large ASCII file to binary with
@@ -524,8 +524,8 @@ gray land masses to cover up the unwanted contours, and end by
 plotting a star at the deepest point on the map with \GMTprog{psxy}.
 This point was extracted from the grid files using \GMTprog{grdinfo}.
 
-\script{example_15} 
-\GMTexample[scale=0.6]{15}{Gridding, contouring, and masking of data.}
+\script[examples]{example_15} 
+\GMTex[scale=0.6]{example_15}{Gridding, contouring, and masking of data.}
 
 \index{Example!gridding, contouring, and masking|)}
 
@@ -561,7 +561,7 @@ used with non-zero tension to partially  overcome this problem.
 The limiting value $tension = 1$ should approximate the triangulation,
 while a value between 0 and 1 may yield a good compromise between
 the above two cases.  A value of 0.5 is shown here
-(Figure~\ref{fig:GMT_example_16}).  A side
+(Figure~\ref{fig:example_16}).  A side
 effect of the tension is that it tends to make the contours turn
 near the edges of the domain so that they approach the edge from
 a perpendicular direction.  A solution is to use \GMTprog{surface}
@@ -581,8 +581,8 @@ four solutions using a CPT file that contains color fills,
 predefined patterns for interval (900,925) and NaN, an image pattern for interval (875,900),
 and a ``skip slice'' request for interval (700,725).
 
-\script{example_16} 
-\GMTexample[scale=0.6]{16}{More ways to grid data.}
+\script[examples]{example_16} 
+\GMTex[scale=0.6]{example_16}{More ways to grid data.}
 
 \index{Example!gridding|)}
 
@@ -600,10 +600,10 @@ with \GMTprog{grdimage}, use \GMTprog{pscoast} to set up land
 clip paths, and then overlay topography from the ETOPO5 data
 set with another call to \GMTprog{grdimage}.  We finally undo
 the clippath with a second call to \GMTprog{pscoast} with the
-option \Opt{Q} (Figure~\ref{fig:GMT_example_17}): 
+option \Opt{Q} (Figure~\ref{fig:example_17}): 
 
-\script{example_17} 
-\GMTexample{17}{Clipping of images using coastlines.}
+\script[examples]{example_17} 
+\GMTex{example_17}{Clipping of images using coastlines.}
 
 We also plot a color legend on top of the land. So here we basically have three
 layers of ``paint'' stacked on top of each other: the underlaying geoid map,
@@ -635,10 +635,10 @@ to \GMTprog{gmtselect} which retains only the points within 200
 km of Pratt.  We then mask out all the data outside this
 radius and use \GMTprog{grdvolume} to determine the combined
 area and volumes of the chosen seamounts.
-Our illustration is presented in Figure~\ref{fig:GMT_example_18}.
+Our illustration is presented in Figure~\ref{fig:example_18}.
 
-\script{example_18}
-\GMTexample{18}{Volumes and geo-spatial selections.}
+\script[examples]{example_18}
+\GMTex{example_18}{Volumes and geo-spatial selections.}
 
 \index{Example!spatial selections|)}
 
@@ -659,10 +659,10 @@ replaced with color combinations. At the same time the ocean is filled with a re
 image of a circuit board (provides in Sun raster format).
 The text \GMT\ in the center is an off-line \PS\ file that was overlaid using \GMTprog{psimage}.
 The final panel repeats the top panel except that the land and sea images have changed places
-(Figure~\ref{fig:GMT_example_19}).
+(Figure~\ref{fig:example_19}).
 
-\script{example_19} 
-\GMTexample[width=0.9\textwidth]{19}{Using color patterns and additional PostScript material in illustrations.}
+\script[examples]{example_19} 
+\GMTex[width=0.9\textwidth]{example_19}{Using color patterns and additional PostScript material in illustrations.}
 
 \index{Example!PostScript inclusions|)}
 \index{Example!color patterns|)}
@@ -740,10 +740,10 @@ world map and overlay red volcano symbols using our custom-built
 volcano symbol and \GMTprog{psxy}. We do something similar with the bulls eye symbols.
 Without the \Opt{G} option, however, they get the colors defined in \filename{bullseye.def}.
 
-Here is our final map script that produces Figure~\ref{fig:GMT_example_20}:
+Here is our final map script that produces Figure~\ref{fig:example_20}:
 
-\script{example_20}
-\GMTexample{20}{Using custom symbols in \gmt.}
+\script[examples]{example_20}
+\GMTex{example_20}{Using custom symbols in \gmt.}
 
 Given these guidelines you can easily make your own symbols.
 Symbols with more than one color can be obtained by making
@@ -783,12 +783,12 @@ days) we must change the default input/output formats used by \GMT. Finally,
 we want to prefix prices with the \$ symbol to indicate the currency.  Here is
 how it all comes out:
 
-\script{example_21} 
+\script[examples]{example_21} 
 
-which produces the plot in Figure~\ref{fig:GMT_example_21}, suggesting Wessel
+which produces the plot in Figure~\ref{fig:example_21}, suggesting Wessel
 has missed a few trains if he had hoped to cash in on the Internet bubble...
 
-\GMTexample{21}{Time-series of RedHat stock price since IPO.}
+\GMTex{example_21}{Time-series of RedHat stock price since IPO.}
 
 \index{Example!RedHat stock price|)}
 
@@ -809,10 +809,10 @@ owner; here that command is commented out and the user is hardwired to ``GMT gur
 The USGS logo, taken from their web page and converted to a Sun raster file, is used
 to spice up the legend.
 
-\script{example_22} 
-\GMTexample{22}{World-wide seismicity the last 7 days.}
+\script[examples]{example_22} 
+\GMTex{example_22}{World-wide seismicity the last 7 days.}
 
-The script produces the plot in Figure~\ref{fig:GMT_example_22}, giving the URL
+The script produces the plot in Figure~\ref{fig:example_22}, giving the URL
 where these and similar data can be obtained.
 
 \index{Example!world-wide seismicity|)}
@@ -832,10 +832,10 @@ distances (in km) from Rome, all laid down on top of a beautiful world map.  Not
 we specify that contour labels only be placed along the straight map-line connecting
 Rome to its antipode, and request curved labels that follows the shape of the contours.
 
-\script{example_23} 
-\GMTexample{23}{All great-circle paths lead to Rome.}
+\script[examples]{example_23} 
+\GMTex{example_23}{All great-circle paths lead to Rome.}
 
-The script produces the plot in Figure~\ref{fig:GMT_example_23}; note how
+The script produces the plot in Figure~\ref{fig:example_23}; note how
 interesting the path to Seattle appears in this particular projection (Hammer).
 We also note that Rome's antipode lies somewhere near the Chatham plateau (antipodes
 will be revisited in Section~\ref{sec:example_25}).
@@ -861,10 +861,10 @@ pass our criteria.  Most of the work here is done by \GMTprog{gmtselect}; the re
 is carried out by the usual \GMTprog{pscoast} and \GMTprog{psxy} workhorses.  Note
 for our purposes the Dateline is just a line along the 180\DS\ meridian.
 
-\script{example_24} 
-\GMTexample{24}{Data selection based on geospatial criteria.}
+\script[examples]{example_24} 
+\GMTex{example_24}{Data selection based on geospatial criteria.}
 
-The script produces the plot in Figure~\ref{fig:GMT_example_24}.  Note that the
+The script produces the plot in Figure~\ref{fig:example_24}.  Note that the
 horizontal distance from the dateline seems to increase as we go south; however that
 is just the projected distance (Mercator distortion) and not the actual distance
 which remains constant at 1000 km.
@@ -892,10 +892,10 @@ and finally convert that ratio to percent.  Since the $\Delta \lambda$, $\Delta 
 appear twice in these expressions they cancel out, leaving the somewhat
 intractable expressions below where the sum of $\cos (\phi)$ for all $\phi$ is known to equal $2N_y / \pi$:
 
-\script{example_25}
+\script[examples]{example_25}
 
 In the end we obtain a funny-looking map depicting the antipodal distribution as
-well as displaying in legend form the requested percentages (Figure~\ref{fig:GMT_example_25}).
+well as displaying in legend form the requested percentages (Figure~\ref{fig:example_25}).
 Note that the script is set to evaluate a global 30 minute grid for expediency ($D = 30$), hence
 several smaller land masses that do have terrestrial antipodes do not show up.  If you want
 a more accurate map you can set the parameter $D$ to a smaller increment (try 5 and wait a
@@ -905,7 +905,7 @@ The call to \GMTprog{grdimage} includes the \Opt{-Sn} to suspend interpolation a
 return the value of the nearest neighbor. This option is particularly practical for plotting
 categorical data, like these, that should not be interpolated.
 
-\GMTexample[width=\textwidth]{25}{Global distribution of antipodes.}
+\GMTex[width=\textwidth]{example_25}{Global distribution of antipodes.}
 
 \index{Example!distribution of antipodes|)}
 
@@ -919,14 +919,14 @@ a view of the eastern continental US from a height of 160 km.  Below we add a vi
 55\DS\ and azimuth 210\DS; here we have chosen a boresight twist of 45\DS.  We view the land from
 New York towards Washington, D.C.
 
-\script{example_26}
+\script[examples]{example_26}
 
 At this point the full projection has not been properly optimized and the map annotations will need
 additional work.  Also, note that the projection is only implemented in \GMTprog{pscoast} and \GMTprog{grdimage}.
 We hope to refine this further and extend the availability of the full projection to all of the
 \GMT\ mapping programs.
 
-\GMTexample{26}{General vertical perspective projection.}
+\GMTex{example_26}{General vertical perspective projection.}
  
 \index{Example!vertical perspective projection|)}
 
@@ -952,12 +952,12 @@ two key issues:
 	\item Select Mercator projection and use the same scale that was used with the linear projection.
 \end{enumerate}
 
-\script{example_27}
+\script[examples]{example_27}
 
 This map of the Tasman Sea shows the marine gravity anomalies with land painted black.  A color scale bar
 was then added to complete the illustration.
 
-\GMTexample{27}{Plotting Sandwell/Smith Mercator img grids.}
+\GMTex{example_27}{Plotting Sandwell/Smith Mercator img grids.}
  
 \index{Example!Mercator img grids|)}
 
@@ -982,14 +982,14 @@ the same map there are a few things you must consider:
 	\item Make sure you use the same scale (and not width) with both the linear and UTM projection.
 \end{enumerate}
 
-\script{example_28}
+\script[examples]{example_28}
 
 Our script illustrates how we would plot a UTM grid of elevations near Kilauea volcano on the Big Island
 of Hawaii.  Given we are in UTM zone 5Q, the script determines the geographic coordinates of the
 lower left and upper right corner of the UTM grid, then uses that region when overlaying the coastline
 and light blue ocean.  We place a scale bar and label Kilauea crater to complete the figure.
 
-\GMTexample{28}{Mixing UTM and geographic data sets requires knowledge of the map region domain in both
+\GMTex{example_28}{Mixing UTM and geographic data sets requires knowledge of the map region domain in both
 UTM and lon/lat coordinates and consistent use of the same map scale.}
  
 \index{Example!Mixing UTM and geographic data|)}
@@ -1006,7 +1006,7 @@ can use to demonstrate spherical surface gridding.  Since \GMTprog{greenspline} 
 matrix system your system memory may impose limits on how large data sets you can handle; also note that
 the spherical surface spline in tension is particularly slow to compute.
 
-\script{example_29}
+\script[examples]{example_29}
 
 Our script must first estimate the ellipsoidal shape of Mars from the parameters given by \emph{Smith and Zuber}
 so that we can remove this reference surface from the gridded radii.  We run the gridding twice: First with
@@ -1014,7 +1014,7 @@ no tension using \emph{Parker}'s [1990] method and then with tension using the \
 The grids are then imaged with \GMTprog{grdimage} and \GMTprog{grdcontour} and a color scale is placed between
 them.
 
-\GMTexample{29}{Gridding of spherical surface data using Green's function splines.}
+\GMTex{example_29}{Gridding of spherical surface data using Green's function splines.}
  
 \index{Example!Gridding spherical surface data using splines|)}
 
@@ -1024,13 +1024,13 @@ them.
 Finally, we end with a simple mathematical illustration of sine and cosine, highlighting the
 \emph{graph} mode for linear projections and the new curved vectors for angles.
 
-\script{example_30}
+\script[examples]{example_30}
 
 The script simply draws a graph basemap, computes sine and cosine and plots them as lines, then
 indicates on a circle that these quantities are simply the projections of an unit vector on the
 x- and y-axis, at the given angle.
 
-\GMTexample{30}{Trigonometric functions plotted in graph mode.}
+\GMTex{example_30}{Trigonometric functions plotted in graph mode.}
  
 \index{Example!Trigonometric functions plotted in graph mode|)}
 
@@ -1056,16 +1056,16 @@ script includes the following steps:
   (optional).
 \end{itemize}
 
-\script{example_31}
+\script[examples]{example_31}
 
 The script produces the plot in
-Figure~\ref{fig:GMT_example_31}. All standard fonts have been
+Figure~\ref{fig:example_31}. All standard fonts have been
 substituted by the free OpenType fonts Linux Libertine (title) and
 Linux Biolinum (annotations). Uncomment the appropriate lines in
 the script to make a \PS-file with outlined fonts or to convert to
 a PDF-file.
 
-\GMTexample{31}{Using non-default fonts in \PS.}
+\GMTex{example_31}{Using non-default fonts in \PS.}
  
 \index{Example!Using non-default fonts in \PS|)}
 
@@ -1093,13 +1093,13 @@ it and with shading to show the little topography there is.
 \GMTprog{pscoast} is used in conjunction with \GMTprog{grdtrack} and \GMT{psxyz} to plot borders ``at altitude''.
 Something similar is done at the end to plot some symbols and names for cities.
 
-\script{example_32}
+\script[examples]{example_32}
 
-The script produces the plot in Figure~\ref{fig:GMT_example_32}. Note that the PNG image of the flag can be
+The script produces the plot in Figure~\ref{fig:example_32}. Note that the PNG image of the flag can be
 downloaded directly in the call the \GMTprog{grdreformat}, but we have commented that out in the example because
 it requires compilation with GDAL support. You will also see the \GMTprog{grdcut} command commented out because
 we did not want to store the 58 MB DEM file, whose location is mentioned in the script.
 
-\GMTexample[width=\textwidth]{32}{Draping an image over topography}
+\GMTex[width=\textwidth]{example_32}{Draping an image over topography}
 
 \index{Example!Draping an image over topography|)}
