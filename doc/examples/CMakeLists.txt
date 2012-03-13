@@ -50,7 +50,7 @@ endmacro (SCRIPT_TO_VERBATIM)
 
 macro (SETUP)
 	# List of output verbatime files for inclusion in LaTeX doc
-	set (_all_verbatim)
+	set (_examples_txt)
 
 	foreach (_script ${_animation_jobs} ${_example_jobs})
 		get_filename_component (_verbatim_file ${_script} NAME_WE)
@@ -61,7 +61,7 @@ macro (SETUP)
 			string (REGEX REPLACE "job([0-9][0-9][a-z]?)$" "example_\\1.txt"
 				_verbatim_file ${_verbatim_file})
 		endif (_verbatim_file MATCHES anim)
-		list (APPEND _all_verbatim ${GMT_BINARY_DIR}/doc/scripts/${_verbatim_file})
+		list (APPEND _examples_txt ${GMT_BINARY_DIR}/doc/scripts/${_verbatim_file})
 
 	# Add command that triggers generator macro when output does not exist
 		add_custom_command (OUTPUT ${GMT_BINARY_DIR}/doc/scripts/${_verbatim_file}
@@ -74,7 +74,7 @@ macro (SETUP)
 			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 	endforeach (_script ${_animation_jobs} ${_example_jobs})
 
-	add_custom_target (examples_txt DEPENDS ${_all_verbatim})
+	add_custom_target (examples_txt DEPENDS ${_examples_txt})
 
 	# run examples (test)
 	if (DO_EXAMPLES) # AND UNIX)

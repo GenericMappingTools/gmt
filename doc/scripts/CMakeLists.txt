@@ -54,23 +54,21 @@ set (_scr_test GMT_RGBchart.sh)
 set (_all_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other} ${_scr_test})
 
 set (_all_scripts ${_scr_nostrip} ${_scr_strip})
-string (REPLACE ".sh" ".txt" _all_verbatim "${_all_scripts}")
+string (REPLACE ".sh" ".txt" _scripts_txt "${_all_scripts}")
 
 set (_all_figures ${_scr_nostrip} ${_scr_strip} ${_scr_other}
 	GMT_-U.ps GMT_RGBchart_a4.ps GMT_RGBchart_letter.ps GMT_RGBchart_tabloid.ps)
 string (REPLACE ".sh" ".ps" _all_ps "${_all_figures}")
-string (REPLACE ".ps" ".pdf" _all_pdf "${_all_ps}")
 
+set (_all_pdf)
 set (_pdf_fig_install GMT_RGBchart_a4.pdf GMT_RGBchart_tabloid.pdf GMT_RGBchart_letter.pdf)
-
-include (ManageString)
 
 # Convert figures to PDF
 foreach (_fig ${_all_ps})
 	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
 	list (APPEND _all_pdf ${_pdf_fig})
 	add_custom_command (
-		OUTPUT ${_fig}.pdf
+		OUTPUT ${_pdf_fig}
 		COMMAND
 		GMT_USERDIR=${GMT_BINARY_DIR}/share
 		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
@@ -81,7 +79,9 @@ foreach (_fig ${_all_ps})
 		DEPENDS ps2raster ${_fig})
 endforeach (_fig ${_all_ps})
 
-macro (SCRIPT_TO_VERBATIM)
+include (ManageString)
+
+macro (script_to_verbatim)
 	# Convert scripts to verbatim text for inclusion in TeX documentation
 	if (no_strip)
 		grep ("[$]Id:|functions[.]sh" _file_content ${script} INVERT)
@@ -92,7 +92,7 @@ macro (SCRIPT_TO_VERBATIM)
 	string_unescape (_verbatim_txt "${_file_content}" NOESCAPE_SEMICOLON)
 	get_filename_component (_verbatim_file ${script} NAME_WE)
 	file (WRITE ${_verbatim_file}.txt "${_verbatim_txt}")
-endmacro (SCRIPT_TO_VERBATIM)
+endmacro (script_to_verbatim)
 
 macro (SETUP)
 	if (PDFLATEX_COMPILER)
@@ -106,7 +106,7 @@ macro (SETUP)
 				-D no_strip=TRUE
 				-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 				-P ${CMAKE_CURRENT_LIST_FILE}
-				DEPENDS ${_all_scripts})
+				DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 		endforeach (_script)
 
 		foreach (_script ${_scr_strip})
@@ -117,10 +117,10 @@ macro (SETUP)
 				-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
 				-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 				-P ${CMAKE_CURRENT_LIST_FILE}
-				DEPENDS ${_all_scripts})
+				DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 		endforeach (_script)
 
-		add_custom_target (scripts_txt DEPENDS ${_all_verbatim})
+		add_custom_target (scripts_txt DEPENDS ${_scripts_txt})
 	endif (PDFLATEX_COMPILER)
 
 	# run tests
