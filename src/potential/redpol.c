@@ -22,7 +22,7 @@
  * computes the continuous reduction to the pole (RTP) anomaly by calculating the
  * filter coefficients in the frequency, inverse FT and convolve in space domain.
  * For details on the method see, Luis, J.F and J.M. Miranda (2008), 
- * "Reevaluation of magnetic chrons in the North Atlantic between 35°N and 47°N: 
+ * "Reevaluation of magnetic chrons in the North Atlantic between 35Â°N and 47Â°N: 
  * Implications for the formation of the Azores Triple Junction and associated plateau, 
  * J. Geophys. Res., 113, B10105, doi:10.1029/2007JB005573 
  *

@@ -3,26 +3,26 @@
 #	$Id$
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
-M	1	Janúar		Jan	J
-M	2	Febrúar		Feb	F
+M	1	JanÃºar		Jan	J
+M	2	FebrÃºar		Feb	F
 M	3	Mars		Mar	M
-M	4	Apríl		Apr	A
-M	5	Maí		Maí	M
-M	6	Júní		Jún	J
-M	7	Júlí		Júl	J
-M	8	Ágúst		Ágú	A
+M	4	AprÃ­l		Apr	A
+M	5	MaÃ­		MaÃ­	M
+M	6	JÃºnÃ­		JÃºn	J
+M	7	JÃºlÃ­		JÃºl	J
+M	8	ÃgÃºst		ÃgÃº	A
 M	9	September	Sep	S
-M	10	Október		Okt	O
-M	11	Nóvember	Nóv	N
+M	10	OktÃ³ber		Okt	O
+M	11	NÃ³vember	NÃ³v	N
 M	12	Desember	Des	D
 # Name and abbreviations for the word Week in this language
 U	1	Vika		Vik	V
 # Weeknames, with 3-char and 1-char abbreviations
 # (List starts on Sunday regardless of TIME_WEEK_START)
 W	1	Sunnudagur	Sun	S
-W	2	Mánudagur	Man	M
-W	3	Şriğjudagur	Şri	Ş
-W	4	Miğvikudagur	Miğ	M
+W	2	MÃ¡nudagur	Man	M
+W	3	ÃriÃ°judagur	Ãri	Ã
+W	4	MiÃ°vikudagur	MiÃ°	M
 W	5	Fimmtudagur	Fim	F
-W	6	Föstudagur	Fös	F
+W	6	FÃ¶studagur	FÃ¶s	F
 W	7	Laugardagur	Lau	L

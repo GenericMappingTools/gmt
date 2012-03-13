@@ -19,10 +19,10 @@ M	12	December	Dec	D
 U	1	Uge		Uge	U
 # Weeknames, with 3-char and 1-char abbreviations
 # (List starts on Sunday regardless of TIME_WEEK_START)
-W	1	Søndag		Søn	S
+W	1	SÃ¸ndag		SÃ¸n	S
 W	2	Mandag		Man	M
 W	3	Tirsdag		Tir	T
 W	4	Onsdag		Ons	O
 W	5	Torsdag		Tor	T
 W	6	Fredag		Fre	F
-W	7	Lørdag		Lør	L
+W	7	LÃ¸rdag		LÃ¸r	L
