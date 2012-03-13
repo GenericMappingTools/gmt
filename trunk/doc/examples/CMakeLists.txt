@@ -42,17 +42,17 @@ foreach (_script ${_all_jobs})
 		string (REGEX REPLACE "job([0-9][0-9][a-z]?)$" "example_\\1.txt"
 			_txt ${_txt})
 	endif (_txt MATCHES anim)
-	list (APPEND _examples_txt ${GMT_BINARY_DIR}/doc/scripts/${_txt})
+	list (APPEND _examples_txt ${CMAKE_CURRENT_BINARY_DIR}/${_txt})
 
 # Add command that triggers generator macro when output does not exist
-	add_custom_command (OUTPUT ${GMT_BINARY_DIR}/doc/scripts/${_txt}
+	add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_txt}
 		COMMAND ${CMAKE_COMMAND}
 		-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
-		-D txt=${GMT_BINARY_DIR}/doc/scripts/${_txt}
+		-D txt=${CMAKE_CURRENT_BINARY_DIR}/${_txt}
 		-D nostrip=TRUE
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
-		WORKING_DIRECTORY ${GMT_BINARY_DIR}/doc/scripts
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script} ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake)
 endforeach (_script ${_animation_jobs} ${_example_jobs})
 

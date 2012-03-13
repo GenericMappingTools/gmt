@@ -50,8 +50,7 @@
 % GMTfig will insert an image file, add a label, and set a caption
 \newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1]\centering\includegraphics{#2}\caption{#3}\label{fig:#2}\end{figure}}
 % Same for examples (scales by 50% by default)
-\newcommand{\GMTexample}[3][scale=0.5]{\begin{figure}[hbtp]\centering\includegraphics[#1]{example_#2}\caption{#3}\label{fig:GMT_example_#2}\end{figure}}
-\newcommand{\GMTanimation}[3][scale=0.5]{\begin{figure}[hbtp]\centering\includegraphics[#1]{anim_#2}\caption{#3}\label{fig:GMT_animation_#2}\end{figure}}
+\newcommand{\GMTex}[3][scale=0.5]{\begin{figure}[hbtp]\centering\includegraphics[#1]{#2}\caption{#3}\label{fig:#2}\end{figure}}
 
 \newcommand{\PS}{\textit{PostScript}}
 \newcommand{\UNIX}{\textit{UNIX}}
@@ -62,10 +61,10 @@
 
 \newcommand{\GMTprog}[1]{\GMTprogi{#1}\index{#1@\textsfbf{#1}}}
 
-\newcommand{\script}[1]{%
+\newcommand{\script}[2][scripts]{%
    \begingroup
    \scriptsize\vspace{0.25\baselineskip}\noindent\hrulefill\vspace{-0.75\baselineskip}%
-   \verbatiminput{scripts/#1.txt}%
+   \verbatiminput{#1/#2.txt}%
    \vspace{-1.25\baselineskip}\noindent\hrulefill\vspace{0.25\baselineskip}%
    \endgroup
 }

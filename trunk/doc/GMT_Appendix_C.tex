@@ -159,7 +159,7 @@ will rotate the image 90\DS\ clockwise and scale it such that its width (after r
    \label{fig:formatpicture}
 \end{figure}
 
-In Figure~\ref{fig:rendering} we have attempted to include Figure~\ref{fig:GMT_example_20} into a \progname{PowerPoint} presentation. First the \PS\ file was converted to PDF (using \GMTprog{ps2raster}), then loaded into \progname{PowerPoint} and the white background color was made transparent using the formatting toolbar (shown on the left side of Figure~\ref{fig:rendering}). Clearly, when we let \progname{PowerPoint} do the rendering, we do not get the best result:
+In Figure~\ref{fig:rendering} we have attempted to include Figure~\ref{fig:example_20} into a \progname{PowerPoint} presentation. First the \PS\ file was converted to PDF (using \GMTprog{ps2raster}), then loaded into \progname{PowerPoint} and the white background color was made transparent using the formatting toolbar (shown on the left side of Figure~\ref{fig:rendering}). Clearly, when we let \progname{PowerPoint} do the rendering, we do not get the best result:
 \begin{enumerate}
 \item The anti-aliasing causes the tiles that make up the land to stand out. This is because the anti-aliasing algorithm blurs all edges, even when the tiles join seamlessly.
 \item The background color was assumed to be white, hence the text is ``smoothed'' using gray shades. Instead, shades of blue which would be appropriate for the background we are using.
