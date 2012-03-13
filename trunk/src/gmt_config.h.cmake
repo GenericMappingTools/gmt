@@ -129,8 +129,6 @@
 #	define _MSC_STDINT_H_
 #endif
 
-#cmakedefine HAVE_MODE_T
-
 #cmakedefine WORDS_BIGENDIAN
 
 /* Math headers */
