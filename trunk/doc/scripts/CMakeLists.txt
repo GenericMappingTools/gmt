@@ -44,8 +44,7 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_App_F_symbol.sh GMT_App_G.sh GMT_App_J_1.sh GMT_App_J_2.sh GMT_App_J_3.sh
 	GMT_App_M_1.sh GMT_App_N_1.sh GMT_arrows.sh GMT_atan.sh GMT_color_interpolate.sh
 	GMT_coverlogo.sh GMT_Defaults_1a.sh GMT_Defaults_1b.sh GMT_Defaults_1c.sh
-	GMT_dummydata.sh GMT_encoding.sh GMT_linecap.sh GMT_nearneighbor.sh
-	GMT_pstext_clearance.sh GMT_pstext_justify.sh GMT_registration.sh
+	GMT_linecap.sh GMT_nearneighbor.sh GMT_pstext_clearance.sh GMT_pstext_justify.sh GMT_registration.sh
 	GMT_utm_zones.sh GMT_volcano.sh)
 
 # Scripts that are only used for testing, figures are not in the documentation
@@ -58,15 +57,15 @@ string (REPLACE ".sh" ".txt" _scripts_txt "${_all_scripts}")
 
 set (_all_figures ${_scr_nostrip} ${_scr_strip} ${_scr_other}
 	GMT_-U.ps GMT_RGBchart_a4.ps GMT_RGBchart_letter.ps GMT_RGBchart_tabloid.ps)
-string (REPLACE ".sh" ".ps" _all_ps "${_all_figures}")
+string (REPLACE ".sh" ".ps" _scripts_ps "${_all_figures}")
 
-set (_all_pdf)
+set (_scripts_pdf)
 set (_pdf_fig_install GMT_RGBchart_a4.pdf GMT_RGBchart_tabloid.pdf GMT_RGBchart_letter.pdf)
 
 # Convert figures to PDF
-foreach (_fig ${_all_ps})
+foreach (_fig ${_scripts_ps})
 	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
-	list (APPEND _all_pdf ${_pdf_fig})
+	list (APPEND _scripts_pdf ${_pdf_fig})
 	add_custom_command (
 		OUTPUT ${_pdf_fig}
 		COMMAND
@@ -77,7 +76,7 @@ foreach (_fig ${_all_ps})
 		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		DEPENDS ps2raster ${_fig})
-endforeach (_fig ${_all_ps})
+endforeach (_fig ${_scripts_ps})
 
 include (ManageString)
 
@@ -166,7 +165,7 @@ else (SCRIPTS_COMMAND)
 endif (SCRIPTS_COMMAND)
 
 # Add build target
-add_custom_target (scripts_pdf DEPENDS ${_all_pdf})
+add_custom_target (scripts_pdf DEPENDS ${_scripts_pdf})
 
 # Install pdf figures (if found)
 foreach (_fig ${_pdf_fig_install})
