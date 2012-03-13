@@ -21,10 +21,10 @@
 #
 # This software is distributed WITHOUT ANY WARRANTY; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the License for more information.
+# See COPYING-CMAKE-SCRIPTS for more information.
 #=============================================================================
-# (To distribute this file outside of CMake, substitute the full
-#  License text for the above reference.)
+# Note: this file is not an exact copy of the original file from Kitware.
+#       It has been modified for the needs of GMT.
 
 #
 # $GDAL_DIR is an environment variable that would
