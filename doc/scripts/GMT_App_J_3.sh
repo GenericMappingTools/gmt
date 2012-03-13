@@ -581,44 +581,13 @@ cat << EOF > tt.r_tr_fns
 5	0.017701225	-0.0013879802	1.1137433e-06
 EOF
 #---------------------------------------------------
-
-echo "-0.5	0" > tt.tmp
-gmtmath -T-0.5/0.5/0.01 1 = >> tt.tmp
-echo "0.5	0" >> tt.tmp
-#
-#
-#
-gmtset FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
-psxy tt.tmp -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -Wthick > GMT_App_J_1.ps
-gmtmath -T-0.5/0.5/0.01 T PI 2 MUL MUL COS 1 ADD 0.5 MUL = | psxy -R -J -O -K -Wthick,- >> GMT_App_J_1.ps
-gmtmath -T-0.5/0.5/0.01 T T MUL 18 MUL NEG EXP = | psxy -R -J -O -K -Wthick,. >> GMT_App_J_1.ps
-pstext -R -J -O -F+f9p,Times-Roman+j << END >> GMT_App_J_1.ps
--0.2	0.3	LM	Solid Line:
--0.2	0.2	LM	Dotted Line:
--0.2	0.1	LM	Dashed Line:
-0.2	0.3	RM	Boxcar
-0.2	0.2	RM	Gaussian
-0.2	0.1	RM	Cosine
-END
-#
-#
-gmtmath -T0/5/0.01 T SINC = | psxy -R0/5/-0.3/1 -JX4i/2i -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -Wthick > GMT_App_J_2.ps
-gmtmath -T0/5/0.01 T SINC 1 T T MUL SUB DIV = | grep -v '^>' | $AWK '{ if ($1 == 1) print 1, 0.5; else print $0}' | psxy -R -J -O -K -Wthick,- >> GMT_App_J_2.ps
-gmtmath -T0/5/0.01 T PI MUL DUP MUL 18 DIV NEG EXP = | psxy -R -J -O -K -Wthick,. >> GMT_App_J_2.ps
-pstext -R -J -O -F+f9p,Times-Roman+j << END >> GMT_App_J_2.ps
-2.2	0.6	LM	Solid Line:
-2.2	0.5	LM	Dotted Line:
-2.2	0.4	LM	Dashed Line:
-3.8	0.6	RM	Boxcar
-3.8	0.5	RM	Gaussian
-3.8	0.4	RM	Cosine
-END
 #
 #
 # These were pre-computed because of the need to do a numerical Hankel transform.
 # Also, I found that j0(x) and j1(x) are not reliable on some machines....
 #
-cut -f1,2 tt.r_tr_fns | psxy -R -J -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -Wthick > GMT_App_J_3.ps
+gmtset FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
+cut -f1,2 tt.r_tr_fns | psxy -R0/5/-0.3/1 -JX4i/2i -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -Wthick > GMT_App_J_3.ps
 cut -f1,3 tt.r_tr_fns | psxy -R -J -O -K -Wthick,- >> GMT_App_J_3.ps
 cut -f1,4 tt.r_tr_fns | psxy -R -J -O -K -Wthick,. >> GMT_App_J_3.ps
 pstext -R -J -O -F+f9p,Times-Roman+j << END >> GMT_App_J_3.ps

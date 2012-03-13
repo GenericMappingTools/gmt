@@ -44,7 +44,7 @@ project -C$x0/$y0 -E$x1/$y1 -G10 -Q > tt.d
 dist=`gmtconvert tt.d --FORMAT_FLOAT_OUT=%.0lf -El -o2`
 R=`minmax -I1 tt.d`
 echo "# Geoid Extrema Separation is $dist km" > transect.d
-grdtrack tt.d -Ggeoid.nc | grdtrack -G"$src"/App_O.nc >> transect.d
+grdtrack tt.d -Ggeoid.nc | grdtrack -G"$src"/GMT_App_O.nc >> transect.d
 
 for n in 1 2 3 4 5 6 7 8 9; do
 	cd ${exec_dir}/..
