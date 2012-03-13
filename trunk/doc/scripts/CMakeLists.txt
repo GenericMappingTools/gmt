@@ -60,23 +60,7 @@ set (_all_figures ${_scr_nostrip} ${_scr_strip} ${_scr_other}
 string (REPLACE ".sh" ".ps" _scripts_ps "${_all_figures}")
 
 set (_scripts_pdf)
-set (_pdf_fig_install GMT_RGBchart_a4.pdf GMT_RGBchart_tabloid.pdf GMT_RGBchart_letter.pdf)
-
-# Convert figures to PDF
-foreach (_fig ${_scripts_ps})
-	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
-	list (APPEND _scripts_pdf ${_pdf_fig})
-	add_custom_command (
-		OUTPUT ${_pdf_fig}
-		COMMAND
-		GMT_USERDIR=${GMT_BINARY_DIR}/share
-		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-		${GMT_BINARY_DIR}/src/ps2raster -A -P -Tf
-		-D${CMAKE_CURRENT_BINARY_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS ps2raster ${_fig})
-endforeach (_fig ${_scripts_ps})
+set (_install_pdf GMT_RGBchart_a4.pdf GMT_RGBchart_tabloid.pdf GMT_RGBchart_letter.pdf)
 
 include (ManageString)
 
@@ -94,6 +78,22 @@ macro (script_to_verbatim)
 endmacro (script_to_verbatim)
 
 macro (SETUP)
+	# Convert figures to PDF
+	foreach (_fig ${_scripts_ps})
+		string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
+		list (APPEND _scripts_pdf ${_pdf_fig})
+		add_custom_command (
+			OUTPUT ${_pdf_fig}
+			COMMAND
+			GMT_USERDIR=${GMT_BINARY_DIR}/share
+			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+			${GMT_BINARY_DIR}/src/ps2raster -A -P -Tf
+			-D${CMAKE_CURRENT_BINARY_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			DEPENDS ps2raster ${_fig})
+	endforeach (_fig ${_scripts_ps})
+
 	if (PDFLATEX_COMPILER)
 		foreach (_script ${_scr_nostrip})
 			string (REPLACE ".sh" ".txt" _verbatim_file ${_script})
@@ -124,10 +124,6 @@ macro (SETUP)
 
 	# run tests
 	if (DO_TESTS)
-		# rules for copying test files to build dir
-		file (GLOB_RECURSE _files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
-		list_regex_get ("[.]svn/|[.]cmake|CMakeLists.txt" _files ${_files} INVERT)
-
 		# this file takes care of setting up the test environment
 		configure_file (functions.sh.cmake functions.sh @ONLY)
 
@@ -141,11 +137,22 @@ macro (SETUP)
 		endif (CYGWIN_INSTALL_PATH)
 
 		foreach (_job ${_all_tests})
-			add_test(NAME ${_job}
+			add_test (NAME ${_job}
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/${_job})
 		endforeach (_job)
-	endif(DO_TESTS)
+	endif (DO_TESTS)
+
+	# Add build target
+	add_custom_target (scripts_pdf DEPENDS ${_scripts_pdf})
+
+	# Install pdf figures (if found)
+	foreach (_fig ${_install_pdf})
+		install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_fig}
+			DESTINATION ${GMT_DOC_PATH}/pdf
+			COMPONENT Documentation
+			OPTIONAL)
+	endforeach (_fig ${_install_pdf})
 endmacro (SETUP)
 
 # Get something done
@@ -161,18 +168,7 @@ if (SCRIPTS_COMMAND)
 	endif (NOT _command_handled)
 else (SCRIPTS_COMMAND)
 	# Must be part of the actual configure (included from CMakeLists.txt).
-	SETUP()
+	SETUP ()
 endif (SCRIPTS_COMMAND)
-
-# Add build target
-add_custom_target (scripts_pdf DEPENDS ${_scripts_pdf})
-
-# Install pdf figures (if found)
-foreach (_fig ${_pdf_fig_install})
-	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_fig}
-		DESTINATION ${GMT_DOC_PATH}/pdf
-		COMPONENT Documentation
-		OPTIONAL)
-endforeach (_fig ${_pdf_fig_install})
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
