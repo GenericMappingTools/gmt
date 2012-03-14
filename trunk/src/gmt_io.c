@@ -804,19 +804,20 @@ GMT_LONG gmt_ogr_decode_aspatial_values (struct GMT_CTRL *C, char *record, struc
 {	/* Parse @D<vals> aspatial values; this is done once per feature (segment).  We store
  	 * both the text representation (value) and attempt to convert to double in dvalue.
  	 * We use S->n_aspatial to know how many values there are .*/
-	GMT_LONG pos = 0, col = 0;
-	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ];
+	GMT_LONG col = 0;
+	char buffer[GMT_BUFSIZ], *token, *stringp;
 
 	if (S->n_aspatial == 0) return (0);	/* Nothing to do */
 	if (S->value == NULL) {			/* First time, allocate space */
 		S->value  = GMT_memory (C, S->value,  S->n_aspatial, char *);
 		S->dvalue = GMT_memory (C, S->dvalue, S->n_aspatial, double);
 	}
-	strcpy (buffer, record);
-	while ((GMT_strtok1 (buffer, '|', &pos, p))) {
+	strcpy (buffer, record); /* working copy */
+	stringp = buffer;
+	while ( (token = strsep (&stringp, "|")) != NULL ) {
 		if (S->value[col]) free (S->value[col]);	/* Free previous item */
-		S->value[col]  = strdup (p);
-		S->dvalue[col] = gmt_convert_aspatial_value (C, S->type[col], p);
+		S->value[col]  = strdup (token);
+		S->dvalue[col] = gmt_convert_aspatial_value (C, S->type[col], token);
 		col++;
 	}
 	if (col == (S->n_aspatial-1)) {	/* Last item was blank */
@@ -1171,7 +1172,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 {
 	GMT_LONG pos, col_no = 0, in_col, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
 	GMT_LONG done = FALSE, bad_record, set_nan_flag = FALSE;
-	char line[GMT_BUFSIZ], *p = NULL, token[GMT_BUFSIZ];
+	char line[GMT_BUFSIZ], *p = NULL, *token, *stringp;
 	double val;
 
 	/* gmt_ascii_input will skip blank lines and shell comment lines which start
@@ -1255,8 +1256,9 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 		col_no = pos = n_ok = 0;			/* Initialize counters */
 		in_col = -1;					/* Since we will increment right away inside the loop */
 
-		while (!bad_record && col_no < n_use && (GMT_strtok (line, " \t,", &pos, token))) {	/* Get one field at the time until we run out or have issues */
-			in_col++;	/* This is the actual column number in the input file */
+		stringp = line;
+		while (!bad_record && col_no < n_use && (token = strsepz (&stringp, " \t,")) != NULL) {	/* Get one field at the time until we run out or have issues */
+			++in_col;	/* This is the actual column number in the input file */
 			if (C->common.i.active) {	/* Must do special column-based processing since the -i option was set */
 				if (C->current.io.col_skip[in_col]) continue;		/* Just skip and not even count this column */
 				col_pos = C->current.io.col[GMT_IN][col_no].order;	/* Which data column will receive this value */

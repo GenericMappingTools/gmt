@@ -34,6 +34,8 @@
  *  GMT_strtok              Reiterant replacement of strtok
  *  DOS_path_fix            Turn /c/dir/... paths into c:/dir/...
  *  strtok_r                Reentrant string tokenizer from Gnulib (LGPL)
+ *  strsep                  Reentrant string tokenizer that handles empty fields
+ *  strsepz                 Like strsep but ignores empty fields
  */
 
 /* CMake definitions: This must be first! */
@@ -186,38 +188,6 @@ GMT_LONG GMT_strtok (const char *string, const char *sep, GMT_LONG *pos, char *t
 	return 1;
 }
 
-GMT_LONG GMT_strtok1 (const char *string, const char sep, GMT_LONG *pos, char *token)
-{
-	/* strtok-like function that retrieves tokens separate by a single character sep.
-	 * Unlike strtok, a token returned may be NULL (if two sep are found in sequence).
-	 * Breaks string into tokens separated by the character seg.  Set *pos to 0
-	 * before first call.  Unlike strtok, always pass the original string as first argument.
-	 * Returns 1 if it finds a token and 0 if no more tokens left.
-	 * pos is updated and token is returned.  char *token must point
-	 * to memory of length >= strlen (string).
-	 * string is not changed by GMT_strtok1.
-	 */
-
-	GMT_LONG i, j, string_len;
-
-	string_len = strlen (string);
-
-	token[0] = 0;	/* Initialize token to NULL in case we are at end */
-
-	if (*pos >= string_len || string_len == 0) return 0;	/* Got NULL string or no more string left to search */
-
-	/* Search for next non-separating character */
-	i = *pos; j = 0;
-	while (string[i] && string[i] != sep) token[j++] = string[i++];
-	token[j] = 0;	/* Add terminating \0 */
-
-	/* Increase *pos to next non-separating character */
-	if (string[i] == sep) i++;
-	*pos = i;
-
-	return 1;
-}
-
 #ifdef WIN32
 /* Turn /c/dir/... paths into c:/dir/...
  * Must do it in a loop since dir may be several ;-separated dirs
@@ -323,3 +293,63 @@ strtok_r (char *s, const char *delim, char **save_ptr)
   return token;
 }
 #endif /* !defined(HAVE_STRTOK_R) && !defined(HAVE_STRTOK_S) */
+
+#ifndef HAVE_STRSEP
+/* Copyright (C) 2004, 2007, 2009-2012 Free Software Foundation, Inc.
+
+   Written by Yoann Vandoorselaere <yoann@prelude-ids.org>.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation; either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+
+char *
+strsep (char **stringp, const char *delim)
+{
+  char *start = *stringp;
+  char *ptr;
+
+  if (start == NULL)
+    return NULL;
+
+  /* Optimize the case of no delimiters.  */
+  if (delim[0] == '\0')
+    {
+      *stringp = NULL;
+      return start;
+    }
+
+  /* Optimize the case of one delimiter.  */
+  if (delim[1] == '\0')
+    ptr = strchr (start, delim[0]);
+  else
+    /* The general case.  */
+    ptr = strpbrk (start, delim);
+  if (ptr == NULL)
+    {
+      *stringp = NULL;
+      return start;
+    }
+
+  *ptr = '\0';
+  *stringp = ptr + 1;
+
+  return start;
+}
+#endif /* ifndef HAVE_STRSEP */
+
+/* Like strsep but ignores empty fields */
+char *strsepz (char **stringp, const char *delim) {
+	char *c;
+	while ( (c = strsep(stringp, delim)) != NULL && *c == '\0' );
+	return c;
+}

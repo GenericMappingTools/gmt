@@ -66,7 +66,8 @@ check_include_file (process.h           HAVE_PROCESS_H_)
 # and sincos is a GNU extension:
 cmake_push_check_state()
 set (CMAKE_REQUIRED_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
-	-D_POSIX_C_SOURCE=200809L -D_GNU_SOURCE)
+	-D_GNU_SOURCE)
+#	-D_POSIX_C_SOURCE=200809L -D_GNU_SOURCE)
 
 check_include_file (assert.h            HAVE_ASSERT_H_)
 check_include_file (dirent.h            HAVE_DIRENT_H_)
@@ -91,9 +92,15 @@ check_function_exists (qsort_r          HAVE_QSORT_R)
 check_function_exists (qsort_s          HAVE_QSORT_S)
 check_function_exists (stricmp          HAVE_STRICMP)
 check_function_exists (strdup           HAVE_STRDUP)
+check_function_exists (strsep           HAVE_STRSEP)
 check_function_exists (strtod           HAVE_STRTOD)
 check_function_exists (strtok_r         HAVE_STRTOK_R)
 check_function_exists (strtok_s         HAVE_STRTOK_S)
+
+# Check if these functions are declared (might not be the case although they
+# are build-in)
+check_symbol_exists (strdup    string.h DECLARED_STRDUP)
+check_symbol_exists (strsep    string.h DECLARED_STRSEP)
 
 if (HAVE_UNISTD_H_)
 	check_symbol_exists (access  unistd.h HAVE_ACCESS)

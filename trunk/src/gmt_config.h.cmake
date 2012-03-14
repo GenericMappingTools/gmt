@@ -101,9 +101,12 @@
 #cmakedefine HAVE__SETMODE
 #cmakedefine HAVE_STRICMP
 #cmakedefine HAVE_STRDUP
+#cmakedefine HAVE_STRSEP
 #cmakedefine HAVE_STRTOD
 #cmakedefine HAVE_STRTOK_R
 #cmakedefine HAVE_STRTOK_S
+#cmakedefine DECLARED_STRDUP
+#cmakedefine DECLARED_STRSEP
 
 /* windows specific */
 
@@ -178,7 +181,7 @@
 
 /* Since glibc 2.12 strdup is only declared if
  * _POSIX_C_SOURCE >= 200809L || _XOPEN_SOURCE >= 500 */
-#define _POSIX_C_SOURCE 200809L
+/* #udefine _POSIX_C_SOURCE 200809L */
 /* #undef _XOPEN_SOURCE 700 */
 
 /* Math function sincos is a GNU extension */

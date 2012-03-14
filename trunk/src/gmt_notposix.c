@@ -59,11 +59,11 @@ char* basename (char* path) {
 
 #ifndef HAVE_STRDUP
 char *strdup (const char *s) {
-	GMT_LONG n;
+	size_t n;
 	char *p = NULL;
 
 	n = strlen (s) + 1;
-	p = malloc ((size_t)n);
+	p = malloc (n);
 	strncpy (p, s, n);
 	return (p);
 }
