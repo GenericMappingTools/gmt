@@ -46,6 +46,12 @@ install (FILES
 	DESTINATION ${GMT_DOC_PATH}/copying
 	COMPONENT Runtime)
 
+# Find LaTeX
+find_package (LATEX)
+
+# Add tests and make verbatim copies from scripts
+add_subdirectory (scripts)
+
 if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	# Install documentation files from external location without creating PDF
 	# documentation first
@@ -57,12 +63,6 @@ if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
 else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	# Create PDF documentation from scratch if possible
-
-	# Find LaTeX
-	find_package (LATEX)
-
-	# Add tests and make verbatim copies from scripts
-	add_subdirectory (scripts)
 
 	if (PDFLATEX_COMPILER)
 		# Copy common TeX dependends
@@ -201,7 +201,7 @@ install (DIRECTORY examples
 	USE_SOURCE_PERMISSIONS
 	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
-	REGEX ".cmake$" EXCLUDE)
+	REGEX "[.](cmake|in)$" EXCLUDE)
 
 # Run examples (test)
 if (DO_EXAMPLES)

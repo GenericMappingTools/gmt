@@ -131,12 +131,14 @@ endif (DO_TESTS)
 # Add build target
 add_custom_target (scripts_pdf DEPENDS ${_scripts_pdf})
 
-# Install pdf figures (if found)
-foreach (_fig ${_install_pdf})
-	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_fig}
-		DESTINATION ${GMT_DOC_PATH}/pdf
-		COMPONENT Documentation
-		OPTIONAL)
-endforeach (_fig ${_install_pdf})
+if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
+	# Install pdf figures (if found) when there is no external location
+	foreach (_fig ${_install_pdf})
+		install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_fig}
+			DESTINATION ${GMT_DOC_PATH}/pdf
+			COMPONENT Documentation
+			OPTIONAL)
+	endforeach (_fig ${_install_pdf})
+endif (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
