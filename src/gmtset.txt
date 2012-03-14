@@ -3,7 +3,7 @@
 .SH NAME
 gmtset \- Change individual BD(GMT) default parameters
 .SH SYNOPSIS
-BD(gmtset) [ OPT(C) | OPT(D)[BD(s)|BD(u)] | OPT(G)IT(defaultsfile) ] PARAMETER1 [=] IT(value1) PARAMETER2 [=] IT(value2) PARAMETER3 [=] IT(value3) ...
+BD(gmtset) [ OPT(C) | OPT(D)[BD(s)|BD(u)] | OPT(G)IT(defaultsfile) ] [ OPT()[BD(BJRXxYycp)]IT(value) ] PARAMETER1 [=] IT(value1) PARAMETER2 [=] IT(value2) PARAMETER3 [=] IT(value3) ...
 .SH DESCRIPTION
 BD(gmtset) will adjust individual BD(GMT) defaults settings in the current directory's BD(gmt.conf)\"'
 file.  If no such file exists one will be created.  The main purpose of BD(gmtset) is
@@ -29,6 +29,9 @@ defaults or BD(s) for SI defaults. [OPT(D) alone gives the version selected at c
 OPT(G)IT(defaultsfile)
 Name of specific BD(gmt.conf) file to read and modify [Default looks first in current directory, then in your
 home directory, then in ~/.gmt and finally in the system defaults].
+.TP
+OPT()[BD(BJRXxYycp)]IT(value)
+Set the expansion of any of these shorthand options.
 #include "explain_help.txt"
 .SH EXAMPLES
 To change annotation font to 12-point Helvetica, select grid-crosses of size 0.1 inch,

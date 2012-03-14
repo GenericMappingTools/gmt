@@ -5300,7 +5300,7 @@ GMT_LONG GMT_Complete_Options (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	remember = (C->hidden.func_level == 1);	/* Only update the history for top level function */
 
 	for (opt = options; opt; opt = opt->next) {
-		if (!strchr ("BJRXxYycp", opt->option)) continue;	/* Not one of the shorthand options */
+		if (!strchr (GMT_SHORTHAND_OPTIONS, opt->option)) continue;	/* Not one of the shorthand options */
 		update = FALSE;
 		str[0] = opt->option; str[1] = str[2] = '\0';
 		if (opt->option == 'J') {	/* -J is special since it can be -J or -J<code> */
