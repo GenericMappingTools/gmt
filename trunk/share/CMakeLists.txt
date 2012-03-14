@@ -18,7 +18,7 @@ install (DIRECTORY ${_gmt_share_dirs}
 	COMPONENT Runtime
 	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
-	PATTERN ".cmake" EXCLUDE)
+	REGEX "[.](cmake|in)$" EXCLUDE)
 
 # create coastline.conf which is needed for in-build-dir ctest
 configure_file (coastline.conf.cmake coastline.conf @ONLY)
