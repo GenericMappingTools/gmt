@@ -104,7 +104,7 @@ struct GRDFFT_CTRL {
 
 #define	MGAL_AT_45	980619.9203 	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
 #define	YOUNGS_MODULUS	1.0e11		/* Pascal = Nt/m**2  */
-#define	NORMAL_GRAVITY	9.80619203	/* m/s**2  */
+#define	NORMAL_GRAVITY	9.806199203	/* m/s**2  */
 #define	POISSONS_RATIO	0.25
 
 struct F_INFO {
@@ -1206,7 +1206,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	/* Check that no NaNs are present */
-	for (j = stop = 0; !stop && j < GridA->header->size; j++) if (GridA->data[j] == 15.0) stop = j;
 	
 	i_data_start = GMT->current.io.pad[XLO];
 	j_data_start = GMT->current.io.pad[YHI];
