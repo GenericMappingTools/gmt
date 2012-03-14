@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-03-14	remko
+	* gmtset.c:		Will write out the expansion of shorthands (like -R...) into
+				.gmtcommands file when those options (GMT_SHORTHAND_OPTIONS) are used.
+
 2012-03-12	remko
 	* scripts/CMakeLists.txt:
 				Scripts now run in build directory without copying files.

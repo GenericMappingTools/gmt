@@ -42,6 +42,8 @@ enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current co
 
 #define MAX_ASPATIAL 64		/* No more than 64 aspatial options in -a */
 
+#define GMT_SHORTHAND_OPTIONS	"BJRXxYycp"		/* All of the shorthand options */
+
 struct GMT_COMMON {
 	/* Structure with all information given via the common GMT command-line options -R -J .. */
 	struct synopsis {	/* \0 (zero) or ^ */
