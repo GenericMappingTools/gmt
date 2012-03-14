@@ -278,7 +278,7 @@
 #	define setmode _setmode
 #endif
 
-#ifndef HAVE_STRDUP
+#ifndef DECLARED_STRDUP
 	EXTERN_MSC char *strdup(const char *s);
 #endif
 

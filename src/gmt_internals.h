@@ -116,7 +116,6 @@ EXTERN_MSC GMT_LONG GMT_check_url_name (char *fname);
 EXTERN_MSC GMT_LONG GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
 EXTERN_MSC GMT_LONG GMT_splitinteger (double value, GMT_LONG epsilon, double *doublepart);
 EXTERN_MSC GMT_LONG GMT_is_gleap (GMT_LONG gyear);
-EXTERN_MSC GMT_LONG GMT_strtok1 (const char *string, const char sep, GMT_LONG *pos, char *token);
 EXTERN_MSC void GMT_str_tolower (char *string);
 EXTERN_MSC void GMT_str_toupper (char *string);
 

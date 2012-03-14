@@ -36,6 +36,12 @@ extern "C" {
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
+#ifdef HAVE_STDBOOL_H_
+#	include <stdbool.h>
+#else
+#	include "compat/stdbool.h"
+#endif /* HAVE_STDBOOL_H_ */
+
 #include "gmt_types.h"
 
 EXTERN_MSC GMT_LONG GMT_strtok (const char *string, const char *sep, GMT_LONG *start, char *token);
@@ -56,6 +62,11 @@ EXTERN_MSC void DOS_path_fix (char *dir);
 #if !defined(HAVE_STRTOK_R) && !defined(HAVE_STRTOK_S)
 EXTERN_MSC char *strtok_r (char *s, const char *delim, char **save_ptr);
 #endif
+
+#ifndef DECLARED_STRSEP
+EXTERN_MSC char *strsep (char **stringp, const char *delim);
+#endif
+EXTERN_MSC char *strsepz (char **stringp, const char *delim);
 
 #ifdef __cplusplus
 }
