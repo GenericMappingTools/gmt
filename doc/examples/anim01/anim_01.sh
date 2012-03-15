@@ -43,7 +43,7 @@ while [ $frame -le $n_frames ]; do
 	printf "0 1.6 a = %3.3d" $angle | pstext -R -J -F+f14p,Helvetica-Bold+jTL -O -K \
 		-N -Dj0.1i/0.05i >> $$.ps
 	psxy -R -J -O -T >> $$.ps
-	if [ "$1" != "1" ]; then
+	if [ $# -eq 0 ]; then
 		mv $$.ps $ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"

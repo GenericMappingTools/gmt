@@ -28,12 +28,12 @@ grdgradient -fg -A45 -Nt1 $$_above.nc -G$$.nc
 makecpt -Crelief -Z > $$.cpt
 while [ $az -lt 360 ]; do
 	file=`gmt_set_framename $name $frame`
-	if [ "$1" != "1" ]; then	# If a single frame is requested we pick this view
+	if [ $# -eq 0 ]; then	# If a single frame is requested we pick this view
 		az=135
 	fi
 	grdview $$_above.nc -R-26/-12/63/67 -JM2.5i -C$$.cpt -Qi$dpi -B5g10/5g5 -P -X0.5i -Y0.5i \
 		-p$az/${el}+w$lon/${lat}+v$x0/$y0 --PS_MEDIA=${px}ix${py}i > $$.ps
-	if [ "$1" != "1" ]; then
+	if [ $# -eq 0 ]; then
 		mv $$.ps $ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"

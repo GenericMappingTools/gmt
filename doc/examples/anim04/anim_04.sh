@@ -37,7 +37,7 @@ while read lon lat dist; do
 		--PS_MEDIA=${px}ix${py}i -K > $$.ps
 	psxy -R -J -O -K -W1p $$.path.d >> $$.ps
 	pstext -R0/$px/0/$py -Jx1i -F+f14p,Helvetica-Bold+jTL -O >> $$.ps <<< "0 4.6 $ID"
-	if [ "$1" != "1" ]; then
+	if [ $# -eq 0 ]; then
 		mv $$.ps $ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"
@@ -47,7 +47,7 @@ while read lon lat dist; do
         echo "Frame $file completed"
 	frame=`gmt_set_framenext $frame`
 done < $$.path.d
-if [ "$1" != "1" ]; then
+if [ $# -eq 0 ]; then
 	echo "anim_04.sh: Made $frame frames at 480x720 pixels placed in subdirectory frames"
 #	qt_export $$/anim_0_123456.tiff --video=h263,24,100, ${name}_movie.m4v
 fi
