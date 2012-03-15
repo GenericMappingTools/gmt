@@ -9,15 +9,13 @@
 #
 # 1. Initialization
 # 1a) Assign movie parameters
-. ../functions.sh
 . gmt_shell_functions.sh
 width=3.5i
 height=4.15i
 dpi=72
 n_frames=36
-TDIR=../../tutorial
-name=`basename $0 '.sh'`
-ps=../${name}.ps
+name=anim_02
+ps=${name}.ps
 # 1b) setup
 del_angle=`gmtmath -Q 360 $n_frames DIV =`
 makecpt -Crainbow -T500/4500/5000 -Z > $$.cpt
@@ -29,12 +27,12 @@ while [ $frame -lt $n_frames ]; do
 	file=`gmt_set_framename $name $frame`
 	angle=`gmtmath -Q $frame $del_angle MUL =`
 	dir=`gmtmath -Q $angle 180 ADD =`
-	grdgradient $TDIR/us.nc -A$angle -Nt2 -fg -G$$.us_int.nc
-	grdimage $TDIR/us.nc -I$$.us_int.nc -JM3i -P -K -C$$.cpt -B1WSne -X0.35i -Y0.3i \
+	grdgradient us.nc -A$angle -Nt2 -fg -G$$.us_int.nc
+	grdimage us.nc -I$$.us_int.nc -JM3i -P -K -C$$.cpt -B1WSne -X0.35i -Y0.3i \
 	--PS_MEDIA=${width}x${height} --FONT_ANNOT_PRIMARY=9p > $$.ps
-	psxy -R$TDIR/us.nc -J -O -K -Sc0.8i -Gwhite -Wthin >> $$.ps <<< "256.25 35.6"
-	psxy -R$TDIR/us.nc -J -O -Sv0.1i+e -Gred -Wthick >> $$.ps <<< "256.25 35.6 $dir 0.37"
-	if [ $# -eq 0 ]; then
+	psxy -Rus.nc -J -O -K -Sc0.8i -Gwhite -Wthin >> $$.ps <<< "256.25 35.6"
+	psxy -Rus.nc -J -O -Sv0.1i+e -Gred -Wthick >> $$.ps <<< "256.25 35.6 $dir 0.37"
+	if [ "$1" != "1" ]; then
 		mv $$.ps $ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"

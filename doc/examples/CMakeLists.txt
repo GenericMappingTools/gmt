@@ -16,35 +16,40 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 
-# List of job scrips
-set (_animation_jobs anim01/anim_01.sh anim02/anim_02.sh anim03/anim_03.sh
-	  anim04/anim_04.sh)
+# List all PS files and convert them to PDF
 
-set (_example_jobs ex01/job01.sh ex02/job02.sh ex03/job03.sh ex04/job04.sh
-	ex04/job04c.sh ex05/job05.sh ex06/job06.sh ex07/job07.sh ex08/job08.sh
-	ex09/job09.sh ex10/job10.sh ex11/job11.sh ex12/job12.sh ex13/job13.sh
-	ex14/job14.sh ex15/job15.sh ex16/job16.sh ex17/job17.sh ex18/job18.sh
-	ex19/job19.sh ex20/job20.sh ex21/job21.sh ex22/job22.sh ex23/job23.sh
-	ex24/job24.sh ex25/job25.sh ex26/job26.sh ex27/job27.sh ex28/job28.sh
-	ex29/job29.sh ex30/job30.sh ex31/job31.sh ex32/job32.sh)
+file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*/*.ps")
 
-set (_all_jobs ${_animation_jobs} ${_example_jobs})
+set (_examples_pdf)
 
-# List of output verbatime files for inclusion in LaTeX doc
+foreach (_ps ${_examples})
+	get_filename_component (_pdf ${_ps} NAME)
+	string (REPLACE ".ps" ".pdf" _pdf ${_pdf})
+	list (APPEND _examples_pdf ${CMAKE_CURRENT_BINARY_DIR}/${_pdf})
+
+	add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_pdf}
+		COMMAND
+		GMT_USERDIR=${GMT_BINARY_DIR}/share
+		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+		${GMT_BINARY_DIR}/src/ps2raster -Au -P -Tf
+		-C-sFONTPATH=${GMT_SOURCE_DIR}/doc/examples/ex31/fonts
+		-F${CMAKE_CURRENT_BINARY_DIR}/${_pdf}
+		${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS ps2raster ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+endforeach (_ps ${_examples})
+
+# List of job scripts and convert to verbatim
+
+file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*/*.sh")
+
 set (_examples_txt)
 
-foreach (_script ${_all_jobs})
-	get_filename_component (_txt ${_script} NAME_WE)
-	if (_txt MATCHES anim)
-		string (REGEX REPLACE ".+_([0-9][0-9][a-z]?)$" "anim_\\1.txt"
-			_txt ${_txt})
-	else (_txt MATCHES anim)
-		string (REGEX REPLACE "job([0-9][0-9][a-z]?)$" "example_\\1.txt"
-			_txt ${_txt})
-	endif (_txt MATCHES anim)
+foreach (_script ${_examples})
+	get_filename_component (_txt ${_script} NAME)
+	string (REPLACE ".sh" ".txt" _txt ${_txt})
 	list (APPEND _examples_txt ${CMAKE_CURRENT_BINARY_DIR}/${_txt})
 
-# Add command that triggers generator macro when output does not exist
 	add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_txt}
 		COMMAND ${CMAKE_COMMAND}
 		-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
@@ -54,14 +59,16 @@ foreach (_script ${_all_jobs})
 		-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script} ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake)
-endforeach (_script ${_animation_jobs} ${_example_jobs})
+endforeach (_script ${_examples})
 
-add_custom_target (examples_txt DEPENDS ${_examples_txt})
+# Add build target
+add_custom_command (OUTPUT .done COMMAND touch .done DEPENDS ${_examples_txt} ${_examples_pdf})
+add_custom_target (examples_done DEPENDS .done)
 
 # run examples (test)
 if (DO_EXAMPLES) # AND UNIX)
 	# this file takes care of setting up the test environment
-	configure_file (functions.sh.cmake functions.sh @ONLY)
+	configure_file (check.in check @ONLY)
 
 	# Workaround cmake bug 3957: CRLF line ending
 	find_package (UnixCommands)
@@ -69,26 +76,25 @@ if (DO_EXAMPLES) # AND UNIX)
 		find_program (D2U d2u
 			${CYGWIN_INSTALL_PATH}/bin)
 		execute_process (COMMAND ${D2U}
-			${CMAKE_CURRENT_BINARY_DIR}/functions.sh)
+			${CMAKE_CURRENT_BINARY_DIR}/check)
 	endif (CYGWIN_INSTALL_PATH)
 
-	foreach (_job ${_all_jobs})
-		get_filename_component (_job_path
-			${CMAKE_CURRENT_BINARY_DIR}/${_job} PATH)
+	foreach (_job ${_examples})
+		string (REPLACE "//" "/" _job ${_job})	# GLOB creates double slashes we do not want
 		add_test (NAME ${_job}
-			WORKING_DIRECTORY ${_job_path}
-			COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${_job})
-	endforeach (_job)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			COMMAND check ${CMAKE_CURRENT_SOURCE_DIR}/${_job})
+	endforeach (_job ${_examples})
 elseif (DO_EXAMPLES_WIN_BATCH_DISABLED) # (DO_EXAMPLES AND WIN32)
 	# only supporting examples with installed GMT in %path%
-	string (REPLACE ".sh" ".bat" _example_jobs_win "${_example_jobs}")
-	foreach (_job ${_example_jobs_win})
+	string (REPLACE ".sh" ".bat" _examples_win "${_examples}")
+	foreach (_job ${_examples_win})
 		get_filename_component (_job_path
 			${CMAKE_CURRENT_BINARY_DIR}/${_job} PATH)
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${_job_path}
 			COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_job})
-	endforeach (_job)
+	endforeach (_job ${_examples_win})
 endif (DO_EXAMPLES) # AND UNIX)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

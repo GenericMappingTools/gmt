@@ -9,7 +9,6 @@
 #
 # 1. Initialization
 # 1a) Assign movie parameters
-. ../functions.sh
 . gmt_shell_functions.sh
 REGION=-Rg
 altitude=160.0
@@ -21,8 +20,8 @@ Height=34.0
 px=7.2
 py=4.8
 dpi=100
-name=`basename $0 '.sh'`
-ps=../${name}.ps
+name=anim_04
+ps=${name}.ps
 
 # Set up flight path
 project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q > $$.path.d
@@ -38,7 +37,7 @@ while read lon lat dist; do
 		--PS_MEDIA=${px}ix${py}i -K > $$.ps
 	psxy -R -J -O -K -W1p $$.path.d >> $$.ps
 	pstext -R0/$px/0/$py -Jx1i -F+f14p,Helvetica-Bold+jTL -O >> $$.ps <<< "0 4.6 $ID"
-	if [ $# -eq 0 ]; then
+	if [ "$1" != "1" ]; then
 		mv $$.ps $ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"
@@ -48,7 +47,7 @@ while read lon lat dist; do
         echo "Frame $file completed"
 	frame=`gmt_set_framenext $frame`
 done < $$.path.d
-if [ $# -eq 1 ]; then
+if [ "$1" != "1" ]; then
 	echo "anim_04.sh: Made $frame frames at 480x720 pixels placed in subdirectory frames"
 #	qt_export $$/anim_0_123456.tiff --video=h263,24,100, ${name}_movie.m4v
 fi

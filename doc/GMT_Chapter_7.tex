@@ -201,7 +201,7 @@ data bases using \GMTprog{grdraster}.  We would like to show a
 of the marine geoid with the location of the Hawaiian islands
 superposed, and a second layer showing the 3-D mesh plot of
 the topography.  We also add an arrow pointing north and some
-text.  This is how to do it:
+text.  The first part of this script shows how to do it:
 
 \script[examples]{example_04} 
 
@@ -210,13 +210,14 @@ the positive topography mesh painted light gray (the remainder
 is white). The left side of Figure~\ref{fig:example_04} shows the complete illustration.
 
 \begin{figure}[ht]
-   \includegraphics[scale=0.42]{example_04}\hfill
-   \includegraphics[scale=0.42]{example_04c}
+   \includegraphics[scale=0.42]{ex04/example_04}\hfill
+   \includegraphics[scale=0.42]{ex04/example_04c}
    \caption{3-D perspective mesh plot (left) and colored version (right).}
    \label{fig:example_04}
 \end{figure}
 
-The color version of this figure was used in our first article in \emph{EOS
+The second part of the script shows how to make the color version of this figure
+that was printed in our first article in \emph{EOS
 Trans. AGU} (8 October 1991).  Using \GMTprog{grdview} one can choose
 to either plot a mesh surface (left) or a color-coded surface (right).
 We have also added artificial illumination from a light-source due north,
@@ -226,14 +227,10 @@ We choose to use the \Opt{Qc} option in \GMTprog{grdview} to
 achieve a high degree of smoothness.  Here, we select 100 dpi
 since that will be the resolution of our final raster
 (The EOS raster was 300 dpi).
-The following script creates
-the color \PS\ file.  Note that the size of the
-resulting output file is directly dependent on the square of
-the dpi chosen for the scanline conversion.  A higher value
-for dpi in \Opt{Qc} would have resulted in a much larger
+Note that the size of the resulting output file is directly dependent on the square of
+the dpi chosen for the scanline conversion and how well the resulting image
+compresses.  A higher value for dpi in \Opt{Qc} would have resulted in a much larger
 output file.  The CPT files were taken from Section~\ref{sec:example_02}.
-
-\script[examples]{example_04c} 
 
 \index{Example!3-D mesh plot|)}
 

@@ -28,9 +28,18 @@ set (_docs_inputs GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex
 	GMT_Appendix_L.tex GMT_Appendix_M.tex GMT_Appendix_N.tex GMT_Appendix_O.tex
 	GMT_Appendix_P.tex GMT_Appendix_Q.tex GMT_Chapter_1.tex GMT_Chapter_2.tex
 	GMT_Chapter_3.tex GMT_Chapter_4.tex GMT_Chapter_5.tex GMT_Chapter_6.tex
-	GMT_Chapter_7.tex GMT_Chapter_8.tex GMT_Chapter_9.tex GMT_Frontmatter.tex)
+	GMT_Chapter_7.tex GMT_Chapter_8.tex GMT_Chapter_9.tex GMT_Frontmatter.tex
+	)
 
 set (_common_inputs GMT.ist GMT.sty GMT_macros.tex GMT_Cover.tex)
+
+set (_docs_depends
+	${CMAKE_CURRENT_BINARY_DIR}/examples/.done
+	${CMAKE_CURRENT_BINARY_DIR}/fig/.done
+	${CMAKE_CURRENT_BINARY_DIR}/scripts/.done)
+
+add_custom_target (docs_depends DEPENDS
+	examples_done fig_done scripts_done)
 
 # Install license files
 if (NOT LICENSE_RESTRICTED STREQUAL GPL)
@@ -67,22 +76,13 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	if (PDFLATEX_COMPILER)
 		# Copy common TeX dependends
 		foreach (_input ${_docs_inputs} ${_common_inputs})
-			add_custom_command (OUTPUT ${_input}
+			add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_input}
 				COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				${CMAKE_CURRENT_SOURCE_DIR}/${_input} ${_input}
-				DEPENDS ${_input})
-		endforeach (_input ${_common_inputs})
-		add_custom_target (copy_tex_depends DEPENDS ${_docs_inputs} ${_common_inputs})
-
-		set (_common_depends
-			copy_tex_depends
-			fig_pdf
-			fig_fig
-			ppt_fig
-			scripts_pdf
-			scripts_txt
-			examples_txt
-		)
+				${CMAKE_CURRENT_SOURCE_DIR}/${_input}
+				${CMAKE_CURRENT_BINARY_DIR}/${_input}
+				DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_input})
+			list (APPEND _docs_depends ${CMAKE_CURRENT_BINARY_DIR}/${_input})
+		endforeach (_input ${_docs_inputs} ${_common_inputs})
 
 		# Generate GMT_version.tex
 		configure_file (GMT_version.tex.cmake GMT_version.tex)
@@ -98,15 +98,14 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
 		# Make PDF figures
 		add_subdirectory (fig)
-		add_subdirectory (ppt) # must be added after fig
+		add_subdirectory (examples)
 
 		foreach (_pdf_file ${_docs_output})
 			string (REPLACE ".pdf" ".tex" _tex_file ${_pdf_file})
-			string (REPLACE ".pdf" "_press.pdf" _shrink_file ${_pdf_file})
 			string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
 
 			add_latex_document (${_tex_file}
-				DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/GMT_version.tex ${_doc_inputs}
+				DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/GMT_version.tex ${_docs_depends}
 				USE_INDEX
 				DEFAULT_PDF
 				MANGLE_TARGET_NAMES)
@@ -115,16 +114,16 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 			add_depend_to_target (gmt_doc ${_pdf_target})
 
 			# Make sure PS figures are converted to PDF before LaTeX runs
-			add_dependencies (${_pdf_target} ${_common_depends})
+			add_depend_to_target (${_pdf_target} docs_depends)
 
 			# Shrink PDF files
 			add_custom_target (${_pdf_target}_shrink
 				COMMAND gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4
 				-dPDFSETTINGS=/prepress -dNOPAUSE -dQUIET -dBATCH
-				-sOutputFile=${_shrink_file} ${_pdf_file}
+				-sOutputFile=shrink.${_pdf_file} ${_pdf_file}
 				COMMAND ${CMAKE_COMMAND} -E rename
-				${_shrink_file} ${_pdf_file}
-				DEPENDS gmt_doc)
+				shrink.${_pdf_file} ${_pdf_file}
+				DEPENDS ${_pdf_file})
 			add_depend_to_target (gmt_doc_shrink ${_pdf_target}_shrink)
 
 			# Install pdf file (if available)
@@ -201,7 +200,7 @@ install (DIRECTORY examples
 	USE_SOURCE_PERMISSIONS
 	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
-	REGEX "[.](cmake|in)$" EXCLUDE)
+	REGEX "[.](cmake|in|ps)$" EXCLUDE)
 
 # Run examples (test)
 if (DO_EXAMPLES)
@@ -219,11 +218,8 @@ if (DO_EXAMPLES)
 	endforeach (_file ${_example_files})
 
 	# Add file dependencies to check target
-	add_custom_target (copy_example_tests
-		DEPENDS ${_test_files})
+	add_custom_target (copy_example_tests DEPENDS ${_test_files})
 	add_dependencies (check copy_example_tests)
-
-	add_subdirectory (examples)
 endif (DO_EXAMPLES)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
