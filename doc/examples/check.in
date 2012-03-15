@@ -116,11 +116,12 @@ mkdir -p "$exec_dir"
 cd "$exec_dir"
 ln -fs "$src"/* .
 rm -f *.ps
+shift
 
 # Start with proper GMT defaults
 gmtset -Du FORMAT_TIME_LOGO "Version 5"
 
 # Now run the original script
-. "$src/$scriptname"
+. "$scriptname"
 
 # vim: ft=sh
