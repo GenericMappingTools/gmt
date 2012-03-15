@@ -103,9 +103,11 @@ if (PDFLATEX_COMPILER)
 			-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
 			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script} ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake)
 	endforeach (_script)
-
-	add_custom_target (scripts_txt DEPENDS ${_scripts_txt})
 endif (PDFLATEX_COMPILER)
+
+# Add build target
+add_custom_command (OUTPUT .done COMMAND touch .done DEPENDS ${_scripts_pdf} ${_scripts_txt})
+add_custom_target (scripts_done DEPENDS .done)
 
 # run tests
 if (DO_TESTS)
@@ -127,9 +129,6 @@ if (DO_TESTS)
 			COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/${_job})
 	endforeach (_job)
 endif (DO_TESTS)
-
-# Add build target
-add_custom_target (scripts_pdf DEPENDS ${_scripts_pdf})
 
 if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	# Install pdf figures (if found) when there is no external location

@@ -9,14 +9,13 @@
 #
 # 1. Initialization
 # 1a) Assign movie parameters
-. ../functions.sh
 . gmt_shell_functions.sh
 width=4i
 height=2i
 dpi=125
 n_frames=18
-name=`basename $0 '.sh'`
-ps=../${name}.ps
+name=anim_01
+ps=${name}.ps
 # 1b) Do frame-independent calculations and setup
 angle_step=`gmtmath -Q 360 $n_frames DIV =`
 angle_inc=`gmtmath -Q $angle_step 10 DIV =`
@@ -44,7 +43,7 @@ while [ $frame -le $n_frames ]; do
 	printf "0 1.6 a = %3.3d" $angle | pstext -R -J -F+f14p,Helvetica-Bold+jTL -O -K \
 		-N -Dj0.1i/0.05i >> $$.ps
 	psxy -R -J -O -T >> $$.ps
-	if [ $# -eq 0 ]; then
+	if [ "$1" != "1" ]; then
 		mv $$.ps $ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"

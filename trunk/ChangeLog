@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-03-15	remko
+	* examples/CMakeLists.txt:	Complete revision. Tests now run with "check" script.
+
 2012-03-14	remko
 	* gmtset.c:		Will write out the expansion of shorthands (like -R...) into
 				.gmtcommands file when those options (GMT_SHORTHAND_OPTIONS) are used.
