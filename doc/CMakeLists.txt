@@ -163,12 +163,12 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 		add_custom_command (OUTPUT GMT_Manpages.pdf
 			COMMAND xargs cat < manfiles_ps.list |
 			${PS2PDF_CONVERTER} - GMT_Manpages.pdf
-			DEPENDS manpages_all
+			DEPENDS manpages_all ${_manfiles_ps}
 			VERBATIM)
 		add_custom_command (OUTPUT GMT_Manpages_suppl.pdf
 			COMMAND xargs cat < manfiles_suppl_ps.list |
 			${PS2PDF_CONVERTER} - GMT_Manpages_suppl.pdf
-			DEPENDS manpages_all
+			DEPENDS manpages_all ${_manfiles_suppl_ps}
 			VERBATIM)
 		add_custom_target (gmt_pdf_manpages
 			DEPENDS GMT_Manpages.pdf GMT_Manpages_suppl.pdf)

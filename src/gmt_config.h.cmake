@@ -179,11 +179,6 @@
 #cmakedefine SIZEOF_WCHAR_T     @SIZEOF_WCHAR_T@
 #cmakedefine SIZEOF_WINT_T      @SIZEOF_WINT_T@
 
-/* Since glibc 2.12 strdup is only declared if
- * _POSIX_C_SOURCE >= 200809L || _XOPEN_SOURCE >= 500 */
-/* #udefine _POSIX_C_SOURCE 200809L */
-/* #undef _XOPEN_SOURCE 700 */
-
 /* Math function sincos is a GNU extension */
 #define _GNU_SOURCE
 
