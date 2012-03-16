@@ -11,7 +11,6 @@
 # users epoch.  We use the same data as before to generate the absolute
 # coordinates using the Apollo 11 epoch.
 
-. ./functions.sh
 header "Test time conversions (abs & rel time)"
 
 sample1d -I0.5 << EOF > tt.d

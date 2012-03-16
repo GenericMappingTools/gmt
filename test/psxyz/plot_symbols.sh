@@ -3,7 +3,6 @@
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
-. ./functions.sh
 header "Test psxyz and all the symbols with fill"
 
 psxyz -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -p155/35 -S1i -X1i -Y1i -K << EOF > $ps

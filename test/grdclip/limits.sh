@@ -2,7 +2,6 @@
 #	$Id$
 # Testing grdclip
 
-. ./functions.sh
 header "Test grdclip for NaN and value clipping"
 
 Rp=-21/21/-21/21

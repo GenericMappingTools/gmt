@@ -9,7 +9,6 @@
 # We create a grid with grdmath and then make a contour map
 # and associate x with days relative to the start of 2004.
 
-. ./functions.sh
 header "Test time conversions (abs & rel time)"
 
 grdmath -R0/90/0/90 -I1 X Y ADD = tt.nc

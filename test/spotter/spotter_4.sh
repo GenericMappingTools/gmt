@@ -2,7 +2,6 @@
 #
 #       $Id$
 
-. ./functions.sh
 header "Testing grdrotater for rotating a grid"
 
 # Build a grid

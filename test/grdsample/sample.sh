@@ -2,7 +2,6 @@
 #	$Id$
 # Testing grdsample
 
-. ./functions.sh
 header "Test grdsample for basic resampling"
 
 Rg=-20/20/-20/20

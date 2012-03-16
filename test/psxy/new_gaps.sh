@@ -1,7 +1,6 @@
 #!/bin/bash
 # Test psxy lines with -g
 
-. ./functions.sh
 header "Test plotting line graphs with different gap options"
 
 cat << EOF >> tt.d

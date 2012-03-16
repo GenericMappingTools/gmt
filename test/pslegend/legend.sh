@@ -3,7 +3,6 @@
 #
 # Testing pslegend capabilities
 
-. ./functions.sh
 header "Test pslegend and its various items"
 
 makecpt -Cpanoply -T-8/8/1 > tt.cpt
@@ -31,7 +30,7 @@ N 1
 D 0.2i 1p
 M 5 5 600+u f
 G 0.05i
-I $src/SOEST_block4.ras 3i CT
+I ${src:=.}/SOEST_block4.ras 3i CT
 G 0.05i
 B tt.cpt 0.2i 0.2i -B0
 G 0.05i

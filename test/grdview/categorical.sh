@@ -2,7 +2,6 @@
 #
 #       $Id$
 
-. ./functions.sh
 header "Test grdview for categorical grid plots"
 
 # The cpt

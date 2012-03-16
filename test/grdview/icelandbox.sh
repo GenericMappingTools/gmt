@@ -4,14 +4,13 @@
 #
 #	$Id$
 
-. ./functions.sh
 header "Test grdview, psclip, grdcontour, psxyz in 3D"
 
 ### Plot options
 popt=-p130/30
 
 ### Colormap
-cpt="$src"/resid.cpt   
+cpt="${src:=.}"/resid.cpt   
 
 ### Pivotal points
 a="-24.4130658 63.0225642"
@@ -64,9 +63,9 @@ $f
 EOF
 
 ### Start plotting surface
-grdimage "$src"/D3-25TV24-resid.nc -E100 -nl -p -R -J -JZ -C$cpt -O -K >> $ps
+grdimage D3-25TV24-resid.nc -E100 -nl -p -R -J -JZ -C$cpt -O -K >> $ps
 
-grdcontour --PS_COMMENTS=1 "$src"/D3-25TV24-resid.nc -p -R -J -JZ -Wthinner -A- -C$cpt -W -K -O >> $ps
+grdcontour --PS_COMMENTS=1 D3-25TV24-resid.nc -p -R -J -JZ -Wthinner -A- -C$cpt -W -K -O >> $ps
 
 pscoast -p -R -J -JZ -Dh -A100 -Wthinnest -S135/190/240 -O -K >> $ps
 psclip -C -O >> $ps

@@ -1,7 +1,8 @@
 #!/bin/bash
+#	$Id:$
+#
 # Test the C API for i/o involving datasets
 
-. ./functions.sh
 function dataset_check {
 	testapi -I$1 -W$2 -Td
 	diff -q --strip-trailing-cr dtest[io].txt >> fail

@@ -2,7 +2,6 @@
 #
 #       $Id$
 
-. ./functions.sh
 header "greenspline: Testing Cartesian 2-D interpolation II"
 
 # Figure 4 in Wessel, P. (2009), A general-purpose Green's function-based
@@ -46,7 +45,7 @@ grd2xyz z.nc | cut -f1,2 | ./ks | xyz2grd -R0/2/0/1 -I$D -Gls.nc -r
 grd2xyz zfine.nc | cut -f1,2 | ./ks | xyz2grd -R0/2/0/1 -I0.01 -Glsfine.nc -r
 grdview ls.nc -Jx2.5i -JZ1.75 -p155/30 -Ctt.cpt -Wc1p -Qm/lightgray -B0.5/0.2/0.2wSEnZ -K --PS_SCALE_X=0.8 --PS_SCALE_Y=0.8 > $ps
 
-blockmean "$src"/random.xyz -R -I$D > use.xyz
+blockmean random.xyz -R -I$D > use.xyz
 grdcontour lsfine.nc -Jx2.8i -O -B0.5/0.2WSne -C0.2 -A0.2 -K -Y4.25i -GlLT/1/0,1.5/0.5/1.5/1 >> $ps
 psxy use.xyz -R -J -O -K -Sc0.05i -Gblack >> $ps
 echo "0 1 a)" | pstext -R -J -O -K -N -F+jBR+f24p -Dj0.1i/0.3i >> $ps

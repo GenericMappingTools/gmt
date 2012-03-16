@@ -3,7 +3,6 @@
 #
 # Convert grids between netcdf and several of the other "native" formats
 
-. ./functions.sh
 header "Convert between netcdf and ESRI float format"
 
 log=reformat_ef.log

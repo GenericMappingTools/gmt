@@ -3,7 +3,6 @@
 #
 # Check clipping of ellipses that should wrap in a global projection
 
-. ./functions.sh
 header "Test psxy global projections for clipping ellipses"
 
 gmtset MAP_FRAME_TYPE plain

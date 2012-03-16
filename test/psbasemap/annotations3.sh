@@ -2,7 +2,6 @@
 #
 #	$Id$
 
-. ./functions.sh
 header "Test orthogonal annotations in psbasemap"
 
 psbasemap="psbasemap -R0/1000/0/1000 -JX2i/2i -B200f100WESN -B:horizontal:/:vertical: --FONT_ANNOT_PRIMARY=10p --FONT_LABEL=16p"

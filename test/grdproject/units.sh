@@ -2,7 +2,6 @@
 #
 #	$Id$
 
-. ./functions.sh
 header "Test grdproject with SI and US units"
 
 # Make a small geographic grid

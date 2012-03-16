@@ -2,7 +2,6 @@
 #	$Id$
 # Testing grd2xyz with -R and -s
 
-. ./functions.sh
 header "Test grd2xyz for subset and NaN-reversal"
 
 Rp=-21/11/-21/21

@@ -2,7 +2,6 @@
 #
 #	$Id$
 
-. ./functions.sh
 header "Test pscontour for clip path set by annotations"
 
 # Make a grid, annotate every 20 and use those as clip paths

@@ -7,7 +7,6 @@
 # fall exactly on tile boundaries.  One point will fall outside -R
 # but should be considered for the gridline registrated case.
 
-. ./functions.sh
 header "Test blockmean's (x,y) <--> (i,j) conversions (numerical)"
 
 cat << EOF > pixel.d
@@ -43,7 +42,7 @@ EOF
 blockmean -R0/5/0/5 -I1 -C grid.d > grid_ij.d
 blockmean -R0/5/0/5 -I1 grid.d > grid_xy.d
 
-diff pixel_xy.d "$src"/pixel_xy.d --strip-trailing-cr  > fail
+diff pixel_xy.d "${src:=.}"/pixel_xy.d --strip-trailing-cr  > fail
 diff pixel_ij.d "$src"/pixel_ij.d --strip-trailing-cr >> fail
 diff grid_xy.d  "$src"/grid_xy.d --strip-trailing-cr  >> fail
 diff grid_ij.d  "$src"/grid_ij.d --strip-trailing-cr  >> fail

@@ -2,14 +2,13 @@
 #
 #	$Id$
 
-. ./functions.sh
 GDAL=`grdreformat 2>&1 | grep -c gd`
 if [ $GDAL -eq 0 ]; then exit; fi
 	
 header "Test psimage for reading images with GDAL"
 
 # RGB image
-psimage "$src"/../grdimage/gdal/needle.jpg -W7c -P -Y15c -K > $ps
+psimage "${src:=.}"/../grdimage/gdal/needle.jpg -W7c -P -Y15c -K > $ps
 
 # Same image as above but as idexed
 psimage "$src"/../grdimage/gdal/needle.png -W7c -X7.5c -O -K >> $ps

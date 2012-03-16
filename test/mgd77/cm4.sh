@@ -2,12 +2,11 @@
 #	$Id$
 #
 
-. ./functions.sh
 
 header "Test mgd77magref with 1 day data at a magnetic observatory"
 
 gmtset FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
-dia="$src"/clf20010501d.min
+dia="${src:=.}"/clf20010501d.min
 
 # Get Station location
 lon=`tail -n +6 $dia | head -1 | awk '{print $3}'`

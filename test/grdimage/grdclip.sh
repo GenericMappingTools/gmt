@@ -3,7 +3,6 @@
 #
 # Check clipping of grids on a global conic plot
 
-. ./functions.sh
 header "Test grdimage for clipping grids"
 
 plot1 () {

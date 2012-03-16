@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # $Id$
 #
@@ -6,10 +7,33 @@
 # Print the shell script name and purpose and fill out to 72 characters
 # and make sure to use US system defaults
 
-scriptname=$(basename "$0")
+# Where the current script resides (need absolute path)
+script_name=$(basename "$1")
+current_dir=$PWD
+cd "$(dirname "$1")"
+src="$PWD"
+
 header () {
-  printf "%-72s\n" "${scriptname}: $1"
+  printf "%-72s\n" "$script_name: $1"
 }
+
+# Temporary change LANG to C
+LANG=C
+
+# Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
+export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
+export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
+export GMT_USERDIR="@GMT_BINARY_DIR@/share"
+export GMT_DATADIR="$src"
+
+# Define variables that are needed *within* test scripts
+GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
+HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
+HAVE_OPENMP="@HAVE_OPENMP@"
+GRAPHICSMAGICK="@GRAPHICSMAGICK@"
+
+# Reset error count
+ERROR=0
 
 # Convert PS to PDF
 function make_pdf()
@@ -37,13 +61,13 @@ pscmp () {
   fi
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
-    echo "RMS Error = $rms [FAIL]"
-    echo "$now ${src##*/}/${ps%.ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
+    echo "${src##*/}/${ps%.ps}: RMS Error = $rms [FAIL]"
+    echo "$now ${src##*/}/${ps%.ps}: RMS Error = $rms" >> "$current_dir/fail_count.d"
     make_pdf "$ps" # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
-    echo "RMS Error = $rms [PASS]"
+    echo "${src##*/}/${ps%.ps}: RMS Error = $rms [PASS]"
   fi
 }
 
@@ -51,7 +75,7 @@ passfail () {
   if [ -s fail ]; then
     now=$(date "+%F %T")
     echo "[FAIL]"
-    echo "$now ${src##*/}/$1: $(wc -l fail)ed lines" >>"@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
+    echo "$now ${src##*/}/$1: $(wc -l fail) failed lines" >> "$current_dir/fail_count.d"
     mv -f fail $1.log
     ((++ERROR))
   else
@@ -59,36 +83,15 @@ passfail () {
   fi
 }
 
-# Temporary change LANG to C
-LANG=C
-
-# Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
-export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
-export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
-export GMT_USERDIR="@GMT_BINARY_DIR@/share"
-
-# Define variables that are needed *within* test scripts
-GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
-HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
-HAVE_OPENMP="@HAVE_OPENMP@"
-GRAPHICSMAGICK="@GRAPHICSMAGICK@"
-
-# Where the current script resides (need absolute path)
-cd "$(dirname "$0")"
-src="${PWD}"
-
-# Reset error count
-ERROR=0
-
 # Make sure to cleanup at end
 function on_exit()
 {
   set +e
   trap - EXIT # Restore EXIT trap
-  cd "@GMT_BINARY_DIR@" # get out of exec_dir before removing it
-  test "${ERROR}" -eq 0 && rm -rf "${exec_dir}"
-  echo "exit status: ${ERROR}"
-  exit ${ERROR}
+  cd "$current_dir" # get out of exec_dir before removing it
+  test "$ERROR" -eq 0 && rm -rf "$exec_dir"
+  echo "exit status: $ERROR"
+  exit $ERROR
 }
 trap on_exit EXIT
 
@@ -105,14 +108,17 @@ trap on_err ERR SIGSEGV SIGTRAP SIGBUS
 
 # Create a temporary directory exec_dir in the build dir
 # and run remainder of this GMT script there
-exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${src##*/}/${scriptname%.sh}"
-mkdir -p "${exec_dir}"
-cd "${exec_dir}"
+exec_dir="$current_dir/${src##*/}/${script_name%.sh}"
+mkdir -p "$exec_dir"
+cd "$exec_dir"
 
 # Start with proper GMT defaults
 gmtset -Du
 
-# Convert script name to PS filename
-ps="${scriptname%.sh}.ps"
+# Tentative PS file name
+ps="${script_name%.sh}.ps"
+
+# Now run the original script
+. "$src/$script_name"
 
 # vim: ft=sh

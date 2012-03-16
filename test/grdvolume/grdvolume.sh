@@ -2,7 +2,6 @@
 #
 #	$Id$
 
-. ./functions.sh
 header "Test grdvolume for various grid registrations"
 
 makegrd () {

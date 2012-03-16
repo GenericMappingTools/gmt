@@ -1,7 +1,6 @@
 #!/bin/bash
 # Test gmtconvert with different segment markers
 
-. ./functions.sh
 header "Let gmtconvert handle different segment markers"
 
 cat << EOF > gmt_i.txt

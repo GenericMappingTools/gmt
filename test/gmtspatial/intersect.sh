@@ -2,7 +2,6 @@
 #	$Id$
 # Testing gmtspatial intersection
 
-. ./functions.sh
 header "Test gmtspatial for polygon intersection"
 
 cat << EOF > A.txt

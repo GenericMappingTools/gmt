@@ -2,7 +2,6 @@
 #	$Id$
 #
 
-. ./functions.sh
 header "Test pscontour for ticked contours"
 
 cat << EOF > t.txt

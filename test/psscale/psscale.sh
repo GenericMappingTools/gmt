@@ -1,7 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
 
 header "Test horizontal/vertical color bar with/without flipping"
 

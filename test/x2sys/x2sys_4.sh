@@ -6,14 +6,13 @@
 # Computers & Geosciences, 36, 348–354.
 # Here used as a test for the x2sys suite.
 
-. ./functions.sh
 header "Reproduce Wessel (2010) Comp. & Geosci., Figure 4"
 
 OLDX=$X2SYS_HOME
 export X2SYS_HOME=.
 
 rm -rf TEST
-ln -fs "$src"/bad "$src"/data .
+ln -fs "${src:=.}"/bad "$src"/data .
 (cd bad; ls *.xyg) > bad.lis
 (cd data; ls *.xyg) > data.lis
 
