@@ -2053,7 +2053,7 @@ int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *C, char *file, struct MGD77_
 }
 
 #ifdef WIN32
-int mgd77_fputc (int c, FILE *fp) {return (fputc (c, stream)); }
+int mgd77_fputc (int c, FILE *fp) {return (fputc (c, fp)); }
 #else
 #define mgd77_fputc(c,fp) fputc(c,fp)
 #endif
