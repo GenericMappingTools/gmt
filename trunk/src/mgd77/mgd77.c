@@ -42,7 +42,15 @@ struct MGD77_MAG_RF mgd77rf[MGD77_N_MAG_RF] = {
 #include "mgd77magref.h"
 };
 
-//struct MGD77_DATA_RECORD *MGD77Record;
+int MGD77_Read_Header_Sequence (struct GMT_CTRL *C, FILE *fp, char *record, int seq);
+int MGD77_Order_Columns (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
+int MGD77_Read_Data_Record_asc (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);
+int MGD77_Write_Data_Record_txt (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);
+int MGD77_Write_Data_Record_m77t (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);
+int MGD77_Write_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);
+int MGD77_Write_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);
+
+/* struct MGD77_DATA_RECORD *MGD77Record; */
 double MGD77_NaN_val[7], MGD77_Low_val[7], MGD77_High_val[7];
 int MGD77_pos[MGD77_N_DATA_EXTENDED];	/* Used to translate the positions 0-27 into MGD77_TIME, MGD77_LONGITUDE, etc */
 struct MGD77_LIMITS {
