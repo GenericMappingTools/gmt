@@ -36,7 +36,8 @@ set (_common_inputs GMT.ist GMT.sty GMT_macros.tex GMT_Cover.tex)
 set (_docs_depends
 	${CMAKE_CURRENT_BINARY_DIR}/examples/done
 	${CMAKE_CURRENT_BINARY_DIR}/fig/done
-	${CMAKE_CURRENT_BINARY_DIR}/scripts/done)
+	${CMAKE_CURRENT_BINARY_DIR}/scripts/done
+	${CMAKE_CURRENT_BINARY_DIR}/GMT_version.tex)
 
 add_custom_target (docs_depends DEPENDS
 	examples_done fig_done scripts_done)
@@ -105,16 +106,13 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 			string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
 
 			add_latex_document (${_tex_file}
-				DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/GMT_version.tex ${_docs_depends}
+				DEPENDS docs_depends ${_docs_depends}
 				USE_INDEX
 				DEFAULT_PDF
 				MANGLE_TARGET_NAMES)
-
-			# Add pdf to gmt_doc target
+			# Target ${_pdf_target} is auto-created by add_latex_document
+			# Add this target to the gmt_doc target
 			add_depend_to_target (gmt_doc ${_pdf_target})
-
-			# Make sure PS figures are converted to PDF before LaTeX runs
-			add_depend_to_target (${_pdf_target} docs_depends)
 
 			# Shrink PDF files
 			add_custom_target (${_pdf_target}_shrink
@@ -123,7 +121,7 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 				-sOutputFile=shrink.${_pdf_file} ${_pdf_file}
 				COMMAND ${CMAKE_COMMAND} -E rename
 				shrink.${_pdf_file} ${_pdf_file}
-				DEPENDS ${_pdf_target} ${_pdf_file})
+				DEPENDS ${_pdf_file})
 			add_depend_to_target (gmt_doc_shrink ${_pdf_target}_shrink)
 
 			# Install pdf file (if available)
