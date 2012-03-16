@@ -3,7 +3,6 @@
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
-. ./functions.sh
 header "Test psxy and all the symbols with fill"
 
 psxy -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps

@@ -3,7 +3,6 @@
 #
 # Convert grids between netcdf and several of the other "native" formats
 
-. ./functions.sh
 header "Convert between netcdf and ESRI integer format"
 
 log=reformat_ei.log

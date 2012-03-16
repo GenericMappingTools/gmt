@@ -3,7 +3,6 @@
 #
 # Check psmeca for plotting beach balls
 
-. ./functions.sh
 header "Test psmeca for plotting focal mechanisms (5)"
 
 # Right lateral Strike Slip

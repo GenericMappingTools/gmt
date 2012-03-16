@@ -3,7 +3,6 @@
 #
 # Check vector symbols
 
-. ./functions.sh
 header "Test psxyz with straight vector symbols"
 
 psbasemap -R0/6/0/3 -Jx1i -P -B1g1WSne -K -Xc -p155/35 > $ps

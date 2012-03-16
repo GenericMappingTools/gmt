@@ -4,7 +4,6 @@
 # Tests mgd77magref against the values of the original FORTRAN version 
 # Because the second term (lithospheric) does not agree it is not included in the comparison
 
-. ./functions.sh
 header "Test mgd77magref vs original CM4 Fortran version"
 
 data=2000.08700533
@@ -23,6 +22,6 @@ done
 #Ion_ind B_xyz     7.9738793E-01 -2.2101940E+00 -3.7272951E+00
 #Tor     B_xyz    -3.4804584E+00 -6.0774586E+00  1.1689001E-02
 
-diff test_cm4.dat "$src"/test_cm4.dat --strip-trailing-cr > fail
+diff test_cm4.dat "${src:=.}"/test_cm4.dat --strip-trailing-cr > fail
 
 passfail test_cm4

@@ -2,7 +2,6 @@
 #
 #       $Id$
 
-. ./functions.sh
 header "Testing originator to determine nearest origin"
 
 # Example 3 - Using originator
@@ -11,7 +10,7 @@ header "Testing originator to determine nearest origin"
 # for the seamounts in the seamounts.d file, given a plate motion model
 # and a list of possible hotspots.
 
-POLES="$src"/WK97.d			# Rotation poles to use
+POLES="${src:=.}"/WK97.d			# Rotation poles to use
 
 grep -v '^#' "$src"/pac_hs.d > tmp
 awk '{printf "s/%s/%d/g\n", $3, NR}' tmp > t.sed

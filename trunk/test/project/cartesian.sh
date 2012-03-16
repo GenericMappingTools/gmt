@@ -3,7 +3,6 @@
 #
 # Tests project in Cartesian manipulations
 
-. ./functions.sh
 header "Test project for rotating Cartesian data"
 
 cat << EOF > pts.tt

@@ -4,7 +4,6 @@
 #
 #	$Id$
 
-. ./functions.sh
 header "Test grdimage for wrapping global grids"
 
 plot=grdimage" -Ctmp.cpt tmp.nc -JX3i/1.5i -B60f10/30f10WeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF"

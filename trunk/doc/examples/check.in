@@ -5,8 +5,11 @@
 # Bash script inclusion to test all GMT examples.
 # It sets the environment such that the examples are created as in the manual.
 
+# Where the current script resides (need absolute path)
 script_name=$(basename "$1")
 current_dir=$PWD
+cd "$(dirname "$1")"
+src="$PWD"
 
 # Determine if awk is buggy
 result=`echo 1 | awk '{print sin($1)}'`
@@ -64,7 +67,7 @@ for ps in *.ps ; do
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
     echo "${ps%.ps}: RMS Error = $rms [FAIL]"
-    echo "$now ${ps%.ps}: RMS Error = $rms" >> ../fail_count.d
+    echo "$now ${ps%.ps}: RMS Error = $rms" >> $current_dir/fail_count.d
     make_pdf "$ps" # try to make pdf file
     ((++ERROR))
   else
@@ -78,7 +81,7 @@ done
 function cleanup()
 {
   cd "$current_dir" # get out of exec_dir before removing it
-  test "${ERROR}" -eq 0 && rm -rf "$exec_dir"
+  test "$ERROR" -eq 0 && rm -rf "$exec_dir"
   echo "exit status: $ERROR"
   exit $ERROR
 }
@@ -104,10 +107,6 @@ function on_err()
 }
 trap on_err ERR SIGSEGV SIGTRAP SIGBUS
 
-# Where the current script resides (need absolute path)
-cd "$(dirname "$1")"
-src="$PWD"
-
 # Create a temporary directory exec_dir in the build dir
 # Then copy all of its contents (except *.ps files)
 # Run remainder of this GMT script there
@@ -122,7 +121,7 @@ shift
 gmtset -Du FORMAT_TIME_LOGO "Version 5"
 
 # Tentative PS file name
-ps=${script_name%.sh}.ps
+ps="${script_name%.sh}.ps"
 
 # Now run the original script
 . "$src/$script_name"

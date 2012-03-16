@@ -3,7 +3,6 @@
 #
 # Convert grids between netcdf and several of the other "native" formats
 
-. ./functions.sh
 header "Convert between netcdf and native byte format"
 
 log=reformat_bb.log

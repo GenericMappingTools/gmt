@@ -4,7 +4,6 @@
 # filter diameter.  Specify which output you want (a|c|r|w).
 # Change args below to pick another filter.
 
-. ./functions.sh
 header "Test grdfilter for filter weights (-DDEBUG only)"
 
 if [ -z "$HAVE_GMT_DEBUG_SYMBOLS" ]; then
@@ -13,7 +12,7 @@ if [ -z "$HAVE_GMT_DEBUG_SYMBOLS" ]; then
 fi
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output
-DATA="${src}/../genper/etopo10.nc" # Test on ETOP10 data
+DATA="../genper/etopo10.nc" # Test on ETOP10 data
 pdf=`basename $ps ".ps"`.pdf
 if [ $# -ne 4 ]; then
 	lon=150

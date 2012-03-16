@@ -3,7 +3,6 @@
 #
 # Tests project in generating lines
 
-. ./functions.sh
 header "Test project's ability to generate lines"
 
 # First Cartesian lines

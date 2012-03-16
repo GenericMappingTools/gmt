@@ -3,7 +3,6 @@
 #
 # Check vector symbols
 
-. ./functions.sh
 header "Test psxy with math angle vector symbols"
 
 psbasemap -R0/6/0/3 -Jx1i -P -B1g1WSne -K -Xc > $ps

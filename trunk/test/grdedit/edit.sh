@@ -2,7 +2,6 @@
 #	$Id$
 # Testing grdedit -R -N
 
-. ./functions.sh
 header "Test grdedit to change region and replace node values"
 
 Rp=-21/21/-21/21

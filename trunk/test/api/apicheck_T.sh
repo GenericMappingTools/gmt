@@ -1,7 +1,8 @@
 #!/bin/bash
+#	$Id:$
+#
 # Test the C API for i/o involving textsets
 
-. ./functions.sh
 function textset_check {
 	testapi -I$1 -W$2 -Tt
 	diff -q --strip-trailing-cr ttest[io].txt >> fail

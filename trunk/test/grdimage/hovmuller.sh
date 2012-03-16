@@ -2,7 +2,6 @@
 #
 #	$Id$
 
-. ./functions.sh
 header "Test grdimage for making Hovmuller plots"
 
 gmtset TIME_EPOCH 2000-01-01T00 TIME_UNIT y

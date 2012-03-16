@@ -1,7 +1,6 @@
 #!/bin/bash
 #	$Id$
 
-. ./functions.sh
 header "Test -JG (US East Coast 160 km Snyder)"
 
 EARTH_MODEL=e

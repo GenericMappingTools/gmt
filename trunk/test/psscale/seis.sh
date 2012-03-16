@@ -1,7 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
 
 header "Test psscale and makecpt combinations"
 

@@ -4,8 +4,11 @@
 #
 # Functions to be used with test scripts
 
+# Where the current script resides (need absolute path)
 script_name=$(basename "$1")
 current_dir=$PWD
+cd "$(dirname "$1")"
+src="$PWD"
 
 # Determine if awk is buggy
 result=`echo 1 | awk '{print sin($1)}'`
@@ -47,10 +50,6 @@ GRAPHICSMAGICK="@GRAPHICSMAGICK@"
 # Reset error count
 ERROR=0
 
-# Where the current script resides (need absolute path)
-cd "$(dirname "$1")"
-src="${PWD}"
-
 # Convert PS to PDF
 function make_pdf()
 {
@@ -78,7 +77,7 @@ pscmp () {
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
     echo "${ps%.ps}: RMS Error = $rms [FAIL]"
-    echo "$now ${ps%.ps}: RMS Error = $rms" >> ../fail_count.d
+    echo "$now ${ps%.ps}: RMS Error = $rms" >> $current_dir/fail_count.d
     make_pdf "$ps" # try to make pdf file
     ((++ERROR))
   else
@@ -91,9 +90,9 @@ pscmp () {
 function cleanup()
 {
   cd "$current_dir" # get out of exec_dir before removing it
-  test "${ERROR}" -eq 0 && rm -rf "${exec_dir}"
-  echo "exit status: ${ERROR}"
-  exit ${ERROR}
+  test "$ERROR" -eq 0 && rm -rf "$exec_dir"
+  echo "exit status: $ERROR"
+  exit $ERROR
 }
 
 # Test the output image before exiting
@@ -129,7 +128,7 @@ shift
 gmtset -Du PS_CHAR_ENCODING ISOLatin1+
 
 # Tentative PS file name
-ps=${script_name%.sh}.ps
+ps="${script_name%.sh}.ps"
 
 # Now run the original script
 . "$src/$script_name"

@@ -3,7 +3,6 @@
 #
 # Convert grids between netcdf and several of the other "native" formats
 
-. ./functions.sh
 header "Convert between netcdf and native short integer format"
 
 log=reformat_bs.log

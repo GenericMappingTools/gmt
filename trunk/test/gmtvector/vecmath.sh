@@ -1,7 +1,6 @@
 #!/bin/bash
 # Test the gmtvector application
 
-. ./functions.sh
 
 header "Test gmtvector with basic vector math"
 
@@ -65,6 +64,6 @@ gmtvector -A1/1/0 -S0/0/1 -Tx -C >> result
 # Bisector pole 
 echo "# gmtvector -A30/30 -S-30/-30 -Tb -fg" >> result
 gmtvector -A30/30 -S-30/-30 -Tb -fg >> result
-diff -q --strip-trailing-cr result "$src"/result > fail
+diff -q --strip-trailing-cr result "${src:=.}"/result > fail
 
 passfail vecmath

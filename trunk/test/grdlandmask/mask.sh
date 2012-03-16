@@ -3,7 +3,6 @@
 #
 # Test grdlandmask for proper wrapping.
 
-. ./functions.sh
 header "Test grdlandmask when wrapping over 0-360"
 
 echo "-10000 white +10000 white" > tt.cpt

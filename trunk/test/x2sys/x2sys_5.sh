@@ -2,10 +2,9 @@
 # $Id$
 #
 
-. ./functions.sh
 header "Test x2sys_binlist on cruise C2308"
 
-ln -fs "$src"/../mgd77/01010221.mgd77 .
+ln -fs "${src:=.}"/../mgd77/01010221.mgd77 .
 OLDX=$X2SYS_HOME
 export X2SYS_HOME=.
 x2sys_init TEST -D${GMT_SOURCE_DIR}/share/x2sys/mgd77 -Emgd77 -F -Gd -Rd -I15m

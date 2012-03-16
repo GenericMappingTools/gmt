@@ -3,7 +3,6 @@
 #
 # Testing pslegend fancy frames
 
-. ./functions.sh
 header "Test pslegend frame options"
 
 makecpt -Cpanoply -T-8/8/1 > tt.cpt

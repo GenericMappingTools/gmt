@@ -3,7 +3,6 @@
 #
 # Test new custom symbol macros using a windbarb.def file
 
-. ./functions.sh
 header "Test psxy with multi-parameter windbarb symbol"
 
 cat << EOF > tmp
@@ -11,7 +10,7 @@ cat << EOF > tmp
 150	-30	50	90.0
 EOF
 
-ln -fs "$src"/windbarb.def .
+ln -fs "${src:=.}"/windbarb.def .
 
 # Mercator
 pscoast -JM5i -R110/165/-45/-10 -Gwheat -Sazure1 -Wthin,black -BafgWSen -K -P -Xc > $ps

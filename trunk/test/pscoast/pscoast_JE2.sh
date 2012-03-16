@@ -3,7 +3,6 @@
 #	$Id$
 # Make sure when fixed it works for all resolutions -D?
 
-. ./functions.sh
 header "Test pscoast for JE plots of the Pacific"
 
 pscoast -Dl -R72.205/-47.346/310.656/30.368r -JE179.300/16.640/3i -A1000 -W0.25p -N1 -B0 -K -Y7i -P > $ps

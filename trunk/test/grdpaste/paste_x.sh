@@ -3,7 +3,6 @@
 #
 # Paste grids along X & Y
 
-. ./functions.sh
 header "Test grdpaste to paste grids horizontal and vertically"
 
 # The final grid is just f(x,y) = x

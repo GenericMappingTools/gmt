@@ -2,7 +2,6 @@
 #
 #	$Id$
 
-. ./functions.sh
 header "Test grdcontour for a problem with saddle points"
 
 xyz2grd -Z -R36/45/50/59 -I1 -Gtmp.nc <<EOF

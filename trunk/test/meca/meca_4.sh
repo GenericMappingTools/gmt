@@ -2,7 +2,6 @@
 #	$Id$
 #
 
-. ./functions.sh
 header "Test psmeca for plotting focal mechanisms (4)"
 
 gmtset PROJ_LENGTH_UNIT inch MAP_VECTOR_SHAPE 0.4 MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i PS_MEDIA A4

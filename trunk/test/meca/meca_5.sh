@@ -1,9 +1,8 @@
 #!/bin/bash
-#	$Id: psmeca.sh 8899 2011-07-27 01:59:56Z pwessel $
+#	$Id$
 #
 # Check psmeca for plotting beach balls
 
-. ./functions.sh
 header "Test psmeca for plotting focal mechanisms (5)"
 
 size=1.0c

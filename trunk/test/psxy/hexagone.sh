@@ -3,7 +3,6 @@
 #
 # Check wrapping around Greenwich
 
-. ./functions.sh
 header "Test psxy and -A resampling crossing Greenwich"
 
 cat > hexagone.dat <<%

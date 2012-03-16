@@ -3,7 +3,6 @@
 #
 # Tests project to make oblique lines
 
-. ./functions.sh
 header "Test project to make oblique lines"
 
 # Since GMT4 project has no option for small circle we must do it differently

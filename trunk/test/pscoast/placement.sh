@@ -4,7 +4,6 @@
 # GMT 5 test script for plot placement on some projections. By Ken McLean.
 # Create triplicate plots of each.
 
-. ./functions.sh
 header "Test placement of some projections"
 gmtdefaults > save.conf
 

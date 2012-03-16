@@ -2,7 +2,6 @@
 #	$Id$
 # Testing trend2d
 
-. ./functions.sh
 header "Test trend2 by removing a robust quadratic plane"
 
 makecpt -Crainbow -T690/960/10 > z.cpt

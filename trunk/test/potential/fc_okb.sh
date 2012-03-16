@@ -3,13 +3,12 @@
 #
 # Compute the gravity anomaly of the Flemish Cap Guyot
 
-. ./functions.sh
 header "Compute gravity anom of a seamount with Okabe method"
 
 lim=-41:50/-41:20/47:30/47:50 
 
 # Get rough surface description
-grd2xyz "$src"/../genper/etopo10.nc -R$lim -fg > fc.dat
+grd2xyz ../genper/etopo10.nc -R$lim -fg > fc.dat
 
 # Calculate the triangles
 triangulate fc.dat > fc_tri.dat
