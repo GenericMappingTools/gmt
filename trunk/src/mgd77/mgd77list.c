@@ -35,9 +35,12 @@
 #include "gmt_mgd77.h"
 #include "mgd77.h"
 
-#define MGD77_ALL "id,time,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"
-#define MGD77_GEO "time,lat,lon,twt,depth,mtf1,mtf2,mag,gobs,faa"
-#define MGD77_AUX "dist,azim,vel,weight"
+#define MGD77_FMT  "drt,id,tz,year,month,day,hour,dmin,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"
+#define MGD77_ALL  "drt,id,time,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"
+#define MGD77T_FMT "id,tz,date,hhmm,lat,lon,ptc,nqc,twt,depth,bcc,btc,bqc,mtf1,mtf2,mag,msens,diur,msd,mqc,gobs,eot,faa,gqc,sln,sspn"
+#define MGD77T_ALL "id,time,lat,lon,ptc,nqc,twt,depth,bcc,btc,bqc,mtf1,mtf2,mag,msens,diur,msd,mqc,gobs,eot,faa,gqc,sln,sspn"
+#define MGD77_GEO  "time,lat,lon,twt,depth,mtf1,mtf2,mag,gobs,faa"
+#define MGD77_AUX  "dist,azim,vel,weight"
 
 #define ADJ_CT	0
 #define ADJ_DP	1
@@ -169,6 +172,10 @@ GMT_LONG GMT_mgd77list_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t       hour:  Record hour(0-23).\n");
 	GMT_message (GMT, "\t       min:   Record minute (0-59).\n");
 	GMT_message (GMT, "\t       sec:   Record second (0-60).\n");
+	GMT_message (GMT, "\t       dmin:  Decimal minute (0-59.xxxx).\n");
+	GMT_message (GMT, "\t       hhmm:  Clock hhmm.xxxx (0-2359.xxxx).\n");
+	GMT_message (GMT, "\t       date:  yyyymmdd string.\n");
+	GMT_message (GMT, "\t       tz :   Time zone adjustment in hours (-13 to +12).\n");
 	GMT_message (GMT, "\t     lon:     Longitude (formatted according to FORMAT_GEO_OUT).\n");
 	GMT_message (GMT, "\t     lat:     Latitude (formatted according to FORMAT_GEO_OUT).\n");
 	GMT_message (GMT, "\t     id:      Survey leg ID [TEXTSTRING].\n");
@@ -185,6 +192,7 @@ GMT_LONG GMT_mgd77list_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     gobs:    Observed gravity (mGal).\n");
 	GMT_message (GMT, "\t     faa:     Free-air gravity anomaly (mGal).\n");
 	GMT_message (GMT, "\t   >Codes, Corrections, and Information:\n");
+	GMT_message (GMT, "\t     drt:     Data record type [5].\n");
 	GMT_message (GMT, "\t     ptc:     Position type code.\n");
 	GMT_message (GMT, "\t     bcc:     Bathymetric correction code.\n");
 	GMT_message (GMT, "\t     btc:     Bathymetric type code.\n");
@@ -204,9 +212,11 @@ GMT_LONG GMT_mgd77list_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     nqc:     Navigation quality code.\n");
 	GMT_message (GMT, "\t  The data are written in the order specified in <dataflags>.\n");
 	GMT_message (GMT, "\t  Shortcut flags are:\n");
-	GMT_message (GMT, "\t     all:     All the columns defined in the data set.\n");
-	GMT_message (GMT, "\t     mgd77:   The full set of all 27 columns in the MGD77 specification.\n");
+	GMT_message (GMT, "\t     mgd77:   The full set of all 27 fields in the MGD77 specification.\n");
+	GMT_message (GMT, "\t     mgd77t:  The full set of all 26 columns in the MGD77T specification.\n");
 	GMT_message (GMT, "\t     geo:     time,lon,lat + the 7 geophysical observations.\n");
+	GMT_message (GMT, "\t     all:     As mgd77 but with time items written as a date-time string.\n");
+	GMT_message (GMT, "\t     allt:     As mgd77t but with time items written as a date-time string.\n");
 	GMT_message (GMT, "\t    Append + to include the 4 derived quantities dist, azim, vel, and weight [see -W]\n");
 	GMT_message (GMT, "\t    [Default is all].\n");
 	GMT_message (GMT, "\t  Abbreviations in UPPER CASE will suppress records where any such column is NaN.\n");
@@ -272,7 +282,7 @@ GMT_LONG GMT_mgd77list_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-G List from given a<record> [Start of cruise] up to given b<record> [End of cruise].\n");
 	GMT_message (GMT, "\t-H Write one header record with column names.\n");
 	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
-	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table files. [Default ignores none].\n");
+	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
 	GMT_message (GMT, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
 	GMT_message (GMT, "\t   the default file mgd77_corrections.txt in $MGD77_HOME is assumed.\n");
 	GMT_message (GMT, "\t-N Append (d)istances or (s)peed, and your choice for unit. Choose among:\n");
@@ -438,14 +448,32 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 			case 'F':	/* Selected output fields */
 				Ctrl->F.active = TRUE;
 				strcpy (buffer, opt->arg);
+				if (!strcmp (buffer, "mgd77")) strcpy (buffer, MGD77_FMT);
+				if (!strcmp (buffer, "mgd77+")) {
+					strcpy (buffer, MGD77_FMT);
+					strcat (buffer, ",");
+					strcat (buffer, MGD77_AUX);
+				}
+				if (!strcmp (buffer, "mgd77t")) strcpy (buffer, MGD77T_FMT);
+				if (!strcmp (buffer, "mgd77t+")) {
+					strcpy (buffer, MGD77T_FMT);
+					strcat (buffer, ",");
+					strcat (buffer, MGD77_AUX);
+				}
 				if (!strcmp (buffer, "all")) strcpy (buffer, MGD77_ALL);
 				if (!strcmp (buffer, "all+")) {
 					strcpy (buffer, MGD77_ALL);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}
-				if (!strcmp (buffer, "mgd77")) strcpy (buffer, MGD77_GEO);
-				if (!strcmp (buffer, "mgd77+")) {
+				if (!strcmp (buffer, "allt")) strcpy (buffer, MGD77T_ALL);
+				if (!strcmp (buffer, "allt+")) {
+					strcpy (buffer, MGD77T_ALL);
+					strcat (buffer, ",");
+					strcat (buffer, MGD77_AUX);
+				}
+				if (!strcmp (buffer, "geo")) strcpy (buffer, MGD77_GEO);
+				if (!strcmp (buffer, "geo+")) {
 					strcpy (buffer, MGD77_GEO);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
@@ -681,7 +709,10 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		{ "day",     MGD77_AUX_DY, 0, 0, "day"},
 		{ "hour",    MGD77_AUX_HR, 0, 0, "hour"},
 		{ "min",     MGD77_AUX_MI, 0, 0, "minute"},
+		{ "dmin",    MGD77_AUX_DM, 0, 0, "dec-minute"},
 		{ "sec",     MGD77_AUX_SC, 0, 0, "second"},
+		{ "date",    MGD77_AUX_DA, 1, 0, "date"},
+		{ "hhmm",    MGD77_AUX_HM, 0, 0, "hourmin"},
 		{ "weight",  MGD77_AUX_WT, 0, 0, "weight"},
 		{ "drt",     MGD77_AUX_RT, 0, 0, "rectype"},
 		{ "igrf",    MGD77_AUX_MG, 0, 0, "IGRF"},
@@ -772,6 +803,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		MGD77_Free_Table (GMT, n_items, item_names);
 	}
 	aux_tvalue[MGD77_AUX_ID] = GMT_memory (GMT, NULL, GMT_TEXT_LEN64, char);	/* Just in case */
+	aux_tvalue[MGD77_AUX_DA] = GMT_memory (GMT, NULL, GMT_TEXT_LEN64, char);	/* Just in case */
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
 	
 	/* Most auxillary columns depend on values in the data columns.  If the user did not specify the required data columns
@@ -782,7 +814,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	 
 	need_distances = (Ctrl->S.active || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested);	/* Distance is requested */
 	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.code[ADJ_DP] & 4 || Ctrl->A.code[ADJ_CT] >= 2 || Ctrl->A.code[ADJ_GR] > 1 || Ctrl->A.fake_times);	/* Need lon, lat to calculate reference fields or Carter correction */
-	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested || auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_MG].requested || (Ctrl->A.code[ADJ_MG] > 1));
+	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested || auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_SC].requested || auxlist[MGD77_AUX_DM].requested || auxlist[MGD77_AUX_HM].requested || auxlist[MGD77_AUX_DA].requested || auxlist[MGD77_AUX_MG].requested);
 #ifdef USE_CM4
 	if (auxlist[MGD77_AUX_CM].requested) need_lonlat = need_time = TRUE;
 #endif
@@ -906,7 +938,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (i = 0, string_output = FALSE ; i < n_cols_to_process; i++) {	/* Prepare GMT output formatting machinery */
 				if (D->H.info[M.order[i].set].col[M.order[i].item].text) string_output = TRUE;
 			}
-			if (auxlist[MGD77_AUX_ID].requested) string_output = TRUE;
+			if (auxlist[MGD77_AUX_ID].requested || auxlist[MGD77_AUX_DA].requested) string_output = TRUE;
 			if (string_output && GMT->common.b.active[1]) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot specify binary output with text fields\n");
 				MGD77_Free_Dataset (GMT, &D);
@@ -1099,8 +1131,11 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				aux_dvalue[MGD77_AUX_DY] = (double)cal.day_m;
 				aux_dvalue[MGD77_AUX_HR] = (double)cal.hour;
 				aux_dvalue[MGD77_AUX_MI] = (double)cal.min;
-				aux_dvalue[MGD77_AUX_SC] = (double)cal.sec;
+				aux_dvalue[MGD77_AUX_SC] = cal.sec;
+				aux_dvalue[MGD77_AUX_DM] = cal.min + cal.sec / 60.0;
+				aux_dvalue[MGD77_AUX_HM] = 100.0 * cal.hour + aux_dvalue[MGD77_AUX_DM];
 				date = MGD77_cal_to_fyear (GMT, &cal);	/* Get date as decimal year */
+				if (auxlist[MGD77_AUX_DA].requested) sprintf (aux_tvalue[MGD77_AUX_DA], "%4.4ld%2.2ld%2.2ld", cal.year, cal.month, cal.day_m);
 				need_date = FALSE;
 			}
 			else
@@ -1304,6 +1339,8 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (!string_output) GMT_free (GMT, out);
+	GMT_free (GMT, aux_tvalue[MGD77_AUX_ID]);
+	GMT_free (GMT, aux_tvalue[MGD77_AUX_DA]);
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Returned %ld output records from %ld cruises\n", n_out, n_cruises);
 	

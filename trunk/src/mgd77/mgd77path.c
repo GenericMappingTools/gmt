@@ -62,7 +62,7 @@ GMT_LONG GMT_mgd77path_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-D List all directories with MGD77 files instead.\n");
 	GMT_message (GMT, "\tOPTIONS:\n\n");
 	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
-	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table files. [Default ignores none].\n");
+	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
 	GMT_explain_options (GMT, "V.");
 	
 	return (EXIT_FAILURE);
