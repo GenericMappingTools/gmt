@@ -205,9 +205,9 @@ include (GmtGenExtraHeaders)
 # generate gmt_progpurpose.h
 gen_gmt_progpurpose_h (GMT_PROG_PURPOSE ${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS})
 
-configure_file (gmt_config.h.cmake gmt_config.h)
-configure_file (gmt_version.h.cmake gmt_version.h)
-configure_file (isogmt.cmake isogmt @ONLY)
+configure_file (gmt_config.h.in gmt_config.h)
+configure_file (gmt_version.h.in gmt_version.h)
+configure_file (isogmt.in isogmt @ONLY)
 
 # gmtprogram
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
@@ -335,7 +335,7 @@ foreach (_gmtdemo ${GMT_DEMOS})
 	target_link_libraries (${_gmtdemo} gmtlib)
 endforeach (_gmtdemo)
 
-configure_file (psldemo.h.cmake psldemo.h @ONLY)
+configure_file (psldemo.h.in psldemo.h @ONLY)
 add_executable (psldemo psldemo.h psldemo.c)
 target_link_libraries (psldemo pslib)
 

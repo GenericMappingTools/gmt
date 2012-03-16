@@ -59,7 +59,7 @@ include (FindUnixCommands)
 
 # Configure a header file to pass some of the CMake settings to the source code
 configure_file (
-	"${PROJECT_SOURCE_DIR}/config.h.cmake"
+	"${PROJECT_SOURCE_DIR}/config.h.in"
 	"${PROJECT_BINARY_DIR}/config.h")
 
 # Global test target

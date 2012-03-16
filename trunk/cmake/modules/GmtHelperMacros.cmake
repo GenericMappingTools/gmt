@@ -79,7 +79,7 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		endforeach (_function)
 		string (REPLACE ";" ";\n" GMT_API_FUNCTION_LIST "${GMT_API_FUNCTION_LIST}")
 		# create api header file from template
-		configure_file (${GMT_SOURCE_DIR}/src/gmt_api.h.cmake
+		configure_file (${GMT_SOURCE_DIR}/src/gmt_api.h.in
 			gmt_${GMT_SUPPL_STRING}.h)
 		set (${_API_HEADER} gmt_${GMT_SUPPL_STRING}.h)
 		set (GMT_SUPPL_STRING) # reset GMT_SUPPL_STRING

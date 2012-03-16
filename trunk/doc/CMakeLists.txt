@@ -85,7 +85,7 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 		endforeach (_input ${_docs_inputs} ${_common_inputs})
 
 		# Generate GMT_version.tex
-		configure_file (GMT_version.tex.cmake GMT_version.tex)
+		configure_file (GMT_version.tex.in GMT_version.tex)
 
 		# Set TeX FLAGS
 		set (MAKEINDEX_COMPILER_FLAGS "-s GMT.ist"

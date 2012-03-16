@@ -21,7 +21,7 @@ install (DIRECTORY ${_gmt_share_dirs}
 	REGEX "[.](cmake|in)$" EXCLUDE)
 
 # create coastline.conf which is needed for in-build-dir ctest
-configure_file (coastline.conf.cmake coastline.conf @ONLY)
+configure_file (coastline.conf.in coastline.conf @ONLY)
 
 # add subtrees
 add_subdirectory (conf)
