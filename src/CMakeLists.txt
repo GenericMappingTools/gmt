@@ -372,9 +372,15 @@ install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS}
 if (WIN32 AND _debug_build)
 	# install program database files
 	set (_pdb_files)
-	foreach (_target libps libgmt ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS})
-		list (APPEND _pdb_files "${CMAKE_CURRENT_BINARY_DIR}/${_target}.pdb")
-	endforeach ()
+	if (NOT DEFINED PSL_DLL_RENAME)
+		foreach (_target libps libgmt ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS})
+			list (APPEND _pdb_files "${CMAKE_CURRENT_BINARY_DIR}/${_target}.pdb")
+		endforeach ()
+	else ()
+		foreach (_target lib${PSL_DLL_RENAME} lib${GMT_DLL_RENAME} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS})
+			list (APPEND _pdb_files "${CMAKE_CURRENT_BINARY_DIR}/${_target}.pdb")
+		endforeach ()
+	endif ()
 	install (FILES ${_pdb_files}
 		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
