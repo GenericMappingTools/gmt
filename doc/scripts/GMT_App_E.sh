@@ -5,9 +5,7 @@
 #
 #	Paul Wessel, v 1.1
 #
-. ./functions.sh
 ps=GMT_App_E.ps
-
 xwidth=0.45	# Width of each box (all units are in inches)
 ywidth=0.45	# Height of each box
 w=0.9		# Width of two adjacent boxes

@@ -74,7 +74,6 @@
 # graphs of h(x) can be interpreted as also = the graphs of h(r).
 #
 #---------------------------------------------------
-. ./functions.sh
 # Here is the tt.r_tr_fns file:
 
 cat << EOF > tt.r_tr_fns

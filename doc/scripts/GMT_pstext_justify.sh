@@ -1,8 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
-
 B=0.2
 M=0.38
 T=0.56

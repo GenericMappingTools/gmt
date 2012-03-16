@@ -2,8 +2,7 @@
 #	$Id$
 #
 # Makes a plot of the global UTM zone grid including the exceptions near Norway/Spitsbergen
-. ./functions.sh
-
+#
 pscoast -Rd -JQ9i -Groyalblue -Sazure -Dl -A2000 -B60f6/0wsNe -K --MAP_FRAME_TYPE=plain \
   --FORMAT_GEO_MAP=dddF --MAP_TITLE_OFFSET=0.25i --MAP_ANNOT_OFFSET_PRIMARY=0.15i --FONT_TITLE=24p --FONT_ANNOT_PRIMARY=10p > GMT_utm_zones.ps
 cat << EOF > tt.z.d

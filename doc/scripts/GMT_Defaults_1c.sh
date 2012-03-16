@@ -1,7 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
 gmtset MAP_FRAME_TYPE plain FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh FONT_ANNOT_PRIMARY +8p
 psbasemap -R2001-9-11T/2001-9-13T/0.01/100 -JX2.25T/2.25l -Bpa6Hf1hg6h:"x-axis label":/a1g3p:"y-axis label":WSne \
 	-X2i -Bsa1D/ -P -K -U/-0.75i/-0.85i/"Dazed and Confused" --TIME_LANGUAGE=pt \

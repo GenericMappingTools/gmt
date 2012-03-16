@@ -72,8 +72,6 @@
 # graphs of h(x) can be interpreted as also = the graphs of h(r).
 #
 #---------------------------------------------------
-. ./functions.sh
-
 echo "-0.5	0" > tt.tmp
 gmtmath -T-0.5/0.5/0.01 1 = >> tt.tmp
 echo "0.5	0" >> tt.tmp

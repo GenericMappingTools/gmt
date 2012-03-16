@@ -6,7 +6,6 @@
 # where <size> is the page size. Use either: ledger, a4, or letter
 # This produces the file GMT_RGBchart_<size>.ps
 
-. ./functions.sh
 . gmt_shell_functions.sh
 
 gmt_init_tmpdir

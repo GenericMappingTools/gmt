@@ -6,7 +6,6 @@
 # GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast
 # GMT funcs:	gmt_init_tmpdir, gmt_remove_tmpdir
 #
-. ./functions.sh
 ps=GMT_App_P_2.ps
 
 # Make GMT shell functions accessible the the script

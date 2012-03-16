@@ -5,8 +5,6 @@
 #	Note that this script also assembles App N tex
 #	file since the number of figures must be calculated.
 #
-. ./functions.sh
-
 grep -v '^#' "${GMT_SOURCE_DIR}"/share/conf/gmt_custom_symbols.conf | awk '{print $1}' > tt.lis
 n=`cat tt.lis | wc -l`
 

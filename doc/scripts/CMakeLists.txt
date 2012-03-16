@@ -112,7 +112,7 @@ add_custom_target (scripts_done DEPENDS .done)
 # run tests
 if (DO_TESTS)
 	# this file takes care of setting up the test environment
-	configure_file (functions.sh.cmake functions.sh @ONLY)
+	configure_file (check.in check @ONLY)
 
 	# Workaround cmake bug 3957: CRLF line ending
 	find_package (UnixCommands)
@@ -120,13 +120,13 @@ if (DO_TESTS)
 		find_program (D2U d2u
 			${CYGWIN_INSTALL_PATH}/bin)
 		execute_process (COMMAND ${D2U}
-			${CMAKE_CURRENT_BINARY_DIR}/functions.sh)
+			${CMAKE_CURRENT_BINARY_DIR}/check)
 	endif (CYGWIN_INSTALL_PATH)
 
 	foreach (_job ${_scripts_tests})
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/${_job})
+			COMMAND check ${CMAKE_CURRENT_SOURCE_DIR}/${_job})
 	endforeach (_job)
 endif (DO_TESTS)
 

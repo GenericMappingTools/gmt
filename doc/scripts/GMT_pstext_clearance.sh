@@ -1,8 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
-
 gmtset PS_SCALE_X 0.8 PS_SCALE_Y 0.8
 pstext -R0/3/-0.1/1.5 -Jx1i -P -K -C0.2 -TO -Wthick -F+f36p,Helvetica-Bold << EOF > GMT_pstext_clearance.ps
 1.5	0.5	My Text

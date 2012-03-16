@@ -1,8 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
-
 pstext -R0/5/0/3 -Jx1i -P -K -F+f+j << EOF > GMT_-J.ps
 2.5	2.8	16p,Helvetica-Bold	BC	GMT PROJECTIONS
 2	2.25	12p,Helvetica-Bold	BC	GEOGRAPHIC PROJECTIONS

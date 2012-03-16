@@ -1,8 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
-
 psxy -R0/2/0/2 -Jx1i -Bg0.25 -Sc0.025 -Gblack -P -K << EOF > GMT_nearneighbor.ps
 0.04	1.8
 0.3	0.3

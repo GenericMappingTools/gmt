@@ -1,8 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
-
 cat << EOF >| xannots.txt
 416.0	ig	Devonian
 443.7	ig	Silurian

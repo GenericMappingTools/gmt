@@ -1,8 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
-
 psxy -R0/2.5/0/1.7 -Jx1i -P -K -Glightyellow -Wthinner << EOF >| GMT_-P.ps
 >
 0	0

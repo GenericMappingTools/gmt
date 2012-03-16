@@ -1,8 +1,6 @@
 #!/bin/bash
-#       $Id$
+#       $Id:$
 #
-. ./functions.sh
-
 # Demonstrate how arrows look like
 ps=GMT_arrows.ps
 # Cartesian straight arrows

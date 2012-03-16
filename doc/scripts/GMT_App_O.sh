@@ -4,10 +4,7 @@
 #	Makes the inserts for Appendix O (labeled lines)
 #	This first script just gets the data ready and run the various scripts
 #
-. ./functions.sh
-
-gmtset MAP_FRAME_WIDTH 0.04i FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p
-grdcut "$src"/../examples/ex01/osu91a1f_16.nc -R50/160/-15/15 -Ggeoid.nc
+grdcut data/../../examples/ex01/osu91a1f_16.nc -R50/160/-15/15 -Ggeoid.nc
 # fixed algorithm points
 cat << EOF > fix.d
 80	-8.5
@@ -44,9 +41,4 @@ project -C$x0/$y0 -E$x1/$y1 -G10 -Q > tt.d
 dist=`gmtconvert tt.d --FORMAT_FLOAT_OUT=%.0lf -El -o2`
 R=`minmax -I1 tt.d`
 echo "# Geoid Extrema Separation is $dist km" > transect.d
-grdtrack tt.d -Ggeoid.nc | grdtrack -G"$src"/GMT_App_O.nc >> transect.d
-
-for n in 1 2 3 4 5 6 7 8 9; do
-	cd ${exec_dir}/..
-	bash "$src"/GMT_App_O_$n.sh
-done
+grdtrack tt.d -Ggeoid.nc | grdtrack -GGMT_App_O.nc >> transect.d
