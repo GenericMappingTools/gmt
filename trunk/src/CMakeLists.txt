@@ -228,7 +228,7 @@ endif (HAVE_M_LIBRARY)
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (pslib
 	PROPERTIES
-	OUTPUT_NAME ps
+	OUTPUT_NAME psl
 	PREFIX lib
 	IMPORT_PREFIX lib
 	VERSION ${GMT_PACKAGE_VERSION}
@@ -373,7 +373,7 @@ if (WIN32 AND _debug_build)
 	# install program database files
 	set (_pdb_files)
 	if (NOT DEFINED PSL_DLL_RENAME)
-		foreach (_target libps libgmt ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS})
+		foreach (_target libpsl libgmt ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS})
 			list (APPEND _pdb_files "${CMAKE_CURRENT_BINARY_DIR}/${_target}.pdb")
 		endforeach ()
 	else ()
