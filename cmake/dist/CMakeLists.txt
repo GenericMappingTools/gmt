@@ -166,8 +166,8 @@ endif(WIN32 AND NOT CYGWIN)
 # MacOSX:
 if (APPLE)
 	# Generate startup script:
-	configure_file (startup_macosx.sh.cmake startup_macosx.sh @ONLY)
-	configure_file (Info.plist.cmake Info.plist @ONLY)
+	configure_file (startup_macosx.sh.in startup_macosx.sh @ONLY)
+	configure_file (Info.plist.in Info.plist @ONLY)
 
 	# Configure CPack:
 	set (CPACK_GENERATOR Bundle TGZ TBZ2)

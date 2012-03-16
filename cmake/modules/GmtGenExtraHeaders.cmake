@@ -38,7 +38,7 @@ macro (gen_gmt_progpurpose_h _PURPOSES _FILE)
 	string (REPLACE ";" "\n  " _purpose_list "${_purpose_list}")
 	set (${_PURPOSES} "${_purpose_list}")
 
-	configure_file (gmt_progpurpose.h.cmake gmt_progpurpose.h)
+	configure_file (gmt_progpurpose.h.in gmt_progpurpose.h)
 endmacro (gen_gmt_progpurpose_h _PURPOSES _FILE)
 
 # gmt_datums.h
@@ -280,7 +280,7 @@ macro (gen_gmt_dimensions_h)
 	list (LENGTH _file_lines GMT_N_PROGRAMS)
 
 	# gmt_dimensions.h
-	configure_file (${GMT_SRC}/src/gmt_dimensions.h.cmake gmt_dimensions.h)
+	configure_file (${GMT_SRC}/src/gmt_dimensions.h.in gmt_dimensions.h)
 endmacro (gen_gmt_dimensions_h)
 
 # gmtmath.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i
@@ -309,7 +309,7 @@ macro (gen_gmt_math_h)
 	string (REPLACE ";" "\n" _op_init "${_op_init}")
 	string_unescape (GMTMATH_OPERATOR_INIT "${_op_init}" NOESCAPE_SEMICOLON)
 
-	configure_file (${GMT_SRC}/src/gmtmath.h.cmake gmtmath.h)
+	configure_file (${GMT_SRC}/src/gmtmath.h.in gmtmath.h)
 
 	# gmtmath_op.h
 	list_regex_replace (
@@ -326,7 +326,7 @@ macro (gen_gmt_math_h)
 	endforeach (_op ${_raw_op_array})
 	string (REPLACE ";" "\n" GMTMATH_OPERATOR_ARRAY "${_op_array}")
 
-	configure_file (${GMT_SRC}/src/gmtmath_op.h.cmake gmtmath_op.h)
+	configure_file (${GMT_SRC}/src/gmtmath_op.h.in gmtmath_op.h)
 
 	# gmtmath_explain.h
 	list_regex_replace (
@@ -342,7 +342,7 @@ macro (gen_gmt_math_h)
 	string (REPLACE ";" "\n" _op_explain "${_padded_lines}")
 	string_unescape (GMTMATH_OPERATOR_EXPLAIN "${_op_explain}" NOESCAPE_SEMICOLON)
 
-	configure_file (${GMT_SRC}/src/gmtmath_explain.h.cmake gmtmath_explain.h)
+	configure_file (${GMT_SRC}/src/gmtmath_explain.h.in gmtmath_explain.h)
 
 	# gmtmath_man.i
 	list_regex_replace (
@@ -384,7 +384,7 @@ macro (gen_grd_math_h)
 	string (REPLACE ";" "\n" _op_init "${_op_init}")
 	string_unescape (GRDMATH_OPERATOR_INIT "${_op_init}" NOESCAPE_SEMICOLON)
 
-	configure_file (${GMT_SRC}/src/grdmath.h.cmake grdmath.h)
+	configure_file (${GMT_SRC}/src/grdmath.h.in grdmath.h)
 
 	# grdmath_op.h
 	list_regex_replace (
@@ -401,7 +401,7 @@ macro (gen_grd_math_h)
 	endforeach (_op ${_raw_op_array})
 	string (REPLACE ";" "\n" GRDMATH_OPERATOR_ARRAY "${_op_array}")
 
-	configure_file (${GMT_SRC}/src/grdmath_op.h.cmake grdmath_op.h)
+	configure_file (${GMT_SRC}/src/grdmath_op.h.in grdmath_op.h)
 
 	# grdmath_explain.h
 	list_regex_replace (
@@ -417,7 +417,7 @@ macro (gen_grd_math_h)
 	string (REPLACE ";" "\n" _op_explain "${_padded_lines}")
 	string_unescape (GRDMATH_OPERATOR_EXPLAIN "${_op_explain}" NOESCAPE_SEMICOLON)
 
-	configure_file (${GMT_SRC}/src/grdmath_explain.h.cmake grdmath_explain.h)
+	configure_file (${GMT_SRC}/src/grdmath_explain.h.in grdmath_explain.h)
 
 	# grdmath_man.i
 	list_regex_replace (

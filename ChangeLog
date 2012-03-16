@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-03-16	remko
+	* *.*.cmake:		Renamed things like config.h.cmake to config.h.in, because they are not
+				cmake files.
+
 2012-03-15	pwessel
 	* mgd77/*.c:		Introduced support for NGDC's MGD77T (tab-delimited) format
 	* mgd77list.c:		Confused the meaning of -F shorthands mgd77 and all.  Now handle
