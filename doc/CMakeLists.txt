@@ -34,9 +34,9 @@ set (_docs_inputs GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex
 set (_common_inputs GMT.ist GMT.sty GMT_macros.tex GMT_Cover.tex)
 
 set (_docs_depends
-	${CMAKE_CURRENT_BINARY_DIR}/examples/.done
-	${CMAKE_CURRENT_BINARY_DIR}/fig/.done
-	${CMAKE_CURRENT_BINARY_DIR}/scripts/.done)
+	${CMAKE_CURRENT_BINARY_DIR}/examples/done
+	${CMAKE_CURRENT_BINARY_DIR}/fig/done
+	${CMAKE_CURRENT_BINARY_DIR}/scripts/done)
 
 add_custom_target (docs_depends DEPENDS
 	examples_done fig_done scripts_done)
@@ -123,7 +123,7 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 				-sOutputFile=shrink.${_pdf_file} ${_pdf_file}
 				COMMAND ${CMAKE_COMMAND} -E rename
 				shrink.${_pdf_file} ${_pdf_file}
-				DEPENDS ${_pdf_file})
+				DEPENDS ${_pdf_target} ${_pdf_file})
 			add_depend_to_target (gmt_doc_shrink ${_pdf_target}_shrink)
 
 			# Install pdf file (if available)
@@ -146,17 +146,17 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 		# create file with list of PS manpages
 		set (_manfiles_ps_relative)
 		foreach (_manfile ${_manfiles_ps})
-			file(RELATIVE_PATH _rel_path ${CMAKE_CURRENT_BINARY_DIR} ${_manfile})
+			file (RELATIVE_PATH _rel_path ${CMAKE_CURRENT_BINARY_DIR} ${_manfile})
 			list (APPEND _manfiles_ps_relative ${_rel_path})
 		endforeach (_manfile ${_manfiles_ps})
 		foreach (_manfile ${_manfiles_suppl_ps})
-			file(RELATIVE_PATH _rel_path ${CMAKE_CURRENT_BINARY_DIR} ${_manfile})
+			file (RELATIVE_PATH _rel_path ${CMAKE_CURRENT_BINARY_DIR} ${_manfile})
 			list (APPEND _manfiles_suppl_ps_relative ${_rel_path})
 		endforeach (_manfile ${_manfiles_suppl_ps})
 		string (REPLACE ";" "\n" _manfiles_ps_relative "${_manfiles_ps_relative}")
 		string (REPLACE ";" "\n" _manfiles_suppl_ps_relative "${_manfiles_suppl_ps_relative}")
-		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/manfiles_ps.list ${_manfiles_ps_relative})
-		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/manfiles_suppl_ps.list ${_manfiles_suppl_ps_relative})
+		file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/manfiles_ps.list ${_manfiles_ps_relative})
+		file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/manfiles_suppl_ps.list ${_manfiles_suppl_ps_relative})
 
 		# using the list, concatenate PS manpages and convert to PDF
 		add_custom_command (OUTPUT GMT_Manpages.pdf

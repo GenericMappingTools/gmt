@@ -31,7 +31,7 @@ foreach (_fig ${_fig_fig})
 endforeach (_fig ${_fig_fig})
 
 # Add build target
-add_custom_command (OUTPUT .done COMMAND touch .done DEPENDS ${_fig_fig})
-add_custom_target (fig_done DEPENDS .done)
+add_custom_command (OUTPUT done COMMAND touch done DEPENDS ${_fig_fig})
+add_custom_target (fig_done DEPENDS done)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

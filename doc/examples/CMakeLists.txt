@@ -62,8 +62,8 @@ foreach (_script ${_examples})
 endforeach (_script ${_examples})
 
 # Add build target
-add_custom_command (OUTPUT .done COMMAND touch .done DEPENDS ${_examples_txt} ${_examples_pdf})
-add_custom_target (examples_done DEPENDS .done)
+add_custom_command (OUTPUT done COMMAND touch done DEPENDS ${_examples_txt} ${_examples_pdf})
+add_custom_target (examples_done DEPENDS done)
 
 # run examples (test)
 if (DO_EXAMPLES) # AND UNIX)
