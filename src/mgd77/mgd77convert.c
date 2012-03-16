@@ -24,6 +24,8 @@
 #include "gmt_mgd77.h"
 #include "mgd77.h"
 
+EXTERN_MSC void MGD77_select_high_resolution (struct GMT_CTRL *C);
+
 struct MGD77CONVERT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct D {	/* -D */
@@ -67,15 +69,15 @@ GMT_LONG GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT,"mgd77convert %s [API] - Convert MGD77 data to other file formats\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: mgd77convert <cruise(s)> -Fa|c|t -T[+]a|c|t [-D] [-L[e][w][+]] [-V]\n\n");
+	GMT_message (GMT, "usage: mgd77convert <cruise(s)> -Fa|c|m|t -T[+]a|c|m|t [-D] [-L[e][w][+]] [-V]\n\n");
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
              
 	MGD77_Cruise_Explain (GMT);
 	GMT_message (GMT, "\t[Files are read from data repositories and written to current directory]\n");
-	GMT_message (GMT, "\t-F Convert from a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table.\n");
+	GMT_message (GMT, "\t-F Convert from a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table.\n");
 	GMT_message (GMT, "\t   Use -FC to recover the original MGD77 setting from the MGD77+ file [Default applies E77 corrections].\n");
-	GMT_message (GMT, "\t-T Convert to a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table.\n");
+	GMT_message (GMT, "\t-T Convert to a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table.\n");
 	GMT_message (GMT, "\t   By default we will refuse to overwrite existing files.  Prepend + to override this policy.\n");
 	GMT_message (GMT, "\tOPTIONS:\n\n");
 	GMT_message (GMT, "\t-D Select high-resolution, 4-byte storage for mag, diur, faa, eot, and msd with precision\n");
@@ -119,13 +121,16 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 			case 'F':
 				Ctrl->F.active = TRUE;
 				switch (opt->arg[0]) {									
-					case 'a':		/* Standard ascii MGD77 file */
+					case 'a':		/* Standard ASCII MGD77 file */
 						Ctrl->F.format = MGD77_FORMAT_M77;
 						break;
 					case 'C':		/* Enhanced MGD77+ netCDF file */
 						Ctrl->F.mode = TRUE;	/* Overlook revisions */
 					case 'c':
 						Ctrl->F.format = MGD77_FORMAT_CDF;
+						break;
+					case 'm':		/* New ASCII MGD77T file */
+						Ctrl->F.format = MGD77_FORMAT_M7T;
 						break;
 					case 't':		/* Plain ascii dat table */
 						Ctrl->F.format = MGD77_FORMAT_TBL;
@@ -146,6 +151,9 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 						break;
 					case 'c':
 						Ctrl->T.format = MGD77_FORMAT_CDF;
+						break;
+					case 'm':		/* New ASCII MGD77T file */
+						Ctrl->T.format = MGD77_FORMAT_M7T;
 						break;
 					case 't':		/* Plain ascii dat table */
 						Ctrl->T.format = MGD77_FORMAT_TBL;
@@ -182,8 +190,8 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, argno, n_cruises = 0, n_paths, error = FALSE;
 	
-	char file[GMT_BUFSIZ], **list = NULL, *fcode = "act";
-	char *format_name[MGD77_N_FORMATS] = {"MGD77 ASCII", "MGD77+ netCDF", "ASCII table"};
+	char file[GMT_BUFSIZ], **list = NULL, *fcode = "actm";
+	char *format_name[MGD77_N_FORMATS] = {"MGD77 ASCII", "MGD77+ netCDF", "ASCII table", "MGD77T ASCII"};
 
 	struct MGD77_CONTROL M;
 	struct MGD77_DATASET *D = NULL;

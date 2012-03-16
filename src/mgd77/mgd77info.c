@@ -99,7 +99,7 @@ GMT_LONG GMT_mgd77info_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD7
 	GMT_message (GMT, "\t     e: Display the MGD77+ file's E77 status.\n");
 	GMT_message (GMT, "\t     h: Display the MGD77+ file's history.\n");
 	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
-	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table files [Default ignores none].\n");
+	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files [Default ignores none].\n");
 	GMT_message (GMT, "\t-L List all the institutions and their 2-character GEODAS codes only.  Append v to also\n");
 	GMT_message (GMT, "\t   display the vessels and their 4-character codes for each institution.\n");
 	GMT_explain_options (GMT, "V");

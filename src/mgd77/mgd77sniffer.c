@@ -799,7 +799,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	 	}
 
 		/* Read MGD77 header */
-		if (MGD77_Read_Header_Record_asc (GMT, list[argno], &M, &H))
+		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &H))
 			GMT_report (GMT, GMT_MSG_FATAL, "Cruise %s has no header.\n", list[argno]);
 
 		/* Allocate memory for data records */
@@ -810,7 +810,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		gotTime = FALSE;
 		nvalues = n_nan = M.bit_pattern[0] = 0;
 		lowPrecision = lowPrecision5 = 0;
-		while (!MGD77_Read_Data_Record_m77 (GMT, &M, &D[nvalues])) {
+		while (!MGD77_Read_Data_Record_asc (GMT, &M, &D[nvalues])) {
 			/* Increase memory allocation if necessary */
 			if (nvalues == n_alloc - 1) {
 				n_alloc <<= 1;
@@ -2379,7 +2379,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Dump "fixed" data row-by-row if requested */
 			if (display != "E77" && strcmp(display,"") && !deleteRecord) {
 				if (!strcmp(display,"MGD77"))
-					MGD77_Write_Data_Record_m77 (&Out, &D[rec]);
+					MGD77_Write_Data_Record_m77 (GMT, &Out, &D[rec]);
 				else {
 					if (rec > 0 || !strcmp(display,"VALS")) {
 						if (GMT->common.b.active[GMT_OUT])

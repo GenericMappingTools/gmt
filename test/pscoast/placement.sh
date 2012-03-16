@@ -6,6 +6,7 @@
 
 . ./functions.sh
 header "Test placement of some projections"
+gmtdefaults > save.conf
 
 coast () {
 pscoast -B+glightblue -Dc -Gblack -O -K -Ya0c $*

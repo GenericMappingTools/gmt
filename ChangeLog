@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-03-15	pwessel
+	* mgd77/*.c:		Introduced support for NGDC's MGD77T (tab-delimited) format
+	* mgd77list.c:		Confused the meaning of -F shorthands mgd77 and all.  Now handle
+				all the stored and derived quantities needed to reproduce original data.
+
 2012-03-15	remko
 	* examples/CMakeLists.txt:	Complete revision. Tests now run with "check" script.
 
