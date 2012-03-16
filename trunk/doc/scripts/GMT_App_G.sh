@@ -3,8 +3,6 @@
 #
 #	Makes the insert for Appendix G (fonts)
 #
-. ./functions.sh
-
 # dy is line spacing and y0 is total box height
 
 dy=-0.2222

@@ -1,8 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
-
 gmtset FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p
 psbasemap -R-2/1/0/0.35 -JM4i -Bpa15mf5mg5mwSe -Bs1f30mg15m -K -P --MAP_FRAME_TYPE=fancy+ \
 	--MAP_GRID_PEN_PRIMARY=thinnest,black,. --MAP_GRID_CROSS_SIZE_SECONDARY=0.1i \

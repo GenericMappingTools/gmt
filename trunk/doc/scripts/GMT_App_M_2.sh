@@ -1,7 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
 ps=GMT_App_M_2.ps
 
 gmtset FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm

@@ -1,7 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
 gmtset MAP_FRAME_TYPE fancy FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.1i FONT_ANNOT_PRIMARY +8p
 psbasemap -X2i -R-60/-30/-10/10 -JM2.25i -Ba10f5g5WSne:."Plot Title": -P -K > GMT_Defaults_1a.ps
 pstext -R -J -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >> GMT_Defaults_1a.ps

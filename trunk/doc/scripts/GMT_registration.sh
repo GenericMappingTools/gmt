@@ -1,8 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
-
 # Gridline registration
 psxy -R0/3/0/3 -JX2.5i/1.25i -B1g1wesn -P -K -Wthinner -L -Glightred << EOF > GMT_registration.ps
 0.5	1.5

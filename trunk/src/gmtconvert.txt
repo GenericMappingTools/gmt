@@ -3,7 +3,7 @@
 .SH NAME
 gmtconvert \- Convert, Paste, and/or Extract columns from data tables
 .SH SYNOPSIS
-BD(gmtconvert) [ IT(table) ] [ OPT(A) ] [ OPT(D)[IT(template)] ] [ OPT(E)[BD(f)|BD(l)] ] 
+BD(gmtconvert) [ IT(table) ] [ OPT(A) ] [ OPT(D)[IT(template)] ] [ OPT(E)[BD(f)|BD(l)|BD(m)IT(stride)] ] 
 [ OPT(L) ] [ OPT(I)[BD(tsr)] ] [ OPT(N) ] [ OPT(Q)IT(seg) ] 
 [ OPT(S)[BD(~)]IT("search string") | OPT(S)[BD(~)]/IT(regexp)/[BD(i)] ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_a_OPT ] [ GMT_b_OPT ] 
 [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
@@ -40,10 +40,11 @@ depending on GMT_bo_OPT].
 Alternatively, give a template with two C format specifiers and we will supply the table number and the segment
 number within the table to build the file name.
 .TP
-OPT(E)[BD(f)|BD(l)]
+OPT(E)[BD(f)|BD(l)|BD(m)IT(stride)]
 Only extract the first and last record for each segment of interest [Default extracts
 all records].  Optionally, append BD(f) or BD(l) to only extract the first or last
 record of each segment, respectively.
+Alternatively, append BD(m)IT(stride) to extract only one out of IT(stride) records.
 .TP
 OPT(I)
 Invert the order of items, i.e., output the items in reverse order, starting with the last and ending

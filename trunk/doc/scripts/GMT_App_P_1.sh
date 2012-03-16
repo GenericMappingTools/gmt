@@ -6,7 +6,6 @@
 # GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast
 # Unix progs:	mktemp, rm
 #
-. ./functions.sh
 ps=GMT_App_P_1.ps
 
 # Create a temporary directory. $GMT_TMPDIR will be set to its pathname.

@@ -6,8 +6,6 @@
 #
 #	e.g., GMT_encoding.sh ISO-8859-1 | gv -
 #
-. ./functions.sh
-
 if [ $# -eq 0 ]; then
 	exit
 fi

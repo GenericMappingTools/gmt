@@ -2,8 +2,7 @@
 #	$Id$
 #
 #	Makes the octal code charts in Appendix F
-. ./functions.sh
-
+#
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column
 

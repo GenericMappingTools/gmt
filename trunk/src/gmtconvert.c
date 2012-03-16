@@ -106,7 +106,7 @@ GMT_LONG GMT_gmtconvert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "gmtconvert %s [API] - Convert, paste, or extract columns from data tables\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: gmtconvert [<table>] [-A] [-D[<template>]] [-E[f|l]] [-I[tsr]] [-L] [-N] [-Q<seg>]\n");
+	GMT_message (GMT, "usage: gmtconvert [<table>] [-A] [-D[<template>]] [-E[f|l|m<stride>]] [-I[tsr]] [-L] [-N] [-Q<seg>]\n");
 	GMT_message (GMT, "\t[-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -126,6 +126,7 @@ GMT_LONG GMT_gmtconvert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   replace them with the table number and table segment numbers.\n");
 	GMT_message (GMT, "\t-E Extract first and last point per segment only [Output all points].\n");
 	GMT_message (GMT, "\t   Append f for first only or l for last only.\n");
+	GMT_message (GMT, "\t   Append m<stride> to pass only 1 out of <stride> records.\n");
 	GMT_message (GMT, "\t-I Invert output order of (t)ables, (s)egments, or (r)ecords.  Append any combination of:\n");
 	GMT_message (GMT, "\t     t: reverse the order of input tables on output.\n");
 	GMT_message (GMT, "\t     s: reverse the order of segments within each table on output.\n");
@@ -180,11 +181,13 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 				Ctrl->E.active = TRUE;
 				switch (opt->arg[0]) {
 					case 'f':		/* Get first point only */
-						Ctrl->E.mode = 1; break;
+						Ctrl->E.mode = -1; break;
 					case 'l':		/* Get last point only */
-						Ctrl->E.mode = 2; break;
+						Ctrl->E.mode = -2; break;
+					case 'm':		/* Set modulo step */
+						Ctrl->E.mode = atoi (&opt->arg[1]); break;
 					default:		/* Get first and last point only */
-						Ctrl->E.mode = 3; break;
+						Ctrl->E.mode = -3; break;
 				}
 				break;
 #ifdef GMT_COMPAT
@@ -377,10 +380,14 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_out_seg++;	/* Number of segments that passed the test */
 			last_row = D[GMT_IN]->table[tbl_ver]->segment[seg]->n_rows - 1;
 			for (row = n_rows = 0; row <= last_row; row++) {	/* Go down all the rows */
-				if (Ctrl->E.active) {	/* Only pass first or last or both of them, skipping all others */ 
+				if (!Ctrl->E.active) { /* Skip this section */ }
+				else if (Ctrl->E.mode < 0) {	/* Only pass first or last or both of them, skipping all others */ 
 					if (row > 0 && row < last_row) continue;		/* Always skip the middle of the segment */
-					if (row == 0 && !(Ctrl->E.mode & 1)) continue;		/* First record, but we are to skip it */
-					if (row == last_row && !(Ctrl->E.mode & 2)) continue;	/* Last record, but we are to skip it */
+					if (row == 0 && !(-Ctrl->E.mode & 1)) continue;		/* First record, but we are to skip it */
+					if (row == last_row && !(-Ctrl->E.mode & 2)) continue;	/* Last record, but we are to skip it */
+				}
+				else {	/* Only pass modulo E.mode records */
+					if (row % Ctrl->E.mode != 0) continue;
 				}
 				/* Pull out current virtual row (may consist of a single or many (-A) table rows) */
 				for (tbl_hor = out_col = 0; tbl_hor < n_horizontal_tbls; tbl_hor++) {	/* Number of tables to place horizontally */

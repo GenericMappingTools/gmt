@@ -73,8 +73,6 @@
 # graphs of h(x) can be interpreted as also = the graphs of h(r).
 #
 #---------------------------------------------------
-. ./functions.sh
-
 gmtset FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
 gmtmath -T0/5/0.01 T SINC = | psxy -R0/5/-0.3/1 -JX4i/2i -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -Wthick > GMT_App_J_2.ps
 gmtmath -T0/5/0.01 T SINC 1 T T MUL SUB DIV = | grep -v '^>' | $AWK '{ if ($1 == 1) print 1, 0.5; else print $0}' | psxy -R -J -O -K -Wthick,- >> GMT_App_J_2.ps

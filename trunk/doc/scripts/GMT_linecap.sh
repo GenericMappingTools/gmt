@@ -1,8 +1,6 @@
 #!/bin/bash
 #       $Id$
 #
-. ./functions.sh
-
 ps=GMT_linecap.ps
 cat << EOF > lines.txt
 0       0

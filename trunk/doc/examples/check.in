@@ -5,8 +5,8 @@
 # Bash script inclusion to test all GMT examples.
 # It sets the environment such that the examples are created as in the manual.
 
-scriptname=$(basename "$1")
-currentdir=$PWD
+script_name=$(basename "$1")
+current_dir=$PWD
 
 # Determine if awk is buggy
 result=`echo 1 | awk '{print sin($1)}'`
@@ -48,11 +48,11 @@ function make_pdf()
 # Compare the ps file with its original.
 pscmp () {
 test -f "$ps" || return 1
+if ! [ -x "$GRAPHICSMAGICK" ]; then
+  echo "[PASS] (without comparison)"
+  return
+fi
 for ps in *.ps ; do
-  if ! [ -x "$GRAPHICSMAGICK" ]; then
-    echo "[PASS] (without comparison)"
-    return
-  fi
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
   rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/$ps") || pscmpfailed="yes"
   rms=$(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p' <<< "$rms")
@@ -63,13 +63,13 @@ for ps in *.ps ; do
   fi
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
-    echo "$ps: RMS Error = $rms [FAIL]"
-    echo "$now $ps: RMS Error = $rms" >> ../fail_count.d
+    echo "${ps%.ps}: RMS Error = $rms [FAIL]"
+    echo "$now ${ps%.ps}: RMS Error = $rms" >> ../fail_count.d
     make_pdf "$ps" # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
-    echo "$ps: RMS Error = $rms [PASS]"
+    echo "${ps%.ps}: RMS Error = $rms [PASS]"
   fi
 done
 }
@@ -111,7 +111,7 @@ src="$PWD"
 # Create a temporary directory exec_dir in the build dir
 # Then copy all of its contents (except *.ps files)
 # Run remainder of this GMT script there
-exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${src##*/}"
+exec_dir="$current_dir/${src##*/}"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
 ln -fs "$src"/* .
@@ -121,7 +121,10 @@ shift
 # Start with proper GMT defaults
 gmtset -Du FORMAT_TIME_LOGO "Version 5"
 
+# Tentative PS file name
+ps=${script_name%.sh}.ps
+
 # Now run the original script
-. "$scriptname"
+. "$src/$script_name"
 
 # vim: ft=sh

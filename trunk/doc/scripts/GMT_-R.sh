@@ -1,8 +1,6 @@
 #!/bin/bash
 #	$Id$
 #
-. ./functions.sh
-
 gmtset MAP_FRAME_TYPE PLAIN FONT_ANNOT_PRIMARY 8p,Helvetica MAP_TICK_LENGTH_PRIMARY 0.05i \
 	PS_CHAR_ENCODING ISOLatin1+
 pscoast -R-90/-70/18/35.819 -JM2i -P -Dl -Glightbrown -Wthinnest -Ba10g5WsEN -K > GMT_-R.ps
