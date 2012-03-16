@@ -106,8 +106,8 @@ if (PDFLATEX_COMPILER)
 endif (PDFLATEX_COMPILER)
 
 # Add build target
-add_custom_command (OUTPUT .done COMMAND touch .done DEPENDS ${_scripts_pdf} ${_scripts_txt})
-add_custom_target (scripts_done DEPENDS .done)
+add_custom_command (OUTPUT done COMMAND touch done DEPENDS ${_scripts_pdf} ${_scripts_txt})
+add_custom_target (scripts_done DEPENDS done)
 
 # run tests
 if (DO_TESTS)
