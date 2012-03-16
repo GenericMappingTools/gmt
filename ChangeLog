@@ -9,6 +9,7 @@
 
 2012-03-15	remko
 	* examples/CMakeLists.txt:	Complete revision. Tests now run with "check" script.
+	* scripts/*.sh test/*/*.sh:	---"---
 
 2012-03-14	remko
 	* gmtset.c:		Will write out the expansion of shorthands (like -R...) into
