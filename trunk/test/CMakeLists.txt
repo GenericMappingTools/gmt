@@ -36,7 +36,7 @@ if (DO_TESTS)
 		set (HAVE_GMT_DEBUG_SYMBOLS TRUE)
 	endif (HAVE_GMT_DEBUG_SYMBOLS EQUAL -1)
 
-	configure_file (check.in check @ONLY)
+	configure_file (gmtest.in gmtest @ONLY)
 
 	# Workaround cmake bug 3957: CRLF line ending
 	find_package (UnixCommands)
@@ -44,7 +44,7 @@ if (DO_TESTS)
 		find_program (D2U d2u
 			${CYGWIN_INSTALL_PATH}/bin)
 		execute_process (COMMAND ${D2U}
-			${CMAKE_CURRENT_BINARY_DIR}/check)
+			${CMAKE_CURRENT_BINARY_DIR}/gmtest)
 	endif (CYGWIN_INSTALL_PATH)
 
 	# add tests
@@ -55,7 +55,7 @@ if (DO_TESTS)
 		foreach (_test ${_test_scripts})
 			add_test (NAME ${_test}
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				COMMAND check ${CMAKE_CURRENT_SOURCE_DIR}/${_test})
+				COMMAND gmtest ${_test})
 		endforeach (_test ${_test_scripts})
 	endforeach (_test_dir ${GMT_TEST_DIRS})
 endif (DO_TESTS)
