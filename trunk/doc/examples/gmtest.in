@@ -35,7 +35,7 @@ src="$GMT_SOURCE_DIR/doc/examples/$script_dir"
 
 # Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
 export PATH="@GMT_BINARY_DIR_PATH@:$GMT_SOURCE_DIR/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
-export GMT_SHAREDIR="$GMT_SOURCE_DIR/share"
+export GMT5_SHAREDIR="$GMT_SOURCE_DIR/share"
 export GMT_USERDIR="$GMT_BINARY_DIR/share"
 
 # Reset error count
