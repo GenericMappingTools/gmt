@@ -14,7 +14,6 @@ POLES="${src:=.}"/WK97.d			# Rotation poles to use
 
 grep -v '^#' "$src"/pac_hs.d > tmp
 awk '{printf "s/%s/%d/g\n", $3, NR}' tmp > t.sed
-grep -v '^#' "$src"/pac_hs.d | awk '{printf "s/%s/%d/g\n", $3, NR}' > t.sed
 makecpt -Ccategorical -T1/11/1 -N > t.cpt
 paste t.cpt tmp | awk '{printf "%s\t%s\t;%s\n", $1, $2, $5}' > key.cpt
 originator "$src"/seamounts.d -S1 -D10m -E${POLES} -F"$src"/pac_hs.d | sed -f t.sed > spotter_3.d
