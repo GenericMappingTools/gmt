@@ -61,22 +61,23 @@ for ps in *.ps ; do
   fi
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
-    echo "${script_name%.sh}: RMS Error = $rms [FAIL]"
-    echo "$now ${scriptname%.sh}: RMS Error = $rms" >> "$current_dir/fail_count.d"
+    echo "$script_dir/$ps: RMS Error = $rms [FAIL]"
+    echo "$now $script_dir/$ps: RMS Error = $rms" >> "$current_dir/fail_count.d"
     make_pdf "$ps" # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
-    echo "${scriptname%.sh}: RMS Error = $rms [PASS]"
+    echo "$script_dir/$ps: RMS Error = $rms [PASS]"
   fi
 done
 }
 
 passfail () {
+  test -f fail || return 0
   if [ -s fail ]; then
     now=$(date "+%F %T")
     echo "[FAIL]"
-    echo "$now ${src##*/}/$1: $(wc -l fail) failed lines" >> "$current_dir/fail_count.d"
+    echo "$now $script_name: $(wc -l fail) failed lines" >> "$current_dir/fail_count.d"
     mv -f fail $1.log
     ((++ERROR))
   else

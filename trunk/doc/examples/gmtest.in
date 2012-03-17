@@ -68,13 +68,13 @@ for ps in *.ps ; do
   fi
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
-    echo "${ps%.ps}: RMS Error = $rms [FAIL]"
-    echo "$now ${ps%.ps}: RMS Error = $rms" >> "$current_dir/fail_count.d"
+    echo "$ps: RMS Error = $rms [FAIL]"
+    echo "$now $ps: RMS Error = $rms" >> "$current_dir/fail_count.d"
     make_pdf "$ps" # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
-    echo "${ps%.ps}: RMS Error = $rms [PASS]"
+    echo "$ps: RMS Error = $rms [PASS]"
   fi
 done
 }
