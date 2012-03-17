@@ -11,4 +11,6 @@ w_inch=`grdinfo i.nc -C | cut -f3`
 err=`gmtmath -Q $w_inch $w_cm NEQ =`
 if [ $err -eq 1 ]; then
 	echo "cm gave $w_cm cm and inch gave $w_inch inc" > fail
+else
+	touch fail
 fi
