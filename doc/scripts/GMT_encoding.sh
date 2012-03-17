@@ -22,7 +22,7 @@ cat << EOF > tt.awk	# This awk script creates the tt.chart table of which entrie
 	printf "\n"
 }
 EOF
-egrep -v '\[|\]' "${GMT5_SHAREDIR}"/share/pslib/$1.ps | $AWK -f tt.awk > tt.chart
+egrep -v '\[|\]' "${GMT5_SHAREDIR:-$GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f tt.awk > tt.chart
 cat << EOF > tt.awk	# This awk script creates a file for psxy to plot a rectangle for undefined entries
 {
 	for (i = 1; i <= 8; i++)
@@ -31,7 +31,7 @@ cat << EOF > tt.awk	# This awk script creates a file for psxy to plot a rectangl
 	}
 }
 EOF
-egrep -v '\[|\]' "${GMT5_SHAREDIR}"/share/pslib/$1.ps | $AWK -f tt.awk > tt.empty
+egrep -v '\[|\]' "${GMT5_SHAREDIR:-$GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f tt.awk > tt.empty
 
 cat << EOF > tt.awk
 BEGIN {
