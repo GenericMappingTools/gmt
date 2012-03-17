@@ -34,7 +34,7 @@ coast -R270/20/305/25r -JOc280/25.5/22/69/3c -Bg5 -A10 -Xf12c >> $ps
 # Cassini cylindrical
 coast -Rg -JQ3c -Bg30 -A10000 -Xf16c >> $ps
 
-# Eckert
+# Eckert VI
 coast -Rg -JK3c -Bg30 -A10000 -Xf20c >> $ps
 
 # Mollweide
@@ -45,8 +45,8 @@ psxy -Rg -JX1c -T -O -K -Yf0c >> $ps
 # Gnomonic
 coast -Rg -JF-120/35/60/3c -Bg15 -A10000 -Xf0c >> $ps
 
-# Polar
-coast -R0/360/0/90 -JP3c -Bg15 -A10000 -Xf4c >> $ps
+# Eckert IV
+coast -Rg -JKf3c -Bg30 -A10000 -Xf4c >> $ps
 
 # American polyconic
 coast -R-180/-20/0/90 -JPoly/3c -Bg15 -A10000 -Xf8c >> $ps
