@@ -74,7 +74,7 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 			free (file);
 		}
 		else {	/* No header file; see if filename contains w/e/s/n information, as in W|ExxxN|Syy.dem 
-			   for GTOPO30 (e.g W020N90.DEM) or N|SxxxW|Eyy.hgt for SRTM1|3 (e.g. N00E006.hgt)  */
+			   for GTOPO30 (e.g W020N90.DEM) or N|SyyW|Exxx.hgt for SRTM1|3 (e.g. N00E006.hgt)  */
 			size_t len;
 
 			while (GMT_chop_ext (file));	/* Remove all extensions so we know exactly where to look */
@@ -253,7 +253,7 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 		c = header->title[len-4];
 		header->title[len-4] = '\0';
 		header->wesn[YLO] = atof (&header->title[len-6]);
-		header->title[len-3] = (char)c;		/* Reset because this function is called at least twice */
+		header->title[len-4] = (char)c;		/* Reset because this function is called at least twice */
 		if ( header->title[len-7] == 'S' || header->title[len-7] == 's' ) header->wesn[YLO] *= -1; 
 		header->wesn[YHI] = header->wesn[YLO] + 1; 
 		header->wesn[XHI] = header->wesn[XLO] + 1; 
