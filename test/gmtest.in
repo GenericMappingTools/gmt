@@ -7,11 +7,10 @@
 # Print the shell script name and purpose and fill out to 72 characters
 # and make sure to use US system defaults
 
-# Where the current script resides (need absolute path)
-script_name=$(basename "$1")
-current_dir=$PWD
-cd "$(dirname "$1")"
-src="$PWD"
+# Name of the script and the directory portion of it
+script_name=$1
+script_dir=$(dirname "$1")
+current_dir="$PWD"
 
 header () {
   printf "%-72s\n" "$script_name: $1"
@@ -20,17 +19,19 @@ header () {
 # Temporary change LANG to C
 LANG=C
 
-# Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
-export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
-export GMT5_SHAREDIR="@GMT_SOURCE_DIR@/share"
-export GMT_USERDIR="@GMT_BINARY_DIR@/share"
-export GMT_DATADIR="$src"
-
 # Define variables that are needed *within* test scripts
+GMT_BINARY_DIR="@GMT_BINARY_DIR@"
 GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
 HAVE_OPENMP="@HAVE_OPENMP@"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
+src="$GMT_SOURCE_DIR/test/$script_dir"
+
+# Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
+export PATH="@GMT_BINARY_DIR_PATH@:$GMT_SOURCE_DIR/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
+export GMT_SHAREDIR="$GMT_SOURCE_DIR/share"
+export GMT_USERDIR="$GMT_BINARY_DIR/share"
+export GMT_DATADIR="$src"
 
 # Reset error count
 ERROR=0
@@ -61,13 +62,13 @@ pscmp () {
   fi
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
-    echo "${src##*/}/${ps%.ps}: RMS Error = $rms [FAIL]"
-    echo "$now ${src##*/}/${ps%.ps}: RMS Error = $rms" >> "$current_dir/fail_count.d"
+    echo "${script_name%.sh}: RMS Error = $rms [FAIL]"
+    echo "$now ${scriptname%.sh}: RMS Error = $rms" >> "$current_dir/fail_count.d"
     make_pdf "$ps" # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
-    echo "${src##*/}/${ps%.ps}: RMS Error = $rms [PASS]"
+    echo "${scriptname%.sh}: RMS Error = $rms [PASS]"
   fi
 }
 
@@ -108,7 +109,7 @@ trap on_err ERR SIGSEGV SIGTRAP SIGBUS
 
 # Create a temporary directory exec_dir in the build dir
 # and run remainder of this GMT script there
-exec_dir="$current_dir/${src##*/}/${script_name%.sh}"
+exec_dir="$current_dir/${script_name%.sh}"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
 
@@ -119,6 +120,6 @@ gmtset -Du
 ps="${script_name%.sh}.ps"
 
 # Now run the original script
-. "$src/$script_name"
+. "$GMT_SOURCE_DIR/test/$script_name"
 
 # vim: ft=sh
