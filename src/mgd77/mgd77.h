@@ -513,6 +513,8 @@ EXTERN_MSC void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F
 EXTERN_MSC void MGD77_Verify_Prep (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATASET *D);
 EXTERN_MSC void MGD77_Verify_Prep_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_META *M, struct MGD77_DATA_RECORD *D, GMT_LONG nrec);
 EXTERN_MSC int MGD77_Remove_E77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F);
+EXTERN_MSC int MGD77_Read_Data_Record_asc (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);			  /* Will read a single MGD77/MGD77T/DAT record */
+EXTERN_MSC int MGD77_Write_Data_Record_asc (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	;		  /* Will write a single MGD77/MGD77T/DAT record */
 
 /* Secondary user functions */
 
