@@ -3,7 +3,7 @@
 #
 #	Makes the insert for Appendix M(cpt)
 #
-grep -v '#' "${GMT_SHAREDIR}"/conf/gmt_cpt.conf | cut -d: -f1 | sort -r > tt.lis
+grep -v '#' "${GMT5_SHAREDIR}"/conf/gmt_cpt.conf | cut -d: -f1 | sort -r > tt.lis
 
 ps=GMT_App_M_1.ps
 n=`cat tt.lis | wc -l`
