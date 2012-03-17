@@ -2,7 +2,7 @@
 # Test gmtconvert with -g
 # Same plotting as psxy/new_gaps.sh but using gmtconvert to make the gaps.
 
-header "Let gmtconvert make gaps in series"
+ps=new_gaps2.ps
 
 cat << EOF >> tt.d
 1	1
@@ -31,4 +31,3 @@ gmtconvert tt.d -gd1.5 | psxy -R -J -O -K -X3.5i -B5g1WSne -W2p >> $ps
 psxy -R -J -O -K -Sc0.1i -Gred tt.d >> $ps
 pstext -R -J -O -F+f18p+jLT -Gwhite -W -Dj0.1i/0.1i >> $ps <<< "0 10 -gd1.5"
 
-pscmp

@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-header "Test grdimage for use of color masking"
+ps=colormasking.ps
 
 xyz2grd -R-0.5/2.5/-0.5/2.5 -I1 -r -Gt.nc <<%
 0 0 0.0
@@ -26,4 +26,3 @@ psxy -R -J -Gp50/10:FwhiteB- -O >> $ps <<%
 1 1
 %
 
-pscmp

@@ -2,7 +2,7 @@
 #	$Id$
 #
 
-header "Test horizontal/vertical color bar with/without flipping"
+ps=psscale.ps
 
 gmtset FONT_ANNOT_PRIMARY 10p FONT_LABEL 14p PROJ_LENGTH_UNIT cm
 
@@ -24,4 +24,3 @@ plot -Y2 -K > $ps
 psscale="psscale -E -Ctmp.cpt -Ac -B1:Range:/:m:"
 plot "-Y9 -O" >> $ps
 
-pscmp

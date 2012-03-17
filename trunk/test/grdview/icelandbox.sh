@@ -4,7 +4,7 @@
 #
 #	$Id$
 
-header "Test grdview, psclip, grdcontour, psxyz in 3D"
+ps=icelandbox.ps
 
 ### Plot options
 popt=-p130/30
@@ -70,4 +70,3 @@ grdcontour --PS_COMMENTS=1 D3-25TV24-resid.nc -p -R -J -JZ -Wthinner -A- -C$cpt 
 pscoast -p -R -J -JZ -Dh -A100 -Wthinnest -S135/190/240 -O -K >> $ps
 psclip -C -O >> $ps
 
-pscmp

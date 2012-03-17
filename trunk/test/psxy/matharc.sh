@@ -3,7 +3,7 @@
 #
 # Check vector symbols
 
-header "Test psxy with math angle vector symbols"
+ps=matharc.ps
 
 psbasemap -R0/6/0/3 -Jx1i -P -B1g1WSne -K -Xc > $ps
 gmtset MAP_VECTOR_SHAPE 1
@@ -52,4 +52,3 @@ psxy -R -J -O -K -W1p -Gblack -Sm0.3i+b+e+n90 << EOF >> $ps
 EOF
 psxy -R -J -O -T >> $ps
 
-pscmp

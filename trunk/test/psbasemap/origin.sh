@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-header "Test positioning with -X and -Y"
+ps=origin.ps
 
 n=0
 
@@ -34,4 +34,3 @@ psxy -Xf0 -Yf0 -R0/1/0/1 -JX8.5i/11i -Wthinnest,red -O >> $ps <<%
 1 0
 %
 
-pscmp

@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 
-header "Test -JG (Pacific 35000 km specific pnt image)"
+ps=pacific_map_2.ps
 
 EARTH_MODEL=e
 DEBUG=
@@ -28,4 +28,3 @@ GRDFILE=etopo2-hawaii.nc
 grdimage ${GRDFILE} ${GMT_VERBOSE} -P -Xc -Yc -E200 $REGION $PROJ -C${COLORMAP} -K > $ps
 pscoast ${GMT_VERBOSE} $REGION $PROJ -B5g5/5g5${TITLE} -Ia -Na -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
 
-pscmp

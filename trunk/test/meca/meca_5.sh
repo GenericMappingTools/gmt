@@ -3,7 +3,7 @@
 #
 # Check psmeca for plotting beach balls
 
-header "Test psmeca for plotting focal mechanisms (5)"
+ps=meca_5.ps
 
 size=1.0c
 
@@ -108,4 +108,3 @@ echo 5.0 0.0 0.0  2.0 -1.0 -1.0  0.0  0.0  0.0 23 0 0 Vertical CLVD | psmeca -Sm
 
 
 
-pscmp

@@ -3,7 +3,7 @@
 #
 # Tests project in Cartesian manipulations
 
-header "Test project for rotating Cartesian data"
+ps=cartesian.ps
 
 cat << EOF > pts.tt
 1.7	1
@@ -72,4 +72,3 @@ for az in 30 135 200 290 ; do
 done
 psxy -R -J -O -T >> $ps
 
-pscmp

@@ -3,7 +3,7 @@
 #
 # Test new custom symbol macros using a windbarb.def file
 
-header "Test psxy with multi-parameter windbarb symbol"
+ps=windbarb.ps
 
 cat << EOF > tmp
 150	-40	25	9.0
@@ -19,4 +19,3 @@ psxy -J -R -W1p,black -Gblack -L -Skwindbarb/1.5i -O -K tmp >> $ps
 pscoast -JS120/-90/5i -R -Gwheat -Sazure1 -Wthin,black -BafgWSen -O -K -Y5i >> $ps
 psxy -J -R -W2p,red -Gblack -L -Skwindbarb/1.5i -O tmp >> $ps
 
-pscmp

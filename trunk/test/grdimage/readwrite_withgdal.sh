@@ -5,7 +5,7 @@
 GDAL=`grdreformat 2>&1 | grep -c gd`
 if [ $GDAL -eq 0 ]; then exit; fi
 	
-header "Test grdimage with images through GDAL"
+ps=readwrite_withgdal.ps
 
 ln -fs "${src:=.}/gdal" .
 
@@ -32,4 +32,3 @@ makecpt -T-25/25/1 > lixo.cpt
 grdimage lixo.grd -Alixo.png=PNG -JX4c -Clixo.cpt
 grdimage -D lixo.png -JX4c -Y-5c -O >> $ps
 
-pscmp

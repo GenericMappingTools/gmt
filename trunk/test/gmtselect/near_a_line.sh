@@ -11,7 +11,7 @@
 # points near the line if they project inside the
 # line's endpoints
 
-header "Test gmtselect's new -L[p] option on given data"
+ps=near_a_line.ps
 
 # Some test data
 grdmath -R0/5/0/5 -I0.1 0 = tt.nc
@@ -45,4 +45,3 @@ psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X3.75i >> $ps
 gmtselect tt.xyz -Lp${D}/tt.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
 psxy -R -J -O tt.d -W1p >> $ps
 
-pscmp

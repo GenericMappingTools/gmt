@@ -1,8 +1,8 @@
 #!/bin/bash
-#	$Id$
-# Test that symbols pick up correct -W -G from command line or header
+#	$Id: ps=headercheck.ps
+# Test that symbols pick up correct -W -G from command line or ps=headercheck.ps
 
-header "Test psxyz and operation of -W -G in headers"
+ps=headercheck.ps
 
 psxyz -R-1/10/-1/10/0/1 -JX5/4 -JZ1 -p135/35 -P -B2g1 -Sc0.2i -Gyellow -W2.5p,cyan -K << EOF > $ps
 > -Ggreen -W1p,black
@@ -55,4 +55,3 @@ psxyz -R -J -JZ -p135/35 -O -Y4.25i -Gred -L -B2g1 -Ctt.cpt << EOF >> $ps
 6	9	0
 EOF
 
-pscmp

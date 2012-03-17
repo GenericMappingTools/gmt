@@ -28,15 +28,14 @@ psxy -R -J -O -T
 }
 
 # First test with ASCII input
-header "Test sample1d and psxy with NaNs indicating line gaps (ASCII)"
-
+ps=gaps_ascii.ps
 tmp=tt.txt
 gmtconvert gaps.nc > $tmp
 makeps > $ps
-pscmp
 
 # Do the same with netCDF input
-header "Test sample1d and psxy with NaNs indicating line gaps (netCDF)"
+ps=gaps_netcdf.ps
 tmp=gaps.nc
 makeps > $ps
-pscmp
+
+psref=gaps.ps

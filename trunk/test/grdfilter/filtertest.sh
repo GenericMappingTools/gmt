@@ -4,7 +4,7 @@
 # filter diameter.  Specify which output you want (a|c|r|w).
 # Change args below to pick another filter.
 
-header "Test grdfilter for filter weights (-DDEBUG only)"
+ps=filtertest.ps
 
 if [ -z "$HAVE_GMT_DEBUG_SYMBOLS" ]; then
 	echo "[N/A]"
@@ -13,21 +13,12 @@ fi
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output
 DATA="../genper/etopo10.nc" # Test on ETOP10 data
-pdf=`basename $ps ".ps"`.pdf
-if [ $# -ne 4 ]; then
-	lon=150
-	lat=-80
-	D=5000
-	mode=c
-	no_U=1
-else
-	lon=$1
-	lat=$2
-	D=$3
-	mode=$4
-	U="-U/-0.5i/-0.25i/$0 $*" 
-	no_U=
-fi
+lon=150
+lat=-80
+D=5000
+mode=c
+no_U=1
+
 # Set contour limits so we just draw the filter radius
 lo=`gmtmath -Q $D 2 DIV 0.5 SUB =`
 hi=`gmtmath -Q $D 2 DIV 0.5 ADD =`
@@ -69,9 +60,3 @@ echo ${lon} $lat | psxy -R -J -O -K -Sx0.1 -W1p >> $ps
 grdcontour  -R0/360/$range r.nc -J -O -K -C1 -L$lo/$hi -W1p >> $ps
 psscale -Ct.cpt -D3.5i/-0.15i/6i/0.05ih -O -K -B$t/:"${mode} [$n_conv]": >> $ps
 psxy -R -J -O -T >> $ps
-if [ $# -eq 4 ]; then
-	ps2raster $ps -Tf
-	open $pdf
-fi
-
-pscmp

@@ -3,8 +3,7 @@
 #
 # Test the Mercator map maker
 
-header "Test Mercator relief image made by gmtmercmap"
+ps=mercmap.ps
 
 gmtmercmap -R-30/10/0/30 -Crelief -P -W6i -S > $ps
 
-pscmp

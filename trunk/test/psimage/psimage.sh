@@ -2,7 +2,7 @@
 #	$Id$
 #
 
-header "Test psimage with different pattern options"
+ps=psimage.ps
 
 cat > tt.in <<%
 0 0
@@ -45,4 +45,3 @@ awk '{ x0=$1+0.5;y0=$2+0.5;c=$3; \
 psimage -E80 -C3i/3i/BL ${GMT_SOURCE_DIR}/share/pattern/ps_pattern_10.ras -Gfred -Gb- -O -K >> $ps
 psimage -E80 -C3i/3i/TL ${GMT_SOURCE_DIR}/share/pattern/ps_pattern_10.ras -O >> $ps
 
-pscmp

@@ -3,7 +3,7 @@
 #
 # Plot error bars and test [+|-]<epen>
 
-header "Test psxy error bar colors"
+ps=plot_errbars.ps
 
 cat << EOF > tt.d
 1	1	1	1
@@ -18,4 +18,3 @@ psxy -R -J -O -B0 -Sc0.2i -Ctt.cpt -W0.25p -X3.25i tt.d -Ey/-1p -K >> $ps
 psxy -R -J -O -B0 -Sc0.2i -Ctt.cpt -W+5p -X-3.25i -Y3.5i tt.d -Ey/+1p -K >> $ps
 psxy -R -J -O -B0 -Sc0.2i -Ctt.cpt -W0.25p,red -X3.25i tt.d -Ex/-1p >> $ps
 
-pscmp

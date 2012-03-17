@@ -24,12 +24,7 @@ blabber () {
 }
 
 
-blabber=0
-if [ $# -gt 0 ] ; then
-	blabber=1
-else
-	header "Compare mapproject forward/inverse with Snyder"
-fi
+blabber=$#
 
 gmtset PROJ_SCALE_FACTOR 1
 
@@ -311,8 +306,4 @@ blabber --PROJ_ELLIPSOID=$unit --FORMAT_FLOAT_OUT=%9.7lf -R90/450/-90/90 -Jks-90
 
 #----------------------------------------------------------------------------
 
-if [ $blabber -eq 0 ]; then
-	passfail snyder
-else
-	cat fail
-fi
+cat fail

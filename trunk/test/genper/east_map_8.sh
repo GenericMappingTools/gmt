@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 
-header "Test -JG (US East Coast 160 km image)"
+ps=east_map_8.ps
 
 EARTH_MODEL=e
 DEBUG=
@@ -26,4 +26,3 @@ GRDFILE=etopo2-chesapeake.nc
 grdimage ${GMT_VERBOSE} ${GRDFILE} -P -Xc -Yc -E200 $REGION $PROJ -C${COLORMAP} -K > $ps
 pscoast ${GMT_VERBOSE} $REGION $PROJ -B5g5/5g5${TITLE} -Ia -Na -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
 
-pscmp

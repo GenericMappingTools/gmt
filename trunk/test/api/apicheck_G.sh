@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id:$
+#	$Id$
 #
 # Test the C API for i/o involving grids
 
@@ -11,7 +11,6 @@ function gridset_check {
 		echo "gridset_check $1 $2 failed" >> fail
 	fi
 }
-header "Test the API for various GRID i/o combinations"
 
 rm -f fail
 grdmath -R0/5/0/5 -I1 X Y MUL = gtesti.nc 
@@ -28,5 +27,3 @@ gridset_check c r	# 4e. Reference
 gridset_check r f	# 5a. File
 gridset_check r c	# 5d. Copy
 gridset_check r r	# 5e. Reference
-
-passfail apicheck_G

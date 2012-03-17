@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "Testing sphtriangulate and sphdistance"
+ps=sph_3.ps
 
 # Get the crude GSHHS data, select GMT format, and decimate to ~20%:
 # gshhs $GMTHOME/src/coast/gshhs/gshhs_c.b | awk '{if ($1 == ">" || NR%5 == 0) print $0}' > gshhs_c.txt
@@ -16,4 +16,3 @@ psxy -R -J -O -K tt.pol -W0.25p,red >> $ps
 pscoast -R -J -O -K -W1p -Glightgray -A0/1/1 >> $ps
 psxy -Rg -J -O -T >> $ps
 
-pscmp

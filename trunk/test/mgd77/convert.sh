@@ -3,8 +3,6 @@
 #
 # Tests mgd77convert
 
-header "Test mgd77convert conversions between mgd77-dat-nc"
-
 log=convert.log
 
 OLD=$MGD77_HOME
@@ -32,5 +30,3 @@ echo "Test if mgd77 from dat matches original:" >> $log
 diff tt.mgd77 dummy.mgd77 --strip-trailing-cr | tee -a fail >> $log
 
 export MGD77_HOME=$OLD
-
-passfail convert

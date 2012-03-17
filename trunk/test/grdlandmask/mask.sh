@@ -3,7 +3,7 @@
 #
 # Test grdlandmask for proper wrapping.
 
-header "Test grdlandmask when wrapping over 0-360"
+ps=mask.ps
 
 echo "-10000 white +10000 white" > tt.cpt
 echo "N black" >> tt.cpt
@@ -17,4 +17,3 @@ grdimage tt.i2=bs -J -B30g180/30g90WsnE -Ctt.cpt -Y3.25i -O -K >> $ps
 grdlandmask -Gtt.i2=bs -I60m -Rd -Di -N1/NaN/NaN/NaN/NaN -A500/1/1
 grdimage tt.i2=bs -J -B30g180/30g90WsnE -Ctt.cpt -Y3.25i -O >> $ps
 
-pscmp

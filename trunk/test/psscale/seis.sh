@@ -2,7 +2,7 @@
 #	$Id$
 #
 
-header "Test psscale and makecpt combinations"
+ps=seis.ps
 
 gmtset FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm
 
@@ -23,4 +23,3 @@ makecpt -T-6/6/1 -Cseis -D -Z | grep -v ^0 | sed 's/^1/0/' > tmp.cpt
 psscale -Ctmp.cpt -D20/04/8/0.5 -O -K       >> $ps
 psscale -Ctmp.cpt -D20/13/8/0.5 -O    -I -N100 >> $ps
 
-pscmp

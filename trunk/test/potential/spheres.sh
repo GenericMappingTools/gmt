@@ -3,7 +3,7 @@
 #
 # Computes the gravity anomaly of a sphere both analytical and descrete triangles
 
-header "Compute gravity anom of a sphere with Okabe method"
+ps=spheres.ps
 
 r=10; z0=-15; ro=1000;
 
@@ -22,4 +22,3 @@ awk '{print $1, $3}' ptodos_g.dat | psxy -R -JX -Sc.1c -G0 -O -K >> $ps
 gmtmath -T-50/50/1 T $z0 HYPOT 3 POW INV 6.674e-6 MUL 4 MUL 3 DIV PI MUL $r 3 POW MUL $ro MUL $z0 ABS MUL = ztmp.dat
 psxy ztmp.dat -R -JX -W1p,200/0/0 -O >> $ps
 
-pscmp

@@ -2,7 +2,7 @@
 #	$Id$
 # Testing gmtspatial intersection
 
-header "Test gmtspatial for polygon intersection"
+ps=intersect.ps
 
 cat << EOF > A.txt
 0	0
@@ -66,4 +66,3 @@ gmtspatial Bg.txt -C -R-2/11/-4/9 -fg | psxy $R -J -O -K -W3p,blue >> $ps
 
 psxy $R -J -O -T >> $ps
 
-pscmp

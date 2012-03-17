@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-header "Test psbasemap's annotation alignment"
+ps=position1.ps
 
 font=Helvetica
 
@@ -60,4 +60,3 @@ pstext -F+j -Ggreen -R -J -O -K >> $ps <<%
 %
 psbasemap -J -R0/1.2/0/1.2 -B0.1/0.1NE -O >> $ps
 
-pscmp

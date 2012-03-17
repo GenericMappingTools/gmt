@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test pstext with filled and outline fonts
 
-header "Test plotting filled and outline fonts"
+ps=filled_font.ps
 
 ln -fs ${GMT_SOURCE_DIR}/share/psldemo/circuit.ras .
 
@@ -15,4 +15,3 @@ p150/circuit.ras
 p150/7=0.25p
 EOF
 
-pscmp

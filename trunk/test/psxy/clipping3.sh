@@ -3,7 +3,7 @@
 #
 # Check clipping of polygons outside region and with dateline
 
-header "Test psxy -JM for clipping polygons straddling dateline"
+ps=clipping3.ps
 
 cat << EOF > a.txt
 150 -65
@@ -24,4 +24,3 @@ psxy a.txt -B5/2WSne -R -J -W0.5p,green -O -K -Y2.3i >> $ps
 psxy b.txt -B5/2WSne -R165/200/-66/-60 -J -W0.5p,red -Ggray -O -K -Y2.3i >> $ps
 psxy b.txt -B5/2WSne -R -J -W0.5p,green -O -Y2.3i >> $ps
 
-pscmp

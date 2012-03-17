@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "greenspline: Testing Cartesian 2-D interpolation II"
+ps=gspline_3.ps
 
 # Figure 4 in Wessel, P. (2009), A general-purpose Green's function-based
 #	interpolator, Computers & Geosciences, 35, 1247–1254.
@@ -60,4 +60,3 @@ psxy use.xyz -R -J -O -K -Sc0.05i -Gblack >> $ps
 echo "0 1 b)" | pstext -R -J -O -K -N -F+jBR+f24p -Dj0.1i/0.3i >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp

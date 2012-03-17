@@ -1,14 +1,14 @@
 #!/bin/bash
 # Test gmtconvert with different segment markers
 
-header "Let gmtconvert handle different segment markers"
+ps=segments.ps
 
 cat << EOF > gmt_i.txt
-> Some header
+> Some ps=segments.ps
 1	1
 2	7
 3	2
->Another header
+>Another ps=segments.ps
 6	3
 8	4
 9	3
@@ -71,4 +71,3 @@ psxy -R -J -O -K t.txt -W0.5p  --IO_SEGMENT_MARKER=B >> $ps
 echo "10 10 NaN->blank" | pstext -R -J -O -K -F+jTR+f12 -Dj0.1i >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp

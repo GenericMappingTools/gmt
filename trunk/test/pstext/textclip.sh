@@ -2,7 +2,7 @@
 # $Id$
 # Test pstext with text path clipping
 
-header "Test text clip paths and delayed annotations"
+ps=textclip.ps
 FONT=16p,Helvetica
 
 pstext -R0/10/0/10 -JX15c/10c -F+f${FONT}+jBL -Gc -B+ggray70 -C0 -K << EOF > $ps
@@ -20,4 +20,3 @@ EOF
 
 psclip -Cs -O >> $ps
 
-pscmp

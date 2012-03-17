@@ -2,7 +2,7 @@
 #	$Id$
 # Test of projection
 
-header "Test -JG (US East Coast 20000 km)"
+ps=east_map_0.ps
 
 EARTH_MODEL=e
 DEBUG=
@@ -23,4 +23,3 @@ PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${
 
 pscoast $REGION $PROJ -P -Yc -Xc -B10g10/10g10${TITLE} -G128/255/128 -S128/128/255 -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $ps
 
-pscmp

@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grdclip
 
-header "Test grdclip for NaN and value clipping"
+ps=limits.ps
 
 Rp=-21/21/-21/21
 Rg=-20/20/-20/20
@@ -17,4 +17,3 @@ grdclip tmp.nc -Sa7/NaN -Sb0/-6 -Gout.nc
 grd2xyz out.nc | psxy -R -J -Sc0.25c -W0.25p -Ct.cpt -O -K -B10f5WSne -Y5i >> $ps
 psxy -R$Rp -J -O -T >> $ps
 
-pscmp

@@ -3,7 +3,7 @@
 # GMT 5 test script for pseudo perspective on some projections. By Ken McLean.
 # Create normal plot, 180 deg rotation, and oblique pseudo perspective of each.
 
-header "Test placement of pseudo perspective projections"
+ps=pseudo.ps
 
 coast () {
 pscoast -B+glightblue -Dc -Gblack -O -K -Ya0c -p180/90 $*
@@ -65,4 +65,3 @@ coast -Rg -JV3c -Bg15 -A10000 -Xf24c >> $ps
 
 psxy -R -J -T -O >> $ps
 
-pscmp

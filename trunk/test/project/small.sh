@@ -3,7 +3,7 @@
 #
 # Tests project in generating small and great circles
 
-header "Test project's ability to generate small/great circles"
+ps=small.ps
 
 # P is the rotation pole and C is the center.  The great circle through
 # P and C defines the zero-meridian.  C is not necessarily 90 degrees
@@ -36,7 +36,7 @@ project -C$C -T$P -G1/10 -L-20/60 | psxy -R -J -O -K -W2p,sandybrown >> $ps
 #
 # Test small circles forced to go through center C and the second point (here we use E = P)
 # This involves computing the pole for this circle; its coordinates are reported in the
-# segment header when -G...+ is used; hence we save the file to extract it.
+# segment ps=small.ps
 # Try plot 80 degree small half circle only through C and E
 project -C$C -E$P -G1/80+ -L-90/90 > tmp
 psxy -R -J -O -K -W2p,blue tmp >> $ps
@@ -62,4 +62,3 @@ echo 15 15 C | pstext -R -J -O -K -D0/-0.2i -F+f14p >> $ps
 
 # The end
 psbasemap -R -J -O -B30g30 >> $ps
-pscmp

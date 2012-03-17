@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-header "Test grdcontour for a problem with saddle points"
+ps=saddle.ps
 
 xyz2grd -Z -R36/45/50/59 -I1 -Gtmp.nc <<EOF
 29527.5605469
@@ -111,4 +111,3 @@ echo "8000 black 10000 red" > tmp.cpt
 grdcontour -Ctmp.cpt -A- -R -JX4i tmp.nc -W+ -B1g1:."Direct contour": -K > $ps
 grdcontour -Ctmp.cpt -A- -R -JX4i tmp.nc -D | psxy -O -X5i -J -R -B1g1:."Via -D then psxy": -Ctmp.cpt >> $ps
 
-pscmp

@@ -6,7 +6,7 @@
 # Computers & Geosciences, 36, 348–354.
 # Here used as a test for the x2sys suite.
 
-header "Reproduce Wessel (2010) Comp. & Geosci., Figure 4"
+ps=x2sys_4.ps
 
 OLDX=$X2SYS_HOME
 export X2SYS_HOME=.
@@ -40,4 +40,3 @@ psxy -R -J -O -T >> $ps
 if [ ! "X$OLDX" = "X" ]; then	# Reset prior setting
 	export X2SYS_HOME=$OLDX
 fi
-pscmp

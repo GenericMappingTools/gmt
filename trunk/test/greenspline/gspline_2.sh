@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "greenspline: Testing Cartesian 2-D interpolation I"
+ps=gspline_2.ps
 
 # Figure 3 in Wessel, P. (2009), A general-purpose Green's function-based
 #	interpolator, Computers & Geosciences, 35, 1247–1254.
@@ -18,4 +18,3 @@ grdcontour -R WB1998.grd -J -O -K -C25 -A50+jCB -Wa0.75p,- -Wc0.25p,-  -GlCT/RB 
 grdcontour -R MM1993.grd -J -O -K -C25 -Wa0.75p,. -Wc0.25p,. >> $ps
 psxy -R -J -O $T -Sc0.1 -G0 >> $ps
 
-pscmp

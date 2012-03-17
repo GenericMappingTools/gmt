@@ -4,7 +4,7 @@
 # GMT 5 test script for plot placement on some projections. By Ken McLean.
 # Create triplicate plots of each.
 
-header "Test placement of some projections"
+ps=placement.ps
 gmtdefaults > save.conf
 
 coast () {
@@ -67,4 +67,3 @@ coast -Rg -JV3c -Bg15 -A10000 -Xf24c >> $ps
 
 psxy -R -J -T -O >> $ps
 
-pscmp

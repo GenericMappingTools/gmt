@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "Test grdview for categorical grid plots"
+ps=categorical.ps
 
 # The cpt
 cat << EOF > tt.cpt
@@ -38,4 +38,3 @@ grdview tt.nc -Ctt.cpt -J -O -K -B5g5:."-Qi100":WSne -Qi100 -X-3.5 -Y5.0 --MAP_T
 # Finally plot as texture image -Qt100
 grdview tt.nc -Ctt.cpt -J -O -B5g5:."-Qt100":WSne -Qt100 -X3.5 --MAP_TITLE_OFFSET=-1i >> $ps
 
-pscmp

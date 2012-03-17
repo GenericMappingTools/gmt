@@ -3,7 +3,7 @@
 #
 # Check clipping of grids on a global conic plot
 
-header "Test grdimage for clipping grids"
+ps=grdclip.ps
 
 plot1 () {
 grdmath $1 -fg -I10 Xn Yn 0.2 MUL ADD = t.nc
@@ -23,4 +23,3 @@ plot2 -R-20/20/30/50 -K >> $ps
 plot1 -R-120/-80/40/60 -K >> $ps
 plot1 -R160/200/40/60 >> $ps
 
-pscmp

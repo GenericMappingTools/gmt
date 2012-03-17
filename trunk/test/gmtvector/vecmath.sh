@@ -2,8 +2,6 @@
 # Test the gmtvector application
 
 
-header "Test gmtvector with basic vector math"
-
 cat << EOF > vec2d.txt
 2.5	1
 1.5	1
@@ -65,5 +63,3 @@ gmtvector -A1/1/0 -S0/0/1 -Tx -C >> result
 echo "# gmtvector -A30/30 -S-30/-30 -Tb -fg" >> result
 gmtvector -A30/30 -S-30/-30 -Tb -fg >> result
 diff -q --strip-trailing-cr result "${src:=.}"/result > fail
-
-passfail vecmath

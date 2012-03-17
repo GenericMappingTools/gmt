@@ -68,7 +68,7 @@ add_custom_target (examples_done DEPENDS done)
 # run examples (test)
 if (DO_EXAMPLES) # AND UNIX)
 	# this file takes care of setting up the test environment
-	configure_file (check.in check @ONLY)
+	configure_file (gmtest.in gmtest @ONLY)
 
 	# Workaround cmake bug 3957: CRLF line ending
 	find_package (UnixCommands)
@@ -76,14 +76,14 @@ if (DO_EXAMPLES) # AND UNIX)
 		find_program (D2U d2u
 			${CYGWIN_INSTALL_PATH}/bin)
 		execute_process (COMMAND ${D2U}
-			${CMAKE_CURRENT_BINARY_DIR}/check)
+			${CMAKE_CURRENT_BINARY_DIR}/gmtest)
 	endif (CYGWIN_INSTALL_PATH)
 
 	foreach (_job ${_examples})
 		string (REPLACE "//" "/" _job ${_job})	# GLOB creates double slashes we do not want
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			COMMAND check ${CMAKE_CURRENT_SOURCE_DIR}/${_job})
+			COMMAND gmtest ${_job})
 	endforeach (_job ${_examples})
 elseif (DO_EXAMPLES_WIN_BATCH_DISABLED) # (DO_EXAMPLES AND WIN32)
 	# only supporting examples with installed GMT in %path%

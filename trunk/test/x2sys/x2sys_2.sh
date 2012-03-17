@@ -6,7 +6,7 @@
 # Computers & Geosciences, 36, 348–354.
 # Here used as a test for the x2sys suite.
 
-header "Reproduce Wessel (2010) Comp. & Geosci., Figure 2"
+ps=x2sys_2.ps
 
 R=181/185/0/3
 makecpt -Crainbow -T-80/80/10 -Z > faa.cpt
@@ -18,4 +18,3 @@ grdgradient ss_gridded.nc -Ne0.75 -A65 -fg -Gss_gridded_int.nc
 grdimage ss_gridded.nc -Iss_gridded_int.nc -Ei -J -O -K -Y-4.5i -Cfaa.cpt -B1WSne --MAP_FRAME_WIDTH=3p --FORMAT_GEO_MAP=dddF >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp

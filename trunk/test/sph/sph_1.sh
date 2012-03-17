@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "Testing sphinterpolate I"
+ps=sph_1.ps
 
 makecpt -Crainbow -T-7000/15000/1000 -Z > tt.cpt
 sphinterpolate mars370.txt -Rg -I1 -Q0 -Gtt.nc
@@ -16,4 +16,3 @@ grdimage tt.nc -J -B30g30:."-Q3": -Ctt.cpt -X4.9i -O -K  --MAP_TITLE_OFFSET=0i -
 psxy -Rg -J -O -K mars370.txt -Sc0.05i -G0 -B30g30 -X-2.45i -Y2.5i >> $ps
 psxy -Rg -J -O -T >> $ps
 
-pscmp

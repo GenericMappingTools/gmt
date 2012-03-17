@@ -3,7 +3,7 @@
 #
 # Check vector symbols
 
-header "Test psxy with straight vector symbols"
+ps=vector.ps
 
 psbasemap -R0/6/0/3 -Jx1i -P -B1g1WSne -K -Xc > $ps
 gmtset MAP_VECTOR_SHAPE 0.5
@@ -65,4 +65,3 @@ psxy -R -J -O -W1p -S << EOF >> $ps
 5.9	2.8	60	1i	V0.2i+je+e+r
 EOF
 
-pscmp

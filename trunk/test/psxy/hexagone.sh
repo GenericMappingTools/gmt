@@ -3,7 +3,7 @@
 #
 # Check wrapping around Greenwich
 
-header "Test psxy and -A resampling crossing Greenwich"
+ps=hexagone.ps
 
 cat > hexagone.dat <<%
 -4.5 48.5
@@ -26,4 +26,3 @@ pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O -K --FORMAT_GEO_MAP=D >> 
 psxy hexagone.dat -R-4/6/42/49.5 -JM3i -Y-4i -L -Gpurple -O -K >> $ps
 pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O --FORMAT_GEO_MAP=D >> $ps
 
-pscmp

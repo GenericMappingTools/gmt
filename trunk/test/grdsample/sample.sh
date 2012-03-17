@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grdsample
 
-header "Test grdsample for basic resampling"
+ps=sample.ps
 
 Rg=-20/20/-20/20
 # Create  grid by evaluating a Kelvin-Bessel * sqrt(r) function
@@ -16,4 +16,3 @@ grdsample tmp.nc -I0.2 -Gout.nc
 grdimage out.nc -JX4.5i -Ct.cpt -O -K -B10f5WSne -Xc -Y5i >> $ps
 psxy -R$Rp -J -O -T >> $ps
 
-pscmp

@@ -4,7 +4,7 @@
 # Test that contours are oriented correctly
 # grdraster 5 -R204/206/19/21 -GBigIsland.nc
 
-header "Test grdcontour for oriented contours with -Fl/r"
+ps=contours.ps
 
 color_contour () {
 	rm -f contour_*.txt
@@ -42,4 +42,3 @@ color_contour l
 
 psxy -R -J -O -T >> $ps
 
-pscmp

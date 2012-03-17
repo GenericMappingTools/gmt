@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "Testing grdspotter for NW Pacific grid"
+ps=spotter_7.ps
 
 # coarser (5m vs 2m) reproduction of Fig 3 in Wessel, P. (2008),
 # Hotspotting: Principles and properties of a plate tectonic Hough
@@ -33,4 +33,3 @@ echo $x $y | psxy -R -J -O -K -Sx0.2i -W2p >> $ps
 psscale -Ch.cpt -D3/-0.4/4i/0.125h -O -K -Ba20f10:,-%:/:"CVA": -I0.5 >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp

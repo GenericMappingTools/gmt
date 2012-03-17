@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "greenspline: Testing Cartesian 1-D interpolation"
+ps=gspline_1.ps
 
 # Figure 2 in Wessel, P. (2009), A general-purpose Green's function-based
 #	interpolator, Computers & Geosciences, 35, 1247–1254.
@@ -22,4 +22,3 @@ S 0.2i - 0.35i - 0.5p,. 0.5i Linear interpolation
 EOF
 psxy -R$R -J -O -T >> $ps
 
-pscmp
