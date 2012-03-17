@@ -56,7 +56,7 @@ function make_pdf()
 {
   pdf="${ps%.ps}.pdf"
   test -f "$ps" || return 1
-  ps2raster -Tf -A -P -Ggs "$ps" || ((++ERROR))
+  ps2raster -Tf -A -P "$ps" || ((++ERROR))
   test -f "$pdf" || ((++ERROR))
 }
 
