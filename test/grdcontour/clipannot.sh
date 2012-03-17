@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-header "Test grdcontour for clip path set by annotations"
+ps=clipannot.ps
 
 # Make a grid, annotate every 20 and use those as clip paths
 # Then draw some lines intersection the annotations and draw
@@ -21,4 +21,3 @@ psbasemap -R -J -O -K -Bg0.2 >> $ps
 psclip -Cs -O -K  >> $ps
 psbasemap -R -J -O -B2WSne:."Delayed Annotations": >> $ps
 
-pscmp

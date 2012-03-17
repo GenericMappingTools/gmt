@@ -3,7 +3,7 @@
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
-header "Test psxy with various circles, ellipses and wedges"
+ps=arcs.ps
 
 psxy -R0/4/0/4 -Jx1i -P -W5p -S1i -X2i -Y2i << EOF > $ps
 1 1 1 c
@@ -18,4 +18,3 @@ psxy -R0/4/0/4 -Jx1i -P -W5p -S1i -X2i -Y2i << EOF > $ps
 3 3 45 2 1 e
 EOF
 
-pscmp

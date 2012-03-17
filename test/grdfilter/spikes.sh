@@ -3,7 +3,7 @@
 # Testing grdfilter's isotropic and rectangular filter
 # on a spike, using both -D0 and -Dp for pixel widths.
 
-header "Test grdfilter for isotropic and rectangular filters"
+ps=spikes.ps
 
 filter () {
 	grdfilter t.nc -Gf.nc $*
@@ -33,4 +33,3 @@ filter -Dp -Fc61/61
 image f.nc -X3.5i  >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp

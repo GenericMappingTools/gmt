@@ -3,14 +3,14 @@
 #
 # Testing pslegend fancy frames
 
-header "Test pslegend frame options"
+ps=fancy.ps
 
 makecpt -Cpanoply -T-8/8/1 > tt.cpt
 gmtset FONT_ANNOT_PRIMARY 12p
 cat << EOF > tt.txt
 # Legend test for pslegend
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,
-# H is header, L is label, S is symbol, T is paragraph text, M is map scale, B is colorbar.
+# H is ps=fancy.ps
 #
 G -0.1i
 H 24 Times-Roman Map Legend
@@ -36,4 +36,3 @@ pslegend -R -J -O -K -Dx0.25i/2.25i/2.75i/2.0i/TL -C0.1i/0.1i -Gwhite -L1.2 -F+i
 pslegend -R -J -O -K -Dx6.25i/2.25i/2.75i/2.0i/TR -C0.1i/0.1i -Gcornsilk -L1.2 -F+i2p+p0.5p+s-5p/-3p/orange+r tt.txt >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp

@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grdfilter if openmp is used.
 
-header "Test grdfilter for parallel operations (-fopenmp only)"
+ps=openmp.ps
 
 if [ -z "$HAVE_OPENMP" ]; then
   echo "[N/A]"
@@ -21,4 +21,3 @@ psscale -Ct.cpt -D3.5i/-0.5i/6i/0.1ih -O -K -Ba/:m: >> $ps
 grdimage $DATA -JQ0/7i -Ba:."Original data":WSne -Ct.cpt -O -K -Y4.75i >> $ps
 psxy -Rt.nc -J -O -T >> $ps
 
-pscmp

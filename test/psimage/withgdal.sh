@@ -5,7 +5,7 @@
 GDAL=`grdreformat 2>&1 | grep -c gd`
 if [ $GDAL -eq 0 ]; then exit; fi
 	
-header "Test psimage for reading images with GDAL"
+ps=withgdal.ps
 
 # RGB image
 psimage "${src:=.}"/../grdimage/gdal/needle.jpg -W7c -P -Y15c -K > $ps
@@ -22,4 +22,3 @@ psimage "$src"/../grdimage/gdal/needle.png -M -W7c -X7.5c -O -K >> $ps
 # A gray image (one band, no color map)
 psimage "$src"/../grdimage/gdal/vader.jpg -W4c -X-2.5c -Y4.5c -O >> $ps
 
-pscmp

@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-header "Test grdimage for rendering issues"
+ps=rendering.ps
 
 xyz2grd -R0/360/0/90 -r -I60/30 -Gt.nc <<%
 #30 45 -1
@@ -40,4 +40,3 @@ render -nb -Y2i >> $ps
 render -nc -Y2i >> $ps
 psxy -R -J -T -O >> $ps
 
-pscmp

@@ -3,7 +3,7 @@
 #
 # Check clipping of ellipses that should wrap in a global projection
 
-header "Test psxy global projections for clipping ellipses"
+ps=clip_ellipse.ps
 
 gmtset MAP_FRAME_TYPE plain
 
@@ -20,4 +20,3 @@ psxy ellipse.d -O -K -JV0/2i -Rg -Bg180 -Wthin -SE -Gred -X-3i -Y1.8i >> $ps
 psxy ellipse.d -O -K -JY0/45/3i -Rg -Bg180 -Wthin -SE -Gred -X3i >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp

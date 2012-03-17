@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grdfft
 
-header "Test grdfft for Gaussian filtering"
+ps=gfilter.ps
 
 # Do a 100 km Gaussian filter on some topography
 grdfft topo.nc -fg -F-/100000 -Glow.nc -L
@@ -15,4 +15,3 @@ grdimage low.nc -Iilow.nc -Ct.cpt -J -Y-4.6i -K -O -B5WSne >> $ps
 echo "315 -10 100 km Gaussian" | pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
 psscale -D3i/-0.4i/5i/0.15ih -O -Ct.cpt -B500 -E+n >> $ps
 
-pscmp

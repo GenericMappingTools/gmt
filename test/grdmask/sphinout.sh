@@ -3,7 +3,7 @@
 #
 # Test grdmask for proper handling of inside/outside for spherical polygons
 
-header "Test grdmask with spherical polygon in/on/out"
+ps=sphinout.ps
 
 # 2k.dat contains many repeat points but no point are integer lon,lat
 # hence, no node in the grid below lies exactly on the perimeter. We
@@ -26,4 +26,3 @@ grdmask -Gmask.nc -N0/0.5/1 -I1 -Rg -fg tmp.txt -A
 grdimage mask.nc -R295/345/59/82 -Jx0.108i -Cmask.cpt -B10g1WSne -O -K -Y2.9i >> $ps
 psxy -R -J -O tmp.txt -W0.5p,blue >> $ps
 
-pscmp

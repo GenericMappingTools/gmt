@@ -2,8 +2,6 @@
 #
 #	$Id$
 
-header "Test grdvolume for various grid registrations"
-
 makegrd () {
 xyz2grd -I1 -Gt.nc -Z $1 <<%
 1
@@ -37,9 +35,3 @@ testcase > grdvolume.log
 
 # Note: a non-zero exit status of diff is not an error
 diff grdvolume.log grdvolume.out --strip-trailing-cr > log || true
-
-if [ $? != 0 ]; then
-	touch fail
-fi
-
-passfail grdvolume

@@ -6,8 +6,6 @@
 # in a -R0/2/0/2 -I2 -r situation (2x2 blocks)
 # In all blocks mean = median = mode = 5.
 
-header "Test blockmean's new -E option on given data"
-
 log=etest.log
 
 cat << EOF > data.d
@@ -44,5 +42,3 @@ blockmode -R0/2/0/2 -I1 -r data.d >> $log
 echo "Extended modes" >> $log
 blockmode -R0/2/0/2 -I1 -r -E data.d >> $log
 awk '{if (NF == 6 && $3 != 5) print $0}' $log > fail
-
-passfail etest

@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grdcut -Z
 
-header "Test grdcut for subset extraction based on data range"
+ps=subset.ps
 
 Rp=-21/21/-21/21
 Rg=-20/20/-20/20
@@ -17,4 +17,3 @@ grdcut tmp.nc -Z0/5 -Gout.nc
 grd2xyz out.nc | psxy -R -J -Sc0.25c -W0.5p -O -K -B10f5WSne:."Rectangular subset with z <= 5": >> $ps
 psxy -R$Rp -J -O -T >> $ps
 
-pscmp

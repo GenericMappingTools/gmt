@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "Testing originator to determine nearest origin"
+ps=spotter_3.ps
 
 # Example 3 - Using originator
 #
@@ -23,4 +23,3 @@ grep -v '^#' "$src"/pac_hs.d | sed -f t.sed | psxy -R -J -O -K -Sa0.2i -W0.25p -
 grep -v '^#' "$src"/pac_hs.d | cut -f1,2,3 | pstext -R -J -O -K -F+jCT+f10p -Dj0.15i/0.15i -Gwhite -W0.5p >> $ps
 psscale -Ckey.cpt -D3i/-0.5i/5i/0.14ih -O -Li0.15i >> $ps
 
-pscmp

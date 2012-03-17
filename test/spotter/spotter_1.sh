@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "Testing backtracker fwd/back-ward"
+ps=spotter_1.ps
 
 # Example 1 - Using backtracker
 #
@@ -29,4 +29,3 @@ echo "170 44 64.7" > suiko.d
 backtracker suiko.d -Db -E${POLES} | psxy -R -JM -O -K -St0.1i -Gyellow -W0.5p >> $ps
 psxy -R -JM -O -ST0.1 -Gcyan -W0.5p suiko.d >> $ps
 
-pscmp

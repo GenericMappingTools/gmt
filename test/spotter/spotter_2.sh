@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "Testing hotspotter to build CVA grids"
+ps=spotter_2.ps
 
 # Example 2 - Using hotspotter
 #
@@ -21,4 +21,3 @@ makecpt -Chot -T0/3000/300 -Z > t.cpt
 grdimage spotter_2.nc -JM6i -P -K -Ct.cpt > $ps
 pscoast -R -J -O -Gdarkgreen -A500 -Dl -W0.25p -B20WSne >> $ps
 
-pscmp

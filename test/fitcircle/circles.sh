@@ -3,7 +3,7 @@
 #
 # Tests fitcircle on spherical data points
 
-header "Test fitcircle for finding great and small circles"
+ps=circles.ps
 
 # Fit great circle to red points and small circle to green points
 # Plot the best-fitting great and small circles as well as the
@@ -32,4 +32,3 @@ grep "L1 Average" s.txt | psxy -R -J -O -K -Sa0.2i -Gyellow -W0.25p >> $ps
 grep "L2 Average" s.txt | psxy -R -J -O -K -Sa0.2i -Gyellow -W0.25p >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp

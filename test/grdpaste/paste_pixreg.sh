@@ -3,7 +3,7 @@
 #
 # Paste pixel registered grids along X & Y
 
-header "Test grdpaste to paste pixel registered grids horizontal and vertically"
+ps=paste_pixreg.ps
 
 # The final grid is just f(x,y) = x*y
 grdmath -R-15/15/-15/15 -I0.5 X Y MUL -r = lixo.nc
@@ -19,4 +19,3 @@ grdpaste lixo_x.nc lixo_y.nc -Glixo_xy.nc
 grdcontour lixo_xy.nc -JX10c -C10 -B5 -P -K -Xc > $ps
 grdcontour lixo.nc -J -C10 -B5 -O -Y12c >> $ps
 
-pscmp

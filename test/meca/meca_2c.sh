@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 
-header "Test psmeca for plotting focal mechanisms (2c)"
+ps=meca_2c.ps
 
 gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
 
@@ -45,4 +45,3 @@ pstext -X-5i -R0/10/0/15 -Jx1i -F+jBL+fHelvetica-Bold+f -O << EOF >> $ps
 3 8.0 20 vertical cross-section
 EOF
 
-pscmp

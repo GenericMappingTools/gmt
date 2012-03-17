@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grdedit -R -N
 
-header "Test grdedit to change region and replace node values"
+ps=edit.ps
 
 Rp=-21/21/-21/21
 Rg=-20/20/-20/20
@@ -22,4 +22,3 @@ grdedit tmp.nc -Ntmp
 grd2xyz tmp.nc | psxy -R$Rp -JX4i -Ss0.2c -Ct.cpt -O -K -B10f5WSne -Y4.5i >> $ps
 psxy -R$Rp -J -O -T >> $ps
 
-pscmp

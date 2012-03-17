@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 
-header "Test -JG (US East Coast 160 km Snyder)"
+ps=snyder_map.ps
 
 EARTH_MODEL=e
 DEBUG=
@@ -22,4 +22,3 @@ PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${
 
 pscoast ${GMT_VERBOSE} $REGION $PROJ -P -Yc -Xc -B5g1/5g1${TITLE} -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $ps
 
-pscmp

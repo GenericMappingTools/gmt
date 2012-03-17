@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "Testing grdpmodeler for evaluating APM model"
+ps=spotter_5.ps
 
 POLES=WK97.d
 
@@ -23,5 +23,4 @@ echo "130 60 Dispacement since formation" | pstext -R -J -O -K -T -Dj0.1i -F+jTL
 psscale -Ct.cpt -D2.25i/-0.4i/3.5i/0.15ih -O -K -B2000f1000/:km: >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp
 

@@ -6,6 +6,5 @@
 # GMT progs:    libpslib, psldemo
 # Unix progs:   -
 #
-header "Test pslib capabilities"
+ps=psldemo.ps
 psldemo > $ps
-pscmp

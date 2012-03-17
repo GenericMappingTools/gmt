@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 
-header "Test -JG (US East Coast 160 km w/tilt+twist)"
+ps=east_map_5.ps
 
 EARTH_MODEL=e
 DEBUG=
@@ -22,4 +22,3 @@ PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${
 
 pscoast ${GMT_VERBOSE} $REGION $PROJ -P -Yc -Xc -B5g5/5g5${TITLE} -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $ps
 
-pscmp

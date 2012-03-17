@@ -4,7 +4,7 @@
 # Test how psxy handles polygons that wrap around periodic boundaries
 # testpol.d is a nasty polygon that exceeds 360-degree range.
 
-header "Test psxy and wrapping of polygons in 0-360"
+ps=wrapping.ps
 
 psxy -Rg -JH180/3i -Bg30 -Gred testpol.d -P -K > $ps
 psxy -R -J -W0.25p testpol.d -O -K >> $ps
@@ -25,4 +25,3 @@ psxy -R-220/220/-90/90 -JX6.5/1.75i -B60g30WSne -Gred testpol.d -O -K -X-4i -Y2.
 psxy -R -J -W0.25p testpol.d -O -K >> $ps
 psxy -R -J -T -O >> $ps
 
-pscmp

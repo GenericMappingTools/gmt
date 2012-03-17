@@ -4,7 +4,7 @@
 #
 #	$Id$
 
-header "Test grdimage for wrapping global grids"
+ps=globalgrid.ps
 
 plot=grdimage" -Ctmp.cpt tmp.nc -JX3i/1.5i -B60f10/30f10WeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF"
 #
@@ -31,4 +31,3 @@ $plot $R2 -Y-2i -O -K >> $ps
 $plot $R3 -Y-2i -O -K >> $ps
 $plot $R4 -Y-2i -O >> $ps
 
-pscmp

@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grd2xyz with -R and -s
 
-header "Test grd2xyz for subset and NaN-reversal"
+ps=extract.ps
 
 Rp=-21/11/-21/21
 Rg=-20/10/-20/20
@@ -18,4 +18,3 @@ grd2xyz -R353/368/-15/14 tmp.nc | psxy -R$Rp -J -Sc0.2c -Ggreen -O -K >> $ps
 grd2xyz tmp.nc -sr | psxy -R$Rp -J -Sc0.1c -Gred -O -K >> $ps
 psxy -R$Rp -J -O -T >> $ps
 
-pscmp

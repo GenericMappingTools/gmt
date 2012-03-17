@@ -7,7 +7,7 @@
 # fall exactly on tile boundaries.  One point will fall outside -R
 # but should be considered for the gridline registrated case.
 
-header "Test blockmean's (x,y) <--> (i,j) conversions (numerical)"
+ps=xy2ij.ps
 
 cat << EOF > pixel.d
 0.0	4.1	0
@@ -47,10 +47,6 @@ diff pixel_ij.d "$src"/pixel_ij.d --strip-trailing-cr >> fail
 diff grid_xy.d  "$src"/grid_xy.d --strip-trailing-cr  >> fail
 diff grid_ij.d  "$src"/grid_ij.d --strip-trailing-cr  >> fail
 
-passfail xy2ij_numerical
-
-header "Test blockmean's (x,y) <--> (i,j) conversions (plot)"
-
 # Connect the original point and the corresponding tile center
 paste pixel_xy.d pixel_ij.d | awk '{if (NF == 6) printf ">\n%s\t%s\n%s\t%s\n", $1, $2, $4, $5}' \
 	| psxy -R0/5/0/5 -JX4.5 -P -B1g1WSne -Wdefault -K -Y0.5i -X2i > $ps
@@ -68,5 +64,3 @@ psxy -R -J grid.d -Sc0.125 -Gwhite -Wfaint -O -K -N >> $ps
 pstext -R -J grid.d -F+f8p -O -K -N >> $ps
 psxy -R -J grid_ij.d -Sc0.15 -Gblack -O -K -N >> $ps
 pstext -R -J grid_ij.d -F+f8p,white -O -N >> $ps
-
-pscmp

@@ -11,8 +11,6 @@
 # and convert to relative time using the new TIME_SYSTEM rata.  The values
 # should match the new rata die + day fraction for each epoch.
 
-header "Test time conversions (rata die)"
-
 ( gmtconvert --TIME_SYSTEM=rata -fi0T -fo0t --FORMAT_FLOAT_OUT=%.12g | grep -v ">" | awk '{if ($1 != $2) print $0}' > fail ) <<%
  2000-01-01T12:00:00    730120.5
 -4713-11-25T12:00:00  -1721423.5
@@ -21,5 +19,3 @@ header "Test time conversions (rata die)"
  1970-01-01T00:00:00    719163.0
  0001-01-01T00:00:00         1.0
 %
-
-passfail time_testing_1

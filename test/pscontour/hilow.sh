@@ -2,7 +2,7 @@
 #	$Id$
 #
 
-header "Test pscontour for ticked contours"
+ps=hilow.ps
 
 cat << EOF > t.txt
 0	2	5
@@ -22,4 +22,3 @@ makecpt -T0/10/1 -Crainbow > t.cpt
 pscontour t.txt -R-2/11/-1/6 -Jx0.5i -B2g1 -Ct.cpt -I -W0.25p -GlZ-/Z+ -O -K -Y4.25i >> $ps
 psxy t.txt -R -J -Sc0.1i -W2p -O >> $ps
 
-pscmp

@@ -2,7 +2,7 @@
 #	$Id$
 #
 
-header "Test psmeca for plotting focal mechanisms (4)"
+ps=meca_4.ps
 
 gmtset PROJ_LENGTH_UNIT inch MAP_VECTOR_SHAPE 0.4 MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i PS_MEDIA A4
 
@@ -64,4 +64,3 @@ psvelo -Se0.2/0.39/18 -R-10/10/-10/10 -Jx0.2i/0.2i -O -Umeca_4 << EOF >> $ps
    0.    -5.     6.0   -4.0     6.0    4.0 -0.500  6x-4
 EOF
 
-pscmp

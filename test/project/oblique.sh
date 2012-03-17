@@ -3,7 +3,7 @@
 #
 # Tests project to make oblique lines
 
-header "Test project to make oblique lines"
+ps=oblique.ps
 
 # Since GMT4 project has no option for small circle we must do it differently
 gmtmath -T0/360/1 45 = t.txt
@@ -19,4 +19,3 @@ echo 0 0 | psxy -R -J -O -K -Sc0.1i -Gblack >> $ps
 project t.txt -T$ppole -C$centr -Fpq | psxy -R -J -O -K -W3p >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp

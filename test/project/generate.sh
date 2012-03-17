@@ -3,7 +3,7 @@
 #
 # Tests project in generating lines
 
-header "Test project's ability to generate lines"
+ps=generate.ps
 
 # First Cartesian lines
 
@@ -62,4 +62,3 @@ pstext -R -J -F+f12p,Helvetica-Bold+jTR -O -K >> $ps <<< "85 35 P"
 # The end
 psbasemap -R -J -O -B30g30 >> $ps
 
-pscmp

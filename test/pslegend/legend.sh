@@ -3,7 +3,7 @@
 #
 # Testing pslegend capabilities
 
-header "Test pslegend and its various items"
+ps=legend.ps
 
 makecpt -Cpanoply -T-8/8/1 > tt.cpt
 gmtset FONT_ANNOT_PRIMARY 12p
@@ -11,7 +11,7 @@ gmtset FONT_ANNOT_PRIMARY 12p
 pslegend -R0/10/0/10 -JM6i -Dx0.5i/0.5i/5i/3.8i/BL -C0.1i/0.1i -Gazure1 -L1.2 -F+r -B5f1 > $ps <<EOF
 # Legend test for pslegend
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,
-# H is header, L is label, S is symbol, T is paragraph text, M is map scale, B is colorbar.
+# H is ps=legend.ps
 #
 G -0.1i
 H 24 Times-Roman My Map Legend
@@ -41,4 +41,3 @@ T There is no easy way to predetermine how many lines may be required
 T so we may have to adjust the height to get the right size box.
 EOF
 
-pscmp

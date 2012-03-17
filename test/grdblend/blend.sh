@@ -2,7 +2,7 @@
 #
 #	$Id$
 
-header "Test grdblend for blending overlapping grids"
+ps=blend.ps
 
 # Make 4 constant grids
 grdmath -R0/6/0/6 -I0.1 0 = a.nc
@@ -88,4 +88,3 @@ psxy -Rblend.nc lines.txt -J -O -K -W1p >> $ps
 echo 10 10 high | pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f14p >> $ps
 psscale -Ct.cpt -D3.25i/1.5i/2.8i/0.15i -O -B1 >> $ps
 
-pscmp

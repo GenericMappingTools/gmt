@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test psxy lines with -g
 
-header "Test plotting line graphs with different gap options"
+ps=new_gaps.ps
 
 cat << EOF >> tt.d
 1	1
@@ -30,4 +30,3 @@ psxy -R -J -O -K -X3.5i -B5g1WSne tt.d -W2p -gd1.5 >> $ps
 psxy -R -J -O -K -Sc0.1i -Gred tt.d >> $ps
 pstext -R -J -F+f18p+jTL -O -Gwhite -W -Dj0.1i >> $ps <<< "0 10 -gd1.5"
 
-pscmp

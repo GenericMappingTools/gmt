@@ -4,7 +4,7 @@
 # Check plotting of boxes in stereographic polar projection
 # Original script by Bruce Raup.
 
-header "Test psxy by plotting boxes in polar stereographic projection"
+ps=polar.ps
 
 pscoast -R315/20/135/20r -JS0/90/15c -Dl -B45g45WESN -A15000 -W0.25p -Slightblue -Gyellow -P -K > $ps
 
@@ -34,7 +34,7 @@ psxy -R -J -W2p,100 -A -L -O -K << END >> $ps
 END
 
 pstext -R -J -F+fHelvetica-Bold+f -O -M -N << END >> $ps
-# This is an optional header record
+# This is an optional ps=polar.ps
 > 170 70 15p 16p 5c c
 High Resolution Domain One
 >  47 78 15p 16p 3c c
@@ -43,4 +43,3 @@ High Resolution Domain One
 @;blue;Pan-Arctic Domain@;;
 END
 
-pscmp

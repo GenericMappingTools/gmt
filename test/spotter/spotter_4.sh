@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "Testing grdrotater for rotating a grid"
+ps=spotter_4.ps
 
 # Build a grid
 grdmath -R0/30/0/30 -I0.25 X Y MUL = t.nc
@@ -51,4 +51,3 @@ echo 0 53 | psxy -R -J -O -K -Sc0.1i -Gblack -N >> $ps
 echo 0 53 0.5i -90 -30 | psxy -R -J -O -K -Sm0.15i+e -Gblack -N -W1p >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp

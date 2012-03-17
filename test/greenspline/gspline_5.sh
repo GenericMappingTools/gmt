@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-header "greenspline: Testing Spherical 3-D interpolation"
+ps=gspline_5.ps
 
 # Figures 2+3 in Wessel, P., and J. M. Becker (2008), Interpolation using a
 # Generalized Green's Function for a Spherical Surface Spline in Tension,
@@ -40,4 +40,3 @@ psxy -R -J -O -K mag_validate_1990.d -Sc0.1i -Gwhite -W0.25p  >> $ps
 psxy -R -J -O -K mag_validate_1990.d -Sc0.025i -Gblack >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp

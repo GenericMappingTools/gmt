@@ -19,7 +19,7 @@ annot () {
    pstext -R -J -F+f20p,Helvetica-Bold+jBC -O -K <<< "0 2 -JX$1"
 }
 
-header "Test various specifications of -Jx w/wo trailing d"
+ps=test-JXd.ps
 
 psxy -T -R-60/60/-60/60 -JX8c/8c -K -X4c -Y13c > $ps
 plot1 8c/8c >> $ps
@@ -28,4 +28,3 @@ plot1 8c/8cd -Y-11c >> $ps
 plot1 8cd/8cd -X-12c >> $ps
 psxy -T -R -J -O >> $ps
 
-pscmp

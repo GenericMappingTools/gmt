@@ -3,7 +3,7 @@
 #
 # Check front symbols
 
-header "Test psxyz with front symbols"
+ps=front.ps
 
 psbasemap -R0/7/0/8 -Jx1i -P -B0 -K -Xc > $ps
 cat << EOF > t.txt
@@ -43,4 +43,3 @@ psxyz -R -J -O -K -W1p -Gyellow -Sf-1/0.1i+s+l -X0.5i t.txt -p150/35 >> $ps
 psxyz -R -J -O -K -W1p -Gyellow -Sf-1/0.1i+t+l -X0.5i t.txt -p150/35 >> $ps
 psxy -R -J -O -T >> $ps
 
-pscmp

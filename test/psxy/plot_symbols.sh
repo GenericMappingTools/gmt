@@ -3,7 +3,7 @@
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
-header "Test psxy and all the symbols with fill"
+ps=plot_symbols.ps
 
 psxy -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
 > Fat pen -W2p
@@ -39,4 +39,3 @@ psxy -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
 3.5	1.5	a
 EOF
 
-pscmp

@@ -3,7 +3,7 @@
 #
 # Compute the magnetic anomaly of our Mexican hat split in two halves
 
-header "Compute magnetic anomaly of the Mexican hat"
+ps=sombrero_mag.ps
 
 # Create two half sobreros 
 grdmath -R-15/15/-15/15 -I1 X Y HYPOT DUP 2 MUL PI MUL 8 DIV COS EXCH NEG 10 DIV EXP MUL -5 ADD = sombrero.nc
@@ -28,4 +28,3 @@ xyzokb -Gsombrero_mag.nc -R-15/15/-15/15 -I1.0 -E2 -H10/60/0/-10/40 -Tdsombrero_
 grd2cpt sombrero_mag.nc -E20 -D > m.cpt
 grdimage sombrero_mag.nc -Cm.cpt -JX12c -Ba -P > $ps
 
-pscmp

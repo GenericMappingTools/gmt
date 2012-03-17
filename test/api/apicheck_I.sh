@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id:$
+#	$Id$
 #
 # Test the C API for i/o involving images
 # Note the -W option is not used but must be present.
@@ -13,15 +13,10 @@ if [ $GDAL -eq 0 ]; then exit; fi
 
 # Use another image as test to avoid storing one for the test
 ln -fs "${src:=.}"/../grdimage/gdal/needle.jpg itesti.jpg
-header "Test the API for passing IMAGE via file (GDAL only)"
-ps=im_f.ps
+ps=apicheck_I_f.ps
 testapi -If -Wf -Ti > $ps
-pscmp apicheck_I.ps
-header "Test the API for passing IMAGE via copy (GDAL only)"
-ps=im_c.ps
+ps=apicheck_I_c.ps
 testapi -Ic -Wf -Ti > $ps
-pscmp apicheck_I.ps
-header "Test the API for passing IMAGE via reference (GDAL only)"
-ps=im_r.ps
+ps=apicheck_I_r.ps
 testapi -Ir -Wf -Ti > $ps
-pscmp apicheck_I.ps
+psref=apicheck_I.ps
