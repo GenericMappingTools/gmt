@@ -1544,6 +1544,28 @@ int MGD77_Write_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, st
 	return (MGD77_NO_ERROR);
 }
 
+int MGD77_Write_Data_Record_asc (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will write a single MGD77/MGD77T/DAT record */
+{	/* Writes a single data record to an ascii file */
+	int error;
+
+	switch (F->format) {
+		case MGD77_FORMAT_M77:		/* Will write a single MGD77 record */
+			if ((error = MGD77_Write_Data_Record_m77 (C, F, MGD77Record))) break;	/* EOF probably */
+			break;
+		case MGD77_FORMAT_M7T:		/* Will write a single MGD77T table record */
+			if ((error = MGD77_Write_Data_Record_m77t (C, F, MGD77Record))) break;	/* probably EOF */
+			break;
+		case MGD77_FORMAT_TBL:		/* Will write a single ascii table record */
+			if ((error = MGD77_Write_Data_Record_txt (C, F, MGD77Record))) break;	/* EOF probably */
+			break;
+		default:
+			error = MGD77_UNKNOWN_FORMAT;
+			break;
+	}
+
+	return (error);
+}
+
 int MGD77_Write_Data_asc (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will write all MGD77 records in current file */
 {
 	GMT_LONG rec;
@@ -1592,17 +1614,7 @@ int MGD77_Write_Data_asc (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *
 			else
 				strncpy (MGD77Record.word[k], ALL_NINES, (size_t)Clength[k]);
 		}
-		switch (F->format) {
-			case MGD77_FORMAT_TBL:
-				err = MGD77_Write_Data_Record_txt (C, F, &MGD77Record);
-				break;
-			case MGD77_FORMAT_M77:
-				err = MGD77_Write_Data_Record_m77 (C, F, &MGD77Record);
-				break;
-			case MGD77_FORMAT_M7T:
-				err = MGD77_Write_Data_Record_m77t (C, F, &MGD77Record);
-				break;
-		}
+		err = MGD77_Write_Data_Record_asc (C, F, &MGD77Record);	  /* Will write a single MGD77/MGD77T/DAT record */
 		if (err) return (err);
 	}
 

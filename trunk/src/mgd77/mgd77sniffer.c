@@ -2331,7 +2331,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Dump data row-by-row if requested */
 			if (strcmp( display, "E77") && strcmp(display,"")) {
 				if (!strcmp(display,"MGD77"))
-					MGD77_Write_Data_Record_m77 (GMT, &Out, &D[curr]);
+					MGD77_Write_Data_Record_asc (GMT, &Out, &D[curr]);
 				else {
 					if (curr > 0 || !strcmp (display,"VALS")) {
 						if (GMT->common.b.active[GMT_OUT])
