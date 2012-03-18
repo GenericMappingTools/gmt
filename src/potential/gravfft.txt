@@ -1,0 +1,5 @@
+#include "common_options.txt"
+.TH GRAVFFT 1 MANDATE GMT_STRING "Generic Mapping Tools [potential supplement]"
+.SH NAME
+gravfft \- Compute gravitational attraction of 3-D surfaces in the wavenumber (or frequency) domain
+.SH SYNOPSIS
