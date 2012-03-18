@@ -2,10 +2,14 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-03-18	pwessel
+	* *.*:			Set GNU Lesser Public License version 3 or later as the official
+				license terms for GMT 5.
+
 2012-03-17	pwessel
 	* gmt_io.c:		Did not sense EOF if last record was a header.
 	* spotter/libspotter.c:	A very long filename would exceed variable space in spotter_GPlates_pair().
-	* xgrid/xgridedit.c:	Fixed SEGV but the new value assigned to a node gets corrupted.
+	* xgrid/xgridedit.c:	Fixed SEGV, but the new value assigned to a node still gets corrupted.
 
 2012-03-16	remko
 	* *.*.cmake:		Renamed things like config.h.cmake to config.h.in, because they are not
