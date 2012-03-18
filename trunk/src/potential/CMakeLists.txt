@@ -18,8 +18,7 @@
 #
 
 # source files
-set (SUPPL_PROGS_SRCS redpol.c xyzokb.c)
-# TODO: gravfft.c
+set (SUPPL_PROGS_SRCS redpol.c xyzokb.c gravfft.c)
 
 # generate header file gmt_potential.h
 gmt_set_api_header(SUPPL_API_H ${SUPPL_PROGS_SRCS})
