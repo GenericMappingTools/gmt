@@ -1260,7 +1260,7 @@ int get_integer (char *text, int start, int length)
 int MGD77_Read_Data_Record_m77t (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single tabular MGD77 record */
 {
 	int k = 1, yyyy, mm, dd;
-	GMT_LONG pos = 0, rata_die;
+	GMT_LONG rata_die;
 	char line[GMT_BUFSIZ], r_date[9], *stringp = NULL, *p = NULL;
 	double tz, secs, r_time;
 

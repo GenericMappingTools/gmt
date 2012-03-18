@@ -229,7 +229,7 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_minmax_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_minmax_Ctrl (GMT, Ctrl); GMT_free (GMT, xyzmin); GMT_free (GMT, xyzmax); GMT_free (GMT, Q); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
@@ -516,10 +516,6 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (!got_stuff) GMT_report (GMT, GMT_MSG_FATAL, "No input data found!\n");
-
-	GMT_free (GMT, xyzmin);
-	GMT_free (GMT, xyzmax);
-	GMT_free (GMT, Q);
 
 	GMT->current.io.geo.range = save_range;	/* Restore what we changed */
 

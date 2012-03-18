@@ -1206,13 +1206,6 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 		else {	/* Skip all blank lines until we get something else */
 			while ((p = GMT_fgets (C, line, GMT_BUFSIZ, fp)) && GMT_is_a_blank_line (line)) C->current.io.rec_no++, C->current.io.rec_in_tbl_no++;
 		}
-		if (gmt_ogr_parser (C, line)) continue;	/* If we parsed a GMT/OGR record we go up to top of loop and get the next record */
-		if (line[0] == '#') {	/* Got a file header, copy it and return */
-			strcpy (C->current.io.current_record, line);
-			C->current.io.status = GMT_IO_TBL_HEADER;
-			*status = 0;
-			return (NULL);
-		}
 		if (!p) {	/* Ran out of records, which can happen if file ends in a comment record */
 			C->current.io.status = GMT_IO_EOF;
 			if (C->current.io.give_report && C->current.io.n_bad_records) {	/* Report summary and reset counters */
@@ -1221,6 +1214,13 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *sta
 				C->current.io.rec_no = C->current.io.rec_in_tbl_no = -1;
 			}
 			*status = -1;
+			return (NULL);
+		}
+		if (gmt_ogr_parser (C, line)) continue;	/* If we parsed a GMT/OGR record we go up to top of loop and get the next record */
+		if (line[0] == '#') {	/* Got a file header, copy it and return */
+			strcpy (C->current.io.current_record, line);
+			C->current.io.status = GMT_IO_TBL_HEADER;
+			*status = 0;
 			return (NULL);
 		}
 
