@@ -376,6 +376,7 @@ GMT_LONG spotter_GPlates_pair (char *file)
 {	/* Check if given file is actually a GPlates plate pair */
 	GMT_LONG i;
 	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
+	if (strlen (file) > GMT_TEXT_LEN64) return (FALSE);	/* Cannot be two pairs of tags */
 	if (sscanf (file, "%[^-]-%s", A, B) != 2) return (FALSE);
 	i = 0;	while (A[i]) if (!isupper ((int)A[i++])) return (FALSE);	/* Not all upper case tag */
 	i = 0;	while (B[i]) if (!isupper ((int)B[i++])) return (FALSE);	/* Not all upper case tag */

@@ -53,8 +53,8 @@ static void readFromFile (GMTGrid *grid, String fileName, int *status)
     if ((*status = GMT_read_grd_info (grid->GMT, fileName, &grid->header)))
       return;
 
-    grid->value = calloc (grid->header.nx * grid->header.ny, sizeof (float));
-
+    grid->value = calloc (grid->header.nm, sizeof (float));
+    GMT_memset (grid->GMT->current.io.pad, 4, GMT_LONG);
     *status = GMT_read_grd (grid->GMT, fileName, &grid->header, grid->value, NULL,
 	grid->GMT->current.io.pad, FALSE);
 
@@ -71,7 +71,10 @@ static void writeToFile (grid, fileName, status)
 	String    fileName;
 	int *	  status;
 {
-  *status = GMT_write_grd (grid->GMT, fileName, &grid->header, grid->value, NULL, grid->GMT->current.io.pad, FALSE);
+	double wesn[4];
+	GMT_memset (wesn, 4, double);
+	GMT_memset (grid->GMT->current.io.pad, 4, GMT_LONG);
+	*status = GMT_write_grd (grid->GMT, fileName, &grid->header, grid->value, wesn, grid->GMT->current.io.pad, FALSE);
 }
 
 static void dispose (grid)
@@ -143,7 +146,11 @@ static void set (grid, xIndex, yIndex, value)
 	int	  yIndex;
 	GridValue value;
 {
-  grid->value[yIndex * grid->header.nx + xIndex] = value;
+	int k = yIndex * grid->header.nx + xIndex;
+	fprintf (stderr, "Before: %g\n", grid->value[k]);
+	fprintf (stderr, "Using: %g\n", value);
+  grid->value[k] = value;
+	fprintf (stderr, "After: %g\n", grid->value[k]);
 }
 
 static GridValue get (grid, xIndex, yIndex)

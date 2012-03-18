@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-03-17	pwessel
+	* gmt_io.c:		Did not sense EOF if last record was a header.
+	* xgrid/xgridedit.c:	Fixed SEGV but the new value assigned to a node gets corrupted.
+
 2012-03-16	remko
 	* *.*.cmake:		Renamed things like config.h.cmake to config.h.in, because they are not
 				cmake files.

@@ -185,6 +185,7 @@ static void EnterNewValue (w, event, params, nparams)
   /* Update grid */
   XtVaGetValues(inputField, XtNstring, &field, NULL);
   sscanf(field, "%f", &newValue);
+fprintf (stderr, "Decoded to %g\n", newValue);
   SetGrid(theView->grid, selection.col, selection.row, newValue);
   redrawGridValue(theView->canvas, selection.col, selection.row);
   /* Tell user */
