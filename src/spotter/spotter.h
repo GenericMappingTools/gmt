@@ -68,7 +68,7 @@ struct HOTSPOT {	/* Structure holding all the information about a hotspot */
 	double radius;			/* Uncertainty radius (in km) for hotspot location */
 	double t_off, t_on;		/* Time interval hotspot was active */
 	GMT_LONG create, fit, plot;	/* TRUE if we want to create, fit, or plot hotspot */
-        char name[32];			/* Full name of hotspot */
+        char name[GMT_TEXT_LEN64];	/* Full name of hotspot */
 	/* Secondary (derived) quantities */
         double x, y, z;			/* Cartesian Current location of hot spot */
 };
