@@ -182,7 +182,7 @@ TODO list
 
 * Remove (void *) casts: perl -i -pe 's/(free.*[(])[(]void[ ]*[*][)][ ]*/$1/g' *.c
 
-* Clean up config.h.cmake gmt_version.h.cmake gmt_notposix.h.cmake.
+* Clean up config.h.in gmt_version.h.in gmt_notposix.h.in.
   Right now this is a mixture of partly redundant defines that can be
   simplified. (almost done)
 
@@ -192,7 +192,7 @@ TODO list
 * Add further tests/cmake-find-modules:
   - fftw/Accelerate Framework
   - xgrid
-  - WIN32: test for USE_MEM_ALIGNED, defined in src/gmt_config.h.cmake
+  - WIN32: test for USE_MEM_ALIGNED, defined in src/gmt_config.h.in
 
 * Generate macros
   - to build a release (including precompiled manpages, pdf docu, ...)
