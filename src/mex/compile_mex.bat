@@ -8,13 +8,13 @@ REM	Copyright (c) 1991-2010 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Lu
 REM	See LICENSE.TXT file for copying and redistribution conditions.
 REM
 REM	This program is free software; you can redistribute it and/or modify
-REM	it under the terms of the GNU General Public License as published by
-REM	the Free Software Foundation; version 2 or any later version.
+REM	it under the terms of the GNU Lesser General Public License as published by
+REM	the Free Software Foundation; version 3 or any later version.
 REM
 REM	This program is distributed in the hope that it will be useful,
 REM	but WITHOUT ANY WARRANTY; without even the implied warranty of
 REM	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-REM	GNU General Public License for more details.
+REM	GNU Lesser General Public License for more details.
 REM
 REM	Contact info: gmt.soest.hawaii.edu
 REM --------------------------------------------------------------------
