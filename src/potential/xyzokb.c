@@ -64,52 +64,52 @@
 #include "gmt_potential.h"
 
 struct XYZOKB_CTRL {
-	struct C {	/* -C */
+	struct XYZOKB_C {	/* -C */
 		double rho;
 		GMT_LONG active;
 	} C;
-	struct D {	/* -D */
+	struct XYZOKB_D {	/* -D */
 		double dir;
 	} D;
-	struct I {	/* -Idx[/dy] */
+	struct XYZOKB_I {	/* -Idx[/dy] */
 		GMT_LONG active;
 		double inc[2];
 	} I;
-	struct F {	/* -F<grdfile> */
+	struct XYZOKB_F {	/* -F<grdfile> */
 		GMT_LONG active;
 		char *file;
 	} F;
-	struct G {	/* -G<grdfile> */
+	struct XYZOKB_G {	/* -G<grdfile> */
 		GMT_LONG active;
 		char *file;
 	} G;
-	struct H {	/* -H */
+	struct XYZOKB_H {	/* -H */
 		GMT_LONG active;
 		double	t_dec, t_dip, m_int, m_dec, m_dip;
 	} H;
-	struct L {	/* -L */
+	struct XYZOKB_L {	/* -L */
 		double zobs;
 	} L;
-	struct M {	/* -M */
+	struct XYZOKB_M {	/* -M */
 		GMT_LONG active;
 	} M;
-	struct N {	/* No option, just a container */
+	struct XYZOKB_N {	/* No option, just a container */
 		double	xx[24], yy[24], zz[24];
 		double	d_to_m, *mag_int, central_long, central_lat;
 		double	c_tet, s_tet, c_phi, s_phi;
 	} N;
-	struct E {	/* -T */
+	struct XYZOKB_E {	/* -T */
 		GMT_LONG active;
 		double dz;
 	} E;
-	struct S {	/* -S */
+	struct XYZOKB_S {	/* -S */
 		GMT_LONG active;
 		double radius;
 	} S;
-	struct Z {	/* -Z */
+	struct XYZOKB_Z {	/* -Z */
 		double z0;
 	} Z;
-	struct T {	/* -T */
+	struct XYZOKB_T {	/* -T */
 		GMT_LONG active;
 		GMT_LONG triangulate;
 		GMT_LONG raw;
@@ -123,52 +123,52 @@ struct XYZOKB_CTRL {
 };
 
 struct  DATA    {
-        double  x, y;
-}       *data;
+	double  x, y;
+} *data;
 
 struct  BODY_DESC {
 	GMT_LONG n_f, *n_v, *ind;
-}       bd_desc;
+} bd_desc;
 
 struct  LOC_OR    {
-        double  x, y, z;
+	double  x, y, z;
 };
 
 struct  TRIANG    {
-        double  x, y, z;
-}       *triang;
+	double  x, y, z;
+} *triang;
 
 struct  VERT    {
-        GMT_LONG  a, b, c;
-}       *vert;
+	GMT_LONG  a, b, c;
+} *vert;
 
 struct  TRI_CENTER {
-        double  x, y, z;
-}       *t_center;
+	double  x, y, z;
+} *t_center;
 
 struct  RAW    {
-        double  t1[3], t2[3], t3[3];
-}       *raw_mesh;
+	double  t1[3], t2[3], t3[3];
+} *raw_mesh;
 
 struct MAG_PARAM {
 	double	rim[3];
-}	*mag_param;
+} *mag_param;
 
 struct MAG_VAR {		/* Used when only the modulus of magnetization varies */
 	double	rk[3];
-}	*mag_var;
+} *mag_var;
 
 struct MAG_VAR2 {
 	double	m, m_dip;
-}	*mag_var2;
+} *mag_var2;
 
 struct MAG_VAR3 {
 	double	m, m_dec, m_dip;
-}	*mag_var3;
+} *mag_var3;
 
 struct MAG_VAR4 {
 	double	t_dec, t_dip, m, m_dec, m_dip;
-}	*mag_var4;
+} *mag_var4;
 
 void *New_xyzokb_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct XYZOKB_CTRL *C;
@@ -398,7 +398,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT_LONG km, pm;		/* index of current body facet (for mag only) */
 	float	*g = NULL, one_100;
 	double	s_rad2;
-	double	t_mag, a, DX, DY, DZ;
+	double	t_mag, a, DX, DY;
 	double	*x_obs = NULL, *y_obs = NULL, *z_obs = NULL, *x = NULL, *y = NULL, *cos_vec = NULL;
 	double	cc_t, cs_t, s_t;
 	double	central_long = 0, central_lat = 0;
@@ -651,9 +651,8 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 							DO = TRUE;
 						else {
 							DX = t_center[i].x - x_obs[col];
-							DY = t_center[i].y - y_obs[col];
-							DZ = t_center[i].z - z_obs[col];
-							DO = (DX*DX + DY*DY + DZ*DZ < s_rad2); 
+							DY = t_center[i].y - y_obs[row];
+							DO = (DX*DX + DY*DY) < s_rad2; 
 						}
 						if (DO) {
 							a = okabe (GMT, Ctrl, x_obs[col], y_obs[row], bd_desc, km, pm, loc_or);
@@ -670,8 +669,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 					else {
 						DX = t_center[i].x - x_obs[kk];
 						DY = t_center[i].y - y_obs[kk];
-						DZ = t_center[i].z - z_obs[kk];
-						DO = (DX*DX + DY*DY + DZ*DZ < s_rad2); 
+						DO = (DX*DX + DY*DY) < s_rad2; 
 					}
 					if (DO) {
 						a = okabe (GMT, Ctrl, x_obs[kk], y_obs[kk], bd_desc, km, pm, loc_or);
