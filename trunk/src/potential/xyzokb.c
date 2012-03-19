@@ -643,7 +643,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			z_th = facet_raw (Ctrl, i, Ctrl->M.active);
 		if (z_th) {
 			if (Ctrl->G.active) { /* grid */
-				GMT_row_loop (GMT, Gout,row) {
+				for (row = 0; row < Gout->header->ny; row++) {
 					y_obs[row] = (Ctrl->M.active) ? ((y[row]+central_lat) * Ctrl->N.d_to_m): y[row];
 					GMT_col_loop (GMT, Gout,row,col,ij) {
 						x_obs[col] = (Ctrl->M.active) ? ((x[col]-central_long)*Ctrl->N.d_to_m*cos_vec[row]): x[col]; 
@@ -720,7 +720,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	if (Ctrl->T.m_var1) GMT_free (GMT, Ctrl->N.mag_int);
 	if (Ctrl->T.m_var2) GMT_free (GMT, mag_var2);
 	if (Ctrl->T.m_var3) GMT_free (GMT, mag_var3);
-	if (Ctrl->T.m_var4) GMT_free (GMT, mag_var4);
+	if (mag_var4) GMT_free (GMT, mag_var4);
 
 	Return (GMT_OK);
 }
