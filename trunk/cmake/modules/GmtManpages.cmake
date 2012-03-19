@@ -155,16 +155,18 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 					VERBATIM)
 
 				# install target for realease documentation
-				add_custom_target (gmt_manfiles_html_release_${_manfile}
-					COMMAND ${CMAKE_COMMAND} -E copy_if_different
-					${_manfile}.html
-					${GMT_RELEASE_PREFIX}/doc_release/html/${_manfile}.html
-					COMMAND ${CMAKE_COMMAND} -E copy_if_different
-					${_manfile}${_gz}
-					${GMT_RELEASE_PREFIX}/man_release/man${_man_section}/${_manfile}${_gz}
-					DEPENDS ${_manfile}${_gz} ${_manfile}.html)
-				add_depend_to_target (gmt_release
-					gmt_manfiles_html_release_${_manfile})
+				if (SVN AND HAVE_SVN_VERSION)
+					add_custom_target (gmt_manfiles_html_release_${_manfile}
+						COMMAND ${CMAKE_COMMAND} -E copy_if_different
+						${_manfile}.html
+						${GMT_RELEASE_PREFIX}/doc_release/html/${_manfile}.html
+						COMMAND ${CMAKE_COMMAND} -E copy_if_different
+						${_manfile}${_gz}
+						${GMT_RELEASE_PREFIX}/man_release/man${_man_section}/${_manfile}${_gz}
+						DEPENDS ${_manfile}${_gz} ${_manfile}.html)
+					add_depend_to_target (gmt_release
+						gmt_manfiles_html_release_${_manfile})
+				endif (SVN AND HAVE_SVN_VERSION)
 
 				# append to list of html manfiles
 				list (APPEND _manfiles_html
