@@ -83,29 +83,34 @@ add_subdirectory (doc)        # share must be processed *after* src (PDF manpage
 add_subdirectory (test)
 add_subdirectory (cmake/dist) # make distribution bundles (always last)
 
-# Source release target (export svn working tree)
+# Source release target
 find_program (SVN svn)
 if (SVN AND HAVE_SVN_VERSION)
+	# Export svn working tree
 	add_custom_target (svn_export_release
 		COMMAND ${SVN} --force export
 		${GMT_SOURCE_DIR} ${GMT_RELEASE_PREFIX})
 	add_depend_to_target (gmt_release svn_export_release)
-	if (TAR)
+	find_program (GNUTAR NAMES gnutar gtar tar)
+	if (GNUTAR)
+		# Targets for creating tarballs
 		string (REGEX REPLACE ".*/" "" _release_dirname "${GMT_RELEASE_PREFIX}")
 		add_custom_command (OUTPUT ${_release_dirname}.tar.gz
-			COMMAND ${TAR} -czf ${GMT_BINARY_DIR}/${_release_dirname}.tar.gz ${_release_dirname}
+			COMMAND ${GNUTAR} -cz --owner 0 --group 0
+			-f ${GMT_BINARY_DIR}/${_release_dirname}.tar.gz ${_release_dirname}
 			DEPENDS ${GMT_RELEASE_PREFIX}
 			WORKING_DIRECTORY ${GMT_RELEASE_PREFIX}/..
 			VERBATIM)
 		add_custom_command (OUTPUT ${_release_dirname}.tar.bz2
-			COMMAND ${TAR} -cjf ${GMT_BINARY_DIR}/${_release_dirname}.tar.bz2 ${_release_dirname}
+			COMMAND ${GNUTAR} -cj --owner 0 --group 0
+			-f ${GMT_BINARY_DIR}/${_release_dirname}.tar.bz2 ${_release_dirname}
 			DEPENDS ${GMT_RELEASE_PREFIX}
 			WORKING_DIRECTORY ${GMT_RELEASE_PREFIX}/..
 			VERBATIM)
 		add_custom_target (gmt_release_tar
 			DEPENDS ${GMT_RELEASE_PREFIX}
 			${_release_dirname}.tar.gz ${_release_dirname}.tar.bz2)
-	endif (TAR)
+	endif (GNUTAR)
 endif (SVN AND HAVE_SVN_VERSION)
 
 # Configuration done
