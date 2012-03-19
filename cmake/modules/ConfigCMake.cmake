@@ -173,14 +173,15 @@ if (NOT GMT_MAN_PATH)
 endif (NOT GMT_MAN_PATH)
 
 # Install path for GMT binaries, headers and libraries
+include (GNUInstallDirs) # defines CMAKE_INSTALL_LIBDIR (lib/lib64)
 if (GMT_INSTALL_MONOLITHIC)
 	set (GMT_INCDIR include)
-	set (GMT_LIBDIR lib)
+	set (GMT_LIBDIR ${CMAKE_INSTALL_LIBDIR})
 	set (GMT_BINDIR bin)
 else (GMT_INSTALL_MONOLITHIC)
 	set (GMT_INCDIR include/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
-	set (GMT_LIBDIR lib/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}/lib)
-	set (GMT_BINDIR lib/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}/bin)
+	set (GMT_LIBDIR ${CMAKE_INSTALL_LIBDIR}/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}/lib)
+	set (GMT_BINDIR ${CMAKE_INSTALL_LIBDIR}/gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}/bin)
 endif (GMT_INSTALL_MONOLITHIC)
 
 # use, i.e. don't skip the full RPATH for the build tree
