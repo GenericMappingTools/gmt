@@ -210,7 +210,6 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 
 void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PS2RASTER_CTRL *C;
-	float gver;
 	FILE *fp;
 
 	C = GMT_memory (GMT, NULL, 1, struct PS2RASTER_CTRL);
