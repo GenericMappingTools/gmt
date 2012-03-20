@@ -41,7 +41,7 @@ EXTERN_MSC void GMT_str_toupper (char *string);
 #	include <windows.h>
 #	include <process.h>
 #	define getpid _getpid
-	GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C);
+	GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C, float *GSversion);
 #endif
 
 #define N_GS_DEVICES		12	/* Number of supported GS output devices */
@@ -95,6 +95,7 @@ struct PS2RASTER_CTRL {
 	struct G {	/* -G<GSpath> */
 		GMT_LONG active;
 		char *file;
+		float GSversion;
 	} G;
 	struct L {	/* -L<listfile> */
 		GMT_LONG active;
@@ -209,16 +210,22 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 
 void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PS2RASTER_CTRL *C;
+	float gver;
+	FILE *fp;
 
 	C = GMT_memory (GMT, NULL, 1, struct PS2RASTER_CTRL);
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 #ifdef WIN32
-	if ( ghostbuster(GMT, C) != GMT_OK ) { /* Try first to find the gspath from registry */
+	if ( ghostbuster(GMT, C, &C->G.GSversion) != GMT_OK ) { /* Try first to find the gspath from registry */
 		C->G.file = strdup ("gswin64c");     /* Fall back to this default and expect a miracle */
 	}
 #else
 	C->G.file = strdup ("gs");
+	if ((fp = popen("gs --version", "r")) != NULL) {
+		fscanf(fp, "%f", &C->G.GSversion);
+		pclose(fp);
+	}
 #endif
 	C->D.dir = strdup (".");
 
@@ -549,10 +556,10 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	char **ps_names = NULL;
 	char ps_file[GMT_BUFSIZ] = "", no_U_file[GMT_BUFSIZ] = "",
-			 clean_PS_file[GMT_BUFSIZ] = "", tmp_file[GMT_BUFSIZ] = "",
-	     out_file[GMT_BUFSIZ] = "", BB_file[GMT_BUFSIZ] = "";
+			clean_PS_file[GMT_BUFSIZ] = "", tmp_file[GMT_BUFSIZ] = "",
+			out_file[GMT_BUFSIZ] = "", BB_file[GMT_BUFSIZ] = "";
 	char line[GMT_BUFSIZ], c1[20], c2[20], c3[20], c4[20],
-	     cmd[GMT_BUFSIZ], proj4_name[20], *quiet = NULL;
+			cmd[GMT_BUFSIZ], proj4_name[20], *quiet = NULL;
 	char *gs_params = NULL, *gs_BB = NULL, *proj4_cmd = NULL;
 	char *device[N_GS_DEVICES] = {"", "pdfwrite", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha", "jpeggray", "pnggray", "tiffgray", "bmpgray"};
 	char *ext[N_GS_DEVICES] = {".eps", ".pdf", ".jpg", ".png", ".ppm", ".tif", ".bmp", ".png", ".jpg", ".png", ".tif", ".bmp"};
@@ -651,6 +658,10 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			ps_names[j++] = strdup (opt->arg);
 		}
 	}
+
+	/* Let gray 50 be rasterized as 50/50/50. See http://gmtrac.soest.hawaii.edu/issues/50 */
+	if (Ctrl->G.GSversion >= 9.05)
+		add_to_list (Ctrl->C.arg, "-dUseFastColor=true");
 
 	/* --------------------------------------------------------------------------------------------- */
 	/* ------    If a multi-page PDF file creation is requested, do it and exit.   ------------------*/
@@ -1249,7 +1260,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 }
 
 #ifdef WIN32
-GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
+GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C, float *GSversion) {
 	/* Search the Windows registry for the directory containing the gswinXXc.exe
 	   We do this by finding the GS_DLL that is a value of the HKLM\SOFTWARE\GPL Ghostscript\X.XX\ key
 	   Things are further complicated because Win64 has TWO registries: one 32 and the other 64 bits.
@@ -1268,6 +1279,7 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	int n = 0;
 	GMT_LONG bits64 = TRUE;
 	float maxVersion = 0;		/* In case more than one GS, hold the number of the highest version */
+	*GSversion = 0;
 
 #ifdef _WIN64
 	RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ, &hkey);	/* Read 64 bits Reg */
@@ -1305,6 +1317,7 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 
 	sprintf(ver, "%.2f", maxVersion);
 	strcat(key, ver);
+	*GSversion = maxVersion;
 
 	/* Open the HKLM key, key, from which we wish to get data.
 	   But now we already know the registry bitage */
