@@ -15,52 +15,33 @@
 #
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
-#
-# Use this file to override variables in 'ConfigDefault.cmake' on a per-user basis.
-# First copy 'ConfigUserDefault.cmake' to 'ConfigUser.cmake', then edit 'ConfigUser.cmake'.
-# 'ConfigUser.cmake' is not version controlled (currently listed in svn:ignore property)
-#
-# Note: CMake considers an empty string, "FALSE", "OFF", "NO", or any string ending
-# in "-NOTFOUND" to be false. (This happens to be case-insensitive, so "False",
-# "off", "no", and "something-NotFound" are all false.) Other values are true. Thus
-# it matters not whether you use TRUE and FALSE, ON and OFF, or YES and NO for your
-# booleans.
-#
 
-# Enforce GPL or LGPL conformity. Use this to disable routines that cannot be
-# redistributed under the terms of the GPL or LGPL such as Shewchuk's
-# triangulation (valid values are GPL, LGPL and off) [off]:
-#set (LICENSE_RESTRICTED GPL)
+## Use this file to override variables in 'ConfigDefault.cmake' on a per-user basis.
+## First copy 'ConfigUserTemplate.cmake' to 'ConfigUser.cmake', then edit 'ConfigUser.cmake'.
+## 'ConfigUser.cmake' is not version controlled (currently listed in svn:ignore property)
+##
+## Note: CMake considers an empty string, "FALSE", "OFF", "NO", or any string ending
+## in "-NOTFOUND" to be false. (This happens to be case-insensitive, so "False",
+## "off", "no", and "something-NotFound" are all false.) Other values are true. Thus
+## it matters not whether you use TRUE and FALSE, ON and OFF, or YES and NO for your
+## booleans.
 
-# Installation path [auto]:
+## Basic setup begins here. All settings are optional. In most cases, setting
+## CMAKE_INSTALL_PREFIX should be all you need to do in order to build GMT with
+## reasonable defaults enabled.
+
+##
+## Section 1: Setting up PATHs
+##
+
+# Installation path (ususally defaults to /usr/local) [auto]:
 #set (CMAKE_INSTALL_PREFIX "prefix_path")
 
-# Install monolithic tree instead of distribution type layout (doc and share
-# separated) [on]:
-#set (GMT_INSTALL_MONOLITHIC OFF)
-
-# Set share installation path [${CMAKE_INSTALL_PREFIX}/share/gmt-<version>]:
-#set (GMT_SHARE_PATH "share_path")
-
-# Set doc installation path [${CMAKE_INSTALL_PREFIX}/share/doc/gmt-<version>]:
-#set (GMT_DOC_PATH "doc_path")
-
-# Set manpage installation path [${CMAKE_INSTALL_PREFIX}/share/doc/gmt-<version>/man]:
-#set (GMT_MAN_PATH "man_path")
+## The following should only be needed if CMake cannot automatically detect
+## the right version or path.
 
 # Set path to GSHHS Shoreline Database [auto]:
 #set (GSHHS_ROOT "gshhs_path")
-
-# Install documentation files from this external location instead of creating
-# new PDF and HTML documents from scratch [${GMT_SOURCE_DIR}/doc_release]:
-#set (GMT_INSTALL_EXTERNAL_DOC OFF)
-
-# Install manual pages from this external location instead of creating the
-# manpages from scratch [${GMT_SOURCE_DIR}/man_release]:
-#set (GMT_INSTALL_EXTERNAL_MAN OFF)
-
-# Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel [Release]:
-#set (CMAKE_BUILD_TYPE Debug)
 
 # Set location of NetCDF (can be root directory, path to header file or path to nc-config) [auto]:
 #set (NETCDF_ROOT "netcdf_install_prefix")
@@ -71,20 +52,65 @@
 # Set location of PCRE (can be root directory, path to header file or path to pcre-config) [auto]:
 #set (PCRE_ROOT "pcre_install_prefix")
 
-# Set compatibility mode, which is normally enabled, to disable set to FALSE [TRUE]:
+##
+## Section 2: GMT features
+##
+
+# Enforce GPL or LGPL conformity. Use this to disable routines that cannot be
+# redistributed under the terms of the GPL or LGPL such as Shewchuk's
+# triangulation (valid values are GPL, LGPL and off) [off]:
+#set (LICENSE_RESTRICTED GPL)
+
+# Configure default units (possible values are SI and US) [SI]:
+#set (UNITS "US")
+
+# Enable compatibility mode [TRUE]:
 #set (GMT_COMPAT FALSE)
 
 # Enable file locking [FALSE]:
 #set (FLOCK TRUE)
-
-# Configure default units (possible values are SI and US) [SI]:
-#set (UNITS "US")
 
 # Enable Matlab API [FALSE]:
 #set (GMT_MATLAB TRUE)
 # If Matlab is not found, point MATLAB_ROOT to its installation path, e.g.:
 #set (MATLAB_ROOT /Applications/MATLAB_R2010a.app)  # MacOSX
 #set (MATLAB_ROOT /opt/matlab-7sp1)                 # Linux
+
+## Advanced configuration begins here. Usually it is not necessary to edit any
+## settings below. You should know what you are doing if you do though.
+
+##
+## Section 3: Advanced PATHs
+##
+
+# Install monolithic tree instead of distribution type layout (doc and share
+# separated) [on]:
+#set (GMT_INSTALL_MONOLITHIC OFF)
+
+# Set share installation path [${CMAKE_INSTALL_PREFIX}/share]:
+#set (GMT_SHARE_PATH "share_path")
+
+# Set doc installation path [${CMAKE_INSTALL_PREFIX}/share/doc]:
+#set (GMT_DOC_PATH "doc_path")
+
+# Set manpage installation path [${CMAKE_INSTALL_PREFIX}/share/man]:
+#set (GMT_MAN_PATH "man_path")
+
+# Install documentation files from this external location instead of creating
+# new PDF and HTML documents from scratch [${GMT_SOURCE_DIR}/doc_release]:
+#set (GMT_INSTALL_EXTERNAL_DOC OFF)
+
+# Install manual pages from this external location instead of creating the
+# manpages from scratch [${GMT_SOURCE_DIR}/man_release]:
+#set (GMT_INSTALL_EXTERNAL_MAN OFF)
+
+# Directory in which to install the release sources per default
+# [${GMT_BINARY_DIR}/GMT-${GMT_PACKAGE_VERSION}-src]:
+#set (GMT_RELEASE_PREFIX "release-src-prefix")
+
+##
+## Section 4: Advanced tweaking
+##
 
 # Enable running examples/tests with "make check" (out-of-source)
 # Need to set either DO_EXAMPLES, DO_TESTS or both and uncomment
@@ -95,9 +121,8 @@
 # Number of parallel test jobs:
 #set (N_TEST_JOBS 4)
 
-# Directory in which to install the release sources per default
-# [${GMT_BINARY_DIR}/GMT-${GMT_PACKAGE_VERSION}-src]:
-#set (GMT_RELEASE_PREFIX "release-src-prefix")
+# Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel [Release]:
+#set (CMAKE_BUILD_TYPE Debug)
 
 # Extra debugging for developers:
 #add_definitions(-DDEBUG)
