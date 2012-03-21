@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-03-22	remko
+	* ConfigUserTemplate.cmake ConfigDefaults.cmake:
+				Make GMT_COMPAT the default. Switch licence restrictions off by default.
+	* lockfile.sh:		Removed. No longer needed.
+	* gmt_init.c:		Improved GMT_COMPAT warnings.
+
 2012-03-18	pwessel
 	* *.*:			Set GNU Lesser Public License version 3 or later as the official
 				license terms for GMT 5.
