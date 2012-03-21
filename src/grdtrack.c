@@ -102,7 +102,7 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<table> is an multicolumn ASCII file with (x, y) in the first two columns\n");
+	GMT_message (GMT, "\t<table> is an multicolumn ASCII file with (x, y) in the first two columns.\n");
 	GMT_message (GMT, "\t-G Set the name of a more 2-D binary data set to sample.\n");
 	GMT_message (GMT, "\t   If the file is a Sandwell/Smith Mercator grid (IMG format) instead,\n");
 	GMT_message (GMT, "\t   append comma-separated scale (0.1 or 1), mode, and optionally max latitude [%g].  Modes are\n", GMT_IMG_MAXLAT_80);
@@ -124,7 +124,7 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   Default samples the grid(s) at the input data points.\n");
 	GMT_message (GMT, "\t-D Save [resampled] input lines to a separate file <dfile>.  Requires -C.\n");
 	GMT_message (GMT, "\t   Output columns are lon, lat, dist, az, z1, z2, ...\n");
-	GMT_message (GMT, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain]\n");
+	GMT_message (GMT, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-T Set +/- dz for tracing.\n");

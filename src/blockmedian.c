@@ -47,9 +47,9 @@ GMT_LONG GMT_blockmedian_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-C Output center of block as location  [Default is (median x, median y), but see -Q].\n");
+	GMT_message (GMT, "\t-C Output center of block as location [Default is (median x, median y), but see -Q].\n");
 	GMT_message (GMT, "\t-E Extend output with L1 scale (s), low (l), and high (h) value per block, i.e.,\n");
-	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w]); see -W regarding w.\n");
+	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
 	GMT_message (GMT, "\t   Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w]).\n");
 	GMT_message (GMT, "\t-Q Quicker; get median z and x,y at that z [Default gets median x, median y, median z].\n");
 	GMT_message (GMT, "\t-T Set quantile (0 < q < 1) to report [Default is 0.5 which is the median of z].\n");

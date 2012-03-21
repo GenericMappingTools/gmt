@@ -149,7 +149,7 @@ GMT_LONG GMT_psrose_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   If no argument is given then labels will be disabled.  Give - to disable an individual label.\n");
 	GMT_message (GMT, "\t-M Specify arrow attributes (requires -C).\n");
 	GMT_vector_syntax (GMT, 15);
-	GMT_message (GMT, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
+	GMT_message (GMT, "\t   Default is %gp+gblack+p1p.\n", VECTOR_HEAD_LENGTH);
 	GMT_message (GMT, "\t-N Normalize rose plots for area, i.e., take sqrt(r) before plotting [FALSE].\n");
 	GMT_message (GMT, "\t   Only applicable if normalization has been specified with -S<radius>n.\n");
 	GMT_explain_options (GMT, "OP");

@@ -153,10 +153,10 @@ GMT_LONG GMT_splitxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\tGive xyz[dh]file name or read stdin.\n");
 	GMT_message (GMT, "\t-C Profile ends when change of heading exceeds <course_change>.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<table> is one or more data files (in ASCII, binary, netCDF) with 2, 3 or 5 columns\n");
+	GMT_message (GMT, "\t<table> is one or more data files (in ASCII, binary, netCDF) with 2, 3 or 5 columns.\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Only write profile if mean direction is w/in +/- <tolerance>\n");
-	GMT_message (GMT, "\t   of <azimuth>. [Default = All].\n");
+	GMT_message (GMT, "\t   of <azimuth> [Default = All].\n");
 	GMT_message (GMT, "\t-D Only write profile if length is at least <minimum_distance> [0].\n");
 	GMT_message (GMT, "\t-F Filter the data.  Give full widths of cosine arch filters for xy and z.\n");
 	GMT_message (GMT, "\t   Defaults are both widths = 0, giving no filtering.\n");
@@ -171,7 +171,7 @@ GMT_LONG GMT_splitxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-Q Indicate what output you want as one or more of xyzdh in any order;\n");
 	GMT_message (GMT, "\t   where x,y,z refer to input data locations and optional z-value(s),\n");
 	GMT_message (GMT, "\t   and d,h are the distance and heading along track.\n");
-	GMT_message (GMT, "\t   [Default is all fields, i.e. -Qxyzdh (or -Qxydh if -Z is set)]\n");
+	GMT_message (GMT, "\t   [Default is all fields, i.e. -Qxyzdh (or -Qxydh if -Z is set)].\n");
 	GMT_message (GMT, "\t-S d,h is supplied.  Input is 5 col x,y,z,d,h with d non-decreasing.\n");
 	GMT_message (GMT, "\t   [Default input is 3 col x,y,z only and computes d,h from the data].\n");
 	GMT_message (GMT, "\t-Z No z-values.  Input is 2 col x,y only.\n");

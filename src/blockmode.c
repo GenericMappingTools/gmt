@@ -47,9 +47,9 @@ GMT_LONG GMT_blockmode_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-C Output center of block and mode z-value  [Default is mode location (but see -Q)].\n");
+	GMT_message (GMT, "\t-C Output center of block and mode z-value [Default is mode location (but see -Q)].\n");
 	GMT_message (GMT, "\t-E Extend output with LMS scale (s), low (l), and high (h) value per block, i.e.,\n");
-	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w]); see -W regarding w.\n");
+	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
 	GMT_message (GMT, "\t-Q Quicker; get mode z and mean x,y [Default gets mode x, mode y, mode z].\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Set Weight options.\n");

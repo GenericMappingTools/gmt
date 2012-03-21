@@ -128,8 +128,8 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-E Compute Lambertian radiance appropriate to use with grdimage/grdview.\n");
 	GMT_message (GMT, "\t   -E<azim/elev> sets azimuth and elevation of light vector.\n");
 	GMT_message (GMT, "\t   -E<azim>/<elev>/<ambient>/<diffuse>/<specular>/<shine> sets azim, elev and\n");
-	GMT_message (GMT, "\t    other parameters that control the reflectance properties of the surface.\n");
-	GMT_message (GMT, "\t    Default values are: 0.55/0.6/0.4/10.\n");
+	GMT_message (GMT, "\t    other parameters that control the reflectance properties of the surface\n");
+	GMT_message (GMT, "\t    [Default values are: 0.55/0.6/0.4/10].\n");
 	GMT_message (GMT, "\t    Specify '=' to get the default value (e.g. -E60/30/=/0.5).\n");
 	GMT_message (GMT, "\t   Append s to use a simpler Lambertian algorithm (note that with this form\n");
 	GMT_message (GMT, "\t   you only have to provide the azimuth and elevation parameters).\n");

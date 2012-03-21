@@ -163,7 +163,7 @@ GMT_LONG GMT_gmtselect_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_GSHHS_syntax (GMT, 'A', "Place limits on coastline features from the GSHHS data base (ignored  unless -N is set).");
 	GMT_dist_syntax (GMT, 'C', "Pass locations that are within <dist> of any point in the ASCII <ptfile>.");
 	GMT_message (GMT, "\t   Give distance as 0 if 3rd column of <ptfile> has individual distances.\n");
-	GMT_message (GMT, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s]\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+	GMT_message (GMT, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t-D Choose one of the following resolutions: (Ignored unless -N is set).\n");
 	GMT_message (GMT, "\t   f - full resolution (may be very slow for large regions).\n");
 	GMT_message (GMT, "\t   h - high resolution (may be slow for large regions).\n");

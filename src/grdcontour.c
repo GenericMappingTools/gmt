@@ -208,9 +208,9 @@ GMT_LONG GMT_grdcontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_pen_syntax (GMT, 'W', "Set pen attributes. Append a<pen> for annotated or (default) c<pen> for regular contours");
 	GMT_message (GMT, "\t   The default pen settings are\n");
 	P = GMT->current.setting.map_default_pen;
-	GMT_message (GMT, "\t   Contour pen:  %s\n", GMT_putpen (GMT, P));
+	GMT_message (GMT, "\t   Contour pen:  %s.\n", GMT_putpen (GMT, P));
 	P.width *= 3.0;
-	GMT_message (GMT, "\t   Annotate pen: %s\n", GMT_putpen (GMT, P));
+	GMT_message (GMT, "\t   Annotate pen: %s.\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t   Prepend + to draw colored contours based on the cpt file.\n");
 	GMT_message (GMT, "\t   Prepend - to color contours and annotations based on the cpt file.\n");
 	GMT_explain_options (GMT, "X");

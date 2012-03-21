@@ -319,9 +319,9 @@ GMT_LONG GMT_pshistogram_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-Jx|X for linear projection.  Scale in %s/units (or width in %s)\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+	GMT_message (GMT, "\t-Jx|X for linear projection.  Scale in %s/units (or width in %s).\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t    Use / to specify separate x/y scaling.\n");
-	GMT_message (GMT, "\t    If -JX is used then give axes lengths in %s rather than scales\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+	GMT_message (GMT, "\t    If -JX is used then give axes lengths in %s rather than scales.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t-W Set the bin width.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<b");

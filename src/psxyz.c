@@ -177,11 +177,11 @@ GMT_LONG GMT_psxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
 	GMT_message (GMT, "\t     or in $GMT_SHAREDIR (searched in that order).\n");
 	GMT_list_custom_symbols (GMT);
-	GMT_message (GMT, "\t   Letter: append /<string> after symbol size, and optionally %%<font>\n");
+	GMT_message (GMT, "\t   Letter: append /<string> after symbol size, and optionally %%<font>.\n");
 	GMT_message (GMT, "\t   Mathangle: start/stop directions of math angle must be in columns 4-5.\n");
 	GMT_message (GMT, "\t     If -SM rather than -Sm is used, we draw straight angle symbol if 90 degrees.\n");
 	GMT_vector_syntax (GMT, 0);
-	GMT_message (GMT, "\t   Quoted line (z must be constant): Give [d|f|n|l|x]<info>[:<labelinfo>]\n");
+	GMT_message (GMT, "\t   Quoted line (z must be constant): Give [d|f|n|l|x]<info>[:<labelinfo>].\n");
 	GMT_message (GMT, "\t     <code><info> controls placement of labels along lines.  Select\n");
 	GMT_cont_syntax (GMT, 7, 1);
 	GMT_message (GMT, "\t     <labelinfo> controls the label attributes.  Choose from\n");

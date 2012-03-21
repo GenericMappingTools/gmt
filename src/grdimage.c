@@ -133,8 +133,8 @@ GMT_LONG GMT_grdimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-E Set dpi for the projected grid which must be constructed [100]\n");
 	GMT_message (GMT, "\t   if -Jx or -Jm is not selected [Default gives same size as input grid].\n");
 	GMT_message (GMT, "\t   Give i to do the interpolation in PostScript at device resolution.\n");
-	GMT_rgb_syntax (GMT, 'G', "Set transparency color for images that otherwise would result in 1-bit images\n\t  ");
-	GMT_message (GMT, "\t-I Use illumination. Append name of intensity grid file\n");
+	GMT_rgb_syntax (GMT, 'G', "Set transparency color for images that otherwise would result in 1-bit images.\n\t  ");
+	GMT_message (GMT, "\t-I Use illumination. Append name of intensity grid file.\n");
 	GMT_explain_options (GMT, "K");
 	GMT_message (GMT, "\t-M Force monochrome image.\n");
 	GMT_message (GMT, "\t-N Do not clip image at the map boundary.\n");

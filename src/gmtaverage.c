@@ -80,7 +80,7 @@ GMT_LONG GMT_gmtaverage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-C Output center of block as location [Default is mean|median|mode of x and y, but see -Q].\n");
 	GMT_message (GMT, "\t-E Extend output with scale (s), low (l), and high (h) value per block, i.e.,\n");
-	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w]); see -W regarding w.\n");
+	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
 	GMT_message (GMT, "\t   Here, scale is standard deviation, L1 scale, or LMS scale depending on -T.\n");
 	GMT_message (GMT, "\t   For -Te|<q>: Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w])\n");
 	GMT_message (GMT, "\t-Q Quicker; get median|mode z and x, y at that z [Default gets median|mode of x, y, and z.].\n");
