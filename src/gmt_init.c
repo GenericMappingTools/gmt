@@ -70,10 +70,12 @@
 
 #define GMT_more_than_once(C,active) (GMT_check_condition (C, active, "Warning: Option -%c given more than once\n", option))
 
+#define GMT_COMPAT_INFO "Please see " GMT_TRAC_WIKI "Changes for more information.\n"
+
 #ifdef GMT_COMPAT
-#define GMT_COMPAT_WARN GMT_report (C, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated.\n", GMT_keywords[case_val])
-#define GMT_COMPAT_CHANGE(new) GMT_report (C, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated. Use %s instead.\n", GMT_keywords[case_val], new)
-#define GMT_COMPAT_OPT(new) if (strchr (list, new)) { GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n", option, new); option = new; }
+#define GMT_COMPAT_WARN GMT_report (C, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val])
+#define GMT_COMPAT_CHANGE(new) GMT_report (C, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keywords[case_val], new)
+#define GMT_COMPAT_OPT(new) if (strchr (list, new)) { GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new); option = new; }
 #endif
 
 EXTERN_MSC GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
@@ -3064,15 +3066,15 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				C->current.setting.color_model = GMT_HSV + GMT_COLORINT;
 #ifdef GMT_COMPAT
 			else if (!strcmp (lower_value, "+rgb")) {
-				GMT_report (C, GMT_MSG_COMPAT, "warning: COLOR_MODEL = %s is deprecated, use COLOR_MODEL = %s instead\n", value, &lower_value[1]);
+				GMT_report (C, GMT_MSG_COMPAT, "warning: COLOR_MODEL = %s is deprecated, use COLOR_MODEL = %s instead\n" GMT_COMPAT_INFO, value, &lower_value[1]);
 				C->current.setting.color_model = GMT_RGB + GMT_COLORINT;
 			}
 			else if (!strcmp (lower_value, "+cmyk")) {
-				GMT_report (C, GMT_MSG_COMPAT, "warning: COLOR_MODEL = %s is deprecated, use COLOR_MODEL = %s instead\n", value, &lower_value[1]);
+				GMT_report (C, GMT_MSG_COMPAT, "warning: COLOR_MODEL = %s is deprecated, use COLOR_MODEL = %s instead\n" GMT_COMPAT_INFO, value, &lower_value[1]);
 				C->current.setting.color_model = GMT_CMYK + GMT_COLORINT;
 			}
 			else if (!strcmp (lower_value, "+hsv")) {
-				GMT_report (C, GMT_MSG_COMPAT, "warning: COLOR_MODEL = %s is deprecated, use COLOR_MODEL = %s instead\n", value, &lower_value[1]);
+				GMT_report (C, GMT_MSG_COMPAT, "warning: COLOR_MODEL = %s is deprecated, use COLOR_MODEL = %s instead\n" GMT_COMPAT_INFO, value, &lower_value[1]);
 				C->current.setting.color_model = GMT_HSV + GMT_COLORINT;
 			}
 #endif
@@ -3612,7 +3614,11 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 
 		default:
 			error = TRUE;
-			GMT_report (C, GMT_MSG_FATAL, "Syntax error in GMT_setparameter: Unrecognized keyword %s\n", keyword);
+#ifdef GMT_COMPAT
+			GMT_report (C, GMT_MSG_FATAL, "Syntax error: Unrecognized keyword %s.\n", keyword);
+#else
+			GMT_report (C, GMT_MSG_FATAL, "Syntax error: Unrecognized keyword %s. You may have been using a deprecated GMT3 or GMT4 keyword.\nChange keyword or recompile with GMT_COMPAT=TRUE. " GMT_COMPAT_INFO, keyword);
+#endif
 			break;
 	}
 
@@ -7474,7 +7480,7 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 #ifdef GMT_COMPAT
 		case 'Q':
 		case 'S':
-			GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -n instead.\n", option);
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -n instead.\n" GMT_COMPAT_INFO, option);
 			error += backwards_SQ_parsing (C, option, item);
 			break;
 #endif
@@ -7517,7 +7523,7 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 
 #ifdef GMT_COMPAT
 		case 'Z':	/* Backwards compatibility */
-			GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -Z[<zlevel>] is deprecated. Use -p<azim>/<elev>[/<zlevel>] instead.\n");
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -Z[<zlevel>] is deprecated. Use -p<azim>/<elev>[/<zlevel>] instead.\n" GMT_COMPAT_INFO);
 			if (item && item[0]) C->current.proj.z_level = atof (item);
 			break;
 #endif

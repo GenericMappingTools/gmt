@@ -39,7 +39,7 @@ extern "C" {
 #ifdef DEBUG
 #define GMT_MSG_COMPAT 1	/* Set high rank warning level for compatibility for debuggers */
 #else
-#define GMT_MSG_COMPAT 2	/* Set lower rank warning level otherwise */
+#define GMT_MSG_COMPAT 1	/* Set lower rank warning level otherwise */
 #endif
 
 /* Declaration modifiers for DLL support (MSC et al) */
