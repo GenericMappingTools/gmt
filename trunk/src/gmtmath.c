@@ -357,7 +357,7 @@ GMT_LONG GMT_gmtmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 		"\t-T Set domain from t_min to t_max in steps of t_inc.\n"
 		"\t   Append + to t_inc to indicate the number of points instead.\n"
 		"\t   If a filename is given instead we read t coordinates from first column.\n"
-		"\t   If no domain is given we assume no time, i.e. only data columns are present.\n"
+		"\t   If no domain is given we assume no time, i.e., only data columns are present.\n"
 		"\t   This choice also implies -Ca.\n");
 	GMT_explain_options (GMT, "VC0D0fghios.");
 

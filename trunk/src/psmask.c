@@ -370,7 +370,7 @@ GMT_LONG GMT_psmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   This means nodes inside circles of <radius> centered on the input\n");
 	GMT_message (GMT, "\t   data points are considered to be reliable estimates of the surface.\n");
 	GMT_message (GMT, "\t   Default is -S0, i.e., only the nearest node is considered reliable.\n");
-	GMT_message (GMT, "\t-T Paint tiles.  [Default will trace data outline].\n");
+	GMT_message (GMT, "\t-T Paint tiles [Default will trace data outline].\n");
 	GMT_message (GMT, "\t   If set you must also specify a color/fill with -G.\n");
 	GMT_explain_options (GMT, "UVXC2D0chipFt:.");
 	

@@ -420,7 +420,7 @@ GMT_LONG GMT_trend2d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t<table> is one or more data files (in ASCII, binary, netCDF) with (x,y,z[,w]) data.\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_message (GMT, "\t-C Truncate eigenvalue spectrum so matrix has <condition_#>.  [Default = 1.0e06].\n");
+	GMT_message (GMT, "\t-C Truncate eigenvalue spectrum so matrix has <condition_#> [Default = 1.0e06].\n");
 	GMT_message (GMT, "\t-I Iteratively Increase # model parameters, to a max of <n_model> so long as the\n");
 	GMT_message (GMT, "\t   reduction in variance is significant at the <confidence> level.\n");
 	GMT_message (GMT, "\t   Give -I without a number to default to 0.51 confidence level.\n");

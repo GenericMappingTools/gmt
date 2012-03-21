@@ -50,10 +50,10 @@ GMT_LONG GMT_blockmean_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-C Output center of block and mean z-value.  [Default outputs the\n");
+	GMT_message (GMT, "\t-C Output center of block and mean z-value [Default outputs the\n");
 	GMT_message (GMT, "\t   (mean x, mean y) location].\n");
 	GMT_message (GMT, "\t-E Extend output with st.dev (s), low (l), and high (h) value per block,\n");
-	GMT_message (GMT, "\t   i.e., output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w]);\n");
+	GMT_message (GMT, "\t   i.e., output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])];\n");
 	GMT_message (GMT, "\t   see -W regarding the weight w.\n");
 	GMT_message (GMT, "\t-S Set the quantity to be reported per block; choose among:\n");
 	GMT_message (GMT, "\t   -Sm report mean values [Default].\n");

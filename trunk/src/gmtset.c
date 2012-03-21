@@ -64,7 +64,7 @@ GMT_LONG GMT_gmtset_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "gmtset %s [API] - Change individual GMT default parameters\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmtset [-C | -D[s|u] | -G<defaultsfile>] [-[" GMT_SHORTHAND_OPTIONS "]<value>] PARAMETER1 [=] value1 PARAMETER2 [=] value2 PARAMETER3 [=] value3 ...\n");
-	GMT_message (GMT, "\n\tFor available PARAMETERS, see gmt.conf man page\n");
+	GMT_message (GMT, "\n\tFor available PARAMETERS, see gmt.conf man page.\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -78,8 +78,8 @@ GMT_LONG GMT_gmtset_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   [Default looks for file in current directory.  If not found,\n");
 	GMT_message (GMT, "\t   it looks in the home directory, if not found it uses GMT defaults.]\n");
 	GMT_message (GMT, "\n\tThe modified defaults are written to the current directory as gmt.conf.\n");
-	GMT_message (GMT, "\n\t-[" GMT_SHORTHAND_OPTIONS "]<value> (any of these options)\n");
-	GMT_message (GMT, "\t   Set the expansion of any of these shorthand options\n");
+	GMT_message (GMT, "\n\t-[" GMT_SHORTHAND_OPTIONS "]<value> (any of these options).\n");
+	GMT_message (GMT, "\t   Set the expansion of any of these shorthand options.\n");
 	
 	return (EXIT_FAILURE);
 }

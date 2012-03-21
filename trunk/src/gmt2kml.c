@@ -189,7 +189,7 @@ GMT_LONG GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-D File with HTML snippets to use for data description [none].\n");
 	GMT_message (GMT, "\t-E Extend feature down to the ground [no extrusion].\n");
 	GMT_message (GMT, "\t-F Feature type; choose from (e)vent, (s)symbol, (t)imespan, (l)ine, or (p)olygon [s].\n");
-	GMT_message (GMT, "\t   All features expect lon, lat in the first two columns. \n");
+	GMT_message (GMT, "\t   All features expect lon, lat in the first two columns.\n");
 	GMT_message (GMT, "\t   Value or altitude is given in the third column (see -A and -C).\n");
 	GMT_message (GMT, "\t   Event requires a timestamp in the next column.\n");
 	GMT_message (GMT, "\t   Timespan requires begin and end timestamps in the next two columns\n");

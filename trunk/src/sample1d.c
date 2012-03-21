@@ -107,7 +107,7 @@ GMT_LONG GMT_sample1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   a Akima spline interpolation.\n");
 	GMT_message (GMT, "\t   c Cubic spline interpolation.\n");
 	GMT_message (GMT, "\t   n No interpolation (nearest point).\n");
-	GMT_message (GMT, "\t   [Default is -F%c]\n", type[GMT->current.setting.interpolant]);
+	GMT_message (GMT, "\t   [Default is -F%c].\n", type[GMT->current.setting.interpolant]);
 	GMT_message (GMT, "\t-I Set equidistant grid interval <inc> [t1 - t0].\n");
 	GMT_message (GMT, "\t   Append %s to indicate that the first two columns contain\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_message (GMT, "\t   longitude, latitude and you wish to resample this path using spherical\n");
