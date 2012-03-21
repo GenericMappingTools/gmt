@@ -55,6 +55,8 @@ set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MIN
 #set (GSHHS_VERSION "2.2.0")
 #set (MANDATE "")
 
+# The GMT wiki location
+set (GMT_TRAC_WIKI "http://gmtrac.soest.hawaii.edu/projects/gmt/wiki/")
 
 # Use SI units per default
 if (NOT UNITS)
@@ -71,12 +73,16 @@ if (NOT DEFINED GMT_INSTALL_MONOLITHIC)
 	set (GMT_INSTALL_MONOLITHIC ON)
 endif (NOT DEFINED GMT_INSTALL_MONOLITHIC)
 
-# Enforce GPL conformity per default. This disables routines that cannot
-# be redistributed under the terms of the GPL such as Shewchuk's
-# triangulation.
+# By defailt, do not enforce GPL conformity per default. This enables routines that cannot
+# normally be redistributed under the terms of the GPL such as Shewchuk's triangulation.
 if (NOT DEFINED LICENSE_RESTRICTED)
-	set (LICENSE_RESTRICTED GPL)
+	set (LICENSE_RESTRICTED off)
 endif (NOT DEFINED LICENSE_RESTRICTED)
+
+# Use compatibility mode by default
+if (NOT DEFINED GMT_COMPAT)
+	set (GMT_COMPAT true)
+endif (NOT DEFINED GMT_COMPAT)
 
 # Default location of release documentation. If the directory exists in the
 # source tree, the files will be copied to GMT_DOC_PATH instead of creating

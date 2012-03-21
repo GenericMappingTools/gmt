@@ -27,10 +27,10 @@
 # booleans.
 #
 
-# Enforce GPL or LGPL conformity. Use this to enable routines that cannot be
+# Enforce GPL or LGPL conformity. Use this to disable routines that cannot be
 # redistributed under the terms of the GPL or LGPL such as Shewchuk's
-# triangulation (valid values are GPL, LGPL and off) [GPL]:
-#set (LICENSE_RESTRICTED off)
+# triangulation (valid values are GPL, LGPL and off) [off]:
+#set (LICENSE_RESTRICTED GPL)
 
 # Installation path [auto]:
 #set (CMAKE_INSTALL_PREFIX "prefix_path")
@@ -71,8 +71,8 @@
 # Set location of PCRE (can be root directory, path to header file or path to pcre-config) [auto]:
 #set (PCRE_ROOT "pcre_install_prefix")
 
-# Enable compatibility mode [FALSE]:
-#set (GMT_COMPAT TRUE)
+# Set compatibility mode, which is normally enabled, to disable set to FALSE [TRUE]:
+#set (GMT_COMPAT FALSE)
 
 # Enable file locking [FALSE]:
 #set (FLOCK TRUE)
