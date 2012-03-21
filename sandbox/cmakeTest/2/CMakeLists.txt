@@ -1,5 +1,9 @@
 make_test_filename (_filename testfile)
 
+add_executable (dummy_all dummy.c)
+
+add_executable (dummy EXCLUDE_FROM_ALL dummy.c)
+
 add_custom_command(OUTPUT ${_filename}
   COMMAND date "+%F %T" > ${_filename}
   VERBATIM)

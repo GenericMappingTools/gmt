@@ -78,7 +78,7 @@ add_custom_command(OUTPUT combinedFileTarget
 # make combinedFileTargetList, depend on both files+targets
 add_custom_command(OUTPUT combinedFileTargetList
   COMMAND cat ${allFiles} > combinedFileTargetList
-  DEPENDS aTarget ${allFiles}
+  DEPENDS aTarget dummy dummy_all ${allFiles}
   VERBATIM)
 
 # triggers for the above
