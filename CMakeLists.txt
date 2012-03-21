@@ -115,6 +115,7 @@ endif (SVN AND HAVE_SVN_VERSION)
 
 # Configuration done
 message(
+	"*  Options:\n"
 	"*  Found GSHHS database : ${GSHHS_PATH}\n"
 	"*  NetCDF library       : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir   : ${NETCDF_INCLUDE_DIR}\n"
@@ -123,7 +124,10 @@ message(
 	"*  Regex support        : ${GMT_CONFIG_REGEX_MESSAGE}\n"
 	"*  Triangulation method : ${GMT_TRIANGULATE}\n"
 	"*  File locking         : ${FLOCK}\n"
-	"*  Build Matlab API     : ${GMT_MATLAB}\n*\n"
+	"*  Compatibility mode   : ${GMT_COMPAT}\n"
+	"*  Build Matlab API     : ${GMT_MATLAB}\n"
+	"*\n"
+	"*  Locations:\n"
 	"*  Installing GMT in    : ${CMAKE_INSTALL_PREFIX}\n"
 	"*  GMT_SHARE_PATH       : ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}\n"
 	"*  GMT_DOC_PATH         : ${CMAKE_INSTALL_PREFIX}/${GMT_DOC_PATH}\n"
