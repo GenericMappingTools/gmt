@@ -47,7 +47,7 @@ Paint the clip polygons (or tiles) with a selected fill [Default is no fill].
 #include "explain_-K.txt"
 .TP
 OPT(N)
-Invert the sense of the test, i.e. clip regions where there is data coverage.
+Invert the sense of the test, i.e., clip regions where there is data coverage.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP

@@ -536,7 +536,7 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-C Clip polygons to the given region box (requires -R), yielding a closed polygon.\n");
-	GMT_message (GMT, "\t   For truncation instead (yielding open polygons, i.e. lines), see -T.\n");
+	GMT_message (GMT, "\t   For truncation instead (yielding open polygons, i.e., lines), see -T.\n");
 	GMT_message (GMT, "\t-D Look for duplicates or near-duplicates in the data, or compare against <file> (if given).\n");
 	GMT_message (GMT, "\t   Near-duplicates have a min point separation less than <dmax> [0] and closeness\n");
 	GMT_message (GMT, "\t   (mean separation/length ratio) less than <cmax> [0.01].\n");

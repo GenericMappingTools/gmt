@@ -30,7 +30,7 @@ Modify the sampling interval along flowlines.  Default [0.5] gives approximately
 each grid box.  Smaller factors gives higher resolutions at the expense of longer processing time.
 .TP
 OPT(N)IT(upper_age)
-Set the upper age to assign seamounts whose crustal age is unknown (i.e. NaN) [no upper age].
+Set the upper age to assign seamounts whose crustal age is unknown (i.e., NaN) [no upper age].
 .TP
 OPT(S)
 Normalize the resulting CVA grid to percentages of the CVA maximum.

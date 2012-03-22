@@ -45,7 +45,7 @@ do some scripting more easily than otherwise. The functions made available are:
 .B gmt_init_tmpdir
 Creates a temporary directory in BD(/tmp) or (when defined) in the directory specified by the
 environment variable BD(TMPDIR). The name of the temporary directory is returned as environment
-variable BD(GMT_TMPDIR). This function also causes BD(GMT) to run in `isolation mode', i.e. all
+variable BD(GMT_TMPDIR). This function also causes BD(GMT) to run in `isolation mode', i.e., all
 temporary files will be created in BD(GMT_TMPDIR) and the BD(gmt.conf) file will not be adjusted.
 .TP
 .B gmt_remove_tmpdir

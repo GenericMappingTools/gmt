@@ -253,7 +253,7 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-A Suppress drawing line segments as great circle arcs, i.e. draw\n");
+	GMT_message (GMT, "\t-A Suppress drawing line segments as great circle arcs, i.e., draw\n");
 	GMT_message (GMT, "\t   straight lines unless m or p is appended to first follow meridian\n");
 	GMT_message (GMT, "\t   then parallel, or vice versa.\n");
 	GMT_explain_options (GMT, "b");

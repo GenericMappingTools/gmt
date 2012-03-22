@@ -178,7 +178,7 @@ GMT_LONG GMT_gmtselect_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   Optionally, use -Lp to exclude points projecting beyond a line's endpoints.\n");
 	GMT_message (GMT, "\t-F Pass locations that are inside the polygons in the ASCII <polygon> file.\n");
-	GMT_message (GMT, "\t-I Reverse the tests, i.e. pass locations outside the region.\n");
+	GMT_message (GMT, "\t-I Reverse the tests, i.e., pass locations outside the region.\n");
 	GMT_message (GMT, "\t   Supply a combination of cflrz where each flag means:\n");
 	GMT_message (GMT, "\t   c will pass locations beyond the minimum distance to the points in -C.\n");
 	GMT_message (GMT, "\t   f will pass locations outside the polygons in -F.\n");

@@ -69,7 +69,7 @@ OPT(T)IT(tension_factor)[BD(i)|BD(b)]
 Tension factor[s].  These must be between 0 and 1.  Tension may be used in the interior solution
 (above equation, where it suppresses spurious oscillations) and in the boundary conditions (where
 it tends to flatten the solution approaching the edges).  Using zero for both values results in
-a minimum curvature surface with free edges, i.e. a natural bicubic spline.
+a minimum curvature surface with free edges, i.e., a natural bicubic spline.
 Use OPT(T)IT(tension_factor)BD(i) to set interior tension, and OPT(T)IT(tension_factor)BD(b)
 to set boundary tension.  If you do not append BD(i) or BD(b), both will be set to the same value.
 [Default = 0 for both gives minimum curvature solution.]

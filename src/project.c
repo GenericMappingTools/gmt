@@ -360,7 +360,7 @@ GMT_LONG GMT_project_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   r,s is the projected position of x,y (taking q = 0) in the (x,y) coordinate system.\n");
 	GMT_message (GMT, "\t   p,q may be scaled from degrees into kilometers by the -Q option.  See -L, -Q, -W.\n");
 	GMT_message (GMT, "\t   Note z refers to all input data columns beyond the required x,y\n");
-	GMT_message (GMT, "\t   [Default is all fields, i.e. -Fxyzpqrs].\n");
+	GMT_message (GMT, "\t   [Default is all fields, i.e., -Fxyzpqrs].\n");
 	GMT_message (GMT, "\t   If -G is set, -F is not available and output defaults to rsp.\n");
 	GMT_message (GMT, "\t-G Generate (r,s,p) points along profile every <dist> units. (No input data used.)\n");
 	GMT_message (GMT, "\t   If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length.\n");
