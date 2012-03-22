@@ -708,13 +708,13 @@ number of arguments.  However, from FORTRAN only a single text argument may be p
 BD(long PSL_setcommand) (ARG(struct PSL_CTRL,*P), ARG(char,*text))
 .RS 5
 Writes a raw IT(PostScript) command to the IT(PostScript) output file,
-e.g. "1 setlinejoin\n".
+e.g., "1 setlinejoin\n".
 .RE
 .br
 .sp
 BD(long PSL_comment) (ARG(struct PSL_CTRL,*P), ARG(char,*text))
 .RS 5
-Writes a comment (IT(text)) to the IT(PostScript) output file, e.g. "Start of graph 2\n".
+Writes a comment (IT(text)) to the IT(PostScript) output file, e.g., "Start of graph 2\n".
 The comment are prefixed with with %% .
 .RE
 .SH AUTHORS

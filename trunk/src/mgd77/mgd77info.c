@@ -93,7 +93,7 @@ GMT_LONG GMT_mgd77info_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD7
 	GMT_message (GMT, "\t   Append e for counting just the of non-NaN values for each extra field.\n");
 	GMT_message (GMT, "\t-M Print header items (and MGD77+ history).  Append type of presentation:\n");
 	GMT_message (GMT, "\t     f: Print header items individually, one per line.  Append name of a particular\n");
-	GMT_message (GMT, "\t        item (e.g. Port_of_Departure), all [Default], or - to see a list of items.\n");
+	GMT_message (GMT, "\t        item (e.g., Port_of_Departure), all [Default], or - to see a list of items.\n");
 	GMT_message (GMT, "\t        You can also use the number of the item.\n");
 	GMT_message (GMT, "\t     r: Display raw original MGD77 header records.\n");
 	GMT_message (GMT, "\t     e: Display the MGD77+ file's E77 status.\n");

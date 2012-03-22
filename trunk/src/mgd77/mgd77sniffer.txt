@@ -205,14 +205,14 @@ Specify gradient type for along-track excessive slope checking.
 .br
 OPT(Sd)
 Calculate change in z values along track (dz). Output is given in geophysical units,
-e.g. mGal.
+e.g., mGal.
 .br
 OPT(Ss)
 Calculate spatial gradients (dz/ds). Output is given in geophysical units per km along the
-survey track, e.g. mGal/km.
+survey track, e.g., mGal/km.
 .br
 OPT(St) Calculate time gradients (dz/dt)  [default]. Output is given in geophysical units
-per second along the survey track, e.g. mGal/sec.
+per second along the survey track, e.g., mGal/sec.
 .TP
 OPT(T)IT(gap)
 Adjusts mgd77sniffer gap handling. By default, data gaps greater than 5 km are skipped. Set to
