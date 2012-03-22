@@ -154,14 +154,14 @@ set (GMT_LIB_SRCS gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c
 set (GMT_LIB_PS_SRCS gmt_init.c gmt_map.c gmt_plot.c gmtapi_util.c
 	${GMT_PROGSPS_SRCS})
 
-set (GMT_LIB_HDRS gmt_datums.h gmt_prognames.h gmt_progcases.h
-	gmt_colornames.h gmt_color_rgb.h gmt_ellipsoids.h gmt_grdkeys.h
-	gmt_keycases.h gmt_keywords.h gmtapi_errno.h gmtapi_errstr.h
-	gmt_dimensions.h gmtmath.h gmtmath_op.h gmtmath_explain.h grdmath.h
-	grdmath_op.h grdmath_explain.h gmt_progpurpose.h gmt_config.h)
+#set (GMT_LIB_HDRS gmt_datums.h gmt_prognames.h gmt_progcases.h
+#	gmt_colornames.h gmt_color_rgb.h gmt_ellipsoids.h gmt_grdkeys.h
+#	gmt_keycases.h gmt_keywords.h gmtapi_errno.h gmtapi_errstr.h
+#	gmt_dimensions.h gmtmath.h gmtmath_op.h gmtmath_explain.h grdmath.h
+#	grdmath_op.h grdmath_explain.h gmt_progpurpose.h gmt_config.h)
 
 # header target
-add_custom_target (gmt_headers DEPENDS ${GMT_LIB_HDRS})
+#add_custom_target (gmt_headers DEPENDS ${GMT_LIB_HDRS})
 
 # lib targets
 set (GMT_LIBS gmtlib pslib)
@@ -272,7 +272,7 @@ endforeach (_dir)
 
 # libgmt
 add_library (gmtlib
-	${GMT_LIB_HDRS}
+	${GMT_GEN_HDRS}
 	${GMT_LIB_SRCS}
 	${GMT_LIB_PS_SRCS}
 	${GMT_SUPPL_LIB_SRCS})
@@ -282,6 +282,9 @@ target_link_libraries (gmtlib
 	${GMT_OPTIONAL_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 	pslib)
+
+# create gmt headers first
+add_dependencies (gmtlib _gmt_headers)
 
 if (HAVE_M_LIBRARY)
 	# link the math library

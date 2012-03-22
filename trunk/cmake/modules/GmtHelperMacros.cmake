@@ -21,6 +21,7 @@
 # tag_from_current_source_dir (TAG [PREFIX])
 # add_depend_to_target (TARGET DEPEND [ DEPEND [ DEPEND ... ]])
 # add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
+# add_file_to_cached_list (LIST [ FILE [ FILE ... ]])
 # gmt_set_api_header (API_HEADER FUNCTIONS)
 # get_subdir_var (VARIABLE VAR_NAME DIR [ DIR ... ])
 # get_subdir_var_files (VARIABLE VAR_NAME DIR [ DIR ... ])
@@ -39,7 +40,6 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		endif (_in_subtree)
 	endmacro (TAG_FROM_CURRENT_SOURCE_DIR)
 
-
 	# add_depend_to_target (TARGET DEPEND [ DEPEND [ DEPEND ... ]])
 	# example: add_depend_to_target (main_target custom_target)
 	macro (ADD_DEPEND_TO_TARGET _TARGET)
@@ -49,7 +49,6 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		endif(NOT TARGET ${_TARGET})
 		add_dependencies(${_TARGET} ${ARGN})
 	endmacro (ADD_DEPEND_TO_TARGET)
-
 
 	# add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
 	# example: add_depend_to_spotless (custom_target)
@@ -62,6 +61,29 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		add_dependencies(spotless ${ARGV})
 	endmacro (ADD_DEPEND_TO_SPOTLESS)
 
+	# add_file_to_cached_list (LIST [ FILE [ FILE ... ]])
+	# if FILE is omitted then the list is cleared
+	# if FILE is not absolute then it is assumed to be in CMAKE_CURRENT_SOURCE_DIR
+	# example: add_file_to_cached_list (list file)
+	macro (ADD_FILE_TO_CACHED_LIST _LIST)
+		set (_files ${ARGN})
+		if (_files)
+			set (_files_abs)
+			foreach (_file ${_files})
+				if (_file MATCHES "^[^/]")
+					# make absolute path
+					file(RELATIVE_PATH _file / ${CMAKE_CURRENT_SOURCE_DIR}/${_file})
+				endif ()
+				list(APPEND _files_abs /${_file})
+			endforeach (_file ${_files})
+			# append to list
+			set (${_LIST} ${${_LIST}} ${_files_abs}
+				CACHE INTERNAL "Global list of files")
+		else (_theList)
+			# clear list
+			set (${_LIST} "" CACHE INTERNAL "Global list of files cleared")
+		endif (_files)
+	endmacro (ADD_FILE_TO_CACHED_LIST)
 
 	# gmt_set_api_header (API_HEADER FUNCTIONS)
 	# example: gmt_set_api_header(GMT_MECA_API_H "${GMT_MECA_PROGS_SRCS}")
