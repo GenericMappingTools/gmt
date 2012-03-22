@@ -149,9 +149,9 @@ int main (int argc, char **argv)
 		fprintf (stderr, "\t   Use -Ld if values are given in terms of coefficient degrees [Default is km]\n");
 		fprintf (stderr, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
 		fprintf (stderr, "\t      coefficients outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
-		fprintf (stderr, "\t      Replace wavelength by - to skip, e.g.  -L-/-/500/100 is a low-pass filter.\n");
+		fprintf (stderr, "\t      Replace wavelength by - to skip, e.g., -L-/-/500/100 is a low-pass filter.\n");
 		fprintf (stderr, "\t   b) Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5.\n");
-		fprintf (stderr, "\t      Replace wavelength by - to skip, e.g.  -L300/- is a high-pass Gaussian filter.\n");
+		fprintf (stderr, "\t      Replace wavelength by - to skip, e.g., -L300/- is a high-pass Gaussian filter.\n");
 		fprintf (stderr, "\t-N Normalization used for coefficients.  Choose among\n");
 		fprintf (stderr, "\t   m: Mathematical normalization - inner products summed over surface equal 1 [Default]\n");
 		fprintf (stderr, "\t   g: Geodesy normalization - inner products summed over surface equal 4pi\n");

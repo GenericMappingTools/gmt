@@ -948,11 +948,11 @@ GMT_LONG GMT_grdfft_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:\n");
 	GMT_message (GMT, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
 	GMT_message (GMT, "\t      freq outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
-	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g.  -F-/-/500/100 is a low-pass filter.\n");
+	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g., -F-/-/500/100 is a low-pass filter.\n");
 	GMT_message (GMT, "\t   b) Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5.\n");
-	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g.  -F300/- is a high-pass Gaussian filter.\n");
+	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g., -F300/- is a high-pass Gaussian filter.\n");
 	GMT_message (GMT, "\t   c) Butterworth band-pass: Append two wavelengths and order <lo>/<hi>/<order> where filter amplitudes = 0.5.\n");
-	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g.  -F300/-/2 is a high-pass 2nd-order Butterworth filter.\n");
+	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g., -F300/-/2 is a high-pass 2nd-order Butterworth filter.\n");
 	GMT_message (GMT, "\t-I Integrate, i.e., divide by kr [ * scale].  Use -Ig to get m from mGal].\n");
 	GMT_message (GMT, "\t-L Leave trend alone.  Do not remove least squares plane from data [Default removes plane].\n");
 	GMT_message (GMT, "\t-N Choose or inquire about suitable grid dimensions for FFT.\n");

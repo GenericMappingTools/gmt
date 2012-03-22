@@ -61,7 +61,7 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\tScan MGD77 files for errors using point-by-point sanity checking,\n");
 	GMT_message (GMT, "\t\talong-track detection of excessive slopes and comparison of cruise\n");
 	GMT_message (GMT, "\t\tdata with global bathymetry and gravity grids.");
-	GMT_message (GMT, "\twhere <cruises> is one or more MGD77 legnames, e.g. 08010001 etc.\n");
+	GMT_message (GMT, "\twhere <cruises> is one or more MGD77 legnames, e.g., 08010001 etc.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Apply scale factor and DC adjustment to specified data field. Allows adjustment of\n");
 	GMT_message (GMT, "\t   cruise data prior to along-track analysis. CAUTION: data must be thoroughly examined\n");
@@ -156,7 +156,7 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-g: Img files must be of Sandwell/Smith signed two-byte integer (i2) type with no header.\n");
 	GMT_message (GMT, "\t-G: Grid files can be any type of GMT grid file (native or netCDF) with header\n");
 	GMT_message (GMT, "\tA correctly formatted grid file can be generated as follows:\n");
-	GMT_message (GMT, "\t   e.g. gmtset GRIDFILE_SHORTHAND TRUE\n");
+	GMT_message (GMT, "\t   e.g., gmtset GRIDFILE_SHORTHAND TRUE\n");
 	GMT_message (GMT, "\t\tCreate/edit .gmt_io file to include the following rows:\n");
 	GMT_message (GMT, "\t\t\t# GMT I/O shorthand file\n");
 	GMT_message (GMT, "\t\t\t# suffix   format_id scale offset       NaN\n");

@@ -285,7 +285,7 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Under Windows, ghostscript path is fished from the registry.\n");
 	GMT_message (GMT, "\t   If this fails you can still add the GS path to system's path\n");
 	GMT_message (GMT, "\t   or give the full path here.\n");
-	GMT_message (GMT, "\t   (e.g. -Gc:\\programs\\gs\\gs9.02\\bin\\gswin64c).\n");
+	GMT_message (GMT, "\t   (e.g., -Gc:\\programs\\gs\\gs9.02\\bin\\gswin64c).\n");
 	GMT_message (GMT, "\t-I Ghostscript versions >= 9.00 change gray-shades by using ICC profiles.\n");
 	GMT_message (GMT, "\t   GS 9.05 and above provide the '-dUseFastColor=true' option to prevent that\n");
 	GMT_message (GMT, "\t   and that is what ps2raster do by default, unless option -I is set.\n");
@@ -318,7 +318,7 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-V Provide progress report [default is silent] and shows the\n");
 	GMT_message (GMT, "\t   gdal_translate command, in case you want to use this program\n");
 	GMT_message (GMT, "\t   to create a geoTIFF file.\n");
-	GMT_message (GMT, "\t-W Write a ESRI type world file suitable to make (e.g.) .tif files be\n");
+	GMT_message (GMT, "\t-W Write a ESRI type world file suitable to make (e.g.,) .tif files be\n");
 	GMT_message (GMT, "\t   recognized as geotiff by softwares that know how to do it. Be aware,\n");
 	GMT_message (GMT, "\t   however, that different results are obtained depending on the image\n");
 	GMT_message (GMT, "\t   contents and if the -B option has been used or not. The trouble with\n");

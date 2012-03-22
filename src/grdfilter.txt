@@ -114,7 +114,7 @@ grdfilter north_pacific_etopo5.nc -Gfiltered_pacific.nc -Fm600 -D4 -R150/250/10/
 .br
 .sp
 If we instead wanted a high-pass result then one can perform the corresponding low-pass filter using a coarse grid interval
-as grdfilter will resample the result to the same resolution as the input grid so we can compute the residuals, e.g.
+as grdfilter will resample the result to the same resolution as the input grid so we can compute the residuals, e.g.,
 .br
 .sp
 grdfilter north_pacific_etopo5.nc -Gresidual_pacific.nc -Fm-600 -D4 -R150/250/10/40 -I0.5 -V

@@ -19,7 +19,7 @@ ESRI type world files used to reference, for instance, tif files and make them b
 .TP
 IT(psfiles)
 Names of IT(PostScript) files to be converted. The output files will have the same name (unless OPT(F) is used) but with the
-conventional extension name associated to the raster format (e.g. .jpg for the jpeg format).  Use
+conventional extension name associated to the raster format (e.g., .jpg for the jpeg format).  Use
 OPT(D) to redirect the output to a different directory.
 .SH OPTIONAL ARGUMENTS
 .TP

@@ -45,7 +45,7 @@ in which case the gradients in each of these directions
 are calculated
 and the one larger in magnitude is retained; this is useful for  
 illuminating data with two directions of
-lineated structures, e.g. OPT(A)IT(0)/IT(270) illuminates from  
+lineated structures, e.g., OPT(A)IT(0)/IT(270) illuminates from  
 the north (top) and west (left).
 .TP
 OPT(D)[BD(c)][BD(o)][BD(n)]

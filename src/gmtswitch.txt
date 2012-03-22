@@ -102,7 +102,7 @@ shell cmd window where it was executes is deleted.
 It is the user responsibility to set the contents of the G32_32 to G5_64 below
 to valid paths where the binaries of the different GMT versions are installed
 Note that it is not mandatory to have all four of them in you computer. For the
-ones you do not have just let them pointing to nothing e.g.
+ones you do not have just let them pointing to nothing e.g.,
 set G4_64=
 .br
 The permanent mode is the default one (but this can be changed. See edit section)
