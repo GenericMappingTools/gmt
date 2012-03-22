@@ -269,8 +269,8 @@
 #endif
 
 /* MSVC implementation of popen and pclose */
-#if defined HAVE__CLOSE && !defined HAVE_CLOSE
-#	define popen _pclose
+#if defined HAVE__PCLOSE && !defined HAVE_PCLOSE
+#	define pclose _pclose
 #endif
 #if defined HAVE__POPEN && !defined HAVE_POPEN
 #	define popen _popen
