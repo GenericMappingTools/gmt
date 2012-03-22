@@ -61,13 +61,10 @@ check_include_file (process.h           HAVE_PROCESS_H_)
 # Check for C90, C99 and POSIX conformity
 #
 
-# Since glibc 2.12 strdup is only declared if
-# _POSIX_C_SOURCE >= 200809L || _XOPEN_SOURCE >= 500
-# and sincos is a GNU extension:
+# sincos is a GNU extension:
 cmake_push_check_state()
 set (CMAKE_REQUIRED_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
 	-D_GNU_SOURCE)
-#	-D_POSIX_C_SOURCE=200809L -D_GNU_SOURCE)
 
 check_include_file (assert.h            HAVE_ASSERT_H_)
 check_include_file (dirent.h            HAVE_DIRENT_H_)
@@ -88,6 +85,10 @@ check_function_exists (_ftelli64        HAVE__FTELLI64)
 check_function_exists (getopt           HAVE_GETOPT)
 check_function_exists (getpwuid         HAVE_GETPWUID)
 check_function_exists (llabs            HAVE_LLABS)
+check_function_exists (pclose           HAVE_PCLOSE)
+check_function_exists (_pclose          HAVE__PCLOSE)
+check_function_exists (popen            HAVE_POPEN)
+check_function_exists (_popen           HAVE__POPEN)
 check_function_exists (qsort_r          HAVE_QSORT_R)
 check_function_exists (qsort_s          HAVE_QSORT_S)
 check_function_exists (stricmp          HAVE_STRICMP)

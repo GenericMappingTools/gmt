@@ -53,7 +53,7 @@ In more detail:
 For CMake related questions refer to the CMake manual which is available
 online: http://www.cmake.org/cmake/help/cmake-2-8-docs.html
 
-To avoid CMake's lengthy command line options you should create your custom
+To avoid CMake's lengthy command line options you can create your custom
 ConfigUser.cmake file in the cmake directory. Simply copy
 cmake/ConfigUserTemplate.cmake to cmake/ConfigUser.cmake and then make changes
 in cmake/ConfigUser.cmake. See additional comments in that file.

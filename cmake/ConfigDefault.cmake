@@ -81,7 +81,7 @@ endif (NOT DEFINED LICENSE_RESTRICTED)
 
 # Enable compatibility mode by default.
 if (NOT DEFINED GMT_COMPAT)
-	set (GMT_COMPAT TRUE)
+	set (GMT_COMPAT yes)
 endif (NOT DEFINED GMT_COMPAT)
 
 # Default location of release documentation. If the directory exists in the
