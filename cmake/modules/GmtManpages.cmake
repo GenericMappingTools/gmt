@@ -176,6 +176,7 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 
 			# manpage target
 			add_custom_target (manpages${_tag} DEPENDS ${_target_depends})
+			add_dependencies (manpages${_tag} _gmt_headers)
 			add_depend_to_target (manpages_all manpages${_tag})
 
 			# install manpages
