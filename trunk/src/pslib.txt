@@ -172,10 +172,10 @@ otherwise pass PSL_INIT (1) to start a new plot. Let IT(colormode) be one of PSL
 this setting controls how colors are presented in the IT(PostScript) code.
 The IT(origin) setting determines for x and y separately the origin of the specified offsets (next
 argument). Each of the two characters are either
-'r' for an offset relative to the current origin,
-'a' for a temporaty adjustment of the origin which is undone during BD(PSL_endplot),
-'f' for a placement of the origin relative to the lower left corner of the page,
-'c' for a placement of the origin relative to the center of the page.
+\'r' for an offset relative to the current origin,
+\'a' for a temporaty adjustment of the origin which is undone during BD(PSL_endplot),
+\'f' for a placement of the origin relative to the lower left corner of the page,
+\'c' for a placement of the origin relative to the center of the page.
 The array IT(offset) specifies the offset of the new origin relative to the position indicated by BD(origin).
 IT(page_size) means the physical width and height of the plotting media in points (typically 612 by 792 for
 Letter or 595 by 842 for A4 format). 
@@ -417,7 +417,8 @@ The polygon may be filled and its outline stroked depending on the current setti
 .sp
 BD(long PSL_plotsegment) (ARG(struct PSL_CTRL,*P), ARG(double,x0), ARG(double,y0), ARG(double,x1), ARG(double,y1))
 .RS 5
-Draws a line segment between the two points (plot coordinates) using the current pen attributes.
+Draws a line segment between the two points (plot coordinates) using the current pen
+attributes.
 .RE
 .SH PLOTTING SYMBOLS
 Here are functions used to plot various geometric symbols or constructs.

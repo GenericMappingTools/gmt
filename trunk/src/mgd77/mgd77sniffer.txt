@@ -178,16 +178,14 @@ Dump defaults OPT(Dl) to view syntax or to quickly create an editable custom lim
 .sp
 Example custom default file contents (see below for units):
 .br
-\('## abbrev min     max     maxSlope    maxArea\"'
-.br
-twt     0       15      1       0
-.br
-depth   0       11000   500    5000
-.br
-mag     -800    800     -     -
-.br
-faa     -300    300     100     2500
-.br
+.TS
+l l l l l .
+\('## abbrev	min	max	maxSlope	maxArea\"'
+twt	0	15	1	0
+depth	0	11000	500	5000
+mag	-800	800	-	-
+faa	-300	300	100	2500
+.TE
 .sp
 Use a dash '-' to retain a default limit.
 Hint: to test your custom limits, try: mgd77sniffer OPT(Dl) OPT(L)<yourlimitsfile>
@@ -232,28 +230,21 @@ Output binary data for OPT(D)d|f|s|v option.
 #include "explain_help.txt"
 
 .SH MGD77 FIELD INFO
-IT(Field                   Abbreviation            Units)
-.br
-Two-way Travel Time     twt                     sec
-.br
-Corrected Depth         depth                   m
-.br
-Mag Total Field1        mtf1                    nT
-.br
-Mag Total Field2        mtf2                    nT
-.br
-Residual Magnetic       mag                     nT
-.br
-Diurnal Correction      diur                    nT
-.br
-Mag Sensor Depth/Alt    msens                   m
-.br
-Observed Gravity        gobs                    mGal
-.br
-Eotvos Correction       eot                     mGal
-.br
-Free Air Anomaly        faa                     mGal
-.br
+.TS
+l l l .
+IT(Field)	IT(Abbreviation)	IT(Units)
+Two-way	Travel	Time	twt	sec
+Corrected	Depth	depth	m
+Mag	Total	Field1	mtf1	nT
+Mag	Total	Field2	mtf2	nT
+Residual	Magnetic	mag	nT
+Diurnal	Correction	diur	nT
+Mag	Sensor	Depth/Alt	msens	m
+Observed	Gravity	gobs	mGal
+Eotvos	Correction	eot	mGal
+Free	Air	Anomaly	faa	mGal
+.TE
+.sp
 
 .SH GRID FILE INFO
 For OPT(g) the grids must be in the format used by Sandwell & Smith, which is a spherical Mercator 2-byte grid with no header.
@@ -266,14 +257,13 @@ gmtset GRIDFILE_SHORTHAND TRUE
 .sp
 Create/edit .gmt_io file to include the following rows:
 .br
+.TS
+l l l l l .
 \('## GMT I/O shorthand file\"'
-.br
-\('## suffix   format_id scale offset       NaN\"'
-.br
-grd             0       -       -       -
-.br
-i2              2       -       -       32767
-.br
+\('## suffix	format_id	scale	offset	NaN\"'
+grd	0	-	-	-
+i2	2	-	-	32767
+.TE
 .sp
 grdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2
 .br
