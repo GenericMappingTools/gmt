@@ -665,13 +665,14 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Let gray 50 be rasterized as 50/50/50. See http://gmtrac.soest.hawaii.edu/issues/50 */
 	if (!Ctrl->I.active) {
-		struct { unsigned major, minor; } gsVersion;
+		struct { int major, minor; } gsVersion;
+		int n;
 		char str[GMT_BUFSIZ];
 		FILE *fpp;
 
 		sprintf(str, "%s --version", Ctrl->G.file);
 		if ((fpp = popen(str, "r")) != NULL) {
-			int n = fscanf(fpp, "%d.%d", &gsVersion.major, &gsVersion.minor);
+			n = fscanf(fpp, "%d.%d", &gsVersion.major, &gsVersion.minor);
 			if (pclose(fpp) == -1)
 				GMT_report (GMT, GMT_MSG_FATAL, "Error closing GS version query.\n");
 			if (n != 2)
@@ -682,7 +683,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Error GS version query.\n");
 		}
 
-		if (gsVersion.major >= 9 && gsVersion.minor >= 5)
+		if ((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9)
 			add_to_list (Ctrl->C.arg, "-dUseFastColor=true");
 	}
 
