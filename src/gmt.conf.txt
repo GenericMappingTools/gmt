@@ -87,7 +87,7 @@ for details. [hh:mm:ss].
 .B FORMAT_CLOCK_OUT
 Formatting template that indicates how an output clock string is to be formatted.  This template
 is then used to guide the writing of clock strings in data fields.  To use a floating point
-format for the smallest unit (e.g., seconds), append .xxx, where the number of x indicates
+format for the smallest unit (e.g., seconds), append \.xxx, where the number of x indicates
 the desired precision.  If no floating point is indicated then the smallest specified unit
 will be rounded off to nearest integer.  For 12-hour clocks, append am, AM, a.m., or A.M. (BD(GMT)
 will replace a|A with p|P for pm).  If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
@@ -155,7 +155,7 @@ mm	Fixed format integer arc minutes
 .br
 ss	Fixed format integer arc seconds
 .br
-.xxx	Floating fraction of previous integer field, fixed width.
+\.xxx	Floating fraction of previous integer field, fixed width.
 .br
 F	Encode sign using WESN suffix
 .br

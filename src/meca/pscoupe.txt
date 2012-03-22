@@ -88,7 +88,7 @@ Parameters are expected to be in the following columns:
 .TP
 BD(1),BD(2):
 longitude, latitude of event (OPT(:) option interchanges order)
-.TPs
+.TP
 BD(3):
 depth of event in kilometers
 .TP
@@ -97,10 +97,10 @@ strike, dip and rake
 .TP
 BD(7):
 magnitude
-.TPs
+.TP
 BD(8),BD(9):
 not used; can be 0 0; allows use of the psmeca file format
-.TPs
+.TP
 BD(10):
 text string to appear above the beach ball (default) or under (add BD(u)).
 .RE
