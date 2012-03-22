@@ -292,7 +292,7 @@ GMT_LONG GMT_mgd77list_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   n Nautical units (nautical miles, knots).\n");
 	GMT_message (GMT, "\t   [Default is -Ndk -Nse].\n");
 	GMT_message (GMT, "\t-Q Return data whose azimuth (-Qa) or velocity (-Qv) fall inside specified range:\n");
-	GMT_message (GMT, "\t   -Qa<min_az>/<max_az>, where <min_az> < <max_az> [all azimuths, i.e. 0/360].\n");
+	GMT_message (GMT, "\t   -Qa<min_az>/<max_az>, where <min_az> < <max_az> [all azimuths, i.e., 0/360].\n");
 	GMT_message (GMT, "\t   -Qv<min_vel>[/<max_vel>], where <max_vel> is optional [all velocities, i.e., 0/infinity].\n");
 	GMT_message (GMT, "\t      Velocities are given in m/s unless changed by -Ns.\n");
 	GMT_message (GMT, "\t-R Return data inside the specified region only [0/360/-90/90].\n");

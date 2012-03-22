@@ -34,7 +34,7 @@ None.
 .TP
 OPT(A)[BD(+)]IT(transparency)
 Sets a constant level of transparency (0\-100) for all color slices.  Prepend BD(+) to also
-affect the fore-, back-, and nan-colors [Default is no transparency, i.e. 0 (opaque)].
+affect the fore-, back-, and nan-colors [Default is no transparency, i.e., 0 (opaque)].
 .TP
 OPT(C)IT(table)
 Selects the master color table IT(table) to use in the interpolation.
@@ -82,7 +82,7 @@ Do not interpolate the input color table but pick the output colors starting at 
 This is particularly useful in combination with a categorical color table. Cannot be used in combination with OPT(Z).
 .TP
 OPT(Z)
-Creates a continuous cpt file [Default is discontinuous, i.e. constant colors
+Creates a continuous cpt file [Default is discontinuous, i.e., constant colors
 for each interval].
 #include "explain_help.txt"
 .SH EXAMPLES

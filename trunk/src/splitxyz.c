@@ -171,7 +171,7 @@ GMT_LONG GMT_splitxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-Q Indicate what output you want as one or more of xyzdh in any order;\n");
 	GMT_message (GMT, "\t   where x,y,z refer to input data locations and optional z-value(s),\n");
 	GMT_message (GMT, "\t   and d,h are the distance and heading along track.\n");
-	GMT_message (GMT, "\t   [Default is all fields, i.e. -Qxyzdh (or -Qxydh if -Z is set)].\n");
+	GMT_message (GMT, "\t   [Default is all fields, i.e., -Qxyzdh (or -Qxydh if -Z is set)].\n");
 	GMT_message (GMT, "\t-S d,h is supplied.  Input is 5 col x,y,z,d,h with d non-decreasing.\n");
 	GMT_message (GMT, "\t   [Default input is 3 col x,y,z only and computes d,h from the data].\n");
 	GMT_message (GMT, "\t-Z No z-values.  Input is 2 col x,y only.\n");

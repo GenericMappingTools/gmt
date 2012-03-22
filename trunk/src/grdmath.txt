@@ -101,7 +101,7 @@ get rid of one of them, or save both by giving two consecutive = file.nc calls.
 The orthonormalized complex harmonics BD(YLM) are most commonly used in physics and seismology.
 The square of BD(YLM) integrates to 1 over a sphere.
 In geophysics, BD(YLMg) is normalized to produce unit power when averaging the cosine and sine terms
-(separately!) over a sphere (i.e. their squares each integrate to 4 pi).
+(separately!) over a sphere (i.e., their squares each integrate to 4 pi).
 The Condon-Shortley phase (-1)^M is not included in BD(YLM) or BD(YLMg), but it can be added by using -M
 as argument.
 .br

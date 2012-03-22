@@ -1613,7 +1613,7 @@ GMT_LONG GMT_surface_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-A Set aspect-ratio> [Default = 1 gives an isotropic solution],\n");
-	GMT_message (GMT, "\t   i.e. xinc and yinc assumed to give derivatives of equal weight; if not, specify\n");
+	GMT_message (GMT, "\t   i.e., xinc and yinc assumed to give derivatives of equal weight; if not, specify\n");
 	GMT_message (GMT, "\t   <aspect_ratio> such that yinc = xinc / <aspect_ratio>.\n");
 	GMT_message (GMT, "\t   e.g. if gridding lon,lat use <aspect_ratio> = cosine(middle of lat range).\n");
 	GMT_message (GMT, "\t-C Set convergence limit; iteration stops when max abs change is less than <c.l.>\n");

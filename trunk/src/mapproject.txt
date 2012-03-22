@@ -68,7 +68,7 @@ calculate cumulate distances along track. Append BD(-) to obtain incremental dis
 Append BD(+) to specify the 2nd point via two extra columns in the input file.
 .TP
 OPT(I)
-Do the Inverse transformation, i.e. get (longitude,latitude) from (x,y) data.
+Do the Inverse transformation, i.e., get (longitude,latitude) from (x,y) data.
 .TP
 OPT(L)IT(line.xy)[/IT(unit)][BD(+)]
 Determine the shortest distance from the input data points to the line(s) given in the ASCII multisegment file IT(line.xy).

@@ -90,7 +90,7 @@ GMT_LONG GMT_grdmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Suppress connecting points using great circle arcs, i.e. connect by straight lines,\n");
+	GMT_message (GMT, "\t-A Suppress connecting points using great circle arcs, i.e., connect by straight lines,\n");
 	GMT_message (GMT, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
 	GMT_message (GMT, "\t   Ignored if -S is used since points are then not considered to be lines.\n");
 	GMT_message (GMT, "\t-N Set <out>/<edge>/<in> to use if point is outside, on the path, or inside.\n");

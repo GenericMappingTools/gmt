@@ -200,7 +200,7 @@ GMT_LONG GMT_filter1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-D Set fixed increment when series is NOT equidistantly sampled.\n");
-	GMT_message (GMT, "\t   Then <increment> will be the abscissae resolution, i.e. all abscissae\n");
+	GMT_message (GMT, "\t   Then <increment> will be the abscissae resolution, i.e., all abscissae\n");
 	GMT_message (GMT, "\t   will be rounded off to a multiple of <increment>.\n");
 	GMT_message (GMT, "\t-E Include ends of time series in output [Default loses half_width at each end].\n");
 	GMT_message (GMT, "\t-I Ignore values; If an input value == <ignore_val> it will be set to NaN.\n");

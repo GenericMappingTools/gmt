@@ -46,7 +46,7 @@ All grids need to have the same size and dimensions.
 .TP
 OPT(A)[BD(+)]IT(transparency)
 Sets a constant level of transparency (0\-100) for all color slices.  Prepend BD(+) to also
-affect the fore-, back-, and nan-colors [Default is no transparency, i.e. 0 (opaque)].
+affect the fore-, back-, and nan-colors [Default is no transparency, i.e., 0 (opaque)].
 .TP
 OPT(C)IT(cptmaster)
 Selects the master color table to use in the interpolation.  Choose among
