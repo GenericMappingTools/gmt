@@ -34,13 +34,14 @@ set (_docs_inputs GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex
 set (_common_inputs GMT.ist GMT.sty GMT_macros.tex GMT_Cover.tex)
 
 set (_docs_depends
+	${_docs_inputs}
 	${CMAKE_CURRENT_BINARY_DIR}/examples/done
-	${CMAKE_CURRENT_BINARY_DIR}/fig/done
+	#${CMAKE_CURRENT_BINARY_DIR}/fig/done
 	${CMAKE_CURRENT_BINARY_DIR}/scripts/done
 	${CMAKE_CURRENT_BINARY_DIR}/GMT_version.tex)
 
 add_custom_target (docs_depends DEPENDS
-	examples_done fig_done scripts_done)
+	examples_done scripts_done)
 
 # Install license files
 if (NOT LICENSE_RESTRICTED STREQUAL GPL)
@@ -76,20 +77,20 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
 	if (PDFLATEX_COMPILER)
 		# Copy common TeX dependends
-		foreach (_input ${_docs_inputs} ${_common_inputs})
-			add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_input}
-				COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				${CMAKE_CURRENT_SOURCE_DIR}/${_input}
-				${CMAKE_CURRENT_BINARY_DIR}/${_input}
-				DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_input})
-			list (APPEND _docs_depends ${CMAKE_CURRENT_BINARY_DIR}/${_input})
-		endforeach (_input ${_docs_inputs} ${_common_inputs})
+#		foreach (_input ${_docs_inputs} ${_common_inputs})
+#			add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_input}
+#				COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#				${CMAKE_CURRENT_SOURCE_DIR}/${_input}
+#				${CMAKE_CURRENT_BINARY_DIR}/${_input}
+#				DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_input})
+#			list (APPEND _docs_depends ${CMAKE_CURRENT_BINARY_DIR}/${_input})
+#		endforeach (_input ${_docs_inputs} ${_common_inputs})
 
 		# Generate GMT_version.tex
 		configure_file (GMT_version.tex.in GMT_version.tex)
 
 		# Set TeX FLAGS
-		set (MAKEINDEX_COMPILER_FLAGS "-s GMT.ist"
+		set (MAKEINDEX_COMPILER_FLAGS "-s ${CMAKE_CURRENT_SOURCE_DIR}/GMT.ist"
 			CACHE STRING "Flags passed to makeindex.")
 		set (PDFLATEX_COMPILER_FLAGS "--interaction=batchmode"
 			CACHE STRING "Silence latex warnings.")
@@ -98,7 +99,7 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 		include (UseLATEX)
 
 		# Make PDF figures
-		add_subdirectory (fig)
+		#add_subdirectory (fig)
 		add_subdirectory (examples)
 
 		foreach (_pdf_file ${_docs_output})
@@ -106,7 +107,7 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 			string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
 
 			add_latex_document (${_tex_file}
-				DEPENDS docs_depends ${_docs_depends}
+				DEPENDS docs_depends ${_docs_depends} ${_docs_inputs}
 				USE_INDEX
 				DEFAULT_PDF
 				MANGLE_TARGET_NAMES)
