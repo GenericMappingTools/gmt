@@ -268,6 +268,14 @@
 #	define getpid _getpid
 #endif
 
+/* MSVC implementation of popen and pclose */
+#if defined HAVE__CLOSE && !defined HAVE_CLOSE
+#	define popen _pclose
+#endif
+#if defined HAVE__POPEN && !defined HAVE_POPEN
+#	define popen _popen
+#endif
+
 #if defined HAVE_QSORT_S && !defined HAVE_QSORT_R
 #	define qsort_r qsort_s
 #elif !defined HAVE_QSORT_R

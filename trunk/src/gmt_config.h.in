@@ -96,6 +96,10 @@
 #cmakedefine HAVE_GETPWUID
 #cmakedefine HAVE_LLABS
 #cmakedefine HAVE__MKDIR
+#cmakedefine HAVE_PCLOSE
+#cmakedefine HAVE__PCLOSE
+#cmakedefine HAVE_POPEN
+#cmakedefine HAVE__POPEN
 #cmakedefine HAVE_QSORT_R
 #cmakedefine HAVE_QSORT_S
 #cmakedefine HAVE__SETMODE

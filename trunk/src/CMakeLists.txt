@@ -341,9 +341,9 @@ target_link_libraries (psldemo pslib)
 
 # rman for converting html manpages
 if (HAVE_GETOPT)
-	add_executable (rman rman.c)
+	add_executable (rman EXCLUDE_FROM_ALL rman.c)
 else (HAVE_GETOPT)
-	add_executable (rman rman.c getopt.c getopt.h)
+	add_executable (rman EXCLUDE_FROM_ALL rman.c getopt.c getopt.h)
 endif (HAVE_GETOPT)
 
 # generate Mac debugging symbols

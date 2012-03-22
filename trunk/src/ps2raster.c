@@ -665,27 +665,24 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Let gray 50 be rasterized as 50/50/50. See http://gmtrac.soest.hawaii.edu/issues/50 */
 	if (!Ctrl->I.active) {
-		float gsVersion = 0;
+		struct { unsigned major, minor; } gsVersion;
 		char str[GMT_BUFSIZ];
 		FILE *fpp;
 
 		sprintf(str, "%s --version", Ctrl->G.file);
-#ifdef WIN32
-		if ((fpp = _popen(str, "r")) != NULL) {
-			fscanf(fpp, "%f", &gsVersion);
-			_pclose(fpp);
-		}
-#else
 		if ((fpp = popen(str, "r")) != NULL) {
-			fscanf(fpp, "%f", &gsVersion);
+			int n = fscanf(fpp, "%d.%d", &gsVersion.major, &gsVersion.minor);
+			if (pclose(fpp) == -1)
+				GMT_report (GMT, GMT_MSG_FATAL, "Error closing GS version query.\n");
+			if (n != 2)
+				GMT_report (GMT, GMT_MSG_FATAL, "Failed to parse response to GS version query.\n");
 			pclose(fpp);
 		}
-#endif
 		else {
-			GMT_report (GMT, GMT_MSG_FATAL, "Cannot to open pipe to inquire about GS version\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Error GS version query.\n");
 		}
 
-		if (gsVersion >= 9.05)
+		if (gsVersion.major >= 9 && gsVersion.minor >= 5)
 			add_to_list (Ctrl->C.arg, "-dUseFastColor=true");
 	}
 
