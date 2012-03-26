@@ -335,7 +335,7 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 					return (GMT_OK);
 				}
 				else {
-					if ((sscanf(opt->arg, "%d/%d", &Ctrl->N.nx2, &Ctrl->N.ny2)) != 2) n_errors++;
+					if ((sscanf(opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->N.nx2, &Ctrl->N.ny2)) != 2) n_errors++;
 					if (Ctrl->N.nx2 <= 0 || Ctrl->N.ny2 <= 0) n_errors++;
 					Ctrl->N.n_user_set = TRUE;
 				}
@@ -520,7 +520,6 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	char	line[256], line2[256], format[64], buffer[256];
 	float	*topo, *raised;
 	double	delta_pt, freq;
-	double	rho = 0.0;		/* general density contrast */
 
 	struct GMT_GRID *GridA = NULL, *GridB = NULL, *Out = NULL, *Out2 = NULL;
 	struct K_XY K;
