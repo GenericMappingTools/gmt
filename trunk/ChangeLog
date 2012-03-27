@@ -2,9 +2,16 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-03-26	pwessel
+	* psrose.c:		Option -L (no args) failed to turn off all labels.
+				Option -T did not create a symmetric plot for -R0/360/...
+				Added -Zu to set all radii to unity (i.e., analysis of angles only).
+				Added -R0/180/... to complement -R-90/90/... for half-circle plots.
+				Allow -i<one_column> to only read azimuths (radii set to unity).
+
 2012-03-22	remko
 	* ConfigUserTemplate.cmake ConfigDefaults.cmake:
-				Make GMT_COMPAT the default. Switch licence restrictions off by default.
+				Make GMT_COMPAT the default. Switch license restrictions off by default.
 	* lockfile.sh:		Removed. No longer needed.
 	* gmt_init.c:		Improved GMT_COMPAT warnings.
 
