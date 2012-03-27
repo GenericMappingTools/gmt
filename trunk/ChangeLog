@@ -5,6 +5,7 @@
 2012-03-26	pwessel
 	* psrose.c:		Option -L (no args) failed to turn off all labels.
 				Option -T did not create a symmetric plot for -R0/360/...
+				Fixed basemap outline for windrose diagrams.
 				Added -Zu to set all radii to unity (i.e., analysis of angles only).
 				Added -R0/180/... to complement -R-90/90/... for half-circle plots.
 				Allow -i<one_column> to only read azimuths (radii set to unity).
