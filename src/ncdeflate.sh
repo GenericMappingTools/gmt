@@ -3,7 +3,7 @@
 #--------------------------------------------------------------------
 # $Id$
 #
-# Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo,
+# Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo,
 # J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
