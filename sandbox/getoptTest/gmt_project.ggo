@@ -1,0 +1,89 @@
+# Name of your program
+package "project"
+
+# Version of your program
+version "5.0.2"
+
+purpose "Project table data onto lines or great circles, generate tracks, or translate coordinates"
+
+#usage "project [ table ] -Ccx/cy [ -Aazimuth ] [ -Ebx/by ] [ -Fflags ] [ -Gdist[/colat][+] ] [ -L[w][l_min/l_max] ] [ -N ] [ -Q ] [ -S ] [ -Tpx/py ] [ -V[level] ] [ -Ww_min/w_max ] [ -b[ncol][t][+L|+B] ] [ -f[i|o]colinfo ] [ -g[a]x|y|d|X|Y|D|[col]z[+|-]gap[u] ] [ -h[i|o][n] ] [ -icols[l][sscale][ooff- set][,...] ] [ -s[cols][a|r] ] [ -:[i|o] ]"
+
+args "--unamed-opts=table --no-handle-error --no-handle-help --no-handle-version --func-name=gmt_cmdline_parser --file-name=gmt_cmdline_project"
+
+# GMT grdimage
+
+section "Mandatory arguments"
+
+option "center"    C "The origin of the projection"
+  string required typestr="cx/cy"
+
+# (Definition 1)  By a Center -C and an Azimuth -A in degrees clockwise from North.
+# (Definition 2)  By a Center -C and end point E of the projection path -E.
+# (Definition 3)  By a Center -C and a roTation pole position -T.
+
+defgroup "projection"
+  groupdesc="The projection may be defined in (only) one of three ways:"
+  required
+groupoption "azimuth"  A "Azimuth in degrees clockwise from North"
+  string typestr="azimuth"
+  group="projection"
+groupoption "endpoint" E "End point of the projection path"
+  string typestr="ex/ey"
+  group="projection"
+groupoption "pole"     T "Position of the rotation pole of the projection"
+  string typestr="px/py"
+  group="projection"
+
+#defmode "center and azimuth"
+#defmode "center and end point of the projection path"
+#defmode "center and rotation pole"
+
+#modeoption "azimuth"  A "Azimuth in degrees clockwise from North"
+#  string required typestr="azimuth"
+#  mode="center and azimuth"
+
+#modeoption "endpoint" E "End point of the projection path"
+#  string required typestr="ex/ey"
+#  mode="center and end point of the projection path"
+
+#modeoption "pole"     T "Position of the rotation pole of the projection"
+#  string required typestr="px/py"
+#  mode="center and rotation pole"
+
+section "Additional arguments"
+
+# GMT common -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f,
+#            -g, -h, -i, -n, -o, -p, -r, -s, -t, -:, -^
+
+option "verbose"     V "Change the verbosity level"
+  int    optional argoptional hidden default="1" typestr="level"
+  details="Choose among 5 levels; each level adds more messages:\n \
+  0 - Complete silence, not even fatal error messages\n \
+  1 - Fatal error messages [Default when no -V is used]\n \
+  2 - Warnings and progress messages [Default when -V is used]\n \
+  3 - Detailed progress messages\n \
+  4 - Debugging messages"
+
+option "copies"      c "Specify the number of copies"
+  int    optional argoptional hidden default="1" typestr="ncopies"
+
+option "header"      h "Input file has header records"
+  string optional argoptional hidden typestr="[i|o][n]"
+
+option "swap"        / "Swap 1st and 2nd column on input and/or output"
+  string optional argoptional hidden typestr="[i|o]"
+
+option "output"      - "Output file  (default=`stdout')"
+  string optional hidden typestr="[outfile]"
+
+section "Help"
+
+option "help"          ? "Show help (required arguments only), and exit"
+  optional
+option "full-help"     - "Show help, including hidden options, and exit"
+  optional
+option "detailed-help" ^ "Show help, including all details and hidden options, and exit"
+  optional
+option "version"       - "Print version and exit" optional
+
+text "\nPlease refer to the manual for further explanations."

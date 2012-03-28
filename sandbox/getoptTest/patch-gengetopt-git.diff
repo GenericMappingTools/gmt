@@ -1,0 +1,36 @@
+--- configure.ac.orig
++++ configure.ac
+@@ -133,7 +133,7 @@
+ AC_PATH_PROGS(HELP2MAN, help2man)
+ AM_CONDITIONAL(NO_HELP2MAN, test -z "$ac_cv_path_HELP2MAN" )
+ 
+-dnl AM_CONDITIONAL(NO_GETOPTLONG, test "$ac_cv_func_getopt_long" = no  )
++AM_CONDITIONAL(NO_GETOPTLONG, test "$ac_cv_func_getopt_long" = no  )
+ AM_CONDITIONAL(NO_STRDUP, test "$ac_cv_func_strdup" = no )
+ AM_CONDITIONAL(NO_SOURCEHIGHLIGHT, test -z "$ac_cv_path_SOURCEHIGHLIGHT" )
+ AM_CONDITIONAL(NO_GENGEN, test -z "$ac_cv_path_GENGEN" )
+--- doc/Makefile.am.orig
++++ doc/Makefile.am
+@@ -41,9 +41,10 @@
+ sample2_SOURCES = cmdline2.c main2.c
+ 
+ # these are for gnulib
++if NO_GETOPTLONG
+ AM_CPPFLAGS = -I$(top_srcdir)/gl -I$(top_builddir)/gl
+-
+ LDADD = $(top_builddir)/gl/libgnu.la
++endif
+ 
+ gengetoptdoc_DATA = gengetopt.html index.html 
+ 
+--- src/scanner.ll.orig
++++ src/scanner.ll
+@@ -120,7 +120,7 @@ tabs [\t]+
+ <SIZE_STATE>[[:digit:]]+ { updateTokenInfo (-1); yylval.str = strdup(yytext); return TOK_SIZE; }
+ <SIZE_STATE>")" { POP(); updateTokenInfo (-1); return ')'; }
+ 
+-<INITIAL>[[:alnum:]-]|\?	 updateTokenInfo (-1); yylval.chr = yytext[0]; return TOK_CHAR;
++<INITIAL>[[:alnum:]!$%&'()*+,\-./;<=>?@[\\\]^_`{|}~] updateTokenInfo (-1); yylval.chr = yytext[0]; return TOK_CHAR;
+ 
+ <INITIAL>\" { updateTokenInfo (-1); DEB("start string"); PUSH(STRING_STATE) ; }
+ <STRING_STATE>\\\\n { updateTokenInfo (2); buffer("\\\\n"); }

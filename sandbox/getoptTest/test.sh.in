@@ -1,0 +1,49 @@
+#!/bin/bash
+
+PATH="$PATH:@CMAKE_CURRENT_BINARY_DIR@"
+
+sep ()
+{
+  echo -e "\n-----------------------8<---------------------\n"
+}
+
+#
+# grdimage
+#
+
+# won't work: space between -V (optargopt) and 1
+gmt_grdimage -JM4 -R1/2/3/4 -OK -C file.cpt -V 2 test.grd
+sep
+
+# works
+gmt_grdimage -JM4 -R1/2/3/4 -OKC file.cpt -V2 test.grd
+sep
+
+# missing -J
+gmt_grdimage
+sep
+
+# missing required file
+gmt_grdimage -JM4
+sep
+
+# too many files
+gmt_grdimage -JM4 test.grd test2.grd
+sep
+
+#
+# project
+#
+
+# missing -C, missing group (-A, -E, -T)
+gmt_project
+sep
+
+# excess too many args of group
+gmt_project -C0/0 -A0 -E1/1
+sep
+
+# works
+gmt_project -C0/0 -A0
+
+exit 0

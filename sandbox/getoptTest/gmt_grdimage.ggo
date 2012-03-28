@@ -1,0 +1,100 @@
+# Name of your program
+package "grdimage"
+
+# Version of your program
+version "5.0.2"
+
+purpose "Project grids or images and plot them on maps"
+
+#usage "grdimage <grd_z>|<grd_r> <grd_g> <grd_b> -J<args> [-B<args>] [-A<out_img=driver>] [-C<cpt>] [-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I<intensgrid>] [-K] [-M] [-N] [-O] [-P] [-Q] [-R<west>/<east>/<south>/<north>[r]] [-T] [-U[<just>/<dx>/<dy>/][c|<label>]] [-V[<level>]] [-X[a|c|r]<xshift>[u]] [-Y[a|c|r]<yshift>[u]] [-c<ncopies>] [-n[b|c|l|n][+a][+b<BC>][+t<threshold>]] [-p[x|y|z]<azim>/<elev>[/<zlevel>][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]] [-t<transp>]"
+
+#args "--no-handle-error --unamed-opts --no-handle-version"
+#args "--unamed-opts --no-handle-version"
+args "--unamed-opts --no-handle-error --no-handle-help --no-handle-version --func-name=gmt_cmdline_parser --file-name=gmt_cmdline_grdimage"
+
+# grdimage hawaii_grav.nc -Jl18/24/1.5c -Cshades.cpt -B1 -OK
+
+# GMT grdimage
+
+description "grd_z is data set to be plotted.  Its z-values are in user units and will be \
+converted to rgb colors via the cpt file.  Alternatively, give three separate \
+grid files that contain the red, green, and blue components in the 0-255 range. \
+If -D is used then grd_z is instead expected to be an image"
+
+section "Mandatory arguments"
+
+option "cpt-file"    C "Color palette file to convert z to rgb"
+  string required typestr="cptfile"
+option "proj"        J "Select map proJection"
+  string required argoptional typestr="parameters"
+  details="The projection type is identified by a 1- or \
+2-character ID (e.g. 'm' or 'kf') or by an abbreviation followed by a slash \
+(e.g. 'cyl_stere/'). When using a lower-case ID <scale> can be given either as 1:<xxxx> \
+or in cm/degree along the standard parallel. Alternatively, when the projection ID is \
+Capitalized, <scale>|<width> denotes the width of the plot in cm \
+Append h for map height, + for max map dimension, and - for min map dimension. \
+When the central meridian (lon0) is optional and omitted, the center of the \
+longitude range specified by -R is used. The default standard parallel is the equator \
+Azimuthal projections set -Rg unless polar aspect or -R<...>r is given."
+
+section "Additional arguments"
+
+# GMT common -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f,
+#            -g, -h, -i, -n, -o, -p, -r, -s, -t, -:, -^
+
+option "boundary"    B "Basemap boundary annotation attributes"
+  string optional hidden typestr="[p|s]xinfo[/yinfo[/zinfo]][:.Title:][W|w][E|e][S|s][N|n][Z|z[+]][+gfill]"
+
+option "intens-file" I "Use illumination. Give name of intensity grid file"
+  string optional typestr="intensgrid"
+
+option "more"        K "Allow for more plot code to be appended later"
+  optional hidden
+option "over"        O "Set Overlay plot mode, i.e., append to an existing plot"
+  optional hidden
+option "portrait"    P "Set Portrait page orientation"
+  flag hidden off
+option "region"      R "Specify the min/max coordinates of data region in user units"
+  string optional argoptional hidden typestr="west/east/south/north[/zmin/zmax][r]"
+option "time"        U "Plot Unix System Time stamp [and optionally appended text]"
+  string optional argoptional hidden typestr="[just/dx/dy/][c|label]"
+
+option "verbose"     V "Change the verbosity level"
+  int    optional argoptional hidden default="1" typestr="level"
+  details="Choose among 5 levels; each level adds more messages:\n \
+  0 - Complete silence, not even fatal error messages\n \
+  1 - Fatal error messages [Default when no -V is used]\n \
+  2 - Warnings and progress messages [Default when -V is used]\n \
+  3 - Detailed progress messages\n \
+  4 - Debugging messages"
+
+option "shift-x"     X "X-shift origin of plot"
+  string optional argoptional hidden typestr="xshift"
+option "shift-y"     Y "Y-shift origin of plot"
+  string optional argoptional hidden typestr="yshift"
+#option  "binary"      b "" string optional hidden
+option "copies"      c "Specify the number of copies"
+  int    optional argoptional hidden default="1" typestr="ncopies"
+option "data-type"   f "Special formatting of input/output columns (time or geographical)"
+  string optional argoptional multiple hidden typestr="[i|o]colinfo"
+
+option "header"      h "Input file has header records"
+  string optional argoptional hidden typestr="[i|o][n]"
+
+option "swap"        / "Swap 1st and 2nd column on input and/or output"
+  string optional argoptional hidden typestr="[i|o]"
+
+option "output"      - "Output file  (default=`stdout')"
+  string optional hidden typestr="[outfile]"
+
+section "Help"
+
+option "help"          ? "Show help (required arguments only), and exit"
+  optional
+option "full-help"     - "Show help, including hidden options, and exit"
+  optional
+option "detailed-help" ^ "Show help, including all details and hidden options, and exit"
+  optional
+option "version"       - "Print version and exit" optional
+
+text "\nPlease refer to the manual for further explanations."
