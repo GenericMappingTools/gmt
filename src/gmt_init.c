@@ -1662,13 +1662,33 @@ GMT_LONG gmt_parse_dash_option (struct GMT_CTRL *C, char *text)
 {	/* parse any --PARAM[=value] arguments */
 	GMT_LONG n;
 	char *this = NULL;
-	if (!text) return (GMT_NOERROR);
-	if ((this = strchr (text, '='))) {	/* Got --PAR=VALUE */
+	if (!text)
+		return (GMT_NOERROR);
+
+	/* print version and exit */
+	if (strcmp (text, "version") == 0) {
+		fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
+		if (GMT_Destroy_Session (&C->parent))
+			exit (EXIT_FAILURE);
+		exit (EXIT_SUCCESS);
+	}
+
+	/* print GMT folders and exit */
+	if (strcmp (text, "show-sharedir") == 0) {
+		fprintf (stdout, "%s\n", C->session.SHAREDIR);
+		if (GMT_Destroy_Session (&C->parent))
+			exit (EXIT_FAILURE);
+		exit (EXIT_SUCCESS);
+	}
+
+	if ((this = strchr (text, '='))) {
+		/* Got --PAR=VALUE */
 		this[0] = '\0';	/* Temporarily remove the '=' character */
 		n = GMT_setparameter (C, text, &this[1]);
 		this[0] = '=';	/* Put it back were it was */
 	}
-	else				/* Got --PAR */
+	else
+		/* Got --PAR */
 		n = GMT_setparameter (C, text, "true");
 	return (n);
 }
