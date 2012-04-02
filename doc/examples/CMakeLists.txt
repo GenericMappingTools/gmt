@@ -58,7 +58,7 @@ foreach (_script ${_examples})
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script} ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake)
+		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 endforeach (_script ${_examples})
 
 # Add build target
