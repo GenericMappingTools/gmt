@@ -1262,7 +1262,7 @@ int MGD77_Read_Data_Record_m77t (struct GMT_CTRL *C, struct MGD77_CONTROL *F, st
 	int k = 1, yyyy, mm, dd;
 	GMT_LONG rata_die;
 	char line[GMT_BUFSIZ], r_date[9], *stringp = NULL, *p = NULL;
-	double tz, secs, r_time;
+	double tz, secs, r_time = 0.0;
 
 	if (!(fgets (line, GMT_BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
 	GMT_chop (line);	/* Get rid of CR or LF */
@@ -2471,7 +2471,7 @@ int MGD77_Write_Header_Record_m77t (struct GMT_CTRL *C, char *file, struct MGD77
 
 int MGD77_Write_File_asc (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will write all MGD77 records in current file */
 {
-	int err;
+	int err = 0;
 
 	if (MGD77_Open_File (C, file, F, MGD77_WRITE_MODE)) return (-1);
 	switch (F->format) {
