@@ -35,11 +35,11 @@ PFL lookup_program (char *prog, struct GMT_PROGRAMS *programs, GMT_LONG n_progs,
 {
 	GMT_LONG k = 0, id = -1;
 	PFL func = NULL;
-	
+
 	for (k = 0; id == -1 && k < n_progs; k++) if (!strcmp (prog, programs[k].name)) id = k;	/* Get program id */
-	
+
 	if (id == -1) return NULL;	/* Not a GMT program */
-	
+
 	switch (id) {	/* Assign the function pointer */
 #include "gmt_progcases.h"
 	}
@@ -64,23 +64,42 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "You may redistribute copies of this program under the terms of the\n");
 		fprintf (stderr, "GNU Lesser General Public License.\n");
 		fprintf (stderr, "For more information about these matters, see the file named LICENSE.TXT.\n");
-		fprintf (stderr, "For a brief description of GMT programs, type gmt --help\n");
+		fprintf (stderr, "For a brief description of GMT programs, type gmt --help\n\n");
+		fprintf (stderr, "  --version            Print version and exit\n");
+		fprintf (stderr, "  --show-sharedir      Show share directory and exit\n");
 		exit (EXIT_FAILURE);
 	}
-	
+
+	/* Print version and exit */
+	if (argc == 2 && !strcmp (argv[1], "--version")) {
+		fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
+		exit (0);
+	}
+
+	/* Show share directory */
+	if (argc == 2 && !strcmp (argv[1], "--show-sharedir")) {
+		/* Initializing new GMT session */
+		if ((API = GMT_Create_Session (argv[0], mode)) == NULL)
+			exit (EXIT_FAILURE);
+		fprintf (stdout, "%s\n", API->GMT->session.SHAREDIR);
+		if (GMT_Destroy_Session (&API))
+			exit (EXIT_FAILURE);
+		exit (0);
+	}
+
 	if (argc == 2 && !strcmp (argv[1], "--help")) {
 		fprintf (stderr, "Program - Purpose of Program\n\n");
 #include "gmt_progpurpose.h"
 		exit (EXIT_FAILURE);
 	}
-	
+
 	if ((func = lookup_program (argv[1], program, GMT_N_PROGRAMS, &mode)) == NULL) {
 		fprintf (stderr, "gmt: No such program: %s\n", argv[1]);
 		exit (EXIT_FAILURE);
 	}
-	
+
 	/* OK, here we found a recognized GMT module; do the job */
-	
+
 	/* 1. Initializing new GMT session */
 	if ((API = GMT_Create_Session (argv[0], mode)) == NULL) exit (EXIT_FAILURE);
 

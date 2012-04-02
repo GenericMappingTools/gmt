@@ -20,6 +20,12 @@ install (DIRECTORY ${_gmt_share_dirs}
 	PATTERN "CMakeLists.txt" EXCLUDE
 	REGEX "[.](cmake|in)$" EXCLUDE)
 
+# install version file (used during runtime to check for correct share dir)
+configure_file (VERSION.in VERSION @ONLY NEWLINE_STYLE LF)
+install (FILES ${CMAKE_CURRENT_BINARY_DIR}/VERSION
+	DESTINATION ${GMT_SHARE_PATH}
+	COMPONENT Runtime)
+
 # create coastline.conf which is needed for in-build-dir ctest
 configure_file (coastline.conf.in coastline.conf @ONLY)
 
