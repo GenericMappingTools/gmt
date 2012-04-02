@@ -55,7 +55,7 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 			# parse arguments
 			set (_arg_is_man_file TRUE)
 			set (_man_files ${MAN_FILES})
-			set (_depends)
+			set (_depends ${GMT_GEN_MAN_HEADERS})
 			foreach (_arg ${ARGN})
 				if (_arg_is_man_file AND _arg STREQUAL "DEPENDS")
 					set (_arg_is_man_file FALSE)
@@ -176,7 +176,6 @@ if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 
 			# manpage target
 			add_custom_target (manpages${_tag} DEPENDS ${_target_depends})
-			add_dependencies (manpages${_tag} _gmt_headers)
 			add_depend_to_target (manpages_all manpages${_tag})
 
 			# install manpages

@@ -89,7 +89,7 @@ if (PDFLATEX_COMPILER)
 			-D no_strip=TRUE
 			-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 			-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
-			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script} ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake)
+			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 	endforeach (_script)
 
 	foreach (_script ${_scr_strip})
@@ -101,7 +101,7 @@ if (PDFLATEX_COMPILER)
 			-D txt=${CMAKE_CURRENT_BINARY_DIR}/${_txt}
 			-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 			-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
-			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script} ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake)
+			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 	endforeach (_script)
 endif (PDFLATEX_COMPILER)
 
