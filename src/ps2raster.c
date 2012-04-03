@@ -677,7 +677,6 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_FATAL, "Error closing GS version query.\n");
 			if (n != 2)
 				GMT_report (GMT, GMT_MSG_FATAL, "Failed to parse response to GS version query.\n");
-			pclose(fpp);
 		}
 		else {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error GS version query.\n");
