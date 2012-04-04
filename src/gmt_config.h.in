@@ -32,6 +32,7 @@
  * Version: @GMT_VERSION_STRING@
  */
 
+#pragma once
 #ifndef _GMT_CONFIG_H
 #define _GMT_CONFIG_H
 
@@ -192,6 +193,6 @@
 #	define _FILE_OFFSET_BITS 64
 #endif
 
-#endif /* _GMT_CONFIG_H */
+#endif /* !_GMT_CONFIG_H */
 
 /* vim: set ft=c: */

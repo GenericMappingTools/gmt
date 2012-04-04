@@ -16,49 +16,43 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * common_runpath.h contains prototypes of functions shared between GMT and PSL
+ * gshhs_version.h contains prototypes
  *
  * Author:  Florian Wobbe
- * Date:    3-MAR-2012
+ * Date:    3-APR-2012
  * Version: 5
  */
 
-#pragma once
-#ifndef _GMT_RUNPATH_H
-#define _GMT_RUNPATH_H
+#ifndef _GMT_GSHHS_VERSION_H
+#define _GMT_GSHHS_VERSION_H
 
 #ifdef __cplusplus      /* Basic C++ support */
 extern "C" {
 #endif
 
-/* CMake definitions: This must be first! */
-#include "gmt_config.h"
+#ifndef STANDALONE
 
-/* Declaration modifiers for DLL support (MSC et al) */
-#include "declspec.h"
+	/* CMake definitions: This must be first! */
+#	include "gmt_config.h"
 
-#ifndef PATH_MAX
-# define PATH_MAX 4096
-#endif
+	/* Declaration modifiers for DLL support (MSC et al) */
+#	include "declspec.h"
 
-/* extern char gmt_runpath[PATH_MAX+1]; */
+#else
+#	define EXTERN_MSC extern
+#endif /* STANDALONE */
+
+/* Structure that holds the GSHHS version */
+struct GSHHS_VERSION {
+	unsigned major, minor, patch;
+};
 
 /* Prototypes */
-#if defined (__APPLE__)
-#	define GMT_runpath(result, argv) GMT_runpath_osx(result)
-	EXTERN_MSC char* GMT_runpath_osx (char *result);
-#elif defined(_WIN32)
-#	define GMT_runpath(result, argv) GMT_runpath_win32(result)
-	EXTERN_MSC char* GMT_runpath_win32 (char *result);
-#else
-	EXTERN_MSC char* GMT_runpath (char *result, const char *candidate);
-#endif
-
-EXTERN_MSC char* GMT_guess_sharedir (char* sharedir, const char* runpath);
-EXTERN_MSC int GMT_verify_sharedir_version (const char *dir);
+EXTERN_MSC int gshhs_get_version (const char* filename, struct GSHHS_VERSION *gshhs_version);
+EXTERN_MSC int gshhs_require_min_version (const char* filename, const struct GSHHS_VERSION min_version);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  /* !_GMT_RUNPATH_H */
+#endif  /* _GMT_GSHHS_VERSION_H */

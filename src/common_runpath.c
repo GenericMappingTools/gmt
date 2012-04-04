@@ -24,10 +24,11 @@
  *
  * Modules in this file:
  *
- *  GMT_runpath          Generic *NIX implementation
- *  GMT_runpath_osx      MacOSX implementation
- *  GMT_runpath_win32    Windows implementation
- *  GMT_guess_sharedir   Determine GMT_SHAREDIR relative to current runpath
+ *  GMT_runpath                  Generic *NIX implementation
+ *  GMT_runpath_osx              MacOSX implementation
+ *  GMT_runpath_win32            Windows implementation
+ *  GMT_guess_sharedir           Determine GMT_SHAREDIR relative to current runpath
+ *  GMT_verify_sharedir_version  Verifies the correct version of the share directory
  */
 
 /* CMake definitions: This must be first! */
@@ -215,10 +216,20 @@ char* GMT_guess_sharedir (char* sharedir, const char* runpath) {
 	sharedir[len_base_dir] = '\0';
 	strcat (sharedir, GMT_SHAREDIR_RELATIVE);
 
-	/* Test if the directory exists */
-	if ( access (sharedir, R_OK | X_OK) == 0 )
+	/* Test if the directory exists and is of correct version */
+	if ( access (sharedir, R_OK | X_OK) == 0
+			 && GMT_verify_sharedir_version (sharedir) )
 		/* Return sharedir */
 		return sharedir;
 
 	return NULL;
+}
+
+/* Verifies the correct version of the share directory */
+int GMT_verify_sharedir_version (const char *dir) {
+	static char* required_version = GMT_PACKAGE_VERSION_WITH_SVN_REVISION;
+	char version_file[PATH_MAX+1];
+
+	snprintf (version_file, PATH_MAX+1, "%s/VERSION", dir);
+	return match_string_in_file (version_file, required_version);
 }

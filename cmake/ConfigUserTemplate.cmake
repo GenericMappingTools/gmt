@@ -102,6 +102,9 @@
 # [${GMT_BINARY_DIR}/GMT-${GMT_PACKAGE_VERSION}-src]:
 #set (GMT_RELEASE_PREFIX "release-src-prefix")
 
+# Copy GSHHS files to ${GMT_SHARE_PATH}/coast [FALSE]:
+# set (COPY_GSHHS TRUE)
+
 ##
 ## Section 4: Advanced tweaking
 ##

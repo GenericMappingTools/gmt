@@ -36,6 +36,7 @@
  *  strtok_r                Reentrant string tokenizer from Gnulib (LGPL)
  *  strsep                  Reentrant string tokenizer that handles empty fields
  *  strsepz                 Like strsep but ignores empty fields
+ *  match_string_in_file    Return true if a string is found in file
  */
 
 /* CMake definitions: This must be first! */
@@ -50,6 +51,8 @@
 #include "common_string.h"
 #include "gmt_notposix.h"
 #include "gmt_types.h"
+
+#define BUF_SIZE 4096
 
 char *GMT_chop_ext (char *string) {
 	/* Chops off the filename extension (e.g., .ps) in the string by replacing the last
@@ -353,3 +356,27 @@ char *strsepz (char **stringp, const char *delim) {
 	while ( (c = strsep(stringp, delim)) != NULL && *c == '\0' );
 	return c;
 }
+
+/* Return true if a string is found in file */
+int match_string_in_file (const char *filename, const char *string) {
+	FILE *fp;
+	char line[BUF_SIZE+1];
+
+	fp = fopen (filename, "r");
+	if ( fp == NULL )
+		return false;
+
+	/* make sure string is always \0-terminated */
+	line[BUF_SIZE] = '\0';
+
+	/* search for string in each line */
+	while ( fgets (line, BUF_SIZE, fp) ) {
+		if ( strstr (line, string) )
+			/* line matches */
+			return true;
+	}
+
+	/* string not found in file */
+	return false;
+}
+

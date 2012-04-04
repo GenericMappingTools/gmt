@@ -23,6 +23,7 @@
  * Version: 5
  */
 
+#pragma once
 #ifndef _COMMON_MATH_H
 #define _COMMON_MATH_H
 
@@ -85,4 +86,4 @@ extern "C" {
 }
 #endif
 
-#endif /* _COMMON_MATH_H */
+#endif /* !_COMMON_MATH_H */
