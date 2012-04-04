@@ -1,8 +1,9 @@
 #
 # GMT @GMT_PACKAGE_VERSION@ Defaults file (@GMT_CONF_TEMPLATE@ version)
 #
-# $Revision$ 
+# $Revision$
 # $LastChangedDate$
+# vim:sw=8:ts=8:sts=8
 #
 # COLOR Parameters
 #
@@ -17,6 +18,7 @@ COLOR_HSV_MAX_V			= 1
 #
 # DIR Parameters
 #
+DIR_GSHHS			= @GSHHS_INSTALL_PATH@
 DIR_TMP				=
 DIR_USER			=
 #

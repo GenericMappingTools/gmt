@@ -149,7 +149,8 @@ set (GMT_PSL_SRCS pslib.c common_string.c common_string.h common_runpath.c
 set (GMT_LIB_SRCS gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c
 	gmt_fft.c gmt_grdio.c gmt_io.c  gmt_nc.c gmt_notposix.c gmt_proj.c
 	gmt_shore.c gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c
-	gmt_version.c gmtapi_parse.c common_math.c common_string.c common_runpath.c
+	gmt_version.c gmtapi_parse.c gshhs_version.c gshhs_version.h
+	common_math.c common_string.c common_runpath.c
 	${GMT_PROGS_SRCS} ${GMT_TRIANGLE_SRCS})
 
 set (GMT_LIB_PS_SRCS gmt_init.c gmt_map.c gmt_plot.c gmtapi_util.c

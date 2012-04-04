@@ -27,6 +27,7 @@
  *
  */
 
+#pragma once
 #ifndef _GMT_CALCLOCK_H
 #define _GMT_CALCLOCK_H
 
@@ -67,4 +68,4 @@ struct GMT_TRUNCATE_TIME {		/* Used when TIME_IS_INTERVAL is not OFF */
 	GMT_LONG direction;			/* 0 [+] to center on next interval, 1 [-] for previous interval */
 };
 
-#endif /* _GMT_CALCLOCK_H */
+#endif /* !_GMT_CALCLOCK_H */

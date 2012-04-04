@@ -21,6 +21,7 @@ COLOR_HSV_MIN_V			# Minimum value assigned for most positive intensity value
 #-------------------------------------------------------
 # DIR Group:	Directories to use
 #-------------------------------------------------------
+DIR_GSHHS			# Location of GSHHS files
 DIR_TMP				# Where to write temporary files
 DIR_USER			# Colon-separated list of dirs where we look for data
 #-------------------------------------------------------
@@ -136,3 +137,4 @@ TIME_UNIT			# Unit of time measurement
 TIME_SYSTEM			# Shortcut to setting TIME_EPOCH/UNIT [does not go in gmt.conf]
 TIME_WEEK_START			# Day a new week starts on
 TIME_Y2K_OFFSET_YEAR		# For 2-digit years to separate 1900 and 2000 centuries
+# vim:sw=8:ts=8:sts=8

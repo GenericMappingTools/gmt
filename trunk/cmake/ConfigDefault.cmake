@@ -52,8 +52,11 @@ set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MIN
 # GMT_VERSION_YEAR set to current date in cmake/modules/ConfigCMake.cmake
 # if not specified here:
 #set (GMT_VERSION_YEAR "2012")
-#set (GSHHS_VERSION "2.2.0")
-#set (MANDATE "")
+
+# The minimum required GSHHS version
+set (MIN_REQUIRED_GSHHS_VERSION_MAJOR 2)
+set (MIN_REQUIRED_GSHHS_VERSION_MINOR 2)
+set (MIN_REQUIRED_GSHHS_VERSION_PATCH 0)
 
 # The GMT wiki location
 set (GMT_TRAC_WIKI "http://gmtrac.soest.hawaii.edu/projects/gmt/wiki/")

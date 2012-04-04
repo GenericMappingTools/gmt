@@ -25,12 +25,13 @@
  * Version:	5 API
  */
 
+#pragma once
+#ifndef _GMT_H
+#define _GMT_H
+
 #ifdef __cplusplus	/* Basic C++ support */
 extern "C" {
 #endif
-
-#ifndef _GMT_H
-#define _GMT_H
 
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
@@ -226,6 +227,7 @@ struct GMT_SESSION {
 	PFL fft1d[N_GMT_FFT];			/* Pointers to available 1-D FFT functions (or NULL if not configured) */
 	PFL fft2d[N_GMT_FFT];			/* Pointers to available 2-D FFT functions (or NULL if not configured) */
 	/* This part contains pointers that may point to additional memory outside this struct */
+	char *GSHHSDIR;			/* Path to the GSHHS directory */
 	char *SHAREDIR;			/* Path to the GMT share directory */
 	char *HOMEDIR;			/* Path to the user's home directory */
 	char *USERDIR;			/* Path to the user's GMT settings directory */
@@ -266,7 +268,8 @@ EXTERN_MSC void GMT_memtrack_off (struct GMT_CTRL *C, struct MEMORY_TRACKER *M);
 EXTERN_MSC struct MEMORY_TRACKER *GMT_mem_keeper;
 #endif
 
-#endif  /* _GMT_H */
 #ifdef __cplusplus
 }
 #endif
+
+#endif  /* !_GMT_H */

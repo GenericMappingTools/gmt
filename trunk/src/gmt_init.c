@@ -2255,6 +2255,7 @@ void gmt_free_hash (struct GMT_CTRL *C, struct GMT_HASH *hashnode, GMT_LONG n_it
 
 GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 {
+	static int gmt_version_major = GMT_PACKAGE_VERSION_MAJOR;
 	GMT_LONG error = 0, rec = 0;
 	char line[GMT_BUFSIZ], keyword[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
 	FILE *fp = NULL;
@@ -2267,9 +2268,11 @@ GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		rec++;
-		GMT_chop (line);	/* Get rid of [\r]\n */
-		if (rec == 2 && (strlen (line) < 7 || line[6] != '5')) {
-			GMT_message (C, "Warning: Your gmt.conf file (%s) may not be GMT 5 compatible\n", file);
+		GMT_chop (line); /* Get rid of [\r]\n */
+		if (rec == 2 && (strlen (line) < 7
+			|| strtol (&line[6], NULL, 10) != gmt_version_major )) {
+			GMT_message (C, "Warning: Your gmt.conf file (%s) may not be GMT %d "
+				"compatible\n", file, gmt_version_major);
 		}
 		if (line[0] == '#') continue;	/* Skip comments */
 		if (line[0] == '\0') continue;	/* Skip Blank lines */
@@ -3536,14 +3539,22 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 
 		/* DIR GROUP */
 
+		case GMTCASE_DIR_GSHHS:
+			if (*value) {
+				/* Set session GSHHS dir */
+				C->session.GSHHSDIR = strdup (value);
+			}
+			break;
 		case GMTCASE_DIR_TMP:
-			if (value[0]) {	/* Replace the session temp dir from the environment, if any */
+			if (*value) {
+				/* Replace the session temp dir from the environment, if any */
 				if (C->session.TMPDIR) free (C->session.TMPDIR);
 				C->session.TMPDIR = strdup (value);
 			}
 			break;
 		case GMTCASE_DIR_USER:
-			if (value[0]) {	/* Replace the session user dir from the environment, if any */
+			if (*value) {
+				/* Replace the session user dir from the environment, if any */
 				if (C->session.USERDIR) free (C->session.USERDIR);
 				C->session.USERDIR = strdup (value);
 			}
@@ -5057,10 +5068,16 @@ void GMT_end (struct GMT_CTRL *C)
 	free (C->init.runpath);
 	free (C->session.SHAREDIR);
 	free (C->session.HOMEDIR);
-	if (C->session.USERDIR) free (C->session.USERDIR);
-	if (C->session.DATADIR) free (C->session.DATADIR);
-	if (C->session.TMPDIR) free (C->session.TMPDIR);
-	for (i = 0; i < GMT_N_PROJ4; i++) free (C->current.proj.proj4[i].name);
+	if (C->session.GSHHSDIR)
+		free (C->session.GSHHSDIR);
+	if (C->session.USERDIR)
+		free (C->session.USERDIR);
+	if (C->session.DATADIR)
+		free (C->session.DATADIR);
+	if (C->session.TMPDIR)
+		free (C->session.TMPDIR);
+	for (i = 0; i < GMT_N_PROJ4; i++)
+		free (C->current.proj.proj4[i].name);
 	GMT_free (C, C->current.proj.proj4);
 
 	if (C->current.setting.io_gridfile_shorthand) gmt_freeshorthand (C);
@@ -5220,34 +5237,39 @@ void GMT_set_env (struct GMT_CTRL *C)
 
 	/* Determine C->session.SHAREDIR (directory containing coast, cpt, etc. subdirectories) */
 
-	if ((this = getenv ("GMT5_SHAREDIR")) != CNULL)	/* GMT5_SHAREDIR was set */
+	if ((this = getenv ("GMT5_SHAREDIR")) != CNULL
+			&& GMT_verify_sharedir_version (this) )
+		/* GMT5_SHAREDIR was set */
 		C->session.SHAREDIR = strdup (this);
-	else if ((this = getenv ("GMT_SHAREDIR")) != CNULL)	/* GMT_SHAREDIR was set */
+	else if ((this = getenv ("GMT_SHAREDIR")) != CNULL
+					 && GMT_verify_sharedir_version (this) )
+		/* GMT_SHAREDIR was set */
 		C->session.SHAREDIR = strdup (this);
-	else	/* Default is GMT_SHARE_PATH */
+	else if ( GMT_verify_sharedir_version (GMT_SHARE_PATH) )
+		/* Found in hardcoded GMT_SHARE_PATH */
 		C->session.SHAREDIR = strdup (GMT_SHARE_PATH);
-#ifdef WIN32
-	DOS_path_fix (C->session.SHAREDIR);
-#endif
-
-	/* TODO: smart test if session.SHAREDIR contains files of correct version
-	 * for now we just check if it exists: */
-	if ( access (C->session.SHAREDIR, R_OK|X_OK) ) {
-		/* C->session.SHAREDIR is not accessible, make a smart guess based on
-		 * runpath: */
+	else {
+		/* SHAREDIR still not found, make a smart guess based on runpath: */
 		if ( GMT_guess_sharedir (path, C->init.runpath) )
 			C->session.SHAREDIR = strdup (path);
-		else
+		else {
 			/* Still not found */
-			GMT_report (C, GMT_MSG_FATAL, "Warning: Could not locate GMT_SHAREDIR.\n");
+			GMT_report (C, GMT_MSG_FATAL,
+				"Error: Could not locate share directory that matches the current GMT version %s.\n",
+				GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
+			GMT_exit (EXIT_FAILURE);
+		}
 	}
+	DOS_path_fix (C->session.SHAREDIR);
 
 	/* Determine HOMEDIR (user home directory) */
 
-	if ((this = getenv ("HOME")) != CNULL)	/* HOME was set */
+	if ((this = getenv ("HOME")) != CNULL)
+		/* HOME was set */
 		C->session.HOMEDIR = strdup (this);
 #ifdef WIN32
-	else if ((this = getenv ("HOMEPATH")) != CNULL)	/* HOMEPATH was set */
+	else if ((this = getenv ("HOMEPATH")) != CNULL)
+		/* HOMEPATH was set */
 		C->session.HOMEDIR = strdup (this);
 #endif
 	else
@@ -5258,15 +5280,18 @@ void GMT_set_env (struct GMT_CTRL *C)
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
-	if ((this = getenv ("GMT_USERDIR")) != CNULL)	/* GMT_USERDIR was set */
+	if ((this = getenv ("GMT_USERDIR")) != CNULL)
+		/* GMT_USERDIR was set */
 		C->session.USERDIR = strdup (this);
-	else if (C->session.HOMEDIR) {	/* Use default path for GMT_USERDIR (~/.gmt) */
+	else if (C->session.HOMEDIR) {
+		/* Use default path for GMT_USERDIR (~/.gmt) */
 		sprintf (path, "%s/%s", C->session.HOMEDIR, ".gmt");
 		C->session.USERDIR = strdup (path);
 	}
-	if (access (C->session.USERDIR, R_OK)) {	/* If we cannot access this dir then we won't use it */
+	if (access (C->session.USERDIR, R_OK)) {
+		/* If we cannot access this dir then we won't use it */
 		free (C->session.USERDIR);
-		C->session.USERDIR = CNULL;
+		C->session.USERDIR = NULL;
 	}
 #ifdef WIN32
 	DOS_path_fix (C->session.USERDIR);
@@ -5308,6 +5333,11 @@ void GMT_set_env (struct GMT_CTRL *C)
 		DOS_path_fix (C->session.TMPDIR);
 #endif
 	}
+
+	/*
+		 286       sprintf (stem, "binned_%s_%c", kind[j], res[i]);
+		 287       if (!gmt_shore_getpathname (C, stem, path))
+		 */
 }
 
 GMT_LONG GMT_Complete_Options (struct GMT_CTRL *C, struct GMT_OPTION *options)
@@ -8043,6 +8073,11 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 			GMT_exit (EXIT_FAILURE);
 		}
 		C->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
+		/* If we already know the share dir and user dir: */
+		if (C->PSL->internal.SHAREDIR)
+			C->PSL->internal.SHAREDIR = strdup (C->session.SHAREDIR);
+		if (C->session.USERDIR)
+			C->PSL->internal.USERDIR = strdup (C->session.USERDIR);
 		PSL_beginsession (C->PSL);					/* Initializes the session and sets a few defaults */
 		/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
 		PSL_setdefaults (C->PSL, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb, C->current.setting.ps_encoding.name);

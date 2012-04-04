@@ -17,6 +17,10 @@
  *--------------------------------------------------------------------
  */
 
+#pragma once
+#ifndef _CONFIG_H
+#define _CONFIG_H
+
 /* configured options and settings for GMT */
 #define GMT_PACKAGE_VERSION_MAJOR @GMT_PACKAGE_VERSION_MAJOR@
 #define GMT_PACKAGE_VERSION_MINOR @GMT_PACKAGE_VERSION_MINOR@
@@ -43,5 +47,10 @@
 
 /* path to GSHHS Shoreline Database */
 #define GSHHS_PATH "@GSHHS_PATH@"
+
+/* min required GSHHS version */
+#define GSHHS_MIN_REQUIRED_VERSION {@MIN_REQUIRED_GSHHS_VERSION_MAJOR@, @MIN_REQUIRED_GSHHS_VERSION_MINOR@, @MIN_REQUIRED_GSHHS_VERSION_PATCH@}
+
+#endif /* !_CONFIG_H */
 
 /* vim: set ft=c: */

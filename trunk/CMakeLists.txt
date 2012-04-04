@@ -116,7 +116,7 @@ endif (SVN AND HAVE_SVN_VERSION)
 # Configuration done
 message(
 	"*  Options:\n"
-	"*  Found GSHHS database : ${GSHHS_PATH}\n"
+	"*  Found GSHHS database : ${GSHHS_PATH} (${GSHHS_VERSION})\n"
 	"*  NetCDF library       : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir   : ${NETCDF_INCLUDE_DIR}\n"
 	"*  GDAL library         : ${GDAL_LIBRARY}\n"

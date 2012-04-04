@@ -23,6 +23,7 @@
  * Version: 5
  */
 
+#pragma once
 #ifndef _COMMON_STRING_H
 #define _COMMON_STRING_H
 
@@ -68,8 +69,10 @@ EXTERN_MSC char *strsep (char **stringp, const char *delim);
 #endif
 EXTERN_MSC char *strsepz (char **stringp, const char *delim);
 
+EXTERN_MSC int match_string_in_file (const char *filename, const char *string);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _COMMON_STRING_H */
+#endif /* !_COMMON_STRING_H */

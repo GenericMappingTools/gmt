@@ -157,11 +157,14 @@
  *			PSL CONSTANTS MACRO DEFINITIONS
  *--------------------------------------------------------------------*/
 
-#define PS_LANGUAGE_LEVEL	2
-#define PSL_Version		"5.0"
-#define PSL_SMALL		1.0e-10
-#define PSL_MAX_L1_PATH		1000 	/* Max path length in Level 1 implementations */
-#define PSL_PAGE_HEIGHT_IN_PTS	842	/* A4 height */
+#define PS_LANGUAGE_LEVEL       2
+#define PSL_Version             "5.0"
+#define PSL_label_version       9865 /* Version number should match that of PSL_label.ps */
+#define PSL_prologue_version    9865 /* Version number should match that of PSL_prologue.ps */
+#define PSL_text_version        8899 /* Version number should match that of PSL_text.ps */
+#define PSL_SMALL               1.0e-10
+#define PSL_MAX_L1_PATH         1000    /* Max path length in Level 1 implementations */
+#define PSL_PAGE_HEIGHT_IN_PTS  842     /* A4 height */
 
 /*--------------------------------------------------------------------
  *			PSL FUNCTION MACRO DEFINITIONS
@@ -320,7 +323,7 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 	 * encoding:	The character encoding used
 	 */
 	PSL_LONG i;
-	char *this = NULL;
+	char *this = NULL, path[PATH_MAX+1];
 
 	/* Initialize the PSL structure to default values unless already set */
 
@@ -334,63 +337,62 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 	if (PSL->init.magnify[1] == 0.0) PSL->init.magnify[1] = 1.0;	/* Default magnification global scales */
 	if (PSL->init.page_rgb[0] < 0.0) for (i = 0; i < 3; i++) PSL->init.page_rgb[i] = 1.0;		/* Default paper color */
 
-	/* Determine SHAREDIR (directory containing PSL and pattern subdirectories) */
-	PSL->internal.SHAREDIR = PSL_memory (PSL, NULL, PATH_MAX + 1, char);
-	if ((this = getenv ("PSL_SHAREDIR")) != NULL) {	/* PSL_SHAREDIR was set */
-		strncpy (PSL->internal.SHAREDIR, this, PATH_MAX);
-	}
-	else if ((this = getenv ("GMT5_SHAREDIR")) != NULL) {	/* GMT5_SHAREDIR was set */
-		strncpy (PSL->internal.SHAREDIR, this, PATH_MAX);
-	}
-	else if ((this = getenv ("GMT_SHAREDIR")) != NULL) {	/* GMT_SHAREDIR was set */
-		strncpy (PSL->internal.SHAREDIR, this, PATH_MAX);
-	}
-	else {	/* Default is GMT_SHARE_PATH */
-		strncpy (PSL->internal.SHAREDIR, GMT_SHARE_PATH, PATH_MAX);
-	}
-#ifdef WIN32
-	DOS_path_fix (PSL->internal.SHAREDIR);
-#endif
+	/* Determine SHAREDIR (directory containing PSL and pattern subdirectories)
+	 * but only if not already initialized */
+	if ( PSL->internal.SHAREDIR == NULL ) {
+		if ((this = getenv ("PSL_SHAREDIR")) != NULL)
+			/* PSL_SHAREDIR was set */
+			PSL->internal.SHAREDIR = strdup (this);
+		else {
+			/* Default is GMT_SHARE_PATH */
+			PSL->internal.SHAREDIR = strdup (GMT_SHARE_PATH);
+		}
+		DOS_path_fix (PSL->internal.SHAREDIR);
 
-	/* TODO: smart test if session.SHAREDIR contains files of correct version
-	 * for now we just check if it exists: */
-	if ( access (PSL->internal.SHAREDIR, R_OK|X_OK) ) {
-		/* C->session.SHAREDIR is not accessible */
-		char runpath[PATH_MAX+1]; /* Directory in which the executable resides */
-		GMT_runpath (runpath, PSL->init.session); /* Set runpath */
-		/* Make a smart guess based on runpath */
-		if ( ! GMT_guess_sharedir (PSL->internal.SHAREDIR, runpath) )
-			/* Still not found */
-			PSL_message (PSL, PSL_MSG_FATAL, "Warning: Could not locate PSL_SHAREDIR.\n");
+		/* TODO: smart test if session.SHAREDIR contains files of correct version
+		 * for now we just check if it exists: */
+		if ( access (PSL->internal.SHAREDIR, R_OK|X_OK) ) {
+			/* C->session.SHAREDIR is not accessible */
+			char runpath[PATH_MAX+1]; /* Directory in which the executable resides */
+			GMT_runpath (runpath, PSL->init.session); /* Set runpath */
+			/* Make a smart guess based on runpath */
+			if ( GMT_guess_sharedir (path, runpath) )
+				PSL->internal.SHAREDIR = strdup (path);
+			else
+				/* Still not found */
+				PSL_message (PSL, PSL_MSG_FATAL, "Warning: Could not locate PSL_SHAREDIR.\n");
+		}
 	}
 
 	/* Determine USERDIR (directory containing user replacements contents in SHAREDIR) */
 
-	if ((this = getenv ("PSL_USERDIR")) != NULL) {	/* PSL_USERDIR was set */
-		PSL->internal.USERDIR = PSL_memory (PSL, NULL, strlen (this) + 1, char);
-		strcpy (PSL->internal.USERDIR, this);
-	}
-	else if ((this = getenv ("GMT_USERDIR")) != NULL) {	/* GMT_USERDIR was set */
-		PSL->internal.USERDIR = PSL_memory (PSL, NULL, strlen (this) + 1, char);
-		strcpy (PSL->internal.USERDIR, this);
-	}
-	else if ((this = getenv ("HOME")) != NULL) {	/* HOME was set: try $HOME/.gmt */
-		PSL->internal.USERDIR = PSL_memory (PSL, NULL, strlen (this) + 6, char);
-		sprintf (PSL->internal.USERDIR, "%s/%s", this, ".gmt");
-	}
-	else {
+	if ( PSL->internal.USERDIR == NULL ) {
+		if ((this = getenv ("PSL_USERDIR")) != NULL)
+			/* PSL_USERDIR was set */
+			PSL->internal.USERDIR = strdup (this);
+		else if ((this = getenv ("HOME")) != NULL) {
+			/* HOME was set: try $HOME/.gmt */
+			sprintf (path, "%s/%s", this, ".gmt");
+			PSL->internal.USERDIR = strdup (path);
+		}
 #ifdef WIN32
-		/* Set USERDIR to C:\.gmt under Windows */
-		PSL->internal.USERDIR = PSL_memory (PSL, NULL, 8, char);
-		sprintf (PSL->internal.USERDIR, "C:/%s", ".gmt");
-#else
-		PSL_message (PSL, PSL_MSG_FATAL, "Could not determine home directory!\n");
+		else if ((this = getenv ("HOMEPATH")) != NULL) {
+			/* HOMEPATH was set */
+			sprintf (path, "%s/%s", this, ".gmt");
+			PSL->internal.USERDIR = strdup (path);
+		}
 #endif
+		else
+			PSL_message (PSL, PSL_MSG_FATAL, "Could not determine home directory!\n");
+
+		DOS_path_fix (PSL->internal.USERDIR);
+
+		/* If we cannot read it we might as well not try */
+		if (PSL->internal.USERDIR && access (PSL->internal.USERDIR, R_OK)) {
+			free (PSL->internal.USERDIR);
+			PSL->internal.USERDIR = NULL;
+		}
 	}
-#ifdef WIN32
-	DOS_path_fix (PSL->internal.USERDIR);
-#endif
-	if (access (PSL->internal.USERDIR, R_OK)) PSL->internal.USERDIR = NULL;	/* If we cannot read it we might as well not try */
 
 	if (!PSL->init.encoding) PSL->init.encoding = strdup ("Standard");		/* Character encoding to use */
 	psl_init_fonts (PSL);								/* Load the available font information */
@@ -405,8 +407,10 @@ PSL_LONG PSL_endsession (struct PSL_CTRL *PSL)
 	for (i = 0; i < PSL->internal.N_FONTS; i++) PSL_free (PSL->internal.font[i].name);
 	PSL_free (PSL->internal.font);
 	for (i = 0; i < PSL->internal.n_userimages; i++) PSL_free (PSL->internal.user_image[i]);
-	PSL_free (PSL->internal.SHAREDIR);
-	PSL_free (PSL->internal.USERDIR);
+	if (PSL->internal.SHAREDIR)
+		free (PSL->internal.SHAREDIR);
+	if (PSL->internal.USERDIR)
+		free (PSL->internal.USERDIR);
 	PSL_free (PSL->init.encoding);
 	PSL_free (PSL->init.session);
 	PSL_free (PSL);
@@ -1158,12 +1162,12 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 		PSL_command (PSL, "%%%%EndComments\n\n");
 
 		PSL_command (PSL, "%%%%BeginProlog\n");
-		psl_bulkcopy (PSL, "PSL_prologue", 9865);	/* Version number should match that of PSL_prologue.ps */
+		psl_bulkcopy (PSL, "PSL_prologue", PSL_prologue_version);	/* Version number should match that of PSL_prologue.ps */
 		psl_bulkcopy (PSL, PSL->init.encoding, 0);
 
 		psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */
 
-		psl_bulkcopy (PSL, "PSL_label", 9865);	/* Place code for label line annotations and clipping */
+		psl_bulkcopy (PSL, "PSL_label", PSL_label_version);	/* Place code for label line annotations and clipping */
 		PSL_command (PSL, "%%%%EndProlog\n\n");
 
 		PSL_command (PSL, "%%%%BeginSetup\n");
@@ -2527,7 +2531,7 @@ PSL_LONG psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, 
 	/* Load PSL_text procedures from file for now */
 
 	if (!PSL->internal.text_init) {
-		psl_bulkcopy (PSL, "PSL_text", 8899);
+		psl_bulkcopy (PSL, "PSL_text", PSL_text_version);
 		PSL->internal.text_init = TRUE;
 	}
 
