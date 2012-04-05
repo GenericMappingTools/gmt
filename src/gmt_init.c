@@ -4344,6 +4344,9 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 
 		/* DIR GROUP */
 
+		case GMTCASE_DIR_GSHHS:
+			strcpy (value, (C->session.GSHHSDIR) ? C->session.GSHHSDIR : "");
+			break;
 		case GMTCASE_DIR_TMP:
 			strcpy (value, (C->session.TMPDIR) ? C->session.TMPDIR : "");
 			break;
