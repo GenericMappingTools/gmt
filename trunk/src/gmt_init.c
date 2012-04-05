@@ -3543,6 +3543,9 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			if (*value) {
 				/* Set session GSHHS dir */
 				C->session.GSHHSDIR = strdup (value);
+				/* Force update of session.GSHHSDIR before GMT_begin_module()
+				 * is called to avoid invalid frees after GMT_end_module() */
+				GMT_shore_adjust_res (C, 'c');
 			}
 			break;
 		case GMTCASE_DIR_TMP:

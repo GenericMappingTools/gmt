@@ -1,6 +1,32 @@
+/*--------------------------------------------------------------------
+ *	$Id$
+ *
+ *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: gmt.soest.hawaii.edu
+ *--------------------------------------------------------------------*/
 /*
- * $Id$
- * Helper function to get GSHHS version
+ * gshhs_version.c contains helper functions to access the GSHHS version
+ *
+ * Author:  Florian Wobbe
+ * Date:    5-APR-2012
+ * Version: 5
+ *
+ * Modules in this file:
+ *
+ *  gshhs_get_version            Obtain version information struct from GSHHS file
+ *  gshhs_require_min_version    Check if GSHHS file meets the min version
+ *                               requirement
  */
 
 #include <stdio.h>
@@ -62,6 +88,7 @@ int gshhs_get_version (const char* filename, struct GSHHS_VERSION *gshhs_version
 	return true;
 }
 
+/* Check if GSHHS file meets the min version requirement */
 int gshhs_require_min_version (const char* filename, const struct GSHHS_VERSION min_version) {
   struct GSHHS_VERSION version;
 	/* get version of file */
@@ -84,7 +111,8 @@ int gshhs_require_min_version (const char* filename, const struct GSHHS_VERSION 
 
 #ifdef STANDALONE
 
-/* Compile with -DSTANDALONE to make an executable */
+/* Compile with -DSTANDALONE to make an executable.
+ * This code is executed by CMake to check the installed GSHHS version. */
 
 int main (int argc, char *argv[]) {
 	struct GSHHS_VERSION gshhs_version;

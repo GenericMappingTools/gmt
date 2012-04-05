@@ -221,6 +221,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 	FILE *fp = NULL;
 	char dir[GMT_BUFSIZ];
 	static struct GSHHS_VERSION version = GSHHS_MIN_REQUIRED_VERSION;
+	static int warn_once = true;
 
 	/* This is the order of checking:
 	 * 1. Check in C->session.GSHHSDIR
@@ -233,9 +234,16 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 
 	/* 1. Check in C->session.GSHHSDIR */
 
-	sprintf (path, "%s/%s%s", C->session.GSHHSDIR, stem, NC_FILE_SUFFIX);
-	if ( access (path, R_OK) == 0 && gshhs_require_min_version (path, version) )
-		return (path);
+	if (C->session.GSHHSDIR) {
+		sprintf (path, "%s/%s%s", C->session.GSHHSDIR, stem, NC_FILE_SUFFIX);
+		if ( access (path, R_OK) == 0 && gshhs_require_min_version (path, version) )
+			return (path);
+		else {
+			/* free invalid C->session.GSHHSDIR */
+			free (C->session.GSHHSDIR);
+			C->session.GSHHSDIR = NULL;
+		}
+	}
 
 	/* 2. First check for coastline.conf */
 
@@ -250,6 +258,8 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 			sprintf (path, "%s/%s%s", dir, stem, NC_FILE_SUFFIX);
 			if ( gshhs_require_min_version (path, version) ) {
 				fclose (fp);
+				/* update invalid C->session.GSHHSDIR */
+				C->session.GSHHSDIR = strdup (dir);
 				return (path);
 			}
 		}
@@ -259,14 +269,22 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 	/* 3. Then check for the named file itself */
 
 	if (GMT_getsharepath (C, "coast", stem, NC_FILE_SUFFIX, path)) {
-		if ( gshhs_require_min_version (path, version) )
+		if ( gshhs_require_min_version (path, version) ) {
+			/* update invalid C->session.GSHHSDIR */
+			sprintf (dir, "%s/%s", C->session.SHAREDIR, "coast");
+			C->session.GSHHSDIR = strdup (dir);
 			return (path);
+		}
 	}
 
-	GMT_report (C, GMT_MSG_FATAL, "GSHHS version %d.%d.%d or newer is "
-		"needed to use coastlines with GMT.\n\tGet and intstall GSHHS from "
-		GSHHS_SITE ".\n", version.major, version.minor, version.patch);
-	GMT_exit (EXIT_FAILURE);
+	if (warn_once) {
+		warn_once = false;
+		GMT_report (C, GMT_MSG_FATAL, "GSHHS version %d.%d.%d or newer is "
+								"needed to use coastlines with GMT.\n\tGet and intstall GSHHS from "
+								GSHHS_SITE ".\n", version.major, version.minor, version.patch);
+	}
+
+	/* GMT_exit (EXIT_FAILURE); */
 
 	return (NULL); /* never reached */
 }
