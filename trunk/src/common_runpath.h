@@ -37,24 +37,25 @@ extern "C" {
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
+#if ! defined PATH_MAX && defined MAX_PATH
+#	define PATH_MAX MAX_PATH
+#endif
 #ifndef PATH_MAX
 # define PATH_MAX 4096
 #endif
 
-/* extern char gmt_runpath[PATH_MAX+1]; */
-
 /* Prototypes */
 #if defined (__APPLE__)
-#	define GMT_runpath(result, argv) GMT_runpath_osx(result)
-	EXTERN_MSC char* GMT_runpath_osx (char *result);
-#elif defined(_WIN32)
-#	define GMT_runpath(result, argv) GMT_runpath_win32(result)
-	EXTERN_MSC char* GMT_runpath_win32 (char *result);
+#	define GMT_runtime_bindir(result, argv) GMT_runtime_bindir_osx(result)
+	EXTERN_MSC char *GMT_runtime_bindir_osx (char *result);
+#elif defined (_WIN32)
+#	define GMT_runtime_bindir(result, argv) GMT_runtime_bindir_win32(result)
+	EXTERN_MSC char *GMT_runtime_bindir_win32 (char *result);
 #else
-	EXTERN_MSC char* GMT_runpath (char *result, const char *candidate);
+	EXTERN_MSC char *GMT_runtime_bindir (char *result, const char *candidate);
 #endif
 
-EXTERN_MSC char* GMT_guess_sharedir (char* sharedir, const char* runpath);
+EXTERN_MSC char *GMT_guess_sharedir (char *sharedir, const char *runpath);
 EXTERN_MSC int GMT_verify_sharedir_version (const char *dir);
 
 #ifdef __cplusplus

@@ -155,7 +155,7 @@ struct GMT_INIT {		/* Holds misc run-time parameters */
 	GMT_LONG n_custom_symbols;
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	char *progname;					/* Name of current GMT program */
-	char *runpath;					/* Directory, where current GMT program resides */
+	char *runtime_bindir;				/* Directory that contains the main exe at run-time */
 	char *module_name;				/* Name of current GMT module */
 	char *history[GMT_N_UNIQUE];			/* The internal .gmtcommands information */
 	struct GMT_CUSTOM_SYMBOL **custom_symbol;	/* For custom symbol plotting in psxy[z]. */
