@@ -112,6 +112,9 @@
 #include <string.h>
 #include <time.h>
 #include <stdarg.h>
+#include "gmt_notposix.h"
+#include "common_string.h"
+#include "common_runpath.h"
 #include "pslib.h"
 
 /* Macro for exit since this should be returned when called from Matlab */
@@ -349,18 +352,20 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 		}
 		DOS_path_fix (PSL->internal.SHAREDIR);
 
-		/* TODO: smart test if session.SHAREDIR contains files of correct version
-		 * for now we just check if it exists: */
+		/* test if PSL->internal.SHAREDIR exists */
 		if ( access (PSL->internal.SHAREDIR, R_OK|X_OK) ) {
-			/* C->session.SHAREDIR is not accessible */
-			char runpath[PATH_MAX+1]; /* Directory in which the executable resides */
-			GMT_runpath (runpath, PSL->init.session); /* Set runpath */
-			/* Make a smart guess based on runpath */
-			if ( GMT_guess_sharedir (path, runpath) )
+			/* PSL->internal.SHAREDIR is not accessible */
+			/* Make a smart guess based on runtime library location */
+			if ( GMT_guess_sharedir (path, NULL) ) {
+				free (PSL->internal.SHAREDIR);
 				PSL->internal.SHAREDIR = strdup (path);
-			else
+			}
+			else {
 				/* Still not found */
+				free (PSL->internal.SHAREDIR);
+				PSL->internal.SHAREDIR = NULL;
 				PSL_message (PSL, PSL_MSG_FATAL, "Warning: Could not locate PSL_SHAREDIR.\n");
+			}
 		}
 	}
 

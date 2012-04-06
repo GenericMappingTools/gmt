@@ -282,8 +282,14 @@
 /* define custom function */
 #endif
 
-#ifdef HAVE__SETMODE
+#if defined HAVE__SETMODE && !defined HAVE_SETMODE
 #	define setmode _setmode
+#endif
+
+#if defined HAVE__SNPRINTF_ && !defined HAVE_SNPRINTF_
+#	define snprintf _snprintf
+#elif !defined HAVE_SNPRINTF_
+#	define snprintf(s, n, format, ...) sprintf(s, format, __VA_ARGS__)
 #endif
 
 #ifndef DECLARED_STRDUP

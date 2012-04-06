@@ -82,6 +82,7 @@
 #cmakedefine HAVE_ACCESS
 #cmakedefine HAVE__ACCESS
 #cmakedefine HAVE_BASENAME
+#cmakedefine HAVE_DLADDR
 #cmakedefine HAVE_FILENO
 #cmakedefine HAVE__FILENO
 #cmakedefine HAVE_FOPEN64
@@ -104,6 +105,8 @@
 #cmakedefine HAVE_QSORT_R
 #cmakedefine HAVE_QSORT_S
 #cmakedefine HAVE__SETMODE
+#cmakedefine HAVE_SNPRINTF_
+#cmakedefine HAVE__SNPRINTF_
 #cmakedefine HAVE_STRICMP
 #cmakedefine HAVE_STRDUP
 #cmakedefine HAVE_STRSEP

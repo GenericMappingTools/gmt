@@ -31,7 +31,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 #include <netcdf.h>
 #include "gshhs_version.h"
@@ -40,6 +39,10 @@
 #define VERSION_ATT_NAME "version"
 #define FAILURE_PREFIX "gshhs_version: "
 
+/* Suppress Visual Studio deprecation warnings */
+#	ifdef _MSC_VER
+#		pragma warning( disable : 4996 )
+#	endif
 
 /* Get value from VERSION_ATT_NAME of netCDF file and populate gshhs_version,
  * gshhs_version_major, gshhs_version_minor, and gshhs_version_patch */
@@ -53,25 +56,25 @@ int gshhs_get_version (const char* filename, struct GSHHS_VERSION *gshhs_version
 	status = nc_open(filename, NC_NOWRITE, &ncid);
 	if (status != NC_NOERR) {
 		fprintf(stderr, FAILURE_PREFIX "cannot open file \"%s\" (%d).\n", filename, status);
-		return false;
+		return 0;
 	}
 
 	/* get length of version string */
 	status = nc_inq_attlen (ncid, NC_GLOBAL, VERSION_ATT_NAME, &v_len);
 	if (status != NC_NOERR) {
 		fprintf(stderr, FAILURE_PREFIX "cannot inquire version attribute length from file \"%s\" (%d).\n", filename, status);
-		return false;
+		return 0;
 	}
 	if (v_len == 0 || v_len > BUF_SIZE) {
 		fprintf(stderr, FAILURE_PREFIX "invalid version attribute length: %zd\n", v_len);
-		return false;
+		return 0;
 	}
 
 	/* get version string */
 	status = nc_get_att_text (ncid, NC_GLOBAL, VERSION_ATT_NAME, gshhs_version_string);
 	if (status != NC_NOERR) {
 		fprintf(stderr, FAILURE_PREFIX "cannot read version attribute from file \"%s\" (%d).\n", filename, status);
-		return false;
+		return 0;
 	}
 
 	/* null-terminate version string */
@@ -82,10 +85,10 @@ int gshhs_get_version (const char* filename, struct GSHHS_VERSION *gshhs_version
 									 &gshhs_version->major, &gshhs_version->minor, &gshhs_version->patch);
 	if (status != 3) {
 		fprintf(stderr, FAILURE_PREFIX "cannot parse version string \"%s\" (%d).\n", gshhs_version_string, status);
-		return false;
+		return 0;
 	}
 
-	return true;
+	return 1;
 }
 
 /* Check if GSHHS file meets the min version requirement */
@@ -93,20 +96,20 @@ int gshhs_require_min_version (const char* filename, const struct GSHHS_VERSION 
   struct GSHHS_VERSION version;
 	/* get version of file */
 	if ( ! gshhs_get_version (filename, &version) )
-		return false;
+		return 0;
 
 	/* compare versions */
 	if ( version.major < min_version.major )
-		return false;
+		return 0;
 	if ( version.minor < min_version.minor )
-		return false;
+		return 0;
 	if ( version.patch < min_version.patch )
-		return false;
+		return 0;
 
 #ifdef GSHHS_VERSION_DEBUG
 	fprintf (stderr, FAILURE_PREFIX "%s\n", filename);
 #endif
-	return true;
+	return 1;
 }
 
 #ifdef STANDALONE

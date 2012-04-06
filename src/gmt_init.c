@@ -5071,7 +5071,7 @@ void GMT_end (struct GMT_CTRL *C)
 #endif
 #endif
 
-	free (C->init.runpath);
+	free (C->init.runtime_bindir);
 	free (C->session.SHAREDIR);
 	free (C->session.HOMEDIR);
 	if (C->session.GSHHSDIR)
@@ -5256,7 +5256,7 @@ void GMT_set_env (struct GMT_CTRL *C)
 		C->session.SHAREDIR = strdup (GMT_SHARE_PATH);
 	else {
 		/* SHAREDIR still not found, make a smart guess based on runpath: */
-		if ( GMT_guess_sharedir (path, C->init.runpath) )
+		if ( GMT_guess_sharedir (path, C->init.runtime_bindir) )
 			C->session.SHAREDIR = strdup (path);
 		else {
 			/* Still not found */
@@ -7954,9 +7954,9 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 	/* We use the calling programs session name as program name */
 	C->init.progname = basename(session);
 
-	/* Set runpath */
-	GMT_runpath (path, session);
-	C->init.runpath = strdup (path);
+	/* Set runtime bindir */
+	GMT_runtime_bindir (path, session);
+	C->init.runtime_bindir = strdup (path);
 
 	GMT_set_env (C);	/* Get GMT_SHAREDIR and other environment path parameters */
 

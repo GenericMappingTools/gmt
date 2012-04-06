@@ -35,8 +35,9 @@
 
 #define GMT_TRAC_WIKI "@GMT_TRAC_WIKI@"
 
-/* path to executables */
+/* path to executables/libs */
 #define GMT_BINDIR_RELATIVE "@GMT_BINDIR@"
+#define GMT_LIBDIR_RELATIVE "@GMT_LIBDIR@"
 
 /* path to shared files */
 #define GMT_SHARE_PATH "@CMAKE_INSTALL_PREFIX@/@GMT_SHARE_PATH@"
