@@ -5,10 +5,17 @@
 # Bash script inclusion to test all GMT examples.
 # It sets the environment such that the examples are created as in the manual.
 
+test -z "$1" && exit 1
+
 # Where the current script resides (need absolute path)
-script_name=$1
-script_dir=$(dirname "$1")
-current_dir=$PWD
+script_name="$1"
+script_dir=$(dirname "${script_name}")
+script="@GMT_SOURCE_DIR@/doc/examples/${script_name}"
+if ! [ -x "${script}" ]; then
+  echo "error: cannot execute script ${script}." 1>&2
+  exit 1
+fi
+
 shift
 
 # Determine if awk is buggy
@@ -31,12 +38,12 @@ GMT_BINARY_DIR="@GMT_BINARY_DIR@"
 GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 EXTRA_FONTS_DIR="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
-src="$GMT_SOURCE_DIR/doc/examples/$script_dir"
+src="@GMT_SOURCE_DIR@/doc/examples/${script_dir}"
 
 # Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
-export PATH="@GMT_BINARY_DIR_PATH@:$GMT_SOURCE_DIR/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
-export GMT5_SHAREDIR="$GMT_SOURCE_DIR/share"
-export GMT_USERDIR="$GMT_BINARY_DIR/share"
+export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
+export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
+export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 
 # Reset error count
 ERROR=0
@@ -59,7 +66,7 @@ if ! [ -x "$GRAPHICSMAGICK" ]; then
 fi
 for ps in *.ps ; do
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/$ps") || pscmpfailed="yes"
+  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "${src}/${ps}") || pscmpfailed="yes"
   rms=$(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p' <<< "$rms")
   if [ -z "$rms" ]; then
     rms="NA"
@@ -68,13 +75,13 @@ for ps in *.ps ; do
   fi
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
-    echo "$ps: RMS Error = $rms [FAIL]"
-    echo "$now $ps: RMS Error = $rms" >> "$current_dir/fail_count.d"
+    echo "${ps}: RMS Error = $rms [FAIL]"
+    echo "$now ${ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
     make_pdf "$ps" # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
-    echo "$ps: RMS Error = $rms [PASS]"
+    echo "${ps}: RMS Error = $rms [PASS]"
   fi
 done
 }
@@ -82,8 +89,8 @@ done
 # Make sure to cleanup at end
 function cleanup()
 {
-  cd "$current_dir" # get out of exec_dir before removing it
-  test "$ERROR" -eq 0 && rm -rf "$exec_dir"
+  cd "@CMAKE_CURRENT_BINARY_DIR@" # get out of exec_dir before removing it test
+  "$ERROR" -eq 0 && rm -rf "$exec_dir"
   echo "exit status: $ERROR"
   exit $ERROR
 }
@@ -112,17 +119,18 @@ trap on_err ERR SIGSEGV SIGTRAP SIGBUS
 # Create a temporary directory exec_dir in the build dir
 # Then copy all of its contents (except *.ps files)
 # Run remainder of this GMT script there
-exec_dir="$current_dir/$script_dir"
+exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${script_dir}"
 rm -rf "$exec_dir"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
+GLOBIGNORE="*.ps:*.sh"
 ln -fs "$src"/* .
-rm -f *.ps *.sh
+unset GLOBIGNORE
 
 # Start with proper GMT defaults
 gmtset -Du FORMAT_TIME_LOGO "Version 5"
 
 # Now run the original script
-. "$GMT_SOURCE_DIR/doc/examples/$script_name"
+. "${script}"
 
 # vim: ft=sh

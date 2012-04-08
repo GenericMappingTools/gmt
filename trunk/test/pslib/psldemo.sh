@@ -7,4 +7,5 @@
 # Unix progs:   -
 #
 ps=psldemo.ps
+export PSL_SHAREDIR="$GMT_SHAREDIR"
 psldemo > $ps

@@ -7,10 +7,17 @@
 # Print the shell script name and purpose and fill out to 72 characters
 # and make sure to use US system defaults
 
+test -z "$1" && exit 1
+
 # Name of the script and the directory portion of it
-script_name=$1
-script_dir=$(dirname "$1")
-current_dir="$PWD"
+script_name="$1"
+script_dir=$(dirname "${script_name}")
+script="@GMT_SOURCE_DIR@/test/${script_name}"
+if ! [ -x "${script}" ]; then
+  echo "error: cannot execute script ${script}." 1>&2
+  exit 1
+fi
+
 shift
 
 # Temporary change LANG to C
@@ -22,12 +29,12 @@ GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
 HAVE_OPENMP="@HAVE_OPENMP@"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
-src="$GMT_SOURCE_DIR/test/$script_dir"
+src="@GMT_SOURCE_DIR@/test/${script_dir}"
 
 # Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
-export PATH="@GMT_BINARY_DIR_PATH@:$GMT_SOURCE_DIR/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
-export GMT5_SHAREDIR="$GMT_SOURCE_DIR/share"
-export GMT_USERDIR="$GMT_BINARY_DIR/share"
+export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
+export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
+export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 export GMT_DATADIR="$src"
 
 # Reset error count
@@ -61,13 +68,13 @@ for ps in *.ps ; do
   fi
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
-    echo "$script_dir/$ps: RMS Error = $rms [FAIL]"
-    echo "$now $script_dir/$ps: RMS Error = $rms" >> "$current_dir/fail_count.d"
+    echo "${script_dir}/${ps}: RMS Error = $rms [FAIL]"
+    echo "$now ${script_dir}/${ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
     make_pdf "$ps" # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
-    echo "$script_dir/$ps: RMS Error = $rms [PASS]"
+    echo "${script_dir}/${ps}: RMS Error = $rms [PASS]"
   fi
 done
 }
@@ -77,7 +84,7 @@ passfail () {
   if [ -s fail ]; then
     now=$(date "+%F %T")
     echo "[FAIL]"
-    echo "$now $script_name: $(wc -l fail) failed lines" >> "$current_dir/fail_count.d"
+    echo "$now ${script_name}: $(wc -l fail) failed lines" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
     mv -f fail $1.log
     ((++ERROR))
   else
@@ -88,7 +95,7 @@ passfail () {
 # Make sure to cleanup at end
 function cleanup()
 {
-  cd "$current_dir" # get out of exec_dir before removing it
+  cd "@CMAKE_CURRENT_BINARY_DIR@" # get out of exec_dir before removing it
   test "$ERROR" -eq 0 && rm -rf "$exec_dir"
   echo "exit status: $ERROR"
   exit $ERROR
@@ -118,7 +125,7 @@ trap on_err ERR SIGSEGV SIGTRAP SIGBUS
 
 # Create a temporary directory exec_dir in the build dir
 # and run remainder of this GMT script there
-exec_dir="$current_dir/${script_name%.sh}"
+exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${script_name%.sh}"
 rm -rf "$exec_dir"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
@@ -127,6 +134,6 @@ cd "$exec_dir"
 gmtset -Du
 
 # Now run the original script
-. "$GMT_SOURCE_DIR/test/$script_name"
+. "${script}"
 
 # vim: ft=sh
