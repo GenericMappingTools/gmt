@@ -344,8 +344,7 @@ char *GMT_guess_sharedir (char *sharedir, const char *runtime_bindir) {
 #endif
 
 	/* Test if the directory exists and is of correct version */
-	if ( access (sharedir, R_OK | X_OK) == 0
-			 && GMT_verify_sharedir_version (sharedir) )
+	if ( GMT_verify_sharedir_version (sharedir) )
 		/* Return sharedir */
 		return sharedir;
 
@@ -357,7 +356,32 @@ int GMT_verify_sharedir_version (const char *dir) {
 	static char *required_version = GMT_PACKAGE_VERSION_WITH_SVN_REVISION;
 	char version_file[PATH_MAX+1];
 
-	sharedir_from_runtime_libdir (version_file);
-	snprintf (version_file, PATH_MAX+1, "%s/VERSION", dir);
-	return match_string_in_file (version_file, required_version);
+#ifdef DEBUG_RUNPATH
+	fprintf (stderr, "GMT_verify_sharedir_version: got dir '%s'.\n", dir);
+#endif
+
+	/* If the directory exists */
+	if ( access (dir, R_OK | X_OK) == 0 ) {
+		snprintf (version_file, PATH_MAX+1, "%s/VERSION", dir);
+		/* Check correct version */
+		if ( match_string_in_file (version_file, required_version) ) {
+#ifdef DEBUG_RUNPATH
+			fprintf (stderr, "GMT_verify_sharedir_version: found '%s' (%s).\n",
+				version_file, required_version);
+#endif
+			return true;
+		}
+		else {
+			/* Special case: accept share dir in source tree.
+			 * Needed when running GMT from build dir. */
+			snprintf (version_file, PATH_MAX+1, "%s/VERSION.in", dir);
+			if ( access (version_file, R_OK) == 0 ) {
+#ifdef DEBUG_RUNPATH
+				fprintf (stderr, "GMT_verify_sharedir_version: found '%s'.\n", version_file);
+#endif
+				return true;
+			}
+		}
+	}
+	return false;
 }

@@ -350,7 +350,6 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 			/* Default is GMT_SHARE_PATH */
 			PSL->internal.SHAREDIR = strdup (GMT_SHARE_PATH);
 		}
-		DOS_path_fix (PSL->internal.SHAREDIR);
 
 		/* test if PSL->internal.SHAREDIR exists */
 		if ( access (PSL->internal.SHAREDIR, R_OK|X_OK) ) {
@@ -367,6 +366,8 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 				PSL_message (PSL, PSL_MSG_FATAL, "Warning: Could not locate PSL_SHAREDIR.\n");
 			}
 		}
+		else
+			DOS_path_fix (PSL->internal.SHAREDIR);
 	}
 
 	/* Determine USERDIR (directory containing user replacements contents in SHAREDIR) */
