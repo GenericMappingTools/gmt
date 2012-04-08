@@ -4,9 +4,17 @@
 #
 # Functions to be used with test scripts
 
+test -z "$1" && exit 1
+
 # Where the current script resides (need absolute path)
-script_name=$1
-current_dir=$PWD
+script_name="$1"
+script_dir=$(dirname "${script_name}")
+script="@GMT_SOURCE_DIR@/doc/scripts/${script_name}"
+if ! [ -x "${script}" ]; then
+  echo "error: cannot execute script ${script}." 1>&2
+  exit 1
+fi
+
 shift
 
 # Determine if awk is buggy
@@ -40,13 +48,13 @@ LANG=C
 GMT_BINARY_DIR="@GMT_BINARY_DIR@"
 GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
-src="$GMT_SOURCE_DIR/doc/scripts"
+src="@GMT_SOURCE_DIR@/doc/scripts"
 
 # Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
-export PATH="@GMT_BINARY_DIR_PATH@:$GMT_SOURCE_DIR/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
-export GMT5_SHAREDIR="$GMT_SOURCE_DIR/share"
-export GMT_USERDIR="$GMT_BINARY_DIR/share"
-export GMT_DATADIR="$GMT_SOURCE_DIR/doc/scripts"
+export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
+export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
+export GMT_USERDIR="@GMT_BINARY_DIR@/share"
+export GMT_DATADIR="@GMT_SOURCE_DIR@/doc/scripts"
 
 # Reset error count
 ERROR=0
@@ -68,7 +76,7 @@ pscmp () {
     return
   fi
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/$ps") || pscmpfailed="yes"
+  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "${src}/${ps}") || pscmpfailed="yes"
   rms=$(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p' <<< "$rms")
   if [ -z "$rms" ]; then
     rms="NA"
@@ -77,20 +85,20 @@ pscmp () {
   fi
   if [ "$pscmpfailed" ]; then
     now=$(date "+%F %T")
-    echo "$ps: RMS Error = $rms [FAIL]"
-    echo "$now $ps: RMS Error = $rms" >> $current_dir/fail_count.d
+    echo "${ps}: RMS Error = $rms [FAIL]"
+    echo "$now ${ps}: RMS Error = $rms" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.d"
     make_pdf "$ps" # try to make pdf file
     ((++ERROR))
   else
     test -z "$rms" && rms=NA
-    echo "$ps: RMS Error = $rms [PASS]"
+    echo "${ps}: RMS Error = $rms [PASS]"
   fi
 }
 
 # Make sure to cleanup at end
 function cleanup()
 {
-  cd "$current_dir" # get out of exec_dir before removing it
+  cd "@CMAKE_CURRENT_BINARY_DIR@" # get out of exec_dir before removing it
   test "$ERROR" -eq 0 && rm -rf "$exec_dir"
   echo "exit status: $ERROR"
   exit $ERROR
@@ -120,7 +128,7 @@ trap on_err ERR SIGSEGV SIGTRAP SIGBUS
 # Create a temporary directory exec_dir in the build dir
 # Then copy all of its contents (except *.ps files)
 # Run remainder of this GMT script there
-exec_dir="$current_dir/${script_name%.sh}"
+exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${script_name%.sh}"
 rm -rf "$exec_dir"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
@@ -132,6 +140,6 @@ gmtset -Du PS_CHAR_ENCODING ISOLatin1+
 ps="${script_name%.sh}.ps"
 
 # Now run the original script
-. "$src/$script_name"
+. "${script}"
 
 # vim: ft=sh
