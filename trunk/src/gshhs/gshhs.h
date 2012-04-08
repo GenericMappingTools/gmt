@@ -42,6 +42,8 @@
 #define _GSHHS
 #include "gmt_config.h"
 
+#include "gmt_notposix.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef HAVE_CTYPE_H_

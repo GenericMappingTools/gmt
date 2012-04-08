@@ -55,8 +55,9 @@ void *get_memory (void *prev_addr, int n, size_t size, char *progname);
 int main (int argc, char **argv)
 {
 	FILE *fp_in = NULL, *fp_out = NULL;
+	size_t n_read;
 	int n_id, n_out, n, k, verbose = FALSE, *index;
-	int n_tot_in, n_tot_out, n_use, n_read, flip, version;
+	int n_tot_in, n_tot_out, n_use, flip, version;
 	int *x = NULL, *y = NULL;
 	double redux, redux2, tolerance = 0.0;
 	struct GSHHS h;

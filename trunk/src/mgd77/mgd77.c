@@ -320,9 +320,9 @@ double MGD77_Sind (double z) {
 	return (sind (z));
 }
 
-int wrong_filler (char *field, int length) {
+int wrong_filler (char *field, size_t length) {
 	/* Returns TRUE if the field is completely 00000.., 9999., or ?????. */
-	int i, nines, zeros, qmarks;
+	unsigned i, nines, zeros, qmarks;
 
 	for (i = nines = zeros = qmarks = 0; field[i] && i < length; i++) {
 		if (field[i] == '0')
@@ -1478,8 +1478,7 @@ int MGD77_Write_Data_Record_txt (struct GMT_CTRL *C, struct MGD77_CONTROL *F, st
 	
 int MGD77_Write_Data_Record_m77t (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single tabular MGD77T record */
 {
-	int k;
-	char buffer[BUFSIZ], line[BUFSIZ];
+	char buffer[BUFSIZ], line[BUFSIZ], *end;
 	double r_time;
 
 	/* Because some values may be 9 or 99 as that was used in the old sMGD77 ystem, these should now become NaN/NULL to prevent their output */
@@ -1518,8 +1517,14 @@ int MGD77_Write_Data_Record_m77t (struct GMT_CTRL *C, struct MGD77_CONTROL *F, s
 	place_int (MGD77T_GQC, "%1d");		strcat (line, "\t");
 	place_text (1);				strcat (line, "\t");
 	place_text (2);
-	/* Remove trailing tabs */
-	for (k = strlen (line) - 1; k >= 0 && line[k] == '\t'; k--) line[k] = 0;
+
+	/* Find end of line */
+	end = line + strlen (line);
+	/* Step backward until first non-tab */
+	while ((--end != line) && *end == '\t');
+	/* Chop off trailing tabs */
+	*(end + 1) = '\0';
+
 	fputs (line, F->fp);	fputs ("\n", F->fp);
 
 	return (MGD77_NO_ERROR);

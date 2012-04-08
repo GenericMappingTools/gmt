@@ -75,7 +75,8 @@ int main (int argc, char **argv)
 	static char *slevel[] = { "unknown" , "land" , "lake" , "island in lake" , "pond in island in lake"};
 	int shore_levels = 5;
 	FILE	*fp = NULL, *ascii_fp = NULL, *att1_fp = NULL, *att2_fp = NULL;
-	int k, max = 270000000, flip, n_read, level, version, greenwich, src, river, shorelines;
+	size_t n_read;
+	int k, max = 270000000, flip, level, version, greenwich, src, river, shorelines;
 	struct POINT p;
 	struct GSHHS h;
 	int max_id=0;
