@@ -73,19 +73,22 @@ file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED "${_license_combined}")
 
 
 # Install components:
-set (CPACK_COMPONENTS_ALL Runtime Documentation)
+set (CPACK_COMPONENTS_ALL Runtime Documentation GSHHS)
 set (CPACK_COMPONENT_DOCUMENTATION_DISABLED ON)
 set (CPACK_COMPONENT_RUNTIME_DISPLAY_NAME "Runtime files")
 set (CPACK_COMPONENT_RUNTIME_DESCRIPTION
 	"GMT programs, libraries and shared files.")
 set (CPACK_COMPONENT_DOCUMENTATION_DESCRIPTION
-	"Documentation and Example files.")
+	"Documentation and example files.")
+set (CPACK_COMPONENT_GSHHS_DESCRIPTION
+	"Shoreline database files.")
 
 # Create two installation types with pre-selected components:
 set (CPACK_ALL_INSTALL_TYPES Full Minimal)
 set (CPACK_INSTALL_TYPE_FULL_DISPLAY_NAME "Everything")
 set (CPACK_COMPONENT_RUNTIME_INSTALL_TYPES Minimal Full)
 set (CPACK_COMPONENT_DOCUMENTATION_INSTALL_TYPES Full)
+set (CPACK_COMPONENT_GSHHS_INSTALL_TYPES Full)
 
 # One package per COMPONENT:
 set(CPACK_COMPONENTS_GROUPING "IGNORE")
