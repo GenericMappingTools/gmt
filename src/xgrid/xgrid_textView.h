@@ -45,16 +45,12 @@ typedef struct {
 #endif
 #define XtCPrecision	"Precision"
 
-extern Widget createTextView ();
-		/* String name, Widget parent, Arg args[], int nargs */
+extern Widget createTextView (String name, Widget parent, Arg args[], int nargs);
 
-extern void setTextViewGrid ();
-		/* Widget view, Grid * grid */
+extern void setTextViewGrid (Widget view, Grid * grid);
 
-extern void recalculateDisplayParameters ();
-		/* Widget view */
+extern void recalculateDisplayParameters (Widget view);
 
-extern void redrawGridValue ();
-		/* Widget view, int col, int row */
+extern void redrawGridValue (Widget view, int col, int row);
 #endif
 

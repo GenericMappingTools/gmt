@@ -16,11 +16,10 @@
 
 Widget	messageWidget = NULL;
 
-Widget createMessageLine (name, parent, args, nargs)
-	String name;
-	Widget parent;
-	Arg    args[];
-	int    nargs;
+Widget createMessageLine (String name,
+			  Widget parent,
+			  Arg    args[],
+			  int    nargs)
 {
   Widget result;
   Arg    list[32];
@@ -40,8 +39,7 @@ Widget createMessageLine (name, parent, args, nargs)
   return result;
 }
 
-void setMessageLine (newMessage)
-	String newMessage;
+void setMessageLine (String newMessage)
 {
   if (messageWidget != NULL)
     XtVaSetValues(messageWidget, XtNlabel, newMessage, NULL);

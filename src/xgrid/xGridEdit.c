@@ -25,19 +25,17 @@ static Boolean done;
 
 /****	Local procedures  ****/
 
-static void usage (); /* String argv[] */
-static void quitGridEdit (); /* Widget w, void * callData, void * clientData */
+static void usage (String argv[]);
+static void quitGridEdit (Widget w, void * callData, void * clientData);
 
-static void usage (argv)
-	String argv[];
+static void usage (String argv[])
 {
   printf("Usage: %s <grid file name>\n", argv[0]);
 }
 
-static void quitGridEdit (w, call, client)
-	Widget	w;
-	void *	call;
-	void *	client;
+static void quitGridEdit (Widget w __attribute__((unused)),
+			  void *call __attribute__((unused)),
+			  void *client __attribute__((unused)))
 {
   /* There may be more than one callback on the Quit button, and
      the order of execution is undefined. We therefore can't

@@ -76,8 +76,7 @@ static Widget	inputArea;
 static Widget	inputField;
 static Widget	undoButton;
 
-Widget createTextInputArea (parent)
-	Widget parent;
+Widget createTextInputArea (Widget parent)
 {
   Widget label;
   
@@ -113,8 +112,7 @@ Widget createTextInputArea (parent)
   
 }
 
-void setViewForInput (data)
-	TextViewData * data;
+void setViewForInput (TextViewData *data)
 {
   theView = data;
   clearInputSelection();
@@ -138,9 +136,8 @@ static void clearUndo ()
   XtSetSensitive(undoButton, False);
 }
 
-void setInputSelection (col, row)
-	int	col;
-	int	row;
+void setInputSelection (int	col,
+			int	row)
 {
   char str[64];
 
@@ -158,20 +155,18 @@ void setInputSelection (col, row)
   XawTextSetInsertionPoint(inputField, strlen(str));
 }
 
-static void Beep (w, event, params, nparams)
-	Widget		w;
-	XEvent *	event;
-	String *	params;
-	Cardinal *	nparams;
+static void Beep (Widget	w,
+		  XEvent *	event __attribute__((unused)),
+		  String *	params __attribute__((unused)),
+		  Cardinal *	nparams __attribute__((unused)))
 {
   XBell(XtDisplay(w), 100);
 }
 
-static void EnterNewValue (w, event, params, nparams)
-	Widget		w;
-	XEvent *	event;
-	String *	params;
-	Cardinal *	nparams;
+static void EnterNewValue (Widget	w __attribute__((unused)),
+			   XEvent *	event __attribute__((unused)),
+			   String *	params __attribute__((unused)),
+			   Cardinal *	nparams __attribute__((unused)))
 {
   GridValue newValue;
   String    field;
@@ -185,7 +180,6 @@ static void EnterNewValue (w, event, params, nparams)
   /* Update grid */
   XtVaGetValues(inputField, XtNstring, &field, NULL);
   sscanf(field, "%f", &newValue);
-fprintf (stderr, "Decoded to %g\n", newValue);
   SetGrid(theView->grid, selection.col, selection.row, newValue);
   redrawGridValue(theView->canvas, selection.col, selection.row);
   /* Tell user */
@@ -199,10 +193,9 @@ fprintf (stderr, "Decoded to %g\n", newValue);
   gridHasChanged = True;
 }
 
-static void undoNewValue (w, clientData, callData)
-	Widget	w;
-	void *	clientData;
-	void *	callData;
+static void undoNewValue (Widget	w __attribute__((unused)),
+			  void *	clientData __attribute__((unused)),
+			  void *	callData __attribute__((unused)))
 {
   XPoint    index;
   GridPoint coord;

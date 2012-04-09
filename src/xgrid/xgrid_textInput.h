@@ -1,12 +1,14 @@
 #ifndef _TEXTINPUT_
 #define _TEXTINPUT_
 
-extern Widget createTextInputArea (); /* Widget parent */
+#include "xgrid_textView.h"
 
-extern void setViewForInput (); /* TextViewData * data */
+extern Widget createTextInputArea (Widget parent); /*  */
 
-extern void clearInputSelection (); /* void */
-extern void setInputSelection (); /* int col, int row */
+extern void setViewForInput (TextViewData * data); /*  */
+
+extern void clearInputSelection (void); /*  */
+extern void setInputSelection (int col, int row); /*  */
 
 #endif
 

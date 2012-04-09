@@ -10,11 +10,9 @@ typedef struct {
 	Widget	  canvas;
 	} ViewData;
 
-extern Widget	createView ();
-		/* String fileName, Widget parent, Arg args[], int nargs */
+extern Widget	createView (struct GMT_CTRL *, String fileName, Widget parent, Arg args[], int nargs);
 
-extern void	createFileCommands ();
-		/* Widget parent */
+extern void	createFileCommands (Widget parent);
 
 /* Anything which changes the grid must set this flag */
 
