@@ -208,7 +208,7 @@
 #		endif
 #	elif SIZEOF_LONG_LONG == 8 && SIZEOF_LONG == 4 /* Win X64/IA-64 */
 #		ifndef __LLP64__
-#			define __LP64__ 1
+#			define __LLP64__ 1
 #		endif
 #	endif /* SIZEOF_LONG == 8 && SIZEOF_INT == 4 */
 #endif /* CMAKE_SIZEOF_VOID_P == 4 */
