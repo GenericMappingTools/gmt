@@ -55,20 +55,8 @@
 
 /* Safe math macros that check arguments */
 
-#ifdef __APPLE__
-#ifdef __x86_64__
-/* Temorarily bypass Apple 64-bit log10 bug on Leopard 10.5.2->
- * This bug has been fixed in Snow Leopard 10.6 */
-/* #define LOG2_10_SCALE 0x1.34413509F79FFp-2 */
-#define LOG2_10_SCALE 0.30102999566398114250631579125183634459972381591796875
-#define d_log10(C,x) ((x) <= 0.0 ? C->session.d_NaN : LOG2_10_SCALE * log2 (x))
-#define d_log101p(C,x) ((x) <= -1.0 ? C->session.d_NaN : LOG2_10_SCALE * log2 (1.0+(x)))
-#endif
-#endif
-#ifndef LOG2_10_SCALE
 #define d_log10(C,x) ((x) <= 0.0 ? C->session.d_NaN : log10 (x))
 #define d_log101p(C,x) ((x) <= -1.0 ? C->session.d_NaN : log10 (1.0+(x)))
-#endif
 #define d_sqrt(x) ((x) < 0.0 ? 0.0 : sqrt (x))
 #define d_acos(x) (fabs(x) >= 1.0 ? ((x) < 0.0 ? M_PI : 0.0) : acos(x))
 #define d_asin(x) (fabs(x) >= 1.0 ? copysign (M_PI_2, (x)) : asin(x))
