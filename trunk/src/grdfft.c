@@ -635,7 +635,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	
 	for (nused = 0, k = 2; k < Grid->header->size; k += 2) {
 		freq = (*get_k)(k, K);
-		ifreq = irint (fabs (freq) * r_delta_k) - 1;
+		ifreq = lrint (fabs (freq) * r_delta_k) - 1;
 		if (ifreq < 0) ifreq = 0;	/* Might happen when doing r spectrum  */
 		if (ifreq >= nk) continue;	/* Might happen when doing r spectrum  */
 		power[ifreq] += hypot (datac[k], datac[k+1]);

@@ -329,14 +329,14 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 		/* The following works for both pixel and grid-registered grids since we are here using the i,j to measure the width of the
 		 * taper zone in units of dx, dy. */
 		 
-		B[n].out_i0 = irint ((B[n].G.header.wesn[XLO] - h->wesn[XLO]) * h->r_inc[GMT_X]);
-		B[n].in_i0  = irint ((B[n].wesn[XLO] - h->wesn[XLO]) * h->r_inc[GMT_X]) - 1;
-		B[n].in_i1  = irint ((B[n].wesn[XHI] - h->wesn[XLO]) * h->r_inc[GMT_X]) + one_or_zero;
-		B[n].out_i1 = irint ((B[n].G.header.wesn[XHI] - h->wesn[XLO]) * h->r_inc[GMT_X]) - B[n].G.header.registration;
-		B[n].out_j0 = irint ((h->wesn[YHI] - B[n].G.header.wesn[YHI]) * h->r_inc[GMT_Y]);
-		B[n].in_j0  = irint ((h->wesn[YHI] - B[n].wesn[YHI]) * h->r_inc[GMT_Y]) - 1;
-		B[n].in_j1  = irint ((h->wesn[YHI] - B[n].wesn[YLO]) * h->r_inc[GMT_Y]) + one_or_zero;
-		B[n].out_j1 = irint ((h->wesn[YHI] - B[n].G.header.wesn[YLO]) * h->r_inc[GMT_Y]) - B[n].G.header.registration;
+		B[n].out_i0 = lrint ((B[n].G.header.wesn[XLO] - h->wesn[XLO]) * h->r_inc[GMT_X]);
+		B[n].in_i0  = lrint ((B[n].wesn[XLO] - h->wesn[XLO]) * h->r_inc[GMT_X]) - 1;
+		B[n].in_i1  = lrint ((B[n].wesn[XHI] - h->wesn[XLO]) * h->r_inc[GMT_X]) + one_or_zero;
+		B[n].out_i1 = lrint ((B[n].G.header.wesn[XHI] - h->wesn[XLO]) * h->r_inc[GMT_X]) - B[n].G.header.registration;
+		B[n].out_j0 = lrint ((h->wesn[YHI] - B[n].G.header.wesn[YHI]) * h->r_inc[GMT_Y]);
+		B[n].in_j0  = lrint ((h->wesn[YHI] - B[n].wesn[YHI]) * h->r_inc[GMT_Y]) - 1;
+		B[n].in_j1  = lrint ((h->wesn[YHI] - B[n].wesn[YLO]) * h->r_inc[GMT_Y]) + one_or_zero;
+		B[n].out_j1 = lrint ((h->wesn[YHI] - B[n].G.header.wesn[YLO]) * h->r_inc[GMT_Y]) - B[n].G.header.registration;
 
 		B[n].wxl = M_PI * h->inc[GMT_X] / (B[n].wesn[XLO] - B[n].G.header.wesn[XLO]);
 		B[n].wxr = M_PI * h->inc[GMT_X] / (B[n].G.header.wesn[XHI] - B[n].wesn[XHI]);
@@ -669,7 +669,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	S.header.z_min = DBL_MAX;	S.header.z_max = -DBL_MAX;	/* These will be updated in the loop below */
 	wrap_x = (GMT_is_geographic (GMT, GMT_OUT));	/* Periodic geographic grid */
-	if (wrap_x) nx_360 = irint (360.0 * S.header.r_inc[GMT_X]);
+	if (wrap_x) nx_360 = lrint (360.0 * S.header.r_inc[GMT_X]);
 
 	for (row = 0; row < S.header.ny; row++) {	/* For every output row */
 

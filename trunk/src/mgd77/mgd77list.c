@@ -1230,7 +1230,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
 						need_date = FALSE;
 					}
-					i = irint (dvalue[ms_col][rec]);
+					i = lrint (dvalue[ms_col][rec]);
 					k = (i == 2) ? m2_col : m1_col;
 					m = MGD77_Recalc_Mag_Anomaly_IGRF (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], FALSE);
 				}
@@ -1239,7 +1239,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
 						need_date = FALSE;
 					}
-					i = irint (dvalue[ms_col][rec]);
+					i = lrint (dvalue[ms_col][rec]);
 					k = (i == 2) ? m1_col : m2_col;
 					m = MGD77_Recalc_Mag_Anomaly_IGRF (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], FALSE);
 				}
@@ -1249,7 +1249,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
 						need_date = FALSE;
 					}
-					i = irint (dvalue[ms_col][rec]);
+					i = lrint (dvalue[ms_col][rec]);
 					k = (i == 2) ? m2_col : m1_col;
 					m = MGD77_Recalc_Mag_Anomaly_CM4 (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], FALSE, &CM4);
 				}
@@ -1258,7 +1258,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
 						need_date = FALSE;
 					}
-					i = irint (dvalue[ms_col][rec]);
+					i = lrint (dvalue[ms_col][rec]);
 					k = (i == 2) ? m1_col : m2_col;
 					m = MGD77_Recalc_Mag_Anomaly_CM4 (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], FALSE, &CM4);
 				}

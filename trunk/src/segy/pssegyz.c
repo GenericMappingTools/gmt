@@ -396,12 +396,12 @@ with lines with gradients slope0 and slope1 respectively */
 
 	if (y0 == y_edge) return;
 
-	pedge_y = irint ((y_edge-GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
-	py0 = irint ((y0 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
+	pedge_y = lrint ((y_edge-GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
+	py0 = lrint ((y0 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
 	if (y0 < y_edge) {
 		for (iy = py0; iy < pedge_y; iy++) {
-			ix1 = irint ((x0-GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - y0) * slope0) * PSL_DOTS_PER_INCH);
-			ix2 = irint ((x1-GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - y0) * slope1) * PSL_DOTS_PER_INCH);
+			ix1 = lrint ((x0-GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - y0) * slope0) * PSL_DOTS_PER_INCH);
+			ix2 = lrint ((x1-GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - y0) * slope1) * PSL_DOTS_PER_INCH);
 			if (ix1 < ix2) {
 				for (ix = ix1; ix < ix2; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
 			} else {
@@ -410,8 +410,8 @@ with lines with gradients slope0 and slope1 respectively */
 		}
 	} else {
 		for (iy = pedge_y; iy < py0; iy++) {
-			ix1 = irint ((x0 - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) +  GMT->current.proj.z_project.ymin - y0) * slope0) * PSL_DOTS_PER_INCH);
-			ix2 = irint ((x1 - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) +GMT->current.proj.z_project.ymin - y0) * slope1) * PSL_DOTS_PER_INCH);
+			ix1 = lrint ((x0 - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) +  GMT->current.proj.z_project.ymin - y0) * slope0) * PSL_DOTS_PER_INCH);
+			ix2 = lrint ((x1 - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) +GMT->current.proj.z_project.ymin - y0) * slope1) * PSL_DOTS_PER_INCH);
 			if (ix1 < ix2) {
 				for (ix = ix1; ix < ix2; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
 			} else {
@@ -433,12 +433,12 @@ and slopes of the two other sides */
 
 	if (apex_y == edge_y) return;
 
-	papex_y = irint ((apex_y - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH); /* location in pixels in y of apex and edge */
-	pedge_y = irint ((edge_y - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
+	papex_y = lrint ((apex_y - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH); /* location in pixels in y of apex and edge */
+	pedge_y = lrint ((edge_y - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
 	if (apex_y < edge_y) {
 		for (iy = papex_y; iy < pedge_y; iy++) {
-			x1 = irint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - apex_y) * slope) * PSL_DOTS_PER_INCH);
-			x2 = irint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - apex_y) * slope0) * PSL_DOTS_PER_INCH);
+			x1 = lrint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - apex_y) * slope) * PSL_DOTS_PER_INCH);
+			x2 = lrint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - apex_y) * slope0) * PSL_DOTS_PER_INCH);
 #ifdef DEBUG
 			GMT_report (GMT, GMT_MSG_DEBUG, "apex_y<edge_y iy %ld x1 %ld x2 %ld\n",iy,x1,x2);
 #endif
@@ -451,8 +451,8 @@ and slopes of the two other sides */
 		}
 	} else {
 		for (iy = pedge_y; iy < papex_y; iy++) {
-			x1 = irint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - apex_y) * slope) * PSL_DOTS_PER_INCH);
-			x2 = irint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH )+ GMT->current.proj.z_project.ymin - apex_y) * slope0) * PSL_DOTS_PER_INCH);
+			x1 = lrint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - apex_y) * slope) * PSL_DOTS_PER_INCH);
+			x2 = lrint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH )+ GMT->current.proj.z_project.ymin - apex_y) * slope0) * PSL_DOTS_PER_INCH);
 #ifdef DEBUG
 				GMT_report (GMT, GMT_MSG_DEBUG, "apex_y>edge_y iy %ld x1 %ld x2 %ld\n",iy,x1,x2);
 #endif

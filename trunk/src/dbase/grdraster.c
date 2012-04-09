@@ -543,16 +543,16 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		lon_tol = 0.01 * rasinfo[nfound].h.inc[GMT_X];
 		global_lon -= lon_tol;	/* make sure we don't fail to find a truly global file  */
 		if (rasinfo[nfound].geo && rasinfo[nfound].h.wesn[XHI] - rasinfo[nfound].h.wesn[XLO] >= global_lon) {
-			rasinfo[nfound].nglobal = irint (360.0 / rasinfo[nfound].h.inc[GMT_X]);
+			rasinfo[nfound].nglobal = lrint (360.0 / rasinfo[nfound].h.inc[GMT_X]);
 		}
 		else
 			rasinfo[nfound].nglobal = 0;
 
 		rasinfo[nfound].h.command[stop_point] = '\0';
 
-		i = irint ((rasinfo[nfound].h.wesn[XHI] - rasinfo[nfound].h.wesn[XLO])/rasinfo[nfound].h.inc[GMT_X]);
+		i = lrint ((rasinfo[nfound].h.wesn[XHI] - rasinfo[nfound].h.wesn[XLO])/rasinfo[nfound].h.inc[GMT_X]);
 		rasinfo[nfound].h.nx = (int)((rasinfo[nfound].h.registration) ? i : i + 1);
-		j = irint ((rasinfo[nfound].h.wesn[YHI] - rasinfo[nfound].h.wesn[YLO])/rasinfo[nfound].h.inc[GMT_Y]);
+		j = lrint ((rasinfo[nfound].h.wesn[YHI] - rasinfo[nfound].h.wesn[YLO])/rasinfo[nfound].h.inc[GMT_Y]);
 		rasinfo[nfound].h.ny = (int)((rasinfo[nfound].h.registration) ? j : j + 1);
 
 		if ((ksize = get_byte_size (GMT, rasinfo[nfound].type)) == 0)
@@ -831,10 +831,10 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->I.active) {
 		GMT_memcpy (Grid->header->inc, Ctrl->I.inc, 2, double);
 		tol = 0.01 * myras.h.inc[GMT_X];
-		imult = irint (Grid->header->inc[GMT_X] / myras.h.inc[GMT_X]);
+		imult = lrint (Grid->header->inc[GMT_X] / myras.h.inc[GMT_X]);
 		if (imult < 1 || fabs(Grid->header->inc[GMT_X] - imult * myras.h.inc[GMT_X]) > tol) error++;
 		tol = 0.01 * myras.h.inc[GMT_Y];
-		jmult = irint (Grid->header->inc[GMT_Y] / myras.h.inc[GMT_Y]);
+		jmult = lrint (Grid->header->inc[GMT_Y] / myras.h.inc[GMT_Y]);
 		if (jmult < 1 || fabs(Grid->header->inc[GMT_Y] - jmult * myras.h.inc[GMT_Y]) > tol) error++;
 		if (error) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Your -I option does not create a grid which fits the selected raster (%s)\n", myras.h.command);
@@ -857,10 +857,10 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && rint (Grid->header->inc[GMT_X] * 60.0) == (Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
 			GMT_LONG w, e, s, n, wm, em, sm, nm;
 
-			w = (GMT_LONG) floor (Grid->header->wesn[XLO]);	wm = irint ((Grid->header->wesn[XLO] - w) * 60.0);
-			e = (GMT_LONG) floor (Grid->header->wesn[XHI]);	em = irint ((Grid->header->wesn[XHI] - e) * 60.0);
-			s = (GMT_LONG) floor (Grid->header->wesn[YLO]);	sm = irint ((Grid->header->wesn[YLO] - s) * 60.0);
-			n = (GMT_LONG) floor (Grid->header->wesn[YHI]);	nm = irint ((Grid->header->wesn[YHI] - n) * 60.0);
+			w = (GMT_LONG) floor (Grid->header->wesn[XLO]);	wm = lrint ((Grid->header->wesn[XLO] - w) * 60.0);
+			e = (GMT_LONG) floor (Grid->header->wesn[XHI]);	em = lrint ((Grid->header->wesn[XHI] - e) * 60.0);
+			s = (GMT_LONG) floor (Grid->header->wesn[YLO]);	sm = lrint ((Grid->header->wesn[YLO] - s) * 60.0);
+			n = (GMT_LONG) floor (Grid->header->wesn[YHI]);	nm = lrint ((Grid->header->wesn[YHI] - n) * 60.0);
 			GMT_report (GMT, GMT_MSG_NORMAL, "%s -> -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld\n", r_opt->arg, w, wm, e, em, s, sm, n, nm);
 		}
 		else
@@ -869,25 +869,25 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Now Enforce that wesn will fit inc[GMT_X], inc[GMT_Y].  Set nx, ny but reset later based on G or P  */
 	tol = 0.01 * Grid->header->inc[GMT_X];
-	Grid->header->nx = irint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO])/Grid->header->inc[GMT_X]);
+	Grid->header->nx = lrint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO])/Grid->header->inc[GMT_X]);
 	if (fabs ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) - Grid->header->inc[GMT_X] * Grid->header->nx) > tol) error++;
 	tol = 0.01 * Grid->header->inc[GMT_Y];
-	Grid->header->ny = irint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO])/Grid->header->inc[GMT_Y]);
+	Grid->header->ny = lrint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO])/Grid->header->inc[GMT_Y]);
 	if (fabs ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) - Grid->header->inc[GMT_Y] * Grid->header->ny) > tol) error++;
 	if (error) {	/* Must cleanup and give warning */
 		Grid->header->wesn[XLO] = floor (Grid->header->wesn[XLO] / Grid->header->inc[GMT_X]) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[XHI] =  ceil (Grid->header->wesn[XHI] / Grid->header->inc[GMT_X]) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[YLO] = floor (Grid->header->wesn[YLO] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y];
 		Grid->header->wesn[YHI] =  ceil (Grid->header->wesn[YHI] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y];
-		Grid->header->nx = irint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) / Grid->header->inc[GMT_X]);
-		Grid->header->ny = irint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) / Grid->header->inc[GMT_Y]);
+		Grid->header->nx = lrint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) / Grid->header->inc[GMT_X]);
+		Grid->header->ny = lrint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) / Grid->header->inc[GMT_Y]);
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your -R option does not create a region divisible by inc[GMT_X], inc[GMT_Y].\n");
 		if (doubleAlmostEqualZero (rint (Grid->header->inc[GMT_X] * 60.0), Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
 			GMT_LONG w, e, s, n, wm, em, sm, nm;
-			w = (GMT_LONG) floor (Grid->header->wesn[XLO]);	wm = irint ((Grid->header->wesn[XLO] - w) * 60.0);
-			e = (GMT_LONG) floor (Grid->header->wesn[XHI]);	em = irint ((Grid->header->wesn[XHI] - e) * 60.0);
-			s = (GMT_LONG) floor (Grid->header->wesn[YLO]);	sm = irint ((Grid->header->wesn[YLO] - s) * 60.0);
-			n = (GMT_LONG) floor (Grid->header->wesn[YHI]);	nm = irint ((Grid->header->wesn[YHI] - n) * 60.0);
+			w = (GMT_LONG) floor (Grid->header->wesn[XLO]);	wm = lrint ((Grid->header->wesn[XLO] - w) * 60.0);
+			e = (GMT_LONG) floor (Grid->header->wesn[XHI]);	em = lrint ((Grid->header->wesn[XHI] - e) * 60.0);
+			s = (GMT_LONG) floor (Grid->header->wesn[YLO]);	sm = lrint ((Grid->header->wesn[YLO] - s) * 60.0);
+			n = (GMT_LONG) floor (Grid->header->wesn[YHI]);	nm = lrint ((Grid->header->wesn[YHI] - n) * 60.0);
 			if (!GMT->common.R.oblique)
 				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld.\n", w, wm, e, em, s, sm, n, nm);
 			else
@@ -929,8 +929,8 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	grdlonorigin = GMT_col_to_x (GMT, 0, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
 	raslatorigin = GMT_row_to_y (GMT, 0, myras.h.wesn[YLO], myras.h.wesn[YHI], myras.h.inc[GMT_Y], myras.h.xy_off, myras.h.ny);
 	raslonorigin = GMT_col_to_x (GMT, 0, myras.h.wesn[XLO], myras.h.wesn[XHI], myras.h.inc[GMT_X], myras.h.xy_off, myras.h.nx);
-	irasstart = irint ((grdlonorigin - raslonorigin) / myras.h.inc[GMT_X]);
-	jrasstart = irint ((raslatorigin - grdlatorigin) / myras.h.inc[GMT_Y]);
+	irasstart = lrint ((grdlonorigin - raslonorigin) / myras.h.inc[GMT_X]);
+	jrasstart = lrint ((raslatorigin - grdlatorigin) / myras.h.inc[GMT_Y]);
 	if (myras.nglobal) while (irasstart < 0) irasstart += myras.nglobal;
 	n_nan = 0;
 

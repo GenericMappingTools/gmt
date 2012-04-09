@@ -404,7 +404,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		az_offset = 0.0;
 		start_angle = 90.0;
 	}
-	n_bins = (Ctrl->A.inc <= 0.0) ? 1 : irint (total_arc / Ctrl->A.inc);
+	n_bins = (Ctrl->A.inc <= 0.0) ? 1 : lrint (total_arc / Ctrl->A.inc);
 
 	sum = GMT_memory (GMT, NULL, n_bins, double);
 	xx = GMT_memory (GMT, NULL, n_bins+2, double);
@@ -722,7 +722,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT->current.map.frame.draw) {	/* Draw grid lines etc */
 		GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
 		off = max_radius * Ctrl->S.scale;
-		n_alpha = (GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval > 0.0) ? irint (total_arc / GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval) : -1;
+		n_alpha = (GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval > 0.0) ? lrint (total_arc / GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval) : -1;
 		for (i = 0; i <= n_alpha; i++) {
 			angle = i * GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval;
 			sincosd (angle, &s, &c);
@@ -731,7 +731,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			PSL_plotsegment (PSL, 0.0, 0.0, x, y);
 		}
 
-		n_bins = (GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval > 0.0) ? irint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) : -1;
+		n_bins = (GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval > 0.0) ? lrint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) : -1;
 		for (i = 1; i <= n_bins; i++)
 			PSL_plotarc (PSL, 0.0, 0.0, i * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval * Ctrl->S.scale, 0.0, total_arc, PSL_MOVE + PSL_STROKE);
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
@@ -777,7 +777,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (GMT->current.map.frame.axis[GMT_Y].label[0]) PSL_plottext (PSL, 0.0, y, GMT->current.setting.font_label.size, GMT->current.map.frame.axis[GMT_Y].label, 0.0, 10, form);
 			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
 			PSL_plottext (PSL, 0.0, -GMT->current.setting.map_annot_offset[0], GMT->current.setting.font_annot[0].size, "0", 0.0, 10, form);
-			n_annot = (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval > 0.0) ? irint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval) : -1;
+			n_annot = (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval > 0.0) ? lrint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval) : -1;
 			for (i = 1; i <= n_annot; i++) {
 				x = i * GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
 				sprintf (text, format, x);

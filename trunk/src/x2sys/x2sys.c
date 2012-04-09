@@ -1149,8 +1149,8 @@ void x2sys_bix_init (struct GMT_CTRL *C, struct X2SYS_BIX *B, GMT_LONG alloc)
 {
 	B->i_bin_x = 1.0 / B->inc[GMT_X];
 	B->i_bin_y = 1.0 / B->inc[GMT_Y];
-	B->nx_bin = irint ((B->wesn[XHI] - B->wesn[XLO]) * B->i_bin_x);
-	B->ny_bin = irint ((B->wesn[YHI] - B->wesn[YLO]) * B->i_bin_y);
+	B->nx_bin = lrint ((B->wesn[XHI] - B->wesn[XLO]) * B->i_bin_x);
+	B->ny_bin = lrint ((B->wesn[YHI] - B->wesn[YLO]) * B->i_bin_y);
 	B->nm_bin = B->nx_bin * B->ny_bin;
 	if (alloc) B->binflag = GMT_memory (C, NULL, B->nm_bin, unsigned int);
 }

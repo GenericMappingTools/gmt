@@ -1189,8 +1189,8 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		GMT_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
 
 	one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 0 : 1;
-	nx_new = irint ((wesn_new[XHI] - wesn_new[XLO]) / Gin->header->inc[GMT_X]) + one_or_zero;
-	ny_new = irint ((wesn_new[YHI] - wesn_new[YLO]) / Gin->header->inc[GMT_Y]) + one_or_zero;
+	nx_new = lrint ((wesn_new[XHI] - wesn_new[XLO]) / Gin->header->inc[GMT_X]) + one_or_zero;
+	ny_new = lrint ((wesn_new[YHI] - wesn_new[YLO]) / Gin->header->inc[GMT_Y]) + one_or_zero;
 
 	Ctrl->S.nx = nx_new;		Ctrl->S.ny = ny_new;
 

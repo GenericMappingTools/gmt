@@ -43,7 +43,7 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 		GMT_memcpy (G->header->wesn, hdr, 4, double);
 		G->header->z_min = hdr[4];
 		G->header->z_max = hdr[5];
-		G->header->registration = (int) irint (hdr[6]);
+		G->header->registration = (int) lrint (hdr[6]);
 		G->header->inc[GMT_X] = hdr[7];
 		G->header->inc[GMT_Y] = hdr[8];
 	}
@@ -66,7 +66,7 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 		}
 		if (nrhs == 5) {
 			r = mxGetData (prhs[3]);
-			G->header->registration = (GMT_LONG)irint (r[0]);
+			G->header->registration = lrint (r[0]);
 		}
 		else
 			G->header->registration = GMT_GRIDLINE_REG;

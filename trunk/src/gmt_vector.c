@@ -936,7 +936,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 
 		if (mode == 1) {	/* First follow meridian, then parallel */
 			theta = fabs (lon[i]-lon[i-1]) * cosd (lat[i-1]);
-			n_step = irint (theta / step);
+			n_step = lrint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
 				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
@@ -945,7 +945,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 				n_tmp++;
 			}
 			theta = fabs (lat[i]-lat[i-1]);
-			n_step = irint (theta / step);
+			n_step = lrint (theta / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
 				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
@@ -958,7 +958,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 
 		else if (mode == 2) {	/* First follow parallel, then meridian */
 			theta = fabs (lat[i]-lat[i-1]);
-			n_step = irint (theta / step);
+			n_step = lrint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
 				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
@@ -967,7 +967,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 				n_tmp++;
 			}
 			theta = fabs (lon[i]-lon[i-1]) * cosd(lat[i]);
-			n_step = irint (theta / step);
+			n_step = lrint (theta / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
 				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
@@ -982,7 +982,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 		else if ((theta = d_acosd (GMT_dot3v (C, a, b))) == 180.0)	/* trouble, no unique great circle */
 			GMT_report (C, GMT_MSG_NORMAL, "Warning: Two points in input list are antipodal - no resampling taken place!\n");
 
-		else if ((n_step = irint (theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+		else if ((n_step = lrint (theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			fraction = 1.0 / (double)n_step;
 			minlon = MIN (lon[i-1],lon[i]);
 			maxlon = MAX (lon[i-1],lon[i]);
@@ -1040,7 +1040,7 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 
 	for (i = 1; i < n; i++) {
 		if (mode == 1) {	/* First follow x, then y */
-			n_step = irint (fabs (x[i] - x[i-1]) / step);
+			n_step = lrint (fabs (x[i] - x[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
 				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
@@ -1048,7 +1048,7 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 				y_tmp[n_tmp] = y[i-1];
 				n_tmp++;
 			}
-			n_step = irint (fabs (y[i]-y[i-1]) / step);
+			n_step = lrint (fabs (y[i]-y[i-1]) / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
 				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
@@ -1059,7 +1059,7 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 			k = 0;
 		}
 		else if (mode == 2) {	/* First follow y, then x */
-			n_step = irint (fabs (y[i]-y[i-1]) / step);
+			n_step = lrint (fabs (y[i]-y[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
 				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
@@ -1067,7 +1067,7 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
 				n_tmp++;
 			}
-			n_step = irint (fabs (x[i]-x[i-1]) / step);
+			n_step = lrint (fabs (x[i]-x[i-1]) / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
 				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
@@ -1078,7 +1078,7 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 			k = 0;
 		}
 		/* Follow straight line */
-		else if ((n_step = irint (hypot (x[i]-x[i-1], y[i]-y[i-1]) / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+		else if ((n_step = lrint (hypot (x[i]-x[i-1], y[i]-y[i-1]) / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
 				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);

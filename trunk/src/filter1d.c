@@ -547,7 +547,7 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 	time = F->t_start;
 	left = right = 0;		/* Left/right end of filter window */
 
-	iq = irint (F->q_factor);
+	iq = lrint (F->q_factor);
 
 	while (time <= (F->t_stop + small)) {
 		while ((time - F->data[F->t_col][left] - small) > F->half_width) ++left;

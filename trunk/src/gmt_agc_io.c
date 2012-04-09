@@ -133,7 +133,7 @@ GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
 	ny = GMT_get_n (C, y_min, y_max, y_inc, 0);
 	if (ny <= 0) return (GMT_GRDIO_BAD_VAL);
 	/* OK so far; see if file size matches the predicted size given the header info */
-	predicted_size = irint (ceil ((double)ny /ZBLOCKHEIGHT) * ceil ((double)nx / ZBLOCKWIDTH)) * (ZBLOCKHEIGHT * ZBLOCKWIDTH + PREHEADSIZE + POSTHEADSIZE) * sizeof (float);
+	predicted_size = lrint (ceil ((double)ny /ZBLOCKHEIGHT) * ceil ((double)nx / ZBLOCKWIDTH)) * (ZBLOCKHEIGHT * ZBLOCKWIDTH + PREHEADSIZE + POSTHEADSIZE) * sizeof (float);
 	if (predicted_size == buf.st_size) return (GMT_GRD_IS_AF);	/* Yes, appears to be an AGC grid */
 	return (GMT_GRDIO_BAD_VAL);
 }
@@ -247,8 +247,8 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	
 	header->z_min = +DBL_MAX;	header->z_max = -DBL_MAX;
 	
-	n_blocks_y = irint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
-	n_blocks_x = irint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
+	n_blocks_y = lrint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
+	n_blocks_x = lrint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
 	n_blocks = n_blocks_x * n_blocks_y;
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {
@@ -354,8 +354,8 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	
 	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
-	n_blocks_y = irint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
-	n_blocks_x = irint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
+	n_blocks_y = lrint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
+	n_blocks_x = lrint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
 	n_blocks = n_blocks_x * n_blocks_y;
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {

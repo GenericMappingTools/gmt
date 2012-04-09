@@ -171,8 +171,8 @@
 	EXTERN_MSC double hypot(double x, double y);
 #endif
 
-#ifndef HAVE_IRINT
-#	define irint (int)rint
+#ifndef HAVE_LRINT
+#	define lrint (long)rint
 #endif
 
 /* Handle IEEE NaNs */

@@ -452,7 +452,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		cellsize *= dist_pr_deg * dist_pr_deg;
 	}
 
-	n_contours = (Ctrl->C.active) ? irint ((Ctrl->C.high - Ctrl->C.low) / Ctrl->C.inc) + 1 : 1;
+	n_contours = (Ctrl->C.active) ? lrint ((Ctrl->C.high - Ctrl->C.low) / Ctrl->C.inc) + 1 : 1;
 
 	height = GMT_memory (GMT, NULL, n_contours, double);
 	vol    = GMT_memory (GMT, NULL, n_contours, double);

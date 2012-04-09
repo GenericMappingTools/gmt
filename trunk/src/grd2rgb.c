@@ -177,10 +177,10 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 
 	/* That's the way it should be but, I don't know why, the result is transposed. Instead
 	   of the number of lines I get number of columns. This is very weird and smells BUG */
-	/* *raw_nx = j;		*raw_ny = irint((float)n_pix / raw_nx);*/
+	/* *raw_nx = j;		*raw_ny = lrint((float)n_pix / raw_nx);*/
 
 	/* So be it */
-	*raw_ny = j;		*raw_nx = irint((float)n_pix / (*raw_ny));
+	*raw_ny = j;		*raw_nx = lrint((float)n_pix / (*raw_ny));
 
 	if ((*raw_nx) * (*raw_ny) != n_pix) {
 		/* Let's make another attempt to find the right nx * ny combination. The idea is that we
@@ -190,9 +190,9 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: first test based on FFT failed to guess image dimensions.\n\tI'll do now a second try\t");
 		k = 1;		pm = 1;		l = 1;
 		while (k < 41) {
-			i = *raw_ny + irint (copysign((double)l, (double)pm));
+			i = *raw_ny + lrint (copysign((double)l, (double)pm));
 			pm *= -1.;
-			j = (*raw_nx) + irint (copysign((double)l, (double)pm));
+			j = (*raw_nx) + lrint (copysign((double)l, (double)pm));
 			if (i*j == n_pix) {	/* Got a good candidate */
 				*raw_ny = i;	*raw_nx = j;
 				GMT_report (GMT, GMT_MSG_NORMAL, "... SUCCESS (W = %ld, H = %ld)\n", *raw_nx, *raw_ny);

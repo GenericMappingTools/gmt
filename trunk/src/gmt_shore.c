@@ -329,7 +329,7 @@ void GMT_set_levels (struct GMT_CTRL *C, char *info, struct GMT_SHORE_SELECT *I)
 	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
 	if (strstr (info, "+r"))  I->flag = GSHHS_NO_LAKES;
 	if ((p = strstr (info, "+p"))) {	/* Requested percentage limit on small features */
-		I->fraction = irint (1e6 * 0.01 * atoi (&p[2]));	/* Convert to integer microfraction */
+		I->fraction = lrint (1e6 * 0.01 * atoi (&p[2]));	/* Convert to integer microfraction */
 	}
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
@@ -465,7 +465,7 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 	ie =  (GMT_LONG)(ceil (wesn[XHI] / c->bsize) * c->bsize);
 	is = 90 - (GMT_LONG)(ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
 	in = 90 - (GMT_LONG)(floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
-	idiv = irint (360.0 / c->bsize);	/* Number of blocks per latitude band */
+	idiv = lrint (360.0 / c->bsize);	/* Number of blocks per latitude band */
 
 	for (i = nb = 0; i < c->n_bin; i++) {	/* Find which bins are needed */
 		this_south = 90 - (GMT_LONG)(c->bsize * ((i / idiv) + 1));
@@ -735,7 +735,7 @@ GMT_LONG GMT_init_br (struct GMT_CTRL *C, char which, char res, struct GMT_BR *c
 	ie =  (GMT_LONG)(ceil (wesn[XHI] / c->bsize) * c->bsize);
 	is = 90 - (GMT_LONG)(ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
 	in = 90 - (GMT_LONG)(floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
-	idiv = irint (360.0 / c->bsize);	/* Number of blocks per latitude band */
+	idiv = lrint (360.0 / c->bsize);	/* Number of blocks per latitude band */
 
 	for (i = nb = 0; i < c->n_bin; i++) {	/* Find which bins are needed */
 		this_south = 90 - (GMT_LONG)(c->bsize * ((i / idiv) + 1));

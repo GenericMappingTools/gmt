@@ -390,7 +390,7 @@ GMT_LONG write_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *heade
 		GMT_report (C, GMT_MSG_NORMAL, "Warning: ESRI Arc/Info ASCII Interchange file must use proxy for NaN; default to -9999\n");
 		header->nan_value = -9999.0;
 	}
-	sprintf (record, "nodata_value %d\n", irint (header->nan_value));
+	sprintf (record, "nodata_value %ld\n", lrint (header->nan_value));
 	GMT_fputs (record, fp);		/* Write a text record */
 
 	return (GMT_NOERROR);
@@ -584,13 +584,13 @@ GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 			if (i == last) c[0] = '\n';
 			kk = inc * (ij+k[i]) + off;
 			if (GMT_is_fnan (grid[kk]))
-				sprintf (item, "%d%c", irint (header->nan_value), c[0]);
+				sprintf (item, "%ld%c", lrint (header->nan_value), c[0]);
 			else if (floating) {
 				sprintf (item, C->current.setting.format_float_out, grid[kk]);
 				strcat (item, c);
 			}
 			else
-				sprintf (item, "%d%c", irint ((double)grid[kk]), c[0]);
+				sprintf (item, "%ld%c", lrint ((double)grid[kk]), c[0]);
 			GMT_fputs (item, fp);
 		}
 	}

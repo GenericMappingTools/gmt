@@ -938,8 +938,8 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		x_width = GMT->current.proj.z_project.xmax - GMT->current.proj.z_project.xmin;	/* Size of image in inches */
 		y_width = GMT->current.proj.z_project.ymax - GMT->current.proj.z_project.ymin;
-		nx_i = irint (x_width * Ctrl->Q.dpi);	/* Size of image in pixels */
-		ny_i = irint (y_width * Ctrl->Q.dpi);
+		nx_i = lrint (x_width * Ctrl->Q.dpi);	/* Size of image in pixels */
+		ny_i = lrint (y_width * Ctrl->Q.dpi);
 		last_i = nx_i - 1;	last_j = ny_i - 1;
 
 		if (drape_resample) {

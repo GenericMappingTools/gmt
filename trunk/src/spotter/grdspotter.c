@@ -387,7 +387,7 @@ GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, st
 	/* Get the flowline from this point back to time tt, restricted to the given wesn box */
 	n_chunk = spotter_forthtrack (GMT, &xx, &yy, &tt, 1, p, n_stages, d_km, 0.0, flag, wesn, &c);
 
-	n_track = irint (c[0]);				/* Number of point pairs making up this flowline */
+	n_track = lrint (c[0]);				/* Number of point pairs making up this flowline */
 
 	/* Find the first point on the flowline inside the desired CVA region */
 
@@ -619,10 +619,10 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		/* Store IDs in a GMT_LONG array instead */
 		ID = GMT_memory (GMT, NULL, L->header->size, GMT_LONG);
-		for (i = 0; i < L->header->size; i++) ID[i] = irint ((double)L->data[i]);
+		for (i = 0; i < L->header->size; i++) ID[i] = lrint ((double)L->data[i]);
 		GMT_free (GMT, L->data);	/* Just free the array since we use ID; Grid stuct is destroyed at end */
 		
-		ID_info = GMT_memory (GMT, NULL, irint (L->header->z_max) + 1, struct ID);
+		ID_info = GMT_memory (GMT, NULL, lrint (L->header->z_max) + 1, struct ID);
 		if (Ctrl->Q.mode == 1) {	/* Only doing one CVA with no extra restrictions */
 			ID_info[Ctrl->Q.id].ok = TRUE;	/* Every other info in struct array is NULL or 0 */
 		}
@@ -723,7 +723,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				node = GMT_IJP (G->header, j, i);
 			if (keep_flowlines) {
 				flowline[n_nodes].node[m] = node;
-				if (Ctrl->PA.active) flowline[n_nodes].PA[m] = (unsigned short) irint (c[k++] * T_2_PA);
+				if (Ctrl->PA.active) flowline[n_nodes].PA[m] = (unsigned short) lrint (c[k++] * T_2_PA);
 			}
 			/* If we did not keep flowlines then there is no PA to skip over (hence no k++) */
 			if (node != OUTSIDE) {
@@ -802,7 +802,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			strcat (format, &Ctrl->G.file[i]);		/* Should add the extension from said file */
 		}
 		CVA_inc = GMT_memory (GMT, NULL, G->header->size, float);
-		nz = irint ((Ctrl->Z.max - Ctrl->Z.min) / Ctrl->Z.inc);
+		nz = lrint ((Ctrl->Z.max - Ctrl->Z.min) / Ctrl->Z.inc);
 		for (i = 0; i < nz; i++) {
 			z0 = Ctrl->Z.min + i * Ctrl->Z.inc;
 			z1 = z0 + Ctrl->Z.inc;
@@ -949,7 +949,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			GMT_message (GMT, "Preprocessed %5ld flowlines\n", n_nodes);
 			GMT_message (GMT, "%ld of %ld total flowlines entered CVA region\n", n_nodes, n_flow);
-			GMT_message (GMT, "Flowlines consumed %d Mb of memory\n", irint (mem * B_TO_MB));
+			GMT_message (GMT, "Flowlines consumed %d Mb of memory\n", lrint (mem * B_TO_MB));
 			GMT_message (GMT, "Estimate %ld CVA max locations using bootstrapping\n", Ctrl->W.n_try);
 		}
 

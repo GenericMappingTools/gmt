@@ -460,7 +460,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_expected_fields = n_active + Ctrl->W.active;
 		while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 			for (i = 0; i < 2; i++) {	/* Get IDs and keept track of min/max values */
-				ID[i][n_COE] = irint (in[i]);
+				ID[i][n_COE] = lrint (in[i]);
 				if (ID[i][n_COE] < min_ID) min_ID = ID[i][n_COE];
 				if (ID[i][n_COE] > max_ID) max_ID = ID[i][n_COE];
 			}

@@ -303,7 +303,7 @@ GMT_LONG decode_I_options (struct GMT_CTRL *C, char *line, char *abbrev, char *n
 			parameters[COL_TYPE] = MGD77_NOT_SET;
 			break;
 	}
-	return ((GMT_LONG)(irint (parameters[COL_TYPE]) == MGD77_NOT_SET) || (i != 7));
+	return ((lrint (parameters[COL_TYPE]) == MGD77_NOT_SET) || (i != 7));
 }
 
 GMT_LONG skip_if_missing (struct GMT_CTRL *C, char *name, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET **D)
@@ -489,7 +489,7 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 
 	got_table = (Ctrl->A.mode == MODE_a || Ctrl->A.mode == MODE_d || Ctrl->A.mode == MODE_n || Ctrl->A.mode == MODE_t);	/* Got a table to read */
 	got_grid = (Ctrl->A.mode == MODE_g || Ctrl->A.mode == MODE_i);					/* Got a grid to read */
-	c_nc_type = (nc_type) irint (Ctrl->A.parameters[COL_TYPE]);		/* NC data type */
+	c_nc_type = (nc_type) lrint (Ctrl->A.parameters[COL_TYPE]);		/* NC data type */
 	strings = (c_nc_type == NC_CHAR);				/* TRUE if our new column contains strings */
 	
 	n_errors += GMT_check_condition (GMT, (got_table + got_grid) > 1, "Syntax error: You must select one, and only one, of the -A options\n");
@@ -563,7 +563,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	got_table = (Ctrl->A.mode == MODE_a || Ctrl->A.mode == MODE_d || Ctrl->A.mode == MODE_n || Ctrl->A.mode == MODE_t);	/* Got a table to read */
 	got_grid = (Ctrl->A.mode == MODE_g || Ctrl->A.mode == MODE_i);					/* Got a grid to read */
-	c_nc_type = (nc_type) irint (Ctrl->A.parameters[COL_TYPE]);		/* NC data type */
+	c_nc_type = (nc_type) lrint (Ctrl->A.parameters[COL_TYPE]);		/* NC data type */
 	strings = (c_nc_type == NC_CHAR);				/* TRUE if our new column contains strings */
 	
 	n_paths = MGD77_Path_Expand (GMT, &In, options, &list);	/* Get list of requested IDs */
@@ -634,7 +634,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (Ctrl->A.mode == MODE_i) {	/* Read Sandwell/Smith IMG file */
 		if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_read_img (GMT, Ctrl->A.file, G, NULL, Ctrl->A.parameters[IMG_SCALE], (GMT_LONG)irint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], TRUE);
+		GMT_read_img (GMT, Ctrl->A.file, G, NULL, Ctrl->A.parameters[IMG_SCALE], lrint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], TRUE);
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}
 	else if (got_table) {	/* Got a one- or two-column table to read */

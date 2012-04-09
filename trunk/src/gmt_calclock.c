@@ -192,7 +192,7 @@ GMT_LONG GMT_rd_from_gymd (struct GMT_CTRL *C, GMT_LONG gy, GMT_LONG gm, GMT_LON
 	rd = day_offset + gd + 365 * yearm1;
 	s = floor (yearm1/4.0) - floor (yearm1/100.0) + floor (yearm1/400.0);
 	s += floor ((367 * gm - 362)/12.0);
-	rd += irint (s);
+	rd += lrint (s);
 	return (rd);
 }
 
@@ -965,7 +965,7 @@ void GMT_get_time_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCL
 			GMT_report (C, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
 #endif
 		case 's':	/* 2-digit seconds */
-			(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%2.2d", irint(calendar.sec));
+			(P->date.compact) ? sprintf (string, "%ld", lrint(calendar.sec)) : sprintf (string, "%2.2ld", lrint(calendar.sec));
 			break;
 		default:
 			GMT_report (C, GMT_MSG_FATAL, "Error: wrong unit passed to GMT_get_time_label\n");
