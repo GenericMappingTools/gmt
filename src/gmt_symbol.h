@@ -47,7 +47,7 @@ struct GMT_CUSTOM_SYMBOL_ITEM {
 struct GMT_CUSTOM_SYMBOL {
 	char name[GMT_TEXT_LEN64];
 	char *PS_macro;		/* Contains all the PS commands if PS is TRUE */
-	GMT_LONG n_required;	/* Number of additional columns necessary to decode chosen symbol */
+	unsigned n_required;	/* Number of additional columns necessary to decode chosen symbol */
 	GMT_LONG PS;		/* TRUE if a PSL symbol */
 	GMT_LONG *type;		/* Array with type of each parameter [0 = dimensionless, 1 = dimension, 2 = geographic angle (convert via projection)] */
 	struct GMT_CUSTOM_SYMBOL_ITEM *first;

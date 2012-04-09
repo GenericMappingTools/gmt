@@ -140,6 +140,9 @@
 #	define _MSC_STDINT_H_
 #endif
 
+/* Math function sincos is a GNU extension */
+#define _GNU_SOURCE
+
 #cmakedefine WORDS_BIGENDIAN
 
 /* Math headers */
@@ -163,7 +166,6 @@
 #cmakedefine HAVE_ISNAND
 #cmakedefine HAVE_ISNANF
 #cmakedefine HAVE__ISNAN
-#cmakedefine HAVE__ISNANF
 #cmakedefine HAVE_J0
 #cmakedefine HAVE_J1
 #cmakedefine HAVE_JN
@@ -187,8 +189,29 @@
 #cmakedefine SIZEOF_WCHAR_T     @SIZEOF_WCHAR_T@
 #cmakedefine SIZEOF_WINT_T      @SIZEOF_WINT_T@
 
-/* Math function sincos is a GNU extension */
-#define _GNU_SOURCE
+/* Architecture type (32/64 bits) */
+#cmakedefine CMAKE_SIZEOF_VOID_P @CMAKE_SIZEOF_VOID_P@
+#if CMAKE_SIZEOF_VOID_P == 4 /* on i386 */
+#	ifndef __i836__
+#		define __i836__ 1
+#	endif
+#elif CMAKE_SIZEOF_VOID_P == 8 /* on x86_64 */
+#	ifndef __x86_64__
+#		define __x86_64__ 1
+#	endif
+#	if SIZEOF_LONG == 8 && SIZEOF_INT == 4 /* 64 bit longs and pointers (most UNIX) */
+#		ifndef __LP64__
+#			define __LP64__ 1
+#		endif
+#		ifndef _LP64
+#			define _LP64 1
+#		endif
+#	elif SIZEOF_LONG_LONG == 8 && SIZEOF_LONG == 4 /* Win X64/IA-64 */
+#		ifndef __LLP64__
+#			define __LP64__ 1
+#		endif
+#	endif /* SIZEOF_LONG == 8 && SIZEOF_INT == 4 */
+#endif /* CMAKE_SIZEOF_VOID_P == 4 */
 
 /* Enable 32 bit systems to use files of sizes beyond the usual limit of 2GB */
 #cmakedefine _LARGEFILE64_SOURCE
