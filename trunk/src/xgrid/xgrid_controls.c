@@ -21,11 +21,7 @@
 
 static Widget quitButton;
 
-Widget createControlBar (name, parent, args, nargs)
-	String name;
-	Widget parent;
-	Arg    args[];
-	int    nargs;
+Widget createControlBar (String name, Widget parent, Arg args[], int nargs)
 {
   Widget result;
   Arg    list[32];
@@ -54,9 +50,7 @@ Widget createControlBar (name, parent, args, nargs)
    chooses to quit. Such callbacks must NOT call exit because
    the order in which callbacks are called is undefined.  */
    
-void addQuitCallback (callback, clientData)
-	XtCallbackProc callback;
-	void *	       clientData;
+void addQuitCallback (XtCallbackProc callback, void *clientData)
 {
   XtAddCallback(quitButton, XtNcallback, callback, clientData);
 }

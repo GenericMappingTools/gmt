@@ -76,7 +76,7 @@ extern WidgetClass canvasWidgetClass;
 
 /**** Convenience functions ****/
 
-extern XFontStruct * XtCanvasFont (); /* Widget w */
-extern void * XtCanvasData (); /* Widget w */
+extern XFontStruct * XtCanvasFont (Widget w);
+extern void * XtCanvasData (Widget w);
 
 #endif /* _Canvas_h */

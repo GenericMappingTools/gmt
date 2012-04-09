@@ -14,20 +14,17 @@
 
 #include "xgrid_Xutility.h"
 
-Dimension XtWidth (w)
-	Widget w;
+Dimension XtWidth (Widget w)
 {
   return w->core.width;
 }
 
-Dimension XtHeight (w)
-	Widget w;
+Dimension XtHeight (Widget w)
 {
   return w->core.height;
 }
 
-Widget XtShell (w)
-	Widget w;
+Widget XtShell (Widget w)
 {
   while (w != NULL && !XtIsSubclass(w, shellWidgetClass))
     w = XtParent(w);
@@ -36,8 +33,7 @@ Widget XtShell (w)
 
 /****	Wait until all windows redrawn	****/
 
-void WaitNoExposes (w)
-	Widget w;
+void WaitNoExposes (Widget w)
 {
   XEvent	event;
   Display *	display;
@@ -56,8 +52,7 @@ void WaitNoExposes (w)
 
 /****	Highlight things	****/
 
-void InvertWidget (w)
-  Widget w;
+void InvertWidget (Widget w)
 {
   Pixel foreground, background;
 

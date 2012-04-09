@@ -84,14 +84,14 @@ extern WidgetClass pannerWidgetClass;
 
 /* Convenience functions */
 
-extern void	XtSetPannerCanvas (); /* Widget w, Widget canvas */
+extern void	XtSetPannerCanvas (Widget, Widget canvas); /*  */
 
-extern int	XtPannerXPosition (); /* Widget w */
-extern int	XtPannerYPosition (); /* Widget w */
+extern int	XtPannerXPosition (Widget); /*  */
+extern int	XtPannerYPosition (Widget); /* Widget w */
 
-extern void     XtSetPannerXPosition (); /* Widget w, int x */
-extern void	XtSetPannerYPosition (); /* Widget w, int y */
-extern void	XtSetPannerXRange ();    /* Widget w, int x */
-extern void	XtSetPannerYRange ();    /* Widget w, int y */
+extern void     XtSetPannerXPosition (Widget, int); /* Widget w, int x */
+extern void	XtSetPannerYPosition (Widget, int); /* Widget w, int y */
+extern void	XtSetPannerXRange (Widget, int);    /* Widget w, int x */
+extern void	XtSetPannerYRange (Widget, int);    /* Widget w, int y */
 
 #endif /* _Panner_h */

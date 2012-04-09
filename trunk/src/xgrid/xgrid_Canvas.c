@@ -22,10 +22,7 @@ static XtResource resources[] = {
 
 /****	Methods for Canvas.	****/
 
-static void CanvasRealize (self, mask, attributes)
-	Widget	self;
-	XtValueMask * mask;
-	XSetWindowAttributes * attributes;
+static void CanvasRealize (Widget self, XtValueMask *mask, XSetWindowAttributes *attributes)
 {
   WidgetClass super;
   
@@ -36,8 +33,7 @@ static void CanvasRealize (self, mask, attributes)
   XtCallCallbackList(self, ((CanvasWidget)self)->canvas.realize_callback, NULL);
 }
 
-static void CanvasResize (self)
-	Widget self;
+static void CanvasResize (Widget self)
 {
   XRectangle	bounds;
   
@@ -50,19 +46,14 @@ static void CanvasResize (self)
   	((CanvasWidget)self)->canvas.resize_callback, &bounds);
 }
 
-static void CanvasExpose (self, event, region)
-	Widget	 self;
-	XEvent * event;
-	Region	 region;
+static void CanvasExpose (Widget self, XEvent *event __attribute__((unused)), Region region)
 {
   XtCallCallbackList(self,
   	((CanvasWidget)self)->canvas.expose_callback, region);
 }
 
-static XtGeometryResult CanvasQueryGeometry (self, request, reply)
-	Widget		   self;
-	XtWidgetGeometry * request;
-	XtWidgetGeometry * reply;
+static XtGeometryResult CanvasQueryGeometry (Widget self, XtWidgetGeometry *request,
+					     XtWidgetGeometry *reply)
 {
   XtGeometryHandler instMethod;
   
@@ -117,17 +108,15 @@ WidgetClass canvasWidgetClass = (WidgetClass)&canvasClassRec;
 
 /****	Convenience functions	****/
 
-XFontStruct * XtCanvasFont (self)
-	CanvasWidget self;
+XFontStruct * XtCanvasFont (Widget self)
 {
   XtCheckSubclass(self, canvasWidgetClass, "XtCanvasFont");
-  return self->canvas.font;
+  return ((CanvasWidget)self)->canvas.font;
 }
 
-void * XtCanvasData (self)
-	CanvasWidget self;
+void * XtCanvasData (Widget self)
 {
   XtCheckSubclass(self, canvasWidgetClass, "XtCanvasData");
-  return self->canvas.data;
+  return ((CanvasWidget)self)->canvas.data;
 }
 

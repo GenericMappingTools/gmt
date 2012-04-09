@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-04-08	pwessel
+	* xgrid/*:		Now works again, thanks to Lloyd Parkes!
+
 2012-03-26	pwessel
 	* psrose.c:		Option -L (no args) failed to turn off all labels.
 				Option -T did not create a symmetric plot for -R0/360/...

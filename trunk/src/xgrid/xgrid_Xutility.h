@@ -4,19 +4,19 @@
 
 #define XSetPoint(pt, xVal, yVal) (pt).x = (xVal); (pt).y = (yVal)
 
-extern Dimension XtWidth ();
+extern Dimension XtWidth (Widget);
 		/* Widget w */
 
-extern Dimension XtHeight ();
+extern Dimension XtHeight (Widget);
 		/* Widget w */
 
-extern Widget XtShell ();
+extern Widget XtShell (Widget);
 		/* Widget w */
 		
-extern void   WaitNoExposes ();
+extern void   WaitNoExposes (Widget);
 		/* Widget w */
 
-extern void InvertWidget ();
+extern void InvertWidget (Widget);
 		/* Widget w */
 
 #endif

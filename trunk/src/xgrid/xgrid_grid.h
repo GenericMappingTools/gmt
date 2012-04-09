@@ -27,30 +27,20 @@ typedef struct {
 
 /****	Grid methods ****/
 
-typedef void      (* GridProc) (); /* Grid * grid, ... */
-typedef GridValue (* GridFunc) (); /* Grid * grid, ... */
-
 /****	Grid data structure	****/
 
-typedef struct {
+typedef struct _Grid_s {
 	int	 width;
 	int	 height;
 	int	 coordType; /* Nodes or pixels */
 	/****	Methods	****/
-	/* dispose (Grid * grid ) */
-	GridProc dispose;
-	/* readFromFile (Grid * grid, String fileName, int * status) */
-	GridProc readFromFile;
-	/* writeToFile (Grid * grid, String fileName, int * status) */
-	GridProc writeToFile;
-	/* getIndexes (Grid * grid, GridPoint * coords, XPoint * indexes) */
-	GridProc getIndexes;
-	/* getCoords (Grid * grid, XPoint * indexes, GridPoint * coords) */
-	GridProc getCoords;
-	/* set (Grid * grid, int xIndex, int yIndex, GridValue value) */
-	GridProc set;
-	/* get (Grid * grid, int xIndex, int yIndex) */
-	GridFunc get;
+	void (*dispose) (struct _Grid_s * grid );
+	void (*readFromFile) (struct _Grid_s *grid, String fileName, int * status);
+	void (*writeToFile) (struct _Grid_s * grid, String fileName, int * status);
+	void (*getIndexes) (struct _Grid_s * grid, GridPoint * coords, XPoint * indexes);
+	void (*getCoords) (struct _Grid_s * grid, XPoint * indexes, GridPoint * coords);
+	void (*set) (struct _Grid_s *grid, int xIndex, int yIndex, GridValue value);
+	GridValue (*get) (struct _Grid_s * grid, int xIndex, int yIndex);
 	} Grid;
 
 /****	Convenience macros to make code cleaner	****/

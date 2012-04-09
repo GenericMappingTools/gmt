@@ -6,9 +6,7 @@
 
 #include "xgrid_utility.h"
 
-FILE * CheckOpen (fileName, access)
-	String fileName;
-	String access;
+FILE * CheckOpen (String fileName, String access)
 {
   FILE * result;
   char   msg[256];
@@ -21,10 +19,7 @@ FILE * CheckOpen (fileName, access)
   return result;
 }
 
-void CheckReadLine (file, line, maxLength)
-	FILE * file;
-	char   line[];
-	int    maxLength;
+void CheckReadLine (FILE *file, char line[], int maxLength)
 {
   char * result;
   
@@ -33,8 +28,7 @@ void CheckReadLine (file, line, maxLength)
     XtError("Null returned by fgets");
 }
 
-void Trace (message)
-	String message;
+void Trace (String message)
 {
   fprintf(stderr, "%s\n", message);
   fflush(stderr);

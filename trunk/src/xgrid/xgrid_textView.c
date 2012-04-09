@@ -43,26 +43,21 @@ static CellInfo cellUnderMouse = {
 
 /****	Local procedures	****/
 
-static void handleRealize (); /* Widget w, TextViewData * data, void * call */
-static void handleExpose (); /* Widget w, void * data, Region area */
-static void createContexts (); /* Widget w, TextViewData * data */
+static void handleRealize (Widget w, XtPointer, XtPointer);
+static void handleExpose (Widget w, XtPointer, XtPointer);
+static void createContexts (Widget w, TextViewData * data);
 
-static void scrollHorizontal (); /* Widget w, TextViewData * data, int x */
-static void scrollVertical (); /* Widget w, TextViewData * data, int y */
+static void scrollHorizontal (Widget w, XtPointer, XtPointer);
+static void scrollVertical (Widget w, XtPointer, XtPointer);
 
-static void redrawValues (); /* Widget w,
-			Position left, Position top,
-			Dimension width, Dimension height */
+static void redrawValues (Widget w, Position left, Position top, Dimension width, Dimension height);
 
-static void highlightCell (); /* Widget w, TextViewData * data, CellInfo * cell */
-static void lowlightCell ();  /* Widget w, CellInfo * cell */
+static void highlightCell (Widget w, TextViewData * data, CellInfo * cell);
+static void lowlightCell (Widget w, CellInfo * cell);
 
-static void CursorMovement (); /* Widget w, XEvent * event,
-			String * params, Cardinal * nparams */
-static void ClearMessage (); /* Widget w, XEvent * event,
-			String * params, Cardinal * nparams */
-static void SelectValue (); /* Widget w, XEvent * event,
-			String * params, Cardinal * nparams */
+static void CursorMovement (Widget w, XEvent * event, String * params, Cardinal * nparams);
+static void ClearMessage (Widget w, XEvent * event, String * params, Cardinal * nparams);
+static void SelectValue (Widget w, XEvent * event, String * params, Cardinal * nparams);
 
 static XtResource ViewResourceList[] = {
   { XtNgrid, XtCGrid, XtRPointer, sizeof(XtPointer),
@@ -93,11 +88,10 @@ static XtActionsRec ViewActions[] = {
 
 /****	Initialization	****/
 
-Widget createTextView (name, parent, args, nargs)
-	String	name;
-	Widget	parent;
-	Arg	args[];
-	int	nargs;
+Widget createTextView (String	name,
+		       Widget	parent,
+		       Arg	args[],
+		       int	nargs)
 {
   Widget result;
   TextViewData * data;
@@ -138,9 +132,8 @@ Widget createTextView (name, parent, args, nargs)
   return result;
 }
 
-void setTextViewGrid (view, grid)
-	Widget	view;
-	Grid *	grid;
+void setTextViewGrid (Widget	view,
+		      Grid *	grid)
 {
   TextViewData * data;
   
@@ -153,8 +146,7 @@ void setTextViewGrid (view, grid)
     XClearArea(XtDisplay(view), XtWindow(view), 0, 0, 0, 0, True);    
 }
 
-void recalculateDisplayParameters (view)
-	Widget	view;
+void recalculateDisplayParameters (Widget view)
 {
   TextViewData * data;
   XFontStruct *  font;
@@ -187,10 +179,9 @@ void recalculateDisplayParameters (view)
   }
 }
 
-void redrawGridValue (view, col, row)
-	Widget	view;
-	int	col;
-	int	row;
+void redrawGridValue (Widget	view,
+		      int	col,
+		      int	row)
 {
   TextViewData * data;
   int x, y;
@@ -206,9 +197,7 @@ void redrawGridValue (view, col, row)
 	window has been created, so do that when we
 	are realized.		****/
 
-static void createContexts (view, data)
-	Widget	       view;
-	TextViewData * data;
+static void createContexts (Widget view, TextViewData *data)
 {
   XFontStruct *  font;
   XGCValues 	 gcv;
@@ -239,35 +228,33 @@ static void createContexts (view, data)
   			GCForeground | GCBackground | GCFont, &gcv);
 }
 
-static void handleRealize (w, data, call)
-	Widget w;
-	TextViewData * data;
-	void * call;
+static void handleRealize (Widget w,
+			   XtPointer client_data,
+			   XtPointer call_data __attribute__((unused)))
 {
-  createContexts(w, data);
+  createContexts(w, client_data);
   recalculateDisplayParameters(w);
-  setViewForInput(data);
+  setViewForInput(client_data);
 }
 
 /****	Expose event handling	****/
 
-static void handleExpose (w, data, area)
-	Widget	w;
-	void *  data;
-	Region  area;
+static void handleExpose (Widget	w,
+			  XtPointer  client_data __attribute__((unused)),
+			  XtPointer call_data)
 {
   XRectangle bbox;
-  
+  Region  area = call_data;
+
   XClipBox(area, &bbox);
   redrawValues(w, bbox.x, bbox.y, bbox.width, bbox.height);
 }
 
-static void redrawValues (w, left, top, width, height)
-	Widget		w;
-	Position	left;
-	Position	top;
-	Dimension	width;
-	Dimension	height;
+static void redrawValues (Widget	w,
+			  Position	left,
+			  Position	top,
+			  Dimension	width,
+			  Dimension	height)
 {
   TextViewData * data;
   int	x, y;
@@ -331,10 +318,9 @@ static void redrawValues (w, left, top, width, height)
 #define XIndex(x) (((x) + data->xOffset) / data->cellWidth)
 #define YIndex(y) (((y) + data->yOffset) / data->cellHeight)
 
-static void scrollHorizontal (w, data, x)
-	Widget		w;
-	TextViewData *	data;
-	int		x;
+static void scrollHorizontal (Widget		w __attribute__((unused)),
+			      XtPointer 	client_data,
+			      XtPointer		call_data)
 {
   Widget    canvas;
   Dimension width, height;
@@ -342,6 +328,10 @@ static void scrollHorizontal (w, data, x)
   char	    msg[256];
   XPoint    index1, index2;
   GridPoint grid1, grid2;
+
+  TextViewData *data = client_data;
+  int		x = (int)call_data;
+
 
   canvas = data->canvas;
   width  = XtWidth(canvas);
@@ -377,10 +367,9 @@ static void scrollHorizontal (w, data, x)
   setMessageLine(msg);
 }
 
-static void scrollVertical (w, data, y)
-	Widget		w;
-	TextViewData *	data;
-	int		y;
+static void scrollVertical (Widget	w __attribute__((unused)),
+			    XtPointer	client_data,
+			    XtPointer	call_data)
 {
   Widget    canvas;
   Dimension width, height;
@@ -388,6 +377,9 @@ static void scrollVertical (w, data, y)
   char	    msg[256];
   XPoint    index1, index2;
   GridPoint grid1, grid2;
+
+  TextViewData *data = client_data;
+  int		y = (int)call_data;
 
   canvas = data->canvas;
   width  = XtWidth(canvas);
@@ -429,29 +421,26 @@ static void scrollVertical (w, data, y)
 
 /****	Event handling	****/
 
-static void highlightCell (w, data, cell)
-	Widget		w;
-	TextViewData *	data;
-	CellInfo *	cell;
+static void highlightCell (Widget		w,
+			   TextViewData *	data,
+			   CellInfo *	cell)
 {
   XDrawRectangle(XtDisplay(w), XtWindow(w), data->valueGC,
   	cell->bounds.x + 1, cell->bounds.y + 1,
 	cell->bounds.width - 2, cell->bounds.height - 2);
 }
 
-static void lowlightCell (w, cell)
-	Widget		w;
-	CellInfo *	cell;
+static void lowlightCell (Widget		w,
+			  CellInfo *	cell)
 {
   redrawValues(w, cell->bounds.x, cell->bounds.y,
   		cell->bounds.width, cell->bounds.height);
 }
 
-static void CursorMovement (w, event, params, nparams)
-	Widget		w;
-	XEvent *	event;
-	String *	params;
-	Cardinal *	nparams;
+static void CursorMovement (Widget	w,
+			    XEvent *	event,
+			    String *	params __attribute__((unused)),
+			    Cardinal *	nparams __attribute__((unused)))
 {
   TextViewData * data;
   char	    msg[256];
@@ -480,21 +469,19 @@ static void CursorMovement (w, event, params, nparams)
 }
 
 
-static void ClearMessage (w, event, params, nparams)
-	Widget		w;
-	XEvent *	event;
-	String *	params;
-	Cardinal *	nparams;
+static void ClearMessage (Widget	w, 
+			  XEvent *	event __attribute__((unused)),
+			  String *	params __attribute__((unused)),
+			  Cardinal *	nparams __attribute__((unused)))
 {
   lowlightCell(w, &cellUnderMouse);
   setMessageLine("");
 }
 
-static void SelectValue (w, event, params, nparams)
-	Widget		w;
-	XEvent *	event;
-	String *	params;
-	Cardinal *	nparams;
+static void SelectValue (Widget		w __attribute__((unused)),
+			 XEvent *	event __attribute__((unused)),
+			 String *	params __attribute__((unused)),
+			 Cardinal *	nparams __attribute__((unused)))
 {
   /* All the actual input is handled in textInput.c */
   setInputSelection(cellUnderMouse.index.x, cellUnderMouse.index.y);

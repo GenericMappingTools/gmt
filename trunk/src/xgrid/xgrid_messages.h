@@ -4,10 +4,8 @@
 
 extern Widget	messageWidget;
 
-extern Widget	createMessageLine ();
-		/* String name, Widget parent, Arg args[], int nargs */
+extern Widget	createMessageLine (String name, Widget parent, Arg args[], int nargs);
 
-extern void	setMessageLine ();
-		/* String newMessage */
+extern void	setMessageLine (String newMessage);
 #endif
 

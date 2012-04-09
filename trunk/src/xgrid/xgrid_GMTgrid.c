@@ -17,8 +17,7 @@
 #include "xgrid_utility.h"
 #include "xgrid_GMTgrid.h"
 
-static void clear (grid)
-	GMTGrid * grid;
+static void clear (GMTGrid *grid)
 {
   grid->methods.width     = 0;
   grid->methods.height    = 0;
@@ -48,8 +47,9 @@ static void clear (grid)
   memset(grid->header.remark, 0, sizeof(grid->header.remark));
 }
 
-static void readFromFile (GMTGrid *grid, String fileName, int *status)
+static void readFromFile (Grid *_grid, String fileName, int *status)
 {
+    GMTGrid *grid = (GMTGrid *)_grid;
     if ((*status = GMT_read_grd_info (grid->GMT, fileName, &grid->header)))
       return;
 
@@ -66,27 +66,24 @@ static void readFromFile (GMTGrid *grid, String fileName, int *status)
   return;
 }
 
-static void writeToFile (grid, fileName, status)
-	GMTGrid * grid;
-	String    fileName;
-	int *	  status;
+static void writeToFile (Grid *_grid, String fileName, int *status)
 {
+	GMTGrid *grid = (GMTGrid *)_grid;
 	double wesn[4];
 	GMT_memset (wesn, 4, double);
 	GMT_memset (grid->GMT->current.io.pad, 4, GMT_LONG);
 	*status = GMT_write_grd (grid->GMT, fileName, &grid->header, grid->value, wesn, grid->GMT->current.io.pad, FALSE);
 }
 
-static void dispose (grid)
-	GMTGrid * grid;
+static void dispose (Grid *_grid)
 {
+  GMTGrid *grid = (GMTGrid *)_grid;
   free(grid->value);
   grid->value = NULL;
 }
 
 #if 0
-static void dumpGrid (grid)
-	GMTGrid * grid;
+static void dumpGrid (GMTGrid *grid)
 {
   int outer, inner;
   GridPoint  gPt;
@@ -117,12 +114,10 @@ static void dumpGrid (grid)
 }
 #endif
 
-static void getIndexes (grid, coord, index)
-	GMTGrid *   grid;
-	GridPoint * coord;
-	XPoint *    index;
+static void getIndexes (Grid *_grid, GridPoint *coord, XPoint *index)
 {
   int column, row;
+  GMTGrid *grid = (GMTGrid *)_grid;
   
   column = (int)((coord->x - grid->header.wesn[XLO]) / grid->header.inc[GMT_X]);
   row    = (int)((coord->y - grid->header.wesn[YLO]) / grid->header.inc[GMT_Y]);
@@ -131,34 +126,23 @@ static void getIndexes (grid, coord, index)
   index->y = grid->header.ny - row;
 }
 
-static void getCoords (grid, index, coord)
-	GMTGrid *   grid;
-	XPoint *    index;
-	GridPoint * coord;
+static void getCoords (Grid *_grid, XPoint *index, GridPoint *coord)
 {
+  GMTGrid *grid = (GMTGrid *)_grid;
   coord->x = grid->header.wesn[XLO] + index->x * grid->header.inc[GMT_X];
   coord->y = grid->header.wesn[YHI] - index->y * grid->header.inc[GMT_Y];
 }
 
-static void set (grid, xIndex, yIndex, value)
-	GMTGrid * grid;
-	int	  xIndex;
-	int	  yIndex;
-	GridValue value;
+static void set (Grid *_grid, int xIndex, int yIndex, GridValue value)
 {
+	GMTGrid *grid = (GMTGrid *)_grid;
 	int k = yIndex * grid->header.nx + xIndex;
-	fprintf (stderr, "Before: %g\n", grid->value[k]);
-	fprintf (stderr, "Using: %g\n", value);
-  grid->value[k] = value;
-	fprintf (stderr, "After: %g\n", grid->value[k]);
+	grid->value[k] = value;
 }
 
-static GridValue get (grid, xIndex, yIndex)
-	GMTGrid * grid;
-	int	  xIndex;
-	int	  yIndex;
+static GridValue get (Grid *_grid, int xIndex, int yIndex)
 {
-
+  GMTGrid *grid = (GMTGrid *)_grid;
 /* Original Version had "grid->header.ny": should be "grid->header.nx */
 /* Fixed 8/4/93 by J. Lillibrige @ NOAA/NOS to eliminate core dumps!  */
 

@@ -6,8 +6,11 @@
 #define Min(a,b) ((a)<(b)?(a):(b))
 #define Max(a,b) ((a)>(b)?(a):(b))
 
-#include "xgrid_PannerP.h"
 #include <stddef.h>
+
+#include "xgrid_utility.h"
+
+#include "xgrid_PannerP.h"
 
 static XtResource resources[] = {
 #define offset(field) XtOffset(PannerWidget, panner.field)
@@ -45,7 +48,9 @@ static void scrollProc (); /* Widget bar, PanScrollRec * data, int position */
 /****	Methods for Panner.	****/
 
 /* At initialisation, create our two scrollbar widgets */
-static void PannerInitialize (Widget request, Widget result, ArgList args, Cardinal *nargs)
+static void PannerInitialize (Widget request __attribute__((unused)),
+			      Widget result, ArgList args __attribute__((unused)),
+			      Cardinal *nargs __attribute__((unused)))
 {
   Widget bar;
   PanScrollRec *horizontal = &((PannerWidget)result)->panner.horizontal;
@@ -85,7 +90,9 @@ static void PannerInitialize (Widget request, Widget result, ArgList args, Cardi
 /* If range or position changed, recalculate appearance
    of scrollbars. Don't bother checking for width, height
    resources because the resize method will catch those.   */
-static Boolean PannerSetValues (Widget old, Widget request, Widget new, ArgList	args, Cardinal *nargs)
+static Boolean PannerSetValues (Widget old, Widget request __attribute__((unused)),
+				Widget new, ArgList args __attribute__((unused)),
+				Cardinal *nargs __attribute__((unused)))
 {
   PannerWidget oldp, newp;
   
@@ -136,8 +143,7 @@ static void doLayout (PannerWidget self)
   recalculateBar(&(self->panner.vertical));
 }
 
-static void recalculateBar (bar)
-	PanScrollRec * bar;
+static void recalculateBar (PanScrollRec * bar)
 {
   float top, size;
   
@@ -228,10 +234,7 @@ WidgetClass pannerWidgetClass = (WidgetClass)&pannerClassRec;
 	2. You can't scroll past the bottom of the data,
 	ie the thumb is always fully visible	****/
 
-static void jumpProc (bar, data, fraction)
-	Widget		bar;
-	PanScrollRec *	data;
-	float *		fraction;
+static void jumpProc (Widget bar, PanScrollRec *data, float *fraction)
 {
   float	   	thumbSize, scaleFrac;
   int	 	previous;
@@ -268,10 +271,7 @@ static void jumpProc (bar, data, fraction)
 	to the position of the cursor in the bar.
 						****/
 
-static void scrollProc (bar, data, position)
-	Widget		bar;
-	PanScrollRec *	data;
-	int		position;
+static void scrollProc (Widget bar, PanScrollRec *data, int position)
 {
   int	    distance;
   Position  previous;
@@ -302,57 +302,45 @@ static void scrollProc (bar, data, position)
 
 /****	Convenience functions	****/
 
-void XtSetPannerCanvas (self, canvas)
-	PannerWidget	self;
-	Widget	canvas;
+void XtSetPannerCanvas (Widget self, Widget canvas)
 {
   XtCheckSubclass(self, pannerWidgetClass, "XtSetPannerCanvas");
-  XtVaSetValues((Widget)self, XtNcanvas, canvas, NULL);
+  XtVaSetValues(self, XtNcanvas, canvas, NULL);
 }
 
-int XtPannerXPosition (self)
-	PannerWidget self;
+int XtPannerXPosition (Widget self)
 {
   XtCheckSubclass(self, pannerWidgetClass, "XtPannerXPosition");
-  return self->panner.horizontal.position;
+  return ((PannerWidget)self)->panner.horizontal.position;
 }
 
-int XtPannerYPosition (self)
-	PannerWidget self;
+int XtPannerYPosition (Widget self)
 {
   XtCheckSubclass(self, pannerWidgetClass, "XtPannerYPosition");
-  return self->panner.vertical.position;
+  return ((PannerWidget)self)->panner.vertical.position;
 }
 
-void XtSetPannerXPosition (self, position)
-	PannerWidget	 self;
-	int position;
+void XtSetPannerXPosition (Widget self, int position)
 {
   XtCheckSubclass(self, pannerWidgetClass, "XtSetPannerXPosition");
-  XtVaSetValues((Widget)self, XtNxPosition, position, NULL);
+  XtVaSetValues(self, XtNxPosition, position, NULL);
 }
 
-void XtSetPannerYPosition (self, position)
-	PannerWidget	 self;
-	int position;
+void XtSetPannerYPosition (Widget self, int position)
 {
   XtCheckSubclass(self, pannerWidgetClass, "XtSetPannerYPosition");
-  XtVaSetValues((Widget)self, XtNyPosition, position, NULL);
+  XtVaSetValues(self, XtNyPosition, position, NULL);
 }
 
-void XtSetPannerXRange (self, range)
-	PannerWidget	 self;
-	int range;
+void XtSetPannerXRange (Widget self, int range)
 {
   XtCheckSubclass(self, pannerWidgetClass, "XtSetPannerXRange");
-  XtVaSetValues((Widget)self, XtNxRange, range, NULL);
+  XtVaSetValues(self, XtNxRange, range, NULL);
 }
 
-void XtSetPannerYRange (self, range)
-	PannerWidget	 self;
-	int range;
+void XtSetPannerYRange (Widget self, int range)
 {
   XtCheckSubclass(self, pannerWidgetClass, "XtSetPannerYRange");
-  XtVaSetValues((Widget)self, XtNyRange, range, NULL);
+  XtVaSetValues(self, XtNyRange, range, NULL);
 }
 
