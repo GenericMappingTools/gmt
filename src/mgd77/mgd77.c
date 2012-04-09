@@ -168,8 +168,8 @@ GMT_LONG MGD77_bit_test (double value, double limit)
 
 	if (GMT_is_dnan (value)) return (FALSE);	/* Cannot pass a test with a NaN */
 	if (GMT_is_dnan (limit)) return (FALSE);	/* Cannot pass a test with a NaN */
-	ivalue = (unsigned int) irint (value);
-	ilimit = (unsigned int) irint (limit);
+	ivalue = (unsigned int) lrint (value);
+	ilimit = (unsigned int) lrint (limit);
 	return (ivalue & ilimit);			/* TRUE if any of the bits in limit line up with value */
 }
 
@@ -1008,7 +1008,7 @@ int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *C, char *file, struct MGD77_C
 		not_used = fgets (line, GMT_BUFSIZ, F->fp);
 		rewind (F->fp);					/* Go back to beginning of file */
 		n_eols = (line[strlen(line)-1] == '\n' && line[strlen(line)-2] == '\r') ? 2 : 1;
-		H->n_records = irint ((double)(buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + n_eols))) / (double)(MGD77_RECORD_LENGTH + n_eols));
+		H->n_records = lrint ((double)(buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + n_eols))) / (double)(MGD77_RECORD_LENGTH + n_eols));
 #endif
 	}
 	else {
@@ -1229,9 +1229,9 @@ int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 	/* Get absolute time, if all the pieces are there */
 
 	if ((MGD77Record->bit_pattern & MGD77_TIME_BITS) == MGD77_TIME_BITS) {	/* Got all the time items */
-		yyyy = irint (MGD77Record->number[MGD77_YEAR]);
-		mm = irint (MGD77Record->number[MGD77_MONTH]);
-		dd = irint (MGD77Record->number[MGD77_DAY]);
+		yyyy = lrint (MGD77Record->number[MGD77_YEAR]);
+		mm = lrint (MGD77Record->number[MGD77_MONTH]);
+		dd = lrint (MGD77Record->number[MGD77_DAY]);
 		rata_die = GMT_rd_from_gymd (C, yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
@@ -1353,9 +1353,9 @@ int MGD77_Read_Data_Record_txt (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 	/* Get absolute time, if all the pieces are there */
 
 	if ((MGD77Record->bit_pattern & MGD77_TIME_BITS) == MGD77_TIME_BITS) {	/* Got all the time items */
-		yyyy = irint (MGD77Record->number[MGD77_YEAR]);
-		mm = irint (MGD77Record->number[MGD77_MONTH]);
-		dd = irint (MGD77Record->number[MGD77_DAY]);
+		yyyy = lrint (MGD77Record->number[MGD77_YEAR]);
+		mm = lrint (MGD77Record->number[MGD77_MONTH]);
+		dd = lrint (MGD77Record->number[MGD77_DAY]);
 		rata_die = GMT_rd_from_gymd (C, yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
@@ -1541,7 +1541,7 @@ int MGD77_Write_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, st
 		else if (i == 24 || i == 25) fprintf (F->fp, mgd77defs[i+1].printMGD77, MGD77Record->word[nwords++]);
 		else {
 			if (GMT_is_dnan (MGD77Record->number[nvalues]))	fprintf (F->fp, "%s", mgd77defs[nvalues].not_given);
-			else fprintf (F->fp, mgd77defs[nvalues].printMGD77, irint (MGD77Record->number[nvalues]*mgd77defs[nvalues].factor));
+			else fprintf (F->fp, mgd77defs[nvalues].printMGD77, lrint (MGD77Record->number[nvalues]*mgd77defs[nvalues].factor));
 			nvalues++;
 		}
 	}
@@ -3454,33 +3454,33 @@ void MGD77_Verify_Prep_m77 (struct GMT_CTRL *G, struct MGD77_CONTROL *F, struct 
 	xpmin = floor (xpmin);	xnmin = floor (xnmin);	ymin = floor (ymin);
 	xpmax = ceil (xpmax);	xnmax = ceil (xnmax);	ymax = ceil (ymax);
 	if (xpmin == DBL_MAX) {	/* Only negative longitudes found */
-		C->w = irint (xnmin);
-		C->e = irint (xnmax);
+		C->w = lrint (xnmin);
+		C->e = lrint (xnmax);
 	}
 	else if (xnmin == DBL_MAX) {	/* Only positive longitudes found */
-		C->w = irint (xpmin);
-		C->e = irint (xpmax);
+		C->w = lrint (xpmin);
+		C->e = lrint (xpmax);
 	}
 	else if ((xpmin - xnmax) < 90.0) {	/* Crossed Greenwich */
-		C->w = irint (xnmin);
-		C->e = irint (xpmax);
+		C->w = lrint (xnmin);
+		C->e = lrint (xpmax);
 	}
 	else {					/* Crossed Dateline */
-		C->w = irint (xpmin);
-		C->e = irint (xnmax);
+		C->w = lrint (xpmin);
+		C->e = lrint (xnmax);
 	}
-	C->s = irint (ymin);
-	C->n = irint (ymax);
+	C->s = lrint (ymin);
+	C->n = lrint (ymax);
 
 	/* Get the cruise time period for later checking against IGRF used, etc. */
 
 	if (!GMT_is_dnan (D[0].time)) {	/* We have  time - obtain yyyy/mm/dd of departure and arrival days */
-		C->Departure[0] = irint (D[0].number[MGD77_YEAR]);
-		C->Departure[1] = irint (D[0].number[MGD77_MONTH]);
-		C->Departure[2] = irint (D[0].number[MGD77_DAY]);
-		C->Arrival[0] = irint (D[nrec-1].number[MGD77_YEAR]);
-		C->Arrival[1] = irint (D[nrec-1].number[MGD77_MONTH]);
-		C->Arrival[2] = irint (D[nrec-1].number[MGD77_DAY]);
+		C->Departure[0] = lrint (D[0].number[MGD77_YEAR]);
+		C->Departure[1] = lrint (D[0].number[MGD77_MONTH]);
+		C->Departure[2] = lrint (D[0].number[MGD77_DAY]);
+		C->Arrival[0] = lrint (D[nrec-1].number[MGD77_YEAR]);
+		C->Arrival[1] = lrint (D[nrec-1].number[MGD77_MONTH]);
+		C->Arrival[2] = lrint (D[nrec-1].number[MGD77_DAY]);
 	}
 
 	for (iy = 0; iy < 20; iy++) {
@@ -3525,23 +3525,23 @@ void MGD77_Verify_Prep (struct GMT_CTRL *G, struct MGD77_CONTROL *F, struct MGD7
 	xpmin = floor (xpmin);	xnmin = floor (xnmin);	ymin = floor (ymin);
 	xpmax = ceil (xpmax);	xnmax = ceil (xnmax);	ymax = ceil (ymax);
 	if (xpmin == DBL_MAX) {	/* Only negative longitudes found */
-		C->w = irint (xnmin);
-		C->e = irint (xnmax);
+		C->w = lrint (xnmin);
+		C->e = lrint (xnmax);
 	}
 	else if (xnmin == DBL_MAX) {	/* Only positive longitudes found */
-		C->w = irint (xpmin);
-		C->e = irint (xpmax);
+		C->w = lrint (xpmin);
+		C->e = lrint (xpmax);
 	}
 	else if ((xpmin - xnmax) < 90.0) {	/* Crossed Greenwich */
-		C->w = irint (xnmin);
-		C->e = irint (xpmax);
+		C->w = lrint (xnmin);
+		C->e = lrint (xpmax);
 	}
 	else {					/* Crossed Dateline */
-		C->w = irint (xpmin);
-		C->e = irint (xnmax);
+		C->w = lrint (xpmin);
+		C->e = lrint (xnmax);
 	}
-	C->s = irint (ymin);
-	C->n = irint (ymax);
+	C->s = lrint (ymin);
+	C->n = lrint (ymax);
 
 	if (!GMT_is_dnan (values[0][0])) {	/* We have time - obtain yyyy/mm/dd of departure and arrival days */
 		struct GMT_gcal CAL;
@@ -4502,7 +4502,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *G, int zone, double twt_in_mse
 		return (-1);
 	}
 
-	nominal_z1500 = irint (0.75 * twt_in_msec);
+	nominal_z1500 = lrint (0.75 * twt_in_msec);
 
 	if (nominal_z1500 <= 100.0) {	/* There is no correction in water this shallow.  */
 		*depth_in_corr_m = nominal_z1500;
@@ -4517,7 +4517,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *G, int zone, double twt_in_mse
 		return (-1);
 	}
 
-	part_in_100 = irint (fmod ((double)nominal_z1500, 100.0));
+	part_in_100 = lrint (fmod ((double)nominal_z1500, 100.0));
 
 	if (part_in_100 > 0.0) {	/* We have to interpolate the table  */
 
@@ -4580,7 +4580,7 @@ int MGD77_carter_twt_from_depth (struct GMT_CTRL *G, int zone, double depth_in_c
 		return (MGD77_NO_ERROR);
 	}
 
-	guess = irint ((depth_in_corr_m / 100.0)) + min;
+	guess = lrint ((depth_in_corr_m / 100.0)) + min;
 	if (guess > max) guess = max;
 	while (guess < max && C->carter_correction[guess] < depth_in_corr_m) guess++;
 	while (guess > min && C->carter_correction[guess] > depth_in_corr_m) guess--;

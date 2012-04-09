@@ -161,7 +161,6 @@
 #cmakedefine HAVE_ERF
 #cmakedefine HAVE_ERFC
 #cmakedefine HAVE_HYPOT
-#cmakedefine HAVE_IRINT
 #cmakedefine HAVE_ISNAN
 #cmakedefine HAVE_ISNAND
 #cmakedefine HAVE_ISNANF
@@ -169,6 +168,7 @@
 #cmakedefine HAVE_J0
 #cmakedefine HAVE_J1
 #cmakedefine HAVE_JN
+#cmakedefine HAVE_LRINT
 #cmakedefine HAVE_LOG1P
 #cmakedefine HAVE_LOG2
 #cmakedefine HAVE_RINT

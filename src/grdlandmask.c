@@ -420,7 +420,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, y);
 
 	GMT_grd_loop (GMT, Grid, row, col, ij) {	/* Turn levels into mask values */
-		k = irint (Grid->data[ij]);
+		k = lrint (Grid->data[ij]);
 		Grid->data[ij] = (float)Ctrl->N.mask[k];
 	}
 

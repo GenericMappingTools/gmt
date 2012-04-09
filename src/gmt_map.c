@@ -1227,7 +1227,7 @@ GMT_LONG gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n
 	inside[0] = inside[3] = gmt_inside_lower_boundary;		outside[0] = outside[3] = gmt_outside_lower_boundary;
 	border[0] = border[3] = 0.0;	border[1] = C->current.map.width;	border[2] = C->current.map.height;
 
-	n_get = irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
+	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
 	GMT_malloc4 (C, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
 
@@ -1303,7 +1303,7 @@ GMT_LONG GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 
 	for (side = 0; side < 2; side++) {	/* Do it twice to get two truncated polygons */
 		L[side] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
-		n_alloc = irint (1.05*S->n_rows+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
+		n_alloc = lrint (1.05*S->n_rows+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 		GMT_alloc_segment (C, L[side], n_alloc, S->n_columns, TRUE);	/* Temp segment with twice the number of points as we will add crossings*/
 		m = 0;		/* Start with nuthin' */
 
@@ -1503,7 +1503,7 @@ GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n
 	if (border[3] > border[1] && way == 0) border[3] -= 360.0;
 	else if (border[3] > border[1] && way == 1) border[1] += 360.0;
 
-	n_get = irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
+	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
 	GMT_malloc4 (C, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
 
@@ -2831,7 +2831,7 @@ GMT_LONG gmt_map_init_stereo (struct GMT_CTRL *C) {
 	gmt_set_polar (C);
 
 	if (C->current.setting.proj_scale_factor == -1.0) C->current.setting.proj_scale_factor = 0.9996;	/* Select default map scale for Stereographic */
-	if (C->current.proj.polar && (irint (C->current.proj.pars[5]) == 1)) C->current.setting.proj_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
+	if (C->current.proj.polar && (lrint (C->current.proj.pars[5]) == 1)) C->current.setting.proj_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
 	/* Equatorial view has a problem with infinite loops.  Until I find a cure
 	  we set projection center latitude to 0.001 so equatorial works for now */
 
@@ -2846,7 +2846,7 @@ GMT_LONG gmt_map_init_stereo (struct GMT_CTRL *C) {
 		if (C->current.proj.polar) {
 			e1p = 1.0 + C->current.proj.ECC;	e1m = 1.0 - C->current.proj.ECC;
 			D /= d_sqrt (pow (e1p, e1p) * pow (e1m, e1m));
-			if (irint (C->current.proj.pars[5]) == 1) {	/* Gave true scale at given parallel */
+			if (lrint (C->current.proj.pars[5]) == 1) {	/* Gave true scale at given parallel */
 				double k_p, m_c, t_c, es;
 
 				sincosd (fabs (C->current.proj.pars[4]), &s, &c);
@@ -3114,7 +3114,7 @@ GMT_LONG gmt_map_init_oblique (struct GMT_CTRL *C) {
 
 	o_x = C->current.proj.pars[0];	o_y = C->current.proj.pars[1];
 
-	if (irint (C->current.proj.pars[6]) == 1) {	/* Must get correct origin, then get second point */
+	if (lrint (C->current.proj.pars[6]) == 1) {	/* Must get correct origin, then get second point */
 		p_x = C->current.proj.pars[2];	p_y = C->current.proj.pars[3];
 
 		C->current.proj.o_pole_lon = p_x;
@@ -5928,8 +5928,8 @@ GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double
 		header->inc[GMT_Y] = GMT_get_inc (C, header->wesn[YLO], header->wesn[YHI], header->ny, offset);
 	}
 	else if (dpi > 0) {
-		header->nx = (int)irint ((header->wesn[XHI] - header->wesn[XLO]) * dpi) + 1 - (int)offset;
-		header->ny = (int)irint ((header->wesn[YHI] - header->wesn[YLO]) * dpi) + 1 - (int)offset;
+		header->nx = (int)lrint ((header->wesn[XHI] - header->wesn[XLO]) * dpi) + 1 - (int)offset;
+		header->ny = (int)lrint ((header->wesn[YHI] - header->wesn[YLO]) * dpi) + 1 - (int)offset;
 		header->inc[GMT_X] = GMT_get_inc (C, header->wesn[XLO], header->wesn[XHI], header->nx, offset);
 		header->inc[GMT_Y] = GMT_get_inc (C, header->wesn[YLO], header->wesn[YHI], header->ny, offset);
 	}
@@ -6215,7 +6215,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 				if (nz[ij_out] < SHRT_MAX) {	/* Avoid overflow */
 					for (b = 0; b < nb; b++) {
 						rgb[b] = ((double)nz[ij_out] * O->data[nb*ij_out+b] + I->data[nb*ij_in+b])/(nz[ij_out] + 1.0);	/* Update the mean pix values inside this rect... */
-						O->data[nb*ij_out+b] = (unsigned char) irint (GMT_0_255_truncate (rgb[b]));
+						O->data[nb*ij_out+b] = (unsigned char) lrint (GMT_0_255_truncate (rgb[b]));
 					}
 					nz[ij_out]++;		/* ..and how many points there were */
 				}
@@ -6255,7 +6255,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 				inv_nz = 1.0 / nz[ij_out];
 				for (b = 0; b < nb; b++) {
 					rgb[b] = ((double)nz[ij_out] * O->data[nb*ij_out+b] + z_int[b] * inv_nz) / (nz[ij_out] + inv_nz);
-					O->data[nb*ij_out+b] = (unsigned char) irint (GMT_0_255_truncate (rgb[b]));
+					O->data[nb*ij_out+b] = (unsigned char) lrint (GMT_0_255_truncate (rgb[b]));
 				}
 			}
 		}
@@ -7423,8 +7423,8 @@ GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 	C->current.map.half_width  = 0.5 * C->current.map.width;
 	C->current.map.half_height = 0.5 * C->current.map.height;
 
-	if (!C->current.map.n_lon_nodes) C->current.map.n_lon_nodes = irint (C->current.map.width / C->current.setting.map_line_step);
-	if (!C->current.map.n_lat_nodes) C->current.map.n_lat_nodes = irint (C->current.map.height / C->current.setting.map_line_step);
+	if (!C->current.map.n_lon_nodes) C->current.map.n_lon_nodes = lrint (C->current.map.width / C->current.setting.map_line_step);
+	if (!C->current.map.n_lat_nodes) C->current.map.n_lat_nodes = lrint (C->current.map.height / C->current.setting.map_line_step);
 
 	C->current.map.dlon = (C->common.R.wesn[XHI] - C->common.R.wesn[XLO]) / C->current.map.n_lon_nodes;
 	C->current.map.dlat = (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]) / C->current.map.n_lat_nodes;

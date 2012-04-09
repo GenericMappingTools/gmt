@@ -135,8 +135,8 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
  * match the sense of truncation used for x) then we revert to row number increasing down
  * by flipping: j = ny - 1 - j'. */
 
-#define gmt_x_to_col(x,x0,dx,off,nx) ((GMT_LONG)irint(((((x) - (x0)) / (dx)) - (off))))
-#define gmt_y_to_row(y,y0,dy,off,ny) ((GMT_LONG)((ny) - 1 - irint(((((y) - (y0)) / (dy)) - (off)))))
+#define gmt_x_to_col(x,x0,dx,off,nx) (lrint((((x) - (x0)) / (dx)) - (off)))
+#define gmt_y_to_row(y,y0,dy,off,ny) ((ny) - 1 - lrint(((((y) - (y0)) / (dy)) - (off))))
 #define GMT_col_to_x(C,col,x0,x1,dx,off,nx) (((col) == ((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((col) + (off)) * (dx))
 #define GMT_row_to_y(C,row,y0,y1,dy,off,ny) (((row) == ((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((row) + (off)) * (dy))
 
@@ -149,7 +149,7 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 
 /* These macros calculate the number of nodes in x or y for the increment dx, dy */
 
-#define GMT_get_n(C,min,max,inc,off) ((GMT_LONG)irint (((max) - (min)) / (inc)) + 1 - (off))
+#define GMT_get_n(C,min,max,inc,off) (lrint (((max) - (min)) / (inc)) + 1 - (off))
 #define GMT_get_inc(C,min,max,n,off) (((max) - (min)) / ((n) + (off) - 1))
 
 /* The follow macros simplify using the 2 above macros when all info is in the struct header */

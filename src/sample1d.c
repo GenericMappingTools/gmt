@@ -344,7 +344,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 				}
 				last_t = (Ctrl->S.mode) ? Ctrl->S.stop : S->coord[Ctrl->T.col][S->n_rows-1];
-				m = m_alloc = irint (fabs((last_t - Ctrl->S.start) / Ctrl->I.inc)) + 1;
+				m = m_alloc = lrint (fabs((last_t - Ctrl->S.start) / Ctrl->I.inc)) + 1;
 				t_out = GMT_memory (GMT, t_out, m_alloc, double);
 				t_out[0] = Ctrl->S.start;
 				i = 1;

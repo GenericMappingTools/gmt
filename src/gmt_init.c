@@ -4498,7 +4498,7 @@ void gmt_append_trans (char *text, double transparency)
 {
 	char trans[GMT_TEXT_LEN64];
 	if (!GMT_IS_ZERO (transparency) && text[0] != '-') {	/* Append nonzero transparency */
-		sprintf (trans, "@%d", irint (100.0 * transparency));
+		sprintf (trans, "@%ld", lrint (100.0 * transparency));
 		strcat (text, trans);
 	}
 }
@@ -5627,7 +5627,7 @@ GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, char *in, c
 	if (!C->current.map.frame.primary) flag = (char) toupper ((int)flag);
 	
 	if (A->type == GMT_TIME) {	/* Strict check on time intervals */
-		if (GMT_verify_time_step (C, irint (val), unit)) GMT_exit (EXIT_FAILURE);
+		if (GMT_verify_time_step (C, lrint (val), unit)) GMT_exit (EXIT_FAILURE);
 		if ((fmod (val, 1.0) > GMT_CONV_LIMIT)) {
 			GMT_report (C, GMT_MSG_FATAL, "ERROR: Time step interval (%g) must be an integer\n", val);
 			GMT_exit (EXIT_FAILURE);
@@ -6596,7 +6596,7 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 				if (mod == 'I' || mod == 'O') error++;	/* No such zones */
 			}
 			C->current.proj.pars[0] = fabs (C->current.proj.pars[0]);
-			C->current.proj.utm_zonex = irint (C->current.proj.pars[0]);
+			C->current.proj.utm_zonex = lrint (C->current.proj.pars[0]);
 			error += gmt_scale_or_width (C, txt_b, &C->current.proj.pars[1]);
 			error += !(n_slashes == 1 && n == 2);
 			error += (C->current.proj.utm_zonex < 1 || C->current.proj.utm_zonex > 60);	/* Zones must be 1-60 */
@@ -7073,7 +7073,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (p->f.f_gap < 0.0) {	/* Gave -# of ticks desired */
-				k = (GMT_LONG) irint (fabs (p->f.f_gap));
+				k = lrint (fabs (p->f.f_gap));
 				if (k == 0) {
 					GMT_report (C, GMT_MSG_FATAL, "Error in Option -Sf: Number of front ticks cannot be zero!\n");
 					GMT_exit (EXIT_FAILURE);

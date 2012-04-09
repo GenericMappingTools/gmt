@@ -470,7 +470,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		 * want the nearest distance from each node to the flowline. Later versions may
 		 * improve on this situation */
 
-		n_track = irint (c[0]);				/* Number of point pairs making up this flowline */
+		n_track = lrint (c[0]);				/* Number of point pairs making up this flowline */
 
 		GMT_memset (processed_node, G->header->size, char);	/* Fresh start for this flowline convolution */
 

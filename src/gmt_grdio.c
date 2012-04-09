@@ -693,8 +693,8 @@ GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double 
 
 		/* Get dimension of subregion */
 
-		*width  = irint ((wesn[XHI] - wesn[XLO]) * header->r_inc[GMT_X]) + one_or_zero;
-		*height = irint ((wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) + one_or_zero;
+		*width  = lrint ((wesn[XHI] - wesn[XLO]) * header->r_inc[GMT_X]) + one_or_zero;
+		*height = lrint ((wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) + one_or_zero;
 
 		/* Get first and last row and column numbers */
 
@@ -856,9 +856,9 @@ GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, ch
 	G->scale = G->header.z_scale_factor, G->offset = G->header.z_add_offset;
 
 	if (C->session.grdformat[G->header.type][1] == 'm')	/* Bit mask */
-		G->n_byte = irint (ceil (G->header.nx / 32.0)) * G->size;
+		G->n_byte = lrint (ceil (G->header.nx / 32.0)) * G->size;
 	else if (C->session.grdformat[G->header.type][0] == 'r' && C->session.grdformat[G->header.type][1] == 'b')	/* Sun Raster */
-		G->n_byte = irint (ceil (G->header.nx / 2.0)) * 2 * G->size;
+		G->n_byte = lrint (ceil (G->header.nx / 2.0)) * 2 * G->size;
 	else	/* All other */
 		G->n_byte = G->header.nx * G->size;
 
@@ -1032,8 +1032,8 @@ void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *G, double shift)
 	GMT_LONG col, row, k, ij, n_shift, width, n_warn = 0;
 	float *tmp = NULL;
 
-	n_shift = irint (shift * G->header->r_inc[GMT_X]);
-	width = irint (360.0 * G->header->r_inc[GMT_X]);
+	n_shift = lrint (shift * G->header->r_inc[GMT_X]);
+	width = lrint (360.0 * G->header->r_inc[GMT_X]);
 	if (width > G->header->nx) {
 		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot rotate grid, width is too small\n");
 		return;
@@ -1155,10 +1155,10 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 		else
 			shift_x = 0.0;
 
-		wesn[XLO] = h->wesn[XLO] + irint ((wesn[XLO] - h->wesn[XLO] + shift_x) * h->r_inc[GMT_X]) * h->inc[GMT_X];
-		wesn[XHI] = h->wesn[XHI] + irint ((wesn[XHI] - h->wesn[XLO] + shift_x) * h->r_inc[GMT_X]) * h->inc[GMT_X];
-		wesn[YLO] = h->wesn[YLO] + irint ((wesn[YLO] - h->wesn[YLO]) * h->r_inc[GMT_Y]) * h->inc[GMT_Y];
-		wesn[YHI] = h->wesn[YHI] + irint ((wesn[YHI] - h->wesn[YLO]) * h->r_inc[GMT_Y]) * h->inc[GMT_Y];
+		wesn[XLO] = h->wesn[XLO] + lrint ((wesn[XLO] - h->wesn[XLO] + shift_x) * h->r_inc[GMT_X]) * h->inc[GMT_X];
+		wesn[XHI] = h->wesn[XHI] + lrint ((wesn[XHI] - h->wesn[XLO] + shift_x) * h->r_inc[GMT_X]) * h->inc[GMT_X];
+		wesn[YLO] = h->wesn[YLO] + lrint ((wesn[YLO] - h->wesn[YLO]) * h->r_inc[GMT_Y]) * h->inc[GMT_Y];
+		wesn[YHI] = h->wesn[YHI] + lrint ((wesn[YHI] - h->wesn[YLO]) * h->r_inc[GMT_Y]) * h->inc[GMT_Y];
 
 		/* Make sure we do not exceed grid domain (which can happen if C->common.R.wesn exceeds the grid limits) */
 		if (wesn[XLO] < h->wesn[XLO] && !grid_global) wesn[XLO] = h->wesn[XLO];
@@ -1284,7 +1284,7 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	if (!(GMT_x_is_lon (C, GMT_IN) && GMT_360_RANGE (wesn[XLO], wesn[XHI]) && global)) {    /* Do this unless a 360 longitude wrap */
 		small = GMT_SMALL * header->inc[GMT_X];
 
-		val = header->wesn[XLO] + irint ((wesn[XLO] - header->wesn[XLO]) * header->r_inc[GMT_X]) * header->inc[GMT_X];
+		val = header->wesn[XLO] + lrint ((wesn[XLO] - header->wesn[XLO]) * header->r_inc[GMT_X]) * header->inc[GMT_X];
 		dx = fabs (wesn[XLO] - val);
 		if (GMT_x_is_lon (C, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
@@ -1293,7 +1293,7 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 			GMT_report (C, GMT_MSG_FATAL, "Warning: w reset to %g\n", wesn[XLO]);
 		}
 
-		val = header->wesn[XLO] + irint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) * header->inc[GMT_X];
+		val = header->wesn[XLO] + lrint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) * header->inc[GMT_X];
 		dx = fabs (wesn[XHI] - val);
 		if (GMT_x_is_lon (C, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > GMT_SMALL) {
@@ -1306,14 +1306,14 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	/* Check if s,n are a multiple of y_inc offset from y_min - if not adjust s, n */
 	small = GMT_SMALL * header->inc[GMT_Y];
 
-	val = header->wesn[YLO] + irint ((wesn[YLO] - header->wesn[YLO]) * header->r_inc[GMT_Y]) * header->inc[GMT_Y];
+	val = header->wesn[YLO] + lrint ((wesn[YLO] - header->wesn[YLO]) * header->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YLO] - val) > small) {
 		wesn[YLO] = val;
 		GMT_report (C, GMT_MSG_FATAL, "Warning: (s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
 		GMT_report (C, GMT_MSG_FATAL, "Warning: s reset to %g\n", wesn[YLO]);
 	}
 
-	val = header->wesn[YLO] + irint ((wesn[YHI] - header->wesn[YLO]) * header->r_inc[GMT_Y]) * header->inc[GMT_Y];
+	val = header->wesn[YLO] + lrint ((wesn[YHI] - header->wesn[YLO]) * header->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YHI] - val) > small) {
 		wesn[YHI] = val;
 		GMT_report (C, GMT_MSG_FATAL, "Warning: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);

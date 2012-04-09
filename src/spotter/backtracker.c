@@ -582,7 +582,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else {
 				if (!Ctrl->W.active) n_chunk = spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
 				
-				n_track = irint (c[0]);
+				n_track = lrint (c[0]);
 				for (j = 0, i = 1; j < n_track; j++, i += 3) {
 					out[GMT_Z] = c[i+2];
 					if (Ctrl->A.mode && (out[GMT_Z] < t_low || out[GMT_Z] > t_high)) continue;

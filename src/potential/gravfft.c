@@ -1385,7 +1385,7 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 	
 	for (k = 2; k < GridA->header->size; k+= 2) {
 		freq = modk__(k, K);
-		ifreq = irint(fabs(freq) * r_delta_k) - 1;
+		ifreq = lrint(fabs(freq) * r_delta_k) - 1;
 		if (ifreq < 0) ifreq = 0;	/* Might happen when doing r average  */
 		if (ifreq >= nk) continue;	/* Might happen when doing r average  */
 		b_pow[ifreq] += (datac[k]*datac[k] + datac[k+1]*datac[k+1]); /* B*B-conj = bat power */

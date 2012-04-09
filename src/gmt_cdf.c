@@ -147,7 +147,7 @@ GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 			GMT_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, (size_t)1, &header->nan_value));
 		}
 		else {
-			i = irint (header->nan_value);
+			i = lrint (header->nan_value);
 			GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, (size_t)1, &i));
 		}
 		GMT_err_trap (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, (size_t)1, &header->registration));
@@ -379,13 +379,13 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 			for (i = 0; i < width_out; i++) {
 				value = grid[inc*(ij+k[i])+off];
 				if (GMT_is_dnan (value))
-					tmp_i[i] = irint (header->nan_value);
+					tmp_i[i] = lrint (header->nan_value);
 				else if (value <= limit[0] || value >= limit[1]) {
-					tmp_i[i] = irint (header->nan_value);
+					tmp_i[i] = lrint (header->nan_value);
 					nr_oor++;
 				}
 				else {
-					tmp_i[i] = irint (value);
+					tmp_i[i] = lrint (value);
 					header->z_min = MIN (header->z_min, (double)tmp_i[i]);
 					header->z_max = MAX (header->z_max, (double)tmp_i[i]);
 				}

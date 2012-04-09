@@ -2458,9 +2458,9 @@ void GMT_draw_map_scale (struct GMT_CTRL *C, struct GMT_MAP_SCALE *ms)
 	x_right = ms->x0 + half;
 
 	if (ms->fancy) {	/* Fancy scale */
-		j = irint (floor (d_log10 (C, ms->length / 0.95)));
+		j = lrint (floor (d_log10 (C, ms->length / 0.95)));
 		base = pow (10.0, (double)j);
-		i = irint (ms->length / base) - 1;
+		i = lrint (ms->length / base) - 1;
 		d_base = ms->length / n_a_ticks[i];
 		dx_f = width / n_f_ticks[i];
 		dx_a = width / n_a_ticks[i];
@@ -2524,7 +2524,7 @@ void GMT_draw_map_scale (struct GMT_CTRL *C, struct GMT_MAP_SCALE *ms)
 	else {	/* Simple scale */
 		if (ms->boxdraw || ms->boxfill) {	/* Draw a rectangle beneath the scale */
 			if (ms->boxdraw) GMT_setpen (C, &ms->pen);
-			dx = fabs (0.5 * irint (floor (d_log10 (C, ms->length))) * 0.4 * (C->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH));
+			dx = fabs (0.5 * lrint (floor (d_log10 (C, ms->length))) * 0.4 * (C->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH));
 			GMT_setfill (C, &ms->fill, ms->boxdraw);
 			PSL_plotbox (P, x_left - 2.0 * C->current.setting.map_annot_offset[0] - dx,
 				ms->y0 - 1.5 * a_len - C->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH,
@@ -2625,9 +2625,9 @@ void gmt_draw_mag_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 			sincosd (ew_angle + angle, &s, &c);
 			x[0] = mr->x0 + (R[level] + C->current.setting.map_annot_offset[level]) * c, y[0] = mr->y0 + (R[level] + C->current.setting.map_annot_offset[level]) * s;
 			if (C->current.setting.map_degree_symbol == gmt_none)
-				sprintf (label, "%d", irint (val[i]));
+				sprintf (label, "%ld", lrint (val[i]));
 			else
-				sprintf (label, "%d%c", irint (val[i]), (int)C->current.setting.ps_encoding.code[C->current.setting.map_degree_symbol]);
+				sprintf (label, "%ld%c", lrint (val[i]), (int)C->current.setting.ps_encoding.code[C->current.setting.map_degree_symbol]);
 			t_angle = fmod ((double)(-val[i] - offset) + 360.0, 360.0);	/* Now in 0-360 range */
 			if (t_angle > 180.0) t_angle -= 180.0;	/* Now in -180/180 range */
 			if (t_angle > 90.0 || t_angle < -90.0) t_angle -= copysign (180.0, t_angle);
@@ -4279,13 +4279,13 @@ void GMT_draw_front (struct GMT_CTRL *C, double x[], double y[], GMT_LONG n, str
 	}
 
 	if (f->f_gap > 0.0) {	/* Gave positive interval; adjust so we start and end with a tick on each line */
-		ngap = irint (s[n-1] / f->f_gap);
+		ngap = lrint (s[n-1] / f->f_gap);
 		gap = s[n-1] / ngap;
 		dist = f->f_off;	/* Start off at the offset distance [0] */
 		ngap++;
 	}
 	else {	/* Gave negative interval which means the # of ticks required */
-		ngap = (GMT_LONG) irint (fabs (f->f_gap));
+		ngap = lrint (fabs (f->f_gap));
 		if (ngap == 0) {	/* Cannot happen but might as well leave the test in case of snafus */
 			GMT_report (C, GMT_MSG_FATAL, "Warning: Number of front ticks reset from 0 to 1 (check your arguments)\n");
 			ngap = 1;

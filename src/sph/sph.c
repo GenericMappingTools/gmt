@@ -282,8 +282,8 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 		double dgmax;
 		/* initialize gradients grad to zeros. */
 		GMT_memset (grad, 3*n, double);
-		itgs  = (par[0] == 0.0) ? 3    : irint (par[0]);
-		maxit = (par[1] == 0.0) ? 10   : irint (par[1]);
+		itgs  = (par[0] == 0.0) ? 3    : lrint (par[0]);
+		maxit = (par[1] == 0.0) ? 10   : lrint (par[1]);
 		dgmax = (par[2] == 0.0) ? 0.01 : par[2];
 		if (!vartens) itgs = 1;
 
@@ -323,7 +323,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 		double wtk, smtol, gstol, e, sm, *wt = GMT_memory (C, NULL, n, double);
 		e    = (par[0] == 0.0) ? 0.01 : par[0];
 		sm   = (par[1] <= 0.0) ? (double)n : par[1];
-		itgs = (par[2] == 0.0) ? 3 : irint (par[2]);
+		itgs = (par[2] == 0.0) ? 3 : lrint (par[2]);
 		if (!vartens) itgs = 1;
 		wtk = 1.0 / e;
 		for (k = 0; k < n; k++) wt[k] = wtk;	/* store the weights wt. */

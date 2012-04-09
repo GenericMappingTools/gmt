@@ -410,14 +410,14 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_memcpy (tmp_h.inc, Ctrl->I.inc, 2, double);
 		GMT_RI_prepare (GMT, &tmp_h);	/* Convert to make sure we have correct increments */
 		GMT_memcpy (Ctrl->I.inc, tmp_h.inc, 2, double);
-		d_row = irint (Ctrl->I.inc[GMT_Y] * Grid[0]->header->r_inc[GMT_Y]);
-		d_col = irint (Ctrl->I.inc[GMT_X] * Grid[0]->header->r_inc[GMT_X]);
+		d_row = lrint (Ctrl->I.inc[GMT_Y] * Grid[0]->header->r_inc[GMT_Y]);
+		d_col = lrint (Ctrl->I.inc[GMT_X] * Grid[0]->header->r_inc[GMT_X]);
 		tmp = ceil (Grid[0]->header->wesn[YHI] / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		if (tmp > Grid[0]->header->wesn[YHI]) tmp -= Ctrl->I.inc[GMT_Y];
-		row_0 = irint ((Grid[0]->header->wesn[YHI] - tmp) * Grid[0]->header->r_inc[GMT_Y]);
+		row_0 = lrint ((Grid[0]->header->wesn[YHI] - tmp) * Grid[0]->header->r_inc[GMT_Y]);
 		tmp = floor (Grid[0]->header->wesn[XLO] / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		if (tmp < Grid[0]->header->wesn[XLO]) tmp += Ctrl->I.inc[GMT_X];
-		col_0 = irint ((tmp - Grid[0]->header->wesn[XLO]) * Grid[0]->header->r_inc[GMT_X]);
+		col_0 = lrint ((tmp - Grid[0]->header->wesn[XLO]) * Grid[0]->header->r_inc[GMT_X]);
 	}
 
 	dim[5] = GMT->current.setting.map_vector_shape;	/* These do not change inside the loop */

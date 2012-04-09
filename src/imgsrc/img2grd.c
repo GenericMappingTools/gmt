@@ -466,7 +466,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Set up header with Mercatorized dimensions assuming -Jm1  */
 	if (Ctrl->C.active) {
 		GMT_LONG equator;
-		equator = irint (GMT_img_lat_to_ypix (0.0, &imgcoord));
+		equator = lrint (GMT_img_lat_to_ypix (0.0, &imgcoord));
 		wesn[XLO] = iinstart * inc[GMT_X];
 		wesn[XHI] = wesn[XLO] + Merc->header->nx * inc[GMT_X];
 		wesn[YHI] = (imgcoord.nyrow - jinstart - equator) * inc[GMT_Y];

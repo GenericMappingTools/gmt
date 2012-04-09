@@ -152,9 +152,6 @@
 #ifndef MAX
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #endif
-#ifndef irint
-#define irint(x) ((int)rint(x))
-#endif
 
 /*--------------------------------------------------------------------
  *			PSL CONSTANTS MACRO DEFINITIONS
@@ -886,8 +883,8 @@ PSL_LONG PSL_setpattern (struct PSL_CTRL *PSL, PSL_LONG image_no, char *imagefil
 
 		PSL_comment (PSL, "Setup %s fill using pattern %ld\n", kind_mask[mask], image_no);
 		if (image_dpi) {	/* Use given DPI */
-			nx = (PSL_LONG)irint (nx * PSL->internal.dpu / image_dpi);
-			ny = (PSL_LONG)irint (ny * PSL->internal.dpu / image_dpi);
+			nx = lrint (nx * PSL->internal.dpu / image_dpi);
+			ny = lrint (ny * PSL->internal.dpu / image_dpi);
 		}
 		PSL_command (PSL, "/pattern%ld {V %ld %ld scale", image_no, nx, ny);
 		PSL_command (PSL, "\n<< /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc\n   {begin");
@@ -1140,7 +1137,7 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 
 		/* Write definitions of macros to plotfile */
 
-		PSL_command (PSL, "%%%%BoundingBox: 0 0 %d %d\n", irint (PSL->internal.p_width), irint (PSL->internal.p_height));
+		PSL_command (PSL, "%%%%BoundingBox: 0 0 %d %d\n", lrint (PSL->internal.p_width), lrint (PSL->internal.p_height));
 		PSL_command (PSL, "%%%%HiResBoundingBox: 0 0 %g %g\n", PSL->internal.p_width, PSL->internal.p_height);
 		if (title) {
 			PSL_command (PSL, "%%%%Title: %s\n", title);
@@ -2245,7 +2242,7 @@ struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, PSL_LONG l
 	strncpy (new->txt, &word[i], (size_t)length);
 	new->font_no = fontno;
 	if (small) {	/* Small caps is on */
-		new->fontsize = irint (0.85 * fs);
+		new->fontsize = lrint (0.85 * fs);
 		for (i = 0; new->txt[i]; i++) {
 			c = (int)new->txt[i];
 			new->txt[i] = (char) toupper (c);
@@ -2253,14 +2250,14 @@ struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, PSL_LONG l
 	}
 	else if (super) {
 		new->fontsize = (PSL_LONG)(0.7 * fs);
-		new->baseshift = irint (0.35 * fs);
+		new->baseshift = lrint (0.35 * fs);
 	}
 	else if (sub) {
 		new->fontsize = (PSL_LONG)(0.7 * fs);
-		new->baseshift = irint (-0.25 * fs);
+		new->baseshift = lrint (-0.25 * fs);
 	}
 	else
-		new->fontsize = irint (fs);
+		new->fontsize = lrint (fs);
 
 	new->flag = space;
 	if (tab) new->flag |= 4;	/* 3rd bit indicates tab, then add space after word */
@@ -2769,7 +2766,7 @@ PSL_LONG psl_read_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h
 		}
 	}
 
-	if (h->type == RT_OLD && h->length == 0) h->length = 2 * irint (ceil (h->width * h->depth / 16.0)) * h->height;
+	if (h->type == RT_OLD && h->length == 0) h->length = 2 * lrint (ceil (h->width * h->depth / 16.0)) * h->height;
 
 	return (0);
 }
@@ -2844,7 +2841,7 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 	double angle[2], tangle[2], off[2], A, B, bo1, bo2, xi, yi, bi1, bi2, xv, yv, rshift;
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
 
-	status = (PSL_LONG)irint (param[7]);
+	status = lrint (param[7]);
 	if (status & PSL_VEC_MARC90 && fabs (90.0 - fabs (param[2]-param[1])) < 1.0e-8) {	/* Right angle */
 		return (psl_mathrightangle (PSL, x, y, param));
 	}
@@ -2933,7 +2930,7 @@ PSL_LONG psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	tailwidth = param[2];
 	headlength = param[3];	headwidth = 0.5 * param[4];	headshape = param[5];
 	off = 0.5 * (2.0 - headshape) * headlength;
-	status = irint (param[6]);
+	status = lrint (param[6]);
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
 	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
@@ -3713,7 +3710,7 @@ void psl_rle_decode (struct PSL_CTRL *PSL, struct imageinfo *h, unsigned char **
 
 	i = j = col = count = 0;
 
-	width = (PSL_LONG)irint (ceil (h->width * h->depth / 8.0));	/* Scanline width in bytes */
+	width = lrint (ceil (h->width * h->depth / 8.0));	/* Scanline width in bytes */
 	if (width%2) odd = TRUE, width++;	/* To ensure 16-bit words */
 	mask = mask_table[h->width%8];	/* Padding for 1-bit images */
 
@@ -3787,7 +3784,7 @@ unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, PSL_LONG *nbytes, unsigned
 	nout = *nbytes / 3;
 	output = PSL_memory (PSL, NULL, nout, unsigned char);
 
-	for (in = out = 0; in < *nbytes; out++, in += 3) output[out] = (char) irint (PSL_YIQ ((&input[in])));
+	for (in = out = 0; in < *nbytes; out++, in += 3) output[out] = (char) lrint (PSL_YIQ ((&input[in])));
 	*nbytes = nout;
 	return (output);
 }
@@ -4361,7 +4358,7 @@ char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[])
 	}
 	else if (PSL_eq (rgb[0], -3.0)) {
 		/* Pattern fill */
-		sprintf (text, "pattern%d I", irint(rgb[1]));
+		sprintf (text, "pattern%ld I", lrint(rgb[1]));
 	}
 	else if (PSL_is_gray (rgb)) {
 		/* Gray scale, since R==G==B */
@@ -4574,22 +4571,22 @@ char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const char *st
 
 PSL_LONG psl_ix (struct PSL_CTRL *PSL, double x)
 {	/* Convert user x to PS dots */
-	return (PSL->internal.x0 + (PSL_LONG)irint (x * PSL->internal.x2ix));
+	return (PSL->internal.x0 + lrint (x * PSL->internal.x2ix));
 }
 
 PSL_LONG psl_iy (struct PSL_CTRL *PSL, double y)
 {	/* Convert user y to PS dots */
-	return (PSL->internal.y0 + (PSL_LONG)irint (y * PSL->internal.y2iy));
+	return (PSL->internal.y0 + lrint (y * PSL->internal.y2iy));
 }
 
 PSL_LONG psl_iz (struct PSL_CTRL *PSL, double z)
 {	/* Convert user distances to PS dots */
-	return ((PSL_LONG)irint (z * PSL->internal.dpu));
+	return (lrint (z * PSL->internal.dpu));
 }
 
 PSL_LONG psl_ip (struct PSL_CTRL *PSL, double p)
 {	/* Convert PS points to PS dots */
-	return ((PSL_LONG)irint (p * PSL->internal.dpp));
+	return (lrint (p * PSL->internal.dpp));
 }
 
 const char *psl_putusername ()

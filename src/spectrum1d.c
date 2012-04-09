@@ -164,7 +164,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 
 	C->d_n_windows = (double)n_data / (double)C->window;
 
-	n_windows = irint (2.0 * C->d_n_windows) - 1;
+	n_windows = lrint (2.0 * C->d_n_windows) - 1;
 	one_on_nw = 1.0 / (double)n_windows;
 	dw = (n_windows > 1) ? (double)(n_data - C->window) / (double)(n_windows - 1) : 1.0;
 

@@ -1792,7 +1792,7 @@ void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 		lat_sum += S->coord[GMT_Y][row];
 	}
 	if (GMT_360_RANGE (lon_sum, 0.0)) {	/* TRUE if contains a pole */
-		S->pole = irint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
+		S->pole = lrint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
 		S->min[GMT_X] = 0.0;	S->max[GMT_X] = 360.0;
 		if (S->pole == -1) S->min[GMT_Y] = -90.0;
 		if (S->pole == +1) S->max[GMT_Y] = +90.0;
@@ -4391,7 +4391,7 @@ void gmt_write_formatted_ogr_value (struct GMT_CTRL *C, FILE *fp, GMT_LONG col, 
 		case GMTAPI_UINT:
 		case GMTAPI_LONG:
 		case GMTAPI_ULONG:
-			fprintf (fp, "%ld", (GMT_LONG)irint (G->dvalue[col]));
+			fprintf (fp, "%ld", lrint (G->dvalue[col]));
 			break;
 		case GMTAPI_TIME:
 			gmt_format_abstime_output (C, G->dvalue[col], text);

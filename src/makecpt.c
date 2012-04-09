@@ -331,7 +331,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (GMT_RUNTIME_ERROR);
 		}
 		else
-			nz = irint ((Ctrl->T.high - Ctrl->T.low) / Ctrl->T.inc) + 1;
+			nz = lrint ((Ctrl->T.high - Ctrl->T.low) / Ctrl->T.inc) + 1;
 
 		z = GMT_memory (GMT, NULL, nz, double);
 		for (i = 0; i < nz; i++) z[i] = Ctrl->T.low + i * Ctrl->T.inc;	/* Desired z values */

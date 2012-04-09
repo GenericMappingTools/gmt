@@ -791,7 +791,7 @@ void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], double *z,
 	fp = fopen ("greenspline.b", "wb");
 	n_out = (grad) ? 3 : 2;
 #endif
-	nx = irint (par[7]);
+	nx = lrint (par[7]);
 	for (i = 0; i < nx; i++) {
 		x = par[10] + i * par[8];
 		z[i] = spline2d_Wessel_Becker (GMT, x, par, NULL);
@@ -1461,7 +1461,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				par[8] = (Ctrl->S.rval[1] - Ctrl->S.rval[0]) / (par[7] - 1.0);
 				par[9] = 1.0 / par[8];
 				par[10] = Ctrl->S.rval[0];
-				nx = irint (par[7]);
+				nx = lrint (par[7]);
 				GMT_report (GMT, GMT_MSG_NORMAL, "Precalculate -SQ lookup table with %ld items from %g to %g...", nx, Ctrl->S.rval[0], Ctrl->S.rval[1]);
 				WB_z = GMT_memory (GMT, NULL, nx, double);
 				if (Ctrl->A.active) WB_g = GMT_memory (GMT, NULL, nx, double);

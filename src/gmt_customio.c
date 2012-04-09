@@ -159,7 +159,7 @@ GMT_LONG GMT_read_rasheader (FILE *fp, struct rasterfile *h)
 		}
 	}
 
-	if (h->type == RT_OLD && h->length == 0) h->length = 2 * irint (ceil (h->width * h->depth / 16.0)) * h->height;
+	if (h->type == RT_OLD && h->length == 0) h->length = 2 * lrint (ceil (h->width * h->depth / 16.0)) * h->height;
 
 	return (GMT_NOERROR);
 }
@@ -175,7 +175,7 @@ GMT_LONG GMT_write_rasheader (FILE *fp, struct rasterfile *h)
 	GMT_LONG i, value;
 
 	if (h->type == RT_OLD && h->length == 0) {
-		h->length = 2 * irint (ceil (h->width * h->depth / 16.0)) * h->height;
+		h->length = 2 * lrint (ceil (h->width * h->depth / 16.0)) * h->height;
 		h->type = RT_STANDARD;
 	}
 
@@ -523,7 +523,7 @@ GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	nm = GMT_get_nm (C, t_head.nx, t_head.ny);
 	if (nm <= 0) return (GMT_GRDIO_BAD_VAL);			/* Overflow for nx * ny? */
 	item_size = (double)((buf.st_size - GRD_HEADER_SIZE) / nm);	/* Estimate size of elements */
-	size = irint (item_size);
+	size = lrint (item_size);
 	if (!doubleAlmostEqualZero (item_size, (double)size))
 		return (GMT_GRDIO_BAD_VAL);	/* Size not an integer */
 
@@ -707,7 +707,7 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 				if (check) grid[ij] = (float)header->nan_value;
 			}
 			else {
-				ival = (unsigned int) irint ((double)grid[ij]);
+				ival = (unsigned int) lrint ((double)grid[ij]);
 				if (ival > 1) ival = 1;	/* Truncate to 1 */
 				header->z_min = MIN (header->z_min, (double)ival);
 				header->z_max = MAX (header->z_max, (double)ival);
@@ -730,7 +730,7 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 			kk = inc * (ij + k[i]) + off;
 			word = i / 32;
 			bit = i % 32;
-			ival = (unsigned int) irint ((double)grid[kk]);
+			ival = (unsigned int) lrint ((double)grid[kk]);
 			if (ival > 1) ival = 1;	/* Truncate to 1 */
 			tmp[word] |= (ival << bit);
 		}
@@ -968,8 +968,8 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 	/* Round off to chosen type */
 
 	if (type != 'f' && type != 'd') {
-		header->z_min = irint (header->z_min);
-		header->z_max = irint (header->z_max);
+		header->z_min = lrint (header->z_min);
+		header->z_max = lrint (header->z_max);
 	}
 
 	/* Store header information and array */
@@ -999,14 +999,14 @@ void GMT_encode (struct GMT_CTRL *C, void *vptr, GMT_LONG k, float z, GMT_LONG t
 {	/* Place the z value in the array location of the (type) pointer */
 	switch (type) {
 		case 'b':
-			((char *)vptr)[k] = (char)irint ((double)z);
+			((char *)vptr)[k] = (char)lrint ((double)z);
 			break;
 		case 's':
-			((short int *)vptr)[k] = (short int)irint ((double)z);
+			((short int *)vptr)[k] = (short int)lrint ((double)z);
 			break;
 		case 'i':
 		case 'm':
-			((int *)vptr)[k] = (int)irint ((double)z);
+			((int *)vptr)[k] = (int)lrint ((double)z);
 			break;
 		case 'f':
 			((float *)vptr)[k] = z;

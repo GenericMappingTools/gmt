@@ -1499,7 +1499,7 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 			dx = xyzline->segment[i]->coord[GMT_X][j+1] - xyzline->segment[i]->coord[GMT_X][j];
 			dy = xyzline->segment[i]->coord[GMT_Y][j+1] - xyzline->segment[i]->coord[GMT_Y][j];
 			dz = xyzline->segment[i]->coord[GMT_Z][j+1] - xyzline->segment[i]->coord[GMT_Z][j];
-			n_int = irint (MAX (fabs(dx) * r_dx, fabs(dy) * r_dy ) ) + 1;
+			n_int = lrint (MAX (fabs(dx) * r_dx, fabs(dy) * r_dy ) ) + 1;
 			this_end += n_int;
 
 			if (n_alloc >= this_end) {

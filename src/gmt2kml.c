@@ -527,8 +527,8 @@ void place_region_tag (struct GMT_CTRL *GMT, double west, double east, double so
 	tabs (--N); printf ("</LatLonAltBox>\n");
 	if (max[LOD] != min[LOD]) {
 		tabs (N++); printf ("<Lod>\n");
-		tabs (N); printf ("<minLodPixels>%d</minLodPixels>\n", irint (min[LOD]));
-		tabs (N); printf ("<maxLodPixels>%d</maxLodPixels>\n", irint (max[LOD]));
+		tabs (N); printf ("<minLodPixels>%ld</minLodPixels>\n", lrint (min[LOD]));
+		tabs (N); printf ("<maxLodPixels>%ld</maxLodPixels>\n", lrint (max[LOD]));
 		if (min[FADE] > 0.0 || max[FADE] > 0.0) {
 			tabs (N); printf ("<minFadeExtent>%g</minFadeExtent>\n", min[FADE]);
 			tabs (N); printf ("<maxFadeExtent>%g</maxFadeExtent>\n", max[FADE]);
@@ -555,7 +555,7 @@ void set_linestyle (struct GMT_PEN *pen, double *rgb, GMT_LONG N)
 {
 	tabs (N++); printf ("<LineStyle>\n");
 	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
-	tabs (N); printf ("<width>%d</width>\n", irint (pen->width));
+	tabs (N); printf ("<width>%ld</width>\n", lrint (pen->width));
 	tabs (--N); printf ("</LineStyle>\n");
 }
 

@@ -622,7 +622,7 @@ double GMT_in (struct GMT_CTRL *C, GMT_LONG n, double x)
 	tox = 2.0 / fabs (x);
 	bip = res = 0.0;
 	bi = 1.0;
-	m = 2 * (n + irint (sqrt ((double)(IACC * n))));
+	m = 2 * (n + lrint (sqrt ((double)(IACC * n))));
 	for (j = m; j >= 1; j--) {
 		bim = bip + ((double)j) * tox * bi;
 		bip = bi;
@@ -1220,7 +1220,7 @@ double GMT_tcrit (struct GMT_CTRL *C, double alpha, double nu)
 	}
 	t_low = GMT_zcrit (C, alpha);
 	t_high = 5.0;
-	NU = irint(nu);
+	NU = lrint(nu);
 	GMT_student_t_a (C, t_high, NU, &p_high);
 	while (p_high < p) {	/* Must pick higher starting point */
 		t_high *= 2.0;
@@ -1298,8 +1298,8 @@ double GMT_Fcrit (struct GMT_CTRL *C, double alpha, double nu1, double nu2)
 	p = 1.0 - alpha;
 	F_low = 0.0;
 	gmt_F_to_ch1_ch2 (C, F_high, nu1, nu2, &chisq1, &chisq2);
-	NU1 = irint (nu1);
-	NU2 = irint (nu2);
+	NU1 = lrint (nu1);
+	NU2 = lrint (nu2);
 	GMT_f_q (C, chisq1, NU1, chisq2, NU2, &p_high);
 	while (p_high > p) {	/* Must pick higher starting point */
 		F_high *= 2.0;

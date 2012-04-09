@@ -606,7 +606,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_set_grddim (GMT, Grid->header);
 		grd = GMT_memory (GMT, NULL, Grid->header->size, char);
 
-		/* Add GMT_CONV_LIMIT to ensure that special case radius = inc --> irint(0.5) actually rounds to 1 */
+		/* Add GMT_CONV_LIMIT to ensure that special case radius = inc --> lrint(0.5) actually rounds to 1 */
 		
 		node_only = (max_d_col == 0 && d_row == 0);
 		if (node_only && Ctrl->S.radius > 0.0) {

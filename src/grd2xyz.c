@@ -327,17 +327,17 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sprintf (item, GMT->current.setting.format_float_out, G->header->inc[GMT_X]);
 			strcat  (record, item);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
-			sprintf (record, "nodata_value %d", irint (Ctrl->E.nodata));
+			sprintf (record, "nodata_value %ld", lrint (Ctrl->E.nodata));
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
 			GMT_row_loop (GMT, G, row) {	/* Scanlines, starting in the north (ymax) */
 				rec_len = 0;
 				GMT_col_loop (GMT, G, row, col, ij) {
 					if (GMT_is_fnan (G->data[ij]))
-						sprintf (item, "%d", irint (Ctrl->E.nodata));
+						sprintf (item, "%ld", lrint (Ctrl->E.nodata));
 					else if (Ctrl->E.floating)
 						sprintf (item, GMT->current.setting.format_float_out, G->data[ij]);
 					else
-						sprintf (item, "%d", irint ((double)G->data[ij]));
+						sprintf (item, "%ld", lrint ((double)G->data[ij]));
 					len = strlen (item);
 					if ((rec_len + len + 1) >= n_alloc) {	/* Must get more memory */
 						n_alloc <<= 1;

@@ -788,7 +788,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->D.mode > 2) {	/* Update max filterweight nodes to deal with for this latitude */
 			y = fabs (lat_out);
 			if (Ctrl->D.mode == 4) y += (par[GRDFILTER_HALF_WIDTH] / par[GRDFILTER_Y_SCALE]);	/* Highest latitude within filter radius */
-			F.x_half_width = (y < 90.0) ? MIN ((F.nx - 1) / 2, irint (par[GRDFILTER_HALF_WIDTH] / (F.dx * par[GRDFILTER_Y_SCALE] * cosd (y)))) : (F.nx - 1) / 2;
+			F.x_half_width = (y < 90.0) ? MIN ((F.nx - 1) / 2, lrint (par[GRDFILTER_HALF_WIDTH] / (F.dx * par[GRDFILTER_Y_SCALE] * cosd (y)))) : (F.nx - 1) / 2;
 			if (y > 90.0 && (F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;	/* When nx is even we may come up short by 1 */
 			visit_check = ((2 * F.x_half_width + 1) >= Gin->header->nx);	/* Must make sure we only visit each node once along a row */
 		}
