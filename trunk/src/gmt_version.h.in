@@ -14,18 +14,10 @@
 #	define MANDATE "@MANDATE@"
 #endif
 
-#ifdef __LP64__
+#ifdef __x86_64__
 #	define GMT_VER_64 " [64-bit]"
 #else
-#	if defined(WIN32) && defined(WINBITAGE)
-#		if (WINBITAGE == 64)
-#			define GMT_VER_64 " [Win64-bit]"
-#		else
-#			define GMT_VER_64 " [Win32-bit]"
-#		endif
-#	else
-#		define GMT_VER_64 ""
-#	endif
+#	define GMT_VER_64 ""
 #endif
 
 #ifdef GMT_COMPAT

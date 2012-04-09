@@ -419,6 +419,12 @@ set_target_properties (gmtlib
 	LINK_FLAGS "${USER_GMTLIB_LINK_FLAGS}"
 	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
+if (HAVE_DLADDR AND HAVE_LIBDL)
+	# link the dynamic linking loader library
+	target_link_libraries (pslib dl)
+	target_link_libraries (gmtlib dl)
+endif (HAVE_DLADDR AND HAVE_LIBDL)
+
 # If a renaming of the gmt dll has been set in ConfigUser.cmake
 if (WIN32 AND GMT_DLL_RENAME)
 	set_target_properties (gmtlib PROPERTIES RUNTIME_OUTPUT_NAME ${GMT_DLL_RENAME})

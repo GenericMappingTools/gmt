@@ -111,7 +111,6 @@ else (HAVE_UNISTD_H_)
 endif (HAVE_UNISTD_H_)
 check_symbol_exists (_access   io.h     HAVE__ACCESS)
 check_symbol_exists (basename  libgen.h HAVE_BASENAME)
-check_symbol_exists (dladdr    dlfcn.h  HAVE_DLADDR)
 check_symbol_exists (fileno    stdio.h  HAVE_FILENO)
 check_symbol_exists (_fileno   stdio.h  HAVE__FILENO)
 check_symbol_exists (_getcwd   direct.h HAVE__GETCWD)
@@ -124,6 +123,18 @@ check_symbol_exists (_mkdir    direct.h HAVE__MKDIR)
 check_symbol_exists (_setmode  io.h     HAVE__SETMODE)
 check_symbol_exists (snprintf  stdio.h  HAVE_SNPRINTF_)
 check_symbol_exists (_snprintf stdio.h  HAVE__SNPRINTF_)
+
+# Check if -ldl is needed for dladdr
+check_function_exists (dlopen HAVE_BUILTIN_DYNAMIC_LINKING_LOADER)
+if (NOT HAVE_BUILTIN_DYNAMIC_LINKING_LOADER)
+	check_library_exists (dl dlopen "" HAVE_LIBDL)
+endif (NOT HAVE_BUILTIN_DYNAMIC_LINKING_LOADER)
+cmake_push_check_state() # save state of CMAKE_REQUIRED_*
+if (HAVE_LIBDL)
+	set (CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} "-ldl")
+endif (HAVE_LIBDL)
+check_symbol_exists (dladdr    dlfcn.h  HAVE_DLADDR)
+cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
 
 #
 # Check c types
@@ -202,7 +213,6 @@ check_symbol_exists (isnan       "${_math_h}" HAVE_ISNAN)
 check_symbol_exists (isnand      "${_math_h}" HAVE_ISNAND)
 check_symbol_exists (isnanf      "${_math_h}" HAVE_ISNANF)
 check_symbol_exists (_isnan      "${_math_h}" HAVE__ISNAN)
-check_symbol_exists (_isnanf     "${_math_h}" HAVE__ISNANF)
 check_symbol_exists (j0          "${_math_h}" HAVE_J0)
 check_symbol_exists (j1          "${_math_h}" HAVE_J1)
 check_symbol_exists (jn          "${_math_h}" HAVE_JN)

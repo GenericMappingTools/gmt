@@ -81,6 +81,9 @@
 EXTERN_MSC GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_grdio_init (struct GMT_CTRL *C);	/* Defined in gmt_customio.c and only used here */
 
+/* private function prototypes */
+void gmt_free_hash (struct GMT_CTRL *C, struct GMT_HASH *hashnode, GMT_LONG n_items);
+
 #ifdef DEBUG
 /* This is used to help is find memory leaks */
 struct MEMORY_TRACKER *GMT_mem_keeper;
@@ -1667,16 +1670,20 @@ GMT_LONG gmt_parse_dash_option (struct GMT_CTRL *C, char *text)
 
 	/* print version and exit */
 	if (strcmp (text, "version") == 0) {
+		struct GMTAPI_CTRL *G = C->parent;
 		fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
-		if (GMT_Destroy_Session (&C->parent))
+		gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);
+		if (GMT_Destroy_Session (&G))
 			exit (EXIT_FAILURE);
 		exit (EXIT_SUCCESS);
 	}
 
 	/* print GMT folders and exit */
 	if (strcmp (text, "show-sharedir") == 0) {
+		struct GMTAPI_CTRL *G = C->parent;
 		fprintf (stdout, "%s\n", C->session.SHAREDIR);
-		if (GMT_Destroy_Session (&C->parent))
+		gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);
+		if (GMT_Destroy_Session (&G))
 			exit (EXIT_FAILURE);
 		exit (EXIT_SUCCESS);
 	}

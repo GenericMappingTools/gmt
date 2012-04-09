@@ -205,8 +205,8 @@ char *GMT_runtime_bindir (char *result, const char *candidate) {
 
 /* Get the directory that contains this shared library at run-time */
 static char *this_runtime_libdir (char *result) {
-	char *p;
 #ifdef HAVE_DLADDR
+	char *p;
 	Dl_info info;
 
 	if ( dladdr (this_runtime_libdir, &info) && info.dli_fname[0] == '/') {
@@ -227,6 +227,7 @@ static char *this_runtime_libdir (char *result) {
 	MEMORY_BASIC_INFORMATION mbi;
 	HMODULE mod;
 	TCHAR path[PATH_MAX+1];
+	char *p;
 	static int dummy;
 
 	/* Get the directory that contains this DLL at run-time on Windows */

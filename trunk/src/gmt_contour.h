@@ -102,7 +102,7 @@ struct GMT_CONTOUR {
 	GMT_LONG transparent;		/* TRUE for transparent textbox, FALSE for opaque */
 	GMT_LONG box;			/* Textbox bits [1 = outline, 2 = rect box shape, 4 = rounded rect shape] */
 	GMT_LONG curved_text;		/* TRUE for text to follow curved lines */
-	GMT_LONG n_label;		/* Length of list */
+	unsigned n_label;		/* Length of list */
 	GMT_LONG just;			/* Label justification */
 	GMT_LONG end_just[2];		/* Justification for end of lines */
 	GMT_LONG angle_type;		/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */

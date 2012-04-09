@@ -124,6 +124,9 @@
  * Math headers
  */
 
+#include <math.h>
+#include <float.h>
+
 #if defined (HAVE_IEEEFP_H_) && defined(__ultrix__) && defined(__mips)
 /* Needed to get isnan[fd] macros */
 #	include <ieeefp.h>
@@ -172,17 +175,33 @@
 #	define irint (int)rint
 #endif
 
-#if defined HAVE__ISNAN && !defined HAVE_ISNAN
-#	define isnan _isnan
-#elif !defined HAVE_ISNAN
-/* define custom function */
-#endif
+/* Handle IEEE NaNs */
 
-#if defined HAVE__ISNANF && !defined HAVE_ISNANF
-#	define isnanf _isnanf
-#elif !defined HAVE_ISNANF
-/* define custom function */
-#endif
+#ifndef NAN
+#	ifdef _MSC_VER
+#		include <ymath.h>
+#		define NAN _Nan._Double
+#	else /* _MSC_VER */
+#		define _INFINITY (DBL_MAX+DBL_MAX)
+		static const double _NAN = (_INFINITY-_INFINITY);
+#		define NAN _NAN
+#	endif /* _MSC_VER */
+#endif /* !NAN */
+
+#ifndef HAVE_ISNAN
+#	if defined HAVE__ISNAN
+#		define isnan _isnan
+#	elif defined HAVE_ISNAND && defined HAVE_ISNANF
+#		define isnan \
+			( sizeof (x) == sizeof(double) ? isnand((double)(x)) \
+			: sizeof (x) == sizeof(float) ? isnanf((float)(x)) \
+			: (x != x) )
+#	else /* defined HAVE__ISNAN */
+#		define isnan (x != x)
+#	endif
+#endif /* !HAVE_ISNAN */
+
+/* End IEEE NaNs */
 
 #ifndef HAVE_J0
 	EXTERN_MSC double j0(double x);

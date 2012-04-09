@@ -8693,7 +8693,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 		if (buffer[0] == '#' || buffer[0] == '\0') continue;	/* Skip comments or blank lines */
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
 			char flags[GMT_TEXT_LEN64];
-			nc = sscanf (&buffer[2], "%" GMT_LL "d %s", &head->n_required, flags);
+			nc = sscanf (&buffer[2], "%d %s", &head->n_required, flags);
 			head->type = GMT_memory (C, NULL, head->n_required, GMT_LONG);
 			if (nc == 2) {	/* Got optional types argument */
 				if (strlen (flags) != head->n_required) {
