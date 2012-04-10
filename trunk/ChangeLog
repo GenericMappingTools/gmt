@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-04-10	remko
+	* FindGSHHS.cmake:	Autodetect GSHHS netCDF file extension
+
 2012-04-08	pwessel
 	* xgrid/*:		Now works again, thanks to Lloyd Parkes!
 
