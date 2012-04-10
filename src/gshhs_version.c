@@ -147,7 +147,7 @@ int main (int argc, char *argv[]) {
 		}
 		if ( ! gshhs_require_min_version (argv[1], required_version) ) {
 			/* version too old */
-			fprintf (stderr, FAILURE_PREFIX "verion of %s < min required version %s.\n", argv[1], argv[2]);
+			fprintf (stderr, FAILURE_PREFIX "version of %s < min required version %s.\n", argv[1], argv[2]);
 			return -1;
 		}
 	}
