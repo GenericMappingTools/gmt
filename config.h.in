@@ -46,8 +46,9 @@
 /* path to documentation */
 #define GMT_DOC_PATH "@CMAKE_INSTALL_PREFIX@/@GMT_DOC_PATH@"
 
-/* path to GSHHS Shoreline Database */
+/* path to GSHHS Shoreline Database and netCDF extension */
 #define GSHHS_PATH "@GSHHS_PATH@"
+#define GSHHS_EXT "@GSHHS_EXT@"
 
 /* min required GSHHS version */
 #define GSHHS_MIN_REQUIRED_VERSION {@MIN_REQUIRED_GSHHS_VERSION_MAJOR@, @MIN_REQUIRED_GSHHS_VERSION_MINOR@, @MIN_REQUIRED_GSHHS_VERSION_PATCH@}

@@ -43,7 +43,6 @@
  *
  */
 
-#define NC_FILE_SUFFIX ".cdf" /* suffix of GSHHS files */
 #define GSHHS_SITE "ftp://ftp.soest.hawaii.edu/pwessel/gshhs/"
 
 #define RIVERLAKE	5				/* Fill array id for riverlakes */
@@ -235,7 +234,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 	/* 1. Check in C->session.GSHHSDIR */
 
 	if (C->session.GSHHSDIR) {
-		sprintf (path, "%s/%s%s", C->session.GSHHSDIR, stem, NC_FILE_SUFFIX);
+		sprintf (path, "%s/%s%s", C->session.GSHHSDIR, stem, GSHHS_EXT);
 		if ( access (path, R_OK) == 0 && gshhs_require_min_version (path, version) )
 			return (path);
 		else {
@@ -255,7 +254,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 		while (fgets (dir, GMT_BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
 			if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
 			GMT_chop (dir);		/* Chop off LF or CR/LF */
-			sprintf (path, "%s/%s%s", dir, stem, NC_FILE_SUFFIX);
+			sprintf (path, "%s/%s%s", dir, stem, GSHHS_EXT);
 			if ( gshhs_require_min_version (path, version) ) {
 				fclose (fp);
 				/* update invalid C->session.GSHHSDIR */
@@ -268,7 +267,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 
 	/* 3. Then check for the named file itself */
 
-	if (GMT_getsharepath (C, "coast", stem, NC_FILE_SUFFIX, path)) {
+	if (GMT_getsharepath (C, "coast", stem, GSHHS_EXT, path)) {
 		if ( gshhs_require_min_version (path, version) ) {
 			/* update invalid C->session.GSHHSDIR */
 			sprintf (dir, "%s/%s", C->session.SHAREDIR, "coast");
@@ -280,11 +279,9 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 	if (warn_once) {
 		warn_once = false;
 		GMT_report (C, GMT_MSG_FATAL, "GSHHS version %d.%d.%d or newer is "
-								"needed to use coastlines with GMT.\n\tGet and intstall GSHHS from "
+								"needed to use coastlines with GMT.\n\tGet and install GSHHS from "
 								GSHHS_SITE ".\n", version.major, version.minor, version.patch);
 	}
-
-	/* GMT_exit (EXIT_FAILURE); */
 
 	return (NULL); /* never reached */
 }
