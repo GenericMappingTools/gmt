@@ -16,9 +16,9 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * API functions to support the redpol application.
+ * API functions to support the xyzokb application.
  *
- * Brief synopsis: 
+ * Brief synopsis:
  *
  *
  * Author:	Joaquim Luis
@@ -62,83 +62,72 @@
  */
 
 #include "gmt_potential.h"
+#include "okbfuns.h"
 
 struct XYZOKB_CTRL {
 	struct XYZOKB_C {	/* -C */
+		int active;
 		double rho;
-		GMT_LONG active;
 	} C;
 	struct XYZOKB_D {	/* -D */
 		double dir;
 	} D;
 	struct XYZOKB_I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		int active;
 		double inc[2];
 	} I;
 	struct XYZOKB_F {	/* -F<grdfile> */
-		GMT_LONG active;
+		int active;
 		char *file;
 	} F;
 	struct XYZOKB_G {	/* -G<grdfile> */
-		GMT_LONG active;
+		int active;
 		char *file;
 	} G;
 	struct XYZOKB_H {	/* -H */
-		GMT_LONG active;
+		int active;
 		double	t_dec, t_dip, m_int, m_dec, m_dip;
 	} H;
 	struct XYZOKB_L {	/* -L */
 		double zobs;
 	} L;
-	struct XYZOKB_M {	/* -M */
-		GMT_LONG active;
-	} M;
-	struct XYZOKB_N {	/* No option, just a container */
-		double	xx[24], yy[24], zz[24];
-		double	d_to_m, *mag_int, central_long, central_lat;
-		double	c_tet, s_tet, c_phi, s_phi;
-	} N;
 	struct XYZOKB_E {	/* -T */
-		GMT_LONG active;
+		int active;
 		double dz;
 	} E;
 	struct XYZOKB_S {	/* -S */
-		GMT_LONG active;
+		int active;
 		double radius;
 	} S;
 	struct XYZOKB_Z {	/* -Z */
 		double z0;
 	} Z;
 	struct XYZOKB_T {	/* -T */
-		GMT_LONG active;
-		GMT_LONG triangulate;
-		GMT_LONG raw;
-		GMT_LONG stl;
-		GMT_LONG m_var, m_var1, m_var2, m_var3, m_var4;
+		int active;
+		int triangulate;
+		int raw;
+		int stl;
+		int m_var, m_var1, m_var2, m_var3, m_var4;
 		char *xyz_file;
 		char *t_file;
 		char *raw_file;
 		char *stl_file;
 	} T;
+	struct XYZOKB_box {	/* No option, just a container */
+		int is_geog;
+		double	d_to_m, *mag_int, lon_0, lat_0;
+	} box;
 };
 
-struct  DATA    {
+struct DATA {
 	double  x, y;
 } *data;
 
-struct  BODY_DESC {
-	GMT_LONG n_f, *n_v, *ind;
-} bd_desc;
-
-struct  LOC_OR    {
-	double  x, y, z;
-};
-
-struct  TRIANG    {
+struct TRIANG {
 	double  x, y, z;
 } *triang;
 
-struct  VERT    {
+struct  VERT {
 	GMT_LONG  a, b, c;
 } *vert;
 
@@ -146,17 +135,9 @@ struct  TRI_CENTER {
 	double  x, y, z;
 } *t_center;
 
-struct  RAW    {
+struct RAW {
 	double  t1[3], t2[3], t3[3];
 } *raw_mesh;
-
-struct MAG_PARAM {
-	double	rim[3];
-} *mag_param;
-
-struct MAG_VAR {		/* Used when only the modulus of magnetization varies */
-	double	rk[3];
-} *mag_var;
 
 struct MAG_VAR2 {
 	double	m, m_dip;
@@ -179,7 +160,6 @@ void *New_xyzokb_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->L.zobs = 0;
 	C->D.dir = -1;
 	C->S.radius = 50000;
-	C->S.active = TRUE;
 	return (C);
 }
 
@@ -189,21 +169,14 @@ void Free_xyzokb_Ctrl (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *central_long, double *central_lat);
+GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0);
 GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname);
 GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir);
 GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir);
 GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_LONG switch_xy);
 void set_center (GMT_LONG n_triang);
-double okabe (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, double x, double y, struct BODY_DESC bd_desc, 
-	      GMT_LONG km, GMT_LONG pm, struct LOC_OR *loc_or);
-double okb_grv (struct XYZOKB_CTRL *Ctrl, GMT_LONG n_vert, struct LOC_OR *loc_or);
-double okb_mag (struct XYZOKB_CTRL *Ctrl, GMT_LONG n_vert, GMT_LONG km, GMT_LONG pm, struct LOC_OR *loc_or); 
-double eq_30 (double c, double s, double x, double y, double z);
-double eq_43 (double mz, double c, double tg, double auxil, double x, double y, double z);
-void rot_17 (struct XYZOKB_CTRL *Ctrl, GMT_LONG n_vert, GMT_LONG top, struct LOC_OR *loc_or);
-GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, GMT_LONG i, GMT_LONG bat);
-GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, GMT_LONG i, GMT_LONG geo);
+GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, GMT_LONG i, GMT_LONG bat);
+GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, GMT_LONG i, GMT_LONG geo);
 GMT_LONG check_triang_cw (GMT_LONG n, GMT_LONG type);
 
 GMT_LONG GMT_xyzokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
@@ -213,7 +186,7 @@ GMT_LONG GMT_xyzokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "usage: xyzokb [-C<density>] [-G<outgrid>] [-R<w>/<e>/<s></n>]\n");
 	GMT_message (GMT, "\t[-E<thick>] [-F<xy_file>] [-L<z_observation>] [-M]\n");
 	GMT_message (GMT, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
-	GMT_message (GMT, "\t[-T[<[d]xyz_file>/<vert_file>[/m]]|<[r|s]raw_file>] [-Z<level>] [-V]\n");
+	GMT_message (GMT, "\t[-T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-Z<level>] [-V]\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
@@ -265,7 +238,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 
 			case 'B':	/* For backward compat (Undocumented) */
 			case 'H':
-				if ((sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf", 
+				if ((sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf",
 					    &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -H option: Can't dechiper values\n");
 					n_errors++;
@@ -283,7 +256,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 				break;
 			case 'F':
 				Ctrl->F.active = TRUE;
-				Ctrl->F.file = strdup (opt->arg); 
+				Ctrl->F.file = strdup (opt->arg);
 				break;
 			case 'G':
 				Ctrl->G.active = TRUE;
@@ -299,10 +272,11 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 			case 'L':
 				Ctrl->L.zobs = atof (opt->arg);
 				break;
-
+#ifdef GMT_COMPAT
 			case 'M':
-				Ctrl->M.active = TRUE;
+				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				break;
+#endif
 	 		case 'P':		/* For backward compat of pre GMT version */
 	 		case 'E':
 				Ctrl->E.dz = atof (opt->arg);
@@ -310,10 +284,10 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 				break;
 	 		case 'S':
 				Ctrl->S.radius = atof (opt->arg) * 1000;
-				Ctrl->S.active = FALSE;
+				Ctrl->S.active = TRUE;
 				break;
 	 		case 't':		/* For backward compat of pre GMT version */
-			case 'T': 		/* Selected input mesh format */ 
+			case 'T': 		/* Selected input mesh format */
 				switch (opt->arg[0]) {
 					case 'd':	/* Surface computed by triangulate */
 						j = 0;
@@ -367,17 +341,17 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || GMT_is_dnan (Ctrl->S.radius)), 
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || GMT_is_dnan (Ctrl->S.radius)),
 					 "Syntax error: Radius is NaN or negative\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.active && !Ctrl->F.active , "Error: Must specify either -G or -F options\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->I.active , "Error: Must specify -I option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !GMT->common.R.active, "Error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 , 
+	n_errors += GMT_check_condition (GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
 					"Error: Must specify either -Cdensity or -H<stuff>\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
-	if (GMT_check_condition (GMT, Ctrl->T.raw && !Ctrl->S.active, "Warning: -Tr overrides -S\n"))
-		Ctrl->S.active = TRUE;
+	if (GMT_check_condition (GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
+		Ctrl->S.active = FALSE;
 
 	/*n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");*/
 
@@ -395,31 +369,33 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT_LONG kk, nm, ndata_r = 0;
 	GMT_LONG ndata_p = 0, ndata_xyz = 0, ndata_t = 0, nx_p, ny_p, n_vert_max;
 	GMT_LONG z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
-	GMT_LONG km, pm;		/* index of current body facet (for mag only) */
+	int km, pm;		/* index of current body facet (for mag only) */
 	float	*g = NULL, one_100;
-	double	s_rad2;
-	double	t_mag, a, DX, DY;
+	double	s_rad2, x_o, y_o, t_mag, a, DX, DY;
 	double	*x_obs = NULL, *y_obs = NULL, *z_obs = NULL, *x = NULL, *y = NULL, *cos_vec = NULL;
-	double	cc_t, cs_t, s_t;
-	double	central_long = 0, central_lat = 0;
+	double	cc_t, cs_t, s_t, lon_0 = 0, lat_0 = 0;
 
-	struct	LOC_OR *loc_or;
+	struct	LOC_OR *loc_or = NULL;
+	struct	BODY_VERTS *body_verts = NULL;
+	struct	BODY_DESC body_desc;
 	struct	XYZOKB_CTRL *Ctrl = NULL;
 	struct	GMT_GRID *Gout = NULL;
 	struct	GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	struct GMT_OPTION *options = NULL;
+	struct	GMT_OPTION *options = NULL;
 
 	data = NULL, triang = NULL, vert = NULL, t_center = NULL, raw_mesh = NULL, mag_param = NULL;
 	mag_var = NULL, mag_var2 = NULL, mag_var3 = NULL, mag_var4 = NULL;
+	body_desc.n_v = NULL, body_desc.ind = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
+	options = GMT_Prep_Options (API, mode, args);
+	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) 
+	if (!options || options->option == GMTAPI_OPT_USAGE)
 		bailout (GMT_xyzokb_usage (API, GMTAPI_USAGE));		/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) 
+	if (options->option == GMTAPI_OPT_SYNOPSIS)
 		bailout (GMT_xyzokb_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
@@ -429,18 +405,19 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	Ctrl = New_xyzokb_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_xyzokb_parse (API, Ctrl, options))) Return (error);
 	
-	/*---------------------------- This is the redpol main code ----------------------------*/
+	/*---------------------------- This is the xyzokb main code ----------------------------*/
+	
+	if (GMT_is_geographic (GMT, GMT_IN)) Ctrl->box.is_geog = TRUE;
 
-	if (!Ctrl->M.active) 
-		Ctrl->N.d_to_m = 1.;
+	if (!Ctrl->box.is_geog)
+		Ctrl->box.d_to_m = 1;
 	else
-		Ctrl->N.d_to_m = 2.0 * M_PI * 6371008.7714 / 360.0;
+		Ctrl->box.d_to_m = 2 * M_PI * 6371008.7714 / 360.0;
+		/*Ctrl->box.d_to_m = 2.0 * M_PI * gmtdefs.ellipse[N_ELLIPSOIDS-1].eq_radius / 360.0;*/
 
 	Ctrl->Z.z0 *= Ctrl->D.dir;
 
-	/*d_to_m = 2.0 * M_PI * gmtdefs.ellipse[N_ELLIPSOIDS-1].eq_radius / 360.0;*/
 	/* ---- Read files section ---------------------------------------------------- */
-
 	if (Ctrl->F.active) { 		/* Read xy file where anomaly is to be computed */
 		if ( (ndata_p = read_poly (GMT, Ctrl->F.file, switch_xy)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->F.file);
@@ -449,7 +426,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	}
 
 	if (Ctrl->T.triangulate) { 	/* Read triangle file output from triangulate */
-		if ( (ndata_xyz = read_xyz (GMT, Ctrl, Ctrl->T.xyz_file, &central_long, &central_lat)) < 0 ) {
+		if ( (ndata_xyz = read_xyz (GMT, Ctrl, Ctrl->T.xyz_file, &lon_0, &lat_0)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->T.xyz_file);
 			return (EXIT_FAILURE);
 		}
@@ -495,11 +472,11 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		/* Build observation point vectors */
 		x = GMT_memory (GMT, NULL, Gout->header->nx, double);
 		y = GMT_memory (GMT, NULL, Gout->header->ny, double);
-		for (i = 0; i < Gout->header->nx; i++) 
-			x[i] = (i == (Gout->header->nx-1)) ? Gout->header->wesn[XHI] : 
+		for (i = 0; i < Gout->header->nx; i++)
+			x[i] = (i == (Gout->header->nx-1)) ? Gout->header->wesn[XHI] :
 				(Gout->header->wesn[XLO] + i * Gout->header->inc[GMT_X]);
-		for (j = 0; j < Gout->header->ny; j++) 
-			y[j] = (j == (Gout->header->ny-1)) ? -Gout->header->wesn[YLO] : 
+		for (j = 0; j < Gout->header->ny; j++)
+			y[j] = (j == (Gout->header->ny-1)) ? -Gout->header->wesn[YLO] :
 				-(Gout->header->wesn[YHI] - j * Gout->header->inc[GMT_Y]);
 	}
 
@@ -509,47 +486,53 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	x_obs = GMT_memory (GMT, NULL, nx_p, double);
 	y_obs = GMT_memory (GMT, NULL, ny_p, double);
 	z_obs = GMT_memory (GMT, NULL, nx_p, double);
+	body_verts = GMT_memory (GMT, NULL, 18, struct BODY_VERTS);
 
 	if (Ctrl->F.active) { /* Need to compute observation coords only once */
 		for (i = 0; i < ndata_p; i++) {
-			x_obs[i] = (Ctrl->M.active) ? (data[i].x-central_long)*Ctrl->N.d_to_m*cos(data[i].y*D2R) : data[i].x;
-			y_obs[i] = (Ctrl->M.active) ? -(data[i].y-central_lat)*Ctrl->N.d_to_m : data[i].y; /* - because y positive 'south' */
+			x_obs[i] = (Ctrl->box.is_geog) ? (data[i].x-lon_0)*Ctrl->box.d_to_m*cos(data[i].y*D2R) : data[i].x;
+			y_obs[i] = (Ctrl->box.is_geog) ? -(data[i].y-lat_0)*Ctrl->box.d_to_m : data[i].y; /* - because y positive 'south' */
 		}
-		g = GMT_memory (GMT, NULL, nm, float); 
+		g = GMT_memory (GMT, NULL, nm, float);
 	}
 
 	if (Ctrl->T.triangulate) {
 		n_triang = ndata_t;
-		bd_desc.n_f = 5;		/* Number of prism facets */
-		bd_desc.n_v = GMT_memory (GMT, NULL, (bd_desc.n_f), GMT_LONG);
-		bd_desc.n_v[0] = 3;	bd_desc.n_v[1] = 3;
-		bd_desc.n_v[2] = 4;	bd_desc.n_v[3] = 4;
-		bd_desc.n_v[4] = 4;
-		bd_desc.ind = GMT_memory (GMT, NULL, (bd_desc.n_v[0] + bd_desc.n_v[1] +
-			bd_desc.n_v[2] + bd_desc.n_v[3] + bd_desc.n_v[4]), GMT_LONG);
-		bd_desc.ind[0] = 0;	bd_desc.ind[1] = 1; 	bd_desc.ind[2] = 2;	/* top triang */
-		bd_desc.ind[3] = 3;	bd_desc.ind[4] = 5; 	bd_desc.ind[5] = 4;	/* bot triang */
-		bd_desc.ind[6] = 1;	bd_desc.ind[7] = 4; 	bd_desc.ind[8] = 5;	bd_desc.ind[9] = 2;
-		bd_desc.ind[10] = 0;	bd_desc.ind[11] = 3;	bd_desc.ind[12] = 4;	bd_desc.ind[13] = 1;
-	 	bd_desc.ind[14] = 0;	bd_desc.ind[15] = 2;	bd_desc.ind[16] = 5;	bd_desc.ind[17] = 3;
+		body_desc.n_f = 5;		/* Number of prism facets */
+		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, GMT_LONG);
+		body_desc.n_v[0] = 3;	body_desc.n_v[1] = 3;
+		body_desc.n_v[2] = 4;	body_desc.n_v[3] = 4;
+		body_desc.n_v[4] = 4;
+		body_desc.ind = GMT_memory (GMT, NULL, (body_desc.n_v[0] + body_desc.n_v[1] +
+			body_desc.n_v[2] + body_desc.n_v[3] + body_desc.n_v[4]), GMT_LONG);
+		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;	/* top triang */
+		body_desc.ind[3] = 3;	body_desc.ind[4] = 5; 	body_desc.ind[5] = 4;	/* bot triang */
+		body_desc.ind[6] = 1;	body_desc.ind[7] = 4; 	body_desc.ind[8] = 5;	body_desc.ind[9] = 2;
+		body_desc.ind[10] = 0;	body_desc.ind[11] = 3;	body_desc.ind[12] = 4;	body_desc.ind[13] = 1;
+	 	body_desc.ind[14] = 0;	body_desc.ind[15] = 2;	body_desc.ind[16] = 5;	body_desc.ind[17] = 3;
+
+	 	/* Actually, for the gravity case we can save lots of computations because the flux
+	 	   through the vertical walls does not contibute to gravity anomaly, which is vertical */
+		if (Ctrl->C.active)
+			body_desc.n_f = 2;		/* Number of prism facets that count */
 	}
 	else if (Ctrl->T.raw || Ctrl->T.stl) {
 		n_triang = (Ctrl->T.raw) ? ndata_r : ndata_s;
-		bd_desc.n_f = 1;
-		bd_desc.n_v = GMT_memory (GMT, NULL, (bd_desc.n_f), GMT_LONG);
-		bd_desc.n_v[0] = 3;
-		bd_desc.ind = GMT_memory (GMT, NULL, (bd_desc.n_v[0]), GMT_LONG);
-		bd_desc.ind[0] = 0;	bd_desc.ind[1] = 1; 	bd_desc.ind[2] = 2;
+		body_desc.n_f = 1;
+		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, GMT_LONG);
+		body_desc.n_v[0] = 3;
+		body_desc.ind = GMT_memory (GMT, NULL, body_desc.n_v[0], GMT_LONG);
+		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;
 	}
 	else
 		GMT_report (GMT, GMT_MSG_FATAL, "It shouldn't pass here\n");
 
 	/* Allocate a structure that will be used inside okabe().
-	   We do it here to avoid thousands of alloc/free that would result if done in okabe() */ 
-	n_vert_max = bd_desc.n_v[0];
-	for (i = 1; i < bd_desc.n_f; i++) {
-		n_vert_max = MAX(bd_desc.n_v[i], n_vert_max);
-	}
+	   We do it here to avoid thousands of alloc/free that would result if done in okabe() */
+	n_vert_max = body_desc.n_v[0];
+	for (i = 1; i < body_desc.n_f; i++)
+		n_vert_max = MAX(body_desc.n_v[i], n_vert_max);
+
 	loc_or = GMT_memory (GMT, NULL, (n_vert_max+1), struct LOC_OR);
 
 	if (Ctrl->H.active) { /* 1e2 is a factor to obtain nT from magnetization in A/m */
@@ -572,10 +555,10 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			mag_var = GMT_memory (GMT, NULL, n_triang, struct MAG_VAR);
 			if (Ctrl->T.m_var1) {		/* Only the mag intensity changes, Dec & Dip are the same as the Field */
 				for (i = 0; i < n_triang; i++) {
-					t_mag = (Ctrl->N.mag_int[vert[i].a] + Ctrl->N.mag_int[vert[i].b] + Ctrl->N.mag_int[vert[i].c])/3.;
+					t_mag = (Ctrl->box.mag_int[vert[i].a] + Ctrl->box.mag_int[vert[i].b] + Ctrl->box.mag_int[vert[i].c])/3.;
 					mag_var[i].rk[0] = t_mag * cc_t;
-					mag_var[i].rk[1] = t_mag * cs_t; 
-					mag_var[i].rk[2] = t_mag * s_t; 
+					mag_var[i].rk[1] = t_mag * cs_t;
+					mag_var[i].rk[2] = t_mag * s_t;
 				}
 			}
 			else if (Ctrl->T.m_var2) {	/* Both mag intensity & dip varies. Dec is Zero (axial dipole) */
@@ -583,8 +566,8 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 					t_mag = (mag_var2[vert[i].a].m + mag_var2[vert[i].b].m + mag_var2[vert[i].c].m)/3.;
 					Ctrl->H.t_dip = (mag_var2[vert[i].a].m_dip + mag_var2[vert[i].b].m_dip + mag_var2[vert[i].c].m_dip)/3.;
 					mag_var[i].rk[0] = 0.;
-					mag_var[i].rk[1] = -t_mag * cos(Ctrl->H.t_dip*D2R); 
-					mag_var[i].rk[2] = t_mag * sin(Ctrl->H.t_dip*D2R); 
+					mag_var[i].rk[1] = -t_mag * cos(Ctrl->H.t_dip*D2R);
+					mag_var[i].rk[2] = t_mag * sin(Ctrl->H.t_dip*D2R);
 				}
 			}
 			else if (Ctrl->T.m_var3) { 	/* Both mag intensity, mag_dec & mag_dip varies. */
@@ -593,11 +576,11 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 					Ctrl->H.t_dec = (mag_var3[vert[i].a].m_dec + mag_var3[vert[i].b].m_dec + mag_var3[vert[i].c].m_dec)/3.;
 					Ctrl->H.t_dip = (mag_var3[vert[i].a].m_dip + mag_var3[vert[i].b].m_dip + mag_var3[vert[i].c].m_dip)/3.;
 					mag_var[i].rk[0] = t_mag * cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90)*D2R);
-					mag_var[i].rk[1] = t_mag * cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90)*D2R); 
-					mag_var[i].rk[2] = t_mag * sin(Ctrl->H.t_dip*D2R); 
+					mag_var[i].rk[1] = t_mag * cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90)*D2R);
+					mag_var[i].rk[2] = t_mag * sin(Ctrl->H.t_dip*D2R);
 				}
 			}
-			else {			/* Everything varies. */ 
+			else {			/* Everything varies. */
 				mag_param = GMT_memory (GMT, NULL, n_triang, struct MAG_PARAM);
 				for (i = 0; i < n_triang; i++) {
 					Ctrl->H.t_dec = (mag_var4[vert[i].a].t_dec + mag_var4[vert[i].b].t_dec + mag_var4[vert[i].c].t_dec)/3.;
@@ -609,8 +592,8 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 					Ctrl->H.t_dec = (mag_var4[vert[i].a].m_dec + mag_var4[vert[i].b].m_dec + mag_var4[vert[i].c].m_dec)/3.;
 					Ctrl->H.t_dip = (mag_var4[vert[i].a].m_dip + mag_var4[vert[i].b].m_dip + mag_var4[vert[i].c].m_dip)/3.;
 					mag_var[i].rk[0] = t_mag * cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90)*D2R);
-					mag_var[i].rk[1] = t_mag * cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90)*D2R); 
-					mag_var[i].rk[2] = t_mag * sin(Ctrl->H.t_dip*D2R); 
+					mag_var[i].rk[1] = t_mag * cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90)*D2R);
+					mag_var[i].rk[2] = t_mag * sin(Ctrl->H.t_dip*D2R);
 				}
 			}
 		}
@@ -623,59 +606,53 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	if (Ctrl->G.active) {		/* Compute the cos(lat) vector only once */
 		cos_vec = GMT_memory (GMT, NULL, Gout->header->ny, double);
 		for (i = 0; i < Gout->header->ny; i++)
-			cos_vec[i] = (Ctrl->M.active) ? cos(y[i]*D2R): 1;
+			cos_vec[i] = (Ctrl->box.is_geog) ? cos(y[i]*D2R): 1;
 	}
 
-	for (i = j = 0; i < n_triang; i++) {
+	for (i = j = 0; i < n_triang; i++) {		/* Main loop over all the triangles */
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && i > j*one_100) {
 			GMT_message (GMT, "computed %.2ld%s of %ld prisms\r", j, "%", n_triang);
 			j++;
 		}
-		km = (Ctrl->T.m_var) ? i : 0;
-		pm = (Ctrl->T.m_var4) ? i : 0;
+		km = (int)((Ctrl->T.m_var)  ? i : 0);
+		pm = (int)((Ctrl->T.m_var4) ? i : 0);
 
-		/* Don't wast time with zero mag triangles */
+		/* Don't waste time with zero mag triangles */
 		if (Ctrl->H.active && Ctrl->T.m_var && mag_var[i].rk[0] == 0 && mag_var[i].rk[1] == 0 && mag_var[i].rk[2] == 0)
 			continue;
 		if (Ctrl->T.triangulate)
-			z_th = facet_triangulate (Ctrl, i, bat);
+			z_th = facet_triangulate (Ctrl, body_verts, i, bat);
 		else if (Ctrl->T.raw || Ctrl->T.stl)
-			z_th = facet_raw (Ctrl, i, Ctrl->M.active);
+			z_th = facet_raw (Ctrl, body_verts, i, Ctrl->box.is_geog);
 		if (z_th) {
 			if (Ctrl->G.active) { /* grid */
 				for (row = 0; row < Gout->header->ny; row++) {
-					y_obs[row] = (Ctrl->M.active) ? ((y[row]+central_lat) * Ctrl->N.d_to_m): y[row];
-					GMT_col_loop (GMT, Gout,row,col,ij) {
-						x_obs[col] = (Ctrl->M.active) ? ((x[col]-central_long)*Ctrl->N.d_to_m*cos_vec[row]): x[col]; 
-						if (Ctrl->S.active)
-							DO = TRUE;
-						else {
-							DX = t_center[i].x - x_obs[col];
-							DY = t_center[i].y - y_obs[row];
-							DO = (DX*DX + DY*DY) < s_rad2; 
+					y_o = (Ctrl->box.is_geog) ? ((y[row]+lat_0) * Ctrl->box.d_to_m): y[row];
+					ij = GMT_IJP(Gout->header, row, 0);
+					for (col = 0; col < Gout->header->nx; col++, ij++) {
+						x_o = (Ctrl->box.is_geog) ? ((x[col]-lon_0)*Ctrl->box.d_to_m * cos_vec[row]) : x[col];
+						if (Ctrl->S.active) {
+							DX = t_center[i].x - x_o;
+							DY = t_center[i].y - y_o;
+							DO = (DX*DX + DY*DY) < s_rad2;
+							if (!DO) continue;
 						}
-						if (DO) {
-							a = okabe (GMT, Ctrl, x_obs[col], y_obs[row], bd_desc, km, pm, loc_or);
-							if (!GMT_is_dnan(a))
-								Gout->data[ij] += (float)a;
-						}
+
+						a = okabe (GMT, x_o, y_o, Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, pm, loc_or);
+						Gout->data[ij] += (float)a;
 					}
 				}
 			}
 			else {		/* polygon */
 				for (kk = 0; kk < ndata_p; kk++){
-					if (Ctrl->S.active)
-						DO = TRUE;
-					else {
+					if (Ctrl->S.active) {
 						DX = t_center[i].x - x_obs[kk];
 						DY = t_center[i].y - y_obs[kk];
-						DO = (DX*DX + DY*DY) < s_rad2; 
+						DO = (DX*DX + DY*DY) < s_rad2;
+						if (!DO) continue;
 					}
-					if (DO) {
-						a = okabe (GMT, Ctrl, x_obs[kk], y_obs[kk], bd_desc, km, pm, loc_or);
-						if (!GMT_is_dnan(a))
-							g[kk] += (float)a;
-					}
+					a = okabe (GMT, x_obs[kk], y_obs[kk], Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, pm, loc_or);
+					g[kk] += (float)a;
 				}
 			}
 		}
@@ -713,11 +690,12 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	if (vert) GMT_free (GMT, vert);
 	if (mag_param) GMT_free (GMT, mag_param);
 	if (mag_var) GMT_free (GMT, mag_var);
-	GMT_free (GMT, bd_desc.n_v);
-	GMT_free (GMT, bd_desc.ind);
+	GMT_free (GMT, body_desc.n_v);
+	GMT_free (GMT, body_desc.ind);
+	GMT_free (GMT, loc_or);
+	GMT_free (GMT, body_verts);
 	if (cos_vec) GMT_free (GMT, cos_vec);
-	if (loc_or) GMT_free (GMT, loc_or);
-	if (Ctrl->T.m_var1) GMT_free (GMT, Ctrl->N.mag_int);
+	if (Ctrl->T.m_var1) GMT_free (GMT, Ctrl->box.mag_int);
 	if (Ctrl->T.m_var2) GMT_free (GMT, mag_var2);
 	if (Ctrl->T.m_var3) GMT_free (GMT, mag_var3);
 	if (mag_var4) GMT_free (GMT, mag_var4);
@@ -726,7 +704,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 }
 
 /* -------------------------------------------------------------------------*/
-GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *central_long, double *central_lat) {
+GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0) {
 	/* read xyz[m] file with point data coordinates */
 
 	GMT_LONG n_alloc, ndata_xyz;
@@ -739,10 +717,10 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 
        	n_alloc = GMT_CHUNK;
 	ndata_xyz = 0;
-	*central_long = 0.;	*central_lat = 0.;
+	*lon_0 = 0.;	*lat_0 = 0.;
         triang = GMT_memory (GMT, NULL, n_alloc, struct TRIANG);
 	if (Ctrl->T.m_var1)
-        	Ctrl->N.mag_int = GMT_memory (GMT, NULL, n_alloc, double);
+        	Ctrl->box.mag_int = GMT_memory (GMT, NULL, n_alloc, double);
 	else if (Ctrl->T.m_var2)
         	mag_var2 = GMT_memory (GMT, NULL, n_alloc, struct MAG_VAR2);
 	else if (Ctrl->T.m_var3)
@@ -750,18 +728,18 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 	else if (Ctrl->T.m_var4)
         	mag_var4 = GMT_memory (GMT, NULL, n_alloc, struct MAG_VAR4);
 	
-	if (Ctrl->M.active) {	/* take a first read just to compute the central logitude */
-		while (fgets (line, GMT_TEXT_LEN256, fp)) { 
+	if (Ctrl->box.is_geog) {	/* take a first read just to compute the central longitude */
+		while (fgets (line, GMT_TEXT_LEN256, fp)) {
 			sscanf (line, "%lg %lg", &in[0], &in[1]); /* A test on file integrity will be done bellow */
 			x_min = (float)MIN(in[0], x_min);	x_max = (float)MAX(in[0], x_max);
 			y_min = (float)MIN(in[1], y_min);	y_max = (float)MAX(in[1], y_max);
 		}
-		*central_long = (x_min + x_max) / 2;
-		*central_lat  = (y_min + y_max) / 2;
+		*lon_0 = (x_min + x_max) / 2;
+		*lat_0  = (y_min + y_max) / 2;
 		rewind(fp);
 	}
 
-	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
+	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		if (!Ctrl->T.m_var) {
 			if(sscanf (line, "%lg %lg %lg", &in[0], &in[1], &in[2]) !=3)
 				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
@@ -778,8 +756,8 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 			if(sscanf (line, "%lg %lg %lg %lg %lg %lg", &in[0], &in[1], &in[2], &in[3], &in[4], &in[5]) !=6)
 				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
-		else {		/* data file has 8 columns: x,y,z,field_dec,field_dip,mag_int,mag_dec,mag_dip */ 
-			if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg", 
+		else {		/* data file has 8 columns: x,y,z,field_dec,field_dip,mag_int,mag_dec,mag_dip */
+			if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg",
 				   &in[0], &in[1], &in[2], &in[3], &in[4], &in[5], &in[6], &in[7]) !=8)
 				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
@@ -787,7 +765,7 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 			n_alloc <<= 1;
 			triang = GMT_memory (GMT, triang, n_alloc, struct TRIANG);
 			if (Ctrl->T.m_var1)
-				Ctrl->N.mag_int = GMT_memory (GMT, Ctrl->N.mag_int, n_alloc, double);
+				Ctrl->box.mag_int = GMT_memory (GMT, Ctrl->box.mag_int, n_alloc, double);
 			else if (Ctrl->T.m_var2)
 				mag_var2 = GMT_memory (GMT, mag_var2, n_alloc, struct MAG_VAR2);
 			else if (Ctrl->T.m_var3)
@@ -795,11 +773,11 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 			else
 				mag_var4 = GMT_memory (GMT, mag_var4, n_alloc, struct MAG_VAR4);
 		}
-		triang[ndata_xyz].x = (Ctrl->M.active) ? (in[0] - *central_long) * Ctrl->N.d_to_m * cos(in[1]*D2R) : in[0];
-		triang[ndata_xyz].y = (Ctrl->M.active) ? -(in[1] - *central_lat) * Ctrl->N.d_to_m : -in[1]; /* - because y must be positive 'south'*/
+		triang[ndata_xyz].x = (Ctrl->box.is_geog) ? (in[0] - *lon_0) * Ctrl->box.d_to_m * cos(in[1]*D2R) : in[0];
+		triang[ndata_xyz].y = (Ctrl->box.is_geog) ? -(in[1] - *lat_0) * Ctrl->box.d_to_m : -in[1]; /* - because y must be positive 'south'*/
 		triang[ndata_xyz].z = in[2] * Ctrl->D.dir;
-		if (Ctrl->T.m_var1) 
-			Ctrl->N.mag_int[ndata_xyz] = in[3];
+		if (Ctrl->T.m_var1)
+			Ctrl->box.mag_int[ndata_xyz] = in[3];
 		else if (Ctrl->T.m_var2) {
 			mag_var2[ndata_xyz].m = in[3];
 			mag_var2[ndata_xyz].m_dip = in[4];
@@ -836,7 +814,7 @@ GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname) {
 	ndata_t = 0;
 	vert = GMT_memory (GMT, NULL, n_alloc, struct VERT);
 	
-	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
+	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		if(sscanf (line, "%d %d %d", &in[0], &in[1], &in[2]) !=3)
 			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_t+1, fname);
 		if (ndata_t == n_alloc) {
@@ -866,8 +844,8 @@ GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	ndata_r = 0;
 	raw_mesh = GMT_memory (GMT, NULL, n_alloc, struct RAW);
 	
-	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
-		if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg %lg", 
+	while (fgets (line, GMT_TEXT_LEN256, fp)) {
+		if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg %lg",
 			   &in[0], &in[1], &in[2], &in[3], &in[4], &in[5], &in[6], &in[7], &in[8]) !=9)
 			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_r+1, fname);
               	if (ndata_r == n_alloc) {
@@ -903,7 +881,7 @@ GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	ndata_s = 0;
 	raw_mesh = GMT_memory (GMT, NULL, n_alloc, struct RAW);
 	
-	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
+	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		sscanf (line, "%s", text);
 		if (strcmp (text, "outer") == 0) {
 			fgets (line, GMT_TEXT_LEN256, fp); /* get first vertex */
@@ -947,19 +925,19 @@ GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_LONG switch_xy) {
 
 	if ((fp = fopen (fname, "r")) == NULL) return (-1);
 
-       	n_alloc = GMT_CHUNK;
+	n_alloc = GMT_CHUNK;
 	ndata = 0;
 	if (switch_xy) {iy = 0; ix = 1;}
 
 	data = GMT_memory (GMT, NULL, n_alloc, struct DATA);
 
-	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
-		if(sscanf (line, "%lg %lg", &in[0], &in[1]) !=2)
+	while (fgets (line, GMT_TEXT_LEN256, fp)) {
+		if (sscanf (line, "%lg %lg", &in[0], &in[1]) !=2)
 			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of polygon file\n", ndata+1);
-               	if (ndata == n_alloc) {
+		if (ndata == n_alloc) {
 			n_alloc <<= 1;
 			data = GMT_memory (GMT, data, n_alloc, struct DATA);
-               	}
+		}
 		data[ndata].x = in[ix];
 		data[ndata].y = in[iy];
 		ndata++;
@@ -969,7 +947,7 @@ GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_LONG switch_xy) {
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, GMT_LONG i, GMT_LONG bat) {
+GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, GMT_LONG i, GMT_LONG bat) {
 	/* Sets coodinates for the facet whose effect is beeing calculated */
 	double x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
 
@@ -977,61 +955,66 @@ GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, GMT_LONG i, GMT_LONG bat) 
 	y_a = triang[vert[i].a].y;	y_b = triang[vert[i].b].y;	y_c = triang[vert[i].c].y;
 	z_a = triang[vert[i].a].z;	z_b = triang[vert[i].b].z;	z_c = triang[vert[i].c].z;
 	/* top triang */
-	Ctrl->N.xx[0] = x_a;	Ctrl->N.yy[0] = y_a;
-	Ctrl->N.xx[1] = x_b;	Ctrl->N.yy[1] = y_b;
-	Ctrl->N.xx[2] = x_c;	Ctrl->N.yy[2] = y_c;
+	body_verts[0].x = x_a;	body_verts[0].y = y_a;
+	body_verts[1].x = x_b;	body_verts[1].y = y_b;
+	body_verts[2].x = x_c;	body_verts[2].y = y_c;
 	/* bot triang */
-	Ctrl->N.xx[3] = Ctrl->N.xx[0];	Ctrl->N.yy[3] = Ctrl->N.yy[0];
-	Ctrl->N.xx[4] = Ctrl->N.xx[1];	Ctrl->N.yy[4] = Ctrl->N.yy[1];
-	Ctrl->N.xx[5] = Ctrl->N.xx[2];	Ctrl->N.yy[5] = Ctrl->N.yy[2];
+	body_verts[3].x = body_verts[0].x;	body_verts[3].y = body_verts[0].y;
+	body_verts[4].x = body_verts[1].x;	body_verts[4].y = body_verts[1].y;
+	body_verts[5].x = body_verts[2].x;	body_verts[5].y = body_verts[2].y;
 
-	Ctrl->N.xx[6] = Ctrl->N.xx[1];	Ctrl->N.yy[6] = Ctrl->N.yy[1];
-	Ctrl->N.xx[7] = Ctrl->N.xx[4];	Ctrl->N.yy[7] = Ctrl->N.yy[4];
-	Ctrl->N.xx[8] = Ctrl->N.xx[5];	Ctrl->N.yy[8] = Ctrl->N.yy[5];
-	Ctrl->N.xx[9] = Ctrl->N.xx[2];	Ctrl->N.yy[9] = Ctrl->N.yy[2];
+	body_verts[6].x = body_verts[1].x;	body_verts[6].y = body_verts[1].y;
+	body_verts[7].x = body_verts[4].x;	body_verts[7].y = body_verts[4].y;
+	body_verts[8].x = body_verts[5].x;	body_verts[8].y = body_verts[5].y;
+	body_verts[9].x = body_verts[2].x;	body_verts[9].y = body_verts[2].y;
 
-	Ctrl->N.xx[10] = Ctrl->N.xx[1];	Ctrl->N.yy[10] = Ctrl->N.yy[1];
-	Ctrl->N.xx[11] = Ctrl->N.xx[0];	Ctrl->N.yy[11] = Ctrl->N.yy[0];
-	Ctrl->N.xx[12] = Ctrl->N.xx[3];	Ctrl->N.yy[12] = Ctrl->N.yy[3];
-	Ctrl->N.xx[13] = Ctrl->N.xx[4];	Ctrl->N.yy[13] = Ctrl->N.yy[4];
+	body_verts[10].x = body_verts[1].x;	body_verts[10].y = body_verts[1].y;
+	body_verts[11].x = body_verts[0].x;	body_verts[11].y = body_verts[0].y;
+	body_verts[12].x = body_verts[3].x;	body_verts[12].y = body_verts[3].y;
+	body_verts[13].x = body_verts[4].x;	body_verts[13].y = body_verts[4].y;
 
-	Ctrl->N.xx[14] = Ctrl->N.xx[0];	Ctrl->N.yy[14] = Ctrl->N.yy[0];
-	Ctrl->N.xx[15] = Ctrl->N.xx[2];	Ctrl->N.yy[15] = Ctrl->N.yy[2];
-	Ctrl->N.xx[16] = Ctrl->N.xx[5];	Ctrl->N.yy[16] = Ctrl->N.yy[5];
-	Ctrl->N.xx[17] = Ctrl->N.xx[3];	Ctrl->N.yy[17] = Ctrl->N.yy[3];
+	body_verts[14].x = body_verts[0].x;	body_verts[14].y = body_verts[0].y;
+	body_verts[15].x = body_verts[2].x;	body_verts[15].y = body_verts[2].y;
+	body_verts[16].x = body_verts[5].x;	body_verts[16].y = body_verts[5].y;
+	body_verts[17].x = body_verts[3].x;	body_verts[17].y = body_verts[3].y;
 
 	if (Ctrl->E.active) { /* Layer of constant thickness */
-		Ctrl->N.zz[0] = z_a;			Ctrl->N.zz[1] = z_b;			Ctrl->N.zz[2] = z_c;
-		Ctrl->N.zz[3] = z_a + Ctrl->E.dz;	Ctrl->N.zz[4] = z_b + Ctrl->E.dz;	Ctrl->N.zz[5] = z_c + Ctrl->E.dz;
-		Ctrl->N.zz[6] = Ctrl->N.zz[1];		Ctrl->N.zz[7] = Ctrl->N.zz[4];		Ctrl->N.zz[8] = Ctrl->N.zz[5];
-		Ctrl->N.zz[9] = Ctrl->N.zz[5];		Ctrl->N.zz[10] = Ctrl->N.zz[1];		Ctrl->N.zz[11] = Ctrl->N.zz[0];
-		Ctrl->N.zz[12] = Ctrl->N.zz[3];		Ctrl->N.zz[13] = Ctrl->N.zz[4];		Ctrl->N.zz[14] = Ctrl->N.zz[0];
-		Ctrl->N.zz[15] = Ctrl->N.zz[2];		Ctrl->N.zz[16] = Ctrl->N.zz[5];		Ctrl->N.zz[17] = Ctrl->N.zz[3];
+		body_verts[0].z = z_a;			body_verts[1].z = z_b;
+		body_verts[2].z = z_c;			body_verts[3].z = z_a + Ctrl->E.dz;
+		body_verts[4].z = z_b + Ctrl->E.dz;	body_verts[5].z = z_c + Ctrl->E.dz;
+		body_verts[6].z = body_verts[1].z;	body_verts[7].z = body_verts[4].z;
+		body_verts[8].z = body_verts[5].z;	body_verts[9].z = body_verts[5].z;
+		body_verts[10].z = body_verts[1].z;	body_verts[11].z = body_verts[0].z;
+		body_verts[12].z = body_verts[3].z;	body_verts[13].z = body_verts[4].z;
+		body_verts[14].z = body_verts[0].z;	body_verts[15].z = body_verts[2].z;
+		body_verts[16].z = body_verts[5].z;	body_verts[17].z = body_verts[3].z;
 
 		return (1);
 	}
 	if (bat) { /* Triangle mesh defines a bathymetric surface (TA MIXORDADO (== NOS DOIS CASOS)) */
-		Ctrl->N.zz[0] = z_a;		Ctrl->N.zz[1] = z_b;		Ctrl->N.zz[2] = z_c;
-		Ctrl->N.zz[3] = Ctrl->Z.z0;	Ctrl->N.zz[4] = Ctrl->Z.z0;	Ctrl->N.zz[5] = Ctrl->Z.z0;
-		if (fabs(Ctrl->N.zz[0] - Ctrl->N.zz[3]) > Ctrl->E.dz || fabs(Ctrl->N.zz[1] - Ctrl->N.zz[4]) > 
-		    Ctrl->E.dz || fabs(Ctrl->N.zz[2] - Ctrl->N.zz[5]) > Ctrl->E.dz) 
+		body_verts[0].z = z_a;		body_verts[1].z = z_b;
+		body_verts[2].z = z_c;		body_verts[3].z = Ctrl->Z.z0;
+		body_verts[4].z = Ctrl->Z.z0;	body_verts[5].z = Ctrl->Z.z0;
+		if (fabs(body_verts[0].z - body_verts[3].z) > Ctrl->E.dz || fabs(body_verts[1].z - body_verts[4].z) >
+		    Ctrl->E.dz || fabs(body_verts[2].z - body_verts[5].z) > Ctrl->E.dz)
 			return 1;
-		else 
+		else
 			return (0);
 	}
 	else { /* Triangle mesh defines a topographic surface */
-		Ctrl->N.zz[0] = z_a;		Ctrl->N.zz[1] = z_b;		Ctrl->N.zz[2] = z_c;
-		Ctrl->N.zz[3] = Ctrl->Z.z0;	Ctrl->N.zz[4] = Ctrl->Z.z0;	Ctrl->N.zz[5] = Ctrl->Z.z0;
-		if (fabs(Ctrl->N.zz[0] - Ctrl->N.zz[3]) > Ctrl->E.dz || fabs(Ctrl->N.zz[1] - Ctrl->N.zz[4]) > 
-		    Ctrl->E.dz || fabs(Ctrl->N.zz[2] - Ctrl->N.zz[5]) > Ctrl->E.dz) 
+		body_verts[0].z = z_a;		body_verts[1].z = z_b;
+		body_verts[2].z = z_c;		body_verts[3].z = Ctrl->Z.z0;
+		body_verts[4].z = Ctrl->Z.z0;	body_verts[5].z = Ctrl->Z.z0;
+		if (fabs(body_verts[0].z - body_verts[3].z) > Ctrl->E.dz || fabs(body_verts[1].z - body_verts[4].z) >
+		    Ctrl->E.dz || fabs(body_verts[2].z - body_verts[5].z) > Ctrl->E.dz)
 			return 1;
-		else 
+		else
 			return (0);
 	}
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, GMT_LONG i, GMT_LONG geo) {
+GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, GMT_LONG i, GMT_LONG geo) {
 	/* Sets coodinates for the facet in the RAW format */
 	double cos_a, cos_b, cos_c, x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
 
@@ -1041,224 +1024,19 @@ GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, GMT_LONG i, GMT_LONG geo) {
 	if (geo) {
 		cos_a = cos(y_a*D2R);	cos_b = cos(y_b*D2R);	cos_c = cos(y_c*D2R);
 	}
-	else {cos_a = cos_b = cos_c = 1.;}
-	Ctrl->N.xx[0] = x_a*Ctrl->N.d_to_m*cos_a;	Ctrl->N.yy[0] = y_a*Ctrl->N.d_to_m;
-	Ctrl->N.xx[1] = x_b*Ctrl->N.d_to_m*cos_b;	Ctrl->N.yy[1] = y_b*Ctrl->N.d_to_m;
-	Ctrl->N.xx[2] = x_c*Ctrl->N.d_to_m*cos_c;	Ctrl->N.yy[2] = y_c*Ctrl->N.d_to_m;
-	Ctrl->N.zz[0] = z_a;	Ctrl->N.zz[1] = z_b;	Ctrl->N.zz[2] = z_c;
+	else {
+		cos_a = cos_b = cos_c = 1;
+	}
+
+	body_verts[0].x = x_a*Ctrl->box.d_to_m*cos_a;		body_verts[0].y = y_a*Ctrl->box.d_to_m;
+	body_verts[1].x = x_b*Ctrl->box.d_to_m*cos_b;		body_verts[1].y = y_b*Ctrl->box.d_to_m;
+	body_verts[2].x = x_c*Ctrl->box.d_to_m*cos_c;		body_verts[2].y = y_c*Ctrl->box.d_to_m;
+	body_verts[0].z = z_a;
+	body_verts[1].z = z_b;
+	body_verts[2].z = z_c;
 	return 1; /* Allways return 1 */
 }
 
-/* --------------------------------------------------------------------- */
-double okabe (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, double x_o, double y_o, 
-	      struct BODY_DESC bd_desc, GMT_LONG km, GMT_LONG pm, struct LOC_OR *loc_or) {
-	double okb = 0.0, tot = 0.;
-	GMT_LONG i, n_vert, l, k, cnt_v = 0;
-	GMT_LONG top = TRUE;
-
-/* x_o, y_o, z_o are the coordinates of the observation point
- * rho is the body density times G constant
- * km is an: index of current body facet (if they have different mags); or 0 if mag=const
- * bd_desc is a structure containing the body's description. It contains the following members
- * n_f -> number of facets (int)
- * n_v -> number of vertex of each facet (pointer)
- * ind -> index describing the vertex order of each facet. These index must
- *	  describe the facet in a clock-wise order when viewed from outside. */
-	
-/*  _________________________________________________________________ 
-    |                                                               | 
-    |  Reference : Okabe, M., Analytical expressions for gravity    |
-    |     anomalies due to polyhedral bodies and translation into   |
-    |     magnetic anomalies, Geophysics, 44, (1979), p 730-741.    |
-    |_______________________________________________________________|
-    _____________________________________________________________________
-    |                                                                   |
-    |  Ifac decrit le corps (ATTN : Integer*2) :                        |
-    |   - Il y a Nff facettes qui sont decrites dans le sens des        |
-    |          aiguilles d'une montre si on regarde le corps de         |
-    |          l'exterieur. Mxsomf = Max de sommets / face              |
-    |   - Le premier nombre indique le nombre de factettes. Suivent     |
-    |       alors des groupes de nombres dont le premier de chaque      |
-    |       groupe est le nombre de sommets de la facette, suivi par    |
-    |       les indices (pointeurs) des sommets (rang dans Xx,Yy,Zz)    |
-    |       correspondant a la facette.                                 |
-    |                                                                   |
-    |  Par exemple pour un cube                _________________        |
-    |  (Nff=6; 4 sommets /face)              /|         X (Nord)        |
-    |  [Ifac] = { 6,  4, 1,2,3,4,           / |                         |
-    |                 4, 2,6,7,3,          /  |     1 ________ 2        |
-    |                 4, 4,3,7,8,         /   |      /       /|         |
-    |                 4, 5,1,4,8,      Y /    |     /       / |         |
-    |                 4, 1,5,6,2,      (Est)  |  4 /_______/3 |         |
-    |                 4, 5,8,7,6 }            |    |       |  |         |
-    |                                         |    |       | / 6        |
-    |                                       Z |    |       |/           |
-    |                                         V    |_______/            |
-    |                                             8         7           |
-    |___________________________________________________________________|
-    |                                                                   |
-    |  X,Y ET Z sont les tableaux des coordonness des pts de mesure     |
-    |___________________________________________________________________| */
-
-	for (i = 0; i < bd_desc.n_f; i++) {	/* Loop over facets */
-		n_vert = bd_desc.n_v[i];	/* Number of vertices of each face */
-		if (n_vert < 3) 
-			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: facet with less than 3 vertex\n");
-		for (l = 0; l < n_vert; l++) {
-			k = bd_desc.ind[l+cnt_v];
-			loc_or[l].x = Ctrl->N.xx[k] - x_o;
-			loc_or[l].y = Ctrl->N.yy[k] - y_o;
-			loc_or[l].z = Ctrl->N.zz[k] - Ctrl->L.zobs;
-		}
-		rot_17 (Ctrl, n_vert, top, loc_or); /* rotate coords by eq (17) of okb */
-		okb += (Ctrl->C.active) ? okb_grv (Ctrl, n_vert, loc_or): okb_mag (Ctrl, n_vert, km, pm, loc_or);
-		cnt_v += n_vert;
-	}
-	tot = (Ctrl->C.active) ? okb * Ctrl->C.rho: okb;
-	return (tot);
-}
-
-/* ---------------------------------------------------------------------- */
-void rot_17 ( struct XYZOKB_CTRL *Ctrl, GMT_LONG n_vert, GMT_LONG top, struct LOC_OR *loc_or) {
-	/* Rotates coordinates by teta and phi acording to equation (17) of Okabe */
-	/* store the result in external structure loc_or and angles c_tet s_tet c_phi s_phi */
-	double xi, xj, xk, yi, yj, yk, zi, zj, zk, v, x, y, z;
-	double r, r2, r_3d, Sxy, Szx, Syz;
-	GMT_LONG i = 0, j, k, l;
-
-	loc_or[n_vert].x = loc_or[0].x;		loc_or[n_vert].y = loc_or[0].y;	
-	loc_or[n_vert].z = loc_or[0].z;		/* Last point = first point */
-
-	if (top) { /* Currently, this is always true */
-		j = i + 1;	k = i + 2;
-		xi = loc_or[i].x;	xj = loc_or[j].x;	xk = loc_or[k].x;
-		yi = loc_or[i].y;	yj = loc_or[j].y;	yk = loc_or[k].y;
-		zi = loc_or[i].z;	zj = loc_or[j].z;	zk = loc_or[k].z;
-		Sxy = xi * (yj - yk) + xj * (yk - yi) + xk * (yi - yj);
-		Syz = yi * (zj - zk) + yj * (zk - zi) + yk * (zi - zj);
-		Szx = zi * (xj - xk) + zj * (xk - xi) + zk * (xi - xj);
-		r2 = Syz * Syz + Szx * Szx;	r = sqrt(r2);
-		r_3d = sqrt(r2 + Sxy * Sxy);
-		Ctrl->N.c_phi = - Sxy / r_3d;
-		Ctrl->N.s_phi = r / r_3d;
-
-		if (Szx == 0.0 && Syz == 0.0) { Ctrl->N.c_tet = 1.0;	Ctrl->N.s_tet = 0.0;}
-		else { Ctrl->N.c_tet = - Syz / r;	Ctrl->N.s_tet = - Szx / r;}
-		}
-	else { /* Don't need to recompute angles, only do this */
-		Ctrl->N.c_tet *= -1;	Ctrl->N.s_tet *= -1;	Ctrl->N.c_phi *= -1;
-	}
-
-	for (l = 0; l < n_vert + 1; l++) {
-		x = loc_or[l].x;	y = loc_or[l].y;	z = loc_or[l].z;
-		v = x * Ctrl->N.c_tet + y * Ctrl->N.s_tet;
-		loc_or[l].x = v * Ctrl->N.c_phi - z * Ctrl->N.s_phi;
-		loc_or[l].y = y * Ctrl->N.c_tet - x * Ctrl->N.s_tet;
-		loc_or[l].z = v * Ctrl->N.s_phi + z * Ctrl->N.c_phi;
-	}
-}
-/* ---------------------------------------------------------------------- */
-double okb_grv ( struct XYZOKB_CTRL *Ctrl, GMT_LONG n_vert, struct LOC_OR *loc_or) {
-/*  Computes the gravity anomaly due to a facet. */
- 
-	double x1, x2, y1, y2, z2, z1, dx, dy, r, r_1, c_psi, s_psi;
-	double grv = 0.0, grv_p;
-	GMT_LONG l;
-
-	if (fabs(Ctrl->N.c_phi) < FLT_EPSILON) return 0.0;
-	for (l = 0; l < n_vert; l++) {
-		x1 = loc_or[l].x;	x2 = loc_or[l+1].x;
-		y1 = loc_or[l].y;	y2 = loc_or[l+1].y;
-		dx = x2 - x1;	dy = y2 - y1;
-		r = sqrt(dx*dx + dy*dy);
-		r_1 = 1. / r;
-		if (r > FLT_EPSILON) {
-			c_psi = dx * r_1;	s_psi = dy * r_1;
-			z2 = loc_or[l+1].z;	z1 = loc_or[l].z;
-			grv_p = eq_30(c_psi, s_psi, x2, y2, z2) - eq_30(c_psi, s_psi, x1, y1, z1);
-		}
-		else
-			grv_p = 0.0;
-		grv += grv_p;
-	}
-	return (grv * Ctrl->N.c_phi);
-}
-/* ---------------------------------------------------------------------- */
-double eq_30 (double c, double s, double x, double y, double z) {
-	double r, Ji = 0.0, log_arg;
-
-	r = sqrt(x * x + y * y + z * z);
-	if (r > FLT_EPSILON) {
-		if (fabs(z) > FLT_EPSILON && fabs(c) > FLT_EPSILON)
-			Ji = -2. * z * atan ((x * c + (s + 1) * (y + r)) / (z * c));
-		log_arg = x * c + y * s + r;
-		if (log_arg > FLT_EPSILON)
-			Ji += (x * s - y * c) * log(log_arg);
-	}
-	return Ji;
-}
-
-/* ---------------------------------------------------------------------- */
-double okb_mag ( struct XYZOKB_CTRL *Ctrl, GMT_LONG n_vert, GMT_LONG km, GMT_LONG pm, struct LOC_OR *loc_or) {
-/*  Computes the total magnetic anomaly due to a facet. */
- 
-	double qsi1, qsi2, eta1, eta2, z2, z1, dx, dy, kx, ky, kz, v, r, c_psi, s_psi;
-	double ano = 0.0, ano_p, mag_fac, xi, xi1, yi, yi1, mx, my, mz, r_1, tg_psi, auxil;
-	GMT_LONG i;
-
-	mag_fac = Ctrl->N.s_phi * (mag_param[pm].rim[0] * Ctrl->N.c_tet + mag_param[pm].rim[1] * Ctrl->N.s_tet) + 
-				   mag_param[pm].rim[2] * Ctrl->N.c_phi;
-
-	if (fabs(mag_fac) < FLT_EPSILON) return 0.0;
-
-	kx = mag_var[km].rk[0];	ky = mag_var[km].rk[1];	kz = mag_var[km].rk[2];
-	v = kx * Ctrl->N.c_tet + ky * Ctrl->N.s_tet;
-	mx = v * Ctrl->N.c_phi - kz * Ctrl->N.s_phi;	my = ky * Ctrl->N.c_tet - kx * Ctrl->N.s_tet;
-	mz = v * Ctrl->N.s_phi + kz * Ctrl->N.c_phi;
-
-	for (i = 0; i < n_vert; i++) {
-		xi = loc_or[i].x;	xi1 = loc_or[i+1].x;
-		yi = loc_or[i].y;	yi1 = loc_or[i+1].y;
-		dx = xi1 - xi;	dy = yi1 - yi;
-		r = sqrt(dx*dx + dy*dy);
-		r_1 = 1. / r;
-		if (r > FLT_EPSILON) {
-			c_psi = dx * r_1;	s_psi = dy * r_1;
-			tg_psi = dy / dx;
-			auxil = my * c_psi - mx * s_psi;
-			qsi1 = yi * s_psi + xi * c_psi;	qsi2 = yi1 * s_psi + xi1 * c_psi;
-			eta1 = yi * c_psi - xi * s_psi;	eta2 = yi1 * c_psi - xi1 * s_psi;
-			z1 = loc_or[i].z;	z2 = loc_or[i+1].z;
-			ano_p = eq_43(mz, c_psi, tg_psi, auxil, qsi2, eta2, z2) - 
-			        eq_43(mz, c_psi, tg_psi, auxil, qsi1, eta1, z1);
-		}
-		else
-			ano_p = 0.0;
-		ano += ano_p;
-	}
-	return (ano * mag_fac);
-}
-
-/* ---------------------------------------------------------------------- */
-double eq_43 (double mz, double c, double tg, double auxil, double x, double y, double z) {
-	double r, ez, Li = 0.0, tmp;
-
-	ez = y * y + z * z;
-	r = sqrt(x * x + ez);
-
-	if (r > FLT_EPSILON) {
-		if (fabs(z) > FLT_EPSILON && fabs(c) > FLT_EPSILON)
-			Li = mz * atan((ez * tg - x * y) / (z * r));
-		else
-			Li = 0.0;
-		tmp = x + r;
-		if (tmp <= 0.)
-			Li -= log(r - x) * auxil;
-		else
-			Li += log(tmp) * auxil;
-	}
-	return Li;
-}
 /* ---------------------------------------------------------------------- */
 void set_center (GMT_LONG n_triang) {
 	/* Calculates triangle center by an aproximate (iterative) formula */
@@ -1282,12 +1060,13 @@ void set_center (GMT_LONG n_triang) {
 		}
 		x = (xa[k]+xb[k]+xc[k])/3.;
 		y = (ya[k]+yb[k]+yc[k])/3.;
-		z = (triang[vert[i].a].z+triang[vert[i].b].z+triang[vert[i].c].z)/3.; 
+		z = (triang[vert[i].a].z+triang[vert[i].b].z+triang[vert[i].c].z)/3.;
 		t_center[i].x = x;
 		t_center[i].y = y;
 		t_center[i].z = z;
 	}
 }
+
 void triang_norm (GMT_LONG n_triang) {
 	/* Computes the unit normal to trianglular facet */
 	GMT_LONG i;
@@ -1312,13 +1091,14 @@ void triang_norm (GMT_LONG n_triang) {
 		n[2] = v3[2] / mod;
 	}
 }
+
 GMT_LONG check_triang_cw (GMT_LONG n, GMT_LONG type) {
 	/* Checks that triangles are given in the correct clock-wise order.
-	If not swap them. This is a tricky issue. In the case of "classic" 
+	If not swap them. This is a tricky issue. In the case of "classic"
 	trihedron (x positive right; y positive "north" and z positive up),
 	positive determinants signify counter clockwise order. However, in
-	geomagnetic reference (x positive right; y positive "south" and z 
-	positive down (OK, I know it's not exactly like this but instead 
+	geomagnetic reference (x positive right; y positive "south" and z
+	positive down (OK, I know it's not exactly like this but instead
 	x->north; y->east; z->down)), counter clockwise order follows if
 	determinant is negative. */
 
@@ -1349,15 +1129,15 @@ GMT_LONG check_triang_cw (GMT_LONG n, GMT_LONG type) {
 				n_swaped++;
 			}
 			else if (type == 1) {
-				d_tmp[0] = raw_mesh[i].t2[0]; 
-				d_tmp[1] = raw_mesh[i].t2[1]; 
-				d_tmp[2] = raw_mesh[i].t2[2]; 
-				raw_mesh[i].t2[0] = raw_mesh[i].t3[0]; 
-				raw_mesh[i].t2[1] = raw_mesh[i].t3[1]; 
-				raw_mesh[i].t2[2] = raw_mesh[i].t3[2]; 
-				raw_mesh[i].t3[0] = d_tmp[0]; 
-				raw_mesh[i].t3[1] = d_tmp[1]; 
-				raw_mesh[i].t3[2] = d_tmp[2]; 
+				d_tmp[0] = raw_mesh[i].t2[0];
+				d_tmp[1] = raw_mesh[i].t2[1];
+				d_tmp[2] = raw_mesh[i].t2[2];
+				raw_mesh[i].t2[0] = raw_mesh[i].t3[0];
+				raw_mesh[i].t2[1] = raw_mesh[i].t3[1];
+				raw_mesh[i].t2[2] = raw_mesh[i].t3[2];
+				raw_mesh[i].t3[0] = d_tmp[0];
+				raw_mesh[i].t3[1] = d_tmp[1];
+				raw_mesh[i].t3[2] = d_tmp[2];
 				n_swaped++;
 			}
 		}
