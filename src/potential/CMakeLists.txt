@@ -18,13 +18,14 @@
 #
 
 # source files
-set (SUPPL_PROGS_SRCS redpol.c xyzokb.c gravfft.c)
+set (SUPPL_LIB_SRCS okbfuns.h okbfuns.c)
+set (SUPPL_PROGS_SRCS redpol.c xyzokb.c gravfft.c grdokb.c)
 
 # generate header file gmt_potential.h
 gmt_set_api_header(SUPPL_API_H ${SUPPL_PROGS_SRCS})
 
 # lib sources
-set (LIB_SRCS ${SUPPL_PROGS_SRCS} ${SUPPL_API_H})
+set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS} ${SUPPL_API_H})
 
 # create build targets
 string (REPLACE ".c" "" SUPPL_PROGS "${SUPPL_PROGS_SRCS}")
