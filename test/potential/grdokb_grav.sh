@@ -1,5 +1,5 @@
 #! /bin/bash
-# $Id: $
+# $Id$
 #
 # Compute the gravity anomaly of the whater layer above the Gorringe bank
 
