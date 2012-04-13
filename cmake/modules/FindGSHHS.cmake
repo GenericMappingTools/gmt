@@ -54,8 +54,7 @@ if (_GSHHS_FILE AND NOT GSHHS_FOUND)
 		if (_EXIT_GSHHS_VERSION EQUAL 0)
 			# found GSHHS of required version or higher
 			set (GSHHS_VERSION ${GSHHS_VERSION} CACHE INTERNAL "GSHHS version")
-			get_filename_component (GSHHS_EXT ${_GSHHS_FILE} EXT)
-			set (GSHHS_EXT ${GSHHS_EXT} CACHE INTERNAL "GSHHS extension")
+			get_filename_component (GSHHS_EXT ${_GSHHS_FILE} EXT CACHE)
 		elseif (_EXIT_GSHHS_VERSION EQUAL -1)
 			# found GSHHS but version is too old
 			message (WARNING "GSHHS found but it is too old (${GSHHS_VERSION}). "
@@ -65,6 +64,7 @@ if (_GSHHS_FILE AND NOT GSHHS_FOUND)
 endif (_GSHHS_FILE AND NOT GSHHS_FOUND)
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (GSHHS DEFAULT_MSG GSHHS_PATH GSHHS_VERSION)
+find_package_handle_standard_args (GSHHS DEFAULT_MSG
+	GSHHS_PATH GSHHS_VERSION GSHHS_EXT)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
