@@ -54,6 +54,15 @@ BD(cmyk) (assumes colors are in CMYK but interpolates in RGB).
 .B COLOR_NAN
 Color used for the non-defined areas of images (i.e., where z == NaN)  [127.5].
 .TP
+.B DIR_GSHHS
+Path to GSHHS files.  Defaults to BD($GMT_SHAREDIR)/coast if empty.
+.TP
+.B DIR_TMP
+Replaces the session temp dir BD($GMT_TMPDIR) from the environment.
+.TP
+.B DIR_USER
+Replaces the session user dir BD($GMT_USERDIR) from the environment.
+.TP
 .B FONT
 Sets the default for all fonts, except FONT_LOGO. This setting is not included in the BD(gmt.conf) file.
 .TP

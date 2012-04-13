@@ -62,6 +62,7 @@ find_package (LATEX)
 
 # Add tests and make verbatim copies from scripts
 add_subdirectory (scripts)
+add_subdirectory (examples)
 
 if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	# Install documentation files from external location without creating PDF
@@ -97,10 +98,6 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
 		# Find LaTeX
 		include (UseLATEX)
-
-		# Make PDF figures
-		#add_subdirectory (fig)
-		add_subdirectory (examples)
 
 		foreach (_pdf_file ${_docs_output})
 			string (REPLACE ".pdf" ".tex" _tex_file ${_pdf_file})
