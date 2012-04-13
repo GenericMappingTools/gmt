@@ -61,8 +61,8 @@
 /* Use b, f when applies to both i and o, else use only the bi, bo, fi, fo variants */
 #define GMT_a_OPT	OPT(a)IT(col)=IT(name)[IT(...)]
 #define GMT_b_OPT	OPT(b)[IT(ncol)][BD(t)][BD(+L)|BD(+B)]
-#define GMT_bi_OPT	OPT(bi)[IT(ncol)][BD(t)]
-#define GMT_bo_OPT	OPT(bo)[IT(ncol)][BD(t)]
+#define GMT_bi_OPT	OPT(bi)[IT(ncols)][IT(type)]
+#define GMT_bo_OPT	OPT(bo)[IT(ncols)][IT(type)]
 #define GMT_c_OPT	OPT(c)IT(copies)
 #define GMT_f_OPT	OPT(f)[BD(i)|BD(o)]IT(colinfo)
 #define GMT_fi_OPT	OPT(f)IT(colinfo)

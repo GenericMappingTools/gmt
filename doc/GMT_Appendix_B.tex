@@ -11,7 +11,7 @@
 \label{app:B}
 \thispagestyle{headings}
 
-\section{Table data} 
+\section{Table data}
 \index{Table!format}
 
 These files have \emph{N} records which have \emph{M} fields each.
@@ -74,27 +74,10 @@ When these markers are used then no other segment header will be considered.  No
 \index{\Opt{bi} (select binary input)}
 \index{\Opt{bo} (select binary output)}
 
-\GMT\ programs also support native binary tables to speed up input-output
-for i/o-intensive tasks like gridding and preprocessing.  Files
-may have a header section and the \Opt{h}\emph{n} option can be used to skip the
-first \emph{n} bytes.  The data record can be in any format, mixing different data types
-and even containing byte-swapped items.  For input, specify \Opt{bi} and append
-one or more comma-separated combinations of
-\emph{n}\textbf{t}, where \textbf{t} is one of \textbf{c} (signed byte),
-\textbf{u} (unsigned byte), \textbf{h} (signed 2-byte int), \textbf{U} (unsigned
-2-byte int), \textbf{i} (signed 4-byte int), \textbf{I} (unsigned 4-byte int),
-\textbf{l} (signed 8-byte int), \textbf{L} (unsigned 8-byte int), \textbf{f}
-(4-byte single-precision float), and \textbf{d} (8-byte double-precision
-float).  Append \textbf{w} to any item to force byte-swapping.
-Alternatively, append \textbf{+L} or \textbf{+B} to indicate that the entire data file
-should be read as little- or big-endian, respectively.
-Here, \emph{n} is the consecutive number of each data type in your binary input file; the
-total number may exceeds the columns actually needed by the program.  If no
-\emph{n} is specified we assume that \textbf{t} applies to all columns and
-that \emph{n} is implied by the expectation of the program.
-Multiple segment files are allowed and the
-segment headers are assumed to be records where all the fields equal 
-NaN.
+\GMT\ programs also support native binary tables to speed up
+input-output for i/o-intensive tasks like gridding and
+preprocessing.  This is discussed in more detail in
+section~\ref{sec:b_option}.
 
 \subsection{NetCDF tables}
 \index{Table!netCDF}
@@ -113,7 +96,7 @@ are the names of the variables to be processed. The latter option is particularl
 than one file is read: the \Opt{bic} option will apply to all files.
 Currently, \GMT\ only reads, but does not write, netCDF tabular data.
 
-\section{Grid files} 
+\section{Grid files}
 
 \subsection{NetCDF files}
 \index{grid file!formats!netCDF|(}
@@ -158,7 +141,7 @@ add\_offset			& Offset to add to scaled $z$ (default: 0) \\ \hline
 actual\_range			& Minimum and maximum $z$ (optional) \\ \hline
 \_FillValue			& Value associated with missing data points; if absent an\\
 (or missing\_value)		& appropriate default value is assumed, depending on data type. \\ \hline
-\end{tabular} 
+\end{tabular}
 \caption{Attributes of default \gmt\ grid file in COARDS-compliant netCDF format.}
 \label{tbl:netcdf-format}
 \end{table}
@@ -186,7 +169,7 @@ for more information.
 \index{grid file!formats!COARDS|)}
 \index{grid file!formats!CF-1.0|)}
 
-\subsection{Gridline and Pixel node registration} 
+\subsection{Gridline and Pixel node registration}
 
 Scanline format means that the data are stored in rows (\emph{y} = constant)
 going from the ``top'' ($y = y_{max}$ (north)) to the ``bottom''
@@ -206,7 +189,7 @@ and convert a pixel- to a gridline-registered grid, or \emph{vice versa}.
 The grid registration is determined by the common \GMT\ \Opt{r} option
 (see Section~\ref{sec:grid_registration}).
 
-\subsection{Boundary Conditions for operations on grids} 
+\subsection{Boundary Conditions for operations on grids}
 \index{grid file!boundary conditions|(}
 
 \GMT\ has the option to specify boundary conditions in some programs
@@ -258,7 +241,7 @@ condition is used there.
 ``south pole condition'' is used at $y_{min}$, else a default
 condition is used there.
 
-\end{enumerate} 
+\end{enumerate}
 
 ``Pole conditions'' use a 180\DS\ phase-shift of the data,
 requiring 180 modulo $x_{inc} = 0$.
@@ -266,7 +249,7 @@ requiring 180 modulo $x_{inc} = 0$.
 \item[Default] boundary conditions are
 \index{grid file!boundary conditions!default}
 
-\[ \nabla^2 f = \frac{\partial}{\partial n} \nabla^2 f = 0 \] 
+\[ \nabla^2 f = \frac{\partial}{\partial n} \nabla^2 f = 0 \]
 
 on the boundary, where $f(x, y)$ is represented by the values in
 the grid file, and $\partial/\partial n$ is the derivative in the direction normal to a
@@ -313,7 +296,7 @@ programmers must take care to read this header correctly (see our code for detai
 \textbf{double} \emph{z\_add\_offset}       &       Offset to add to scaled $z$-values  \\ \hline
 \textbf{char} \emph{x\_units}[80]   &       Units of the $x$-dimension      \\ \hline
 \textbf{char} \emph{y\_units}[80]   &       Units of the $y$-dimension      \\ \hline
-\textbf{char} \emph{z\_units}[80]   &       Units of the $z$-dimension      \\ \hline 
+\textbf{char} \emph{z\_units}[80]   &       Units of the $z$-dimension      \\ \hline
 \textbf{char} \emph{title}[80]      &       Descriptive title of the data set       \\ \hline
 \textbf{char} \emph{command}[320]   &       Command line that produced the grid file  \\ \hline
 \textbf{char} \emph{remark}[160]    &       Any additional comments \\ \hline \hline
@@ -354,11 +337,11 @@ is outline in Table~\ref{tbl:sunheader}.
 
 \caption{Structure of a Sun raster file.}
 \label{tbl:sunheader}
-\end{table} 
+\end{table}
 
 After the header, the color map (if \emph{ras\_maptype} is not RMT\_NONE)
 follows for \emph{ras\_maplength} bytes, followed by an image of
-\emph{ras\_length} bytes.  Some related definitions are given in Table~\ref{tbl:sundef}.  
+\emph{ras\_length} bytes.  Some related definitions are given in Table~\ref{tbl:sundef}.
 
 \begin{table}[H]
 \index{Raster file!definitions}
@@ -377,7 +360,7 @@ RMT\_EQUAL\_RGB &       1 (red[ras\_maplength/3],green[],blue[])  \\ \hline
 
 \caption{Sun macro definitions relevant to raster files.}
 \label{tbl:sundef}
-\end{table} 
+\end{table}
 
 Numerous public-domain programs exist, such as \progname{xv} and
 \progname{convert} (in the ImageMagick package), that will translate

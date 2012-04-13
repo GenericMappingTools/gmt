@@ -13,7 +13,7 @@
 This section explains features common to all the programs
 in \GMT\ and summarizes the philosophy behind the system.  Some
 of the features described here may make more sense once you reach
-the cook-book section where we present actual examples of their use. 
+the cook-book section where we present actual examples of their use.
 
 \section{\gmt\ units}
 \index{GMT@\GMT!units|(}
@@ -49,7 +49,7 @@ a unit suffix will be consider to be in meters.  For example, a distance of
 \end{tabular}
 \caption{Distance units recognized by \gmt\ command line switches.}
 \label{tbl:distunits}
-\end{table} 
+\end{table}
 
 \subsection{Distance calculations}
 
@@ -154,7 +154,7 @@ readable overheads and slides.  Note that any arguments given on
 the command line (see below) will take precedent over the default
 values.  E.g., if your \filename{gmt.conf} file has \emph{x}
 offset = 1\textbf{i} as default, the \Opt{X}1.5\textbf{i} option will override the
-default and set the offset to 1.5 inches. 
+default and set the offset to 1.5 inches.
 
 There are at least two good reasons why the \GMT\ default options
 are placed in a separate parameter file:
@@ -226,7 +226,7 @@ available to change via one of the described mechanisms.
 \index{GMT@\GMT!defaults|)}
 \index{Default settings|)}
 
-\section{Command line arguments} 
+\section{Command line arguments}
 \index{Command line!arguments}%
 \index{Arguments, command line}%
 
@@ -241,11 +241,11 @@ sometimes a number or character string immediately after the letter.
 \emph{Do not} space between the hyphen, letter, and number or string.
 \emph{Do} space between options.  Example:
 
-\vspace{\baselineskip} 
+\vspace{\baselineskip}
 
 \texttt{pscoast -R0/20/0/20 -Ggray -JM6i -Wthin -B5 -V -P $>$ map.ps}
 
-\section{Standardized command line options} 
+\section{Standardized command line options}
 \index{Standardized command line options}%
 \index{Command line!standardized options|(}%
 \label{sec:stopt}
@@ -315,7 +315,7 @@ these options in order of importance (some are use a lot more than others).
 \end{tabular}
 \caption{The 24 standardized \gmt\ command line switches.}
 \label{tbl:switches}
-\end{table} 
+\end{table}
 
 \subsection{Data domain or map region: The \Opt{R} option}
 \index{\Opt{R} (set region)}
@@ -379,7 +379,7 @@ change was to correct for drift in the dates of significant religious observatio
 in the dates. The important effects of the change were (a) Drop 10 days from October 1582 to realign the Vernal Equinox with 21 March,
 (b) change leap year selection so that not all years ending in ``00'' are leap years, and (c) change the beginning of the year to
 1 January from 25 March.  Adoption of the new calendar was essentially immediate within Catholic countries. In the Protestant countries,
-where papal authority was neither recognized not appreciated, adoption came more slowly. 
+where papal authority was neither recognized not appreciated, adoption came more slowly.
 England finally adopted the new calendar in 1752, with eleven days removed from September. The additional day came because the old and
 new calendars disagreed on whether 1700 was a leap year, so the Julian calendar had to be adjusted by one more day.} are extrapolated
 backward.  Note that this is not historical.
@@ -590,7 +590,7 @@ values.  Interval = 1 means every whole power of 10, 2 means 1, 2, 5 times
 powers of 10, and 3 means every 0.1 times powers of 10.  We used
 \Opt{R}1/1000/0/1 \Opt{JX}3l/0.4 \Opt{Ba}1\textbf{f}2\textbf{g}3.
 (middle) Here, we have chosen to
-annotate log$_{10}$ of the actual values, with \Opt{Ba}1\textbf{f}2\textbf{g}3\textbf{l}. 
+annotate log$_{10}$ of the actual values, with \Opt{Ba}1\textbf{f}2\textbf{g}3\textbf{l}.
 (bottom) We annotate every power of 10 using log$_{10}$ of the actual values
 as exponents, with \Opt{Ba}1\textbf{f}2\textbf{g}3\textbf{p}.}
 
@@ -707,7 +707,7 @@ with an interval annotations on the \emph{x}-axis and irregular annotations on t
 
 \GMTfig[h!]{GMT_-B_custom}{Custom and irregular annotations, tick-marks, and gridlines.}
 
-\subsection{Portrait plot orientation: The \Opt{P} option} 
+\subsection{Portrait plot orientation: The \Opt{P} option}
 \index{Orientation!of plot}
 \index{Plot!orientation}
 \index{Landscape orientation}
@@ -758,9 +758,9 @@ mode and omits the header information [Default initializes a new plot system].
 Most unexpected results for multiple overlay plots can be traced to the
 incorrect use of these options.  If you run only one plot
 program, ignore both the \Opt{O} and \Opt{K} options; they are
-only used when stacking plots. 
+only used when stacking plots.
 
-\subsection{Timestamps on plots: The \Opt{U} option} 
+\subsection{Timestamps on plots: The \Opt{U} option}
 \index{\Opt{U} (plot timestamp)}
 \index{Timestamp}
 \index{UNIX@\UNIX!timestamp}
@@ -771,7 +771,7 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 
 \GMTfig[h]{GMT_-U}{The \Opt{U} option makes it easy to ``date'' a plot.}
 
-\subsection{Verbose feedback: The \Opt{V} option} 
+\subsection{Verbose feedback: The \Opt{V} option}
 \index{\Opt{V} (verbose mode)}
 \index{Verbose (\Opt{V})}
 \label{sec:verbose}
@@ -847,6 +847,7 @@ the multi-versions of these three geometries.  Use upper-case +\textbf{G} to sig
 you want to split any line or polygon features that straddle the Dateline.
 
 \subsection{Binary table i/o: The \Opt{b} option}
+\label{sec:b_option}
 \index{Table!binary}
 \index{Table!netCDF}
 \index{Binary tables}
@@ -856,40 +857,52 @@ you want to split any line or polygon features that straddle the Dateline.
 \index{\Opt{bi} (select binary input)}
 \index{\Opt{bo} (select binary output)}
 
-All \GMT\ programs that accept table data input may read ASCII, native binary, or netCDF data.
-When using native binary data the user must be aware
-of the fact that \GMT\ has no way of determining the actual
-number of columns in the file.  You must therefore pass that
-information to \GMT\ via the binary \Opt{bi}[\emph{n}]\textbf{t} option,
-where \emph{n} is the actual number of data columns and \textbf{t}
-must be one of \textbf{c} (signed 1-byte character), \textbf{u}
-(unsigned 1-byte character), \textbf{h} (signed 2-byte int), \textbf{H}
-(unsigned 2-byte int), \textbf{i} (signed 4-byte int), \textbf{I}
-(unsigned 4-byte int), \textbf{l} (signed 8-byte int), \textbf{K}
-(unsigned 8-byte int), \textbf{f} (4-byte single-precision float), and
-\textbf{d} (8-byte double-precision float).  For a mixed-type data record
-you can concatenate several [\emph{n}]\textbf{t} combinations,
-separated by commas.  You may append \textbf{w}
-to any of the items to force byte-swapping.  Alternatively, append
-\textbf{+L}$|$\textbf{B} to indicate that the entire data file
-should be read or written as little- or big-endian, respectively.
-Here, \emph{n} is the number of each items in your binary file.
-Note that \emph{n} may be larger than \emph{m}, the number of
-columns that the \GMT\ program requires to do its task.
-If \emph{n} is not given then it defaults to \emph{m} and all columns
-are assumed to be of the single specified type \textbf{t} [\textbf{d} (double), if not set].
-If \emph{n} $<$ \emph{m} an error is generated.
+All \GMT\ programs that accept table data input may read ASCII,
+native binary, or netCDF data.  Files may have a header section
+and the \Opt{h}\emph{n} option can be used to skip the first
+\emph{n} bytes.  The data record can be in any format, mixing
+different data types and even containing byte-swapped items.  When
+using native binary data the user must be aware of the fact that
+\GMT\ has no way of determining the actual number of columns in
+the file.  You must therefore pass that information to \GMT\ via
+the binary \Opt{bi}[\emph{n}]\textbf{t} option, where \emph{n} is
+the actual number of data columns and \textbf{t} must be one of
+\textbf{c} (signed 1-byte character, int8\_t), \textbf{u} (unsigned
+1-byte character, uint8\_t), \textbf{h} (signed 2-byte int,
+int16\_t), \textbf{H} (unsigned 2-byte int, uint16\_t), \textbf{i}
+(signed 4-byte int, int32\_t), \textbf{I} (unsigned 4-byte int,
+uint32\_t), \textbf{l} (signed 8-byte int, int64\_t), \textbf{L}
+(unsigned 8-byte int, uint64\_t), \textbf{f} (4-byte
+single-precision float), and \textbf{d} (8-byte double-precision
+float).  For a mixed-type data record you can concatenate several
+[\emph{n}]\textbf{t} combinations, separated by commas.  You may
+append \textbf{w} to any of the items to force byte-swapping.
+Alternatively, append \textbf{+L}$|$\textbf{B} to indicate that
+the entire data file should be read or written as little- or
+big-endian, respectively.  Here, \emph{n} is the number of each
+item in your binary file.  Note that \emph{n} may be larger than
+\emph{m}, the number of columns that the \GMT\ program requires to
+do its task.  If \emph{n} is not given then it defaults to
+\emph{m} and all columns are assumed to be of the single specified
+type \textbf{t} [\textbf{d} (double), if not set].  If \emph{n}
+$<$ \emph{m} an error is generated.  Multiple segment files are
+allowed and the segment headers are assumed to be records where
+all the fields equal NaN.
 
-For binary output, use the \Opt{bo}[\emph{n}]\textbf{t} option; see \Opt{bi} for further
-details.
+For binary output, use the \Opt{bo}[\emph{n}]\textbf{t} option;
+see \Opt{bi} for further details.
 
-Because of its meta data, reading netCDF tables (i.e., netCDF files containing 1-dimensional arrays)
-is quite a bit less complex than reading native binary files. When feeding netCDF tables to programs
-like \GMTprog{psxy}, the program will automatically recognize the format and read whatever amount of
-columns are needed for that program. To steer which columns are to be read, the user can
-append the suffix \textbf{?}\emph{var1}\textbf{/}\emph{var2}\textbf{/}\emph{...} to the netCDF file name,
-where \emph{var1}, \emph{var2}, etc.\
-are the names of the variables to be processed. No \Opt{bi} option is needed in this case.
+Because of its meta data, reading netCDF tables (i.e., netCDF
+files containing 1-dimensional arrays) is quite a bit less complex
+than reading native binary files. When feeding netCDF tables to
+programs like \GMTprog{psxy}, the program will automatically
+recognize the format and read whatever amount of columns are
+needed for that program. To steer which columns are to be read,
+the user can append the suffix
+\textbf{?}\emph{var1}\textbf{/}\emph{var2}\textbf{/}\emph{...} to
+the netCDF file name, where \emph{var1}, \emph{var2}, etc.\ are
+the names of the variables to be processed. No \Opt{bi} option is
+needed in this case.
 
 Currently, netCDF tables can only be input, not output.
 For more information, see Appendix~\ref{app:B}.
@@ -988,7 +1001,7 @@ Finally, we add in the specified \emph{offset} [0].
 \index{\Opt{n} (Grid resampling parameters)}
 \index{Resampling \Opt{n}}
 \label{sec:resample}
-The \Opt{n}\emph{type} option controls parameters 
+The \Opt{n}\emph{type} option controls parameters
 used for 2-D grids resampling.  You can select the type
 of spline used (\Opt{nb} for B-spline smoothing, \Opt{nc} for bicubic [Default],
 \Opt{nl} for bilinear, or \Opt{nn} for nearest-node value).
@@ -1026,7 +1039,7 @@ be told to view this flat illustration from a particular vantage point, resultin
 a perspective view.  You can select perspective view with the \Opt{p} option by setting
 the azimuth and elevation of the viewpoint [Default is 180/90].
 When \Opt{p} is used in consort with \Opt{Jz} or \Opt{JZ}, a third value can be appended which indicates
-at which \emph{z}-level all 2D material, like the plot frame, is plotted (in perspective) 
+at which \emph{z}-level all 2D material, like the plot frame, is plotted (in perspective)
 [Default is at the bottom of the z-axis].
 For frames used for animation, you may want to append \textbf{+} to fix the center
 of your data domain (or specify a particular world coordinate point with \textbf{+w}\emph{lon0/lat}[\emph{z}])
@@ -1054,8 +1067,8 @@ node (Figure~\ref{fig:GMT_registration}).
 In the case of grid line registration the number of nodes are
 related to region and grid spacing by \\
 
-\[ \begin{array}{ccl} 
-nx & =  &       (x_{max} - x_{min}) / x_{inc} + 1       \\ 
+\[ \begin{array}{ccl}
+nx & =  &       (x_{max} - x_{min}) / x_{inc} + 1       \\
 ny & =  &       (y_{max} - y_{min}) / y_{inc} + 1
 \end{array} \]
 which for the example in Figure~\ref{fig:GMT_registration} yields $nx = ny = 4$.
@@ -1073,8 +1086,8 @@ values within each cell (Figure~\ref{fig:GMT_registration}.
 In the case of pixel registration the number of nodes are related
 to region and grid spacing by \\
 
-\[ \begin{array}{ccl} 
-nx & =  &       (x_{max} - x_{min}) / x_{inc}   \\ 
+\[ \begin{array}{ccl}
+nx & =  &       (x_{max} - x_{min}) / x_{inc}   \\
 ny & =  &       (y_{max} - y_{min}) / y_{inc}
 \end{array} \]
 Thus, given the same region (\Opt{R}) and grid spacing, the pixel-registered grids have one less
@@ -1130,11 +1143,11 @@ and this provides a shorthand notation for complex options.
 For example, if a basemap was created with an oblique Mercator
 projection, specified as
 
-\vspace{\baselineskip} 
+\vspace{\baselineskip}
 
-\texttt{-Joc170W/25:30S/33W/56:20N/1:500000} \\ 
+\texttt{-Joc170W/25:30S/33W/56:20N/1:500000} \\
 
-\vspace{\baselineskip} 
+\vspace{\baselineskip}
 \noindent
 then a subsequent \GMTprog{psxy} command to plot symbols only needs
 to state \Opt{J}o in order to activate the same projection.  In
@@ -1181,7 +1194,7 @@ program will in some cases recognize this and give you an
 error message.  Usually this will also terminate the run.
 The error messages generally begin with the name of the
 program in which the error occurred; if you have several
-programs piped together this tells you where the trouble is. 
+programs piped together this tells you where the trouble is.
 
 \section{Standard input or file, header records}
 \index{Standard input}
@@ -1209,7 +1222,7 @@ be skipped before the data section is reached.
 Binary files may also contain segment-headers
 separating data segments.  These segment-headers are simply data records
 whose fields are all set to NaN;
-see Appendix~\ref{app:B} for complete documentation. 
+see Appendix~\ref{app:B} for complete documentation.
 
 If filenames are given for reading, \GMT\ programs will first look for them in the
 current directory.  If the file is not found, the programs
@@ -1240,7 +1253,7 @@ of the operation you are running.  Verbose reports things
 such as counts of points read, names of data files
 processed, convergence of iterative solutions, and the like.
 Since these messages are written to \emph{stderr},  the
-verbose talk remains separate from your data output. 
+verbose talk remains separate from your data output.
 You may optionally choose among five levels of \emph{verbosity}; each level
 adds more messages with an increasing level of details.  The levels are
 \begin{description}
@@ -1356,9 +1369,9 @@ and \emph{style}.  Most programs will accept pen attributes in
 the form of an option argument, with commas separating the
 given attributes, e.g.,
 
-\vspace{\baselineskip} 
+\vspace{\baselineskip}
 
-\par \Opt{W}[\emph{width}[\textbf{c$|$i$|$p}]],[\emph{color}],[\emph{style}[\textbf{c$|$i$|$p$|$}]]\par 
+\par \Opt{W}[\emph{width}[\textbf{c$|$i$|$p}]],[\emph{color}],[\emph{style}[\textbf{c$|$i$|$p$|$}]]\par
 
 \begin{description}
 \index{Pen!width}
@@ -1375,12 +1388,12 @@ and obese.  Table~\ref{tbl:pennames} shows this list and the corresponding pen w
 \centering
 \begin{tabular}{|l|c||l|c|} \hline
 \multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}{\emph{Width}}	&	\multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}{\emph{Width}} \\ \hline
-faint		&	0	&	thicker		&	1.5p \\ \hline 
+faint		&	0	&	thicker		&	1.5p \\ \hline
 default		&	0.25p	&	thickest	&	2p \\ \hline
 thinnest	&	0.25p	&	fat		&	3p \\ \hline
-thinner		&	0.50p	&	fatter		&	6p \\ \hline 
-thin		&	0.75p	&	fattest		&	12p \\ \hline  
-thick		&	1.0p	&	obese		&	18p \\	\hline 
+thinner		&	0.50p	&	fatter		&	6p \\ \hline
+thin		&	0.75p	&	fattest		&	12p \\ \hline
+thick		&	1.0p	&	obese		&	18p \\	\hline
 \end{tabular}
 \caption{\gmt\ predefined pen widths.}
 \label{tbl:pennames}
@@ -1426,19 +1439,19 @@ pattern from the beginning the line.  For example, if you want a yellow line of 
 a 5 point dash, then another 8 point gap, with pattern offset by 2 points
 from the origin, specify \Opt{W}0.1c,yellow,4\_8\_5\_8:2p.
 Just as with pen width, the default style units are points, but can also be explicitly specified in cm, inch, or points
-(see \emph{width} discussion above). 
-\end{description} 
+(see \emph{width} discussion above).
+\end{description}
 Table~\ref{tbl:penex} contains additional examples of pen specifications suitable for, say, \GMTprog{psxy}.
 \begin{table}[h]
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Pen example}}	&	\multicolumn{1}{c|}{\emph{Comment}} \\ \hline
-\Opt{W}0.5p		&	0.5 point wide line of default color and style \\ \hline 
+\Opt{W}0.5p		&	0.5 point wide line of default color and style \\ \hline
 \Opt{W}green		&	Green line with default width and style \\ \hline
-\Opt{W}thin,red,-	&	Dashed, thin red line \\ \hline 
-\Opt{W}fat,.		&	Fat dotted line with default color \\ \hline 
-\Opt{W}0.1c,120-1-1	&	Green (in h-s-v) pen, 1~mm thick \\ \hline 
-\Opt{W}faint,100/0/0/0,..-	&	Very thin, cyan (in c/m/y/k), dot-dot-dashed line \\ \hline 
+\Opt{W}thin,red,-	&	Dashed, thin red line \\ \hline
+\Opt{W}fat,.		&	Fat dotted line with default color \\ \hline
+\Opt{W}0.1c,120-1-1	&	Green (in h-s-v) pen, 1~mm thick \\ \hline
+\Opt{W}faint,100/0/0/0,..-	&	Very thin, cyan (in c/m/y/k), dot-dot-dashed line \\ \hline
 \end{tabular}
 \caption{A few examples of pen specifications. The default width, color and style are determined by the \textbf{MAP\_DEFAULT\_PEN} parameter.}
 \label{tbl:penex}
@@ -1468,15 +1481,15 @@ in this fashion.  See the \GMTprog{gmt.conf} man page for more information.
 \label{sec:fill}
 
 Many plotting programs will allow the user to draw filled polygons or
-symbols.  The fill specification may take two forms: 
+symbols.  The fill specification may take two forms:
 
-\vspace{\baselineskip} 
+\vspace{\baselineskip}
 
-\par \Opt{G}\emph{fill}\par 
+\par \Opt{G}\emph{fill}\par
 
-\par \Opt{Gp}\emph{dpi/pattern}[:\textbf{B}\emph{color}[\textbf{F}\emph{color}]]\par 
+\par \Opt{Gp}\emph{dpi/pattern}[:\textbf{B}\emph{color}[\textbf{F}\emph{color}]]\par
 
-\vspace{\baselineskip} 
+\vspace{\baselineskip}
 \noindent
 \begin{description}
 \item [fill:]
@@ -1516,7 +1529,7 @@ There is therefore the possibility that some \PS\ interpreters
 (especially those supplied with older laserwriters) will run out of memory
 and abort.  Should that occur we recommend that you use a regular gray-shade
 fill instead of the patterns.  Installing more memory in your printer
-\emph{may or may not} solve the problem! 
+\emph{may or may not} solve the problem!
 
 Table~\ref{tbl:fillex} contains a few examples of fill specifications.
 
@@ -1526,13 +1539,13 @@ Table~\ref{tbl:fillex} contains a few examples of fill specifications.
 \multicolumn{1}{|c|}{\emph{Fill example}}	&	\multicolumn{1}{c|}{\emph{Comment}} \\ \hline
 \Opt{G}128		&	Solid gray \\ \hline
 \Opt{G}127/255/0	&	Chartreuse, R/G/B-style \\ \hline
-\Opt{G}\#00ff00 & Green, hexadecimal RGB code \\ \hline  
-\Opt{G}25-0.86-0.82	&	Chocolate, h-s-v -- style \\ \hline 
-\Opt{G}DarkOliveGreen1	&	One of the named colors \\ \hline 
-\Opt{Gp}300/7		&	Simple diagonal hachure pattern in b/w at 300 dpi\\ \hline 
-\Opt{Gp}300/7:Bred	&	Same, but with red lines on white \\ \hline 
-\Opt{Gp}300/7:BredF-	&	Now the gaps between red lines are transparent \\ \hline 
-\Opt{Gp}100/marble.ras	&	Using user image of marble as the fill at 100 dpi \\ \hline 
+\Opt{G}\#00ff00 & Green, hexadecimal RGB code \\ \hline
+\Opt{G}25-0.86-0.82	&	Chocolate, h-s-v -- style \\ \hline
+\Opt{G}DarkOliveGreen1	&	One of the named colors \\ \hline
+\Opt{Gp}300/7		&	Simple diagonal hachure pattern in b/w at 300 dpi\\ \hline
+\Opt{Gp}300/7:Bred	&	Same, but with red lines on white \\ \hline
+\Opt{Gp}300/7:BredF-	&	Now the gaps between red lines are transparent \\ \hline
+\Opt{Gp}100/marble.ras	&	Using user image of marble as the fill at 100 dpi \\ \hline
 \end{tabular}
 \caption{A few examples of fill specifications.}
 \label{tbl:fillex}
@@ -1622,10 +1635,10 @@ monotonically increasing but do not need to be consecutive.  The format is
 
 \begin{center}
 \begin{tabular}{lll}
-key$_1$ &  \emph{fill} &  [;\emph{label}] \\ 
-\ldots & & \\ 
-key$_n$ &  \emph{fill} &  [;\emph{label}] \\ 
-\end{tabular} 
+key$_1$ &  \emph{fill} &  [;\emph{label}] \\
+\ldots & & \\
+key$_n$ &  \emph{fill} &  [;\emph{label}] \\
+\end{tabular}
 \end{center}
 
 The \emph{fill} information follows the format given in Section \ref{sec:fill}.
@@ -1637,8 +1650,8 @@ file, but can be overridden by the statements
 
 \begin{center}
 \begin{tabular}{llll}
-B &  R$_{back}$ &  G$_{back}$ &  B$_{back}$ \\ 
-F &  R$_{fore}$ &  G$_{fore}$ &  B$_{fore}$ \\ 
+B &  R$_{back}$ &  G$_{back}$ &  B$_{back}$ \\
+F &  R$_{fore}$ &  G$_{fore}$ &  B$_{fore}$ \\
 N &  R$_{nan}$ &  G$_{nan}$ &  B$_{nan}$ \\
 \end{tabular}
 \end{center}
@@ -1646,14 +1659,14 @@ N &  R$_{nan}$ &  G$_{nan}$ &  B$_{nan}$ \\
 \subsection{Regular CPT files}
 
 Suitable for continuous data types and allowing for color interpolations, the
-format of the regular CPT files is: 
+format of the regular CPT files is:
 
 \begin{center}
 \begin{tabular}{llllll}
-z$_0$ &  Color$_{min}$  &  z$_1$ & Color$_{max}$ &  [\bf{A}] & [;\emph{label}] \\ 
-\ldots & & & & & \\ 
+z$_0$ &  Color$_{min}$  &  z$_1$ & Color$_{max}$ &  [\bf{A}] & [;\emph{label}] \\
+\ldots & & & & & \\
 z$_{n-2}$ &  Color$_{min}$ &  z$_{n-1}$ &  Color$_{max}$ &  [\textbf{A}] & [;\emph{label}] \\
-\end{tabular} 
+\end{tabular}
 \end{center}
 
 Thus, for each ``\emph{z}-slice'', defined as the interval between two boundaries
@@ -1674,8 +1687,8 @@ file, but can be overridden by the statements
 
 \begin{center}
 \begin{tabular}{ll}
-B &  Color$_{back}$ \\ 
-F &  Color$_{fore}$ \\ 
+B &  Color$_{back}$ \\
+F &  Color$_{fore}$ \\
 N &  Color$_{nan}$ \\
 \end{tabular}
 \end{center}
@@ -1695,17 +1708,17 @@ A few programs (i.e., those that plot polygons such as \GMTprog{grdview},
 \GMTprog{psscale}, \GMTprog{psxy} and \GMTprog{psxyz}) can accept pattern fills instead
 of gray-shades.  You must specify the pattern as in Section~\ref{sec:fill} (no
 leading \Opt{G} of course), and only the first pattern (for low $z$) is used (we cannot
-interpolate between patterns).  
+interpolate between patterns).
 Finally, some programs let you skip features whose $z$-slice in the CPT file has
 gray-shades set to --.  As an example, consider
 
 \begin{center}
 \begin{tabular}{lllll}
-30 &  p200/16 &  80 & -- \\ 
+30 &  p200/16 &  80 & -- \\
 80 &  -- &  100 &  -- \\
 100 &  200/0/0  &  200/255/255  &  0 \\
-200 &  yellow &  300 & green  \\ 
-\end{tabular} 
+200 &  yellow &  300 & green  \\
+\end{tabular}
 \end{center}
 \noindent
 where slice $30 < z < 80$ is painted with pattern \# 16 at 200 dpi,
@@ -1740,7 +1753,7 @@ E.g., some side-scan sonar systems collect both bathymetry and
 backscatter intensities, and one may want to use the latter information
 to specify the illumination of the colors defined by the former.
 Similarly, one could portray magnetic anomalies superimposed on
-topography by using the former for colors and the latter for shading. 
+topography by using the former for colors and the latter for shading.
 
 \section{The Drawing of Vectors}
 \label{sec:vectors}
@@ -1804,7 +1817,7 @@ For annotation labels or text strings plotted with \GMTprog{pstext},
 temporarily switch to the symbol font, turn on sub- or superscript,
 etc., within words.  These conditions are toggled on/off by the
 escape sequence @\textbf{x}, where \textbf{x} can be one of several types.
-The escape sequences recognized in \GMT\ are listed in Table~\ref{tbl:escape}. 
+The escape sequences recognized in \GMT\ are listed in Table~\ref{tbl:escape}.
 Only one level of sub- or superscript is supported.
 Note that under Windows the percent symbol indicates a batch variable,
 hence you must use two percent-signs for each one required in the escape sequence for font switching.
@@ -1813,16 +1826,16 @@ hence you must use two percent-signs for each one required in the escape sequenc
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Code}}	&	\multicolumn{1}{c|}{\emph{Effect}} \\ \hline
-@\~	&	Turns symbol font on or off \\ \hline 
-@+	&	Turns superscript on or off \\ \hline 
-@-	&	Turns subscript on or off \\ \hline 
-@\#	&	Turns small caps on or off \\ \hline 
-@\_	&	Turns underline on or off \\ \hline 
-@\%\emph{fontno}\%	&	Switches to another font; @\%\% resets to previous font \\ \hline 
-@:\emph{size}:	&	Switches to another font size; @:: resets to previous size \\ \hline 
-@;\emph{color};	&	Switches to another font color; @;; resets to previous color \\ \hline 
-@!	&	Creates one composite character of the next two characters \\ \hline 
-@@	&	Prints the @ sign itself \\ \hline 
+@\~	&	Turns symbol font on or off \\ \hline
+@+	&	Turns superscript on or off \\ \hline
+@-	&	Turns subscript on or off \\ \hline
+@\#	&	Turns small caps on or off \\ \hline
+@\_	&	Turns underline on or off \\ \hline
+@\%\emph{fontno}\%	&	Switches to another font; @\%\% resets to previous font \\ \hline
+@:\emph{size}:	&	Switches to another font size; @:: resets to previous size \\ \hline
+@;\emph{color};	&	Switches to another font color; @;; resets to previous color \\ \hline
+@!	&	Creates one composite character of the next two characters \\ \hline
+@@	&	Prints the @ sign itself \\ \hline
 \end{tabular}
 \caption{\gmt\ text escape sequences.}
 \label{tbl:escape}
@@ -1859,22 +1872,22 @@ belonging to a particular encoding will
 be available.  Many characters not directly available by
 using single octal codes may be constructed with the composite
 character mechanism @!.
- 
+
 Some examples of escape sequences and embedded octal codes in \GMT\ strings using the
-Standard+ encoding: 
+Standard+ encoding:
 
 \begin{tabbing}
-XXX\=\verb|2@~p@~r@+2@+h@-0@- E\363tv\363s|XXXX \== XXXX\=text \kill 
-\>\verb|2@~p@~r@+2@+h@-0@- E\363tv\363s| \> = \> 2$\pi r^2h_0$ E\"{o}tv\"{o}s \\ 
-\>\verb|10@+-3 @Angstr@om|		 \> =	\> 10$^{-3}$ \AA ngstr\o m \\ 
-\>\verb|Se@nor Gar@con|	 \> = \> Se\~{n}or Gar\c{c}on \\ 
-\>\verb|M@!\305anoa stra@se|	 \> = \> M\={a}noa stra\ss e \\ 
+XXX\=\verb|2@~p@~r@+2@+h@-0@- E\363tv\363s|XXXX \== XXXX\=text \kill
+\>\verb|2@~p@~r@+2@+h@-0@- E\363tv\363s| \> = \> 2$\pi r^2h_0$ E\"{o}tv\"{o}s \\
+\>\verb|10@+-3 @Angstr@om|		 \> =	\> 10$^{-3}$ \AA ngstr\o m \\
+\>\verb|Se@nor Gar@con|	 \> = \> Se\~{n}or Gar\c{c}on \\
+\>\verb|M@!\305anoa stra@se|	 \> = \> M\={a}noa stra\ss e \\
 \>\verb|A@\#cceleration@\# (ms@+-2@+)|	 \> = \> \sc{Acceleration (ms$^{-2}$)}
-\end{tabbing} 
+\end{tabbing}
 
 The option in \GMTprog{pstext} to draw a rectangle surrounding the text
 will not work for strings with escape sequences.  A chart of characters
-and their octal codes is given in Appendix~\ref{app:F}. 
+and their octal codes is given in Appendix~\ref{app:F}.
 
 \section{Grid file format specifications}
 \index{grid file!formats|(}
@@ -1910,7 +1923,7 @@ on the \htmladdnormallink{netCDF website}{http://www.unidata.ucar.edu/software/n
 In addition, users with some C-programming experience may add
 their own read/write functions and link them with the \GMT\ library
 to extend the number of predefined formats.  Technical information
-on this topic can be found in the source file \filename{gmt\_customio.c}. 
+on this topic can be found in the source file \filename{gmt\_customio.c}.
 Users who are considering this approach should contact the \GMT\ team.
 
 \begin{table}[H]
@@ -1957,11 +1970,11 @@ or NaN, and the data may need translation and scaling prior to use.
 Therefore, all \GMT\ programs that read or write grid files will decode
 the given filename as follows:
 
-\vspace{\baselineskip} 
+\vspace{\baselineskip}
 
-\par 	name[=\emph{ID}[/\emph{scale}/\emph{offset}[/\emph{nan}]]]\par 
+\par 	name[=\emph{ID}[/\emph{scale}/\emph{offset}[/\emph{nan}]]]\par
 
-\vspace{\baselineskip} 
+\vspace{\baselineskip}
 
 \noindent
 where everything in brackets is optional.  If you are reading a grid
@@ -1973,7 +1986,7 @@ a scale factor, and (2) add a constant offset you must append the
 /\emph{scale}/\emph{offset} modifier.  Finally, if you need to indicate
 that a certain data value should be interpreted as a NaN (not-a-number)
 you must append the /\emph{nan} suffix to the scaling string (it cannot
-go by itself; note the nesting of the brackets!). 
+go by itself; note the nesting of the brackets!).
 
 Some of the grid formats allow writing to standard output and reading
 from standard input which means you can connect \GMT\ programs that
@@ -1981,35 +1994,35 @@ operate on grid files with pipes, thereby speeding up execution and
 eliminating the need for large, intermediate grid files.  You specify
 standard input/output by leaving out the filename entirely.
 That means the ``filename'' will begin with
-``=\emph{ID}\,'' since no \GMT\  netCDF format 
-allow piping (due to the design of netCDF). 
+``=\emph{ID}\,'' since no \GMT\  netCDF format
+allow piping (due to the design of netCDF).
 
-Everything looks clearer after a few examples: 
+Everything looks clearer after a few examples:
 
 \begin{enumerate}
 \item To write a native binary float grid file, specify the name as \filename{my\_file.f4=bf}.
 
 \item To read a native short integer grid file, multiply the data by 10 and then
 add 32000, but first let values that equal 32767 be set to NaN,
-use the filename \filename{my\_file.i2=bs/10/32000/32767}. 
+use the filename \filename{my\_file.i2=bs/10/32000/32767}.
 
 \item To read a Golden Software ``surfer'' format 6 grid file, just pass the file name,
-e.g., \filename{my\_surferfile.grd}. 
+e.g., \filename{my\_surferfile.grd}.
 
 \item To read a 8-bit standard Sun raster file (with values in the 0--255 range)
 and convert it to a \PM 1 range, give the name as
 \filename{rasterfile=rb/7.84313725e-3/-1} (i.e., 1/127.5).
 
 \item To write a native binary short integer grid file to standard output after subtracting
-32000 and dividing its values by 10, give filename as \filename{=bs/0.1/-3200}. 
+32000 and dividing its values by 10, give filename as \filename{=bs/0.1/-3200}.
 
-\end{enumerate} 
+\end{enumerate}
 
 Programs that both read and/or write more than one grid file may
 specify different formats and/or scaling for the files involved.
 The only restriction with the embedded grid specification mechanism
 is that no grid files may actually use the ``=''
-character as part of their name (presumably, a small sacrifice). 
+character as part of their name (presumably, a small sacrifice).
 
 \index{grid file!suffix}
 
@@ -2022,23 +2035,23 @@ number of custom formats.  The following is an example of a
 \filename{.gmt\_io} file:
 \index{.gmt\_io}
 
-\vspace{\baselineskip} 
+\vspace{\baselineskip}
 
 \noindent
 \begin{tabbing}
-MMM\=\# suffix \=format\_id \=scale \=offset \=NaNxxx\=Comments \kill 
-\>\# GMT i/o shorthand file \\ 
+MMM\=\# suffix \=format\_id \=scale \=offset \=NaNxxx\=Comments \kill
+\>\# GMT i/o shorthand file \\
 \>\# It can have any number of comment lines like this one anywhere \\
-\>\# suffix \> format\_id	\> scale \> offset \>NaN\>Comments \\ 
-\>grd \> nf \> - \> - \> - \>Default format \\ 
-\>b \> bf \> - \> - \> - \> Native binary floats \\ 
-\>i2 \> bs \> - \> - \> 32767 \> 2-byte integers with NaN value \\ 
-\>ras \> rb \> - \> - \> - \> Sun raster files \\ 
-\>byte \> bb \> - \> - \> 255 \> Native binary 1-byte grids \\ 
-\>bit \> bm \> - \> - \> - \> Native binary 0 or 1 grids \\ 
-\>mask \> bm \> - \> - \> 0 \> Native binary 1 or NaN masks \\ 
+\>\# suffix \> format\_id	\> scale \> offset \>NaN\>Comments \\
+\>grd \> nf \> - \> - \> - \>Default format \\
+\>b \> bf \> - \> - \> - \> Native binary floats \\
+\>i2 \> bs \> - \> - \> 32767 \> 2-byte integers with NaN value \\
+\>ras \> rb \> - \> - \> - \> Sun raster files \\
+\>byte \> bb \> - \> - \> 255 \> Native binary 1-byte grids \\
+\>bit \> bm \> - \> - \> - \> Native binary 0 or 1 grids \\
+\>mask \> bm \> - \> - \> 0 \> Native binary 1 or NaN masks \\
 \>faa \> bs \> 0.1 \> - \> 32767 \> Native binary gravity in 0.1 mGal
-\end{tabbing} 
+\end{tabbing}
 
 These suffices can be anything that makes sense to the user.  To
 activate this mechanism, set parameter \textbf{IO\_GRIDFILE\_SHORTHAND} to TRUE in
@@ -2047,7 +2060,7 @@ your \filename{gmt.conf} file.  Then, using the filename
 and the filename \filename{wet.mask} means wet.mask=bm/1/0/0.  For a
 file intended for masking, i.e., the nodes are either 1 or NaN,
 the bit or mask format file may be as small as 1/32 the size of the
-corresponding grid float format file. 
+corresponding grid float format file.
 \index{grid file!formats|)}
 
 \section{Options for COARDS-compliant netCDF files}
