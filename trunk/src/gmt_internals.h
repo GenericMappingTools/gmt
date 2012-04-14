@@ -110,7 +110,7 @@ EXTERN_MSC void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal 
 EXTERN_MSC GMT_LONG GMT_great_circle_intersection (struct GMT_CTRL *T, double A[], double B[], double C[], double X[], double *CX_dist);
 EXTERN_MSC double GMT_great_circle_dist_degree (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
 EXTERN_MSC void GMT_get_point_from_r_az (struct GMT_CTRL *C, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
-EXTERN_MSC GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text);
+EXTERN_MSC int gmt_parse_b_option (struct GMT_CTRL *C, char *text);
 EXTERN_MSC GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a_y, GMT_LONG n, double step, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_check_url_name (char *fname);
 EXTERN_MSC GMT_LONG GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */

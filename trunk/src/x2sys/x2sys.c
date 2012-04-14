@@ -63,6 +63,7 @@
 
 #include "x2sys.h"
 #include "gmt_internals.h"
+#include "common_byteswap.h"
 
 /* Global variables used by X2SYS functions */
 
@@ -1235,7 +1236,7 @@ GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct 
 	GMT_LONG i, not_used = 0;
 	char index_file[GMT_BUFSIZ], index_path[GMT_BUFSIZ];
 	FILE *fbin = NULL;
-	int index = 0, flag, no_of_tracks, id;	/* These must remain 4-byte ints */
+	uint32_t index = 0, flag, no_of_tracks, id; /* These must remain uint32_t */
 
 	sprintf (index_file, "%s/%s_index.b", S->TAG, S->TAG);
 	x2sys_path (C, index_file, index_path);
@@ -1251,18 +1252,17 @@ GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct 
 
 	while ((fread ((&index), sizeof (int), (size_t)1, fbin)) == 1) {
 		not_used = fread ((&no_of_tracks), sizeof (int), (size_t)1, fbin);
-		if (!swap && (index < 0 || no_of_tracks < 0)) swap = TRUE;	/* A negative index or no_of_tracks must mean that swapping is needed */
 		if (swap) {
-			index = GMT_swab4 (index);
-			no_of_tracks = GMT_swab4 (no_of_tracks);
+			index = bswap32 (index);
+			no_of_tracks = bswap32 (no_of_tracks);
 		}
 		B->base[index].first_track = B->base[index].last_track = x2sys_bix_make_track (C, 0, 0);
 		for (i = 0; i < no_of_tracks; i++) {
 			not_used = fread ((&id), sizeof (int), (size_t)1, fbin);
 			not_used = fread ((&flag), sizeof (int), (size_t)1, fbin);
 			if (swap) {
-				id = GMT_swab4 (id);
-				flag = GMT_swab4 (flag);
+				id = bswap32 (id);
+				flag = bswap32 (flag);
 			}
 			B->base[index].last_track->next_track = x2sys_bix_make_track (C, id, flag);
 			B->base[index].last_track = B->base[index].last_track->next_track;

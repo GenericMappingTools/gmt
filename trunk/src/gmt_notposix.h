@@ -84,6 +84,12 @@
 #	define GMT_STAT stat
 #endif
 
+#ifdef HAVE_STDBOOL_H_
+#	include <stdbool.h>
+#else
+#	include "compat/stdbool.h"
+#endif /* HAVE_STDBOOL_H_ */
+
 #ifdef HAVE_STDDEF_H_
 #	include <stddef.h>
 #endif

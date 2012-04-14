@@ -38,21 +38,25 @@
 #define GMT_OPT(opt) ""
 #endif
 
-enum GMT_enum_fmt {GMT_COLUMN_FORMAT	= 1,	/* 2-D grid is Fortran-style with columns */
+enum GMT_enum_fmt {
+	GMT_COLUMN_FORMAT	= 1,	/* 2-D grid is Fortran-style with columns */
 	GMT_ROW_FORMAT			= 2};	/* 2-D grid is C-style with rows */
 
 /* Two different i/o mode: GMT_Put|Get_Data vs GMT_Put|Get_Record */
-enum GMT_enum_iomode {GMT_BY_SET = 0,	/* Default is to read the entire set */
+enum GMT_enum_iomode {
+	GMT_BY_SET = 0,	/* Default is to read the entire set */
 	GMT_BY_REC		 = 1};	/* Means we will access the registere files on a record-by-record basis */
 
 /* Three different i/o status: unused, actively using, or used */
-enum GMT_enum_status {GMT_IS_UNUSED = 0,	/* We have not yet read from/written to this resource */
+enum GMT_enum_status {
+	GMT_IS_UNUSED = 0,	/* We have not yet read from/written to this resource */
 	GMT_IS_USING,				/* Means we have started reading from/writing to this file */
 	GMT_IS_USED};				/* Means we are done reading from/writing to this file */
 
 /* These are the 6 methods for i/o */
 
-enum GMT_enum_methods {GMT_IS_FILE = 0, /* Entity is a filename */
+enum GMT_enum_methods {
+	GMT_IS_FILE = 0, /* Entity is a filename */
 	GMT_IS_STREAM,		   /* Entity is an open stream */
 	GMT_IS_FDESC,              /* Entity is an open file descriptor */
 	GMT_IS_COPY,               /* Entity is a memory location that should be duplicated */
@@ -62,11 +66,13 @@ enum GMT_enum_methods {GMT_IS_FILE = 0, /* Entity is a filename */
 
 /* But Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 
-enum GMT_enum_via {GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
+enum GMT_enum_via {
+	GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
 	GMT_VIA_MATRIX = 200};		/* Data passed via user vectors */
 
 /* These are the 5 families of data types */
-enum GMT_enum_families {GMT_IS_DATASET = 0,  /* Entity is data table */
+enum GMT_enum_families {
+	GMT_IS_DATASET = 0,  /* Entity is data table */
 	GMT_IS_TEXTSET,             	/* Entity is a Text table */
 	GMT_IS_GRID,                	/* Entity is a GMT grid */
 	GMT_IS_CPT,                 	/* Entity is a CPT table */
@@ -76,12 +82,14 @@ enum GMT_enum_families {GMT_IS_DATASET = 0,  /* Entity is data table */
 	GMT_N_FAMILIES};            	/* Entity is user matrix */
 
 /* There are 3 named columns */
-enum GMT_enum_dimensions {GMT_X,  /* x or lon is in 0th column */
+enum GMT_enum_dimensions {
+	GMT_X,  /* x or lon is in 0th column */
 	GMT_Y,               /* y or lat is in 1st column */
 	GMT_Z};              /* z is in 2nd column */
 
 /* GIS geometries, with GMT_IS_TEXT as 0 for no such thing */
-enum GMT_enum_geometries {GMT_IS_TEXT = 0,
+enum GMT_enum_geometries {
+	GMT_IS_TEXT = 0,
 	GMT_IS_POINT,
 	GMT_IS_LINE,
 	GMT_IS_POLY,
@@ -89,7 +97,8 @@ enum GMT_enum_geometries {GMT_IS_TEXT = 0,
 	GMT_N_GEOMETRIES};
 
 /* These are two polygon modes */
-enum GMT_enum_pol {GMT_IS_PERIMETER = 0,
+enum GMT_enum_pol {
+	GMT_IS_PERIMETER = 0,
 	GMT_IS_HOLE};
 
 #define GMT_polygon_is_hole(S) (S->pol_mode == GMT_IS_HOLE || (S->ogr && S->ogr->pol_mode == GMT_IS_HOLE))
@@ -97,61 +106,72 @@ enum GMT_enum_pol {GMT_IS_PERIMETER = 0,
 /* Specific feature geometries as obtained from OGR */
 /* Note: As far as registering or reading data, GMT only needs to know if data type is POINT, LINE, or POLY */
 
-enum GMT_enum_ogr {GMT_IS_LINESTRING = 2,
+enum GMT_enum_ogr {
+	GMT_IS_LINESTRING = 2,
 	GMT_IS_POLYGON,
 	GMT_IS_MULTIPOINT,
 	GMT_IS_MULTILINESTRING,
 	GMT_IS_MULTIPOLYGON};
 
-enum GMT_enum_freg {GMT_REG_FILES_IF_NONE = 1,	/* Tell GMT_Init_IO we conditionally want to register all input files in the option list if nothing else is registered */
+enum GMT_enum_freg {
+	GMT_REG_FILES_IF_NONE = 1,	/* Tell GMT_Init_IO we conditionally want to register all input files in the option list if nothing else is registered */
 	GMT_REG_FILES_ALWAYS = 2,		/* Tell GMT_Init_IO to always register all input files in the option list */
 	GMT_REG_STD_IF_NONE = 4,		/* Tell GMT_Init_IO we conditionally want to register std(in|out) if nothing else has been registered */
 	GMT_REG_STD_ALWAYS = 8,			/* Tell GMT_Init_IO to always register std(in|out) */
 	GMT_REG_DEFAULT = 5};			/* Tell GMT_Init_IO to register files, and if none are found then std(in|out), but only if nothing was registered before this call */
 
-enum GMT_enum_ioset {GMT_IO_DONE = 0,	/* Tell GMT_End_IO we are done but nothing special is to be done. */
+enum GMT_enum_ioset {
+	GMT_IO_DONE = 0,	/* Tell GMT_End_IO we are done but nothing special is to be done. */
 	GMT_IO_ASCII = 512,		/* Force ASCII mode for reading (ignoring current io settings). */
 	GMT_IO_RESET = 32768,		/* Tell GMT_End_IO that accessed resources should be made read/write-able again. */
 	GMT_IO_UNREG = 16384};		/* Tell GMT_End_IO to unregister all accessed resources. */
 
-enum GMT_enum_gridio {GMT_GRID_ALL = 0,	/* Read|write both grid header and the entire grid (no subset) */
+enum GMT_enum_gridio {
+	GMT_GRID_ALL = 0,	/* Read|write both grid header and the entire grid (no subset) */
 	GMT_GRID_HEADER = 1,		/* Just read|write the grid header */
 	GMT_GRID_DATA = 2,		/* Read|write the grid array given w/e/s/n set in the header */
 	GMT_GRID_COMPLEX_REAL = 4,	/* Read|write the real component to/from a complex grid */
 	GMT_GRID_COMPLEX_IMAG = 8,	/* Read|write the imaginary component to/from a complex grid */
 	GMT_GRID_NO_HEADER = 16};	/* Write a native grid without the leading grid header */
 
-enum GMT_enum_complex {GMT_IS_NORMAL = 0,	/* Normal floating point value */
+enum GMT_enum_complex {
+	GMT_IS_NORMAL = 0,	/* Normal floating point value */
 	GMT_IS_COMPLEX_REAL,			/* The real component of a complex value */
 	GMT_IS_COMPLEX_IMAG};			/* The imaginary component of a complex value */
 
-enum GMT_enum_read {GMT_READ_DOUBLE = 0,	/* Read ASCII data record and return double array */
+enum GMT_enum_read {
+	GMT_READ_DOUBLE = 0,	/* Read ASCII data record and return double array */
 	GMT_READ_TEXT = 1,			/* Read ASCII data record and return text string */
 	GMT_READ_MIXED = 2,			/* Read ASCII data record and return double array but tolerate conversion errors */
 	GMT_FILE_BREAK = 4};			/* Add to mode to indicate we want to know when each file end is reached [continuous] */
 
-enum GMT_enum_write {GMT_WRITE_DOUBLE = 0,	/* Write double array to output */
+enum GMT_enum_write {
+	GMT_WRITE_DOUBLE = 0,	/* Write double array to output */
 	GMT_WRITE_TEXT,		/* Write ASCII current record to output */
 	GMT_WRITE_SEGHEADER,	/* Write segment header record to output */
 	GMT_WRITE_TBLHEADER};	/* Write current record as table header to output */
 
-enum GMT_enum_dest {GMT_WRITE_OGR = -1,	/* Output OGR/GMT format [Requires proper -a setting] */
+enum GMT_enum_dest {
+	GMT_WRITE_OGR = -1,	/* Output OGR/GMT format [Requires proper -a setting] */
 	GMT_WRITE_DATASET,		/* Write all output tables and all their segments to one destination [Default] */
 	GMT_WRITE_TABLES,		/* Write each output table and all their segments to separate destinations */
 	GMT_WRITE_SEGMENTS,		/* Write all output tables' segments to separate destinations */
 	GMT_WRITE_TABLE_SEGMENTS};	/* Same as 2 but if no filenames we use both tbl and seg with format */
 
-enum GMT_enum_shape {GMT_ALLOC_NORMAL = 0,	/* Normal allocation of new dataset based on shape of input dataset */
+enum GMT_enum_shape {
+	GMT_ALLOC_NORMAL = 0,	/* Normal allocation of new dataset based on shape of input dataset */
 	GMT_ALLOC_VERTICAL,			/* Allocate a single table for data set to hold all input tables by vertical concatenation */
 	GMT_ALLOC_HORIZONTAL};			/* Alocate a single table for data set to hold all input tables by horizontal (paste) concatenations */
 
-enum GMT_enum_out {GMT_WRITE_NORMAL = 0,	/* Write header and contents of this entity (table or segment) */
+enum GMT_enum_out {
+	GMT_WRITE_NORMAL = 0,	/* Write header and contents of this entity (table or segment) */
 	GMT_WRITE_HEADER,		/* Only write header and not the contents of this entity (table or segment) */
 	GMT_WRITE_SKIP};		/* Entirely skip this entity on output (table or segment) */
 
 /* Codes for aspatial assocation with segment header options: */
 
-enum GMT_enum_segopt {GMT_IS_D = -1,	/* -D */
+enum GMT_enum_segopt {
+	GMT_IS_D = -1,	/* -D */
 	GMT_IS_G = -2,			/* -G */
 	GMT_IS_I = -3,			/* -I */
 	GMT_IS_L = -4,			/* -L */
@@ -161,7 +181,8 @@ enum GMT_enum_segopt {GMT_IS_D = -1,	/* -D */
 
 /* Return codes for GMT_ascii_input: */
 
-enum GMT_enum_ascii_input_return {GMT_IO_TBL_HEADER = 1,	/* Read a table header */
+enum GMT_enum_ascii_input_return {
+	GMT_IO_TBL_HEADER = 1,	/* Read a table header */
 	GMT_IO_SEG_HEADER	=  2,		/* Read a segment header */
 	GMT_IO_MISMATCH		=  4,		/* Read incorrect number of columns */
 	GMT_IO_EOF		=  8,		/* Read end-of-file */
@@ -184,7 +205,8 @@ enum GMT_enum_ascii_input_return {GMT_IO_TBL_HEADER = 1,	/* Read a table header 
 
 /* Array indices for input/output/stderr variables */
 
-enum GMT_io_enum {GMT_IN = 0,	/* stdin */
+enum GMT_io_enum {
+	GMT_IN = 0,	/* stdin */
 	GMT_OUT,		/* stdout */
 	GMT_ERR};		/* stderr */
 
@@ -197,7 +219,8 @@ enum GMT_io_enum {GMT_IN = 0,	/* stdin */
 
 /* Types of possible column entries in a file: */
 
-enum GMT_col_enum {GMT_IS_NAN   =   0,	/* Returned by GMT_scanf routines when read fails */
+enum GMT_col_enum {
+	GMT_IS_NAN   =   0,	/* Returned by GMT_scanf routines when read fails */
 	GMT_IS_FLOAT		=   1,	/* Generic (double) data type, no special format */
 	GMT_IS_LAT		=   2,
 	GMT_IS_LON		=   4,
@@ -212,7 +235,8 @@ enum GMT_col_enum {GMT_IS_NAN   =   0,	/* Returned by GMT_scanf routines when re
 
 /* Various ways to report longitudes */
 
-enum GMT_lon_enum {GMT_IS_0_TO_P360_RANGE 	= 1,	/* Report 0 <= lon <= 360 */
+enum GMT_lon_enum {
+	GMT_IS_0_TO_P360_RANGE 	= 1,	/* Report 0 <= lon <= 360 */
 	GMT_IS_0_TO_P360			= 2,	/* Report 0 <= lon < 360 */
 	GMT_IS_M360_TO_0_RANGE			= 3,	/* Report -360 <= lon <= 0 */
 	GMT_IS_M360_TO_0			= 4,	/* Report -360 < lon <= 0 */
@@ -333,17 +357,16 @@ struct GMT_COL_INFO {	/* Used by -i and input parsing */
 };
 
 struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
-	GMT_LONG type;		/* Data type e.g., GMTAPI_FLOAT */
-	GMT_LONG skip;		/* Rather than read/write an item, jump skip bytes */
-	PFL io;			/* Pointer to the correct read or write function given type/swab */
+	int type;		/* Data type e.g., GMTAPI_FLOAT */
+	int skip;		/* Rather than read/write an item, jump skip bytes */
+	PFI io;			/* Pointer to the correct read or write function given type/swab */
 };
 
 struct GMT_IO {				/* Used to process input data records */
-	
 	PFP input;			/* Pointer to function reading ascii or binary tables */
 	PFL output;			/* Pointer to function writing ascii or binary tables */
-	PFL read_item;			/* Pointer to function reading 1-col z tables in grd2xyz */
-	PFL write_item;			/* Pointer to function writing 1-col z tables in xyz2grd */
+	PFI read_item;			/* Pointer to function reading 1-col z tables in grd2xyz */
+	PFI write_item;			/* Pointer to function writing 1-col z tables in xyz2grd */
 	PFL ogr_parser;			/* Set to handle either header or data OGR records */
 
 	GMT_LONG pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */
@@ -407,7 +430,7 @@ struct GMT_IO {				/* Used to process input data records */
 };
 
 struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is implicit */
-	GMT_LONG swab;		/* TRUE if we must swap byte-order */
+	int swab;		/* TRUE if we must swap byte-order */
 	GMT_LONG x_missing;	/* 1 if a periodic (right) column is implicit (i.e., not stored) */
 	GMT_LONG y_missing;	/* 1 if a periodic (top) row is implicit (i.e., not stored) */
 	GMT_LONG binary;		/* TRUE if we are reading/writing binary data */
@@ -428,7 +451,7 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 
 struct GMT_PARSE_Z_IO {	/* -Z[<flags>] */
 	GMT_LONG active;
-	GMT_LONG swab;
+	int swab;
 	GMT_LONG repeat[2];
 	GMT_LONG skip;
 	char type;
@@ -555,17 +578,18 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 };
 
 /* This union is used to hold any type of array */
-union GMT_UNIVECTOR {	/* Universal vector or any data type can be held here */
-	unsigned char *uc1;		/* Unsigned 1-byte char */
-	char *sc1;			/* Signed 1-byte char */
-	unsigned short int *ui2;	/* Unsigned 2-byte int */
-	short int *si2;			/* Signed 2-byte int */
-	unsigned int *ui4;		/* Unsigned 4-byte int */
-	int *si4;			/* Signed 4-byte int */
-	GMT_ULONG *ui8;			/* Unsigned 8-byte int */
-	GMT_LONG *si8;			/* Signed 8-byte int */
-	float *f4;			/* 4-byte float */
-	double *f8;			/* 8-byte float */
+union GMT_UNIVECTOR {
+	/* Universal vector or any data type can be held here */
+	uint8_t  *uc1; /* Unsigned 1-byte int */
+	int8_t   *sc1; /* Signed 1-byte int */
+	uint16_t *ui2; /* Unsigned 2-byte int */
+	int16_t  *si2; /* Signed 2-byte int */
+	uint32_t *ui4; /* Unsigned 4-byte int */
+	int32_t  *si4; /* Signed 4-byte int */
+	uint64_t *ui8; /* Unsigned 8-byte int */
+	int64_t  *si8; /* Signed 8-byte int */
+	float    *f4;  /* 4-byte float */
+	double   *f8;  /* 8-byte float */
 };
 
 /* These containers are used to pass user vectors and matrices in/out of GMT */

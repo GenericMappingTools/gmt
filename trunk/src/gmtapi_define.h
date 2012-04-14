@@ -44,19 +44,20 @@ enum GMT_enum_pars {GMTAPI_TYPE = 0,	/* ipar[0] = data type (GMTAPI_{BYTE|SHORT|
 	GMTAPI_NODE};		/* ipar[7] = 1 for pixel registration, 0 for node */
 
 /* These data primitive identifiers are as follows: */
-enum GMT_enum_type {GMTAPI_CHAR = 0,	/* The 1-byte signed integer type */
-	GMTAPI_UCHAR,			/* The 1-byte unsigned integer type */
-	GMTAPI_SHORT,			/* The 2-byte signed integer type */
-	GMTAPI_USHORT,			/* The 2-byte unsigned integer type */
-	GMTAPI_INT,			/* The 4-byte signed integer type */
-	GMTAPI_UINT,			/* The 4-byte unsigned integer type */
-	GMTAPI_LONG,			/* The 8-byte signed integer type */
-	GMTAPI_ULONG,			/* The 8-byte unsigned integer type */
-	GMTAPI_FLOAT,			/* The 4-byte data float type */
-	GMTAPI_DOUBLE,			/* The 8-byte data float type */
-	GMTAPI_TEXT,			/* Arbitrarily long text string [OGR/GMT use only] */
-	GMTAPI_TIME,			/* string with date/time info [OGR/GMT use only] */
-	GMTAPI_N_TYPES};		/* The number of supported data types above */
+enum GMT_enum_type {
+	GMTAPI_CHAR = 0,  /* int8_t, 1-byte signed integer type */
+	GMTAPI_UCHAR,     /* uint8_t, 1-byte unsigned integer type */
+	GMTAPI_SHORT,     /* int16_t, 2-byte signed integer type */
+	GMTAPI_USHORT,    /* uint16_t, 2-byte unsigned integer type */
+	GMTAPI_INT,       /* int32_t, 4-byte signed integer type */
+	GMTAPI_UINT,      /* uint32_t, 4-byte unsigned integer type */
+	GMTAPI_LONG,      /* int64_t, 8-byte signed integer type */
+	GMTAPI_ULONG,     /* uint64_t, 8-byte unsigned integer type */
+	GMTAPI_FLOAT,     /* 4-byte data float type */
+	GMTAPI_DOUBLE,    /* 8-byte data float type */
+	GMTAPI_TEXT,      /* Arbitrarily long text string [OGR/GMT use only] */
+	GMTAPI_TIME,      /* string with date/time info [OGR/GMT use only] */
+	GMTAPI_N_TYPES};  /* The number of supported data types above */
 
 #define GMTAPI_OPT_USAGE	'?'
 #define GMTAPI_OPT_SYNOPSIS	'^'

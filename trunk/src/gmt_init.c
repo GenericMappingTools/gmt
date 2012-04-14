@@ -1337,21 +1337,25 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
+int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 {
 	/* Syntax:	-b[i][cvar1/var2/...] or -b[i|o]<n><type>[,<n><type>]... */
 
-	GMT_LONG i, col = 0, k, ncol = 0, id = GMT_IN, i_or_o = FALSE, set = FALSE;
-	GMT_LONG endian_swab = FALSE, swab = FALSE, error = FALSE;
+	int i, col = 0, k, ncol = 0, id = GMT_IN, i_or_o = FALSE, set = FALSE;
+	int endian_swab = FALSE, swab = FALSE, error = FALSE;
 	char *p = NULL, c;
 
-	if (!text || !text[0]) return (GMT_PARSE_ERROR);	/* -b requires at least one arg, e.g, -bo */
+	if (!text || !text[0])
+		return (GMT_PARSE_ERROR); /* -b requires at least one arg, e.g, -bo */
 
 	/* First determine if there is an endian modifer supplied */
 	if ((p = strchr (text, '+'))) {	/* Yes */
 		*p = '\0';	/* Temporarily chop off the modifier */
 		switch (p[1]) {
-			case 'B': case 'L': swab = (p[1] != GMT_ENDIAN); break;	/* Must swap */
+			case 'B':
+			case 'L':
+				swab = (p[1] != GMT_ENDIAN);
+				break;	/* Must swap */
 			default:
 				GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Bad endian modifier +%c\n", (int)p[1]);
 				return (EXIT_FAILURE);
@@ -1363,15 +1367,15 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 		}
 		endian_swab = TRUE;
 	}
-	
+
 	/* Now deal with [i|o] modifier */
 	if (text[0] == 'i') { id = GMT_IN; i_or_o = TRUE; }
 	if (text[0] == 'o') { id = GMT_OUT; i_or_o = TRUE; }
 	C->common.b.active[id] = TRUE;
 	C->common.b.type[id] = 'd';	/* Set default to double */
-	
+
 	/* Because under GMT_COMPAT c means either netCDF or signed char we deal with netCDF up front */
-	
+
 	k = i_or_o;
 #ifdef GMT_COMPAT
 	if (text[k] == 'c' && !text[k+1]) {	/* Ambiguous case "-bic" which MAY mean netCDF */
@@ -1401,13 +1405,13 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 					if (c == 'D') c = 'd';
 					if (ncol == 0) ncol = 1;	/* in order to make -bs work as before */
 #endif
-				case 'l': case 'L':	/* 8-byte long integers */
-					if (sizeof (GMT_LONG) == 4) {
-						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Cannot specify type %c in 32-bit mode\n", (int)c);
-						return (EXIT_FAILURE);
-					}
-				case 'c': case 'u': case 'h': case 'H': case 'i': case 'I': case 'f': case 'd':
-					if (text[i+1] == 'w') swab = TRUE;
+				case 'c': case 'u': /* int8_t, uint8_t */
+				case 'h': case 'H': /* int16_t, uint16_t */
+				case 'i': case 'I': /* int32_t, uint32_t */
+				case 'l': case 'L': /* int64_t, uint64_t */
+				case 'f': case 'd': /* float, double */
+					if (text[i+1] == 'w')
+						swab = TRUE;
 					set = TRUE;
 					if (ncol == 0) {
 						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Column count must be specified\n");
@@ -1434,11 +1438,14 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Column count must be > 0\n");
 						return (EXIT_FAILURE);
 					}
-					while (text[i] && isdigit ((int)text[i])) i++;	i--;	/* Wind past the digits */
+					while (text[++i] && isdigit ((int)text[i])); --i; /* Wind past the digits */
 					break;
-				case ',': break;	/* Comma between sequences are optional and just ignored */
+				case ',':
+					break;	/* Comma between sequences are optional and just ignored */
 				case 'w':		/* Turn off the swap unless it set via +L|B */
-					if (!endian_swab) swab = FALSE;	break;
+					if (!endian_swab)
+						swab = FALSE;
+					break;
 				default:
 					error = TRUE;
 					GMT_report (C, GMT_MSG_FATAL, "Error: Malformed -b argument [%s]\n", text);
@@ -1447,13 +1454,16 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 			}
 		}
 	}
-	if (col == 0) col = ncol;	/* Maybe we got a column count */
+	if (col == 0)
+		col = ncol; /* Maybe we got a column count */
 	C->common.b.ncol[id] = col;
-	if (col && !set) for (col = 0; col < C->common.b.ncol[id]; col++) {	/* Default binary type is double */
-		C->current.io.fmt[id][col].io   = GMT_get_io_ptr (C, id, swab, 'd');
-		C->current.io.fmt[id][col].type = GMT_get_io_type (C, 'd');
+	if (col && !set)
+		for (col = 0; col < C->common.b.ncol[id]; col++) {
+			/* Default binary type is double */
+			C->current.io.fmt[id][col].io   = GMT_get_io_ptr (C, id, swab, 'd');
+			C->current.io.fmt[id][col].type = GMT_get_io_type (C, 'd');
 	}
-	
+
 	if (!i_or_o) {	/* Specified neither i or o so let settings apply to both */
 		C->common.b.active[GMT_OUT] = C->common.b.active[GMT_IN];
 		C->common.b.ncol[GMT_OUT] = C->common.b.ncol[GMT_IN];
@@ -1670,21 +1680,19 @@ GMT_LONG gmt_parse_dash_option (struct GMT_CTRL *C, char *text)
 
 	/* print version and exit */
 	if (strcmp (text, "version") == 0) {
-		struct GMTAPI_CTRL *G = C->parent;
 		fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
-		gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);
-		if (GMT_Destroy_Session (&G))
-			exit (EXIT_FAILURE);
+		/* cannot call GMT_Free_Options() from here, so we are leaking on exit.
+		 * struct GMTAPI_CTRL *G = C->parent;
+		 * gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);
+		 * if (GMT_Destroy_Session (&G))
+		 *   exit (EXIT_FAILURE); */
 		exit (EXIT_SUCCESS);
 	}
 
 	/* print GMT folders and exit */
 	if (strcmp (text, "show-sharedir") == 0) {
-		struct GMTAPI_CTRL *G = C->parent;
 		fprintf (stdout, "%s\n", C->session.SHAREDIR);
-		gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);
-		if (GMT_Destroy_Session (&G))
-			exit (EXIT_FAILURE);
+		/* leaking on exit same as above. */
 		exit (EXIT_SUCCESS);
 	}
 
@@ -6839,7 +6847,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 		}
 	}
 	else if (text[0] == 'k') {	/* Custom symbol spec */
-		for (j = strlen (text); j > 0 && text[j] != '/'; j--);;
+		for (j = strlen (text); j > 0 && text[j] != '/'; --j);
 		if (j == 0) {	/* No slash, i.e., no symbol size given */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 #if 0

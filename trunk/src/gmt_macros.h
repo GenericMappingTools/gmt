@@ -88,13 +88,6 @@
 #define d_swap(x, y) {double tmp; tmp = x, x = y, y = tmp;}
 #define f_swap(x, y) {float tmp; tmp = x, x = y, y = tmp;}
 
-/* Macros for byte-order swapping 2- and 4-byte values(From John M. Kuhn, NOAA) */
-
-#define GMT_swab2(data) ((((data) & 0xff) << 8) | ((unsigned short) (data) >> 8))
-#define GMT_swab4(data) \
-	(((data) << 24) | (((data) << 8) & 0x00ff0000) | \
-	(((data) >> 8) & 0x0000ff00) | ((unsigned int)(data) >> 24))
-
 /* Macro to simplify call to memcpy when duplicating values and memset when zeroing out */
 #define GMT_memcpy(to,from,n,type) memcpy(to, from, (n)*sizeof(type))
 #define GMT_memset(array,n,type) memset(array, 0, (n)*sizeof(type))

@@ -20,7 +20,8 @@
 #define _GMT_SUPPORT_H
 
 /* Return codes from GMT_inonout */
-enum GMT_enum_inside {GMT_OUTSIDE = 0,
+enum GMT_enum_inside {
+	GMT_OUTSIDE = 0,
 	GMT_ONEDGE,
 	GMT_INSIDE};
 

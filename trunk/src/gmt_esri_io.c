@@ -29,6 +29,8 @@
   * Joaquim Luis, Mars 2011.
   */
 
+#include "common_byteswap.h"
+
 GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {	/* Determine if file is an ESRI Interchange ASCII file */
 	FILE *fp = NULL;
@@ -419,9 +421,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_LONG row, row2, col2, ij, width_in, check, error, *k = NULL;
 	GMT_LONG nBits = 32, i_0_out, is_binary = FALSE, swap = FALSE;
 	char *r_mode = NULL;
-	short int *tmp16 = NULL;
-	unsigned int *ui = NULL;
-	unsigned short *us = NULL;
+	int16_t *tmp16 = NULL;
 	float value, *tmp = NULL;
 	FILE *fp = NULL;
 
@@ -455,7 +455,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	if (nBits == 32)		/* Either an ascii file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
 		tmp = GMT_memory (C, NULL, header->nx, float);
 	else
-		tmp16 = GMT_memory (C, NULL, header->nx, short int);
+		tmp16 = GMT_memory (C, NULL, header->nx, int16_t);
 
 	if (is_binary) {
 
@@ -475,15 +475,19 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 			for (col = 0, kk = ij; col < width_in; col++, kk+=inc) {
 				if (nBits == 32) {
 					if (swap) {
-						ui = (unsigned int *)&tmp[k[col]];	/* These 2 lines do the swap */
-						*ui = GMT_swab4 (*ui);
+						/* need to memcpy because casting from float* to uint32_t*
+						 * violates strict-aliasing rules. */
+						uint32_t u;
+						memcpy (&u, &tmp[k[col]], sizeof (uint32_t));
+						u = bswap32 (u);
+						memcpy (&tmp[k[col]], &u, sizeof (uint32_t));
 					}
 					grid[kk] = tmp[k[col]];
 				}
 				else {
 					if (swap) {
-						us = (unsigned short *)&tmp16[k[col]];	/* These 2 lines do the swap */
-						*us = GMT_swab2 (*us);
+						uint16_t *p = (uint16_t *)&tmp16[k[col]]; /* here casting the pointer is allowed */
+						*p = bswap16 (*p);
 					}
 					grid[kk] = tmp16[k[col]];
 				}

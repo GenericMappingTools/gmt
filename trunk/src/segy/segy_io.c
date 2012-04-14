@@ -1,76 +1,66 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include "segy_io.h"
-
-
 /*
- *	$Id$
+ * $Id$
  * segy_io.c:  A suite of functions to cover reading SEGY header variables.
  *
  * modified by T. Henstock from the PASSCAL software suite.
  * From PASSCAL code base which is in the public domain
+ * http://www.passcal.nmt.edu/
  *
+ * Edit F. Wobbe: use stdint sizes, fix buffer overflow check
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include "segy_io.h"
 
 /************************ samp_rd() *******************************/
-/* Returns Number of Sample in SegyHead (hdr), FALSE otherwise
+/* Returns Number of Sample in SegyHead (hdr), false otherwise
  *
- * needed since the SEGY standard only allows 32767 samples, which
+ * needed since the SEGY standard only allows 2^16 samples, which
  * is often exceeded in refraction experiments. */
 
-unsigned long samp_rd(SEGYHEAD *hdr) {
+uint32_t samp_rd(SEGYHEAD *hdr) {
   if (!hdr) {
     printf("samp_rd: Received a NULL pointer\n");
-    return (FALSE);
+    return (false);
   }
-  if (hdr->sampleLength == 32767)
+  if (hdr->sampleLength == 0xffff && hdr->num_samps > 0xffff)
+		/* buffer overflow */
     return (hdr->num_samps);
   else
     return (hdr->sampleLength);
 }
 
-
 /************************ get_segy_reelhd() **************************/
 /* read (and discard!) EBCDIC text reel header */
 
 int get_segy_reelhd (FILE *fileptr, char *reelhead) {
-	int igot;
-
-        if ((igot = (int)fread (reelhead, (size_t)3200, (size_t)1, fileptr)) != 1) {
+	if (fread (reelhead, 3200, 1, fileptr) != 1) {
 		fprintf(stderr,"Error reading SEGY reel header \n");
 		exit(1);
-		}
-	return (TRUE);
+	}
+	return (true);
 }
 
 /*********************** get_segy_binhd() ****************************/
 /* read SEGY binary reel header */
 
-int get_segy_binhd (FILE *fileptr, SEGYREEL *binhead) {		
-	int igot;
-
-	if ((igot = (int)fread (binhead, (size_t)400, (size_t)1, fileptr)) !=1) {
+int get_segy_binhd (FILE *fileptr, SEGYREEL *binhead) {
+	if (fread (binhead, 400, 1, fileptr) !=1) {
 		fprintf(stderr, "Error reading SEGY binary header \n");
-		return(FALSE);
+		return(false);
 		}
-
-/*	fprintf(stderr, "n_samp %i\n", binhead->nsamp); */
-
-	return (TRUE);
+	return (true);
 }
-
-
-
 
 /************************ get_segy_header() **************************/
 /*
  * Returns a SEGY header structure given a file pointer. This SEGY header
  * structure is dynamically allocated using calloc and should be free()'d
  * when it's usefulness is over.
- * 
+ *
  * NO DATA IS RETRIEVED
- * 
+ *
  * Returns a NULL ptr upon Failure and echos an error message (minus final "\n")
  * to stderr explaining the problem.
  */
@@ -79,12 +69,12 @@ SEGYHEAD *get_segy_header(FILE *file_ptr) {
   SEGYHEAD       *head_ptr;
 
   /* get memory for SegyHead'er */
-  if ((head_ptr = (SEGYHEAD *) calloc((size_t)1, (size_t)240)) == NULL) {
+  if ((head_ptr = calloc (1, 240)) == NULL) {
     fprintf(stderr, "Error: Out of memory for SEGY Headers ");
     return (NULL);
   }
   /* read in the header */
-  if (fread(head_ptr, (size_t)240, (size_t)1, file_ptr) != 1) {
+  if (fread (head_ptr, 240, 1, file_ptr) != 1) {
     fprintf(stderr, "Error: Unable to read next trace header -- end of file?\n");
     free(head_ptr);
     return (NULL);
@@ -96,31 +86,28 @@ SEGYHEAD *get_segy_header(FILE *file_ptr) {
 /*
  * This SEGY data pointer is dynamically allocated using calloc and should be
  * free()'d when it's usefulness is over.
- * 
- * DATA IS RETRIEVED and returned as (char *) from this function.
- * (this is probably bad, requiring casts elsewhere, but we just want
- * a block of bytes)
- * 
+ *
+ * Original function returned a (char *) but casting from (char *) violates
+ * strict-aliasing rules.
+ *
  * Returns a NULL ptr upon Failure and echos an error message (minus final "\n")
  * to stderr explaining the problem.
  */
 
-char *get_segy_data(FILE *file_ptr, SEGYHEAD *head_ptr) {
-  char           *data_ptr;
-  unsigned long            size_of_data, num_samps, num_bytes;
+float *get_segy_data(FILE *file_ptr, SEGYHEAD *head_ptr) {
+  float    *data_ptr;
+  uint32_t size_of_data, num_samps;
 
-	
   num_samps = samp_rd(head_ptr);
-  size_of_data = 4;
-  num_bytes = size_of_data * num_samps;
+  size_of_data = sizeof (float);
 
-  data_ptr = calloc(num_bytes, sizeof(char));
+  data_ptr = calloc(num_samps, sizeof(float));
   if (data_ptr == NULL) {
     fprintf(stderr, "Error: Out of memory for SEGY data ");
     return (NULL);
   }
   /* read in data  */
-  if (fread(data_ptr, size_of_data, num_samps, file_ptr) != num_samps) {
+  if (fread(data_ptr, sizeof (float), num_samps, file_ptr) != num_samps) {
     fprintf(stderr, "Error: Unable to read data ");
     free(data_ptr);
     return (NULL);
