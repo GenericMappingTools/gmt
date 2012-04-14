@@ -4048,7 +4048,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 		else {
 			if (!(opt->option == GMTAPI_OPT_INFILE)) continue;	/* Skip command line options other that -< which is how numerical ID files may appear */
 			/* Strip off any extension in case a user gave 12345678.mgd77 */
-			for (i = strlen (opt->arg)-1; i >= 0 && opt->arg[i] != '.'; i--);;	/* Wind back to last period (or get i == -1) */
+			for (i = strlen (opt->arg)-1; i >= 0 && opt->arg[i] != '.'; --i); /* Wind back to last period (or get i == -1) */
 			if (i == -1)
 				strcpy (this_arg, opt->arg);
 			else {

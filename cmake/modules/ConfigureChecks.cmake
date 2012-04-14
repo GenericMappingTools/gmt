@@ -170,6 +170,32 @@ set (HAVE_SYS_TYPES_H_ "${HAVE_SYS_TYPES_H}"
 
 test_big_endian (WORDS_BIGENDIAN)
 
+# Byte swapping functions
+check_c_source_runs (
+	"
+	int main(void) {
+		return !__builtin_bswap16(0xabcd) == 0xcdab;
+	}
+	"
+	HAVE___BUILTIN_BSWAP16)
+check_c_source_runs (
+	"
+	int main(void) {
+		return !__builtin_bswap32(0xdeadbeef) == 0xefbeadde;
+	}
+	"
+	HAVE___BUILTIN_BSWAP32)
+check_c_source_runs (
+	"
+	int main(void) {
+		return !__builtin_bswap64(0x1234567890abcdef) == 0xefcdab9078563412;
+	}
+	"
+	HAVE___BUILTIN_BSWAP64)
+check_function_exists (_byteswap_ushort HAVE__BYTESWAP_USHORT) # for uint16_t
+check_function_exists (_byteswap_ulong  HAVE__BYTESWAP_ULONG)  # for uint32_t
+check_function_exists (_byteswap_uint64 HAVE__BYTESWAP_UINT64) # for uint64_t
+
 #
 # Check math related stuff
 #

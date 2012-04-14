@@ -43,21 +43,21 @@ one of several data types (all binary except BD(a)):
 .sp
 	BD(a)  ASCII representation of a single item per record
 .br
-	BD(c)  signed 1-byte character
+	BD(c)  int8_t, signed 1-byte character
 .br
-	BD(u)  unsigned 1-byte character
+	BD(u)  uint8_t, unsigned 1-byte character
 .br
-	BD(h)  short 2-byte integer
+	BD(h)  int16_t, short 2-byte integer
 .br
-	BD(H)  unsigned short 2-byte integer
+	BD(H)  uint16_t, unsigned short 2-byte integer
 .br
-	BD(i)  4-byte integer
+	BD(i)  int32_t, 4-byte integer
 .br
-	BD(I)  unsigned 4-byte integer
+	BD(I)  uint32_t, unsigned 4-byte integer
 .br
-	BD(l)  long (8-byte) integer [requires 64-bit mode]
+	BD(l)  int64_t, long (8-byte) integer
 .br
-	BD(L)  unsigned long (8-byte) integer [requires 64-bit mode]
+	BD(L)  uint64_t, unsigned long (8-byte) integer
 .br
 	BD(f)  4-byte floating point single precision
 .br

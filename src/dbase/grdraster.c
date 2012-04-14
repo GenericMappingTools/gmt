@@ -31,6 +31,7 @@
  */
 
 #include "gmt_dbase.h"
+#include "common_byteswap.h"
 
 EXTERN_MSC void GMT_str_toupper (char *string);
 
@@ -67,7 +68,8 @@ struct GRDRASTER_INFO {
 
 void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, unsigned char *buffer)
 {
-	GMT_LONG i, tempval;
+	int i;
+	unsigned char tempval;
 	for (i = 0; i < ras.h.nx; i++) {
 		tempval = buffer[i];
 		if (ras.nanset && tempval == ras.nanflag) {
@@ -84,7 +86,8 @@ void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row,
 
 void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer)
 {
-	GMT_LONG i, tempval;
+	int i;
+	char tempval;
 	for (i = 0; i < ras.h.nx; i++) {
 		tempval = buffer[i];
 		if (ras.nanset && tempval == ras.nanflag) {
@@ -99,13 +102,15 @@ void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row,
 	return;
 }
 
-void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, short unsigned int *buffer)
+void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, uint16_t *buffer)
 {
-	GMT_LONG i, tempval;
+	int i;
+	uint16_t tempval;
 	for (i = 0; i < ras.h.nx; i++) {
-		if (ras.swap_me) buffer[i] = GMT_swab2 (buffer[i]);
-
-		tempval = buffer[i];
+		if (ras.swap_me)
+			tempval = bswap16 (buffer[i]);
+		else
+			tempval = buffer[i];
 		if (ras.nanset && tempval == ras.nanflag) {
 			row[i] = GMT->session.f_NaN;
 		}
@@ -118,18 +123,23 @@ void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row,
 	return;
 }
 
-void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, short int *buffer)
+void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, uint16_t *buffer)
 {
-	GMT_LONG i, tempval;
+	int i;
+	union {
+		int16_t s;
+		uint16_t u;
+	} tempval;
 	for (i = 0; i < ras.h.nx; i++) {
-		if (ras.swap_me) buffer[i] = GMT_swab2 (buffer[i]);
-
-		tempval = buffer[i];
-		if (ras.nanset && tempval == ras.nanflag) {
+		if (ras.swap_me)
+			tempval.u = bswap16 (buffer[i]);
+		else
+			tempval.u = buffer[i];
+		if (ras.nanset && tempval.s == ras.nanflag) {
 			row[i] = GMT->session.f_NaN;
 		}
 		else {
-			row[i] = (float)tempval;
+			row[i] = (float)tempval.s;
 			if (ras.h.z_scale_factor != 1.0) row[i] *= (float)ras.h.z_scale_factor;
 			if (ras.h.z_add_offset != 0.0) row[i] += (float)ras.h.z_add_offset;
 		}
@@ -137,18 +147,23 @@ void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row,
 	return;
 }
 
-void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, int *buffer)
+void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, uint32_t *buffer)
 {
-	GMT_LONG i, tempval;
+	int i;
+	union {
+		int16_t s;
+		uint16_t u;
+	} tempval;
 	for (i = 0; i < ras.h.nx; i++) {
-		if (ras.swap_me) buffer[i] = GMT_swab4 (buffer[i]);
-
-		tempval = buffer[i];
-		if (ras.nanset && tempval == ras.nanflag) {
+		if (ras.swap_me)
+			tempval.u = bswap16 (buffer[i]);
+		else
+			tempval.u = buffer[i];
+		if (ras.nanset && tempval.s == ras.nanflag) {
 			row[i] = GMT->session.f_NaN;
 		}
 		else {
-			row[i] = (float)tempval;
+			row[i] = (float)tempval.s;
 			if (ras.h.z_scale_factor != 1.0) row[i] *= (float)ras.h.z_scale_factor;
 			if (ras.h.z_add_offset != 0.0) row[i] += (float)ras.h.z_add_offset;
 		}
@@ -1060,13 +1075,13 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						convert_c_row (GMT, myras, floatrasrow, buffer);
 						break;
 					case 'd':
-						convert_d_row (GMT, myras, floatrasrow, (short unsigned int *)buffer);
+						convert_d_row (GMT, myras, floatrasrow, (uint16_t *)buffer);
 						break;
 					case 'i':
-						convert_i_row (GMT, myras, floatrasrow, (short int *)buffer);
+						convert_i_row (GMT, myras, floatrasrow, (uint16_t *)buffer);
 						break;
 					case 'l':
-						convert_l_row (GMT, myras, floatrasrow, (int *)buffer);
+						convert_l_row (GMT, myras, floatrasrow, (uint32_t *)buffer);
 						break;
 				}
 				iras = irasstart;

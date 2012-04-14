@@ -54,6 +54,7 @@
 
 #include "gmt_imgsubs.h"
 #include "gmt_imgsrc.h"
+#include "common_byteswap.h"
 
 struct IMG2GRD_CTRL {
 	struct In {	/* Input file name */
@@ -274,19 +275,20 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
 	GMT_LONG iout, jout, iinstart, iinstop, jinstart, jinstop, k, kk, ion, jin, jj, iin, ii, kstart;
 	GMT_LONG ij, in_ID, out_ID = GMTAPI_NOTSET, *ix = NULL;
-	
-	int tempint;
-	
+
+	int16_t tempint;
+
 	double west, east, south, north, wesn[4], toplat, botlat, dx;
 	double south2, north2, rnavgsq, csum, dsum, left, bottom, inc[2];
-	
-	short int *row = NULL;
-	
+
+	int16_t *row = NULL;
+	uint16_t *u2;
+
 	char infile[GMT_BUFSIZ], cmd[GMT_BUFSIZ], s_in_ID[GMTAPI_STRLEN], s_out_ID[GMT_TEXT_LEN256];
 	char z_units[GRD_UNIT_LEN80];
-	
+
 	FILE *fp = NULL;
-	
+
 	struct GMT_IMG_COORD imgcoord;
 	struct GMT_IMG_RANGE imgrange = { GMT_IMG_MAXLON, GMT_IMG_MINLAT, GMT_IMG_MAXLAT, GMT_IMG_MPIXEL };
 	struct GMT_GRID *Merc = NULL;
@@ -296,35 +298,42 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
-	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
+	if (API == NULL)
+		return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	options = GMT_Prep_Options (API, mode, args);
+	if (API->error)
+		return (API->error); /* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_img2grd_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_img2grd_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE)
+		bailout (GMT_img2grd_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS)
+		bailout (GMT_img2grd_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_img2grd", &GMT_cpy);	/* Save current state */
-	if (GMT_Parse_Common (API, "-VRf", GMT_OPT("m"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VRf", GMT_OPT("m"), options))
+		Return (API->error);
 	Ctrl = New_img2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_img2grd_parse (API, Ctrl, options))) Return (error);
-	
+	if ((error = GMT_img2grd_parse (API, Ctrl, options)))
+		Return (error);
+
 	/*---------------------------- This is the img2grd main code ----------------------------*/
 
 	/* Set up default settings if not specified */
-	
+
 	if (Ctrl->W.active) imgrange.maxlon = Ctrl->W.value;
 	if (Ctrl->I.active) imgrange.mpixel = Ctrl->I.value;
 	if (Ctrl->D.active) {
 		imgrange.minlat = Ctrl->D.min;
 		imgrange.maxlat = Ctrl->D.max;
 	}
-	
+
 	if (!GMT_getdatapath (GMT, Ctrl->In.file, infile)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "img file %s not found\n", Ctrl->In.file);
 		Return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
-	
+
 	if (! (Ctrl->I.active || Ctrl->D.active)) {
 		GMT_LONG min;
 		double lat = 0.0;
@@ -498,11 +507,11 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	strcpy (Merc->header->title, "Data from Altimetry");
 	Merc->header->z_min = DBL_MAX;	Merc->header->z_max = -DBL_MAX;
 
-	/* Now malloc some space for float grd array, integer pixel index, and short integer data buffer.  */
+	/* Now malloc some space for float grd array, integer pixel index, and int16_t data buffer.  */
 
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Merc, wesn, inc, TRUE), Ctrl->G.file);
 	Merc->data = GMT_memory (GMT, NULL, Merc->header->size, float);
-	row = GMT_memory (GMT, NULL, navg * imgcoord.nxcol, short int);
+	row = GMT_memory (GMT, NULL, navg * imgcoord.nxcol, int16_t);
 	ix = GMT_memory (GMT, NULL, navgsq * Merc->header->nx, GMT_LONG);
 
 	/* Load ix with the index to the correct column, for each output desired.  This helps for Greenwich, 
@@ -538,20 +547,22 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (iout = 0; iout < Merc->header->nx; iout++, ij++) Merc->data[ij] = GMT->session.f_NaN;
 			continue;
 		}
-		if ((fread (row, sizeof (short int), (size_t)(navg * imgcoord.nxcol), fp) ) != (size_t)(navg * imgcoord.nxcol)) {
+		if ((fread (row, sizeof (int16_t), (size_t)(navg * imgcoord.nxcol), fp) ) != (size_t)(navg * imgcoord.nxcol)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Read failure at jin = %ld.\n", jin);
 			exit (EXIT_FAILURE);
 		}
 
 #ifndef WORDS_BIGENDIAN
-		for (iout = 0; iout < navg * imgcoord.nxcol; iout++) row[iout] = GMT_swab2 (row[iout]);
+		u2 = (uint16_t *)row;
+		for (iout = 0; iout < navg * imgcoord.nxcol; iout++)
+			u2[iout] = bswap16 (u2[iout]);
 #endif
 
 		for (iout = 0, kstart = 0; iout < Merc->header->nx; iout++, ij++, kstart += navgsq) {
 			if (navg) {
 				csum = dsum = 0.0;
 				for (k = 0, kk = kstart; k < navgsq; k++, kk++) {
-					tempint = (int)row[ix[kk]];
+					tempint = row[ix[kk]];
 					if (Ctrl->T.value && abs (tempint) % 2 != 0) {
 						csum += 1.0;
 						tempint--;
@@ -562,7 +573,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				dsum *= rnavgsq;
 			}
 			else {
-				tempint = (int)row[ix[iout]];
+				tempint = row[ix[iout]];
 				if (Ctrl->T.value && abs (tempint) %2 != 0) {
 					csum = 1.0;
 					tempint--;

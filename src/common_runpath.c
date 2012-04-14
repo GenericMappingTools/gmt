@@ -138,7 +138,7 @@ char *GMT_runtime_bindir_win32 (char *result) {
 
 /* Generic *NIX function */
 char *GMT_runtime_bindir (char *result, const char *candidate) {
-	char *c, *path, *dir, *save_ptr;
+	char *c, *path, *dir, *save_ptr = NULL;
 	char candidate_abs[PATH_MAX+1];
 	*result = '\0';
 

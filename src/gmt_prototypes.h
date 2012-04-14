@@ -118,8 +118,8 @@ EXTERN_MSC void GMT_set_segmentheader (struct GMT_CTRL *C, GMT_LONG direction, G
 EXTERN_MSC void GMT_io_binary_header (struct GMT_CTRL *C, FILE *fp, GMT_LONG dir);
 EXTERN_MSC void * GMT_z_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, GMT_LONG *status);
 EXTERN_MSC GMT_LONG GMT_z_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, void *data);
-EXTERN_MSC GMT_LONG GMT_get_io_type (struct GMT_CTRL *C, char type);
-EXTERN_MSC PFL GMT_get_io_ptr (struct GMT_CTRL *C, GMT_LONG direction, GMT_LONG swap, char type);
+EXTERN_MSC int GMT_get_io_type (struct GMT_CTRL *C, char type);
+EXTERN_MSC PFI GMT_get_io_ptr (struct GMT_CTRL *C, GMT_LONG direction, int swap, char type);
 EXTERN_MSC struct GMT_QUAD * GMT_quad_init (struct GMT_CTRL *C, GMT_LONG n_items);
 EXTERN_MSC void GMT_quad_reset (struct GMT_CTRL *C, struct GMT_QUAD *Q, GMT_LONG n_items);
 EXTERN_MSC void GMT_quad_add (struct GMT_CTRL *C, struct GMT_QUAD *Q, double x);
@@ -514,7 +514,7 @@ EXTERN_MSC GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in,
 
 /* grd2xyz_func & xyz2grd_func */
 EXTERN_MSC GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z);
-EXTERN_MSC GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_LONG repeat[], GMT_LONG swab, GMT_LONG skip, char type, struct GMT_Z_IO *r);
+EXTERN_MSC GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_LONG repeat[], int swab, GMT_LONG skip, char type, struct GMT_Z_IO *r);
 EXTERN_MSC GMT_LONG GMT_set_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G);
 EXTERN_MSC void GMT_check_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G);
 

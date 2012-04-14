@@ -47,62 +47,62 @@
 
 struct PSSEGYZ_CTRL {
 	struct In {	/* -In */
-		GMT_LONG active;
+		bool active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		GMT_LONG active;
+		bool active;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		bool active;
 		double value;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		bool active;
 		double value[2];
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		bool active;
 		double value;
 	} E;
 	struct F {	/* -F<fill> */
-		GMT_LONG active;
+		bool active;
 		double rgb[4];
 	} F;
 	struct I {	/* -I */
-		GMT_LONG active;
+		bool active;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
-		GMT_LONG value;
+		bool active;
+		int value;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
-		GMT_LONG value;
+		bool active;
+		int value;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		bool active;
 	} N;
 	struct Q {	/* -Qb|u|x|y */
-		GMT_LONG active[4];
+		bool active[4];
 		double value[4];	/* b is bias, u is redval, x/y are trace and sample interval */
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
-		GMT_LONG fixed[2];
-		GMT_LONG mode[2];
-		GMT_LONG value[2];
+		bool active;
+		int fixed[2];
+		int mode[2];
+		int value[2];
 		double orig[2];
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		bool active;
 		char *file;
 	} T;
 	struct W {	/* -W */
-		GMT_LONG active;
+		bool active;
 	} W;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		bool active;
 	} Z;
 };
 
@@ -111,7 +111,7 @@ void *New_pssegyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	C = GMT_memory (GMT, NULL, 1, struct PSSEGYZ_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->A.active = !GMT_BIGENDIAN;
 	C->M.value = 10000;
@@ -200,11 +200,11 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 				Ctrl->A.active = !Ctrl->A.active;
 				break;
 			case 'C':	/* trace clip */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				Ctrl->C.value = (float) atof (opt->arg);
 				break;
 			case 'D':	/* trace scaling */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				if (strchr (opt->arg, '/')) {
 					sscanf (opt->arg, "%[^/]/%lf", txt_a, &Ctrl->D.value[GMT_Y]);
 					Ctrl->D.value[GMT_X] = atof (txt_a);
@@ -213,46 +213,46 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 					Ctrl->D.value[GMT_X] = Ctrl->D.value[GMT_Y] = atof (opt->arg);
 				break;
 			case 'E':
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				Ctrl->E.value = atof (opt->arg);
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				if (GMT_getrgb (GMT, opt->arg, Ctrl->F.rgb)) {
 					n_errors++;
 					GMT_rgb_syntax (GMT, 'F', " ");
 				}
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				break;
 			case 'L':
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				Ctrl->L.value = atoi (opt->arg);
 				break;
 			case 'M':
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				Ctrl->M.value = atoi (opt->arg);
 				break;
 			case 'N':	/* trace norm. */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				break;
 			case 'Q':
 				switch (opt->arg[0]) {
 					case 'b':	/* Trace bias */
-						Ctrl->Q.active[B_ID] = TRUE;
+						Ctrl->Q.active[B_ID] = true;
 						Ctrl->Q.value[B_ID] = atof (opt->arg);
 						break;
 					case 'u':	/* reduction velocity application */
-						Ctrl->Q.active[U_ID] = TRUE;
+						Ctrl->Q.active[U_ID] = true;
 						Ctrl->Q.value[U_ID] = atof (opt->arg);
 						break;
 					case 'x': /* over-rides of header info */
-						Ctrl->Q.active[X_ID] = TRUE;
+						Ctrl->Q.active[X_ID] = true;
 						Ctrl->Q.value[X_ID] = atof (opt->arg);
 						break;
 					case 'y': /* over-rides of header info */
-						Ctrl->Q.active[Z_ID] = TRUE;
+						Ctrl->Q.active[Z_ID] = true;
 						Ctrl->Q.value[Z_ID] = atof (opt->arg);
 						break;
 				}
@@ -263,7 +263,7 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 					n_errors++;
 					continue;
 				}
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) == 2) {
 					txt[0] = txt_a;	txt[1] = txt_b;
 					for (k = 0; k < 2; k++) {
@@ -279,7 +279,7 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 								break;
 							case '0' : case '1': case '2': case '3': case '4': case '5':
 							case '6': case '7': case '8': case '9': case '-': case '+': case '.':
-								Ctrl->S.fixed[k] = TRUE;
+								Ctrl->S.fixed[k] = true;
 								Ctrl->S.mode[k] = PLOT_CDP;
 								break;
 						}
@@ -289,14 +289,14 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 					n_errors++;
 				break;
 			case 'T':	/* plot traces only at listed locations */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.file = strdup (opt->arg);
 				break;
 			case 'W':
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				break;
 			case 'Z':
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -571,15 +571,13 @@ void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, 
 
 GMT_LONG GMT_pssegyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, nm, ix, iz, n_samp = 0, check, bm_nx, bm_ny;
+	GMT_LONG error = false, nm, ix, iz, n_samp = 0, check, bm_nx, bm_ny;
 
 	double xlen, ylen, xpix, ypix, x0, y0, trans[3] = {-1.0,-1.0,-1.0};
 
 	float scale = 1.0, toffset = 0.0;
 
-	char *head = NULL;
 	unsigned char *bitmap = NULL;
-	int head2;
 
 	char reelhead[3200];
 	float *data = NULL;
@@ -640,17 +638,17 @@ GMT_LONG GMT_pssegyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	bm_ny = (GMT_LONG) ypix;
 	nm = bm_nx * bm_ny;
 
-	if ((check = get_segy_reelhd (fpi, reelhead)) != TRUE) exit (1);
-	if ((check = get_segy_binhd (fpi, &binhead)) != TRUE) exit (1);
+	if ((check = get_segy_reelhd (fpi, reelhead)) != true) exit (1);
+	if ((check = get_segy_binhd (fpi, &binhead)) != true) exit (1);
 
 	if (Ctrl->A.active) {
 /* this is a little-endian system, and we need to byte-swap ints in the reel header - we only
 use a few of these*/
 		GMT_report (GMT, GMT_MSG_NORMAL, "Swapping bytes for ints in the headers\n");
-		binhead.num_traces = GMT_swab2 (binhead.num_traces);
-		binhead.nsamp = GMT_swab2 (binhead.nsamp);
-		binhead.dsfc = GMT_swab2 (binhead.dsfc);
-		binhead.sr = GMT_swab2 (binhead.sr);
+		binhead.num_traces = bswap16 (binhead.num_traces);
+		binhead.nsamp = bswap16 (binhead.nsamp);
+		binhead.dsfc = bswap16 (binhead.dsfc);
+		binhead.sr = bswap16 (binhead.sr);
 	}
 
 /* set parameters from the reel headers */
@@ -691,23 +689,31 @@ use a few of these*/
 	bitmap = GMT_memory (GMT, NULL, nm, unsigned char);
 
 	ix = 0;
-	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {   /* read traces one by one */
+	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {
+		/* read traces one by one */
 		/* check true location header for x */
-		if (Ctrl->S.mode[GMT_X] == PLOT_OFFSET) { /* plot traces by offset, cdp, or input order */
-			int32_t offset = ((Ctrl->A.active) ? (int32_t)GMT_swab4 (header->sourceToRecDist) : header->sourceToRecDist);
-			x0 = (double) offset;
+		if (Ctrl->S.mode[GMT_X] == PLOT_OFFSET) {
+			/* plot traces by offset, cdp, or input order */
+			int32_t tmp = header->sourceToRecDist;
+			if (Ctrl->A.active) {
+				uint32_t *p = (uint32_t *)&tmp;
+				*p = bswap32 (*p);
+			}
+			x0 = (double) tmp;
 		}
 		else if (Ctrl->S.mode[GMT_X] == PLOT_CDP) {
-			int32_t cdpval = ((Ctrl->A.active) ? (int32_t)GMT_swab4 (header->cdpEns) : header->cdpEns);
-			x0 = (double) cdpval;
+			int32_t tmp = header->cdpEns;
+			if (Ctrl->A.active) {
+				uint32_t *p = (uint32_t *)&tmp;
+				*p = bswap32 (*p);
+			}
+			x0 = (double) tmp;
 		}
-		else if (Ctrl->S.value[GMT_X]) { /* ugly code - want to get value starting at Ctrl->S.value[GMT_X] of header into a double... */
-			int32_t tmp;
-			head = (char *)header;
-			memcpy (&head2, &head[Ctrl->S.value[GMT_X]], 4); /* edited to fix bug where 8bytes were copied from head.
-                                                Caused by casting to a long directly from char array*/
-			tmp = (Ctrl->A.active) ? (int32_t) GMT_swab4 (head2) : head2;
-		x0 = (double)tmp;
+		else if (Ctrl->S.value[GMT_X]) {
+			/* get value starting at Ctrl->S.value of header into a double */
+			uint32_t tmp;
+			memcpy (&tmp, &header[Ctrl->S.value[GMT_X]], sizeof (uint32_t));
+			x0 = (Ctrl->A.active) ? (double) bswap32 (tmp) : (double) tmp;
 		}
 		else if (Ctrl->S.fixed[GMT_X])
 			x0 = Ctrl->S.orig[GMT_X] / Ctrl->Q.value[X_ID];
@@ -715,21 +721,28 @@ use a few of these*/
 			x0 = (1.0 + (double) ix); /* default x to input trace number */
 
 		/* now do same for y */
-		if (Ctrl->S.mode[GMT_Y] == PLOT_OFFSET) { /* plot traces by offset, cdp, or input order */
-			int32_t offset = ((Ctrl->A.active) ? (int32_t)GMT_swab4 (header->sourceToRecDist) : header->sourceToRecDist);
-			y0 = (double) offset;
+		if (Ctrl->S.mode[GMT_Y] == PLOT_OFFSET) {
+			/* plot traces by offset, cdp, or input order */
+			int32_t tmp = header->sourceToRecDist;
+			if (Ctrl->A.active) {
+				uint32_t *p = (uint32_t *)&tmp;
+				*p = bswap32 (*p);
+			}
+			y0 = (double) tmp;
 		}
 		else if (Ctrl->S.mode[GMT_Y] == PLOT_CDP) {
-			int32_t cdpval = ((Ctrl->A.active) ? (int32_t) GMT_swab4 (header->cdpEns) : header->cdpEns);
-			y0 = (double) cdpval;
+			int32_t tmp = header->cdpEns;
+			if (Ctrl->A.active) {
+				uint32_t *p = (uint32_t *)&tmp;
+				*p = bswap32 (*p);
+			}
+			y0 = (double) tmp;
 		}
 		else if (Ctrl->S.value[GMT_Y]) {
-			int32_t tmp;
-			head = (char *)header;
-			memcpy (&head2, &head[Ctrl->S.value[GMT_Y]], 4); /* edited to fix bug where 8bytes were copied from head.
-                                                Caused by casting to a long directly from char array*/
-			tmp = (Ctrl->A.active) ? (int32_t)GMT_swab4 (head2) : head2;
-			y0 = (double) tmp;
+			/* get value starting at Ctrl->S.value of header into a double */
+			uint32_t tmp;
+			memcpy (&tmp, &header[Ctrl->S.value[GMT_Y]], sizeof (uint32_t));
+			y0 = (Ctrl->A.active) ? (double) bswap32 (tmp) : (double) tmp;
 		}
 		else if (Ctrl->S.fixed[GMT_Y])
 			y0  = Ctrl->S.orig[GMT_Y] / Ctrl->Q.value[X_ID];
@@ -741,11 +754,13 @@ use a few of these*/
 
 		if (Ctrl->A.active) {
 			/* need to permanently byte-swap some things in the trace header
-			   do this after getting the location of where traces are plotted in case the general Ctrl->S.value[GMT_X] case
-			   overlaps a defined header in a strange way */
-			header->sourceToRecDist = GMT_swab4 (header->sourceToRecDist);
-			header->sampleLength = GMT_swab2 (header->sampleLength);
-			header->num_samps = GMT_swab4 (header->num_samps);
+				 do this after getting the location of where traces are plotted
+				 in case the general Ctrl->S.value[GMT_X] case overlaps a defined
+				 header in a strange way */
+			uint32_t *p = (uint32_t *)&header->sourceToRecDist;
+			*p = bswap32 (*p);
+			header->sampleLength = bswap16 (header->sampleLength);
+			header->num_samps = bswap32 (header->num_samps);
 		}
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "trace %ld at x=%f, y=%f \n", ix+1, x0, y0);
@@ -755,14 +770,19 @@ use a few of these*/
 			GMT_report (GMT, GMT_MSG_NORMAL, "time shifted by %f\n", toffset);
 		}
 
-		data = (float *)get_segy_data (fpi, header);	/* read a trace */
+		data = get_segy_data (fpi, header);	/* read a trace */
 		/* get number of samples in _this_ trace (e.g. OMEGA has strange ideas about SEGY standard)
 		   or set to number in reel header */
                 if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
 
-		if (Ctrl->A.active) {	/* need to swap the order of the bytes in the data even though assuming IEEE format */
-			int *intdata = (int *)data;
-			for (iz = 0; iz < n_samp; iz++) intdata[iz] = GMT_swab4 (intdata[iz]);
+		if (Ctrl->A.active) {
+			/* need to swap the order of the bytes in the data even though assuming IEEE format */
+			uint32_t tmp;
+			for (iz = 0; iz < n_samp; ++iz) {
+				memcpy (&tmp, &data[iz], sizeof(uint32_t));
+				tmp = bswap32 (tmp);
+				memcpy (&data[iz], &tmp, sizeof(uint32_t));
+			}
 		}
 
 		if (Ctrl->N.active || Ctrl->Z.active) {

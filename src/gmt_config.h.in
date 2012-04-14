@@ -145,6 +145,14 @@
 
 #cmakedefine WORDS_BIGENDIAN
 
+/* Byte swapping functions */
+#cmakedefine HAVE___BUILTIN_BSWAP16
+#cmakedefine HAVE___BUILTIN_BSWAP32
+#cmakedefine HAVE___BUILTIN_BSWAP64
+#cmakedefine HAVE__BYTESWAP_USHORT /* for 16 bit */
+#cmakedefine HAVE__BYTESWAP_ULONG /* for 32 bit */
+#cmakedefine HAVE__BYTESWAP_UINT64 /* for 64 bit */
+
 /* Math headers */
 
 #cmakedefine HAVE_FLOATINGPOINT_H_

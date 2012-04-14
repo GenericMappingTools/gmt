@@ -44,60 +44,60 @@
 
 struct PSSEGY_CTRL {
 	struct In {	/* -In */
-		GMT_LONG active;
+		bool active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		GMT_LONG active;
+		bool active;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		bool active;
 		double value;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		bool active;
 		double value;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		bool active;
 		double value;
 	} E;
 	struct F {	/* -F<fill> */
-		GMT_LONG active;
+		bool active;
 		double rgb[4];
 	} F;
 	struct I {	/* -I */
-		GMT_LONG active;
+		bool active;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
-		GMT_LONG value;
+		bool active;
+		uint32_t value;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
-		GMT_LONG value;
+		bool active;
+		int value;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		bool active;
 	} N;
 	struct Q {	/* -Qb|u|x|y */
-		GMT_LONG active[4];
+		bool active[4];
 		double value[4];
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
-		GMT_LONG mode;
-		GMT_LONG value;
+		bool active;
+		int mode;
+		int value;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		bool active;
 		char *file;
 	} T;
 	struct W {	/* -W */
-		GMT_LONG active;
+		bool active;
 	} W;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		bool active;
 	} Z;
 };
 
@@ -106,7 +106,7 @@ void *New_pssegy_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C = GMT_memory (GMT, NULL, 1, struct PSSEGY_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->A.active = !GMT_BIGENDIAN;
 	C->M.value = 10000;
@@ -198,60 +198,60 @@ GMT_LONG GMT_pssegy_parse (struct GMTAPI_CTRL *C, struct PSSEGY_CTRL *Ctrl, stru
 				Ctrl->A.active = !Ctrl->A.active;
 				break;
 			case 'C':	/* trace clip */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				Ctrl->C.value = (float) atof (opt->arg);
 				break;
 			case 'D':	/* trace scaling */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.value = atof (opt->arg);
 				break;
 			case 'E':
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				Ctrl->E.value = atof (opt->arg);
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				if (GMT_getrgb (GMT, opt->arg, Ctrl->F.rgb)) {
 					n_errors++;
 					GMT_rgb_syntax (GMT, 'F', " ");
 				}
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				break;
 			case 'L':
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				Ctrl->L.value = atoi (opt->arg);
 				break;
 			case 'M':
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				Ctrl->M.value = atoi (opt->arg);
 				break;
 			case 'N':	/* trace norm. */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				break;
 			case 'Q':
 				switch (opt->arg[0]) {
 					case 'b':	/* Trace bias */
-						Ctrl->Q.active[B_ID] = TRUE;
+						Ctrl->Q.active[B_ID] = true;
 						Ctrl->Q.value[B_ID] = atof (opt->arg);
 						break;
 					case 'u':	/* reduction velocity application */
-						Ctrl->Q.active[U_ID] = TRUE;
+						Ctrl->Q.active[U_ID] = true;
 						Ctrl->Q.value[U_ID] = atof (opt->arg);
 						break;
 					case 'x': /* over-rides of header info */
-						Ctrl->Q.active[X_ID] = TRUE;
+						Ctrl->Q.active[X_ID] = true;
 						Ctrl->Q.value[X_ID] = atof (opt->arg);
 						break;
 					case 'y': /* over-rides of header info */
-						Ctrl->Q.active[Y_ID] = TRUE;
+						Ctrl->Q.active[Y_ID] = true;
 						Ctrl->Q.value[Y_ID] = atof (opt->arg);
 						break;
 				}
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'o':
 						Ctrl->S.mode = PLOT_OFFSET;
@@ -265,14 +265,14 @@ GMT_LONG GMT_pssegy_parse (struct GMTAPI_CTRL *C, struct PSSEGY_CTRL *Ctrl, stru
 				}
 				break;
 			case 'T':	/* plot traces only at listed locations */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.file = strdup (opt->arg);
 				break;
 			case 'W':
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				break;
 			case 'Z':
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -291,15 +291,16 @@ GMT_LONG GMT_pssegy_parse (struct GMTAPI_CTRL *C, struct PSSEGY_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double segy_rms (float *data, GMT_LONG n_samp)
-{	/* function to return rms amplitude of n_samp values from the array data */
-	GMT_LONG ix;
+float segy_rms (float *data, uint32_t n_samp)
+{ /* function to return rms amplitude of n_samp values from the array data */
+	uint32_t ix;
 	double sumsq = 0.0;
 
-	for (ix = 0; ix < n_samp; ix++) sumsq += ((double) data[ix])*((double) data[ix]);
+	for (ix = 0; ix < n_samp; ix++)
+		sumsq += ((double) data[ix])*((double) data[ix]);
 	sumsq /= ((double) n_samp);
 	sumsq = sqrt (sumsq);
-	return (sumsq);
+	return (float) sumsq;
 }
 
 GMT_LONG segy_paint (GMT_LONG ix, GMT_LONG iy, unsigned char *bitmap, GMT_LONG bm_nx, GMT_LONG bm_ny)	/* pixel to paint */
@@ -443,17 +444,17 @@ void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, i
 
 GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, i, nm, ix, iy, n_samp = 0;
-	int check, plot_it = FALSE, n_tracelist = 0, bm_nx, bm_ny;
+	GMT_LONG error = false, i, nm, ix, iy;
+	uint32_t n_samp = 0;
+	int check, plot_it = false, n_tracelist = 0, bm_nx, bm_ny;
 
 	float scale = 1.0, toffset = 0.0, *data = NULL;
 	double xlen, ylen, xpix, ypix, x0, test, *tracelist = NULL, trans[3] = {-1.0, -1.0, -1.0};
 
 	unsigned char *bitmap = NULL;
 
-	char reelhead[3200], *head = NULL;
+	char reelhead[3200];
 	SEGYHEAD *header = NULL;
-	int head2;
 	SEGYREEL binhead;
 
 	FILE *fpi = NULL, *fpt = NULL;
@@ -537,17 +538,17 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	nm = bm_nx * bm_ny;
 
 	/* read in reel headers from segy file */
-	if ((check = get_segy_reelhd (fpi, reelhead)) != TRUE) Return (GMT_RUNTIME_ERROR);
-	if ((check = get_segy_binhd (fpi, &binhead)) != TRUE) Return (GMT_RUNTIME_ERROR);
+	if ((check = get_segy_reelhd (fpi, reelhead)) != true) Return (GMT_RUNTIME_ERROR);
+	if ((check = get_segy_binhd (fpi, &binhead)) != true) Return (GMT_RUNTIME_ERROR);
 
 	if (Ctrl->A.active) {
 		/* this is a little-endian system, and we need to byte-swap ints in the header - we only
 		   use a few of these*/
-		GMT_report (GMT, GMT_MSG_NORMAL, "swapping bytes for ints in the headers\n");
-		binhead.num_traces = GMT_swab2 (binhead.num_traces);
-		binhead.nsamp = GMT_swab2 (binhead.nsamp);
-		binhead.dsfc = GMT_swab2 (binhead.dsfc);
-		binhead.sr = GMT_swab2 (binhead.sr);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Swapping bytes for ints in the headers\n");
+		binhead.num_traces = bswap16 (binhead.num_traces);
+		binhead.nsamp = bswap16 (binhead.nsamp);
+		binhead.dsfc = bswap16 (binhead.dsfc);
+		binhead.sr = bswap16 (binhead.sr);
 	}
 
 /* set parameters from the reel headers */
@@ -588,23 +589,30 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	bitmap = GMT_memory (GMT, NULL, nm, unsigned char);
 
 	ix=0;
-	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {	/* read traces one by one */
-
-		if (Ctrl->S.mode == PLOT_OFFSET) { /* plot traces by offset, cdp, or input order */
-			int32_t offset = ((Ctrl->A.active) ? (int32_t)GMT_swab4 (header->sourceToRecDist) : header->sourceToRecDist);
-			x0 = (double) offset;
+	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {
+		/* read traces one by one */
+		if (Ctrl->S.mode == PLOT_OFFSET) {
+			/* plot traces by offset, cdp, or input order */
+			int32_t tmp = header->sourceToRecDist;
+			if (Ctrl->A.active) {
+				uint32_t *p = (uint32_t *)&tmp;
+				*p = bswap32 (*p);
+			}
+			x0 = (double) tmp;
 		}
 		else if (Ctrl->S.mode == PLOT_CDP) {
-			int32_t cdpval = ((Ctrl->A.active) ? (int32_t) GMT_swab4 (header->cdpEns) : header->cdpEns);
-			x0 = (double) cdpval;
-		}
-		else if (Ctrl->S.value) { /* ugly code - want to get value starting at Ctrl->S.value of header into a double... */
-			int32_t tmp;
-			head = (char *)header;
-			memcpy(&head2, &head[Ctrl->S.value], 4); /* edited to fix bug where 8bytes were copied from head.
-												Caused by casting to a long directly from char array*/
-			tmp = (Ctrl->A.active) ? (int32_t) GMT_swab4 (head2) : head2;
+			int32_t tmp = header->cdpEns;
+			if (Ctrl->A.active) {
+				uint32_t *p = (uint32_t *)&tmp;
+				*p = bswap32 (*p);
+			}
 			x0 = (double) tmp;
+		}
+		else if (Ctrl->S.value) {
+			/* get value starting at Ctrl->S.value of header into a double */
+			uint32_t tmp;
+			memcpy (&tmp, &header[Ctrl->S.value], sizeof (uint32_t));
+			x0 = (Ctrl->A.active) ? (double) bswap32 (tmp) : (double) tmp;
 		}
 		else
 			x0 = (1.0 + (double) ix);
@@ -613,18 +621,20 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (Ctrl->A.active) {
 			/* need to permanently byte-swap some things in the trace header
-			   do this after getting the location of where traces are plotted in case the general Ctrl->S.value case
-			   overlaps a defined header in a strange way */
-			header->sourceToRecDist = GMT_swab4 (header->sourceToRecDist);
-			header->sampleLength = GMT_swab2 (header->sampleLength);
-			header->num_samps = GMT_swab4 (header->num_samps);
+				 do this after getting the location of where traces are plotted
+				 in case the general Ctrl->S.value case overlaps a defined header
+				 in a strange way */
+			uint32_t *p = (uint32_t *)&header->sourceToRecDist;
+			*p = bswap32 (*p);
+			header->sampleLength = bswap16 (header->sampleLength);
+			header->num_samps = bswap32 (header->num_samps);
 		}
 
 		/* now check that on list to plot if list exists */
 		if (n_tracelist) {
-			plot_it = FALSE;
+			plot_it = false;
 			for (i = 0; i< n_tracelist; i++) {
-				if (fabs (x0 - tracelist[i]) <= Ctrl->E.value) plot_it = TRUE;
+				if (fabs (x0 - tracelist[i]) <= Ctrl->E.value) plot_it = true;
 			}
 		}
 
@@ -633,18 +643,23 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "pssegy: time shifted by %f\n", toffset);
 		}
 
-		data = (float *)get_segy_data (fpi, header); /* read a trace */
+		data = get_segy_data (fpi, header); /* read a trace */
 		/* get number of samples in _this_ trace (e.g. OMEGA has strange ideas about SEGY standard)
 		or set to number in reel header */
 		if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
 
-		if (Ctrl->A.active) { /* need to swap the order of the bytes in the data even though assuming IEEE format */
-			int *intdata = (int *)data;
-			for (iy = 0; iy < n_samp; iy++)  intdata[iy] = GMT_swab4 (intdata[iy]);
+		if (Ctrl->A.active) {
+			/* need to swap the order of the bytes in the data even though assuming IEEE format */
+			uint32_t tmp;
+			for (iy = 0; iy < n_samp; ++iy) {
+				memcpy (&tmp, &data[iy], sizeof(uint32_t));
+				tmp = bswap32 (tmp);
+				memcpy (&data[iy], &tmp, sizeof(uint32_t));
+			}
 		}
 
 		if (Ctrl->N.active || Ctrl->Z.active) {
-			scale = (float) segy_rms (data, n_samp);
+			scale = segy_rms (data, n_samp);
 			GMT_report (GMT, GMT_MSG_NORMAL, "pssegy: \t\t rms value is %f\n",scale);
 		}
 		for (iy = 0; iy < n_samp; iy++) { /* scale bias and clip each sample in the trace */

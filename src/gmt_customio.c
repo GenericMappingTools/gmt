@@ -120,41 +120,40 @@ GMT_LONG GMT_read_rasheader (FILE *fp, struct rasterfile *h)
 	   PDP-11.
 	 */
 
-	unsigned char byte[4];
-	GMT_LONG i, j, value, in[4];
+	uint8_t byte[4];
+	int32_t i, value;
 
 	for (i = 0; i < 8; i++) {
 
-		if (GMT_fread (byte, sizeof (unsigned char), (size_t)4, fp) != 4) return (GMT_GRDIO_READ_FAILED);
+		if (GMT_fread (byte, sizeof (uint8_t), 4, fp) != 4)
+			return (GMT_GRDIO_READ_FAILED);
 
-		for (j = 0; j < 4; j++) in[j] = (GMT_LONG)byte[j];
-
-		value = (in[0] << 24) + (in[1] << 16) + (in[2] << 8) + in[3];
+		value = (byte[0] << 24) + (byte[1] << 16) + (byte[2] << 8) + byte[3];
 
 		switch (i) {
 			case 0:
-				h->magic = (int)value;
+				h->magic = value;
 				break;
 			case 1:
-				h->width = (int)value;
+				h->width = value;
 				break;
 			case 2:
-				h->height = (int)value;
+				h->height = value;
 				break;
 			case 3:
-				h->depth = (int)value;
+				h->depth = value;
 				break;
 			case 4:
-				h->length = (int)value;
+				h->length = value;
 				break;
 			case 5:
-				h->type = (int)value;
+				h->type = value;
 				break;
 			case 6:
-				h->maptype = (int)value;
+				h->maptype = value;
 				break;
 			case 7:
-				h->maplength = (int)value;
+				h->maplength = value;
 				break;
 		}
 	}
@@ -171,8 +170,9 @@ GMT_LONG GMT_write_rasheader (FILE *fp, struct rasterfile *h)
 	   PDP-11.
 	 */
 
-	unsigned char byte[4];
-	GMT_LONG i, value;
+	int i;
+	uint8_t byte[4];
+	int32_t value;
 
 	if (h->type == RT_OLD && h->length == 0) {
 		h->length = 2 * lrint (ceil (h->width * h->depth / 16.0)) * h->height;
@@ -207,12 +207,13 @@ GMT_LONG GMT_write_rasheader (FILE *fp, struct rasterfile *h)
 				value = h->maplength;
 				break;
 		}
-		byte[0] = (unsigned char)((value >> 24) & 0xFF);
-		byte[1] = (unsigned char)((value >> 16) & 0xFF);
-		byte[2] = (unsigned char)((value >> 8) & 0xFF);
-		byte[3] = (unsigned char)(value & 0xFF);
+		byte[0] = (uint8_t)((value >> 24) & 0xFF);
+		byte[1] = (uint8_t)((value >> 16) & 0xFF);
+		byte[2] = (uint8_t)((value >> 8) & 0xFF);
+		byte[3] = (uint8_t)(value & 0xFF);
 
-		if (GMT_fwrite (byte, sizeof (unsigned char), (size_t)4, fp) != 4) return (GMT_GRDIO_WRITE_FAILED);
+		if (GMT_fwrite (byte, sizeof (uint8_t), 4, fp) != 4)
+			return (GMT_GRDIO_WRITE_FAILED);
 	}
 
 	return (GMT_NOERROR);

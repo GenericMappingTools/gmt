@@ -629,30 +629,31 @@ int gmt_comp_char_asc (const void *p_1, const void *p_2)
 }
 
 void GMT_sort_array (struct GMT_CTRL *C, void *base, GMT_LONG n, GMT_LONG type)
-{	/* Front function to call qsort on all <type> array into ascending order */
+{ /* Front function to call qsort on all <type> array into ascending order */
 	size_t width[GMTAPI_N_TYPES] = {
-		sizeof(unsigned char),		/* GMTAPI_CHAR */
-		sizeof(char),			/* GMTAPI_USHORT */
-		sizeof(unsigned short int),	/* GMTAPI_SHORT */
-		sizeof(short int),		/* GMTAPI_UINT */
-		sizeof(unsigned int),		/* GMTAPI_INT */
-		sizeof(int),			/* GMTAPI_LONG */
-		sizeof(GMT_ULONG),		/* GMTAPI_ULONG */
-		sizeof(GMT_LONG),		/* GMTAPI_FLOAT */
-		sizeof(float),			/* GMTAPI_DOUBLE */
-		sizeof(double)};		/* GMTAPI_TEXT */
-	PFI compare[GMTAPI_N_TYPES] = {
-		gmt_comp_uchar_asc,		/* GMTAPI_CHAR */
-		gmt_comp_char_asc,		/* GMTAPI_USHORT */
-		gmt_comp_ushort_asc,		/* GMTAPI_SHORT */
-		gmt_comp_short_asc,		/* GMTAPI_UINT */
-		gmt_comp_uint_asc,		/* GMTAPI_INT */
-		gmt_comp_int_asc,		/* GMTAPI_LONG */
-		gmt_comp_ulong_asc,		/* GMTAPI_ULONG */
-		gmt_comp_long_asc,		/* GMTAPI_FLOAT */
-		gmt_comp_float_asc,		/* GMTAPI_DOUBLE */
-		gmt_comp_double_asc};		/* GMTAPI_TEXT */
-		
+		sizeof(uint8_t),      /* GMTAPI_UCHAR */
+		sizeof(int8_t),       /* GMTAPI_CHAR */
+		sizeof(uint16_t),     /* GMTAPI_USHORT */
+		sizeof(int16_t),      /* GMTAPI_SHORT */
+		sizeof(uint32_t),     /* GMTAPI_UINT */
+		sizeof(int32_t),      /* GMTAPI_INT */
+		sizeof(uint64_t),     /* GMTAPI_ULONG */
+		sizeof(int64_t),      /* GMTAPI_LONG */
+		sizeof(float),        /* GMTAPI_FLOAT */
+		sizeof(double)};      /* GMTAPI_DOUBLE */
+	int (*compare[GMTAPI_N_TYPES]) (const void *, const void *) = {
+		/* Array of function pointers */
+		gmt_comp_uchar_asc,   /* GMTAPI_CHAR */
+		gmt_comp_char_asc,    /* GMTAPI_UCHAR */
+		gmt_comp_ushort_asc,  /* GMTAPI_USHORT */
+		gmt_comp_short_asc,   /* GMTAPI_SHORT */
+		gmt_comp_uint_asc,    /* GMTAPI_UINT */
+		gmt_comp_int_asc,     /* GMTAPI_INT */
+		gmt_comp_ulong_asc,   /* GMTAPI_ULONG */
+		gmt_comp_long_asc,    /* GMTAPI_LONG */
+		gmt_comp_float_asc,   /* GMTAPI_FLOAT */
+		gmt_comp_double_asc}; /* GMTAPI_DOUBLE */
+
 	qsort (base, (size_t)n, width[type], compare[type]);
 }
 

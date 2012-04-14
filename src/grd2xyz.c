@@ -90,17 +90,14 @@ GMT_LONG GMT_grd2xyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   Append y if gridline-registered, periodic data in y without repeating row at ymax.\n");
 	GMT_message (GMT, "\t   Specify one of the following data types (all binary except a):\n");
 	GMT_message (GMT, "\t     a  Ascii.\n");
-	GMT_message (GMT, "\t     c  signed 1-byte character.\n");
-	GMT_message (GMT, "\t     u  unsigned 1-byte character.\n");
-	GMT_message (GMT, "\t     h  signed short 2-byte integer.\n");
-	GMT_message (GMT, "\t     H  unsigned short 2-byte integer.\n");
-	GMT_message (GMT, "\t     i  signed 4-byte integer.\n");
-	GMT_message (GMT, "\t     I  unsigned 4-byte integer.\n");
-	GMT_message (GMT, "\t     l  long (4- or 8-byte) integer.\n");
-	if (sizeof (GMT_LONG) == 8) {
-		GMT_message (GMT, "\t     l  signed long (8-byte) integer.\n");
-		GMT_message (GMT, "\t     L  unsigned long (8-byte) integer.\n");
-	}
+	GMT_message (GMT, "\t     c  int8_t, signed 1-byte character.\n");
+	GMT_message (GMT, "\t     u  uint8_t, unsigned 1-byte character.\n");
+	GMT_message (GMT, "\t     h  int16_t, signed short 2-byte integer.\n");
+	GMT_message (GMT, "\t     H  uint16_t, unsigned short 2-byte integer.\n");
+	GMT_message (GMT, "\t     i  int32_t, signed 4-byte integer.\n");
+	GMT_message (GMT, "\t     I  uint32_t, unsigned 4-byte integer.\n");
+	GMT_message (GMT, "\t     l  int64_t, signed long (8-byte) integer.\n");
+	GMT_message (GMT, "\t     L  uint64_t, unsigned long (8-byte) integer.\n");
 	GMT_message (GMT, "\t     f  4-byte floating point single precision.\n");
 	GMT_message (GMT, "\t     d  8-byte floating point double precision.\n");
 	GMT_message (GMT, "\t   [Default format is scanline orientation in ascii representation: -ZTLa].\n");
@@ -172,7 +169,7 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 				break;
 		}
 	}
-	
+
 	GMT_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 
 	n_errors += GMT_check_condition (GMT, n_files == 0, "Syntax error: Must specify at least one input file\n");

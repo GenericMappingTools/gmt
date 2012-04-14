@@ -63,6 +63,7 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 #include "gmt_internals.h"
+#include "common_byteswap.h"
 
 struct GRD_PAD {
 	double wesn[4];
@@ -125,7 +126,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 	 * 4. If a file is open for reading, we set header->name to the full path of the file
 	 *    by seaching in current dir and the various GMT_*DIR paths.
 	 */
-	
+
 	GMT_LONG i = 0, val, j;
 	char code[GMT_TEXT_LEN64], tmp[GMT_BUFSIZ];
 
@@ -546,12 +547,12 @@ GMT_LONG GMT_grd_data_size (struct GMT_CTRL *C, GMT_LONG format, double *nan_val
 			break;
 		case 's':
 			if (GMT_is_dnan (*nan_value)) *nan_value = SHRT_MIN;
-			return (sizeof (short int));
+			return (sizeof (int16_t));
 			break;
 		case 'i':
 			if (GMT_is_dnan (*nan_value)) *nan_value = INT_MIN;
 		case 'm':
-			return (sizeof (int));
+			return (sizeof (int32_t));
 			break;
 		case 'f':
 			return (sizeof (float));
@@ -1330,7 +1331,8 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	 */
 
 	GMT_LONG min, i, j, k, ij, first_i, n_skip, n_cols, status;
-	short int *i2 = NULL;
+	int16_t *i2 = NULL;
+	uint16_t *u2;
 	char file[GMT_BUFSIZ];
 	struct GMT_STAT buf;
 	FILE *fp = NULL;
@@ -1369,11 +1371,11 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 
 
 	if ((fp = GMT_fopen (C, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
-	
+
 	GMT_report (C, GMT_MSG_NORMAL, "Reading img grid from file %s (scale = %g mode = %ld lat = %g)\n", imgfile, scale, mode, lat);
 	GMT_grd_init (C, Grid->header, NULL, FALSE);
 	Grid->header->inc[GMT_X] = Grid->header->inc[GMT_Y] = min / 60.0;
-	
+
 	if (init) {
 		/* Select plain Mercator on a sphere with -Jm1 -R0/360/-lat/+lat */
 		C->current.setting.proj_ellipsoid = GMT_get_ellipsoid (C, "Sphere");
@@ -1415,11 +1417,14 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	n_skip = (GMT_LONG)floor ((C->current.proj.rect[YHI] - Grid->header->wesn[YHI]) * Grid->header->r_inc[GMT_Y]);	/* Number of rows clearly above y_max */
 	if (GMT_fseek (fp, (long)(n_skip * n_cols * GMT_IMG_ITEMSIZE), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 
-	i2 = GMT_memory (C, NULL, n_cols, short int);
+	i2 = GMT_memory (C, NULL, n_cols, int16_t);
 	for (j = 0; j < Grid->header->ny; j++) {	/* Read all the rows, offset by 2 boundary rows and cols */
-		if (GMT_fread (i2, sizeof (short int), (size_t)n_cols, fp) != (size_t)n_cols)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
-#if !defined(WORDS_BIGENDIAN)
-		for (i = 0; i < n_cols; i++) i2[i] = GMT_swab2 (i2[i]);
+		if (GMT_fread (i2, sizeof (int16_t), (size_t)n_cols, fp) != (size_t)n_cols)
+			return (GMT_GRDIO_READ_FAILED);	/* Get one row */
+#ifndef WORDS_BIGENDIAN
+		u2 = (uint16_t *)i2;
+		for (i = 0; i < n_cols; i++)
+			u2[i] = bswap16 (u2[i]);
 #endif
 		ij = GMT_IJP (Grid->header, j, 0);
 		for (i = 0, k = first_i; i < Grid->header->nx; i++) {	/* Process this row's values */
@@ -1452,12 +1457,12 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 }
 
 void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G)
-{	/* Shifts the grid contents so there is no pad.  The remainder of
- 	 * the array is not reset and should not be addressed.
+{ /* Shifts the grid contents so there is no pad.  The remainder of
+	 * the array is not reset and should not be addressed.
 	 * If pad is zero then we do nothing.
 	 */
 	GMT_LONG row, ijp, ij0;
-	
+
 	if (!GMT_grd_pad_status (C, G->header, NULL)) return;	/* No pad so nothing to do */
 	/* Here, G has a pad which we need to eliminate */
 	for (row = 0; row < G->header->ny; row++) {
@@ -1469,13 +1474,13 @@ void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G)
 }
 
 void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG *pad)
-{	/* Shift grid content from a non-padded (or differently padded) to a padded organization.
- 	 * We check that the grid size can handle this and allocate more space if needed.
+{ /* Shift grid content from a non-padded (or differently padded) to a padded organization.
+	 * We check that the grid size can handle this and allocate more space if needed.
 	 * If pad matches the grid's pad then we do nothing.
 	 */
 	GMT_LONG row, ijp, ij0, size;
 	struct GRD_HEADER *h = NULL;
-	
+
 	if (GMT_grd_pad_status (C, G->header, pad)) return;	/* Already padded as requested so nothing to do */
 	/* Here the pads differ (or G has no pad at all) */
 	size = gmt_grd_get_nxpad (G->header, pad) * gmt_grd_get_nypad (G->header, pad);
@@ -1485,7 +1490,7 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG *pad)
 	}
 	/* Because G may have a pad that is nonzero (but different from pad) we need a different header structure in the macros below */
 	h = GMT_duplicate_gridheader (C, G->header);
-	
+
 	GMT_grd_setpad (C, G->header, pad);		/* Pad is now active and set to specified dimensions */
 	GMT_set_grddim (C, G->header);			/* Update all dimensions to reflect the padding */
 	for (row = G->header->ny-1; row >= 0; row--) {

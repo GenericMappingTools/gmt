@@ -137,16 +137,14 @@ GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Specify one of the following data types (all binary except a):\n");
 	GMT_message (GMT, "\t     A  Ascii (multiple floating point values per record).\n");
 	GMT_message (GMT, "\t     a  Ascii (one value per record).\n");
-	GMT_message (GMT, "\t     c  signed 1-byte character.\n");
-	GMT_message (GMT, "\t     u  unsigned 1-byte character.\n");
-	GMT_message (GMT, "\t     h  signed 2-byte integer.\n");
-	GMT_message (GMT, "\t     H  unsigned 2-byte integer.\n");
-	GMT_message (GMT, "\t     i  signed 4-byte integer.\n");
-	GMT_message (GMT, "\t     I  unsigned 4-byte integer.\n");
-	if (sizeof (GMT_LONG) == 8) {
-		GMT_message (GMT, "\t     l  signed long (8-byte) integer.\n");
-		GMT_message (GMT, "\t     L  unsigned long (8-byte) integer.\n");
-	}
+	GMT_message (GMT, "\t     c  int8_t, signed 1-byte character.\n");
+	GMT_message (GMT, "\t     u  uint8_t, unsigned 1-byte character.\n");
+	GMT_message (GMT, "\t     h  int16_t, signed 2-byte integer.\n");
+	GMT_message (GMT, "\t     H  uint16_t, unsigned 2-byte integer.\n");
+	GMT_message (GMT, "\t     i  int32_t, signed 4-byte integer.\n");
+	GMT_message (GMT, "\t     I  uint32_t, unsigned 4-byte integer.\n");
+	GMT_message (GMT, "\t     l  int64_t, signed long (8-byte) integer.\n");
+	GMT_message (GMT, "\t     L  uint64_t, unsigned long (8-byte) integer.\n");
 	GMT_message (GMT, "\t     f  4-byte floating point single precision.\n");
 	GMT_message (GMT, "\t     d  8-byte floating point double precision.\n");
 	GMT_message (GMT, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");

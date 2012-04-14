@@ -30,17 +30,17 @@
 
 #define GRD_HEADER_SIZE	892
 
-/* Definition for Sun rasterfiles [THESE MUST REMAIN int]  */
+/* Definition for Sun rasterfiles [THESE MUST REMAIN int32_t]  */
 struct rasterfile {
-        int magic;		/* magic number */
-        int width;		/* width (pixels) of image */
-        int height;		/* height (pixels) of image */
-        int depth;		/* depth (1, 8, or 24 bits) of pixel */
-        int length;		/* length (bytes) of image */
-        int type;		/* type of file; see RT_* below */
-        int maptype;		/* type of colormap; see RMT_* below */
-        int maplength;		/* length (bytes) of following map */
-        /* color map follows for maplength bytes, followed by image */
+	int32_t magic;     /* magic number */
+	int32_t width;     /* width (pixels) of image */
+	int32_t height;    /* height (pixels) of image */
+	int32_t depth;     /* depth (1, 8, or 24 bits) of pixel */
+	int32_t length;    /* length (bytes) of image */
+	int32_t type;      /* type of file; see RT_* below */
+	int32_t maptype;   /* type of colormap; see RMT_* below */
+	int32_t maplength; /* length (bytes) of following map */
+	/* color map follows for maplength bytes, followed by image */
 };
 
 #define	RAS_MAGIC	0x59a66a95	/* Magic number for Sun rasterfile */

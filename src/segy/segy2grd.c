@@ -39,23 +39,23 @@
 
 struct SEGY2GRD_CTRL {
 	struct In {	/* -In */
-		GMT_LONG active;
+		bool active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		GMT_LONG active;
-		GMT_LONG mode;
+		bool active;
+		int mode;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		bool active;
 		double value;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		bool active;
 		char *text;
 	} D;
 	struct G {	/* -G */
-		GMT_LONG active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
@@ -63,26 +63,26 @@ struct SEGY2GRD_CTRL {
 		double inc[2];
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
-		GMT_LONG value;
+		bool active;
+		int value;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
-		GMT_LONG value;
+		bool active;
+		int value;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		bool active;
 		double d_value;
 		float f_value;
 	} N;
 	struct Q {	/* -Qx|y */
-		GMT_LONG active[2];
+		bool active[2];
 		double value[2];
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
-		GMT_LONG mode;
-		GMT_LONG value;
+		bool active;
+		int mode;
+		int value;
 	} S;
 };
 
@@ -91,7 +91,7 @@ void *New_segy2grd_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 	C = GMT_memory (GMT, NULL, 1, struct SEGY2GRD_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->A.mode = AVERAGE;
 	C->M.value = 10000;
@@ -168,7 +168,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 			/* Processes program-specific parameters */
 
 			case 'A':
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				if (opt->arg[0] == 'n')
 					Ctrl->A.mode = COUNT;
 				else if (opt->arg[0] == '\0' || opt->arg[0] == 'z')
@@ -179,15 +179,15 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 				}
 				break;
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.text = strdup (opt->arg);
 				break;
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
@@ -201,27 +201,27 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 				else {
 					Ctrl->N.d_value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 					Ctrl->N.f_value = (float)Ctrl->N.d_value;
-					Ctrl->N.active = TRUE;
+					Ctrl->N.active = true;
 				}
 				break;
 			case 'Q':
 				switch (opt->arg[0]) {
 					case 'x': /* over-rides of header info */
-						Ctrl->Q.active[X_ID] = TRUE;
+						Ctrl->Q.active[X_ID] = true;
 						Ctrl->Q.value[X_ID] = atof (opt->arg);
 						break;
 					case 'y': /* over-rides of header info */
-						Ctrl->Q.active[Y_ID] = TRUE;
+						Ctrl->Q.active[Y_ID] = true;
 						Ctrl->Q.value[Y_ID] = atof (opt->arg);
 						break;
 				}
 				break;
 			case 'L':
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				Ctrl->L.value = atoi (opt->arg);
 				break;
 			case 'M':
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				Ctrl->M.value = atoi (opt->arg);
 				break;
 			/* variable spacing */
@@ -230,7 +230,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Can only be set once\n");
 					n_errors++;
 				}
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'o':
 						Ctrl->S.mode = PLOT_OFFSET;
@@ -248,7 +248,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 				break;
 		}
 	}
-	
+
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
@@ -264,7 +264,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 
 GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, read_cont = FALSE;
+	GMT_LONG error = false, read_cont = false;
 	GMT_LONG swap_bytes = !GMT_BIGENDIAN;
 
 	GMT_LONG ij, ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
@@ -272,7 +272,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	double idy, x0, yval;
 
-	char line[GMT_BUFSIZ], *head = NULL;
+	char line[GMT_BUFSIZ];
 
 	FILE *fpi = NULL;
 
@@ -282,7 +282,6 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char reelhead[3200];
 	float *data = NULL;
 	SEGYHEAD *header = NULL;
-	int head2;
 	SEGYREEL binhead;
 
 	struct SEGY2GRD_CTRL *Ctrl = NULL;
@@ -309,7 +308,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	read_cont = (Ctrl->S.mode != PLOT_CDP && Ctrl->S.mode != PLOT_OFFSET && !Ctrl->S.value);
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, FALSE);
+	GMT_grd_init (GMT, Grid->header, options, false);
 
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
 
@@ -339,17 +338,17 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Will read segy file from standard input\n");
 		if (fpi == NULL) fpi = stdin;
 	}
-	if ((check = get_segy_reelhd (fpi, reelhead)) != TRUE) exit (1);
-	if ((check = get_segy_binhd (fpi, &binhead)) != TRUE) exit (1);
+	if ((check = get_segy_reelhd (fpi, reelhead)) != true) exit (1);
+	if ((check = get_segy_binhd (fpi, &binhead)) != true) exit (1);
 
 	if (swap_bytes) {
 		/* this is a little-endian system, and we need to byte-swap ints in the reel header - we only
 		   use a few of these*/
-		GMT_report (GMT, GMT_MSG_NORMAL, "swapping bytes for ints in the headers\n");
-		binhead.num_traces = GMT_swab2 (binhead.num_traces);
-		binhead.nsamp = GMT_swab2 (binhead.nsamp);
-		binhead.dsfc = GMT_swab2 (binhead.dsfc);
-		binhead.sr = GMT_swab2 (binhead.sr);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Swapping bytes for ints in the headers\n");
+		binhead.num_traces = bswap16 (binhead.num_traces);
+		binhead.nsamp = bswap16 (binhead.nsamp);
+		binhead.dsfc = bswap16 (binhead.dsfc);
+		binhead.sr = bswap16 (binhead.sr);
 	}
 
 
@@ -405,20 +404,25 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {
 			if (swap_bytes) {
 /* need to permanently byte-swap number of samples in the trace header */
-				header->num_samps = GMT_swab4 (header->num_samps);
-			 	header->sampleLength = GMT_swab2 (header->sampleLength);
+				header->num_samps = bswap32 (header->num_samps);
+				header->sampleLength = bswap16 (header->sampleLength);
 			}
 
-			data = (float *)get_segy_data (fpi, header); /* read a trace */
+			data = get_segy_data (fpi, header); /* read a trace */
 			/* get number of samples in _this_ trace or set to number in reel header */
 			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
 
 			ij0 = (GMT_LONG)(GMT->common.R.wesn[YLO] * idy);
 			if (n_samp - ij0 > Grid->header->ny) n_samp = Grid->header->ny + ij0;
 
-			if (swap_bytes) { /* need to swap the order of the bytes in the data even though assuming IEEE format */
-				int *intdata = (int *)data;
-				for (isamp = 0; isamp < n_samp; isamp++) intdata[isamp] = GMT_swab4 (intdata[isamp]);
+			if (swap_bytes) {
+				/* need to swap the order of the bytes in the data even though assuming IEEE format */
+				uint32_t tmp;
+				for (isamp = 0; isamp < n_samp; ++isamp) {
+					memcpy (&tmp, &data[isamp], sizeof(uint32_t));
+					tmp = bswap32 (tmp);
+					memcpy (&data[isamp], &tmp, sizeof(uint32_t));
+				}
 			}
 
 			for (ij = ij0; ij < n_samp ; ij++) {  /* n*idy is index of first sample to be included in the grid */
@@ -430,24 +434,33 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			ix++;
 		}
 	}
-	else {	/* Get trace data and position by headers */
+	else {
+		/* Get trace data and position by headers */
 		ix = 0;
-		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {   /* read traces one by one */
-			if (Ctrl->S.mode == PLOT_OFFSET) { /* plot traces by offset, cdp, or input order */
-				int32_t offset = ((swap_bytes) ? (int32_t)GMT_swab4 (header->sourceToRecDist) : header->sourceToRecDist);
-				x0 = (double) offset;
+		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {
+			/* read traces one by one */
+			if (Ctrl->S.mode == PLOT_OFFSET) {
+				/* plot traces by offset, cdp, or input order */
+				int32_t tmp = header->sourceToRecDist;
+				if (swap_bytes) {
+					uint32_t *p = (uint32_t *)&tmp;
+					*p = bswap32 (*p);
+				}
+				x0 = (double) tmp;
 			}
 			else if (Ctrl->S.mode == PLOT_CDP) {
-				int32_t cdpval = ((swap_bytes) ? (int32_t)GMT_swab4 (header->cdpEns) : header->cdpEns);
-				x0 = (double) cdpval;
-			}
-			else if (Ctrl->S.value) { /* ugly code - want to get value starting at Ctrl->S.value of header into a double... */
-				int32_t tmp;
-				head = (char *)header;
-				memcpy(&head2, &head[Ctrl->S.value], 4); /* edited to fix bug where 8bytes were copied from head.
-                                                Caused by casting to a long directly from char array*/ 
-				tmp = (swap_bytes) ? (int32_t)GMT_swab4 (head2) : head2;
+				int32_t tmp = header->cdpEns;
+				if (swap_bytes) {
+					uint32_t *p = (uint32_t *)&tmp;
+					*p = bswap32 (*p);
+				}
 				x0 = (double) tmp;
+			}
+			else if (Ctrl->S.value) {
+				/* get value starting at Ctrl->S.value of header into a double */
+				uint32_t tmp;
+				memcpy (&tmp, &header[Ctrl->S.value], sizeof (uint32_t));
+				x0 = (swap_bytes) ? (double) bswap32 (tmp) : (double) tmp;
 			}
 			else
 				x0 = (1.0 + (double) ix);
@@ -455,29 +468,36 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			x0 *= Ctrl->Q.value[X_ID];
 
 			if (swap_bytes) {
-				/* need to permanently byte-swap some things in the trace header 
-				   do this after getting the location of where traces are plotted in case the general Ctrl->S.value case
-				   overlaps a defined header in a strange way */
-				header->sourceToRecDist = GMT_swab4 (header->sourceToRecDist);
-				header->sampleLength = GMT_swab2 (header->sampleLength);
-				header->num_samps = GMT_swab4 (header->num_samps);
+				/* need to permanently byte-swap some things in the trace header
+					 do this after getting the location of where traces are plotted
+					 in case the general Ctrl->S.value case overlaps a defined header
+					 in a strange way */
+				uint32_t *p = (uint32_t *)&header->sourceToRecDist;
+				*p = bswap32 (*p);
+				header->sampleLength = bswap16 (header->sampleLength);
+				header->num_samps = bswap32 (header->num_samps);
 			}
 
-			data = (float *)get_segy_data (fpi, header); /* read a trace */
+			data = get_segy_data (fpi, header); /* read a trace */
 			/* get number of samples in _this_ trace (e.g. OMEGA has strange ideas about SEGY standard)
 			   or set to number in reel header */
 			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
 
-			if (swap_bytes) { /* need to swap the order of the bytes in the data even though assuming IEEE format */
-				int *intdata = (int *)data;
-				for (isamp = 0; isamp < n_samp; isamp++) intdata[isamp] = GMT_swab4 (intdata[isamp]);
+			if (swap_bytes) {
+				/* need to swap the order of the bytes in the data even though assuming IEEE format */
+				uint32_t tmp;
+				for (isamp = 0; isamp < n_samp; ++isamp) {
+					memcpy (&tmp, &data[isamp], sizeof(uint32_t));
+					tmp = bswap32 (tmp);
+					memcpy (&data[isamp], &tmp, sizeof(uint32_t));
+				}
 			}
 
 			if (!(x0 < GMT->common.R.wesn[XLO] || x0 > GMT->common.R.wesn[XHI])) {	/* inside x-range */
 				/* find horizontal grid pos of this trace */
 				ii = GMT_grd_x_to_col (GMT, x0, Grid->header);
 				if (ii == Grid->header->nx) ii--, n_confused++;
-				for (isamp = 0; isamp< n_samp; isamp++) {
+				for (isamp = 0; isamp< n_samp; ++isamp) {
 					yval = isamp*Ctrl->Q.value[Y_ID];
 					if (!(yval < GMT->common.R.wesn[YLO] || yval > GMT->common.R.wesn[YHI])) {	/* inside y-range */
 						jj = GMT_grd_y_to_row (GMT, yval, Grid->header);
