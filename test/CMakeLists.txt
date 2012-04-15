@@ -19,9 +19,9 @@
 # run tests
 if (DO_TESTS)
 	# list of test dirs
-	set (GMT_TEST_DIRS api blockmean filter1d fitcircle genper gmtconvert gmtdp
-		gmtmath gmtselect gmtspatial gmtstitch gmtvector grd2rgb grd2xyz grdblend
-		grdclip grdcontour grdcut grdedit grdfft grdfilter grdhisteq grdimage
+	set (GMT_TEST_DIRS api byteswap blockmean filter1d fitcircle genper gmtconvert
+		gmtdp gmtmath gmtselect gmtspatial gmtstitch gmtvector grd2rgb grd2xyz
+		grdblend grdclip grdcontour grdcut grdedit grdfft grdfilter grdhisteq grdimage
 		grdlandmask grdmask grdpaste grdproject grdreformat grdsample grdtrend
 		grdview grdvolume greenspline kml mapproject meca mgd77 ogr potential
 		project psbasemap pscoast pscontour psimage pslegend pslib psrose psscale
