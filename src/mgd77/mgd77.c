@@ -655,7 +655,7 @@ int MGD77_Decode_Header_m77t (struct GMT_CTRL *C, struct MGD77_HEADER_PARAMS *P,
 			case  3:	strcpy (P->Parameters_Surveyed_Code, word);			break;
 			case  4:	strncpy (P->File_Creation_Year, word, 4);
 					strncpy (P->File_Creation_Month, &word[4], 2);
-					strncpy (P->File_Creation_Day, &word[6], 4);			break;
+					strncpy (P->File_Creation_Day, &word[6], 2);			break;
 			case  5:	strcpy (P->Source_Institution, word);				break;
 			case  6:	strcpy (P->Country, word);					break;
 			case  7:	strcpy (P->Platform_Name, word);				break;
@@ -666,11 +666,11 @@ int MGD77_Decode_Header_m77t (struct GMT_CTRL *C, struct MGD77_HEADER_PARAMS *P,
 			case 12:	strcpy (P->Funding, word);					break;
 			case 13:	strncpy (P->Survey_Departure_Year, word, 4);
 					strncpy (P->Survey_Departure_Month, &word[4], 2);
-					strncpy (P->Survey_Departure_Day, &word[6], 4);			break;
+					strncpy (P->Survey_Departure_Day, &word[6], 2);			break;
 			case 14:	strcpy (P->Port_of_Departure, word);				break;
 			case 15:	strncpy (P->Survey_Arrival_Year, word, 4);
 					strncpy (P->Survey_Arrival_Month, &word[4], 2);
-					strncpy (P->Survey_Arrival_Day, &word[6], 4);			break;
+					strncpy (P->Survey_Arrival_Day, &word[6], 2);			break;
 			case 16:	strcpy (P->Port_of_Arrival, word);				break;
 			case 17:	strcpy (P->Navigation_Instrumentation, word);			break;
 			case 18:	strcpy (P->Geodetic_Datum_Position_Determination_Method, word);	break;
