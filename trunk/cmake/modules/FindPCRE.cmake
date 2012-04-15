@@ -28,6 +28,12 @@
 #
 #include "pcre.h"
 
+if (DEFINED PCRE_ROOT AND NOT PCRE_ROOT)
+  set (PCRE_LIBRARY "" CACHE INTERNAL "")
+  set (PCRE_INCLUDE_DIR "" CACHE INTERNAL "")
+  return()
+endif()
+
 if (UNIX AND NOT PCRE_FOUND)
   # Use pcre-config to obtain the library version (this should hopefully
   # allow us to -lpcre1.x.y where x.y are correct version)
