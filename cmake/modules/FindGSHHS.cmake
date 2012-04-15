@@ -17,15 +17,22 @@
 
 # get GSHHS path
 find_path (GSHHS_PATH
-	NAMES binned_GSHHS_c.cdf binned_GSHHS_c.nc
+	NAMES binned_GSHHS_c.nc binned_GSHHS_c.cdf
 	HINTS ${GSHHS_ROOT}
-	PATH_SUFFIXES coast share/coast share/gmt/coast share/gshhs
-	PATHS ${CMAKE_SOURCE_DIR}
+	PATH_SUFFIXES
+	gshhs+wdbii-gmt
+	gshhs+wdbii
+	coast
+	share/gshhs+wdbii-gmt
+	share/gshhs+wdbii
+	share/coast
+	share/gmt/coast
+	PATHS
+	${CMAKE_SOURCE_DIR}
 	/sw # Fink
 	/opt/local # DarwinPorts
 	/opt/csw # Blastwave
-	/opt
-	)
+	/opt)
 
 # get GSHHS file
 if (GSHHS_PATH)

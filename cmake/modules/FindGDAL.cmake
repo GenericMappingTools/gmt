@@ -43,6 +43,12 @@
 #
 #include "gdal.h"
 
+if (DEFINED GDAL_ROOT AND NOT GDAL_ROOT)
+  set (GDAL_LIBRARY "" CACHE INTERNAL "")
+  set (GDAL_INCLUDE_DIR "" CACHE INTERNAL "")
+  return()
+endif()
+
 if (UNIX AND NOT GDAL_FOUND)
   # Use gdal-config to obtain the library version (this should hopefully
   # allow us to -lgdal1.x.y where x.y are correct version)
