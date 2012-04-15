@@ -13,16 +13,16 @@ head -c $BYTES /dev/urandom > data.b
 #gmtconvert -bi1l -bo1lw data.b | gmtconvert -bi1lw -bo1l > out.d
 
 # swap using xyz2grd
-xyz2grd -Sl -Gswapped_tmp.b data.b
-xyz2grd -Sl -Gswapped.b swapped_tmp.b
+xyz2grd -S8 -Gswapped_tmp.b data.b
+xyz2grd -S8 -Gswapped.b swapped_tmp.b
 
 # swap skipping 16384 bytes
-xyz2grd -Sl16384 -Gswapped_tmp.b data.b
-xyz2grd -Sl16384 -Gswapped_skip.b swapped_tmp.b
+xyz2grd -S8/16384 -Gswapped_tmp.b data.b
+xyz2grd -S8/16384 -Gswapped_skip.b swapped_tmp.b
 
 # swap region of 524288 bytes
-xyz2grd -Sl16384/524288 -Gswapped_tmp.b data.b
-xyz2grd -Sl16384/524288 -Gswapped_region.b swapped_tmp.b
+xyz2grd -S8/16384/524288 -Gswapped_tmp.b data.b
+xyz2grd -S8/16384/524288 -Gswapped_region.b swapped_tmp.b
 
 # compare result
 diff -q data.b swapped_again.b
