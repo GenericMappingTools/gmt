@@ -99,11 +99,14 @@ Widget createTextView (String	name,
   /* We are fussy about our parent: should be a panner */
   if (! XtIsSubclass(parent, pannerWidgetClass))
     XtError("Parent of text view widget must be a panner");
-    
-  result = XtCreateManagedWidget(name, canvasWidgetClass, parent, args, nargs);
-  
-  /* Allocate data block for widget and cross-ref data and canvas */
-  data = (TextViewData *)XtMalloc(sizeof(TextViewData));
+
+	result = XtCreateManagedWidget(name, canvasWidgetClass, parent, args, nargs);
+
+	/* Allocate data block for widget and cross-ref data and canvas
+		 avoid cast from 'char *' to 'GMTGrid *'
+		 -data = (TextViewData *)XtMalloc(sizeof(TextViewData));
+		 */
+	data = malloc(sizeof(TextViewData));
   XtVaSetValues(result, XtNcanvasData, data, NULL);
   data->canvas = result;
   

@@ -152,8 +152,10 @@ static GridValue get (Grid *_grid, int xIndex, int yIndex)
 GMTGrid * CreateGMTGrid (struct GMT_CTRL *GMT)
 {
   GMTGrid * result;
-  
-  result = (GMTGrid *)XtMalloc(sizeof(GMTGrid));
+	/* avoid cast from 'char *' to 'GMTGrid *'
+		 -result = (GMTGrid *)XtMalloc(sizeof(GMTGrid));
+		 */
+	result = malloc(sizeof(GMTGrid));
   clear(result);
   /* Assign methods */
   result->methods.dispose	= dispose;
