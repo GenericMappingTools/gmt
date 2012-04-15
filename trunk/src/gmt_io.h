@@ -244,22 +244,29 @@ enum GMT_lon_enum {
 	GMT_IS_M180_TO_P180			= 6,	/* Report -180 <= lon < +180 */
 	GMT_IS_M180_TO_P270_RANGE		= 7};	/* Report -180 <= lon < +270 [GSHHS only] */
 
-#ifdef WIN32
-/* Functions we have written to handle DLL troubles */
-EXTERN_MSC FILE *GMT_fdopen (int handle, const char *mode);
-EXTERN_MSC int GMT_fgetc (FILE *stream);
-EXTERN_MSC int GMT_ungetc (int c, FILE *stream);
-EXTERN_MSC int GMT_fputs (const char *line, FILE *fp);
-EXTERN_MSC int GMT_fseek (FILE *stream, long offset, int whence);
-EXTERN_MSC long GMT_ftell (FILE *stream);
-EXTERN_MSC size_t GMT_fread (void * ptr, size_t size, size_t nmemb, FILE *stream);
-EXTERN_MSC size_t GMT_fwrite (const void * ptr, size_t size, size_t nmemb, FILE *stream);
-EXTERN_MSC void GMT_rewind (FILE *stream);
-#if 0
-EXTERN_MSC int GMT_fscanf (FILE *fp, char *format, ...);
+/* Use POSIX functions ftello() and fseeko(), which represent the
+ * position using the off_t type: */
+#ifdef HAVE_FSEEKO
+#	define fseek fseeko
 #endif
-#else
-/* No need for functions; just use text macros */
+
+#ifdef HAVE_FTELLO
+#	define ftell ftello
+#endif
+
+/* Windows 64-bit file access */
+#if defined HAVE__FSEEKI64 && defined HAVE__FTELLI64
+#	define fseek _fseeki64
+#	define ftell _ftelli64
+#	ifndef SIZEOF_OFF_T
+		typedef __int64 off_t;
+#	else
+#		define off_t __int64
+#	endif /* SIZEOF_OFF_T */
+#elif !defined SIZEOF_OFF_T /* HAVE__FSEEKI64 && HAVE__FTELLI64 */
+	typedef long off_t;
+#endif /* HAVE__FSEEKI64 && HAVE__FTELLI64 */
+
 #define GMT_fdopen(handle, mode) fdopen(handle, mode)
 #define GMT_fgetc(stream) fgetc(stream)
 #define GMT_ungetc(c, stream) ungetc(c, stream)
@@ -269,10 +276,6 @@ EXTERN_MSC int GMT_fscanf (FILE *fp, char *format, ...);
 #define GMT_fread(ptr,size,nmemb,stream) fread(ptr,size,nmemb,stream)
 #define GMT_fwrite(ptr,size,nmemb,stream) fwrite(ptr,size,nmemb,stream)
 #define GMT_rewind(stream) rewind(stream)
-#if 0
-#define GMT_fscanf(stream,...) fscanf(stream,__VA_ARGS__)
-#endif
-#endif
 
 /* Matlab */
 #ifdef GMT_MATLAB
@@ -385,11 +388,11 @@ struct GMT_IO {				/* Used to process input data records */
 	GMT_LONG file_no;		/* Number of current file */
 	GMT_LONG io_n_header_items;	/* number of header records (ascii) or bytes (binary) [0] */
 	GMT_LONG seg_no;		/* Number of current multi-segment in entire data set */
-	GMT_LONG rec_no;		/* Number of current records (counts headers etc) in entire data set */
+	uint64_t rec_no;		/* Number of current records (counts headers etc) in entire data set */
 	GMT_LONG tbl_no;		/* Number of current table in entire data set */
 	GMT_LONG seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	GMT_LONG rec_in_tbl_no;		/* Number of current record (counts headers etc) in current table */
-	GMT_LONG pt_no;			/* Number of current valid points in a row  */
+	uint64_t pt_no;			/* Number of current valid points in a row  */
 	GMT_LONG curr_pos[2][3];	/* Keep track of current input/output table, segment, and row (for rec-by-rec action) */
 	GMT_LONG n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
 	GMT_LONG n_bad_records;		/* Number of bad records encountered during i/o */
@@ -617,6 +620,13 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0 = allocated, 1 = allocate as needed] */
 	union GMT_UNIVECTOR *data;	/* Array of uni-vectors */
 };
+
+/* Byteswap widths used with gmt_byteswap_file */
+typedef enum {
+	Int16len = 2,
+	Int32len = 4,
+	Int64len = 8
+} SwapWidth;
 
 /* For the GMT_GRID container, see gmt_grdio.h */
 

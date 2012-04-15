@@ -79,7 +79,8 @@ char *GMT_runtime_bindir_osx (char *result) {
 		return NULL;
 	else {
 		/* Resolve symlinks */
-		realpath (path, result);
+		if (realpath (path, result) == NULL)
+			return NULL;
 		/* Truncate full path to dirname */
 		if ( (c = strrchr (result, '/')) && c != result )
 			*c = '\0';
@@ -149,7 +150,8 @@ char *GMT_runtime_bindir (char *result, const char *candidate) {
 	/* Handle absolute paths */
 	if (*candidate == '/') {
 		/* Resolve symlinks */
-		realpath (candidate, result);
+		if (realpath (candidate, result) == NULL)
+			return NULL;
 		/* Truncate absolute path to dirname */
 		if ( (c = strrchr (result, '/')) && c != result )
 			*c = '\0';
@@ -162,7 +164,8 @@ char *GMT_runtime_bindir (char *result, const char *candidate) {
 	/* Test if candidate was path from cwd */
 	if (strchr (candidate, '/')) {
 		/* Get the real path */
-		realpath (candidate, result);
+		if (realpath (candidate, result) == NULL)
+			return NULL;
 		/* Truncate absolute path to dirname */
 		if ( (c = strrchr (result, '/')) && c != result )
 			*c = '\0';
@@ -185,7 +188,8 @@ char *GMT_runtime_bindir (char *result, const char *candidate) {
 			strcat (candidate_abs, candidate);
 			if ( access (candidate_abs, X_OK) == 0 ) {
 				/* Get real dirname */
-				realpath (candidate_abs, result);
+				if (realpath (candidate_abs, result) == NULL)
+					return NULL;
 				/* Truncate absolute path to dirname */
 				if ( (c = strrchr (result, '/')) && c != result )
 					*c = '\0';
@@ -211,7 +215,8 @@ static char *this_runtime_libdir (char *result) {
 
 	if ( dladdr (this_runtime_libdir, &info) && info.dli_fname[0] == '/') {
 		/* Resolve symlinks */
-		realpath (info.dli_fname, result);
+		if (realpath (info.dli_fname, result) == NULL)
+			return NULL;
 		/* Truncate absolute path to dirname */
 		if ( (p = strrchr (result, '/')) && p != result )
 			*p = '\0';

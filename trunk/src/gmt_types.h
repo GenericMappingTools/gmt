@@ -41,10 +41,19 @@ typedef __int64 GMT_LONG;		/* A signed 8-byte integer under 64-bit Windows */
 typedef unsigned __int64 GMT_ULONG;	/* A unsigned 8-byte integer under 64-bit Windows */
 #define GMT_LL "ll"
 #else
-typedef long GMT_LONG;			/* A signed 4 (or 8-byte for 64-bit) integer */
-typedef unsigned long GMT_ULONG;	/* A unsigned 4 (or 8-byte for 64-bit) integer */
-#define GMT_LL "l"
+//#if SIZEOF_LONG == 8
+typedef long GMT_LONG;			/* A signed 8-byte integer */
+typedef unsigned long GMT_ULONG;	/* A unsigned 8-byte integer */
+#	define GMT_LL "l"
+/*#elif SIZEOF_LONG_LONG == 8
+typedef long long GMT_LONG;
+typedef unsigned long long GMT_ULONG;
+#	define GMT_LL "ll"
+#else
+# error "no 64-bit int type available"
+#endif*/
 #endif
+
 typedef void (*PFV) ();         /* PFV declares a pointer to a function returning void */
 typedef void* (*PFP) ();        /* PFP declares a pointer to a function returning void* */
 typedef GMT_LONG (*PFL) ();     /* PFL declares a pointer to a function returning an GMT_LONG */

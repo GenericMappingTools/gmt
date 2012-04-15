@@ -764,13 +764,13 @@ GMT_LONG GMT_err_func (struct GMT_CTRL *C, GMT_LONG err, GMT_LONG fail, char *fi
 #ifdef DEBUG
 		GMT_message (C, "%s:%s:%d: %s [%s]\n", C->init.progname, fname, line, GMT_strerror(err), file);
 #else
-		GMT_message (C, "%s: %s [%s]\n", C->init.progname, GMT_strerror(err), file);
+		GMT_message (C, "%s (%s): %s [%s]\n", C->init.progname, fname, GMT_strerror(err), file);
 #endif
 	else
 #ifdef DEBUG
 		GMT_message (C, "%s:%s:%d: %s\n", C->init.progname, fname, line, GMT_strerror(err));
 #else
-		GMT_message (C, "%s: %s\n", C->init.progname, GMT_strerror(err));
+		GMT_message (C, "%s (%s): %s\n", C->init.progname, fname, GMT_strerror(err));
 #endif
 	/* Pass error code on or exit */
 	if (fail)

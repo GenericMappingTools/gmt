@@ -100,12 +100,16 @@ EXTERN_MSC const char * GMT_strerror (GMT_LONG err);
 #define GMT_check_condition(C,condition,...) ((condition) ? GMT_report(C,GMT_MSG_FATAL,__VA_ARGS__) : 0)
 
 /* Convenience functions to GMT_err_func */
+#ifndef __func__
+#	define __func__ __FUNCTION__
+#endif
+
 #ifdef DEBUG
 #define GMT_err_pass(C,err,file) GMT_err_func (C,err,FALSE,file,__FILE__,__LINE__)
 #define GMT_err_fail(C,err,file) GMT_err_func (C,err,TRUE,file,__FILE__,__LINE__)
 #else
-#define GMT_err_pass(C,err,file) GMT_err_func (C,err,FALSE,file,"",0)
-#define GMT_err_fail(C,err,file) GMT_err_func (C,err,TRUE,file,"",0)
+#define GMT_err_pass(C,err,file) GMT_err_func (C,err,FALSE,file,__func__,0)
+#define GMT_err_fail(C,err,file) GMT_err_func (C,err,TRUE,file,__func__,0)
 #endif
 
 #endif /* GMT_ERROR_H */
