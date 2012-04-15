@@ -235,7 +235,8 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
 	GMT_LONG brackets = FALSE, work_on_abs_value, do_report, fixed_phase[2] = {1, 1};
-	GMT_LONG i, j, ncol = 0, n = 0, save_range, wmode, done;
+	GMT_LONG i, j, ncol = 0, save_range, wmode, done;
+	uint64_t n = 0;
 
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
 
@@ -375,7 +376,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						sprintf (record, "%s-%ld", file, GMT->current.io.seg_no);
 					else									/* Either table mode or only one table in dataset */
 						sprintf (record, "%s", file);
-					sprintf (buffer, ": N = %ld\t", n);					/* Number of records in this item */
+					sprintf (buffer, ": N = %" PRIu64 "\t", n);					/* Number of records in this item */
 					strcat (record, buffer);
 				}
 				for (i = 0; i < ncol; i++) {	/* Report min/max for each column in the format controlled by -C */

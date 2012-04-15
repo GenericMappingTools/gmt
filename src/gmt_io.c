@@ -36,56 +36,57 @@
  *
  * The following functions are here:
  *
- *	GMT_getuserpath		Get pathname of file in "user directories" (C->session.TMPDIR, CWD, HOME, C->session.USERDIR)
- *	GMT_getdatapath		Get pathname of file in "data directories" (CWD, GMT_{USER,DATA,GRID,IMG}DIR)
- *	GMT_getsharepath	Get pathname of file in "share directries" (CWD, C->session.USERDIR, C->session.SHAREDIR tree)
- *	GMT_fopen:		Open a file using GMT_getdatapath
- *	GMT_fclose:		Close a file
- *	GMT_io_init:		Init GMT_IO structure
- *	GMT_write_segmentheader	Write header record for multisegment files
- *	gmt_ascii_input:	Decode ascii input record
- *	GMT_scanf:		Robust scanf function with optional dd:mm:ss conversion
- *	GMT_bin_double_input:	Decode binary double precision record
- *	GMT_bin_double_input_swab:	Decode binary double precision record followed by byte-swabbing
- *	GMT_bin_float_input:	Decode binary single precision record
- *	GMT_bin_float_input_swab:	Decode binary single precision record followed by byte-swabbing
- *	gmt_nc_input:		Decode one record of netCDF column-oriented data
- *	GMT_ascii_output:	Write ascii record
- *	GMT_bin_double_output:	Write binary double precision record
- *	GMT_bin_double_output_swab:	Write binary double precision record after first swabbing
- *	GMT_bin_float_output:	Write binary single precision record
- *	GMT_bin_float_output_swab:	Write binary single precision record after first swabbing
- *	GMT_set_z_io:		Set GMT_Z_IO structure based on -Z
- *	GMT_check_z_io:		Fill in implied missing row/column
- *	gmt_A_read:		Read the next ascii item from input stream (may be more than one per line) z must be regular float
- *	gmt_a_read:		Read 1 ascii item per input record
- *	gmt_c_read:		Read 1 binary int8_t item
- *	gmt_u_read:		Read 1 binary uint8_t item
- *	gmt_h_read:		Read 1 binary int16_t item
- *	gmt_H_read:		Read 1 binary uint16_t item
- *	gmt_i_read:		Read 1 binary int32_t item
- *	gmt_I_read:		Read 1 binary uint32_t item
- *	gmt_l_read:		Read 1 binary int64_t item
- *	gmt_L_read:		Read 1 binary uint64_t item
- *	gmt_f_read:		Read 1 binary float item
- *	gmt_d_read:		Read 1 binary double item
- *	gmt_a_write:		Write 1 ascii item
- *	gmt_c_write:		Write 1 binary int8_t item
- *	gmt_u_write:		Write 1 binary uint8_t item
- *	gmt_h_write:		Write 1 binary int16_t item
- *	gmt_H_write:		Write 1 binary uint16_t item
- *	gmt_i_write:		Write 1 binary int32_t item
- *	gmt_I_write:		Write 1 binary uint32_t item
- *	gmt_l_write:		Write 1 binary int64_t item
- *	gmt_L_write:		Write 1 binary uint64_t item
- *	gmt_f_write:		Write 1 binary float item
- *	gmt_d_write:		Write 1 binary double item
- *	gmt_col_ij:		Convert index to column format
- *	gmt_row_ij:		Convert index to row format
+ *  GMT_getuserpath     Get pathname of file in "user directories" (C->session.TMPDIR, CWD, HOME, C->session.USERDIR)
+ *  GMT_getdatapath     Get pathname of file in "data directories" (CWD, GMT_{USER,DATA,GRID,IMG}DIR)
+ *  GMT_getsharepath    Get pathname of file in "share directries" (CWD, C->session.USERDIR, C->session.SHAREDIR tree)
+ *  GMT_fopen:          Open a file using GMT_getdatapath
+ *  GMT_fclose:         Close a file
+ *  GMT_io_init:        Init GMT_IO structure
+ *  GMT_write_segmentheader:   Write header record for multisegment files
+ *  gmt_ascii_input:    Decode ascii input record
+ *  GMT_scanf:          Robust scanf function with optional dd:mm:ss conversion
+ *  GMT_bin_double_input:   Decode binary double precision record
+ *  GMT_bin_double_input_swab:  Decode binary double precision record followed by byte-swabbing
+ *  GMT_bin_float_input:    Decode binary single precision record
+ *  GMT_bin_float_input_swab:   Decode binary single precision record followed by byte-swabbing
+ *  gmt_nc_input:       Decode one record of netCDF column-oriented data
+ *  GMT_ascii_output:   Write ascii record
+ *  GMT_bin_double_output:  Write binary double precision record
+ *  GMT_bin_double_output_swab: Write binary double precision record after first swabbing
+ *  GMT_bin_float_output:   Write binary single precision record
+ *  GMT_bin_float_output_swab:  Write binary single precision record after first swabbing
+ *  GMT_set_z_io:       Set GMT_Z_IO structure based on -Z
+ *  GMT_check_z_io:     Fill in implied missing row/column
+ *  gmt_A_read:         Read the next ascii item from input stream (may be more than one per line) z must be regular float
+ *  gmt_a_read:         Read 1 ascii item per input record
+ *  gmt_c_read:         Read 1 binary int8_t item
+ *  gmt_u_read:         Read 1 binary uint8_t item
+ *  gmt_h_read:         Read 1 binary int16_t item
+ *  gmt_H_read:         Read 1 binary uint16_t item
+ *  gmt_i_read:         Read 1 binary int32_t item
+ *  gmt_I_read:         Read 1 binary uint32_t item
+ *  gmt_l_read:         Read 1 binary int64_t item
+ *  gmt_L_read:         Read 1 binary uint64_t item
+ *  gmt_f_read:         Read 1 binary float item
+ *  gmt_d_read:         Read 1 binary double item
+ *  gmt_a_write:        Write 1 ascii item
+ *  gmt_c_write:        Write 1 binary int8_t item
+ *  gmt_u_write:        Write 1 binary uint8_t item
+ *  gmt_h_write:        Write 1 binary int16_t item
+ *  gmt_H_write:        Write 1 binary uint16_t item
+ *  gmt_i_write:        Write 1 binary int32_t item
+ *  gmt_I_write:        Write 1 binary uint32_t item
+ *  gmt_l_write:        Write 1 binary int64_t item
+ *  gmt_L_write:        Write 1 binary uint64_t item
+ *  gmt_f_write:        Write 1 binary float item
+ *  gmt_d_write:        Write 1 binary double item
+ *  gmt_byteswap_file:  Byteswap an entire file
+ *  gmt_col_ij:         Convert index to column format
+ *  gmt_row_ij:         Convert index to row format
  *
- * Author:	Paul Wessel
- * Date:	1-JAN-2010
- * Version:	5
+ * Author:  Paul Wessel
+ * Date:    1-JAN-2010
+ * Version: 5
  * Now 64-bit enabled.
  */
 
@@ -114,26 +115,6 @@ EXTERN_MSC GMT_LONG GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, GMT_LONG family
 #define gmt_convert_col(S,x) {if (S.convert) x = ((S.convert == 2) ? log10 (x) : x) * S.scale + S.offset;}
 
 static const char *GMT_type[GMTAPI_N_TYPES] = {"byte", "byte", "integer", "integer", "integer", "integer", "integer", "integer", "double", "double", "string", "datetime"};
-
-/* Library functions needed for Windows DLL to work properly.
- * These are only compiled under Windows - under other OS the
- * macros in gmt_io.h will kick in instead.  The reason these
- * are needed has to do with how Windows DDL differs from the
- * typical Linux shared libraries: Pointers created inside a
- * DLL can only be freed inside the DLL.
- */
-
-#ifdef WIN32
-FILE *GMT_fdopen (int handle, const char *mode) { return (fdopen (handle, mode)); }
-int GMT_fgetc (FILE *stream) { return (fgetc (stream)); }
-int GMT_ungetc (int c, FILE *stream) { return (ungetc (c, stream)); }
-int GMT_fputs (const char *str, FILE *stream) { return (fputs (str, stream)); }
-int GMT_fseek (FILE *stream, long offset, int whence) { return (fseek(stream, offset, whence)); }
-long GMT_ftell (FILE *stream) { return (ftell(stream)); }
-size_t GMT_fread (void *ptr, size_t size, size_t nmemb, FILE * stream) { return (fread (ptr, size, nmemb, stream)); }
-size_t GMT_fwrite (const void *ptr, size_t size, size_t nmemb, FILE * stream) { return (fwrite (ptr, size, nmemb, stream)); }
-void GMT_rewind (FILE *stream) { rewind (stream); }
-#endif
 
 /* This version of fgets will check for input record truncation, that is,
  * the input record is longer than the given size.  Since calls to GMT_fgets
@@ -2567,6 +2548,179 @@ int gmt_d_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 			return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
+}
+
+#define DEBUG_BYTESWAP
+
+static inline void fwrite_check (const void *ptr,
+		size_t size, size_t nitems, FILE *stream) {
+	if (fwrite (ptr, size, nitems, stream) != nitems) {
+		fprintf (stderr, "%s: error writing %zd bytes.\n", __func__, size*nitems);
+		exit (EXIT_FAILURE);
+	}
+}
+
+static inline void swap_uint16 (char *buffer, const size_t len) {
+	/* byteswap uint16_t in buffer of length 'len' bytes */
+	uint16_t u;
+	size_t n;
+
+	for (n = 0; n < len; n+=Int16len) {
+		memcpy (&u, &buffer[n], Int16len);
+		u = bswap16 (u);
+		memcpy (&buffer[n], &u, Int16len);
+	}
+}
+
+static inline void swap_uint32 (char *buffer, const size_t len) {
+	/* byteswap uint32_t in buffer of length 'len' bytes */
+	uint32_t u;
+	size_t n;
+
+	for (n = 0; n < len; n+=Int32len) {
+		memcpy (&u, &buffer[n], Int32len);
+		u = bswap32 (u);
+		memcpy (&buffer[n], &u, Int32len);
+	}
+}
+
+static inline void swap_uint64 (char *buffer, const size_t len) {
+	/* byteswap uint64_t in buffer of length 'len' bytes */
+	uint64_t u;
+	size_t n;
+
+	for (n = 0; n < len; n+=Int64len) {
+		memcpy (&u, &buffer[n], Int64len);
+		u = bswap64 (u);
+		memcpy (&buffer[n], &u, Int64len);
+	}
+}
+
+int gmt_byteswap_file (struct GMT_CTRL *C,
+		FILE *outfp, FILE *infp, const SwapWidth swapwidth,
+		const uint64_t offset, const uint64_t length) {
+	/* read from *infp and write byteswapped data to *ofp
+	 * swap only 'length' bytes beginning at 'offset' bytes
+	 * if 'length == 0' swap until EOF */
+	uint64_t bytes_read = 0;
+	size_t nbytes, chunk, padlen;
+	static const size_t chunksize = 0x1000000; /* 16 MiB */
+	char *buffer;
+
+	/* length must be a multiple SwapWidth */
+	if ( length%swapwidth != 0 ) {
+		fprintf (stderr, "%s: error: length must be a multiple of %u bytes.\n", __func__, swapwidth);
+		exit(EXIT_FAILURE);
+	}
+
+	/* allocate buffer on stack to improve disk i/o */
+	buffer = malloc (chunksize);
+	if (buffer == NULL) {
+		fprintf (stderr, "%s: error: cannot malloc %zd bytes.\n", __func__, chunksize);
+		exit(EXIT_FAILURE);
+	}
+
+	/* skip offset bytes at beginning of infp */
+	while ( bytes_read < offset ) {
+		chunk = chunksize < offset - bytes_read ? chunksize : offset - bytes_read;
+		nbytes = fread (buffer, sizeof (char), chunk, infp);
+		if (nbytes == 0) {
+			if (feof (infp)) {
+				/* EOF */
+#ifdef DEBUG_BYTESWAP
+				fprintf (stderr, "%s: EOF encountered at %" PRIu64
+						" (before offset at %" PRIu64 ")\n", __func__, bytes_read, offset);
+#endif
+				C->current.io.status = GMT_IO_EOF;
+				free (buffer);
+				return true;
+			}
+			fprintf (stderr, "%s: error reading stream while skipping.\n", __func__);
+			exit(EXIT_FAILURE);
+		}
+		bytes_read += nbytes;
+		/* write buffer */
+		fwrite_check (buffer, sizeof (char), nbytes, outfp);
+	}
+#ifdef DEBUG_BYTESWAP
+	if (bytes_read)
+		fprintf (stderr, "%s: %" PRIu64 " bytes skipped at beginning.\n", __func__, bytes_read);
+#endif
+
+	/* start swapping bytes */
+	while ( length == 0 || bytes_read < offset + length ) {
+		chunk = length == 0 ? chunksize : length - bytes_read + offset;
+		nbytes = fread (buffer, sizeof (char), chunk, infp);
+		if (nbytes == 0) {
+			if (feof (infp)) {
+				/* EOF */
+#ifdef DEBUG_BYTESWAP
+				fprintf (stderr, "%s: %" PRIu64 " bytes swapped.\n", __func__, bytes_read - offset);
+#endif
+				C->current.io.status = GMT_IO_EOF;
+				free (buffer);
+				return true;
+			}
+			fprintf (stderr, "%s: error reading stream while swapping.\n", __func__);
+			exit(EXIT_FAILURE);
+		}
+		bytes_read += nbytes;
+
+		/* nbytes must be a multiple of SwapWidth */
+		padlen = 8 - nbytes % swapwidth;
+		if ( padlen != 8 ) {
+			/* pad with zero */
+			memset (&buffer[nbytes], 0, padlen);
+			nbytes += padlen;
+			fprintf (stderr, "%s: warning: %" PRIu64 " bytes read; not aligned with "
+					"swapwidth of %u bytes; zero-pad %zd bytes.\n", __func__,
+					bytes_read - offset, swapwidth, padlen);
+		}
+
+		/* swap bytes in buffer */
+		switch (swapwidth) {
+			case Int16len:
+				swap_uint16 (buffer, nbytes);
+				break;
+			case Int32len:
+				swap_uint32 (buffer, nbytes);
+				break;
+			case Int64len:
+			default:
+				swap_uint64 (buffer, nbytes);
+				break;
+		}
+
+		/* write buffer */
+		fwrite_check (buffer, sizeof (char), nbytes, outfp);
+	}
+#ifdef DEBUG_BYTESWAP
+	fprintf (stderr, "%s: %" PRIu64 " bytes swapped.\n", __func__, bytes_read - offset);
+#endif
+
+	/* skip to EOF */
+	while ( true ) {
+		nbytes = fread (buffer, sizeof (char), chunksize, infp);
+		if (nbytes == 0) {
+			if (feof (infp)) {
+				/* EOF */
+#ifdef DEBUG_BYTESWAP
+				fprintf (stderr, "%s: %" PRIu64 " bytes nbytes until EOF.\n",
+						__func__, bytes_read - offset - length);
+#endif
+				break;
+			}
+			fprintf (stderr, "%s: error reading stream while skipping to EOF.\n", __func__);
+			exit(EXIT_FAILURE);
+		}
+		bytes_read += nbytes;
+		/* write buffer */
+		fwrite_check (buffer, sizeof (char), nbytes, outfp);
+	}
+
+	C->current.io.status = GMT_IO_EOF;
+	free (buffer);
+	return true;
 }
 
 GMT_LONG gmt_col_ij (struct GMT_Z_IO *r, struct GMT_GRID *G, GMT_LONG ij)

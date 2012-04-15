@@ -170,4 +170,7 @@ endif (NOT DEFINED CMAKE_VERBOSE_MAKEFILE)
 set (BUILD_SHARED_LIBS true)
 set (CMAKE_FIND_STATIC LAST)
 
+# search order for find_*
+set (CMAKE_FIND_FRAMEWORK LAST)
+
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

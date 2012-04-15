@@ -51,9 +51,9 @@ struct GMTAPI_DATA_OBJECT {
 	GMT_LONG method;			/* One of GMT_IS_{FILE,STREAM,FDESC,ARRAY,GRID,COPY,REF|READONLY} */
 	GMT_LONG status;			/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
 	GMT_LONG n_columns;			/* Number of columns to process in this dataset [GMT_DATASET only] */
-	GMT_LONG n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET only] */
+	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET only] */
 	GMT_LONG n_expected_fields;		/* Number of expected columns for this dataset [GMT_DATASET only] */
-	GMT_LONG n_alloc;			/* Number of memory allocated so far if writing to memory */
+	size_t n_alloc;			/* Number of memory allocated so far if writing to memory */
 	GMT_LONG geometry;			/* One of GMT_POINT, GMT_LINE, GMT_POLY, GMT_SURF */
 	GMT_LONG region;			/* 1 if wesn was passed, 0 otherwise */
 	GMT_LONG level;				/* Nested module level when object was allocated */
@@ -76,7 +76,7 @@ struct GMTAPI_CTRL {
 	GMT_LONG unique_ID;			/* Used to create unique IDs for duration of session */
 	GMT_LONG session_ID;			/* ID of this session */
 	GMT_LONG current_item[2];		/* Array number of current dataset being processed (in and out)*/
-	GMT_LONG current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
+	uint64_t current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
 	GMT_LONG registered[2];			/* TRUE if at least one source/destination has been registered (in and out) */
 	GMT_LONG io_enabled[2];			/* TRUE if access has been allowed (in and out) */
 	GMT_LONG io_mode[2];			/* 1 if access as set, 0 if record-by-record */

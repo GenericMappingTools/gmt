@@ -179,6 +179,9 @@ EXTERN_MSC void GMT_write_ogr_header (FILE *fp, struct GMT_OGR *G);
 EXTERN_MSC char *GMT_trim_segheader (struct GMT_CTRL *C, char *line);
 EXTERN_MSC GMT_LONG GMT_alloc_vectors (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_LONG n_rows);
 EXTERN_MSC GMT_LONG GMT_alloc_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, GMT_LONG type, GMT_LONG n_rows);
+EXTERN_MSC int gmt_byteswap_file (struct GMT_CTRL *C,
+		FILE *outfp, FILE *infp, const SwapWidth nbytes,
+		const uint64_t offset, const uint64_t length);
 
 /* gmt_proj.c: */
 
