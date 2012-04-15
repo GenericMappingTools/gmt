@@ -24,13 +24,13 @@ typedef struct {
 	int empty;
 	} PannerClassPart;
 
-typedef struct _PannerClassRec {
+typedef struct _PannerClassRecCustom {
 	CoreClassPart		core_class;
 	CompositeClassPart	composite_class;
 	PannerClassPart		panner_class;
-	} PannerClassRec;
+	} PannerClassRecCustom;
 
-extern PannerClassRec pannerClassRec;
+extern PannerClassRecCustom pannerClassRecCustom;
 
 /*	Instance record	*/
 

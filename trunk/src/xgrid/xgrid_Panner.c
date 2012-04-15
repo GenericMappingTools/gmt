@@ -177,7 +177,7 @@ static CompositeClassExtensionRec extension = {
 	/* allows_change_managed_set */ False
 };
 
-PannerClassRec pannerClassRec = {
+PannerClassRecCustom pannerClassRecCustom = {
   { /* core fields */
     /* superclass		*/	(WidgetClass) &compositeClassRec,
     /* class_name		*/	"Panner",
@@ -224,7 +224,7 @@ PannerClassRec pannerClassRec = {
   }
 };
 
-WidgetClass pannerWidgetClass = (WidgetClass)&pannerClassRec;
+WidgetClass pannerWidgetClass = (WidgetClass)&pannerClassRecCustom;
 
 /****	Scrolling by dragging the thumb.
 

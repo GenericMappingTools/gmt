@@ -75,7 +75,7 @@
 #define XtCYCallback		"YCallback"
 #define XtCYScrollStep		"YScrollStep"
 
-typedef struct _PannerClassRec*	PannerWidgetClass;
+typedef struct _PannerClassRecCustom*	PannerWidgetClass;
 typedef struct _PannerRec*	PannerWidget;
 
 /* Declare the class constant */
