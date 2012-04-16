@@ -483,7 +483,7 @@ add_dependencies (check ${GMT_PROGSPS} ${GMT_PROGS} ${GMT_DEMOS} psldemo
 if (NOT GMT_INSTALL_MONOLITHIC)
 	set_target_properties (gmt
 		PROPERTIES
-		OUTPUT_NAME gmt-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
+		OUTPUT_NAME gmt${GMT_INSTALL_NAME_SUFFIX})
 endif (NOT GMT_INSTALL_MONOLITHIC)
 
 # add the install targets
@@ -534,14 +534,16 @@ if (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 	")
 
 	# create symlinks in libdir/..:
-	file (RELATIVE_PATH _rpath /${GMT_LIBDIR} /${GMT_SHARE_PATH})
-	string (REGEX REPLACE "^[.][.]/(.*)" "\\1" _rpath "${_rpath}")
+	file (RELATIVE_PATH _rpath_share /${GMT_LIBDIR} /${GMT_SHARE_PATH})
+	string (REGEX REPLACE "^[.][.]/(.*)" "\\1" _rpath_share "${_rpath_share}")
+	file (RELATIVE_PATH _rpath_man /${GMT_LIBDIR} /${GMT_MAN_PATH})
+	string (REGEX REPLACE "^[.][.]/(.*)" "\\1" _rpath_man "${_rpath_man}")
 	install (CODE "
 	execute_process (
 		COMMAND ${CMAKE_COMMAND} -E create_symlink
-		${_rpath} \${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/../share
+		${_rpath_share} \${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/../share
 		COMMAND ${CMAKE_COMMAND} -E create_symlink
-		${_rpath}/man \${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/../man)
+		${_rpath_man} \${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/../man)
 	")
 endif (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 
