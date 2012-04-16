@@ -53,10 +53,10 @@ set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MIN
 # if not specified here:
 #set (GMT_VERSION_YEAR "2012")
 
-# The minimum required GSHHS version
-set (MIN_REQUIRED_GSHHS_VERSION_MAJOR 2)
-set (MIN_REQUIRED_GSHHS_VERSION_MINOR 2)
-set (MIN_REQUIRED_GSHHS_VERSION_PATCH 0)
+# The minimum required GSHHG version
+set (MIN_REQUIRED_GSHHG_VERSION_MAJOR 2)
+set (MIN_REQUIRED_GSHHG_VERSION_MINOR 2)
+set (MIN_REQUIRED_GSHHG_VERSION_PATCH 0)
 
 # The GMT wiki location
 set (GMT_TRAC_WIKI "http://gmtrac.soest.hawaii.edu/projects/gmt/wiki/")

@@ -16,15 +16,15 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * gshhs_version.h contains prototypes
+ * gshhg_version.h contains prototypes
  *
  * Author:  Florian Wobbe
  * Date:    3-APR-2012
  * Version: 5
  */
 
-#ifndef _GMT_GSHHS_VERSION_H
-#define _GMT_GSHHS_VERSION_H
+#ifndef _GMT_GSHHG_VERSION_H
+#define _GMT_GSHHG_VERSION_H
 
 #ifdef __cplusplus      /* Basic C++ support */
 extern "C" {
@@ -42,17 +42,17 @@ extern "C" {
 #	define EXTERN_MSC extern
 #endif /* STANDALONE */
 
-/* Structure that holds the GSHHS version */
-struct GSHHS_VERSION {
+/* Structure that holds the GSHHG version */
+struct GSHHG_VERSION {
 	unsigned major, minor, patch;
 };
 
 /* Prototypes */
-EXTERN_MSC int gshhs_get_version (const char* filename, struct GSHHS_VERSION *gshhs_version);
-EXTERN_MSC int gshhs_require_min_version (const char* filename, const struct GSHHS_VERSION min_version);
+EXTERN_MSC int gshhg_get_version (const char* filename, struct GSHHG_VERSION *gshhg_version);
+EXTERN_MSC int gshhg_require_min_version (const char* filename, const struct GSHHG_VERSION min_version);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  /* _GMT_GSHHS_VERSION_H */
+#endif  /* _GMT_GSHHG_VERSION_H */

@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * gshhs_version.c contains helper functions to access the GSHHS version
+ * gshhg_version.c contains helper functions to access the GSHHG version
  *
  * Author:  Florian Wobbe
  * Date:    5-APR-2012
@@ -24,8 +24,8 @@
  *
  * Modules in this file:
  *
- *  gshhs_get_version            Obtain version information struct from GSHHS file
- *  gshhs_require_min_version    Check if GSHHS file meets the min version
+ *  gshhg_get_version            Obtain version information struct from GSHHG file
+ *  gshhg_require_min_version    Check if GSHHG file meets the min version
  *                               requirement
  */
 
@@ -33,24 +33,24 @@
 #include <stdlib.h>
 #include <string.h>
 #include <netcdf.h>
-#include "gshhs_version.h"
+#include "gshhg_version.h"
 
 #define BUF_SIZE 64
 #define VERSION_ATT_NAME "version"
-#define FAILURE_PREFIX "gshhs_version: "
+#define FAILURE_PREFIX "gshhg_version: "
 
 /* Suppress Visual Studio deprecation warnings */
 #	ifdef _MSC_VER
 #		pragma warning( disable : 4996 )
 #	endif
 
-/* Get value from VERSION_ATT_NAME of netCDF file and populate gshhs_version,
- * gshhs_version_major, gshhs_version_minor, and gshhs_version_patch */
-int gshhs_get_version (const char* filename, struct GSHHS_VERSION *gshhs_version) {
+/* Get value from VERSION_ATT_NAME of netCDF file and populate gshhg_version,
+ * gshhg_version_major, gshhg_version_minor, and gshhg_version_patch */
+int gshhg_get_version (const char* filename, struct GSHHG_VERSION *gshhg_version) {
 	int    status;                         /* error status */
 	int    ncid;                           /* netCDF ID */
 	size_t v_len;                          /* version length */
-	char   gshhs_version_string[BUF_SIZE]; /* GSHHS version string */
+	char   gshhg_version_string[BUF_SIZE]; /* GSHHG version string */
 
 	/* open shoreline file */
 	status = nc_open(filename, NC_NOWRITE, &ncid);
@@ -71,31 +71,31 @@ int gshhs_get_version (const char* filename, struct GSHHS_VERSION *gshhs_version
 	}
 
 	/* get version string */
-	status = nc_get_att_text (ncid, NC_GLOBAL, VERSION_ATT_NAME, gshhs_version_string);
+	status = nc_get_att_text (ncid, NC_GLOBAL, VERSION_ATT_NAME, gshhg_version_string);
 	if (status != NC_NOERR) {
 		fprintf(stderr, FAILURE_PREFIX "cannot read version attribute from file \"%s\" (%d).\n", filename, status);
 		return 0;
 	}
 
 	/* null-terminate version string */
-	gshhs_version_string[v_len] = '\0';
+	gshhg_version_string[v_len] = '\0';
 
 	/* parse version major, minor, and patch */
-	status = sscanf (gshhs_version_string, "%u.%u.%u",
-									 &gshhs_version->major, &gshhs_version->minor, &gshhs_version->patch);
+	status = sscanf (gshhg_version_string, "%u.%u.%u",
+									 &gshhg_version->major, &gshhg_version->minor, &gshhg_version->patch);
 	if (status != 3) {
-		fprintf(stderr, FAILURE_PREFIX "cannot parse version string \"%s\" (%d).\n", gshhs_version_string, status);
+		fprintf(stderr, FAILURE_PREFIX "cannot parse version string \"%s\" (%d).\n", gshhg_version_string, status);
 		return 0;
 	}
 
 	return 1;
 }
 
-/* Check if GSHHS file meets the min version requirement */
-int gshhs_require_min_version (const char* filename, const struct GSHHS_VERSION min_version) {
-  struct GSHHS_VERSION version;
+/* Check if GSHHG file meets the min version requirement */
+int gshhg_require_min_version (const char* filename, const struct GSHHG_VERSION min_version) {
+  struct GSHHG_VERSION version;
 	/* get version of file */
-	if ( ! gshhs_get_version (filename, &version) )
+	if ( ! gshhg_get_version (filename, &version) )
 		return 0;
 
 	/* compare versions */
@@ -106,7 +106,7 @@ int gshhs_require_min_version (const char* filename, const struct GSHHS_VERSION 
 	if ( version.patch < min_version.patch )
 		return 0;
 
-#ifdef GSHHS_VERSION_DEBUG
+#ifdef GSHHG_VERSION_DEBUG
 	fprintf (stderr, FAILURE_PREFIX "%s\n", filename);
 #endif
 	return 1;
@@ -115,29 +115,29 @@ int gshhs_require_min_version (const char* filename, const struct GSHHS_VERSION 
 #ifdef STANDALONE
 
 /* Compile with -DSTANDALONE to make an executable.
- * This code is executed by CMake to check the installed GSHHS version. */
+ * This code is executed by CMake to check the installed GSHHG version. */
 
 int main (int argc, char *argv[]) {
-	struct GSHHS_VERSION gshhs_version;
+	struct GSHHG_VERSION gshhg_version;
 	int status;
 
 	if (argc < 2 || argc > 3) {
-		fprintf(stderr, FAILURE_PREFIX "usage: gshhs_version file [min_required_version]\n");
+		fprintf(stderr, FAILURE_PREFIX "usage: gshhg_version file [min_required_version]\n");
 		return EXIT_FAILURE;
 	}
 
-	if ( ! gshhs_get_version (argv[1], &gshhs_version) )
+	if ( ! gshhg_get_version (argv[1], &gshhg_version) )
 		return EXIT_FAILURE;
 
 	/* return version string and exit */
 	fprintf(stdout, "%d.%d.%d\n",
-					gshhs_version.major,
-					gshhs_version.minor,
-					gshhs_version.patch);
+					gshhg_version.major,
+					gshhg_version.minor,
+					gshhg_version.patch);
 
 	if (argc > 2) {
 		/* do min version check */
-		struct GSHHS_VERSION required_version;
+		struct GSHHG_VERSION required_version;
 		status = sscanf (argv[2], "%u.%u.%u",
 										 &required_version.major,
 										 &required_version.minor,
@@ -145,7 +145,7 @@ int main (int argc, char *argv[]) {
 		if ( status != 3 ) {
 			fprintf (stderr, FAILURE_PREFIX "cannot parse version string \"%s\" (%d).\n", argv[2], status);
 		}
-		if ( ! gshhs_require_min_version (argv[1], required_version) ) {
+		if ( ! gshhg_require_min_version (argv[1], required_version) ) {
 			/* version too old */
 			fprintf (stderr, FAILURE_PREFIX "version of %s < min required version %s.\n", argv[1], argv[2]);
 			return -1;

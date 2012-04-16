@@ -22,17 +22,17 @@ install (FILES ${CMAKE_CURRENT_BINARY_DIR}/VERSION
 	COMPONENT Runtime)
 
 # only attempt to install shorelines when requested and path is known
-if (GSHHS_PATH AND COPY_GSHHS)
-	install (DIRECTORY ${GSHHS_PATH}/
+if (GSHHG_PATH AND COPY_GSHHG)
+	install (DIRECTORY ${GSHHG_PATH}/
 		DESTINATION ${GMT_SHARE_PATH}/coast
-		COMPONENT GSHHS)
+		COMPONENT GSHHG)
 	# set installed location
-	set (GSHHS_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}/coast)
-	message ("${GSHHS_INSTALL_PATH}")
-else (GSHHS_PATH AND COPY_GSHHS)
+	set (GSHHG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}/coast)
+	message ("${GSHHG_INSTALL_PATH}")
+else (GSHHG_PATH AND COPY_GSHHG)
 	# set installed location
-	set (GSHHS_INSTALL_PATH ${GSHHS_PATH})
-endif (GSHHS_PATH AND COPY_GSHHS)
+	set (GSHHG_INSTALL_PATH ${GSHHG_PATH})
+endif (GSHHG_PATH AND COPY_GSHHG)
 
 # create coastline.conf which is needed for in-build-dir ctest
 configure_file (coastline.conf.in coastline.conf @ONLY)

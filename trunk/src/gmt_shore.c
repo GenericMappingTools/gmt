@@ -18,7 +18,7 @@
 
 #include "gmt.h"
 #include "gmt_internals.h"
-#include "gshhs_version.h"
+#include "gshhg_version.h"
 /*
  * These functions simplifies the access to the GMT shoreline, border, and river
  * databases.
@@ -43,7 +43,7 @@
  *
  */
 
-#define GSHHS_SITE "ftp://ftp.soest.hawaii.edu/pwessel/gshhs/"
+#define GSHHG_SITE "ftp://ftp.soest.hawaii.edu/pwessel/gshhs/"
 
 #define RIVERLAKE	5				/* Fill array id for riverlakes */
 #define get_level(arg) (((arg) >> 6) & 7)		/* Extract level from bit mask */
@@ -219,11 +219,11 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 
 	FILE *fp = NULL;
 	char dir[GMT_BUFSIZ];
-	static struct GSHHS_VERSION version = GSHHS_MIN_REQUIRED_VERSION;
+	static struct GSHHG_VERSION version = GSHHG_MIN_REQUIRED_VERSION;
 	static int warn_once = true;
 
 	/* This is the order of checking:
-	 * 1. Check in C->session.GSHHSDIR
+	 * 1. Check in C->session.GSHHGDIR
 	 * 2. Is there a file coastline.conf in current directory,
 	 *    C->session.USERDIR or C->session.SHAREDIR[/coast]?
 	 *    If so, use its information
@@ -231,16 +231,16 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 	 *    C->session.SHAREDIR[/coast] for file "name".
 	 */
 
-	/* 1. Check in C->session.GSHHSDIR */
+	/* 1. Check in C->session.GSHHGDIR */
 
-	if (C->session.GSHHSDIR) {
-		sprintf (path, "%s/%s%s", C->session.GSHHSDIR, stem, GSHHS_EXT);
-		if ( access (path, R_OK) == 0 && gshhs_require_min_version (path, version) )
+	if (C->session.GSHHGDIR) {
+		sprintf (path, "%s/%s%s", C->session.GSHHGDIR, stem, GSHHG_EXT);
+		if ( access (path, R_OK) == 0 && gshhg_require_min_version (path, version) )
 			return (path);
 		else {
-			/* free invalid C->session.GSHHSDIR */
-			free (C->session.GSHHSDIR);
-			C->session.GSHHSDIR = NULL;
+			/* free invalid C->session.GSHHGDIR */
+			free (C->session.GSHHGDIR);
+			C->session.GSHHGDIR = NULL;
 		}
 	}
 
@@ -254,11 +254,11 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 		while (fgets (dir, GMT_BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
 			if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
 			GMT_chop (dir);		/* Chop off LF or CR/LF */
-			sprintf (path, "%s/%s%s", dir, stem, GSHHS_EXT);
-			if ( gshhs_require_min_version (path, version) ) {
+			sprintf (path, "%s/%s%s", dir, stem, GSHHG_EXT);
+			if ( gshhg_require_min_version (path, version) ) {
 				fclose (fp);
-				/* update invalid C->session.GSHHSDIR */
-				C->session.GSHHSDIR = strdup (dir);
+				/* update invalid C->session.GSHHGDIR */
+				C->session.GSHHGDIR = strdup (dir);
 				return (path);
 			}
 		}
@@ -267,20 +267,20 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 
 	/* 3. Then check for the named file itself */
 
-	if (GMT_getsharepath (C, "coast", stem, GSHHS_EXT, path)) {
-		if ( gshhs_require_min_version (path, version) ) {
-			/* update invalid C->session.GSHHSDIR */
+	if (GMT_getsharepath (C, "coast", stem, GSHHG_EXT, path)) {
+		if ( gshhg_require_min_version (path, version) ) {
+			/* update invalid C->session.GSHHGDIR */
 			sprintf (dir, "%s/%s", C->session.SHAREDIR, "coast");
-			C->session.GSHHSDIR = strdup (dir);
+			C->session.GSHHGDIR = strdup (dir);
 			return (path);
 		}
 	}
 
 	if (warn_once) {
 		warn_once = false;
-		GMT_report (C, GMT_MSG_FATAL, "GSHHS version %d.%d.%d or newer is "
-								"needed to use coastlines with GMT.\n\tGet and install GSHHS from "
-								GSHHS_SITE ".\n", version.major, version.minor, version.patch);
+		GMT_report (C, GMT_MSG_FATAL, "GSHHG version %d.%d.%d or newer is "
+								"needed to use coastlines with GMT.\n\tGet and install GSHHG from "
+								GSHHG_SITE ".\n", version.major, version.minor, version.patch);
 	}
 
 	return (NULL); /* never reached */
@@ -423,7 +423,7 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_GSHHS_ID", &c->seg_GSHHS_ID_id));
 
 	if (nc_inq_varid (c->cdfid, "Ten_times_the_km_squared_area_of_polygons", &c->GSHHS_area_id) == NC_NOERR) {	/* Old file with 1/10 km^2 areas in int format*/
-		GMT_report (C, GMT_MSG_VERBOSE, "GSHHS: Areas not accurate for small lakes and islands.  Consider updating GSHHS.\n");
+		GMT_report (C, GMT_MSG_VERBOSE, "GSHHS: Areas not accurate for small lakes and islands.  Consider updating GSHHG.\n");
 		int_areas = TRUE;
 	}
 	else if (nc_inq_varid (c->cdfid, "The_km_squared_area_of_polygons", &c->GSHHS_area_id) != NC_NOERR) {	/* New file with km^2 areas as doubles */

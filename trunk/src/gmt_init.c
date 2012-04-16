@@ -3554,11 +3554,11 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 
 		/* DIR GROUP */
 
-		case GMTCASE_DIR_GSHHS:
+		case GMTCASE_DIR_GSHHG:
 			if (*value) {
-				/* Set session GSHHS dir */
-				C->session.GSHHSDIR = strdup (value);
-				/* Force update of session.GSHHSDIR before GMT_begin_module()
+				/* Set session GSHHG dir */
+				C->session.GSHHGDIR = strdup (value);
+				/* Force update of session.GSHHGDIR before GMT_begin_module()
 				 * is called to avoid invalid frees after GMT_end_module() */
 				GMT_shore_adjust_res (C, 'c');
 			}
@@ -4362,8 +4362,8 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 
 		/* DIR GROUP */
 
-		case GMTCASE_DIR_GSHHS:
-			strcpy (value, (C->session.GSHHSDIR) ? C->session.GSHHSDIR : "");
+		case GMTCASE_DIR_GSHHG:
+			strcpy (value, (C->session.GSHHGDIR) ? C->session.GSHHGDIR : "");
 			break;
 		case GMTCASE_DIR_TMP:
 			strcpy (value, (C->session.TMPDIR) ? C->session.TMPDIR : "");
@@ -5089,8 +5089,8 @@ void GMT_end (struct GMT_CTRL *C)
 	free (C->init.runtime_bindir);
 	free (C->session.SHAREDIR);
 	free (C->session.HOMEDIR);
-	if (C->session.GSHHSDIR)
-		free (C->session.GSHHSDIR);
+	if (C->session.GSHHGDIR)
+		free (C->session.GSHHGDIR);
 	if (C->session.USERDIR)
 		free (C->session.USERDIR);
 	if (C->session.DATADIR)

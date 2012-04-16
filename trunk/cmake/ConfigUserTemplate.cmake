@@ -40,8 +40,8 @@
 ## The following should only be needed if CMake cannot automatically detect
 ## the right version or path.
 
-# Set path to GSHHS Shoreline Database [auto]:
-#set (GSHHS_ROOT "gshhs_path")
+# Set path to GSHHG Shoreline Database [auto]:
+#set (GSHHG_ROOT "gshhg_path")
 
 # Set location of NetCDF (can be root directory, path to header file or path to nc-config) [auto]:
 #set (NETCDF_ROOT "netcdf_install_prefix")
@@ -102,8 +102,8 @@
 # [${GMT_BINARY_DIR}/GMT-${GMT_PACKAGE_VERSION}-src]:
 #set (GMT_RELEASE_PREFIX "release-src-prefix")
 
-# Copy GSHHS files to ${GMT_SHARE_PATH}/coast [FALSE]:
-# set (COPY_GSHHS TRUE)
+# Copy GSHHG files to ${GMT_SHARE_PATH}/coast [FALSE]:
+# set (COPY_GSHHG TRUE)
 
 ##
 ## Section 4: Advanced tweaking

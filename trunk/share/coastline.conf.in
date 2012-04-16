@@ -1,5 +1,5 @@
 #
 # $Id$
-# GSHHS shoreline search path for in-build-dir tests
+# GSHHG shoreline search path for in-build-dir tests
 #
-@GSHHS_PATH@
+@GSHHG_PATH@

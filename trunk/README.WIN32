@@ -151,7 +151,7 @@ Download from http://nsis.sourceforge.net/
 Finally we are ready to compile GMT5.
 
 - Get GMT from svn://gmtserver.soest.hawaii.edu/gmt5/tunk
-- Get GSHHS (Shoreline Database) from ftp://ftp.soest.hawaii.edu/gmt5/
+- Get GSHHG (Shoreline Database) from ftp://ftp.soest.hawaii.edu/pwessel/gshhs/
 
 - In the source tree copy cmake/ConfigUserTemplate.cmake to
   cmake/ConfigUser.cmake and edit the file according to your demands. This is
@@ -159,7 +159,7 @@ Finally we are ready to compile GMT5.
 
   set (CMAKE_INSTALL_PREFIX z:/software/gmt5msc)
   set (GMT_INSTALL_MONOLITHIC ON)
-  set (GSHHS_ROOT z:/software/src/coast)
+  set (GSHHG_ROOT z:/software/src/coast)
   set (NETCDF_ROOT z:/software)
   set (GDAL_ROOT z:/software)
   set (PCRE_ROOT z:/software)
