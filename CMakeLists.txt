@@ -73,7 +73,7 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 set(_manfiles_ps "" CACHE INTERNAL "Global list of PS manpages")
 set(_manfiles_suppl_ps "" CACHE INTERNAL "Global list of supplement PS manpages")
 add_subdirectory (src)
-add_subdirectory (share)      # share must be processed *after* src (GSHHS_PATH)
+add_subdirectory (share)      # share must be processed *after* src (GSHHG_PATH)
 add_subdirectory (doc)        # share must be processed *after* src (PDF manpages)
 add_subdirectory (test)
 add_subdirectory (cmake/dist) # make distribution bundles (always last)
@@ -116,7 +116,7 @@ configure_file (
 # Configuration done
 message(
 	"*  Options:\n"
-	"*  Found GSHHS database : ${GSHHS_PATH} (${GSHHS_VERSION})\n"
+	"*  Found GSHHG database : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
 	"*  NetCDF library       : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir   : ${NETCDF_INCLUDE_DIR}\n"
 	"*  GDAL library         : ${GDAL_LIBRARY}\n"

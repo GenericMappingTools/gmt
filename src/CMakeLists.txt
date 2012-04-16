@@ -98,11 +98,11 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 # Examples and tests depend on Shorelines
-find_package (GSHHS)
-if (DO_EXAMPLES OR DO_TESTS AND NOT GSHHS_FOUND)
-	message (FATAL_ERROR "Cannot proceed without GSHHS Shorelines. "
-		"Need to either set GSHHS_ROOT or disable tests.")
-endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHS_FOUND)
+find_package (GSHHG)
+if (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
+	message (FATAL_ERROR "Cannot proceed without GSHHG Shorelines. "
+		"Need to either set GSHHG_ROOT or disable tests.")
+endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 
 # These three lines are temporarily here for the beta release
 set (GMT_PROGS2_SRCS gmtaverage.c)
@@ -149,7 +149,7 @@ set (GMT_PSL_SRCS pslib.c common_string.c common_string.h common_runpath.c
 set (GMT_LIB_SRCS gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c
 	gmt_fft.c gmt_grdio.c gmt_io.c  gmt_nc.c gmt_notposix.c gmt_proj.c
 	gmt_shore.c gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c
-	gmt_version.c gmtapi_parse.c gshhs_version.c gshhs_version.h
+	gmt_version.c gmtapi_parse.c gshhg_version.c gshhg_version.h
 	common_math.c common_string.c common_runpath.c
 	${GMT_PROGS_SRCS} ${GMT_TRIANGLE_SRCS})
 
@@ -462,6 +462,7 @@ endforeach (_gmtdemo)
 
 configure_file (psldemo.h.in psldemo.h @ONLY)
 add_executable (psldemo psldemo.h psldemo.c)
+add_executable (byteswap_file byteswap_file.h byteswap_file.c)
 target_link_libraries (psldemo pslib)
 
 # rman for converting html manpages

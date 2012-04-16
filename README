@@ -27,8 +27,8 @@ and installation details.
 
 Note there are two GMT tar archives available:
 
-1. gmt-5.0.0b.tar.bz2:  The GMT distribution
-2. gshhs-2.2.0.tar.bz2: All five resolutions of GSHHS coastline data
+1. gmt-5.0.0b.tar.bz2:          The GMT distribution
+2. gshhg-gmt-nc4-2.2.1.tar.bz2: All five resolutions of GSHHG coastline data
 
 The archives are available in bzip2 (*.bz2) format.
 If you do not have bzip2 installed you can obtain source or executables

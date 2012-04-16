@@ -227,7 +227,7 @@ struct GMT_SESSION {
 	PFL fft1d[N_GMT_FFT];			/* Pointers to available 1-D FFT functions (or NULL if not configured) */
 	PFL fft2d[N_GMT_FFT];			/* Pointers to available 2-D FFT functions (or NULL if not configured) */
 	/* This part contains pointers that may point to additional memory outside this struct */
-	char *GSHHSDIR;			/* Path to the GSHHS directory */
+	char *GSHHGDIR;			/* Path to the GSHHG directory */
 	char *SHAREDIR;			/* Path to the GMT share directory */
 	char *HOMEDIR;			/* Path to the user's home directory */
 	char *USERDIR;			/* Path to the user's GMT settings directory */

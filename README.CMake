@@ -81,12 +81,12 @@ minimal required version and then search for required and optional libraries
 fail if dependencies are not met. You have to ensure that CMake can find the
 required resources by configuring *cmake/ConfigUser.cmake*.
 
-Finding GSHHS:
+Finding GSHHG:
 ~~~~~~~~~~~~~~
 
-GSHHS shorelines are searched in FindGSHHS.cmake and a little helper programm
-tests the version (gshhs_version.c). If CMake cannot find the shorelines you
-have to configure _GSHHS_ROOT_ in cmake/ConfigUser.cmake.
+GSHHG shorelines are searched in FindGSHHG.cmake and a little helper programm
+tests the version (gshhg_version.c). If CMake cannot find the shorelines you
+have to configure _GSHHG_ROOT_ in cmake/ConfigUser.cmake.
 
 Documentation:
 ~~~~~~~~~~~~~~
@@ -109,7 +109,7 @@ Installing:
   $ make -j8 install
 
 will compile and install libps, libgmt, and all GMT modules. Optionally it
-will install the GSHHS shorelines (if found), manpages, and PDF documentation.
+will install the GSHHG shorelines (if found), manpages, and PDF documentation.
 You have to explicitly make the latter two beforehand or they will be omitted
 during installation. You have the choice between a monolithic installation
 (_-DGMT_INSTALL_MONOLITHIC=ON_) where everything goes into a common

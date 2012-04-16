@@ -21,7 +21,7 @@ COLOR_HSV_MIN_V			# Minimum value assigned for most positive intensity value
 #-------------------------------------------------------
 # DIR Group:	Directories to use
 #-------------------------------------------------------
-DIR_GSHHS			# Location of GSHHS files
+DIR_GSHHG			# Location of GSHHG files
 DIR_TMP				# Where to write temporary files
 DIR_USER			# Colon-separated list of dirs where we look for data
 #-------------------------------------------------------
