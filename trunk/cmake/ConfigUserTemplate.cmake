@@ -81,6 +81,10 @@
 # separated) [on]:
 #set (GMT_INSTALL_MONOLITHIC OFF)
 
+# Set install name suffix used for directories and main gmt executable
+# [-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}]:
+#set (GMT_INSTALL_NAME_SUFFIX "suffix")
+
 # Set share installation path [${CMAKE_INSTALL_PREFIX}/share]:
 #set (GMT_SHARE_PATH "share_path")
 
