@@ -462,7 +462,6 @@ endforeach (_gmtdemo)
 
 configure_file (psldemo.h.in psldemo.h @ONLY)
 add_executable (psldemo psldemo.h psldemo.c)
-add_executable (byteswap_file byteswap_file.h byteswap_file.c)
 target_link_libraries (psldemo pslib)
 
 # rman for converting html manpages
