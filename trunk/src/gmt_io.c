@@ -2550,12 +2550,15 @@ int gmt_d_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
+/* Begin private functions used by gmt_byteswap_file() */
+
 #define DEBUG_BYTESWAP
 
 static inline void fwrite_check (const void *ptr,
 		size_t size, size_t nitems, FILE *stream) {
 	if (fwrite (ptr, size, nitems, stream) != nitems) {
-		fprintf (stderr, "%s: error writing %zd bytes.\n", __func__, size*nitems);
+		fprintf (stderr, "%s: error writing %zd bytes to stream.\n",
+				__func__, size * nitems);
 		exit (EXIT_FAILURE);
 	}
 }
@@ -2596,6 +2599,8 @@ static inline void swap_uint64 (char *buffer, const size_t len) {
 	}
 }
 
+/* End private functions used by gmt_byteswap_file() */
+
 int gmt_byteswap_file (struct GMT_CTRL *C,
 		FILE *outfp, FILE *infp, const SwapWidth swapwidth,
 		const uint64_t offset, const uint64_t length) {
@@ -2603,7 +2608,7 @@ int gmt_byteswap_file (struct GMT_CTRL *C,
 	 * swap only 'length' bytes beginning at 'offset' bytes
 	 * if 'length == 0' swap until EOF */
 	uint64_t bytes_read = 0;
-	size_t nbytes, chunk, padlen;
+	size_t nbytes, chunk, extrabytes;
 	static const size_t chunksize = 0x1000000; /* 16 MiB */
 	char *buffer;
 
@@ -2616,7 +2621,7 @@ int gmt_byteswap_file (struct GMT_CTRL *C,
 	/* allocate buffer on stack to improve disk i/o */
 	buffer = malloc (chunksize);
 	if (buffer == NULL) {
-		fprintf (stderr, "%s: error: cannot malloc %zd bytes.\n", __func__, chunksize);
+		fprintf (stderr, "%s: error: cannot malloc %zu bytes.\n", __func__, chunksize);
 		exit(EXIT_FAILURE);
 	}
 
@@ -2649,14 +2654,19 @@ int gmt_byteswap_file (struct GMT_CTRL *C,
 
 	/* start swapping bytes */
 	while ( length == 0 || bytes_read < offset + length ) {
-		chunk = length == 0 ? chunksize : length - bytes_read + offset;
+		uint64_t bytes_left = length - bytes_read + offset;
+		chunk = (length == 0 || bytes_left > chunksize) ? chunksize : bytes_left;
 		nbytes = fread (buffer, sizeof (char), chunk, infp);
 		if (nbytes == 0) {
 			if (feof (infp)) {
 				/* EOF */
 #ifdef DEBUG_BYTESWAP
-				fprintf (stderr, "%s: %" PRIu64 " bytes swapped.\n", __func__, bytes_read - offset);
+				fprintf (stderr, "%s: %" PRIu64 " bytes swapped.\n",
+						__func__, bytes_read - offset - extrabytes);
 #endif
+				if ( extrabytes != 0 )
+					fprintf (stderr, "%s: warning: the last %zu bytes were ignored during swapping.\n",
+							__func__, extrabytes);
 				C->current.io.status = GMT_IO_EOF;
 				free (buffer);
 				return true;
@@ -2665,16 +2675,19 @@ int gmt_byteswap_file (struct GMT_CTRL *C,
 			exit(EXIT_FAILURE);
 		}
 		bytes_read += nbytes;
+#ifdef DEBUG_BYTESWAP
+		fprintf (stderr, "%s: read %zu bytes into buffer of size %zu.\n",
+				__func__, nbytes, chunksize);
+#endif
 
 		/* nbytes must be a multiple of SwapWidth */
-		padlen = 8 - nbytes % swapwidth;
-		if ( padlen != 8 ) {
-			/* pad with zero */
-			memset (&buffer[nbytes], 0, padlen);
-			nbytes += padlen;
-			fprintf (stderr, "%s: warning: %" PRIu64 " bytes read; not aligned with "
-					"swapwidth of %u bytes; zero-pad %zd bytes.\n", __func__,
-					bytes_read - offset, swapwidth, padlen);
+		extrabytes = nbytes % swapwidth;
+		if ( extrabytes != 0 ) {
+			/* this can only happen on EOF, ignore extra bytes while swapping. */
+			fprintf (stderr, "%s: warning: read buffer contains %zu bytes which are "
+					"not aligned with the swapwidth of %zu bytes.\n",
+					__func__, nbytes, extrabytes);
+			nbytes -= extrabytes;
 		}
 
 		/* swap bytes in buffer */
@@ -2690,6 +2703,9 @@ int gmt_byteswap_file (struct GMT_CTRL *C,
 				swap_uint64 (buffer, nbytes);
 				break;
 		}
+
+		/* restore nbytes */
+		nbytes += extrabytes;
 
 		/* write buffer */
 		fwrite_check (buffer, sizeof (char), nbytes, outfp);
