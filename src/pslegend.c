@@ -27,7 +27,6 @@
 
 #include "pslib.h"
 #include "gmt.h"
-#include "gmt_modules.h"
 
 #define FRAME_CLEARANCE	4.0	/* In points */
 #define FRAME_GAP	2.0	/* In points */

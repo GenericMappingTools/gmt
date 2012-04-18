@@ -35,36 +35,6 @@ macro (gen_gmt_datums_h)
 	file (WRITE gmt_datums.h "${_datums}\n")
 endmacro (gen_gmt_datums_h)
 
-macro (gen_gmt_progs_h)
-	# gmt_prognames.h
-	file2list (_prognames_file ${GMT_SRC}/src/GMTprogs.txt)
-	list_regex_replace (
-		"^([^# \t]+)[ \t]+([^ \t]+)"
-		"{\"\\\\1\", \\\\2}"
-		_prognames ${_prognames_file}
-		MATCHES_ONLY)
-	list (REMOVE_DUPLICATES _prognames)
-	string (REPLACE ";" ",\n" _prognames "${_prognames}")
-	file (WRITE gmt_prognames.h "${_prognames}\n")
-
-	# gmt_progcases.h
-	list_regex_replace (
-		"^([^# \t]+)[ \t]+([^ \t]+)"
-		"\t\t\tfunc = (PFL)GMT_\\\\1#S\n\t\t\t*mode = \\\\2#S\n\t\t\tbreak#S"
-		_raw_progcases ${_prognames_file}
-		MATCHES_ONLY)
-	list (REMOVE_DUPLICATES _raw_progcases)
-	set (_progcases)
-	set (_casenum 0)
-	foreach (_case ${_raw_progcases})
-		list (APPEND _progcases "\t\tcase ${_casenum}:\n${_case}")
-		math (EXPR _casenum "${_casenum} + 1")
-	endforeach (_case ${_raw_progcases})
-	string (REPLACE ";" "\n" _progcases "${_progcases}")
-	string_unescape (_progcases "${_progcases}" NOESCAPE_SEMICOLON)
-	file (WRITE gmt_progcases.h "${_progcases}\n")
-endmacro (gen_gmt_progs_h)
-
 macro (gen_gmt_colors_h)
 	# gmt_colornames.h
 	file2list (_color_file ${GMT_SRC}/src/Colors.txt)
@@ -414,30 +384,28 @@ macro (gen_grd_math_h)
 endmacro (gen_grd_math_h)
 
 # Get something done
-if (${GENERATE_COMMAND} STREQUAL gen_gmt_datums_h)
+if (GENERATE_COMMAND STREQUAL gen_gmt_datums_h)
 	gen_gmt_datums_h ()
-elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_progs_h)
-	gen_gmt_progs_h ()
-elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_colors_h)
+elseif (GENERATE_COMMAND STREQUAL gen_gmt_colors_h)
 	gen_gmt_colors_h ()
-elseif (${GENERATE_COMMAND} STREQUAL gen_ps_font_info)
+elseif (GENERATE_COMMAND STREQUAL gen_ps_font_info)
 	gen_ps_font_info ()
-elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_ellipsoids)
+elseif (GENERATE_COMMAND STREQUAL gen_gmt_ellipsoids)
 	gen_gmt_ellipsoids ()
-elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_grdkeys_h)
+elseif (GENERATE_COMMAND STREQUAL gen_gmt_grdkeys_h)
 	gen_gmt_grdkeys_h ()
-elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_keywords_h)
+elseif (GENERATE_COMMAND STREQUAL gen_gmt_keywords_h)
 	gen_gmt_keywords_h ()
-elseif (${GENERATE_COMMAND} STREQUAL gen_gmtapi_err_h)
+elseif (GENERATE_COMMAND STREQUAL gen_gmtapi_err_h)
 	gen_gmtapi_err_h ()
-elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_dimensions_h)
+elseif (GENERATE_COMMAND STREQUAL gen_gmt_dimensions_h)
 	gen_gmt_dimensions_h ()
-elseif (${GENERATE_COMMAND} STREQUAL gen_gmt_math_h)
+elseif (GENERATE_COMMAND STREQUAL gen_gmt_math_h)
 	gen_gmt_math_h ()
-elseif (${GENERATE_COMMAND} STREQUAL gen_grd_math_h)
+elseif (GENERATE_COMMAND STREQUAL gen_grd_math_h)
 	gen_grd_math_h ()
-else (${GENERATE_COMMAND} STREQUAL gen_gmt_datums_h)
+elseif (DEFINED GENERATE_COMMAND)
 	message (SEND_ERROR "Unknown command: ${GENERATE_COMMAND}")
-endif (${GENERATE_COMMAND} STREQUAL gen_gmt_datums_h)
+endif (GENERATE_COMMAND STREQUAL gen_gmt_datums_h)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

@@ -62,11 +62,11 @@ int main (int argc, char **argv)
 	double redux, redux2, tolerance = 0.0;
 	struct GSHHS h;
 	struct POINT p;
-        
+ 
 	int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band, int index[]);
-	
+
 	if (argc < 2 || !(argc == 4 || argc == 5)) {
-		fprintf (stderr, "gshhs_dp %s - Line reduction of GSHHS %s using the Douglas-Peucker algorithm\n\n", GSHHS_PROG_VERSION, GSHHS_DATA_VERSION);
+		fprintf (stderr, "gshhs_dp %s - Line reduction of GSHHS using the Douglas-Peucker algorithm\n\n", GSHHS_PROG_VERSION);
 		fprintf (stderr, "usage: gshhs_dp input.b tolerance output.b [-v].\n");
 		fprintf (stderr, "\ttolerance is maximum mismatch in km.\n");
 		fprintf (stderr, "\t-v will run in verbose mode and report shrinkage.\n");

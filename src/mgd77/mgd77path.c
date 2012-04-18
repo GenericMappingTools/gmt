@@ -52,8 +52,8 @@ GMT_LONG GMT_mgd77path_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT,"mgd77path %s [API] - Return paths to MGD77 cruises and directories\n\n", GMT_VERSION);
-	GMT_message (GMT,"usage: mgd77path <cruise(s)> A[-] -D [-I<code>] [%s]\n\n", GMT_V_OPT);
+	GMT_message (GMT, "mgd77path %s [API] - Return paths to MGD77 cruises and directories\n\n", GMT_VERSION);
+	GMT_message (GMT, "usage: mgd77path <cruise(s)> A[-] -D [-I<code>] [%s]\n\n", GMT_V_OPT);
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
              

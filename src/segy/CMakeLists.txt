@@ -19,7 +19,8 @@
 
 # source files
 set (SUPPL_LIB_SRCS segy_io.h segy.h segyreel.h segy_io.c)
-set (SUPPL_PROGS_SRCS pssegy.c pssegyz.c segy2grd.c)
+set (SUPPL_PROGS_SRCS segy2grd.c)
+set (SUPPL_PROGSPS_SRCS pssegy.c pssegyz.c)
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.segyprogs
@@ -28,34 +29,46 @@ set (SUPPL_EXAMPLE_PROGS segyprogs_1.sh segyprogs_2.sh segyprogs_3.sh
 	segyprogs_4.sh segyprogs_5.sh)
 
 # generate header file gmt_segy.h
-gmt_set_api_header(SUPPL_API_H ${SUPPL_PROGS_SRCS})
+gmt_set_api_header(SUPPL_API_H
+	${SUPPL_PROGS_SRCS}
+	${SUPPL_PROGSPS_SRCS})
 
 # lib sources
-set (LIB_SRCS ${SUPPL_LIB_SRCS}
-	${SUPPL_PROGS_SRCS} ${SUPPL_API_H})
+set (LIB_SRCS
+	${SUPPL_LIB_SRCS}
+	${SUPPL_PROGS_SRCS}
+	${SUPPL_PROGSPS_SRCS}
+	${SUPPL_API_H})
 
 # create build targets
 string (REPLACE ".c" "" SUPPL_PROGS "${SUPPL_PROGS_SRCS}")
+string (REPLACE ".c" "" SUPPL_PROGSPS "${SUPPL_PROGSPS_SRCS}")
 foreach (prog ${SUPPL_PROGS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
-	PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
+		PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
+	target_link_libraries (${prog} gmtlib)
+endforeach (prog)
+foreach (prog ${SUPPL_PROGSPS})
+	add_executable (${prog} ${GMT_PROGRAM})
+	set_target_properties (${prog}
+		PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMTPSL;FUNC=GMT_${prog}")
 	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 
 # generate Mac debugging symbols
-create_debug_sym (${SUPPL_PROGS})
+create_debug_sym (${SUPPL_PROGS} ${SUPPL_PROGSPS})
 
 # add the install targets
-install (TARGETS ${SUPPL_PROGS}
+install (TARGETS ${SUPPL_PROGS} ${SUPPL_PROGSPS}
 	RUNTIME DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 
 # add to gmt_suppl target
-add_depend_to_target (gmt_suppl ${SUPPL_PROGS})
+add_depend_to_target (gmt_suppl ${SUPPL_PROGS} ${SUPPL_PROGSPS})
 
 # Generate manpages
-string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGS_SRCS}")
+string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGS_SRCS};${SUPPL_PROGSPS_SRCS}")
 gmt_create_manpages ("${SUPPL_MAN_1}")
 
 # install example data

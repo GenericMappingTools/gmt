@@ -49,7 +49,7 @@ project (GMT)
 
 # Where to find our CMake modules (this variable is visible in subdirectories).
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/"
-	CACHE INTERNAL "Location of our custom CMake modules.")
+	CACHE INTERNAL "Location of our custom CMake modules." FORCE)
 
 # Include configuration options (default options and options overridden by user).
 include (ConfigCMake)
