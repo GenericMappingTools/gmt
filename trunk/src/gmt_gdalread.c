@@ -29,7 +29,7 @@
 int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, double *adfGeoTransform);
 int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename, GMT_LONG got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max);
 int ReportCorner (struct GMT_CTRL *C, GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo);
-void ComputeRasterMinMax (struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, double adfMinMax[2], GMT_LONG nXSize, GMT_LONG nYSize, double, double);
+void ComputeRasterMinMax (struct GMT_CTRL *C, unsigned char *tmp, GDALRasterBandH hBand, double adfMinMax[2], GMT_LONG nXSize, GMT_LONG nYSize, double, double);
 int gdal_decode_columns (struct GMT_CTRL *C, char *txt, GMT_LONG *whichBands, GMT_LONG n_col);
 
 GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
@@ -62,18 +62,13 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	GMT_LONG	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
 	GMT_LONG	n_alloc, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
 	//GMT_LONG	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
-	char	*tmp = NULL;
-	float	*tmpF32 = NULL;
-	double	*tmpF64 = NULL, dfNoData, adfMinMax[2];
+	unsigned char *tmp = NULL;
+	double	tmpF64, dfNoData, adfMinMax[2];
 	double	dfULX = 0.0, dfULY = 0.0, dfLRX = 0.0, dfLRY = 0.0;
 	double	z_min = 1e50, z_max = -1e50;
 	GDALDatasetH	hDataset;
 	GDALRasterBandH	hBand;
 	GDALDriverH	hDriver;
-	GInt16	*tmpI16 = NULL;
-	GUInt16	*tmpUI16 = NULL;
-	GInt32	*tmpI32 = NULL;
-	GUInt32	*tmpUI32 = NULL;
 
 	Ctrl->band_field_names = NULL;		/* So we can test before trying to read its fields */
 	GMT_memset (anSrcWin, 4, int);
@@ -281,7 +276,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			if (prhs->c_ptr.active)	/* We have a pointer with already allocated memory ready to use */
 				Ctrl->UInt8.data = prhs->c_ptr.grd;
 			else
-				Ctrl->UInt8.data = GMT_memory (C, NULL, n_alloc, unsigned char);
+				Ctrl->UInt8.data = GMT_memory (C, NULL, n_alloc, uint8_t); /* aka unsigned char */
 
 			if (do_BIP) {
 				if (nBands == 4)	/* Assume fourth band holds the alpha channel */
@@ -295,16 +290,16 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			}
 			break;
 		case GDT_Int16:
-			Ctrl->Int16.data = GMT_memory (C, NULL, n_alloc, short int);
+			Ctrl->Int16.data = GMT_memory (C, NULL, n_alloc, int16_t);
 			break;
 		case GDT_UInt16:
-			Ctrl->UInt16.data = GMT_memory (C, NULL, n_alloc, unsigned short int);
+			Ctrl->UInt16.data = GMT_memory (C, NULL, n_alloc, uint16_t);
 			break;
 		case GDT_Int32:
-			Ctrl->Int32.data = GMT_memory (C, NULL, n_alloc, int);
+			Ctrl->Int32.data = GMT_memory (C, NULL, n_alloc, int32_t);
 			break;
 		case GDT_UInt32:
-			Ctrl->UInt32.data = GMT_memory (C, NULL, n_alloc, int);
+			Ctrl->UInt32.data = GMT_memory (C, NULL, n_alloc, uint32_t);
 			break;
 		case GDT_Float32:
 		case GDT_Float64:
@@ -395,95 +390,100 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 					}
 				break;
 			case GDT_Int16:
-				tmpI16 = (GInt16 *) tmp;
 				Ctrl->Int16.active = TRUE;
 				if (fliplr) {
 					for (m = 0; m < nYSize; m++) {
 						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
 						for (n = nXSize-1; n >= 0; n--)
-							Ctrl->Int16.data[nn++] = tmpI16[mVector[m]+n];
+							memcpy (&Ctrl->Int16.data[nn++],
+									&tmp[(mVector[m]+n) * sizeof(int16_t)], sizeof(int16_t));
 					}
 				}
 				else {
 					for (m = 0; m < nYSize; m++) {
 						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
 						for (n = 0; n < nXSize; n++)
-							Ctrl->Int16.data[nn++] = tmpI16[mVector[m]+n];
+							memcpy (&Ctrl->Int16.data[nn++],
+									&tmp[(mVector[m]+n) * sizeof(int16_t)], sizeof(int16_t));
 					}
 				}
 				break;
 			case GDT_UInt16:
-				tmpUI16 = (GUInt16 *) tmp;
 				Ctrl->UInt16.active = TRUE;
 				if (fliplr) {
 					for (m = 0; m < nYSize; m++) {
 						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
 						for (n = nXSize-1; n >= 0; n--)
-							Ctrl->UInt16.data[nn++] = tmpUI16[mVector[m]+n];
+							memcpy (&Ctrl->UInt16.data[nn++],
+									&tmp[(mVector[m]+n) * sizeof(uint16_t)], sizeof(uint16_t));
 					}
 				}
 				else {
 					for (m = 0; m < nYSize; m++) {
 						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
 						for (n = 0; n < nXSize; n++)
-							Ctrl->UInt16.data[nn++] = tmpUI16[mVector[m]+n];
+							memcpy (&Ctrl->UInt16.data[nn++],
+									&tmp[(mVector[m]+n) * sizeof(uint16_t)], sizeof(uint16_t));
 					}
 				}
 				break;
 			case GDT_Int32:
-				tmpI32 = (GInt32 *) tmp;
 				Ctrl->Int32.active = TRUE;
 				if (fliplr) {
 					for (m = 0; m < nYSize; m++) {
 						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
 						for (n = nXSize-1; n >= 0; n--)
-							Ctrl->Int32.data[nn++] = tmpI32[mVector[m]+n];
+							memcpy (&Ctrl->Int32.data[nn++],
+									&tmp[(mVector[m]+n) * sizeof(int32_t)], sizeof(int32_t));
 					}
 				}
 				else {
 					for (m = 0; m < nYSize; m++) {
 						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
 						for (n = 0; n < nXSize; n++)
-							Ctrl->Int32.data[nn++] = tmpI32[mVector[m]+n];
+							memcpy (&Ctrl->Int32.data[nn++],
+									&tmp[(mVector[m]+n) * sizeof(int32_t)], sizeof(int32_t));
 					}
 				}
 				break;
 			case GDT_UInt32:
-				tmpUI32 = (GUInt32 *) tmp;
 				Ctrl->UInt32.active = TRUE;
 				if (fliplr) {
 					for (m = 0; m < nYSize; m++) {
 						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
 						for (n = nXSize-1; n >= 0; n--)
-							Ctrl->UInt32.data[nn++] = tmpUI32[mVector[m]+n];
+							memcpy (&Ctrl->UInt32.data[nn++],
+									&tmp[(mVector[m]+n) * sizeof(uint32_t)], sizeof(uint32_t));
 					}
 				}
 				else {
 					for (m = 0; m < nYSize; m++) {
 						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
 						for (n = 0; n < nXSize; n++)
-							Ctrl->UInt32.data[nn++] = tmpUI32[mVector[m]+n];
+							memcpy (&Ctrl->UInt32.data[nn++],
+									&tmp[(mVector[m]+n) * sizeof(uint32_t)], sizeof(uint32_t));
 					}
 				}
 				break;
 			case GDT_Float32:
-				tmpF32 = (float *)tmp;
 				Ctrl->Float.active = TRUE;
 				for (m = 0; m < nYSize; m++) {
 					nn = (pad+m)*(nXSize_withPad) + startColPos;
 					for (n = 0; n < nXSize; n++) {
-						Ctrl->Float.data[nn] = tmpF32[mVector[m]+n];
+						memcpy (&Ctrl->Float.data[nn],
+								&tmp[(mVector[m]+n) * sizeof(float)], sizeof(float));
 						nn += incStep;
 					}
 				}
 				break;
 			case GDT_Float64:	/* For now we don't care about doubles */
-				tmpF64 = (double *)tmp;
 				Ctrl->Float.active = TRUE;
 				for (m = 0; m < nYSize; m++) {
 					nn = (pad+m)*(nXSize_withPad) + startColPos;
 					for (n = 0; n < nXSize; n++) {
-						Ctrl->Float.data[nn] = (float)tmpF64[mVector[m]+n];
+						memcpy (&tmpF64,
+								&tmp[(mVector[m]+n) * sizeof(double)], sizeof(double));
+						Ctrl->Float.data[nn] = (float)tmpF64;
 						nn += incStep;
 					}
 				}
@@ -957,73 +957,80 @@ int record_geotransform ( char *gdal_filename, GDALDatasetH hDataset, double *ad
 }
 
 /* -------------------------------------------------------------------- */
-void ComputeRasterMinMax(struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, double adfMinMax[2],
+void ComputeRasterMinMax(struct GMT_CTRL *C, unsigned char *tmp, GDALRasterBandH hBand, double adfMinMax[2],
 			GMT_LONG nXSize, GMT_LONG nYSize, double z_min, double z_max) {
 	/* Compute Min/Max of a sub-region. I'm forced to do this because the
 	GDALComputeRasterMinMax works only on the entire dataset */
 	int	i, bGotNoDataValue;
-	GInt16	*tmpI16 = NULL;
-	GUInt16	*tmpUI16 = NULL;
-	GInt32	*tmpI32 = NULL;
-	GUInt32	*tmpUI32 = NULL;
-	float	*tmpF32 = NULL;
-	double	dfNoDataValue, *tmpF64;
+	int16_t	tmpI16;
+	uint16_t	tmpUI16;
+	int32_t	tmpI32;
+	uint32_t	tmpUI32;
+	float	tmpF32;
+	double	dfNoDataValue, tmpF64;
 
 	dfNoDataValue = GDALGetRasterNoDataValue(hBand, &bGotNoDataValue);
 	switch( GDALGetRasterDataType(hBand) ) {
 		case GDT_Byte:
 			for (i = 0; i < nXSize*nYSize; i++) {
-				if( bGotNoDataValue && tmp[i] == dfNoDataValue ) continue;
+				if( bGotNoDataValue && tmp[i] == dfNoDataValue )
+					continue;
 				z_min = MIN(tmp[i], z_min);
 				z_max = MAX(tmp[i], z_max);
 			}
 			break;
 		case GDT_Int16:
-			tmpI16 = (GInt16 *) tmp;
 			for (i = 0; i < nXSize*nYSize; i++) {
-				if( bGotNoDataValue && tmpI16[i] == dfNoDataValue ) continue;
-				z_min = MIN(tmpI16[i], z_min);
-				z_max = MAX(tmpI16[i], z_max);
+				memcpy (&tmpI16, &tmp[i * sizeof(int16_t)], sizeof(int16_t));
+				if( bGotNoDataValue && tmpI16 == dfNoDataValue )
+					continue;
+				z_min = MIN(tmpI16, z_min);
+				z_max = MAX(tmpI16, z_max);
 			}
 			break;
 		case GDT_UInt16:
-			tmpUI16 = (GUInt16 *) tmp;
 			for (i = 0; i < nXSize*nYSize; i++) {
-				if( bGotNoDataValue && tmpUI16[i] == dfNoDataValue ) continue;
-				z_min = MIN(tmpUI16[i], z_min);
-				z_max = MAX(tmpUI16[i], z_max);
+				memcpy (&tmpUI16, &tmp[i * sizeof(uint16_t)], sizeof(uint16_t));
+				if( bGotNoDataValue && tmpUI16 == dfNoDataValue )
+					continue;
+				z_min = MIN(tmpUI16, z_min);
+				z_max = MAX(tmpUI16, z_max);
 			}
 			break;
 		case GDT_Int32:
-			tmpI32 = (GInt32 *) tmp;
 			for (i = 0; i < nXSize*nYSize; i++) {
-				if( bGotNoDataValue && tmpI32[i] == dfNoDataValue ) continue;
-				z_min = MIN(tmpI32[i], z_min);
-				z_max = MAX(tmpI32[i], z_max);
+				memcpy (&tmpI32, &tmp[i * sizeof(int32_t)], sizeof(int32_t));
+				if( bGotNoDataValue && tmpI32 == dfNoDataValue )
+					continue;
+				z_min = MIN(tmpI32, z_min);
+				z_max = MAX(tmpI32, z_max);
 			}
 			break;
 		case GDT_UInt32:
-			tmpUI32 = (GUInt32 *) tmp;
 			for (i = 0; i < nXSize*nYSize; i++) {
-				if( bGotNoDataValue && tmpUI32[i] == dfNoDataValue ) continue;
-				z_min = MIN(tmpUI32[i], z_min);
-				z_max = MAX(tmpUI32[i], z_max);
+				memcpy (&tmpUI32, &tmp[i * sizeof(uint32_t)], sizeof(uint32_t));
+				if( bGotNoDataValue && tmpUI32 == dfNoDataValue )
+					continue;
+				z_min = MIN(tmpUI32, z_min);
+				z_max = MAX(tmpUI32, z_max);
 			}
 			break;
 		case GDT_Float32:
-			tmpF32 = (float *)tmp;
 			for (i = 0; i < nXSize*nYSize; i++) {
-				if( bGotNoDataValue && tmpF32[i] == dfNoDataValue ) continue;
-				z_min = MIN(tmpF32[i], z_min);
-				z_max = MAX(tmpF32[i], z_max);
+				memcpy (&tmpF32, &tmp[i * sizeof(float)], sizeof(float));
+				if( bGotNoDataValue && tmpF32 == dfNoDataValue )
+					continue;
+				z_min = MIN(tmpF32, z_min);
+				z_max = MAX(tmpF32, z_max);
 			}
 			break;
 		case GDT_Float64:
-			tmpF64 = (double *)tmp;
 			for (i = 0; i < nXSize*nYSize; i++) {
-				if( bGotNoDataValue && tmpF64[i] == dfNoDataValue ) continue;
-				z_min = MIN(tmpF64[i], z_min);
-				z_max = MAX(tmpF64[i], z_max);
+				memcpy (&tmpF64, &tmp[i * sizeof(double)], sizeof(double));
+				if( bGotNoDataValue && tmpF64 == dfNoDataValue )
+					continue;
+				z_min = MIN(tmpF64, z_min);
+				z_max = MAX(tmpF64, z_max);
 			}
 			break;
 		default:
