@@ -43,18 +43,18 @@ string (REPLACE ".c" "" SUPPL_PROGSPS "${SUPPL_PROGSPS_SRCS}")
 foreach (prog ${SUPPL_PROGS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
-	PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
+		PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
 	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 foreach (prog ${SUPPL_PROGSPS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
-	PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMTPSL;FUNC=GMT_${prog}")
+		PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMTPSL;FUNC=GMT_${prog}")
 	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 
 # generate Mac debugging symbols
-create_debug_sym (${SUPPL_PROGS})
+create_debug_sym (${SUPPL_PROGS} ${SUPPL_PROGSPS})
 
 # add the install targets
 install (TARGETS ${SUPPL_PROGS} ${SUPPL_PROGSPS}
@@ -62,10 +62,10 @@ install (TARGETS ${SUPPL_PROGS} ${SUPPL_PROGSPS}
 	COMPONENT Runtime)
 
 # add to gmt_suppl target
-add_depend_to_target (gmt_suppl ${SUPPL_PROGS})
+add_depend_to_target (gmt_suppl ${SUPPL_PROGS} ${SUPPL_PROGSPS})
 
 # Generate manpages
-string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGS_SRCS}")
+string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGS_SRCS};${SUPPL_PROGSPS_SRCS}")
 gmt_create_manpages ("${SUPPL_MAN_1}")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

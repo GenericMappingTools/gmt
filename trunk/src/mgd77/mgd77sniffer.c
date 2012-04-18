@@ -50,7 +50,7 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	fprintf(stderr,"mgd77sniffer %s [API] - Along-track quality control of MGD77 cruises\n\n", GMT_VERSION);
+	GMT_message (GMT, "mgd77sniffer %s [API] - Along-track quality control of MGD77 cruises\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: mgd77sniffer <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
 	GMT_message (GMT, "\t[-g<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>]] [-G<fieldabbrev>,<grid>] [-H] [-I<fieldabbrev>,<rec1>,<recN>] [-K]\n");
 	GMT_message (GMT, "\t[-L<custom_limits_file> ] [-N] [%s] [-Sd|s|t] [-T<gap>]\n",GMT_Rgeo_OPT);

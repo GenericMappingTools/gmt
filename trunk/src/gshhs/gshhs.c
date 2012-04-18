@@ -97,8 +97,8 @@ void Free_gshhs_Ctrl (struct GMT_CTRL *GMT, struct GSHHS_CTRL *C) {	/* Deallocat
 GMT_LONG GMT_gshhs_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
-	
-	GMT_message (GMT, "gshhs %s [API] - Extract data tables from binary GSHHS or WDBII %s data files\n", GSHHS_PROG_VERSION, GSHHS_DATA_VERSION);
+
+	GMT_message (GMT, "gshhs %s [API] - Extract data tables from binary GSHHS or WDBII data files\n\n", GSHHS_PROG_VERSION);
 	GMT_message (GMT, "usage: gshhs gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>] [-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

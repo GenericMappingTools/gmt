@@ -215,14 +215,6 @@ add_custom_command (OUTPUT gmt_datums.h
 	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
 	DEPENDS Datums.txt)
 
-add_custom_command (OUTPUT gmt_prognames.h gmt_progcases.h
-	COMMAND ${CMAKE_COMMAND}
-	-D GENERATE_COMMAND=gen_gmt_progs_h
-	-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-	-D GMT_SRC=${GMT_SOURCE_DIR}
-	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
-	DEPENDS GMTprogs.txt)
-
 add_custom_command (OUTPUT gmt_colornames.h gmt_color_rgb.h Colors.i
 	COMMAND ${CMAKE_COMMAND}
 	-D GENERATE_COMMAND=gen_gmt_colors_h
@@ -301,28 +293,6 @@ add_custom_command (OUTPUT grdmath.h grdmath_op.h grdmath_explain.h grdmath_man.
 	-D GMT_SRC=${GMT_SOURCE_DIR}
 	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
 	DEPENDS grdmath.c)
-
-# gen_gmt_progpurpose.h
-macro (gen_gmt_progpurpose_h _PURPOSES _FILE)
-	grep (
-		#"GMT_message[^%]+%s [[]API[]]"
-		"%s [API] -"
-		_raw_purpose_list
-		${_FILE} ${ARGN}
-		LITERALLY
-		)
-	list_regex_replace (
-		"^[ \t]*GMT_message \\\\(GMT, ([^ ]+)[^-]*(.*#Bn)#Bn.+"
-		"\\\\1 \\\\2\""
-		_purpose_list ${_raw_purpose_list})
-	string_unescape (_purpose_list "${_purpose_list}" NOESCAPE_SEMICOLON)
-	string (REPLACE ";" "\n  " _purpose_list "${_purpose_list}")
-	set (${_PURPOSES} "${_purpose_list}")
-	configure_file (gmt_progpurpose.h.in gmt_progpurpose.h)
-endmacro (gen_gmt_progpurpose_h _PURPOSES _FILE)
-
-# generate gmt_progpurpose.h
-gen_gmt_progpurpose_h (GMT_PROG_PURPOSE ${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS})
 
 configure_file (gmt_config.h.in gmt_config.h)
 configure_file (gmt_version.h.in gmt_version.h)
@@ -453,6 +423,37 @@ endforeach (_gmtprogps)
 set (GMT_SUPPL_STRING "modules")
 gmt_set_api_header(GMT_MODULES_API_H ${GMT_PROGS} ${GMT_PROGSPS})
 
+# make list of main gmt and supplement targets
+get_subdir_var (_suppl_progs SUPPL_PROGS ${GMT_SUPPL_DIRS})
+get_subdir_var (_suppl_progsps SUPPL_PROGSPS ${GMT_SUPPL_DIRS})
+set (_all_progs ${GMT_PROGS} ${_suppl_progs})
+set (_all_progsps ${GMT_PROGSPS} ${_suppl_progsps})
+string (REPLACE ";" ":GMTAPI_GMT;" _all_progs "${_all_progs}:GMTAPI_GMT")
+string (REPLACE ";" ":GMTAPI_GMTPSL;" _all_progsps "${_all_progsps}:GMTAPI_GMTPSL")
+list (APPEND _all_progs ${_all_progsps})
+list (SORT _all_progs)
+
+# generate gmt_prognames.h and gmt_progcases.h
+gen_gmt_prog_names_cases_h (${_all_progs})
+
+# generate gmt_suppl_modules.h
+# TODO: this is ugly. should all go into gmt_modules.h
+get_subdir_var (_suppl_api_hdrs SUPPL_API_H ${GMT_SUPPL_DIRS})
+set (_suppl_api_includes)
+foreach (_hdrfile ${_suppl_api_hdrs})
+	list (APPEND _suppl_api_includes "#include \"${_hdrfile}\"")
+endforeach (_hdrfile ${_suppl_api_hdrs})
+string (REPLACE ";" "\n" _suppl_api_includes "${_suppl_api_includes}")
+file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_suppl_modules.h
+	"${_suppl_api_includes}\n")
+
+# generate gmt_progpurpose.h
+get_subdir_var_files (_suppl_progs_srcs SUPPL_PROGS_SRCS ${GMT_SUPPL_DIRS})
+get_subdir_var_files (_suppl_progsps_srcs SUPPL_PROGSPS_SRCS ${GMT_SUPPL_DIRS})
+gen_gmt_progpurpose_h (GMT_PROG_PURPOSE
+	${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS}
+	${_suppl_progs_srcs} ${_suppl_progsps_srcs})
+
 # build targets for demos
 string (REPLACE ".c" "" GMT_DEMOS "${GMT_DEMOS_SRCS}")
 foreach (_gmtdemo ${GMT_DEMOS})
@@ -527,9 +528,9 @@ if (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 		\${CMAKE_INSTALL_PREFIX}/bin)
 	execute_process (
 		COMMAND ${CMAKE_COMMAND} -E create_symlink
-		${_rpath} \${CMAKE_INSTALL_PREFIX}/bin/${_gmt_wrapper_name}
+		${_rpath} \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/bin/${_gmt_wrapper_name}
 		COMMAND ${CMAKE_COMMAND} -E create_symlink
-		${_gmt_wrapper_name} \${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt)
+		${_gmt_wrapper_name} \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt)
 	")
 
 	# create symlinks in libdir/..:
@@ -540,9 +541,9 @@ if (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 	install (CODE "
 	execute_process (
 		COMMAND ${CMAKE_COMMAND} -E create_symlink
-		${_rpath_share} \${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/../share
+		${_rpath_share} \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/../share
 		COMMAND ${CMAKE_COMMAND} -E create_symlink
-		${_rpath_man} \${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/../man)
+		${_rpath_man} \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/../man)
 	")
 endif (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 

@@ -18,10 +18,9 @@
 #
 
 # source files
+set (SUPPL_PROGS_SRCS dimfilter.c)
 if (UNIX)
-	set (SUPPL_PROGS_SRCS dimfilter.c gmtdigitize.c)
-elseif (WIN32)
-	set (SUPPL_PROGS_SRCS dimfilter.c)
+	set (SUPPL_PROGS_SRCS ${SUPPL_PROGS_SRCS} gmtdigitize.c)
 endif (UNIX)
 
 # example files

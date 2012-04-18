@@ -25,6 +25,7 @@
 
 #include "pslib.h"
 #include "gmt_modules.h"
+#include "gmt_suppl_modules.h"
 
 struct GMT_PROGRAMS {		/* Struct with name and mode for each GMT 4 program */
 	char name[GMT_TEXT_LEN64];	/* Program name */

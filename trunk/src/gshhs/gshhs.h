@@ -60,7 +60,6 @@
 #endif
 
 #define GSHHS_DATA_RELEASE	9		/* For v2.2.0 data set */
-#define GSHHS_DATA_VERSION	"2.2.0"
 #define GSHHS_PROG_VERSION	"1.13"
 
 #define GSHHS_MAXPOL	200000	/* Should never need to allocate more than this many polygons */

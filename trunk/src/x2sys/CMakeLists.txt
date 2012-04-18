@@ -39,7 +39,7 @@ string (REPLACE ".c" "" SUPPL_PROGS "${SUPPL_PROGS_SRCS}")
 foreach (prog ${SUPPL_PROGS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
-	PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
+		PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
 	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 

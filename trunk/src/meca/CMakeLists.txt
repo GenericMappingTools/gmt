@@ -19,40 +19,40 @@
 
 # source files
 set (SUPPL_LIB_SRCS utilmeca.c nrutil.c)
-set (SUPPL_PROGS_SRCS psmeca.c pspolar.c psvelo.c pscoupe.c)
+set (SUPPL_PROGSPS_SRCS psmeca.c pspolar.c psvelo.c pscoupe.c)
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.meca)
 
 # generate header file gmt_meca.h
-gmt_set_api_header(SUPPL_API_H ${SUPPL_PROGS_SRCS})
+gmt_set_api_header(SUPPL_API_H ${SUPPL_PROGSPS_SRCS})
 
 # lib sources
 set (LIB_SRCS ${SUPPL_LIB_SRCS}
-	${SUPPL_PROGS_SRCS} ${SUPPL_API_H})
+	${SUPPL_PROGSPS_SRCS} ${SUPPL_API_H})
 
 # create build targets
-string (REPLACE ".c" "" SUPPL_PROGS "${SUPPL_PROGS_SRCS}")
-foreach (prog ${SUPPL_PROGS})
+string (REPLACE ".c" "" SUPPL_PROGSPS "${SUPPL_PROGSPS_SRCS}")
+foreach (prog ${SUPPL_PROGSPS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
-	PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMTPSL;FUNC=GMT_${prog}")
+		PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMTPSL;FUNC=GMT_${prog}")
 	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 
 # generate Mac debugging symbols
-create_debug_sym (${SUPPL_PROGS})
+create_debug_sym (${SUPPL_PROGSPS})
 
 # add the install targets
-install (TARGETS ${SUPPL_PROGS}
+install (TARGETS ${SUPPL_PROGSPS}
 	RUNTIME DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 
 # add to gmt_suppl target
-add_depend_to_target (gmt_suppl ${SUPPL_PROGS})
+add_depend_to_target (gmt_suppl ${SUPPL_PROGSPS})
 
 # Generate manpages
-string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGS_SRCS}")
+string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGSPS_SRCS}")
 gmt_create_manpages ("${SUPPL_MAN_1}")
 
 # install example data

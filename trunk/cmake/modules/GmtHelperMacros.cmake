@@ -23,6 +23,8 @@
 # add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
 # add_file_to_cached_list (LIST [ FILE [ FILE ... ]])
 # gmt_set_api_header (API_HEADER FUNCTIONS)
+# gen_gmt_progpurpose.h (VARIABLE FILE [ FILE... ])
+# gen_gmt_prog_names_cases_h (GMT_PROGS)
 # get_subdir_var (VARIABLE VAR_NAME DIR [ DIR ... ])
 # get_subdir_var_files (VARIABLE VAR_NAME DIR [ DIR ... ])
 
@@ -103,9 +105,59 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		# create api header file from template
 		configure_file (${GMT_SOURCE_DIR}/src/gmt_api.h.in
 			gmt_${GMT_SUPPL_STRING}.h)
-		set (${_API_HEADER} gmt_${GMT_SUPPL_STRING}.h)
 		set (GMT_SUPPL_STRING) # reset GMT_SUPPL_STRING
 	endmacro (GMT_SET_API_HEADER _API_HEADER _FUNCTIONS)
+
+	# gen_gmt_progpurpose.h (VARIABLE FILE [ FILE... ])
+  # example: gen_gmt_progpurpose_h (GMT_PROG_PURPOSE ${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS})
+	macro (gen_gmt_progpurpose_h _PURPOSES _FILE)
+		grep (
+			"%s [API] -"
+			_raw_purpose_list
+			${_FILE} ${ARGN}
+			LITERALLY
+			)
+		list_regex_replace (
+			"^[ \t]*GMT_message \\\\(GMT, ([^ ]+)[^-]*(.*#Bn)#Bn.+"
+			"\\\\1 \\\\2\""
+			_purpose_list ${_raw_purpose_list})
+		string_unescape (_purpose_list "${_purpose_list}" NOESCAPE_SEMICOLON)
+		string (REPLACE ";" "\n  " _purpose_list "${_purpose_list}")
+		set (${_PURPOSES} "${_purpose_list}")
+		configure_file (gmt_progpurpose.h.in gmt_progpurpose.h)
+	endmacro (gen_gmt_progpurpose_h _PURPOSES _FILE)
+
+	# gen_gmt_prog_names_cases_h (GMT_PROGS)
+	# gen_gmt_prog_names_cases_h (${_allGMT_PROGS})
+	macro (gen_gmt_prog_names_cases_h GMT_PROGS)
+		# gmt_prognames.h
+		list_regex_replace (
+			"^([^# \t:]+):([^ \t]+)"
+			"{\"\\\\1\", \\\\2}"
+			_prognames ${GMT_PROGS} ${ARGN}
+			MATCHES_ONLY)
+		list (REMOVE_DUPLICATES _prognames)
+		string (REPLACE ";" ",\n" _prognames "${_prognames}")
+		file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_prognames.h "${_prognames}\n")
+
+		# gmt_progcases.h
+		list_regex_replace (
+			"^([^# \t:]+):([^ \t]+)"
+			"\t\t\tfunc = (PFL)GMT_\\\\1#S\n\t\t\t*mode = \\\\2#S\n\t\t\tbreak#S"
+			_raw_progcases ${GMT_PROGS} ${ARGN}
+			MATCHES_ONLY)
+		list (REMOVE_DUPLICATES _raw_progcases)
+		set (_progcases)
+		set (_casenum 0)
+		foreach (_case ${_raw_progcases})
+			list (APPEND _progcases "\t\tcase ${_casenum}:\n${_case}")
+			math (EXPR _casenum "${_casenum} + 1")
+		endforeach (_case ${_raw_progcases})
+		string (REPLACE ";" "\n" _progcases "${_progcases}")
+		string_unescape (_progcases "${_progcases}" NOESCAPE_SEMICOLON)
+		file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_progcases.h "${_progcases}\n")
+	endmacro (gen_gmt_prog_names_cases_h)
+
 
 	# get_subdir_var (VARIABLE VAR_NAME DIR [ DIR ... ])
 	# example: get_subdir_var (SUB_TARGETS PROGS ${SUB_DIRS})

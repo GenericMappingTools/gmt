@@ -68,7 +68,7 @@ GMT_LONG GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT,"mgd77convert %s [API] - Convert MGD77 data to other file formats\n\n", GMT_VERSION);
+	GMT_message (GMT, "mgd77convert %s [API] - Convert MGD77 data to other file formats\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: mgd77convert <cruise(s)> -Fa|c|m|t -T[+]a|c|m|t [-D] [-L[e][w][+]] [-V]\n\n");
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
