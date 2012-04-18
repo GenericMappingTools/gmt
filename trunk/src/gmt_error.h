@@ -99,11 +99,16 @@ EXTERN_MSC const char * GMT_strerror (GMT_LONG err);
 /* Check condition and report error if true */
 #define GMT_check_condition(C,condition,...) ((condition) ? GMT_report(C,GMT_MSG_FATAL,__VA_ARGS__) : 0)
 
-/* Convenience functions to GMT_err_func */
-#ifndef __func__
-#	define __func__ __FUNCTION__
+/* Set __func__ identifier */
+#ifndef HAVE___FUNC__
+#	ifdef HAVE___FUNCTION__
+#		define __func__ __FUNCTION__
+#	else
+#		define __func__ "<unknown>"
+#	endif
 #endif
 
+/* Convenience functions to GMT_err_func */
 #ifdef DEBUG
 #define GMT_err_pass(C,err,file) GMT_err_func (C,err,FALSE,file,__FILE__,__LINE__)
 #define GMT_err_fail(C,err,file) GMT_err_func (C,err,TRUE,file,__FILE__,__LINE__)

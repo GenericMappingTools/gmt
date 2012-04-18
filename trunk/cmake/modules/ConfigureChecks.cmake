@@ -25,29 +25,42 @@ endif(NOT DEFINED _INCLUDED_CHECK_MACROS_)
 # Check if compiler supports -traditional-cpp
 #
 
-if (MSVC)
-	if (NOT HAVE_TRADITIONAL_CPP)
-		# Microsoft compiler
-		message (STATUS "Performing Test HAVE_TRADITIONAL_CPP")
-		execute_process (COMMAND ${CMAKE_C_COMPILER} /EP
-			${GMT_SOURCE_DIR}/config.h.cmake # can be any header file
-			RESULT_VARIABLE _mscl_ep
-			OUTPUT_QUIET ERROR_QUIET)
-		if (_mscl_ep EQUAL 0)
-			set (HAVE_TRADITIONAL_CPP TRUE CACHE INTERNAL "Test HAVE_TRADITIONAL_CPP")
-			message (STATUS "Performing Test HAVE_TRADITIONAL_CPP - Success")
-		else (_mscl_ep EQUAL 0)
-			set (HAVE_TRADITIONAL_CPP "" CACHE INTERNAL "Test HAVE_TRADITIONAL_CPP")
-			message (STATUS "Performing Test HAVE_TRADITIONAL_CPP - Failed")
-		endif (_mscl_ep EQUAL 0)
-	endif (NOT HAVE_TRADITIONAL_CPP)
-elseif (CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU)
-	# GCC or Clang
-	cmake_push_check_state() # save state of CMAKE_REQUIRED_*
-	set (CMAKE_REQUIRED_FLAGS "-E -w -P -nostdinc -traditional-cpp")
-	check_c_source_compiles ("#define TEST" HAVE_TRADITIONAL_CPP)
-	cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
-endif (MSVC)
+if (NOT HAVE_TRADITIONAL_CPP)
+	if (MSVC)
+		# Visual C++
+		set (_cpp_cmdline /EP)
+	elseif (CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU)
+		# GCC or Clang
+		set (_cpp_cmdline -E -w -P -nostdinc -traditional-cpp)
+	endif (MSVC)
+	message (STATUS "Performing Test HAVE_TRADITIONAL_CPP")
+	execute_process (COMMAND ${CMAKE_C_COMPILER} ${_cpp_cmdline}
+		${GMT_SOURCE_DIR}/config.h.in # can be any header file
+		RESULT_VARIABLE _cpp_traditional_result
+		OUTPUT_QUIET ERROR_QUIET)
+	if (_cpp_traditional_result EQUAL 0)
+		set (HAVE_TRADITIONAL_CPP TRUE CACHE INTERNAL "Test HAVE_TRADITIONAL_CPP")
+		message (STATUS "Performing Test HAVE_TRADITIONAL_CPP - Success")
+	else (_cpp_traditional_result EQUAL 0)
+		set (HAVE_TRADITIONAL_CPP "" CACHE INTERNAL "Test HAVE_TRADITIONAL_CPP")
+		message (STATUS "Performing Test HAVE_TRADITIONAL_CPP - Failed")
+	endif (_cpp_traditional_result EQUAL 0)
+endif (NOT HAVE_TRADITIONAL_CPP)
+
+#
+# Check if compiler supports __func__ or __FUNCTION__ identifier
+#
+
+check_c_source_compiles (
+	"
+	int main (){char *function_name = __func__; return 0;}
+	"
+	HAVE___FUNC__)
+check_c_source_compiles (
+	"
+	int main (){char *function_name = __FUNCTION__; return 0;}
+	"
+	HAVE___FUNCTION__)
 
 #
 # Check for windows header
