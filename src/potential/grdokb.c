@@ -14,9 +14,9 @@
  *	GNU Lesser General Public License for more details.
  *
  *	Contact info: gmt.soest.hawaii.edu
- *--------------------------------------------------------------------*/
-/*
-/*
+ *--------------------------------------------------------------------
+ *
+ *
  * API functions to support the grdokb application.
  *
  * Brief synopsis: Compute the gravity anomaly of the volume contained between
@@ -128,7 +128,7 @@ GMT_LONG GMT_grdokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t[%s] [%s] [-Z<level>]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
-		
+
 	GMT_message (GMT, "\tgrdfile_up is the grdfile whose gravity efect is to be computed.\n");
 	GMT_message (GMT, "\t   If two grids are provided then the gravity/magnetic efect of the\n");
 	GMT_message (GMT, "\t   volume between them is computed\n\n");
@@ -166,11 +166,11 @@ GMT_LONG GMT_grdokb_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, pos = 0;
+	GMT_LONG n_errors = 0;
 	struct	GMT_OPTION *opt = NULL;
 	struct	GMT_CTRL *GMT = C->GMT;
-	int error = FALSE, bat = TRUE, n_files = 0, m_var = FALSE;
-	
+	int n_files = 0;
+
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
@@ -288,14 +288,13 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	int two_grids = FALSE, switch_xy = FALSE, clockwise_type[] = {0, 5};
 	int km = 0;		/* index of current body facet (for mag only) */
 	GMT_LONG error = FALSE;
-	GMT_LONG ndata_r = 0, ndata_xyz = 0, n_vert_max;
-	GMT_LONG z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
+	GMT_LONG n_vert_max;
 	double	a, d, x_o, y_o;
 	double	*x_obs = NULL, *y_obs = NULL, *x_grd = NULL, *y_grd = NULL, *cos_vec = NULL;
 	double	*g = NULL, *x_grd2 = NULL, *y_grd2 = NULL, *cos_vec2 = NULL;
 	double	cc_t, cs_t, s_t, wesn_new[4], wesn_padded[4];
 
-	struct	GMT_GRID *GridA = NULL, *GridB = NULL, *Out = NULL;
+	struct	GMT_GRID *GridA = NULL, *GridB = NULL;
 	struct	LOC_OR *loc_or;
 	struct	BODY_VERTS *body_verts = NULL;
 	struct	BODY_DESC body_desc;
@@ -372,7 +371,7 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		   No memory is allocated here. */
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, Gout->header->wesn,
 					Gout->header->inc, GridA->header->registration), Ctrl->G.file);
-	
+
 		GMT_report (GMT, GMT_MSG_NORMAL, "Grid dimensions are nx = %d, ny = %d\n",
 					Gout->header->nx, Gout->header->ny);
 		Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
@@ -440,7 +439,7 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	Ctrl->box.lon_0 = (GridA->header->wesn[XLO] + GridA->header->wesn[XHI]) / 2;
 	Ctrl->box.lat_0  = (GridA->header->wesn[YLO] + GridA->header->wesn[YHI]) / 2;
 
-	if (Ctrl->Z.z0 > GridA->header->z_max) {	
+	if (Ctrl->Z.z0 > GridA->header->z_max) {
 		/* Typical when computing the effect of whater shell for Buguer reduction of marine data */
 		clockwise_type[0] = 5;		/* Means Top triangs will have a CCW description and CW for bot */
 		clockwise_type[1] = 0;
@@ -556,7 +555,7 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		y_grd[0] = y_grd[1] - Ctrl->Q.n_pad * fabs(y_grd[2] - y_grd[1]);
 		x_grd[GridA->header->nx-1] = x_grd[GridA->header->nx-1] + Ctrl->Q.n_pad * (x_grd[2] - x_grd[1]);
 		y_grd[GridA->header->ny-1] = y_grd[GridA->header->ny-1] + Ctrl->Q.n_pad * fabs(y_grd[2] - y_grd[1]);
-	}	
+	}
 
 	if (Ctrl->F.active) { /* Need to compute observation coords only once */
 		for (i = 0; i < ndata; i++) {
@@ -613,7 +612,7 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			}
 		}
 		else {		/* "two_grids". One at the top and the other at the base */
-			grdokb_body_desc(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of top triangs */		
+			grdokb_body_desc(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of top triangs */
 			grdokb_calc_top_surf (GMT, Ctrl, GridB, Gout, NULL, 0, x_grd2, y_grd2, x_obs, y_obs,
 					cos_vec2, mag_var, loc_or, &body_desc, body_verts);
 		}
@@ -630,7 +629,7 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 				g[k] += okabe (GMT, x_obs[k], y_obs[k], Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, 0, loc_or);
 		}
 		else {		/* "two_grids". One at the top and the other at the base */
-			grdokb_body_desc(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of top triangs */		
+			grdokb_body_desc(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of top triangs */
 			grdokb_calc_top_surf (GMT, Ctrl, GridB, NULL, g, ndata, x_grd2, y_grd2, x_obs, y_obs,
 					cos_vec2, mag_var, loc_or, &body_desc, body_verts);
 		}
@@ -804,7 +803,7 @@ int grdokb_body_set(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_G
 		if (inc_i == 1) {
 			GMT_LONG ij;
 			ij = GMT_IJP(h,j,i);
-			body_verts[0].z = z[ij];		
+			body_verts[0].z = z[ij];
 			body_verts[1].z = z[ij + 1];  /* z[GMT_IJP(h,j,i1)];  */
 			ij = GMT_IJP(h,j1,i1);
 			body_verts[2].z = z[ij];      /* z[GMT_IJP(h,j1,i1)]; */
@@ -923,7 +922,7 @@ void grdokb_calc_top_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struc
 			}
 			else {
 				for (k = 0; k < n_pts; k++)
-					g[k] += okabe (GMT, x_obs[k], y_obs[k], Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, *body_desc, body_verts, km, 0, loc_or);				
+					g[k] += okabe (GMT, x_obs[k], y_obs[k], Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, *body_desc, body_verts, km, 0, loc_or);
 			}
 		}
 	}
