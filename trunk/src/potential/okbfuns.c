@@ -32,10 +32,10 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
  * n_f -> number of facets (int)
  * n_v -> number of vertex of each facet (pointer)
  * ind -> index describing the vertex order of each facet. These index must
- *	  describe the facet in a clock-wise order when viewed from outside.
-	
-/*  _________________________________________________________________ 
-    |                                                               | 
+ * describe the facet in a clock-wise order when viewed from outside.
+
+    _________________________________________________________________
+    |                                                               |
     |  Reference : Okabe, M., Analytical expressions for gravity    |
     |     anomalies due to polyhedral bodies and translation into   |
     |     magnetic anomalies, Geophysics, 44, (1979), p 730-741.    |
@@ -71,7 +71,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 
 	for (i = 0; i < bd_desc.n_f; i++) {	/* Loop over facets */
 		n_vert = (int)bd_desc.n_v[i];	/* Number of vertices of each face */
-		if (n_vert < 3) 
+		if (n_vert < 3)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: facet with less than 3 vertex\n");
 		for (l = 0; l < n_vert; l++) {
 			k = bd_desc.ind[l+cnt_v];
@@ -89,7 +89,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 }
 
 /* ---------------------------------------------------------------------- */
-void rot_17 (int n_vert, int top, struct LOC_OR *loc_or, 
+void rot_17 (int n_vert, int top, struct LOC_OR *loc_or,
 			double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
 	/* Rotates coordinates by teta and phi acording to equation (17) of Okabe */
 	/* store the result in external structure loc_or and angles c_tet s_tet c_phi s_phi */
@@ -97,7 +97,7 @@ void rot_17 (int n_vert, int top, struct LOC_OR *loc_or,
 	double r, r2, r_3d, Sxy, Szx, Syz;
 	GMT_LONG i = 0, j, k, l;
 
-	loc_or[n_vert].x = loc_or[0].x;		loc_or[n_vert].y = loc_or[0].y;	
+	loc_or[n_vert].x = loc_or[0].x;		loc_or[n_vert].y = loc_or[0].y;
 	loc_or[n_vert].z = loc_or[0].z;		/* Last point = first point */
 
 	if (top) { /* Currently, this is always true */
@@ -133,7 +133,7 @@ void rot_17 (int n_vert, int top, struct LOC_OR *loc_or,
 /* ---------------------------------------------------------------------- */
 double okb_grv (int n_vert, struct LOC_OR *loc_or, double *c_phi) {
 /*  Computes the gravity anomaly due to a facet. */
- 
+
 	int l;
 	double x1, x2, y1, y2, dx, dy, r, c_psi, s_psi, grv = 0, grv_p;
 
@@ -172,12 +172,12 @@ double eq_30 (double c, double s, double x, double y, double z) {
 double okb_mag (int n_vert, GMT_LONG km, GMT_LONG pm, struct LOC_OR *loc_or,
 			double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
 /*  Computes the total magnetic anomaly due to a facet. */
- 
+
 	int i;
 	double qsi1, qsi2, eta1, eta2, z2, z1, dx, dy, kx, ky, kz, v, r, c_psi, s_psi;
 	double ano = 0, ano_p, mag_fac, xi, xi1, yi, yi1, mx, my, mz, r_1, tg_psi, auxil;
 
-	mag_fac = *s_phi * (mag_param[pm].rim[0] * *c_tet + mag_param[pm].rim[1] * *s_tet) + 
+	mag_fac = *s_phi * (mag_param[pm].rim[0] * *c_tet + mag_param[pm].rim[1] * *s_tet) +
 				   mag_param[pm].rim[2] * *c_phi;
 
 	if (fabs(mag_fac) < FLT_EPSILON) return 0.0;
@@ -200,7 +200,7 @@ double okb_mag (int n_vert, GMT_LONG km, GMT_LONG pm, struct LOC_OR *loc_or,
 			qsi1 = yi * s_psi + xi * c_psi;	qsi2 = yi1 * s_psi + xi1 * c_psi;
 			eta1 = yi * c_psi - xi * s_psi;	eta2 = yi1 * c_psi - xi1 * s_psi;
 			z1 = loc_or[i].z;	z2 = loc_or[i+1].z;
-			ano_p = eq_43(mz, c_psi, tg_psi, auxil, qsi2, eta2, z2) - 
+			ano_p = eq_43(mz, c_psi, tg_psi, auxil, qsi2, eta2, z2) -
 			        eq_43(mz, c_psi, tg_psi, auxil, qsi1, eta1, z1);
 		}
 		else
