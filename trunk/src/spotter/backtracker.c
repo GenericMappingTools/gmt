@@ -560,7 +560,6 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
 					n_chunk = spotter_track (GMT, spotter_way, &lon, &lat, &t, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
-					lat = GMT_lat_swap (GMT, lat, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					out[GMT_X] = lon * R2D;
 					out[GMT_Y] = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					out[GMT_Z] = t;
@@ -587,8 +586,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					out[GMT_Z] = c[i+2];
 					if (Ctrl->A.mode && (out[GMT_Z] < t_low || out[GMT_Z] > t_high)) continue;
 					out[GMT_X] = c[i] * R2D;
-					out[GMT_Y] = c[i+1] * R2D;
-					out[GMT_Y] = GMT_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+					out[GMT_Y] = GMT_lat_swap (GMT, c[i+1] * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
 			}
