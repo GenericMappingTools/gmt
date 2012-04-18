@@ -1438,7 +1438,8 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Column count must be > 0\n");
 						return (EXIT_FAILURE);
 					}
-					while (text[++i] && isdigit ((int)text[i])); --i; /* Wind past the digits */
+					while (text[++i] && isdigit ((int)text[i]))
+						; --i; /* Wind past the digits */
 					break;
 				case ',':
 					break;	/* Comma between sequences are optional and just ignored */
