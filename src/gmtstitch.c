@@ -86,7 +86,7 @@ struct LINK {
 	struct BUDDY buddy[2];
 };
 
-void *New_gmtstitch_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_gmtstitch_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTSTITCH_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct GMTSTITCH_CTRL);
@@ -94,17 +94,17 @@ void *New_gmtstitch_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-void Free_gmtstitch_Ctrl (struct GMT_CTRL *GMT, struct GMTSTITCH_CTRL *C) {	/* Deallocate control structure */
+static void Free_gmtstitch_Ctrl (struct GMT_CTRL *GMT, struct GMTSTITCH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free (C->Out.file);	
-	if (C->C.file) free (C->C.file);	
-	if (C->D.format) free (C->D.format);	
-	if (C->L.file) free (C->L.file);	
-	if (C->Q.file) free (C->Q.file);	
-	GMT_free (GMT, C);	
+	if (C->Out.file) free (C->Out.file);
+	if (C->C.file) free (C->C.file);
+	if (C->D.format) free (C->D.format);
+	if (C->L.file) free (C->L.file);
+	if (C->Q.file) free (C->Q.file);
+	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_gmtstitch_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+static GMT_LONG GMT_gmtstitch_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -133,11 +133,11 @@ GMT_LONG GMT_gmtstitch_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-Q Used with -D to write names of files to a list.  Optionally give list name [gmtstitch_list.txt].\n");
 	GMT_message (GMT, "\t   Embed %%c in the list name to write two separate lists: one for C(losed) and one for O(pen).\n");
 	GMT_explain_options (GMT, "C2D0fghio:.");
-	
+
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_gmtstitch_parse (struct GMTAPI_CTRL *C, struct GMTSTITCH_CTRL *Ctrl, struct GMT_OPTION *options)
+static GMT_LONG GMT_gmtstitch_parse (struct GMTAPI_CTRL *C, struct GMTSTITCH_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtstitch and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -204,7 +204,7 @@ GMT_LONG GMT_gmtstitch_parse (struct GMTAPI_CTRL *C, struct GMTSTITCH_CTRL *Ctrl
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG connect (struct LINK *S, GMT_LONG id, GMT_LONG order, double cutoff, GMT_LONG nn_check, double nn_dist)
+static GMT_LONG connect (struct LINK *S, GMT_LONG id, GMT_LONG order, double cutoff, GMT_LONG nn_check, double nn_dist)
 {	/* Checks if OK to connect this segment to its nearest neighbor and returns TRUE if OK */
 
 	if (S[S[id].buddy[order].id].used) return (FALSE);		/* Segment has been used already */
@@ -214,15 +214,15 @@ GMT_LONG connect (struct LINK *S, GMT_LONG id, GMT_LONG order, double cutoff, GM
 	return (FALSE);							/* Failed all tests */
 }
 
-GMT_LONG Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_SEGMENT *out, GMT_LONG out_start, GMT_LONG in_start, GMT_LONG in_end)
+static GMT_LONG Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_SEGMENT *out, GMT_LONG out_start, GMT_LONG in_start, GMT_LONG in_end)
 {
 	GMT_LONG i, j, k, inc, done = FALSE;
-	
+
 	/* We will copy the records from the out segment from rows in_start up to and including in_end.
 	 * If in_start > in_end then we will end up reversing the order of the records.
 	 * The records are copied to the out segment starting at output record out_start (usually 0).
 	 * We return the next row number for output.
-	 */ 
+	 */
 	inc = (in_start < in_end) ? +1 : -1;
 	for (i = in_start, k = out_start; !done; i += inc, k++) {	/* Either loop from 1st to last or the other way */
 		for (j = 0; j < in->n_columns; j++) out->coord[j][k] = in->coord[j][i];
@@ -244,9 +244,9 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	double dd[2][2], p_dummy_x, p_dummy_y, p_last_x, p_last_y, p_first_x, p_first_y, distance;
 	double closed_dist = 0.0;
-	
+
 	char buffer[GMT_BUFSIZ], *BE = "BE", *ofile = NULL;
-	
+
 	struct LINK *seg = NULL;
 	struct GMT_DATASET *D[2] = {NULL, NULL}, *C = NULL;
 	struct GMT_TEXTSET *Q = NULL;
@@ -270,7 +270,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_gmtstitch_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtstitch_parse (API, Ctrl, options))) Return (error);
-	
+
 	/*---------------------------- This is the gmtstitch main code ----------------------------*/
 
 	/* Now we are ready to take on some input values */
@@ -305,7 +305,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 	}
-	
+
 	GMT_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
@@ -319,17 +319,17 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "No data records found.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	
+
 	seg = GMT_memory (GMT, NULL, n_id_alloc, struct LINK);
 	id = pos = ns = out_seg = 0;
 	GMT_report (GMT, GMT_MSG_NORMAL, "Check for closed polygons\n");
-	
+
 	/* Closed polygons are already finished - just identify, write out, and move on */
-	
+
 	/* Allocated D[GMT_OUT] and possibly C, both with nrows = ncolumns so just segment structs are allocated */
-	
+
 	n_columns = dim_tscr[2] = D[GMT_IN]->n_columns;	/* Set the required columns for output */
-	
+
 	n_seg_alloc[0] = dim_tscr[1] = 0;	/* Allocate no segments for now - we will do this as needed */
 	if ((D[GMT_OUT] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim_tscr)) == NULL) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for output segments\n");
@@ -338,7 +338,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_seg_alloc[0] = D[GMT_IN]->n_segments;	/* Cannot end up with more segments than given on input  */
 	T[OPEN] = GMT_memory (GMT, NULL, n_seg_alloc[0], struct GMT_LINE_SEGMENT *);
 	n_seg_alloc[1] = 0;	/* Allocate no segments for now - we will do this as needed */
-	
+
 	if (Ctrl->C.active) {	/* Wish to return already-closed polygons via a separate file */
 		if ((C = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim_tscr)) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for closed segments\n");
@@ -350,13 +350,13 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else
 		T[CLOSED] = T[OPEN];	/* Everything returned via same dataset */
-	
+
 	/* Start processing all the segments */
-	
+
 	ns = -1;		/* So the ID of the very first segment when incremented will be 0 */
 	n_open = n_closed = 0;	/* Numbers of open segments and closed polygons found */
 	closed_dist = (Ctrl->C.active) ? Ctrl->T.dist[0] : 0.0;
-	
+
 	for (k = 0; k < D[GMT_IN]->n_tables; k++) {	/* For each data table */
 		for (j = 0; j < D[GMT_IN]->table[k]->n_segments; j++) {	/* For each segment */
 			np = D[GMT_IN]->table[k]->segment[j]->n_rows;	/* Short-hand to avoid the full expression below */
@@ -376,7 +376,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				/* Allocate space for this segment */
 				n_rows = (Ctrl->C.active && distance > 0.0) ? np + 1 : np;
 				GMT_alloc_segment (GMT, T[CLOSED][out_seg], n_rows, n_columns, TRUE);
-				
+
 				if (D[GMT_IN]->table[k]->segment[j]->header) T[CLOSED][out_seg]->header = strdup (D[GMT_IN]->table[k]->segment[j]->header);
 				out_p = Copy_This_Segment (D[GMT_IN]->table[k]->segment[j], T[CLOSED][out_seg], 0, 0, np-1);
 				if (Ctrl->C.active && distance > 0.0) out_p = Copy_This_Segment (D[GMT_IN]->table[k]->segment[j], T[CLOSED][out_seg], out_p, 0, 0);	/* Close polygon */
@@ -393,7 +393,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				n_open++;	/* Number of open segments placed in T[OPEN] so far */
 			}
 			else { /* No -C: Here we have a segment that is not closed.  Store refs to D[GMT_IN]->table and copy end points; more work on linking takes place below */
-			
+
 				if (np == 1) GMT_report (GMT, GMT_MSG_NORMAL, "Segment %ld only consists of a single point.  Stitching may require additional stitching.\n", id);
 				seg[id].id = id;
 				seg[id].orig_id = ns;
@@ -419,7 +419,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		C->table[0]->segment = GMT_memory (GMT, T[OPEN], n_open, struct GMT_LINE_SEGMENT *);
 		C->n_segments = C->table[0]->n_segments = n_closed;
 	}
-	
+
 	if (Ctrl->C.active) {	/* With -C we only separate closed from open and then we are done */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Separated %ld closed and %ld open segments\n", n_closed, n_open);
 		wrap_up = 2;
@@ -449,19 +449,19 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		Return (GMT_OK);
 	}
-	
+
 	/* Below here, Ctrl->C.active is FALSE since those cases have already been dealt with.  Also T[OPEN] = T[CLOSED] and we already have found out_seg segments. */
-	
+
 	/* Here we need to do the stitching work.  We already have n_closed polygons in D[GMT_OUT] at this point */
-	
+
 	ns = id;
 	if (ns < n_id_alloc) seg = GMT_memory (GMT, seg, ns, struct LINK);
 	skip = GMT_memory (GMT, NULL, ns, GMT_LONG);
-	
+
 	GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld closed polygons\n", n_islands);
-	
+
 	/* The algorithm will be confused if there are identical duplicates of segments - thus we check */
-	
+
 	GMT_report (GMT, GMT_MSG_NORMAL, "Check for duplicate lines\n");
 	for (i = 0; i < ns; i++) {
 		if (skip[i]) continue;	/* Skip segment that has been determined to be a duplicate segment */
@@ -473,7 +473,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			    (seg[i].x_end[1] == seg[j].x_end[1] && seg[i].y_end[1] == seg[j].y_end[1])) {
 			    	if (seg[i].n == seg[j].n) {
 					for (k = match = 0; k < seg[i].n && k == match; k++) {
-						match += (D[GMT_IN]->table[seg[i].group]->segment[seg[i].pos]->coord[GMT_X][k] == D[GMT_IN]->table[seg[j].group]->segment[seg[j].pos]->coord[GMT_X][k] && 
+						match += (D[GMT_IN]->table[seg[i].group]->segment[seg[i].pos]->coord[GMT_X][k] == D[GMT_IN]->table[seg[j].group]->segment[seg[j].pos]->coord[GMT_X][k] &&
 						          D[GMT_IN]->table[seg[i].group]->segment[seg[i].pos]->coord[GMT_Y][k] == D[GMT_IN]->table[seg[j].group]->segment[seg[j].pos]->coord[GMT_Y][k]);
 					}
 					match = (match == seg[i].n) ? 1 : 0;
@@ -485,9 +485,9 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 	}
-	
+
 	/* Eliminate the duplicate segments from consideration */
-	
+
 	for (i = j = 0; i < ns; i++) {
 		if (skip[i]) continue;
 		if (i > j) seg[j] = seg[i];
@@ -496,14 +496,14 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (j < ns) GMT_report (GMT, GMT_MSG_NORMAL, "%ld duplicate segment removed\n", ns - j);
 	ns = j;
 	GMT_free (GMT, skip);
-	
+
 	GMT_report (GMT, GMT_MSG_NORMAL, "Calculate and rank end point separations [cutoff = %g nn_dist = %g]\n", Ctrl->T.dist[0], Ctrl->T.dist[1]);
-	
+
 	/* We determine the distance from each segments two endpoints to the two endpoints on every other
 	 * segment; this is four distances per segment.  We then assign the nearest endpoint to each end
 	 * of a segment to the buddy structure which keeps the id of the nearest segment so far.
 	 */
-	 
+
 	for (i = 0; i < ns; i++) {
 		for (j = i; j < ns; j++) {
 			/* nearest_end indicates which end is closest to this end */
@@ -552,7 +552,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			return (GMT->parent->error);
 		}
 		sprintf (fmt, "%%s%s%%s%s%%c%s%s%s%s%s%%s%s%%c%s%s%s%%d", s, s, s, GMT->current.setting.format_float_out, s, GMT->current.setting.format_float_out, s, s, s, GMT->current.setting.format_float_out, s);
-		
+
 		GMT->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on table headers on output */
 		sprintf (buffer, "# segid%sbegin_id%sb_pt%sb_dist%sb_nndist%send_id%se_pt%se_dist%se_nndist", s, s, s, s, s, s, s, s);
 		LNK->table[0]->n_headers = 1;
@@ -586,18 +586,18 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);
 		}
 	}
-	
+
 	start_id = done = n_closed = 0;
 	p_dummy_x = p_dummy_y = DBL_MAX;
-	
+
 	GMT_report (GMT, GMT_MSG_NORMAL, "Assemble new segments\n");
 
 	while (!done) {
-	
+
 		/* Find the 'beginning' of the chain that this segment belongs to by tracing the connections
 		 * until we either reappear at the starting point (a closed loop) or we reach an end (i.e.,
 		 * the nearest next endpoint is beyond the separation threshold. */
-		
+
 		done = FALSE;
 		id = start_id;
 		end_order = n_steps = n_alloc_pts = 0;
@@ -623,18 +623,18 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_steps++;
 		}
 		n_alloc_pts = MAX (GMT_CHUNK, n_alloc_pts);	/* Allocate enough space to get us started */
-				
+
 		/* This id should be the beginning of a segment.  Now trace forward and dump out the chain */
-		
+
 		T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);	/* Get a new segment structure */
 		GMT_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts, n_columns, TRUE);
-		
+
 		sprintf (buffer, "Possibly a composite segment; see comments for individual segment headers");
 		T[OPEN][out_seg]->header = strdup (buffer);
 		/* First dump start segment */
-		
+
 		start_id = id;
-		
+
 		GMT_memset (GMT->current.io.segment_header, GMT_BUFSIZ, char);
 		if (Ctrl->D.active) {	/* Prepare and set segment output file name */
 			d_mode = OPEN;
@@ -703,7 +703,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_DEBUG, "\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, "Segment %ld made from %ld pieces\n", out_seg, k);
 		if (n_seg_length < n_alloc_pts) GMT_alloc_segment (GMT, T[OPEN][out_seg], n_seg_length, n_columns, FALSE);
-		
+
 		if (p_first_x == p_last_x && p_first_y == p_last_y) {
 			if (Ctrl->D.active && save_type) {	/* Ended up closed, rename with the C type */
 				sprintf (buffer, Ctrl->D.format, 'C', out_seg);
@@ -717,16 +717,16 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			QT[d_mode]->record[QT[d_mode]->n_rows++] = strdup (buffer);
 			if (QT[d_mode]->n_rows == QT[d_mode]->n_alloc) QT[d_mode]->record = GMT_memory (GMT, QT[d_mode]->record, (QT[d_mode]->n_alloc <<= 2), char *);
 		}
-		
+
 		chain++;
 		out_seg++;
-		
+
 		/* Wind to the next unused segments to start the connection search again */
 		start_id = 0;
 		while (start_id < ns && seg[start_id].used) start_id++;
 		done = (start_id == ns);	/* No more unused segments */
 	}
-	
+
 	if (out_seg > 1) GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 	if (Ctrl->Q.active) {	/* Write out the list(s) with individual file names */
 		Q->table[CLOSED]->segment[0]->record = GMT_memory (GMT, QT[CLOSED]->record, QT[CLOSED]->n_rows, char *);
@@ -737,7 +737,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	/* Write out the new multisegment file with polygons and segments */
-	
+
 	D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[OPEN], out_seg, struct GMT_LINE_SEGMENT *);
 	D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = out_seg;
 	ofile = (Ctrl->D.active) ? Ctrl->D.format : Ctrl->Out.file;
@@ -749,6 +749,6 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (n_trouble) GMT_report (GMT, GMT_MSG_NORMAL, "%ld trouble spots\n", n_trouble);
 	if (n_closed) GMT_report (GMT, GMT_MSG_NORMAL, "%ld new closed segments\n", n_closed);
 	if (n_islands) GMT_report (GMT, GMT_MSG_NORMAL, "%ld were already closed\n", n_islands);
-	
+
 	Return (GMT_OK);
 }
