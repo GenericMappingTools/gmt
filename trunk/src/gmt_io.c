@@ -2608,7 +2608,7 @@ int gmt_byteswap_file (struct GMT_CTRL *C,
 	 * swap only 'length' bytes beginning at 'offset' bytes
 	 * if 'length == 0' swap until EOF */
 	uint64_t bytes_read = 0;
-	size_t nbytes, chunk, extrabytes;
+	size_t nbytes, chunk, extrabytes = 0;
 	static const size_t chunksize = 0x1000000; /* 16 MiB */
 	char *buffer;
 
