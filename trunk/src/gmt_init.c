@@ -3681,7 +3681,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 {	/* value must hold at least GMT_BUFSIZ chars */
 	static char value[GMT_TEXT_LEN256], txt[8];
-	GMT_LONG case_val, error = FALSE;
+	GMT_LONG case_val;
 	char pm[2] = {'+', '-'}, *ft[2] = {"false", "true"};
 	
 	GMT_memset (value, GMT_TEXT_LEN256, char);
@@ -4411,7 +4411,6 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 
 		default:
 			GMT_report (C, GMT_MSG_FATAL, "Syntax error in GMT_putparameter: Unrecognized keyword %s\n", keyword);
-			error = TRUE;
 			break;
 	}
 	return (value);

@@ -205,7 +205,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 
 GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, greenwich = FALSE, temp_shift = FALSE, wrap, used_polygons;
+	GMT_LONG error = FALSE, temp_shift = FALSE, wrap, used_polygons;
 	GMT_LONG i, k, ii, bin, ind, np, side, col_min, col_max, row_min, row_max, nx1, ny1;
 	GMT_LONG base = 3, direction, err, ij, row, col, np_new;
 
@@ -294,8 +294,6 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	y = GMT_memory (GMT, NULL, Grid->header->ny, double);
 
 	nx1 = Grid->header->nx - 1;	ny1 = Grid->header->ny - 1;
-
-	greenwich = (Grid->header->wesn[XLO] < 0.0 && Grid->header->wesn[XHI] > 0.0);	/* Must shift longitudes */
 
 	GMT_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection so the shore machinery will work */
 	GMT_err_fail (GMT, GMT_map_setup (GMT, Grid->header->wesn), "");

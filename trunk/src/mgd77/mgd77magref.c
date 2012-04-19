@@ -162,7 +162,7 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, pos, t_col = 3, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
+	GMT_LONG n_errors = 0, j, pos, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
 	GMT_LONG n_out, lfval = 0;
 	char p[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
@@ -184,7 +184,6 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 						case 'a':
 							Ctrl->A.fixed_alt = TRUE;
 							Ctrl->A.altitude = atof (&p[1]);
-							t_col = 2;	/* Since we are missing the altitude column */
 							break;
 						case 't':
 							Ctrl->A.fixed_time = TRUE;

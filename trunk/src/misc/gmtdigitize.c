@@ -274,22 +274,22 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, ok, multi_files, n_segments = 0;
 	GMT_LONG i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, digunit;
-	GMT_LONG val_pos = 2, key_pos = 2, m_button, type, button, i_unused = 0;
+	GMT_LONG val_pos = 2, key_pos = 2, m_button, type, button, sys_retval = 0;
 	
 	char line[GMT_BUFSIZ], format[GMT_BUFSIZ], unit_name[80], this_file[GMT_BUFSIZ];
 	char *control[4] = {"first", "second", "third", "fourth"};
 	char *corner[4] = {"lower left", "lower right", "upper right", "upper left"};
 	char *xname[2] = {"longitude", "x-coordinate"};
-	char *yname[2] = {"latitude ", "y-coordinate"}, *not_used = NULL;
+	char *yname[2] = {"latitude ", "y-coordinate"};
 	
 	gid_t gid = 0;
 	uid_t uid = 0;
 	
 	double mean_dig_y, z_val = 0.0, dist, mean_dig_x;
-	double utm_correct, fwd_scale, inv_scale, xmap, ymap, X_DIG[4], Y_DIG[4], out[3];
+	double fwd_scale, inv_scale, xmap, ymap, X_DIG[4], Y_DIG[4], out[3];
 	double last_xmap, last_ymap, x_in_min, x_in_max, y_in_min, y_in_max, inch_to_unit;
 	double unit_to_inch, rotation, mean_map_x, mean_map_y, x_out_min, x_out_max, y_out_min;
-	double y_out_max, rms, u_scale, LON[4], LAT[4], X_MAP[4], Y_MAP[4], XP[4], YP[4];
+	double y_out_max, rms, LON[4], LAT[4], X_MAP[4], Y_MAP[4], XP[4], YP[4];
 	
 	FILE *fp = NULL;
 
@@ -335,8 +335,6 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #endif
 
 	GMT_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
-
-	u_scale = inv_scale;
 
 	GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
 
@@ -386,14 +384,20 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_message (GMT, "\n");
 			for (i = 0; i < 4; i++) {
 				GMT_message (GMT, "Please Enter %s of %s point: ", xname[type], control[i]);
-				not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN]);
+				if (!GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN])) {
+					GMT_message (GMT, "Read error - NULL returned");
+					exit (EXIT_FAILURE);
+				}
 				GMT_chop (line);
 				if (!(GMT_scanf (GMT, line, GMT->current.io.col_type[GMT_IN][GMT_X], &LON[i]))) {
 					GMT_message (GMT, "Conversion error for %sx [%s]\n", xname[type], line);
 					exit (EXIT_FAILURE);
 				}
 				GMT_message (GMT, "Please Enter %s of %s point: ", yname[type], control[i]);
-				not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN]);
+				if (!GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN])) {
+					GMT_message (GMT, "Read error - NULL returned");
+					exit (EXIT_FAILURE);
+				}
 				GMT_chop (line);
 				if (!(GMT_scanf (GMT, line, GMT->current.io.col_type[GMT_IN][GMT_Y], &LAT[i]))) {
 					GMT_message (GMT, "Conversion error for %s [%s]\n", yname[type], line);
@@ -467,8 +471,6 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	C.map_x0 = (mean_map_x - mean_dig_x * C.cos_theta + mean_dig_y * C.sin_theta) * C.map_scale[GMT_X];
 	C.map_y0 = (mean_map_y - mean_dig_x * C.sin_theta - mean_dig_y * C.cos_theta) * C.map_scale[GMT_Y];
 	
-	utm_correct = (GMT->current.proj.projection == GMT_UTM && !GMT->current.proj.north_pole) ? GMT_FALSE_NORTHING : 0.0;
-	
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		double rect[4];
 		sprintf (format, "%s/%s/%s/%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
@@ -508,7 +510,10 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_message (GMT, "(Do not start with # - it will be prepended automatically.\n\n");
 		do {
 			GMT_message (GMT, "==> Please enter comment records, end with blank line: ");
-			not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, stdin);
+			if (!GMT_fgets (GMT, line, GMT_BUFSIZ, stdin)) {
+				GMT_message (GMT, "Read error - NULL returned");
+				exit (EXIT_FAILURE);
+			}
 			GMT_chop (line);
 			if (line[0] != '\0' && !GMT->common.b.active[GMT_OUT]) fprintf (fp, "# %s\n", line);
 		} while (line[0] != '\0');
@@ -538,14 +543,21 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (multi_files) {
 					if (fp) {
 						GMT_fclose (GMT, fp);
-						i_unused = chown (this_file, uid, gid);
+						sys_retval = chown (this_file, uid, gid);
+						if (sys_retval) {
+							GMT_message (GMT, "chown error - returned %ld", sys_retval);
+							exit (EXIT_FAILURE);
+						}
 					}
 					if ((fp = next_file (GMT, Ctrl->N.name, n_segments, this_file))) Return (EXIT_FAILURE);
 				}
 
 				if (Ctrl->Z.active[V_ID]) {
 					GMT_message (GMT, "Enter z-value for next segment: ");
-					not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN]);
+					if (!GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN])) {
+						GMT_message (GMT, "Read error - NULL returned");
+						exit (EXIT_FAILURE);
+					}
 					GMT_chop (line);
 					z_val = atof (line);
 				}
@@ -554,7 +566,10 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				else {	/* Ask for what to write out */
 					GMT_message (GMT, "Enter segment header: ");
-					not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN]);
+					if (!GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN])) {
+						GMT_message (GMT, "Read error - NULL returned");
+						exit (EXIT_FAILURE);
+					}
 					GMT_chop (line);
 					sprintf (GMT->current.io.segment_header, "%ld %s", n_segments, line);
 				}
@@ -602,7 +617,11 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (multi_files && fp) {
 		GMT_fclose (GMT, fp);
-		i_unused = chown (this_file, uid, gid);
+		sys_retval = chown (this_file, uid, gid);
+		if (sys_retval) {
+			GMT_message (GMT, "chown error - returned %ld", sys_retval);
+			exit (EXIT_FAILURE);
+		}
 	}
 	
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && n_read > 0) {

@@ -381,11 +381,14 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 
 GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, GMT_LONG n_stages, double d_km, GMT_LONG step, GMT_LONG flag, double wesn[], double **flow)
 {
-	GMT_LONG n_chunk, n_track, m, kx, ky, first, last, np;
+	GMT_LONG n_track, m, kx, ky, first, last, np;
 	double *c = NULL, *f = NULL;
 
 	/* Get the flowline from this point back to time tt, restricted to the given wesn box */
-	n_chunk = spotter_forthtrack (GMT, &xx, &yy, &tt, 1, p, n_stages, d_km, 0.0, flag, wesn, &c);
+	if (spotter_forthtrack (GMT, &xx, &yy, &tt, 1, p, n_stages, d_km, 0.0, flag, wesn, &c) <= 0) {
+		GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_forthtrack - skipping\n");
+		return 0;
+	}
 
 	n_track = lrint (c[0]);				/* Number of point pairs making up this flowline */
 

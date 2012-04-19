@@ -548,7 +548,7 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 
 GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, found_proj = FALSE, setup, i_unused = 0;
+	GMT_LONG error = FALSE, found_proj = FALSE, setup, sys_retval = 0;
 	GMT_LONG isGMT_PS = FALSE, excessK;
 	GMT_LONG i, j, k, len, r, pos_file, pos_ext, pix_w = 0, pix_h = 0;
 	GMT_LONG got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
@@ -768,7 +768,11 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sprintf (BB_file, "%s/ps2raster_%ldc.bb", Ctrl->D.dir, (GMT_LONG)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
 			sprintf (cmd, "%s%s %s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, psfile_to_use, BB_file);
-			i_unused = system (cmd);		/* Execute the command that computes the tight BB */
+			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
+			if (sys_retval) {
+				GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %ld.\n", cmd, sys_retval);
+				Return (EXIT_FAILURE);
+			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to open file %s\n", BB_file);
 				Return (EXIT_FAILURE);
@@ -791,8 +795,12 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g1x1 -r%ld -sOutputFile=%s -f%s", 
 							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
 							Ctrl->E.dpi, tmp_file, ps_file);
-						i_unused = system (cmd);		/* Execute the GhostScript command */
+						sys_retval = system (cmd);		/* Execute the GhostScript command */
 						if (Ctrl->S.active) fprintf (stdout, "%s\n", cmd);
+						if (sys_retval) {
+							GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %ld.\n", cmd, sys_retval);
+							Return (EXIT_FAILURE);
+						}
 
 						continue;
 					}
@@ -1088,7 +1096,11 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				fprintf (stdout, "%s\n", cmd);
 
 			/* Execute the GhostScript command */
-			i_unused = system (cmd);
+			sys_retval = system (cmd);
+			if (sys_retval) {
+				GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %ld.\n", cmd, sys_retval);
+				Return (EXIT_FAILURE);
+			}
 
 			/* Check output file */
 			if (access (out_file, R_OK)) {
@@ -1189,8 +1201,12 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						proj4_cmd, quiet, out_file, world_file); 
 #endif
 				free(proj4_cmd);
-				i_unused = system (cmd);		/* Execute the gdal_translate command */
+				sys_retval = system (cmd);		/* Execute the gdal_translate command */
 				GMT_report (GMT, GMT_MSG_VERBOSE, "\nThe gdal_translate command: \n%s\n", cmd);
+				if (sys_retval) {
+					GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %ld.\n", cmd, sys_retval);
+					Return (EXIT_FAILURE);
+				}
 			}
 			else if (Ctrl->W.warp && !proj4_cmd)
 				GMT_report (GMT, GMT_MSG_FATAL, "Could not find the Proj4 command in the PS file. No conversion performed.\n");

@@ -771,7 +771,6 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG ix, iy, n_rec = 0, n_plane_old = 0, form = 0, error;
-	GMT_LONG greenwich, old_is_world;
 	GMT_LONG i, transparence_old = 0, not_defined = 0;
 	FILE *pnew = NULL, *pext = NULL;
 
@@ -827,8 +826,6 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_IS_ZERO (Ctrl->A.PREF.dip)) Ctrl->A.PREF.dip = 1.0;
 	}
 
-	greenwich = (GMT->common.R.wesn[XLO] < 0.0 || GMT->common.R.wesn[XHI] <= 0.0);
-
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	GMT_plotinit (GMT, options);
@@ -838,8 +835,6 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_setpen (GMT, &Ctrl->W.pen);
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
-
-	old_is_world = GMT->current.map.is_world;
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);    iy = 1 - ix;
 

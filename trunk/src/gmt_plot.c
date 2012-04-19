@@ -935,7 +935,7 @@ void gmt_fancy_frame_straight_outline (struct GMT_CTRL *C, struct PSL_CTRL *P, d
 
 void gmt_fancy_frame_curved_outline (struct GMT_CTRL *C, struct PSL_CTRL *P, double lonA, double latA, double lonB, double latB, GMT_LONG side, GMT_LONG secondary_too)
 {
-	double scale[2] = {1.0, 1.0}, escl, x1, x2, y1, y2, radius, dr, r_inc, az1, az2, da0, da, width, s;
+	double scale[2] = {1.0, 1.0}, escl, x1, x2, y1, y2, radius, r_inc, az1, az2, da0, da, width, s;
 
 	if (!C->current.map.frame.side[side]) return;
 
@@ -945,7 +945,6 @@ void gmt_fancy_frame_curved_outline (struct GMT_CTRL *C, struct PSL_CTRL *P, dou
 	GMT_geo_to_xy (C, lonA, latA, &x1, &y1);
 	GMT_geo_to_xy (C, lonB, latB, &x2, &y2);
 	radius = hypot (x1 - C->current.proj.c_x0, y1 - C->current.proj.c_y0);
-	dr = 0.5 * width;
 	s = ((C->current.proj.north_pole && side == 2) || (!C->current.proj.north_pole && side == 0)) ? -1.0 : +1.0;	/* North: needs shorter radius.  South: Needs longer radius (opposite in S hemi) */
 	r_inc = s*scale[0] * width;
 	if (GMT_IS_AZIMUTHAL(C) && GMT_360_RANGE (lonA, lonB)) {	/* Full 360-degree cirle */

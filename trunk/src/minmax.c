@@ -235,7 +235,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
 	GMT_LONG brackets = FALSE, work_on_abs_value, do_report, fixed_phase[2] = {1, 1};
-	GMT_LONG i, j, ncol = 0, save_range, wmode, done;
+	GMT_LONG i, j, ncol = 0, save_range, done;
 	uint64_t n = 0;
 
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
@@ -268,7 +268,6 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	give_r_string = (Ctrl->I.active && !Ctrl->C.active);
 	delimeter[0] = (Ctrl->C.active) ? '\t' : '/';
 	delimeter[1] = '\0';
-	wmode = (Ctrl->C.active) ? GMT_WRITE_DOUBLE : GMT_WRITE_TEXT;
 	GMT_memset (file, GMT_BUFSIZ, char);
 	off = (GMT->common.r.active) ? 0.5 : 0.0;
 	

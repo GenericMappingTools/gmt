@@ -217,7 +217,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* THE FOLLOWING VARIABLES DO NOT VARY FOR EACH CRUISE */
 	GMT_LONG error = FALSE, nautical = FALSE, custom_max_speed = FALSE, simulate = FALSE;
 	GMT_LONG bad_sections = FALSE, custom_min_speed = FALSE, do_regression = TRUE, dist_to_coast = FALSE;
-	GMT_LONG custom_warn = FALSE, warn[MGD77_N_WARN_TYPES], custom_maxGap = FALSE, report_raw = FALSE;
+	GMT_LONG custom_warn = FALSE, warn[MGD77_N_WARN_TYPES], report_raw = FALSE;
 	GMT_LONG decimateData = TRUE, forced = FALSE, adjustData = FALSE, flip_flags = FALSE;
 	GMT_LONG argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
 	GMT_LONG dtc_index = 0, pos = 0;
@@ -232,7 +232,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	char c, tmp_min[16], tmp_max[16], tmp_maxSlope[16], tmp_area[16], *derivative;
 	char *custom_limit_file = NULL, custom_limit_line[GMT_BUFSIZ], arguments[GMT_BUFSIZ], buffer[GMT_BUFSIZ];
-	char field_abbrev[8], *speed_units = "m/s", *distance_units = "km";
+	char field_abbrev[8], *speed_units = "m/s";
 	char *display = NULL, fpercent_limit[8], **list;
 
 	FILE *custom_fp, *fpout = NULL;
@@ -246,7 +246,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* THESE VARIABLES VARY FOR EACH CRUISE AND REQUIRE EXTRA CARE (RESET FOR EACH CRUISE) */
 	int type, field, bccCode, col, distanceErrorCount, duplicates[MGD77_N_NUMBER_FIELDS], *iMaxDiff = NULL, n_bad, grav_formula;
 	int noTimeCount, noTimeStart, timeErrorCount, timeErrorStart, distanceErrorStart, overLandStart, overLandCount, last_day, utc_offset;
-	GMT_LONG i, j, k, m, curr = 0, nwords, nout, nvalues, n_nan, n, npts = 0, *offsetStart, rec = 0, n_alloc = GMT_CHUNK, n_wrap, extreme;
+	GMT_LONG i, j, k, m, curr = 0, nout, nvalues, n_nan, n, npts = 0, *offsetStart, rec = 0, n_alloc = GMT_CHUNK, n_wrap, extreme;
 	unsigned int lowPrecision, lowPrecision5, MGD77_sign_bit[32];
 
 	double gradient, dvalue, dt, ds, **out, thisArea, speed, prev_speed, **G = NULL, min, *distance, date, range, range2;
@@ -495,7 +495,6 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			case 'N':	/* Change to nautical units instead of metric */
 				nautical = TRUE;
 				speed_units = "knots";
-				distance_units = "nm";
 				break;
 			case 'P':	/* Specify percent limits for all regression tests */
 				percent_limit = atof (opt->arg);
@@ -520,7 +519,6 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				break;
 			case 'T':	/* Specify maximum gap between records */
-				custom_maxGap = TRUE;
 				maxGap = atof (opt->arg);
 				if (maxGap < 0) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -M option: max gap cannot be negative\n");
@@ -1901,7 +1899,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 
-			nwords = nout = 0;
+			nout = 0;
 
 			/* Store latitude and longitude in the output array */
 			if (!strcmp(display,"VALS") && (D[curr].keep_nav || report_raw)) {

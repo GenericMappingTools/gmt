@@ -418,12 +418,10 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	*/
 	GMT_LONG np, i, j, k, ij, inside, col, row, stop, done, n_ticks, way, form;
 	double add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end, match, found;
-	double xmin, xmax, ymin, ymax, inc, dist, a, small, this_lon, this_lat, sa, ca;
+	double xmin, xmax, ymin, ymax, inc, dist, a, this_lon, this_lat, sa, ca;
 	double *s = NULL, *xp = NULL, *yp = NULL;
 
 	/* The x/y coordinates in SAVE in original cooordinates */
-
-	small = MAX (0.1 * (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]) / G->header->nx, GRDCONTOUR_MIN_LENGTH);
 
 	for (i = 0; i < n; i++) {	/* Mark polygons that have other polygons inside them */
 		np = save[i].n;	/* Length of this polygon */
@@ -684,7 +682,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char *cont_type = NULL, *cont_do_tick = NULL;
 	char cont_label[GMT_TEXT_LEN256], format[GMT_TEXT_LEN256];
 
-	double aval, cval, small, xyz[2][3], small_x, small_y, z_range, wesn[4], rgb[4];
+	double aval, cval, small, xyz[2][3], z_range, wesn[4], rgb[4];
 	double *xp = NULL, *yp = NULL, *contour = NULL, *x = NULL, *y = NULL, *cont_angle = NULL;
 
 	struct GRDCONTOUR_CTRL *Ctrl = NULL;
@@ -777,8 +775,6 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!strcmp (Ctrl->contour.unit, "z")) strcpy (Ctrl->contour.unit, G->header->z_units);
 	if (Ctrl->A.interval == 0.0) Ctrl->A.interval = Ctrl->C.interval;
-
-	small_x = 0.01 * G->header->inc[GMT_X];	small_y = 0.01 * G->header->inc[GMT_Y];	/* Use 1% noise to find near-closed contours */
 
 	if (Ctrl->contour.annot) {	/* Want annotated contours */
 		/* Determine the first annotated contour level */

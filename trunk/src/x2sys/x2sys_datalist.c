@@ -186,7 +186,7 @@ GMT_LONG x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, cha
 
 GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	char *sfile, *def = "x2sys", **trk_name = NULL;
+	char **trk_name = NULL;
 
 	GMT_LONG i, j, k, bad, trk_no, n_tracks, n_data_col_out = 0;
 	GMT_LONG error = FALSE,  cmdline_files, special_formatting = FALSE, *adj_col = NULL;
@@ -230,8 +230,6 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_FATAL, "No datafiles given!\n");
 		Return (EXIT_FAILURE);		
 	}
-
-	sfile = def;
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
 

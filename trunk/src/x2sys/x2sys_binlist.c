@@ -174,7 +174,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG last_bin_i;	/* Previous i node for bin */
 	GMT_LONG last_bin_j;	/* Previous j node for bin */
 	GMT_LONG last_bin_ij;	/* Previous bin */
-	GMT_LONG n_alloc = 0, nx_alloc = GMT_SMALL_CHUNK;
+	GMT_LONG nx_alloc = GMT_SMALL_CHUNK;
 	GMT_LONG error = FALSE, gap, cmdline_files;
 
 	unsigned int nav_flag;
@@ -257,7 +257,6 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	X = GMT_memory (GMT, NULL, nx_alloc, struct BINCROSS);
 	
 	if (Ctrl->D.active) {
-		n_alloc = GMT_CHUNK;
 		dist_bin = GMT_memory (GMT, NULL, B.nm_bin, double);
 	}
 

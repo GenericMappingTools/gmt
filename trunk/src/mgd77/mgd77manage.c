@@ -525,7 +525,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char not_given[GMT_TEXT_LEN64], word[GMT_BUFSIZ], **tmp_string = NULL, *text = NULL;
 	signed char LEN = 0, OLDLEN = 0;
 	
-	double i_dx = 0, i_dy = 0, x, y, match_value, single_val, dist_scale = 1.0;
+	double x, y, match_value, single_val, dist_scale = 1.0;
 	double *xtmp = NULL, *coldnt = NULL, *colvalue = NULL, *in = NULL, limits[2];
 
 	FILE *fp = NULL, *fp_err = NULL;
@@ -640,7 +640,6 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else if (got_table) {	/* Got a one- or two-column table to read */
 		GMT_LONG n_ave = 0;
 		double last_dnt = -DBL_MAX, sum_z = 0.0;
-		char *not_used = NULL;
 		
 		if (Ctrl->A.file[0] == '-') {   /* Just read from standard input */
 			fp = GMT->session.std[GMT_IN];
@@ -655,8 +654,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 
-		/* Skip any header records */
-		if (GMT->current.io.io_header[GMT_IN]) for (i = 0; i < GMT->current.io.io_n_header_items; i++) not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+		if (GMT->current.io.io_header[GMT_IN]) {	/* Skip any header records */
+			for (i = 0; i < GMT->current.io.io_n_header_items; i++) if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+				GMT_report (GMT, GMT_MSG_FATAL, "Read error for headers\n");
+				Return (EXIT_FAILURE);
+			}
+		}
 
 		two_cols = (Ctrl->A.mode == MODE_d || Ctrl->A.mode == MODE_n || Ctrl->A.mode == MODE_t);
 		n = (two_cols) ? -1 : 0;
@@ -738,11 +741,6 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (two_cols) coldnt = GMT_memory (GMT, coldnt, n, double);
 	}
 	
-	if (got_grid) {	/* Set inverse spacing */
-		i_dx = 1.0 / G->header->inc[GMT_X];
-		i_dy = 1.0 / G->header->inc[GMT_Y];
-	}
-
 	MGD77_Ignore_Format (GMT, MGD77_FORMAT_ANY);	/* Reset to all formats OK, then ... */
 	MGD77_Ignore_Format (GMT, MGD77_FORMAT_M77);	/* disallow ASCII MGD77 files */
 	MGD77_Ignore_Format (GMT, MGD77_FORMAT_TBL);	/* and ASCII tables */

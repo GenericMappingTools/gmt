@@ -777,7 +777,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (M.adjust_time) Ctrl->D.start = MGD77_time2utime (GMT, &M, Ctrl->D.start);	/* Convert to Unix time if need be */
 	if (M.adjust_time) Ctrl->D.stop  = MGD77_time2utime (GMT, &M, Ctrl->D.stop);
 	if (Ctrl->L.active) {	/* Scan the ephemeral correction table for needed auxilliary columns */
-		char path[GMT_BUFSIZ];
+		char path[GMT_BUFSIZ], **plist = NULL;
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {
@@ -786,7 +786,8 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			Ctrl->L.file = path;
 		}
-		n_items = MGD77_Scan_Corrtable (GMT, Ctrl->L.file, list, (int)n_paths, M.n_out_columns, (char **)M.desired_column, &item_names, 2);
+		plist = (char **)M.desired_column;
+		n_items = MGD77_Scan_Corrtable (GMT, Ctrl->L.file, list, n_paths, M.n_out_columns, plist, &item_names, 2);
 	}
 	
 	select_option = MGD77_RESET_CONSTRAINT | MGD77_RESET_EXACT;	/* Make sure these start at zero */
@@ -901,7 +902,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #endif
 
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
-		char path[GMT_BUFSIZ];
+		char path[GMT_BUFSIZ], **plist = NULL;
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {
@@ -910,7 +911,8 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			Ctrl->L.file = path;
 		}
-		MGD77_Parse_Corrtable (GMT, Ctrl->L.file, list, n_paths, M.n_out_columns, (char **)M.desired_column, 2, &CORR);
+		plist = (char **)M.desired_column;
+		MGD77_Parse_Corrtable (GMT, Ctrl->L.file, list, n_paths, M.n_out_columns, plist, 2, &CORR);
 	}
 
 	for (argno = 0; argno < n_paths; argno++) {		/* Process each ID */

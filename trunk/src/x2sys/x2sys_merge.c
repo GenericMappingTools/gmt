@@ -122,7 +122,7 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG  i, j, k, n_alloc, n_base, n_merge, merge_start, error;
 	GMT_LONG *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL, *map_merge_end = NULL;
-	char line[GMT_BUFSIZ], **pairs_base = NULL, **pairs_merge = NULL, *c_not_used = NULL;
+	char line[GMT_BUFSIZ], **pairs_base = NULL, **pairs_merge = NULL;
 	FILE *fp_base = NULL, *fp_merge = NULL;
 	struct X2SYS_MERGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -211,18 +211,18 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 
 	/* Jump comment lines in both files and osition the file poiter into the first data line */
-	k = 0;
+	k = i = 0;
 	while (fgets (line, GMT_BUFSIZ, fp_merge) && line[0] == '#') k++;	/* Jump the comment lines in the to-merge file */
 	rewind (fp_merge);
-	for (i = 0; i < k; i++) c_not_used = fgets (line, GMT_BUFSIZ, fp_merge);
+	while (i < k && fgets (line, GMT_BUFSIZ, fp_merge)) i++;
 
-	k = 0;
+	k = i = 0;
 	while (fgets (line, GMT_BUFSIZ, fp_base) && line[0] == '#') {
 		fprintf (stdout, "%s", line);
 		k++;
 	}
 	rewind (fp_base);
-	for (i = 0; i < k; i++) c_not_used = fgets (line, GMT_BUFSIZ, fp_base);
+	while (i < k && fgets (line, GMT_BUFSIZ, fp_base)) i++;
 
 	/* Do the merging. COEs present in file dbase2 replace their pairs in dbase1 */
 	merge_start = 0;
@@ -230,18 +230,28 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (j = merge_start; j < n_merge; j++) {
 			if (!strcmp(pairs_base[i], pairs_merge[j])) {		 /* Update these COEs */
 				for (k = map_merge_start[j]; k <= map_merge_end[j]; k++) {
-					c_not_used = fgets (line, GMT_BUFSIZ, fp_merge);
+					if (!fgets (line, GMT_BUFSIZ, fp_merge)) {
+						GMT_report (GMT, GMT_MSG_FATAL, "Read error in merge file line\n");
+						Return (EXIT_FAILURE);
+					}
 					fprintf (stdout, "%s", line);
 				}
-				for (k = map_base_start[i]; k <= map_base_end[i]; k++)	/* Advance also in the base file */
-					c_not_used = fgets (line, GMT_BUFSIZ, fp_base);
+				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {	/* Advance also in the base file */
+					if (!fgets (line, GMT_BUFSIZ, fp_base)) {
+						GMT_report (GMT, GMT_MSG_FATAL, "Read error in base file\n");
+						Return (EXIT_FAILURE);
+					}
+				}
 
 				merge_start = j + 1;
 				break;		/* Since we found this to update, no need to continue seeking for another repetition */
 			}
 			else if (j == (n_merge - 1)) {	/* Not equal. So do not to update, just recopy */
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {
-					c_not_used = fgets (line, GMT_BUFSIZ, fp_base);
+					if (!fgets (line, GMT_BUFSIZ, fp_base)) {
+						GMT_report (GMT, GMT_MSG_FATAL, "Read error in base file\n");
+						Return (EXIT_FAILURE);
+					}
 					fprintf (stdout, "%s", line);
 				}
 			}

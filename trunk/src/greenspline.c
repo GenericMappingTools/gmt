@@ -1058,7 +1058,7 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, G
 GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, j, k, p, ii, n, m, nm, error, dimension = 0;
-	GMT_LONG n_expected_fields, normalize = 1, unit = 0, out_ID;
+	GMT_LONG normalize = 1, unit = 0, out_ID;
 	GMT_LONG old_n_alloc, n_alloc, ij, ji, nxy, n_ok = 0, way, new_grid = FALSE;
 	
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
@@ -1165,8 +1165,6 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-
-	n_expected_fields = (GMT->common.b.ncol[GMT_IN]) ? GMT->common.b.ncol[GMT_IN] : dimension + 1;
 
 	n_alloc = GMT_CHUNK;
 	X = GMT_memory (GMT, NULL, n_alloc, double *);

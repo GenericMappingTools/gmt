@@ -1794,7 +1794,7 @@ GMT_LONG GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, st
 
 GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, key, one = 1, greenwich = FALSE;
+	GMT_LONG error = FALSE, key, one = 1;
 	
 	struct GMT_TABLE *xyzline = NULL;
 	struct GMT_DATASET *Lin = NULL;
@@ -1882,8 +1882,6 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	set_grid_parameters (&C);
 	if (read_data_surface (GMT, &C, options)) Return (EXIT_FAILURE);
 	if (Ctrl->D.active) {
-		greenwich = (C.Grid->header->wesn[XLO] < 0.0 && C.Grid->header->wesn[XHI] > 0.0);
-
 		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, Ctrl->D.file, NULL)) == NULL)
 			Return (API->error);
 		xyzline = Lin->table[0];			/* Can only be one table since we read a single file */

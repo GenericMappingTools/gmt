@@ -516,7 +516,6 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	int i, j, k, n;
 	GMT_LONG error = FALSE, stop, m;
-	GMT_LONG i_data_start, j_data_start, new_grid;
 	char	line[256], line2[256], format[64], buffer[256];
 	float	*topo, *raised;
 	double	delta_pt, freq;
@@ -595,9 +594,6 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		Return (API->error);
 	}
 
-	i_data_start = GMT->current.io.pad[XLO];
-	j_data_start = GMT->current.io.pad[YHI];
-
 	/* Check that no NaNs are present */
 	stop = FALSE;
 	for (j = 0; !stop && j < GridA->header->ny; j++)
@@ -608,7 +604,7 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		Return (EXIT_FAILURE);
 	}
 
-	new_grid = GMT_set_outgrid (GMT, GridA, &Out);	/* TRUE if input is a read-only array; otherwise Out just points to GridA */
+	(void)GMT_set_outgrid (GMT, GridA, &Out);	/* TRUE if input is a read-only array; otherwise Out just points to GridA */
 
 	/* ------------------------------------------------------------------------------------ */
 	if (Ctrl->In.file[1]) {
@@ -684,7 +680,7 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			Return (EXIT_FAILURE);
 		}
 
-		new_grid = GMT_set_outgrid (GMT, GridB, &Out2);	/* TRUE if input is a read-only array; otherwise Out just points to GridB */
+		(void)GMT_set_outgrid (GMT, GridB, &Out2);	/* TRUE if input is a read-only array; otherwise Out just points to GridB */
 		if (!Ctrl->L.active) remove_plane__ (GMT, Out2);
 		if (!Ctrl->N.force_narray) taper_edges__ (GMT, Out2);
 
@@ -698,9 +694,8 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	raised = GMT_memory (GMT, NULL, (size_t) GridA->header->size, float);
 
 	if (Ctrl->t.active) {	/* Write the FFTed input grid as two grids; Real and Img */
-		int nx_2, ny_2, plus_minus;
+		int plus_minus;
 		char *infile_r = NULL, *infile_i = NULL;	/* File names for real and imaginary grids */
-		nx_2  = (int)Ctrl->N.nx2/2;		ny_2 = (int)Ctrl->N.ny2/2;
 		strcpy (line, Ctrl->G.file);
 		strcpy (line2, Ctrl->G.file);
 		infile_r = strtok (line, ".");
@@ -1285,7 +1280,7 @@ void remove_plane__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
 	spend some multiplications on normalizing the 
 	range of x,y into [-1,1], to avoid roundoff error.  */
 
-	GMT_LONG i, j, ij, one_or_zero, i_data_start, j_data_start;
+	GMT_LONG i, j, ij, one_or_zero;
 	double x_half_length, one_on_xhl, y_half_length, one_on_yhl;
 	double sumx2, sumy2, data_var, x, y, z, a[3];
 	float *datac = Grid->data;
@@ -1297,8 +1292,6 @@ void remove_plane__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
 	one_on_yhl = 1.0 / y_half_length;
 
 	sumx2 = sumy2 = data_var = a[2] = a[1] = a[0] = 0.0;
-	i_data_start = GMT->current.io.pad[XLO];
-	j_data_start = GMT->current.io.pad[YHI];
 
 	for (j = 0; j < Grid->header->ny; j++) {
 		y = one_on_yhl * (j - y_half_length);

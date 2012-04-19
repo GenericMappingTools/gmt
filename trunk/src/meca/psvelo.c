@@ -302,8 +302,8 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG ix = 0, iy = 1, n_rec = 0, error = FALSE, old_is_world, justify;
-	GMT_LONG greenwich, des_ellipse = TRUE, des_arrow = TRUE;
+	GMT_LONG ix = 0, iy = 1, n_rec = 0, error = FALSE,justify;
+	GMT_LONG des_ellipse = TRUE, des_arrow = TRUE;
 
 	double xy[2], plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[7];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0;
@@ -336,8 +336,6 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the psvelo main code ----------------------------*/
 
-	greenwich = (GMT->common.R.wesn[XLO] < 0.0 || GMT->common.R.wesn[XHI] <= 0.0);
-
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	GMT_plotinit (GMT, options);
@@ -350,7 +348,6 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	GMT_init_vector_param (GMT, &Ctrl->A.S);
 
-	old_is_world = GMT->current.map.is_world;
 	station_name = GMT_memory (GMT, NULL, 64, char);
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;

@@ -44,17 +44,16 @@
 # then acts on these records as described above.
 # Note: This script uses the GMT4 registration dir since that part is in GMT 4 subversion
 
-GMT4=/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT4
+GMT4=/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT4
 
 if [ "X$GMTHOME" = "X" ]; then	# Running crontab and environment is not set
 	. /sw/bin/init.sh
-	GS_LIB=/sw/share/ghostscript/8.61/lib
-	GMTHOME4=/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt4
-	GMTHOME5=/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5
-	PATH=$GMTHOME5/bin:$PATH
+	GS_LIB=/sw/share/ghostscript/9.02/lib
+	GMTHOME4=/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt4
+	GMTHOME5=/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5
+	PATH=$GMTHOME5/trunk/build/gmt5/bin:$PATH
 	export PATH
 	export GS_LIB
-	CVSROOT=":pserver:guru@pohaku.soest.hawaii.edu:/usr/local/cvs"
 fi
 if [ $# = 1 ] && [ $1 = "help" ]; then
 	cat << EOF >&2
@@ -69,7 +68,7 @@ EOF
 	exit
 fi
 REGHOME4=$GMTHOME4/registration	# Where to do the work
-REGHOME5=$GMTHOME5/registration	# Where to do the work
+REGHOME5=$GMTHOME5/sandbox/registration	# Where to do the work
 gmtswitch gmt5
 
 cd $REGHOME5

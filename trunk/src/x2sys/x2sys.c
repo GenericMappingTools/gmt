@@ -185,13 +185,21 @@ GMT_LONG x2sys_fclose (struct GMT_CTRL *C, char *fname, FILE *fp)
 void x2sys_skip_header (struct GMT_CTRL *C, FILE *fp, struct X2SYS_INFO *s)
 {
 	GMT_LONG i;
-	char line[GMT_BUFSIZ], *unused = NULL;
+	char line[GMT_BUFSIZ];
 
 	if (s->file_type == X2SYS_ASCII) {	/* ASCII, skip records */
-		for (i = 0; i < s->skip; i++) unused = fgets (line, GMT_BUFSIZ, fp);
+		for (i = 0; i < s->skip; i++) {
+			if (!fgets (line, GMT_BUFSIZ, fp)) {
+				GMT_report (C, GMT_MSG_FATAL, "Read error in header line %ld\n", i);
+				exit (EXIT_FAILURE);
+			}
+		}
 	}
 	else if (s->file_type == X2SYS_BINARY) {			/* Native binary, skip bytes */
-		fseek (fp, (long)s->skip, SEEK_CUR);
+		if (fseek (fp, (long)s->skip, SEEK_CUR)) {
+			GMT_report (C, GMT_MSG_FATAL, "Seed error while skipping headers\n");
+			exit (EXIT_FAILURE);
+		}
 	}
 }
 
@@ -1174,7 +1182,7 @@ GMT_LONG x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct
 	/* Reads the binned track listing which is ASCII */
 	/* mode = 0 gives linked list, mode = 1 gives fixed array */
 	GMT_LONG id, flag, last_id = -1, n_alloc = GMT_CHUNK;
-	char track_file[GMT_BUFSIZ], track_path[GMT_BUFSIZ], line[GMT_BUFSIZ], name[GMT_BUFSIZ], *unused = NULL;
+	char track_file[GMT_BUFSIZ], track_path[GMT_BUFSIZ], line[GMT_BUFSIZ], name[GMT_BUFSIZ];
 	FILE *ftrack = NULL;
 	struct X2SYS_BIX_TRACK_INFO *this_info = NULL;
 
@@ -1191,7 +1199,10 @@ GMT_LONG x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct
 	else
 		B->head = this_info = x2sys_bix_make_entry (C, "-", 0, 0);
 
-	unused = fgets (line, GMT_BUFSIZ, ftrack);	/* Skip header record */
+	if (!fgets (line, GMT_BUFSIZ, ftrack)) {	/* Skip header record */
+		GMT_report (C, GMT_MSG_FATAL, "Read error in header record\n");
+		exit (EXIT_FAILURE);
+	}
 	while (fgets (line, GMT_BUFSIZ, ftrack)) {
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %ld %ld", name, &id, &flag);
@@ -1227,7 +1238,7 @@ GMT_LONG x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct
 GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct X2SYS_BIX *B, GMT_LONG swap)
 {
 	/* Reads the binned index file which is native binary and thus swab is an issue */
-	GMT_LONG i, not_used = 0;
+	GMT_LONG i;
 	char index_file[GMT_BUFSIZ], index_path[GMT_BUFSIZ];
 	FILE *fbin = NULL;
 	uint32_t index = 0, flag, no_of_tracks, id; /* These must remain uint32_t */
@@ -1245,15 +1256,24 @@ GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct 
 	B->base = GMT_memory (C, NULL, B->nm_bin, struct X2SYS_BIX_DATABASE);
 
 	while ((fread ((&index), sizeof (int), (size_t)1, fbin)) == 1) {
-		not_used = fread ((&no_of_tracks), sizeof (int), (size_t)1, fbin);
+		if (fread ((&no_of_tracks), sizeof (int), (size_t)1, fbin) != 1) {
+			GMT_report (C, GMT_MSG_FATAL, "Read error bin index file\n");
+			return (GMT_GRDIO_READ_FAILED);
+		}
 		if (swap) {
 			index = bswap32 (index);
 			no_of_tracks = bswap32 (no_of_tracks);
 		}
 		B->base[index].first_track = B->base[index].last_track = x2sys_bix_make_track (C, 0, 0);
 		for (i = 0; i < no_of_tracks; i++) {
-			not_used = fread ((&id), sizeof (int), (size_t)1, fbin);
-			not_used = fread ((&flag), sizeof (int), (size_t)1, fbin);
+			if (fread ((&id), sizeof (int), (size_t)1, fbin) != 1) {
+				GMT_report (C, GMT_MSG_FATAL, "Read error bin index file\n");
+				return (GMT_GRDIO_READ_FAILED);
+			}
+			if (fread ((&flag), sizeof (int), (size_t)1, fbin) != 1) {
+				GMT_report (C, GMT_MSG_FATAL, "Read error bin index file\n");
+				return (GMT_GRDIO_READ_FAILED);
+			}
 			if (swap) {
 				id = bswap32 (id);
 				flag = bswap32 (flag);

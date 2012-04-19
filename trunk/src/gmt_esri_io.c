@@ -212,10 +212,8 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 	}
 	else if (header->flags[0] == 'B' && header->flags[1] == '0') {	/* A GTOPO30 or SRTM30 file */
 		size_t len = strlen (header->title);
-		double inc2;
 
 		header->inc[GMT_X] = header->inc[GMT_Y] = 30.0 * GMT_SEC2DEG;	/* 30 arc seconds */
-		inc2 = header->inc[GMT_X] / 2.0;
 		header->wesn[YHI] = atof (&header->title[len-2]);
 		if ( header->title[len-3] == 'S' || header->title[len-3] == 's' ) header->wesn[YHI] *= -1; 
 		c = header->title[len-3];
@@ -418,7 +416,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 {
 	GMT_LONG col, width_out, height_in, ii, kk, in_nx, inc, off;
 	GMT_LONG first_col, last_col, first_row, last_row, n_left = 0;
-	GMT_LONG row, row2, col2, ij, width_in, check, error, *k = NULL;
+	GMT_LONG row, row2, ij, width_in, check, error, *k = NULL;
 	GMT_LONG nBits = 32, i_0_out, is_binary = FALSE, swap = FALSE;
 	char *r_mode = NULL;
 	int16_t *tmp16 = NULL;
@@ -508,7 +506,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		/* ESRI grids are scanline oriented (top to bottom), as are the GMT grids.
 	 	 * NaNs are not allowed; they are represented by a nodata_value instead. */
 		col = row = 0;		/* For the entire file */
-		col2 = row2 = 0;	/* For the inside region */
+		row2 = 0;	/* For the inside region */
 		check = !GMT_is_dnan (header->nan_value);
 		in_nx = header->nx;
 		header->nx = (int)width_in;	/* Needed to be set here due to GMT_IJP below */
