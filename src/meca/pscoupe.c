@@ -773,12 +773,12 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG ix, iy, n_rec = 0, n_plane_old = 0, form = 0, error;
 	GMT_LONG greenwich, old_is_world;
 	GMT_LONG i, transparence_old = 0, not_defined = 0;
-	FILE *pnew, *pext;
+	FILE *pnew = NULL, *pext = NULL;
 
 	double size, xy[2], plot_x, plot_y, angle = 0.0, n_dep, distance, fault, depth;
 	double P_x, P_y, T_x, T_y;
 
-	char event_title[GMT_BUFSIZ], *line, col[15][GMT_TEXT_LEN64];
+	char event_title[GMT_BUFSIZ], *line = NULL, col[15][GMT_TEXT_LEN64];
 
 	st_me meca, mecar;
 	struct MOMENT moment;

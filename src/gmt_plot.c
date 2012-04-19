@@ -4000,7 +4000,8 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 
 	GMT_LONG n1, n2, n, longway = FALSE, add, heads, side, justify;
 	double lon[2], lat[2], tlon, tlat, mlon, mlat, r, r0, A[3], B[3], P[3], Ax[3], Bx[3];
-	double x, y, dr[2], az[2], oaz[2], off[2] = {0.0, 0.0}, scl[2], da, dshift, s, olon[2], olat[2], head_length, arc_width;
+	double x, y, dr[2] = {0.0, 0.0}, az[2] = {0.0, 0.0}, oaz[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, scl[2];
+	double da = 0.0, dshift, s, olon[2], olat[2], head_length, arc_width;
 	double *xp = NULL, *yp = NULL, *xp2 = NULL, *yp2 = NULL;
 
 	/* We must determine points A and B, whose great-circle connector is the arc we seek to draw */
@@ -4262,7 +4263,7 @@ void GMT_geo_rectangle (struct GMT_CTRL *C, double lon, double lat, double width
 
 void GMT_draw_front (struct GMT_CTRL *C, double x[], double y[], GMT_LONG n, struct GMT_FRONTLINE *f)
 {
-	GMT_LONG i, ngap, skip, tmp_join, tmp_limit;
+	GMT_LONG i, ngap, skip, tmp_join = 0, tmp_limit = 0;
 	double *s = NULL, xx[4], yy[4], dist = 0.0, w, frac, dx, dy, angle, dir1, dir2;
 	double gap, x0, y0, xp, yp, len2, len3, cosa, sina, sa, ca, offx, offy, dim[3];
 	struct PSL_CTRL *P = C->PSL;
