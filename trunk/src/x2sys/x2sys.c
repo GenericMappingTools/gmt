@@ -464,9 +464,7 @@ GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X
 	short int h;
 	float f;
 	long L;
-	double NaN;
-
-	GMT_make_dnan (NaN);
+	double NaN = C->session.d_NaN;
 
 	for (j = 0; !error && j < s->n_fields; j++) {
 
@@ -631,10 +629,8 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 	char path[GMT_BUFSIZ];
 	FILE *fp = NULL;
 	double **z = NULL;
-	double NaN, t_off;
+	double NaN = C->session.d_NaN, t_off;
 	struct GMTMGG_REC record;
-
-	GMT_make_dnan(NaN);
 
  	if (n_x2sys_paths) {
   		if (x2sys_get_data_path (C, path, fname, s->suffix)) return (GMT_GRDIO_FILE_NOT_FOUND);
@@ -715,9 +711,7 @@ GMT_LONG x2sys_read_mgd77file (struct GMT_CTRL *C, char *fname, double ***data, 
 	double **z = NULL, dvals[MGD77_N_DATA_EXTENDED];
 	struct MGD77_HEADER H;
 	struct MGD77_CONTROL M;
-	double NaN;
 
-	GMT_make_dnan (NaN);
 	MGD77_Init (C, &M);	/* Initialize MGD77 Machinery */
 
   	if (n_x2sys_paths) {

@@ -301,7 +301,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	systemTime = gmtime (&clock);
 	MGD77_carter_init (GMT, &C);
 	Out.fp = GMT->session.std[GMT_OUT];
-	GMT_make_dnan (MGD77_NaN);
+	MGD77_NaN = GMT->session.d_NaN;
 
 	/* INITIALIZE E77 */
 	n_types[E77_NAV] = N_NAV_TYPES;
@@ -2896,8 +2896,7 @@ void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[
 int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, GMT_LONG n_grid, GMT_LONG n) {
 
 	GMT_LONG rec, pts = 0;
-	double MGD77_NaN, x, y;
-	GMT_make_dnan (MGD77_NaN);
+	double MGD77_NaN = GMT->session.d_NaN, x, y;
 
 	/* Get grid values at cruise locations */
 	for (rec = 0; rec < n; rec++) {

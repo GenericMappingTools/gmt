@@ -4718,8 +4718,7 @@ void gmt_place_label (struct GMT_CTRL *C, struct GMT_LABEL *L, char *txt, struct
 
 void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, GMT_LONG nn, double zval, char *label, char ctype, double cangle, GMT_LONG closed, struct GMT_CONTOUR *G)
 {	/* The xx, yy are expected to be projected x/y inches */
-	GMT_LONG i, j, start = 0;
-	size_t n_alloc = GMT_SMALL_CHUNK;
+	GMT_LONG i, j, start = 0, n_alloc = GMT_SMALL_CHUNK;
 	double *track_dist = NULL, *map_dist = NULL, *value_dist = NULL, *radii = NULL, *xx = NULL, *yy = NULL;
 	double dx, dy, width, f, this_dist, step, stept, this_value_dist, lon[2], lat[2];
 	struct GMT_LABEL *new_label = NULL;

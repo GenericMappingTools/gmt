@@ -376,8 +376,8 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_read = 0;
 	GMT_LONG n_out, error;
 	GMT_LONG i, j, k, n;			/* Misc. counters */
-	GMT_LONG make_path = FALSE;	/* TRUE means create continuous path, FALSE works on discrete points */
-	GMT_LONG spotter_way;		/* Either SPOTTER_FWD or SPOTTER_BACK */
+	GMT_LONG make_path = FALSE;		/* TRUE means create continuous path, FALSE works on discrete points */
+	GMT_LONG spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
 
 	double *c = NULL;		/* Array of track chunks returned by libeuler routines */
 	double lon, lat;		/* Seamounts location in decimal degrees */

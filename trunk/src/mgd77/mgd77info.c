@@ -405,8 +405,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			fprintf (GMT->session.std[GMT_OUT], "\n");
 		}
 		
-		GMT_make_dnan (tmin);
-		GMT_make_dnan (tmax);
+		tmin = tmax = GMT->session.d_NaN;
 		this_dist = this_lon = this_lat = ds = this_time = 0.0;
 		xmin1 = xmin2 = 360.0;
 		xmax1 = xmax2 = -360.0;
