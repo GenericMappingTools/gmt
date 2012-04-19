@@ -284,7 +284,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pslegend task */
 	GMT_LONG i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
 	GMT_LONG flush_paragraph = FALSE, draw_vertical_line = FALSE, gave_label, gave_mapscale_options;
-	GMT_LONG dim[4] = {1, 1, 0, 2}, status, object_ID, did_old = FALSE;
+	GMT_LONG dim[4] = {1, 1, 0, 2}, status = 0, object_ID, did_old = FALSE;
 
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256];
 	char txt_f[GMT_TEXT_LEN256], key[GMT_TEXT_LEN256], sub[GMT_TEXT_LEN256], tmp[GMT_TEXT_LEN256], just;
@@ -463,6 +463,10 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				x_off = GMT_to_inch (GMT, bar_gap);
 				sprintf (buffer, "-C%s -O -K -D%gi/%gi/%gi/%sh %s", bar_cpt, Ctrl->D.lon + 0.5 * Ctrl->D.width, y0, Ctrl->D.width - 2 * x_off, bar_height, bar_opts);
 				status = GMT_psscale (API, 0, buffer);	/* Plot the colorbar */
+				if (status) {
+					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psscale returned error %ld.\n", status);
+					Return (EXIT_FAILURE);
+				}
 				y0 -= GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 				column_number = 0;
 				API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psscale */
@@ -522,6 +526,10 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width - Ctrl->C.dx : 0.5 * Ctrl->D.width);
 				sprintf (buffer, "-O -K %s -W%s -C%gi/%gi/%s", image, size, x_off, y0, key);
 				status = GMT_psimage (API, 0, buffer);	/* Plot the image */
+				if (status) {
+					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psimage returned error %ld.\n", status);
+					Return (EXIT_FAILURE);
+				}
 				y0 -= GMT_to_inch (GMT, size) * (double)header.height / (double)header.width;
 				column_number = 0;
 				break;
@@ -589,6 +597,10 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					sprintf (buffer, "-R%s -J%s -O -K -L%s", r_ptr->arg, j_ptr->arg, &mapscale[k]);
 				}
 				status = GMT_psbasemap (API, 0, buffer);	/* Plot the scale */
+				if (status) {
+					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psbasemap returned error %ld.\n", status);
+					Return (EXIT_FAILURE);
+				}
 				if (gave_label && just == 'b') y0 -= d_off;
 				y0 -= GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
 				column_number = 0;
@@ -680,6 +692,10 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (txt_c[0] != '-') {strcat (buffer, " -G"); strcat (buffer, txt_c);}
 					if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
 					status = GMT_psxy (API, 0, buffer);	/* Plot the front */
+					if (status) {
+						GMT_report (GMT, GMT_MSG_FATAL, "GMT_psxy returned error %ld.\n", status);
+						Return (EXIT_FAILURE);
+					}
 					API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psxy */
 				}
 				else {	/* Regular symbols */

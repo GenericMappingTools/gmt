@@ -145,7 +145,6 @@ GMT_LONG GMT_psbasemap (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct PSBASEMAP_CTRL *Ctrl = NULL;	/* Control structure specific to program */
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -161,7 +160,6 @@ GMT_LONG GMT_psbasemap (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycpt>" GMT_OPT("EZ"), options)) Return (API->error);
 	Ctrl = New_psbasemap_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psbasemap_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the psbasemap main code ----------------------------*/
 

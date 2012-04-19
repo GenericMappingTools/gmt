@@ -408,7 +408,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG k, x, y, rmode, pos, i = 0, j, n_fields, n_output = 0, two;
 	GMT_LONG fmt[2], save[2] = {0,0}, unit = 0, n_read = 0, n = 0, proj_type = 0;
 	GMT_LONG error = FALSE, line_start = TRUE, n_read_in_seg, do_geo_conv = FALSE;
-	GMT_LONG geodetic_calc = FALSE, greenwich = FALSE, lat_mode = 0;
+	GMT_LONG geodetic_calc = FALSE, lat_mode = 0;
 	GMT_LONG datum_conv_only = FALSE, double_whammy = FALSE, way;
 
 	double x_in = 0.0, y_in = 0.0, d = 0.0, fwd_scale, inv_scale, xtmp, ytmp, *out = NULL;
@@ -580,8 +580,6 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_message (GMT, " [%s]\n", unit_name);
 		}
 	}
-
-	greenwich = (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO && proj_type == GMT_GEOGRAPHIC) ? (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0) : FALSE;
 
 	if (Ctrl->L.active) {
 		/* Initialize the i/o for doing table reading */

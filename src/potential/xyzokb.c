@@ -1067,6 +1067,7 @@ void set_center (GMT_LONG n_triang) {
 	}
 }
 
+#if 0
 void triang_norm (GMT_LONG n_triang) {
 	/* Computes the unit normal to trianglular facet */
 	GMT_LONG i;
@@ -1091,6 +1092,7 @@ void triang_norm (GMT_LONG n_triang) {
 		n[2] = v3[2] / mod;
 	}
 }
+#endif
 
 GMT_LONG check_triang_cw (GMT_LONG n, GMT_LONG type) {
 	/* Checks that triangles are given in the correct clock-wise order.

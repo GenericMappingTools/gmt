@@ -240,7 +240,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, id, rec, argno, length, id_col, t_col, x_col, y_col, saved_range, use;
 	GMT_LONG n_paths, counter[MGD77_MAX_COLS], quad_no, n_quad, rata_die;
-	GMT_LONG error = FALSE, greenwich = FALSE, first = TRUE, read_file;
+	GMT_LONG error = FALSE, first = TRUE, read_file;
 	GMT_LONG quad[4] = {FALSE, FALSE, FALSE, FALSE};
 	
 	double this_dist, this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;
@@ -411,8 +411,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		xmax1 = xmax2 = -360.0;
 		ymin = 180.0;
 		ymax = -180.0;
-		GMT_memset (quad, 4, GMT_LONG);	/* Set al to FALSE */
-		greenwich = FALSE;
+		GMT_memset (quad, 4, GMT_LONG);	/* Set all to FALSE */
 		GMT_memset (counter, MGD77_MAX_COLS, GMT_LONG);
 	
 		for (i = 0; i < MGD77_MAX_COLS; i++) {
@@ -449,7 +448,6 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (rec > 0) {	/* Need a previous point to calculate distance, speed, and heading */
 				dlon = this_lon - last_lon;
 				if (fabs (dlon) > 180.0) {
-					greenwich = TRUE;
 					dlon = copysign ((360.0 - fabs (dlon)), dlon);
 				}
 				dx = dlon * cosd (0.5 * (this_lat + last_lat));

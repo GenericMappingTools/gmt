@@ -96,10 +96,9 @@ SEGYHEAD *get_segy_header(FILE *file_ptr) {
 
 float *get_segy_data(FILE *file_ptr, SEGYHEAD *head_ptr) {
   float    *data_ptr;
-  uint32_t size_of_data, num_samps;
+  uint32_t num_samps;
 
   num_samps = samp_rd(head_ptr);
-  size_of_data = sizeof (float);
 
   data_ptr = calloc(num_samps, sizeof(float));
   if (data_ptr == NULL) {

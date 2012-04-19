@@ -3573,11 +3573,13 @@ doublereal sig0_(integer *n1, integer *n2, integer *n, doublereal *x,
     static integer lp1, lp2;
     static doublereal bnd, scm, sig, ems;
     static integer lpl, nit;
-    static doublereal ssm, d1pd2, fneg, dsig, dmax__, fmax, sneg, ftol, rsig, 
+    static doublereal ssm, d1pd2, fneg, dsig, dmax__, fmax, ftol, rsig, 
 	    rtol, stol, coshm, sinhm, ssinh;
     static doublereal unorm;
     static doublereal coshmm;
-
+#ifdef SPH_DEBUG
+    static sneg;
+#endif
 
 /* *********************************************************** */
 
@@ -3897,11 +3899,11 @@ L4:
     d__1 = fabs(s1), d__2 = fabs(s2);
     sig = max(d__1,d__2) / t;
     dmax__ = sig * (1. - t / fmax);
-    sneg = sig - dmax__;
 /*      IF (LUN .GE. 0) WRITE (LUN,120) SIG, SNEG, F0, FMAX */
 /*  120 FORMAT (1X,8X,'SIG = ',E15.8,', SNEG = ',E15.8/ */
 /*     .        1X,9X,'F0 = ',E15.8,', FMAX = ',E15.8/) */
 #ifdef SPH_DEBUG
+    sneg = sig - dmax__;
     fprintf (stderr, "SIG = %g  SNEG = %g F0 = %g FMAX = %g\n", sig, sneg, f0, fmax);
 #endif
     dsig = sig;

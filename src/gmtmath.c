@@ -2835,7 +2835,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, j, k, kk, op = 0, nstack = 0, new_stack = -1, use_t_col = 0, status, n_macros;
 	GMT_LONG consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS];
-	GMT_LONG n_records, n_rows = 0, n_columns = 0, n_segments, seg, alloc_mode[GMTMATH_STACK_SIZE];
+	GMT_LONG n_records, n_rows = 0, n_columns = 0, seg, alloc_mode[GMTMATH_STACK_SIZE];
 	GMT_LONG constant[GMTMATH_STACK_SIZE], error = FALSE, set_equidistant_t = FALSE, dim[4] = {1, 1, 0, 0};
 	GMT_LONG read_stdin = FALSE, t_check_required = TRUE, got_t_from_file = FALSE, done;
 
@@ -2955,7 +2955,6 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (D_in) {	/* Read a file, update columns */
 		use_t_col  = Ctrl->N.tcol;
-		n_segments = D_in->n_segments;
 		n_columns  = D_in->n_columns;
 	}
 	set_equidistant_t = (Ctrl->T.active && !Ctrl->T.file && !Ctrl->T.notime);	/* We were given -Tmin/max/inc */

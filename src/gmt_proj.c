@@ -2329,7 +2329,7 @@ double GMT_right_eckert6 (struct GMT_CTRL *C, double y)
 
 void GMT_vrobinson (struct GMT_CTRL *C, double lon0)
 {	/* Set up Robinson projection */
-	GMT_LONG err_flag;
+	GMT_LONG err_flag = 0;
 
 	if (C->current.setting.interpolant == 0) {	/* Must reset and warn */
 		GMT_message (C, "Warning: -JN requires Akima or Cubic spline interpolant, set to Akima\n");
@@ -2362,15 +2362,16 @@ void GMT_vrobinson (struct GMT_CTRL *C, double lon0)
 	C->current.proj.n_phi[17] = 85;	C->current.proj.n_X[17] = 0.5722;	C->current.proj.n_Y[17] = 0.9761;
 	C->current.proj.n_phi[18] = 90;	C->current.proj.n_X[18] = 0.5322;	C->current.proj.n_Y[18] = 1.0000;
 	if (C->current.setting.interpolant == 2) {	/* Natural cubic spline */
-		err_flag = GMT_cspline (C, C->current.proj.n_phi, C->current.proj.n_X, GMT_N_ROBINSON, C->current.proj.n_x_coeff);
-		err_flag = GMT_cspline (C, C->current.proj.n_phi, C->current.proj.n_Y, GMT_N_ROBINSON, C->current.proj.n_y_coeff);
-		err_flag = GMT_cspline (C, C->current.proj.n_Y, C->current.proj.n_phi, GMT_N_ROBINSON, C->current.proj.n_iy_coeff);
+		err_flag  = GMT_cspline (C, C->current.proj.n_phi, C->current.proj.n_X, GMT_N_ROBINSON, C->current.proj.n_x_coeff);
+		err_flag += GMT_cspline (C, C->current.proj.n_phi, C->current.proj.n_Y, GMT_N_ROBINSON, C->current.proj.n_y_coeff);
+		err_flag += GMT_cspline (C, C->current.proj.n_Y, C->current.proj.n_phi, GMT_N_ROBINSON, C->current.proj.n_iy_coeff);
 	}
 	else {	/* Akimas spline */
-		err_flag = GMT_akima (C, C->current.proj.n_phi, C->current.proj.n_X, GMT_N_ROBINSON, C->current.proj.n_x_coeff);
-		err_flag = GMT_akima (C, C->current.proj.n_phi, C->current.proj.n_Y, GMT_N_ROBINSON, C->current.proj.n_y_coeff);
-		err_flag = GMT_akima (C, C->current.proj.n_Y, C->current.proj.n_phi, GMT_N_ROBINSON, C->current.proj.n_iy_coeff);
+		err_flag  = GMT_akima (C, C->current.proj.n_phi, C->current.proj.n_X, GMT_N_ROBINSON, C->current.proj.n_x_coeff);
+		err_flag += GMT_akima (C, C->current.proj.n_phi, C->current.proj.n_Y, GMT_N_ROBINSON, C->current.proj.n_y_coeff);
+		err_flag += GMT_akima (C, C->current.proj.n_Y, C->current.proj.n_phi, GMT_N_ROBINSON, C->current.proj.n_iy_coeff);
 	}
+	if (err_flag) GMT_report (C, GMT_MSG_FATAL, "Error:  Interpolation failed in GMT_vrobinson?\n");
 }
 
 double gmt_robinson_spline (struct GMT_CTRL *C, double xp, double *x, double *y, double *c)

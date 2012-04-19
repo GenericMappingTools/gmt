@@ -413,7 +413,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_fields, ind, bin, last_bin = -1, pt_cartesian = FALSE, inside;
 	GMT_LONG np[2] = {0, 0}, base = 3, wd[2] = {0, 0}, id, this_node, side, row, col;
 	GMT_LONG error = FALSE, need_header, shuffle, just_copy_record = FALSE;
-	GMT_LONG greenwich = FALSE, output_header = FALSE, do_project = FALSE, no_resample = FALSE;
+	GMT_LONG output_header = FALSE, do_project = FALSE, no_resample = FALSE;
 
 	double xx, yy, *in = NULL;
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
@@ -471,7 +471,6 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT->common.R.wesn[XLO] += 360.0;
 				GMT->common.R.wesn[XHI] += 360.0;
 			}
-			greenwich = (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0);
 		}
 		GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
 		if (no_resample) GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */

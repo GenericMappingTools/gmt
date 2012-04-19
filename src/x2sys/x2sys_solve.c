@@ -531,8 +531,11 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	else {	/* Ascii input with track names */
-		char file_TAG[GMT_TEXT_LEN64], file_column[GMT_TEXT_LEN64], *not_used = NULL;
-		not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Read first line with TAG and column */
+		char file_TAG[GMT_TEXT_LEN64], file_column[GMT_TEXT_LEN64];
+		if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Read first line with TAG and column */
+			GMT_report (GMT, GMT_MSG_FATAL, "Read error in 1st line of track file\n");
+			Return (EXIT_FAILURE);
+		}
 		sscanf (&line[7], "%s %s", file_TAG, file_column);
 		if (strcmp (Ctrl->T.TAG, file_TAG) && strcmp (Ctrl->C.col, file_column)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: The TAG and column info in the ASCII file %s are not compatible with the -C -T options\n", Ctrl->In.file);

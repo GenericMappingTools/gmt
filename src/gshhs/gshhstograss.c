@@ -68,15 +68,15 @@ char *putusername();
 
 int main (int argc, char **argv)
 {
-	int i = 1, m;
-	double w, e, s, n, area, lon, lat, scale = 10.0;
+	int i = 1;
+	double w, e, s, n, lon, lat;
 	double minx = -360., maxx = 360., miny = -90., maxy = 90.;
-	char source, *progname, *dataname = NULL, ascii_name[40], att1_name[40], att2_name[40];
+	char *progname = NULL, *dataname = NULL, ascii_name[40], att1_name[40], att2_name[40];
 	static char *slevel[] = { "unknown" , "land" , "lake" , "island in lake" , "pond in island in lake"};
 	int shore_levels = 5;
 	FILE	*fp = NULL, *ascii_fp = NULL, *att1_fp = NULL, *att2_fp = NULL;
 	size_t n_read;
-	int k, max = 270000000, flip, level, version, greenwich, src, river, shorelines;
+	int k, max = 270000000, flip, level, version, greenwich, shorelines;
 	struct POINT p;
 	struct GSHHS h;
 	int max_id=0;
@@ -229,18 +229,10 @@ int main (int argc, char **argv)
 		level = h.flag & 255;
 		version = (h.flag >> 8) & 255;
 		greenwich = (h.flag >> 16) & 3;
-		src = (h.flag >> 24) & 1;
-		river = (h.flag >> 25) & 1;
 		w = h.west * GSHHS_SCL;
 		e = h.east * GSHHS_SCL;
 		s = h.south * GSHHS_SCL;
 		n = h.north * GSHHS_SCL;
-		source = (src == 1) ? 'W' : 'C';
-		if (version >= 9) {				/* Magnitude for area scale */
-			m = h.flag >> 26;
-			scale = pow (10.0, (double)m);		/* Area scale */
-		}
-		area = h.area / scale;				/* Now im km^2 */
 
 		if( ( w <= maxx && e >= minx ) && ( s <= maxy && n >= miny ) ){
 			fprintf(ascii_fp,"L %d 2\n",h.n);

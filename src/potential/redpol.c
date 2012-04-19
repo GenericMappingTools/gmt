@@ -120,13 +120,12 @@ void rtp_filt_colinear(GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr,double 
 		double v, double alfa, double beta, double gama, struct REDPOL_CTRL *Ctrl) {
 
 	GMT_LONG ij = ij_mn(Ctrl,i,j-n21+1);
-	double ro, ro2, ro3, ro4, ro5, alfa_u, beta_v, gama_v, alfa_ro, alfa_ro_2, gama_ro, gama_ro_2;
+	double ro, ro2, ro3, ro4, ro5, alfa_u, beta_v, gama_ro, gama_ro_2;
 	double alfa_u_beta_v, alfa_u_beta_v_2, rnr, rni, t2, t3;
 	ro2 = u * u + v * v;    ro = sqrt(ro2);     ro3 = ro2 * ro;
 	ro4 = ro2 * ro2;	ro5 = ro3 * ro2;
-	alfa_u = alfa * u;      gama_v = gama * v;
+	alfa_u = alfa * u;
 	beta_v = beta * v;
-	alfa_ro = alfa * ro;    alfa_ro_2 = alfa_ro * alfa_ro;
 	gama_ro = gama * ro;    gama_ro_2 = gama_ro * gama_ro;
 	alfa_u_beta_v = alfa_u + beta_v;
 	alfa_u_beta_v_2 = alfa_u_beta_v * alfa_u_beta_v;
@@ -157,16 +156,15 @@ void rtp_filt_NOTcolinear(GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr, dou
 		double beta, double gama, double tau, double mu, double nu, struct REDPOL_CTRL *Ctrl) {
 
 	GMT_LONG ij = ij_mn(Ctrl,i,j-n21+1);
-	double ro, ro2, ro3, ro4, ro5, alfa_u, beta_v, gama_v, alfa_ro, alfa_ro_2, gama_ro, gama_ro_2;
+	double ro, ro2, ro3, ro4, ro5, alfa_u, beta_v, gama_ro, gama_ro_2;
 	double alfa_u_beta_v, alfa_u_beta_v_2, rnr, rni, den_r, den_i1, den_i2;
 	double tau_u, mu_v, nu_ro, nu_ro_2, tau_u_mu_v, tau_u_mu_v_2, tau_u_mu_v_gama;
 	double alfa_u_beta_v_nu, alfa_u_beta_v_tau_u_mu_v;
 
 	ro2 = u * u + v * v;    ro = sqrt(ro2);     ro3 = ro2 * ro;
 	ro4 = ro2 * ro2;	ro5 = ro3 * ro2;
-	alfa_u = alfa * u;      gama_v = gama * v;
+	alfa_u = alfa * u;
 	beta_v = beta * v;
-	alfa_ro = alfa * ro;    alfa_ro_2 = alfa_ro * alfa_ro;
 	gama_ro = gama * ro;    gama_ro_2 = gama_ro * gama_ro;
 	alfa_u_beta_v = alfa_u + beta_v;
 	alfa_u_beta_v_2 = alfa_u_beta_v * alfa_u_beta_v;

@@ -316,7 +316,7 @@ GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double
 
 GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, new_grid = FALSE;
+	GMT_LONG error = FALSE;
 
 	double wesn[4];
 	
@@ -350,7 +350,7 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, Grid) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
-	new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array */
+	(void)GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array */
 	GMT_grd_init (GMT, Out->header, options, TRUE);
 
 	if (Ctrl->N.active)

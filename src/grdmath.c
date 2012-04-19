@@ -2229,7 +2229,7 @@ void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
 /*OPERATOR: ROTY 2 1 Rotate A by the (constant) shift B in y-direction.  */
 {
-	GMT_LONG row, col, prev = last - 1, shift, *new_row = NULL, nx;
+	GMT_LONG row, col, prev = last - 1, shift, *new_row = NULL;
 	float *z = NULL;
 
 	/* Shift grid A by the y-shift B.  B must be a constant */
@@ -2242,7 +2242,6 @@ void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 
 	if (constant[prev] || !shift) return;	/* Trivial since A is a constant or shift is zero */
 	if (shift < 0) shift += info->G->header->ny;	/* Same thing */
-	nx = info->G->header->nx;
 	/* Set up permutation vector */
 
 	new_row = GMT_memory (GMT, NULL, info->G->header->ny, GMT_LONG);

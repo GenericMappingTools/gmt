@@ -349,7 +349,7 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 
 GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, row, col, error = 0, index, ij, k, k3;
+	GMT_LONG i, row, col, error = 0, ij, k, k3;
 	
 	char rgb[3] = {'r', 'g', 'b'}, *comp[3] = {"red", "green", "blue"};
 	char buffer[GMT_BUFSIZ], *grdfile = NULL;
@@ -407,7 +407,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			grdfile = strdup (buffer);
 			sprintf (Out->header->remark, "Grid of %s components in the 0-255 range", comp[i]);
 			GMT_grd_loop (GMT, Grid, row, col, ij) {
-				index = GMT_get_rgb_from_z (GMT, P, Grid->data[ij], f_rgb);
+				(void)GMT_get_rgb_from_z (GMT, P, Grid->data[ij], f_rgb);
 				Out->data[ij] = (float)GMT_s255 (f_rgb[i]);
 			}
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, grdfile, Out) != GMT_OK) {

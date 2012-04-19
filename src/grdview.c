@@ -547,7 +547,7 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG get_contours, bad, good, error = FALSE, pen_set, row, col;
-	GMT_LONG first, begin, saddle, drape_resample = FALSE;
+	GMT_LONG begin, saddle, drape_resample = FALSE;
 	GMT_LONG j, n_edges, max, i_bin, j_bin, i_bin_old, j_bin_old, t_reg, d_reg[3], i_reg = 0;
 	GMT_LONG sw, se, nw, ne, n4, nk, c, i_start, i_stop, j_start, j_stop, i_inc, j_inc, ii, jj;
 	GMT_LONG bin, i, ij, k, k1, n, n_drape = 0, n_out, bin_inc[4], ij_inc[4];
@@ -705,7 +705,6 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */
 		Z_orig = GMT_duplicate_grid (GMT, Z, TRUE);	/* Original copy of grid used for contouring */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Trace and bin contours...\n");
-		first = TRUE;
 		for (c = 0; c < P->n_colors+1; c++) {	/* For each color change */
 
 			/* Reset markers and set up new zero-contour */
@@ -715,7 +714,6 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (cval < Z->header->z_min || cval > Z->header->z_max) continue;
 
 			GMT_report (GMT, GMT_MSG_NORMAL, "Now tracing contour interval %8g\r", cval);
-			first = FALSE;
 			/* Old version of loop below could give round-off since we kept subtracting the increments between successive contours.
 			 * The safer way is to always start with original grid and subtract current contour value instead, as in grdcontour. PW, 11/18/2011 */
 			GMT_grd_loop (GMT, Topo, row, col, ij) {

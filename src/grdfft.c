@@ -170,7 +170,7 @@ void remove_plane (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	spend some multiplications on normalizing the 
 	range of x,y into [-1,1], to avoid roundoff error.  */
 
-	GMT_LONG i, j, ij, one_or_zero, i_data_start, j_data_start;
+	GMT_LONG i, j, ij, one_or_zero;
 	double x_half_length, one_on_xhl, y_half_length, one_on_yhl;
 	double sumx2, sumy2, data_var, x, y, z, a[3];
 	float *datac = Grid->data;
@@ -182,8 +182,6 @@ void remove_plane (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	one_on_yhl = 1.0 / y_half_length;
 
 	sumx2 = sumy2 = data_var = a[2] = a[1] = a[0] = 0.0;
-	i_data_start = GMT->current.io.pad[XLO];
-	j_data_start = GMT->current.io.pad[YHI];
 
 	for (j = 0; j < Grid->header->ny; j++) {
 		y = one_on_yhl * (j - y_half_length);
@@ -1130,8 +1128,7 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 
 GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, stop, op_count = 0, par_count = 0, status;
-	GMT_LONG narray[2], i, j, i_data_start, j_data_start, new_grid;
+	GMT_LONG error = FALSE, stop, op_count = 0, par_count = 0, status, i, j;
 	
 
 	struct GMT_GRID *GridA = NULL, *Out = NULL;
@@ -1207,8 +1204,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Check that no NaNs are present */
 	
-	i_data_start = GMT->current.io.pad[XLO];
-	j_data_start = GMT->current.io.pad[YHI];
 	stop = FALSE;
 	for (j = 0; !stop && j < GridA->header->ny; j++) for (i = 0; !stop && i < GridA->header->nx; i++) 
 		stop = GMT_is_fnan (GridA->data[GMT_IJPR(GridA->header,j,i)]);
@@ -1217,7 +1212,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 
-	new_grid = GMT_set_outgrid (GMT, GridA, &Out);	/* TRUE if input is a read-only array; otherwise Out just points to GridA */
+	(void) GMT_set_outgrid (GMT, GridA, &Out);	/* TRUE if input is a read-only array; otherwise Out just points to GridA */
 
 	if (!(Ctrl->L.active)) remove_plane (GMT, Out);
 	if (!(Ctrl->N.force_narray)) taper_edges (GMT, Out);
@@ -1244,7 +1239,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #endif
 	GMT_report (GMT, GMT_MSG_NORMAL, "forward FFT...");
 	
-	narray[0] = Ctrl->N.nx2;	narray[1] = Ctrl->N.ny2;
 	GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX);
 
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {

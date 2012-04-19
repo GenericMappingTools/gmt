@@ -2615,7 +2615,7 @@ GMT_LONG GMT_write_cpt (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, GMT_
 
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
 		strcpy (cpt_file, dest);
-		if ((fp = GMT_fopen (C, cpt_file, "w")) == NULL) {
+		if ((fp = fopen (cpt_file, "w")) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot create file %s\n", cpt_file);
 			return (EXIT_FAILURE);
 		}
@@ -2699,7 +2699,10 @@ GMT_LONG GMT_write_cpt (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, GMT_
 
 	/* Background, foreground, and nan colors */
 
-	if (cpt_flags & 1) return (EXIT_SUCCESS);	/* Do not want to write BFN to the cpt file */
+	if (cpt_flags & 1) {	/* Do not want to write BFN to the cpt file */
+		if (close_file) fclose (fp);
+		return (EXIT_SUCCESS);
+	}
 
 	if (cpt_flags & 2) {	/* Use low and high colors as back and foreground */
 		GMT_rgb_copy (P->patch[GMT_BGD].rgb, P->range[0].rgb_low);
@@ -2722,7 +2725,8 @@ GMT_LONG GMT_write_cpt (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, GMT_
 		else
 			fprintf (fp, "%c\t%s\n", code[k], GMT_putcolor (C, P->patch[k].rgb));
 	}
-	return (EXIT_SUCCESS);	/* Do not want to write BFN to the cpt file */
+	if (close_file) fclose (fp);
+	return (EXIT_SUCCESS);
 }
 
 GMT_LONG GMT_get_index (struct GMT_CTRL *C, struct GMT_PALETTE *P, double value)

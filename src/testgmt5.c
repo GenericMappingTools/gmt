@@ -68,6 +68,10 @@ int main (int argc, char *argv[]) {
 
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_grdcut (API, -1, head);	/* This allocates memory for the export grid associated with the -G option */
+	if (status) {
+		GMT_report (API->GMT, GMT_MSG_FATAL, "GMT_grdcut returned error %ld\n", status);
+		exit (EXIT_FAILURE);
+	}
 	if ((Gout = GMT_Retrieve_Data (API, out_grdcut_ID)) == NULL) exit (EXIT_FAILURE);
 
 	/* 6. Destroy local linked option list */

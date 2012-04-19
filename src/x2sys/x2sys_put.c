@@ -186,7 +186,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct X2SYS_BIX_TRACK_INFO *this_info = NULL, *new_info = NULL;
 	struct X2SYS_BIX_TRACK *this_track = NULL;
 
-	char track[GMT_TEXT_LEN64], line[GMT_BUFSIZ], *c_unused = NULL;
+	char track[GMT_TEXT_LEN64], line[GMT_BUFSIZ];
 	char track_file[GMT_BUFSIZ], index_file[GMT_BUFSIZ], old_track_file[GMT_BUFSIZ], old_index_file[GMT_BUFSIZ];
 	char track_path[GMT_BUFSIZ], index_path[GMT_BUFSIZ], old_track_path[GMT_BUFSIZ], old_index_path[GMT_BUFSIZ];
 
@@ -197,8 +197,6 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Leave these as 4-byte ints */
 	int index, id, bin, free_id, max_flag, flag;
 	int i, bit, total_flag;
-	
-	size_t s_unused = 0;
 	
 	struct X2SYS_PUT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -229,7 +227,10 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (fp == NULL) fp = GMT->session.std[GMT_IN];	/* No file given; read stdin instead */
 
-	c_unused = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Got the first record from the track binindex file */
+	if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Got the first record from the track binindex file */
+		GMT_report (GMT, GMT_MSG_FATAL, "Read error in 1st line of track binindex file\n");
+		Return (EXIT_FAILURE);
+	}
 	if (strncmp (&line[2], Ctrl->T.TAG, strlen(Ctrl->T.TAG))) {	/* Hard check to see if the TAG matches what we says it should be */
 		GMT_report (GMT, GMT_MSG_FATAL, "The TAG specified (%s) does not match the one in the .tbf file (%s)\n", Ctrl->T.TAG, &line[2]);
 		Return (EXIT_FAILURE);
@@ -257,7 +258,10 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef DEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
-	c_unused = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+	if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+		GMT_report (GMT, GMT_MSG_FATAL, "Read error in 2nd line of track binindex file\n");
+		Return (EXIT_FAILURE);
+	}
 	while (line[0] == '>') {	/* Next segment */
 		sscanf (line, "> %s", track);
 		
@@ -290,7 +294,10 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			skip = FALSE;
 
 		if (skip) {	/* Just wind past this segment */
-			c_unused = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+			if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+				GMT_report (GMT, GMT_MSG_FATAL, "Read error in a segment line of track binindex file\n");
+				Return (EXIT_FAILURE);
+			}
 			while (line[0] != '>' && (GMT_fgets (GMT, line, GMT_BUFSIZ, fp) != NULL));
 		}
 		else {	/* Read the tbf information for this track */
@@ -378,11 +385,23 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (bin = 0; bin < B.nm_bin; bin++) {
 		if (B.base[bin].n_tracks == 0) continue;
 
-		s_unused = fwrite ((&bin), (size_t)4, (size_t)1, fbin);
-		s_unused = fwrite ((&B.base[bin].n_tracks), (size_t)4, (size_t)1, fbin);
+		if (fwrite ((&bin), (size_t)4, (size_t)1, fbin) != 1) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Failed to write to binary file. Aborts!\n");
+			Return (EXIT_FAILURE);
+		}
+		if (fwrite ((&B.base[bin].n_tracks), (size_t)4, (size_t)1, fbin) != 1) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Failed to write to binary file. Aborts!\n");
+			Return (EXIT_FAILURE);
+		}
 		for (this_track = B.base[bin].first_track->next_track; this_track; this_track = this_track->next_track) {
-			s_unused = fwrite ((&this_track->track_id), (size_t)4, (size_t)1, fbin);
-			s_unused = fwrite ((&this_track->track_flag), (size_t)4, (size_t)1, fbin);
+			if (fwrite ((&this_track->track_id), (size_t)4, (size_t)1, fbin) != 1) {
+				GMT_report (GMT, GMT_MSG_FATAL, "Failed to write to binary file. Aborts!\n");
+				Return (EXIT_FAILURE);
+			}
+			if (fwrite ((&this_track->track_flag), (size_t)4, (size_t)1, fbin) != 1) {
+				GMT_report (GMT, GMT_MSG_FATAL, "Failed to write to binary file. Aborts!\n");
+				Return (EXIT_FAILURE);
+			}
 		}
 	}
 	fclose (fbin);

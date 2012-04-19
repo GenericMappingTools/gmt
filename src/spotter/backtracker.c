@@ -367,7 +367,6 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 
 	GMT_LONG n_points;			/* Number of data points read */
-	GMT_LONG n_chunk;			/* Total length or array returned by libeuler functions */
 	GMT_LONG n_track;			/* Number of points in a track segment */
 	GMT_LONG n_stages = 0;			/* Number of stage poles */
 	GMT_LONG n_segments;			/* Number of path segments written out */
@@ -375,7 +374,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_fields, n_expected_fields;
 	GMT_LONG n_read = 0;
 	GMT_LONG n_out, error;
-	GMT_LONG i, j, k, n;			/* Misc. counters */
+	GMT_LONG i, j, k;			/* Misc. counters */
 	GMT_LONG make_path = FALSE;		/* TRUE means create continuous path, FALSE works on discrete points */
 	GMT_LONG spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
 
@@ -474,8 +473,6 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	n = 0;
-
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
@@ -559,7 +556,10 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_X], H->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
-					n_chunk = spotter_track (GMT, spotter_way, &lon, &lat, &t, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
+					if (spotter_track (GMT, spotter_way, &lon, &lat, &t, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c) <= 0) {
+						GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_track - aborting\n");
+						Return (GMT_RUNTIME_ERROR);
+					}
 					out[GMT_X] = lon * R2D;
 					out[GMT_Y] = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					out[GMT_Z] = t;
@@ -571,7 +571,10 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_X], H->n_rows, 1, &t_end, &lon, GMT->current.setting.interpolant);
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t_end, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
-					n_chunk = spotter_track (GMT, spotter_way, &lon, &lat, &t_end, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
+					if (spotter_track (GMT, spotter_way, &lon, &lat, &t_end, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c) <= 0) {
+						GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_track - aborting\n");
+						Return (GMT_RUNTIME_ERROR);
+					}
 					out[GMT_X] = lon * R2D;
 					out[GMT_Y] = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					out[GMT_Z] = t_end;
@@ -579,7 +582,12 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			else {
-				if (!Ctrl->W.active) n_chunk = spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
+				if (!Ctrl->W.active) {
+					if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c) <= 0) {
+						GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_track - aborting\n");
+						Return (GMT_RUNTIME_ERROR);
+					}
+				}
 				
 				n_track = lrint (c[0]);
 				for (j = 0, i = 1; j < n_track; j++, i += 3) {
@@ -600,7 +608,10 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			else {
-				n_chunk = spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
+				if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c) <= 0) {
+					GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_track - aborting\n");
+					Return (GMT_RUNTIME_ERROR);
+				}
 				out[GMT_X] = lon * R2D;
 				out[GMT_Y] = lat * R2D;
 				for (k = 2; k < n_expected_fields; k++) out[k] = in[k];

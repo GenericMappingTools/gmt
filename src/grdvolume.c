@@ -397,7 +397,7 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, bad, cut[4], ij, ij_inc[5];
-	GMT_LONG row, col, c, k, pos, neg, nc, n_contours, new_grid = FALSE;
+	GMT_LONG row, col, c, k, pos, neg, nc, n_contours;
 
 	double take_out, dv, da, cval = 0.0, cellsize, fact, dist_pr_deg, sum, out[4];
 	double *area = NULL, *vol = NULL, *height = NULL, this_base, small, wesn[4];
@@ -439,7 +439,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	new_grid = GMT_set_outgrid (GMT, Grid, &Work);	/* TRUE if input is a read-only array */
+	(void) GMT_set_outgrid (GMT, Grid, &Work);	/* TRUE if input is a read-only array */
 	GMT_grd_init (GMT, Work->header, options, TRUE);
 
 	/* Set node increments relative to the lower-left node of a 4-point box */
