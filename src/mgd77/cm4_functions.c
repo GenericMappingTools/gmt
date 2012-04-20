@@ -189,6 +189,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
 	sscanf (line, "%d", &lum1);
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
+	(void)c_unused; /* silence -Wunused-but-set-variable */
 	sscanf (line, "%lf %lf %lf %lf", &epch, &re, &rp, &rm);
 	for (j = 0; j < lsmf; ++j)
 		i_unused = fscanf (fp, "%d", &bord[j]);
@@ -265,6 +266,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 					i_unused = fscanf (fp, "%lf", &gcto_or[i + n]);
 			}
 	}
+	(void)i_unused; /* silence -Wunused-but-set-variable */
 
 	fclose(fp);
 	cpol = cnmp * D2R;

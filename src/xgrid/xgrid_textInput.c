@@ -95,6 +95,7 @@ Widget createTextInputArea (Widget parent)
   		XtNjustify, XtJustifyRight,
 		XtNlabel, "New value:",
 		NULL);
+	(void)label; /* fixme: -Wunused-but-set-variable */
 
   inputField = XtVaCreateManagedWidget("field", asciiTextWidgetClass, inputArea,
   		XtNeditType, XawtextEdit,

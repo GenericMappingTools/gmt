@@ -727,6 +727,9 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 								if (n_in_median[s] < 5) x_debug[n_in_median[s]] = (double)ii;
 								if (n_in_median[s] < 5) y_debug[n_in_median[s]] = (double)jj;
 								if (n_in_median[s] < 5) z_debug[n_in_median[s]] = Gin->data[ij_in];
+								(void)x_debug;
+								(void)y_debug;
+								(void)z_debug;
 #endif
 #ifdef OBSOLETE					
 								if (Ctrl->E.active) {	/* Sum up required terms to solve for slope and intercepts of planar trend */
