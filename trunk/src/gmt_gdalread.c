@@ -48,14 +48,14 @@ GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 
 int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
 	const char	*format = NULL;
-	int	bGotNodata, metadata_only;
+	int	metadata_only;
 	int	do_BIP;		/* For images if BIP == TRUE data is stored Pixel interleaved, otherwise Band interleaved */
 	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated bellow) */
 	int	complex = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
 	int	pixel_reg = FALSE;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
-	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nXYSize, nBufXSize, nBufYSize;
+	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nBufXSize, nBufYSize;
 	int n, m, incStep = 1;
 	GMT_LONG	fliplr;
 	GMT_LONG	nn, off, got_R = FALSE, got_r = FALSE, error = FALSE;
@@ -63,7 +63,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	GMT_LONG	n_alloc, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
 	//GMT_LONG	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	unsigned char *tmp = NULL;
-	double	tmpF64, dfNoData, adfMinMax[2];
+	double	tmpF64, adfMinMax[2];
 	double	dfULX = 0.0, dfULY = 0.0, dfLRX = 0.0, dfLRY = 0.0;
 	double	z_min = 1e50, z_max = -1e50;
 	GDALDatasetH	hDataset;
@@ -266,7 +266,6 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	}
 
 	nBands = GDALGetRasterCount(hDataset);
-	nXYSize = nBufXSize * nBufYSize;
 
 	if (nReqBands) nBands = MIN(nBands,nReqBands);	/* If a band selection was made */
 
@@ -347,7 +346,6 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		GDALRasterIO(hBand, GF_Read, xOrigin, yOrigin, nXSize, nYSize,
 			tmp, nBufXSize, nBufYSize, GDALGetRasterDataType(hBand), 0, 0 );
 
-		dfNoData = GDALGetRasterNoDataValue(hBand, &bGotNodata);
 		/* If we didn't computed it yet, its time to do it now */
 		if (got_R) ComputeRasterMinMax(C, tmp, hBand, adfMinMax, nXSize, nYSize, z_min, z_max);
 

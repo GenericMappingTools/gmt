@@ -37,7 +37,7 @@
 #define GDAL_TILE_SIZE 256 /* default tile size when creating tiled GTiff */
 
 int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs) {
-	int	flipud, i_x_nXYSize, bQuiet = FALSE, bStrict = FALSE;
+	int	bStrict = FALSE;
 	char **papszOptions = NULL, *projWKT = NULL;
 	char *pszFormat = "GTiff"; 
 	double adfGeoTransform[6] = {0,1,0,0,0,1}; 
@@ -63,7 +63,6 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	adfGeoTransform[1] =  prhs->x_inc;
 	adfGeoTransform[5] = -prhs->y_inc;
 	registration = prhs->registration;
-	flipud  = prhs->flipud;
 	is_geog = prhs->geog;
 	nx = prhs->nx;
 	ny = prhs->ny;
@@ -121,7 +120,6 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 		OSRDestroySpatialReference( hSRS_2 );
 	}
 
-	bQuiet = TRUE;
 	pfnProgress = GDALDummyProgress;
 
 	GDALAllRegister();
@@ -179,7 +177,6 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 				GMT_report(C, GMT_MSG_FATAL, "\tERROR creating Color Table");
 			GDALDestroyColorTable( hColorTable );
 		}
-		i_x_nXYSize = i*nx*ny;		/* We don't need to recompute this everytime */
 		switch( typeCLASS ) {
 			case GDT_Byte:
 			 	tmpByte = (unsigned char *)data;	

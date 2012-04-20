@@ -2770,8 +2770,12 @@ GMT_LONG GMT_Init_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG geometr
 	 *
 	 * Returns:	FALSE if successfull, TRUE if error.
 	 */
+#ifdef DEBUG
 	GMT_LONG object_ID;	/* ID of first object [only for debug purposes - not used in this function] */
-
+	#define ASSIGN_OR_VOID object_ID =
+#else
+	#define ASSIGN_OR_VOID (void)
+#endif
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	API->error = GMT_OK;		/* No error yet */
 	if (geometry < GMT_IS_TEXT || geometry > GMT_IS_SURFACE) return_error (API, GMT_BAD_GEOMETRY);
@@ -2780,9 +2784,9 @@ GMT_LONG GMT_Init_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG geometr
 
 	GMT_io_banner (API->GMT, direction);	/* Message for binary i/o */
 	if (direction == GMT_IN)
-		object_ID = GMTAPI_Init_Import (API, family, geometry, mode, head);
+		ASSIGN_OR_VOID GMTAPI_Init_Import (API, family, geometry, mode, head);
 	else
-		object_ID = GMTAPI_Init_Export (API, family, geometry, mode, head);
+		ASSIGN_OR_VOID GMTAPI_Init_Export (API, family, geometry, mode, head);
 	return ((API->error) ? TRUE : FALSE);	/* Return TRUE if any error occured in the Init_* functions */
 }
 
