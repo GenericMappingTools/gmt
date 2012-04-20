@@ -96,12 +96,14 @@ int main (int argc, String argv[])
   XtSetArg(args[nargs], XtNshowGrip, False); nargs ++;
   XtSetArg(args[nargs], XtNskipAdjust, False); nargs ++;
   view = createView(GMT,gridFileName, frame, args, nargs);
-  
+	(void)view; /* fixme: -Wunused-but-set-variable */
+
   /* Status/info line: see messages.c */
   nargs = 0;
   XtSetArg(args[nargs], XtNshowGrip, False); nargs ++;
   XtSetArg(args[nargs], XtNskipAdjust, True); nargs ++;
   message = createMessageLine("message", frame, args, nargs);
+	(void)message; /* fixme: -Wunused-but-set-variable */
 
   XtRealizeWidget(shell);
 

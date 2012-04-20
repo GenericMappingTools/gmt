@@ -240,7 +240,7 @@ void rot_nodal_plane (struct nodal_plane PLAN, struct nodal_plane PREF, struct n
 
 	double dfi = PLAN.str - PREF.str;
 	double sd, cd, sdfi, cdfi, srd, crd;
-	double sir, cor, cdr, sdr, sr, cr;
+	double sir, cor, cdr, sr, cr;
 
 	sincosd (PLAN.dip, &sd, &cd);
 	sincosd (dfi, &sdfi, &cdfi);
@@ -248,7 +248,6 @@ void rot_nodal_plane (struct nodal_plane PLAN, struct nodal_plane PREF, struct n
 	sincosd (PLAN.rake, &sir, &cor);
 
 	cdr = cd * crd + cdfi * sd * srd;
-	sdr = sqrt (1. - cdr * cdr);
 
 	cr = - sd * sdfi;
 	sr = (sd * crd * cdfi - cd * srd);
