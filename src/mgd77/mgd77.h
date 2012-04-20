@@ -410,6 +410,7 @@ struct MGD77_CONTROL {
 	/* File path information */
 	char *MGD77_HOME;				/* Directory where paths are stored [$GMT->session.SHAREDIR/mgd77] */
 	char **MGD77_datadir;				/* Directories where MGD77 data may live */
+	char **desired_column;				/* List of desired column names in final output order */
 	int n_MGD77_paths;				/* Number of such directories */
 	char user[MGD77_COL_ABBREV_LEN];		/* Current user id */
 	char NGDC_id[MGD77_COL_ABBREV_LEN];		/* Current NGDC file tag id */
@@ -438,7 +439,6 @@ struct MGD77_CONTROL {
 	int n_bit_tests;				/* Number of bit tests to match */
 	int no_checking;				/* TRUE if there are no constraints, exact-tests, or bit-tests to pass */
 	struct MGD77_CONSTRAINT Constraint[MGD77_MAX_COLS];		/* List of constraints, if any */
-	char desired_column[MGD77_MAX_COLS][MGD77_COL_ABBREV_LEN];	/* List of desired column names in final output order */
 	struct MGD77_PAIR Exact[MGD77_MAX_COLS];	/* List of column names whose values must be !NaN to be output, if any */
 	struct MGD77_PAIR Bit_test[MGD77_MAX_COLS];	/* List of bit-tests, if any */
 	int n_out_columns;				/* Number of output columns requested */

@@ -920,14 +920,14 @@ static void MGD77_Select_All_Columns (struct GMT_CTRL *C, struct MGD77_CONTROL *
 
 	/* Here, no selection is made, we return everything available in the file */
 
+	/* Now get their names sets, and ids */
 	for (set = k = 0; set < MGD77_N_SETS; set++) {
 		for (id = 0; id < MGD77_SET_COLS; id++) {
 			if (!H->info[set].col[id].present) continue;	/* This column is not available */
 			F->order[k].set = set;
 			F->order[k].item = id;
 			H->info[set].col[id].pos = k;
-			strcpy (F->desired_column[k], H->info[set].col[id].abbrev);
-			k++;
+			F->desired_column[k++] = strdup (H->info[set].col[id].abbrev);
 		}
 	}
 	F->n_out_columns = k;
@@ -3758,6 +3758,7 @@ void MGD77_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	GMT_memset (mgd77_range, MGD77_N_DATA_EXTENDED, struct MGD77_LIMITS);
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
 	strcpy (F->user, GMT_putusername(C));
+	F->desired_column = GMT_memory (C, NULL, MGD77_MAX_COLS, char *);	/* Allocate array pointer for column names */
 	F->verbose_level = 0;
 	F->verbose_dest = 2;
 	F->format = MGD77_FORMAT_ANY;
@@ -3791,7 +3792,8 @@ void MGD77_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 void MGD77_Reset (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 {
 	/* Reset the entire MGD77 control system except system paths, etc */
-
+	GMT_LONG k;
+	for (k = 0; k < F->n_out_columns; k++) if (F->desired_column[k]) free ((void *)F->desired_column[k]);
 	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = TRUE;		/* TRUE means programs will use error bitflags (if present) when returning data */
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = TRUE;	/* TRUE means we will apply correction factors (if present) when reading data */
 	F->rec_no = F->n_out_columns = F->bit_pattern[0] = F->bit_pattern[1] = F->n_constraints = F->n_exact = F->n_bit_tests = 0;
@@ -3803,7 +3805,6 @@ void MGD77_Reset (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	F->format = MGD77_FORMAT_ANY;
 	GMT_memset (F->order, MGD77_MAX_COLS, struct MGD77_ORDER);
 	GMT_memset (F->Constraint, MGD77_MAX_COLS, struct MGD77_CONSTRAINT);
-	GMT_memset (F->desired_column, MGD77_MAX_COLS * MGD77_COL_ABBREV_LEN, char);
 	GMT_memset (F->Exact, MGD77_MAX_COLS, struct MGD77_PAIR);
 	GMT_memset (F->Bit_test, MGD77_MAX_COLS, struct MGD77_PAIR);
 }
@@ -3921,7 +3922,11 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 			if (k != MGD77_NOT_SET) {	/* Mentioned before */
 				GMT_report (C, GMT_MSG_FATAL, "Warning: Column \"%s\" given more than once.\n", word);
 			}
-			strcpy (F->desired_column[i], word);
+			if (F->desired_column[i]) {	/* Allocated before */
+				GMT_report (C, GMT_MSG_FATAL, "Warning: Column \"%s\" given more than once.\n", word);
+				free ((void *)F->desired_column[i]);
+			}
+			F->desired_column[i] = strdup (word);
 			if (exact) {		/* This geophysical column must be != NaN for us to output record */
 				strcpy (F->Exact[F->n_exact].name, word);
 				F->n_exact++;
@@ -3982,6 +3987,8 @@ void MGD77_end (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	if (F->MGD77_HOME) GMT_free (C, F->MGD77_HOME);
 	for (i = 0; i < F->n_MGD77_paths; i++) GMT_free (C, F->MGD77_datadir[i]);
 	if (F->MGD77_datadir) GMT_free (C, F->MGD77_datadir);
+	for (i = 0; i < F->n_out_columns; i++) if (F->desired_column[i]) free ((void *)F->desired_column[i]);
+	GMT_free (C, F->desired_column);
 }
 
 void MGD77_Cruise_Explain (struct GMT_CTRL *C)
