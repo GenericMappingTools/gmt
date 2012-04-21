@@ -17,41 +17,41 @@ n_frames=36
 name=anim_02
 ps=${name}.ps
 # 1b) setup
-del_angle=`gmtmath -Q 360 $n_frames DIV =`
+del_angle=`gmtmath -Q 360 ${n_frames} DIV =`
 makecpt -Crainbow -T500/4500/5000 -Z > $$.cpt
 # 2. Main loop
 mkdir -p $$
 frame=0
-while [ $frame -lt $n_frames ]; do
+while [ ${frame} -lt ${n_frames} ]; do
 	# Create file name using a name_##.tif format
-	file=`gmt_set_framename $name $frame`
-	angle=`gmtmath -Q $frame $del_angle MUL =`
-	dir=`gmtmath -Q $angle 180 ADD =`
-	grdgradient us.nc -A$angle -Nt2 -fg -G$$.us_int.nc
+	file=`gmt_set_framename ${name} ${frame}`
+	angle=`gmtmath -Q ${frame} ${del_angle} MUL =`
+	dir=`gmtmath -Q ${angle} 180 ADD =`
+	grdgradient us.nc -A${angle} -Nt2 -fg -G$$.us_int.nc
 	grdimage us.nc -I$$.us_int.nc -JM3i -P -K -C$$.cpt -B1WSne -X0.35i -Y0.3i \
 	--PS_MEDIA=${width}x${height} --FONT_ANNOT_PRIMARY=9p > $$.ps
 	psxy -Rus.nc -J -O -K -Sc0.8i -Gwhite -Wthin >> $$.ps <<< "256.25 35.6"
-	psxy -Rus.nc -J -O -Sv0.1i+e -Gred -Wthick >> $$.ps <<< "256.25 35.6 $dir 0.37"
+	psxy -Rus.nc -J -O -Sv0.1i+e -Gred -Wthick >> $$.ps <<< "256.25 35.6 ${dir} 0.37"
 	if [ $# -eq 0 ]; then
-		mv $$.ps $ps
+		mv $$.ps ${ps}
 		gmt_cleanup .gmt
-		gmt_abort "$0: First frame plotted to $name.ps"
+		gmt_abort "${0}: First frame plotted to ${name}.ps"
 	fi
 #	RIP to TIFF at specified dpi
-	ps2raster -E$dpi -Tt $$.ps
-	mv -f $$.tif $$/$file.tif
-	echo "Frame $file completed"
-	frame=`gmt_set_framenext $frame`
+	ps2raster -E${dpi} -Tt $$.ps
+	mv -f $$.tif $$/${file}.tif
+	echo "Frame ${file} completed"
+	frame=`gmt_set_framenext ${frame}`
 done
 # 3. Create animated GIF file and HTML for web page
-convert -delay 10 -loop 0 $$/*.tif $name.gif
-cat << END > $name.html
+convert -delay 10 -loop 0 $$/${name_}*.tif ${name}.gif
+cat << END > ${name}.html
 <HTML>
 <TITLE>GMT shading: A tool for feature detection</TITLE>
 <BODY bgcolor="#ffffff">
 <CENTER>
 <H1>GMT shading: A tool for feature detection</H1>
-<IMG src="$name.gif">
+<IMG src="${name}.gif">
 </CENTER>
 <HR>
 We make illuminated images of topography from a section of Colorado and
@@ -62,7 +62,7 @@ gradients and such derivatives will high-light short-wavelength signal.
 Again, our animation uses Imagemagick's convert tool to make an animated GIF file
 with a 0.1 second pause between the 36 frames.
 <HR>
-<I>$name.sh: Created by $USER on `date`</I>
+<I>${name}.sh: Created by ${USER} on `date`</I>
 </BODY>
 </HTML>
 END
