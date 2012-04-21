@@ -124,25 +124,16 @@ if (LICENSE_RESTRICTED) # on
 		message (WARNING "unknown license: ${LICENSE_RESTRICTED}")
 	endif (LICENSE_RESTRICTED STREQUAL GPL)
 	# restrictions that apply to any of the above licenses
-	# disable Shewchuk's triangle routine
-	set (TRIANGLE_D OFF)
 else (LICENSE_RESTRICTED) # off
 	# no restrictions at all
-	# enable Shewchuk's triangle routine
-	set (TRIANGLE_D ON)
-	set (GMT_EXTRA_LICENSE_FILES ${GMT_SOURCE_DIR}/src/README.TRIANGLE)
 endif (LICENSE_RESTRICTED)
+
+# reset list of extra license files
+set (GMT_EXTRA_LICENSE_FILES)
 
 # location of GNU license files
 set (COPYING_GPL ${GMT_SOURCE_DIR}/COPYINGv3)
 set (COPYING_LGPL ${GMT_SOURCE_DIR}/COPYING.LESSERv3)
-
-# set default triangulation method
-if (TRIANGLE_D)
-	set (GMT_TRIANGULATE "Shewchuk")
-else (TRIANGLE_D)
-	set (GMT_TRIANGULATE "Watson")
-endif (TRIANGLE_D)
 
 # GMT paths used in the code
 if (NOT GMT_SHARE_PATH)

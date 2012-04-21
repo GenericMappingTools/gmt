@@ -112,9 +112,14 @@ set (GMT_DEMOS2_SRCS gmtmercmap.c testgmt5.c testgmtio.c testio.c)
 # source files
 set (GMT_DEMOS_SRCS gmt.c ${GMT_DEMOS2_SRCS})
 
-if (NOT LICENSE_RESTRICTED)
+if (NOT LICENSE_RESTRICTED) # off
+	# enable Shewchuk's triangle routine
+	set (GMT_TRIANGULATE "Shewchuk" PARENT_SCOPE)
 	set (GMT_TRIANGLE_SRCS triangle.c triangle.h)
-	set (GMT_EXTRA_LICENSE_TERMS ${CMAKE_CURRENT_DIR}/README.TRIANGLE)
+	list (APPEND GMT_EXTRA_LICENSE_FILES ${CMAKE_CURRENT_DIR}/README.TRIANGLE)
+else (NOT LICENSE_RESTRICTED) # on
+	# disable Shewchuk's triangle routine
+	set (GMT_TRIANGULATE "Watson" PARENT_SCOPE)
 endif (NOT LICENSE_RESTRICTED)
 
 set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c
@@ -149,7 +154,7 @@ set (GMT_PSL_SRCS pslib.c common_string.c common_string.h common_runpath.c
 set (GMT_LIB_SRCS gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c
 	gmt_fft.c gmt_grdio.c gmt_io.c  gmt_nc.c gmt_notposix.c gmt_proj.c
 	gmt_shore.c gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c
-	gmt_version.c gmtapi_parse.c gshhg_version.c gshhg_version.h
+	gmtapi_parse.c gshhg_version.c gshhg_version.h
 	common_math.c common_string.c common_runpath.c
 	${GMT_PROGS_SRCS} ${GMT_TRIANGLE_SRCS})
 
@@ -334,7 +339,7 @@ endif ()
 set (GMT_SUPPL_DIRS dbase gshhs imgsrc meca mgd77 potential segy sph spotter
 	x2sys)
 
-# other supplement directories
+# other supplement directories (not included in gmtlib)
 set (GMT_OTHER_SUPPL_DIRS misc xgrid)
 
 # path to all binary dirs (used to set PATH in test scripts)

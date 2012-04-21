@@ -46,14 +46,18 @@
 /* compile with GDAL support <gdal.h> */
 #cmakedefine HAVE_GDAL
 #ifdef HAVE_GDAL
-#define USE_GDAL    /* Unfortunately, GMT uses this define and not HAVE_GDAL */
+#	define USE_GDAL    /* Unfortunately, GMT uses this define and not HAVE_GDAL */
 #endif
 
 /* file locking */
 #cmakedefine FLOCK
 
-/* set triangulation method */
-#cmakedefine TRIANGLE_D
+/* set license restrictions */
+#cmakedefine LICENSE_RESTRICTED @LICENSE_RESTRICTED@
+#ifndef LICENSE_RESTRICTED
+	/* enable Shewchuk's triangle routine */
+#	define TRIANGLE_D
+#endif
 
 /* enable compatibility mode */
 #cmakedefine GMT_COMPAT

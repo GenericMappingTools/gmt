@@ -105,4 +105,5 @@
 
 #endif /* GMT_SYNOPSIS_TXT */
 
+#define GMT_MANPAGE /* do not include GMT_version() function */
 #include "gmt_version.h"

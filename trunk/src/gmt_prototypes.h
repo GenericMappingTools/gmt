@@ -472,10 +472,6 @@ EXTERN_MSC GMT_LONG GMT_solve_svd (struct GMT_CTRL *C, double *u, GMT_LONG m, GM
 EXTERN_MSC void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, GMT_LONG degrees);
 EXTERN_MSC void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a, GMT_LONG degrees);
 
-/* gmt_version.c: */
-
-EXTERN_MSC char *GMT_version ();
-
 /* grdfilter_func */
 EXTERN_MSC double GMT_great_circle_dist_meter (struct GMT_CTRL *C, double x0, double y0, double x1, double y1);
 
