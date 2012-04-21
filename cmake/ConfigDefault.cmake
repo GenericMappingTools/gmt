@@ -79,7 +79,7 @@ endif (NOT DEFINED GMT_INSTALL_MONOLITHIC)
 # Do not enforce GPL conformity per default. This enables routines that cannot
 # normally be redistributed under the terms of the GPL such as Shewchuk's triangulation.
 if (NOT DEFINED LICENSE_RESTRICTED)
-	set (LICENSE_RESTRICTED off)
+	set (LICENSE_RESTRICTED no)
 endif (NOT DEFINED LICENSE_RESTRICTED)
 
 # Enable compatibility mode by default.

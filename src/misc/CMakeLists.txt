@@ -17,6 +17,11 @@
 #-------------------------------------------------------------------------------
 #
 
+# misc is GPL only
+if (LICENSE_RESTRICTED AND NOT LICENSE_RESTRICTED STREQUAL GPL)
+	return()
+endif (LICENSE_RESTRICTED AND NOT LICENSE_RESTRICTED STREQUAL GPL)
+
 # source files
 set (SUPPL_PROGS_SRCS dimfilter.c)
 if (UNIX)

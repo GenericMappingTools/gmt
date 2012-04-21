@@ -17,6 +17,15 @@
 #-------------------------------------------------------------------------------
 #
 
+# xgrid is GPL only
+if (LICENSE_RESTRICTED AND NOT LICENSE_RESTRICTED STREQUAL GPL)
+	return()
+endif (LICENSE_RESTRICTED AND NOT LICENSE_RESTRICTED STREQUAL GPL)
+
+if (DEFINED XGRID AND NOT XGRID)
+	return()
+endif (DEFINED XGRID AND NOT XGRID)
+
 include (FindX11)
 
 if (X11_FOUND AND X11_Xt_FOUND)
