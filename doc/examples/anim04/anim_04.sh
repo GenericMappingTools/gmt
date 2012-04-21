@@ -27,28 +27,28 @@ ps=${name}.ps
 project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q > $$.path.d
 frame=0
 mkdir -p frames
-grdgradient USEast_Coast.nc -A90 -Nt1 -G$$_int.nc
+grdgradient USEast_Coast.nc -A90 -Nt1 -G$${_int}.nc
 makecpt -Cglobe -Z > $$.cpt
 while read lon lat dist; do
-	file=`gmt_set_framename $name $frame`
-	ID=`echo $frame | awk '{printf "%4.4d\n", $1}'`
+	file=`gmt_set_framename ${name} ${frame}`
+	ID=`echo ${frame} | awk '{printf "%4.4d\n", $1}'`
 	grdimage -JG${lon}/${lat}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+ \
-		$REGION -P -Y0.1i -X0.1i USEast_Coast.nc -I$$_int.nc -C$$.cpt \
+		${REGION} -P -Y0.1i -X0.1i USEast_Coast.nc -I$${_int}.nc -C$$.cpt \
 		--PS_MEDIA=${px}ix${py}i -K > $$.ps
 	psxy -R -J -O -K -W1p $$.path.d >> $$.ps
-	pstext -R0/$px/0/$py -Jx1i -F+f14p,Helvetica-Bold+jTL -O >> $$.ps <<< "0 4.6 $ID"
+	pstext -R0/${px}/0/${py} -Jx1i -F+f14p,Helvetica-Bold+jTL -O >> $$.ps <<< "0 4.6 ${ID}"
 	if [ $# -eq 0 ]; then
-		mv $$.ps $ps
+		mv $$.ps ${ps}
 		gmt_cleanup .gmt
-		gmt_abort "$0: First frame plotted to $name.ps"
+		gmt_abort "${0}: First frame plotted to ${name}.ps"
 	fi
-	ps2raster $$.ps -Tt -E$dpi
-	mv $$.tif frames/$file.tif
-        echo "Frame $file completed"
-	frame=`gmt_set_framenext $frame`
+	ps2raster $$.ps -Tt -E${dpi}
+	mv $$.tif frames/${file}.tif
+        echo "Frame ${file} completed"
+	frame=`gmt_set_framenext ${frame}`
 done < $$.path.d
 if [ $# -eq 0 ]; then
-	echo "anim_04.sh: Made $frame frames at 480x720 pixels placed in subdirectory frames"
+	echo "anim_04.sh: Made ${frame} frames at 480x720 pixels placed in subdirectory frames"
 #	qt_export $$/anim_0_123456.tiff --video=h263,24,100, ${name}_movie.m4v
 fi
 # 4. Clean up temporary files

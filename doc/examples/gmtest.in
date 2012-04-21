@@ -90,7 +90,7 @@ done
 function cleanup()
 {
   cd "@CMAKE_CURRENT_BINARY_DIR@" # get out of exec_dir before removing it test
-  "$ERROR" -eq 0 && rm -rf "$exec_dir"
+  test "$ERROR" -eq 0 && rm -rf "$exec_dir"
   echo "exit status: $ERROR"
   exit $ERROR
 }
@@ -123,7 +123,7 @@ exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${script_dir}"
 rm -rf "$exec_dir"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
-GLOBIGNORE="*.ps:*.sh"
+GLOBIGNORE="*.ps:*.sh" # fonts
 ln -fs "$src"/* .
 unset GLOBIGNORE
 
