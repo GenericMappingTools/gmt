@@ -1902,7 +1902,7 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 			}
 			if (ny) GMT_free (C, val);
 			if (label_c) {
-				for (i = 0; i < nx; i++) if (label_c[i]) free (label_c[i]);
+				for (i = 0; i < ny; i++) if (label_c[i]) free (label_c[i]);
 				GMT_free (C, label_c);
 			}
 			if (C->current.proj.z_down) GMT_free (C, tval);
