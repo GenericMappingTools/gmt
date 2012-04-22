@@ -890,7 +890,7 @@ void grdokb_calc_top_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struc
 	/* Send g = NULL for grid computations (e.g. -G) or Gout = NULL otherwise (-F).
 	   In case of polyline output (-F) n_pts is the number of output locations (irrelevant otherwise) */
 	int row, col, k, i, km;
-	double x_o, y_o, tmp, a;
+	double x_o, y_o, tmp = 1, a;
 
 /*#ifdef _OPENMP
 #pragma omp parallel for private(row, col, k, i, y_o, x_o)
