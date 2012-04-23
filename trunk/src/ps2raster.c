@@ -879,7 +879,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				got_end = TRUE;
 			if (got_BBatend == 1 && (got_end || i == 19)) {	/* Now is the time to look at the end of the file */
 				got_BBatend++;			/* Avoid jumping more than once to the end */
-				if (!fseek (fp, (long)-256, SEEK_END)) i = -30;
+				if (!fseek (fp, (off_t)-256, SEEK_END)) i = -30;
 			}
 		}
 
@@ -1060,7 +1060,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* Recede a bit to test the contents of last line. -7 for when
 		 * PS has CRLF endings */
-		fseek (fp, -7, SEEK_END);
+		fseek (fp, (off_t)-7, SEEK_END);
 		/* Read until last line is encountered */
 		while ( GMT_fgets (GMT, line, BUFSIZ, fp) );
 		if ( strncmp (line, "%%EOF", 5) )

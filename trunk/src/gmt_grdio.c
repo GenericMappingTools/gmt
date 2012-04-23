@@ -849,7 +849,7 @@ GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, ch
 		}
 		else if ((G->fp = GMT_fopen (C, G->header.name, bin_mode[r_w])) == NULL)
 			return (GMT_GRDIO_CREATE_FAILED);
-		if (header && GMT_fseek (G->fp, (long)GRD_HEADER_SIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+		if (header && fseek (G->fp, (off_t)GRD_HEADER_SIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 
 	G->size = GMT_grd_data_size (C, G->header.type, &G->header.nan_value);
@@ -908,10 +908,10 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 	else {			/* Get a binary row */
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = GMT_abs (row_no);
-			if (GMT_fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+			if (fseek (G->fp, (off_t)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 			return (GMT_NOERROR);
 		}
-		if (!G->auto_advance && GMT_fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+		if (!G->auto_advance && fseek (G->fp, (off_t)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 
 		if (GMT_fread (G->v_row, (size_t)G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		for (i = 0; i < G->header.nx; i++) {
@@ -1415,7 +1415,7 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	first_i = (GMT_LONG)floor (Grid->header->wesn[XLO] * Grid->header->r_inc[GMT_X]);				/* first tile partly or fully inside region */
 	if (first_i < 0) first_i += n_cols;
 	n_skip = (GMT_LONG)floor ((C->current.proj.rect[YHI] - Grid->header->wesn[YHI]) * Grid->header->r_inc[GMT_Y]);	/* Number of rows clearly above y_max */
-	if (GMT_fseek (fp, (long)(n_skip * n_cols * GMT_IMG_ITEMSIZE), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+	if (fseek (fp, (off_t)(n_skip * n_cols * GMT_IMG_ITEMSIZE), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 
 	i2 = GMT_memory (C, NULL, n_cols, int16_t);
 	for (j = 0; j < Grid->header->ny; j++) {	/* Read all the rows, offset by 2 boundary rows and cols */

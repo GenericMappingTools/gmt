@@ -458,7 +458,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	if (is_binary) {
 
 		if (last_row - first_row + 1 != header->ny)		/* We have a sub-region */
-			if (GMT_fseek (fp, (long) (first_row * header->nx * 4 * nBits / 32), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+			if (fseek (fp, (off_t) (first_row * header->nx * 4 * nBits / 32), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 
 		i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 		ij = pad[YHI] * width_out + i_0_out;

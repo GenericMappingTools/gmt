@@ -259,7 +259,7 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_LONG j, j2, width_in, height_in, i_0_out, inc, off;
 	GMT_LONG i, kk, ij, width_out, *k = NULL;
 	GMT_LONG piping = FALSE, swap_all = FALSE, is_float = FALSE;
-	long long_offset;	/* For fseek only */
+	off_t long_offset;	/* For fseek only */
 	
 	GMT_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
 	if (!strcmp (header->name, "=")) {
@@ -292,8 +292,8 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	if (piping)	{ /* Skip data by reading it */
 		for (j = 0; j < first_row; j++) if (GMT_fread ( tLong, (size_t)abs (mggHeader.numType), (size_t)header->nx, fp) != (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 	} else { /* Simply seek by it */
-		long_offset = (long)(first_row * header->nx * abs (mggHeader.numType));
-		if (GMT_fseek (fp, long_offset, 1)) return (GMT_GRDIO_SEEK_FAILED);
+		long_offset = (off_t)(first_row * header->nx * abs (mggHeader.numType));
+		if (fseek (fp, long_offset, 1)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 	
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;

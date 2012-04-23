@@ -88,7 +88,7 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	GMT_LONG in_i0, in_i1, out_i0, out_i1;		/* Indices of outer and inner x-coordinates (in output grid coordinates) */
 	GMT_LONG in_j0, in_j1, out_j0, out_j1;		/* Indices of outer and inner y-coordinates (in output grid coordinates) */
 	GMT_LONG offset;				/* grid offset when the grid extends beyond north */
-	long skip;					/* Byte offset to skip in native binary files */
+	off_t skip;					/* Byte offset to skip in native binary files */
 	GMT_LONG ignore;				/* TRUE if the grid is entirely outside desired region */
 	GMT_LONG outside;				/* TRUE if the current output row is outside the range of this grid */
 	GMT_LONG invert;				/* TRUE if weight was given as negative and we want to taper to zero INSIDE the grid region */
@@ -350,7 +350,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			else if (type == 'n')	/* New, 2-D netcdf grid */
 				B[n].offset = B[n].out_j0;
 			else
-				B[n].skip = (long)(B[n].G.n_byte * GMT_abs (B[n].out_j0));	/* do the fseek when we are ready to read first row */
+				B[n].skip = (off_t)(B[n].G.n_byte * GMT_abs (B[n].out_j0));	/* do the fseek when we are ready to read first row */
 		}
 
 		/* Allocate space for one entire row */
@@ -398,7 +398,7 @@ void sync_input_rows (struct GMT_CTRL *GMT, GMT_LONG row, struct GRDBLEND_INFO *
 
 		if (!B[k].open) {
 			GMT_err_fail (GMT, GMT_open_grd (GMT, B[k].file, &B[k].G, 'r'), B[k].file);	/* Open the grid for incremental row reading */
-			if (B[k].skip) GMT_fseek (B[k].G.fp, B[k].skip, SEEK_CUR);	/* Position for native binary files */
+			if (B[k].skip) fseek (B[k].G.fp, B[k].skip, SEEK_CUR);	/* Position for native binary files */
 			B[k].G.start[0] += B[k].offset;					/* Start position for netCDF files */
 			B[k].open = TRUE;
 		}

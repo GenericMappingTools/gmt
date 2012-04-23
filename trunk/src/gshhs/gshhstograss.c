@@ -264,7 +264,7 @@ int main (int argc, char **argv)
 		}
 		else {
 			fprintf(stderr,"line %d skipped\n", h.id);
-			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
+			fseek (fp, (off_t)(h.n * sizeof(struct POINT)), SEEK_CUR);
 		}
 		max = 180000000;	/* Only Eurasia needs 270 */
 
@@ -284,7 +284,7 @@ int main (int argc, char **argv)
 	}
 	
 	/* now fix up the number of categories */
-	fseek (att2_fp, 0, 0);
+	fseek (att2_fp, (off_t)0, 0);
 	fprintf(att2_fp,"#!/bin/sh\n\n");
 	fprintf(att2_fp,"# %6d categories, starting at 0\n\n",max_id + 1);
 

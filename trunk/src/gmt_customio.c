@@ -323,7 +323,7 @@ GMT_LONG GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	}
 	else if ((fp = GMT_fopen (C, header->name, "rb")) != NULL) {	/* Skip header */
 		if (GMT_read_rasheader (fp, &h)) return (GMT_GRDIO_READ_FAILED);
-		if (h.maplength && GMT_fseek (fp, (long) h.maplength, SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+		if (h.maplength && fseek (fp, (off_t) h.maplength, SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
@@ -348,7 +348,7 @@ GMT_LONG GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		}
 	}
 	else {/* Simply seek by it */
-		if (GMT_fseek (fp, (long) (first_row * n2 * sizeof (unsigned char)), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+		if (fseek (fp, (off_t) (first_row * n2 * sizeof (unsigned char)), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
@@ -575,7 +575,7 @@ GMT_LONG GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header)
 	GMT_LONG err = GMT_NOERROR;
 	/* Because GRD_HEADER is not 64-bit aligned we must estimate the # of bytes in parts */
 
-	if (GMT_fseek (fp, (long)(3*sizeof (int) + sizeof (struct GRD_HEADER) - ((GMT_LONG)header->wesn - (GMT_LONG)&header->nx)), SEEK_SET))
+	if (fseek (fp, (off_t)(3*sizeof (int) + sizeof (struct GRD_HEADER) - ((GMT_LONG)header->wesn - (GMT_LONG)&header->nx)), SEEK_SET))
 		err = GMT_GRDIO_SEEK_FAILED;
 	return (err);
 }
@@ -627,7 +627,7 @@ GMT_LONG GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		for (j = 0; j < first_row; j++) if (GMT_fread ( tmp, sizeof (unsigned int), (size_t)mx, fp) < (size_t)mx) return (GMT_GRDIO_READ_FAILED);
 	}
 	else {		/* Simply seek by it */
-		if (GMT_fseek (fp, (long) (first_row * mx * sizeof (unsigned int)), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+		if (fseek (fp, (off_t) (first_row * mx * sizeof (unsigned int)), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
@@ -865,7 +865,7 @@ GMT_LONG GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, flo
 		for (j = 0; j < first_row; j++) if (GMT_fread (tmp, size, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 	}
 	else {		/* Simply seek over it */
-		if (GMT_fseek (fp, (long) (first_row * header->nx * size), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+		if (fseek (fp, (off_t) (first_row * header->nx * size), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
@@ -1151,7 +1151,7 @@ GMT_LONG GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h)
 {
 	/* Reads the header of a Surfer 7 gridfile */
 
-	if (GMT_fseek (fp, 3*sizeof(int), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);	/* skip the first 12 bytes */
+	if (fseek (fp, (off_t)(3*sizeof(int)), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);	/* skip the first 12 bytes */
 	/* if (GMT_fread (h, sizeof (struct srf_header7), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_READ_FAILED); */
 
 	/* UPDATE: Because srf_header6 is not 64-bit aligned we must read it in parts */
@@ -1191,7 +1191,7 @@ GMT_LONG GMT_srf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	if (GMT_fread (id, sizeof (char), (size_t)4, fp) < (size_t)4) return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fseek(fp, 0, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+	if (fseek(fp, (off_t)0, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 	if (strncmp (id, "DSBB", (size_t)4) && strncmp (id, "DSRB", (size_t)4)) return (GMT_GRDIO_NOT_SURFER);
 
 	GMT_memset (&h6, 1, struct srf_header6);
@@ -1298,10 +1298,10 @@ GMT_LONG GMT_srf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	}
 	else if ((fp = GMT_fopen (C, header->name, "rb")) != NULL) {	/* Skip header */
 		if (header->type == GMT_GRD_IS_SF) {	/* Surfer Version 6 */
-			if (GMT_fseek (fp, (long) sizeof (struct srf_header6), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+			if (fseek (fp, (off_t) sizeof (struct srf_header6), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 		}
 		else {			/* Version 7  (skip also the first 12 bytes) */
-			if (GMT_fseek (fp, (long) (3*sizeof(int) + sizeof (struct srf_header7)), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+			if (fseek (fp, (off_t) (3*sizeof(int) + sizeof (struct srf_header7)), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 		}
 	}
 	else
@@ -1338,7 +1338,7 @@ GMT_LONG GMT_srf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 			if (GMT_fread (tmp, size, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 	}
 	else {		/* Simply seek over it */
-		if (GMT_fseek (fp, (long) (first_row * header->nx * size), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+		if (fseek (fp, (off_t) (first_row * header->nx * size), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 
 	for (j = first_row, j2 = height_in-1; j <= last_row; j++, j2--) {
