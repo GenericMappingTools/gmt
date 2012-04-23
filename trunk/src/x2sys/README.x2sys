@@ -1,7 +1,8 @@
 	$Id$
 
 README file for GMT supplemental x2sys programs
-Distributed under the GNU Public License (see file ../LICENSE.TXT)
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
 
 AUTHOR:		Paul Wessel
 DATE:		1-JAN-2011

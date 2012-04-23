@@ -1,6 +1,7 @@
 	$Id$
 
-Distributed under the GNU Public License (see file ../LICENSE.TXT)
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
 
 GMT 5 Release introduced a full set of Matlab interface functions
 for all GMT modules.

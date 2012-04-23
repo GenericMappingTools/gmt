@@ -3,7 +3,8 @@
 			G S H H S
 
 Global Self-consistent Hierarchical High-resolution Shorelines
-Distributed under the GNU Public License (see file ../LICENSE.TXT)
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
 
 Version Jul 15, 2011
 Work with the latest GSHHS data set version 2.2.0.  Here, the

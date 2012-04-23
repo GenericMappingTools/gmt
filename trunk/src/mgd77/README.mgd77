@@ -1,7 +1,8 @@
 	$Id$
 
-README file for GMT supplemental mgd77 programs.  The mgd77 supplement
-and all its files are distributed under the Gnu Public License.
+README file for GMT supplemental mgd77 programs.
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
 
 AUTHORS:	Paul Wessel and Michael Chandler
 DATE:		01-MAY-2011

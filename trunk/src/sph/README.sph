@@ -1,7 +1,8 @@
 #	$Id$
 	README for GMT supplement sph.
 
-	Distributed under the GNU Public License (see file ../LICENSE.TXT)
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
 
 Rewritten as modules for GMT 5, January 2010. 64-bit in August 2011.
 
