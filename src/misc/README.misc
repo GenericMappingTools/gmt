@@ -1,13 +1,14 @@
 	$Id$
 
-Distributed under the GNU Public License (see file ../LICENSE.TXT)
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
 
 This directory contains some miscellaneous programs
 that may come in handy for some users.
 
 	dimfilter - Filtering of 2-D gridded data and
 	   assisting in calculation of MAD error envelope
-	gmtdigitize - Digitize and project coordinates from dititizer
+	gmtdigitize - Digitize and project coordinates from digitizer
 
 dimfilter derives from grdfilter but allows for directional filtering
 of grids (*).  The dim.template.sh is a skeleton shell script that can
