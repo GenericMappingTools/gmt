@@ -137,7 +137,9 @@ GMT_LONG GMT_grdtrend_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t<ingrid> is name of grid file to fit trend to.\n");
-	GMT_message (GMT, "\t-N Number of model parameters to fit; integer in [1,10].  Append r for robust fit.\n");
+	GMT_message (GMT, "\t-N Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3r.\n");
+	GMT_message (GMT, "\n   Model parameters order is given as follows:\n");
+	GMT_message (GMT, "\n   z = m1 + m2*x + m3*y + m4*x*y + m5*x^2 + m6*y^2 + m7*x^3 + m8*x^2*y + m9*x*y^2 + m10*y^3.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-D Supply filename to write grid file of differences (input - trend).\n");
 	GMT_explain_options (GMT, "R");
