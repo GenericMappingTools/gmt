@@ -1391,7 +1391,7 @@ GMT_LONG gmt_bin_colselect (struct GMT_CTRL *C)
 
 GMT_LONG gmt_x_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
 {	/* Used to skip (*n) bytes; no reading takes place */
-	if (GMT_fseek (fp, (long)n, SEEK_CUR)) {
+	if (fseek (fp, (off_t)n, SEEK_CUR)) {
 		C->current.io.status = GMT_IO_EOF;
 		return (-1);
 	}

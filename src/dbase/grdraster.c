@@ -60,7 +60,7 @@ struct GRDRASTER_INFO {
 	GMT_LONG nglobal;	/* If not 0, ras is global and i%nglobal makes it periodic  */
 	GMT_LONG nanflag;
 	GMT_LONG nanset;	/* True if raster uses nanflag to signal NaN  */
-	GMT_LONG skip;		/* Skip this number of header bytes when opening file  */
+	off_t skip;		/* Skip this number of header bytes when opening file  */
 	GMT_LONG swap_me;	/* TRUE if data set need to be swapped */
 	GMT_LONG geo;		/* TRUE if we believe x/y is lon/lat, FALSE otherwise */
 	char type;
@@ -514,7 +514,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 				case 'H':
 				case 'h':	/* Give header size for skipping */
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
-					rasinfo[nfound].skip = atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
+					rasinfo[nfound].skip = (off_t)atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
 					break;
 #endif
 				default:
@@ -542,7 +542,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 				case 'H':
 				case 'h':	/* Give header size for skipping */
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
-					rasinfo[nfound].skip = atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
+					rasinfo[nfound].skip = (off_t)atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
 					break;
 #endif
 				default:
@@ -583,7 +583,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 
 		delta = F.st_size - expected_size;
 		if (delta == GRD_HEADER_SIZE)
-			rasinfo[nfound].skip = GRD_HEADER_SIZE;	/* Must skip GMT grd header */
+			rasinfo[nfound].skip = (off_t)GRD_HEADER_SIZE;	/* Must skip GMT grd header */
 		else if (delta) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Metadata conflict: Actual size of file %s [%ld] differs from expected [%ld]. Verify file and its grdraster.info details.\n", rasinfo[nfound].h.remark, (GMT_LONG)F.st_size, expected_size);
 			continue;
@@ -978,8 +978,8 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_FATAL, "ERROR opening %s for read.\n", myras.h.remark);
 		Return (EXIT_FAILURE);
 	}
-	if (myras.skip && GMT_fseek (fp, (long) (myras.skip), SEEK_CUR) ) {
-		GMT_report (GMT, GMT_MSG_FATAL, "ERROR skipping %ld bytes in %s.\n", myras.skip, myras.h.remark);
+	if (myras.skip && fseek (fp, myras.skip, SEEK_CUR)) {
+		GMT_report (GMT, GMT_MSG_FATAL, "ERROR skipping %ld bytes in %s.\n", (GMT_LONG)myras.skip, myras.h.remark);
 		Return (EXIT_FAILURE);
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Reading from raster %s\n", myras.h.remark);
@@ -1050,7 +1050,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				else
 					jseek = 0;
 				/* This will be slow on SGI because seek is broken there */
-				if (jseek && GMT_fseek (fp, (long) (jseek * ksize * myras.h.nx), SEEK_CUR) ) {
+				if (jseek && fseek (fp, (off_t) (jseek * ksize * myras.h.nx), SEEK_CUR) ) {
 					GMT_report (GMT, GMT_MSG_FATAL, "ERROR seeking in %s\n", myras.h.remark);
 					GMT_fclose (GMT, fp);
 					GMT_free (GMT, buffer);

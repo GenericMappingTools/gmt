@@ -196,7 +196,7 @@ void x2sys_skip_header (struct GMT_CTRL *C, FILE *fp, struct X2SYS_INFO *s)
 		}
 	}
 	else if (s->file_type == X2SYS_BINARY) {			/* Native binary, skip bytes */
-		if (fseek (fp, (long)s->skip, SEEK_CUR)) {
+		if (fseek (fp, (off_t)s->skip, SEEK_CUR)) {
 			GMT_report (C, GMT_MSG_FATAL, "Seed error while skipping headers\n");
 			exit (EXIT_FAILURE);
 		}

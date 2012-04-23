@@ -271,8 +271,6 @@ enum GMT_lon_enum {
 #define GMT_fgetc(stream) fgetc(stream)
 #define GMT_ungetc(c, stream) ungetc(c, stream)
 #define GMT_fputs(line,fp) fputs(line,fp)
-#define GMT_fseek(stream,offset,whence) fseek(stream,offset,whence)
-#define GMT_ftell(stream) ftell(stream)
 #define GMT_fread(ptr,size,nmemb,stream) fread(ptr,size,nmemb,stream)
 #define GMT_fwrite(ptr,size,nmemb,stream) fwrite(ptr,size,nmemb,stream)
 #define GMT_rewind(stream) rewind(stream)

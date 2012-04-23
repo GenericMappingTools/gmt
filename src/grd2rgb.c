@@ -120,8 +120,9 @@ GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GM
 }
 
 GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel, GMT_LONG *raw_nx, GMT_LONG *raw_ny) {
-	GMT_LONG k = 0, j, inc, i, l, even, img_size, n_pix;
+	GMT_LONG k = 0, j, inc, i, l, even, n_pix;
 	unsigned char *buffer = NULL;
+	off_t img_size;
 	float *work = NULL, *datac = NULL, *img_pow = NULL, pow_max = -FLT_MAX, pm;
 	int rgb[3];
 	FILE *fp = NULL;
@@ -131,11 +132,11 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 		return (EXIT_FAILURE);
 	}
 
-	GMT_fseek (fp, 0, SEEK_END);
-	img_size = GMT_ftell (fp);
-	GMT_fseek (fp, 0, SEEK_SET);
+	fseek (fp, (off_t)0, SEEK_END);
+	img_size = ftell (fp);
+	fseek (fp, 0, SEEK_SET);
 
-	n_pix = img_size / byte_per_pixel;
+	n_pix = (GMT_LONG) (img_size / byte_per_pixel);
 
 	buffer  = GMT_memory (GMT, NULL, img_size, unsigned char);
 	datac   = GMT_memory (GMT, NULL, 2*n_pix, float);
@@ -153,7 +154,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 	GMT_fclose (GMT, fp);
 
 	inc = (byte_per_pixel == 3) ? 3: 4;
-	for (j = 0; j < img_size; j += inc) {
+	for (j = 0; j < (GMT_LONG)img_size; j += inc) {
 		for (i = 0; i < 3; i++) rgb[i] = buffer[j+i];
 		/* Convert rgb to gray using the GMT_YIQ transformation */
 		datac[k] = (float) GMT_YIQ (rgb);

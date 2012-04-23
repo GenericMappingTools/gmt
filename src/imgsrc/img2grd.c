@@ -536,7 +536,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 
 	/* Now before beginning data loop, fseek if needed.  */
-	if (jinstart > 0 && jinstart < imgcoord.nyrow) fseek (fp, (long)(2 * imgcoord.nxcol * jinstart), SEEK_SET);
+	if (jinstart > 0 && jinstart < imgcoord.nyrow) fseek (fp, (off_t)(2 * imgcoord.nxcol * jinstart), SEEK_SET);
 	
 	/* Now loop over output points, reading and handling data as needed */
 

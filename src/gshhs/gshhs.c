@@ -331,7 +331,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (OK && Ctrl->Q.active && ((is_river && Ctrl->Q.mode == 1) || (!is_river && Ctrl->Q.mode == 2))) OK = FALSE;	/* Skip if riverlake/not riverlake (-Q) */
 		if (OK && Ctrl->N.active && Ctrl->N.level != level) OK = 0;		/* Skip if not the right level (-N) */
 		if (!OK) {	/* Not what we are looking for, skip to next */
-			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
+			fseek (fp, (off_t)(h.n * sizeof(struct POINT)), SEEK_CUR);
 			n_read = fread (&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
 			continue;	/* Back to top of loop */
 		}
@@ -367,7 +367,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
 			TX->record[seg_no] = strdup (header);
 			TX->n_rows++;
-			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
+			fseek (fp, (off_t)(h.n * sizeof(struct POINT)), SEEK_CUR);
 		}
 		else {	/* Return the data points also */
 			/* Place the header in the output data structure */

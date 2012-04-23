@@ -2674,7 +2674,7 @@ PSL_LONG PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, u
 		PSL_message (PSL, PSL_MSG_FATAL, "Error reading magic number of image file %s!\n", file);
 		PSL_exit (EXIT_FAILURE);
 	}
-	fseek (fp, 0, SEEK_SET);
+	fseek (fp, (off_t)0, SEEK_SET);
 
 	/* Which file type */
 
@@ -2701,7 +2701,7 @@ PSL_LONG PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, u
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading magic number of image file %s!\n", tmp_file);
 			PSL_exit (EXIT_FAILURE);
 		}
-		fseek (fp, 0, SEEK_SET);
+		fseek (fp, (off_t)0, SEEK_SET);
 		if (h->magic != RAS_MAGIC) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Unrecognised magic number 0x%x in file %s!\n", h->magic, tmp_file);
 			PSL_exit (EXIT_FAILURE);
@@ -3293,7 +3293,7 @@ PSL_LONG psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, unsi
 	/* Rewind and load into buffer */
 
 	n=0;
-	fseek (fp, 0, SEEK_SET);
+	fseek (fp, (off_t)0, SEEK_SET);
 	buffer = PSL_memory (PSL, NULL, BLOCKSIZE, unsigned char);
 	while ((p = fread ((unsigned char *)buffer + n, (size_t)1, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE)
 	{
