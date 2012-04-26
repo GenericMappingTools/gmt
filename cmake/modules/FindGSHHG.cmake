@@ -22,6 +22,7 @@ find_path (GSHHG_PATH
 	PATH_SUFFIXES
 	gshhg-gmt-nc4
 	share/gshhg-gmt-nc4
+	share/gshhs
 	coast
 	share/coast
 	share/gmt/coast
