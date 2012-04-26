@@ -256,9 +256,10 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	char *tChar = NULL;
 	float *tFloat = NULL;
 	GMT_LONG first_col, last_col, first_row, last_row;
-	GMT_LONG j, j2, width_in, height_in, i_0_out, inc, off;
-	GMT_LONG i, kk, ij, width_out, *k = NULL;
+	GMT_LONG j, width_in, height_in, i_0_out, inc, off;
+	GMT_LONG i, width_out, *k = NULL;
 	GMT_LONG piping = FALSE, swap_all = FALSE, is_float = FALSE;
+	uint64_t kk, ij, j2;
 	off_t long_offset;	/* For fseek only */
 	
 	GMT_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
@@ -352,8 +353,9 @@ GMT_LONG GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 {
 	MGG_GRID_HEADER_2 mggHeader;
 	GMT_LONG is_float = FALSE, check, *k = NULL;
-	GMT_LONG i2, kk, err, j, j2, width_out, height_out, inc, off;
-	GMT_LONG first_col, last_col, first_row, last_row, i, ij, width_in;
+	GMT_LONG i2, err, j, width_out, height_out, inc, off;
+	GMT_LONG first_col, last_col, first_row, last_row, i, width_in;
+	uint64_t ij, kk, j2;
 	
 	int *tLong = NULL;
 	short *tShort = NULL;

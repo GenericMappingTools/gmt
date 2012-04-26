@@ -337,7 +337,11 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG error = FALSE, find_mean = FALSE, half_only = 0;
 	GMT_LONG automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
 	GMT_LONG n_bins, n_annot, n_alpha, n_modes, form, n_in;
-	GMT_LONG i, bin, n = 0, do_fill = FALSE, n_alloc = GMT_CHUNK;
+	GMT_LONG bin, do_fill = FALSE;
+	
+	uint64_t n = 0, i;
+	
+	size_t n_alloc = GMT_CHUNK;
 
 	char text[GMT_BUFSIZ], format[GMT_BUFSIZ];
 
@@ -778,7 +782,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
 			PSL_plottext (PSL, 0.0, -GMT->current.setting.map_annot_offset[0], GMT->current.setting.font_annot[0].size, "0", 0.0, 10, form);
 			n_annot = (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval > 0.0) ? lrint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval) : -1;
-			for (i = 1; i <= n_annot; i++) {
+			for (i = 1; n_annot > 0 && i <= n_annot; i++) {
 				x = i * GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
 				sprintf (text, format, x);
 				x *= Ctrl->S.scale;

@@ -245,7 +245,8 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, pos = 0, k, n_files = 0, n_alloc = 0;
+	GMT_LONG n_errors = 0, pos = 0, k, n_files = 0;
+	size_t n_alloc = 0;
 	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ], T[4][GMT_TEXT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -842,7 +843,8 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	else {	/* Read regular data table */
-		GMT_LONG tbl, seg, row;
+		GMT_LONG tbl, seg;
+		uint64_t row;
 		struct GMT_DATASET *Din = NULL;
 		struct GMT_TABLE *T = NULL;
 #ifdef GMT_COMPAT
@@ -942,7 +944,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							tabs (N); printf ("<name>"); printf (Ctrl->N.fmt, (int)pnt_nr); printf ("</name>\n");
 						}
 						else if (T->segment[seg]->label && T->segment[seg]->n_rows > 1)
-							tabs (N), printf ("<name>%s %ld</name>\n", T->segment[seg]->label, row);
+							tabs (N), printf ("<name>%s %" PRIu64 "</name>\n", T->segment[seg]->label, row);
 						else if (T->segment[seg]->label)
 							tabs (N), printf ("<name>%s</name>\n", T->segment[seg]->label);
 						else

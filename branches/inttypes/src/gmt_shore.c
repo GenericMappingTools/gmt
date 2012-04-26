@@ -832,9 +832,10 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 /* edge: Edge test for shifting */
 {
 	struct GMT_GSHHS_POL *p = NULL;
-	GMT_LONG start_side, next_side, id, P = 0, more, p_alloc, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL;
-	GMT_LONG n_alloc, cid, nid, add, first_pos, entry_pos, n, low_level, high_level, fid, nseg_at_level[GSHHS_MAX_LEVEL+1];
+	GMT_LONG start_side, next_side, id, P = 0, more, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL;
+	GMT_LONG cid, nid, add, first_pos, entry_pos, n, low_level, high_level, fid, nseg_at_level[GSHHS_MAX_LEVEL+1];
 	GMT_LONG completely_inside;
+	size_t n_alloc, p_alloc;
 	double *xtmp = NULL, *ytmp = NULL, plon, plat;
 
 	if (!assemble) {	/* Easy, just need to scale all segments to degrees and return */
@@ -1077,7 +1078,8 @@ GMT_LONG GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_o
 	 * We also explicitly close all polygons if they are not so already.
 	 */
 
-	GMT_LONG k, np_new, n_use, n, start, n_alloc, close;
+	GMT_LONG k, np_new, n_use, n, start, close;
+	size_t n_alloc;
 	double *xtmp = NULL, *ytmp = NULL;
 	struct GMT_GSHHS_POL *p = NULL;
 

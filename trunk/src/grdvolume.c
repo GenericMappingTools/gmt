@@ -59,7 +59,7 @@ struct GRDVOLUME_CTRL {
  * lines x0 and x1 and two horizontal lines y0 = ax +b and y1 = cx + d
  */
 
-double vol_prism_frac_x (struct GMT_GRID *G, GMT_LONG ij, double x0, double x1, double a, double b, double c, double d)
+double vol_prism_frac_x (struct GMT_GRID *G, uint64_t ij, double x0, double x1, double a, double b, double c, double d)
 {
 	double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, x02, x12, x03, x04, x13, x14;
 
@@ -87,7 +87,7 @@ double vol_prism_frac_x (struct GMT_GRID *G, GMT_LONG ij, double x0, double x1, 
  * lines y0 and y1 and two vertical lines x0 = ay +b and x1 = cy + d
  */
 
-double vol_prism_frac_y (struct GMT_GRID *G, GMT_LONG ij, double y0, double y1, double a, double b, double c, double d)
+double vol_prism_frac_y (struct GMT_GRID *G, uint64_t ij, double y0, double y1, double a, double b, double c, double d)
 {
 	double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, y02, y03, y04, y12, y13, y14;
 
@@ -111,7 +111,7 @@ double vol_prism_frac_y (struct GMT_GRID *G, GMT_LONG ij, double y0, double y1, 
 	return (v);
 }
 
-void SW_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv, double *da)
+void SW_triangle (struct GMT_GRID *G, uint64_t ij, GMT_LONG triangle, double *dv, double *da)
 {	/* Calculates area of a SW-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x1, y0, frac;
@@ -129,7 +129,7 @@ void SW_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv
 	}
 }
 
-void NE_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv, double *da)
+void NE_triangle (struct GMT_GRID *G, uint64_t ij, GMT_LONG triangle, double *dv, double *da)
 {	/* Calculates area of a NE-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x0, y1, a, x0_1, y1_1, frac = 0.0;
@@ -152,7 +152,7 @@ void NE_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv
 	}
 }
 
-void SE_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv, double *da)
+void SE_triangle (struct GMT_GRID *G, uint64_t ij, GMT_LONG triangle, double *dv, double *da)
 {	/* Calculates area of a SE-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x0, y1, c, x0_1, frac = 0.0;
@@ -174,7 +174,7 @@ void SE_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv
 	}
 }
 
-void NW_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv, double *da)
+void NW_triangle (struct GMT_GRID *G, uint64_t ij, GMT_LONG triangle, double *dv, double *da)
 {	/* Calculates area of a NW-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x1, y0, y0_1, frac;
@@ -193,7 +193,7 @@ void NW_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv
 	}
 }
 
-void NS_trapezoid (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG right, double *dv, double *da)
+void NS_trapezoid (struct GMT_GRID *G, uint64_t ij, GMT_LONG right, double *dv, double *da)
 {	/* Calculates area of a NS trapezoid */
 	/* right = TRUE gets the right trapezoid, FALSE gets the left */
 	double x0, x1;
@@ -210,7 +210,7 @@ void NS_trapezoid (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG right, double *dv, 
 	}
 }
 
-void EW_trapezoid (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG top, double *dv, double *da)
+void EW_trapezoid (struct GMT_GRID *G, uint64_t ij, GMT_LONG top, double *dv, double *da)
 {	/* Calculates area of a EW trapezoid */
 	/* top = TRUE gets the top trapezoid, FALSE gets the bottom */
 	double y0, y1;
@@ -396,8 +396,10 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 
 GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, bad, cut[4], ij, ij_inc[5];
+	GMT_LONG error = FALSE, bad, cut[4], ij_inc[5];
 	GMT_LONG row, col, c, k, pos, neg, nc, n_contours;
+	
+	uint64_t ij;
 
 	double take_out, dv, da, cval = 0.0, cellsize, fact, dist_pr_deg, sum, out[4];
 	double *area = NULL, *vol = NULL, *height = NULL, this_base, small, wesn[4];

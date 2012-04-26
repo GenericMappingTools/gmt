@@ -405,11 +405,13 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 
 GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG k, x, y, rmode, pos, i = 0, j, n_fields, n_output = 0, two;
-	GMT_LONG fmt[2], save[2] = {0,0}, unit = 0, n_read = 0, n = 0, proj_type = 0;
-	GMT_LONG error = FALSE, line_start = TRUE, n_read_in_seg, do_geo_conv = FALSE;
+	GMT_LONG k, x, y, rmode, pos, i = 0, seg, n_fields, n_output = 0, two;
+	GMT_LONG fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0;
+	GMT_LONG error = FALSE, line_start = TRUE, do_geo_conv = FALSE;
 	GMT_LONG geodetic_calc = FALSE, lat_mode = 0;
 	GMT_LONG datum_conv_only = FALSE, double_whammy = FALSE, way;
+	
+	uint64_t row, n_read_in_seg, n_read = 0, n = 0;
 
 	double x_in = 0.0, y_in = 0.0, d = 0.0, fwd_scale, inv_scale, xtmp, ytmp, *out = NULL;
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, u_scale, y_out_min;
@@ -592,20 +594,20 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		xyline = Lin->table[0];			/* Can only be one table since we read a single file */
 		if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */
-			for (i = 0; i < xyline->n_segments; i++) {
-				for (j = 0; j < xyline->segment[i]->n_rows; j++) {
-					GMT_geo_to_xy (GMT, xyline->segment[i]->coord[GMT_X][j], xyline->segment[i]->coord[GMT_Y][j], &xtmp, &ytmp);
-					xyline->segment[i]->coord[GMT_X][j] = xtmp;
-					xyline->segment[i]->coord[GMT_Y][j] = ytmp;
+			for (seg = 0; seg < xyline->n_segments; seg++) {
+				for (row = 0; row < xyline->segment[seg]->n_rows; row++) {
+					GMT_geo_to_xy (GMT, xyline->segment[seg]->coord[GMT_X][row], xyline->segment[seg]->coord[GMT_Y][row], &xtmp, &ytmp);
+					xyline->segment[seg]->coord[GMT_X][row] = xtmp;
+					xyline->segment[seg]->coord[GMT_Y][row] = ytmp;
 				}
 			}
 		}
 		else if (GMT_is_geographic (GMT, GMT_IN) && proj_type == GMT_GEOGRAPHIC && !GMT_IS_SPHERICAL (GMT)) {
 			do_geo_conv = TRUE;
 			/* Will need spherical trig so convert to geocentric latitudes if on an ellipsoid */
-			for (i = 0; i < xyline->n_segments; i++) {
-				for (j = 0; j < xyline->segment[i]->n_rows; j++) {
-					xyline->segment[i]->coord[GMT_Y][j] = GMT_lat_swap (GMT, xyline->segment[i]->coord[GMT_Y][j], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+			for (seg = 0; seg < xyline->n_segments; seg++) {
+				for (row = 0; row < xyline->segment[seg]->n_rows; row++) {
+					xyline->segment[seg]->coord[GMT_Y][row] = GMT_lat_swap (GMT, xyline->segment[seg]->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 				}
 			}
 		}

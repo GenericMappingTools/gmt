@@ -1692,9 +1692,9 @@ void GMT_igenper (struct GMT_CTRL *C, double *lon, double *lat, double xt, doubl
 	return;
 }
 
-GMT_LONG GMT_genper_map_clip_path (struct GMT_CTRL *C, GMT_LONG np, double *work_x, double *work_y)
+GMT_LONG GMT_genper_map_clip_path (struct GMT_CTRL *C, uint64_t np, double *work_x, double *work_y)
 {
-	GMT_LONG i;
+	uint64_t i;
 	double da, angle;
 	double x, y, xt, yt;
 
@@ -1702,7 +1702,7 @@ GMT_LONG GMT_genper_map_clip_path (struct GMT_CTRL *C, GMT_LONG np, double *work
 		GMT_message (C, "\n\ngenper_map_clip_path: np %ld\n", np);
 		GMT_message (C, " x_scale %e y_scale %e, x0 %e y0 %e\n", C->current.proj.scale[GMT_X], C->current.proj.scale[GMT_Y], C->current.proj.origin[GMT_X], C->current.proj.origin[GMT_Y]);
 	}
-
+	assert (np > 1);
 	da = TWO_PI/(np-1);
 
 	for (i = 0; i < np; i++) {

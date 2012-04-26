@@ -246,7 +246,8 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* THESE VARIABLES VARY FOR EACH CRUISE AND REQUIRE EXTRA CARE (RESET FOR EACH CRUISE) */
 	int type, field, bccCode, col, distanceErrorCount, duplicates[MGD77_N_NUMBER_FIELDS], *iMaxDiff = NULL, n_bad, grav_formula;
 	int noTimeCount, noTimeStart, timeErrorCount, timeErrorStart, distanceErrorStart, overLandStart, overLandCount, last_day, utc_offset;
-	GMT_LONG i, j, k, m, curr = 0, nout, nvalues, n_nan, n, npts = 0, *offsetStart, rec = 0, n_alloc = GMT_CHUNK, n_wrap, extreme;
+	GMT_LONG i, j, k, m, curr = 0, nout, nvalues, n_nan, n, npts = 0, *offsetStart, rec = 0, n_wrap, extreme;
+	size_t n_alloc = GMT_CHUNK;
 	unsigned int lowPrecision, lowPrecision5, MGD77_sign_bit[32];
 
 	double gradient, dvalue, dt, ds, **out, thisArea, speed, prev_speed, **G = NULL, min, *distance, date, range, range2;

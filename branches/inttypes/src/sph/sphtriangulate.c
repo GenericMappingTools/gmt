@@ -173,8 +173,9 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 
 void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, double *lat, struct STRIPACK_VORONOI *V, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET *Dout[])
 {	/* Prints out the Voronoi polygons either as polygons (for filling) or arcs (lines) */
-	GMT_LONG i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
-	GMT_LONG n_alloc = GMT_CHUNK, p_alloc = GMT_TINY_CHUNK, do_authalic, dim[4] = {1, 0, 0, 0};
+	GMT_LONG i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last;
+	GMT_LONG do_authalic, dim[4] = {1, 0, 0, 0}, vertex_last, n_arcs = 0;
+	size_t n_alloc = GMT_CHUNK, p_alloc = GMT_TINY_CHUNK;
 	
 	char segment_header[GMT_BUFSIZ];
 	
@@ -474,8 +475,11 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char *tmode[2] = {"Delaunay", "Voronoi"}, header[GMT_BUFSIZ];
 
-	GMT_LONG n = 0, n_alloc, n_dup = 0, do_authalic = FALSE;
+	GMT_LONG n_dup = 0, do_authalic = FALSE;
 	GMT_LONG error = FALSE, first = FALSE, steradians = FALSE;
+	
+	uint64_t n = 0;
+	size_t n_alloc;
 
 	double first_x = 0.0, first_y = 0.0, X[3], *in = NULL;
 	double *xx = NULL, *yy = NULL, *zz = NULL, *lon = NULL, *lat = NULL;
@@ -565,7 +569,7 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		
 		if (++n == n_alloc) {	/* Get more memory */
-			if (!Ctrl->C.active) {GMT_LONG n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
+			if (!Ctrl->C.active) {size_t n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
 			GMT_malloc3 (GMT, xx, yy, zz, n, &n_alloc, double);
 		}
 		first = FALSE;
@@ -576,8 +580,9 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	/* Reallocate memory to n points */
-	if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n, double);
-	GMT_malloc3 (GMT, xx, yy, zz, 0, &n, double);
+	n_alloc = n;
+	if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
+	GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 
 	if (Ctrl->D.active && n_dup) GMT_report (GMT, GMT_MSG_NORMAL, "Skipped %ld duplicate points in segments\n", n_dup);
 	GMT_report (GMT, GMT_MSG_NORMAL, "Do Voronoi construction using %ld points\n", n);

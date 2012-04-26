@@ -732,8 +732,10 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, j, k, ksize = 0, iselect, imult, jmult, nrasters;
-	GMT_LONG irasstart, jrasstart, n_nan, iras, jras, ij, ijras, jseek;
+	GMT_LONG irasstart, jrasstart, n_nan, iras, jras, ijras, jseek;
 	GMT_LONG error = FALSE, firstread, nmask = 0;
+	
+	uint64_t ij;
 
 	char *buffer = NULL, *tselect = NULL, match[GRD_REMARK_LEN160];
 	unsigned char *ubuffer = NULL;

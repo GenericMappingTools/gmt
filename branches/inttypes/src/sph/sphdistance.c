@@ -74,18 +74,18 @@ void prepare_polygon (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *P)
 {
 	/* Set the min/max extent of this polygon and determine if it
 	 * is a polar cap; if so set the required metadata flags */
-	GMT_LONG i;
+	uint64_t row;
 	double lon_sum = 0.0, lat_sum = 0.0, dlon;
 	
 	GMT_set_seg_minmax (C, P);	/* Set the domain of the segment */
 	
 	/* Then loop over points to accumulate sums */
 	
-	for (i = 1; i < P->n_rows; i++) {	/* Start at i = 1 since (a) 0'th point is repeated at end and (b) we are doing differences */
-		dlon = P->coord[GMT_X][i] - P->coord[GMT_X][i-1];
+	for (row = 1; row < P->n_rows; row++) {	/* Start at row = 1 since (a) 0'th point is repeated at end and (b) we are doing differences */
+		dlon = P->coord[GMT_X][row] - P->coord[GMT_X][row-1];
 		if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
 		lon_sum += dlon;
-		lat_sum += P->coord[GMT_Y][i];
+		lat_sum += P->coord[GMT_Y][row];
 	}
 	P->pole = 0;
 	if (GMT_360_RANGE (lon_sum, 0.0)) {	/* Contains a pole */
@@ -231,9 +231,12 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 
 GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, n = 0, n_dup = 0, n_set = 0, ij, ii, s_row, n_row, w_col, e_col, side;
-	GMT_LONG n_alloc, p_alloc = 0, nx1, error = FALSE, first = FALSE;
+	GMT_LONG row, col, n_dup = 0, n_set = 0, ii, s_row, n_row, w_col, e_col, side;
+	GMT_LONG nx1, error = FALSE, first = FALSE;
 	GMT_LONG node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
+	
+	uint64_t ij, n = 0;
+	size_t n_alloc, p_alloc = 0;
 
 	double first_x = 0.0, first_y = 0.0, X[3], *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
 	double *xx = NULL, *yy = NULL, *zz = NULL, *lon = NULL, *lat = NULL;
@@ -370,15 +373,15 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			
 			if (++n == n_alloc) {	/* Get more memory */
-				if (!Ctrl->C.active) { GMT_LONG n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
+				if (!Ctrl->C.active) { size_t n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
 				GMT_malloc3 (GMT, xx, yy, zz, n, &n_alloc, double);
 			}
 			first = FALSE;
 		} while (TRUE);
 
-		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n, double);
-		GMT_malloc3 (GMT, xx, yy, zz, 0, &n, double);
 		n_alloc = n;
+		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
+		GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 
 		if (Ctrl->D.active && n_dup) GMT_report (GMT, GMT_MSG_NORMAL, "Skipped %ld duplicate points in segments\n", n_dup);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Do Voronoi construction using %ld points\n", n);

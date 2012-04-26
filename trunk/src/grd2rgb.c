@@ -81,7 +81,8 @@ void Free_grd2rgb_Ctrl (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *C) {	/* Deall
 GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GMT_LONG byte_per_pixel, GMT_LONG nx, GMT_LONG ny, unsigned char **P) {
 	/* loadraw reads a raw binary grb or rgba rasterfile of depth 24, or 32 into memory */
 
-	GMT_LONG j, i, k, nm;
+	GMT_LONG j, i, k;
+	uint64_t nm;
 	unsigned char *buffer = NULL;
 
 	FILE *fp = NULL;
@@ -96,11 +97,11 @@ GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GM
 	header->depth = 24;
 	header->width = (int)nx;
 	header->height = (int)ny;
-	nm = nx * ny * byte_per_pixel;
+	nm = (uint64_t)nx * (uint64_t)ny * (uint64_t)byte_per_pixel;
 	header->length = (int)nm;
 
 	buffer = GMT_memory (GMT, NULL, nm, unsigned char);
-	if (GMT_fread (buffer, (size_t)1, (size_t)nm, fp) != (size_t)nm) {
+	if (GMT_fread (buffer, (size_t)1, nm, fp) != nm) {
 		if (byte_per_pixel == 3)
 			GMT_report (GMT, GMT_MSG_FATAL, "Trouble reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
@@ -350,7 +351,9 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 
 GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, row, col, error = 0, ij, k, k3;
+	GMT_LONG i, row, col, error = 0;
+	
+	uint64_t ij, k, k3;
 	
 	char rgb[3] = {'r', 'g', 'b'}, *comp[3] = {"red", "green", "blue"};
 	char buffer[GMT_BUFSIZ], *grdfile = NULL;

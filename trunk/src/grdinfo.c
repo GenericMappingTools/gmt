@@ -187,7 +187,9 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 
 GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n_grds = 0, n_nan = 0, n = 0, ij, error, subset;
+	GMT_LONG n_grds = 0, error, subset;
+	
+	uint64_t ij, n_nan = 0, n = 0;
 
 	double x_min = 0.0, y_min = 0.0, z_min = 0.0, x_max = 0.0, y_max = 0.0, z_max = 0.0, wesn[4];
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax;
@@ -254,7 +256,8 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
-			GMT_LONG ij_min, ij_max, col, row;
+			uint64_t ij_min, ij_max;
+			GMT_LONG col, row;
 
 			z_min = DBL_MAX;	z_max = -DBL_MAX;
 			mean = median = sum2 = 0.0;
@@ -366,7 +369,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				strcat (record, GMT->current.setting.io_col_separator);	GMT_ascii_format_col (GMT, text, stdev, GMT_Z);	strcat (record, text);
 				strcat (record, GMT->current.setting.io_col_separator);	GMT_ascii_format_col (GMT, text, rms, GMT_Z);	strcat (record, text);
 			}
-			if (Ctrl->M.active) { sprintf (text, "%s%" GMT_LL "d", GMT->current.setting.io_col_separator, n_nan);	strcat (record, text); }
+			if (Ctrl->M.active) { sprintf (text, "%s%" PRIu64, GMT->current.setting.io_col_separator, n_nan);	strcat (record, text); }
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		}
 		else if (!(Ctrl->T.active || (Ctrl->I.active && Ctrl->I.status == 2))) {
@@ -468,7 +471,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 			sprintf (format, "%s: scale_factor: %s add_offset: %%s", G->header->name, GMT->current.setting.format_float_out);
 			sprintf (record, format, G->header->z_scale_factor, text);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			if (n_nan) { sprintf (record, "%s: %" GMT_LL "d nodes set to NaN", G->header->name, n_nan);	GMT_Put_Record (API, GMT_WRITE_TEXT, record); }
+			if (n_nan) { sprintf (record, "%s: %" PRIu64 " nodes set to NaN", G->header->name, n_nan);	GMT_Put_Record (API, GMT_WRITE_TEXT, record); }
 			if (Ctrl->L.norm & 1) {
 				sprintf (record, "%s: median: ", G->header->name);
 				GMT_ascii_format_col (GMT, text, median, GMT_Z);	strcat (record, text);
