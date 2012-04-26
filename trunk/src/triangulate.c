@@ -223,12 +223,10 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	int *link = NULL;	/* Must remain int and not GMT_LONG due to triangle function */
 	
-	uint64_t ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
-	GMT_LONG col_min, col_max, row_min, row_max, n_output;
+	GMT_LONG ij, ij1, ij2, ij3, np, n_alloc, n = 0, i, j, k, n_edge;
+	GMT_LONG col_min, col_max, row_min, row_max, p, n_output;
 	GMT_LONG row, col, n_input, triplets[2] = {FALSE, FALSE}, error = FALSE, map_them = FALSE;
-	
-	size_t n_alloc;
-	
+
 	double zj, zk, zl, zlj, zkj, xp, yp, a, b, c, f;
 	double xkj, xlj, ykj, ylj, out[3], vx[4], vy[4];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *in = NULL;
@@ -381,7 +379,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 		if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
-		for (p = 0; p < Grid->header->size; p++) Grid->data[p] = (float)Ctrl->E.value;	/* initialize grid */
+		for (i = 0; i < Grid->header->size; i++) Grid->data[i] = (float)Ctrl->E.value;	/* initialize grid */
 
 		for (k = ij = 0; k < np; k++) {
 
@@ -451,7 +449,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->M.active) {	/* Must find unique edges to output only once */
 		if (Ctrl->Q.active) {	/* Voronoi edges */
 			for (i = j = 0; i < np; i++) {
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%c Edge %" PRIu64 "\n", GMT->current.setting.io_seg_marker[GMT_OUT], i);
+				GMT_fprintf (GMT->session.std[GMT_OUT], "%c Edge %ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], i);
 				out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];

@@ -514,10 +514,8 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_LONG i, j, k = 0, ii, jj, argno, n_paths = 0, column, result, c_kind = 0, interpolate = 0;
 	GMT_LONG width, n_delete = 0, GF_version = MGD77_NOT_SET, n_expected_fields, n_fields = 0, ok_to_read = TRUE;
-	GMT_LONG MTF_col = 1, set, n_bad, check, n_sampled = 0, n_changed = 0, n = 0, pos;
+	GMT_LONG MTF_col = 1, set, n_bad, check, n_sampled = 0, n_changed = 0, n = 0, pos, n_alloc = GMT_CHUNK;
 	GMT_LONG error = FALSE, transform, verified, strings = FALSE, got_grid, got_table, two_cols = FALSE, constant;
-	
-	size_t n_alloc = GMT_CHUNK;
 	
 	time_t now;
 	

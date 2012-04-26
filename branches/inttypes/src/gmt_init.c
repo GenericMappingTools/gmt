@@ -2459,8 +2459,7 @@ void gmt_free_user_media (struct GMT_CTRL *C) {	/* Free any user-specified media
 }
 
 GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified media formats */
-	size_t n_alloc = 0;
-	GMT_LONG n = 0;
+	GMT_LONG n = 0, n_alloc = 0;
 	double w, h;
 	char line[GMT_BUFSIZ], file[GMT_BUFSIZ], media[GMT_TEXT_LEN64];
 	FILE *fp = NULL;
@@ -2481,7 +2480,7 @@ GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified m
 		GMT_str_tolower (media);	/* Convert string to lower case */
 
 		if (n == n_alloc) {
-			size_t k = n_alloc;	/* So we don't update n_alloc in the first GMT_malloc call */
+			GMT_LONG k = n_alloc;	/* So we don't update n_alloc in the first GMT_malloc call */
 			C->session.user_media = GMT_malloc (C, C->session.user_media, n, &k, struct GMT_MEDIA);
 			C->session.user_media_name = GMT_malloc (C, C->session.user_media_name, n, &n_alloc, char *);
 		}
@@ -2492,9 +2491,8 @@ GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified m
 	}
 	fclose (fp);
 
-	n_alloc = n;
-	C->session.user_media = GMT_malloc (C, C->session.user_media, 0, &n_alloc, struct GMT_MEDIA);
-	C->session.user_media_name = GMT_malloc (C, C->session.user_media_name, 0, &n_alloc, char *);
+	C->session.user_media = GMT_malloc (C, C->session.user_media, 0, &n, struct GMT_MEDIA);
+	C->session.user_media_name = GMT_malloc (C, C->session.user_media_name, 0, &n, char *);
 	GMT_reset_meminc (C);
 
 	C->session.n_user_media = n;
@@ -4867,8 +4865,7 @@ GMT_LONG GMT_get_char_encoding (struct GMT_CTRL *C, char *name)
 }
 
 void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and initialize shorthand notation */
-	GMT_LONG n = 0;
-	size_t n_alloc = 0;
+	GMT_LONG n = 0, n_alloc = 0;
 	char file[GMT_BUFSIZ], line[GMT_BUFSIZ], a[GMT_TEXT_LEN64], b[GMT_TEXT_LEN64], c[GMT_TEXT_LEN64], d[GMT_TEXT_LEN64], e[GMT_TEXT_LEN64];
 	FILE *fp = NULL;
 
@@ -4896,9 +4893,9 @@ void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and init
 	}
 	fclose (fp);
 
-	n_alloc = C->session.n_shorthands = n;
+	C->session.n_shorthands = n;
 	GMT_reset_meminc (C);
-	C->session.shorthand = GMT_malloc (C, C->session.shorthand, 0, &n_alloc, struct GMT_SHORTHAND);
+	C->session.shorthand = GMT_malloc (C, C->session.shorthand, 0, &n, struct GMT_SHORTHAND);
 }
 
 void gmt_freeshorthand (struct GMT_CTRL *C) {/* Free memory used by shorthand arrays */
@@ -7840,8 +7837,7 @@ void GMT_set_pad (struct GMT_CTRL *C, GMT_LONG pad)
 
 GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 {
-	GMT_LONG i = 0, n_GMT_fonts;
-	size_t n_alloc = 0;
+	GMT_LONG i = 0, n_GMT_fonts, n_alloc = 0;
 	char buf[GMT_BUFSIZ], fullname[GMT_BUFSIZ];
 	FILE *in = NULL;
 
@@ -7888,8 +7884,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 		fclose (in);
 		C->session.n_fonts = i;
 	}
-	n_alloc = i;
-	C->session.font = GMT_malloc (C, C->session.font, 0, &n_alloc, struct GMT_FONTSPEC);
+	C->session.font = GMT_malloc (C, C->session.font, 0, &i, struct GMT_FONTSPEC);
 	GMT_reset_meminc (C);
 	return (GMT_NOERROR);
 }

@@ -287,10 +287,10 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, previous = 0;
-	GMT_LONG zcol, row, col, *flag = NULL, i;
-	uint64_t n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
-	uint64_t ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;
-	
+	GMT_LONG zcol, row, col, *flag = NULL;
+	GMT_LONG i, ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;
+	GMT_LONG n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
+
 	double *in = NULL, wesn[4];
 
 	float no_data_f;
@@ -610,8 +610,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {	/* xyz data could have resulted in duplicates */
 		if (GMT_grd_duplicate_column (GMT, Grid->header, GMT_IN)) {	/* Make sure longitudes got replicated */
-			uint64_t ij_west, ij_east;
-			GMT_LONG first_bad = TRUE;
+			GMT_LONG ij_west, ij_east, first_bad = TRUE;
 
 			for (row = 0; row < Grid->header->ny; row++) {	/* For each row, look at west and east bin */
 				ij_west = GMT_IJ0 (Grid->header, row, 0);

@@ -353,12 +353,9 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG polygon, penset_OK = TRUE, not_line, old_is_world;
 	GMT_LONG get_rgb, read_symbol, clip_set = FALSE, fill_active;
 	GMT_LONG default_outline, outline_active, pos2x, pos2y, set_type;
-	GMT_LONG i, j, geometry, tbl, seg;
+	GMT_LONG i, n, n_alloc = 0, n_total_read = 0, j, geometry, tbl, seg;
 	GMT_LONG n_cols_start = 3, justify, error = GMT_NOERROR;
 	GMT_LONG ex1, ex2, ex3, change, n_needed, read_mode, save_u = FALSE;
-	
-	uint64_t n, n_total_read = 0;
-	size_t n_alloc = 0;
 
 	char *text_rec = NULL;
 
@@ -761,8 +758,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);
 		}
 
-		n_alloc = n;
-		data = GMT_malloc (GMT, data, 0, &n_alloc, struct PSXYZ_DATA);
+		data = GMT_malloc (GMT, data, 0, &n, struct PSXYZ_DATA);
 
 		/* Sort according to distance from viewer */
 
@@ -927,7 +923,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				if (polygon && GMT_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
 
-				n = (GMT_LONG)L->n_rows;				/* Number of points in this segment */
+				n = L->n_rows;				/* Number of points in this segment */
 
 				/* We had here things like:	x = D->table[tbl]->segment[seg]->coord[GMT_X];
 				 * but reallocating x below lead to disasters.  */

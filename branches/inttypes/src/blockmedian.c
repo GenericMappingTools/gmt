@@ -215,12 +215,11 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_i
 
 GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	uint64_t n_read, nz, n_lost, node, first_in_cell, first_in_new_cell;
-	uint64_t n_pitched, row, col, n_cells_filled;
-	size_t n_alloc = 0, nz_alloc = 0;
 	GMT_LONG error = FALSE, box_and_whisker = FALSE;
+	GMT_LONG nz, n_read, n_lost, node, first_in_cell, first_in_new_cell;
+	GMT_LONG n_alloc = 0, nz_alloc = 0, n_pitched, row, col, n_cells_filled;
 	GMT_LONG w_col, n_output, n_quantiles = 1, go_quickly = 0;
-	
+
 	double out[7], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[3], weight, *in = NULL, *z_tmp = NULL;
 
 	char format[GMT_BUFSIZ];

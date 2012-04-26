@@ -224,9 +224,7 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 
 GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG col, row, inside, seg, k, n_stages, registration, error = FALSE;
-	
-	uint64_t node;
+	GMT_LONG col, row, node, inside, seg, k, n_stages, registration, error = FALSE;
 	
 	double lon, lat, d, value = 0.0, t_max, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
 	

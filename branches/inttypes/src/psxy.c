@@ -1052,10 +1052,8 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				if (polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) {
 					/* Explicitly close polygon so that arc will work */
-					size_t n_alloc;
 					L->n_rows++;
-					n_alloc = L->n_rows;
-					GMT_malloc2 (GMT, L->coord[GMT_X], L->coord[GMT_Y], 0, &n_alloc, double);
+					GMT_malloc2 (GMT, L->coord[GMT_X], L->coord[GMT_Y], 0, &L->n_rows, double);
 					L->coord[GMT_X][L->n_rows-1] = L->coord[GMT_X][0];
 					L->coord[GMT_Y][L->n_rows-1] = L->coord[GMT_Y][0];
 				}

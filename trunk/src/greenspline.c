@@ -786,7 +786,7 @@ void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], double *z,
 	double x;
 #ifdef DUMP
 	FILE *fp = NULL;
-	uint64_t n_out;
+	size_t n_out;
 	double out[3];
 	fp = fopen ("greenspline.b", "wb");
 	n_out = (grad) ? 3 : 2;
@@ -1057,10 +1057,9 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, G
 
 GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	uint64_t row, p, k, m, n, nm, nxy, n_ok = 0, ij, ji;
-	size_t old_n_alloc, n_alloc;
-	GMT_LONG i, j, seg, ii, error, dimension = 0;
-	GMT_LONG normalize = 1, unit = 0, out_ID, way, new_grid = FALSE;
+	GMT_LONG i, j, k, p, ii, n, m, nm, error, dimension = 0;
+	GMT_LONG normalize = 1, unit = 0, out_ID;
+	GMT_LONG old_n_alloc, n_alloc, ij, ji, nxy, n_ok = 0, way, new_grid = FALSE;
 	
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
 		"minimum curvature Cartesian spline [2-D]",
@@ -1224,15 +1223,15 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		obs = GMT_memory (GMT, obs, nm, double);
 		D = GMT_memory (GMT, NULL, m, double *);
 		for (k = 0; k < m; k++) D[k] = GMT_memory (GMT, NULL, dimension, double);
-		for (seg = k = 0, p = n; seg < S->n_segments; seg++) {
-			for (row = 0; row < S->segment[seg]->n_rows; row++, k++, p++) {
-				for (ii = 0; ii < dimension; ii++) X[p][ii] = S->segment[seg]->coord[ii][row];
+		for (i = k = 0, p = n; i < S->n_segments; i++) {
+			for (j = 0; j < S->segment[i]->n_rows; j++, k++, p++) {
+				for (ii = 0; ii < dimension; ii++) X[p][ii] = S->segment[i]->coord[ii][j];
 				switch (dimension) {
 					case 1:	/* 1-D */
 						switch (Ctrl->A.mode) {
 							case 0:	/* x, slope */
 								D[k][0] = 1.0;	/* Dummy since there is no direction for 1-D spline (the gradient is in the x-y plane) */
-								obs[p] = S->segment[seg]->coord[dimension][row];
+								obs[p] = S->segment[i]->coord[dimension][j];
 								break;
 							default:
 								GMT_report (GMT, GMT_MSG_FATAL, "Bad gradient mode selected for 1-D data (%ld) - aborting!\n", Ctrl->A.mode);
@@ -1243,24 +1242,24 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					case 2:	/* 2-D */
 						switch (Ctrl->A.mode) {
 							case 1:	/* (x, y, az, gradient) */
-								az = D2R * S->segment[seg]->coord[2][row];
-								obs[p] = S->segment[seg]->coord[3][row];
+								az = D2R * S->segment[i]->coord[2][j];
+								obs[p] = S->segment[i]->coord[3][j];
 								break;
 							case 2:	/* (x, y, gradient, azimuth) */
-								az = D2R * S->segment[seg]->coord[3][row];
-								obs[p] = S->segment[seg]->coord[2][row];
+								az = D2R * S->segment[i]->coord[3][j];
+								obs[p] = S->segment[i]->coord[2][j];
 								break;
 							case 3:	/* (x, y, direction, gradient) */
-								az = M_PI_2 - D2R * S->segment[seg]->coord[2][row];
-								obs[p] = S->segment[seg]->coord[3][row];
+								az = M_PI_2 - D2R * S->segment[i]->coord[2][j];
+								obs[p] = S->segment[i]->coord[3][j];
 								break;
 							case 4:	/* (x, y, gx, gy) */
-								az = atan2 (S->segment[seg]->coord[2][row], S->segment[seg]->coord[3][row]);		/* Get azimuth of gradient */
-								obs[p] = hypot (S->segment[seg]->coord[3][row], S->segment[seg]->coord[3][row]);	/* Get magnitude of gradient */
+								az = atan2 (S->segment[i]->coord[2][j], S->segment[i]->coord[3][j]);		/* Get azimuth of gradient */
+								obs[p] = hypot (S->segment[i]->coord[3][j], S->segment[i]->coord[3][j]);	/* Get magnitude of gradient */
 								break;
 							case 5:	/* (x, y, nx, ny, gradient) */
-								az = atan2 (S->segment[seg]->coord[2][row], S->segment[seg]->coord[3][row]);		/* Get azimuth of gradient */
-								obs[p] = S->segment[seg]->coord[4][row];	/* Magnitude of gradient */
+								az = atan2 (S->segment[i]->coord[2][j], S->segment[i]->coord[3][j]);		/* Get azimuth of gradient */
+								obs[p] = S->segment[i]->coord[4][j];	/* Magnitude of gradient */
 								break;
 							default:
 								GMT_report (GMT, GMT_MSG_FATAL, "Bad gradient mode selected for 2-D data (%ld) - aborting!\n", Ctrl->A.mode);
@@ -1272,13 +1271,13 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					case 3:	/* 3-D */
 						switch (Ctrl->A.mode) {
 							case 4:	/* (x, y, z, gx, gy, gz) */
-								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->coord[3+ii][row];	/* Get the gradient vector */
+								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[i]->coord[3+ii][j];	/* Get the gradient vector */
 								obs[p] = GMT_mag3v (GMT, D[k]);	/* This is the gradient magnitude */
 								GMT_normalize3v (GMT, D[k]);		/* These are the direction cosines of the gradient */
 								break;
 							case 5: /* (x, y, z, nx, ny, nz, gradient) */
-								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->coord[3+ii][row];	/* Get the unit vector */
-								obs[p] = S->segment[seg]->coord[6][row];	/* This is the gradient magnitude */
+								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[i]->coord[3+ii][j];	/* Get the unit vector */
+								obs[p] = S->segment[i]->coord[6][j];	/* This is the gradient magnitude */
 								break;
 							default:
 								GMT_report (GMT, GMT_MSG_FATAL, "Bad gradient mode selected for 3-D data (%ld) - aborting!\n", Ctrl->A.mode);
@@ -1593,9 +1592,9 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 		GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate spline at %ld given locations\n", T->n_records);
-		for (seg = 0; seg < T->n_segments; seg++) {
-			for (row = 0; row < T->segment[seg]->n_rows; row++) {
-				for (ii = 0; ii < dimension; ii++) out[ii] = T->segment[seg]->coord[ii][row];
+		for (i = 0; i < T->n_segments; i++) {
+			for (j = 0; j < T->segment[i]->n_rows; j++) {
+				for (ii = 0; ii < dimension; ii++) out[ii] = T->segment[i]->coord[ii][j];
 				out[dimension] = 0.0;
 				for (p = 0; p < nm; p++) {
 					r = get_radius (GMT, out, X[p], dimension);

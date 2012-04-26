@@ -391,9 +391,8 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 	/* total_out;	TRUE if we want to return finite (total construction poles) [alternative is stage poles] */
 	/* invert;	TRUE if we want to invert all the rotations */
 	/* t_max;	Extend earliest stage pole back to this age */
-	GMT_LONG n, nf, i = 0, k, GPlates = FALSE, id;
+	GMT_LONG n, nf, i = 0, k, GPlates = FALSE, n_alloc = GMT_SMALL_CHUNK, id;
 	GMT_LONG A_id = 0, B_id = 0, p1, p2, V1 = 0, V2 = 0, total_in = FALSE;
-	size_t n_alloc = GMT_SMALL_CHUNK;
 	double lon, lat, rot, t;
 	FILE *fp = NULL;
 	struct EULER *e = NULL;
@@ -568,8 +567,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 
 GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_LONG geocentric, struct HOTSPOT **p)
 {
-	GMT_LONG i = 0, n;
-	size_t n_alloc = GMT_CHUNK;
+	GMT_LONG i = 0, n, n_alloc = GMT_CHUNK;
 	FILE *fp = NULL;
 	struct HOTSPOT *e = NULL;
 	char buffer[GMT_BUFSIZ], create, fit, plot;
@@ -634,9 +632,8 @@ GMT_LONG spotter_backtrack (struct GMT_CTRL *C, double xp[], double yp[], double
 /* wesn:	if do_time >= 10, only to track within the given box */
 /* **c;		Pointer to return track vector */
 {
-	GMT_LONG i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn, sideA[2] = {0, 0}, sideB[2] = {0, 0};
+	GMT_LONG i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn, n_alloc = 2 * GMT_CHUNK, sideA[2] = {0, 0}, sideB[2] = {0, 0};
 	GMT_LONG path, bend, go = FALSE, box_check;
-	size_t n_alloc = 2 * GMT_CHUNK;
 	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, next_x, next_y;
 	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd, *track = NULL;
 
@@ -814,9 +811,8 @@ GMT_LONG spotter_forthtrack (struct GMT_CTRL *C, double xp[], double yp[], doubl
 /* wesn:	if do_time >= 10, only to track within the given box */
 /* c;		Pointer to return track vector */
 {
-	GMT_LONG i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn, sideA[2] = {0, 0}, sideB[2] = {0, 0};
+	GMT_LONG i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn, n_alloc = BIG_CHUNK, sideA[2] = {0, 0}, sideB[2] = {0, 0};
 	GMT_LONG path, bend, go = FALSE, box_check;
-	size_t n_alloc = BIG_CHUNK;
 	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, *track = NULL;
 	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd, next_x, next_y;
 
@@ -1444,8 +1440,7 @@ GMT_LONG spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct E
 	/* X, Y:	Pointers to arrays that will hold the confidence region polygon */
 		
 	GMT_LONG i, j, ii, jj, na, nrots, try, n, dump = 0, fake = 0, axis[3];
-	GMT_LONG matrix_dim = 3, done, got_it, bail;
-	size_t n_alloc;
+	GMT_LONG matrix_dim = 3, done, got_it, bail, n_alloc;
 	char *name = "uvw";
 	double sa, ca, angle, d, V[3][3], Vt[3][3], C[9], fval = 0.0005;
 	double EigenValue[3], EigenVector[9], work1[3], work2[3], r_center[3];

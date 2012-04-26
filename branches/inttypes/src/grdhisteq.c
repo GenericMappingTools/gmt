@@ -267,8 +267,7 @@ int compare_indices (const void *point_1, const void *point_2)
 
 GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
 {	/* Make an output grid file with standard normal scores */
-	GMT_LONG row, col;
-	uint64_t i = 0, j = 0, ij, nxy;
+	GMT_LONG i = 0, j = 0, ij, row, col, nxy;
 	double dnxy;
 	struct INDEXED_DATA *indexed_data = NULL;
 
@@ -290,7 +289,7 @@ GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double
 
 	/* Sort on data value  */
 
-	qsort (indexed_data, nxy, sizeof (struct INDEXED_DATA), compare_indexed_floats);
+	qsort (indexed_data, (size_t)nxy, sizeof (struct INDEXED_DATA), compare_indexed_floats);
 
 	dnxy = 1.0 / (nxy + 1);
 
@@ -303,7 +302,7 @@ GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double
 
 	/* Sort on data index  */
 
-	qsort (indexed_data, Grid->header->nm, sizeof (struct INDEXED_DATA), compare_indices);
+	qsort (indexed_data, (size_t)Grid->header->nm, sizeof (struct INDEXED_DATA), compare_indices);
 
 	i = 0;
 	GMT_grd_loop (GMT, Grid, row, col, ij) Grid->data[ij] = indexed_data[i++].x;	/* Load up the grid */

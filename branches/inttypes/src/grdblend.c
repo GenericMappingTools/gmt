@@ -188,7 +188,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 		}
 	}
 	else {	/* Must read blend file */
-		size_t n_alloc = 0;
+		GMT_LONG n_alloc = 0;
 		char *line = NULL, r_in[GMT_TEXT_LEN256], file[GMT_TEXT_LEN256];
 		double weight;
 		GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
@@ -559,9 +559,7 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 
 GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG col, pcol, row, nx_360 = 0, k, kk, m, n_blend, error, n_fill, n_tot, wrap_x, reformat;
-	
-	uint64_t ij;
+	GMT_LONG col, pcol, row, nx_360 = 0, k, kk, m, n_blend, error, n_fill, n_tot, ij, wrap_x, reformat;
 	
 	double wt_x, w, wt;
 	

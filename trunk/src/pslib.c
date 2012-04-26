@@ -2272,8 +2272,7 @@ PSL_LONG psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, 
 	 * This is a subfunction that simply place all the text attributes on the stack.
 	 */
 	PSL_LONG i, i1, i0, j, k, n, p, n_scan, last_k = -1, error = 0, old_font, font, after, len;
-	PSL_LONG *font_unique = NULL, n_font_unique, n_rgb_unique, n_items, n_words = 0;
-	size_t n_alloc;
+	PSL_LONG *font_unique = NULL, n_font_unique, n_rgb_unique, n_alloc, n_items, n_words = 0;
 	double old_size, last_rgb[4], rgb[4];
 	PSL_LONG sub, super, small, plain_word = FALSE, under, escape;
 	char *c = NULL, *clean = NULL, test_char, **text = NULL, *lastp = NULL, *copy = NULL;
@@ -4178,8 +4177,7 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname, PSL_LONG revi
 static void psl_init_fonts (struct PSL_CTRL *PSL)
 {
 	FILE *in = NULL;
-	PSL_LONG i = 0, n_GMT_fonts;
-	size_t n_alloc = 64;
+	PSL_LONG i = 0, n_alloc = 64, n_GMT_fonts;
 	char buf[PSL_BUFSIZ];
 	char fullname[PSL_BUFSIZ];
 

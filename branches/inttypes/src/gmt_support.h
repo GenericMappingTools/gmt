@@ -39,9 +39,9 @@ struct MATH_MACRO {
 #define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),"",0)
 #endif
 /* The k = *n_alloc below is needed to ensure only the final GMT_malloc call changes n_alloc */
-#define GMT_malloc2(C,a,b,n,n_alloc,type) { size_t __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); b = GMT_malloc(C,b,n,n_alloc,type); }
-#define GMT_malloc3(C,a,b,c,n,n_alloc,type) { size_t __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); __k = *n_alloc; b = GMT_malloc(C,b,n,&__k,type); c = GMT_malloc(C,c,n,n_alloc,type); }
-#define GMT_malloc4(C,a,b,c,d,n,n_alloc,type) { size_t __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); __k = *n_alloc; b = GMT_malloc(C,b,n,&__k,type); __k = *n_alloc; c = GMT_malloc(C,c,n,&__k,type); d = GMT_malloc(C,d,n,n_alloc,type); }
+#define GMT_malloc2(C,a,b,n,n_alloc,type) { GMT_LONG __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); b = GMT_malloc(C,b,n,n_alloc,type); }
+#define GMT_malloc3(C,a,b,c,n,n_alloc,type) { GMT_LONG __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); __k = *n_alloc; b = GMT_malloc(C,b,n,&__k,type); c = GMT_malloc(C,c,n,n_alloc,type); }
+#define GMT_malloc4(C,a,b,c,d,n,n_alloc,type) { GMT_LONG __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); __k = *n_alloc; b = GMT_malloc(C,b,n,&__k,type); __k = *n_alloc; c = GMT_malloc(C,c,n,&__k,type); d = GMT_malloc(C,d,n,n_alloc,type); }
 
 /* Convenience macro for GMT_memory_func */
 #ifdef DEBUG
@@ -61,7 +61,7 @@ struct MATH_MACRO {
 #define MEM_TXT_LEN	128
 
 struct MEMORY_ITEM {
-	size_t size;	/* Size of memory allocated */
+	GMT_LONG size;	/* Size of memory allocated */
 	GMT_LONG line;	/* Line number where things were initially allocated */
 	void *ptr;	/* Memory pointer */
 #ifdef NEW_DEBUG
@@ -75,14 +75,14 @@ struct MEMORY_ITEM {
 struct MEMORY_TRACKER {
 	GMT_LONG active;	/* Normally TRUE but can be changed to focus on just some allocations */
 	GMT_LONG search;	/* Normally TRUE but can be changed to skip searching when we know we add a new item */
-	uint64_t n_ptr;		/* Number of unique pointers to allocated memory */
-	uint64_t n_allocated;	/* Number of items allocated by GMT_memory */
-	uint64_t n_reallocated;	/* Number of items reallocated by GMT_memory */
-	uint64_t n_freed;	/* Number of items freed by GMT_free */
-	uint64_t current;	/* Memory allocated at current time */
-	uint64_t maximum;	/* Highest memory count during execution */
-	uint64_t largest;	/* Highest memory allocation to a single variable */
-	size_t n_alloc;		/* Allocated size of memory pointer array */
+	GMT_LONG n_ptr;		/* Number of unique pointers to allocated memory */
+	GMT_LONG n_allocated;	/* Number of items allocated by GMT_memory */
+	GMT_LONG n_reallocated;	/* Number of items reallocated by GMT_memory */
+	GMT_LONG n_freed;	/* Number of items freed by GMT_free */
+	GMT_LONG current;	/* Memory allocated at current time */
+	GMT_LONG maximum;	/* Highest memory count during execution */
+	GMT_LONG largest;	/* Highest memory allocation to a single variable */
+	GMT_LONG n_alloc;	/* Allocated size of memory pointer array */
 #ifdef NEW_DEBUG
 	struct MEMORY_ITEM *list_head, *list_tail;
 #else

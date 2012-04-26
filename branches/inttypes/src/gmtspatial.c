@@ -44,7 +44,7 @@ void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, st
 #define MIN_SUBSET		2.0	/* If two close segments deemed approximate fits has lengths that differ by this factor then they are sub/super sets of each other */
 
 struct DUP {
-	uint64_t point;
+	GMT_LONG point;
 	GMT_LONG segment;
 	GMT_LONG table;
 	GMT_LONG mode;
@@ -59,7 +59,7 @@ struct DUP {
 };
 
 struct DUP_INFO {
-	uint64_t point;
+	GMT_LONG point;
 	GMT_LONG mode;
 	double distance;
 	double closeness;
@@ -315,8 +315,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 	 * not detect such crossings.  For most situations this should not matter much (?).
 	 */
 	
-	GMT_LONG tbl, seg, np, n_close = 0, n_dup = 0, status, mode1, mode3;
-	uint64_t k, row, pt;
+	GMT_LONG k, row, tbl, seg, pt, np, n_close = 0, n_dup = 0, status, mode1, mode3;
 	double dist, f_seg, f_pt, d1, d2, closest, length[2], separation[2], close[2];
 	double med_separation[2], med_close[2], high = 0, low = 0, use_length, *sep = NULL;
 	struct GMT_LINE_SEGMENT *Sp = NULL;
@@ -742,8 +741,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 
 GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	uint64_t i, p;
-	GMT_LONG j, k, error = 0, in, c, mseg = FALSE, geometry = GMT_IS_POLY;
+	GMT_LONG i, j, k, error = 0, in, p, c, mseg = FALSE, geometry = GMT_IS_POLY;
 	GMT_LONG internal = FALSE, external = FALSE;
 
 	static char *kind[2] = {"CCW", "CW"};
@@ -821,8 +819,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* OK, with data in hand we can do some damage */
 	
 	if (Ctrl->L.active) {	/* Remove tile lines only */
-		GMT_LONG gap = 0, first, prev_OK;
-		uint64_t p;
+		GMT_LONG p, gap = 0, first, prev_OK;
 		double dx, dy, DX, DY, dist;
 
 		GMT_init_distaz (GMT, GMT_MAP_DIST_UNIT, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
@@ -1000,8 +997,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						nx = GMT_crossover (GMT, S1->coord[GMT_X], S1->coord[GMT_Y], NULL, ylist1, S1->n_rows, S2->coord[GMT_X], S2->coord[GMT_Y], NULL, ylist2, S2->n_rows, FALSE, &XC);
 						if (nx) {	/* Polygon pair generated crossings */
 							if (Ctrl->S.active) {	/* Do the spatial clip operation */
-								uint64_t p0, px;
-								GMT_LONG c, go, first;
+								GMT_LONG p0, px, c, go, first;
 								double *xx = NULL, *yy = NULL, *kk = NULL;
 								struct PAIR *pair = NULL;
 								
@@ -1217,8 +1213,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->C.active) {	/* Clip polygon to bounding box */
-		uint64_t np, p;
-		GMT_LONG c, nx;
+		GMT_LONG np, c, p, nx;
 		double *cp[2] = {NULL, NULL};
 		if (!GMT->common.J.active) {	/* -J not specified, set one implicitly */
 			/* Supply dummy linear proj */
@@ -1246,8 +1241,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->N.active) {	/* Report the polygons that contain the given features */
-		uint64_t row, first, last, n, p, np;
-		GMT_LONG tbl, seg, seg2, ID = -1, n_inside, *count = NULL;
+		GMT_LONG tbl, seg, seg2, ID = -1, row, first, last, n, p, np, n_inside, *count = NULL;
 		char seg_label[GMT_TEXT_LEN64], record[GMT_BUFSIZ], *kind[2] = {"Middle point", "All points"};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_TABLE *T = NULL;

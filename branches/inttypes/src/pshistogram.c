@@ -246,12 +246,11 @@ GMT_LONG plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALE
 	return (0);
 }
 
-GMT_LONG get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats)
+GMT_LONG get_loc_scl (struct GMT_CTRL *GMT, double *data, GMT_LONG n, double *stats)
 {
 	/* Returns stats[] = L2, L1, LMS location, L2, L1, LMS scale  */
 
-	uint64_t i, j;
-	GMT_LONG n_multiples;
+	GMT_LONG i, j, n_multiples;
 	double dx;
 
 	if (n < 3) return (-1);
@@ -453,11 +452,7 @@ GMT_LONG GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *
 
 GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, automatic = FALSE;
-	
-	uint64_t n;
-	
-	size_t n_alloc = GMT_CHUNK;
+	GMT_LONG error = FALSE, automatic = FALSE, n_alloc = GMT_CHUNK, n;
 
 	char format[GMT_BUFSIZ];
 	

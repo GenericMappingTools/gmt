@@ -207,9 +207,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, temp_shift = FALSE, wrap, used_polygons;
 	GMT_LONG i, k, ii, bin, ind, np, side, col_min, col_max, row_min, row_max, nx1, ny1;
-	GMT_LONG base = 3, direction, err, row, col, np_new;
-	
-	uint64_t ij;
+	GMT_LONG base = 3, direction, err, ij, row, col, np_new;
 
 	char line[GMT_TEXT_LEN256];
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
