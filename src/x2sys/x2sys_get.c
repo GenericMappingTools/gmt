@@ -382,6 +382,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_free (GMT, y_match);
 	GMT_free (GMT, n_match);
+	GMT_free (GMT, in_bin_flag);
 	x2sys_end (GMT, s);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "completed successfully\n");
