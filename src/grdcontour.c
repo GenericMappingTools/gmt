@@ -584,8 +584,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 
 void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][3])
 {	/* Determine the grid's global min and max locations and z values */
-	GMT_LONG row, col, i;
-	uint64_t ij, i_minmax[2] = {0, 0};
+	GMT_LONG row, col, ij, i, i_minmax[2] = {0, 0};
 	float z_extreme[2] = {FLT_MAX, -FLT_MAX};
 
 	GMT_grd_loop (GMT, Grid, row, col, ij) {
@@ -608,8 +607,7 @@ void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][
 
 void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_GRID *Grid)
 {	/* Modify orientation of contours to have top of annotation facing the local hill top */
-	GMT_LONG i, k, col, row;
-	uint64_t ij;
+	GMT_LONG i, k, col, row, ij;
 	double nx, ny, x_on, y_on, x_node, y_node, x_node_p, y_node_p, dx, dy, dz, dot, angle;
 	struct GMT_CONTOUR_LINE *C = NULL;
 
@@ -676,13 +674,10 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 
 GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the grdcontour task */
-	GMT_LONG c, n_edges, id, cont_counts[2] = {0, 0}, need_proj;
-	GMT_LONG tbl_scl = 1, i, n, nn, closed, begin, error, io_mode = 0;
+	GMT_LONG c, n_edges, n_alloc = 0, n_contours, id, cont_counts[2] = {0, 0}, need_proj;
+	GMT_LONG tbl_scl = 1, n_save = 0, i, n, nn, ij, closed, begin, error, io_mode = 0, n_tmp;
 	GMT_LONG make_plot, fmt[3] = {0, 0, 0}, two_only = FALSE, n_tables = 1, tbl, extra;
-	GMT_LONG *n_seg = NULL, *n_seg_alloc = NULL, *edge = NULL;
-	
-	size_t n_contours, n_save = 0, n_alloc = 0, n_tmp;
-	uint64_t ij;
+	GMT_LONG *n_seg_alloc = NULL, *n_seg = NULL, *edge = NULL;
 
 	char *cont_type = NULL, *cont_do_tick = NULL;
 	char cont_label[GMT_TEXT_LEN256], format[GMT_TEXT_LEN256];
@@ -1017,7 +1012,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					/* Select which table this segment should be added to */
 					tbl = (io_mode == GMT_WRITE_TABLES) ? ((two_only) ? closed : tbl_scl * c) : 0;
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
-						size_t old_n_alloc = n_seg_alloc[tbl];
+						GMT_LONG old_n_alloc = n_seg_alloc[tbl];
 						D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
 						GMT_memset (&(D->table[tbl]->segment[old_n_alloc]), n_seg_alloc[tbl] - old_n_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
 					}

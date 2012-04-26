@@ -165,11 +165,10 @@ GMT_LONG GMT_colmath_parse (struct GMTAPI_CTRL *C, struct COLMATH_CTRL *Ctrl, st
 
 GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG out_col, n_out_seg = 0, error = 0;
-	GMT_LONG tbl, seg, col, n_cols_in, n_cols_out, out_seg = 0;
+	GMT_LONG last_row, n_rows, out_col, n_out_seg = 0, error = 0;
+	GMT_LONG tbl, seg, col, row, n_cols_in, n_cols_out, out_seg = 0;
 	GMT_LONG n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
 	GMT_LONG match = FALSE, warn = FALSE;
-	uint64_t row, last_row, n_rows;
 	
 	double *val = NULL;
 

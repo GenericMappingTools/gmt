@@ -162,9 +162,7 @@ GMT_LONG GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, st
 #define Return(code) {Free_grdclip_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
-	GMT_LONG row, col, error, new_grid;
-	
-	uint64_t ij, n_above = 0, n_below = 0;
+	GMT_LONG k, row, col, n_above = 0, n_below = 0, error, new_grid;
 	
 	double wesn[4];
 	
@@ -202,17 +200,17 @@ GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	new_grid = GMT_set_outgrid (GMT, G, &Out);	/* TRUE if input is a read-only array */
 
-	GMT_grd_loop (GMT, G, row, col, ij) {	/* Checking if extremes are exceeded (need not check NaN) */
-		if (Ctrl->S.mode & 1 && G->data[ij] > Ctrl->S.high) {
-			Out->data[ij] = Ctrl->S.above;
+	GMT_grd_loop (GMT, G, row, col, k) {	/* Checking if extremes are exceeded (need not check NaN) */
+		if (Ctrl->S.mode & 1 && G->data[k] > Ctrl->S.high) {
+			Out->data[k] = Ctrl->S.above;
 			n_above++;
 		}
-		else if (Ctrl->S.mode & 2 && G->data[ij] < Ctrl->S.low) {
-			Out->data[ij] = Ctrl->S.below;
+		else if (Ctrl->S.mode & 2 && G->data[k] < Ctrl->S.low) {
+			Out->data[k] = Ctrl->S.below;
 			n_below++;
 		}
 		else if (new_grid)
-			Out->data[ij] = G->data[ij];
+			Out->data[k] = G->data[k];
 	}
 
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Out) != GMT_OK) {

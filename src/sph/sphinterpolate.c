@@ -208,11 +208,8 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 
 GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, i, error = FALSE;
+	GMT_LONG row, col, i, ij, ij_f, n = 0, n_alloc = 0, error = FALSE;
 
-	size_t n_alloc = 0;
-	uint64_t n = 0, ij, ij_f;
-	
 	double w_min, w_max, sf = 1.0, X[3];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;
 
@@ -287,8 +284,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	n_alloc = n;
-	GMT_malloc4 (GMT, xx, yy, zz, ww, 0, &n_alloc, double);
+	GMT_malloc4 (GMT, xx, yy, zz, ww, 0, &n, double);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Do spherical interpolation using %ld points\n", n);
 

@@ -240,8 +240,7 @@ GMT_LONG init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, GMT_LONG m
 	 * 3. Grid-registered grids have boundary nodes that only apply to 1/2 the area
 	 *    (and the four corners (unless poles) only 1/4 the area of other cells).
 	 */
-	GMT_LONG row, col;
-	uint64_t ij;
+	GMT_LONG row, col, ij;
 	double row_weight, col_weight, dy_half = 0.0, dx, y, lat, lat_s, lat_n, s2 = 0.0;
 	
 	/* Based the grid on the input grid domain and increments. */
@@ -492,13 +491,12 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG n_in_median, n_nan = 0, tid = 0, spherical = FALSE, full_360;
 	GMT_LONG j_origin, col_out, row_out, nx_wrap = 0, visit_check = FALSE;
-	GMT_LONG col_in, row_in, ii, jj, i, j, effort_level, go_on;
+	GMT_LONG col_in, row_in, ii, jj, i, j, ij_in, ij_out, ij_wt, effort_level, go_on;
 	GMT_LONG filter_type, one_or_zero = 1, GMT_n_multiples = 0, *i_origin = NULL;
 	GMT_LONG error = FALSE, fast_way, slow = FALSE, slower = FALSE, same_grid = FALSE;
 #ifdef DEBUG
 	GMT_LONG n_conv = 0;
 #endif
-	uint64_t ij_in, ij_out, ij_wt;
 	double x_scale = 1.0, y_scale = 1.0, x_width, y_width, y, par[GRDFILTER_N_PARS];
 	double x_out, y_out, wt_sum, value, last_median = 0.0, this_median = 0.;
 	double y_shift = 0.0, x_fix = 0.0, y_fix = 0.0, max_lat, lat_out, w;
@@ -766,7 +764,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (effort_level == 1) set_weight_matrix (GMT, &F, weight, 0.0, par, x_fix, y_fix);
 	
 #ifdef DEBUG
-	if (Ctrl->A.active) for (ij_in = 0; ij_in < Gin->header->size; ij_in++) Gin->data[ij_in] = 0.0;	/* We are using Gin to store filter weights etc instead */
+	if (Ctrl->A.active) for (i = 0; i < Gin->header->size; i++) Gin->data[i] = 0.0;	/* We are using Gin to store filter weights etc instead */
 #endif
 
 #ifdef _OPENMP

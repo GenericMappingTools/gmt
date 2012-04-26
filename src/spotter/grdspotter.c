@@ -421,7 +421,7 @@ GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, st
 
 	np = (last - first) / step + 1;			/* Number of (x,y[,t]) points on this flowline inside the region */
 	if (np < n_track) {	/* Just copy out the subset of points we want */
-		size_t n_alloc;
+		GMT_LONG n_alloc;
 		n_alloc = np * step;	/* Number of (x,y[,t]) to copy */
 		f = GMT_memory (GMT, NULL, n_alloc+1, double);
 		f[0] = (double)np;	/* Number of points found */
@@ -462,15 +462,14 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG n_nodes;		/* Number of nodes processed */
 	GMT_LONG n_stages;		/* Number of stage rotations (poles) */
+	GMT_LONG node;			/* The current node index */
 	GMT_LONG try;			/* Number of current bootstrap estimate */
-	size_t n_alloc = 0, inc_alloc = BIG_CHUNK;
-	GMT_LONG i, j, k, m, row, col, k_step, np, max_ij = 0, n_flow, mem = 0, n_unique_nodes = 0;
+	GMT_LONG n_alloc = 0, inc_alloc = BIG_CHUNK;
+	GMT_LONG i, j, k, ij, m, row, col, k_step, np, max_ij = 0, n_flow, mem = 0, n_unique_nodes = 0;
 	GMT_LONG error = FALSE;		/* TRUE when arguments are wrong */
 	GMT_LONG keep_flowlines = FALSE;	/* TRUE if Ctrl->D.active, Ctrl->PA.active, or bootstrap is TRUE */
 	GMT_LONG forth_flag;		/* Holds the do_time + 10 flag passed to forthtrack */
 	GMT_LONG *ID = NULL;		/* Optional array with IDs for each node */
-	
-	uint64_t ij, node;
 	char *processed_node = NULL;	/* Pointer to array with TRUE/FALSE values for each grid node */
 	
 	unsigned short pa = 0;		/* Placeholder for PA along track */
@@ -623,7 +622,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		/* Store IDs in a GMT_LONG array instead */
 		ID = GMT_memory (GMT, NULL, L->header->size, GMT_LONG);
-		for (ij = 0; ij < L->header->size; ij++) ID[ij] = lrint ((double)L->data[ij]);
+		for (i = 0; i < L->header->size; i++) ID[i] = lrint ((double)L->data[i]);
 		GMT_free (GMT, L->data);	/* Just free the array since we use ID; Grid stuct is destroyed at end */
 		
 		ID_info = GMT_memory (GMT, NULL, lrint (L->header->z_max) + 1, struct ID);

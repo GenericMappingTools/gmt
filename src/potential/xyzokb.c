@@ -707,8 +707,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0) {
 	/* read xyz[m] file with point data coordinates */
 
-	GMT_LONG ndata_xyz;
-	size_t n_alloc;
+	GMT_LONG n_alloc, ndata_xyz;
 	float x_min = FLT_MAX, x_max = -FLT_MAX, y_min = FLT_MAX, y_max = -FLT_MAX;
 	double in[8];
 	char line[GMT_TEXT_LEN256];
@@ -804,8 +803,7 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 /* -----------------------------------------------------------------*/
 GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname) {
 	/* read file with vertex indexes of triangles */
-	GMT_LONG ndata_t;
-	size_t n_alloc;
+	GMT_LONG n_alloc, ndata_t;
 	int in[3];
 	char line[GMT_TEXT_LEN256];
 	FILE *fp = NULL;
@@ -835,8 +833,7 @@ GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname) {
 /* -----------------------------------------------------------------*/
 GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the raw format and returns nb of triangles */
-	GMT_LONG ndata_r;
-	size_t n_alloc;
+	GMT_LONG n_alloc, ndata_r;
 	double in[9];
 	char line[GMT_TEXT_LEN256];
 	FILE *fp = NULL;
@@ -873,8 +870,7 @@ GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 /* -----------------------------------------------------------------*/
 GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the stl format and returns nb of triangles */
-	GMT_LONG ndata_s;
-	size_t n_alloc;
+	GMT_LONG n_alloc, ndata_s;
 	double in[3];
 	char line[GMT_TEXT_LEN256], text[128], ver_txt[128];
 	FILE *fp = NULL;
@@ -922,8 +918,7 @@ GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 /* -----------------------------------------------------------------*/
 GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_LONG switch_xy) {
 	/* Read file with xy points where anomaly is going to be computed*/
-	GMT_LONG ndata, ix = 0, iy = 1;
-	size_t n_alloc;
+	GMT_LONG n_alloc, ndata, ix = 0, iy = 1;
 	double in[2];
 	char line[GMT_TEXT_LEN256];
 	FILE *fp = NULL;

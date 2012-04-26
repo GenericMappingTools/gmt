@@ -252,14 +252,10 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 
 GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, k, col_0, row_0, n, n_set;
+	GMT_LONG row, col, k, col_0, row_0, ij, n, n_alloc = GMT_CHUNK, n_set;
 	GMT_LONG d_row, sector, ii, jj, ij0, n_read, *d_col = NULL;
 	GMT_LONG max_d_col, x_wrap, y_wrap, n_almost, n_none;
 	GMT_LONG error = FALSE, wrap_180, replicate_x, replicate_y, n_filled;
-	
-	size_t n_alloc = GMT_CHUNK;
-	
-	uint64_t ij;
 
 	double weight, weight_sum, grd_sum, dx, dy, delta, distance = 0.0;
 	double x_left, x_right, y_top, y_bottom, factor, three_over_radius;
@@ -433,7 +429,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n++;
 		if (!(n%1000)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed record %10ld\r", n);
 		if (n == n_alloc) {
-			size_t old_n_alloc = n_alloc;
+			GMT_LONG old_n_alloc = n_alloc;
 #ifdef DEBUG
 			GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif

@@ -414,11 +414,10 @@ GMT_LONG GMT_esri_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG pad[], GMT_LONG complex_mode)
 {
-	GMT_LONG col, height_in, ii, in_nx, inc, off;
+	GMT_LONG col, width_out, height_in, ii, kk, in_nx, inc, off;
 	GMT_LONG first_col, last_col, first_row, last_row, n_left = 0;
-	GMT_LONG row, row2, width_in, check, error, *k = NULL;
+	GMT_LONG row, row2, ij, width_in, check, error, *k = NULL;
 	GMT_LONG nBits = 32, i_0_out, is_binary = FALSE, swap = FALSE;
-	uint64_t ij, kk, width_out;
 	char *r_mode = NULL;
 	int16_t *tmp16 = NULL;
 	float value, *tmp = NULL;
@@ -553,9 +552,8 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode, GMT_LONG floating)
 {
 	GMT_LONG i2, j, j2, width_out, height_out, last, inc, off;
-	GMT_LONG first_col, last_col, first_row, last_row;
-	GMT_LONG i, *k = NULL;
-	uint64_t ij, width_in, kk;
+	GMT_LONG first_col, last_col, first_row, last_row, kk;
+	GMT_LONG i, ij, width_in, *k = NULL;
 	char item[GMT_TEXT_LEN64], c[2] = {0, 0};
 	FILE *fp = NULL;
 

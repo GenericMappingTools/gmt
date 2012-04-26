@@ -214,10 +214,9 @@ static GMT_LONG connect (struct LINK *S, GMT_LONG id, GMT_LONG order, double cut
 	return (FALSE);							/* Failed all tests */
 }
 
-static uint64_t Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_SEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end)
+static GMT_LONG Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_SEGMENT *out, GMT_LONG out_start, GMT_LONG in_start, GMT_LONG in_end)
 {
-	uint64_t i, j, k;
-	GMT_LONG inc, done = FALSE;
+	GMT_LONG i, j, k, inc, done = FALSE;
 
 	/* We will copy the records from the out segment from rows in_start up to and including in_end.
 	 * If in_start > in_end then we will end up reversing the order of the records.
@@ -237,13 +236,11 @@ static uint64_t Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_
 
 GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG nearest_end[2][2], ii, end, n_open, dim_tscr[4] = {1, 1, 0, 0};
-	GMT_LONG i, j, k, id, pos, start_id, done, end_order, n_columns;
+	GMT_LONG nearest_end[2][2], ii, end, n_open, dim_tscr[4] = {1, 1, 0, 0}, n_seg_alloc[2] = {0, 0};
+	GMT_LONG i, j, k, np, ns, id, pos, start_id, done, end_order, n_columns, n_rows, out_p, n_alloc_pts;
 	GMT_LONG n_new, n, chain = 0, n_islands = 0, n_trouble = 0, n_closed = 0, id2, L, G, error = 0, d_mode = 0;
-	GMT_LONG out_seg, match = 0, n_steps, n_seg_length, io_mode = GMT_WRITE_DATASET;
+	GMT_LONG n_id_alloc = GMT_CHUNK, out_seg, match = 0, n_steps, n_seg_length, io_mode = GMT_WRITE_DATASET;
 	GMT_LONG save_type = FALSE, first, wrap_up = FALSE, n_qfiles = 0, q_mode = 0, *skip = NULL;
-	size_t n_id_alloc = GMT_CHUNK, n_seg_alloc[2] = {0, 0}, n_alloc_pts;
-	uint64_t n_rows, np, ns, out_p;
 
 	double dd[2][2], p_dummy_x, p_dummy_y, p_last_x, p_last_y, p_first_x, p_first_y, distance;
 	double closed_dist = 0.0;
@@ -410,7 +407,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				seg[id].buddy[0].dist = seg[id].buddy[1].dist = seg[id].buddy[0].next_dist = seg[id].buddy[1].next_dist = DBL_MAX;
 				id++;
 				if (id == n_id_alloc) {
-					size_t old_n_id_alloc = n_id_alloc;
+					GMT_LONG old_n_id_alloc = n_id_alloc;
 					n_id_alloc <<= 1;
 					seg = GMT_memory (GMT, seg, n_id_alloc, struct LINK);
 					GMT_memset (&(seg[old_n_id_alloc]), n_id_alloc - old_n_id_alloc, struct LINK);	/* Set to NULL/0 */

@@ -270,8 +270,7 @@ void load_pstuff (double *pstuff, GMT_LONG n_model, double x, double y, GMT_LONG
 
 void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, double *yval, double *gtd, GMT_LONG n_model, double *pstuff)
 {	/* Find trend from a model  */
-	GMT_LONG row, col, k;
-	uint64_t ij;
+	GMT_LONG row, col, k, ij;
 
 	GMT_grd_loop (GMT, T, row, col, ij) {
 		load_pstuff (pstuff, n_model, xval[col], yval[row], 1, (!(col)));
@@ -282,8 +281,7 @@ void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, doub
 
 void compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct GMT_GRID *T, struct GMT_GRID *R)
 {	/* Find residuals from a trend  */
-	GMT_LONG row, col;
-	uint64_t ij;
+	GMT_LONG row, col, ij;
 
 	GMT_grd_loop (GMT, T, row, col, ij) R->data[ij] = D->data[ij] - T->data[ij];
 }
@@ -295,8 +293,7 @@ void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, 
 	where x,y are normalized to range [-1,1] and there are no
 	NaNs in grid file, and problem is unweighted least squares.  */
 
-	GMT_LONG row, col;
-	uint64_t ij;
+	GMT_LONG row, col, ij;
 	double x2, y2, sumx2 = 0.0, sumy2 = 0.0, sumx2y2 = 0.0;
 
 	/* First zero the model parameters to use for sums */
@@ -331,8 +328,7 @@ void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, 
 
 double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W, double scale)
 {	/* Find Chi-Squared from weighted residuals  */
-	GMT_LONG row, col;
-	uint64_t ij;
+	GMT_LONG row, col, ij;
 	double tmp, chisq = 0.0;
 
 	GMT_grd_loop (GMT, R, row, col, ij) {
@@ -348,8 +344,7 @@ double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID 
 
 double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W)
 {	/* Find weights from residuals  */
-	GMT_LONG row, col;
-	uint64_t j = 0, j2, ij;
+	GMT_LONG row, col, j = 0, j2, ij;
 	double r, mad, scale;
 
 	GMT_grd_loop (GMT, R, row, col, ij) {
@@ -412,8 +407,7 @@ void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, d
 	loading only lower triangular part of gtg and then filling
 	by symmetry after i,j loop.  */
 
-	GMT_LONG row, col, k, l, n_used = 0;
-	uint64_t ij;
+	GMT_LONG row, col, k, l, n_used = 0, ij;
 
 	/* First zero things out to start */
 
@@ -470,9 +464,8 @@ void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, d
 GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* High-level function that implements the grdcontour task */
 
-	GMT_LONG trivial, weighted, error = 0, k, ierror = 0, iterations, set_ones = TRUE;
-	
-	uint64_t ij;
+	GMT_LONG trivial, weighted, error = 0, i, k, ierror = 0, iterations;
+	GMT_LONG set_ones = TRUE;
 	
 	char format[GMT_BUFSIZ];
 
@@ -518,8 +511,8 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	}
 
 	/* Check for NaNs (we include the pad for simplicity)  */
-	ij = 0;
-	while (trivial && ij < G->header->size) if (GMT_is_fnan (G->data[ij++])) trivial = FALSE;
+	i = 0;
+	while (trivial && i < G->header->size) if (GMT_is_fnan (G->data[i++])) trivial = FALSE;
 
 	/* Allocate other required arrays */
 

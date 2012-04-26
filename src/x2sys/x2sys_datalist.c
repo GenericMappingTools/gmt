@@ -149,8 +149,7 @@ GMT_LONG GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_
 
 GMT_LONG x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
 {
-	GMT_LONG n_fields, n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
-	size_t n_alloc = GMT_CHUNK;
+	GMT_LONG n_fields, n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT}, n_alloc = GMT_CHUNK;
 	double *in = NULL;
 	char file[GMT_BUFSIZ];
 	FILE *fp = NULL;
@@ -189,10 +188,8 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char **trk_name = NULL;
 
-	GMT_LONG i, k, bad, trk_no, n_tracks, n_data_col_out = 0;
+	GMT_LONG i, j, k, bad, trk_no, n_tracks, n_data_col_out = 0;
 	GMT_LONG error = FALSE,  cmdline_files, special_formatting = FALSE, *adj_col = NULL;
-	
-	uint64_t j;
 
 	double **data = NULL, *out = NULL, correction = 0.0, aux_dvalue[N_GENERIC_AUX];
 	double ds = 0.0, cumulative_dist, dist_scale = 1.0, dt, vel_scale = 1.0, adj_amount;

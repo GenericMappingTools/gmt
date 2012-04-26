@@ -313,11 +313,9 @@ GMT_LONG skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon,
 
 GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG col, row, seg, not_global, registered_d = FALSE;
+	GMT_LONG ij, col, row, ij_rot, seg, rec, not_global, registered_d = FALSE;
 	GMT_LONG col2, row2, col_o, row_o, error = FALSE, global = FALSE;
 	
-	uint64_t ij, ij_rot, rec;
-
 	double xx, yy, lon, P_original[3], P_rotated[3], R[3][3];
 	double *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
 

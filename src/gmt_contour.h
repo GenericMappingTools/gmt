@@ -114,7 +114,7 @@ struct GMT_CONTOUR {
 	GMT_LONG debug;			/* TRUE of we want to draw helper lines/points */
 	GMT_LONG delay;			/* TRUE of we want to delay the actual annotation plotting until later */
 	GMT_LONG n_segments;		/* The number of segments */
-	size_t n_alloc;			/* How many allocated so far */
+	GMT_LONG n_alloc;		/* How many allocated so far */
 	char file[GMT_BUFSIZ];		/* File with crossing lines, if specified */
 	char option[GMT_BUFSIZ];	/* Copy of the option string */
 	char label[GMT_BUFSIZ];		/* Fixed label */
