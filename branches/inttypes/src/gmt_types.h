@@ -57,6 +57,8 @@ typedef unsigned long long GMT_ULONG;
 typedef void (*PFV) ();         /* PFV declares a pointer to a function returning void */
 typedef void* (*PFP) ();        /* PFP declares a pointer to a function returning void* */
 typedef GMT_LONG (*PFL) ();     /* PFL declares a pointer to a function returning an GMT_LONG */
+typedef size_t (*PFS) ();    	/* PFS declares a pointer to a function returning an size_t */
+// typedef uint64_t (*PFU) ();    	/* PFU declares a pointer to a function returning an uint64_t */
 typedef int (*PFI) ();          /* PFI declares a pointer to a function returning an int */
 typedef double (*PFD) ();       /* PFD declares a pointer to a function returning a double */
 

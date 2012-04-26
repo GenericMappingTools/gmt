@@ -703,7 +703,8 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 GMT_LONG read_poly__ (struct GMT_CTRL *GMT, char *fname, int switch_xy) {
 	/* Read file with xy points where anomaly is going to be computed
 	   This is a temporary function while we not use the API to do this job. */
-	int n_alloc, ndata, ix = 0, iy = 1;
+	int ndata, ix = 0, iy = 1;
+	size_t n_alloc;
 	double in[2];
 	char line[GMT_TEXT_LEN256];
 	FILE *fp = NULL;

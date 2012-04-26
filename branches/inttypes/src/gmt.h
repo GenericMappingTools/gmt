@@ -25,6 +25,18 @@
  * Version:	5 API
  */
 
+/* Note on data type:  GMT will generally use double precision for
+ * all floating point values except for grids which are held in single
+ * precision floats.  All integer values are standard int (presumably
+ * 32-bit) except for quantities that may be very large, such as
+ * counters of data records, which will be declared as uint64_t, and
+ * variables that holds allocated number of bytes and similar, which
+ * will be declared as size_t.  Occasionally, arrays of integer values
+ * will be stored in smaller memory containers such as short int of
+ * unsigned/signed char when the program logic places limits on their
+ * possible ranges (e.g., true/false variables).
+ */
+
 #pragma once
 #ifndef _GMT_H
 #define _GMT_H
@@ -163,8 +175,8 @@ struct GMT_INIT {		/* Holds misc run-time parameters */
 };
 
 struct GMT_PLOT {		/* Holds all plotting-related parameters */
-	GMT_LONG n;			/* Number of such points */
-	GMT_LONG n_alloc;		/* Size of allocated plot arrays */
+	uint64_t n;			/* Number of such points */
+	size_t n_alloc;			/* Size of allocated plot arrays */
 	GMT_LONG r_theta_annot;		/* TRUE for special r-theta map annotation (see GMT_get_annot_label) */
 	GMT_LONG mode_3D;		/* Determines if we draw fore and/or back 3-D box lines [Default is both] */
 	GMT_LONG *pen;			/* Pen (PSL_MOVE = up, PSL_DRAW = down) for these points */
@@ -208,8 +220,8 @@ struct GMT_SESSION {
 	PFL output_ascii;		/* Pointer to function writing ascii tables only */
 	GMT_LONG n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
 	GMT_LONG n_user_media;		/* Total number of user media returned by gmt_load_user_media */
-	GMT_LONG min_meminc;		/* DEBUG, sets min/max memory increments */
-	GMT_LONG max_meminc;
+	size_t min_meminc;		/* DEBUG, sets min/max memory increments */
+	size_t max_meminc;
 	float f_NaN;			/* Holds the IEEE NaN for floats */
 	double d_NaN;			/* Holds the IEEE NaN for doubles */
 	double no_rgb[4];		/* To hold {-1, -1, -1, 0} when needed */

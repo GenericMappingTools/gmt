@@ -226,8 +226,13 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 
 GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG result, i, j, k, m = 0, m_alloc, tbl, seg, col, row, rows = 1, m_supplied = 0;
-	GMT_LONG error = FALSE, spatial = FALSE, *nan_flag = NULL;
+	GMT_LONG result, k, tbl, seg, col;
+	GMT_LONG error = FALSE, spatial = FALSE;
+	
+	unsigned char *nan_flag = NULL;
+	
+	size_t m_alloc;
+	uint64_t row, m = 0, m_supplied = 0;
 
 	double *t_supplied_out = NULL, *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
 	double tt, low_t, high_t, last_t, inc_degrees = 0.0, *lon = NULL, *lat = NULL;
@@ -301,12 +306,12 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	Dout->table = GMT_memory (GMT, NULL, Din->n_tables, struct GMT_TABLE *);	/* with table array */
 	Dout->n_tables = Din->n_tables;
 
-	nan_flag = GMT_memory (GMT, NULL, Din->n_columns, GMT_LONG);
+	nan_flag = GMT_memory (GMT, NULL, Din->n_columns, unsigned char);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0);
 		Dout->table[tbl] = Tout;
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
-			GMT_memset (nan_flag, Din->n_columns, GMT_LONG);
+			GMT_memset (nan_flag, Din->n_columns, unsigned char);
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (GMT_is_dnan (S->coord[col][row])) nan_flag[col] = TRUE;
 			if (spatial) {	/* Need distance for spatial interpolation */
@@ -321,9 +326,9 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else if (Ctrl->N.active) {	/* Get relevant t_out segment */
 				low_t  = MIN (S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
 				high_t = MAX (S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
-				for (i = m = 0; i < m_supplied; i++) {
-					if (t_supplied_out[i] < low_t || t_supplied_out[i] > high_t) continue;
-					t_out[m++] = t_supplied_out[i];
+				for (row = m = 0; row < m_supplied; row++) {
+					if (t_supplied_out[row] < low_t || t_supplied_out[row] > high_t) continue;
+					t_out[m++] = t_supplied_out[row];
 				}
 				if (m == 0) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Warning: No output points for range %g to %g\n", S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
@@ -347,20 +352,20 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				m = m_alloc = lrint (fabs((last_t - Ctrl->S.start) / Ctrl->I.inc)) + 1;
 				t_out = GMT_memory (GMT, t_out, m_alloc, double);
 				t_out[0] = Ctrl->S.start;
-				i = 1;
+				row = 1;
 				if (Ctrl->I.inc > 0.0) {
-					while (i < m && (tt = Ctrl->S.start + i * Ctrl->I.inc) <= last_t) {
-						t_out[i] = tt;
-						i++;
+					while (row < m && (tt = Ctrl->S.start + row * Ctrl->I.inc) <= last_t) {
+						t_out[row] = tt;
+						row++;
 					}
 				}
 				else {
-					while (i < m && (tt = Ctrl->S.start + i * Ctrl->I.inc) >= last_t) {
-						t_out[i] = tt;
-						i++;
+					while (row < m && (tt = Ctrl->S.start + row * Ctrl->I.inc) >= last_t) {
+						t_out[row] = tt;
+						row++;
 					}
 				}
-				m = i;
+				m = row;
 				if (fabs (t_out[m-1]-last_t) < GMT_SMALL) t_out[m-1] = last_t;	/* Fix roundoff */
 			}
 			Sout = Tout->segment[seg];	/* Current output segment */
@@ -374,31 +379,31 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (S->header) Sout->header = strdup (S->header);	/* Duplicate header */
 			Sout->n_rows = m;
 				
-			for (j = 0; m && j < Din->n_columns; j++) {
+			for (col = 0; m && col < Din->n_columns; col++) {
 
-				if (j == Ctrl->T.col && !spatial) continue;	/* Skip the time column */
-				if (spatial && j <= GMT_Y) continue;		/* Skip the lon,lat columns */
+				if (col == Ctrl->T.col && !spatial) continue;	/* Skip the time column */
+				if (spatial && col <= GMT_Y) continue;		/* Skip the lon,lat columns */
 				
-				if (nan_flag[j] && !GMT->current.setting.io_nan_records) {	/* NaN's present, need "clean" time and data columns */
+				if (nan_flag[col] && !GMT->current.setting.io_nan_records) {	/* NaN's present, need "clean" time and data columns */
 
 					ttime = GMT_memory (GMT, NULL, S->n_rows, double);
 					data = GMT_memory (GMT, NULL, S->n_rows, double);
-					for (i = k = 0; i < S->n_rows; i++) {
-						if (GMT_is_dnan (S->coord[j][i])) continue;
-						ttime[k] = (spatial) ? dist_in[i] : S->coord[Ctrl->T.col][i];
-						data[k++] = S->coord[j][i];
+					for (row = k = 0; row < S->n_rows; row++) {
+						if (GMT_is_dnan (S->coord[col][row])) continue;
+						ttime[k] = (spatial) ? dist_in[row] : S->coord[Ctrl->T.col][row];
+						data[k++] = S->coord[col][row];
 					}
-					result = GMT_intpol (GMT, ttime, data, k, m, t_out, Sout->coord[j], Ctrl->F.mode);
+					result = GMT_intpol (GMT, ttime, data, k, m, t_out, Sout->coord[col], Ctrl->F.mode);
 					GMT_free (GMT, ttime);
 					GMT_free (GMT, data);
 				}
 				else {
 					ttime = (spatial) ? dist_in : S->coord[Ctrl->T.col];
-					result = GMT_intpol (GMT, ttime, S->coord[j], S->n_rows, m, t_out, Sout->coord[j], Ctrl->F.mode);
+					result = GMT_intpol (GMT, ttime, S->coord[col], S->n_rows, m, t_out, Sout->coord[col], Ctrl->F.mode);
 				}
 
 				if (result != GMT_OK) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error from GMT_intpol near row %ld!\n", rows+result+1);
+					GMT_report (GMT, GMT_MSG_FATAL, "Error from GMT_intpol near row %ld!\n", result+1);
 					return (result);
 				}
 			}

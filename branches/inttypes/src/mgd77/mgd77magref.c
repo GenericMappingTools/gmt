@@ -397,8 +397,10 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 
 GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, s, nval = 0, nfval = 0, error = 0, t_col = 3, n_out = 0, cm4_igrf_T = FALSE;
-	GMT_LONG lval = 0, lfval = 0, n_field_components, n_alloc = 0, need = 0, tbl;
+	GMT_LONG j, s, nval = 0, nfval = 0, error = 0, t_col = 3, n_out = 0, cm4_igrf_T = FALSE;
+	GMT_LONG lval = 0, lfval = 0, n_field_components, tbl;
+	
+	size_t i, need = 0, n_alloc = 0;
 
 	double the_altitude, the_time, *time_array = NULL, *alt_array = NULL, *time_years = NULL, IGRF[7], out[GMT_MAX_COLUMNS];
 	double *igrf_xyz = NULL;	/* Temporary storage for the joint_IGRF_CM4 case */

@@ -67,8 +67,9 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 	 * NOTE: All indeces returned are C (0->) adjusted from FORTRAN (1->).
 	 */
 
-	GMT_LONG k, nrow = TRI_NROW, lnew, ierror, n_alloc;
+	GMT_LONG k, nrow = TRI_NROW, lnew, ierror;
 	GMT_LONG *iwk = NULL, *list = NULL, *lptr = NULL, *lend = NULL;
+	size_t n_alloc;
 	double *ds = NULL;
 	
 	ds = GMT_memory (C, NULL, n, double);

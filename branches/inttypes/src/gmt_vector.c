@@ -290,12 +290,14 @@ void GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, GMT_LONG n_in, GMT_L
  *					multiple systems with same a
  */
 	static GMT_LONG l1;
-	GMT_LONG *line = NULL, *isub = NULL, i = 0, j, k, l, j2, n, nstore, iet, ieb, n_alloc = 0;
+	GMT_LONG *line = NULL, i = 0, j, k, l, j2;
+	GMT_LONG n = n_in, *isub = NULL;
+	GMT_LONG iet, ieb, nstore;
+	size_t n_alloc = 0;
 	double big, testa, b, sum;
 
 	iet = 0;  /* initial error flags, one for triagularization*/
 	ieb = 0;  /* one for backsolving */
-	n = n_in;
 	nstore = nstore_in;
 	GMT_malloc2 (C, line, isub, n, &n_alloc, GMT_LONG);
 
@@ -905,7 +907,7 @@ void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a,
 	if (degrees) *theta *= R2D;
 }
 
-GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GMT_LONG n, double step, GMT_LONG mode)
+uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, uint64_t n, double step, GMT_LONG mode)
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
 	 * auxiliary points if the great circle distance between two given points exceeds
@@ -916,7 +918,9 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 	 * Returns the new number of points (original plus auxiliary).
 	 */
 
-	GMT_LONG i, j, k = 1, n_tmp, n_step = 0, n_alloc = 0, meridian;
+	GMT_LONG k = 1, n_step = 0, meridian;
+	size_t n_alloc = 0;
+	uint64_t i, j, n_tmp;
 	double *lon_tmp = NULL, *lat_tmp = NULL;
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
@@ -1008,7 +1012,8 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 		n_tmp++;
 		GMT_cpy3v (a, b);
 	}
-	GMT_malloc2 (C, lon_tmp, lat_tmp, 0, &n_tmp, double);
+	n_alloc = n_tmp;
+	GMT_malloc2 (C, lon_tmp, lat_tmp, 0, &n_alloc, double);
 
 	/* Destroy old alocated memory and put the new none in place */
 	GMT_free (C, lon);
@@ -1018,7 +1023,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 	return (n_tmp);
 }
 
-GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a_y, GMT_LONG n, double step, GMT_LONG mode)
+uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a_y, uint64_t n, double step, GMT_LONG mode)
 {
 	/* Takes pointers to a list of <n> x/y pairs (in user units) and adds
 	 * auxiliary points if the distance between two given points exceeds
@@ -1029,7 +1034,9 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 	 * Returns the new number of points (original plus auxiliary).
 	 */
 
-	GMT_LONG i, j, k = 1, n_tmp, n_step = 0, n_alloc = 0;
+	GMT_LONG k = 1, n_step = 0;
+	size_t n_alloc = 0;
+	uint64_t i, j, n_tmp;
 	double *x_tmp = NULL, *y_tmp = NULL, *x = NULL, *y = NULL, c;
 
 	x = *a_x;	y = *a_y;
@@ -1090,7 +1097,8 @@ GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 		if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 		x_tmp[n_tmp] = x[i];	y_tmp[n_tmp] = y[i];	n_tmp++;
 	}
-	GMT_malloc2 (C, x_tmp, y_tmp, 0, &n_tmp, double);
+	n_alloc = n_tmp;
+	GMT_malloc2 (C, x_tmp, y_tmp, 0, &n_alloc, double);
 
 	/* Destroy old alocated memory and put the knew none in place */
 	GMT_free (C, x);	GMT_free (C, y);

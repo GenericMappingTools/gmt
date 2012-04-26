@@ -1285,13 +1285,13 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (!Ctrl->E.active) {	/* Since -E out was handled separately by do_spectrum */
-
+		uint64_t ij;
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "inverse FFT...");
 
 		GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);
 
 		Ctrl->S.scale *= (2.0 / Out->header->size);
-		for (i = 0; i < Out->header->size; i++) Out->data[i] *= (float)Ctrl->S.scale;
+		for (ij = 0; ij < Out->header->size; ij++) Out->data[ij] *= (float)Ctrl->S.scale;
 
 		/* The data are in the middle of the padded array */
 

@@ -177,7 +177,8 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the grdcut main code ----------------------------*/
 
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
-		GMT_LONG i0, i1, j0, j1, j, ij;
+		GMT_LONG i0, i1, j0, j1, j;
+		uint64_t ij;
 		
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get entire grid */

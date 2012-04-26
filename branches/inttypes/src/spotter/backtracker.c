@@ -377,6 +377,8 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG i, j, k;			/* Misc. counters */
 	GMT_LONG make_path = FALSE;		/* TRUE means create continuous path, FALSE works on discrete points */
 	GMT_LONG spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
+	
+	uint64_t row;
 
 	double *c = NULL;		/* Array of track chunks returned by libeuler routines */
 	double lon, lat;		/* Seamounts location in decimal degrees */
@@ -436,7 +438,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);
 		}
 		H = F->table[0]->segment[0];	/* Only one table with one segment for histories */
-		for (j = 0; j < H->n_rows; j++) H->coord[GMT_Y][j] = GMT_lat_swap (GMT, H->coord[GMT_Y][j], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+		for (row = 0; row < H->n_rows; row++) H->coord[GMT_Y][row] = GMT_lat_swap (GMT, H->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	}
 
 	n_points = n_segments = 0;

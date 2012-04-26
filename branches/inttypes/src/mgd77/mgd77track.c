@@ -527,9 +527,11 @@ extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal
 
 GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG rec, first_rec, last_rec, n_alloc_c = GMT_SMALL_CHUNK, i, n_id = 0, mrk = 0, dist_flag = 2, use, n_paths;
+	GMT_LONG rec, first_rec, last_rec, i, n_id = 0, mrk = 0, dist_flag = 2, use, n_paths;
 	GMT_LONG this_julian = 0, last_julian, argno, n_cruises = 0, error = FALSE, first, form, both = FALSE;
 	GMT_LONG annot_tick[2] = {0, 0}, draw_tick[2] = {0, 0};
+	
+	size_t n_alloc_c = GMT_SMALL_CHUNK;
 	
        	char label[GMT_TEXT_LEN256], date[GMT_TEXT_LEN64], clock[GMT_TEXT_LEN64];
 	char name[GMT_TEXT_LEN64], **list = NULL;
@@ -689,7 +691,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						strcpy (cruise_id[n_id].text, name);
 						n_id++;
 						if (n_id == n_alloc_c) {
-							GMT_LONG old_n_alloc = n_alloc_c;
+							size_t old_n_alloc = n_alloc_c;
 							n_alloc_c <<= 1;
 							cruise_id = GMT_memory (GMT, cruise_id, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);
 							GMT_memset (&(cruise_id[old_n_alloc]), n_alloc_c - old_n_alloc,  struct MGD77TRACK_LEG_ANNOT);	/* Set to NULL/0 */

@@ -33,7 +33,8 @@ EXTERN_MSC GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void
 
 int main (int argc, char *argv[]) {
 
-	GMT_LONG status = 0, in_ID, out_ID, row, col, ij;
+	GMT_LONG status = 0, in_ID, out_ID, col;
+	uint64_t row, ij;
 	struct GMTAPI_CTRL *API = NULL;			/* GMT API control structure */
 	float x[4] = {1.0, 2.0, 3.0, 4.0}, y[4] = {0.5, 1.5, 2.5, 3.5}, z[4] = {3.3f, 8.1f, 2.9f, 4.4f};
 	char i_string[GMTAPI_STRLEN], o_string[GMTAPI_STRLEN], buffer[GMT_BUFSIZ];
