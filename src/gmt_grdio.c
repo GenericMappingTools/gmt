@@ -588,11 +588,11 @@ GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code)
 	return (id);
 }
 
-void GMT_grd_do_scaling (struct GMT_CTRL *C, float *grid, GMT_LONG nm, double scale, double offset)
+void GMT_grd_do_scaling (struct GMT_CTRL *C, float *grid, uint64_t nm, double scale, double offset)
 {
 	/* Routine that scales and offsets the data if specified.
 	 * Note: The loop includes the pad which we also want scaled as well. */
-	GMT_LONG i;
+	uint64_t i;
 
 	if (GMT_is_dnan (scale) || GMT_is_dnan (offset)) return;	/* Sanity check */
 	if (scale == 1.0 && offset == 0.0) return;			/* No work needed */
@@ -1030,7 +1030,8 @@ void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *G, double shift)
 	/* Rotate geographical, global grid in e-w direction
 	 * This function will shift a grid by shift degrees */
 
-	GMT_LONG col, row, k, ij, n_shift, width, n_warn = 0;
+	GMT_LONG col, row, k, n_shift, width, n_warn = 0;
+	uint64_t ij;
 	float *tmp = NULL;
 
 	n_shift = lrint (shift * G->header->r_inc[GMT_X]);
@@ -1330,9 +1331,10 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	 * if we are dealing with standard 72 or 80 img latitude; else it must be specified.
 	 */
 
-	GMT_LONG min, i, j, k, ij, first_i, n_skip, n_cols, status;
+	GMT_LONG min, i, j, k, first_i, n_skip, n_cols, status;
 	int16_t *i2 = NULL;
 	uint16_t *u2;
+	uint64_t ij;
 	char file[GMT_BUFSIZ];
 	struct GMT_STAT buf;
 	FILE *fp = NULL;
@@ -1461,7 +1463,7 @@ void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G)
 	 * the array is not reset and should not be addressed.
 	 * If pad is zero then we do nothing.
 	 */
-	GMT_LONG row, ijp, ij0;
+	uint64_t row, ijp, ij0;
 
 	if (!GMT_grd_pad_status (C, G->header, NULL)) return;	/* No pad so nothing to do */
 	/* Here, G has a pad which we need to eliminate */
@@ -1478,7 +1480,8 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG *pad)
 	 * We check that the grid size can handle this and allocate more space if needed.
 	 * If pad matches the grid's pad then we do nothing.
 	 */
-	GMT_LONG row, ijp, ij0, size;
+	uint64_t ijp, ij0, size;
+	GMT_LONG row;
 	struct GRD_HEADER *h = NULL;
 
 	if (GMT_grd_pad_status (C, G->header, pad)) return;	/* Already padded as requested so nothing to do */
@@ -1505,7 +1508,8 @@ void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G)
 {	/* Sets all boundary row/col nodes to zero and sets
 	 * the header->BC to GMT_IS_NOTSET.
 	 */
-	GMT_LONG row, kf, kl, k, nx1;
+	GMT_LONG row, k, nx1;
+	uint64_t kf, kl;
 	
 	if (!GMT_grd_pad_status (C, G->header, NULL)) return;	/* No pad so nothing to do */
 	if (G->header->BC[XLO] == GMT_BC_IS_NOTSET && G->header->BC[XHI] == GMT_BC_IS_NOTSET && G->header->BC[YLO] == GMT_BC_IS_NOTSET && G->header->BC[YHI] == GMT_BC_IS_NOTSET) return;	/* No BCs set so nothing to do */			/* No pad so nothing to do */
@@ -1631,7 +1635,8 @@ GMT_LONG GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *header, GMT_L
 
 void GMT_grd_zminmax (struct GMT_CTRL *C, struct GRD_HEADER *h, float *z)
 {	/* Reset the xmin/zmax values in the header */
-	GMT_LONG row, col, node, n = 0;
+	GMT_LONG row, col;
+	uint64_t node, n = 0;
 	
 	h->z_min = DBL_MAX;	h->z_max = -DBL_MAX;
 	for (row = 0; row < h->ny; row++) {

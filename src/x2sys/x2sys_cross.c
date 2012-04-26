@@ -258,7 +258,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_output;			/* Number of columns on output */
 	GMT_LONG n_pairs = 0;			/* Number of acceptable combinations */
 	GMT_LONG A, B, i, j, col, k, start, n_bad;	/* Misc. counters and local variables */
-	GMT_LONG end, first, n_ok, n_alloc = 1;
+	GMT_LONG end, first, n_ok;
 	GMT_LONG n_data_col, left[2], t_left;
 	GMT_LONG n_left, right[2], t_right, n_right;
 	GMT_LONG n_duplicates, n_errors;
@@ -277,6 +277,8 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG *duplicate = NULL;		/* Array, TRUE for any cruise that is already listed */
 	GMT_LONG *ok = NULL;
 	GMT_LONG cmdline_files = FALSE;		/* TRUE if files where given directly on the command line */
+	
+	size_t n_alloc = 1;
 
 	double dt;				/* Time between crossover and previous node */
 	double dist_x[2];			/* Distance(s) along track at the crossover point */
@@ -388,7 +390,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			pair[n_pairs].id2 = strdup (name2);
 			n_pairs++;
 			if (n_pairs == n_alloc) {
-				GMT_LONG old_n_alloc = n_alloc;
+				size_t old_n_alloc = n_alloc;
 				add_chunk *= 2;
 				n_alloc += add_chunk;
 				pair = GMT_memory (GMT, pair, n_alloc, struct PAIR);

@@ -48,9 +48,27 @@
 #define D2R (M_PI/180.0)
 #define F (D2R * 0.5 * 1.0e-6)
 #define FALSE 0
-#define VNULL NULL
 
-void *get_memory (void *prev_addr, int n, size_t size, char *progname);
+void *get_memory (void *prev_addr, int n, size_t size, char *progname)
+{
+        void *tmp;
+
+	if (n == 0) return(NULL); /* Take care of n = 0 */
+
+	if (prev_addr) {
+		if ((tmp = realloc ( prev_addr, (size_t) (n * size))) == NULL) {
+			fprintf (stderr, "Error: %s could not reallocate more memory, n = %d\n", progname, n);
+			exit (EXIT_FAILURE);
+		}
+	}
+	else {
+		if ((tmp = calloc ((size_t) n, (size_t) size)) == NULL) {
+			fprintf (stderr, "Error: %s could not allocate memory, n = %d\n", progname, n);
+			exit (EXIT_FAILURE);
+		}
+	}
+	return (tmp);
+}
 
 int main (int argc, char **argv)
 {
@@ -83,9 +101,9 @@ int main (int argc, char **argv)
 	
 	n_id = n_out = n_tot_in = n_tot_out = 0;
 	
-	x = get_memory (VNULL, 1, sizeof (int), "gshhs_dp");
-	y = get_memory (VNULL, 1, sizeof (int), "gshhs_dp");
-	index = get_memory (VNULL, 1, sizeof (int), "gshhs_dp");
+	x = get_memory (NULL, 1, sizeof (int), "gshhs_dp");
+	y = get_memory (NULL, 1, sizeof (int), "gshhs_dp");
+	index = get_memory (NULL, 1, sizeof (int), "gshhs_dp");
 	
 	n_read = fread (&h, sizeof (struct GSHHS), (size_t)1, fp_in);
 	version = (h.flag >> 8) & 255;
@@ -198,8 +216,8 @@ int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band
 
         /* more complex case. initialize stack */
 
- 	sig_start = get_memory (VNULL, n_source, sizeof (int), "Douglas_Peucker_i");
-	sig_end   = get_memory (VNULL, n_source, sizeof (int), "Douglas_Peucker_i");
+ 	sig_start = get_memory (NULL, n_source, sizeof (int), "Douglas_Peucker_i");
+	sig_end   = get_memory (NULL, n_source, sizeof (int), "Douglas_Peucker_i");
 	
 	band *= 360.0 / (2.0 * M_PI * 6371.007181);	/* Now in degrees */
 	band_sqr = sqr(band);
@@ -303,25 +321,4 @@ int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band
 	free (sig_end);
 	
         return (n_dest);
-}
-
-void *get_memory (void *prev_addr, int n, size_t size, char *progname)
-{
-        void *tmp;
-
-	if (n == 0) return(VNULL); /* Take care of n = 0 */
-
-	if (prev_addr) {
-		if ((tmp = realloc ( prev_addr, (size_t) (n * size))) == VNULL) {
-			fprintf (stderr, "Error: %s could not reallocate more memory, n = %d\n", progname, n);
-			exit (EXIT_FAILURE);
-		}
-	}
-	else {
-		if ((tmp = calloc ((size_t) n, (size_t) size)) == VNULL) {
-			fprintf (stderr, "Error: %s could not allocate memory, n = %d\n", progname, n);
-			exit (EXIT_FAILURE);
-		}
-	}
-	return (tmp);
 }

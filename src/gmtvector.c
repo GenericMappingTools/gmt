@@ -354,7 +354,8 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, GMT_LONG cartesia
 {
 	/* Determines the mean vector M and the covariance matrix C */
 	
-	GMT_LONG i, j, k, p, tbl, seg, row, nv, n, nrots;
+	GMT_LONG i, j, k, p, tbl, seg, nv, nrots;
+	uint64_t row, n;
 	double lambda[3], V[9], work1[3], work2[3], lon, lat, lon2, lat2, scl, L, Y;
 	double *P[3], X[3], B[3], C[9];
 	struct GMT_LINE_SEGMENT *S = NULL;
@@ -434,7 +435,9 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, GMT_LONG cartesia
 
 GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG tbl, seg, row, error = 0, k, n, nv, n_out, add = 0, single = FALSE;
+	GMT_LONG tbl, seg, error = 0, k, n, nv, n_out, add = 0, single = FALSE;
+	
+	uint64_t row;
 
 	double out[3], vector_1[3], vector_2[3], vector_3[3], R[3][3], E[3];
 

@@ -288,7 +288,9 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 
 GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, col_0, row_0, d_col, d_row, k, ij, justify, error = FALSE;
+	GMT_LONG row, col, col_0, row_0, d_col, d_row, k, justify, error = FALSE;
+	
+	uint64_t ij;
 
 	double tmp, x, y, plot_x, plot_y, x_off, y_off, f;
 	double x2, y2, wesn[4], vec_length, vec_azim, scaled_vec_length, c, s, dim[PSL_MAX_DIMS];

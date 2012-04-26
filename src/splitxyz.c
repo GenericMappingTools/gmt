@@ -297,10 +297,13 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 
 GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, tbl, seg, begin, row, col, end, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
-	GMT_LONG k, n, output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_columns = 0;
-	GMT_LONG error = FALSE, ok, io_mode = 0, nprofiles = 0, *rec = NULL, first = TRUE;
-	GMT_LONG n_total = 0, n_out = 0, seg2 = 0, n_alloc_seg = 0, n_alloc = 0, dim[4] = {1, 0, 0, 0};
+	GMT_LONG j, tbl, seg, col, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
+	GMT_LONG output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_columns = 0;
+	GMT_LONG error = FALSE, ok, io_mode = 0, nprofiles = 0, first = TRUE;
+	GMT_LONG n_out = 0, seg2 = 0, dim[4] = {1, 0, 0, 0};
+	
+	size_t n_alloc_seg = 0, n_alloc = 0;
+	uint64_t i, k, n, row, begin, end, n_total = 0, *rec = NULL;
 
 	double dy, dx, last_c, last_s, csum, ssum, this_c, this_s, dotprod;
 	double mean_azim, *fwork = NULL;
@@ -511,7 +514,7 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							}
 							if (seg2 == n_alloc_seg) {
 								n_alloc_seg = (n_alloc_seg == 0) ? D[GMT_IN]->n_segments : n_alloc_seg * 2;
-								rec = GMT_memory (GMT, rec, n_alloc_seg, GMT_LONG);
+								rec = GMT_memory (GMT, rec, n_alloc_seg, uint64_t);
 							}
 							rec[seg2++] = k;
 							n_total += n_out;

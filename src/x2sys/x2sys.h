@@ -158,7 +158,7 @@ struct X2SYS_INFO {
 	 				   and speed (c = Cartesian, e = m/s, k = km/hr, m = miles/hr, n = knots) */
 	char ms_flag;			/* Multi-segment header flag */
 	char suffix[16];		/* Suffix for these data files */
-	char fflags[GMT_BUFSIZ];		/* Text copy of selected columns */
+	char fflags[GMT_BUFSIZ];	/* Text copy of selected columns */
 	char path[GMT_BUFSIZ];		/* Full path to current data file */
 	struct X2SYS_DATA_INFO *info;	/* Array of info for each data field */
 };
@@ -181,7 +181,7 @@ struct X2SYS_DATA_INFO {
 struct X2SYS_FILE_INFO {
 	/* Information for a particular data file */
 	GMT_LONG year;		/* Starting year for this leg */
-	GMT_LONG n_rows;	/* Number of rows */
+	uint64_t n_rows;	/* Number of rows */
 	GMT_LONG n_segments;	/* Number of segments in this file */
 	GMT_LONG *ms_rec;	/* Pointer to array with start record for each segment */
 	char name[32];		/* Name of cruise or agency */
@@ -260,11 +260,11 @@ EXTERN_MSC GMT_LONG x2sys_access (struct GMT_CTRL *C, char *fname, GMT_LONG mode
 EXTERN_MSC void x2sys_path (struct GMT_CTRL *C, char *fname, char *path);
 
 EXTERN_MSC GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G);
-EXTERN_MSC GMT_LONG x2sys_read_file        (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
-EXTERN_MSC GMT_LONG x2sys_read_gmtfile     (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
-EXTERN_MSC GMT_LONG x2sys_read_mgd77file   (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
-EXTERN_MSC GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
-EXTERN_MSC GMT_LONG x2sys_read_ncfile      (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
+EXTERN_MSC GMT_LONG x2sys_read_file        (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
+EXTERN_MSC GMT_LONG x2sys_read_gmtfile     (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
+EXTERN_MSC GMT_LONG x2sys_read_mgd77file   (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
+EXTERN_MSC GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
+EXTERN_MSC GMT_LONG x2sys_read_ncfile      (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
 EXTERN_MSC GMT_LONG x2sys_n_data_cols (struct GMT_CTRL *C, struct X2SYS_INFO *s);
 EXTERN_MSC GMT_LONG x2sys_read_list (struct GMT_CTRL *C, char *file, char ***list, GMT_LONG *n);
 EXTERN_MSC GMT_LONG x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, double **weights, GMT_LONG *nf);

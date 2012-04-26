@@ -91,8 +91,8 @@ EXTERN_MSC GMT_LONG gmt_load_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_A
 
 /* Local variables to this file */
 
-GMT_LONG GMT_n_annotations[4] = {0, 0, 0, 0};
-GMT_LONG GMT_alloc_annotations[4] = {0, 0, 0, 0};
+size_t GMT_n_annotations[4] = {0, 0, 0, 0};
+size_t GMT_alloc_annotations[4] = {0, 0, 0, 0};
 double *GMT_x_annotation[4], *GMT_y_annotation[4];
 
 /* Get bitmapped 600 dpi GMT glyph for timestamp.  The glyph is a 90 x 220 pixel 1-bit image
@@ -1300,7 +1300,7 @@ void gmt_circle_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, 
 
 void gmt_theta_r_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
-	GMT_LONG i, nr;
+	uint64_t i, nr;
 	double a, da;
 	double xx[2], yy[2];
 
@@ -2243,7 +2243,7 @@ void gmt_timestamp (struct GMT_CTRL *C, struct PSL_CTRL *P, double x, double y, 
 	/* Plot time string in format defined by format_time_logo */
 
 	right_now = time ((time_t *)0);
-	strftime (text, (size_t)sizeof(text), C->current.setting.format_time_logo, localtime (&right_now));
+	strftime (text, sizeof(text), C->current.setting.format_time_logo, localtime (&right_now));
 	sprintf (label, "  %s  ", text);
 
 	PSL_command (P, "%% Begin GMT time-stamp\nV\n");
@@ -2891,8 +2891,10 @@ void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, 
 
 void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, GMT_LONG outline)
 {
-	GMT_LONG n = 0, n_alloc = 0, na, i, flush = FALSE, this_outline = FALSE;
+	GMT_LONG na, i, flush = FALSE, this_outline = FALSE;
 	GMT_LONG level = 0, found_elseif = FALSE, skip[11];
+	GMT_LONG n = 0;
+	size_t n_alloc = 0;
 	double x, y, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
 	char *c = NULL;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
@@ -3172,7 +3174,7 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 
 void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G)
 {
-	GMT_LONG i, j, *pen = NULL;
+	GMT_LONG row;
 	double size[1] = {0.025};
 
 	/* If called we simply draw the helper lines or points to assist in debug */
@@ -3180,14 +3182,15 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 	GMT_setpen (C, &C->current.setting.map_default_pen);
 	if (G->fixed) {	/* Place a small open circle at each fixed point */
 		PSL_setfill (P, C->session.no_rgb, PSL_OUTLINE);
-		for (i = 0; i < G->f_n; i++) 
-			PSL_plotsymbol (P, G->f_xy[0][i], G->f_xy[1][i], size, PSL_CIRCLE);
+		for (row = 0; row < G->f_n; row++) 
+			PSL_plotsymbol (P, G->f_xy[0][row], G->f_xy[1][row], size, PSL_CIRCLE);
 	}
 	else if (G->crossing) {	/* Draw a thin line */
-		for (j = 0; j < G->xp->n_segments; j++) {
-			pen = GMT_memory (C, NULL, G->xp->segment[j]->n_rows, GMT_LONG);
-			for (i = 1, pen[0] = PSL_MOVE; i < G->xp->segment[j]->n_rows; i++) pen[i] = PSL_DRAW;
-			GMT_plot_line (C, G->xp->segment[j]->coord[GMT_X], G->xp->segment[j]->coord[GMT_Y], pen, G->xp->segment[j]->n_rows);
+		GMT_LONG seg, *pen = NULL;
+		for (seg = 0; seg < G->xp->n_segments; seg++) {
+			pen = GMT_memory (C, NULL, G->xp->segment[seg]->n_rows, GMT_LONG);
+			for (row = 1, pen[0] = PSL_MOVE; row < G->xp->segment[seg]->n_rows; row++) pen[row] = PSL_DRAW;
+			GMT_plot_line (C, G->xp->segment[seg]->coord[GMT_X], G->xp->segment[seg]->coord[GMT_Y], pen, G->xp->segment[seg]->n_rows);
 			GMT_free (C, pen);
 		}
 	}
@@ -3195,10 +3198,10 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 
 void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
 {
-	GMT_LONG i, k, *pen = NULL;
+	GMT_LONG seg, k, *pen = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
-	for (i = 0; i < G->n_segments; i++) {
-		L = G->segment[i];	/* Pointer to current segment */
+	for (seg = 0; seg < G->n_segments; seg++) {
+		L = G->segment[seg];	/* Pointer to current segment */
 		if (L->annot && mode == 1) continue; /* Annotated lines done with curved text routine */
 		GMT_setpen (C, &L->pen);
 		pen = GMT_memory (C, NULL, L->n, GMT_LONG);
@@ -3276,7 +3279,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 
 		if (mode == 0) {	/* Opaque so PSL_plottextclip is called for 1st time here */
 			/* Allocate temp space for everything that must be passed to PSL_plottextclip */
-			GMT_LONG n_alloc = 0;
+			size_t n_alloc = 0;
 			GMT_malloc3 (C, angle, xt, yt, m, &n_alloc, double);
 			txt = GMT_memory (C, NULL, m, char *);
 			for (i = m = 0; i < G->n_segments; i++) {
@@ -3304,7 +3307,8 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 
 void gmt_contlabel_clippath (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
 {
-	GMT_LONG i, k, m, nseg, just, form;
+	uint64_t i, k, m;
+	GMT_LONG nseg, just, form;
 	double *angle = NULL, *xt = NULL, *yt = NULL;
 	char **txt = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
@@ -3331,7 +3335,7 @@ void gmt_contlabel_clippath (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_
 		if (nseg == 1) G->box |= 8;	/* Special message to just repeate the labelline call */
 	}
 	else {				/* Save PS memory by doing it this way instead via PSL_plottextclip */
-		GMT_LONG n_alloc = 0;
+		size_t n_alloc = 0;
 		if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
 			just = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
 		else
@@ -3810,7 +3814,7 @@ void gmt_geo_polygon_segment (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT
 	 * Polar caps need special treatment in that we must add a detour to the pole.
 	 * That detour will not be drawn, only used for fill. */
 	
-	GMT_LONG n = S->n_rows;
+	uint64_t n = S->n_rows;
 	double *plon = S->coord[GMT_X], *plat = S->coord[GMT_Y];
 	
 	if (add_pole) {	/* Must detour to the N or S pole, then resample the path */
@@ -3951,7 +3955,8 @@ void GMT_geo_ellipse (struct GMT_CTRL *C, double lon, double lat, double major, 
 GMT_LONG GMT_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, GMT_LONG longway, double **xp, double **yp)
 { /* Given vectors A and B, return great circle path sampled every step.  Shorest path is selected unless longway is TRUE */
 	/* Determine unit vector pole of great circle */
-	GMT_LONG k, n, n_alloc = 0;
+	size_t n_alloc = 0;
+	uint64_t k, n;
 	double P[3], X[3], R[3][3], R0[3][3], c, w, *xx = NULL, *yy = NULL;
 	
 	GMT_cross3v (C, A, B, P);	/* Parallel to rotation pole */
@@ -3962,7 +3967,7 @@ GMT_LONG GMT_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, G
 		P[0] = -P[0], P[1] = -P[1], P[2] = -P[2];
 	}
 	if (GMT_IS_ZERO (step)) step = C->current.map.path_step;	/* Use default map-step if given as 0 */
-	n = (GMT_LONG)ceil (c / step) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
+	n = (uint64_t)ceil (c / step) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * c / (n - 1);	/* Adjust step for exact fit, convert to radians */
 	GMT_malloc2 (C, xx, yy, n, &n_alloc, double);	/* Allocate space for arrays */
 	gmt_init_rot_matrix (R0, P);			/* Get partial rotation matrix since no actual angle is applied yet */
@@ -3998,6 +4003,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 	   arrow heads we also shorten the vector arc so that unfilled vector heads are possible. */
 
 	GMT_LONG n1, n2, n, longway = FALSE, add, heads, side, justify;
+	size_t n_alloc;
 	double lon[2], lat[2], tlon, tlat, mlon, mlat, r, r0, A[3], B[3], P[3], Ax[3], Bx[3];
 	double x, y, dr[2] = {0.0, 0.0}, az[2] = {0.0, 0.0}, oaz[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, scl[2];
 	double da = 0.0, dshift, s, olon[2], olat[2], head_length, arc_width;
@@ -4133,8 +4139,8 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 			GMT_geo_to_cart (C, mlat, mlon, P, TRUE);	/* End at (adjusted) mid point instead */
 		n2 = GMT_get_gcarc (C, A, P, 0.0, FALSE, &xp2, &yp2);	/* Compute great circle arc from A to P */
 		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
-		n = n1 + n2 + add;
-		GMT_malloc2 (C, xp, yp, 0, &n, double);	/* Allocate space for total path */
+		n_alloc = n = n1 + n2 + add;
+		GMT_malloc2 (C, xp, yp, 0, &n_alloc, double);	/* Allocate space for total path */
 		GMT_memcpy (&xp[n1], xp2, n2, double);
 		GMT_memcpy (&yp[n1], yp2, n2, double);
 		if (add) {	/* Mid point of arrow */
@@ -4176,8 +4182,8 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 			GMT_geo_to_cart (C, mlat, mlon, P, TRUE);	/* End at (adjusted) mid point instead */
 		n2 = GMT_get_gcarc (C, B, P, 0.0, FALSE, &xp2, &yp2);	/* Compute great circle arc from B to P */
 		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
-		n = n1 + n2 + add;
-		GMT_malloc2 (C, xp, yp, 0, &n, double);	/* Allocate space for total path */
+		n_alloc = n = n1 + n2 + add;
+		GMT_malloc2 (C, xp, yp, 0, &n_alloc, double);	/* Allocate space for total path */
 		GMT_memcpy (&xp[n1], xp2, n2, double);
 		GMT_memcpy (&yp[n1], yp2, n2, double);
 		if (add) {	/* Mid point of arrow */
@@ -4262,7 +4268,7 @@ void GMT_geo_rectangle (struct GMT_CTRL *C, double lon, double lat, double width
 
 void GMT_draw_front (struct GMT_CTRL *C, double x[], double y[], GMT_LONG n, struct GMT_FRONTLINE *f)
 {
-	GMT_LONG i, ngap, skip, tmp_join = 0, tmp_limit = 0;
+	GMT_LONG ngap, skip, tmp_join = 0, tmp_limit = 0, i;
 	double *s = NULL, xx[4], yy[4], dist = 0.0, w, frac, dx, dy, angle, dir1, dir2;
 	double gap, x0, y0, xp, yp, len2, len3, cosa, sina, sa, ca, offx, offy, dim[3];
 	struct PSL_CTRL *P = C->PSL;

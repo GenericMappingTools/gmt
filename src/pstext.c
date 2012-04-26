@@ -522,9 +522,11 @@ GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG
 GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pstext task */
 
-	GMT_LONG i, nscan, length = 0, n_paragraphs = 0, n_add, fmode, n_alloc = 0, m = 0;
+	GMT_LONG i, nscan, length = 0, n_paragraphs = 0, n_add, fmode, m = 0;
 	GMT_LONG n_read = 0, n_processed = 0, txt_alloc = 0, old_is_world, add, n_expected_cols;
 	GMT_LONG error = FALSE, master_record = FALSE, skip_text_records = FALSE, pos, text_col;
+	
+	size_t n_alloc = 0;
 
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
 	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;

@@ -70,9 +70,10 @@ struct TREND2D_DATA {
 	double	w;
 };
 
-GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, GMT_LONG *n_data, double *xmin, double *xmax, double *ymin, double *ymax, GMT_LONG weighted_input, double **work)
+GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, double *ymin, double *ymax, GMT_LONG weighted_input, double **work)
 {
-	GMT_LONG i, n_alloc = GMT_CHUNK;
+	uint64_t i;
+	size_t n_alloc = GMT_CHUNK;
 	double *in = NULL;
 
 	*data = GMT_memory (GMT, NULL, n_alloc, struct TREND2D_DATA);
@@ -132,9 +133,10 @@ void allocate_the_memory_2d (struct GMT_CTRL *GMT, GMT_LONG np, double **gtg, do
 	*w_model = GMT_memory (GMT, NULL, np, double);
 }
 
-void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, GMT_LONG n_data, char *output_choice, GMT_LONG n_outputs)
+void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, char *output_choice, GMT_LONG n_outputs)
 {
-	GMT_LONG i, j;
+	uint64_t i;
+	GMT_LONG j;
 	double out[6];
 
 	for (i = 0; i < n_data; i++) {
@@ -179,9 +181,9 @@ void free_the_memory_2d (struct GMT_CTRL *GMT, double *gtg, double *v, double *g
 	GMT_free (GMT, gtg);
 }
 
-void transform_x_2d (struct TREND2D_DATA *data, GMT_LONG n_data, double xmin, double xmax, double ymin, double ymax)
+void transform_x_2d (struct TREND2D_DATA *data, uint64_t n_data, double xmin, double xmax, double ymin, double ymax)
 {
-	GMT_LONG i;
+	uint64_t i;
 	double offsetx, scalex;
 	double offsety, scaley;
 
@@ -196,9 +198,9 @@ void transform_x_2d (struct TREND2D_DATA *data, GMT_LONG n_data, double xmin, do
 	}
 }
 
-void untransform_x_2d (struct TREND2D_DATA *data, GMT_LONG n_data, double xmin, double xmax, double ymin, double ymax)
+void untransform_x_2d (struct TREND2D_DATA *data, uint64_t n_data, double xmin, double xmax, double ymin, double ymax)
 {
-	GMT_LONG i;
+	uint64_t i;
 	double offsetx, scalex;
 	double offsety, scaley;
 
@@ -213,9 +215,9 @@ void untransform_x_2d (struct TREND2D_DATA *data, GMT_LONG n_data, double xmin, 
 	}
 }
 
-double get_chisq_2d (struct TREND2D_DATA *data, GMT_LONG n_data, GMT_LONG n_model)
+double get_chisq_2d (struct TREND2D_DATA *data, uint64_t n_data, GMT_LONG n_model)
 {
-	GMT_LONG i, nu;
+	uint64_t i, nu;
 	double chi = 0.0;
 
 	for (i = 0; i < n_data; i++) {	/* Weight is already squared  */
@@ -229,9 +231,9 @@ double get_chisq_2d (struct TREND2D_DATA *data, GMT_LONG n_data, GMT_LONG n_mode
 	return (chi);
 }
 
-void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, GMT_LONG n_data, double *work, double *scale)
+void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *work, double *scale)
 {
-	GMT_LONG i;
+	uint64_t i;
 	double k, ksq, rr;
 
 	/* First find median { fabs(data[].r) },
@@ -304,12 +306,13 @@ void load_g_row_2d (double x, double y, GMT_LONG n, double *gr)
 	}
 }
 
-void calc_m_and_r_2d (struct TREND2D_DATA *data, GMT_LONG n_data, double *model, GMT_LONG n_model, double *grow)
+void calc_m_and_r_2d (struct TREND2D_DATA *data, uint64_t n_data, double *model, GMT_LONG n_model, double *grow)
 {
 	/*	model[n_model] holds solved coefficients of m_type model.
 		grow[n_model] is a vector for a row of G matrix.  */
 
-	GMT_LONG i, j;
+	uint64_t i;
+	GMT_LONG j;
 	for (i = 0; i < n_data; i++) {
 		load_g_row_2d (data[i].x, data[i].y, n_model, grow);
 		data[i].m = 0.0;
@@ -325,10 +328,11 @@ void move_model_a_to_b_2d (double *model_a, double *model_b, GMT_LONG n_model, d
 	*chisq_b = *chisq_a;
 }
 
-void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, GMT_LONG n_data, double *gtg, double *gtd, double *grow, GMT_LONG n_model, GMT_LONG mp)
+void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, GMT_LONG n_model, GMT_LONG mp)
 {	/* mp is row dimension of gtg  */
 
-	GMT_LONG i, j, k;
+	uint64_t i;
+	GMT_LONG j, k;
 	double wz;
 
 	/* First zero the contents for summing */
@@ -516,7 +520,9 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 
 GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, n_model, significant, rank, np, n_data, error = FALSE;
+	GMT_LONG i, n_model, significant, rank, np, error = FALSE;
+	
+	uint64_t n_data;
 
 	double *gtg = NULL, *v = NULL, *gtd = NULL, *lambda = NULL, *workb = NULL;
 	double *workz = NULL, *c_model = NULL, *o_model = NULL, *w_model = NULL, *work = NULL;

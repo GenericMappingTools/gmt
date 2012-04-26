@@ -171,7 +171,9 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 
 GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
-	GMT_LONG error = 0, ij, row, col;
+	GMT_LONG error = 0, row, col;
+	
+	uint64_t ij;
 	
 	char format[GMT_BUFSIZ];
 	

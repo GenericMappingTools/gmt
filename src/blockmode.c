@@ -128,7 +128,7 @@ GMT_LONG GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double weighted_mode (struct BLK_DATA *d, double wsum, GMT_LONG n, GMT_LONG k)
+double weighted_mode (struct BLK_DATA *d, double wsum, uint64_t n, uint64_t k)
 {
 	/* Estimate mode by finding a maximum in the estimated
 	   pdf of weighted data.  Estimate the pdf as the finite
@@ -150,7 +150,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, GMT_LONG n, GMT_LONG k)
 	   I assumed n > 2 when I wrote this. [WHFS] */
 
 	double top, topj, topi, bottomj, bottomi, pj, pi;
-	GMT_LONG i = 0, j = n - 1, nh = n / 2;
+	int64_t i = 0, j = n - 1, nh = n / 2;
 
 	top = wsum;
 
@@ -187,9 +187,11 @@ double weighted_mode (struct BLK_DATA *d, double wsum, GMT_LONG n, GMT_LONG k)
 
 GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, mode_xy, col, row, w_col, n_pitched;
-	GMT_LONG node, first_in_cell, first_in_new_cell, n_lost, n_read;
-	GMT_LONG n_cells_filled, n_in_cell, n_alloc = 0, nz_alloc = 0, nz;
+	GMT_LONG error = FALSE, mode_xy, col, w_col;
+
+	uint64_t node, row, first_in_cell, first_in_new_cell, n_lost, n_read;
+	uint64_t n_cells_filled, n_in_cell, nz, n_pitched;
+	size_t n_alloc = 0, nz_alloc = 0;
 
 	double out[7], wesn[4], i_n_in_cell, weight, *in = NULL, *z_tmp = NULL;
 

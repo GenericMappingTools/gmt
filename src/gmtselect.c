@@ -409,11 +409,13 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 
 GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, k, err, n_minimum = 2, n_read = 0, n_pass = 0, r_mode;
+	GMT_LONG i, err, n_minimum = 2, n_read = 0, n_pass = 0, r_mode;
 	GMT_LONG n_fields, ind, bin, last_bin = -1, pt_cartesian = FALSE, inside;
-	GMT_LONG np[2] = {0, 0}, base = 3, wd[2] = {0, 0}, id, this_node, side, row, col;
+	GMT_LONG np[2] = {0, 0}, base = 3, wd[2] = {0, 0}, id, this_node, side, col;
 	GMT_LONG error = FALSE, need_header, shuffle, just_copy_record = FALSE;
 	GMT_LONG output_header = FALSE, do_project = FALSE, no_resample = FALSE;
+
+	uint64_t row, k;
 
 	double xx, yy, *in = NULL;
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
@@ -526,10 +528,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (i = 0; i < point->n_segments; i++) {
 			if (Cin->n_columns == 2) point->segment[i]->dist = Ctrl->C.dist;
 			if (do_project) {	/* Convert all the points using the map projection */
-				for (j = 0; j < point->segment[i]->n_rows; j++) {
-					GMT_geo_to_xy (GMT, point->segment[i]->coord[GMT_X][j], point->segment[i]->coord[GMT_Y][j], &xx, &yy);
-					point->segment[i]->coord[GMT_X][j] = xx;
-					point->segment[i]->coord[GMT_Y][j] = yy;
+				for (row = 0; row < point->segment[i]->n_rows; row++) {
+					GMT_geo_to_xy (GMT, point->segment[i]->coord[GMT_X][row], point->segment[i]->coord[GMT_Y][row], &xx, &yy);
+					point->segment[i]->coord[GMT_X][row] = xx;
+					point->segment[i]->coord[GMT_Y][row] = yy;
 				}
 				pt_cartesian = TRUE;	/* Well, now it is */
 			}
@@ -542,10 +544,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			data = GMT_memory (GMT, NULL, point->n_records, struct GMTSELECT_DATA);
 
 			for (i = k = 0; i < point->n_segments; i++) {
-				for (j = 0; j < point->segment[i]->n_rows; j++, k++) {
-					data[k].x = point->segment[i]->coord[GMT_X][j];
-					data[k].y = point->segment[i]->coord[GMT_Y][j];
-					data[k].d = (Ctrl->C.dist == 0.0) ? point->segment[i]->coord[GMT_Z][j] : Ctrl->C.dist;
+				for (row = 0; row < point->segment[i]->n_rows; row++, k++) {
+					data[k].x = point->segment[i]->coord[GMT_X][row];
+					data[k].y = point->segment[i]->coord[GMT_Y][row];
+					data[k].d = (Ctrl->C.dist == 0.0) ? point->segment[i]->coord[GMT_Z][row] : Ctrl->C.dist;
 				}
 			}
 			
@@ -553,10 +555,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			qsort (data, (size_t)point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
 			
 			for (i = k = 0; i < point->n_segments; i++) {	/* Put back the new order */
-				for (j = 0; j < point->segment[i]->n_rows; j++, k++) {
-					point->segment[i]->coord[GMT_X][j] = data[k].x;
-					point->segment[i]->coord[GMT_Y][j] = data[k].y;
-					if (Ctrl->C.dist == 0.0) point->segment[i]->coord[GMT_Z][j] = data[k].d ;
+				for (row = 0; row < point->segment[i]->n_rows; row++, k++) {
+					point->segment[i]->coord[GMT_X][row] = data[k].x;
+					point->segment[i]->coord[GMT_Y][row] = data[k].y;
+					if (Ctrl->C.dist == 0.0) point->segment[i]->coord[GMT_Z][row] = data[k].d ;
 				}
 			}
 			GMT_free (GMT, data);
@@ -575,10 +577,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (i = 0; i < line->n_segments; i++) {
 			if (Ctrl->L.dist > 0.0) line->segment[i]->dist = Ctrl->L.dist;	/* Only override when nonzero */
 			if (do_project) {	/* Convert all the line points using the map projection */
-				for (j = 0; j < line->segment[i]->n_rows; j++) {
-					GMT_geo_to_xy (GMT, line->segment[i]->coord[GMT_X][j], line->segment[i]->coord[GMT_Y][j], &xx, &yy);
-					line->segment[i]->coord[GMT_X][j] = xx;
-					line->segment[i]->coord[GMT_Y][j] = yy;
+				for (row = 0; row < line->segment[i]->n_rows; row++) {
+					GMT_geo_to_xy (GMT, line->segment[i]->coord[GMT_X][row], line->segment[i]->coord[GMT_Y][row], &xx, &yy);
+					line->segment[i]->coord[GMT_X][row] = xx;
+					line->segment[i]->coord[GMT_Y][row] = yy;
 				}
 			}
 		}
@@ -596,10 +598,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		pol = Fin->table[0];	/* Can only be one table since we read a single file */
 		if (do_project) {	/* Convert all the polygons points using the map projection */
 			for (i = 0; i < pol->n_segments; i++) {
-				for (j = 0; j < pol->segment[i]->n_rows; j++) {
-					GMT_geo_to_xy (GMT, pol->segment[i]->coord[GMT_X][j], pol->segment[i]->coord[GMT_Y][j], &xx, &yy);
-					pol->segment[i]->coord[GMT_X][j] = xx;
-					pol->segment[i]->coord[GMT_Y][j] = yy;
+				for (row = 0; row < pol->segment[i]->n_rows; row++) {
+					GMT_geo_to_xy (GMT, pol->segment[i]->coord[GMT_X][row], pol->segment[i]->coord[GMT_Y][row], &xx, &yy);
+					pol->segment[i]->coord[GMT_X][row] = xx;
+					pol->segment[i]->coord[GMT_Y][row] = yy;
 				}
 			}
 		}
@@ -700,12 +702,13 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (Ctrl->N.active) {	/* Check if on land or not */
+			GMT_LONG brow;
 			xx = lon;
 			while (xx < 0.0) xx += 360.0;
-			row = ((GMT_LONG)floor ((90.0 - in[GMT_Y]) / c.bsize));
-			if (row >= c.bin_ny) row = c.bin_ny - 1;	/* Presumably only kicks in for south pole */
+			brow = ((GMT_LONG)floor ((90.0 - in[GMT_Y]) / c.bsize));
+			if (brow >= c.bin_ny) brow = c.bin_ny - 1;	/* Presumably only kicks in for south pole */
 			col = (GMT_LONG)floor (xx / c.bsize);
-			bin = row * c.bin_nx + col;
+			bin = brow * c.bin_nx + col;
 			if (bin != last_bin) {	/* Do this upon entering new bin */
 				ind = 0;
 				while (ind < c.nb && c.bins[ind] != bin) ind++;	/* Set ind to right bin */
