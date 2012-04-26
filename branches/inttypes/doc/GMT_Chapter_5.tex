@@ -1,0 +1,278 @@
+%------------------------------------------
+%	$Id$
+%
+%	The GMT Documentation Project
+%	Copyright (c) 2000-2012.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+%------------------------------------------
+%
+\chapter{\gmt\ Coordinate Transformations}
+\label{ch:5}
+\thispagestyle{headings}
+
+\GMT\ programs read real-world coordinates and convert them to positions on a plot.
+This is achieved by selecting one of several coordinate transformations or projections.
+We distinguish between three sets of such conversions:
+
+\begin{itemize}
+\item Cartesian coordinate transformations
+\item Polar coordinate transformations
+\item Map coordinate transformations
+\end{itemize}
+
+The next chapter will be dedicated to \GMT\ map projections in its entirety.  Meanwhile, the present chapter
+will summarize the properties of the Cartesian and Polar coordinate transformations available in \GMT, list
+which parameters define them, and demonstrate how they are used to create simple plot axes.  We will mostly
+be using \GMTprog{psbasemap} (and occasionally \GMTprog{psxy}) to demonstrate the various transformations.
+Our illustrations may differ from those you reproduce with the same commands because of different settings
+in our \filename{gmt.conf} file.)  Finally, note that while we will specify dimensions in inches (by
+appending \textbf{i}), you may want to use cm (\textbf{c}), or points (\textbf{p}) as unit instead
+(see the \GMTprog{gmt.conf} man page). 
+
+\section{Cartesian transformations}
+\index{Projection!cartesian|(}
+\index{Transformation!cartesian|(}
+
+\GMT\ Cartesian coordinate transformations come in three flavors:
+
+\begin{itemize}
+\item Linear coordinate transformation
+\item Log$_{10}$ coordinate transformation
+\item Power (exponential) coordinate transformation
+\end{itemize}
+
+These transformations convert input coordinates $(x,y)$ to locations $(x', y')$ on a plot.
+There is no coupling between $x$ and $y$ (i.e., $x' = f(x)$ and $y' = f(y)$);
+it is a \textbf{one-dimensional} projection. Hence, we may use separate transformations
+for the $x$- and $y$-axes (and $z$-axes for 3-D plots).   Below, we will use the expression
+$u' = f(u)$, where $u$ is either $x$ or $y$ (or $z$ for 3-D plots).
+The coefficients in $f(u)$ depend on the desired plot
+size (or scale), the chosen $(x,y)$ domain, and the nature of $f$ itself.
+
+
+Two subsets of linear will be discussed
+separately; these are a polar (cylindrical) projection and a linear projection applied to
+geographic coordinates (with a 360\DS\ periodicity in the $x$-coordinate).  We will show examples
+of all of these projections using dummy data sets created with
+\GMTprog{gmtmath}, a ``Reverse Polish Notation'' (RPN) calculator that
+operates on or creates table data: 
+
+\index{Reverse Polish Notation (RPN)}
+\index{RPN (Reverse Polish Notation)}
+\script{../gmtmath}
+
+%---------------------------------------LINEAR TRANSFORMATION----------------------------------------------
+
+\subsection{Cartesian linear transformation (\Opt{Jx} \Opt{JX})}
+\index{Projection!cartesian!linear|(}
+\index{Transformation!cartesian!linear|(}
+\index{Projection!linear|(}
+\index{Cartesian!linear projection|(}
+\index{Linear projection|(}
+\index{\Opt{Jx} \Opt{JX} (Non-map projections)|(}
+
+There are in fact three different uses of the Cartesian linear transformation, each
+associated with specific command line options.  The different manifestations result
+from specific properties of three kinds of data:
+
+\begin{enumerate}
+\item Regular floating point coordinates
+\item Geographic coordinates
+\item Calendar time coordinates
+\end{enumerate}
+
+\subsubsection{Regular floating point coordinates}
+
+Selection of the Cartesian linear transformation with regular floating point coordinates
+will result in a simple linear scaling $u' = au + b$ of the input coordinates.  The projection
+is defined by stating
+
+\begin{itemize}
+\item scale in inches/unit (\Opt{Jx}) or axis length in inches (\Opt{JX})
+\end{itemize}
+
+If the \emph{y}-scale or \emph{y}-axis length is different from that of
+the \emph{x}-axis (which is most often the case), separate the two
+scales (or lengths) by a slash, e.g., \Opt{Jx}0.1i/0.5i or \Opt{JX}8i/5i. 
+Thus, our $y = \sqrt{x}$ data sets will plot as shown in Figure~\ref{fig:GMT_linear}.
+
+\GMTfig{GMT_linear}{Linear transformation of Cartesian coordinates.}
+
+The complete commands given to produce this plot were 
+
+\script{GMT_linear}
+\index{Axes!direction}
+\index{Axes!reverse}
+
+\noindent
+Normally, the user's \emph{x}-values will increase to the right
+and the \emph{y}-values will increase upwards.  It should be noted
+that in many situations it is desirable to have the direction of
+positive coordinates be reversed.  For example, when plotting
+depth on the \emph{y}-axis it makes more sense to have the positive
+direction downwards.  All that is required to reverse the sense of
+positive direction is to supply a negative scale (or axis length).
+Finally, sometimes it is convenient to specify the width (or height)
+of a map and let the other dimension be computed based on the implied
+scale and the range of the other axis.  To do this, simply specify
+the length to be recomputed as 0.
+
+\subsubsection{Geographic coordinates}
+\label{sec:linear}
+\index{Projection!linear!geographic|(}
+\index{Transformation!linear!geographic|(}
+\index{Geographic Linear projection|(}
+
+\GMTfig{GMT_linear_d}{Linear transformation of map coordinates.}
+
+While the Cartesian linear projection is primarily designed for regular floating point
+\emph{x},\emph{y} data, it is sometimes necessary to plot geographical
+data in a linear projection.  This poses a problem since longitudes
+have a 360\DS\ periodicity.  \GMT\ therefore needs to be informed
+that it has been given geographical coordinates even though a linear transformation
+has been chosen.  We do so by adding a \textbf{g} (for geographical) or \textbf{d} (for degrees)
+directly after \Opt{R} or by appending a \textbf{g} or \textbf{d} to
+the end of the \Opt{Jx} (or \Opt{JX}) option.  As an example, we
+want to plot a crude world map centered on 125\DS E.  Our command will be 
+
+\script{GMT_linear_d} 
+
+\noindent
+with the result reproduced in Figure~\ref{fig:GMT_linear_d}.
+\index{Projection!linear!geographic|)}
+\index{Transformation!linear!geographic|)}
+\index{Geographic Linear projection|)}
+
+\subsubsection{Calendar time coordinates}
+\label{sec:time}
+\index{Projection!linear!calendar|(}
+\index{Transformation!linear!calendar|(}
+\index{Calendar Linear projection|(}
+
+\GMTfig{GMT_linear_cal}{Linear transformation of calendar coordinates.}
+
+Several particular issues arise when we seek to make linear plots using calendar date/time as
+the input coordinates.  As far as setting up the coordinate transformation we must indicate whether
+our input data have absolute time coordinates or relative time coordinates.  For the
+former we append \textbf{T} after the axis scale (or width), while for the latter we append \textbf{t} at the
+end of the \Opt{Jx} (or \Opt{JX}) option.
+However, other command line arguments (like the \Opt{R} option) may already specify whether the time
+coordinate is absolute or relative. An
+absolute time entry must be given as [\emph{date}]\textbf{T}[\emph{clock}]
+(with \emph{date} given as \emph{yyyy}[-\emph{mm}[-\emph{dd}]], \emph{yyyy}[-\emph{jjj}], or \emph{yyyy}[-\textbf{W}\emph{ww}[-\emph{d}]], and \emph{clock} using
+the \emph{hh}[:\emph{mm}[:\emph{ss}[\emph{.xxx}]]] 24-hour clock format) whereas the relative time is simply
+given as the units of time since the epoch followed by \textbf{t} (see \textbf{TIME\_UNIT} and \textbf{TIME\_EPOCH} for information
+on specifying the time unit and the epoch).  As a simple example, we will make a plot of a school week
+calendar (Figure~\ref{fig:GMT_linear_cal}).
+
+\script{GMT_linear_cal} 
+
+When the coordinate ranges provided by the \Opt{R} option and the projection type given by \Opt{JX}
+(including the optional \textbf{d}, \textbf{g}, \textbf{t} or \textbf{T}) conflict, \GMT\ will warn the
+users about it. In general, the options provided with \Opt{JX} will prevail.
+
+\index{Projection!linear!calendar|)}
+\index{Transformation!linear!calendar|)}
+\index{Calendar Linear projection|)}
+
+\index{Projection!cartesian!linear|)}
+\index{Transformation!cartesian!linear|)}
+\index{Projection!linear|)}
+\index{Cartesian!linear projection|)}
+\index{Linear projection|)}
+
+%---------------------------------------LOG10 TRANSFORMATION----------------------------------------------
+
+\subsection{Cartesian logarithmic projection}
+\index{Projection!cartesian!logarithmic|(}
+\index{Transformation!cartesian!logarithmic|(}
+\index{Logarithmic projection|(}
+
+\GMTfig[h]{GMT_log}{Logarithmic transformation of $x$-coordinates.}
+
+The log$_{10}$ transformation is simply $u' = a \log_{10}(u) + b$ and is selected by appending an \textbf{l}
+(lower case L) immediately following the scale (or axis length)
+value.  Hence, to produce a plot in which the \emph{x}-axis is
+logarithmic (the \emph{y}-axis remains linear, i.e., a semi-log plot), try 
+
+\script{GMT_log} 
+
+\par Note that if \emph{x}- and \emph{y}-scaling are different and
+a log$_{10}$-log$_{10}$ plot is desired, the \textbf{l} must be
+appended twice: Once after the \emph{x}-scale (before the /) and
+once after the \emph{y}-scale. 
+\index{Projection!cartesian!logarithmic|)}
+\index{Transformation!cartesian!logarithmic|)}
+\index{Logarithmic projection|)}
+
+%---------------------------------------POWER TRANSFORMATION----------------------------------------------
+
+\subsection{Cartesian power projection}
+\index{Projection!cartesian!power (exponential)|(}
+\index{Transformation!cartesian!power (exponential)|(}
+\index{Power (exponential) projection|(}
+
+\GMTfig[h]{GMT_pow}{Exponential or power transformation of $x$-coordinates.}
+
+This projection uses $u' = a u^b + c$ and allows us to explore exponential relationships like \emph{x$^p$} versus \emph{y$^q$}.
+While $p$ and $q$ can be any values, we will select $p
+= 0.5$ and $q = 1$ which means we will plot $x$ versus $\sqrt{x}$.
+We indicate this scaling by appending a \textbf{p} (lower case P) followed
+by the desired exponent, in our case 0.5.  Since $q = 1$ we do not
+need to specify \textbf{p}1 since it is identical to the linear transformation.
+Thus our command becomes
+
+\script{GMT_pow} 
+\index{Projection!cartesian!power (exponential)|)}
+\index{Transformation!cartesian!power (exponential)|)}
+\index{Power (exponential) projection|)}
+\index{\Opt{Jx} \Opt{JX} (Non-map projections)|)}
+
+%---------------------------------------POLAR TRANSFORMATION----------------------------------------------
+
+\section{Linear projection with polar ($\theta, r$) coordinates (\Opt{Jp } \Opt{JP})}
+\index{Projection!polar ($\theta, r$) \Opt{Jp} \Opt{JP}|(}
+\index{Polar ($\theta, r$) projection \Opt{Jp} \Opt{JP}|(}
+\index{\Opt{Jp} \Opt{JP} (Polar ($\theta, r$) projections)|(}
+
+\GMTfig{GMT_polar}{Polar (Cylindrical) transformation of
+($\theta, r$) coordinates.}
+
+This transformation converts polar coordinates (angle $\theta$ and radius $r$)
+to positions on a plot.  Now $x' = f(\theta,r)$ and $y' = g(\theta,r)$, hence it is similar
+to a regular map projection because $x$ and $y$ are coupled and $x$ (i.e., $\theta$) has a 360\DS\ periodicity.
+With input and output points both in the plane it is a \textbf{two-dimensional} projection.
+The transformation comes in two flavors:
+
+\begin{enumerate}
+\item Normally, $\theta$ is understood to be directions counter-clockwise from the horizontal axis, but we may choose
+to specify an angular offset [whose default value is zero].  We will call this offset $\theta_0$.
+Then, $x' = f(\theta, r) = ar \cos (\theta-\theta_0) + b$ and $y' = g(\theta, r) = ar \sin (\theta-\theta_0) + c$.
+\item Alternatively, $\theta$ can be interpreted to be azimuths clockwise from the vertical axis, yet we may again
+choose to specify the angular offset [whose default value is zero].
+Then, $x' = f(\theta, r) = ar \cos (90 - (\theta-\theta_0)) + b$ and $y' = g(\theta, r) = ar \sin (90 - (\theta-\theta_0)) + c$.
+\end{enumerate}
+
+Consequently, the polar transformation is defined by providing
+
+\begin{itemize}
+\item scale in inches/unit (\Opt{Jp}) or full width of plot in inches (\Opt{JP})
+\item Optionally, insert \textbf{a} after \textbf{p$|$P} to indicate CW azimuths rather than CCW directions
+\item Optionally, append /$origin$ in degrees to indicate an angular offset [0]
+\item Optionally, append \textbf{r} to reverse the radial direction (here, \emph{south} and \emph{north} must be elevations in 0--90\DS\ range).
+\item Optionally, append \textbf{z} to annotate depths rather than radius.
+\end{itemize}
+
+As an example of this projection we will create a gridded data set
+in polar coordinates $z(\theta, r) = r^2 \cdot \cos{4\theta}$
+using \GMTprog{grdmath}, a RPN calculator that operates on or
+creates grid files.
+
+\script{GMT_polar} 
+
+We used \GMTprog{grdcontour} to make a contour map of this data.  Because
+the data file only contains values with $2 \leq r \leq 4$, a donut
+shaped plot appears in Figure~\ref{fig:GMT_polar}.\
+\index{Projection!polar ($\theta, r$) \Opt{Jp} \Opt{JP}|)}
+\index{Polar ($\theta, r$) projection \Opt{Jp} \Opt{JP}|)}
+\index{\Opt{Jp} \Opt{JP} (Polar ($\theta, r$) projections)|)}

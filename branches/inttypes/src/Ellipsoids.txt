@@ -1,0 +1,92 @@
+# $Id$
+#
+# This is the core listing of supported ellipsoids in GMT map projections.
+# Please adhere to the format.
+#
+# This file is converted to gmt_ellipsoids.h by the guru's make process
+# described in src/GNUmakefile. It also updates GMT_N_ELLIPSOIDS in
+# gmt_dimensions.h. Changing this file at runtime has no affect.
+#
+# a:   Equatorial axis [m]
+# b:   Polar axis [m]
+# 1/f: Flattening = (a-b)/a
+#
+# Tab-ID		Year a [m]		1/f [m]		Info
+#-------------------------------------------------------------------------------
+Airy			1830 6377563.396	299.3249646	: Applies to Great Britain
+Airy-Ireland		1830 6377340.189	299.3249646	: Applies to Ireland in 1965
+Andrae			1876 6377104.43		300.0		: Applies to Denmark and Iceland
+APL4.9			1965 6378137.0		298.25		: Appl. Physics
+ATS77			1977 6378135.0		298.257		: Average Terrestrial System, Canada Maritime provinces
+Australian		1965 6378160.0		298.25		: Applies to Australia
+Bessel			1841 6377397.155	299.1528128	: Applies to Central Europe, Chile, Indonesia
+Bessel-Namibia		1841 6377483.865	299.1528128	: Same as Bessel-Schwazeck
+Bessel-NGO1948		1841 6377492.0176	299.15281	: Modified Bessel for NGO 1948
+Bessel-Schwazeck	1841 6377483.865	299.1528128	: Applies to Namibia
+Clarke-1858		1858 6378293.639	294.26068	: Clarke's early ellipsoid
+Clarke-1866		1866 6378206.4		294.9786982	: Applies to North America, the Philippines
+Clarke-1866-Michigan	1866 6378450.047484481	294.9786982	: Modified Clarke-1866 for Michigan
+Clarke-1880		1880 6378249.145	293.465		: Applies to most of Africa, France
+Clarke-1880-Arc1950	1880 6378249.145326	293.4663076	: Modified Clarke-1880 for Arc 1950
+Clarke-1880-IGN		1880 6378249.2		293.4660213	: Modified Clarke-1880 for IGN
+Clarke-1880-Jamaica	1880 6378249.136	293.46631	: Modified Clarke-1880 for Jamaica
+Clarke-1880-Merchich	1880 6378249.2		293.46598	: Modified Clarke-1880 for Merchich
+Clarke-1880-Palestine	1880 6378300.79		293.46623	: Modified Clarke-1880 for Palestine
+CPM 			1799 6375738.7		334.29		: Comm. des Poids et Mesures, France
+Delambre		1810 6376428.0		311.5		: Applies to Belgium
+Engelis			1985 6378136.05		298.2566	: Goddard Earth Models
+Everest-1830		1830 6377276.345	300.8017	: India, Burma, Pakistan, Afghanistan, Thailand
+Everest-1830-Kalianpur	1830 6377301.243	300.80174	: Modified Everest for Kalianpur (1956)
+Everest-1830-Kertau	1830 6377304.063	300.8017	: Modified Everest for Kertau, Malaysia & Singapore
+Everest-1830-Pakistan	1830 6377309.613	300.8017	: Modified Everest for Pakistan
+Everest-1830-Timbalai	1830 6377298.556	300.8017	: Modified Everest for Timbalai, Sabah Sarawak
+Fischer-1960		1960 6378166.0		298.3		: Used by NASA for Mercury program
+Fischer-1960-SouthAsia	1960 6378155.0		298.3		: Same as Modified-Fischer-1960
+Fischer-1968		1968 6378150.0		298.3		: Used by NASA for Mercury program
+FlatEarth		1984 6371008.7714	0		: As Sphere, but implies fast "Flat Earth" distance calculations
+GRS-67			1967 6378160.0		298.247167427	: International Geodetic Reference System
+GRS-80			1980 6378137.0		298.257222101	: International Geodetic Reference System
+Hayford-1909		1909 6378388.0		297.0		: Same as the International 1924
+Helmert-1906		1906 6378200.0		298.3		: Applies to Egypt
+Hough			1960 6378270.0		297.0		: Applies to the Marshall Islands
+Hughes-1980		1980 6378273.0		298.2794	: Hughes Aircraft Company for DMSP SSM/I grid products
+IAG-75			1975 6378140.0		298.257222	: International Association of Geodesy
+Indonesian		1974 6378160.0		298.247		: Applies to Indonesia
+International-1924	1924 6378388.0		297.0		: Worldwide use
+International-1967	1967 6378157.5		298.25		: Worldwide use
+Kaula			1961 6378163.0		298.24		: From satellite tracking
+Krassovsky		1940 6378245.0		298.3		: Used in the (now former) Soviet Union
+Lerch			1979 6378139.0		298.257		: For geoid modelling
+Maupertius		1738 6397300.0		191.0		: Really old ellipsoid used in France
+Mercury-1960		1960 6378166.0		298.3		: Same as Fischer-1960
+MERIT-83		1983 6378137.0		298.257		: United States Naval Observatory
+Modified-Airy		1830 6377340.189	299.3249646	: Same as Airy-Ireland
+Modified-Fischer-1960	1960 6378155.0		298.3		: Applies to Singapore
+Modified-Mercury-1968	1968 6378150.0		298.3		: Same as Fischer-1968
+NWL-10D			1972 6378135.0		298.26		: Naval Weapons Lab (Same as WGS-72)
+NWL-9D			1966 6378145.0		298.25		: Naval Weapons Lab (Same as WGS-66)
+OSU86F			1986 6378136.2		298.25722	: Ohio State University
+OSU91A			1991 6378136.3		298.25722	: Ohio State University
+Plessis			1817 6376523.0		308.64		: Old ellipsoid used in France
+SGS-85			1985 6378136.0		298.257		: Soviet Geodetic System
+South-American		1969 6378160.0		298.25		: Applies to South America
+Sphere			1984 6371008.7714	0		: The mean radius in WGS-84 (for spherical/plate tectonics applications)
+Struve			1860 6378297.0		294.73		: Friedrich Georg Wilhelm Struve
+TOPEX			1990 6378136.3		298.257		: Used commonly for altimetry
+Walbeck			1819 6376896.0		302.78		: First least squares solution by Finnish astronomer
+War-Office		1926 6378300.583	296.0		: Developed by G. T. McCaw
+WGS-60			1960 6378165.0		298.3		: World Geodetic System
+WGS-66			1966 6378145.0		298.25		: World Geodetic System
+WGS-72			1972 6378135.0		298.26		: World Geodetic System
+WGS-84			1984 6378137.0		298.257223563	: World Geodetic System [Default]
+Moon			2000 1737400.0		0		: Moon (IAU2000)
+Mercury			2000 2439700.0		0		: Mercury (IAU2000)
+Venus			2000 6051800.0		0		: Venus (IAU2000)
+Mars			2000 3396190.0		169.894447224	: Mars (IAU2000)
+Jupiter			2000 71492000.0		15.4144027598	: Jupiter (IAU2000)
+Saturn			2000 60268000.0		10.2079945799	: Saturn (IAU2000)
+Uranus			2000 25559000.0		43.6160409556	: Uranus (IAU2000)
+Neptune			2000 24764000.0		58.5437352246	: Neptune (IAU2000)
+Pluto			2000 1195000.0		0		: Pluto (IAU2000)
+#-------------------------------------------------------------------------------
+# vim: noet ts=8 sts=8 sw=8

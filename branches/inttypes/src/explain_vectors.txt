@@ -1,0 +1,34 @@
+.SH VECTOR ATTRIBUTES
+Several modifiers may be appended to the vector-producing options
+to specify the placement of vector heads, their shapes, and the justification of the vector:
+.br
+.sp
+MOD(a)IT(angle) sets the angle of the vector head apex [30].
+.br
+MOD(b) places a vector head at the beginning of the vector path [none].
+.br
+MOD(e) places a vector head at the end of the vector path [none].
+.br
+MOD(g)-|IT(fill) turns off vector head fill (if -) or sets the vector head fill
+[Default fill is used, which may be no fill].
+.br
+MOD(l) draws half-arrows, using only the left side [both].
+.br
+MOD(n)IT(norm) scales down vector attributes (pen thickness, head size) with decreasing length,
+where vectors shorter than IT(norm) will have their
+attributes scaled by length/IT(norm) [arrow attributes remains invariant to length].
+.br
+MOD(p)[-][IT(pen)] sets the vector pen attributes.  If IT(pen) has a leading - then
+the head outline is not drawn. [Default pen is used, and head outline is drawn]
+.br
+MOD(r) draws half-arrows, using only the right side [both].
+.br
+.sp
+In addition, all but circular vectors may take these modifiers:
+.br
+.sp
+MOD(j)IT(just) determines how the input IT(x),IT(y) point relates
+to the vector.  Choose from BD(b)eginning [default], BD(e)nd, or BD(c)enter.
+.br
+MOD(s) means the input IT(angle), IT(length) is instead the IT(x), IT(y) coordinates
+of the vector end point.

@@ -1,0 +1,12 @@
+	$Id$
+
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
+
+This directory contains programs for geopotential calculations.
+
+	redpol - Compute the Continuous Reduction To the Pole, AKA differential RTP
+	xyzokb - Compute the gravity/magnetic anomaly of a body by the method of Okabe
+
+These were provided by J. Luis.
+We hope to expand this supplement considerably over the next year.

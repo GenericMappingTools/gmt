@@ -1,0 +1,6 @@
+.SH UNITS
+For map distance units, append IT(unit) BD(d) for arc degrees, BD(m) for arc minutes, and BD(s) for arc seconds,
+or BD(e) for meters [Default], BD(f) for feet, BD(k) for km, BD(M) for statute miles, and BD(n) for nautical miles.
+By default we compute such distances using a spherical approximation with great circles. Prepend
+BD(-) to a distance (or the unit is no distance is given) to perform "Flat Earth" calculations
+(quicker but less accurate) or prepend BD(+) to perform exact geodesic calculations (slower but more accurate).

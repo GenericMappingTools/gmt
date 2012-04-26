@@ -1,0 +1,11 @@
+#	$Id$
+#
+# This is README for spharmonics supplement
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
+#
+At the moment these programs do nothing - they are skeleton main programs
+that will eventually be used to perform forward and inverse spherical
+harmonic calculations.
+
+Paul Wessel, May 26, 2006

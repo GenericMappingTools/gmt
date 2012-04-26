@@ -1,0 +1,139 @@
+#include "common_options.txt"
+.TH GMTCONVERT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+gmtconvert \- Convert, Paste, and/or Extract columns from data tables
+.SH SYNOPSIS
+BD(gmtconvert) [ IT(table) ] [ OPT(A) ] [ OPT(D)[IT(template)] ] [ OPT(E)[BD(f)|BD(l)|BD(m)IT(stride)] ] 
+[ OPT(L) ] [ OPT(I)[BD(tsr)] ] [ OPT(N) ] [ OPT(Q)IT(seg) ] 
+[ OPT(S)[BD(~)]IT("search string") | OPT(S)[BD(~)]/IT(regexp)/[BD(i)] ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_a_OPT ] [ GMT_b_OPT ] 
+[ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(gmtconvert) reads its standard input [or input files] and writes out
+the desired information to standard output.  It can do a combination of
+seven tasks: (1) convert between binary and ASCII data tables, (2) paste
+corresponding records from multiple files horizontally into a single file, (3)
+extract a subset of the available columns, (4) only extract segments whose header
+record matches a text pattern search, (5) only list segment headers and no data
+records, (6) extract first and/or last data record for each segment, and (7)
+reverse the order of items on output.
+Input (and hence output) may have multiple sub-headers,
+and ASCII tables may have regular headers as well.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+None
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+.TP
+OPT(A)
+The records from the input files should be pasted horizontally, not appended vertically [Default].
+All files must have the same number of segments and number of
+rows per segment.  Note for binary input, all the files you want to paste must
+have the same number of columns (as set with GMT_bi_OPT); ascii tables can have different number
+of columns.
+.TP
+OPT(D)[IT(template)]
+For multiple segment data, dump each segment to a separate output file [Default writes a multiple segment
+file to stdout].  Append a format template for the individual file names; this template BD(must) contain a
+C format specifier that can format an long integer argument (the running segment number across all tables);
+this is usually %ld but could be %8.8ld which gives leading zeros, etc. [Default is gmtconvert_segment_%ld.{txt|bin},
+depending on GMT_bo_OPT].
+Alternatively, give a template with two C format specifiers and we will supply the table number and the segment
+number within the table to build the file name.
+.TP
+OPT(E)[BD(f)|BD(l)|BD(m)IT(stride)]
+Only extract the first and last record for each segment of interest [Default extracts
+all records].  Optionally, append BD(f) or BD(l) to only extract the first or last
+record of each segment, respectively.
+Alternatively, append BD(m)IT(stride) to extract only one out of IT(stride) records.
+.TP
+OPT(I)
+Invert the order of items, i.e., output the items in reverse order, starting with the last and ending
+up with the first item [Default keeps original order].  Append up to three items that should be reversed:
+BD(t) will reverse the order of tables, BD(s) will reverse the order of segments within each table,
+and BD(r) will reverse the order of records within each segment [Default].
+.TP
+OPT(L)
+Only output a listing of all segment header records and no data records (requires ASCII data).
+.TP
+OPT(N)
+Do not write records that only contain NaNs in every field [Default writes all records].
+.TP
+OPT(Q)IT(seg)
+Only write segment number IT(seg) and skip all others.  Cannot be used with OPT(S).
+.TP
+OPT(S)[BD(~)]IT("search string") or OPT(S)[BD(~)]/IT(regexp)/[BD(i)]
+Only output those segments whose header record contains the specified text string.  To reverse the search,
+i.e., to output segments whose headers do IT(not) contain the specified pattern, use OPT(S~).
+Should your pattern happen to start with ~ you need to escape this character with a backslash \ [Default output all segments].
+Cannot be used with OPT(Q).  For matching segments based on aspatial values (via OGR/GMT format), give the
+search string as IT(varname)=IT(value) and we will compare IT(value) against the value of IT(varname) for
+each segment.  Note: If the features are polygons then a match of a particular polygon perimeter also means
+that any associated polygon holes will also be matched.  For matching segment headers against extended regular expressions enclose the expression in slashes. Append BD(i) for caseless matching.
+.TP
+OPT(T)
+Suppress the writing of segment headers on output.
+#include "explain_-V.txt"
+#include "explain_-aspatial.txt"
+#include "explain_-bi.txt"
+#include "explain_-bo.txt"
+[Default is same as input].
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_-s.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_precision.txt"
+.SH EXAMPLES
+To convert the binary file test.b (single precision) with 4 columns to ASCII:
+.br
+.sp
+gmtconvert test.b -bi4f > test.dat
+.br
+.sp
+To convert the multiple segment ASCII table test.d to a double precision binary file:
+.br
+.sp
+gmtconvert test.d -bo > test.b
+.br
+.sp
+You have an ASCII table with 6 columns and you want to plot column 5 versus column 0.  Try
+.br
+.sp
+gmtconvert table.d -o5,0 | psxy ...
+.br
+.sp
+If the file instead is the binary file results.b which has 9 single-precision values per record,
+we extract the last column and columns 4-6 and write ASCII with the command
+.br
+.sp
+gmtconvert results.b -o8,4-6 -bi9s | psxy ...
+.br
+.sp
+You want to plot the 2nd column of a 2-column file left.d versus the first column of a file right.d:
+.br
+.sp
+gmtconvert left.d right.d -A -o1,2 | psxy ...
+.br
+.sp
+To extract all segments in the file big_file.d whose headers contain the string "RIDGE AXIS", try
+.br
+.sp
+gmtconvert big_file.d -S"RIDGE AXIS" > subset.d
+.br
+.sp
+To invert the selection of segments whose headers begin with "profile " followed by an integer number and any letter between "g" and "l", try
+.br
+.sp
+gmtconvert -S~"/^profile [0-9]+[g-l]$/"
+.br
+.sp
+To reverse the order of segments in a file without reversing the order of records within each segment, try
+.br
+.sp
+gmtconvert lots of segments.txt -Is > last_segment_first.txt
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR minmax (1)

@@ -1,0 +1,54 @@
+#include "common_options.txt"
+.TH MGD77PATH 1 MANDATE GMT_STRING "Generic Mapping Tools [mgd77 supplement]"
+.SH NAME
+mgd77path \- Return paths to MGD77 cruises and directories
+.SH SYNOPSIS
+BD(mgd77path) IT(NGDC-ids) [ OPT(A)[BD(-)] ] [ OPT(D) ] [ OPT(I)IT(ignore) ] [ GMT_V_OPT ]
+.SH DESCRIPTION
+BD(mgd77path) returns the full pathname to one or more MGD77 files. The pathname returned for a given
+cruise may change with time due to reshuffling of disks/subdirectories.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_ncid.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)[BD(-)]
+Display the full path to each cruise [Default].  Optionally, append BD(-) which will list
+just the cruise IDs instead.
+.TP
+OPT(D)
+Instead of cruise listings, just show the directory paths currently used in the search.
+.TP
+OPT(I)IT(ignore)
+Ignore certain data file formats from consideration. Append BD(a|c|t) to ignore
+MGD77 ASCII, MGD77+ netCDF, or plain tab-separated ASCII table files, respectively. The option may
+be repeated to ignore more than one format.  [Default ignores none].
+#include "explain_-V.txt"
+Reports the total number of cruises found.
+#include "explain_help.txt"
+.SH EXAMPLES
+To obtain pathnames for cruises 01010008 and 01010007, run
+.br
+.sp
+BD(mgd77path) 01010008 01010007
+.br
+.sp
+To obtain pathnames for cruises 01010008 and 01010007, but only if there are MGD77+ version in netCDF, run
+.br
+.sp
+BD(mgd77path) 01010008 01010007 OPT(Ia) OPT(It)
+.br
+.sp
+To see the list of active directories where MGD77 files might be stored, run
+.br
+.sp
+BD(mgd77path) OPT(D)
+.SH "SEE ALSO"
+.IR GMT (1)
+.IR mgd77info (1)
+.IR mgd77list (1)
+.IR mgd77manage (1)
+.IR mgd77track (1)
+#include "refs.i"
+The Marine Geophysical Data Exchange Format - MGD77, see
+\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP.

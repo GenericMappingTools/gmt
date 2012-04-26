@@ -1,0 +1,224 @@
+#include "common_options.txt"
+.TH GMTMATH 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+gmtmath \- Reverse Polish Notation (RPN) calculator for data tables
+.SH SYNOPSIS
+BD(gmtmath) [ OPT(A)IT(t_f(t).d) ] [ OPT(C)IT(cols) ] [ OPT(I) ] 
+[ OPT(N)IT(n_col)/IT(t_col) ] [ OPT(Q) ] [ OPT(S)[BD(f)|BD(l)] ] 
+[ OPT(T)IT(t_min)/IT(t_max)/IT(t_inc)[BD(+)]|IT(tfile) ] [ GMT_V_OPT ] [ GMT_b_OPT ] 
+[ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] 
+IT(operand) [ IT(operand) ] BD(OPERATOR) [ IT(operand) ] 
+BD(OPERATOR) ... BD(=) [ IT(outfile) ]
+.SH DESCRIPTION
+BD(gmtmath) will perform operations like add, subtract, multiply, and divide
+on one or more table data files or constants using Reverse Polish Notation (RPN)
+syntax (e.g., Hewlett-Packard calculator-style).  Arbitrarily complicated expressions
+may therefore be evaluated; the final result is written to an output file
+[or standard output].
+When two data tables are on the stack, each element in file A is modified by the corresponding element in file B.
+However, some operators only require one operand (see below).  If no data tables are used in the
+expression then options OPT(T), OPT(N) can be set (and optionally GMT_bo_OPT to indicate the data type).
+If STDIN is given, <stdin> will be read and placed on the stack as if a file with that content
+had been given on the command line.  By default, all columns except the
+"time" column are operated on, but this can be changed (see OPT(C)).
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(operand)
+If IT(operand) can be opened as a file it will be read as an ASCII (or binary, see GMT_bi_OPT) table data file.
+If not a file, it is interpreted as a numerical constant or a special symbol (see below).  The special argument
+STDIN means that IT(stdin) will be read and placed on the stack; STDIN can appear more than once if necessary.
+.TP
+IT(outfile)
+The name of a table data file that will hold the final result.  If not given then the output is sent to stdout.
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)IT(t_f(t).d)
+Requires OPT(N) and will partially initialize a table with values from the given file containing
+IT(t) and IT(f(t)) only.  The IT(t) is placed in column IT(t_col) while IT(f(t)) goes into
+column IT(n_col) - 1 (see OPT(N)).
+.TP
+OPT(C)IT(cols)
+Select the columns that will be operated on until next occurrence of OPT(C).
+List columns separated by commas; ranges like 1,3-5,7 are allowed.  OPT(C)
+(no arguments) resets the default action of using all columns except time column (see OPT(N)). 
+OPT(Ca) selects all columns, including time column, while OPT(Cr) reverses (toggles) the current
+choices.
+.TP
+OPT(I)
+Reverses the output row sequence from ascending time to descending [ascending].
+.TP
+OPT(N)IT(n_col)/IT(t_col)
+Select the number of columns and the column number that contains the
+"time" variable.  Columns are numbered starting at 0 [2/0].
+.TP
+OPT(Q)
+Quick mode for scalar calculation.  Shorthand for OPT(Ca) OPT(N)1/0 OPT(T)0/0/1.
+.TP
+OPT(S)[BD(f)|BD(l)]
+Only report the first or last row of the results [Default is all rows].  This is useful if
+you have computed a statistic (say the BD(MODE)) and only want to report a single number
+instead of numerous records with identical values.
+Append BD(l) to get the last row and BD(f) to get the first row only
+[Default].
+.TP
+OPT(T)IT(t_min)/IT(t_max)/IT(t_inc)[BD(+)]|IT(tfile)
+Required when no input files are given.  Sets the t-coordinates of the first
+and last point and the equidistant sampling interval for the "time" column (see OPT(N)).
+Append BD(+) if you are specifying the number of equidistant points instead.
+If there is no time column (only data columns), give OPT(T) with no arguments; this
+also implies OPT(Ca).  Alternatively, give the name of a file whose first column
+contains the desired t-coordinates which may be irregular.
+#include "explain_-V.txt"
+#include "explain_-bi.txt"
+#include "explain_-bo.txt"
+[Default is same as input, but see OPT(o)]
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_-s.txt"
+#include "explain_help.txt"
+.SH OPERATORS
+#include "gmtmath_man.i"
+.SH SYMBOLS
+The following symbols have special meaning:
+.br
+.TS
+l l .
+BD(PI)	3.1415926...
+BD(E)	2.7182818...
+BD(EULER)	0.5772156...
+BD(TMIN)	Minimum t value
+BD(TMAX)	Maximum t value
+BD(TINC)	t increment
+BD(N)	The number of records
+BD(T)	Table with t-coordinates
+.TE
+#include "explain_precision.txt"
+.SH NOTES ON OPERATORS
+(1) The operators BD(PLM) and BD(PLMg) calculate the associated Legendre polynomial
+of degree L and order M in x which must satisfy -1 <= x <= +1 and 0 <= M <= L.
+x, L, and M are the three arguments preceding the operator.
+BD(PLM) is not normalized and includes the Condon-Shortley phase (-1)^M.
+BD(PLMg) is normalized in the way that is most commonly used in geophysics.
+The C-S phase can be added by using -M as argument.
+BD(PLM) will overflow at higher degrees, whereas BD(PLMg) is stable until ultra high degrees (at
+least 3000).
+.br
+.sp
+(2) Files that have the same names as some operators, e.g., BD(ADD), BD(SIGN), BD(=), etc. should be
+identified by prepending the current directory (i.e., ./LOG).
+.br
+.sp
+(3) The stack depth limit is hard-wired to 100.
+.br
+.sp
+(4) All functions expecting a positive radius (e.g., BD(LOG), BD(KEI), etc.) are passed the
+absolute value of their argument.
+.br
+.sp
+(5) The BD(DDT) and BD(D2DT2) functions only work on regularly spaced data.
+.br
+.sp
+(6) All derivatives are based on central finite differences, with natural
+boundary conditions.
+.br
+.sp
+(7) BD(ROOTS) must be the last operator on the stack, only followed by BD(=).
+.SH MACROS
+Users may save their favorite operator combinations as macros via the file .gmtmath
+in their current or user directory.  The file may contain any number of macros (one
+per record); comment lines starting with # are skipped.  The format for the macros is
+BD(name) = BD(arg1 arg2 ... arg2) : IT(comment)
+where BD(name) is how the macro will be used.  When this operator appears on the command
+line we simply replace it with the listed argument list.  No macro may call another macro.
+As an example, the following macro expects that the time-column contains seafloor ages in
+Myr and computes the predicted half-space bathymetry:
+.sp
+BD(DEPTH) = BD(SQRT 350 MUL 2500 ADD NEG) : IT(usage: DEPTH to return half-space seafloor depths)
+.SH EXAMPLES
+To take the square root of the content of the second data column being piped through BD(gmtmath)
+by process1 and pipe it through a 3rd process, use
+.br
+.sp
+process1 | gmtmath STDIN SQRT = | process3
+.br
+.sp
+To take log10 of the average of 2 data files, use
+.br
+.sp
+gmtmath file1.d file2.d ADD 0.5 MUL LOG10 = file3.d
+.br
+.sp
+Given the file samples.d, which holds seafloor ages in m.y. and seafloor depth in m, use the relation
+depth(in m) = 2500 + 350 * sqrt (age) to print the depth anomalies:
+.br
+.sp
+gmtmath samples.d T SQRT 350 MUL 2500 ADD SUB = | lpr
+.br
+.sp
+To take the average of columns 1 and 4-6 in the three data sets sizes.1, sizes.2, and sizes.3, use
+.br
+.sp
+gmtmath -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.d
+.br
+.sp
+To take the 1-column data set ages.d and calculate the modal value and assign it to a variable, try
+.br
+.sp
+set mode_age = `gmtmath -S -T ages.d MODE =`
+.br
+.sp
+To evaluate the dilog(x) function for coordinates given in the file t.d:
+.br
+.sp
+gmtmath -Tt.d T DILOG = dilog.d
+.br
+.sp
+To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no input
+files) and calculate arbitrary expressions, use the OPT(Q) option.
+As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) + cos (60))
+and store the result in the shell variable z:
+.br
+.sp
+set z = `gmtmath -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
+.br
+.sp
+To use BD(gmtmath) as a general least squares equation solver, imagine that the current table is the
+augmented matrix [ A | b ] and you want the least squares solution x to the matrix equation A * x = b.
+The operator BD(LSQFIT) does this; it is your job to populate the matrix correctly first.  The OPT(A)
+option will facilitate this.  Suppose you have a 2-column file ty.d with IT(t) and IT(b(t)) and you would
+like to fit a the model y(t) = a + b*t + c*H(t-t0), where H is the Heaviside step function for a given t0 = 1.55.
+Then, you need a 4-column augmented table loaded with t in column 0 and your observed y(t) in column 3.
+The calculation becomes
+.br
+.sp
+gmtmath -N4/1 -Aty.d -C0 1 ADD \-C2 1.55 STEPT ADD \-Ca LSQFIT \= solution.d
+.br
+.sp
+Note we use the OPT(C) option to select which columns we are working on, then make active all the
+columns we need (here all of them, with OPT(Ca)) before calling BD(LSQFIT).  The second and fourth
+columns (col numbers 1 and 3) are preloaded with t and y(t), respectively, the other columns are zero.  If you already have
+a pre-calculated table with the augmented matrix [ A | b ] in a file (say lsqsys.d), the least squares
+solution is simply
+.br
+.sp
+BD(gmtmath) OPT(T) lsqsys.d BD(LSQFIT \=) solution.d
+.SH REFERENCES
+Abramowitz, M., and I. A. Stegun, 1964, IT(Handbook of Mathematical
+Functions), Applied Mathematics Series, vol. 55, Dover, New York.
+.br
+Holmes, S. A., and W. E. Featherstone, 2002,  A unified approach to the Clenshaw summation and the
+recursive computation of very high degree and order normalized associated Legendre functions.
+IT(Journal of Geodesy), 76, 279-299.
+.br
+Press, W. H.,  S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery, 1992, 
+IT(Numerical Recipes), 2nd edition, Cambridge Univ., New York.
+.br
+Spanier, J., and K. B. Oldman, 1987,
+IT(An Atlas of Functions), Hemisphere Publishing Corp.
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR grdmath (1)

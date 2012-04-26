@@ -1,0 +1,485 @@
+#include "common_options.txt"
+.TH MGD77LIST 1 MANDATE GMT_STRING "Generic Mapping Tools [mgd77 supplement]"
+.SH NAME
+mgd77list \- Extract data from MGD77 files
+.SH SYNOPSIS
+BD(mgd77list) IT(NGDC-ids) OPT(F)IT(columns)[,IT(logic)][:IT(bittests)] 
+[ OPT(A)[BD(+)]BD(c)|BD(d)|BD(f)|BD(m)|BD(t)IT(code) ] [ OPT(C)BD(f)|BD(g)|BD(e) ] 
+[ OPT(D)BD(A)|BD(a)IT(startdate) ] [ OPT(D)BD(B)|BD(b)IT(stopdate) ] [ OPT(E) ] [ OPT(Ga)IT(startrec) ] [ OPT(Gb)IT(stoprec) ] 
+[ OPT(I)IT(ignore) ] [ OPT(L)[IT(corrtable)] ] 
+[ OPT(Nd)|BD(s)IT(unit) ] [ OPT(Q)BD(a)|BD(v)IT(min)/IT(max) ] [ GMT_Rgeo_OPT ] [ OPT(Sa)IT(startdist)[unit] ] 
+[ OPT(Sb)IT(stopdist)[unit] ] [ OPT(T)[BD(m)|BD(e)] ]  [ GMT_V_OPT ] 
+[ OPT(W)IT(weight) ] [ OPT(Z)IT(+)|BD(-) ] [ GMT_bo_OPT ] [ GMT_h_OPT ]
+.SH DESCRIPTION
+BD(mgd77list) reads <NGDC-id>.[mgd77|nc] files and produces an ASCII [or binary] table.
+The <NGDC-id>.[mgd77|nc] files contain track information such as leg-id, time and position,
+geophysical observables such as gravity, magnetics, and bathymetry, and control codes and
+corrections such as Eotvos and diurnal corrections.  The MGD77+ extended netCDF files may
+also contain additional user columns (for a listing of available columns, use BD(mgd77info)
+OPT(C), and to learn how to add your own custom columns, see BD(mgd77manage)).  The
+user may extract any combination of these parameters, any of six computed quantities (distance,
+heading, velocity, Carter correction, and gravity and magnetic global reference fields),
+calendar sub-units of time (year, month, day, hour, min, sec), the NGDC id, and finally a
+preset weight (see OPT(W)).  A sub-section can be specified by passing time- or
+distance-intervals along track or by selecting a geographical region.  Finally, each output
+record may be required to pass any number of logical tests involving data values or bit flags.
+#include "mgd77_IGF_coeffs.h"
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_ncid.txt"
+.TP
+OPT(F)IT(columns)[,IT(logic)][:IT(bittests)]
+The required IT(columns) string must be a comma-separated list of parameter abbreviations
+given in the desired output order.  Any parameters given in UPPER case must not be NaN in
+a record for output to occur.  Unless specified separately, the output format (if ASCII) is
+controlled by the GMT parameter BD(FORMAT_FLOAT_OUT).  The available abbreviations are:
+.TP
+.B drt
+The digital record type, usually 3 or 5 (for Y2K-compliant cruises).
+.TP
+.B id
+The survey ID string (leg name).
+.TP
+.B ngdcid
+The 8-character NGDC cruise ID string (usually the file prefix).
+.TP
+.B time
+Choose between Absolute calendar time (BD(atime), the default) in the format dictated by the GMT
+parameters BD(FORMAT_DATE_OUT) and BD(FORMAT_CLOCK_OUT), Relative time (BD(rtime))
+in the format dictated by the GMT parameters BD(FORMAT_FLOAT_OUT) and BD(TIME_SYSTEM) (or
+BD(TIME_EPOCH) and BD(TIME_UNIT))), or Fractional year (BD(ytime)) in the format
+dictated by BD(FORMAT_FLOAT_OUT).
+.TP
+.B lon
+Longitude in the format dictated by the GMT parameter BD(FORMAT_GEO_OUT).
+.TP
+.B lat
+Longitude in the format dictated by the GMT parameter BD(FORMAT_GEO_OUT).
+.TP
+.B twt
+Two-Way Travel time (in s).
+.TP
+.B depth
+Corrected bathymetry (in m, positive below sealevel).
+.TP
+.B mtf1
+Magnetic Total Field intensity from sensor 1 (in nTesla).
+.TP
+.B mtf2
+Magnetic Total Field intensity from sensor 2 (in nTesla).
+.TP
+.B mag
+Residual magnetic anomaly (in nTesla).
+.TP
+.B gobs
+Observed gravity (in mGal).
+.TP
+.B faa
+Free-air gravity anomaly (in mGal).
+.TP
+.B ptc
+Position Type Code (1 = fix, 3 = interpolated, 9 = unspecified).
+.TP
+.B bcc
+Bathymetric Correction Code, indicating the procedure used to convert travel time to depth.
+(01-55 = Matthews' zone used to correct the depth,\"'
+59 = Matthews' corrections used but the zones is unspecified in the data record, 60 = S. Kuwahara formula\"'
+for T-S, 61 = Wilson formula for T-S, 62 = Del Grosso formula for T-S, 63 = Carter's tables,\"'
+88 = Other, described in header sections, 99 = unspecified).
+.TP
+.B btc
+Bathymetric Type Code, indicating how the bathymetry value was obtained (1 = observed,
+3 = interpolated, 9 = unspecified).
+.TP
+.B msens
+Magnetic sensor for used to evaluate the residual field (1 = 1st or leading sensor, 2 = 2nd or trailing sensor, 9 = unspecified).
+.TP
+.B msd
+Depth (or altitude) of the magnetic sensor (in m, positive below sealevel).
+.TP
+.B diur
+Magnetic diurnal correction (in nTesla).
+.TP
+.B eot
+Eotvos correction (in mGal).
+.TP
+.B sln
+Seismic Line Number string.
+.TP
+.B sspn
+Seismic Shot Point Number string.
+.TP
+.B nqc
+Navigation Quality Code (5 = suspected, by source institution, 6 = suspected, by NGDC, 9 = no problems identified).
+.br
+.sp
+In addition, the following derived quantities can be requested:
+.TP
+.B year
+The year of each record.
+.TP
+.B month
+The month of each record.
+.TP
+.B day
+The day of the month of each record.
+.TP
+.B hour
+The hour of each record.
+.TP
+.B min
+The minutes of each record.
+.TP
+.B sec
+The decimal seconds of each record.
+.TP
+.B dist
+Along-track distance from start of leg.  For method of calculation, see OPT(C) [spherical great circle distances], and
+for distance units, see OPT(N) [km].
+.TP
+.B az
+Ship azimuth (heading) measured clockwise from north (in degrees).
+.TP
+.B vel
+Ship speed; see OPT(N) for units [m/s]. 
+.TP
+.B weight
+Weight assigned to this data set (see OPT(W)).
+.TP
+.B carter
+Carter depth correction, if BD(twt) is present in file (in m).  Sign: Correction
+is to be subtracted from uncorrected depths to yield a corrected depth.
+.TP
+.B igrf
+International geomagnetic reference field (total field) (in nTesla).
+.TP
+.B ngrav
+International Gravity reference Field ("normal gravity") (in mGal).
+Field is selected based on the parameter Gravity Theoretical
+Formula Code in the cruise's MGD77 header.  If this is not set or is invalid we default to the IGF 1980.\"'
+Alternatively, specify the field directly using OPT(Af) (see that option for more details).
+.br
+.sp
+The following short-hand flags are also recognized:
+.TP
+.B all
+This returns all data columns in the file.
+.TP
+.B mgd77
+This results in all 27 MGD77 fields being written out in the offical MGD77 order.
+.TP
+.B geo
+This limits the output to 10 fields (BD(time), BD(lon), BD(lat) plus the seven geophysical observations
+BD(twt), BD(depth), BD(mtf1), BD(mtf2), BD(mag), BD(gobs), and BD(faa)).
+By appending BD(+) to either of these set we will also append BD(dist), BD(azim), BD(vel), and
+BD(weight) as listed above.
+.br
+.sp
+As an option, logical tests may be added for any of the observations by appending ,IT(logic),
+which is itself composed of one or more comma-separated instructions
+of the form IT(par)BD(OP)IT(value), where IT(par) is one of the parameters listed above, BD(OP) is
+a logical operator (<, <=, =, !=, >=, >, |), and IT(value) is a constant used in the comparison.  Floating point
+parameters are compared numerically; character parameters are compared lexically (after leading and trailing
+blanks have been removed).  The bit comparison (|) means that at least one of the bits in IT(value)
+must be turned on in IT(par).  At least one of the tests must be true for the record to be output, except for
+tests using UPPER case parameters which all must be true for output to occur.  Note that
+specifying a test does not imply that the corresponding column will be included in the output stream;
+it must be present in IT(columns) for that to occur. Note: some of the operators are special UNIX characters
+and you are advised to place quotes around the entire argument to OPT(F).
+.br
+.sp
+Finally, for MGD77+ files you may optionally append :IT(bittests) which is : (a colon) followed by one or more comma-separated
++-IT(col) terms.  This compares specific bitflags only for each listed column.  Here, + means the chosen bit must
+be 1 (ON) whereas - means it must be 0 (OFF).  All bit tests given must be passed.  By default, MGD77+
+files that have the special BD(MGD77_flags) column present will use those flags, and observations associated with
+ON-bits (meaning they are flagged as bad) will be set to NaN; append : with no trailing information
+to turn this behavior off (i.e., no bit flags will be consulted).
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)[BD(+)]BD(c)|BD(d)|BD(f)|BD(m)|BD(t)IT(code)
+By default, corrected depth (BD(depth)),
+magnetic residual anomaly (BD(mag)), free-air gravity anomaly (BD(faa)),
+and the derived quantity Carter depth correction (BD(carter)) are all
+output as is (if selected in OPT(F)); this option adjusts that behavior.
+For each of these columns there are 2\-4 ways to adjust the data.  Append
+BD(c)(arter), BD(d)(epth), BD(f)(aa), or BD(m)(ag) and select the
+IT(code) for the procedure you want applied.  You may select more than
+one procedure for a data column by summing their numerical IT(code)s
+(1, 2, 4, and 8). E.g., OPT(Ac)3 will first try method OPT(Ac)1 to
+estimate a Carter correction but if BD(depth) is NaN we will next try
+OPT(Ac)2 which only uses BD(twt).  In all cases, if any of the values
+required by an adjustment procedure is NaN then the result will be NaN.
+This is also true if the original anomaly is NaN.  Specify OPT(A+) to
+recalculate anomalies even if the anomaly in the file is NaN.
+Additionally, you can use OPT(At) to create fake times for cruises that
+has no time; these are based on distances and cruise duration.
+.TP
+OPT(Ac)
+Determines how the BD(carter) correction term is calculated.  Below, 
+C(BD(twt)) stands for the Carter-corrected depth (it also depends on
+BD(lon), BD(lat)), U(BD(twt), IT(v)) is the uncorrected depth
+(= BD(twt) * IT(v) / 2) using as IT(v) the "Assumed Sound Velocity"
+parameter in the MGD77 header (if it is a valid velocity, otherwise we default to
+1500 m/s); alternatively, append your preferred velocity IT(v) in m/s,
+TU(BD(depth), IT(v)) is the 2-way travel time estimated from the
+(presumably) uncorrected BD(depth), and TC(BD(depth)) is the
+2-way travel time obtained by inverting the (presumably) corrected BD(depth)
+using the Carter correction formula.
+Select from
+.br
+OPT(Ac1)[,IT(v)]
+returns difference between U(BD(twt), IT(v)) and BD(depth) [Default].
+.br
+OPT(Ac2)[,IT(v)]
+returns difference between U(BD(twt), IT(v)) and Carter (BD(twt)).
+.br
+OPT(Ac4)[,IT(v)]
+returns difference between (assumed uncorrected) BD(depth) and Carter (TU(BD(depth))).
+.br
+OPT(Ac8)[,IT(v)]
+returns difference between U(TC(BD(depth)), IT(v)) and BD(depth).
+.TP
+OPT(Ad)
+Determines how the BD(depth) column output is obtained:
+.br
+OPT(Ad1)
+returns BD(depth) as stored in the data set [Default].
+.br
+OPT(Ad2)[,IT(v)]
+returns calculated uncorrected depth U(BD(twt), IT(v)).
+.br
+OPT(Ad4)
+returns calculated corrected depth C(BD(twt)).
+.TP
+OPT(Af)
+Determines how the BD(faa) column output is obtained. If BD(ngrav) (i.e., the International
+Gravity reference Field (IGF), or "normal gravity") is required
+it is selected based on the MGD77 header parameter "Theoretical Gravity Formula Code";
+if this code is not present or is invalid we default to 4.  Alternatively, append the preferred IT(field)
+(1\-4) to select 1 (Heiskanen 1924), 2 (IGF 1930), 3 (IGF 1967) or 4 (IGF 1980).  Select from
+.br
+OPT(Af1)[,IT(field)]
+returns BD(faa) as stored in the data set [Default]. Optionally, sets the IGF IT(field)
+to use if you also have requested BD(ngrav) as an output column in OPT(F).
+.br
+OPT(Af2)[,IT(field)]
+returns the difference between BD(gobs) and BD(ngrav) (with optional IT(field) directive).
+.br
+OPT(Af3)[,IT(field)]
+returns the combination of BD(gobs) + BD(eot) - BD(ngrav) (with optional IT(field) directive).
+.TP
+OPT(Am)
+Determines how the BD(mag) column output is obtained.  There may be one or two
+total field measurements in the file (BD(mtf1) and BD(mtf2)), and the column BD(msens)
+may state which one is the leading sensor (1 or 2; it may also be undefined).  Select from
+.br
+OPT(Am1)
+returns BD(mag) as stored in the data set [Default].
+.br
+OPT(Am2)
+returns the difference between BD(mgfx) and BD(igrf), where
+BD(x) is the leading sensor (BD(1) or BD(2)) indicated by the BD(msens) data field
+(defaults to BD(1) if unspecified).
+.br
+OPT(Am4)
+returns the difference between BD(mgfx) and BD(igrf), where
+BD(x) is the sensor (BD(2) or BD(1)) IT(not) indicated by the BD(msens) data field
+(defaults to BD(2) if unspecified).
+.TP
+OPT(C)BD(f)|BD(g)|BD(e)
+Append a one-letter code to select the procedure for along-track distance
+calculation (see OPT(N) for selecting units):
+.br
+	BD(f) Flat Earth distances.
+.br
+	BD(g) Great circle distances [Default].
+.br
+	BD(e) Geodesic distances on current GMT ellipsoid.
+.TP
+OPT(Da)IT(startdate)
+Do not list data collected before IT(startdate) (yyyy-mm-ddBD(T)[hh:mm:ss])  [Default is start of cruise].
+Use OPT(DA) to exclude records whose time is undefined (i.e., NaN). [Default reports those records].
+.TP
+OPT(Db)IT(stopdate)
+Do not list data collected on or after IT(stopdate) (yyyy-mm-ddBD(T)[hh:mm:ss]). [Default is end of cruise].
+Use OPT(DB) to exclude records whose time is undefined (i.e., NaN). [Default reports those records].
+.TP
+OPT(E)
+Exact match: Only output records that match all the requested geophysical columns
+[Default outputs records that matches at least one of the observed columns].
+.TP
+OPT(Ga)IT(startrec)
+Do not list records before IT(startrec)  [Default is 0, the first record].
+.TP
+OPT(Gb)IT(stoprec)
+Do not list data after IT(stoprec). [Default is the last record].
+.TP
+OPT(I)IT(ignore)
+Ignore certain data file formats from consideration. Append BD(a|c|t) to ignore
+MGD77 ASCII, MGD77+ netCDF, or plain tab-separated ASCII table files, respectively. The option may
+be repeated to ignore more than one format.  [Default ignores none].
+.TP
+OPT(L)[IT(corrtable)]
+Apply optimal corrections to columns where such corrections are available.  Append the correction
+table to use [Default uses the correction table mgd77_corrections.txt in the BD($MGD77_HOME) directory].
+For the format of this file, see CORRECTIONS below.
+.TP
+OPT(n)
+Issue a segment header record with cruise ID for each cruise.
+.TP
+OPT(Nd)|BD(s)IT(unit)
+Append BD(d) for distance or BD(s) for speed, then give the desired IT(unit) as
+BD(e) (meter or m/s), BD(k) (km or km/hr), BD(m) (miles or miles/hr), or
+BD(n) (nautical miles or knots).  [Default is OPT(Ndk) OPT(Nse) (km and m/s)].
+.TP
+OPT(Qa)IT(min)/IT(max)
+Specify an accepted range (IT(min)/IT(max)) of azimuths.  Records whose track azimuth falls
+outside this range are ignored [0-360].
+.TP
+OPT(Qv)IT(min)/IT(max)
+Specify an accepted range (IT(min)/IT(max); or just IT(min) if there is no upper limit)
+of velocities.  Records whose track speed falls outside this range are ignored [0-infinity].
+#include "explain_-Rgeo.txt"
+.TP
+OPT(Sa)IT(startdist)[unit]
+Do not list data that are less than IT(startdist) meter along track from port of departure.
+Append BD(k) for km, BD(m) for miles, or BD(n) for nautical miles [Default is 0 meters].
+.TP
+OPT(Sb)IT(stopdist)[unit]
+Do not list data that are IT(stopdist) or more meters along track from port of departure.
+Append BD(k) for km, BD(m) for miles, or BD(n) for nautical miles [Default is end of track].
+.TP
+OPT(T)[BD(m)|BD(e)]
+Turns OFF the otherwise automatic adjustment of values based on correction terms that are
+stored in the MGD77+ file and used to counteract such things as wrong units used by the source
+institution when creating the original MGD77 file from which the MGD77+ file derives (the
+option has no effect on plain MGD77 ASCII files).  Append BD(m) or BD(e) to limit the
+option to the MGD77 or extended columns set only [Default applies to both].
+#include "explain_-V.txt"
+.TP
+OPT(W)IT(weight)
+Set the weight for these data.  Weight output option must be set in OPT(F).  This is
+useful if the data are to be processed with the weighted averaging techniques offered by
+BD(blockmean), BD(blockmedian), and BD(blockmode) [1].
+.TP
+OPT(Z)IT(+)|BD(-)
+Append the sign you want for BD(depth), BD(carter), and BD(msd) values below sea level
+(OPT(Z-) gives negative bathymetry) [Default is positive down].
+#include "explain_-bo_full.txt"
+OPT(h) is ignored if GMT_bo_OPT is selected.  Likewise, string-fields cannot be selected.
+Note that if time is one of the binary output columns it will be stored as Unix-time (seconds
+since 1970).  To read this information in GMT to obtain absolute calendar time will require you
+to use --TIME_SYSTEM=unix.
+.TP
+OPT(h)
+Issue a header record with names for each data field.
+#include "explain_help.txt"
+.SH EXAMPLES
+To get a (distance, heading, gravity, bathymetry) listing from 01010047.mgd77,
+starting at June 3 1971 20:45 and ending at distance = 5000 km, use the following command:
+.br
+.sp
+BD(mgd77list) 01010047 OPT(Da)1971-06-03T20:45 OPT(Sb)5000 OPT(F)dist,azim,faa,depth > myfile.d
+.br
+.sp
+To make input for BD(blockmean) and BD(surface) using free-air anomalies from all the cruises listed in the file cruises.lis,
+but only the data that are inside the specified area, and make the output binary:
+.br
+.sp
+BD(mgd77list) `cat cruises.lis` OPT(F)lon,lat,faa OPT(R)-40/-30/25/35 OPT(bo) > allgrav.b
+.br
+.sp
+To extract the locations of depths exceeding 9000 meter that were not interpolated (BD(btc) != 1)
+from all the cruises listed in the file cruises.lis:
+.br
+.sp
+BD(mgd77list) `cat cruises.lis` OPT(F)"depth,DEPTH>9000,BTC!=1" > really_deep.d
+.br
+.sp
+To extract dist, faa, and grav12_2 from records whose depths are shallower than 3 km
+and where none of the requested fields are NaN, from all the MGD77+ netCDF files whose
+cruise ids are listed in the file cruises.lis, we try
+.br
+.sp
+BD(mgd77list) `cat cruises.lis` OPT(E) OPT(Ia) OPT(F)"dist,faa,grav12_2,depth<3000" > shallow_grav.d
+.br
+.sp
+To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files whose
+cruise ids are listed in the file cruises.lis, but only retrieve records
+whose bitflag for faa indicates BAD values, we try
+.br
+.sp
+BD(mgd77list) `cat cruises.lis` OPT(E) OPT(Ia) OPT(F)"dist,faa,grav12_2:+faa" > bad_grav.d
+.br
+.sp
+To output lon, lat, mag, and faa from all the cruises listed in the file cruises.lis,
+but recalculate the two residuals based on the latest reference fields, try:
+.br
+.sp
+BD(mgd77list) `cat cruises.lis` OPT(F)lon,lat,mag,faa OPT(Af)2,4 OPT(Am)2 > data.d
+.SH RECALCULATED ANOMALIES
+When recalculated anomalies are requested (either explicitly via the OPT(A) option or implicitly
+via E77 metadata in the MGD77+ file) we only do so for the records whose original anomaly was
+not a NaN.  This restriction is implemented since many anomaly columns contains corrections, usually
+in the form of hand-edited changes, that cannot be duplicated from the corresponding observation.
+.SH IGRF
+The IGRF calculations are based on a Fortran program written by Susan Macmillan,
+British Geological Survey, translated to C via f2c by Joaquim Luis, U Algarve, and adapted to
+GMT-style by Paul Wessel.
+.SH IGF
+The equations used are reproduced here using coefficients extracted directly from the source code (let us know if you find errors):
+.br
+(1) g = MGD77_IGF24_G0 * [1 + MGD77_IGF24_G1 * sin^2(lat) - MGD77_IGF24_G2 * sin^2(2*lat) + MGD77_IGF24_G3 * cos^2(lat) * cos^2(lon-18)]
+.br
+(2) g = MGD77_IGF30_G0 * [1 + MGD77_IGF30_G1 * sin^2(lat) - MGD77_IGF30_G2 * sin^2(2*lat)]
+.br
+(3) g = MGD77_IGF67_G0 * [1 + MGD77_IGF67_G1 * sin^2(lat) - MGD77_IGF67_G2 * sin^2(2*lat)]
+.br
+(4) g = MGD77_IGF80_G0 * [(1 + MGD77_IGF80_G1 * sin^2(lat)) / sqrt (1 - MGD77_IGF80_G2 * sin^2(lat))]
+.SH CORRECTIONS
+The correction table is an ASCII file with coefficients and parameters needed to carry out corrections.
+Comment records beginning with # are allowed.  All correction records are of the form
+.br
+.sp
+IT(cruiseID observation correction)
+.br
+.sp
+where IT(cruiseID) is a NGDC prefix, IT(observation) is one of the abbreviations for geophysical observations
+listed under OPT(F) above, and IT(correction) consists of one or more IT(term)s that will be summed up and
+then BD(subtracted) from the observation before output.  Each IT(term) must have this exact syntax:
+.br
+.sp
+IT(factor)[*[IT(function)]([IT(scale)](IT(abbrev)[-IT(origin)]))[^IT(power)]]
+.br
+.sp
+where terms in brackets are optional (the brackets themselves are not used but regular parentheses must
+be used as indicated).  No spaces are allowed except between IT(term)s. The IT(factor) is the amplitude
+of the basis function, while the optional IT(function) can be one of sin, cos, or exp. The
+optional IT(scale) and IT(origin) can be used to translate the argument (before giving it to the optional
+function).  The argument IT(abbrev) is one of the abbreviations for observations listed above.  If IT(origin) is
+given as BD(T) it means that we should replace it with the value of IT(abbrev) for the very
+first record in the file (this is usually only done for IT(time)).  If the first record entry is
+NaN we revert IT(origin) to zero.  Optionally, raise the entire expression to the given IT(power),
+before multiplying by the amplitude.  The following is an example of fictitious corrections to the
+cruise 99999999, implying the BD(depth) should have the Carter correction removed, BD(faa) should have a linear
+trend removed, the magnetic anomaly (BD(mag)) should be corrected by a strange dependency on ship heading and latitude, and
+BD(gob)s needs to have 10 mGal added (hence given as -10):
+.br
+.sp
+99999999 depth	1.0*((carter))
+.br
+99999999 faa	14.1	1e-5*((time-T))
+.br
+99999999 mag	0.5*cos(0.5*(azim-19))^2	1.0*exp(-1e-3(lat))^1.5
+.br
+99999999 gobs	-10
+.SH "SEE ALSO"
+.IR mgd77convert (1),
+.IR mgd77info (1),
+.IR mgd77manage (1),
+.IR mgd77track (1)
+#include "refs.i"
+The Marine Geophysical Data Exchange Format - MGD77, see
+\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
+.br
+IGRF, see \fIhttp://www.ngdc.noaa.gov/IAGA/vmod/igrf.html\fP

@@ -1,0 +1,55 @@
+/*
+ * $Id$
+ *
+ * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+ * See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; version 3 or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * Contact info: gmt.soest.hawaii.edu
+ *--------------------------------------------------------------------
+ */
+
+#pragma once
+#ifndef _CONFIG_H
+#define _CONFIG_H
+
+/* configured options and settings for GMT */
+#define GMT_PACKAGE_VERSION_MAJOR @GMT_PACKAGE_VERSION_MAJOR@
+#define GMT_PACKAGE_VERSION_MINOR @GMT_PACKAGE_VERSION_MINOR@
+#define GMT_PACKAGE_VERSION_PATCH @GMT_PACKAGE_VERSION_PATCH@
+
+#define GMT_PACKAGE_VERSION "@GMT_PACKAGE_VERSION@"
+#define GMT_SVN_REVISION "@SVN_VERSION@"
+#define GMT_PACKAGE_VERSION_WITH_SVN_REVISION "@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@"
+
+#define GMT_VERSION_STRING "@GMT_VERSION_STRING@"
+#define GMT_LONG_VERSION_STRING "@GMT_LONG_VERSION_STRING@"
+
+#define GMT_TRAC_WIKI "@GMT_TRAC_WIKI@"
+
+/* path to executables/libs */
+#define GMT_BINDIR_RELATIVE "@GMT_BINDIR@"
+#define GMT_LIBDIR_RELATIVE "@GMT_LIBDIR@"
+
+/* path to shared files */
+#define GMT_SHARE_PATH "@CMAKE_INSTALL_PREFIX@/@GMT_SHARE_PATH@"
+#define GMT_SHAREDIR_RELATIVE "@GMT_SHARE_PATH@"
+
+/* path to documentation */
+#define GMT_DOC_PATH "@CMAKE_INSTALL_PREFIX@/@GMT_DOC_PATH@"
+
+/* min required GSHHG version and its netCDF extension */
+#define GSHHG_MIN_REQUIRED_VERSION {@MIN_REQUIRED_GSHHG_VERSION_MAJOR@, @MIN_REQUIRED_GSHHG_VERSION_MINOR@, @MIN_REQUIRED_GSHHG_VERSION_PATCH@}
+#define GSHHG_EXT "@GSHHG_EXT@"
+
+#endif /* !_CONFIG_H */
+
+/* vim: set ft=c: */

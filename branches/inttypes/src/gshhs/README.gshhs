@@ -1,0 +1,274 @@
+#	$Id$
+
+			G S H H S
+
+Global Self-consistent Hierarchical High-resolution Shorelines
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
+
+Version Jul 15, 2011
+Work with the latest GSHHS data set version 2.2.0.  Here, the
+greenwich flag is now 2-bit with values 0-3 (0 = no Greenwich
+nor Dateline crossing, 1 = Greenwich crossing, 2 = Dateline
+crossing, 3 = both), and the area is stored with a magnitude
+embedded in the flag; see code for details.  This ensure higher
+precision for smaller areas.  gshhs.c is now a module.  Also
+set river flag for the river-lakes in the WDBII files so they
+can be detected.
+
+Version Jan 1, 2011
+No source code changes but expected to work with the latest GSHHS
+data set version 2.1.1
+
+Version July 1, 2010
+No source code changes but expected to work with the latest GSHHS
+data set version 2.1.0
+
+Version July 1, 2009
+This version include a revised GSHHS data format in which the
+polygon ID of the parent (that contains this polygon) is given
+(or -1 if none), as well as the ancestor (Id of the full resolution
+polygon that yielded this reduced polygon), and the area of the
+reduced resolution polygon.  We also keep track if a lake is a
+river-lake or a regular lake.  The header structure has thus
+increased by three integer items.  The GSHHS data set is now
+version 2.0; from now on we will no longer give version number for 
+the gshhs supplement programs since it leads to confusion with the
+GSHHS data version numbers.  See gshhs.h for new structure.
+
+Version 1.11 Feb 15, 2009
+This version adds the -I<id> option go gshhs so that a single
+polygon can be extracted.
+Also, thanx to Markus Metz,GSHHS shorelines can now be imported
+directly into GRASS with v.in.gshhs, a GRASS AddOn available on
+http://grass.osgeo.org/wiki/GRASS_AddOns. This module
+works with GRASS 6.4 and GSHHS databases version 1.4 and above.
+As an alternative there is still gshhstograss, a standalone program
+creating a simple GRASS ASCII vector. It is recommended to use
+v.in.gshhs instead.
+
+Version 1.10 May 1, 2008
+Due to a numbering snafu the GMT 4.2.1 release started calling
+the GSHHS data set using the same numbering as the GSHHS software.
+Thus, GSHHS v 1.9 is the data set version that follows v1.6.
+For the GMT 4.3.0 release the GSHHS version is 1.10 since we
+have added two missing islands off Long Island, NY.
+Also, thanx to Markus Metz the gshhstograss.c has been updated.
+--------------------------------------------------------------
+Version 1.9 Sept 1, 2007
+
+Now distributing the WDB borders and rivers with GSHHS, hence
+gshhs.c needed a few tweaks to recognize the difference.  No
+data format change, but we increment version number to 1.6 do
+indicate a change in composition (river+borders added).
+--------------------------------------------------------------
+Version 1.8 March 31, 2007
+
+Minor fix to ensure gshhstograss.c will compile.  Version 1.5
+of the GSHHS data released, fixing a few crossings and dupli-
+cate points.  No data format change so 1.7 can read as well.
+
+--------------------------------------------------------------
+Version 1.7 Nov 11, 2006
+
+Minor bug fix: gshhs.c used && instead of & in one of the bit
+manipulations, thus always yielding 1 as the level.
+
+--------------------------------------------------------------
+Version 1.6 May 13, 2006
+
+Minor update to handle the latest GSHHS v1.4 database. Once again
+we claim that now, for sure, GSHHS is finally self-consistent!
+Due to a bug in our consistency checker a few lingering problems
+made it into v1.3 - these should now all be gone.  Many thanx to
+Thomas DeMay for contributing the results from his error checking.
+We have also once again made changes to the GSHHS header structure
+to make it only contain integer*4 (and not a mix of 2- and 4-byte
+integers) as well as be a multiple of 16 bytes.  Thus, the new
+structure is
+
+int id;				/* Unique polygon id number, starting at 0 */
+int n;				/* Number of points in this polygon */
+int flag;			/* level + version << 8 + greenwich << 16 + source << 24 
+int west, east, south, north;	/* min/max extent in micro-degrees */
+int area;			/* Area of polygon in 1/10 km^2 */
+
+
+Here, level, version, greenwhich, and source are
+level:		1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake
+version:	Set to 4 for GSHHS version 1.4
+greenwich:	1 if Greenwich is crossed
+source:		0 = CIA WDBII, 1 = WVS
+
+These values are recovered using bit math.  For further info about
+GSHHS see the earlier comments below.
+
+--------------------------------------------------------------
+Version 1.5 Sept 14, 2004
+
+Minor update to handle the latest GSHHS v1.3 database.  GSHHS is now
+[finally] self-consistent: There are no longer any lingering cross-
+overs (internal or external), all polygons are explicitly closed,
+and there are no duplicate points along the lines.  The GSHHS header
+record has been expanded by one 4-byte element (called version and
+set to 3 for all polygons) so that the size of the entire header
+structure is a multiple of 8 bytes (now 40 bytes).  The old structure
+was not as portable because padding of structures is architecture-
+dependent.  To be explicit, each header in v1.3 now consist of the
+following variables:
+
+int id;				/* Unique polygon id number, starting at 0 */
+int n;				/* Number of points in this polygon */
+int level;			/* 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake */
+int west, east, south, north;	/* min/max extent in micro-degrees */
+int area;			/* Area of polygon in 1/10 km^2 */
+int version;			/* Polygon version, set to 3
+short int greenwich;		/* Greenwich is 1 if Greenwich is crossed */
+short int source;		/* 0 = CIA WDBII, 1 = WVS */
+
+We remind users that the polygons are sorted by polygon length (not
+area), and that the w/e/s/n values for each polygon are those based on
+the full resolution and are simply copied to the other resolutions.
+The decimated polygons will in general have a different w/e/s/n set
+which you can find if you calculate the actual w/e/s/n values.
+
+Allthough gshhs is distributed as a GMT supplement, it makes no references
+to GMT include files or libraries.  If you need to compile gshhs without
+placing the gshhs directory under GMT/src you can run
+
+cc gshhs.c -O2 -lm -o gshhs
+cc gshhs_dp.c -O2 -lm -o gshhs_dp
+
+--------------------------------------------------------------
+Version 1.4 Sept 5, 2000
+
+Now GSHHS source code is distributed as a GMT supplement.  The data
+may be obtained separately from the SOEST or NGDC web sites as before.
+The FLIP macro is no longer needed as the programs will determine if
+swab'ing is required.  Do no use dd on the data.
+
+--------------------------------------------------------------
+Version 1.3 Nov 8, 1999
+
+Now all code and data files are explicitly distributed under the
+GNU Public License, see file LICENSE.TXT for more details.
+
+--------------------------------------------------------------
+Version 1.2 May 18, 1999
+
+Made programs POSIX.1 compliant and added binary open for DOS.
+
+--------------------------------------------------------------
+Version 1.1, April 30, 1996
+
+Paul Wessel, G&G, SOEST, U of Hawaii (pwessel@hawaii.edu)
+Walter H. F. Smith, NOAA Geosciences Lab (walter@raptor.grdl.noaa.gov)
+
+Ref: Wessel, P., and W. H. F. Smith, 1996, A global self-consistent,
+        hierarchical, high-resolution shoreline database, J. Geophys.
+        Res., 101, 8741-8743.
+
+For details on data processing etc. we refer you to that reference.
+
+--------------------------------------------------------------------
+This README file explains the usage of the gshhs data sets.  The
+archive consists of the following files (after you unzip the compressed
+files using bzip2 -d):
+
+Name		Content
+--------------------------------------------------------------------
+README		This file
+gshhs.h		Header file for programs
+gshhs.c		Program to extract ASCII data
+gshhs_dp.c	Program to decimate polygons
+gshhs_f.b	Full resolution data
+gshhs_h.b	High resolution data
+gshhs_i.b	Intermediate resolution data
+gshhs_l.b	Low resolution data
+gshhs_c.b	Crude resolution data
+
+In addition, the following program was supplied by Simon Cox (simon@ned.dem.csiro.au)
+and can be used to import the *.b files into a GRASS database:
+
+gshhstograss.c	Import *.b into GRASS GIS database
+
+All the *.b file share the same file structure; thus the gshhs program can
+read and extract data from any of the files.  The program's purpose is
+simply to demonstrate how a programmer may access the data.  Presumably,
+the user wants to access the data from within his/her own programs.
+If plotting the data is the only purpose, we strongly recommend you
+instead use the GMT package which comes with the same data and tools for
+plotting filled landmasses, coastlines, political borders, and rivers.
+	The file(s) contain several successive logical blocks of the form
+
+<polygon header>
+<polygon points>
+
+Each header consist of the following variables:
+
+int id;				/* Unique polygon id number, starting at 0 */
+int n;				/* Number of points in this polygon */
+int level;			/* 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake */
+int west, east, south, north;	/* min/max extent in micro-degrees */
+int area;			/* Area of polygon in 1/10 km^2 */
+short int greenwich;		/* Greenwich is 1 if Greenwich is crossed */
+short int source;		/* 0 = CIA WDBII, 1 = WVS */
+
+Here, int is 4-byte integers and short means 2-byte integers.
+
+The polygon points are stored as n successive records of the form
+
+int	x;	/* longitude of a point in micro-degrees */
+int	y;	/* latitude of a point in micro-degrees */
+
+On some systems, the byte order is swapped relative to the order used on
+a Sun workstation (on which the current data were processed).  To
+determine if you need to swap the byte pairs, do the following test:
+
+1. Compile gshhs
+2. Run gshhs gshhs_c.b | head -1	# This shows the 1st line of output
+3. If the output does not look exactly like the next line:
+
+P      0    1240 1 W 79793839.900 -17.53378 190.32600 -34.83044  77.71625
+
+   you most likely need to swap the byte-pairs.  Simply recompile gsggs with
+  the switch -DFLIP and see if that did the trick.
+4. If all fails you may email one of the authors for advice.
+
+Compile the two programs as follows (with or without the -DFLIP switch):
+
+cc -O gshhs.c -o gshhs [-DFLIP]
+cc -O gshhs_dp.c -o gshhs_dp -lm [-DFLIP]
+
+[and optionally cc -O -o gshhstograss gshhstograss.c -lm [-DFLIP]]
+
+We have provided 5 different resolution of the data which should
+satisfy just about any user.  The [h,i,l,c]-versions were
+derived from the gshhs_f.b full resolution file using the
+Douglas-Peucker algorithm as implemented in gshhs_dp.c  The
+tolerances used were:
+
+File		Content			Tolerance
+-------------------------------------------------
+gshhs_h.c	High resolution		0.2 km
+gshhs_i.c	Interm. resolution	1.0 km
+gshhs_l.c	Low resolution		5.0 km
+gshhs_c.c	Crude resolution	25  km
+
+However, should you need to decimate the full data set using a
+different tolerance you can use the program gshhs_dp to do so:
+
+gshhs_dp gshhs_f.b your_tolerance_in_km newfile.b
+
+gshhs.c can then read the resulting newfile.b
+[Note that output from gshhs_dp WILL NOT need byte swapping since
+it is created on your machine].
+
+The Douglas-Peucker routine implemented in gshhs_dp was kindly
+provided by Dr. Gary J. Robinson, Environmental Systems Science Centre,
+University of Reading, Reading, UK (gazza@mail.nerc-nutis.ac.uk).
+
+Good Luck,
+Paul Wessel and Walter. H. F. Smith
+
+GMT URL:   http://gmt.soest.hawaii.edu

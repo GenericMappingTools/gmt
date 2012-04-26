@@ -1,0 +1,9 @@
+.SH ASCII FORMAT PRECISION
+The ASCII output formats of numerical data are controlled by parameters in
+your BD(gmt.conf) file.  Longitude and latitude are formatted according to
+BD(FORMAT_GEO_OUT), whereas other values are formatted according
+to BD(FORMAT_FLOAT_OUT).  Be aware that the format in effect can lead to loss of
+precision in the output, which can lead to various problems downstream.  If
+you find the output is not written with enough precision, consider switching
+to binary output (OPT(bo) if available) or specify more decimals using
+the BD(FORMAT_FLOAT_OUT) setting.

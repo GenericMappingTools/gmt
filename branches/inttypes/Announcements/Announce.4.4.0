@@ -1,0 +1,21 @@
+Dear GMT user-
+
+We are pleased to announce the release of GMT version 4.4.0.
+This release fixes several problems and adds new functionality
+and is therefore a highly recommended upgrade from 4.3.1.
+It also introduces a new program (greenspline) for gridding and
+interpolation using Green's function splines.  Note that
+there is no change to GSHHS which still is version 1.10.
+
+For a complete list of enhancements and features, please
+see Chapter 1 in the Technical Reference & Cookbook or
+follow the RELEASES link on the updated GMT web page
+(http://gmt.soest.hawaii.edu).
+
+As of this notice, the Oslo, NOAA, SOEST, Sydney, and Brazil
+ftp servers are now updated; the others will follow within
+24 hours (we hope).
+
+Sincerely,
+
+The GMT Team

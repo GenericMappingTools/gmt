@@ -1,0 +1,46 @@
+#include "common_options.txt"
+.TH GMTSET 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+gmtset \- Change individual BD(GMT) default parameters
+.SH SYNOPSIS
+BD(gmtset) [ OPT(C) | OPT(D)[BD(s)|BD(u)] | OPT(G)IT(defaultsfile) ] [ OPT()[BD(BJRXxYycp)]IT(value) ] PARAMETER1 [=] IT(value1) PARAMETER2 [=] IT(value2) PARAMETER3 [=] IT(value3) ...
+.SH DESCRIPTION
+BD(gmtset) will adjust individual BD(GMT) defaults settings in the current directory's BD(gmt.conf)\"'
+file.  If no such file exists one will be created.  The main purpose of BD(gmtset) is
+temporarily to change certain parameters inside a shell script, e.g., set the dots-per-inch
+to 72, run the script, and reset to 1200 dpi.  Optionally, you can specify one or more temporary changes
+directly on any BD(GMT) command line with the syntax PAR(PARAMETER,VALUE); such changes are
+only in effect for that command and do not permanently change the default settings on disk.
+.SH REQUIRED ARGUMENTS
+.TP
+PARAMETER IT(value)
+Provide one or several pairs of parameter/value combinations that you want to modify.  For a
+complete listing of available parameters and their meaning, see the BD(gmt.conf) man page.
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(C)
+Convert a \.gmtdefaults4 file created by GMT4 to a BD(gmt.conf) file used by GMT5.
+The original file is retained.
+.TP
+OPT(D)[BD(s)|BD(u)]
+Modify the BD(GMT) defaults based on the system settings.  Append BD(u) for US
+defaults or BD(s) for SI defaults. [OPT(D) alone gives the version selected at compile time]
+.TP
+OPT(G)IT(defaultsfile)
+Name of specific BD(gmt.conf) file to read and modify [Default looks first in current directory, then in your
+home directory, then in ~/.gmt and finally in the system defaults].
+.TP
+OPT()[BD(BJRXxYycp)]IT(value)
+Set the expansion of any of these shorthand options.
+#include "explain_help.txt"
+.SH EXAMPLES
+To change annotation font to 12-point Helvetica, select grid-crosses of size 0.1 inch,
+and set annotation offset to 0.2 cm:
+.br
+.sp
+gmtset FONT_ANNOT_PRIMARY 12p,Helvetica MAP_GRID_CROSS_SIZE_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.2c
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmt.conf (5),
+.IR gmtdefaults (1),
+.IR gmtget (1)

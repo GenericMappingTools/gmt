@@ -1,0 +1,132 @@
+#!/bin/sh
+#	$Id$
+#
+# Makes a summary plot of one cruise
+#
+if [ $# -ne 1 ]; then
+	echo "usage: mgd77view cruise"
+	echo "	Creates the plot cruise.ps"
+	exit
+fi
+
+GRAVITY=$GMT_GRIDDIR/grav.15.2.B.img,0.1,1
+RELIEF=$GMT_GRIDDIR/S2004_hdr.i2=bs
+#--------------------------------------
+size=0.015i
+
+# 1. Extract data from the MGD77 file
+mgd77list $1 -Flon,lat,time,faa,gobs,ngrav,eot,mag,mtf1,mtf2,diur,igrf,depth,twt -G4 -bod -Z- > $$.1
+
+# Get region to nearest degree
+Rxy=`minmax -I1 -bi14d $$.1 -fg`
+
+#pscoast $Rxy -JM6 -P -B10f5 -Gbrown -K > t.ps
+#psxy -R -J -O -W0.25p $$.1 -bi14d >> t.ps
+#gv t.ps &
+
+# 2. Sample the global gravity grid
+grdtrack -G$GRAVITY $$.1 -bi14d -bod $Rxy -fg > $$.2
+
+# 3. Sample the global topography grid
+grdtrack -G$RELIEF  $$.2 -bi15d -bod $Rxy -fg > $$.b
+#cp $$.b t.b
+
+mgd77info $1 -E > $$.info
+
+do_twt=`awk '{if (NR == 2) printf "%d\n", $14}' $$.info`
+do_mf=`awk '{if (NR == 2) printf "%d\n", $18+$19}' $$.info`
+do_ma=`awk '{if (NR == 2) printf "%d\n", $20}' $$.info`
+do_gf=`awk '{if (NR == 2) printf "%d\n", $24}' $$.info`
+do_ga=`awk '{if (NR == 2) printf "%d\n", $26}' $$.info`
+
+# Lay down relief pane:
+
+gmtconvert -F2,12 -bi16d -bod $$.b > $$.depth
+gmtconvert -F2,13 -bi16d -bod $$.b > $$.twt
+gmtconvert -F2,15 -bi16d -bod $$.b > $$.s2004
+Rz=`minmax -I3600/500 $$.depth $$.s2004 -bi2d -f0T --TIME_SYSTEM=unix`
+Rt=`minmax -I3600/1 $$.twt -bi2d -f0T --TIME_SYSTEM=unix`
+
+B=
+if [ $do_twt -eq 0 ]; then
+	B=e
+fi
+psbasemap $Rz -JX9iT/2i -Bp7df1d/0Sn -Bs1O/0Sn -K --PLOT_DATE_FORMAT="-o yyyy" --TIME_INTERVAL_FRACTION=0.3 > $1.ps
+psbasemap -R -J -B0/a2000f500W${B} -O -K >> $1.ps
+psxy -R -J -O -K -bi2d $$.s2004 -Wfaint  --TIME_SYSTEM=unix >> $1.ps
+psxy -R -J -O -K -bi2d $$.depth -Sc${size} -Gred  --TIME_SYSTEM=unix >> $1.ps
+if [ $do_twt -gt 0 ]; then
+	psxy $Rt -J -O -K -B0/2f1E -bi2d $$.twt -Sc${size} -Ggreen  --TIME_SYSTEM=unix >> $1.ps
+else
+	echo "9 1 12 90 1 CT NO TWT" | pstext -R0/9/0/2 -Jx1i -O -K -Dj0.25/0.25i -N >> $1.ps
+fi
+
+# Lay down mag pane:
+
+gmtconvert -F2,7 -bi16d -bod $$.b > $$.mag
+gmtconvert -F2,8 -bi16d -bod $$.b > $$.mtf1
+gmtconvert -F2,9 -bi16d -bod $$.b > $$.mtf2
+gmtconvert -F2,10 -bi16d -bod $$.b > $$.diur
+gmtconvert -F2,11 -bi16d -bod $$.b > $$.igrf
+Rr=`minmax -I3600/500 $$.mtf? $$.igrf -bi2d -f0T --TIME_SYSTEM=unix`
+Ra=`minmax -I3600/500 $$.mag $$.diur -bi2d -f0T --TIME_SYSTEM=unix`
+
+B=
+if [ $do_ma -eq 0 ]; then
+	B=e
+fi
+psbasemap $Rr -JX9iT/2i -Bp7df1d/0sn -Bs1O/0sn -O -K -Y2.2i >> $1.ps
+psbasemap -R -J -B0/a5000f1000W${B} -O -K >> $1.ps
+psxy -R -J -O -K -bi2d $$.igrf -Wfaint  --TIME_SYSTEM=unix >> $1.ps
+psxy -R -J -O -K -bi2d $$.mtf1 -Sc${size} -Ggreen  --TIME_SYSTEM=unix >> $1.ps
+psxy -R -J -O -K -bi2d $$.mtf2 -Sc${size} -Gcyan  --TIME_SYSTEM=unix >> $1.ps
+if [ $do_ma -gt 0 ]; then
+	psxy $Ra -J -O -K -bi2d -B0/500f100E $$.mag -Sc${size} -Gred  --TIME_SYSTEM=unix >> $1.ps
+	psxy -R -J -O -K -bi2d $$.diur -Sc${size} -Gblue  --TIME_SYSTEM=unix >> $1.ps
+else
+	echo "9 1 12 90 1 CT NO MAG" | pstext -R0/9/0/2 -Jx1i -O -K -Dj0.25/0.25i -N >> $1.ps
+fi
+
+# Lay down grav pane:
+
+gmtconvert -F2,3 -bi16d -bod $$.b > $$.faa
+gmtconvert -F2,4 -bi16d -bod $$.b > $$.gobs
+gmtconvert -F2,5 -bi16d -bod $$.b > $$.ngrav
+gmtconvert -F2,6 -bi16d -bod $$.b > $$.eot
+gmtconvert -F2,14 -bi16d -bod $$.b > $$.ss
+Rr=`minmax -I3600/500 $$.gobs $$.ngrav -bi2d -f0T --TIME_SYSTEM=unix`
+Ra=`minmax -I3600/50 $$.ss $$.faa $$.eot -bi2d -f0T --TIME_SYSTEM=unix`
+
+B=
+if [ $do_ga -eq 0 ]; then
+	B=e
+fi
+psbasemap $Rr -JX9iT/2i -Bp7df1d/0sn -Bs1O/0sn -O -K -Y2.2i >> $1.ps
+psbasemap -R -J -B0/a500f100W${B} -O -K >> $1.ps
+psxy -R -J -O -K -bi2d $$.ngrav -Wfaint --TIME_SYSTEM=unix >> $1.ps
+psxy -R -J -O -K -bi2d $$.gobs -Sc${size} -Ggreen --TIME_SYSTEM=unix >> $1.ps
+if [ $do_ga -gt 0 ]; then
+	psxy $Ra -J -O -K -bi2d -B0/100f50E $$.ss -Wfaint,gray --TIME_SYSTEM=unix >> $1.ps
+	psxy -R -J -O -K -bi2d $$.faa -Sc${size} -Gred --TIME_SYSTEM=unix >> $1.ps
+	psxy -R -J -O -K -bi2d $$.eot -Sc${size} -Gblue --TIME_SYSTEM=unix >> $1.ps
+else
+	echo "9 1 12 90 1 CT NO FAA" | pstext -R0/9/0/2 -Jx1i -O -K -Dj0.25/0.25i -N >> $1.ps
+fi
+
+pslegend -R0/9/0/1 -Jx1i -Dx0/2.5i/9i/0.3i/LT -O --ANNOT_FONT_SIZE_PRIMARY=12p << EOF >> $1.ps
+N 6
+S 0.1i - 0.2i - 0.25p 0.25i IGF/IGRF/S2004
+S 0.1i c 0.1i red 0.25p 0.3i faa/mag/depth
+S 0.1i c 0.1i green 0.25p 0.3i gobs/mtf1/twt
+S 0.1i c 0.1i cyan 0.25p 0.3i -/mgf2/-
+S 0.1i - 0.2i - 0.25p,gray 0.25i SS15
+S 0.1i c 0.1i blue 0.25p 0.3i eot/diur/-
+EOF
+
+# Trailer
+psxy -R -J -O /dev/null >> $1.ps
+
+# Clean up
+
+rm -f $$.*
+gv $1.ps &

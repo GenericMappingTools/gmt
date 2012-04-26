@@ -1,0 +1,54 @@
+/*
+ * $Id$
+ */
+
+#pragma once
+#ifndef GMT_VERSION_H_
+#define GMT_VERSION_H_
+
+/* for manpages only */
+#define MANDATE "@DAY@ @MONTHNAME@ @YEAR@"
+
+#define GMT_MAJOR_VERSION @GMT_PACKAGE_VERSION_MAJOR@
+#define GMT_MINOR_VERSION @GMT_PACKAGE_VERSION_MINOR@
+#define GMT_RELEASE_VERSION @GMT_PACKAGE_VERSION_PATCH@
+#define GMT_VERSION_YEAR @GMT_VERSION_YEAR@
+
+#cmakedefine HAVE_SVN_VERSION
+#cmakedefine GMT_SOURCE_CODE_CONTROL_VERSION_STRING "@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@"
+#ifdef HAVE_SVN_VERSION
+#	define GMT_STRING "@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@"
+#elif defined GMT_SOURCE_CODE_CONTROL_VERSION_STRING
+#	define GMT_STRING "@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@ (r@GMT_SOURCE_CODE_CONTROL_VERSION_STRING@)"
+#endif
+
+#ifdef __x86_64__
+#	define GMT_VER_64 " [64-bit]"
+#else
+#	define GMT_VER_64 ""
+#endif
+
+#ifdef GMT_COMPAT
+#	define GMT_VER_COMPAT " [C4]"
+#else
+#	define GMT_VER_COMPAT ""
+#endif
+
+#ifdef _OPENMP /* Open MP Parallelization is on */
+#	define GMT_MP " [MP]"
+#else
+#	define GMT_MP ""
+#endif
+
+#ifndef GMT_MANPAGE
+#	define GMT_VERSION GMT_version()
+	static inline char *GMT_version () {
+		/* final string returned by GMT_version() */
+		static char version[] = GMT_STRING GMT_VER_64 GMT_VER_COMPAT GMT_MP;
+		return version;
+	}
+#endif /* !GMT_MANPAGE */
+
+#endif /* !GMT_VERSION_H_ */
+
+/* vim: set ft=c: */

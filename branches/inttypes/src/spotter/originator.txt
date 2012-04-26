@@ -1,0 +1,82 @@
+#include "common_options.txt"
+.TH ORIGINATOR 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
+.SH NAME
+originator \- Associate seamounts with nearest hotspot point sources
+.SH SYNOPSIS
+BD(originator) [ IT(table) ] OPT(E)IT(rotfile) 
+OPT(F)IT(hs_file) 
+[ OPT(D)IT(d_km) ] [ OPT(L)[IT(flag)] ] [ OPT(N)IT(upper_age) ] [ OPT(Q)IT(r/t) ] 
+[ OPT(S)[IT(n_hs)] ] [ OPT(T) ] [ GMT_V_OPT ]  OPT(W)IT(maxdist) ] [ OPT(Z) ]
+[ GMT_bi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ] 
+.SH DESCRIPTION
+BD(originator) reads (longitude, latitude, height, radius, crustal_age) records from IT(infiles) 
+[or standard input] and uses the given Absolute Plate Motion (APM) stage or total reconstruction
+rotation file and the list of hotspot locations to determine the most likely origin (hotspot)
+for each seamount.  It does so by calculating flowlines back in time and determining
+the closest approach to all hotspots.  The output consists of the input records with
+four additional fields added for each of the IT(n_hs) closest hotspots.  The four fields
+are the hotspot id (e.g., HWI), the stage id of the flowline segment that came closest,
+the pseudo-age of the seamount, and the closest distance to the hotspot (in km).
+See option OPT(:) on how to read (latitude, longitude,height, radius, crustal_age) files.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "euler.txt"
+#include "hotspot.txt"
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+.TP
+OPT(D)IT(d_km)
+Sets the flowline sampling interval in km.  [Default is 5].
+.TP
+OPT(L)[IT(flag)]
+Output closest approach for nearest hotspot only (ignores OPT(S)).
+Choose OPT(Lt) for (IT(time), IT(dist), IT(z)) [Default], OPT(Lw) for (IT(omega), IT(dist), IT(z)),
+and OPT(Ll) for (lon, lat, time, dist, z).  Normally, IT(dist) is in km; use
+upper case modifiers BD(TWL) to get IT(dist) in spherical degrees.
+.TP
+OPT(N)IT(upper_age)
+Set the maximum age to extend the oldest stage back in time [no extension].
+.TP
+OPT(Q)IT(r/t)
+.TP
+INput files only has (IT(x),IT(y),IT(z)); specify constant values for IT(r),IT(t) that
+will be implied for each record.
+OPT(S)[IT(n_hs)]
+Set the number of closest hotspots to report [Default is 1].
+.TP
+OPT(T)
+Truncate seamount ages exceeding the upper age set with OPT(N) [no truncation].
+#include "explain_-V.txt"
+.TP
+OPT(W)IT(maxdist)
+Only report those seamounts whose flowlines came within IT(maxdist) to any hotspot
+[Default reports all seamounts].
+.TP
+OPT(Z)
+Use the hotspot ID number rather than the name tag in output records.
+#include "explain_-bi.txt"
+[Default is 5 input columns].
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To find the likely (hotspot) origins of the seamounts represented by the (x,y,z,r,tc) points
+in the file seamounts.d, using the DC85.d Euler poles and the pac_hs.d list of possible hotspots,
+and report the 2 most likely hotspot candidates for each seamount, run
+.br
+.sp
+BD(originator) seamounts.d OPT(S)2 OPT(E)DC85.d OPT(F)pac_hs.d > origins.d
+.br
+.sp
+.SH "SEE ALSO"
+.IR GMT (1),
+.IR grdrotater (1),
+.IR grdspotter (1),
+.IR project (1),
+.IR mapproject (1),
+.IR backtracker (1),
+.IR hotspotter (1)
+.SH REFERENCES
+Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
+.br

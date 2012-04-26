@@ -1,0 +1,45 @@
+#include "common_options.txt"
+.TH GRDOKB 1 MANDATE GMT_STRING "Generic Mapping Tools [potential supplement]"
+.SH NAME
+grdokb \- Compute the gravity effect of a grid by the method of Okabe
+.SH SYNOPSIS
+BD(grdokb) [ OPT(C)IT(density) ]
+[ OPT(D) ] [ OPT(F)IT(xy_file) ] [ OPT(G)IT(outputgrid.nc) ] 
+[ OPT(L)IT(z_observation) ] 
+[ OPT(M) ] GMT_Rgeo_OPT [ OPT(S)IT(radius) ] 
+[ OPT(Z)IT(level) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+.SH DESCRIPTION
+BD(grdokb) will compute the gravity anomaly of a body described by one or (optionally) two grids
+The output can either be along a given set of xy locations or on a grid. This method is not particularly fast 
+but allows computing the anomaly of arbitrarily complex shapes.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(C)IT(density) Sets body density in SI. This option is mutually exclusive with OPT(H).
+.TP
+OPT(F)IT(xy_file) Provide locations where the anomaly will be computed. Note this option is mutually 
+exlusive with OPT(G).
+.TP
+OPT(G)IT(outgrid.nc)
+Output the gravity anomaly at nodes of this grid file.
+#include "explain_-R.txt"
+.SH OPTIONAL ARGUMENTS
+#include "explain_-V.txt"
+.TP
+OPT(L) sets level of observation [Default = 0]. That is the height (z) at which anomalies are computed. 
+.TP
+OPT(M) Map units TRUE; x,y in degrees, dist units in m. [Default dist unit = x,y unit] 
+.TP
+OPT(Z) level of reference plane [Default = 0]. Use this option when the triangles describe a non-closed surface and the volume is deffined from each triangle and this reference level. An example will be the whater depth to compute a Bouguer anomaly.
+#include "explain_-f.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+Suppose you ...
+.sp
+BD(grdokb) 
+.SH "SEE ALSO"
+.IR GMT (1)
+
+.SH REFERENCE
+Okabe, M., Analytical expressions for gravity anomalies due to polyhedral bodies and translation into 
+magnetic anomalies, \fIGeophysics\fP, 44, (1979), p 730-741.

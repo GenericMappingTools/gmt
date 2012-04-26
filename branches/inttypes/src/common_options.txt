@@ -1,0 +1,109 @@
+/*--------------------------------------------------------------------
+ *	$Id$
+ *
+ *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: gmt.soest.hawaii.edu
+ *--------------------------------------------------------------------*/
+/*
+ * Contains macros for presenting the GMT common options in man page
+ * synopsis - yielding consistent presentation from all programs.
+ * See gmt_synopsis.h for macros for the C programs.
+ *
+ * Author:	Paul Wessel
+ * Date:	1-JAN-2011
+ * Version:	5
+ *
+ */
+
+#ifndef GMT_SYNOPSIS_TXT
+#define GMT_SYNOPSIS_TXT
+
+/* General definitions */
+#define IT(x) \fI/**/x\fP
+#define BD(x) \fB/**/x\fP
+
+/* Generic option, yields -letter in bold */
+#define OPT(letter)	BD(\-letter)
+/* Generic modifier, yields +letter in bold */
+#define MOD(letter)	BD(+letter)
+/* Generic parameter spec, yield --par=value in bold and italic */
+#define PAR(par,value)	BD(\-\-par)=IT(value)
+
+/* The GMT standard options */
+#define GMT_B_OPT	OPT(B)[BD(p)|BD(s)]IT(parameters)
+#define GMT_I_OPT	OPT(I)IT(xinc)[IT(unit)][BD(=)|BD(+)][/IT(yinc)[IT(unit)][BD(=)|BD(+)]]
+#define GMT_inc_OPT	IT(xinc)[IT(unit)][BD(=)|BD(+)][/IT(yinc)[IT(unit)][BD(=)|BD(+)]]
+#define GMT_Id_OPT	OPT(I)IT(xinc)[BD(m)|BD(s)][/IT(yinc)[BD(m)|BD(s)]]
+#define GMT_J_OPT	OPT(J)IT(parameters)
+#define GMT_Jx_OPT	OPT(Jx)|BD(X)IT(parameters)
+#define GMT_Jz_OPT	OPT(Jz)|BD(Z)IT(parameters)
+#define GMT_K_OPT	OPT(K)
+#define GMT_O_OPT	OPT(O)
+#define GMT_P_OPT	OPT(P)
+#define GMT_Rgeo_OPT	OPT(R)IT(west)/IT(east)/IT(south)/IT(north)[BD(r)]
+#define GMT_Rgeoz_OPT	OPT(R)IT(west)/IT(east)/IT(south)/IT(north)[/IT(zmin)/IT(zmax)][BD(r)]
+#define GMT_Rx_OPT	OPT(R)IT(xmin)/IT(xmax)/IT(ymin)/IT(ymax)[BD(r)]
+#define GMT_U_OPT	OPT(U)[IT(just)/IT(dx)/IT(dy)/][BD(c)|IT(label)]
+#define GMT_V_OPT	OPT(V)[IT(level)]
+#define GMT_X_OPT	OPT(X)[BD(a)|BD(c)|BD(f)|BD(r)][IT(x-shift)[BD(u)]]
+#define GMT_Y_OPT	OPT(Y)[BD(a)|BD(c)|BD(f)|BD(r)][IT(y-shift)[BD(u)]]
+/* Use b, f when applies to both i and o, else use only the bi, bo, fi, fo variants */
+#define GMT_a_OPT	OPT(a)IT(col)=IT(name)[IT(...)]
+#define GMT_b_OPT	OPT(b)[IT(ncol)][BD(t)][BD(+L)|BD(+B)]
+#define GMT_bi_OPT	OPT(bi)[IT(ncols)][IT(type)]
+#define GMT_bo_OPT	OPT(bo)[IT(ncols)][IT(type)]
+#define GMT_c_OPT	OPT(c)IT(copies)
+#define GMT_f_OPT	OPT(f)[BD(i)|BD(o)]IT(colinfo)
+#define GMT_fi_OPT	OPT(f)IT(colinfo)
+#define GMT_fo_OPT	OPT(f)IT(colinfo)
+#define GMT_g_OPT	OPT(g)[BD(a)]BD(x)|BD(y)|BD(d)|BD(X)|BD(Y)|BD(D)|[IT(col)]BD(z)[+|-]IT(gap)[BD(u)]
+#define GMT_h_OPT	OPT(h)[BD(i)|BD(o)][IT(n)]
+#define GMT_ho_OPT	OPT(ho)[IT(n)]
+#define GMT_i_OPT	OPT(i)IT(cols)[BD(l)][BD(s)IT(scale)][BD(o)IT(offset)][,IT(...)]
+#define GMT_n_OPT	OPT(n)[BD(b)|BD(c)|BD(l)|BD(n)][BD(+a)][BD(+b)IT(BC)][BD(+t)IT(threshold)]
+#define GMT_o_OPT	OPT(o)IT(cols)[,IT(...)]
+#define GMT_p_OPT	OPT(p)IT(azim)/IT(elev)[/IT(zlevel)][BD(+w)IT(lon0)/IT(lat0)[/IT(z0)]][BD(+v)IT(x0)/IT(y0)]
+#define GMT_r_OPT	OPT(r)
+#define GMT_s_OPT	OPT(s)[IT(cols)][BD(a)|BD(r)]
+#define GMT_t_OPT	OPT(t)[IT(transp)]
+#define GMT_colon_OPT	OPT(:)[BD(i)|BD(o)]
+
+/* Options for map rose and scale, used in pscoast and psbasemap */
+#define GMT_TROSE	OPT(T)[BD(f)|BD(m)][BD(x)]IT(lon0)/IT(lat0)/IT(size)[/IT(info)][BD(:)IT(w),IT(e),IT(s),IT(n)BD(:)][BD(+)IT(gint)[/IT(mint)]]
+#define GMT_SCALE	OPT(L)[BD(f)][BD(x)]IT(lon0)/IT(lat0)[/IT(slon)]/IT(slat)/IT(length)[BD(e)|BD(f)|BD(k)|BD(M)|BD(n)][BD(+l)IT(label)][BD(+j)IT(just)][BD(+p)IT(pen)][BD(+f)IT(fill)][BD(+u)] ]
+
+/* Option for limiting features from GSHHS */
+#define GMT_A_OPT	OPT(A)IT(min_area)[/IT(min_level)/IT(max_level)][BD(+r)|BD(l)][BD(p)IT(percent)]
+
+/* Argument to *contour programs */
+#define GMT_CONTG	OPT(G)[BD(d)|BD(f)|BD(n)|BD(l)|BD(L)|BD(x)|BD(X)]IT(params)
+
+/* Used in tools that sets grdheader information via a -D option */
+#define GMT_GRDEDIT	OPT(D)IT(xname)/IT(yname)/IT(zname)/IT(scale)/IT(offset)/IT(title)/IT(remark)
+
+/* For tools needing grid resampling */
+#define GMT_SAMP_OPT	BD(b)|BD(c)|BD(l)|BD(n)][[BD(/)]IT(threshold)]
+
+/* Optional suffix for grids */
+#define GMT_GRD_SUFFIX	BD(=)IT(id)[BD(/)IT(scale)BD(/)IT(offset)[BD(/)IT(nan)]]
+
+/* Argument for distance units */
+
+#define GMT_DIST_UNIT	BD(d)|BD(m)|BD(s)|BD(e)|BD(f)|BD(k)|BD(M)|BD(n)
+#define GMT_DIST_UNIT2	BD(e)|BD(f)|BD(k)|BD(M)|BD(n)
+
+#endif /* GMT_SYNOPSIS_TXT */
+
+#define GMT_MANPAGE /* do not include GMT_version() function */
+#include "gmt_version.h"

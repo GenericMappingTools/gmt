@@ -1,0 +1,349 @@
+$Id$
+
+== Information for installing GMT 5 ==
+
+Note: The build system has recently been switched to CMake which is a
+cross-platform system for managing the build process. If you are familiar
+with the old GNU Build Tools (automake, autoconf, and configure) you can
+probably skip over to the CMake quick start guide in README.CMake.
+
+
+Introduction
+------------
+
+You do not need to read these instructions unless you plan to build and
+install the programs manually.
+
+GMT has been installed successfully under Unix/Linux/OS X on workstations
+from Sun, Silicon Graphics, Cray, DEC, HP, Data General, IBM, Apple, NEXT,
+as well on any number of PC clones running Linux.  It also installs under
+WIN32 and in Unix emulators such as Cygwin on PCs and Machten on Macs.
+We anticipate few problems if you are installing the package on other platforms.
+Should you need to make small modifications, e.g., not use certain
+include files, please let us know so that future releases will be even
+more portable.  This is likely to mean that your platform is not
+POSIX compliant.  For a non-UNIX solution, see Appendix L for options
+and installation details.
+
+Note there are two GMT tar archives available:
+
+1. gmt-5.0.0b.tar.bz2:          The GMT distribution
+2. gshhg-gmt-nc4-2.2.1.tar.bz2: All five resolutions of GSHHG coastline data
+
+The archives are available in bzip2 (*.bz2) format.
+If you do not have bzip2 installed you can obtain source or executables
+from http://www.bzip.org.
+
+For Windows users there are separate Windows installers available; this
+discussion only considers UNIX/Linux/OS X installations. Windows users who
+which to build GMT from the sources refer to README.WIN32.
+
+
+CMake
+-----
+
+Install CMake (>=2.8.5) from http://www.cmake.org/cmake/resources/software.html
+
+
+Install netCDF library
+----------------------
+
+Get and install netCDF from http://www.unidata.ucar.edu/downloads/netcdf/.
+You need at least version 3.6.3 but we recommend installing version 4.
+
+For all major Linux distributions there are prepackaged development binaries
+available. netCDF is also available on MacOSX trough the macports and fink
+package managers.
+
+
+GDAL (optional)
+---------------
+
+To use the GDAL interface (ability to provide grids or images to be imported
+via gdal) you must have the GDAL library and include files installed. Please
+report any problems or limitations that you might experience as this is an
+optional and experimental feature.
+
+Like netCDF, GDAL is available through your favorite package manager on many
+*NIX systems.
+
+
+Install support data
+--------------------
+
+You can obtain GMT from gmt.soest.hawaii.edu. Alternatively you may ftp GMT
+from pub/gmt on any of the following sites. Try the site that is closest to
+you to minimize transmission times:
+
+Site                                    FTP address
+--------------------------------------------------------------
+SOEST, U. of Hawaii                     gmt.soest.hawaii.edu
+Lab for Satellite Altimetry, NOAA       ibis.grdl.noaa.gov
+IRIS, Washington, US                    ftp.iris.washington.edu
+IAG-USP, U. of Sao Paulo, BRAZIL        ftp.iag.usp.br
+Dep. Geology, U. in Oslo, NORWAY        ftp.geologi.uio.no
+ISV, Hokkaido U, Sapporo, JAPAN         ftp.eos.hokudai.ac.jp
+U of Sydney, Sydney, AUSTRALIA          mirror.geosci.usyd.edu.au
+GDS, Vienna U. of Technology, AUSTRIA   gd.tuwien.ac.at
+TENET, Tertiary Education & Research Networks, SOUTH AFRICA
+                                        gmt.mirror.ac.za
+
+The development sources are available from the subversion repository at
+svn://gmtserver.soest.hawaii.edu/gmt5/trunk
+
+Extract the files and put them in a separate directory (need not be
+where you eventually want to install GMT).
+
+
+Configuring
+-----------
+
+GMT can be build on any platform supported by CMake. CMake is a cross-platform,
+open-source system for managing the build process. Refer to the documentation
+at http://www.cmake.org/ for further details. In the source tree copy
+cmake/ConfigUserTemplate.cmake to cmake/ConfigUser.cmake and edit the file
+according to your demands.
+
+By default, GMT will use Dave Watson's Delaunay triangulation routine.
+However, a much faster alternative is available from Jonathan Shewchuk, but
+his routine is not distributed under the GNU Public License.  If you work for
+a for-profit organization you should read Shewchuk's copyright statement (in
+src/triangle.c) first.  If you agree with the license terms you can enable
+Shewchuk's triangulation routine cmake/ConfigUser.cmake.
+
+At run-time, GMT will initialize all default variables by reading
+either the share/gmtdefaults_SI or the share/gmtdefaults_US file.
+Both are installed, and the one that is read is given by the file
+share/gmt.conf.  This file will have either SI or US as the first
+two columns on a line.  SI is default. You can configure the default
+at build time in cmake/ConfigUser.cmake.
+
+The default values differ slightly between SI and US, mostly because
+it is inconvenient to convert, say, 1" to 2.54 cm; we use 2.5 cm
+instead.  Although strongly discouraged, if you want to make
+permanent changes to some of the defaults you can edit the
+gmtdefaults_{SI,US} files directly.  A much better approach is to
+create a .gmtdefaults4 file in your home directory and edit those
+settings since GMT will check for that file before loading system
+defaults (actually, it will first look in the current directory,
+then the home directory, and then finally in share).  See the gmtdefaults
+man page for a description of all defaults.
+
+To prevent two GMT processes writing to the same .gmtcommands4 file
+simultaneously (thereby corrupting it), GMT can implement the POSIX
+advisory file locking scheme and sets and releases locks on these
+files.  Under GNU/Linux, this does not work when the files reside
+in directories mounted with NFS.  Since it works with NFS under
+other UNIX systems we suspect this is a [temporary] limitation of GNU
+NSF.  If you want to activate file locking you may enable it in
+cmake/ConfigUser.cmake.
+
+GMT can produce either Freeform PostScript (suitable to be sent to
+various printers) or Encapsulated PostScript (suitable to be included
+in another document).  True PS files will use the setpagedevice
+PostScript command to manipulate paper trays and manual feeds
+on selected printers.  Some PostScript previewers (such as Sun's
+old pageview) do not understand these commands and will abort; this
+is also true of some PS to raster conversion utilities.  On the other
+hand, EPS files are intended to be included in another document and
+are not allowed to use setpagedevice.  To simplify printing, EPS files
+are allowed to contain a showpage operator which means EPS files will
+print if sent to a printer.  The PAPER_MEDIA setting in .gmtdefaults4
+can be set to one or the other format (see man gmtdefaults).  By
+default GMT will produce PS files.
+
+We provide two install modes via CMake: You have the choice between a
+monolithic installation (GMT_INSTALL_MONOLITHIC=ON) where everything goes
+into a common subdirectory, or a distribution-like installation
+(PREFIX/bin/gmt-VERSION, PREFIX/lib/gmt-VERSION/, PREFIX/share/gmt-VERSION/,
+PREFIX/share/doc/gmt-VERSION/).
+
+The top-level installation directory is configured with the variable
+CMAKE_INSTALL_PREFIX.
+
+Now that you made your configuration choices it is time for invoking CMake.
+In the source tree, create a subdirectory where the build files will be
+generated, e.g., 'mkdir build'.
+
+In the build subdirectory, type
+
+  cmake [options] ..
+
+Append any of the options explained above as you see fit.  If CMake cannot
+figure out all the dependent libraries or required compiler and linker flags
+it will give you a message and you will be asked to edit
+cmake/ConfigUser.cmake.
+
+
+Build GMT
+---------
+
+In the build directory, type
+
+  make -jx
+  make -jx manpages_all
+
+which will compile all the programs and create the manual pages. You can
+define the number of jobs to run simultaneously by make with the -jx option,
+where x is typically the number of CPUs. After a successful compilation you
+may install the executables in the designated bin directory with the command
+
+  make -jx install
+
+After a successful install you can have the object files and the local
+executables removed by saying
+
+  make clean
+
+or just remove the entire build directory.
+
+
+Documentation
+_____________
+
+The documentation is available online at http://gmt.soest.hawaii.edu/
+or as platform independent package that you can install along with GMT.
+
+The development sources from subversion does not contain the precompiled
+documentation in PDF format. The PDFs have to be created from source with
+LaTeX (e.g., TeX Live).
+
+The GMT documentation includes HTML files for online browsing, user guide,
+cookbook, and manual pages. The Documentation also contains the
+GMT_Tutorial.pdf file which is a short course in how to use GMT.  It can be
+followed individually or in a lab setting by a group of users.
+
+While these are available from the main GMT home page in Hawaii, users may
+find it convenient to install these pages locally for added speed.  The
+subdirectories contain both HTML and PDF versions of the cookbook, and HTML
+versions of the manual pages.  All users need to do is to add a browser
+bookmark to the top-level file doc/html/gmt_services.html. To install all
+documentation in your chosen directory, type
+
+  make gmt_pdf_manpages
+  make gmt_doc
+  make gmt_doc_shrink
+  make install
+
+
+Set path
+--------
+
+Make sure users set their PATH to include the directory containing
+the GMT executables (BINDIR) if this is not a standard directory
+like /usr/local/bin.  You should now be able to run GMT programs.
+
+
+GMT supplemental Code
+---------------------
+
+GMT users elsewhere have developed programs that utilize the GMT
+libraries and produce PostScript code compatible with the rest of
+GMT or simply perform data manipulation.  In addition, misc.
+code developed by us depend on GMT libraries.
+Currently, the supplemental archive include the directories:
+
+  dbase     - Data extractor for global gridded data sets such
+              as those on CD-ROM from NGDC.
+  gshhs     - Data extractor for GSHHS shoreline polygons.
+  imgsrc    - Data extractor for Smith/Sandwell altimetry grids.
+  meca      - Plotting of focal mechanisms, velocity arrows,
+              and error ellipses on maps.
+  mex       - Matlab or Octave mex files for grid file I/O.
+  mgg       - Programs for MGD-77 data in .gmt format.
+  mgd77     - Programs for handling of native MGD77 files.
+  misc      - psmegaplot, makepattern, gmtdigitize,
+              gmtstitch, gmtdp, and nc2xy
+  segyprogs - Plotting SEGY seismic data sets.
+  sph       - Spherical interpolation and triangulation.
+  spotter   - Plate tectonic & kinematics applications.
+  x2sys     - Track intersection (crossover) tools.
+  x_system  - Track intersection (crossover) tools (old version).
+  xgrid     - X11 editor for grid files.
+
+These are installed automatically, except for mex and xgrid which
+requires more configuration as they depend on non-GMT libraries.
+
+
+Example Scripts
+---------------
+
+   A complete set of the example scripts used to create all the
+example plots, including all necessary data files, are provided by
+the installation; you can run all the examples from the
+src directory using CTest (enable in cmake/ConfigUser.cmake)
+
+	make check
+
+
+Misc
+----
+
+Before running programs, there are a few things you should do/know:
+
+  - Read carefully the documentation for the gmt system.  This can be
+    found as both PDF and HTML files in the doc/pdf|html directories.
+    The successful operation of gmt-programs depends directly on your
+    understanding of how gmt "works", its option lists, I/O, and composite
+    plot mechanisms.  Then, before running individual gmt programs, read
+    the associated man page.
+
+  - Do not confuse the GMT-system with the GMT-database that was
+    initiated at Lamont-Doherty Earth Observatory.  These
+    marine geophysical data files (Gravity, Magnetics, Topography)
+    are NOT distributed with the GMT-system!  [However, programs that
+    deal with gmt-files can be found in the supplemental tar archive.
+
+
+A reminder
+----------
+
+   If you think it is appropriate, you may consider paying us back
+by including our latest EOS article (Wessel, P. and W. H. F. Smith,
+New, improved version of the Generic Mapping Tools released, EOS Trans.
+AGU, 79, 579, 1998, and our Geophysics article on the gridding algorithm
+in surface (Smith, W. H. F. and P. Wessel, Gridding with continuous
+curvature splines in tension, Geophysics, 55, 293-305, 1990) in the
+reference list of your future publications that will benefit from the
+availability of GMT.
+
+
+Software support
+----------------
+
+   You haven't bought anything so you cannot expect full service.
+However, if you find a bug in any of the programs, please report
+it to us (gmtrac.soest.hawaii.edu) rather than trying to fix it yourself
+so that we, and through us, other users may benefit from your find.
+Make sure you provide us with enough information so that we can recreate
+the problem.
+	Please register via the GMT web page (gmt.soest.hawaii.edu).
+Two mailing lists of interest to GMT users are available:  gmt-group@lists.hawaii.edu
+allows us to notify registered users in the event of bugfixes
+and/or new releases.  A separate mailing list (gmt-help@lists.hawaii.edu) exists
+for GMT users who have questions about GMT installation and usage.  If you want
+to subscribe to one or both of these mailinglists, send a message to
+listproc@hawaii.edu that contains one or both of the commands
+
+subscribe gmt-help <yourname, not email address>
+subscribe gmt-group <yourname, not email address>
+
+You may post messages to gmt-help while gmt-group is more of a one-way street
+for us to inform users of bug fixes and upgrades.  The online registration
+also lets you subscribe to the two mailinglists.
+
+
+Ordering the GMT package on CD/DVD-Rs
+-------------------------------------
+
+Should you or someone you know without net-access need to obtain GMT:
+Geoware makes and distributes CD/DVD-Rs with the GMT package and many
+useful data sets.  For more details and a full description of the data
+sets (up to 60 Gb of data!) visit www.geoware-online.com
+
+
+Good luck!
+
+The GMT Team.
+
+vim: tw=78 et ts=2 sts=2 sw=2 autoindent smartindent

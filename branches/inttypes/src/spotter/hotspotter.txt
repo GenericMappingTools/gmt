@@ -1,0 +1,72 @@
+#include "common_options.txt"
+.TH HOTSPOTTER 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
+.SH NAME
+hotspotter \- Create CVA image from seamount locations
+.SH SYNOPSIS
+BD(hotspotter) [IT(table)] OPT(E)IT(rotfile) 
+OPT(G)IT(CVAgrid) GMT_I_OPT GMT_Rgeo_OPT [ OPT(D)IT(factor) ] 
+[ OPT(N)IT(upper_age) ] [ OPT(S) ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_bi_OPT ] 
+[ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(hotspotter) reads (longitude, latitude, amplitude, radius, age) records
+from IT(infiles)  [or standard input] and calculates flowlines using the 
+specified stage or total reconstruction rotations.  These flowlines are convolved with
+the shape of the seamount (using a Gaussian shape given amplitude and radius
+= 6 sigma) and added up to give a Cumulative Volcano Amplitude grid (CVA).
+See option OPT(:) on how to read (latitude,longitude,...) files.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_intables.txt"
+#include "euler.txt"
+.TP
+OPT(G)IT(CVAgrid)
+Specify name for output grid file.
+#include "explain_-I.txt"
+#include "explain_-Rgeo.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(D)IT(factor)
+Modify the sampling interval along flowlines.  Default [0.5] gives approximately 2 points within
+each grid box.  Smaller factors gives higher resolutions at the expense of longer processing time.
+.TP
+OPT(N)IT(upper_age)
+Set the upper age to assign seamounts whose crustal age is unknown (i.e., NaN) [no upper age].
+.TP
+OPT(S)
+Normalize the resulting CVA grid to percentages of the CVA maximum.
+.TP
+OPT(T)
+Truncate seamount ages exceeding the upper age set with OPT(N) [no truncation].
+#include "explain_-V.txt"
+#include "explain_-bi.txt"
+[Default is 5 input columns].
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_nodereg.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To create a CVA image from the Pacific (x,y,z,r,t) data in the file seamounts.d,
+using the DC85.d Euler poles, run
+.br
+.sp
+BD(hotspotter) seamounts.d OPT(E)DC85.d OPT(G)CVA.nc OPT(R)130/260/-66/60 OPT(I)10BD(m) OPT(N)145 OPT(T) OPT(V)
+.br
+.sp
+This file can then be plotted with BD(grdimage).
+.SH "SEE ALSO"
+.IR GMT (1),
+.IR grdimage (1),
+.IR grdrotater (1),
+.IR grdspotter (1),
+.IR project (1),
+.IR mapproject (1),
+.IR backtracker (1),
+.IR originator (1)
+.SH REFERENCES
+Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
+.br
+Wessel, P., 2008, Hotspotting: Principles and properties of a plate tectonic Hough transform,
+Geochem. Geophys. Geosyst. 9(Q08004): doi:10.1029/2008GC002058.
+.br

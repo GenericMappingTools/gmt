@@ -1,0 +1,144 @@
+#include "common_options.txt"
+.TH XYZ2GRD 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+xyz2grd \- Convert data table to a grid file
+.SH SYNOPSIS
+BD(xyz2grd) [ IT(table) ] OPT(G)IT(grdfile) GMT_I_OPT 
+GMT_Rgeo_OPT [ OPT(A)[BD(f)|BD(l)|BD(m)|BD(n)|BD(r)|BD(s)|BD(u)|BD(z)] ] [ GMT_GRDEDIT ] 
+[ OPT(N)IT(nodata) ] [ OPT(S)[IT(zfile)] ] [ GMT_V_OPT ] [ OPT(Z)[IT(flags)] ] 
+[ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(xyz2grd) reads one or more z or xyz tables and
+creates a binary grid file.  BD(xyz2grd) will report if some of the nodes are not filled in with
+data.  Such unconstrained nodes are set to a value specified by the user [Default is NaN].
+Nodes with more than one value will be set to the mean value.  As an option (using OPT(Z)),
+a 1-column z-table may be read assuming all nodes are present (z-tables can be in organized in a
+number of formats, see OPT(Z) below.)
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(G)IT(grdfile)
+IT(grdfile) is the name of the binary output grid file.
+(See GRID FILE FORMAT below.)
+#include "explain_-I.txt"
+#include "explain_-R.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+IT(table)
+One or more ASCII [or binary, see GMT_bi_OPT] files holding z or (x,y,z) values.  The xyz triplets do not
+have to be sorted.  One-column z tables must be sorted and the OPT(Z) must be set. 
+.TP
+OPT(A)[BD(f)|BD(l)|BD(m)|BD(n)|BD(r)|BD(s)|BD(u)|BD(z)]
+By default we will calculate mean values if multiple entries fall on the same node.  Use
+OPT(A) to change this behavior, except it is ignored if OPT(Z) is given.
+Append BD(f) or BD(s) to simply keep the first or last data point that was assigned to each node.
+Append BD(l) or BD(u) to find the lowest (minimum) or upper (maximum) value at each node, respectively. 
+Append BD(m) or BD(r) to compute mean or RMS value at each node, respectively.
+Append BD(n) to simply count the number of data points that were assigned to each node.
+Append BD(z) to sum multiple values that belong to the same node.
+.TP
+GMT_GRDEDIT
+Give values for IT(xname), IT(yname), IT(zname), IT(scale), IT(offset), IT(title), and IT(remark).
+To leave some of these values untouched, specify = as the value.
+Alternatively, to allow "/" to be part of one of the values, use any non-alphanumeric
+character (and not the equal sign) as separator by both starting and ending with it. For example:
+OPT(D):IT(xname):IT(yname):IT(zname):IT(scale):IT(offset):IT(title):IT(remark):
+.TP
+OPT(N)IT(nodata)
+No data.  Set nodes with no input xyz triplet to this value [Default is NaN].  For z-tables, this
+option is used to replace z-values that equal IT(nodata) with NaN.
+.TP
+OPT(S)[IT(zfile)]
+Swap the byte-order of the input only.  No grid file is produced.  You must
+also supply the OPT(Z) option.  The output is written to IT(zfile) (or
+stdout if not supplied).
+#include "explain_-V.txt"
+.TP
+OPT(Z)[IT(flags)]
+Read a 1-column ASCII [or binary] table.  This assumes that all the nodes are
+present and sorted according to specified ordering convention contained in IT(flags).
+If incoming data represents rows, make IT(flags) start with BD(T)(op) if first row is y = ymax
+or BD(B)(ottom) if first row is y = ymin.  Then, append BD(L) or BD(R) to indicate that first element is at left
+or right end of row.  Likewise for column formats: start with BD(L) or BD(R) to position first column,
+and then append BD(T) or BD(B) to position first element in a row.  
+For gridline registered grids:  If data are periodic in x but the
+incoming data do not contain the (redundant) column at x = xmax, append BD(x).  For data periodic in y
+without redundant row at y = ymax, append BD(y).  Append BD(s)IT(n) to skip the first IT(n) number
+of bytes (probably a header).  If the byte-order needs to be swapped, append BD(w).  Select
+one of several data types (all binary except BD(a)):
+.br
+.sp
+	BD(A)  ASCII representation of one or more floating point values per record
+.sp
+	BD(a)  ASCII representation of a single item per record
+.br
+	BD(c)  int8_t, signed 1-byte character
+.br
+	BD(u)  uint8_t, unsigned 1-byte character
+.br
+	BD(h)  int16_t, signed 2-byte integer
+.br
+	BD(H)  uint16_t, unsigned 2-byte integer
+.br
+	BD(i)  int32_t, signed 4-byte integer
+.br
+	BD(I)  uint32_t, unsigned 4-byte integer
+.br
+	BD(l)  int64_t, long (8-byte) integer
+.br
+	BD(L)  uint64_t, unsigned long (8-byte) integer
+.br
+	BD(f)  4-byte floating point single precision
+.br
+	BD(d)  8-byte floating point double precision
+.br
+.sp
+Default format is scanline orientation of ASCII numbers: OPT(ZTLa).
+Note that OPT(Z) only applies to 1-column input.  The difference between BD(A) and BD(a) is that
+the latter can decode both IT(date)BD(T)IT(clock) and IT(ddd:mm:ss[.xx]) formats while the former is
+strictly for regular floating point values.
+#include "explain_-bi.txt"
+[Default is 3 input columns].  This option only applies to xyz input files; see OPT(Z) for z tables.
+#include "explain_-f.txt"
+#include "explain_-h.txt"
+Not used with binary data.
+#include "explain_-icols.txt"
+#include "explain_nodereg.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_float.txt"
+#include "explain_grd_output.txt"
+#include "explain_grd_coord.txt"
+.SH EXAMPLES
+To create a grid file from the ASCII data in hawaii_grv.xyz, use
+.br
+.sp
+xyz2grd hawaii_grv.xyz -Ddegree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used"
+-Ghawaii_grv_new.nc -R198/208/18/25 -I5m -V
+.br
+.sp
+To create a grid file from the raw binary (3-column, single-precision scanline-oriented data raw.b, use
+.br
+.sp
+xyz2grd raw.b -Dm/m/m/1/0/=/= -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
+.br
+.sp
+To make a grid file from the raw binary USGS DEM (short integer scanline-oriented data topo30. on the NGDC
+global relief Data CD-ROM, with values of -9999 indicate missing data, one must on some machine reverse the byte-order.
+On such machines (like Sun, use
+.br
+.sp
+xyz2grd topo30. -Dm/m/m/1/0/=/= -Gustopo.nc -R234/294/24/50 -I30s -N-9999 -B -ZTLhw
+.br
+.sp
+Say you have received a binary file with 4-byte floating points that were
+written on a machine of different byte-order than yours.  You can swap the
+byte-order with
+.br
+.sp
+xyz2grd floats.bin -Snew_floats.bin -V -Zf
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR grd2xyz (1),
+.IR grdedit (1)
+.IR grdreformat (1)

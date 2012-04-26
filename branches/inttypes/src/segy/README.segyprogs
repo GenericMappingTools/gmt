@@ -1,0 +1,60 @@
+	$Id$
+
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
+
+GMT 5 Released made these into modules.
+
+pssegy: program to plot segy files in postscript.
+the code was developed following a devious route from several programs in the GMT and
+PASSCAL software releases. an explicit 1-bit depth bitmap (ie on/off) is generated
+from the seismic data including the ability to plot traces at true locations
+taken from offset, cdp, or a general byte location in the trace header.
+the postscript imagemask operator is used to display the bitmap
+rather than the more obvious image to make the bitmap transparent (ie plotting
+picks first then the seismic data will mean that the picks do not obscure the
+data, assuming this is desirable.) the code allows the shade of grey or colour
+that fills the bitmap to be specified, although note that you get a single shade
+throughout.  No current bugs are known.
+
+pssegyz: program to ploy segy files in 3-D in postscript.
+This is just an extension of pssegy which rather than plotting the seismic
+data in (x,y) space uses the GMT transformation routines to plot the
+data in (x,y,z) space, with z being the depth/time axis. 
+The code was generalized to allow plotting location to be based on any 
+(int*4) location in the SEGY trace header in both the x and y dimensions. 
+Note that as you increase the projection elevation there are an increasing
+number of pathological cases for variable area plotting and the code
+may well leave regions unshaded, or shade regions which should be transparent
+under those circumstances.
+
+segy2grd: program to convert SEGY files into GMT-compliant netCDF format.
+This is a merge of bits of pssegy with xyz2grd, and deals with two classes
+of case - one where there is already even trace spacing, and a simple
+translation is done where each cell in the netCDF file is filled with
+a corresponding sample. The other allows the gridcell spacing to differ
+from the underlying samples in the SEGY file (eg to input a file with
+traces at varying offsets) and by default averages the values
+which fall within a given grid cell.
+
+All 3 codes have now been modified to cope with the variable
+trace length "SEGY" that programs like OMEGA apparently produce.
+They have also been tested on SGI and Sun systems as being 64-bit
+safe. Byte-swapping is now incorporated for both the headers and
+the seismic data; this assumes that the byte-order in the
+data is big-endian, and by default byte-swaps on little-endian platforms.
+A new flag -A will reverse the byte-swap behaviour and should be
+used for files with little-endian byte order.
+
+Authorship:
+
+The pssegy, pssegyz and segy2grd programs were written and are maintained by Tim Henstock,
+then@soc.soton.ac.uk, and I'm happy (well, not exactly happy
+since I think I got most of the bugs) to have reports of unexpected behaviour.
+The routines which read the SEGY data are modified from the IRIS/PASSCAL
+software distribution.
+
+Licensing:
+These programs are released without any warranty; they are free software
+and may be modified or redistributed under the terms of the GNU public license
+(see the file LICENSE.TXT in the main GMT directory, or http://www.gnu.org)

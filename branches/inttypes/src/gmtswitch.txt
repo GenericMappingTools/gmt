@@ -1,0 +1,119 @@
+#include "common_options.txt"
+.TH GMTSWITCH 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+gmtswitch \- Switching between different GMT versions
+.SH SYNOPSIS
+BD(gmtswitch) [ D | IT(version) ]
+.SH INTRODUCTION
+BD(gmtswitch) helps you modify your environment to allow for the switching back
+and forth between several installed GMT versions, in particular GMT 5 beta and
+versions from the GMT 4.x series.  It works by maintaining a list of directories
+to GMT installations in a file in your home directory, then manipulates a symbolic
+link to point to the GMT directory whose executables we wish to use [The Windows
+version works a bit differently; see WINDOWS below].
+.SH REQUIRED ARGUMENTS
+None.  If no arguments are given you are presented with a menu of installed GMT
+versions from 1 to IT(n) and you specify which one you wish to switch to.
+.SH OPTIONAL ARGUMENTS
+.TP
+BD(D)
+Select the default GMT version.  This is the first entry in the ~/.gmtversions file
+.TP
+IT(version)
+Search for a unique match in the ~/.gmtversions file.  If one match is found we switch
+to that entry; otherwise an error is generated.
+where module is the name of a BD(GMT) program and the options are those that pertain to
+that particular program.
+.SH SETUP
+If you have official versions installed then running gmtswitch the very first time will
+examine your hard disk starting at / and look for directories with GMT4 or GMT5 in the
+name.  This will fail to find the subversion directories and possibly others you have
+placed elsewhere.  The fastest way to get up and running is this:
+.br
+1. Edit/Create ~/.gmtversions and add the paths to all GMT installations you have or
+care to consider.  Each path goes on separate lines and points to the top dir of each
+distribution, e.g., /Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT4.5.7
+.br
+2. In your .bashrc or .[t]csrh or wherever you are maintaining your PATH or path variable,
+remove any directories you have added that contain GMT, and add the new path $HOME/this_gmt/bin
+(might be $home for csh users).
+.br
+3. Make the new path take effect (quit/restart terminal, logout/login, etc).
+.br
+4. cd to the most recent GMT directory where a gmtswitch version lives, and run gmtswitch
+with no argument.  Select one of the version from the menu.
+.br
+5. If in csh you may have to say rehash afterwards.
+.br
+6. Type "psxy -" and the synopsis should tell you that you got the correct version.  You
+can now run gmtswitch from anywhere; try it out and make sure that you can switch between
+the versions.
+.SH EXAMPLES
+To switch to GMT version 4.5.7 (assuming it was installed as such an not via a package manager),
+try
+.br
+.sp
+gmtswitch GMT4.5.7
+.br
+.sp
+To switch to the default (your top choice), do
+.br
+.sp
+gmtswitch D
+.br
+.sp
+Finally, to select from the menu, just run
+.br
+.sp
+gmtswitch
+.br
+.sp
+and pick the one you want.
+.SH BEWARE
+GMT remembers where it was installed the first time and uses that dir to find the default
+GMT share directory.  If you move entire GMT installation after compilation then you may
+have to set GMT_SHAREDIR to point to the top dir in order for things to work.  It is best not
+to move things after installation.
+.SH WINDOWS
+Under Windows use gmtswitch.bat which is a batch script that changes the Windows PATH variable so that the BIN directory
+of the preferred version always comes first. To do that the batch works in two
+alternative modes:
+.br
+.sp
+1 - Permanent mode
+.br
+2 - Temporary mode
+.br
+.sp
+The permanent mode makes use of the free executable program "EditPath" to
+change the user path in the registry. It's called permanent because the changes
+remains until ... next change. See
+.br
+http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml
+.br
+Of course the editpath.exe binary must be in your system's path as well.
+WARNING: The path change will not be visible on the shell cmd where it was executed.
+For the change to be active you will need to open a new cmd window.
+.br
+The second mode is temporary because the path to the selected GMT binary dir is
+prepended to the previous path via a shell command line. This modification disappears when the
+shell cmd window where it was executes is deleted.
+.br
+It is the user responsibility to set the contents of the G32_32 to G5_64 below
+to valid paths where the binaries of the different GMT versions are installed
+Note that it is not mandatory to have all four of them in you computer. For the
+ones you do not have just let them pointing to nothing e.g.,
+set G4_64=
+.br
+The permanent mode is the default one (but this can be changed. See edit section)
+To run in the temporary mode just give a second argument (doesn't matter what)
+.br
+Example usage to set a GMT5 64 bits permanent
+gmtswitch g5_64
+.br
+.sp
+To temporary set a GMT4 32 bits do
+gmtswitch g4_32 1
+.br
+.sp
+Run without arguments to get a "Usage" (for permanent mode)

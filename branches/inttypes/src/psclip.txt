@@ -1,0 +1,95 @@
+#include "common_options.txt"
+.TH PSCLIP 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+psclip \- Initialize or terminate polygonal clip paths
+.SH SYNOPSIS
+BD(psclip) [ IT(table) ] GMT_J_OPT GMT_Rgeoz_OPT 
+[ GMT_B_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(N) ] 
+[ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(T) ] [ GMT_U_OPT ] 
+[ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_bi_OPT ] 
+[ GMT_c_OPT] [ GMT_fi_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] 
+[ GMT_i_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ] [ GMT_colon_OPT ]
+.br
+.sp
+BD(psclip) OPT(C)[BD(c)|BD(s)|[BD(a)|IT(n)] [ GMT_K_OPT ] [ GMT_O_OPT ]
+.SH DESCRIPTION
+BD(psclip) reads (x,y) file(s) [or standard input] and draws polygons that are
+activated as clipping paths.  Several files may be read to create complex paths
+consisting of several non-connecting segments.
+Only marks that are subsequently drawn inside the clipping path will be shown. To determine what is inside or
+outside the clipping path, BD(psclip) uses the even-odd rule. When a ray drawn from any point, regardless of
+direction, crosses the clipping path segments an odd number of times, the point is inside the clipping path.
+If the number is even, the point is outside.
+The OPT(N) option, reverses the sense of what is the inside and outside of the paths by plotting a clipping
+path along the map boundary.
+After subsequent plotting, which will be clipped against these paths, the clipping
+may be deactivated by running BD(psclip) a second time with the OPT(C) option only.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(C)[BD(c)|BD(s)[BD(a)|IT(n)]
+Mark end of existing clip path(s).  No input file will be processed.  No projection information is needed
+unless OPT(B) has been selected as well.
+Append BD(c) (for curved text) or BD(s) (for straight text) to plot text previously used to lay down a
+clip path (e.g., via contouring, pstext, or psxy OPT(Sq)).  The curved text option (OPT(Cc)) is only
+required if psxy OPT(Sq) was run with the BD(+v) modifier; the pstext and contouring mechanisms use
+straight text.  Both OPT(Cc) and OPT(Cs) assumes only one level of text clipping was initialized and
+we thus reduce the clip level by one.  To undo one level of
+polygon clipping (perhaps initiated by earlier psclip, pscoast, or psmask calls) use OPT(C).
+You can undo all clip levels with OPT(Ca) or a specific number with OPT(C)IT(n).
+Also supply OPT(X) and OPT(Y) settings if you have moved since the clip started.
+#include "explain_-J.txt"
+#include "explain_-R.txt"
+#include "explain_-Rz.txt"
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+.sp
+#include "explain_-B.txt"
+#include "explain_-Jz.txt"
+#include "explain_-K.txt"
+.TP
+OPT(N)
+Invert the sense of what is inside and outside. For example, when using a single path, this means that
+only points outside that path will be shown. Cannot be used together with OPT(B).
+#include "explain_-O.txt"
+#include "explain_-P.txt"
+.TP
+OPT(T)
+Rather than read any input files, simply turn on clipping for the current map region.
+Basically, OPT(T) is a convenient way to run BD(psclip) with
+the arguments OPT(N) /dev/null (or, under Windows, OPT(N) NUL). Cannot be used together with OPT(B).
+#include "explain_-U.txt"
+#include "explain_-V.txt"
+#include "explain_-XY.txt"
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-c.txt"
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To make an overlay IT(PostScript) file that will set up a complex clip area to which
+subsequent plotting will be confined, run:
+.br
+.sp
+psclip my_region.xy -R0/40/0/40 -Jm0.3i -O -K > clip_mask_on.ps
+.br
+.sp
+To deactivate the clipping in an existing plotfile, run:
+.br
+.sp
+psclip -C -O >> complex_plot.ps
+.SH BUGS
+BD(psclip) cannot handle polygons that contain the south or north pole.  For such polygons,
+you should split them into two and make each explicitly contain the polar point.  The two
+clip polygons will combine to give the desired effect.
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR grdmask (1),
+.IR psbasemap (1),
+.IR psmask (1)
