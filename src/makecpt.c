@@ -308,7 +308,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (GMT_RUNTIME_ERROR);
 		}
 		z = T->table[0]->segment[0]->coord[GMT_X];
-		nz = T->table[0]->segment[0]->n_rows;
+		nz = (GMT_LONG)T->table[0]->segment[0]->n_rows;
 	}
 	else if (Ctrl->T.active && Ctrl->Q.mode == 2) {	/* Establish a log10 grid */
 		if (!(Ctrl->T.inc == 1.0 || Ctrl->T.inc == 2.0 || Ctrl->T.inc == 3.0)) {

@@ -98,9 +98,10 @@ GMT_LONG gmt_bcr_reject (struct GRD_HEADER *h, double xx, double yy)
 	return (0);	/* Good to use */
 }
 
-GMT_LONG gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], double wy[])
+uint64_t gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], double wy[])
 {
-	GMT_LONG i, j, ij;
+	GMT_LONG i, j;
+	uint64_t ij;
 	double x, y, wp, wq, w;
 
 	/* Compute the normalized real indices (x,y) of the point (xx,yy) within the grid.
@@ -229,7 +230,8 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 	   this routine returns the desired interpolated value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy. */
 
-	GMT_LONG i, j, ij;
+	GMT_LONG i, j;
+	uint64_t ij;
 	double retval, wsum, wx[4], wy[4], w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
@@ -262,7 +264,8 @@ GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, do
 	   this routine returns the desired interpolated image value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy. 8-bit components is assumed per band.  */
 
-	GMT_LONG i, j, ij, b, nb = G->header->n_bands;
+	GMT_LONG i, j, b, nb = G->header->n_bands;
+	uint64_t ij;
 	double retval[4], wsum, wx[4], wy[4], w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */

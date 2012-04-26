@@ -169,8 +169,9 @@ GMT_LONG GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, st
 
 GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = 0, in_ID, k, out_ID, par[1] = {2}, via[2] = {0, 0};
+	GMT_LONG error = 0, in_ID, out_ID, par[1] = {2}, via[2] = {0, 0};
 	GMT_LONG geometry[7] = {GMT_IS_POINT, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
+	uint64_t k;
 	
 	float *fdata = NULL;
 	double *ddata = NULL;

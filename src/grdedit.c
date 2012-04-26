@@ -182,7 +182,9 @@ GMT_LONG GMT_grdedit_parse (struct GMTAPI_CTRL *C, struct GRDEDIT_CTRL *Ctrl, st
 GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* High-level function that implements the grdedit task */
 
-	GMT_LONG row, col, error, n_data, n_use, k;
+	GMT_LONG row, col, error, n_data, n_use;
+	
+	uint64_t ij;
 	
 	double shift_amount = 0.0, *in = NULL;
 
@@ -301,13 +303,13 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			if (row < 0 || row >= G->header->ny) continue;
 			col = GMT_grd_x_to_col (GMT, in[GMT_X], G->header);
 			if (col < 0 || col >= G->header->nx) continue;
-			k = GMT_IJP (G->header, row, col);
-			G->data[k] = (float)in[GMT_Z];
+			ij = GMT_IJP (G->header, row, col);
+			G->data[ij] = (float)in[GMT_Z];
 			n_use++;
 			if (GMT_grd_duplicate_column (GMT, G->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 				/* Possibly need to replicate e/w value */
-				if (col == 0) {k = GMT_IJP (G->header, row, G->header->nx-1); G->data[k] = (float)in[GMT_Z]; n_use++; }
-				else if (col == (G->header->nx-1)) {k = GMT_IJP (G->header, row, 0); G->data[k] = (float)in[GMT_Z]; n_use++; }
+				if (col == 0) {ij = GMT_IJP (G->header, row, G->header->nx-1); G->data[ij] = (float)in[GMT_Z]; n_use++; }
+				else if (col == (G->header->nx-1)) {ij = GMT_IJP (G->header, row, 0); G->data[ij] = (float)in[GMT_Z]; n_use++; }
 			}
 		} while (TRUE);
 		
@@ -322,7 +324,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	}
 	else if (Ctrl->E.active) {	/* Transpose the matrix and exchange x and y info */
 		struct GRD_HEADER *h_tr = NULL;
-		GMT_LONG ij, ij_tr;
+		uint64_t ij, ij_tr;
 		float *a_tr = NULL;
 		
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file, G)) {	/* Get data */

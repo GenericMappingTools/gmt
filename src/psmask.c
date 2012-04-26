@@ -103,10 +103,10 @@ void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx,
 	if (nn > 0) PSL_comment (PSL, "End of clip path sub-segment %ld\n", id);
 }
 
-GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, GMT_LONG *edge, struct GRD_HEADER *h, double inc2[], double **xx, double **yy, GMT_LONG i, GMT_LONG j, GMT_LONG kk, GMT_LONG *max)
+GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, GMT_LONG *edge, struct GRD_HEADER *h, double inc2[], double **xx, double **yy, GMT_LONG i, GMT_LONG j, GMT_LONG kk, uint64_t *max)
 {
-	GMT_LONG n = 1, k, k0, n_cuts, kk_opposite, first_k, more;
-	GMT_LONG edge_word, edge_bit, ij, ij0, m;
+	GMT_LONG k, k0, n_cuts, kk_opposite, first_k, more;
+	uint64_t n = 1, edge_word, edge_bit, ij, ij0, m;
 	double xk[4], yk[4], x0, y0;
 
 	m = *max - 2;
@@ -226,7 +226,7 @@ GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 	return (n);
 }
 
-GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GRD_HEADER *h, double inc2[], GMT_LONG *edge, GMT_LONG first, double **x, double **y, GMT_LONG *max)
+GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GRD_HEADER *h, double inc2[], GMT_LONG *edge, GMT_LONG first, double **x, double **y, uint64_t *max)
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
@@ -494,9 +494,11 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG ij, k, n, row, col, n_edges, *d_col = NULL, d_row = 0, ii, jj, make_plot, n_seg = 0;
-	GMT_LONG section, n_read, n_alloc, closed, io_mode = 0, max_d_col = 0;
+	GMT_LONG section, n_read, closed, io_mode = 0, max_d_col = 0;
 	GMT_LONG error = FALSE, first = TRUE, node_only, n_seg_alloc = 0;
 	GMT_LONG fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
+	
+	uint64_t n_points;
 
 	char *grd = NULL;
 
@@ -698,7 +700,6 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Arrays holding the contour xy values */
 			x = GMT_memory (GMT, NULL, GMT_CHUNK, double);
 			y = GMT_memory (GMT, NULL, GMT_CHUNK, double);
-			n_alloc = GMT_CHUNK;
 
 			n_edges = Grid->header->ny * (GMT_LONG )ceil (Grid->header->nx / 16.0);
 			edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);
@@ -709,7 +710,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			section = 0;
 			first = TRUE;
-			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &n_alloc)) > 0) {
+			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &n_points)) > 0) {
 				closed = FALSE;
 				shrink_clip_contours (GMT, x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI]);
 				if (Ctrl->D.active && n > Ctrl->Q.min) {	/* Save the contour as output data */

@@ -1,6 +1,8 @@
 -----------------------------------------------------------------------------------------
 	$Id$
 -----------------------------------------------------------------------------------------
+2012-04-25	pwessel
+	branch inttypes to work on replacing GMT_LONG with proper inttypes.
 
 2012-04-21	pwessel
 	* gmt_plot.c:		Fixed memory leak in gmt_map_annotate
