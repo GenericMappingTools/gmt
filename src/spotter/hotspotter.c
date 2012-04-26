@@ -290,12 +290,11 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_track;		/* Number of points along a single flowline */
 	GMT_LONG node_x_width;		/* Number of x-nodes covered by the seamount in question (y-dependent) */
 	GMT_LONG node_y_width;		/* Number of y-nodes covered by the seamount */
+	GMT_LONG node;			/* The current node index */
 	GMT_LONG n_expected_fields;
 	GMT_LONG n_read = 0;		/* Number of records read */
-	GMT_LONG row, col, kx, ky, m, d_col, d_row, col_0, row_0;
+	GMT_LONG row, col, kx, ky, m, d_col, d_row, col_0, row_0, k0;
 	GMT_LONG error = FALSE;		/* TRUE when arguments are wrong */
-	
-	uint64_t node, k0;
 
 	double sampling_int_in_km;	/* Sampling interval along flowline (in km) */
 	double x_smt;			/* Seamount longitude (input degrees, stored as radians) */

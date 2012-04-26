@@ -147,7 +147,7 @@ void detrend_and_hanning (struct SPECTRUM1D_INFO *C)
 	}
 }
 
-void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data)
+void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, GMT_LONG n_data)
 {
 	GMT_LONG n_windows, w, i, t_start, t_stop, t, f;
 	double dw, spec_scale, x_varp, y_varp = 1.0, one_on_nw, co_quad;

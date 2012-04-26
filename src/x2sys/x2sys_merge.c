@@ -120,9 +120,8 @@ GMT_LONG GMT_x2sys_merge_parse (struct GMTAPI_CTRL *C, struct X2SYS_MERGE_CTRL *
 
 GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG  i, j, k, n_base, n_merge, merge_start, error, *map_merge_end = NULL;
-	GMT_LONG *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL;
-	size_t n_alloc;
+	GMT_LONG  i, j, k, n_alloc, n_base, n_merge, merge_start, error;
+	GMT_LONG *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL, *map_merge_end = NULL;
 	char line[GMT_BUFSIZ], **pairs_base = NULL, **pairs_merge = NULL;
 	FILE *fp_base = NULL, *fp_merge = NULL;
 	struct X2SYS_MERGE_CTRL *Ctrl = NULL;

@@ -29,8 +29,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	struct GMT_GRID *G = NULL;
 	float	*z = NULL;
 	char *filein = NULL;
-	GMT_LONG row, col;
-	uint64_t gmt_node;
+	GMT_LONG row, col, gmt_node;
 	int	px = -1, py = -1, pz = -1, pi = -1;
 
 	if (nrhs != 1 || nlhs < 1 || nlhs > 4) {	/* Give usage message and return */

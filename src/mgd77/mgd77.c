@@ -268,7 +268,7 @@ static inline void MGD77_Init_Columns (struct GMT_CTRL *C, struct MGD77_CONTROL 
 
 static void MGD77_Path_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 {
-	size_t n_alloc = GMT_SMALL_CHUNK;
+	GMT_LONG n_alloc = GMT_SMALL_CHUNK;
 	char file[GMT_BUFSIZ], line[GMT_BUFSIZ];
 	FILE *fp = NULL;
 
@@ -4014,8 +4014,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 {
 	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none) */
 
-	GMT_LONG i, j, k, n = 0, n_dig, length, all, NGDC_ID_likely;
-	size_t n_alloc = 0;
+	GMT_LONG i, j, k, n = 0, n_dig, length, all, NGDC_ID_likely, n_alloc = 0;
 	struct GMT_OPTION *opt = NULL;
 	char **L = NULL, *d_name = NULL, line[GMT_BUFSIZ], this_arg[GMT_BUFSIZ], *flist = NULL;
 #ifdef HAVE_DIRENT_H_
@@ -4050,7 +4049,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 		while (GMT_fgets (C, line, GMT_BUFSIZ, fp)) {
 			GMT_chop (line);	/* Get rid of CR/LF issues */
 			if (line[0] == '#' || line[0] == '>' || (length = strlen (line)) == 0) continue;	/* Skip comments and blank lines */
-			if (n == (GMT_LONG)n_alloc) L = GMT_memory (C, L, n_alloc += GMT_CHUNK, char *);
+			if (n == (int)n_alloc) L = GMT_memory (C, L, n_alloc += GMT_CHUNK, char *);
 			L[n] = GMT_memory (C, NULL, length + 1, char);
 			strcpy (L[n++], line);
 		}
@@ -4078,7 +4077,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 			NGDC_ID_likely = ((n_dig == (int)strlen (this_arg)) && (n_dig == 2 || n_dig == 4 || n_dig == 8));	/* All integers: 2 = agency, 4 = agency+vessel, 8 = single cruise */
 
 			if (!NGDC_ID_likely || length == 8) {	/* Either a custom cruise name OR a full 8-integer NGDC ID, append name to list */
-				if (n == (GMT_LONG)n_alloc) L = GMT_memory (C, L, n_alloc += GMT_CHUNK, char *);
+				if (n == (int)n_alloc) L = GMT_memory (C, L, n_alloc += GMT_CHUNK, char *);
 				L[n] = GMT_memory (C, NULL, length + 1, char);
 				strcpy (L[n++], this_arg);
 				continue;
@@ -4108,7 +4107,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 				k = strlen (d_name) - 1;
 				while (k && d_name[k] != '.') k--;	/* Strip off file extension */
 				if (k < 8) continue;	/* Not a NGDC 8-char ID */
-				if (n == (GMT_LONG)n_alloc) L = GMT_memory (C, L, n_alloc += GMT_CHUNK, char *);
+				if (n == (int)n_alloc) L = GMT_memory (C, L, n_alloc += GMT_CHUNK, char *);
 				L[n] = GMT_memory (C, NULL, k + 1, char);
 				strncpy (L[n], d_name, (size_t)k);
 				L[n++][k] = '\0';
@@ -4132,7 +4131,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 		n = i;
 	}
 
-	if (n != (GMT_LONG)n_alloc) L = GMT_memory (C, L, n, char *);
+	if (n != (int)n_alloc) L = GMT_memory (C, L, n, char *);
 	*list = L;
 #ifdef DEBUG
 	GMT_memtrack_on (C, GMT_mem_keeper);
@@ -5389,8 +5388,7 @@ GMT_LONG MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruis
 	 * time, dist, heading) are needed.
 	 */
 
-	GMT_LONG cruise_id, id, n_list = 0, rec = 0, pos, sorted;
-	size_t n_alloc = GMT_SMALL_CHUNK;
+	GMT_LONG cruise_id, id, n_list = 0, n_alloc = GMT_SMALL_CHUNK, rec = 0, pos, sorted;
 	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
 	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
 	char **list = NULL;

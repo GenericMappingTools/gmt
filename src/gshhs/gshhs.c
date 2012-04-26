@@ -197,11 +197,9 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 
 GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG k, seg_no = 0, is_line = 0, n_seg = 0, max_east = 270000000;
+	GMT_LONG k, seg_no = 0, is_line = 0, n_alloc = 0, n_seg = 0, max_east = 270000000;
 	GMT_LONG error, n_read, m, gmode, level, version, greenwich, is_river, src;
 	GMT_LONG must_swab, dim[4] = {1, 0, 2, 0}, OK, first = TRUE;
-	
-	size_t n_alloc = 0;
 
 	double w, e, s, n, area, f_area, scale = 10.0;
 	
@@ -348,7 +346,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else {
 			dim[3] = h.n + Ctrl->G.active;	/* Number of data records to allocate for this segment/polygon*/
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
-				size_t old_n_alloc = n_alloc;
+				GMT_LONG old_n_alloc = n_alloc;
 				n_alloc <<= 1;
 				T = GMT_memory (GMT, T, n_alloc, struct GMT_LINE_SEGMENT *);
 				GMT_memset (&(T[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */

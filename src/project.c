@@ -615,10 +615,8 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 
 GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, n_total_read, n_total_used = 0;
+	GMT_LONG i, n_total_read, n_total_used = 0, n_alloc = GMT_CHUNK;
 	GMT_LONG j, k, rmode, error = FALSE, pure_ascii, skip, z_first = TRUE;
-	
-	size_t n_alloc = GMT_CHUNK;
 
 	double xx, yy, cos_theta, sin_theta, sin_lat_to_pole = 1.0;
 	double theta = 0.0, d_along, sign = 1.0, s, c, *in = NULL;
@@ -821,7 +819,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			P.n_used++;
 			d_along = Ctrl->L.min + P.n_used * Ctrl->G.inc;
 			if (P.n_used == (n_alloc-1)) {
-				size_t old_n_alloc = n_alloc;
+				GMT_LONG old_n_alloc = n_alloc;
 				n_alloc <<= 1;
 				p_data = GMT_memory (GMT, p_data, n_alloc, struct PROJECT_DATA);
 				GMT_memset (&(p_data[old_n_alloc]), n_alloc - old_n_alloc, struct PROJECT_DATA);	/* Set to NULL/0 */
@@ -969,7 +967,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			P.n_used++;
 			if (P.n_used == n_alloc) {
-				size_t old_n_alloc = n_alloc;
+				GMT_LONG old_n_alloc = n_alloc;
 				n_alloc <<= 1;
 				p_data = GMT_memory (GMT, p_data, n_alloc, struct PROJECT_DATA);
 				GMT_memset (&(p_data[old_n_alloc]), n_alloc - old_n_alloc, struct PROJECT_DATA);	/* Set to NULL/0 */

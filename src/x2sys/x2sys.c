@@ -207,8 +207,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 {
 	/* Reads the format definition file and sets all information variables */
 
-	GMT_LONG i = 0;
-	size_t n_alloc = GMT_TINY_CHUNK;
+	GMT_LONG i = 0, n_alloc = GMT_TINY_CHUNK;
 	int c;	/* Remain 4-byte integer */
 	FILE *fp = NULL;
 	struct X2SYS_INFO *X = NULL;
@@ -565,15 +564,14 @@ GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X
 	return ((error || n_read != s->n_fields) ? -1 : 0);
 }
 
-GMT_LONG x2sys_read_file (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
+GMT_LONG x2sys_read_file (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
 	 * pointer data.
 	 */
 
-	uint64_t i, j;
-	size_t n_alloc;
+	GMT_LONG i, j, n_alloc;
 	FILE *fp = NULL;
 	double **z = NULL, *rec = NULL;
 	char path[GMT_BUFSIZ];
@@ -626,7 +624,7 @@ GMT_LONG x2sys_read_file (struct GMT_CTRL *C, char *fname, double ***data, struc
 }
 
 #ifdef GMT_COMPAT
-GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
+GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
@@ -635,8 +633,7 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 	 */
 
 	int year, n_records;	/* These must remain 4-byte ints */
-	GMT_LONG i, rata_day;
-	uint64_t j;
+	GMT_LONG i, j, rata_day;
 	char path[GMT_BUFSIZ];
 	FILE *fp = NULL;
 	double **z = NULL;
@@ -715,11 +712,9 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 }
 #endif
 
-GMT_LONG x2sys_read_mgd77file (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
+GMT_LONG x2sys_read_mgd77file (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
-	uint64_t j;
-	size_t n_alloc = GMT_CHUNK;
-	GMT_LONG i, col[MGD77_N_DATA_EXTENDED];
+	GMT_LONG i, j, col[MGD77_N_DATA_EXTENDED], n_alloc = GMT_CHUNK;
 	char path[GMT_BUFSIZ], *tvals[MGD77_N_STRING_FIELDS];
 	double **z = NULL, dvals[MGD77_N_DATA_EXTENDED];
 	struct MGD77_HEADER H;
@@ -788,7 +783,7 @@ GMT_LONG get_first_year (struct GMT_CTRL *C, double t)
 	return (CAL.year);
 }
 
-GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
+GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
 	GMT_LONG i;
 	char path[GMT_BUFSIZ];
@@ -844,10 +839,9 @@ GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data
 	return (X2SYS_NOERROR);
 }
 
-GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
+GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
-	GMT_LONG i, n_fields, n_expect = GMT_MAX_COLUMNS;
-	uint64_t j;
+	GMT_LONG i, n_fields, n_expect = GMT_MAX_COLUMNS, j;
 	char path[GMT_BUFSIZ];
 	double **z = NULL, *in = NULL;
 	FILE *fp = NULL;
@@ -871,7 +865,7 @@ GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, str
 	z = GMT_memory (C, NULL, s->n_out_columns, double *);
 	for (i = 0; i < s->n_out_columns; i++) z[i] = GMT_memory (C, NULL, C->current.io.ndim, double);
 
-	for (j = 0; j < C->current.io.ndim; j++) {
+	for (j = 0; j < (GMT_LONG)C->current.io.ndim; j++) {
 		if ((in = C->current.io.input (C, fp, &n_expect, &n_fields)) == NULL || n_fields != s->n_out_columns) {
 			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_ncfile: Error reading file %s at record %d\n", fname, j);
 	     		return (GMT_GRDIO_READ_FAILED);
@@ -893,8 +887,7 @@ GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, str
 
 GMT_LONG x2sys_read_list (struct GMT_CTRL *C, char *file, char ***list, GMT_LONG *nf)
 {
-	GMT_LONG n = 0;
-	size_t n_alloc = GMT_CHUNK;
+	GMT_LONG n_alloc = GMT_CHUNK, n = 0;
 	char **p = NULL, line[GMT_BUFSIZ], name[GMT_TEXT_LEN64];
 	FILE *fp = NULL;
 
@@ -928,8 +921,7 @@ GMT_LONG x2sys_read_list (struct GMT_CTRL *C, char *file, char ***list, GMT_LONG
 
 GMT_LONG x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, double **weights, GMT_LONG *nf)
 {
-	GMT_LONG n = 0;
-	size_t n_alloc = GMT_CHUNK;
+	GMT_LONG n_alloc = GMT_CHUNK, n = 0;
 	char **p = NULL, line[GMT_BUFSIZ], name[GMT_TEXT_LEN64];
 	double *W = NULL, this_w;
 	FILE *fp = NULL;
@@ -1189,8 +1181,7 @@ GMT_LONG x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct
 {
 	/* Reads the binned track listing which is ASCII */
 	/* mode = 0 gives linked list, mode = 1 gives fixed array */
-	GMT_LONG id, flag, last_id = -1;
-	size_t n_alloc = GMT_CHUNK;
+	GMT_LONG id, flag, last_id = -1, n_alloc = GMT_CHUNK;
 	char track_file[GMT_BUFSIZ], track_path[GMT_BUFSIZ], line[GMT_BUFSIZ], name[GMT_BUFSIZ];
 	FILE *ftrack = NULL;
 	struct X2SYS_BIX_TRACK_INFO *this_info = NULL;
@@ -1217,7 +1208,7 @@ GMT_LONG x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct
 		sscanf (line, "%s %ld %ld", name, &id, &flag);
 		if (mode == 1) {
 			if (id >= n_alloc) {
-				size_t old_n_alloc = n_alloc;
+				GMT_LONG old_n_alloc = n_alloc;
 				while (id >= n_alloc) n_alloc += GMT_CHUNK;
 				B->head = GMT_memory (C, B->head, n_alloc, struct X2SYS_BIX_TRACK_INFO);
 				GMT_memset (&(B->head[old_n_alloc]), n_alloc - old_n_alloc, struct X2SYS_BIX_TRACK_INFO);	/* Set to NULL */
@@ -1480,9 +1471,8 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 	char line[GMT_BUFSIZ], txt[GMT_BUFSIZ], kind[GMT_BUFSIZ], fmt[GMT_BUFSIZ], trk[2][GMT_TEXT_LEN64], t_txt[2][GMT_TEXT_LEN64], start[2][GMT_TEXT_LEN64];
 	char x_txt[GMT_TEXT_LEN64], y_txt[GMT_TEXT_LEN64], d_txt[2][GMT_TEXT_LEN64], h_txt[2][GMT_TEXT_LEN64], v_txt[2][GMT_TEXT_LEN64], z_txt[2][GMT_TEXT_LEN64];
 	char stop[2][GMT_TEXT_LEN64], info[2][3*GMT_TEXT_LEN64], **trk_list = NULL, **ignore = NULL, *t = NULL;
-	GMT_LONG p, n_pairs, i, k, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
+	GMT_LONG p, n_pairs, i, k, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
 	GMT_LONG more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
-	size_t n_alloc_x, n_alloc_p, n_alloc_t;
 	double x, m, lon, dist[2], d_val;
 
 	fp = stdin;	/* Default to stdin if dbase is NULL */
@@ -1628,7 +1618,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 		}
 		n_pairs++;
 		if (n_pairs == n_alloc_p) {
-			size_t old_n_alloc = n_alloc_p;
+			GMT_LONG old_n_alloc = n_alloc_p;
 			n_alloc_p <<= 1;
 			P = GMT_memory (C, P, n_alloc_p, struct X2SYS_COE_PAIR);
 			GMT_memset (&(P[old_n_alloc]), n_alloc_p - old_n_alloc, struct X2SYS_COE_PAIR);	/* Set to NULL/0 */
@@ -1688,7 +1678,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 				k++;
 			}
 			if (k == n_alloc_x) {
-				size_t old_n_alloc = n_alloc_x;
+				GMT_LONG old_n_alloc = n_alloc_x;
 				n_alloc_x <<= 1;
 				P[p].COE = GMT_memory (C, P[p].COE, n_alloc_x, struct X2SYS_COE);
 				GMT_memset (&(P[p].COE[old_n_alloc]), n_alloc_x - old_n_alloc, struct X2SYS_COE);	/* Set to NULL/0 */
@@ -1739,8 +1729,7 @@ GMT_LONG x2sys_find_track (struct GMT_CTRL *C, char *name, char **list, GMT_LONG
 GMT_LONG x2sys_get_tracknames (struct GMT_CTRL *C, struct GMT_OPTION *options, char ***filelist, GMT_LONG *cmdline)
 {	/* Return list of track names given on command line or via =list mechanism.
 	 * The names do not have the track extension. */
-	GMT_LONG i, A, add_chunk;
-	size_t n_alloc;
+	GMT_LONG i, A, add_chunk, n_alloc;
 	char **file = NULL, *p = NULL;
 	struct GMT_OPTION *opt = NULL, *list = NULL;
 

@@ -79,8 +79,7 @@ struct COE_ADJUST {	/* Holds adjustment spline knots */
 
 struct COE_ADJLIST {	/* Array with the growing arrays of COE_ADJUST per track */
 	struct COE_ADJUST *K;
-	int n;
-	size_t n_alloc;
+	int n, n_alloc;
 };
 
 void *New_x2sys_report_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
