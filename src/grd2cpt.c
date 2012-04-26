@@ -290,8 +290,11 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 
 GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, j, k, ij, ngrd = 0, nxyg, nfound, ngood, cpt_flags = 0;
-	GMT_LONG n_alloc = GMT_TINY_CHUNK, error = FALSE;
+	GMT_LONG row, col, j, ngrd = 0, nxyg, nfound, ngood, cpt_flags = 0;
+	GMT_LONG error = FALSE;
+	
+	uint64_t ij, k;
+	size_t n_alloc = GMT_TINY_CHUNK;
 
 	char CPT_file[GMT_BUFSIZ], format[GMT_BUFSIZ], *file = NULL, *l = NULL, **grdfile = NULL;
 
@@ -366,7 +369,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		k++;
 		if (k == n_alloc) {
-			GMT_LONG old_n_alloc = n_alloc;
+			size_t old_n_alloc = n_alloc;
 			n_alloc += GMT_TINY_CHUNK;
 			G = GMT_memory (GMT, G, n_alloc, struct GMT_GRID *);
 			GMT_memset (&(G[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_GRID *);	/* Set to NULL */

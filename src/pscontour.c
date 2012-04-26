@@ -102,7 +102,8 @@ struct PSCONTOUR_LINE {	/* Beginning and end of straight contour segment */
 };
 
 struct PSCONTOUR {
-	GMT_LONG n_alloc, nl;
+	size_t n_alloc;
+	GMT_LONG nl;
 	double val;
 	double angle;
 	char type, do_tick;
@@ -155,8 +156,9 @@ GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, GMT_
 	 * linesegments made up of two points, with coordinates xc, yc, and contour level zc.
 	 */
 	 
-	GMT_LONG i, j, k, k2, i1, nx, n_alloc, ok, n_ok, *vout = NULL, *cind = NULL, *ctmp = NULL;
+	GMT_LONG i, j, k, k2, i1, nx, ok, n_ok, *vout = NULL, *cind = NULL, *ctmp = NULL;
 	double xx[3], yy[3], zz[3], zmin, zmax, dz, frac, *xout = NULL, *yout = NULL, *zout = NULL, *ztmp = NULL;
+	size_t n_alloc;
 
 	xx[0] = x[ind[0]];	yy[0] = y[ind[0]];	zz[0] = z[ind[0]];
 	xx[1] = x[ind[1]];	yy[1] = y[ind[1]];	zz[1] = z[ind[1]];
@@ -592,11 +594,13 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG nx, k2, k3, node1, node2, c, PSCONTOUR_SUM, cont_counts[2] = {0, 0};
-	GMT_LONG n_alloc, n_contours = 0, io_mode = 0, id;
-	GMT_LONG add, last_entry, last_exit, make_plot, n_save = 0, n_save_alloc = 0;
-	GMT_LONG ij, n, np, k, i, low, high, *vert = NULL, *cind = NULL;
-	GMT_LONG error = FALSE, skip = FALSE, closed, *n_seg_alloc = NULL, *n_seg = NULL;
+	GMT_LONG io_mode = 0, id, add, last_entry, last_exit, make_plot;
+	GMT_LONG n, np, k, i, low, high, *vert = NULL, *cind = NULL;
+	GMT_LONG error = FALSE, skip = FALSE, closed, *n_seg = NULL;
 	GMT_LONG tbl_scl = 0, two_only = FALSE, fmt[3] = {0, 0, 0}, n_tables = 0, tbl;
+	
+	size_t n_contours = 0, n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL;
+	uint64_t ij;
 	
 	int *ind = NULL;	/* Must remain int due to triangle */
 	
@@ -730,7 +734,8 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (i = 0; i < n; i++) GMT_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
 
 	if (Ctrl->Q.active) {	/* Read precalculated triangulation indices */
-		GMT_LONG seg, row, col;
+		GMT_LONG seg, col;
+		uint64_t row;
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_TABLE *T = NULL;
 
@@ -797,7 +802,8 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
 		char *record = NULL;
-		GMT_LONG got, in_ID, NL, c_alloc = 0;
+		GMT_LONG got, in_ID, NL;
+		size_t c_alloc = 0;
 		double tmp;
 
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, Ctrl->C.file, NULL)) == GMTAPI_NOTSET) {
@@ -836,7 +842,8 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_contours = c;
 	}
 	else {	/* Set up contour intervals automatically from Ctrl->C.interval and Ctrl->A.interval */
-		GMT_LONG c_alloc = 0, ic;
+		size_t c_alloc = 0;
+		uint64_t ic;
 		double min, max, aval;
 		min = floor (xyz[0][GMT_Z] / Ctrl->C.interval) * Ctrl->C.interval; if (min < xyz[0][GMT_Z]) min += Ctrl->C.interval;
 		max = ceil (xyz[1][GMT_Z] / Ctrl->C.interval) * Ctrl->C.interval; if (max > xyz[1][GMT_Z]) max -= Ctrl->C.interval;
@@ -895,7 +902,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 		dim[0] = n_tables;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty dataset */
-		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
+		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, size_t);
 		n_seg = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
 	}
@@ -1225,7 +1232,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					/* Select which table this segment should be added to */
 					tbl = (io_mode == GMT_WRITE_TABLES) ? ((two_only) ? closed : tbl_scl * c) : 0;
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
-						GMT_LONG n_old_alloc = n_seg_alloc[tbl];
+						size_t n_old_alloc = n_seg_alloc[tbl];
 						D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
 						GMT_memset (&(D->table[tbl]->segment[n_old_alloc]), n_seg_alloc[tbl] - n_old_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
 					}

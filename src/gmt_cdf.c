@@ -228,7 +228,8 @@ GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	size_t start[1], edge[1];
 	GMT_LONG first_col, last_col, first_row, last_row, err;
 	GMT_LONG i, j, width_in, height_in, i_0_out, inc, off;
-	GMT_LONG ij, kk, width_out, check, *k = NULL;
+	GMT_LONG width_out, check, *k = NULL;
+	uint64_t ij, kk;
 	float *tmp = NULL;
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
@@ -294,8 +295,9 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	size_t start[1], edge[1];
 	int ncid, old_fill_mode, *tmp_i = NULL;
 	GMT_LONG err, i, inc = 1, off = 0, nr_oor = 0, *k = NULL;
-	GMT_LONG j, width_out, height_out, ij, width_in;
+	GMT_LONG j, width_out, height_out, width_in;
 	GMT_LONG first_col, last_col, first_row, last_row;
+	uint64_t ij; 
 	float *tmp_f = NULL;
 	double limit[2] = {-FLT_MAX, FLT_MAX}, value;
 	nc_type z_type;

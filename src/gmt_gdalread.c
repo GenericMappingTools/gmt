@@ -60,7 +60,8 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	GMT_LONG	fliplr;
 	GMT_LONG	nn, off, got_R = FALSE, got_r = FALSE, error = FALSE;
 	GMT_LONG	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
-	GMT_LONG	n_alloc, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
+	GMT_LONG	pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
+	size_t n_alloc;
 	//GMT_LONG	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	unsigned char *tmp = NULL;
 	double	tmpF64, adfMinMax[2];

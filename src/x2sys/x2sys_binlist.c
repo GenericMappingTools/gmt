@@ -167,7 +167,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char **trk_name = NULL;
 
-	GMT_LONG i, j, k, n_tracks, k1, ij, ii, jj, nx, bi, bj, start_i, end_i, jump_180, jump_360;
+	GMT_LONG i, k, n_tracks, k1, ij, ii, jj, nx, bi, bj, start_i, end_i, jump_180, jump_360;
 	GMT_LONG this_bin_i;	/* This i node for bin */
 	GMT_LONG this_bin_j;	/* This j node for bin */
 	GMT_LONG this_bin_ij;	/* This bin */
@@ -176,6 +176,8 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG last_bin_ij;	/* Previous bin */
 	GMT_LONG nx_alloc = GMT_SMALL_CHUNK;
 	GMT_LONG error = FALSE, gap, cmdline_files;
+	
+	uint64_t j;
 
 	unsigned int nav_flag;
 

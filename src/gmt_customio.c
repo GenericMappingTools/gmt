@@ -308,8 +308,9 @@ GMT_LONG GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	GMT_LONG first_col, last_col, first_row, last_row, inc, off;
-	GMT_LONG i, j, j2, width_in, width_out, height_in, i_0_out, n2;
-	GMT_LONG kk, ij, piping = FALSE, check, *k = NULL;
+	GMT_LONG i, j, width_in, height_in, i_0_out, n2;
+	GMT_LONG piping = FALSE, check, *k = NULL;
+	uint64_t kk, ij, j2, width_out;
 	FILE *fp = NULL;
 	unsigned char *tmp = NULL;
 	struct rasterfile h;
@@ -390,9 +391,10 @@ GMT_LONG GMT_ras_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	/*		for real and imaginary parts when processed by grdfft etc. */
 	/* 		If 64 is added we write no header */
 
-	GMT_LONG i, i2, inc = 1, off = 0, kk, ij, check, *k = NULL;
-	GMT_LONG j, j2, width_in, width_out, height_out, n2;
+	GMT_LONG i, i2, inc = 1, off = 0, check, *k = NULL;
+	GMT_LONG j, width_out, height_out, n2;
 	GMT_LONG first_col, last_col, first_row, last_row, do_header = TRUE;
+	uint64_t kk, ij, j2, width_in;
 
 	unsigned char *tmp = NULL;
 
@@ -511,7 +513,7 @@ GMT_LONG GMT_native_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header
 
 GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
-	GMT_LONG nm, mx, status, size;
+	uint64_t nm, mx, status, size;
 	double item_size;
 	struct GMT_STAT buf;
 	struct GRD_HEADER t_head;
@@ -530,8 +532,8 @@ GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 	switch (size) {
 		case 0:	/* Possibly bit map; check some more */
-			mx = (GMT_LONG) ceil (t_head.nx / 32.0);
-			nm = mx * ((GMT_LONG)t_head.ny);
+			mx = (uint64_t) ceil (t_head.nx / 32.0);
+			nm = mx * ((uint64_t)t_head.ny);
 			if ((buf.st_size - GRD_HEADER_SIZE) == nm)	/* Yes, it was a bit mask file */
 				header->type = GMT_GRD_IS_BM;
 			else	/* No, junk data */
@@ -590,8 +592,9 @@ GMT_LONG GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	GMT_LONG first_col, last_col, first_row, last_row, word, bit, err;
-	GMT_LONG i, j, j2, width_in, width_out, height_in, i_0_out, inc, off, mx;
-	GMT_LONG *k = NULL, kk, ij, piping = FALSE, check = FALSE;
+	GMT_LONG i, j, width_in, height_in, i_0_out, inc, off, mx;
+	GMT_LONG *k = NULL, piping = FALSE, check = FALSE;
+	uint64_t kk, ij, j2, width_out;
 	FILE *fp = NULL;
 	unsigned int *tmp = NULL, ival;
 
@@ -671,9 +674,10 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		If 64 is added we write no header*/
 
-	GMT_LONG j, j2, width_in, width_out, height_out, mx, word, bit, err, inc, off;
+	GMT_LONG j, width_out, height_out, mx, word, bit, err, inc, off;
 	GMT_LONG i, i2, first_col, last_col, first_row, last_row, *k = NULL;
-	GMT_LONG kk, ij, check = FALSE, do_header;
+	GMT_LONG check = FALSE, do_header;
+	uint64_t kk, ij, j2, width_in;
 	unsigned int *tmp = NULL, ival;
 
 	FILE *fp = NULL;
@@ -816,15 +820,14 @@ GMT_LONG GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, flo
 	GMT_LONG first_row, last_row;	/* First and last row to deal with */
 	GMT_LONG height_in;		/* Number of columns in subregion */
 	GMT_LONG inc, off;		/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary), and offset */
-	GMT_LONG err, i, j, j2, i_0_out;	/* Misc. counters */
+	GMT_LONG err, i, j, i_0_out;	/* Misc. counters */
 	GMT_LONG *k = NULL;		/* Array with indices */
 	GMT_LONG type;			/* Data type */
 	GMT_LONG width_in;		/* Number of items in one row of the subregion */
-	GMT_LONG kk, ij;
-	GMT_LONG width_out;		/* Width of row as return (may include padding) */
+	uint64_t kk, ij, j2, width_out;	/* Width of row as return (may include padding) */
 	GMT_LONG piping = FALSE;	/* TRUE if we read input pipe instead of from file */
 	GMT_LONG check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
-	size_t size;			/* Length of data type */
+	size_t size;			/* Length of data type */ 
 	FILE *fp = NULL;		/* File pointer to data or pipe */
 	void *tmp = NULL;		/* Array pointer for reading in rows of data */
 
@@ -917,11 +920,10 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 	GMT_LONG height_out;		/* Number of columns in subregion */
 	GMT_LONG inc;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	GMT_LONG off;			/* Offset in complex array: 0 for real part, 1 for imaginary */
-	GMT_LONG i, j, i2, j2, err;	/* Misc. counters */
+	GMT_LONG i, j, i2, err;		/* Misc. counters */
 	GMT_LONG *k = NULL;		/* Array with indices */
 	GMT_LONG type;			/* Data type */
-	GMT_LONG width_in;		/* Number of items in one row of the subregion */
-	GMT_LONG ij;
+	uint64_t ij, width_in, j2;
 	GMT_LONG check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	GMT_LONG do_header = TRUE;	/* TRUE if we should write the header first */
 	size_t size;			/* Length of data type */
@@ -996,7 +998,7 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 	return (GMT_NOERROR);
 }
 
-void GMT_encode (struct GMT_CTRL *C, void *vptr, GMT_LONG k, float z, GMT_LONG type)
+void GMT_encode (struct GMT_CTRL *C, void *vptr, uint64_t k, float z, GMT_LONG type)
 {	/* Place the z value in the array location of the (type) pointer */
 	switch (type) {
 		case 'b':
@@ -1021,7 +1023,7 @@ void GMT_encode (struct GMT_CTRL *C, void *vptr, GMT_LONG k, float z, GMT_LONG t
 	}
 }
 
-float GMT_decode (struct GMT_CTRL *C, void *vptr, GMT_LONG k, GMT_LONG type)
+float GMT_decode (struct GMT_CTRL *C, void *vptr, uint64_t k, GMT_LONG type)
 {	/* Retrieve the z value from the array location of the (type) pointer */
 	float fval;
 
@@ -1278,11 +1280,10 @@ GMT_LONG GMT_srf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	GMT_LONG width_in;		/* Number of items in one row of the subregion */
 	GMT_LONG height_in;		/* Number of columns in subregion */
 	GMT_LONG inc, off;		/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary), and offset */
-	GMT_LONG i, j, j2, i_0_out; 	/* Misc. counters */
+	GMT_LONG i, j, i_0_out; 	/* Misc. counters */
 	GMT_LONG *k = NULL;		/* Array with indices */
 	GMT_LONG type;			/* Data type */
-	GMT_LONG kk, ij;
-	GMT_LONG width_out;		/* Width of row as return (may include padding) */
+	uint64_t kk, ij, j2, width_out;
 	GMT_LONG piping = FALSE;	/* TRUE if we read input pipe instead of from file */
 	size_t size;			/* Length of data type */
 	FILE *fp = NULL;		/* File pointer to data or pipe */
@@ -1385,11 +1386,10 @@ GMT_LONG GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_LONG height_out;		/* Number of columns in subregion */
 	GMT_LONG inc;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	GMT_LONG off;			/* Offset in complex array: 0 for real part, 1 for imaginary */
-	GMT_LONG i, j, i2, j2;		/* Misc. counters */
+	GMT_LONG i, j, i2;		/* Misc. counters */
 	GMT_LONG *k = NULL;		/* Array with indices */
 	GMT_LONG type;			/* Data type */
-	GMT_LONG ij;
-	GMT_LONG width_in;		/* Number of items in one row of the subregion */
+	uint64_t ij, j2, width_in;	/* Number of items in one row of the subregion */
 	size_t size;			/* Length of data type */
 	FILE *fp = NULL;		/* File pointer to data or pipe */
 	void *tmp = NULL;		/* Array pointer for writing in rows of data */

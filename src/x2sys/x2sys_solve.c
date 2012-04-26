@@ -283,7 +283,8 @@ GMT_LONG GMT_x2sys_solve_parse (struct GMTAPI_CTRL *C, struct X2SYS_SOLVE_CTRL *
 int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, double **start, int *nf)
 {
 	/* Reads a list with track names and their origin times (needed for -Et) */
-	int n_alloc = GMT_CHUNK, n = 0;
+	size_t n_alloc = GMT_CHUNK;
+	int n = 0;
 	char **p, line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], date[GMT_TEXT_LEN64];
 	double *T;
 	FILE *fp;
@@ -333,7 +334,8 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG error = FALSE, grow_list = FALSE, normalize = FALSE, active_col[N_COE_PARS];
 	int *ID[2] = {NULL, NULL};
 	GMT_LONG n_par = 0, n, m, t, n_tracks = 0, n_active;
-	GMT_LONG i, p, j, k, r, s, off, row, n_COE = 0, n_alloc = GMT_CHUNK, n_alloc_t = GMT_CHUNK, ierror;
+	GMT_LONG i, p, j, k, r, s, off, row, n_COE = 0, ierror;
+	size_t n_alloc = GMT_CHUNK, n_alloc_t = GMT_CHUNK;
 	double *N = NULL, *a = NULL, *b = NULL, *data[N_COE_PARS], sgn, zero_test = 1.0e-08, old_mean, new_mean, sw2;
 	double old_stdev, new_stdev, e_k, min_extent, max_extent, range = 0.0, Sw, Sx, Sxx;
 #ifdef SAVEFORLATER

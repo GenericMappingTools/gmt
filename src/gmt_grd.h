@@ -60,9 +60,9 @@ struct GRD_HEADER {
 	GMT_LONG bits;			/* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
 	GMT_LONG complex_mode;		/* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
 	GMT_LONG mx, my;		/* Actual dimensions of the grid in memory, allowing for the padding */
-	GMT_LONG nm;			/* Number of data items in this grid (nx * ny) [padding is excluded] */
+	uint64_t nm;			/* Number of data items in this grid (nx * ny) [padding is excluded] */
+	uint64_t size;			/* Actual number of items required to hold this grid (= mx * my) */
 	GMT_LONG n_bands;		/* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
-	GMT_LONG size;			/* Actual number of items required to hold this grid (mx * my) */
 	GMT_LONG pad[4];		/* Padding on west, east, south, north sides [2,2,2,2] */
 	GMT_LONG BC[4];			/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
 	char name[GMT_TEXT_LEN256];	/* Actual name of the file after any ?<varname> and =<stuff> has been removed */
@@ -164,8 +164,8 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 
 /* 64-bit-safe macros to return the number of points in the grid given its dimensions */
 
-#define GMT_get_nm(C,nx,ny) (((GMT_LONG)(nx)) * ((GMT_LONG)(ny)))
-#define gmt_grd_get_nm(h) (((GMT_LONG)(h->nx)) * ((GMT_LONG)(h->ny)))
+#define GMT_get_nm(C,nx,ny) (((uint64_t)(nx)) * ((uint64_t)(ny)))
+#define gmt_grd_get_nm(h) (((uint64_t)(h->nx)) * ((uint64_t)(h->ny)))
 
 /* GMT_grd_setpad copies the given pad into the header */
 
@@ -180,14 +180,14 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
  * we pass the column dimension as padding is added by the macro. */
 
 /* New IJP macro using h and the pad info */
-#define GMT_IJP(h,row,col) (((GMT_LONG)(row)+(GMT_LONG)h->pad[YHI])*((GMT_LONG)h->mx)+(GMT_LONG)(col)+(GMT_LONG)h->pad[XLO])
+#define GMT_IJP(h,row,col) (((uint64_t)(row)+(uint64_t)h->pad[YHI])*((uint64_t)h->mx)+(uint64_t)(col)+(uint64_t)h->pad[XLO])
 /* New IJPR|C macros using h and the pad info to get the real or imag component of a complex array*/
-#define GMT_IJPR(h,row,col) (2*(((GMT_LONG)(row)+(GMT_LONG)h->pad[YHI])*((GMT_LONG)h->mx)+(GMT_LONG)(col)+(GMT_LONG)h->pad[XLO]))
+#define GMT_IJPR(h,row,col) (2*(((uint64_t)(row)+(uint64_t)h->pad[YHI])*((uint64_t)h->mx)+(uint64_t)(col)+(uint64_t)h->pad[XLO]))
 #define GMT_IJPC(h,row,col) (GMT_IJPR(h,row,col)+1)
 /* New IJ0 macro using h but ignores the pad info */
-#define GMT_IJ0(h,row,col) (((GMT_LONG)(row))*((GMT_LONG)h->nx)+(GMT_LONG)(col))
+#define GMT_IJ0(h,row,col) (((uint64_t)(row))*((uint64_t)h->nx)+(uint64_t)(col))
 /* New IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
-#define GMT_IJPGI(h,row,col) (((GMT_LONG)(row)+(GMT_LONG)h->pad[YHI])*((GMT_LONG)h->mx*(GMT_LONG)h->n_bands)+(GMT_LONG)(col)+(GMT_LONG)h->pad[XLO]*(GMT_LONG)h->n_bands)
+#define GMT_IJPGI(h,row,col) (((uint64_t)(row)+(uint64_t)h->pad[YHI])*((uint64_t)h->mx*(uint64_t)h->n_bands)+(uint64_t)(col)+(uint64_t)h->pad[XLO]*(uint64_t)h->n_bands)
 
 /* Obtain row and col from index */
 #define GMT_col(h,ij) ((ij) % h->mx - h->pad[XLO])
