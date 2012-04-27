@@ -1689,7 +1689,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 				P[p].COE[k].data[1][COE_Y] = P[p].COE[k].data[0][COE_Y];
 				k++;
 			}
-			if (k == n_alloc_x) {
+			if ((size_t)k == n_alloc_x) {
 				size_t old_n_alloc = n_alloc_x;
 				n_alloc_x <<= 1;
 				P[p].COE = GMT_memory (C, P[p].COE, n_alloc_x, struct X2SYS_COE);
@@ -1766,7 +1766,7 @@ GMT_LONG x2sys_get_tracknames (struct GMT_CTRL *C, struct GMT_OPTION *options, c
 			if (opt->option != GMTAPI_OPT_INFILE) continue;	/* Skip options */
 
 			file[A++] = strdup (opt->arg);
-			if (A == n_alloc) {
+			if ((size_t)A == n_alloc) {
 				add_chunk <<= 1;
 				n_alloc += add_chunk;
 				file = GMT_memory (C, file, n_alloc, char *);

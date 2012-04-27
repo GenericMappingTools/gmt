@@ -733,7 +733,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Map transform */
 
-	for (i = 0; i < n; i++) GMT_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
+	for (i = 0; i < (GMT_LONG)n; i++) GMT_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
 
 	if (Ctrl->Q.active) {	/* Read precalculated triangulation indices */
 		GMT_LONG col;
@@ -827,7 +827,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Data record to process */
 
-			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
+			if ((size_t)c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
 			if (cont[c].type == '\0') cont[c].type = 'C';
 			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? 1 : 0;
@@ -843,7 +843,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_contours = c;
 	}
 	else {	/* Set up contour intervals automatically from Ctrl->C.interval and Ctrl->A.interval */
-		uint64_t ic;
+		GMT_LONG ic;
 		double min, max, aval;
 		min = floor (xyz[0][GMT_Z] / Ctrl->C.interval) * Ctrl->C.interval; if (min < xyz[0][GMT_Z]) min += Ctrl->C.interval;
 		max = ceil (xyz[1][GMT_Z] / Ctrl->C.interval) * Ctrl->C.interval; if (max > xyz[1][GMT_Z]) max -= Ctrl->C.interval;
@@ -855,7 +855,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else	/* No annotations, set aval outside range */
 			aval = xyz[1][GMT_Z] + 1.0;
 		for (ic = lrint (min/Ctrl->C.interval), c = 0; ic <= lrint (max/Ctrl->C.interval); ic++, c++) {
-			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
+			if ((size_t)c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			cont[c].val = ic * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_SMALL) aval += Ctrl->A.interval;
 			cont[c].type = (fabs (cont[c].val - aval) < GMT_SMALL) ? 'A' : 'C';
@@ -1223,7 +1223,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					sprintf (cont_label, format, cont[c].val);
 				}
 				if (Ctrl->D.active) {
-					GMT_LONG count;
+					size_t count;
 					double *xtmp = NULL, *ytmp = NULL;
 					/* Must first apply inverse map transform */
 					xtmp = GMT_memory (GMT, NULL, n, double);
@@ -1274,13 +1274,14 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((error = GMT_contlabel_save (GMT, &Ctrl->contour))) Return (error);
 		}
 		if (make_plot) {
+			size_t kk;
 			if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours */
 				save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);
 
 				sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt);
-				for (i = 0; i < n_save; i++) {
-					GMT_free (GMT, save[i].x);
-					GMT_free (GMT, save[i].y);
+				for (kk = 0; kk < n_save; kk++) {
+					GMT_free (GMT, save[kk].x);
+					GMT_free (GMT, save[kk].y);
 				}
 				GMT_free (GMT, save);
 			}

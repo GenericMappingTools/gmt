@@ -232,7 +232,7 @@ GMT_LONG get_side (struct GMT_CTRL *GMT, double x, double y, double x_left, doub
 	return (side);
 }
 
-void copy_points_fw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], GMT_LONG ncont, uint64_t *n) {
+void copy_points_fw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], GMT_LONG ncont, int64_t *n) {
 	GMT_LONG k;
 	for (k = 0; k < ncont; k++, (*n)++) {
 		x[*n] = xcont[k];
@@ -242,7 +242,7 @@ void copy_points_fw (struct GMT_CTRL *GMT, double x[], double y[], double z[], d
 	}
 }
 
-void copy_points_bw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], GMT_LONG ncont, uint64_t *n) {
+void copy_points_bw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], GMT_LONG ncont, int64_t *n) {
 	GMT_LONG k;
 	for (k = ncont - 1; k >= 0; k--, (*n)++) {
 		x[*n] = xcont[k];
@@ -260,7 +260,7 @@ double get_z_ave (struct GMT_CTRL *GMT, double v[], double next_up, GMT_LONG n) 
 	return (z_ave / n);
 }
 
-void add_node (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], uint64_t *k, GMT_LONG node, double X_vert[], double Y_vert[], float topo[], float zgrd[], uint64_t ij) {
+void add_node (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], int64_t *k, GMT_LONG node, double X_vert[], double Y_vert[], float topo[], float zgrd[], uint64_t ij) {
 	/* Adds a corner node to list of points and increments counter */
 	x[*k] = X_vert[node];
 	y[*k] = Y_vert[node];
@@ -551,8 +551,9 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_edges, max, i_bin, j_bin, i_bin_old, j_bin_old, t_reg, d_reg[3], i_reg = 0;
 	GMT_LONG n4, nk, c, i_start, i_stop, j_start, j_stop, i_inc, j_inc, ii, jj;
 	GMT_LONG i, j, PS_colormask_off = 0, way, *edge = NULL;
-	uint64_t ij, sw, se, nw, ne, bin, n;
-	int64_t bin_inc[4], ij_inc[4];
+	
+	uint64_t ij, sw, se, nw, ne, bin;
+	int64_t bin_inc[4], ij_inc[4], n;
 
 	double cval, x_left, x_right, y_top, y_bottom, small = GMT_SMALL, z_ave;
 	double inc2[2], wesn[4], z_val, x_pixel_size, y_pixel_size;

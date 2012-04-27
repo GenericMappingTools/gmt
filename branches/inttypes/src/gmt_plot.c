@@ -3199,8 +3199,8 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 
 void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
 {
-	uint64_t seg, k;
-	GMT_LONG *pen = NULL;
+	uint64_t k;
+	GMT_LONG seg, *pen = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
 	for (seg = 0; seg < G->n_segments; seg++) {
 		L = G->segment[seg];	/* Pointer to current segment */

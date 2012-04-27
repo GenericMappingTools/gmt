@@ -300,7 +300,8 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 
 GMT_LONG skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon, double lat)
 {	/* Returns TRUE if the selected point is outside the polygon */
-	GMT_LONG seg, inside = FALSE;
+	uint64_t seg;
+	GMT_LONG inside = FALSE;
 	for (seg = 0; seg < P->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
 		if (GMT_polygon_is_hole (P->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
 		inside = (GMT_inonout (GMT, lon, lat, P->segment[seg]) > 0);
@@ -313,10 +314,10 @@ GMT_LONG skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon,
 
 GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG col, row, seg, not_global, registered_d = FALSE;
+	GMT_LONG col, row, not_global, registered_d = FALSE;
 	GMT_LONG col2, row2, col_o, row_o, error = FALSE, global = FALSE;
 	
-	uint64_t ij, ij_rot, rec;
+	uint64_t ij, ij_rot, seg, rec;
 
 	double xx, yy, lon, P_original[3], P_rotated[3], R[3][3];
 	double *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;

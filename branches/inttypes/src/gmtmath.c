@@ -179,8 +179,8 @@ GMT_LONG solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct G
 	 * we do a full SVD decomposition and set small eigenvalues to zero, yielding an approximate solution.
 	 */
 
-	GMT_LONG i, j, k, k0, i2, j2, rhs, n, ier, seg;
-	uint64_t row;
+	GMT_LONG i, j, k, k0, i2, j2, rhs, n, ier;
+	uint64_t row, seg;
 	double cond, *N = NULL, *B = NULL, *d = NULL, *x = NULL, *b = NULL, *z = NULL, *v = NULL, *lambda = NULL;
 	FILE *fp = NULL;
 	struct GMT_TABLE *T = D->table[0];
@@ -288,8 +288,7 @@ void load_column (struct GMT_DATASET *to, GMT_LONG to_col, struct GMT_TABLE *fro
 
 void load_const_column (struct GMT_DATASET *to, GMT_LONG to_col, double factor)
 {	/* Sets all rows in a column to a constant factor */
-	GMT_LONG seg;
-	uint64_t row;
+	uint64_t row, seg;
 	for (seg = 0; seg < to->n_segments; seg++) {
 		for (row = 0; row < to->table[0]->segment[seg]->n_rows; row++) to->table[0]->segment[seg]->coord[to_col][row] = factor;
 	}
@@ -297,7 +296,7 @@ void load_const_column (struct GMT_DATASET *to, GMT_LONG to_col, double factor)
 
 GMT_LONG same_size (struct GMT_DATASET *A, struct GMT_DATASET *B)
 {	/* Are the two dataset the same size */
-	GMT_LONG seg;
+	uint64_t seg;
 	if (!(A->table[0]->n_segments == B->table[0]->n_segments && A->table[0]->n_columns == B->table[0]->n_columns)) return (FALSE);
 	for (seg = 0; seg < A->table[0]->n_segments; seg++) if (A->table[0]->segment[seg]->n_rows != B->table[0]->segment[seg]->n_rows) return (FALSE);
 	return (TRUE);
@@ -305,7 +304,7 @@ GMT_LONG same_size (struct GMT_DATASET *A, struct GMT_DATASET *B)
 
 GMT_LONG same_domain (struct GMT_DATASET *A, GMT_LONG t_col, struct GMT_TABLE *B)
 {	/* Are the two dataset the same domain */
-	GMT_LONG seg;
+	uint64_t seg;
 	for (seg = 0; seg < A->table[0]->n_segments; seg++) {
 		if (!(doubleAlmostEqualZero (A->table[0]->min[t_col], B->min[COL_T])
 					&& doubleAlmostEqualZero (A->table[0]->max[t_col], B->max[COL_T])))
@@ -2886,10 +2885,10 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, j, k, kk, op = 0, nstack = 0, new_stack = -1, use_t_col = 0, status, n_macros;
 	GMT_LONG consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS];
-	GMT_LONG n_columns = 0, seg, alloc_mode[GMTMATH_STACK_SIZE];
+	GMT_LONG n_columns = 0, alloc_mode[GMTMATH_STACK_SIZE];
 	GMT_LONG constant[GMTMATH_STACK_SIZE], error = FALSE, set_equidistant_t = FALSE, dim[4] = {1, 1, 0, 0};
 	GMT_LONG read_stdin = FALSE, t_check_required = TRUE, got_t_from_file = FALSE, done;
-	uint64_t row, n_records, n_rows = 0;
+	uint64_t row, n_records, n_rows = 0, seg;
 
 	double factor[GMTMATH_STACK_SIZE], t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
 
@@ -3134,7 +3133,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (seg = n_records = 0; seg < info.T->n_segments; seg++) {	/* Create normalized times and possibly reverse time (-I) */
 		off = 0.5 * (info.T->segment[seg]->coord[0][info.T->segment[seg]->n_rows-1] + info.T->segment[seg]->coord[0][0]);
 		scale = 2.0 / (info.T->segment[seg]->coord[0][info.T->segment[seg]->n_rows-1] - info.T->segment[seg]->coord[0][0]);
-		if (Ctrl->I.active) for (i = 0; i < info.T->segment[seg]->n_rows/2; i++) d_swap (info.T->segment[seg]->coord[0][i], info.T->segment[seg]->coord[0][info.T->segment[seg]->n_rows-1-i]);	/* Reverse time-series */
+		if (Ctrl->I.active) for (row = 0; row < info.T->segment[seg]->n_rows/2; row++) d_swap (info.T->segment[seg]->coord[0][row], info.T->segment[seg]->coord[0][info.T->segment[seg]->n_rows-1-row]);	/* Reverse time-series */
 		for (row = 0; row < info.T->segment[seg]->n_rows; row++) info.T->segment[seg]->coord[1][row] = (info.T->segment[seg]->coord[0][row] - off) * scale;
 		n_records += info.T->segment[seg]->n_rows;
 	}

@@ -76,9 +76,10 @@ struct PSWIGGLE_CTRL {
 	} Z;
 };
 
-void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, double *z, int64_t np, double zscale, double start_az, double stop_az, GMT_LONG fixed, double fix_az, struct GMT_FILL *fill, struct GMT_PEN *pen_o, struct GMT_PEN *pen_t, GMT_LONG paint_wiggle, GMT_LONG negative, GMT_LONG outline, GMT_LONG track)
+void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, double *z, uint64_t n_in, double zscale, double start_az, double stop_az, GMT_LONG fixed, double fix_az, struct GMT_FILL *fill, struct GMT_PEN *pen_o, struct GMT_PEN *pen_t, GMT_LONG paint_wiggle, GMT_LONG negative, GMT_LONG outline, GMT_LONG track)
 {
-	int64_t n = 0, i;
+	uint64_t n = 0;
+	int64_t i, np = n_in;
 	double dx, dy, len, az = 0.0, s = 0.0, c = 0.0, x_inc, y_inc;
 
 	if (fixed) {
@@ -379,10 +380,9 @@ void alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, double **xx, double **y
 
 GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, negative, tbl, seg;
+	GMT_LONG error = FALSE, negative, tbl;
 	
-	uint64_t row;
-	int64_t j;
+	uint64_t row, seg, j;
 	size_t n_alloc = GMT_CHUNK;
 
 	double x_2, y_2, start_az, stop_az, fix_az, dz;

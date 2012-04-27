@@ -1322,8 +1322,8 @@ void grd_INRANGE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GR
 void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
 /*OPERATOR: INSIDE 1 1 1 when inside or on polygon(s) in A, else 0.  */
 {	/* Suitable for geographic (lon, lat) data and polygons */
-	uint64_t node;
-	GMT_LONG row, col, P, inside;
+	uint64_t node, seg;
+	GMT_LONG row, col, inside;
 	struct GMT_TABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
@@ -1338,8 +1338,8 @@ void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRI
 	GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
 	T = D->table[0];	/* Only one table in a single file */
 	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
-		for (P = inside = 0; !inside && P < T->n_segments; P++) {
-			S = T->segment[P];
+		for (seg = inside = 0; !inside && seg < T->n_segments; seg++) {
+			S = T->segment[seg];
 			if (GMT_polygon_is_hole (S)) continue;	/* Holes are handled within GMT_inonout */
 			inside = GMT_inonout (GMT, (double)info->grd_x[col], (double)info->grd_y[row], S);
 		}
