@@ -543,7 +543,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Processed %5ld seamounts\n", n_smts);
 
 	if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */
-		GMT_LONG node;
+		uint64_t node;
 		double scale;
 		
 		GMT_report (GMT, GMT_MSG_NORMAL, "Normalize CVS grid to percentages of max CVA\n");

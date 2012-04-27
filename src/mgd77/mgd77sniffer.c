@@ -811,7 +811,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		lowPrecision = lowPrecision5 = 0;
 		while (!MGD77_Read_Data_Record_asc (GMT, &M, &D[nvalues])) {
 			/* Increase memory allocation if necessary */
-			if (nvalues == n_alloc - 1) {
+			if ((size_t)nvalues == n_alloc - 1) {
 				n_alloc <<= 1;
 				D = GMT_memory (GMT, D, n_alloc, struct MGD77_DATA_RECORD);
 			}
@@ -1491,7 +1491,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (i = n = 0; i < nvalues; i++) {
 					if (GMT_is_dnan(D[i].number[MGD77_GOBS]) || GMT_is_dnan(D[i].number[MGD77_FAA])) continue;
 					/* Increase memory allocation if necessary */
-					if (n == n_alloc - 1) {
+					if ((size_t)n == (n_alloc - 1)) {
 						n_alloc <<= 1;
 						new_anom = GMT_memory (GMT, new_anom, n_alloc, double);
 						old_anom = GMT_memory (GMT, old_anom, n_alloc, double);
@@ -1698,7 +1698,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (i = n = 0; i < nvalues; i++) {
 				if (GMT_is_dnan(D[i].number[MGD77_MTF2-(int)mtf1]) || GMT_is_dnan(D[i].number[MGD77_MAG])) continue;
 				/* Increase memory allocation if necessary */
-				if (n == n_alloc - 1) {
+				if ((size_t)n == (n_alloc - 1)) {
 					n_alloc <<= 1;
 					new_anom = GMT_memory (GMT, new_anom, n_alloc, double);
 					old_anom = GMT_memory (GMT, old_anom, n_alloc, double);

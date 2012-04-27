@@ -1265,7 +1265,7 @@ void gmt_basic_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, d
 
 GMT_LONG gmt_genper_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
-	GMT_LONG nr;
+	uint64_t nr;
 
 	if (C->common.R.oblique) {	/* Draw rectangular boundary and return */
 		gmt_rect_map_boundary (C, P, 0.0, 0.0, C->current.proj.rect[XHI], C->current.proj.rect[YHI]);
@@ -1399,7 +1399,7 @@ void gmt_map_lattick (struct GMT_CTRL *C, struct PSL_CTRL *P, double lat, double
 
 GMT_LONG gmt_annot_too_crowded (struct GMT_CTRL *C, double x, double y, GMT_LONG side) {
 	/* Checks if the proposed annotation is too close to a previously plotted annotation */
-	GMT_LONG i;
+	uint64_t i;
 	double d_min;
 
 	if (C->current.setting.map_annot_min_spacing <= 0.0) return (FALSE);
@@ -2872,18 +2872,18 @@ GMT_LONG gmt_custum_failed_bool_test (struct GMT_CTRL *C, struct GMT_CUSTOM_SYMB
 	return (!result);			/* Return the opposite of the test result */
 }
 
-void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, double *y, GMT_LONG *n, struct GMT_PEN *p, struct GMT_FILL *f, GMT_LONG outline, GMT_LONG *flush)
+void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, GMT_LONG outline, GMT_LONG *flush)
 {
 	GMT_LONG draw_outline;
 
 	draw_outline = (outline && p->rgb[0] != -1) ? TRUE : FALSE;
 	if (draw_outline) GMT_setpen (C, p);
 	if (draw_outline == 2) {	/* Stroke path only */
-		PSL_plotline (P, x, y, *n, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+		PSL_plotline (P, x, y, (GMT_LONG)*n, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 	}
 	else {	/* Fill polygon and possibly stroke outline */
 		GMT_setfill (C, f, draw_outline);
-		PSL_plotpolygon (P, x, y, *n);
+		PSL_plotpolygon (P, x, y, (GMT_LONG)*n);
 	}
 	*flush = FALSE;
 	*n = 0;
@@ -2893,7 +2893,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 {
 	GMT_LONG na, i, flush = FALSE, this_outline = FALSE;
 	GMT_LONG level = 0, found_elseif = FALSE, skip[11];
-	GMT_LONG n = 0;
+	uint64_t n = 0;
 	size_t n_alloc = 0;
 	double x, y, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
 	char *c = NULL;
@@ -3174,7 +3174,7 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 
 void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G)
 {
-	GMT_LONG row;
+	uint64_t row;
 	double size[1] = {0.025};
 
 	/* If called we simply draw the helper lines or points to assist in debug */
@@ -3182,11 +3182,12 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 	GMT_setpen (C, &C->current.setting.map_default_pen);
 	if (G->fixed) {	/* Place a small open circle at each fixed point */
 		PSL_setfill (P, C->session.no_rgb, PSL_OUTLINE);
-		for (row = 0; row < G->f_n; row++) 
+		for (row = 0; row < (uint64_t)G->f_n; row++) 
 			PSL_plotsymbol (P, G->f_xy[0][row], G->f_xy[1][row], size, PSL_CIRCLE);
 	}
 	else if (G->crossing) {	/* Draw a thin line */
-		GMT_LONG seg, *pen = NULL;
+		uint64_t seg;
+		GMT_LONG *pen = NULL;
 		for (seg = 0; seg < G->xp->n_segments; seg++) {
 			pen = GMT_memory (C, NULL, G->xp->segment[seg]->n_rows, GMT_LONG);
 			for (row = 1, pen[0] = PSL_MOVE; row < G->xp->segment[seg]->n_rows; row++) pen[row] = PSL_DRAW;
@@ -3198,7 +3199,8 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 
 void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
 {
-	GMT_LONG seg, k, *pen = NULL;
+	uint64_t seg, k;
+	GMT_LONG *pen = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
 	for (seg = 0; seg < G->n_segments; seg++) {
 		L = G->segment[seg];	/* Pointer to current segment */
@@ -3307,8 +3309,8 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 
 void gmt_contlabel_clippath (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
 {
-	uint64_t i, k, m;
-	GMT_LONG nseg, just, form;
+	GMT_LONG i, k, m, nseg;
+	GMT_LONG just, form;
 	double *angle = NULL, *xt = NULL, *yt = NULL;
 	char **txt = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
@@ -3720,7 +3722,8 @@ void gmt_geo_polygon (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n)
 #define JUMP_L 0
 #define JUMP_R 1
 
-	GMT_LONG jump, i, k, first, jump_dir = JUMP_L;
+	GMT_LONG jump, k, first, jump_dir = JUMP_L;
+	uint64_t i;
 	double *xp = NULL, *yp = NULL;
 	PFD x_on_border[2] = {NULL, NULL};
 	struct PSL_CTRL *P = C->PSL;

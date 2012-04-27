@@ -1463,7 +1463,8 @@ GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, uint64_t n, double xmin, dou
 {
 	double lower_bound, upper_bound, m_guess, t_0, t_1, t_middle;
 	double lub, glb, xx, temp;
-	int64_t i, n_above, n_below, n_equal, n_lub, n_glb, one;	/* These must be signed integers */
+	uint64_t i;
+	int64_t n_above, n_below, n_equal, n_lub, n_glb, one;	/* These must be signed integers (PW: Why?) */
 	GMT_LONG iteration = 0, finished = FALSE;
 
 	if (n == 0) {
@@ -1594,7 +1595,8 @@ double GMT_mode_weighted (struct GMT_CTRL *C, fpair *data, uint64_t n)
 	/* Based on mode_output in blockmode_func.c */
 
 	double top, topj, topi, bottomj, bottomi, pj, pi, wsum = 0.0;
-	int64_t k, i = 0, j = n - 1, nh = n / 2;
+	uint64_t k;
+	int64_t i = 0, j = n - 1, nh = n / 2;
 
 	/* First sort data on z */
 
@@ -1743,8 +1745,8 @@ GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, uint64_t n, uint64_t j, GMT_L
 
 void GMT_getmad (struct GMT_CTRL *C, double *x, uint64_t n, double location, double *scale)
 {
-	GMT_LONG i;
-	uint64_t med, *dev = GMT_memory (C, NULL, n, double);
+	uint64_t i;
+	double med, *dev = GMT_memory (C, NULL, n, double);
 
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
 	GMT_sort_array (C, dev, n, GMTAPI_DOUBLE);

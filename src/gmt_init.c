@@ -2480,7 +2480,7 @@ GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified m
 
 		GMT_str_tolower (media);	/* Convert string to lower case */
 
-		if (n == n_alloc) {
+		if ((size_t)n == n_alloc) {
 			size_t k = n_alloc;	/* So we don't update n_alloc in the first GMT_malloc call */
 			C->session.user_media = GMT_malloc (C, C->session.user_media, n, &k, struct GMT_MEDIA);
 			C->session.user_media_name = GMT_malloc (C, C->session.user_media_name, n, &n_alloc, char *);
@@ -4885,7 +4885,7 @@ void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and init
 			GMT_exit (EXIT_FAILURE);
 		}
 
-		if (n == n_alloc) C->session.shorthand = GMT_malloc (C, C->session.shorthand, n, &n_alloc, struct GMT_SHORTHAND);
+		if ((size_t)n == n_alloc) C->session.shorthand = GMT_malloc (C, C->session.shorthand, n, &n_alloc, struct GMT_SHORTHAND);
 
 		C->session.shorthand[n].suffix = strdup (a);
 		C->session.shorthand[n].id = GMT_grd_format_decoder (C, b);
@@ -7858,7 +7858,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 	GMT_set_meminc (C, GMT_SMALL_CHUNK);	/* Only allocate a small amount */
 	while (fgets (buf, GMT_BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-		if (i == n_alloc) C->session.font = GMT_malloc (C, C->session.font, i, &n_alloc, struct GMT_FONTSPEC);
+		if ((size_t)i == n_alloc) C->session.font = GMT_malloc (C, C->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 		if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding font info for font %ld\n", i);
 			GMT_exit (EXIT_FAILURE);
@@ -7878,7 +7878,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 
 		while (fgets (buf, GMT_BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-			if (i == n_alloc) C->session.font = GMT_malloc (C, C->session.font, i, &n_alloc, struct GMT_FONTSPEC);
+			if ((size_t)i == n_alloc) C->session.font = GMT_malloc (C, C->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 			if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
 				GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding custom font info for font %ld\n", i - n_GMT_fonts);
 				GMT_exit (EXIT_FAILURE);

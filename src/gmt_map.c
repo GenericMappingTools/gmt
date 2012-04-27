@@ -1089,9 +1089,10 @@ GMT_LONG gmt_move_to_rect (struct GMT_CTRL *C, double *x_edge, double *y_edge, G
 	return (n + 1);
 }
 
-GMT_LONG gmt_rect_clip_old (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG gmt_rect_clip_old (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n, double **x, double **y, GMT_LONG *total_nx)
 {
-	GMT_LONG i, j = 0, k, nx, sides[4];
+	uint64_t i, j = 0;
+	GMT_LONG nx, k, sides[4];
 	size_t n_alloc = GMT_CHUNK;
 	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
 
@@ -1206,11 +1207,11 @@ GMT_LONG gmt_outside_upper_boundary (double val, double max) {return (val > max)
  * that boundary; this is then repeated for all boundaries.  Assumptions here are Cartesian coordinates
  * so all boundaries are straight lines in x or y. */
 
-GMT_LONG gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n, double **x, double **y, GMT_LONG *total_nx)
 {
-	uint64_t n_get, m;
+	uint64_t i, n_get, m;
 	size_t n_alloc = 0;
-	GMT_LONG i, side, in = 1, out = 0, j, np, polygon, cross = 0;
+	GMT_LONG side, in = 1, out = 0, j, np, polygon, cross = 0;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
 	PFL clipper[4], inside[4], outside[4];
 #ifdef DEBUG
@@ -1397,9 +1398,10 @@ GMT_LONG gmt_move_to_wesn (struct GMT_CTRL *C, double *x_edge, double *y_edge, d
 	return (n + 1);
 }
 
-GMT_LONG gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n, double **x, double **y, GMT_LONG *total_nx)
 {
-	GMT_LONG i, j = 0, k, nx, sides[4];
+	uint64_t i, j = 0;
+	GMT_LONG nx, k, sides[4];
 	size_t n_alloc = GMT_CHUNK;
 	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
 
@@ -1457,11 +1459,11 @@ GMT_LONG gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, GMT_LO
 	return (j);
 }
 
-GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n_orig, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n_orig, double **x, double **y, GMT_LONG *total_nx)
 {
 	size_t n_alloc = 0, n_x_alloc = 0;
-	uint64_t n_get, m;
-	GMT_LONG i, n, new_n, range, j, np, n_cross = 0, *x_index = NULL, *x_type = NULL;
+	uint64_t i, n_get, n, m, n_cross = 0;
+	GMT_LONG new_n, range, j, np, *x_index = NULL, *x_type = NULL;
 	GMT_LONG polygon, jump = FALSE, curved, way, side, in = 1, out = 0, cross = 0, periodic = FALSE;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
 	double x1, x2, y1, y2;
@@ -4850,10 +4852,10 @@ GMT_LONG gmt_will_it_wrap_x (struct GMT_CTRL *C, double *x, double *y, GMT_LONG 
 	return (wrap);
 }
 
-GMT_LONG gmt_map_truncate_x (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n, GMT_LONG start, GMT_LONG l_or_r)
+GMT_LONG gmt_map_truncate_x (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t start, GMT_LONG l_or_r)
 {	/* Truncates a wrapping polygon against left or right edge */
 
-	GMT_LONG i, i1, j, k;
+	uint64_t i, i1, j, k;
 	double xc[4], yc[4], w_last, w_this;
 
 	/* First initialize variables that differ for left and right truncation */
@@ -4896,10 +4898,10 @@ GMT_LONG gmt_map_truncate_x (struct GMT_CTRL *C, double *x, double *y, GMT_LONG 
 	return (j);
 }
 
-GMT_LONG gmt_map_truncate_tm (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n, GMT_LONG start, GMT_LONG b_or_t)
+GMT_LONG gmt_map_truncate_tm (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t start, GMT_LONG b_or_t)
 {	/* Truncates a wrapping polygon against bottom or top edge for global TM maps */
 
-	GMT_LONG i, i1, j, k;
+	uint64_t i, i1, j, k;
 	double xc[4], yc[4], trunc_y;
 
 	/* First initialize variables that differ for bottom and top truncation */
@@ -4940,7 +4942,7 @@ GMT_LONG gmt_map_truncate_tm (struct GMT_CTRL *C, double *x, double *y, GMT_LONG
 	return (j);
 }
 
-GMT_LONG GMT_map_truncate (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n, GMT_LONG start, GMT_LONG side)
+GMT_LONG GMT_map_truncate (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t start, GMT_LONG side)
 {	/* Truncates a wrapping polygon against left or right edge.
 	   (bottom or top edge when projection is TM)
 	   x, y : arrays of plot coordinates
@@ -5166,8 +5168,7 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, do
 
 double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, uint64_t *id)
 {
-	GMT_LONG seg;
-	uint64_t row;
+	uint64_t row, seg;
 	double d, d_min;
 
 	d_min = DBL_MAX;
@@ -5184,8 +5185,8 @@ double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct 
 
 GMT_LONG gmt_near_a_point_spherical (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
 {
-	uint64_t row;
-	GMT_LONG seg, inside = FALSE, each_point_has_distance;
+	uint64_t row, seg;
+	GMT_LONG inside = FALSE, each_point_has_distance;
 	double d;
 
 	each_point_has_distance = (dist <= 0.0 && T->segment[0]->n_columns > 2);
@@ -5201,8 +5202,8 @@ GMT_LONG gmt_near_a_point_spherical (struct GMT_CTRL *C, double x, double y, str
 
 GMT_LONG gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
 {
-	GMT_LONG seg, inside = FALSE, each_point_has_distance;
-	uint64_t row;
+	GMT_LONG inside = FALSE, each_point_has_distance;
+	uint64_t row, seg;
 	double d, x0, y0, xn, d0, dn;
 
 	each_point_has_distance = (dist <= 0.0 && T->segment[0]->n_columns > 2);
@@ -5356,7 +5357,8 @@ GMT_LONG gmt_near_a_line_cartesian (struct GMT_CTRL *C, double lon, double lat, 
 
 GMT_LONG gmt_near_lines_cartesian (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
 {
-	GMT_LONG seg, mode = return_mindist, status, OK = FALSE;
+	uint64_t seg;
+	GMT_LONG mode = return_mindist, status, OK = FALSE;
 	if (mode >= 10) mode -= 10;	/* Exclude (or flag) circular region surrounding line endpoints */
 	if (mode) *dist_min = DBL_MAX;	/* Want to find the minimum distance so init to huge */
 
@@ -5461,7 +5463,8 @@ GMT_LONG gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, 
 
 GMT_LONG gmt_near_lines_spherical (struct GMT_CTRL *P, double lon, double lat, struct GMT_TABLE *T, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
 {
-	GMT_LONG seg, mode = return_mindist, status, OK = FALSE;
+	uint64_t seg;
+	GMT_LONG mode = return_mindist, status, OK = FALSE;
 	if (mode >= 10) mode -= 10;	/* Exclude (or flag) circular region surrounding line endpoints */
 	if (mode) *dist_min = DBL_MAX;	/* Want to find the minimum distance so init to huge */
 
@@ -5527,9 +5530,10 @@ uint64_t *GMT_split_line (struct GMT_CTRL *C, double **xx, double **yy, uint64_t
 	 * add_crossings is TRUE if we need to find the crossings; FALSE means
 	 * they are already part of the line. */
 
-	uint64_t i, j, k, n, n_seg, *split = NULL;
+	uint64_t i, j, k, n, n_seg, *split = NULL, *pos = NULL;
 	size_t n_alloc = 0;
- 	GMT_LONG *way = NULL, *pos = NULL, l_or_r;
+ 	GMT_LONG l_or_r;
+ 	char *way = NULL;
 	double *x = NULL, *y = NULL, *xin = NULL, *yin = NULL, xc[2], yc[2];
 
 	/* First quick scan to see how many jumps there are */
@@ -5538,7 +5542,11 @@ uint64_t *GMT_split_line (struct GMT_CTRL *C, double **xx, double **yy, uint64_t
 	GMT_set_meminc (C, GMT_SMALL_CHUNK);
 	for (n_seg = 0, i = 1; i < *nn; i++) {
 		if ((l_or_r = gmt_map_jump_x (C, xin[i], yin[i], xin[i-1], yin[i-1]))) {
-			if (n_seg == n_alloc) GMT_malloc2 (C, pos, way, n_seg, &n_alloc, GMT_LONG);
+			if (n_seg == n_alloc) {
+				GMT_malloc (C, pos, n_seg, &n_alloc, uint64_t);
+				n_alloc = n_seg;
+				GMT_malloc (C, way, n_seg, &n_alloc, char);
+			}
 			pos[n_seg] = i;		/* 2nd of the two points that generate the jump */
 			way[n_seg] = l_or_r;	/* Which way we jump : +1 is right to left, -1 is left to right */
 			n_seg++;
@@ -6869,7 +6877,7 @@ void GMT_ECEF_inverse (struct GMT_CTRL *C, double in[], double out[])
 
 double * GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], uint64_t n, double scale, GMT_LONG dist_flag)
 {	/* Returns distances in meter; use scale to get other units */
-	int64_t this, prev;
+	uint64_t this, prev;
 	GMT_LONG cumulative = TRUE, do_scale, xy_not_NaN;
 	double *d = NULL, cum_dist = 0.0, inc = 0.0;
 
@@ -6882,10 +6890,10 @@ double * GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], uint64_t n,
 
 	do_scale = (scale != 1.0);
 	d = GMT_memory (C, NULL, n, double);
-
-	for (this = 0, prev = -1; this < n; this++) {
+	if (GMT_is_dnan (x[0]) || GMT_is_dnan (y[0])) d[0] = C->session.d_NaN;
+	for (this = 1, prev = 0; this < n; this++) {
 		xy_not_NaN = !(GMT_is_dnan (x[this]) || GMT_is_dnan (y[this]));
-		if (xy_not_NaN && prev >= 0) {	/* safe to calculate inc */
+		if (xy_not_NaN) {	/* safe to calculate inc */
 			switch (dist_flag) {
 
 				case 0:	/* Cartesian distances */
@@ -6913,7 +6921,7 @@ double * GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], uint64_t n,
 			if (cumulative) cum_dist += inc;
 			d[this] = (cumulative) ? cum_dist : inc;
 		}
-		else if (this > 0)
+		else
 			d[this] = C->session.d_NaN;
 
 		if (xy_not_NaN) prev = this;	/* This was a record with OK x,y; make it the previous point for distance calculations */
@@ -6958,7 +6966,7 @@ GMT_LONG GMT_map_latcross (struct GMT_CTRL *C, double lat, double west, double e
 		if (go) {
 			X[nc].nx = nx;
 			nc++;
-			if (nc == n_alloc) {
+			if ((size_t)nc == n_alloc) {
 				n_alloc <<= 1;
 				X = GMT_memory (C, X, n_alloc, struct GMT_XINGS);
 			}
@@ -7014,7 +7022,7 @@ GMT_LONG GMT_map_loncross (struct GMT_CTRL *C, double lon, double south, double 
 		if (go) {
 			X[nc].nx = nx;
 			nc++;
-			if (nc == n_alloc) {
+			if ((size_t)nc == n_alloc) {
 				n_alloc <<= 1;
 				X = GMT_memory (C, X, n_alloc, struct GMT_XINGS);
 			}

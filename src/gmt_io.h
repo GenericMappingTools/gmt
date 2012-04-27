@@ -384,12 +384,12 @@ struct GMT_IO {				/* Used to process input data records */
 	GMT_LONG io_nan_ncols;		/* Number of columns to consider for -s option */
 
 	GMT_LONG file_no;		/* Number of current file */
-	GMT_LONG io_n_header_items;	/* number of header records (ascii) or bytes (binary) [0] */
+	uint64_t io_n_header_items;	/* number of header records (ascii) or bytes (binary) [0] */
 	GMT_LONG seg_no;		/* Number of current multi-segment in entire data set */
 	GMT_LONG tbl_no;		/* Number of current table in entire data set */
 	GMT_LONG seg_in_tbl_no;		/* Number of current multi-segment in current table */
-	GMT_LONG n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
-	GMT_LONG n_bad_records;		/* Number of bad records encountered during i/o */
+	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
+	uint64_t n_bad_records;		/* Number of bad records encountered during i/o */
 	GMT_LONG ogr;			/* Tells us if current input source has OGR/GMT metadata (1) or not (0) or not set (-1) */
 	GMT_LONG status;		/* 0	All is ok
 					   1	Current record is segment header
@@ -490,9 +490,9 @@ struct GMT_LINE_SEGMENT {		/* For holding segment lines in memory */
 struct GMT_TABLE {	/* To hold an array of line segment structures and header information in one container */
 	GMT_LONG id;			/* The internal number of the table */
 	GMT_LONG n_headers;		/* Number of file header records (0 if no header) */
-	GMT_LONG n_segments;		/* Number of segments in the array */
 	GMT_LONG n_columns;		/* Number of columns (fields) in each record */
 	GMT_LONG mode;			/* 0 = output table, 1 = output header only, 2 = skip table */
+	uint64_t n_segments;		/* Number of segments in the array */
 	uint64_t n_records;		/* Total number of data records across all segments */
 	size_t n_alloc;			/* The current allocation length of segments */
 	double *min;			/* Minimum coordinate for each column */
@@ -518,8 +518,8 @@ struct GMT_TEXT_SEGMENT {		/* For holding segment text records in memory */
 struct GMT_TEXT_TABLE {	/* To hold an array of text segment structures and header information in one container */
 	GMT_LONG id;			/* The internal number of the table */
 	GMT_LONG n_headers;		/* Number of file header records (0 if no header) */
-	GMT_LONG n_segments;		/* Number of segments in the array */
 	GMT_LONG mode;			/* 0 = output table, 1 = output header only, 2 = skip table */
+	uint64_t n_segments;		/* Number of segments in the array */
 	uint64_t n_records;		/* Total number of data records across all segments */
 	size_t n_alloc;			/* The current allocation length of segments */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
@@ -532,8 +532,8 @@ struct GMT_TEXT_TABLE {	/* To hold an array of text segment structures and heade
 struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 	GMT_LONG id;			/* The internal number of the data set */
 	GMT_LONG n_tables;		/* The total number of tables (files) contained */
-	GMT_LONG n_segments;		/* The total number of segments across all tables */
 	GMT_LONG n_columns;		/* The number of data columns */
+	uint64_t n_segments;		/* The total number of segments across all tables */
 	uint64_t n_records;		/* The total number of data records across all tables */
 	size_t n_alloc;			/* The current allocation length of tables */
 	enum GMT_enum_dest io_mode;	/* -1 means write OGR format (requires proper -a),
@@ -551,7 +551,7 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files) */
 	GMT_LONG id;			/* The internal number of the data set */
 	GMT_LONG n_tables;		/* The total number of tables (files) contained */
-	GMT_LONG n_segments;		/* The total number of segments across all tables */
+	uint64_t n_segments;		/* The total number of segments across all tables */
 	uint64_t n_records;		/* The total number of data records across all tables */
 	size_t n_alloc;			/* The current allocation length of tables */
 	enum GMT_enum_dest io_mode;	/* -1 means write OGR format (requires proper -a),
@@ -600,9 +600,9 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	GMT_LONG n_rows;		/* Number of rows in this matrix */
 	GMT_LONG n_columns;		/* Number of columns in this matrix */
 	GMT_LONG n_layers;		/* Number of layers in a 3-D matrix [1] */
-	GMT_LONG dim;			/* Allocated length of longest C or Fortran dim */
 	GMT_LONG shape;			/* 0 = C (rows) and 1 = Fortran (cols) */
 	GMT_LONG registration;     	/* 0 for gridline and 1 for pixel registration  */
+	size_t dim;			/* Allocated length of longest C or Fortran dim */
 	size_t size;			/* Byte length of data */
 	enum GMT_enum_type type;	/* Data type, e.g. GMTAPI_FLOAT */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */

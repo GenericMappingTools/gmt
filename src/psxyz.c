@@ -353,11 +353,11 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG polygon, penset_OK = TRUE, not_line, old_is_world;
 	GMT_LONG get_rgb, read_symbol, clip_set = FALSE, fill_active;
 	GMT_LONG default_outline, outline_active, pos2x, pos2y, set_type;
-	GMT_LONG i, j, geometry, tbl, seg;
+	GMT_LONG k, j, geometry, tbl;
 	GMT_LONG n_cols_start = 3, justify, error = GMT_NOERROR;
 	GMT_LONG ex1, ex2, ex3, change, n_needed, read_mode, save_u = FALSE;
 	
-	uint64_t n, n_total_read = 0;
+	uint64_t i, n, n_total_read = 0;
 	size_t n_alloc = 0;
 
 	char *text_rec = NULL;
@@ -457,12 +457,12 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	lux[1] = fabs (GMT->current.proj.z_project.cos_az * GMT->current.proj.z_project.cos_el);
 	lux[2] = fabs (GMT->current.proj.z_project.sin_el);
 	tmp = MAX (lux[0], MAX (lux[1], lux[2]));
-	for (i = 0; i < 3; i++) lux[i] = (lux[i] / tmp) - 0.5;
+	for (k = 0; k < 3; k++) lux[k] = (lux[k] / tmp) - 0.5;
 
 	if ((Ctrl->C.active || current_fill.rgb[0]) >= 0 && (S.symbol == GMT_SYMBOL_COLUMN || S.symbol == GMT_SYMBOL_CUBE)) {	/* Modify the color for each facet */
-		for (i = 0; i < 3; i++) {
-			GMT_rgb_copy (rgb[i], current_fill.rgb);
-			if (S.shade3D) GMT_illuminate (GMT, lux[i], rgb[i]);
+		for (k = 0; k < 3; k++) {
+			GMT_rgb_copy (rgb[k], current_fill.rgb);
+			if (S.shade3D) GMT_illuminate (GMT, lux[k], rgb[k]);
 		}
 	}
 
@@ -910,6 +910,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, data);
 	}
 	else {	/* Line/polygon part */
+		uint64_t seg;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT segment table(s) */
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */

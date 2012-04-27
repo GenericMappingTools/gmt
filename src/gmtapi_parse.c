@@ -103,7 +103,8 @@ struct GMT_OPTION * GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
-		GMT_LONG pos = 0, new_n_args = 0;
+		GMT_LONG pos = 0;
+		uint32_t new_n_args = 0;
 		size_t n_alloc = GMT_SMALL_CHUNK;
 		char p[GMT_BUFSIZ], *txt_in = in;	/* Passed a single text string */
 		new_args = GMT_memory (G, NULL, n_alloc, char *);
@@ -215,7 +216,7 @@ char ** GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, struct GMT_OPT
 		/* Copy over the buffer contents */
 		strcpy (txt[arg], buffer);
 		arg++;	/* One more option added */
-		if (arg == n_alloc) {	/* Need more space for our growing list */
+		if ((size_t)arg == n_alloc) {	/* Need more space for our growing list */
 			n_alloc += GMT_SMALL_CHUNK;
 			txt = GMT_memory (G, txt, n_alloc, char *);
 		}
@@ -224,7 +225,7 @@ char ** GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, struct GMT_OPT
 	if (arg == 0) {	/* Found no options, so delete the list we allocated */
 		GMT_free (G, txt);
 	}
-	else if (arg < n_alloc) {	/* Trim back on the list to fit what we want */
+	else if ((size_t)arg < n_alloc) {	/* Trim back on the list to fit what we want */
 		txt = GMT_memory (G, txt, arg, char *);
 	}
 	
@@ -273,7 +274,7 @@ char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 
 		inc = strlen (buffer);
 		if (!first) inc++;	/* Count the space */
-		if ((length + inc) >= n_alloc) txt = GMT_memory (G, NULL, n_alloc *= 2, char);
+		if ((size_t)(length + inc) >= n_alloc) txt = GMT_memory (G, NULL, n_alloc *= 2, char);
 		if (!first) strcat (txt, " ");
 		strcat (txt, buffer);
 		length += inc;
@@ -284,7 +285,7 @@ char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	if (length == 1) {	/* Found no options, so delete the string we allocated */
 		GMT_free (G, txt);
 	}
-	else if (length < n_alloc) {	/* Trim back on the list to fit what we want */
+	else if ((size_t)length < n_alloc) {	/* Trim back on the list to fit what we want */
 		txt = GMT_memory (G, txt, length, char);
 	}
 

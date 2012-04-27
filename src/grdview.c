@@ -547,11 +547,11 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG get_contours, bad, good, error = FALSE, pen_set, row, col;
-	GMT_LONG begin, saddle, drape_resample = FALSE, k, k1, n_out;
+	GMT_LONG begin, saddle, drape_resample = FALSE, k, k1, n_out, n_drape = 0;
 	GMT_LONG n_edges, max, i_bin, j_bin, i_bin_old, j_bin_old, t_reg, d_reg[3], i_reg = 0;
 	GMT_LONG n4, nk, c, i_start, i_stop, j_start, j_stop, i_inc, j_inc, ii, jj;
 	GMT_LONG i, j, PS_colormask_off = 0, way, *edge = NULL;
-	uint64_t ij, sw, se, nw, ne, bin, n, n_drape = 0;
+	uint64_t ij, sw, se, nw, ne, bin, n;
 	int64_t bin_inc[4], ij_inc[4];
 
 	double cval, x_left, x_right, y_top, y_bottom, small = GMT_SMALL, z_ave;
@@ -922,10 +922,10 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	else if (Ctrl->Q.mode == GRDVIEW_IMAGE) {	/* Plot image */
-		GMT_LONG nx_i, ny_i, kk, ip, jp, min_i, max_i, min_j, max_j, dist;
+		GMT_LONG nx_i, ny_i, ip, jp, min_i, max_i, min_j, max_j, dist;
 		GMT_LONG done, layers, last_i, last_j, p;
 		GMT_LONG *top_jp = NULL, *bottom_jp = NULL, *ix = NULL, *iy = NULL;
-		uint64_t d_node, nm_i, node;
+		uint64_t d_node, nm_i, node, kk;
 		double xp, yp, sum_w, w, sum_i, x_width, y_width, value;
 		double sum_r, sum_g, sum_b, intval = 0.0, *y_drape = NULL, *x_drape = NULL;
 		float *int_drape = NULL;

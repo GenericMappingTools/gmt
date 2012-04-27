@@ -167,7 +167,7 @@ GMT_LONG x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, cha
 		adj->d[n] = in[0];
 		adj->c[n] = in[1];
 		n++;
-		if (n == n_alloc) {
+		if ((size_t)n == n_alloc) {
 			n_alloc <<= 1;
 			adj->d = GMT_memory (GMT, adj->d, n_alloc, double);
 			adj->c = GMT_memory (GMT, adj->c, n_alloc, double);

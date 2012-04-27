@@ -918,9 +918,9 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, ui
 	 * Returns the new number of points (original plus auxiliary).
 	 */
 
-	GMT_LONG k = 1, n_step = 0, meridian;
+	GMT_LONG k = 1, meridian;
 	size_t n_alloc = 0;
-	uint64_t i, j, n_tmp;
+	uint64_t i, j, n_tmp, n_step = 0;
 	double *lon_tmp = NULL, *lat_tmp = NULL;
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
@@ -1034,9 +1034,9 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 	 * Returns the new number of points (original plus auxiliary).
 	 */
 
-	GMT_LONG k = 1, n_step = 0;
+	GMT_LONG k = 1;
 	size_t n_alloc = 0;
-	uint64_t i, j, n_tmp;
+	uint64_t i, j, n_tmp, n_step = 0;
 	double *x_tmp = NULL, *y_tmp = NULL, *x = NULL, *y = NULL, c;
 
 	x = *a_x;	y = *a_y;

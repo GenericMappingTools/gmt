@@ -189,9 +189,9 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 /* New IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
 #define GMT_IJPGI(h,row,col) (((uint64_t)(row)+(uint64_t)h->pad[YHI])*((uint64_t)h->mx*(uint64_t)h->n_bands)+(uint64_t)(col)+(uint64_t)h->pad[XLO]*(uint64_t)h->n_bands)
 
-/* Obtain row and col from index */
-#define GMT_col(h,ij) ((ij) % h->mx - h->pad[XLO])
-#define GMT_row(h,ij) ((ij) / h->mx - h->pad[YHI])
+/* Obtain GMT_LONG row and col from index */
+#define GMT_col(h,ij) ((GMT_LONG)((ij) % h->mx) - h->pad[XLO])
+#define GMT_row(h,ij) ((GMT_LONG)((ij) / h->mx) - h->pad[YHI])
 
 /* To set up a standard double for-loop over rows and columns to visit all nodes in a padded array by computing the node index, use GMT_grd_loop */
 /* Note: All arguments must be actual variables and not expressions */

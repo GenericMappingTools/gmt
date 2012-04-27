@@ -1463,7 +1463,8 @@ void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G)
 	 * the array is not reset and should not be addressed.
 	 * If pad is zero then we do nothing.
 	 */
-	uint64_t row, ijp, ij0;
+	uint64_t ijp, ij0;
+	GMT_LONG row;
 
 	if (!GMT_grd_pad_status (C, G->header, NULL)) return;	/* No pad so nothing to do */
 	/* Here, G has a pad which we need to eliminate */

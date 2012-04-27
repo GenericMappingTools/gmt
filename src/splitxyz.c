@@ -297,13 +297,13 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 
 GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG j, tbl, seg, col, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
+	GMT_LONG i, j, tbl, col, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
 	GMT_LONG output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_columns = 0;
 	GMT_LONG error = FALSE, ok, io_mode = 0, nprofiles = 0, first = TRUE;
-	GMT_LONG n_out = 0, seg2 = 0, dim[4] = {1, 0, 0, 0};
+	GMT_LONG n_out = 0, dim[4] = {1, 0, 0, 0};
 	
 	size_t n_alloc_seg = 0, n_alloc = 0;
-	uint64_t i, k, n, row, begin, end, n_total = 0, *rec = NULL;
+	uint64_t k, n, row, seg, seg2 = 0, begin, end, n_total = 0, *rec = NULL;
 
 	double dy, dx, last_c, last_s, csum, ssum, this_c, this_s, dotprod;
 	double mean_azim, *fwork = NULL;
@@ -507,9 +507,9 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 								first = FALSE;
 							}
 
-							for (i = begin; i < end; i++, k++) {
+							for (row = begin; row < end; row++, k++) {
 								for (j = 0; j < n_outputs; j++) {	/* Remember to convert CCW angles back to azimuths */
-									S_out->coord[j][k] = (output_choice[j] == h_col) ? 90.0 - R2D * S->coord[h_col][i] : S->coord[output_choice[j]][i];
+									S_out->coord[j][k] = (output_choice[j] == h_col) ? 90.0 - R2D * S->coord[h_col][row] : S->coord[output_choice[j]][row];
 								}
 							}
 							if (seg2 == n_alloc_seg) {
@@ -547,7 +547,7 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n = (seg == 0) ? rec[seg] : rec[seg] - rec[seg-1];
 		for (j = 0; j < n_outputs; j++) S->coord[j] = &(S_out->coord[j][k]);
 		S->n_rows = n;
-		sprintf (header, "Profile %ld -I%ld", seg, seg);
+		sprintf (header, "Profile %" PRIu64" -I%" PRIu64, seg, seg);
 		S->header = strdup (header);
 		S->id = seg;
 	}

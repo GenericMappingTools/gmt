@@ -119,6 +119,7 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 	
 	if (T->mode == VORONOI) {	/* Construct the Voronoi diagram */
 		GMT_LONG *lbtri = NULL;
+		uint64_t kk;
 		double *rc = NULL;
 		double *xc = NULL, *yc = NULL, *zc = NULL;	/* Voronoi polygon vertices */
 	
@@ -156,9 +157,9 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 		
 		/* Adjust Fortran to C indeces */
 		n_alloc = 6 * (n - 2);
-		for (k = 0; k < n_alloc; k++) T->V.listc[k]--;
-		for (k = 0; k < n_alloc; k++) T->V.lptr[k]--;
-		for (k = 0; k < n; k++) T->V.lend[k]--;
+		for (kk = 0; kk < n_alloc; kk++) T->V.listc[kk]--;
+		for (kk = 0; kk < n_alloc; kk++) T->V.lptr[kk]--;
+		for (kk = 0; kk < n; kk++) T->V.lend[kk]--;
 	}
 	else {	/* Free things not needed */
 		GMT_free (C, lend);

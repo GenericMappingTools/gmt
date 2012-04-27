@@ -174,7 +174,7 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			pairs_base[n_base] = GMT_memory (GMT, NULL, 24, char);
 			strncpy(pairs_base[n_base], &line[2], 19);
 			n_base++;
-			if (n_base == n_alloc) {
+			if ((size_t)n_base == n_alloc) {
 				n_alloc <<= 1;
 				map_base_start = GMT_memory (GMT, map_base_start, n_alloc, GMT_LONG);
 				map_base_end =   GMT_memory (GMT, map_base_end, n_alloc, GMT_LONG);
@@ -197,7 +197,7 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			pairs_merge[n_merge] = GMT_memory (GMT, NULL, 24, char);
 			strncpy(pairs_merge[n_merge], &line[2], 19);
 			n_merge++;
-			if (n_merge == n_alloc) {
+			if ((size_t)n_merge == n_alloc) {
 				n_alloc <<= 1;
 				map_merge_start = GMT_memory (GMT, map_merge_start, n_alloc, GMT_LONG);
 				map_merge_end   = GMT_memory (GMT, map_merge_end, n_alloc, GMT_LONG);

@@ -657,7 +657,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (GMT->current.io.io_header[GMT_IN]) {	/* Skip any header records */
-			for (i = 0; i < GMT->current.io.io_n_header_items; i++) if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+			for (i = 0; i < (GMT_LONG)GMT->current.io.io_n_header_items; i++) if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Read error for headers\n");
 				Return (EXIT_FAILURE);
 			}
@@ -726,7 +726,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else
 				colvalue[n] = in[0];
 			if (!two_cols) n++;
-			if (n == n_alloc) {
+			if ((size_t)n == n_alloc) {
 				n_alloc <<= 1;
 				if (strings)
 					tmp_string = GMT_memory (GMT, tmp_string, n_alloc, char *);

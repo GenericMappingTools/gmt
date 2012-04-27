@@ -389,7 +389,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			pair[n_pairs].id1 = strdup (name1);
 			pair[n_pairs].id2 = strdup (name2);
 			n_pairs++;
-			if (n_pairs == n_alloc) {
+			if ((size_t)n_pairs == n_alloc) {
 				size_t old_n_alloc = n_alloc;
 				add_chunk *= 2;
 				n_alloc += add_chunk;
@@ -403,7 +403,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: No combinations found in file %s!\n", Ctrl->A.file);
 			Return (EXIT_FAILURE);
 		}
-		if (n_pairs < n_alloc) pair = GMT_memory (GMT, pair, n_pairs, struct PAIR);
+		if ((size_t)n_pairs < n_alloc) pair = GMT_memory (GMT, pair, n_pairs, struct PAIR);
 		GMT_report (GMT, GMT_MSG_NORMAL, "%ld\n", n_pairs);
 	}
 

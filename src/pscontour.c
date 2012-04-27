@@ -595,12 +595,14 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG nx, k2, k3, node1, node2, c, PSCONTOUR_SUM, cont_counts[2] = {0, 0};
 	GMT_LONG io_mode = 0, id, add, last_entry, last_exit, make_plot;
-	GMT_LONG n, np, k, i, low, high, *vert = NULL, *cind = NULL;
-	GMT_LONG error = FALSE, skip = FALSE, closed, *n_seg = NULL;
+	GMT_LONG np, k, i, low, high, n_contours = 0, *vert = NULL, *cind = NULL;
+	GMT_LONG error = FALSE, skip = FALSE, closed;
 	GMT_LONG tbl_scl = 0, two_only = FALSE, fmt[3] = {0, 0, 0}, n_tables = 0, tbl;
 	
-	size_t n_contours = 0, n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL;
-	uint64_t ij;
+	size_t n, n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL;
+	size_t c_alloc = 0;
+	
+	uint64_t ij, *n_seg = NULL;
 	
 	int *ind = NULL;	/* Must remain int due to triangle */
 	
@@ -734,8 +736,8 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (i = 0; i < n; i++) GMT_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
 
 	if (Ctrl->Q.active) {	/* Read precalculated triangulation indices */
-		GMT_LONG seg, col;
-		uint64_t row;
+		GMT_LONG col;
+		uint64_t seg, row;
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_TABLE *T = NULL;
 
@@ -803,7 +805,6 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
 		char *record = NULL;
 		GMT_LONG got, in_ID, NL;
-		size_t c_alloc = 0;
 		double tmp;
 
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, Ctrl->C.file, NULL)) == GMTAPI_NOTSET) {
@@ -842,7 +843,6 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_contours = c;
 	}
 	else {	/* Set up contour intervals automatically from Ctrl->C.interval and Ctrl->A.interval */
-		size_t c_alloc = 0;
 		uint64_t ic;
 		double min, max, aval;
 		min = floor (xyz[0][GMT_Z] / Ctrl->C.interval) * Ctrl->C.interval; if (min < xyz[0][GMT_Z]) min += Ctrl->C.interval;
@@ -864,7 +864,8 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		n_contours = c;
 	}
-	cont = GMT_malloc (GMT, cont, 0, &n_contours, struct PSCONTOUR);
+	c_alloc = n_contours;
+	cont = GMT_malloc (GMT, cont, 0, &c_alloc, struct PSCONTOUR);
 
 	if (Ctrl->D.active) {
 		GMT_LONG dim[4] = {0, 0, 3, 0};
@@ -903,7 +904,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		dim[0] = n_tables;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty dataset */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, size_t);
-		n_seg = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
+		n_seg = GMT_memory (GMT, NULL, n_tables, uint64_t);
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
 	}
 	

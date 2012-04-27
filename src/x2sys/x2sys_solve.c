@@ -501,7 +501,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				continue;
 			}
 			n_COE++;
-			if (n_COE == n_alloc) {
+			if ((size_t)n_COE == n_alloc) {
 				n_alloc <<= 1;
 				for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) data[i] = GMT_memory (GMT, data[i], n_alloc, double);
 				data[COL_WW] = GMT_memory (GMT, data[COL_WW], n_alloc, double);
@@ -595,7 +595,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (grow_list) {	/* Add it */
 						trk_list[n_tracks] = strdup (trk[i]);
 						ID[i][n_COE] = (int)n_tracks++;
-						if (n_tracks == n_alloc_t) {
+						if ((size_t)n_tracks == n_alloc_t) {
 							n_alloc_t <<= 1;
 							trk_list = GMT_memory (GMT, trk_list, n_alloc_t, char *);
 						}
@@ -610,7 +610,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		
 			n_COE++;
-			if (n_COE == n_alloc) {
+			if ((size_t)n_COE == n_alloc) {
 				n_alloc <<= 1;
 				for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) data[i] = GMT_memory (GMT, data[i], n_alloc, double);
 				data[COL_WW] = GMT_memory (GMT, data[COL_WW], n_alloc, double);

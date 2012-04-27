@@ -384,7 +384,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 
 	if (F->filter_type == FILTER1D_CUSTOM) {	/* Use coefficients we read from file */
 		F->n_f_wts = F->Fin->n_records;
-		while (F->n_f_wts <= F->n_work_alloc) {	/* Need more memory */
+		while ((size_t)F->n_f_wts <= F->n_work_alloc) {	/* Need more memory */
 			F->n_work_alloc <<= 1;
 			allocate_more_work_space (GMT, F);
 		}
@@ -467,7 +467,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	return (0);
 }
 
-GMT_LONG lack_check (struct FILTER1D_INFO *F, GMT_LONG i_col, GMT_LONG left, GMT_LONG right)
+GMT_LONG lack_check (struct FILTER1D_INFO *F, uint64_t i_col, uint64_t left, uint64_t right)
 {
 	uint64_t last_row, this_row;
 	GMT_LONG lacking = FALSE;
@@ -492,9 +492,10 @@ GMT_LONG lack_check (struct FILTER1D_INFO *F, GMT_LONG i_col, GMT_LONG left, GMT
 	return (lacking);
 }
 
-void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, GMT_LONG j, GMT_LONG n, GMT_LONG both)
+void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, uint64_t j, uint64_t n, GMT_LONG both)
 {
-	GMT_LONG i, n_smooth, sort_me = TRUE;
+	uint64_t i, n_smooth;
+	GMT_LONG sort_me = TRUE;
 	double low, high, last, temp;
 
 	if (F->filter_type > FILTER1D_MODE)
@@ -525,8 +526,9 @@ void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, GMT_LO
 
 GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 {
-	uint64_t i_row, left, right, n_l, n_r, iq, i_f_wt, i_col;
+	uint64_t i_row, left, right, n_l, n_r;
 	uint64_t i_t_output = 0, n_in_filter, n_for_call, n_good_ones;
+	GMT_LONG i_col, iq, i_f_wt;
 	GMT_LONG *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
 	double time, delta_time, *outval = NULL, wt, val, med, scl, small;
 	double *wt_sum = NULL;		/* Pointer for array of weight sums [each column]  */
@@ -791,8 +793,8 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 
 GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG col, tbl, seg, error;
-	uint64_t row;
+	GMT_LONG col, tbl, error;
+	uint64_t row, seg;
 
 	double last_time, new_time, in;
 	

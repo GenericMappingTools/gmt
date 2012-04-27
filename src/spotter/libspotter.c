@@ -507,7 +507,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 			e[i].id[1] = B_id;
 		}
 		i++;
-		if (i == n_alloc) {
+		if ((size_t)i == n_alloc) {
 			n_alloc <<= 1;
 			e = GMT_memory (C, e, n_alloc, struct EULER);
 		}
@@ -535,7 +535,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 		if (invert) for (i = 0; i < n; i++) {e[i].omega = -e[i].omega; e[i].omega_r = - e[i].omega_r;}
 		invert = FALSE;	/* Since we have taken care of this now */
 	}
-	if (n < n_alloc) e = GMT_memory (C, e, n, struct EULER);
+	if ((size_t)n < n_alloc) e = GMT_memory (C, e, n, struct EULER);
 
 	if (invert) {	/* If TRUE this means we read stage rotations and want stage rotations out.  We must take a detour */
 		spotter_stages_to_total (C, e, n, TRUE, TRUE);	/* Convert forward stage poles to total reconstruction poles */
@@ -597,13 +597,13 @@ GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_LONG geocentr
 		e[i].y = P[1];
 		e[i].z = P[2];
 		i++;
-		if (i == n_alloc) {
+		if ((size_t)i == n_alloc) {
 			n_alloc <<= 1;
 			e = GMT_memory (C, e, n_alloc, struct HOTSPOT);
 		}
 	}
 	GMT_fclose (C, fp);
-	if (i < n_alloc) e = GMT_memory (C, e, i, struct HOTSPOT);
+	if ((size_t)i < n_alloc) e = GMT_memory (C, e, i, struct HOTSPOT);
 	*p = e;
 
 	return (i);
@@ -662,7 +662,7 @@ GMT_LONG spotter_backtrack (struct GMT_CTRL *C, double xp[], double yp[], double
 
 		if (path) {
 			start_k = kk++;
-			if (kk == n_alloc) {
+			if ((size_t)kk == n_alloc) {
 				n_alloc <<= 1;
 				track = GMT_memory (C, track, n_alloc, double);
 			}
@@ -717,18 +717,18 @@ GMT_LONG spotter_backtrack (struct GMT_CTRL *C, double xp[], double yp[], double
 					tt = dt * i_nd;
 				}
 				track[kk++] = xp[i];
-				if (kk == n_alloc) {
+				if ((size_t)kk == n_alloc) {
 					n_alloc <<= 1;
 					track = GMT_memory (C, track, n_alloc, double);
 				}
 				track[kk++] = yp[i];
-				if (kk == n_alloc) {
+				if ((size_t)kk == n_alloc) {
 					n_alloc <<= 1;
 					track = GMT_memory (C, track, n_alloc, double);
 				}
 				if (do_time) {
 					track[kk++] = (do_time == 2) ? (double)(ns - j) : t;
-					if (kk == n_alloc) {
+					if ((size_t)kk == n_alloc) {
 						n_alloc <<= 1;
 						track = GMT_memory (C, track, n_alloc, double);
 					}
@@ -745,18 +745,18 @@ GMT_LONG spotter_backtrack (struct GMT_CTRL *C, double xp[], double yp[], double
 					if (xx < 0.0) xx += TWO_PI;
 					if (xx >= TWO_PI) xx -= TWO_PI;
 					track[kk++] = xx;
-					if (kk == n_alloc) {
+					if ((size_t)kk == n_alloc) {
 						n_alloc <<= 1;
 						track = GMT_memory (C, track, n_alloc, double);
 					}
 					track[kk++] = yy;
-					if (kk == n_alloc) {
+					if ((size_t)kk == n_alloc) {
 						n_alloc <<= 1;
 						track = GMT_memory (C, track, n_alloc, double);
 					}
 					if (do_time) {
 						track[kk++] = (do_time == 2) ? (double)(ns - j) : t - k * tt;
-						if (kk == n_alloc) {
+						if ((size_t)kk == n_alloc) {
 							n_alloc <<= 1;
 							track = GMT_memory (C, track, n_alloc, double);
 						}
@@ -769,18 +769,18 @@ GMT_LONG spotter_backtrack (struct GMT_CTRL *C, double xp[], double yp[], double
 		}
 		if (path) {
 			track[kk++] = xp[i];
-			if (kk == n_alloc) {
+			if ((size_t)kk == n_alloc) {
 				n_alloc <<= 1;
 				track = GMT_memory (C, track, n_alloc, double);
 			}
 			track[kk++] = yp[i];
-			if (kk == n_alloc) {
+			if ((size_t)kk == n_alloc) {
 				n_alloc <<= 1;
 				track = GMT_memory (C, track, n_alloc, double);
 			}
 			if (do_time) {
 				track[kk++] = (do_time == 2) ? (double)(ns - j) : t;
-				if (kk == n_alloc) {
+				if ((size_t)kk == n_alloc) {
 					n_alloc <<= 1;
 					track = GMT_memory (C, track, n_alloc, double);
 				}
@@ -842,7 +842,7 @@ GMT_LONG spotter_forthtrack (struct GMT_CTRL *C, double xp[], double yp[], doubl
 
 		if (path) {
 			start_k = kk++;
-			if (kk == n_alloc) {
+			if ((size_t)kk == n_alloc) {
 				n_alloc <<= 1;
 				track = GMT_memory (C, track, n_alloc, double);
 			}
@@ -897,18 +897,18 @@ GMT_LONG spotter_forthtrack (struct GMT_CTRL *C, double xp[], double yp[], doubl
 					tt = dt * i_nd;
 				}
 				track[kk++] = xp[i];
-				if (kk == n_alloc) {
+				if ((size_t)kk == n_alloc) {
 					n_alloc <<= 1;
 					track = GMT_memory (C, track, n_alloc, double);
 				}
 				track[kk++] = yp[i];
-				if (kk == n_alloc) {
+				if ((size_t)kk == n_alloc) {
 					n_alloc <<= 1;
 					track = GMT_memory (C, track, n_alloc, double);
 				}
 				if (do_time) {
 					track[kk++] = (do_time == 2) ? (double)(ns - j) : t;
-					if (kk == n_alloc) {
+					if ((size_t)kk == n_alloc) {
 						n_alloc <<= 1;
 						track = GMT_memory (C, track, n_alloc, double);
 					}
@@ -924,18 +924,18 @@ GMT_LONG spotter_forthtrack (struct GMT_CTRL *C, double xp[], double yp[], doubl
 					if (xx < 0.0) xx += TWO_PI;
 					if (xx >= TWO_PI) xx -= TWO_PI;
 					track[kk++] = xx;
-					if (kk == n_alloc) {
+					if ((size_t)kk == n_alloc) {
 						n_alloc <<= 1;
 						track = GMT_memory (C, track, n_alloc, double);
 					}
 					track[kk++] = yy;
-					if (kk == n_alloc) {
+					if ((size_t)kk == n_alloc) {
 						n_alloc <<= 1;
 						track = GMT_memory (C, track, n_alloc, double);
 					}
 					if (do_time) {
 						track[kk++] = (do_time == 2) ? (double)(ns - j) : t + k * tt;
-						if (kk == n_alloc) {
+						if ((size_t)kk == n_alloc) {
 							n_alloc <<= 1;
 							track = GMT_memory (C, track, n_alloc, double);
 						}
@@ -949,18 +949,18 @@ GMT_LONG spotter_forthtrack (struct GMT_CTRL *C, double xp[], double yp[], doubl
 		}
 		if (path) {
 			track[kk++] = xp[i];
-			if (kk == n_alloc) {
+			if ((size_t)kk == n_alloc) {
 				n_alloc <<= 1;
 				track = GMT_memory (C, track, n_alloc, double);
 			}
 			track[kk++] = yp[i];
-			if (kk == n_alloc) {
+			if ((size_t)kk == n_alloc) {
 				n_alloc <<= 1;
 				track = GMT_memory (C, track, n_alloc, double);
 			}
 			if (do_time) {
 				track[kk++] = (do_time == 2) ? (double)(ns - j) : t;
-				if (kk == n_alloc) {
+				if ((size_t)kk == n_alloc) {
 					n_alloc <<= 1;
 					track = GMT_memory (C, track, n_alloc, double);
 				}
@@ -1591,7 +1591,7 @@ GMT_LONG spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct E
 			GMT_normalize3v (GMT, r_tangent_path);
 			GMT_cart_to_geo (GMT, &lat[n], &lon[n], r_tangent_path, TRUE);
 			n++;
-			if (n == n_alloc) {
+			if ((size_t)n == n_alloc) {
 				n_alloc <<= 1;
 				lon = GMT_memory (GMT, lon, n_alloc, double);
 				lat = GMT_memory (GMT, lat, n_alloc, double);
@@ -1607,7 +1607,7 @@ GMT_LONG spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct E
 		lat[n] = lat[1];
 		n++;
 	}
-	if (n < n_alloc) {
+	if ((size_t)n < n_alloc) {
 		lon = GMT_memory (GMT, lon, n, double);
 		lat = GMT_memory (GMT, lat, n, double);
 	}

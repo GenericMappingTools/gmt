@@ -209,7 +209,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 				GMT_report (GMT, GMT_MSG_FATAL, "Read error for blending parameters near row %ld\n", n);
 				return (EXIT_FAILURE);
 			}
-			if (n == n_alloc) L = GMT_malloc (GMT, L, n, &n_alloc, struct BLEND_LIST);
+			if ((size_t)n == n_alloc) L = GMT_malloc (GMT, L, n, &n_alloc, struct BLEND_LIST);
 			L[n].file = strdup (file);
 			L[n].region = strdup (r_in);
 			L[n].weight = (nr == 1) ? 1.0 : weight;	/* Default weight if not given */

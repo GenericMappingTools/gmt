@@ -192,7 +192,8 @@ float get_cell (float x, struct CELL *cell, GMT_LONG n_cells_m1, GMT_LONG last_c
 
 GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, GMT_LONG n_cells, GMT_LONG quadratic, GMT_LONG dump_intervals)
 {	/* Do basic histogram equalization */
-	GMT_LONG last_cell, n_cells_m1 = 0, current_cell, i, j, nxy, pad[4];
+	uint64_t i, j, nxy;
+	GMT_LONG last_cell, n_cells_m1 = 0, current_cell, pad[4];
 	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;

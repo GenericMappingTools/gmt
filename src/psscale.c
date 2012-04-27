@@ -1098,7 +1098,7 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);
 		}
 		z_width = D->table[0]->segment[0]->coord[GMT_X];
-		if (D->table[0]->segment[0]->n_rows < P->n_colors) {
+		if (D->table[0]->segment[0]->n_rows < (uint64_t)P->n_colors) {
 			GMT_report (GMT, GMT_MSG_FATAL, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}

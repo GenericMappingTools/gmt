@@ -493,12 +493,14 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG ij, k, n, row, col, n_edges, *d_col = NULL, d_row = 0, ii, jj, make_plot, n_seg = 0;
-	GMT_LONG section, n_read, closed, io_mode = 0, max_d_col = 0;
-	GMT_LONG error = FALSE, first = TRUE, node_only, n_seg_alloc = 0;
+	GMT_LONG k, row, col, n_edges, *d_col = NULL, d_row = 0, ii, jj, make_plot;
+	GMT_LONG section, closed, io_mode = 0, max_d_col = 0;
+	GMT_LONG error = FALSE, first = TRUE, node_only;
 	GMT_LONG fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
 	
-	uint64_t n_points;
+	uint64_t ij, n_points, n_seg = 0, n_read, n;
+	
+	size_t n_seg_alloc = 0;
 
 	char *grd = NULL;
 
@@ -681,7 +683,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld data points\n", n_read);
 
-		if (Ctrl->N.active) for (k = 0; k < Grid->header->nm; k++) grd[k] = 1 - grd[k];	/* Reverse sense of test */
+		if (Ctrl->N.active) for (ij = 0; ij < Grid->header->nm; ij++) grd[ij] = 1 - grd[ij];	/* Reverse sense of test */
 
 		/* Force perimeter nodes to be FALSE; thus all contours will be closed */
 
@@ -691,7 +693,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef DEBUG
 		if (Ctrl->D.debug) {	/* Save a copy of the grid to psmask.nc */
 			float *z = GMT_memory (GMT, NULL, Grid->header->nm, float);
-			for (k = 0; k < Grid->header->nm; k++) z[k] = (float)grd[k];
+			for (ij = 0; ij < Grid->header->nm; ij++) z[ij] = (float)grd[ij];
 			GMT_write_grd (GMT, "psmask.nc", Grid->header, z, NULL, GMT->current.io.pad, FALSE);
 			GMT_free (GMT, z);
 		}
@@ -713,11 +715,11 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &n_points)) > 0) {
 				closed = FALSE;
 				shrink_clip_contours (GMT, x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI]);
-				if (Ctrl->D.active && n > Ctrl->Q.min) {	/* Save the contour as output data */
+				if (Ctrl->D.active && n > (uint64_t)Ctrl->Q.min) {	/* Save the contour as output data */
 					S = GMT_dump_contour (GMT, x, y, n, GMT->session.d_NaN);
 					/* Select which table this segment should be added to */
 					if (n_seg == n_seg_alloc) {
-						GMT_LONG n_old_alloc = n_seg_alloc;
+						size_t n_old_alloc = n_seg_alloc;
 						D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, (n_seg_alloc += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
 						GMT_memset (&(D->table[0]->segment[n_old_alloc]), n_seg_alloc - n_old_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
 					}

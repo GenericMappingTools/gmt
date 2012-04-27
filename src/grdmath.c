@@ -2160,7 +2160,8 @@ void grd_PSI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *
 
 void grd_PVQV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG kind)
 {
-	GMT_LONG prev = last - 1, first = last - 2, n, node, calc;
+	GMT_LONG prev = last - 1, first = last - 2, n, calc;
+	uint64_t node;
 	double a = 0.0, x = 0.0, nu[2], pq[4];
 	static char *name[2] = {"PV", "QV"};
 	/* last holds the imaginary order vi, prev holds the real order vr, first holds the argument x = cos(colat) */

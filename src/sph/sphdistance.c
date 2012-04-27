@@ -233,9 +233,9 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG row, col, n_dup = 0, n_set = 0, ii, s_row, n_row, w_col, e_col, side;
 	GMT_LONG nx1, error = FALSE, first = FALSE;
-	GMT_LONG node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
+	GMT_LONG vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
 	
-	uint64_t ij, n = 0;
+	uint64_t ij, node, n = 0;
 	size_t n_alloc, p_alloc = 0;
 
 	double first_x = 0.0, first_y = 0.0, X[3], *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
@@ -305,7 +305,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_FATAL, "File %s can only have 1 segment!\n", Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (Table->n_segments != NTable->n_records) {
+			if (Table->n_segments != (uint64_t)NTable->n_records) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Files %s and %s do not have same number of items!\n", Ctrl->Q.file, Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -451,13 +451,13 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (P->coord[GMT_X][vertex] < 0.0) P->coord[GMT_X][vertex] += 360.0;
 				if (P->coord[GMT_X][vertex] == 360.0) P->coord[GMT_X][vertex] = 0.0;
 				vertex++;
-				if (vertex == p_alloc) GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
+				if ((size_t)vertex == p_alloc) GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
 
 				/* When we reach the vertex where we started, we are done with this polygon */
 			} while (node_new != node_stop);
 			P->coord[GMT_X][vertex] = P->coord[GMT_X][0];	/* Close polygon explicitly */
 			P->coord[GMT_Y][vertex] = P->coord[GMT_Y][0];
-			if (++vertex == p_alloc) GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
+			if ((size_t)(++vertex) == p_alloc) GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
 			P->n_rows = vertex;
 		}
 		

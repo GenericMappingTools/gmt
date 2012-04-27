@@ -563,9 +563,9 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	 */
 
 	size_t start[2] = {0,0}, edge[2] = {1,1};
-	GMT_LONG i, j, inc, off, nr_oor = 0, err, width_in, width_out, height_out, node;
+	GMT_LONG i, j, inc, off, nr_oor = 0, err, width_in, width_out, height_out;
 	GMT_LONG first_col, last_col, first_row, last_row, *k = NULL;
-	size_t ij;	/* To allow 64-bit addressing on 64-bit systems */
+	size_t ij, node;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp_f = NULL;
 	int *tmp_i = NULL;
 	double limit[2] = {FLT_MIN, FLT_MAX}, value;
@@ -623,7 +623,7 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 			start[0] = j;
 			for (i = 0; i < width_out; i++) {
 				node = inc*(ij+k[i])+off;
-				if (node < 0 || node > header->size) {
+				if (node > header->size) {
 					fprintf (stderr, "Outside bounds\n");
 				}
 				value = grid[node];
