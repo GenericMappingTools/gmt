@@ -849,7 +849,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Data record to process */
 
-			if (n_contours == n_alloc) {
+			if ((size_t)n_contours == n_alloc) {
 				n_tmp = n_alloc;
 				GMT_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
 				GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
@@ -870,7 +870,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		min = floor (G->header->z_min / Ctrl->C.interval) * Ctrl->C.interval; if (!GMT->current.map.z_periodic && min < G->header->z_min) min += Ctrl->C.interval;
 		max = ceil (G->header->z_max / Ctrl->C.interval) * Ctrl->C.interval; if (max > G->header->z_max) max -= Ctrl->C.interval;
 		for (c = lrint (min/Ctrl->C.interval), n_contours = 0; c <= lrint (max/Ctrl->C.interval); c++, n_contours++) {
-			if (n_contours == n_alloc) {
+			if ((size_t)n_contours == n_alloc) {
 				n_tmp = n_alloc;
 				GMT_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
 				GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
@@ -1090,7 +1090,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);
 
 			grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt);
-			for (i = 0; i < n_save; i++) {
+			for (i = 0; i < (GMT_LONG)n_save; i++) {
 				GMT_free (GMT, save[i].x);
 				GMT_free (GMT, save[i].y);
 			}

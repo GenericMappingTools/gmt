@@ -1591,6 +1591,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
+		GMT_memset (out, 4, double);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate spline at %ld given locations\n", T->n_records);
 		for (seg = 0; seg < T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++) {
@@ -1645,6 +1646,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				Return (API->error);
 			}
 		}
+		GMT_memset (V, 4, double);
 		for (layer = nz_off = 0; layer < Z.nz; layer++, nz_off += nxy) {
 			if (dimension == 3) V[GMT_Z] = GMT_col_to_x (GMT, layer, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
 			for (row = 0; row < Grid->header->ny; row++) {

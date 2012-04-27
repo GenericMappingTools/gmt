@@ -33,7 +33,7 @@ EXTERN_MSC GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void
 
 int main (int argc, char *argv[]) {
 
-	GMT_LONG status = 0, in_ID, out_ID, col;
+	GMT_LONG status = 0, xrow, in_ID, out_ID, col;
 	uint64_t row, ij;
 	struct GMTAPI_CTRL *API = NULL;			/* GMT API control structure */
 	float x[4] = {1.0, 2.0, 3.0, 4.0}, y[4] = {0.5, 1.5, 2.5, 3.5}, z[4] = {3.3f, 8.1f, 2.9f, 4.4f};
@@ -95,7 +95,7 @@ int main (int argc, char *argv[]) {
 	GMT_free_vector (API->GMT, &Vo, TRUE);
 	
 	printf ("nx,ny = %d %d\n", G->header->nx, G->header->ny);
-	GMT_grd_loop (API->GMT, G, row, col, ij) if (!GMT_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
+	GMT_grd_loop (API->GMT, G, xrow, col, ij) if (!GMT_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
 	
 	GMT_free_grid (API->GMT, &G, TRUE);
 

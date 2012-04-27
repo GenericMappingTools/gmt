@@ -459,17 +459,17 @@ GMT_LONG set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, GMT_L
 
 GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n_nodes;		/* Number of nodes processed */
 	GMT_LONG n_stages;		/* Number of stage rotations (poles) */
 	GMT_LONG try;			/* Number of current bootstrap estimate */
 	size_t n_alloc = 0, inc_alloc = BIG_CHUNK;
-	GMT_LONG i, j, k, m, row, col, k_step, np, max_ij = 0, n_flow, mem = 0, n_unique_nodes = 0;
+	GMT_LONG i, j, k, row, col, k_step, np, max_ij = 0, n_flow, mem = 0, n_unique_nodes = 0;
 	GMT_LONG error = FALSE;		/* TRUE when arguments are wrong */
 	GMT_LONG keep_flowlines = FALSE;	/* TRUE if Ctrl->D.active, Ctrl->PA.active, or bootstrap is TRUE */
 	GMT_LONG forth_flag;		/* Holds the do_time + 10 flag passed to forthtrack */
 	GMT_LONG *ID = NULL;		/* Optional array with IDs for each node */
 	
-	uint64_t ij, node;
+	uint64_t ij, node, m;
+	uint64_t n_nodes;		/* Number of nodes processed */
 	char *processed_node = NULL;	/* Pointer to array with TRUE/FALSE values for each grid node */
 	
 	unsigned short pa = 0;		/* Placeholder for PA along track */
@@ -714,7 +714,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		cva_contribution = lat_area[row] * (Ctrl->T.active[UPPER] ? Ctrl->T.t_fix : Z->data[ij]);	/* This node's contribution to the convolution */
 
 #ifdef DEBUG2
-		printf ("> %ld %ld %ld %ld %g\n", n_nodes, np, row, col, cva_contribution);
+		printf ("> %" PRIu64 " %ld %ld %ld %g\n", n_nodes, np, row, col, cva_contribution);
 #endif
 		for (m = 0, k = 1; m < np; m++) {	/* Store nearest node indices only */
 			i = GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
@@ -752,16 +752,16 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_nodes++;	/* Go to next node */
 
 		if (keep_flowlines && n_nodes == n_alloc) {
-			GMT_LONG old_n_alloc = n_alloc;
+			size_t old_n_alloc = n_alloc;
 			inc_alloc *= 2;
 			n_alloc += inc_alloc;
 			flowline = GMT_memory (GMT, flowline, n_alloc, struct FLOWLINE);
 			GMT_memset (&(flowline[old_n_alloc]), n_alloc - old_n_alloc, struct FLOWLINE);	/* Set to NULL/0 */
 		}
 		
-		if (!(n_nodes%100)) GMT_report (GMT, GMT_MSG_NORMAL, "Row %5ld Processed %5ld nodes [%5ld/%.1f]\r", row, n_nodes, n_flow, mem * B_TO_MB);
+		if (!(n_nodes%100)) GMT_report (GMT, GMT_MSG_NORMAL, "Row %5ld Processed %5" PRIu64" nodes [%5ld/%.1f]\r", row, n_nodes, n_flow, mem * B_TO_MB);
 	}
-	GMT_report (GMT, GMT_MSG_NORMAL, "Row %5ld Processed %5ld nodes [%5ld/%.1f]\n", row, n_nodes, n_flow, mem * B_TO_MB);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Row %5ld Processed %5" PRIu64 " nodes [%5ld/%.1f]\n", row, n_nodes, n_flow, mem * B_TO_MB);
 	GMT_report (GMT, GMT_MSG_NORMAL, "On average, each node was visited %g times\n", n_more_than_once / n_unique_nodes);
 
 	if (keep_flowlines && n_nodes != n_alloc) flowline = GMT_memory (GMT, flowline, n_nodes, struct FLOWLINE);
@@ -825,7 +825,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				if (!(m%10000)) GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\r", m);
 			}
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\n", n_nodes);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5" PRIu64 " flowlines\n", n_nodes);
 			
 			/* Time to write out this z-slice grid */
 			if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */		
@@ -889,7 +889,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (Ctrl->PA.active) PA->data[flowline[m].ij] = (float) (pa * PA_2_T);
 				if (!(m%10000)) GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\r", m);
 			}
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\n", n_nodes);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5" PRIu64 " flowlines\n", n_nodes);
 		}
 		else {	/* Must recreate flowlines */
 			k_step = 3;	/* FLowlines have (x,y,t) here */
@@ -925,9 +925,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (Ctrl->D.active) DI->data[ij] = (float)CVA_max;	/* Store the maximum CVA associated with this node's flowline */
 				if (Ctrl->PA.active) PA->data[ij] = (float) this_pa;
 				GMT_free (GMT, c);
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Row %5ld: Processed %5ld flowlines\r", row, n_nodes);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Row %5ld: Processed %5" PRIu64 " flowlines\r", row, n_nodes);
 			}
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Row %5ld: Processed %5ld flowlines\n", row, n_nodes);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Row %5ld: Processed %5" PRIu64 " flowlines\n", row, n_nodes);
 		}
 		
 
@@ -950,8 +950,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->W.active) {	/* Use bootstrapping to estimate confidence region for CVA maxima */
 
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
-			GMT_message (GMT, "Preprocessed %5ld flowlines\n", n_nodes);
-			GMT_message (GMT, "%ld of %ld total flowlines entered CVA region\n", n_nodes, n_flow);
+			GMT_message (GMT, "Preprocessed %5" PRIu64 " flowlines\n", n_nodes);
+			GMT_message (GMT, "%" PRIu64 " of %ld total flowlines entered CVA region\n", n_nodes, n_flow);
 			GMT_message (GMT, "Flowlines consumed %d Mb of memory\n", lrint (mem * B_TO_MB));
 			GMT_message (GMT, "Estimate %ld CVA max locations using bootstrapping\n", Ctrl->W.n_try);
 		}
@@ -988,7 +988,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				if (!(m%10000)) GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\r", m);
 			}
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\n", n_nodes);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5" PRIu64 " flowlines\n", n_nodes);
 		
 			/* Find max CVA location */
 		
@@ -1016,9 +1016,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Clean up memory */
 
 	GMT_free (GMT, processed_node);
-	for (i = 0; keep_flowlines && i < n_nodes; i++) {
-		GMT_free (GMT, flowline[i].node);
-		if (Ctrl->PA.active) GMT_free (GMT, flowline[i].PA);
+	for (m = 0; keep_flowlines && m < n_nodes; m++) {
+		GMT_free (GMT, flowline[m].node);
+		if (Ctrl->PA.active) GMT_free (GMT, flowline[m].PA);
 	}
 	GMT_free (GMT, p);
 	GMT_free (GMT, x_smt);	GMT_free (GMT, y_smt);

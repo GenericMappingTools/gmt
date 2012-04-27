@@ -159,7 +159,7 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 		n_alloc = 6 * (n - 2);
 		for (kk = 0; kk < n_alloc; kk++) T->V.listc[kk]--;
 		for (kk = 0; kk < n_alloc; kk++) T->V.lptr[kk]--;
-		for (kk = 0; kk < n; kk++) T->V.lend[kk]--;
+		for (k = 0; k < n; k++) T->V.lend[k]--;
 	}
 	else {	/* Free things not needed */
 		GMT_free (C, lend);
