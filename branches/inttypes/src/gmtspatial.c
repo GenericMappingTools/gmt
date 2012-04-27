@@ -315,8 +315,8 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 	 * not detect such crossings.  For most situations this should not matter much (?).
 	 */
 	
-	GMT_LONG tbl, seg, np, n_close = 0, n_dup = 0, status, mode1, mode3;
-	uint64_t k, row, pt;
+	GMT_LONG tbl, np, n_close = 0, n_dup = 0, status, mode1, mode3;
+	uint64_t k, row, seg, pt;
 	double dist, f_seg, f_pt, d1, d2, closest, length[2], separation[2], close[2];
 	double med_separation[2], med_close[2], high = 0, low = 0, use_length, *sep = NULL;
 	struct GMT_LINE_SEGMENT *Sp = NULL;
@@ -822,14 +822,14 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	if (Ctrl->L.active) {	/* Remove tile lines only */
 		GMT_LONG gap = 0, first, prev_OK;
-		uint64_t p;
+		uint64_t p, seg;
 		double dx, dy, DX, DY, dist;
 
 		GMT_init_distaz (GMT, GMT_MAP_DIST_UNIT, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 		
 		for (k = 0; k < D->n_tables; k++) {
-			for (j = 0; j < D->table[k]->n_segments; j++) {
-				S = D->table[k]->segment[j];
+			for (seg = 0; seg < D->table[k]->n_segments; seg++) {
+				S = D->table[k]->segment[seg];
 				if (S->n_rows == 0) continue;
 				for (p = 1, first = TRUE, prev_OK = FALSE; p < S->n_rows; p++) {
 					dx = S->coord[GMT_X][p] - S->coord[GMT_X][p-1];
@@ -868,6 +868,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	if (Ctrl->Q.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
 		double out[3];
+		uint64_t seg;
 		GMT_LONG handedness = 0, c, p, mode, poly, geo = GMT_is_geographic (GMT, GMT_IN);
 
 		char line[GMT_BUFSIZ];
@@ -889,8 +890,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		
 		for (k = 0; k < D->n_tables; k++) {
-			for (j = 0; j < D->table[k]->n_segments; j++) {
-				S = D->table[k]->segment[j];
+			for (seg = 0; seg < D->table[k]->n_segments; seg++) {
+				S = D->table[k]->segment[seg];
 				if (S->n_rows == 0) continue;
 				if (GMT_polygon_is_open (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) {	/* Line */
 					length_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, out);
@@ -942,7 +943,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->I.active || external) {	/* Crossovers between polygons */
-		GMT_LONG k1, k2, j1, j2, nx, same;
+		GMT_LONG k1, k2, nx, same;
+		uint64_t j1, j2;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
 		char T1[GMT_BUFSIZ], T2[GMT_BUFSIZ], fmt[GMT_BUFSIZ];
@@ -1000,8 +1002,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						nx = GMT_crossover (GMT, S1->coord[GMT_X], S1->coord[GMT_Y], NULL, ylist1, S1->n_rows, S2->coord[GMT_X], S2->coord[GMT_Y], NULL, ylist2, S2->n_rows, FALSE, &XC);
 						if (nx) {	/* Polygon pair generated crossings */
 							if (Ctrl->S.active) {	/* Do the spatial clip operation */
-								uint64_t p0, px;
-								GMT_LONG c, go, first;
+								uint64_t p0;
+								GMT_LONG c, go, px, first;
 								double *xx = NULL, *yy = NULL, *kk = NULL;
 								struct PAIR *pair = NULL;
 								
@@ -1073,8 +1075,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							}
 							else {	/* Just report */
 								if (mseg){
-									sprintf (T1, "%s-%ld", C->table[k1]->file[GMT_IN], j1);
-									sprintf (T2, "%s-%ld", D->table[k2]->file[GMT_IN], j2);
+									sprintf (T1, "%s-%" PRIu64, C->table[k1]->file[GMT_IN], j1);
+									sprintf (T2, "%s-%" PRIu64, D->table[k2]->file[GMT_IN], j2);
 								}
 								else {
 									strcpy (T1, C->table[k1]->file[GMT_IN]);

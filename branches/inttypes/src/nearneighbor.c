@@ -252,14 +252,13 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 
 GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, k, col_0, row_0, n, n_set;
-	GMT_LONG d_row, sector, ii, jj, ij0, n_read, *d_col = NULL;
-	GMT_LONG max_d_col, x_wrap, y_wrap, n_almost, n_none;
+	GMT_LONG row, col, k, col_0, row_0, max_d_col, x_wrap;
+	GMT_LONG d_row, sector, ii, jj, y_wrap, *d_col = NULL;
 	GMT_LONG error = FALSE, wrap_180, replicate_x, replicate_y, n_filled;
 	
 	size_t n_alloc = GMT_CHUNK;
 	
-	uint64_t ij;
+	uint64_t ij, ij0, kk, n, n_read, n_almost, n_none, n_set;
 
 	double weight, weight_sum, grd_sum, dx, dy, delta, distance = 0.0;
 	double x_left, x_right, y_top, y_bottom, factor, three_over_radius;
@@ -394,7 +393,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				distance = GMT_distance (GMT, x0[ii], y0[jj], in[GMT_X], in[GMT_Y]);
 
 				if (distance > Ctrl->S.radius) continue;	/* Data constraint is too far from this node */
-				k = GMT_IJ0 (Grid->header, jj, ii);		/* No padding used for gridnode array */
+				kk = GMT_IJ0 (Grid->header, jj, ii);		/* No padding used for gridnode array */
 				dx = in[GMT_X] - x0[ii];	dy = in[GMT_Y] - y0[jj];
 
 				/* Check for wrap-around in x or y.  This should only occur if the
@@ -409,7 +408,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				/* OK, this point should constrain this node.  Calculate which sector and assign the value */
 
 				sector = ((GMT_LONG)((d_atan2 (dy, dx) + M_PI) * factor)) % Ctrl->N.sectors;
-				assign_node (GMT, &grid_node[k], Ctrl->N.sectors, sector, distance, n);
+				assign_node (GMT, &grid_node[kk], Ctrl->N.sectors, sector, distance, n);
 
 				/* With periodic, gridline-registered grids there are duplicate rows and/or columns
 				   so we may have to assign the point to more than one node.  The next section deals
@@ -418,15 +417,15 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				if (replicate_x) {	/* Must check if we have to replicate a column */
 					if (ii == 0) 	/* Must replicate left to right column */
-						assign_node (GMT, &grid_node[k+x_wrap], Ctrl->N.sectors, sector, distance, n);
+						assign_node (GMT, &grid_node[kk+x_wrap], Ctrl->N.sectors, sector, distance, n);
 					else if (ii == Grid->header->nxp)	/* Must replicate right to left column */
-						assign_node (GMT, &grid_node[k-x_wrap], Ctrl->N.sectors, sector, distance, n);
+						assign_node (GMT, &grid_node[kk-x_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 				if (replicate_y) {	/* Must check if we have to replicate a row */
 					if (jj == 0)	/* Must replicate top to bottom row */
-						assign_node (GMT, &grid_node[k+y_wrap], Ctrl->N.sectors, sector, distance, n);
+						assign_node (GMT, &grid_node[kk+y_wrap], Ctrl->N.sectors, sector, distance, n);
 					else if (jj == Grid->header->nyp)	/* Must replicate bottom to top row */
-						assign_node (GMT, &grid_node[k-y_wrap], Ctrl->N.sectors, sector, distance, n);
+						assign_node (GMT, &grid_node[kk-y_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 			}
 		}
@@ -466,12 +465,13 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
 	three_over_radius = 3.0 / Ctrl->S.radius;
 
-	ij0 = -1;
+	ij0 = 0;
 	GMT_row_loop (GMT, Grid, row) {
 		GMT_col_loop (GMT, Grid, row, col, ij) {
-			if (!grid_node[++ij0]) {	/* No nearest neighbors, set to empty and goto next node */
+			if (!grid_node[ij0]) {	/* No nearest neighbors, set to empty and goto next node */
 				n_none++;
 				Grid->data[ij] = (float)Ctrl->E.value;
+				ij0++;
 				continue;
 			}
 
@@ -480,6 +480,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				n_almost++;
 				Grid->data[ij] = (float)Ctrl->E.value;
 				free_node (GMT, grid_node[ij0]);
+				ij0++;
 				continue;
 			}
 
@@ -498,6 +499,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			Grid->data[ij] = (float)(grd_sum / weight_sum);
 			free_node (GMT, grid_node[ij0]);
+			ij0++;
 		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "Gridded row %10ld\r", row);
 	}

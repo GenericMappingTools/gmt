@@ -365,7 +365,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				while ((GMT_strtok (opt->arg, ",", &pos, p))) {
 					for (k = 0; p[k] && p[k] != ':'; k++);	/* Find position of colon */
 					p[k] = ' ';
-					if (Ctrl->L.n_cols == n_alloc) Ctrl->L.ext = GMT_memory (GMT, Ctrl->L.ext, n_alloc += GMT_TINY_CHUNK, struct EXT_COL);
+					if ((size_t)Ctrl->L.n_cols == n_alloc) Ctrl->L.ext = GMT_memory (GMT, Ctrl->L.ext, n_alloc += GMT_TINY_CHUNK, struct EXT_COL);
 					sscanf (p, "%d %[^:]", &Ctrl->L.ext[Ctrl->L.n_cols].col, Ctrl->L.ext[Ctrl->L.n_cols].name);
 					Ctrl->L.n_cols++;
 				}
@@ -843,8 +843,8 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	else {	/* Read regular data table */
-		GMT_LONG tbl, seg;
-		uint64_t row;
+		GMT_LONG tbl;
+		uint64_t row, seg;
 		struct GMT_DATASET *Din = NULL;
 		struct GMT_TABLE *T = NULL;
 #ifdef GMT_COMPAT

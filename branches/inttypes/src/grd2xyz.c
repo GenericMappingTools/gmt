@@ -290,8 +290,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else if (Ctrl->E.active) {	/* ESRI format */
 			double slop;
 			char *record = NULL, item[GMT_BUFSIZ];
-			size_t n_alloc;
-			GMT_LONG len, rec_len;
+			size_t n_alloc, len, rec_len;
 			slop = 1.0 - (G->header->inc[GMT_X] / G->header->inc[GMT_Y]);
 			if (!GMT_IS_ZERO (slop)) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: x_inc must equal y_inc when writing to ESRI format\n");

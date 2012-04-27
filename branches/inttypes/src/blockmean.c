@@ -161,8 +161,8 @@ GMT_LONG GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl
 
 GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	uint64_t row, node, n_cells_filled, n_read, n_lost, n_pitched, *np = NULL;
-	GMT_LONG col, w_col, error, use_xy, use_weight;
+	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, *np = NULL;
+	GMT_LONG row, col, w_col, error, use_xy, use_weight;
 
 	double weight, weighted_z, iw, wesn[4], out[7], *in = NULL;
 

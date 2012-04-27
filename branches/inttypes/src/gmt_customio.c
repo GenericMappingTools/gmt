@@ -534,7 +534,7 @@ GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		case 0:	/* Possibly bit map; check some more */
 			mx = (uint64_t) ceil (t_head.nx / 32.0);
 			nm = mx * ((uint64_t)t_head.ny);
-			if ((buf.st_size - GRD_HEADER_SIZE) == nm)	/* Yes, it was a bit mask file */
+			if ((size_t)(buf.st_size - GRD_HEADER_SIZE) == nm)	/* Yes, it was a bit mask file */
 				header->type = GMT_GRD_IS_BM;
 			else	/* No, junk data */
 				return (GMT_GRDIO_BAD_VAL);
@@ -1544,7 +1544,8 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
-	GMT_LONG i, j, nBand, subset;
+	GMT_LONG nBand, subset;
+	uint64_t i, j;
 	char strR[128];
 
 	/* Allocate new control structures */
@@ -1641,7 +1642,7 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	GMT_free (C, to_gdalread);
 	GMT_free (C, from_gdalread->ColorMap);
-	for ( i = 0; i < from_gdalread->RasterCount; ++i )
+	for ( i = 0; i < (uint64_t)from_gdalread->RasterCount; ++i )
 		free(from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	GMT_free (C, from_gdalread->band_field_names);
 	GMT_free (C, from_gdalread);

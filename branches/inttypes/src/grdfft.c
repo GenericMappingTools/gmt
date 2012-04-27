@@ -312,7 +312,7 @@ double modk (GMT_LONG k, struct K_XY *K)
 
 GMT_LONG do_differentiate (struct GMT_GRID *Grid, double *par, struct K_XY *K)
 {
-	GMT_LONG k;
+	uint64_t k;
 	double scale, fact;
 	float *datac = Grid->data;
 
@@ -331,7 +331,7 @@ GMT_LONG do_differentiate (struct GMT_GRID *Grid, double *par, struct K_XY *K)
 GMT_LONG do_integrate (struct GMT_GRID *Grid, double *par, struct K_XY *K)
 {
 	/* Integrate in frequency domain by dividing by kr [scale optional] */
-	GMT_LONG k;
+	uint64_t k;
 	double fact, scale;
 	float *datac = Grid->data;
 
@@ -347,7 +347,7 @@ GMT_LONG do_integrate (struct GMT_GRID *Grid, double *par, struct K_XY *K)
 
 GMT_LONG do_continuation (struct GMT_GRID *Grid, double *zlevel, struct K_XY *K)
 {
-	GMT_LONG k;
+	uint64_t k;
 	float tmp, *datac = Grid->data;
 
 	/* If z is positive, the field will be upward continued using exp[- k z].  */
@@ -362,7 +362,7 @@ GMT_LONG do_continuation (struct GMT_GRID *Grid, double *zlevel, struct K_XY *K)
 
 GMT_LONG do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struct K_XY *K)
 {
-	GMT_LONG k;
+	uint64_t k;
 	float tempr, tempi, fact, *datac = Grid->data;
 	double cos_azim, sin_azim;
 
@@ -387,7 +387,7 @@ GMT_LONG do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, double *p
 	densities in kg/m**3, Te in m, etc.
 	rw, the water density, is used to set the Airy ratio and the restoring
 	force on the plate (rm - ri)*gravity if ri = rw; so use zero for topo in air.  */
-	GMT_LONG k;
+	uint64_t k;
 	double airy_ratio, rigidity_d, d_over_restoring_force, mk, k2, k4, transfer_fn;
 
 	double te;	/* Elastic thickness, SI units (m)  */
@@ -467,7 +467,7 @@ double get_filter_weight (GMT_LONG k, struct F_INFO *f_info, struct K_XY *K)
 
 void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct K_XY *K)
 {
-	GMT_LONG k;
+	uint64_t k;
 	float weight, *datac = Grid->data;
 
 	for (k = 0; k < Grid->header->size; k += 2) {
@@ -592,7 +592,9 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	 */
 
 	char format[GMT_TEXT_LEN64];
-	GMT_LONG k, nk, nused, ifreq, dim[4] = {1, 1, 1, 0};
+	GMT_LONG dim[4] = {1, 1, 1, 0};
+	int64_t ifreq;
+	uint64_t k, nk, nused;
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
 	PFD get_k;
 	float *datac = Grid->data;
@@ -635,7 +637,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 		freq = (*get_k)(k, K);
 		ifreq = lrint (fabs (freq) * r_delta_k) - 1;
 		if (ifreq < 0) ifreq = 0;	/* Might happen when doing r spectrum  */
-		if (ifreq >= nk) continue;	/* Might happen when doing r spectrum  */
+		if ((uint64_t)ifreq >= nk) continue;	/* Might happen when doing r spectrum  */
 		power[ifreq] += hypot (datac[k], datac[k+1]);
 		nused++;
 	}

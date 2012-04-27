@@ -409,13 +409,13 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 
 GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, err, n_minimum = 2, n_read = 0, n_pass = 0, r_mode;
+	GMT_LONG i, k, err, n_minimum = 2, r_mode;
 	GMT_LONG n_fields, ind, bin, last_bin = -1, pt_cartesian = FALSE, inside;
 	GMT_LONG np[2] = {0, 0}, base = 3, wd[2] = {0, 0}, id, this_node, side, col;
 	GMT_LONG error = FALSE, need_header, shuffle, just_copy_record = FALSE;
 	GMT_LONG output_header = FALSE, do_project = FALSE, no_resample = FALSE;
 
-	uint64_t row, k;
+	uint64_t row, seg, n_read = 0, n_pass = 0;
 
 	double xx, yy, *in = NULL;
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
@@ -525,13 +525,13 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		point = Cin->table[0];	/* Can only be one table since we read a single file */
-		for (i = 0; i < point->n_segments; i++) {
-			if (Cin->n_columns == 2) point->segment[i]->dist = Ctrl->C.dist;
+		for (seg = 0; seg < point->n_segments; seg++) {
+			if (Cin->n_columns == 2) point->segment[seg]->dist = Ctrl->C.dist;
 			if (do_project) {	/* Convert all the points using the map projection */
-				for (row = 0; row < point->segment[i]->n_rows; row++) {
-					GMT_geo_to_xy (GMT, point->segment[i]->coord[GMT_X][row], point->segment[i]->coord[GMT_Y][row], &xx, &yy);
-					point->segment[i]->coord[GMT_X][row] = xx;
-					point->segment[i]->coord[GMT_Y][row] = yy;
+				for (row = 0; row < point->segment[seg]->n_rows; row++) {
+					GMT_geo_to_xy (GMT, point->segment[seg]->coord[GMT_X][row], point->segment[seg]->coord[GMT_Y][row], &xx, &yy);
+					point->segment[seg]->coord[GMT_X][row] = xx;
+					point->segment[seg]->coord[GMT_Y][row] = yy;
 				}
 				pt_cartesian = TRUE;	/* Well, now it is */
 			}
@@ -543,22 +543,22 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			data = GMT_memory (GMT, NULL, point->n_records, struct GMTSELECT_DATA);
 
-			for (i = k = 0; i < point->n_segments; i++) {
-				for (row = 0; row < point->segment[i]->n_rows; row++, k++) {
-					data[k].x = point->segment[i]->coord[GMT_X][row];
-					data[k].y = point->segment[i]->coord[GMT_Y][row];
-					data[k].d = (Ctrl->C.dist == 0.0) ? point->segment[i]->coord[GMT_Z][row] : Ctrl->C.dist;
+			for (seg = k = 0; seg < point->n_segments; seg++) {
+				for (row = 0; row < point->segment[seg]->n_rows; row++, k++) {
+					data[k].x = point->segment[seg]->coord[GMT_X][row];
+					data[k].y = point->segment[seg]->coord[GMT_Y][row];
+					data[k].d = (Ctrl->C.dist == 0.0) ? point->segment[seg]->coord[GMT_Z][row] : Ctrl->C.dist;
 				}
 			}
 			
 			/* Sort on x to speed up inside testing */
 			qsort (data, (size_t)point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
 			
-			for (i = k = 0; i < point->n_segments; i++) {	/* Put back the new order */
-				for (row = 0; row < point->segment[i]->n_rows; row++, k++) {
-					point->segment[i]->coord[GMT_X][row] = data[k].x;
-					point->segment[i]->coord[GMT_Y][row] = data[k].y;
-					if (Ctrl->C.dist == 0.0) point->segment[i]->coord[GMT_Z][row] = data[k].d ;
+			for (seg = k = 0; seg < point->n_segments; seg++) {	/* Put back the new order */
+				for (row = 0; row < point->segment[seg]->n_rows; row++, k++) {
+					point->segment[seg]->coord[GMT_X][row] = data[k].x;
+					point->segment[seg]->coord[GMT_Y][row] = data[k].y;
+					if (Ctrl->C.dist == 0.0) point->segment[seg]->coord[GMT_Z][row] = data[k].d ;
 				}
 			}
 			GMT_free (GMT, data);
@@ -574,13 +574,13 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		line = Lin->table[0];	/* Can only be one table since we read a single file */
-		for (i = 0; i < line->n_segments; i++) {
-			if (Ctrl->L.dist > 0.0) line->segment[i]->dist = Ctrl->L.dist;	/* Only override when nonzero */
+		for (seg = 0; seg < line->n_segments; seg++) {
+			if (Ctrl->L.dist > 0.0) line->segment[seg]->dist = Ctrl->L.dist;	/* Only override when nonzero */
 			if (do_project) {	/* Convert all the line points using the map projection */
-				for (row = 0; row < line->segment[i]->n_rows; row++) {
-					GMT_geo_to_xy (GMT, line->segment[i]->coord[GMT_X][row], line->segment[i]->coord[GMT_Y][row], &xx, &yy);
-					line->segment[i]->coord[GMT_X][row] = xx;
-					line->segment[i]->coord[GMT_Y][row] = yy;
+				for (row = 0; row < line->segment[seg]->n_rows; row++) {
+					GMT_geo_to_xy (GMT, line->segment[seg]->coord[GMT_X][row], line->segment[seg]->coord[GMT_Y][row], &xx, &yy);
+					line->segment[seg]->coord[GMT_X][row] = xx;
+					line->segment[seg]->coord[GMT_Y][row] = yy;
 				}
 			}
 		}
@@ -597,11 +597,11 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		pol = Fin->table[0];	/* Can only be one table since we read a single file */
 		if (do_project) {	/* Convert all the polygons points using the map projection */
-			for (i = 0; i < pol->n_segments; i++) {
-				for (row = 0; row < pol->segment[i]->n_rows; row++) {
-					GMT_geo_to_xy (GMT, pol->segment[i]->coord[GMT_X][row], pol->segment[i]->coord[GMT_Y][row], &xx, &yy);
-					pol->segment[i]->coord[GMT_X][row] = xx;
-					pol->segment[i]->coord[GMT_Y][row] = yy;
+			for (seg = 0; seg < pol->n_segments; seg++) {
+				for (row = 0; row < pol->segment[seg]->n_rows; row++) {
+					GMT_geo_to_xy (GMT, pol->segment[seg]->coord[GMT_X][row], pol->segment[seg]->coord[GMT_Y][row], &xx, &yy);
+					pol->segment[seg]->coord[GMT_X][row] = xx;
+					pol->segment[seg]->coord[GMT_Y][row] = yy;
 				}
 			}
 		}
@@ -690,9 +690,9 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
 			}
 			inside = FALSE;
-			for (i = 0; i < pol->n_segments && !inside; i++) {	/* Check each polygon until we find that our point is inside */
-				if (GMT_polygon_is_hole (pol->segment[i])) continue;	/* Holes are handled within GMT_inonout */
-				inside = (GMT_inonout (GMT, xx, yy, pol->segment[i]) >= Ctrl->E.inside[F_ITEM]);
+			for (seg = 0; seg < pol->n_segments && !inside; seg++) {	/* Check each polygon until we find that our point is inside */
+				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
+				inside = (GMT_inonout (GMT, xx, yy, pol->segment[seg]) >= Ctrl->E.inside[F_ITEM]);
 			}
 			if (do_project) {	/* Reset input type for GMT_inonout to do Cartesian mode */
 				GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;

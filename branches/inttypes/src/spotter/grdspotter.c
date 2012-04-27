@@ -105,7 +105,6 @@
 #include "spotter.h"
 
 #define B_TO_MB	(1.0 / 1048576.0)
-#define OUTSIDE -1
 
 #define TRUNC	0	/* Indices for -T */
 #define UPPER	1
@@ -710,7 +709,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Keep in mind that although first and last are entry/exit into the CVA grid, we must
 		 * expect the flowline between those points to also exit/reentry the CVA grid; hence
 		 * we must still check if points are in/out of the box.  Here, we do not skip points but
-		 * set the node index to OUTSIDE */
+		 * set the node index to UINTMAX_MAX */
 		 
 		cva_contribution = lat_area[row] * (Ctrl->T.active[UPPER] ? Ctrl->T.t_fix : Z->data[ij]);	/* This node's contribution to the convolution */
 
@@ -722,7 +721,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			yg = GMT_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 			j = GMT_grd_y_to_row (GMT, yg, G->header);
 			if (i < 0 || i >= G->header->nx || j < 0 || j >= G->header->ny)	/* Outside the CVA box, flag as outside */
-				node = OUTSIDE;
+				node = UINTMAX_MAX;
 			else								/* Inside the CVA box, assign node ij */
 				node = GMT_IJP (G->header, j, i);
 			if (keep_flowlines) {
@@ -730,7 +729,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (Ctrl->PA.active) flowline[n_nodes].PA[m] = (unsigned short) lrint (c[k++] * T_2_PA);
 			}
 			/* If we did not keep flowlines then there is no PA to skip over (hence no k++) */
-			if (node != OUTSIDE) {
+			if (node != UINTMAX_MAX) {
 				if (!processed_node[node]) {	/* Have not added to the CVA at this node yet */
 					G->data[node] += (float)cva_contribution;
 					processed_node[node] = TRUE;		/* Now we have visited this node */
@@ -819,7 +818,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_memset (processed_node, G->header->size, char);		/* Fresh start for this flowline convolution */
 				for (k = 0; k < flowline[m].n; k++) {			/* For each point along this flowline */
 					node = flowline[m].node[k];
-					if (node != OUTSIDE && !processed_node[node]) {	/* Have not added to the CVA at this node yet */
+					if (node != UINTMAX_MAX && !processed_node[node]) {	/* Have not added to the CVA at this node yet */
 						CVA_inc[node] += (float)cva_contribution;
 						processed_node[node] = TRUE;		/* Now we have visited this node */
 					}
@@ -881,7 +880,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				CVA_max = 0.0;						/* Fresh start for this flowline convolution */
 				for (k = 0; k < flowline[m].n; k++) {			/* For each point along this flowline */
 					node = flowline[m].node[k];
-					if (node != OUTSIDE && G->data[node] > CVA_max) {	/* Found a higher CVA value */
+					if (node != UINTMAX_MAX && G->data[node] > CVA_max) {	/* Found a higher CVA value */
 						CVA_max = G->data[node];
 						if (Ctrl->PA.active) pa = flowline[m].PA[k];	/* Keep the estimate of age at highest CVA */
 					}
@@ -982,7 +981,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				zz = Z->data[flowline[ij].ij];
 				for (k = 0; k < flowline[ij].n; k++) {		/* For each point along this flowline */
 					node = flowline[ij].node[k];
-					if (node != OUTSIDE && !processed_node[node]) {	/* Have not added to the CVA at this node yet */
+					if (node != UINTMAX_MAX && !processed_node[node]) {	/* Have not added to the CVA at this node yet */
 						G->data[node] += zz;
 						processed_node[node] = TRUE;		/* Now we have visited this node; flag it */
 					}

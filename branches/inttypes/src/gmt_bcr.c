@@ -246,7 +246,7 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 	for (j = 0; j < G->header->bcr_n; j++) {
 		for (i = 0; i < G->header->bcr_n; i++) {
 			/* assure that index is inside bounds of the array G->data: */
-			assert (ij+i >= 0 && ij+i < G->header->size);
+			assert (ij+i < G->header->size);
 			if (!GMT_is_fnan (G->data[ij+i])) {
 				w = wx[i] * wy[j];
 				retval += G->data[ij+i] * w;

@@ -676,13 +676,12 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 
 GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the grdcontour task */
-	GMT_LONG c, n_edges, id, cont_counts[2] = {0, 0}, need_proj;
-	GMT_LONG tbl_scl = 1, i, n, nn, closed, begin, error, io_mode = 0;
+	GMT_LONG n_contours, c, n_edges, id, cont_counts[2] = {0, 0}, need_proj;
+	GMT_LONG tbl_scl = 1, i, n, nn, closed, begin, error, io_mode = 0, *edge = NULL;
 	GMT_LONG make_plot, fmt[3] = {0, 0, 0}, two_only = FALSE, n_tables = 1, tbl, extra;
-	GMT_LONG *n_seg = NULL, *n_seg_alloc = NULL, *edge = NULL;
 	
-	size_t n_contours, n_save = 0, n_alloc = 0, n_tmp;
-	uint64_t ij;
+	size_t n_save = 0, n_alloc = 0, n_tmp, *n_seg_alloc = NULL;
+	uint64_t ij, *n_seg = NULL;
 
 	char *cont_type = NULL, *cont_do_tick = NULL;
 	char cont_label[GMT_TEXT_LEN256], format[GMT_TEXT_LEN256];
@@ -916,7 +915,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
 	n_alloc = n_tmp = n_contours;
 	GMT_malloc2 (GMT, contour, cont_angle, 0, &n_tmp, double);
-	GMT_malloc2 (GMT, cont_type, cont_do_tick, 0, &n_contours, char);
+	GMT_malloc2 (GMT, cont_type, cont_do_tick, 0, &n_alloc, char);
 
 	GMT_grd_minmax (GMT, G, xyz);
 	if (GMT_contlabel_prep (GMT, &Ctrl->contour, xyz)) Return (EXIT_FAILURE);	/* Prep for crossing lines, if any */
@@ -965,8 +964,8 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		dim[0] = n_tables;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty dataset */
-		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
-		n_seg = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
+		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, size_t);
+		n_seg = GMT_memory (GMT, NULL, n_tables, uint64_t);
 	}
 
 	if (make_plot) {

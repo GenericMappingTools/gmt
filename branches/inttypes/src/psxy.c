@@ -498,7 +498,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG get_rgb, read_symbol, clip_set = FALSE, fill_active;
 	GMT_LONG default_outline, outline_active, set_type, n_needed;
 	GMT_LONG error_x = FALSE, error_y = FALSE, def_err_xy = FALSE;
-	GMT_LONG i, n_total_read = 0, j, geometry, tbl, seg, read_mode;
+	GMT_LONG i, n_total_read = 0, j, geometry, tbl, read_mode;
 	GMT_LONG n_cols_start = 2, justify, error = GMT_NOERROR;
 	GMT_LONG ex1, ex2, ex3, change, pos2x, pos2y, save_u = FALSE;
 	GMT_LONG xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
@@ -998,6 +998,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	else {	/* Line/polygon part */
+		uint64_t seg;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */

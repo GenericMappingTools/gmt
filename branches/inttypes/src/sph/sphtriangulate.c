@@ -233,7 +233,8 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 
 			if (get_arcs) {	/* Only collect the arcs - we'll sort out duplicates later */
 				arc[n_arcs].begin = vertex_last;	arc[n_arcs].end = vertex_new;
-				if (++n_arcs == n_alloc) {
+				n_arcs++;
+				if ((size_t)n_arcs == n_alloc) {
 					n_alloc <<= 1;
 					arc = GMT_memory (GMT, arc, n_alloc, struct STRPACK_ARC);
 				}
@@ -253,7 +254,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 					area_polygon += area_triangle;
 				}
 				vertex++;
-				if (vertex == p_alloc) {	/* Need more space for polygon */
+				if ((size_t)vertex == p_alloc) {	/* Need more space for polygon */
 					p_alloc <<= 1;
 					plon = GMT_memory (GMT, plon, p_alloc, double);
 					plat = GMT_memory (GMT, plat, p_alloc, double);

@@ -141,11 +141,12 @@ GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_in_cell, GMT_LONG first_in_new_cell, double weight_sum, double *out, double *extra,
+void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, uint64_t first_in_cell, uint64_t first_in_new_cell, double weight_sum, double *out, double *extra,
 	GMT_LONG go_quickly, double *quantile, GMT_LONG n_quantiles, struct BLK_DATA *data)
 {
 	double weight_half, weight_count;
-	GMT_LONG node, n_in_cell, node1, k, k_for_xy;
+	uint64_t node, n_in_cell, node1;
+	GMT_LONG k, k_for_xy;
 
 	/* Remember: Data are already sorted on z for each cell */
 
@@ -216,10 +217,10 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_i
 GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	uint64_t n_read, nz, n_lost, node, first_in_cell, first_in_new_cell;
-	uint64_t n_pitched, row, col, n_cells_filled;
+	uint64_t n_pitched, n_cells_filled;
 	size_t n_alloc = 0, nz_alloc = 0;
 	GMT_LONG error = FALSE, box_and_whisker = FALSE;
-	GMT_LONG w_col, n_output, n_quantiles = 1, go_quickly = 0;
+	GMT_LONG row, col, w_col, n_output, n_quantiles = 1, go_quickly = 0;
 	
 	double out[7], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[3], weight, *in = NULL, *z_tmp = NULL;
 

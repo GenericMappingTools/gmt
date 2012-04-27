@@ -287,7 +287,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 		if (!strcmp (X->info[i].name, "y") || !strcmp (X->info[i].name, "lat"))  X->y_col = i;
 		if (!strcmp (X->info[i].name, "t") || !strcmp (X->info[i].name, "time")) X->t_col = i;
 		i++;
-		if (i == n_alloc) {
+		if ((size_t)i == n_alloc) {
 			n_alloc <<= 1;
 			X->info = GMT_memory (C, X->info, n_alloc, struct X2SYS_DATA_INFO);
 		}
@@ -296,7 +296,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 	fclose (fp);
 	if (X->file_type == X2SYS_NETCDF) X->read_file = (PFL) x2sys_read_ncfile;
 
-	if (i < n_alloc) X->info = GMT_memory (C, X->info, i, struct X2SYS_DATA_INFO);
+	if ((size_t)i < n_alloc) X->info = GMT_memory (C, X->info, i, struct X2SYS_DATA_INFO);
 	X->n_fields = X->n_out_columns = i;
 
 	if (X->file_type == X2SYS_BINARY) {	/* Binary mode needed */
@@ -572,7 +572,8 @@ GMT_LONG x2sys_read_file (struct GMT_CTRL *C, char *fname, double ***data, struc
 	 * pointer data.
 	 */
 
-	uint64_t i, j;
+	uint64_t j;
+ 	GMT_LONG i;
 	size_t n_alloc;
 	FILE *fp = NULL;
 	double **z = NULL, *rec = NULL;
@@ -911,7 +912,7 @@ GMT_LONG x2sys_read_list (struct GMT_CTRL *C, char *file, char ***list, GMT_LONG
 		sscanf (line, "%s", name);
 		p[n] = strdup (name);
 		n++;
-		if (n == n_alloc) {
+		if ((size_t)n == n_alloc) {
 			n_alloc <<= 1;
 			p = GMT_memory (C, p, n_alloc, char *);
 		}
@@ -950,7 +951,7 @@ GMT_LONG x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, doubl
 		p[n] = strdup (name);
 		W[n] = this_w;
 		n++;
-		if (n == n_alloc) {
+		if ((size_t)n == n_alloc) {
 			n_alloc <<= 1;
 			p = GMT_memory (C, p, n_alloc, char *);
 		}
@@ -1216,9 +1217,9 @@ GMT_LONG x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %ld %ld", name, &id, &flag);
 		if (mode == 1) {
-			if (id >= n_alloc) {
+			if ((size_t)id >= n_alloc) {
 				size_t old_n_alloc = n_alloc;
-				while (id >= n_alloc) n_alloc += GMT_CHUNK;
+				while ((size_t)id >= n_alloc) n_alloc += GMT_CHUNK;
 				B->head = GMT_memory (C, B->head, n_alloc, struct X2SYS_BIX_TRACK_INFO);
 				GMT_memset (&(B->head[old_n_alloc]), n_alloc - old_n_alloc, struct X2SYS_BIX_TRACK_INFO);	/* Set to NULL */
 			}
@@ -1480,9 +1481,10 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 	char line[GMT_BUFSIZ], txt[GMT_BUFSIZ], kind[GMT_BUFSIZ], fmt[GMT_BUFSIZ], trk[2][GMT_TEXT_LEN64], t_txt[2][GMT_TEXT_LEN64], start[2][GMT_TEXT_LEN64];
 	char x_txt[GMT_TEXT_LEN64], y_txt[GMT_TEXT_LEN64], d_txt[2][GMT_TEXT_LEN64], h_txt[2][GMT_TEXT_LEN64], v_txt[2][GMT_TEXT_LEN64], z_txt[2][GMT_TEXT_LEN64];
 	char stop[2][GMT_TEXT_LEN64], info[2][3*GMT_TEXT_LEN64], **trk_list = NULL, **ignore = NULL, *t = NULL;
-	GMT_LONG p, n_pairs, i, k, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
+	GMT_LONG i, k, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
 	GMT_LONG more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
 	size_t n_alloc_x, n_alloc_p, n_alloc_t;
+	uint64_t p, n_pairs;
 	double x, m, lon, dist[2], d_val;
 
 	fp = stdin;	/* Default to stdin if dbase is NULL */
@@ -1583,7 +1585,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 				/* Leg not in the data base yet, add it */
 				trk_list[n_tracks] = strdup (trk[k]);
 				id[k] = n_tracks++;
-				if (n_tracks == n_alloc_t) {
+				if ((size_t)n_tracks == n_alloc_t) {
 					n_alloc_t <<= 1;
 					trk_list = GMT_memory (C, trk_list, n_alloc_t, char *);
 				}

@@ -5437,7 +5437,7 @@ GMT_LONG MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruis
 				if ((id = MGD77_Match_List (C, name, n_list, list)) == MGD77_NOT_SET) {;	/* Not a recognized column */
 					list[n_list] = strdup (name);
 					n_list++;
-					if (n_list == n_alloc) {
+					if ((size_t)n_list == n_alloc) {
 						n_alloc <<= 1;
 						list = GMT_memory (C, list, n_alloc, char *);
 					}

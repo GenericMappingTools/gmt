@@ -842,7 +842,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				curr_txt = in_txt;
 			fmode = GMT_setfont (GMT, &T.font);
 			if (Ctrl->G.mode) {
-				if (m <= n_alloc) {
+				if ((size_t)m <= n_alloc) {
 					GMT_malloc3 (GMT, c_angle, c_x, c_y, m, &n_alloc, double);
 					c_txt = GMT_memory (GMT, c_txt, n_alloc, char *);
 				}

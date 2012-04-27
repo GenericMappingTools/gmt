@@ -340,14 +340,14 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 
 		if (Ctrl->L.active) {	/* Want a text set of headers back */
-			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
+			if ((size_t)seg_no == n_alloc) {	/* Must add more segments to this table first */
 				n_alloc <<= 2;
 				TX->record = GMT_memory (GMT, TX->record, n_alloc, char *);
 			}
 		}
 		else {
 			dim[3] = h.n + Ctrl->G.active;	/* Number of data records to allocate for this segment/polygon*/
-			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
+			if ((size_t)seg_no == n_alloc) {	/* Must add more segments to this table first */
 				size_t old_n_alloc = n_alloc;
 				n_alloc <<= 1;
 				T = GMT_memory (GMT, T, n_alloc, struct GMT_LINE_SEGMENT *);
@@ -406,7 +406,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_fclose (GMT, fp);
 	
 	if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
-		if (seg_no < n_alloc) {	/* Allocate to final size table */
+		if ((size_t)seg_no < n_alloc) {	/* Allocate to final size table */
 			TX->record = GMT_memory (GMT, TX->record, seg_no, char *);
 		}
 		X->n_records = X->table[0]->n_records = TX->n_rows;
@@ -415,7 +415,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	else {
-		if (seg_no < n_alloc) {	/* Allocate to final size table */
+		if ((size_t)seg_no < n_alloc) {	/* Allocate to final size table */
 			D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, seg_no, struct GMT_LINE_SEGMENT *);
 		}
 		D->n_segments = D->table[0]->n_segments = seg_no;

@@ -187,9 +187,9 @@ double weighted_mode (struct BLK_DATA *d, double wsum, uint64_t n, uint64_t k)
 
 GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, mode_xy, col, w_col;
+	GMT_LONG error = FALSE, mode_xy, row, col, w_col;
 
-	uint64_t node, row, first_in_cell, first_in_new_cell, n_lost, n_read;
+	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
 	uint64_t n_cells_filled, n_in_cell, nz, n_pitched;
 	size_t n_alloc = 0, nz_alloc = 0;
 

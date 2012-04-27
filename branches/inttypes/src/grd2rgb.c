@@ -81,8 +81,8 @@ void Free_grd2rgb_Ctrl (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *C) {	/* Deall
 GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GMT_LONG byte_per_pixel, GMT_LONG nx, GMT_LONG ny, unsigned char **P) {
 	/* loadraw reads a raw binary grb or rgba rasterfile of depth 24, or 32 into memory */
 
-	GMT_LONG j, i, k;
-	uint64_t nm;
+	GMT_LONG k;
+	uint64_t j, i, nm;
 	unsigned char *buffer = NULL;
 
 	FILE *fp = NULL;

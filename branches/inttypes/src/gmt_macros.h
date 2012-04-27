@@ -92,7 +92,7 @@
 #define GMT_memcpy(to,from,n,type) memcpy(to, from, (n)*sizeof(type))
 #define GMT_memset(array,n,type) memset(array, 0, (n)*sizeof(type))
 /* Macro to set all items in an array to the given value */
-#define GMT_setnval(array,n,value) {int k; for (k = 0; k < n; k++) array[k] = value;}
+#define GMT_setnval(array,n,value) {uint64_t k; for (k = 0; k < (uint64_t)n; k++) array[k] = value;}
 /* Macro to simplify assignment of one 3-vector to another */
 #define GMT_cpy3v(to,from) memcpy(to, from, 3*sizeof(double))
 

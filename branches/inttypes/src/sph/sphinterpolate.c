@@ -208,10 +208,10 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 
 GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, i, error = FALSE;
+	GMT_LONG row, col, error = FALSE;
 
 	size_t n_alloc = 0;
-	uint64_t n = 0, ij, ij_f;
+	uint64_t i, n = 0, ij, ij_f;
 	
 	double w_min, w_max, sf = 1.0, X[3];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;

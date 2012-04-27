@@ -290,10 +290,10 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 
 GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, j, ngrd = 0, nxyg, nfound, ngood, cpt_flags = 0;
+	GMT_LONG row, col, j, cpt_flags = 0;
 	GMT_LONG error = FALSE;
 	
-	uint64_t ij, k;
+	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
 	size_t n_alloc = GMT_TINY_CHUNK;
 
 	char CPT_file[GMT_BUFSIZ], format[GMT_BUFSIZ], *file = NULL, *l = NULL, **grdfile = NULL;
@@ -485,7 +485,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		range = (Ctrl->T.kind) ? 2.0 * fabs (start) : G[0]->header->z_max - G[0]->header->z_min;
 		Ctrl->S.inc = range / (double)(Ctrl->E.levels - 1);
 		cdf_cpt = GMT_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
-		for (k = 0; k < Ctrl->E.levels; k++) cdf_cpt[k].z = start + k * Ctrl->S.inc;
+		for (j = 0; j < Ctrl->E.levels; j++) cdf_cpt[j].z = start + j * Ctrl->S.inc;
 	}
 
 	else {	/* This is completely ad-hoc.  It chooses z based on steps of 0.1 for a Gaussian CDF:  */
@@ -535,8 +535,8 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Now the cdf function has been found.  We now resample the chosen cptfile  */
 
 	z = GMT_memory (GMT, NULL, Ctrl->E.levels, double);
-	for (k = 0; k < Ctrl->E.levels; k++) z[k] = cdf_cpt[k].z;
-	if (Ctrl->Q.mode == 2) for (k = 0; k < Ctrl->E.levels; k++) z[k] = d_log10 (GMT, z[k]);	/* Make log10(z) values for interpolation step */
+	for (j = 0; j < Ctrl->E.levels; j++) z[j] = cdf_cpt[j].z;
+	if (Ctrl->Q.mode == 2) for (j = 0; j < Ctrl->E.levels; j++) z[j] = d_log10 (GMT, z[j]);	/* Make log10(z) values for interpolation step */
 
 	Pout = GMT_sample_cpt (GMT, Pin, z, -Ctrl->E.levels, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);	/* -ve to keep original colors */
 

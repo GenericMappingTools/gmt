@@ -1057,10 +1057,9 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, G
 
 GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	uint64_t row, p, k, m, n, nm, nxy, n_ok = 0, ij, ji;
+	uint64_t row, p, k, i, j, seg, m, n, nm, nxy, n_ok = 0, ij, ji, ii, dimension = 0;
 	size_t old_n_alloc, n_alloc;
-	GMT_LONG i, j, seg, ii, error, dimension = 0;
-	GMT_LONG normalize = 1, unit = 0, out_ID, way, new_grid = FALSE;
+	GMT_LONG error, normalize = 1, unit = 0, out_ID, way, new_grid = FALSE;
 	
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
 		"minimum curvature Cartesian spline [2-D]",
@@ -1622,7 +1621,8 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_fclose (GMT, fp);
 	}
 	else {
-		GMT_LONG nz_off, nxy, col, row;
+		uint64_t nz_off, nxy;
+		GMT_LONG col, row, layer;
 		double *xp = NULL, *yp = NULL, wp, V[4];
 		GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate spline at %ld equidistant output locations\n", n_ok);
 		/* Precalculate coordinates */
@@ -1645,8 +1645,8 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				Return (API->error);
 			}
 		}
-		for (k = nz_off = 0; k < Z.nz; k++, nz_off += nxy) {
-			if (dimension == 3) V[GMT_Z] = GMT_col_to_x (GMT, k, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
+		for (layer = nz_off = 0; layer < Z.nz; layer++, nz_off += nxy) {
+			if (dimension == 3) V[GMT_Z] = GMT_col_to_x (GMT, layer, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
 			for (row = 0; row < Grid->header->ny; row++) {
 				if (dimension > 1) V[GMT_Y] = yp[row];
 				for (col = 0; col < Grid->header->nx; col++) {

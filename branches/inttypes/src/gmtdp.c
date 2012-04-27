@@ -262,8 +262,8 @@ uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y
 
 GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG seg, tbl, col, geo, error;
-	uint64_t row, np_out, *index = NULL;
+	GMT_LONG tbl, col, geo, error;
+	uint64_t row, seg, np_out, *index = NULL;
 	
 	double tolerance;
 	

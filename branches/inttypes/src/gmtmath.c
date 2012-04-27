@@ -179,8 +179,8 @@ GMT_LONG solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct G
 	 * we do a full SVD decomposition and set small eigenvalues to zero, yielding an approximate solution.
 	 */
 
-	GMT_LONG i, j, k0, i2, j2, rhs, n, ier, seg;
-	uint64_t row, k;
+	GMT_LONG i, j, k, k0, i2, j2, rhs, n, ier, seg;
+	uint64_t row;
 	double cond, *N = NULL, *B = NULL, *d = NULL, *x = NULL, *b = NULL, *z = NULL, *v = NULL, *lambda = NULL;
 	FILE *fp = NULL;
 	struct GMT_TABLE *T = D->table[0];

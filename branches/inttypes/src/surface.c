@@ -100,7 +100,7 @@ struct SURFACE_DATA {	/* Data point and index to node it currently constrains  *
 	float x;
 	float y;
 	float z;
-	GMT_LONG index;
+	uint64_t index;
 };
 
 struct SURFACE_BRIGGS {		/* Coefficients in Taylor series for Laplacian(z) a la I. C. Briggs (1974)  */
@@ -257,7 +257,8 @@ void fill_in_forecast (struct SURFACE_INFO *C) {
 	   after grid is divided.   
 	 */
 
-	uint64_t i, j, ii, jj, index_0, index_1, index_2, index_3, index_new;
+	uint64_t index_0, index_1, index_2, index_3, index_new;
+	GMT_LONG ii, jj, i, j;
 	char *iu = C->iu;
 	double delta_x, delta_y, a0, a1, a2, a3, old_size;
 	float *u = C->Grid->data;
@@ -366,7 +367,8 @@ void set_index (struct SURFACE_INFO *C) {
 	/* recomputes data[k].index for new value of grid,
 	   sorts data on index and radii, and throws away
 	   data which are now outside the usable limits. */
-	uint64_t i, j, k, k_skipped = 0;
+	GMT_LONG i, j;
+	uint64_t k, k_skipped = 0;
 	struct GRD_HEADER *h = C->Grid->header;
 
 	for (k = 0; k < C->npoints; k++) {
@@ -387,13 +389,14 @@ void set_index (struct SURFACE_INFO *C) {
 }
 
 void find_nearest_point (struct SURFACE_INFO *C) {
-	uint64_t i, j, ij_v2, k, last_index, block_i, block_j, iu_index, briggs_index;
+	uint64_t ij_v2, k, last_index, iu_index, briggs_index;
+	GMT_LONG i, j, block_i, block_j;
 	double x0, y0, dx, dy, xys, xy1, btemp, b0, b1, b2, b3, b4, b5;
 	float z_at_node, *u = C->Grid->data;
 	char *iu = C->iu;
 	struct GRD_HEADER *h = C->Grid->header;
 
-	last_index = -1;
+	last_index = UINTMAX_MAX;
 	C->small = 0.05 * ((C->grid_xinc < C->grid_yinc) ? C->grid_xinc : C->grid_yinc);
 
 	for (i = 0; i < C->nx; i += C->grid)	/* Reset grid info */
@@ -691,7 +694,7 @@ GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LON
 		if (C->set_low < 3) {
 			if ((C->Low = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) return (API->error);
 			C->Low->data = GMT_memory (GMT, NULL, C->mxmy, float);
-			for (i = 0; i < C->mxmy; i++) C->Low->data[i] = (float)C->low_limit;
+			for (ij = 0; ij < C->mxmy; ij++) C->Low->data[ij] = (float)C->low_limit;
 		}
 		else {
 			if ((C->Low = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, C->low_file, NULL)) == NULL) return (API->error);	/* Get header only */
@@ -718,7 +721,7 @@ GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LON
 		if (C->set_high < 3) {
 			if ((C->High = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) return (API->error);
 			C->High->data = GMT_memory (GMT, NULL, C->mxmy, float);
-			for (i = 0; i < C->mxmy; i++) C->High->data[i] = (float)C->high_limit;
+			for (ij = 0; ij < C->mxmy; ij++) C->High->data[ij] = (float)C->high_limit;
 		}
 		else {
 			if ((C->High = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, C->high_file, NULL)) == NULL) return (API->error);	/* Get header only */
@@ -1025,8 +1028,8 @@ GMT_LONG iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG mode)
 
 void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 
-	GMT_LONG i, j, k, move_over[12];
-	uint64_t ij;
+	GMT_LONG i, j, move_over[12];
+	uint64_t ij, k;
 	char *iu = C->iu;	/* move_over = C->offset[kase][12], but grid = 1 so move_over is easy  */
 
 	double	x0, y0, dx, dy, mean_error, mean_squared_error, z_est, z_err, curvature, c;
@@ -1250,7 +1253,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	/* If more than one datum is indexed to same node, only the first should be kept.
 		Mark the additional ones as SURFACE_OUTSIDE
 	*/
-	last_index = -1;
+	last_index = UINTMAX_MAX;
 	n_outside = 0;
 	for (k = 0; k < C->npoints; k++) {
 		if (C->data[k].index == last_index) {
@@ -1490,8 +1493,9 @@ void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl)
 
 void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_TABLE *xyzline) {
 
-	uint64_t n_tot = 0, this_ini = 0, this_end = 0, n_int = 0, i, j;
-	uint64_t k = 0, n, kmax = 0, kmin = 0;
+	uint64_t n_tot = 0, this_ini = 0, this_end = 0, n_int = 0;
+	uint64_t k = 0, n, kmax = 0, kmin = 0, seg, row;
+	GMT_LONG i, j;
 	size_t n_alloc;
 	double *x = NULL, *y = NULL, *z = NULL, dx, dy, dz, r_dx, r_dy, zmin = DBL_MAX, zmax = -DBL_MAX;
 
@@ -1502,11 +1506,11 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 
 	r_dx = 1.0 / C->grid_xinc; 
 	r_dy = 1.0 / C->grid_yinc; 
-	for (i = 0; i < xyzline->n_segments; i++) {
-		for (j = 0; j < xyzline->segment[i]->n_rows - 1; j++) {
-			dx = xyzline->segment[i]->coord[GMT_X][j+1] - xyzline->segment[i]->coord[GMT_X][j];
-			dy = xyzline->segment[i]->coord[GMT_Y][j+1] - xyzline->segment[i]->coord[GMT_Y][j];
-			dz = xyzline->segment[i]->coord[GMT_Z][j+1] - xyzline->segment[i]->coord[GMT_Z][j];
+	for (seg = 0; seg < xyzline->n_segments; seg++) {
+		for (row = 0; row < xyzline->segment[seg]->n_rows - 1; row++) {
+			dx = xyzline->segment[seg]->coord[GMT_X][j+1] - xyzline->segment[seg]->coord[GMT_X][row];
+			dy = xyzline->segment[seg]->coord[GMT_Y][j+1] - xyzline->segment[seg]->coord[GMT_Y][row];
+			dz = xyzline->segment[seg]->coord[GMT_Z][j+1] - xyzline->segment[seg]->coord[GMT_Z][row];
 			n_int = lrint (MAX (fabs(dx) * r_dx, fabs(dy) * r_dy ) ) + 1;
 			this_end += n_int;
 
@@ -1521,13 +1525,13 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 			dy /= (floor((double)n_int) - 1);
 			dz /= (floor((double)n_int) - 1);
 			for (k = this_ini, n = 0; k < this_end - 1; k++, n++) {
-				x[k] = xyzline->segment[i]->coord[GMT_X][j] + n * dx;
-				y[k] = xyzline->segment[i]->coord[GMT_Y][j] + n * dy;
-				z[k] = xyzline->segment[i]->coord[GMT_Z][j] + n * dz;
+				x[k] = xyzline->segment[seg]->coord[GMT_X][row] + n * dx;
+				y[k] = xyzline->segment[seg]->coord[GMT_Y][row] + n * dy;
+				z[k] = xyzline->segment[seg]->coord[GMT_Z][row] + n * dz;
 			}
-			x[this_end - 1] = xyzline->segment[i]->coord[GMT_X][j+1];
-			y[this_end - 1] = xyzline->segment[i]->coord[GMT_Y][j+1];
-			z[this_end - 1] = xyzline->segment[i]->coord[GMT_Z][j+1];
+			x[this_end - 1] = xyzline->segment[seg]->coord[GMT_X][row+1];
+			y[this_end - 1] = xyzline->segment[seg]->coord[GMT_Y][row+1];
+			z[this_end - 1] = xyzline->segment[seg]->coord[GMT_Z][row+1];
 
 			this_ini += n_int;
 		}
