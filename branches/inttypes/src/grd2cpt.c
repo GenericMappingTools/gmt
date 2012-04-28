@@ -293,7 +293,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG row, col, j, cpt_flags = 0;
 	GMT_LONG error = FALSE;
 	
-	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
+	COUNTER ij, k, ngrd = 0, nxyg, nfound, ngood;
 	size_t n_alloc = GMT_TINY_CHUNK;
 
 	char CPT_file[GMT_BUFSIZ], format[GMT_BUFSIZ], *file = NULL, *l = NULL, **grdfile = NULL;

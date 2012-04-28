@@ -188,7 +188,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, first = TRUE, row, col, ok;
 	
-	uint64_t ij, gmt_ij, n_total = 0, n_suppressed = 0;
+	COUNTER ij, gmt_ij, n_total = 0, n_suppressed = 0;
 
 	char header[GMT_BUFSIZ];
 

@@ -29,7 +29,7 @@
  * all floating point values except for grids which are held in single
  * precision floats.  All integer values are standard int (presumably
  * 32-bit) except for quantities that may be very large, such as
- * counters of data records, which will be declared as uint64_t, and
+ * counters of data records, which will be declared as COUNTER, and
  * variables that holds allocated number of bytes and similar, which
  * will be declared as size_t.  Occasionally, arrays of integer values
  * will be stored in smaller memory containers such as short int of
@@ -175,7 +175,7 @@ struct GMT_INIT {		/* Holds misc run-time parameters */
 };
 
 struct GMT_PLOT {		/* Holds all plotting-related parameters */
-	uint64_t n;			/* Number of such points */
+	COUNTER n;			/* Number of such points */
 	size_t n_alloc;			/* Size of allocated plot arrays */
 	GMT_LONG r_theta_annot;		/* TRUE for special r-theta map annotation (see GMT_get_annot_label) */
 	GMT_LONG mode_3D;		/* Determines if we draw fore and/or back 3-D box lines [Default is both] */

@@ -109,7 +109,7 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	GMT_LONG *n_this_col;		/* Pointer to array of counters [one per column]  */
 	GMT_LONG *n_left;		/* Pointer to array of counters [one per column]  */
 	GMT_LONG *n_right;		/* Pointer to array of counters [one per column]  */
-	uint64_t n_rows;		/* Number of rows of input  */
+	COUNTER n_rows;		/* Number of rows of input  */
 	GMT_LONG n_cols;		/* Number of columns of input  */
 	GMT_LONG t_col;			/* Column of time abscissae (independent variable)  */
 	GMT_LONG n_f_wts;		/* Number of filter weights  */
@@ -454,7 +454,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 			F->t_stop = t_1;
 		}
 		else {
-			uint64_t row;
+			COUNTER row;
 			for (row = 0; (F->data[F->t_col][row] - t_0) < F->half_width; ++row);
 			F->t_start = F->data[F->t_col][row];
 			for (row = F->n_rows - 1; row > 0 && (t_1 - F->data[F->t_col][row]) < F->half_width; --row);
@@ -467,9 +467,9 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	return (0);
 }
 
-GMT_LONG lack_check (struct FILTER1D_INFO *F, uint64_t i_col, uint64_t left, uint64_t right)
+GMT_LONG lack_check (struct FILTER1D_INFO *F, COUNTER i_col, COUNTER left, COUNTER right)
 {
-	uint64_t last_row, this_row;
+	COUNTER last_row, this_row;
 	GMT_LONG lacking = FALSE;
 	double last_t;
 
@@ -492,9 +492,9 @@ GMT_LONG lack_check (struct FILTER1D_INFO *F, uint64_t i_col, uint64_t left, uin
 	return (lacking);
 }
 
-void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, uint64_t j, uint64_t n, GMT_LONG both)
+void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, COUNTER j, COUNTER n, GMT_LONG both)
 {
-	uint64_t i, n_smooth;
+	COUNTER i, n_smooth;
 	GMT_LONG sort_me = TRUE;
 	double low, high, last, temp;
 
@@ -526,8 +526,8 @@ void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, uint64
 
 GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 {
-	uint64_t i_row, left, right, n_l, n_r;
-	uint64_t i_t_output = 0, n_in_filter, n_for_call, n_good_ones;
+	COUNTER i_row, left, right, n_l, n_r;
+	COUNTER i_t_output = 0, n_in_filter, n_for_call, n_good_ones;
 	GMT_LONG i_col, iq, i_f_wt;
 	GMT_LONG *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
 	double time, delta_time, *outval = NULL, wt, val, med, scl, small;
@@ -794,7 +794,7 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG col, tbl, error;
-	uint64_t row, seg;
+	COUNTER row, seg;
 
 	double last_time, new_time, in;
 	

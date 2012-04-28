@@ -242,7 +242,7 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!Ctrl->C.active) {	/* Start new clip_path */
 		GMT_LONG tbl, first = !Ctrl->N.active;
-		uint64_t row, seg;
+		COUNTER row, seg;
 		double *x = NULL, *y = NULL;
 		struct GMT_DATASET *D = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL;

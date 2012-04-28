@@ -86,7 +86,7 @@ struct PROJECT_DATA {
 };
 
 struct PROJECT_INFO {
-	uint64_t n_used;
+	COUNTER n_used;
 	GMT_LONG find_new_point;
 	GMT_LONG n_outputs;
 	GMT_LONG want_z_output;
@@ -533,7 +533,7 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, struct PROJECT_INFO *P)
 {
 	GMT_LONG n_items, j, k, error, pure_ascii;
-	uint64_t i;
+	COUNTER i;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
 	char record[GMT_BUFSIZ], text[GMT_BUFSIZ];
 
@@ -616,7 +616,7 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 
 GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	uint64_t i, n_total_read, n_total_used = 0;
+	COUNTER i, n_total_read, n_total_used = 0;
 	GMT_LONG j, k, rmode, error = FALSE, pure_ascii, skip, z_first = TRUE;
 	
 	size_t n_alloc = GMT_CHUNK;

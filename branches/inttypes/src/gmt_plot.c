@@ -1265,7 +1265,7 @@ void gmt_basic_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, d
 
 GMT_LONG gmt_genper_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
-	uint64_t nr;
+	COUNTER nr;
 
 	if (C->common.R.oblique) {	/* Draw rectangular boundary and return */
 		gmt_rect_map_boundary (C, P, 0.0, 0.0, C->current.proj.rect[XHI], C->current.proj.rect[YHI]);
@@ -1300,7 +1300,7 @@ void gmt_circle_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, 
 
 void gmt_theta_r_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
-	uint64_t i, nr;
+	COUNTER i, nr;
 	double a, da;
 	double xx[2], yy[2];
 
@@ -1399,7 +1399,7 @@ void gmt_map_lattick (struct GMT_CTRL *C, struct PSL_CTRL *P, double lat, double
 
 GMT_LONG gmt_annot_too_crowded (struct GMT_CTRL *C, double x, double y, GMT_LONG side) {
 	/* Checks if the proposed annotation is too close to a previously plotted annotation */
-	uint64_t i;
+	COUNTER i;
 	double d_min;
 
 	if (C->current.setting.map_annot_min_spacing <= 0.0) return (FALSE);
@@ -2872,7 +2872,7 @@ GMT_LONG gmt_custum_failed_bool_test (struct GMT_CTRL *C, struct GMT_CUSTOM_SYMB
 	return (!result);			/* Return the opposite of the test result */
 }
 
-void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, GMT_LONG outline, GMT_LONG *flush)
+void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, double *y, COUNTER *n, struct GMT_PEN *p, struct GMT_FILL *f, GMT_LONG outline, GMT_LONG *flush)
 {
 	GMT_LONG draw_outline;
 
@@ -2893,7 +2893,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 {
 	GMT_LONG na, i, flush = FALSE, this_outline = FALSE;
 	GMT_LONG level = 0, found_elseif = FALSE, skip[11];
-	uint64_t n = 0;
+	COUNTER n = 0;
 	size_t n_alloc = 0;
 	double x, y, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
 	char *c = NULL;
@@ -3174,7 +3174,7 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 
 void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G)
 {
-	uint64_t row;
+	COUNTER row;
 	double size[1] = {0.025};
 
 	/* If called we simply draw the helper lines or points to assist in debug */
@@ -3182,11 +3182,11 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 	GMT_setpen (C, &C->current.setting.map_default_pen);
 	if (G->fixed) {	/* Place a small open circle at each fixed point */
 		PSL_setfill (P, C->session.no_rgb, PSL_OUTLINE);
-		for (row = 0; row < (uint64_t)G->f_n; row++) 
+		for (row = 0; row < (COUNTER)G->f_n; row++) 
 			PSL_plotsymbol (P, G->f_xy[0][row], G->f_xy[1][row], size, PSL_CIRCLE);
 	}
 	else if (G->crossing) {	/* Draw a thin line */
-		uint64_t seg;
+		COUNTER seg;
 		GMT_LONG *pen = NULL;
 		for (seg = 0; seg < G->xp->n_segments; seg++) {
 			pen = GMT_memory (C, NULL, G->xp->segment[seg]->n_rows, GMT_LONG);
@@ -3199,7 +3199,7 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 
 void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
 {
-	uint64_t k;
+	COUNTER k;
 	GMT_LONG seg, *pen = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
 	for (seg = 0; seg < G->n_segments; seg++) {
@@ -3723,7 +3723,7 @@ void gmt_geo_polygon (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n)
 #define JUMP_R 1
 
 	GMT_LONG jump, k, first, jump_dir = JUMP_L;
-	uint64_t i;
+	COUNTER i;
 	double *xp = NULL, *yp = NULL;
 	PFD x_on_border[2] = {NULL, NULL};
 	struct PSL_CTRL *P = C->PSL;
@@ -3817,7 +3817,7 @@ void gmt_geo_polygon_segment (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT
 	 * Polar caps need special treatment in that we must add a detour to the pole.
 	 * That detour will not be drawn, only used for fill. */
 	
-	uint64_t n = S->n_rows;
+	COUNTER n = S->n_rows;
 	double *plon = S->coord[GMT_X], *plat = S->coord[GMT_Y];
 	
 	if (add_pole) {	/* Must detour to the N or S pole, then resample the path */
@@ -3959,7 +3959,7 @@ GMT_LONG GMT_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, G
 { /* Given vectors A and B, return great circle path sampled every step.  Shorest path is selected unless longway is TRUE */
 	/* Determine unit vector pole of great circle */
 	size_t n_alloc = 0;
-	uint64_t k, n;
+	COUNTER k, n;
 	double P[3], X[3], R[3][3], R0[3][3], c, w, *xx = NULL, *yy = NULL;
 	
 	GMT_cross3v (C, A, B, P);	/* Parallel to rotation pole */
@@ -3970,7 +3970,7 @@ GMT_LONG GMT_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, G
 		P[0] = -P[0], P[1] = -P[1], P[2] = -P[2];
 	}
 	if (GMT_IS_ZERO (step)) step = C->current.map.path_step;	/* Use default map-step if given as 0 */
-	n = (uint64_t)ceil (c / step) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
+	n = (COUNTER)ceil (c / step) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * c / (n - 1);	/* Adjust step for exact fit, convert to radians */
 	GMT_malloc2 (C, xx, yy, n, &n_alloc, double);	/* Allocate space for arrays */
 	gmt_init_rot_matrix (R0, P);			/* Get partial rotation matrix since no actual angle is applied yet */

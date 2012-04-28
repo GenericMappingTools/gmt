@@ -171,7 +171,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = 0, in_ID, out_ID, par[1] = {2}, via[2] = {0, 0};
 	GMT_LONG geometry[7] = {GMT_IS_POINT, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
-	uint64_t k;
+	COUNTER k;
 	
 	float *fdata = NULL;
 	double *ddata = NULL;
@@ -216,7 +216,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->T.mode == GMT_IS_DATASET) {	/* Mimic the dtest.txt table */
 			M->n_rows = 9;	M->n_columns = 2;	M->n_layers = 1;	M->dim = 9;	M->type = GMTAPI_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
-			for (k = 0; k < (uint64_t)M->n_rows; k++) {
+			for (k = 0; k < (COUNTER)M->n_rows; k++) {
 				fdata[2*k] = (float)k;	fdata[2*k+1] = (float)k*10;
 			}
 			fdata[0] = fdata[1] = fdata[8] = fdata[9] = GMT->session.f_NaN;

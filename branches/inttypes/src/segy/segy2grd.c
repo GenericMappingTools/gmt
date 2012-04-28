@@ -269,7 +269,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
 	GMT_LONG n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix, isamp;
 
-	uint64_t ij;
+	COUNTER ij;
 	
 	double idy, x0, yval;
 

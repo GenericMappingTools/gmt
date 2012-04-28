@@ -468,8 +468,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG forth_flag;		/* Holds the do_time + 10 flag passed to forthtrack */
 	GMT_LONG *ID = NULL;		/* Optional array with IDs for each node */
 	
-	uint64_t ij, node, m;
-	uint64_t n_nodes;		/* Number of nodes processed */
+	COUNTER ij, node, m;
+	COUNTER n_nodes;		/* Number of nodes processed */
 	char *processed_node = NULL;	/* Pointer to array with TRUE/FALSE values for each grid node */
 	
 	unsigned short pa = 0;		/* Placeholder for PA along track */

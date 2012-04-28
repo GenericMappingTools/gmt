@@ -232,7 +232,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	unsigned char *nan_flag = NULL;
 	
 	size_t m_alloc;
-	uint64_t row, seg, m = 0, m_supplied = 0;
+	COUNTER row, seg, m = 0, m_supplied = 0;
 
 	double *t_supplied_out = NULL, *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
 	double tt, low_t, high_t, last_t, inc_degrees = 0.0, *lon = NULL, *lat = NULL;

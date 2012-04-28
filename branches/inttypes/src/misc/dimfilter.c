@@ -367,7 +367,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_sectors_2 = 0, one_or_zero = 1, shift = FALSE, slow, slow2, error = FALSE;
 	GMT_LONG GMT_mode_selection = 0, GMT_n_multiples = 0, fast_way, *i_origin = NULL;
 	
-	uint64_t ij_in, ij_out, ij_wt;
+	COUNTER ij_in, ij_out, ij_wt;
 	
 	double wesn[4], inc[2], x_scale, y_scale, x_width, y_width, angle, z = 0.0;
 	double x_out, y_out, *wt_sum = NULL, *value = NULL, last_median, this_median;

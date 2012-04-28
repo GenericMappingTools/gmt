@@ -276,7 +276,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG iout, jout, iinstart, iinstop, jinstart, jinstop, k, kk, ion, jin, jj, iin, ii, kstart;
 	GMT_LONG in_ID, out_ID = GMTAPI_NOTSET, *ix = NULL;
 
-	uint64_t ij;
+	COUNTER ij;
 	int16_t tempint;
 
 	double west, east, south, north, wesn[4], toplat, botlat, dx;

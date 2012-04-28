@@ -258,7 +258,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	size_t n_alloc = GMT_CHUNK;
 	
-	uint64_t ij, ij0, kk, n, n_read, n_almost, n_none, n_set;
+	COUNTER ij, ij0, kk, n, n_read, n_almost, n_none, n_set;
 
 	double weight, weight_sum, grd_sum, dx, dy, delta, distance = 0.0;
 	double x_left, x_right, y_top, y_bottom, factor, three_over_radius;

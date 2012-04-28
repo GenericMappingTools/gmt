@@ -214,9 +214,9 @@ static GMT_LONG connect (struct LINK *S, GMT_LONG id, GMT_LONG order, double cut
 	return (FALSE);							/* Failed all tests */
 }
 
-static uint64_t Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_SEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end)
+static COUNTER Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_SEGMENT *out, COUNTER out_start, COUNTER in_start, COUNTER in_end)
 {
-	uint64_t i, k;
+	COUNTER i, k;
 	GMT_LONG inc, j, done = FALSE;
 
 	/* We will copy the records from the out segment from rows in_start up to and including in_end.
@@ -244,7 +244,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG save_type = FALSE, first, wrap_up = FALSE, n_qfiles = 0, q_mode = 0, *skip = NULL;
 	
 	size_t n_id_alloc = GMT_CHUNK, n_seg_alloc[2] = {0, 0}, n_alloc_pts;
-	uint64_t n_rows, seg, np, ns, out_p, id, iseg, jseg, n_steps, n_seg_length;
+	COUNTER n_rows, seg, np, ns, out_p, id, iseg, jseg, n_steps, n_seg_length;
 
 	double dd[2][2], p_dummy_x, p_dummy_y, p_last_x, p_last_y, p_first_x, p_first_y, distance;
 	double closed_dist = 0.0;

@@ -209,7 +209,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG row, col, side, *d_col = NULL, d_row = 0, col_0, row_0;
 	GMT_LONG tbl, gmode, n_pol = 0, max_d_col = 0;
 	
-	uint64_t ij, k, seg;
+	COUNTER ij, k, seg;
 	
 	char seg_label[GMT_TEXT_LEN64];
 
