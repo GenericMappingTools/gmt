@@ -55,7 +55,7 @@ struct GMTAPI_DATA_OBJECT {
 	GMT_LONG geometry;			/* One of GMT_POINT, GMT_LINE, GMT_POLY, GMT_SURF */
 	GMT_LONG region;			/* 1 if wesn was passed, 0 otherwise */
 	GMT_LONG level;				/* Nested module level when object was allocated */
-	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET only] */
+	COUNTER n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET only] */
 	size_t n_alloc;				/* Number of memory allocated so far if writing to memory */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
 	void *resource;				/* Points to registered data container (if appropriate) */
@@ -79,7 +79,7 @@ struct GMTAPI_CTRL {
 	GMT_LONG registered[2];			/* TRUE if at least one source/destination has been registered (in and out) */
 	GMT_LONG io_enabled[2];			/* TRUE if access has been allowed (in and out) */
 	GMT_LONG io_mode[2];			/* 1 if access as set, 0 if record-by-record */
-	uint64_t current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
+	COUNTER current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */

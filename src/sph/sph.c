@@ -119,7 +119,7 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 	
 	if (T->mode == VORONOI) {	/* Construct the Voronoi diagram */
 		GMT_LONG *lbtri = NULL;
-		uint64_t kk;
+		COUNTER kk;
 		double *rc = NULL;
 		double *xc = NULL, *yc = NULL, *zc = NULL;	/* Voronoi polygon vertices */
 	

@@ -148,7 +148,7 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 		i_string = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
  	else {			/* Input via matrix and either info array or x,y arrays */
 		GMT_LONG row, col, in_ID;
-		uint64_t gmt_ij;
+		COUNTER gmt_ij;
 		double *z = NULL;
 		//char buffer[GMT_BUFSIZ];
 		i_string = mxMalloc(GMT_BUFSIZ);
@@ -224,7 +224,7 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 void GMTMEX_prep_mexgrd (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, struct GMT_GRID *G)
 {	/* Turn a GMT grid into a 2-D Z matrix (and possibly x,y arrays) for passing back to Matlab/Octave */
 	GMT_LONG px = -1, py = -1, pz = -1, pi = -1, row, col;
-	uint64_t gmt_ij;
+	COUNTER gmt_ij;
 	float *z = NULL;
 	
 	pz = (nlhs >= 3) ? 2 : 0;

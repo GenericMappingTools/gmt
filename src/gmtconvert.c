@@ -69,7 +69,7 @@ struct GMTCONVERT_CTRL {
 	} N;
 	struct Q {	/* -Q<segno> */
 		GMT_LONG active;
-		uint64_t seg;
+		COUNTER seg;
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
 		GMT_LONG active;
@@ -266,7 +266,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG out_col, error = 0, tbl, col, n_cols_in, n_cols_out;
 	GMT_LONG n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
 	GMT_LONG match = FALSE, warn = FALSE, ogr_match = FALSE, ogr_item = 0;
-	uint64_t last_row, n_rows, row, seg, n_out_seg = 0, out_seg = 0;
+	COUNTER last_row, n_rows, row, seg, n_out_seg = 0, out_seg = 0;
 	
 	double *val = NULL;
 
@@ -416,7 +416,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->I.active) {	/* Must reverse the order of tables, segments and/or records */
 		GMT_LONG tbl1, tbl2;
-		uint64_t row1, row2, seg1, seg2;
+		COUNTER row1, row2, seg1, seg2;
 		void *p = NULL;
 		if (Ctrl->I.mode & INV_ROWS) {	/* Must actually swap rows */
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Reversing order of records within each segment.\n");

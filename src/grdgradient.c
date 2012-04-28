@@ -301,7 +301,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG error = FALSE, sigma_set = FALSE, offset_set = FALSE, bad;
 	GMT_LONG p[4], row, col, n, new_grid = FALSE;
 	
-	uint64_t ij, ij0, index, n_used = 0;
+	COUNTER ij, ij0, index, n_used = 0;
 	
 	char format[GMT_BUFSIZ];
 	

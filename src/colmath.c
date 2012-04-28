@@ -48,7 +48,7 @@ struct COLMATH_CTRL {
 	} N;
 	struct Q {	/* -Q<segno> */
 		GMT_LONG active;
-		uint64_t seg;
+		COUNTER seg;
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
 		GMT_LONG active;
@@ -169,7 +169,7 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG tbl, col, n_cols_in, n_cols_out;
 	GMT_LONG n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
 	GMT_LONG match = FALSE, warn = FALSE;
-	uint64_t row, last_row, n_rows, seg, out_seg = 0;
+	COUNTER row, last_row, n_rows, seg, out_seg = 0;
 	
 	double *val = NULL;
 

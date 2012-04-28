@@ -139,14 +139,14 @@ GMT_LONG GMT_gmtdp_parse (struct GMTAPI_CTRL *C, struct GMTDP_CTRL *Ctrl, struct
 /* Stack-based Douglas Peucker line simplification routine */
 /* returned value is the number of output points */
 
-uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y_source[], uint64_t n_source, double band, GMT_LONG geo, uint64_t index[]) {
+COUNTER Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y_source[], COUNTER n_source, double band, GMT_LONG geo, COUNTER index[]) {
 /* x/y_source	Input coordinates, n_source of them.  These are not changed */
 /* band;	tolerance in Cartesian user units or degrees */
 /* geo:		TRUE if data is lon/lat */
 /* index[]	output co-ordinates indices */
 
-	uint64_t n_stack, n_dest, start, end, i, sig;
-	uint64_t *sig_start = NULL, *sig_end = NULL;	/* indices of start&end of working section */
+	COUNTER n_stack, n_dest, start, end, i, sig;
+	COUNTER *sig_start = NULL, *sig_end = NULL;	/* indices of start&end of working section */
 
 	double dev_sqr, max_dev_sqr, band_sqr;
 	double x12, y12, d12, x13, y13, d13, x23, y23, d23;
@@ -160,8 +160,8 @@ uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y
 
 	/* more complex case. initialise stack */
 
-	sig_start = GMT_memory (GMT, NULL, n_source, uint64_t);
-	sig_end   = GMT_memory (GMT, NULL, n_source, uint64_t);
+	sig_start = GMT_memory (GMT, NULL, n_source, COUNTER);
+	sig_end   = GMT_memory (GMT, NULL, n_source, COUNTER);
 
 	/* All calculations uses the original units, either Cartesian or FlatEarth */
 	/* The tolerance (band) must be in the same units as the data */
@@ -263,7 +263,7 @@ uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y
 GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG tbl, col, geo, error;
-	uint64_t row, seg, np_out, *index = NULL;
+	COUNTER row, seg, np_out, *index = NULL;
 	
 	double tolerance;
 	
@@ -339,7 +339,7 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {
 			S[GMT_IN]  = D[GMT_IN]->table[tbl]->segment[seg];
 			S[GMT_OUT] = D[GMT_OUT]->table[tbl]->segment[seg];
-			index = GMT_memory (GMT, NULL, S[GMT_IN]->n_rows, uint64_t);
+			index = GMT_memory (GMT, NULL, S[GMT_IN]->n_rows, COUNTER);
 			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
 
 			GMT_alloc_segment (GMT, S[GMT_OUT], np_out, S[GMT_OUT]->n_columns, FALSE);	/* Reallocate to get correct n_rows */

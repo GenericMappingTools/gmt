@@ -82,7 +82,7 @@ GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GM
 	/* loadraw reads a raw binary grb or rgba rasterfile of depth 24, or 32 into memory */
 
 	GMT_LONG k;
-	uint64_t j, i, nm;
+	COUNTER j, i, nm;
 	unsigned char *buffer = NULL;
 
 	FILE *fp = NULL;
@@ -97,7 +97,7 @@ GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GM
 	header->depth = 24;
 	header->width = (int)nx;
 	header->height = (int)ny;
-	nm = (uint64_t)nx * (uint64_t)ny * (uint64_t)byte_per_pixel;
+	nm = (COUNTER)nx * (COUNTER)ny * (COUNTER)byte_per_pixel;
 	header->length = (int)nm;
 
 	buffer = GMT_memory (GMT, NULL, nm, unsigned char);
@@ -353,7 +353,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, row, col, error = 0;
 	
-	uint64_t ij, k, k3;
+	COUNTER ij, k, k3;
 	
 	char rgb[3] = {'r', 'g', 'b'}, *comp[3] = {"red", "green", "blue"};
 	char buffer[GMT_BUFSIZ], *grdfile = NULL;

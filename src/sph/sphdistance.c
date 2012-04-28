@@ -74,7 +74,7 @@ void prepare_polygon (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *P)
 {
 	/* Set the min/max extent of this polygon and determine if it
 	 * is a polar cap; if so set the required metadata flags */
-	uint64_t row;
+	COUNTER row;
 	double lon_sum = 0.0, lat_sum = 0.0, dlon;
 	
 	GMT_set_seg_minmax (C, P);	/* Set the domain of the segment */
@@ -235,7 +235,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG nx1, error = FALSE, first = FALSE;
 	GMT_LONG vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
 	
-	uint64_t ij, node, n = 0;
+	COUNTER ij, node, n = 0;
 	size_t n_alloc, p_alloc = 0;
 
 	double first_x = 0.0, first_y = 0.0, X[3], *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
@@ -305,7 +305,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_FATAL, "File %s can only have 1 segment!\n", Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (Table->n_segments != (uint64_t)NTable->n_records) {
+			if (Table->n_segments != (COUNTER)NTable->n_records) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Files %s and %s do not have same number of items!\n", Ctrl->Q.file, Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}

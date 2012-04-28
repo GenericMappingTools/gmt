@@ -844,7 +844,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {	/* Read regular data table */
 		GMT_LONG tbl;
-		uint64_t row, seg;
+		COUNTER row, seg;
 		struct GMT_DATASET *Din = NULL;
 		struct GMT_TABLE *T = NULL;
 #ifdef GMT_COMPAT

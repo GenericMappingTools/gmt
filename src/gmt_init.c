@@ -1408,7 +1408,7 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 				case 'c': case 'u': /* int8_t, uint8_t */
 				case 'h': case 'H': /* int16_t, uint16_t */
 				case 'i': case 'I': /* int32_t, uint32_t */
-				case 'l': case 'L': /* int64_t, uint64_t */
+				case 'l': case 'L': /* int64_t, COUNTER */
 				case 'f': case 'd': /* float, double */
 					if (text[i+1] == 'w')
 						swab = TRUE;

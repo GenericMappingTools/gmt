@@ -66,7 +66,7 @@
  *  gmt_i_read:         Read 1 binary int32_t item
  *  gmt_I_read:         Read 1 binary uint32_t item
  *  gmt_l_read:         Read 1 binary int64_t item
- *  gmt_L_read:         Read 1 binary uint64_t item
+ *  gmt_L_read:         Read 1 binary COUNTER item
  *  gmt_f_read:         Read 1 binary float item
  *  gmt_d_read:         Read 1 binary double item
  *  gmt_a_write:        Write 1 ascii item
@@ -77,7 +77,7 @@
  *  gmt_i_write:        Write 1 binary int32_t item
  *  gmt_I_write:        Write 1 binary uint32_t item
  *  gmt_l_write:        Write 1 binary int64_t item
- *  gmt_L_write:        Write 1 binary uint64_t item
+ *  gmt_L_write:        Write 1 binary COUNTER item
  *  gmt_f_write:        Write 1 binary float item
  *  gmt_d_write:        Write 1 binary double item
  *  gmt_byteswap_file:  Byteswap an entire file
@@ -1755,10 +1755,10 @@ GMT_LONG GMT_quad_finalize (struct GMT_CTRL *C, struct GMT_QUAD *Q)
 	return (way);
 }
 
-void GMT_get_lon_minmax (struct GMT_CTRL *C, double *lon, uint64_t n_rows, double *min, double *max)
+void GMT_get_lon_minmax (struct GMT_CTRL *C, double *lon, COUNTER n_rows, double *min, double *max)
 {	/* Return the min/max longitude in array lon using clever quadrant checking. */
 	GMT_LONG way;
-	uint64_t row;
+	COUNTER row;
 	struct GMT_QUAD *Q = GMT_quad_init (C, 1);	/* Allocate and initialize one QUAD structure */
 
 	/* We must keep separate min/max for both Dateline and Greenwich conventions */
@@ -1772,7 +1772,7 @@ void GMT_get_lon_minmax (struct GMT_CTRL *C, double *lon, uint64_t n_rows, doubl
 
 void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 {	/* Must check if polygon is a polar cap */
-	uint64_t row;
+	COUNTER row;
 	double dlon, lon_sum = 0.0, lat_sum = 0.0;
 	
 	if (GMT_polygon_is_open (C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) {
@@ -1881,7 +1881,7 @@ void GMT_write_segmentheader (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
 
 void GMT_io_binary_header (struct GMT_CTRL *C, FILE *fp, GMT_LONG dir)
 {
-	uint64_t k;
+	COUNTER k;
 	char c = ' ';
 	if (dir == GMT_IN) {	/* Use fread since we dont know if input is a stream or a file */
 		for (k = 0; k < C->current.io.io_n_header_items; k++) GMT_fread (&c, sizeof (char), (size_t)1, fp);
@@ -2133,10 +2133,10 @@ int gmt_l_read_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 {
 	/* read byteswapped int64_t */
 	unsigned i;
-	uint64_t u;
+	COUNTER u;
 	int64_t *s = (int64_t *)&u;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint64_t), 1, fp)) {
+		if (!GMT_fread (&u, sizeof (COUNTER), 1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2148,12 +2148,12 @@ int gmt_l_read_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 
 int gmt_L_read (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 {
-	/* read uint64_t */
+	/* read COUNTER */
 	unsigned i;
-	uint64_t u;
+	COUNTER u;
 
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint64_t), 1, fp)) {
+		if (!GMT_fread (&u, sizeof (COUNTER), 1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2164,12 +2164,12 @@ int gmt_L_read (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 
 int gmt_L_read_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 {
-	/* read byteswapped uint64_t */
+	/* read byteswapped COUNTER */
 	unsigned i;
-	uint64_t u;
+	COUNTER u;
 
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint64_t), 1, fp)) {
+		if (!GMT_fread (&u, sizeof (COUNTER), 1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2231,10 +2231,10 @@ int gmt_d_read_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	unsigned i;
 	union {
 		double d;
-		uint64_t bits;
+		COUNTER bits;
 	} u;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u.bits, sizeof (uint64_t), 1, fp)) {
+		if (!GMT_fread (&u.bits, sizeof (COUNTER), 1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
@@ -2444,7 +2444,7 @@ int gmt_l_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 {
 	/* write byteswapped int64_t */
 	unsigned i;
-	uint64_t u;
+	COUNTER u;
 	int64_t *s = (int64_t *)&u;
 	if (gmt_skip_output (C, d, n))
 		/* Record was skipped via -s[r] */
@@ -2452,7 +2452,7 @@ int gmt_l_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	for (i = 0; i < n; ++i) {
 		*s = (int64_t) d[i];
 		u = bswap64(u);
-		if (GMT_fwrite (&u, sizeof (uint64_t), 1, fp) != 1)
+		if (GMT_fwrite (&u, sizeof (COUNTER), 1, fp) != 1)
 			return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
@@ -2460,14 +2460,14 @@ int gmt_l_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 
 int gmt_L_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 {
-	/* write uint64_t */
+	/* write COUNTER */
 	unsigned i;
-	uint64_t u;
+	COUNTER u;
 	if (gmt_skip_output (C, d, n))
 		/* Record was skipped via -s[r] */
 		return (0);
 	for (i = 0; i < n; ++i) {
-		u = (uint64_t) d[i];
+		u = (COUNTER) d[i];
 		if (GMT_fwrite (&u, sizeof (int64_t), 1, fp) != 1)
 			return (GMT_DATA_WRITE_ERROR);
 	}
@@ -2476,14 +2476,14 @@ int gmt_L_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 
 int gmt_L_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 {
-	/* write byteswapped uint64_t */
+	/* write byteswapped COUNTER */
 	unsigned i;
-	uint64_t u;
+	COUNTER u;
 	if (gmt_skip_output (C, d, n))
 		return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; ++i) {
-		u = bswap64((uint64_t) d[i]);
-		if (GMT_fwrite (&u, sizeof (uint64_t), 1, fp) != 1)
+		u = bswap64((COUNTER) d[i]);
+		if (GMT_fwrite (&u, sizeof (COUNTER), 1, fp) != 1)
 			return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
@@ -2541,7 +2541,7 @@ int gmt_d_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	unsigned i;
 	union {
 		double d;
-		uint64_t bits;
+		COUNTER bits;
 	} u;
 	if (gmt_skip_output (C, d, n))
 		/* Record was skipped via -s[r] */
@@ -2549,7 +2549,7 @@ int gmt_d_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	for (i = 0; i < n; ++i) {
 		u.d = d[i];
 		u.bits = bswap64 (u.bits);
-		if (GMT_fwrite (&u.bits, sizeof (uint64_t), 1, fp) != 1)
+		if (GMT_fwrite (&u.bits, sizeof (COUNTER), 1, fp) != 1)
 			return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
@@ -2593,8 +2593,8 @@ static inline void swap_uint32 (char *buffer, const size_t len) {
 }
 
 static inline void swap_uint64 (char *buffer, const size_t len) {
-	/* byteswap uint64_t in buffer of length 'len' bytes */
-	uint64_t u;
+	/* byteswap COUNTER in buffer of length 'len' bytes */
+	COUNTER u;
 	size_t n;
 
 	for (n = 0; n < len; n+=Int64len) {
@@ -2608,11 +2608,11 @@ static inline void swap_uint64 (char *buffer, const size_t len) {
 
 int gmt_byteswap_file (struct GMT_CTRL *C,
 		FILE *outfp, FILE *infp, const SwapWidth swapwidth,
-		const uint64_t offset, const uint64_t length) {
+		const COUNTER offset, const COUNTER length) {
 	/* read from *infp and write byteswapped data to *ofp
 	 * swap only 'length' bytes beginning at 'offset' bytes
 	 * if 'length == 0' swap until EOF */
-	uint64_t bytes_read = 0;
+	COUNTER bytes_read = 0;
 	size_t nbytes, chunk, extrabytes = 0;
 	static const size_t chunksize = 0x1000000; /* 16 MiB */
 	char *buffer;
@@ -2659,7 +2659,7 @@ int gmt_byteswap_file (struct GMT_CTRL *C,
 
 	/* start swapping bytes */
 	while ( length == 0 || bytes_read < offset + length ) {
-		uint64_t bytes_left = length - bytes_read + offset;
+		COUNTER bytes_left = length - bytes_read + offset;
 		chunk = (length == 0 || bytes_left > chunksize) ? chunksize : bytes_left;
 		nbytes = fread (buffer, sizeof (char), chunk, infp);
 		if (nbytes == 0) {
@@ -2835,7 +2835,7 @@ GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z
 			case 'i': /* Binary int32_t */
 			case 'I': /* Binary uint32_t */
 			case 'l': /* Binary int64_t */
-			case 'L': /* Binary uint64_t */
+			case 'L': /* Binary COUNTER */
 			case 'f': /* Binary 4-byte float */
 			case 'd': /* Binary 8-byte double */
 				z->type = txt[i];
@@ -2864,7 +2864,7 @@ int GMT_get_io_type (struct GMT_CTRL *C, char type)
 		case 'i': t = GMTAPI_INT;    break; /* Binary int32_t */
 		case 'I': t = GMTAPI_UINT;   break; /* Binary uint32_t */
 		case 'l': t = GMTAPI_LONG;   break; /* Binary int64_t */
-		case 'L': t = GMTAPI_ULONG;  break; /* Binary uint64_t */
+		case 'L': t = GMTAPI_ULONG;  break; /* Binary COUNTER */
 		case 'f': t = GMTAPI_FLOAT;  break; /* Binary 4-byte float */
 		case 'd': t = GMTAPI_DOUBLE; break; /* Binary 8-byte double */
 		default:
@@ -2922,7 +2922,7 @@ PFI GMT_get_io_ptr (struct GMT_CTRL *C, GMT_LONG direction, int swap, char type)
 			else
 				p = (direction == GMT_IN) ? (PFI)gmt_l_read : (PFI)gmt_l_write;
 			break;
-		case 'L':	/* Binary uint64_t */
+		case 'L':	/* Binary COUNTER */
 			if (swap)
 				p = (direction == GMT_IN) ? (PFI)gmt_L_read_swab : (PFI)gmt_L_write_swab;
 			else
@@ -3034,7 +3034,7 @@ void GMT_check_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G)
 	 * We must allow for padding in G->data */
 
 	GMT_LONG col, row;
-	uint64_t k, k_top, k_bot;
+	COUNTER k, k_top, k_bot;
 
 	if (r->x_missing) for (row = 0, k = GMT_IJP (G->header, row, 0); row < G->header->ny; row++, k += G->header->mx) G->data[k+G->header->nx-1] = G->data[k];
 	if (r->y_missing) for (col = 0, k_top = GMT_IJP (G->header, 0, 0), k_bot = GMT_IJP (G->header, G->header->ny-1, 0); col < G->header->nx; col++) G->data[col+k_top] = G->data[col+k_bot];
@@ -4277,7 +4277,7 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, GM
 
 	GMT_LONG close_file = FALSE, header = TRUE, no_segments, first_seg = TRUE, n_fields, ncol = 0;
 	size_t n_row_alloc = GMT_CHUNK, n_seg_alloc = GMT_CHUNK, n_head_alloc = GMT_TINY_CHUNK;
-	uint64_t row = 0, n_read = 0, seg = 0;
+	COUNTER row = 0, n_read = 0, seg = 0;
 	char file[GMT_BUFSIZ], *in = NULL;
 	FILE *fp = NULL;
 	struct GMT_TEXT_TABLE *T = NULL;
@@ -4429,7 +4429,7 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, GM
 void GMT_set_seg_minmax (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 {	/* Determine the min/max values for each column in the segment */
 	GMT_LONG col;
-	uint64_t row;
+	COUNTER row;
 
 	for (col = 0; col < S->n_columns; col++) {
 		if (C->current.io.col_type[GMT_IN][col] == GMT_IS_LON) /* Requires separate quandrant assessment */
@@ -4447,7 +4447,7 @@ void GMT_set_seg_minmax (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 void GMT_set_tbl_minmax (struct GMT_CTRL *C, struct GMT_TABLE *T)
 {	/* Update the min/max of all segments and the entire table */
 	GMT_LONG col;
-	uint64_t seg;
+	COUNTER seg;
 	struct GMT_LINE_SEGMENT *S = NULL;
 
 	if (!T) return;	/* No table given */
@@ -4819,7 +4819,7 @@ void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, s
 GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 
 	GMT_LONG object_ID, k, col, stop, n_reg, item, error = 0;
-	uint64_t row, seg, seg1, seg2;
+	COUNTER row, seg, seg1, seg2;
 	char buffer[GMT_BUFSIZ], in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN];
 	struct GMT_TABLE *T = NULL;
 	struct GMT_DATASET *M = NULL;
@@ -4940,7 +4940,7 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	}
 	if (T->ogr->geometry > GMT_IS_POINT && T->ogr->geometry != GMT_IS_MULTIPOINT) {	/* Must check for Dateline crossings */
 		GMT_LONG n_split;
-		uint64_t n_segs = T->n_segments;
+		COUNTER n_segs = T->n_segments;
 		struct GMT_LINE_SEGMENT **L = NULL;
 		
 		for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment in the table */
@@ -4976,7 +4976,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 	 * If dist is NULL we choose stdout. */
 
 	GMT_LONG ascii, close_file = FALSE, append, save = 0, col, k;
-	uint64_t row = 0, seg;
+	COUNTER row = 0, seg;
 	int *fd = NULL;
 	char open_mode[4], file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
 	double *out = NULL;
@@ -5170,7 +5170,7 @@ GMT_LONG gmt_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 	 * If dist is NULL we choose stdout. */
 
 	GMT_LONG close_file = FALSE, append, k;
-	uint64_t row = 0, seg;
+	COUNTER row = 0, seg;
 	int *fd = NULL;	/* Must be int, not GMT_LONG */
 	char file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
 	FILE *fp = NULL;
@@ -5346,7 +5346,7 @@ void gmt_adjust_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, GMT_LON
 void gmt_adjust_table (struct GMT_CTRL *C, struct GMT_TABLE *T, GMT_LONG n_columns)
 {
 	/* Let table have n_columns (so either deallocate or allocate columns). */
-	uint64_t seg;
+	COUNTER seg;
 
 	T->min = GMT_memory (C, T->min, n_columns, double);
 	T->max = GMT_memory (C, T->max, n_columns, double);
@@ -5365,14 +5365,14 @@ void GMT_adjust_dataset (struct GMT_CTRL *C, struct GMT_DATASET *D, GMT_LONG n_c
 	D->n_columns = n_columns;
 }
 
-struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_segments, uint64_t n_rows)
+struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, GMT_LONG n_segments, COUNTER n_rows)
 {	/* Create an empty text set structure with the required number of empty tables, all set to hold n_segments with n_rows */
 	/* Allocate the new textset structure given the specified dimensions.
 	 * If n_segments or n_rows are negative we use the abs value to allocate
 	 * and set the n_alloc values but we do NOT set the corresponding
 	 * counters (i.e., n_rows, n_segments).  */
 	GMT_LONG tbl;
-	uint64_t seg;
+	COUNTER seg;
 	struct GMT_TEXT_TABLE *T = NULL;
 	struct GMT_TEXTSET *D = NULL;
 	
@@ -5400,7 +5400,7 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, 
 struct GMT_TEXT_TABLE * gmt_alloc_texttable (struct GMT_CTRL *C, struct GMT_TEXT_TABLE *Tin)
 {
 	/* Allocate the new Text Table structure with same # of segments and rows/segment as input table. */
-	uint64_t seg;
+	COUNTER seg;
 	GMT_LONG hdr;
 	struct GMT_TEXT_TABLE *T = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE);
 	
@@ -5432,7 +5432,7 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 	 *	(# of segments, # of rows/segment) because tables will be pasted horizontally and not vertically.
 	 */
 	GMT_LONG tbl, hdr;
-	uint64_t seg, n_seg, seg_in_tbl;
+	COUNTER seg, n_seg, seg_in_tbl;
 	size_t len;
 	struct GMT_TEXTSET *D = GMT_memory (C, NULL, 1, struct GMT_TEXTSET);
 	
@@ -5484,7 +5484,7 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 struct GMT_TEXTSET * GMT_duplicate_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, GMT_LONG mode)
 {
 	GMT_LONG tbl;
-	uint64_t row, seg;
+	COUNTER row, seg;
 	struct GMT_TEXTSET *D = NULL;
 	D = GMT_alloc_textset (C, Din, mode);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
@@ -5493,13 +5493,13 @@ struct GMT_TEXTSET * GMT_duplicate_textset (struct GMT_CTRL *C, struct GMT_TEXTS
 	return (D);
 }
 
-struct GMT_TABLE * gmt_alloc_table (struct GMT_CTRL *C, struct GMT_TABLE *Tin, GMT_LONG n_columns, uint64_t n_rows)
+struct GMT_TABLE * gmt_alloc_table (struct GMT_CTRL *C, struct GMT_TABLE *Tin, GMT_LONG n_columns, COUNTER n_rows)
 {
 	/* Allocate the new Table structure with same # of segments and rows/segment as input table.
 	 * However, n_columns is given separately and could differ.
 	 * If n_rows is > 0 we well override the Tin rows counts by using n_rows instead.  */
 	GMT_LONG hdr;
-	uint64_t seg, nr;
+	COUNTER seg, nr;
 	struct GMT_TABLE *T = GMT_memory (C, NULL, 1, struct GMT_TABLE);
 	
 	T->n_segments = T->n_alloc = Tin->n_segments;	/* Same number of segments as input table */
@@ -5524,7 +5524,7 @@ struct GMT_TABLE * gmt_alloc_table (struct GMT_CTRL *C, struct GMT_TABLE *Tin, G
 	return (T);
 }
 
-GMT_LONG GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, uint64_t n_rows, GMT_LONG n_columns, GMT_LONG first)
+GMT_LONG GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, COUNTER n_rows, GMT_LONG n_columns, GMT_LONG first)
 {	/* (re)allocates memory for a segment of given dimensions.
  	 * If n_rows is 0 then we do not set S->n_rows.  */
 	GMT_LONG col;
@@ -5544,7 +5544,7 @@ GMT_LONG GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, uint
 	return (GMT_OK);
 }
 
-struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, int64_t n_segments, GMT_LONG n_columns, uint64_t n_rows)
+struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, int64_t n_segments, GMT_LONG n_columns, COUNTER n_rows)
 {
 	/* Allocate the new Table structure given the specified dimensions.
 	 * If n_columns == 0 it means we don't know that dimension yet.
@@ -5574,7 +5574,7 @@ struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, int64_t n_segments, GMT
 	return (T);
 }
 
-struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, GMT_LONG n_tables, int64_t n_segments, GMT_LONG n_columns, uint64_t n_rows)
+struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, GMT_LONG n_tables, int64_t n_segments, GMT_LONG n_columns, COUNTER n_rows)
 {	/* Create an empty data set structure with the required number of empty tables, all set to hold n_segments with n_columns */
 	GMT_LONG tbl;
 	struct GMT_DATASET *D = NULL;
@@ -5601,7 +5601,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 
 	GMT_LONG ascii, close_file = FALSE, header = TRUE, no_segments, first_seg = TRUE;
 	GMT_LONG n_fields, n_expected_fields, k, col;
-	uint64_t n_read = 0, row = 0, seg = 0;
+	COUNTER n_read = 0, row = 0, seg = 0;
 	size_t n_row_alloc, n_head_alloc = GMT_TINY_CHUNK;
 	char open_mode[4], file[GMT_BUFSIZ], line[GMT_TEXT_LEN64];
 	double d, *in = NULL;
@@ -5860,7 +5860,7 @@ struct GMT_LINE_SEGMENT * GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_
 	return (Sout);
 }
 
-struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, GMT_LONG n_columns, uint64_t n_rows, GMT_LONG mode)
+struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, GMT_LONG n_columns, COUNTER n_rows, GMT_LONG mode)
 {
 	/* Allocate new dataset structure with same # of tables, segments and rows/segment as input data set.
 	 * However, n_columns is given separately and could differ.  Also, if n_rows > 0 we let that override the segment row counts.
@@ -5873,7 +5873,7 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 	 */
 	GMT_LONG tbl, hdr;
 	size_t len;
-	uint64_t nr, seg, n_seg, seg_in_tbl;
+	COUNTER nr, seg, n_seg, seg_in_tbl;
 	struct GMT_DATASET *D = GMT_memory (C, NULL, 1, struct GMT_DATASET);
 	
 	D->n_columns = (n_columns) ? n_columns : Din->n_columns;
@@ -5933,7 +5933,7 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, GMT_LONG n_columns, GMT_LONG mode)
 {	/* Make an exact replica */
 	GMT_LONG tbl;
-	uint64_t seg;
+	COUNTER seg;
 	struct GMT_DATASET *D = NULL;
 	D = GMT_alloc_dataset (C, Din, n_columns, 0, mode);
 	GMT_memcpy (D->min, Din->min, Din->n_columns, double);
@@ -5988,7 +5988,7 @@ void GMT_free_table (struct GMT_CTRL *C, struct GMT_TABLE *table)
 	for (k = 0; k < 2; k++) if (table->file[k]) free (table->file[k]);
 	GMT_free_ogr (C, &(table->ogr), 1);
 	if (table->segment) {	/* Free segments */
-		uint64_t seg;
+		COUNTER seg;
 		for (seg = 0; seg < table->n_segments; seg++) GMT_free_segment (C, table->segment[seg]);
 		GMT_free (C, table->segment);
 	}
@@ -6019,7 +6019,7 @@ void gmt_free_textsegment (struct GMT_CTRL *C, struct GMT_TEXT_SEGMENT *segment)
 {
 	/* Free memory allocated by GMT_read_texttable */
 
-	uint64_t k;
+	COUNTER k;
 	if (!segment) return;	/* Do not try to free NULL pointer */
 	for (k = 0; k < segment->n_rows; k++) if (segment->record[k]) free (segment->record[k]);
 	GMT_free (C, segment->record);
@@ -6032,7 +6032,7 @@ void gmt_free_textsegment (struct GMT_CTRL *C, struct GMT_TEXT_SEGMENT *segment)
 void gmt_free_texttable (struct GMT_CTRL *C, struct GMT_TEXT_TABLE *table)
 {
 	GMT_LONG k;
-	uint64_t seg;
+	COUNTER seg;
 	if (!table) return;	/* Do not try to free NULL pointer */
 	for (seg = 0; seg < table->n_segments; seg++) gmt_free_textsegment (C, table->segment[seg]);
 	for (k = 0; k < table->n_headers; k++) free (table->header[k]);
@@ -6114,7 +6114,7 @@ struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *C, GMT_LONG n_columns)
 	return (V);
 }
 
-GMT_LONG GMT_alloc_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, GMT_LONG type, uint64_t n_rows)
+GMT_LONG GMT_alloc_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, GMT_LONG type, COUNTER n_rows)
 {
 	/* Allocate space for one univector according to data type */
 	switch (type) {
@@ -6124,7 +6124,7 @@ GMT_LONG GMT_alloc_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, GMT_LO
 		case GMTAPI_SHORT:  u->si2 = GMT_memory (C, u->si2, n_rows, int16_t);   break;
 		case GMTAPI_UINT:   u->ui4 = GMT_memory (C, u->ui4, n_rows, uint32_t);  break;
 		case GMTAPI_INT:    u->si4 = GMT_memory (C, u->si4, n_rows, int32_t);   break;
-		case GMTAPI_ULONG:  u->ui8 = GMT_memory (C, u->ui8, n_rows, uint64_t);  break;
+		case GMTAPI_ULONG:  u->ui8 = GMT_memory (C, u->ui8, n_rows, COUNTER);  break;
 		case GMTAPI_LONG:   u->si8 = GMT_memory (C, u->si8, n_rows, int64_t);   break;
 		case GMTAPI_FLOAT:  u->f4  = GMT_memory (C, u->f4,  n_rows, float);     break;
 		case GMTAPI_DOUBLE: u->f8  = GMT_memory (C, u->f8,  n_rows, double);    break;
@@ -6132,7 +6132,7 @@ GMT_LONG GMT_alloc_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, GMT_LO
 	return (GMT_OK);
 }
 
-GMT_LONG GMT_duplicate_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u_out, union GMT_UNIVECTOR *u_in, GMT_LONG type, uint64_t n_rows)
+GMT_LONG GMT_duplicate_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u_out, union GMT_UNIVECTOR *u_in, GMT_LONG type, COUNTER n_rows)
 {
 	/* Allocate space for one univector according to data type */
 	switch (type) {
@@ -6142,7 +6142,7 @@ GMT_LONG GMT_duplicate_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u_out
 		case GMTAPI_SHORT:  GMT_memcpy (u_out->si2, u_in->si2, n_rows, int16_t);   break;
 		case GMTAPI_UINT:   GMT_memcpy (u_out->ui4, u_in->ui4, n_rows, uint32_t);  break;
 		case GMTAPI_INT:    GMT_memcpy (u_out->si4, u_in->si4, n_rows, int32_t);   break;
-		case GMTAPI_ULONG:  GMT_memcpy (u_out->ui8, u_in->ui8, n_rows, uint64_t);  break;
+		case GMTAPI_ULONG:  GMT_memcpy (u_out->ui8, u_in->ui8, n_rows, COUNTER);  break;
 		case GMTAPI_LONG:   GMT_memcpy (u_out->si8, u_in->si8, n_rows, int64_t);   break;
 		case GMTAPI_FLOAT:  GMT_memcpy (u_out->f4,  u_in->f4,  n_rows, float);     break;
 		case GMTAPI_DOUBLE: GMT_memcpy (u_out->f8,  u_in->f8,  n_rows, double);    break;
@@ -6150,7 +6150,7 @@ GMT_LONG GMT_duplicate_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u_out
 	return (GMT_OK);
 }
 
-GMT_LONG GMT_alloc_vectors (struct GMT_CTRL *C, struct GMT_VECTOR *V, uint64_t n_rows)
+GMT_LONG GMT_alloc_vectors (struct GMT_CTRL *C, struct GMT_VECTOR *V, COUNTER n_rows)
 {	/* Allocate space for each column according to data type */
 	GMT_LONG col;
 

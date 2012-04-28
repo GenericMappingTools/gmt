@@ -1089,9 +1089,9 @@ GMT_LONG gmt_move_to_rect (struct GMT_CTRL *C, double *x_edge, double *y_edge, G
 	return (n + 1);
 }
 
-GMT_LONG gmt_rect_clip_old (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG gmt_rect_clip_old (struct GMT_CTRL *C, double *lon, double *lat, COUNTER n, double **x, double **y, GMT_LONG *total_nx)
 {
-	uint64_t i, j = 0;
+	COUNTER i, j = 0;
 	GMT_LONG nx, k, sides[4];
 	size_t n_alloc = GMT_CHUNK;
 	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
@@ -1207,9 +1207,9 @@ GMT_LONG gmt_outside_upper_boundary (double val, double max) {return (val > max)
  * that boundary; this is then repeated for all boundaries.  Assumptions here are Cartesian coordinates
  * so all boundaries are straight lines in x or y. */
 
-GMT_LONG gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNTER n, double **x, double **y, GMT_LONG *total_nx)
 {
-	uint64_t i, n_get, m;
+	COUNTER i, n_get, m;
 	size_t n_alloc = 0;
 	GMT_LONG side, in = 1, out = 0, j, np, polygon, cross = 0;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
@@ -1296,7 +1296,7 @@ GMT_LONG gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n
 GMT_LONG GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GMT_LINE_SEGMENT ***Lout)
 {
 	GMT_LONG side, j, np, cross = 0;
-	uint64_t row, m;
+	COUNTER row, m;
 	size_t n_alloc = 0;
 	char label[GMT_BUFSIZ], *part = "EW";
 	double xx[2], yy[2];
@@ -1398,9 +1398,9 @@ GMT_LONG gmt_move_to_wesn (struct GMT_CTRL *C, double *x_edge, double *y_edge, d
 	return (n + 1);
 }
 
-GMT_LONG gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, COUNTER n, double **x, double **y, GMT_LONG *total_nx)
 {
-	uint64_t i, j = 0;
+	COUNTER i, j = 0;
 	GMT_LONG nx, k, sides[4];
 	size_t n_alloc = GMT_CHUNK;
 	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
@@ -1459,10 +1459,10 @@ GMT_LONG gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, uint64
 	return (j);
 }
 
-GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n_orig, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNTER n_orig, double **x, double **y, GMT_LONG *total_nx)
 {
 	size_t n_alloc = 0, n_x_alloc = 0;
-	uint64_t i, n_get, n, m, n_cross = 0;
+	COUNTER i, n_get, n, m, n_cross = 0;
 	GMT_LONG new_n, range, j, np, *x_index = NULL, *x_type = NULL;
 	GMT_LONG polygon, jump = FALSE, curved, way, side, in = 1, out = 0, cross = 0, periodic = FALSE;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
@@ -1569,7 +1569,7 @@ GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n
 		if (polygon && curved && n_cross) {	/* Must resample between crossing points */
 			double *x_add = NULL, *y_add = NULL, *x_cpy = NULL, *y_cpy = NULL;
 			size_t np = 0;
-			uint64_t add, last_index = 0, p, p_next;
+			COUNTER add, last_index = 0, p, p_next;
 
 			if (n_cross%2 == 1) {	/* Should not happen with a polygon */
 				GMT_report (C, GMT_MSG_FATAL, "Error in GMT_wesn_clip: odd number of crossings?");
@@ -1652,7 +1652,7 @@ GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n
 
 GMT_LONG gmt_radial_boundary_arc (struct GMT_CTRL *C, GMT_LONG this, double end_x[], double end_y[], double **xarc, double **yarc) {
 	size_t n_alloc = 0;
-	uint64_t n_arc, k, pt;
+	COUNTER n_arc, k, pt;
 	double az1, az2, d_az, da, xr, yr, da_try, *xx = NULL, *yy = NULL;
 
 	/* When a polygon crosses out then in again into the circle we need to add a boundary arc
@@ -1702,7 +1702,7 @@ void gmt_dumppol (GMT_LONG n, double *x, double *y, GMT_LONG *id)
 GMT_LONG gmt_radial_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG np, double **x, double **y, GMT_LONG *total_nx)
 {
 	size_t n_alloc = 0;
-	uint64_t n = 0, n_arc;
+	COUNTER n = 0, n_arc;
 	GMT_LONG i, this = FALSE, sides[4], nx, add_boundary = FALSE;
 	double xlon[4], xlat[4], xc[4], yc[4], end_x[3], end_y[3], xr, yr;
 	double *xx = NULL, *yy = NULL, *xarc = NULL, *yarc = NULL;
@@ -2460,9 +2460,9 @@ void GMT_xyz_to_xy (struct GMT_CTRL *C, double x, double y, double z, double *x_
 	*y_out = - (x * C->current.proj.z_project.sin_az + y * C->current.proj.z_project.cos_az) * C->current.proj.z_project.sin_el + z * C->current.proj.z_project.cos_el + C->current.proj.z_project.y_off;
 }
 
-void GMT_xyz_to_xy_n (struct GMT_CTRL *C, double *x, double *y, double z, uint64_t n)
+void GMT_xyz_to_xy_n (struct GMT_CTRL *C, double *x, double *y, double z, COUNTER n)
 {	/* projects xyz (inches) onto perspective xy plane (inches) for multiple points */
-	uint64_t i;
+	COUNTER i;
 	for (i = 0; i < n; i++) GMT_xyz_to_xy (C, x[i], y[i], z, &x[i], &y[i]);
 }
 
@@ -4852,10 +4852,10 @@ GMT_LONG gmt_will_it_wrap_x (struct GMT_CTRL *C, double *x, double *y, GMT_LONG 
 	return (wrap);
 }
 
-GMT_LONG gmt_map_truncate_x (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t start, GMT_LONG l_or_r)
+GMT_LONG gmt_map_truncate_x (struct GMT_CTRL *C, double *x, double *y, COUNTER n, COUNTER start, GMT_LONG l_or_r)
 {	/* Truncates a wrapping polygon against left or right edge */
 
-	uint64_t i, i1, j, k;
+	COUNTER i, i1, j, k;
 	double xc[4], yc[4], w_last, w_this;
 
 	/* First initialize variables that differ for left and right truncation */
@@ -4898,10 +4898,10 @@ GMT_LONG gmt_map_truncate_x (struct GMT_CTRL *C, double *x, double *y, uint64_t 
 	return (j);
 }
 
-GMT_LONG gmt_map_truncate_tm (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t start, GMT_LONG b_or_t)
+GMT_LONG gmt_map_truncate_tm (struct GMT_CTRL *C, double *x, double *y, COUNTER n, COUNTER start, GMT_LONG b_or_t)
 {	/* Truncates a wrapping polygon against bottom or top edge for global TM maps */
 
-	uint64_t i, i1, j, k;
+	COUNTER i, i1, j, k;
 	double xc[4], yc[4], trunc_y;
 
 	/* First initialize variables that differ for bottom and top truncation */
@@ -4942,7 +4942,7 @@ GMT_LONG gmt_map_truncate_tm (struct GMT_CTRL *C, double *x, double *y, uint64_t
 	return (j);
 }
 
-GMT_LONG GMT_map_truncate (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t start, GMT_LONG side)
+GMT_LONG GMT_map_truncate (struct GMT_CTRL *C, double *x, double *y, COUNTER n, COUNTER start, GMT_LONG side)
 {	/* Truncates a wrapping polygon against left or right edge.
 	   (bottom or top edge when projection is TM)
 	   x, y : arrays of plot coordinates
@@ -5166,9 +5166,9 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, do
 
 /* Functions dealing with distance between points */
 
-double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, uint64_t *id)
+double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, COUNTER *id)
 {
-	uint64_t row, seg;
+	COUNTER row, seg;
 	double d, d_min;
 
 	d_min = DBL_MAX;
@@ -5185,7 +5185,7 @@ double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct 
 
 GMT_LONG gmt_near_a_point_spherical (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
 {
-	uint64_t row, seg;
+	COUNTER row, seg;
 	GMT_LONG inside = FALSE, each_point_has_distance;
 	double d;
 
@@ -5203,7 +5203,7 @@ GMT_LONG gmt_near_a_point_spherical (struct GMT_CTRL *C, double x, double y, str
 GMT_LONG gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
 {
 	GMT_LONG inside = FALSE, each_point_has_distance;
-	uint64_t row, seg;
+	COUNTER row, seg;
 	double d, x0, y0, xn, d0, dn;
 
 	each_point_has_distance = (dist <= 0.0 && T->segment[0]->n_columns > 2);
@@ -5241,7 +5241,7 @@ GMT_LONG gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, str
 GMT_LONG gmt_near_a_line_cartesian (struct GMT_CTRL *C, double lon, double lat, GMT_LONG seg, struct GMT_LINE_SEGMENT *S, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	GMT_LONG perpendicular_only = FALSE, interior, within;
-	uint64_t row0, row1;
+	COUNTER row0, row1;
 	double edge, dx, dy, xc, yc, s, s_inv, d, dist_AB, fraction;
 	/* gmt_near_a_line_cartesian works in one of two modes, depending on return_mindist.
 	   Since return_mindist is composed of two settings we must first set
@@ -5357,7 +5357,7 @@ GMT_LONG gmt_near_a_line_cartesian (struct GMT_CTRL *C, double lon, double lat, 
 
 GMT_LONG gmt_near_lines_cartesian (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
 {
-	uint64_t seg;
+	COUNTER seg;
 	GMT_LONG mode = return_mindist, status, OK = FALSE;
 	if (mode >= 10) mode -= 10;	/* Exclude (or flag) circular region surrounding line endpoints */
 	if (mode) *dist_min = DBL_MAX;	/* Want to find the minimum distance so init to huge */
@@ -5375,7 +5375,7 @@ GMT_LONG gmt_near_lines_cartesian (struct GMT_CTRL *C, double lon, double lat, s
 GMT_LONG gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, GMT_LONG seg, struct GMT_LINE_SEGMENT *S, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	GMT_LONG perpendicular_only = FALSE, interior, within;
-	uint64_t row, prev_row;
+	COUNTER row, prev_row;
 	double d, A[3], B[3], C[3], X[3], xlon, xlat, cx_dist, cos_dist, dist_AB, fraction;
 
 	/* gmt_near_a_line_spherical works in one of two modes, depending on return_mindist.
@@ -5463,7 +5463,7 @@ GMT_LONG gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, 
 
 GMT_LONG gmt_near_lines_spherical (struct GMT_CTRL *P, double lon, double lat, struct GMT_TABLE *T, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
 {
-	uint64_t seg;
+	COUNTER seg;
 	GMT_LONG mode = return_mindist, status, OK = FALSE;
 	if (mode >= 10) mode -= 10;	/* Exclude (or flag) circular region surrounding line endpoints */
 	if (mode) *dist_min = DBL_MAX;	/* Want to find the minimum distance so init to huge */
@@ -5519,7 +5519,7 @@ GMT_LONG GMT_great_circle_intersection (struct GMT_CTRL *T, double A[], double B
 	return (0);				/* Return zero if intersection is between A and B */
 }
 
-uint64_t *GMT_split_line (struct GMT_CTRL *C, double **xx, double **yy, uint64_t *nn, GMT_LONG add_crossings)
+COUNTER *GMT_split_line (struct GMT_CTRL *C, double **xx, double **yy, COUNTER *nn, GMT_LONG add_crossings)
 {	/* Accepts x/y array for a line in projected inches and looks for
 	 * map jumps.  If found it will insert the boundary crossing points and
 	 * build a split integer array with the nodes of the first point
@@ -5530,7 +5530,7 @@ uint64_t *GMT_split_line (struct GMT_CTRL *C, double **xx, double **yy, uint64_t
 	 * add_crossings is TRUE if we need to find the crossings; FALSE means
 	 * they are already part of the line. */
 
-	uint64_t i, j, k, n, n_seg, *split = NULL, *pos = NULL;
+	COUNTER i, j, k, n, n_seg, *split = NULL, *pos = NULL;
 	size_t n_alloc = 0;
  	GMT_LONG l_or_r;
  	char *way = NULL;
@@ -5543,7 +5543,7 @@ uint64_t *GMT_split_line (struct GMT_CTRL *C, double **xx, double **yy, uint64_t
 	for (n_seg = 0, i = 1; i < *nn; i++) {
 		if ((l_or_r = gmt_map_jump_x (C, xin[i], yin[i], xin[i-1], yin[i-1]))) {
 			if (n_seg == n_alloc) {
-				GMT_malloc (C, pos, n_seg, &n_alloc, uint64_t);
+				GMT_malloc (C, pos, n_seg, &n_alloc, COUNTER);
 				n_alloc = n_seg;
 				GMT_malloc (C, way, n_seg, &n_alloc, char);
 			}
@@ -5562,7 +5562,7 @@ uint64_t *GMT_split_line (struct GMT_CTRL *C, double **xx, double **yy, uint64_t
 	if (add_crossings) n += 2 * n_seg;	/* Must add 2 crossing points per jump */
 	n_alloc = 0;
 	GMT_malloc2 (C, x, y, n, &n_alloc, double);
-	split = GMT_memory (C, NULL, n_seg+2, uint64_t);
+	split = GMT_memory (C, NULL, n_seg+2, COUNTER);
 	split[0] = n_seg;
 
 	x[0] = xin[0];	y[0] = yin[0];
@@ -5602,7 +5602,7 @@ uint64_t *GMT_split_line (struct GMT_CTRL *C, double **xx, double **yy, uint64_t
 GMT_LONG GMT_graticule_path (struct GMT_CTRL *C, double **x, double **y, GMT_LONG dir, double w, double e, double s, double n)
 {	/* Returns the path of a graticule (box of meridians and parallels) */
 	size_t n_alloc = 0;
-	uint64_t np = 0;
+	COUNTER np = 0;
 	double *xx = NULL, *yy = NULL;
 	double px0, px1, px2, px3;
 
@@ -5624,7 +5624,7 @@ GMT_LONG GMT_graticule_path (struct GMT_CTRL *C, double **x, double **y, GMT_LON
 	else {	/* Must assemble path from meridians and parallel pieces */
 		double *xtmp = NULL, *ytmp = NULL;
 		size_t add;
-		uint64_t k;
+		COUNTER k;
 
 		/* SOUTH BORDER */
 
@@ -5678,7 +5678,7 @@ GMT_LONG GMT_graticule_path (struct GMT_CTRL *C, double **x, double **y, GMT_LON
 
 	if (GMT_x_is_lon (C, GMT_IN)) {
 		GMT_LONG straddle;
-		uint64_t i;
+		COUNTER i;
 		straddle = (C->common.R.wesn[XLO] < 0.0 && C->common.R.wesn[XHI] > 0.0);
 		for (i = 0; straddle && i < np; i++) {
 			while (xx[i] < 0.0) xx[i] += 360.0;
@@ -5702,7 +5702,7 @@ GMT_LONG GMT_map_path (struct GMT_CTRL *C, double lon1, double lat1, double lon2
 GMT_LONG GMT_lonpath (struct GMT_CTRL *C, double lon, double lat1, double lat2, double **x, double **y)
 {
 	size_t n_alloc = 0;
-	uint64_t n, k;
+	COUNTER n, k;
 	GMT_LONG n_try, keep_trying, pos;
 	double dlat, dlat0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
 
@@ -5787,7 +5787,7 @@ GMT_LONG GMT_lonpath (struct GMT_CTRL *C, double lon, double lat1, double lat2, 
 GMT_LONG GMT_latpath (struct GMT_CTRL *C, double lat, double lon1, double lon2, double **x, double **y)
 {
 	size_t n_alloc = 0;
-	uint64_t k, n;
+	COUNTER k, n;
 	GMT_LONG n_try, keep_trying, pos;
 	double dlon, dlon0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
 
@@ -5855,12 +5855,12 @@ GMT_LONG GMT_latpath (struct GMT_CTRL *C, double lat, double lon1, double lon2, 
 	return ((GMT_LONG)n);
 }
 
-GMT_LONG GMT_geo_to_xy_line (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n)
+GMT_LONG GMT_geo_to_xy_line (struct GMT_CTRL *C, double *lon, double *lat, COUNTER n)
 {
 	/* Traces the lon/lat array and returns x,y plus appropriate pen moves
 	 * Pen moves are caused by breakthroughs of the map boundary or when
 	 * a point has lon = NaN or lat = NaN (this means "pick up pen") */
-	uint64_t j, np;
+	COUNTER j, np;
 	GMT_LONG inside, sides[4], nx;
 	double xlon[4], xlat[4], xx[4], yy[4];
 	double this_x, this_y, last_x, last_y, dummy[4];
@@ -5917,10 +5917,10 @@ GMT_LONG GMT_geo_to_xy_line (struct GMT_CTRL *C, double *lon, double *lat, uint6
 	return (np);
 }
 
-GMT_LONG GMT_compact_line (struct GMT_CTRL *C, double *x, double *y, uint64_t n, GMT_LONG pen_flag, int *pen)
+GMT_LONG GMT_compact_line (struct GMT_CTRL *C, double *x, double *y, COUNTER n, GMT_LONG pen_flag, int *pen)
 {	/* TRUE if pen movements is present */
 	/* GMT_compact_line will remove unnecessary points in paths */
-	uint64_t i, j;
+	COUNTER i, j;
 	double old_slope, new_slope, dx;
 	char *flag = NULL;
 
@@ -6011,7 +6011,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 	 */
 
 	GMT_LONG col_in, row_in, col_out, row_out;
- 	uint64_t ij_in, ij_out;
+ 	COUNTER ij_in, ij_out;
 	short int *nz = NULL;
 	double x_proj = 0.0, y_proj = 0.0, z_int, inv_nz;
 	double *x_in = NULL, *x_out = NULL, *x_in_proj = NULL, *x_out_proj = NULL;
@@ -6173,7 +6173,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 	 */
 
 	GMT_LONG col_in, row_in, col_out, row_out, b, nb = I->header->n_bands;
- 	uint64_t ij_in, ij_out;
+ 	COUNTER ij_in, ij_out;
 	short int *nz = NULL;
 	double x_proj = 0.0, y_proj = 0.0, inv_nz, rgb[4];
 	double *x_in = NULL, *x_out = NULL, *x_in_proj = NULL, *x_out_proj = NULL;
@@ -6875,9 +6875,9 @@ void GMT_ECEF_inverse (struct GMT_CTRL *C, double in[], double out[])
 	out[GMT_Z] = (p / cos_lat) - N;
 }
 
-double * GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], uint64_t n, double scale, GMT_LONG dist_flag)
+double * GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], COUNTER n, double scale, GMT_LONG dist_flag)
 {	/* Returns distances in meter; use scale to get other units */
-	uint64_t this, prev;
+	COUNTER this, prev;
 	GMT_LONG cumulative = TRUE, do_scale, xy_not_NaN;
 	double *d = NULL, cum_dist = 0.0, inc = 0.0;
 

@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * gmt_constants.h contains definitions of special types used by GMT.
+ * gmt_types.h contains definitions of special types used by GMT.
  *
  * Author:	Paul Wessel
  * Date:	01-OCT-2009
@@ -25,6 +25,8 @@
 
 #ifndef _GMT_TYPES_H
 #define _GMT_TYPES_H
+
+#define COUNTER uint64_t
 
 /*--------------------------------------------------------------------
  *			GMT TYPEDEF DEFINITIONS
@@ -58,7 +60,7 @@ typedef void (*PFV) ();         /* PFV declares a pointer to a function returnin
 typedef void* (*PFP) ();        /* PFP declares a pointer to a function returning void* */
 typedef GMT_LONG (*PFL) ();     /* PFL declares a pointer to a function returning an GMT_LONG */
 typedef size_t (*PFS) ();    	/* PFS declares a pointer to a function returning an size_t */
-// typedef uint64_t (*PFU) ();    	/* PFU declares a pointer to a function returning an uint64_t */
+// typedef COUNTER (*PFU) ();    	/* PFU declares a pointer to a function returning an COUNTER */
 typedef int (*PFI) ();          /* PFI declares a pointer to a function returning an int */
 typedef double (*PFD) ();       /* PFD declares a pointer to a function returning a double */
 

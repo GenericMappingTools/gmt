@@ -1692,9 +1692,9 @@ void GMT_igenper (struct GMT_CTRL *C, double *lon, double *lat, double xt, doubl
 	return;
 }
 
-GMT_LONG GMT_genper_map_clip_path (struct GMT_CTRL *C, uint64_t np, double *work_x, double *work_y)
+GMT_LONG GMT_genper_map_clip_path (struct GMT_CTRL *C, COUNTER np, double *work_x, double *work_y)
 {
-	uint64_t i;
+	COUNTER i;
 	double da, angle;
 	double x, y, xt, yt;
 

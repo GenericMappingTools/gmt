@@ -411,7 +411,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG geodetic_calc = FALSE, lat_mode = 0;
 	GMT_LONG datum_conv_only = FALSE, double_whammy = FALSE, way;
 	
-	uint64_t row, n_read_in_seg, seg, n_read = 0, n = 0;
+	COUNTER row, n_read_in_seg, seg, n_read = 0, n = 0;
 
 	double x_in = 0.0, y_in = 0.0, d = 0.0, fwd_scale, inv_scale, xtmp, ytmp, *out = NULL;
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, u_scale, y_out_min;

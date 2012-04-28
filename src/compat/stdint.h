@@ -91,7 +91,7 @@ extern "C" {
    typedef unsigned __int32  uint32_t;
 #endif
 typedef signed __int64       int64_t;
-typedef unsigned __int64     uint64_t;
+typedef unsigned __int64     COUNTER;
 
 
 /* 7.18.1.2 Minimum-width integer types */
@@ -102,7 +102,7 @@ typedef int64_t   int_least64_t;
 typedef uint8_t   uint_least8_t;
 typedef uint16_t  uint_least16_t;
 typedef uint32_t  uint_least32_t;
-typedef uint64_t  uint_least64_t;
+typedef COUNTER  uint_least64_t;
 
 /* 7.18.1.3 Fastest minimum-width integer types */
 typedef int8_t    int_fast8_t;
@@ -112,7 +112,7 @@ typedef int64_t   int_fast64_t;
 typedef uint8_t   uint_fast8_t;
 typedef uint16_t  uint_fast16_t;
 typedef uint32_t  uint_fast32_t;
-typedef uint64_t  uint_fast64_t;
+typedef COUNTER  uint_fast64_t;
 
 /* 7.18.1.4 Integer types capable of holding object pointers */
 #ifdef _WIN64 /* [ */
@@ -125,7 +125,7 @@ typedef uint64_t  uint_fast64_t;
 
 /* 7.18.1.5 Greatest-width integer types */
 typedef int64_t   intmax_t;
-typedef uint64_t  uintmax_t;
+typedef COUNTER  uintmax_t;
 
 
 /* 7.18.2 Limits of specified-width integer types */

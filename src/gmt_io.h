@@ -384,22 +384,22 @@ struct GMT_IO {				/* Used to process input data records */
 	GMT_LONG io_nan_ncols;		/* Number of columns to consider for -s option */
 
 	GMT_LONG file_no;		/* Number of current file */
-	uint64_t io_n_header_items;	/* number of header records (ascii) or bytes (binary) [0] */
+	COUNTER io_n_header_items;	/* number of header records (ascii) or bytes (binary) [0] */
 	GMT_LONG seg_no;		/* Number of current multi-segment in entire data set */
 	GMT_LONG tbl_no;		/* Number of current table in entire data set */
 	GMT_LONG seg_in_tbl_no;		/* Number of current multi-segment in current table */
-	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
-	uint64_t n_bad_records;		/* Number of bad records encountered during i/o */
+	COUNTER n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
+	COUNTER n_bad_records;		/* Number of bad records encountered during i/o */
 	GMT_LONG ogr;			/* Tells us if current input source has OGR/GMT metadata (1) or not (0) or not set (-1) */
 	GMT_LONG status;		/* 0	All is ok
 					   1	Current record is segment header
 					   2	Mismatch between actual and expected fields
 					   4	EOF
 					   8	NaNs encountered in first 2/3 cols */
-	uint64_t rec_no;		/* Number of current records (counts headers etc) in entire data set */
-	uint64_t rec_in_tbl_no;		/* Number of current record (counts headers etc) in current table */
-	uint64_t pt_no;			/* Number of current valid points in a row  */
-	uint64_t curr_pos[2][3];	/* Keep track of current input/output table, segment, and row (for rec-by-rec action) */
+	COUNTER rec_no;		/* Number of current records (counts headers etc) in entire data set */
+	COUNTER rec_in_tbl_no;		/* Number of current record (counts headers etc) in current table */
+	COUNTER pt_no;			/* Number of current valid points in a row  */
+	COUNTER curr_pos[2][3];	/* Keep track of current input/output table, segment, and row (for rec-by-rec action) */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
 	char a_mode[4];			/* Current file append mode for writing (a+ or ab+) */
@@ -445,7 +445,7 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 	GMT_LONG start_row;	/* First logical row in file */
 	GMT_LONG gmt_i;		/* Current column number in the GMT registered grid */
 	GMT_LONG gmt_j;		/* Current row number in the GMT registered grid */
-	uint64_t n_expected;	/* Number of data element expected to be read */
+	COUNTER n_expected;	/* Number of data element expected to be read */
 	off_t skip;		/* Number of bytes to skip before reading data */
 	PFL get_gmt_ij;		/* Pointer to function that converts running number to GMT ij */
 };
@@ -474,7 +474,7 @@ struct GMT_LINE_SEGMENT {		/* For holding segment lines in memory */
 	GMT_LONG mode;			/* 0 = output segment, 1 = output header only, 2 = skip segment */
 	GMT_LONG range;			/* 0 = use default lon adjustment, -1 = negative longs, +1 = positive lons */
 	GMT_LONG pol_mode;		/* Either GMT_IS_PERIMETER  [-Pp] or GMT_IS_HOLE [-Ph] (for polygons only) */
-	uint64_t n_rows;		/* Number of points in this segment */
+	COUNTER n_rows;		/* Number of points in this segment */
 	size_t n_alloc;			/* The current allocation length of each coord */
 	double dist;			/* Distance from a point to this feature */
 	double *min;			/* Minimum coordinate for each column */
@@ -492,8 +492,8 @@ struct GMT_TABLE {	/* To hold an array of line segment structures and header inf
 	GMT_LONG n_headers;		/* Number of file header records (0 if no header) */
 	GMT_LONG n_columns;		/* Number of columns (fields) in each record */
 	GMT_LONG mode;			/* 0 = output table, 1 = output header only, 2 = skip table */
-	uint64_t n_segments;		/* Number of segments in the array */
-	uint64_t n_records;		/* Total number of data records across all segments */
+	COUNTER n_segments;		/* Number of segments in the array */
+	COUNTER n_records;		/* Total number of data records across all segments */
 	size_t n_alloc;			/* The current allocation length of segments */
 	double *min;			/* Minimum coordinate for each column */
 	double *max;			/* Maximum coordinate for each column */
@@ -506,7 +506,7 @@ struct GMT_TABLE {	/* To hold an array of line segment structures and header inf
 struct GMT_TEXT_SEGMENT {		/* For holding segment text records in memory */
 	GMT_LONG id;			/* The internal number of the table */
 	GMT_LONG mode;			/* 0 = output segment, 1 = output header only, 2 = skip segment */
-	uint64_t n_rows;		/* Number of rows in this segment */
+	COUNTER n_rows;		/* Number of rows in this segment */
 	size_t n_alloc;			/* Number of rows allocated for this segment */
 	char **record;			/* Array of text records */
 	char *label;			/* Label string (if applicable) */
@@ -519,8 +519,8 @@ struct GMT_TEXT_TABLE {	/* To hold an array of text segment structures and heade
 	GMT_LONG id;			/* The internal number of the table */
 	GMT_LONG n_headers;		/* Number of file header records (0 if no header) */
 	GMT_LONG mode;			/* 0 = output table, 1 = output header only, 2 = skip table */
-	uint64_t n_segments;		/* Number of segments in the array */
-	uint64_t n_records;		/* Total number of data records across all segments */
+	COUNTER n_segments;		/* Number of segments in the array */
+	COUNTER n_records;		/* Total number of data records across all segments */
 	size_t n_alloc;			/* The current allocation length of segments */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
 	char **header;			/* Array with all file header records, if any) */
@@ -533,8 +533,8 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 	GMT_LONG id;			/* The internal number of the data set */
 	GMT_LONG n_tables;		/* The total number of tables (files) contained */
 	GMT_LONG n_columns;		/* The number of data columns */
-	uint64_t n_segments;		/* The total number of segments across all tables */
-	uint64_t n_records;		/* The total number of data records across all tables */
+	COUNTER n_segments;		/* The total number of segments across all tables */
+	COUNTER n_records;		/* The total number of data records across all tables */
 	size_t n_alloc;			/* The current allocation length of tables */
 	enum GMT_enum_dest io_mode;	/* -1 means write OGR format (requires proper -a),
 					 * 0 means write everything to one destination [Default],
@@ -551,8 +551,8 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files) */
 	GMT_LONG id;			/* The internal number of the data set */
 	GMT_LONG n_tables;		/* The total number of tables (files) contained */
-	uint64_t n_segments;		/* The total number of segments across all tables */
-	uint64_t n_records;		/* The total number of data records across all tables */
+	COUNTER n_segments;		/* The total number of segments across all tables */
+	COUNTER n_records;		/* The total number of data records across all tables */
 	size_t n_alloc;			/* The current allocation length of tables */
 	enum GMT_enum_dest io_mode;	/* -1 means write OGR format (requires proper -a),
 					 * 0 means write everything to one destination [Default],
@@ -587,7 +587,7 @@ union GMT_UNIVECTOR {
 	int16_t  *si2; /* Signed 2-byte int */
 	uint32_t *ui4; /* Unsigned 4-byte int */
 	int32_t  *si4; /* Signed 4-byte int */
-	uint64_t *ui8; /* Unsigned 8-byte int */
+	COUNTER *ui8; /* Unsigned 8-byte int */
 	int64_t  *si8; /* Signed 8-byte int */
 	float    *f4;  /* 4-byte float */
 	double   *f8;  /* 8-byte float */
@@ -613,7 +613,7 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	GMT_LONG id;			/* The internal number of the data set */
 	GMT_LONG n_columns;		/* Number of vectors */
-	uint64_t n_rows;		/* Number of rows in each vector */
+	COUNTER n_rows;		/* Number of rows in each vector */
 	enum GMT_enum_type *type;	/* Array of data types (type of each uni-vector, e.g. GMTAPI_FLOAT */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0 = allocated, 1 = allocate as needed] */
 	union GMT_UNIVECTOR *data;	/* Array of uni-vectors */
