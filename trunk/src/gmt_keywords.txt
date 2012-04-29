@@ -66,6 +66,7 @@ IO_GRIDFILE_SHORTHAND		# Should we decode file extensions for gridformat details
 IO_HEADER			# Are there header records?
 IO_N_HEADER_RECS		# How many header records to expect
 IO_NAN_RECORDS			# How NaNs in input should be interpreted
+IO_NC4_DEFLATION_LEVEL	# Deflate level for netCDF output
 IO_LONLAT_TOGGLE		# Expect lat-lon instead of lon-lat
 IO_SEGMENT_MARKER		# 1st char in segment headers for input and output
 #-------------------------------------------------------

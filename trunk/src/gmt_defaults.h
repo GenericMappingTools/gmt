@@ -94,6 +94,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	GMT_LONG io_n_header_items;		/* number of header records [0] */
 	GMT_LONG io_nan_records;		/* Determines what NaNs in input records should mean (beyond skipping the record) */
 	GMT_LONG io_nan_mode;			/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
+	GMT_LONG io_nc4_deflation_level;	/* NetCDF deflation level on output [0] */
 	GMT_LONG io_lonlat_toggle[2];		/* TRUE means read/write I/O as lat/lon instead of lon/lat [FALSE,FALSE] */
 	GMT_LONG io_blankline[2];		/* TRUE means blank lines should be treated as segment breaks [FALSE,FALSE] */
 	GMT_LONG io_nanline[2];			/* TRUE means lines with all NaNs should be treated as segment breaks [FALSE,FALSE] */

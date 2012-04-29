@@ -3398,6 +3398,16 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_IO_NC4_DEFLATION_LEVEL:
+			if (!strcmp (lower_value, "false"))
+				ival = 0;
+			else
+				ival = atoi (value);
+			if (ival >= 0 && ival <= 9)
+				C->current.setting.io_nc4_deflation_level = ival;
+			else
+				error = TRUE;
+			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_XY_TOGGLE: GMT_COMPAT_CHANGE ("IO_LONLAT_TOGGLE");
 #endif
@@ -4246,6 +4256,9 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 				strcpy (value, "pass");
 			else 
 				strcpy (value, "skip");
+			break;
+		case GMTCASE_IO_NC4_DEFLATION_LEVEL:
+			sprintf (value, "%ld", C->current.setting.io_nc4_deflation_level);
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_XY_TOGGLE: GMT_COMPAT_WARN;
