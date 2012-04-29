@@ -369,7 +369,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	
 	if (Ctrl->C.active) {	/* Special case of requesting cross-profiles for given line segments */
 		GMT_LONG tbl, col;
-		COUNTER row, seg;
+		COUNTER_LARGE row, seg;
 		struct GMT_DATASET *Din = NULL, *Dout = NULL, *Dtmp = NULL;
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL;

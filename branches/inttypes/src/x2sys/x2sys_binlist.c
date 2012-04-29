@@ -177,7 +177,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG nx_alloc = GMT_SMALL_CHUNK;
 	GMT_LONG error = FALSE, gap, cmdline_files;
 	
-	COUNTER j;
+	COUNTER_LARGE j;
 
 	unsigned int nav_flag;
 

@@ -75,13 +75,13 @@ struct MEMORY_ITEM {
 struct MEMORY_TRACKER {
 	GMT_LONG active;	/* Normally TRUE but can be changed to focus on just some allocations */
 	GMT_LONG search;	/* Normally TRUE but can be changed to skip searching when we know we add a new item */
-	COUNTER n_ptr;		/* Number of unique pointers to allocated memory */
-	COUNTER n_allocated;	/* Number of items allocated by GMT_memory */
-	COUNTER n_reallocated;	/* Number of items reallocated by GMT_memory */
-	COUNTER n_freed;	/* Number of items freed by GMT_free */
-	COUNTER current;	/* Memory allocated at current time */
-	COUNTER maximum;	/* Highest memory count during execution */
-	COUNTER largest;	/* Highest memory allocation to a single variable */
+	COUNTER_LARGE n_ptr;		/* Number of unique pointers to allocated memory */
+	COUNTER_LARGE n_allocated;	/* Number of items allocated by GMT_memory */
+	COUNTER_LARGE n_reallocated;	/* Number of items reallocated by GMT_memory */
+	COUNTER_LARGE n_freed;	/* Number of items freed by GMT_free */
+	COUNTER_LARGE current;	/* Memory allocated at current time */
+	COUNTER_LARGE maximum;	/* Highest memory count during execution */
+	COUNTER_LARGE largest;	/* Highest memory allocation to a single variable */
 	size_t n_alloc;		/* Allocated size of memory pointer array */
 #ifdef NEW_DEBUG
 	struct MEMORY_ITEM *list_head, *list_tail;

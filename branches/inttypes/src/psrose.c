@@ -339,7 +339,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_bins, n_annot, n_alpha, n_modes, form, n_in;
 	GMT_LONG k, bin, do_fill = FALSE;
 	
-	COUNTER n = 0, i;
+	COUNTER_LARGE n = 0, i;
 	
 	size_t n_alloc = GMT_CHUNK;
 

@@ -1408,7 +1408,7 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 				case 'c': case 'u': /* int8_t, uint8_t */
 				case 'h': case 'H': /* int16_t, uint16_t */
 				case 'i': case 'I': /* int32_t, uint32_t */
-				case 'l': case 'L': /* int64_t, COUNTER */
+				case 'l': case 'L': /* int64_t, COUNTER_LARGE */
 				case 'f': case 'd': /* float, double */
 					if (text[i+1] == 'w')
 						swab = TRUE;
@@ -5139,7 +5139,7 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 
 	GMT_memcpy (Csave, C, 1, struct GMT_CTRL);
 
-	/* Increment level counter */
+	/* Increment level COUNTER_LARGE */
 	C->hidden.func_level++;		/* This lets us know how deeply we are nested when a GMT module is called */
 
 	/* Now fix things that were allocated separately from the main GMT structure.  These are usually text strings

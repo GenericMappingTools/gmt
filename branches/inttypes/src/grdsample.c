@@ -173,7 +173,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT_LONG error = 0, row, col;
 	
-	COUNTER ij;
+	COUNTER_LARGE ij;
 	
 	char format[GMT_BUFSIZ];
 	

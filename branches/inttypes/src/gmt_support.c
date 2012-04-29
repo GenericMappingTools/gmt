@@ -128,7 +128,7 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name,
 #ifdef NEW_DEBUG
 struct MEMORY_ITEM * gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *addr);
 #else
-COUNTER gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *ptr);
+COUNTER_LARGE gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *ptr);
 #endif
 #endif
 
@@ -380,7 +380,7 @@ GMT_LONG GMT_get_prime_factors (struct GMT_CTRL *C, GMT_LONG n, GMT_LONG *f)
 	GMT_LONG skip_five = 25;	/* Used to skip multiples of 5 in the list  */
 	GMT_LONG base_factor[3] = {2, 3, 5};	/* Standard factors to try */
 	GMT_LONG m;			/* Used to keep a working copy of n  */
-	GMT_LONG k;			/* Counter */
+	GMT_LONG k;			/* COUNTER_LARGE */
 
 	/* Initialize m and max_factor  */
 
@@ -628,7 +628,7 @@ int gmt_comp_char_asc (const void *p_1, const void *p_2)
 	return (0);
 }
 
-void GMT_sort_array (struct GMT_CTRL *C, void *base, COUNTER n, GMT_LONG type)
+void GMT_sort_array (struct GMT_CTRL *C, void *base, COUNTER_LARGE n, GMT_LONG type)
 { /* Front function to call qsort on all <type> array into ascending order */
 	size_t width[GMTAPI_N_TYPES] = {
 		sizeof(uint8_t),      /* GMTAPI_UCHAR */
@@ -637,7 +637,7 @@ void GMT_sort_array (struct GMT_CTRL *C, void *base, COUNTER n, GMT_LONG type)
 		sizeof(int16_t),      /* GMTAPI_SHORT */
 		sizeof(uint32_t),     /* GMTAPI_UINT */
 		sizeof(int32_t),      /* GMTAPI_INT */
-		sizeof(COUNTER),     /* GMTAPI_ULONG */
+		sizeof(COUNTER_LARGE),     /* GMTAPI_ULONG */
 		sizeof(int64_t),      /* GMTAPI_LONG */
 		sizeof(float),        /* GMTAPI_FLOAT */
 		sizeof(double)};      /* GMTAPI_DOUBLE */
@@ -2859,9 +2859,9 @@ void GMT_illuminate (struct GMT_CTRL *C, double intensity, double rgb[])
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
 
-GMT_LONG GMT_akima (struct GMT_CTRL *C, double *x, double *y, COUNTER nx, double *c)
+GMT_LONG GMT_akima (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE nx, double *c)
 {
-	COUNTER i, no;
+	COUNTER_LARGE i, no;
 	double t1, t2, b, rm1, rm2, rm3, rm4;
 
 	/* Assumes that n >= 4 and x is monotonically increasing */
@@ -2907,9 +2907,9 @@ GMT_LONG GMT_akima (struct GMT_CTRL *C, double *x, double *y, COUNTER nx, double
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
 
-GMT_LONG GMT_cspline (struct GMT_CTRL *C, double *x, double *y, COUNTER n, double *c)
+GMT_LONG GMT_cspline (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, double *c)
 {
-	COUNTER i, k;
+	COUNTER_LARGE i, k;
 	double ip, s, dx1, i_dx2, *u = GMT_memory (C, NULL, n, double);
 
 	/* Assumes that n >= 4 and x is monotonically increasing */
@@ -2930,9 +2930,9 @@ GMT_LONG GMT_cspline (struct GMT_CTRL *C, double *x, double *y, COUNTER n, doubl
 	return (GMT_NOERROR);
 }
 
-double GMT_csplint (struct GMT_CTRL *C, double *x, double *y, double *c, double xp, COUNTER klo)
+double GMT_csplint (struct GMT_CTRL *C, double *x, double *y, double *c, double xp, COUNTER_LARGE klo)
 {
-	COUNTER khi;
+	COUNTER_LARGE khi;
 	double h, ih, b, a, yp;
 
 	khi = klo + 1;
@@ -2971,9 +2971,9 @@ double GMT_csplint (struct GMT_CTRL *C, double *x, double *y, double *c, double 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
 
-GMT_LONG gmt_intpol_sub (struct GMT_CTRL *C, double *x, double *y, COUNTER n, COUNTER m, double *u, double *v, GMT_LONG mode)
+GMT_LONG gmt_intpol_sub (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, COUNTER_LARGE m, double *u, double *v, GMT_LONG mode)
 {	/* Does the main work of interpolating a section that has no NaNs */
-	COUNTER i, j;
+	COUNTER_LARGE i, j;
 	GMT_LONG err_flag = 0;
 	double dx, x_min, x_max, *c = NULL;
 
@@ -3037,16 +3037,16 @@ GMT_LONG gmt_intpol_sub (struct GMT_CTRL *C, double *x, double *y, COUNTER n, CO
 	return (GMT_NOERROR);
 }
 
-void gmt_intpol_reverse (double *x, double *u, COUNTER n, COUNTER m)
+void gmt_intpol_reverse (double *x, double *u, COUNTER_LARGE n, COUNTER_LARGE m)
 {	/* Changes sign on x and u */
-	COUNTER i;
+	COUNTER_LARGE i;
 	for (i = 0; i < n; i++) x[i] = -x[i];
 	for (i = 0; i < m; i++) u[i] = -u[i];
 }
 
-GMT_LONG GMT_intpol (struct GMT_CTRL *C, double *x, double *y, COUNTER n, COUNTER m, double *u, double *v, GMT_LONG mode)
+GMT_LONG GMT_intpol (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, COUNTER_LARGE m, double *u, double *v, GMT_LONG mode)
 {
-	COUNTER i, this_n, this_m, start_i, start_j, stop_i, stop_j;
+	COUNTER_LARGE i, this_n, this_m, start_i, start_j, stop_i, stop_j;
 	GMT_LONG err_flag = 0, down = FALSE, check = TRUE, clean = TRUE;
 	double dx;
 
@@ -3626,7 +3626,7 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double x
 
 	GMT_LONG n, error = 0, pos;
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	COUNTER k, i;
+	COUNTER_LARGE k, i;
 	double x, y, step = 0.0;
 	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
 
@@ -3844,9 +3844,9 @@ int gmt_sort_label_struct (const void *p_1, const void *p_2)
 	return 0;
 }
 
-void gmt_contlabel_fixpath (struct GMT_CTRL *C, double **xin, double **yin, double d[], COUNTER *n, struct GMT_CONTOUR *G)
+void gmt_contlabel_fixpath (struct GMT_CTRL *C, double **xin, double **yin, double d[], COUNTER_LARGE *n, struct GMT_CONTOUR *G)
 {	/* Sorts labels based on distance and inserts the label (x,y) point into the x,y path */
-	COUNTER i, j, np;
+	COUNTER_LARGE i, j, np;
 	GMT_LONG k;
 	double *xp = NULL, *yp = NULL, *x = NULL, *y = NULL;
 
@@ -3968,11 +3968,11 @@ void GMT_contlabel_free (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 	}
 }
 
-void gmt_get_radii_of_curvature (double x[], double y[], COUNTER n, double r[])
+void gmt_get_radii_of_curvature (double x[], double y[], COUNTER_LARGE n, double r[])
 {
 	/* Calculates radius of curvature along the spatial curve x(t), y(t) */
 
-	COUNTER i, im, ip;
+	COUNTER_LARGE i, im, ip;
 	double a, b, c, d, e, f, x0, y0, denom;
 
 	for (im = 0, i = 1, ip = 2; ip < n; i++, im++, ip++) {
@@ -4010,7 +4010,7 @@ void gmt_edge_contour (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG col, GMT
 	}
 }
 
-void gmt_setcontjump (float *z, COUNTER nz)
+void gmt_setcontjump (float *z, COUNTER_LARGE nz)
 {
 /* This routine will check if there is a 360 jump problem
  * among these coordinates and adjust them accordingly so
@@ -4018,7 +4018,7 @@ void gmt_setcontjump (float *z, COUNTER nz)
  * goes through these edges.  E.g., values like 359, 1
  * should become -1, 1 after this function */
 
-	COUNTER i;
+	COUNTER_LARGE i;
 	GMT_LONG jump = FALSE;
 	double dz;
 
@@ -4039,12 +4039,12 @@ void gmt_setcontjump (float *z, COUNTER nz)
 	}
 }
 
-COUNTER gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG test, GMT_LONG *edge, double **x, double **y, GMT_LONG col, GMT_LONG row, GMT_LONG side, COUNTER offset, size_t *bit, GMT_LONG *nan_flag)
+COUNTER_LARGE gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG test, GMT_LONG *edge, double **x, double **y, GMT_LONG col, GMT_LONG row, GMT_LONG side, COUNTER_LARGE offset, size_t *bit, GMT_LONG *nan_flag)
 {
 	GMT_LONG this_side, old_side, n_exits, opposite_side, n_nan;
 	GMT_LONG side_in, edge_word, edge_bit, more, p[5];
 	size_t n_alloc;
-	COUNTER n = 1, m, ij0, ij_in, ij;
+	COUNTER_LARGE n = 1, m, ij0, ij_in, ij;
 	float z[5];
 	double xk[5], *xx = NULL, *yy = NULL;
 	static GMT_LONG d_col[5] = {0, 1, 0, 0, 0}, d_row[5] = {0, 0, -1, 0, 0}, d_side[5] = {0, 1, 0, 1, 0};
@@ -4182,12 +4182,12 @@ COUNTER gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG test
 	return (n);
 }
 
-COUNTER gmt_smooth_contour (struct GMT_CTRL *C, double **x_in, double **y_in, COUNTER n, GMT_LONG sfactor, GMT_LONG stype)
+COUNTER_LARGE gmt_smooth_contour (struct GMT_CTRL *C, double **x_in, double **y_in, COUNTER_LARGE n, GMT_LONG sfactor, GMT_LONG stype)
 {
 	/* Input n (x_in, y_in) points */
 	/* n_out = sfactor * n -1 */
 	/* Interpolation scheme used (0 = linear, 1 = Akima, 2 = Cubic spline, 3 = None */
-	COUNTER i, j, k, n_out;
+	COUNTER_LARGE i, j, k, n_out;
 	double ds, t_next, *x = NULL, *y = NULL;
 	double *t_in = NULL, *t_out = NULL, *x_tmp = NULL, *y_tmp = NULL, x0, x1, y0, y1;
 	char *flag = NULL;
@@ -4287,10 +4287,10 @@ COUNTER gmt_smooth_contour (struct GMT_CTRL *C, double **x_in, double **y_in, CO
 	return (n_out);
 }
 
-COUNTER gmt_splice_contour (struct GMT_CTRL *C, double **x, double **y, COUNTER n, double *x2, double *y2, COUNTER n2)
+COUNTER_LARGE gmt_splice_contour (struct GMT_CTRL *C, double **x, double **y, COUNTER_LARGE n, double *x2, double *y2, COUNTER_LARGE n2)
 {	/* Basically does a "tail -r" on the array x,y and append arrays x2/y2 */
 
-	COUNTER i, j, m;
+	COUNTER_LARGE i, j, m;
 	double *x1, *y1;
 
 	if (n2 < 2) return (n);		/* Nothing to be done when second piece < 2 points */
@@ -4321,11 +4321,11 @@ COUNTER gmt_splice_contour (struct GMT_CTRL *C, double **x, double **y, COUNTER 
 	return (m);
 }
 
-void gmt_orient_contour (struct GMT_GRID *G, double *x, double *y, COUNTER n, GMT_LONG orient)
+void gmt_orient_contour (struct GMT_GRID *G, double *x, double *y, COUNTER_LARGE n, GMT_LONG orient)
 {
 	/* Determine handedness of the contour and if opposite of orient reverse the contour */
 	GMT_LONG reverse, side[2], z_dir, k, k2;
-	COUNTER ij, i, j;
+	COUNTER_LARGE ij, i, j;
 	double fx[2], fy[2], dx, dy;
 
 	if (orient == 0) return;	/* Nothing to be done when no orientation specified */
@@ -4399,7 +4399,7 @@ void gmt_orient_contour (struct GMT_GRID *G, double *x, double *y, COUNTER n, GM
 	}
 }
 
-COUNTER GMT_contours (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG smooth_factor, GMT_LONG int_scheme, GMT_LONG orient, GMT_LONG *edge, GMT_LONG *first, double **x, double **y)
+COUNTER_LARGE GMT_contours (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG smooth_factor, GMT_LONG int_scheme, GMT_LONG orient, GMT_LONG *edge, GMT_LONG *first, double **x, double **y)
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
@@ -4411,11 +4411,11 @@ COUNTER GMT_contours (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG smooth_fa
 
 	static GMT_LONG col_0, row_0, side;
 	GMT_LONG nans = 0, row, col;
-	COUNTER n = 0, n2, n_edges, offset;
+	COUNTER_LARGE n = 0, n2, n_edges, offset;
 	double *x2 = NULL, *y2 = NULL;
 	static size_t bit[32];
 
-	n_edges = G->header->ny * (COUNTER) ceil (G->header->nx / 16.0);
+	n_edges = G->header->ny * (COUNTER_LARGE) ceil (G->header->nx / 16.0);
 	offset = n_edges / 2;
 
 	/* Reset edge-flags to zero, if necessary */
@@ -4541,7 +4541,7 @@ COUNTER GMT_contours (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG smooth_fa
 	return (0);
 }
 
-struct GMT_LINE_SEGMENT * GMT_dump_contour (struct GMT_CTRL *C, double *x, double *y, COUNTER n, double z)
+struct GMT_LINE_SEGMENT * GMT_dump_contour (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, double z)
 {	/* Returns a segment with this contour */
 	GMT_LONG n_cols;
 	char header[GMT_BUFSIZ];
@@ -4722,9 +4722,9 @@ void gmt_place_label (struct GMT_CTRL *C, struct GMT_LABEL *L, char *txt, struct
 	}
 }
 
-void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, COUNTER nn, double zval, char *label, char ctype, double cangle, GMT_LONG closed, struct GMT_CONTOUR *G)
+void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, COUNTER_LARGE nn, double zval, char *label, char ctype, double cangle, GMT_LONG closed, struct GMT_CONTOUR *G)
 {	/* The xx, yy are expected to be projected x/y inches */
-	COUNTER i, j, start = 0;
+	COUNTER_LARGE i, j, start = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double *track_dist = NULL, *map_dist = NULL, *value_dist = NULL, *radii = NULL, *xx = NULL, *yy = NULL;
 	double dx, dy, width, f, this_dist, step, stept, this_value_dist, lon[2], lat[2];
@@ -4844,7 +4844,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, COUNT
 
 		}
 		if (G->number) {	/* Place prescribed number of labels evenly along contours */
-			COUNTER nc;
+			COUNTER_LARGE nc;
 			GMT_LONG e_val = 0;
 			double dist, last_dist;
 
@@ -4910,7 +4910,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, COUNT
 			if (G->n_label == 0) GMT_report (C, GMT_MSG_VERBOSE, "Warning: Your -Gn|N option produced no contour labels for z = %g\n", zval);
 		}
 		if (G->crossing) {	/* Determine label positions based on crossing lines */
-			COUNTER left, right, line_no;
+			COUNTER_LARGE left, right, line_no;
 			GMT_init_track (C, yy, nn, &(G->ylist));
 			for (line_no = 0; line_no < G->xp->n_segments; line_no++) {	/* For each of the crossing lines */
 				GMT_init_track (C, G->xp->segment[line_no]->coord[GMT_Y], G->xp->segment[line_no]->n_rows, &(G->ylist_XP));
@@ -4920,7 +4920,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, COUNT
 
 				/* OK, we found intersections for labels */
 
-				for (i = 0; i < (COUNTER)G->nx; i++) {
+				for (i = 0; i < (COUNTER_LARGE)G->nx; i++) {
 					left  = (GMT_LONG) floor (G->XC.xnode[1][i]);
 					right = (GMT_LONG) ceil  (G->XC.xnode[1][i]);
 					new_label = GMT_memory (C, NULL, 1, struct GMT_LABEL);
@@ -4961,7 +4961,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, COUNT
 		}
 		if (G->fixed) {	/* Prescribed point locations for labels that match points in input records */
 			double dist, min_dist;
-			for (j = 0; j < (COUNTER)G->f_n; j++) {	/* Loop over fixed point list */
+			for (j = 0; j < (COUNTER_LARGE)G->f_n; j++) {	/* Loop over fixed point list */
 				min_dist = DBL_MAX;
 				for (i = 0; i < nn; i++) {	/* Loop over input line/contour */
 					if ((dist = hypot (xx[i] - G->f_xy[0][j], yy[i] - G->f_xy[1][j])) < min_dist) {	/* Better fit */
@@ -5003,7 +5003,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, COUNT
 		GMT_free (C, map_dist);
 		GMT_free (C, value_dist);
 		/* Free label structure since info is now copied to segment labels */
-		for (i = 0; i < (COUNTER)G->n_label; i++) {
+		for (i = 0; i < (COUNTER_LARGE)G->n_label; i++) {
 			GMT_free (C, G->L[i]->label);
 			GMT_free (C, G->L[i]);
 		}
@@ -5016,13 +5016,13 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, COUNT
 	*yyy = yy;
 }
 
-void GMT_hold_contour (struct GMT_CTRL *C, double **xxx, double **yyy, COUNTER nn, double zval, char *label, char ctype, double cangle, GMT_LONG closed, struct GMT_CONTOUR *G)
+void GMT_hold_contour (struct GMT_CTRL *C, double **xxx, double **yyy, COUNTER_LARGE nn, double zval, char *label, char ctype, double cangle, GMT_LONG closed, struct GMT_CONTOUR *G)
 {	/* The xx, yy are expected to be projected x/y inches.
 	 * This function just makes sure that the xxx/yyy are continuous and do not have map jumps.
 	 * If there are jumps we find them and call the main gmt_hold_contour_sub for each segment
 	 */
 
-	COUNTER seg, first, n, *split = NULL;
+	COUNTER_LARGE seg, first, n, *split = NULL;
 	double *xs = NULL, *ys = NULL, *xin = NULL, *yin = NULL;
 
 	if ((split = GMT_split_line (C, xxx, yyy, &nn, G->line_type)) == NULL) {	/* Just one long line */
@@ -5119,7 +5119,7 @@ GMT_LONG GMT_get_format (struct GMT_CTRL *C, double interval, char *unit, char *
 	return (ndec);
 }
 
-GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double *x, double *y, COUNTER n_path)
+GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double *x, double *y, COUNTER_LARGE n_path)
 {
 	/* Routine returns (2) if (xp,yp) is inside the
 	   polygon x[n_path], y[n_path], (0) if outside,
@@ -5146,7 +5146,7 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 	   in the path before and after this section, and check them.
 	   */
 
-	COUNTER i, j, k, jend, crossing_count;
+	COUNTER_LARGE i, j, k, jend, crossing_count;
 	GMT_LONG above;
 	double y_sect;
 
@@ -5311,9 +5311,9 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 	return ((crossing_count) ? GMT_INSIDE: GMT_OUTSIDE);
 }
 
-COUNTER gmt_getprevpoint (double plon, double lon[], COUNTER n, COUNTER this)
+COUNTER_LARGE gmt_getprevpoint (double plon, double lon[], COUNTER_LARGE n, COUNTER_LARGE this)
 {	/* Return the previous point that does NOT equal plon */
-	COUNTER ip = (this == 0) ? n - 2 : this - 1;	/* Previous point (-2 because last is a duplicate of first) */
+	COUNTER_LARGE ip = (this == 0) ? n - 2 : this - 1;	/* Previous point (-2 because last is a duplicate of first) */
 	while (doubleAlmostEqualZero (plon, lon[ip]) || doubleAlmostEqual (fabs(plon - lon[ip]), 360.0)) {	/* Same as plon */
 		if (ip == 0)
 			ip = n - 2;
@@ -5328,7 +5328,7 @@ COUNTER gmt_getprevpoint (double plon, double lon[], COUNTER n, COUNTER this)
 
 GMT_LONG gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SEGMENT *P, GMT_LONG count[])
 {	/* Case of a polar cap */
-	COUNTER i, in, ip, prev;
+	COUNTER_LARGE i, in, ip, prev;
 	GMT_LONG cut;
 	double W, E, S, N, lon, lon1, lon2, dlon, x_lat;
 
@@ -5532,14 +5532,14 @@ GMT_LONG GMT_inonout (struct GMT_CTRL *C, double x, double y, const struct GMT_L
 #include "triangle.h"
 
 /* Leave link as int**, not GMT_LONG** */
-GMT_LONG GMT_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER n, int **link)
+GMT_LONG GMT_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, int **link)
 {
 	/* GMT interface to the triangle package; see above for references.
 	 * All that is done is reformatting of parameters and calling the
 	 * main triangulate routine.  Thanx to Alain Coat for the tip.
 	 */
 
-	COUNTER i, j;
+	COUNTER_LARGE i, j;
 	struct triangulateio In, Out, vorOut;
 
 	/* Set everything to 0 and NULL */
@@ -5573,7 +5573,7 @@ GMT_LONG GMT_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, 
 	return (Out.numberoftriangles);
 }
 
-GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER n, double *we, double **x_out, double **y_out)
+GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, double *we, double **x_out, double **y_out)
 {
 	/* GMT interface to the triangle package; see above for references.
 	 * All that is done is reformatting of parameters and calling the
@@ -5589,7 +5589,7 @@ GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, C
 	 * for every edge that has input vertex 1 as an endpoint.  The corresponding dual
 	 * edges in the output .v.edge file form the boundary of Voronoi cell 1." */
 
-	COUNTER i, j, k, j2, n_edges;
+	COUNTER_LARGE i, j, k, j2, n_edges;
 	struct triangulateio In, Out, vorOut;
 	double *x_edge = NULL, *y_edge = NULL, dy;
 
@@ -5653,13 +5653,13 @@ GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, C
 }
 #else
 /* Dummy functions since not installed */
-GMT_LONG GMT_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER n, int **link)
+GMT_LONG GMT_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, int **link)
 {
 	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_delaunay_shewchuk is unavailable: Shewchuk's triangle option was not selected during GMT installation");
 	return (0);
 	
 }
-GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER n, double *we, double **x_out, double **y_out) {
+GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, double *we, double **x_out, double **y_out) {
 	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_voronoi_shewchuk is unavailable: Shewchuk's triangle option was not selected during GMT installation");
 	return (0);
 }
@@ -5674,7 +5674,7 @@ GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, C
  */
 
 /* Leave link as int**, not GMT_LONG** */
-GMT_LONG GMT_delaunay_watson (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER n, int **link)
+GMT_LONG GMT_delaunay_watson (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, int **link)
 	/* Input point x coordinates */
 	/* Input point y coordinates */
 	/* Number of input points */
@@ -5683,7 +5683,7 @@ GMT_LONG GMT_delaunay_watson (struct GMT_CTRL *C, double *x_in, double *y_in, CO
 {
 	int *index = NULL;	/* Must be int not GMT_LONG */
 	GMT_LONG ix[3], iy[3], done;
-	COUNTER i, j, nuc, ij, jt, km, id, isp, l1, l2, k, k1, jz, i2, kmt, kt, size;
+	COUNTER_LARGE i, j, nuc, ij, jt, km, id, isp, l1, l2, k, k1, jz, i2, kmt, kt, size;
 	int64_t *istack = NULL, *x_tmp = NULL, *y_tmp = NULL;
 	double det[2][3], *x_circum = NULL, *y_circum = NULL, *r2_circum = NULL, *x = NULL, *y = NULL;
 	double xmin, xmax, ymin, ymax, datax, dx, dy, dsq, dd;
@@ -5837,13 +5837,13 @@ GMT_LONG GMT_delaunay_watson (struct GMT_CTRL *C, double *x_in, double *y_in, CO
 	return (i/3);
 }
 
-GMT_LONG GMT_voronoi_watson (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER n, double *we, double **x_out, double **y_out)
+GMT_LONG GMT_voronoi_watson (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, double *we, double **x_out, double **y_out)
 {
 	GMT_report (C, GMT_MSG_FATAL, "GMT: No Voronoi unless you select Shewchuk's triangle option during GMT installation");
 	return (0);
 }
 
-GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER n, int **link)
+GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, int **link)
 {
 	if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (GMT_delaunay_shewchuk (C, x_in, y_in, n, link));
 	if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (GMT_delaunay_watson    (C, x_in, y_in, n, link));
@@ -5851,7 +5851,7 @@ GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER n
 	return (-1);
 }
 
-GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER n, double *we, double **x_out, double **y_out)
+GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, double *we, double **x_out, double **y_out)
 {
 	if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (GMT_voronoi_shewchuk (C, x_in, y_in, n, we, x_out, y_out));
 	if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (GMT_voronoi_watson    (C, x_in, y_in, n, we, x_out, y_out));
@@ -6022,17 +6022,17 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 	   This is the revised, two-rows version (WHFS 6 May 1998).
 	*/
 
-	COUNTER mx;		/* Width of padded array; width as malloc'ed  */
-	COUNTER mxnyp;		/* distance to periodic constraint in j direction  */
-	COUNTER i, jmx;		/* Current i, j * mx  */
-	COUNTER nxp2;		/* 1/2 the xg period (180 degrees) in cells  */
-	COUNTER i180;		/* index to 180 degree phase shift  */
-	COUNTER iw, iwo1, iwo2, iwi1, ie, ieo1, ieo2, iei1;  /* see below  */
-	COUNTER jn, jno1, jno2, jni1, js, jso1, jso2, jsi1;  /* see below  */
-	COUNTER jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
-	COUNTER j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
+	COUNTER_LARGE mx;		/* Width of padded array; width as malloc'ed  */
+	COUNTER_LARGE mxnyp;		/* distance to periodic constraint in j direction  */
+	COUNTER_LARGE i, jmx;		/* Current i, j * mx  */
+	COUNTER_LARGE nxp2;		/* 1/2 the xg period (180 degrees) in cells  */
+	COUNTER_LARGE i180;		/* index to 180 degree phase shift  */
+	COUNTER_LARGE iw, iwo1, iwo2, iwi1, ie, ieo1, ieo2, iei1;  /* see below  */
+	COUNTER_LARGE jn, jno1, jno2, jni1, js, jso1, jso2, jsi1;  /* see below  */
+	COUNTER_LARGE jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
+	COUNTER_LARGE j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
 	GMT_LONG n_skip;
-	GMT_LONG bok;		/* Counter used to test that things are OK  */
+	GMT_LONG bok;		/* COUNTER_LARGE used to test that things are OK  */
 	GMT_LONG set[4] = {TRUE, TRUE, TRUE, TRUE};
 	 
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
@@ -6430,18 +6430,18 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 	   Based on GMT_boundcont_set but extended to multiple bands and using char * array
 	*/
 
-	COUNTER mx;		/* Width of padded array; width as malloc'ed  */
-	COUNTER mxnyp;		/* distance to periodic constraint in j direction  */
-	COUNTER i, jmx;	/* Current i, j * mx  */
-	COUNTER nxp2;		/* 1/2 the xg period (180 degrees) in cells  */
-	COUNTER i180;		/* index to 180 degree phase shift  */
-	COUNTER iw, iwo1, iwo2, iwi1, ie, ieo1, ieo2, iei1;  /* see below  */
-	COUNTER jn, jno1, jno2, jni1, js, jso1, jso2, jsi1;  /* see below  */
-	COUNTER jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
-	COUNTER j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
+	COUNTER_LARGE mx;		/* Width of padded array; width as malloc'ed  */
+	COUNTER_LARGE mxnyp;		/* distance to periodic constraint in j direction  */
+	COUNTER_LARGE i, jmx;	/* Current i, j * mx  */
+	COUNTER_LARGE nxp2;		/* 1/2 the xg period (180 degrees) in cells  */
+	COUNTER_LARGE i180;		/* index to 180 degree phase shift  */
+	COUNTER_LARGE iw, iwo1, iwo2, iwi1, ie, ieo1, ieo2, iei1;  /* see below  */
+	COUNTER_LARGE jn, jno1, jno2, jni1, js, jso1, jso2, jsi1;  /* see below  */
+	COUNTER_LARGE jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
+	COUNTER_LARGE j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
 	GMT_LONG n_skip;
 	GMT_LONG b, nb = G->header->n_bands;
-	GMT_LONG bok;		/* Counter used to test that things are OK  */
+	GMT_LONG bok;		/* COUNTER_LARGE used to test that things are OK  */
 	GMT_LONG set[4] = {TRUE, TRUE, TRUE, TRUE};
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
 	char *edge[4] = {"left  ", "right ", "bottom", "top   "};
@@ -7489,9 +7489,9 @@ void GMT_list_custom_symbols (struct GMT_CTRL *C)
 	GMT_message (C, "\t     ---------------------------------------------------------\n");
 }
 
-void GMT_rotate2D (struct GMT_CTRL *C, double x[], double y[], COUNTER n, double x0, double y0, double angle, double xp[], double yp[])
+void GMT_rotate2D (struct GMT_CTRL *C, double x[], double y[], COUNTER_LARGE n, double x0, double y0, double angle, double xp[], double yp[])
 {	/* Cartesian rotation of x,y in the plane by angle followed by translation by (x0, y0) */
-	COUNTER i;
+	COUNTER_LARGE i;
 	double s, c;
 
 	sincosd (angle, &s, &c);
@@ -7556,13 +7556,13 @@ int GMT_ysort (const void *p1, const void *p2, void *data)	/* Can use qsort_r an
 	return (0);
 }
 
-GMT_LONG GMT_init_track (struct GMT_CTRL *C, double y[], COUNTER n, struct GMT_XSEGMENT **S)
+GMT_LONG GMT_init_track (struct GMT_CTRL *C, double y[], COUNTER_LARGE n, struct GMT_XSEGMENT **S)
 {
 	/* GMT_init_track accepts the y components of an x-y track of length n and returns an array of
 	 * line segments that have been sorted on the minimum y-coordinate
 	 */
 
-	COUNTER a, b, nl = n - 1;
+	COUNTER_LARGE a, b, nl = n - 1;
 	struct GMT_XSEGMENT *L = NULL;
 
 	if (nl <= 0) {
@@ -7616,10 +7616,10 @@ void gmt_x_alloc (struct GMT_CTRL *C, struct GMT_XOVER *X, size_t nx_alloc, GMT_
 	}
 }
 
-GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], GMT_LONG *sa0, struct GMT_XSEGMENT A[], COUNTER na, double xb[], double yb[], GMT_LONG *sb0, struct GMT_XSEGMENT B[], COUNTER nb, GMT_LONG internal, struct GMT_XOVER *X)
+GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], GMT_LONG *sa0, struct GMT_XSEGMENT A[], COUNTER_LARGE na, double xb[], double yb[], GMT_LONG *sb0, struct GMT_XSEGMENT B[], COUNTER_LARGE nb, GMT_LONG internal, struct GMT_XOVER *X)
 {
 	size_t nx_alloc;
-	COUNTER this_a, this_b, xa_start = 0, xa_stop = 0, xb_start = 0, xb_stop = 0, ta_start = 0, ta_stop = 0, tb_start, tb_stop, n_seg_a, n_seg_b;
+	COUNTER_LARGE this_a, this_b, xa_start = 0, xa_stop = 0, xb_start = 0, xb_stop = 0, ta_start = 0, ta_stop = 0, tb_start, tb_stop, n_seg_a, n_seg_b;
 	GMT_LONG nx, new_a, new_b, new_a_time = FALSE, xa_OK = FALSE, xb_OK = FALSE;
 	GMT_LONG *sa = NULL, *sb = NULL;
 	double del_xa, del_xb, del_ya, del_yb, i_del_xa, i_del_xb, i_del_ya, i_del_yb, slp_a, slp_b, xc, yc, tx_a, tx_b;
@@ -8977,7 +8977,7 @@ void GMT_free_custom_symbols (struct GMT_CTRL *C) {	/* Free the allocated list o
 	C->init.n_custom_symbols = 0;
 }
 
-GMT_LONG GMT_polygon_is_open (struct GMT_CTRL *C, double x[], double y[], COUNTER n)
+GMT_LONG GMT_polygon_is_open (struct GMT_CTRL *C, double x[], double y[], COUNTER_LARGE n)
 {	/* Returns TRUE if the first and last point is not identical */
 	if (n < 2) return FALSE;	/*	A point is closed */
 	if (!doubleAlmostEqualZero (x[0], x[n-1]))
@@ -8989,9 +8989,9 @@ GMT_LONG GMT_polygon_is_open (struct GMT_CTRL *C, double x[], double y[], COUNTE
 	return FALSE;
 }
 
-double GMT_polygon_area (struct GMT_CTRL *C, double x[], double y[], COUNTER n)
+double GMT_polygon_area (struct GMT_CTRL *C, double x[], double y[], COUNTER_LARGE n)
 {
-	COUNTER i, last;
+	COUNTER_LARGE i, last;
 	double area, xold, yold;
 
 	/* Sign will be +ve if polygon is CW, negative if CCW */
@@ -9010,9 +9010,9 @@ double GMT_polygon_area (struct GMT_CTRL *C, double x[], double y[], COUNTER n)
 	return (0.5 * area);
 }
 
-GMT_LONG GMT_polygon_centroid (struct GMT_CTRL *C, double *x, double *y, COUNTER n, double *Cx, double *Cy)
+GMT_LONG GMT_polygon_centroid (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, double *Cx, double *Cy)
 {	/* Compute polygon centroid location */
-	COUNTER i, last;
+	COUNTER_LARGE i, last;
 	double A, d, xold, yold;
 
 	A = GMT_polygon_area (C, x, y, n);
@@ -9190,7 +9190,7 @@ void gmt_memtrack_alloc (struct GMT_CTRL *C, struct MEMORY_TRACKER *M)
 void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name, GMT_LONG line, void *ptr, void *prev_ptr, size_t size) {
 	/* Called from GMT_memory to update current list of memory allocated */
 	size_t old;
-	COUNTER entry;
+	COUNTER_LARGE entry;
 	int64_t diff;
 	void *use = NULL;
 
@@ -9252,9 +9252,9 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name,
 	M->n_freed++;
 }
 
-COUNTER gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *ptr) {
+COUNTER_LARGE gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *ptr) {
 	/* Brute force linear search for now - if useful we'll do linked lists or something */
-	COUNTER i = 0;
+	COUNTER_LARGE i = 0;
 	while (i < M->n_ptr && ptr != M->item[i].ptr) i++;	/* Loop over array of known pointers */
 	return (i == M->n_ptr ? -1 : i);
 }
@@ -9524,7 +9524,7 @@ struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct G
 
 	int ndig;
 	GMT_LONG tbl, col, n_cols, resample;
-	COUNTER row, seg, seg_no;
+	COUNTER_LARGE row, seg, seg_no;
 	char buffer[GMT_BUFSIZ], ID[GMT_BUFSIZ];
 	double along_dist, azimuth, dist_inc, along_ds_degree;
 	struct GMT_DATASET *D = NULL;
@@ -9588,7 +9588,7 @@ struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct G
 
 	int ndig;
 	GMT_LONG tbl, col, n_cols, resample;
-	COUNTER row, seg, seg_no;
+	COUNTER_LARGE row, seg, seg_no;
 	char buffer[GMT_BUFSIZ], ID[GMT_BUFSIZ];
 	double along_dist, azimuth, dist_inc;
 	struct GMT_DATASET *D = NULL;
@@ -9664,7 +9664,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 	GMT_LONG tbl, k, left, right, ii, np_cross, dim[4] = {0, 0, 0, 0};
 	GMT_LONG n_half_cross, n_tot_cols;
 	
-	COUNTER row, seg, seg_no;
+	COUNTER_LARGE row, seg, seg_no;
 	size_t n_x_seg = 0, n_x_seg_alloc = 0;
 
 	char buffer[GMT_BUFSIZ], seg_name[GMT_BUFSIZ], ID[GMT_BUFSIZ];
@@ -9798,7 +9798,7 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 	GMT_LONG tbl, k, ii, np_cross, dim[4] = {0, 0, 0, 0};
 	GMT_LONG n_half_cross, n_tot_cols;
 	
-	COUNTER row, seg, seg_no;
+	COUNTER_LARGE row, seg, seg_no;
 	size_t n_x_seg = 0, n_x_seg_alloc = 0;
 
 	char buffer[GMT_BUFSIZ], seg_name[GMT_BUFSIZ], ID[GMT_BUFSIZ];
@@ -9909,7 +9909,7 @@ GMT_LONG gmt_straddle_dateline (double x0, double x1) {
 
 GMT_LONG GMT_crossing_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 {	/* Return TRUE if this line or polygon feature contains points on either side of the Dateline */
-	COUNTER k;
+	COUNTER_LARGE k;
 	GMT_LONG east = FALSE, west = FALSE, cross = FALSE;
 	for (k = 0; !cross && k < S->n_rows; k++) {
 		if ((S->coord[GMT_X][k] > 180.0 && S->coord[GMT_X][k] < 270.0) || (S->coord[GMT_X][k] > -180.0 && S->coord[GMT_X][k] < -90.0)) west = TRUE;
@@ -9923,7 +9923,7 @@ GMT_LONG GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 {	/* Create two or more feature segments by splitting them across the Dateline.
 	 * GMT_split_line_at_dateline should ONLY be called when we KNOW we must split. */
 	GMT_LONG col, seg, n_split;
-	COUNTER k, row, start, length, *pos = GMT_memory (C, NULL, S->n_rows, COUNTER);
+	COUNTER_LARGE k, row, start, length, *pos = GMT_memory (C, NULL, S->n_rows, COUNTER_LARGE);
 	char label[GMT_BUFSIZ], *txt = NULL, *feature = "Line";
 	double r;
 	struct GMT_LINE_SEGMENT **L = NULL, *Sx = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
@@ -9974,20 +9974,20 @@ GMT_LONG GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 	return (n_split);	/* Return how many segments was made */
 }
 
-GMT_LONG GMT_detrend (struct GMT_CTRL *C, double *x, double *y, COUNTER n, double increment, double *intercept, double *slope, GMT_LONG mode)
+GMT_LONG GMT_detrend (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, double increment, double *intercept, double *slope, GMT_LONG mode)
 {	/* Deals with linear trend in a dataset, depending on mode:
 	 * -1: Determine trend, and remove it from x,y. Return slope and intercept
 	 * 0 : Just determine trend. Return slope and intercept
 	 * +1: Restore trend in x,y based on given slope/intercept.
 	 * (x,y) is the data.  If x == NULL then data is equidistant with increment as the spacing.
 	 */
-	COUNTER i;
+	COUNTER_LARGE i;
 	GMT_LONG equidistant;
 	double xx;
 	
 	equidistant = (x == NULL);	/* If there are no x-values we assume dx is passed via intercept */
 	if (mode < 1) {	/* Must determine trend */
-		COUNTER m;
+		COUNTER_LARGE m;
 		double sum_x = 0.0, sum_xx = 0.0, sum_y = 0.0, sum_xy = 0.0;
 		for (i = m = 0; i < n; i++) {
 			if (GMT_is_dnan (y[i])) continue;

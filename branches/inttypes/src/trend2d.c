@@ -70,9 +70,9 @@ struct TREND2D_DATA {
 	double	w;
 };
 
-GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, COUNTER *n_data, double *xmin, double *xmax, double *ymin, double *ymax, GMT_LONG weighted_input, double **work)
+GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, COUNTER_LARGE *n_data, double *xmin, double *xmax, double *ymin, double *ymax, GMT_LONG weighted_input, double **work)
 {
-	COUNTER i;
+	COUNTER_LARGE i;
 	size_t n_alloc = GMT_CHUNK;
 	double *in = NULL;
 
@@ -133,9 +133,9 @@ void allocate_the_memory_2d (struct GMT_CTRL *GMT, GMT_LONG np, double **gtg, do
 	*w_model = GMT_memory (GMT, NULL, np, double);
 }
 
-void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER n_data, char *output_choice, GMT_LONG n_outputs)
+void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER_LARGE n_data, char *output_choice, GMT_LONG n_outputs)
 {
-	COUNTER i;
+	COUNTER_LARGE i;
 	GMT_LONG j;
 	double out[6];
 
@@ -181,9 +181,9 @@ void free_the_memory_2d (struct GMT_CTRL *GMT, double *gtg, double *v, double *g
 	GMT_free (GMT, gtg);
 }
 
-void transform_x_2d (struct TREND2D_DATA *data, COUNTER n_data, double xmin, double xmax, double ymin, double ymax)
+void transform_x_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double xmin, double xmax, double ymin, double ymax)
 {
-	COUNTER i;
+	COUNTER_LARGE i;
 	double offsetx, scalex;
 	double offsety, scaley;
 
@@ -198,9 +198,9 @@ void transform_x_2d (struct TREND2D_DATA *data, COUNTER n_data, double xmin, dou
 	}
 }
 
-void untransform_x_2d (struct TREND2D_DATA *data, COUNTER n_data, double xmin, double xmax, double ymin, double ymax)
+void untransform_x_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double xmin, double xmax, double ymin, double ymax)
 {
-	COUNTER i;
+	COUNTER_LARGE i;
 	double offsetx, scalex;
 	double offsety, scaley;
 
@@ -215,9 +215,9 @@ void untransform_x_2d (struct TREND2D_DATA *data, COUNTER n_data, double xmin, d
 	}
 }
 
-double get_chisq_2d (struct TREND2D_DATA *data, COUNTER n_data, GMT_LONG n_model)
+double get_chisq_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, GMT_LONG n_model)
 {
-	COUNTER i, nu;
+	COUNTER_LARGE i, nu;
 	double chi = 0.0;
 
 	for (i = 0; i < n_data; i++) {	/* Weight is already squared  */
@@ -231,9 +231,9 @@ double get_chisq_2d (struct TREND2D_DATA *data, COUNTER n_data, GMT_LONG n_model
 	return (chi);
 }
 
-void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER n_data, double *work, double *scale)
+void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER_LARGE n_data, double *work, double *scale)
 {
-	COUNTER i;
+	COUNTER_LARGE i;
 	double k, ksq, rr;
 
 	/* First find median { fabs(data[].r) },
@@ -306,12 +306,12 @@ void load_g_row_2d (double x, double y, GMT_LONG n, double *gr)
 	}
 }
 
-void calc_m_and_r_2d (struct TREND2D_DATA *data, COUNTER n_data, double *model, GMT_LONG n_model, double *grow)
+void calc_m_and_r_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double *model, GMT_LONG n_model, double *grow)
 {
 	/*	model[n_model] holds solved coefficients of m_type model.
 		grow[n_model] is a vector for a row of G matrix.  */
 
-	COUNTER i;
+	COUNTER_LARGE i;
 	GMT_LONG j;
 	for (i = 0; i < n_data; i++) {
 		load_g_row_2d (data[i].x, data[i].y, n_model, grow);
@@ -328,10 +328,10 @@ void move_model_a_to_b_2d (double *model_a, double *model_b, GMT_LONG n_model, d
 	*chisq_b = *chisq_a;
 }
 
-void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER n_data, double *gtg, double *gtd, double *grow, GMT_LONG n_model, GMT_LONG mp)
+void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER_LARGE n_data, double *gtg, double *gtd, double *grow, GMT_LONG n_model, GMT_LONG mp)
 {	/* mp is row dimension of gtg  */
 
-	COUNTER i;
+	COUNTER_LARGE i;
 	GMT_LONG j, k;
 	double wz;
 
@@ -522,7 +522,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, n_model, significant, rank, np, error = FALSE;
 	
-	COUNTER n_data;
+	COUNTER_LARGE n_data;
 
 	double *gtg = NULL, *v = NULL, *gtd = NULL, *lambda = NULL, *workb = NULL;
 	double *workz = NULL, *c_model = NULL, *o_model = NULL, *w_model = NULL, *work = NULL;
@@ -587,7 +587,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not read any data.\n");
 		Return (EXIT_FAILURE);
 	}
-	if (n_data < (COUNTER)Ctrl->N.value) {
+	if (n_data < (COUNTER_LARGE)Ctrl->N.value) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Ill-posed problem; n_data < n_model_max.\n");
 	}
 

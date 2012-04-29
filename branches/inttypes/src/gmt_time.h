@@ -34,7 +34,7 @@ struct GMT_TIME_SYSTEM {
 	double epoch_t0;		/* Rata_die fraction (in days since epoch, 0 <= t0 < 1) */
 	double scale;			/* Converts user units to seconds */
 	double i_scale;			/* Converts seconds to user units (= 1.0/scale) */
-	GMT_LONG rata_die;		/* Rata die number of epoch */
+	int64_t rata_die;		/* Rata die number of epoch */
 	char epoch[GMT_TEXT_LEN64];	/* User-defined epoch for time */
 	char unit;			/* User-defined time unit */
 };

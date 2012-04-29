@@ -55,7 +55,7 @@ struct GMTAPI_DATA_OBJECT {
 	GMT_LONG geometry;			/* One of GMT_POINT, GMT_LINE, GMT_POLY, GMT_SURF */
 	GMT_LONG region;			/* 1 if wesn was passed, 0 otherwise */
 	GMT_LONG level;				/* Nested module level when object was allocated */
-	COUNTER n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET only] */
+	COUNTER_LARGE n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET only] */
 	size_t n_alloc;				/* Number of memory allocated so far if writing to memory */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
 	void *resource;				/* Points to registered data container (if appropriate) */
@@ -72,14 +72,14 @@ struct GMTAPI_CTRL {
 	
 	GMT_LONG error;				/* Error code from latest API call [GMT_OK] */
 	GMT_LONG n_objects;			/* Number of currently active input and output data objects */
-	GMT_LONG n_objects_alloc;		/* Allocation counter for data objects */
+	GMT_LONG n_objects_alloc;		/* Allocation COUNTER_LARGE for data objects */
 	GMT_LONG unique_ID;			/* Used to create unique IDs for duration of session */
 	GMT_LONG session_ID;			/* ID of this session */
 	GMT_LONG current_item[2];		/* Array number of current dataset being processed (in and out)*/
 	GMT_LONG registered[2];			/* TRUE if at least one source/destination has been registered (in and out) */
 	GMT_LONG io_enabled[2];			/* TRUE if access has been allowed (in and out) */
 	GMT_LONG io_mode[2];			/* 1 if access as set, 0 if record-by-record */
-	COUNTER current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
+	COUNTER_LARGE current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */

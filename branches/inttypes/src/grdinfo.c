@@ -189,7 +189,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG n_grds = 0, error, subset;
 	
-	COUNTER ij, n_nan = 0, n = 0;
+	COUNTER_LARGE ij, n_nan = 0, n = 0;
 
 	double x_min = 0.0, y_min = 0.0, z_min = 0.0, x_max = 0.0, y_max = 0.0, z_max = 0.0, wesn[4];
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax;
@@ -256,7 +256,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
-			COUNTER ij_min, ij_max;
+			COUNTER_LARGE ij_min, ij_max;
 			GMT_LONG col, row;
 
 			z_min = DBL_MAX;	z_max = -DBL_MAX;

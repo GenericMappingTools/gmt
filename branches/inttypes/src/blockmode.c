@@ -128,7 +128,7 @@ GMT_LONG GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double weighted_mode (struct BLK_DATA *d, double wsum, COUNTER n, COUNTER k)
+double weighted_mode (struct BLK_DATA *d, double wsum, COUNTER_LARGE n, COUNTER_LARGE k)
 {
 	/* Estimate mode by finding a maximum in the estimated
 	   pdf of weighted data.  Estimate the pdf as the finite
@@ -189,8 +189,8 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, mode_xy, row, col, w_col;
 
-	COUNTER node, first_in_cell, first_in_new_cell, n_lost, n_read;
-	COUNTER n_cells_filled, n_in_cell, nz, n_pitched;
+	COUNTER_LARGE node, first_in_cell, first_in_new_cell, n_lost, n_read;
+	COUNTER_LARGE n_cells_filled, n_in_cell, nz, n_pitched;
 	size_t n_alloc = 0, nz_alloc = 0;
 
 	double out[7], wesn[4], i_n_in_cell, weight, *in = NULL, *z_tmp = NULL;

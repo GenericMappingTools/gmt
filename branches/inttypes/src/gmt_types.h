@@ -26,7 +26,10 @@
 #ifndef _GMT_TYPES_H
 #define _GMT_TYPES_H
 
-#define COUNTER uint64_t
+/* Three types for counting, depending on expected range of integers we need */
+#define COUNTER_LARGE	uint64_t
+#define COUNTER_MEDIUM	uint32_t
+#define COUNTER_SMALL	uint16_t
 
 /*--------------------------------------------------------------------
  *			GMT TYPEDEF DEFINITIONS
@@ -60,7 +63,7 @@ typedef void (*PFV) ();         /* PFV declares a pointer to a function returnin
 typedef void* (*PFP) ();        /* PFP declares a pointer to a function returning void* */
 typedef GMT_LONG (*PFL) ();     /* PFL declares a pointer to a function returning an GMT_LONG */
 typedef size_t (*PFS) ();    	/* PFS declares a pointer to a function returning an size_t */
-// typedef COUNTER (*PFU) ();    	/* PFU declares a pointer to a function returning an COUNTER */
+// typedef COUNTER_LARGE (*PFU) ();    	/* PFU declares a pointer to a function returning an COUNTER_LARGE */
 typedef int (*PFI) ();          /* PFI declares a pointer to a function returning an int */
 typedef double (*PFD) ();       /* PFD declares a pointer to a function returning a double */
 

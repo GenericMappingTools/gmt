@@ -192,7 +192,7 @@ float get_cell (float x, struct CELL *cell, GMT_LONG n_cells_m1, GMT_LONG last_c
 
 GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, GMT_LONG n_cells, GMT_LONG quadratic, GMT_LONG dump_intervals)
 {	/* Do basic histogram equalization */
-	COUNTER i, j, nxy;
+	COUNTER_LARGE i, j, nxy;
 	GMT_LONG last_cell, n_cells_m1 = 0, current_cell, pad[4];
 	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
@@ -269,7 +269,7 @@ int compare_indices (const void *point_1, const void *point_2)
 GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
 {	/* Make an output grid file with standard normal scores */
 	GMT_LONG row, col;
-	COUNTER i = 0, j = 0, ij, nxy;
+	COUNTER_LARGE i = 0, j = 0, ij, nxy;
 	double dnxy;
 	struct INDEXED_DATA *indexed_data = NULL;
 

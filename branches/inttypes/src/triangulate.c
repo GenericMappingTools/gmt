@@ -223,7 +223,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	int *link = NULL;	/* Must remain int and not GMT_LONG due to triangle function */
 	
-	COUNTER ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
+	COUNTER_LARGE ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
 	GMT_LONG col_min, col_max, row_min, row_max, n_output;
 	GMT_LONG row, col, n_input, triplets[2] = {FALSE, FALSE}, error = FALSE, map_them = FALSE;
 	

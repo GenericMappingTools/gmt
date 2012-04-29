@@ -357,7 +357,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_cols_start = 3, justify, error = GMT_NOERROR;
 	GMT_LONG ex1, ex2, ex3, change, n_needed, read_mode, save_u = FALSE;
 	
-	COUNTER i, n, n_total_read = 0;
+	COUNTER_LARGE i, n, n_total_read = 0;
 	size_t n_alloc = 0;
 
 	char *text_rec = NULL;
@@ -910,7 +910,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, data);
 	}
 	else {	/* Line/polygon part */
-		COUNTER seg;
+		COUNTER_LARGE seg;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT segment table(s) */
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */

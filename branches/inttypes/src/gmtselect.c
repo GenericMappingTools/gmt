@@ -415,7 +415,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG error = FALSE, need_header, shuffle, just_copy_record = FALSE;
 	GMT_LONG output_header = FALSE, do_project = FALSE, no_resample = FALSE;
 
-	COUNTER row, seg, n_read = 0, n_pass = 0;
+	COUNTER_LARGE row, seg, n_read = 0, n_pass = 0;
 
 	double xx, yy, *in = NULL;
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;

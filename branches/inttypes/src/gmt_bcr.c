@@ -98,11 +98,11 @@ GMT_LONG gmt_bcr_reject (struct GRD_HEADER *h, double xx, double yy)
 	return (0);	/* Good to use */
 }
 
-COUNTER gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], double wy[])
+COUNTER_LARGE gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], double wy[])
 {
-	GMT_LONG i, j;
-	COUNTER ij;
-	double x, y, wp, wq, w;
+	GMT_LONG col, row;
+	COUNTER_LARGE ij;
+	double x, y, wp, wq, w, xi, yj;
 
 	/* Compute the normalized real indices (x,y) of the point (xx,yy) within the grid.
 	   Note that the y axis points down from the upper left corner of the grid. */
@@ -112,21 +112,23 @@ COUNTER gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], d
 
 	if (h->bcr_interpolant == BCR_NEARNEIGHBOR) {
 		/* Find the indices (i,j) of the closest node. */
-		i = lrint (x);
-		j = lrint (y);
+		col = lrint (x);
+		row = lrint (y);
 	}
 	else {
 		/* Find the indices (i,j) of the node to the upper left of that.
 	   	   Because of padding, i and j can be on the edge. */
-		i = (GMT_LONG)floor(x);
-		j = (GMT_LONG)floor(y);
+		xi  = floor (x);
+		yj  = floor (y);
+		col = lrint (xi);
+		row = lrint (yj);
 
 		/* Determine the offset of (x,y) with respect to (i,j). */
-		x -= (double)i;
-		y -= (double)j;
+		x -= xi;
+		y -= yj;
 
 		/* For 4x4 interpolants, move over one more cell to the upper left corner */
-		if (h->bcr_n == 4) { i--; j--; }
+		if (h->bcr_n == 4) { col--; row--; }
 	}
 
 	/* Normally, one would expect here a check on the value (i,j) to make sure that the
@@ -137,7 +139,7 @@ COUNTER gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], d
 	*/
 
 	/* Save the location of the upper left corner point of the convolution kernel */
-	ij = GMT_IJP (h, j, i);
+	ij = GMT_IJP (h, j, col);
 
 	/* Build weights */
 
@@ -207,23 +209,6 @@ COUNTER gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], d
 	return (ij);
 }
 
-/* MAIN FUNCTIONS */
-#if 0
-void GMT_bcr_init (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG interpolant, double threshold, struct GMT_BCR *bcr)
-{
-	/* Initialize interpolant and threshold */
-	bcr->interpolant = interpolant;
-	bcr->threshold = threshold;
-	if (interpolant == BCR_NEARNEIGHBOR)
-		bcr->n = 1;
-	else if (interpolant == BCR_BILINEAR)
-		bcr->n = 2;
-	else
-		bcr->n = 4;
-
-}
-#endif
-
 double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double yy)
 {
 	/* Given xx, yy in user's grid file (in non-normalized units)
@@ -231,7 +216,7 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 	   B-spline or bicubic) at xx, yy. */
 
 	GMT_LONG i, j;
-	COUNTER ij;
+	COUNTER_LARGE ij;
 	double retval, wsum, wx[4], wy[4], w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
@@ -265,7 +250,7 @@ GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, do
 	   B-spline or bicubic) at xx, yy. 8-bit components is assumed per band.  */
 
 	GMT_LONG i, j, b, nb = G->header->n_bands;
-	COUNTER ij;
+	COUNTER_LARGE ij;
 	double retval[4], wsum, wx[4], wy[4], w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */

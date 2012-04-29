@@ -602,7 +602,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	size_t n, n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL;
 	size_t c_alloc = 0;
 	
-	COUNTER ij, *n_seg = NULL;
+	COUNTER_LARGE ij, *n_seg = NULL;
 	
 	int *ind = NULL;	/* Must remain int due to triangle */
 	
@@ -737,7 +737,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->Q.active) {	/* Read precalculated triangulation indices */
 		GMT_LONG col;
-		COUNTER seg, row;
+		COUNTER_LARGE seg, row;
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_TABLE *T = NULL;
 
@@ -904,7 +904,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		dim[0] = n_tables;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty dataset */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, size_t);
-		n_seg = GMT_memory (GMT, NULL, n_tables, COUNTER);
+		n_seg = GMT_memory (GMT, NULL, n_tables, COUNTER_LARGE);
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
 	}
 	

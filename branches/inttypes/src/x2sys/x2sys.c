@@ -565,14 +565,14 @@ GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X
 	return ((error || n_read != s->n_fields) ? -1 : 0);
 }
 
-GMT_LONG x2sys_read_file (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, COUNTER *n_rec)
+GMT_LONG x2sys_read_file (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, COUNTER_LARGE *n_rec)
 {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
 	 * pointer data.
 	 */
 
-	COUNTER j;
+	COUNTER_LARGE j;
  	GMT_LONG i;
 	size_t n_alloc;
 	FILE *fp = NULL;
@@ -627,7 +627,7 @@ GMT_LONG x2sys_read_file (struct GMT_CTRL *C, char *fname, double ***data, struc
 }
 
 #ifdef GMT_COMPAT
-GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, COUNTER *n_rec)
+GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, COUNTER_LARGE *n_rec)
 {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
@@ -637,7 +637,7 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 
 	int year, n_records;	/* These must remain 4-byte ints */
 	GMT_LONG i, rata_day;
-	COUNTER j;
+	COUNTER_LARGE j;
 	char path[GMT_BUFSIZ];
 	FILE *fp = NULL;
 	double **z = NULL;
@@ -716,9 +716,9 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 }
 #endif
 
-GMT_LONG x2sys_read_mgd77file (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, COUNTER *n_rec)
+GMT_LONG x2sys_read_mgd77file (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, COUNTER_LARGE *n_rec)
 {
-	COUNTER j;
+	COUNTER_LARGE j;
 	size_t n_alloc = GMT_CHUNK;
 	GMT_LONG i, col[MGD77_N_DATA_EXTENDED];
 	char path[GMT_BUFSIZ], *tvals[MGD77_N_STRING_FIELDS];
@@ -789,7 +789,7 @@ GMT_LONG get_first_year (struct GMT_CTRL *C, double t)
 	return (CAL.year);
 }
 
-GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, COUNTER *n_rec)
+GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, COUNTER_LARGE *n_rec)
 {
 	GMT_LONG i;
 	char path[GMT_BUFSIZ];
@@ -845,10 +845,10 @@ GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data
 	return (X2SYS_NOERROR);
 }
 
-GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, COUNTER *n_rec)
+GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, COUNTER_LARGE *n_rec)
 {
 	GMT_LONG i, n_fields, n_expect = GMT_MAX_COLUMNS;
-	COUNTER j;
+	COUNTER_LARGE j;
 	char path[GMT_BUFSIZ];
 	double **z = NULL, *in = NULL;
 	FILE *fp = NULL;
@@ -1484,7 +1484,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 	GMT_LONG i, k, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
 	GMT_LONG more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
 	size_t n_alloc_x, n_alloc_p, n_alloc_t;
-	COUNTER p, n_pairs;
+	COUNTER_LARGE p, n_pairs;
 	double x, m, lon, dist[2], d_val;
 
 	fp = stdin;	/* Default to stdin if dbase is NULL */

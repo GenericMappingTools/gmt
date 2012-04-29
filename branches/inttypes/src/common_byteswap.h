@@ -53,7 +53,7 @@ static inline uint32_t inline_bswap32 (uint32_t x) {
 		 ((x & 0x000000FF) << 24));
 }
 
-static inline COUNTER inline_bswap64 (COUNTER x) {
+static inline COUNTER_LARGE inline_bswap64 (COUNTER_LARGE x) {
 	return
 		(((x & 0x00000000000000FFULL) << 56) |
 		 ((x & 0x000000000000FF00ULL) << 40) |
@@ -119,7 +119,7 @@ static inline COUNTER inline_bswap64 (COUNTER x) {
 #	define bswap64 __builtin_bswap64
 #elif defined __GNUC__ && defined __x86_64__
 #	define bswap64 gnuc_bswap64
-	static inline COUNTER gnuc_bswap64(COUNTER x) {
+	static inline COUNTER_LARGE gnuc_bswap64(COUNTER_LARGE x) {
 		if (__builtin_constant_p(x))
 			x = inline_bswap64(x);
 		else

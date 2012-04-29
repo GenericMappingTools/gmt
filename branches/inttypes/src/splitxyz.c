@@ -303,7 +303,7 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_out = 0, dim[4] = {1, 0, 0, 0};
 	
 	size_t n_alloc_seg = 0, n_alloc = 0;
-	COUNTER k, n, row, seg, seg2 = 0, begin, end, n_total = 0, *rec = NULL;
+	COUNTER_LARGE k, n, row, seg, seg2 = 0, begin, end, n_total = 0, *rec = NULL;
 
 	double dy, dx, last_c, last_s, csum, ssum, this_c, this_s, dotprod;
 	double mean_azim, *fwork = NULL;
@@ -514,7 +514,7 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							}
 							if (seg2 == n_alloc_seg) {
 								n_alloc_seg = (n_alloc_seg == 0) ? D[GMT_IN]->n_segments : n_alloc_seg * 2;
-								rec = GMT_memory (GMT, rec, n_alloc_seg, COUNTER);
+								rec = GMT_memory (GMT, rec, n_alloc_seg, COUNTER_LARGE);
 							}
 							rec[seg2++] = k;
 							n_total += n_out;

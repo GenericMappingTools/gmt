@@ -211,7 +211,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG row, col, error = FALSE;
 
 	size_t n_alloc = 0;
-	COUNTER i, n = 0, ij, ij_f;
+	COUNTER_LARGE i, n = 0, ij, ij_f;
 	
 	double w_min, w_max, sf = 1.0, X[3];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;

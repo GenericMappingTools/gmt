@@ -52,7 +52,7 @@ variable (double) and a calendar day (GMT_LONG)
 and time of day (double secs) 
 */
 
-double GMT_rdc2dt (struct GMT_CTRL *C, GMT_LONG rd, double secs) {
+double GMT_rdc2dt (struct GMT_CTRL *C, int64_t rd, double secs) {
 /*	Given rata die rd and double seconds, return 
 	time in TIME_UNIT relative to chosen TIME_EPOCH  */
 	double f_days;
@@ -60,15 +60,16 @@ double GMT_rdc2dt (struct GMT_CTRL *C, GMT_LONG rd, double secs) {
 	return ((f_days * GMT_DAY2SEC_F  + secs) * C->current.setting.time_system.i_scale);
 }
 
-GMT_LONG GMT_splitinteger (double value, GMT_LONG epsilon, double *doublepart) {
+int64_t GMT_splitinteger (double value, GMT_LONG epsilon, double *doublepart) {
 	/* Split value into integer and and floating part for date usage.
 	   While the integer can be negative, doublepart is always >= 0
 	   When doublepart is close to 0 or close to epsilon, doublepart is set
 	   to zero and in the latter case, GMT_splitinteger is raised by one.
 	   This makes value "snap" to multiples of epsilon.
 	*/
-	GMT_LONG i = (GMT_LONG) floor (value / (double)epsilon);
-	*doublepart = value - ((double)i)*((double)epsilon);
+	double x = floor (value / epsilon);
+	int64_t i = lrint (x);
+	*doublepart = value - x * epsilon;
 	if ((*doublepart) < GMT_SMALL)
 		*doublepart = 0.0;	/* Snap to the lower integer */
 	else if ((double)epsilon - (*doublepart) < GMT_SMALL) {
@@ -78,7 +79,7 @@ GMT_LONG GMT_splitinteger (double value, GMT_LONG epsilon, double *doublepart) {
 	return i;
 }
 
-void GMT_dt2rdc (struct GMT_CTRL *C, double t, GMT_LONG *rd, double *s) {
+void GMT_dt2rdc (struct GMT_CTRL *C, double t, int64_t *rd, double *s) {
 /*	Given time in TIME_UNIT relative to TIME_EPOCH, load rata die of this day
 	in rd and the seconds since the start of that day in s.  */
 	double t_sec;
@@ -98,8 +99,8 @@ void GMT_dt2rdc (struct GMT_CTRL *C, double t, GMT_LONG *rd, double *s) {
 */
 
 GMT_LONG gmt_cal_imod (GMT_LONG x, GMT_LONG y) {
-	if (y == 0) return (x);
-	return (x - y * ((GMT_LONG)floor ((double)x / (double)y)));
+	assert (y != 0);
+	return (x - y * lrint (floor ((double)x / (double)y)));
 }
 
 /* kday functions:
@@ -176,12 +177,12 @@ GMT_LONG GMT_is_gleap (GMT_LONG gyear) {
 	return (TRUE);
 }
 
-GMT_LONG GMT_rd_from_gymd (struct GMT_CTRL *C, GMT_LONG gy, GMT_LONG gm, GMT_LONG gd) {
+int64_t GMT_rd_from_gymd (struct GMT_CTRL *C, GMT_LONG gy, GMT_LONG gm, GMT_LONG gd) {
 	/* Given gregorian calendar year, month, day of month, 
 	   return the rata die integer day number.  */
 	
 	double s;
-	GMT_LONG day_offset, yearm1, rd;
+	int64_t day_offset, yearm1, rd;
 	
 	if (gm <= 2)
 		day_offset = 0;
@@ -202,13 +203,13 @@ GMT_LONG gmt_gyear_from_rd (GMT_LONG date) {
 	GMT_LONG d0, d1, d2, d3, n400, n100, n4, n1, year;
 	
 	d0 = date - 1;
-	n400 = (GMT_LONG) floor (d0 / 146097.0);
+	n400 = lrint (floor (d0 / 146097.0));
 	d1 = gmt_cal_imod (d0, 146097);
-	n100 = (GMT_LONG) floor (d1 / 36524.0);
+	n100 = lrint (floor (d1 / 36524.0));
 	d2 = gmt_cal_imod (d1, 36524);
-	n4 = (GMT_LONG)floor (d2 / 1461.0);
+	n4 = lrint (floor (d2 / 1461.0));
 	d3 = gmt_cal_imod (d2, 1461);
-	n1 = (GMT_LONG)floor (d3 / 365.0);
+	n1 = lrint (floor (d3 / 365.0));
 	/* d4 = gmt_cal_imod (d3, 365) + 1; NOT USED (removed) */
 	year = 400*n400 + 100*n100 + 4*n4 + n1;
 	
@@ -219,11 +220,11 @@ GMT_LONG gmt_gyear_from_rd (GMT_LONG date) {
 
 /* ISO calendar routine  */
 
-GMT_LONG GMT_rd_from_iywd (struct GMT_CTRL *C, GMT_LONG iy, GMT_LONG iw, GMT_LONG id) {
+int64_t GMT_rd_from_iywd (struct GMT_CTRL *C, GMT_LONG iy, GMT_LONG iw, GMT_LONG id) {
 	/* Given ISO calendar year, week, day of week, 
 	   return the rata die integer day number.  */
 	
-	GMT_LONG rdtemp;
+	int64_t rdtemp;
 	
 	/* Add id to the iw'th Sunday after Dec 28 iy-1:  */
 	rdtemp = GMT_rd_from_gymd (C, iy-1, 12, 28);
@@ -232,11 +233,11 @@ GMT_LONG GMT_rd_from_iywd (struct GMT_CTRL *C, GMT_LONG iy, GMT_LONG iw, GMT_LON
 
 /* Set calendar struct data from fixed date:  */
 
-void GMT_gcal_from_rd (struct GMT_CTRL *C, GMT_LONG date, struct GMT_gcal *gcal) {
+void GMT_gcal_from_rd (struct GMT_CTRL *C, int64_t date, struct GMT_gcal *gcal) {
 	/* Given rata die integer day number, load calendar structure
 	   with proleptic Gregorian and ISO calendar values.  */
 	
-	GMT_LONG prior_days, corexn, tempdate, tempyear;
+	int64_t prior_days, corexn, tempdate, tempyear;
 	
 	/* Day of the week in 0 thru 6:  */
 	
@@ -254,7 +255,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *C, GMT_LONG date, struct GMT_gcal *gcal)
 	else
 		corexn = GMT_is_gleap (gcal->year) ? 1 : 2;
 	
-	gcal->month = (GMT_LONG) floor ((12*(prior_days + corexn) + 373)/367.0);
+	gcal->month = lrint (floor ((12*(prior_days + corexn) + 373)/367.0));
 	
 	tempdate = GMT_rd_from_gymd (C, gcal->year, gcal->month, 1);
 	
@@ -265,7 +266,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *C, GMT_LONG date, struct GMT_gcal *gcal)
 	tempyear = (prior_days >= 3) ? gcal->year : gcal->year - 1;
 	tempdate = GMT_rd_from_iywd (C, tempyear+1, 1, 1);
 	gcal->iso_y = (date >= tempdate) ? tempyear + 1 : tempyear;
-	gcal->iso_w = 1 + (GMT_LONG)floor((date - GMT_rd_from_iywd (C, gcal->iso_y, 1, 1))/7.0);
+	gcal->iso_w = 1 + lrint (floor((date - GMT_rd_from_iywd (C, gcal->iso_y, 1, 1))/7.0));
 	gcal->iso_d = (gcal->day_w) ? gcal->day_w : 7;
 }
 
@@ -348,7 +349,7 @@ void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal) {
 	   Note: does not yet deal w/ leap seconds; modulo math here.
 	*/
 	
-	GMT_LONG rd, i;
+	int64_t rd, i;
 	double x;
 
 	GMT_dt2rdc (C, t, &rd, &x);
@@ -869,8 +870,8 @@ void GMT_format_calendar (struct GMT_CTRL *C, char *date, char *clock, struct GM
 	if (!clock) return;	/* Do not want a formatted clock string - return here */
 	
 	GMT_memset (clock, GMT_CALSTRING_LENGTH, char);			/* To set all to zero */
-	i_sec = (GMT_LONG) floor (calendar.sec);
-	m_sec = (GMT_LONG) floor (W->f_sec_to_int * (calendar.sec - i_sec));
+	i_sec = lrint (floor (calendar.sec));
+	m_sec = lrint (floor (W->f_sec_to_int * (calendar.sec - i_sec)));
 	
 	if (W->twelve_hr_clock) {		/* Must deal with am/pm formatting */
 		if (calendar.hour < 12)
