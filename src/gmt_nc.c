@@ -199,7 +199,12 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 			GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
 			break;
 		default:
-			GMT_err_trap (nc_create (header->name, NC_CLOBBER, &ncid));
+			if (C->current.setting.io_nc4_deflation_level > 0) {
+				GMT_err_trap (nc_create (header->name, NC_NETCDF4 | NC_CLOBBER, &ncid));
+			}
+			else {
+				GMT_err_trap (nc_create (header->name, NC_CLOBBER, &ncid));
+			}
 			GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
 			break;
 	}
@@ -279,6 +284,9 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		/* Variable name is given, or defaults to "z" */
 		if (!header->varname[0]) strcpy (header->varname, "z");
 		GMT_err_trap (nc_def_var (ncid, header->varname, z_type, 2, dims, &z_id));
+		if (C->current.setting.io_nc4_deflation_level > 0) {
+			GMT_err_trap (nc_def_var_deflate (ncid, z_id, TRUE, TRUE, C->current.setting.io_nc4_deflation_level));
+		}
 	}
 	header->z_id = z_id;
 	header->ncid = ncid;
