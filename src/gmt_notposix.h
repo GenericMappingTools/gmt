@@ -188,8 +188,7 @@
 #		include <ymath.h>
 #		define NAN _Nan._Double
 #	else /* _MSC_VER */
-#		define _INFINITY (DBL_MAX+DBL_MAX)
-		static const double _NAN = (_INFINITY-_INFINITY);
+		static const double _NAN = (HUGE_VAL-HUGE_VAL);
 #		define NAN _NAN
 #	endif /* _MSC_VER */
 #endif /* !NAN */
@@ -208,6 +207,73 @@
 #endif /* !HAVE_ISNAN */
 
 /* End IEEE NaNs */
+
+/* floating-point classes */
+
+#ifndef isinf
+#	ifdef HAVE__FPCLASS
+		static inline int isinf (double x) {
+			int fpc = _fpclass (x);
+			return fpc == _FPCLASS_PINF || fpc == _FPCLASS_NINF;
+		}
+#	else
+#		define isinf(x) \
+			( sizeof (x) == sizeof (float)  ? __inline_isinf_f (x) \
+			: sizeof (x) == sizeof (double) ? __inline_isinf_d (x) \
+			:                                 __inline_isinf (x))
+		static inline int __inline_isinf_f (float x) {
+			return !isnan (x) && isnan (x - x);
+		}
+		static inline int __inline_isinf_d (double x) {
+			return !isnan (x) && isnan (x - x);
+		}
+		static inline int __inline_isinf   (long double x) {
+			return !isnan (x) && isnan (x - x);
+		}
+#	endif /* HAVE__FPCLASS */
+#endif /* !isinf */
+
+#ifndef isfinite
+#	ifdef HAVE__FINITE
+#		define isfinite _finite
+#	else
+#		define isfinite(x) (!isinf(x) && !isnan(x))
+#	endif
+#endif
+
+#ifndef isnormal
+#	ifdef HAVE__FPCLASS
+		static inline int isnormal (double x) {
+			int fpc = _fpclass (x);
+			return fpc == _FPCLASS_PN || fpc == _FPCLASS_NN;
+		}
+#	else
+#		define isnormal(x) \
+			( sizeof (x) == sizeof (float)  ? __inline_isnormal_f (x) \
+			: sizeof (x) == sizeof (double) ? __inline_isnormal_d (x) \
+			:                                 __inline_isnormal (x))
+		static inline int __inline_isnormal_f ( float x ) {
+			float fabsf = fabsf(x);
+			if ( x != x )
+				return 0;
+			return fabsf < HUGE_VALF && fabsf >= FLT_MIN;
+		}
+		static inline int __inline_isnormal_d ( double x ) {
+			double fabsf = fabs(x);
+			if ( x != x )
+				return 0;
+			return fabsf < HUGE_VAL && fabsf >= DBL_MIN;
+		}
+		static inline int __inline_isnormal ( long double x ) {
+			long double fabsf = fabsl(x);
+			if ( x != x )
+				return 0;
+			return fabsf < HUGE_VALL && fabsf >= LDBL_MIN;
+		}
+#	endif /* HAVE__FPCLASS */
+#endif /* !isnormal */
+
+/* End floating-point classes */
 
 #ifndef HAVE_J0
 	EXTERN_MSC double j0(double x);

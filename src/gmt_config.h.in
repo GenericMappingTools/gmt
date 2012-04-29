@@ -169,11 +169,16 @@
 #cmakedefine HAVE__COPYSIGN
 #cmakedefine HAVE_ERF
 #cmakedefine HAVE_ERFC
+#cmakedefine HAVE__FINITE
+#cmakedefine HAVE__FPCLASS
 #cmakedefine HAVE_HYPOT
+#cmakedefine HAVE_ISFINITE
+#cmakedefine HAVE_ISINF
 #cmakedefine HAVE_ISNAN
 #cmakedefine HAVE_ISNAND
 #cmakedefine HAVE_ISNANF
 #cmakedefine HAVE__ISNAN
+#cmakedefine HAVE_ISNORMAL
 #cmakedefine HAVE_J0
 #cmakedefine HAVE_J1
 #cmakedefine HAVE_JN
