@@ -561,7 +561,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG col, pcol, row, nx_360 = 0, k, kk, m, n_blend, error, n_fill, n_tot, wrap_x, reformat;
 	
-	COUNTER ij;
+	COUNTER_LARGE ij;
 	
 	double wt_x, w, wt;
 	

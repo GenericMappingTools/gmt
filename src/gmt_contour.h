@@ -37,8 +37,8 @@ struct GMT_XOVER {		/* Structure with info on all track cross-over */
 };
 
 struct GMT_XSEGMENT {
-	COUNTER start;	/* y-array index for minimum y endpoint */
-	COUNTER stop;	/* y-array index for maximum y endpoint */
+	COUNTER_LARGE start;	/* y-array index for minimum y endpoint */
+	COUNTER_LARGE stop;	/* y-array index for maximum y endpoint */
 };
 
 struct GMT_LABEL {	/* Contains information on contour/lineation labels */
@@ -46,13 +46,13 @@ struct GMT_LABEL {	/* Contains information on contour/lineation labels */
 	double angle;		/* Angle of text unless curved text */
 	double line_angle;	/* Angle of line at label unless curved text */
 	double dist;
-	COUNTER node;		/* Node of label on the line */
+	COUNTER_LARGE node;		/* Node of label on the line */
 	GMT_LONG end;		/* If N is used then -1 is start, +1 is end label */
 	char *label;
 };
 
 struct GMT_CONTOUR_LINE {
-	COUNTER n;			/* Length of the contour */
+	COUNTER_LARGE n;			/* Length of the contour */
 	GMT_LONG annot;			/* TRUE if we want labels */
 	GMT_LONG n_labels;		/* Number of labels; if 0 we just have a line segment */
 	double z;			/* Datum of this contour (z-value) */

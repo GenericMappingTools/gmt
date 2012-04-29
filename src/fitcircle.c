@@ -170,12 +170,12 @@ GMT_LONG GMT_fitcircle_parse (struct GMTAPI_CTRL *C, struct FITCIRCLE_CTRL *Ctrl
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, COUNTER ndata, double *pole, GMT_LONG norm, double *work, double *circle_distance)
+double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, COUNTER_LARGE ndata, double *pole, GMT_LONG norm, double *work, double *circle_distance)
 {
 	/* Find the L(norm) misfit between a small circle through
 	   center with pole pole.  Return misfit in radians.  */
 
-	COUNTER i;
+	COUNTER_LARGE i;
 	double distance, delta_distance, misfit = 0.0;
 
 	/* At first, I thought we could use the center to define
@@ -209,13 +209,13 @@ double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, COUNTER
 	return (norm == 1) ? misfit : sqrt (misfit);
 }
 
-double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, COUNTER ndata, double *center, double *gcpole, double *scpole, GMT_LONG norm, double *work, GMT_LONG mode, double slat)
+double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, COUNTER_LARGE ndata, double *center, double *gcpole, double *scpole, GMT_LONG norm, double *work, GMT_LONG mode, double slat)
 {
 	/* Find scpole, the pole to the best-fit small circle, 
 	   by L(norm) iterative search along arc between center
 	   and +/- gcpole, the pole to the best fit great circle.  */
 
-	COUNTER i, j;
+	COUNTER_LARGE i, j;
 	double temppole[3], a[3], b[3], oldpole[3];
 	double trypos, tryneg, afit, bfit, afactor, bfactor, fit, oldfit;
 	double length_ab, length_aold, length_bold, circle_distance;
@@ -318,7 +318,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, greenwich = FALSE, allocate;
 	GMT_LONG imin, imax, nrots, j, k, n, np;
-	COUNTER i, n_data;
+	COUNTER_LARGE i, n_data;
 	size_t n_alloc;
 
 	char format[GMT_BUFSIZ], record[GMT_BUFSIZ], item[GMT_BUFSIZ];

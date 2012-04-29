@@ -188,13 +188,13 @@ void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, GMT_LONG d
 }
 #endif
 
-double get_intensity (struct GMT_CTRL *GMT, struct GMT_GRID *I, COUNTER k)
+double get_intensity (struct GMT_CTRL *GMT, struct GMT_GRID *I, COUNTER_LARGE k)
 {
 	/* Returns the average intensity for this tile */
 	return (0.25 * (I->data[k] + I->data[k+1] + I->data[k-I->header->mx] + I->data[k-I->header->mx+1]));
 }
 
-GMT_LONG pixel_inside (struct GMT_CTRL *GMT, GMT_LONG ip, GMT_LONG jp, GMT_LONG *ix, GMT_LONG *iy, COUNTER bin, int64_t bin_inc[])
+GMT_LONG pixel_inside (struct GMT_CTRL *GMT, GMT_LONG ip, GMT_LONG jp, GMT_LONG *ix, GMT_LONG *iy, COUNTER_LARGE bin, int64_t bin_inc[])
 {	/* Returns TRUE of the ip,jp point is inside the polygon defined by the tile */
 	GMT_LONG i, what;
 	double x[6], y[6];
@@ -260,8 +260,8 @@ double get_z_ave (struct GMT_CTRL *GMT, double v[], double next_up, GMT_LONG n) 
 	return (z_ave / n);
 }
 
-void add_node (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], int64_t *k, GMT_LONG node, double X_vert[], double Y_vert[], float topo[], float zgrd[], COUNTER ij) {
-	/* Adds a corner node to list of points and increments counter */
+void add_node (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], int64_t *k, GMT_LONG node, double X_vert[], double Y_vert[], float topo[], float zgrd[], COUNTER_LARGE ij) {
+	/* Adds a corner node to list of points and increments COUNTER_LARGE */
 	x[*k] = X_vert[node];
 	y[*k] = Y_vert[node];
 	z[*k] = topo[ij];
@@ -552,7 +552,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n4, nk, c, i_start, i_stop, j_start, j_stop, i_inc, j_inc, ii, jj;
 	GMT_LONG i, j, PS_colormask_off = 0, way, *edge = NULL;
 	
-	COUNTER ij, sw, se, nw, ne, bin;
+	COUNTER_LARGE ij, sw, se, nw, ne, bin;
 	int64_t bin_inc[4], ij_inc[4], n;
 
 	double cval, x_left, x_right, y_top, y_bottom, small = GMT_SMALL, z_ave;
@@ -926,7 +926,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_LONG nx_i, ny_i, ip, jp, min_i, max_i, min_j, max_j, dist;
 		GMT_LONG done, layers, last_i, last_j, p;
 		GMT_LONG *top_jp = NULL, *bottom_jp = NULL, *ix = NULL, *iy = NULL;
-		COUNTER d_node, nm_i, node, kk;
+		COUNTER_LARGE d_node, nm_i, node, kk;
 		double xp, yp, sum_w, w, sum_i, x_width, y_width, value;
 		double sum_r, sum_g, sum_b, intval = 0.0, *y_drape = NULL, *x_drape = NULL;
 		float *int_drape = NULL;

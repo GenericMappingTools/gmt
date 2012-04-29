@@ -148,7 +148,7 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 		i_string = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
  	else {			/* Input via matrix and either info array or x,y arrays */
 		GMT_LONG row, col, in_ID;
-		COUNTER gmt_ij;
+		COUNTER_LARGE gmt_ij;
 		double *z = NULL;
 		//char buffer[GMT_BUFSIZ];
 		i_string = mxMalloc(GMT_BUFSIZ);
@@ -224,7 +224,7 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 void GMTMEX_prep_mexgrd (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, struct GMT_GRID *G)
 {	/* Turn a GMT grid into a 2-D Z matrix (and possibly x,y arrays) for passing back to Matlab/Octave */
 	GMT_LONG px = -1, py = -1, pz = -1, pi = -1, row, col;
-	COUNTER gmt_ij;
+	COUNTER_LARGE gmt_ij;
 	float *z = NULL;
 	
 	pz = (nlhs >= 3) ? 2 : 0;
@@ -479,7 +479,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		if ((ID = GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, ptr, NULL)) == GMTAPI_NOTSET) {
 			mexErrMsgTxt ("GMTMEX_parser: Failure to register GMT source or destination\n");
 		}
-		lr_pos[direction]++;		/* Advance counter for next time */
+		lr_pos[direction]++;		/* Advance COUNTER_LARGE for next time */
 		if (GMT_Encode_ID (API, name, ID) != GMT_OK) {	/* Make filename with embedded object ID */
 			mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");
 		}
@@ -501,7 +501,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		if (GMT_Encode_ID (API, name, ID) != GMT_OK) {	/* Make filename with embedded object ID */
 			mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");
 		}
-		lr_pos[direction]++;		/* Advance counter for next time */
+		lr_pos[direction]++;		/* Advance COUNTER_LARGE for next time */
 		
 		/* Replace the option argument with the embedded file */
 		opt->arg[pos] = '\0';	/* Chop off the stuff starting at the $ sign */

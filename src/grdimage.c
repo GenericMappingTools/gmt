@@ -350,8 +350,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG error = FALSE, done, need_to_project, normal_x, normal_y, resampled = FALSE;
 	GMT_LONG k, nx = 0, ny = 0, index = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
 	GMT_LONG colormask_offset = 0, try, gray_only = FALSE;
-	COUNTER node_RGBA = 0;		/* Counter for the RGB(A) image array. */
-	COUNTER node, kk, nm, byte;
+	COUNTER_LARGE node_RGBA = 0;		/* COUNTER_LARGE for the RGB(A) image array. */
+	COUNTER_LARGE node, kk, nm, byte;
 	
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
 

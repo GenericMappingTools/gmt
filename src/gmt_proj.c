@@ -1692,9 +1692,9 @@ void GMT_igenper (struct GMT_CTRL *C, double *lon, double *lat, double xt, doubl
 	return;
 }
 
-GMT_LONG GMT_genper_map_clip_path (struct GMT_CTRL *C, COUNTER np, double *work_x, double *work_y)
+GMT_LONG GMT_genper_map_clip_path (struct GMT_CTRL *C, COUNTER_LARGE np, double *work_x, double *work_y)
 {
-	COUNTER i;
+	COUNTER_LARGE i;
 	double da, angle;
 	double x, y, xt, yt;
 
@@ -1834,7 +1834,7 @@ void GMT_azeqdist (struct GMT_CTRL *C, double lon, double lat, double *x, double
 
 	t = clat * clon;
 	cc = C->current.proj.sinp * slat + C->current.proj.cosp * t;
-	if (cc <= -1.0) {	/* Antipode is a circle, so flag x,y as NaN and increase counter */
+	if (cc <= -1.0) {	/* Antipode is a circle, so flag x,y as NaN and increase COUNTER_LARGE */
 		*x = *y = C->session.d_NaN;
 		C->current.proj.n_antipoles++;
 	}

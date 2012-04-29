@@ -164,7 +164,7 @@ GMT_LONG GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, st
 GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT_LONG row, col, error, new_grid;
 	
-	COUNTER ij, n_above = 0, n_below = 0;
+	COUNTER_LARGE ij, n_above = 0, n_below = 0;
 	
 	double wesn[4];
 	

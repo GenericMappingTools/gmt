@@ -998,7 +998,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	else {	/* Line/polygon part */
-		COUNTER seg;
+		COUNTER_LARGE seg;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */

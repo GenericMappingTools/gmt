@@ -907,7 +907,7 @@ void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a,
 	if (degrees) *theta *= R2D;
 }
 
-COUNTER GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, COUNTER n, double step, GMT_LONG mode)
+COUNTER_LARGE GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, COUNTER_LARGE n, double step, GMT_LONG mode)
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
 	 * auxiliary points if the great circle distance between two given points exceeds
@@ -920,7 +920,7 @@ COUNTER GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, COU
 
 	GMT_LONG k = 1, meridian;
 	size_t n_alloc = 0;
-	COUNTER i, j, n_tmp, n_step = 0;
+	COUNTER_LARGE i, j, n_tmp, n_step = 0;
 	double *lon_tmp = NULL, *lat_tmp = NULL;
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
@@ -1023,7 +1023,7 @@ COUNTER GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, COU
 	return (n_tmp);
 }
 
-COUNTER GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a_y, COUNTER n, double step, GMT_LONG mode)
+COUNTER_LARGE GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a_y, COUNTER_LARGE n, double step, GMT_LONG mode)
 {
 	/* Takes pointers to a list of <n> x/y pairs (in user units) and adds
 	 * auxiliary points if the distance between two given points exceeds
@@ -1036,7 +1036,7 @@ COUNTER GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a_
 
 	GMT_LONG k = 1;
 	size_t n_alloc = 0;
-	COUNTER i, j, n_tmp, n_step = 0;
+	COUNTER_LARGE i, j, n_tmp, n_step = 0;
 	double *x_tmp = NULL, *y_tmp = NULL, *x = NULL, *y = NULL, c;
 
 	x = *a_x;	y = *a_y;

@@ -310,7 +310,7 @@ GMT_LONG GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	GMT_LONG first_col, last_col, first_row, last_row, inc, off;
 	GMT_LONG i, j, width_in, height_in, i_0_out, n2;
 	GMT_LONG piping = FALSE, check, *k = NULL;
-	COUNTER kk, ij, j2, width_out;
+	COUNTER_LARGE kk, ij, j2, width_out;
 	FILE *fp = NULL;
 	unsigned char *tmp = NULL;
 	struct rasterfile h;
@@ -394,7 +394,7 @@ GMT_LONG GMT_ras_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_LONG i, i2, inc = 1, off = 0, check, *k = NULL;
 	GMT_LONG j, width_out, height_out, n2;
 	GMT_LONG first_col, last_col, first_row, last_row, do_header = TRUE;
-	COUNTER kk, ij, j2, width_in;
+	COUNTER_LARGE kk, ij, j2, width_in;
 
 	unsigned char *tmp = NULL;
 
@@ -513,7 +513,7 @@ GMT_LONG GMT_native_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header
 
 GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
-	COUNTER nm, mx, status, size;
+	COUNTER_LARGE nm, mx, status, size;
 	double item_size;
 	struct GMT_STAT buf;
 	struct GRD_HEADER t_head;
@@ -532,8 +532,8 @@ GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 	switch (size) {
 		case 0:	/* Possibly bit map; check some more */
-			mx = (COUNTER) ceil (t_head.nx / 32.0);
-			nm = mx * ((COUNTER)t_head.ny);
+			mx = (COUNTER_LARGE) ceil (t_head.nx / 32.0);
+			nm = mx * ((COUNTER_LARGE)t_head.ny);
 			if ((size_t)(buf.st_size - GRD_HEADER_SIZE) == nm)	/* Yes, it was a bit mask file */
 				header->type = GMT_GRD_IS_BM;
 			else	/* No, junk data */
@@ -594,7 +594,7 @@ GMT_LONG GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	GMT_LONG first_col, last_col, first_row, last_row, word, bit, err;
 	GMT_LONG i, j, width_in, height_in, i_0_out, inc, off, mx;
 	GMT_LONG *k = NULL, piping = FALSE, check = FALSE;
-	COUNTER kk, ij, j2, width_out;
+	COUNTER_LARGE kk, ij, j2, width_out;
 	FILE *fp = NULL;
 	unsigned int *tmp = NULL, ival;
 
@@ -677,7 +677,7 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_LONG j, width_out, height_out, mx, word, bit, err, inc, off;
 	GMT_LONG i, i2, first_col, last_col, first_row, last_row, *k = NULL;
 	GMT_LONG check = FALSE, do_header;
-	COUNTER kk, ij, j2, width_in;
+	COUNTER_LARGE kk, ij, j2, width_in;
 	unsigned int *tmp = NULL, ival;
 
 	FILE *fp = NULL;
@@ -824,7 +824,7 @@ GMT_LONG GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, flo
 	GMT_LONG *k = NULL;		/* Array with indices */
 	GMT_LONG type;			/* Data type */
 	GMT_LONG width_in;		/* Number of items in one row of the subregion */
-	COUNTER kk, ij, j2, width_out;	/* Width of row as return (may include padding) */
+	COUNTER_LARGE kk, ij, j2, width_out;	/* Width of row as return (may include padding) */
 	GMT_LONG piping = FALSE;	/* TRUE if we read input pipe instead of from file */
 	GMT_LONG check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	size_t size;			/* Length of data type */ 
@@ -923,7 +923,7 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 	GMT_LONG i, j, i2, err;		/* Misc. counters */
 	GMT_LONG *k = NULL;		/* Array with indices */
 	GMT_LONG type;			/* Data type */
-	COUNTER ij, width_in, j2;
+	COUNTER_LARGE ij, width_in, j2;
 	GMT_LONG check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	GMT_LONG do_header = TRUE;	/* TRUE if we should write the header first */
 	size_t size;			/* Length of data type */
@@ -998,7 +998,7 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 	return (GMT_NOERROR);
 }
 
-void GMT_encode (struct GMT_CTRL *C, void *vptr, COUNTER k, float z, GMT_LONG type)
+void GMT_encode (struct GMT_CTRL *C, void *vptr, COUNTER_LARGE k, float z, GMT_LONG type)
 {	/* Place the z value in the array location of the (type) pointer */
 	switch (type) {
 		case 'b':
@@ -1023,7 +1023,7 @@ void GMT_encode (struct GMT_CTRL *C, void *vptr, COUNTER k, float z, GMT_LONG ty
 	}
 }
 
-float GMT_decode (struct GMT_CTRL *C, void *vptr, COUNTER k, GMT_LONG type)
+float GMT_decode (struct GMT_CTRL *C, void *vptr, COUNTER_LARGE k, GMT_LONG type)
 {	/* Retrieve the z value from the array location of the (type) pointer */
 	float fval;
 
@@ -1283,7 +1283,7 @@ GMT_LONG GMT_srf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	GMT_LONG i, j, i_0_out; 	/* Misc. counters */
 	GMT_LONG *k = NULL;		/* Array with indices */
 	GMT_LONG type;			/* Data type */
-	COUNTER kk, ij, j2, width_out;
+	COUNTER_LARGE kk, ij, j2, width_out;
 	GMT_LONG piping = FALSE;	/* TRUE if we read input pipe instead of from file */
 	size_t size;			/* Length of data type */
 	FILE *fp = NULL;		/* File pointer to data or pipe */
@@ -1389,7 +1389,7 @@ GMT_LONG GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_LONG i, j, i2;		/* Misc. counters */
 	GMT_LONG *k = NULL;		/* Array with indices */
 	GMT_LONG type;			/* Data type */
-	COUNTER ij, j2, width_in;	/* Number of items in one row of the subregion */
+	COUNTER_LARGE ij, j2, width_in;	/* Number of items in one row of the subregion */
 	size_t size;			/* Length of data type */
 	FILE *fp = NULL;		/* File pointer to data or pipe */
 	void *tmp = NULL;		/* Array pointer for writing in rows of data */
@@ -1545,7 +1545,7 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
 	GMT_LONG nBand, subset;
-	COUNTER i, j;
+	COUNTER_LARGE i, j;
 	char strR[128];
 
 	/* Allocate new control structures */
@@ -1642,7 +1642,7 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	GMT_free (C, to_gdalread);
 	GMT_free (C, from_gdalread->ColorMap);
-	for ( i = 0; i < (COUNTER)from_gdalread->RasterCount; ++i )
+	for ( i = 0; i < (COUNTER_LARGE)from_gdalread->RasterCount; ++i )
 		free(from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	GMT_free (C, from_gdalread->band_field_names);
 	GMT_free (C, from_gdalread);

@@ -479,7 +479,7 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG n_dup = 0, do_authalic = FALSE;
 	GMT_LONG error = FALSE, first = FALSE, steradians = FALSE;
 	
-	COUNTER n = 0;
+	COUNTER_LARGE n = 0;
 	size_t n_alloc;
 
 	double first_x = 0.0, first_y = 0.0, X[3], *in = NULL;

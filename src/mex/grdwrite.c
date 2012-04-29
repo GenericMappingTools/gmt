@@ -38,7 +38,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	char *fileout = NULL, *title = NULL;
 	struct GMT_GRID *G = NULL;
 	GMT_LONG row, col, error = 0, k;
-	COUNTER gmt_ij;
+	COUNTER_LARGE gmt_ij;
 
 	if (nrhs < 3 || nrhs > 6) {
 		GMT5MEX_banner;

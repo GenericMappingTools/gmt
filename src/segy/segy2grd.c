@@ -265,11 +265,11 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = false, read_cont = false, ij0;
-	GMT_LONG swap_bytes = !GMT_BIGENDIAN, n_samp=0;
+	GMT_LONG swap_bytes = !GMT_BIGENDIAN, n_samp = 0;
 	GMT_LONG ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
 	GMT_LONG n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix, isamp;
 
-	COUNTER ij;
+	COUNTER_LARGE ij;
 	
 	double idy, x0, yval;
 
@@ -426,7 +426,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 
-			for (ij = ij0; ij < n_samp ; ij++) {  /* n*idy is index of first sample to be included in the grid */
+			for (ij = ij0; ij < (COUNTER_LARGE)n_samp ; ij++) {  /* n*idy is index of first sample to be included in the grid */
 				Grid->data[ix + Grid->header->nx*(Grid->header->ny+ij0-ij-1)] = data[ij];
 			}
 

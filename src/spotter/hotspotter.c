@@ -295,7 +295,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG row, col, kx, ky, m, d_col, d_row, col_0, row_0;
 	GMT_LONG error = FALSE;		/* TRUE when arguments are wrong */
 	
-	COUNTER node, k0;
+	COUNTER_LARGE node, k0;
 
 	double sampling_int_in_km;	/* Sampling interval along flowline (in km) */
 	double x_smt;			/* Seamount longitude (input degrees, stored as radians) */
@@ -543,7 +543,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Processed %5ld seamounts\n", n_smts);
 
 	if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */
-		COUNTER node;
+		COUNTER_LARGE node;
 		double scale;
 		
 		GMT_report (GMT, GMT_MSG_NORMAL, "Normalize CVS grid to percentages of max CVA\n");

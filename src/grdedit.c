@@ -184,7 +184,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT_LONG row, col, error, n_data, n_use;
 	
-	COUNTER ij;
+	COUNTER_LARGE ij;
 	
 	double shift_amount = 0.0, *in = NULL;
 
@@ -324,7 +324,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	}
 	else if (Ctrl->E.active) {	/* Transpose the matrix and exchange x and y info */
 		struct GRD_HEADER *h_tr = NULL;
-		COUNTER ij, ij_tr;
+		COUNTER_LARGE ij, ij_tr;
 		float *a_tr = NULL;
 		
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file, G)) {	/* Get data */

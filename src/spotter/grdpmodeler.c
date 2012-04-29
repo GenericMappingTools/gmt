@@ -226,7 +226,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG col, row, inside, k, n_stages, registration, error = FALSE;
 	
-	COUNTER node, seg;
+	COUNTER_LARGE node, seg;
 	
 	double lon, lat, d, value = 0.0, t_max, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
 	

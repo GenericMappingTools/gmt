@@ -241,7 +241,7 @@ GMT_LONG init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, GMT_LONG m
 	 *    (and the four corners (unless poles) only 1/4 the area of other cells).
 	 */
 	GMT_LONG row, col;
-	COUNTER ij;
+	COUNTER_LARGE ij;
 	double row_weight, col_weight, dy_half = 0.0, dx, y, lat, lat_s, lat_n, s2 = 0.0;
 	
 	/* Based the grid on the input grid domain and increments. */
@@ -498,7 +498,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef DEBUG
 	GMT_LONG n_conv = 0;
 #endif
-	COUNTER ij_in, ij_out, ij_wt;
+	COUNTER_LARGE ij_in, ij_out, ij_wt;
 	double x_scale = 1.0, y_scale = 1.0, x_width, y_width, y, par[GRDFILTER_N_PARS];
 	double x_out, y_out, wt_sum, value, last_median = 0.0, this_median = 0.;
 	double y_shift = 0.0, x_fix = 0.0, y_fix = 0.0, max_lat, lat_out, w;
@@ -823,7 +823,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (jj = -F.y_half_width; go_on && jj <= F.y_half_width; jj++) {	/* Possible -/+ rows to consider for filter input */
 				row_in = j_origin + jj;		/* Current input data row number */
 				if (row_in < 0 || (row_in >= Gin->header->ny)) continue;	/* Outside input y-range */
-				if (visit_check) GMT_memset (F.visit, Gin->header->nx, char);	/* Reset our longitude visit counter */
+				if (visit_check) GMT_memset (F.visit, Gin->header->nx, char);	/* Reset our longitude visit COUNTER_LARGE */
 				for (ii = -F.x_half_width; go_on && ii <= F.x_half_width; ii++) {	/* Possible -/+ columns to consider on both sides of input point */
 					col_in = i_origin[col_out] + ii;	/* Input column to consider */
 					if (spherical) {			/* Must handle wrapping around the globe */

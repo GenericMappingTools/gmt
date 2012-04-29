@@ -786,7 +786,7 @@ void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], double *z,
 	double x;
 #ifdef DUMP
 	FILE *fp = NULL;
-	COUNTER n_out;
+	COUNTER_LARGE n_out;
 	double out[3];
 	fp = fopen ("greenspline.b", "wb");
 	n_out = (grad) ? 3 : 2;
@@ -1057,7 +1057,7 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, G
 
 GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	COUNTER row, p, k, i, j, seg, m, n, nm, nxy, n_ok = 0, ij, ji, ii, dimension = 0;
+	COUNTER_LARGE row, p, k, i, j, seg, m, n, nm, nxy, n_ok = 0, ij, ji, ii, dimension = 0;
 	size_t old_n_alloc, n_alloc;
 	GMT_LONG error, normalize = 1, unit = 0, out_ID, way, new_grid = FALSE;
 	
@@ -1622,7 +1622,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_fclose (GMT, fp);
 	}
 	else {
-		COUNTER nz_off, nxy;
+		COUNTER_LARGE nz_off, nxy;
 		GMT_LONG col, row, layer;
 		double *xp = NULL, *yp = NULL, wp, V[4];
 		GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate spline at %ld equidistant output locations\n", n_ok);

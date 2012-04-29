@@ -65,14 +65,14 @@ void SaveAGCHeader (char *remark, float *agchead)
 
 GMT_LONG ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT])
 {	/* Reads one block of data, including pre- and post-headers */
-	GMT_LONG nitems;
+	size_t nitems;
 	float garbage[PREHEADSIZE];
 
-	if (GMT_fread (garbage, sizeof(float), PREHEADSIZE, fpi) < (size_t)PREHEADSIZE) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (garbage, sizeof(float), PREHEADSIZE, fpi) < PREHEADSIZE) return (GMT_GRDIO_READ_FAILED);
 	nitems = GMT_fread (z, sizeof(float), (ZBLOCKWIDTH * ZBLOCKHEIGHT), fpi);
 
 	if (nitems != (ZBLOCKWIDTH * ZBLOCKHEIGHT) && !feof(fpi)) return (GMT_GRDIO_READ_FAILED);	/* Bad stuff */
-	if (GMT_fread (garbage, sizeof(float), POSTHEADSIZE, fpi) < (size_t)POSTHEADSIZE) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (garbage, sizeof(float), POSTHEADSIZE, fpi) < POSTHEADSIZE) return (GMT_GRDIO_READ_FAILED);
 	return (GMT_NOERROR);
 }
 
@@ -100,7 +100,8 @@ void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header)
 void SaveAGCHeader (char *remark, float *agchead)
 {	/* Place AGC header data in remark string */
 	char floatvalue[PARAMSIZE+1];	/* Allow space for final \0 */
-	GMT_LONG i, j;
+	COUNTER_SMALL i;
+	size_t j;
 
 	strcpy (remark, AGCHEADINDICATOR);
 	for (i = 0; i < BUFFHEADSIZE; i++) {
@@ -113,7 +114,8 @@ void SaveAGCHeader (char *remark, float *agchead)
 GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
 {	/* Determine if file is an AGC grid file. */
 	FILE *fp = NULL;
-	GMT_LONG nx, ny, predicted_size;
+	GMT_LONG nx, ny;
+	off_t predicted_size;
 	float recdata[RECORDLENGTH], x_min, x_max, y_min, y_max, x_inc, y_inc;
 	struct GMT_STAT buf;
 
@@ -140,7 +142,7 @@ GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
 
 GMT_LONG GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {	/* Read header info. NOTE: All AGC files are assumed to be gridline-registered */
-	GMT_LONG i;
+	COUNTER_SMALL i;
 	FILE *fp = NULL;
 	float recdata[RECORDLENGTH], agchead[BUFFHEADSIZE];
 
@@ -209,18 +211,19 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	 *		for real and imaginary parts when processed by grdfft etc.
 	 */
 
-	GMT_LONG first_col, last_col;		/* First and last column to deal with */
-	GMT_LONG first_row, last_row;		/* First and last row to deal with */
-	GMT_LONG width_in;			/* Number of items in one row of the subregion */
-	GMT_LONG width_out;			/* Width of row as return (may include padding) */
-	GMT_LONG height_in;			/* Number of columns in subregion */
-	GMT_LONG inc, off;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	GMT_LONG i, j, j_gmt, i_0_out;		/* Misc. counters */
-	GMT_LONG *k = NULL;			/* Array with indices */
-	GMT_LONG block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
-	GMT_LONG datablockcol, datablockrow, rowstart, rowend, colstart, colend, row, col, ij;
-	FILE *fp = NULL;			/* File pointer to data or pipe */
+	COUNTER_MEDIUM first_col, last_col;		/* First and last column to deal with */
+	COUNTER_MEDIUM first_row, last_row;		/* First and last row to deal with */
+	COUNTER_MEDIUM width_in;			/* Number of items in one row of the subregion */
+	COUNTER_MEDIUM width_out;			/* Width of row as return (may include padding) */
+	COUNTER_MEDIUM height_in;			/* Number of columns in subregion */
+	COUNTER_MEDIUM inc, off;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
+	COUNTER_MEDIUM i, j, j_gmt, i_0_out;		/* Misc. counters */
+	COUNTER_MEDIUM *k = NULL;			/* Array with indices */
+	COUNTER_MEDIUM block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
+	COUNTER_MEDIUM datablockcol, datablockrow, rowstart, rowend, colstart, colend, row, col;
+	COUNTER_LARGE ij;
 	float z[ZBLOCKWIDTH][ZBLOCKHEIGHT];
+	FILE *fp = NULL;			/* File pointer to data or pipe */
 	
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
@@ -296,21 +299,22 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	 */
 
 
-	GMT_LONG first_col, last_col;		/* First and last column to deal with */
-	GMT_LONG first_row, last_row;		/* First and last row to deal with */
-	GMT_LONG width_in;			/* Number of items in one row of the subregion */
-	GMT_LONG width_out;			/* Width of row as return (may include padding) */
-	GMT_LONG height_out;			/* Number of columns in subregion */
-	GMT_LONG inc;				/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	GMT_LONG off;				/* Complex array offset: 0 for real, 1 for imaginary */
-	GMT_LONG i, j, i2, j2;			/* Misc. counters */
-	GMT_LONG *k = NULL;			/* Array with indices */
-	GMT_LONG block, n_blocks, n_blocks_x, n_blocks_y, ij;	/* Misc. counters */
-	FILE *fp = NULL;			/* File pointer to data or pipe */
-	GMT_LONG rowstart, rowend, colstart, colend = 0, datablockcol, datablockrow;
-	GMT_LONG j_gmt, row, col;
+	COUNTER_MEDIUM first_col, last_col;		/* First and last column to deal with */
+	COUNTER_MEDIUM first_row, last_row;		/* First and last row to deal with */
+	COUNTER_MEDIUM width_in;			/* Number of items in one row of the subregion */
+	COUNTER_MEDIUM width_out;			/* Width of row as return (may include padding) */
+	COUNTER_MEDIUM height_out;			/* Number of columns in subregion */
+	COUNTER_MEDIUM inc;				/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
+	COUNTER_MEDIUM off;				/* Complex array offset: 0 for real, 1 for imaginary */
+	COUNTER_MEDIUM i, j, i2, j2;			/* Misc. counters */
+	COUNTER_MEDIUM *k = NULL;			/* Array with indices */
+	COUNTER_MEDIUM block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
+	COUNTER_MEDIUM rowstart, rowend, colstart, colend = 0, datablockcol, datablockrow;
+	COUNTER_MEDIUM j_gmt, row, col;
+	COUNTER_LARGE ij;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
 	float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT];
+	FILE *fp = NULL;			/* File pointer to data or pipe */
 
 	if (!strcmp (header->name, "=")) {	/* Write to pipe */
 #ifdef SET_IO_MODE

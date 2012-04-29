@@ -461,15 +461,17 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG n_stages;		/* Number of stage rotations (poles) */
 	GMT_LONG try;			/* Number of current bootstrap estimate */
-	size_t n_alloc = 0, inc_alloc = BIG_CHUNK;
-	GMT_LONG i, j, k, row, col, k_step, np, max_ij = 0, n_flow, mem = 0, n_unique_nodes = 0;
+	GMT_LONG i, j, k, row, col, k_step;
 	GMT_LONG error = FALSE;		/* TRUE when arguments are wrong */
 	GMT_LONG keep_flowlines = FALSE;	/* TRUE if Ctrl->D.active, Ctrl->PA.active, or bootstrap is TRUE */
 	GMT_LONG forth_flag;		/* Holds the do_time + 10 flag passed to forthtrack */
 	GMT_LONG *ID = NULL;		/* Optional array with IDs for each node */
 	
-	COUNTER ij, node, m;
-	COUNTER n_nodes;		/* Number of nodes processed */
+	COUNTER_LARGE ij, node, m, np, max_ij = 0, n_flow, n_unique_nodes = 0;
+	COUNTER_LARGE n_nodes;		/* Number of nodes processed */
+
+	size_t n_alloc = 0, inc_alloc = BIG_CHUNK, mem = 0;
+
 	char *processed_node = NULL;	/* Pointer to array with TRUE/FALSE values for each grid node */
 	
 	unsigned short pa = 0;		/* Placeholder for PA along track */
