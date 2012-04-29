@@ -97,7 +97,7 @@ EXTERN_MSC GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *hea
 void gmt_expand_filename (struct GMT_CTRL *C, char *file, char *fname)
 {
 	GMT_LONG found;
-	COUNTER_SMALL i;
+	COUNTER_MEDIUM i;
 	size_t f_length, length;
 
 	if (C->current.setting.io_gridfile_shorthand) {	/* Look for matches */
@@ -133,7 +133,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 	 *    by seaching in current dir and the various GMT_*DIR paths.
 	 */
 
-	COUNTER_SMALL i = 0, j;
+	COUNTER_MEDIUM i = 0, j;
 	GMT_LONG val;
 	char code[GMT_TEXT_LEN64], tmp[GMT_BUFSIZ];
 
@@ -220,7 +220,7 @@ void gmt_grd_set_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	/* Set unit strings for grid coordinates x, y and z based on
 	   output data types for columns 0, 1, and 2.
 	*/
-	COUNTER_SMALL i;
+	COUNTER_MEDIUM i;
 	char *string[3] = {NULL, NULL, NULL}, unit[GRD_UNIT_LEN80], date[GMT_CALSTRING_LENGTH], clock[GMT_CALSTRING_LENGTH];
 
 	/* Copy pointers to unit strings */
@@ -282,7 +282,7 @@ void gmt_grd_get_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	   grid coordinates x, y and z.
 	   When "Time": transform the data scale and offset to match the current time system.
 	*/
-	COUNTER_SMALL i;
+	COUNTER_MEDIUM i;
 	char string[3][GMT_TEXT_LEN256], *units = NULL;
 	double scale = 1.0, offset = 0.0;
 	struct GMT_TIME_SYSTEM time_system;
@@ -358,7 +358,7 @@ GMT_LONG GMT_grd_pad_status (struct GMT_CTRL *C, struct GRD_HEADER *header, GMT_
 	 *    TRUE:  Grid padding matches pad exactly.
 	 *    FALSE: Grid padding failed to match pad exactly.
 	 */
-	COUNTER_SMALL side;
+	COUNTER_MEDIUM side;
 	
 	if (pad) {	/* Determine if the grid's pad differ from given pad (FALSE) or not (TRUE) */
 		for (side = 0; side < 4; side++) if (header->pad[side] != pad[side]) return (FALSE);	/* Pads differ */
@@ -378,7 +378,7 @@ GMT_LONG gmt_padspace (struct GMT_CTRL *C, struct GRD_HEADER *header, double *we
 	 * data to fill those pad rows/columns.  Thus, this function tries to determine if the
 	 * input grid has the extra data we need to fill the BC pad with observations. */
 	GMT_LONG wrap;
-	COUNTER_SMALL n_sides = 0;
+	COUNTER_MEDIUM n_sides = 0;
 	double wesn2[4];
 	
 	/* First copy over original settings to the Pad structure */
@@ -497,7 +497,7 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 
 	GMT_LONG expand;	/* TRUE or FALSE */
 	GMT_LONG err;		/* Implied by GMT_err_trap */
-	COUNTER_SMALL side;
+	COUNTER_MEDIUM side;
 	struct GRD_PAD P;
 
 	expand = gmt_padspace (C, header, wesn, pad, &P);	/* TRUE if we can extend the region by the pad-size to obtain real data for BC */
@@ -625,7 +625,7 @@ GMT_LONG GMT_grd_RI_verify (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG m
 {
 	/* mode - 0 means we are checking an existing grid, mode = 1 means we test a new -R -I combination */
 
-	COUNTER_SMALL error = 0;
+	COUNTER_MEDIUM error = 0;
 
 	if (!strcmp (C->init.progname, "grdedit")) return (GMT_NOERROR);	/* Separate handling in grdedit to allow grdedit -A */
 
@@ -995,7 +995,7 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 	 * options to the header variable command.
 	 * update = TRUE if we only want to update command line */
 
-	COUNTER_SMALL i;
+	COUNTER_MEDIUM i;
 	
 	if (update)	/* Only clean the command history */
 		GMT_memset (header->command, GRD_COMMAND_LEN320, char);
@@ -1715,7 +1715,7 @@ GMT_LONG GMT_check_url_name (char *fname) {
 
 #ifdef USE_GDAL
 GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I) {
-	COUNTER_SMALL i;
+	COUNTER_MEDIUM i;
 	double dumb;
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
@@ -1784,7 +1784,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	COUNTER_SMALL i;
+	COUNTER_MEDIUM i;
 	GMT_LONG expand;
 	struct GRD_PAD P;
 	struct GDALREAD_CTRL *to_gdalread = NULL;

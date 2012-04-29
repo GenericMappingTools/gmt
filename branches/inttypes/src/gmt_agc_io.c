@@ -100,7 +100,7 @@ void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header)
 void SaveAGCHeader (char *remark, float *agchead)
 {	/* Place AGC header data in remark string */
 	char floatvalue[PARAMSIZE+1];	/* Allow space for final \0 */
-	COUNTER_SMALL i;
+	COUNTER_MEDIUM i;
 	size_t j;
 
 	strcpy (remark, AGCHEADINDICATOR);
@@ -142,7 +142,7 @@ GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
 
 GMT_LONG GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {	/* Read header info. NOTE: All AGC files are assumed to be gridline-registered */
-	COUNTER_SMALL i;
+	COUNTER_MEDIUM i;
 	FILE *fp = NULL;
 	float recdata[RECORDLENGTH], agchead[BUFFHEADSIZE];
 
