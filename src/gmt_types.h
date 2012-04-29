@@ -29,7 +29,6 @@
 /* Three types for counting, depending on expected range of integers we need */
 #define COUNTER_LARGE	uint64_t
 #define COUNTER_MEDIUM	uint32_t
-#define COUNTER_SMALL	uint16_t
 
 /*--------------------------------------------------------------------
  *			GMT TYPEDEF DEFINITIONS
