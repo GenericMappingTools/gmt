@@ -498,11 +498,11 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else
 				this_az = azimuth[i];
-			bin = (GMT_LONG) ((this_az + az_offset) / Ctrl->A.inc);
+			bin = lrint ((this_az + az_offset) / Ctrl->A.inc);
 			sum[bin] += length[i];
 			if (Ctrl->T.active) {	/* Also count its other end */
 				this_az += 180.0;	if (this_az >= 360.0) this_az -= 360.0;
-				bin = (GMT_LONG) ((this_az + az_offset) / Ctrl->A.inc);
+				bin = lrint ((this_az + az_offset) / Ctrl->A.inc);
 				sum[bin] += length[i];
 			}
 		}

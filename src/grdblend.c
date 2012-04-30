@@ -169,7 +169,8 @@ GMT_LONG overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GR
 }
 
 GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
-	GMT_LONG n = 0, nr, one_or_zero = !h->registration, type, do_sample, status, not_supported;
+	GMT_LONG one_or_zero = !h->registration, type, do_sample, status, not_supported;
+	COUNTER_MEDIUM n = 0, nr;
 	struct GRDBLEND_INFO *B = NULL;
 	char *sense[2] = {"normal", "inverse"}, buffer[GMT_BUFSIZ];
 	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[GMT_BUFSIZ];
@@ -209,7 +210,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 				GMT_report (GMT, GMT_MSG_FATAL, "Read error for blending parameters near row %ld\n", n);
 				return (EXIT_FAILURE);
 			}
-			if ((size_t)n == n_alloc) L = GMT_malloc (GMT, L, n, &n_alloc, struct BLEND_LIST);
+			if (n == n_alloc) L = GMT_malloc (GMT, L, n, &n_alloc, struct BLEND_LIST);
 			L[n].file = strdup (file);
 			L[n].region = strdup (r_in);
 			L[n].weight = (nr == 1) ? 1.0 : weight;	/* Default weight if not given */

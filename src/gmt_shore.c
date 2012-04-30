@@ -458,16 +458,16 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 
 	/* Round off area to nearest multiple of block-dimension */
 
-	iw = (GMT_LONG)(floor (wesn[XLO] / c->bsize) * c->bsize);
-	ie =  (GMT_LONG)(ceil (wesn[XHI] / c->bsize) * c->bsize);
-	is = 90 - (GMT_LONG)(ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
-	in = 90 - (GMT_LONG)(floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
+	iw = lrint (floor (wesn[XLO] / c->bsize) * c->bsize);
+	ie = lrint (ceil (wesn[XHI] / c->bsize) * c->bsize);
+	is = 90 - lrint (ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
+	in = 90 - lrint (floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
 	idiv = lrint (360.0 / c->bsize);	/* Number of blocks per latitude band */
 
 	for (i = nb = 0; i < c->n_bin; i++) {	/* Find which bins are needed */
-		this_south = 90 - (GMT_LONG)(c->bsize * ((i / idiv) + 1));
+		this_south = 90 - lrint (c->bsize * ((i / idiv) + 1));
 		if (this_south < is || this_south >= in) continue;
-		this_west = (GMT_LONG)(c->bsize * (i % idiv)) - 360;
+		this_west = lrint (c->bsize * (i % idiv)) - 360;
 		while (this_west < iw) this_west += 360;
 		if (this_west >= ie) continue;
 		c->bins[nb] = i;
@@ -728,16 +728,16 @@ GMT_LONG GMT_init_br (struct GMT_CTRL *C, char which, char res, struct GMT_BR *c
 
 	/* Round off area to nearest multiple of block-dimension */
 
-	iw = (GMT_LONG)(floor (wesn[XLO] / c->bsize) * c->bsize);
-	ie =  (GMT_LONG)(ceil (wesn[XHI] / c->bsize) * c->bsize);
-	is = 90 - (GMT_LONG)(ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
-	in = 90 - (GMT_LONG)(floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
+	iw = lrint (floor (wesn[XLO] / c->bsize) * c->bsize);
+	ie = lrint (ceil (wesn[XHI] / c->bsize) * c->bsize);
+	is = 90 - lrint (ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
+	in = 90 - lrint (floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
 	idiv = lrint (360.0 / c->bsize);	/* Number of blocks per latitude band */
 
 	for (i = nb = 0; i < c->n_bin; i++) {	/* Find which bins are needed */
-		this_south = 90 - (GMT_LONG)(c->bsize * ((i / idiv) + 1));
+		this_south = 90 - lrint (c->bsize * ((i / idiv) + 1));
 		if (this_south < is || this_south >= in) continue;
-		this_west = (GMT_LONG)(c->bsize * (i % idiv)) - 360;
+		this_west = lrint (c->bsize * (i % idiv)) - 360;
 		while (this_west < iw) this_west += 360;
 		if (this_west >= ie) continue;
 		c->bins[nb] = i;
@@ -832,9 +832,10 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 /* edge: Edge test for shifting */
 {
 	struct GMT_GSHHS_POL *p = NULL;
-	GMT_LONG start_side, next_side, id, P = 0, more, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL;
+	GMT_LONG start_side, next_side, id, more, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL;
 	GMT_LONG cid, nid, add, first_pos, entry_pos, n, low_level, high_level, fid, nseg_at_level[GSHHS_MAX_LEVEL+1];
 	GMT_LONG completely_inside;
+	COUNTER_MEDIUM P = 0;
 	size_t n_alloc, p_alloc;
 	double *xtmp = NULL, *ytmp = NULL, plon, plat;
 
@@ -958,7 +959,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 		p[P].level = (dir == 1) ? 2 * ((low_level - 1) / 2) + 1: 2 * (low_level/2);
 		p[P].fid = (p[P].level == 2 && fid == RIVERLAKE) ? RIVERLAKE : p[P].level;	/* Not sure about this yet */
 		P++;
-		if ((size_t)P == p_alloc) {
+		if (P == p_alloc) {
 			size_t old_p_alloc = p_alloc;
 			p_alloc <<= 1;
 			p = GMT_memory (C, p, p_alloc, struct GMT_GSHHS_POL);
@@ -979,7 +980,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 		p[P].level = c->seg[id].level;
 		p[P].fid = c->seg[id].fid;
 		P++;
-		if ((size_t)P == p_alloc) {
+		if (P == p_alloc) {
 			size_t old_p_alloc = p_alloc;
 			p_alloc <<= 1;
 			p = GMT_memory (C, p, p_alloc, struct GMT_GSHHS_POL);

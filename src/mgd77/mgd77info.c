@@ -439,7 +439,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (this_lon < 0.0) this_lon += 360.0;	/* Start off with everything in 0-360 range */
 			xmin1 = MIN (this_lon, xmin1);
 			xmax1 = MAX (this_lon, xmax1);
-			quad_no = (GMT_LONG)floor (this_lon/90.0);	/* Yields quadrants 0-3 */
+			quad_no = lrint (floor (this_lon/90.0));	/* Yields quadrants 0-3 */
 			if (quad_no == 4) quad_no = 0;		/* When this_lon == 360.0 */
 			quad[quad_no] = TRUE;
 			if (lon_w > 180.0) this_lon -= 360.0;	/* For -180/+180 range */

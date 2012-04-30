@@ -223,11 +223,11 @@ EXTERN_MSC GMT_LONG GMT_detrend (struct GMT_CTRL *C, double *x, double *y, COUNT
 
 /* gmt_calclock.c: */
 
-EXTERN_MSC double GMT_rdc2dt (struct GMT_CTRL *C, GMT_LONG rd, double secs);
-EXTERN_MSC void GMT_dt2rdc (struct GMT_CTRL *C, double t, GMT_LONG *rd, double *s);
-EXTERN_MSC GMT_LONG GMT_rd_from_gymd (struct GMT_CTRL *C, GMT_LONG gy, GMT_LONG gm, GMT_LONG gd);
+EXTERN_MSC double GMT_rdc2dt (struct GMT_CTRL *C, int64_t rd, double secs);
+EXTERN_MSC void GMT_dt2rdc (struct GMT_CTRL *C, double t, int64_t *rd, double *s);
+EXTERN_MSC int64_t GMT_rd_from_gymd (struct GMT_CTRL *C, GMT_LONG gy, GMT_LONG gm, GMT_LONG gd);
 EXTERN_MSC void GMT_format_calendar (struct GMT_CTRL *C, char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *W, GMT_LONG upper, GMT_LONG kind, double dt);
-EXTERN_MSC void GMT_gcal_from_rd (struct GMT_CTRL *C, GMT_LONG date, struct GMT_gcal *gcal);
+EXTERN_MSC void GMT_gcal_from_rd (struct GMT_CTRL *C, int64_t rd, struct GMT_gcal *gcal);
 
 /* gmt_init.c: */
 

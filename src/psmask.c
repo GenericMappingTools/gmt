@@ -237,7 +237,7 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	GMT_LONG ij, i, j, n = 0, n_edges, edge_word, edge_bit, go_on = TRUE;
 	 
 	 
-	n_edges = h->ny * (GMT_LONG) ceil (h->nx / 16.0);
+	n_edges = h->ny * lrint (ceil (h->nx / 16.0));
 	 
 	 /* Reset edge-flags to zero, if necessary */
 	 if (first) {

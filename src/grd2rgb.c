@@ -81,8 +81,9 @@ void Free_grd2rgb_Ctrl (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *C) {	/* Deall
 GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GMT_LONG byte_per_pixel, GMT_LONG nx, GMT_LONG ny, unsigned char **P) {
 	/* loadraw reads a raw binary grb or rgba rasterfile of depth 24, or 32 into memory */
 
-	GMT_LONG k;
-	COUNTER_LARGE j, i, nm;
+	COUNTER_MEDIUM k;
+	COUNTER_LARGE j, i;
+	size_t nm;
 	unsigned char *buffer = NULL;
 
 	FILE *fp = NULL;
@@ -97,7 +98,7 @@ GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GM
 	header->depth = 24;
 	header->width = (int)nx;
 	header->height = (int)ny;
-	nm = (COUNTER_LARGE)nx * (COUNTER_LARGE)ny * (COUNTER_LARGE)byte_per_pixel;
+	nm = (size_t)nx * (size_t)ny * (size_t)byte_per_pixel;
 	header->length = (int)nm;
 
 	buffer = GMT_memory (GMT, NULL, nm, unsigned char);
@@ -121,9 +122,10 @@ GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GM
 }
 
 GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel, GMT_LONG *raw_nx, GMT_LONG *raw_ny) {
-	GMT_LONG k = 0, j, inc, i, l, even, n_pix;
+	GMT_LONG inc, even;
+	COUNTER_MEDIUM k = 0, j, i, l, n_pix;
 	unsigned char *buffer = NULL;
-	off_t img_size;
+	size_t img_size;
 	float *work = NULL, *datac = NULL, *img_pow = NULL, pow_max = -FLT_MAX, pm;
 	int rgb[3];
 	FILE *fp = NULL;
@@ -137,7 +139,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 	img_size = ftell (fp);
 	fseek (fp, 0, SEEK_SET);
 
-	n_pix = (GMT_LONG) (img_size / byte_per_pixel);
+	n_pix = (COUNTER_MEDIUM) (img_size / byte_per_pixel);
 
 	buffer  = GMT_memory (GMT, NULL, img_size, unsigned char);
 	datac   = GMT_memory (GMT, NULL, 2*n_pix, float);
@@ -145,7 +147,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 	img_pow = GMT_memory (GMT, NULL, n_pix/2, float);
 	GMT_memset (work, 2*n_pix, float);
 
-	if (GMT_fread (buffer, (size_t)1, (size_t)img_size, fp) != (size_t)img_size) {
+	if (GMT_fread (buffer, (size_t)1, img_size, fp) != img_size) {
 		if (byte_per_pixel == 3)
 			GMT_report (GMT, GMT_MSG_FATAL, "Trouble_ reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
@@ -200,7 +202,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 				GMT_report (GMT, GMT_MSG_NORMAL, "... SUCCESS (W = %ld, H = %ld)\n", *raw_nx, *raw_ny);
 				break;
 			}
-			even = (k%2 == 0) ? 1: 0;
+			even = (k%2 == 0) ? 1 : 0;
 			if (even) l++;
 			k++;
 		}

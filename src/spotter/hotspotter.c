@@ -457,7 +457,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		r_smt /= EQ_RAD;				/* Converts radius in km to radians */
 		norm = -4.5 / (r_smt * r_smt);			/* Gaussian normalization */
-		node_y_width = (GMT_LONG)ceil (i_yinc_r * r_smt);	/* y-node coverage */
+		node_y_width = lrint (ceil (i_yinc_r * r_smt));	/* y-node coverage */
 
 		/* STEP 2: Calculate this seamount's flowline */
 
@@ -500,7 +500,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				/* Shape is z_smt * exp (r^2 * norm) */
 
-				node_x_width = (GMT_LONG) ceil (r_smt * ilatfactor[row]);
+				node_x_width = lrint (ceil (r_smt * ilatfactor[row]));
 				dx = c[kx] - xpos[col];
 				dy = c[ky] - ypos[row];
 

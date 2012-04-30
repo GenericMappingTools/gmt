@@ -454,7 +454,7 @@ double jn (int n, double x)
 	}
 	else {  /* More complicated here */
 		tox = 2.0 / ax;
-		m = 2 * ((n + (GMT_LONG) d_sqrt(ACC * n)) / 2);
+		m = 2 * ((n + lrint (d_sqrt(ACC * n))) / 2);
 		jsum = 0;
 		bjp = ans = sum = 0.0;
 		bj = 1.0;

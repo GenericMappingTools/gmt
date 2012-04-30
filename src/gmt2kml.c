@@ -96,7 +96,7 @@ struct GMT2KML_CTRL {
 	} I;
 	struct L {	/* -L */
 		GMT_LONG active;
-		GMT_LONG n_cols;
+		COUNTER_MEDIUM n_cols;
 		struct EXT_COL *ext;
 	} L;
 	struct N {	/* -N */
@@ -365,7 +365,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				while ((GMT_strtok (opt->arg, ",", &pos, p))) {
 					for (k = 0; p[k] && p[k] != ':'; k++);	/* Find position of colon */
 					p[k] = ' ';
-					if ((size_t)Ctrl->L.n_cols == n_alloc) Ctrl->L.ext = GMT_memory (GMT, Ctrl->L.ext, n_alloc += GMT_TINY_CHUNK, struct EXT_COL);
+					if (Ctrl->L.n_cols == n_alloc) Ctrl->L.ext = GMT_memory (GMT, Ctrl->L.ext, n_alloc += GMT_TINY_CHUNK, struct EXT_COL);
 					sscanf (p, "%d %[^:]", &Ctrl->L.ext[Ctrl->L.n_cols].col, Ctrl->L.ext[Ctrl->L.n_cols].name);
 					Ctrl->L.n_cols++;
 				}

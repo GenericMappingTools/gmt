@@ -178,7 +178,7 @@
 #define PSL_eq(a,b) (fabs((a)-(b)) < PSL_SMALL)						/* If two color component are ~identical */
 #define PSL_is_gray(rgb) (PSL_eq(rgb[0],rgb[1]) && PSL_eq(rgb[1],rgb[2]))		/* If the rgb is a color and not gray */
 #define PSL_same_rgb(a,b) (PSL_eq(a[0],b[0]) && PSL_eq(a[1],b[1]) && PSL_eq(a[2],b[2]) && PSL_eq(a[3],b[3]))	/* If two colors are ~identical */
-#define PSL_rgb_copy(a,b) memcpy((void*)a,(void*)b,(size_t)(4*sizeof(double)));		/* Copy RGB[T] triplets: a = b */
+#define PSL_rgb_copy(a,b) memcpy((void*)a,(void*)b,4*sizeof(double));			/* Copy RGB[T] triplets: a = b */
 
 #define PSL_memory(C,ptr,n,type) (type*)psl_memory(C,(void*)ptr,(PSL_LONG)(n),sizeof(type))	/* Easier macro for psl_memory */
 

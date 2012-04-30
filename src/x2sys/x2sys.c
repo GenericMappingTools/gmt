@@ -207,7 +207,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 {
 	/* Reads the format definition file and sets all information variables */
 
-	GMT_LONG i = 0;
+	COUNTER_MEDIUM i = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
 	int c;	/* Remain 4-byte integer */
 	FILE *fp = NULL;
@@ -287,7 +287,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 		if (!strcmp (X->info[i].name, "y") || !strcmp (X->info[i].name, "lat"))  X->y_col = i;
 		if (!strcmp (X->info[i].name, "t") || !strcmp (X->info[i].name, "time")) X->t_col = i;
 		i++;
-		if ((size_t)i == n_alloc) {
+		if (i == n_alloc) {
 			n_alloc <<= 1;
 			X->info = GMT_memory (C, X->info, n_alloc, struct X2SYS_DATA_INFO);
 		}
@@ -296,7 +296,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 	fclose (fp);
 	if (X->file_type == X2SYS_NETCDF) X->read_file = (PFL) x2sys_read_ncfile;
 
-	if ((size_t)i < n_alloc) X->info = GMT_memory (C, X->info, i, struct X2SYS_DATA_INFO);
+	if (i < n_alloc) X->info = GMT_memory (C, X->info, i, struct X2SYS_DATA_INFO);
 	X->n_fields = X->n_out_columns = i;
 
 	if (X->file_type == X2SYS_BINARY) {	/* Binary mode needed */
@@ -1304,12 +1304,12 @@ GMT_LONG x2sys_bix_get_ij (struct GMT_CTRL *C, double x, double y, GMT_LONG *i, 
 {
 	GMT_LONG index = 0;
 
-	*j = (y == B->wesn[YHI]) ? B->ny_bin - 1 : (GMT_LONG)floor ((y - B->wesn[YLO]) * B->i_bin_y);
+	*j = (y == B->wesn[YHI]) ? B->ny_bin - 1 : lrint (floor ((y - B->wesn[YLO]) * B->i_bin_y));
 	if ((*j) < 0 || (*j) >= B->ny_bin) {
 		GMT_report (C, GMT_MSG_FATAL, "j (%ld) outside range implied by -R -I! [0-%ld>\n", *j, B->ny_bin);
 		return (X2SYS_BIX_BAD_J);
 	}
-	*i = (x == B->wesn[XHI]) ? B->nx_bin - 1 : (GMT_LONG)floor ((x - B->wesn[XLO])  * B->i_bin_x);
+	*i = (x == B->wesn[XHI]) ? B->nx_bin - 1 : lrint (floor ((x - B->wesn[XLO])  * B->i_bin_x));
 	if (B->periodic) {
 		while (*i < 0) *i += B->nx_bin;
 		while (*i >= B->nx_bin) *i -= B->nx_bin;

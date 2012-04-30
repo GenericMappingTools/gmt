@@ -481,8 +481,9 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 	 
 	size_t start[5] = {0,0,0,0,0}, edge[5] = {1,1,1,1,1};
 	int ncid, ndims;
-	GMT_LONG first_col, last_col, first_row, last_row, check, *k = NULL;
-	GMT_LONG i, j, width_in, width_out, height_in, i_0_out, inc, off, err;
+	GMT_LONG check, inc, off, err;
+	COUNTER_MEDIUM first_col, last_col, first_row, last_row, *actual_col = NULL;
+	COUNTER_MEDIUM i, j, width_in, width_out, height_in, i_0_out;
 	size_t ij, kk;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp = NULL;
 
@@ -493,7 +494,7 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 	else if (C->session.grdformat[header->type][0] != 'n')
 		return (NC_ENOTNC);
 
-	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_out = width_in;		/* Width of output array */
@@ -533,7 +534,7 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 		start[header->xy_dim[1]] = j;
 		GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
 		for (i = 0, kk = ij; i < width_in; i++, kk+=inc) {	/* Check for and handle NaN proxies */
-			grid[kk] = tmp[k[i]];
+			grid[kk] = tmp[actual_col[i]];
 			if (check && grid[kk] == header->nan_value) grid[kk] = C->session.f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
@@ -547,7 +548,7 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 
 	GMT_err_trap (nc_close (ncid));
 
-	GMT_free (C, k);
+	GMT_free (C, actual_col);
 	GMT_free (C, tmp);
 	return (GMT_NOERROR);
 }
@@ -563,8 +564,9 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	 */
 
 	size_t start[2] = {0,0}, edge[2] = {1,1};
-	GMT_LONG i, j, inc, off, nr_oor = 0, err, width_in, width_out, height_out;
-	GMT_LONG first_col, last_col, first_row, last_row, *k = NULL;
+	GMT_LONG inc, off, err;
+	COUNTER_MEDIUM i, j, width_in, width_out, height_out, nr_oor = 0;
+	COUNTER_MEDIUM first_col, last_col, first_row, last_row, *actual_col = NULL;
 	size_t ij, node;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp_f = NULL;
 	int *tmp_i = NULL;
@@ -594,7 +596,7 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 			z_type = NC_NAT;
 	}
 
-	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_in = width_out;		/* Physical width of input array */
@@ -622,7 +624,7 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		for (j = 0; j < height_out; j++, ij -= (size_t)width_in) {
 			start[0] = j;
 			for (i = 0; i < width_out; i++) {
-				node = inc*(ij+k[i])+off;
+				node = inc*(ij+actual_col[i])+off;
 				if (node > header->size) {
 					fprintf (stderr, "Outside bounds\n");
 				}
@@ -649,7 +651,7 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		for (j = 0; j < height_out; j++, ij -= (size_t)width_in) {
 			start[0] = j;
 			for (i = 0; i < width_out; i++) {
-				value = grid[inc*(ij+k[i])+off];
+				value = grid[inc*(ij+actual_col[i])+off];
 				if (GMT_is_dnan (value))
 					tmp_i[i] = lrint (header->nan_value);
 				else if (value <= limit[0] || value >= limit[1]) {
@@ -669,7 +671,7 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 
 	if (nr_oor > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %ld out-of-range grid values converted to _FillValue [%s]\n", nr_oor, header->name);
 
-	GMT_free (C, k);
+	GMT_free (C, actual_col);
 
 	/* Limits need to be written in actual, not internal grid, units */
 

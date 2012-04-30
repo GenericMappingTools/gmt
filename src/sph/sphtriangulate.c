@@ -125,7 +125,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 		if (get_area) GMT_report (GMT, GMT_MSG_NORMAL, "Total surface area = %g\n", area_sphere * R2);
 	}
 	else {	/* Want just the arcs (to draw then, probably).  This avoids repeating shared arcs between triangles */
-		GMT_LONG j, ij1, ij2, ij3, n_arcs;
+		COUNTER_MEDIUM j, ij1, ij2, ij3, n_arcs;
 		struct STRPACK_ARC *arc = NULL;
 		
 		n_arcs = 3 * D->n;
@@ -140,7 +140,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 				l_swap (arc[k].begin, arc[k].end);
 
 		/* Sort and eliminate duplicate arcs */
-		qsort (arc, (size_t)n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
+		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
 		for (i = 1, j = 0; i < n_arcs; i++) {
 			if (arc[i].begin != arc[j].begin || arc[i].end != arc[j].end) j++;
 			arc[j] = arc[i];
@@ -173,8 +173,10 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 
 void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, double *lat, struct STRIPACK_VORONOI *V, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET *Dout[])
 {	/* Prints out the Voronoi polygons either as polygons (for filling) or arcs (lines) */
-	GMT_LONG i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last;
-	GMT_LONG do_authalic, dim[4] = {1, 0, 0, 0}, vertex_last, n_arcs = 0;
+	GMT_LONG do_authalic;
+	
+	COUNTER_MEDIUM i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last;
+	GMT_LONG dim[4] = {1, 0, 0, 0}, vertex_last, n_arcs = 0;
 	size_t n_alloc = GMT_CHUNK, p_alloc = GMT_TINY_CHUNK;
 	
 	char segment_header[GMT_BUFSIZ];
@@ -234,7 +236,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 			if (get_arcs) {	/* Only collect the arcs - we'll sort out duplicates later */
 				arc[n_arcs].begin = vertex_last;	arc[n_arcs].end = vertex_new;
 				n_arcs++;
-				if ((size_t)n_arcs == n_alloc) {
+				if (n_arcs == n_alloc) {
 					n_alloc <<= 1;
 					arc = GMT_memory (GMT, arc, n_alloc, struct STRPACK_ARC);
 				}
@@ -254,7 +256,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 					area_polygon += area_triangle;
 				}
 				vertex++;
-				if ((size_t)vertex == p_alloc) {	/* Need more space for polygon */
+				if (vertex == p_alloc) {	/* Need more space for polygon */
 					p_alloc <<= 1;
 					plon = GMT_memory (GMT, plon, p_alloc, double);
 					plat = GMT_memory (GMT, plat, p_alloc, double);
@@ -293,7 +295,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 			l_swap (arc[k].begin, arc[k].end);
 
 		/* Sort and exclude duplicates */
-		qsort (arc, (size_t)n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
+		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
 		for (i = 1, j = 0; i < n_arcs; i++) {
 			if (arc[i].begin != arc[j].begin || arc[i].end != arc[j].end) j++;
 			arc[j] = arc[i];

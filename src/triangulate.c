@@ -224,8 +224,8 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	int *link = NULL;	/* Must remain int and not GMT_LONG due to triangle function */
 	
 	COUNTER_LARGE ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
-	GMT_LONG col_min, col_max, row_min, row_max, n_output;
-	GMT_LONG row, col, n_input, triplets[2] = {FALSE, FALSE}, error = FALSE, map_them = FALSE;
+	COUNTER_MEDIUM row, col, n_input, col_min, col_max, row_min, row_max, n_output;
+	GMT_LONG triplets[2] = {FALSE, FALSE}, error = FALSE, map_them = FALSE;
 	
 	size_t n_alloc;
 	
@@ -470,7 +470,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			for (i = 0; i < n_edge; i++) if (edge[i].begin > edge[i].end) l_swap (edge[i].begin, edge[i].end);
 
-			qsort (edge, (size_t)n_edge, sizeof (struct TRIANGULATE_EDGE), compare_edge);
+			qsort (edge, n_edge, sizeof (struct TRIANGULATE_EDGE), compare_edge);
 			for (i = 1, j = 0; i < n_edge; i++) {
 				if (edge[i].begin != edge[j].begin || edge[i].end != edge[j].end) j++;
 				edge[j] = edge[i];

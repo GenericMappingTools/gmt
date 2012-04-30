@@ -320,7 +320,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 		}
 		if (s < GRDCONTOUR_MIN_LENGTH) continue;	/* Contour is too short to be ticked or labeled */
 
-		n_ticks = (GMT_LONG)(s / tick_gap);
+		n_ticks = lrint (s / tick_gap);
 		if (n_ticks == 0) continue;	/* Too short to be ticked or labeled */
 
 		GMT_setpen (GMT, &save[i].pen);
@@ -332,7 +332,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 			dx = save[i].x[j] - save[i].x[j-1];
 			dy = save[i].y[j] - save[i].y[j-1];
 			length = hypot (dx, dy);
-			n_ticks = (GMT_LONG)ceil (length / tick_gap);	/* At least one per side */
+			n_ticks = lrint (ceil (length / tick_gap));	/* At least one per side */
 			a = atan2 (dy, dx) + add;
 			sincos (a, &sa, &ca);
 			for (k = 0; k <= n_ticks; k++) {
@@ -593,14 +593,13 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 
 GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG nx, k2, k3, node1, node2, c, PSCONTOUR_SUM, cont_counts[2] = {0, 0};
-	GMT_LONG io_mode = 0, id, add, last_entry, last_exit, make_plot;
-	GMT_LONG np, k, i, low, high, n_contours = 0, *vert = NULL, *cind = NULL;
-	GMT_LONG error = FALSE, skip = FALSE, closed;
-	GMT_LONG tbl_scl = 0, two_only = FALSE, fmt[3] = {0, 0, 0}, n_tables = 0, tbl;
+	GMT_LONG PSCONTOUR_SUM, io_mode = 0, id, make_plot, error = FALSE, skip = FALSE, closed;
+	GMT_LONG tbl_scl = 0, two_only = FALSE, fmt[3] = {0, 0, 0};
 	
-	size_t n, n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL;
-	size_t c_alloc = 0;
+	COUNTER_MEDIUM n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0}, add, last_entry, last_exit;
+	COUNTER_MEDIUM np, k, i, low, high, n_contours = 0, n_tables = 0, tbl, *vert = NULL, *cind = NULL;
+	
+	size_t n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL, c_alloc = 0;
 	
 	COUNTER_LARGE ij, *n_seg = NULL;
 	
@@ -827,7 +826,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Data record to process */
 
-			if ((size_t)c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
+			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
 			if (cont[c].type == '\0') cont[c].type = 'C';
 			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? 1 : 0;
@@ -855,7 +854,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else	/* No annotations, set aval outside range */
 			aval = xyz[1][GMT_Z] + 1.0;
 		for (ic = lrint (min/Ctrl->C.interval), c = 0; ic <= lrint (max/Ctrl->C.interval); ic++, c++) {
-			if ((size_t)c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
+			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			cont[c].val = ic * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_SMALL) aval += Ctrl->A.interval;
 			cont[c].type = (fabs (cont[c].val - aval) < GMT_SMALL) ? 'A' : 'C';

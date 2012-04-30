@@ -351,12 +351,12 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (p[k].lat[i] < ymin) ymin = p[k].lat[i];
 					if (p[k].lat[i] > ymax) ymax = p[k].lat[i];
 				}
-				col_min = (GMT_LONG)MAX (0, ceil (xmin * i_dx_inch - Grid->header->xy_off - GMT_CONV_LIMIT));
+				col_min = MAX (0, lrint (ceil (xmin * i_dx_inch - Grid->header->xy_off - GMT_CONV_LIMIT)));
 				if (col_min > nx1) col_min = 0;
-				col_max = (GMT_LONG)MIN (nx1, floor (xmax * i_dx_inch - Grid->header->xy_off + GMT_CONV_LIMIT));
+				col_max = MIN (nx1, lrint (floor (xmax * i_dx_inch - Grid->header->xy_off + GMT_CONV_LIMIT)));
 				if (col_max <= 0 || col_max < col_min) col_max = nx1;
-				row_min = (GMT_LONG)MAX (0, ceil ((GMT->current.proj.rect[YHI] - ymax) * i_dy_inch - Grid->header->xy_off - GMT_CONV_LIMIT));
-				row_max = (GMT_LONG)MIN (ny1, floor ((GMT->current.proj.rect[YHI] - ymin) * i_dy_inch - Grid->header->xy_off + GMT_CONV_LIMIT));
+				row_min = MAX (0, lrint (ceil ((GMT->current.proj.rect[YHI] - ymax) * i_dy_inch - Grid->header->xy_off - GMT_CONV_LIMIT)));
+				row_max = MIN (ny1, lrint (floor ((GMT->current.proj.rect[YHI] - ymin) * i_dy_inch - Grid->header->xy_off + GMT_CONV_LIMIT));
 
 				for (row = row_min; row <= row_max; row++) {
 					for (col = col_min; col <= col_max; col++) {
@@ -391,10 +391,10 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Determine nodes to initialize */
 
-			row_min = (GMT_LONG)MAX (0, ceil ((Grid->header->wesn[YHI] - c.lat_sw - c.bsize) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off));
-			row_max = (GMT_LONG)MIN (ny1, floor ((Grid->header->wesn[YHI] - c.lat_sw) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off));
-			col_min = (GMT_LONG)ceil (fmod (c.lon_sw - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off);
-			col_max = (GMT_LONG)floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off);
+			row_min = MAX (0, lrint (ceil ((Grid->header->wesn[YHI] - c.lat_sw - c.bsize) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off)));
+			row_max = MIN (ny1, lrint (floor ((Grid->header->wesn[YHI] - c.lat_sw) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off)));
+			col_min = lrint (ceil (fmod (c.lon_sw - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
+			col_max = lrint (floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
 			if (wrap) {	/* Handle jumps */
 				if (col_max < col_min) col_max += Grid->header->nx;
 			}

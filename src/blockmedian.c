@@ -197,13 +197,13 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, COUNTER_LARGE fi
 
 	weight_half = quantile[k_for_xy] * weight_sum;	/* We want the same quantile for locations as was used for z */
 
-	if (n_in_cell > 2) qsort(&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
+	if (n_in_cell > 2) qsort(&data[first_in_cell], n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
 	node = first_in_cell;
 	weight_count = data[first_in_cell].a[BLK_W];
 	while (weight_count < weight_half) weight_count += data[++node].a[BLK_W];
 	out[GMT_X] = (weight_count == weight_half) ?  0.5 * (data[node].a[GMT_X] + data[node + 1].a[GMT_X]) : data[node].a[GMT_X];
 
-	if (n_in_cell > 2) qsort (&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
+	if (n_in_cell > 2) qsort (&data[first_in_cell], n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
 	node = first_in_cell;
 	weight_count = data[first_in_cell].a[BLK_W];
 	while (weight_count < weight_half) weight_count += data[++node].a[BLK_W];
@@ -216,11 +216,13 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, COUNTER_LARGE fi
 
 GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	COUNTER_LARGE n_read, nz, n_lost, node, first_in_cell, first_in_new_cell;
-	COUNTER_LARGE n_pitched, n_cells_filled;
+	COUNTER_LARGE n_lost, node, first_in_cell, first_in_new_cell;
+	COUNTER_LARGE n_read, nz, n_pitched, n_cells_filled;
+	
 	size_t n_alloc = 0, nz_alloc = 0;
-	GMT_LONG error = FALSE, box_and_whisker = FALSE;
-	GMT_LONG row, col, w_col, n_output, n_quantiles = 1, go_quickly = 0;
+	
+	GMT_LONG error = FALSE, box_and_whisker = FALSE, go_quickly = 0;
+	GMT_LONG row, col, w_col, n_output, n_quantiles = 1;
 	
 	double out[7], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[3], weight, *in = NULL, *z_tmp = NULL;
 
@@ -376,7 +378,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Sort on node and Z value */
 
-	qsort (data, (size_t)n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
+	qsort (data, n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
 
 	/* Find n_in_cell and write appropriate output  */
 

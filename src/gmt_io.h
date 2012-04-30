@@ -468,8 +468,8 @@ struct GMT_PLOT_CALCLOCK {
 /* Here are the GMT data types used for tables */
 
 struct GMT_LINE_SEGMENT {		/* For holding segment lines in memory */
-	GMT_LONG id;			/* The internal number of the table */
-	GMT_LONG n_columns;		/* Number of fields in each record (>= 2) */
+	COUNTER_MEDIUM id;		/* The internal number of the table */
+	COUNTER_MEDIUM n_columns;		/* Number of fields in each record (>= 2) */
 	GMT_LONG pole;			/* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
 	GMT_LONG mode;			/* 0 = output segment, 1 = output header only, 2 = skip segment */
 	GMT_LONG range;			/* 0 = use default lon adjustment, -1 = negative longs, +1 = positive lons */
@@ -488,9 +488,9 @@ struct GMT_LINE_SEGMENT {		/* For holding segment lines in memory */
 };
 
 struct GMT_TABLE {	/* To hold an array of line segment structures and header information in one container */
-	GMT_LONG id;			/* The internal number of the table */
-	GMT_LONG n_headers;		/* Number of file header records (0 if no header) */
-	GMT_LONG n_columns;		/* Number of columns (fields) in each record */
+	COUNTER_MEDIUM id;			/* The internal number of the table */
+	COUNTER_MEDIUM n_headers;		/* Number of file header records (0 if no header) */
+	COUNTER_MEDIUM n_columns;		/* Number of columns (fields) in each record */
 	GMT_LONG mode;			/* 0 = output table, 1 = output header only, 2 = skip table */
 	COUNTER_LARGE n_segments;		/* Number of segments in the array */
 	COUNTER_LARGE n_records;		/* Total number of data records across all segments */
@@ -504,7 +504,7 @@ struct GMT_TABLE {	/* To hold an array of line segment structures and header inf
 };
 
 struct GMT_TEXT_SEGMENT {		/* For holding segment text records in memory */
-	GMT_LONG id;			/* The internal number of the table */
+	COUNTER_MEDIUM id;			/* The internal number of the table */
 	GMT_LONG mode;			/* 0 = output segment, 1 = output header only, 2 = skip segment */
 	COUNTER_LARGE n_rows;		/* Number of rows in this segment */
 	size_t n_alloc;			/* Number of rows allocated for this segment */
@@ -516,8 +516,8 @@ struct GMT_TEXT_SEGMENT {		/* For holding segment text records in memory */
 };
 
 struct GMT_TEXT_TABLE {	/* To hold an array of text segment structures and header information in one container */
-	GMT_LONG id;			/* The internal number of the table */
-	GMT_LONG n_headers;		/* Number of file header records (0 if no header) */
+	COUNTER_MEDIUM id;			/* The internal number of the table */
+	COUNTER_MEDIUM n_headers;		/* Number of file header records (0 if no header) */
 	GMT_LONG mode;			/* 0 = output table, 1 = output header only, 2 = skip table */
 	COUNTER_LARGE n_segments;		/* Number of segments in the array */
 	COUNTER_LARGE n_records;		/* Total number of data records across all segments */
@@ -530,9 +530,9 @@ struct GMT_TEXT_TABLE {	/* To hold an array of text segment structures and heade
 /* The main GMT Data Containers used in the API: */
 
 struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
-	GMT_LONG id;			/* The internal number of the data set */
-	GMT_LONG n_tables;		/* The total number of tables (files) contained */
-	GMT_LONG n_columns;		/* The number of data columns */
+	COUNTER_MEDIUM id;			/* The internal number of the data set */
+	COUNTER_MEDIUM n_tables;		/* The total number of tables (files) contained */
+	COUNTER_MEDIUM n_columns;		/* The number of data columns */
 	COUNTER_LARGE n_segments;		/* The total number of segments across all tables */
 	COUNTER_LARGE n_records;		/* The total number of data records across all tables */
 	size_t n_alloc;			/* The current allocation length of tables */
@@ -549,8 +549,8 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 };
 
 struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files) */
-	GMT_LONG id;			/* The internal number of the data set */
-	GMT_LONG n_tables;		/* The total number of tables (files) contained */
+	COUNTER_MEDIUM id;			/* The internal number of the data set */
+	COUNTER_MEDIUM n_tables;		/* The total number of tables (files) contained */
 	COUNTER_LARGE n_segments;		/* The total number of segments across all tables */
 	COUNTER_LARGE n_records;		/* The total number of data records across all tables */
 	size_t n_alloc;			/* The current allocation length of tables */
@@ -567,7 +567,7 @@ struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files)
 /* The GMT_IMAGE container is used to pass user images in from the GDAL bridge */
 
 struct GMT_IMAGE {	/* Single container for a user image of data */
-	GMT_LONG id;			/* The internal number of the data set */
+	COUNTER_MEDIUM id;			/* The internal number of the data set */
 	GMT_LONG type;			/* Data type, e.g. GMTAPI_FLOAT */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
 	int		*ColorMap;
@@ -596,10 +596,10 @@ union GMT_UNIVECTOR {
 /* These containers are used to pass user vectors and matrices in/out of GMT */
 
 struct GMT_MATRIX {	/* Single container for a user matrix of data */
-	GMT_LONG id;			/* The internal number of the data set */
-	GMT_LONG n_rows;		/* Number of rows in this matrix */
-	GMT_LONG n_columns;		/* Number of columns in this matrix */
-	GMT_LONG n_layers;		/* Number of layers in a 3-D matrix [1] */
+	COUNTER_MEDIUM id;			/* The internal number of the data set */
+	COUNTER_MEDIUM n_rows;		/* Number of rows in this matrix */
+	COUNTER_MEDIUM n_columns;		/* Number of columns in this matrix */
+	COUNTER_MEDIUM n_layers;		/* Number of layers in a 3-D matrix [1] */
 	GMT_LONG shape;			/* 0 = C (rows) and 1 = Fortran (cols) */
 	GMT_LONG registration;     	/* 0 for gridline and 1 for pixel registration  */
 	size_t dim;			/* Allocated length of longest C or Fortran dim */
@@ -611,8 +611,8 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 };
 
 struct GMT_VECTOR {	/* Single container for user vector(s) of data */
-	GMT_LONG id;			/* The internal number of the data set */
-	GMT_LONG n_columns;		/* Number of vectors */
+	COUNTER_MEDIUM id;			/* The internal number of the data set */
+	COUNTER_MEDIUM n_columns;		/* Number of vectors */
 	COUNTER_LARGE n_rows;		/* Number of rows in each vector */
 	enum GMT_enum_type *type;	/* Array of data types (type of each uni-vector, e.g. GMTAPI_FLOAT */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0 = allocated, 1 = allocate as needed] */

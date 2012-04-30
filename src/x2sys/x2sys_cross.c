@@ -599,8 +599,8 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							      ^      ^       ^
 							    left   xover   right			*/
 
-						left[k]  = (GMT_LONG) floor (XC.xnode[k][i]);
-						right[k] = (GMT_LONG) ceil  (XC.xnode[k][i]);
+						left[k]  = lrint (floor (XC.xnode[k][i]));
+						right[k] = lrint (ceil  (XC.xnode[k][i]));
 						
 						if (left[k] == right[k]) {	/* Crosses exactly on a node; move left or right so interpolation will work */
 							if (left[k] > 0)

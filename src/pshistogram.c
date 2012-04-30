@@ -96,7 +96,7 @@ GMT_LONG fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *d
 	double add_half = 0.0;
 	GMT_LONG b0, b1, i, ibox, count_sum;
 
-	F->n_boxes = (GMT_LONG)ceil(((F->wesn[XHI] - F->wesn[XLO]) / F->box_width) + 0.5);
+	F->n_boxes = lrint (ceil(((F->wesn[XHI] - F->wesn[XLO]) / F->box_width) + 0.5));
 
 	if (F->center_box) {
 		F->n_boxes++;
@@ -112,7 +112,7 @@ GMT_LONG fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *d
 	/* First fill boxes with counts  */
 
 	for (i = 0; i < n; i++) {
-		ibox = (GMT_LONG)floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half);
+		ibox = lrint (floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half));
 		if (ibox < 0 || ibox >= F->n_boxes) continue;
 		F->boxh[ibox]++;
 		F->n_counted++;

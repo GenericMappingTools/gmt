@@ -100,7 +100,7 @@ void filter_cols (struct GMT_CTRL *C, double *data[], GMT_LONG begin, GMT_LONG e
 		while (istart < end && data[d_col][istart] - data[d_col][j] <= -half_width) istart++;
 		while (istop  < end && data[d_col][istop]  - data[d_col][j] <   half_width) istop++;
 		for (i = istart, sum = 0.0; i < istop; i++) {
-			k = (GMT_LONG)floor (dt * fabs (data[d_col][i] - data[d_col][j]));
+			k = lrint (floor (dt * fabs (data[d_col][i] - data[d_col][j])));
 			if (k < 0 || k >= SPLITXYZ_F_RES) continue;	/* Safety valve */
 			sum += fwork[k];
 			for (p = 0; p < n_cols; p++) w[p][j] += (data[cols[p]][i] * fwork[k]);

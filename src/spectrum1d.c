@@ -169,7 +169,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 	dw = (n_windows > 1) ? (double)(n_data - C->window) / (double)(n_windows - 1) : 1.0;
 
 	for (w = 0; w < n_windows; w++) {
-		t_start = (GMT_LONG)floor (0.5 + w * dw);
+		t_start = lrint (floor (0.5 + w * dw));
 		t_stop = t_start + C->window;
 		if (C->y_given) {
 			for (t = t_start, i = 0; t < t_stop; t++, i+=2) {

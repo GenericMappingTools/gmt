@@ -139,7 +139,7 @@ COUNTER_LARGE gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double w
 	*/
 
 	/* Save the location of the upper left corner point of the convolution kernel */
-	ij = GMT_IJP (h, j, col);
+	ij = GMT_IJP (h, row, col);
 
 	/* Build weights */
 

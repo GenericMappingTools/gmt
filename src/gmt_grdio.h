@@ -66,8 +66,8 @@ struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 };
 
 struct GMT_GRDFILE {
-	GMT_LONG size;		/* Bytes per item */
-	GMT_LONG n_byte;	/* Number of bytes for row */
+	size_t size;		/* Bytes per item */
+	size_t n_byte;		/* Number of bytes for row */
 	GMT_LONG row;		/* Current row */
 	GMT_LONG check;		/* TRUE if we must replace NaNs with another representation on i/o */
 	GMT_LONG auto_advance;	/* TRUE if we want to read file sequentially */

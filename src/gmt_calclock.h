@@ -57,7 +57,7 @@ struct GMT_MOMENT_INTERVAL {
 	struct GMT_gcal	cc[2];		
 	double dt[2];		
 	double sd[2];		/* Seconds since the start of the day.  */
-	GMT_LONG rd[2];
+	int64_t rd[2];
 	GMT_LONG itype;
 	GMT_LONG step;
 	char unit;

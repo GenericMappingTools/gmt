@@ -87,7 +87,7 @@ EXTERN_MSC GMT_LONG GMT_map_path (struct GMT_CTRL *C, double lon1, double lat1, 
 EXTERN_MSC void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, double dt_in, GMT_LONG init); /* step a time axis by time units */
 EXTERN_MSC int64_t GMT_rd_from_iywd (struct GMT_CTRL *C, GMT_LONG iy, GMT_LONG iw, GMT_LONG id);
 EXTERN_MSC GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code);
-EXTERN_MSC GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[], GMT_LONG *width, GMT_LONG *height, GMT_LONG *first_col, GMT_LONG *last_col, GMT_LONG *first_row, GMT_LONG *last_row, GMT_LONG **index);
+EXTERN_MSC GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[], COUNTER_MEDIUM *width, COUNTER_MEDIUM *height, COUNTER_MEDIUM *first_col, COUNTER_MEDIUM *last_col, COUNTER_MEDIUM *first_row, COUNTER_MEDIUM *last_row, COUNTER_MEDIUM **index);
 EXTERN_MSC void GMT_scale_eqrad (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, GMT_LONG size);
 GMT_LONG GMT_get_fill_from_z (struct GMT_CTRL *C, struct GMT_PALETTE *P, double value, struct GMT_FILL *fill);
@@ -97,7 +97,7 @@ EXTERN_MSC struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *C, GMT_LONG
 EXTERN_MSC struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_type);
 EXTERN_MSC GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, struct GMT_TEXTSET *D, GMT_LONG table);
 EXTERN_MSC struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, GMT_LONG mode);
-EXTERN_MSC GMT_LONG GMT_init_complex (GMT_LONG complex, GMT_LONG *inc, GMT_LONG *off);
+EXTERN_MSC GMT_LONG GMT_init_complex (GMT_LONG complex, COUNTER_MEDIUM *inc, COUNTER_MEDIUM *off);
 EXTERN_MSC struct GMT_MATRIX * GMT_duplicate_matrix (struct GMT_CTRL *C, struct GMT_MATRIX *M_in, GMT_LONG duplicate_data);
 EXTERN_MSC struct GMT_VECTOR * GMT_duplicate_vector (struct GMT_CTRL *C, struct GMT_VECTOR *V_in, GMT_LONG duplicate_data);
 EXTERN_MSC void gmt_init_rot_matrix (double R[3][3], double E[]);
