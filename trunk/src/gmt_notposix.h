@@ -194,7 +194,7 @@
 #endif /* !NAN */
 
 #ifndef HAVE_ISNAN
-#	if defined HAVE__ISNAN
+#	if defined HAVE__ISNAN /* only WIN32 */
 #		define isnan _isnan
 #	elif defined HAVE_ISNAND && defined HAVE_ISNANF
 #		define isnan \
@@ -212,7 +212,8 @@
 
 #ifndef isinf
 #	ifdef HAVE__FPCLASS
-		static inline int isinf (double x) {
+		/* only WIN32 */
+		static __inline int isinf (double x) {
 			int fpc = _fpclass (x);
 			return fpc == _FPCLASS_PINF || fpc == _FPCLASS_NINF;
 		}
@@ -234,7 +235,7 @@
 #endif /* !isinf */
 
 #ifndef isfinite
-#	ifdef HAVE__FINITE
+#	ifdef HAVE__FINITE /* only WIN32 */
 #		define isfinite _finite
 #	else
 #		define isfinite(x) (!isinf(x) && !isnan(x))
@@ -243,7 +244,8 @@
 
 #ifndef isnormal
 #	ifdef HAVE__FPCLASS
-		static inline int isnormal (double x) {
+		/* only WIN32 */
+		static __inline int isnormal (double x) {
 			int fpc = _fpclass (x);
 			return fpc == _FPCLASS_PN || fpc == _FPCLASS_NN;
 		}
@@ -433,10 +435,13 @@
 #		include <vld.h>
 #	endif
 
-/* Suppress Visual Studio deprecation warnings */
+	/* Suppress Visual Studio deprecation warnings */
 #	ifdef _MSC_VER
 #		pragma warning( disable : 4996 )
 #	endif
+
+	/* Support for inline functions */
+#	define inline __inline
 
 #endif /* defined _WIN32 || defined WIN32 */
 
