@@ -41,16 +41,16 @@
  */
 static inline uint16_t inline_bswap16 (uint16_t x) {
 	return
-		(((x & 0x00FF) << 8) |
-		 ((x & 0xFF00) >> 8));
+		(((x & 0x00FFU) << 8) |
+		 ((x & 0xFF00U) >> 8));
 }
 
 static inline uint32_t inline_bswap32 (uint32_t x) {
 	return
-		(((x & 0xFF000000) >> 24) |
-		 ((x & 0x00FF0000) >>  8) |
-		 ((x & 0x0000FF00) <<  8) |
-		 ((x & 0x000000FF) << 24));
+		(((x & 0xFF000000U) >> 24) |
+		 ((x & 0x00FF0000U) >>  8) |
+		 ((x & 0x0000FF00U) <<  8) |
+		 ((x & 0x000000FFU) << 24));
 }
 
 static inline uint64_t inline_bswap64 (uint64_t x) {
