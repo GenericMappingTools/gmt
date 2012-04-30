@@ -6937,7 +6937,8 @@ double * GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], COUNTER_LAR
 
 GMT_LONG GMT_map_latcross (struct GMT_CTRL *C, double lat, double west, double east, struct GMT_XINGS **xings)
 {
-	GMT_LONG i, go = FALSE, nx, nc = 0;
+	GMT_LONG go = FALSE;
+	COUNTER_MEDIUM i, nx, nc = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double lon, lon_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;
 	struct GMT_XINGS *X = NULL;
@@ -6972,7 +6973,7 @@ GMT_LONG GMT_map_latcross (struct GMT_CTRL *C, double lat, double west, double e
 		if (go) {
 			X[nc].nx = nx;
 			nc++;
-			if ((size_t)nc == n_alloc) {
+			if (nc == n_alloc) {
 				n_alloc <<= 1;
 				X = GMT_memory (C, X, n_alloc, struct GMT_XINGS);
 			}
@@ -6994,7 +6995,8 @@ GMT_LONG GMT_map_latcross (struct GMT_CTRL *C, double lat, double west, double e
 
 GMT_LONG GMT_map_loncross (struct GMT_CTRL *C, double lon, double south, double north, struct GMT_XINGS **xings)
 {
-	GMT_LONG go = FALSE, j, nx, nc = 0;
+	GMT_LONG go = FALSE;
+	COUNTER_MEDIUM j, nx, nc = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double lat, lat_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;
 	struct GMT_XINGS *X = NULL;
@@ -7028,7 +7030,7 @@ GMT_LONG GMT_map_loncross (struct GMT_CTRL *C, double lon, double south, double 
 		if (go) {
 			X[nc].nx = nx;
 			nc++;
-			if ((size_t)nc == n_alloc) {
+			if (nc == n_alloc) {
 				n_alloc <<= 1;
 				X = GMT_memory (C, X, n_alloc, struct GMT_XINGS);
 			}
@@ -7090,7 +7092,7 @@ GMT_LONG gmt_init_three_D (struct GMT_CTRL *C) {
 
 	if (C->current.proj.z_project.view_azimuth >= 360.0) C->current.proj.z_project.view_azimuth -= 360.0;
 	if (C->current.proj.z_project.view_azimuth < 0.0)    C->current.proj.z_project.view_azimuth += 360.0;
-	C->current.proj.z_project.quadrant = (GMT_LONG)floor (C->current.proj.z_project.view_azimuth / 90.0) + 1;
+	C->current.proj.z_project.quadrant = lrint (floor (C->current.proj.z_project.view_azimuth / 90.0)) + 1;
 	sincosd (C->current.proj.z_project.view_azimuth, &C->current.proj.z_project.sin_az, &C->current.proj.z_project.cos_az);
 	sincosd (C->current.proj.z_project.view_elevation, &C->current.proj.z_project.sin_el, &C->current.proj.z_project.cos_el);
 

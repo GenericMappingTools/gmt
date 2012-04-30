@@ -278,6 +278,8 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	COUNTER_LARGE ij;
 	int16_t tempint;
+	
+	size_t n_expected;	/* Expected items per row */
 
 	double west, east, south, north, wesn[4], toplat, botlat, dx;
 	double south2, north2, rnavgsq, csum, dsum, left, bottom, inc[2];
@@ -455,8 +457,8 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	north2 = wesn[YHI] = GMT_img_ypix_to_lat ((double)jinstart, &imgcoord);
 	south2 = wesn[YLO] = GMT_img_ypix_to_lat ((double)jinstop,  &imgcoord);
 
-	iinstart = navg * (GMT_LONG)floor (wesn[XLO]/inc[GMT_X]);
-	iinstop  = navg * (GMT_LONG)ceil  (wesn[XHI]/inc[GMT_X]);
+	iinstart = navg * lrint (floor (wesn[XLO]/inc[GMT_X]));
+	iinstop  = navg * lrint (ceil  (wesn[XHI]/inc[GMT_X]));
 	/* iinstart <= ipixelcol < iinstop, but modulo all with imgcoord.nx360  */
 	/* Reset left and right edges of user area */
 	wesn[XLO] = iinstart * dx;
@@ -541,6 +543,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Now loop over output points, reading and handling data as needed */
 
+	n_expected = navg * imgcoord.nxcol;
 	for (jout = 0; jout < Merc->header->ny; jout++) {
 		jin = jinstart + navg * jout;
 		ij = GMT_IJP (Merc->header, jout, 0);	/* Left-most index of this row */
@@ -548,7 +551,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (iout = 0; iout < Merc->header->nx; iout++, ij++) Merc->data[ij] = GMT->session.f_NaN;
 			continue;
 		}
-		if ((fread (row, sizeof (int16_t), (size_t)(navg * imgcoord.nxcol), fp) ) != (size_t)(navg * imgcoord.nxcol)) {
+		if ((fread (row, sizeof (int16_t), n_expected, fp) ) != n_expected) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Read failure at jin = %ld.\n", jin);
 			exit (EXIT_FAILURE);
 		}

@@ -765,7 +765,7 @@ double spline2d_lookup (struct GMT_CTRL *GMT, double x, double par[], double *y)
 	f = (x - par[10]) * par[9];	/* Floating point index */
 	f0 = floor (f);
 	df = f - f0;
-	k = (GMT_LONG)f0;
+	k = lrint (f0);
 	if (df == 0.0) return (y[k]);
 	return (y[k]*(1.0 - df) + y[k+1] * df);
 }

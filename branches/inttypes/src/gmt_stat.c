@@ -1575,7 +1575,7 @@ double GMT_median_weighted (struct GMT_CTRL *C, fpair *data, COUNTER_LARGE n, do
 
 	/* First sort data on z */
 
-	qsort (data, (size_t)n, sizeof (fpair), compare_fpair);
+	qsort (data, n, sizeof (fpair), compare_fpair);
 	
 	/* Find weight sum, then get half-value */
 	
@@ -1600,7 +1600,7 @@ double GMT_mode_weighted (struct GMT_CTRL *C, fpair *data, COUNTER_LARGE n)
 
 	/* First sort data on z */
 
-	qsort (data, (size_t)n, sizeof (fpair), compare_fpair);
+	qsort (data, n, sizeof (fpair), compare_fpair);
 	
 	/* Find weight sum, then get half-value */
 	

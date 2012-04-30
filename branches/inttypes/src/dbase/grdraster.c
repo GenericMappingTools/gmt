@@ -569,7 +569,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		rasinfo[nfound].h.ny = (int)((rasinfo[nfound].h.registration) ? j : j + 1);
 
 		if ((ksize = get_byte_size (GMT, rasinfo[nfound].type)) == 0)
-			expected_size = (GMT_LONG)(ceil (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125) + rasinfo[nfound].skip);
+			expected_size = lrint ((ceil (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125)) + rasinfo[nfound].skip);
 		else
 			expected_size = (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
 		if (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path) || GMT_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path)) {
@@ -733,9 +733,11 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, j, k, ksize = 0, iselect, imult, jmult, nrasters;
 	GMT_LONG irasstart, jrasstart, n_nan, iras, jras, ijras, jseek;
-	GMT_LONG error = FALSE, firstread, nmask = 0;
+	GMT_LONG error = FALSE, firstread;
 	
 	COUNTER_LARGE ij;
+	
+	size_t nmask = 0, n_expected;
 
 	char *buffer = NULL, *tselect = NULL, match[GRD_REMARK_LEN160];
 	unsigned char *ubuffer = NULL;
@@ -872,10 +874,10 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && rint (Grid->header->inc[GMT_X] * 60.0) == (Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
 			GMT_LONG w, e, s, n, wm, em, sm, nm;
 
-			w = (GMT_LONG) floor (Grid->header->wesn[XLO]);	wm = lrint ((Grid->header->wesn[XLO] - w) * 60.0);
-			e = (GMT_LONG) floor (Grid->header->wesn[XHI]);	em = lrint ((Grid->header->wesn[XHI] - e) * 60.0);
-			s = (GMT_LONG) floor (Grid->header->wesn[YLO]);	sm = lrint ((Grid->header->wesn[YLO] - s) * 60.0);
-			n = (GMT_LONG) floor (Grid->header->wesn[YHI]);	nm = lrint ((Grid->header->wesn[YHI] - n) * 60.0);
+			w = lrint (floor (Grid->header->wesn[XLO]));	wm = lrint ((Grid->header->wesn[XLO] - w) * 60.0);
+			e = lrint (floor (Grid->header->wesn[XHI]));	em = lrint ((Grid->header->wesn[XHI] - e) * 60.0);
+			s = lrint (floor (Grid->header->wesn[YLO]));	sm = lrint ((Grid->header->wesn[YLO] - s) * 60.0);
+			n = lrint (floor (Grid->header->wesn[YHI]));	nm = lrint ((Grid->header->wesn[YHI] - n) * 60.0);
 			GMT_report (GMT, GMT_MSG_NORMAL, "%s -> -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld\n", r_opt->arg, w, wm, e, em, s, sm, n, nm);
 		}
 		else
@@ -899,10 +901,10 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your -R option does not create a region divisible by inc[GMT_X], inc[GMT_Y].\n");
 		if (doubleAlmostEqualZero (rint (Grid->header->inc[GMT_X] * 60.0), Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
 			GMT_LONG w, e, s, n, wm, em, sm, nm;
-			w = (GMT_LONG) floor (Grid->header->wesn[XLO]);	wm = lrint ((Grid->header->wesn[XLO] - w) * 60.0);
-			e = (GMT_LONG) floor (Grid->header->wesn[XHI]);	em = lrint ((Grid->header->wesn[XHI] - e) * 60.0);
-			s = (GMT_LONG) floor (Grid->header->wesn[YLO]);	sm = lrint ((Grid->header->wesn[YLO] - s) * 60.0);
-			n = (GMT_LONG) floor (Grid->header->wesn[YHI]);	nm = lrint ((Grid->header->wesn[YHI] - n) * 60.0);
+			w = lrint (floor (Grid->header->wesn[XLO]));	wm = lrint ((Grid->header->wesn[XLO] - w) * 60.0);
+			e = lrint (floor (Grid->header->wesn[XHI]));	em = lrint ((Grid->header->wesn[XHI] - e) * 60.0);
+			s = lrint (floor (Grid->header->wesn[YLO]));	sm = lrint ((Grid->header->wesn[YLO] - s) * 60.0);
+			n = lrint (floor (Grid->header->wesn[YHI]));	nm = lrint ((Grid->header->wesn[YHI] - n) * 60.0);
 			if (!GMT->common.R.oblique)
 				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld.\n", w, wm, e, em, s, sm, n, nm);
 			else
@@ -966,7 +968,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	ksize = get_byte_size (GMT, myras.type);
 	if (ksize == 0) {	/* Bits; Need to read the whole thing */
-		nmask = (GMT_LONG)ceil (myras.h.nx * myras.h.ny * 0.125);
+		nmask = lrint (ceil (myras.h.nx * myras.h.ny * 0.125));
 		ubuffer = GMT_memory (GMT, NULL, nmask, unsigned char);
 	}
 	else {	/* Need to read by rows, and convert each row to float */
@@ -988,7 +990,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (myras.swap_me) GMT_report (GMT, GMT_MSG_NORMAL, "Data from %s will be byte-swapped\n", myras.h.remark);
 
 	if (myras.type == 'b') {	/* Must handle bit rasters a bit differently */
-		if ( (GMT_fread (ubuffer, sizeof (unsigned char), nmask, fp)) != (size_t)nmask) {
+		if ( (GMT_fread (ubuffer, sizeof (unsigned char), nmask, fp)) != nmask) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Failure to read a bitmap raster from %s.\n", myras.h.remark);
 			GMT_free (GMT, ubuffer);
 			GMT_fclose (GMT, fp);
@@ -1034,6 +1036,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {
 		firstread = TRUE;
+		n_expected = myras.h.nx;
 		for (j = 0, jras = jrasstart; j < Grid->header->ny; j++, jras += jmult) {
 			y = GMT_row_to_y (GMT, j, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
 			ij = (Ctrl->T.active) ? 0 : GMT_IJP (Grid->header, j, 0);	/* Either we just have one row (no padding) or we have a padded grid */
@@ -1058,7 +1061,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_free (GMT, buffer);
 					Return (EXIT_FAILURE);
 				}
-				if ( (GMT_fread(buffer, ksize, myras.h.nx, fp)) != (size_t)myras.h.nx) {
+				if ((GMT_fread (buffer, ksize, n_expected, fp)) != n_expected) {
 					GMT_report (GMT, GMT_MSG_FATAL, "ERROR reading in %s\n", myras.h.remark);
 					GMT_fclose (GMT, fp);
 					GMT_free (GMT, buffer);

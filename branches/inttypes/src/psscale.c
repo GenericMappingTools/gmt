@@ -529,8 +529,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		else {	/* Determine center and dimensions of vertical background rectangle */
 			y_center = 0.5 * length; x_center = 0.5 * width;
 			/* Must guesstimate the width of the largest horizontal annotation */
-			sprintf (text, "%ld", (GMT_LONG) (floor (P->range[0].z_low)));
-			sprintf (test, "%ld", (GMT_LONG) (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
+			sprintf (text, "%ld", lrint (floor (P->range[0].z_low)));
+			sprintf (test, "%ld", lrint (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
 			off = ((MAX ((GMT_LONG)strlen (text), (GMT_LONG)strlen (test)) + ndec) * GMT_DEC_SIZE +
 				((ndec > 0) ? GMT_PER_SIZE : 0.0))
 				* GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
@@ -825,15 +825,15 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		}
 
 		if (center && interval_annot) {
-			sprintf (text, "%ld - %ld", (GMT_LONG) (floor (P->range[0].z_low)), (GMT_LONG) (ceil (P->range[0].z_high)));
-			sprintf (test, "%ld - %ld", (GMT_LONG) (floor (P->range[P->n_colors-1].z_low)), (GMT_LONG) (ceil (P->range[P->n_colors-1].z_high)));
+			sprintf (text, "%ld - %ld", lrint (floor (P->range[0].z_low)), lrint (ceil (P->range[0].z_high)));
+			sprintf (test, "%ld - %ld", lrint (floor (P->range[P->n_colors-1].z_low)), lrint (ceil (P->range[P->n_colors-1].z_high)));
 			off = ((MAX ((GMT_LONG)strlen (text), (GMT_LONG)strlen (test)) + 2*ndec) * GMT_DEC_SIZE - 0.4 + 
 				((ndec > 0) ? 2*GMT_PER_SIZE : 0.0))
 				* GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		}
 		else {
-			sprintf (text, "%ld", (GMT_LONG) (floor (P->range[0].z_low)));
-			sprintf (test, "%ld", (GMT_LONG) (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
+			sprintf (text, "%ld", lrint (floor (P->range[0].z_low)));
+			sprintf (test, "%ld", lrint (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
 			off = ((MAX ((GMT_LONG)strlen (text), (GMT_LONG)strlen (test)) + ndec) * GMT_DEC_SIZE +
 				((ndec > 0) ? GMT_PER_SIZE : 0.0))
 				* GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];

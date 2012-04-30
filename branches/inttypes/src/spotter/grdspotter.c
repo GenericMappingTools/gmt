@@ -978,7 +978,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 			GMT_memset (G->data, G->header->size, float);	/* Start with fresh grid */
 			for (m = 0; m < n_nodes; m++) {	/* Loop over all indices */
-				ij = (GMT_LONG)floor (rand() * scale);		/* Get a random integer in 0 to n_nodes-1 range */
+				ij = lrint (floor (rand() * scale));		/* Get a random integer in 0 to n_nodes-1 range */
 				GMT_memset (processed_node, G->header->size, char);		/* Fresh start for this flowline convolution */
 				zz = Z->data[flowline[ij].ij];
 				for (k = 0; k < flowline[ij].n; k++) {		/* For each point along this flowline */

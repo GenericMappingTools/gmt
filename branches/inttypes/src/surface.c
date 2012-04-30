@@ -372,8 +372,8 @@ void set_index (struct SURFACE_INFO *C) {
 	struct GRD_HEADER *h = C->Grid->header;
 
 	for (k = 0; k < C->npoints; k++) {
-		i = (GMT_LONG)floor(((C->data[k].x-h->wesn[XLO])*C->r_grid_xinc) + 0.5);
-		j = (GMT_LONG)floor(((C->data[k].y-h->wesn[YLO])*C->r_grid_yinc) + 0.5);
+		i = lrint (floor(((C->data[k].x-h->wesn[XLO])*C->r_grid_xinc) + 0.5));
+		j = lrint (floor(((C->data[k].y-h->wesn[YLO])*C->r_grid_yinc) + 0.5));
 		if (i < 0 || i >= C->block_nx || j < 0 || j >= C->block_ny) {
 			C->data[k].index = SURFACE_OUTSIDE;
 			k_skipped++;
@@ -382,7 +382,7 @@ void set_index (struct SURFACE_INFO *C) {
 			C->data[k].index = i * C->block_ny + j;
 	}
 
-	qsort (C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
+	qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 
 	C->npoints -= k_skipped;
 
@@ -491,8 +491,8 @@ void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	float *u = C->Grid->data;
 	struct GRD_HEADER *h = C->Grid->header;
 
-	 irad = (GMT_LONG)ceil(C->radius/C->grid_xinc);
-	 jrad = (GMT_LONG)ceil(C->radius/C->grid_yinc);
+	 irad = lrint (ceil(C->radius/C->grid_xinc));
+	 jrad = lrint (ceil(C->radius/C->grid_yinc));
 	 rfact = -4.5/(C->radius*C->radius);
 	 for (i = 0; i < C->block_nx; i ++ ) {
 	 	x0 = h->wesn[XLO] + i*C->grid_xinc;
@@ -626,9 +626,9 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 		if (GMT_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue;	/* Outside y-range */
 		if (GMT_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI])) continue;	/* Outside x-range (or longitude) */
 
-		i = (GMT_LONG)floor(((in[GMT_X]-h->wesn[XLO])*C->r_grid_xinc) + 0.5);
+		i = lrint (floor(((in[GMT_X]-h->wesn[XLO])*C->r_grid_xinc) + 0.5));
 		if (i < 0 || i >= C->block_nx) continue;
-		j = (GMT_LONG)floor(((in[GMT_Y]-h->wesn[YLO])*C->r_grid_yinc) + 0.5);
+		j = lrint (floor(((in[GMT_Y]-h->wesn[YLO])*C->r_grid_yinc) + 0.5));
 		if (j < 0 || j >= C->block_ny) continue;
 
 		C->data[k].index = i * C->block_ny + j;
@@ -1248,7 +1248,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 
 	/* Sort the data  */
 
-	qsort (C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
+	qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 
 	/* If more than one datum is indexed to same node, only the first should be kept.
 		Mark the additional ones as SURFACE_OUTSIDE
@@ -1265,7 +1265,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	}
 	
 	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be thrown away  */
-		qsort (C->data, (size_t)C->npoints, sizeof (struct SURFACE_DATA), compare_points);
+		qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 		C->npoints -= n_outside;
 		C->data = GMT_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 		GMT_report (GMT, GMT_MSG_NORMAL, "%ld unusable points were supplied; these will be ignored.\n", n_outside);
@@ -1408,11 +1408,11 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LO
 
 	double users_time;	/* Time for user's nx, ny  */
 	double current_time;	/* Time for current nxg, nyg  */
-	GMT_LONG i;
-	GMT_LONG nxg, nyg;	/* Guessed by this routine  */
-	GMT_LONG nx2, ny2, nx3, ny3, nx5, ny5;	/* For powers  */
-	GMT_LONG xstop, ystop;	/* Set to 2*nx, 2*ny  */
-	GMT_LONG n_sug = 0;	/* N of suggestions found  */
+	COUNTER_MEDIUM i;
+	COUNTER_MEDIUM nxg, nyg;	/* Guessed by this routine  */
+	COUNTER_MEDIUM nx2, ny2, nx3, ny3, nx5, ny5;	/* For powers  */
+	COUNTER_MEDIUM xstop, ystop;	/* Set to 2*nx, 2*ny  */
+	COUNTER_MEDIUM n_sug = 0;	/* N of suggestions found  */
 	struct SURFACE_SUGGESTION *sug = NULL;
 
 	users_time = guess_surface_time (GMT, factors, nx, ny);
@@ -1448,7 +1448,7 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LO
 	}
 
 	if (n_sug) {
-		qsort (sug, (size_t)n_sug, sizeof(struct SURFACE_SUGGESTION), compare_sugs);
+		qsort (sug, n_sug, sizeof(struct SURFACE_SUGGESTION), compare_sugs);
 		for (i = 0; i < n_sug && i < 10; i++) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Hint: Choosing nx = %ld, ny = %ld might cut run time by a factor of %.8g\n",
 				sug[i].nx, sug[i].ny, sug[i].factor);
@@ -1553,9 +1553,9 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 
 		if (GMT_is_dnan (z[n])) continue;
 
-		i = (GMT_LONG)floor (((x[n] - C->Grid->header->wesn[XLO]) * C->r_grid_xinc) + 0.5);
+		i = lrint (floor (((x[n] - C->Grid->header->wesn[XLO]) * C->r_grid_xinc) + 0.5));
 		if (i < 0 || i >= C->block_nx) continue;
-		j = (GMT_LONG)floor (((y[n] - C->Grid->header->wesn[YLO]) * C->r_grid_yinc) + 0.5);
+		j = lrint (floor (((y[n] - C->Grid->header->wesn[YLO]) * C->r_grid_yinc) + 0.5));
 		if (j < 0 || j >= C->block_ny) continue;
 
 		C->data[k].index = i * C->block_ny + j;

@@ -3445,8 +3445,8 @@ void MGD77_Verify_Prep_m77 (struct GMT_CTRL *G, struct MGD77_CONTROL *F, struct 
 		lon = D[i].number[MGD77_LONGITUDE];
 		lat = D[i].number[MGD77_LATITUDE];
 		if (lon >= 180.0) lon -= 360.0;
-		ix = (GMT_LONG)floor (fabs(lon) / 10.0);	/* Gives 0-18 for 19 possible values */
-		iy = (GMT_LONG)floor (fabs(lat) / 10.0);	/* Gives 0-9 for 10 possible values */
+		ix = lrint (floor (fabs(lon) / 10.0));	/* Gives 0-18 for 19 possible values */
+		iy = lrint (floor (fabs(lat) / 10.0));	/* Gives 0-9 for 10 possible values */
 		if (lon >= 0.0) ix += 19;
 		if (lat >= 0.0) iy += 10;
 		C->ten_box[iy][ix] = 1;
@@ -3519,8 +3519,8 @@ void MGD77_Verify_Prep (struct GMT_CTRL *G, struct MGD77_CONTROL *F, struct MGD7
 		lat = values[1][i];
 		lon = values[2][i];
 		if (lon > 180.0) lon -= 360.0;
-		ix = (GMT_LONG)floor (fabs(lon) / 10.0);	/* Gives 0-18 for 19 possible values */
-		iy = (GMT_LONG)floor (fabs(lat) / 10.0);	/* Gives 0-9 for 10 possible values */
+		ix = lrint (floor (fabs(lon) / 10.0));	/* Gives 0-18 for 19 possible values */
+		iy = lrint (floor (fabs(lat) / 10.0));	/* Gives 0-9 for 10 possible values */
 		if (lon >= 0.0) ix += 19;
 		if (lat >= 0.0) iy += 10;
 		C->ten_box[iy][ix] = 1;

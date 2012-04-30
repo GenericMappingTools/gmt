@@ -552,7 +552,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			
 			/* Sort on x to speed up inside testing */
-			qsort (data, (size_t)point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
+			qsort (data, point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
 			
 			for (seg = k = 0; seg < point->n_segments; seg++) {	/* Put back the new order */
 				for (row = 0; row < point->segment[seg]->n_rows; row++, k++) {
@@ -705,9 +705,9 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_LONG brow;
 			xx = lon;
 			while (xx < 0.0) xx += 360.0;
-			brow = ((GMT_LONG)floor ((90.0 - in[GMT_Y]) / c.bsize));
+			brow = lrint (floor ((90.0 - in[GMT_Y]) / c.bsize));
 			if (brow >= c.bin_ny) brow = c.bin_ny - 1;	/* Presumably only kicks in for south pole */
-			col = (GMT_LONG)floor (xx / c.bsize);
+			col = lrint (floor (xx / c.bsize));
 			bin = brow * c.bin_nx + col;
 			if (bin != last_bin) {	/* Do this upon entering new bin */
 				ind = 0;

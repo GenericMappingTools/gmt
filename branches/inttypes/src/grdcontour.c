@@ -519,7 +519,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		
 		s = GMT_memory (GMT, NULL, np, double);	/* Compute distance along the contour */
 		for (j = 1, s[0] = 0.0; j < np; j++) s[j] = s[j-1] + hypot (xp[j]-xp[j-1], yp[j]-yp[j-1]);
-		n_ticks = (GMT_LONG)(s[np-1] / tick_gap);
+		n_ticks = lrint (s[np-1] / tick_gap);
 		if (s[np-1] < GRDCONTOUR_MIN_LENGTH || n_ticks == 0) {	/* Contour is too short to be ticked or labeled */
 			save[i].do_it = FALSE;
 			GMT_free (GMT, s);	GMT_free (GMT, xp);	GMT_free (GMT, yp);
@@ -676,13 +676,15 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 
 GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the grdcontour task */
-	GMT_LONG n_contours, c, n_edges, id, cont_counts[2] = {0, 0}, need_proj;
-	GMT_LONG tbl_scl = 1, i, n, nn, closed, begin, error, io_mode = 0, *edge = NULL;
-	GMT_LONG make_plot, fmt[3] = {0, 0, 0}, two_only = FALSE, n_tables = 1, tbl, extra;
+	GMT_LONG id, need_proj, tbl_scl = 1, closed, begin, error, io_mode = 0;
+	GMT_LONG make_plot, fmt[3] = {0, 0, 0}, two_only = FALSE;
 	
-	size_t n_save = 0, n_alloc = 0, n_tmp, *n_seg_alloc = NULL;
+	COUNTER_MEDIUM n_contours, c, n_edges, cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, tbl;
+	
 	COUNTER_LARGE ij, *n_seg = NULL;
 
+	size_t n_save = 0, n_alloc = 0, n_tmp, *n_seg_alloc = NULL;
+	
 	char *cont_type = NULL, *cont_do_tick = NULL;
 	char cont_label[GMT_TEXT_LEN256], format[GMT_TEXT_LEN256];
 
@@ -849,7 +851,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Data record to process */
 
-			if ((size_t)n_contours == n_alloc) {
+			if (n_contours == n_alloc) {
 				n_tmp = n_alloc;
 				GMT_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
 				GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
@@ -870,7 +872,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		min = floor (G->header->z_min / Ctrl->C.interval) * Ctrl->C.interval; if (!GMT->current.map.z_periodic && min < G->header->z_min) min += Ctrl->C.interval;
 		max = ceil (G->header->z_max / Ctrl->C.interval) * Ctrl->C.interval; if (max > G->header->z_max) max -= Ctrl->C.interval;
 		for (c = lrint (min/Ctrl->C.interval), n_contours = 0; c <= lrint (max/Ctrl->C.interval); c++, n_contours++) {
-			if ((size_t)n_contours == n_alloc) {
+			if (n_contours == n_alloc) {
 				n_tmp = n_alloc;
 				GMT_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
 				GMT_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
@@ -1031,6 +1033,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				if (make_plot && cont_do_tick[c] && closed) {	/* Must store the entire contour for later processing */
 					/* These are original coordinates that have not yet been projected */
+					GMT_LONG extra;
 					if (n_save == n_alloc) save = GMT_malloc (GMT, save, n_save, &n_alloc, struct SAVE);
 					extra = (GMT_abs (closed) == 2);	/* Need extra slot to temporarily close half-polygons */
 					n_alloc = 0;

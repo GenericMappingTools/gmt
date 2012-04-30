@@ -443,7 +443,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_LONG i, j;
 
 		Ctrl->E.levels = (G[0]->header->z_min < Ctrl->S.low) ? 1 : 0;
-		Ctrl->E.levels += (GMT_LONG)floor((Ctrl->S.high - Ctrl->S.low)/Ctrl->S.inc) + 1;
+		Ctrl->E.levels += lrint (floor((Ctrl->S.high - Ctrl->S.low)/Ctrl->S.inc)) + 1;
 		if (G[0]->header->z_max > Ctrl->S.high) Ctrl->E.levels++;
 		cdf_cpt = GMT_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
 		if (G[0]->header->z_min < Ctrl->S.low) {

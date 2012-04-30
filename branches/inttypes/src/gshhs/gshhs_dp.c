@@ -49,20 +49,20 @@
 #define F (D2R * 0.5 * 1.0e-6)
 #define FALSE 0
 
-void *get_memory (void *prev_addr, int n, size_t size, char *progname)
+void *get_memory (void *prev_addr, size_t n, size_t size, char *progname)
 {
         void *tmp;
 
 	if (n == 0) return(NULL); /* Take care of n = 0 */
 
 	if (prev_addr) {
-		if ((tmp = realloc ( prev_addr, (size_t) (n * size))) == NULL) {
+		if ((tmp = realloc ( prev_addr, n * size)) == NULL) {
 			fprintf (stderr, "Error: %s could not reallocate more memory, n = %d\n", progname, n);
 			exit (EXIT_FAILURE);
 		}
 	}
 	else {
-		if ((tmp = calloc ((size_t) n, (size_t) size)) == NULL) {
+		if ((tmp = calloc (n, size)) == NULL) {
 			fprintf (stderr, "Error: %s could not allocate memory, n = %d\n", progname, n);
 			exit (EXIT_FAILURE);
 		}
@@ -130,7 +130,7 @@ int main (int argc, char **argv)
 		index = get_memory (index, h.n, sizeof (int), "gshhs_dp");
 		
 		for (k = 0; k < h.n; k++) {
-			if (fread (&p, sizeof(struct POINT), (size_t)1, fp_in) != 1) {
+			if (fread (&p, sizeof (struct POINT), (size_t)1, fp_in) != 1) {
 				fprintf (stderr,"gshhs_dp: Error reading data point.\n");
 				exit (EXIT_FAILURE);
 			}
@@ -159,7 +159,7 @@ int main (int argc, char **argv)
 			for (k = 0; k < n; k++) {
 				p.x = x[index[k]];
 				p.y = y[index[k]];
-				if (fwrite(&p, sizeof(struct POINT), (size_t)1, fp_out) != 1) {
+				if (fwrite(&p, sizeof (struct POINT), (size_t)1, fp_out) != 1) {
 					fprintf(stderr,"gshhs_dp: Error writing data point.\n");
 					exit (EXIT_FAILURE);
 				}

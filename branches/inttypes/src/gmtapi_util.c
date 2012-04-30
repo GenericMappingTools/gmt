@@ -987,7 +987,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 			if (D->n_tables > 1) 
 				for (seg = 0; seg < D->table[D->n_tables-1]->n_segments; seg++) 
 					D->table[D->n_tables-1]->segment[seg]->id += D->table[D->n_tables-2]->n_segments;
-			if (allocate && (size_t)D->n_tables == n_alloc) {	/* Must allocate space for more tables */
+			if (allocate && D->n_tables == n_alloc) {	/* Must allocate space for more tables */
 				size_t old_n_alloc = n_alloc;
 				n_alloc += GMT_TINY_CHUNK;
 				D->table = GMT_memory (API->GMT, D->table, n_alloc, struct GMT_TABLE *);
@@ -1006,7 +1006,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID
 		D->n_tables = 1;	/* But we must indicate we found one (empty) table */
 	}
 	else {	/* Found one or more tables */
-		if (allocate && (size_t)D->n_tables < n_alloc) D->table = GMT_memory (API->GMT, D->table, D->n_tables, struct GMT_TABLE *);
+		if (allocate && D->n_tables < n_alloc) D->table = GMT_memory (API->GMT, D->table, D->n_tables, struct GMT_TABLE *);
 		D->n_columns = D->table[0]->n_columns;
 		if (!D->min) D->min = GMT_memory (API->GMT, NULL, D->n_columns, double);
 		if (!D->max) D->max = GMT_memory (API->GMT, NULL, D->n_columns, double);
@@ -1092,7 +1092,7 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 			}
 			else {	/* Fortran style */
 				if (M->dim == 0) M->dim = D->n_records;
-				if (M->dim < (size_t)D->n_records) return (GMT_Report_Error (API, GMT_DIM_TOO_SMALL));
+				if (M->dim < D->n_records) return (GMT_Report_Error (API, GMT_DIM_TOO_SMALL));
 				S->n_alloc = GMT_get_nm (API->GMT, M->n_columns, M->dim);	/* Get total number of elements as n_columns * dim */
 			}
 			if ((error = GMT_alloc_univector (API->GMT, &(M->data), M->type, S->n_alloc)) != GMT_OK) return (GMT_Report_Error (API, error));
@@ -1259,7 +1259,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID
 					T->table[T->n_tables]->segment[seg]->id += T->table[T->n_tables-1]->n_segments;
 			T->n_tables++;
 		}
-		if (allocate && (size_t)T->n_tables == n_alloc) {	/* Must allocate space for more tables */
+		if (allocate && T->n_tables == n_alloc) {	/* Must allocate space for more tables */
 			size_t old_n_alloc = n_alloc;
 			n_alloc += GMT_TINY_CHUNK;
 			T->table = GMT_memory (API->GMT, T->table, n_alloc, struct GMT_TEXT_TABLE *);
@@ -1275,7 +1275,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID
 		T->n_tables = 1;	/* But we must indicate we found one (empty) table */
 	}
 	else {	/* Found one or more tables */
-		if (allocate && (size_t)T->n_tables < n_alloc) T->table = GMT_memory (API->GMT, T->table, T->n_tables, struct GMT_TEXT_TABLE *);
+		if (allocate && T->n_tables < n_alloc) T->table = GMT_memory (API->GMT, T->table, T->n_tables, struct GMT_TEXT_TABLE *);
 	}
 	API->object[first_item]->data = T;		/* Retain pointer to the allocated data so we use garbage collection later */
 

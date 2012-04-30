@@ -222,10 +222,10 @@ GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char
 			j = nxy - 1;
 		else if (quadratic) {	/* Use y = 2x - x**2 scaling  */
 			target = (current_cell + 1.0) / n_cells;
-			j = (GMT_LONG)floor (nxy * (1.0 - sqrt (1.0 - target)));
+			j = lrint (floor (nxy * (1.0 - sqrt (1.0 - target))));
 		}
 		else	/* Use simple linear scale  */
-			j = (GMT_LONG)(floor ((current_cell + 1) * delta_cell)) - 1;
+			j = lrint (floor ((current_cell + 1) * delta_cell)) - 1;
 
 		cell[current_cell].low  = Grid->data[i];
 		cell[current_cell].high = Grid->data[j];

@@ -887,7 +887,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Creating 1-bit B/W image\n");
 
-		nx8 = (GMT_LONG)ceil (nx / 8.0);	/* Image width must equal a multiple of 8 bits */
+		nx8 = lrint (ceil (nx / 8.0));	/* Image width must equal a multiple of 8 bits */
 		nx_pixels = nx8 * 8;
 		bit = GMT_memory (GMT, NULL, nx8 * ny, unsigned char);
 

@@ -327,22 +327,22 @@ void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, d
 	GMT_geo_to_xy (GMT, x0+ (double)data1, y1, &xp1, &yp1);
 	slope = (yp1 - yp0) / (xp1 - xp0);
 
-	px0 = (GMT_LONG) (xp0 * PSL_DOTS_PER_INCH);
-	px1 = (GMT_LONG) (xp1 * PSL_DOTS_PER_INCH);
-	py0 = (GMT_LONG) (yp0 * PSL_DOTS_PER_INCH);
-	py1 = (GMT_LONG) (yp1 * PSL_DOTS_PER_INCH);
+	px0 = lrint (xp0 * PSL_DOTS_PER_INCH);
+	px1 = lrint (xp1 * PSL_DOTS_PER_INCH);
+	py0 = lrint (yp0 * PSL_DOTS_PER_INCH);
+	py1 = lrint (yp1 * PSL_DOTS_PER_INCH);
 
 	/* now have the pixel locations for the two samples - join with a line..... */
 	if (fabs (slope) <= 1.0) { /* more pixels needed in x direction */
 		if (px0 < px1) {
 			for (ix = px0; ix <= px1; ix++) {
-				iy = py0 + (GMT_LONG) (slope * (float) (ix - px0));
+				iy = py0 + lrint (slope * (float) (ix - px0));
 				segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 		else {
 			for (ix = px1; ix <= px0; ix++) {
-				iy = py0 + (GMT_LONG) (slope * (float) (ix - px0));
+				iy = py0 + lrint (slope * (float) (ix - px0));
 				segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 
@@ -351,13 +351,13 @@ void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, d
 	else { /* more pixels needed in y direction */
 		if (py0 < py1) {
 			for (iy = py0; iy <= py1; iy++) {
-				ix = px0 + (GMT_LONG) (((float) (iy - py0)) / slope);
+				ix = px0 + lrint (((float) (iy - py0)) / slope);
 				segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 		else {
 			for (iy=py1; iy<=py0; iy++) {
-				ix = px0 + (GMT_LONG) ( ((float) (iy - py0)) / slope);
+				ix = px0 + lrint (((float) (iy - py0)) / slope);
 				segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
@@ -390,16 +390,16 @@ void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1,
 
 	slope = (yp1 - yp0) / (xp1 - xp0);
 
-	px0  = (GMT_LONG) (0.49 + xp0  * PSL_DOTS_PER_INCH);
-	px00 = (GMT_LONG) (0.49 + xp00 * PSL_DOTS_PER_INCH);
-	py0  = (GMT_LONG) (0.49 + yp0  * PSL_DOTS_PER_INCH);
-	py1  = (GMT_LONG) (0.49 + yp1  * PSL_DOTS_PER_INCH);
+	px0  = lrint (0.49 + xp0  * PSL_DOTS_PER_INCH);
+	px00 = lrint (0.49 + xp00 * PSL_DOTS_PER_INCH);
+	py0  = lrint (0.49 + yp0  * PSL_DOTS_PER_INCH);
+	py1  = lrint (0.49 + yp1  * PSL_DOTS_PER_INCH);
 
 
 	/*  can rasterize simply by looping over values of y */
 	if (py0 < py1) {
 		for (iy = py0; iy <= py1; iy++) {
-			ixx = px0 + (GMT_LONG) (((float) (iy - py0)) / slope);
+			ixx = px0 + lrint (((float) (iy - py0)) / slope);
 			if (ixx < px00) {
 				for (ix = ixx; ix <= px00; ix++) segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
@@ -410,7 +410,7 @@ void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1,
 	}
 	else {
 		for (iy = py1; iy <= py0; iy++) {
-			ixx = px0 + (GMT_LONG) (((float) (iy - py0)) / slope);
+			ixx = px0 + lrint (((float) (iy - py0)) / slope);
 			if (ixx < px00) {
 				for (ix = ixx; ix <= px00; ix++) segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}

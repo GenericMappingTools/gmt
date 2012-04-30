@@ -191,6 +191,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	COUNTER_LARGE node, first_in_cell, first_in_new_cell, n_lost, n_read;
 	COUNTER_LARGE n_cells_filled, n_in_cell, nz, n_pitched;
+	
 	size_t n_alloc = 0, nz_alloc = 0;
 
 	double out[7], wesn[4], i_n_in_cell, weight, *in = NULL, *z_tmp = NULL;
@@ -381,10 +382,10 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				out[GMT_Y] *= i_n_in_cell;
 			}
 			else if (mode_xy) {
-				qsort (&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
+				qsort (&data[first_in_cell], n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
 				out[GMT_X] = weighted_mode (&data[first_in_cell], weight, n_in_cell, 0);
 
-				qsort (&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
+				qsort (&data[first_in_cell], n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
 				out[GMT_Y] = weighted_mode (&data[first_in_cell], weight, n_in_cell, 1);
 			}
 		}

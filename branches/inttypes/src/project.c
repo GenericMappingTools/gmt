@@ -537,7 +537,7 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
 	char record[GMT_BUFSIZ], text[GMT_BUFSIZ];
 
-	if (Ctrl->S.active) qsort (p_data, (size_t)P->n_used, sizeof (struct PROJECT_DATA), compare_distances);
+	if (Ctrl->S.active) qsort (p_data, P->n_used, sizeof (struct PROJECT_DATA), compare_distances);
 
 	/* Get here when all data are loaded with p,q and p is in increasing order if desired. */
 

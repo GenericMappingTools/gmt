@@ -413,7 +413,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* get number of samples in _this_ trace or set to number in reel header */
 			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
 
-			ij0 = (GMT_LONG)(GMT->common.R.wesn[YLO] * idy);
+			ij0 = lrint (GMT->common.R.wesn[YLO] * idy);
 			if (n_samp - ij0 > Grid->header->ny) n_samp = Grid->header->ny + ij0;
 
 			if (swap_bytes) {

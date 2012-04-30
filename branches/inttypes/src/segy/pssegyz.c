@@ -351,22 +351,22 @@ void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float da
 	GMT_geoz_to_xy (GMT, x0+(double)data1*dev_x, y0+(double)data1*dev_y, z1, &xp1, &yp1);
 	slope = (yp1 - yp0) / (xp1 - xp0);
 
-	px0 = (GMT_LONG) ((xp0 - GMT->current.proj.z_project.xmin) * PSL_DOTS_PER_INCH);
-	px1 = (GMT_LONG) ((xp1 - GMT->current.proj.z_project.xmin) * PSL_DOTS_PER_INCH);
-	py0 = (GMT_LONG) ((yp0 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
-	py1 = (GMT_LONG) ((yp1 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
+	px0 = lrint ((xp0 - GMT->current.proj.z_project.xmin) * PSL_DOTS_PER_INCH);
+	px1 = lrint ((xp1 - GMT->current.proj.z_project.xmin) * PSL_DOTS_PER_INCH);
+	py0 = lrint ((yp0 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
+	py1 = lrint ((yp1 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
 
 	/* now have the pixel locations for the two samples - join with a line..... */
 	if (fabs (slope) <= 1.0) { /* more pixels needed in x direction */
 		if (px0 < px1) {
 			for (ix = px0; ix <= px1; ix++) {
-				iy = py0 + (GMT_LONG) (slope * (float) (ix - px0));
+				iy = py0 + lrint (slope * (float) (ix - px0));
 				segyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 		else {
 			for (ix = px1; ix <= px0; ix++) {
-				iy = py0 + (GMT_LONG) (slope * (float) (ix - px0));
+				iy = py0 + lrint (slope * (float) (ix - px0));
 				segyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 
@@ -375,13 +375,13 @@ void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float da
 	else { /* more pixels needed in y direction */
 		if (py0 < py1) {
 			for (iy = py0; iy <= py1; iy++) {
-				ix = px0 + (GMT_LONG) (((float) (iy - py0)) / slope);
+				ix = px0 + lrint (((float) (iy - py0)) / slope);
 				segyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 		else {
 			for (iy = py1; iy <= py0; iy++) {
-				ix = px0 + (GMT_LONG) (((float) (iy - py0)) / slope);
+				ix = px0 + lrint (((float) (iy - py0)) / slope);
 				segyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
@@ -631,11 +631,11 @@ GMT_LONG GMT_pssegyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* define area for plotting and size of array for bitmap */
 	xlen = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
 	xpix = xlen * PSL_DOTS_PER_INCH; /* pixels in x direction */
-	bm_nx = (GMT_LONG) ceil (xpix / 8.0); /* store 8 pixels per byte in x direction but must have
+	bm_nx = lrint (ceil (xpix / 8.0)); /* store 8 pixels per byte in x direction but must have
 				whole number of bytes per scan */
 	ylen = GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO];
 	ypix = ylen * PSL_DOTS_PER_INCH; /* pixels in y direction */
-	bm_ny = (GMT_LONG) ypix;
+	bm_ny = lrint (ypix);
 	nm = bm_nx * bm_ny;
 
 	if ((check = get_segy_reelhd (fpi, reelhead)) != true) exit (1);

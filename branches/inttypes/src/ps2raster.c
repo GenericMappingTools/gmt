@@ -951,7 +951,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			if (!strncmp (line, "%%BoundingBox:", 14)) {
 				if (got_BB)
-					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", (GMT_LONG)ceil(w), (GMT_LONG)ceil(h));
+					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (ceil(w)), lrint (ceil(h)));
 				got_BB = FALSE;
 				if (file_has_HRBB)
 					continue;	/* High-res BB will be put elsewhere */
@@ -1085,8 +1085,8 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else
 				strcpy (out_file, Ctrl->F.file);
 			strcat (out_file, ext[Ctrl->T.device]);
-			pix_w = (GMT_LONG)ceil (w * Ctrl->E.dpi / 72.0);
-			pix_h = (GMT_LONG)ceil (h * Ctrl->E.dpi / 72.0);
+			pix_w = lrint (ceil (w * Ctrl->E.dpi / 72.0));
+			pix_h = lrint (ceil (h * Ctrl->E.dpi / 72.0));
 			sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g%ldx%ld -r%ld -sOutputFile=%s -f%s",
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
 				pix_w, pix_h, Ctrl->E.dpi, out_file, tmp_file);

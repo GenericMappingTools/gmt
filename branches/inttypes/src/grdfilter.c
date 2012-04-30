@@ -692,8 +692,8 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	F.y_max = Gin->header->wesn[YHI];
 	x_width = Ctrl->F.width / (Gin->header->inc[GMT_X] * x_scale);
 	y_width = ((F.rect) ? Ctrl->F.width2 : Ctrl->F.width) / (Gin->header->inc[GMT_Y] * y_scale);
-	F.x_half_width = (GMT_LONG) (ceil(x_width) / 2.0);
-	F.y_half_width = (GMT_LONG) (ceil(y_width) / 2.0);
+	F.x_half_width = lrint (ceil (x_width) / 2.0);
+	F.y_half_width = lrint (ceil (y_width) / 2.0);
 	F.nx = 2 * F.x_half_width + 1;
 	F.ny = 2 * F.y_half_width + 1;
 	if (x_scale == 0.0 || F.nx < 0 || F.nx > Gin->header->nx) {	/* Safety valve when x_scale -> 0.0 */

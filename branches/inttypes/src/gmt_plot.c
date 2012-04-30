@@ -772,9 +772,9 @@ void gmt_fancy_frame_straightlon_checkers (struct GMT_CTRL *C, struct PSL_CTRL *
 		T = &C->current.map.frame.axis[GMT_X].item[item[k]];
 		if (T->active) {
 			dx = GMT_get_map_interval (C, T);
-			shade = ((GMT_LONG)floor ((w - C->current.map.frame.axis[GMT_X].phase)/ dx)) % 2;
+			shade = (lrint (floor ((w - C->current.map.frame.axis[GMT_X].phase)/ dx))) % 2;
 			w1 = floor ((w - C->current.map.frame.axis[GMT_X].phase)/ dx) * dx + C->current.map.frame.axis[GMT_X].phase;
-			nx = (w1 > e) ? -1 : (GMT_LONG)((e - w1) / dx + GMT_SMALL);
+			nx = (w1 > e) ? -1 : lrint (((e - w1) / dx + GMT_SMALL));
 			for (i = 0; i <= nx; i++) {
 				shade = !shade;
 				val = w1 + i * dx;
@@ -815,9 +815,9 @@ void gmt_fancy_frame_curvedlon_checkers (struct GMT_CTRL *C, struct PSL_CTRL *P,
 		T = &C->current.map.frame.axis[GMT_X].item[item[k]];
 		if (T->active) {
 			dx = GMT_get_map_interval (C, T);
-			shade = ((GMT_LONG)floor ((w - C->current.map.frame.axis[GMT_X].phase) / dx)) % 2;
-			w1 = floor((w - C->current.map.frame.axis[GMT_X].phase)/dx) * dx + C->current.map.frame.axis[GMT_X].phase;
-			nx = (w1 > e) ? -1 : (GMT_LONG)((e-w1) / dx + GMT_SMALL);
+			shade = (lrint (floor ((w - C->current.map.frame.axis[GMT_X].phase) / dx))) % 2;
+			w1 = floor ((w - C->current.map.frame.axis[GMT_X].phase)/dx) * dx + C->current.map.frame.axis[GMT_X].phase;
+			nx = (w1 > e) ? -1 : lrint ((e-w1) / dx + GMT_SMALL);
 			for (i = 0; i <= nx; i++) {
 				shade = !shade;
 				val = w1 + i * dx;
@@ -881,9 +881,9 @@ void gmt_fancy_frame_straightlat_checkers (struct GMT_CTRL *C, struct PSL_CTRL *
 		T = &C->current.map.frame.axis[GMT_Y].item[item[k]];
 		if (T->active) {
 			dy = GMT_get_map_interval (C, T);
-			shade = ((GMT_LONG)floor ((s - C->current.map.frame.axis[GMT_Y].phase) / dy)) % 2;
+			shade = (lrint (floor ((s - C->current.map.frame.axis[GMT_Y].phase) / dy))) % 2;
 			s1 = floor((s - C->current.map.frame.axis[GMT_Y].phase)/dy) * dy + C->current.map.frame.axis[GMT_Y].phase;
-			ny = (s1 > n) ? -1 : (GMT_LONG)((n-s1) / dy + GMT_SMALL);
+			ny = (s1 > n) ? -1 : lrint ((n-s1) / dy + GMT_SMALL);
 			for (i = 0; i <= ny; i++) {
 				shade = !shade;
 				val = s1 + i * dy;

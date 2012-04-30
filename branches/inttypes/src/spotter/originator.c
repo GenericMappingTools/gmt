@@ -339,8 +339,10 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 
 GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n_max_spots, n_input, n_expected_fields, n_out, better;
-	GMT_LONG i, j, k, n, kk, ns, nh, np, n_read, n_skipped = 0, error = FALSE;
+	COUNTER_MEDIUM n_max_spots, n_input, n_expected_fields, n_out;
+	COUNTER_MEDIUM i, j, k, n, kk, ns, nh, np, n_read, n_skipped = 0;
+	
+	GMT_LONG error = FALSE, better;
 
 	double x_smt, y_smt, z_smt, r_smt, t_smt, *c, *in = NULL, dist, dlon, out[5];
 	double hx_dist, hx_dist_km, dist_NA, dist_NX, del_dist, dt = 0.0, A[3], H[3], N[3], X[3];
@@ -553,7 +555,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (hot[j].stage == 0) hot[j].stage++;
 		}
 
-		if (nh > 1) qsort (hot, (size_t)nh, sizeof(struct HOTSPOT_ORIGINATOR), comp_hs);
+		if (nh > 1) qsort (hot, nh, sizeof (struct HOTSPOT_ORIGINATOR), comp_hs);
 
 		if (hot[0].np_dist < Ctrl->W.dist) {
 			if (Ctrl->L.mode == 1) {	/* Want time, dist, z output */

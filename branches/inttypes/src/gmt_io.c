@@ -1730,7 +1730,7 @@ void GMT_quad_add (struct GMT_CTRL *C, struct GMT_QUAD *Q, double x)
 		Q->min[way] = MIN (x, Q->min[way]);
 		Q->max[way] = MAX (x, Q->max[way]);
 	}
-	quad_no = (GMT_LONG)floor (x / 90.0);	/* Now x is 0-360; this yields quadrants 0-3 */
+	quad_no = lrint (floor (x / 90.0));	/* Now x is 0-360; this yields quadrants 0-3 */
 	if (quad_no == 4) quad_no = 0;		/* When x == 360.0 */
 	Q->quad[quad_no] = TRUE;		/* OUr x fell in this quadrant */
 }
@@ -1804,33 +1804,33 @@ GMT_LONG GMT_geo_to_dms (double val, GMT_LONG n_items, double fact, GMT_LONG *d,
 
 	if (n_items == 3) {		/* Want dd:mm:ss[.xxx] format */
 		sec = GMT_DEG2SEC_F * fabs (val) + step;	/* Convert to seconds */
-		isec = (GMT_LONG)floor (sec);			/* Integer seconds */
+		isec = lrint (floor (sec));			/* Integer seconds */
 		fsec = sec - (double)isec;  			/* Leftover fractional second */
 		*d = isec / GMT_DEG2SEC_I;			/* Integer degrees */
 		isec -= ((*d) * GMT_DEG2SEC_I);			/* Left-over seconds in the last degree */
 		*m = isec / GMT_MIN2SEC_I;			/* Integer minutes */
 		isec -= ((*m) * GMT_MIN2SEC_I);			/* Leftover seconds in the last minute */
 		*s = isec;					/* Integer seconds */
-		*ix = (GMT_LONG)floor (fsec * fact);		/* Fractional seconds scaled to integer */
+		*ix = lrint (floor (fsec * fact));		/* Fractional seconds scaled to integer */
 	}
 	else if (n_items == 2) {		/* Want dd:mm[.xxx] format */
 		min = GMT_DEG2MIN_F * fabs (val) + step;	/* Convert to minutes */
-		imin = (GMT_LONG)floor (min);			/* Integer minutes */
+		imin = lrint (floor (min));			/* Integer minutes */
 		fmin = min - (double)imin;  			/* Leftover fractional minute */
 		*d = imin / GMT_DEG2MIN_I;			/* Integer degrees */
 		imin -= ((*d) * GMT_DEG2MIN_I);			/* Left-over seconds in the last degree */
 		*m = imin;					/* Integer minutes */
 		*s = 0;						/* No seconds */
-		*ix = (GMT_LONG)floor (fmin * fact);		/* Fractional minutes scaled to integer */
+		*ix = lrint (floor (fmin * fact));		/* Fractional minutes scaled to integer */
 	}
 	else {		/* Want dd[.xxx] format */
 		min = fabs (val) + step;			/* Convert to degrees */
-		imin = (GMT_LONG)floor (min);			/* Integer degrees */
+		imin = lrint (floor (min));			/* Integer degrees */
 		fmin = min - (double)imin;  			/* Leftover fractional degree */
 		*d = imin;					/* Integer degrees */
 		*m = 0;						/* Integer minutes */
 		*s = 0;						/* No seconds */
-		*ix = (GMT_LONG)floor (fmin * fact);		/* Fractional degrees scaled to integer */
+		*ix = lrint (floor (fmin * fact));		/* Fractional degrees scaled to integer */
 	}
 	if (minus) {	/* OK, change sign, but watch for *d = 0 */
 		if (*d)	/* Non-zero degree term is easy */
@@ -3046,7 +3046,7 @@ GMT_LONG gmt_get_ymdj_order (struct GMT_CTRL *C, char *text, struct GMT_DATE_IO 
 	 * Items not encountered are left as -1.
 	 */
 
-	GMT_LONG i, j, order, n_y, n_m, n_d, n_j, n_w, n_delim, last, error = 0;
+	COUNTER_MEDIUM i, j, order, n_y, n_m, n_d, n_j, n_w, n_delim, last, error = 0;
 
 	GMT_memset (S, 1, struct GMT_DATE_IO);
 	for (i = 0; i < 4; i++) S->item_order[i] = S->item_pos[i] = -1;	/* Meaning not encountered yet */
@@ -3058,7 +3058,7 @@ GMT_LONG gmt_get_ymdj_order (struct GMT_CTRL *C, char *text, struct GMT_DATE_IO 
 		S->compact = TRUE;
 		i++;
 	}
-	for (order = 0; i < (GMT_LONG)strlen (text); i++) {
+	for (order = 0; i < strlen (text); i++) {
 		switch (text[i]) {
 			case 'y':	/* Year */
 				if (S->item_pos[0] < 0)		/* First time we encounter a y */
@@ -3862,11 +3862,12 @@ GMT_LONG gmt_scanf_geo (char *s, double *val)
 	done here.
 	*/
 
-	GMT_LONG retval = GMT_IS_FLOAT, k, id, im, ncolons, negate = FALSE;
+	GMT_LONG retval = GMT_IS_FLOAT, negate = FALSE;
+	COUNTER_MEDIUM k, id, im, ncolons;
 	char scopy[GMT_TEXT_LEN64], suffix, *p = NULL, *p2 = NULL;
 	double dd, dm, ds;
 
-	k = (GMT_LONG)strlen (s);
+	k = strlen (s);
 	if (k == 0) return (GMT_IS_NAN);
 	if (!(isdigit ((int)s[k-1]))) {
 		suffix = s[k-1];
@@ -3897,7 +3898,7 @@ GMT_LONG gmt_scanf_geo (char *s, double *val)
 		k--;
 	}
 	if (k >= GMT_TEXT_LEN64) return (GMT_IS_NAN);
-	strncpy (scopy, s, (size_t)k);				/* Copy all but the suffix  */
+	strncpy (scopy, s, k);				/* Copy all but the suffix  */
 	scopy[k] = 0;
 	ncolons = 0;
 	if ((p = strpbrk (scopy, "dD"))) {
@@ -3968,7 +3969,7 @@ GMT_LONG gmt_scanf_float (char *s, double *val)
 
 	char scopy[GMT_TEXT_LEN64], *p = NULL;
 	double x;
-	GMT_LONG j, k;
+	size_t j, k;
 
 	x = strtod (s, &p);
 	if (p[0] == 0) {	/* Success (non-Fortran).  */
@@ -3976,13 +3977,13 @@ GMT_LONG gmt_scanf_float (char *s, double *val)
 		return (GMT_IS_FLOAT);
 	}
 	if (p[0] != 'D' && p[0] != 'd') return (GMT_IS_NAN);
-	k = strlen(p);
+	k = strlen (p);
 	if (k == 1) return (GMT_IS_NAN);	/* A string ending in e would be invalid  */
 	/* Make a copy of s in scopy, mapping the d or D to an e */
-	j = (GMT_LONG)strlen (s);
+	j = strlen (s);
 	if (j > GMT_TEXT_LEN64) return (GMT_IS_NAN);
 	j -= k;
-	strncpy (scopy, s, (size_t)j );
+	strncpy (scopy, s, j);
 	scopy[j] = 'e';
 	strcpy (&scopy[j+1], &p[1]);
 	x = strtod (scopy, &p);
@@ -4057,11 +4058,12 @@ GMT_LONG gmt_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 	to know which was decoded and hence which is expected as column input.
 	*/
 
-	GMT_LONG hh, mm, j, k, i, dash, ival[3], negate_year = FALSE, got_yd = FALSE;
+	GMT_LONG ival[3], negate_year = FALSE, got_yd = FALSE;
+	COUNTER_MEDIUM hh, mm, j, k, i, dash;
 	double ss, x;
 	char *pw = NULL, *pt = NULL;
 
-	i = (GMT_LONG)strlen (s) - 1;
+	i = strlen (s) - 1;
 	if (s[i] == 't') s[i] = '\0';
 	if ( (pt = strchr (s, (int)'T') ) == CNULL) {
 		/* There is no T.  This must decode with gmt_scanf_float() or we die.  */
@@ -4088,7 +4090,7 @@ GMT_LONG gmt_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 	while (s[k] && s[k] == ' ') k++;
 	if (s[k] == '-') negate_year = TRUE;
 	if (s[k] == 'T') {	/* There is no calendar.  Set day to 1 and use that */
-		*t = GMT_rdc2dt (C, (GMT_LONG)1, x);
+		*t = GMT_rdc2dt (C, (int64_t)1, x);
 		return (GMT_IS_ABSTIME);
 	}
 
@@ -4145,7 +4147,8 @@ GMT_LONG GMT_scanf (struct GMT_CTRL *C, char *s, GMT_LONG expectation, double *v
 
 	char calstring[GMT_TEXT_LEN64], clockstring[GMT_TEXT_LEN64], *p = NULL;
 	double x;
-	GMT_LONG callen, clocklen, rd;
+	int64_t rd;
+	size_t callen, clocklen;
 
 	if (s[0] == 'T') {	/* Numbers cannot start with letters except for clocks, e.g., T07:0 */
 		if (!isdigit ((int)s[1])) return (GMT_IS_NAN);	/* Clocks must have T followed by digit, e.g., T07:0 otherwise junk*/
@@ -4197,9 +4200,9 @@ GMT_LONG GMT_scanf (struct GMT_CTRL *C, char *s, GMT_LONG expectation, double *v
 			strcpy (calstring, s);
 		}
 		else {
-			clocklen = strlen(p);
+			clocklen = strlen (p);
 			callen -= clocklen;
-			strncpy (calstring, s, (size_t)callen);
+			strncpy (calstring, s, callen);
 			calstring[callen] = 0;
 			strcpy (clockstring, &p[1]);
 			clocklen--;
@@ -4336,7 +4339,7 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, GM
 		while (header && ((C->current.io.io_header[GMT_IN] && n_read <= C->current.io.io_n_header_items) || GMT_REC_IS_TBL_HEADER (C))) { /* Process headers */
 			T->header[T->n_headers] = strdup (C->current.io.current_record);
 			T->n_headers++;
-			if ((size_t)T->n_headers == n_head_alloc) {
+			if (T->n_headers == n_head_alloc) {
 				n_head_alloc <<= 1;
 				T->header = GMT_memory (C, T->header, n_head_alloc, char *);
 			}
@@ -4600,7 +4603,8 @@ GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_
 
 void GMT_extract_label (struct GMT_CTRL *C, char *line, char *label)
 {	/* Pull out the label in a -L<label> option in a segment header w./w.o. quotes */
-	GMT_LONG i = 0, k, j, j0, done;
+	GMT_LONG done;
+	COUNTER_MEDIUM i = 0, k, j, j0;
 	char *p = NULL, q[2] = {'\"', '\''};
 
 	if (GMT_parse_segment_item (C, line, "-L", label)) return;	/* Found -L */
@@ -4613,7 +4617,7 @@ void GMT_extract_label (struct GMT_CTRL *C, char *line, char *label)
 		if ((p = strchr (&line[i], q[k]))) {	/* Gave several double/single-quoted words as label */
 			for (j0 = j = i + 1; line[j] != q[k]; j++);
 			if (line[j] == q[k]) {	/* Found the matching quote */
-				strncpy (label, &line[j0], (size_t)(j-j0));
+				strncpy (label, &line[j0], j-j0);
 				label[j-j0] = '\0';
 				done = TRUE;
 			}
@@ -5684,7 +5688,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 		while (header && ((C->current.io.io_header[GMT_IN] && n_read <= C->current.io.io_n_header_items) || GMT_REC_IS_TBL_HEADER (C))) { /* Process headers */
 			T->header[T->n_headers] = strdup (C->current.io.current_record);
 			T->n_headers++;
-			if ((size_t)T->n_headers == n_head_alloc) {
+			if (T->n_headers == n_head_alloc) {
 				n_head_alloc <<= 1;
 				T->header = GMT_memory (C, T->header, n_head_alloc, char *);
 			}

@@ -926,7 +926,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 		}
 		if (!G->auto_advance && fseek (G->fp, (off_t)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 
-		if (GMT_fread (G->v_row, (size_t)G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
+		if (GMT_fread (G->v_row, G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		for (col = 0; col < G->header.nx; col++) {
 			row[col] = GMT_decode (C, G->v_row, col, C->session.grdformat[G->header.type][1]);	/* Convert whatever to float */
 			if (G->check && row[col] == G->header.nan_value) row[col] = C->session.f_NaN;
@@ -1545,7 +1545,7 @@ void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G)
 	}
 	if (G->header->pad[YLO]) {
 		ij_f = GMT_IJP (G->header, G->header->ny, -G->header->pad[XLO]);		/* Index of first column of bottom pad  */
-		GMT_memset (&(G->data[kf]), G->header->pad[YLO] * G->header->mx, float);	/* Zero the bottom pad */
+		GMT_memset (&(G->data[ij_f]), G->header->pad[YLO] * G->header->mx, float);	/* Zero the bottom pad */
 	}
 	GMT_memset (G->header->BC, 4, GMT_LONG);				/* BCs no longer set for this grid */
 }
@@ -1715,7 +1715,7 @@ GMT_LONG GMT_check_url_name (char *fname) {
 
 #ifdef USE_GDAL
 GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I) {
-	COUNTER_MEDIUM i;
+	GMT_LONG i;
 	double dumb;
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
@@ -1726,7 +1726,7 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 
 	to_gdalread->M.active = TRUE;	/* Get metadata only */
 
-	len = strlen (file) - 1;
+	i = strlen (file) - 1;
 	while (i && file[i] && file[i] != '+') i--;	/* See if we have a band request */
 	if (i && file[i+1] == 'b') {
 		/* Yes we do. Put the band string into the 'pocket' where GMT_read_image will look and finish the request */

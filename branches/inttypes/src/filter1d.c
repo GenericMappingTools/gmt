@@ -106,14 +106,14 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	GMT_LONG out_at_time;		/* TRUE when output is required at evenly spaced intervals */
 	GMT_LONG f_operator;		/* TRUE if custom weights coefficients sum to zero */
 
-	GMT_LONG *n_this_col;		/* Pointer to array of counters [one per column]  */
-	GMT_LONG *n_left;		/* Pointer to array of counters [one per column]  */
-	GMT_LONG *n_right;		/* Pointer to array of counters [one per column]  */
+	COUNTER_MEDIUM *n_this_col;	/* Pointer to array of counters [one per column]  */
+	COUNTER_MEDIUM *n_left;		/* Pointer to array of counters [one per column]  */
+	COUNTER_MEDIUM *n_right;	/* Pointer to array of counters [one per column]  */
+	COUNTER_MEDIUM n_cols;		/* Number of columns of input  */
+	COUNTER_MEDIUM t_col;		/* Column of time abscissae (independent variable)  */
+	COUNTER_MEDIUM n_f_wts;		/* Number of filter weights  */
+	COUNTER_MEDIUM half_n_f_wts;	/* Half the number of filter weights  */
 	COUNTER_LARGE n_rows;		/* Number of rows of input  */
-	GMT_LONG n_cols;		/* Number of columns of input  */
-	GMT_LONG t_col;			/* Column of time abscissae (independent variable)  */
-	GMT_LONG n_f_wts;		/* Number of filter weights  */
-	GMT_LONG half_n_f_wts;		/* Half the number of filter weights  */
 	size_t n_row_alloc;		/* Number of rows of data to allocate  */
 	size_t n_work_alloc;		/* Number of rows of workspace to allocate  */
 	GMT_LONG filter_type;		/* Flag indicating desired filter type  */
@@ -384,7 +384,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 
 	if (F->filter_type == FILTER1D_CUSTOM) {	/* Use coefficients we read from file */
 		F->n_f_wts = F->Fin->n_records;
-		while ((size_t)F->n_f_wts <= F->n_work_alloc) {	/* Need more memory */
+		while (F->n_f_wts <= F->n_work_alloc) {	/* Need more memory */
 			F->n_work_alloc <<= 1;
 			allocate_more_work_space (GMT, F);
 		}
@@ -401,7 +401,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		get_weight[FILTER1D_COS_ARCH] = (PFD)cosine_weight_filter1d;
 		get_weight[FILTER1D_GAUSSIAN] = (PFD)gaussian_weight;
 		F->half_width = 0.5 * F->filter_width;
-		F->half_n_f_wts = (GMT_LONG)floor (F->half_width / F->dt);
+		F->half_n_f_wts = lrint (floor (F->half_width / F->dt));
 		F->n_f_wts = 2 * F->half_n_f_wts + 1;
 
 		F->f_wt = GMT_memory (GMT, F->f_wt, F->n_f_wts, double);
@@ -642,7 +642,7 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 
 			for (i_row = left; i_row < right; ++i_row) {
 				delta_time = time - F->data[F->t_col][i_row];
-				i_f_wt = F->half_n_f_wts + (GMT_LONG)floor (0.5 + delta_time/F->dt);
+				i_f_wt = F->half_n_f_wts + lrint (floor (0.5 + delta_time/F->dt));
 				if ((i_f_wt < 0) || (i_f_wt >= F->n_f_wts)) continue;
 
 				for(i_col = 0; i_col < F->n_cols; ++i_col) {

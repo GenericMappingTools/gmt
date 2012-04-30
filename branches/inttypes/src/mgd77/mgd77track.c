@@ -360,11 +360,11 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance gap in km */
 					Ctrl->G.active[GAP_D] = TRUE;
-						Ctrl->G.value[GAP_D] = (GMT_LONG)(atof (&opt->arg[1]) * 1000.0);	/* Gap converted to m from km */
+						Ctrl->G.value[GAP_D] = lrint (atof (&opt->arg[1]) * 1000.0);	/* Gap converted to m from km */
 						break;
 					case 't':	/* Distance gap in minutes */
 						Ctrl->G.active[GAP_T] = TRUE;
-						Ctrl->G.value[GAP_T] = (GMT_LONG)(atof (&opt->arg[1]) * 60.0);	/* Gap converted to seconds from minutes */
+						Ctrl->G.value[GAP_T] = lrint (atof (&opt->arg[1]) * 60.0);	/* Gap converted to seconds from minutes */
 						break;
 					default:
 						GMT_report (GMT, GMT_MSG_FATAL, "Error -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
