@@ -84,8 +84,8 @@ struct BLK_SLH {	/* Holds std, low, and high values */
 enum GMT_enum_blks {BLK_Z	= 2,
 	BLK_W		= 3};
 struct BLK_DATA {
-	double a[4];	/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
-	GMT_LONG i;	/* Index to data value */
+	double a[4];		/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
+	COUNTER_LARGE i;	/* Index to data value */
 };
 #endif
 

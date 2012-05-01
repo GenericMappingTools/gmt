@@ -108,7 +108,7 @@ void gmt_expand_filename (struct GMT_CTRL *C, char *file, char *fname)
 		}
 		if (found) {	/* file ended in a recognized shorthand extension */
 			--i;
-			sprintf (fname, "%s=%ld/%g/%g/%g", file, C->session.shorthand[i].id, C->session.shorthand[i].scale, C->session.shorthand[i].offset, C->session.shorthand[i].nan);
+			sprintf (fname, "%s=%d/%g/%g/%g", file, C->session.shorthand[i].id, C->session.shorthand[i].scale, C->session.shorthand[i].offset, C->session.shorthand[i].nan);
 		}
 		else
 			strcpy (fname, file);
@@ -461,7 +461,7 @@ GMT_LONG GMT_write_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 
  	GMT_err_trap (GMT_grd_get_format (C, file, header, FALSE));
 
-	if (GMT_is_dnan(header->z_scale_factor))
+	if (GMT_is_dnan (header->z_scale_factor))
 		header->z_scale_factor = 1.0;
 	else if (header->z_scale_factor == 0.0) {
 		header->z_scale_factor = 1.0;
@@ -752,7 +752,7 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 	and after GMT_grd_init() has been called.
 */
 	char ptr[GMT_BUFSIZ], sep[] = "/";
-	GMT_LONG entry = 0, pos = 0;
+	COUNTER_MEDIUM entry = 0, pos = 0;
 
 	if (input[0] != input[strlen(input)-1]) {}
 	else if (input[0] == '=') {}
@@ -897,8 +897,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 	 * fseek to the start of the abs(row_no) record and no reading takes place.
 	 */
 
-	COUNTER_MEDIUM col;
-	GMT_LONG err;
+	GMT_LONG col, err;
 
 	if (C->session.grdformat[G->header.type][0] == 'c') {		/* Get one NetCDF row, old format */
 		if (row_no < 0) {	/* Special seek instruction */
@@ -940,8 +939,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 GMT_LONG GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, float *row)
 {	/* Writes the entire row vector to the grdfile */
 
-	COUNTER_MEDIUM col;
-	GMT_LONG err;	/* Required by GMT_err_trap */
+	GMT_LONG col, err;	/* Required by GMT_err_trap */
 	size_t size;
 	void *tmp = NULL;
 
@@ -995,7 +993,7 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 	 * options to the header variable command.
 	 * update = TRUE if we only want to update command line */
 
-	COUNTER_MEDIUM i;
+	int i;
 	
 	if (update)	/* Only clean the command history */
 		GMT_memset (header->command, GRD_COMMAND_LEN320, char);
@@ -1348,8 +1346,8 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	 * if we are dealing with standard 72 or 80 img latitude; else it must be specified.
 	 */
 
-	GMT_LONG first_i, status;
-	COUNTER_MEDIUM min, row, col, actual_col, n_cols;
+	GMT_LONG status;
+	COUNTER_MEDIUM first_i, min, actual_col, n_cols, row, col;
 	COUNTER_LARGE ij;
 	off_t n_skip;
 	int16_t *i2 = NULL;
@@ -1656,7 +1654,7 @@ GMT_LONG GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *header, GMT_L
 
 void GMT_grd_zminmax (struct GMT_CTRL *C, struct GRD_HEADER *h, float *z)
 {	/* Reset the xmin/zmax values in the header */
-	COUNTER_MEDIUM row, col;
+	int row, col;
 	COUNTER_LARGE node, n = 0;
 	
 	h->z_min = DBL_MAX;	h->z_max = -DBL_MAX;
@@ -1784,8 +1782,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	COUNTER_MEDIUM i;
-	GMT_LONG expand;
+	GMT_LONG i, expand;
 	struct GRD_PAD P;
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;

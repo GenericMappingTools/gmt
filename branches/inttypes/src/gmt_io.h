@@ -286,7 +286,7 @@ enum GMT_lon_enum {
 /* Low-level structures used internally */
 
 struct GMT_QUAD {	/* Counting parameters needed to determine proper longitude min/max range */
-	GMT_LONG quad[4];		/* Keeps track if a longitude fell in these quadrants */
+	COUNTER_LARGE quad[4];		/* Keeps track if a longitude fell in these quadrants */
 	GMT_LONG range[2];		/* The format for reporting longitude */
 	double min[2], max[2];		/* Min/max values in either -180/180 or 0/360 counting */
 };
@@ -295,8 +295,8 @@ struct GMT_CLOCK_IO {
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
 	GMT_LONG order[3];		/* The relative order of hour, mn, sec in input clock string */
 	GMT_LONG n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
-	GMT_LONG compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
-	GMT_LONG twelve_hr_clock;	/* TRUE if we are doing am/pm on output */
+	BOOLEAN compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
+	BOOLEAN twelve_hr_clock;	/* TRUE if we are doing am/pm on output */
 	char ampm_suffix[2][8];		/* Holds the strings to append am or pm */
 	char format[GMT_TEXT_LEN64];	/* Actual C format used to output clock */
 	char delimiter[2][2];		/* Delimiter strings in clock, e.g. ":" */
@@ -305,12 +305,12 @@ struct GMT_CLOCK_IO {
 struct GMT_DATE_IO {
 	GMT_LONG item_order[4];		/* The sequence year, month, day, day-of-year in input calendar string */
 	GMT_LONG item_pos[4];		/* Which position year, month, day, day-of-year has in calendar string */
-	GMT_LONG Y2K_year;		/* TRUE if we have 2-digit years */
-	GMT_LONG truncated_cal_is_ok;	/* TRUE if we have YMD or YJ order so smallest unit is to the right */
-	GMT_LONG iso_calendar;		/* TRUE if we do ISO week calendar */
-	GMT_LONG day_of_year;		/* TRUE if we do day-of-year rather than month/day */
-	GMT_LONG mw_text;		/* TRUE if we must plot the month name or Week rather than a numeral */
-	GMT_LONG compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
+	BOOLEAN Y2K_year;		/* TRUE if we have 2-digit years */
+	BOOLEAN truncated_cal_is_ok;	/* TRUE if we have YMD or YJ order so smallest unit is to the right */
+	BOOLEAN iso_calendar;		/* TRUE if we do ISO week calendar */
+	BOOLEAN day_of_year;		/* TRUE if we do day-of-year rather than month/day */
+	BOOLEAN mw_text;		/* TRUE if we must plot the month name or Week rather than a numeral */
+	BOOLEAN compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
 	char format[GMT_TEXT_LEN64];	/* Actual C format used to input/output date */
 	char delimiter[2][2];		/* Delimiter strings in date, e.g. "-" */
 };
@@ -319,9 +319,9 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
 	GMT_LONG order[3];		/* The relative order of degree, minute, seconds in form */
 	GMT_LONG range;			/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
-	GMT_LONG decimal;		/* TRUE if we want to use the D_FORMAT for decimal degrees only */
-	GMT_LONG wesn;			/* TRUE if we want sign encoded with suffix W, E, S, N */
-	GMT_LONG no_sign;		/* TRUE if we want absolute values (plot only) */
+	BOOLEAN decimal;		/* TRUE if we want to use the D_FORMAT for decimal degrees only */
+	BOOLEAN wesn;			/* TRUE if we want sign encoded with suffix W, E, S, N */
+	BOOLEAN no_sign;		/* TRUE if we want absolute values (plot only) */
 	GMT_LONG n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
 	char x_format[GMT_TEXT_LEN64];	/* Actual C format used to plot/output longitude */
 	char y_format[GMT_TEXT_LEN64];	/* Actual C format used to plot/output latitude */
@@ -331,7 +331,7 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 struct GMT_OGR {	/* Struct with all things GMT/OGR for a table*/
 	/* The first parameters are usually set once per data set and do not change */
 	GMT_LONG geometry;		/* @G: The geometry of this data set, if known [0 otherwise] */
-	GMT_LONG n_aspatial;		/* @T: The number of aspatial fields */
+	COUNTER_MEDIUM n_aspatial;	/* @T: The number of aspatial fields */
 	char *region;			/* @R: The region textstring [NULL if not set] */
 	char *proj[4];			/* @J: The 1-4 projection strings [NULL if not set] */
 	GMT_LONG *type;			/* @T: The data types of the aspatial fields [NULL if not set]  */
@@ -344,15 +344,15 @@ struct GMT_OGR {	/* Struct with all things GMT/OGR for a table*/
 
 struct GMT_OGR_SEG {	/* Struct with GMT/OGR aspatial data for a segment*/
 	GMT_LONG pol_mode;		/* @P: Either GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
-	GMT_LONG n_aspatial;		/* @T: The number of aspatial fields */
+	COUNTER_MEDIUM n_aspatial;	/* @T: The number of aspatial fields */
 	char **value;			/* @D: The values of the current aspatial fields (uses GMT_OGR's n_aspatial as length) */
 	double *dvalue;			/* @D: Same but converted to double (assumed possible) */
 };
 
 struct GMT_COL_INFO {	/* Used by -i and input parsing */
-	GMT_LONG col;		/* The column number in the order requested via -i */
-	GMT_LONG order;		/* The initial order (0,1,...) but this will be sorted on col */
-	GMT_LONG convert;	/* TRUE if we must convert the data by log10, scale, offset */
+	COUNTER_MEDIUM col;		/* The column number in the order requested via -i */
+	COUNTER_MEDIUM order;		/* The initial order (0,1,...) but this will be sorted on col */
+	BOOLEAN convert;	/* TRUE if we must convert the data by log10, scale, offset */
 	double scale;		/* Multiplier for raw in value */
 	double offset;		/* Offset applied after multiplier */ 
 };
@@ -376,14 +376,13 @@ struct GMT_IO {				/* Used to process input data records */
 	double prev_rec[GMT_MAX_COLUMNS];	/* The previous data record */
 	struct GMT_GRD_INFO grd_info;
 
-	GMT_LONG multi_segments[2];	/* TRUE if current Ascii input/output file has multiple segments */
-	GMT_LONG io_header[2];		/* TRUE if input/output data has header records */
-	GMT_LONG skip_bad_records;	/* TRUE if records where x and/or y are NaN or Inf */
-	GMT_LONG give_report;		/* TRUE if functions should report how many bad records were skipped */
-	GMT_LONG skip_duplicates;	/* TRUE if we should ignore duplicate x,y records */
+	BOOLEAN multi_segments[2];	/* TRUE if current Ascii input/output file has multiple segments */
+	BOOLEAN io_header[2];		/* TRUE if input/output data has header records */
+	BOOLEAN skip_bad_records;	/* TRUE if records where x and/or y are NaN or Inf */
+	BOOLEAN give_report;		/* TRUE if functions should report how many bad records were skipped */
+	BOOLEAN skip_duplicates;	/* TRUE if we should ignore duplicate x,y records */
 	GMT_LONG io_nan_ncols;		/* Number of columns to consider for -s option */
 
-	GMT_LONG file_no;		/* Number of current file */
 	COUNTER_LARGE io_n_header_items;	/* number of header records (ascii) or bytes (binary) [0] */
 	GMT_LONG seg_no;		/* Number of current multi-segment in entire data set */
 	GMT_LONG tbl_no;		/* Number of current table in entire data set */
@@ -416,9 +415,9 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_CLOCK_IO clock_input;	/* Has all info on how to decode input clocks */
 	struct GMT_CLOCK_IO clock_output;	/* Has all info on how to write output clocks */
 	struct GMT_GEO_IO geo;		/* Has all the info on how to write geographic coordinates */
-	GMT_LONG skip_if_NaN[GMT_MAX_COLUMNS];	/* TRUE if column j cannot be NaN and we must skip the record */
+	BOOLEAN skip_if_NaN[GMT_MAX_COLUMNS];	/* TRUE if column j cannot be NaN and we must skip the record */
 	GMT_LONG col_type[2][GMT_MAX_COLUMNS];	/* Type of column on input and output: Time, geographic, etc, see GMT_IS_<TYPE> */
-	GMT_LONG col_skip[GMT_MAX_COLUMNS];	/* TRUE of input column is to be ignored [Default reads all columns, but see -i] */
+	BOOLEAN col_skip[GMT_MAX_COLUMNS];	/* TRUE of input column is to be ignored [Default reads all columns, but see -i] */
 	GMT_LONG io_nan_col[GMT_MAX_COLUMNS];	/* Array of columns to consider for -s option ir TRUE */
 	struct GMT_COL_INFO col[2][GMT_MAX_COLUMNS];	/* Order of columns on input and output unless 0,1,2,3,... */
 	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information for binary data */
@@ -431,11 +430,11 @@ struct GMT_IO {				/* Used to process input data records */
 };
 
 struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is implicit */
-	int swab;		/* TRUE if we must swap byte-order */
+	BOOLEAN swab;		/* TRUE if we must swap byte-order */
 	GMT_LONG x_missing;	/* 1 if a periodic (right) column is implicit (i.e., not stored) */
 	GMT_LONG y_missing;	/* 1 if a periodic (top) row is implicit (i.e., not stored) */
-	GMT_LONG binary;	/* TRUE if we are reading/writing binary data */
-	GMT_LONG input;		/* TRUE if we are reading, FALSE if we are writing */
+	BOOLEAN binary;		/* TRUE if we are reading/writing binary data */
+	BOOLEAN input;		/* TRUE if we are reading, FALSE if we are writing */
 	GMT_LONG format;	/* Either GMT_COLUMN_FORMAT or GMT_ROW_FORMAT */
 	GMT_LONG x_step;	/* +1 if logical x values increase to right, else -1 */
 	GMT_LONG y_step;	/* +1 if logical y values increase upwards, else -1 */
@@ -451,8 +450,8 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 };
 
 struct GMT_PARSE_Z_IO {	/* -Z[<flags>] */
-	GMT_LONG active;
-	int swab;
+	BOOLEAN active;
+	BOOLEAN swab;
 	GMT_LONG repeat[2];
 	off_t skip;
 	char type;

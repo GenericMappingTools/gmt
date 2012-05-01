@@ -150,13 +150,13 @@ void Free_pscontour_Ctrl (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, GMT_LONG n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, GMT_LONG **v, GMT_LONG **cindex)
+GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, GMT_LONG n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, COUNTER_MEDIUM **v, COUNTER_MEDIUM **cindex)
 {
 	/* This routine finds all the contour crossings for this triangle.  Each contour consists of
 	 * linesegments made up of two points, with coordinates xc, yc, and contour level zc.
 	 */
 	 
-	GMT_LONG i, j, k, k2, i1, nx, ok, n_ok, *vout = NULL, *cind = NULL, *ctmp = NULL;
+	COUNTER_MEDIUM i, j, k, k2, i1, nx, ok, n_ok, *vout = NULL, *cind = NULL, *ctmp = NULL;
 	double xx[3], yy[3], zz[3], zmin, zmax, dz, frac, *xout = NULL, *yout = NULL, *zout = NULL, *ztmp = NULL;
 	size_t n_alloc;
 
@@ -594,9 +594,9 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG PSCONTOUR_SUM, io_mode = 0, id, make_plot, error = FALSE, skip = FALSE, closed;
-	GMT_LONG tbl_scl = 0, two_only = FALSE, fmt[3] = {0, 0, 0};
+	GMT_LONG tbl_scl = 0, add, two_only = FALSE, fmt[3] = {0, 0, 0};
 	
-	COUNTER_MEDIUM n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0}, add, last_entry, last_exit;
+	COUNTER_MEDIUM n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0}, last_entry, last_exit;
 	COUNTER_MEDIUM np, k, i, low, high, n_contours = 0, n_tables = 0, tbl, *vert = NULL, *cind = NULL;
 	
 	size_t n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL, c_alloc = 0;

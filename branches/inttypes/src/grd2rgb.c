@@ -269,7 +269,8 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0, pos, entry, guess = FALSE;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0, pos, entry;
+	GMT_LONG guess = FALSE;
 	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;

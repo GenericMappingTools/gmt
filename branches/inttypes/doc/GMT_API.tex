@@ -104,11 +104,11 @@ such modules are given the same name as the corresponding program but carry the
 prefix \texttt{GMT\_}, e.g., \texttt{GMT\_blockmean}.
 \item ``\GMT\ application'' refers to a new application written by developers
 and may call one or more \GMT\ functions to create a new \GMT-compatible executable.
-\item In the API description that follows we will use the type \texttt{long} to mean
-a 4-byte (for 32-bit systems) or 8-byte (for 64-bit systems) integer.  Since different
-operating systems have their own way of defining 8-byte integers it is recommended that
-developers use the type \texttt{GMT\_LONG} for this purpose; it is guaranteed to yield
-the correct type that the \GMT\ functions expect.
+\item In the API description that follows we will use the type \texttt{int} to mean
+a 4-byte integer.  Al integers used in the API are 4-byte integers with the exception
+of one function where a longer integer is used.  Since different operating systems have their
+own way of defining 8-byte integers we use C99's \texttt{int64\_6} for this purpose; it is guaranteed to yield
+the correct type that the \GMT\ function expect.
 \end{enumerate}
 In version 5, the standard \GMT\ programs are themselves specific but overly simple examples
 of \GMT\ applications that only call the single \GMT\ function they are associated with.
@@ -219,8 +219,8 @@ of variable.  Unlike the other objects, images can only be read and not written.
 \centering
 \begin{tabular}{ll} \hline
 \multicolumn{2}{l}{\texttt{struct GMT\_VECTOR \{}} \\ 
-\texttt{	long id;}		&       /* \emph{An identification number} */ \\
-\texttt{	long n\_rows;}		&       /* \emph{Number of rows in each vector} */ \\
+\texttt{	int id;}		&       /* \emph{An identification number} */ \\
+\texttt{	uint64_t n\_rows;}	&       /* \emph{Number of rows in each vector} */ \\
 \texttt{	long n\_columns;}	&       /* \emph{Number of vectors}  */\\
 \texttt{	long alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
 \texttt{	long *type;}		&       /* \emph{Array with data type for each vector}  */\\
@@ -343,11 +343,11 @@ function prototype is
 \index{GMT\_Create\_Session}
 
 \begin{verbatim}
-struct GMTAPI_CTRL * GMT_Create_Session (char *tag, long mode)
+struct GMTAPI_CTRL * GMT_Create_Session (char *tag, int mode)
 \end{verbatim}
 and you will typically call it thus:
 \begin{verbatim}
-GMT_LONG mode = GMTAPI_GMT;
+int mode = GMTAPI_GMT;
 struct GMTAPI_CTRL *API = NULL;
 API = GMT_Create_Session ("Session name", mode);
 \end{verbatim}
@@ -573,7 +573,7 @@ This is done with the \texttt{GMT\_Create\_Data} function, whose prototype is
 \index{GMT\_Create\_Data}.
 
 \begin{verbatim}
-void * GMT_Create_Data (struct GMTAPI_CTRL *API, long family, long par[])
+void * GMT_Create_Data (struct GMTAPI_CTRL *API, int family, int64_t par[])
 \end{verbatim}
 which returns a pointer to the allocated resource.
 Pass \texttt{family} as one of GMT\_IS\_GMTGRID, GMT\_IS\_DATASET, GMT\_IS\_TEXTSET, or GMT\_IS\_CPT,
@@ -637,7 +637,7 @@ function enables dataset and text set record-by-record import and prepares the r
 The prototype is
 
 \begin{verbatim}
-long GMT_Begin_IO (struct GMTAPI_CTRL *API, long family, long direction)
+int GMT_Begin_IO (struct GMTAPI_CTRL *API, int family, int direction)
 \end{verbatim}
 where \texttt{family} specifies what kind of resources is about to be read or written (see Table \ref{tbl:family}
 for list of all families; only GMT\_IS\_DATASET and GMT\_IS\_TEXTSET are available for record-by-record handling).
@@ -666,8 +666,8 @@ an generic form that covers all of them.
 \index{GMT\_Read\_Data}
 To read an entire data set from a file, a stream, or file handle, use
 \begin{verbatim}
-void * GMT_Read_Data (struct GMTAPI_CTRL *API, long family, long method, \
-    long geometry, double wesn[], long mode, char *input, void *data)
+void * GMT_Read_Data (struct GMTAPI_CTRL *API, int family, int method, \
+    int geometry, double wesn[], int mode, char *input, void *data)
 \end{verbatim}
 where \texttt{data} is usually NULL except when reading grids in two steps
 (i.e., first get a grid structure with a header, then read the data).
@@ -720,7 +720,7 @@ pass the unique ID number of the resource.  The function is described as follows
 \index{GMT\_Get\_Data}
 
 \begin{verbatim}
-void * GMT_Get_Data (struct GMTAPI_CTRL *API, long ID, long mode, \
+void * GMT_Get_Data (struct GMTAPI_CTRL *API, int ID, int mode, \
 	void *data)
 \end{verbatim}
 The \texttt{ID} is the unique object ID you received when registering the resource earlier,
@@ -743,7 +743,7 @@ pass the unique ID number of the resource.  The function is described as follows
 \index{GMT\_Retrieve\_Data}
 
 \begin{verbatim}
-void * GMT_Retrieve_Data (struct GMTAPI_CTRL *API, long ID)
+void * GMT_Retrieve_Data (struct GMTAPI_CTRL *API, int ID)
 \end{verbatim}
 The \texttt{ID} is the unique object ID you received when registering the NULL resource earlier,
 Since this container has already been created, a pointer to the object is returned.
@@ -760,7 +760,7 @@ enable this input mechanism with \texttt{GMT\_Begin\_IO} and then use the
 \index{GMT\_Get\_Record}
 
 \begin{verbatim}
-void * GMT_Get_Record (struct GMTAPI_CTRL *API, long mode, long *nfields)
+void * GMT_Get_Record (struct GMTAPI_CTRL *API, int mode, int *nfields)
 \end{verbatim}
 where the returned value is either a pointer to a double array with the current row
 or a pointer to a character string with the current row, depending on \texttt{mode}.
@@ -839,7 +839,7 @@ reading from occurring (due to poor program structure, bugs, etc.).  We do so by
 function disables further record-by-record data import; its prototype is
 
 \begin{verbatim}
-long GMT_End_IO (struct GMTAPI_CTRL *API, long direction, long mode)
+int GMT_End_IO (struct GMTAPI_CTRL *API, int direction, int mode)
 \end{verbatim}
 
 \noindent
@@ -854,7 +854,7 @@ otherwise it returns FALSE (0).
 The module prototype interface is
 
 \begin{verbatim}
-long GMT_module (struct GMTAPI_CTRL *API, long mode, void *args)
+int GMT_module (struct GMTAPI_CTRL *API, int mode, void *args)
 \end{verbatim}
 All GMT modules may be called with one of three sets of \texttt{args} depending on \texttt{mode}.
 The three modes differ in how the options are passed to the module:
@@ -926,7 +926,7 @@ allow you to convert between the two argument formats.  They are
 
 \begin{verbatim}
 struct GMT_OPTIONS * GMT_Create_Options (struct GMTAPI_CTRL *API, \
-    long argc, void *args)
+    int argc, void *args)
 \end{verbatim}
 \index{GMT\_Create\_Options}
 This function accepts your array of text arguments (cast via a void pointer), allocates the necessary
@@ -942,7 +942,7 @@ and \texttt{argv+1}.  If, you wish to pass a single text string with
 multiple options (in lieu of an array of text strings), then pass \texttt{arg} = 0.
 When no longer needed you can remove the entire list by calling
 \begin{verbatim}
-long GMT_Destroy_Options (struct GMTAPI_CTRL *API, \
+int GMT_Destroy_Options (struct GMTAPI_CTRL *API, \
     struct GMT_OPTION **list)
 \end{verbatim}
 \index{GMT\_Destroy\_Options}
@@ -951,7 +951,7 @@ otherwise it returns FALSE (0).
 
 The inverse function prototype is
 \begin{verbatim}
-char ** GMT_Create_Args (struct GMTAPI_CTRL *API, long *argc, \
+char ** GMT_Create_Args (struct GMTAPI_CTRL *API, int *argc, \
     struct GMT_OPTIONS *list)
 \end{verbatim}
 \index{GMT\_Create\_Args}
@@ -962,7 +962,7 @@ Note that \texttt{argv[0]} will not contain the name of the program as
 is the case the arguments presented by a C \texttt{main()} function.
 When you no longer have any use for the text array, call
 \begin{verbatim}
-long GMT_Destroy_Args (struct GMTAPI_CTRL *API, long argc, char *argv[])
+int GMT_Destroy_Args (struct GMTAPI_CTRL *API, int argc, char *argv[])
 \end{verbatim}
 \index{GMT\_Destroy\_Args}
 to deallocate the space used.  This function returns TRUE (1) if there is an error
@@ -1057,7 +1057,7 @@ and append it to the end of the linked \texttt{list}.  The prototype is
 \index{GMT\_Update\_Option}
 
 \begin{verbatim}
-long GMT_Update_Option (struct GMTAPI_CTRL *API, char option, \
+int GMT_Update_Option (struct GMTAPI_CTRL *API, char option, \
     char *arg, struct GMT_OPTION *list)
 \end{verbatim}
 An error will be reported if (a) \texttt{list} is NULL or (b) the option is not found.
@@ -1074,7 +1074,7 @@ the linked \texttt{list}.  The prototype is
 \index{GMT\_Delete\_Option}
 
 \begin{verbatim}
-long GMT_Delete_Option (struct GMTAPI_CTRL *API, \
+int GMT_Delete_Option (struct GMTAPI_CTRL *API, \
     struct GMT_OPTION *current)
 \end{verbatim}
 We return TRUE if the option is not found in the list and set \texttt{API->error} accordingly.
@@ -1109,7 +1109,7 @@ of this parser is
 \index{GMT\_Parse\_Common}
 
 \begin{verbatim}
-long GMT_Parse_Common (struct GMTAPI_CTRL *API, \
+int GMT_Parse_Common (struct GMTAPI_CTRL *API, \
     struct GMT_OPTION *list)
 \end{verbatim}
 
@@ -1170,8 +1170,8 @@ very similar to the \texttt{GMT\_Read\_Data} and \texttt{GMT\_Get\_Data} functio
 The prototype for writing to a file (via name, stream, or file handle) is
 
 \begin{verbatim}
-long GMT_Write_Data (struct GMTAPI_CTRL *API, long family, long method, \
-    long geometry, double wesn[], long mode, void *output, void *data)
+int GMT_Write_Data (struct GMTAPI_CTRL *API, int family, int method, \
+    int geometry, double wesn[], int mode, void *output, void *data)
 \end{verbatim}
 where \texttt{data} is a pointer to any of the four structures
 discussed previously.  Again, the \texttt{mode} parameter is specific to
@@ -1188,7 +1188,7 @@ should be written (1) or not (0).
 \index{GMT\_WRITE\_DATASET}
 \item [GMT\_WRITE\_TABLES]: Each table in the data set is written to individual files [1].
 You can either specify an output file name that \emph{must} contain one C-style
-format specifier for a long variable (e.g., ``New\_Table\_\%6.6ld.txt''), which will be
+format specifier for a int variable (e.g., ``New\_Table\_\%6.6ld.txt''), which will be
 replaced with the table number (a running number from 0) \emph{or} you must assign
 to each table \emph{i} a unique output file name via the \texttt{D->table[i]->file[GMT\_OUT]}
 variables prior to calling the function.
@@ -1198,7 +1198,7 @@ Same setup as for GMT\_WRITE\_TABLES except we use sequential segment numbers to
 \index{GMT\_WRITE\_SEGMENTS}
 \item [GMT\_WRITE\_TABLE\_SEGMENTS]: Each segment in the data set is written to an individual file [3].
 You can either specify an output file name that \emph{must} contain two C-style
-format specifiers for two long variables (e.g., ``New\_Table\_\%6.6ld\_Segment\_\%3.3ld.txt''),
+format specifiers for two int variables (e.g., ``New\_Table\_\%6.6ld\_Segment\_\%3.3ld.txt''),
 which will be replaced with the table and segment numbers, \emph{or}
 you must assign to each segment \emph{j} in each table \emph{i} a unique output file name
 via the \texttt{D->table[i]->segment[j]->file[GMT\_OUT]} variables prior to calling the function.
@@ -1229,7 +1229,7 @@ If writing to a memory destination you will want to first register that destinat
 \texttt{GMT\_Put\_Data} instead:
 
 \begin{verbatim}
-long GMT_Put_Data (struct GMTAPI_CTRL *API, long ID, long mode, \
+int GMT_Put_Data (struct GMTAPI_CTRL *API, int ID, int mode, \
 	void *data)
 \end{verbatim}
 where \texttt{ID} is the unique ID of the registered destination, \texttt{mode}
@@ -1250,7 +1250,7 @@ the prototype is
 \index{GMT\_Put\_Record}
 
 \begin{verbatim}
-long GMT_Put_Record (struct GMTAPI_CTRL *API, long mode, void *rec)
+int GMT_Put_Record (struct GMTAPI_CTRL *API, int mode, void *rec)
 \end{verbatim}
 where \texttt{rec} is a pointer to either (a) a double-precision array with the current row.
 Then, \texttt{rec} is expected to hold at least as many items as the current setting of
@@ -1300,7 +1300,7 @@ This is done with the \texttt{GMT\_Destroy\_Data} function, whose prototype is
 \index{GMT\_Destroy\_Data}
 
 \begin{verbatim}
-long GMT_Destroy_Data (struct GMTAPI_CTRL *API, long mode, void *data)
+int GMT_Destroy_Data (struct GMTAPI_CTRL *API, int mode, void *data)
 \end{verbatim}
 where \texttt{data} is the address of the pointer to a data container.
 Pass \texttt{mode} either as GMT\_ALLOCATED or GMT\_REFERENCE.  The former
@@ -1322,7 +1322,7 @@ The function returns TRUE (1) if there is an error when trying to free the memor
 Before your program exits it should properly terminate the \GMT\ session, which involves a call to
 
 \begin{verbatim}
-long GMT_Destroy_Session (struct GMTAPI_CTRL **API)
+int GMT_Destroy_Session (struct GMTAPI_CTRL **API)
 \end{verbatim}
 \index{GMT\_Destroy\_Session}
 which simply takes the address of the pointer to the \GMT\ API control structure as its only arguments.  It terminates the \GMT\ machinery
@@ -1343,7 +1343,7 @@ moving to the next step.  All API functions will issue an error message before r
 to the calling program.  This function is
 
 \begin{verbatim}
-long GMT_Report_Error (struct GMTAPI_CTRL *API, long error);
+int GMT_Report_Error (struct GMTAPI_CTRL *API, int error);
 \end{verbatim}
 \index{GMT\_Report\_Error}
 where \texttt{error} is the status code return by any API function.  Note: The error message is

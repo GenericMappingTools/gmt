@@ -140,7 +140,7 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 	/* Syntax: -W[+g][+k][+t<doctitle>][+n<layername>][+a<altmode>][+l<lodmin>/<lodmax>] */
 	
 	GMT_LONG error = FALSE;
-	GMT_LONG pos = 0;
+	COUNTER_MEDIUM pos = 0;
 	char txt[GMT_BUFSIZ], p[GMT_BUFSIZ];
 	
 	C->W.active = TRUE;

@@ -185,7 +185,7 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, n, pos, n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM j, n, pos, n_errors = 0, n_files = 0;
 	char flag, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], *c = NULL;
 	char txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;

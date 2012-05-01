@@ -285,7 +285,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
 	GMT_LONG flush_paragraph = FALSE, draw_vertical_line = FALSE, gave_label, gave_mapscale_options;
 	GMT_LONG dim[4] = {1, 1, 0, 2}, status = 0, object_ID, did_old = FALSE;
-
+	 
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256];
 	char txt_f[GMT_TEXT_LEN256], key[GMT_TEXT_LEN256], sub[GMT_TEXT_LEN256], tmp[GMT_TEXT_LEN256], just;
 	char symbol[GMT_TEXT_LEN256], text[GMT_BUFSIZ], image[GMT_BUFSIZ], xx[GMT_TEXT_LEN256], yy[GMT_TEXT_LEN256];
@@ -567,7 +567,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
 					char txt_cpy[GMT_BUFSIZ], p[GMT_TEXT_LEN256];
-					GMT_LONG pos = 0;
+					COUNTER_MEDIUM pos = 0;
 					strcpy (txt_cpy, opt);
 					while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 						switch (p[0]) {

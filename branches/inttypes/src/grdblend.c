@@ -116,7 +116,7 @@ GMT_LONG found_unsupported_format (struct GMT_CTRL *GMT, struct GRD_HEADER *h, c
 }
 
 void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
-	GMT_LONG i, pos, error = 0;
+	COUNTER_MEDIUM i, pos, error = 0;
 	char text[GMT_BUFSIZ];
 
 	/* Needed to decode the inner region -Rw/e/s/n string */
@@ -293,7 +293,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 		}
 		if (do_sample) {	/* One or more reasons to call grdsample before using this grid */
 			if (do_sample & 1) {	/* Resampling of the grid */
-				sprintf (buffer, "/tmp/grdblend_resampled_%ld_%ld.nc", (GMT_LONG)getpid(), n);
+				sprintf (buffer, "/tmp/grdblend_resampled_%d_%d.nc", (int)getpid(), n);
 				sprintf (cmd, "%s %s %s %s -G%s -V%ld", B[n].file, Targs, Iargs, Rargs, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
@@ -303,7 +303,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 				}
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
-				sprintf (buffer, "/tmp/grdblend_reformatted_%ld_%ld.nc", (GMT_LONG)getpid(), n);
+				sprintf (buffer, "/tmp/grdblend_reformatted_%d_%d.nc", (int)getpid(), n);
 				sprintf (cmd, "%s %s %s -V%ld", B[n].file, Rargs, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);

@@ -227,9 +227,9 @@ GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	 
 	int  ncid;
 	size_t start[1], edge[1];
-	GMT_LONG err, inc, off, check;
+	GMT_LONG err, check;
 	COUNTER_MEDIUM first_col, last_col, first_row, last_row;
-	COUNTER_MEDIUM i, j, width_in, height_in, i_0_out;
+	COUNTER_MEDIUM i, j, width_in, height_in, i_0_out, inc, off;
 	COUNTER_MEDIUM width_out, *actual_col = NULL;
 	COUNTER_LARGE ij, kk;
 	float *tmp = NULL;
@@ -296,9 +296,9 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	size_t start[1], edge[1];
 	int ncid, old_fill_mode, *tmp_i = NULL;
-	GMT_LONG err, inc = 1, off = 0;
+	GMT_LONG err;
 	COUNTER_MEDIUM i, nr_oor = 0, *actual_col = NULL;
-	COUNTER_MEDIUM j, width_out, height_out, width_in;
+	COUNTER_MEDIUM j, width_out, height_out, width_in, inc = 1, off = 0;
 	COUNTER_MEDIUM first_col, last_col, first_row, last_row;
 	COUNTER_LARGE ij; 
 	float *tmp_f = NULL;

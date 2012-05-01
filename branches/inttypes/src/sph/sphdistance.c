@@ -231,9 +231,9 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 
 GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, first = FALSE;
+	GMT_LONG error = FALSE, first = FALSE, s_row, n_row, w_col, e_col;
 
-	COUNTER_MEDIUM row, col, n_dup = 0, n_set = 0, ii, s_row, n_row, w_col, e_col, side;
+	COUNTER_MEDIUM row, col, n_dup = 0, n_set = 0, ii, side;
 	COUNTER_MEDIUM nx1, vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
 	
 	COUNTER_LARGE ij, node, n = 0;

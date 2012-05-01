@@ -1042,14 +1042,14 @@ void ComputeRasterMinMax(struct GMT_CTRL *C, unsigned char *tmp, GDALRasterBandH
 
 /* -------------------------------------------------------------------- */
 int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *whichBands, GMT_LONG n_col) {
-	GMT_LONG n = 0, i, start, stop, pos = 0;
-	char p[1024];
+	COUNTER_MEDIUM n = 0, i, start, stop, pos = 0;
+	char p[GMT_BUFSIZ];
 
 	while ((GMT_strtok (txt, ",", &pos, p))) {
 		if (strchr (p, '-'))
-			sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
+			sscanf (p, "%d-%d", &start, &stop);
 		else {
-			sscanf (p, "%" GMT_LL "d", &start);
+			sscanf (p, "%d", &start);
 			stop = start;
 		}
 		stop = MIN (stop, n_col);

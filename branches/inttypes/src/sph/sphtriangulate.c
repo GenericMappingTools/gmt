@@ -175,8 +175,8 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 {	/* Prints out the Voronoi polygons either as polygons (for filling) or arcs (lines) */
 	GMT_LONG do_authalic;
 	
-	COUNTER_MEDIUM i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last;
-	GMT_LONG dim[4] = {1, 0, 0, 0}, vertex_last, n_arcs = 0;
+	COUNTER_MEDIUM i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
+	GMT_LONG dim[4] = {1, 0, 0, 0};
 	size_t n_alloc = GMT_CHUNK, p_alloc = GMT_TINY_CHUNK;
 	
 	char segment_header[GMT_BUFSIZ];
@@ -270,10 +270,10 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 			S[0] = Dout[0]->table[0]->segment[node];	/* Local shorthand to current output segment */
 			if (get_area) {
 				area_km2 = area_polygon * R2;	/* Get correct area units */
-				sprintf (segment_header, "Pol: %ld %g %g Area: %g", node, lon[node], lat[node], area_km2);
+				sprintf (segment_header, "Pol: %d %g %g Area: %g", node, lon[node], lat[node], area_km2);
 			}
 			else
-				sprintf (segment_header, "Pol: %ld %g %g", node, lon[node], lat[node]);
+				sprintf (segment_header, "Pol: %d %g %g", node, lon[node], lat[node]);
 			
 			if (nodes) {	/* Also output node info via S[1] */
 				S[1]->coord[GMT_X][node] = lon[node];

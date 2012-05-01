@@ -27,7 +27,7 @@ enum GMT_enum_inside {
 
 /* Here are definition of MATH_MACRO and some functions used by grdmath and gmtmath */
 struct MATH_MACRO {
-	GMT_LONG n_arg;	/* How many commands this macro represents */
+	COUNTER_MEDIUM n_arg;	/* How many commands this macro represents */
 	char *name;	/* The macro name */
 	char **arg;	/* List of those commands */
 };
@@ -62,7 +62,7 @@ struct MATH_MACRO {
 
 struct MEMORY_ITEM {
 	size_t size;	/* Size of memory allocated */
-	GMT_LONG line;	/* Line number where things were initially allocated */
+	COUNTER_MEDIUM line;	/* Line number where things were initially allocated */
 	void *ptr;	/* Memory pointer */
 #ifdef NEW_DEBUG
 	char *name;	/* File name */
@@ -73,8 +73,8 @@ struct MEMORY_ITEM {
 };
 
 struct MEMORY_TRACKER {
-	GMT_LONG active;	/* Normally TRUE but can be changed to focus on just some allocations */
-	GMT_LONG search;	/* Normally TRUE but can be changed to skip searching when we know we add a new item */
+	BOOLEAN active;	/* Normally TRUE but can be changed to focus on just some allocations */
+	BOOLEAN search;	/* Normally TRUE but can be changed to skip searching when we know we add a new item */
 	COUNTER_LARGE n_ptr;		/* Number of unique pointers to allocated memory */
 	COUNTER_LARGE n_allocated;	/* Number of items allocated by GMT_memory */
 	COUNTER_LARGE n_reallocated;	/* Number of items reallocated by GMT_memory */

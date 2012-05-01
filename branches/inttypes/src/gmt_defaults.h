@@ -81,7 +81,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	char format_time_logo[GMT_TEXT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
 	/* GMT group */
 	GMT_LONG fft;				/* -1 for auto, or 0-4 for specific FFT algorithm */
-	GMT_LONG history;			/* TRUE to pass information via gmt.conf files */
+	BOOLEAN history;			/* TRUE to pass information via gmt.conf files */
 	GMT_LONG interpolant;			/* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
 	GMT_LONG triangulate;			/* 0 for Watson [Default], 1 for Shewchuk (if configured) */
 	GMT_LONG verbose;			/* Level of verbosity 0-4 [1] */
@@ -89,14 +89,14 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	char io_col_separator[8];		/* Separator between output ascii data columns [tab] */
 	char io_gridfile_format[GMT_TEXT_LEN64];	/* Default grid file format */
 	char io_seg_marker[2];			/* Character used to recognize and write segment headers [>,>] */
-	GMT_LONG io_gridfile_shorthand;		/* Use shorthand suffix notation for embedded grid file formats [FALSE] */
-	GMT_LONG io_header[2];			/* Input & Output data has header records [FALSE, FALSE] */
+	BOOLEAN io_gridfile_shorthand;		/* Use shorthand suffix notation for embedded grid file formats [FALSE] */
+	BOOLEAN io_header[2];			/* Input & Output data has header records [FALSE, FALSE] */
 	GMT_LONG io_n_header_items;		/* number of header records [0] */
 	GMT_LONG io_nan_records;		/* Determines what NaNs in input records should mean (beyond skipping the record) */
 	GMT_LONG io_nan_mode;			/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
-	GMT_LONG io_lonlat_toggle[2];		/* TRUE means read/write I/O as lat/lon instead of lon/lat [FALSE,FALSE] */
-	GMT_LONG io_blankline[2];		/* TRUE means blank lines should be treated as segment breaks [FALSE,FALSE] */
-	GMT_LONG io_nanline[2];			/* TRUE means lines with all NaNs should be treated as segment breaks [FALSE,FALSE] */
+	BOOLEAN io_lonlat_toggle[2];		/* TRUE means read/write I/O as lat/lon instead of lon/lat [FALSE,FALSE] */
+	BOOLEAN io_blankline[2];		/* TRUE means blank lines should be treated as segment breaks [FALSE,FALSE] */
+	BOOLEAN io_nanline[2];			/* TRUE means lines with all NaNs should be treated as segment breaks [FALSE,FALSE] */
 	/* MAP group */
 	double map_annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [5p/5p] */
 	double map_annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
@@ -113,7 +113,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	double map_title_offset;		/* Distance between lowermost annotation (or label) and base of plot title [14p] */
 	double map_vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
 	GMT_LONG map_annot_oblique;		/* Controls annotations and tick angles etc. [0] */
-	GMT_LONG map_logo;			/* Plot time and map projection on map [FALSE] */
+	BOOLEAN map_logo;			/* Plot time and map projection on map [FALSE] */
 	GMT_LONG map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */
@@ -139,9 +139,9 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 #ifdef GMT_COMPAT
 	GMT_LONG ps_copies;			/* How man copies of each plot [>=1] */
 #endif
-	GMT_LONG ps_orientation;			/* Orientation of page [FALSE = Landscape, TRUE = Portrait] */
+	BOOLEAN ps_orientation;			/* Orientation of page [FALSE = Landscape, TRUE = Portrait] */
 	GMT_LONG ps_media;			/* Default paper media [25(Letter)] */
-	GMT_LONG ps_comments;			/* TRUE if we write comments in the PS file */
+	BOOLEAN ps_comments;			/* TRUE if we write comments in the PS file */
 	char ps_transpmode[16];			/* Transparency mode for PDF only */
 	struct gmt_encoding ps_encoding;
 	/* TIME group */

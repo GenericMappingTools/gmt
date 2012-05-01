@@ -48,9 +48,9 @@
 
 #include <limits.h>
 
-#include "common_string.h"
 #include "gmt_notposix.h"
 #include "gmt_types.h"
+#include "common_string.h"
 
 #define BUF_SIZE 4096
 
@@ -156,7 +156,7 @@ size_t GMT_strlcmp (char *str1, char *str2)
 	return i;
 }
 
-GMT_LONG GMT_strtok (const char *string, const char *sep, GMT_LONG *pos, char *token)
+GMT_LONG GMT_strtok (const char *string, const char *sep, COUNTER_MEDIUM *pos, char *token)
 {
 	/* Reentrant replacement for strtok that uses no static variables.
 	 * Breaks string into tokens separated by one of more separator
@@ -168,7 +168,7 @@ GMT_LONG GMT_strtok (const char *string, const char *sep, GMT_LONG *pos, char *t
 	 * string is not changed by GMT_strtok.
 	 */
 
-	GMT_LONG i, j, string_len;
+	size_t i, j, string_len;
 
 	string_len = strlen (string);
 
@@ -197,7 +197,7 @@ GMT_LONG GMT_strtok (const char *string, const char *sep, GMT_LONG *pos, char *t
  */
 void DOS_path_fix (char *dir)
 {
-	GMT_LONG k, n;
+	size_t k, n;
 
 	if (!dir)
 		return; /* Given NULL */
@@ -379,4 +379,3 @@ int match_string_in_file (const char *filename, const char *string) {
 	/* string not found in file */
 	return false;
 }
-

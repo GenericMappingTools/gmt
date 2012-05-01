@@ -1464,7 +1464,7 @@ GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LA
 	char *x_type = NULL;
 	size_t n_alloc = 0, n_x_alloc = 0;
 	COUNTER_LARGE i, n_get, n, m, n_cross = 0, *x_index = NULL;
-	GMT_LONG new_n, range, j, np;
+	COUNTER_MEDIUM new_n, range, j, np;
 	GMT_LONG polygon, jump = FALSE, curved, way, side, in = 1, out = 0, cross = 0, periodic = FALSE;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
 	double x1, x2, y1, y2;

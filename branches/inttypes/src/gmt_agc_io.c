@@ -37,10 +37,10 @@
 
 /* Public Functions:
 
-GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
-GMT_LONG GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
-GMT_LONG GMT_agc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
-GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
+int GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
+int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_agc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
 GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
 
 Private Functions used by the public functions:
@@ -257,12 +257,12 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	for (block = 0; block < n_blocks; block++) {
 		if (ReadRecord (fp, z)) return (GMT_GRDIO_READ_FAILED);
 		rowstart = datablockrow * ZBLOCKHEIGHT;
-		rowend = MIN (rowstart + ZBLOCKHEIGHT, header->ny);
+		rowend = MIN (rowstart + ZBLOCKHEIGHT, (COUNTER_MEDIUM)header->ny);
 		for (i = 0, row = rowstart; row < rowend; i++, row++) {
 			j_gmt = header->ny - 1 - row;	/* GMT internal row number */
 			if (j_gmt < first_row || j_gmt > last_row) continue;
 			colstart = datablockcol * ZBLOCKWIDTH;
-			colend = MIN (colstart + ZBLOCKWIDTH, header->nx);
+			colend = MIN (colstart + ZBLOCKWIDTH, (COUNTER_MEDIUM)header->nx);
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
 				ij = (((j_gmt - first_row) + pad[YHI]) * width_out + inc * (col - first_col)) + i_0_out;
@@ -364,12 +364,12 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {
 		rowstart = datablockrow * ZBLOCKHEIGHT;
-		rowend = MIN (rowstart + ZBLOCKHEIGHT, header->ny);
+		rowend = MIN (rowstart + ZBLOCKHEIGHT, (COUNTER_MEDIUM)header->ny);
 		for (i = 0, row = rowstart; row < rowend; i++, row++) {
 			j_gmt = header->ny - 1 - row;	/* GMT internal row number */
 			if (j_gmt < first_row || j_gmt > last_row) continue;
 			colstart = datablockcol * ZBLOCKWIDTH;
-			colend = MIN (colstart + ZBLOCKWIDTH, header->nx);
+			colend = MIN (colstart + ZBLOCKWIDTH, (COUNTER_MEDIUM)header->nx);
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
 				ij = ((j_gmt - first_row) + pad[YHI]) * width_in + (col - first_col) + pad[XLO];
