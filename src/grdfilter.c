@@ -113,7 +113,7 @@ struct FILTER_INFO {
 	double *x, *y;		/* Distances in original units along x and y to distance nodes */
 	double par[5];		/* [0] is filter width, [1] is 0.5*filter_width, [2] is xscale, [3] is yscale, [4] is 1/r_half for filter */
 	double x_off, y_off;	/* Offsets relative to original grid */
-	char *visit;		/* BOOLEAN array to keep track of which longitude nodes we have already visited once */
+	char *visit;		/* TRUE/FALSE array to keep track of which longitude nodes we have already visited once */
 	PFD weight_func, radius_func;
 };
 

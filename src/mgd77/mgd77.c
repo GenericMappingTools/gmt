@@ -1339,7 +1339,7 @@ static int MGD77_Read_Data_Record_m77t (struct GMT_CTRL *C, struct MGD77_CONTROL
 static int MGD77_Read_Data_Record_txt (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single tabular MGD77 record */
 {
 	int j, n9, nwords, k, yyyy, mm, dd;
-	GMT_LONG pos, i;
+	COUNTER_MEDIUM pos, i;
 	GMT_LONG rata_die;
 	char line[GMT_BUFSIZ], p[GMT_BUFSIZ];
 	double tz, secs;
@@ -2980,7 +2980,8 @@ int MGD77_Write_Data_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct
 
 void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE *ufp)
 {
-	GMT_LONG i, k, pos, ix, iy, w, e, s, n, n_block, kind = 0, ref_field_code, y, yr1, rfStart, yr2, rfEnd;
+	GMT_LONG i, k, ix, iy, w, e, s, n, n_block, kind = 0, ref_field_code, y, yr1, rfStart, yr2, rfEnd;
+	COUNTER_MEDIUM pos;
 	char copy[151], p[GMT_TEXT_LEN64], text[GMT_TEXT_LEN64];
 	char *pscode[5] = {"Bathy", "Magnetics", "Gravity", "3.5 kHz", "Seismics"};
 	time_t now;
@@ -3826,8 +3827,8 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 	 */
 
 	char p[GMT_BUFSIZ], cstring[GMT_BUFSIZ], bstring[GMT_BUFSIZ], word[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
-	int j, k, constraint, n;
-	GMT_LONG pos, i;
+	int j, k, i, constraint, n;
+	COUNTER_MEDIUM pos;
 	GMT_LONG exact, all_exact;
 
 	/* Special test for keywords mgd77 and all */
@@ -5389,7 +5390,8 @@ GMT_LONG MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruis
 	 * time, dist, heading) are needed.
 	 */
 
-	GMT_LONG cruise_id, id, n_list = 0, rec = 0, pos, sorted;
+	COUNTER_MEDIUM n_list = 0, rec = 0, pos;
+	GMT_LONG sorted, id, cruise_id;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
 	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
@@ -5487,7 +5489,8 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 	 * cruise abbrev term_1 term_2 ... term_n
 	 */
 
-	GMT_LONG cruise_id, id, i, n_aux, rec = 0, pos, sorted, mgd77;
+	COUNTER_MEDIUM i, n_aux, rec = 0, pos;
+	GMT_LONG id, cruise_id, sorted, mgd77;
 	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
 	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
 	struct MGD77_CORRTABLE **C_table = NULL;

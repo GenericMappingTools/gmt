@@ -486,7 +486,8 @@ GMT_LONG count_slashes (char *txt)
 
 GMT_LONG parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 {
-	GMT_LONG i, j, n_tokens, pos, descending;
+	COUNTER_MEDIUM i, j, n_tokens, pos;
+	GMT_LONG descending;
 	double fourvals[4];
 	char line[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
 	

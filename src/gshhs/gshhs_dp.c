@@ -57,13 +57,13 @@ void *get_memory (void *prev_addr, size_t n, size_t size, char *progname)
 
 	if (prev_addr) {
 		if ((tmp = realloc ( prev_addr, n * size)) == NULL) {
-			fprintf (stderr, "Error: %s could not reallocate more memory, n = %d\n", progname, n);
+			fprintf (stderr, "Error: %s could not reallocate more memory, n = %zu\n", progname, n);
 			exit (EXIT_FAILURE);
 		}
 	}
 	else {
 		if ((tmp = calloc (n, size)) == NULL) {
-			fprintf (stderr, "Error: %s could not allocate memory, n = %d\n", progname, n);
+			fprintf (stderr, "Error: %s could not allocate memory, n = %zu\n", progname, n);
 			exit (EXIT_FAILURE);
 		}
 	}

@@ -69,8 +69,8 @@ struct GMT_GRDFILE {
 	size_t size;		/* Bytes per item */
 	size_t n_byte;		/* Number of bytes for row */
 	GMT_LONG row;		/* Current row */
-	GMT_LONG check;		/* TRUE if we must replace NaNs with another representation on i/o */
-	GMT_LONG auto_advance;	/* TRUE if we want to read file sequentially */
+	BOOLEAN check;		/* TRUE if we must replace NaNs with another representation on i/o */
+	BOOLEAN auto_advance;	/* TRUE if we want to read file sequentially */
 
 	int fid;		/* NetCDF file number */
 	size_t edge[2];		/* Dimension arrays for netCDF files */

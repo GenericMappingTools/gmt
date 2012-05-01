@@ -481,9 +481,9 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 	 
 	size_t start[5] = {0,0,0,0,0}, edge[5] = {1,1,1,1,1};
 	int ncid, ndims;
-	GMT_LONG check, inc, off, err;
+	GMT_LONG check, err;
 	COUNTER_MEDIUM first_col, last_col, first_row, last_row, *actual_col = NULL;
-	COUNTER_MEDIUM i, j, width_in, width_out, height_in, i_0_out;
+	COUNTER_MEDIUM i, j, width_in, width_out, height_in, i_0_out, inc, off;
 	size_t ij, kk;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp = NULL;
 
@@ -564,8 +564,8 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	 */
 
 	size_t start[2] = {0,0}, edge[2] = {1,1};
-	GMT_LONG inc, off, err;
-	COUNTER_MEDIUM i, j, width_in, width_out, height_out, nr_oor = 0;
+	GMT_LONG err;
+	COUNTER_MEDIUM i, j, width_in, width_out, height_out, nr_oor = 0, inc, off;
 	COUNTER_MEDIUM first_col, last_col, first_row, last_row, *actual_col = NULL;
 	size_t ij, node;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp_f = NULL;

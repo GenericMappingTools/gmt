@@ -103,7 +103,7 @@ void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx,
 	if (nn > 0) PSL_comment (PSL, "End of clip path sub-segment %ld\n", id);
 }
 
-GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, GMT_LONG *edge, struct GRD_HEADER *h, double inc2[], double **xx, double **yy, GMT_LONG i, GMT_LONG j, GMT_LONG kk, COUNTER_LARGE *max)
+GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, COUNTER_MEDIUM *edge, struct GRD_HEADER *h, double inc2[], double **xx, double **yy, GMT_LONG i, GMT_LONG j, GMT_LONG kk, COUNTER_LARGE *max)
 {
 	GMT_LONG k, k0, n_cuts, kk_opposite, first_k, more;
 	COUNTER_LARGE n = 1, edge_word, edge_bit, ij, ij0, m;
@@ -226,7 +226,7 @@ GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 	return (n);
 }
 
-GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GRD_HEADER *h, double inc2[], GMT_LONG *edge, GMT_LONG first, double **x, double **y, COUNTER_LARGE *max)
+GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GRD_HEADER *h, double inc2[], COUNTER_MEDIUM *edge, GMT_LONG first, double **x, double **y, COUNTER_LARGE *max)
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
@@ -234,7 +234,8 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	 */
 	 
 	static GMT_LONG i0, j0, side;
-	GMT_LONG ij, i, j, n = 0, n_edges, edge_word, edge_bit, go_on = TRUE;
+	GMT_LONG ij, i, j, n = 0, n_edges, edge_word, edge_bit;
+	GMT_LONG go_on = TRUE;
 	 
 	 
 	n_edges = h->ny * lrint (ceil (h->nx / 16.0));
@@ -493,10 +494,10 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG k, row, col, n_edges, *d_col = NULL, d_row = 0, ii, jj, make_plot;
-	GMT_LONG section, closed, io_mode = 0, max_d_col = 0;
-	GMT_LONG error = FALSE, first = TRUE, node_only;
-	GMT_LONG fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
+	GMT_LONG k, row, col, n_edges, *d_col = NULL, d_row = 0, ii, jj;
+	GMT_LONG fmt[3] = {0, 0, 0}, section, closed, io_mode = 0, max_d_col = 0;
+	GMT_LONG error = FALSE, first = TRUE, node_only, make_plot;
+	COUNTER_MEDIUM cont_counts[2] = {0, 0}, *edge = NULL;
 	
 	COUNTER_LARGE ij, n_points, n_seg = 0, n_read, n;
 	
@@ -703,7 +704,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			x = GMT_memory (GMT, NULL, GMT_CHUNK, double);
 			y = GMT_memory (GMT, NULL, GMT_CHUNK, double);
 
-			n_edges = Grid->header->ny * (GMT_LONG )ceil (Grid->header->nx / 16.0);
+			n_edges = Grid->header->ny * lrint (ceil (Grid->header->nx / 16.0));
 			edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);
 
 			if (make_plot) GMT_map_basemap (GMT);

@@ -122,15 +122,15 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	GMT_LONG prev_x_status;
 	GMT_LONG prev_y_status;
 	GMT_LONG corner;
-	GMT_LONG on_border_is_outside;		/* TRUE if a point exactly on the map border shoud be considered outside the map */
-	GMT_LONG is_world;			/* TRUE if map has 360 degrees of longitude range */
-	GMT_LONG is_world_tm;			/* TRUE if GMT_TM map is global? */
-	GMT_LONG lon_wrap;			/* TRUE when longitude wrapping over 360 degrees is allowed */
-	GMT_LONG meridian_straight;		/* TRUE if meridians plot as straight lines */
-	GMT_LONG parallel_straight;		/* TRUE if parallels plot as straight lines */
+	BOOLEAN on_border_is_outside;		/* TRUE if a point exactly on the map border shoud be considered outside the map */
+	BOOLEAN is_world;			/* TRUE if map has 360 degrees of longitude range */
+	BOOLEAN is_world_tm;			/* TRUE if GMT_TM map is global? */
+	BOOLEAN lon_wrap;			/* TRUE when longitude wrapping over 360 degrees is allowed */
+	BOOLEAN meridian_straight;		/* TRUE if meridians plot as straight lines */
+	BOOLEAN parallel_straight;		/* TRUE if parallels plot as straight lines */
+	BOOLEAN z_periodic;			/* TRUE if grid values are 0-360 degrees (phases etc) */
 	GMT_LONG n_lon_nodes;			/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
 	GMT_LONG n_lat_nodes;			/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
-	GMT_LONG z_periodic;			/* TRUE if grid values are 0-360 degrees (phases etc) */
 	GMT_LONG path_mode;			/* 0 if we should call GMT_fix_up_path to resample across gaps > path_step, 1 to leave alone */
 	double width;				/* Full width in inches of this world map */
 	double height;				/* Full height in inches of this world map */
@@ -218,8 +218,8 @@ struct GMT_SESSION {
 	FILE *std[3];			/* Pointers for standard input, output, and error */
 	PFP input_ascii;		/* Pointer to function reading ascii tables only */
 	PFL output_ascii;		/* Pointer to function writing ascii tables only */
-	GMT_LONG n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
-	GMT_LONG n_user_media;		/* Total number of user media returned by gmt_load_user_media */
+	n_fonts n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
+	n_user_media n_user_media;	/* Total number of user media returned by gmt_load_user_media */
 	size_t min_meminc;		/* DEBUG, sets min/max memory increments */
 	size_t max_meminc;
 	float f_NaN;			/* Holds the IEEE NaN for floats */
@@ -228,7 +228,7 @@ struct GMT_SESSION {
 	double u2u[4][4];		/* u2u is the 4x4 conversion matrix for cm, inch, m, pt */
 	char unit_name[4][8];		/* Full name of the 4 units cm, inch, m, pt */
 	struct GMT_HASH rgb_hashnode[GMT_N_COLOR_NAMES];/* Used to translate colornames to r/g/b */
-	GMT_LONG n_shorthands;			/* Length of arrray with shorthand information */
+	COUNTER_MEDIUM n_shorthands;			/* Length of arrray with shorthand information */
 	GMT_LONG grdcode[GMT_N_GRD_FORMATS];	/* Old (obsolete) grid ID code */
 	char *grdformat[GMT_N_GRD_FORMATS];	/* Type and description of grid format */
 	PFL readinfo[GMT_N_GRD_FORMATS];	/* Pointers to grid read header functions */

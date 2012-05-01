@@ -1177,7 +1177,8 @@ GMT_LONG GMT_check_region (struct GMT_CTRL *C, double wesn[])
 }
 
 GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
-	GMT_LONG i, icol, pos, got, col_type[2], expect_to_read, error = 0;
+	COUNTER_MEDIUM i, icol, pos, error = 0;
+	GMT_LONG got, col_type[2], expect_to_read;
 	char text[GMT_BUFSIZ], string[GMT_BUFSIZ];
 	double p[6];
 
@@ -1285,7 +1286,8 @@ GMT_LONG gmt_parse_XY_option (struct GMT_CTRL *C, GMT_LONG axis, char *text)
 
 GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 {	/* -a<col>=<name>[:<type>][,<col>...][+g|G<geometry>] */
-	GMT_LONG col, pos = 0;
+	COUNTER_MEDIUM pos = 0;
+	GMT_LONG col;
 	char p[GMT_BUFSIZ], name[GMT_BUFSIZ], A[64], *s = NULL, *c = NULL;
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -a requires an argument */
 	if ((s = strstr (arg, "+g")) || (s = strstr (arg, "+G"))) {	/* Also got +g|G<geometry> */
@@ -1496,8 +1498,8 @@ GMT_LONG gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 	/* Routine will decode the -f[i|o]<col>|<colrange>[t|T|g],... arguments */
 
 	char copy[GMT_BUFSIZ], p[GMT_BUFSIZ], *c = NULL;
-	GMT_LONG i, k = 1, start = -1, stop = -1, ic, pos = 0, code, *col = NULL;
-	GMT_LONG both_i_and_o = FALSE;
+	COUNTER_MEDIUM i, k = 1, ic, pos = 0, code;
+	GMT_LONG start = -1, stop = -1, both_i_and_o = FALSE, *col = NULL;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -f requires an argument */
 
@@ -1582,7 +1584,8 @@ GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 #ifdef GMT_COMPAT
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 #endif
-	GMT_LONG i, k = 0, start = -1, stop = -1, pos = 0, convert;
+	COUNTER_MEDIUM i, k = 0, pos = 0;
+	GMT_LONG start = -1, stop = -1, convert;
 	double scale, offset;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -i requires an argument */
@@ -1646,7 +1649,8 @@ GMT_LONG gmt_parse_o_option (struct GMT_CTRL *C, char *arg)
 	/* Routine will decode the -o<col>|<colrange>,... arguments */
 
 	char copy[GMT_BUFSIZ], p[GMT_BUFSIZ], *c = NULL;
-	GMT_LONG i, k = 0, start = -1, stop = -1, pos = 0;
+	COUNTER_MEDIUM k = 0, pos = 0;
+	int i, start = -1, stop = -1;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -o requires an argument */
 
@@ -1655,7 +1659,7 @@ GMT_LONG gmt_parse_o_option (struct GMT_CTRL *C, char *arg)
 
 	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((c = strchr (p, '-')))	/* Range of columns given. e.g., 7-9 */
-			sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
+			sscanf (p, "%d-%d", &start, &stop);
 		else if (isdigit ((int)p[0]))	/* Just a single column, e.g., 3 */
 			start = stop = atoi (p);
 		else				/* Just assume it goes column by column */
@@ -2112,7 +2116,7 @@ GMT_LONG gmt_parse_n_option (struct GMT_CTRL *C, char *item)
 
 GMT_LONG gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 {
-	GMT_LONG k, l = 0, s, pos = 0, error = 0;
+	COUNTER_MEDIUM k, l = 0, s, pos = 0, error = 0;
 	double az, el, z;
 	char p[GMT_TEXT_LEN256], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 
@@ -2185,8 +2189,8 @@ GMT_LONG gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 }
 
 GMT_LONG gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
-	GMT_LONG error = 0, i, n, start = 0, stop = 0, pos = 0, tmp[GMT_MAX_COLUMNS];
-	char p[GMT_BUFSIZ], *c = NULL;
+	COUNTER_MEDIUM error = 0, i, n, start = 0, stop = 0, pos = 0;
+	char p[GMT_BUFSIZ], *c = NULL, tmp[GMT_MAX_COLUMNS];
 	/* Parse the -s option.  Full syntax: -s[<cols>][r|a] */
 
 	GMT_memset (C->current.io.io_nan_col, GMT_MAX_COLUMNS, GMT_LONG);
@@ -2202,7 +2206,7 @@ GMT_LONG gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) tmp[i] = -1;
 	while (!error && (GMT_strtok (item, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((c = strchr (p, '-')))	/* Range of columns given. e.g., 7-9 */
-			sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
+			sscanf (p, "%d-%d", &start, &stop);
 		else if (isdigit ((int)p[0]))	/* Just a single column, e.g., 3t */
 			start = stop = atoi (p);
 		else				/* Unable to decode */
@@ -2508,7 +2512,7 @@ GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified m
 GMT_LONG gmt_load_encoding (struct GMT_CTRL *C)
 {
 	char line[GMT_TEXT_LEN256], symbol[GMT_TEXT_LEN256];
-	GMT_LONG code = 0, pos;
+	COUNTER_MEDIUM code = 0, pos;
 	FILE *in = NULL;
 	struct gmt_encoding *enc = &C->current.setting.ps_encoding;
 
@@ -2591,13 +2595,13 @@ GMT_LONG gmt_decode_wesnz (struct GMT_CTRL *C, const char *in, GMT_LONG side[], 
 
 void gmt_parse_format_float_out (struct GMT_CTRL *C, char *value)
 {
-	GMT_LONG pos = 0, col = 0, start = 0, stop = 0, k, error = 0;
+	COUNTER_MEDIUM pos = 0, col = 0, start = 0, stop = 0, k, error = 0;
 	char fmt[GMT_TEXT_LEN64], *p = NULL;
 	/* Look for multiple comma-separated format statements of type [<cols>:]<format> */
 	while ((GMT_strtok (value, ",", &pos, fmt))) {
 		if ((p = strchr (fmt, ':'))) {	/* Must decode which columns */
 			if (strchr (fmt, '-'))	/* Range of columns given. e.g., 7-9 */
-				sscanf (fmt, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
+				sscanf (fmt, "%d-%d", &start, &stop);
 			else if (isdigit ((int)fmt[0]))	/* Just a single column, e.g., 3 */
 				start = stop = atoi (fmt);
 			else				/* Something bad */
@@ -2617,7 +2621,8 @@ void gmt_parse_format_float_out (struct GMT_CTRL *C, char *value)
 
 GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 {
-	GMT_LONG i, ival, case_val, pos, manual, len, error = FALSE;
+	COUNTER_MEDIUM pos, len;
+	GMT_LONG i, ival, case_val, manual, error = FALSE;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], lower_value[GMT_BUFSIZ];
 	
 	double dval;
@@ -6659,7 +6664,8 @@ GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 {
 	/* Parser for -Sv|V, -S=, and -Sm */
 	
-	GMT_LONG pos = 0, k, j, error = 0, len, p_opt = FALSE, g_opt = FALSE;
+	COUNTER_MEDIUM pos = 0, k, error = 0, len;
+	GMT_LONG p_opt = FALSE, g_opt = FALSE, j;
 	char p[GMT_BUFSIZ];
 	
 	S->v.pen = C->current.setting.map_default_pen;
@@ -6748,7 +6754,8 @@ GMT_LONG GMT_parse_front (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 {
 	/* Parser for -Sf */
 	
-	GMT_LONG pos = 0, k, error = 0, mods;
+	COUNTER_MEDIUM pos = 0, k, error = 0;
+	GMT_LONG mods;
 	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	
 	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
@@ -7728,7 +7735,7 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 	return (error);
 }
 
-GMT_LONG gmt_scanf_epoch (struct GMT_CTRL *C, char *s, GMT_LONG *rata_die, double *t0) {
+GMT_LONG gmt_scanf_epoch (struct GMT_CTRL *C, char *s, int64_t *rata_die, double *t0) {
 
 	/* Read a string which must be in one of these forms:
 		[-]yyyy-mm-dd[T| [hh:mm:ss.sss]]
@@ -7739,7 +7746,8 @@ GMT_LONG gmt_scanf_epoch (struct GMT_CTRL *C, char *s, GMT_LONG *rata_die, doubl
 	*/
 
 	double ss = 0.0;
-	GMT_LONG i, yy, mo, dd, hh = 0, mm = 0, rd;
+	GMT_LONG i, yy, mo, dd, hh = 0, mm = 0;
+	int64_t rd;
 	char tt[8];
 
 	i = 0;

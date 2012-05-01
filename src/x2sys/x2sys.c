@@ -382,8 +382,7 @@ GMT_LONG x2sys_pick_fields (struct GMT_CTRL *C, char *string, struct X2SYS_INFO 
 	 */
 
 	char line[GMT_BUFSIZ], p[GMT_BUFSIZ];
-	GMT_LONG i = 0, j;
-	GMT_LONG pos = 0;
+	COUNTER_MEDIUM i = 0, j, pos = 0;
 
 	strncpy (s->fflags, string, (size_t)GMT_BUFSIZ);
 	strncpy (line, string, (size_t)GMT_BUFSIZ);	/* Make copy for later use */
@@ -467,7 +466,8 @@ double *x2sys_dummytimes (struct GMT_CTRL *C, GMT_LONG n)
 
 GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G)
 {
-	GMT_LONG j, k, i, n_read = 0, pos, error = FALSE;
+	GMT_LONG error = FALSE;
+	COUNTER_MEDIUM j, k, i, n_read = 0, pos;
 	char line[GMT_BUFSIZ], buffer[GMT_TEXT_LEN64], p[GMT_BUFSIZ], c;
 	unsigned char u;
 	short int h;
@@ -781,7 +781,7 @@ GMT_LONG x2sys_read_mgd77file (struct GMT_CTRL *C, char *fname, double ***data, 
 GMT_LONG get_first_year (struct GMT_CTRL *C, double t)
 {
 	/* obtain yyyy/mm/dd and return year */
-	GMT_LONG rd;
+	int64_t rd;
 	double s;
 	struct GMT_gcal CAL;
 	GMT_dt2rdc (C, t, &rd, &s);
@@ -978,7 +978,8 @@ void x2sys_free_list (struct GMT_CTRL *C, char **list, GMT_LONG n)
 GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, struct GMT_IO *G)
 {
 	char tag_file[GMT_BUFSIZ], line[GMT_BUFSIZ], p[GMT_BUFSIZ], sfile[GMT_BUFSIZ], suffix[16], unit[2][2];
-	GMT_LONG geodetic = 0, n, k, dist_flag = 0, pos = 0;
+	COUNTER_MEDIUM n, k, pos = 0;
+	GMT_LONG geodetic = 0, dist_flag = 0;
 	GMT_LONG geographic = FALSE, n_given[2] = {FALSE, FALSE}, c_given = FALSE;
 	double dist;
 	FILE *fp = NULL;
@@ -1517,7 +1518,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 			sscanf (&line[2], "%*s %*s %s %*s %*s %*s %*s %*s %*s %*s %s", kind, txt);	/* Get first column name after lon/x etc */
 			if (strchr (txt, '_')) {	/* A column name with underscore; we thus assume this is the correct record */
 				char ptr[GMT_BUFSIZ];
-				GMT_LONG pos = 0, item = 0;
+				COUNTER_MEDIUM pos = 0, item = 0;
 				no_time = !strcmp (kind, "i_1");	/* No time in this database */
 				if (txt[strlen(txt)-1] == '1') two_values = TRUE;	/* Option -2 was used */
 				while (our_item == -1 && (GMT_strtok (&line[2], " \t", &pos, ptr))) {    /* Process all tokens */

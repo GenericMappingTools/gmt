@@ -490,7 +490,7 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 
 GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG rec_no, char *record, char buffer[])
 {	/* Parse x,y [and z], check for validity, and return the rest of the text in buffer */
-	GMT_LONG ix, iy, nscan;
+	COUNTER_MEDIUM ix, iy, nscan;
 	char txt_x[GMT_TEXT_LEN256], txt_y[GMT_TEXT_LEN256], txt_z[GMT_TEXT_LEN256];
 
 	if (has_z) {	/* Expect z in 3rd column */
@@ -522,10 +522,10 @@ GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG
 GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pstext task */
 
-	GMT_LONG fmode, old_is_world;
+	GMT_LONG fmode, old_is_world, nscan;
 	GMT_LONG error = FALSE, master_record = FALSE, skip_text_records = FALSE;
 	
-	COUNTER_MEDIUM i, nscan, length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
+	COUNTER_MEDIUM i, length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
 	COUNTER_MEDIUM n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
 	
 	size_t n_alloc = 0;

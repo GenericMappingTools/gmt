@@ -219,10 +219,10 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG bad_sections = FALSE, custom_min_speed = FALSE, do_regression = TRUE, dist_to_coast = FALSE;
 	GMT_LONG custom_warn = FALSE, warn[MGD77_N_WARN_TYPES], report_raw = FALSE;
 	GMT_LONG decimateData = TRUE, forced = FALSE, adjustData = FALSE, flip_flags = FALSE;
-	GMT_LONG argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
-	GMT_LONG dtc_index = 0, pos = 0;
+	COUNTER_MEDIUM argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
+	COUNTER_MEDIUM dtc_index = 0, pos = 0;
 
-	unsigned int MGD77_this_bit[32], n_types[N_ERROR_CLASSES], n_bad_sections = 0;
+	COUNTER_MEDIUM MGD77_this_bit[32], n_types[N_ERROR_CLASSES], n_bad_sections = 0;
 
 	double time_factor = 1.0, distance_factor = 1.0, maxTime, west=0.0, east=0.0, north=0.0, south=0.0, adjustDC[32];
 	double test_slope[5] = {0.1, 10.0, MGD77_METERS_PER_FATHOM, MGD77_FATHOMS_PER_METER}, adjustScale[32];

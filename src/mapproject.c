@@ -405,11 +405,13 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 
 GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG k, x, y, rmode, pos, i = 0, n_fields, n_output = 0, two;
+	GMT_LONG k, x, y, rmode, i = 0, n_fields, n_output = 0, two;
 	GMT_LONG fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0;
 	GMT_LONG error = FALSE, line_start = TRUE, do_geo_conv = FALSE;
 	GMT_LONG geodetic_calc = FALSE, lat_mode = 0;
 	GMT_LONG datum_conv_only = FALSE, double_whammy = FALSE, way;
+	
+	COUNTER_MEDIUM pos;
 	
 	COUNTER_LARGE row, n_read_in_seg, seg, n_read = 0, n = 0;
 

@@ -415,7 +415,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 		A_id = B_id = 0;
 		while ((A_id == 0 || B_id == 0) && GMT_fgets (C, buffer, GMT_BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 			if (buffer[0] == '#' || buffer[0] == '\n') continue;
-			sscanf (buffer, "%" GMT_LL "d %s %[^\n]", &id, txt, comment);
+			sscanf (buffer, "%d %s %[^\n]", &id, txt, comment);
 			if (A_id == 0 && !strcmp (txt, A)) A_id = id;
 			if (B_id == 0 && !strcmp (txt, B)) B_id = id;
 		}
@@ -452,7 +452,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 
 		if (GPlates) {
-			if ((nf = sscanf (buffer, "%" GMT_LL "d %lf %lf %lf %lf %" GMT_LL "d %[^\n]", &p1, &t, &lat, &lon, &rot, &p2, comment)) != 7) continue;
+			if ((nf = sscanf (buffer, "%d %lf %lf %lf %lf %d %[^\n]", &p1, &t, &lat, &lon, &rot, &p2, comment)) != 7) continue;
 			if (GMT_IS_ZERO (t)) continue;	/* Not a rotation */
 			if (strstr (comment, "cross-over") || strstr (comment, "cross over") || strstr (comment, "crossover")) continue;	/* Skip GPlates cross-over rotations */
 			if (A_id == p1 && B_id == p2 && !V2) {	/* Exactly what we wanted */
@@ -492,7 +492,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 		}
 
 		if (e[i].t_stop >= e[i].t_start) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Stage rotation %ld has start time younger than stop time\n", i);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Stage rotation %d has start time younger than stop time\n", i);
 			GMT_exit (EXIT_FAILURE);
 		}
 		e[i].duration = e[i].t_start - e[i].t_stop;
@@ -568,7 +568,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 
 GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_LONG geocentric, struct HOTSPOT **p)
 {
-	GMT_LONG i = 0, n;
+	COUNTER_MEDIUM i = 0, n;
 	size_t n_alloc = GMT_CHUNK;
 	FILE *fp = NULL;
 	struct HOTSPOT *e = NULL;
@@ -634,8 +634,8 @@ GMT_LONG spotter_backtrack (struct GMT_CTRL *C, double xp[], double yp[], double
 /* wesn:	if do_time >= 10, only to track within the given box */
 /* **c;		Pointer to return track vector */
 {
-	COUNTER_MEDIUM i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn, sideA[2] = {0, 0}, sideB[2] = {0, 0};
-	GMT_LONG path, bend, go = FALSE, box_check;
+	COUNTER_MEDIUM i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn;
+	GMT_LONG path, bend, go = FALSE, box_check, sideA[2] = {0, 0}, sideB[2] = {0, 0};
 	size_t n_alloc = 2 * GMT_CHUNK;
 	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, next_x, next_y;
 	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd, *track = NULL;
@@ -814,8 +814,8 @@ GMT_LONG spotter_forthtrack (struct GMT_CTRL *C, double xp[], double yp[], doubl
 /* wesn:	if do_time >= 10, only to track within the given box */
 /* c;		Pointer to return track vector */
 {
-	COUNTER_MEDIUM i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn, sideA[2] = {0, 0}, sideB[2] = {0, 0};
-	GMT_LONG path, bend, go = FALSE, box_check;
+	COUNTER_MEDIUM i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn;
+	GMT_LONG path, bend, go = FALSE, box_check, sideA[2] = {0, 0}, sideB[2] = {0, 0};
 	size_t n_alloc = BIG_CHUNK;
 	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, *track = NULL;
 	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd, next_x, next_y;
@@ -1443,8 +1443,8 @@ GMT_LONG spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct E
 	/* p:		Euler rotation structure for the current rotation */
 	/* X, Y:	Pointers to arrays that will hold the confidence region polygon */
 		
-	COUNTER_MEDIUM i, j, ii, jj, na, nrots, try, n;
-	GMT_LONG matrix_dim = 3, done, got_it, bail, dump = 0, fake = 0, axis[3];
+	COUNTER_MEDIUM i, j, ii, jj, na, try, n;
+	GMT_LONG matrix_dim = 3, done, got_it, bail, dump = 0, fake = 0, nrots, axis[3];
 	size_t n_alloc;
 	char *name = "uvw";
 	double sa, ca, angle, d, V[3][3], Vt[3][3], C[9], fval = 0.0005;

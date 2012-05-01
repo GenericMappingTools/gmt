@@ -212,7 +212,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, pos, j, k;
+	COUNTER_MEDIUM n_errors = 0, pos, j, k;
 	char ptr[GMT_BUFSIZ], buffer[GMT_BUFSIZ], za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;

@@ -44,11 +44,11 @@ enum GMT_enum_reg {GMT_GRIDLINE_REG = 0,
 	GMT_PIXEL_REG};
 
 /* These lengths (except GRD_VARNAME_LEN80) must NOT be changed as they are part of grd definition */
-enum GMT_enum_grdlen {	GRD_UNIT_LEN80	= 80,
-			GRD_TITLE_LEN80	= 80,
-		GRD_VARNAME_LEN80	= 80,
-		GRD_COMMAND_LEN320	= 320,
-		GRD_REMARK_LEN160	= 160};
+enum GMT_enum_grdlen {	GRD_UNIT_LEN80	= 80U,
+			GRD_TITLE_LEN80	= 80U,
+		GRD_VARNAME_LEN80	= 80U,
+		GRD_COMMAND_LEN320	= 320U,
+		GRD_REMARK_LEN160	= 160U};
 
 struct GRD_HEADER {
 /* ===== Do not change the first three items. They are copied verbatim to the native grid header */
@@ -159,8 +159,8 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 
 /* The follow macros gets the full length or rows and columns when padding is considered (i.e., mx and my) */
 
-#define gmt_grd_get_nxpad(h,pad) ((GMT_LONG)(h->nx) + pad[XLO] + pad[XHI])
-#define gmt_grd_get_nypad(h,pad) ((GMT_LONG)(h->ny) + pad[YLO] + pad[YHI])
+#define gmt_grd_get_nxpad(h,pad) ((h->nx) + pad[XLO] + pad[XHI])
+#define gmt_grd_get_nypad(h,pad) ((h->ny) + pad[YLO] + pad[YHI])
 
 /* 64-bit-safe macros to return the number of points in the grid given its dimensions */
 

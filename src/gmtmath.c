@@ -137,7 +137,7 @@ void new_table (struct GMT_CTRL *GMT, double ***s, GMT_LONG n_col, GMT_LONG n)
 
 void decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *skip, GMT_LONG n_col, GMT_LONG t_col)
 {
-	GMT_LONG i, start, stop, pos, col;
+	COUNTER_MEDIUM i, start, stop, pos, col;
 	char p[GMT_BUFSIZ];
 
 	/* decode_columns is used to handle the parsing of -C<cols>.  */
@@ -157,9 +157,9 @@ void decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *skip, GMT_LONG n
 		pos = col = 0;
 		while ((GMT_strtok (txt, ",", &pos, p))) {
 			if (strchr (p, '-'))
-				sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
+				sscanf (p, "%d-%d", &start, &stop);
 			else {
-				sscanf (p, "%" GMT_LL "d", &start);
+				sscanf (p, "%d", &start);
 				stop = start;
 			}
 			stop = MIN (stop, n_col-1);

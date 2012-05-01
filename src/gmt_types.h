@@ -26,9 +26,11 @@
 #ifndef _GMT_TYPES_H
 #define _GMT_TYPES_H
 
-/* Three types for counting, depending on expected range of integers we need */
+/* Two types for counting, depending on expected range of integers we need */
 #define COUNTER_LARGE	uint64_t
 #define COUNTER_MEDIUM	uint32_t
+/* Type for TRUE [!0] or FALSE [0] only */
+#define BOOLEAN	int
 
 /*--------------------------------------------------------------------
  *			GMT TYPEDEF DEFINITIONS
@@ -40,14 +42,16 @@
  * variables are processed we let the compiler build the actual format
  * using the GMT_LL string which is either "l" or "ll"
  */
+
+
 #ifdef _WIN64
 typedef __int64 GMT_LONG;		/* A signed 8-byte integer under 64-bit Windows */
 typedef unsigned __int64 GMT_ULONG;	/* A unsigned 8-byte integer under 64-bit Windows */
 #define GMT_LL "ll"
 #else
 //#if SIZEOF_LONG == 8
-typedef long GMT_LONG;			/* A signed 8-byte integer */
-typedef unsigned long GMT_ULONG;	/* A unsigned 8-byte integer */
+typedef int GMT_LONG;			/* A signed 8-byte integer */
+typedef unsigned int GMT_ULONG;	/* A unsigned 8-byte integer */
 #	define GMT_LL "l"
 /*#elif SIZEOF_LONG_LONG == 8
 typedef long long GMT_LONG;

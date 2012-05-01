@@ -142,7 +142,7 @@ EXTERN_MSC GMT_LONG GMT_scanf_arg (struct GMT_CTRL *C, char *p, GMT_LONG expecta
 EXTERN_MSC GMT_LONG GMT_ascii_output_col (struct GMT_CTRL *C, FILE *fp, double x, GMT_LONG col);
 EXTERN_MSC GMT_LONG GMT_not_numeric (struct GMT_CTRL *C, char *text);				/* Rules out _some_ text as possible numerics */
 EXTERN_MSC GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *pattern, char *out_string);
-EXTERN_MSC GMT_LONG GMT_set_cols (struct GMT_CTRL *C, GMT_LONG direction, GMT_LONG expected);
+EXTERN_MSC GMT_LONG GMT_set_cols (struct GMT_CTRL *C, GMT_LONG direction, COUNTER_MEDIUM expected);
 EXTERN_MSC struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, GMT_LONG n_tables, int64_t n_segments, GMT_LONG n_columns, COUNTER_LARGE n_rows);
 EXTERN_MSC struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, int64_t n_segments, GMT_LONG n_columns, COUNTER_LARGE n_rows);
 EXTERN_MSC void GMT_free_textset (struct GMT_CTRL *C, struct GMT_TEXTSET **data);
@@ -215,7 +215,7 @@ EXTERN_MSC void GMT_x_free (struct GMT_CTRL *C, struct GMT_XOVER *X);
 EXTERN_MSC GMT_LONG GMT_init_track (struct GMT_CTRL *C, double y[], COUNTER_LARGE n, struct GMT_XSEGMENT **S);
 EXTERN_MSC GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], GMT_LONG sa[], struct GMT_XSEGMENT A[], COUNTER_LARGE na, double xb[], double yb[], GMT_LONG sb[], struct GMT_XSEGMENT B[], COUNTER_LARGE nb, GMT_LONG internal, struct GMT_XOVER *X);
 EXTERN_MSC void * GMT_malloc_func (struct GMT_CTRL *C, void *ptr, size_t n, size_t *n_alloc, size_t element_size, char *fname, GMT_LONG line);
-EXTERN_MSC char *GMT_make_filename (struct GMT_CTRL *C, char *template, GMT_LONG fmt[], double z, GMT_LONG closed, GMT_LONG count[]);
+EXTERN_MSC char *GMT_make_filename (struct GMT_CTRL *C, char *template, GMT_LONG fmt[], double z, GMT_LONG closed, COUNTER_MEDIUM count[]);
 EXTERN_MSC void GMT_str_setcase (struct GMT_CTRL *C, char *value, GMT_LONG mode);
 EXTERN_MSC char *GMT_putusername (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, double radius, GMT_LONG mode, GMT_LONG *d_row, GMT_LONG *actual_max_d_col);
@@ -405,7 +405,7 @@ EXTERN_MSC GMT_LONG GMT_polygon_is_open (struct GMT_CTRL *C, double x[], double 
 EXTERN_MSC double GMT_polygon_area (struct GMT_CTRL *C, double x[], double y[], COUNTER_LARGE n);
 EXTERN_MSC GMT_LONG GMT_polygon_centroid (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, double *Cx, double *Cy);
 EXTERN_MSC GMT_LONG GMT_get_distance (struct GMT_CTRL *C, char *line, double *dist, char *unit);
-EXTERN_MSC COUNTER_LARGE GMT_contours (struct GMT_CTRL *C, struct GMT_GRID *Grid, GMT_LONG smooth_factor, GMT_LONG int_scheme, GMT_LONG orient, GMT_LONG *edge, GMT_LONG *first, double **x, double **y);
+EXTERN_MSC COUNTER_LARGE GMT_contours (struct GMT_CTRL *C, struct GMT_GRID *Grid, GMT_LONG smooth_factor, GMT_LONG int_scheme, GMT_LONG orient, COUNTER_MEDIUM *edge, GMT_LONG *first, double **x, double **y);
 EXTERN_MSC GMT_LONG GMT_init_distaz (struct GMT_CTRL *C, char c, GMT_LONG mode, GMT_LONG type);
 EXTERN_MSC GMT_LONG GMT_get_format (struct GMT_CTRL *C, double interval, char *unit, char *prefix, char *format);
 EXTERN_MSC GMT_LONG GMT_get_index (struct GMT_CTRL *C, struct GMT_PALETTE *P, double value);

@@ -550,7 +550,9 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG begin, saddle, drape_resample = FALSE, k, k1, n_out, n_drape = 0;
 	GMT_LONG n_edges, max, i_bin, j_bin, i_bin_old, j_bin_old, t_reg, d_reg[3], i_reg = 0;
 	GMT_LONG n4, nk, c, i_start, i_stop, j_start, j_stop, i_inc, j_inc, ii, jj;
-	GMT_LONG i, j, PS_colormask_off = 0, way, *edge = NULL;
+	GMT_LONG i, j, PS_colormask_off = 0, way;
+	
+	COUNTER_MEDIUM *edge = NULL;
 	
 	COUNTER_LARGE ij, sw, se, nw, ne, bin;
 	int64_t bin_inc[4], ij_inc[4], n;
@@ -700,8 +702,8 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (get_contours) {	/* Need to find contours */
 		struct GMT_GRID *Z_orig = NULL;
 		GMT_report (GMT, GMT_MSG_NORMAL, "Find contours\n");
-		n_edges = Z->header->ny * (GMT_LONG )ceil (Z->header->nx / 16.0);
-		edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);
+		n_edges = Z->header->ny * lrint (ceil (Z->header->nx / 16.0));
+		edge = GMT_memory (GMT, NULL, n_edges, COUNTER_MEDIUM);
 		binij = GMT_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
 		small = GMT_SMALL * (Z->header->z_max - Z->header->z_min);
 		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */

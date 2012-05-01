@@ -123,7 +123,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, pos, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, j, pos, n_files = 0;
 	char line[GMT_TEXT_LEN256], ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -356,7 +356,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				col_max = MIN (nx1, lrint (floor (xmax * i_dx_inch - Grid->header->xy_off + GMT_CONV_LIMIT)));
 				if (col_max <= 0 || col_max < col_min) col_max = nx1;
 				row_min = MAX (0, lrint (ceil ((GMT->current.proj.rect[YHI] - ymax) * i_dy_inch - Grid->header->xy_off - GMT_CONV_LIMIT)));
-				row_max = MIN (ny1, lrint (floor ((GMT->current.proj.rect[YHI] - ymin) * i_dy_inch - Grid->header->xy_off + GMT_CONV_LIMIT));
+				row_max = MIN (ny1, lrint (floor ((GMT->current.proj.rect[YHI] - ymin) * i_dy_inch - Grid->header->xy_off + GMT_CONV_LIMIT)));
 
 				for (row = row_min; row <= row_max; row++) {
 					for (col = col_min; col <= col_max; col++) {

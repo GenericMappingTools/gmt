@@ -146,7 +146,7 @@ GMT_LONG read_esri_info_hdr (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);
-	if (sscanf (record, "%*s %" GMT_LL "d", &header->bits) != 1) {
+	if (sscanf (record, "%*s %d", &header->bits) != 1) {
 		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding NBITS record\n");
 		return (GMT_GRDIO_READ_FAILED);
 	}
@@ -414,8 +414,8 @@ GMT_LONG GMT_esri_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG pad[], GMT_LONG complex_mode)
 {
-	GMT_LONG inc, off, check, error, is_binary = FALSE, swap = FALSE;
-	COUNTER_MEDIUM col, height_in, ii, in_nx;
+	GMT_LONG check, error, is_binary = FALSE, swap = FALSE;
+	COUNTER_MEDIUM inc, off, col, height_in, ii, in_nx;
 	COUNTER_MEDIUM first_col, last_col, first_row, last_row, n_left = 0;
 	COUNTER_MEDIUM row, row2, width_in, *actual_col = NULL;
 	COUNTER_MEDIUM nBits = 32, i_0_out;
@@ -461,7 +461,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	if (is_binary) {
 
-		if (last_row - first_row + 1 != header->ny)		/* We have a sub-region */
+		if (last_row - first_row + 1 != (COUNTER_MEDIUM)header->ny)		/* We have a sub-region */
 			if (fseek (fp, (off_t) (first_row * n_expected * 4 * nBits / 32), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 
 		i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
@@ -555,8 +555,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode, GMT_LONG floating)
 {
-	GMT_LONG inc, off;
-	COUNTER_MEDIUM i2, j, j2, width_out, height_out, last;
+	COUNTER_MEDIUM inc, off, i2, j, j2, width_out, height_out, last;
 	COUNTER_MEDIUM first_col, last_col, first_row, last_row;
 	COUNTER_MEDIUM i, *actual_col = NULL;
 	COUNTER_LARGE ij, width_in, kk;
