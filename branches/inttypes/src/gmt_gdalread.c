@@ -30,7 +30,7 @@ int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, double *adf
 int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename, GMT_LONG got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max);
 int ReportCorner (struct GMT_CTRL *C, GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo);
 void ComputeRasterMinMax (struct GMT_CTRL *C, unsigned char *tmp, GDALRasterBandH hBand, double adfMinMax[2], GMT_LONG nXSize, GMT_LONG nYSize, double, double);
-int gdal_decode_columns (struct GMT_CTRL *C, char *txt, GMT_LONG *whichBands, GMT_LONG n_col);
+int gdal_decode_columns (struct GMT_CTRL *C, char *txt, GMT_LONG *whichBands, COUNTER_MEDIUM n_col);
 
 GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	GDALDatasetH hDataset;
@@ -58,9 +58,10 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nBufXSize, nBufYSize;
 	int n, m, incStep = 1;
 	GMT_LONG	fliplr;
-	GMT_LONG	nn, off, got_R = FALSE, got_r = FALSE, error = FALSE;
+	GMT_LONG	off, got_R = FALSE, got_r = FALSE, error = FALSE;
 	GMT_LONG	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
 	GMT_LONG	pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
+	COUNTER_MEDIUM nn;
 	size_t n_alloc;
 	//GMT_LONG	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	unsigned char *tmp = NULL;
@@ -1041,7 +1042,7 @@ void ComputeRasterMinMax(struct GMT_CTRL *C, unsigned char *tmp, GDALRasterBandH
 }
 
 /* -------------------------------------------------------------------- */
-int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *whichBands, GMT_LONG n_col) {
+int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *whichBands, COUNTER_MEDIUM n_col) {
 	COUNTER_MEDIUM n = 0, i, start, stop, pos = 0;
 	char p[GMT_BUFSIZ];
 

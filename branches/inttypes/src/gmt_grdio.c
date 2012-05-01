@@ -1346,8 +1346,8 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	 * if we are dealing with standard 72 or 80 img latitude; else it must be specified.
 	 */
 
-	GMT_LONG status;
-	COUNTER_MEDIUM first_i, min, actual_col, n_cols, row, col;
+	GMT_LONG status, first_i;
+	COUNTER_MEDIUM min, actual_col, n_cols, row, col;
 	COUNTER_LARGE ij;
 	off_t n_skip;
 	int16_t *i2 = NULL;

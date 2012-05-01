@@ -47,65 +47,65 @@ enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current co
 struct GMT_COMMON {
 	/* Structure with all information given via the common GMT command-line options -R -J .. */
 	struct synopsis {	/* \0 (zero) or ^ */
-		GMT_LONG active;
+		BOOLEAN active;
 	} synopsis;
 	struct B {	/* -B<params> */
-		GMT_LONG active[2];	/* 0 = primary annotation, 1 = secondary annotations */
+		BOOLEAN active[2];	/* 0 = primary annotation, 1 = secondary annotations */
 	} B;	
 	struct J {	/* -J<params> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG id;
 		double par[6];
 	} J;		
 	struct K {	/* -K */
-		GMT_LONG active;
+		BOOLEAN active;
 	} K;	
 	struct O {	/* -O */
-		GMT_LONG active;
+		BOOLEAN active;
 	} O;
 	struct P {	/* -P */
-		GMT_LONG active;
+		BOOLEAN active;
 	} P;
 	struct R {	/* -Rw/e/s/n[/z_min/z_max][r] */
-		GMT_LONG active;
-		GMT_LONG oblique;	/* TRUE when -R...r was given (oblique map, probably), else FALSE (map borders are meridians/parallels) */
+		BOOLEAN active;
+		BOOLEAN oblique;	/* TRUE when -R...r was given (oblique map, probably), else FALSE (map borders are meridians/parallels) */
 		double wesn[6];		/* Boundaries of west, east, south, north, low-z and hi-z */
 		char string[GMT_TEXT_LEN256];
 	} R;
 	struct U {	/* -U */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG just;
 		double x, y;
 		char *label;		/* Content not counted by sizeof (struct) */
 	} U;
 	struct V {	/* -V */
-		GMT_LONG active;
+		BOOLEAN active;
 	} V;
 	struct X {	/* -X */
-		GMT_LONG active;
+		BOOLEAN active;
 		double off;
 		char mode;	/* r, a, or c */
 	} X;
 	struct Y {	/* -Y */
-		GMT_LONG active;
+		BOOLEAN active;
 		double off;
 		char mode;	/* r, a, or c */
 	} Y;
 	struct a {	/* -a<col>=<name>[:<type>][,col>=<name>[:<type>], etc][+g<geometry>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG geometry;
-		GMT_LONG n_aspatial;
-		GMT_LONG clip;		/* TRUE if we wish to clip lines/polygons at Dateline [FALSE] */
-		GMT_LONG output;	/* TRUE when we wish to build OGR output */
+		COUNTER_MEDIUM n_aspatial;
+		BOOLEAN clip;		/* TRUE if we wish to clip lines/polygons at Dateline [FALSE] */
+		BOOLEAN output;	/* TRUE when we wish to build OGR output */
 		GMT_LONG col[MAX_ASPATIAL];
 		GMT_LONG ogr[MAX_ASPATIAL];
 		GMT_LONG type[MAX_ASPATIAL];
 		char *name[MAX_ASPATIAL];
 	} a;
 	struct b {	/* -b[i][o][s|S][d|D][#cols][cvar1/var2/...] */
-		GMT_LONG active[2];		/* TRUE if current input/output is in native binary format */
-		int swab[2];		/* TRUE if current binary input/output must be byte-swapped */
-		GMT_LONG ncol[2];		/* Number of expected columns of input/output
+		BOOLEAN active[2];		/* TRUE if current input/output is in native binary format */
+		BOOLEAN swab[2];		/* TRUE if current binary input/output must be byte-swapped */
+		COUNTER_MEDIUM ncol[2];		/* Number of expected columns of input/output
 						   0 means it will be determined by program */
 		char type[2];			/* Default column type, if set [d for double] */
 #ifdef GMT_COMPAT
@@ -113,59 +113,59 @@ struct GMT_COMMON {
 #endif
 	} b;
 	struct c {	/* -c */
-		GMT_LONG active;
-		GMT_LONG copies;
+		BOOLEAN active;
+		COUNTER_MEDIUM copies;
 	} c;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */
-		GMT_LONG active[2];	/* For GMT_IN|OUT */
+		BOOLEAN active[2];	/* For GMT_IN|OUT */
 		char col_type[2][GMT_MAX_COLUMNS];
 	} f;
 	struct g {	/* -g[+]x|x|y|Y|d|Y<gap>[unit]  */
-		GMT_LONG active;
-		GMT_LONG n_methods;			/* How many different criteria to apply */
-		GMT_LONG n_col;				/* Largest column-number needed to be read */
-		GMT_LONG match_all;			/* If TRUE then all specified criteria must be met to be a gap [default is any of them] */
+		BOOLEAN active;
+		COUNTER_MEDIUM n_methods;			/* How many different criteria to apply */
+		COUNTER_MEDIUM n_col;				/* Largest column-number needed to be read */
+		BOOLEAN match_all;			/* If TRUE then all specified criteria must be met to be a gap [default is any of them] */
 		enum GMT_enum_gaps method[GMT_N_GAP_METHODS];	/* How distances are computed for each criteria */
 		GMT_LONG col[GMT_N_GAP_METHODS];	/* Which column to use (-1 for x,y distance) */
 		double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
 		PFD get_dist[GMT_N_GAP_METHODS];	/* Pointers to functiosn that compute those distances */
 	} g;
 	struct h {	/* -h[i][<nrecs>] */
-		GMT_LONG active;
-		GMT_LONG n_recs;
+		BOOLEAN active;
+		COUNTER_MEDIUM n_recs;
 	} h;	
 	struct i {	/* -i<col>|<colrange>,.. */
-		GMT_LONG active;
-		GMT_LONG n_cols;
+		BOOLEAN active;
+		COUNTER_MEDIUM n_cols;
 	} i;
 	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+t<threshold>] */
-		GMT_LONG active;
-		GMT_LONG antialias;	/* Defaults to TRUE, if supported */
+		BOOLEAN active;
+		BOOLEAN antialias;	/* Defaults to TRUE, if supported */
 		GMT_LONG interpolant;	/* Defaults to BCR_BICUBIC */
-		GMT_LONG bc_set;	/* TRUE if +b was parsed */
+		BOOLEAN bc_set;	/* TRUE if +b was parsed */
 		char BC[4];		/* For BC settings via +bg|n[x|y]|p[x|y] */
 		double threshold;	/* Defaults to 0.5 */
 	} n;
 	struct o {	/* -o<col>|<colrange>,.. */
-		GMT_LONG active;
-		GMT_LONG n_cols;
+		BOOLEAN active;
+		COUNTER_MEDIUM n_cols;
 	} o;
 	struct p {	/* -p<az>/<el>[+wlon0/lat0[/z0]][+vx0[cip]/y0[cip]] */
-		GMT_LONG active;
+		BOOLEAN active;
 	} p;
 	struct r {	/* -r */
-		GMT_LONG active;
+		BOOLEAN active;
 	} r;
 	struct s {	/* -s[r] */
-		GMT_LONG active;
+		BOOLEAN active;
 	} s;
 	struct t {	/* -t<transparency> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} t;
 	struct colon {	/* -:[i|o] */
-		GMT_LONG active;
-		GMT_LONG toggle[2];
+		BOOLEAN active;
+		BOOLEAN toggle[2];
 	} colon;
 };
 
