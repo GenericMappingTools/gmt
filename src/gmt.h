@@ -218,8 +218,8 @@ struct GMT_SESSION {
 	FILE *std[3];			/* Pointers for standard input, output, and error */
 	PFP input_ascii;		/* Pointer to function reading ascii tables only */
 	PFL output_ascii;		/* Pointer to function writing ascii tables only */
-	n_fonts n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
-	n_user_media n_user_media;	/* Total number of user media returned by gmt_load_user_media */
+	COUNTER_MEDIUM n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
+	COUNTER_MEDIUM n_user_media;	/* Total number of user media returned by gmt_load_user_media */
 	size_t min_meminc;		/* DEBUG, sets min/max memory increments */
 	size_t max_meminc;
 	float f_NaN;			/* Holds the IEEE NaN for floats */

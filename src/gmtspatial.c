@@ -969,7 +969,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
-				GMT_LONG dim[4] = {1, 1, 2, 5};
+				int64_t dim[4] = {1, 1, 2, 5};
 				if ((C = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);
 				S1 = C->table[0]->segment[0];
 				S1->coord[GMT_X][0] = S1->coord[GMT_X][3] = S1->coord[GMT_X][4] = GMT->common.R.wesn[XLO];
