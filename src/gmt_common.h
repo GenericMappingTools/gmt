@@ -105,7 +105,7 @@ struct GMT_COMMON {
 	struct b {	/* -b[i][o][s|S][d|D][#cols][cvar1/var2/...] */
 		BOOLEAN active[2];		/* TRUE if current input/output is in native binary format */
 		BOOLEAN swab[2];		/* TRUE if current binary input/output must be byte-swapped */
-		COUNTER_MEDIUM ncol[2];		/* Number of expected columns of input/output
+		GMT_LONG ncol[2];		/* Number of expected columns of input/output
 						   0 means it will be determined by program */
 		char type[2];			/* Default column type, if set [d for double] */
 #ifdef GMT_COMPAT

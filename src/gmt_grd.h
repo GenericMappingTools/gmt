@@ -41,7 +41,7 @@
 /* Nodes that are unconstrained are assumed to be set to NaN */
 
 enum GMT_enum_reg {GMT_GRIDLINE_REG = 0,
-	GMT_PIXEL_REG};
+	GMT_PIXEL_REG = 1U};
 
 /* These lengths (except GRD_VARNAME_LEN80) must NOT be changed as they are part of grd definition */
 enum GMT_enum_grdlen {	GRD_UNIT_LEN80	= 80U,
@@ -52,9 +52,9 @@ enum GMT_enum_grdlen {	GRD_UNIT_LEN80	= 80U,
 
 struct GRD_HEADER {
 /* ===== Do not change the first three items. They are copied verbatim to the native grid header */
-	int nx;				/* Number of columns */
-	int ny;				/* Number of rows */
-	int registration;		/* 0 for node grids, 1 for pixel grids */
+	unsigned int nx;		/* Number of columns */
+	unsigned int ny;		/* Number of rows */
+	unsigned int registration;	/* 0 for node grids, 1 for pixel grids */
 /* This section is flexible. It is not copied to any grid header */
 	GMT_LONG type;			/* Grid format */
 	GMT_LONG bits;			/* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
@@ -190,8 +190,8 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 #define GMT_IJPGI(h,row,col) (((COUNTER_LARGE)(row)+(COUNTER_LARGE)h->pad[YHI])*((COUNTER_LARGE)h->mx*(COUNTER_LARGE)h->n_bands)+(COUNTER_LARGE)(col)+(COUNTER_LARGE)h->pad[XLO]*(COUNTER_LARGE)h->n_bands)
 
 /* Obtain GMT_LONG row and col from index */
-#define GMT_col(h,ij) ((GMT_LONG)((ij) % h->mx) - h->pad[XLO])
-#define GMT_row(h,ij) ((GMT_LONG)((ij) / h->mx) - h->pad[YHI])
+#define GMT_col(h,ij) (((ij) % h->mx) - h->pad[XLO])
+#define GMT_row(h,ij) (((ij) / h->mx) - h->pad[YHI])
 
 /* To set up a standard double for-loop over rows and columns to visit all nodes in a padded array by computing the node index, use GMT_grd_loop */
 /* Note: All arguments must be actual variables and not expressions */

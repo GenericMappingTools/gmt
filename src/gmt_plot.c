@@ -3216,7 +3216,8 @@ void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT
 
 void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
 {	/* mode = 1 when clipping is in effect */
-	GMT_LONG i, k, m, first_i, last_i, just, form, *node = NULL;
+	GMT_LONG just, form;
+	COUNTER_LARGE first_i, last_i, k, m, seg, *node = NULL;
 	double *angle = NULL, *xt = NULL, *yt = NULL;
 	char **txt = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
@@ -3237,11 +3238,11 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 	else
 		just = G->just;
 
-	for (i = last_i = m = 0, first_i = -1; i < G->n_segments; i++) {	/* Find first and last set of labels */
-		L = G->segment[i];	/* Pointer to current segment */
+	for (seg = last_i = m = 0, first_i = UINTMAX_MAX; seg < G->n_segments; seg++) {	/* Find first and last set of labels */
+		L = G->segment[seg];	/* Pointer to current segment */
 		if (L->n_labels) {	/* This segment has labels */
-			if (first_i == -1) first_i = i;	/* OK, this is the first */
-			last_i = i;			/* When done, this will hold the last i */
+			if (first_i == UINTMAX_MAX) first_i = seg;	/* OK, this is the first */
+			last_i = seg;			/* When done, this will hold the last i */
 			m += L->n_labels;		/* Total number of labels */
 		}
 	}
@@ -3249,21 +3250,21 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 	if (m == 0) return;	/* There are no labels */
 
 	if (G->curved_text) {	/* Curved labels in 2D with transparent or opaque textbox: use PSL_plottextpath */
-		for (i = 0; i < G->n_segments; i++) {
-			L = G->segment[i];	/* Pointer to current segment */
+		for (seg = 0; seg < G->n_segments; seg++) {
+			L = G->segment[seg];	/* Pointer to current segment */
 			if (!L->annot || L->n_labels == 0) continue;
 			angle = GMT_memory (C, NULL, L->n_labels, double);
-			txt = GMT_memory (C, NULL, L->n_labels, char *);
-			node = GMT_memory (C, NULL, L->n_labels, GMT_LONG);
+			txt   = GMT_memory (C, NULL, L->n_labels, char *);
+			node  = GMT_memory (C, NULL, L->n_labels, COUNTER_LARGE);
 			for (k = 0; k < L->n_labels; k++) {
 				angle[k] = L->L[k].angle;
-				txt[k] = L->L[k].label;
-				node[k] = L->L[k].node;
+				txt[k]   = L->L[k].label;
+				node[k]  = L->L[k].node;
 			}
 
 			form = mode;		/* 1 means clip labelboxes, 0 means place text */
-			if (i == first_i) form |= 32;		/* First of possibly several calls to PSL_plottextpath */
-			if (i == last_i)  form |= 64;		/* Final call to PSL_plottextpath */
+			if (seg == first_i) form |= 32;		/* First of possibly several calls to PSL_plottextpath */
+			if (seg == last_i)  form |= 64;		/* Final call to PSL_plottextpath */
 			if (!G->transparent) form |= 128;	/* Want the box filled */
 			if (G->box & 1) form |= 256;		/* Want box outline */
 			GMT_textpath_init (C, &L->pen, G->rgb, &G->pen, L->rgb);
@@ -3284,13 +3285,13 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 			size_t n_alloc = 0;
 			GMT_malloc3 (C, angle, xt, yt, m, &n_alloc, double);
 			txt = GMT_memory (C, NULL, m, char *);
-			for (i = m = 0; i < G->n_segments; i++) {
-				L = G->segment[i];	/* Pointer to current segment */
+			for (seg = m = 0; seg < G->n_segments; seg++) {
+				L = G->segment[seg];	/* Pointer to current segment */
 				for (k = 0; k < L->n_labels; k++, m++) {
 					angle[m] = L->L[k].angle;
-					txt[m] = L->L[k].label;
-					xt[m] = L->L[k].x;
-					yt[m] = L->L[k].y;
+					txt[m]   = L->L[k].label;
+					xt[m]    = L->L[k].x;
+					yt[m]    = L->L[k].y;
 				}
 			}
 			/* Note this uses the last segments pen/fontrgb on behalf of all */
@@ -3309,7 +3310,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 
 void gmt_contlabel_clippath (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
 {
-	GMT_LONG i, k, m, nseg;
+	COUNTER_LARGE seg, k, m, nseg;
 	GMT_LONG just, form;
 	double *angle = NULL, *xt = NULL, *yt = NULL;
 	char **txt = NULL;
@@ -3321,8 +3322,8 @@ void gmt_contlabel_clippath (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_
 		return;
 	}
 
-	for (i = m = nseg = 0; i < G->n_segments; i++) {	/* Get total number of segments with labels */
-		L = G->segment[i];		/* Pointer to current segment */
+	for (seg = m = nseg = 0; seg < G->n_segments; seg++) {	/* Get total number of segments with labels */
+		L = G->segment[seg];		/* Pointer to current segment */
 		if (L->n_labels) {
 			nseg++;
 			m += L->n_labels;
@@ -3345,13 +3346,13 @@ void gmt_contlabel_clippath (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_
 		/* Allocate temp space for everything that must be passed to PSL_plottextclip */
 		GMT_malloc3 (C, angle, xt, yt, m, &n_alloc, double);
 		txt = GMT_memory (C, NULL, m, char *);
-		for (i = m = 0; i < G->n_segments; i++) {
-			L = G->segment[i];	/* Pointer to current segment */
+		for (seg = m = 0; seg < G->n_segments; seg++) {
+			L = G->segment[seg];	/* Pointer to current segment */
 			for (k = 0; k < L->n_labels; k++, m++) {
 				angle[m] = L->L[k].angle;
-				txt[m] = L->L[k].label;
-				xt[m] = L->L[k].x;
-				yt[m] = L->L[k].y;
+				txt[m]   = L->L[k].label;
+				xt[m]    = L->L[k].x;
+				yt[m]    = L->L[k].y;
 			}
 		}
 		/* Note this uses the last segments pen/fontrgb on behalf of all */
@@ -3377,7 +3378,8 @@ void GMT_textpath_init (struct GMT_CTRL *C, struct GMT_PEN *LP, double Brgb[], s
 
 void GMT_contlabel_plot (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 {
-	GMT_LONG i, no_labels;
+	COUNTER_MEDIUM i;
+	BOOLEAN no_labels;
 	struct PSL_CTRL *P = C->PSL;
 
 	if (!G->n_segments) return;	/* Northing to do here */
@@ -3701,7 +3703,7 @@ void GMT_geo_line (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n)
 	GMT_plot_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.pen, C->current.plot.n);	/* Separately plot the outline */
 }
 
-void gmt_geo_polygon (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n)
+void gmt_geo_polygon (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n)
 {
 	/* When geographic data are plotted, polygons that cross the west map boundary will
 	 * sometimes appear on the area bounded by the east map boundary - they "wrap around".
@@ -3722,8 +3724,9 @@ void gmt_geo_polygon (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n)
 #define JUMP_L 0
 #define JUMP_R 1
 
-	GMT_LONG jump, k, first, jump_dir = JUMP_L;
-	COUNTER_LARGE i;
+	GMT_LONG jump_dir = JUMP_L;
+	BOOLEAN jump;
+	COUNTER_LARGE k, first, i;
 	double *xp = NULL, *yp = NULL;
 	PFD x_on_border[2] = {NULL, NULL};
 	struct PSL_CTRL *P = C->PSL;
@@ -3848,7 +3851,8 @@ void GMT_geo_polygons (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 	 * two paths are not the same.  If no fill is requested then we just draw lines.
 	 */
 	struct GMT_LINE_SEGMENT *S2 = NULL;
-	GMT_LONG add_pole, outline = 0, separate;
+ 	BOOLEAN add_pole, separate;
+	GMT_LONG outline = 0;
 	char *type[2] = {"Perimeter", "Polar cap perimeter"};
 	char *use[2] = {"fill only", "fill and outline"};
 	struct PSL_CTRL *P = C->PSL;
@@ -3902,7 +3906,7 @@ void GMT_geo_polygons (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 void GMT_geo_ellipse (struct GMT_CTRL *C, double lon, double lat, double major, double minor, double azimuth)
 {
 	/* GMT_geo_ellipse takes the location, axes (in km), and azimuth of an ellipse
-	   and draws the ellipse using the chosen map projection */
+	   and draws an approximate ellipse using GMT_ELLIPSE_APPROX points and the chosen map projection */
 
 	GMT_LONG i;
 	double delta_azimuth, sin_azimuth, cos_azimuth, sinp, cosp, x, y, x_prime, y_prime, rho, c;
