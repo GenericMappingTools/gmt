@@ -1511,7 +1511,7 @@ void GMT_vgenper (struct GMT_CTRL *C, double lon0, double lat0, double altitude,
 			y *= rmax;
 			gmt_genper_to_xtyt (C, (double)az, x, y, C->current.proj.g_yoffset, &xt, &yt);
 
-			if (C->current.proj.g_debug > 2) fprintf (fp,"%3ld x %10.2f y %10.2f xt %10.3f yt %10.3f\n", az, x/1000, y/1000, xt/1000, yt/1000);
+			if (C->current.proj.g_debug > 2) fprintf (fp,"%3d x %10.2f y %10.2f xt %10.3f yt %10.3f\n", az, x/1000, y/1000, xt/1000, yt/1000);
 
 			xt_min = MIN (xt, xt_min);
 			xt_max = MAX (xt, xt_max);

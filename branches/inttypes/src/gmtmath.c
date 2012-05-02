@@ -32,8 +32,8 @@
 #include "gmt.h"
 
 EXTERN_MSC GMT_LONG gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
-EXTERN_MSC GMT_LONG gmt_find_macro (char *arg, GMT_LONG n_macros, struct MATH_MACRO *M);
-EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, GMT_LONG n_macros, struct MATH_MACRO **M);
+EXTERN_MSC GMT_LONG gmt_find_macro (char *arg, COUNTER_MEDIUM n_macros, struct MATH_MACRO *M);
+EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, COUNTER_MEDIUM n_macros, struct MATH_MACRO **M);
 	
 #define GMTMATH_ARG_IS_OPERATOR	 0
 #define GMTMATH_ARG_IS_FILE	-1
@@ -179,7 +179,8 @@ GMT_LONG solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct G
 	 * we do a full SVD decomposition and set small eigenvalues to zero, yielding an approximate solution.
 	 */
 
-	GMT_LONG i, j, k, k0, i2, j2, rhs, n, ier;
+	COUNTER_MEDIUM i, j, k, k0, i2, j2, rhs, n;
+	GMT_LONG ier;
 	COUNTER_LARGE row, seg;
 	double cond, *N = NULL, *B = NULL, *d = NULL, *x = NULL, *b = NULL, *z = NULL, *v = NULL, *lambda = NULL;
 	FILE *fp = NULL;
@@ -219,7 +220,7 @@ GMT_LONG solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct G
 	d = GMT_memory (GMT, NULL, n, double);
 	x = GMT_memory (GMT, NULL, n, double);
 	if ( (ier = GMT_chol_dcmp (GMT, N, d, &cond, n, n) ) != 0) {	/* Decomposition failed, use SVD method */
-		GMT_LONG nrots;
+		COUNTER_MEDIUM nrots;
 		GMT_chol_recover (GMT, N, d, n, n, ier, TRUE);		/* Restore to former matrix N */
 		/* Solve instead using GMT_jacobi */
 		lambda = GMT_memory (GMT, NULL, n, double);
@@ -227,7 +228,7 @@ GMT_LONG solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct G
 		z = GMT_memory (GMT, NULL, n, double);
 		v = GMT_memory (GMT, NULL, n*n, double);
 
-		if (GMT_jacobi (GMT, N, &n, &n, lambda, v, b, z, &nrots)) {
+		if (GMT_jacobi (GMT, N, n, n, lambda, v, b, z, &nrots)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
 			GMT_report (GMT, GMT_MSG_FATAL, "The reported L2 positions might be garbage.\n");
 		}
@@ -2883,12 +2884,13 @@ GMT_LONG decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, st
 
 GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, k, kk, op = 0, nstack = 0, new_stack = -1, use_t_col = 0, status, n_macros;
+	GMT_LONG i, j, k, kk, op = 0, nstack = 0, new_stack = -1, use_t_col = 0, status;
 	GMT_LONG consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS];
 	GMT_LONG n_columns = 0, alloc_mode[GMTMATH_STACK_SIZE];
 	GMT_LONG constant[GMTMATH_STACK_SIZE], error = FALSE, set_equidistant_t = FALSE, dim[4] = {1, 1, 0, 0};
 	GMT_LONG read_stdin = FALSE, t_check_required = TRUE, got_t_from_file = FALSE, done;
 	COUNTER_LARGE row, n_records, n_rows = 0, seg;
+	COUNTER_MEDIUM n_macros;
 
 	double factor[GMTMATH_STACK_SIZE], t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
 

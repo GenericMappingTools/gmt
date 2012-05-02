@@ -5189,7 +5189,7 @@ double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct 
 	return (d_min);
 }
 
-GMT_LONG gmt_near_a_point_spherical (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
+BOOLEAN gmt_near_a_point_spherical (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
 {
 	COUNTER_LARGE row, seg;
 	GMT_LONG inside = FALSE, each_point_has_distance;
@@ -5206,7 +5206,7 @@ GMT_LONG gmt_near_a_point_spherical (struct GMT_CTRL *C, double x, double y, str
 	return (inside);
 }
 
-GMT_LONG gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
+BOOLEAN gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
 {
 	GMT_LONG inside = FALSE, each_point_has_distance;
 	COUNTER_LARGE row, seg;
@@ -5244,7 +5244,7 @@ GMT_LONG gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, str
 
 /* Functions involving distance from arbitrary points to a line */
 
-GMT_LONG gmt_near_a_line_cartesian (struct GMT_CTRL *C, double lon, double lat, GMT_LONG seg, struct GMT_LINE_SEGMENT *S, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
+BOOLEAN gmt_near_a_line_cartesian (struct GMT_CTRL *C, double lon, double lat, GMT_LONG seg, struct GMT_LINE_SEGMENT *S, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	GMT_LONG perpendicular_only = FALSE, interior, within;
 	COUNTER_LARGE row0, row1;
@@ -5361,7 +5361,7 @@ GMT_LONG gmt_near_a_line_cartesian (struct GMT_CTRL *C, double lon, double lat, 
 	return (within);	/* All tests failed, we are not close to the line(s), or we just return distance and interior (see comments above) */
 }
 
-GMT_LONG gmt_near_lines_cartesian (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
+BOOLEAN gmt_near_lines_cartesian (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	COUNTER_LARGE seg;
 	GMT_LONG mode = return_mindist, status, OK = FALSE;
@@ -5378,7 +5378,7 @@ GMT_LONG gmt_near_lines_cartesian (struct GMT_CTRL *C, double lon, double lat, s
 	return (OK);	
 }
 
-GMT_LONG gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, GMT_LONG seg, struct GMT_LINE_SEGMENT *S, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
+BOOLEAN gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, GMT_LONG seg, struct GMT_LINE_SEGMENT *S, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	GMT_LONG perpendicular_only = FALSE, interior, within;
 	COUNTER_LARGE row, prev_row;
@@ -5467,7 +5467,7 @@ GMT_LONG gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, 
 	return (within);	/* All tests failed, we are not close to the line(s), or we return a mindist (see comments above) */
 }
 
-GMT_LONG gmt_near_lines_spherical (struct GMT_CTRL *P, double lon, double lat, struct GMT_TABLE *T, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
+BOOLEAN gmt_near_lines_spherical (struct GMT_CTRL *P, double lon, double lat, struct GMT_TABLE *T, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	COUNTER_LARGE seg;
 	GMT_LONG mode = return_mindist, status, OK = FALSE;

@@ -172,9 +172,9 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 			case 'N':	/* Backwards compatible.  nx/ny can now be set with -D */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D instead.\n");
 				Ctrl->D.active = TRUE;
-				sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &ii, &jj);
+				sscanf (opt->arg, "%d/%d", &ii, &jj);
 				if (jj == 0) jj = ii;
-				sprintf (format, "%" GMT_LL "d+/%" GMT_LL "d+", ii, jj);
+				sprintf (format, "%d+/%d+", ii, jj);
 				GMT_getinc (GMT, format, Ctrl->D.inc);
 				break;
 #endif

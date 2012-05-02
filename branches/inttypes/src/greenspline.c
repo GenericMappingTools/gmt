@@ -1623,7 +1623,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {
 		COUNTER_LARGE nz_off, nxy;
-		GMT_LONG col, row, layer;
+		COUNTER_MEDIUM col, row, layer;
 		double *xp = NULL, *yp = NULL, wp, V[4];
 		GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate spline at %ld equidistant output locations\n", n_ok);
 		/* Precalculate coordinates */

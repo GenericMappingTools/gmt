@@ -187,7 +187,8 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 
 GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n_grds = 0, error, subset;
+	GMT_LONG n_grds = 0, error;
+	BOOLEAN subset;
 	
 	COUNTER_LARGE ij, n_nan = 0, n = 0;
 
@@ -257,7 +258,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
 			COUNTER_LARGE ij_min, ij_max;
-			GMT_LONG col, row;
+			COUNTER_MEDIUM col, row;
 
 			z_min = DBL_MAX;	z_max = -DBL_MAX;
 			mean = median = sum2 = 0.0;
@@ -510,7 +511,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
-		sprintf (record, "%" GMT_LL "d%s", n_grds, GMT->current.setting.io_col_separator);
+		sprintf (record, "%d%s", n_grds, GMT->current.setting.io_col_separator);
 		GMT_ascii_format_col (GMT, text, global_xmin, GMT_X);	strcat (record, text);	strcat (record, GMT->current.setting.io_col_separator);
 		GMT_ascii_format_col (GMT, text, global_xmax, GMT_X);	strcat (record, text);	strcat (record, GMT->current.setting.io_col_separator);
 		GMT_ascii_format_col (GMT, text, global_ymin, GMT_Y);	strcat (record, text);	strcat (record, GMT->current.setting.io_col_separator);

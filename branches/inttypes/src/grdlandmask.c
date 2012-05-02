@@ -205,9 +205,10 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 
 GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, temp_shift = FALSE, wrap, used_polygons;
-	GMT_LONG i, k, ii, bin, ind, np, side, col_min, col_max, row_min, row_max, nx1, ny1;
-	GMT_LONG base = 3, direction, err, row, col, np_new;
+	BOOLEAN error = FALSE, temp_shift = FALSE, wrap, used_polygons;
+	COUNTER_MEDIUM base = 3, row, col, col_min, col_max, row_min, row_max, nx1, ny1;
+	COUNTER_MEDIUM i, k, ii, bin, ind, np, side, np_new;
+	GMT_LONG direction, err;
 	
 	COUNTER_LARGE ij;
 

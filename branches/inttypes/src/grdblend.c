@@ -104,10 +104,15 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 
 GMT_LONG found_unsupported_format (struct GMT_CTRL *GMT, struct GRD_HEADER *h, char *file)
 {	/* Check that grid files are not among the unsupported formats that has no row-by-row io yet */
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
+	GMT_LONG s_code;
+	unsigned code;
 	static char *not_supported[N_NOT_SUPPORTED] = {"rb", "rf", "sf", "sd", "af", "ei", "ef", "gd"};
 	for (i = 0; i < N_NOT_SUPPORTED; i++) {	/* Only allow netcdf (both v3 and new) and native binary output */
-		if (h->type == GMT_grd_format_decoder (GMT, not_supported[i])) {
+		s_code = GMT_grd_format_decoder (GMT, not_supported[i]);
+		assert (s_code > 0);
+		code = s_code;
+		if (h->type == code) {
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Grid format type %s for file %s is not directly supported\n", not_supported[i], file);
 			return (1);
 		}
@@ -131,7 +136,7 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	}
 }
 
-GMT_LONG out_of_phase (struct GRD_HEADER *g, struct GRD_HEADER *h)
+BOOLEAN out_of_phase (struct GRD_HEADER *g, struct GRD_HEADER *h)
 {	/* Look for phase shifts in w/e/s/n between the two grids */
 	GMT_LONG way, side;
 	double a;
@@ -145,7 +150,7 @@ GMT_LONG out_of_phase (struct GRD_HEADER *g, struct GRD_HEADER *h)
 	return FALSE;
 }
 
-GMT_LONG overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GRD_HEADER *h, GMT_LONG mode)
+BOOLEAN overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GRD_HEADER *h, GMT_LONG mode)
 {
 	double w, e, shift = 720.0;
 	char *type[2] = {"grid", "inner grid"};
@@ -168,9 +173,10 @@ GMT_LONG overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GR
 	return FALSE;
 }
 
-GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
-	GMT_LONG one_or_zero = !h->registration, type, do_sample, status, not_supported;
-	COUNTER_MEDIUM n = 0, nr;
+GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, COUNTER_MEDIUM n_files, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
+	GMT_LONG type, status;
+	BOOLEAN do_sample, not_supported;
+	COUNTER_MEDIUM one_or_zero = !h->registration, n = 0, nr;
 	struct GRDBLEND_INFO *B = NULL;
 	char *sense[2] = {"normal", "inverse"}, buffer[GMT_BUFSIZ];
 	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[GMT_BUFSIZ];
@@ -294,7 +300,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 		if (do_sample) {	/* One or more reasons to call grdsample before using this grid */
 			if (do_sample & 1) {	/* Resampling of the grid */
 				sprintf (buffer, "/tmp/grdblend_resampled_%d_%d.nc", (int)getpid(), n);
-				sprintf (cmd, "%s %s %s %s -G%s -V%ld", B[n].file, Targs, Iargs, Rargs, buffer, GMT->current.setting.verbose);
+				sprintf (cmd, "%s %s %s %s -G%s -V%d", B[n].file, Targs, Iargs, Rargs, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
 				if ((status = GMT_grdsample (GMT->parent, 0, cmd))) {	/* Resample the file */
@@ -304,7 +310,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
 				sprintf (buffer, "/tmp/grdblend_reformatted_%d_%d.nc", (int)getpid(), n);
-				sprintf (cmd, "%s %s %s -V%ld", B[n].file, Rargs, buffer, GMT->current.setting.verbose);
+				sprintf (cmd, "%s %s %s -V%d", B[n].file, Rargs, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
 				if ((status = GMT_grdreformat (GMT->parent, 0, cmd))) {	/* Resample the file */
@@ -373,8 +379,8 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 	return (n_files);
 }
 
-void sync_input_rows (struct GMT_CTRL *GMT, GMT_LONG row, struct GRDBLEND_INFO *B, GMT_LONG n_blend, double half) {
-	GMT_LONG k;
+void sync_input_rows (struct GMT_CTRL *GMT, GMT_LONG row, struct GRDBLEND_INFO *B, COUNTER_MEDIUM n_blend, double half) {
+	COUNTER_MEDIUM k;
 
 	for (k = 0; k < n_blend; k++) {	/* Get every input grid ready for the new row */
 		if (B[k].ignore) continue;
@@ -560,9 +566,10 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 
 GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG col, pcol, row, nx_360 = 0, k, kk, m, n_blend, error, n_fill, n_tot, wrap_x, reformat;
+	COUNTER_MEDIUM col, pcol, row, nx_360 = 0, k, kk, m, n_blend, error;
+	BOOLEAN reformat, wrap_x;
 	
-	COUNTER_LARGE ij;
+	COUNTER_LARGE ij, n_fill, n_tot;
 	
 	double wt_x, w, wt;
 	
@@ -658,7 +665,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {
 		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */
-			sprintf (outtemp, "/tmp/grdblend_temp_%ld.nc", (GMT_LONG)getpid());	/* Get temporary file name */
+			sprintf (outtemp, "/tmp/grdblend_temp_%" PRIu64 ".nc", (uint64_t)getpid());	/* Get temporary file name */
 			outfile = outtemp;
 		}
 		else
@@ -775,7 +782,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				strcpy (empty, "NaN");
 			else
 				sprintf (empty, "%g", no_data_f);
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld nodes assigned values, %ld set to %s\n", n_fill, n_tot - n_fill, empty);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " nodes assigned values, %" PRIu64 " set to %s\n", n_fill, n_tot - n_fill, empty);
 		}
 	}
 
@@ -784,7 +791,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (reformat) {	/* Must reformat the output grid to the non-supported format */
 		GMT_LONG status;
 		char cmd[GMT_BUFSIZ];
-		sprintf (cmd, "%s %s -V%ld", outfile, Ctrl->G.file, GMT->current.setting.verbose);
+		sprintf (cmd, "%s %s -V%d", outfile, Ctrl->G.file, GMT->current.setting.verbose);
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Reformat %s via grdreformat %s\n", outfile, cmd);
 		if ((status = GMT_grdreformat (GMT->parent, 0, cmd))) {	/* Resample the file */
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s.\n", outfile);

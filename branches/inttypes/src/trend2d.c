@@ -120,7 +120,7 @@ GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, CO
 	return (0);
 }
 
-void allocate_the_memory_2d (struct GMT_CTRL *GMT, GMT_LONG np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model)
+void allocate_the_memory_2d (struct GMT_CTRL *GMT, COUNTER_LARGE np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model)
 {
 	*gtg = GMT_memory (GMT, NULL, np*np, double);
 	*v = GMT_memory (GMT, NULL, np*np, double);
@@ -133,10 +133,10 @@ void allocate_the_memory_2d (struct GMT_CTRL *GMT, GMT_LONG np, double **gtg, do
 	*w_model = GMT_memory (GMT, NULL, np, double);
 }
 
-void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER_LARGE n_data, char *output_choice, GMT_LONG n_outputs)
+void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER_LARGE n_data, char *output_choice, COUNTER_MEDIUM n_outputs)
 {
 	COUNTER_LARGE i;
-	GMT_LONG j;
+	COUNTER_MEDIUM j;
 	double out[6];
 
 	for (i = 0; i < n_data; i++) {
@@ -215,7 +215,7 @@ void untransform_x_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double x
 	}
 }
 
-double get_chisq_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, GMT_LONG n_model)
+double get_chisq_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, COUNTER_MEDIUM n_model)
 {
 	COUNTER_LARGE i, nu;
 	double chi = 0.0;
@@ -257,7 +257,7 @@ void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUN
 	}
 }
 
-void load_g_row_2d (double x, double y, GMT_LONG n, double *gr)
+void load_g_row_2d (double x, double y, COUNTER_MEDIUM n, double *gr)
 {
 	/* Current data position, appropriately normalized.  */
 	/* Number of model parameters, and elements of gr[]  */
@@ -266,7 +266,7 @@ void load_g_row_2d (double x, double y, GMT_LONG n, double *gr)
 	   G matrix (Menke notation), where x,y is the ith datum's
 	   location.  */
 
-	GMT_LONG j;
+	COUNTER_MEDIUM j;
 
 	j = 0;
 	while (j < n) {
@@ -306,13 +306,13 @@ void load_g_row_2d (double x, double y, GMT_LONG n, double *gr)
 	}
 }
 
-void calc_m_and_r_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double *model, GMT_LONG n_model, double *grow)
+void calc_m_and_r_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double *model, COUNTER_MEDIUM n_model, double *grow)
 {
 	/*	model[n_model] holds solved coefficients of m_type model.
 		grow[n_model] is a vector for a row of G matrix.  */
 
 	COUNTER_LARGE i;
-	GMT_LONG j;
+	COUNTER_MEDIUM j;
 	for (i = 0; i < n_data; i++) {
 		load_g_row_2d (data[i].x, data[i].y, n_model, grow);
 		data[i].m = 0.0;
@@ -321,18 +321,18 @@ void calc_m_and_r_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double *m
 	}
 }
 
-void move_model_a_to_b_2d (double *model_a, double *model_b, GMT_LONG n_model, double *chisq_a, double *chisq_b)
+void move_model_a_to_b_2d (double *model_a, double *model_b, COUNTER_MEDIUM n_model, double *chisq_a, double *chisq_b)
 {
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	for (i = 0; i < n_model; i++) model_b[i] = model_a[i];
 	*chisq_b = *chisq_a;
 }
 
-void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER_LARGE n_data, double *gtg, double *gtd, double *grow, GMT_LONG n_model, GMT_LONG mp)
+void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER_LARGE n_data, double *gtg, double *gtd, double *grow, COUNTER_MEDIUM n_model, COUNTER_MEDIUM mp)
 {	/* mp is row dimension of gtg  */
 
 	COUNTER_LARGE i;
-	GMT_LONG j, k;
+	COUNTER_MEDIUM j, k;
 	double wz;
 
 	/* First zero the contents for summing */
@@ -361,10 +361,10 @@ void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNT
 	}
 }
 
-void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, GMT_LONG n_model, GMT_LONG mp, double *lambda, double *v, double *b, double *z, double c_no, GMT_LONG *ir)
+void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, COUNTER_MEDIUM n_model, COUNTER_MEDIUM mp, double *lambda, double *v, double *b, double *z, double c_no, COUNTER_MEDIUM *ir)
 {
 
-	GMT_LONG i, j, k, rank = 0, nrots, n, m;
+	COUNTER_MEDIUM i, j, k, rank = 0, nrots;
 	double c_test, temp_inverse_ij;
 
 	if (n_model == 1) {
@@ -372,9 +372,7 @@ void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *mo
 		*ir = 1;
 	}
 	else {
-		n = n_model;
-		m = mp;
-		if (GMT_jacobi (GMT, gtg, &n, &m, lambda, v, b, z, &nrots)) {
+		if (GMT_jacobi (GMT, gtg, n_model, mp, lambda, v, b, z, &nrots)) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Matrix Solver Convergence Failure.\n");
 		}
 		c_test = fabs (lambda[0]) / c_no;
@@ -520,7 +518,8 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 
 GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, n_model, significant, rank, np, error = FALSE;
+	COUNTER_MEDIUM i, n_model, rank, np;
+	GMT_LONG error = FALSE, significant;
 	
 	COUNTER_LARGE n_data;
 

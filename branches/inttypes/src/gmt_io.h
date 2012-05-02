@@ -370,8 +370,8 @@ struct GMT_IO {				/* Used to process input data records */
 	PFI write_item;			/* Pointer to function writing 1-col z tables in xyz2grd */
 	PFL ogr_parser;			/* Set to handle either header or data OGR records */
 
-	GMT_LONG pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */
-	GMT_LONG inc_code[2];
+	COUNTER_MEDIUM pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */
+	COUNTER_MEDIUM inc_code[2];
 	double curr_rec[GMT_MAX_COLUMNS];	/* The most recently processed data record */
 	double prev_rec[GMT_MAX_COLUMNS];	/* The previous data record */
 	struct GMT_GRD_INFO grd_info;
@@ -381,14 +381,14 @@ struct GMT_IO {				/* Used to process input data records */
 	BOOLEAN skip_bad_records;	/* TRUE if records where x and/or y are NaN or Inf */
 	BOOLEAN give_report;		/* TRUE if functions should report how many bad records were skipped */
 	BOOLEAN skip_duplicates;	/* TRUE if we should ignore duplicate x,y records */
-	GMT_LONG io_nan_ncols;		/* Number of columns to consider for -s option */
 
 	COUNTER_LARGE io_n_header_items;	/* number of header records (ascii) or bytes (binary) [0] */
-	GMT_LONG seg_no;		/* Number of current multi-segment in entire data set */
-	GMT_LONG tbl_no;		/* Number of current table in entire data set */
-	GMT_LONG seg_in_tbl_no;		/* Number of current multi-segment in current table */
+	COUNTER_LARGE seg_no;		/* Number of current multi-segment in entire data set */
+	COUNTER_LARGE seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	COUNTER_LARGE n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
 	COUNTER_LARGE n_bad_records;		/* Number of bad records encountered during i/o */
+	COUNTER_MEDIUM tbl_no;		/* Number of current table in entire data set */
+	COUNTER_MEDIUM io_nan_ncols;		/* Number of columns to consider for -s option */
 	GMT_LONG ogr;			/* Tells us if current input source has OGR/GMT metadata (1) or not (0) or not set (-1) */
 	GMT_LONG status;		/* 0	All is ok
 					   1	Current record is segment header
@@ -407,7 +407,7 @@ struct GMT_IO {				/* Used to process input data records */
 	char current_filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
 	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ascii format to overrule format_float_out */
 	int ncid;			/* NetCDF file ID (when opening netCDF file) */
-	int nvars;			/* Number of requested variables in netCDF file */
+	COUNTER_MEDIUM nvars;			/* Number of requested variables in netCDF file */
 	size_t ndim;			/* Length of the column dimension */
 	size_t nrec;			/* Record count */
 	struct GMT_DATE_IO date_input;	/* Has all info on how to decode input dates */
@@ -416,9 +416,9 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_CLOCK_IO clock_output;	/* Has all info on how to write output clocks */
 	struct GMT_GEO_IO geo;		/* Has all the info on how to write geographic coordinates */
 	BOOLEAN skip_if_NaN[GMT_MAX_COLUMNS];	/* TRUE if column j cannot be NaN and we must skip the record */
-	GMT_LONG col_type[2][GMT_MAX_COLUMNS];	/* Type of column on input and output: Time, geographic, etc, see GMT_IS_<TYPE> */
 	BOOLEAN col_skip[GMT_MAX_COLUMNS];	/* TRUE of input column is to be ignored [Default reads all columns, but see -i] */
-	GMT_LONG io_nan_col[GMT_MAX_COLUMNS];	/* Array of columns to consider for -s option ir TRUE */
+	COUNTER_MEDIUM col_type[2][GMT_MAX_COLUMNS];	/* Type of column on input and output: Time, geographic, etc, see GMT_IS_<TYPE> */
+	COUNTER_MEDIUM io_nan_col[GMT_MAX_COLUMNS];	/* Array of columns to consider for -s option ir TRUE */
 	struct GMT_COL_INFO col[2][GMT_MAX_COLUMNS];	/* Order of columns on input and output unless 0,1,2,3,... */
 	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information for binary data */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
@@ -431,19 +431,19 @@ struct GMT_IO {				/* Used to process input data records */
 
 struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is implicit */
 	BOOLEAN swab;		/* TRUE if we must swap byte-order */
-	GMT_LONG x_missing;	/* 1 if a periodic (right) column is implicit (i.e., not stored) */
-	GMT_LONG y_missing;	/* 1 if a periodic (top) row is implicit (i.e., not stored) */
 	BOOLEAN binary;		/* TRUE if we are reading/writing binary data */
 	BOOLEAN input;		/* TRUE if we are reading, FALSE if we are writing */
-	GMT_LONG format;	/* Either GMT_COLUMN_FORMAT or GMT_ROW_FORMAT */
 	GMT_LONG x_step;	/* +1 if logical x values increase to right, else -1 */
 	GMT_LONG y_step;	/* +1 if logical y values increase upwards, else -1 */
-	GMT_LONG x_period;	/* length of a row in the input data ( <= nx, see x_missing) */
-	GMT_LONG y_period;	/* length of a col in the input data ( <= ny, see y_missing) */
-	GMT_LONG start_col;	/* First logical column in file */
-	GMT_LONG start_row;	/* First logical row in file */
-	GMT_LONG gmt_i;		/* Current column number in the GMT registered grid */
-	GMT_LONG gmt_j;		/* Current row number in the GMT registered grid */
+	COUNTER_MEDIUM x_missing;	/* 1 if a periodic (right) column is implicit (i.e., not stored) */
+	COUNTER_MEDIUM y_missing;	/* 1 if a periodic (top) row is implicit (i.e., not stored) */
+	COUNTER_MEDIUM format;	/* Either GMT_COLUMN_FORMAT or GMT_ROW_FORMAT */
+	COUNTER_MEDIUM x_period;	/* length of a row in the input data ( <= nx, see x_missing) */
+	COUNTER_MEDIUM y_period;	/* length of a col in the input data ( <= ny, see y_missing) */
+	COUNTER_MEDIUM start_col;	/* First logical column in file */
+	COUNTER_MEDIUM start_row;	/* First logical row in file */
+	COUNTER_MEDIUM gmt_i;		/* Current column number in the GMT registered grid */
+	COUNTER_MEDIUM gmt_j;		/* Current row number in the GMT registered grid */
 	COUNTER_LARGE n_expected;	/* Number of data element expected to be read */
 	off_t skip;		/* Number of bytes to skip before reading data */
 	PFL get_gmt_ij;		/* Pointer to function that converts running number to GMT ij */
@@ -452,7 +452,7 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 struct GMT_PARSE_Z_IO {	/* -Z[<flags>] */
 	BOOLEAN active;
 	BOOLEAN swab;
-	GMT_LONG repeat[2];
+	BOOLEAN repeat[2];
 	off_t skip;
 	char type;
 	char format[2];

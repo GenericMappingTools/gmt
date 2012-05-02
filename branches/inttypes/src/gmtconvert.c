@@ -263,9 +263,10 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 
 GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG out_col, error = 0, tbl, col, n_cols_in, n_cols_out;
-	GMT_LONG n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
-	GMT_LONG match = FALSE, warn = FALSE, ogr_match = FALSE, ogr_item = 0;
+	BOOLEAN match = FALSE, warn = FALSE, ogr_match = FALSE;
+	GMT_LONG error = 0, ogr_item = 0;
+	COUNTER_MEDIUM out_col, col, n_cols_in, n_cols_out, tbl;
+	COUNTER_MEDIUM n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
 	COUNTER_LARGE last_row, n_rows, row, seg, n_out_seg = 0, out_seg = 0;
 	
 	double *val = NULL;
@@ -415,7 +416,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, val);
 
 	if (Ctrl->I.active) {	/* Must reverse the order of tables, segments and/or records */
-		GMT_LONG tbl1, tbl2;
+		COUNTER_MEDIUM tbl1, tbl2;
 		COUNTER_LARGE row1, row2, seg1, seg2;
 		void *p = NULL;
 		if (Ctrl->I.mode & INV_ROWS) {	/* Must actually swap rows */
@@ -452,7 +453,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Now ready for output */
 
 	if (Ctrl->D.active) {	/* Must write individual segments to separate files so create the needed template */
-		GMT_LONG n_formats = 0;
+		COUNTER_MEDIUM n_formats = 0;
 		if (!Ctrl->D.name) Ctrl->D.name = (GMT->common.b.active[GMT_OUT]) ? strdup ("gmtconvert_segment_%ld.bin") : strdup ("gmtconvert_segment_%ld.txt");
 		for (col = 0; Ctrl->D.name[col]; col++) if (Ctrl->D.name[col] == '%') n_formats++;
 		D[GMT_OUT]->io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENTS: GMT_WRITE_SEGMENTS;

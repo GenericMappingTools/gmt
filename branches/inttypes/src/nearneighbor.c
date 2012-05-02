@@ -212,7 +212,7 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 #endif
 			case 'N':	/* Sectors */
 				Ctrl->N.active = TRUE;
-				n = sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->N.sectors, &Ctrl->N.min_sectors);
+				n = sscanf (opt->arg, "%d/%d", &Ctrl->N.sectors, &Ctrl->N.min_sectors);
 				if (n < 1) Ctrl->N.sectors = NN_DEF_SECTORS;
 				if (n < 2) Ctrl->N.min_sectors = NN_MIN_SECTORS;
 				if (Ctrl->N.sectors < Ctrl->N.min_sectors) Ctrl->N.min_sectors = Ctrl->N.sectors;	/* Minimum cannot be larger than desired */
@@ -252,13 +252,13 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 
 GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, k, col_0, row_0, max_d_col, x_wrap;
-	GMT_LONG d_row, sector, ii, jj, y_wrap, *d_col = NULL;
-	GMT_LONG error = FALSE, wrap_180, replicate_x, replicate_y, n_filled;
+	GMT_LONG row, col, k, ii, jj;
+	COUNTER_MEDIUM d_row, col_0, row_0, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
+	BOOLEAN error = FALSE, wrap_180, replicate_x, replicate_y;
 	
 	size_t n_alloc = GMT_CHUNK;
 	
-	COUNTER_LARGE ij, ij0, kk, n, n_read, n_almost, n_none, n_set;
+	COUNTER_LARGE ij, ij0, kk, n, n_read, n_almost, n_none, n_set, n_filled;
 
 	double weight, weight_sum, grd_sum, dx, dy, delta, distance = 0.0;
 	double x_left, x_right, y_top, y_bottom, factor, three_over_radius;

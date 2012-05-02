@@ -58,7 +58,7 @@ struct GRD2CPT_CTRL {
 	} D;
 	struct E {	/* -E<nlevels> */
 		GMT_LONG active;
-		GMT_LONG levels;
+		COUNTER_MEDIUM levels;
 	} E;
 	struct F {	/* -F[R|r|h|c] */
 		GMT_LONG active;
@@ -199,7 +199,7 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 				break;
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = TRUE;
-				if (sscanf (opt->arg, "%ld", &Ctrl->E.levels) != 1) {
+				if (sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Cannot decode value\n");
 					n_errors++;
 				}
@@ -290,8 +290,8 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 
 GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, j, cpt_flags = 0;
-	GMT_LONG error = FALSE;
+	COUNTER_MEDIUM row, col, j, cpt_flags = 0;
+	BOOLEAN error = FALSE;
 	
 	COUNTER_LARGE ij, k, ngrd = 0, nxyg, nfound, ngood;
 	size_t n_alloc = GMT_TINY_CHUNK;
@@ -440,7 +440,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Decide how to make steps in z.  */
 	if (Ctrl->S.active) {	/* Use predefined levels and interval */
-		GMT_LONG i, j;
+		COUNTER_MEDIUM i, j;
 
 		Ctrl->E.levels = (G[0]->header->z_min < Ctrl->S.low) ? 1 : 0;
 		Ctrl->E.levels += lrint (floor((Ctrl->S.high - Ctrl->S.low)/Ctrl->S.inc)) + 1;

@@ -215,7 +215,7 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 	   this routine returns the desired interpolated value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy. */
 
-	GMT_LONG i, j;
+	COUNTER_MEDIUM i, j;
 	COUNTER_LARGE ij;
 	double retval, wsum, wx[4], wy[4], w;
 
@@ -249,7 +249,7 @@ GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, do
 	   this routine returns the desired interpolated image value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy. 8-bit components is assumed per band.  */
 
-	GMT_LONG i, j, b, nb = G->header->n_bands;
+	COUNTER_MEDIUM i, j, b, nb = G->header->n_bands;
 	COUNTER_LARGE ij;
 	double retval[4], wsum, wx[4], wy[4], w;
 

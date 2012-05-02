@@ -226,13 +226,14 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 
 GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG result, k, tbl, col;
-	GMT_LONG error = FALSE, spatial = FALSE;
+	COUNTER_MEDIUM tbl, col;
+	BOOLEAN error = FALSE, spatial = FALSE;
+	GMT_LONG result;
 	
 	unsigned char *nan_flag = NULL;
 	
 	size_t m_alloc;
-	COUNTER_LARGE row, seg, m = 0, m_supplied = 0;
+	COUNTER_LARGE k, row, seg, m = 0, m_supplied = 0;
 
 	double *t_supplied_out = NULL, *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
 	double tt, low_t, high_t, last_t, inc_degrees = 0.0, *lon = NULL, *lat = NULL;

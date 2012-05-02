@@ -298,9 +298,9 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 
 GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, sigma_set = FALSE, offset_set = FALSE, bad;
-	GMT_LONG p[4], row, col, n, new_grid = FALSE;
-	
+	BOOLEAN error = FALSE, sigma_set = FALSE, offset_set = FALSE, bad, new_grid = FALSE;
+	GMT_LONG p[4];
+	COUNTER_MEDIUM row, col, n;
 	COUNTER_LARGE ij, ij0, index, n_used = 0;
 	
 	char format[GMT_BUFSIZ];

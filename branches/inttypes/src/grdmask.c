@@ -205,9 +205,10 @@ GMT_LONG GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, st
 
 GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, periodic = FALSE, periodic_grid = FALSE;
-	GMT_LONG row, col, side, *d_col = NULL, d_row = 0, col_0, row_0;
-	GMT_LONG tbl, gmode, n_pol = 0, max_d_col = 0;
+	BOOLEAN error = FALSE, periodic = FALSE, periodic_grid = FALSE;
+	COUNTER_MEDIUM side, *d_col = NULL, d_row = 0, col_0, row_0;
+	COUNTER_MEDIUM tbl, gmode, n_pol = 0, max_d_col = 0;
+	GMT_LONG row, col;
 	
 	COUNTER_LARGE ij, k, seg;
 	

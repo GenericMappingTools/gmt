@@ -93,7 +93,7 @@ struct GMT_COMMON {
 	} Y;
 	struct a {	/* -a<col>=<name>[:<type>][,col>=<name>[:<type>], etc][+g<geometry>] */
 		BOOLEAN active;
-		GMT_LONG geometry;
+		COUNTER_MEDIUM geometry;
 		COUNTER_MEDIUM n_aspatial;
 		BOOLEAN clip;		/* TRUE if we wish to clip lines/polygons at Dateline [FALSE] */
 		BOOLEAN output;	/* TRUE when we wish to build OGR output */
@@ -105,7 +105,7 @@ struct GMT_COMMON {
 	struct b {	/* -b[i][o][s|S][d|D][#cols][cvar1/var2/...] */
 		BOOLEAN active[2];		/* TRUE if current input/output is in native binary format */
 		BOOLEAN swab[2];		/* TRUE if current binary input/output must be byte-swapped */
-		GMT_LONG ncol[2];		/* Number of expected columns of input/output
+		COUNTER_MEDIUM ncol[2];		/* Number of expected columns of input/output
 						   0 means it will be determined by program */
 		char type[2];			/* Default column type, if set [d for double] */
 #ifdef GMT_COMPAT
@@ -141,7 +141,7 @@ struct GMT_COMMON {
 	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+t<threshold>] */
 		BOOLEAN active;
 		BOOLEAN antialias;	/* Defaults to TRUE, if supported */
-		GMT_LONG interpolant;	/* Defaults to BCR_BICUBIC */
+		COUNTER_MEDIUM interpolant;	/* Defaults to BCR_BICUBIC */
 		BOOLEAN bc_set;	/* TRUE if +b was parsed */
 		char BC[4];		/* For BC settings via +bg|n[x|y]|p[x|y] */
 		double threshold;	/* Defaults to 0.5 */

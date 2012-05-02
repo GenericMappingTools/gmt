@@ -29,8 +29,8 @@
 #include "gmt.h"
 
 EXTERN_MSC GMT_LONG gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
-EXTERN_MSC GMT_LONG gmt_find_macro (char *arg, GMT_LONG n_macros, struct MATH_MACRO *M);
-EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, GMT_LONG n_macros, struct MATH_MACRO **M);	
+EXTERN_MSC GMT_LONG gmt_find_macro (char *arg, COUNTER_MEDIUM n_macros, struct MATH_MACRO *M);
+EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, COUNTER_MEDIUM n_macros, struct MATH_MACRO **M);	
 EXTERN_MSC double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, COUNTER_LARGE *id);
 
 #define GRDMATH_ARG_IS_OPERATOR		 0
@@ -2906,8 +2906,10 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG row, col, k, kk, op = 0, nstack = 0, new_stack = -1, n_items = 0, this_stack;
 	GMT_LONG consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
-	GMT_LONG alloc_mode[GRDMATH_STACK_SIZE], status, subset, n_macros;
+	GMT_LONG alloc_mode[GRDMATH_STACK_SIZE], status, subset;
 	GMT_LONG constant[GRDMATH_STACK_SIZE], error = FALSE;
+	
+	COUNTER_MEDIUM n_macros;
 	
 	COUNTER_LARGE node;
 

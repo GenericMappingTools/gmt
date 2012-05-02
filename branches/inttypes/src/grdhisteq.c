@@ -190,10 +190,10 @@ float get_cell (float x, struct CELL *cell, GMT_LONG n_cells_m1, GMT_LONG last_c
 	return (0.0);	/* Cannot get here - just used to quiet compiler */
 }
 
-GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, GMT_LONG n_cells, GMT_LONG quadratic, GMT_LONG dump_intervals)
+GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, COUNTER_MEDIUM n_cells, BOOLEAN quadratic, GMT_LONG COUNTER_MEDIUM)
 {	/* Do basic histogram equalization */
 	COUNTER_LARGE i, j, nxy;
-	GMT_LONG last_cell, n_cells_m1 = 0, current_cell, pad[4];
+	COUNTER_MEDIUM last_cell, n_cells_m1 = 0, current_cell, pad[4];
 	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
@@ -268,7 +268,7 @@ int compare_indices (const void *point_1, const void *point_2)
 
 GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
 {	/* Make an output grid file with standard normal scores */
-	GMT_LONG row, col;
+	COUNTER_MEDIUM row, col;
 	COUNTER_LARGE i = 0, j = 0, ij, nxy;
 	double dnxy;
 	struct INDEXED_DATA *indexed_data = NULL;
@@ -318,7 +318,7 @@ GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double
 
 GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE;
+	BOOLEAN error = FALSE;
 
 	double wesn[4];
 	

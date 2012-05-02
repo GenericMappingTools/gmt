@@ -291,7 +291,7 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 #ifdef GMT_COMPAT
 				if (strchr (opt->arg, '/')) { /* Gave obsolete format */
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
-					if (sscanf (opt->arg, "%*s/%" GMT_LL "d", &Ctrl->N.col) != 1) {
+					if (sscanf (opt->arg, "%*s/%d", &Ctrl->N.col) != 1) {
 						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Syntax is -N<tcol>\n");
 						++n_errors;
 					}
@@ -360,21 +360,22 @@ double gaussian_weight (double radius, double half_width)
 
 void allocate_data_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 
 	for (i = 0; i < F->n_cols; ++i) F->data[i] = GMT_memory (GMT, F->data[i], F->n_row_alloc, double);
 }
 
 void allocate_more_work_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 
 	for (i = 0; i < F->n_cols; ++i) F->work[i] = GMT_memory (GMT, F->work[i], F->n_work_alloc, double);
 }
 
 GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
-	GMT_LONG i, i1, i2, normalize = FALSE;
+	COUNTER_MEDIUM i, i1, i2;
+	BOOLEAN normalize = FALSE;
 	double t_0, t_1, time, w_sum;
 	PFD get_weight[3];		/* Selects desired weight function.  */
 
@@ -528,15 +529,16 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 {
 	COUNTER_LARGE i_row, left, right, n_l, n_r;
 	COUNTER_LARGE i_t_output = 0, n_in_filter, n_for_call, n_good_ones;
-	GMT_LONG i_col, iq, i_f_wt;
-	GMT_LONG *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
+	COUNTER_MEDIUM iq, i_col;
+	GMT_LONG i_f_wt;
+	BOOLEAN *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
 	double time, delta_time, *outval = NULL, wt, val, med, scl, small;
 	double *wt_sum = NULL;		/* Pointer for array of weight sums [each column]  */
 	double *data_sum = NULL;	/* Pointer for array of data * weight sums [columns]  */
 	struct GMT_CTRL *GMT = C->GMT;
 
 	outval = GMT_memory (GMT, NULL, F->n_cols, double);
-	good_one = GMT_memory (GMT, NULL, F->n_cols, GMT_LONG);
+	good_one = GMT_memory (GMT, NULL, F->n_cols, BOOLEAN);
 	wt_sum = GMT_memory (GMT, NULL, F->n_cols, double);
 	data_sum = GMT_memory (GMT, NULL, F->n_cols, double);
 
@@ -643,7 +645,7 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 			for (i_row = left; i_row < right; ++i_row) {
 				delta_time = time - F->data[F->t_col][i_row];
 				i_f_wt = F->half_n_f_wts + lrint (floor (0.5 + delta_time/F->dt));
-				if ((i_f_wt < 0) || (i_f_wt >= F->n_f_wts)) continue;
+				if ((i_f_wt < 0) || (i_f_wt >= (GMT_LONG)F->n_f_wts)) continue;
 
 				for(i_col = 0; i_col < F->n_cols; ++i_col) {
 					if (!good_one[i_col]) continue;
@@ -726,7 +728,7 @@ GMT_LONG allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	if (F->check_asym) F->n_right = GMT_memory (GMT, NULL, F->n_cols, GMT_LONG);
 
 	if (F->robust || (F->filter_type > FILTER1D_CONVOLVE) ) {	/* Then we need workspace  */
-		GMT_LONG i;
+		COUNTER_MEDIUM i;
 
 		F->work = GMT_memory (GMT, NULL, F->n_cols, double *);
 		for (i = 0; i < F->n_cols; ++i) F->work[i] = GMT_memory (GMT, NULL, F->n_work_alloc, double);
@@ -744,7 +746,7 @@ GMT_LONG allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 
 void free_space_filter1d (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	if (!F) return;
 	if (F->robust || (F->filter_type > FILTER1D_CONVOLVE) ) {
 		for (i = 0; i < F->n_cols; ++i)	GMT_free (GMT, F->work[i]);
@@ -793,8 +795,9 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 
 GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG col, tbl, error;
+	COUNTER_MEDIUM col, tbl;
 	COUNTER_LARGE row, seg;
+	GMT_LONG error;
 
 	double last_time, new_time, in;
 	

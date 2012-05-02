@@ -95,7 +95,7 @@ struct GRDTREND_CTRL {	/* All control options for this program (except common ar
 	struct N {	/* -N[r]<n_model> */
 		GMT_LONG active;
 		GMT_LONG robust;
-		GMT_LONG value;
+		COUNTER_MEDIUM value;
 	} N;
 	struct T {	/* -T<trend.grd> */
 		GMT_LONG active;
@@ -225,9 +225,9 @@ GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void set_up_vals (double *val, GMT_LONG nval, double vmin, double vmax, double dv, GMT_LONG pixel_reg)
+void set_up_vals (double *val, COUNTER_MEDIUM nval, double vmin, double vmax, double dv, COUNTER_MEDIUM pixel_reg)
 {	/* Store x[i], y[j] once for all to save time  */
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	double v, middle, drange, true_min, true_max;
 
 	true_min = (pixel_reg) ? vmin + 0.5 * dv : vmin;
@@ -245,7 +245,7 @@ void set_up_vals (double *val, GMT_LONG nval, double vmin, double vmax, double d
 	return;
 }
 
-void load_pstuff (double *pstuff, GMT_LONG n_model, double x, double y, GMT_LONG newx, GMT_LONG newy)
+void load_pstuff (double *pstuff, COUNTER_MEDIUM n_model, double x, double y, COUNTER_MEDIUM newx, COUNTER_MEDIUM newy)
 {	/* Compute Legendre polynomials of x[i],y[j] as needed  */
 	/* If either x or y has changed, compute new Legendre polynomials as needed  */
 
@@ -268,9 +268,9 @@ void load_pstuff (double *pstuff, GMT_LONG n_model, double x, double y, GMT_LONG
 	return;
 }
 
-void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, double *yval, double *gtd, GMT_LONG n_model, double *pstuff)
+void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, double *yval, double *gtd, COUNTER_MEDIUM n_model, double *pstuff)
 {	/* Find trend from a model  */
-	GMT_LONG row, col, k;
+	COUNTER_MEDIUM row, col, k;
 	COUNTER_LARGE ij;
 
 	GMT_grd_loop (GMT, T, row, col, ij) {
@@ -282,20 +282,20 @@ void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, doub
 
 void compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct GMT_GRID *T, struct GMT_GRID *R)
 {	/* Find residuals from a trend  */
-	GMT_LONG row, col;
+	COUNTER_MEDIUM row, col;
 	COUNTER_LARGE ij;
 
 	GMT_grd_loop (GMT, T, row, col, ij) R->data[ij] = D->data[ij] - T->data[ij];
 }
 
-void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, GMT_LONG n_model)
+void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, COUNTER_MEDIUM n_model)
 {
 	/* Routine to fit up elementary polynomial model of grd data, 
 	model = gtd[0] + gtd[1]*x + gtd[2]*y + gtd[3] * x * y,
 	where x,y are normalized to range [-1,1] and there are no
 	NaNs in grid file, and problem is unweighted least squares.  */
 
-	GMT_LONG row, col;
+	COUNTER_MEDIUM row, col;
 	COUNTER_LARGE ij;
 	double x2, y2, sumx2 = 0.0, sumy2 = 0.0, sumx2y2 = 0.0;
 
@@ -331,7 +331,7 @@ void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, 
 
 double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W, double scale)
 {	/* Find Chi-Squared from weighted residuals  */
-	GMT_LONG row, col;
+	COUNTER_MEDIUM row, col;
 	COUNTER_LARGE ij;
 	double tmp, chisq = 0.0;
 
@@ -348,7 +348,7 @@ double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID 
 
 double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W)
 {	/* Find weights from residuals  */
-	GMT_LONG row, col;
+	COUNTER_MEDIUM row, col;
 	COUNTER_LARGE j = 0, j2, ij;
 	double r, mad, scale;
 
@@ -380,9 +380,9 @@ double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct G
 	return (scale);
 }
 
-void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, GMT_LONG n_model)
+void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, COUNTER_MEDIUM n_model)
 {	/* Do reports if gmtdefs.verbose = NORMAL or above  */
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	char pbasis[10][16], format[GMT_BUFSIZ];
 
 	sprintf (pbasis[0], "Mean");
@@ -402,7 +402,7 @@ void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, GMT_LONG n_model
 	return;
 }
 
-void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, GMT_LONG n_model, struct GMT_GRID *W, GMT_LONG weighted)
+void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, COUNTER_MEDIUM n_model, struct GMT_GRID *W, BOOLEAN weighted)
 {
 	/* Routine to load the matrix G'G (gtg) and vector G'd (gtd)
 	for the normal equations.  Routine uses indices i,j to refer
@@ -412,7 +412,7 @@ void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, d
 	loading only lower triangular part of gtg and then filling
 	by symmetry after i,j loop.  */
 
-	GMT_LONG row, col, k, l, n_used = 0;
+	COUNTER_MEDIUM row, col, k, l, n_used = 0;
 	COUNTER_LARGE ij;
 
 	/* First zero things out to start */
@@ -470,7 +470,9 @@ void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, d
 GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* High-level function that implements the grdcontour task */
 
-	GMT_LONG trivial, weighted, error = 0, k, ierror = 0, iterations, set_ones = TRUE;
+	BOOLEAN trivial, weighted,iterations, set_ones = TRUE;
+	GMT_LONG error = 0;
+	BOUNTER_MEDIUM row, col;
 	
 	COUNTER_LARGE ij;
 	
@@ -569,9 +571,9 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* Set up xval and yval lookup tables */
 
 	dv = 2.0 / (double)(G->header->nx - 1);
-	for (k = 0; k < G->header->nx - 1; k++) xval[k] = -1.0 + k * dv;
+	for (col = 0; col < G->header->nx - 1; col++) xval[col] = -1.0 + col * dv;
 	dv = 2.0 / (double)(G->header->ny - 1);
-	for (k = 0; k < G->header->ny - 1; k++) yval[k] = -1.0 + k * dv;
+	for (row = 0; row < G->header->ny - 1; row++) yval[row] = -1.0 + row * dv;
 	xval[G->header->nx - 1] = yval[G->header->ny - 1] = 1.0;
 
 	/* Do the problem */
@@ -584,7 +586,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	else {	/* Problem is not trivial  !!  */
 
 		load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
-		GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, &ierror, 1);
+		ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, TRUE);
 		if (ierror) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %ld\n", ierror);
 			return (EXIT_FAILURE);
@@ -601,7 +603,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 				GMT_memcpy (old, gtd, Ctrl->N.value, double);
 				scale = compute_robust_weight (GMT, R, W);
 				load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
-				GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, &ierror, 1);
+				ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, TRUE);
 				if (ierror) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %ld\n", ierror);
 					return (EXIT_FAILURE);
