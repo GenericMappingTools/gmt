@@ -182,9 +182,10 @@ GMT_LONG GMT_grdedit_parse (struct GMTAPI_CTRL *C, struct GRDEDIT_CTRL *Ctrl, st
 GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* High-level function that implements the grdedit task */
 
-	GMT_LONG row, col, error, n_data, n_use;
+	COUNTER_MEDIUM row, col;
+	GMT_LONG error;
 	
-	COUNTER_LARGE ij;
+	COUNTER_LARGE ij, n_data, n_use;
 	
 	double shift_amount = 0.0, *in = NULL;
 
@@ -299,10 +300,8 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 			if (GMT_y_is_outside (GMT, in[GMT_Y],  G->header->wesn[YLO], G->header->wesn[YHI])) continue;	/* Outside y-range */
 			if (GMT_x_is_outside (GMT, &in[GMT_X], G->header->wesn[XLO], G->header->wesn[XHI])) continue;	/* Outside x-range */
-			row = GMT_grd_y_to_row (GMT, in[GMT_Y], G->header);
-			if (row < 0 || row >= G->header->ny) continue;
-			col = GMT_grd_x_to_col (GMT, in[GMT_X], G->header);
-			if (col < 0 || col >= G->header->nx) continue;
+			if (GMT_row_col_out_of_bounds (GMT, in, G->header, &row, &col)) continue;			/* Outside grid node range */
+			
 			ij = GMT_IJP (G->header, row, col);
 			G->data[ij] = (float)in[GMT_Z];
 			n_use++;

@@ -43,7 +43,7 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 	} D;
 	struct E {	/* -E */
 		GMT_LONG active;
-		GMT_LONG inside;	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
+		COUNTER_MEDIUM inside;	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
 	struct G {	/* -G<maskfile> */
 		GMT_LONG active;
@@ -206,9 +206,9 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	BOOLEAN error = FALSE, temp_shift = FALSE, wrap, used_polygons;
-	COUNTER_MEDIUM base = 3, row, col, col_min, col_max, row_min, row_max, nx1, ny1;
-	COUNTER_MEDIUM i, k, ii, bin, ind, np, side, np_new;
-	GMT_LONG direction, err;
+	COUNTER_MEDIUM base = 3, row, row_min, row_max, nx1, ny1;
+	COUNTER_MEDIUM k, ii, bin, np, side, np_new;
+	GMT_LONG col, col_min, col_max, i, direction, err, ind;
 	
 	COUNTER_LARGE ij;
 

@@ -190,7 +190,7 @@ float get_cell (float x, struct CELL *cell, GMT_LONG n_cells_m1, GMT_LONG last_c
 	return (0.0);	/* Cannot get here - just used to quiet compiler */
 }
 
-GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, COUNTER_MEDIUM n_cells, BOOLEAN quadratic, GMT_LONG COUNTER_MEDIUM)
+GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, COUNTER_MEDIUM n_cells, BOOLEAN quadratic, BOOLEAN dump_intervals)
 {	/* Do basic histogram equalization */
 	COUNTER_LARGE i, j, nxy;
 	COUNTER_MEDIUM last_cell, n_cells_m1 = 0, current_cell, pad[4];

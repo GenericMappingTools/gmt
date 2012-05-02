@@ -185,7 +185,7 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, COUNTER_LARGE fi
 	if (go_quickly == 1) return;	/* Already have everything requested so we return */
 
 	if (go_quickly == 2) {	/* Return center of block instead of computing a representative location */
-		GMT_LONG row, col;
+		COUNTER_MEDIUM row, col;
 		row = GMT_row (h, data[node].i);
 		col = GMT_col (h, data[node].i);
 		out[GMT_X] = GMT_grd_col_to_x (GMT, col, h);
@@ -222,7 +222,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	size_t n_alloc = 0, nz_alloc = 0;
 	
 	GMT_LONG error = FALSE, box_and_whisker = FALSE, go_quickly = 0;
-	GMT_LONG row, col, w_col, n_output, n_quantiles = 1;
+	COUNTER_MEDIUM row, col, w_col, n_output, n_quantiles = 1;
 	
 	double out[7], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[3], weight, *in = NULL, *z_tmp = NULL;
 
@@ -329,10 +329,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* We appear to be inside: Get row and col indices of this block */
 
-		col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
-		if (col < 0 || col >= Grid->header->nx ) continue;
-		row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
-		if (row < 0 || row >= Grid->header->ny ) continue;
+		if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;	/* Sorry, outside after all */
 
 		/* OK, this point is definitively inside and will be used */
 

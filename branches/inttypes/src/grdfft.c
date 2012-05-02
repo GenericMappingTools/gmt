@@ -217,8 +217,8 @@ void remove_plane (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 
 void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 {
-	GMT_LONG im, jm, il1, ir1, il2, ir2, jb1, jb2, jt1, jt2;
-	COUNTER_MEDIUM i, j, i_data_start, j_data_start;
+	GMT_LONG il1, ir1, il2, ir2, jb1, jb2, jt1, jt2, j;
+	COUNTER_MEDIUM im, jm, i, i_data_start, j_data_start;
 	float *datac = Grid->data;
 	double scale, cos_wt;
 	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
@@ -689,7 +689,7 @@ COUNTER_LARGE get_non_symmetric_f (COUNTER_LARGE *f, COUNTER_LARGE n)
 	return (retval);
 }
 
-void fourt_stats (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny, GMT_LONG *f, double *r, size_t *s, double *t)
+void fourt_stats (struct GMT_CTRL *C, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, COUNTER_MEDIUM *f, double *r, size_t *s, double *t)
 {
 	/* Find the proportional run time, t, and rms relative error, r,
 	 * of a Fourier transform of size nx,ny.  Also gives s, the size
@@ -764,15 +764,15 @@ void fourt_stats (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny, GMT_LONG *f, dou
 	return;
 } 
 
-void suggest_fft (struct GMT_CTRL *GMT, GMT_LONG nx, GMT_LONG ny, struct FFT_SUGGESTION *fft_sug, GMT_LONG do_print)
+void suggest_fft (struct GMT_CTRL *GMT, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, struct FFT_SUGGESTION *fft_sug, BOOLEAN do_print)
 {
-	GMT_LONG f[32], xstop, ystop;
-	GMT_LONG nx_best_t, ny_best_t;
-	GMT_LONG nx_best_e, ny_best_e;
-	GMT_LONG nx_best_s, ny_best_s;
-	GMT_LONG nxg, nyg;       /* Guessed by this routine  */
-	GMT_LONG nx2, ny2, nx3, ny3, nx5, ny5;   /* For powers  */
-	GMT_LONG current_space, best_space, given_space, e_space, t_space;
+	COUNTER_MEDIUM f[32], xstop, ystop;
+	COUNTER_MEDIUM nx_best_t, ny_best_t;
+	COUNTER_MEDIUM nx_best_e, ny_best_e;
+	COUNTER_MEDIUM nx_best_s, ny_best_s;
+	COUNTER_MEDIUM nxg, nyg;       /* Guessed by this routine  */
+	COUNTER_MEDIUM nx2, ny2, nx3, ny3, nx5, ny5;   /* For powers  */
+	COUNTER_MEDIUM current_space, best_space, given_space, e_space, t_space;
 	double current_time, best_time, given_time, s_time, e_time;
 	double current_err, best_err, given_err, s_err, t_err;
 
@@ -1132,7 +1132,8 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	BOOLEAN error = FALSE, stop;
-	COUNTER_MEDIUM op_count = 0, par_count = 0, status, side;
+	GMT_LONG status;
+	COUNTER_MEDIUM op_count = 0, par_count = 0, side;
 	COUNTER_LARGE ij;
 
 	struct GMT_GRID *GridA = NULL, *Out = NULL;
