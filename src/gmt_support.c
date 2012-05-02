@@ -5137,7 +5137,7 @@ GMT_LONG GMT_get_format (struct GMT_CTRL *C, double interval, char *unit, char *
 	return (ndec);
 }
 
-GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double *x, double *y, COUNTER_LARGE n_path)
+COUNTER_MEDIUM GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double *x, double *y, COUNTER_LARGE n_path)
 {
 	/* Routine returns (2) if (xp,yp) is inside the
 	   polygon x[n_path], y[n_path], (0) if outside,
@@ -5165,7 +5165,7 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 	   */
 
 	COUNTER_LARGE i, j, k, jend, crossing_count;
-	GMT_LONG above;
+	BOOLEAN above;
 	double y_sect;
 
 	if (n_path < 2) return (GMT_OUTSIDE);	/* Cannot be inside a null set or a point so default to outside */
@@ -5427,7 +5427,7 @@ GMT_LONG gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LI
 	return (0);	/* This means no special cases were detected that warranted an immediate return */
 }
 
-GMT_LONG GMT_inonout_sphpol (struct GMT_CTRL *C, double plon, double plat, const struct GMT_LINE_SEGMENT *P)
+COUNTER_MEDIUM GMT_inonout_sphpol (struct GMT_CTRL *C, double plon, double plat, const struct GMT_LINE_SEGMENT *P)
 /* This function is used to see if some point P is located inside, outside, or on the boundary of the
  * spherical polygon S read by GMT_import_table.  Note C->current.io.skip_duplicates must be TRUE when the polygon
  * was read so there are NO duplicate (repeated) points.
@@ -5484,7 +5484,7 @@ GMT_LONG GMT_inonout_sphpol (struct GMT_CTRL *C, double plon, double plat, const
 	return (GMT_OUTSIDE);	/* Nothing triggered the tests; we are outside */
 }
 
-GMT_LONG gmt_inonout_sub (struct GMT_CTRL *C, double x, double y, const struct GMT_LINE_SEGMENT *S)
+COUNTER_MEDIUM gmt_inonout_sub (struct GMT_CTRL *C, double x, double y, const struct GMT_LINE_SEGMENT *S)
 {	/* Front end for both spherical and Cartesian in-on-out functions */
 	GMT_LONG side;
 
@@ -5505,10 +5505,10 @@ GMT_LONG gmt_inonout_sub (struct GMT_CTRL *C, double x, double y, const struct G
 	return (side);
 }
 
-GMT_LONG GMT_inonout (struct GMT_CTRL *C, double x, double y, const struct GMT_LINE_SEGMENT *S)
+COUNTER_MEDIUM GMT_inonout (struct GMT_CTRL *C, double x, double y, const struct GMT_LINE_SEGMENT *S)
 {	/* Front end for both spherical and Cartesian in-on-out functions.
  	 * Knows to check for polygons with holes as well. */
-	GMT_LONG side, side_h;
+	COUNTER_MEDIUM side, side_h;
 	struct GMT_LINE_SEGMENT *H = NULL;
 
 	if ((side = gmt_inonout_sub (C, x, y, S)) <= GMT_ONEDGE) return (side);	/* Outside polygon or on perimeter, we are done */
@@ -6864,6 +6864,7 @@ BOOLEAN GMT_y_out_of_bounds (struct GMT_CTRL *C, GMT_LONG *j, struct GRD_HEADER 
 	* If no periodicities are present then nothing happens here.  If we end up being
 	* out of bounds we return TRUE (and main program can take action like continue);
 	* otherwise we return FALSE.
+	* Note: *j may be negative on input.
 	*/
 
 	if ((*j) < 0) {	/* Depending on BC's we wrap around or we are above the top of the domain */
@@ -6902,6 +6903,7 @@ BOOLEAN GMT_x_out_of_bounds (struct GMT_CTRL *C, GMT_LONG *i, struct GRD_HEADER 
 	* the longitude 180 degrees away - this is achieved by examining the wrap_180 flag and take action.
 	* If no periodicities are present and we end up being out of bounds we return TRUE (and
 	* main program can take action like continue); otherwise we return FALSE.
+	* Note: *i may be negative on input.
 	*/
 
 	/* Depending on BC's we wrap around or leave as is. */
@@ -6922,6 +6924,20 @@ BOOLEAN GMT_x_out_of_bounds (struct GMT_CTRL *C, GMT_LONG *i, struct GRD_HEADER 
 	if (wrap_180) (*i) = ((*i) + (h->nxp / 2)) % h->nxp;	/* Must move 180 degrees */
 
 	return (FALSE);	/* OK, we are inside grid now for sure */
+}
+
+BOOLEAN GMT_row_col_out_of_bounds (struct GMT_CTRL *C, double *in, struct GRD_HEADER *h, COUNTER_MEDIUM *row, COUNTER_MEDIUM *col)
+{	/* Retirn FALSE and pass back unsigned row,col ifinside region, or return TRUE (outside) */
+	GMT_LONG signed_row, signed_col;
+	signed_row = GMT_grd_y_to_row (GMT, in[GMT_Y], h);
+	if (signed_row < 0) return (TRUE);
+	signed_col = GMT_grd_x_to_col (GMT, in[GMT_X], h);
+	if (signed_col < 0) return (TRUE);
+	*row = signed_row;
+	if (*row >= h->ny) return (TRUE);
+	*col = signed_col;
+	if (*col >= h->nx) return (TRUE);
+	return (FALSE);	/* Inside the node region */
 }
 
 void GMT_set_xy_domain (struct GMT_CTRL *C, double wesn_extended[], struct GRD_HEADER *h)

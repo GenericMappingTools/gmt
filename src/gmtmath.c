@@ -135,7 +135,7 @@ void new_table (struct GMT_CTRL *GMT, double ***s, GMT_LONG n_col, GMT_LONG n)
 	*s = p;
 }
 
-void decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *skip, GMT_LONG n_col, GMT_LONG t_col)
+void decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *skip, COUNTER_MEDIUM n_col, COUNTER_MEDIUM t_col)
 {
 	COUNTER_MEDIUM i, start, stop, pos, col;
 	char p[GMT_BUFSIZ];
@@ -170,7 +170,7 @@ void decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *skip, GMT_LONG n
 
 /* ---------------------- start convenience functions --------------------- */
 
-GMT_LONG solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *D, GMT_LONG n_col, GMT_LONG skip[], char *file)
+GMT_LONG solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *D, COUNTER_MEDIUM n_col, GMT_LONG skip[], char *file)
 {
 	/* Consider the current table the augmented matrix [A | b], making up the linear system Ax = b.
 	 * We will set up the normal equations, solve for x, and output the solution before quitting.
@@ -420,7 +420,7 @@ GMT_LONG GMT_gmtmath_parse (struct GMTAPI_CTRL *C, struct GMTMATH_CTRL *Ctrl, st
 				break;
 			case 'N':	/* Sets no of columns and the time column */
 				Ctrl->N.active = TRUE;
-				sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->N.ncol, &Ctrl->N.tcol);
+				sscanf (opt->arg, "%d/%d", &Ctrl->N.ncol, &Ctrl->N.tcol);
 				break;
 			case 'Q':	/* Quick for -Ca -N1/0 -T0/0/1 */
 				Ctrl->Q.active = TRUE;
@@ -2826,7 +2826,9 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 #define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Hash; Free_Stack; Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
 
 GMT_LONG decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
-	GMT_LONG expect, i, check = GMT_IS_NAN, possible_number = FALSE;
+	COUNTER_MEDIUM expect;
+	GMT_LONG key;
+	BOOLEAN check = GMT_IS_NAN, possible_number = FALSE;
 	char copy[GMT_TEXT_LEN256];
 	char *mark = NULL;
 	double tmp = 0.0;
@@ -2835,7 +2837,7 @@ GMT_LONG decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, st
 
 	/* Check if argument is operator */
 
-	if ((i = GMT_hash_lookup (GMT, txt, H, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS)) >= GMTMATH_ARG_IS_OPERATOR) return (i);
+	if ((key = GMT_hash_lookup (GMT, txt, H, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS)) >= GMTMATH_ARG_IS_OPERATOR) return (key);
 
 	/* Next look for symbols with special meaning */
 
@@ -2884,13 +2886,15 @@ GMT_LONG decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, st
 
 GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, k, kk, op = 0, nstack = 0, new_stack = -1, use_t_col = 0, status;
-	GMT_LONG consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS];
-	GMT_LONG n_columns = 0, alloc_mode[GMTMATH_STACK_SIZE];
-	GMT_LONG constant[GMTMATH_STACK_SIZE], error = FALSE, set_equidistant_t = FALSE, dim[4] = {1, 1, 0, 0};
-	GMT_LONG read_stdin = FALSE, t_check_required = TRUE, got_t_from_file = FALSE, done;
+	GMT_LONG i, j, k, op = 0, new_stack = -1;
+	COUNTER_MEDIUM consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS];
+	COUNTER_MEDIUM n_columns = 0, alloc_mode[GMTMATH_STACK_SIZE], use_t_col = 0, nstack = 0, kk;
+	BOOLEAN constant[GMTMATH_STACK_SIZE], error = FALSE, set_equidistant_t = FALSE;
+	BOOLEAN read_stdin = FALSE, t_check_required = TRUE, got_t_from_file = FALSE, done;
 	COUNTER_LARGE row, n_records, n_rows = 0, seg;
 	COUNTER_MEDIUM n_macros;
+	
+	int64_t dim[4] = {1, 1, 0, 0};
 
 	double factor[GMTMATH_STACK_SIZE], t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
 
@@ -2986,9 +2990,9 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (opt = list, got_t_from_file = 0; got_t_from_file == 0 && opt; opt = opt->next) {
 		if (!(opt->option == GMTAPI_OPT_INFILE))	continue;	/* Skip command line options and output */
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
-		status = decode_gmt_argument (GMT, opt->arg, &value, localhashnode);	/* Determine what this is */
-		if (status == GMTMATH_ARG_IS_BAD) Return (EXIT_FAILURE);		/* Horrible */
-		if (status != GMTMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
+		op = decode_gmt_argument (GMT, opt->arg, &value, localhashnode);	/* Determine what this is */
+		if (op == GMTMATH_ARG_IS_BAD) Return (EXIT_FAILURE);		/* Horrible */
+		if (op != GMTMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
 		if (!got_t_from_file) {
 			if (!strcmp (opt->arg, "STDIN")) {	/* Special stdin name.  We store this input in a special struct since we may need it again and it can only be read once! */
 				if ((D_stdin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, 0, NULL, NULL)) == NULL) {
@@ -3336,7 +3340,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (info.roots_found) {	/* Special treatment of root finding */
 		struct GMT_LINE_SEGMENT *S = stack[0]->table[0]->segment[0];
-		GMT_LONG dim[4] = {1, 1, 1, 0};
+		int64_t dim[4] = {1, 1, 1, 0};
 		
 		dim[3] = info.n_roots;
 		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error)
@@ -3362,7 +3366,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		if (Ctrl->S.active) {	/* Only get one record */
 			COUNTER_LARGE r, row;
-			GMT_LONG nr, c;
+			COUNTER_MEDIUM nr, c;
 			struct GMT_DATASET *N = NULL;
 			nr = (Ctrl->S.active) ? 1 : 0;
 			N = GMT_alloc_dataset (GMT, R, n_columns, nr, GMT_ALLOC_NORMAL);

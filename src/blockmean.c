@@ -162,7 +162,9 @@ GMT_LONG GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl
 GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_LARGE node, n_cells_filled, n_read, n_lost, n_pitched, *np = NULL;
-	GMT_LONG row, col, w_col, error, use_xy, use_weight;
+	COUNTER_MEDIUM row, col, w_col;
+	GMT_LONG error;
+	BOOLEAN use_xy, use_weight;
 
 	double weight, weighted_z, iw, wesn[4], out[7], *in = NULL;
 
@@ -273,10 +275,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* We appear to be inside: Get row and col indices of this block */
 
-		col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
-		if (col < 0 || col >= Grid->header->nx) continue;
-		row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
-		if (row < 0 || row >= Grid->header->ny) continue;
+		if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;	/* Sorry, outside after all */
 
 		/* OK, this point is definitively inside and will be used */
 

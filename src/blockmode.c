@@ -187,7 +187,9 @@ double weighted_mode (struct BLK_DATA *d, double wsum, COUNTER_LARGE n, COUNTER_
 
 GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, mode_xy, row, col, w_col;
+	BOOLEAN error = FALSE, mode_xy;
+	
+	COUNTER_MEDIUM row, col, w_col;
 
 	COUNTER_LARGE node, first_in_cell, first_in_new_cell, n_lost, n_read;
 	COUNTER_LARGE n_cells_filled, n_in_cell, nz, n_pitched;
@@ -288,10 +290,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* We appear to be inside: Get row and col indices of this block */
 
-		col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
-		if (col < 0 || col >= Grid->header->nx ) continue;
-		row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
-		if (row < 0 || row >= Grid->header->ny ) continue;
+		if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;	/* Sorry, outside after all */
 
 		/* OK, this point is definitively inside and will be used */
 

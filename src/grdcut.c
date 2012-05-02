@@ -149,7 +149,7 @@ GMT_LONG GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, stru
 
 GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = 0
+	GMT_LONG error = 0;
 	unsigned int nx_old, ny_old;
 
 	double wesn_new[4], wesn_old[4];

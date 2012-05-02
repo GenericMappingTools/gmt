@@ -594,7 +594,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	BOOLEAN first = TRUE, get_z = FALSE, error = FALSE, use_folder = FALSE, do_description;
 	COUNTER_MEDIUM n_coord = 0, t1_col, t2_col, pnt_nr = 0;
-	GMT_LONG k, set_nr = 0, index = -4, N = 1;
+	GMT_LONG set_nr = 0, index = -4, N = 1;
 	
 	char buffer[GMT_BUFSIZ], description[GMT_BUFSIZ], *Document[2] = {"Document", "Folder"};
 	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"};
@@ -694,9 +694,9 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	tabs (--N); printf ("</LabelStyle>\n");
 	tabs (--N); printf ("</Style>\n");
 
-	for (k = -3; Ctrl->C.active && k < (GMT_LONG)P->n_colors; k++) {	/* Place styles for each color in CPT file */
-		get_rgb_lookup (GMT, P, k, rgb);
-		tabs (N++); printf ("<Style id=\"GMT%d\">\n", k);
+	for (index = -3; Ctrl->C.active && index < (GMT_LONG)P->n_colors; index++) {	/* Place styles for each color in CPT file */
+		get_rgb_lookup (GMT, P, index, rgb);
+		tabs (N++); printf ("<Style id=\"GMT%d\">\n", index);
 		if (Ctrl->F.mode < LINE)	/* Set icon style (applies to symbols only */
 			set_iconstyle (Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
 		else if (Ctrl->F.mode == LINE)	/* Line style only */
@@ -720,6 +720,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		tabs (--N); printf ("</Style>\n");
 	}
+	index = -4;	/* Default unless -C changes things */
 	if (Ctrl->D.active) {	/* Add in a description HTML snipped */
 		char line[GMT_BUFSIZ];
 		FILE *fp = NULL;
@@ -845,7 +846,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	else {	/* Read regular data table */
-		COUNTER_MEDIUM tbl;
+		COUNTER_MEDIUM tbl, col;
 		COUNTER_LARGE row, seg;
 		struct GMT_DATASET *Din = NULL;
 		struct GMT_TABLE *T = NULL;
@@ -953,10 +954,10 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							tabs (N), printf ("<name>%s %d</name>\n", name[Ctrl->F.mode], pnt_nr);
 						if (Ctrl->L.n_cols) {
 							tabs (N++); printf ("<ExtendedData>\n");
-							for (k = 0; k < Ctrl->L.n_cols; k++) {
-								tabs (N++); printf ("<Data name = \"%s\">\n", Ctrl->L.ext[k].name);
+							for (col = 0; col < Ctrl->L.n_cols; col++) {
+								tabs (N++); printf ("<Data name = \"%s\">\n", Ctrl->L.ext[col].name);
 								tabs (N--); printf ("<value>");
-								ascii_output_one (GMT, T->segment[seg]->coord[Ctrl->L.ext[k].col][row], Ctrl->L.ext[k].col);
+								ascii_output_one (GMT, T->segment[seg]->coord[Ctrl->L.ext[col].col][row], Ctrl->L.ext[col].col);
 								printf ("</value>\n");
 								tabs (N--); printf ("</Data>\n");
 							}

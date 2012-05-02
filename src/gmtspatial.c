@@ -751,8 +751,9 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 
 GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG k, error = 0, in, c, mseg = FALSE, geometry = GMT_IS_POLY;
-	GMT_LONG internal = FALSE, external = FALSE;
+	GMT_LONG error = 0;
+	COUNTER_MEDIUM geometry = GMT_IS_POLY;
+	BOOLEAN internal = FALSE, external = FALSE, mseg = FALSE;
 
 	static char *kind[2] = {"CCW", "CW"};
 
@@ -953,8 +954,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->I.active || external) {	/* Crossovers between polygons */
-		GMT_LONG same_feature;
-		COUNTER_MEDIUM tbl1, tbl2, col;
+		BOOLEAN same_feature;
+		COUNTER_MEDIUM tbl1, tbl2, col, in;
 		COUNTER_LARGE nx, row, seg1, seg2;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
@@ -1145,7 +1146,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->D.active) {	/* Look for duplicates of lines or polygons */
 		COUNTER_MEDIUM tbl, tbl2, col, n_dup, poly_D, poly_S2;
 		COUNTER_LARGE seg, seg2;
-		GMT_LONG same_feature = FALSE;
+		BOOLEAN same_feature = FALSE;
 		char *kind[9] = {"approximate-reversed-superset", "approximate-reversed-subset", "approximate-reversed", "exact-reversed" , "", "exact", "approximate", "approximate-subset", "approximate-superset"};
 		char record[GMT_BUFSIZ], src[GMT_BUFSIZ], dup[GMT_BUFSIZ], *feature[2] = {"polygon", "line"}, *from = NULL;
 		char *in = "the same data set", *verdict = "NY~-+";	/* No, Yes, Approximate, Subsection, Supersection */
@@ -1396,7 +1397,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (crossing) {
 					for (kseg = 0; kseg < n_split; kseg++) {
 						GMT_free_segment (GMT, T->segment[seg_out]);
-						T->segment[seg_out++] = L[kkseg];	/* Add the remaining segments to the end */
+						T->segment[seg_out++] = L[kseg];	/* Add the remaining segments to the end */
 					}
 					GMT_free (GMT, L);
 				}

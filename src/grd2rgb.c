@@ -52,8 +52,8 @@ struct GRD2RGB_CTRL {
 	} L;
 	struct W {	/* -W<width/height>[/<n_bytes>] */
 		GMT_LONG active;
-		GMT_LONG nx, ny;	/* Dimension of image */
-		GMT_LONG size;	/* Number of bytes per pixels */
+		unsigned int nx, ny;	/* Dimension of image */
+		unsigned int size;	/* Number of bytes per pixels */
 	} W;
 };
 
@@ -121,7 +121,7 @@ GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GM
 	return (0);
 }
 
-GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel, GMT_LONG *raw_nx, GMT_LONG *raw_ny) {
+GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, COUNTER_MEDIUM byte_per_pixel, COUNTER_MEDIUM *raw_nx, COUNTER_MEDIUM *raw_ny) {
 	GMT_LONG inc, even;
 	COUNTER_MEDIUM k = 0, j, i, l, n_pix;
 	unsigned char *buffer = NULL;

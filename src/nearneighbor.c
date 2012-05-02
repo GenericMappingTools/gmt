@@ -252,8 +252,8 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 
 GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, k, ii, jj;
-	COUNTER_MEDIUM d_row, col_0, row_0, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
+	GMT_LONG col_0, row_0, row, col, k, ii, jj;
+	COUNTER_MEDIUM d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
 	BOOLEAN error = FALSE, wrap_180, replicate_x, replicate_y;
 	
 	size_t n_alloc = GMT_CHUNK;
@@ -371,7 +371,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		point[n].z = (float)in[GMT_Z];
 		if (Ctrl->W.active) point[n].w = (float)in[3];
 
-		/* Find row/col indices of the node closest to this data point */
+		/* Find row/col indices of the node closest to this data point.  Note: These may be negative */
 
 		col_0 = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
 		row_0 = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
@@ -388,7 +388,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				ii = col;
 				if (GMT_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range */ 
 
-				/* Here, (ii,jj) is index of a node (k) inside the grid */
+				/* Here, (ii,jj) [both are >= 0] is index of a node (kk) inside the grid */
 
 				distance = GMT_distance (GMT, x0[ii], y0[jj], in[GMT_X], in[GMT_Y]);
 

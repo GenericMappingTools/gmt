@@ -186,8 +186,8 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 
 GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, first = TRUE, ok;
-	COUTNER_MEDIUM row, col;
+	BOOLEAN error = FALSE, first = TRUE, ok;
+	COUNTER_MEDIUM row, col;
 	
 	COUNTER_LARGE ij, gmt_ij, n_total = 0, n_suppressed = 0;
 

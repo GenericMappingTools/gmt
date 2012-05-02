@@ -162,7 +162,8 @@ GMT_LONG GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, st
 #define Return(code) {Free_grdclip_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
-	GMT_LONG row, col, error, new_grid;
+	COUNTER_MEDIUM row, col;
+	BOOLEAN error, new_grid;
 	
 	COUNTER_LARGE ij, n_above = 0, n_below = 0;
 	

@@ -495,7 +495,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG error = FALSE, fast_way, slow = FALSE, slower = FALSE, same_grid = FALSE;
 	BOOLEAN spherical = FALSE, full_360, visit_check = FALSE, go_on;
 	COUNTER_MEDIUM n_in_median, n_nan = 0, col_out, row_out, nx_wrap = 0, effort_level;
-	COUNTER_MEDIUM filter_type, one_or_zero = 1, GMT_n_multiples = 0, 
+	COUNTER_MEDIUM filter_type, one_or_zero = 1, GMT_n_multiples = 0;
 	GMT_LONG tid = 0, col_in, row_in, ii, jj, i, j, *i_origin = NULL, j_origin;
 #ifdef DEBUG
 	COUNTER_MEDIUM n_conv = 0;
@@ -967,7 +967,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_OK) {
 				Return (API->error);	/* Make filename with embedded object ID for result grid L */
 			}
-			sprintf (cmd, "%s -G%s -R%s -V%ld", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
+			sprintf (cmd, "%s -G%s -R%s -V%d", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Highpass requires us to resample the lowpass result via grdsample %s\n", cmd);
 			if (GMT_grdsample (GMT->parent, 0, cmd) != GMT_OK) {	/* Resample the file */
