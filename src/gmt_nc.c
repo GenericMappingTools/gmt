@@ -370,6 +370,7 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 	}
 	else {
 		/* Store global attributes */
+		COUNTER_MEDIUM row, col;
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_CDF_CONVENTION), (const char *) GMT_CDF_CONVENTION));
 		if (header->title[0]) {
 			GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
@@ -381,7 +382,7 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		if (header->remark[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "GMT_version", strlen(GMT_VERSION), (const char *) GMT_VERSION));
 		if (header->registration == GMT_PIXEL_REG) {
-			GMT_err_trap (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, (size_t)1, &header->registration));
+			GMT_err_trap (nc_put_att_uint (ncid, NC_GLOBAL, "node_offset", NC_LONG, (size_t)1, &header->registration));
 		}
 		else
 			nc_del_att (ncid, NC_GLOBAL, "node_offset");
@@ -432,13 +433,13 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		/* Store values along x and y axes */
 		GMT_err_trap (nc_enddef (ncid));
 		xy = GMT_memory (C, NULL,  MAX (header->nx,header->ny), double);
-		for (i = 0; i < header->nx; i++) xy[i] = GMT_grd_col_to_x (C, i, header);
+		for (col = 0; col < header->nx; col++) xy[col] = GMT_grd_col_to_x (C, col, header);
 		GMT_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[0]], xy));
 		if (header->y_order > 0) {
-			for (i = 0; i < header->ny; i++) xy[i] = (double) GMT_col_to_x (C, i, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->ny);
+			for (row = 0; row < header->ny; row++) xy[row] = (double) GMT_col_to_x (C, row, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->ny);
 		}
 		else {
-			for (i = 0; i < header->ny; i++) xy[i] = (double) GMT_row_to_y (C, i, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->ny);
+			for (row = 0; row < header->ny; row++) xy[row] = (double) GMT_row_to_y (C, row, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->ny);
 		}
 		GMT_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[1]], xy));
 		GMT_free (C, xy);
@@ -480,10 +481,10 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 	 */
 	 
 	size_t start[5] = {0,0,0,0,0}, edge[5] = {1,1,1,1,1};
-	int ncid, ndims;
+	int i, ncid, ndims;
 	GMT_LONG check, err;
-	COUNTER_MEDIUM first_col, last_col, first_row, last_row, *actual_col = NULL;
-	COUNTER_MEDIUM i, j, width_in, width_out, height_in, i_0_out, inc, off;
+	COUNTER_MEDIUM row, col, first_col, last_col, first_row, last_row, *actual_col = NULL;
+	COUNTER_MEDIUM width_in, width_out, height_in, i_0_out, inc, off;
 	size_t ij, kk;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp = NULL;
 
@@ -524,17 +525,17 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 		ij = (size_t)pad[YHI] * (size_t)width_out + (size_t)i_0_out;
 	else {		/* Flip around the meaning of first and last row */
 		ij = ((size_t)last_row - (size_t)first_row + (size_t)pad[YHI]) * (size_t)width_out + (size_t)i_0_out;
-		j = first_row;
+		row = first_row;
 		first_row = header->ny - 1 - last_row;
-		last_row = header->ny - 1 - j;
+		last_row = header->ny - 1 - row;
 	}
 	header->z_min =  DBL_MAX;	header->z_max = -DBL_MAX;
 
-	for (j = first_row; j <= last_row; j++, ij -= ((size_t)header->y_order * (size_t)width_out)) {
-		start[header->xy_dim[1]] = j;
+	for (row = first_row; row <= last_row; row++, ij -= ((size_t)header->y_order * (size_t)width_out)) {
+		start[header->xy_dim[1]] = row;
 		GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
-		for (i = 0, kk = ij; i < width_in; i++, kk+=inc) {	/* Check for and handle NaN proxies */
-			grid[kk] = tmp[actual_col[i]];
+		for (col = 0, kk = ij; col < width_in; col++, kk+=inc) {	/* Check for and handle NaN proxies */
+			grid[kk] = tmp[actual_col[col]];
 			if (check && grid[kk] == header->nan_value) grid[kk] = C->session.f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
@@ -542,8 +543,8 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 		}
 	}
 
-	header->nx = (int)width_in;
-	header->ny = (int)height_in;
+	header->nx = width_in;
+	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
 	GMT_err_trap (nc_close (ncid));

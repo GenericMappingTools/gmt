@@ -79,7 +79,7 @@ struct GMT_CONTOUR {
 	double nudge[2];		/* Shift between calculated and desired text placement */
 	double rgb[4];			/* Opaque box fill */
 	COUNTER_MEDIUM current_file_no;	/* Number (0->) of current input data file */
-	COUNTER_MEDIUM current_seg_no;	/* Number (0->) of current segment in current data file */
+	COUNTER_LARGE current_seg_no;	/* Number (0->) of current segment in current data file */
 	BOOLEAN annot;			/* TRUE if we want labels */
 	BOOLEAN isolate;		/* TRUE if we have a limit on how close labels may appear (see below) */
 	BOOLEAN spacing;		/* TRUE if we have spacing constraints to apply */

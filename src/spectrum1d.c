@@ -610,7 +610,8 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 
 GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, one_table, tbl, k, n_outputs;
+	BOOLEAN error = FALSE, one_table;
+	COUNTER_MEDIUM tbl, k, n_outputs;
 	
 	COUNTER_LARGE seg;
 

@@ -249,11 +249,14 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 }
 
 GMT_LONG decode_vector (struct GMT_CTRL *C, char *arg, double coord[], GMT_LONG cartesian, GMT_LONG geocentric) {
-	GMT_LONG n, n_out, n_errors = 0, ix, iy;
+	COUNTER_MEDIUM n_out, n_errors = 0, ix, iy;
+	GMT_LONG n;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64];
 	
 	ix = (C->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
-	n = n_out = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+	n = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+	assert (n == 3);
+	n_out = n;
 	if (n == 2) {	/* Got lon/lat, r/theta, or x/y */
 		if (GMT_is_geographic (C, GMT_IN)) {
 			n_errors += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][ix], GMT_scanf_arg (C, txt_a, C->current.io.col_type[GMT_IN][ix], &coord[ix]), txt_a);
@@ -321,9 +324,9 @@ void make_rot_matrix (struct GMT_CTRL *C, double lonp, double latp, double w, do
 	R[2][2] = E[2] * E[2] * c + cos_w;
 }
 
-void matrix_vect_mult (struct GMT_CTRL *C, GMT_LONG dim, double a[3][3], double b[3], double c[3])
+void matrix_vect_mult (struct GMT_CTRL *C, COUNTER_MEDIUM dim, double a[3][3], double b[3], double c[3])
 {	/* c = A * b */
-	GMT_LONG i, j;
+	COUNTER_MEDIUM i, j;
 
 	for (i = 0; i < dim; i++) for (j = 0, c[i] = 0.0; j < dim; j++) c[i] += a[i][j] * b[j];
 }
@@ -331,7 +334,7 @@ void matrix_vect_mult (struct GMT_CTRL *C, GMT_LONG dim, double a[3][3], double 
 void get_bisector (struct GMT_CTRL *C, double A[3], double B[3], double P[3])
 {	/* Given points in A and B, return the bisector pole via P */
 	 
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	double Pa[3], M[3];
 	 
 	/* Get mid point between A and B */
@@ -350,11 +353,11 @@ void get_bisector (struct GMT_CTRL *C, double A[3], double B[3], double P[3])
 	GMT_normalize3v (C, P);
 }
 
-void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, GMT_LONG cartesian, double conf, double *M, double *E)
+void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, BOOLEAN cartesian, double conf, double *M, double *E)
 {
 	/* Determines the mean vector M and the covariance matrix C */
 	
-	GMT_LONG i, j, k, tbl, nv, nrots;
+	COUNTER_MEDIUM i, j, k, tbl, nv, nrots;
 	COUNTER_LARGE row, n, seg, p;
 	double lambda[3], V[9], work1[3], work2[3], lon, lat, lon2, lat2, scl, L, Y;
 	double *P[3], X[3], B[3], C[9];
@@ -394,7 +397,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, GMT_LONG cartesia
 	}
 	for (k = 0; k < nv; k++) GMT_free (GMT, P[k]);
 
-	if (GMT_jacobi (GMT, C, &nv, &nv, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
+	if (GMT_jacobi (GMT, C, nv, nv, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
 		GMT_message (GMT, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
 	if (nv == 3) {
@@ -435,7 +438,8 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, GMT_LONG cartesia
 
 GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG tbl, error = 0, k, n, nv, n_out, add = 0, single = FALSE;
+	COUNTER_MEDIUM tbl, error = 0, k, n, nv, n_out, add = 0;
+	BOOLEAN single = FALSE;
 	
 	COUNTER_LARGE row, seg;
 
@@ -490,7 +494,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memset (vector_1, 3, double);
 	GMT_memset (vector_3, 3, double);
 	if (Ctrl->A.active) {	/* Want a single primary vector */
-		GMT_LONG dim[4] = {1, 1, 3, 1};
+		int64_t dim[4] = {1, 1, 3, 1};
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 				Return (API->error);

@@ -244,7 +244,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	BOOLEAN save_type = FALSE, first, wrap_up = FALSE, done, *skip = NULL;
 	
-	COUNTER_MEDIUM j, n_columns, n_qfiles = 0, G;
+	COUNTER_MEDIUM j, tbl, n_columns, n_qfiles = 0, G;
 	
 	int64_t dim_tscr[4] = {1, 1, 0, 0};
 	
@@ -546,7 +546,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
     				if (dd[end][ii] < segment[jseg].buddy[ii].dist) {	/* This distance is shorter than the previous shortest distance */
  					segment[jseg].buddy[ii].next_dist = segment[jseg].buddy[ii].dist;	/* Previous closest distance */
 					segment[jseg].buddy[ii].orig_id = segment[iseg].orig_id;
- 					segment[jseg].buddy[ii].id = i;
+ 					segment[jseg].buddy[ii].id = iseg;
 					segment[jseg].buddy[ii].dist = dd[end][ii];
 					segment[jseg].buddy[ii].end_order = end;
     				}
@@ -574,17 +574,17 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
 				strcpy (name, &pp[2]);
 				for (j = 0; name[j]; j++) if (name[j] == ' ') name[j] = '\0';		/* Just truncate after 1st word */
-			} else sprintf (name, "%ld", segment[iseg].orig_id);
+			} else sprintf (name, "%" PRIu64, segment[iseg].orig_id);
 			G = segment[segment[iseg].buddy[0].id].group;	L = segment[segment[iseg].buddy[0].id].pos;
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
 				strcpy (name0, &pp[2]);
 				for (j = 0; name0[j]; j++) if (name0[j] == ' ') name0[j] = '\0';	/* Just truncate after 1st word */
-			} else sprintf (name0, "%ld", segment[iseg].buddy[0].orig_id);
+			} else sprintf (name0, "%" PRIu64, segment[iseg].buddy[0].orig_id);
 			G = segment[segment[iseg].buddy[1].id].group;	L = segment[segment[iseg].buddy[1].id].pos;
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
 				strcpy (name1, &pp[2]);
 				for (j = 0; name1[j]; j++) if (name1[j] == ' ') name1[j] = '\0';	/* Just truncate after 1st word */
-			} else sprintf (name1, "%ld", segment[iseg].buddy[1].orig_id);
+			} else sprintf (name1, "%" PRIu64, segment[iseg].buddy[1].orig_id);
 			sprintf (buffer, fmt, name, name0, BE[segment[iseg].buddy[0].end_order], segment[iseg].buddy[0].dist, segment[iseg].buddy[0].next_dist, name1, \
 				BE[segment[iseg].buddy[1].end_order], segment[iseg].buddy[1].dist, segment[iseg].buddy[1].next_dist);
 			LNK->table[0]->segment[0]->record[iseg] = strdup (buffer);

@@ -316,8 +316,8 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, COUN
 
 GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, greenwich = FALSE, allocate;
-	GMT_LONG imin, imax, nrots, j, k, n, np;
+	BOOLEAN error = FALSE, greenwich = FALSE, allocate;
+	COUNTER_MEDIUM imin, imax, nrots, j, k, n, np;
 	COUNTER_LARGE i, n_data;
 	size_t n_alloc;
 
@@ -470,7 +470,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (i = 0; i < n_data; i++) for (j = 0; j < n; j++) for (k = 0; k < n; k++)
 			a[j + k*np] += (data[i].x[j]*data[i].x[k]);
 
-		if (GMT_jacobi (GMT, a, &n, &np, lambda, v, b, z, &nrots)) {
+		if (GMT_jacobi (GMT, a, n, np, lambda, v, b, z, &nrots)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
 			GMT_report (GMT, GMT_MSG_FATAL, "The reported L2 positions might be garbage.\n");
 		}

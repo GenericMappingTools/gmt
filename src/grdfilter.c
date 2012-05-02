@@ -101,13 +101,13 @@ struct GRDFILTER_CTRL {
 #define NAN_PRESERVE	2
 
 struct FILTER_INFO {
-	GMT_LONG nx;		/* The max number of filter weights in x-direction */
-	GMT_LONG ny;		/* The max number of filter weights in y-direction */
-	GMT_LONG x_half_width;	/* Number of filter nodes to either side needed at this latitude */
-	GMT_LONG y_half_width;	/* Number of filter nodes above/below this point (ny_f/2) */
-	GMT_LONG d_flag;
-	GMT_LONG rect;		/* For 2-D rectangular filtering */
-	GMT_LONG debug;		/* Normally unused except under DEBUG */
+	COUNTER_MEDIUM nx;		/* The max number of filter weights in x-direction */
+	COUNTER_MEDIUM ny;		/* The max number of filter weights in y-direction */
+	COUNTER_MEDIUM x_half_width;	/* Number of filter nodes to either side needed at this latitude */
+	COUNTER_MEDIUM y_half_width;	/* Number of filter nodes above/below this point (ny_f/2) */
+	COUNTER_MEDIUM d_flag;
+	BOOLEAN rect;		/* For 2-D rectangular filtering */
+	BOOLEAN debug;		/* Normally unused except under DEBUG */
 	double dx, dy;		/* Grid spacing in original units */
 	double y_min, y_max;	/* Grid limits in y(lat) */
 	double *x, *y;		/* Distances in original units along x and y to distance nodes */
@@ -146,7 +146,8 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 	 * par[4] is the normalization distance needed for the Cosine-bell or Gaussian weight function.
 	 */
 
-	GMT_LONG i, j, ij;
+	GMT_LONG i, j;
+	uint64_t ij;
 	double x, y, yc, y0, r, ry = 0.0;
 
 	yc = y0 = output_lat - y_off;		/* Input latitude of central point (i,j) = (0,0) */
@@ -162,6 +163,7 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 		for (i = -F->x_half_width; i <= F->x_half_width; i++) {
 			x = (i < 0) ? -F->x[-i] : F->x[i];
 			ij = (j + F->y_half_width) * F->nx + i + F->x_half_width;
+			assert (ij >= 0);
 			if (F->rect) {	/* 2-D rectangular filtering; radius not used as we use x/F->x_half_width and ry instead */
 				weight[ij] = F->weight_func ((double)i/(double)F->x_half_width, par) * F->weight_func (ry, par);
 			}
@@ -240,7 +242,7 @@ GMT_LONG init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, GMT_LONG m
 	 * 3. Grid-registered grids have boundary nodes that only apply to 1/2 the area
 	 *    (and the four corners (unless poles) only 1/4 the area of other cells).
 	 */
-	GMT_LONG row, col;
+	COUNTER_MEDIUM row, col;
 	COUNTER_LARGE ij;
 	double row_weight, col_weight, dy_half = 0.0, dx, y, lat, lat_s, lat_n, s2 = 0.0;
 	
@@ -490,13 +492,13 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 
 GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n_in_median, n_nan = 0, tid = 0, spherical = FALSE, full_360;
-	GMT_LONG j_origin, col_out, row_out, nx_wrap = 0, visit_check = FALSE;
-	GMT_LONG col_in, row_in, ii, jj, i, j, effort_level, go_on;
-	GMT_LONG filter_type, one_or_zero = 1, GMT_n_multiples = 0, *i_origin = NULL;
 	GMT_LONG error = FALSE, fast_way, slow = FALSE, slower = FALSE, same_grid = FALSE;
+	BOOLEAN spherical = FALSE, full_360, visit_check = FALSE, go_on;
+	COUNTER_MEDIUM n_in_median, n_nan = 0, col_out, row_out, nx_wrap = 0, effort_level;
+	COUNTER_MEDIUM filter_type, one_or_zero = 1, GMT_n_multiples = 0, 
+	GMT_LONG tid = 0, col_in, row_in, ii, jj, i, j, *i_origin = NULL, j_origin;
 #ifdef DEBUG
-	GMT_LONG n_conv = 0;
+	COUNTER_MEDIUM n_conv = 0;
 #endif
 	COUNTER_LARGE ij_in, ij_out, ij_wt;
 	double x_scale = 1.0, y_scale = 1.0, x_width, y_width, y, par[GRDFILTER_N_PARS];
@@ -738,7 +740,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->A.active) {	/* Picked a point to examine filter weights etc */
 		Ctrl->A.COL = GMT_grd_x_to_col (GMT, Ctrl->A.x, Gout->header);
 		Ctrl->A.ROW = GMT_grd_y_to_row (GMT, Ctrl->A.y, Gout->header);
-		if (Ctrl->A.mode == 'r') F.debug = 1;	/* In order to return radii instead of weights */
+		if (Ctrl->A.mode == 'r') F.debug = TRUE;	/* In order to return radii instead of weights */
 		if (tid == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "ROW = %ld COL = %ld\n", Ctrl->A.ROW, Ctrl->A.COL);
 	}
 #endif

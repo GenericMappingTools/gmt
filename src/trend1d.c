@@ -160,7 +160,7 @@ GMT_LONG read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, CO
 	return (0);
 }
 
-void allocate_the_memory_1d (struct GMT_CTRL *GMT, GMT_LONG np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model)
+void allocate_the_memory_1d (struct GMT_CTRL *GMT, COUNTER_MEDIUM np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model)
 {
 	*gtg = GMT_memory (GMT, NULL, np*np, double);
 	*v = GMT_memory (GMT, NULL, np*np, double);
@@ -173,10 +173,10 @@ void allocate_the_memory_1d (struct GMT_CTRL *GMT, GMT_LONG np, double **gtg, do
 	*w_model = GMT_memory (GMT, NULL, np, double);
 }
 
-void write_output_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, COUNTER_LARGE n_data, char *output_choice, GMT_LONG n_outputs)
+void write_output_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, COUNTER_LARGE n_data, char *output_choice, COUNTER_MEDIUM n_outputs)
 {
 	COUNTER_LARGE i;
-	GMT_LONG j;
+	COUNTER_MEDIUM j;
 	double out[5];
 
 	for (i = 0; i < n_data; i++) {
@@ -218,7 +218,7 @@ void free_the_memory_1d (struct GMT_CTRL *GMT, double *gtg, double *v, double *g
 	GMT_free (GMT, gtg);
 }
 
-void transform_x_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, GMT_LONG model_type, double xmin, double xmax)
+void transform_x_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, COUNTER_MEDIUM model_type, double xmin, double xmax)
 {
 	COUNTER_LARGE i;
 	double offset, scale;
@@ -231,7 +231,7 @@ void transform_x_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, GMT_LONG m
 	for (i = 0; i < n_data; i++) data[i].x = (data[i].x - offset) * scale;
 }
 
-void untransform_x_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, GMT_LONG model_type, double xmin, double xmax)
+void untransform_x_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, COUNTER_MEDIUM model_type, double xmin, double xmax)
 {
 	COUNTER_LARGE i;
 	double offset, scale;
@@ -244,7 +244,7 @@ void untransform_x_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, GMT_LONG
 	for (i = 0; i < n_data; i++) data[i].x = (data[i].x * scale) + offset;
 }
 
-double get_chisq_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, GMT_LONG n_model)
+double get_chisq_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, COUNTER_MEDIUM n_model)
 {
 	COUNTER_LARGE i, nu;
 	double chi = 0.0;
@@ -286,7 +286,7 @@ void recompute_weights_1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, COUN
 	}
 }
 
-void load_g_row_1d (double x, GMT_LONG n, double *gr, GMT_LONG m)
+void load_g_row_1d (double x, GMT_LONG n, double *gr, COUNTER_MEDIUM type)
 {
 	/* Current data position, appropriately normalized.  */
 	/* Number of model parameters, and elements of gr[]  */
@@ -302,7 +302,7 @@ void load_g_row_1d (double x, GMT_LONG n, double *gr, GMT_LONG m)
 	if (n) {
 		gr[0] = 1.0;
 
-		switch (m) {
+		switch (type) {
 
 			case TREND1D_POLYNOMIAL:
 				/* Create Chebyshev polynomials  */
@@ -320,13 +320,13 @@ void load_g_row_1d (double x, GMT_LONG n, double *gr, GMT_LONG m)
 	}
 }
 
-void calc_m_and_r_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, double *model, GMT_LONG n_model, GMT_LONG m_type, double *grow)
+void calc_m_and_r_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, double *model, COUNTER_MEDIUM n_model, COUNTER_MEDIUM m_type, double *grow)
 {
 	/* model[n_model] holds solved coefficients of m_type model.
 	  grow[n_model] is a vector for a row of G matrix.  */
 
 	COUNTER_LARGE i;
-	GMT_LONG j;
+	COUNTER_MEDIUM j;
 	for (i = 0; i < n_data; i++) {
 		load_g_row_1d (data[i].x, n_model, grow, m_type);
 		data[i].m = 0.0;
@@ -335,19 +335,19 @@ void calc_m_and_r_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, double *m
 	}
 }
 
-void move_model_a_to_b_1d (double *model_a, double *model_b, GMT_LONG n_model, double *chisq_a, double *chisq_b)
+void move_model_a_to_b_1d (double *model_a, double *model_b, COUNTER_MEDIUM n_model, double *chisq_a, double *chisq_b)
 {
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	for (i = 0; i < n_model; i++) model_b[i] = model_a[i];
 	*chisq_b = *chisq_a;
 }
 
-void load_gtg_and_gtd_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, double *gtg, double *gtd, double *grow, GMT_LONG n_model, GMT_LONG mp, GMT_LONG m_type)
+void load_gtg_and_gtd_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, double *gtg, double *gtd, double *grow, COUNTER_MEDIUM n_model, COUNTER_MEDIUM mp, COUNTER_MEDIUM m_type)
 {
    	/* mp is row dimension of gtg  */
 
 	COUNTER_LARGE i;
-	GMT_LONG j, k;
+	COUNTER_MEDIUM j, k;
 	double wy;
 
 	/* First zero the contents for summing */
@@ -376,9 +376,9 @@ void load_gtg_and_gtd_1d (struct TREND1D_DATA *data, COUNTER_LARGE n_data, doubl
 	}
 }
 
-void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, GMT_LONG n_model, GMT_LONG mp, double *lambda, double *v, double *b, double *z, double c_no, GMT_LONG *ir)
+void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, COUNTER_MEDIUM n_model, COUNTER_MEDIUM mp, double *lambda, double *v, double *b, double *z, double c_no, COUNTER_MEDIUM *ir)
 {
-	GMT_LONG i, j, k, rank = 0, nrots, n, m;
+	COUNTER_MEDIUM i, j, k, rank = 0, nrots;
 	double c_test, temp_inverse_ij;
 
 	if (n_model == 1) {
@@ -386,9 +386,7 @@ void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *mo
 		*ir = 1;
 	}
 	else {
-		n = n_model;
-		m = mp;
-		if (GMT_jacobi (GMT, gtg, &n, &m, lambda, v, b, z, &nrots)) {
+		if (GMT_jacobi (GMT, gtg, n_model, mp, lambda, v, b, z, &nrots)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Matrix Solver Convergence Failure.\n");
 		}
 		c_test = fabs (lambda[0]) / c_no;
@@ -407,13 +405,13 @@ void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *mo
 	}
 }
 
-void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], GMT_LONG n, double a, double b)
+void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], COUNTER_MEDIUM n, double a, double b)
 {
 	/* Convert from Chebyshev coefficients used on a t =  [-1,+1] interval
 	 * to polynomial coefficients on the original x = [a b] interval.
 	 * Modified from Numerical Miracles, ...eh Recipes */
 	 
-	 GMT_LONG j, k;
+	 COUNTER_MEDIUM j, k;
 	 double sv, cnst, fac, *d, *dd;
 	 
 	 d  = GMT_memory (GMT, NULL, n, double);
@@ -444,7 +442,7 @@ void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], GMT_LONG n, double a, do
 		fac *= cnst;
 	}
 	cnst = 0.5 * (a + b);
-	for (j = 0; j <= n - 2; j++) for (k = n - 2; k >= j; k--) d[k] -= cnst * d[k+1];
+	for (j = 0; j <= n - 2; j++) for (k = n - 1; k > j; k--) d[k-1] -= cnst * d[k];
 
 	/* Return the new coefficients via c */
 
@@ -509,7 +507,7 @@ GMT_LONG GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j;
+	COUNTER_MEDIUM n_errors = 0, j;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -596,7 +594,8 @@ GMT_LONG GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, st
 
 GMT_LONG GMT_trend1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, n_model, significant, rank, np, error = FALSE;
+	COUNTER_MEDIUM i, n_model, rank, np;
+	BOOLEAN error = FALSE, significant;
 	
 	COUNTER_LARGE n_data;
 

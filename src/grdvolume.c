@@ -241,7 +241,7 @@ double median3 (double x[])
 	}
 }
 
-GMT_LONG ors_find_kink (struct GMT_CTRL *GMT, double y[], GMT_LONG n, GMT_LONG mode)
+GMT_LONG ors_find_kink (struct GMT_CTRL *GMT, double y[], COUNTER_MEDIUM n, COUNTER_MEDIUM mode)
 {	/* mode: 0 = find value maximum, 1 = find curvature maximum */
 	GMT_LONG i, im;
 	double *c = NULL, *f = NULL;
@@ -396,8 +396,9 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 
 GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, bad, cut[4], ij_inc[5];
-	GMT_LONG row, col, c, k, pos, neg, nc, n_contours;
+	BOOLEAN error = FALSE, bad, cut[4];
+	GMT_LONG ij_inc[5];
+	COUNTER_MEDIUM row, col, c, k, pos, neg, nc, n_contours;
 	
 	COUNTER_LARGE ij;
 

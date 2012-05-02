@@ -56,15 +56,15 @@ struct GRD_HEADER {
 	unsigned int ny;		/* Number of rows */
 	unsigned int registration;	/* 0 for node grids, 1 for pixel grids */
 /* This section is flexible. It is not copied to any grid header */
-	GMT_LONG type;			/* Grid format */
-	GMT_LONG bits;			/* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
-	GMT_LONG complex_mode;		/* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
-	GMT_LONG mx, my;		/* Actual dimensions of the grid in memory, allowing for the padding */
-	COUNTER_LARGE nm;			/* Number of data items in this grid (nx * ny) [padding is excluded] */
-	COUNTER_LARGE size;			/* Actual number of items required to hold this grid (= mx * my) */
-	GMT_LONG n_bands;		/* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
-	GMT_LONG pad[4];		/* Padding on west, east, south, north sides [2,2,2,2] */
-	GMT_LONG BC[4];			/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
+	unsigned int type;		/* Grid format */
+	unsigned int bits;		/* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
+	unsigned int complex_mode;	/* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
+	COUNTER_MEDIUM mx, my;		/* Actual dimensions of the grid in memory, allowing for the padding */
+	COUNTER_LARGE nm;		/* Number of data items in this grid (nx * ny) [padding is excluded] */
+	COUNTER_LARGE size;		/* Actual number of items required to hold this grid (= mx * my) */
+	unsigned int n_bands;		/* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
+	unsigned int pad[4];		/* Padding on west, east, south, north sides [2,2,2,2] */
+	unsigned int BC[4];		/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
 	char name[GMT_TEXT_LEN256];	/* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GRD_VARNAME_LEN80];	/* NetCDF: variable name */
 	int y_order;			/* NetCDF: 1 if S->N, -1 if N->S */
@@ -78,13 +78,13 @@ struct GRD_HEADER {
 	char flags[4];			/* Flags used for ESRI grids */
 	char *pocket;			/* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
 	double bcr_threshold;		/* sum of cardinals must >= threshold in bilinear; else NaN */
-	GMT_LONG bcr_interpolant;	/* Interpolation function used (0, 1, 2, 3) */
-	GMT_LONG bcr_n;			/* Width of the interpolation function */
-	GMT_LONG no_BC;			/* If TRUE we skip BC stuff entirely */
+	unsigned int bcr_interpolant;	/* Interpolation function used (0, 1, 2, 3) */
+	unsigned int bcr_n;			/* Width of the interpolation function */
 	GMT_LONG nxp;			/* if X periodic, nxp > 0 is the period in pixels  */
 	GMT_LONG nyp;			/* if Y periodic, nxp > 0 is the period in pixels  */
-	GMT_LONG gn;			/* TRUE if top    edge will be set as N pole  */
-	GMT_LONG gs;			/* TRUE if bottom edge will be set as S pole  */
+	BOOLEAN no_BC;			/* If TRUE we skip BC stuff entirely */
+	BOOLEAN gn;			/* TRUE if top    edge will be set as N pole  */
+	BOOLEAN gs;			/* TRUE if bottom edge will be set as S pole  */
 	
 /* ===== The following elements must not be changed. They are copied verbatim to the native grid header */
 	double wesn[4];			/* Min/max x and y coordinates */
@@ -169,7 +169,7 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 
 /* GMT_grd_setpad copies the given pad into the header */
 
-#define GMT_grd_setpad(C,h,newpad) memcpy ((h)->pad, newpad, 4*sizeof(GMT_LONG))
+#define GMT_grd_setpad(C,h,newpad) memcpy ((h)->pad, newpad, 4*sizeof(unsigned int))
 
 /* gmt_grd_get_size computes grid size including the padding, and doubles it if complex values */
 

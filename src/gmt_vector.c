@@ -28,7 +28,7 @@
 
 #define MAX_SWEEPS 50
 
-GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, GMT_LONG *nrots) {
+GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, COUNTER_MEDIUM n, COUNTER_MEDIUM m, double *d, double *v, double *b, double *z, COUNTER_MEDIUM *nrots) {
 /*
  *
  * Find eigenvalues & eigenvectors of a square symmetric matrix by Jacobi's
@@ -119,18 +119,18 @@ GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, GMT_LONG *n, GMT_LONG *m, do
  * Revised:	PW: 12-MAR-1998 for GMT 3.1
  * Revision by WHF Smith, March 03, 2000, to speed up loop indexes.
  */
-	GMT_LONG p, q, pp, pq, mp1, pm, qm, nsweeps, j, jm, i, k;
+	COUNTER_MEDIUM p, q, pp, pq, mp1, pm, qm, nsweeps, j, jm, i, k;
 	double sum, threshold, g, h, t, theta, c, s, tau;
 
 	/* Begin by initializing v, b, d, and z.  v = identity matrix,
 		b = d = diag(a), and z = 0:  */
 
-	GMT_memset (v, (*m)*(*n), double);
-	GMT_memset (z, (*n), double);
+	GMT_memset (v, m*n, double);
+	GMT_memset (z, n, double);
 
-	mp1 = (*m) + 1;
+	mp1 = m + 1;
 
-	for (p = 0, pp = 0; p < (*n); p++, pp+=mp1) {
+	for (p = 0, pp = 0; p < n; p++, pp+=mp1) {
 		v[pp] = 1.0;
 		b[p] = a[pp];
 		d[p] = b[p];
@@ -145,7 +145,7 @@ GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, GMT_LONG *n, GMT_LONG *m, do
 
 		/* Sum off-diagonal elements of upper triangle.  */
 		sum = 0.0;
-		for (q = 1, qm = (*m); q < (*n); q++, qm += (*m) ) {
+		for (q = 1, qm = m; q < n; q++, qm += m ) {
 			for (p = 0, pq = qm; p < q; p++, pq++) sum += fabs(a[pq]);
 		}
 
@@ -153,11 +153,11 @@ GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, GMT_LONG *n, GMT_LONG *m, do
 		if (sum == 0.0) break;
 
 		/* If (nsweeps < 3) do only bigger elements;  else all  */
-		threshold =  (nsweeps < 3) ? 0.2 * sum / ( (*n) * (*n) ) : 0.0;
+		threshold =  (nsweeps < 3) ? 0.2 * sum / ( n * n ) : 0.0;
 
 		/* Now sweep whole upper triangle doing Givens rotations:  */
-		for (q = 1, qm = (*m); q < (*n); q++, qm += (*m) ) {
-			for (p = 0, pm = 0, pq = qm; p < q; p++, pm += (*m), pq++) {
+		for (q = 1, qm = m; q < n; q++, qm += m ) {
+			for (p = 0, pm = 0, pq = qm; p < q; p++, pm += m, pq++) {
 				/* In 3/2000 I swapped order of these loops,
 					to allow simple incrementing of pq  */
 
@@ -202,20 +202,20 @@ GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, GMT_LONG *n, GMT_LONG *m, do
 						a[j + pm] = g - s * (h + g * tau);
 						a[j + qm] = h + s * (g - h * tau);
 					}
-					for (j = p+1, jm = (*m)*(p+1); j < q; j++, jm += (*m) ) {
+					for (j = p+1, jm = m*(p+1); j < q; j++, jm += m ) {
 						g = a[p + jm];
 						h = a[j + qm];
 						a[p + jm] = g - s * (h + g * tau);
 						a[j + qm] = h + s * (g - h * tau);
 					}
-					for (j = q+1, jm = (*m)*(q+1); j < (*n); j++, jm += (*m) ) {
+					for (j = q+1, jm = m*(q+1); j < n; j++, jm += m ) {
 						g = a[p + jm];
 						h = a[q + jm];
 						a[p + jm] = g - s * (h + g * tau);
 						a[q + jm] = h + s * (g - h * tau);
 					}
 
-					for (j = 0; j < (*n); j++) {
+					for (j = 0; j < n; j++) {
 						g = v[j + pm];
 						h = v[j + qm];
 						v[j + pm] = g - s * (h + g * tau);
@@ -231,7 +231,7 @@ GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, GMT_LONG *n, GMT_LONG *m, do
 
 		nsweeps++;
 
-		for (p = 0; p < (*n); p++) {
+		for (p = 0; p < n; p++) {
 			b[p] += z[p];	/* Update the b copy of diagonal  */
 			d[p] = b[p];	/* Replace d with b to reduce round-off error  */
 			z[p] = 0.0;	/* Clear z.  */
@@ -241,10 +241,10 @@ GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, GMT_LONG *n, GMT_LONG *m, do
 	/* Get here via break when converged, or when nsweeps == MAX_SWEEPS.
 		Sort eigenvalues by insertion:  */
 
-	for (i = 0; i < (*n)-1; i++) {
+	for (i = 0; i < n-1; i++) {
 		k = i;
 		g = d[i];
-		for (j = i+1; j < (*n); j++) {  /* Find max location  */
+		for (j = i+1; j < n; j++) {  /* Find max location  */
 			if (d[j] >= g) {
 				k = j;
 				g = d[j];
@@ -253,9 +253,9 @@ GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, GMT_LONG *n, GMT_LONG *m, do
 		if (k != i) {  /*  Need to swap value and vector  */
 			d[k] = d[i];
 			d[i] = g;
-			p = i * (*m);
-			q = k * (*m);
-			for (j = 0; j < (*n); j++) {
+			p = i * m;
+			q = k * m;
+			for (j = 0; j < n; j++) {
 				g = v[j + p];
 				v[j + p] = v[j + q];
 				v[j + q] = g;
@@ -272,7 +272,7 @@ GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, GMT_LONG *n, GMT_LONG *m, do
 	return(0);
 }
 
-void GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, GMT_LONG n_in, GMT_LONG nstore_in, double test, GMT_LONG *ierror, GMT_LONG itriag)
+GMT_LONG GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, COUNTER_MEDIUM n, COUNTER_MEDIUM nstore, double test, BOOLEAN itriag)
 {
 
 /* subroutine gauss, by william menke */
@@ -289,17 +289,15 @@ void GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, GMT_LONG n_in, GMT_L
  *					on TRUE useful when solving
  *					multiple systems with same a
  */
-	static GMT_LONG l1;
-	GMT_LONG *line = NULL, i = 0, j, k, l, j2;
-	GMT_LONG n = n_in, *isub = NULL;
-	GMT_LONG iet, ieb, nstore;
+	static COUNTER_MEDIUM l1;
+	COUNTER_MEDIUM *line = NULL, i = 0, j, k, l, j1, j2, *isub = NULL;
+	GMT_LONG iet, ieb;
 	size_t n_alloc = 0;
 	double big, testa, b, sum;
 
 	iet = 0;  /* initial error flags, one for triagularization*/
 	ieb = 0;  /* one for backsolving */
-	nstore = nstore_in;
-	GMT_malloc2 (C, line, isub, n, &n_alloc, GMT_LONG);
+	GMT_malloc2 (C, line, isub, n, &n_alloc, COUNTER_MEDIUM);
 
 /* triangularize the matrix a */
 /* replacing the zero elements of the triangularized matrix */
@@ -370,7 +368,8 @@ void GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, GMT_LONG n_in, GMT_L
 	if (fabs((double)b)<=test) ieb=2; /* check for div by zero in backsolving */
 	vec[isub[n-1]]=vec[isub[n-1]]/b;
  
-	for (j=n-2; j>=0; j--) { /* backsolve rest of triangle*/
+	for (j1=n-1; j1>0; j1--) { /* backsolve rest of triangle*/
+		j = j1 - 1;
 		sum=vec[isub[j]];
 		for (j2=j+1; j2<n; j2++) sum -= (vec[isub[j2]] * (*(a+isub[j]*nstore+j2)));
 		b = *(a+isub[j]*nstore+j);
@@ -395,7 +394,7 @@ void GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, GMT_LONG n_in, GMT_L
  
 	GMT_free (C, isub);
 	GMT_free (C, line);
-	*ierror = iet + ieb;   /* set final error flag*/
+	return (iet + ieb);   /* Return final error flag*/
 }
 
 /* Modified from similar function in Numerical Recipes */

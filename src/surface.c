@@ -119,28 +119,28 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 					 * I means just interpolate from larger grid */
 	char format[GMT_BUFSIZ];
 	char *low_file, *high_file;	/* Pointers to grids with low and high limits, if selected */
-	GMT_LONG grid, old_grid;	/* Node spacings  */
-	GMT_LONG n_fact;		/* Number of factors in common (ny-1, nx-1) */
-	GMT_LONG factors[32];		/* Array of common factors */
-	GMT_LONG set_low;		/* 0 unconstrained,1 = by min data value, 2 = by user value */
-	GMT_LONG set_high;		/* 0 unconstrained,1 = by max data value, 2 = by user value */
+	COUNTER_MEDIUM grid, old_grid;	/* Node spacings  */
+	COUNTER_MEDIUM n_fact;		/* Number of factors in common (ny-1, nx-1) */
+	COUNTER_MEDIUM factors[32];		/* Array of common factors */
+	COUNTER_MEDIUM set_low;		/* 0 unconstrained,1 = by min data value, 2 = by user value */
+	COUNTER_MEDIUM set_high;		/* 0 unconstrained,1 = by max data value, 2 = by user value */
 	size_t n_alloc;
 	COUNTER_LARGE npoints;			/* Number of data points */
 	COUNTER_LARGE ij_sw_corner, ij_se_corner,ij_nw_corner, ij_ne_corner;
 	COUNTER_LARGE n_empty;		/* No of unconstrained nodes at initialization  */
-	GMT_LONG nx;			/* Number of nodes in x-dir. */
-	GMT_LONG ny;			/* Number of nodes in y-dir. (Final grid) */
-	COUNTER_LARGE nxny;			/* Total number of grid nodes without boundaries  */
-	GMT_LONG mx;
-	GMT_LONG my;
+	unsigned int nx;		/* Number of nodes in x-dir. */
+	unsigned int ny;		/* Number of nodes in y-dir. (Final grid) */
+	COUNTER_LARGE nxny;		/* Total number of grid nodes without boundaries  */
+	unsigned int mx;
+	unsigned int my;
 	COUNTER_LARGE mxmy;			/* Total number of grid nodes with boundaries  */
-	GMT_LONG block_nx;		/* Number of nodes in x-dir for a given grid factor */
-	GMT_LONG block_ny;		/* Number of nodes in y-dir for a given grid factor */
-	GMT_LONG max_iterations;	/* Max iter per call to iterate */
-	GMT_LONG total_iterations;
-	GMT_LONG grid_east;
+	unsigned int block_nx;		/* Number of nodes in x-dir for a given grid factor */
+	unsigned int block_ny;		/* Number of nodes in y-dir for a given grid factor */
+	COUNTER_MEDIUM max_iterations;	/* Max iter per call to iterate */
+	COUNTER_MEDIUM total_iterations;
+	COUNTER_MEDIUM grid_east;
 	GMT_LONG offset[25][12];	/* Indices of 12 nearby points in 25 cases of edge conditions  */
-	GMT_LONG constrained;		/* TRUE if set_low or set_high is TRUE */
+	BOOLEAN constrained;		/* TRUE if set_low or set_high is TRUE */
 	float *lower, *upper;		/* arrays for minmax values, if set */
 	double low_limit, high_limit;	/* Constrains on range of solution */
 	double grid_xinc, grid_yinc;	/* size of each grid cell for a given grid factor */
@@ -170,8 +170,8 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 };
 
 struct SURFACE_SUGGESTION {	/* Used to find top ten list of faster grid dimensions  */
-	GMT_LONG nx;
-	GMT_LONG ny;
+	unsigned int nx;
+	unsigned int ny;
 	double factor;	/* Speed up by a factor of factor  */
 };
 
@@ -221,7 +221,7 @@ void set_coefficients (struct SURFACE_INFO *C)
 void set_offset (struct SURFACE_INFO *C)
 {
 	GMT_LONG add_w[5], add_e[5], add_s[5], add_n[5], add_w2[5], add_e2[5], add_s2[5], add_n2[5];
-	GMT_LONG i, j, kase;
+	COUNTER_MEDIUM i, j, kase;
 
 	add_w[0] = -C->my; add_w[1] = add_w[2] = add_w[3] = add_w[4] = -C->grid_east;
 	add_w2[0] = -2 * C->my;  add_w2[1] = -C->my - C->grid_east;  add_w2[2] = add_w2[3] = add_w2[4] = -2 * C->grid_east;
@@ -683,7 +683,7 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 
 GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG transform)
 {
-	GMT_LONG i, j;
+	COUNTER_MEDIUM i, j;
 	COUNTER_LARGE ij;
 	double yy;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -1299,7 +1299,7 @@ GMT_LONG rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 }
 /* gcd_euclid.c  Greatest common divisor routine  */
 
-GMT_LONG gcd_euclid (GMT_LONG a, GMT_LONG b)
+COUNTER_MEDIUM gcd_euclid (unsigned int a, unsigned int b)
 {
 	/* Returns the greatest common divisor of u and v by Euclid's method.
 	 * I have experimented also with Stein's method, which involves only
@@ -1310,10 +1310,10 @@ GMT_LONG gcd_euclid (GMT_LONG a, GMT_LONG b)
 	 *
 	 * Walter H. F. Smith, 25 Feb 1992, after D. E. Knuth, vol. II  */
 
-	GMT_LONG u, v, r;
+	COUNTER_MEDIUM u, v, r;
 
-	u = MAX (GMT_abs(a), GMT_abs(b));
-	v = MIN (GMT_abs(a), GMT_abs(b));
+	u = MAX (a, b);
+	v = MIN (a, b);
 
 	while (v > 0) {
 		r = u % v;	/* Knuth notes that u < 2v 40% of the time;  */
@@ -1323,7 +1323,7 @@ GMT_LONG gcd_euclid (GMT_LONG a, GMT_LONG b)
 	return (u);
 }
 
-double guess_surface_time (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LONG nx, GMT_LONG ny)
+double guess_surface_time (struct GMT_CTRL *GMT, COUNTER_MEDIUM factors[], unsigned int nx, unsigned int ny)
 {
 	/* Routine to guess a number proportional to the operations
 	 * required by surface working on a user-desired grid of
@@ -1350,10 +1350,10 @@ double guess_surface_time (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LONG nx
 	 *
 	 * W. H. F. Smith, 26 Feb 1992.  */
 
-	GMT_LONG gcd;		/* Current value of the gcd  */
-	GMT_LONG nxg, nyg;	/* Current value of the grid dimensions  */
-	GMT_LONG nfactors = 0;	/* Number of prime factors of current gcd  */
-	GMT_LONG factor;	/* Currently used factor  */
+	COUNTER_MEDIUM gcd;		/* Current value of the gcd  */
+	COUNTER_MEDIUM nxg, nyg;	/* Current value of the grid dimensions  */
+	COUNTER_MEDIUM nfactors = 0;	/* Number of prime factors of current gcd  */
+	COUNTER_MEDIUM factor;	/* Currently used factor  */
 	/* Doubles are used below, even though the values will be integers,
 		because the multiplications might reach sizes of O(n**3)  */
 	double t_sum;		/* Sum of values of T at each grid cycle  */
@@ -1392,7 +1392,7 @@ double guess_surface_time (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LONG nx
 	return (t_sum);
 }
 
-void suggest_sizes_for_surface (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LONG nx, GMT_LONG ny)
+void suggest_sizes_for_surface (struct GMT_CTRL *GMT, COUNTER_MEDIUM factors[], unsigned int nx, unsigned int ny)
 {
 	/* Calls guess_surface_time for a variety of trial grid
 	 * sizes, where the trials are highly composite numbers

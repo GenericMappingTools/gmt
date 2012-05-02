@@ -174,7 +174,7 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 				}
 				break;
 			case 'f':	/* Set fading options in KML */
-				sscanf (&p[1], "%" GMT_LL "d/%" GMT_LL "d", &C->W.min_fade, &C->W.max_fade);
+				sscanf (&p[1], "%d/%d", &C->W.min_fade, &C->W.max_fade);
 				break;
 			case 'g':	/* Use gdal to make geotiff */
 				C->W.warp = TRUE;
@@ -183,7 +183,7 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 				C->W.kml = TRUE;
 				break;
 			case 'l':	/* Set KML level of detail for image */
-				sscanf (&p[1], "%" GMT_LL "d/%" GMT_LL "d", &C->W.min_lod, &C->W.max_lod);
+				sscanf (&p[1], "%d/%d", &C->W.min_lod, &C->W.max_lod);
 				break;
 			case 'n':	/* Set KML document layer name */
 				if (C->W.overlayname) free (C->W.overlayname);	/* Already set, free then reset */
@@ -462,7 +462,7 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 				}
 				Ctrl->Q.on[mode] = TRUE;
 				Ctrl->Q.bits[mode] = (opt->arg[1]) ? atoi (&opt->arg[1]) : 4;
-				sprintf (text, "%s%ld", anti, Ctrl->Q.bits[mode]);
+				sprintf (text, "%s%d", anti, Ctrl->Q.bits[mode]);
 				add_to_list (Ctrl->C.arg, text);	/* Append to list of extra GS options */
 				break;
 			case 'S':	/* Write the GS command to STDOUT */

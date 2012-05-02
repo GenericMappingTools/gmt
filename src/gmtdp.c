@@ -262,7 +262,9 @@ COUNTER_LARGE Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], dou
 
 GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG tbl, col, geo, error;
+	COUNTER_MEDIUM tbl, col;
+	GMT_LONG error;
+	BOOLEAN geo;
 	COUNTER_LARGE row, seg, np_out, *index = NULL;
 	
 	double tolerance;

@@ -125,10 +125,10 @@ struct F_INFO {
 };
 
 struct FFT_SUGGESTION {
-	GMT_LONG nx;
-	GMT_LONG ny;
-	GMT_LONG worksize;	/* # single-complex elements needed in work array  */
-	GMT_LONG totalbytes;	/* (8*(nx*ny + worksize))  */
+	unsigned int nx;
+	unsigned int ny;
+	size_t worksize;	/* # single-complex elements needed in work array  */
+	size_t totalbytes;	/* (8*(nx*ny + worksize))  */
 	double run_time;
 	double rms_rel_err;
 }; /* [0] holds fastest, [1] most accurate, [2] least storage  */
@@ -170,7 +170,8 @@ void remove_plane (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	spend some multiplications on normalizing the 
 	range of x,y into [-1,1], to avoid roundoff error.  */
 
-	GMT_LONG i, j, ij, one_or_zero;
+	COUNTER_MEDIUM i, j, one_or_zero;
+	COUNTER_LARGE ij;
 	double x_half_length, one_on_xhl, y_half_length, one_on_yhl;
 	double sumx2, sumy2, data_var, x, y, z, a[3];
 	float *datac = Grid->data;
@@ -217,7 +218,7 @@ void remove_plane (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 {
 	GMT_LONG im, jm, il1, ir1, il2, ir2, jb1, jb2, jt1, jt2;
-	GMT_LONG i, j, i_data_start, j_data_start;
+	COUNTER_MEDIUM i, j, i_data_start, j_data_start;
 	float *datac = Grid->data;
 	double scale, cos_wt;
 	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
@@ -593,8 +594,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	 */
 
 	char format[GMT_TEXT_LEN64];
-	GMT_LONG dim[4] = {1, 1, 1, 0};
-	int64_t ifreq;
+	int64_t dim[4] = {1, 1, 1, 0}, ifreq;
 	COUNTER_LARGE k, nk, nused;
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
 	PFD get_k;
@@ -672,10 +672,10 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	return (2);	/* Number of parameters used */
 }
 
-GMT_LONG get_non_symmetric_f (GMT_LONG *f, GMT_LONG n)
+COUNTER_LARGE get_non_symmetric_f (COUNTER_LARGE *f, COUNTER_LARGE n)
 {
 	/* Return the product of the non-symmetric factors in f[]  */
-	GMT_LONG i = 0, j = 1, retval = 1;
+	COUNTER_LARGE i = 0, j = 1, retval = 1;
 
 	if (n == 1) return (f[0]);
 
@@ -689,7 +689,7 @@ GMT_LONG get_non_symmetric_f (GMT_LONG *f, GMT_LONG n)
 	return (retval);
 }
 
-void fourt_stats (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny, GMT_LONG *f, double *r, GMT_LONG *s, double *t)
+void fourt_stats (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny, GMT_LONG *f, double *r, size_t *s, double *t)
 {
 	/* Find the proportional run time, t, and rms relative error, r,
 	 * of a Fourier transform of size nx,ny.  Also gives s, the size
@@ -729,7 +729,7 @@ void fourt_stats (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny, GMT_LONG *f, dou
 	 *  */
 
 	GMT_LONG n_factors, i, sum2, sumnot2, nnot2;
-	GMT_LONG nonsymx, nonsymy, nonsym, storage, ntotal;
+	COUNTER_LARGE nonsymx, nonsymy, nonsym, storage, ntotal;
 	double err_scale;
 
 	/* Find workspace needed.  First find non_symmetric factors in nx, ny  */
@@ -871,7 +871,7 @@ void suggest_fft (struct GMT_CTRL *GMT, GMT_LONG nx, GMT_LONG ny, struct FFT_SUG
 
 void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct GMT_GRID *Gin)
 {
-	GMT_LONG k, worksize, factors[32];
+	COUNTER_MEDIUM k, worksize, factors[32];
 	double tdummy, edummy;
 	struct FFT_SUGGESTION fft_sug[3];
 		
@@ -1089,7 +1089,7 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 					case 'q': case 'Q':
 						Ctrl->N.suggest_narray = TRUE; break;
 					default:
-						sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->N.nx2, &Ctrl->N.ny2);
+						sscanf (opt->arg, "%d/%d", &Ctrl->N.nx2, &Ctrl->N.ny2);
 						Ctrl->N.n_user_set = TRUE;
 				}
 				break;
@@ -1131,8 +1131,9 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 
 GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, stop, op_count = 0, par_count = 0, status, i, j;
-	
+	BOOLEAN error = FALSE, stop;
+	COUNTER_MEDIUM op_count = 0, par_count = 0, status, side;
+	COUNTER_LARGE ij;
 
 	struct GMT_GRID *GridA = NULL, *Out = NULL;
 	struct F_INFO f_info;
@@ -1142,7 +1143,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct GMT_OPTION *options = NULL;
 
 #ifdef NEW
-	GMT_LONG two_grids = FALSE;
+	BOOLEAN two_grids = FALSE;
 	struct GMT_GRID *GridB = NULL;
 #endif
 
@@ -1198,7 +1199,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_grd_init (GMT, GridA->header, options, TRUE);
 	set_grid_radix_size (GMT, Ctrl, GridA);		/* This also sets the new pads */
 	/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
-	for (j = 0; j < 4; j++) GridA->header->BC[j] = GMT_BC_IS_DATA;
+	for (side = 0; side < 4; side++) GridA->header->BC[side] = GMT_BC_IS_DATA;
 
 	/* Now read data into the real positions in the padded complex radix grid */
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, Ctrl->In.file[0], GridA) == NULL) {	/* Get subset */
@@ -1208,8 +1209,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Check that no NaNs are present */
 	
 	stop = FALSE;
-	for (j = 0; !stop && j < GridA->header->ny; j++) for (i = 0; !stop && i < GridA->header->nx; i++) 
-		stop = GMT_is_fnan (GridA->data[GMT_IJPR(GridA->header,j,i)]);
+	for (ij = 0; !stop && ij < GridA->header->size; ij++) stop = GMT_is_fnan (GridA->data[ij]);
 	if (stop) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Input grid cannot have NaNs!\n");
 		Return (EXIT_FAILURE);
@@ -1288,7 +1288,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (!Ctrl->E.active) {	/* Since -E out was handled separately by do_spectrum */
-		COUNTER_LARGE ij;
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "inverse FFT...");
 
 		GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);

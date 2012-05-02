@@ -112,7 +112,7 @@ GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 		GMT_err_trap (nc_get_att_text (ncid, z_range_id, "units", header->z_units));
 		GMT_err_trap (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor));
 		GMT_err_trap (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset));
-		GMT_err_trap (nc_get_att_int (ncid, z_id, "node_offset", &header->registration));
+		GMT_err_trap (nc_get_att_uint (ncid, z_id, "node_offset", &header->registration));
 		nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value);
 		GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title));
 		GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "source", text));
@@ -151,7 +151,7 @@ GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 			i = lrint (header->nan_value);
 			GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, (size_t)1, &i));
 		}
-		GMT_err_trap (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, (size_t)1, &header->registration));
+		GMT_err_trap (nc_put_att_uint (ncid, z_id, "node_offset", NC_LONG, (size_t)1, &header->registration));
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", (size_t)GRD_TITLE_LEN80, header->title));
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "source", (size_t)(GRD_COMMAND_LEN320+GRD_REMARK_LEN160), text));
 

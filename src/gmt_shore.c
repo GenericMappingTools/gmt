@@ -835,7 +835,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 	GMT_LONG start_side, next_side, id, more, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL;
 	GMT_LONG cid, nid, add, first_pos, entry_pos, n, low_level, high_level, fid, nseg_at_level[GSHHS_MAX_LEVEL+1];
 	GMT_LONG completely_inside;
-	COUNTER_MEDIUM P = 0;
+	COUNTER_MEDIUM P = 0, k;
 	size_t n_alloc, p_alloc;
 	double *xtmp = NULL, *ytmp = NULL, plon, plat;
 
@@ -992,7 +992,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 
 	if (c->ns > 0) p = GMT_memory (C, p, P, struct GMT_GSHHS_POL);
 
-	for (id = 0; id < P; id++) gmt_shore_path_shift2 (p[id].lon, p[id].n, west, east, c->leftmost_bin);
+	for (k = 0; k < P; k++) gmt_shore_path_shift2 (p[k].lon, p[k].n, west, east, c->leftmost_bin);
 
 	*pol = p;
 	return (P);

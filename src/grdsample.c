@@ -139,9 +139,9 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 			case 'N':	/* Backwards compatible.  nx/ny can now be set with -I */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N<nx>/<ny> is deprecated; use -I<nx>+/<ny>+ instead.\n");
 				Ctrl->I.active = TRUE;
-				sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &ii, &jj);
+				sscanf (opt->arg, "%d/%d", &ii, &jj);
 				if (jj == 0) jj = ii;
-				sprintf (format, "%" GMT_LL "d+/%" GMT_LL "d+", ii, jj);
+				sprintf (format, "%d+/%d+", ii, jj);
 				GMT_getinc (GMT, format, Ctrl->I.inc);
 				break;
 #endif
@@ -171,7 +171,8 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 
 GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
-	GMT_LONG error = 0, row, col;
+	GMT_LONG error = 0;
+	COUNTER_MEDIUM row, col;
 	
 	COUNTER_LARGE ij;
 	

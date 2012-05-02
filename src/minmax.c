@@ -203,7 +203,7 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 				break;
 			case 'T':	/* makecpt range/inc string */
 				Ctrl->T.active = TRUE;
-				j = sscanf (opt->arg, "%lf/%" GMT_LL "d", &Ctrl->T.inc, &Ctrl->T.col);
+				j = sscanf (opt->arg, "%lf/%d", &Ctrl->T.inc, &Ctrl->T.col);
 				if (j == 1) Ctrl->T.col = 0;
 				break;
 
@@ -372,7 +372,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (Ctrl->A.mode == REPORT_PER_DATASET && GMT->current.io.tbl_no > 1)	/* More than one table given */
 						strcpy (record, "dataset");
 					else if (Ctrl->A.mode == REPORT_PER_SEGMENT)				/* Want segment number after file name */
-						sprintf (record, "%s-%ld", file, GMT->current.io.seg_no);
+						sprintf (record, "%s-%" PRIu64, file, GMT->current.io.seg_no);
 					else									/* Either table mode or only one table in dataset */
 						sprintf (record, "%s", file);
 					sprintf (buffer, ": N = %" PRIu64 "\t", n);					/* Number of records in this item */

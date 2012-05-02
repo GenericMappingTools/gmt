@@ -157,7 +157,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 	GMT_fclose (GMT, fp);
 
 	inc = (byte_per_pixel == 3) ? 3: 4;
-	for (j = 0; j < (GMT_LONG)img_size; j += inc) {
+	for (j = 0; j < img_size; j += inc) {
 		for (i = 0; i < 3; i++) rgb[i] = buffer[j+i];
 		/* Convert rgb to gray using the GMT_YIQ transformation */
 		datac[k] = (float) GMT_YIQ (rgb);
@@ -354,7 +354,8 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 
 GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, row, col, error = 0;
+	COUNTER_MEDIUM channel, row, col;
+	GMT_LONG error = 0;
 	
 	COUNTER_LARGE ij, k, k3;
 	
@@ -400,9 +401,9 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);
 		}
 		
-		for (i = 0; i < 3; i++) {	/* Do the r, g, and b channels */
-			if (Ctrl->L.active && Ctrl->L.layer != rgb[i]) continue;	/* Only do one of the layers */
-			GMT_report (GMT, GMT_MSG_NORMAL, "Processing the %s components\n", comp[i]);
+		for (channel = 0; channel < 3; channel++) {	/* Do the r, g, and b channels */
+			if (Ctrl->L.active && Ctrl->L.layer != rgb[channel]) continue;	/* Only do one of the layers */
+			GMT_report (GMT, GMT_MSG_NORMAL, "Processing the %s components\n", comp[channel]);
 			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {
 				Return (API->error);
 			}
@@ -410,12 +411,12 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array; else Out == Grid */
 				
-			sprintf (buffer, Ctrl->G.name, rgb[i]);
+			sprintf (buffer, Ctrl->G.name, rgb[channel]);
 			grdfile = strdup (buffer);
-			sprintf (Out->header->remark, "Grid of %s components in the 0-255 range", comp[i]);
+			sprintf (Out->header->remark, "Grid of %s components in the 0-255 range", comp[channel]);
 			GMT_grd_loop (GMT, Grid, row, col, ij) {
 				(void)GMT_get_rgb_from_z (GMT, P, Grid->data[ij], f_rgb);
-				Out->data[ij] = (float)GMT_s255 (f_rgb[i]);
+				Out->data[ij] = (float)GMT_s255 (f_rgb[channel]);
 			}
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, grdfile, Out) != GMT_OK) {
 				Return (API->error);
@@ -479,11 +480,11 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Ctrl->I.inc[GMT_X] = GMT_get_inc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], Grid->header->nx, Grid->header->registration);
 			Ctrl->I.inc[GMT_Y] = GMT_get_inc (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Grid->header->ny, Grid->header->registration);
 		}
-		if (header.width != Grid->header->nx) {
+		if (header.width != (int)Grid->header->nx) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Sun rasterfile width and -R -I do not match (%d versus %d)  Need -r?\n", header.width, Grid->header->nx);
 			Return (EXIT_FAILURE);
 		}
-		if (header.height != Grid->header->ny) {
+		if (header.height != (int)Grid->header->ny) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Sun rasterfile height and -R -I do not match (%d versus %d)  Need -r?\n", header.height, Grid->header->ny);
 			Return (EXIT_FAILURE);
 		}
@@ -496,13 +497,13 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* Note: While the picture array has no pads, we must assume the output grid may have one */
 		
-		for (i = 0; i < 3; i++) {	/* Do the r, g, and b channels */
-			if (Ctrl->L.active && Ctrl->L.layer != rgb[i]) continue;
-			GMT_report (GMT, GMT_MSG_NORMAL, "Processing the %s components\n", comp[i]);
-			sprintf (buffer, Ctrl->G.name, rgb[i]);
+		for (channel = 0; channel < 3; channel++) {	/* Do the r, g, and b channels */
+			if (Ctrl->L.active && Ctrl->L.layer != rgb[channel]) continue;
+			GMT_report (GMT, GMT_MSG_NORMAL, "Processing the %s components\n", comp[channel]);
+			sprintf (buffer, Ctrl->G.name, rgb[channel]);
 			grdfile = strdup (buffer);
-			sprintf (Grid->header->remark, "Grid of %s components in the 0-255 range", comp[i]);
-			k3 = i;
+			sprintf (Grid->header->remark, "Grid of %s components in the 0-255 range", comp[channel]);
+			k3 = channel;
 			k = 0;
 			GMT_grd_loop (GMT, Grid, row, col, ij) {
 				if (header.depth == 8)	/* Gray ramp */

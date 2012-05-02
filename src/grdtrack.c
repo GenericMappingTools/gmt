@@ -187,7 +187,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 					Ctrl->G.active = TRUE;
 					Ctrl->G.scale[ng] = 1.0;
 					if (strchr (opt->arg, ',') && !strchr (opt->arg, '?')) {	/* IMG grid file with required parameters */
-						if ((j = sscanf (opt->arg, "%[^,],%lf,%" GMT_LL "d,%lf", line, &Ctrl->G.scale[ng], &Ctrl->G.mode[ng], &Ctrl->G.lat[ng])) < 3) {
+						if ((j = sscanf (opt->arg, "%[^,],%lf,%d,%lf", line, &Ctrl->G.scale[ng], &Ctrl->G.mode[ng], &Ctrl->G.lat[ng])) < 3) {
 							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
 							n_errors++;
 						}
@@ -208,7 +208,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 				if (opt->arg[0]) {
 #endif
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L<flag> is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
-					strncpy (GMT->common.n.BC, opt->arg, (size_t)4);
+					strncpy (GMT->common.n.BC, opt->arg, 4U);
 #ifdef GMT_COMPAT
 				}
 				else {
@@ -368,7 +368,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	}
 	
 	if (Ctrl->C.active) {	/* Special case of requesting cross-profiles for given line segments */
-		GMT_LONG tbl, col;
+		COUNTER_MEDIUM tbl, col;
 		COUNTER_LARGE row, seg;
 		struct GMT_DATASET *Din = NULL, *Dout = NULL, *Dtmp = NULL;
 		struct GMT_TABLE *T = NULL;
