@@ -85,24 +85,24 @@
 
 struct GRDTREND_CTRL {	/* All control options for this program (except common args) */
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct D {	/* -D<diffgrid> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} D;
 	struct N {	/* -N[r]<n_model> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG robust;
 		COUNTER_MEDIUM value;
 	} N;
 	struct T {	/* -T<trend.grd> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} T;
 	struct W {	/* -W<weight.grd> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} W;
 };
@@ -472,7 +472,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	BOOLEAN trivial, weighted,iterations, set_ones = TRUE;
 	GMT_LONG error = 0;
-	BOUNTER_MEDIUM row, col;
+	COUNTER_MEDIUM row, col;
 	
 	COUNTER_LARGE ij;
 	
@@ -584,7 +584,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		if (Ctrl->D.active) compute_resid (GMT, G, T, R);
 	}
 	else {	/* Problem is not trivial  !!  */
-
+		GMT_LONG ierror;
 		load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
 		ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, TRUE);
 		if (ierror) {

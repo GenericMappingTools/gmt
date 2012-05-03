@@ -129,8 +129,8 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	BOOLEAN meridian_straight;		/* TRUE if meridians plot as straight lines */
 	BOOLEAN parallel_straight;		/* TRUE if parallels plot as straight lines */
 	BOOLEAN z_periodic;			/* TRUE if grid values are 0-360 degrees (phases etc) */
-	GMT_LONG n_lon_nodes;			/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
-	GMT_LONG n_lat_nodes;			/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
+	COUNTER_MEDIUM n_lon_nodes;		/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
+	COUNTER_MEDIUM n_lat_nodes;		/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
 	GMT_LONG path_mode;			/* 0 if we should call GMT_fix_up_path to resample across gaps > path_step, 1 to leave alone */
 	double width;				/* Full width in inches of this world map */
 	double height;				/* Full height in inches of this world map */
@@ -164,7 +164,7 @@ struct GMT_TIME_CONV {		/* Holds all time-related parameters */
 };
 
 struct GMT_INIT {		/* Holds misc run-time parameters */
-	GMT_LONG n_custom_symbols;
+	COUNTER_MEDIUM n_custom_symbols;
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	char *progname;					/* Name of current GMT program */
 	char *runtime_bindir;				/* Directory that contains the main exe at run-time */
@@ -177,7 +177,7 @@ struct GMT_INIT {		/* Holds misc run-time parameters */
 struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	COUNTER_LARGE n;			/* Number of such points */
 	size_t n_alloc;			/* Size of allocated plot arrays */
-	GMT_LONG r_theta_annot;		/* TRUE for special r-theta map annotation (see GMT_get_annot_label) */
+	BOOLEAN r_theta_annot;		/* TRUE for special r-theta map annotation (see GMT_get_annot_label) */
 	GMT_LONG mode_3D;		/* Determines if we draw fore and/or back 3-D box lines [Default is both] */
 	GMT_LONG *pen;			/* Pen (PSL_MOVE = up, PSL_DRAW = down) for these points */
 	struct GMT_PLOT_CALCLOCK calclock;

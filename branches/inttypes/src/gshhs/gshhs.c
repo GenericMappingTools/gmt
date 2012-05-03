@@ -47,34 +47,34 @@
 
 struct GSHHS_CTRL {
 	struct In {	/* <file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct Out {	/* > <file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 		double min;	/* Cutoff area in km^2 */
 	} A;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 	} L;
 	struct G {	/* -G */
-		GMT_LONG active;
+		BOOLEAN active;
 	} G;
 	struct I {	/* -I[<id>|c] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		GMT_LONG id;
 	} I;
 	struct N {	/* -N<level> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG level;
 	} N;
 	struct Q {	/* -Qe|i */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} Q;
 };
@@ -199,7 +199,9 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM seg_no = 0, is_line = 0, n_seg = 0, n_read, m;
 	GMT_LONG k, error, gmode, level, version, greenwich, is_river, src;
-	GMT_LONG must_swab, dim[4] = {1, 0, 2, 0}, OK, first = TRUE, max_east = 270000000;
+	GMT_LONG must_swab, OK, first = TRUE, max_east = 270000000;
+	
+	int64_t dim[4] = {1, 0, 2, 0};
 	
 	size_t n_alloc = 0;
 
@@ -357,13 +359,13 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* Create the segment/polygon header record */
 		if (is_line) {	/* River or border line-segment */
-			sprintf (header, "%6d%8d%3ld%2c%11.5f%10.5f%10.5f%10.5f", h.id, h.n, level, source, w, e, s, n);
+			sprintf (header, "%6d%8d%3d%2c%11.5f%10.5f%10.5f%10.5f", h.id, h.n, level, source, w, e, s, n);
 			max_east = 180000000;	/* For line segments we always use -180/+180  */
 		}
 		else {		/* Island or lake polygon */
 			(h.container == -1) ? sprintf (container, "-") : sprintf (container, "%6d", h.container);
 			(h.ancestor == -1) ? sprintf (ancestor, "-") : sprintf (ancestor, "%6d", h.ancestor);
-			sprintf (header, "%6d%8d%2ld%2c %.12g %.12g%11.5f%11.5f%10.5f%10.5f %s %s", h.id, h.n, level, source, area, f_area, w, e, s, n, container, ancestor);
+			sprintf (header, "%6d%8d%2d%2c %.12g %.12g%11.5f%11.5f%10.5f%10.5f %s %s", h.id, h.n, level, source, area, f_area, w, e, s, n, container, ancestor);
 		}
 
 		if (Ctrl->L.active) {	/* Skip data, only wanted the headers */

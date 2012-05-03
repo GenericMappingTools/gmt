@@ -30,38 +30,38 @@
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct D {	/* -Drotpolfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} D;
 	struct E {	/* -E[+]rotfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		char *file;
 	} E;
 	struct e {	/* -e<lon/lat/angle> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double lon, lat, w;
 	} e;
 	struct F {	/* -Fpolfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} F;
 	struct G {	/* -Goutfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} T;
 };
@@ -224,7 +224,8 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	 * Note that the path is the same for pixel or grid-registered grids.
 	 */
 
-	GMT_LONG np = 0, add, i, j, dim[4] = {1, 1, 2, 0};
+	GMT_LONG np = 0, add, i, j;
+	int64_t dim[4] = {1, 1, 2, 0};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
 	

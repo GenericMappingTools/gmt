@@ -62,32 +62,32 @@
 struct GMTDIGITIZE_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 	} A;
 	struct C {	/* Device */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *device;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 		double limit;
 	} D;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 	} F;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG LPI;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *name;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct Z {	/* -Z */
-		GMT_LONG active[2];
+		BOOLEAN active[2];
 	} Z;
 };
 
@@ -122,10 +122,10 @@ GMT_LONG get_digitize_raw (struct GMT_CTRL *GMT, GMT_LONG digunit, double *xdig,
 	n--;
 	buffer[n] = 0;
 #ifdef DEBUG
-	GMT_report (GMT, GMT_MSG_DEBUG, "Got %ld bytes [%s]\n", n, buffer);
+	GMT_report (GMT, GMT_MSG_DEBUG, "Got %d bytes [%s]\n", n, buffer);
 #endif
 	for (i = 0; i < n; i++) if (buffer[i] == ',') buffer[i] = ' ';
-	sscanf (buffer, "%ld %ld %c", &ix, &iy, &button);
+	sscanf (buffer, "%d %d %c", &ix, &iy, &button);
 	
 	*xdig = (double)(ix) * C->INV_LPI;	/* Convert from lines per inch to inches */
 	*ydig = (double)(iy) * C->INV_LPI;
@@ -562,7 +562,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					z_val = atof (line);
 				}
 				if (button == MULTISEG_BUTTON1) {	/* Just write blank segment header */
-					sprintf (GMT->current.io.segment_header, "%ld", n_segments);
+					sprintf (GMT->current.io.segment_header, "%d", n_segments);
 				}
 				else {	/* Ask for what to write out */
 					GMT_message (GMT, "Enter segment header: ");
@@ -571,7 +571,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						exit (EXIT_FAILURE);
 					}
 					GMT_chop (line);
-					sprintf (GMT->current.io.segment_header, "%ld %s", n_segments, line);
+					sprintf (GMT->current.io.segment_header, "%d %s", n_segments, line);
 				}
 				GMT_write_segmentheader (GMT, fp, n_expected_fields);
 				GMT_report (GMT, GMT_MSG_NORMAL, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);

@@ -28,59 +28,59 @@
 #include "gmt.h"
 
 struct GRDFFT_CTRL {
-	GMT_LONG n_op_count, n_par;
+	COUNTER_MEDIUM n_op_count, n_par;
 	GMT_LONG *operation;
 	double *par;
 
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file[2];
 	} In;
 	struct A {	/* -A<azimuth> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} A;
 	struct C {	/* -C<zlevel> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} C;
 	struct D {	/* -D[<scale>|g] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} D;
 	struct E {	/* -E[x_or_y][w] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG give_wavelength;
 		GMT_LONG mode;
 	} E;
 	struct F {	/* -F[x_or_y]<lc>/<lp>/<hp>/<hc> or -F[x_or_y]<lo>/<hi> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double lc, lp, hp, hc;
 	} F;
 	struct G {	/* -G<outfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -I[<scale>|g] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 	} L;
 	struct N {	/* -N<stuff> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG force_narray, suggest_narray, n_user_set;
-		GMT_LONG nx2, ny2;
+		unsigned int nx2, ny2;
 		double value;
 	} N;
 	struct S {	/* -S<scale> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double scale;
 	} S;
 	struct T {	/* -T<te/rl/rm/rw/ri> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double te, rhol, rhom, rhow, rhoi;
 	} T;
 };
@@ -217,8 +217,8 @@ void remove_plane (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 
 void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 {
-	GMT_LONG il1, ir1, il2, ir2, jb1, jb2, jt1, jt2, j;
-	COUNTER_MEDIUM im, jm, i, i_data_start, j_data_start;
+	GMT_LONG il1, ir1, il2, ir2, jb1, jb2, jt1, jt2, j, end_j;
+	COUNTER_MEDIUM im, jm, ju, i, i_data_start, j_data_start;
 	float *datac = Grid->data;
 	double scale, cos_wt;
 	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
@@ -239,9 +239,9 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 		ir1 = im;	/* Inside xmin; right of edge 1  */
 		il2 = il1 + h->nx - 1;	/* Inside xmax; left of edge 2  */
 		ir2 = ir1 + h->nx - 1;	/* Outside xmax; right of edge 2  */
-		for (j = 0; j < h->ny; j++) {
-			datac[GMT_IJPR(h,j,il1)] = (float)2.0*datac[GMT_IJPR(h,j,0)] - datac[GMT_IJPR(h,j,ir1)];
-			datac[GMT_IJPR(h,j,ir2)] = (float)2.0*datac[GMT_IJPR(h,j,h->nx-1)] - datac[GMT_IJPR(h,j,il2)];
+		for (ju = 0; ju < h->ny; ju++) {
+			datac[GMT_IJPR(h,ju,il1)] = (float)2.0*datac[GMT_IJPR(h,ju,0)] - datac[GMT_IJPR(h,ju,ir1)];
+			datac[GMT_IJPR(h,ju,ir2)] = (float)2.0*datac[GMT_IJPR(h,ju,h->nx-1)] - datac[GMT_IJPR(h,ju,il2)];
 		}
 	}
 
@@ -265,13 +265,14 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 
 	/* Now, cos taper the x edges */
 	scale = M_PI / (i_data_start + 1);
+	end_j = h->my - j_data_start;
 	for (im = 1; im <= i_data_start; im++) {
 		il1 = -im;
 		ir1 = im;
 		il2 = il1 + h->nx - 1;
 		ir2 = ir1 + h->nx - 1;
 		cos_wt = 0.5 * (1.0 + cos (im * scale));
-		for (j = -j_data_start; j < h->my - j_data_start; j++) {
+		for (j = -j_data_start; j < end_j; j++) {
 			datac[GMT_IJPR(h,j,il1)] *= (float)cos_wt;
 			datac[GMT_IJPR(h,j,ir2)] *= (float)cos_wt;
 		}
@@ -672,10 +673,10 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	return (2);	/* Number of parameters used */
 }
 
-COUNTER_LARGE get_non_symmetric_f (COUNTER_LARGE *f, COUNTER_LARGE n)
+COUNTER_LARGE get_non_symmetric_f (COUNTER_MEDIUM *f, COUNTER_MEDIUM n)
 {
 	/* Return the product of the non-symmetric factors in f[]  */
-	COUNTER_LARGE i = 0, j = 1, retval = 1;
+	COUNTER_MEDIUM i = 0, j = 1, retval = 1;
 
 	if (n == 1) return (f[0]);
 
@@ -728,7 +729,7 @@ void fourt_stats (struct GMT_CTRL *C, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, COUN
 	 * W. H. F. Smith, 26 February 1992.
 	 *  */
 
-	GMT_LONG n_factors, i, sum2, sumnot2, nnot2;
+	COUNTER_MEDIUM n_factors, i, sum2, sumnot2, nnot2;
 	COUNTER_LARGE nonsymx, nonsymy, nonsym, storage, ntotal;
 	double err_scale;
 
@@ -772,7 +773,7 @@ void suggest_fft (struct GMT_CTRL *GMT, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, st
 	COUNTER_MEDIUM nx_best_s, ny_best_s;
 	COUNTER_MEDIUM nxg, nyg;       /* Guessed by this routine  */
 	COUNTER_MEDIUM nx2, ny2, nx3, ny3, nx5, ny5;   /* For powers  */
-	COUNTER_MEDIUM current_space, best_space, given_space, e_space, t_space;
+	size_t current_space, best_space, e_space, t_space, given_space;
 	double current_time, best_time, given_time, s_time, e_time;
 	double current_err, best_err, given_err, s_err, t_err;
 
@@ -837,11 +838,11 @@ void suggest_fft (struct GMT_CTRL *GMT, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, st
 	}
 
 	if (do_print) {
-		GMT_report (GMT, GMT_MSG_FATAL, " Highest speed\t%ld %ld\ttime factor %.8g\trms error %.8e\tbytes %ld\n",
+		GMT_report (GMT, GMT_MSG_FATAL, " Highest speed\t%ld %ld\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
 			nx_best_t, ny_best_t, best_time, t_err, t_space);
-		GMT_report (GMT, GMT_MSG_FATAL, " Most accurate\t%ld %ld\ttime factor %.8g\trms error %.8e\tbytes %ld\n",
+		GMT_report (GMT, GMT_MSG_FATAL, " Most accurate\t%ld %ld\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
 			nx_best_e, ny_best_e, e_time, best_err, e_space);
-		GMT_report (GMT, GMT_MSG_FATAL, " Least storage\t%ld %ld\ttime factor %.8g\trms error %.8e\tbytes %ld\n",
+		GMT_report (GMT, GMT_MSG_FATAL, " Least storage\t%ld %ld\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
 			nx_best_s, ny_best_s, s_time, s_err, best_space);
 	}
 	/* Fastest solution */
@@ -871,7 +872,8 @@ void suggest_fft (struct GMT_CTRL *GMT, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, st
 
 void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct GMT_GRID *Gin)
 {
-	COUNTER_MEDIUM k, worksize, factors[32];
+	COUNTER_MEDIUM k, factors[32];
+	size_t worksize;
 	double tdummy, edummy;
 	struct FFT_SUGGESTION fft_sug[3];
 		

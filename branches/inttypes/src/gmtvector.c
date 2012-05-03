@@ -39,39 +39,39 @@
 
 struct GMTVECTOR_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct In {	/* infile */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG n_args;
 		char *arg;
 	} In;
 	struct A {	/* -A[m[<conf>]|<vec>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double conf;
 		char *arg;
 	} A;
 	struct C {	/* -C[i|o] */
-		GMT_LONG active[2];
+		BOOLEAN active[2];
 	} C;
 	struct D {	/* -D[dim] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 	} E;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct S {	/* -S[vec] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *arg;
 	} S;
 	struct T {	/* -T[operator] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		GMT_LONG degree;
 		double par[3];
@@ -144,7 +144,8 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG  n, n_in, n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM  n_in, n_errors = 0, n_files = 0;
+	GMT_LONG n;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;

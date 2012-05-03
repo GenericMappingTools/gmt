@@ -31,49 +31,49 @@
 struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
 	struct A {	/* -A[-][labelinfo] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 1 turns off all labels */
 		double interval;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG cpt;
 		char *file;
 		double interval;
 	} C;
 	struct D {	/* -D<dumpfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} D;
 	struct G {	/* -G[d|f|n|l|L|x|X]<params> */
-		GMT_LONG active;
+		BOOLEAN active;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 	} I;
 	struct L {	/* -L<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct T {	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG label;
 		GMT_LONG low, high;	/* TRUE to tick low and high locals */
 		double spacing, length;
 		char *txt[2];	/* Low and high label */
 	} T;
 	struct Q {	/* -Q<indexfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Q;
 	struct W {	/* -W[+|-]<type><pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG color_cont;
 		GMT_LONG color_text;
 		struct GMT_PEN pen[2];
@@ -150,7 +150,7 @@ void Free_pscontour_Ctrl (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, GMT_LONG n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, COUNTER_MEDIUM **v, COUNTER_MEDIUM **cindex)
+GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, COUNTER_MEDIUM n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, COUNTER_MEDIUM **v, COUNTER_MEDIUM **cindex)
 {
 	/* This routine finds all the contour crossings for this triangle.  Each contour consists of
 	 * linesegments made up of two points, with coordinates xc, yc, and contour level zc.
@@ -593,11 +593,11 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 
 GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG PSCONTOUR_SUM, io_mode = 0, id, make_plot, error = FALSE, skip = FALSE, closed;
-	GMT_LONG tbl_scl = 0, add, two_only = FALSE, fmt[3] = {0, 0, 0};
+	GMT_LONG add;
+	BOOLEAN two_only = FALSE, make_plot, error = FALSE, skip = FALSE, closed;
 	
-	COUNTER_MEDIUM n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0}, last_entry, last_exit;
-	COUNTER_MEDIUM np, k, i, low, high, n_contours = 0, n_tables = 0, tbl, *vert = NULL, *cind = NULL;
+	COUNTER_MEDIUM PSCONTOUR_SUM, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0}, last_entry, last_exit, fmt[3] = {0, 0, 0};
+	COUNTER_MEDIUM np, k, i, low, high, n_contours = 0, n_tables = 0, tbl_scl = 0, io_mode = 0, tbl, id, *vert = NULL, *cind = NULL;
 	
 	size_t n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL, c_alloc = 0;
 	
@@ -732,7 +732,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Map transform */
 
-	for (i = 0; i < (GMT_LONG)n; i++) GMT_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
+	for (i = 0; i < n; i++) GMT_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
 
 	if (Ctrl->Q.active) {	/* Read precalculated triangulation indices */
 		GMT_LONG col;
@@ -867,7 +867,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	cont = GMT_malloc (GMT, cont, 0, &c_alloc, struct PSCONTOUR);
 
 	if (Ctrl->D.active) {
-		GMT_LONG dim[4] = {0, 0, 3, 0};
+		int64_t dim[4] = {0, 0, 3, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_DATASET;
 		else {	/* Must determine the kind of output organization */

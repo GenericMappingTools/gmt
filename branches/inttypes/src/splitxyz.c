@@ -33,44 +33,44 @@ EXTERN_MSC GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
 
 struct SPLITXYZ_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A<azimuth>/<tolerance> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double azimuth, tolerance;
 	} A;
 	struct C {	/* -C<course_change> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} C;
 	struct D {	/* -D<mindist> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} D;
 	struct F {	/* -F<xy_filter>/<z_filter> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double xy_filter, z_filter;
 	} F;
 	struct N {	/* -N<namestem> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *name;
 	} N;
 	struct Q {	/* -Q[<xyzdg>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char col[SPLITXYZ_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Z;
 };
 
 double *filterxy_setup (struct GMT_CTRL *C)
 {
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	double tmp, sum = 0.0, *fwork = NULL;
 
 	fwork = GMT_memory (C, NULL, SPLITXYZ_F_RES, double);	/* Initialized to zeros */
@@ -83,9 +83,11 @@ double *filterxy_setup (struct GMT_CTRL *C)
 	return (fwork);
 }
 
-void filter_cols (struct GMT_CTRL *C, double *data[], GMT_LONG begin, GMT_LONG end, GMT_LONG d_col, GMT_LONG n_cols, GMT_LONG cols[], double filter_width, double *fwork)
+void filter_cols (struct GMT_CTRL *C, double *data[], COUNTER_LARGE begin, COUNTER_LARGE end, COUNTER_MEDIUM d_col, COUNTER_MEDIUM n_cols, COUNTER_MEDIUM cols[], double filter_width, double *fwork)
 {
-	GMT_LONG i, j, k, p, istart, istop, ndata, hilow;
+	COUNTER_LARGE i, j, k, p, istart, istop, ndata;
+	int64_t kk;
+	BOOLEAN hilow;
 	double half_width, dt, sum, **w = NULL;
 
 	if (filter_width == 0.0) return;	/* No filtering */
@@ -100,8 +102,9 @@ void filter_cols (struct GMT_CTRL *C, double *data[], GMT_LONG begin, GMT_LONG e
 		while (istart < end && data[d_col][istart] - data[d_col][j] <= -half_width) istart++;
 		while (istop  < end && data[d_col][istop]  - data[d_col][j] <   half_width) istop++;
 		for (i = istart, sum = 0.0; i < istop; i++) {
-			k = lrint (floor (dt * fabs (data[d_col][i] - data[d_col][j])));
-			if (k < 0 || k >= SPLITXYZ_F_RES) continue;	/* Safety valve */
+			kk = lrint (floor (dt * fabs (data[d_col][i] - data[d_col][j])));
+			if (kk < 0 || kk >= SPLITXYZ_F_RES) continue;	/* Safety valve */
+			k = kk;
 			sum += fwork[k];
 			for (p = 0; p < n_cols; p++) w[p][j] += (data[cols[p]][i] * fwork[k]);
 		}
@@ -191,7 +194,8 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, n_errors = 0, n_outputs = 0, n_files = 0, z_selected = FALSE;
+	GMT_LONG j, n_errors = 0, n_outputs = 0, n_files = 0;
+	BOOLEAN z_selected = FALSE;
 #ifdef GMT_COMPAT
 	char txt_a[GMT_TEXT_LEN256];
 #endif
@@ -297,10 +301,10 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 
 GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, tbl, col, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
-	GMT_LONG output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_columns = 0;
-	GMT_LONG error = FALSE, ok, io_mode = 0, nprofiles = 0, first = TRUE;
-	GMT_LONG n_out = 0, dim[4] = {1, 0, 0, 0};
+	COUNTER_MEDIUM n_out = 0, i, j, tbl, col, d_col, h_col, z_cols, xy_cols[2] = {0, 1}, nprofiles = 0;
+	COUNTER_MEDIUM output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_columns = 0;
+	BOOLEAN error = FALSE, ok, io_mode = 0, first = TRUE;
+	int64_t dim[4] = {1, 0, 0, 0};
 	
 	size_t n_alloc_seg = 0, n_alloc = 0;
 	COUNTER_LARGE k, n, row, seg, seg2 = 0, begin, end, n_total = 0, *rec = NULL;

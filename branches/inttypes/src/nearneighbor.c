@@ -39,29 +39,29 @@
 struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct E {	/* -E<empty> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} E;
 	struct G {	/* -G<grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct N {	/* -N<sectors> */
-		GMT_LONG active;
-		GMT_LONG sectors, min_sectors;
+		BOOLEAN active;
+		COUNTER_MEDIUM sectors, min_sectors;
 	} N;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double radius;
 		char unit;
 	} S;
 	struct W {	/* -W */
-		GMT_LONG active;
+		BOOLEAN active;
 	} W;
 };
 
@@ -252,8 +252,8 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 
 GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG col_0, row_0, row, col, k, ii, jj;
-	COUNTER_MEDIUM d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
+	GMT_LONG col_0, row_0, row, col, row_end, col_end, k, ii, jj;
+	COUNTER_MEDIUM rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
 	BOOLEAN error = FALSE, wrap_180, replicate_x, replicate_y;
 	
 	size_t n_alloc = GMT_CHUNK;
@@ -313,8 +313,8 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	x0 = GMT_memory (GMT, NULL, Grid->header->nx, double);
 	y0 = GMT_memory (GMT, NULL, Grid->header->ny, double);
-	for (col = 0; col < Grid->header->nx; col++) x0[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
-	for (row = 0; row < Grid->header->ny; row++) y0[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
+	for (colu = 0; colu < Grid->header->nx; colu++) x0[colu] = GMT_grd_col_to_x (GMT, colu, Grid->header);
+	for (rowu = 0; rowu < Grid->header->ny; rowu++) y0[rowu] = GMT_grd_row_to_y (GMT, rowu, Grid->header);
 
 	d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 
@@ -378,12 +378,14 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* Loop over all nodes within radius of this node */
 
-		for (row = row_0 - d_row; row <= (row_0 + d_row); row++) {
+		row_end = row_0 + d_row;
+		for (row = row_0 - d_row; row <= row_end; row++) {
 
 			jj = row;
 			if (GMT_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range */
 
-			for (col = col_0 - d_col[jj]; col <= (col_0 + d_col[jj]); col++) {
+			col_end = col_0 + d_col[jj];
+			for (col = col_0 - d_col[jj]; col <= col_end; col++) {
 
 				ii = col;
 				if (GMT_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range */ 

@@ -44,41 +44,41 @@
 
 struct FILTER1D_CTRL {
 	struct D {	/* -D<inc> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 	} E;
 	struct F {	/* -F<type><width>[<mode>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char filter;	/* Character codes for the filter */
 		double width;
 		GMT_LONG mode;
 		char *file;	/* Character codes for the filter */
 	} F;
 	struct I {	/* -I<ignoreval> */
-		GMT_LONG active;	/* TRUE when input values that equal value should be discarded */
+		BOOLEAN active;	/* TRUE when input values that equal value should be discarded */
 		double value;
 	} I;
 	struct L {	/* -L<lackwidth> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} L;
 	struct N {	/* -N<t_col> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG col;
 	} N;
 	struct Q {	/* -Q<factor> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} Q;
 	struct S {	/* -S<symmetry> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} S;
 	struct T {	/* -T[<tmin/tmax/t_inc>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double min, max, inc;
 	} T;
 };
@@ -119,8 +119,8 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	GMT_LONG filter_type;		/* Flag indicating desired filter type  */
 	GMT_LONG kind;			/* -1 skip +ve, +1 skip -ve, else use all  [for the l|L|u|U filter] */
 	GMT_LONG way;			/* -1 find minimum, +1 find maximum  [for the l|L|u|U filter] */
-	GMT_LONG mode_selection;
-	GMT_LONG n_multiples;
+	COUNTER_MEDIUM mode_selection;
+	COUNTER_MEDIUM n_multiples;
 
 	double *f_wt;			/* Pointer for array of filter coefficients  */
 	double *min_loc;		/* Pointer for array of values, one per [column]  */

@@ -55,7 +55,7 @@ enum GMT_enum_img {GMT_IMG_NLON_1M 	= 21600,	/* At 1 min resolution */
 
 struct GMT_GRD_INFO {	/* Holds any -R -I -F settings passed indirectly via -R<grdfile> */
 	struct GRD_HEADER grd;	/* Header of grid file passed via -R */
-	GMT_LONG active;		/* TRUE if initialized via -R */
+	BOOLEAN active;		/* TRUE if initialized via -R */
 };
 
 struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */

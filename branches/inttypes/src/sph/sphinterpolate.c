@@ -38,23 +38,23 @@
 
 struct SPHINTERPOLATE_CTRL {
 	struct G {	/* -G<grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct Q {	/* -Q<interpolation> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double value[2];
 	} Q;
 	struct T {	/* -T for variable tension */
-		GMT_LONG active;
+		BOOLEAN active;
 	} T;
 	struct Z {	/* -Z to scale data */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Z;
 };
 

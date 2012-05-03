@@ -32,43 +32,43 @@ EXTERN_MSC GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg);
 
 struct PSHISTOGRAM_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} C;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 	} F;
 	struct G {	/* -Gfill */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I[o] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} I;
 	struct L {	/* -L<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} L;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct W {	/* -W<width> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc;
 	} W;
 	struct Z {	/* -Z<type> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} Z;
 };
@@ -251,7 +251,7 @@ GMT_LONG get_loc_scl (struct GMT_CTRL *GMT, double *data, COUNTER_LARGE n, doubl
 	/* Returns stats[] = L2, L1, LMS location, L2, L1, LMS scale  */
 
 	COUNTER_LARGE i, j;
-	GMT_LONG n_multiples;
+	COUNTER_MEDIUM n_multiples;
 	double dx;
 
 	if (n < 3) return (-1);
@@ -593,7 +593,8 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
 		if (Ctrl->I.mode) {
-			GMT_LONG ibox, dim[4] = {1, 1, 2, 0};
+			GMT_LONG ibox;
+			int64_t dim[4] = {1, 1, 2, 0};
 			double xx, yy;
 			struct GMT_DATASET *D = NULL;
 			struct GMT_LINE_SEGMENT *S = NULL;

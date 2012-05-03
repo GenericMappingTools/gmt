@@ -36,29 +36,29 @@ EXTERN_MSC GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, d
 struct MINMAX_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 0 reports range for all tables, 1 is per table, 2 is per segment */
 	} A;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 	} C;
 	struct E {	/* -E<L|l|H|h><col> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG abs;
 		GMT_LONG mode;
 		GMT_LONG col;
 	} E;
 	struct I {	/* -Idx[/dy[/<dz>..]] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG ncol;
 		double inc[GMT_MAX_COLUMNS];
 	} I;
 	struct S {	/* -S[x|y] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG xbar, ybar;
 	} S;
 	struct T {	/* -T<dz>[/<col>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc;
 		GMT_LONG col;
 	} T;

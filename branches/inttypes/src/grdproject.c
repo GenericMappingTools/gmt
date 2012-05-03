@@ -30,34 +30,34 @@
 
 struct GRDPROJECT_CTRL {
 	struct In {	/* Input grid */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A[k|m|n|i|c|p] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char unit;
 	} A;
 	struct C {	/* -C[<dx/dy>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double easting, northing;
 	} C;
 	struct D {	/* -Ddx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} D;
 	struct E {	/* -E<dpi> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG dpi;
 	} E;
 	struct G {	/* -G */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 	} I;
 	struct M {	/* -Mc|i|m */
-		GMT_LONG active;
+		BOOLEAN active;
 		char unit;
 	} M;
 };

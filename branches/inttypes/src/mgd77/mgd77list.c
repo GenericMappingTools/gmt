@@ -55,68 +55,68 @@
 struct MGD77LIST_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG code[4];
-		GMT_LONG force;
+		BOOLEAN force;
 		GMT_LONG GF_version;
-		GMT_LONG fake_times;
+		BOOLEAN fake_times;
 		double sound_speed;
 	} A;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* TRUE to skip recs with time == NaN */
 		double start;	/* Start time */
 		double stop;	/* Stop time */
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 	} E;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *flags;
 	} F;
 	struct G {	/* -G */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG start;	/* Start rec */
 		GMT_LONG stop;	/* Stop rec */
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active[2];
+		BOOLEAN active[2];
 		char unit[2][2];
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active[2];
+		BOOLEAN active[2];
 		double min[2];
 		double max[2];
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} T;
 	struct W {	/* -W */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} W;
 	struct Z {	/* -Z[-|+] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} Z;
 };
@@ -1135,7 +1135,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				aux_dvalue[MGD77_AUX_DM] = cal.min + cal.sec / 60.0;
 				aux_dvalue[MGD77_AUX_HM] = 100.0 * cal.hour + aux_dvalue[MGD77_AUX_DM];
 				date = MGD77_cal_to_fyear (GMT, &cal);	/* Get date as decimal year */
-				if (auxlist[MGD77_AUX_DA].requested) sprintf (aux_tvalue[MGD77_AUX_DA], "%4.4ld%2.2ld%2.2ld", cal.year, cal.month, cal.day_m);
+				if (auxlist[MGD77_AUX_DA].requested) sprintf (aux_tvalue[MGD77_AUX_DA], "%4.4d%2.2d%2.2d", cal.year, cal.month, cal.day_m);
 				need_date = FALSE;
 			}
 			else

@@ -38,31 +38,31 @@
 
 struct X2SYS_CROSS_CTRL {
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} A;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} I;
 	struct S {	/* -S */
-		GMT_LONG active[2];
+		BOOLEAN active[2];
 		double limit[3];
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *TAG;
 	} T;
 	struct W {	/* -W */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG width;
 	} W;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} Q;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Z;
 };
 

@@ -56,27 +56,27 @@ struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coo
 struct GMTSELECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_SHORE_SELECT info;
 	} A;
 	struct C {	/* [-C[-|=|+]<dist>[unit]/<ptfile>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* Form of distance calculation */
 		double dist;	/* Radius of influence for each point */
 		char unit;	/* Unit name */
 		char *file;	/* Name of file with points */
 	} C;
 	struct D {	/* -D<resolution> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG force;	/* if TRUE, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct E {	/* -E<operators> , <op> = combination or f,n */
-		GMT_LONG active;
-		GMT_LONG inside[2];	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
+		BOOLEAN active;
+		COUNTER_MEDIUM inside[2];	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
 	struct L {	/* -L[p][-|=|+]<dist>[unit]/<lfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG end_mode;	/* Controls what happens beyond segment endpoints */
 		GMT_LONG mode;	/* Form of distance calculation */
 		double dist;	/* Distance of influence for each line */
@@ -84,25 +84,25 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 		char *file;	/* Name of file with lines */
 	} L;
 	struct F {	/* -F<polygon> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;	/* Name of file with polygons */
 	} F;
 	struct I {	/* -Icflrsz */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG pass[GMTSELECT_N_TESTS];	/* One flag for each setting */
 	} I;
 	struct N {	/* -N<maskvalues> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		GMT_LONG mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
 	} N;
 	struct Z {	/* -Z<min>/<max> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double min;	/* Smallest z-value to pass through */
 		double max;	/* Largest z-value to pass through */
 	} Z;
 	struct dbg {	/* -+step */
-		GMT_LONG active;
+		BOOLEAN active;
 		double step;
 	} dbg;
 };
@@ -409,13 +409,14 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 
 GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, k, err, n_minimum = 2, r_mode;
-	GMT_LONG n_fields, ind, bin, last_bin = -1, pt_cartesian = FALSE, inside;
-	GMT_LONG np[2] = {0, 0}, base = 3, wd[2] = {0, 0}, id, this_node, side, col;
-	GMT_LONG error = FALSE, need_header, shuffle, just_copy_record = FALSE;
-	GMT_LONG output_header = FALSE, do_project = FALSE, no_resample = FALSE;
+	GMT_LONG err;	/* Required by GMT_err_fail */
+	COUNTER_MEDIUM base = 3, np[2] = {0, 0}, r_mode;
+	COUNTER_MEDIUM side, col, id;
+	GMT_LONG n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX;
+	BOOLEAN inside, error = FALSE, need_header, shuffle, just_copy_record = FALSE, pt_cartesian = FALSE;
+	BOOLEAN output_header = FALSE, do_project = FALSE, no_resample = FALSE;
 
-	COUNTER_LARGE row, seg, n_read = 0, n_pass = 0;
+	COUNTER_LARGE k, row, seg, n_read = 0, n_pass = 0;
 
 	double xx, yy, *in = NULL;
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
@@ -624,7 +625,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Now we are ready to take on some input values */
 
-	GMT->common.b.ncol[GMT_OUT] = -1;
+	GMT->common.b.ncol[GMT_OUT] = UINT_MAX;	/* Flag to have it reset to GMT->common.b.ncol[GMT_IN] when writing */
 	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 	need_header = GMT->current.io.multi_segments[GMT_OUT];	/* Only need to break up segments */
 	
@@ -689,7 +690,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (do_project) {	/* Projected lon/lat; temporary reset input type for GMT_inonout to do Cartesian mode */
 				GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
 			}
-			inside = FALSE;
+			inside = 0;
 			for (seg = 0; seg < pol->n_segments && !inside; seg++) {	/* Check each polygon until we find that our point is inside */
 				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
 				inside = (GMT_inonout (GMT, xx, yy, pol->segment[seg]) >= Ctrl->E.inside[F_ITEM]);
@@ -702,7 +703,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (Ctrl->N.active) {	/* Check if on land or not */
-			GMT_LONG brow;
+			GMT_LONG brow, i, this_node;
 			xx = lon;
 			while (xx < 0.0) xx += 360.0;
 			brow = lrint (floor ((90.0 - in[GMT_Y]) / c.bsize));

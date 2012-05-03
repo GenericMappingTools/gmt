@@ -37,27 +37,27 @@
 #define TREND2D_N_OUTPUT_CHOICES 6
 
 struct TREND2D_CTRL {
-	GMT_LONG n_outputs;
-	GMT_LONG weighted_output;
+	COUNTER_MEDIUM n_outputs;
+	BOOLEAN weighted_output;
 	struct C {	/* -C<condition_#> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} C;
 	struct F {	/* -F<xymrw> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char col[TREND2D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} F;
 	struct I {	/* -I[<confidence>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} I;
 	struct N {	/* -N<n_model>[r] */
-		GMT_LONG active;
-		GMT_LONG robust;
-		GMT_LONG value;
+		BOOLEAN active;
+		BOOLEAN robust;
+		COUNTER_MEDIUM value;
 	} N;
 	struct W {	/* -W */
-		GMT_LONG active;
+		BOOLEAN active;
 	} W;
 };
 

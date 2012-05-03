@@ -57,50 +57,50 @@ EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, COUNTER_MEDIUM n_macros, 
 struct GMTMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct Out {	/* = <filename> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A<t_f(t).d> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} A;
 	struct C {	/* -C<cols> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG *cols;
 	} C;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 	} L;
 	struct N {	/* -N<n_col>/<t_col> */
-		GMT_LONG active;
-		GMT_LONG ncol, tcol;
+		BOOLEAN active;
+		COUNTER_MEDIUM ncol, tcol;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 	struct S {	/* -S[f|l] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} S;
 	struct T {	/* -T[<tmin/tmax/t_inc>] | -T<file> */
-		GMT_LONG active;
-		GMT_LONG notime;
-		GMT_LONG mode;	/* = 1 if t_inc really is number of desired nodes */
+		BOOLEAN active;
+		BOOLEAN notime;
+		COUNTER_MEDIUM mode;	/* = 1 if t_inc really is number of desired nodes */
 		double min, max, inc;
 		char *file;
 	} T;
 };
 
 struct GMTMATH_INFO {
-	GMT_LONG irregular;	/* TRUE if t_inc varies */
-	GMT_LONG roots_found;	/* TRUE if roots have been solved for */
-	GMT_LONG local;		/* Per segment operation (TRUE) or global operation (FALSE) */
-	GMT_LONG n_roots;	/* Number of roots found */
-	GMT_LONG r_col;		/* The column used to find roots */
-	GMT_LONG n_col;		/* Number of columns */
+	BOOLEAN irregular;	/* TRUE if t_inc varies */
+	BOOLEAN roots_found;	/* TRUE if roots have been solved for */
+	BOOLEAN local;		/* Per segment operation (TRUE) or global operation (FALSE) */
+	COUNTER_MEDIUM n_roots;	/* Number of roots found */
+	COUNTER_MEDIUM r_col;	/* The column used to find roots */
+	COUNTER_MEDIUM n_col;	/* Number of columns */
 	double t_min, t_max, t_inc;
 	struct GMT_TABLE *T;	/* Table with all time information */
 };
@@ -127,6 +127,7 @@ void Free_gmtmath_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
+#if 0
 void new_table (struct GMT_CTRL *GMT, double ***s, GMT_LONG n_col, GMT_LONG n)
 {	/* First time it is called for a table the the s pointer is NULL */
 	GMT_LONG j;
@@ -134,6 +135,7 @@ void new_table (struct GMT_CTRL *GMT, double ***s, GMT_LONG n_col, GMT_LONG n)
 	for (j = 0; j < n_col; j++) p[j] = GMT_memory (GMT, p[j], n, double);
 	*s = p;
 }
+#endif
 
 void decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *skip, COUNTER_MEDIUM n_col, COUNTER_MEDIUM t_col)
 {
@@ -464,7 +466,7 @@ GMT_LONG GMT_gmtmath_parse (struct GMTAPI_CTRL *C, struct GMTMATH_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->T.active || Ctrl->N.active || Ctrl->C.active), "Syntax error: Cannot use -T, -N, or -C when -Q has been set\n");
 	n_req = (Ctrl->N.active) ? Ctrl->N.ncol : 0;
 	n_errors += GMT_check_binary_io (GMT, n_req);
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (Ctrl->N.ncol <= 0 || Ctrl->N.tcol < 0 || Ctrl->N.tcol >= Ctrl->N.ncol),
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (Ctrl->N.ncol == 0 || Ctrl->N.tcol >= Ctrl->N.ncol),
 		"Syntax error: -N must have positive n_cols and 0 <= t_col < n_col\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -1554,8 +1556,8 @@ void table_LE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATAS
 void table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *S[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG col)
 /*OPERATOR: LMSSCL 1 1 LMS scale estimate (LMS STD) of A.  */
 {
-	COUNTER_LARGE s, i;
-	GMT_LONG k, GMT_mode_selection = 0, GMT_n_multiples = 0;
+	COUNTER_LARGE k, s, i;
+	COUNTER_MEDIUM GMT_mode_selection = 0, GMT_n_multiples = 0;
 	double lmsscl, mode, *z = NULL;
 	struct GMT_TABLE *T = S[last]->table[0];
 
@@ -1881,8 +1883,8 @@ void table_MOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 void table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *S[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG col)
 /*OPERATOR: MODE 1 1 Mode value (Least Median of Squares) of A.  */
 {
-	COUNTER_LARGE s, i;
-	GMT_LONG k, GMT_mode_selection = 0, GMT_n_multiples = 0;
+	COUNTER_LARGE k, s, i;
+	COUNTER_MEDIUM GMT_mode_selection = 0, GMT_n_multiples = 0;
 	double mode, *z = NULL;
 	struct GMT_TABLE *T = S[last]->table[0];
 
@@ -2774,7 +2776,8 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 /*OPERATOR: ROOTS 2 1 Treats col A as f(t) = 0 and returns its roots.  */
 {
 	COUNTER_LARGE seg, row;
-	GMT_LONG prev = last - 1, i;
+	COUNTER_MEDIUM i;
+	GMT_LONG prev = last - 1, i, arg;
 	double *roots = NULL;
 	struct GMT_TABLE *T = (constant[last]) ? NULL : S[last]->table[0], *T_prev = S[prev]->table[0];
 
@@ -2785,14 +2788,15 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 	if (info->roots_found) return;	/* Already been here */
 	if (!constant[last]) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Argument to operator ROOTS must be a constant: the column number. Reset to 0\n");
-		info->r_col = 0;
+		arg = 0;
 	}
 	else
-		info->r_col = lrint (factor[last]);
-	if (info->r_col < 0 || info->r_col >= info->n_col) {
+		arg = lrint (factor[last]);
+	if (arg < 0 || arg >= info->n_col) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Argument to operator ROOTS must be a column number 0 < col < %ld. Reset to 0\n", info->n_col);
-		info->r_col = 0;
+		arg = 0;
 	}
+	info->r_col = arg;
 	roots = GMT_memory (GMT, NULL, T->n_records, double);
 	info->n_roots = 0;
 	if (T_prev->segment[0]->coord[info->r_col][0] == 0.0) roots[info->n_roots++] = info->T->segment[0]->coord[COL_T][0];
@@ -2886,9 +2890,9 @@ GMT_LONG decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, st
 
 GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, k, op = 0, new_stack = -1;
-	COUNTER_MEDIUM consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS];
-	COUNTER_MEDIUM n_columns = 0, alloc_mode[GMTMATH_STACK_SIZE], use_t_col = 0, nstack = 0, kk;
+	GMT_LONG i, k, op = 0;
+	COUNTER_MEDIUM consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS], new_stack = INT_MAX;
+	COUNTER_MEDIUM j, n_columns = 0, alloc_mode[GMTMATH_STACK_SIZE], use_t_col = 0, nstack = 0, kk;
 	BOOLEAN constant[GMTMATH_STACK_SIZE], error = FALSE, set_equidistant_t = FALSE;
 	BOOLEAN read_stdin = FALSE, t_check_required = TRUE, got_t_from_file = FALSE, done;
 	COUNTER_LARGE row, n_records, n_rows = 0, seg;
@@ -3322,7 +3326,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		(outfile) ? GMT_message (GMT, "= %s", outfile) : GMT_message (GMT,  "= <stdout>");
 	}
 
-	if (new_stack < 0 && constant[0]) {	/* Only a constant provided, set table accordingly */
+	if (new_stack == INT_MAX && constant[0]) {	/* Only a constant provided, set table accordingly */
 		if (!stack[0]) {
 			stack[0] = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 			alloc_mode[0] = 1;

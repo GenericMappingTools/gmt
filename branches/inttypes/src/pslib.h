@@ -45,7 +45,8 @@ extern "C" {
 typedef __int64 PSL_LONG;	/* A signed 8-byte integer */
 #define PSL_LL "ll"
 #else
-typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
+// typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
+typedef int PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 #define PSL_LL "l"
 #endif
 

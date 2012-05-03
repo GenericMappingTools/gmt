@@ -32,11 +32,11 @@
 
 struct GMTAVERAGE_CTRL {	/* All control options for this program (except common args) */
 	struct E {	/* -E[b] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} E;
 	struct T {	/* -T<quantile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG median;
 		double quantile;
 	} T;

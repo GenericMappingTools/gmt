@@ -33,27 +33,27 @@
 
 struct GMTSTITCH_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct C {	/* -C[<file>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D[<file>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *format;
 	} D;
 	struct L {	/* -L[<file>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} L;
 	struct Q {	/* -Q[<file>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Q;
 	struct T {	/* -T<cutoff[unit][/<nn_dist]> */
-		GMT_LONG active[2], mode;
+		BOOLEAN active[2], mode;
 		double dist[2];
 		char unit;
 	} T;

@@ -119,51 +119,51 @@ struct HOTSPOT_ORIGINATOR {
 	double np_time;		/* Predicted time at nearest point */
 	double np_lon;		/* Longitude of nearest point on the current flowline */
 	double np_lat;		/* Latitude  of nearest point on the current flowline */
-	GMT_LONG nearest;	/* Point id of current flowline node points closest to hotspot */
-	GMT_LONG stage;		/* Stage to which seamount belongs */
+	COUNTER_LARGE nearest;	/* Point id of current flowline node points closest to hotspot */
+	COUNTER_MEDIUM stage;	/* Stage to which seamount belongs */
 };
 
 struct ORIGINATOR_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct D {	/* -D<factor */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;	
 	} D;
 	struct E {	/* -Erotfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		char *file;
 	} E;
 	struct F {	/* -Ehotspotfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} F;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		GMT_LONG degree;	/* Report degrees */
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		double t_upper;
 	} N;
 	struct Q {	/* -Q<tfix> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double t_fix, r_fix;
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG n;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 	} T;
 	struct W {	/* -W<max_dist> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double dist;
 	} W;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Z;
 };
 

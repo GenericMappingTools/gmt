@@ -43,34 +43,34 @@ PostScript code is written to stdout.
 
 struct PSMECA_CTRL {
 	struct C {	/* -C[<pen>][P<pointsize>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double size;
 		struct GMT_PEN pen;
 	} C;
  	struct D {	/* -D<min/max> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double depmin, depmax;
 	} D;
  	struct E {	/* -E<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} E;
  	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct S {	/* -S<format><scale>[/fontsize[/justify/offset/angle/form]] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG readmode;
 		GMT_LONG plotmode;
 		GMT_LONG justify;
@@ -80,50 +80,50 @@ struct PSMECA_CTRL {
 		struct GMT_FILL fill;
 	} S;
 	struct T {	/* -Tnplane[/<pen>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG n_plane;
 		struct GMT_PEN pen;
 	} T;
 	struct Z2 {	/* -z<pen>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} Z2;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<cptfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Z;
 	struct A2 {	/* -a[size][/Psymbol[Tsymbol]] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char P_sym_type, T_sym_type;
 		char P_symbol, T_symbol;
 		double size;
 	} A2;
  	struct E2 {	/* -e<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} E2;
  	struct G2 {	/* -g<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} G2;
  	struct P2 {	/* -p[<pen>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} P2;
 	struct R2 {	/* -r[<fill>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} R2;
  	struct T2 {	/* -t[<pen>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} T2;
  	struct O2 {	/* -o */
-		GMT_LONG active;
+		BOOLEAN active;
 	} O2;
 };
 
@@ -363,7 +363,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 				break;
 			case 'T':
 				Ctrl->T.active = TRUE;
-				sscanf (opt->arg, "%ld", &Ctrl->T.n_plane);
+				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
 				if (strlen (opt->arg) > 2 && GMT_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
 					GMT_pen_syntax (GMT, 'T', " ");
 					n_errors++;

@@ -32,11 +32,11 @@
 
 struct KML2GMT_CTRL {
 	struct In {	/* in file */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG n_cols;
 	} Z;
 };

@@ -71,56 +71,56 @@ struct PS2RASTER_CTRL {
 		GMT_LONG n_files;
 	} In;
 	struct A {	/* -A[u][-] [Adjust boundingbox] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG strip;	/* Remove the -U time-stamp */
 		GMT_LONG reset;	/* The -A- turns -A off, overriding any automode in effect */
 		double margin[4];
 	} A;
 	struct C {	/* -C<option> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char arg[GMT_BUFSIZ];
 	} C;
 	struct D {	/* -D<dir> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *dir;
 	} D;
 	struct E {	/* -E<resolution> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG dpi;
 	} E;
 	struct F {	/* -F<out_name> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} F;
 	struct G {	/* -G<GSpath> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 	} I;
 	struct L {	/* -L<listfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} L;
 	struct P2 {	/* -P */
-		GMT_LONG active;
+		BOOLEAN active;
 	} P;
 	struct Q {	/* -Q[g|t]<bits> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG on[2];	/* [0] for graphics, [1] for text antialiasing */
 		GMT_LONG bits[2];
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG eps;	/* 1 if we want to make EPS, -1 with /PageSize (possibly in addition to another format) */
 		GMT_LONG device;
 	} T;
 	struct W {	/* -W -- for world file production */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG folder;
 		GMT_LONG warp;
 		GMT_LONG kml;
@@ -700,7 +700,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			free (ps_names[k]);
 		}
 		cmd2 = GMT_memory (GMT, NULL, n_alloc + GMT_BUFSIZ, char);
-		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s -r%ld -sOutputFile=%s.pdf %s",
+		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s -r%d -sOutputFile=%s.pdf %s",
 			at_sign, Ctrl->G.file, Ctrl->C.arg, Ctrl->E.dpi, Ctrl->F.file, all_names_in);
 
 		system (cmd2);		/* Execute the GhostScript command */
@@ -765,7 +765,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->A.active) {
 			char *psfile_to_use;
 			GMT_report (GMT, GMT_MSG_VERBOSE, " Find HiResBoundingBox ");
-			sprintf (BB_file, "%s/ps2raster_%ldc.bb", Ctrl->D.dir, (GMT_LONG)getpid());
+			sprintf (BB_file, "%s/ps2raster_%" PRIu64 "c.bb", Ctrl->D.dir, (uint64_t)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
 			sprintf (cmd, "%s%s %s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, psfile_to_use, BB_file);
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
@@ -792,7 +792,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 						strcat (tmp_file, ext[Ctrl->T.device]);
-						sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g1x1 -r%ld -sOutputFile=%s -f%s", 
+						sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g1x1 -r%d -sOutputFile=%s -f%s", 
 							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
 							Ctrl->E.dpi, tmp_file, ps_file);
 						sys_retval = system (cmd);		/* Execute the GhostScript command */
@@ -829,7 +829,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		else {
-			sprintf (tmp_file, "%s/ps2raster_%ldd.eps", Ctrl->D.dir, (GMT_LONG)getpid());
+			sprintf (tmp_file, "%s/ps2raster_%" PRIu64 "d.eps", Ctrl->D.dir, (uint64_t)getpid());
 			if ((fpo = fopen (tmp_file, "w+")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a temporary file\n");
 				continue;
@@ -978,7 +978,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (Ctrl->T.eps != 1)	/* Write out /PageSize command */
 					fprintf (fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
 				if (r != 0)
-					fprintf (fpo, "%ld rotate\n", r);
+					fprintf (fpo, "%d rotate\n", r);
 				if (!GMT_IS_ZERO (xt) || !GMT_IS_ZERO (yt))
 					fprintf (fpo, "%g %g translate\n", xt, yt);
 				xt = yt = 0.0;
@@ -986,7 +986,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else if (!strncmp (line, "%%Page:", 7)) {
 				if (r != 0)
-					fprintf (fpo, "%ld rotate\n", r);
+					fprintf (fpo, "%d rotate\n", r);
 				if (!GMT_IS_ZERO (xt) || !GMT_IS_ZERO (yt))
 					fprintf (fpo, "%g %g translate\n", xt, yt);
 				xt = yt = 0.0;
@@ -1087,7 +1087,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			strcat (out_file, ext[Ctrl->T.device]);
 			pix_w = lrint (ceil (w * Ctrl->E.dpi / 72.0));
 			pix_h = lrint (ceil (h * Ctrl->E.dpi / 72.0));
-			sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g%ldx%ld -r%ld -sOutputFile=%s -f%s",
+			sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g%dx%d -r%d -sOutputFile=%s -f%s",
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
 				pix_w, pix_h, Ctrl->E.dpi, out_file, tmp_file);
 
@@ -1268,10 +1268,10 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				fprintf (fpw, "\t\t</LatLonAltBox>\n");
 				if (Ctrl->W.min_lod != Ctrl->W.max_lod) {	/* Control layer visibility */
  					fprintf (fpw, "\t\t<Lod>\n");
- 					fprintf (fpw, "\t\t\t<minLodPixels>%ld</minLodPixels>\n", Ctrl->W.min_lod);
- 					fprintf (fpw, "\t\t\t<maxLodPixels>%ld</maxLodPixels>\n", Ctrl->W.max_lod);
-					if (Ctrl->W.min_fade) fprintf (fpw, "\t\t\t<minFadeExtent>%ld</minFadeExtent>\n", Ctrl->W.min_fade);
-	 				if (Ctrl->W.max_fade) fprintf (fpw, "\t\t\t<maxFadeExtent>%ld</maxFadeExtent>\n", Ctrl->W.max_fade);
+ 					fprintf (fpw, "\t\t\t<minLodPixels>%d</minLodPixels>\n", Ctrl->W.min_lod);
+ 					fprintf (fpw, "\t\t\t<maxLodPixels>%d</maxLodPixels>\n", Ctrl->W.max_lod);
+					if (Ctrl->W.min_fade) fprintf (fpw, "\t\t\t<minFadeExtent>%d</minFadeExtent>\n", Ctrl->W.min_fade);
+	 				if (Ctrl->W.max_fade) fprintf (fpw, "\t\t\t<maxFadeExtent>%d</maxFadeExtent>\n", Ctrl->W.max_fade);
  					fprintf (fpw, "\t\t</Lod>\n");
 				}
 				fprintf (fpw, "\t\t</Region>\n");

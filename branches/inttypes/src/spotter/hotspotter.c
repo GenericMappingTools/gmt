@@ -128,32 +128,32 @@
 struct HOTSPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct D {	/* -D<factor> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;	/* Resampling factor */
 	} D;
 	struct E {	/* -E[+]rotfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		char *file;
 	} E;
 	struct G {	/* -Goutfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		double t_upper;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} S;
 	struct T {	/* -T<tzero> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double t_zero;	/* Set zero age*/
 	} T;
 };

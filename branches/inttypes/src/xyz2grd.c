@@ -33,38 +33,38 @@ EXTERN_MSC void GMT_str_tolower (char *string);
 
 struct XYZ2GRD_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A[f|l|n|m|r|s|u|z] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char mode;
 	} A;
 	struct D {	/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<title>/<remark> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *information;
 	} D;
 #ifdef GMT_COMPAT
 	struct E {	/* -E[<nodata>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG set;
 		double nodata;
 	} E;
 #endif
 	struct G {	/* -G<output_grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N<nodata> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} S;
 	struct GMT_PARSE_Z_IO Z;
@@ -286,8 +286,9 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 
 GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, previous = 0;
-	GMT_LONG zcol, row, col, *flag = NULL, i;
+	BOOLEAN error = FALSE, previous = FALSE;
+	GMT_LONG scol, srow;
+	COUNTER_MEDIUM zcol, row, col, *flag = NULL, i;
 	COUNTER_LARGE n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
 	COUNTER_LARGE ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;
 	
@@ -377,7 +378,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 #ifdef GMT_COMPAT	/* PW: This is now done in grdreformat since ESRI Arc Interchange is a recognized format */
 	if (Ctrl->E.active) {	/* Read an ESRI Arc Interchange grid format in ASCII.  This must be a single physical file. */
-		GMT_LONG n_left;
+		COUNTER_LARGE n_left;
 		float value;
 		char line[GMT_BUFSIZ];
 		FILE *fp = GMT->session.std[GMT_IN];
@@ -498,8 +499,8 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {
 		zcol = GMT_Z;
-		flag = GMT_memory (GMT, NULL, Grid->header->nm, GMT_LONG);	/* No padding needed for flag array */
-		GMT_memset (Grid->header->pad, 4, GMT_LONG);	/* Algorithm below expects no padding; we repad at the end */
+		flag = GMT_memory (GMT, NULL, Grid->header->nm, COUNTER_MEDIUM);	/* No padding needed for flag array */
+		GMT_memset (Grid->header->pad, 4, COUNTER_MEDIUM);	/* Algorithm below expects no padding; we repad at the end */
 		GMT->current.setting.io_nan_records = FALSE;	/* Cannot have x,y as NaNs here */
 	}
 
@@ -515,7 +516,6 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	n_read = 0;
-	ij = -1;	/* Will be incremented to 0 in -Z section or recomputed in the xyz section */
 	if (Ctrl->Z.active) for (i = 0; i < io.skip; i++) fread (&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
 
 	do {	/* Keep returning records until we reach EOF */
@@ -533,13 +533,13 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 		n_read++;
 		if (Ctrl->Z.active) {	/* Read separately because of all the possible formats */
-			ij++;
 			if (ij == io.n_expected) {
 				GMT_report (GMT, GMT_MSG_FATAL, "More than %ld records, only %ld was expected (aborting)!\n", ij, io.n_expected);
 				Return (EXIT_FAILURE);
 			}
 			gmt_ij = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
 			Grid->data[gmt_ij] = (Ctrl->N.active && in[zcol] == Ctrl->N.value) ? GMT->session.f_NaN : (float)in[zcol];
+			ij++;
 		}
 		else {	/* Get x, y, z */
 			if (GMT_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
@@ -547,11 +547,13 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Ok, we are inside the region - process data */
 
-			col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
-			if (col == -1) col++, n_confused++;
+			scol = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
+			if (scol == -1) scol++, n_confused++;
+			col = scol;
 			if (col == Grid->header->nx) col--, n_confused++;
-			row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
-			if (row == -1) row++, n_confused++;
+			srow = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
+			if (srow == -1) srow++, n_confused++;
+			row = srow;
 			if (row == Grid->header->ny) row--, n_confused++;
 			ij = GMT_IJ0 (Grid->header, row, col);	/* Because padding is turned off we can use ij for both Grid and flag */
 			if (Amode == 'f') {	/* Want the first value to matter only */
@@ -611,7 +613,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {	/* xyz data could have resulted in duplicates */
 		if (GMT_grd_duplicate_column (GMT, Grid->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 			COUNTER_LARGE ij_west, ij_east;
-			GMT_LONG first_bad = TRUE;
+			BOOLEAN first_bad = TRUE;
 
 			for (row = 0; row < Grid->header->ny; row++) {	/* For each row, look at west and east bin */
 				ij_west = GMT_IJ0 (Grid->header, row, 0);

@@ -60,29 +60,29 @@
 
 struct X2SYS_SOLVE_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *col;
 	} C;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} E;
 #ifdef SAVEFORLATER
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} I;
 #endif
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *TAG;
 	} T;
 	struct W {	/* -W */
-		GMT_LONG active;
+		BOOLEAN active;
 	} W;
 };
 
@@ -695,7 +695,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Get LS solution */
 
-	GMT_gauss (GMT, N, b, m, m, zero_test, &ierror, 1);
+	ierror = GMT_gauss (GMT, N, b, m, m, zero_test, TRUE);
 	GMT_free (GMT, N);
 	a = b;	/* Convenience since the solution is called a in the notes */
 
@@ -724,7 +724,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	for (p = 0; p < n_tracks; p++) {
 		if (normalize) a[p*n_par+1] /= range;	/* Unnormalize slopes */
-		(GMT->common.b.active[GMT_IN]) ? printf ("%ld", p) : printf ("%s", trk_list[p]);
+		(GMT->common.b.active[GMT_IN]) ? printf ("%d", p) : printf ("%s", trk_list[p]);
 		printf ("\t%s", Ctrl->C.col);
 		switch (Ctrl->E.mode) {	/* Set up pointers to basis functions and assign constants */
 			case F_IS_CONSTANT:

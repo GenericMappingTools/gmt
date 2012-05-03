@@ -28,27 +28,27 @@
 
 struct GRDHISTEQ_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C<n_cells>*/
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG value;
 	} C;
 	struct D {	/* -D[<file>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} D;
 	struct G {	/* -G<file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct N {	/* -N[<norm>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double norm;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 };
 

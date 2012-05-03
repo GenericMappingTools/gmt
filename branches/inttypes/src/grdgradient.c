@@ -33,35 +33,35 @@
 
 struct GRDGRADIENT_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A<azim>[/<azim2>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG two;
 		double azimuth[2];
 	} A;
 	struct D {	/* -D[a][o][n] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} D;
 	struct E {	/* -E[s|p]<azim>/<elev[ambient/diffuse/specular/shine]> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double azimuth, elevation;
 		double ambient, diffuse, specular, shine;
 		GMT_LONG mode;
 	} E;
 	struct G {	/* -G<file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct N {	/* -N[t_or_e][<amp>[/<sigma>[/<offset>]]] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 1 = atan, 2 = exp */
 		double norm, sigma, offset;
 	} N;
 	struct S {	/* -S<slopefile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} S;
 };

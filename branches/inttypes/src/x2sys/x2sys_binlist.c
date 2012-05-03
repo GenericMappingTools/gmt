@@ -34,13 +34,13 @@
 
 struct X2SYS_BINLIST_CTRL {
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 	} E;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *TAG;
 	} T;
 };
@@ -410,7 +410,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x, GMT_X);
 			fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y, GMT_Y);
-			fprintf (GMT->session.std[GMT_OUT], "%s%ld%s%u", GMT->current.setting.io_col_separator, ij, GMT->current.setting.io_col_separator, B.binflag[ij]);
+			fprintf (GMT->session.std[GMT_OUT], "%s%d%s%u", GMT->current.setting.io_col_separator, ij, GMT->current.setting.io_col_separator, B.binflag[ij]);
 			if (Ctrl->D.active) {
 				fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], dist_bin[ij], GMT_Z);

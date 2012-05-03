@@ -67,30 +67,30 @@
 struct ROTCONVERTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 	} A;
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 	} D;
 	struct E {	/* -E[<value>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} E;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* out mode (TRUE if total reconstruction rotations) */
 	} F;
 	struct G {	/* -G */
-		GMT_LONG active;
+		BOOLEAN active;
 	} G;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 	} T;
 };
 

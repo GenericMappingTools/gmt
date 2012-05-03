@@ -50,29 +50,29 @@ PostScript code is written to stdout.
 
 struct PSVELO_CTRL {
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_SYMBOL S;
 	} A;
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 		double scale;
 	} D;
  	struct E {	/* -E<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} E;
  	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct S {	/* -r<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG symbol;
 		GMT_LONG readmode;
 		double scale, wedge_amp, conrad;
@@ -80,7 +80,7 @@ struct PSVELO_CTRL {
 		struct GMT_FILL fill;
 	} S;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 };

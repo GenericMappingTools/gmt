@@ -31,25 +31,25 @@
 
 struct GRDINFO_CTRL {
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 	} C;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 	} F;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG status;
 		double inc[2];
 	} I;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct L {	/* -L[1|2] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG norm;
 	} L;
 	struct T {	/* -T[s]<dz> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double inc;
 	} T;
@@ -383,7 +383,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else
 				sprintf (record, "%s: Unknown registration! Probably not a GMT grid", G->header->name);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			if (G->header->type >= 0 && G->header->type < GMT_N_GRD_FORMATS)
+			if (G->header->type < GMT_N_GRD_FORMATS)
 				sprintf (record, "%s: Grid file format: %s", G->header->name, GMT->session.grdformat[G->header->type]);
 			else
 				sprintf (record, "%s: Unrecognized grid file format! Probably not a GMT grid", G->header->name);

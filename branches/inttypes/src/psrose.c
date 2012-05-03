@@ -36,56 +36,56 @@
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A<sector_angle>[r] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG rose;
 		double inc;
 	} A;
 	struct C {	/* -C[<modefile>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 	} D;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 	} F;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *w, *e, *s, *n;
 	} L;
 	struct M {	/* -M[<size>][<modifiers>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_SYMBOL S;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct S {	/* -Sscale[n] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG normalize;
 		double scale;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 	} T;
 	struct W {	/* -W[v]<pen> */
-		GMT_LONG active[2];
+		BOOLEAN active[2];
 		struct GMT_PEN pen[2];
 	} W;
 	struct Z {	/* -Zu|<scale> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double scale;
 	} Z;

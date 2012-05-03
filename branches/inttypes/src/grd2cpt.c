@@ -37,65 +37,65 @@
 
 struct GRD2CPT_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 	} In;
 	struct Out {	/* -> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A+ */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double value;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D[i|o] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} D;
 	struct E {	/* -E<nlevels> */
-		GMT_LONG active;
+		BOOLEAN active;
 		COUNTER_MEDIUM levels;
 	} E;
 	struct F {	/* -F[R|r|h|c] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG model;
 	} F;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 	} I;
 	struct L {	/* -L<min_limit>/<max_limit> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double min, max;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct Q {	/* -Q[i|o] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} Q;
 	struct S {	/* -S<z_start>/<z_stop>/<z_inc> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG cpt;
 		double low, high, inc;
 		char *file;
 	} S;
 	struct T {	/* -T<kind> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG kind; /* -1 symmetric +-zmin, +1 +-zmax, -2 = +-Minx(|zmin|,|zmax|), +2 = +-Max(|zmin|,|zmax|), 0 = min to max [Default] */
 	} T;
 	struct W {	/* -W */
-		GMT_LONG active;
+		BOOLEAN active;
 	} W;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Z;
 };
 

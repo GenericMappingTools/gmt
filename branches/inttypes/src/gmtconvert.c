@@ -43,43 +43,43 @@ EXTERN_MSC GMT_LONG gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 
 struct GMTCONVERT_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 	} A;
 	struct D {	/* -D[<template>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *name;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} E;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 	} L;
 	struct I {	/* -I[ast] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} I;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<segno> */
-		GMT_LONG active;
+		BOOLEAN active;
 		COUNTER_LARGE seg;
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG inverse;
 		GMT_LONG regexp;
 		GMT_LONG caseless;
 		char *pattern;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 	} T;
 };
 

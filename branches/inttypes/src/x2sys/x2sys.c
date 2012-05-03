@@ -275,7 +275,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 
 		sscanf (line, "%s %c %c %lf %lf %lf %s %s", X->info[i].name, &X->info[i].intype, &yes_no, &X->info[i].nan_proxy, &X->info[i].scale, &X->info[i].offset, X->info[i].format, cardcol);
 		if (X->info[i].intype == 'A') {	/* ASCII Card format */
-			sscanf (cardcol, "%" GMT_LL "d-%" GMT_LL "d", &X->info[i].start_col, &X->info[i].stop_col);
+			sscanf (cardcol, "%d-%d", &X->info[i].start_col, &X->info[i].stop_col);
 			X->info[i].n_cols = X->info[i].stop_col - X->info[i].start_col + 1;
 		}
 		c = (int)X->info[i].intype;
@@ -304,8 +304,8 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 		strcpy (G->w_mode, "wb");
 		strcpy (G->a_mode, "ab+");
 	}
-	X->out_order  = GMT_memory (C, NULL, X->n_fields, GMT_LONG);
-	X->use_column = GMT_memory (C, NULL, X->n_fields, GMT_LONG);
+	X->out_order  = GMT_memory (C, NULL, X->n_fields, COUNTER_MEDIUM);
+	X->use_column = GMT_memory (C, NULL, X->n_fields, BOOLEAN);
 	for (i = 0; i < X->n_fields; i++) {	/* Default is same order and use all columns */
 		X->out_order[i] = i;
 		X->use_column[i] = 1;
@@ -573,7 +573,7 @@ GMT_LONG x2sys_read_file (struct GMT_CTRL *C, char *fname, double ***data, struc
 	 */
 
 	COUNTER_LARGE j;
- 	GMT_LONG i;
+ 	COUNTER_MEDIUM i;
 	size_t n_alloc;
 	FILE *fp = NULL;
 	double **z = NULL, *rec = NULL;
@@ -594,27 +594,27 @@ GMT_LONG x2sys_read_file (struct GMT_CTRL *C, char *fname, double ***data, struc
 	rec = GMT_memory (C, NULL, s->n_fields, double);
 	z = GMT_memory (C, NULL, s->n_fields, double *);
 	for (i = 0; i < s->n_fields; i++) z[i] = GMT_memory (C, NULL, n_alloc, double);
-	p->ms_rec = GMT_memory (C, NULL, n_alloc, GMT_LONG);
+	p->ms_rec = GMT_memory (C, NULL, n_alloc, COUNTER_LARGE);
 	x2sys_skip_header (C, fp, s);
-	p->n_segments = (s->multi_segment) ? -1 : 0;	/* So that first increment sets it to 0 */
+	p->n_segments = 0;	/* So that first increment sets it to 0 */
 
 	j = 0;
 	while (!x2sys_read_record (C, fp, rec, s, G)) {	/* Gets the next data record */
 		for (i = 0; i < s->n_fields; i++) z[i][j] = rec[i];
-		if (s->multi_segment && s->ms_next) p->n_segments++;
 		p->ms_rec[j] = p->n_segments;
 		j++;
 		if (j == n_alloc) {	/* Get more */
 			n_alloc <<= 1;
 			for (i = 0; i < s->n_fields; i++) z[i] = GMT_memory (C, z[i], n_alloc, double);
-			p->ms_rec = GMT_memory (C, p->ms_rec, n_alloc, GMT_LONG);
+			p->ms_rec = GMT_memory (C, p->ms_rec, n_alloc, COUNTER_LARGE);
 		}
+		if (s->multi_segment && s->ms_next) p->n_segments++;
 	}
 
 	fclose (fp);
 	GMT_free (C, rec);
 	for (i = 0; i < s->n_fields; i++) z[i] = GMT_memory (C, z[i], j, double);
-	p->ms_rec = GMT_memory (C, p->ms_rec, j, GMT_LONG);
+	p->ms_rec = GMT_memory (C, p->ms_rec, j, COUNTER_LARGE);
 
 	*data = z;
 

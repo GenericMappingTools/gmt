@@ -59,7 +59,7 @@ struct SEGY2GRD_CTRL {
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct L {	/* -L */

@@ -3119,7 +3119,8 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 
 GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 {
-	GMT_LONG i, k, error, kind, object_ID;
+	GMT_LONG error, kind, object_ID;
+	COUNTER_LARGE k, seg;
 	char word[GMT_TEXT_LEN64], record[GMT_BUFSIZ], *name = strdup (G->label_file);
 	char *xname[2] = {"x", "lon"}, *yname[2] = {"y", "lat"};
 	double geo[2], angle;
@@ -3144,8 +3145,8 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 	else 
 		sprintf (record, "# %s%s%s%slabel", xname[kind], C->current.setting.io_col_separator, yname[kind], C->current.setting.io_col_separator);
 	GMT_Put_Record (C->parent, GMT_WRITE_TEXT, record);	/* Write this to output */
-	for (i = 0; i < G->n_segments; i++) {
-		L = G->segment[i];	/* Pointer to current segment */
+	for (seg = 0; seg < G->n_segments; seg++) {
+		L = G->segment[seg];	/* Pointer to current segment */
 		if (!L->annot || L->n_labels == 0) continue;
 		for (k = 0; k < L->n_labels; k++) {
 			record[0] = 0;	/* Start with blank record */
@@ -3199,8 +3200,8 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 
 void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
 {
-	COUNTER_LARGE k;
-	GMT_LONG seg, *pen = NULL;
+	COUNTER_LARGE seg, k;
+	GMT_LONG *pen = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
 	for (seg = 0; seg < G->n_segments; seg++) {
 		L = G->segment[seg];	/* Pointer to current segment */
@@ -3216,8 +3217,8 @@ void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT
 
 void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
 {	/* mode = 1 when clipping is in effect */
-	GMT_LONG just, form;
-	COUNTER_LARGE first_i, last_i, k, m, seg, *node = NULL;
+	GMT_LONG just, form, *node = NULL;
+	COUNTER_LARGE first_i, last_i, k, m, seg;
 	double *angle = NULL, *xt = NULL, *yt = NULL;
 	char **txt = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
@@ -3255,7 +3256,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 			if (!L->annot || L->n_labels == 0) continue;
 			angle = GMT_memory (C, NULL, L->n_labels, double);
 			txt   = GMT_memory (C, NULL, L->n_labels, char *);
-			node  = GMT_memory (C, NULL, L->n_labels, COUNTER_LARGE);
+			node  = GMT_memory (C, NULL, L->n_labels, GMT_LONG);
 			for (k = 0; k < L->n_labels; k++) {
 				angle[k] = L->L[k].angle;
 				txt[k]   = L->L[k].label;

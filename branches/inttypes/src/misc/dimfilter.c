@@ -38,47 +38,47 @@ struct DIMFILTER_INFO {
 
 struct DIMFILTER_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 	} C;
 	struct D {	/* -D<distflag> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 	} E;
 	struct F {	/* <type><filter_width>*/
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG filter;	/* Id for the filter */
 		double width;
 	} F;
 	struct G {	/* -G<file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG n_sectors;
 		GMT_LONG filter;	/* Id for the filter */
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG err_cols;
 	} Q;
 	struct S {	/* -S<file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 	} T;
 };
 
@@ -362,12 +362,13 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	short int **sector = NULL;
 	
-	GMT_LONG *n_in_median, n_nan = 0, j_origin, col_out, row_out, wsize = 0, full_360;
-	GMT_LONG col_in, row_in, ii, jj, i, j, effort_level, k, s;
-	GMT_LONG n_sectors_2 = 0, one_or_zero = 1, shift = FALSE, slow, slow2, error = FALSE;
-	GMT_LONG GMT_mode_selection = 0, GMT_n_multiples = 0, fast_way, *i_origin = NULL;
+	COUNTER_MEDIUM *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0;
+	COUNTER_MEDIUM GMT_mode_selection = 0, GMT_n_multiples = 0;
+	BOOLEAN full_360, shift = FALSE, slow, slow2, error = FALSE, fast_way;
+	GMT_LONG j_origin, col_out, row_out, *i_origin = NULL;
+	GMT_LONG col_in, row_in, ii, jj, i, j, k, s;
 	
-	COUNTER_LARGE ij_in, ij_out, ij_wt;
+	COUNTER_LARGE n_nan = 0, ij_in, ij_out, ij_wt;
 	
 	double wesn[4], inc[2], x_scale, y_scale, x_width, y_width, angle, z = 0.0;
 	double x_out, y_out, *wt_sum = NULL, *value = NULL, last_median, this_median;
@@ -593,7 +594,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 		}
-		n_in_median = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, GMT_LONG);
+		n_in_median = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, COUNTER_MEDIUM);
 		value = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, double);
 		wt_sum = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, double);
 				
@@ -607,7 +608,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (col_out = 0; col_out < Gout->header->nx; col_out++) {
 			
 				if (effort_level == 3) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
-				GMT_memset (n_in_median, Ctrl->N.n_sectors, int);
+				GMT_memset (n_in_median, Ctrl->N.n_sectors, COUNTER_MEDIUM);
 				GMT_memset (value, Ctrl->N.n_sectors, double);
 				GMT_memset (wt_sum, Ctrl->N.n_sectors, double);
 #ifdef OBSOLETE			

@@ -48,41 +48,41 @@ EXTERN_MSC double GMT_great_circle_dist_cos (struct GMT_CTRL *C, double lon1, do
 
 struct GREENSPLINE_CTRL {
 	struct A {	/* -A<gradientfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
 		char *file;
 	} A	;
 	struct C {	/* -C<cutoff> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 		char *file;
 	} C;
 	struct D {	/* -D<distflag> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} D;
 	struct G {	/* -G<output_grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy[/dz]] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[3];
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 	} L;
 	struct N {	/* -N<outputnode_file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} N;
 	struct Q {	/* -Qdaz */
-		GMT_LONG active;
+		BOOLEAN active;
 		double az;
 		double dir[3];
 	} Q;
 	struct R3 {	/* -Rxmin/xmax[/ymin/ymax[/zmin/zmaz]] | -Ggridfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;		/* TRUE if settings came from a grid file */
 		GMT_LONG dimension;	/* 1, 2, or 3 */
 		GMT_LONG offset;	/* 0 or 1 */
@@ -97,7 +97,7 @@ struct GREENSPLINE_CTRL {
 		char *arg;
 	} S;
 	struct T {	/* -T<mask_grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} T;
 };
@@ -131,7 +131,7 @@ struct GREENSPLINE_CTRL {
 #define N_X 	100001
 
 struct ZGRID {
-	GMT_LONG nz;
+	COUNTER_MEDIUM nz;
 	double z_min, z_max, z_inc;
 };
 
@@ -1319,7 +1319,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: The mask grid resolution does not match your specified grid spacing\n");
 			Return (EXIT_FAILURE);
 		}
-		if (! (Grid->header->registration == GMT->common.r.active)) {
+		if (! (Grid->header->registration == (unsigned int)GMT->common.r.active)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: The mask grid registration does not match your specified grid registration\n");
 			Return (EXIT_FAILURE);
 		}

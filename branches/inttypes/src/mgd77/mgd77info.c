@@ -33,24 +33,24 @@
 struct MGD77INFO_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} C;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} E;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		GMT_LONG flag;
 	} M;
@@ -531,11 +531,11 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				D->H.mgd77[use]->Survey_Departure_Year, D->H.mgd77[use]->Survey_Departure_Month, D->H.mgd77[use]->Survey_Departure_Day, GMT->current.setting.io_col_separator,
 				D->H.mgd77[use]->Survey_Arrival_Year, D->H.mgd77[use]->Survey_Arrival_Month, D->H.mgd77[use]->Survey_Arrival_Day, GMT->current.setting.io_col_separator);
 			}
-			fprintf (GMT->session.std[GMT_OUT], "%ld%s%ld", lrint (this_dist), GMT->current.setting.io_col_separator, D->H.n_records);
+			fprintf (GMT->session.std[GMT_OUT], "%d%s%d", lrint (this_dist), GMT->current.setting.io_col_separator, D->H.n_records);
 			for (i = 1; i < M.n_out_columns; i++) {
 				if (i == id_col || i == t_col || i == x_col || i == y_col) continue;
 				if (((Ctrl->E.mode & 1) && M.order[i].set == 0) || ((Ctrl->E.mode & 2) && M.order[i].set == 1))
-					fprintf (GMT->session.std[GMT_OUT],"%s%ld",	GMT->current.setting.io_col_separator, counter[i]);
+					fprintf (GMT->session.std[GMT_OUT],"%s%d",	GMT->current.setting.io_col_separator, counter[i]);
 			}
 			fprintf (GMT->session.std[GMT_OUT],"\n");
 		}

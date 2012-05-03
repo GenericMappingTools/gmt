@@ -34,17 +34,17 @@
 
 struct PSLEGEND_CTRL {
 	struct C {	/* -C<dx>/<dy> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double dx, dy;
 	} C;
 	struct D {	/* -D[x]<x0>/<y0>/w/h/just[/xoff/yoff] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG cartesian;
 		double lon, lat, width, height, dx, dy;
 		char justify[3];
 	} D;
 	struct F {	/* -F+r[<radius>][+p<pen>][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<fill>]] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;			/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade */
 		double radius;			/* Radius for rounded corner */
 		double dx, dy;			/* Offset for background shaded rectangle (+s) */
@@ -53,11 +53,11 @@ struct PSLEGEND_CTRL {
 		struct GMT_FILL fill;		/* Background shade */
 	} F;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L<spacing> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double spacing;
 	} L;
 };
@@ -284,7 +284,8 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pslegend task */
 	GMT_LONG i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
 	GMT_LONG flush_paragraph = FALSE, draw_vertical_line = FALSE, gave_label, gave_mapscale_options;
-	GMT_LONG dim[4] = {1, 1, 0, 2}, status = 0, object_ID, did_old = FALSE;
+	GMT_LONG status = 0, object_ID, did_old = FALSE;
+	int64_t dim[4] = {1, 1, 0, 2};
 	 
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256];
 	char txt_f[GMT_TEXT_LEN256], key[GMT_TEXT_LEN256], sub[GMT_TEXT_LEN256], tmp[GMT_TEXT_LEN256], just;
@@ -625,7 +626,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					Return (GMT_RUNTIME_ERROR);
 				}
 				if (n == 0 || size[0] == '-') sprintf (size, "%g", GMT->current.setting.font_annot[0].size);
-				if (n == 0 || font[0] == '-') sprintf (font, "%ld", GMT->current.setting.font_annot[0].id);
+				if (n == 0 || font[0] == '-') sprintf (font, "%d", GMT->current.setting.font_annot[0].id);
 				sprintf (tmp, "%s,%s,", size, font);
 				did_old = TRUE;
 #endif
@@ -644,7 +645,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #endif
 				if (n == 0 || xx[0] == '-') sprintf (xx, "%g", x0);
 				if (n == 0 || yy[0] == '-') sprintf (yy, "%g", y0);
-				if (n == 0 || tmp[0] == '-') sprintf (tmp, "%g,%ld,%s", GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor);
+				if (n == 0 || tmp[0] == '-') sprintf (tmp, "%g,%d,%s", GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor);
 				if (n == 0 || angle[0] == '-') sprintf (angle, "0");
 				if (n == 0 || key[0] == '-') sprintf (key, "TL");
 				if (n == 0 || lspace[0] == '-') sprintf (lspace, "%gi", one_line_spacing);
@@ -749,7 +750,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				y0 -= half_line_spacing;	/* Go back to bottom of box */
 				if (n_scan == 7) {	/* Place symbol text */
 					S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
-					sprintf (buffer, "%g %g %g,%ld,%s BL %s", x_off + off_tt, y0 + d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, text);
+					sprintf (buffer, "%g %g %g,%d,%s BL %s", x_off + off_tt, y0 + d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, text);
 					S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
 					if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 				}
@@ -764,7 +765,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				S[PAR] = D[PAR]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 				if (!flush_paragraph) {
 					d_off = 0.5 * (Ctrl->L.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
-					sprintf (buffer, "> %g %g %g,%ld,%s 0 TL %gi %gi j", x0, y0 - d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, one_line_spacing, Ctrl->D.width - 2.0 * Ctrl->C.dx);
+					sprintf (buffer, "> %g %g %g,%d,%s 0 TL %gi %gi j", x0, y0 - d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, one_line_spacing, Ctrl->D.width - 2.0 * Ctrl->C.dx);
 					S[PAR]->record[S[PAR]->n_rows++] = strdup (buffer);
 					if (S[PAR]->n_rows == S[PAR]->n_alloc) S[PAR]->record = GMT_memory (GMT, S[PAR]->record, S[PAR]->n_alloc += GMT_SMALL_CHUNK, char *);
 				}

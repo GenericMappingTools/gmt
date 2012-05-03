@@ -30,27 +30,27 @@
 
 struct GRDVOLUME_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 		double low, high, inc;
 	} C;
 	struct L {	/* -L<base> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} L;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 		char unit;
 	} S;
 	struct T {	/* -T[c|z] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} T;
 	struct Z {	/* Z<fact>[/<shift>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double scale, offset;
 	} Z;
 };
@@ -243,7 +243,7 @@ double median3 (double x[])
 
 GMT_LONG ors_find_kink (struct GMT_CTRL *GMT, double y[], COUNTER_MEDIUM n, COUNTER_MEDIUM mode)
 {	/* mode: 0 = find value maximum, 1 = find curvature maximum */
-	GMT_LONG i, im;
+	COUNTER_MEDIUM i, im;
 	double *c = NULL, *f = NULL;
 
 	if (mode == 0) {	/* Find maximum value */

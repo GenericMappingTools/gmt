@@ -40,32 +40,32 @@
 
 struct SPHDISTANCE_CTRL {
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 	} E;
 	struct G {	/* -G<maskfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct L {	/* -L<unit>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char unit;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Q;
 };

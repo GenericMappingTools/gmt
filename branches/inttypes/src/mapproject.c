@@ -42,7 +42,7 @@
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -Ab|B|f|Fb|B|o|O<lon0>/<lat0> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG azims;
 		GMT_LONG orient;	/* TRUE if we want orientations, not azimuths */
 		GMT_LONG reverse;	/* TRUE if we want back-azimuths instead of regular azimuths */
@@ -50,52 +50,52 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 		double lon, lat;	/* Fixed point of reference */
 	} A;
 	struct C {	/* -C[<false_easting>/<false_northing>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG shift;
 		double easting, northing;	/* Shifts */
 	} C;
 	struct D {	/* -D<c|i|p> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char unit;
 	} D;
 	struct E {	/* -E[<datum>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_DATUM datum;	/* Contains a, f, xyz[3] */
 	} E;
 	struct F {	/* -F[k|m|n|i|c|p] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char unit;
 	} F;
 	struct G {	/* -G<lon0>/<lat0>[d|e|f|k|m|M|n|s|c|C] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;		/* 1 = distance to fixed point, 2 = cumulative distances, 3 = incremental distances, 4 = 2nd point in cols 3/4 */
 		GMT_LONG sph;		/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		double lon, lat;	/* Fixed point of reference */
 		char unit;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 	} I;
 	struct L {	/* -L<line.xy>[/<d|e|f|k|m|M|n|s|c|C>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 0 = dist to nearest point, 1 = also get the point, 2 = instead get seg#, pt# */
 		GMT_LONG sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		char *file;	/* Name of file with lines */
 		char unit;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} N;
 	struct Q {	/* -Q[e|d] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 1 = print =Qe, 2 print -Qd, 3 print both */
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct T {	/* -T[h]<from>[/<to>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG heights;	/* True if we have heights */
 		struct GMT_DATUM from;	/* Contains a, f, xyz[3] */
 		struct GMT_DATUM to;	/* Contains a, f, xyz[3] */

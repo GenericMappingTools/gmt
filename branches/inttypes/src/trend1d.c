@@ -80,25 +80,25 @@ struct TREND1D_CTRL {
 	GMT_LONG weighted_output;
 	GMT_LONG model_parameters;
 	struct C {	/* -C<condition_#> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} C;
 	struct F {	/* -F<xymrw> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char col[TREND1D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} F;
 	struct I {	/* -I[<confidence>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} I;
 	struct N {	/* -N[f]<n_model>[r] */
-		GMT_LONG active;
-		GMT_LONG robust;
-		GMT_LONG mode;
-		GMT_LONG value;
+		BOOLEAN active;
+		BOOLEAN robust;
+		COUNTER_MEDIUM mode;
+		COUNTER_MEDIUM value;
 	} N;
 	struct W {	/* -W */
-		GMT_LONG active;
+		BOOLEAN active;
 	} W;
 };
 
