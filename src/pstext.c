@@ -522,7 +522,7 @@ GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG
 GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pstext task */
 
-	GMT_LONG fmode, old_is_world, nscan;
+	GMT_LONG k, fmode, old_is_world, nscan;
 	GMT_LONG error = FALSE, master_record = FALSE, skip_text_records = FALSE;
 	
 	COUNTER_MEDIUM i, length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
@@ -654,9 +654,9 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (!Ctrl->F.nread)	/* All attributes given via -F (or we accept defaults); skip to paragraph attributes */
 					in_txt = buffer;
 				else {	/* Must pick up 1-3 attributes from data file */
-					for (i = 0; i < Ctrl->F.nread; i++) {
+					for (k = 0; k < Ctrl->F.nread; k++) {
 						nscan += GMT_strtok (buffer, " \t", &pos, text);
-						switch (Ctrl->F.read[i]) {
+						switch (Ctrl->F.read[k]) {
 							case 'f':
 								T.font = Ctrl->F.font;
 								if (GMT_getfont (GMT, text, &T.font)) GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
@@ -760,9 +760,9 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (!Ctrl->F.nread)	/* All attributes given via -F (or we accept defaults); just need text */
 				in_txt = buffer;
 			else {	/* Must pick up 1-3 attributes from data file */
-				for (i = 0; i < Ctrl->F.nread; i++) {
+				for (k = 0; k < Ctrl->F.nread; k++) {
 					nscan += GMT_strtok (buffer, " \t", &pos, text);
-					switch (Ctrl->F.read[i]) {
+					switch (Ctrl->F.read[k]) {
 						case 'f':
 							T.font = Ctrl->F.font;
 							if (GMT_getfont (GMT, text, &T.font)) GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));

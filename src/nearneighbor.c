@@ -252,8 +252,8 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 
 GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG col_0, row_0, row, col, row_end, col_end, k, ii, jj;
-	COUNTER_MEDIUM rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
+	GMT_LONG col_0, row_0, row, col, row_end, col_end, ii, jj;
+	COUNTER_MEDIUM k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
 	BOOLEAN error = FALSE, wrap_180, replicate_x, replicate_y;
 	
 	size_t n_alloc = GMT_CHUNK;

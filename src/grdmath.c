@@ -2883,9 +2883,9 @@ GMT_LONG decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, doub
 	return GRDMATH_ARG_IS_BAD;
 }
 
-void grdmath_free (struct GMT_CTRL *GMT, struct GMT_GRID *stack[], GMT_LONG alloc_mode[], struct GRDMATH_INFO *info, struct GMT_HASH lnode[]) {
+void grdmath_free (struct GMT_CTRL *GMT, struct GMT_GRID *stack[], COUNTER_MEDIUM alloc_mode[], struct GRDMATH_INFO *info, struct GMT_HASH lnode[]) {
 	/* Free allocated memory before quitting */
-	GMT_LONG k;
+	COUNTER_MEDIUM k;
 	struct GMT_HASH *p = NULL, *current = NULL;
 	
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
@@ -3044,8 +3044,8 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	info.grd_y = GMT_memory (GMT, NULL, info.G->header->my, float);
 	info.grd_xn = GMT_memory (GMT, NULL, info.G->header->mx, float);
 	info.grd_yn = GMT_memory (GMT, NULL, info.G->header->my, float);
-	for (k = 0, colx = -info.G->header->pad[XLO]; k < info.G->header->mx; colx++, k++) info.grd_x[k] = (float)GMT_grd_col_to_x (GMT, colx, info.G->header);
-	for (k = 0, rowx = -info.G->header->pad[YHI]; k < info.G->header->my; rowx++, k++) info.grd_y[k] = (float)GMT_grd_row_to_y (GMT, rowx, info.G->header);
+	for (k = 0, colx = -info.G->header->pad[XLO]; k < (int)info.G->header->mx; colx++, k++) info.grd_x[k] = (float)GMT_grd_col_to_x (GMT, colx, info.G->header);
+	for (k = 0, rowx = -info.G->header->pad[YHI]; k < (int)info.G->header->my; rowx++, k++) info.grd_y[k] = (float)GMT_grd_row_to_y (GMT, rowx, info.G->header);
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Make sure latitudes remain in range; if not apply geographic BC */
 		for (k = 0; k < info.G->header->pad[YHI]; k++) 
 			if (info.grd_y[k] > 90.0) info.grd_y[k] = (float)(2.0 * 90.0 - info.grd_y[k]);
@@ -3054,10 +3054,10 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	off = 0.5 * (info.G->header->wesn[XHI] + info.G->header->wesn[XLO]);
 	scale = 2.0 / (info.G->header->wesn[XHI] - info.G->header->wesn[XLO]);
-	for (k = 0; k < info.G->header->mx; k++) info.grd_xn[k] = (float)((info.grd_x[k] - off) * scale);
+	for (kk = 0; kk < info.G->header->mx; kk++) info.grd_xn[kk] = (float)((info.grd_x[kk] - off) * scale);
 	off = 0.5 * (info.G->header->wesn[YHI] + info.G->header->wesn[YLO]);
 	scale = 2.0 / (info.G->header->wesn[YHI] - info.G->header->wesn[YLO]);
-	for (k = 0; k < info.G->header->my; k++) info.grd_yn[k] = (float)((info.grd_y[k] - off) * scale);
+	for (kk = 0; kk < info.G->header->my; kk++) info.grd_yn[kk] = (float)((info.grd_y[kk] - off) * scale);
 	x_noise = GMT_SMALL * info.G->header->inc[GMT_X];	y_noise = GMT_SMALL * info.G->header->inc[GMT_Y];
 	info.dx = GMT_memory (GMT, NULL, info.G->header->my, float);
 
@@ -3249,7 +3249,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (info.error) Return (info.error);	/* Got an error inside the operator */
 
 		nstack = new_stack;
-		for (k = 1; k <= produced_operands[op]; k++) constant[nstack-k] = FALSE;	/* Now filled with grid */
+		for (kk = 1; kk <= produced_operands[op]; kk++) constant[nstack-kk] = FALSE;	/* Now filled with grid */
 	}
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "\n");
 

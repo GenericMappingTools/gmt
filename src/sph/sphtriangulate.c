@@ -96,7 +96,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			}
 			S[1] = Dout[1]->table[0]->segment[0];
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "%s: Output %ld unique triangle polygons\n", GMT->init.progname, D->n);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%s: Output %d unique triangle polygons\n", GMT->init.progname, D->n);
 		for (k = ij = 0; k < D->n; k++, ij += TRI_NROW) {	/* For each triangle */
 			S[0] = Dout[0]->table[0]->segment[k];	/* Short hand for current triangle segment */
 			/* Write segment header with triangle # and the three node numbers */
@@ -107,10 +107,10 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 				}
 				area_triangle = stripack_areas (V[0], V[1], V[2]);
 				area_sphere += area_triangle;
-				sprintf (segment_header, "Triangle: %ld %ld-%ld-%ld Area: %g", k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2);
+				sprintf (segment_header, "Triangle: %d %d-%d-%d Area: %g", k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2);
 			}
 			else	/* Just a plain header with triangle number */
-				sprintf (segment_header, "Triangle: %ld", k);
+				sprintf (segment_header, "Triangle: %d", k);
 			if (nodes) {	/* Output Voronoi node and area information via S[1] */
 				S[1]->coord[GMT_X][k] = (double)D->tri[ij];
 				S[1]->coord[GMT_Y][k] = (double)D->tri[ij+1];
@@ -147,7 +147,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			arc[j] = arc[i];
 		}
 		n_arcs = j + 1;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Output %ld unique triangle arcs\n", n_arcs);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Output %d unique triangle arcs\n", n_arcs);
 
 		dim[1] = n_arcs;	/* Number of output arcs = segments */
 		dim[2] = 2;		/* Only use 2 columns */
@@ -162,10 +162,10 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			S[0]->coord[GMT_X][1] = lon[arc[i].end];	S[0]->coord[GMT_Y][1] = lat[arc[i].end];
 			if (get_area) {	/* Compute arc lengths */
 				dist = GMT_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
-				sprintf (segment_header, "Arc: %ld-%ld Length: %g", arc[i].begin, arc[i].end, dist);
+				sprintf (segment_header, "Arc: %d-%d Length: %g", arc[i].begin, arc[i].end, dist);
 			}
 			else	/* Plain header */
-				sprintf (segment_header, "Arc: %ld-%ld", arc[i].begin, arc[i].end);
+				sprintf (segment_header, "Arc: %d-%d", arc[i].begin, arc[i].end);
 			S[0]->header = strdup (segment_header);
 		}
 		GMT_free (GMT, arc);
@@ -309,7 +309,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for sphtriangulate Voronoi nodes\n");
 			GMT_exit (EXIT_FAILURE);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "Output %ld unique Voronoi arcs\n", n_arcs);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Output %d unique Voronoi arcs\n", n_arcs);
 
 		for (i = 0; i < n_arcs; i++) {
 			S[0] = Dout[0]->table[0]->segment[i];	/* Shorthand for this output segment */
@@ -317,10 +317,10 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 			S[0]->coord[GMT_X][1] = V->lon[arc[i].begin];	S[1]->coord[GMT_Y][1] = V->lat[arc[i].begin];
 			if (get_area) {
 				dist = GMT_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
-				sprintf (segment_header, "Arc: %ld-%ld Length: %g", arc[i].begin, arc[i].end, dist);
+				sprintf (segment_header, "Arc: %d-%d Length: %g", arc[i].begin, arc[i].end, dist);
 			}
 			else
-				sprintf (segment_header, "Arc: %ld-%ld", arc[i].begin, arc[i].end);
+				sprintf (segment_header, "Arc: %d-%d", arc[i].begin, arc[i].end);
 			S[0]->header = strdup (segment_header);
 		}
 		GMT_free (GMT, arc);
@@ -588,8 +588,8 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 	GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 
-	if (Ctrl->D.active && n_dup) GMT_report (GMT, GMT_MSG_NORMAL, "Skipped %ld duplicate points in segments\n", n_dup);
-	GMT_report (GMT, GMT_MSG_NORMAL, "Do Voronoi construction using %ld points\n", n);
+	if (Ctrl->D.active && n_dup) GMT_report (GMT, GMT_MSG_NORMAL, "Skipped %d duplicate points in segments\n", n_dup);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Do Voronoi construction using %d points\n", n);
 
 	GMT_memset (&T, 1, struct STRIPACK);
 	T.mode = Ctrl->Q.mode;

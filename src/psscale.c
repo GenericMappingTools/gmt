@@ -761,7 +761,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					if (logscl) {
 						p_val = lrint (P->range[i].z_high);
 						if (doubleAlmostEqualZero (P->range[i].z_high, (double)p_val))
-							sprintf (text, "10@+%ld@+", p_val);
+							sprintf (text, "10@+%d@+", p_val);
 						else
 							do_annot = FALSE;
 					}
@@ -1031,7 +1031,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 
 GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psscale task */
-	GMT_LONG error = FALSE, i;
+	BOOLEAN error = FALSE;
+	COUNTER_MEDIUM i;
 
 	char text[GMT_TEXT_LEN256];
 

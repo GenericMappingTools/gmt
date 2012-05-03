@@ -4648,7 +4648,7 @@ GMT_LONG gmt_map_init_polyconic (struct GMT_CTRL *C) {
 
 void gmt_wesn_search (struct GMT_CTRL *C, double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north) {
 	double dx, dy, w, e, s, n, x, y, lat, *lon = NULL;
-	GMT_LONG i, j, k;
+	COUNTER_MEDIUM i, j, k;
 
 	/* Search for extreme lon/lat coordinates by matching along the rectangular boundary */
 
@@ -4687,7 +4687,8 @@ void gmt_wesn_search (struct GMT_CTRL *C, double xmin, double xmax, double ymin,
 
 GMT_LONG gmt_horizon_search (struct GMT_CTRL *C, double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax) {
 	double dx, dy, d, x, y, lon, lat;
-	GMT_LONG i, j, beyond = FALSE;
+	COUNTER_MEDIUM i, j;
+	BOOLEAN beyond = FALSE;
 
 	/* Search for extreme original coordinates lon/lat and see if any fall beyond the horizon */
 

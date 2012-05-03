@@ -119,7 +119,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 					 * I means just interpolate from larger grid */
 	char format[GMT_BUFSIZ];
 	char *low_file, *high_file;	/* Pointers to grids with low and high limits, if selected */
-	COUNTER_MEDIUM grid, old_grid;	/* Node spacings  */
+	GMT_LONG grid, old_grid;	/* Node spacings  */
 	COUNTER_MEDIUM n_fact;		/* Number of factors in common (ny-1, nx-1) */
 	COUNTER_MEDIUM factors[32];		/* Array of common factors */
 	COUNTER_MEDIUM set_low;		/* 0 unconstrained,1 = by min data value, 2 = by user value */
@@ -698,16 +698,16 @@ GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LON
 		}
 		else {
 			if ((C->Low = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, C->low_file, NULL)) == NULL) return (API->error);	/* Get header only */
-			if (C->Low->header->nx != C->nx || C->Low->header->ny != C->ny) {
+			if (C->Low->header->nx != C->Grid->header->nx || C->Low->header->ny != C->Grid->header->ny) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Lower limit file not of proper dimension!\n");
 				return (EXIT_FAILURE);
 			}
 			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, C->low_file, C->Low) == NULL) return (API->error);
 		}
 		if (transform) {
-			for (j = 0; j < C->ny; j++) {
-				yy = (double)(C->ny - j - 1);
-				for (i = 0; i < C->nx; i++) {
+			for (j = 0; j < C->Grid->header->ny; j++) {
+				yy = (double)(C->Grid->header->ny - j - 1);
+				for (i = 0; i < C->Grid->header->nx; i++) {
 					ij = GMT_IJP (C->Grid->header, j, i);
 					if (GMT_is_fnan (C->Low->data[ij])) continue;
 					C->Low->data[ij] -= (float)(C->plane_c0 + C->plane_c1 * i + C->plane_c2 * yy);
@@ -725,16 +725,16 @@ GMT_LONG load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LON
 		}
 		else {
 			if ((C->High = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, C->high_file, NULL)) == NULL) return (API->error);	/* Get header only */
-			if (C->High->header->nx != C->nx || C->High->header->ny != C->ny) {
+			if (C->High->header->nx != C->Grid->header->nx || C->High->header->ny != C->Grid->header->ny) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Upper limit file not of proper dimension!\n");
 				return (EXIT_FAILURE);
 			}
 			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, C->high_file, C->High) == NULL) return (API->error);
 		}
 		if (transform) {
-			for (j = 0; j < C->ny; j++) {
+			for (j = 0; j < C->Grid->header->ny; j++) {
 				yy = (double)(C->ny - j - 1);
-				for (i = 0; i < C->nx; i++) {
+				for (i = 0; i < C->Grid->header->nx; i++) {
 					ij = GMT_IJP (C->Grid->header, j, i);
 					if (GMT_is_fnan (C->High->data[ij])) continue;
 					C->High->data[ij] -= (float)(C->plane_c0 + C->plane_c1 * i + C->plane_c2 * yy);
@@ -787,8 +787,8 @@ GMT_LONG write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, cha
 
 GMT_LONG iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG mode)
 {
-	COUNTER_LARGE ij, briggs_index, ij_v2;
-	GMT_LONG i, j, k, kase, iteration_count = 0;
+	COUNTER_LARGE ij, briggs_index, ij_v2, iteration_count = 0;
+	GMT_LONG i, j, k, kase;
 	GMT_LONG x_case, y_case, x_w_case, x_e_case, y_s_case, y_n_case;
 	char *iu = C->iu;
 
