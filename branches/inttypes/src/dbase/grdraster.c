@@ -731,7 +731,7 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 
 GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	COUNTER_MEDIUM i, j, k, ksize = 0, iselect, imult, jmult, nrasters;
+	COUNTER_MEDIUM i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
 	COUNTER_MEDIUM irasstart, jrasstart, n_nan, iras, jras, ijras, jseek;
 	BOOLEAN error = FALSE, firstread;
 	

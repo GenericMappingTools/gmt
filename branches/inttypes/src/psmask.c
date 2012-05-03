@@ -494,10 +494,10 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	COUNTER_MEDIUM section, k, row, col, n_edges, *d_col = NULL, d_row = 0, ii, jj;
-	COUNTER_MEDIUM io_mode = 0, max_d_col = 0;
-	BOOLEAN error = FALSE, first = TRUE, node_only, make_plot, closed;
+	COUNTER_MEDIUM section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
+	COUNTER_MEDIUM io_mode = 0, max_d_col = 0, ii, jj, i_start, j_start;
 	COUNTER_MEDIUM fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
+	BOOLEAN error = FALSE, first = TRUE, node_only, make_plot, closed;
 	
 	COUNTER_LARGE ij, n_points, n_seg = 0, n_read, n;
 	
@@ -653,19 +653,19 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				ij = GMT_IJP (Grid->header, row, col);
 				grd[ij] = 1;
 			}
-			else {
-
-				/* Set coordinate of this node */
+			else {	/* Set coordinate of this node */
 
 				x0 = GMT_grd_col_to_x (GMT, col, Grid->header);
 				y0 = GMT_grd_row_to_y (GMT, row, Grid->header);
 
 				/* Set this and all nodes within radius distance to 1 */
 
-				for (jj = row - d_row; jj <= row + d_row; jj++) {
-					if (jj < 0 || jj >= Grid->header->ny) continue;
-					for (ii = col - d_col[jj]; ii <= col + d_col[jj]; ii++) {
-						if (ii < 0 || ii >= Grid->header->nx) continue;
+				j_start = (row > d_row) ? row - d_row : 0;
+				for (jj = j_start; jj <= row + d_row; jj++) {
+					if (jj >= Grid->header->ny) continue;
+					i_start = (col > d_col[jj]) ? col - d_col[jj] : 0;
+					for (ii = i_start; ii <= col + d_col[jj]; ii++) {
+						if (ii >= Grid->header->nx) continue;
 						distance = GMT_distance (GMT, x0, y0, grd_x0[ii], grd_y0[jj]);
 						if (distance > Ctrl->S.radius) continue;
 						ij = GMT_IJP (Grid->header, jj, ii);

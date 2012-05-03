@@ -363,10 +363,9 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	short int **sector = NULL;
 	
 	COUNTER_MEDIUM *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0;
-	COUNTER_MEDIUM GMT_mode_selection = 0, GMT_n_multiples = 0;
+	COUNTER_MEDIUM GMT_mode_selection = 0, GMT_n_multiples = 0, col_out, row_out;
 	BOOLEAN full_360, shift = FALSE, slow, slow2, error = FALSE, fast_way;
-	GMT_LONG j_origin, col_out, row_out, *i_origin = NULL;
-	GMT_LONG col_in, row_in, ii, jj, i, j, k, s;
+	GMT_LONG j_origin, *i_origin = NULL, col_in, row_in, ii, jj, i, j, k, s;
 	
 	COUNTER_LARGE n_nan = 0, ij_in, ij_out, ij_wt;
 	

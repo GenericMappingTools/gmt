@@ -87,7 +87,7 @@ struct PSCONTOUR_CTRL {
 struct SAVE {
 	double *x, *y;
 	double cval;
-	GMT_LONG n;
+	COUNTER_MEDIUM n;
 	struct GMT_PEN pen;
 	GMT_LONG do_it, high;
 };
@@ -103,7 +103,7 @@ struct PSCONTOUR_LINE {	/* Beginning and end of straight contour segment */
 
 struct PSCONTOUR {
 	size_t n_alloc;
-	GMT_LONG nl;
+	COUNTER_MEDIUM nl;
 	double val;
 	double angle;
 	char type, do_tick;

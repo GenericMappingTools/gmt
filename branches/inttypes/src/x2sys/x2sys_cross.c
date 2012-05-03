@@ -250,33 +250,33 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char name1[80], name2[80];		/* Name of two files to be examined */
 	char *x2sys_header = "%s %ld %s %ld %s";
 
-	GMT_LONG n_rec[2];			/* Number of data records for both files */
-	GMT_LONG window_width;			/* Max number of points to use in the interpolation */
-	GMT_LONG n_tracks = 0;			/* Total number of data sets to compare */
-	GMT_LONG nx;				/* Number of crossovers found for this pair */
-	GMT_LONG *col_number = NULL;		/* Array with the column numbers of the data fields */
-	GMT_LONG n_output;			/* Number of columns on output */
-	GMT_LONG n_pairs = 0;			/* Number of acceptable combinations */
-	GMT_LONG A, B, i, j, col, k, start, n_bad;	/* Misc. counters and local variables */
-	GMT_LONG end, first, n_ok;
-	GMT_LONG n_data_col, left[2], t_left;
-	GMT_LONG n_left, right[2], t_right, n_right;
-	GMT_LONG n_duplicates, n_errors;
-	GMT_LONG add_chunk;
+	COUNTER_LARGE n_rec[2];			/* Number of data records for both files */
+	COUNTER_LARGE window_width;			/* Max number of points to use in the interpolation */
+	COUNTER_LARGE n_tracks = 0;			/* Total number of data sets to compare */
+	COUNTER_LARGE nx;				/* Number of crossovers found for this pair */
+	COUNTER_LARGE *col_number = NULL;		/* Array with the column numbers of the data fields */
+	COUNTER_LARGE n_output;			/* Number of columns on output */
+	COUNTER_LARGE n_pairs = 0;			/* Number of acceptable combinations */
+	COUNTER_LARGE A, B, i, j, col, k, start, n_bad;	/* Misc. counters and local variables */
+	COUNTER_LARGE end, first, n_ok;
+	COUNTER_LARGE n_data_col, left[2], t_left;
+	COUNTER_LARGE n_left, right[2], t_right, n_right;
+	COUNTER_LARGE n_duplicates, n_errors;
+	COUNTER_LARGE add_chunk;
 
-	GMT_LONG xover_locations_only = FALSE;	/* TRUE if only x,y (and possible indices) to be output */
-	GMT_LONG internal = TRUE;		/* FALSE if only external xovers are needed */
-	GMT_LONG external = TRUE;		/* FALSE if only internal xovers are needed */
-	GMT_LONG error = FALSE;			/* TRUE for invalid arguments */
-	GMT_LONG do_project = FALSE;		/* TRUE if we must mapproject first */
-	GMT_LONG got_time = FALSE;		/* TRUE if there is a time column */
-	GMT_LONG first_header = TRUE;		/* TRUE for very first crossover */
-	GMT_LONG first_crossover;		/* TRUE for first crossover between two data sets */
-	GMT_LONG same = FALSE;			/* TRUE when the two cruises we compare have the same name */
-	GMT_LONG has_time[2];			/* TRUE for each cruises that actually has a time column */
-	GMT_LONG *duplicate = NULL;		/* Array, TRUE for any cruise that is already listed */
-	GMT_LONG *ok = NULL;
-	GMT_LONG cmdline_files = FALSE;		/* TRUE if files where given directly on the command line */
+	BOOLEAN xover_locations_only = FALSE;	/* TRUE if only x,y (and possible indices) to be output */
+	BOOLEAN internal = TRUE;		/* FALSE if only external xovers are needed */
+	BOOLEAN external = TRUE;		/* FALSE if only internal xovers are needed */
+	BOOLEAN error = FALSE;			/* TRUE for invalid arguments */
+	BOOLEAN do_project = FALSE;		/* TRUE if we must mapproject first */
+	BOOLEAN got_time = FALSE;		/* TRUE if there is a time column */
+	BOOLEAN first_header = TRUE;		/* TRUE for very first crossover */
+	BOOLEAN first_crossover;		/* TRUE for first crossover between two data sets */
+	BOOLEAN same = FALSE;			/* TRUE when the two cruises we compare have the same name */
+	BOOLEAN has_time[2];			/* TRUE for each cruises that actually has a time column */
+	BOOLEAN *duplicate = NULL;		/* Array, TRUE for any cruise that is already listed */
+	BOOLEAN *ok = NULL;
+	BOOLEAN cmdline_files = FALSE;		/* TRUE if files where given directly on the command line */
 	
 	size_t n_alloc = 1;
 
@@ -428,7 +428,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {	/* Set the actual column numbers with data fields */
 		t = GMT_memory (GMT, NULL, window_width, double);
 		y = GMT_memory (GMT, NULL, window_width, double);
-		col_number = GMT_memory (GMT, NULL, n_data_col, GMT_LONG);
+		col_number = GMT_memory (GMT, NULL, n_data_col, COUNTER_LARGE);
 		ok = GMT_memory (GMT, NULL, n_data_col, GMT_LONG);
 		for (col = k = 0; col < s->n_out_columns; col++) {
 			if (col == s->x_col || col == s->y_col || col == s->t_col) continue;

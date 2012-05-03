@@ -338,11 +338,11 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_fprintf (GMT->session.std[GMT_OUT], "# Command: %s", GMT->init.progname);
 	if (!Ctrl->In.file) GMT_fprintf (GMT->session.std[GMT_OUT], " [stdin]");
 	for (opt = options; opt; opt = opt->next) (opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
-	GMT_fprintf (GMT->session.std[GMT_OUT], "\n#track%sN%smean%sstdev%srms%sweight[%ld]\n", c, c, c, c, c, n_use);
+	GMT_fprintf (GMT->session.std[GMT_OUT], "\n#track%sN%smean%sstdev%srms%sweight[%" PRIu64 "]\n", c, c, c, c, c, n_use);
 	Tmean = (Tnx) ? Tsum / Tnx : GMT->session.d_NaN;
 	Tstdev = (Tnx > 1) ? sqrt ((Tnx * Tsum2 - Tsum * Tsum) / (Tnx * (Tnx - 1.0))) : GMT->session.d_NaN;
 	Trms = (Tnx) ? sqrt (Tsum2 / Tnx) : GMT->session.d_NaN;
-	printf ("TOTAL%s%ld%s%g%s%g%s%g%s1\n", c, Tnx, c, Tmean, c, Tstdev, c, Trms, c);
+	printf ("TOTAL%s%" PRIu64 "%s%g%s%g%s%g%s1\n", c, Tnx, c, Tmean, c, Tstdev, c, Trms, c);
 	for (k = 0; k < n_tracks; k++) {	/* For each track that generated crossovers */
 		if (R[k].nx <= Ctrl->N.min) continue;			/* Not enough COEs */
 		if (!GMT_is_dnan (R[k].W)) R[k].W *= scale;
@@ -353,7 +353,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->A.active) {	/* Create track adjustment spline files for each track */
-		int n_out, n1;
+		COUNTER_MEDIUM n_out, n1;
 		char file[GMT_BUFSIZ];
 		double out[2], z[2], z_ij;
 		FILE *fp = NULL;

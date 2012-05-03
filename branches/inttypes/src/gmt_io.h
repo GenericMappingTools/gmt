@@ -330,20 +330,20 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 
 struct GMT_OGR {	/* Struct with all things GMT/OGR for a table*/
 	/* The first parameters are usually set once per data set and do not change */
-	GMT_LONG geometry;		/* @G: The geometry of this data set, if known [0 otherwise] */
+	COUNTER_MEDIUM geometry;	/* @G: The geometry of this data set, if known [0 otherwise] */
 	COUNTER_MEDIUM n_aspatial;	/* @T: The number of aspatial fields */
 	char *region;			/* @R: The region textstring [NULL if not set] */
 	char *proj[4];			/* @J: The 1-4 projection strings [NULL if not set] */
-	GMT_LONG *type;			/* @T: The data types of the aspatial fields [NULL if not set]  */
+	COUNTER_MEDIUM *type;		/* @T: The data types of the aspatial fields [NULL if not set]  */
 	char **name;			/* @N The names of the aspatial fields [NULL if not set]  */
 	/* The following are for OGR data only. It is filled during parsing (current segment) but is then copied to the segment header so it can be accessed later */
-	GMT_LONG pol_mode;		/* @P: Either GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
+	COUNTER_MEDIUM pol_mode;	/* @P: Either GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
 	char **value;			/* @D: The text values of the current aspatial fields */
 	double *dvalue;			/* @D: Same but converted to double (assumed possible) */
 };
 
 struct GMT_OGR_SEG {	/* Struct with GMT/OGR aspatial data for a segment*/
-	GMT_LONG pol_mode;		/* @P: Either GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
+	COUNTER_MEDIUM pol_mode;	/* @P: Either GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
 	COUNTER_MEDIUM n_aspatial;	/* @T: The number of aspatial fields */
 	char **value;			/* @D: The values of the current aspatial fields (uses GMT_OGR's n_aspatial as length) */
 	double *dvalue;			/* @D: Same but converted to double (assumed possible) */
@@ -358,7 +358,7 @@ struct GMT_COL_INFO {	/* Used by -i and input parsing */
 };
 
 struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
-	int type;		/* Data type e.g., GMTAPI_FLOAT */
+	COUNTER_MEDIUM type;	/* Data type e.g., GMTAPI_FLOAT */
 	int skip;		/* Rather than read/write an item, jump skip bytes */
 	PFI io;			/* Pointer to the correct read or write function given type/swab */
 };

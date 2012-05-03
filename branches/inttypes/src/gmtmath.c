@@ -2777,7 +2777,7 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 {
 	COUNTER_LARGE seg, row;
 	COUNTER_MEDIUM i;
-	GMT_LONG prev = last - 1, i, arg;
+	GMT_LONG prev = last - 1, s_arg;
 	double *roots = NULL;
 	struct GMT_TABLE *T = (constant[last]) ? NULL : S[last]->table[0], *T_prev = S[prev]->table[0];
 
@@ -2788,15 +2788,19 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 	if (info->roots_found) return;	/* Already been here */
 	if (!constant[last]) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Argument to operator ROOTS must be a constant: the column number. Reset to 0\n");
-		arg = 0;
+		s_arg = 0;
 	}
 	else
-		arg = lrint (factor[last]);
-	if (arg < 0 || arg >= info->n_col) {
+		s_arg = lrint (factor[last]);
+	if (s_arg < 0) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Argument to operator ROOTS must be a column number 0 < col < %ld. Reset to 0\n", info->n_col);
-		arg = 0;
+		s_arg = 0;
 	}
-	info->r_col = arg;
+	info->r_col = s_arg;
+	if (info->r_col >= info->n_col) {
+		GMT_report (GMT, GMT_MSG_FATAL, "Argument to operator ROOTS must be a column number 0 < col < %ld. Reset to 0\n", info->n_col);
+		info->r_col = 0;
+	}
 	roots = GMT_memory (GMT, NULL, T->n_records, double);
 	info->n_roots = 0;
 	if (T_prev->segment[0]->coord[info->r_col][0] == 0.0) roots[info->n_roots++] = info->T->segment[0]->coord[COL_T][0];
@@ -3319,7 +3323,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		nstack = new_stack;
 
-		for (i = 1; i <= produced_operands[op]; i++) if (stack[nstack-i]) constant[nstack-i] = FALSE;	/* Now filled with table */
+		for (kk = 1; kk <= produced_operands[op]; kk++) if (stack[nstack-kk]) constant[nstack-kk] = FALSE;	/* Now filled with table */
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
@@ -3348,7 +3352,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		dim[3] = info.n_roots;
 		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error)
-		for (i = 0; i < info.n_roots; i++) R->table[0]->segment[0]->coord[GMT_X][i] = S->coord[info.r_col][i];
+		for (kk = 0; kk < info.n_roots; kk++) R->table[0]->segment[0]->coord[GMT_X][kk] = S->coord[info.r_col][kk];
 		if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, stack[0]->io_mode, Ctrl->Out.file, R) != GMT_OK) {
 			Return (API->error);
 		}
