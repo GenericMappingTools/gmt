@@ -34,15 +34,15 @@
 
 struct GRDCLIP_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct G {	/* -G<output_grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct S {	/* -Sa<high/above> or -Sb<low/below> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		float high, above;
 		float low, below;

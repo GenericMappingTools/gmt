@@ -40,37 +40,37 @@ EXTERN_MSC GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
 
 struct PSWIGGLE_CTRL {
 	struct A {	/* -A<azimuth> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} A;
 	struct C {	/* -C<center> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} C;
 	struct G {	/* -G[+|-|=]<fill> */
-		GMT_LONG active[2];
+		BOOLEAN active[2];
 		struct GMT_FILL fill[2];
 	} G;
 	struct I {	/* -I<azimuth> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} I;
 	struct S {	/* -S[x]<lon0>/<lat0>/<length>/<units> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG cartesian;
 		double lon, lat, length;
 		char *label;
 	} S;
 	struct T {	/* -T<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} T;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<scale> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double scale;
 		char unit;
 	} Z;
@@ -380,7 +380,9 @@ void alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, double **xx, double **y
 
 GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, negative, tbl;
+	BOOLEAN error = FALSE, negative;
+	
+	COUNTER_MEDIUM tbl;
 	
 	COUNTER_LARGE row, seg, j;
 	size_t n_alloc = GMT_CHUNK;

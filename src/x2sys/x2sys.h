@@ -137,23 +137,23 @@ struct X2SYS_INFO {
 	/* Information of this datasets particular organization */
 
 	char *TAG;			/* The system TAG */
-	GMT_LONG n_fields;		/* Number of input columns */
-	GMT_LONG n_out_columns;		/* Number of output columns */
-	GMT_LONG n_data_cols;		/* Number of data columns (other than x,y,t) */
+	COUNTER_MEDIUM n_fields;	/* Number of input columns */
+	COUNTER_MEDIUM n_out_columns;	/* Number of output columns */
+	COUNTER_MEDIUM n_data_cols;	/* Number of data columns (other than x,y,t) */
 	size_t rec_size;		/* Number of bytes for a potential x2sys_dbase_*.b file */
 	GMT_LONG x_col, y_col, t_col;	/* Column numbers for x, y, and t */
 	GMT_LONG skip;			/* Number of header records to skip */
 	GMT_LONG flags;			/* Various processing flags for internal use */
-	GMT_LONG *out_order;		/* Array with column number in the order for output */
-	GMT_LONG *use_column;		/* Array of T/F for which columns to use */
+	COUNTER_MEDIUM *out_order;	/* Array with column number in the order for output */
+	BOOLEAN *use_column;		/* Array of T/F for which columns to use */
 	GMT_LONG geodetic;		/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
 	GMT_LONG dist_flag;		/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
 	PFL read_file;			/* Pointer to function that reads this file */
 	GMT_LONG file_type;		/* 0 = ASCII, 1 = native binary, 2 = netCDF */
-	GMT_LONG ascii_out;		/* TRUE if output should be in ascii */
-	GMT_LONG multi_segment;		/* TRUE if there are multiple segments in this file */
-	GMT_LONG geographic;		/* TRUE if x/y data are lon/lat */
-	GMT_LONG ms_next;		/* TRUE if we just read 1st record in a new segments in this file */
+	BOOLEAN ascii_out;		/* TRUE if output should be in ascii */
+	BOOLEAN multi_segment;		/* TRUE if there are multiple segments in this file */
+	BOOLEAN geographic;		/* TRUE if x/y data are lon/lat */
+	BOOLEAN ms_next;		/* TRUE if we just read 1st record in a new segments in this file */
 	char unit[2][2];		/* Units for distance (c = Cartesian, e = meter, k = km, m = miles, n = nautical miles)
 	 				   and speed (c = Cartesian, e = m/s, k = km/hr, m = miles/hr, n = knots) */
 	char ms_flag;			/* Multi-segment header flag */
@@ -167,12 +167,12 @@ struct X2SYS_DATA_INFO {
 	double nan_proxy;	/* Value that signifies lack of data (NaN) */
 	double scale;		/* Input value should be multiplied by this value */
 	double offset;		/* And then add this value */
-	GMT_LONG start_col;	/* For cardformat: starting column */
-	GMT_LONG stop_col;	/* For cardformat: last column */
-	GMT_LONG n_cols;	/* For cardformat: number of columns */
-	GMT_LONG has_nan_proxy;	/* TRUE if there is a special value that indicates NaN */
-	GMT_LONG has_nans;	/* TRUE if there are NaNs in this field */
-	GMT_LONG do_scale;	/* TRUE if scale != 1 or offset != 0 */
+	COUNTER_MEDIUM start_col;	/* For cardformat: starting column */
+	COUNTER_MEDIUM stop_col;	/* For cardformat: last column */
+	COUNTER_MEDIUM n_cols;	/* For cardformat: number of columns */
+	BOOLEAN has_nan_proxy;	/* TRUE if there is a special value that indicates NaN */
+	BOOLEAN has_nans;	/* TRUE if there are NaNs in this field */
+	BOOLEAN do_scale;	/* TRUE if scale != 1 or offset != 0 */
 	char name[32];		/* Name of this data type */
 	char format[32];	/* Output print format for ascii conversion */
 	char intype;		/* Input data type (cuhilfdaA) */
@@ -182,8 +182,8 @@ struct X2SYS_FILE_INFO {
 	/* Information for a particular data file */
 	GMT_LONG year;		/* Starting year for this leg */
 	COUNTER_LARGE n_rows;	/* Number of rows */
-	GMT_LONG n_segments;	/* Number of segments in this file */
-	GMT_LONG *ms_rec;	/* Pointer to array with start record for each segment */
+	COUNTER_LARGE n_segments;	/* Number of segments in this file */
+	COUNTER_LARGE *ms_rec;	/* Pointer to array with start record for each segment */
 	char name[32];		/* Name of cruise or agency */
 };
 
@@ -195,10 +195,10 @@ struct X2SYS_BIX {
 	double i_bin_y;		/* 1/dy */
 	double time_gap;	/* We have a data-gap if two records differ by this amount in time */
 	double dist_gap;	/* We have a data-gap if two records differ by this amount in distance [if there is no time column] */
-	GMT_LONG nx_bin;	/* Number of x bins */
-	GMT_LONG ny_bin;	/* Number of y bins */
-	GMT_LONG nm_bin;	/* Total number of bins */
-	GMT_LONG periodic;	/* 1 if x is periodic */
+	COUNTER_MEDIUM nx_bin;	/* Number of x bins */
+	COUNTER_MEDIUM ny_bin;	/* Number of y bins */
+	COUNTER_LARGE nm_bin;	/* Total number of bins */
+	BOOLEAN periodic;	/* 1 if x is periodic */
 	unsigned int *binflag;	/* The bin array */
 	struct X2SYS_BIX_DATABASE *base;
 	struct X2SYS_BIX_TRACK_INFO *head;
@@ -239,7 +239,7 @@ struct X2SYS_COE_PAIR {	/* Holds the information for COE between a pair of track
 	char trk[2][GMT_TEXT_LEN64];	/* Track names */
 	GMT_LONG id[2];			/* Internal ID track numbers */
 	GMT_LONG year[2];		/* Start year for each track */
-	GMT_LONG nx;			/* Number of crossovers */
+	COUNTER_MEDIUM nx;		/* Number of crossovers */
 	double start[2];		/* Time of first point for each track */
 	double stop[2];			/* Time of last point for each track */
 	double dist[2];			/* Length of each track */

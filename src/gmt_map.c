@@ -6071,6 +6071,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 	/* PART 1: Project input grid points and do a blockmean operation */
 
 	if (C->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
+		GMT_LONG nx = O->header->nx, ny = O->header->ny;
 		nz = GMT_memory (C, NULL, O->header->size, short int);
 		GMT_row_loop (C, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (GMT_IS_RECT_GRATICULE (C)) y_proj = y_in_proj[row_in];
@@ -6087,9 +6088,9 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 				/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
 
 				row_out = GMT_grd_y_to_row (C, y_proj, O->header);
-				if (row_out < 0 || row_out >= O->header->ny) continue;	/* Outside our grid region */
+				if (row_out < 0 || row_out >= ny) continue;	/* Outside our grid region */
 				col_out = GMT_grd_x_to_col (C, x_proj, O->header);
-				if (col_out < 0 || col_out >= O->header->nx) continue;	/* Outside our grid region */
+				if (col_out < 0 || col_out >= nx) continue;	/* Outside our grid region */
 
 				/* OK, this projected point falls inside the projected grid's rectangular domain */
 
@@ -6236,6 +6237,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 	/* PART 1: Project input image points and do a blockmean operation */
 
 	if (C->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
+		GMT_LONG nx = O->header->nx, ny = O->header->ny;
 		nz = GMT_memory (C, NULL, O->header->size, short int);
 		GMT_row_loop (C, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (GMT_IS_RECT_GRATICULE (C)) y_proj = y_in_proj[row_in];
@@ -6252,9 +6254,9 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 				/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
 
 				row_out = GMT_grd_y_to_row (C, y_proj, O->header);
-				if (row_out < 0 || row_out >= O->header->ny) continue;	/* Outside our grid region */
+				if (row_out < 0 || row_out >= ny) continue;	/* Outside our grid region */
 				col_out = GMT_grd_x_to_col (C, x_proj, O->header);
-				if (col_out < 0 || col_out >= O->header->nx) continue;	/* Outside our grid region */
+				if (col_out < 0 || col_out >= nx) continue;	/* Outside our grid region */
 
 				/* OK, this projected point falls inside the projected grid's rectangular domain */
 
@@ -6784,7 +6786,7 @@ GMT_LONG GMT_set_datum (struct GMT_CTRL *C, char *text, struct GMT_DATUM *D)
 	}
 	else {		/* Gave a Datum ID tag [ 0-(GMT_N_DATUMS-1)] */
 		GMT_LONG k;
-		if (sscanf (text, "%" GMT_LL "d", &i) != 1) {
+		if (sscanf (text, "%d", &i) != 1) {
 			GMT_report (C, GMT_MSG_FATAL, "Malformed or unrecognized <datum> argument (%s)!\n", text);
 			return (-1);
 		}
@@ -6937,7 +6939,7 @@ double * GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], COUNTER_LAR
 
 GMT_LONG GMT_map_latcross (struct GMT_CTRL *C, double lat, double west, double east, struct GMT_XINGS **xings)
 {
-	GMT_LONG go = FALSE;
+	BOOLEAN go = FALSE;
 	COUNTER_MEDIUM i, nx, nc = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double lon, lon_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;

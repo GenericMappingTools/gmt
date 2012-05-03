@@ -27,15 +27,15 @@
 
 struct grd2sph_CTRL {
 	struct D {	/* -D<degree> */
-		GMT_LONG active;
+		BOOLEAN active;
 		int max_degree;
 	} D;
 	struct N {	/* -Ng|m|s */
-		GMT_LONG active;
+		BOOLEAN active;
 		char mode;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 };
 

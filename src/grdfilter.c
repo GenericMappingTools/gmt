@@ -32,23 +32,23 @@ EXTERN_MSC double GMT_great_circle_dist_meter (struct GMT_CTRL *C, double x0, do
 
 struct GRDFILTER_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 #ifdef DEBUG
 	struct A {	/* -A<a|r|w|c>row/col */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		GMT_LONG ROW, COL;
 		double x, y;
 	} A;
 #endif
 	struct D {	/* -D<distflag> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} D;
 	struct F {	/* <type>[-]<filter_width>[/<width2>][<mode>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG highpass;
 		char filter;	/* Character codes for the filter */
 		double width, width2, quantile;
@@ -56,24 +56,24 @@ struct GRDFILTER_CTRL {
 		GMT_LONG mode;
 	} F;
 	struct G {	/* -G<file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 		char string[GMT_TEXT_LEN256];
 	} I;
 	struct N {	/* -Np|i|r */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 0 is default (i), 1 is replace (r), 2 is preserve (p) */
 	} N;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 	} T;
 #ifdef DEBUG
 	struct W {	/* -W */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} W;
 #endif
@@ -103,8 +103,8 @@ struct GRDFILTER_CTRL {
 struct FILTER_INFO {
 	COUNTER_MEDIUM nx;		/* The max number of filter weights in x-direction */
 	COUNTER_MEDIUM ny;		/* The max number of filter weights in y-direction */
-	COUNTER_MEDIUM x_half_width;	/* Number of filter nodes to either side needed at this latitude */
-	COUNTER_MEDIUM y_half_width;	/* Number of filter nodes above/below this point (ny_f/2) */
+	GMT_LONG x_half_width;		/* Number of filter nodes to either side needed at this latitude */
+	GMT_LONG y_half_width;		/* Number of filter nodes above/below this point (ny_f/2) */
 	COUNTER_MEDIUM d_flag;
 	BOOLEAN rect;		/* For 2-D rectangular filtering */
 	BOOLEAN debug;		/* Normally unused except under DEBUG */
@@ -147,11 +147,15 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 	 */
 
 	GMT_LONG i, j;
-	uint64_t ij;
-	double x, y, yc, y0, r, ry = 0.0;
+	int64_t ij;
+	double x, y, yc, y0, r, ry = 0.0, inv_x_half_width = 0.0, inv_y_half_width = 0.0;
 
 	yc = y0 = output_lat - y_off;		/* Input latitude of central point (i,j) = (0,0) */
 	if (F->d_flag == 5) yc = IMG2LAT (yc);	/* Recover actual latitude in IMG grid at this center point */
+	if (F->rect) {
+		inv_x_half_width = 1.0 / F->x_half_width;
+		inv_y_half_width = 1.0 / F->y_half_width;
+	}
 	for (j = -F->y_half_width; j <= F->y_half_width; j++) {
 		y = y0 + ((j < 0) ? F->y[-j] : -F->y[j]);	/* y or latitude at this row */
 		if (F->d_flag > 2 && (y < F->y_min || y > F->y_max)) {		/* This filter row is outside input grid domain */
@@ -159,13 +163,13 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 			continue;	/* Done with this row */
 		}
 		if (F->d_flag == 5) y = IMG2LAT (y);	/* Recover actual latitudes */
-		if (F->rect) ry = (double)j / (double)F->y_half_width;	/* -1 to +1 */
+		if (F->rect) ry = inv_y_half_width * j;	/* -1 to +1 */
 		for (i = -F->x_half_width; i <= F->x_half_width; i++) {
 			x = (i < 0) ? -F->x[-i] : F->x[i];
 			ij = (j + F->y_half_width) * F->nx + i + F->x_half_width;
 			assert (ij >= 0);
-			if (F->rect) {	/* 2-D rectangular filtering; radius not used as we use x/F->x_half_width and ry instead */
-				weight[ij] = F->weight_func ((double)i/(double)F->x_half_width, par) * F->weight_func (ry, par);
+			if (F->rect) {	/* 2-D rectangular filtering; radius not used as we use x/x_half_width and ry instead */
+				weight[ij] = F->weight_func (inv_x_half_width * i, par) * F->weight_func (ry, par);
 			}
 			else {
 				r = F->radius_func (GMT, x_off, yc, x, y, par);
@@ -494,9 +498,9 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = FALSE, fast_way, slow = FALSE, slower = FALSE, same_grid = FALSE;
 	BOOLEAN spherical = FALSE, full_360, visit_check = FALSE, go_on;
-	COUNTER_MEDIUM n_in_median, n_nan = 0, col_out, row_out, nx_wrap = 0, effort_level;
+	COUNTER_MEDIUM n_in_median, n_nan = 0, col_out, row_out, effort_level;
 	COUNTER_MEDIUM filter_type, one_or_zero = 1, GMT_n_multiples = 0;
-	GMT_LONG tid = 0, col_in, row_in, ii, jj, i, j, *i_origin = NULL, j_origin;
+	GMT_LONG tid = 0, col_in, row_in, ii, jj, *i_origin = NULL, j_origin, nx_wrap = 0;
 #ifdef DEBUG
 	COUNTER_MEDIUM n_conv = 0;
 #endif
@@ -698,21 +702,21 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	F.y_half_width = lrint (ceil (y_width) / 2.0);
 	F.nx = 2 * F.x_half_width + 1;
 	F.ny = 2 * F.y_half_width + 1;
-	if (x_scale == 0.0 || F.nx < 0 || F.nx > Gin->header->nx) {	/* Safety valve when x_scale -> 0.0 */
+	if (x_scale == 0.0 || F.nx > Gin->header->nx) {	/* Safety valve when x_scale -> 0.0 */
 		F.nx = Gin->header->nx;
 		F.x_half_width = (F.nx - 1) / 2;
 		if ((F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;	/* When nx is even we may come up short by 1 */
-		visit_check = ((2 * F.x_half_width + 1) >= Gin->header->nx);	/* Must make sure we only visit each node once along a row */
+		visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->nx);	/* Must make sure we only visit each node once along a row */
 	}
-	if (F.ny < 0 || F.ny > Gin->header->ny) {	/* Safety valve when y_scale -> 0.0 */
+	if (F.ny > Gin->header->ny) {	/* Safety valve when y_scale -> 0.0 */
 		F.ny = Gin->header->ny;
 		F.y_half_width = (F.ny - 1) / 2;
 	}
 	F.x = GMT_memory (GMT, NULL, F.x_half_width+1, double);
 	F.y = GMT_memory (GMT, NULL, F.y_half_width+1, double);
 	F.visit = GMT_memory (GMT, NULL, Gin->header->nx, char);
-	for (i = 0; i <= F.x_half_width; i++) F.x[i] = i * F.dx;
-	for (j = 0; j <= F.y_half_width; j++) F.y[j] = j * F.dy;
+	for (ii = 0; ii <= F.x_half_width; ii++) F.x[ii] = ii * F.dx;
+	for (jj = 0; jj <= F.y_half_width; jj++) F.y[jj] = jj * F.dy;
 	
 	weight = GMT_memory (GMT, NULL, F.nx*F.ny, double);
 
@@ -794,7 +798,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->D.mode == 4) y += (par[GRDFILTER_HALF_WIDTH] / par[GRDFILTER_Y_SCALE]);	/* Highest latitude within filter radius */
 			F.x_half_width = (y < 90.0) ? MIN ((F.nx - 1) / 2, lrint (par[GRDFILTER_HALF_WIDTH] / (F.dx * par[GRDFILTER_Y_SCALE] * cosd (y)))) : (F.nx - 1) / 2;
 			if (y > 90.0 && (F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;	/* When nx is even we may come up short by 1 */
-			visit_check = ((2 * F.x_half_width + 1) >= Gin->header->nx);	/* Must make sure we only visit each node once along a row */
+			visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->nx);	/* Must make sure we only visit each node once along a row */
 		}
 			
 		if (effort_level == 2) set_weight_matrix (GMT, &F, weight, y_out, par, x_fix, y_fix);	/* Compute new weights for this latitude */
@@ -812,9 +816,6 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				continue;	/* Done with this node */
 			}
 
-			if (col_out == 0 || col_out == (Gout->header->nx-1)) {
-				ii = 4;
-			}
 			if (effort_level == 3) set_weight_matrix (GMT, &F, weight, y_out, par, x_shift[col_out], y_shift);	/* Update weights for this location */
 			wt_sum = value = 0.0;	n_in_median = 0;	go_on = TRUE;	/* Reset all counters */
 #ifdef DEBUG
@@ -824,7 +825,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			
 			for (jj = -F.y_half_width; go_on && jj <= F.y_half_width; jj++) {	/* Possible -/+ rows to consider for filter input */
 				row_in = j_origin + jj;		/* Current input data row number */
-				if (row_in < 0 || (row_in >= Gin->header->ny)) continue;	/* Outside input y-range */
+				if (row_in < 0 || (row_in >= (int)Gin->header->ny)) continue;	/* Outside input y-range */
 				if (visit_check) GMT_memset (F.visit, Gin->header->nx, char);	/* Reset our longitude visit COUNTER_LARGE */
 				for (ii = -F.x_half_width; go_on && ii <= F.x_half_width; ii++) {	/* Possible -/+ columns to consider on both sides of input point */
 					col_in = i_origin[col_out] + ii;	/* Input column to consider */
@@ -832,7 +833,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						if (col_in < 0) col_in += nx_wrap;	/* "Left" of west means we might reappear in the east */
 						else if (col_in >= nx_wrap) col_in -= nx_wrap;	/* Likewise if we are "right" of east */
 					}
-					if (col_in < 0 || (col_in >= Gin->header->nx)) continue;	/* Still outside range of original input grid */
+					if (col_in < 0 || (col_in >= (int)Gin->header->nx)) continue;	/* Still outside range of original input grid */
 					if (visit_check) {	/* Make sure we never include the same node twice along a given row */
 						if (F.visit[col_in]) continue;		/* Already been used */
 						F.visit[col_in] = 1;			/* Now marked as visited */

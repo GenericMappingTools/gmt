@@ -30,41 +30,41 @@
 
 struct PSIMAGE_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C<xpos>/<ypos>[/<justify>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double x, y;
 		char justify[3];
 	} C;
 	struct E {	/* -E<dpi> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double dpi;
 	} E;
 	struct F {	/* -F<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} F;
 	struct G {	/* -G[f|b|t]<rgb> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 0 for f|b, 1 for t */
 		double f_rgb[4];
 		double b_rgb[4];
 		double t_rgb[4];
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 	} I;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct N {	/* -N<nx>/<ny> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG nx, ny;
 	} N;
 	struct W {	/* -W[-]<width>[/<height>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG interpolate;
 		double width, height;
 	} W;
@@ -218,7 +218,7 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 				break;
 			case 'N':	/* Replicate image */
 				Ctrl->N.active = TRUE;
-				n = sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->N.nx, &Ctrl->N.ny);
+				n = sscanf (opt->arg, "%d/%d", &Ctrl->N.nx, &Ctrl->N.ny);
 				if (n == 1) Ctrl->N.ny = Ctrl->N.nx;
 				n_errors += GMT_check_condition (GMT, n < 1, "Syntax error -N option: Must values for replication\n");
 				break;

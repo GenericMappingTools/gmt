@@ -37,26 +37,26 @@
 
 struct COLMATH_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 	} A;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<segno> */
-		GMT_LONG active;
+		BOOLEAN active;
 		COUNTER_LARGE seg;
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG inverse;
 		char *pattern;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 	} T;
 };
 

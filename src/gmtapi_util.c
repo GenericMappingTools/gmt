@@ -307,9 +307,9 @@ void GMTAPI_grdheader_to_info (struct GRD_HEADER *h, struct GMT_MATRIX *M)
 
 void GMTAPI_info_to_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *h, struct GMT_MATRIX *M)
 {	/* Unpacks the necessary items into the grid header from the matrix parameters */
-	h->nx = (int)M->n_columns;	/* Cast to int due to definition of GRD_HEADER */
-	h->ny = (int)M->n_rows;
-	h->registration = (int)M->registration;
+	h->nx = M->n_columns;
+	h->ny = M->n_rows;
+	h->registration = M->registration;
 	GMT_memcpy (h->wesn, M->limit, 4, double);
 	/* Compute xy_off and increments */
 	h->xy_off = (h->registration == GMT_GRIDLINE_REG) ? 0.0 : 0.5;
@@ -317,7 +317,7 @@ void GMTAPI_info_to_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *h, struct 
 	h->inc[GMT_Y] = GMT_get_inc (C, h->wesn[YLO], h->wesn[YHI], h->ny, h->registration);
 }
 
-BOOLEAN GMTAPI_need_grdpadding (struct GRD_HEADER *h, GMT_LONG *pad)
+BOOLEAN GMTAPI_need_grdpadding (struct GRD_HEADER *h, COUNTER_MEDIUM *pad)
 {	/* Compares current grid pad status to output pad requested.  If we need
 	 * to add a pad we return TRUE here, otherwise FALSE. */
 	int k;
@@ -641,17 +641,19 @@ int GMTAPI_is_registered (struct GMTAPI_CTRL *API, int family, int geometry, int
 
 int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, int direction)
 {	/* Remove specified object ID from active list of objects */
-	int item;
+	int s_item;
+	unsigned item;
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));		/* GMT_Create_Session has not been called */
 	API->error = GMT_OK;		/* No error yet */
 	if (API->n_objects == 0) return (GMT_Report_Error (API, GMT_NO_RESOURCES));	/* There are no known resources yet */
 
 	/* Check if this is a valid ID and matches the direction */
-	if ((item = GMTAPI_Validate_ID (API, GMTAPI_NOTSET, object_ID, direction)) == GMTAPI_NOTSET) return (GMT_Report_Error (API, API->error));
+	if ((s_item = GMTAPI_Validate_ID (API, GMTAPI_NOTSET, object_ID, direction)) == GMTAPI_NOTSET) return (GMT_Report_Error (API, API->error));
 
-	/* OK, now it is safe to remove the object */
+	/* OK, now it is safe to remove the object; item >= 0 */
 
+	item = s_item;
 	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO: Unregistering object no %d\n", API->object[item]->ID);
 
 	if (API->object[item]->method == GMT_IS_FILE && API->object[item]->filename) free (API->object[item]->filename);	/* Free any strdup-allocated filenames */
@@ -2343,7 +2345,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	/* GMT_Garbage_Collection frees all registered memory associated with the current module level,
 	 * or for the entire session if level == GMTAPI_NOTSET (-1) */
 	
-	COUNTER_MEDIUM i, j, n_free;
+	COUNTER_MEDIUM i, j, n_free, u_level = 0;
 	int error;
 	void *address = NULL;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
@@ -2355,13 +2357,14 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	
 	API->error = GMT_OK;		/* No error yet */
 	i = n_free = 0;
+	if (level != GMTAPI_NOTSET) u_level = level;
 	while (i < API->n_objects) {	/* While there are more objects to consider */
 		S = API->object[i];	/* Shorthand for the the current object */
 		if (!S) {		/* Skip empty object [Should not happen?] */
 			GMT_report (API->GMT, GMT_MSG_FATAL, "GMT_Garbage_Collection found empty object number % d [Bug?]\n", i++);
 			continue;
 		}
-		if (!(level == GMTAPI_NOTSET || S->level == level)) {	/* Not the right module level (or not end of session) */
+		if (!(level == GMTAPI_NOTSET || S->level == u_level)) {	/* Not the right module level (or not end of session) */
 			i++;	continue;
 		}
 		if (!S->data) {	/* No memory to free (probably freed earlier); handle trashing of object after this loop */
@@ -2390,7 +2393,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	i = 0;
 	while (i < API->n_objects) {	/* While there are more objects to consider */
 		S = API->object[i];	/* Shorthand for the the current object */
-		if (S && (level == GMTAPI_NOTSET || S->level == level))	/* Yes, this object was added in this module (or we dont care), get rid of it; leave i where it is */
+		if (S && (level == GMTAPI_NOTSET || S->level == u_level))	/* Yes, this object was added in this module (or we dont care), get rid of it; leave i where it is */
 			GMTAPI_Unregister_IO (API, S->ID, GMTAPI_NOTSET);	/* This shuffles the object array and reduces n_objects */
 		else
 			i++;	/* Was allocated higher up, leave alone and go to next */
@@ -3384,7 +3387,7 @@ int GMT_Put_Record (struct GMTAPI_CTRL *API, int mode, void *record)
 					GMT_write_segmentheader (API->GMT, S->fp, API->GMT->common.b.ncol[GMT_OUT]);
 					break;
 				case GMT_WRITE_DOUBLE:		/* Export either a formatted ASCII data record or a binary record */
-					if (API->GMT->common.b.ncol[GMT_OUT] < 0) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
+					if (API->GMT->common.b.ncol[GMT_OUT] == UINT_MAX) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
 					wrote = API->GMT->current.io.output (API->GMT, S->fp, API->GMT->common.b.ncol[GMT_OUT], record);
 					break;
 				case GMT_WRITE_TEXT:		/* Export the current text record; skip if binary */
@@ -3425,7 +3428,7 @@ int GMT_Put_Record (struct GMTAPI_CTRL *API, int mode, void *record)
 						break;
 					case GMT_WRITE_DOUBLE:		/* Export a segment row */
 						if (p[1] == 0) { GMT_report (API->GMT, GMT_MSG_NORMAL, "GMTAPI: Internal Warning: GMT_Put_Record (double) called before any segments declared\n"); p[1] = 0; T->n_segments = 1;}
-						if (API->GMT->common.b.ncol[GMT_OUT] < 0) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
+						if (API->GMT->common.b.ncol[GMT_OUT] == UINT_MAX) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
 						if (!T->segment[p[1]]) T->segment[p[1]] = GMT_memory (API->GMT, NULL, 1, struct GMT_LINE_SEGMENT);	
 						if (p[2] == T->segment[p[1]]->n_alloc) {
 							T->segment[p[1]]->n_alloc = (T->segment[p[1]]->n_alloc == 0) ? GMT_CHUNK : T->segment[p[1]]->n_alloc << 1;

@@ -27,31 +27,31 @@
 struct SPH2GRD_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 		char mode;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 	} E;
 	struct G {	/* -G<grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct L {	/* -L<lc>/<lp>/<hp>/<hc> or -L<lo>/<hi> */
-		GMT_LONG active;
+		BOOLEAN active;
 		int mode;
 		double lc, lp, hp, hc;
 	} L;
 	struct N {	/* -Ng|m|s */
-		GMT_LONG active;
+		BOOLEAN active;
 		char mode;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 };
 

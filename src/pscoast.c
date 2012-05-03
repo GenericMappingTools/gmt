@@ -61,60 +61,60 @@
 
 struct PSCOAST_CTRL {
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_SHORE_SELECT info;
 	} A;
 	struct C {	/* -C<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill[2];	/* lake and riverlake fill */
 	} C;
 	struct D {	/* -D<resolution> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG force;	/* if TRUE, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG clip;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I<feature>[/<pen>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG use[GSHHS_N_RLEVELS], n_rlevels;
 		struct GMT_PEN pen[GSHHS_N_RLEVELS];
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_MAP_SCALE item;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct N {	/* -N<feature>[/<pen>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG use[GSHHS_N_BLEVELS], n_blevels;
 		struct GMT_PEN pen[GSHHS_N_BLEVELS];
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 	struct S {	/* -S<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG clip;
 		struct GMT_FILL fill;
 	} S;
 	struct T {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_MAP_ROSE item;
 	} T;
 	struct W {	/* -W[<feature>/]<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG use[GSHHS_MAX_LEVEL];
 		struct GMT_PEN pen[GSHHS_MAX_LEVEL];
 	} W;
 #ifdef DEBUG
 	struct DBG {	/* -+<bin> */
-		GMT_LONG active;
+		BOOLEAN active;
 		int bin;
 	} debug;
 #endif
@@ -835,7 +835,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "Shore Bin # %ld, Level %ld", bin, p[i].level);
+					sprintf (GMT->current.io.segment_header, "Shore Bin # %d, Level %d", bin, p[i].level);
 					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
@@ -896,7 +896,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "River Bin # %ld, Level %ld", bin, p[i].level);
+					sprintf (GMT->current.io.segment_header, "River Bin # %d, Level %d", bin, p[i].level);
 					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
@@ -957,7 +957,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "Border Bin # %ld, Level %ld", bin, p[i].level);
+					sprintf (GMT->current.io.segment_header, "Border Bin # %d, Level %d", bin, p[i].level);
 					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];

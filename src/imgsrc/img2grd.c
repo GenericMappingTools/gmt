@@ -58,45 +58,45 @@
 
 struct IMG2GRD_CTRL {
 	struct In {	/* Input file name */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;	/* Input file name */
 	} In;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 	} C;
 	struct D {	/* -D[<minlat>/<maxlat>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double min, max;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 	} E;
 	struct G {	/* -G<output_grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -I<minutes> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} I;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct N {	/* -N<ave> */
-		GMT_LONG active;
+		BOOLEAN active;
 		int value;
 	} N;
 	struct S {	/* -S<scale> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double value;
 	} S;
 	struct T {	/* -T<type> */
-		GMT_LONG active;
+		BOOLEAN active;
 		int value;
 	} T;
 	struct W {	/* -W<maxlon> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} W;
 };
@@ -271,10 +271,10 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 
 GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG navgsq, error = FALSE;
-	GMT_LONG navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
-	GMT_LONG iout, jout, iinstart, iinstop, jinstart, jinstop, k, kk, ion, jin, jj, iin, ii, kstart;
-	GMT_LONG in_ID, out_ID = GMTAPI_NOTSET, *ix = NULL;
+	BOOLEAN error = FALSE;
+	COUNTER_MEDIUM navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
+	COUNTER_MEDIUM iout, jout, iinstart, iinstop, jinstart, jinstop, k, kk, ion, jin, jj, iin, ii, kstart, *ix = NULL;
+	GMT_LONG in_ID, out_ID = GMTAPI_NOTSET;
 
 	COUNTER_LARGE ij;
 	int16_t tempint;
@@ -515,7 +515,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Merc, wesn, inc, TRUE), Ctrl->G.file);
 	Merc->data = GMT_memory (GMT, NULL, Merc->header->size, float);
 	row = GMT_memory (GMT, NULL, navg * imgcoord.nxcol, int16_t);
-	ix = GMT_memory (GMT, NULL, navgsq * Merc->header->nx, GMT_LONG);
+	ix = GMT_memory (GMT, NULL, navgsq * Merc->header->nx, COUNTER_MEDIUM);
 
 	/* Load ix with the index to the correct column, for each output desired.  This helps for Greenwich, 
 	   also faster averaging of the file, etc.  Note for averaging each n by n block is looped in turn. */

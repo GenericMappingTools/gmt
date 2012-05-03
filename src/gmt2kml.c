@@ -65,65 +65,65 @@ struct EXT_COL {
 struct GMT2KML_CTRL {
 	double t_transp;
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		GMT_LONG get_alt;
 		double scale;
 		double altitude;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D<descriptfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 	} E;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} F;
 	struct G {	/* -G<fill> */
-		GMT_LONG active[2];
+		BOOLEAN active[2];
 		struct GMT_FILL fill[2];
 	} G;
 	struct I {	/* -I<icon> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		COUNTER_MEDIUM n_cols;
 		struct EXT_COL *ext;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		char *fmt;
 	} N;
 	struct R2 {	/* -R */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG automatic;
 	} R2;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 		double scale[2];
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *title;
 		char *folder;
 	} T;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG invisible;
 		GMT_LONG open;
 		double min[3], max[3];

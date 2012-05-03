@@ -539,7 +539,7 @@ void define_second_plane (struct nodal_plane NP1, struct nodal_plane *NP2)
 void moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struct AXIS *N, struct AXIS *P)
 {
 	/* This version uses GMT_jacobi and does not suffer from the convert_matrix bug */
-	GMT_LONG j, nrots, np = 3;
+	COUNTER_MEDIUM j, nrots, np = 3;
 	double *a, *d, *b, *z, *v;
 	double az[3], pl[3];
 
@@ -553,7 +553,7 @@ void moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struc
 	a[3]=mt.f[3];	a[4]=mt.f[1];	a[5]=mt.f[5];
 	a[6]=mt.f[4];	a[7]=mt.f[5];	a[8]=mt.f[2];
 
-	if (GMT_jacobi (GMT, a, &np, &np, d, v, b, z, &nrots))
+	if (GMT_jacobi (GMT, a, np, np, d, v, b, z, &nrots))
 		fprintf(GMT->session.std[GMT_ERR],"%s: Eigenvalue routine failed to converge in 50 sweeps.\n", GMT->init.progname);
 
 	for (j = 0; j < np; j++) {

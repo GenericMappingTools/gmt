@@ -133,12 +133,13 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
  * overhead.  Note: gmt_x_to_col does not need nx but we included it for symmetry reasons.
  * gmt_y_to_row must first compute j', the number of rows in the increasing y-direction (to
  * match the sense of truncation used for x) then we revert to row number increasing down
- * by flipping: j = ny - 1 - j'. */
+ * by flipping: j = ny - 1 - j'.
+ * Note that input col, row _may_ be negative, hence we do the cast to (int) here. */
 
 #define gmt_x_to_col(x,x0,dx,off,nx) (lrint((((x) - (x0)) / (dx)) - (off)))
 #define gmt_y_to_row(y,y0,dy,off,ny) ((ny) - 1 - lrint(((((y) - (y0)) / (dy)) - (off))))
-#define GMT_col_to_x(C,col,x0,x1,dx,off,nx) (((col) == ((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((col) + (off)) * (dx))
-#define GMT_row_to_y(C,row,y0,y1,dy,off,ny) (((row) == ((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((row) + (off)) * (dy))
+#define GMT_col_to_x(C,col,x0,x1,dx,off,nx) (((int)(col) == (int)((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((col) + (off)) * (dx))
+#define GMT_row_to_y(C,row,y0,y1,dy,off,ny) (((int)(row) == (int)((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((row) + (off)) * (dy))
 
 /* The follow macros simplify using the 4 above macros when all info is in the struct header h. */
 
@@ -194,16 +195,17 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 #define GMT_row(h,ij) (((ij) / h->mx) - h->pad[YHI])
 
 /* To set up a standard double for-loop over rows and columns to visit all nodes in a padded array by computing the node index, use GMT_grd_loop */
-/* Note: All arguments must be actual variables and not expressions */
+/* Note: All arguments must be actual variables and not expressions.
+ * Note: that input col, row _may_ be signed, hence we do the cast to (int) here. */
 
-#define GMT_row_loop(C,G,row) for (row = 0; row < G->header->ny; row++)
-#define GMT_col_loop(C,G,row,col,ij) for (col = 0, ij = GMT_IJP (G->header, row, 0); col < G->header->nx; col++, ij++)
+#define GMT_row_loop(C,G,row) for (row = 0; (int)row < (int)G->header->ny; row++)
+#define GMT_col_loop(C,G,row,col,ij) for (col = 0, ij = GMT_IJP (G->header, row, 0); (int)col < (int)G->header->nx; col++, ij++)
 #define GMT_grd_loop(C,G,row,col,ij) GMT_row_loop(C,G,row) GMT_col_loop(C,G,row,col,ij)
 /* Just a loop over columns */
-#define GMT_col_loop2(C,G,col) for (col = 0; col < G->header->nx; col++)
+#define GMT_col_loop2(C,G,col) for (col = 0; (int)col < (int)G->header->nx; col++)
 /* Loop over all nodes including the pad */
-#define GMT_row_padloop(C,G,row,ij) for (row = ij = 0; row < G->header->my; row++)
-#define GMT_col_padloop(C,G,col,ij) for (col = 0; col < G->header->mx; col++, ij++)
+#define GMT_row_padloop(C,G,row,ij) for (row = ij = 0; (int)row < (int)G->header->my; row++)
+#define GMT_col_padloop(C,G,col,ij) for (col = 0; (int)col < (int)G->header->mx; col++, ij++)
 #define GMT_grd_padloop(C,G,row,col,ij) GMT_row_padloop(C,G,row,ij) GMT_col_padloop(C,G,col,ij)
 
 /* The usage could be:

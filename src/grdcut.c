@@ -32,15 +32,15 @@
 
 struct GRDCUT_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct G {	/* -G<output_grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct Z {	/* -Z[min/max] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 1 means NaN */
 		double min, max;
 	} Z;

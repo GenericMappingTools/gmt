@@ -31,29 +31,29 @@
 
 struct X2SYS_GET_CTRL {
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 	} C;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *flags;
 	} F;
 	struct G {	/* -G */
-		GMT_LONG active;
+		BOOLEAN active;
 	} G;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		char *file;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *flags;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *TAG;
 	} T;
 };

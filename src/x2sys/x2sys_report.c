@@ -29,38 +29,38 @@
 
 struct X2SYS_REPORT_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 	} A;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *col;
 	} C;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG min;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *TAG;
 	} T;
 };
@@ -223,11 +223,11 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct X2SYS_COE_PAIR *P = NULL;
 	struct COE_REPORT *R = NULL;
 	struct MGD77_CORRTABLE **CORR = NULL;
-	GMT_LONG error = FALSE;
-	GMT_LONG internal = FALSE;	/* FALSE if only external xovers are needed */
-	GMT_LONG external = TRUE;	/* FALSE if only internal xovers are needed */
-	GMT_LONG i, k, n, coe_kind, n_use, n_tracks;
-	GMT_LONG p, np, nx, Tnx = 0;
+	BOOLEAN error = FALSE;
+	BOOLEAN internal = FALSE;	/* FALSE if only external xovers are needed */
+	BOOLEAN external = TRUE;	/* FALSE if only internal xovers are needed */
+	COUNTER_LARGE i, k, n, coe_kind, n_use, n_tracks;
+	COUNTER_LARGE p, np, nx, Tnx = 0;
 	double sum, sum2, sum_w, Tsum, Tsum2, COE, sign, scale, corr[2] = {0.0, 0.0};
 	double Tmean, Tstdev, Trms;
 	struct GMT_OPTION *opt = NULL;

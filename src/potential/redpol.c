@@ -35,7 +35,7 @@
 
 struct REDPOL_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C */
@@ -45,21 +45,21 @@ struct REDPOL_CTRL {
 		double	dip;
 	} C;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG dip_grd_only;
 		GMT_LONG dip_dec_grd;
 		char *decfile;
 		char *dipfile;
 	} E;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG	ncoef_row;
 		GMT_LONG	ncoef_col;
 		GMT_LONG	compute_n;	/* Compute ncoef_col */
 		double	width;
 	} F;
 	struct G {	/* -G<file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char	*file;
 	} G;
 	struct M {	/* -M */
@@ -67,7 +67,7 @@ struct REDPOL_CTRL {
 		GMT_LONG mirror;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct S {	/* -S, size of working grid */
 		GMT_LONG	nx;
@@ -80,7 +80,7 @@ struct REDPOL_CTRL {
 		double	wid;
 	} W;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		BOOLEAN active;
 		char	*file;
 	} Z;
 };

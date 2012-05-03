@@ -36,29 +36,29 @@ struct GRD_CONTAINER {	/* Keep all the grid and sample parameters together */
 
 struct GRDTRACK_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct Out {	/* -> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A[m|p] */
-		GMT_LONG active;
+		BOOLEAN active;
 		int mode;
 	} A;
 	struct C {	/* -C<length>/<ds>[/<spacing>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		char unit;
 		double ds, spacing, length;
 	} C;
 	struct D {	/* -Dresampfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} D;
 	struct G {	/* -G<grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG n_grids;
 		char *file[MAX_GRIDS];
 		double scale[MAX_GRIDS], lat[MAX_GRIDS];
@@ -66,10 +66,10 @@ struct GRDTRACK_CTRL {
 		GMT_LONG type[MAX_GRIDS];	/*HIDDEN */
 	} G;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Z;
 };
 

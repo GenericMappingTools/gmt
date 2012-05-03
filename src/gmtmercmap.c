@@ -35,19 +35,19 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 
 struct GMTMERCMAP_CTRL {
 	struct C {	/* -C<cptfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D[b|c|d] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} D;
 	struct W {	/* -W<width> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double width;
 	} W;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 };
 
@@ -193,7 +193,7 @@ int main (int argc, char **argv)
 	
 	/* 3. Load in the subset from the selected etopo?m.nc grid */
 	
-	sprintf (file, "etopo%ldm_grd.nc", min);	/* Make the selected file name */
+	sprintf (file, "etopo%dm_grd.nc", min);	/* Make the selected file name */
 	
 	if (Ctrl->D.active) {	/* Just return equivalent GMT shell script */
 		char *comment[3] = {"#", "#", "REM"};	/* Comment for csh, bash and DOS [none], respectively */

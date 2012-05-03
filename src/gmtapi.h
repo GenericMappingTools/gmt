@@ -44,7 +44,7 @@ struct GMTAPI_DATA_OBJECT {
 	/* Information for each input or output data entity, including information
 	 * needed while reading/writing from a table (file or array) */
 	COUNTER_LARGE n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET only] */
-	COUNTER_MEDIUM ID;			/* Unique identifier which is > 0 */
+	GMT_LONG ID;				/* Unique identifier which is > 0, but may be compared to -1, hence signed */
 	COUNTER_MEDIUM n_columns;		/* Number of columns to process in this dataset [GMT_DATASET only] */
 	COUNTER_MEDIUM n_expected_fields;	/* Number of expected columns for this dataset [GMT_DATASET only] */
 	COUNTER_MEDIUM level;			/* Nested module level when object was allocated */

@@ -32,75 +32,75 @@ struct GRAVFFT_CTRL {
 	double *par;
 
 	struct GRVF_In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file[2];
 	} In;
 	struct GRVF_A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 		double	te, rhol, rhom, rhow;
 		double	rho_cw;		/* crust-water density contrast */
 		double	rho_mc;		/* mantle-crust density contrast */
 		double	rho_mw;		/* mantle-water density contrast */
 	} A;
 	struct GRVF_C {	/* -C<zlevel> */
-		GMT_LONG active;
+		BOOLEAN active;
 		int n_pt;
 		double theor_inc;
 	} C;
 	struct GRVF_D {	/* -D[<scale>|g] */
-		GMT_LONG active;
+		BOOLEAN active;
 	} D;
 	struct GRVF_E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 		int n_terms;
 	} E;
 	struct GRVF_F {	/* -F[x_or_y]<lc>/<lp>/<hp>/<hc> or -F[x_or_y]<lo>/<hi> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double lc, lp, hp, hc;
 	} F;
 	struct GRVF_G {	/* -G<outfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct GRVF_H {
-		GMT_LONG active;
+		BOOLEAN active;
 	} H;
 	struct GRVF_I {	/* -I[<scale>|g] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} I;
 	struct GRVF_L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 	} L;
 	struct GRVF_M {
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct GRVF_N {	/* -N<stuff> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG force_narray, suggest_narray, n_user_set;
 		GMT_LONG nx2, ny2;
 		double value;
 	} N;
 	struct GRVF_Q {
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 	struct GRVF_S {	/* -S<scale> */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct GRVF_s {
-		GMT_LONG active;
+		BOOLEAN active;
 		double scale;
 	} s;
 	struct GRVF_T {	/* -T<te/rl/rm/rw/ri> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double te, rhol, rhom, rhow;
 		double	rho_cw;		/* crust-water density contrast */
 		double	rho_mc;		/* mantle-crust density contrast */
 		double	rho_mw;		/* mantle-water density contrast */
 	} T;
 	struct GRVF_t {	/* -t For saving real & imag FFT grids */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG sc_coherence, sc_admitt;
 	} t;
 	struct GRVF_Z {

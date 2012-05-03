@@ -32,45 +32,45 @@
 
 struct GRDIMAGE_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG do_rgb;
 		char *file[3];
 	} In;
 	struct C {	/* -C<cptfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D to read GDAL file */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* Use info of -R option to reference image */
 	} D;
 	struct A {	/* -A to write a GDAL file */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 		char *driver;
 	} A;
 	struct E {	/* -Ei|<dpi> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG device_dpi;
 		GMT_LONG dpi;
 	} E;
 	struct G {	/* -G[f|b]<rgb> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double f_rgb[4];
 		double b_rgb[4];
 	} G;
 	struct I {	/* -I<intensfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} I;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 };
 
@@ -293,7 +293,8 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 	 * nx/ny are set accordingly.  Not that some of these may change
 	 * if GMT_project_init is called at a later stage */
 
-	GMT_LONG i, k, all_lats = FALSE, all_lons = FALSE;
+	COUNTER_MEDIUM i, k;
+	BOOLEAN all_lats = FALSE, all_lons = FALSE;
 	double x, y;
 
 	r->nx = g->nx;	r->ny = g->ny;
@@ -461,7 +462,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 #ifdef USE_GDAL
 		else if (Ctrl->D.active) {
-			GMT_LONG dim[1] = {256};
+			int64_t dim[1] = {256};
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
 			if ((P = GMT_Create_Data (API, GMT_IS_CPT, dim)) == NULL) Return (API->error);
 			P->model = GMT_RGB;
@@ -599,7 +600,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				Return (API->error);	/* Make filename with embedded object ID for result grid G2 */
 			}
 
-			sprintf (cmd, "%s -G%s -I%ld+/%ld+", in_string, out_string, nx, ny);
+			sprintf (cmd, "%s -G%s -I%d+/%d+", in_string, out_string, nx, ny);
 			if (GMT_grdsample (GMT->parent, 0, cmd) != GMT_OK) return (API->error);	/* Do the resampling */
 			if ((G2 = GMT_Retrieve_Data (API, object_ID)) == NULL) {
 				Return (API->error);

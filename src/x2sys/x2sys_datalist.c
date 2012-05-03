@@ -30,21 +30,21 @@
 
 struct X2SYS_DATALIST_CTRL {
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 	} A;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *flags;
 	} F;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} L;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *TAG;
 	} T;
 };

@@ -36,32 +36,32 @@
 
 struct TRIANGULATE_CTRL {
 	struct D {	/* -Dx|y */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG dir;
 	} D;
 	struct E {	/* -E<value> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} E;
 	struct G {	/* -G<output_grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Z;
 };
 
@@ -379,7 +379,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 
 	if (Ctrl->G.active) {	/* Grid via planar triangle segments */
-
+		GMT_LONG nx = Grid->header->nx, ny = Grid->header->ny;	/* Signed versions */
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 		if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
 		for (p = 0; p < Grid->header->size; p++) Grid->data[p] = (float)Ctrl->E.value;	/* initialize grid */
@@ -412,14 +412,14 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Adjustments for triangles outside -R region. */
 			/* Triangle to the left or right. */
-			if ((col_max < 0) || (col_min >= Grid->header->nx)) continue;
+			if ((col_max < 0) || (col_min >= nx)) continue;
 			/* Triangle Above or below */
-			if ((row_max < 0) || (row_min >= Grid->header->ny)) continue;
+			if ((row_max < 0) || (row_min >= ny)) continue;
 
 			/* Triangle covers boundary, left or right. */
-			if (col_min < 0) col_min = 0;       if (col_max >= Grid->header->nx) col_max = Grid->header->nx - 1;
+			if (col_min < 0) col_min = 0;       if (col_max >= nx) col_max = Grid->header->nx - 1;
 			/* Triangle covers boundary, top or bottom. */
-			if (row_min < 0) row_min = 0;       if (row_max >= Grid->header->ny) row_max = Grid->header->ny - 1;
+			if (row_min < 0) row_min = 0;       if (row_max >= ny) row_max = Grid->header->ny - 1;
 
 			for (row = row_min; row <= row_max; row++) {
 				yp = GMT_grd_row_to_y (GMT, row, Grid->header);
@@ -481,7 +481,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "%ld unique triangle edges\n", n_edge);
 
 			for (i = 0; i < n_edge; i++) {
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%c Edge %ld-%ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], edge[i].begin, edge[i].end);
+				GMT_fprintf (GMT->session.std[GMT_OUT], "%c Edge %d-%d\n", GMT->current.setting.io_seg_marker[GMT_OUT], edge[i].begin, edge[i].end);
 				out[GMT_X] = xx[edge[i].begin];	out[GMT_Y] = yy[edge[i].begin];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].begin];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				out[GMT_X] = xx[edge[i].end];	out[GMT_Y] = yy[edge[i].end];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].end];

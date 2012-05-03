@@ -29,17 +29,17 @@
 struct GRD2XYZ_CTRL {
 #ifdef GMT_COMPAT
 	struct E {	/* -E[f][<nodata>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG floating;
 		double nodata;
 	} E;
 #endif
 	struct N {	/* -N<nodata> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} N;
 	struct W {	/* -W[<weight>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double weight;
 	} W;
 	struct GMT_PARSE_Z_IO Z;

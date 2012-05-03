@@ -68,35 +68,35 @@ struct DUP_INFO {
 
 struct GMTSPATIAL_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 	} C;
 	struct D {	/* -D[pol] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		char unit;
 		char *file;
 		struct DUP I;
 	} D;
 	struct E {	/* -D[-|+] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} E;
 	struct I {	/* -I[i|e] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		char unit;
 		double s_cutoff, path_noise, box_offset;
 	} L;
 	struct N {	/* -N<file>[+a][+p>ID>][+r][+z] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 0 for reporting ID in -Z<ID> header, 1 via data column, 2 just as a report */
 		GMT_LONG all;	/* All points in lines and polygons must be inside a polygon for us to report ID */
 		GMT_LONG start;	/* First ID for running polygon IDs */
@@ -104,16 +104,16 @@ struct GMTSPATIAL_CTRL {
 		char *file;
 	} N;
 	struct Q {	/* -Q[+] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		char unit;
 	} Q;
 	struct S {	/* -S[u|i|c] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} S;
 	struct T {	/* -T[pol] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} T;
 };

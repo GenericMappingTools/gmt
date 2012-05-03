@@ -37,33 +37,33 @@
 
 struct BLOCK_CTRL {	/* All control options for this program (except common args) */
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 	} C;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 		int mode;	/* Used in blockmedian to select box-and-whisker output (-Eb) */
 	} E;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 #endif
 #if defined(BLOCKMEDIAN)	/* Only blockmedian has a -T option */
 	struct T {	/* -T<quantile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double quantile;
 	} T;
 #endif
 	struct S {	/* -S[m|w|z] */
-		GMT_LONG active;
+		BOOLEAN active;
 		int mode;
 	} S;
 	struct W {	/* -W[i][o] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG weighted[2];
 	} W;
 };

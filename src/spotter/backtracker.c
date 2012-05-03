@@ -75,51 +75,51 @@
 struct BACKTRACKER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A[young/old] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 1 specific limits for all input points, 2 if limits are in cols 4 + 5  */
 		double t_low, t_high;
 	} A;
 	struct D {	/* -Df|b */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;		/* 1 we go FROM hotspot to seamount, 0 is reverse */
 	} D;
 	struct E {	/* -E[+]rotfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		char *file;
 	} E;
 	struct e {	/* -e<lon/lat/angle> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double lon, lat, w;
 	} e;
 	struct F {	/* -Fdriftfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} F;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;		/* 0 = hotspot tracks, 1 = flowlines */
 		GMT_LONG stage_id;	/* 1 returns stage id instead of ages */
 		double d_km;	/* Resampling spacing */
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		double t_upper;
 	} N;
 	struct Q {	/* -Q<tfix> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double t_fix;	/* Set fixed age*/
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} S;
 	struct T {	/* -T<tzero> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double t_zero;	/* Set zero age*/
 	} T;
 	struct W {	/* -W<flag> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char mode;
 	} W;
 };
@@ -366,16 +366,16 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 
-	GMT_LONG n_points;			/* Number of data points read */
-	GMT_LONG n_track;			/* Number of points in a track segment */
-	GMT_LONG n_stages = 0;			/* Number of stage poles */
-	GMT_LONG n_segments;			/* Number of path segments written out */
-	GMT_LONG n_skipped = 0;			/* Number of points skipped because t < 0 */
+	COUNTER_LARGE n_points;			/* Number of data points read */
+	COUNTER_LARGE n_track;			/* Number of points in a track segment */
+	COUNTER_MEDIUM n_stages = 0;		/* Number of stage poles */
+	COUNTER_LARGE n_segments;		/* Number of path segments written out */
+	COUNTER_LARGE n_skipped = 0;		/* Number of points skipped because t < 0 */
 	GMT_LONG n_fields, n_expected_fields;
-	GMT_LONG n_read = 0;
-	GMT_LONG n_out, error;
-	GMT_LONG i, j, k;			/* Misc. counters */
-	GMT_LONG make_path = FALSE;		/* TRUE means create continuous path, FALSE works on discrete points */
+	COUNTER_LARGE n_read = 0;
+	COUNTER_MEDIUM n_out;
+	GMT_LONG i, j, k, error;		/* Misc. counters */
+	BOOLEAN make_path = FALSE;		/* TRUE means create continuous path, FALSE works on discrete points */
 	GMT_LONG spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
 	
 	COUNTER_LARGE row;

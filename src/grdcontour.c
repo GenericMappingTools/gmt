@@ -32,59 +32,59 @@
 
 struct GRDCONTOUR_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct GMT_CONTOUR contour;
 	struct A {	/* -A[-][labelinfo] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 1 turns off all labels */
 		double interval;
 	} A;
 	struct C {	/* -C<cont_int> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG cpt;
 		char *file;
 		double interval;
 	} C;
 	struct D {	/* -D<dumpfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} D;
 	struct F {	/* -F<way> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG value;
 	} F;
 	struct G {	/* -G[d|f|n|l|L|x|X]<params> */
-		GMT_LONG active;
+		BOOLEAN active;
 	} G;
 	struct L {	/* -L<Low/high> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double low, high;
 	} L;
 	struct Q {	/* -Q<cut> */
-		GMT_LONG active;
-		GMT_LONG min;
+		BOOLEAN active;
+		COUNTER_MEDIUM min;
 	} Q;
 	struct S {	/* -S<smooth> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG value;
 	} S;
 	struct T {	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG label;
 		GMT_LONG low, high;	/* TRUE to tick low and high locals */
 		double spacing, length;
 		char *txt[2];	/* Low and high label */
 	} T;
 	struct W {	/* -W[+]<type><pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG color_cont;
 		GMT_LONG color_text;
 		struct GMT_PEN pen[2];
 	} W;
 	struct Z {	/* -Z[<fact>[/shift>]][p] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG periodic;
 		double scale, offset;
 	} Z;
@@ -301,7 +301,9 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 				break;
 			case 'Q':	/* Skip small closed contours */
 				Ctrl->Q.active = TRUE;
-				Ctrl->Q.min = atoi (opt->arg);
+				n = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
+				Ctrl->Q.min = n;
 				break;
 			case 'S':	/* Smoothing of contours */
 				Ctrl->S.active = TRUE;
@@ -398,7 +400,6 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 	n_errors += GMT_check_condition (GMT, Ctrl->L.low >= Ctrl->L.high, "Syntax error -L option: lower limit >= upper!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Syntax error -F option: Must also specify -D\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.value < 0, "Syntax error -S option: Smooth_factor must be > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.min < 0, "Syntax error -Q option: Value must be >= 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0, "Syntax error -G option: Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: factor must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option: + or - only valid if -C sets a cpt file\n");
@@ -584,7 +585,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 
 void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][3])
 {	/* Determine the grid's global min and max locations and z values */
-	GMT_LONG row, col, i;
+	COUNTER_MEDIUM row, col, i;
 	COUNTER_LARGE ij, i_minmax[2] = {0, 0};
 	float z_extreme[2] = {FLT_MAX, -FLT_MAX};
 
@@ -608,21 +609,21 @@ void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][
 
 void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_GRID *Grid)
 {	/* Modify orientation of contours to have top of annotation facing the local hill top */
-	GMT_LONG i, k, col, row;
-	COUNTER_LARGE ij;
+	GMT_LONG col, row;
+	COUNTER_LARGE k, seg, ij;
 	double nx, ny, x_on, y_on, x_node, y_node, x_node_p, y_node_p, dx, dy, dz, dot, angle;
 	struct GMT_CONTOUR_LINE *C = NULL;
 
-	for (i = 0; i < G->n_segments; i++) {
-		C = G->segment[i];	/* Pointer to current segment */
+	for (seg = 0; seg < G->n_segments; seg++) {
+		C = G->segment[seg];	/* Pointer to current segment */
 		for (k = 0; k < C->n_labels; k++) {
 			GMT_xy_to_geo (GMT, &x_on, &y_on, C->L[k].x, C->L[k].y);	/* Retrieve original coordinates */
 			row = GMT_grd_y_to_row (GMT, y_on, Grid->header);
-			if (row < 0 || row >= Grid->header->ny) continue;		/* Somehow, outside y range */
+			if (row < 0 || row >= (int)Grid->header->ny) continue;		/* Somehow, outside y range */
 			while (GMT_x_is_lon (GMT, GMT_IN) && x_on < Grid->header->wesn[XLO]) x_on += 360.0;
 			while (GMT_x_is_lon (GMT, GMT_IN) && x_on > Grid->header->wesn[XHI]) x_on -= 360.0;
 			col = GMT_grd_x_to_col (GMT, x_on, Grid->header);
-			if (col < 0 || col >= Grid->header->nx) continue;		/* Somehow, outside x range */
+			if (col < 0 || col >= (int)Grid->header->nx) continue;		/* Somehow, outside x range */
 			angle = fmod (2.0 * C->L[k].angle, 360.0) * 0.5;	/* 0-180 range */
 			if (angle > 90.0) angle -= 180.0;
 			sincosd (angle + 90, &ny, &nx);	/* Coordinate of normal to label line */
@@ -676,10 +677,11 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 
 GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the grdcontour task */
-	GMT_LONG id, need_proj, tbl_scl = 1, closed, begin, error, io_mode = 0;
-	GMT_LONG make_plot, fmt[3] = {0, 0, 0}, two_only = FALSE;
+	GMT_LONG error;
+	BOOLEAN need_proj, closed, make_plot, two_only = FALSE, begin; 
 	
-	COUNTER_MEDIUM n_contours, c, n_edges, cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, tbl;
+	COUNTER_MEDIUM id, n_contours, c, n_edges, tbl_scl = 1, io_mode = 0;
+	COUNTER_MEDIUM cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, tbl, fmt[3] = {0, 0, 0};
 	
 	COUNTER_LARGE ij, *n_seg = NULL;
 
@@ -932,7 +934,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);	/* Bit flags used to keep track of contours */
 
 	if (Ctrl->D.active) {
-		GMT_LONG dim[4] = {0, 0, 3, 0};
+		int64_t dim[4] = {0, 0, 3, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_DATASET;
 		else {	/* Must determine the kind of output organization */

@@ -41,41 +41,41 @@
 
 struct PSMASK_CTRL {
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 	} C;
 	struct D {	/* -D<dumpfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 #ifdef DEBUG
 		GMT_LONG debug;
 #endif
 	} D;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 	} F;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<cut> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG min;
 	} Q;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n|s] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double radius;
 		char unit;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 	} T;
 };
 
@@ -233,9 +233,9 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	 * trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points
 	 */
 	 
-	static GMT_LONG i0, j0, side;
-	GMT_LONG ij, i, j, n = 0, n_edges, edge_word, edge_bit;
-	GMT_LONG go_on = TRUE;
+	static COUNTER_MEDIUM i0, j0, side, i, j, n = 0, n_edges, edge_word, edge_bit;
+	COUNTER_LARGE ij;
+	BOOLEAN go_on = TRUE;
 	 
 	 
 	n_edges = h->ny * lrint (ceil (h->nx / 16.0));
@@ -494,10 +494,10 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG k, row, col, n_edges, *d_col = NULL, d_row = 0, ii, jj;
-	GMT_LONG fmt[3] = {0, 0, 0}, section, closed, io_mode = 0, max_d_col = 0;
-	GMT_LONG error = FALSE, first = TRUE, node_only, make_plot;
-	COUNTER_MEDIUM cont_counts[2] = {0, 0}, *edge = NULL;
+	COUNTER_MEDIUM section, k, row, col, n_edges, *d_col = NULL, d_row = 0, ii, jj;
+	COUNTER_MEDIUM io_mode = 0, max_d_col = 0;
+	BOOLEAN error = FALSE, first = TRUE, node_only, make_plot, closed;
+	COUNTER_MEDIUM fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
 	
 	COUNTER_LARGE ij, n_points, n_seg = 0, n_read, n;
 	
@@ -545,7 +545,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!Ctrl->C.active && make_plot && GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
-		GMT_LONG dim[4] = {1, 0, 2, 0};
+		int64_t dim[4] = {1, 0, 2, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_DATASET;
 		else {	/* Must determine the kind of output organization */
@@ -647,10 +647,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Determine the node closest to the data point */
 
-			col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
-			if (col < 0 || col >= Grid->header->nx) continue;
-			row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
-			if (row < 0 || row >= Grid->header->ny) continue;
+			if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;			/* Outside grid node range */
 
 			if (node_only) {
 				ij = GMT_IJP (Grid->header, row, col);

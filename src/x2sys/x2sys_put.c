@@ -33,20 +33,20 @@
 
 struct X2SYS_PUT_CTRL {
 	struct In {	/* -In */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 	} D;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 	} F;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *TAG;
 	} T;
 };

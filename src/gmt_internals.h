@@ -103,7 +103,7 @@ EXTERN_MSC struct GMT_VECTOR * GMT_duplicate_vector (struct GMT_CTRL *C, struct 
 EXTERN_MSC void gmt_init_rot_matrix (double R[3][3], double E[]);
 EXTERN_MSC void gmt_load_rot_matrix (double w, double R[3][3], double E[]);
 EXTERN_MSC void gmt_matrix_vect_mult (double a[3][3], double b[3], double c[3]);
-EXTERN_MSC void gmt_geo_polygon (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n);
+EXTERN_MSC void gmt_geo_polygon (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n);
 
 EXTERN_MSC GMT_LONG GMT_gmonth_length (GMT_LONG year, GMT_LONG month);
 EXTERN_MSC void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */

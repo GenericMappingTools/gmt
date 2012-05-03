@@ -59,53 +59,53 @@ struct MGD77TRACK_MARKER {
 struct MGD77TRACK_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double size;
 		struct MGD77TRACK_ANNOT info;
 	} A;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* TRUE to skip recs with time == NaN */
 		double start;	/* Start time */
 		double stop;	/* Stop time */
 	} D;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} F;
 	struct G {	/* -G */
-		GMT_LONG active[2];
+		BOOLEAN active[2];
 		GMT_LONG value[2];
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct MGD77TRACK_ANNOT info;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		struct MGD77TRACK_MARKER marker[3];
 	} T;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 };

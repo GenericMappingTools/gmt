@@ -1632,7 +1632,7 @@ double GMT_mode_weighted (struct GMT_CTRL *C, fpair *data, COUNTER_LARGE n)
 	return ((double)(0.5 * (data[j].x[0] + data[i].x[0])));
 }
 
-GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, COUNTER_LARGE j, BOOLEAN sort, COUNTER_MEDIUM mode_selection, GMT_LONG *n_multiples, double *mode_est)
+GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, COUNTER_LARGE j, BOOLEAN sort, COUNTER_MEDIUM mode_selection, COUNTER_MEDIUM *n_multiples, double *mode_est)
 {
 	COUNTER_LARGE i, istop;
 	COUNTER_MEDIUM multiplicity;
@@ -1687,7 +1687,7 @@ GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, COUNTER_LARGE
 	return (0);
 }
 
-GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, COUNTER_LARGE n, COUNTER_LARGE j, BOOLEAN sort, COUNTER_MEDIUM mode_selection, GMT_LONG *n_multiples, double *mode_est)
+GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, COUNTER_LARGE n, COUNTER_LARGE j, BOOLEAN sort, COUNTER_MEDIUM mode_selection, COUNTER_MEDIUM *n_multiples, double *mode_est)
 {
 	COUNTER_LARGE i, istop;
 	COUNTER_MEDIUM multiplicity;

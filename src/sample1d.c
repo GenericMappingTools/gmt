@@ -35,33 +35,33 @@
 
 struct SAMPLE1D_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A[m|p] */
-		GMT_LONG active;
+		BOOLEAN active;
 		int mode;
 	} A;
 	struct F {	/* -Fl|a|c */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} F;
 	struct I {	/* -I<inc>[d|e|k||M|n|c|C] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double inc;
 		char unit;
 	} I;
 	struct T {	/* -T<time_col> */
-		GMT_LONG active;
-		GMT_LONG col;
+		BOOLEAN active;
+		COUNTER_MEDIUM col;
 	} T;
 	struct N {	/* -N<knotfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} N;
 	struct S {	/* -S<xstart>[/<xstop>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double start, stop;
 	} S;
@@ -201,7 +201,9 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 				break;
 			case 'T':
 				Ctrl->T.active = TRUE;
-				Ctrl->T.col = atoi (opt->arg);
+				n = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, n < 0, "Syntax error -T option: Column number cannot be negative\n");
+				Ctrl->T.col = n;
 				break;
 
 			default:	/* Report bad options */
@@ -210,7 +212,6 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->T.col < 0, "Syntax error -T option: Column number cannot be negative\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == 1 && Ctrl->S.stop <= Ctrl->S.start, "Syntax error -S option: <stop> must exceed <start>\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->I.active, "Syntax error: Specify only one of -N and -S\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.inc <= 0.0, "Syntax error -I option: Must specify positive increment\n");

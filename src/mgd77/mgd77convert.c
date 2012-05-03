@@ -29,20 +29,20 @@ EXTERN_MSC void MGD77_select_high_resolution (struct GMT_CTRL *C);
 struct MGD77CONVERT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 	} D;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		GMT_LONG dest;
 	} L;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		GMT_LONG format;
 	} F;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		GMT_LONG format;
 	} T;

@@ -47,49 +47,49 @@ int compare_sugs (const void *point_1, const void *point_2);	/* Sort suggestions
 
 struct SURFACE_CTRL {
 	struct A {	/* -A<aspect_ratio> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} A;
 	struct C {	/* -C<converge_limit> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} C;
 	struct D {	/* -D<line.xyz> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;	/* Name of file with breaklines */
 	} D;
 	struct G {	/* -G<file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct L {	/* -Ll|u<limit> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *low, *high;
 		double min, max;
 		GMT_LONG lmode, hmode;
 	} L;
 	struct N {	/* -N<max_iterations> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG value;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 	struct S {	/* -S<radius>[m|c] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double radius;
 		char unit;
 	} S;
 	struct T {	/* -T<tension>[i][b] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double b_tension, i_tension;
 	} T;
 	struct Z {	/* -Z<over_relaxation_parameter> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} Z;
 };
@@ -128,14 +128,14 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	COUNTER_LARGE npoints;			/* Number of data points */
 	COUNTER_LARGE ij_sw_corner, ij_se_corner,ij_nw_corner, ij_ne_corner;
 	COUNTER_LARGE n_empty;		/* No of unconstrained nodes at initialization  */
-	unsigned int nx;		/* Number of nodes in x-dir. */
-	unsigned int ny;		/* Number of nodes in y-dir. (Final grid) */
+	int nx;				/* Number of nodes in x-dir. */
+	int ny;				/* Number of nodes in y-dir. (Final grid) */
 	COUNTER_LARGE nxny;		/* Total number of grid nodes without boundaries  */
-	unsigned int mx;
-	unsigned int my;
-	COUNTER_LARGE mxmy;			/* Total number of grid nodes with boundaries  */
-	unsigned int block_nx;		/* Number of nodes in x-dir for a given grid factor */
-	unsigned int block_ny;		/* Number of nodes in y-dir for a given grid factor */
+	int mx;
+	int my;
+	COUNTER_LARGE mxmy;		/* Total number of grid nodes with boundaries  */
+	GMT_LONG block_nx;		/* Number of nodes in x-dir for a given grid factor */
+	GMT_LONG block_ny;		/* Number of nodes in y-dir for a given grid factor */
 	COUNTER_MEDIUM max_iterations;	/* Max iter per call to iterate */
 	COUNTER_MEDIUM total_iterations;
 	COUNTER_MEDIUM grid_east;
@@ -267,9 +267,9 @@ void fill_in_forecast (struct SURFACE_INFO *C) {
 
 	/* first do from southwest corner */
 
-	for (i = 0; i < C->nx-1; i += C->old_grid) {
+	for (i = 0; i < (C->nx-1); i += C->old_grid) {
 
-		for (j = 0; j < C->ny-1; j += C->old_grid) {
+		for (j = 0; j < (C->ny-1); j += C->old_grid) {
 
 			/* get indices of bilinear square */
 			index_0 = C->ij_sw_corner + i * C->my + j;
@@ -285,9 +285,9 @@ void fill_in_forecast (struct SURFACE_INFO *C) {
 
 			/* find all possible new fill ins */
 
-			for (ii = i;  ii < i + C->old_grid; ii += C->grid) {
+			for (ii = i;  ii < (i + C->old_grid); ii += C->grid) {
 				delta_x = (ii - i) * old_size;
-				for (jj = j;  jj < j + C->old_grid; jj += C->grid) {
+				for (jj = j;  jj < (j + C->old_grid); jj += C->grid) {
 					index_new = C->ij_sw_corner + ii * C->my + jj;
 					if (index_new == index_0) continue;
 					delta_y = (jj - j) * old_size;

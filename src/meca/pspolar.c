@@ -28,49 +28,49 @@
 
 struct PSPOLAR_CTRL {
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 		double lon, lat, size;
 		struct GMT_PEN pen;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 		double lon, lat;
 	} D;
  	struct E {	/* -E<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG outline;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} E;
 	struct F {	/* -F<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} F;
  	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} G;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 		double ech;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct Q {	/* -Q only -h for Hypo71 */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 	struct S {	/* -r<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG symbol;
 		char type;
 		double scale, size;
 		struct GMT_FILL fill;
 	} S;
 	struct S2 {	/* -r<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG symbol;
 		GMT_LONG outline;
 		GMT_LONG scolor;
@@ -82,13 +82,13 @@ struct PSPOLAR_CTRL {
 		struct GMT_FILL fill;
 	} S2;
 	struct T {
-		GMT_LONG active;
+		BOOLEAN active;
 		double angle, fontsize;
 		GMT_LONG form, justify;
 		struct GMT_PEN pen;
  	} T;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 };
@@ -319,7 +319,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 			case 'T':	/* Information about label printing */
 				Ctrl->T.active = TRUE;
 				if (strlen (opt->arg)) {
-					sscanf (opt->arg, "%lf/%ld/%ld/%lf/", &Ctrl->T.angle, &Ctrl->T.form, &Ctrl->T.justify, &Ctrl->T.fontsize);
+					sscanf (opt->arg, "%lf/%d/%d/%lf/", &Ctrl->T.angle, &Ctrl->T.form, &Ctrl->T.justify, &Ctrl->T.fontsize);
 				}
 				break;
 			case 't':	/* Set color for station label */

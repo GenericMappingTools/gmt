@@ -29,11 +29,11 @@ EXTERN_MSC GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct G
 
 struct GRDREFORMAT_CTRL {
 	struct IO {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file[2];
 	} IO;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 };
 

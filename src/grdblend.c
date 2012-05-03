@@ -51,35 +51,35 @@ EXTERN_MSC GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code
 
 struct GRDBLEND_CTRL {
 	struct In {	/* Input files */
-		GMT_LONG active;
+		BOOLEAN active;
 		char **file;
-		GMT_LONG n;	/* If n > 1 we probably got *.grd or something */
+		COUNTER_MEDIUM n;	/* If n > 1 we probably got *.grd or something */
 	} In;
 	struct G {	/* -G<grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} C;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N<nodata> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double nodata;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 	struct Z {	/* -Z<scale> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double scale;
 	} Z;
 	struct W {	/* -W */
-		GMT_LONG active;
+		BOOLEAN active;
 	} W;
 };
 
@@ -87,13 +87,13 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	struct GMT_GRDFILE G;				/* I/O structure for grid files, including grd header */
 	GMT_LONG in_i0, in_i1, out_i0, out_i1;		/* Indices of outer and inner x-coordinates (in output grid coordinates) */
 	GMT_LONG in_j0, in_j1, out_j0, out_j1;		/* Indices of outer and inner y-coordinates (in output grid coordinates) */
-	GMT_LONG offset;				/* grid offset when the grid extends beyond north */
+	off_t offset;					/* grid offset when the grid extends beyond north */
 	off_t skip;					/* Byte offset to skip in native binary files */
-	GMT_LONG ignore;				/* TRUE if the grid is entirely outside desired region */
-	GMT_LONG outside;				/* TRUE if the current output row is outside the range of this grid */
-	GMT_LONG invert;				/* TRUE if weight was given as negative and we want to taper to zero INSIDE the grid region */
-	GMT_LONG open;					/* TRUE if file is currently open */
-	GMT_LONG delete;				/* TRUE if file was produced by grdsample to deal with different registration/increments */
+	BOOLEAN ignore;					/* TRUE if the grid is entirely outside desired region */
+	BOOLEAN outside;				/* TRUE if the current output row is outside the range of this grid */
+	BOOLEAN invert;					/* TRUE if weight was given as negative and we want to taper to zero INSIDE the grid region */
+	BOOLEAN open;					/* TRUE if file is currently open */
+	BOOLEAN delete;					/* TRUE if file was produced by grdsample to deal with different registration/increments */
 	char file[GMT_TEXT_LEN256];			/* Name of grid file */
 	double weight, wt_y, wxr, wxl, wyu, wyd;	/* Various weighting factors used for cosine-taper weights */
 	double wesn[4];					/* Boundaries of inner region */
@@ -484,7 +484,9 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_alloc = 0, err;
+	GMT_LONG err;
+ 	COUNTER_MEDIUM n_errors = 0;
+	size_t n_alloc = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -566,7 +568,8 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 
 GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	COUNTER_MEDIUM col, pcol, row, nx_360 = 0, k, kk, m, n_blend, error;
+	COUNTER_MEDIUM col, row, nx_360 = 0, k, kk, m, n_blend, error;
+	GMT_LONG status, pcol;
 	BOOLEAN reformat, wrap_x;
 	
 	COUNTER_LARGE ij, n_fill, n_tot;
@@ -630,14 +633,14 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	n_blend = init_blend_job (GMT, Ctrl->In.file, Ctrl->In.n, &S.header, &blend);
+	status = init_blend_job (GMT, Ctrl->In.file, Ctrl->In.n, &S.header, &blend);
 
 	if (Ctrl->In.n <= 1 && GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}
 
-	if (n_blend < 0) Return (EXIT_FAILURE);	/* Something went wrong in init_blend_job */
-	
+	if (status < 0) Return (EXIT_FAILURE);	/* Something went wrong in init_blend_job */
+	n_blend = status;
 	if (Ctrl->W.active && n_blend > 1) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -W option: Only applies when there is a single input grid file\n");
 		Return (EXIT_FAILURE);
@@ -699,8 +702,8 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (pcol < blend[k].out_i0) continue;	/* This grid is currently outside the w/e range */
 				}
 				else {	/* Not periodic */
-					if (col < blend[k].out_i0 || col > blend[k].out_i1) continue;	/* This grid is currently outside the xmin/xmax range */
 					pcol = col;
+					if (pcol < blend[k].out_i0 || pcol > blend[k].out_i1) continue;	/* This grid is currently outside the xmin/xmax range */
 				}
 				kk = pcol - blend[k].out_i0;					/* kk is the local column variable for this grid */
 				if (GMT_is_fnan (blend[k].z[kk])) continue;			/* NaNs do not contribute */

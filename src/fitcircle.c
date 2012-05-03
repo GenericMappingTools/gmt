@@ -77,11 +77,11 @@
 struct FITCIRCLE_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct L {	/* -L[<n>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG norm;	/* 1, 2, or 3 (both) */
 	} L;
 	struct S {	/* -S[<lat] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 0 = find latitude, 1 = use specified latitude */
 		double lat;	/* 0 for great circle */
 	} S;

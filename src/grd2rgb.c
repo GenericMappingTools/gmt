@@ -31,27 +31,27 @@
 
 struct GRD2RGB_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C<cptfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} C;
 	struct G {	/* -G<nametemplate> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *name;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct L {	/* -L<layer> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char layer;
 	} L;
 	struct W {	/* -W<width/height>[/<n_bytes>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		unsigned int nx, ny;	/* Dimension of image */
 		unsigned int size;	/* Number of bytes per pixels */
 	} W;

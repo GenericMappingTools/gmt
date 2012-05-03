@@ -38,61 +38,61 @@ EXTERN_MSC GMT_LONG GMT_is_a_blank_line (char *line);	/* Checks if line is a bla
 
 struct PSTEXT_CTRL {
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 	} A;
 	struct C {	/* -C<dx>/<dy> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG percent;
 		double dx, dy;
 	} C;
 	struct D {	/* -D[j]<dx>[/<dy>][v[<pen>]] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG justify;
 		GMT_LONG line;
 		double dx, dy;
 		struct GMT_PEN pen;
 	} D;
 	struct F {	/* -F[+f<fontinfo>+a<angle>+j<justification>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FONT font;
 		double angle;
 		GMT_LONG justify, nread;
 		char read[3];	/* Contains f, a, and/or j in order required to be read from input */
 	} F;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<case> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 0 = do nothing, -1 = force lower case, +1 = force upper case */
 	} Q;
 #ifdef GMT_COMPAT
 	struct S {	/* -S<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} S;
 #endif
 	struct T {	/* -To|O|c|C */
-		GMT_LONG active;
+		BOOLEAN active;
 		char mode;
 	} T;
 	struct W {	/* -W[<pen>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<z_level> */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Z;
 };
 
@@ -276,7 +276,7 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	GMT_message (GMT, "\t(See manual page for more information).\n");
 
 	if (show_fonts) {	/* List fonts */
-		GMT_LONG i;
+		COUNTER_MEDIUM i;
 		GMT_message (GMT, "\n\tFont #	Font Name\n");
 		GMT_message (GMT, "\t------------------------------------\n");
 		for (i = 0; i < GMT->session.n_fonts; i++)

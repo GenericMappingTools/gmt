@@ -32,25 +32,25 @@
 
 struct GRDMASK_CTRL {
 	struct A {	/* -A[m|p|step] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double step;
 	} A;
 	struct G {	/* -G<maskfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N<maskvalues> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 0 for out/on/in, 1 for polygon ID inside, 2 for polygon ID inside+path */
 		double mask[GRDMASK_N_CLASSES];	/* values for each level */
 	} N;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double radius;
 		char unit;
@@ -208,7 +208,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	BOOLEAN error = FALSE, periodic = FALSE, periodic_grid = FALSE;
 	COUNTER_MEDIUM side, *d_col = NULL, d_row = 0, col_0, row_0;
 	COUNTER_MEDIUM tbl, gmode, n_pol = 0, max_d_col = 0;
-	GMT_LONG row, col;
+	GMT_LONG row, col, nx, ny;
 	
 	COUNTER_LARGE ij, k, seg;
 	
@@ -271,13 +271,14 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
+	nx = Grid->header->nx;	ny = Grid->header->ny;	/* Signed versions */
 	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 		GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 		d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 		grd_x0 = GMT_memory (GMT, NULL, Grid->header->nx, double);
 		grd_y0 = GMT_memory (GMT, NULL, Grid->header->ny, double);
-		for (col = 0; col < Grid->header->nx; col++) grd_x0[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
-		for (row = 0; row < Grid->header->ny; row++) grd_y0[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
+		for (col = 0; col < nx; col++) grd_x0[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
+		for (row = 0; row < ny; row++) grd_y0[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
 	}
 	
 	periodic = GMT_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */
@@ -331,10 +332,10 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 					if (Ctrl->S.radius == 0.0) continue;	/* Only consider the nearest node */
 					/* Here we also include all the nodes within the search radius */
-					for (row = row_0 - d_row; row <= (row_0 + d_row); row++) {
-						if (row < 0 || row >= Grid->header->ny) continue;
-						for (col = col_0 - d_col[row]; col <= (col_0 + d_col[row]); col++) {
-							if (col < 0 || col >= Grid->header->nx) continue;
+					for (row = row_0 - d_row; row <= (int)(row_0 + d_row); row++) {
+						if (row < 0 || row >= ny) continue;
+						for (col = col_0 - d_col[row]; col <= (int)(col_0 + d_col[row]); col++) {
+							if (col < 0 || col >= nx) continue;
 							ij = GMT_IJP (Grid->header, row, col);
 							distance = GMT_distance (GMT, xtmp, S->coord[GMT_Y][k], grd_x0[col], grd_y0[row]);
 							if (distance > Ctrl->S.radius) continue;
@@ -356,7 +357,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					ID += 1.0;
 
-				for (row = 0; row < Grid->header->ny; row++) {
+				for (row = 0; row < ny; row++) {
 
 					yy = GMT_grd_row_to_y (GMT, row, Grid->header);
 					
@@ -370,7 +371,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						continue;
 
 					/* Here we will have to consider the x coordinates as well */
-					for (col = 0; col < Grid->header->nx; col++) {
+					for (col = 0; col < nx; col++) {
 						xx = GMT_grd_col_to_x (GMT, col, Grid->header);
 						if ((side = GMT_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next point */
 						/* Here, point is inside or on edge, we must assign value */

@@ -42,24 +42,24 @@
 
 struct SPECTRUM1D_CTRL {
 	struct C {	/* -C[<xycnpago>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char col[SPECTRUM1D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} C;
 	struct D {	/* -D<inc> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc;
 	} D;
 	struct N {	/* -N[+]<namestem> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		char *name;
 	} N;
 	struct S {	/* -S<segment_size> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG size;
 	} S;
 	struct W {	/* -W */
-		GMT_LONG active;
+		BOOLEAN active;
 	} W;
 };
 

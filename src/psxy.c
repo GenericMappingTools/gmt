@@ -34,48 +34,48 @@ EXTERN_MSC char * gmt_get_char_ptr (char **ptr);
 
 struct PSXY_CTRL {
 	struct A {	/* -A[m|p|step] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double step;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D<dx>/<dy> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double dx, dy;
 	} D;
 	struct E {	/* -E[x|X][y|Y][cap][/[+|-]<pen>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = box-whisker, 3 notched box-whisker */
 		GMT_LONG mode;	/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
 		double size;
 		struct GMT_PEN pen;
 	} E;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I<intensity> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *arg;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 	} T;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
 	} W;
@@ -494,14 +494,15 @@ GMT_LONG GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct G
 
 GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psxy task */
-	GMT_LONG polygon, penset_OK = TRUE, not_line, old_is_world;
-	GMT_LONG get_rgb, read_symbol, clip_set = FALSE, fill_active;
-	GMT_LONG default_outline, outline_active, set_type, n_needed;
-	GMT_LONG error_x = FALSE, error_y = FALSE, def_err_xy = FALSE;
-	GMT_LONG i, n_total_read = 0, j, geometry, tbl, read_mode;
-	GMT_LONG n_cols_start = 2, justify, error = GMT_NOERROR;
-	GMT_LONG ex1, ex2, ex3, change, pos2x, pos2y, save_u = FALSE;
-	GMT_LONG xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
+	BOOLEAN polygon, penset_OK = TRUE, not_line, old_is_world;
+	BOOLEAN get_rgb, read_symbol, clip_set = FALSE, fill_active;
+	BOOLEAN error_x = FALSE, error_y = FALSE, def_err_xy = FALSE;
+	BOOLEAN default_outline, outline_active;
+	COUNTER_MEDIUM set_type, n_needed, n_cols_start = 2, justify, tbl;
+	COUNTER_MEDIUM i, n_total_read = 0, j, geometry, read_mode;
+	COUNTER_MEDIUM ex1, ex2, ex3, change, pos2x, pos2y, save_u = FALSE;
+	COUNTER_MEDIUM xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
+	GMT_LONG error = GMT_NOERROR;
 
 	char *text_rec = NULL;
 

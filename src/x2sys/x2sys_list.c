@@ -32,47 +32,47 @@
 
 struct X2SYS_LIST_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} A;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *col;
 	} C;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *flags;
 	} F;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG min;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *TAG;
 	} T;
 	struct W {	/* -W */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} W;
 };
@@ -513,7 +513,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->A.active && (fabs (trk_symm[P[p].id[0]]) > Ctrl->A.value || fabs (trk_symm[P[p].id[1]]) > Ctrl->A.value)) continue;	/* COEs not distributed symmatrically */
 		np_use++;
 		nx_use += P[p].nx;
-		if (GMT->current.io.multi_segments[GMT_OUT]) GMT_fprintf (GMT->session.std[GMT_OUT], "%c %s - %s nx = %ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], P[p].trk[0], P[p].trk[1], P[p].nx);
+		if (GMT->current.io.multi_segments[GMT_OUT]) GMT_fprintf (GMT->session.std[GMT_OUT], "%c %s - %s nx = %d\n", GMT->current.setting.io_seg_marker[GMT_OUT], P[p].trk[0], P[p].trk[1], P[p].nx);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Crossovers from %s minus %s [%ld].\n", P[p].trk[0], P[p].trk[1], P[p].nx);
 		if (Ctrl->S.active) {	/* May have to flip which is track one and two */
 			two = !strcmp (Ctrl->S.file, P[p].trk[0]);

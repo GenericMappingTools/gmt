@@ -33,48 +33,48 @@
 struct PROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A<azimuth> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double azimuth;
 	} A;
 	struct C {	/* -C<ox>/<oy> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double x, y;
 	} C;
 	struct E {	/* -E<bx>/<by> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double x, y;
 	} E;
 	struct F {	/* -F<flags> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char col[PROJECT_N_FARGS];	/* Character codes for desired output in the right order */
 	} F;
 	struct G {	/* -G<inc>[/<colat>][+] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		GMT_LONG header;
 		double inc;
 		double colat;
 	} G;
 	struct L {	/* -L[w][<l_min>/<l_max>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG constrain;
 		double min, max;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct T {	/* -T<px>/<py> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double x, y;
 	} T;
 	struct W {	/* -W<w_min>/<w_max> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double min, max;
 	} W;
 };

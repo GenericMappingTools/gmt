@@ -39,31 +39,31 @@
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct E {	/* -Erotfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} E;
 	struct F {	/* -Fpolfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} F;
 	struct G {	/* -Goutfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct S {	/* -Sa|d|r|w|x|y|X|Y */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} S;
 	struct T {	/* -T<fixtime> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} T;
 };

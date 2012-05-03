@@ -25,7 +25,7 @@ struct MGD77MAGREF_CTRL {	/* All control options for this program (except common
 	GMT_LONG do_CM4;
 	GMT_LONG joint_IGRF_CM4;
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG fixed_alt;
 		GMT_LONG fixed_time;
 		GMT_LONG years;
@@ -34,31 +34,31 @@ struct MGD77MAGREF_CTRL {	/* All control options for this program (except common
 		double time;
 	} A;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 	} E;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 	} F;
 	struct G {	/* -G */
-		GMT_LONG active;
+		BOOLEAN active;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 	} L;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 };
 
@@ -397,8 +397,10 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 
 GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG j, nval = 0, nfval = 0, error = 0, t_col = 3, n_out = 0, cm4_igrf_T = FALSE;
-	GMT_LONG lval = 0, lfval = 0, n_field_components, tbl;
+	COUNTER_MEDIUM j, nval = 0, nfval = 0, error = 0;
+	COUNTER_MEDIUM lval = 0, lfval = 0, n_field_components, tbl;
+	COUNTER_MEDIUM n_out = 0, t_col = 3;
+	GMT_LONG cm4_igrf_T = FALSE;
 	
 	size_t i, s, need = 0, n_alloc = 0;
 
@@ -528,7 +530,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (GMT->common.b.active[GMT_OUT] && GMT->common.b.ncol[GMT_OUT] > 0 && n_out > GMT->common.b.ncol[GMT_OUT]) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Binary output must have at least %ld columns (your -bo option only set %ld)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
+		GMT_report (GMT, GMT_MSG_FATAL, "Binary output must have at least %d columns (your -bo option only set %d)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
 		Return (EXIT_FAILURE);
 	}
 

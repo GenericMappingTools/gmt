@@ -35,38 +35,39 @@
 
 struct SPHTRIANGULATE_CTRL {
 	struct A {	/* -A */
-		GMT_LONG active;
+		BOOLEAN active;
 	} A;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 	} D;
 	struct G {	/* -G<output_grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct L {	/* -L<unit>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char unit;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 0 is Delaunay, 1 is Voronoi */
 	} Q;
 	struct T {	/* -T */
-		GMT_LONG active;
+		BOOLEAN active;
 	} T;
 };
 
 void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET *Dout[])
 {	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
-	GMT_LONG i, ij, k, do_authalic, dim[4] = {1, 0, 0, 0};
+	GMT_LONG i, ij, k, do_authalic;
+	int64_t dim[4] = {1, 0, 0, 0};
 	double area_sphere = 0.0, area_triangle = GMT->session.d_NaN, V[3][3], R2, y, dist = GMT->session.d_NaN;
 	char segment_header[GMT_BUFSIZ];
 	struct GMT_LINE_SEGMENT *S[2] = {NULL, NULL};

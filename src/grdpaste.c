@@ -28,11 +28,11 @@
 
 struct GRDPASTE_CTRL {
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file[2];
 	} In;
 	struct G {	/* -G<output_grdfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 };

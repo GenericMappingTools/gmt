@@ -33,28 +33,28 @@
 struct GRDLANDMASK_CTRL {	/* All control options for this program (except common args) */
 	/* ctive is TRUE if the option has been activated */
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_SHORE_SELECT info;
 	} A;
 	struct D {	/* -D<resolution> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG force;	/* if TRUE, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 		COUNTER_MEDIUM inside;	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
 	struct G {	/* -G<maskfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N<maskvalues>[o] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		double mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
 	} N;
@@ -206,9 +206,8 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	BOOLEAN error = FALSE, temp_shift = FALSE, wrap, used_polygons;
-	COUNTER_MEDIUM base = 3, row, row_min, row_max, nx1, ny1;
-	COUNTER_MEDIUM k, ii, bin, np, side, np_new;
-	GMT_LONG col, col_min, col_max, i, direction, err, ind;
+	COUNTER_MEDIUM base = 3, k, bin, np, side, np_new;
+	GMT_LONG row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1;
 	
 	COUNTER_LARGE ij;
 
@@ -305,8 +304,8 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Fill out gridnode coordinates and apply the implicit linear projection */
 
-	for (col = 0; col < Grid->header->nx; col++) GMT_geo_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Grid->header), 0.0, &x[col], &dummy);
-	for (row = 0; row < Grid->header->ny; row++) GMT_geo_to_xy (GMT, 0.0, GMT_grd_row_to_y (GMT, row, Grid->header), &dummy, &y[row]);
+	for (col = 0; col <= nx1; col++) GMT_geo_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Grid->header), 0.0, &x[col], &dummy);
+	for (row = 0; row <= ny1; row++) GMT_geo_to_xy (GMT, 0.0, GMT_grd_row_to_y (GMT, row, Grid->header), &dummy, &y[row]);
 	i_dx_inch = 1.0 / fabs (x[1] - x[0]);
 	i_dy_inch = 1.0 / fabs (y[1] - y[0]);
 
@@ -405,7 +404,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			for (row = row_min; row <= row_max; row++) {
 				for (col = col_min; col <= col_max; col++) {
-					ii = (wrap) ? col % Grid->header->nx : col;
+					ii = (wrap) ? col % (int)Grid->header->nx : col;
 					if (ii < 0 || ii > nx1) continue;
 					ij = GMT_IJP (Grid->header, row, ii);
 					Grid->data[ij] = (float)k;
@@ -426,7 +425,8 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (wrap && Grid->header->registration == GMT_GRIDLINE_REG) { /* Copy over values to the repeating right column */
-		for (row = 0, ij = GMT_IJP (Grid->header, row, 0); row < Grid->header->ny; row++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
+		COUNTER_MEDIUM row_l;
+		for (row_l = 0, ij = GMT_IJP (Grid->header, row_l, 0); row_l < Grid->header->ny; row_l++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
 	}
 	
 	if (temp_shift) {

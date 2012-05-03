@@ -345,7 +345,7 @@ void gmt_lab_to_rgb (struct GMT_CTRL *C, double rgb[], double lab[])
 
 #define gmt_is_fill(C,word) (!strcmp(word,"-") || gmt_is_pattern (word) || gmt_is_color (C, word))
 
-GMT_LONG GMT_get_prime_factors (struct GMT_CTRL *C, GMT_LONG n, GMT_LONG *f)
+GMT_LONG GMT_get_prime_factors (struct GMT_CTRL *C, COUNTER_LARGE n, COUNTER_MEDIUM *f)
 {
 	/* Fills the integer array f with the prime factors of n.
 	 * Returns the number of locations filled in f, which is
@@ -372,15 +372,15 @@ GMT_LONG GMT_get_prime_factors (struct GMT_CTRL *C, GMT_LONG n, GMT_LONG *f)
 	 *
 	 * W. H. F. Smith, 26 Feb 1992, after D.E. Knuth, vol. II  */
 
-	GMT_LONG current_factor = 0;	/* The factor currently being tried  */
-	GMT_LONG max_factor;		/* Don't try any factors bigger than this  */
-	GMT_LONG n_factors = 0;		/* Returned; one if n is prime  */
-	GMT_LONG two_four_toggle = 0;	/* Used to add 2 or 4 to get next trial factor  */
-	GMT_LONG ten_twenty_toggle = 0;	/* Used to add 10 or 20 to skip_five  */
-	GMT_LONG skip_five = 25;	/* Used to skip multiples of 5 in the list  */
-	GMT_LONG base_factor[3] = {2, 3, 5};	/* Standard factors to try */
-	GMT_LONG m;			/* Used to keep a working copy of n  */
-	GMT_LONG k;			/* COUNTER_LARGE */
+	COUNTER_MEDIUM current_factor = 0;	/* The factor currently being tried  */
+	COUNTER_MEDIUM max_factor;		/* Don't try any factors bigger than this  */
+	COUNTER_MEDIUM n_factors = 0;		/* Returned; one if n is prime  */
+	COUNTER_MEDIUM two_four_toggle = 0;	/* Used to add 2 or 4 to get next trial factor  */
+	COUNTER_MEDIUM ten_twenty_toggle = 0;	/* Used to add 10 or 20 to skip_five  */
+	COUNTER_MEDIUM skip_five = 25;	/* Used to skip multiples of 5 in the list  */
+	COUNTER_MEDIUM base_factor[3] = {2, 3, 5};	/* Standard factors to try */
+	COUNTER_MEDIUM m;			/* Used to keep a working copy of n  */
+	COUNTER_MEDIUM k;			/* counter */
 
 	/* Initialize m and max_factor  */
 
@@ -4582,7 +4582,7 @@ struct GMT_LINE_SEGMENT * GMT_dump_contour (struct GMT_CTRL *C, double *x, doubl
 	return (S);
 }
 
-char * GMT_make_filename (struct GMT_CTRL *C, char *template, GMT_LONG fmt[], double z, GMT_LONG closed, COUNTER_MEDIUM count[])
+char * GMT_make_filename (struct GMT_CTRL *C, char *template, COUNTER_MEDIUM fmt[], double z, BOOLEAN closed, COUNTER_MEDIUM count[])
 {
 	/* Produce a filename given the template and the running values.
 	 * Here, c, d, f stands for the O/C character, the running count,
@@ -4590,7 +4590,7 @@ char * GMT_make_filename (struct GMT_CTRL *C, char *template, GMT_LONG fmt[], do
 	 * incremented.  If c is not used the only count[0] is used, else
 	 * we used count[0] for open and count[1] for closed contours. */
 
-	GMT_LONG i, n_fmt;
+	COUNTER_MEDIUM i, n_fmt;
 	static char kind[2] = {'O', 'C'};
 	char file[GMT_BUFSIZ];
 

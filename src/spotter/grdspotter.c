@@ -112,68 +112,68 @@
 struct GRDSPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct In {
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A<file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} A;
 	struct D {	/* -Di<file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} D;
 	struct E {	/* -E[+rotfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		char *file;
 	} E;
 	struct G {	/* -Ggrdfile */
-		GMT_LONG active;	/* Pixel registration */
+		BOOLEAN active;	/* Pixel registration */
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct L {	/* -Lfile */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 		double t_upper;
 	} N;
 	struct PA {	/* -Dp<file> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} PA;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		GMT_LONG id;
 		char *file;
 	} Q;
 	struct S2 {	/* -S2 */
-		GMT_LONG active;
+		BOOLEAN active;
 		double dist;
 	} S2;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active[2];
+		BOOLEAN active[2];
 		double t_fix;	/* Set fixed age*/
 	} T;
 	struct W {	/* -W */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG n_try;
 	} W;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double min, max, inc;
 	} Z;

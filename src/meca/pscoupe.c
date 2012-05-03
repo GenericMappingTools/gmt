@@ -45,7 +45,7 @@ PostScript code is written to stdout.
 
 struct PSCOUPE_CTRL {
 	struct A {	/* -A[<params>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG frame, fuseau, polygon;
 		char proj_type;
 		double p_width, p_length, dmin, dmax;
@@ -55,28 +55,28 @@ struct PSCOUPE_CTRL {
 		char newfile[GMT_TEXT_LEN256], extfile[GMT_TEXT_LEN256];
 	} A;
  	struct E {	/* -E<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} E;
  	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 	struct S {	/* -S and -s */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG readmode;
 		GMT_LONG plotmode;
 		GMT_LONG justify;
@@ -89,41 +89,41 @@ struct PSCOUPE_CTRL {
 		struct GMT_FILL fill;
 	} S;
 	struct T {	/* -Tnplane[/<pen>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG n_plane;
 		struct GMT_PEN pen;
 	} T;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<cptfile> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Z;
 	struct A2 {	/* -a[size][/Psymbol[Tsymbol]] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char P_symbol, T_symbol;
 		double size;
 	} A2;
 	struct E2 {	/* -e<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} E2;
  	struct G2 {	/* -g<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} G2;
  	struct P2 {	/* -p[<pen>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} P2;
 	struct R2 {	/* -r[<fill>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} R2;
  	struct T2 {	/* -t[<pen>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_PEN pen;
 	} T2;
 };
@@ -667,7 +667,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 
 			case 'T':
 				Ctrl->T.active = TRUE;
-				sscanf (opt->arg, "%ld", &Ctrl->T.n_plane);
+				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
 				if (strlen (opt->arg) > 2 && GMT_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
 					GMT_pen_syntax (GMT, 'T', " ");
 					n_errors++;
@@ -1051,7 +1051,7 @@ Definition of scalar moment.
 			if (!Ctrl->Q.active) fprintf (pext, "%s\n", line);
 			if (Ctrl->S.readmode == READ_AXIS) {
 				if (!Ctrl->Q.active)
-					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %f %f %f %ld 0 0 %s\n",
+					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %f %f %f %d 0 0 %s\n",
 					xy[0], xy[1], depth, Tr.val, Tr.str, Tr.dip, Nr.val, Nr.str, Nr.dip,
 					Pr.val, Pr.str, Pr.dip, moment.exponent, event_title);
 				T = Tr;
@@ -1060,14 +1060,14 @@ Definition of scalar moment.
 			}
 			else if (Ctrl->S.readmode == READ_TENSOR) {
 				if (!Ctrl->Q.active)
-					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %ld 0 0 %s\n",
+					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %d 0 0 %s\n",
 					xy[0], xy[1], depth, mtr.f[0], mtr.f[1], mtr.f[2], mtr.f[3], mtr.f[4], mtr.f[5],
 					moment.exponent, event_title);
 				mt = mtr;
 			}
 			else {
 				if (!Ctrl->Q.active)
-					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %f %ld 0 0 %s\n",
+					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %f %d 0 0 %s\n",
 					xy[0], xy[1], depth, mecar.NP1.str, mecar.NP1.dip, mecar.NP1.rake,
 					mecar.NP2.str, mecar.NP2.dip, mecar.NP2.rake,
 					moment.mant, moment.exponent, event_title);

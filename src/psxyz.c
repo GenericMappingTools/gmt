@@ -33,40 +33,40 @@ EXTERN_MSC GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, str
 
 struct PSXYZ_CTRL {
 	struct A {	/* -A[step] {NOT IMPLEMENTED YET} */
-		GMT_LONG active;
+		BOOLEAN active;
 		double step;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D<dx>/<dy>[/<dz>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double dx, dy, dz;
 	} D;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I<intensity> */
-		GMT_LONG active;
+		BOOLEAN active;
 		double value;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		BOOLEAN active;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		BOOLEAN active;
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *arg;
 	} S;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
 	} W;
@@ -350,12 +350,13 @@ int dist_compare (const void *a, const void *b)
 
 GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psxyz task */
-	GMT_LONG polygon, penset_OK = TRUE, not_line, old_is_world;
-	GMT_LONG get_rgb, read_symbol, clip_set = FALSE, fill_active;
-	GMT_LONG default_outline, outline_active, pos2x, pos2y, set_type;
-	GMT_LONG k, j, geometry, tbl;
-	GMT_LONG n_cols_start = 3, justify, error = GMT_NOERROR;
-	GMT_LONG ex1, ex2, ex3, change, n_needed, read_mode, save_u = FALSE;
+	BOOLEAN polygon, penset_OK = TRUE, not_line, old_is_world;
+	BOOLEAN get_rgb, read_symbol, clip_set = FALSE, fill_active;
+	BOOLEAN default_outline, outline_active, save_u = FALSE;
+	COUNTER_MEDIUM k, j, geometry, tbl, pos2x, pos2y, set_type;
+	COUNTER_MEDIUM n_cols_start = 3, justify;
+	COUNTER_MEDIUM ex1, ex2, ex3, change, n_needed, read_mode;
+	GMT_LONG error = GMT_NOERROR;
 	
 	COUNTER_LARGE i, n, n_total_read = 0;
 	size_t n_alloc = 0;

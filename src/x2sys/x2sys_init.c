@@ -32,43 +32,43 @@ extern void x2sys_set_home (struct GMT_CTRL *GMT);
 
 struct X2SYS_INIT_CTRL {
 	struct In {	/*  */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *TAG;
 	} In;
 	struct C {	/* -C */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *string;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *string;
 	} E;
 	struct F {	/* -F */
-		GMT_LONG active;
+		BOOLEAN active;
 	} F;
 	struct G {	/* -G */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *string;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 		char *string;
 	} I;
 	struct m {	/* -m */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *string;
 	} m;
 	struct N {	/* -N */
-		GMT_LONG active[2];
+		BOOLEAN active[2];
 		char *string[2];
 	} N;
 	struct W {	/* -W */
-		GMT_LONG active[2];
+		BOOLEAN active[2];
 		char *string[2];
 	} W;
 };

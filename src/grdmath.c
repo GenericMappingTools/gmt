@@ -60,18 +60,18 @@ EXTERN_MSC double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double l
 struct GRDMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct Out {	/* = <filename> */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		BOOLEAN active;
 		double inc[2];
 	} I;
 	struct M {	/* -M */
-		GMT_LONG active;
+		BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		BOOLEAN active;
 	} N;
 };
 
@@ -502,7 +502,7 @@ void grd_CORRCOEFF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_
 /*OPERATOR: CORRCOEFF 2 1 Correlation coefficient r(A, B).  */
 {
 	COUNTER_LARGE node;
-	GMT_LONG prev = last - 1, pad[4];
+	COUNTER_MEDIUM prev = last - 1, pad[4];
 	double coeff;
 
 	if (constant[prev] || constant[last]) {
@@ -510,7 +510,7 @@ void grd_CORRCOEFF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_
 		for (node = 0; node < info->size; node++) stack[prev]->data[node] = GMT->session.f_NaN;
 		return;
 	}
-	GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
+	GMT_memcpy (pad, stack[last]->header->pad, 4, COUNTER_MEDIUM);	/* Save original pad */
 	GMT_grd_pad_off (GMT, stack[prev]);				/* Undo pad if one existed so we can sort */
 	GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
 	coeff = GMT_corrcoeff_f (GMT, stack[prev]->data, stack[last]->data, info->nm, 0);
@@ -1127,7 +1127,7 @@ void grd_FLIPLR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRI
 /*OPERATOR: FLIPLR 1 1 Reverse order of values in each row.  */
 {
 	COUNTER_LARGE node;
-	GMT_LONG mx1, row, col_l, col_r, mx_half;
+	COUNTER_MEDIUM mx1, row, col_l, col_r, mx_half;
 
 	/* Reverse order of all rows */
 
@@ -1645,7 +1645,7 @@ void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRI
 /*OPERATOR: LMSSCL 1 1 LMS scale estimate (LMS STD) of A.  */
 {
 	COUNTER_LARGE node, n;
-	GMT_LONG GMT_mode_selection = 0, GMT_n_multiples = 0, pad[4];
+	COUNTER_MEDIUM GMT_mode_selection = 0, GMT_n_multiples = 0, pad[4];
 	double mode, lmsscl;
 	float lmsscl_f;
 
@@ -1731,7 +1731,7 @@ void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *
 /*OPERATOR: MAD 1 1 Median Absolute Deviation (L1 STD) of A.  */
 {
 	COUNTER_LARGE node, n;
-	GMT_LONG pad[4];
+	COUNTER_MEDIUM pad[4];
 	double mad, med;
 	float mad_f;
 
@@ -1798,7 +1798,7 @@ void grd_MED (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *
 /*OPERATOR: MED 1 1 Median value of A.  */
 {
 	COUNTER_LARGE node, n;
-	GMT_LONG pad[4];
+	COUNTER_MEDIUM pad[4];
 	float med;
 
 	if (constant[last]) {	/* Trivial case */
@@ -1854,7 +1854,7 @@ void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 /*OPERATOR: MODE 1 1 Mode value (Least Median of Squares) of A.  */
 {
 	COUNTER_LARGE node, n;
-	GMT_LONG GMT_mode_selection = 0, GMT_n_multiples = 0, pad[4];
+	COUNTER_MEDIUM GMT_mode_selection = 0, GMT_n_multiples = 0, pad[4];
 	double mode = 0.0;
 
 	if (constant[last]) {	/* Trivial case */
@@ -2109,7 +2109,7 @@ void grd_PQUANT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRI
 /*OPERATOR: PQUANT 2 1 The B'th Quantile (0-100%) of A.  */
 {
 	COUNTER_LARGE node;
-	GMT_LONG prev, pad[4];
+	COUNTER_MEDIUM prev, pad[4];
 	float p;
 
 	prev  = last - 1;	/* last holds the selected quantile (0-100), prev the data % */
@@ -2262,7 +2262,8 @@ void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 /*OPERATOR: ROTX 2 1 Rotate A by the (constant) shift B in x-direction.  */
 {
 	COUNTER_LARGE node;
-	GMT_LONG row, col, prev = last - 1, shift, *new_col = NULL, nx;
+	COUNTER_MEDIUM col, row, prev = last - 1, *new_col = NULL, nx;
+	GMT_LONG colx, shift;
 	float *z = NULL;
 
 	/* Shift grid A by the x-shift B.  B must be a constant */
@@ -2280,7 +2281,7 @@ void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 
 	new_col = GMT_memory (GMT, NULL, nx, GMT_LONG);
 	z = GMT_memory (GMT, NULL, nx, float);
-	for (col = 0; col < info->G->header->nx; col++) new_col[col] = (col + shift) % info->G->header->nx;	/* Move by shift but rotate around */
+	for (col = colx = 0; col < info->G->header->nx; col++, colx++) new_col[colx] = (colx + shift) % info->G->header->nx;	/* Move by shift but rotate around */
 	GMT_row_loop (GMT, info->G, row) {	/* For each row */
 		GMT_col_loop (GMT, info->G, row, col, node) z[new_col[col]] = stack[prev]->data[node];	/* Copy one row of data to z with shift */
 		node = GMT_IJP (info->G->header, row, 0);		/* First col */
@@ -2293,7 +2294,8 @@ void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
 /*OPERATOR: ROTY 2 1 Rotate A by the (constant) shift B in y-direction.  */
 {
-	GMT_LONG row, col, prev = last - 1, shift, *new_row = NULL;
+	COUNTER_MEDIUM row, col, prev = last - 1, *new_row = NULL;
+	GMT_LONG rowx, shift;
 	float *z = NULL;
 
 	/* Shift grid A by the y-shift B.  B must be a constant */
@@ -2310,7 +2312,7 @@ void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 
 	new_row = GMT_memory (GMT, NULL, info->G->header->ny, GMT_LONG);
 	z = GMT_memory (GMT, NULL, info->G->header->ny, float);
-	for (row = 0; row < info->G->header->ny; row++) new_row[row] = (row + info->G->header->ny - shift) % info->G->header->ny;	/* Move by shift but rotate around */
+	for (row = rowx = 0; row < info->G->header->ny; row++, rowx++) new_row[rowx] = (rowx + info->G->header->ny - shift) % info->G->header->ny;	/* Move by shift but rotate around */
 	for (col = 0; col < info->G->header->nx; col++) {	/* For each column */
 		for (row = 0; row < info->G->header->ny; row++) z[new_row[row]] = stack[prev]->data[GMT_IJP(info->G->header, row, col)];	/* Copy one column of data to z with shift */
 		for (row = 0; row < info->G->header->ny; row++) stack[prev]->data[GMT_IJP(info->G->header, row, col)] = z[row];	/* Replace this column */
@@ -2904,12 +2906,11 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GMT_GRID *stack[], GMT_LONG allo
 
 GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, k, kk, op = 0, nstack = 0, new_stack = -1, n_items = 0, this_stack;
-	GMT_LONG consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
-	GMT_LONG alloc_mode[GRDMATH_STACK_SIZE], status, subset;
-	GMT_LONG constant[GRDMATH_STACK_SIZE], error = FALSE;
-	
-	COUNTER_MEDIUM n_macros;
+	GMT_LONG k, op = 0, new_stack = -1, rowx, colx, status;
+	COUNTER_MEDIUM row, col, kk, nstack = 0, n_items = 0, this_stack, n_macros;
+	COUNTER_MEDIUM consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
+	COUNTER_MEDIUM alloc_mode[GRDMATH_STACK_SIZE];
+	COUNTER_MEDIUM constant[GRDMATH_STACK_SIZE], error = FALSE, subset;
 	
 	COUNTER_LARGE node;
 
@@ -3043,8 +3044,8 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	info.grd_y = GMT_memory (GMT, NULL, info.G->header->my, float);
 	info.grd_xn = GMT_memory (GMT, NULL, info.G->header->mx, float);
 	info.grd_yn = GMT_memory (GMT, NULL, info.G->header->my, float);
-	for (k = 0, col = -info.G->header->pad[XLO]; k < info.G->header->mx; col++, k++) info.grd_x[k] = (float)GMT_grd_col_to_x (GMT, col, info.G->header);
-	for (k = 0, row = -info.G->header->pad[YHI]; k < info.G->header->my; row++, k++) info.grd_y[k] = (float)GMT_grd_row_to_y (GMT, row, info.G->header);
+	for (k = 0, colx = -info.G->header->pad[XLO]; k < info.G->header->mx; colx++, k++) info.grd_x[k] = (float)GMT_grd_col_to_x (GMT, colx, info.G->header);
+	for (k = 0, rowx = -info.G->header->pad[YHI]; k < info.G->header->my; rowx++, k++) info.grd_y[k] = (float)GMT_grd_row_to_y (GMT, rowx, info.G->header);
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Make sure latitudes remain in range; if not apply geographic BC */
 		for (k = 0; k < info.G->header->pad[YHI]; k++) 
 			if (info.grd_y[k] > 90.0) info.grd_y[k] = (float)(2.0 * 90.0 - info.grd_y[k]);

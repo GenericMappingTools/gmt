@@ -44,11 +44,11 @@
 
 struct GMTDP_CTRL {
 	struct Out {	/* ->[<outfile>] */
-		GMT_LONG active;
+		BOOLEAN active;
 		char *file;
 	} Out;
 	struct T {	/* 	-T[-|=|+]<tolerance>[d|s|m|e|f|k|M|n] */
-		GMT_LONG active;
+		BOOLEAN active;
 		GMT_LONG mode;
 		double tolerance;
 		char unit;
