@@ -147,7 +147,7 @@ GMT_LONG GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
+BOOLEAN x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
 {
 	GMT_LONG n_fields, n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
 	size_t n_alloc = GMT_CHUNK;
@@ -189,10 +189,10 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char **trk_name = NULL;
 
-	GMT_LONG i, k, bad, trk_no, n_tracks, n_data_col_out = 0;
-	GMT_LONG error = FALSE,  cmdline_files, special_formatting = FALSE, *adj_col = NULL;
-	
-	COUNTER_LARGE j;
+	GMT_LONG is, this_col;
+	BOOLEAN error = FALSE,  cmdline_files, special_formatting = FALSE, *adj_col = NULL;
+	COUNTER_MEDIUM bad, trk_no, n_tracks, n_data_col_out = 0;
+	COUNTER_LARGE i, j, k;
 
 	double **data = NULL, *out = NULL, correction = 0.0, aux_dvalue[N_GENERIC_AUX];
 	double ds = 0.0, cumulative_dist, dist_scale = 1.0, dt, vel_scale = 1.0, adj_amount;
@@ -256,12 +256,12 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	out = GMT_memory (GMT, NULL, s->n_fields, double);
 
-	for (i = 0; i < s->n_out_columns; i++) {	/* Set output formats */
-		if (i == s->t_col)
+	for (i = is = 0; i < s->n_out_columns; i++, is++) {	/* Set output formats */
+		if (is == s->t_col)
 			GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_ABSTIME;
-		else if (i == s->x_col)
+		else if (is == s->x_col)
 			GMT->current.io.col_type[GMT_OUT][i] = (!strcmp (s->info[s->out_order[i]].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT;
-		else if (i == s->y_col)
+		else if (is == s->y_col)
 			GMT->current.io.col_type[GMT_OUT][i] = (!strcmp (s->info[s->out_order[i]].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT;
 		else
 			GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;
@@ -272,9 +272,10 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->S.active) {	/* Must count output data columns (except t, x, y) */
 		for (i = n_data_col_out = 0; i < s->n_out_columns; i++) {
-			if (s->out_order[i] == s->t_col) continue;
-			if (s->out_order[i] == s->x_col) continue;
-			if (s->out_order[i] == s->y_col) continue;
+			this_col = s->out_order[i];
+			if (this_col == s->t_col) continue;
+			if (this_col == s->x_col) continue;
+			if (this_col == s->y_col) continue;
 			n_data_col_out++;
 		}
 	}
@@ -349,7 +350,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->A.active) {
 		A = GMT_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);
-		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, GMT_LONG);
+		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, BOOLEAN);
 	}
 	
 	for (trk_no = 0; trk_no < n_tracks; trk_no++) {
@@ -371,9 +372,10 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (GMT->common.R.active && GMT_map_outside (GMT, data[s->x_col][j], data[s->y_col][j])) continue;
 			if (Ctrl->S.active) {
 				for (k = bad = 0; k < s->n_out_columns; k++) {
-					if (s->out_order[k] == s->t_col) continue;
-					if (s->out_order[k] == s->x_col) continue;
-					if (s->out_order[k] == s->y_col) continue;
+					this_col = s->out_order[k];
+					if (this_col == s->t_col) continue;
+					if (this_col == s->x_col) continue;
+					if (this_col == s->y_col) continue;
 					if (GMT_is_dnan (data[s->out_order[k]][j])) bad++;
 				}
 				if (bad == n_data_col_out) continue;

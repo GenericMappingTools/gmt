@@ -190,7 +190,7 @@ void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, GMT_LONG 
 
 GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE;
+	BOOLEAN error = FALSE;
 
 	double x0, y0;
 

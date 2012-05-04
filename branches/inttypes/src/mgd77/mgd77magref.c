@@ -400,7 +400,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_MEDIUM j, nval = 0, nfval = 0, error = 0;
 	COUNTER_MEDIUM lval = 0, lfval = 0, n_field_components, tbl;
 	COUNTER_MEDIUM n_out = 0, t_col = 3;
-	GMT_LONG cm4_igrf_T = FALSE;
+	BOOLEAN cm4_igrf_T = FALSE;
 	
 	size_t i, s, need = 0, n_alloc = 0;
 

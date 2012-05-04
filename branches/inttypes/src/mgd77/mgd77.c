@@ -457,7 +457,7 @@ void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H)
 	}
 }
 
-GMT_LONG MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, GMT_LONG n, int width)
+BOOLEAN MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, GMT_LONG n, int width)
 {
 	GMT_LONG i = 0;
 
@@ -467,10 +467,10 @@ GMT_LONG MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, GMT_LONG n, int 
 	return (TRUE);
 }
 
-GMT_LONG MGD77_dbl_are_constant (struct GMT_CTRL *C, double x[], GMT_LONG n, double limits[2])
+BOOLEAN MGD77_dbl_are_constant (struct GMT_CTRL *C, double x[], GMT_LONG n, double limits[2])
 {	/* Determine if the values in x[] are all the same, and sets actual range limits */
 	GMT_LONG i;
-	GMT_LONG constant = TRUE;
+	BOOLEAN constant = TRUE;
 	double last;
 
 	limits[0] = limits[1] = x[0];
@@ -1112,7 +1112,6 @@ static int MGD77_Convert_To_New_Format (struct GMT_CTRL *C, char *line)
 	return TRUE;
 }
 
-
 static GMT_LONG MGD77_entry_in_MGD77record (struct GMT_CTRL *C, char *name, GMT_LONG *entry)
 {
 	GMT_LONG i;
@@ -1647,7 +1646,7 @@ void MGD77_Prep_Header_cdf (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct 
 	 */
 
 	GMT_LONG i, id, t_id, set, t_set = MGD77_NOT_SET, entry;
-	GMT_LONG crossed_dateline = FALSE, crossed_greenwich = FALSE;
+	BOOLEAN crossed_dateline = FALSE, crossed_greenwich = FALSE;
 	char *text;
 	double *values, dx;
 
@@ -1827,7 +1826,7 @@ static int MGD77_Write_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CO
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
 	double *values = NULL, *x = NULL, *xtmp = NULL, single_val, scale, offset;
 	char *text = NULL;
-	GMT_LONG transform, not_allocated = TRUE;
+	BOOLEAN transform, not_allocated = TRUE;
 
 	count[0] = S->H.n_records;
 
@@ -2048,7 +2047,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CON
 		/* Now E.aux[i] points to the correct array of values for each auxillary column that is needed */
 
 		if (E.correction_requested[E77_CORR_FIELD_TWT]) {	/* Must correct twt for wraps */
-			GMT_LONG has_prev_twt = FALSE;
+			BOOLEAN has_prev_twt = FALSE;
 			double PDR_wrap_trigger, d_twt, prev_twt = 0.0, twt_pdrwrap_corr = 0.0;
 			PDR_wrap_trigger = 0.5 * S->H.PDR_wrap;	/* Must exceed 50% of wrap to activate unwrapping */
 			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
@@ -2527,7 +2526,7 @@ static void MGD77_dt2rdc (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double t,
 
 int MGD77_Info_from_Abbrev (struct GMT_CTRL *C, char *name, struct MGD77_HEADER *H, GMT_LONG *set, GMT_LONG *item)
 {
-	GMT_LONG id, c;
+	COUNTER_MEDIUM id, c;
 
 	/* Returns the number in the output list AND passes set,item as the entry in H */
 
@@ -2649,7 +2648,7 @@ int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MG
 	 *      - append .mgd77 and see if we can find it in listed directories
 	 */
 	int id, fmt, f_start, f_stop, k, has_suffix = MGD77_NOT_SET;
-	GMT_LONG append = FALSE;
+	BOOLEAN append = FALSE;
 	char geo_path[GMT_BUFSIZ];
 
 	for (k = 0; k < MGD77_FORMAT_ANY; k++) {	/* Determine if given track name contains one of the 3 possible extensions */
@@ -4015,7 +4014,8 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 {
 	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none) */
 
-	GMT_LONG i, j, k, n = 0, n_dig, length, all, NGDC_ID_likely;
+	GMT_LONG i, j, k, n = 0, n_dig, length;
+	BOOLEAN all, NGDC_ID_likely;
 	size_t n_alloc = 0;
 	struct GMT_OPTION *opt = NULL;
 	char **L = NULL, *d_name = NULL, line[GMT_BUFSIZ], this_arg[GMT_BUFSIZ], *flist = NULL;
@@ -4175,10 +4175,10 @@ void MGD77_Apply_Bitflags (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct M
 	}
 }
 
-GMT_LONG MGD77_Pass_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT_LONG rec)
+BOOLEAN MGD77_Pass_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT_LONG rec)
 {
 	int i, col, c, id, match, n_passed;
-	GMT_LONG pass;
+	BOOLEAN pass;
 	double *value;
 	char *text;
 
@@ -5391,7 +5391,8 @@ GMT_LONG MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruis
 	 */
 
 	COUNTER_MEDIUM n_list = 0, rec = 0, pos;
-	GMT_LONG sorted, id, cruise_id;
+	BOOLEAN sorted;
+	GMT_LONG id, cruise_id;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
 	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
@@ -5490,7 +5491,8 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 	 */
 
 	COUNTER_MEDIUM i, n_aux, rec = 0, pos;
-	GMT_LONG id, cruise_id, sorted, mgd77;
+	GMT_LONG id, cruise_id;
+	BOOLEAN sorted, mgd77;
 	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
 	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
 	struct MGD77_CORRTABLE **C_table = NULL;

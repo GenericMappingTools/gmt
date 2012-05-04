@@ -286,7 +286,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 	return (NULL); /* never reached */
 }
 
-void gmt_shore_check (struct GMT_CTRL *C, GMT_LONG ok[5])
+void gmt_shore_check (struct GMT_CTRL *C, BOOLEAN ok[5])
 /* Sets ok to TRUE for those resolutions available in share for
  * resolution (f, h, i, l, c) */
 {
@@ -379,7 +379,8 @@ char GMT_shore_adjust_res (struct GMT_CTRL *C, char res) {	/* Returns the highes
 }
 
 GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, double wesn[], struct GMT_SHORE_SELECT *info) {	/* res: Resolution (f, h, i, l, c */
-	GMT_LONG i, nb, idiv, iw, ie, is, in, this_south, this_west, err, int_areas = FALSE;
+	GMT_LONG i, nb, idiv, iw, ie, is, in, this_south, this_west, err;
+	BOOLEAN int_areas = FALSE;
 	short *stmp = NULL;
 	int *itmp = NULL;
 	size_t start[1], count[1];
@@ -777,7 +778,9 @@ GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, GMT_LONG b, struct GMT_BR *c, GMT_L
 	size_t start[1], count[1];
 	int *seg_start = NULL;
 	short *seg_n = NULL, *seg_level = NULL;
-	GMT_LONG s, i, k, skip, err;
+	GMT_LONG s, i, k, err;
+	BOOLEAN skip;
+	
 
 	c->lon_sw = (c->bins[b] % c->bin_nx) * c->bin_size / 60.0;
 	c->lat_sw = 90.0 - ((c->bins[b] / c->bin_nx) + 1) * c->bin_size / 60.0;
@@ -832,9 +835,9 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 /* edge: Edge test for shifting */
 {
 	struct GMT_GSHHS_POL *p = NULL;
-	GMT_LONG start_side, next_side, id, more, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL;
+	GMT_LONG start_side, next_side, id, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL;
 	GMT_LONG cid, nid, add, first_pos, entry_pos, n, low_level, high_level, fid, nseg_at_level[GSHHS_MAX_LEVEL+1];
-	GMT_LONG completely_inside;
+	BOOLEAN completely_inside, more;
 	COUNTER_MEDIUM P = 0, k;
 	size_t n_alloc, p_alloc;
 	double *xtmp = NULL, *ytmp = NULL, plon, plat;

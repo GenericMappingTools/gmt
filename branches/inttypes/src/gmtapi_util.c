@@ -814,10 +814,11 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int ID, int
 	 * Note: Memory is allocated for the Dataset except for method GMT_IS_DATASET_REF.
 	 */
 	
-	int item, col, n_cols = 0, first_item = 0, this_item = GMTAPI_NOTSET, last_item, geometry;
-	int allocate = FALSE, update = FALSE, all_D, use_GMT_io, poly;
+	int item, first_item = 0, this_item = GMTAPI_NOTSET, last_item, geometry;
+	BOOLEAN allocate = FALSE, update = FALSE, all_D, use_GMT_io, poly;
 	size_t n_alloc;
 	COUNTER_LARGE row, seg, ij;
+	COUNTER_MEDIUM n_cols = 0, col;
 	PFS GMT_2D_to_index;
 	struct GMT_DATASET *D = NULL, *Din = NULL;
 	struct GMT_MATRIX *M = NULL;
@@ -916,7 +917,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int ID, int
 				D->table[D->n_tables]->segment[0] = GMT_memory (API->GMT, NULL, 1, struct GMT_LINE_SEGMENT);
 				GMT_alloc_segment (API->GMT, D->table[D->n_tables]->segment[0], M->n_rows, M->n_columns, TRUE);
 				GMT_2D_to_index = GMTAPI_get_2D_to_index (M->shape, GMT_IS_NORMAL);
-				for (row = 0; row < (COUNTER_LARGE)M->n_rows; row++) {
+				for (row = 0; row < M->n_rows; row++) {
 					for (col = 0; col < M->n_columns; col++) {
 						ij = GMT_2D_to_index (row, col, M->dim);
 						D->table[D->n_tables]->segment[0]->coord[col][row] = GMTAPI_get_val (API, &(M->data), ij, M->type);

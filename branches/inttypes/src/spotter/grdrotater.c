@@ -224,7 +224,7 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	 * Note that the path is the same for pixel or grid-registered grids.
 	 */
 
-	GMT_LONG np = 0, add, i, j;
+	COUNTER_MEDIUM np = 0, add, i, j;
 	int64_t dim[4] = {1, 1, 2, 0};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
@@ -299,10 +299,10 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	return (D);
 }
 
-GMT_LONG skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon, double lat)
+BOOLEAN skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon, double lat)
 {	/* Returns TRUE if the selected point is outside the polygon */
 	COUNTER_LARGE seg;
-	GMT_LONG inside = FALSE;
+	COUNTER_MEDIUM inside = 0;
 	for (seg = 0; seg < P->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
 		if (GMT_polygon_is_hole (P->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
 		inside = (GMT_inonout (GMT, lon, lat, P->segment[seg]) > 0);
@@ -315,8 +315,9 @@ GMT_LONG skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon,
 
 GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG col, row, not_global, registered_d = FALSE;
-	GMT_LONG col2, row2, col_o, row_o, error = FALSE, global = FALSE;
+	GMT_LONG scol, srow;	/* Signed row, col */
+	BOOLEAN not_global, registered_d = FALSE, error = FALSE, global = FALSE;
+	COUNTER_MEDIUM col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
 	
 	COUNTER_LARGE ij, ij_rot, seg, rec;
 
@@ -502,24 +503,30 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (rec = 0; rec < pol->segment[seg]->n_rows; rec++) {
 			lon = pol->segment[seg]->coord[GMT_X][rec];
 			while (lon < G_rot->header->wesn[XLO]) lon += 360.0;
-			col = GMT_grd_x_to_col (GMT, lon, G_rot->header);
-			row = GMT_grd_y_to_row (GMT, pol->segment[seg]->coord[GMT_Y][rec], G_rot->header);
+			scol = GMT_grd_x_to_col (GMT, lon, G_rot->header);
+			srow = GMT_grd_y_to_row (GMT, pol->segment[seg]->coord[GMT_Y][rec], G_rot->header);
 			/* Visit the PAD * PAD number of cells centered on col, row and make sure they have been set */
-			for (row2 = (row - PAD); row2 <= (row + PAD); row2++) {
-				if (row2 < 0 || row2 >= G_rot->header->ny) continue;
-				for (col2 = (col - PAD); col2 <= (col + PAD); col2++) {
-					if (col2 < 0 || col2 >= G_rot->header->nx) continue;
-					ij_rot = GMT_IJP (G_rot->header, row2, col2);
+			start_row = (srow > PAD) ? srow - PAD : 0;
+			stop_row  = srow + PAD;
+			start_col = (scol > PAD) ? scol - PAD : 0;
+			stop_col  = scol + PAD;
+			for (row = start_row; row <= stop_row; row++) {
+				if (row >= G_rot->header->ny) continue;
+				for (col = start_col; col <= stop_col; col++) {
+					if (col >= G_rot->header->nx) continue;
+					ij_rot = GMT_IJP (G_rot->header, row, col);
 					if (!GMT_is_fnan (G_rot->data[ij_rot])) continue;	/* Already done this */
-					if (not_global && skip_if_outside (GMT, pol, grd_x[col2], grd_yc[row2])) continue;	/* Outside polygon */
-					GMT_geo_to_cart (GMT, grd_yc[row2], grd_x[col2], P_rotated, TRUE);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
+					if (not_global && skip_if_outside (GMT, pol, grd_x[col], grd_yc[row])) continue;	/* Outside polygon */
+					GMT_geo_to_cart (GMT, grd_yc[row], grd_x[col], P_rotated, TRUE);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
 					spotter_matrix_vect_mult (GMT, R, P_rotated, P_original);	/* Rotate the vector */
 					GMT_cart_to_geo (GMT, &xx, &yy, P_original, TRUE);	/* Recover degree lon lat representation */
 					yy = GMT_lat_swap (GMT, yy, GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-					col_o = GMT_grd_x_to_col (GMT, xx, G->header);
-					if (col_o < 0 || col_o >= G->header->nx) continue;
-					row_o = GMT_grd_y_to_row (GMT, yy, G->header);
-					if (row_o < 0 || row_o >= G->header->ny) continue;
+					scol = GMT_grd_x_to_col (GMT, xx, G->header);
+					if (scol < 0) continue;
+					col_o = scol;	if (col_o >= G->header->nx) continue;
+					srow = GMT_grd_y_to_row (GMT, yy, G->header);
+					if (srow < 0) continue;
+					row_o = srow;	if (row_o >= G->header->ny) continue;
 					ij = GMT_IJP (G->header, row_o, col_o);
 					G_rot->data[ij_rot] = G->data[ij];
 				}

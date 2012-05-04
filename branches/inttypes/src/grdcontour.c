@@ -417,8 +417,9 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	   2) Next, we mark closed contours with other contours inside them as not "innermost"
 	   3) We then determine if the remaining closed polygons contain highs or lows.
 	*/
-	GMT_LONG np, i, j, k, ij, inside, col, row, stop, done, n_ticks, way, form;
-	double add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end, match, found;
+	GMT_LONG np, i, j, k, ij, inside, col, row, stop, n_ticks, way, form;
+	BOOLEAN done, match, found;
+	double add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end;
 	double xmin, xmax, ymin, ymax, inc, dist, a, this_lon, this_lat, sa, ca;
 	double *s = NULL, *xp = NULL, *yp = NULL;
 
@@ -678,9 +679,9 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the grdcontour task */
 	GMT_LONG error;
-	BOOLEAN need_proj, closed, make_plot, two_only = FALSE, begin; 
+	BOOLEAN need_proj, make_plot, two_only = FALSE, begin; 
 	
-	COUNTER_MEDIUM id, n_contours, c, n_edges, tbl_scl = 1, io_mode = 0;
+	COUNTER_MEDIUM id, n_contours, c, n_edges, tbl_scl = 1, io_mode = 0, closed;
 	COUNTER_MEDIUM cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, tbl, fmt[3] = {0, 0, 0};
 	
 	COUNTER_LARGE ij, *n_seg = NULL;
@@ -1095,7 +1096,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);
 
 			grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt);
-			for (i = 0; i < (GMT_LONG)n_save; i++) {
+			for (i = 0; i < n_save; i++) {
 				GMT_free (GMT, save[i].x);
 				GMT_free (GMT, save[i].y);
 			}

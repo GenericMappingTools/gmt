@@ -142,8 +142,7 @@ int outside (double x, double y, struct X2SYS_BIX *B, GMT_LONG geo)
 
 unsigned int get_data_flag (double *data[], GMT_LONG j, struct X2SYS_INFO *s)
 {
-	int i;
-	unsigned int bit, flag;
+	unsigned int i, bit, flag;
 	for (i = flag = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) {
 		if (GMT_is_dnan (data[i][j])) continue;	/* NaN, so no data here */
 		flag |= bit;
@@ -167,15 +166,14 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char **trk_name = NULL;
 
-	GMT_LONG i, k, n_tracks, k1, ij, ii, jj, nx, bi, bj, start_i, end_i, jump_180, jump_360;
+	GMT_LONG i, k, n_tracks, k1, ii, jj, nx, bi, bj, start_i, end_i, jump_180, jump_360;
 	GMT_LONG this_bin_i;	/* This i node for bin */
 	GMT_LONG this_bin_j;	/* This j node for bin */
-	GMT_LONG this_bin_ij;	/* This bin */
+	COUNTER_LARGE this_bin_ij, ij, last_bin_ij;
 	GMT_LONG last_bin_i;	/* Previous i node for bin */
 	GMT_LONG last_bin_j;	/* Previous j node for bin */
-	GMT_LONG last_bin_ij;	/* Previous bin */
 	GMT_LONG nx_alloc = GMT_SMALL_CHUNK;
-	GMT_LONG error = FALSE, gap, cmdline_files;
+	BOOLEAN error = FALSE, gap, cmdline_files;
 	
 	COUNTER_LARGE j;
 
@@ -283,7 +281,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((dist_km = GMT_dist_array (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -s->dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 		}
 
-		last_bin_ij = last_bin_i = last_bin_j = -1;
+		last_bin_ij = last_bin_i = last_bin_j = UINT_MAX;
 		for (j = 0; j < p.n_rows; j++) {
 			if (outside (data[s->x_col][j], data[s->y_col][j], &B, s->geographic)) continue;
 			 x2sys_err_fail (GMT, x2sys_bix_get_ij (GMT, data[s->x_col][j], data[s->y_col][j], &this_bin_i, &this_bin_j, &B, &this_bin_ij), "");
@@ -295,7 +293,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			if (!Ctrl->D.active) continue;	/* Not worried about trackline lengths */
 			
-			if (last_bin_ij == -1) last_bin_ij = this_bin_ij;	/* Initialize last bin to this bin the first time */
+			if (last_bin_ij == UINT_MAX) last_bin_ij = this_bin_ij;	/* Initialize last bin to this bin the first time */
 			
 			if (j > 0) { /* Can check for gaps starting with 1st to 2nd point */
 				gap = FALSE;
@@ -410,7 +408,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x, GMT_X);
 			fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y, GMT_Y);
-			fprintf (GMT->session.std[GMT_OUT], "%s%d%s%u", GMT->current.setting.io_col_separator, ij, GMT->current.setting.io_col_separator, B.binflag[ij]);
+			fprintf (GMT->session.std[GMT_OUT], "%s%" PRIu64 "%s%u", GMT->current.setting.io_col_separator, ij, GMT->current.setting.io_col_separator, B.binflag[ij]);
 			if (Ctrl->D.active) {
 				fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], dist_bin[ij], GMT_Z);

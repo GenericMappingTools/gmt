@@ -97,14 +97,14 @@ struct FILTER1D_CTRL {
 #define FILTER1D_CONVOLVE	3		/* If filter_type > FILTER1D_CONVOLVE then a FILTER1D_MEDIAN, FILTER1D_MODE, or EXTREME filter is selected  */
 
 struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup */
-	GMT_LONG use_ends;		/* True to start/stop at ends of series instead of 1/2 width inside  */
-	GMT_LONG check_asym;		/* TRUE to test whether the data are asymmetric about the output time  */
-	GMT_LONG check_lack;		/* TRUE to test for lack of data (gap) in the filter window */
-	GMT_LONG check_q;		/* TRUE to test average weight or N in median */
-	GMT_LONG robust;		/* Look for outliers in data when TRUE */
-	GMT_LONG equidist;		/* Data is evenly sampled in t */
-	GMT_LONG out_at_time;		/* TRUE when output is required at evenly spaced intervals */
-	GMT_LONG f_operator;		/* TRUE if custom weights coefficients sum to zero */
+	BOOLEAN use_ends;		/* True to start/stop at ends of series instead of 1/2 width inside  */
+	BOOLEAN check_asym;		/* TRUE to test whether the data are asymmetric about the output time  */
+	BOOLEAN check_lack;		/* TRUE to test for lack of data (gap) in the filter window */
+	BOOLEAN check_q;		/* TRUE to test average weight or N in median */
+	BOOLEAN robust;			/* Look for outliers in data when TRUE */
+	BOOLEAN equidist;		/* Data is evenly sampled in t */
+	BOOLEAN out_at_time;		/* TRUE when output is required at evenly spaced intervals */
+	BOOLEAN f_operator;		/* TRUE if custom weights coefficients sum to zero */
 
 	COUNTER_MEDIUM *n_this_col;	/* Pointer to array of counters [one per column]  */
 	COUNTER_MEDIUM *n_left;		/* Pointer to array of counters [one per column]  */
@@ -471,7 +471,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 GMT_LONG lack_check (struct FILTER1D_INFO *F, COUNTER_LARGE i_col, COUNTER_LARGE left, COUNTER_LARGE right)
 {
 	COUNTER_LARGE last_row, this_row;
-	GMT_LONG lacking = FALSE;
+	BOOLEAN lacking = FALSE;
 	double last_t;
 
 	last_row = left;
@@ -496,7 +496,7 @@ GMT_LONG lack_check (struct FILTER1D_INFO *F, COUNTER_LARGE i_col, COUNTER_LARGE
 void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, COUNTER_LARGE j, COUNTER_LARGE n, GMT_LONG both)
 {
 	COUNTER_LARGE i, n_smooth;
-	GMT_LONG sort_me = TRUE;
+	BOOLEAN sort_me = TRUE;
 	double low, high, last, temp;
 
 	if (F->filter_type > FILTER1D_MODE)

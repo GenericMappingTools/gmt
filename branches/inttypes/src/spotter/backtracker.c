@@ -339,7 +339,7 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 #define SPOTTER_BACK -1
 #define SPOTTER_FWD  +1
 
-GMT_LONG spotter_track (struct GMT_CTRL *GMT, GMT_LONG way, double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, GMT_LONG do_time, double wesn[], double **c)
+GMT_LONG spotter_track (struct GMT_CTRL *GMT, GMT_LONG way, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c)
 {
 	GMT_LONG n = -1;
 	/* Call either spotter_forthtrack (way = 1) or spotter_backtrack (way = -1) */
@@ -368,17 +368,17 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	COUNTER_LARGE n_points;			/* Number of data points read */
 	COUNTER_LARGE n_track;			/* Number of points in a track segment */
-	COUNTER_MEDIUM n_stages = 0;		/* Number of stage poles */
 	COUNTER_LARGE n_segments;		/* Number of path segments written out */
 	COUNTER_LARGE n_skipped = 0;		/* Number of points skipped because t < 0 */
-	GMT_LONG n_fields, n_expected_fields;
-	COUNTER_LARGE n_read = 0;
-	COUNTER_MEDIUM n_out;
-	GMT_LONG i, j, k, error;		/* Misc. counters */
+	COUNTER_LARGE n_read = 0;		/* Number of records read */
+	COUNTER_LARGE row;
+	COUNTER_LARGE i, j, k;
+	COUNTER_MEDIUM n_stages = 0;		/* Number of stage poles */
+	COUNTER_MEDIUM n_out, n_expected_fields;
 	BOOLEAN make_path = FALSE;		/* TRUE means create continuous path, FALSE works on discrete points */
+	GMT_LONG n_fields, error;		/* Misc. signed counters */
 	GMT_LONG spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
 	
-	COUNTER_LARGE row;
 
 	double *c = NULL;		/* Array of track chunks returned by libeuler routines */
 	double lon, lat;		/* Seamounts location in decimal degrees */
@@ -545,7 +545,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (make_path) {	/* Asked for paths, now write out several multiple segment tracks */
 			if (Ctrl->S.active) {
 				out[3] = (double)n_points;	/* Put the seamount id number in 4th column and use -L in header */
-				sprintf (GMT->current.io.segment_header, "%s %s %g %g -L%ld", type, dir, in[GMT_X], in[GMT_Y], n_points);
+				sprintf (GMT->current.io.segment_header, "%s %s %g %g -L%" PRIu64, type, dir, in[GMT_X], in[GMT_Y], n_points);
 			}
 			else
 				sprintf (GMT->current.io.segment_header, "%s %s %g %g", type, dir, in[GMT_X], in[GMT_Y]);

@@ -331,7 +331,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char **trk_list = NULL;
 	char trk[2][GMT_TEXT_LEN64], t_txt[2][GMT_TEXT_LEN64], z_txt[GMT_TEXT_LEN64], w_txt[GMT_TEXT_LEN64], line[GMT_BUFSIZ];
-	GMT_LONG error = FALSE, grow_list = FALSE, normalize = FALSE, active_col[N_COE_PARS];
+	BOOLEAN error = FALSE, grow_list = FALSE, normalize = FALSE, active_col[N_COE_PARS];
 	int *ID[2] = {NULL, NULL};
 	GMT_LONG n_par = 0, n, m, t, n_tracks = 0, n_active;
 	GMT_LONG i, p, j, k, r, s, off, row, n_COE = 0, ierror;

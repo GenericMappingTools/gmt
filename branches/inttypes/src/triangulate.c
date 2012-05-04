@@ -226,7 +226,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_LARGE ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
 	COUNTER_MEDIUM n_input, n_output;
 	GMT_LONG row, col, col_min, col_max, row_min, row_max;
-	GMT_LONG triplets[2] = {FALSE, FALSE}, error = FALSE, map_them = FALSE;
+	BOOLEAN triplets[2] = {FALSE, FALSE}, error = FALSE, map_them = FALSE;
 	
 	size_t n_alloc;
 	

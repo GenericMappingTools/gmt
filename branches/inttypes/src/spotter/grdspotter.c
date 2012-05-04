@@ -170,7 +170,7 @@ struct GRDSPOTTER_CTRL {	/* All control options for this program (except common 
 	} T;
 	struct W {	/* -W */
 		BOOLEAN active;
-		GMT_LONG n_try;
+		COUNTER_MEDIUM n_try;
 	} W;
 	struct Z {	/* -Z */
 		BOOLEAN active;
@@ -378,9 +378,9 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, GMT_LONG n_stages, double d_km, GMT_LONG step, GMT_LONG flag, double wesn[], double **flow)
+GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, COUNTER_MEDIUM n_stages, double d_km, COUNTER_MEDIUM step, COUNTER_MEDIUM flag, double wesn[], double **flow)
 {
-	GMT_LONG n_track, m, kx, ky, first, last, np;
+	int64_t n_track, m, kx, ky, np, first, last;
 	double *c = NULL, *f = NULL;
 
 	/* Get the flowline from this point back to time tt, restricted to the given wesn box */
@@ -433,7 +433,7 @@ GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, st
 	return (np);
 }
 
-GMT_LONG set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, GMT_LONG node, double upper_age, GMT_LONG truncate)
+BOOLEAN set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, COUNTER_LARGE node, double upper_age, BOOLEAN truncate)
 {
 	/* Returns the age of this node based on either a given seafloor age grid
 	 * or the upper age, truncated if necessary */
@@ -459,15 +459,16 @@ GMT_LONG set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, GMT_L
 
 GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n_stages;		/* Number of stage rotations (poles) */
-	GMT_LONG try;			/* Number of current bootstrap estimate */
-	GMT_LONG i, j, k, row, col, k_step;
-	GMT_LONG error = FALSE;		/* TRUE when arguments are wrong */
-	GMT_LONG keep_flowlines = FALSE;	/* TRUE if Ctrl->D.active, Ctrl->PA.active, or bootstrap is TRUE */
-	GMT_LONG forth_flag;		/* Holds the do_time + 10 flag passed to forthtrack */
+	COUNTER_MEDIUM n_stages;	/* Number of stage rotations (poles) */
+	COUNTER_MEDIUM try;		/* Number of current bootstrap estimate */
+	COUNTER_MEDIUM row, col, k_step;
+	COUNTER_MEDIUM forth_flag;	/* Holds the do_time + 10 flag passed to forthtrack */
+	BOOLEAN error = FALSE;		/* TRUE when arguments are wrong */
+	BOOLEAN keep_flowlines = FALSE;	/* TRUE if Ctrl->D.active, Ctrl->PA.active, or bootstrap is TRUE */
+	GMT_LONG i, j;			/* Signed row,col variables */
 	GMT_LONG *ID = NULL;		/* Optional array with IDs for each node */
 	
-	COUNTER_LARGE ij, node, m, np, max_ij = 0, n_flow, n_unique_nodes = 0;
+	COUNTER_LARGE ij, k, node, m, np, max_ij = 0, n_flow, n_unique_nodes = 0;
 	COUNTER_LARGE n_nodes;		/* Number of nodes processed */
 
 	size_t n_alloc = 0, inc_alloc = BIG_CHUNK, mem = 0;
@@ -505,8 +506,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	struct ID {			/* Information regarding one chain ID */
 		double wesn[4];		/* Do not calculate flowlines outside this box */
-		GMT_LONG ok;		/* TRUE if we want to calculate this CVA */
-		GMT_LONG check_region;	/* TRUE if w, e, s, n is more restrictive than command line -R */
+		BOOLEAN ok;		/* TRUE if we want to calculate this CVA */
+		BOOLEAN check_region;	/* TRUE if w, e, s, n is more restrictive than command line -R */
 	} *ID_info = NULL;
 	struct GMT_OPTION *ptr = NULL;
 	struct GRDSPOTTER_CTRL *Ctrl = NULL;
@@ -587,17 +588,17 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	area = 111.195 * Z->header->inc[GMT_Y] * 111.195 * Z->header->inc[GMT_X];	/* In km^2 at Equator */
 	x_smt = GMT_memory (GMT, NULL, Z->header->nx, double);
-	for (i = 0; i < Z->header->nx; i++) x_smt[i] = D2R * GMT_grd_col_to_x (GMT, i, Z->header);
+	for (col = 0; col < Z->header->nx; col++) x_smt[col] = D2R * GMT_grd_col_to_x (GMT, col, Z->header);
 	y_smt = GMT_memory (GMT, NULL, Z->header->ny, double);
-	for (j = 0; j < Z->header->ny; j++) y_smt[j] = D2R * GMT_lat_swap (GMT, GMT_grd_row_to_y (GMT, j, Z->header), GMT_LATSWAP_G2O);	/* Convert to geocentric */
+	for (row = 0; row < Z->header->ny; row++) y_smt[row] = D2R * GMT_lat_swap (GMT, GMT_grd_row_to_y (GMT, row, Z->header), GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	lat_area = GMT_memory (GMT, NULL, Z->header->ny, double);
 
-	for (j = 0; j < Z->header->ny; j++) lat_area[j] = area * cos (y_smt[j]);
+	for (row = 0; row < Z->header->ny; row++) lat_area[row] = area * cos (y_smt[row]);
 	
 	x_cva = GMT_memory (GMT, NULL, G->header->nx, double);
-	for (i = 0; i < G->header->nx; i++) x_cva[i] = GMT_grd_col_to_x (GMT, i, G->header);
+	for (col = 0; col < G->header->nx; col++) x_cva[col] = GMT_grd_col_to_x (GMT, col, G->header);
 	y_cva = GMT_memory (GMT, NULL, G->header->ny, double);
-	for (j = 0; j < G->header->ny; j++) y_cva[j] = GMT_grd_row_to_y (GMT, j, G->header);
+	for (row = 0; row < G->header->ny; row++) y_cva[row] = GMT_grd_row_to_y (GMT, row, G->header);
 	if (Ctrl->A.file) {
 		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
@@ -643,7 +644,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
 				if (line[0] == '#' || line[0] == '\n') continue;
-				k = sscanf (line, "%*s %ld %lf %lf %lf %lf", &Qid, &wq, &eq, &sq, &nq);
+				k = sscanf (line, "%*s %d %lf %lf %lf %lf", &Qid, &wq, &eq, &sq, &nq);
 				ID_info[Ctrl->Q.id].ok = TRUE;
 				if (k == 5) {	/* Got restricted wesn also */
 					ID_info[Qid].check_region = TRUE;
@@ -722,10 +723,10 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			i = GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
 			yg = GMT_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 			j = GMT_grd_y_to_row (GMT, yg, G->header);
-			if (i < 0 || i >= G->header->nx || j < 0 || j >= G->header->ny)	/* Outside the CVA box, flag as outside */
+			if (i < 0 || (col = i) >= G->header->nx || j < 0 || (row = j) >= G->header->ny)	/* Outside the CVA box, flag as outside */
 				node = UINTMAX_MAX;
 			else								/* Inside the CVA box, assign node ij */
-				node = GMT_IJP (G->header, j, i);
+				node = GMT_IJP (G->header, row, col);
 			if (keep_flowlines) {
 				flowline[n_nodes].node[m] = node;
 				if (Ctrl->PA.active) flowline[n_nodes].PA[m] = (unsigned short) lrint (c[k++] * T_2_PA);
@@ -737,7 +738,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					processed_node[node] = TRUE;		/* Now we have visited this node */
 					n_unique_nodes++;
 #ifdef DEBUG2
-					printf ("%g\t%g\n", x_cva[i],y_cva[j]);
+					printf ("%g\t%g\n", x_cva[col], y_cva[row]);
 #endif
 				}
 				n_more_than_once += 1.0;
@@ -794,8 +795,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->Z.mode) {	/* Do CVA calculations for each z-slice using stored flowlines */
-		GMT_LONG nz;
-		char file[256], format[256];
+		COUNTER_MEDIUM layer, nz;
+		char file[GMT_BUFSIZ], format[GMT_BUFSIZ];
 		double z0, z1;
 		float *CVA_inc = NULL, *old = G->data;
 		
@@ -808,8 +809,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		CVA_inc = GMT_memory (GMT, NULL, G->header->size, float);
 		nz = lrint ((Ctrl->Z.max - Ctrl->Z.min) / Ctrl->Z.inc);
-		for (i = 0; i < nz; i++) {
-			z0 = Ctrl->Z.min + i * Ctrl->Z.inc;
+		for (layer = 0; layer < nz; layer++) {
+			z0 = Ctrl->Z.min + layer * Ctrl->Z.inc;
 			z1 = z0 + Ctrl->Z.inc;
 			GMT_report (GMT, GMT_MSG_NORMAL, "Start z-slice %g - %g\n", z0, z1);
 			GMT_memset (CVA_inc, G->header->size, float);	/* Fresh start for this z-slice */
@@ -847,7 +848,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_NORMAL, "%g %g\n", G->header->z_min, G->header->z_max);
 			}
 			sprintf (G->header->remark, "CVA for z-range %g - %g only", z0, z1);
-			sprintf (file, format, i);
+			sprintf (file, format, layer);
 			G->data = CVA_inc;	/* Temporarily change the array pointer */
 			GMT_report (GMT, GMT_MSG_NORMAL, "Save z-slice CVA to file %s\n", file);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, file, G) != GMT_OK) {
@@ -915,11 +916,12 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				this_pa = GMT->session.d_NaN;
 				for (m = 0, k = 1; m < np; m++) {	/* Store nearest node indices only */
 					i = GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
+					if (i < 0 || (col = i) >= G->header->nx) { k += 2; continue;}	/* Outside the CVA box, flag as outside */
 					yg = GMT_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 					j = GMT_grd_y_to_row (GMT, yg, G->header);
+					if (j < 0 || (row = j) >= G->header->ny) { k++; continue;}	/* Outside the CVA box, flag as outside */
 					if (Ctrl->PA.active) pa_val = c[k++];
-					if (i < 0 || i >= G->header->nx || j < 0 || j >= G->header->ny) continue;	/* Outside the CVA box, flag as outside */
-					node = GMT_IJP (G->header, j, i);
+					node = GMT_IJP (G->header, row, col);
 					if (G->data[node] <= CVA_max) continue;	/* Already seen higher CVA values */
 					CVA_max = G->data[node];
 					if (Ctrl->PA.active) this_pa = pa_val;

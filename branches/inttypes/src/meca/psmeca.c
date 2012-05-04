@@ -478,7 +478,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psmeca task */
 	GMT_LONG i, n, ix = 0, iy = 1, last = 0, form = 0, new;
 	GMT_LONG n_rec = 0, n_plane_old = 0, error;
-	GMT_LONG transparence_old = FALSE, not_defined = FALSE;
+	BOOLEAN transparence_old = FALSE, not_defined = FALSE;
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xy[2], xynew[2];

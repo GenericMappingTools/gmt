@@ -233,7 +233,7 @@ COUNTER_MEDIUM get_side (struct GMT_CTRL *GMT, double x, double y, double x_left
 }
 
 void copy_points_fw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], COUNTER_MEDIUM ncont, int64_t *n) {
-	GMT_LONG k;
+	COUNTER_MEDIUM k;
 	for (k = 0; k < ncont; k++, (*n)++) {
 		x[*n] = xcont[k];
 		y[*n] = ycont[k];
@@ -243,7 +243,7 @@ void copy_points_fw (struct GMT_CTRL *GMT, double x[], double y[], double z[], d
 }
 
 void copy_points_bw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], COUNTER_MEDIUM ncont, int64_t *n) {
-	COUNTER_MEDIUM k,k2;
+	COUNTER_MEDIUM k, k2;
 	for (k2 = 0, k = ncont - 1; k2 < ncont; k2++, k--, (*n)++) {
 		x[*n] = xcont[k];
 		y[*n] = ycont[k];
@@ -526,7 +526,7 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_drape = Ctrl->G.image ? 3 : 1;
 	if (Ctrl->G.active) {
-		GMT_LONG i;
+		COUNTER_MEDIUM i;
 		for (i = 0; i < n_drape; i++) {
 			n_errors += GMT_check_condition (GMT, !Ctrl->G.file[i][0], "Syntax error -G option: Must specify drape file\n");
 		}
@@ -612,7 +612,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->G.active) {
-		for (i = 0; i < n_drape; i++) if ((Drape[i] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->G.file[i], NULL)) == NULL) {	/* Get header only */
+		for (k = 0; k < n_drape; k++) if ((Drape[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->G.file[k], NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 	}
@@ -655,14 +655,14 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	t_reg = GMT_change_grdreg (GMT, Topo->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 
 	if (Ctrl->G.active) {	/* Draping wanted */
-		for (i = 0; i < n_drape; i++) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Processing drape file %s\n", Ctrl->G.file[i]);
+		for (k = 0; k < n_drape; k++) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Processing drape file %s\n", Ctrl->G.file[k]);
 
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->G.file[i], Drape[i]) == NULL) {	/* Get drape data */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->G.file[k], Drape[k]) == NULL) {	/* Get drape data */
 				Return (API->error);
 			}
-			if (Drape[i]->header->nx != Topo->header->nx || Drape[i]->header->ny != Topo->header->ny) drape_resample = TRUE;
-			d_reg[i] = GMT_change_grdreg (GMT, Drape[i]->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
+			if (Drape[k]->header->nx != Topo->header->nx || Drape[k]->header->ny != Topo->header->ny) drape_resample = TRUE;
+			d_reg[k] = GMT_change_grdreg (GMT, Drape[k]->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 		}
 		Z = Drape[0];
 	}
@@ -688,7 +688,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #endif
 
 	i_start = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 2) ? 0 : Z->header->nx - 2;
-	i_stop  = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 2) ? Z->header->nx - 1 : -1;
+	i_stop  = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 2) ? Z->header->nx : 0;	i_stop--;
 	i_inc   = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 2) ? 1 : -1;
 	j_start = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? Z->header->ny - 1 : 1;
 	j_stop  = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? 0 : Z->header->ny;
@@ -1565,39 +1565,39 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_setpen (GMT, &Ctrl->W.pen[2]);
 		PSL_setfill (PSL, Ctrl->N.rgb, TRUE);
 		if (!GMT->current.proj.z_project.draw[0])	{	/* Southern side */
-			for (i = n = 0, ij = sw; i < Z->header->nx; i++, ij++) {
+			for (col = n = 0, ij = sw; col < Z->header->nx; col++, ij++) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
-				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, i, Z->header), Z->header->wesn[YLO], (double)(Topo->data[ij]), &xx[n], &yy[n]);
+				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YLO], (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (i = Z->header->nx - 1; i >= 0; i--, n++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, i, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[n], &yy[n]);
+			for (col = Z->header->nx ; col > 0; col--, n++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, n);
 		}
 		if (!GMT->current.proj.z_project.draw[1]) {	/*	Eastern side */
-			for (j = n = 0, ij = ne; j < Z->header->ny; j++, ij += Topo->header->mx) {
+			for (row = n = 0, ij = ne; row < Z->header->ny; j++, ij += Topo->header->mx) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
-				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, j, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
+				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (j = Z->header->ny - 1; j >= 0; j--, n++) GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, j, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
+			for (row = Z->header->ny; row > 0; row--, n++) GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, n);
 		}
 		if (!GMT->current.proj.z_project.draw[2])	{	/* Northern side */
-			for (i = n = 0, ij = nw; i < Z->header->nx; i++, ij++) {
+			for (col = n = 0, ij = nw; col < Z->header->nx; col++, ij++) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
-				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, i, Z->header), Z->header->wesn[YHI], (double)(Topo->data[ij]), &xx[n], &yy[n]);
+				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YHI], (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (i = Z->header->nx - 1; i >= 0; i--, n++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, i, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[n], &yy[n]);
+			for (col = Z->header->nx; col > 0; col--, n++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, n);
 		}
 		if (!GMT->current.proj.z_project.draw[3]) {	/*	Western side */
-			for (j = n = 0, ij = nw; j < Z->header->ny; j++, ij += Topo->header->mx) {
+			for (row = n = 0, ij = nw; row < Z->header->ny; row++, ij += Topo->header->mx) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
-				GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, j, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
+				GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (j = Z->header->ny - 1; j >= 0; j--, n++) GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, j, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
+			for (row = Z->header->ny; row > 0; row--, n++) GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, n);
 		}
 	}
@@ -1642,8 +1642,8 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, y);
 	GMT_free (GMT, z);
 	GMT_free (GMT, v);
-	if (Ctrl->G.active) for (i = 0; i < n_drape; i++) {
-		GMT_change_grdreg (GMT, Drape[i]->header, d_reg[i]);	/* Reset registration, if required */
+	if (Ctrl->G.active) for (k = 0; k < n_drape; k++) {
+		GMT_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
 	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");

@@ -257,7 +257,7 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char tag_file[GMT_BUFSIZ], track_file[GMT_BUFSIZ], bin_file[GMT_BUFSIZ], def_file[GMT_BUFSIZ];
 	char path_file[GMT_BUFSIZ], path[GMT_BUFSIZ], line[GMT_BUFSIZ];
 
-	GMT_LONG error = FALSE;
+	BOOLEAN error = FALSE;
 
 	FILE *fp = NULL, *fp_def = NULL;
 

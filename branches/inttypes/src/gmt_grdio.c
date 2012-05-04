@@ -96,7 +96,7 @@ EXTERN_MSC GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *hea
 
 void gmt_expand_filename (struct GMT_CTRL *C, char *file, char *fname)
 {
-	GMT_LONG found;
+	BOOLEAN found;
 	COUNTER_MEDIUM i;
 	size_t f_length, length;
 
@@ -495,7 +495,7 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	GMT_LONG expand;	/* TRUE or FALSE */
+	BOOLEAN expand;		/* TRUE or FALSE */
 	GMT_LONG err;		/* Implied by GMT_err_trap */
 	COUNTER_MEDIUM side;
 	struct GRD_PAD P;
@@ -819,7 +819,8 @@ GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, ch
 	 * grdraster-type files.
 	 */
 
-	GMT_LONG r_w, err, header = TRUE, magic = TRUE;
+	GMT_LONG r_w, err;
+	BOOLEAN header = TRUE, magic = TRUE;
 	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};	/* MUST be ints */
 	char *bin_mode[3] = { "rb", "rb+", "wb"};
 
@@ -1250,7 +1251,7 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	 * intended to throw just any values at it (although one could).
 	 */
 	
-	GMT_LONG global, error = FALSE;
+	BOOLEAN global, error = FALSE;
 	double val, dx, small;
 	
 	switch (GMT_minmaxinc_verify (C, wesn[XLO], wesn[XHI], header->inc[GMT_X], GMT_SMALL)) {	/* Check if range is compatible with x_inc */
@@ -1681,7 +1682,7 @@ GMT_LONG GMT_init_complex (GMT_LONG complex_mode, COUNTER_MEDIUM *inc, COUNTER_M
 	 * Here, *inc is 1|2 and *off = 0-2
 	 */
 	
-	GMT_LONG do_header = TRUE;
+	BOOLEAN do_header = TRUE;
 	if (complex_mode & 64) {	/* Want no header, adjust complex_mode */
 		complex_mode %= 64;
 		do_header = FALSE;
@@ -1695,7 +1696,7 @@ GMT_LONG GMT_init_complex (GMT_LONG complex_mode, COUNTER_MEDIUM *inc, COUNTER_M
 	return (do_header);
 }
 
-GMT_LONG GMT_check_url_name (char *fname) {
+BOOLEAN GMT_check_url_name (char *fname) {
 	/* File names starting as below should not be tested for existance or reading permissions as they
 	   are either meant to be accessed on the fly (http & ftp) or they are compressed. So, if any of
 	   the conditions holds true, returns TRUE. All cases are read via GDAL support. */

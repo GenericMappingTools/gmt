@@ -288,8 +288,8 @@ GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
 
 GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, n, justify, PS_interpolate = 1, PS_transparent = 1;
-	GMT_LONG error = FALSE, free_GMT = FALSE, known = 0;
+	GMT_LONG i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0;
+	BOOLEAN error = FALSE, free_GMT = FALSE;
 
 	double x, y, wesn[4];
 

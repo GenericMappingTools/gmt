@@ -1007,7 +1007,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				size = 0.9 * GMT->current.setting.font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 				x0 = 0.5 * (length + ((GMT_LONG)strlen (label) -1) * size);
 				text[1] = 0;
-				for (i = 0; i < (GMT_LONG)strlen (label); i++) {
+				for (i = 0; i < strlen (label); i++) {
 					x1 = x0 - i * size;
 					text[0] = label[i];
 					PSL_plottext (PSL, x1, y_label, GMT->current.setting.font_label.size, text, -90.0, 6, form);

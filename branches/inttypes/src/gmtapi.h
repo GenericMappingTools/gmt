@@ -56,7 +56,7 @@ struct GMTAPI_DATA_OBJECT {
 	int family;				/* One of GMT_IS_{DATASET|TEXTSET|CPT|IMAGE|GMTGRID} */
 	int method;				/* One of GMT_IS_{FILE,STREAM,FDESC,ARRAY,GRID,COPY,REF|READONLY} */
 	int status;				/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
-	COUNTER_MEDIUM geometry;		/* One of GMT_POINT, GMT_LINE, GMT_POLY, GMT_SURF */
+	int geometry;				/* One of GMT_POINT, GMT_LINE, GMT_POLY, GMT_SURF */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
 	void *resource;				/* Points to registered data container (if appropriate) */
 	void *data;				/* Points to container associated with this object [for garbage collection purposes] */

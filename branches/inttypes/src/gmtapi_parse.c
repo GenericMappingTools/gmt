@@ -252,7 +252,7 @@ char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	 */
 
 	char *txt = NULL, buffer[GMT_BUFSIZ];
-	GMT_LONG first = TRUE;
+	BOOLEAN first = TRUE;
 	size_t length = 0, inc, n_alloc = GMT_BUFSIZ;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *G = API->GMT;	/* GMT control structure */

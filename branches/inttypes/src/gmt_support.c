@@ -779,7 +779,7 @@ GMT_LONG GMT_err_func (struct GMT_CTRL *C, GMT_LONG err, GMT_LONG fail, char *fi
 		return (err);
 }
 
-GMT_LONG gmt_check_irgb (int irgb[], double rgb[])
+BOOLEAN gmt_check_irgb (int irgb[], double rgb[])
 {
 	if ((irgb[0] < 0 || irgb[0] > 255) || (irgb[1] < 0 || irgb[1] > 255) || (irgb[2] < 0 || irgb[2] > 255)) return (TRUE);
 	rgb[0] = GMT_is255 (irgb[0]);
@@ -788,17 +788,17 @@ GMT_LONG gmt_check_irgb (int irgb[], double rgb[])
 	return (FALSE);
 }
 
-GMT_LONG gmt_check_rgb (double rgb[])
+BOOLEAN gmt_check_rgb (double rgb[])
 {
 	return ((rgb[0] < 0.0 || rgb[0] > 1.0) || (rgb[1] < 0.0 || rgb[1] > 1.0) || (rgb[2] < 0.0 || rgb[2] > 1.0));
 }
 
-GMT_LONG gmt_check_hsv (struct GMT_CTRL *C, double hsv[])
+BOOLEAN gmt_check_hsv (struct GMT_CTRL *C, double hsv[])
 {
 	return ((hsv[0] < 0.0 || hsv[0] > 360.0) || (hsv[1] < 0.0 || hsv[1] > 1.0) || (hsv[2] < 0.0 || hsv[2] > 1.0));
 }
 
-GMT_LONG gmt_check_cmyk (double cmyk[])
+BOOLEAN gmt_check_cmyk (double cmyk[])
 {
 	int i;
 	for (i = 0; i < 4; i++) cmyk[i] *= 0.01;
@@ -931,7 +931,7 @@ GMT_LONG GMT_colorname2index (struct GMT_CTRL *C, char *name)
 	return (k);
 }
 
-GMT_LONG GMT_getrgb (struct GMT_CTRL *C, char *line, double rgb[])
+BOOLEAN GMT_getrgb (struct GMT_CTRL *C, char *line, double rgb[])
 {
 	int n, i, count, irgb[3];
 	double hsv[4], cmyk[5];
@@ -1019,7 +1019,7 @@ GMT_LONG GMT_getrgb (struct GMT_CTRL *C, char *line, double rgb[])
 	return (TRUE);
 }
 
-GMT_LONG gmt_gethsv (struct GMT_CTRL *C, char *line, double hsv[])
+BOOLEAN gmt_gethsv (struct GMT_CTRL *C, char *line, double hsv[])
 {
 	int n, i, count, irgb[3];
 	double rgb[4], cmyk[5];
@@ -1154,7 +1154,7 @@ void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, COUNTER_MEDIUM si
 	strncpy (text, buffer, k);	/* Copy back the revised string */
 }
 
-GMT_LONG gmt_is_pattern (char *word) {
+BOOLEAN gmt_is_pattern (char *word) {
 	/* Returns TRUE if the word is a pattern specification P|p<dpi>/<pattern>[:B<color>[F<color>]] */
 
 	if (strchr (word, ':')) return (TRUE);			/* Only patterns may have a colon */
@@ -1164,7 +1164,7 @@ GMT_LONG gmt_is_pattern (char *word) {
 	return (TRUE);
 }
 
-GMT_LONG gmt_is_color (struct GMT_CTRL *C, char *word)
+BOOLEAN gmt_is_color (struct GMT_CTRL *C, char *word)
 {
 	GMT_LONG i, k, n, n_hyphen = 0;
 
@@ -1208,7 +1208,7 @@ GMT_LONG gmt_getfonttype (struct GMT_CTRL *C, char *name)
 	return (atoi (name));
 }
 
-GMT_LONG gmt_is_fontname (struct GMT_CTRL *C, char *word) {
+BOOLEAN gmt_is_fontname (struct GMT_CTRL *C, char *word) {
 	/* Returns TRUE if the word is one of the named fonts */
 	COUNTER_MEDIUM i;
 
@@ -1460,7 +1460,7 @@ GMT_LONG gmt_getpenstyle (struct GMT_CTRL *C, char *line, struct GMT_PEN *P) {
 	return (GMT_NOERROR);
 }
 
-GMT_LONG gmt_is_penstyle (char *word)
+BOOLEAN gmt_is_penstyle (char *word)
 {
 	GMT_LONG n;
 
@@ -1483,7 +1483,7 @@ GMT_LONG gmt_is_penstyle (char *word)
 	return ((n == -1));	/* TRUE if we only found -/., FALSE otherwise */
 }
 
-GMT_LONG GMT_getpen (struct GMT_CTRL *C, char *buffer, struct GMT_PEN *P)
+BOOLEAN GMT_getpen (struct GMT_CTRL *C, char *buffer, struct GMT_PEN *P)
 {
 	GMT_LONG i, n;
 	char width[GMT_TEXT_LEN256], color[GMT_TEXT_LEN256], style[GMT_TEXT_LEN256], line[GMT_BUFSIZ];
@@ -1572,7 +1572,7 @@ char *GMT_putpen (struct GMT_CTRL *C, struct GMT_PEN pen)
 
 #if 0
 /* NOT USED ?? */
-GMT_LONG gmt_is_penwidth (struct GMT_CTRL *C, char *word)
+BOOLEAN gmt_is_penwidth (struct GMT_CTRL *C, char *word)
 {
 	GMT_LONG n;
 
@@ -3055,7 +3055,8 @@ void gmt_intpol_reverse (double *x, double *u, COUNTER_LARGE n, COUNTER_LARGE m)
 GMT_LONG GMT_intpol (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, COUNTER_LARGE m, double *u, double *v, GMT_LONG mode)
 {
 	COUNTER_LARGE i, this_n, this_m, start_i, start_j, stop_i, stop_j;
-	GMT_LONG err_flag = 0, down = FALSE, check = TRUE, clean = TRUE;
+	GMT_LONG err_flag = 0;
+	BOOLEAN down = FALSE, check = TRUE, clean = TRUE;
 	double dx;
 
 	if (mode < 0) {	/* No need to check for sanity */
@@ -3576,7 +3577,8 @@ GMT_LONG GMT_contlabel_info (struct GMT_CTRL *C, char flag, char *txt, struct GM
 
 GMT_LONG gmt_code_to_lonlat (struct GMT_CTRL *C, char *code, double *lon, double *lat)
 {
-	GMT_LONG i, n, error = 0, z_OK = FALSE;
+	GMT_LONG i, n, error = 0;
+	BOOLEAN z_OK = FALSE;
 
 	n = strlen (code);
 	if (n != 2) return (1);
@@ -3753,7 +3755,8 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double x
 	}
 	else if (G->fixed) {
 		FILE *fp = NULL;
-		GMT_LONG kk, n_col, len, bad_record = FALSE;
+		GMT_LONG kk, n_col, len;
+		BOOLEAN bad_record = FALSE;
 		double xy[2];
 
 		if ((fp = GMT_fopen (C, G->file, "r")) == NULL) {
@@ -4033,7 +4036,7 @@ void gmt_setcontjump (float *z, COUNTER_LARGE nz)
  * should become -1, 1 after this function */
 
 	COUNTER_LARGE i;
-	GMT_LONG jump = FALSE;
+	BOOLEAN jump = FALSE;
 	double dz;
 
 	for (i = 1; !jump && i < nz; i++) {
@@ -4056,8 +4059,8 @@ void gmt_setcontjump (float *z, COUNTER_LARGE nz)
 COUNTER_LARGE gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG test, COUNTER_MEDIUM *edge, double **x, double **y, GMT_LONG col, GMT_LONG row, GMT_LONG side, COUNTER_LARGE offset, size_t *bit, COUNTER_MEDIUM *nan_flag)
 {
 	COUNTER_MEDIUM this_side, old_side, n_exits, opposite_side, n_nan;
-	GMT_LONG side_in, edge_word, edge_bit;
-	GMT_LONG more, p[5];
+	GMT_LONG side_in, edge_word, edge_bit, p[5];
+	BOOLEAN more;
 	size_t n_alloc;
 	COUNTER_LARGE n = 1, m, ij0, ij_in, ij;
 	float z[5];
@@ -4414,7 +4417,7 @@ void gmt_orient_contour (struct GMT_GRID *G, double *x, double *y, COUNTER_LARGE
 	}
 }
 
-COUNTER_LARGE GMT_contours (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG smooth_factor, GMT_LONG int_scheme, GMT_LONG orient, COUNTER_MEDIUM *edge, GMT_LONG *first, double **x, double **y)
+COUNTER_LARGE GMT_contours (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG smooth_factor, GMT_LONG int_scheme, GMT_LONG orient, COUNTER_MEDIUM *edge, BOOLEAN *first, double **x, double **y)
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
@@ -5700,7 +5703,8 @@ GMT_LONG GMT_delaunay_watson (struct GMT_CTRL *C, double *x_in, double *y_in, CO
 	   is in link[i*3], link[i*3+1], link[i*3+2] */
 {
 	int *index = NULL;	/* Must be int not GMT_LONG */
-	GMT_LONG ix[3], iy[3], done;
+	GMT_LONG ix[3], iy[3];
+	BOOLEAN done;
 	COUNTER_LARGE i, j, nuc, ij, jt, km, id, isp, l1, l2, k, k1, jz, i2, kmt, kt, size;
 	int64_t *istack = NULL, *x_tmp = NULL, *y_tmp = NULL;
 	double det[2][3], *x_circum = NULL, *y_circum = NULL, *r2_circum = NULL, *x = NULL, *y = NULL;
@@ -6051,7 +6055,7 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 	COUNTER_LARGE j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
 	GMT_LONG n_skip;
 	GMT_LONG bok;		/* COUNTER_LARGE used to test that things are OK  */
-	GMT_LONG set[4] = {TRUE, TRUE, TRUE, TRUE};
+	BOOLEAN set[4] = {TRUE, TRUE, TRUE, TRUE};
 	 
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
 	char *edge[4] = {"left  ", "right ", "bottom", "top   "};
@@ -6460,7 +6464,7 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 	GMT_LONG n_skip;
 	GMT_LONG b, nb = G->header->n_bands;
 	GMT_LONG bok;		/* COUNTER_LARGE used to test that things are OK  */
-	GMT_LONG set[4] = {TRUE, TRUE, TRUE, TRUE};
+	BOOLEAN set[4] = {TRUE, TRUE, TRUE, TRUE};
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
 	char *edge[4] = {"left  ", "right ", "bottom", "top   "};
 
@@ -6962,7 +6966,7 @@ void GMT_set_xy_domain (struct GMT_CTRL *C, double wesn_extended[], struct GRD_H
 	}
 }
 
-GMT_LONG GMT_x_is_outside (struct GMT_CTRL *C, double *x, double left, double right)
+BOOLEAN GMT_x_is_outside (struct GMT_CTRL *C, double *x, double left, double right)
 {
 	/* Determines if this x is inside the effective x-domain.  This is normally
 	 * west to east, but when gridding is concerned it can be extended by +-0.5 * dx
@@ -7313,7 +7317,8 @@ GMT_LONG GMT_getmodopt (struct GMT_CTRL *C, const char *string, const char *sep,
 	 * string is not changed by GMT_getmodopt.
 	 */
 
-	GMT_LONG i, j, string_len, done = FALSE;
+	GMT_LONG i, j, string_len;
+	BOOLEAN done = FALSE;
 
 	string_len = strlen (string);
 	token[0] = 0;	/* Initialize token to NULL in case we are at end */
@@ -7651,12 +7656,12 @@ void gmt_x_alloc (struct GMT_CTRL *C, struct GMT_XOVER *X, size_t nx_alloc, GMT_
 	}
 }
 
-GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], GMT_LONG *sa0, struct GMT_XSEGMENT A[], COUNTER_LARGE na, double xb[], double yb[], GMT_LONG *sb0, struct GMT_XSEGMENT B[], COUNTER_LARGE nb, GMT_LONG internal, struct GMT_XOVER *X)
+GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], COUNTER_LARGE *sa0, struct GMT_XSEGMENT A[], COUNTER_LARGE na, double xb[], double yb[], COUNTER_LARGE *sb0, struct GMT_XSEGMENT B[], COUNTER_LARGE nb, BOOLEAN internal, struct GMT_XOVER *X)
 {
 	size_t nx_alloc;
 	COUNTER_LARGE nx, this_a, this_b, xa_start = 0, xa_stop = 0, xb_start = 0, xb_stop = 0, ta_start = 0, ta_stop = 0, tb_start, tb_stop, n_seg_a, n_seg_b;
-	GMT_LONG new_a, new_b, new_a_time = FALSE, xa_OK = FALSE, xb_OK = FALSE;
-	GMT_LONG *sa = NULL, *sb = NULL;
+	BOOLEAN new_a, new_b, new_a_time = FALSE, xa_OK = FALSE, xb_OK = FALSE;
+	COUNTER_LARGE *sa = NULL, *sb = NULL;
 	double del_xa, del_xb, del_ya, del_yb, i_del_xa, i_del_xb, i_del_ya, i_del_yb, slp_a, slp_b, xc, yc, tx_a, tx_b;
 
 	if (na < 2 || nb < 2) return (0);	/* Need at least 2 points to make a segment */
@@ -7669,8 +7674,8 @@ GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], GMT_LONG *
 	n_seg_b = nb - 1;
 
 	/* Assign pointers to segment info given, or initialize zero arrays if not given */
-	sa = (sa0) ? sa0 : GMT_memory (C, NULL, na, GMT_LONG);
-	sb = (sb0) ? sb0 : GMT_memory (C, NULL, nb, GMT_LONG);
+	sa = (sa0) ? sa0 : GMT_memory (C, NULL, na, COUNTER_LARGE);
+	sb = (sb0) ? sb0 : GMT_memory (C, NULL, nb, COUNTER_LARGE);
 
 	gmt_x_alloc (C, X, nx_alloc, TRUE);
 
@@ -8188,7 +8193,8 @@ GMT_LONG gmt_load_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, cha
 	 * The item argument specifies which type to consider [a|i,f,g].  We return
 	 * an array with coordinates and labels, and set interval to TRUE if applicable.
 	 */
-	GMT_LONG found, text, error = 0;
+	GMT_LONG text, error = 0;
+	BOOLEAN found;
  	COUNTER_MEDIUM k = 0, nc, n_annot = 0, n_int = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double *x = NULL;
@@ -8261,7 +8267,7 @@ GMT_LONG GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struc
 	return (n);
 }
 
-GMT_LONG GMT_annot_pos (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double coord[], double *pos)
+BOOLEAN GMT_annot_pos (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double coord[], double *pos)
 {
 	/* Calculates the location of the next annotation in user units.  This is
 	 * trivial for tick annotations but can be tricky for interval annotations
@@ -8395,9 +8401,9 @@ GMT_LONG gmt_polar_adjust (struct GMT_CTRL *C, GMT_LONG side, double angle, doub
 	return (justify);
 }
 
-GMT_LONG gmt_get_label_parameters (struct GMT_CTRL *C, GMT_LONG side, double line_angle, GMT_LONG type, double *text_angle, GMT_LONG *justify)
+BOOLEAN gmt_get_label_parameters (struct GMT_CTRL *C, GMT_LONG side, double line_angle, GMT_LONG type, double *text_angle, GMT_LONG *justify)
 {
-	GMT_LONG ok;
+	BOOLEAN ok;
 
 	*text_angle = line_angle;
 #ifdef OPT_WORKS_BADLY
@@ -8478,7 +8484,7 @@ GMT_LONG gmt_gnomonic_adjust (struct GMT_CTRL *C, double angle, double x, double
 
 GMT_LONG GMT_prepare_label (struct GMT_CTRL *C, double angle, GMT_LONG side, double x, double y, GMT_LONG type, double *line_angle, double *text_angle, GMT_LONG *justify)
 {
-	GMT_LONG set_angle;
+	BOOLEAN set_angle;
 
 	if (!C->current.proj.edge[side]) return -1;		/* Side doesn't exist */
 	if (C->current.map.frame.side[side] < 2) return -1;	/* Don't want labels here */
@@ -8517,7 +8523,7 @@ GMT_LONG GMT_prepare_label (struct GMT_CTRL *C, double angle, GMT_LONG side, dou
 	return 0;
 }
 
-void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_LONG do_minutes, GMT_LONG do_seconds, GMT_LONG lonlat, GMT_LONG worldmap)
+void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, BOOLEAN do_minutes, BOOLEAN do_seconds, GMT_LONG lonlat, BOOLEAN worldmap)
 /* val:		Degree value of annotation */
 /* label:	String to hold the final annotation */
 /* do_minutes:	TRUE if degree and minutes are desired, FALSE for just integer degrees */
@@ -8525,7 +8531,8 @@ void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_LONG 
 /* lonlat:	0 = longitudes, 1 = latitudes, 2 non-geographical data passed */
 /* worldmap:	T/F, whatever C->current.map.is_world is */
 {
-	GMT_LONG k, n_items, sign, d, m, s, m_sec, level, type, h_pos = 0, zero_fix = FALSE;
+	GMT_LONG k, n_items, sign, d, m, s, m_sec, level, type, h_pos = 0;
+	BOOLEAN zero_fix = FALSE;
 	char hemi[3], format[GMT_TEXT_LEN64];
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
@@ -8660,7 +8667,7 @@ double gmt_get_angle (struct GMT_CTRL *C, double lon1, double lat1, double lon2,
 	return (direction);
 }
 
-double GMT_get_annot_offset (struct GMT_CTRL *C, GMT_LONG *flip, GMT_LONG level)
+double GMT_get_annot_offset (struct GMT_CTRL *C, BOOLEAN *flip, GMT_LONG level)
 {
 	/* Return offset in inches for text annotation.  If annotation
 	 * is to be placed 'inside' the map, set flip to TRUE */
@@ -9016,7 +9023,7 @@ void GMT_free_custom_symbols (struct GMT_CTRL *C) {	/* Free the allocated list o
 	C->init.n_custom_symbols = 0;
 }
 
-GMT_LONG GMT_polygon_is_open (struct GMT_CTRL *C, double x[], double y[], COUNTER_LARGE n)
+BOOLEAN GMT_polygon_is_open (struct GMT_CTRL *C, double x[], double y[], COUNTER_LARGE n)
 {	/* Returns TRUE if the first and last point is not identical */
 	if (n < 2) return FALSE;	/*	A point is closed */
 	if (!doubleAlmostEqualZero (x[0], x[n-1]))
@@ -9944,7 +9951,7 @@ struct GMT_DATASET * GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *
 	return (D);
 }
 
-GMT_LONG gmt_straddle_dateline (double x0, double x1) {
+BOOLEAN gmt_straddle_dateline (double x0, double x1) {
 	if (fabs (x0 - x1) > 90.0) return (FALSE);	/* Probably Greenwhich crossing with 0/360 discontinuity */
 	if ((x0 < 180.0 && x1 > 180.0) || (x0 > 180.0 && x1 < 180.0)) return (TRUE);	/* Crossed Dateline */
 	return (FALSE);

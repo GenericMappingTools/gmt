@@ -46,14 +46,14 @@ struct DIMFILTER_CTRL {
 	} C;
 	struct D {	/* -D<distflag> */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} D;
 	struct E {	/* -E */
 		BOOLEAN active;
 	} E;
 	struct F {	/* <type><filter_width>*/
 		BOOLEAN active;
-		GMT_LONG filter;	/* Id for the filter */
+		COUNTER_MEDIUM filter;	/* Id for the filter */
 		double width;
 	} F;
 	struct G {	/* -G<file> */
@@ -66,12 +66,12 @@ struct DIMFILTER_CTRL {
 	} I;
 	struct N {	/* -N */
 		BOOLEAN active;
-		GMT_LONG n_sectors;
-		GMT_LONG filter;	/* Id for the filter */
+		COUNTER_MEDIUM n_sectors;
+		COUNTER_MEDIUM filter;	/* Id for the filter */
 	} N;
 	struct Q {	/* -Q */
 		BOOLEAN active;
-		GMT_LONG err_cols;
+		COUNTER_MEDIUM err_cols;
 	} Q;
 	struct S {	/* -S<file> */
 		BOOLEAN active;
@@ -158,7 +158,7 @@ GMT_LONG GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	GMT_LONG n_errors = 0, n_files = 0, k;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 #ifdef OBSOLETE					
@@ -180,7 +180,9 @@ GMT_LONG GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl
 				break;
 			case 'D':
 				Ctrl->D.active = TRUE;
-				Ctrl->D.mode = atoi (opt->arg);
+				k = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, k < 0 || k > 4, "Syntax error -D option: Choose from the range 0-4\n");
+				Ctrl->D.mode = k;
 				break;
 #ifdef OBSOLETE					
 			case 'E':
@@ -244,7 +246,9 @@ GMT_LONG GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl
 						n_errors++;
 						break;
 				}
-				Ctrl->N.n_sectors = atoi (&opt->arg[1]);	/* Number of sections to split filter into */
+				k = atoi (&opt->arg[1]);	/* Number of sections to split filter into */
+				n_errors += GMT_check_condition (GMT, k <= 0, "Syntax error -N option: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
+				Ctrl->N.n_sectors = k;	/* Number of sections to split filter into */
 				break;
 			case 'Q':	/* entering the MAD error analysis mode */
 				Ctrl->Q.active = TRUE;
@@ -271,9 +275,8 @@ GMT_LONG GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl
 		GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
 		n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->D.mode < 0 || Ctrl->D.mode > 4, "Syntax error -D option: Choose from the range 0-4\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->F.filter < 0 || Ctrl->F.width <= 0.0, "Syntax error -F option: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->N.filter < 0 || Ctrl->N.n_sectors <= 0, "Syntax error -N option: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->F.width <= 0.0, "Syntax error -F option: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->N.n_sectors == 0, "Syntax error -N option: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
 #ifdef OBSOLETE						
 		slow = (Ctrl->F.filter == 3 || Ctrl->F.filter == 4);		/* Will require sorting etc */
 		n_errors += GMT_check_condition (GMT, Ctrl->E.active && !slow, "Syntax error -E option: Only valid for robust filters -Fm|p.\n");
@@ -360,12 +363,12 @@ void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GRD_HEADER *h, doub
 
 GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	short int **sector = NULL;
+	unsigned short int **sector = NULL;
 	
-	COUNTER_MEDIUM *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0;
-	COUNTER_MEDIUM GMT_mode_selection = 0, GMT_n_multiples = 0, col_out, row_out;
+	COUNTER_MEDIUM *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0, col_in, row_in;
+	COUNTER_MEDIUM GMT_mode_selection = 0, GMT_n_multiples = 0, col_out, row_out, i, j, k, s;
 	BOOLEAN full_360, shift = FALSE, slow, slow2, error = FALSE, fast_way;
-	GMT_LONG j_origin, *i_origin = NULL, col_in, row_in, ii, jj, i, j, k, s;
+	GMT_LONG j_origin, *i_origin = NULL, ii, jj, scol, srow;
 	
 	COUNTER_LARGE n_nan = 0, ij_in, ij_out, ij_wt;
 	
@@ -378,7 +381,8 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #endif
 	
 #ifdef OBSOLETE
-	GMT_LONG first_time = TRUE, n = 0;
+	BOOLEAN first_time = TRUE;
+	GMT_LONG n = 0;
 	int n_bad_planes = 0, S = 0;
 	double Sx = 0.0, Sy = 0.0, Sz = 0.0, Sxx = 0.0, Syy = 0.0, Sxy = 0.0, Sxz = 0.0, Syz = 0.0;
 	double denominator, scale, Sw, intercept = 0.0, slope_x = 0.0, slope_y = 0.0, inv_D;
@@ -579,8 +583,8 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		else {
 		/* SCAN: Precalculate which sector each point belongs to */
-			sector = GMT_memory (GMT, NULL, F.ny, short int *);
-			for (jj = 0; jj < F.ny; jj++) sector[jj] = GMT_memory (GMT, NULL, F.nx, short int);
+			sector = GMT_memory (GMT, NULL, F.ny, unsigned short int *);
+			for (jj = 0; jj < F.ny; jj++) sector[jj] = GMT_memory (GMT, NULL, F.nx, unsigned short int);
 			for (jj = -F.y_half_width; jj <= F.y_half_width; jj++) {	/* This double loop visits all nodes in the square centered on an output node */
 				j = F.y_half_width + jj;
 				for (ii = -F.x_half_width; ii <= F.x_half_width; ii++) {	/* (ii, jj) is local coordinates relative center (0,0) */
@@ -588,7 +592,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					/* We are doing "bow-ties" and not wedges here */
 					angle = atan2 ((double)jj, (double)ii);				/* Returns angle in -PI,+PI range */
 					if (angle < 0.0) angle += M_PI;					/* Flip to complimentary sector in 0-PI range */
-					sector[j][i] = (short) rint ((Ctrl->N.n_sectors * angle) / M_PI);		/* Convert to sector id 0-<n_sectors-1> */
+					sector[j][i] = (short) rint ((Ctrl->N.n_sectors * angle) / M_PI);	/* Convert to sector id 0-<n_sectors-1> */
 					if (sector[j][i] == Ctrl->N.n_sectors) sector[j][i] = 0;		/* Ensure that exact PI is set to 0 */
 				}
 			}
@@ -619,11 +623,11 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				
 				for (ii = -F.x_half_width; ii <= F.x_half_width; ii++) {
 					col_in = i_origin[col_out] + ii;
-					if ((col_in < 0) || (col_in >= Gin->header->nx)) continue;
+					if (col_in < 0 || (col_in = scol) >= Gin->header->nx) continue;
 
 					for (jj = -F.y_half_width; jj <= F.y_half_width; jj++) {
-						row_in = j_origin + jj;
-						if ((row_in < 0) || (row_in >= Gin->header->ny)) continue;
+						srow = j_origin + jj;
+						if (srow < 0 || (row_in = srow) >= Gin->header->ny) continue;
 											
 						ij_wt = (jj + F.y_half_width) * F.nx + ii + F.x_half_width;
 						if (F. weight[ij_wt] < 0.0) continue;
@@ -921,7 +925,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		GMT_free (GMT, F. weight);
 		GMT_free (GMT, i_origin);
-		for (j = 0; j < F.ny; j++) GMT_free (GMT, sector[j]);
+		for (ii = 0; ii < F.ny; ii++) GMT_free (GMT, sector[ii]);
 		GMT_free (GMT, sector);
 		GMT_free (GMT, value);
 		GMT_free (GMT, wt_sum);

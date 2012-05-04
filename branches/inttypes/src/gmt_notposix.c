@@ -88,7 +88,8 @@ double strtod (const char *s, char **ends) {
 
 	char *t = NULL, savechar;
 	double x = 0.0;
-	GMT_LONG i, nsign[2], nradix[2], nexp, ndigits, error, inside = FALSE;
+	GMT_LONG i, nsign[2], nradix[2], nexp, ndigits, error;
+	BOOLEAN inside = FALSE;
 
 	t = s;
 	i = 0;

@@ -174,7 +174,7 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 
 GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE;
+	BOOLEAN error = FALSE;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMTAVERAGE_CTRL *Ctrl = NULL;

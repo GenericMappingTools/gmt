@@ -125,7 +125,8 @@ GMT_LONG GMT_grdpaste_parse (struct GMTAPI_CTRL *C, struct GRDPASTE_CTRL *Ctrl, 
 
 GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, way, one_or_zero;
+	BOOLEAN error = FALSE;
+	GMT_LONG way, one_or_zero;
 
 	char format[GMT_BUFSIZ];
 

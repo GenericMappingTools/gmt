@@ -109,7 +109,7 @@ int compare_distances (const void *point_1, const void *point_2)
 	return (0);
 }
 
-double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p, double *clat, double *clon, double *c, GMT_LONG c_given, GMT_LONG generate)
+double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p, double *clat, double *clon, double *c, BOOLEAN c_given, BOOLEAN generate)
 {
 	/* routine sets up a unit 3-vector p, the pole of an
 	   oblique projection, given plat, plon, the position

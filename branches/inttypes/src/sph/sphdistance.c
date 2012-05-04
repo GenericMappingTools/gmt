@@ -231,12 +231,13 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 
 GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, first = FALSE, s_row, n_row, w_col, e_col;
+	BOOLEAN error = FALSE, first = FALSE, periodic;
+	GMT_LONG s_row, south_row, north_row, west_col, east_col, w_col, e_col;
 
-	COUNTER_MEDIUM row, col, n_dup = 0, n_set = 0, ii, side;
-	COUNTER_MEDIUM nx1, vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
-	
-	COUNTER_LARGE ij, node, n = 0;
+	COUNTER_MEDIUM row, col, p_col;
+	COUNTER_LARGE nx1, n_dup = 0, n_set = 0, side, ij, node, n = 0;
+	COUNTER_LARGE vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
+
 	size_t n_alloc, p_alloc = 0;
 
 	double first_x = 0.0, first_y = 0.0, X[3], *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
@@ -279,7 +280,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!GMT->common.R.active) {	/* Default to a global grid */
 		Grid->header->wesn[XLO] = 0.0;	Grid->header->wesn[XHI] = 360.0;	Grid->header->wesn[YLO] = -90.0;	Grid->header->wesn[YHI] = 90.0;
 	}
-
+	periodic = GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]);
 	/* Now we are ready to take on some input values */
 
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
@@ -466,14 +467,25 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
-		s_row = GMT_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
-		n_row = GMT_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);
-		w_col = GMT_grd_x_to_col (GMT, P->min[GMT_X], Grid->header);
+		south_row = GMT_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
+		north_row = GMT_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);
+		w_col  = GMT_grd_x_to_col (GMT, P->min[GMT_X], Grid->header);
+		while (w_col < 0) w_col += nx1;
+		west_col = w_col;
 		e_col = GMT_grd_x_to_col (GMT, P->max[GMT_X], Grid->header);
-
-		for (row = n_row; row <= s_row; row++) {	/* For each scanline intersecting this polygon */
-			for (ii = w_col; ii <= e_col; ii++) {	/* March along the scanline */
-				col = (ii >= 0) ? ii : ii + nx1;
+		while (e_col < w_col) e_col += nx1;
+		east_col = e_col;
+		/* So here, any polygon will have a positive (or 0) west_col with an east_col >= west_col */
+		for (s_row = north_row; s_row <= south_row; s_row++) {	/* For each scanline intersecting this polygon */
+			if (s_row < 0) continue;	/* North of region */
+			row = s_row; if (row >= Grid->header->ny) continue;	/* South of region */
+			for (p_col = west_col; p_col <= east_col; p_col++) {	/* March along the scanline using col >= 0 */
+				if (p_col >= Grid->header->nx) {	/* Off the east end of the grid */
+					if (periodic)	/* Just shuffle to the corresponding point inside the global grid */
+						col = p_col - nx1;
+					else		/* Sorry, really outside the region */
+						continue;
+				}
 				side = GMT_inonout_sphpol (GMT, grid_lon[col], grid_lat[row], P);	/* No holes to worry about here */
 				if (side == 0) continue;	/* Outside spherical polygon */
 				ij = GMT_IJP (Grid->header, row, col);

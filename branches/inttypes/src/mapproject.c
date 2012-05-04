@@ -194,7 +194,8 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_slash, n, k, n_errors = 0, slash, last, geodetic_calc = FALSE;
+	GMT_LONG n_slash, n, k, n_errors = 0, slash, last;
+	BOOLEAN geodetic_calc = FALSE;
 	char c, d, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], from[GMT_TEXT_LEN256], to[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -405,11 +406,10 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 
 GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG k, x, y, rmode, i = 0, n_fields, n_output = 0, two;
-	GMT_LONG fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0;
-	GMT_LONG error = FALSE, line_start = TRUE, do_geo_conv = FALSE;
-	GMT_LONG geodetic_calc = FALSE, lat_mode = 0;
-	GMT_LONG datum_conv_only = FALSE, double_whammy = FALSE, way;
+	GMT_LONG k, x, y, rmode, i = 0, n_fields, n_output = 0, two, way;
+	GMT_LONG fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
+	BOOLEAN error = FALSE, line_start = TRUE, do_geo_conv = FALSE;
+	BOOLEAN geodetic_calc = FALSE, datum_conv_only = FALSE, double_whammy = FALSE;
 	
 	COUNTER_MEDIUM pos;
 	

@@ -139,7 +139,7 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 {
 	/* Syntax: -W[+g][+k][+t<doctitle>][+n<layername>][+a<altmode>][+l<lodmin>/<lodmax>] */
 	
-	GMT_LONG error = FALSE;
+	BOOLEAN error = FALSE;
 	COUNTER_MEDIUM pos = 0;
 	char txt[GMT_BUFSIZ], p[GMT_BUFSIZ];
 	
@@ -548,10 +548,9 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 
 GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, found_proj = FALSE, setup, sys_retval = 0;
-	GMT_LONG isGMT_PS = FALSE, excessK;
-	GMT_LONG i, j, k, len, r, pos_file, pos_ext, pix_w = 0, pix_h = 0;
-	GMT_LONG got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
+	GMT_LONG sys_retval = 0, i, j, k, len, r, pos_file, pos_ext, pix_w = 0, pix_h = 0;
+	BOOLEAN got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
+	BOOLEAN excessK, setup, error = FALSE, found_proj = FALSE, isGMT_PS = FALSE;
 
 	double xt, yt, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
@@ -1317,7 +1316,7 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	unsigned long datatype;
 	long RegO, rc = 0;
 	int n = 0;
-	GMT_LONG bits64 = TRUE;
+	BOOLEAN bits64 = TRUE;
 	float maxVersion = 0;		/* In case more than one GS, hold the number of the highest version */
 
 #ifdef _WIN64

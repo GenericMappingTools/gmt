@@ -272,8 +272,8 @@ GMT_LONG GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *
 
 GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, ok, multi_files, n_segments = 0;
-	GMT_LONG i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, digunit;
+	BOOLEAN error = FALSE, ok, multi_files;
+	GMT_LONG i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, digunit, n_segments = 0;
 	GMT_LONG val_pos = 2, key_pos = 2, m_button, type, button, sys_retval = 0;
 	
 	char line[GMT_BUFSIZ], format[GMT_BUFSIZ], unit_name[80], this_file[GMT_BUFSIZ];

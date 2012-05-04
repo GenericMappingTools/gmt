@@ -229,23 +229,23 @@ struct MGD77_COLINFO {
 	double corr_factor;	/* Extra correction factor/offset to follow scale/offset; */
 	double corr_offset;	/* this is used to correct wrong units, etc. */
 	double limit[2];	/* Lower and upper limits on this data column */
-	int pos;		/* Position in output record [0 - n_columns-1]*/
+	uint32_t pos;		/* Position in output record [0 - n_columns-1]*/
 	nc_type type;		/* Type of representation of this data in the netCDF file (NC_SHORT, NC_INT, NC_BYTE, etc) */
 	char text;		/* length if this is a text string, else 0 */
 	int var_id;		/* netCDF variable ID */
 	int adjust;		/* Column needs some sort of adjustment before data is returned [0 means as is] */
-	GMT_LONG constant;	/* TRUE if column is constant and only 1 row is/should be stored */
-	GMT_LONG present;	/* TRUE if column is present in the file (NaN or otherwise) */
+	BOOLEAN constant;	/* TRUE if column is constant and only 1 row is/should be stored */
+	BOOLEAN present;	/* TRUE if column is present in the file (NaN or otherwise) */
 };
 
 struct MGD77_DATA_INFO {
-	short n_col;					/* Number of active columns in this MGD77+ file */
+	COUNTER_MEDIUM n_col;					/* Number of active columns in this MGD77+ file */
 	struct MGD77_COLINFO col[MGD77_SET_COLS];	/* List of info per extra column */
 	unsigned int bit_pattern;			/* Up to 32 bit flags, one for each parameter desired */
 };
 
 struct MGD77_META {	/* Information about a cruise as derived from navigation data */
-	GMT_LONG verified;	/* TRUE once MGD77_Verify_Prep has been called */
+	BOOLEAN verified;	/* TRUE once MGD77_Verify_Prep has been called */
 	int n_ten_box;		/* Number of 10x10 degree boxes visited by this cruise */
 	int w, e, s, n;		/* Whole degree left/right/bottom/top coordinates */
 	int Departure[3];	/* yyyy, mm, dd of departure */
@@ -260,10 +260,10 @@ struct MGD77_HEADER {
 	char *author;					/* Name of author of last creation/modification */
 	char *history;					/* History of creation/modifications */
 	char *E77;					/* Statement of E77 information encoded */
-	GMT_LONG n_records;					/* Number of MGD77 data records found */
+	GMT_LONG n_records;				/* Number of MGD77 data records found */
 	int n_fields;					/* Number of columns returned */
 	int errors[3];					/* Number of total errors, (warnings, errors) found when reading this header */
-	GMT_LONG no_time;				/* TRUE for those few cruises that have no time values */
+	BOOLEAN no_time;				/* TRUE for those few cruises that have no time values */
 	double PDR_wrap;				/* Non-zero if we must undo PDR wrapping */
 	struct MGD77_DATA_INFO info[MGD77_N_SETS];	/* Info regarding [0] standard MGD77 columns and [1] any extra columns (max 32 each) */
 };
@@ -333,7 +333,7 @@ struct MGD77_AUXLIST {
 	char name[MGD77_COL_ABBREV_LEN];
 	GMT_LONG type;
 	GMT_LONG text;
-	GMT_LONG requested;
+	BOOLEAN requested;
 	char header[GMT_TEXT_LEN64];
 };
 
@@ -354,7 +354,7 @@ struct MGD77_DATA_RECORD {	/* See MGD77 Documentation from NGDC for details */
 	double time;				/* Time using current GMT absolute time conventions (J2000 UTC) */
 	char word[MGD77_N_STRING_FIELDS][10];	/* The 3 text strings in MGD77 records */
 	unsigned int bit_pattern;		/* Bit pattern indicating which of the 27 fields are present in current record */
-	GMT_LONG keep_nav;			/* Set to false when navigation is bad */
+	BOOLEAN keep_nav;			/* Set to false when navigation is bad */
 };
 
 struct MGD77_DATASET {	/* Info for an entire MGD77+ data set */
@@ -383,7 +383,7 @@ struct MGD77_CONSTRAINT {
 	char name[MGD77_COL_ABBREV_LEN];	/* Name of data col that is constrained */
 	int col;				/* Number of data col that is constrained */
 	int code;				/* Which test this is */
-	GMT_LONG exact;				/* If TRUE we MUST pass this test */
+	BOOLEAN exact;				/* If TRUE we MUST pass this test */
 	double d_constraint;			/* Value for testing */
 	char c_constraint[GMT_TEXT_LEN64];	/* String value for testing */
 	PFL double_test;			/* Pointer to function performing the chosen limit test on a double */
@@ -425,23 +425,23 @@ struct MGD77_CONTROL {
 	/* Format-related issues */
 	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
 	struct GMT_TIME_SYSTEM utime;			/* All the information about the Unix time system */
-	GMT_LONG adjust_time;				/* TRUE if GMT time-system is NOT unix */
+	BOOLEAN adjust_time;				/* TRUE if GMT time-system is NOT unix */
 	/* Data use information */
-	GMT_LONG original;				/* TRUE means we want original not revised header attributes */
-	GMT_LONG revised;				/* TRUE means we are working on a MGD77+ file with revised header attributes */
-	GMT_LONG Want_Header_Item[MGD77_N_HEADER_ITEMS];	/* TRUE means print this header item if dump is selected */
-	GMT_LONG use_flags[MGD77_N_SETS];		/* TRUE means programs will use error bitflags (if present) when returning data */
-	GMT_LONG use_corrections[MGD77_N_SETS];		/* TRUE means we will apply correction factors (if present) when reading data */
+	BOOLEAN original;				/* TRUE means we want original not revised header attributes */
+	BOOLEAN revised;				/* TRUE means we are working on a MGD77+ file with revised header attributes */
+	BOOLEAN Want_Header_Item[MGD77_N_HEADER_ITEMS];	/* TRUE means print this header item if dump is selected */
+	BOOLEAN use_flags[MGD77_N_SETS];		/* TRUE means programs will use error bitflags (if present) when returning data */
+	BOOLEAN use_corrections[MGD77_N_SETS];		/* TRUE means we will apply correction factors (if present) when reading data */
 	struct MGD77_ORDER order[MGD77_MAX_COLS];	/* Gives the output order (set, item) of each desired column */
 	unsigned int bit_pattern[2];			/* 64 bit flags, one for each parameter desired */
 	int n_constraints;				/* Number of constraints specified */
 	int n_exact;					/* Number of exact columns to match */
 	int n_bit_tests;				/* Number of bit tests to match */
-	int no_checking;				/* TRUE if there are no constraints, exact-tests, or bit-tests to pass */
+	BOOLEAN no_checking;				/* TRUE if there are no constraints, exact-tests, or bit-tests to pass */
 	struct MGD77_CONSTRAINT Constraint[MGD77_MAX_COLS];		/* List of constraints, if any */
 	struct MGD77_PAIR Exact[MGD77_MAX_COLS];	/* List of column names whose values must be !NaN to be output, if any */
 	struct MGD77_PAIR Bit_test[MGD77_MAX_COLS];	/* List of bit-tests, if any */
-	int n_out_columns;				/* Number of output columns requested */
+	unsigned int n_out_columns;			/* Number of output columns requested */
 };
 
 #define N_CARTER_BINS 64800             /* Number of 1x1 degree bins */

@@ -161,7 +161,7 @@ GMT_LONG GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, st
 	 */
 
 	GMT_LONG n_errors = 0;
-	GMT_LONG missing_equal = TRUE;
+	BOOLEAN missing_equal = TRUE;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -1264,7 +1264,8 @@ void grd_IN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *s
 /*OPERATOR: IN 2 1 Modified Bessel function of A (1st kind, order B).  */
 {
 	COUNTER_LARGE node;
-	GMT_LONG prev = last - 1, order = 0, simple = FALSE;
+	GMT_LONG prev = last - 1, order = 0;
+	BOOLEAN simple = FALSE;
 	double b = 0.0;
 
 	if (constant[last]) {
@@ -1403,7 +1404,8 @@ void grd_JN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *s
 /*OPERATOR: JN 2 1 Bessel function of A (1st kind, order B).  */
 {
 	COUNTER_LARGE node;
-	GMT_LONG prev = last - 1, simple = FALSE, order = 0;
+	GMT_LONG prev = last - 1, order = 0;
+	BOOLEAN simple = FALSE;
 	double b = 0.0;
 
 	if (constant[last]) {
@@ -1479,7 +1481,8 @@ void grd_KN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *s
 /*OPERATOR: KN 2 1 Modified Bessel function of A (2nd kind, order B).  */
 {
 	COUNTER_LARGE node;
-	GMT_LONG prev = last - 1, order = 0, simple = FALSE;
+	GMT_LONG prev = last - 1, order = 0;
+	BOOLEAN simple = FALSE;
 	double b = 0.0;
 
 	if (constant[last]) {
@@ -2774,7 +2777,8 @@ void grd_YN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *s
 /*OPERATOR: YN 2 1 Bessel function of A (2nd kind, order B).  */
 {
 	COUNTER_LARGE node;
-	GMT_LONG prev = last - 1, order = 0, simple = FALSE;
+	GMT_LONG prev = last - 1, order = 0;
+	BOOLEAN simple = FALSE;
 	double b = 0.0;
 
 	if (constant[prev] && factor[prev] == 0.0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning, argument = 0 for YN!\n");
@@ -2827,7 +2831,8 @@ void grd_ZDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 
 GMT_LONG decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *value, struct GMT_HASH *H)
 {
-	GMT_LONG i, expect, check = GMT_IS_NAN, possible_number = FALSE;
+	GMT_LONG i, expect, check = GMT_IS_NAN;
+	BOOLEAN possible_number = FALSE;
 	double tmp = 0.0;
 
 	if (opt->option == GMTAPI_OPT_OUTFILE) return GRDMATH_ARG_IS_SAVE;	/* Time to save stack; arg is filename */
@@ -2910,7 +2915,8 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_MEDIUM row, col, kk, nstack = 0, n_items = 0, this_stack, n_macros;
 	COUNTER_MEDIUM consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
 	COUNTER_MEDIUM alloc_mode[GRDMATH_STACK_SIZE];
-	COUNTER_MEDIUM constant[GRDMATH_STACK_SIZE], error = FALSE, subset;
+	COUNTER_MEDIUM constant[GRDMATH_STACK_SIZE];
+	BOOLEAN error = FALSE, subset;
 	
 	COUNTER_LARGE node;
 
@@ -3047,10 +3053,10 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (k = 0, colx = -info.G->header->pad[XLO]; k < (int)info.G->header->mx; colx++, k++) info.grd_x[k] = (float)GMT_grd_col_to_x (GMT, colx, info.G->header);
 	for (k = 0, rowx = -info.G->header->pad[YHI]; k < (int)info.G->header->my; rowx++, k++) info.grd_y[k] = (float)GMT_grd_row_to_y (GMT, rowx, info.G->header);
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Make sure latitudes remain in range; if not apply geographic BC */
-		for (k = 0; k < info.G->header->pad[YHI]; k++) 
-			if (info.grd_y[k] > 90.0) info.grd_y[k] = (float)(2.0 * 90.0 - info.grd_y[k]);
-		for (k = 0, kk = info.G->header->my - info.G->header->pad[YLO]; k < info.G->header->pad[YLO]; k++, k++) 
-			if (info.grd_y[kk] < -90.0) info.grd_y[kk] = (float)(-2.0 * 90.0 - info.grd_y[kk]);
+		for (kk = 0; kk < info.G->header->pad[YHI]; kk++) 
+			if (info.grd_y[kk] > 90.0) info.grd_y[kk] = (float)(2.0 * 90.0 - info.grd_y[kk]);
+		for (kk = 0, k = info.G->header->my - info.G->header->pad[YLO]; kk < info.G->header->pad[YLO]; kk++, k++) 
+			if (info.grd_y[k] < -90.0) info.grd_y[k] = (float)(-2.0 * 90.0 - info.grd_y[k]);
 	}
 	off = 0.5 * (info.G->header->wesn[XHI] + info.G->header->wesn[XLO]);
 	scale = 2.0 / (info.G->header->wesn[XHI] - info.G->header->wesn[XLO]);
@@ -3062,12 +3068,12 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	info.dx = GMT_memory (GMT, NULL, info.G->header->my, float);
 
 	if (Ctrl->M.active) {	/* Use flat earth distances for gradients */
-		for (k = 0; k < info.G->header->my; k++) info.dx[k] = (float) (GMT->current.proj.DIST_M_PR_DEG * info.G->header->inc[GMT_X] * cosd (info.grd_y[k]));
+		for (kk = 0; kk < info.G->header->my; kk++) info.dx[kk] = (float) (GMT->current.proj.DIST_M_PR_DEG * info.G->header->inc[GMT_X] * cosd (info.grd_y[kk]));
 		info.dy = (float)(GMT->current.proj.DIST_M_PR_DEG * info.G->header->inc[GMT_Y]);
 		info.convert = TRUE;
 	}
 	else {	/* Constant increments in user units */
-		for (k = 0; k < info.G->header->my; k++) info.dx[k] = (float)info.G->header->inc[GMT_X];
+		for (kk = 0; kk < info.G->header->my; kk++) info.dx[kk] = (float)info.G->header->inc[GMT_X];
 		info.dy = (float)info.G->header->inc[GMT_Y];
 	}
 

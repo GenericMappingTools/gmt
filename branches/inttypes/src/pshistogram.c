@@ -173,7 +173,8 @@ GMT_LONG fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *d
 
 GMT_LONG plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, GMT_LONG stairs, GMT_LONG flip_to_y, GMT_LONG draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, GMT_LONG cpt)
 {
-	GMT_LONG i, ibox, first = TRUE, index;
+	GMT_LONG i, ibox, index;
+	BOOLEAN first = TRUE;
 	double rgb[4], x[4], y[4], xx, yy, xval, *px = NULL, *py = NULL;
 	struct GMT_FILL *f = NULL;
 
@@ -453,7 +454,7 @@ GMT_LONG GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *
 
 GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, automatic = FALSE;
+	BOOLEAN error = FALSE, automatic = FALSE;
 	
 	COUNTER_LARGE n;
 	

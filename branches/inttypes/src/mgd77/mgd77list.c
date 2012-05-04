@@ -682,10 +682,11 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG i, c, id, k, kx, pos, argno, n_cruises = 0, n_paths, use, n_items = 0, t_pos = MGD77_NOT_SET;
 	GMT_LONG t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
 	GMT_LONG n_sub, n_out_columns, n_cols_to_process, n_aux, select_option, time_column, lon_column, lat_column;
-	GMT_LONG rec, prevrec, n_out = 0, error = FALSE, string_output = FALSE, need_depth = FALSE, PDR_wrap;
-	GMT_LONG negative_depth = FALSE,  negative_msd = FALSE, need_distances, need_time, ms_col = 0, twt_col = 0;
-	GMT_LONG need_lonlat = FALSE, first_cruise = TRUE, need_twt = FALSE, this_limit_on_time;
-	GMT_LONG need_date, need_sound = FALSE, lonlat_not_NaN, first_warning = TRUE, has_prev_twt = FALSE;
+	GMT_LONG rec, prevrec, n_out = 0, ms_col = 0, twt_col = 0;
+	BOOLEAN negative_depth = FALSE,  negative_msd = FALSE, need_distances, need_time;
+	BOOLEAN error = FALSE, string_output = FALSE, need_depth = FALSE, PDR_wrap;
+	BOOLEAN need_lonlat = FALSE, first_cruise = TRUE, need_twt = FALSE, this_limit_on_time;
+	BOOLEAN need_date, need_sound = FALSE, lonlat_not_NaN, first_warning = TRUE, has_prev_twt = FALSE;
 	
 	char fx_setting[GMT_BUFSIZ], **list = NULL, **item_names = NULL;
 	char *tvalue[MGD77_MAX_COLS], *aux_tvalue[N_MGD77_AUX];
@@ -1037,7 +1038,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		this_limit_on_time = Ctrl->D.active;	/* Since we might change it below */
 		if (time_column != MGD77_NOT_SET && D->H.no_time) {	/* Cannot know if ASCII MGD77 dont have time until after reading */
-			GMT_LONG faked = FALSE;
+			BOOLEAN faked = FALSE;
 			if (Ctrl->A.fake_times) {	/* Try to make fake times based on duration and distances */
 				faked = MGD77_fake_times (GMT, &M, &(D->H), dvalue[x_col], dvalue[y_col], dvalue[t_col], D->H.n_records);
 				if (faked) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Time column for cruise %s created from distances and duration\n", list[argno]);

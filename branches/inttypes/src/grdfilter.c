@@ -496,7 +496,7 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 
 GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, fast_way, slow = FALSE, slower = FALSE, same_grid = FALSE;
+	BOOLEAN error = FALSE, fast_way, slow = FALSE, slower = FALSE, same_grid = FALSE;
 	BOOLEAN spherical = FALSE, full_360, visit_check = FALSE, go_on;
 	COUNTER_MEDIUM n_in_median, n_nan = 0, col_out, row_out, effort_level;
 	COUNTER_MEDIUM filter_type, one_or_zero = 1, GMT_n_multiples = 0;

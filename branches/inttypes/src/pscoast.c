@@ -70,12 +70,12 @@ struct PSCOAST_CTRL {
 	} C;
 	struct D {	/* -D<resolution> */
 		BOOLEAN active;
-		GMT_LONG force;	/* if TRUE, select next highest level if current set is not avaialble */
+		BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct G {	/* -G<fill> */
 		BOOLEAN active;
-		GMT_LONG clip;
+		BOOLEAN clip;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I<feature>[/<pen>] */
@@ -100,7 +100,7 @@ struct PSCOAST_CTRL {
 	} Q;
 	struct S {	/* -S<fill> */
 		BOOLEAN active;
-		GMT_LONG clip;
+		BOOLEAN clip;
 		struct GMT_FILL fill;
 	} S;
 	struct T {	/* -L */
@@ -477,7 +477,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 	return (n_errors);
 }
 
-GMT_LONG add_this_polygon_to_path (struct GMT_CTRL *GMT, GMT_LONG k0, struct GMT_GSHHS_POL *p, GMT_LONG level, GMT_LONG k)
+BOOLEAN add_this_polygon_to_path (struct GMT_CTRL *GMT, GMT_LONG k0, struct GMT_GSHHS_POL *p, GMT_LONG level, GMT_LONG k)
 {
 	/* Determines if we should add the current polygon pol[k] to the growing path we are constructing */
 
@@ -529,10 +529,10 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_LONG i, np, ind, bin = 0, base, anti_bin = -1, np_new, k, last_k, err, bin_trouble, error, n;
 	GMT_LONG level_to_be_painted = 0, direction, start_direction, stop_direction, last_pen_level;
-	GMT_LONG shift = FALSE, need_coast_base, recursive;
-	GMT_LONG greenwich = FALSE, possibly_donut_hell = FALSE, fill_in_use = FALSE;
-	GMT_LONG clobber_background, paint_polygons = FALSE, donut;
-	GMT_LONG donut_hell = FALSE, world_map_save, clipping;
+	BOOLEAN shift = FALSE, need_coast_base, recursive;
+	BOOLEAN greenwich = FALSE, possibly_donut_hell = FALSE, fill_in_use = FALSE;
+	BOOLEAN clobber_background, paint_polygons = FALSE, donut;
+	BOOLEAN donut_hell = FALSE, world_map_save, clipping;
 
 	double bin_x[5], bin_y[5], out[2], *xtmp = NULL, *ytmp = NULL;
 	double west_border, east_border, anti_lon = 0.0, anti_lat = -90.0, edge = 720.0;

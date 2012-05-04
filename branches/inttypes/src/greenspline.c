@@ -135,8 +135,8 @@ struct ZGRID {
 	double z_min, z_max, z_inc;
 };
 
-GMT_LONG TEST = FALSE;	/* Global variable used for undocumented testing [under -DDEBUG only] */
 #ifdef DEBUG
+BOOLEAN TEST = FALSE;	/* Global variable used for undocumented testing [under -DDEBUG only] */
 void dump_green (PFD G, PFD D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg);
 #endif
 
@@ -1059,7 +1059,8 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_LARGE row, p, k, i, j, seg, m, n, nm, nxy, n_ok = 0, ij, ji, ii, dimension = 0;
 	size_t old_n_alloc, n_alloc;
-	GMT_LONG error, normalize = 1, unit = 0, out_ID, way, new_grid = FALSE;
+	GMT_LONG error, normalize = 1, unit = 0, out_ID, way;
+	BOOLEAN new_grid = FALSE;
 	
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
 		"minimum curvature Cartesian spline [2-D]",

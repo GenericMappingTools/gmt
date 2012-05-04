@@ -1499,7 +1499,8 @@ GMT_LONG gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 
 	char copy[GMT_BUFSIZ], p[GMT_BUFSIZ], *c = NULL;
 	COUNTER_MEDIUM k = 1, ic, pos = 0, code, *col = NULL;
-	GMT_LONG i, start = -1, stop = -1, both_i_and_o = FALSE;
+	GMT_LONG i, start = -1, stop = -1;
+	BOOLEAN both_i_and_o = FALSE;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -f requires an argument */
 
@@ -1798,7 +1799,8 @@ GMT_LONG gmt_parse_U_option (struct GMT_CTRL *C, char *item) {
 }
 
 GMT_LONG gmt_parse_colon_option (struct GMT_CTRL *C, char *item) {
-	GMT_LONG error = 0, way, off = 0, ok[2] = {FALSE, FALSE};
+	GMT_LONG error = 0, way, off = 0;
+	BOOLEAN ok[2] = {FALSE, FALSE};
 	static char *mode[4] = {"i", "o", "", ""}, *dir[2] = {"input", "output"};
 	char kase = (item) ? item[0] : '\0';
 	/* Parse the -: option.  Full syntax: -:[i|o].
@@ -2188,7 +2190,7 @@ GMT_LONG gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 	return (error);
 }
 
-GMT_LONG gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
+BOOLEAN gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 	COUNTER_MEDIUM error = 0, i, n, start = 0, stop = 0, pos = 0;
 	char p[GMT_BUFSIZ], *c = NULL, tmp[GMT_MAX_COLUMNS];
 	/* Parse the -s option.  Full syntax: -s[<cols>][r|a] */
@@ -2367,7 +2369,7 @@ void GMT_pickdefaults (struct GMT_CTRL *C, GMT_LONG lines, struct GMT_OPTION *op
 	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now  */
 }
 
-GMT_LONG gmt_true_false_or_error (char *value, GMT_LONG *answer)
+BOOLEAN gmt_true_false_or_error (char *value, GMT_LONG *answer)
 {
 	/* Assigns 0 or 1 to answer, depending on whether value is false or true.
 	 * answer = 0, when value is "f", "false" or "0"
@@ -2555,7 +2557,8 @@ GMT_LONG gmt_decode_wesnz (struct GMT_CTRL *C, const char *in, GMT_LONG side[], 
 	 * and returns the length of the remaining string.  Assumes any +g<fill> ahs been removed from in.
 	 */
 
-	GMT_LONG i, k, go = TRUE;
+	GMT_LONG i, k;
+	BOOLEAN go = TRUE;
 
 	i = strlen (in);
 	if (i == 0) return (0);
@@ -2622,7 +2625,8 @@ void gmt_parse_format_float_out (struct GMT_CTRL *C, char *value)
 GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 {
 	COUNTER_MEDIUM pos, len;
-	GMT_LONG i, ival, case_val, manual, error = FALSE;
+	GMT_LONG i, ival, case_val, manual;
+	BOOLEAN error = FALSE;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], lower_value[GMT_BUFSIZ];
 	
 	double dval;
@@ -3291,11 +3295,11 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				C->current.setting.ps_page_size[1] = GMT_media[i].height;
 			}
 			else if (gmt_load_user_media (C) &&
-				(i = gmt_key_lookup (lower_value, C->session.user_media_name, C->session.n_user_media)) < C->session.n_user_media) {
+				(pos = gmt_key_lookup (lower_value, C->session.user_media_name, C->session.n_user_media)) < C->session.n_user_media) {
 				/* Use a user-specified format */
-					C->current.setting.ps_media = i + USER_MEDIA_OFFSET;
-					C->current.setting.ps_page_size[0] = C->session.user_media[i].width;
-					C->current.setting.ps_page_size[1] = C->session.user_media[i].height;
+					C->current.setting.ps_media = pos + USER_MEDIA_OFFSET;
+					C->current.setting.ps_page_size[0] = C->session.user_media[pos].width;
+					C->current.setting.ps_page_size[1] = C->session.user_media[pos].height;
 				}
 			else {
 				/* A custom paper size in W x H points (or in inch/c if units are appended) */
@@ -4608,7 +4612,7 @@ char *GMT_puthsv (struct GMT_CTRL *C, double *hsv)
 	return (text);
 }
 
-GMT_LONG GMT_is_valid_number (char *t)
+BOOLEAN GMT_is_valid_number (char *t)
 {
 	GMT_LONG i, n;
 
@@ -4640,7 +4644,8 @@ double GMT_convert_units (struct GMT_CTRL *C, char *string, GMT_LONG default_uni
 	 * Both target_unit and default_unit are either GMT_PT, GMT_CM, GMT_INCH or GMT_M.
 	 */
 
-	GMT_LONG c = 0, len, given_unit, have_unit = FALSE;
+	GMT_LONG c = 0, len, given_unit;
+	BOOLEAN have_unit = FALSE;
 	double value;
 
 	if ((len = strlen(string))) {
@@ -4945,7 +4950,8 @@ void gmt_file_unlock (struct GMT_CTRL *C, int fd, struct flock *lock)
 
 GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 {
-	GMT_LONG id, done = FALSE;
+	GMT_LONG id;
+	BOOLEAN done = FALSE;
 	char line[GMT_BUFSIZ], hfile[GMT_BUFSIZ], cwd[GMT_BUFSIZ];
 	char option[GMT_TEXT_LEN64], value[GMT_BUFSIZ];
 	FILE *fp = NULL;	/* For .gmtcommands file */
@@ -5017,7 +5023,8 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 
 GMT_LONG gmt_put_history (struct GMT_CTRL *C)
 {
-	GMT_LONG id, empty;
+	GMT_LONG id;
+	BOOLEAN empty;
 	char hfile[GMT_BUFSIZ], cwd[GMT_BUFSIZ];
 	FILE *fp = NULL;	/* For .gmtcommands file */
 #ifdef FLOCK
@@ -5372,7 +5379,8 @@ GMT_LONG GMT_Complete_Options (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	 * Finally, keep the option arguments in the history list.
 	 * However, when func_level > 1, do update the entry, but do not
 	 * remember it in history. */
-	GMT_LONG id, k, update, remember;
+	GMT_LONG id, k;
+	BOOLEAN update, remember;
 	struct GMT_OPTION *opt = NULL;
 	char str[3];
 
@@ -5458,7 +5466,7 @@ GMT_LONG gmt_strip_colonitem (struct GMT_CTRL *C, GMT_LONG axis, const char *in,
 	 */
 
 	char *s = NULL, *str = "xyz";
-	GMT_LONG error = FALSE;
+	BOOLEAN error = FALSE;
 
 	if ((s = strstr (in, pattern))) {		/* OK, found what we are looking for */
 		size_t i, j, k;
@@ -5526,7 +5534,7 @@ void gmt_handle_atcolon (struct GMT_CTRL *C, char *txt, GMT_LONG old)
 GMT_LONG gmt_split_info_strings (struct GMT_CTRL *C, const char *in, char *x_info, char *y_info, char *z_info) {
 	/* Take the -B string (minus the leading -B) and chop into 3 strings for x, y, and z */
 
-	GMT_LONG mute = FALSE;
+	BOOLEAN mute = FALSE;
 	COUNTER_MEDIUM i, n_slash, s_pos[2];
 
 	x_info[0] = y_info[0] = z_info[0] = '\0';
@@ -6046,7 +6054,8 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 	 */
 
 	GMT_LONG i, j, k = 9, m, n, nlen, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
-	GMT_LONG n_slashes = 0, width_given, last_pos, error = FALSE, skip = FALSE;
+	GMT_LONG n_slashes = 0, last_pos;
+	BOOLEAN width_given, error = FALSE, skip = FALSE;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	char txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256], last_char;
@@ -6665,7 +6674,8 @@ GMT_LONG GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 	/* Parser for -Sv|V, -S=, and -Sm */
 	
 	COUNTER_MEDIUM pos = 0, k, error = 0, len;
-	GMT_LONG p_opt = FALSE, g_opt = FALSE, j;
+	BOOLEAN p_opt = FALSE, g_opt = FALSE;
+	GMT_LONG j;
 	char p[GMT_BUFSIZ];
 	
 	S->v.pen = C->current.setting.map_default_pen;
@@ -6794,7 +6804,8 @@ GMT_LONG GMT_parse_front (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd)
 {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = 1 when called to process command line options */
-	GMT_LONG decode_error = 0, bset = 0, j, n, k, slash = 0, colon, check = TRUE, col_off = mode;
+	GMT_LONG decode_error = 0, bset = 0, j, n, k, slash = 0, colon, col_off = mode;
+	BOOLEAN check = TRUE;
 	COUNTER_MEDIUM ju;
 	char symbol_type, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], text_cp[GMT_TEXT_LEN256], *c = NULL, *s = NULL;
 	static char *allowed_symbols[2] = {"=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};

@@ -202,8 +202,8 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 
 GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, set_n = FALSE, shift_xy = FALSE, offset, k, unit = 0;
-	GMT_LONG use_nx = 0, use_ny = 0;
+	BOOLEAN error = FALSE, set_n = FALSE, shift_xy = FALSE;
+	GMT_LONG use_nx = 0, use_ny = 0, offset, k, unit = 0;
 
 	char format[GMT_BUFSIZ], unit_name[GRD_UNIT_LEN80], scale_unit_name[GRD_UNIT_LEN80];
 

@@ -195,7 +195,8 @@ GMT_LONG GMT_mgd77track_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD
 
 GMT_LONG get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info)
 {
-	GMT_LONG i1, i2, error = FALSE, flag1, flag2, type;
+	GMT_LONG i1, i2, flag1, flag2, type;
+	BOOLEAN error = FALSE;
 	double value;
 	
 	info->annot_int_dist = info->tick_int_dist = 0;
@@ -272,7 +273,8 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, mrk = 0, error = FALSE;
+	GMT_LONG n_errors = 0, j, mrk = 0;
+	BOOLEAN error = FALSE;
 	char ms[GMT_TEXT_LEN64], mc[GMT_TEXT_LEN64], tmp[GMT_TEXT_LEN64], mfs[GMT_TEXT_LEN64], mf[GMT_TEXT_LEN64];
 	char comment[GMT_BUFSIZ], mfc[GMT_TEXT_LEN64], *t = NULL;
 	double dist_scale;
@@ -528,7 +530,8 @@ extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal
 GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG rec, first_rec, last_rec, i, n_id = 0, mrk = 0, dist_flag = 2, use, n_paths;
-	GMT_LONG this_julian = 0, last_julian, argno, n_cruises = 0, error = FALSE, first, form, both = FALSE;
+	GMT_LONG this_julian = 0, last_julian, argno, n_cruises = 0;
+	BOOLEAN error = FALSE, first, form, both = FALSE;
 	GMT_LONG annot_tick[2] = {0, 0}, draw_tick[2] = {0, 0};
 	
 	size_t n_alloc_c = GMT_SMALL_CHUNK;

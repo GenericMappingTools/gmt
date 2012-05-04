@@ -128,7 +128,8 @@ GMT_LONG GMT_grdreformat_parse (struct GMTAPI_CTRL *C, struct GRDREFORMAT_CTRL *
 
 GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, hmode, type[2];
+	BOOLEAN error = FALSE;
+	GMT_LONG hmode, type[2];
 
 	char fname[2][GMT_BUFSIZ];
 
@@ -187,7 +188,7 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (GMT->common.R.active) {	/* Specified a subset */
-		GMT_LONG global = FALSE;
+		BOOLEAN global = FALSE;
 		global = GMT_grd_is_global (GMT, Grid->header);
 		if (!global && (GMT->common.R.wesn[XLO] < Grid->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Grid->header->wesn[XHI])) error++;
 		if (GMT->common.R.wesn[YLO] < Grid->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Grid->header->wesn[YHI]) error++;
