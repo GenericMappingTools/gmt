@@ -895,7 +895,7 @@ static int MGD77_Read_Header_Sequence (struct GMT_CTRL *C, FILE *fp, char *recor
 			return (MGD77_NO_HEADER_REC);
 		}
 	}
-	if (fgets (record, MGD77_HEADER_LENGTH + 2, fp) == NULL) {
+	if (fgets (record, MGD77_HEADER_LENGTH + 3, fp) == NULL) {
 		GMT_report (C, GMT_MSG_NORMAL, "MGD77_Read_Header: Failure to read header sequence %2.2d\n", seq);
 		return (MGD77_ERROR_READ_HEADER_ASC);
 	}
@@ -994,16 +994,6 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *C, char *file, struct 
 			GMT_report (C, GMT_MSG_FATAL, "Unable to stat file %s\n", F->path);
 			GMT_exit (EXIT_FAILURE);
 		}
-#ifdef WIN32
-		/* Count number of records by counting number of new line characters. The non-Windows solution does not work here
-		   because the '\r' characters which are present on Win terminated EOLs are apparently stripped by the stdio and
-		   so if we cannt find their traces (!!!) */
-		while ( (c = fgetc( F->fp )) != EOF ) {
-			if (c == '\n') n++;
-		}
-		H->n_records = n - 24;					/* 24 is the header size */
-		rewind (F->fp);					/* Go back to beginning of file */
-#else
 		/* Test if we need to use +2 because of \r\n. We could use the above solution but this one looks more (time) efficient. */
 		if (!fgets (line, GMT_BUFSIZ, F->fp)) {
 			GMT_report (C, GMT_MSG_FATAL, "Error reading M77 record\n");
@@ -1011,12 +1001,13 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *C, char *file, struct 
 		}
 		rewind (F->fp);					/* Go back to beginning of file */
 		n_eols = (line[strlen(line)-1] == '\n' && line[strlen(line)-2] == '\r') ? 2 : 1;
-		H->n_records = lrint ((double)(buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + n_eols))) / (double)(MGD77_RECORD_LENGTH + n_eols));
-#endif
+		H->n_records = lrint ((double)(buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + n_eols))) / 
+							 (double)(MGD77_RECORD_LENGTH + n_eols));
 	}
 	else {
 		/* Since we do not know the number of records, we must quickly count lines */
-		while (fgets (line, GMT_BUFSIZ, F->fp)) if (line[0] != '#') H->n_records++;	/* Count every line except comments  */
+		while (fgets (line, GMT_BUFSIZ, F->fp))
+			if (line[0] != '#') H->n_records++;		/* Count every line except comments  */
 		rewind (F->fp);					/* Go back to beginning of file */
 		H->n_records -= MGD77_N_HEADER_RECORDS;			/* Adjust for the 24 records in the header block */
 	}
@@ -1024,7 +1015,7 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *C, char *file, struct 
 	/* Read Sequences No 01-24: */
 
 	for (sequence = 0; sequence < MGD77_N_HEADER_RECORDS; sequence++) {
-		MGD77_header[sequence] = GMT_memory (C, NULL, MGD77_HEADER_LENGTH + 2, char);
+		MGD77_header[sequence] = GMT_memory (C, NULL, MGD77_HEADER_LENGTH + 3, char);
 		if ((err = MGD77_Read_Header_Sequence (C, F->fp, MGD77_header[sequence], sequence+1))) return (err);
 	}
 	if (F->format == MGD77_FORMAT_TBL) {		/* Skip the column header for tables */
@@ -2838,7 +2829,8 @@ int MGD77_Read_Header_Record (struct GMT_CTRL *C, char *file, struct MGD77_CONTR
 			break;
 	}
 
-	MGD77_Init_Ptr (C, MGD77_Header_Lookup, H->mgd77);	/* set pointers */
+	if (!error)
+		MGD77_Init_Ptr (C, MGD77_Header_Lookup, H->mgd77);	/* set pointers */
 
 	return (error);
 }
