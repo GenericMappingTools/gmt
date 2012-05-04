@@ -64,10 +64,11 @@ struct SPHTRIANGULATE_CTRL {
 	} T;
 };
 
-void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET *Dout[])
+void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, COUNTER_LARGE get_arcs, COUNTER_MEDIUM get_area, COUNTER_LARGE nodes, struct GMT_DATASET *Dout[])
 {	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
-	GMT_LONG i, ij, k, do_authalic;
-	int64_t dim[4] = {1, 0, 0, 0};
+	COUNTER_LARGE i, ij;
+	BOOLEAN do_authalic;
+	int64_t dim[4] = {1, 0, 0, 0}, k;
 	double area_sphere = 0.0, area_triangle = GMT->session.d_NaN, V[3][3], R2, y, dist = GMT->session.d_NaN;
 	char segment_header[GMT_BUFSIZ];
 	struct GMT_LINE_SEGMENT *S[2] = {NULL, NULL};
@@ -107,10 +108,10 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 				}
 				area_triangle = stripack_areas (V[0], V[1], V[2]);
 				area_sphere += area_triangle;
-				sprintf (segment_header, "Triangle: %d %d-%d-%d Area: %g", k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2);
+				sprintf (segment_header, "Triangle: %" PRIu64 " %" PRIu64 "-%" PRIu64 "-%" PRIu64 " Area: %g", k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2);
 			}
 			else	/* Just a plain header with triangle number */
-				sprintf (segment_header, "Triangle: %d", k);
+				sprintf (segment_header, "Triangle: %" PRIu64, k);
 			if (nodes) {	/* Output Voronoi node and area information via S[1] */
 				S[1]->coord[GMT_X][k] = (double)D->tri[ij];
 				S[1]->coord[GMT_Y][k] = (double)D->tri[ij+1];
@@ -126,7 +127,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 		if (get_area) GMT_report (GMT, GMT_MSG_NORMAL, "Total surface area = %g\n", area_sphere * R2);
 	}
 	else {	/* Want just the arcs (to draw then, probably).  This avoids repeating shared arcs between triangles */
-		COUNTER_MEDIUM j, ij1, ij2, ij3, n_arcs;
+		COUNTER_LARGE j, ij1, ij2, ij3, n_arcs, kk;
 		struct STRPACK_ARC *arc = NULL;
 		
 		n_arcs = 3 * D->n;
@@ -136,9 +137,9 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			arc[ij].begin = D->tri[ij2];	arc[ij].end = D->tri[ij3];	ij++;
 			arc[ij].begin = D->tri[ij1];	arc[ij].end = D->tri[ij3];	ij++;
 		}
-		for (k = 0; k < n_arcs; ++k)
-			if (arc[k].begin > arc[k].end)
-				l_swap (arc[k].begin, arc[k].end);
+		for (kk = 0; kk < n_arcs; ++kk)
+			if (arc[kk].begin > arc[kk].end)
+				l_swap (arc[kk].begin, arc[kk].end);
 
 		/* Sort and eliminate duplicate arcs */
 		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
@@ -147,7 +148,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			arc[j] = arc[i];
 		}
 		n_arcs = j + 1;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Output %d unique triangle arcs\n", n_arcs);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Output %" PRIu64 " unique triangle arcs\n", n_arcs);
 
 		dim[1] = n_arcs;	/* Number of output arcs = segments */
 		dim[2] = 2;		/* Only use 2 columns */
@@ -162,22 +163,22 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			S[0]->coord[GMT_X][1] = lon[arc[i].end];	S[0]->coord[GMT_Y][1] = lat[arc[i].end];
 			if (get_area) {	/* Compute arc lengths */
 				dist = GMT_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
-				sprintf (segment_header, "Arc: %d-%d Length: %g", arc[i].begin, arc[i].end, dist);
+				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " Length: %g", arc[i].begin, arc[i].end, dist);
 			}
 			else	/* Plain header */
-				sprintf (segment_header, "Arc: %d-%d", arc[i].begin, arc[i].end);
+				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64, arc[i].begin, arc[i].end);
 			S[0]->header = strdup (segment_header);
 		}
 		GMT_free (GMT, arc);
 	}
 }
 
-void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, double *lat, struct STRIPACK_VORONOI *V, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET *Dout[])
+void stripack_voronoi_output (struct GMT_CTRL *GMT, COUNTER_LARGE n, double *lon, double *lat, struct STRIPACK_VORONOI *V, BOOLEAN get_arcs, COUNTER_MEDIUM get_area, COUNTER_LARGE nodes, struct GMT_DATASET *Dout[])
 {	/* Prints out the Voronoi polygons either as polygons (for filling) or arcs (lines) */
-	GMT_LONG do_authalic;
+	BOOLEAN do_authalic;
 	
-	COUNTER_MEDIUM i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
-	GMT_LONG dim[4] = {1, 0, 0, 0};
+	COUNTER_LARGE i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
+	int64_t dim[4] = {1, 0, 0, 0};
 	size_t n_alloc = GMT_CHUNK, p_alloc = GMT_TINY_CHUNK;
 	
 	char segment_header[GMT_BUFSIZ];
@@ -271,10 +272,10 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 			S[0] = Dout[0]->table[0]->segment[node];	/* Local shorthand to current output segment */
 			if (get_area) {
 				area_km2 = area_polygon * R2;	/* Get correct area units */
-				sprintf (segment_header, "Pol: %d %g %g Area: %g", node, lon[node], lat[node], area_km2);
+				sprintf (segment_header, "Pol: %" PRIu64 " %g %g Area: %g", node, lon[node], lat[node], area_km2);
 			}
 			else
-				sprintf (segment_header, "Pol: %d %g %g", node, lon[node], lat[node]);
+				sprintf (segment_header, "Pol: %" PRIu64 " %g %g", node, lon[node], lat[node]);
 			
 			if (nodes) {	/* Also output node info via S[1] */
 				S[1]->coord[GMT_X][node] = lon[node];
@@ -317,10 +318,10 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 			S[0]->coord[GMT_X][1] = V->lon[arc[i].begin];	S[1]->coord[GMT_Y][1] = V->lat[arc[i].begin];
 			if (get_area) {
 				dist = GMT_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
-				sprintf (segment_header, "Arc: %d-%d Length: %g", arc[i].begin, arc[i].end, dist);
+				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " Length: %g", arc[i].begin, arc[i].end, dist);
 			}
 			else
-				sprintf (segment_header, "Arc: %d-%d", arc[i].begin, arc[i].end);
+				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64, arc[i].begin, arc[i].end);
 			S[0]->header = strdup (segment_header);
 		}
 		GMT_free (GMT, arc);
@@ -479,10 +480,9 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char *tmode[2] = {"Delaunay", "Voronoi"}, header[GMT_BUFSIZ];
 
-	GMT_LONG n_dup = 0, do_authalic = FALSE;
-	GMT_LONG error = FALSE, first = FALSE, steradians = FALSE;
+	BOOLEAN error = FALSE, first = FALSE, steradians = FALSE, do_authalic = FALSE;
 	
-	COUNTER_LARGE n = 0;
+	COUNTER_LARGE n = 0, n_dup = 0;
 	size_t n_alloc;
 
 	double first_x = 0.0, first_y = 0.0, X[3], *in = NULL;

@@ -44,60 +44,60 @@
 
 struct PSSEGY_CTRL {
 	struct In {	/* -In */
-		bool active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		bool active;
+		BOOLEAN active;
 	} A;
 	struct C {	/* -C<cpt> */
-		bool active;
+		BOOLEAN active;
 		double value;
 	} C;
 	struct D {	/* -D */
-		bool active;
+		BOOLEAN active;
 		double value;
 	} D;
 	struct E {	/* -E */
-		bool active;
+		BOOLEAN active;
 		double value;
 	} E;
 	struct F {	/* -F<fill> */
-		bool active;
+		BOOLEAN active;
 		double rgb[4];
 	} F;
 	struct I {	/* -I */
-		bool active;
+		BOOLEAN active;
 	} I;
 	struct L {	/* -L */
-		bool active;
+		BOOLEAN active;
 		uint32_t value;
 	} L;
 	struct M {	/* -M */
-		bool active;
-		int value;
+		BOOLEAN active;
+		uint32_t value;
 	} M;
 	struct N {	/* -N */
-		bool active;
+		BOOLEAN active;
 	} N;
 	struct Q {	/* -Qb|u|x|y */
-		bool active[4];
+		BOOLEAN active[4];
 		double value[4];
 	} Q;
 	struct S {	/* -S */
-		bool active;
+		BOOLEAN active;
 		int mode;
 		int value;
 	} S;
 	struct T {	/* -T */
-		bool active;
+		BOOLEAN active;
 		char *file;
 	} T;
 	struct W {	/* -W */
-		bool active;
+		BOOLEAN active;
 	} W;
 	struct Z {	/* -Z */
-		bool active;
+		BOOLEAN active;
 	} Z;
 };
 
@@ -106,7 +106,7 @@ void *New_pssegy_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C = GMT_memory (GMT, NULL, 1, struct PSSEGY_CTRL);
 
-	/* Initialize values whose defaults are not 0/false/NULL */
+	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
 	C->A.active = !GMT_BIGENDIAN;
 	C->M.value = 10000;
@@ -444,9 +444,10 @@ void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, i
 
 GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = false, i, nm, ix, iy;
-	uint32_t n_samp = 0;
-	int check, plot_it = false, n_tracelist = 0, bm_nx, bm_ny;
+	BOOLEAN error = FALSE, plot_it = FALSE;
+	COUNTER_MEDIUM i, nm, ix, iy;
+	uint32_t n_samp = 0, n_tracelist = 0;
+	int check, bm_nx, bm_ny;
 
 	float scale = 1.0, toffset = 0.0, *data = NULL;
 	double xlen, ylen, xpix, ypix, x0, test, *tracelist = NULL, trans[3] = {-1.0, -1.0, -1.0};
@@ -632,7 +633,7 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* now check that on list to plot if list exists */
 		if (n_tracelist) {
-			plot_it = false;
+			plot_it = FALSE;
 			for (i = 0; i< n_tracelist; i++) {
 				if (fabs (x0 - tracelist[i]) <= Ctrl->E.value) plot_it = true;
 			}

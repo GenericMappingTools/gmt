@@ -208,7 +208,8 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 
 GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, error = FALSE;
+	GMT_LONG row, col;
+	BOOLEAN error = FALSE;
 
 	size_t n_alloc = 0;
 	COUNTER_LARGE i, n = 0, ij, ij_f;
@@ -315,7 +316,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	sf = (w_max - w_min);
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 	GMT_grd_loop (GMT, Grid, row, col, ij) {
-		ij_f = col * Grid->header->ny + row;	/* Fortran index */
+		ij_f = (COUNTER_LARGE)col * (COUNTER_LARGE)Grid->header->ny + (COUNTER_LARGE)row;	/* Fortran index */
 		Grid->data[ij] = (float)surfd[ij_f];	/* ij is GMT C index */
 		if (Ctrl->Z.active) Grid->data[ij] *= (float)sf;
 	}

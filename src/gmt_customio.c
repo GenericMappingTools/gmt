@@ -307,7 +307,7 @@ GMT_LONG GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
-	GMT_LONG piping = FALSE, check;
+	BOOLEAN piping = FALSE, check;
 	COUNTER_MEDIUM first_col, last_col, first_row, last_row, inc, off;
 	COUNTER_MEDIUM i, j, width_in, height_in, i_0_out, *actual_row = NULL;
 	size_t n2;
@@ -393,7 +393,7 @@ GMT_LONG GMT_ras_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	/*		for real and imaginary parts when processed by grdfft etc. */
 	/* 		If 64 is added we write no header */
 
-	GMT_LONG check, do_header = TRUE;
+	BOOLEAN check, do_header = TRUE;
 	COUNTER_MEDIUM i, i2, j, width_out, height_out, n2, *actual_col = NULL;
 	COUNTER_MEDIUM inc = 1, off = 0, first_col, last_col, first_row, last_row;
 	COUNTER_LARGE kk, ij, j2, width_in;
@@ -594,7 +594,8 @@ GMT_LONG GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
-	GMT_LONG err, piping = FALSE, check = FALSE, bit;
+	GMT_LONG err, bit;
+	BOOLEAN piping = FALSE, check = FALSE;
 	COUNTER_MEDIUM first_col, last_col, first_row, last_row, word;
 	COUNTER_MEDIUM inc, off, i, j, width_in, height_in, i_0_out, mx;
 	COUNTER_MEDIUM *actual_col = NULL;
@@ -681,7 +682,8 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	COUNTER_MEDIUM j, width_out, height_out, mx, word, inc, off;
 	COUNTER_MEDIUM i, i2, first_col, last_col, first_row, last_row, *actual_col = NULL;
-	GMT_LONG check = FALSE, do_header, bit, err;
+	GMT_LONG bit, err;
+	BOOLEAN check = FALSE, do_header;
 	COUNTER_LARGE kk, ij, j2, width_in;
 	unsigned int *tmp = NULL, ival;
 
@@ -822,8 +824,8 @@ GMT_LONG GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, flo
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	GMT_LONG type;			/* Data type */
-	GMT_LONG piping = FALSE;	/* TRUE if we read input pipe instead of from file */
-	GMT_LONG check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
+	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
+	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	COUNTER_MEDIUM err, inc, off;		/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary), and offset */
 	COUNTER_MEDIUM first_col, last_col;	/* First and last column to deal with */
 	COUNTER_MEDIUM first_row, last_row;	/* First and last row to deal with */
@@ -924,8 +926,8 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 
 	GMT_LONG err;			/* Offset in complex array: 0 for real part, 1 for imaginary */
 	GMT_LONG type;			/* Data type */
-	GMT_LONG check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
-	GMT_LONG do_header = TRUE;	/* TRUE if we should write the header first */
+	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
+	BOOLEAN do_header = TRUE;	/* TRUE if we should write the header first */
 	COUNTER_MEDIUM inc, off;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	COUNTER_MEDIUM first_col, last_col;	/* First and last column to deal with */
 	COUNTER_MEDIUM first_row, last_row;	/* First and last row to deal with */
@@ -1286,7 +1288,7 @@ GMT_LONG GMT_srf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	GMT_LONG type;			/* Data type */
-	GMT_LONG piping = FALSE;	/* TRUE if we read input pipe instead of from file */
+	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	COUNTER_MEDIUM inc, off;		/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary), and offset */
 	COUNTER_MEDIUM first_col, last_col;	/* First and last column to deal with */
 	COUNTER_MEDIUM first_row, last_row;	/* First and last row to deal with */

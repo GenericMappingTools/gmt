@@ -217,7 +217,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 #ifdef GMT_COMPAT
-	GMT_LONG fix = FALSE;
+	BOOLEAN fix = FALSE;
 #endif
 
 	for (opt = options; opt; opt = opt->next) {

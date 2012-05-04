@@ -224,7 +224,9 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 
 GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG col, row, inside, k, n_stages, registration, error = FALSE;
+	COUNTER_MEDIUM col, row, inside, k, n_stages, registration;
+	GMT_LONG ks;
+	BOOLEAN error = FALSE;
 	
 	COUNTER_LARGE node, seg;
 	
@@ -338,7 +340,8 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Here we are inside; get the coordinates and rotate back to original grid coordinates */
 		age = (Ctrl->T.active) ? Ctrl->T.value : G_age->data[node];
 		if (GMT_is_dnan (age)) continue;	/* No crustal age */
-		if ((k = spotter_stage (GMT, age, p, n_stages)) < 0) continue;	/* Outside valid stage rotation range */
+		if ((ks = spotter_stage (GMT, age, p, n_stages)) < 0) continue;	/* Outside valid stage rotation range */
+		k = ks;
 		switch (Ctrl->S.mode) {
 			case PM_RATE:	/* Compute plate motion speed at this point in time/space */
 				d = GMT_distance (GMT, grd_x[col], grd_yc[row], p[k].lon, p[k].lat);

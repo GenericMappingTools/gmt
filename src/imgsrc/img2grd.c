@@ -273,8 +273,8 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	BOOLEAN error = FALSE;
 	COUNTER_MEDIUM navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
-	COUNTER_MEDIUM iout, jout, iinstart, iinstop, jinstart, jinstop, k, kk, ion, jin, jj, iin, ii, kstart, *ix = NULL;
-	GMT_LONG in_ID, out_ID = GMTAPI_NOTSET;
+	COUNTER_MEDIUM iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
+	GMT_LONG in_ID, out_ID = GMTAPI_NOTSET, jin, iinstart, iinstop;
 
 	COUNTER_LARGE ij;
 	int16_t tempint;
@@ -285,7 +285,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	double south2, north2, rnavgsq, csum, dsum, left, bottom, inc[2];
 
 	int16_t *row = NULL;
-	uint16_t *u2;
+	uint16_t *u2 = NULL;
 
 	char infile[GMT_BUFSIZ], cmd[GMT_BUFSIZ], s_in_ID[GMTAPI_STRLEN], s_out_ID[GMT_TEXT_LEN256];
 	char z_units[GRD_UNIT_LEN80];
@@ -523,8 +523,8 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (navg > 1) {
 		for (iout = k = 0; iout < Merc->header->nx; iout++) {
 			ion = iout * navg;
-			for (jin = 0; jin < navg; jin++) {
-				jj = jin * imgcoord.nxcol;
+			for (jin2 = 0; jin2 < navg; jin2++) {
+				jj = jin2 * imgcoord.nxcol;
 				for (iin = 0; iin < navg; iin++) {
 					ii = (iin + iinstart + ion) % imgcoord.nx360;
 					ix[k] = ii + jj;
@@ -539,7 +539,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 
 	/* Now before beginning data loop, fseek if needed.  */
-	if (jinstart > 0 && jinstart < imgcoord.nyrow) fseek (fp, (off_t)(2 * imgcoord.nxcol * jinstart), SEEK_SET);
+	if (jinstart > 0 && abs(jinstart) < imgcoord.nyrow) fseek (fp, 2LL * imgcoord.nxcol * jinstart, SEEK_SET);
 	
 	/* Now loop over output points, reading and handling data as needed */
 

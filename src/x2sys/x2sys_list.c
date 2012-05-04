@@ -57,7 +57,7 @@ struct X2SYS_LIST_CTRL {
 	} L;
 	struct N {	/* -N */
 		BOOLEAN active;
-		GMT_LONG min;
+		COUNTER_MEDIUM min;
 	} N;
 	struct Q {	/* -Q */
 		BOOLEAN active;
@@ -157,7 +157,8 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, mixed = FALSE, i, n_files = 0;
+	GMT_LONG n_errors = 0, i, n_files = 0;
+	BOOLEAN mixed = FALSE;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -238,7 +239,7 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, GMT_LONG col, GMT_LONG n, GMT_LONG first)
+void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, GMT_LONG col, GMT_LONG n, BOOLEAN first)
 {	/* Short-hand to dump n = 1 or 2 numerical values in chosen format.
 	 * col is used to set the format, and first is TRUE for first item per record.
 	 */
@@ -262,8 +263,9 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	BOOLEAN error = FALSE, mixed = FALSE, check_for_NaN = FALSE, both, first;
 	BOOLEAN internal = TRUE;	/* FALSE if only external xovers are needed */
 	BOOLEAN external = TRUE;	/* FALSE if only internal xovers are needed */
-	COUNTER_LARGE i, j, k, coe_kind, one, two, n_items, n_out, n_tracks, n_weights = 0;
+	COUNTER_LARGE i, j, k, coe_kind, one, two, n_items, n_out, n_tracks;
 	COUNTER_LARGE p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
+	COUNTER_MEDIUM n_weights = 0;
 	GMT_LONG id;
 	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
 	double fixed_weight = 1.0, *weights = NULL, *trk_symm = NULL;
@@ -289,7 +291,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
  	/*---------------------------- This is the x2sys_list main code ----------------------------*/
 
-	for (i = 0; i < (GMT_LONG)strlen (Ctrl->F.flags); i++) {
+	for (i = 0; i < strlen (Ctrl->F.flags); i++) {
 		if (Ctrl->F.flags[i] == 'c' || Ctrl->F.flags[i] == 'z') check_for_NaN = TRUE; /* Do not output records where the crossover or values are NaN */
 		if (Ctrl->F.flags[i] == 'n') mixed = TRUE;		/* Both numbers and text */
 	}

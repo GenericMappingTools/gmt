@@ -300,7 +300,8 @@ GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, GMT_L
 GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* High-level function that implements the grdtrack task */
 
-	GMT_LONG status, error, n_points = 0, n_read = 0, g, k, img_conv_needed = FALSE;
+	GMT_LONG status, error, n_points = 0, n_read = 0, g, k;
+	BOOLEAN img_conv_needed = FALSE;
 	
 	char line[GMT_BUFSIZ];
 
@@ -431,7 +432,8 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		}
 	}
 	else {	/* Standard resampling point case */
-		GMT_LONG pure_ascii = FALSE, ix, iy, n_fields, rmode;
+		BOOLEAN pure_ascii = FALSE;
+		GMT_LONG ix, iy, n_fields, rmode;
 		double *in = NULL, *out = NULL;
 		char record[GMT_BUFSIZ];
 		EXTERN_MSC GMT_LONG gmt_skip_output (struct GMT_CTRL *C, double *cols, GMT_LONG n_cols);

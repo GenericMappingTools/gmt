@@ -221,8 +221,8 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	size_t n_alloc = 0, nz_alloc = 0;
 	
-	GMT_LONG error = FALSE, box_and_whisker = FALSE, go_quickly = 0;
-	COUNTER_MEDIUM row, col, w_col, n_output, n_quantiles = 1;
+	BOOLEAN error = FALSE, box_and_whisker = FALSE;
+	COUNTER_MEDIUM row, col, w_col, n_output, n_quantiles = 1, go_quickly = 0;
 	
 	double out[7], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[3], weight, *in = NULL, *z_tmp = NULL;
 

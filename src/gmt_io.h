@@ -330,7 +330,7 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 
 struct GMT_OGR {	/* Struct with all things GMT/OGR for a table*/
 	/* The first parameters are usually set once per data set and do not change */
-	COUNTER_MEDIUM geometry;	/* @G: The geometry of this data set, if known [0 otherwise] */
+	GMT_LONG geometry;		/* @G: The geometry of this data set, if known [0 otherwise] */
 	COUNTER_MEDIUM n_aspatial;	/* @T: The number of aspatial fields */
 	char *region;			/* @R: The region textstring [NULL if not set] */
 	char *proj[4];			/* @J: The 1-4 projection strings [NULL if not set] */

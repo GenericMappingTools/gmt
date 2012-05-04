@@ -285,17 +285,18 @@ GMT_LONG GMT_hotspotter_parse (struct GMTAPI_CTRL *C, struct HOTSPOTTER_CTRL *Ct
 GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 
-	GMT_LONG n_smts;		/* Number of seamounts read */
-	GMT_LONG n_stages;		/* Number of stage rotations (poles) */
-	GMT_LONG n_track;		/* Number of points along a single flowline */
+	COUNTER_LARGE n_smts;		/* Number of seamounts read */
+	COUNTER_LARGE n_track;		/* Number of points along a single flowline */
+	COUNTER_LARGE n_read = 0;	/* Number of records read */
+	COUNTER_LARGE node, k0;		/* Grid indices */
+	COUNTER_MEDIUM n_stages;	/* Number of stage rotations (poles) */
+	COUNTER_MEDIUM n_expected_fields;
+	COUNTER_MEDIUM row, col, kx, ky, m;
 	GMT_LONG node_x_width;		/* Number of x-nodes covered by the seamount in question (y-dependent) */
 	GMT_LONG node_y_width;		/* Number of y-nodes covered by the seamount */
-	GMT_LONG n_expected_fields;
-	GMT_LONG n_read = 0;		/* Number of records read */
-	GMT_LONG row, col, kx, ky, m, d_col, d_row, col_0, row_0;
-	GMT_LONG error = FALSE;		/* TRUE when arguments are wrong */
+	GMT_LONG d_col, d_row, col_0, row_0, nx, ny;
+	BOOLEAN error = FALSE;		/* TRUE when arguments are wrong */
 	
-	COUNTER_LARGE node, k0;
 
 	double sampling_int_in_km;	/* Sampling interval along flowline (in km) */
 	double x_smt;			/* Seamount longitude (input degrees, stored as radians) */
@@ -407,6 +408,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Start to read input data */
 
 	n_smts = 0;
+	nx = G->header->nx;	ny = G->header->ny;	/* Signed integers */
 
 	n_expected_fields = (GMT->common.b.ncol[GMT_IN]) ? GMT->common.b.ncol[GMT_IN] : 5;
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
@@ -450,14 +452,6 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		y_smt = D2R * GMT_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric, and radians */
 		x_smt = in[GMT_X] * D2R;	/* Seamount positions in RADIANS */
-		z_smt = in[GMT_Z];
-		r_smt = in[3];
-
-		/* Do some normalizations here to save processing inside convolution later */
-
-		r_smt /= EQ_RAD;				/* Converts radius in km to radians */
-		norm = -4.5 / (r_smt * r_smt);			/* Gaussian normalization */
-		node_y_width = lrint (ceil (i_yinc_r * r_smt));	/* y-node coverage */
 
 		/* STEP 2: Calculate this seamount's flowline */
 
@@ -465,6 +459,14 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_forthtrack - aborting\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
+
+		/* Do some normalizations here to save processing inside convolution later */
+
+		z_smt = in[GMT_Z];
+		r_smt = in[3];
+		r_smt /= EQ_RAD;				/* Converts radius in km to radians */
+		norm = -4.5 / (r_smt * r_smt);			/* Gaussian normalization */
+		node_y_width = lrint (ceil (i_yinc_r * r_smt));	/* y-node coverage */
 
 		/* STEP 3: Convolve this flowline with seamount shape and add to CVA grid */
 
@@ -504,11 +506,11 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				dx = c[kx] - xpos[col];
 				dy = c[ky] - ypos[row];
 
-				/* Loop over a square that circumscribes this seamounts basal outline */
+				/* Loop over a square that circumscribes this seamount's basal outline */
 
 				for (d_row = -node_y_width, row_0 = row - node_y_width; d_row <= node_y_width; d_row++, row_0++) {
 
-					if (row_0 < 0 || row_0 >= G->header->ny) continue;	/* Outside grid */
+					if (row_0 < 0 || row_0 >= ny) continue;	/* Outside grid */
 
 					y_part = d_row * G_rad->header->inc[GMT_Y] - dy;
 					y_part2 = y_part * y_part;
@@ -516,7 +518,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 					for (d_col = -node_x_width, col_0 = col - node_x_width; d_col <= node_x_width; d_col++, col_0++) {
 
-						if (col_0 < 0 || col_0 >= G->header->nx) continue;	/* Outside grid */
+						if (col_0 < 0 || col_0 >= nx) continue;	/* Outside grid */
 
 						x_part = d_col * latfactor[row] - dx;
 						r2 = (x_part * x_part + y_part2) * norm;

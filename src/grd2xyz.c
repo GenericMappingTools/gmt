@@ -270,7 +270,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
 			PFL save = GMT->current.io.output;
-			GMT_LONG previous = GMT->common.b.active[GMT_OUT], rst = FALSE;
+			BOOLEAN previous = GMT->common.b.active[GMT_OUT], rst = FALSE;
 			GMT->current.io.output = GMT_z_output;		/* Override and use chosen output mode */
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
 			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) 

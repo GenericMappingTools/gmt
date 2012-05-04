@@ -38,8 +38,8 @@
 #include "sph.h"
 
 typedef double doublereal;
-typedef GMT_LONG integer;
-typedef GMT_LONG logical;
+typedef int64_t integer;
+typedef uint32_t logical;
 
 #ifndef min
 #define min(x, y) (((x) < (y)) ? (x) : (y))
@@ -55,7 +55,7 @@ typedef GMT_LONG logical;
 #include "stripack.c"
 #include "ssrfpack.c"
 
-void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, double *z, struct STRIPACK *T)
+void stripack_lists (struct GMT_CTRL *C, COUNTER_LARGE n_in, double *x, double *y, double *z, struct STRIPACK *T)
 {
  	/* n, the number of points.
 	 * x, y, z, the arrays with coordinates of points 
@@ -67,17 +67,17 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 	 * NOTE: All indeces returned are C (0->) adjusted from FORTRAN (1->).
 	 */
 
-	GMT_LONG k, nrow = TRI_NROW, lnew, ierror;
-	GMT_LONG *iwk = NULL, *list = NULL, *lptr = NULL, *lend = NULL;
+	int64_t *iwk = NULL, *list = NULL, *lptr = NULL, *lend = NULL;
+	int64_t n = n_in, k, ierror, lnew, nrow = TRI_NROW;	/* Since the Fortran funcs expect signed ints */
 	size_t n_alloc;
 	double *ds = NULL;
 	
 	ds = GMT_memory (C, NULL, n, double);
-	lend = GMT_memory (C, NULL, n, GMT_LONG);
- 	iwk = GMT_memory (C, NULL, 2*n, GMT_LONG);
+	lend = GMT_memory (C, NULL, n, int64_t);
+ 	iwk = GMT_memory (C, NULL, 2*n, int64_t);
 	n_alloc = 6 * (n - 2);
-	lptr = GMT_memory (C, NULL, n_alloc, GMT_LONG);
-	list = GMT_memory (C, NULL, n_alloc, GMT_LONG);
+	lptr = GMT_memory (C, NULL, n_alloc, int64_t);
+	list = GMT_memory (C, NULL, n_alloc, int64_t);
 
 	/* Create the triangulation. Main output is (list, lptr, lend) */
 
@@ -107,7 +107,7 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 	/* Create a triangle list which returns the number of triangles and their node list tri */
 
 	n_alloc = 2 * (n - 2);
-	T->D.tri = GMT_memory (C, NULL, (TRI_NROW*n_alloc), GMT_LONG);
+	T->D.tri = GMT_memory (C, NULL, TRI_NROW*n_alloc, int64_t);
 	GMT_report (C, GMT_MSG_VERBOSE, "Call STRIPACK TRLIST subroutine...");
 	trlist_ (&n, list, lptr, lend, &nrow, &T->D.n, T->D.tri, &ierror);
 	GMT_report (C, GMT_MSG_VERBOSE, "OK\n");
@@ -118,7 +118,7 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 	}
 	
 	if (T->mode == VORONOI) {	/* Construct the Voronoi diagram */
-		GMT_LONG *lbtri = NULL;
+		int64_t *lbtri = NULL;
 		COUNTER_LARGE kk;
 		double *rc = NULL;
 		double *xc = NULL, *yc = NULL, *zc = NULL;	/* Voronoi polygon vertices */
@@ -131,8 +131,8 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 		zc = GMT_memory (C, NULL, n_alloc, double);
 		rc = GMT_memory (C, NULL, n_alloc, double);
 		n_alloc = 6 * (n - 2);
-		T->V.listc = GMT_memory (C, NULL, n_alloc, GMT_LONG);
-		lbtri = GMT_memory (C, NULL, 6*n, GMT_LONG);
+		T->V.listc = GMT_memory (C, NULL, n_alloc, int64_t);
+		lbtri = GMT_memory (C, NULL, 6*n, int64_t);
 
 		GMT_report (C, GMT_MSG_VERBOSE, "Call STRIPACK CRLIST subroutine...");
 		crlist_ (&n, &n, x, y, z, list, lend, lptr, &lnew, lbtri, T->V.listc, &T->V.n, xc, yc, zc, rc, &ierror);
@@ -177,9 +177,9 @@ double stripack_areas (double *V1, double *V2, double *V3)
 	return (areas_ (V1, V2, V3));
 }
 
-void cart_to_geo (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, double *z, double *lon, double *lat)
+void cart_to_geo (struct GMT_CTRL *C, COUNTER_LARGE n, double *x, double *y, double *z, double *lon, double *lat)
 {	/* Convert Cartesian vectors back to lon, lat vectors */
-	GMT_LONG k;
+	COUNTER_LARGE k;
 	double V[3];
 	for (k = 0; k < n; k++) {
 		V[0] = x[k];	V[1] = y[k];	V[2] = z[k];
@@ -201,9 +201,11 @@ int compare_arc (const void *p1, const void *p2)
 
 /* Functions for spherical surface interpolation */
 
-void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double *w, GMT_LONG n, GMT_LONG mode, double *par, GMT_LONG vartens, struct GRD_HEADER *h, double *f)
+void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double *w, COUNTER_LARGE n_in, COUNTER_MEDIUM mode, double *par, BOOLEAN vartens, struct GRD_HEADER *h, double *f)
 {
-	GMT_LONG ierror, nm, k, i, j, n_sig, nxp, ist, ij, iflgs, iter, itgs, plus = 1, minus = -1, nx = (GMT_LONG)h->nx, ny = (GMT_LONG)h->ny;
+	int64_t ierror, plus = 1, minus = -1, ij, nxp, k, n = n_in;
+	int64_t nm, i, n_sig, ist, iflgs, iter, itgs, nx = h->nx, ny = h->ny;
+	uint32_t row, col;
 	double *sigma = NULL, *grad = NULL, *plon = NULL, *plat = NULL, tol = 0.01, dsm, dgmx;
 	struct STRIPACK P;
 	
@@ -219,8 +221,8 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 	
 	plon = GMT_memory (C, NULL, h->nx, double);
 	plat = GMT_memory (C, NULL, h->ny, double);
-	for (i = 0; i < h->nx; i++) plon[i] = D2R * GMT_grd_col_to_x (C, i, h);
-	for (j = 0; j < h->ny; j++) plat[j] = D2R * GMT_grd_row_to_y (C, j, h);
+	for (col = 0; col < h->nx; col++) plon[col] = D2R * GMT_grd_col_to_x (C, col, h);
+	for (row = 0; row < h->ny; row++) plat[row] = D2R * GMT_grd_row_to_y (C, row, h);
 	nm = h->nx * h->ny;
 	
 	/* Time to work on the interpolation */
@@ -231,13 +233,13 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 	if (mode == 0) {	 /* C-0 interpolation (INTRC0). */
 		nxp = 0;
 		ist = 1;
-		for (j = 0; j < h->ny; j++) {
-			for (i = 0; i < h->nx; i++) {
-				ij = i * h->ny + (h->ny - j -1); /* Use Fortran indexing since calling program will transpose to GMT order */
-				intrc0_ (&n, &plat[j], &plon[i], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
+		for (row = 0; row < h->ny; row++) {
+			for (col = 0; col < h->nx; col++) {
+				ij = (COUNTER_LARGE)col * (COUNTER_LARGE)h->ny + (COUNTER_LARGE)(h->ny - row -1); /* Use Fortran indexing since calling program will transpose to GMT order */
+				intrc0_ (&n, &plat[row], &plon[i], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 	            		if (ierror < 0) {
-					GMT_report (C, GMT_MSG_FATAL, "Error in INTRC0: I = %ld, J = %ld, IER = %ld\n", j, i, ierror);
+					GMT_report (C, GMT_MSG_FATAL, "Error in INTRC0: I = %ld, J = %ld, IER = %ld\n", row, col, ierror);
 					GMT_exit (EXIT_FAILURE);
 	            		}
 			}
@@ -246,7 +248,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 	}
 	else if (mode == 1) {	/* C-1 interpolation (INTRC1) with local gradients GRADL. */
 	   	/* Accumulate the sum of the numbers of nodes used in the least squares fits in sum. */
-		GMT_LONG k1;
+		int64_t k1;
 		double sum = 0.0;
 		for (k = 0; k < n; k++) {
 			k1 = k + 1;	/* Since gradl expects Fortran indexing */
@@ -280,7 +282,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 		GMT_report (C, GMT_MSG_VERBOSE, "UNIF: Number of evaluation points = %ld, number of extrapolation points = %ld\n", nm, ierror);
 	}
 	else if (mode == 2) {	/* c-1 interpolation (intrc1) with global gradients gradg. */
-		GMT_LONG maxit, nitg;
+		int64_t maxit, nitg;
 		double dgmax;
 		/* initialize gradients grad to zeros. */
 		GMT_memset (grad, 3*n, double);

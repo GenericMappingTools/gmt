@@ -55,7 +55,7 @@ struct X2SYS_CROSS_CTRL {
 	} T;
 	struct W {	/* -W */
 		BOOLEAN active;
-		GMT_LONG width;
+		COUNTER_MEDIUM width;
 	} W;
 	struct Q {	/* -Q */
 		BOOLEAN active;
@@ -263,6 +263,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_LARGE n_left, right[2], t_right, n_right;
 	COUNTER_LARGE n_duplicates, n_errors;
 	COUNTER_LARGE add_chunk;
+	GMT_LONG scol;
 
 	BOOLEAN xover_locations_only = FALSE;	/* TRUE if only x,y (and possible indices) to be output */
 	BOOLEAN internal = TRUE;		/* FALSE if only external xovers are needed */
@@ -430,8 +431,8 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		y = GMT_memory (GMT, NULL, window_width, double);
 		col_number = GMT_memory (GMT, NULL, n_data_col, COUNTER_LARGE);
 		ok = GMT_memory (GMT, NULL, n_data_col, GMT_LONG);
-		for (col = k = 0; col < s->n_out_columns; col++) {
-			if (col == s->x_col || col == s->y_col || col == s->t_col) continue;
+		for (col = k = scol = 0; col < s->n_out_columns; col++, scol++) {
+			if (scol == s->x_col || scol == s->y_col || scol == s->t_col) continue;
 			col_number[k++] = col;
 		}
 		if (s->t_col < 0) GMT_report (GMT, GMT_MSG_NORMAL, "No time column, use dummy times\n");
@@ -583,7 +584,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_x_free (GMT, &XC);
 			}
 			else if (nx) {	/* Got crossovers, now estimate crossover values */
-
+				int64_t start_s;
 				first_crossover = TRUE;
 
 				for (i = 0; i < nx; i++) {	/* For each potential crossover */
@@ -639,8 +640,8 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							xdata[k][col] = GMT->session.d_NaN;	/* In case of nuthin' */
 
 							/* First find the required <window> points to the left of the xover */
-
-							while (start >= 0 && n_left < Ctrl->W.width) {
+							start_s = start;
+							while (start_s >= 0 && n_left < Ctrl->W.width) {
 								if (!GMT_is_dnan (data[k][col][start])) {
 									n_left++;
 									if (t_left > left[k]) t_left = start;
@@ -648,6 +649,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 									t[Ctrl->W.width-n_left] = time[k][start];
 								}
 								start--;
+								start_s--;
 							}
 
 							if (!n_left) continue;

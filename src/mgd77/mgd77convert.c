@@ -188,7 +188,8 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 
 GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, argno, n_cruises = 0, n_paths, error = FALSE;
+	GMT_LONG i, argno, n_cruises = 0, n_paths;
+	BOOLEAN error = FALSE;
 	
 	char file[GMT_BUFSIZ], **list = NULL, *fcode = "actm";
 	char *format_name[MGD77_N_FORMATS] = {"MGD77 ASCII", "MGD77+ netCDF", "ASCII table", "MGD77T ASCII"};

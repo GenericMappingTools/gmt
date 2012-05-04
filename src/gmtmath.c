@@ -137,7 +137,7 @@ void new_table (struct GMT_CTRL *GMT, double ***s, GMT_LONG n_col, GMT_LONG n)
 }
 #endif
 
-void decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *skip, COUNTER_MEDIUM n_col, COUNTER_MEDIUM t_col)
+void decode_columns (struct GMT_CTRL *GMT, char *txt, BOOLEAN *skip, COUNTER_MEDIUM n_col, COUNTER_MEDIUM t_col)
 {
 	COUNTER_MEDIUM i, start, stop, pos, col;
 	char p[GMT_BUFSIZ];
@@ -297,7 +297,7 @@ void load_const_column (struct GMT_DATASET *to, GMT_LONG to_col, double factor)
 	}
 }
 
-GMT_LONG same_size (struct GMT_DATASET *A, struct GMT_DATASET *B)
+BOOLEAN same_size (struct GMT_DATASET *A, struct GMT_DATASET *B)
 {	/* Are the two dataset the same size */
 	COUNTER_LARGE seg;
 	if (!(A->table[0]->n_segments == B->table[0]->n_segments && A->table[0]->n_columns == B->table[0]->n_columns)) return (FALSE);
@@ -305,7 +305,7 @@ GMT_LONG same_size (struct GMT_DATASET *A, struct GMT_DATASET *B)
 	return (TRUE);
 }
 
-GMT_LONG same_domain (struct GMT_DATASET *A, GMT_LONG t_col, struct GMT_TABLE *B)
+BOOLEAN same_domain (struct GMT_DATASET *A, GMT_LONG t_col, struct GMT_TABLE *B)
 {	/* Are the two dataset the same domain */
 	COUNTER_LARGE seg;
 	for (seg = 0; seg < A->table[0]->n_segments; seg++) {
@@ -376,7 +376,8 @@ GMT_LONG GMT_gmtmath_parse (struct GMTAPI_CTRL *C, struct GMTMATH_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0, n_req, missing_equal = TRUE;
+	GMT_LONG n_errors = 0, n_files = 0, n_req;
+	BOOLEAN missing_equal = TRUE;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 #ifdef GMT_COMPAT
@@ -1249,7 +1250,8 @@ void table_IN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATAS
 /*OPERATOR: IN 2 1 Modified Bessel function of A (1st kind, order B).  */
 {
 	COUNTER_LARGE s, i;
-	GMT_LONG prev = last - 1, simple = FALSE, order = 0;
+	GMT_LONG prev = last - 1, order = 0;
+	BOOLEAN simple = FALSE;
 	double b = 0.0;
 	struct GMT_TABLE *T = (constant[last]) ? NULL : S[last]->table[0], *T_prev = S[prev]->table[0];
 
@@ -1390,7 +1392,8 @@ void table_JN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATAS
 /*OPERATOR: JN 2 1 Bessel function of A (1st kind, order B).  */
 {
 	COUNTER_LARGE s, i;
-	GMT_LONG prev = last - 1, order = 0, simple = FALSE;
+	GMT_LONG prev = last - 1, order = 0;
+	BOOLEAN simple = FALSE;
 	double b = 0.0;
 	struct GMT_TABLE *T = (constant[last]) ? NULL : S[last]->table[0], *T_prev = S[prev]->table[0];
 
@@ -1439,7 +1442,8 @@ void table_KN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATAS
 /*OPERATOR: KN 2 1 Modified Bessel function of A (2nd kind, order B).  */
 {
 	COUNTER_LARGE s, i;
-	GMT_LONG prev = last - 1, order = 0, simple = FALSE;
+	GMT_LONG prev = last - 1, order = 0;
+	BOOLEAN simple = FALSE;
 	double b = 0.0;
 	struct GMT_TABLE *T = (constant[last]) ? NULL : S[last]->table[0], *T_prev = S[prev]->table[0];
 
@@ -2728,7 +2732,8 @@ void table_YN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATAS
 /*OPERATOR: YN 2 1 Bessel function of A (2nd kind, order B).  */
 {
 	COUNTER_LARGE s, i;
-	GMT_LONG prev = last - 1, order = 0, simple = FALSE;
+	GMT_LONG prev = last - 1, order = 0;
+	BOOLEAN simple = FALSE;
 	double b = 0.0;
 	struct GMT_TABLE *T = (constant[last]) ? NULL : S[last]->table[0], *T_prev = S[prev]->table[0];
 
@@ -3361,7 +3366,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	else {	/* Regular table result */
-		GMT_LONG template_used = FALSE;
+		BOOLEAN template_used = FALSE;
 		if (stack[0])	/* There is an output stack, select it */
 			R = stack[0];
 		else {		/* Can happen if only -T [-N] was specified with no operators */

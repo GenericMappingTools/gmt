@@ -215,10 +215,11 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	/* THE FOLLOWING VARIABLES DO NOT VARY FOR EACH CRUISE */
-	GMT_LONG error = FALSE, nautical = FALSE, custom_max_speed = FALSE, simulate = FALSE;
-	GMT_LONG bad_sections = FALSE, custom_min_speed = FALSE, do_regression = TRUE, dist_to_coast = FALSE;
-	GMT_LONG custom_warn = FALSE, warn[MGD77_N_WARN_TYPES], report_raw = FALSE;
-	GMT_LONG decimateData = TRUE, forced = FALSE, adjustData = FALSE, flip_flags = FALSE;
+	BOOLEAN error = FALSE, nautical = FALSE, custom_max_speed = FALSE, simulate = FALSE;
+	BOOLEAN bad_sections = FALSE, custom_min_speed = FALSE, do_regression = TRUE, dist_to_coast = FALSE;
+	BOOLEAN custom_warn = FALSE, warn[MGD77_N_WARN_TYPES], report_raw = FALSE;
+	BOOLEAN decimateData = TRUE, forced = FALSE, adjustData = FALSE, flip_flags = FALSE;
+	
 	COUNTER_MEDIUM argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
 	COUNTER_MEDIUM dtc_index = 0, pos = 0;
 

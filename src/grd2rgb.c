@@ -270,7 +270,7 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 	 */
 
 	COUNTER_MEDIUM n_errors = 0, n_files = 0, pos, entry;
-	GMT_LONG guess = FALSE;
+	BOOLEAN guess = FALSE;
 	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -395,7 +395,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* No command line files or std** to add via GMT_Init_IO */
 	
 	if (Ctrl->C.active) {	/* Apply CPT to get three r,g,b channel files */
-		GMT_LONG new_grid = FALSE;
+		BOOLEAN new_grid = FALSE;
 		/* Since these GMT grids COULD be passed in via memory locations, they COULD have pads so we must use general IJ access */
 		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);

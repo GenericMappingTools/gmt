@@ -207,7 +207,7 @@ void load_parameters_pstext (struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C)
 }
 
 #ifdef GMT_COMPAT
-GMT_LONG check_for_old_format (struct GMT_CTRL *C, char *buffer, GMT_LONG mode)
+BOOLEAN check_for_old_format (struct GMT_CTRL *C, char *buffer, GMT_LONG mode)
 {
 	/* Try to determine if input is the old GMT4-style format.
 	 * mode = 0 means normal textrec, mode = 1 means paragraph mode. */
@@ -522,10 +522,10 @@ GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG
 GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pstext task */
 
-	GMT_LONG k, fmode, old_is_world, nscan;
-	GMT_LONG error = FALSE, master_record = FALSE, skip_text_records = FALSE;
+	GMT_LONG k, fmode, nscan;
+	BOOLEAN error = FALSE, master_record = FALSE, skip_text_records = FALSE, old_is_world;
 	
-	COUNTER_MEDIUM i, length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
+	COUNTER_MEDIUM length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
 	COUNTER_MEDIUM n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
 	
 	size_t n_alloc = 0;
@@ -682,7 +682,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had bad justification info (set to LB)\n", n_read);
 					T.block_justify = 1;
 				}
-				if (nscan != n_expected_cols) {
+				if (nscan != (GMT_LONG)n_expected_cols) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had incomplete paragraph information, skipped)\n", n_read);
 					continue;
 				}
@@ -786,7 +786,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			nscan += GMT_load_aspatial_string (GMT, GMT->current.io.OGR, text_col, in_txt);	/* Substitute OGR attribute if used */
 
-			if (nscan != n_expected_cols) {
+			if (nscan != (GMT_LONG)n_expected_cols) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Record %ld is incomplete (skipped)\n", n_read);
 				continue;
 			}

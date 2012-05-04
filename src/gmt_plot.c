@@ -344,7 +344,8 @@ GMT_LONG gmt_get_primary_annot (struct GMT_PLOT_AXIS *A)
 
 GMT_LONG gmt_skip_second_annot (GMT_LONG item, double x, double x2[], GMT_LONG n, GMT_LONG primary)
 {
-	GMT_LONG i, found;
+	GMT_LONG i;
+	BOOLEAN found;
 	double small;
 
 	if (!n) return (FALSE);	/* Not set, no need to skip */
@@ -363,14 +364,14 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	GMT_LONG annot_pos;		/* Either 0 for upper annotation or 1 for lower annotation */
 	GMT_LONG primary;		/* Axis item number of annotation with largest interval/unit */
 	GMT_LONG axis = A->id;		/* Axis id (GMT_X, GMT_Y, GMT_Z) */
-	GMT_LONG horizontal;		/* TRUE if axis is horizontal */
-	GMT_LONG neg = below;		/* TRUE if annotations are to the left of or below the axis */
-	GMT_LONG far;			/* TRUE if the anchor point of annotations is on the far side of the axis */
-	GMT_LONG is_interval;		/* TRUE when the annotation is interval annotation and not tick annotation */
-	GMT_LONG do_annot;		/* TRUE unless we are dealing with Gregorian weeks */
-	GMT_LONG do_tick;		/* TRUE unless we are dealing with bits of weeks */
-	GMT_LONG form;			/* TRUE for outline font */
-	GMT_LONG ortho = FALSE;		/* TRUE if annotations are orthogonal to axes */
+	BOOLEAN horizontal;		/* TRUE if axis is horizontal */
+	BOOLEAN neg = below;		/* TRUE if annotations are to the left of or below the axis */
+	BOOLEAN far;			/* TRUE if the anchor point of annotations is on the far side of the axis */
+	BOOLEAN is_interval;		/* TRUE when the annotation is interval annotation and not tick annotation */
+	BOOLEAN do_annot;		/* TRUE unless we are dealing with Gregorian weeks */
+	BOOLEAN do_tick;		/* TRUE unless we are dealing with bits of weeks */
+	BOOLEAN form;			/* TRUE for outline font */
+	BOOLEAN ortho = FALSE;		/* TRUE if annotations are orthogonal to axes */
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
 	double x, t_use;			/* Misc. variables */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
@@ -586,7 +587,8 @@ void gmt_map_lonline (struct GMT_CTRL *C, struct PSL_CTRL *P, double lon, double
 void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval)
 {
 	double *x = NULL, ys, yn, p_cap = 0.0, cap_start[2] = {0.0, 0.0}, cap_stop[2] = {0.0, 0.0};
-	GMT_LONG i, nx, idup = FALSE, cap = FALSE;
+	GMT_LONG i, nx;
+	BOOLEAN idup = FALSE, cap = FALSE;
 
 	/* Do we have duplicate e and w boundaries ? */
 	idup = (GMT_IS_AZIMUTHAL(C) && doubleAlmostEqual(e-w, 360.0));
@@ -1060,7 +1062,8 @@ void gmt_wesn_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, do
 void gmt_fancy_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
 	double fat_pen, thin_pen;
-	GMT_LONG dual = FALSE, cap = P->internal.line_cap;
+	BOOLEAN dual = FALSE;
+	GMT_LONG cap = P->internal.line_cap;
 
 	if (!(C->current.setting.map_frame_type & GMT_IS_FANCY)) {	/* Draw plain boundary and return */
 		gmt_wesn_map_boundary (C, P, w, e, s, n);
@@ -1119,7 +1122,8 @@ void gmt_rect_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, d
 
 void gmt_polar_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
-	GMT_LONG dual = FALSE, cap = P->internal.line_cap;
+	BOOLEAN dual = FALSE;
+	GMT_LONG cap = P->internal.line_cap;
 	double thin_pen, fat_pen;
 
 	if (C->common.R.oblique) { /* Draw rectangular boundary and return */
@@ -1176,7 +1180,8 @@ void gmt_polar_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, d
 
 void gmt_conic_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
-	GMT_LONG dual = FALSE, cap = P->internal.line_cap;
+	BOOLEAN dual = FALSE;
+	GMT_LONG cap = P->internal.line_cap;
 	double thin_pen, fat_pen;
 
 	if (C->common.R.oblique) { /* Draw rectangular boundary and return */
@@ -1739,8 +1744,8 @@ void gmt_label_trim (char *label, GMT_LONG stage)
 void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
 	GMT_LONG i, k, nx, ny, form, remove[2] = {0,0};
-	GMT_LONG do_minutes, do_seconds, done_Greenwich, done_Dateline;
-	GMT_LONG full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual[2], is_dual, annot, is_world_save, lon_wrap_save;
+	BOOLEAN do_minutes, do_seconds, done_Greenwich, done_Dateline;
+	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual[2], is_dual, annot, is_world_save, lon_wrap_save;
 	char label[GMT_TEXT_LEN256];
 	char **label_c = NULL;
 	double *val = NULL, dx[2], dy[2], w2, s2, del;
@@ -2033,7 +2038,8 @@ GMT_LONG gmt_is_fancy_boundary (struct GMT_CTRL *C)
 
 void GMT_map_basemap (struct GMT_CTRL *C)
 {
-	GMT_LONG i, clip_on = FALSE;
+	GMT_LONG i;
+	BOOLEAN clip_on = FALSE;
 	double w, e, s, n;
 	struct PSL_CTRL *P = C->PSL;
 
@@ -2338,7 +2344,8 @@ void gmt_NaN_pen_up (double x[], double y[], GMT_LONG pen[], GMT_LONG n)
 
 void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, GMT_LONG *pen, GMT_LONG n)
 {
-	GMT_LONG i, j, i1, way, stop, close;
+	GMT_LONG i, j, i1, way, stop;
+	BOOLEAN close;
 	double x_cross[2], y_cross[2];
 	struct PSL_CTRL *P = C->PSL;
 
@@ -2874,11 +2881,11 @@ GMT_LONG gmt_custum_failed_bool_test (struct GMT_CTRL *C, struct GMT_CUSTOM_SYMB
 
 void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, double *y, COUNTER_LARGE *n, struct GMT_PEN *p, struct GMT_FILL *f, GMT_LONG outline, GMT_LONG *flush)
 {
-	GMT_LONG draw_outline;
+	BOOLEAN draw_outline;
 
 	draw_outline = (outline && p->rgb[0] != -1) ? TRUE : FALSE;
 	if (draw_outline) GMT_setpen (C, p);
-	if (draw_outline == 2) {	/* Stroke path only */
+	if (outline == 2) {	/* Stroke path only */
 		PSL_plotline (P, x, y, (GMT_LONG)*n, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 	}
 	else {	/* Fill polygon and possibly stroke outline */
@@ -2891,8 +2898,8 @@ void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, 
 
 void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, GMT_LONG outline)
 {
-	GMT_LONG na, i, flush = FALSE, this_outline = FALSE;
-	GMT_LONG level = 0, found_elseif = FALSE, skip[11];
+	GMT_LONG na, i, level = 0;
+	BOOLEAN flush = FALSE, this_outline = FALSE, found_elseif = FALSE, skip[11];
 	COUNTER_LARGE n = 0;
 	size_t n_alloc = 0;
 	double x, y, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
@@ -3661,7 +3668,8 @@ void GMT_plotcanvas (struct GMT_CTRL *C)
 {
 	if (C->current.map.frame.paint) {	/* Paint the inside of the map with specified fill */
 		double *x = NULL, *y = NULL;
-		GMT_LONG np, donut;
+		GMT_LONG np;
+		BOOLEAN donut;
 		np = GMT_map_clip_path (C, &x, &y, &donut);
 		GMT_setfill (C, &C->current.map.frame.fill, FALSE);
 		PSL_plotpolygon (C->PSL, x, y, (1 + donut) * np);
@@ -4010,7 +4018,8 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 	   we compute an arc length in degrees that is equivalent to the chosen symbol size.  With
 	   arrow heads we also shorten the vector arc so that unfilled vector heads are possible. */
 
-	GMT_LONG n1, n2, n, longway = FALSE, add, heads, side, justify;
+	GMT_LONG n1, n2, n, add, heads, side, justify;
+	BOOLEAN longway = FALSE;
 	size_t n_alloc;
 	double lon[2], lat[2], tlon, tlat, mlon, mlat, r, r0, A[3], B[3], P[3], Ax[3], Bx[3];
 	double x, y, dr[2] = {0.0, 0.0}, az[2] = {0.0, 0.0}, oaz[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, scl[2];

@@ -3877,7 +3877,8 @@ GMT_LONG gmt_scanf_geo (char *s, double *val)
 	done here.
 	*/
 
-	int retval = GMT_IS_FLOAT, negate = FALSE, id, im;
+	int retval = GMT_IS_FLOAT, id, im;
+	BOOLEAN negate = FALSE;
 	COUNTER_MEDIUM k, ncolons;
 	char scopy[GMT_TEXT_LEN64], suffix, *p = NULL, *p2 = NULL;
 	double dd, dm, ds;
@@ -4769,7 +4770,7 @@ void gmt_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 void gmt_build_segheader_from_ogr (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 {	/* Build segment-level OGR/GMT header metadata */
 	COUNTER_MEDIUM k, col, n;
-	GMT_LONG space = FALSE;
+	BOOLEAN space = FALSE;
 	char *sflag[7] = {"-D", "-G", "-I", "-L", "-T", "-W", "-Z"};
 	char buffer[GMT_BUFSIZ];
 

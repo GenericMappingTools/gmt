@@ -166,7 +166,8 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n, no_size_needed, n_set, got_A = FALSE;
+	GMT_LONG n_errors = 0, n;
+	BOOLEAN no_size_needed, n_set, got_A = FALSE;
 	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 #ifdef GMT_COMPAT
 	char txt_c[GMT_TEXT_LEN256];
@@ -302,8 +303,8 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG ix = 0, iy = 1, n_rec = 0, error = FALSE,justify;
-	GMT_LONG des_ellipse = TRUE, des_arrow = TRUE;
+	GMT_LONG ix = 0, iy = 1, n_rec = 0, justify;
+	GMT_LONG des_ellipse = TRUE, des_arrow = TRUE, error = FALSE;
 
 	double xy[2], plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[7];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0;

@@ -56,13 +56,13 @@ struct GRDRASTER_CTRL {
 
 struct GRDRASTER_INFO {
 	struct GRD_HEADER h;
-	GMT_LONG id;		/* File number  */
-	GMT_LONG nglobal;	/* If not 0, ras is global and i%nglobal makes it periodic  */
+	COUNTER_MEDIUM id;	/* File number  */
+	COUNTER_MEDIUM nglobal;	/* If not 0, ras is global and i%nglobal makes it periodic  */
 	GMT_LONG nanflag;
-	GMT_LONG nanset;	/* True if raster uses nanflag to signal NaN  */
+	BOOLEAN nanset;		/* True if raster uses nanflag to signal NaN  */
 	off_t skip;		/* Skip this number of header bytes when opening file  */
-	GMT_LONG swap_me;	/* TRUE if data set need to be swapped */
-	GMT_LONG geo;		/* TRUE if we believe x/y is lon/lat, FALSE otherwise */
+	BOOLEAN swap_me;	/* TRUE if data set need to be swapped */
+	BOOLEAN geo;		/* TRUE if we believe x/y is lon/lat, FALSE otherwise */
 	char type;
 };
 
@@ -732,7 +732,8 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
-	COUNTER_MEDIUM irasstart, jrasstart, n_nan, iras, jras, ijras, jseek;
+	COUNTER_MEDIUM n_nan, ijras, jseek, jras2, iras2;
+	GMT_LONG jrasstart, irasstart, iras, jras;
 	BOOLEAN error = FALSE, firstread;
 	
 	COUNTER_LARGE ij;
@@ -791,7 +792,10 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	tselect = strdup (Ctrl->In.file);
 	GMT_str_toupper (tselect);	/* Make it upper case - which wont affect integers */
 	for (j = i = 0; tselect[j] && i == 0; j++) if (!isdigit ((int)tselect[j])) i = 1;
-	iselect = (i == 0) ? atoi (tselect) : UINT_MAX;
+	if (i == 0)
+		iselect = atoi (tselect);
+	else
+		iselect = UINT_MAX;
 	for (i = 0, j = UINT_MAX; !error && i < nrasters; i++) {
 		if (iselect != UINT_MAX) {	/* We gave an integer ID */
 			if (rasinfo[i].id == iselect) {
@@ -1000,7 +1004,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (row = 0, jras = jrasstart; row < Grid->header->ny; row++, jras += jmult) {
 			y = GMT_row_to_y (GMT, row, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
 			ij = (Ctrl->T.active) ? 0 : GMT_IJP (Grid->header, row, 0);	/* Either we just have one row (with no padding) or we have a padded grid */
-			if (jras < 0 || jras > myras.h.ny) {
+			if (jras < 0 || (jras2 = jras) > myras.h.ny) {
 				/* This entire row is outside the raster */
 				for (col = 0; col < Grid->header->nx; col++, ij++) Grid->data[ij] = GMT->session.f_NaN;
 				n_nan += Grid->header->nx;
@@ -1011,7 +1015,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				
 				for (col = 0; col < Grid->header->nx; col++, ij++) {
 					if (myras.nglobal && iras >= myras.nglobal) iras = iras%myras.nglobal;
-					if (iras < 0 || iras >= myras.h.nx) {
+					if (iras < 0 || (iras2 = iras) >= myras.h.nx) {
 						Grid->data[ij] = GMT->session.f_NaN;
 						n_nan++;
 					}
@@ -1041,7 +1045,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (row = 0, jras = jrasstart; row < Grid->header->ny; row++, jras += jmult) {
 			y = GMT_row_to_y (GMT, row, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
 			ij = (Ctrl->T.active) ? 0 : GMT_IJP (Grid->header, row, 0);	/* Either we just have one row (no padding) or we have a padded grid */
-			if (jras < 0 || jras > myras.h.ny) {
+			if (jras < 0 || (jras2 = jras) > myras.h.ny) {
 				/* This entire row is outside the raster */
 				for (col = 0; col < Grid->header->nx; col++, ij++) Grid->data[ij] = GMT->session.f_NaN;
 				n_nan += Grid->header->nx;
@@ -1096,7 +1100,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				iras = irasstart;
 				for (col = 0; col < Grid->header->nx; col++, ij++) {
 					if (myras.nglobal && iras >= myras.nglobal) iras = iras%myras.nglobal;
-					if (iras < 0 || iras >= myras.h.nx) {
+					if (iras < 0 || (iras2 = iras) >= myras.h.nx) {
 						Grid->data[ij] = GMT->session.f_NaN;
 						n_nan++;
 					}

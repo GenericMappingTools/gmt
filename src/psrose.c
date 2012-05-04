@@ -334,10 +334,10 @@ GMT_LONG GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, find_mean = FALSE, half_only = 0;
-	GMT_LONG automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
+	BOOLEAN error = FALSE, find_mean = FALSE, half_only = 0, do_fill = FALSE;
+	BOOLEAN automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
 	GMT_LONG n_bins, n_annot, n_alpha, n_modes, form, n_in;
-	GMT_LONG k, bin, do_fill = FALSE;
+	GMT_LONG k, bin;
 	
 	COUNTER_LARGE n = 0, i;
 	

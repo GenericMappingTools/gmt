@@ -118,8 +118,8 @@ struct F_INFO {
 	double hlambda[3];	/* High full-wavelength where Gauss amp = 0.5  for r, x, and y	*/
 	double bw_order;	/* Order, N, of Butterworth filter	*/
 	PFD filter;		/* Points to the correct filter function */
-	GMT_LONG do_this[3];	/* T/F this filter wanted for r, x, and y	*/
-	GMT_LONG set_already;	/* TRUE if we already filled in the structure */
+	BOOLEAN do_this[3];	/* T/F this filter wanted for r, x, and y	*/
+	BOOLEAN set_already;	/* TRUE if we already filled in the structure */
 	GMT_LONG kind;		/* FILTER_EXP, FILTER_BW, FILTER_COS  */
 	GMT_LONG arg;		/* 0 = Gaussian, 1 = Butterworth, 2 = cosine taper,  */
 };
@@ -486,10 +486,10 @@ GMT_LONG count_slashes (char *txt)
 	return (n);
 }
 
-GMT_LONG parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
+BOOLEAN parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 {
 	COUNTER_MEDIUM i, j, n_tokens, pos;
-	GMT_LONG descending;
+	BOOLEAN descending;
 	double fourvals[4];
 	char line[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
 	

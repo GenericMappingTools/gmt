@@ -519,7 +519,7 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM i, n_model, rank, np;
-	GMT_LONG error = FALSE, significant;
+	BOOLEAN error = FALSE, significant;
 	
 	COUNTER_LARGE n_data;
 

@@ -17,8 +17,8 @@ struct MGD77_HEADER_LOOKUP {    /* Book-keeping for one header parameter  */
         GMT_LONG length;        /* Number of bytes to use */
         int record;             /* Header record number where it occurs (1-24) */
         int item;               /* Sequential item order in this record (1->) */
-        GMT_LONG check;         /* TRUE if we actually do a test on this item */
-        GMT_LONG revised;       /* TRUE if read in via the _REVISED attribute */
+        BOOLEAN check;         /* TRUE if we actually do a test on this item */
+        BOOLEAN revised;       /* TRUE if read in via the _REVISED attribute */
         char *ptr[2];           /* Pointers to the corresponding named variable in struct MGD77_HEADER_PARAMS (orig and revised) */
 };
 

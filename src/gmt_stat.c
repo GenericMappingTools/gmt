@@ -778,7 +778,7 @@ double GMT_plm_bar (struct GMT_CTRL *C, GMT_LONG l, GMT_LONG m, double x, GMT_LO
 	 * Journal of Geodesy, 76, 279-299, 2002. doi:10.1007/s00190-002-0216-2.
 	 */
 	GMT_LONG i;
-	GMT_LONG csphase = FALSE;
+	BOOLEAN csphase = FALSE;
 	double scalef=1.0e280, u, r, pmm, pmm0, pmm1, pmm2;
 
 	/* x is cosine of colatitude (sine of latitude) and must be -1 <= x <= +1 */
@@ -1207,7 +1207,8 @@ double GMT_tcrit (struct GMT_CTRL *C, double alpha, double nu)
 {
 	/* Critical values for Student t-distribution */
 
-	GMT_LONG NU, done;
+	GMT_LONG NU;
+	BOOLEAN done;
 	double t_low, t_high, t_mid = 0.0, p_high, p_mid, p, sign;
 
 	if (alpha > 0.5) {	/* right tail */
@@ -1250,7 +1251,7 @@ double GMT_chi2crit (struct GMT_CTRL *C, double alpha, double nu)
 {
 	/* Critical values for Chi^2-distribution */
 
-	GMT_LONG done;
+	BOOLEAN done;
 	double chi2_low, chi2_high, chi2_mid = 0.0, p_high, p_mid, p;
 
 	p = 1.0 - alpha;
@@ -1291,7 +1292,8 @@ double GMT_Fcrit (struct GMT_CTRL *C, double alpha, double nu1, double nu2)
 {
 	/* Critical values for F-distribution */
 
-	GMT_LONG NU1, NU2, done;
+	GMT_LONG NU1, NU2;
+	BOOLEAN done;
 	double F_low, F_high, F_mid = 0.0, p_high, p_mid, p, chisq1, chisq2;
 
 	F_high = 5.0;
@@ -1465,7 +1467,8 @@ GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, double xmin
 	double lub, glb, xx, temp;
 	COUNTER_LARGE i;
 	int64_t n_above, n_below, n_equal, n_lub, n_glb, one;	/* These must be signed integers (PW: Why?) */
-	GMT_LONG iteration = 0, finished = FALSE;
+	GMT_LONG iteration = 0;
+	BOOLEAN finished = FALSE;
 
 	if (n == 0) {
 		*med = m_initial;
@@ -2062,7 +2065,7 @@ void GMT_PvQv (struct GMT_CTRL *C, double x, double v_ri[], double pq[], GMT_LON
 	 * the real amd imaginary parts of Pv(x) and Qv(x) in the pq array.
 	 * Based on recipe in An Atlas of Functions */
 
-	GMT_LONG p_set, q_set;
+	BOOLEAN p_set, q_set;
 	double M, L, K, Xn, x2, k, k1, ep, em, sx, cx, fact;
 	double a[2], v[2], vp1[2], G[2], g[2], u[2], t[2], f[2];
 	double R[2], r[2], z[2], s[2], c[2], w[2], tmp[2], X[2], A[2], B[2];

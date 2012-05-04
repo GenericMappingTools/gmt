@@ -238,12 +238,14 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 	struct EULER *a = NULL, *b = NULL;	/* Pointer to arrays of stage poles */
 
-	GMT_LONG i, j, n_p, n_a = 1, n_b, n, k;	/* Misc. counters */
-	GMT_LONG last_sign, n_slash, n_out = 0, n_opt = 0, confusion = FALSE, online_stage = FALSE;
-	GMT_LONG error = FALSE;		/* Set to TRUE if arguments are inconsistent */
-	GMT_LONG first = TRUE;		/* TRUE for first input file */
-	GMT_LONG online_rot = FALSE;	/* TRUE if we gave a rotation on the commandline rather than file name */
-	GMT_LONG no_time = FALSE;	/* TRUE if we gave a rotation on the commandline as lon/lat/angle only */
+	COUNTER_MEDIUM i, j, n, k;	/* Misc. counters */
+	COUNTER_MEDIUM n_slash, n_out = 0, n_opt = 0, n_p, n_a = 1, n_b;
+	GMT_LONG last_sign;
+	BOOLEAN confusion = FALSE, online_stage = FALSE;
+	BOOLEAN error = FALSE;		/* Set to TRUE if arguments are inconsistent */
+	BOOLEAN first = TRUE;		/* TRUE for first input file */
+	BOOLEAN online_rot = FALSE;	/* TRUE if we gave a rotation on the commandline rather than file name */
+	BOOLEAN no_time = FALSE;	/* TRUE if we gave a rotation on the commandline as lon/lat/angle only */
 
 	double zero = 0.0;		/* Needed to pass to spotter_init */
 	double lon = 0.0, lat = 0.0;	/* Pole location for online rotations */
@@ -372,7 +374,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					a[j].omega = -a[j].omega;
 					spotter_cov_of_inverse (GMT, &a[j], a[j].C);
 				}
-				last_sign = 1;
+				last_sign = +1;
 			}
 			first = FALSE;
 		}
@@ -389,7 +391,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else
 				n_b = spotter_init (GMT, opt->arg, &b, FALSE, TRUE, FALSE, &zero);	/* Return total reconstruction rotations */
 			zero = 0.0;
-			spotter_add_rotations (GMT, a, n_a, b, last_sign * n_b, &p, &n_p);			/* Add the two total reconstruction rotations sets, returns total reconstruction rotations in p */
+			spotter_add_rotations (GMT, a, n_a, b, last_sign * n_b, &p, &n_p);		/* Add the two total reconstruction rotations sets, returns total reconstruction rotations in p */
 			GMT_free (GMT, a);
 			GMT_free (GMT, b);
 			a = p;

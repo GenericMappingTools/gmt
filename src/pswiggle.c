@@ -248,7 +248,7 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 
 	GMT_LONG j, k, wantx, wanty, n_errors = 0;
 #ifdef GMT_COMPAT
-	GMT_LONG N_active = FALSE;
+	BOOLEAN N_active = FALSE;
 #endif
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], *units = NULL;
 	struct GMT_OPTION *opt = NULL;

@@ -141,7 +141,7 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 	struct L {	/* -L */
 		BOOLEAN active;
 		GMT_LONG mode;
-		GMT_LONG degree;	/* Report degrees */
+		BOOLEAN degree;	/* Report degrees */
 	} L;
 	struct N {	/* -N */
 		BOOLEAN active;
@@ -153,7 +153,7 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 	} Q;
 	struct S {	/* -S */
 		BOOLEAN active;
-		GMT_LONG n;
+		COUNTER_MEDIUM n;
 	} S;
 	struct T {	/* -T */
 		BOOLEAN active;
@@ -243,7 +243,8 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, k, n_input;
+	COUNTER_MEDIUM n_errors = 0, n_input;
+	GMT_LONG k;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -304,7 +305,9 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 				break;
 			case 'S':
 				Ctrl->S.active = TRUE;
-				Ctrl->S.n = atoi (opt->arg);
+				k = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, k < 1, "Syntax error -S: Must specify a positive number of hotspots\n");
+				Ctrl->S.n = k;
 				break;
 			case 'T':
 				Ctrl->T.active = TRUE;
@@ -342,7 +345,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_MEDIUM n_max_spots, n_input, n_expected_fields, n_out;
 	COUNTER_MEDIUM i, j, k, n, kk, ns, nh, np, n_read, n_skipped = 0;
 	
-	GMT_LONG error = FALSE, better;
+	BOOLEAN error = FALSE, better;
 
 	double x_smt, y_smt, z_smt, r_smt, t_smt, *c, *in = NULL, dist, dlon, out[5];
 	double hx_dist, hx_dist_km, dist_NA, dist_NX, del_dist, dt = 0.0, A[3], H[3], N[3], X[3];
@@ -378,7 +381,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_lat_swap_init (GMT);	/* Initialize auxiliary latitude machinery */
 
 	nh = spotter_hotspot_init (GMT, Ctrl->F.file, TRUE, &orig_hotspot);	/* Get geocentric hotspot locations */
-	if (Ctrl->S.n <= 0 || Ctrl->S.n > nh) {
+	if (Ctrl->S.n > nh) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Give value between 1 and %ld\n", nh);
 		Return (EXIT_FAILURE);
 	}

@@ -132,7 +132,8 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, special = FALSE;
+	GMT_LONG n_errors = 0, j;
+	BOOLEAN special = FALSE;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -233,9 +234,9 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 
 GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
-	GMT_LONG brackets = FALSE, work_on_abs_value, do_report, fixed_phase[2] = {1, 1};
-	GMT_LONG i, j, ncol = 0, save_range, done;
+	BOOLEAN error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
+	BOOLEAN brackets = FALSE, work_on_abs_value, do_report, save_range, done;
+	GMT_LONG i, j, ncol = 0, fixed_phase[2] = {1, 1};
 	COUNTER_LARGE n = 0;
 
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];

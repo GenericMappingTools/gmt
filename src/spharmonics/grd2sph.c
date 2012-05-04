@@ -41,7 +41,7 @@ struct grd2sph_CTRL {
 
 int main (int argc, char **argv)
 {
-	GMT_LONG error = FALSE;
+	BOOLEAN error = FALSE;
 
 	int i, d, o, nm, f_arg = -1, n_files = 0;
 

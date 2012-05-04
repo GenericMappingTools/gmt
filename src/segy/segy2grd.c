@@ -39,23 +39,23 @@
 
 struct SEGY2GRD_CTRL {
 	struct In {	/* -In */
-		bool active;
+		BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		bool active;
+		BOOLEAN active;
 		int mode;
 	} A;
 	struct C {	/* -C<cpt> */
-		bool active;
+		BOOLEAN active;
 		double value;
 	} C;
 	struct D {	/* -D */
-		bool active;
+		BOOLEAN active;
 		char *text;
 	} D;
 	struct G {	/* -G */
-		bool active;
+		BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
@@ -63,24 +63,24 @@ struct SEGY2GRD_CTRL {
 		double inc[2];
 	} I;
 	struct L {	/* -L */
-		bool active;
+		BOOLEAN active;
 		int value;
 	} L;
 	struct M {	/* -M */
-		bool active;
-		int value;
+		BOOLEAN active;
+		COUNTER_MEDIUM value;
 	} M;
 	struct N {	/* -N */
-		bool active;
+		BOOLEAN active;
 		double d_value;
 		float f_value;
 	} N;
 	struct Q {	/* -Qx|y */
-		bool active[2];
+		BOOLEAN active[2];
 		double value[2];
 	} Q;
 	struct S {	/* -S */
-		bool active;
+		BOOLEAN active;
 		int mode;
 		int value;
 	} S;
@@ -264,10 +264,11 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 
 GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = false, read_cont = false, ij0;
-	GMT_LONG swap_bytes = !GMT_BIGENDIAN, n_samp = 0;
-	GMT_LONG ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
-	GMT_LONG n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix, isamp;
+	BOOLEAN  error = FALSE, read_cont = FALSE, swap_bytes = !GMT_BIGENDIAN;
+	
+	COUNTER_MEDIUM n_samp = 0, ij0;
+	COUNTER_MEDIUM ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
+	COUNTER_MEDIUM n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix, isamp;
 
 	COUNTER_LARGE ij;
 	
