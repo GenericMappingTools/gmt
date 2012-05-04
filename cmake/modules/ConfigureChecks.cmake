@@ -134,6 +134,8 @@ check_symbol_exists (_mkdir    direct.h HAVE__MKDIR)
 check_symbol_exists (_setmode  io.h     HAVE__SETMODE)
 check_symbol_exists (snprintf  stdio.h  HAVE_SNPRINTF_)
 check_symbol_exists (_snprintf stdio.h  HAVE__SNPRINTF_)
+check_symbol_exists (vsnprintf  stdio.h  HAVE_VSNPRINTF_)
+check_symbol_exists (_vsnprintf stdio.h  HAVE__VSNPRINTF_)
 
 # Check if -ldl is needed for dladdr
 check_function_exists (dlopen HAVE_BUILTIN_DYNAMIC_LINKING_LOADER)

@@ -283,7 +283,7 @@ EXTERN_MSC GMT_LONG GMT_geo_C_format (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file);
 
 EXTERN_MSC GMT_LONG GMT_message (struct GMT_CTRL *C, char *format, ...);
-EXTERN_MSC GMT_LONG GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...);
+EXTERN_MSC GMT_LONG GMT_report_func (struct GMT_CTRL *C, GMT_LONG level, char *source_line, char *format, ...);
 
 #ifdef WIN32
 EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
