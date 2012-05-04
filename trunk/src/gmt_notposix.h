@@ -382,7 +382,13 @@
 #if defined HAVE__SNPRINTF_ && !defined HAVE_SNPRINTF_
 #	define snprintf _snprintf
 #elif !defined HAVE_SNPRINTF_
-#	define snprintf(s, n, format, ...) sprintf(s, format, __VA_ARGS__)
+#	define snprintf(s, n, format , ...) sprintf(s, format , ##__VA_ARGS__)
+#endif
+
+#if defined HAVE__VSNPRINTF_ && !defined HAVE_VSNPRINTF_
+#	define vsnprintf _vsnprintf
+#elif !defined HAVE_VSNPRINTF_
+#	define vsnprintf(s, n, format, arg) vsprintf(s, format, arg)
 #endif
 
 #ifndef DECLARED_STRDUP

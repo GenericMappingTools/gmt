@@ -8207,27 +8207,34 @@ GMT_LONG GMT_message (struct GMT_CTRL *C, char *format, ...) {
 	return (0);
 }
 
-GMT_LONG GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
-#ifdef GMT_MATLAB
-	char line[GMT_BUFSIZ];
-#endif
+GMT_LONG GMT_report_func (struct GMT_CTRL *C, GMT_LONG level, char *source_line, char *format, ...) {
+	char message[GMT_BUFSIZ];
+	char *source_line_basename;
+	size_t source_info_len;
 	va_list args;
-	if (level > C->current.setting.verbose) return (0);
-#ifdef DEBUG
-	GMT_message (C, "%s(%s):%s:%d: ", C->init.progname, C->init.module_name, __FILE__, __LINE__);
+	if (level > C->current.setting.verbose)
+		return 0;
+	/* if source_line contains absolute path strip leading path: */
+#ifndef WIN32
+	source_line_basename = (strrchr (source_line, '/') ? : source_line - 1) + 1;
 #else
-	GMT_message (C, "%s(%s): ", C->init.progname, C->init.module_name);
+	source_line_basename = (strrchr (source_line, '\\') ?
+			strrchr (source_line, '\\') : source_line - 1) + 1;
 #endif
+	snprintf (message, GMT_BUFSIZ, "%s, %s, %s: ",
+			C->init.progname, C->init.module_name, source_line_basename);
+	source_info_len = strlen (message);
 	va_start (args, format);
+	/* append format to the message: */
+	vsnprintf (message + source_info_len, GMT_BUFSIZ - source_info_len, format, args);
+	va_end (args);
 #ifdef GMT_MATLAB
 	/* Version used by Matlab MEXs that are not able to print to stdout/stderr */
-	vsnprintf (line, GMT_BUFSIZ, format, args);
-	mexPrintf ("%s", line);
+	mexPrintf ("%s", message);
 #else
-	vfprintf (C->session.std[GMT_ERR], format, args);
+	fprintf (C->session.std[GMT_ERR], "%s", message);
 #endif
-	va_end (args);
-	return (1);
+	return 1;
 }
 
 /* Due to the DLL boundary cross problem on Windows we
