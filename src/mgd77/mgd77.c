@@ -1000,7 +1000,7 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *C, char *file, struct 
 			GMT_exit (EXIT_FAILURE);
 		}
 		rewind (F->fp);					/* Go back to beginning of file */
-		n_eols = (line[strlen(line)-1] == '\n' && line[strlen(line)-2] == '\r') ? 2 : 1;
+		n_eols = line[MGD77_HEADER_LENGTH] == '\r' ? 2 : 1; 		/* CRLF vs. LF line termination */
 		H->n_records = (buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + n_eols))) / (MGD77_RECORD_LENGTH + n_eols);
 	}
 	else {
