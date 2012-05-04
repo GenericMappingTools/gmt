@@ -8236,29 +8236,3 @@ GMT_LONG GMT_report_func (struct GMT_CTRL *C, GMT_LONG level, char *source_line,
 #endif
 	return 1;
 }
-
-/* Due to the DLL boundary cross problem on Windows we
- * are forced to have the following, otherwise defined
- * as macro, implemented as a function. */
-#ifdef GMT_MATLAB
-int GMT_fprintf (FILE *stream, char *format, ...) {
-	va_list args;
-	va_start (args, format);
-	vfprintf (stream, format, args);
-	va_end (args);
-
-	return (0);
-}
-#endif
-
-#if 0
-/* Comment out for now since not used for now */
-int GMT_fscanf (FILE *stream, char *format, ...) {
-	va_list args;
-	va_start (args, format);
-	vfscanf (stream, format, args);
-	va_end (args);
-
-	return (0);
-}
-#endif
