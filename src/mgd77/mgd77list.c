@@ -634,7 +634,8 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 
 GMT_LONG separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist)
 {
-	GMT_LONG i, j, k, this_aux, n_aux;
+	COUNTER_MEDIUM i, j, k, n_aux;
+	GMT_LONG this_aux;
 	
 	fx_setting[0] = '\0';
 	for (i = k = n_aux = 0; i < F->n_out_columns; i++) {
@@ -679,11 +680,15 @@ GMT_LONG augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_IN
 
 GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, c, id, k, kx, pos, argno, n_cruises = 0, n_paths, use, n_items = 0, t_pos = MGD77_NOT_SET;
-	GMT_LONG t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
-	GMT_LONG n_sub, n_out_columns, n_cols_to_process, n_aux, select_option, time_column, lon_column, lat_column;
-	GMT_LONG rec, prevrec, n_out = 0, ms_col = 0, twt_col = 0;
-	BOOLEAN negative_depth = FALSE,  negative_msd = FALSE, need_distances, need_time;
+	GMT_LONG i, c, id, k, kx, pos, use, n_items = 0, t_pos = MGD77_NOT_SET;
+	GMT_LONG t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
+	GMT_LONG select_option, time_column, lon_column, lat_column;
+	GMT_LONG ms_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
+	
+	COUNTER_MEDIUM rec, prevrec, n_out = 0, argno, n_cruises = 0, n_paths;
+	COUNTER_MEDIUM kk, n_sub, n_out_columns, n_cols_to_process, n_aux;
+	
+	BOOLEAN negative_depth = FALSE, negative_msd = FALSE, need_distances, need_time;
 	BOOLEAN error = FALSE, string_output = FALSE, need_depth = FALSE, PDR_wrap;
 	BOOLEAN need_lonlat = FALSE, first_cruise = TRUE, need_twt = FALSE, this_limit_on_time;
 	BOOLEAN need_date, need_sound = FALSE, lonlat_not_NaN, first_warning = TRUE, has_prev_twt = FALSE;
@@ -1031,9 +1036,9 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				Ctrl->A.GF_version = MGD77_IGF_1980;
 			}
 		}
-		for (i = 0; i < M.n_out_columns; i++) {
-			dvalue[i] = D->values[i];
-			tvalue[i] = D->values[i];
+		for (kk = 0; kk < M.n_out_columns; kk++) {
+			dvalue[kk] = D->values[kk];
+			tvalue[kk] = D->values[kk];
 		}
 
 		this_limit_on_time = Ctrl->D.active;	/* Since we might change it below */
@@ -1063,7 +1068,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		/* Start processing records  */
 		
-		for (rec = 0, prevrec = -1; rec < D->H.n_records; rec++) {
+		for (rec = 0; rec < D->H.n_records; rec++) {
 		
 			/* Compute accumulated distance along track (Great circles or Flat Earth) */
 		

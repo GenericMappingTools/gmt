@@ -512,13 +512,13 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	int cdf_var_id, n_dims = 0, dims[2];		/* netCDF variables should be declared as int */
 	size_t start[2] = {0, 0}, count[2] = {0, 0};	/* NetCDF offset variables are size_t */
 	
-	GMT_LONG i, j, k = 0, ii, jj, argno, n_paths = 0, column, result, c_kind = 0, interpolate = 0;
-	GMT_LONG width, n_delete = 0, GF_version = MGD77_NOT_SET, n_expected_fields, n_fields = 0;
-	GMT_LONG MTF_col = 1, set, n_bad, check, n_sampled = 0, n_changed = 0, n = 0;
-	BOOLEAN error = FALSE, transform, verified, strings = FALSE, got_grid, got_table, two_cols = FALSE, constant, ok_to_read = TRUE;
+	GMT_LONG i, j, k = 0, column, result, set, check;
+	GMT_LONG width, GF_version = MGD77_NOT_SET, n_fields = 0;
+	BOOLEAN error = FALSE, transform, verified, strings = FALSE, got_grid, got_table;
+	BOOLEAN two_cols = FALSE, constant, ok_to_read = TRUE, interpolate = FALSE;
 	
-	COUNTER_MEDIUM pos;
-	
+	COUNTER_MEDIUM MTF_col = 1, pos, c_kind = 0, n_expected_fields, row, col;
+	COUNTER_LARGE argno, n_paths = 0, n_delete = 0, n_bad, n_sampled = 0, n_changed = 0, n = 0, rec;
 	size_t n_alloc = GMT_CHUNK;
 	
 	time_t now;
@@ -583,7 +583,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	MGD77_Set_Unit (GMT, Ctrl->N.code, &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 
-	memset (not_given, (int)Ctrl->E.value, (size_t)GMT_TEXT_LEN64);	/* Text representing "no text value" */
+	memset (not_given, (int)Ctrl->E.value, GMT_TEXT_LEN64);	/* Text representing "no text value" */
 	not_given[GMT_TEXT_LEN64-1] = '\0';
 	fp_err = (In.verbose_dest == 1) ? GMT->session.std[GMT_OUT] : GMT->session.std[GMT_ERR];
 	
@@ -642,7 +642,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}
 	else if (got_table) {	/* Got a one- or two-column table to read */
-		GMT_LONG n_ave = 0;
+		COUNTER_LARGE n_ave = 0;
 		double last_dnt = -DBL_MAX, sum_z = 0.0;
 		
 		if (Ctrl->A.file[0] == '-') {   /* Just read from standard input */
@@ -880,9 +880,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			tvar = D->values[it];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
-			for (i = n_sampled = 0; i < D->H.n_records; i++) {
-				date = MGD77_time_to_fyear (GMT, &In, tvar[i]);	/* Get date as decimal year */
-				colvalue[i] = (MGD77_igrf10syn (GMT, 0, date, 1, 0.0, xvar[i], yvar[i], IGRF)) ? GMT->session.d_NaN : IGRF[MGD77_IGRF_F];
+			for (rec = n_sampled = 0; rec < D->H.n_records; rec++) {
+				date = MGD77_time_to_fyear (GMT, &In, tvar[rec]);	/* Get date as decimal year */
+				colvalue[rec] = (MGD77_igrf10syn (GMT, 0, date, 1, 0.0, xvar[rec], yvar[rec], IGRF)) ? GMT->session.d_NaN : IGRF[MGD77_IGRF_F];
 				n_sampled++;
 			}
 			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated IGRF at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
@@ -903,9 +903,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			MGD77_CM4_init (&In, &CM4);
 			
-			for (i = n_sampled = 0; i < D->H.n_records; i++) {
-				date = MGD77_time_to_fyear (GMT, &In, tvar[i]);	/* Get date as decimal year */
-				colvalue[i] = MGD77_Calc_CM4 (GMT, date, xvar[i], yvar[i], FALSE, &CM4);
+			for (rec = n_sampled = 0; rec < D->H.n_records; rec++) {
+				date = MGD77_time_to_fyear (GMT, &In, tvar[rec]);	/* Get date as decimal year */
+				colvalue[rec] = MGD77_Calc_CM4 (GMT, date, xvar[rec], yvar[rec], FALSE, &CM4);
 				n_sampled++;
 			}
 			MGD77_CM4_end (GMT, &CM4);
@@ -928,10 +928,10 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			mvar = D->values[im];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
-			for (i = n_sampled = 0; i < D->H.n_records; i++) {
-				date = MGD77_time_to_fyear (GMT, &In, tvar[i]);	/* Get date as decimal year */
-/* Change this--> */		check = MGD77_igrf10syn (GMT, 0, date, 1, 0.0, xvar[i], yvar[i], IGRF);
-				colvalue[i] = (check) ? GMT->session.d_NaN : mvar[i] - IGRF[MGD77_IGRF_F];
+			for (rec = n_sampled = 0; rec < D->H.n_records; rec++) {
+				date = MGD77_time_to_fyear (GMT, &In, tvar[rec]);	/* Get date as decimal year */
+/* Change this--> */		check = MGD77_igrf10syn (GMT, 0, date, 1, 0.0, xvar[rec], yvar[rec], IGRF);
+				colvalue[rec] = (check) ? GMT->session.d_NaN : mvar[rec] - IGRF[MGD77_IGRF_F];
 				n_sampled++;
 			}
 			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated recomputed magnetic anomaly at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
@@ -956,7 +956,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			yvar = D->values[iy];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
-			for (i = 0; i < D->H.n_records; i++) colvalue[i] = MGD77_Theoretical_Gravity (GMT, xvar[i], yvar[i], (int)GF_version);
+			for (rec = 0; rec < D->H.n_records; rec++) colvalue[rec] = MGD77_Theoretical_Gravity (GMT, xvar[rec], yvar[rec], GF_version);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated IGRF at %d locations out of %d for cruise %s\n", D->H.n_records, D->H.n_records, list[argno]);
 		}
 		else if (c_kind == ADD_CARTER) {	/* Append Carter correction column */
@@ -972,7 +972,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			tvar = D->values[it];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
-			for (i = 0; i < D->H.n_records; i++) colvalue[i] = MGD77_carter_correction (GMT, xvar[i], yvar[i], 1000.0 * tvar[i], &Carter);
+			for (rec = 0; rec < D->H.n_records; rec++) colvalue[rec] = MGD77_carter_correction (GMT, xvar[rec], yvar[rec], 1000.0 * tvar[rec], &Carter);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated IGRF at %d locations out of %d for cruise %s\n", D->H.n_records, D->H.n_records, list[argno]);
 		}
 		else if (c_kind == ADD_RMAG) {	/* Append recomputed residual mag column */
@@ -992,10 +992,10 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			mvar = D->values[im];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
-			for (i = n_sampled = 0; i < D->H.n_records; i++) {
-				date = MGD77_time_to_fyear (GMT, &In, tvar[i]);	/* Get date as decimal year */
-				check = MGD77_igrf10syn (GMT, 0, date, 1, 0.0, xvar[i], yvar[i], IGRF);
-				colvalue[i] = (check) ? GMT->session.d_NaN : mvar[i] - IGRF[MGD77_IGRF_F];
+			for (rec = n_sampled = 0; rec < D->H.n_records; rec++) {
+				date = MGD77_time_to_fyear (GMT, &In, tvar[rec]);	/* Get date as decimal year */
+				check = MGD77_igrf10syn (GMT, 0, date, 1, 0.0, xvar[rec], yvar[rec], IGRF);
+				colvalue[rec] = (check) ? GMT->session.d_NaN : mvar[rec] - IGRF[MGD77_IGRF_F];
 				n_sampled++;
 			}
 			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated recomputed magnetic anomaly at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
@@ -1011,16 +1011,16 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			yvar = D->values[iy];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
-			for (i = n_sampled = 0; i < D->H.n_records; i++) {
-				colvalue[i] = GMT->session.d_NaN;	/* In case we are outside grid */
+			for (rec = n_sampled = 0; rec < D->H.n_records; rec++) {
+				colvalue[rec] = GMT->session.d_NaN;	/* In case we are outside grid */
 	
 				/* If point is outside grd area, shift it using periodicity or skip if not periodic. */
 
 				if (Ctrl->A.mode == MODE_i)	/* Mercator IMG grid */
-					GMT_geo_to_xy (GMT, xvar[i], yvar[i], &x, &y);
+					GMT_geo_to_xy (GMT, xvar[rec], yvar[rec], &x, &y);
 				else {		/* Regular geographic grd */
-					x = xvar[i];
-					y = yvar[i];
+					x = xvar[rec];
+					y = yvar[rec];
 				}
 				if (y < G->header->wesn[YLO] || y > G->header->wesn[YHI]) continue;
 
@@ -1031,12 +1031,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (x > G->header->wesn[XHI]) continue;
 
 				if (interpolate) {	/* IMG has been corrected, and GRD is good to go */
-					colvalue[i] = GMT_get_bcr_z (GMT, G, x, y);
+					colvalue[rec] = GMT_get_bcr_z (GMT, G, x, y);
 				}
 				else {	/* Take IMG nearest node and do special stuff (values already set during read) */
-					ii = GMT_grd_x_to_col (GMT, x, G->header);
-					jj = GMT_grd_y_to_row (GMT, y, G->header);
-					colvalue[i] = G->data[GMT_IJP(G->header,jj,ii)];
+					col = GMT_grd_x_to_col (GMT, x, G->header);
+					row = GMT_grd_y_to_row (GMT, y, G->header);
+					colvalue[rec] = G->data[GMT_IJP(G->header,row,col)];
 				}
 				n_sampled++;
 			}
@@ -1077,12 +1077,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else if (strings && n < D->H.n_records) {	/* Only update the exact matching records */
 				text = GMT_memory (GMT, NULL, D->H.n_records * LEN, char);
-				for (i = j = n_sampled = 0; i < D->H.n_records && j < n; i++) {
-					match_value = (Ctrl->A.mode == MODE_n) ? i+1 : x[i];
-					strncpy (&text[i*LEN], not_given, (size_t)LEN);	/* In case we have no data at this time */
-					while (coldnt[j] < match_value && j < n) j++;
+				for (rec = j = n_sampled = 0; rec < D->H.n_records && j < n; rec++) {
+					match_value = (Ctrl->A.mode == MODE_n) ? rec+1 : x[rec];
+					strncpy (&text[rec*LEN], not_given, (size_t)LEN);	/* In case we have no data at this time */
+					while (coldnt[rec] < match_value && j < n) j++;
 					if (coldnt[j] == match_value) {
-						strncpy (&text[i*LEN], tmp_string[j], (size_t)LEN);
+						strncpy (&text[rec*LEN], tmp_string[j], (size_t)LEN);
 						n_sampled++;
 					}
 				}
@@ -1091,18 +1091,18 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else if (strings) {	/* One to one match */
 				text = GMT_memory (GMT, NULL, D->H.n_records * LEN, char);
-				for (i = 0; i < n; i++) strncpy (&text[i*LEN], tmp_string[i], (size_t)LEN);
+				for (rec = 0; rec < n; rec++) strncpy (&text[rec*LEN], tmp_string[rec], (size_t)LEN);
 				GMT_free (GMT, tmp_string);
 				GMT_report (GMT, GMT_MSG_NORMAL, "Appended column data for %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 			}
 			else {	/* Only update the exact matching records */
 				y = GMT_memory (GMT, NULL, D->H.n_records, double);
-				for (i = j = n_sampled = 0; i < D->H.n_records && j < n; i++) {
-					match_value = (Ctrl->A.mode == MODE_n) ? i+1 : x[i];
-					y[i] = GMT->session.d_NaN;	/* In case we have no data at this time */
+				for (rec = j = n_sampled = 0; rec < D->H.n_records && j < n; rec++) {
+					match_value = (Ctrl->A.mode == MODE_n) ? rec+1 : x[rec];
+					y[rec] = GMT->session.d_NaN;	/* In case we have no data at this time */
 					while (coldnt[j] < match_value && j < n) j++;
 					if (coldnt[j] == match_value) {	/* Found our guy */
-						y[i] = colvalue[j];
+						y[rec] = colvalue[j];
 						n_sampled++;
 					}
 				}
@@ -1121,10 +1121,10 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			int cdf_var_id, cdf_adjust;
 			char ID[16], date[16], field[GMT_TEXT_LEN64], efile[GMT_BUFSIZ], E77[256], timestamp[GMT_TEXT_LEN64], answer[GMT_BUFSIZ], code[GMT_BUFSIZ], kind, YorN;
 			GMT_LONG n_recs, rec, number, type, it, id, key, n_E77_flags, from, to, day, month, year, item;
-			GMT_LONG n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_unprocessed, e_error = 0;
+			GMT_LONG n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_unprocessed, e_error = 0, old_flags;
 			unsigned int *flags = NULL, pattern;
 			size_t length;
-			GMT_LONG has_time, old_flags;
+			BOOLEAN has_time;
 			struct MGD77_HEADER_PARAMS *P = NULL;
 			double rec_time, del_t, value, *tvar = NULL;
 			
