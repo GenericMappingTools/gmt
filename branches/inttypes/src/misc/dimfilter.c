@@ -622,8 +622,8 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				ij_out = GMT_IJP (Gout->header, row_out, col_out);
 				
 				for (ii = -F.x_half_width; ii <= F.x_half_width; ii++) {
-					col_in = i_origin[col_out] + ii;
-					if (col_in < 0 || (col_in = scol) >= Gin->header->nx) continue;
+					scol = i_origin[col_out] + ii;
+					if (scol < 0 || (col_in = scol) >= Gin->header->nx) continue;
 
 					for (jj = -F.y_half_width; jj <= F.y_half_width; jj++) {
 						srow = j_origin + jj;

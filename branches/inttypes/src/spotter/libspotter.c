@@ -584,7 +584,7 @@ GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, BOOLEAN geocentri
 
 	while (GMT_fgets (C, buffer, GMT_BUFSIZ, fp) != NULL) {
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
-		n = sscanf (buffer, "%lf %lf %s %" GMT_LL "d %lf %lf %lf %c %c %c %s", &e[i].lon, &e[i].lat, e[i].abbrev, &e[i].id, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
+		n = sscanf (buffer, "%lf %lf %s %d %lf %lf %lf %c %c %c %s", &e[i].lon, &e[i].lat, e[i].abbrev, &e[i].id, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
 		if (n == 3) e[i].id = i;	/* Minimal lon, lat, abbrev */
 		if (n >= 10) {
 			e[i].create = (create == 'Y');

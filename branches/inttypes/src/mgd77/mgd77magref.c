@@ -586,8 +586,9 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					MGD77_igrf10syn (GMT, 0, the_time, type, the_altitude, T->segment[s]->coord[GMT_X][i],
 							T->segment[s]->coord[GMT_Y][i], IGRF);
 					if (!Ctrl->joint_IGRF_CM4) {		/* IGRF only */
-						for (j = 0; j < Ctrl->CM4->CM4_F.n_field_components; j++)
-							Ctrl->CM4->CM4_DATA.out_field[i*n_field_components+j] = IGRF[Ctrl->CM4->CM4_F.field_components[j]];
+						int jj;
+						for (jj = 0; jj < Ctrl->CM4->CM4_F.n_field_components; jj++)
+							Ctrl->CM4->CM4_DATA.out_field[i*n_field_components+jj] = IGRF[Ctrl->CM4->CM4_F.field_components[jj]];
 					}
 					else {				/* Store the IGRF x,y,z components for later use */
 						for (j = 0; j < 3; j++)

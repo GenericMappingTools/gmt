@@ -434,9 +434,9 @@ struct MGD77_CONTROL {
 	BOOLEAN use_corrections[MGD77_N_SETS];		/* TRUE means we will apply correction factors (if present) when reading data */
 	struct MGD77_ORDER order[MGD77_MAX_COLS];	/* Gives the output order (set, item) of each desired column */
 	unsigned int bit_pattern[2];			/* 64 bit flags, one for each parameter desired */
-	int n_constraints;				/* Number of constraints specified */
-	int n_exact;					/* Number of exact columns to match */
-	int n_bit_tests;				/* Number of bit tests to match */
+	unsigned int n_constraints;			/* Number of constraints specified */
+	unsigned int n_exact;				/* Number of exact columns to match */
+	unsigned int n_bit_tests;			/* Number of bit tests to match */
 	BOOLEAN no_checking;				/* TRUE if there are no constraints, exact-tests, or bit-tests to pass */
 	struct MGD77_CONSTRAINT Constraint[MGD77_MAX_COLS];		/* List of constraints, if any */
 	struct MGD77_PAIR Exact[MGD77_MAX_COLS];	/* List of column names whose values must be !NaN to be output, if any */
@@ -526,7 +526,7 @@ EXTERN_MSC GMT_LONG MGD77_dbl_are_constant (struct GMT_CTRL *C, double x[], GMT_
 EXTERN_MSC GMT_LONG MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, GMT_LONG n, int width);
 EXTERN_MSC int MGD77_do_scale_offset_before_write (struct GMT_CTRL *C, double new[], const double x[], GMT_LONG n, double scale, double offset, int type);
 EXTERN_MSC void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H);
-EXTERN_MSC GMT_LONG MGD77_Match_List (struct GMT_CTRL *C, char *word, GMT_LONG n_fields, char **list);
+EXTERN_MSC GMT_LONG MGD77_Match_List (struct GMT_CTRL *C, char *word, COUNTER_MEDIUM n_fields, char **list);
 
 /* User functions for direct use of Carter corrections */
 

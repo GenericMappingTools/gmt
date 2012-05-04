@@ -232,9 +232,9 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	BOOLEAN error = FALSE, first = FALSE, periodic;
-	GMT_LONG s_row, south_row, north_row, west_col, east_col, w_col, e_col;
+	GMT_LONG s_row, south_row, north_row, w_col, e_col;
 
-	COUNTER_MEDIUM row, col, p_col;
+	COUNTER_MEDIUM row, col, p_col, west_col, east_col;
 	COUNTER_LARGE nx1, n_dup = 0, n_set = 0, side, ij, node, n = 0;
 	COUNTER_LARGE vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
 
