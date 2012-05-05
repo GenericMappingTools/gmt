@@ -1334,12 +1334,12 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	int16_t *i2 = NULL;
 	uint16_t *u2;
 	char file[GMT_BUFSIZ];
-	struct GMT_STAT buf;
+	struct stat buf;
 	FILE *fp = NULL;
 	double wesn[4], wesn_all[4];
 
 	if (!GMT_getdatapath (C, imgfile, file)) return (GMT_GRDIO_FILE_NOT_FOUND);
-	if (GMT_STAT (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
+	if (stat (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
 
 	switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = ~72 or ~80 */
 		case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_80*GMT_IMG_ITEMSIZE:

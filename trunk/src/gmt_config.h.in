@@ -110,6 +110,8 @@
 #cmakedefine HAVE__SNPRINTF_
 #cmakedefine HAVE_VSNPRINTF_
 #cmakedefine HAVE__VSNPRINTF_
+#cmakedefine HAVE__STAT
+#cmakedefine HAVE__STATI64
 #cmakedefine HAVE_STRICMP
 #cmakedefine HAVE_STRDUP
 #cmakedefine HAVE_STRSEP

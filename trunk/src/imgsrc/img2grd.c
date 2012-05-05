@@ -337,8 +337,8 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (! (Ctrl->I.active || Ctrl->D.active)) {
 		GMT_LONG min;
 		double lat = 0.0;
-		struct GMT_STAT buf;
-		if (GMT_STAT (infile, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
+		struct stat buf;
+		if (stat (infile, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
 
 		switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = ~72 or 80 */
 			case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_80*GMT_IMG_ITEMSIZE:

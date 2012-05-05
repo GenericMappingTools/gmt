@@ -8662,7 +8662,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
 #ifdef PS_MACRO
-	struct GMT_STAT buf;
+	struct stat buf;
 #endif
 
 	/* Parse the *.def files.  Note: PS_MACRO is off and will be worked on later.  For now the
@@ -8670,7 +8670,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 
 	GMT_getsharepath (C, "custom", name, ".def", file);
 #ifdef PS_MACRO
-	if (GMT_STAT (file, &buf)) {
+	if (stat (file, &buf)) {
 		GMT_report (C, GMT_MSG_FATAL, "Error: Could not find custom symbol %s\n", name);
 		GMT_exit (EXIT_FAILURE);
 	}
