@@ -28,9 +28,9 @@
 
 /* Two types for counting, depending on expected range of integers we need */
 #define COUNTER_LARGE	uint64_t
-#define COUNTER_MEDIUM	uint32_t
+#define COUNTER_MEDIUM	unsigned
 /* Type for TRUE [!0] or FALSE [0] only */
-#define BOOLEAN	int
+#define BOOLEAN	bool
 
 /*--------------------------------------------------------------------
  *			GMT TYPEDEF DEFINITIONS
@@ -43,24 +43,9 @@
  * using the GMT_LL string which is either "l" or "ll"
  */
 
-
-#ifdef _WIN64
-typedef __int64 GMT_LONG;		/* A signed 8-byte integer under 64-bit Windows */
-typedef unsigned __int64 GMT_ULONG;	/* A unsigned 8-byte integer under 64-bit Windows */
-#define GMT_LL "ll"
-#else
-//#if SIZEOF_LONG == 8
-typedef int GMT_LONG;			/* A signed 8-byte integer */
-typedef unsigned int GMT_ULONG;	/* A unsigned 8-byte integer */
-#	define GMT_LL "l"
-/*#elif SIZEOF_LONG_LONG == 8
-typedef long long GMT_LONG;
-typedef unsigned long long GMT_ULONG;
-#	define GMT_LL "ll"
-#else
-# error "no 64-bit int type available"
-#endif*/
-#endif
+typedef int GMT_LONG;			/* plain integer */
+typedef unsigned int GMT_ULONG;	/* plain unsigned */
+#define GMT_LL ""
 
 typedef void (*PFV) ();         /* PFV declares a pointer to a function returning void */
 typedef void* (*PFP) ();        /* PFP declares a pointer to a function returning void* */

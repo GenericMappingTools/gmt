@@ -591,7 +591,7 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	GMT_LONG N;
 	GMT_LONG gmt_traverse_dir (const char *file, char *path);
 #endif /* HAVE_DIRENT_H_ */
-	GMT_LONG gmt_file_is_readable (struct GMT_CTRL *C, char *path);
+	BOOLEAN gmt_file_is_readable (struct GMT_CTRL *C, char *path);
 
 	/* First look in the current working directory */
 

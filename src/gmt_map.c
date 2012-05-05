@@ -5874,7 +5874,7 @@ COUNTER_LARGE GMT_latpath (struct GMT_CTRL *C, double lat, double lon1, double l
 	return (n);
 }
 
-GMT_LONG GMT_geo_to_xy_line (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n)
+COUNTER_LARGE GMT_geo_to_xy_line (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n)
 {
 	/* Traces the lon/lat array and returns x,y plus appropriate pen moves
 	 * Pen moves are caused by breakthroughs of the map boundary or when
@@ -6009,7 +6009,7 @@ GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double
 }
 
 
-GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRID *O, GMT_LONG inverse)
+GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRID *O, BOOLEAN inverse)
 {
 	/* Generalized grid projection that deals with both interpolation and averaging effects.
 	 * It requires the input grid to have 2 boundary rows/cols so that the bcr
@@ -6170,7 +6170,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IMAGE *O, GMT_LONG inverse)
+GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IMAGE *O, BOOLEAN inverse)
 {
 	/* Generalized image projection that deals with both interpolation and averaging effects.
 	 * It requires the input image to have 2 boundary rows/cols so that the bcr
