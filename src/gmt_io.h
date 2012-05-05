@@ -275,14 +275,6 @@ enum GMT_lon_enum {
 #define GMT_fwrite(ptr,size,nmemb,stream) fwrite(ptr,size,nmemb,stream)
 #define GMT_rewind(stream) rewind(stream)
 
-/* Matlab */
-#ifdef GMT_MATLAB
-	/* Replace GMT_fprintf macro with a function when using Matlab */
-	EXTERN_MSC int GMT_fprintf (FILE *fp, char *format, ...);
-#else
-#	define GMT_fprintf(stream,...) fprintf(stream,__VA_ARGS__)
-#endif
-
 /* Low-level structures used internally */
 
 struct GMT_QUAD {	/* Counting parameters needed to determine proper longitude min/max range */

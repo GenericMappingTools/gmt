@@ -117,10 +117,10 @@ GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
 	GMT_LONG nx, ny;
 	off_t predicted_size;
 	float recdata[RECORDLENGTH], x_min, x_max, y_min, y_max, x_inc, y_inc;
-	struct GMT_STAT buf;
+	struct stat buf;
 
 	if (!strcmp (file, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if (GMT_STAT (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
+	if (stat (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
 	if ((fp = GMT_fopen (C, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
 	

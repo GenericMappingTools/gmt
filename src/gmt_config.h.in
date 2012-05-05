@@ -108,6 +108,10 @@
 #cmakedefine HAVE__SETMODE
 #cmakedefine HAVE_SNPRINTF_
 #cmakedefine HAVE__SNPRINTF_
+#cmakedefine HAVE_VSNPRINTF_
+#cmakedefine HAVE__VSNPRINTF_
+#cmakedefine HAVE__STAT
+#cmakedefine HAVE__STATI64
 #cmakedefine HAVE_STRICMP
 #cmakedefine HAVE_STRDUP
 #cmakedefine HAVE_STRSEP
@@ -169,11 +173,16 @@
 #cmakedefine HAVE__COPYSIGN
 #cmakedefine HAVE_ERF
 #cmakedefine HAVE_ERFC
+#cmakedefine HAVE__FINITE
+#cmakedefine HAVE__FPCLASS
 #cmakedefine HAVE_HYPOT
+#cmakedefine HAVE_ISFINITE
+#cmakedefine HAVE_ISINF
 #cmakedefine HAVE_ISNAN
 #cmakedefine HAVE_ISNAND
 #cmakedefine HAVE_ISNANF
 #cmakedefine HAVE__ISNAN
+#cmakedefine HAVE_ISNORMAL
 #cmakedefine HAVE_J0
 #cmakedefine HAVE_J1
 #cmakedefine HAVE_JN

@@ -109,12 +109,29 @@ EXTERN_MSC const char * GMT_strerror (GMT_LONG err);
 #endif
 
 /* Convenience functions to GMT_err_func */
-#ifdef DEBUG
-#define GMT_err_pass(C,err,file) GMT_err_func (C,err,FALSE,file,__FILE__,__LINE__)
-#define GMT_err_fail(C,err,file) GMT_err_func (C,err,TRUE,file,__FILE__,__LINE__)
+#ifndef WIN32
+#	define __FILENAME ((strrchr(__FILE__, '/') ? : __FILE__- 1) + 1)
 #else
-#define GMT_err_pass(C,err,file) GMT_err_func (C,err,FALSE,file,__func__,0)
-#define GMT_err_fail(C,err,file) GMT_err_func (C,err,TRUE,file,__func__,0)
+#	define __FILENAME ((strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__))
+#endif
+
+#ifdef DEBUG
+#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,FALSE,file,__FILENAME,__LINE__)
+#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,TRUE,file,__FILENAME,__LINE__)
+#else
+#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,FALSE,file,__func__,0)
+#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,TRUE,file,__func__,0)
+#endif
+
+/* Convenience functions to GMT_report_func */
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define __SOURCE_LINE __FILE__ ":" TOSTRING(__LINE__)
+#ifdef DEBUG
+/* !keep space before comma in ', ##__VA_ARGS__'! */
+#	define GMT_report(C, level, format, ...) GMT_report_func(C, level, __SOURCE_LINE, format , ##__VA_ARGS__)
+#else
+#	define GMT_report(C, level, format, ...) GMT_report_func(C, level, __func__, format , ##__VA_ARGS__)
 #endif
 
 #endif /* GMT_ERROR_H */

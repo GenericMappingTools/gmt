@@ -252,11 +252,11 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	unsigned int lowPrecision, lowPrecision5, MGD77_sign_bit[32];
 
 	double gradient, dvalue, dt, ds, **out, thisArea, speed, prev_speed, **G = NULL, min, *distance, date, range, range2;
-	double *offsetArea, stat[MGD77_N_STATS], stat2[MGD77_N_STATS], *ship_val, *grid_val, max;
+	double *offsetArea, stats[MGD77_N_STATS], stats2[MGD77_N_STATS], *ship_val, *grid_val, max;
 	double thisLon, thisLat, lastLon, lastLat, *MaxDiff = NULL, **diff = NULL, *decimated_orig, wrapsum, tcrit, se,  n_days;
 	double *offsetLength, *decimated_new, recommended_scale, *new_anom = NULL, *old_anom = NULL, IGRF[8], lastCorr = 0.0;
 
-	char timeStr[32], placeStr[128], errorStr[128], outfile[32], abbrev[8], fstat[MGD77_N_STATS][GMT_TEXT_LEN64], text[GMT_TEXT_LEN64];
+	char timeStr[32], placeStr[128], errorStr[128], outfile[32], abbrev[8], fstats[MGD77_N_STATS][GMT_TEXT_LEN64], text[GMT_TEXT_LEN64];
 
 	GMT_LONG gotTime, landcruise, *offsetSign, newScale = FALSE, mtf1, nav_error, spike_amplitude;
 	GMT_LONG *prevOffsetSign, prevFlag, prevType, decimated = FALSE;
@@ -1141,7 +1141,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					diff[i][j] = D[j].number[this_grid[i].col] - G[i][j];
 
 				/* Initialize variables */
-				for (k=0; k<MGD77_N_STATS; k++) { stat[k] = stat2[k] = 0.0; for (j=0; j<GMT_TEXT_LEN64; j++) fstat[k][j]='\0'; }
+				for (k=0; k<MGD77_N_STATS; k++) { stats[k] = stats2[k] = 0.0; for (j=0; j<GMT_TEXT_LEN64; j++) fstats[k][j]='\0'; }
 				tcrit = se = 0;
 				newScale = FALSE;
 				MaxDiff[i] = 0.0;
@@ -1189,7 +1189,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (k > 2) {
 						GMT_report (GMT, GMT_MSG_NORMAL, "Comparing %s and %s using RLS regression\n",this_grid[i].abbrev,this_grid[i].fname);
 						if (!decimateData && forced) {
-							regress_rls (GMT, grid_val, ship_val, nvalues-this_grid[i].n_nan, stat, this_grid[i].col);
+							regress_rls (GMT, grid_val, ship_val, nvalues-this_grid[i].n_nan, stats, this_grid[i].col);
 							decimated = FALSE;
 							tcrit = GMT_tcrit (GMT, 0.975, (double)(nvalues - this_grid[i].n_nan) - 2.0);
 							npts=(nvalues - this_grid[i].n_nan);
@@ -1204,24 +1204,24 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 								mgd77snifferdefs[this_grid[i].col].delta, &decimated_new, &decimated_orig, &extreme, this_grid[i].abbrev);
 							}
 							if (decimateData && forced) {
-								regress_rls (GMT, decimated_new, decimated_orig, npts, stat, this_grid[i].col);
+								regress_rls (GMT, decimated_new, decimated_orig, npts, stats, this_grid[i].col);
 								decimated = TRUE;
 								tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
 							}
 							else {
 								if (npts < 3) {
-									regress_rls (GMT, grid_val, ship_val, (nvalues - this_grid[i].n_nan), stat, this_grid[i].col);
+									regress_rls (GMT, grid_val, ship_val, (nvalues - this_grid[i].n_nan), stats, this_grid[i].col);
 									decimated = FALSE;
 									tcrit = GMT_tcrit (GMT, 0.975, (double)(nvalues - this_grid[i].n_nan) - 2.0);
 									GMT_report (GMT, GMT_MSG_NORMAL, "Regression on undecimated data due to insufficient bins\n");
 								} else {
-									regress_rls (GMT, decimated_new, decimated_orig, npts, stat, this_grid[i].col);
+									regress_rls (GMT, decimated_new, decimated_orig, npts, stats, this_grid[i].col);
 									decimated = TRUE;
-									regress_rls (GMT, grid_val, ship_val, (nvalues - this_grid[i].n_nan), stat2, this_grid[i].col);
-									if ((stat[MGD77_RLS_CORR] < stat2[MGD77_RLS_CORR] && stat2[MGD77_RLS_SIG] == 1.0) || \
-										(stat[MGD77_RLS_SIG] == 0.0 && stat2[MGD77_RLS_SIG] == 1.0)) {
+									regress_rls (GMT, grid_val, ship_val, (nvalues - this_grid[i].n_nan), stats2, this_grid[i].col);
+									if ((stats[MGD77_RLS_CORR] < stats2[MGD77_RLS_CORR] && stats2[MGD77_RLS_SIG] == 1.0) || \
+										(stats[MGD77_RLS_SIG] == 0.0 && stats2[MGD77_RLS_SIG] == 1.0)) {
 										GMT_report (GMT, GMT_MSG_NORMAL, "Regression on undecimated data due to better correlation\n");
-										for (j=0; j<MGD77_N_STATS; j++) stat[j] = stat2[j];
+										for (j=0; j<MGD77_N_STATS; j++) stats[j] = stats2[j];
 										npts=(nvalues - this_grid[i].n_nan);
 										decimated = FALSE;
 									}
@@ -1233,17 +1233,17 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						}
 
 						/* Make gmtdef formatted array of rls statistics */
-						for (j=0; j<MGD77_N_STATS; j++) sprintf (fstat[j],GMT->current.setting.format_float_out,stat[j]);
+						for (j=0; j<MGD77_N_STATS; j++) sprintf (fstats[j],GMT->current.setting.format_float_out,stats[j]);
 
 						/* User specified scale factor/DC shift */
 						if (adjustData && !strcmp(display,"E77")) {
 							if (fabs(adjustScale[this_grid[i].col]-1.0)>0.0) {
-								sprintf (text, GMT->current.setting.format_float_out, stat[MGD77_RLS_SLOPE]/adjustScale[this_grid[i].col]);
+								sprintf (text, GMT->current.setting.format_float_out, stats[MGD77_RLS_SLOPE]/adjustScale[this_grid[i].col]);
 								fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression slope %s different from 1. Recommended: [%f]\n",E77_APPLY,E77_ERROR,list[argno],\
 								this_grid[i].abbrev,E77_HDR_SCALE,text,adjustScale[this_grid[i].col]);
 							}
 							if (fabs(adjustDC[this_grid[i].col])>0.0) {
-								sprintf (text, GMT->current.setting.format_float_out, stat[MGD77_RLS_ICEPT]-adjustDC[this_grid[i].col]);
+								sprintf (text, GMT->current.setting.format_float_out, stats[MGD77_RLS_ICEPT]-adjustDC[this_grid[i].col]);
 								fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression offset %s different from 0. Recommended: [%f]\n",E77_APPLY,E77_ERROR,\
 								list[argno],this_grid[i].abbrev,E77_HDR_DCSHIFT,text,adjustDC[this_grid[i].col]);
 							}
@@ -1251,35 +1251,35 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 						if (warn[SUMMARY_WARN]) {
 							sprintf (buffer, "%s (%s) RLS m: %s b: %s rms: %s r: %s sig: %d dec: %d\n",
-							list[argno],this_grid[i].abbrev,fstat[MGD77_RLS_SLOPE],fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+							list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 						else if (!strcmp(display,"E77"))
 							fprintf (fpout, "%c-%c-%s-%s-%.02d: RLS m: %s b: %s rms: %s r: %s sig: %d dec: %d\n",E77_APPLY,E77_INFO,list[argno],this_grid[i].abbrev,\
-							E77_HDR_RLS,fstat[MGD77_RLS_SLOPE],fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+							E77_HDR_RLS,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 
 						/* Analyze regression slope if significant */
-						if (stat[MGD77_RLS_SIG] == 1.0 && (GMT_is_dnan(adjustScale[this_grid[i].col]) || adjustScale[this_grid[i].col] == 1.0)) {
+						if (stats[MGD77_RLS_SIG] == 1.0 && (GMT_is_dnan(adjustScale[this_grid[i].col]) || adjustScale[this_grid[i].col] == 1.0)) {
 
 							/* Get error range for regression slope */
-							range = (tcrit * stat[MGD77_RLS_STD]) / sqrt(stat[MGD77_RLS_SXX]);	/* Draper 1.4.8 */
+							range = (tcrit * stats[MGD77_RLS_STD]) / sqrt(stats[MGD77_RLS_SXX]);	/* Draper 1.4.8 */
 
-							if ((stat[MGD77_RLS_SLOPE] <= (1.0-range) || stat[MGD77_RLS_SLOPE] >= (1.0+range)) && fabs(stat[MGD77_RLS_SLOPE]-1.0) > FLT_EPSILON) {
+							if ((stats[MGD77_RLS_SLOPE] <= (1.0-range) || stats[MGD77_RLS_SLOPE] >= (1.0+range)) && fabs(stats[MGD77_RLS_SLOPE]-1.0) > FLT_EPSILON) {
 								if (warn[SUMMARY_WARN]) {
 									sprintf (buffer, "%s (%s) Slope %s is statistically different from 1\n",\
-									list[argno],this_grid[i].abbrev,fstat[MGD77_RLS_SLOPE]);
+									list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_SLOPE]);
 									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 								/* Check if regression slope matches common scales (0.1, 10, etc.)  */
 								for (j = 0; j < 4; j++) { 
-									if (test_slope[j] >= (stat[MGD77_RLS_SLOPE]-range) && test_slope[j] <= (stat[MGD77_RLS_SLOPE]+range)) {
+									if (test_slope[j] >= (stats[MGD77_RLS_SLOPE]-range) && test_slope[j] <= (stats[MGD77_RLS_SLOPE]+range)) {
 										sprintf (text, GMT->current.setting.format_float_out, test_slope[j]);
 										if (!strcmp(display,"E77"))
 											fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression slope %s statistically identical to %s. Recommended: [%g]\n",\
-											E77_REVIEW,E77_ERROR,list[argno],this_grid[i].abbrev,E77_HDR_SCALE,fstat[MGD77_RLS_SLOPE],text,1/test_slope[j]);
+											E77_REVIEW,E77_ERROR,list[argno],this_grid[i].abbrev,E77_HDR_SCALE,fstats[MGD77_RLS_SLOPE],text,1/test_slope[j]);
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Slope %s statistically identical to %s. Recommended: [%g]\n",list[argno],this_grid[i].abbrev,\
-											fstat[MGD77_RLS_SLOPE],text,1/test_slope[j]);
+											fstats[MGD77_RLS_SLOPE],text,1/test_slope[j]);
 											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 
@@ -1302,21 +1302,21 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 								}
 								if (!newScale) {
 									/* Recommend factor of 10 closest to regression slope, for depth add fathoms ratio check */
-									recommended_scale = (strcmp (this_grid[i].abbrev, "depth")) ? pow (10.0, rint (log10 (1.0/fabs(stat[MGD77_RLS_SLOPE])))) : \
-									((stat[MGD77_RLS_SLOPE] > 1.5 && stat[MGD77_RLS_SLOPE] < 2.1) ? MGD77_METERS_PER_FATHOM : pow (10.0, rint (log10 (1.0/fabs(stat[MGD77_RLS_SLOPE])))));
+									recommended_scale = (strcmp (this_grid[i].abbrev, "depth")) ? pow (10.0, rint (log10 (1.0/fabs(stats[MGD77_RLS_SLOPE])))) : \
+									((stats[MGD77_RLS_SLOPE] > 1.5 && stats[MGD77_RLS_SLOPE] < 2.1) ? MGD77_METERS_PER_FATHOM : pow (10.0, rint (log10 (1.0/fabs(stats[MGD77_RLS_SLOPE])))));
 									sprintf (text, GMT->current.setting.format_float_out, recommended_scale);
 									if (!strcmp(display,"E77"))
 										fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression slope %s different from 1. Recommended: [%s]\n",E77_REJECT,E77_ERROR,\
-										list[argno],this_grid[i].abbrev,E77_HDR_SCALE,fstat[MGD77_RLS_SLOPE],text);
+										list[argno],this_grid[i].abbrev,E77_HDR_SCALE,fstats[MGD77_RLS_SLOPE],text);
 									else if (warn[SUMMARY_WARN]) {
 										sprintf (buffer, "%s (%s) Slope %s different from 1. Recommended: [%s]\n",list[argno],this_grid[i].abbrev,\
-										fstat[MGD77_RLS_SLOPE],text);
+										fstats[MGD77_RLS_SLOPE],text);
 										GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 									}
 								}
 							}
-							else if (fabs(stat[MGD77_RLS_STD]) <= FLT_EPSILON && fabs(stat[MGD77_RLS_SLOPE]-1.0) <= FLT_EPSILON &&\
-								fabs(stat[MGD77_RLS_ICEPT]) <= FLT_EPSILON) {
+							else if (fabs(stats[MGD77_RLS_STD]) <= FLT_EPSILON && fabs(stats[MGD77_RLS_SLOPE]-1.0) <= FLT_EPSILON &&\
+								fabs(stats[MGD77_RLS_ICEPT]) <= FLT_EPSILON) {
 								if (!strcmp(display,"E77"))
 									fprintf (fpout, "%c-%c-%s-%s-%.02d: Ship and %s grid appear identical (m=1,b=0,s=0)\n",\
 									E77_APPLY,E77_WARN,list[argno],this_grid[i].abbrev,E77_HDR_SCALE,this_grid[i].fname);
@@ -1329,42 +1329,42 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						}
 
 						/* Check regression intercept */
-						if (stat[MGD77_RLS_SIG] == 1.0 && (GMT_is_dnan(adjustDC[this_grid[i].col]) || adjustDC[this_grid[i].col] == 0.0)) {
-							range = tcrit * stat[MGD77_RLS_STD] * sqrt(stat[MGD77_RLS_SUMX2]/(npts*stat[MGD77_RLS_SXX]));	/* Draper 1.4.11 */
-							if (this_grid[i].col != MGD77_DEPTH && (range <= stat[MGD77_RLS_ICEPT] || -1.0*range >= stat[MGD77_RLS_ICEPT])) {
+						if (stats[MGD77_RLS_SIG] == 1.0 && (GMT_is_dnan(adjustDC[this_grid[i].col]) || adjustDC[this_grid[i].col] == 0.0)) {
+							range = tcrit * stats[MGD77_RLS_STD] * sqrt(stats[MGD77_RLS_SUMX2]/(npts*stats[MGD77_RLS_SXX]));	/* Draper 1.4.11 */
+							if (this_grid[i].col != MGD77_DEPTH && (range <= stats[MGD77_RLS_ICEPT] || -1.0*range >= stats[MGD77_RLS_ICEPT])) {
 								if (!strcmp(display,"E77")) {
 									if (!GMT_is_dnan(adjustDC[this_grid[i].col])) {
 										if (adjustDC[this_grid[i].col] == 0)
 											fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression offset %s different from 0.\n",E77_APPLY,E77_WARN,\
-											list[argno],this_grid[i].abbrev,E77_HDR_DCSHIFT,fstat[MGD77_RLS_ICEPT]);
+											list[argno],this_grid[i].abbrev,E77_HDR_DCSHIFT,fstats[MGD77_RLS_ICEPT]);
 										else
 											fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression offset %s different from 0. Recommended: [%f]\n",E77_APPLY,E77_ERROR,\
-											list[argno],this_grid[i].abbrev,E77_HDR_DCSHIFT,fstat[MGD77_RLS_ICEPT],adjustDC[this_grid[i].col]);
+											list[argno],this_grid[i].abbrev,E77_HDR_DCSHIFT,fstats[MGD77_RLS_ICEPT],adjustDC[this_grid[i].col]);
 									}
 									else
 										fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression offset %s different from 0.\n",E77_APPLY,E77_WARN,\
-										list[argno],this_grid[i].abbrev,E77_HDR_DCSHIFT,fstat[MGD77_RLS_ICEPT]);
+										list[argno],this_grid[i].abbrev,E77_HDR_DCSHIFT,fstats[MGD77_RLS_ICEPT]);
 								}
 								else if (warn[GRID_WARN]) {
-									sprintf (buffer, "%s (%s) Offset different than 0 (%s)\n",list[argno],this_grid[i].abbrev,fstat[MGD77_RLS_ICEPT]);
+									sprintf (buffer, "%s (%s) Offset different than 0 (%s)\n",list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_ICEPT]);
 									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 
 		#ifdef FIX
 								/* Apply DC shift to current field */
 								for (n = 0; n < nvalues; n++) {
-									D[n].number[this_grid[i].col] -= stat[MGD77_RLS_ICEPT];
+									D[n].number[this_grid[i].col] -= stats[MGD77_RLS_ICEPT];
 									diff[i][n] = D[n].number[this_grid[i].col] - G[i][n]; /* Re-compute cruise - grid differences */
 								}
 								GMT_report (GMT, GMT_MSG_NORMAL, "%s (%s) Warning: Offset corrected by %s for internal along-track analysis\n",\
-									list[argno],this_grid[i].abbrev, fstat[MGD77_RLS_ICEPT]);
+									list[argno],this_grid[i].abbrev, fstats[MGD77_RLS_ICEPT]);
 		#endif
 							}
 						}
 
 						/* Check if removing average IGF80-IGF30 offset from faa regression intercept improves fit to < 2 mGal (or to < 1 sigma) */
 						/* This check applies to cruises reporting faa without gobs. More thorough tests are performed for cruises having faa and gobs */
-						if (M.bit_pattern[0] & (0 << MGD77_GOBS) && this_grid[i].col == MGD77_FAA && fabs(stat[MGD77_RLS_ICEPT]-H.meta.G1980_1930) < 2.0) {
+						if (M.bit_pattern[0] & (0 << MGD77_GOBS) && this_grid[i].col == MGD77_FAA && fabs(stats[MGD77_RLS_ICEPT]-H.meta.G1980_1930) < 2.0) {
 							if (!strcmp(display,"E77"))
 								fprintf (fpout, "%c-%c-%s-%s-%.02d: Free-air anomalies may have been computed using IGF 1930. [Adjust to IGF 1980]\n",\
 								E77_REVIEW,E77_ERROR,list[argno],this_grid[i].abbrev,E77_HDR_ANOM_FAA_IGF);
@@ -1375,43 +1375,43 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						}
 
 						/* Check if rls grid comparison coefficients are outside percent limits */
-						if (stat[MGD77_RLS_SIG] == 1.0 && !adjustData) {
+						if (stats[MGD77_RLS_SIG] == 1.0 && !adjustData) {
 							if (!GMT_is_dnan(percent_limit)) {
 								if (this_grid[i].col == MGD77_DEPTH) {
 									/* Check depth rls slope (two sided test) */
 									for (j = 0; depth_v_grid[j].cd < percent_limit/200.0 && j < RLS_N_DEPTH_ROWS-2; j++);
 									for (n = RLS_N_DEPTH_ROWS-1; 1-percent_limit/200.0 < depth_v_grid[n].cd && n > 1; n--);
-									if (stat[MGD77_RLS_SLOPE] < depth_v_grid[j+1].m || stat[MGD77_RLS_SLOPE] > depth_v_grid[n-1].m) {
+									if (stats[MGD77_RLS_SLOPE] < depth_v_grid[j+1].m || stats[MGD77_RLS_SLOPE] > depth_v_grid[n-1].m) {
 										if (!strcmp(display,"E77"))
 											fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression slope (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,\
-											list[argno],this_grid[i].abbrev,E77_HDR_SCALE,fstat[MGD77_RLS_SLOPE],fpercent_limit);
+											list[argno],this_grid[i].abbrev,E77_HDR_SCALE,fstats[MGD77_RLS_SLOPE],fpercent_limit);
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression slope (%s) outside %s%% limits.\n",\
-											list[argno],this_grid[i].abbrev,fstat[MGD77_RLS_SLOPE],fpercent_limit);
+											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_SLOPE],fpercent_limit);
 											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
 									/* Check depth rls rms (right sided test) */
 									for (n = RLS_N_DEPTH_ROWS-1; 1-percent_limit/100.0 < depth_v_grid[n].cd && n > 1; n--);
-									if (stat[MGD77_RLS_RMS] > depth_v_grid[k-1].rms) {
+									if (stats[MGD77_RLS_RMS] > depth_v_grid[k-1].rms) {
 										if (!strcmp(display,"E77"))
 											fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression rms (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,\
-											list[argno],this_grid[i].abbrev,E77_HDR_RMS,fstat[MGD77_RLS_RMS],fpercent_limit);
+											list[argno],this_grid[i].abbrev,E77_HDR_RMS,fstats[MGD77_RLS_RMS],fpercent_limit);
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression rms (%s) outside %s%% limits.\n",\
-											list[argno],this_grid[i].abbrev,fstat[MGD77_RLS_RMS],fpercent_limit);
+											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_RMS],fpercent_limit);
 											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
 									/* Check depth rls correlation (left sided test) */
 									for (j = 0; depth_v_grid[j].cd < percent_limit/100.0 && j < RLS_N_DEPTH_ROWS-2; j++);
-									if (stat[MGD77_RLS_CORR] < depth_v_grid[j+1].r) {
+									if (stats[MGD77_RLS_CORR] < depth_v_grid[j+1].r) {
 										if (!strcmp(display,"E77"))
 											fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression correlation (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,\
-											list[argno],this_grid[i].abbrev,E77_HDR_CORR,fstat[MGD77_RLS_CORR],fpercent_limit);
+											list[argno],this_grid[i].abbrev,E77_HDR_CORR,fstats[MGD77_RLS_CORR],fpercent_limit);
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression correlation (%s) outside %s%% limits.\n",\
-											list[argno],this_grid[i].abbrev,fstat[MGD77_RLS_CORR],fpercent_limit);
+											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_CORR],fpercent_limit);
 											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
@@ -1420,48 +1420,48 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 									/*check faa rls slope (two sided test) */
 									for (j = 0; faa_v_grid[j].cd < percent_limit/200.0 && j < RLS_N_FAA_ROWS-2; j++);
 									for (n = RLS_N_FAA_ROWS-1; 1-percent_limit/200.0 < faa_v_grid[n].cd && n > 1; n--);
-									if (stat[MGD77_RLS_SLOPE] < faa_v_grid[j+1].m || stat[MGD77_RLS_SLOPE] > faa_v_grid[n-1].m) {
+									if (stats[MGD77_RLS_SLOPE] < faa_v_grid[j+1].m || stats[MGD77_RLS_SLOPE] > faa_v_grid[n-1].m) {
 										if (!strcmp(display,"E77"))
 											fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression slope (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,list[argno],\
-											this_grid[i].abbrev,E77_HDR_SCALE,fstat[MGD77_RLS_SLOPE],fpercent_limit);
+											this_grid[i].abbrev,E77_HDR_SCALE,fstats[MGD77_RLS_SLOPE],fpercent_limit);
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression slope (%s) outside %s%% limits.\n",\
-											list[argno],this_grid[i].abbrev,fstat[MGD77_RLS_SLOPE],fpercent_limit);
+											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_SLOPE],fpercent_limit);
 											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
 									/*check faa rls intercept (two sided test) */
-									if (stat[MGD77_RLS_ICEPT] < faa_v_grid[j+1].b || stat[MGD77_RLS_ICEPT] > faa_v_grid[k-1].b) {
+									if (stats[MGD77_RLS_ICEPT] < faa_v_grid[j+1].b || stats[MGD77_RLS_ICEPT] > faa_v_grid[k-1].b) {
 										if (!strcmp(display,"E77"))
 											fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression offset (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,list[argno],\
-											this_grid[i].abbrev,E77_HDR_DCSHIFT,fstat[MGD77_RLS_ICEPT],fpercent_limit);
+											this_grid[i].abbrev,E77_HDR_DCSHIFT,fstats[MGD77_RLS_ICEPT],fpercent_limit);
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression offset (%s) outside %s%% limits.\n",\
-											list[argno],this_grid[i].abbrev,fstat[MGD77_RLS_ICEPT],fpercent_limit);
+											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_ICEPT],fpercent_limit);
 											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
 									/*check faa rls rms (right sided test) */
 									for (n = RLS_N_FAA_ROWS-1; 1-percent_limit/100.0 < faa_v_grid[n].cd && n > 1; n--);
-									if (stat[MGD77_RLS_RMS] > faa_v_grid[n-1].rms) {
+									if (stats[MGD77_RLS_RMS] > faa_v_grid[n-1].rms) {
 										if (!strcmp(display,"E77"))
 											fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression rms (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,list[argno],\
-											this_grid[i].abbrev,E77_HDR_RMS,fstat[MGD77_RLS_RMS],fpercent_limit);
+											this_grid[i].abbrev,E77_HDR_RMS,fstats[MGD77_RLS_RMS],fpercent_limit);
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression rms (%s) outside %s%% limits.\n",\
-											list[argno],this_grid[i].abbrev,fstat[MGD77_RLS_RMS],fpercent_limit);
+											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_RMS],fpercent_limit);
 											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
 									/*check faa rls correlation (left sided test) */
 									for (j = 0; faa_v_grid[j].cd < percent_limit/100.0 && j < RLS_N_FAA_ROWS-2; j++);
-									if (stat[MGD77_RLS_CORR] < faa_v_grid[j+1].r) {
+									if (stats[MGD77_RLS_CORR] < faa_v_grid[j+1].r) {
 										if (!strcmp(display,"E77"))
 											fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression correlation (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,list[argno],\
-											this_grid[i].abbrev,E77_HDR_CORR,fstat[MGD77_RLS_CORR],fpercent_limit);
+											this_grid[i].abbrev,E77_HDR_CORR,fstats[MGD77_RLS_CORR],fpercent_limit);
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression correlation (%s) outside %s%% limits.\n",\
-											list[argno],this_grid[i].abbrev,fstat[MGD77_RLS_CORR],fpercent_limit);
+											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_CORR],fpercent_limit);
 											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
@@ -1505,7 +1505,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (m == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Comparing reported with recomputed (gobs - IGF80) faa using RLS regression\n");
 				else GMT_report (GMT, GMT_MSG_NORMAL, "Comparing reported with recomputed (gobs - IGF80 + eot) faa using RLS regression\n");
 				if (!decimateData && forced) {
-					regress_rls (GMT, new_anom, old_anom, n, stat, MGD77_FAA);
+					regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_FAA);
 					decimated = FALSE;
 					tcrit = GMT_tcrit (GMT, 0.975, (double)n - 2.0);
 					npts=n;
@@ -1519,24 +1519,24 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					}
 					if (decimateData && forced) {
-						regress_rls (GMT, decimated_new, decimated_orig, npts, stat, MGD77_FAA);
+						regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_FAA);
 						decimated = TRUE;
 						tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
 					}
 					else {
 						if (npts < 3) {
-							regress_rls (GMT, new_anom, old_anom, n, stat, MGD77_FAA);
+							regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_FAA);
 							decimated = FALSE;
 							tcrit = GMT_tcrit (GMT, 0.975, (double)n - 2.0);
 							GMT_report (GMT, GMT_MSG_NORMAL, "Regression on undecimated data due to insufficient bins\n");
 						} else {
-							regress_rls (GMT, decimated_new, decimated_orig, npts, stat, MGD77_FAA);
+							regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_FAA);
 							decimated = TRUE;
-							regress_rls (GMT, new_anom, old_anom, n, stat2, MGD77_FAA);
-							if ((stat[MGD77_RLS_CORR] < stat2[MGD77_RLS_CORR] && stat2[MGD77_RLS_SIG] == 1.0) || \
-								(stat[MGD77_RLS_SIG] == 0.0 && stat2[MGD77_RLS_SIG] == 1.0)) {
+							regress_rls (GMT, new_anom, old_anom, n, stats2, MGD77_FAA);
+							if ((stats[MGD77_RLS_CORR] < stats2[MGD77_RLS_CORR] && stats2[MGD77_RLS_SIG] == 1.0) || \
+								(stats[MGD77_RLS_SIG] == 0.0 && stats2[MGD77_RLS_SIG] == 1.0)) {
 								GMT_report (GMT, GMT_MSG_NORMAL, "Regression on undecimated data due to better correlation\n");
-								for (k=0; k<MGD77_N_STATS; k++) stat[k] = stat2[k];
+								for (k=0; k<MGD77_N_STATS; k++) stats[k] = stats2[k];
 								npts=n;
 								decimated = FALSE;
 							}
@@ -1545,31 +1545,31 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 				}
 				/* Make gmtdef formatted array of rls statistics */
-				for (k=0; k<MGD77_N_STATS; k++) sprintf (fstat[k],GMT->current.setting.format_float_out,stat[k]);
-				range = (tcrit * stat[MGD77_RLS_STD]) / sqrt(stat[MGD77_RLS_SXX]);	/* Draper 1.4.8 */
-				range2 = tcrit * stat[MGD77_RLS_STD] * sqrt(stat[MGD77_RLS_SUMX2]/(n*stat[MGD77_RLS_SXX]));	/* Draper 1.4.11 */
+				for (k=0; k<MGD77_N_STATS; k++) sprintf (fstats[k],GMT->current.setting.format_float_out,stats[k]);
+				range = (tcrit * stats[MGD77_RLS_STD]) / sqrt(stats[MGD77_RLS_SXX]);	/* Draper 1.4.8 */
+				range2 = tcrit * stats[MGD77_RLS_STD] * sqrt(stats[MGD77_RLS_SUMX2]/(n*stats[MGD77_RLS_SXX]));	/* Draper 1.4.11 */
 				(m == 1) ? sprintf (text,"+eot ") : sprintf (text," ");
-				if (stat[MGD77_RLS_SIG] == 1.0) {
-					if (((1.0 < (stat[MGD77_RLS_SLOPE]-range) || 1.0 > (stat[MGD77_RLS_SLOPE]+range)) || (0.0 < (stat[MGD77_RLS_ICEPT]-range2) || 0.0 > (stat[MGD77_RLS_ICEPT]+range2)))) {
+				if (stats[MGD77_RLS_SIG] == 1.0) {
+					if (((1.0 < (stats[MGD77_RLS_SLOPE]-range) || 1.0 > (stats[MGD77_RLS_SLOPE]+range)) || (0.0 < (stats[MGD77_RLS_ICEPT]-range2) || 0.0 > (stats[MGD77_RLS_ICEPT]+range2)))) {
 						if (!strcmp(display,"E77"))
 							fprintf (fpout, "%c-%c-%s-faa-%.02d: Anomaly differs from gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d). [Recompute]\n",E77_REVIEW,E77_ERROR,list[argno],\
-							(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstat[MGD77_RLS_SLOPE],fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+							(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 						else if (warn[SUMMARY_WARN]) {
-							sprintf (buffer, "%s (faa) anomaly differs from gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],text,fstat[MGD77_RLS_SLOPE],\
-							fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+							sprintf (buffer, "%s (faa) anomaly differs from gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],text,fstats[MGD77_RLS_SLOPE],\
+							fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 					} else {
 						if (!strcmp(display,"E77"))
 							fprintf (fpout, "%c-%c-%s-faa-%.02d: Anomaly equivalent to gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",E77_APPLY,E77_INFO,list[argno],\
-							(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstat[MGD77_RLS_SLOPE],fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+							(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 						else if (warn[SUMMARY_WARN]) {
 							sprintf (buffer, "%s (faa) anomaly statistically the same as gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],text,\
-							fstat[MGD77_RLS_SLOPE],fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+							fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 					}
-					if (m == 1 && stat[MGD77_RLS_CORR] > lastCorr) {
+					if (m == 1 && stats[MGD77_RLS_CORR] > lastCorr) {
 						if (!strcmp(display,"E77"))
 							fprintf (fpout, "%c-%c-%s-faa-%.02d: gobs may not be corrected for Eotvos (correlation for gobs-IGF80+eot > correlation for gobs-IGF80)\n",E77_APPLY,E77_WARN,list[argno],\
 							E77_HDR_ANOM_FAA_EOT);
@@ -1581,25 +1581,25 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				} else {
 					if (!strcmp(display,"E77"))
 						fprintf (fpout, "%c-%c-%s-faa-%.02d: Insignificant regression: reported versus gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d). [Recompute]\n",E77_REJECT,E77_ERROR,list[argno],\
-						(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstat[MGD77_RLS_SLOPE],fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+						(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 					else if (warn[SUMMARY_WARN]) {
-						sprintf (buffer, "%s (faa) insignificant regression: reported versus gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],text,fstat[MGD77_RLS_SLOPE],\
-						fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+						sprintf (buffer, "%s (faa) insignificant regression: reported versus gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],text,fstats[MGD77_RLS_SLOPE],\
+						fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
-				if (m == 0) lastCorr = stat[MGD77_RLS_CORR];
+				if (m == 0) lastCorr = stats[MGD77_RLS_CORR];
 			}
 
 			/* Try to determine which gravity formula was used */
 			grav_formula = MGD77_IGF_1980;
-			for (k=0; k<MGD77_N_STATS; k++) stat2[k] = stat[k];
+			for (k=0; k<MGD77_N_STATS; k++) stats2[k] = stats[k];
 			for (m=MGD77_IGF_1980; m>=MGD77_IGF_1930; m--) { /* Skip Heiskanen 1924 */
 				if (m==MGD77_IGF_1967) continue; /* Skip IGF 1967 (can't distinguish between it and IGF 1980 */
 				for (i = n = 0; i < nvalues; i++) {
 					if (GMT_is_dnan(D[i].number[MGD77_GOBS]) || GMT_is_dnan(D[i].number[MGD77_FAA])) continue;
 					new_anom[n] = D[i].number[MGD77_GOBS] - MGD77_Theoretical_Gravity (GMT, (int)D[i].number[MGD77_LONGITUDE], (int)D[i].number[MGD77_LATITUDE], (int)m);
-					if (stat[MGD77_RLS_CORR] > lastCorr && !GMT_is_dnan(D[i].number[MGD77_EOT])) new_anom[n] += D[i].number[MGD77_EOT];
+					if (stats[MGD77_RLS_CORR] > lastCorr && !GMT_is_dnan(D[i].number[MGD77_EOT])) new_anom[n] += D[i].number[MGD77_EOT];
 					old_anom[n] = D[i].number[MGD77_FAA];
 					n++;
 				}
@@ -1611,26 +1611,26 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].binmin, mgd77snifferdefs[MGD77_FAA].binmax,\
 						mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					}
-					regress_rls (GMT, decimated_new, decimated_orig, npts, stat, MGD77_FAA);
+					regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_FAA);
 					GMT_free (GMT, decimated_orig);
 					GMT_free (GMT, decimated_new);
 				} else
-					regress_rls (GMT, new_anom, old_anom, n, stat, MGD77_FAA);
-				if (stat[MGD77_RLS_CORR] > stat2[MGD77_RLS_CORR]) {
-					for (k=0; k<MGD77_N_STATS; k++) stat2[k] = stat[k];
+					regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_FAA);
+				if (stats[MGD77_RLS_CORR] > stats2[MGD77_RLS_CORR]) {
+					for (k=0; k<MGD77_N_STATS; k++) stats2[k] = stats[k];
 					grav_formula = (int)m;
 				}
-				GMT_report (GMT, GMT_MSG_NORMAL, "Regression statistics for gravity formula (%d) test (m: %.3f b: %.3f rms: %.3f r: %.6f sig: %d dec: %d)\n",m,stat[MGD77_RLS_SLOPE],\
-					stat[MGD77_RLS_ICEPT],stat[MGD77_RLS_RMS],stat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Regression statistics for gravity formula (%d) test (m: %.3f b: %.3f rms: %.3f r: %.6f sig: %d dec: %d)\n",m,stats[MGD77_RLS_SLOPE],\
+					stats[MGD77_RLS_ICEPT],stats[MGD77_RLS_RMS],stats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 			}
-			for (k=0; k<MGD77_N_STATS; k++) sprintf (fstat[k],GMT->current.setting.format_float_out,stat2[k]);
+			for (k=0; k<MGD77_N_STATS; k++) sprintf (fstats[k],GMT->current.setting.format_float_out,stats2[k]);
 			if (grav_formula == MGD77_IGF_1930) {
 				if (!strcmp(display,"E77"))
 					fprintf (fpout, "%c-%c-%s-faa-%.02d: Free-air anomalies may have been computed using IGF 1930 (m: %s b: %s rms: %s r: %s sig: %d dec: %d). [Adjust to IGF 1980]\n",E77_REVIEW,
-					E77_ERROR,list[argno],E77_HDR_ANOM_FAA_IGF,fstat[MGD77_RLS_SLOPE],fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+					E77_ERROR,list[argno],E77_HDR_ANOM_FAA_IGF,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 				else if (warn[SUMMARY_WARN]) {
 					sprintf (buffer, "%s (faa) Free-air anomalies may have been computed using IGF 1930 (m: %s b: %s rms: %s r: %s sig: %d dec: %d). (Consider adjusting to 1980).\n",\
-					list[argno],fstat[MGD77_RLS_SLOPE],fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+					list[argno],fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 					GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 				}
 			}
@@ -1642,48 +1642,48 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				/* check faa v newfaa rls slope */
 				for (j = 0; faa_v_newfaa[j].cd < percent_limit/200.0 && j < RLS_N_NEWFAA_ROWS-2; j++);
 				for (k = RLS_N_NEWFAA_ROWS-1; 1-percent_limit/200.0 < faa_v_newfaa[k].cd && k > 1; k--);
-				if (stat[MGD77_RLS_SLOPE] < faa_v_newfaa[j+1].m || stat[MGD77_RLS_SLOPE] > faa_v_newfaa[k-1].m) {
+				if (stats[MGD77_RLS_SLOPE] < faa_v_newfaa[j+1].m || stats[MGD77_RLS_SLOPE] > faa_v_newfaa[k-1].m) {
 					if (!strcmp(display,"E77"))
 						fprintf (fpout, "%c-%c-%s-faa-%.02d: Recomputed anomaly regression slope (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,list[argno],\
-						E77_HDR_ANOM_FAA,fstat[MGD77_RLS_SLOPE],fpercent_limit);
+						E77_HDR_ANOM_FAA,fstats[MGD77_RLS_SLOPE],fpercent_limit);
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (faa) Recomputed anomaly regression slope (%s) outside %s%% limits.\n",\
-						list[argno],fstat[MGD77_RLS_SLOPE],fpercent_limit);
+						list[argno],fstats[MGD77_RLS_SLOPE],fpercent_limit);
 						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				/* check faa rls intercept */
-				if (stat[MGD77_RLS_ICEPT] < faa_v_newfaa[j+1].b || stat[MGD77_RLS_ICEPT] > faa_v_newfaa[k-1].b) {
+				if (stats[MGD77_RLS_ICEPT] < faa_v_newfaa[j+1].b || stats[MGD77_RLS_ICEPT] > faa_v_newfaa[k-1].b) {
 					if (!strcmp(display,"E77"))
 						fprintf (fpout, "%c-%c-%s-faa-%.02d: Recomputed anomaly regression intercept (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,list[argno],\
-						E77_HDR_ANOM_FAA,fstat[MGD77_RLS_ICEPT],fpercent_limit);
+						E77_HDR_ANOM_FAA,fstats[MGD77_RLS_ICEPT],fpercent_limit);
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (faa) Recomputed anomaly regression intercept (%s) outside %s%% limits.\n",\
-						list[argno],fstat[MGD77_RLS_ICEPT],fpercent_limit);
+						list[argno],fstats[MGD77_RLS_ICEPT],fpercent_limit);
 						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				/* check faa rls rms  (right sided test)*/
 				for (k = RLS_N_NEWFAA_ROWS-1; 1-percent_limit/100.0 < faa_v_newfaa[k].cd && k > 1; k--);
-				if (stat[MGD77_RLS_RMS] > faa_v_newfaa[k-1].rms) {
+				if (stats[MGD77_RLS_RMS] > faa_v_newfaa[k-1].rms) {
 					if (!strcmp(display,"E77"))
 						fprintf (fpout, "%c-%c-%s-faa-%.02d: Recomputed anomaly regression rms (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,list[argno],\
-						E77_HDR_ANOM_FAA,fstat[MGD77_RLS_RMS],fpercent_limit);
+						E77_HDR_ANOM_FAA,fstats[MGD77_RLS_RMS],fpercent_limit);
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (faa) Recomputed anomaly regression rms (%s) outside %s%% limits.\n",\
-						list[argno],fstat[MGD77_RLS_RMS],fpercent_limit);
+						list[argno],fstats[MGD77_RLS_RMS],fpercent_limit);
 						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				/* check faa rls correlation (left sided test) */
 				for (j = 0; faa_v_newfaa[j].cd < percent_limit/100.0 && j < RLS_N_NEWFAA_ROWS-2; j++);
-				if (stat[MGD77_RLS_CORR] < faa_v_newfaa[j+1].r) {
+				if (stats[MGD77_RLS_CORR] < faa_v_newfaa[j+1].r) {
 					if (!strcmp(display,"E77"))
 						fprintf (fpout, "%c-%c-%s-faa-%.02d: Recomputed anomaly regression correlation (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,list[argno],\
-						E77_HDR_ANOM_FAA,fstat[MGD77_RLS_CORR],fpercent_limit);
+						E77_HDR_ANOM_FAA,fstats[MGD77_RLS_CORR],fpercent_limit);
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (faa) Recomputed anomaly regression correlation (%s) outside %s%% limits.\n",\
-						list[argno],fstat[MGD77_RLS_CORR],fpercent_limit);
+						list[argno],fstats[MGD77_RLS_CORR],fpercent_limit);
 						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
@@ -1718,7 +1718,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (n > 0) { /* must have time records for mag recalculation */
 				GMT_report (GMT, GMT_MSG_NORMAL, "Comparing reported and recomputed mag using RLS regression\n");
 				if (!decimateData && forced) {
-					regress_rls (GMT, new_anom, old_anom, n, stat, MGD77_MAG);
+					regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_MAG);
 					decimated = FALSE;
 					tcrit = GMT_tcrit (GMT, 0.975, (double)n - 2.0);
 					npts=n;
@@ -1732,24 +1732,24 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						mgd77snifferdefs[MGD77_MAG].delta, &decimated_new, &decimated_orig, &extreme, "nmag");
 					}
 					if (decimateData && forced) {
-						regress_rls (GMT, decimated_new, decimated_orig, npts, stat, MGD77_MAG);
+						regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_MAG);
 						decimated = TRUE;
 						tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
 					}
 					else {
 						if (npts < 3) {
-							regress_rls (GMT, new_anom, old_anom, n, stat, MGD77_MAG);
+							regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_MAG);
 							decimated = FALSE;
 							tcrit = GMT_tcrit (GMT, 0.975, (double)n - 2.0);
 							GMT_report (GMT, GMT_MSG_NORMAL, "Regression on undecimated data due to insufficient bins\n");
 						} else {
-							regress_rls (GMT, decimated_new, decimated_orig, npts, stat, MGD77_MAG);
+							regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_MAG);
 							decimated = TRUE;
-							regress_rls (GMT, new_anom, old_anom, n, stat2, MGD77_MAG);
-							if ((stat[MGD77_RLS_CORR] < stat2[MGD77_RLS_CORR] && stat2[MGD77_RLS_SIG] == 1.0) || \
-								(stat[MGD77_RLS_SIG] == 0.0 && stat2[MGD77_RLS_SIG] == 1.0)) {
+							regress_rls (GMT, new_anom, old_anom, n, stats2, MGD77_MAG);
+							if ((stats[MGD77_RLS_CORR] < stats2[MGD77_RLS_CORR] && stats2[MGD77_RLS_SIG] == 1.0) || \
+								(stats[MGD77_RLS_SIG] == 0.0 && stats2[MGD77_RLS_SIG] == 1.0)) {
 								GMT_report (GMT, GMT_MSG_NORMAL, "Regression on undecimated data due to better correlation\n");
-								for (k=0; k<MGD77_N_STATS; k++) stat[k] = stat2[k];
+								for (k=0; k<MGD77_N_STATS; k++) stats[k] = stats2[k];
 								npts=n;
 								decimated = FALSE;
 							}
@@ -1760,34 +1760,34 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_free (GMT, decimated_new);
 				}
 				/* Make gmtdef formatted array of rls statistics */
-				for (k=0; k<MGD77_N_STATS; k++) sprintf (fstat[k],GMT->current.setting.format_float_out,stat[k]);
+				for (k=0; k<MGD77_N_STATS; k++) sprintf (fstats[k],GMT->current.setting.format_float_out,stats[k]);
 				/* Check for significant scale */
-				range = (tcrit * stat[MGD77_RLS_STD]) / sqrt(stat[MGD77_RLS_SXX]);	/* Draper 1.4.8 */
-				range2 = tcrit * stat[MGD77_RLS_STD] * sqrt(stat[MGD77_RLS_SUMX2]/(n*stat[MGD77_RLS_SXX]));	/* Draper 1.4.11 */
-				if (stat[MGD77_RLS_SIG] == 1.0) {
-					if (((1.0 < (stat[MGD77_RLS_SLOPE]-range) || 1.0 > (stat[MGD77_RLS_SLOPE]+range)) || (0.0 < (stat[MGD77_RLS_ICEPT]-range2) || 0.0 > (stat[MGD77_RLS_ICEPT]+range2)))) {
+				range = (tcrit * stats[MGD77_RLS_STD]) / sqrt(stats[MGD77_RLS_SXX]);	/* Draper 1.4.8 */
+				range2 = tcrit * stats[MGD77_RLS_STD] * sqrt(stats[MGD77_RLS_SUMX2]/(n*stats[MGD77_RLS_SXX]));	/* Draper 1.4.11 */
+				if (stats[MGD77_RLS_SIG] == 1.0) {
+					if (((1.0 < (stats[MGD77_RLS_SLOPE]-range) || 1.0 > (stats[MGD77_RLS_SLOPE]+range)) || (0.0 < (stats[MGD77_RLS_ICEPT]-range2) || 0.0 > (stats[MGD77_RLS_ICEPT]+range2)))) {
 						if (!strcmp(display,"E77"))
 							fprintf (fpout, "%c-%c-%s-mag-%.2d: Anomaly differs from mtf%d-IGRF (m: %s b: %s rms: %s r: %s sig: %d dec: %d). [Recompute]\n",E77_REVIEW,E77_ERROR,list[argno],\
-							E77_HDR_ANOM_MAG,2-(int)mtf1,fstat[MGD77_RLS_SLOPE],fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+							E77_HDR_ANOM_MAG,2-(int)mtf1,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 						else if (warn[SUMMARY_WARN]) {
 							sprintf (buffer, "%s (mag) anomaly differs from mtf%d-IGRF (m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],2-(int)mtf1,\
-							fstat[MGD77_RLS_SLOPE],fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+							fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 					} else {
 						if (warn[SUMMARY_WARN]) {
-							sprintf (buffer, "%s (mag) anomaly same as expected (m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],fstat[MGD77_RLS_SLOPE],\
-							fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+							sprintf (buffer, "%s (mag) anomaly same as expected (m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],fstats[MGD77_RLS_SLOPE],\
+							fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 						else if (!strcmp(display,"E77"))
 							fprintf (fpout, "%c-%c-%s-mag-%.02d: Anomaly equivalent to mtf%d-IGRF (m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",E77_APPLY,E77_INFO,list[argno],\
-							E77_HDR_ANOM_MAG,2-(int)mtf1,fstat[MGD77_RLS_SLOPE],fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+							E77_HDR_ANOM_MAG,2-(int)mtf1,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 					}
 				} else {
 					if (warn[SUMMARY_WARN]) {
-						sprintf (buffer, "%s (mag) recalculated anomaly regression insignificant (m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],fstat[MGD77_RLS_SLOPE],\
-						fstat[MGD77_RLS_ICEPT],fstat[MGD77_RLS_RMS],fstat[MGD77_RLS_CORR],(int)stat[MGD77_RLS_SIG],(int)decimated);
+						sprintf (buffer, "%s (mag) recalculated anomaly regression insignificant (m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],fstats[MGD77_RLS_SLOPE],\
+						fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
@@ -1803,48 +1803,48 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				/* check mag v newmag rls slope */
 				for (j = 0; mag_v_newmag[j].cd < percent_limit/200.0 && j < RLS_N_NEWMAG_ROWS-2; j++);
 				for (k = RLS_N_NEWMAG_ROWS-1; 1-percent_limit/200.0 < mag_v_newmag[k].cd && k > 1; k--);
-				if (stat[MGD77_RLS_SLOPE] < mag_v_newmag[j+1].m || stat[MGD77_RLS_SLOPE] > mag_v_newmag[k-1].m) {
+				if (stats[MGD77_RLS_SLOPE] < mag_v_newmag[j+1].m || stats[MGD77_RLS_SLOPE] > mag_v_newmag[k-1].m) {
 					if (!strcmp(display,"E77"))
 						fprintf (fpout, "%c-%c-%s-mag-%.02d: Recomputed anomaly regression slope (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,\
-						list[argno],E77_HDR_ANOM_MAG,fstat[MGD77_RLS_SLOPE],fpercent_limit);
+						list[argno],E77_HDR_ANOM_MAG,fstats[MGD77_RLS_SLOPE],fpercent_limit);
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (mag) Recomputed anomaly regression slope (%s) outside %s%% limits.\n",\
-						list[argno],fstat[MGD77_RLS_SLOPE],fpercent_limit);
+						list[argno],fstats[MGD77_RLS_SLOPE],fpercent_limit);
 						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				/* check mag rls intercept */
-				if (stat[MGD77_RLS_ICEPT] < mag_v_newmag[j+1].b || stat[MGD77_RLS_ICEPT] > mag_v_newmag[k-1].b) {
+				if (stats[MGD77_RLS_ICEPT] < mag_v_newmag[j+1].b || stats[MGD77_RLS_ICEPT] > mag_v_newmag[k-1].b) {
 					if (!strcmp(display,"E77"))
 						fprintf (fpout, "%c-%c-%s-mag-%.02d: Recomputed anomaly regression intercept (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,\
-						list[argno],E77_HDR_ANOM_MAG,fstat[MGD77_RLS_ICEPT],fpercent_limit);
+						list[argno],E77_HDR_ANOM_MAG,fstats[MGD77_RLS_ICEPT],fpercent_limit);
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (mag) Recomputed anomaly regression intercept (%s) outside %s%% limits.\n",\
-						list[argno],fstat[MGD77_RLS_ICEPT],fpercent_limit);
+						list[argno],fstats[MGD77_RLS_ICEPT],fpercent_limit);
 						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				/* check mag rls rms (right sided test) */
 				for (k = RLS_N_NEWMAG_ROWS-1; 1-percent_limit/100.0 < mag_v_newmag[k].cd && k > 1; k--);
-				if (stat[MGD77_RLS_RMS] > mag_v_newmag[k-1].rms) {
+				if (stats[MGD77_RLS_RMS] > mag_v_newmag[k-1].rms) {
 					if (!strcmp(display,"E77"))
 						fprintf (fpout, "%c-%c-%s-mag-%.02d: Recomputed anomaly regression rms (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,\
-						list[argno],E77_HDR_ANOM_MAG,fstat[MGD77_RLS_RMS],fpercent_limit);
+						list[argno],E77_HDR_ANOM_MAG,fstats[MGD77_RLS_RMS],fpercent_limit);
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (mag) Recomputed anomaly regression rms (%s) outside %s%% limits.\n",\
-						list[argno],fstat[MGD77_RLS_RMS],fpercent_limit);
+						list[argno],fstats[MGD77_RLS_RMS],fpercent_limit);
 						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				/* check mag rls correlation (left sided test) */
 				for (j = 0; mag_v_newmag[j].cd <percent_limit/100.0 && j < RLS_N_NEWMAG_ROWS-2; j++);
-				if (stat[MGD77_RLS_CORR] < mag_v_newmag[j+1].r) {
+				if (stats[MGD77_RLS_CORR] < mag_v_newmag[j+1].r) {
 					if (!strcmp(display,"E77"))
 						fprintf (fpout, "%c-%c-%s-mag-%.02d: Recomputed anomaly regression correlation (%s) outside %s%% limits.\n",E77_APPLY,E77_WARN,\
-						list[argno],E77_HDR_ANOM_MAG,fstat[MGD77_RLS_CORR],fpercent_limit);
+						list[argno],E77_HDR_ANOM_MAG,fstats[MGD77_RLS_CORR],fpercent_limit);
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (mag) Recomputed anomaly regression correlation (%s) outside %s%% limits.\n",\
-						list[argno],fstat[MGD77_RLS_CORR],fpercent_limit);
+						list[argno],fstats[MGD77_RLS_CORR],fpercent_limit);
 						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
@@ -2685,20 +2685,20 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	bailout (GMT_OK);
 }
 
-void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG nvalues, double *stat, int col)
+void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG nvalues, double *stats, int col)
 {
 	GMT_LONG i, n;
 	double y_hat, threshold, s_0, res, *xx, *yy, corr=0.0;
 
-	regress_lms (GMT, x, y, nvalues, stat, col);
+	regress_lms (GMT, x, y, nvalues, stats, col);
 	/* Get LMS scale and use 2.5 of it to detect regression outliers */
-	s_0 = 1.4826 * (1.0 + 5.0 / nvalues) * sqrt (stat[MGD77_RLS_STD]);
+	s_0 = 1.4826 * (1.0 + 5.0 / nvalues) * sqrt (stats[MGD77_RLS_STD]);
 	threshold = 2.5 * s_0;
 
 	xx = GMT_memory (GMT, NULL, nvalues, double);
 	yy = GMT_memory (GMT, NULL, nvalues, double);
 	for (i = n = 0; i < nvalues; i++) {
-		y_hat = stat[MGD77_RLS_SLOPE] * x[i] + stat[MGD77_RLS_ICEPT];
+		y_hat = stats[MGD77_RLS_SLOPE] * x[i] + stats[MGD77_RLS_ICEPT];
 		res = y[i] - y_hat;
 		if (fabs (res) > threshold) continue;	/* Skip outliers */
 		xx[n] = x[i];
@@ -2706,24 +2706,24 @@ void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG nvalues, 
 		n++;
 	}
 	/* Now do LS regression on the 'good' points */
-	regress_ls (xx, yy, n, stat, col);
-	/*stat[MGD77_RLS_CORR] = GMT_corrcoeff (xx, yy, n, 0);*/
-	corr=stat[MGD77_RLS_CORR];
-	if (stat[MGD77_RLS_CORR] == 1.0) corr=stat[MGD77_RLS_CORR]-FLT_EPSILON;
+	regress_ls (xx, yy, n, stats, col);
+	/*stats[MGD77_RLS_CORR] = GMT_corrcoeff (xx, yy, n, 0);*/
+	corr=stats[MGD77_RLS_CORR];
+	if (stats[MGD77_RLS_CORR] == 1.0) corr=stats[MGD77_RLS_CORR]-FLT_EPSILON;
 	if (n > 2) {	/* Determine if correlation is significant at 95% */
 		double t, tcrit;
 		t = corr * sqrt (n - 2.0) / sqrt (1.0 - corr * corr);
 		tcrit = GMT_tcrit (GMT, 0.95, (double)n - 2.0);
-		stat[MGD77_RLS_SIG] = (double)(t > tcrit);	/* 1.0 if significant, 0.0 otherwise */
+		stats[MGD77_RLS_SIG] = (double)(t > tcrit);	/* 1.0 if significant, 0.0 otherwise */
 	}
 	else
-		stat[MGD77_RLS_SIG] = GMT->session.d_NaN;
+		stats[MGD77_RLS_SIG] = GMT->session.d_NaN;
 
 	GMT_free (GMT, xx);
 	GMT_free (GMT, yy);
 }
 
-void regress_ls (double *x, double *y, GMT_LONG n, double *stat, int col)
+void regress_ls (double *x, double *y, GMT_LONG n, double *stats, int col)
 {
 	GMT_LONG i;
 	double sum_x, sum_y, sum_x2, sum_y2, sum_xy, d, ss;
@@ -2753,22 +2753,22 @@ void regress_ls (double *x, double *y, GMT_LONG n, double *stat, int col)
 	S_xx = sum_x2 - n * mean_x * mean_x;
 	S_yy = sum_y2 - n * mean_y * mean_y; */
 	if (col != MGD77_DEPTH) { /* Use LMS m & b for depth (since offset forced to 0) */
-		stat[MGD77_RLS_SLOPE] = S_xy / S_xx;                                    /* Slope */
-		stat[MGD77_RLS_ICEPT] = mean_y - stat[MGD77_RLS_SLOPE] * mean_x;        /* Intercept */
+		stats[MGD77_RLS_SLOPE] = S_xy / S_xx;                                    /* Slope */
+		stats[MGD77_RLS_ICEPT] = mean_y - stats[MGD77_RLS_SLOPE] * mean_x;        /* Intercept */
 	}
 
 	for (i = 0; i < n; i++) {
-		d = y[i] - stat[MGD77_RLS_SLOPE] * x[i] - stat[MGD77_RLS_ICEPT];
+		d = y[i] - stats[MGD77_RLS_SLOPE] * x[i] - stats[MGD77_RLS_ICEPT];
 		y_discrepancy += d*d;
 	}
-	stat[MGD77_RLS_STD] = sqrt (y_discrepancy / (n-1));         /* Standard deviation */
-	stat[MGD77_RLS_SXX] = S_xx;                                 /* Sum of squares */
-	stat[MGD77_RLS_CORR] = sqrt(S_xy * S_xy / (S_xx * S_yy));   /* Correlation (r) */
-	stat[MGD77_RLS_RMS] = sqrt(ss / n);                         /* rms */
-	stat[MGD77_RLS_SUMX2] = sum_x2;                             /* Sum of x^2 */
+	stats[MGD77_RLS_STD] = sqrt (y_discrepancy / (n-1));         /* Standard deviation */
+	stats[MGD77_RLS_SXX] = S_xx;                                 /* Sum of squares */
+	stats[MGD77_RLS_CORR] = sqrt(S_xy * S_xy / (S_xx * S_yy));   /* Correlation (r) */
+	stats[MGD77_RLS_RMS] = sqrt(ss / n);                         /* rms */
+	stats[MGD77_RLS_SUMX2] = sum_x2;                             /* Sum of x^2 */
 }
 
-void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG nvalues, double *stat, int col)
+void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG nvalues, double *stats, int col)
 {
 
 	double d_angle, limit, a, old_error, d_error, angle_0, angle_1;
@@ -2777,22 +2777,22 @@ void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG nvalues, 
 	d_angle = 1.0;
 	limit = 0.1;
 	n_angle = lrint ((180.0 - 2 * d_angle) / d_angle) + 1;
-	regresslms_sub (GMT, x, y, -90.0 + d_angle, 90.0 - d_angle, nvalues, n_angle, stat, col);
-	old_error = stat[MGD77_RLS_STD];
-	d_error = stat[MGD77_RLS_STD];
+	regresslms_sub (GMT, x, y, -90.0 + d_angle, 90.0 - d_angle, nvalues, n_angle, stats, col);
+	old_error = stats[MGD77_RLS_STD];
+	d_error = stats[MGD77_RLS_STD];
 
 	while (d_error > limit) {
 		d_angle = 0.1 * d_angle;
-		a = atan (stat[MGD77_RLS_SLOPE]) * 180 / M_PI;
+		a = atan (stats[MGD77_RLS_SLOPE]) * 180 / M_PI;
 		angle_0 = floor (a / d_angle) * d_angle - d_angle;
 		angle_1 = angle_0 + 2.0 * d_angle;
-		regresslms_sub (GMT, x, y, angle_0, angle_1, nvalues, 21, stat, col);
-		d_error = fabs (stat[MGD77_RLS_STD] - old_error);
-		old_error = stat[MGD77_RLS_STD];
+		regresslms_sub (GMT, x, y, angle_0, angle_1, nvalues, 21, stats, col);
+		d_error = fabs (stats[MGD77_RLS_STD] - old_error);
+		old_error = stats[MGD77_RLS_STD];
 	}
 }
 
-void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, GMT_LONG nvalues, int n_angle, double *stat, int col)
+void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, GMT_LONG nvalues, int n_angle, double *stats, int col)
 {
 	double da, *slp, *icept, *z, *sq_misfit, *angle, *e, emin = DBL_MAX, d;
 	GMT_LONG i, j = 0;
@@ -2805,7 +2805,7 @@ void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, 
 	sq_misfit = GMT_memory (GMT, NULL, nvalues, double);
 
 	for (i=0; i < 4; i++)
-		stat[i] = 0;
+		stats[i] = 0;
 	GMT_memset (slp,   n_angle, double);
 	GMT_memset (icept, n_angle, double);
 	GMT_memset (angle, n_angle, double);
@@ -2833,9 +2833,9 @@ void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, 
 			j = i;
 		}
 	}
-	stat[MGD77_RLS_SLOPE] = slp[j];
-	stat[MGD77_RLS_ICEPT] = icept[j];
-	stat[MGD77_RLS_STD] = e[j];
+	stats[MGD77_RLS_SLOPE] = slp[j];
+	stats[MGD77_RLS_ICEPT] = icept[j];
+	stats[MGD77_RLS_STD] = e[j];
 
 	GMT_free (GMT, slp);
 	GMT_free (GMT, icept);

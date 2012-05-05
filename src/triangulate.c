@@ -452,7 +452,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->M.active) {	/* Must find unique edges to output only once */
 		if (Ctrl->Q.active) {	/* Voronoi edges */
 			for (i = j = 0; i < np; i++) {
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%c Edge %" PRIu64 "\n", GMT->current.setting.io_seg_marker[GMT_OUT], i);
+				fprintf (GMT->session.std[GMT_OUT], "%c Edge %" PRIu64 "\n", GMT->current.setting.io_seg_marker[GMT_OUT], i);
 				out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];
@@ -481,7 +481,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "%ld unique triangle edges\n", n_edge);
 
 			for (i = 0; i < n_edge; i++) {
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%c Edge %d-%d\n", GMT->current.setting.io_seg_marker[GMT_OUT], edge[i].begin, edge[i].end);
+				fprintf (GMT->session.std[GMT_OUT], "%c Edge %d-%d\n", GMT->current.setting.io_seg_marker[GMT_OUT], edge[i].begin, edge[i].end);
 				out[GMT_X] = xx[edge[i].begin];	out[GMT_Y] = yy[edge[i].begin];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].begin];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				out[GMT_X] = xx[edge[i].end];	out[GMT_Y] = yy[edge[i].end];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].end];
@@ -492,7 +492,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (Ctrl->S.active)  {	/* Write triangle polygons */
 		for (i = ij = 0; i < np; i++, ij += 3) {
-			GMT_fprintf (GMT->session.std[GMT_OUT], "%c Polygon %d-%d-%d\n", GMT->current.setting.io_seg_marker[GMT_OUT], link[ij], link[ij+1], link[ij+2]);
+			fprintf (GMT->session.std[GMT_OUT], "%c Polygon %d-%d-%d\n", GMT->current.setting.io_seg_marker[GMT_OUT], link[ij], link[ij+1], link[ij+2]);
 			for (k = 0; k < 3; k++) {	/* Three vertices */
 				out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij+k]];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
