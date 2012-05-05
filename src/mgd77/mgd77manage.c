@@ -512,13 +512,13 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	int cdf_var_id, n_dims = 0, dims[2];		/* netCDF variables should be declared as int */
 	size_t start[2] = {0, 0}, count[2] = {0, 0};	/* NetCDF offset variables are size_t */
 	
-	GMT_LONG i, j, k = 0, column, result, set, check;
+	GMT_LONG i, k = 0, column, result, set, check;
 	GMT_LONG width, GF_version = MGD77_NOT_SET, n_fields = 0;
 	BOOLEAN error = FALSE, transform, verified, strings = FALSE, got_grid, got_table;
 	BOOLEAN two_cols = FALSE, constant, ok_to_read = TRUE, interpolate = FALSE;
 	
 	COUNTER_MEDIUM MTF_col = 1, pos, c_kind = 0, n_expected_fields, row, col;
-	COUNTER_LARGE argno, n_paths = 0, n_delete = 0, n_bad, n_sampled = 0, n_changed = 0, n = 0, rec;
+	COUNTER_LARGE argno, n_paths = 0, n_delete = 0, n_bad, n_sampled = 0, n_changed = 0, n = 0, rec, jrec;
 	size_t n_alloc = GMT_CHUNK;
 	
 	time_t now;
@@ -813,11 +813,11 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				D->H.n_fields--;
 				D->n_fields--;
 				In.n_out_columns--;
-				for (i = k; i < In.n_out_columns; i++) {	/* Move remaining columns over */
-					D->values[i] = D->values[i+1];
-					strcpy (In.desired_column[i], In.desired_column[i+1]);
-					In.order[i].set = In.order[i+1].set;
-					In.order[i].item = In.order[i+1].item;
+				for (col = k; col < In.n_out_columns; col++) {	/* Move remaining columns over */
+					D->values[col] = D->values[col+1];
+					strcpy (In.desired_column[col], In.desired_column[col+1]);
+					In.order[col].set = In.order[col+1].set;
+					In.order[col].item = In.order[col+1].item;
 				}
 				strcat (history, " ");
 				strcat (history, p);
@@ -1077,12 +1077,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else if (strings && n < D->H.n_records) {	/* Only update the exact matching records */
 				text = GMT_memory (GMT, NULL, D->H.n_records * LEN, char);
-				for (rec = j = n_sampled = 0; rec < D->H.n_records && j < n; rec++) {
+				for (rec = jrec = n_sampled = 0; rec < D->H.n_records && jrec < n; rec++) {
 					match_value = (Ctrl->A.mode == MODE_n) ? rec+1 : x[rec];
 					strncpy (&text[rec*LEN], not_given, (size_t)LEN);	/* In case we have no data at this time */
-					while (coldnt[rec] < match_value && j < n) j++;
-					if (coldnt[j] == match_value) {
-						strncpy (&text[rec*LEN], tmp_string[j], (size_t)LEN);
+					while (coldnt[rec] < match_value && jrec < n) jrec++;
+					if (coldnt[jrec] == match_value) {
+						strncpy (&text[rec*LEN], tmp_string[jrec], (size_t)LEN);
 						n_sampled++;
 					}
 				}
@@ -1097,12 +1097,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else {	/* Only update the exact matching records */
 				y = GMT_memory (GMT, NULL, D->H.n_records, double);
-				for (rec = j = n_sampled = 0; rec < D->H.n_records && j < n; rec++) {
+				for (rec = jrec = n_sampled = 0; rec < D->H.n_records && jrec < n; rec++) {
 					match_value = (Ctrl->A.mode == MODE_n) ? rec+1 : x[rec];
 					y[rec] = GMT->session.d_NaN;	/* In case we have no data at this time */
-					while (coldnt[j] < match_value && j < n) j++;
-					if (coldnt[j] == match_value) {	/* Found our guy */
-						y[rec] = colvalue[j];
+					while (coldnt[jrec] < match_value && jrec < n) jrec++;
+					if (coldnt[jrec] == match_value) {	/* Found our guy */
+						y[rec] = colvalue[jrec];
 						n_sampled++;
 					}
 				}
@@ -1120,8 +1120,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			FILE *fp_e = NULL;
 			int cdf_var_id, cdf_adjust;
 			char ID[16], date[16], field[GMT_TEXT_LEN64], efile[GMT_BUFSIZ], E77[256], timestamp[GMT_TEXT_LEN64], answer[GMT_BUFSIZ], code[GMT_BUFSIZ], kind, YorN;
-			GMT_LONG n_recs, rec, number, type, it, id, key, n_E77_flags, from, to, day, month, year, item;
+			GMT_LONG number, type, it, id, key, n_E77_flags, day, month, year, item;
 			GMT_LONG n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_unprocessed, e_error = 0, old_flags;
+			COUNTER_LARGE n_recs, rec, from, to;
 			unsigned int *flags = NULL, pattern;
 			size_t length;
 			BOOLEAN has_time;
@@ -1153,7 +1154,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not read record #1 from %s.e77 - aborting\n", list[argno]);
 				e_error++;
 			}
-			sscanf (&line[1], "%*s %s %*s %*s %*s %*s %*s %s %*s %d", ID, date, &n_recs);
+			sscanf (&line[1], "%*s %s %*s %*s %*s %*s %*s %s %*s %" PRIu64, ID, date, &n_recs);
 			if (strcmp (In.NGDC_id, ID)) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 Conflict %s : ID = %s versus %s - aborting\n", efile, ID, In.NGDC_id);
 				e_error++;
@@ -1207,7 +1208,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					sscanf (line, "%c-%c-%[^-]-%[^-]-%d", &YorN, &kind, ID, field, &item);
 				}
 				else				/* Data record */
-					sscanf (line, "%c %s %s %d %s", &YorN, ID, timestamp, &rec, code);
+					sscanf (line, "%c %s %s %" PRIu64 " %s", &YorN, ID, timestamp, &rec, code);
 				if (strcmp (In.NGDC_id, ID)) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 Conflict %s : ID = %s versus %s in header records!\n", efile, ID, In.NGDC_id);
 					e_error++;
@@ -1341,7 +1342,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 								break;
 							case E77_HDR_GRID_OFFSET:	/* Range of bad values - set flags to BAD  */
 							case E77_HDR_FLAGRANGE:		/* Range of bad values - set flags to BAD  */
-								sscanf (answer, "%d-%d", &from, &to);
+								sscanf (answer, "%" PRIu64 "-%" PRIu64, &from, &to);
 								if (from < 1 || from > D->H.n_records || to < 1 || to > D->H.n_records || to < from) {
 									GMT_report (GMT, GMT_MSG_FATAL, "Error: Record range %s is invalid.  Correction skipped\n", answer);
 									break;
@@ -1364,7 +1365,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (rec = 0, has_time = FALSE; !has_time && rec < D->H.n_records; rec++) if (!GMT_is_dnan (tvar[rec])) has_time = TRUE;
 			}
 			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {	/* Read until EOF */
-				sscanf (line, "%c %s %s %d %s", &YorN, ID, timestamp, &rec, code);
+				sscanf (line, "%c %s %s %" PRIu64 " %s", &YorN, ID, timestamp, &rec, code);
 				if (strcmp (In.NGDC_id, ID)) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 Conflict %s : ID = %s versus %s in data records - skipped\n", efile, ID, In.NGDC_id);
 					e_error++;
@@ -1614,7 +1615,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				MGD77_nc_status (GMT, nc_put_vara_double (In.nc_id, cdf_var_id, start, count, colvalue));
 		}
 		if (n_bad) {	/* Report what we found */
-			if (In.verbose_level | 1) fprintf (fp_err, "%s: %s [%s] had %d values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
+			if (In.verbose_level | 1) fprintf (fp_err, "%s: %s [%s] had %" PRIu64 " values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
 				GMT->init.progname, In.NGDC_id, Ctrl->I.c_abbrev, n_bad, MGD77_Low_val[c_nc_type], MGD77_High_val[c_nc_type], MGD77_NaN_val[c_nc_type]);
 		}
 		

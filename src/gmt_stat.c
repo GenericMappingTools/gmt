@@ -607,11 +607,11 @@ double GMT_i1 (struct GMT_CTRL *C, double x)
 	return (res);
 }
 
-double GMT_in (struct GMT_CTRL *C, GMT_LONG n, double x)
+double GMT_in (struct GMT_CTRL *C, COUNTER_MEDIUM n, double x)
 {
 	/* Modified Bessel function In(x) */
 
-	GMT_LONG j, m, IACC = 40;
+	COUNTER_MEDIUM j, m, IACC = 40;
 	double res, tox, bip, bi, bim;
 	double BIGNO = 1.0e10, BIGNI = 1.0e-10;
 
@@ -677,7 +677,7 @@ double GMT_k1 (struct GMT_CTRL *C, double x)
 	return (res);
 }
 
-double GMT_kn (struct GMT_CTRL *C, GMT_LONG n, double x)
+double GMT_kn (struct GMT_CTRL *C, COUNTER_MEDIUM n, double x)
 {
 	/* Modified Bessel function Kn(x) */
 
@@ -740,7 +740,7 @@ double GMT_plm (struct GMT_CTRL *C, GMT_LONG l, GMT_LONG m, double x)
 	return (pll);
 }
 
-double GMT_plm_bar (struct GMT_CTRL *C, GMT_LONG l, GMT_LONG m, double x, GMT_LONG ortho)
+double GMT_plm_bar (struct GMT_CTRL *C, GMT_LONG l, GMT_LONG m, double x, BOOLEAN ortho)
 {
 	/* This function computes the normalized associated Legendre function of x for degree
 	 * l and order m. u must be in the range [-1;1] and 0 <= |m| <= l.
@@ -1842,7 +1842,7 @@ GMT_LONG GMT_chebyshev (struct GMT_CTRL *C, double x, GMT_LONG n, double *t)
 	return (GMT_NOERROR);
 }
 
-double GMT_corrcoeff (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, GMT_LONG mode)
+double GMT_corrcoeff (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, COUNTER_MEDIUM mode)
 {
 	/* Returns plain correlation coefficient, r.
 	 * If mode = 1 we assume mean(x) = mean(y) = 0.
@@ -1877,7 +1877,7 @@ double GMT_corrcoeff (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n,
 	return (r);
 }
 
-double GMT_corrcoeff_f (struct GMT_CTRL *C, float *x, float *y, COUNTER_LARGE n, GMT_LONG mode)
+double GMT_corrcoeff_f (struct GMT_CTRL *C, float *x, float *y, COUNTER_LARGE n, COUNTER_MEDIUM mode)
 {
 	/* Returns plain correlation coefficient, r.
 	 * If mode = 1 we assume mean(x) = mean(y) = 0.
@@ -2059,7 +2059,7 @@ double GMT_psi (struct GMT_CTRL *P, double zz[], double p[])
 #define QV_RE 2
 #define QV_IM 3
 
-void GMT_PvQv (struct GMT_CTRL *C, double x, double v_ri[], double pq[], GMT_LONG *iter)
+void GMT_PvQv (struct GMT_CTRL *C, double x, double v_ri[], double pq[], COUNTER_MEDIUM *iter)
 {
 	/* Here, -1 <= x <= +1, v_ri is an imaginary number [r,i], and we return
 	 * the real amd imaginary parts of Pv(x) and Qv(x) in the pq array.

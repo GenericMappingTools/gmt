@@ -621,7 +621,7 @@ void GMT_grd_do_scaling (struct GMT_CTRL *C, float *grid, COUNTER_LARGE nm, doub
  * Date:	20 April 1998
  */
 
-GMT_LONG GMT_grd_RI_verify (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG mode)
+GMT_LONG GMT_grd_RI_verify (struct GMT_CTRL *C, struct GRD_HEADER *h, COUNTER_MEDIUM mode)
 {
 	/* mode - 0 means we are checking an existing grid, mode = 1 means we test a new -R -I combination */
 
@@ -894,7 +894,7 @@ void GMT_close_grd (struct GMT_CTRL *C, struct GMT_GRDFILE *G)
 
 GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG row_no, float *row)
 {	/* Reads the entire row vector form the grdfile
-	 * If row_no is negative it is interpreted to mean that we want to
+	 * If row_no is NEGATIVE it is interpreted to mean that we want to
 	 * fseek to the start of the abs(row_no) record and no reading takes place.
 	 */
 
@@ -989,7 +989,7 @@ void GMT_set_grddim (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	GMT_set_grdinc (C, h);
 }
 
-void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, GMT_LONG update)
+void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, BOOLEAN update)
 {	/* GMT_grd_init initializes a grd header to default values and copies the
 	 * options to the header variable command.
 	 * update = TRUE if we only want to update command line */
@@ -1341,7 +1341,7 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid, double *in_wesn, double scale, GMT_LONG mode, double lat, GMT_LONG init)
+GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid, double *in_wesn, double scale, COUNTER_MEDIUM mode, double lat, BOOLEAN init)
 {
 	/* Function that reads an entire Sandwell/Smith Mercator grid and stores it like a regular
 	 * GMT grid.  If init is TRUE we also initialize the Mercator projection.  Lat should be 0.0
@@ -1572,7 +1572,7 @@ struct GRD_HEADER *GMT_duplicate_gridheader (struct GMT_CTRL *C, struct GRD_HEAD
 	return (hnew);
 }
 
-struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG alloc_data)
+struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, BOOLEAN alloc_data)
 {	/* Duplicates an entire grid, including data. */
 	struct GMT_GRID *Gnew = NULL;
 
@@ -1585,14 +1585,14 @@ struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, GMT
 	return (Gnew);
 }
 
-void GMT_free_grid_ptr (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG free_grid)
+void GMT_free_grid_ptr (struct GMT_CTRL *C, struct GMT_GRID *G, BOOLEAN free_grid)
 {	/* By taking a reference to the grid pointer we can set it to NULL when done */
 	if (!G) return;	/* Nothing to deallocate */
 	if (G->data && free_grid) GMT_free (C, G->data);
 	if (G->header) GMT_free (C, G->header);
 }
 
-void GMT_free_grid (struct GMT_CTRL *C, struct GMT_GRID **G, GMT_LONG free_grid)
+void GMT_free_grid (struct GMT_CTRL *C, struct GMT_GRID **G, BOOLEAN free_grid)
 {	/* By taking a reference to the grid pointer we can set it to NULL when done */
 	GMT_free_grid_ptr (C, *G, free_grid);
 	GMT_free (C, *G);
@@ -1616,7 +1616,7 @@ GMT_LONG GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRI
 	return (FALSE);
 }
 
-GMT_LONG GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wesn[], double inc[], GMT_LONG registration)
+GMT_LONG GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wesn[], double inc[], COUNTER_MEDIUM registration)
 {	/* Does the dirty work of initializing the Grid header and make sure all is correct:
  	 * Make sure -R -I is compatible.
 	 * Set all the dimension parameters and pad info. Programs that need to set up a grid from
@@ -1625,7 +1625,7 @@ GMT_LONG GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wes
 	
 	GMT_memcpy (Grid->header->wesn, wesn, 4, double);
 	GMT_memcpy (Grid->header->inc, inc, 2, double);
-	Grid->header->registration = (int)registration;
+	Grid->header->registration = registration;
 	GMT_RI_prepare (C, Grid->header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	if ((status = GMT_grd_RI_verify (C, Grid->header, 1))) return (status);	/* Final verification of -R -I; return error if we must */
 	GMT_grd_setpad (C, Grid->header, C->current.io.pad);	/* Assign default pad */
@@ -1633,9 +1633,9 @@ GMT_LONG GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wes
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *header, GMT_LONG registration)
+GMT_LONG GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *header, COUNTER_MEDIUM registration)
 {
-	GMT_LONG old_registration;
+	COUNTER_MEDIUM old_registration;
 	double F;
 	/* Adjust the grid header to the selected registration, if different.
 	 * In all cases we return the original registration. */
@@ -1649,7 +1649,7 @@ GMT_LONG GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *header, GMT_L
 	header->wesn[YLO] += F * header->inc[GMT_Y];
 	header->wesn[YHI] -= F * header->inc[GMT_Y];
 	
-	header->registration = (int)registration;
+	header->registration = registration;
 	header->xy_off = 0.5 * header->registration;
 	return (old_registration);
 }
@@ -1774,7 +1774,7 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, double *wesn, COUNTER_MEDIUM *pad, GMT_LONG complex_mode)
+GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, double *wesn, COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
 {	/* file:	- IGNORED -
 	 * image:	array with final image
 	 * wesn:	Sub-region to extract  [Use entire file if NULL or contains 0,0,0,0]

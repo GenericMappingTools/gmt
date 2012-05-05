@@ -417,7 +417,8 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	   2) Next, we mark closed contours with other contours inside them as not "innermost"
 	   3) We then determine if the remaining closed polygons contain highs or lows.
 	*/
-	GMT_LONG np, i, j, k, ij, inside, col, row, stop, n_ticks, way, form;
+	GMT_LONG np, i, j, k, inside, col, row, stop, n_ticks, way, form;
+	COUNTER_LARGE ij;
 	BOOLEAN done, match, found;
 	double add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end;
 	double xmin, xmax, ymin, ymax, inc, dist, a, this_lon, this_lat, sa, ca;

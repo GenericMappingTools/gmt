@@ -349,8 +349,8 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	BOOLEAN error = FALSE, done, need_to_project, normal_x, normal_y, resampled = FALSE, gray_only = FALSE;
-	GMT_LONG k, nx = 0, ny = 0, index = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
-	GMT_LONG colormask_offset = 0, try;
+	COUNTER_MEDIUM k, nx = 0, ny = 0, index = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
+	COUNTER_MEDIUM colormask_offset = 0, try;
 	COUNTER_LARGE node_RGBA = 0;		/* COUNTER_LARGE for the RGB(A) image array. */
 	COUNTER_LARGE node, kk, nm, byte;
 	

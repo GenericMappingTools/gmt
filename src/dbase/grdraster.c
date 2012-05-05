@@ -57,7 +57,7 @@ struct GRDRASTER_CTRL {
 struct GRDRASTER_INFO {
 	struct GRD_HEADER h;
 	COUNTER_MEDIUM id;	/* File number  */
-	COUNTER_MEDIUM nglobal;	/* If not 0, ras is global and i%nglobal makes it periodic  */
+	GMT_LONG nglobal;	/* If not 0, ras is global and i%nglobal makes it periodic  */
 	GMT_LONG nanflag;
 	BOOLEAN nanset;		/* True if raster uses nanflag to signal NaN  */
 	off_t skip;		/* Skip this number of header bytes when opening file  */

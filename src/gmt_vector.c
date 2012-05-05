@@ -399,9 +399,10 @@ GMT_LONG GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, COUNTER_MEDIUM n
 
 /* Modified from similar function in Numerical Recipes */
 
-GMT_LONG GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, GMT_LONG n, GMT_LONG ndim, double *b, GMT_LONG m, GMT_LONG mdim)
+GMT_LONG GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, COUNTER_MEDIUM n_in, COUNTER_MEDIUM ndim, double *b, COUNTER_MEDIUM m_in, COUNTER_MEDIUM mdim)
 {
 	GMT_LONG i, j, k, l, ll, *ipiv = NULL, *indxc = NULL, *indxr = NULL, irow = 0, icol = 0;
+	GMT_LONG n = n_in, m = m_in;
 	double big, dum, pivinv;
 	
 	ipiv  = GMT_memory (GMT, NULL, n, GMT_LONG);
@@ -496,7 +497,7 @@ GMT_LONG GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, GMT_LONG n, GMT_LONG 
 
 #define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
 
-GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, GMT_LONG m, GMT_LONG n, double *w, double *v)
+GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, COUNTER_MEDIUM m, COUNTER_MEDIUM n, double *w, double *v)
 {
 	/* void svdcmp(double *a,int m,int n,double *w,double *v) */
 	
@@ -744,7 +745,7 @@ void gmt_mat_mult (double a[], GMT_LONG mrow, GMT_LONG ncol, double b[], GMT_LON
 	
 */
 
-GMT_LONG GMT_solve_svd (struct GMT_CTRL *GMT, double *u, GMT_LONG m, GMT_LONG n, double *v, double *w, double *b, GMT_LONG k, double *x, double cutoff)
+GMT_LONG GMT_solve_svd (struct GMT_CTRL *GMT, double *u, COUNTER_MEDIUM m, COUNTER_MEDIUM n, double *v, double *w, double *b, COUNTER_MEDIUM k, double *x, double cutoff)
 {
 	double *ut = NULL, sing_max;
 	GMT_LONG i, j, n_use = 0;
@@ -849,7 +850,7 @@ void GMT_cross3v (struct GMT_CTRL *C, double *a, double *b, double *c)
 	c[GMT_Z] = a[GMT_X] * b[GMT_Y] - a[GMT_Y] * b[GMT_X];
 }
 
-void GMT_geo_to_cart (struct GMT_CTRL *C, double lat, double lon, double *a, GMT_LONG degrees)
+void GMT_geo_to_cart (struct GMT_CTRL *C, double lat, double lon, double *a, BOOLEAN degrees)
 {
 	/* Convert geographic latitude and longitude (lat, lon)
 	   to a 3-vector of unit length (a). If degrees = TRUE,
@@ -867,7 +868,7 @@ void GMT_geo_to_cart (struct GMT_CTRL *C, double lat, double lon, double *a, GMT
 	a[GMT_Y] = clat * slon;
 }
 
-void GMT_cart_to_geo (struct GMT_CTRL *C, double *lat, double *lon, double *a, GMT_LONG degrees)
+void GMT_cart_to_geo (struct GMT_CTRL *C, double *lat, double *lon, double *a, BOOLEAN degrees)
 {
 	/* Convert a 3-vector (a) of unit length into geographic
 	   coordinates (lat, lon). If degrees = TRUE, the output coordinates
@@ -883,7 +884,7 @@ void GMT_cart_to_geo (struct GMT_CTRL *C, double *lat, double *lon, double *a, G
 	}
 }
 
-void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, GMT_LONG degrees)
+void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, BOOLEAN degrees)
 {
 	/* Convert polar (cylindrical) coordinates r, theta
 	   to a 2-vector of unit length (a). If degrees = TRUE,
@@ -895,7 +896,7 @@ void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, G
 	a[GMT_Y] *= r;
 }
 
-void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a, GMT_LONG degrees)
+void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a, BOOLEAN degrees)
 {
 	/* Convert a 2-vector (a) of unit length into polar (cylindrical)
 	   coordinates (r, theta). If degrees = TRUE, the output coordinates
@@ -906,7 +907,7 @@ void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a,
 	if (degrees) *theta *= R2D;
 }
 
-COUNTER_LARGE GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, COUNTER_LARGE n, double step, GMT_LONG mode)
+COUNTER_LARGE GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, COUNTER_LARGE n, double step, COUNTER_MEDIUM mode)
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
 	 * auxiliary points if the great circle distance between two given points exceeds

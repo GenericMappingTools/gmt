@@ -203,7 +203,7 @@ int GMT_fclose (struct GMT_CTRL *C, FILE *stream)
 	return (fclose (stream));
 }
 
-void GMT_skip_xy_duplicates (struct GMT_CTRL *C, GMT_LONG mode)
+void GMT_skip_xy_duplicates (struct GMT_CTRL *C, BOOLEAN mode)
 {	/* Changes the status of the skip_duplicates setting */
 	/* PW: This is needed as some algorithms testing if a point is
 	 * inside or outside a polygon have trouble if there are
@@ -248,7 +248,7 @@ void gmt_adjust_periodic (struct GMT_CTRL *C) {
 	/* Now it will be outside the region on the same side it started out at */
 }
 
-void GMT_set_segmentheader (struct GMT_CTRL *C, GMT_LONG direction, GMT_LONG true_false)
+void GMT_set_segmentheader (struct GMT_CTRL *C, GMT_LONG direction, BOOLEAN true_false)
 {	/* Enable/Disable multi-segment headers for either input or output */
 		
 	C->current.io.multi_segments[direction] = true_false;
@@ -856,7 +856,7 @@ GMT_LONG gmt_ogr_decode_aspatial_names (struct GMT_CTRL *C, char *record, struct
 	return (col);
 }
 
-GMT_LONG GMT_append_ogr_item (struct GMT_CTRL *C, char *name, GMT_LONG type, struct GMT_OGR *S)
+GMT_LONG GMT_append_ogr_item (struct GMT_CTRL *C, char *name, COUNTER_MEDIUM type, struct GMT_OGR *S)
 {
 	/* Adds one more metadata item to this OGR structure */
 	S->n_aspatial++;
@@ -1605,7 +1605,7 @@ void gmt_format_abstime_output (struct GMT_CTRL *C, double dt, char *text)
 	sprintf (text, "%sT%s", date, clock);
 }
 
-void GMT_ascii_format_col (struct GMT_CTRL *C, char *text, double x, GMT_LONG col)
+void GMT_ascii_format_col (struct GMT_CTRL *C, char *text, double x, COUNTER_MEDIUM col)
 {	/* Format based on column position */
 	if (GMT_is_dnan (x)) {	/* NaN, just write it as a string */
 		sprintf (text, "NaN");
@@ -1674,7 +1674,7 @@ void GMT_io_init (struct GMT_CTRL *C)
 	GMT_memcpy (C->current.io.io_header, C->current.setting.io_header, 2, GMT_LONG);
 }
 
-void GMT_lon_range_adjust (GMT_LONG range, double *lon)
+void GMT_lon_range_adjust (COUNTER_MEDIUM range, double *lon)
 {
 	switch (range) {	/* Adjust to the desired range */
 		case GMT_IS_0_TO_P360_RANGE:		/* Make 0 <= lon <= 360 */
@@ -1850,7 +1850,7 @@ BOOLEAN GMT_geo_to_dms (double val, GMT_LONG n_items, double fact, GMT_LONG *d, 
 	return (FALSE);
 }
 
-void GMT_add_to_record (struct GMT_CTRL *C, char *record, double val, COUNTER_MEDIUM col, GMT_LONG sep)
+void GMT_add_to_record (struct GMT_CTRL *C, char *record, double val, COUNTER_MEDIUM col, COUNTER_MEDIUM sep)
 {	/* formats and appends val to the record texts string.
 	 * If sep is 1 we prepend col separator.
 	 * If sep is 2 we append col separator
@@ -4151,7 +4151,7 @@ GMT_LONG gmt_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 	return (GMT_IS_ABSTIME);
 }
 
-GMT_LONG GMT_scanf (struct GMT_CTRL *C, char *s, GMT_LONG expectation, double *val)
+GMT_LONG GMT_scanf (struct GMT_CTRL *C, char *s, COUNTER_MEDIUM expectation, double *val)
 {
 	/* Called with s pointing to a char string, expectation
 	indicating what is known/required/expected about the
@@ -4257,7 +4257,7 @@ GMT_LONG GMT_scanf (struct GMT_CTRL *C, char *s, GMT_LONG expectation, double *v
 	}
 }
 
-GMT_LONG GMT_scanf_arg (struct GMT_CTRL *C, char *s, GMT_LONG expectation, double *val)
+GMT_LONG GMT_scanf_arg (struct GMT_CTRL *C, char *s, COUNTER_MEDIUM expectation, double *val)
 {
 	/* Version of GMT_scanf used for cpt & command line arguments only (not data records).
 	 * It differs from GMT_scanf in that if the expectation is GMT_IS_UNKNOWN it will
@@ -4491,7 +4491,7 @@ void GMT_set_tbl_minmax (struct GMT_CTRL *C, struct GMT_TABLE *T)
 	}
 }
 
-GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_PALETTE *P, GMT_LONG *use_fill, struct GMT_FILL *fill, struct GMT_FILL def_fill,  GMT_LONG *use_pen, struct GMT_PEN *pen, struct GMT_PEN def_pen, GMT_LONG def_outline, struct GMT_OGR_SEG *G)
+GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_PALETTE *P, BOOLEAN *use_fill, struct GMT_FILL *fill, struct GMT_FILL def_fill,  BOOLEAN *use_pen, struct GMT_PEN *pen, struct GMT_PEN def_pen, COUNTER_MEDIUM def_outline, struct GMT_OGR_SEG *G)
 {
 	/* Scan header for occurrences of valid GMT options.
 	 * The possibilities are:
@@ -4994,7 +4994,7 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	return (0);
 }
 
-GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, struct GMT_TABLE *table, GMT_LONG use_GMT_io, GMT_LONG io_mode)
+GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_type, struct GMT_TABLE *table, BOOLEAN use_GMT_io, COUNTER_MEDIUM io_mode)
 {
 	/* Writes an entire segment data set to file or wherever.
 	 * Specify io_mode == GMT_WRITE_SEGMENTS or GMT_WRITE_TABLE_SEGMENTS to write segments to individual files.
@@ -5108,7 +5108,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 	return (0);	/* OK status */
 }
 
-GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, struct GMT_DATASET *D, GMT_LONG use_GMT_io, GMT_LONG table)
+GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_type, struct GMT_DATASET *D, BOOLEAN use_GMT_io, GMT_LONG table)
 {	/* Writes an entire data set to file or stream */
 	COUNTER_MEDIUM tbl;
 	BOOLEAN close_file = FALSE;
@@ -5514,7 +5514,7 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 	return (D);
 }
 
-struct GMT_TEXTSET * GMT_duplicate_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, GMT_LONG mode)
+struct GMT_TEXTSET * GMT_duplicate_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, COUNTER_LARGE mode)
 {
 	COUNTER_MEDIUM tbl;
 	COUNTER_LARGE row, seg;
@@ -5628,7 +5628,7 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, COUNTER_MEDIUM n_ta
 	return (D);
 }
 
-struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type, GMT_LONG greenwich, GMT_LONG poly, GMT_LONG use_GMT_io)
+struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, COUNTER_MEDIUM source_type, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io)
 {
 	/* Reads an entire data set into a single table memory with any number of segments */
 
@@ -5894,7 +5894,7 @@ struct GMT_LINE_SEGMENT * GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_
 	return (Sout);
 }
 
-struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows, GMT_LONG mode)
+struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows, COUNTER_MEDIUM mode)
 {
 	/* Allocate new dataset structure with same # of tables, segments and rows/segment as input data set.
 	 * However, n_columns is given separately and could differ.  Also, if n_rows > 0 we let that override the segment row counts.
@@ -5964,7 +5964,7 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 	return (D);
 }
 
-struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, COUNTER_MEDIUM n_columns, GMT_LONG mode)
+struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, COUNTER_MEDIUM n_columns, COUNTER_MEDIUM mode)
 {	/* Make an exact replica */
 	COUNTER_MEDIUM tbl;
 	COUNTER_LARGE seg;
@@ -6103,7 +6103,7 @@ struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *C)
 	return (I);
 }
 
-void GMT_free_image_ptr (struct GMT_CTRL *C, struct GMT_IMAGE *I, GMT_LONG free_image)
+void GMT_free_image_ptr (struct GMT_CTRL *C, struct GMT_IMAGE *I, BOOLEAN free_image)
 {	/* Free contents of image pointer */
 	if (!I) return;	/* Nothing to deallocate */
 	if (I->data && free_image) GMT_free (C, I->data);
@@ -6111,7 +6111,7 @@ void GMT_free_image_ptr (struct GMT_CTRL *C, struct GMT_IMAGE *I, GMT_LONG free_
 	if (I->ColorMap) GMT_free (C, I->ColorMap);
 }
 
-void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, GMT_LONG free_image)
+void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, BOOLEAN free_image)
 {	/* By taking a reference to the image pointer we can set it to NULL when done */
 	GMT_free_image_ptr (C, *I, free_image);
 	GMT_free (C, *I);
@@ -6470,7 +6470,7 @@ GMT_LONG GMT_load_aspatial_values (struct GMT_CTRL *C, struct GMT_OGR *G)
 	return (n);
 }
 
-double GMT_get_aspatial_value (struct GMT_CTRL *C, GMT_LONG col, struct GMT_LINE_SEGMENT *S)
+double GMT_get_aspatial_value (struct GMT_CTRL *C, COUNTER_MEDIUM col, struct GMT_LINE_SEGMENT *S)
 {
 	/* Return the value associated with the aspatial values given for this column col */
 
@@ -6487,7 +6487,7 @@ double GMT_get_aspatial_value (struct GMT_CTRL *C, GMT_LONG col, struct GMT_LINE
 	return (C->session.d_NaN);
 }
 
-GMT_LONG GMT_load_aspatial_string (struct GMT_CTRL *C, struct GMT_OGR *G, GMT_LONG col, char out[GMT_BUFSIZ])
+GMT_LONG GMT_load_aspatial_string (struct GMT_CTRL *C, struct GMT_OGR *G, COUNTER_MEDIUM col, char out[GMT_BUFSIZ])
 {
 	/* Uses the info in -a and OGR to retrieve the requested aspatial string */
 

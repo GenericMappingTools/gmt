@@ -159,9 +159,9 @@ GMT_LONG GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-float get_cell (float x, struct CELL *cell, GMT_LONG n_cells_m1, GMT_LONG last_cell)
+float get_cell (float x, struct CELL *cell, COUNTER_MEDIUM n_cells_m1, COUNTER_MEDIUM last_cell)
 {
-	GMT_LONG low, high, i;
+	COUNTER_MEDIUM low, high, i;
 
 	low = 0;
 	high = n_cells_m1;

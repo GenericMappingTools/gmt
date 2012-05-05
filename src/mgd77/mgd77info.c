@@ -244,7 +244,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	size_t length;
 	
 	COUNTER_LARGE rec, argno, n_paths, counter[MGD77_MAX_COLS];
-	COUNTER_MEDIUM saved_range quad_no, n_quad, use, k;
+	COUNTER_MEDIUM saved_range, quad_no, n_quad, use, k;
 	BOOLEAN error = FALSE, first = TRUE, read_file, quad[4] = {FALSE, FALSE, FALSE, FALSE};
 	
 	double this_dist, this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;
@@ -535,11 +535,11 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				D->H.mgd77[use]->Survey_Departure_Year, D->H.mgd77[use]->Survey_Departure_Month, D->H.mgd77[use]->Survey_Departure_Day, GMT->current.setting.io_col_separator,
 				D->H.mgd77[use]->Survey_Arrival_Year, D->H.mgd77[use]->Survey_Arrival_Month, D->H.mgd77[use]->Survey_Arrival_Day, GMT->current.setting.io_col_separator);
 			}
-			fprintf (GMT->session.std[GMT_OUT], "%ld%s%d", lrint (this_dist), GMT->current.setting.io_col_separator, D->H.n_records);
+			fprintf (GMT->session.std[GMT_OUT], "%ld%s%" PRIu64, lrint (this_dist), GMT->current.setting.io_col_separator, D->H.n_records);
 			for (i = k = 1; k < M.n_out_columns; i++, k++) {
 				if (i == id_col || i == t_col || i == x_col || i == y_col) continue;
 				if (((Ctrl->E.mode & 1) && M.order[k].set == 0) || ((Ctrl->E.mode & 2) && M.order[k].set == 1))
-					fprintf (GMT->session.std[GMT_OUT],"%s%d",	GMT->current.setting.io_col_separator, counter[k]);
+					fprintf (GMT->session.std[GMT_OUT],"%s%" PRIu64,	GMT->current.setting.io_col_separator, counter[k]);
 			}
 			fprintf (GMT->session.std[GMT_OUT],"\n");
 		}

@@ -358,7 +358,7 @@ GMT_LONG gmt_skip_second_annot (GMT_LONG item, double x, double x2[], GMT_LONG n
 	return (found);
 }
 
-void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, GMT_LONG below, GMT_LONG annotate)
+void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, BOOLEAN below, BOOLEAN annotate)
 {
 	GMT_LONG k, i, nx, np = 0;	/* Misc. variables */
 	GMT_LONG annot_pos;		/* Either 0 for upper annotation or 1 for lower annotation */
@@ -2157,7 +2157,7 @@ void GMT_vertical_axis (struct GMT_CTRL *C, GMT_LONG mode)
 	GMT_plane_perspective (C, old_plane, old_level);
 }
 
-void GMT_map_clip_on (struct GMT_CTRL *C, double rgb[], GMT_LONG flag)
+void GMT_map_clip_on (struct GMT_CTRL *C, double rgb[], COUNTER_MEDIUM flag)
 {
 	/* This function sets up a clip path so that only plotting
 	 * inside the map area will be drawn on paper. map_setup
@@ -2342,10 +2342,11 @@ void gmt_NaN_pen_up (double x[], double y[], GMT_LONG pen[], GMT_LONG n)
 	}
 }
 
-void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, GMT_LONG *pen, GMT_LONG n)
+void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, GMT_LONG *pen, COUNTER_MEDIUM n)
 {
-	GMT_LONG i, j, i1, way, stop;
-	BOOLEAN close;
+	COUNTER_MEDIUM i, j, i1;
+	GMT_LONG way;
+	BOOLEAN close, stop;
 	double x_cross[2], y_cross[2];
 	struct PSL_CTRL *P = C->PSL;
 
@@ -3702,7 +3703,7 @@ GMT_LONG GMT_plotend (struct GMT_CTRL *C) {
 	return (0);
 }
 
-void GMT_geo_line (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n)
+void GMT_geo_line (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_MEDIUM n)
 {
 	/* When geographic lines are plotted, they may cross the boundaries, may need to be clipped,
 	 * or may appear again on the other side of the map. This is all taken care of in this
@@ -4283,9 +4284,10 @@ void GMT_geo_rectangle (struct GMT_CTRL *C, double lon, double lat, double width
 	PSL_plotsymbol (P, xp, yp, dim, PSL_ROTRECT);
 }
 
-void GMT_draw_front (struct GMT_CTRL *C, double x[], double y[], GMT_LONG n, struct GMT_FRONTLINE *f)
+void GMT_draw_front (struct GMT_CTRL *C, double x[], double y[], COUNTER_MEDIUM n, struct GMT_FRONTLINE *f)
 {
-	GMT_LONG ngap, skip, tmp_join = 0, tmp_limit = 0, i;
+	GMT_LONG ngap, skip, tmp_join = 0, tmp_limit = 0;
+	COUNTER_MEDIUM i;
 	double *s = NULL, xx[4], yy[4], dist = 0.0, w, frac, dx, dy, angle, dir1, dir2;
 	double gap, x0, y0, xp, yp, len2, len3, cosa, sina, sa, ca, offx, offy, dim[3];
 	struct PSL_CTRL *P = C->PSL;

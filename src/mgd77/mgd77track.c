@@ -529,10 +529,10 @@ extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal
 
 GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG rec, first_rec, last_rec, i, n_id = 0, mrk = 0, dist_flag = 2, use, n_paths;
-	GMT_LONG this_julian = 0, last_julian, argno, n_cruises = 0;
+	COUNTER_LARGE rec, first_rec, last_rec, i, n_id = 0, mrk = 0, dist_flag = 2, use, n_paths, argno, n_cruises = 0;
+	GMT_LONG this_julian = 0, last_julian;
 	BOOLEAN error = FALSE, first, form, both = FALSE;
-	GMT_LONG annot_tick[2] = {0, 0}, draw_tick[2] = {0, 0};
+	COUNTER_MEDIUM annot_tick[2] = {0, 0}, draw_tick[2] = {0, 0};
 	
 	size_t n_alloc_c = GMT_SMALL_CHUNK;
 	
@@ -629,7 +629,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			strcpy (name, D->H.mgd77[use]->Survey_Identifier);
 		else {			/* Use file name prefix */
 			strcpy (name, list[argno]);
-			for (i = 0; i < (int)strlen (name); i++) if (name[i] == '.') name[i] = '\0';
+			for (i = 0; i < strlen (name); i++) if (name[i] == '.') name[i] = '\0';
 		}
 	
 		/* Start reading data from file */
@@ -653,7 +653,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* First draw the track line, clip segments outside the area */
 		
 		if (Ctrl->G.active[GAP_D] || Ctrl->G.active[GAP_T]) {
-			GMT_LONG start, stop;
+			COUNTER_LARGE start, stop;
 			start = first_rec;
 			while (start < last_rec && ((Ctrl->G.active[GAP_D] && (track_dist[start+1] - track_dist[start]) > Ctrl->G.value[GAP_D]) || (Ctrl->G.active[GAP_T] && (track_time[start+1] - track_time[start]) > Ctrl->G.value[GAP_T]))) {	/* First start of first segment */
 				lon[start] = GMT->session.d_NaN;	/* Flag to make sure we do not plot this gap later */
@@ -805,7 +805,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_map_basemap (GMT);
 	
 	if (Ctrl->A.mode > 0 && Ctrl->N.active) {	/* Plot leg names after clipping is terminated ( see -N) */
-		int id;
+		COUNTER_MEDIUM id;
 		double size;
 		size = GMT->session.u2u[GMT_INCH][GMT_PT] * 1.25 * Ctrl->A.size;
 		for (id = 0; id < n_id; id++) annot_legname (GMT, PSL, cruise_id[id].x, cruise_id[id].y, cruise_id[id].lon, cruise_id[id].lat, cruise_id[id].angle, cruise_id[id].text, size);
