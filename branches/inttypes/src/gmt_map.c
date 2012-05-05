@@ -1090,7 +1090,7 @@ GMT_LONG gmt_move_to_rect (struct GMT_CTRL *C, double *x_edge, double *y_edge, G
 	return (n + 1);
 }
 
-GMT_LONG gmt_rect_clip_old (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG gmt_rect_clip_old (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n, double **x, double **y, COUNTER_LARGE *total_nx)
 {
 	COUNTER_LARGE i, j = 0;
 	COUNTER_MEDIUM nx, k;
