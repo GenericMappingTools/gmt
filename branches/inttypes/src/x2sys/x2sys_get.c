@@ -235,7 +235,8 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->N.flags) {
 		x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->N.flags, s), "-N");
-		for (ii = missing = 0; ii < s->n_out_columns; ii++) missing |= X2SYS_bit (s->out_order[ii]);
+		for (ii = missing = 0; ii < s->n_out_columns; ++ii)
+			missing |= X2SYS_bit (s->out_order[ii]);
 	}
 	
 	x2sys_bix_init (GMT, &B, FALSE);
@@ -356,12 +357,16 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld pairs for crossover consideration\n", n_pairs);
 	}
 	else if (!Ctrl->C.active) {
-		for (ii = n_tracks_found = 0; ii < n_tracks; ii++) if (y_match[ii] == 1 && n_match[ii] == 0) n_tracks_found++;
+		for (ii = n_tracks_found = 0; ii < n_tracks; ++ii) {
+			if (y_match[ii] == 1 && n_match[ii] == 0)
+				++n_tracks_found;
+		}
 		if (n_tracks_found) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld tracks\n", n_tracks_found);
 	
 			printf ("# Search command: %s", GMT->init.progname);
-			for (opt = options; opt; opt = opt->next) (opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
+			for (opt = options; opt; opt = opt->next)
+				(opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
 			printf ("\n#track_ID%s", GMT->current.setting.io_col_separator);
 			for (ii = 0; ii < (s->n_fields-1); ii++) printf ("%s%s", s->info[ii].name, GMT->current.setting.io_col_separator);
 			printf ("%s\n", s->info[s->n_fields-1].name);
@@ -384,6 +389,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_free (GMT, y_match);
 	GMT_free (GMT, n_match);
+	GMT_free (GMT, in_bin_flag);
 	x2sys_end (GMT, s);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "completed successfully\n");

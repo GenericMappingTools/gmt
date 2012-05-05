@@ -3211,16 +3211,12 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 
 void GMT_free_func (struct GMT_CTRL *C, void *addr, const char *fname, const COUNTER_MEDIUM line)
 {
-	if (addr==NULL)
-	{
+	if (addr == NULL) {
 		/* report freeing unallocated memory */
 #ifdef DEBUG
-		GMT_report (C, GMT_MSG_NORMAL,
-		    "GMT_free_func: %s from file %s on line %ld tried to free unallocated memory\n",
-		    C->init.progname, fname, line);
+		GMT_report (C, GMT_MSG_DEBUG, "GMT_free_func: %s from file %s on line %ld tried to free unallocated memory\n", C->init.progname, fname, line);
 #else
-		GMT_report (C, GMT_MSG_DEBUG,
-		    "GMT_free_func: %s tried to free unallocated memory\n");
+		GMT_report (C, GMT_MSG_DEBUG, "GMT_free_func: %s tried to free unallocated memory\n");
 #endif
 		return; /* Do not free a NULL pointer, although allowed */
 	}
@@ -8726,7 +8722,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
 #ifdef PS_MACRO
-	struct GMT_STAT buf;
+	struct stat buf;
 #endif
 
 	/* Parse the *.def files.  Note: PS_MACRO is off and will be worked on later.  For now the
@@ -8734,7 +8730,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 
 	GMT_getsharepath (C, "custom", name, ".def", file);
 #ifdef PS_MACRO
-	if (GMT_STAT (file, &buf)) {
+	if (stat (file, &buf)) {
 		GMT_report (C, GMT_MSG_FATAL, "Error: Could not find custom symbol %s\n", name);
 		GMT_exit (EXIT_FAILURE);
 	}

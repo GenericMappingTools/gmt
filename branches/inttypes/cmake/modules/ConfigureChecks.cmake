@@ -71,7 +71,7 @@ check_include_file (direct.h            HAVE_DIRECT_H_)
 check_include_file (process.h           HAVE_PROCESS_H_)
 
 #
-# Check for C90, C99 and POSIX conformity
+# Check for C99 and POSIX conformity
 #
 
 # sincos is a GNU extension:
@@ -91,61 +91,71 @@ check_include_file (unistd.h            HAVE_UNISTD_H_)
 check_function_exists (fopen64          HAVE_FOPEN64)
 check_function_exists (fseeko           HAVE_FSEEKO)
 check_function_exists (ftello           HAVE_FTELLO)
-check_function_exists (_fseeki64        HAVE__FSEEKI64)
-check_function_exists (_ftelli64        HAVE__FTELLI64)
 check_function_exists (getopt           HAVE_GETOPT)
 check_function_exists (getpwuid         HAVE_GETPWUID)
 check_function_exists (llabs            HAVE_LLABS)
 check_function_exists (pclose           HAVE_PCLOSE)
-check_function_exists (_pclose          HAVE__PCLOSE)
 check_function_exists (popen            HAVE_POPEN)
-check_function_exists (_popen           HAVE__POPEN)
 check_function_exists (qsort_r          HAVE_QSORT_R)
-check_function_exists (qsort_s          HAVE_QSORT_S)
 check_function_exists (stricmp          HAVE_STRICMP)
 check_function_exists (strdup           HAVE_STRDUP)
 check_function_exists (strsep           HAVE_STRSEP)
 check_function_exists (strtod           HAVE_STRTOD)
 check_function_exists (strtok_r         HAVE_STRTOK_R)
-check_function_exists (strtok_s         HAVE_STRTOK_S)
+
+if (WIN32)
+	check_function_exists (_fseeki64      HAVE__FSEEKI64)
+	check_function_exists (_ftelli64      HAVE__FTELLI64)
+	check_function_exists (_pclose        HAVE__PCLOSE)
+	check_function_exists (_popen         HAVE__POPEN)
+	check_function_exists (_stat          HAVE__STAT)
+	check_function_exists (_stati64       HAVE__STATI64)
+	check_function_exists (qsort_s        HAVE_QSORT_S)
+	check_function_exists (strtok_s       HAVE_STRTOK_S)
+endif (WIN32)
 
 # Check if these functions are declared (might not be the case although they
 # are build-in)
 check_symbol_exists (strdup    string.h DECLARED_STRDUP)
 check_symbol_exists (strsep    string.h DECLARED_STRSEP)
 
+check_symbol_exists (basename  libgen.h HAVE_BASENAME)
+check_symbol_exists (fileno    stdio.h  HAVE_FILENO)
+check_symbol_exists (snprintf  stdio.h  HAVE_SNPRINTF_)
+check_symbol_exists (vsnprintf stdio.h  HAVE_VSNPRINTF_)
+
 if (HAVE_UNISTD_H_)
 	check_symbol_exists (access  unistd.h HAVE_ACCESS)
+	check_symbol_exists (getpid  unistd.h HAVE_GETPID)
 else (HAVE_UNISTD_H_)
 	# in MinGW:
 	check_symbol_exists (access  io.h     HAVE_ACCESS)
-endif (HAVE_UNISTD_H_)
-check_symbol_exists (_access   io.h     HAVE__ACCESS)
-check_symbol_exists (basename  libgen.h HAVE_BASENAME)
-check_symbol_exists (fileno    stdio.h  HAVE_FILENO)
-check_symbol_exists (_fileno   stdio.h  HAVE__FILENO)
-check_symbol_exists (_getcwd   direct.h HAVE__GETCWD)
-if (HAVE_UNISTD_H_)
-	check_symbol_exists (getpid  unistd.h  HAVE_GETPID)
-elseif (HAVE_PROCESS_H_)
 	check_symbol_exists (_getpid process.h HAVE__GETPID)
 endif (HAVE_UNISTD_H_)
-check_symbol_exists (_mkdir    direct.h HAVE__MKDIR)
-check_symbol_exists (_setmode  io.h     HAVE__SETMODE)
-check_symbol_exists (snprintf  stdio.h  HAVE_SNPRINTF_)
-check_symbol_exists (_snprintf stdio.h  HAVE__SNPRINTF_)
 
-# Check if -ldl is needed for dladdr
-check_function_exists (dlopen HAVE_BUILTIN_DYNAMIC_LINKING_LOADER)
-if (NOT HAVE_BUILTIN_DYNAMIC_LINKING_LOADER)
-	check_library_exists (dl dlopen "" HAVE_LIBDL)
-endif (NOT HAVE_BUILTIN_DYNAMIC_LINKING_LOADER)
-cmake_push_check_state() # save state of CMAKE_REQUIRED_*
-if (HAVE_LIBDL)
-	set (CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} "-ldl")
-endif (HAVE_LIBDL)
-check_symbol_exists (dladdr    dlfcn.h  HAVE_DLADDR)
-cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
+if (WIN32)
+	check_symbol_exists (_access   io.h     HAVE__ACCESS)
+	check_symbol_exists (_fileno   stdio.h  HAVE__FILENO)
+	check_symbol_exists (_getcwd   direct.h HAVE__GETCWD)
+	check_symbol_exists (_mkdir    direct.h HAVE__MKDIR)
+	check_symbol_exists (_setmode  io.h     HAVE__SETMODE)
+	check_symbol_exists (_snprintf stdio.h  HAVE__SNPRINTF_)
+	check_symbol_exists (_vsnprintf stdio.h HAVE__VSNPRINTF_)
+endif (WIN32)
+
+if (UNIX)
+	# Check if -ldl is needed for dladdr
+	check_function_exists (dlopen HAVE_BUILTIN_DYNAMIC_LINKING_LOADER)
+	if (NOT HAVE_BUILTIN_DYNAMIC_LINKING_LOADER)
+		check_library_exists (dl dlopen "" HAVE_LIBDL)
+	endif (NOT HAVE_BUILTIN_DYNAMIC_LINKING_LOADER)
+	cmake_push_check_state() # save state of CMAKE_REQUIRED_*
+	if (HAVE_LIBDL)
+		set (CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} "-ldl")
+	endif (HAVE_LIBDL)
+	check_symbol_exists (dladdr    dlfcn.h  HAVE_DLADDR)
+	cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
+endif (UNIX)
 
 #
 # Check c types
@@ -171,7 +181,6 @@ check_type_size (mode_t                 SIZEOF_MODE_T)
 check_type_size (off_t                  SIZEOF_OFF_T)
 check_type_size (size_t                 SIZEOF_SIZE_T)
 check_type_size (wchar_t                SIZEOF_WCHAR_T)
-check_type_size (wint_t                 SIZEOF_WINT_T)
 check_type_size ("void*"                SIZEOF_VOID_P)
 
 # add suffix to prevent name clash with GDAL
@@ -206,9 +215,11 @@ check_c_source_runs (
 	}
 	"
 	HAVE___BUILTIN_BSWAP64)
-check_function_exists (_byteswap_ushort HAVE__BYTESWAP_USHORT) # for uint16_t
-check_function_exists (_byteswap_ulong  HAVE__BYTESWAP_ULONG)  # for uint32_t
-check_function_exists (_byteswap_uint64 HAVE__BYTESWAP_UINT64) # for uint64_t
+if (WIN32)
+	check_function_exists (_byteswap_ushort HAVE__BYTESWAP_USHORT) # for uint16_t
+	check_function_exists (_byteswap_ulong  HAVE__BYTESWAP_ULONG)  # for uint32_t
+	check_function_exists (_byteswap_uint64 HAVE__BYTESWAP_UINT64) # for uint64_t
+endif (WIN32)
 
 #
 # Check math related stuff
@@ -244,14 +255,15 @@ check_symbol_exists (alphasincos "${_math_h}" HAVE_ALPHASINCOS)
 check_symbol_exists (asinh       "${_math_h}" HAVE_ASINH)
 check_symbol_exists (atanh       "${_math_h}" HAVE_ATANH)
 check_symbol_exists (copysign    "${_math_h}" HAVE_COPYSIGN)
-check_symbol_exists (_copysign   "${_math_h}" HAVE__COPYSIGN)
 check_symbol_exists (erf         "${_math_h}" HAVE_ERF)
 check_symbol_exists (erfc        "${_math_h}" HAVE_ERFC)
 check_symbol_exists (hypot       "${_math_h}" HAVE_HYPOT)
+check_symbol_exists (isfinite    "${_math_h}" HAVE_ISFINITE)
+check_symbol_exists (isinf       "${_math_h}" HAVE_ISINF)
 check_symbol_exists (isnan       "${_math_h}" HAVE_ISNAN)
 check_symbol_exists (isnand      "${_math_h}" HAVE_ISNAND)
 check_symbol_exists (isnanf      "${_math_h}" HAVE_ISNANF)
-check_symbol_exists (_isnan      "${_math_h}" HAVE__ISNAN)
+check_symbol_exists (isnormal    "${_math_h}" HAVE_ISNORMAL)
 check_symbol_exists (j0          "${_math_h}" HAVE_J0)
 check_symbol_exists (j1          "${_math_h}" HAVE_J1)
 check_symbol_exists (jn          "${_math_h}" HAVE_JN)
@@ -264,11 +276,20 @@ check_symbol_exists (y0          "${_math_h}" HAVE_Y0)
 check_symbol_exists (y1          "${_math_h}" HAVE_Y1)
 check_symbol_exists (yn          "${_math_h}" HAVE_YN)
 
+if (WIN32)
+	check_symbol_exists (_copysign "${_math_h}" HAVE__COPYSIGN)
+	check_symbol_exists (_finite   "${_math_h}" HAVE__FINITE)
+	check_symbol_exists (_fpclass  "${_math_h}" HAVE__FPCLASS)
+	check_symbol_exists (_isnan    "${_math_h}" HAVE__ISNAN)
+endif (WIN32)
+
 # test if sincos is buggy
 if (HAVE_SINCOS)
 	check_c_source_runs (
 		"
+		#ifndef _GNU_SOURCE
 		#define _GNU_SOURCE
+		#endif
 		include <math.h>
 		int main () {
 		double s = 0.1, c = 0.2;
@@ -277,7 +298,10 @@ if (HAVE_SINCOS)
 		sincos (0.5, &s, &c);
 		return !(s == s1 || c == c1);} /* return TRUE if sincos works ok */
 		"
-		HAVE_SINCOS)
+		HAVE_BUGGY_SINCOS)
+	if (HAVE_BUGGY_SINCOS)
+		set (HAVE_SINCOS "" CACHE INTERNAL "disable sincos because it is buggy" FORCE)
+	endif (HAVE_BUGGY_SINCOS)
 endif (HAVE_SINCOS)
 
 # restore state of CMAKE_REQUIRED_*

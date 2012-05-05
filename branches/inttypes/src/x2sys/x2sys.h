@@ -78,16 +78,6 @@ struct GMTMGG_REC {	/* Format of old *.gmt file records */
 #define MDEG2DEG	0.000001	/* Convert millidegrees to degrees */
 #endif
 
-#ifdef WIN32
-#define _chmod(path,mode) chmod(path,mode)
-#if 0		/* It gives error when used. So it seams useless */
-EXTERN_MSC int _chmod (const char *path, int mode);
-#endif
-#else
-#include <pwd.h>
-#include <sys/stat.h>
-#endif
-
 #define S_RDONLY 0000444
 
 #define X2SYS_VERSION "1.2"

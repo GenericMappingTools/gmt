@@ -3409,6 +3409,16 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_IO_NC4_DEFLATION_LEVEL:
+			if (!strcmp (lower_value, "false"))
+				ival = 0;
+			else
+				ival = atoi (value);
+			if (ival >= 0 && ival <= 9)
+				C->current.setting.io_nc4_deflation_level = ival;
+			else
+				error = TRUE;
+			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_XY_TOGGLE: GMT_COMPAT_CHANGE ("IO_LONLAT_TOGGLE");
 #endif
@@ -4260,6 +4270,9 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 				strcpy (value, "pass");
 			else 
 				strcpy (value, "skip");
+			break;
+		case GMTCASE_IO_NC4_DEFLATION_LEVEL:
+			sprintf (value, "%ld", C->current.setting.io_nc4_deflation_level);
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_XY_TOGGLE: GMT_COMPAT_WARN;
@@ -8231,51 +8244,32 @@ GMT_LONG GMT_message (struct GMT_CTRL *C, char *format, ...) {
 	return (0);
 }
 
-GMT_LONG GMT_report (struct GMT_CTRL *C, COUNTER_MEDIUM level, char *format, ...) {
-#ifdef GMT_MATLAB
-	char line[GMT_BUFSIZ];
-#endif
+GMT_LONG GMT_report_func (struct GMT_CTRL *C, COUNTER_MEDIUM level, char *source_line, char *format, ...) {
+	char message[GMT_BUFSIZ];
+	char *source_line_basename;
+	size_t source_info_len;
 	va_list args;
-	if (level > C->current.setting.verbose) return (0);
-#ifdef DEBUG
-	GMT_message (C, "%s(%s):%s:%d: ", C->init.progname, C->init.module_name, __FILE__, __LINE__);
+	if (level > C->current.setting.verbose)
+		return 0;
+	/* if source_line contains absolute path strip leading path: */
+#ifndef WIN32
+	source_line_basename = (strrchr (source_line, '/') ? : source_line - 1) + 1;
 #else
-	GMT_message (C, "%s(%s): ", C->init.progname, C->init.module_name);
+	source_line_basename = (strrchr (source_line, '\\') ?
+			strrchr (source_line, '\\') : source_line - 1) + 1;
 #endif
+	snprintf (message, GMT_BUFSIZ, "%s, %s, %s: ",
+			C->init.progname, C->init.module_name, source_line_basename);
+	source_info_len = strlen (message);
 	va_start (args, format);
+	/* append format to the message: */
+	vsnprintf (message + source_info_len, GMT_BUFSIZ - source_info_len, format, args);
+	va_end (args);
 #ifdef GMT_MATLAB
 	/* Version used by Matlab MEXs that are not able to print to stdout/stderr */
-	vsnprintf (line, GMT_BUFSIZ, format, args);
-	mexPrintf ("%s", line);
+	mexPrintf ("%s", message);
 #else
-	vfprintf (C->session.std[GMT_ERR], format, args);
+	fprintf (C->session.std[GMT_ERR], "%s", message);
 #endif
-	va_end (args);
-	return (1);
+	return 1;
 }
-
-/* Due to the DLL boundary cross problem on Windows we
- * are forced to have the following, otherwise defined
- * as macro, implemented as a function. */
-#ifdef GMT_MATLAB
-int GMT_fprintf (FILE *stream, char *format, ...) {
-	va_list args;
-	va_start (args, format);
-	vfprintf (stream, format, args);
-	va_end (args);
-
-	return (0);
-}
-#endif
-
-#if 0
-/* Comment out for now since not used for now */
-int GMT_fscanf (FILE *stream, char *format, ...) {
-	va_list args;
-	va_start (args, format);
-	vfscanf (stream, format, args);
-	va_end (args);
-
-	return (0);
-}
-#endif
