@@ -128,10 +128,10 @@ struct MGD77_MAG_RF {
 /* Local functions */
 void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[], GMT_LONG bilinear, double threshold);
 int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, GMT_LONG n_grid, GMT_LONG n);
-void regress_ls (double *x, double *y, GMT_LONG n, double *stat, int col);
-void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG nvalues, double *stat, int col);
-void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG nvalues, double *stat, int gridField);
-void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, GMT_LONG nvalues, int n_angle, double *stat, int gridField);
+void regress_ls (double *x, double *y, GMT_LONG n, double *stats, int col);
+void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG nvalues, double *stats, int col);
+void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG nvalues, double *stats, int gridField);
+void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, GMT_LONG nvalues, int n_angle, double *stats, int gridField);
 GMT_LONG decimate (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG nclean, double min, double max, double delta, double **dec_new, double **dec_orig, GMT_LONG *extreme, char *fieldTest);
 double lms (struct GMT_CTRL *GMT, double *x, GMT_LONG n);
 double median (struct GMT_CTRL *GMT, double *x, GMT_LONG n);
