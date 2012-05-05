@@ -41,7 +41,9 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 	} C;
 	struct E {	/* -E */
 		BOOLEAN active;
-		int mode;	/* Used in blockmedian to select box-and-whisker output (-Eb) */
+#if defined(BLOCKMEDIAN)	/* Only blockmedian has a -Eb modifier */
+		COUNTER_MEDIUM mode;	/* Used in blockmedian to select box-and-whisker output (-Eb) */
+#endif
 	} E;
 	struct I {	/* -Idx[/dy] */
 		BOOLEAN active;
@@ -58,13 +60,15 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 		double quantile;
 	} T;
 #endif
+#if defined(BLOCKMEAN)		/* Only blockmean has a -S option */
 	struct S {	/* -S[m|w|z] */
 		BOOLEAN active;
-		int mode;
+		COUNTER_MEDIUM mode;
 	} S;
+#endif
 	struct W {	/* -W[i][o] */
 		BOOLEAN active;
-		GMT_LONG weighted[2];
+		BOOLEAN weighted[2];
 	} W;
 };
 

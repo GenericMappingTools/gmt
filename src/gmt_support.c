@@ -3815,7 +3815,7 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double x
 
 void gmt_contlabel_angle (double x[], double y[], GMT_LONG start, GMT_LONG stop, double cangle, GMT_LONG n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
 {
-	GMT_LONG j, this_angle_type;
+	GMT_LONG j, this_angle_type, half = G->half_width;
 	double sum_x2 = 0.0, sum_xy = 0.0, sum_y2 = 0.0, dx, dy;
 
 	if (start == stop) {	/* Can happen if we want no smoothing but landed exactly on a knot point */
@@ -3824,7 +3824,7 @@ void gmt_contlabel_angle (double x[], double y[], GMT_LONG start, GMT_LONG stop,
 		else if (stop < (n-1))
 			stop++;
 	}
-	for (j = start - G->half_width; j <= stop + G->half_width; j++) {	/* L2 fit for slope over this range of points */
+	for (j = start - half; j <= stop + half; j++) {	/* L2 fit for slope over this range of points */
 		if (j < 0 || j >= n) continue;
 		dx = x[j] - L->x;
 		dy = y[j] - L->y;
@@ -8019,7 +8019,7 @@ void GMT_x_free (struct GMT_CTRL *C, struct GMT_XOVER *X) {
 	GMT_free (C, X->xnode[1]);
 }
 
-GMT_LONG GMT_linear_array (struct GMT_CTRL *C, double min, double max, double delta, double phase, double **array)
+COUNTER_MEDIUM GMT_linear_array (struct GMT_CTRL *C, double min, double max, double delta, double phase, double **array)
 {
 	/* Create an array of values between min and max, with steps delta and given phase.
 	   Example: min = 0, max = 9, delta = 2, phase = 1
@@ -8055,7 +8055,7 @@ GMT_LONG GMT_linear_array (struct GMT_CTRL *C, double min, double max, double de
 	return (n);
 }
 
-GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array)
+COUNTER_MEDIUM GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array)
 {
 	GMT_LONG first, last, i, n, nticks;
 	double *val = NULL, tvals[10];
@@ -8126,7 +8126,7 @@ GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta
 	return (n);
 }
 
-GMT_LONG GMT_pow_array (struct GMT_CTRL *C, double min, double max, double delta, GMT_LONG x_or_y, double **array)
+COUNTER_MEDIUM GMT_pow_array (struct GMT_CTRL *C, double min, double max, double delta, COUNTER_MEDIUM x_or_y, double **array)
 {
 	GMT_LONG i, n;
 	double *val = NULL, v0, v1;
@@ -8153,7 +8153,7 @@ GMT_LONG GMT_pow_array (struct GMT_CTRL *C, double min, double max, double delta
 	return (n);
 }
 
-GMT_LONG GMT_time_array (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array)
+COUNTER_MEDIUM GMT_time_array (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array)
 {	/* When T->active is TRUE we must return interval start/stop even if outside min/max range */
 	COUNTER_MEDIUM n = 0;
 	GMT_LONG interval;
@@ -8235,9 +8235,9 @@ GMT_LONG gmt_load_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, cha
 	return (k);
 }
 
-GMT_LONG GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels)
+COUNTER_MEDIUM GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels)
 {
-	GMT_LONG n;
+	COUNTER_MEDIUM n;
 
 	if (!T->active) return (0);	/* Nothing to do */
 

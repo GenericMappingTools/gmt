@@ -829,6 +829,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef USE_GDAL
 	if (Ctrl->A.active) {
 		int	id, k;
+		COUNTER_MEDIUM this_proj = GMT->current.proj.projection;
 		to_GDALW = GMT_memory (GMT, NULL, 1, struct GDALWRITE_CTRL);
 		to_GDALW->driver = Ctrl->A.driver;
 		to_GDALW->type = strdup("byte");
@@ -858,7 +859,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) 
-			if (GMT->current.proj.proj4[k].id == GMT->current.proj.projection) id = k;
+			if (GMT->current.proj.proj4[k].id == this_proj) id = k;
 		if (id >= 0) {			/* Valid projection for creating world file info */
 			to_GDALW->P.active = TRUE;
 			to_GDALW->P.ProjectionRefPROJ4 = GMT_export2proj4 (GMT);

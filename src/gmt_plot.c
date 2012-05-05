@@ -1426,7 +1426,8 @@ void gmt_map_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double *xx, double 
 	/* type = 0 for lon and 1 for lat */
 
 	double line_angle, text_angle, div, tick_length, o_len, len, ca, sa;
-	GMT_LONG i, justify, annot_type;
+	GMT_LONG i, annot_type;
+	COUNTER_MEDIUM justify;
 	BOOLEAN flip;	
 
 	len = GMT_get_annot_offset (C, &flip, level);	/* Get annotation offset, and flip justification if "inside" */
@@ -3546,6 +3547,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	 * and places a time stamp, if selected */
 
 	GMT_LONG k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last;
+	COUNTER_MEDIUM this_proj;
 	char title[GMT_BUFSIZ];
 	char *mode[2] = {"w","a"};
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
@@ -3620,7 +3622,8 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 
 	/* Create %%PROJ tag that ps2raster can use to prepare a ESRI world file */
 
-	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) if (C->current.proj.proj4[k].id == C->current.proj.projection) id = k;
+	this_proj = C->current.proj.projection;
+	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) if (C->current.proj.proj4[k].id == this_proj) id = k;
 	if (id >= 0) {			/* Valid projection for creating world file info */
 		double Cartesian_m[4];	/* WESN equivalents in projected meters */
 		char *pstr = NULL, proj4name[16];

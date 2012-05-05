@@ -161,7 +161,7 @@ GMT_LONG GMT_gmonth_length (GMT_LONG year, GMT_LONG month) {
 
 /* Proleptic Gregorian Calendar operations  */
 
-GMT_LONG GMT_is_gleap (GMT_LONG gyear) {
+BOOLEAN GMT_is_gleap (GMT_LONG gyear) {
 	/* Given integer proleptic gregorian calendar year,
 	   return TRUE if it is a Gregorian leap year; 
 	   else return FALSE.  */
@@ -270,7 +270,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *C, int64_t date, struct GMT_gcal *gcal) 
 	gcal->iso_d = (gcal->day_w) ? gcal->day_w : 7;
 }
 
-GMT_LONG GMT_y2_to_y4_yearfix (struct GMT_CTRL *C, GMT_LONG y2) {
+GMT_LONG GMT_y2_to_y4_yearfix (struct GMT_CTRL *C, COUNTER_MEDIUM y2) {
 
 	/* Convert 2-digit year to 4-digit year, using 
 	   C->current.setting.time_Y2K_offset_year.
@@ -544,7 +544,8 @@ void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, dou
 		
 	*/
 	
-	GMT_LONG k, kws, kml, kyd;
+	GMT_LONG k, kws, kyd;
+	COUNTER_MEDIUM kml;
 
 	if (init) {
 		/* Temporarily store a breakdown of dt_in in p->stuff[0].

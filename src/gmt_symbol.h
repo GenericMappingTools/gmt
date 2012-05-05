@@ -49,7 +49,7 @@ struct GMT_CUSTOM_SYMBOL {
 	char *PS_macro;		/* Contains all the PS commands if PS is TRUE */
 	COUNTER_MEDIUM n_required;	/* Number of additional columns necessary to decode chosen symbol */
 	BOOLEAN PS;		/* TRUE if a PSL symbol */
-	GMT_LONG *type;		/* Array with type of each parameter [0 = dimensionless, 1 = dimension, 2 = geographic angle (convert via projection)] */
+	COUNTER_MEDIUM *type;	/* Array with type of each parameter [0 = dimensionless, 1 = dimension, 2 = geographic angle (convert via projection)] */
 	struct GMT_CUSTOM_SYMBOL_ITEM *first;
 };
 
@@ -84,7 +84,7 @@ struct GMT_MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and ps
 	BOOLEAN plot;		/* TRUE if we want to draw the rose */
 	BOOLEAN fancy;		/* TRUE for a fancy map rose */
 	BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
-	GMT_LONG kind;		/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
+	COUNTER_MEDIUM kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
 	char label[4][GMT_TEXT_LEN64];	/* User-changable labels for W, E, S, N point */
 	char dlabel[GMT_TEXT_LEN256];	/* Magnetic declination label */
 };

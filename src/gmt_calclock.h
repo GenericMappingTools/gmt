@@ -48,7 +48,7 @@ struct GMT_gcal {	/* (proleptic) Gregorian calendar  */
 };
 
 struct GMT_Y2K_FIX {	/* The issue that refuses to go away... */
-	GMT_LONG y2_cutoff;	/* The 2-digit offset year.  If y2 >= y2_cuttoff, add y100 else add y200 */
+	COUNTER_MEDIUM y2_cutoff;	/* The 2-digit offset year.  If y2 >= y2_cuttoff, add y100 else add y200 */
 	GMT_LONG y100;	/* The multiple of 100 to add to the 2-digit year if we are above the time_Y2K_offset_year */
 	GMT_LONG y200;	/* The multiple of 100 to add to the 2-digit year if we are below the time_Y2K_offset_year */
 };
@@ -58,8 +58,8 @@ struct GMT_MOMENT_INTERVAL {
 	double dt[2];		
 	double sd[2];		/* Seconds since the start of the day.  */
 	int64_t rd[2];
-	GMT_LONG itype;
-	GMT_LONG step;
+//	GMT_LONG itype;
+	COUNTER_MEDIUM step;
 	char unit;
 };
 

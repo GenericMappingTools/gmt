@@ -2552,7 +2552,7 @@ GMT_LONG gmt_load_encoding (struct GMT_CTRL *C)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG gmt_decode_wesnz (struct GMT_CTRL *C, const char *in, GMT_LONG side[], GMT_LONG *draw_box) {
+GMT_LONG gmt_decode_wesnz (struct GMT_CTRL *C, const char *in, COUNTER_MEDIUM side[], BOOLEAN *draw_box) {
 	/* Scans the WESNZwesnz+ flags at the end of string "in" and sets the side/drawbox parameters
 	 * and returns the length of the remaining string.  Assumes any +g<fill> ahs been removed from in.
 	 */
@@ -3643,7 +3643,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			break;
 		case GMTCASE_TIME_WEEK_START:
 			ival = gmt_key_lookup (value, GMT_weekdays, 7);
-			if (C->current.setting.time_week_start < 0 || C->current.setting.time_week_start >= 7) {
+			if (ival < 0 || ival >= 7) {
 				error = TRUE;
 				C->current.setting.time_week_start = 0;
 			}
@@ -4883,6 +4883,7 @@ GMT_LONG GMT_get_char_encoding (struct GMT_CTRL *C, char *name)
 
 void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and initialize shorthand notation */
 	COUNTER_MEDIUM n = 0;
+	GMT_LONG id;
 	size_t n_alloc = 0;
 	char file[GMT_BUFSIZ], line[GMT_BUFSIZ], a[GMT_TEXT_LEN64], b[GMT_TEXT_LEN64], c[GMT_TEXT_LEN64], d[GMT_TEXT_LEN64], e[GMT_TEXT_LEN64];
 	FILE *fp = NULL;
@@ -4903,7 +4904,12 @@ void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and init
 		if (n == n_alloc) C->session.shorthand = GMT_malloc (C, C->session.shorthand, n, &n_alloc, struct GMT_SHORTHAND);
 
 		C->session.shorthand[n].suffix = strdup (a);
-		C->session.shorthand[n].id = GMT_grd_format_decoder (C, b);
+		id = GMT_grd_format_decoder (C, b);
+		if (id == GMT_GRDIO_UNKNOWN_ID) {
+			GMT_report (C, GMT_MSG_FATAL, "Unknown shorthand format [%s]\n", file, b);
+			GMT_exit (EXIT_FAILURE);
+		}
+		C->session.shorthand[n].id = id;
 		C->session.shorthand[n].scale = (strcmp (c, "-")) ? atof (c) : 1.0;
 		C->session.shorthand[n].offset = (strcmp (d, "-")) ? atof (d) : 0.0;
 		C->session.shorthand[n].nan = (strcmp (e, "-")) ? atof (e) : C->session.d_NaN;

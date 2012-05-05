@@ -114,7 +114,7 @@ enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head *
 
 struct GMT_VECT_ATTR {
 	/* Container for common attributes for plot attributes of vectors */
-	GMT_LONG status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
+	COUNTER_MEDIUM status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
 	//GMT_LONG side;		/* 0 for normal head, -1 for left-half only, +1 for right-half only */
 	//GMT_LONG just;		/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
 	//GMT_LONG heads;		/* 1 for head at beginning, 2 for head at end, 3 for both */
@@ -145,10 +145,10 @@ struct GMT_SYMBOL {
 	BOOLEAN read_size;	/* TRUE when we must read symbol size from file */
 	BOOLEAN shade3D;	/* TRUE when we should simulate shading of 3D symbols cube and column */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
-	GMT_LONG convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
+	COUNTER_MEDIUM convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
 	COUNTER_MEDIUM n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
 	COUNTER_MEDIUM nondim_col[6];	/* Which columns has angles or km for this symbol */
-	GMT_LONG convert_size;	/* 1 if we must convert given "size" to actual size, 2 if log10 is to be applied first */
+	COUNTER_MEDIUM convert_size;	/* 1 if we must convert given "size" to actual size, 2 if log10 is to be applied first */
 	double scale, origin;	/* Used to convert size = (given_size - origin) * scale */
 
 	/* These apply to bar symbols */

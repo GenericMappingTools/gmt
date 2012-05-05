@@ -1400,7 +1400,7 @@ GMT_LONG gmt_move_to_wesn (struct GMT_CTRL *C, double *x_edge, double *y_edge, d
 	return (n + 1);
 }
 
-GMT_LONG gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n, double **x, double **y, COUNTER_LARGE *total_nx)
 {
 	COUNTER_LARGE i, j = 0;
 	COUNTER_MEDIUM nx, k;
@@ -5708,7 +5708,7 @@ GMT_LONG GMT_graticule_path (struct GMT_CTRL *C, double **x, double **y, GMT_LON
 	return (np);
 }
 
-GMT_LONG GMT_map_path (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2, double **x, double **y)
+COUNTER_LARGE GMT_map_path (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2, double **x, double **y)
 {
 	if (doubleAlmostEqualZero (lat1, lat2))
 		return (GMT_latpath (C, lat1, lon1, lon2, x, y));
@@ -5716,7 +5716,7 @@ GMT_LONG GMT_map_path (struct GMT_CTRL *C, double lon1, double lat1, double lon2
 		return (GMT_lonpath (C, lon1, lat1, lat2, x, y));
 }
 
-GMT_LONG GMT_lonpath (struct GMT_CTRL *C, double lon, double lat1, double lat2, double **x, double **y)
+COUNTER_LARGE GMT_lonpath (struct GMT_CTRL *C, double lon, double lat1, double lat2, double **x, double **y)
 {
 	size_t n_alloc = 0;
 	COUNTER_LARGE n, k;
@@ -5730,7 +5730,7 @@ GMT_LONG GMT_lonpath (struct GMT_CTRL *C, double lon, double lat1, double lat2, 
 		tlat[0] = lat1;	tlat[1] = lat2;
 		*x = tlon;
 		*y = tlat;
-		return ((GMT_LONG)n_alloc);
+		return (n = n_alloc);
 	}
 
 	if (C->current.map.meridian_straight) {	/* Easy, just a straight line connect via quarter-points */
@@ -5741,7 +5741,7 @@ GMT_LONG GMT_lonpath (struct GMT_CTRL *C, double lon, double lat1, double lat2, 
 		tlat[3] = lat1 + 0.75 * dlat;	tlat[4] = lat2;
 		*x = tlon;
 		*y = tlat;
-		return ((GMT_LONG)n_alloc);
+		return (n = n_alloc);
 	}
 
 	/* Must do general case */
@@ -5799,10 +5799,10 @@ GMT_LONG GMT_lonpath (struct GMT_CTRL *C, double lon, double lat1, double lat2, 
 	}
 
 	*x = tlon;	*y = tlat;
-	return ((GMT_LONG)n);
+	return (n);
 }
 
-GMT_LONG GMT_latpath (struct GMT_CTRL *C, double lat, double lon1, double lon2, double **x, double **y)
+COUNTER_LARGE GMT_latpath (struct GMT_CTRL *C, double lat, double lon1, double lon2, double **x, double **y)
 {
 	size_t n_alloc = 0;
 	COUNTER_LARGE k, n;
@@ -5815,7 +5815,7 @@ GMT_LONG GMT_latpath (struct GMT_CTRL *C, double lat, double lon1, double lon2, 
 		tlat[0] = tlat[1] = lat;
 		tlon[0] = lon1;	tlon[1] = lon2;
 		*x = tlon;	*y = tlat;
-		return ((GMT_LONG)n_alloc);
+		return (n = n_alloc);
 	}
 	if (C->current.map.parallel_straight) {	/* Easy, just a straight line connection via quarter points */
 		GMT_malloc2 (C, tlon, tlat, 5, &n_alloc, double);
@@ -5824,7 +5824,7 @@ GMT_LONG GMT_latpath (struct GMT_CTRL *C, double lat, double lon1, double lon2, 
 		tlon[0] = lon1;	tlon[1] = lon1 + 0.25 * dlon;	tlon[2] = lon1 + 0.5 * dlon;
 		tlon[3] = lon1 + 0.75 * dlon;	tlon[4] = lon2;
 		*x = tlon;	*y = tlat;
-		return ((GMT_LONG)n_alloc);
+		return (n = n_alloc);
 	}
 	/* Here we try to walk along lat for small increment in longitude to make sure our steps are smaller than the line_step */
 	min_gap = 0.1 * C->current.setting.map_line_step;
@@ -5871,7 +5871,7 @@ GMT_LONG GMT_latpath (struct GMT_CTRL *C, double lat, double lon1, double lon2, 
 	GMT_malloc2 (C, tlon, tlat, 0, &n_alloc, double);
 
 	*x = tlon;	*y = tlat;
-	return ((GMT_LONG)n);
+	return (n);
 }
 
 GMT_LONG GMT_geo_to_xy_line (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n)
@@ -6952,7 +6952,7 @@ double * GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], COUNTER_LAR
 	return (d);
 }
 
-GMT_LONG GMT_map_latcross (struct GMT_CTRL *C, double lat, double west, double east, struct GMT_XINGS **xings)
+COUNTER_MEDIUM GMT_map_latcross (struct GMT_CTRL *C, double lat, double west, double east, struct GMT_XINGS **xings)
 {
 	BOOLEAN go = FALSE;
 	COUNTER_MEDIUM i, nx, nc = 0;
@@ -7010,7 +7010,7 @@ GMT_LONG GMT_map_latcross (struct GMT_CTRL *C, double lat, double west, double e
 	return (nc);
 }
 
-GMT_LONG GMT_map_loncross (struct GMT_CTRL *C, double lon, double south, double north, struct GMT_XINGS **xings)
+COUNTER_MEDIUM GMT_map_loncross (struct GMT_CTRL *C, double lon, double south, double north, struct GMT_XINGS **xings)
 {
 	BOOLEAN go = FALSE;
 	COUNTER_MEDIUM j, nx, nc = 0;
