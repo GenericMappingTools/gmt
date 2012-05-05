@@ -43,9 +43,6 @@
 #define POS 1
 #define NEG 0
 
-EXTERN_MSC GMT_LONG GMT_gmonth_length (GMT_LONG year, GMT_LONG month);
-EXTERN_MSC GMT_LONG GMT_is_gleap (GMT_LONG gyear);
-
 GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;

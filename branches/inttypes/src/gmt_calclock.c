@@ -511,7 +511,7 @@ void gmt_small_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *
 	}
 }
 
-void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, double dt_in, GMT_LONG init) {
+void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN init) {
 	/* Unchanged by this routine:
 	     p->step is a positive interval width;
 	     p->unit is set to a time axis unit;

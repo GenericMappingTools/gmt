@@ -81,7 +81,6 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-EXTERN_MSC GMT_LONG GMT_grd_is_global (struct GMT_CTRL *C, struct GRD_HEADER *h);
 EXTERN_MSC double GMT_distance_type (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE, GMT_LONG id);
 EXTERN_MSC char * GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path);	/* Look for user file */
 
@@ -8519,7 +8518,7 @@ GMT_LONG GMT_prepare_label (struct GMT_CTRL *C, double angle, COUNTER_MEDIUM sid
 	return 0;
 }
 
-void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, BOOLEAN do_minutes, BOOLEAN do_seconds, GMT_LONG lonlat, BOOLEAN worldmap)
+void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, BOOLEAN do_minutes, BOOLEAN do_seconds, BOOLEAN lonlat, BOOLEAN worldmap)
 /* val:		Degree value of annotation */
 /* label:	String to hold the final annotation */
 /* do_minutes:	TRUE if degree and minutes are desired, FALSE for just integer degrees */
@@ -8541,7 +8540,7 @@ void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, BOOLEAN d
 		GMT_lon_range_adjust (C->current.plot.calclock.geo.range, &val);
 	}
 
-	if (lonlat < 2) {	/* i.e., for geographical data */
+	if (lonlat) {	/* i.e., for geographical data */
 		if (doubleAlmostEqual (val, 360.0) && !worldmap)
 			val = 0.0;
 		if (doubleAlmostEqual (val, 360.0) && worldmap && C->current.proj.projection == GMT_OBLIQUE_MERC)
