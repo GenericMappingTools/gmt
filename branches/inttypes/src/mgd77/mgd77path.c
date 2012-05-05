@@ -133,7 +133,7 @@ GMT_LONG GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl
 
 GMT_LONG GMT_mgd77path (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, n_cruises = 0, n_paths;
+	COUNTER_MEDIUM i, n_cruises = 0, n_paths;
 	BOOLEAN error = FALSE;
 	
 	char path[GMT_BUFSIZ], **list = NULL;

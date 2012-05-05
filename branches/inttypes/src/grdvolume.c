@@ -111,7 +111,7 @@ double vol_prism_frac_y (struct GMT_GRID *G, COUNTER_LARGE ij, double y0, double
 	return (v);
 }
 
-void SW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_LONG triangle, double *dv, double *da)
+void SW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN triangle, double *dv, double *da)
 {	/* Calculates area of a SW-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x1, y0, frac;
@@ -129,7 +129,7 @@ void SW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_LONG triangle, doubl
 	}
 }
 
-void NE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_LONG triangle, double *dv, double *da)
+void NE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN triangle, double *dv, double *da)
 {	/* Calculates area of a NE-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x0, y1, a, x0_1, y1_1, frac = 0.0;
@@ -152,7 +152,7 @@ void NE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_LONG triangle, doubl
 	}
 }
 
-void SE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_LONG triangle, double *dv, double *da)
+void SE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN triangle, double *dv, double *da)
 {	/* Calculates area of a SE-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x0, y1, c, x0_1, frac = 0.0;
@@ -174,7 +174,7 @@ void SE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_LONG triangle, doubl
 	}
 }
 
-void NW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_LONG triangle, double *dv, double *da)
+void NW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN triangle, double *dv, double *da)
 {	/* Calculates area of a NW-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x1, y0, y0_1, frac;
@@ -193,7 +193,7 @@ void NW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_LONG triangle, doubl
 	}
 }
 
-void NS_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_LONG right, double *dv, double *da)
+void NS_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN right, double *dv, double *da)
 {	/* Calculates area of a NS trapezoid */
 	/* right = TRUE gets the right trapezoid, FALSE gets the left */
 	double x0, x1;
@@ -210,7 +210,7 @@ void NS_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_LONG right, double 
 	}
 }
 
-void EW_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_LONG top, double *dv, double *da)
+void EW_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN top, double *dv, double *da)
 {	/* Calculates area of a EW trapezoid */
 	/* top = TRUE gets the top trapezoid, FALSE gets the bottom */
 	double y0, y1;

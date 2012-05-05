@@ -372,7 +372,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (i) B.head[kk].trackname[i] = '\0';
 				}
 				printf ("%s", B.head[kk].trackname);
-				for (i = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) {
+				for (ii = 0, bit = 1; ii < s->n_fields; ii++, bit <<= 1) {
 					(((Ctrl->G.active) ? B.head[kk].flag : in_bin_flag[kk]) & bit) ? printf ("%sY", GMT->current.setting.io_col_separator) : printf ("%sN", GMT->current.setting.io_col_separator);
 				}
 				printf ("\n");

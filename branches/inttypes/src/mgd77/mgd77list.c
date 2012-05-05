@@ -81,8 +81,8 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 	} F;
 	struct G {	/* -G */
 		BOOLEAN active;
-		GMT_LONG start;	/* Start rec */
-		GMT_LONG stop;	/* Stop rec */
+		COUNTER_LARGE start;	/* Start rec */
+		COUNTER_LARGE stop;	/* Stop rec */
 	} G;
 	struct I {	/* -I */
 		BOOLEAN active;
@@ -131,7 +131,7 @@ void *New_mgd77list_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.GF_version = MGD77_NOT_SET;
 	C->C.mode = 2;
 	C->D.stop = C->S.stop = DBL_MAX;	/* No upper limit on time and distance */
-	C->G.stop = INT_MAX;		/* No limit on stop record */
+	C->G.stop = UINTMAX_MAX;		/* No limit on stop record */
 	C->N.unit[N_D][0] = 'k';	/* Default is -Ndk */
 	C->N.unit[N_S][0] = GMT_MAP_DIST_UNIT;	/* Default is -Nse */
 	C->Q.max[Q_V] = DBL_MAX;	/* No upper speed limit */
@@ -485,10 +485,10 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 				Ctrl->G.active = TRUE;
 				switch (opt->arg[0]) {
 				 	case 'a':		/* Start record */
-						Ctrl->G.start = atoi (&opt->arg[1]);
+						Ctrl->G.start = atol (&opt->arg[1]);
 						break;
 					case 'b':		/* Stop record */
-						Ctrl->G.stop = atoi (&opt->arg[1]);
+						Ctrl->G.stop = atol (&opt->arg[1]);
 						break;
 					default:
 						n_errors++;
@@ -680,13 +680,15 @@ GMT_LONG augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_IN
 
 GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, c, id, k, kx, pos, use, n_items = 0, t_pos = MGD77_NOT_SET;
+	GMT_LONG i, c, id, k, t_pos = MGD77_NOT_SET;
 	GMT_LONG t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
 	GMT_LONG select_option, time_column, lon_column, lat_column;
 	GMT_LONG ms_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
 	
-	COUNTER_MEDIUM rec, prevrec, n_out = 0, argno, n_cruises = 0, n_paths;
-	COUNTER_MEDIUM kk, n_sub, n_out_columns, n_cols_to_process, n_aux;
+	COUNTER_MEDIUM n_out = 0, argno, n_cruises = 0, n_paths, kx, n_items = 0;
+	COUNTER_MEDIUM kk, n_sub, n_out_columns, n_cols_to_process, n_aux, pos, use;
+	
+	COUNTER_LARGE rec, prevrec;
 	
 	BOOLEAN negative_depth = FALSE, negative_msd = FALSE, need_distances, need_time;
 	BOOLEAN error = FALSE, string_output = FALSE, need_depth = FALSE, PDR_wrap;
@@ -707,24 +709,24 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct MGD77_CARTER Carter;
 	struct MGD77_CORRTABLE **CORR = NULL;
 	struct MGD77_AUXLIST auxlist[N_MGD77_AUX] = {
-		{ "dist",    MGD77_AUX_DS, 0, 0, "d(km)"},
-		{ "azim",    MGD77_AUX_AZ, 0, 0, "azimuth"},
-		{ "vel",     MGD77_AUX_SP, 0, 0, "v(m/s)"},
-		{ "year",    MGD77_AUX_YR, 0, 0, "year"},
-		{ "month",   MGD77_AUX_MO, 0, 0, "month"},
-		{ "day",     MGD77_AUX_DY, 0, 0, "day"},
-		{ "hour",    MGD77_AUX_HR, 0, 0, "hour"},
-		{ "min",     MGD77_AUX_MI, 0, 0, "minute"},
-		{ "dmin",    MGD77_AUX_DM, 0, 0, "dec-minute"},
-		{ "sec",     MGD77_AUX_SC, 0, 0, "second"},
-		{ "date",    MGD77_AUX_DA, 1, 0, "date"},
-		{ "hhmm",    MGD77_AUX_HM, 0, 0, "hourmin"},
-		{ "weight",  MGD77_AUX_WT, 0, 0, "weight"},
-		{ "drt",     MGD77_AUX_RT, 0, 0, "rectype"},
-		{ "igrf",    MGD77_AUX_MG, 0, 0, "IGRF"},
-		{ "carter",  MGD77_AUX_CT, 0, 0, "Carter"},
-		{ "ngrav",   MGD77_AUX_GR, 0, 0, "IGF"},
-		{ "ngdcid",  MGD77_AUX_ID, 1, 0, "NGDC-ID"}
+		{ "dist",    MGD77_AUX_DS, FALSE, FALSE, "d(km)"},
+		{ "azim",    MGD77_AUX_AZ, FALSE, FALSE, "azimuth"},
+		{ "vel",     MGD77_AUX_SP, FALSE, FALSE, "v(m/s)"},
+		{ "year",    MGD77_AUX_YR, FALSE, FALSE, "year"},
+		{ "month",   MGD77_AUX_MO, FALSE, FALSE, "month"},
+		{ "day",     MGD77_AUX_DY, FALSE, FALSE, "day"},
+		{ "hour",    MGD77_AUX_HR, FALSE, FALSE, "hour"},
+		{ "min",     MGD77_AUX_MI, FALSE, FALSE, "minute"},
+		{ "dmin",    MGD77_AUX_DM, FALSE, FALSE, "dec-minute"},
+		{ "sec",     MGD77_AUX_SC, FALSE, FALSE, "second"},
+		{ "date",    MGD77_AUX_DA, TRUE,  FALSE, "date"},
+		{ "hhmm",    MGD77_AUX_HM, FALSE, FALSE, "hourmin"},
+		{ "weight",  MGD77_AUX_WT, FALSE, FALSE, "weight"},
+		{ "drt",     MGD77_AUX_RT, FALSE, FALSE, "rectype"},
+		{ "igrf",    MGD77_AUX_MG, FALSE, FALSE, "IGRF"},
+		{ "carter",  MGD77_AUX_CT, FALSE, FALSE, "Carter"},
+		{ "ngrav",   MGD77_AUX_GR, FALSE, FALSE, "IGF"},
+		{ "ngdcid",  MGD77_AUX_ID, TRUE,  FALSE, "NGDC-ID"}
 #ifdef USE_CM4
 	, { "cm4",  MGD77_AUX_CM, 0, 0, "CM4"}
 #endif
@@ -804,7 +806,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_aux = separate_aux_columns (&M, fx_setting, aux, auxlist);				/* Determine which auxillary columns are requested (if any) */
 	if (Ctrl->L.active) {
 		n_aux = augment_aux_columns ((int)n_items, item_names, aux, auxlist, (int)n_aux);	/* Determine which auxillary columns are needed by -L */
-		for (i = 0; i < n_items; i++) GMT_free (GMT, item_names[i]);
+		for (kk = 0; kk < n_items; kk++) GMT_free (GMT, item_names[kk]);
 		if (n_items) GMT_free (GMT, item_names);
 		MGD77_Free_Table (GMT, n_items, item_names);
 	}
@@ -852,10 +854,10 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		 if (MGD77_Get_Column (GMT, "msens", &M) == MGD77_NOT_SET) strcat (fx_setting, ",msens"), n_sub++;	/* Must append msens to requested list */
 	}
 	/* If logical tests are specified we must make sure the required columns are included as auxillary */
-	for (i = 0; i < M.n_constraints; i++) {
-		if (MGD77_Get_Column (GMT, M.Constraint[i].name, &M) != MGD77_NOT_SET) continue;	/* OK, already included */
+	for (kk = 0; kk < M.n_constraints; kk++) {
+		if (MGD77_Get_Column (GMT, M.Constraint[kk].name, &M) != MGD77_NOT_SET) continue;	/* OK, already included */
 		strcat (fx_setting, ",");
-		strcat (fx_setting, M.Constraint[i].name);	/* Must add to our list */
+		strcat (fx_setting, M.Constraint[kk].name);	/* Must add to our list */
 		n_sub++;
 	}
 	need_sound = (((Ctrl->A.code[ADJ_CT] & (1 | 2 | 8)) || Ctrl->A.code[ADJ_DP] & 2) && Ctrl->A.sound_speed == 0.0);
@@ -941,8 +943,8 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		
 		if (first_cruise) {
-			for (i = 0, string_output = FALSE ; i < n_cols_to_process; i++) {	/* Prepare GMT output formatting machinery */
-				if (D->H.info[M.order[i].set].col[M.order[i].item].text) string_output = TRUE;
+			for (kk = 0, string_output = FALSE; kk < n_cols_to_process; kk++) {	/* Prepare GMT output formatting machinery */
+				if (D->H.info[M.order[kk].set].col[M.order[kk].item].text) string_output = TRUE;
 			}
 			if (auxlist[MGD77_AUX_ID].requested || auxlist[MGD77_AUX_DA].requested) string_output = TRUE;
 			if (string_output && GMT->common.b.active[1]) {
@@ -971,14 +973,14 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: For binary output, time is stored as seconds since 1970 (Use TIME_SYSTEM=Unix to decode)\n");
 			first_warning = FALSE;
 		}
-		for (i = kx = pos = 0; pos < n_out_columns; i++, pos++) {	/* Prepare GMT output formatting machinery */
-			while (kx < n_aux && aux[kx].pos == i) {	/* Insert formatting for auxillary column (none are special) */
+		for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {	/* Prepare GMT output formatting machinery */
+			while (kx < n_aux && aux[kx].pos == kk) {	/* Insert formatting for auxillary column (none are special) */
 				GMT->current.io.col_type[GMT_OUT][pos] = GMT_IS_FLOAT;
 				pos++, kx++;
 			}
-			if (i >= n_cols_to_process) continue;	/* Dont worry about helper columns that wont be printed */
-			c  = M.order[i].set;
-			id = M.order[i].item;
+			if (kk >= n_cols_to_process) continue;	/* Dont worry about helper columns that wont be printed */
+			c  = M.order[kk].set;
+			id = M.order[kk].item;
 			if (id == time_column)	{/* Special time formatting */
 				GMT->current.io.col_type[GMT_OUT][pos] = (c == 0) ? M.time_format : GMT_IS_FLOAT;
 				t_pos = pos;	/* Output order of time */
@@ -993,15 +995,15 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		if (!GMT->common.b.active[GMT_OUT] && GMT->current.io.io_header[GMT_OUT]) {	/* Write out header record */
 			fprintf (GMT->session.std[GMT_OUT], "# ");
-			for (i = kx = pos = 0; pos < n_out_columns; i++, pos++) {
-				while (kx < n_aux && aux[kx].pos == i) {	/* Insert auxillary column */
+			for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
+				while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxillary column */
 					fprintf (GMT->session.std[GMT_OUT], "%s", auxlist[aux[kx].type].header);
 					if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 					pos++, kx++;
 				}
-				if (i >= n_cols_to_process) continue;
-				c  = M.order[i].set;
-				id = M.order[i].item;
+				if (kk >= n_cols_to_process) continue;
+				c  = M.order[kk].set;
+				id = M.order[kk].item;
 				fprintf (GMT->session.std[GMT_OUT], "%7s", D->H.info[c].col[id].abbrev);
 				if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 			}
@@ -1068,6 +1070,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		/* Start processing records  */
 		
+		prevrec = UINTMAX_MAX;	/* Not determined */
 		for (rec = 0; rec < D->H.n_records; rec++) {
 		
 			/* Compute accumulated distance along track (Great circles or Flat Earth) */
@@ -1078,7 +1081,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (auxlist[MGD77_AUX_AZ].requested) aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0], FALSE);
 				}
 				else {		/* Need a previous point to calculate distance and heading */
-					if (lonlat_not_NaN && prevrec >= 0) {	/* We have to records with OK lon,lat and can compute a distance from the previous OK point */
+					if (lonlat_not_NaN && prevrec != UINTMAX_MAX) {	/* We have to records with OK lon,lat and can compute a distance from the previous OK point */
 						ds = dist_scale * GMT_distance (GMT, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[x_col][prevrec], dvalue[y_col][prevrec]);
 						if (auxlist[MGD77_AUX_AZ].requested) aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[x_col][prevrec], dvalue[y_col][prevrec], FALSE);
 						cumulative_dist += ds;
@@ -1090,7 +1093,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 				}
 				if (auxlist[MGD77_AUX_SP].requested) {
-					if (rec == 0 || prevrec < 0) {	/* Initialize various counters */
+					if (rec == 0 || prevrec == UINTMAX_MAX) {	/* Initialize various counters */
 						dt = dvalue[t_col][1] - dvalue[t_col][0];
 						if (auxlist[MGD77_AUX_SP].requested) aux_dvalue[MGD77_AUX_SP] = (GMT_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds / dt;
 					}
@@ -1276,8 +1279,8 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (negative_msd) dvalue[m_col][rec] = -dvalue[m_col][rec];
 			
 			if (string_output) {	/* Must do it col by col and deal with the requested string(s) */
-				for (i = kx = pos = 0; pos < n_out_columns; i++, pos++) {
-					while (kx < n_aux && aux[kx].pos == i) {	/* Insert auxillary column */
+				for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
+					while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxillary column */
 						if (aux[kx].text)
 							fprintf (GMT->session.std[GMT_OUT], "%s", aux_tvalue[aux[kx].type]);
 						else
@@ -1285,11 +1288,11 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 						kx++, pos++;
 					}
-					if (i >= n_cols_to_process) continue;
-					c  = M.order[i].set;
-					id = M.order[i].item;
+					if (kk >= n_cols_to_process) continue;
+					c  = M.order[kk].set;
+					id = M.order[kk].item;
 					if (D->H.info[c].col[id].text)
-						for (k = 0; k < D->H.info[c].col[id].text && tvalue[i][rec*D->H.info[c].col[id].text+k]; k++) fputc ((int)tvalue[i][rec*D->H.info[c].col[id].text+k], GMT->session.std[GMT_OUT]);
+						for (k = 0; k < D->H.info[c].col[id].text && tvalue[kk][rec*D->H.info[c].col[id].text+k]; k++) fputc ((int)tvalue[kk][rec*D->H.info[c].col[id].text+k], GMT->session.std[GMT_OUT]);
 					else if (id == time_column) {	/* Time */
 						if (GMT->current.io.col_type[GMT_OUT][pos] == GMT_IS_FLOAT) {	/* fractional year */
 							if (need_date) {	/* Did not get computed already */
@@ -1304,21 +1307,22 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], date, pos);
 					}
 					else {
-						correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[argno][i].term, dvalue, aux_dvalue, rec) : 0.0;
-						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], dvalue[i][rec] - correction, pos);
+						correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[argno][kk].term, dvalue, aux_dvalue, rec) : 0.0;
+						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], dvalue[kk][rec] - correction, pos);
 					}
 					if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 				}
 				fprintf (GMT->session.std[GMT_OUT], "\n");
 			}
 			else {	/* Use GMT output machinery which can handle binary output, if requested */
-				for (i = kx = pos = 0; pos < n_out_columns; i++, pos++) {
-					while (kx < n_aux && aux[kx].pos == i) {	/* Insert auxillary column */
+				COUNTER_MEDIUM u_t_pos = t_pos;
+				for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
+					while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxillary column */
 						out[pos] = aux_dvalue[aux[kx].type];
 						pos++, kx++;
 					}
-					if (i >= n_cols_to_process) continue;
-					if (pos == t_pos) {	/* This is the time column */
+					if (kk >= n_cols_to_process) continue;
+					if (pos == u_t_pos) {	/* This is the time column */
 						if (GMT->current.io.col_type[GMT_OUT][pos] == GMT_IS_FLOAT) {	/* fractional year */
 							if (need_date) {	/* Did not get computed already */
 								date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
@@ -1332,8 +1336,8 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							out[pos] = dvalue[t_col][rec];
 					}
 					else {
-						correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[argno][i].term, dvalue, aux_dvalue, rec) : 0.0;
-						out[pos] = dvalue[i][rec] - correction;
+						correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[argno][kk].term, dvalue, aux_dvalue, rec) : 0.0;
+						out[pos] = dvalue[kk][rec] - correction;
 					}
 				}
 				GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], n_out_columns, out);

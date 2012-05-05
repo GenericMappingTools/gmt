@@ -250,9 +250,9 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, GMT_LONG n_grids, GMT_LONG img, double x_in, double y_in, double value[])
+GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, COUNTER_MEDIUM n_grids, BOOLEAN img, double x_in, double y_in, double value[])
 {
-	GMT_LONG g, n_in, n_set;
+	COUNTER_MEDIUM g, n_in, n_set;
 	double x, y, x0 = 0.0, y0 = 0.0;
 	
 	if (img) GMT_geo_to_xy (GMT, x_in, y_in, &x0, &y0);	/* At least one Mercator IMG grid in use - get Mercator coordinates x,y */
@@ -291,7 +291,8 @@ GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, GMT_L
 		if (!GMT_is_dnan (value[g])) n_set++;	/* Count value results */
 	}
 	
-	return ((n_in == 0) ? -1 : n_set);
+	if (n_in == 0) return (-1);
+	return (n_set);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
@@ -300,7 +301,9 @@ GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, GMT_L
 GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* High-level function that implements the grdtrack task */
 
-	GMT_LONG status, error, n_points = 0, n_read = 0, g, k;
+	GMT_LONG status, error;
+	COUNTER_LARGE n_points = 0, n_read = 0;
+	COUNTER_MEDIUM g, k;
 	BOOLEAN img_conv_needed = FALSE;
 	
 	char line[GMT_BUFSIZ];

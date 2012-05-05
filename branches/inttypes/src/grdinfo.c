@@ -187,7 +187,8 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 
 GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n_grds = 0, error;
+	GMT_LONG error;
+	COUNTER_MEDIUM n_grds = 0, error;
 	BOOLEAN subset;
 	
 	COUNTER_LARGE ij, n_nan = 0, n = 0;

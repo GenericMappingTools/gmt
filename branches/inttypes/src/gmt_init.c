@@ -630,14 +630,14 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 	}
 }
 
-void GMT_label_syntax (struct GMT_CTRL *C, GMT_LONG indent, GMT_LONG kind)
+void GMT_label_syntax (struct GMT_CTRL *C, COUNTER_MEDIUM indent, COUNTER_MEDIUM kind)
 {
 	/* Contour/line specifications in *contour and psxy[z]
 	 * indent is the number of spaces to indent after the TAB.
 	 * kind = 0 for *contour and 1 for psxy[z]
 	 */
 
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	char pad[16], *type[2] = {"Contour", "Line"};
 
 	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
@@ -680,13 +680,13 @@ void GMT_label_syntax (struct GMT_CTRL *C, GMT_LONG indent, GMT_LONG kind)
 	GMT_message (C, "%s   no space between annotation and prefix.\n", pad);
 }
 
-void GMT_cont_syntax (struct GMT_CTRL *C, GMT_LONG indent, GMT_LONG kind)
+void GMT_cont_syntax (struct GMT_CTRL *C, COUNTER_MEDIUM indent, GMT_LONG kind)
 {
 	/* Contour/line label placement specifications in *contour and psxy[z]
 	 * indent is the number of spaces to indent after the TAB.
 	 * kind = 0 for *contour and 1 for psxy[z]
 	 */
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	double gap;
 	char pad[16];
 	char *type[2] = {"contour", "quoted line"};
@@ -725,7 +725,7 @@ void GMT_cont_syntax (struct GMT_CTRL *C, GMT_LONG indent, GMT_LONG kind)
 	GMT_message (C, "%s   radial separation between labels [0]\n", pad);
 }
 
-void GMT_inc_syntax (struct GMT_CTRL *C, char option, GMT_LONG error)
+void GMT_inc_syntax (struct GMT_CTRL *C, char option, BOOLEAN error)
 {
 	if (error) GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c Specify increment(s) and optionally append units or flags.\n", option);
@@ -832,7 +832,7 @@ void GMT_dist_syntax (struct GMT_CTRL *C, char option, char *string)
 	GMT_message (C, "\t   [Default is spherical great-circle calculations].\n");
 }
 
-void GMT_vector_syntax (struct GMT_CTRL *C, GMT_LONG mode)
+void GMT_vector_syntax (struct GMT_CTRL *C, COUNTER_MEDIUM mode)
 {	/* Use mode to control which options are displayed */
 	GMT_message (C, "\t   Append length of vector head, with optional modifiers:\n");
 	GMT_message (C, "\t     +a<angle> to set angle of the vector head apex [30]\n");
@@ -1714,7 +1714,7 @@ GMT_LONG gmt_parse_dash_option (struct GMT_CTRL *C, char *text)
 	return (n);
 }
 
-void GMT_check_lattice (struct GMT_CTRL *C, double *inc, GMT_LONG *pixel, GMT_LONG *active)
+void GMT_check_lattice (struct GMT_CTRL *C, double *inc, COUNTER_MEDIUM *pixel, BOOLEAN *active)
 {	/* Uses provided settings to initialize the lattice settings from
 	 * the -R<grdfile> if it was given; else it does nothing.
 	 */
@@ -2348,7 +2348,7 @@ void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	if (n_errors) GMT_report (C, GMT_MSG_FATAL, " %ld conversion errors\n", n_errors);
 }
 
-void GMT_pickdefaults (struct GMT_CTRL *C, GMT_LONG lines, struct GMT_OPTION *options)
+void GMT_pickdefaults (struct GMT_CTRL *C, BOOLEAN lines, struct GMT_OPTION *options)
 {
 	GMT_LONG n = 0;
 	struct GMT_OPTION *opt = NULL;
@@ -4636,7 +4636,7 @@ BOOLEAN GMT_is_valid_number (char *t)
 	return ((t[i] || n == 0) ? FALSE : TRUE);
 }
 
-double GMT_convert_units (struct GMT_CTRL *C, char *string, GMT_LONG default_unit, GMT_LONG target_unit)
+double GMT_convert_units (struct GMT_CTRL *C, char *string, COUNTER_MEDIUM default_unit, COUNTER_MEDIUM target_unit)
 {
 	/* Converts the input string "value" to a float in units indicated by target_unit
 	 * If value does not contain a unit (''c', 'i', or p') then the units indicated
@@ -4666,7 +4666,7 @@ double GMT_convert_units (struct GMT_CTRL *C, char *string, GMT_LONG default_uni
 	return (value);
 }
 
-GMT_LONG GMT_unit_lookup (struct GMT_CTRL *C, GMT_LONG c, GMT_LONG unit)
+COUNTER_MEDIUM GMT_unit_lookup (struct GMT_CTRL *C, GMT_LONG c, COUNTER_MEDIUM unit)
 {
 	if (!isalpha ((int)c))	/* Not a unit modifier - just return the current default unit */
 		return (unit);
@@ -4691,7 +4691,7 @@ GMT_LONG GMT_unit_lookup (struct GMT_CTRL *C, GMT_LONG c, GMT_LONG unit)
 	return (unit);
 }
 
-GMT_LONG GMT_hash (struct GMT_CTRL *C, char *v, GMT_LONG n_hash)
+GMT_LONG GMT_hash (struct GMT_CTRL *C, char *v, COUNTER_MEDIUM n_hash)
 {
 	GMT_LONG h;
 	assert (v!=NULL); /* We are in trouble if we get a NULL pointer here */
@@ -4700,7 +4700,7 @@ GMT_LONG GMT_hash (struct GMT_CTRL *C, char *v, GMT_LONG n_hash)
 	return (h);
 }
 
-GMT_LONG GMT_hash_lookup (struct GMT_CTRL *C, char *key, struct GMT_HASH *hashnode, GMT_LONG n, GMT_LONG n_hash)
+GMT_LONG GMT_hash_lookup (struct GMT_CTRL *C, char *key, struct GMT_HASH *hashnode, COUNTER_MEDIUM n, COUNTER_MEDIUM n_hash)
 {
 	GMT_LONG i;
 	struct GMT_HASH *this = NULL;
@@ -4714,9 +4714,10 @@ GMT_LONG GMT_hash_lookup (struct GMT_CTRL *C, char *key, struct GMT_HASH *hashno
 	return ((this) ? this->id : -1);
 }
 
-void GMT_hash_init (struct GMT_CTRL *C, struct GMT_HASH *hashnode, char **keys, GMT_LONG n_hash, GMT_LONG n_keys)
+void GMT_hash_init (struct GMT_CTRL *C, struct GMT_HASH *hashnode, char **keys, COUNTER_MEDIUM n_hash, COUNTER_MEDIUM n_keys)
 {
-	GMT_LONG i, entry;
+	COUNTER_MEDIUM i;
+	GMT_LONG entry;
 	struct GMT_HASH *this = NULL;
 
 	/* Set up hash table */
@@ -7375,7 +7376,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 	return (decode_error);
 }
 
-void GMT_init_scales (struct GMT_CTRL *C, GMT_LONG unit, double *fwd_scale, double *inv_scale, double *inch_to_unit, double *unit_to_inch, char *unit_name) {
+void GMT_init_scales (struct GMT_CTRL *C, COUNTER_MEDIUM unit, double *fwd_scale, double *inv_scale, double *inch_to_unit, double *unit_to_inch, char *unit_name) {
 	/* unit is 0-6 and stands for m, km, miles, nautical miles, inch, cm, or point */
 	/* fwd_scale is used to convert user distance units to meter */
 	/* inv_scale is used to convert meters to user distance units */
@@ -7418,8 +7419,8 @@ void GMT_init_scales (struct GMT_CTRL *C, GMT_LONG unit, double *fwd_scale, doub
 	*inv_scale = scales[unit];
 }
 
-GMT_LONG GMT_check_scalingopt (struct GMT_CTRL *C, char option, char unit, char *unit_name) {
-	GMT_LONG mode;
+COUNTER_MEDIUM GMT_check_scalingopt (struct GMT_CTRL *C, char option, char unit, char *unit_name) {
+	COUNTER_MEDIUM mode;
 
 	switch (unit) {
 		case '\0':
@@ -8055,7 +8056,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 	return (C);
 }
 
-struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
+struct GMT_CTRL *GMT_begin (char *session, COUNTER_MEDIUM mode)
 {
 	/* GMT_begin is called once by GMT_Create_Session and does basic
 	 * one-time initialization of GMT before the GMT modules take over.
@@ -8220,7 +8221,7 @@ GMT_LONG GMT_message (struct GMT_CTRL *C, char *format, ...) {
 	return (0);
 }
 
-GMT_LONG GMT_report (struct GMT_CTRL *C, GMT_LONG level, char *format, ...) {
+GMT_LONG GMT_report (struct GMT_CTRL *C, COUNTER_MEDIUM level, char *format, ...) {
 #ifdef GMT_MATLAB
 	char line[GMT_BUFSIZ];
 #endif

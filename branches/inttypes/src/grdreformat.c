@@ -129,7 +129,7 @@ GMT_LONG GMT_grdreformat_parse (struct GMTAPI_CTRL *C, struct GRDREFORMAT_CTRL *
 GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	BOOLEAN error = FALSE;
-	GMT_LONG hmode, type[2];
+	COUNTER_MEDIUM hmode, type[2];
 
 	char fname[2][GMT_BUFSIZ];
 

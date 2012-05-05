@@ -2499,7 +2499,7 @@ void cfft1d_fftpack (int *np, fcomplex *c, int *dir)
 	}
 }
 
-GMT_LONG GMT_fft_1d_fftpack (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d_fftpack (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	int np = (int)n, dir = (int)direction;
 	cfft1d_fftpack (&np, (fcomplex)data, &dir);
@@ -2575,7 +2575,7 @@ int cfft2d_fftpack (int *N, int *M, struct FCOMPLEX *cin, int *dir)
 
 return 0;
 
-GMT_LONG GMT_fft_2d_fftpack (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_2d_fftpack (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	int N = (int)ny, M = (int)nx, dir = (int)direction;
 	return (cfft2d_fftpack (&N, &M, (struct FCOMPLEX *)data, &dir));
@@ -2636,7 +2636,7 @@ cfft1d_fftw (int *np, fftwf_complex *c, int *dir)
 	}
 }
 
-GMT_LONG GMT_fft_1d_fftw (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d_fftw (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	int np = (int)n, dir = (int)direction;
 	cfft1d_fftw (&np, (fftwf_complex)data, &dir);
@@ -2701,7 +2701,7 @@ cfft1d_perflib (int *np,fcomplex *c,int *dir)
 	}
 }
 
-GMT_LONG GMT_fft_1d_perflib (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d_perflib (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	int np = (int)n, dir = (int)direction;
 	cfft1d_perflib (&np, (fcomplex)data, &dir);
@@ -2768,7 +2768,7 @@ void cfft1d_cleanup_()
 	}
 }
 
-GMT_LONG GMT_fft_1d_accelerate (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d_accelerate (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM n, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	int np = (int)n, dir = (int)direction;
 	cfft1d_accelerate (&np, (DSPComplex *)data, &dir);
@@ -2780,7 +2780,7 @@ GMT_LONG GMT_fft_1d_accelerate (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM 
 
 #define GMT_radix2(n) doubleAlmostEqualZero(log2 ((double)n), floor(log2 ((double)n)))
 
-GMT_LONG GMT_fft_1d_brenner (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d_brenner (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM n, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	/* void GMT_fourt (struct GMT_CTRL *C, float *data, GMT_LONG *nn, GMT_LONG ndim, GMT_LONG ksign, GMT_LONG iform, float *work) */
 	/* Data array */
@@ -2799,7 +2799,7 @@ GMT_LONG GMT_fft_1d_brenner (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM n, 
 	return (GMT_OK);
 }
 
-GMT_LONG GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	/* Data array */
 	/* Dimension array */
@@ -2861,7 +2861,7 @@ GMT_LONG GMT_fft_2d_selection (struct GMT_CTRL *C, COUNTER_MEDIUM nx, COUNTER_ME
 	return (GMT_FFT_BRENNER);						/* Default */
 }
 
-GMT_LONG GMT_fft_1d (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM n, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	/* data is an array of length n (or 2*n for complex) data points
 	 * n is the number of data points
@@ -2875,7 +2875,7 @@ GMT_LONG GMT_fft_1d (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM n, GMT_LONG
 	return (status);
 }
 
-GMT_LONG GMT_fft_2d (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_2d (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	/* data is an array of length nx*ny (or 2*nx*ny for complex) data points
 	 * nx, ny is the number of data nodes

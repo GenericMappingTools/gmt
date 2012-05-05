@@ -83,8 +83,8 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			if (prhs->B.bands[n] == '-') n_dash = (int)n;
 		nn = MAX(n_commas+1, n_dash);
 		if (nn) {
-			nn = MAX( nn, atoi(&prhs->B.bands[nc_ind-1])+1 );		/* +1 because band numbering in GMT is zero based */
-			if (n_dash)	nn = MAX( nn, atoi(&prhs->B.bands[nn+1])+1 );
+			nn = MAX( nn, (COUNTER_MEDIUM)atoi(&prhs->B.bands[nc_ind-1])+1 );		/* +1 because band numbering in GMT is zero based */
+			if (n_dash)	nn = MAX( nn, (COUNTER_MEDIUM)atoi(&prhs->B.bands[nn+1])+1 );
 		}
 		else		/* Hmm, this else case is never reached */
 			nn = atoi(prhs->B.bands);

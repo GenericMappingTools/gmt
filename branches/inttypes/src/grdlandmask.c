@@ -353,12 +353,17 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				col_min = MAX (0, lrint (ceil (xmin * i_dx_inch - Grid->header->xy_off - GMT_CONV_LIMIT)));
 				if (col_min > nx1) col_min = 0;
+				/* So col_min is in range [0,nx1] */
 				col_max = MIN (nx1, lrint (floor (xmax * i_dx_inch - Grid->header->xy_off + GMT_CONV_LIMIT)));
 				if (col_max <= 0 || col_max < col_min) col_max = nx1;
+				/* So col_max is in range [1,nx1] */
 				row_min = MAX (0, lrint (ceil ((GMT->current.proj.rect[YHI] - ymax) * i_dy_inch - Grid->header->xy_off - GMT_CONV_LIMIT)));
+				/* So row_min is in range [0,?] */
 				row_max = MIN (ny1, lrint (floor ((GMT->current.proj.rect[YHI] - ymin) * i_dy_inch - Grid->header->xy_off + GMT_CONV_LIMIT)));
+				/* So row_max is in range [?,ny1] */
 
 				for (row = row_min; row <= row_max; row++) {
+					assert (row >= 0);	/* Just in case we have a logic bug somewhere */
 					for (col = col_min; col <= col_max; col++) {
 
 						if ((side = GMT_non_zero_winding (GMT, x[col], y[row], p[k].lon, p[k].lat, p[k].n)) < Ctrl->E.inside) continue;	/* Outside */

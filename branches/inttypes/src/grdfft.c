@@ -445,7 +445,7 @@ double cosine_weight_grdfft (struct F_INFO *f_info, double freq, int j) {
 
 double get_filter_weight (GMT_LONG k, struct F_INFO *f_info, struct K_XY *K)
 {
-	GMT_LONG j;
+	COUNTER_MEDIUM j;
 	double freq, return_value = 1.0;
 		
 	for (j = 0; j < 3; j++) {
@@ -479,9 +479,9 @@ void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct K_XY *K)
 	}
 }
 
-GMT_LONG count_slashes (char *txt)
+COUNTER_MEDIUM count_slashes (char *txt)
 {
-	GMT_LONG i, n;
+	COUNTER_MEDIUM i, n;
 	for (i = n = 0; txt[i]; i++) if (txt[i] == '/') n++;
 	return (n);
 }

@@ -141,13 +141,13 @@ int gmt_shore_desc_sort (const void *a, const void *b)
 
 void gmt_shore_done_sides (struct GMT_CTRL *C, struct GMT_SHORE *c)
 {
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	for (i = 0; i < 4; i++) GMT_free (C, c->side[i]);
 }
 
-void GMT_free_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL *p, GMT_LONG n)
+void GMT_free_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL *p, COUNTER_MEDIUM n)
 {
-	GMT_LONG k;
+	COUNTER_MEDIUM k;
 	for (k = 0; k < n; k++) {
 		GMT_free (C, p[k].lon);
 		GMT_free (C, p[k].lat);
@@ -156,14 +156,14 @@ void GMT_free_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL *p, GMT_L
 
 void gmt_shore_path_shift (double *lon, GMT_LONG n, double edge)
 {
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 
 	for (i = 0; i < n; i++) if (lon[i] >= edge) lon[i] -= 360.0;
 }
 
 void gmt_shore_path_shift2 (double *lon, GMT_LONG n, double west, double east, GMT_LONG leftmost)
 {
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 
 	if (leftmost) {	/* Must check this bin differently  */
 		for (i = 0; i < n; i++) if (lon[i] >= east && (lon[i]-360.0) >= west) lon[i] -= 360.0;
@@ -522,7 +522,7 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_get_shore_bin (struct GMT_CTRL *C, GMT_LONG b, struct GMT_SHORE *c)
+GMT_LONG GMT_get_shore_bin (struct GMT_CTRL *C, COUNTER_MEDIUM b, struct GMT_SHORE *c)
 /* b: index number into c->bins */
 /* min_area: Polygons with area less than this are ignored */
 /* min_level: Polygons with lower levels are ignored */
@@ -770,7 +770,7 @@ GMT_LONG GMT_init_br (struct GMT_CTRL *C, char which, char res, struct GMT_BR *c
 	return (0);
 }
 
-GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, GMT_LONG b, struct GMT_BR *c, GMT_LONG *level, GMT_LONG n_levels)
+GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, COUNTER_MEDIUM b, struct GMT_BR *c, COUNTER_MEDIUM *level, COUNTER_MEDIUM n_levels)
 /* b: index number into c->bins */
 /* level: Levels of features to extract */
 /* n_levels: # of such levels. 0 means use all levels */
@@ -830,7 +830,7 @@ GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, GMT_LONG b, struct GMT_BR *c, GMT_L
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG assemble, double west, double east, struct GMT_GSHHS_POL **pol)
+GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG dir, BOOLEAN assemble, double west, double east, struct GMT_GSHHS_POL **pol)
 /* assemble: TRUE if polygons is needed */
 /* edge: Edge test for shifting */
 {
@@ -1001,7 +1001,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 	return (P);
 }
 
-GMT_LONG GMT_assemble_br (struct GMT_CTRL *C, struct GMT_BR *c, GMT_LONG shift, double edge, struct GMT_GSHHS_POL **pol)
+GMT_LONG GMT_assemble_br (struct GMT_CTRL *C, struct GMT_BR *c, BOOLEAN shift, double edge, struct GMT_GSHHS_POL **pol)
 /* shift: TRUE if longitudes may have to be shifted */
 /* edge: Edge test for shifting */
 {
@@ -1066,7 +1066,7 @@ void GMT_br_cleanup (struct GMT_CTRL *C, struct GMT_BR *c)
 	nc_close (c->cdfid);
 }
 
-GMT_LONG GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, GMT_LONG np, GMT_LONG sample, double step, GMT_LONG anti_bin)
+GMT_LONG GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, COUNTER_MEDIUM np, BOOLEAN sample, double step, GMT_LONG anti_bin)
 {
 	/* This function will go through each of the polygons and determine
 	 * if the polygon is clipped by the map boundary, and if so if it
@@ -1082,7 +1082,8 @@ GMT_LONG GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_o
 	 * We also explicitly close all polygons if they are not so already.
 	 */
 
-	GMT_LONG k, np_new, n_use, n, start, close;
+	COUNTER_MEDIUM k, np_new, n_use, n, start;
+	BOOLEAN close;
 	size_t n_alloc;
 	double *xtmp = NULL, *ytmp = NULL;
 	struct GMT_GSHHS_POL *p = NULL;
