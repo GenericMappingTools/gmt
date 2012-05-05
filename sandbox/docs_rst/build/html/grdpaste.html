@@ -1,0 +1,216 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>grdpaste &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="grdproject" href="grdproject.html" />
+    <link rel="prev" title="grdmath" href="grdmath.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdproject.html" title="grdproject"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="grdmath.html" title="grdmath"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="grdpaste">
+<h1>grdpaste<a class="headerlink" href="#grdpaste" title="Permalink to this headline">¶</a></h1>
+<p>grdpaste - Join two grids along their common edge</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdpaste</strong> <em>file_a.nc file_b.nc</em> <strong>-G</strong><em>outfile.nc</em> [
+<strong>-V</strong>[<em>level</em>] ] [ <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdpaste</strong> will combine <em>file_a.nc</em> and <em>file_b.nc</em> into
+<em>outfile.nc</em> by pasting them together along their common edge. Files
+<em>file_a.nc</em> and <em>file_b.nc</em> must have the same dx, dy and have one
+edge in common. If in doubt, check with <strong>grdinfo</strong> and use <strong>grdcut</strong>
+and/or <strong>grdsample</strong> if necessary to prepare the edge joint. For
+geographical grids, use <strong>-f</strong> to handle periodic longitudes.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>file_a.nc</em></dt>
+<dd>One of two files to be pasted together.</dd>
+<dt><em>file_b.nc</em></dt>
+<dd>The other of two files to be pasted together.</dd>
+<dt><strong>-G</strong><em>outfile.nc</em></dt>
+<dd>The name for the combined output.</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
+<dd>Specify data types of input and/or output columns.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Grid File Formats</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>By default <strong>GMT</strong> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <strong>GMT</strong> is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called &#8220;packing&#8221; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision, scale and
+offset, the user should add the suffix
+<strong>=</strong><em>id</em>[<strong>/</strong><em>scale</em><strong>/</strong><em>offset</em>[<strong>/</strong><em>nan</em>]], where
+<em>id</em> is a two-letter identifier of the grid type and precision, and
+<em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
+to all grid values, and <em>nan</em> is the value used to indicate missing
+data. When reading grids, the format is generally automatically
+recognized. If not, the same suffix can be added to input grid file
+names. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
+of the GMT Technical Reference and Cookbook for more information.</p>
+<p>When reading a netCDF file that contains multiple grids, <strong>GMT</strong> will
+read, by default, the first 2-dimensional grid that can find in that
+file. To coax <strong>GMT</strong> into reading another multi-dimensional variable in
+the grid file, append <strong>?</strong><em>varname</em> to the file name, where <em>varname</em>
+is the name of the variable. Note that you may need to escape the
+special meaning of <strong>?</strong> in your shell program by putting a backslash in
+front of it, or by placing the filename and suffix between quotes or
+double quotes. The <strong>?</strong><em>varname</em> suffix can also be used for output
+grids to specify a variable name different from the default: &#8220;z&#8221;. See
+<a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.18 of the GMT
+Technical Reference and Cookbook for more information, particularly on
+how to read splices of 3-, 4-, or 5-dimensional grids.</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc7">Examples</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>Suppose file_a.nc is 150E - 180E and 0 - 30N, and file_b.nc is 150E -
+180E, -30S - 0, then you can make outfile.nc which will be 150 - 180 and
+-30S - 30N by:</p>
+<p>grdpaste file_a.nc file_b.nc -Goutfile.nc -V -fg</p>
+</div>
+<div class="section" id="id9">
+<h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="grdblend.1.html">*grdblend*(1)</a> ,
+<a class="reference external" href="grdcut.1.html">*grdcut*(1)</a> , <a class="reference external" href="grdinfo.1.html">*grdinfo*(1)</a> ,
+<a class="reference external" href="grdsample.1.html">*grdsample*(1)</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdpaste</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Grid File Formats</a></li>
+<li><a class="reference internal" href="#id8">Examples</a></li>
+<li><a class="reference internal" href="#id9">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdmath.html"
+                        title="previous chapter">grdmath</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdproject.html"
+                        title="next chapter">grdproject</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/grdpaste.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdproject.html" title="grdproject"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="grdmath.html" title="grdmath"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

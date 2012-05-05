@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gmtaverage &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="gmtcolors" href="gmtcolors.html" />
+    <link rel="prev" title="gmt2kml" href="gmt2kml.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gmtcolors.html" title="gmtcolors"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gmt2kml.html" title="gmt2kml"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="gmtaverage">
+<h1>gmtaverage<a class="headerlink" href="#gmtaverage" title="Permalink to this headline">¶</a></h1>
+<p>gmtaverage - Block average (<em>x</em>,<em>y</em>,<em>z</em>) data tables by mean,
+median, or mode estimation</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmtaverage</strong> [ <em>xyz[w]file(s)</em> ]
+<strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>][/<em>yinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>]]
+<strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>]
+<strong>-Te</strong>|<strong>m</strong>|<strong>n</strong>|<strong>o</strong>|<strong>s</strong>|<strong>w</strong>|<em>quantile</em>
+[ <strong>-C</strong> ] [ <strong>-E</strong>[<strong>b</strong>] ] [ <strong>-Q</strong> ] [ <strong>-V</strong>[<em>level</em>] ] [
+<strong>-W</strong>[<strong>io</strong>] ] [ <strong>-b</strong>[<em>ncol</em>][<strong>t</strong>][<strong>+L</strong>|<strong>+B</strong>]
+] [ <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ] [
+<strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
+<strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
+] [ <strong>-o</strong><em>cols</em>[,*...*] ] [ <strong>-r</strong> ] [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmtaverage</strong> reads arbitrarily located (<em>x</em>,<em>y</em>,<em>z</em>) triples [or
+optionally weighted quadruples (<em>x</em>,<em>y</em>,<em>z</em>,<em>w</em>)] from standard
+input [or <em>xyz[w]file(s)</em>] and writes to standard output an average
+position and value for every non-empty block in a grid region defined by
+the <strong>-R</strong> and <strong>-I</strong> arguments. <strong>gmtaverage</strong> should be used as a
+pre-processor before running <strong>surface</strong> to avoid aliasing short
+wavelengths, but is also generally useful for decimating or averaging
+(<em>x</em>,<em>y</em>,<em>z</em>) data. You can modify the precision of the output
+format by editing the <strong>FORMAT_FLOAT_OUT</strong> parameter in your
+<strong>gmt.conf</strong> file, or you may choose binary input and/or output using
+single or double precision storage.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>][/<em>yinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>]]</dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
+append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>:
+Append <strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc
+seconds. If one of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, or <strong>n</strong> is
+appended instead, the increment is assumed to be given in meter,
+feet, km, Miles, or nautical miles, respectively, and will be
+converted to the equivalent degrees longitude at the middle latitude
+of the region (the conversion depends on <strong>PROJ_ELLIPSOID</strong>). If
+/<em>y_inc</em> is given but set to 0 it will be reset equal to <em>x_inc</em>;
+otherwise it will be converted to degrees latitude. <strong>All
+coordinates</strong>: If <strong>=</strong> is appended then the corresponding max <em>x</em>
+(<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly adjusted to fit exactly
+the given increment [by default the increment may be adjusted
+slightly to fit the given domain]. Finally, instead of giving an
+increment you may specify the <em>number of nodes</em> desired by appending
+<strong>+</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The resulting
+increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see Appendix B for
+details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing
+has already been initialized; use <strong>-I</strong> to override the values.</dd>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
+<dd>Specify the region of interest.</dd>
+<dt><strong>-T</strong></dt>
+<dd>Specify the operator to use when computing output values. Choose
+among <strong>e</strong> (median), <strong>m</strong> (mean), <strong>n</strong> (number of points), <strong>o</strong>
+(mode), <strong>s</strong> (sum), <strong>w</strong> (weight sum), or the <em>quantile</em> of the
+distribution to be returned. Here, 0 &lt; <em>quantile</em> &lt; 1.</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>xyz[w]file(s)</em></dt>
+<dd>3 [or 4, see <strong>-W</strong>] column ASCII data table file(s) [or binary, see
+<strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]] holding (<em>x</em>,<em>y</em>,<em>z</em>[,*w*]) data
+values. [<em>w</em>] is an optional weight for the data. If no file is
+specified, <strong>gmtaverage</strong> will read from standard input.</dd>
+<dt><strong>-C</strong></dt>
+<dd>Use the center of the block as the output location [Default uses the
+mean, median, or mode x and y as location, depending on operator
+selected with <strong>-T</strong> (but see <strong>-Q</strong>)].</dd>
+<dt><strong>-E</strong>[<strong>b</strong>]</dt>
+<dd>Provide Extended report which includes <strong>s</strong> (the scale of the
+reported value), <strong>l</strong>, the lowest value, and <strong>h</strong>, the high value
+for each block. Output order becomes
+<em>x</em>,<em>y</em>,<em>z</em>,<em>s</em>,<em>l</em>,<em>h</em>[,*w*]. [Default outputs
+<em>x</em>,<em>y</em>,<em>z</em>[,*w*]. For box-and-whisker calculation using
+<strong>-Te</strong>, select <strong>-Eb</strong> which will output
+<em>x</em>,<em>y</em>,<em>z</em>,<em>l</em>,<em>q25</em>,<em>q75</em>,<em>h</em>[,*w*], where <em>q25</em> and
+<em>q75</em> are the 25% and 75% quantiles, respectively. The <em>scale</em> is
+the standard deviation, the L1 scale, or the LMS scale, depending on
+<strong>-T</strong>. See <strong>-W</strong> for <em>w</em> output.</dd>
+<dt><strong>-Q</strong></dt>
+<dd>(Quicker) Finds median (or mode) <em>z</em> and (<em>x</em>,<em>y</em>) at that median
+(or mode) <em>z</em> [Default finds median or mode <em>x</em> and <em>y</em> independent
+of <em>z</em>]. Also see <strong>-C</strong>. Ignored if <strong>-Tm</strong>, <strong>-Tn</strong>, <strong>-Ts</strong> or
+<strong>-Tw</strong> is used.</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-W</strong>[<strong>io</strong>]</dt>
+<dd>Weighted modifier[s]. Unweighted input and output has 3 columns
+<em>x</em>,<em>y</em>,<em>z</em>; Weighted i/o has 4 columns <em>x</em>,<em>y</em>,<em>z</em>,<em>w</em>.
+Weights can be used in input to construct weighted output values in
+blocks. Weight sums can be reported in output for later combining
+several runs, etc. Use <strong>-W</strong> for weighted i/o, <strong>-Wi</strong> for weighted
+input only, <strong>-Wo</strong> for weighted output only. [Default uses
+unweighted i/o].</dd>
+<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select binary input. [Default is 3 (or 4 if <strong>-Wi</strong> is set)].</dd>
+<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select binary output. [Default is 3 (or 4 if <strong>-Wo</strong> is set)].
+<strong>-E</strong> adds 3 additional columns.</dd>
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
+<dd>Specify data types of input and/or output columns.</dd>
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
+<dd>Skip or produce header record(s).</dd>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dd>Select input columns.</dd>
+<dt><strong>-o</strong><em>cols</em>[,*...*] (*)</dt>
+<dd>Select output columns.</dd>
+<dt><strong>-r</strong></dt>
+<dd>Set pixel node registration [gridline]. Each block is the locus of
+points nearest the grid value location. For example, with
+<strong>-R</strong>10/15/10/15 and and <strong>-I</strong>1: with the <strong>-r</strong> option 10 &lt;=
+(<em>x</em>,<em>y</em>) &lt; 11 is one of 25 blocks; without it 9.5 &lt;= (<em>x</em>,<em>y</em>)
+&lt; 10.5 is one of 36 blocks.</dd>
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] (*)</dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Ascii Format Precision</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <strong>gmt.conf</strong> file. Longitude and latitude are formatted
+according to <strong>FORMAT_GEO_OUT</strong>, whereas other values are formatted
+according to <strong>FORMAT_FLOAT_OUT</strong>. Be aware that the format in effect
+can lead to loss of precision in the output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <strong>FORMAT_FLOAT_OUT</strong> setting.</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">Examples</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>To find 5 by 5 minute block mode values from the double precision binary
+data in hawaii_b.xyg and output an ASCII table, run</p>
+<p>gmtaverage hawaii_b.xyg -R198/208/18/25 -I5m -To -bi3 &gt; hawaii_5x5.xyg</p>
+<p>To find 5 by 5 minute block mean values from the same file, run</p>
+<p>gmtaverage hawaii.xyg -R198/208/18/25 -I5m -Tm &gt; hawaii_5x5.xyg</p>
+<p>To find the number of data points in each 5 by 5 minute block from the
+same file, run</p>
+<p>gmtaverage hawaii.xyg -R198/208/18/25 -I5m -Tn &gt; hawaii_5x5.xyn</p>
+<p>To compute the shape of a data distribution per bin via a
+box-and-whisker diagram we need the 0%, 25%, 50%, 75%, and 100%
+quantiles. To do so on a global 5 by 5 degree basis from the ASCII table
+depths.xyz and send output to an ASCII table, run</p>
+<p>gmtaverage depths.xyz -Rg -I5 -Te -Eb -r &gt; depths_5x5.txt</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="gmt.conf.5.html">*gmt.conf*(5)</a> ,
+<a class="reference external" href="nearneighbor.1.html">*nearneighbor*(1)</a> ,
+<a class="reference external" href="surface.1.html">*surface*(1)</a> ,
+<a class="reference external" href="triangulate.1.html">*triangulate*(1)</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gmtaverage</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Ascii Format Precision</a></li>
+<li><a class="reference internal" href="#id7">Examples</a></li>
+<li><a class="reference internal" href="#id8">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gmt2kml.html"
+                        title="previous chapter">gmt2kml</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gmtcolors.html"
+                        title="next chapter">gmtcolors</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/gmtaverage.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gmtcolors.html" title="gmtcolors"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gmt2kml.html" title="gmt2kml"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

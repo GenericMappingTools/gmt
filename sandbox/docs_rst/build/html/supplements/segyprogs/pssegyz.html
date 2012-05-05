@@ -1,0 +1,281 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pssegyz &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
+    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="next" title="segy2grd" href="segy2grd.html" />
+    <link rel="prev" title="pssegy" href="pssegy.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="segy2grd.html" title="segy2grd"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pssegy.html" title="pssegy"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
+          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pssegyz">
+<h1>pssegyz<a class="headerlink" href="#pssegyz" title="Permalink to this headline">¶</a></h1>
+<p>pssegyz - Create imagemasked postscript from SEGY file</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>pssegyz</strong> <em>SEGYfile</em> <strong>-J</strong><em>parameters</em>
+<strong>-Jz</strong>|<strong>Z</strong><em>parameters</em>
+<strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>]
+<strong>-D</strong><em>deviation</em> <strong>-F</strong>[<em>rgb</em>|<em>gray</em>] <strong>-W</strong> [ <strong>-B</strong><em>bias</em>
+] [ <strong>-C</strong><em>clip</em> ] [ <strong>-I</strong> ] [ <strong>-K</strong> ] [ <strong>-L</strong><em>nsamp</em> ] [
+<strong>-M</strong><em>ntrace</em> ] [ <strong>-N</strong> ] [ <strong>-O</strong> ] [ <strong>-P</strong> ] [
+<strong>-S</strong><em>header_x</em>/<em>header_y</em> ] [ <strong>-U</strong><em>redvel</em> ] [
+<strong>-V</strong>[<em>level</em>] ] [ <strong>-X</strong><em>scale</em> ] [ <strong>-Y</strong><em>sample_int</em> ] [
+<strong>-Z</strong> ] [
+<strong>-p</strong><em>azim</em>/<em>elev</em>[/<em>zlevel</em>][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>]
+] [ <strong>-t</strong>[<em>transp</em>] ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>pssegyz</strong> reads a native (IEEE) format SEGY file and produces a
+<em>PostScript</em> image of the seismic data. The <em>imagemask</em> operator is used
+so that the seismic data are plotted as a 1-bit deep bitmap in a single
+(user-specified) color or gray shade, with a transparent background. The
+bitmap resolution is taken from the current <strong>GMT</strong> defaults. The
+seismic traces may be plotted at their true locations using information
+in the trace headers (in which case order of the traces in the file is
+not significant). Standard <strong>GMT</strong> geometry routines are used so that in
+principle any map projection may be used, however it is likely that the
+geographic projections will lead to unexpected results. Beware also that
+some parameters have non-standard meanings, and a couple of the options
+for <strong>pssegy</strong> are not available in <strong>pssegyz</strong>.</p>
+<p>Note that the order of operations before the seismic data are plotted is
+deviation*[clip]([bias]+[normalize](sample value)). Deviation
+determines how far <em>in the plot coordinates</em> a
+[normalized][biased][clipped] sample value of 1 plots from the trace
+location.</p>
+<p>The SEGY file should be a disk image of the tape format (ie 3200 byte
+text header, which is ignored, 400 byte binary reel header, and 240 byte
+header for each trace) with samples as native real*4 (IEEE real on all
+the platforms to which I have access)</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>SEGYfile</em></dt>
+<dd>Seismic data set to be imaged</dd>
+<dt><strong>-J</strong><em>parameters</em> (*)</dt>
+<dd>Select map projection.</dd>
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <strong>r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing, if applicable) are copied from
+the grid.</dd>
+<dt><strong>-D</strong><em>deviation</em></dt>
+<dd>gives the deviation in X units of the plot for 1.0 on the scaled
+trace, This may be a single number (applied equally in X and Y
+directions) or devX/devY</dd>
+<dt><strong>-F</strong>[<em>rgb</em>|<em>gray</em>]</dt>
+<dd>Fill trace (variable area, defaults to filling positive). rgb or
+gray gives the color with which the imagemask is filled.</dd>
+<dt><strong>-W</strong></dt>
+<dd>Draw wiggle trace.</dd>
+</dl>
+<p>You <em>must</em> specify at least one of <strong>-W</strong> and <strong>-F</strong>.</p>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-A</strong></dt>
+<dd>Flip the default byte-swap state (default assumes data have a
+bigendian byte-order).</dd>
+<dt><strong>-C</strong><em>clip</em></dt>
+<dd>Sample value at which to clip data (clipping is applied to both
+positive and negative values).</dd>
+<dt><strong>-I</strong></dt>
+<dd>Fill negative rather than positive excursions.</dd>
+<dt><strong>-K</strong> (*)</dt>
+<dd>Do not finalize the <em>PostScript</em> plot.</dd>
+<dt><strong>-L</strong><em>nsamp</em></dt>
+<dd>Override number of samples per trace in reel header (program
+attempts to determine number of samples from each trace header if
+possible to allow for variable length traces).</dd>
+<dt><strong>-M</strong><em>ntrace</em></dt>
+<dd>Override number of traces specified in reel header. Program detects
+end of file (relatively) gracefully, but this parameter limits
+number of traces that the program attempts to read.</dd>
+<dt><strong>-N</strong></dt>
+<dd>Normalize trace by dividing by rms amplitude over full trace length.</dd>
+<dt><strong>-O</strong> (*)</dt>
+<dd>Append to existing <em>PostScript</em> plot.</dd>
+<dt><strong>-P</strong> (*)</dt>
+<dd>Select &#8220;Portrait&#8221; plot orientation.</dd>
+<dt><strong>-S</strong><em>header_x</em>/<em>header_y</em></dt>
+<dd>Read trace locations from trace headers: header is either c for CDP,
+o for offset, b&lt;num&gt; to read a long starting at byte &lt;num&gt; in the
+header (first byte corresponds to num=0), or a number to fix the
+location. First parameter for x, second for y. Default has X and Y
+given by trace number.</dd>
+<dt><strong>-U</strong><em>redvel</em></dt>
+<dd>Apply reduction velocity by shifting traces <em>upwards</em> by
+redvel/|offset|. Negative velocity removes existing reduction.
+Units should be consistent with offset in trace header and sample
+interval.</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-X</strong><em>scale</em></dt>
+<dd>Multiply trace locations by scale before plotting.</dd>
+<dt><strong>-Y</strong><em>sample_int</em></dt>
+<dd>Override sample interval in reel header.</dd>
+<dt><strong>-Z</strong></dt>
+<dd>Do not plot traces with zero rms amplitude.</dd>
+<dt><strong>-p</strong><em>azim</em>/<em>elev</em>[/<em>zlevel</em>][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] (*)</dt>
+<dd>Select perspective view.</dd>
+<dt><strong>-t</strong>[<em>transp</em>] (*)</dt>
+<dd>Set PDF transparency level.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>To plot the SEGY file wa1.segy with normalized traces plotted at true
+offset locations, clipped at +-3 and with wiggle trace and positive
+variable area shading in black, use</p>
+<p><strong>pssegyz</strong> wa1.segy <strong>-JX</strong>5/-5 <strong>-D</strong>1 <strong>-Jz</strong>0.05 <strong>-E</strong>180/5
+<strong>-R</strong>0/100/0/10/0/10 <strong>-C</strong>3 <strong>-N</strong> <strong>-S</strong>o <strong>-W</strong> <strong>-F</strong>black &gt; segy.ps</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">Bugs</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>Variable area involves filling four-sided figures of distressing
+generality. I <em>know</em> that some of the more complex degenerate cases are
+not dealt with correctly or at all; the incidence of such cases
+increases as viewing angles become more oblique, and particularly as the
+viewing elevation increases. Wiggle-trace plotting is not affected.</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="GMT.html">*GMT*</a> , <a class="reference external" href="pssegy.html">*pssegy*</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pssegyz</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Examples</a></li>
+<li><a class="reference internal" href="#id7">Bugs</a></li>
+<li><a class="reference internal" href="#id8">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pssegy.html"
+                        title="previous chapter">pssegy</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="segy2grd.html"
+                        title="next chapter">segy2grd</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/supplements/segyprogs/pssegyz.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="segy2grd.html" title="segy2grd"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pssegy.html" title="pssegy"
+             >previous</a> |</li>
+        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
+          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

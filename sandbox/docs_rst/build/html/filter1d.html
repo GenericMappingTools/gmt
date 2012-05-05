@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>filter1d &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="fitcircle" href="fitcircle.html" />
+    <link rel="prev" title="colmath" href="colmath.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="fitcircle.html" title="fitcircle"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="colmath.html" title="colmath"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="filter1d">
+<h1>filter1d<a class="headerlink" href="#filter1d" title="Permalink to this headline">¶</a></h1>
+<p>filter1d - Do time domain filtering of 1-D data tables</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>filter1d</strong> [ <em>table</em> ] <strong>-F</strong><em>type&lt;width&gt;</em>[<em>mode</em>] [
+<strong>-D</strong><em>increment</em> ] [ <strong>-E</strong> ] [ <strong>-I</strong><em>ignore_val</em> ] [
+<strong>-L</strong><em>lack_width</em> ] [ <strong>-N</strong><em>t_col</em> ] [ <strong>-Q</strong><em>q_factor</em> ] [
+<strong>-S</strong><em>symmetry_factor</em> ] [ <strong>-T</strong><em>start/stop/int</em> ] [
+<strong>-V</strong>[<em>level</em>] ] [
+<strong>-b</strong>[<em>ncol</em>][<strong>t</strong>][<strong>+L</strong>|<strong>+B</strong>] ] [
+<strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ] [
+<strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
+] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
+<strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
+] [ <strong>-o</strong><em>cols</em>[,*...*] ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>filter1d</strong> is a general time domain filter for multiple column time
+series data. The user specifies which column is the time (i.e., the
+independent variable). (See <strong>-N</strong> option below). The fastest operation
+occurs when the input time series are equally spaced and have no gaps or
+outliers and the special options are not needed. <strong>filter1d</strong> has
+options <strong>-L</strong>, <strong>-Q</strong>, and <strong>-S</strong> for unevenly sampled data with gaps.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-F</strong><em>type&lt;width&gt;</em>[<em>mode</em>]</dt>
+<dd>Sets the filter <em>type</em>. Choose among convolution and non-convolution
+filters. Append the filter code followed by the full filter
+<em>&lt;width&gt;</em> in same units as time column. Available convolution
+filters are:
+(<strong>b</strong>) Boxcar: All weights are equal.
+(<strong>c</strong>) Cosine Arch: Weights follow a cosine arch curve.
+(<strong>g</strong>) Gaussian: Weights are given by the Gaussian function.
+(<strong>f</strong>) Custom: Instead of <em>width</em> give name of a one-column file
+with your own weight coefficients.
+Non-convolution filters are:
+(<strong>m</strong>) Median: Returns median value.
+(<strong>p</strong>) Maximum likelihood probability (a mode estimator): Return
+modal value. If more than one mode is found we return their average
+value. Append - or + to the filter width if you rather want to
+return the smallest or largest of the modal values.
+(<strong>l</strong>) Lower: Return the minimum of all values.
+(<strong>L</strong>) Lower: Return minimum of all positive values only.
+(<strong>u</strong>) Upper: Return maximum of all values.
+(<strong>U</strong>) Upper: Return maximum or all negative values only.
+Upper case type <strong>B</strong>, <strong>C</strong>, <strong>G</strong>, <strong>M</strong>, <strong>P</strong>, <strong>F</strong> will use
+robust filter versions: i.e., replace outliers (2.5 L1 scale off
+median) with median during filtering.
+In the case of <strong>L</strong>|<strong>U</strong> it is possible that no data passes
+the initial sign test; in that case the filter will return 0.0.</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
+table file(s) holding a number of data columns. If no tables are
+given then we read from standard input.</dd>
+<dt><strong>-D</strong><em>increment</em></dt>
+<dd><em>increment</em> is used when series is NOT equidistantly sampled. Then
+<em>increment</em> will be the abscissae resolution, i.e., all abscissae
+will be rounded off to a multiple of <em>increment</em>. Alternatively,
+resample data with <strong>sample1d</strong>.</dd>
+<dt><strong>-E</strong></dt>
+<dd>Include Ends of time series in output. Default loses half the
+filter-width of data at each end.</dd>
+<dt><strong>-I</strong><em>ignore_val</em></dt>
+<dd>To ignore values; If an input value equals <em>ignore_val</em> it will be
+set to NaN.</dd>
+<dt><strong>-L</strong><em>lack_width</em></dt>
+<dd>Checks for Lack of data condition. If input data has a gap exceeding
+<em>width</em> then no output will be given at that point [Default does not
+check Lack].</dd>
+<dt><strong>-N</strong><em>t_col</em></dt>
+<dd>Indicates which column contains the independent variable (time). The
+left-most column is # 0, the right-most is # (<em>n_cols</em> - 1).
+[Default is 0].</dd>
+<dt><strong>-Q</strong><em>q_factor</em></dt>
+<dd>assess Quality of output value by checking mean weight in
+convolution. Enter <em>q_factor</em> between 0 and 1. If mean weight &lt;
+<em>q_factor</em>, output is suppressed at this point [Default does not
+check Quality].</dd>
+<dt><strong>-S</strong><em>symmetry_factor</em></dt>
+<dd>Checks symmetry of data about window center. Enter a factor between
+0 and 1. If ( (abs(n_left - n_right)) / (n_left + n_right) ) &gt;
+<em>factor</em>, then no output will be given at this point [Default does
+not check Symmetry].</dd>
+<dt><strong>-T</strong><em>start/stop/int</em></dt>
+<dd>Make evenly spaced time-steps from <em>start</em> to <em>stop</em> by <em>int</em>
+[Default uses input times].</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select binary input.</dd>
+<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select binary output. [Default is same as input].</dd>
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
+<dd>Specify data types of input and/or output columns.</dd>
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] (*)</dt>
+<dd>Determine data gaps and line breaks.</dd>
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
+<dd>Skip or produce header record(s).</dd>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dd>Select input columns.</dd>
+<dt><strong>-o</strong><em>cols</em>[,*...*] (*)</dt>
+<dd>Select output columns.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Ascii Format Precision</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <strong>gmt.conf</strong> file. Longitude and latitude are formatted
+according to <strong>FORMAT_GEO_OUT</strong>, whereas other values are formatted
+according to <strong>FORMAT_FLOAT_OUT</strong>. Be aware that the format in effect
+can lead to loss of precision in the output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <strong>FORMAT_FLOAT_OUT</strong> setting.</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">Examples</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>To filter the data set in the file cruise.gmtd containing evenly spaced
+gravity, magnetics, topography, and distance (in m) with a 10 km
+Gaussian filter, removing outliers, and output a filtered value every 2
+km between 0 and 100 km:</p>
+<p>filter1d cruise.gmtd -T0/1.0e5/2000 -FG10000 -N3 -V &gt;
+filtered_cruise.gmtd</p>
+<p>Data along track often have uneven sampling and gaps which we do not
+want to interpolate using <strong>sample1d</strong>. To find the median depth in a 50
+km window every 25 km along the track of cruise v3312, stored in
+v3312.dt, checking for gaps of 10km and asymmetry of 0.3:</p>
+<p>filter1d v3312.dt -FM50 -T0/100000/25 -L10 -S0.3 &gt; v3312_filt.dt</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="gmt.html">*gmt*</a> , <a class="reference external" href="sample1d.html">*sample1d*</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">filter1d</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Ascii Format Precision</a></li>
+<li><a class="reference internal" href="#id7">Examples</a></li>
+<li><a class="reference internal" href="#id8">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="colmath.html"
+                        title="previous chapter">colmath</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="fitcircle.html"
+                        title="next chapter">fitcircle</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/filter1d.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="fitcircle.html" title="fitcircle"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="colmath.html" title="colmath"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

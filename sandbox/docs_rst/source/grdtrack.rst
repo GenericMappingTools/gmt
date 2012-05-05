@@ -1,0 +1,230 @@
+********
+grdtrack
+********
+
+
+grdtrack - Sample grids at specified (x,y) locations
+
+`Synopsis <#toc1>`_
+-------------------
+
+**grdtrack** [ *xyfile* ] **-G**\ *grd1* **-G**\ *grd2* ... [
+**-A**\ **m**\ \|\ **p** ] [ **-C**\ *length*/*ds*\ [*spacing*\ ] ] [
+**-D**\ *dfile* ] [ **-L**\ *flag* ] [ **-N** ] [
+**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
+] [ **-Z** ] [ **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
+**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
+] [
+**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
+] [ **-o**\ *cols*\ [,*...*] ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**]
+] [ **-:**\ [**i**\ \|\ **o**] ]
+
+`Description <#toc2>`_
+----------------------
+
+**grdtrack** reads one or more grid files (or a Sandwell/Smith IMG
+files) and a table (from file or standard input) with (x,y) [or
+(lon,lat)] positions in the first two columns (more columns may be
+present). It interpolates the grid(s) at the positions in the table and
+writes out the table with the interpolated values added as (one or more)
+new columns. Alternatively (**-C**), the input is considered to be
+line-segments and we create orthogonal cross-profiles at each data point
+or with an equidistant separation and sample the grid(s) along these
+profiles. A bicubic [Default], bilinear, B-spline or nearest-neighbor
+(see **-n**) interpolation is used, requiring boundary conditions at the
+limits of the region (see **-L**).
+
+`Common Arguments And Specifications <#toc3>`_
+----------------------------------------------
+
+All options marked with an asterisk (\*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the **gmt** man page. Note: No
+space is allowed between the option flag and the associated arguments.
+
+`Required Arguments <#toc4>`_
+-----------------------------
+
+**-G**\ *gridfile*
+    *grdfile* is a 2-D binary grid file with the function f(x,y). If the
+    specified grid is in Sandwell/Smith Mercator format you must append
+    a comma-separated list of arguments that includes a scale to
+    multiply the data (usually 1 or 0.1), the mode which stand for the
+    following: (0) Img files with no constraint code, returns data at
+    all points, (1) Img file with constraints coded, return data at all
+    points, (2) Img file with constraints coded, return data only at
+    constrained points and NaN elsewhere, `and (3) <and.3.html>`_ Img
+    file with constraints coded, return 1 at constraints and 0
+    elsewhere, and optionally the max latitude in the IMG file [80.738].
+    You may repeat **-G** as many times as you have grids you wish to
+    sample. The grids are sampled and results are output in the order
+    given. (See GRID FILE FORMAT below.)
+
+`Optional Arguments <#toc5>`_
+-----------------------------
+
+*xyfile*
+    This is an ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) file
+    where the first 2 columns hold the (x,y) positions where the user
+    wants to sample the 2-D data set.
+**-A**\ **m**\ \|\ **p**
+    For spherical surface resampling we resample along great circle
+    arcs. Alternatively, use **-Am** to resample by first following a
+    meridian, then a parallel. Or use **-Ap** to start following a
+    parallel, then a meridian. (This can be practical for resampling
+    lines along parallels, for example). Ignored unless **-C** is used.
+**-C**\ *length*\ **/**\ *ds*\ [**/**\ *spacing*]
+    Use input line segments to create an equidistant and (optionally)
+    equally-spaced set of crossing profiles along which we sample the
+    grid(s) [Default simply samples the grid(s) at the input locations].
+    Specify two length scales that control how the sampling is done:
+    *length* sets the full length of each cross-profile, while *ds* is
+    the distance increment along each cross-profile. Optionally, append
+    **/**\ *spacing* for an equidistant spacing between cross-profiles
+    [Default erects cross-profiles at the input coordinates]. Append
+    suitable units for each length scale (See UNITS below). The output
+    columns will be *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ...
+    (sampled value for each grid)
+**-D**\ *dfile*
+    In concert with **-C** we can save the (possibly resampled) original
+    lines to the file *dfile* [Default only saves the cross-profiles].
+    The columns will be *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ...
+    (sampled value for each grid)
+**-L**\ *flag*
+    Boundary condition *flag* may be *x* or *y* or *xy* indicating data
+    is periodic in range of x or y or both set by **-R**, or *flag* may
+    be *g* indicating geographical conditions (x and y are lon and lat).
+    [Default uses "natural" conditions (second partial derivative normal
+    to edge is zero) unless the grid is automatically recognized as
+    periodic.]
+**-N**
+    Do *not* skip points that fall outside the domain of the grid(s)
+    [Default only output points within grid domain].
+**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+    Specify the region of interest.
+**-V**\ [*level*\ ] (\*)
+    Select verbosity level [1].
+**-Z**
+    Only write out the sampled z-values [Default writes all columns].
+**-:**
+    Toggles between (longitude,latitude) and (latitude,longitude)
+    input/output. [Default is (longitude,latitude)].
+**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select binary input. [Default is 2 input columns].
+**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+    Select binary output. [Default is one more than input].
+**-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
+    Specify data types of input and/or output columns.
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+    Determine data gaps and line breaks.
+**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
+    Skip or produce header record(s).
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+    Select input columns.
+**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*] (\*)
+    Select interpolation mode for grids.
+**-o**\ *cols*\ [,*...*] (\*)
+    Select output columns.
+**-s**\ [*cols*\ ][\ **a**\ \|\ **r**] (\*)
+    Set handling of NaN records.
+**-^** (\*)
+    Print a short message about the syntax of the command, then exits.
+**-?** (\*)
+    Print a full usage (help) message, including the explanation of
+    options, then exits.
+
+`Units <#toc6>`_
+----------------
+
+For map distance units, append *unit* **d** for arc degrees, **m** for
+arc minutes, and **s** for arc seconds, or **e** for meters [Default],
+**f** for feet, **k** for km, **M** for statute miles, and **n** for
+nautical miles. By default we compute such distances using a spherical
+approximation with great circles. Prepend **-** to a distance (or the
+unit is no distance is given) to perform "Flat Earth" calculations
+(quicker but less accurate) or prepend **+** to perform exact geodesic
+calculations (slower but more accurate).
+
+`Ascii Format Precision <#toc7>`_
+---------------------------------
+
+The ASCII output formats of numerical data are controlled by parameters
+in your **gmt.conf** file. Longitude and latitude are formatted
+according to **FORMAT\_GEO\_OUT**, whereas other values are formatted
+according to **FORMAT\_FLOAT\_OUT**. Be aware that the format in effect
+can lead to loss of precision in the output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (**-bo** if available) or
+specify more decimals using the **FORMAT\_FLOAT\_OUT** setting.
+
+`Grid File Formats <#toc8>`_
+----------------------------
+
+**GMT** is able to recognize many of the commonly used grid file
+formats, as well as the precision, scale and offset of the values
+contained in the grid file. When **GMT** needs a little help with that,
+you can add the suffix
+**=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
+*id* is a two-letter identifier of the grid type and precision, and
+*scale* and *offset* are optional scale factor and offset to be applied
+to all grid values, and *nan* is the value used to indicate missing
+data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
+of the GMT Technical Reference and Cookbook for more information.
+
+When reading a netCDF file that contains multiple grids, **GMT** will
+read, by default, the first 2-dimensional grid that can find in that
+file. To coax **GMT** into reading another multi-dimensional variable in
+the grid file, append **?**\ *varname* to the file name, where *varname*
+is the name of the variable. Note that you may need to escape the
+special meaning of **?** in your shell program by putting a backslash in
+front of it, or by placing the filename and suffix between quotes or
+double quotes. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and
+Section 4.18 of the GMT Technical Reference and Cookbook for more
+information, particularly on how to read splices of 3-, 4-, or
+5-dimensional grids.
+
+`Hints <#toc9>`_
+----------------
+
+If an interpolation point is not on a node of the input grid, then a NaN
+at any node in the neighborhood surrounding the point will yield an
+interpolated NaN. Bicubic interpolation [default] yields continuous
+first derivatives but requires a neighborhood of 4 nodes by 4 nodes.
+Bilinear interpolation [**-n**\ ] uses only a 2 by 2 neighborhood, but
+yields only zeroth-order continuity. Use bicubic when smoothness is
+important. Use bilinear to minimize the propagation of NaNs, or lower
+*threshold*.
+
+`Examples <#toc10>`_
+--------------------
+
+To sample the file hawaii\_topo.nc along the SEASAT track track\_4.xyg
+(An ASCII table containing longitude, latitude, and SEASAT-derived
+gravity, preceded by one header record):
+
+grdtrack track\_4.xyg -Ghawaii\_topo.nc -h > track\_4.xygt
+
+To sample the Sandwell/Smith IMG format file topo.8.2.img (2 minute
+predicted bathymetry on a Mercator grid) and the Muller et al age grid
+age.3.2.nc along the lon,lat coordinates given in the file
+cruise\_track.xy, try
+
+grdtrack cruise\_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.d
+
+To sample the Sandwell/Smith IMG format file grav.18.1.img (1 minute
+free-air anomalies on a Mercator grid) along 100-km-long cross-profiles
+that are orthogonal to the line segment given in the file track.xy,
+erecting cross-profiles every 25 km and sampling the grid every 3 km,
+try
+
+grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3k/25k > xprofiles.d
+
+`See Also <#toc11>`_
+--------------------
+
+`*gmt*\ (1) <gmt.1.html>`_ , `*surface*\ (1) <surface.1.html>`_ ,
+`*sample1d*\ (1) <sample1d.1.html>`_
+

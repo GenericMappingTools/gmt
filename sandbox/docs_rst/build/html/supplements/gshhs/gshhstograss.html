@@ -1,0 +1,183 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gshhs2grass &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
+    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="next" title="&lt;no title&gt;" href="../imgsrc/list.html" />
+    <link rel="prev" title="gshhs_dp" href="gshhs_dp.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../imgsrc/list.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gshhs_dp.html" title="gshhs_dp"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
+          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="gshhs2grass">
+<h1>gshhs2grass<a class="headerlink" href="#gshhs2grass" title="Permalink to this headline">¶</a></h1>
+<p>gshhs2grass - Extracting GSHHS and WDBII data in GRASS-compatible ASCII format</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>gshhs2grass</strong> <strong>-i</strong> gshhs_[f|h|i|l|c].b [ <strong>-x</strong><em>minx</em> ]
+[<strong>-X</strong><em>maxx</em> ] [ <strong>-y</strong><em>miny</em> ] [ <strong>-Y</strong><em>maxy</em> ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>gshhs2grass</strong> reads the binary coastline (GSHHS) and and translates it
+into an ASCII format suitable for import into GRASS. It automatically
+handles byte-swabbing between different architectures.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Required Arguments</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>gshhs_[f|h|i|l|c].b</em></dt>
+<dd>One of the GSHHS binary data file as distributed with the GSHHS data
+supplement. Any of the 5 standard resolutions (full, high,
+intermediate, low, crude) can be used. The resulting files are
+called dig_[ascii|att|cats].gshhs_[f|h|i|l|c].</dd>
+</dl>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Optional Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-x</strong><em>minx</em></dt>
+<dd>Specify a minimum (west) longitude.</dd>
+<dt><strong>-X</strong><em>maxx</em></dt>
+<dd>Specify a maximum (east) longitude.</dd>
+<dt><strong>-y</strong><em>miny</em></dt>
+<dd>Specify a minimum (south) latitude.</dd>
+<dt><strong>-Y</strong><em>maxy</em></dt>
+<dd>Specify a maximum (north) latitude.</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Examples</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>To convert the full GSHHS data set , try</p>
+<p><strong>gshhs2grass</strong> <em>gshhs_f.b</em></p>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Bugs</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>Not updated to handle the WDBII line data (borders or rivers).</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">Author</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>Original version by Simon Cox (<a class="reference external" href="mailto:simon&#37;&#52;&#48;ned&#46;dem&#46;csiro&#46;au">simon<span>&#64;</span>ned<span>&#46;</span>dem<span>&#46;</span>csiro<span>&#46;</span>au</a>) with some
+maintenance by Paul Wessel (<a class="reference external" href="mailto:pwessel&#37;&#52;&#48;hawaii&#46;edu">pwessel<span>&#64;</span>hawaii<span>&#46;</span>edu</a>).</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> , <a class="reference external" href="gshhs.1.html">*gshhs*(1)</a>
+<a class="reference external" href="gshhs_dp.1.html">*gshhs_dp*(1)</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gshhs2grass</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Required Arguments</a></li>
+<li><a class="reference internal" href="#id4">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id5">Examples</a></li>
+<li><a class="reference internal" href="#id6">Bugs</a></li>
+<li><a class="reference internal" href="#id7">Author</a></li>
+<li><a class="reference internal" href="#id8">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gshhs_dp.html"
+                        title="previous chapter">gshhs_dp</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../imgsrc/list.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/supplements/gshhs/gshhstograss.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../imgsrc/list.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gshhs_dp.html" title="gshhs_dp"
+             >previous</a> |</li>
+        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
+          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

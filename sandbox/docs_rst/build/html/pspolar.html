@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Name &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p><a class="reference external" href="#toc">Table of Contents</a></p>
+<div class="section" id="id1">
+<h1><a class="reference external" href="#toc0">Name</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p><strong>pspolar</strong> - Plot polarities on the inferior focal half-sphere on maps</p>
+</div>
+<div class="section" id="id2">
+<h1><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div>pspolar [ <em>table</em> ] <strong>-J</strong><em>parameters</em></div></blockquote>
+<p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] <strong>-D</strong><em>lon</em>/<em>lat</em>
+<strong>-M</strong><em>size</em> <strong>-S</strong><em>&lt;symbol&gt;&lt;size&gt;</em> [
+<strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ] [
+<strong>-C</strong><em>lon</em>/<em>lat</em>[/<em>dash_width</em>/<em>pointsize</em>] ] [ <strong>-F</strong><em>color</em> ]
+[ <strong>-G</strong><em>fill</em> ] [ <strong>-g</strong><em>fill</em> ] [ <strong>-K</strong> ] [ <strong>-L</strong> ] [ <strong>-N</strong> ] [
+<strong>-O</strong> ] [ <strong>-P</strong> ] [
+<strong>-s</strong><em>Half-size</em>[<strong>v</strong>[[<em>v_width</em>/<em>h_length</em>/<em>h_width</em>/<em>shape</em>]][<strong>g</strong>[<em>color</em>]][<strong>l</strong>]
+[ <strong>-T</strong><em>angle</em>/<em>form</em>/<em>justify</em>/<em>fontsize</em> ] [ <strong>-t</strong><em>pen</em> ] [
+<strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] ] [ <strong>-V</strong>[<em>level</em>]
+] [ <strong>-W</strong><em>pen</em> ] [
+<strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]
+] [
+<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]]
+] [ <strong>-c</strong><em>copies</em> ] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
+<strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
+]</p>
+</div>
+<div class="section" id="id3">
+<h1><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<p><strong>pspolar</strong> reads data values from <em>files</em> [or standard input] and
+generates <em>PostScript</em> code that will plot stations on focal mechanisms
+on a map. The <em>PostScript</em> code is written to standard output.</p>
+<p>Parameters are expected to be in the following columns:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt><strong>1</strong>,<strong>2</strong>,<strong>3</strong>:</dt>
+<dd>station_code, azimuth, take-off angle</dd>
+<dt><strong>4</strong>:</dt>
+<dd><dl class="first last docutils">
+<dt>polarity:</dt>
+<dd><ul class="first last simple">
+<li>compression can be c,C,u,U,+</li>
+<li>rarefaction can be d,D,r,R,-</li>
+<li></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>not defined is anything else</p>
+</div></blockquote>
+</div>
+<div class="section" id="id4">
+<h1><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id5">
+<h1><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
+table file(s) holding a number of data columns. If no tables are
+given then we read from standard input.</dd>
+<dt><strong>-J</strong><em>parameters</em> (*)</dt>
+<dd>Select map projection.</dd>
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <strong>r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing, if applicable) are copied from
+the grid.</dd>
+<dt><strong>-D</strong>longitude/latitude)</dt>
+<dd>Maps the bubble at given longitude and latitude point.</dd>
+<dt><strong>-M</strong>size)</dt>
+<dd>Sets the size of the beach ball to plot polarities in. <em>Size</em> is in
+inch (unless <strong>c</strong>, <strong>i</strong>, <strong>m</strong>, or <strong>p</strong> is appended).</dd>
+<dt><strong>-S</strong>&lt;symbol_type&gt;&lt;size&gt;)</dt>
+<dd>Selects <em>symbol_type</em> and symbol <em>size</em>. Size is in inch (unless
+<strong>c</strong>, <strong>i</strong>, <strong>m</strong>, or <strong>p</strong> is appended). Choose symbol type from
+st(<em>a</em>)r, (<em>c</em>)ircle, (<em>d</em>)iamond, (<em>h</em>)exagon, (<em>i</em>)nverted
+triangle, (<em>p</em>)oint, (<em>s</em>)quare, (<em>t</em>)riangle, (<em>x</em>)cross.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h1><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> (*)</dt>
+<dd>Set map boundary intervals.</dd>
+<dt><strong>-C</strong></dt>
+<dd>Offsets focal mechanisms to the latitude and longitude specified in
+the last two columns of the input file.</dd>
+<dt><strong>-E</strong>fill)</dt>
+<dd>Selects filling of symbols for stations in extensive quadrants. Set
+the color [Default is 250]. If <strong>-E</strong><em>fill</em> is the same as
+<strong>-F</strong><em>fill</em>, use <strong>-e</strong> to outline.</dd>
+<dt><strong>-e</strong>[pen])</dt>
+<dd>Outline symbols in extensive quadrants using <em>pen</em> or the default
+pen (see <strong>-W</strong>).</dd>
+<dt><strong>-F</strong><em>fill</em></dt>
+<dd>Sets background color of the beach ball. Default is no fill.</dd>
+<dt><strong>-G</strong><em>fill</em></dt>
+<dd>Selects filling of symbols for stations in compressional quadrants.
+Set the color [Default is black].</dd>
+<dt><strong>-K</strong> (*)</dt>
+<dd>Do not finalize the <em>PostScript</em> plot.</dd>
+<dt><strong>-N</strong></dt>
+<dd>Does <strong>not</strong> skip symbols that fall outside map border [Default
+plots points inside border only].</dd>
+<dt><strong>-O</strong> (*)</dt>
+<dd>Append to existing <em>PostScript</em> plot.</dd>
+<dt><strong>-P</strong> (*)</dt>
+<dd>Select &#8220;Portrait&#8221; plot orientation.</dd>
+<dt><strong>-T</strong><em>angle/form/justify/fontsize in points</em></dt>
+<dd>To write station code. [Default is 0.0/0/5/12].</dd>
+<dt><strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] (*)</dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-W</strong><em>pen</em></dt>
+<dd>Set current pen attributes [Defaults: width = default, color =
+black, style = solid].</dd>
+</dl>
+<p><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]
+<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]]
+(*)</p>
+<blockquote>
+<div>Shift plot origin.</div></blockquote>
+<dl class="docutils">
+<dt><strong>-c</strong><em>copies</em> (*)</dt>
+<dd>Specify number of plot copies [Default is 1].</dd>
+<dt><strong>-f</strong>[pen])</dt>
+<dd>Outline the beach ball using <em>pen</em> or the default pen (see <strong>-W</strong>).</dd>
+<dt><strong>-g</strong>[pen])</dt>
+<dd>Outline symbols in compressional quadrants using <em>pen</em> or the
+default pen (see <strong>-W</strong>).</dd>
+<dt><strong>-h</strong></dt>
+<dd>Use special format derived from HYPO71 output</dd>
+</dl>
+<p><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
+(*)</p>
+<blockquote>
+<div>Select input columns.</div></blockquote>
+<dl class="docutils">
+<dt><strong>-s</strong><em>half-size</em>/[<strong>V</strong>[<em>v_width/h_length/h_width/shape</em>]][<strong>G</strong><em>color</em>][<strong>L</strong>]</dt>
+<dd>Plots S polarity azimuth. S polarity is in last column. It may be a
+vector (<strong>V</strong> option) or a segment. Give
+half-size,v_width,h_length,h_width in inch (unless <strong>c</strong>, <strong>i</strong>,
+<strong>m</strong>, or <strong>p</strong> is appended). [<strong>L</strong>] option is for outline.</dd>
+<dt><strong>-t</strong><em>pen</em></dt>
+<dd>Set pen color to write station code. Default uses the default pen
+(see <strong>-W</strong>).</dd>
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] (*)</dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id7">
+<h1><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
+<p><strong>pspolar</strong> <strong>-R</strong>239/240/34/35.2 <strong>-JM</strong>8 <strong>-N</strong> <strong>-Sc</strong>0.4
+<strong>-H</strong>1 <strong>-D</strong>239.5/34.5 <strong>-M</strong>5 &lt;&lt;END &gt; test.ps</p>
+<blockquote>
+<div>stat azim ih pol
+0481 11 147 c
+6185 247 120 d
+0485 288 114 +
+0490 223 112 -
+0487 212 109 .
+END
+or
+<strong>pspolar</strong> <strong>-R</strong>239/240/34/35.2 <strong>-JM</strong>8 <strong>-N</strong> <strong>-Sc</strong>0.4</div></blockquote>
+<dl class="docutils">
+<dt><strong>-H</strong>1 <strong>-D</strong>239.5/34.5 <strong>-M</strong>5 <strong>-h</strong> &lt;&lt;END &gt; test.ps</dt>
+<dd>Date Or. time stat azim ih
+910223 1 22 0481 11 147 ipu0
+910223 1 22 6185 247 120 ipd0
+910223 1 22 0485 288 114 epu0
+910223 1 22 0490 223 112 epd0
+910223 1 22 0487 212 109 epu0
+END</dd>
+</dl>
+</div>
+<div class="section" id="id8">
+<h1><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> , <a class="reference external" href="psbasemap.1.html">*psbasemap*(1)</a> ,
+<a class="reference external" href="psxy.1.html">*psxy*(1)</a></p>
+</div>
+<div class="section" id="id9">
+<h1><a class="reference external" href="#toc8">References</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div>Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
+Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.</div></blockquote>
+</div>
+<div class="section" id="id10">
+<h1><a class="reference external" href="#toc9">Authors</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>Genevieve Patau</dt>
+<dd>Seismology Dept.
+Institut de Physique du Globe de Paris
+(<a class="reference external" href="mailto:patau&#37;&#52;&#48;ipgp&#46;jussieu&#46;fr">patau<span>&#64;</span>ipgp<span>&#46;</span>jussieu<span>&#46;</span>fr</a>)</dd>
+</dl>
+<hr class="docutils" />
+<p><strong>Table of Contents</strong></p>
+<ul class="simple">
+<li><a class="reference external" href="#sect0">Name</a></li>
+<li><a class="reference external" href="#sect1">Synopsis</a></li>
+<li><a class="reference external" href="#sect2">Description</a></li>
+<li><a class="reference external" href="#sect3">Common Arguments And Specifications</a></li>
+<li><a class="reference external" href="#sect4">Required Arguments</a></li>
+<li><a class="reference external" href="#sect5">Optional Arguments</a></li>
+<li><a class="reference external" href="#sect6">Examples</a></li>
+<li><a class="reference external" href="#sect7">See Also</a></li>
+<li><a class="reference external" href="#sect8">References</a></li>
+<li><a class="reference external" href="#sect9">Authors</a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Name</a></li>
+<li><a class="reference internal" href="#id2">Synopsis</a></li>
+<li><a class="reference internal" href="#id3">Description</a></li>
+<li><a class="reference internal" href="#id4">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id5">Required Arguments</a></li>
+<li><a class="reference internal" href="#id6">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id7">Examples</a></li>
+<li><a class="reference internal" href="#id8">See Also</a></li>
+<li><a class="reference internal" href="#id9">References</a></li>
+<li><a class="reference internal" href="#id10">Authors</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pspolar.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

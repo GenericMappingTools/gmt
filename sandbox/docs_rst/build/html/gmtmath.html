@@ -1,0 +1,949 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gmtmath &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="gmtselect" href="gmtselect.html" />
+    <link rel="prev" title="gmtlogo" href="gmtlogo.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gmtselect.html" title="gmtselect"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gmtlogo.html" title="gmtlogo"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="gmtmath">
+<h1>gmtmath<a class="headerlink" href="#gmtmath" title="Permalink to this headline">¶</a></h1>
+<p>gmtmath - Reverse Polish Notation (RPN) calculator for data tables</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmtmath</strong> [ <strong>-A</strong><em>t_f(t).d</em> ] [ <strong>-C</strong><em>cols</em> ] [ <strong>-I</strong> ] [
+<strong>-N</strong><em>n_col</em>/<em>t_col</em> ] [ <strong>-Q</strong> ] [ <strong>-S</strong>[<strong>f</strong>|<strong>l</strong>] ] [
+<strong>-T</strong><em>t_min</em>/<em>t_max</em>/<em>t_inc</em>[<strong>+</strong>]|<em>tfile</em> ] [
+<strong>-V</strong>[<em>level</em>] ] [
+<strong>-b</strong>[<em>ncol</em>][<strong>t</strong>][<strong>+L</strong>|<strong>+B</strong>] ] [
+<strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ] [
+<strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
+] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
+<strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
+] [ <strong>-o</strong><em>cols</em>[,*...*] ] [ <strong>-s</strong>[<em>cols</em>][<strong>a</strong>|<strong>r</strong>]
+] <em>operand</em> [ <em>operand</em> ] <strong>OPERATOR</strong> [ <em>operand</em> ] <strong>OPERATOR</strong> ...
+<strong>=</strong> [ <em>outfile</em> ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmtmath</strong> will perform operations like add, subtract, multiply, and
+divide on one or more table data files or constants using Reverse Polish
+Notation (RPN) syntax (e.g., Hewlett-Packard calculator-style).
+Arbitrarily complicated expressions may therefore be evaluated; the
+final result is written to an output file [or standard output]. When two
+data tables are on the stack, each element in file A is modified by the
+corresponding element in file B. However, some operators only require
+one operand (see below). If no data tables are used in the expression
+then options <strong>-T</strong>, <strong>-N</strong> can be set (and optionally
+<strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] to indicate the data type). If STDIN is
+given, &lt;stdin&gt; will be read and placed on the stack as if a file with
+that content had been given on the command line. By default, all columns
+except the &#8220;time&#8221; column are operated on, but this can be changed (see
+<strong>-C</strong>).</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>operand</em></dt>
+<dd>If <em>operand</em> can be opened as a file it will be read as an ASCII (or
+binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) table data file. If not a
+file, it is interpreted as a numerical constant or a special symbol
+(see below). The special argument STDIN means that <em>stdin</em> will be
+read and placed on the stack; STDIN can appear more than once if
+necessary.</dd>
+<dt><em>outfile</em></dt>
+<dd>The name of a table data file that will hold the final result. If
+not given then the output is sent to stdout.</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-A</strong><em>t_f(t).d</em></dt>
+<dd>Requires <strong>-N</strong> and will partially initialize a table with values
+from the given file containing <em>t</em> and <em>f(t)</em> only. The <em>t</em> is
+placed in column <em>t_col</em> while <em>f(t)</em> goes into column <em>n_col</em> - 1
+(see <strong>-N</strong>).</dd>
+<dt><strong>-C</strong><em>cols</em></dt>
+<dd>Select the columns that will be operated on until next occurrence of
+<strong>-C</strong>. List columns separated by commas; ranges like 1,3-5,7 are
+allowed. <strong>-C</strong> (no arguments) resets the default action of using
+all columns except time column (see <strong>-N</strong>). <strong>-Ca</strong> selects all
+columns, including time column, while <strong>-Cr</strong> reverses (toggles) the
+current choices.</dd>
+<dt><strong>-I</strong></dt>
+<dd>Reverses the output row sequence from ascending time to descending
+[ascending].</dd>
+<dt><strong>-N</strong><em>n_col</em>/<em>t_col</em></dt>
+<dd>Select the number of columns and the column number that contains the
+&#8220;time&#8221; variable. Columns are numbered starting at 0 [2/0].</dd>
+<dt><strong>-Q</strong></dt>
+<dd>Quick mode for scalar calculation. Shorthand for <strong>-Ca</strong> <strong>-N</strong>1/0
+<strong>-T</strong>0/0/1.</dd>
+<dt><strong>-S</strong>[<strong>f</strong>|<strong>l</strong>]</dt>
+<dd>Only report the first or last row of the results [Default is all
+rows]. This is useful if you have computed a statistic (say the
+<strong>MODE</strong>) and only want to report a single number instead of
+numerous records with identical values. Append <strong>l</strong> to get the last
+row and <strong>f</strong> to get the first row only [Default].</dd>
+<dt><strong>-T</strong><em>t_min</em>/<em>t_max</em>/<em>t_inc</em>[<strong>+</strong>]|<em>tfile</em></dt>
+<dd>Required when no input files are given. Sets the t-coordinates of
+the first and last point and the equidistant sampling interval for
+the &#8220;time&#8221; column (see <strong>-N</strong>). Append <strong>+</strong> if you are specifying
+the number of equidistant points instead. If there is no time column
+(only data columns), give <strong>-T</strong> with no arguments; this also
+implies <strong>-Ca</strong>. Alternatively, give the name of a file whose first
+column contains the desired t-coordinates which may be irregular.</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select binary input.</dd>
+<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select binary output. [Default is same as input, but see <strong>-o</strong>]</dd>
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
+<dd>Specify data types of input and/or output columns.</dd>
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] (*)</dt>
+<dd>Determine data gaps and line breaks.</dd>
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
+<dd>Skip or produce header record(s).</dd>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dd>Select input columns.</dd>
+<dt><strong>-o</strong><em>cols</em>[,*...*] (*)</dt>
+<dd>Select output columns.</dd>
+<dt><strong>-s</strong>[<em>cols</em>][<strong>a</strong>|<strong>r</strong>] (*)</dt>
+<dd>Set handling of NaN records.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Operators</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>Choose among the following 133 operators. &#8220;args&#8221; are the number of input
+and output arguments.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="7%" />
+<col width="79%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Operator</td>
+<td>args</td>
+<td>Returns</td>
+</tr>
+<tr><td><strong>ABS</strong></td>
+<td>1 1</td>
+<td>abs (A)</td>
+</tr>
+<tr><td><strong>ACOS</strong></td>
+<td>1 1</td>
+<td>acos (A)</td>
+</tr>
+<tr><td><strong>ACOSH</strong></td>
+<td>1 1</td>
+<td>acosh (A)</td>
+</tr>
+<tr><td><strong>ACSC</strong></td>
+<td>1 1</td>
+<td>acsc (A)</td>
+</tr>
+<tr><td><strong>ACOT</strong></td>
+<td>1 1</td>
+<td>acot (A)</td>
+</tr>
+<tr><td><strong>ADD</strong></td>
+<td>2 1</td>
+<td>A + B</td>
+</tr>
+<tr><td><strong>AND</strong></td>
+<td>2 1</td>
+<td>B if A == NaN, else A</td>
+</tr>
+<tr><td><strong>ASEC</strong></td>
+<td>1 1</td>
+<td>asec (A)</td>
+</tr>
+<tr><td><strong>ASIN</strong></td>
+<td>1 1</td>
+<td>asin (A)</td>
+</tr>
+<tr><td><strong>ASINH</strong></td>
+<td>1 1</td>
+<td>asinh (A)</td>
+</tr>
+<tr><td><strong>ATAN</strong></td>
+<td>1 1</td>
+<td>atan (A)</td>
+</tr>
+<tr><td><strong>ATAN2</strong></td>
+<td>2 1</td>
+<td>atan2 (A, B)</td>
+</tr>
+<tr><td><strong>ATANH</strong></td>
+<td>1 1</td>
+<td>atanh (A)</td>
+</tr>
+<tr><td><strong>BEI</strong></td>
+<td>1 1</td>
+<td>bei (A)</td>
+</tr>
+<tr><td><strong>BER</strong></td>
+<td>1 1</td>
+<td>ber (A)</td>
+</tr>
+<tr><td><strong>CEIL</strong></td>
+<td>1 1</td>
+<td>ceil (A) (smallest integer &gt;= A)</td>
+</tr>
+<tr><td><strong>CHICRIT</strong></td>
+<td>2 1</td>
+<td>Critical value for chi-squared-distribution, with alpha = A and n = B</td>
+</tr>
+<tr><td><strong>CHIDIST</strong></td>
+<td>2 1</td>
+<td>chi-squared-distribution P(chi2,n), with chi2 = A and n = B</td>
+</tr>
+<tr><td><strong>COL</strong></td>
+<td>1 1</td>
+<td>Places column A on the stack</td>
+</tr>
+<tr><td><strong>CORRCOEFF</strong></td>
+<td>2 1</td>
+<td>Correlation coefficient r(A, B)</td>
+</tr>
+<tr><td><strong>COS</strong></td>
+<td>1 1</td>
+<td>cos (A) (A in radians)</td>
+</tr>
+<tr><td><strong>COSD</strong></td>
+<td>1 1</td>
+<td>cos (A) (A in degrees)</td>
+</tr>
+<tr><td><strong>COSH</strong></td>
+<td>1 1</td>
+<td>cosh (A)</td>
+</tr>
+<tr><td><strong>COT</strong></td>
+<td>1 1</td>
+<td>cot (A) (A in radians)</td>
+</tr>
+<tr><td><strong>COTD</strong></td>
+<td>1 1</td>
+<td>cot (A) (A in degrees)</td>
+</tr>
+<tr><td><strong>CSC</strong></td>
+<td>1 1</td>
+<td>csc (A) (A in radians)</td>
+</tr>
+<tr><td><strong>CSCD</strong></td>
+<td>1 1</td>
+<td>csc (A) (A in degrees)</td>
+</tr>
+<tr><td><strong>CPOISS</strong></td>
+<td>2 1</td>
+<td>Cumulative Poisson distribution F(x,lambda), with x = A and lambda = B</td>
+</tr>
+<tr><td><strong>DDT</strong></td>
+<td>1 1</td>
+<td>d(A)/dt Central 1st derivative</td>
+</tr>
+<tr><td><strong>D2DT2</strong></td>
+<td>1 1</td>
+<td>d^2(A)/dt^2 2nd derivative</td>
+</tr>
+<tr><td><strong>D2R</strong></td>
+<td>1 1</td>
+<td>Converts Degrees to Radians</td>
+</tr>
+<tr><td><strong>DILOG</strong></td>
+<td>1 1</td>
+<td>dilog (A)</td>
+</tr>
+<tr><td><strong>DIFF</strong></td>
+<td>1 1</td>
+<td>Difference between adjacent elements of A (A[1]-A[0], A[2]-A[1], ..., 0)</td>
+</tr>
+<tr><td><strong>DIV</strong></td>
+<td>2 1</td>
+<td>A / B</td>
+</tr>
+<tr><td><strong>DUP</strong></td>
+<td>1 2</td>
+<td>Places duplicate of A on the stack</td>
+</tr>
+<tr><td><strong>ERF</strong></td>
+<td>1 1</td>
+<td>Error function erf (A)</td>
+</tr>
+<tr><td><strong>ERFC</strong></td>
+<td>1 1</td>
+<td>Complementary Error function erfc (A)</td>
+</tr>
+<tr><td><strong>ERFINV</strong></td>
+<td>1 1</td>
+<td>Inverse error function of A</td>
+</tr>
+<tr><td><strong>EQ</strong></td>
+<td>2 1</td>
+<td>1 if A == B, else 0</td>
+</tr>
+<tr><td><strong>EXCH</strong></td>
+<td>2 2</td>
+<td>Exchanges A and B on the stack</td>
+</tr>
+<tr><td><strong>EXP</strong></td>
+<td>1 1</td>
+<td>exp (A)</td>
+</tr>
+<tr><td><strong>FACT</strong></td>
+<td>1 1</td>
+<td>A! (A factorial)</td>
+</tr>
+<tr><td><strong>FCRIT</strong></td>
+<td>3 1</td>
+<td>Critical value for F-distribution, with alpha = A, n1 = B, and n2 = C</td>
+</tr>
+<tr><td><strong>FDIST</strong></td>
+<td>3 1</td>
+<td>F-distribution Q(F,n1,n2), with F = A, n1 = B, and n2 = C</td>
+</tr>
+<tr><td><strong>FLIPUD</strong></td>
+<td>1 1</td>
+<td>Reverse order of each column</td>
+</tr>
+<tr><td><strong>FLOOR</strong></td>
+<td>1 1</td>
+<td>floor (A) (greatest integer &lt;= A)</td>
+</tr>
+<tr><td><strong>FMOD</strong></td>
+<td>2 1</td>
+<td>A % B (remainder after truncated division)</td>
+</tr>
+<tr><td><strong>GE</strong></td>
+<td>2 1</td>
+<td>1 if A &gt;= B, else 0</td>
+</tr>
+<tr><td><strong>GT</strong></td>
+<td>2 1</td>
+<td>1 if A &gt; B, else 0</td>
+</tr>
+<tr><td><strong>HYPOT</strong></td>
+<td>2 1</td>
+<td>hypot (A, B) = sqrt (A*A + B*B)</td>
+</tr>
+<tr><td><strong>I0</strong></td>
+<td>1 1</td>
+<td>Modified Bessel function of A (1st kind, order 0)</td>
+</tr>
+<tr><td><strong>I1</strong></td>
+<td>1 1</td>
+<td>Modified Bessel function of A (1st kind, order 1)</td>
+</tr>
+<tr><td><strong>IN</strong></td>
+<td>2 1</td>
+<td>Modified Bessel function of A (1st kind, order B)</td>
+</tr>
+<tr><td><strong>INRANGE</strong></td>
+<td>3 1</td>
+<td>1 if B &lt;= A &lt;= C, else 0</td>
+</tr>
+<tr><td><strong>INT</strong></td>
+<td>1 1</td>
+<td>Numerically integrate A</td>
+</tr>
+<tr><td><strong>INV</strong></td>
+<td>1 1</td>
+<td>1 / A</td>
+</tr>
+<tr><td><strong>ISNAN</strong></td>
+<td>1 1</td>
+<td>1 if A == NaN, else 0</td>
+</tr>
+<tr><td><strong>J0</strong></td>
+<td>1 1</td>
+<td>Bessel function of A (1st kind, order 0)</td>
+</tr>
+<tr><td><strong>J1</strong></td>
+<td>1 1</td>
+<td>Bessel function of A (1st kind, order 1)</td>
+</tr>
+<tr><td><strong>JN</strong></td>
+<td>2 1</td>
+<td>Bessel function of A (1st kind, order B)</td>
+</tr>
+<tr><td><strong>K0</strong></td>
+<td>1 1</td>
+<td>Modified Kelvin function of A (2nd kind, order 0)</td>
+</tr>
+<tr><td><strong>K1</strong></td>
+<td>1 1</td>
+<td>Modified Bessel function of A (2nd kind, order 1)</td>
+</tr>
+<tr><td><strong>KN</strong></td>
+<td>2 1</td>
+<td>Modified Bessel function of A (2nd kind, order B)</td>
+</tr>
+<tr><td><strong>KEI</strong></td>
+<td>1 1</td>
+<td>kei (A)</td>
+</tr>
+<tr><td><strong>KER</strong></td>
+<td>1 1</td>
+<td>ker (A)</td>
+</tr>
+<tr><td><strong>KURT</strong></td>
+<td>1 1</td>
+<td>Kurtosis of A</td>
+</tr>
+<tr><td><strong>LE</strong></td>
+<td>2 1</td>
+<td>1 if A &lt;= B, else 0</td>
+</tr>
+<tr><td><strong>LMSSCL</strong></td>
+<td>1 1</td>
+<td>LMS scale estimate (LMS STD) of A</td>
+</tr>
+<tr><td><strong>LOG</strong></td>
+<td>1 1</td>
+<td>log (A) (natural log)</td>
+</tr>
+<tr><td><strong>LOG10</strong></td>
+<td>1 1</td>
+<td>log10 (A) (base 10)</td>
+</tr>
+<tr><td><strong>LOG1P</strong></td>
+<td>1 1</td>
+<td>log (1+A) (accurate for small A)</td>
+</tr>
+<tr><td><strong>LOG2</strong></td>
+<td>1 1</td>
+<td>log2 (A) (base 2)</td>
+</tr>
+<tr><td><strong>LOWER</strong></td>
+<td>1 1</td>
+<td>The lowest (minimum) value of A</td>
+</tr>
+<tr><td><strong>LRAND</strong></td>
+<td>2 1</td>
+<td>Laplace random noise with mean A and std. deviation B</td>
+</tr>
+<tr><td><strong>LSQFIT</strong></td>
+<td>1 0</td>
+<td>Let current table be [A | b] return least squares solution x = A \ b</td>
+</tr>
+<tr><td><strong>LT</strong></td>
+<td>2 1</td>
+<td>1 if A &lt; B, else 0</td>
+</tr>
+<tr><td><strong>MAD</strong></td>
+<td>1 1</td>
+<td>Median Absolute Deviation (L1 STD) of A</td>
+</tr>
+<tr><td><strong>MAX</strong></td>
+<td>2 1</td>
+<td>Maximum of A and B</td>
+</tr>
+<tr><td><strong>MEAN</strong></td>
+<td>1 1</td>
+<td>Mean value of A</td>
+</tr>
+<tr><td><strong>MED</strong></td>
+<td>1 1</td>
+<td>Median value of A</td>
+</tr>
+<tr><td><strong>MIN</strong></td>
+<td>2 1</td>
+<td>Minimum of A and B</td>
+</tr>
+<tr><td><strong>MOD</strong></td>
+<td>2 1</td>
+<td>A mod B (remainder after floored division)</td>
+</tr>
+<tr><td><strong>MODE</strong></td>
+<td>1 1</td>
+<td>Mode value (Least Median of Squares) of A</td>
+</tr>
+<tr><td><strong>MUL</strong></td>
+<td>2 1</td>
+<td>A * B</td>
+</tr>
+<tr><td><strong>NAN</strong></td>
+<td>2 1</td>
+<td>NaN if A == B, else A</td>
+</tr>
+<tr><td><strong>NEG</strong></td>
+<td>1 1</td>
+<td>-A</td>
+</tr>
+<tr><td><strong>NEQ</strong></td>
+<td>2 1</td>
+<td>1 if A != B, else 0</td>
+</tr>
+<tr><td><strong>NORM</strong></td>
+<td>1 1</td>
+<td>Normalize (A) so max(A)-min(A) = 1</td>
+</tr>
+<tr><td><strong>NOT</strong></td>
+<td>1 1</td>
+<td>NaN if A == NaN, 1 if A == 0, else 0</td>
+</tr>
+<tr><td><strong>NRAND</strong></td>
+<td>2 1</td>
+<td>Normal, random values with mean A and std. deviation B</td>
+</tr>
+<tr><td><strong>OR</strong></td>
+<td>2 1</td>
+<td>NaN if B == NaN, else A</td>
+</tr>
+<tr><td><strong>PLM</strong></td>
+<td>3 1</td>
+<td>Associated Legendre polynomial P(A) degree B order C</td>
+</tr>
+<tr><td><strong>PLMg</strong></td>
+<td>3 1</td>
+<td>Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention)</td>
+</tr>
+<tr><td><strong>POP</strong></td>
+<td>1 0</td>
+<td>Delete top element from the stack</td>
+</tr>
+<tr><td><strong>POW</strong></td>
+<td>2 1</td>
+<td>A ^ B</td>
+</tr>
+<tr><td><strong>PQUANT</strong></td>
+<td>2 1</td>
+<td>The B’th Quantile (0-100%) of A</td>
+</tr>
+<tr><td><strong>PSI</strong></td>
+<td>1 1</td>
+<td>Psi (or Digamma) of A</td>
+</tr>
+<tr><td><strong>PV</strong></td>
+<td>3 1</td>
+<td>Legendre function Pv(A) of degree v = real(B) + imag(C)</td>
+</tr>
+<tr><td><strong>QV</strong></td>
+<td>3 1</td>
+<td>Legendre function Qv(A) of degree v = real(B) + imag(C)</td>
+</tr>
+<tr><td><strong>R2</strong></td>
+<td>2 1</td>
+<td>R2 = A^2 + B^2</td>
+</tr>
+<tr><td><strong>R2D</strong></td>
+<td>1 1</td>
+<td>Convert Radians to Degrees</td>
+</tr>
+<tr><td><strong>RAND</strong></td>
+<td>2 1</td>
+<td>Uniform random values between A and B</td>
+</tr>
+<tr><td><strong>RINT</strong></td>
+<td>1 1</td>
+<td>rint (A) (nearest integer)</td>
+</tr>
+<tr><td><strong>ROTT</strong></td>
+<td>2 1</td>
+<td>Rotate A by the (constant) shift B in the t-direction</td>
+</tr>
+<tr><td><strong>SEC</strong></td>
+<td>1 1</td>
+<td>sec (A) (A in radians)</td>
+</tr>
+<tr><td><strong>SECD</strong></td>
+<td>1 1</td>
+<td>sec (A) (A in degrees)</td>
+</tr>
+<tr><td><strong>SIGN</strong></td>
+<td>1 1</td>
+<td>sign (+1 or -1) of A</td>
+</tr>
+<tr><td><strong>SIN</strong></td>
+<td>1 1</td>
+<td>sin (A) (A in radians)</td>
+</tr>
+<tr><td><strong>SINC</strong></td>
+<td>1 1</td>
+<td>sinc (A) (sin (pi*A)/(pi*A))</td>
+</tr>
+<tr><td><strong>SIND</strong></td>
+<td>1 1</td>
+<td>sin (A) (A in degrees)</td>
+</tr>
+<tr><td><strong>SINH</strong></td>
+<td>1 1</td>
+<td>sinh (A)</td>
+</tr>
+<tr><td><strong>SKEW</strong></td>
+<td>1 1</td>
+<td>Skewness of A</td>
+</tr>
+<tr><td><strong>SQR</strong></td>
+<td>1 1</td>
+<td>A^2</td>
+</tr>
+<tr><td><strong>SQRT</strong></td>
+<td>1 1</td>
+<td>sqrt (A)</td>
+</tr>
+<tr><td><strong>STD</strong></td>
+<td>1 1</td>
+<td>Standard deviation of A</td>
+</tr>
+<tr><td><strong>STEP</strong></td>
+<td>1 1</td>
+<td>Heaviside step function H(A)</td>
+</tr>
+<tr><td><strong>STEPT</strong></td>
+<td>1 1</td>
+<td>Heaviside step function H(t-A)</td>
+</tr>
+<tr><td><strong>SUB</strong></td>
+<td>2 1</td>
+<td>A - B</td>
+</tr>
+<tr><td><strong>SUM</strong></td>
+<td>1 1</td>
+<td>Cumulative sum of A</td>
+</tr>
+<tr><td><strong>TAN</strong></td>
+<td>1 1</td>
+<td>tan (A) (A in radians)</td>
+</tr>
+<tr><td><strong>TAND</strong></td>
+<td>1 1</td>
+<td>tan (A) (A in degrees)</td>
+</tr>
+<tr><td><strong>TANH</strong></td>
+<td>1 1</td>
+<td>tanh (A)</td>
+</tr>
+<tr><td><strong>TN</strong></td>
+<td>2 1</td>
+<td>Chebyshev polynomial Tn(-1&lt;A&lt;+1) of degree B</td>
+</tr>
+<tr><td><strong>TCRIT</strong></td>
+<td>2 1</td>
+<td>Critical value for Student’s t-distribution, with alpha = A and n = B</td>
+</tr>
+<tr><td><strong>TDIST</strong></td>
+<td>2 1</td>
+<td>Student’s t-distribution A(t,n), with t = A, and n = B</td>
+</tr>
+<tr><td><strong>UPPER</strong></td>
+<td>1 1</td>
+<td>The highest (maximum) value of A</td>
+</tr>
+<tr><td><strong>XOR</strong></td>
+<td>2 1</td>
+<td>B if A == NaN, else A</td>
+</tr>
+<tr><td><strong>Y0</strong></td>
+<td>1 1</td>
+<td>Bessel function of A (2nd kind, order 0)</td>
+</tr>
+<tr><td><strong>Y1</strong></td>
+<td>1 1</td>
+<td>Bessel function of A (2nd kind, order 1)</td>
+</tr>
+<tr><td><strong>YN</strong></td>
+<td>2 1</td>
+<td>Bessel function of A (2nd kind, order B)</td>
+</tr>
+<tr><td><strong>ZCRIT</strong></td>
+<td>1 1</td>
+<td>Critical value for the normal-distribution, with alpha = A</td>
+</tr>
+<tr><td><strong>ZDIST</strong></td>
+<td>1 1</td>
+<td>Cumulative normal-distribution C(x), with x = A</td>
+</tr>
+<tr><td><strong>ROOTS</strong></td>
+<td>2 1</td>
+<td>Treats col A as f(t) = 0 and returns its roots</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">Symbols</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>The following symbols have special meaning:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="68%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><strong>PI</strong></td>
+<td>3.1415926...</td>
+</tr>
+<tr><td><strong>E</strong></td>
+<td>2.7182818...</td>
+</tr>
+<tr><td><strong>EULER</strong></td>
+<td>0.5772156...</td>
+</tr>
+<tr><td><strong>TMIN</strong></td>
+<td>Minimum t value</td>
+</tr>
+<tr><td><strong>TMAX</strong></td>
+<td>Maximum t value</td>
+</tr>
+<tr><td><strong>TINC</strong></td>
+<td>t increment</td>
+</tr>
+<tr><td><strong>N</strong></td>
+<td>The number of records</td>
+</tr>
+<tr><td><strong>T</strong></td>
+<td>Table with t-coordinates</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc8">Ascii Format Precision</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <strong>gmt.conf</strong> file. Longitude and latitude are formatted
+according to <strong>FORMAT_GEO_OUT</strong>, whereas other values are formatted
+according to <strong>FORMAT_FLOAT_OUT</strong>. Be aware that the format in effect
+can lead to loss of precision in the output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <strong>FORMAT_FLOAT_OUT</strong> setting.</p>
+</div>
+<div class="section" id="id9">
+<h2><a class="reference external" href="#toc9">Notes On Operators</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>(1) The operators <strong>PLM</strong> and <strong>PLMg</strong> calculate the associated Legendre
+polynomial of degree L and order M in x which must satisfy -1 &lt;= x &lt;= +1
+and 0 &lt;= M &lt;= L. x, L, and M are the three arguments preceding the
+operator. <strong>PLM</strong> is not normalized and includes the Condon-Shortley
+phase (-1)^M. <strong>PLMg</strong> is normalized in the way that is most commonly
+used in geophysics. The C-S phase can be added by using -M as argument.
+<strong>PLM</strong> will overflow at higher degrees, whereas <strong>PLMg</strong> is stable
+until ultra high degrees (at least 3000).</p>
+<p>(2) Files that have the same names as some operators, e.g., <strong>ADD</strong>,
+<strong>SIGN</strong>, <strong>=</strong>, etc. should be identified by prepending the current
+directory (i.e., ./LOG).</p>
+<ol class="arabic simple" start="3">
+<li>The stack depth limit is hard-wired to 100.</li>
+</ol>
+<p>(4) All functions expecting a positive radius (e.g., <strong>LOG</strong>, <strong>KEI</strong>,
+etc.) are passed the absolute value of their argument.</p>
+<p>(5) The <strong>DDT</strong> and <strong>D2DT2</strong> functions only work on regularly spaced
+data.</p>
+<p>(6) All derivatives are based on central finite differences, with
+natural boundary conditions.</p>
+<p>(7) <strong>ROOTS</strong> must be the last operator on the stack, only followed by
+<strong>=</strong>.</p>
+</div>
+<div class="section" id="id10">
+<h2><a class="reference external" href="#toc10">Macros</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<p>Users may save their favorite operator combinations as macros via the
+file .gmtmath in their current or user directory. The file may contain
+any number of macros (one per record); comment lines starting with # are
+skipped. The format for the macros is <strong>name</strong> = <strong>arg1 arg2 ... arg2</strong>
+: <em>comment</em> where <strong>name</strong> is how the macro will be used. When this
+operator appears on the command line we simply replace it with the
+listed argument list. No macro may call another macro. As an example,
+the following macro expects that the time-column contains seafloor ages
+in Myr and computes the predicted half-space bathymetry:</p>
+<p><strong>DEPTH</strong> = <strong>SQRT 350 MUL 2500 ADD NEG</strong> : <em>usage: DEPTH to return
+half-space seafloor depths</em></p>
+</div>
+<div class="section" id="id11">
+<h2><a class="reference external" href="#toc11">Examples</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p>To take the square root of the content of the second data column being
+piped through <strong>gmtmath</strong> by process1 and pipe it through a 3rd process,
+use</p>
+<p>process1 | gmtmath STDIN SQRT = | process3</p>
+<p>To take log10 of the average of 2 data files, use</p>
+<p>gmtmath file1.d file2.d ADD 0.5 MUL LOG10 = file3.d</p>
+<p>Given the file samples.d, which holds seafloor ages in m.y. and seafloor
+depth in m, use the relation depth(in m) = 2500 + 350 * sqrt (age) to
+print the depth anomalies:</p>
+<p>gmtmath samples.d T SQRT 350 MUL 2500 ADD SUB = | lpr</p>
+<p>To take the average of columns 1 and 4-6 in the three data sets sizes.1,
+sizes.2, and sizes.3, use</p>
+<p>gmtmath -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.d</p>
+<p>To take the 1-column data set ages.d and calculate the modal value and
+assign it to a variable, try</p>
+<p>set mode_age = ‘gmtmath -S -T ages.d MODE =‘</p>
+<p>To evaluate the dilog(x) function for coordinates given in the file t.d:</p>
+<p>gmtmath -Tt.d T DILOG = dilog.d</p>
+<p>To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no
+input files) and calculate arbitrary expressions, use the <strong>-Q</strong> option.
+As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) +
+cos (60)) and store the result in the shell variable z:</p>
+<p>set z = ‘gmtmath -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =‘</p>
+<p>To use <strong>gmtmath</strong> as a general least squares equation solver, imagine
+that the current table is the augmented matrix [ A | b ] and you want
+the least squares solution x to the matrix equation A * x = b. The
+operator <strong>LSQFIT</strong> does this; it is your job to populate the matrix
+correctly first. The <strong>-A</strong> option will facilitate this. Suppose you
+have a 2-column file ty.d with <em>t</em> and <em>b(t)</em> and you would like to fit
+a the model y(t) = a + b*t + c*H(t-t0), where H is the Heaviside step
+function for a given t0 = 1.55. Then, you need a 4-column augmented
+table loaded with t in column 0 and your observed y(t) in column 3. The
+calculation becomes</p>
+<p>gmtmath -N4/1 -Aty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT =
+solution.d</p>
+<p>Note we use the <strong>-C</strong> option to select which columns we are working on,
+then make active all the columns we need (here all of them, with
+<strong>-Ca</strong>) before calling <strong>LSQFIT</strong>. The second and fourth columns (col
+numbers 1 and 3) are preloaded with t and y(t), respectively, the other
+columns are zero. If you already have a pre-calculated table with the
+augmented matrix [ A | b ] in a file (say lsqsys.d), the least squares
+solution is simply</p>
+<p><strong>gmtmath</strong> <strong>-T</strong> lsqsys.d <strong>LSQFIT =</strong> solution.d</p>
+</div>
+<div class="section" id="id12">
+<h2><a class="reference external" href="#toc12">References</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<p>Abramowitz, M., and I. A. Stegun, 1964, <em>Handbook of Mathematical
+Functions</em>, Applied Mathematics Series, vol. 55, Dover, New York.
+Holmes, S. A., and W. E. Featherstone, 2002, A unified approach to the
+Clenshaw summation and the recursive computation of very high degree and
+order normalized associated Legendre functions. <em>Journal of Geodesy</em>,
+76, 279-299.
+Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery,
+1992, <em>Numerical Recipes</em>, 2nd edition, Cambridge Univ., New York.
+Spanier, J., and K. B. Oldman, 1987, <em>An Atlas of Functions</em>,
+Hemisphere Publishing Corp.</p>
+</div>
+<div class="section" id="id13">
+<h2><a class="reference external" href="#toc13">See Also</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="gmt.html">*gmt*</a> , <a class="reference external" href="grdmath.html">*grdmath*</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gmtmath</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Operators</a></li>
+<li><a class="reference internal" href="#id7">Symbols</a></li>
+<li><a class="reference internal" href="#id8">Ascii Format Precision</a></li>
+<li><a class="reference internal" href="#id9">Notes On Operators</a></li>
+<li><a class="reference internal" href="#id10">Macros</a></li>
+<li><a class="reference internal" href="#id11">Examples</a></li>
+<li><a class="reference internal" href="#id12">References</a></li>
+<li><a class="reference internal" href="#id13">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gmtlogo.html"
+                        title="previous chapter">gmtlogo</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gmtselect.html"
+                        title="next chapter">gmtselect</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/gmtmath.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gmtselect.html" title="gmtselect"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gmtlogo.html" title="gmtlogo"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

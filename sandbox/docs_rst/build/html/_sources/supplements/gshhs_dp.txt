@@ -1,0 +1,81 @@
+`Table of Contents <#toc>`_
+
+`Name <#toc0>`_
+---------------
+
+gshhs\_dp - Line reduction using the Douglas-Peucker algorithm
+
+`Synopsis <#toc1>`_
+-------------------
+
+**gshhs\_dp** *input.b tolerance output.b* [ **-v** ]
+
+`Description <#toc2>`_
+----------------------
+
+**gshhs\_dp** reads the binary coastline (GSHHS) or political boundary
+or river (WDBII) files and and reduces the complexity of the line by
+applying the Douglas-Peucker algorithm. It automatically handles
+byte-swabbing between different architectures.
+
+`Required Arguments <#toc3>`_
+-----------------------------
+
+*input.b*
+    GSHHS or WDBII binary data file as distributed with the GSHHS data
+    supplement. Any of the 5 standard resolutions (full, high,
+    intermediate, low, crude) can be used.
+*tolerance*
+    tolerance is maximum mismatch in km. The larger the value the more
+    reduction will take place.
+*output.b*
+    The reducted data set.
+
+`Optional Arguments <#toc4>`_
+-----------------------------
+
+**-v**
+    Reports progress and statistics while running.
+
+`Examples <#toc5>`_
+-------------------
+
+To simplify the full GSHHS data set with a custom tolerance of 2 km, try
+
+**gshhs\_dp** *gshhs\_f.b 2 gshhs\_2km.b*
+
+`References <#toc6>`_
+---------------------
+
+Douglas, D. H., and T. K. Peucker, Algorithms for the reduction of the
+number of points required to represent a digitized line of its
+caricature, *Can. Cartogr.*, **10**, 112-122, 1973.
+
+`Author <#toc7>`_
+-----------------
+
+This implementation of the D-P algorithm has been kindly provided by Dr.
+Gary J. Robinson, Environmental Systems Science Centre, University of
+Reading, Reading, UK (gazza@mail.nerc-essc.ac.uk); his subroutine forms
+the basis for this program.
+
+`See Also <#toc8>`_
+-------------------
+
+`*GMT*\ (1) <GMT.1.html>`_ , `*gshhs*\ (1) <gshhs.1.html>`_ ,
+`*gshhstograss*\ (1) <gshhstograss.1.html>`_
+
+--------------
+
+**Table of Contents**
+
+-  `Name <#sect0>`_
+-  `Synopsis <#sect1>`_
+-  `Description <#sect2>`_
+-  `Required Arguments <#sect3>`_
+-  `Optional Arguments <#sect4>`_
+-  `Examples <#sect5>`_
+-  `References <#sect6>`_
+-  `Author <#sect7>`_
+-  `See Also <#sect8>`_
+

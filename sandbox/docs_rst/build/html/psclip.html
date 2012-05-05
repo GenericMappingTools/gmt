@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>psclip &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="pscoast" href="pscoast.html" />
+    <link rel="prev" title="psbasemap" href="psbasemap.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="pscoast.html" title="pscoast"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="psbasemap.html" title="psbasemap"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="psclip">
+<h1>psclip<a class="headerlink" href="#psclip" title="Permalink to this headline">¶</a></h1>
+<p>psclip - Initialize or terminate polygonal clip paths</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>psclip</strong> [ <em>table</em> ] <strong>-J</strong><em>parameters</em>
+<strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>] [
+<strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ] [
+<strong>-Jz</strong>|<strong>Z</strong><em>parameters</em> ] [ <strong>-K</strong> ] [ <strong>-N</strong> ] [ <strong>-O</strong> ] [
+<strong>-P</strong> ] [ <strong>-T</strong> ] [ <strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] ]
+[ <strong>-V</strong>[<em>level</em>] ] [
+<strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]
+] [
+<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]]
+] [ <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] ] [ <strong>-c</strong><em>copies</em>] [
+<strong>-f</strong><em>colinfo</em> ] [
+<strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
+] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
+<strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
+] [
+<strong>-p</strong><em>azim</em>/<em>elev</em>[/<em>zlevel</em>][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>]
+] [ <strong>-t</strong>[<em>transp</em>] ] [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>psclip</strong> <strong>-C</strong>[<strong>c</strong>|<strong>s</strong>|[<strong>a</strong>|<em>n</em>] [ <strong>-K</strong> ] [
+<strong>-O</strong> ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>psclip</strong> reads (x,y) file(s) [or standard input] and draws polygons
+that are activated as clipping paths. Several files may be read to
+create complex paths consisting of several non-connecting segments. Only
+marks that are subsequently drawn inside the clipping path will be
+shown. To determine what is inside or outside the clipping path,
+<strong>psclip</strong> uses the even-odd rule. When a ray drawn from any point,
+regardless of direction, crosses the clipping path segments an odd
+number of times, the point is inside the clipping path. If the number is
+even, the point is outside. The <strong>-N</strong> option, reverses the sense of
+what is the inside and outside of the paths by plotting a clipping path
+along the map boundary. After subsequent plotting, which will be clipped
+against these paths, the clipping may be deactivated by running
+<strong>psclip</strong> a second time with the <strong>-C</strong> option only.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-C</strong>[<strong>c</strong>|<strong>s</strong>[<strong>a</strong>|<em>n</em>]</dt>
+<dd>Mark end of existing clip path(s). No input file will be processed.
+No projection information is needed unless <strong>-B</strong> has been selected
+as well. Append <strong>c</strong> (for curved text) or <strong>s</strong> (for straight text)
+to plot text previously used to lay down a clip path (e.g., via
+contouring, pstext, or psxy <strong>-Sq</strong>). The curved text option
+(<strong>-Cc</strong>) is only required if psxy <strong>-Sq</strong> was run with the <strong>+v</strong>
+modifier; the pstext and contouring mechanisms use straight text.
+Both <strong>-Cc</strong> and <strong>-Cs</strong> assumes only one level of text clipping was
+initialized and we thus reduce the clip level by one. To undo one
+level of polygon clipping (perhaps initiated by earlier psclip,
+pscoast, or psmask calls) use <strong>-C</strong>. You can undo all clip levels
+with <strong>-Ca</strong> or a specific number with <strong>-C</strong><em>n</em>. Also supply
+<strong>-X</strong> and <strong>-Y</strong> settings if you have moved since the clip started.</dd>
+<dt><strong>-J</strong><em>parameters</em> (*)</dt>
+<dd>Select map projection.</dd>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
+<dd>Specify the region of interest.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
+table file(s) holding a number of data columns. If no tables are
+given then we read from standard input.</dd>
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> (*)</dt>
+<dd>Set map boundary intervals.</dd>
+<dt><strong>-Jz</strong>|<strong>Z</strong><em>parameters</em> (*)</dt>
+<dd>Set z-axis scaling; same syntax as <strong>-Jx</strong>.</dd>
+<dt><strong>-K</strong> (*)</dt>
+<dd>Do not finalize the <em>PostScript</em> plot.</dd>
+<dt><strong>-N</strong></dt>
+<dd>Invert the sense of what is inside and outside. For example, when
+using a single path, this means that only points outside that path
+will be shown. Cannot be used together with <strong>-B</strong>.</dd>
+<dt><strong>-O</strong> (*)</dt>
+<dd>Append to existing <em>PostScript</em> plot.</dd>
+<dt><strong>-P</strong> (*)</dt>
+<dd>Select &#8220;Portrait&#8221; plot orientation.</dd>
+<dt><strong>-T</strong></dt>
+<dd>Rather than read any input files, simply turn on clipping for the
+current map region. Basically, <strong>-T</strong> is a convenient way to run
+<strong>psclip</strong> with the arguments <strong>-N</strong> /dev/null (or, under Windows,
+<strong>-N</strong> NUL). Cannot be used together with <strong>-B</strong>.</dd>
+<dt><strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] (*)</dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+</dl>
+<p><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]
+<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] (*)</p>
+<blockquote>
+<div>Shift plot origin.</div></blockquote>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select binary input. [Default is 2 input columns].</dd>
+<dt><strong>-c</strong><em>copies</em> (*)</dt>
+<dd>Specify number of plot copies [Default is 1].</dd>
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
+<dd>Specify data types of input and/or output columns.</dd>
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] (*)</dt>
+<dd>Determine data gaps and line breaks.</dd>
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
+<dd>Skip or produce header record(s).</dd>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dd>Select input columns.</dd>
+<dt><strong>-p</strong><em>azim</em>/<em>elev</em>[/<em>zlevel</em>][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] (*)</dt>
+<dd>Select perspective view.</dd>
+<dt><strong>-t</strong>[<em>transp</em>] (*)</dt>
+<dd>Set PDF transparency level.</dd>
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] (*)</dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>To make an overlay <em>PostScript</em> file that will set up a complex clip
+area to which subsequent plotting will be confined, run:</p>
+<p>psclip my_region.xy -R0/40/0/40 -Jm0.3i -O -K &gt; clip_mask_on.ps</p>
+<p>To deactivate the clipping in an existing plotfile, run:</p>
+<p>psclip -C -O &gt;&gt; complex_plot.ps</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">Bugs</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p><strong>psclip</strong> cannot handle polygons that contain the south or north pole.
+For such polygons, you should split them into two and make each
+explicitly contain the polar point. The two clip polygons will combine
+to give the desired effect.</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="grdmask.1.html">*grdmask*(1)</a> ,
+<a class="reference external" href="psbasemap.1.html">*psbasemap*(1)</a> ,
+<a class="reference external" href="psmask.1.html">*psmask*(1)</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">psclip</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Examples</a></li>
+<li><a class="reference internal" href="#id7">Bugs</a></li>
+<li><a class="reference internal" href="#id8">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="psbasemap.html"
+                        title="previous chapter">psbasemap</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pscoast.html"
+                        title="next chapter">pscoast</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/psclip.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="pscoast.html" title="pscoast"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="psbasemap.html" title="psbasemap"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

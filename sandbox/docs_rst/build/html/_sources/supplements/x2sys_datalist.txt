@@ -1,0 +1,193 @@
+`Table of Contents <#toc>`_
+
+`Name <#toc0>`_
+---------------
+
+x2sys\_datalist - Extract content of track data files
+
+`Synopsis <#toc1>`_
+-------------------
+
+**x2sys\_datalist** *track(s)* **-T**\ *TAG* [ **-A** ] [
+**-F**\ *name1*,\ *name2*,...) ] [ **-L**\ [*corrtable*\ ] ] [
+**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-S** ] [
+**-V**\ [*level*\ ] ] [ **-bo**\ [*ncol*\ ][**t**\ ] ] [
+**-h**\ [**i**\ \|\ **o**][*n*\ ] ]
+
+`Description <#toc2>`_
+----------------------
+
+**x2sys\_datalist** reads one or more files and produces a single ASCII
+[or binary] table. The files can be of any format, which must be
+described and passed with the **-T** option. You may limit the output to
+a geographic region, and insist that the output from several files be
+separated by a multiple segment header. Only the named data fields will
+be output [Default selects all columns].
+
+`Common Arguments And Specifications <#toc3>`_
+----------------------------------------------
+
+All options marked with an asterisk (\*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the **gmt** man page. Note: No
+space is allowed between the option flag and the associated arguments.
+
+`Required Arguments <#toc4>`_
+-----------------------------
+
+*tracks*
+    Can be one or more ASCII, native binary, or COARDS netCDF 1-D data
+    files. To supply the data files via a text file with a list of
+    tracks (one per record), specify the name of the track list after a
+    leading equal-sign (e.g., =tracks.lis). If the names are missing
+    their file extension we will append the suffix specified for this
+    *TAG*. Track files will be searched for first in the current
+    directory and second in all directories listed in
+    **$X2SYS\_HOME**/*TAG*/*TAG*\ \_paths.txt (if it exists). [If
+    **$X2SYS\_HOME** is not set it will default to
+    **$GMT\_SHAREDIR**/x2sys]. (Note: MGD77 files will also be looked
+    for via **MGD77\_HOME**/mgd77\_paths.txt and \*.gmt files will be
+    searched for via **$GMT\_SHAREDIR**/mgg/gmtfile\_paths).
+**-T**\ *TAG*
+    Specify the x2sys *TAG* which tracks the attributes of this data
+    type.
+
+`Optional Arguments <#toc5>`_
+-----------------------------
+
+**-A**
+    Eliminate COEs by distributing the COE between the two tracks in
+    proportion to track weight. These (dist, adjustment) spline knots
+    files for each track and data column are called *track.column*.adj
+    and are expected to be in the **$X2SYS\_HOME**/*TAG* directory. The
+    adjustments are only applied if the corresponding adjust file can be
+    found [No residual adjustments]
+**-F**\ *name1*,\ *name2*,...)
+    Give a comma-separated sub-set list of column names defined in the
+    definition file. [Default selects all data columns].
+**-L**\ [*corrtable*\ ]
+    Apply optimal corrections to columns where such corrections are
+    available. Append the correction table to use [Default uses the
+    correction table *TAG*\ \_corrections.txt which is expected to
+    reside in the **$X2SYS\_HOME**/*TAG* directory]. For the format of
+    this file, see CORRECTIONS below.
+**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
+    *west*, *east*, *south*, and *north* specify the region of interest,
+    and you may specify them in decimal degrees or in
+    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
+    and upper right map coordinates are given instead of w/e/s/n. The
+    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
+    and -180/+180 in longitude respectively, with -90/+90 in latitude).
+    Alternatively, specify the name of an existing grid file and the
+    **-R** settings (and grid spacing, if applicable) are copied from
+    the grid. For Cartesian data just give *xmin/xmax/ymin/ymax*. This
+    option limits the COEs to those that fall inside the specified
+    domain.
+**-S**
+    Suppress output records where all the data columns are NaN [Default
+    will output all records].
+**-V**\ [*level*\ ] (\*)
+    Select verbosity level [1].
+**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+    Select binary output.
+**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
+    Skip or produce header record(s).
+**-m**
+    Output a segment header between data from each track. Note this
+    option does not imply anything about the input file; that
+    information is conveyed via the system tag (**-T**).
+**-^** (\*)
+    Print a short message about the syntax of the command, then exits.
+**-?** (\*)
+    Print a full usage (help) message, including the explanation of
+    options, then exits.
+
+`Examples <#toc6>`_
+-------------------
+
+To extract all data from the old-style MGG supplement file c2104.gmt,
+recognized by the tag GMT:
+
+**x2sys\_datalist** c2104.gmt **-T**\ GMT > myfile
+
+To make lon,lat, and depth input for **blockmean** and **surface** using
+all the files listed in the file tracks.lis and define by the tag TRK,
+but only the data that are inside the specified area, and make output
+binary, run
+
+**x2sys\_datalist** =tracks.lis **-T**\ TRK **-F**\ lon,lat,depth
+**-R**-40/-30/25/35 **-bo** > alltopo\_bin.xyz
+
+`Corrections <#toc7>`_
+----------------------
+
+The correction table is an ASCII file with coefficients and parameters
+needed to carry out corrections. This table is usually produced by
+**x2sys\_solve**. Comment records beginning with # are allowed. All
+correction records are of the form
+
+*trackID observation correction*
+
+where *trackID* is the track name, *observation* is one of the
+abbreviations for an observed field contained in files under this TAG,
+and *correction* consists of one or more white-space-separated *term*\ s
+that will be **subtracted** from the observation before output. Each
+*term* must have this exact syntax:
+
+*factor*\ [\*[*function*\ ]([*scale*\ ](\ *abbrev*\ [-*origin*]))[^\ *power*]]
+
+where terms in brackets are optional (the brackets themselves are not
+used but regular parentheses must be used exactly as indicated). No
+spaces are allowed except between *term*\ s. The *factor* is the
+amplitude of the basis function, while the optional *function* can be
+one of sin, cos, or exp. The optional *scale* and *origin* can be used
+to translate the argument (before giving it to the optional function).
+The argument *abbrev* is one of the abbreviations for columns known to
+this TAG. However, it can also be one of the three auxiliary terms
+**dist** (for along-track distances), **azim** for along-track azimuths,
+and **vel** (for along-track speed); these are all sensitive to the
+**-C** and **-N** settings used when defining the TAB; furthermore,
+**vel** requires **time** to be present in the data. If *origin* is
+given as **T** it means that we should replace it with the value of
+*abbrev* for the very first record in the file (this is usually only
+done for *time*). If the first data record entry is NaN we revert
+*origin* to zero. Optionally, raise the entire expression to the given
+*power*, before multiplying by *factor*. The following is an example of
+fictitious corrections to the track ABC, implying the **z** column
+should have a linear trend removed, the field **obs** should be
+corrected by a strange dependency on latitude, **weight** needs to have
+1 added (hence correction is given as -1), and **fuel** should be
+reduced by a linear distance term:
+
+ABC z\ `` `` `` `` 7.1\ `` `` `` `` 1e-4\*((time-T))
+ ABC obs\ `` `` `` `` 0.5\*exp(-1e-3(lat))^1.5
+ ABC weight\ `` `` `` `` -1
+ ABC fuel 0.02\*((dist))
+
+`See Also <#toc8>`_
+-------------------
+
+`*blockmean*\ (1) <blockmean.1.html>`_ , `*GMT*\ (1) <GMT.1.html>`_ ,
+`*surface*\ (1) <surface.1.html>`_ ,
+`*x2sys\_init*\ (1) <x2sys_init.1.html>`_ ,
+`*x2sys\_datalist*\ (1) <x2sys_datalist.1.html>`_ ,
+`*x2sys\_get*\ (1) <x2sys_get.1.html>`_ ,
+`*x2sys\_list*\ (1) <x2sys_list.1.html>`_ ,
+`*x2sys\_put*\ (1) <x2sys_put.1.html>`_ ,
+`*x2sys\_report*\ (1) <x2sys_report.1.html>`_ ,
+`*x2sys\_solve*\ (1) <x2sys_solve.1.html>`_
+
+--------------
+
+**Table of Contents**
+
+-  `Name <#sect0>`_
+-  `Synopsis <#sect1>`_
+-  `Description <#sect2>`_
+-  `Common Arguments And Specifications <#sect3>`_
+-  `Required Arguments <#sect4>`_
+-  `Optional Arguments <#sect5>`_
+-  `Examples <#sect6>`_
+-  `Corrections <#sect7>`_
+-  `See Also <#sect8>`_
+

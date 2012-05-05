@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>grdfft &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="grdfilter" href="grdfilter.html" />
+    <link rel="prev" title="grdedit" href="grdedit.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdfilter.html" title="grdfilter"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="grdedit.html" title="grdedit"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="grdfft">
+<h1>grdfft<a class="headerlink" href="#grdfft" title="Permalink to this headline">¶</a></h1>
+<p>grdfft - Do mathematical operations on grids in the wavenumber (or
+frequency) domain</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdfft</strong> <em>ingrid</em> <strong>-G</strong><em>outgrid</em> [ <strong>-A</strong><em>azimuth</em> ] [
+<strong>-C</strong><em>zlevel</em> ] [ <strong>-D</strong>[<em>scale</em><strong>|g</strong>] ] [
+<strong>-E</strong>[<strong>x|y</strong>][<strong>w</strong>] ] [ <strong>-F</strong>[<strong>x</strong>|<strong>y</strong>]<em>params</em> ]
+[ <strong>-I</strong>[<em>scale</em><strong>|g</strong>] ] [ <strong>-L</strong> ] [ <strong>-N</strong><em>stuff</em> ] [
+<strong>-S</strong><em>scale</em> ] [ <strong>-T</strong><em>te/rl/rm/rw/ri</em> ] [ <strong>-V</strong>[<em>level</em>] ] [
+<strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdfft</strong> will take the 2-D forward Fast Fourier Transform and perform
+one or more mathematical operations in the frequency domain before
+transforming back to the space domain. An option is provided to scale
+the data before writing the new values to an output file. The horizontal
+dimensions of the grid are assumed to be in meters. Geographical grids
+may be used by specifying the <strong>-f</strong> option that scales degrees to
+meters. If you have grids with dimensions in km, you could change this
+to meters using <strong>grdedit</strong> or scale the output with <strong>grdmath</strong>.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>ingrid</em></dt>
+<dd>2-D binary grid file to be operated on. (See GRID FILE FORMATS
+below).</dd>
+<dt><strong>-G</strong><em>outgrid</em></dt>
+<dd>Specify the name of the output grid file or the 1-D spectrum file
+(see <strong>-E</strong>). (See GRID FILE FORMATS below).</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-A</strong><em>azimuth</em></dt>
+<dd>Take the directional derivative in the <em>azimuth</em> direction measured
+in degrees CW from north.</dd>
+<dt><strong>-C</strong><em>zlevel</em></dt>
+<dd>Upward (for <em>zlevel</em> &gt; 0) or downward (for <em>zlevel</em> &lt; 0) continue
+the field <em>zlevel</em> meters.</dd>
+<dt><strong>-D</strong>[<em>scale</em><strong>|g</strong>]</dt>
+<dd>Differentiate the field, i.e., take d(field)/dz. This is equivalent
+to multiplying by kr in the frequency domain (kr is radial wave
+number). Append a scale to multiply by (kr * <em>scale</em>) instead.
+Alternatively, append <strong>g</strong> to indicate that your data are geoid
+heights in meters and output should be gravity anomalies in mGal.
+[Default is no scale].</dd>
+<dt><strong>-E</strong>[<strong>x|y</strong>][<strong>w</strong>]</dt>
+<dd>Estimate power spectrum in the radial direction. Place <strong>x</strong> or
+<strong>y</strong> immediately after <strong>-E</strong> to compute the spectrum in the x or y
+direction instead. No grid file is created; f (i.e., frequency or
+wave number), power[f], and 1 standard deviation in power[f] are
+written to file set by <strong>-G</strong> [stdout]. Append <strong>w</strong> to write
+wavelength instead of frequency.</dd>
+<dt><strong>-F</strong>[<strong>x</strong>|<strong>y</strong>]<em>params</em></dt>
+<dd>Filter the data. Place <strong>x</strong> or <strong>y</strong> immediately after <strong>-F</strong> to
+filter <em>x</em> or <em>y</em> direction only; default is isotropic. Choose
+between a cosine-tapered band-pass, a Gaussian band-pass filter, or
+a Butterworth band-pass filter. Cosine-taper: Specify four
+wavelengths <em>lc</em>/<em>lp</em>/<em>hp</em>/<em>hc</em> in correct units (see <strong>-fg</strong>) to
+design a bandpass filter: wavelengths greater than <em>lc</em> or less than
+<em>hc</em> will be cut, wavelengths greater than <em>lp</em> and less than <em>hp</em>
+will be passed, and wavelengths in between will be cosine-tapered.
+E.g., <strong>-F</strong>1000000/250000/50000/10000 <strong>-fg</strong> will bandpass,
+cutting wavelengths &gt; 1000 km and &lt; 10 km, passing wavelengths
+between 250 km and 50 km. To make a highpass or lowpass filter, give
+hyphens (-) for <em>hp</em>/<em>hc</em> or <em>lc</em>/<em>lp</em>. E.g., <strong>-Fx</strong>-/-/50/10 will
+lowpass <em>x</em>, passing wavelengths &gt; 50 and rejecting wavelengths &lt;
+10. <strong>-Fy</strong>1000/250/-/- will highpass <em>y</em>, passing wavelengths &lt;
+250 and rejecting wavelengths &gt; 1000. Gaussian band-pass: Append
+<em>lo</em>/<em>hi</em>, the two wavelengths in correct units (see <strong>-fg</strong>) to
+design a bandpass filter. At the given wavelengths the Gaussian
+filter weights will be 0.5. To make a highpass or lowpass filter,
+give a hyphen (-) for the <em>hi</em> or <em>lo</em> wavelength, respectively.
+E.g., <strong>-F</strong>-/30 will lowpass the data using a Gaussian filter with
+half-weight at 30, while <strong>-F</strong>400/- will highpass the data.
+Butterworth band-pass: Append <em>lo</em>/<em>hi</em>/<em>order</em>, the two wavelengths
+in correct units (see <strong>-fg</strong>) and the filter order (an integer) to
+design a bandpass filter. At the given wavelengths the Butterworth
+filter weights will be 0.5. To make a highpass or lowpass filter,
+give a hyphen (-) for the <em>hi</em> or <em>lo</em> wavelength, respectively.
+E.g., <strong>-F</strong>-/30/2 will lowpass the data using a 2nd-order
+Butterworth filter, with half-weight at 30, while <strong>-F</strong>400/-/2
+will highpass the data.</dd>
+<dt><strong>-I</strong>[<em>scale</em><strong>|g</strong>]</dt>
+<dd>Integrate the field, i.e., compute integral_over_z (field * dz).
+This is equivalent to divide by kr in the frequency domain (kr is
+radial wave number). Append a scale to divide by (kr * <em>scale</em>)
+instead. Alternatively, append <strong>g</strong> to indicate that your data set
+is gravity anomalies in mGal and output should be geoid heights in
+meters. [Default is no scale].</dd>
+<dt><strong>-L</strong></dt>
+<dd>Leave trend alone. By default, a linear trend will be removed prior
+to the transform.</dd>
+<dt><strong>-N</strong><em>stuff</em></dt>
+<dd>Choose or inquire about suitable grid dimensions for FFT. <strong>-Nf</strong>
+will force the FFT to use the dimensions of the data. <strong>-Nq</strong> will
+inQuire about more suitable dimensions. <strong>-N</strong><em>nx/ny</em> will do FFT
+on array size <em>nx/ny</em> (Must be &gt;= grid file size). Default chooses
+dimensions &gt;= data which optimize speed, accuracy of FFT. If FFT
+dimensions &gt; grid file dimensions, data are extended and tapered to
+zero.</dd>
+<dt><strong>-S</strong><em>scale</em></dt>
+<dd>Multiply each element by <em>scale</em> in the space domain (after the
+frequency domain operations). [Default is 1.0].</dd>
+<dt><strong>-T</strong><em>te/rl/rm/rw/ri</em></dt>
+<dd>Compute the isostatic compensation from the topography load (input
+grid file) on an elastic plate of thickness <em>te</em>. Also append
+densities for load, mantle, water, and infill in SI units. If <em>te</em>
+== 0 then the Airy response is returned. <strong>-T</strong> implicitly sets
+<strong>-L</strong>.</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Grid File Formats</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>By default <strong>GMT</strong> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <strong>GMT</strong> is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called &#8220;packing&#8221; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision, scale and
+offset, the user should add the suffix
+<strong>=</strong><em>id</em>[<strong>/</strong><em>scale</em><strong>/</strong><em>offset</em>[<strong>/</strong><em>nan</em>]], where
+<em>id</em> is a two-letter identifier of the grid type and precision, and
+<em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
+to all grid values, and <em>nan</em> is the value used to indicate missing
+data. When reading grids, the format is generally automatically
+recognized. If not, the same suffix can be added to input grid file
+names. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
+of the GMT Technical Reference and Cookbook for more information.</p>
+<p>When reading a netCDF file that contains multiple grids, <strong>GMT</strong> will
+read, by default, the first 2-dimensional grid that can find in that
+file. To coax <strong>GMT</strong> into reading another multi-dimensional variable in
+the grid file, append <strong>?</strong><em>varname</em> to the file name, where <em>varname</em>
+is the name of the variable. Note that you may need to escape the
+special meaning of <strong>?</strong> in your shell program by putting a backslash in
+front of it, or by placing the filename and suffix between quotes or
+double quotes. The <strong>?</strong><em>varname</em> suffix can also be used for output
+grids to specify a variable name different from the default: &#8220;z&#8221;. See
+<a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.18 of the GMT
+Technical Reference and Cookbook for more information, particularly on
+how to read splices of 3-, 4-, or 5-dimensional grids.</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc7">Considerations</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>netCDF COARDS grids will automatically be recognized as geographic. For
+other grids geographical grids were you want to convert degrees into
+meters, select <strong>-fg</strong>. If the data are close to either pole, you should
+consider projecting the grid file onto a rectangular coordinate system
+using <strong>grdproject</strong>.</p>
+</div>
+<div class="section" id="id9">
+<h2><a class="reference external" href="#toc8">Examples</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>To upward continue the sea-level magnetic anomalies in the file
+mag_0.nc to a level 800 m above sealevel:</p>
+<p>grdfft mag_0.nc -C800 -V -Gmag_800.nc</p>
+<p>To transform geoid heights in m (geoid.nc) on a geographical grid to
+free-air gravity anomalies in mGal:</p>
+<p>grdfft geoid.nc -Dg -V -Ggrav.nc</p>
+<p>To transform gravity anomalies in mGal (faa.nc) to deflections of the
+vertical (in micro-radians) in the 038 direction, we must first
+integrate gravity to get geoid, then take the directional derivative,
+and finally scale radians to micro-radians:</p>
+<p>grdfft faa.nc -Ig38 -S1e6 -V -Gdefl_38.nc</p>
+<p>Second vertical derivatives of gravity anomalies are related to the
+curvature of the field. We can compute these as mGal/m^2 by
+differentiating twice:</p>
+<p>grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc</p>
+<p>The first order gravity anomaly (in mGal) due to the compensating
+surface caused by the topography load topo.nc (in m) on a 20 km thick
+elastic plate, assumed to be 4 km beneath the observation level can be
+computed as</p>
+<p>grdfft topo.nc -T20000/2800/3330/1030/2300 -S0.022 -C4000 -Gcomp_faa.nc</p>
+<p>where 0.022 is the scale needed for the first term in Parker’s expansion
+for computing gravity from topography (= 2 * PI * G * (rhom - rhol)).</p>
+</div>
+<div class="section" id="id10">
+<h2><a class="reference external" href="#toc9">See Also</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="grdedit.1.html">*grdedit*(1)</a> ,
+<a class="reference external" href="grdmath.1.html">*grdmath*(1)</a> ,
+<a class="reference external" href="grdproject.1.html">*grdproject*(1)</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdfft</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Grid File Formats</a></li>
+<li><a class="reference internal" href="#id8">Considerations</a></li>
+<li><a class="reference internal" href="#id9">Examples</a></li>
+<li><a class="reference internal" href="#id10">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdedit.html"
+                        title="previous chapter">grdedit</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdfilter.html"
+                        title="next chapter">grdfilter</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/grdfft.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdfilter.html" title="grdfilter"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="grdedit.html" title="grdedit"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

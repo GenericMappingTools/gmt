@@ -1,0 +1,319 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>grdreformat &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="grdsample" href="grdsample.html" />
+    <link rel="prev" title="grdraster" href="grdraster.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdsample.html" title="grdsample"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="grdraster.html" title="grdraster"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="grdreformat">
+<h1>grdreformat<a class="headerlink" href="#grdreformat" title="Permalink to this headline">¶</a></h1>
+<p>grdreformat - Convert between different grid formats</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdreformat</strong> <em>ingrdfile</em>[<em>=id</em>[<em>/scale/offset</em>[<em>/NaNvalue</em>]]]
+<em>outgrdfile</em>[<em>=id</em>[<em>/scale/offset</em>[<em>/NaNvalue</em>]]] [ <strong>-N</strong> ] [
+<strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] ] [
+<strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ] [ <strong>-V</strong>[<em>level</em>] ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdreformat</strong> reads a grid file in one format and writes it out using
+another format. As an option the user may select a subset of the data to
+be written and to specify scaling, translation, and NaN-value.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc5">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>ingrdfile</em></dt>
+<dd>The grid file to be read. Append format =<em>id</em> code if not a
+standard COARDS-compliant netCDF grid file. If =<em>id</em> is set (see
+below), you may optionally append <em>scale</em> and <em>offset</em>. These
+options will scale the data and then offset them with the specified
+amounts after reading.
+If <em>scale</em> and <em>offset</em> are supplied you may also append a value
+that represents ’Not-a-Number’ (for floating-point grids this is
+unnecessary since the IEEE NaN is used; however integers need a
+value which means no data available.)</dd>
+<dt><em>outgrdfile</em></dt>
+<dd>The grid file to be written. Append format =<em>id</em> code if not a
+standard COARDS-compliant netCDF grid file. If =<em>id</em> is set (see
+below), you may optionally append <em>scale</em> and <em>offset</em>. These
+options are particularly practical when storing the data as
+integers, first removing an offset and then scaling down the values.
+Since the scale and offset are applied in reverse order when
+reading, this does not affect the data values (except for
+round-offs).
+If <em>scale</em> and <em>offset</em> are supplied you may also append a value
+that represents ’Not-a-Number’ (for floating-point grids this is
+unnecessary since the IEEE NaN is used; however integers need a
+value which means no data available.)</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc6">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-N</strong></dt>
+<dd>Suppress the writing of the <strong>GMT</strong> header structure. This is useful
+when you want to write a native grid to be used by <strong>grdraster</strong>. It
+only applies to native grids and is ignored for netCDF output.</dd>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
+<dd>Specify the region of interest.</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
+<dd>Specify data types of input and/or output columns.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc7">Format Identifier</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>By default, grids will be written as floating point data stored in
+binary files using the netCDF format and meta-data structure. This
+format is conform the COARDS conventions. <strong>GMT</strong> versions prior to 4.1
+produced netCDF files that did not conform to these conventions.
+Although these files are still supported, their use is deprecated. To
+write other than floating point COARDS-compliant netCDF files, append
+the =<em>id</em> suffix to the filename <em>outgrdfile</em>.
+When reading files, <strong>grdreformat</strong> and other <strong>GMT</strong> programs will
+automatically recognize any type of netCDF grid file. These can be in
+either COARDS-compliant or pre-4.1 format, and contain floating-point or
+integer data. To read other types of grid files, append the =<em>id</em>
+suffix to the filename <em>ingrdfile</em>.
+<strong>nb</strong> GMT netCDF format (byte) (COARDS-compliant)
+<strong>ns</strong> GMT netCDF format (short) (COARDS-compliant)
+<strong>ni</strong> GMT netCDF format (int) (COARDS-compliant)
+<strong>nf</strong> GMT netCDF format (float) (COARDS-compliant)
+<strong>nd</strong> GMT netCDF format (double) (COARDS-compliant)
+<strong>cb</strong> GMT netCDF format (byte) (deprecated)
+<strong>cs</strong> GMT netCDF format (short) (deprecated)
+<strong>ci</strong> GMT netCDF format (int) (deprecated)
+<strong>cf</strong> GMT netCDF format (float) (deprecated)
+<strong>cd</strong> GMT netCDF format (double) (deprecated)
+<strong>bm</strong> GMT native, C-binary format (bit-mask)
+<strong>bb</strong> GMT native, C-binary format (byte)
+<strong>bs</strong> GMT native, C-binary format (short)
+<strong>bi</strong> GMT native, C-binary format (int)
+<strong>bf</strong> GMT native, C-binary format (float)
+<strong>bd</strong> GMT native, C-binary format (double)
+<strong>rb</strong> SUN rasterfile format (8-bit standard)
+<strong>rf</strong> GEODAS grid format GRD98 (NGDC)
+<strong>sf</strong> Golden Software Surfer format 6 (float)
+<strong>sd</strong> Golden Software Surfer format 7 (double, read-only)
+<strong>af</strong> Atlantic Geoscience Center format AGC (float)
+<strong>ei</strong> ESRI Arc/Info ASCII Grid Interchange format (integer)
+<strong>ef</strong> ESRI Arc/Info ASCII Grid Interchange format (float)
+<strong>gd</strong> Import through GDAL (convert to float)</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc8">Gmt Standard Netcdf Files</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>The standard format used for grdfiles is based on netCDF and conforms to
+the COARDS conventions. Files written in this format can be read by
+numerous third-party programs and are platform-independent. Some
+disk-space can be saved by storing the data as bytes or shorts in stead
+of integers. Use the <em>scale</em> and <em>offset</em> parameters to make this work
+without loss of data range or significance. For more details, see
+Appendix B.</p>
+<p><strong>Multi-variable grid files</strong>
+By default, <strong>GMT</strong> programs will read the first 2-dimensional grid
+contained in a COARDS-compliant netCDF file. Alternatively, use
+<em>ingrdfile</em><strong>?</strong><em>varname</em> (ahead of any optional suffix <strong>=</strong><em>id</em>)
+to specify the requested variable <em>varname</em>. Since <strong>?</strong> has special
+meaning as a wildcard, escape this meaning by placing the full filename
+and suffix between quotes.</p>
+<p><strong>Multi-dimensional grids</strong>
+To extract one <em>layer</em> or <em>level</em> from a 3-dimensional grid stored in a
+COARDS-compliant netCDF file, append both the name of the variable and
+the index associated with the layer (starting at zero) in the form:
+<em>ingrdfile</em><strong>?</strong><em>varname</em><strong>[</strong><em>layer</em><strong>]</strong>. Alternatively,
+specify the value associated with that layer using parentheses in stead
+of brackets:
+<em>ingridfile</em><strong>?`*varname***(</strong><em>level</em><strong>)</strong> &lt;varname.level.html&gt;`_
+.
+In a similar way layers can be extracted from 4- or even 5-dimensional
+grids. For example, if a grid has the dimensions (parameter, time,
+depth, latitude, longitude), a map can be selected by using:
+<em>ingridfile</em><strong>?</strong><em>varname</em><strong>(</strong><em>parameter</em>,<em>time</em>,<em>depth</em><strong>)</strong>.
+Since question marks, brackets and parentheses have special meanings on
+the command line, escape these meanings by placing the full filename and
+suffix between quotes.**</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc9">Native Binary Files</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>For binary native <strong>GMT</strong> files the size of the <strong>GMT</strong> grdheader block
+is <em>hsize</em> = 892 bytes, and the total size of the file is <em>hsize</em> + <em>nx</em>
+* <em>ny</em> * <em>item_size</em>, where <em>item_size</em> is the size in bytes of each
+element (1, 2, 4). Bit grids are stored using 4-byte integers, each
+holding 32 bits, so for these files the size equation is modified by
+using ceil (<em>nx</em> / 32) * 4 instead of <em>nx</em>. Note that these files are
+platform-dependent. Files written on Little Endian machines (e.g. PCs)
+can not be read on Big Endian machines (e.g. most workstations). Also
+note that it is not possible for <strong>GMT</strong> to determine uniquely if a
+4-byte grid is float or int; in such cases it is best to use the <em>=ID</em>
+mechanism to specify the file format. In all cases a native grid is
+considered to be signed (i.e., there are no provision for unsigned short
+ints or unsigned bytes). For header and grid details, see Appendix B.</p>
+</div>
+<div class="section" id="id9">
+<h2><a class="reference external" href="#toc10">Grid Values Precision</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>Regardless of the precision of the input data, GMT programs that create
+grid files will internally hold the grids in 4-byte floating point
+arrays. This is done to conserve memory and furthermore most if not all
+real data can be stored using 4-byte floating point values. Data with
+higher precision (i.e., double precision values) will lose that
+precision once GMT operates on the grid or writes out new grids. To
+limit loss of precision when processing data you should always consider
+normalizing the data prior to processing.</p>
+</div>
+<div class="section" id="id10">
+<h2><a class="reference external" href="#toc11">Examples</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<p>To extract the second layer from a 3-dimensional grid named temp from a
+COARDS-compliant netCDF file climate.nc:</p>
+<p>grdreformat climate.nc?temp[1] temp.nc -V</p>
+<p>To create a 4-byte native floating point grid from the COARDS-compliant
+netCDF file data.nc:</p>
+<p>grdreformat data.nc ras_data.b4=bf -V</p>
+<p>To make a 2-byte short integer file, scale it by 10, subtract 32000,
+setting NaNs to -9999, do</p>
+<p>grdreformat values.nc shorts.i2=bs/10/-32000/-9999 -V</p>
+<p>To create a Sun standard 8-bit rasterfile for a subset of the data file
+image.nc, assuming the range in image.nc is 0-1 and we need 0-255, run</p>
+<p>grdreformat image.nc -R-60/-40/-40/-30 image.ras8=rb/255/0 -V</p>
+<p>To convert etopo2.nc to etopo2.i2 that can be used by <strong>grdraster</strong>, try</p>
+<p>grdreformat etopo2.nc etopo2.i2=bs -N -V</p>
+</div>
+<div class="section" id="id11">
+<h2><a class="reference external" href="#toc12">See Also</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="gmt.html">*gmt*</a> , <a class="reference external" href="grdmath.html">*grdmath*</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdreformat</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Format Identifier</a></li>
+<li><a class="reference internal" href="#id7">Gmt Standard Netcdf Files</a></li>
+<li><a class="reference internal" href="#id8">Native Binary Files</a></li>
+<li><a class="reference internal" href="#id9">Grid Values Precision</a></li>
+<li><a class="reference internal" href="#id10">Examples</a></li>
+<li><a class="reference internal" href="#id11">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdraster.html"
+                        title="previous chapter">grdraster</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdsample.html"
+                        title="next chapter">grdsample</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/grdreformat.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdsample.html" title="grdsample"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="grdraster.html" title="grdraster"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

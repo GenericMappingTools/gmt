@@ -1,0 +1,446 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Name &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">GMT5 v0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p><a class="reference external" href="#toc">Table of Contents</a></p>
+<div class="section" id="id1">
+<h1><a class="reference external" href="#toc0">Name</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>x2sys_init - Initialize a new x2sys track database</p>
+</div>
+<div class="section" id="id2">
+<h1><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<p><strong>x2sys_init</strong> <em>TAG</em> <strong>-D</strong><em>deffile</em> [
+<strong>-Cc</strong>|<strong>f</strong>|<strong>g</strong>|<strong>e</strong> ] [ <strong>-E</strong><em>suffix</em> ] [ <strong>-F</strong>
+] [ <strong>-Gd</strong>|<strong>g</strong> ] [ <strong>-I</strong><em>dx</em>[/<em>dy</em>] ] [
+<strong>-Nd</strong>|<strong>s</strong><em>unit</em> ] [
+<strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] ] [ <strong>-V</strong>[<em>level</em>]
+] [ <strong>-Wt</strong>|<strong>d</strong><em>gap</em> ]</p>
+</div>
+<div class="section" id="id3">
+<h1><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<p><strong>x2sys_init</strong> is the starting point for anyone wishing to use x2sys;
+it initializes a set of data bases that are particular to one kind of
+track data. These data, their associated data bases, and key parameters
+are given a short-hand notation called an x2sys TAG. The TAG keeps track
+of settings such as file format, whether the data are geographic or not,
+and the binning resolution for track indices. Running <strong>x2sys_init</strong> is
+a prerequisite to running any of the other x2sys programs, such as
+<strong>x2sys_binlist</strong>, which will create a crude representation of where
+each data track go within the domain and which observations are
+available; this information serves as input to <strong>x2sys_put</strong> which
+updates the track data base. Then, <strong>x2sys_get</strong> can be used to find
+which tracks and data are available inside a given region. With that
+list of tracks you can use <strong>x2sys_cross</strong> to calculate track
+crossovers, use <strong>x2sys_report</strong> to report crossover statistics or
+<strong>x2sys_list</strong> to pull out selected crossover information that
+<strong>x2sys_solve</strong> can use to determine track-specific systematic
+corrections. These corrections may be used with <strong>x2sys_datalist</strong> to
+extract corrected data values for use in subsequent work.</p>
+</div>
+<div class="section" id="id4">
+<h1><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id5">
+<h1><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt><em>TAG</em></dt>
+<dd>The unique name of this data type x2sys TAG.</dd>
+<dt><strong>-D</strong><em>deffile</em></dt>
+<dd>Definition file prefix for this data set [See DEFINITION FILES below
+for more information]. Specify full path if the file is not in the
+current directory.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h1><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt><strong>-Cc</strong>|<strong>f</strong>|<strong>g</strong>|<strong>e</strong></dt>
+<dd><p class="first">Select procedure for along-track distance calculation when needed by
+other programs:</p>
+<blockquote class="last">
+<div><strong>c</strong> Cartesian distances [Default, unless <strong>-G</strong> is set].
+<strong>f</strong> Flat Earth distances.
+<strong>g</strong> Great circle distances [Default if <strong>-G</strong> is set].
+<strong>e</strong> Geodesic distances on current <strong>GMT</strong> ellipsoid.</div></blockquote>
+</dd>
+<dt><strong>-E</strong><em>suffix</em></dt>
+<dd>Specifies the file extension (suffix) for these data files. If not
+given we use the definition file prefix as the suffix (see <strong>-D</strong>).</dd>
+<dt><strong>-F</strong></dt>
+<dd>Force creating new files if old ones are present [Default will abort
+if old TAG files are found].</dd>
+<dt><strong>-Gd</strong>|<strong>g</strong></dt>
+<dd>Selects geographical coordinates. Append <strong>d</strong> for discontinuity at
+the Dateline (makes longitude go from -180 to + 180) or <strong>g</strong> for
+discontinuity at Greenwich (makes longitude go from 0 to 360
+[Default]). If not given we assume the data are Cartesian.</dd>
+<dt><strong>-I</strong><em>dx</em>[/<em>dy</em>]</dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Append <strong>m</strong>
+to indicate minutes or <strong>c</strong> to indicate seconds for geographic
+data. These spacings refer to the binning used in the track
+bin-index data base.</dd>
+<dt><strong>-Nd</strong>|<strong>s</strong><em>unit</em></dt>
+<dd>Sets the units used for distance and speed when requested by other
+programs. Append <strong>d</strong> for distance or <strong>s</strong> for speed, then give
+the desired <em>unit</em> as <strong>c</strong> (Cartesian userdist or
+userdist/usertime), <strong>e</strong> (meter or m/s), <strong>k</strong> (km or km/hr), <strong>m</strong>
+(miles or miles/hr), or <strong>n</strong> (nautical miles or knots). [Default is
+<strong>-Ndk</strong> <strong>-Nse</strong> (km and m/s) if <strong>-G</strong> is set and <strong>-Ndc</strong> and
+<strong>-Nsc</strong> otherwise (Cartesian units)].</dd>
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <strong>r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing, if applicable) are copied from
+the grid. For Cartesian data just give <em>xin/xmax/ymin/ymax</em>. This
+sets the complete domain for the relevant track data set.</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-Wt</strong>|<strong>d</strong><em>gap</em></dt>
+<dd>Give <strong>t</strong> or <strong>d</strong> and append the corresponding maximum time gap
+(in user units; this is typically seconds [Infinity]), or distance
+(for units, see <strong>-N</strong>) gap [Infinity]) allowed between the two data
+points immediately on either side of a crossover. If these limits
+are exceeded then a data gap is assumed and no COE will be
+determined.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id7">
+<h1><a class="reference external" href="#toc6">Definition Files</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
+<p>These *.def files contain information about the data file format and
+have two sections: (1) header information <a class="reference external" href="and.2.html">and (2)</a> column
+information. All header information starts with the character # in the
+first column, immediately followed by an upper-case directive. If the
+directive takes an argument it is separated by white-space. You may
+append a trailing # comments. Five directives are recognized:</p>
+<dl class="docutils">
+<dt><strong>ASCII</strong> states that the data files are in ASCII format.</dt>
+<dd><strong>BINARY</strong> states that the data files are native binary files.
+<strong>NETCDF</strong> states that the data files are COARDS-compliant 1-D netCDF</dd>
+<dt>files.</dt>
+<dd><strong>SKIP</strong> takes an integer argument which is either the number of lines</dd>
+</dl>
+<p>to skip (when reading ASCII files) or the number of bytes to skip (when
+reading native binary files). Not used with netCDF files.</p>
+<blockquote>
+<div><strong>GEO</strong> indicates that these files are geographic data sets, with</div></blockquote>
+<p>periodicities in the <em>x</em>-coordinate (longitudes). Alternatively, use
+<strong>-G</strong>.</p>
+<blockquote>
+<div><strong>MULTISEG</strong> means each track consists of multiple segments separated</div></blockquote>
+<p>by a <strong>GMT</strong> segment header (alternatively, use <strong>-m</strong> when defining the
+system TAG). Not used with netCDF files.</p>
+<p>The column information consists of one line per column in the order the
+columns appear in the data file. For each column you must provide seven
+attributes:</p>
+<blockquote>
+<div><em>name type NaN NaN-proxy scale offset oformat</em></div></blockquote>
+<p><em>name</em> is the name of the column variable. It is expected that you will
+use the special names <em>lon</em> (or <em>x</em> if Cartesian) and <em>lat</em> (or <em>y</em>) for
+the two required coordinate columns, and <em>time</em> when optional time data
+are present.</p>
+<blockquote>
+<div><em>type</em> is always <strong>a</strong> for ASCII representations of numbers, whereas</div></blockquote>
+<p>for binary files you may choose among <strong>c</strong> for signed 1-byte character
+(-127,+128), <strong>u</strong> for unsigned byte (0-255), <strong>h</strong> for signed 2-byte
+integers (-32768,+32767), <strong>i</strong> for signed 4-byte integers
+(-2,147,483,648,+2,147,483,647), <strong>f</strong> for 4-byte floating points and
+<strong>d</strong> for 8-byte double precision floating points. For netCDF, simply
+use <strong>d</strong> as netCDF will automatically handle type-conversions during
+reading.</p>
+<blockquote>
+<div><em>NaN</em> is Y if certain values (e.g, -9999) are to be replaced by NAN,</div></blockquote>
+<dl class="docutils">
+<dt>and N otherwise.</dt>
+<dd><em>NaN-proxy</em> is that special value (e.g., -9999).
+<em>scale</em> is used to multiply the data after reading.
+<em>offset</em> is used to add to the scaled data.
+<em>oformat</em> is a C-style format string used to print values from this</dd>
+</dl>
+<p>column.</p>
+<p>If you give - as the <em>oformat</em> then <strong>GMT</strong>’s formatting machinery
+will be used instead (i.e., <strong>FORMAT_FLOAT_OUT</strong>,
+<strong>FORMAT_GEO_MAP</strong>, <strong>FORMAT_DATE_MAP</strong>, <strong>FORMAT_CLOCK_MAP</strong>).
+Some file formats already have definition files premade. These include
+mgd77 (for plain ASCII MGD77 data files), mgd77+ (for enhanced MGD77+
+netCDF files), gmt (for old mgg supplement binary files), xy (for plain
+ASCII x, y tables), xyz (same, with one z-column), geo (for plain ASCII
+longitude, latitude files), and geoz (same, with one z-column).</p>
+</div>
+<div class="section" id="id8">
+<h1><a class="reference external" href="#toc7">Examples</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h1>
+<p>If you have a large set of track data files you can organize them using
+the x2sys tools. Here we will outline the steps. Let us assume that your
+track data file format consist of 2 header records with text information
+followed by any number of identically formatted data records with 6
+columns (lat, lon, time, obs1, obs2, obs3) and that files are called
+*.trk. We will call this the &#8220;line&#8221; format. First, we create the
+line.def file:</p>
+<dl class="docutils">
+<dt><a href="#id9"><span class="problematic" id="id10">**</span></a><a href="#id11"><span class="problematic" id="id12">**</span></a># Define file for the line format</dt>
+<dd><a href="#id13"><span class="problematic" id="id14">**</span></a><strong>#ASCII`` `` `` `` `` `` `` `` # File is ASCII
+**</strong>#SKIP 2`` `` `` `` `` `` `` `` # Skip 2 header records
+<a href="#id15"><span class="problematic" id="id16">**</span></a><strong>#GEO`` `` `` `` `` `` `` `` # Data are geographic
+**</strong>#name`` `` `` `` type `` `` `` `` NaN`` `` `` ``</dd>
+<dt>NaN-proxy`` `` `` `` scale offset oformat</dt>
+<dd>lat`` `` `` `` a`` `` `` `` N`` `` `` `` 0`` `` `` `` 1`` ``</dd>
+<dt>`` `` 0`` `` `` `` %9.5f</dt>
+<dd>lon`` `` `` `` a`` `` `` `` N`` `` `` `` 0`` `` `` `` 1`` ``</dd>
+<dt>`` `` 0`` `` `` `` %10.5f</dt>
+<dd>time`` `` `` `` a`` `` `` `` N`` `` `` `` 0`` `` `` `` 1`` ``</dd>
+<dt>`` `` 0`` `` `` `` %7.1f</dt>
+<dd>obs1`` `` `` `` a`` `` `` `` N`` `` `` `` 0`` `` `` `` 1`` ``</dd>
+<dt>`` `` 0`` `` `` `` %7.2f</dt>
+<dd>obs2`` `` `` `` a`` `` `` `` N`` `` `` `` 0`` `` `` `` 1`` ``</dd>
+<dt>`` `` 0`` `` `` `` %7.2f</dt>
+<dd>obs3`` `` `` `` a`` `` `` `` N`` `` `` `` 0`` `` `` `` 1`` ``</dd>
+</dl>
+<p>`` `` 0`` `` `` `` %7.2f</p>
+<blockquote>
+<div>Next we create the TAG and the TAG directory with the databases for</div></blockquote>
+<p>these line track files. Assuming these contain geographic data and that
+we want to keep track of the data distribution at a 1 x 1 degree
+resolution, with distances in km calculated along geodesics and with
+speeds given in knots, we may run</p>
+<p><strong>x2sys_init</strong> LINE <strong>-V</strong> <strong>-G</strong> <strong>-D</strong>line <strong>-Rg</strong> <strong>-Ce</strong> <strong>-Ndk</strong>
+<strong>-NsN</strong> <strong>-I</strong>1/1 <strong>-E</strong>trk</p>
+<p>where we have selected LINE to be our x2sys tag. When x2sys tools try to
+read your line data files they will first look in the current directory
+and second look in the file <em>TAG</em>_paths.txt for a list of additional
+directories to examine. Therefore, create such a file (here
+LINE_paths.txt) and stick the full paths to your data directories
+there. All TAG-related files (definition files, tag files, and track
+data bases created) will be expected to be in the directory pointed to
+by <strong>$X2SYS_HOME</strong>/<em>TAG</em> (in our case <strong>$X2SYS_HOME</strong>/LINE). Note that
+the argument to <strong>-D</strong> must contain the full path if the *.def file is
+not in the current directory. <strong>x2sys_init</strong> will copy this file to the
+<strong>$X2SYS_HOME</strong>/<em>TAG</em> directory where all other x2sys tools will expect
+to find it.</p>
+<dl class="docutils">
+<dt><strong>Create tbf file(s):</strong></dt>
+<dd>Once the (empty) TAG databases have been initialized we go through a
+two-step process to populate them. First we run <strong>x2sys_binlist</strong>
+on all our track files to create one (or more) multisegment track
+bin-index files (tbf). These contain information on which 1 x 1
+degree bins (or any other blocksize; see <strong>-I</strong>) each track has
+visited and which observations (in your case obs1, obs2, obs3) were
+actually observed (not all tracks may have all three kinds of
+observations everywhere). For instance, if your tracks are listed in
+the file tracks.lis we may run this command:
+<strong>x2sys_binlist</strong> <strong>-V</strong> <strong>-T</strong>LINE :tracks.lis &gt; tracks.tbf</dd>
+<dt><strong>Update index data base:</strong></dt>
+<dd>Next, the track bin-index files are fed to <strong>x2sys_put</strong> which will
+insert the information into the TAG databases:
+<strong>x2sys_put</strong> <strong>-V</strong> <strong>-T</strong>LINE tracks.tbf</dd>
+<dt><strong>Search for data:</strong></dt>
+<dd>You may now use <strong>x2sys_get</strong> to find all the tracks within a
+certain sub-region, and optionally limit the search to those tracks
+that have a particular combination of observables. E.g., to find all
+the tracks which has both obs1 and obs3 inside the specified region,
+run
+<strong>x2sys_get</strong> <strong>-V</strong> <strong>-T</strong>LINE <strong>-R</strong>20/40/-40/-20
+<strong>-F</strong>obs1,obs3 &gt; tracks.tbf</dd>
+<dt><strong>MGD77[+] or GMT:</strong></dt>
+<dd><p class="first">Definition files already exist for MGD77 files (both standard ASCII
+and enhanced netCDF-based MGD77+ files) and the old *.gmt files
+manipulated by the mgg supplements; for these data sets the <strong>-C</strong>
+and <strong>-N</strong> will default to great circle distance calculation in km
+and speed in m/s. There are also definition files for plain x,y[,z]
+and lon,lat[,z] tracks. To initiate new track databases to be used
+with MGD77 data from NGDC, try</p>
+<p><strong>x2sys_init</strong> MGD77 <strong>-V</strong> <strong>-D</strong>mgd77 <strong>-E</strong>mgd77 <strong>-Rd</strong>
+<strong>-Gd</strong> <strong>-Nsn</strong> <strong>-I</strong>1/1 <strong>-Wt</strong>900 <strong>-Wd</strong>5</p>
+<p class="last">where we have chosen a 15 minute (900 sec) or 5 km threshold to
+indicate a data gap and selected knots as the speed; the other steps
+are similar.</p>
+</dd>
+<dt><strong>Binary files:</strong></dt>
+<dd><p class="first">Let us pretend that your line files actually are binary files with a
+128-byte header structure (to be skipped) followed by the data
+records and where <em>lon</em>, <em>lat</em>, <em>time</em> are double precision numbers
+while the three observations are 2-byte integers which must be
+multiplied by 0.1. Finally, the first two observations may be -32768
+which means there is no data available. All that is needed is a
+different line.def file:</p>
+<dl class="docutils">
+<dt><a href="#id17"><span class="problematic" id="id18">**</span></a><a href="#id19"><span class="problematic" id="id20">**</span></a># Define file for the binary line format</dt>
+<dd><a href="#id21"><span class="problematic" id="id22">**</span></a><strong>#BINARY`` `` `` `` # File is now binary
+**</strong>#SKIP 128`` `` `` `` # Skip 128 bytes
+<a href="#id23"><span class="problematic" id="id24">**</span></a><strong>#GEO`` `` `` `` `` `` `` `` # Data are geographic
+**</strong>#name`` `` `` `` type`` `` `` `` NaN?`` `` `` ``</dd>
+<dt>NaN-proxy`` `` `` `` scale offset oformat</dt>
+<dd>lon`` `` `` `` d`` `` `` `` N`` `` `` `` 0`` `` `` ``</dd>
+<dt>1`` `` `` `` 0`` `` `` `` %10.5f</dt>
+<dd>lat`` `` `` `` d`` `` `` `` N`` `` `` `` 0`` `` `` ``</dd>
+<dt>1`` `` `` `` 0`` `` `` `` %9.5f</dt>
+<dd>time`` `` `` `` d`` `` `` `` N`` `` `` `` 0`` `` `` ``</dd>
+<dt>1`` `` `` `` 0`` `` `` `` %7.1f</dt>
+<dd>obs1`` `` `` `` h`` `` `` `` Y`` `` `` `` -32768`` `` `` ``</dd>
+<dt>0.1`` `` `` `` 0`` `` `` `` %6.1f</dt>
+<dd>obs2`` `` `` `` h`` `` `` `` Y`` `` `` `` -32768`` `` `` ``</dd>
+<dt>0.1`` `` `` `` 0`` `` `` `` %6.1f</dt>
+<dd>obs3`` `` `` `` h`` `` `` `` N`` `` `` `` 0`` `` `` ``</dd>
+</dl>
+<p>0.1`` `` `` `` 0`` `` `` `` %6.1f</p>
+<p class="last">The rest of the steps are identical.</p>
+</dd>
+<dt><strong>COARDS 1-D netCDF files:</strong></dt>
+<dd><p class="first">Finally, suppose that your line files actually are netCDF files that
+conform to the COARDS convention, with data columns named <em>lon</em>,
+<em>lat</em>, <em>time</em>, <em>obs1</em>, <em>obs2</em>, and <em>obs3</em>. All that is needed is a
+different line.def file:</p>
+<dl class="docutils">
+<dt><a href="#id25"><span class="problematic" id="id26">**</span></a><a href="#id27"><span class="problematic" id="id28">**</span></a># Define file for the netCDF COARDS line format</dt>
+<dd><a href="#id29"><span class="problematic" id="id30">**</span></a><strong>#NETCDF`` `` `` `` # File is now netCDF
+**</strong>#GEO`` `` `` `` `` `` `` `` # Data are geographic
+<a href="#id31"><span class="problematic" id="id32">**</span></a><a href="#id33"><span class="problematic" id="id34">**</span></a>#name`` `` `` `` type`` `` `` `` NaN?`` `` `` ``</dd>
+<dt>NaN-proxy`` `` `` `` scale offset oformat</dt>
+<dd>lon`` `` `` `` d`` `` `` `` N`` `` `` `` 0`` `` `` ``</dd>
+<dt>1`` `` `` `` 0`` `` `` `` %10.5f</dt>
+<dd>lat`` `` `` `` d`` `` `` `` N`` `` `` `` 0`` `` `` ``</dd>
+<dt>1`` `` `` `` 0`` `` `` `` %9.5f</dt>
+<dd>time`` `` `` `` d`` `` `` `` N`` `` `` `` 0`` `` `` ``</dd>
+<dt>1`` `` `` `` 0`` `` `` `` %7.1f</dt>
+<dd>obs1`` `` `` `` d`` `` `` `` N`` `` `` `` 0`` `` `` ``</dd>
+<dt>1`` `` `` `` 0`` `` `` `` %6.1f</dt>
+<dd>obs2`` `` `` `` d`` `` `` `` N`` `` `` `` 0`` `` `` ``</dd>
+<dt>1`` `` `` `` 0`` `` `` `` %6.1f</dt>
+<dd>obs3`` `` `` `` d`` `` `` `` N`` `` `` `` 0`` `` `` ``</dd>
+</dl>
+<p>1`` `` `` `` 0`` `` `` `` %6.1f</p>
+<p class="last">Note we use no scaling or NAN proxies since those issues are usually
+handled internally in the netCDF format description.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id35">
+<h1><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="x2sys_binlist.1.html">*x2sys_binlist*(1)</a> ,
+<a class="reference external" href="x2sys_datalist.1.html">*x2sys_datalist*(1)</a> ,
+<a class="reference external" href="x2sys_get.1.html">*x2sys_get*(1)</a> ,
+<a class="reference external" href="x2sys_list.1.html">*x2sys_list*(1)</a> ,
+<a class="reference external" href="x2sys_put.1.html">*x2sys_put*(1)</a> ,
+<a class="reference external" href="x2sys_report.1.html">*x2sys_report*(1)</a> ,
+<a class="reference external" href="x2sys_solve.1.html">*x2sys_solve*(1)</a></p>
+<hr class="docutils" />
+<p><strong>Table of Contents</strong></p>
+<ul class="simple">
+<li><a class="reference external" href="#sect0">Name</a></li>
+<li><a class="reference external" href="#sect1">Synopsis</a></li>
+<li><a class="reference external" href="#sect2">Description</a></li>
+<li><a class="reference external" href="#sect3">Common Arguments And Specifications</a></li>
+<li><a class="reference external" href="#sect4">Required Arguments</a></li>
+<li><a class="reference external" href="#sect5">Optional Arguments</a></li>
+<li><a class="reference external" href="#sect6">Definition Files</a></li>
+<li><a class="reference external" href="#sect7">Examples</a></li>
+<li><a class="reference external" href="#sect8">See Also</a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Name</a></li>
+<li><a class="reference internal" href="#id2">Synopsis</a></li>
+<li><a class="reference internal" href="#id3">Description</a></li>
+<li><a class="reference internal" href="#id4">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id5">Required Arguments</a></li>
+<li><a class="reference internal" href="#id6">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id7">Definition Files</a></li>
+<li><a class="reference internal" href="#id8">Examples</a></li>
+<li><a class="reference internal" href="#id35">See Also</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/supplements/x2sys_init.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">GMT5 v0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

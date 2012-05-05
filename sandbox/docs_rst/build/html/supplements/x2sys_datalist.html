@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Name &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">GMT5 v0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p><a class="reference external" href="#toc">Table of Contents</a></p>
+<div class="section" id="id1">
+<h1><a class="reference external" href="#toc0">Name</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>x2sys_datalist - Extract content of track data files</p>
+</div>
+<div class="section" id="id2">
+<h1><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<p><strong>x2sys_datalist</strong> <em>track(s)</em> <strong>-T</strong><em>TAG</em> [ <strong>-A</strong> ] [
+<strong>-F</strong><em>name1</em>,<em>name2</em>,...) ] [ <strong>-L</strong>[<em>corrtable</em>] ] [
+<strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] ] [ <strong>-S</strong> ] [
+<strong>-V</strong>[<em>level</em>] ] [ <strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] ] [
+<strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ]</p>
+</div>
+<div class="section" id="id3">
+<h1><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<p><strong>x2sys_datalist</strong> reads one or more files and produces a single ASCII
+[or binary] table. The files can be of any format, which must be
+described and passed with the <strong>-T</strong> option. You may limit the output to
+a geographic region, and insist that the output from several files be
+separated by a multiple segment header. Only the named data fields will
+be output [Default selects all columns].</p>
+</div>
+<div class="section" id="id4">
+<h1><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id5">
+<h1><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt><em>tracks</em></dt>
+<dd>Can be one or more ASCII, native binary, or COARDS netCDF 1-D data
+files. To supply the data files via a text file with a list of
+tracks (one per record), specify the name of the track list after a
+leading equal-sign (e.g., =tracks.lis). If the names are missing
+their file extension we will append the suffix specified for this
+<em>TAG</em>. Track files will be searched for first in the current
+directory and second in all directories listed in
+<strong>$X2SYS_HOME</strong>/<em>TAG</em>/<em>TAG</em>_paths.txt (if it exists). [If
+<strong>$X2SYS_HOME</strong> is not set it will default to
+<strong>$GMT_SHAREDIR</strong>/x2sys]. (Note: MGD77 files will also be looked
+for via <strong>MGD77_HOME</strong>/mgd77_paths.txt and *.gmt files will be
+searched for via <strong>$GMT_SHAREDIR</strong>/mgg/gmtfile_paths).</dd>
+<dt><strong>-T</strong><em>TAG</em></dt>
+<dd>Specify the x2sys <em>TAG</em> which tracks the attributes of this data
+type.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h1><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt><strong>-A</strong></dt>
+<dd>Eliminate COEs by distributing the COE between the two tracks in
+proportion to track weight. These (dist, adjustment) spline knots
+files for each track and data column are called <em>track.column</em>.adj
+and are expected to be in the <strong>$X2SYS_HOME</strong>/<em>TAG</em> directory. The
+adjustments are only applied if the corresponding adjust file can be
+found [No residual adjustments]</dd>
+<dt><strong>-F</strong><em>name1</em>,<em>name2</em>,...)</dt>
+<dd>Give a comma-separated sub-set list of column names defined in the
+definition file. [Default selects all data columns].</dd>
+<dt><strong>-L</strong>[<em>corrtable</em>]</dt>
+<dd>Apply optimal corrections to columns where such corrections are
+available. Append the correction table to use [Default uses the
+correction table <em>TAG</em>_corrections.txt which is expected to
+reside in the <strong>$X2SYS_HOME</strong>/<em>TAG</em> directory]. For the format of
+this file, see CORRECTIONS below.</dd>
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <strong>r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing, if applicable) are copied from
+the grid. For Cartesian data just give <em>xmin/xmax/ymin/ymax</em>. This
+option limits the COEs to those that fall inside the specified
+domain.</dd>
+<dt><strong>-S</strong></dt>
+<dd>Suppress output records where all the data columns are NaN [Default
+will output all records].</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select binary output.</dd>
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
+<dd>Skip or produce header record(s).</dd>
+<dt><strong>-m</strong></dt>
+<dd>Output a segment header between data from each track. Note this
+option does not imply anything about the input file; that
+information is conveyed via the system tag (<strong>-T</strong>).</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id7">
+<h1><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
+<p>To extract all data from the old-style MGG supplement file c2104.gmt,
+recognized by the tag GMT:</p>
+<p><strong>x2sys_datalist</strong> c2104.gmt <strong>-T</strong>GMT &gt; myfile</p>
+<p>To make lon,lat, and depth input for <strong>blockmean</strong> and <strong>surface</strong> using
+all the files listed in the file tracks.lis and define by the tag TRK,
+but only the data that are inside the specified area, and make output
+binary, run</p>
+<p><strong>x2sys_datalist</strong> =tracks.lis <strong>-T</strong>TRK <strong>-F</strong>lon,lat,depth
+<strong>-R</strong>-40/-30/25/35 <strong>-bo</strong> &gt; alltopo_bin.xyz</p>
+</div>
+<div class="section" id="id8">
+<h1><a class="reference external" href="#toc7">Corrections</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h1>
+<p>The correction table is an ASCII file with coefficients and parameters
+needed to carry out corrections. This table is usually produced by
+<strong>x2sys_solve</strong>. Comment records beginning with # are allowed. All
+correction records are of the form</p>
+<p><em>trackID observation correction</em></p>
+<p>where <em>trackID</em> is the track name, <em>observation</em> is one of the
+abbreviations for an observed field contained in files under this TAG,
+and <em>correction</em> consists of one or more white-space-separated <em>term</em>s
+that will be <strong>subtracted</strong> from the observation before output. Each
+<em>term</em> must have this exact syntax:</p>
+<p><em>factor</em>[*[<em>function</em>]([<em>scale</em>](<em>abbrev</em>[-<em>origin</em>]))[^<em>power</em>]]</p>
+<p>where terms in brackets are optional (the brackets themselves are not
+used but regular parentheses must be used exactly as indicated). No
+spaces are allowed except between <em>term</em>s. The <em>factor</em> is the
+amplitude of the basis function, while the optional <em>function</em> can be
+one of sin, cos, or exp. The optional <em>scale</em> and <em>origin</em> can be used
+to translate the argument (before giving it to the optional function).
+The argument <em>abbrev</em> is one of the abbreviations for columns known to
+this TAG. However, it can also be one of the three auxiliary terms
+<strong>dist</strong> (for along-track distances), <strong>azim</strong> for along-track azimuths,
+and <strong>vel</strong> (for along-track speed); these are all sensitive to the
+<strong>-C</strong> and <strong>-N</strong> settings used when defining the TAB; furthermore,
+<strong>vel</strong> requires <strong>time</strong> to be present in the data. If <em>origin</em> is
+given as <strong>T</strong> it means that we should replace it with the value of
+<em>abbrev</em> for the very first record in the file (this is usually only
+done for <em>time</em>). If the first data record entry is NaN we revert
+<em>origin</em> to zero. Optionally, raise the entire expression to the given
+<em>power</em>, before multiplying by <em>factor</em>. The following is an example of
+fictitious corrections to the track ABC, implying the <strong>z</strong> column
+should have a linear trend removed, the field <strong>obs</strong> should be
+corrected by a strange dependency on latitude, <strong>weight</strong> needs to have
+1 added (hence correction is given as -1), and <strong>fuel</strong> should be
+reduced by a linear distance term:</p>
+<dl class="docutils">
+<dt>ABC z`` `` `` `` 7.1`` `` `` `` 1e-4*((time-T))</dt>
+<dd>ABC obs`` `` `` `` 0.5*exp(-1e-3(lat))^1.5
+ABC weight`` `` `` `` -1
+ABC fuel 0.02*((dist))</dd>
+</dl>
+</div>
+<div class="section" id="id9">
+<h1><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="blockmean.1.html">*blockmean*(1)</a> , <a class="reference external" href="GMT.1.html">*GMT*(1)</a> ,
+<a class="reference external" href="surface.1.html">*surface*(1)</a> ,
+<a class="reference external" href="x2sys_init.1.html">*x2sys_init*(1)</a> ,
+<a class="reference external" href="x2sys_datalist.1.html">*x2sys_datalist*(1)</a> ,
+<a class="reference external" href="x2sys_get.1.html">*x2sys_get*(1)</a> ,
+<a class="reference external" href="x2sys_list.1.html">*x2sys_list*(1)</a> ,
+<a class="reference external" href="x2sys_put.1.html">*x2sys_put*(1)</a> ,
+<a class="reference external" href="x2sys_report.1.html">*x2sys_report*(1)</a> ,
+<a class="reference external" href="x2sys_solve.1.html">*x2sys_solve*(1)</a></p>
+<hr class="docutils" />
+<p><strong>Table of Contents</strong></p>
+<ul class="simple">
+<li><a class="reference external" href="#sect0">Name</a></li>
+<li><a class="reference external" href="#sect1">Synopsis</a></li>
+<li><a class="reference external" href="#sect2">Description</a></li>
+<li><a class="reference external" href="#sect3">Common Arguments And Specifications</a></li>
+<li><a class="reference external" href="#sect4">Required Arguments</a></li>
+<li><a class="reference external" href="#sect5">Optional Arguments</a></li>
+<li><a class="reference external" href="#sect6">Examples</a></li>
+<li><a class="reference external" href="#sect7">Corrections</a></li>
+<li><a class="reference external" href="#sect8">See Also</a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Name</a></li>
+<li><a class="reference internal" href="#id2">Synopsis</a></li>
+<li><a class="reference internal" href="#id3">Description</a></li>
+<li><a class="reference internal" href="#id4">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id5">Required Arguments</a></li>
+<li><a class="reference internal" href="#id6">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id7">Examples</a></li>
+<li><a class="reference internal" href="#id8">Corrections</a></li>
+<li><a class="reference internal" href="#id9">See Also</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/supplements/x2sys_datalist.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">GMT5 v0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

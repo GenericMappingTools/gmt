@@ -1,0 +1,420 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>psvelo &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
+    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="next" title="&lt;no title&gt;" href="../mgd77/list.html" />
+    <link rel="prev" title="pspolar" href="pspolar.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../mgd77/list.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pspolar.html" title="pspolar"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
+          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="psvelo">
+<h1>psvelo<a class="headerlink" href="#psvelo" title="Permalink to this headline">¶</a></h1>
+<p>psvelo - Plot velocity vectors, crosses, and wedges on maps</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>psvelo</strong> [ <em>table</em> ] <strong>-J</strong><em>parameters</em>
+<strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] [ <strong>-A</strong><em>parameters</em>
+] [ <strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ] [ <strong>-D</strong><em>sigma_scale</em>
+] [ <strong>-F</strong><em>color</em> ] [ <strong>-E</strong><em>color</em> ] [ <strong>-G</strong><em>fill</em> ] [ <strong>-K</strong> ]
+[ <strong>-L</strong> ] [ <strong>-N</strong> ] [ <strong>-O</strong> ] [ <strong>-P</strong> ] [
+<strong>-S</strong><em>symbol</em>/<em>scale</em>/<em>conf</em>/<em>font_size</em> ] [
+<strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] ] [ <strong>-V</strong>[<em>level</em>]
+] [ <strong>-W</strong><em>pen</em> ] [
+<strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]
+] [
+<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]]
+] [ <strong>-c</strong><em>copies</em> ] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
+<strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
+] [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>psvelo</strong> reads data values from <em>files</em> [or standard input] and
+generates <em>PostScript</em> code that will plot velocity arrows on a map.
+Most options are the same as for <strong>psxy</strong>, except <strong>-S</strong>. The
+<em>PostScript</em> code is written to standard output. The previous version
+(<strong>psvelomeca</strong>) is now obsolete. It has been replaced by <strong>psvelo</strong> and
+<strong>psmeca</strong>.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><em>table</em></p>
+<p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.</p>
+<p><strong>-J</strong><em>parameters</em> (*)</p>
+<p>Select map projection.</p>
+<p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>]</p>
+<p><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest, and
+you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <strong>r</strong> if lower left and
+upper right map coordinates are given instead of w/e/s/n. The two
+shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in latitude).
+Alternatively, specify the name of an existing grid file and the <strong>-R</strong>
+settings (and grid spacing, if applicable) are copied from the grid.</p>
+<p><strong>-S</strong></p>
+<p>Selects the meaning of the columns in the data file and the figure to be
+plotted.</p>
+<p><strong>-Se</strong><em>velscale/confidence/fontsize</em>.</p>
+<p>Velocity ellipses in (N,E) convention. <em>Vscale</em> sets the scaling of the
+velocity arrows. This scaling gives inches (unless <strong>c</strong>, <strong>i</strong>, <strong>m</strong>,
+or <strong>p</strong> is appended). <em>Confidence</em> sets the 2-dimensional confidence
+limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. <em>Fontsize</em>
+sets the size of the text in points. The ellipse will be filled with the
+color or shade specified by the <strong>-G</strong> option [default transparent]. The
+arrow and the circumference of the ellipse will be drawn with the pen
+attributes specified by the <strong>-W</strong> option. Parameters are expected to be
+in the following columns:</p>
+<blockquote>
+<div><strong>1</strong>,<strong>2</strong>:
+longitude, latitude of station (<strong>-:</strong> option interchanges order)
+<strong>3</strong>,<strong>4</strong>:
+eastward, northward velocity (<strong>-:</strong> option interchanges order)
+<strong>5</strong>,<strong>6</strong>:
+uncertainty of eastward, northward velocities (1-sigma) (<strong>-:</strong>
+option interchanges order)
+<strong>7</strong>:
+correlation between eastward and northward components
+<strong>8</strong>:
+name of station (optional).</div></blockquote>
+<p><strong>-Sn</strong><em>barscale.</em></p>
+<p>Anisotropy bars. <em>Barscale</em> sets the scaling of the bars This scaling
+gives inches (unless <strong>c</strong>, <strong>i</strong>, <strong>m</strong>, or <strong>p</strong> is appended).
+Parameters are expected to be in the following columns:</p>
+<blockquote>
+<div><strong>1</strong>,<strong>2</strong>:
+longitude, latitude of station (<strong>-:</strong> option interchanges order)
+<strong>3</strong>,<strong>4</strong>:
+eastward, northward components of anisotropy vector (<strong>-:</strong> option
+interchanges order)</div></blockquote>
+<p><strong>-Sr</strong><em>velscale/confidence/fontsize</em></p>
+<p>Velocity ellipses in rotated convention. <em>Vscale</em> sets the scaling of
+the velocity arrows. This scaling gives inches (unless <strong>c</strong>, <strong>i</strong>,
+<strong>m</strong>, or <strong>p</strong> is appended). <em>Confidence</em> sets the 2-dimensional
+confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
+<em>Fontsize</em> sets the size of the text in points. The ellipse will be
+filled with the color or shade specified by the <strong>-G</strong> option [default
+transparent]. The arrow and the circumference of the ellipse will be
+drawn with the pen attributes specified by the <strong>-W</strong> option. Parameters
+are expected to be in the following columns:</p>
+<blockquote>
+<div><strong>1</strong>,<strong>2</strong>:
+longitude, latitude, of station (<strong>-:</strong> option interchanges order)
+<strong>3</strong>,<strong>4</strong>:
+eastward, northward velocity (<strong>-:</strong> option interchanges order)
+<strong>5</strong>,<strong>6</strong>:
+semi-major, semi-minor axes
+<strong>7</strong>:
+counter-clockwise angle, in degrees, from horizontal axis to major
+axis of ellipse.
+<strong>8</strong>:
+name of station (optional)</div></blockquote>
+<p><strong>-Sw</strong><em>wedge_scale/wedge_mag</em>.</p>
+<p>Rotational wedges. <em>Wedge_scale</em> sets the size of the wedges in inches
+(unless <strong>c</strong>, <strong>i</strong>, <strong>m</strong>, or <strong>p</strong> is appended). Values are
+multiplied by <em>Wedge_mag</em> before plotting. For example, setting
+<em>Wedge_mag</em> to 1.e7 works well for rotations of the order of 100
+nanoradians/yr. Use <strong>-G</strong> to set the fill color or shade for the wedge,
+and <strong>-E</strong> to set the color or shade for the uncertainty. Parameters are
+expected to be in the following columns:</p>
+<blockquote>
+<div><strong>1</strong>,<strong>2</strong>:
+longitude, latitude, of station (<strong>-:</strong> option interchanges order)
+<strong>3</strong>:
+rotation in radians
+<strong>4</strong>:
+rotation uncertainty in radians</div></blockquote>
+<p><strong>-Sx</strong><em>cross_scale</em></p>
+<p>gives Strain crosses. <em>Cross_scale</em> sets the size of the cross in
+inches (unless <strong>c</strong>, <strong>i</strong>, <strong>m</strong>, or <strong>p</strong> is appended). Parameters
+are expected to be in the following columns:</p>
+<blockquote>
+<div><strong>1</strong>,<strong>2</strong>:
+longitude, latitude, of station (<strong>-:</strong> option interchanges order)
+<strong>3</strong>:
+eps1, the most extensional eigenvalue of strain tensor, with
+extension taken positive.
+<strong>4</strong>:
+eps2, the most compressional eigenvalue of strain tensor, with
+extension taken positive.
+<strong>5</strong>:
+azimuth of eps2 in degrees CW from North.</div></blockquote>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-A</strong><em>parameters</em></dt>
+<dd>Modify vector parameters. For vector heads, append vector head
+<em>size</em> [Default is 9p]. See VECTOR ATTRIBUTES for specifying
+additional attributes.</dd>
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> (*)</dt>
+<dd>Set map boundary intervals.</dd>
+<dt><strong>-D</strong><em>Sigma_scale</em></dt>
+<dd>can be used to rescale the uncertainties of velocities (<strong>-Se</strong> and
+<strong>-Sr</strong>) and rotations (<strong>-Sw</strong>). Can be combined with the
+<em>confidence</em> variable.</dd>
+<dt><strong>-F</strong><em>fill</em></dt>
+<dd>Sets the color or shade used for frame and annotation. [Default is
+black]</dd>
+<dt><strong>-E</strong><em>fill</em></dt>
+<dd>Sets the color or shade used for filling uncertainty wedges
+(<strong>-Sw</strong>) or velocity error ellipses (<strong>-Se</strong> or <strong>-Sr</strong>). [If
+<strong>-E</strong> is not specified, the uncertainty regions will be
+transparent.]</dd>
+<dt><strong>-G</strong><em>fill</em></dt>
+<dd>Specify color (for symbols/polygons) or pattern (for polygons)
+[Default is black]. Optionally, specify
+<strong>-Gp</strong><em>icon_size/pattern</em>, where <em>pattern</em> gives the number of
+the image pattern (1-90) OR the name of a icon-format file.
+<em>icon_size</em> sets the unit size in inches. To invert black and white
+pixels, use <strong>-GP</strong> instead of <strong>-Gp</strong>. See <strong>pspatterns</strong> for
+information on individual patterns.</dd>
+<dt><strong>-K</strong> (*)</dt>
+<dd>Do not finalize the <em>PostScript</em> plot.</dd>
+<dt><strong>-L</strong></dt>
+<dd>Draw lines. Ellipses and fault planes will have their outlines drawn
+using current pen (see <strong>-W</strong>).</dd>
+<dt><strong>-N</strong></dt>
+<dd>Do <strong>NOT</strong> skip symbols that fall outside the frame boundary
+specified by <strong>-R</strong>. [Default plots symbols inside frame only].</dd>
+<dt><strong>-O</strong> (*)</dt>
+<dd>Append to existing <em>PostScript</em> plot.</dd>
+<dt><strong>-P</strong> (*)</dt>
+<dd>Select &#8220;Portrait&#8221; plot orientation.</dd>
+<dt><strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] (*)</dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-W</strong></dt>
+<dd>Set pen attributes for velocity arrows, ellipse circumference and
+fault plane edges. [Defaults: width = default, color = black, style = solid].</dd>
+</dl>
+<p><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]
+<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] (*)</p>
+<blockquote>
+<div>Shift plot origin.</div></blockquote>
+<dl class="docutils">
+<dt><strong>-c</strong><em>copies</em> (*)</dt>
+<dd>Specify number of plot copies [Default is 1].</dd>
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
+<dd>Skip or produce header record(s).</dd>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dd>Select input columns.</dd>
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] (*)</dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Vector Attributes</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>Several modifiers may be appended to the vector-producing options to
+specify the placement of vector heads, their shapes, and the
+justification of the vector:</p>
+<p><strong>+a</strong><em>angle</em> sets the angle of the vector head apex [30].
+<strong>+b</strong> places a vector head at the beginning of the vector path [none].
+<strong>+e</strong> places a vector head at the end of the vector path [none].
+<strong>+g</strong>-|<em>fill</em> turns off vector head fill (if -) or sets the vector
+head fill [Default fill is used, which may be no fill].
+<strong>+l</strong> draws half-arrows, using only the left side [both].
+<strong>+n</strong><em>norm</em> scales down vector attributes (pen thickness, head size)
+with decreasing length, where vectors shorter than <em>norm</em> will have
+their attributes scaled by length/<em>norm</em> [arrow attributes remains
+invariant to length].
+<strong>+p</strong>[-][<em>pen</em>] sets the vector pen attributes. If <em>pen</em> has a
+leading - then the head outline is not drawn. [Default pen is used, and
+head outline is drawn]
+<strong>+r</strong> draws half-arrows, using only the right side [both].</p>
+<p>In addition, all but circular vectors may take these modifiers:</p>
+<p><strong>+j</strong><em>just</em> determines how the input <em>x</em>,<em>y</em> point relates to the
+vector. Choose from <strong>b</strong>eginning [default], <strong>e</strong>nd, or
+<strong>c</strong>enter.
+<strong>+s</strong> means the input <em>angle</em>, <em>length</em> is instead the <em>x</em>, <em>y</em>
+coordinates of the vector end point.</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">Examples</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>The following should make big red arrows with green ellipses, outlined
+in red. Note that the 39% confidence scaling will give an ellipse which
+fits inside a rectangle of dimension Esig by Nsig.</p>
+<p><strong>psvelo</strong> &lt;&lt; END <strong>-H</strong>2 <strong>-R</strong>-10/10/-10/10 <strong>-W</strong>0.25p,red
+<strong>-G</strong>green <strong>-L</strong> <strong>-Se</strong>0.2/0.39/18 <strong>-B</strong>1g1 <strong>-Jx</strong>0.4/0.4
+<strong>-A</strong>0.3p <strong>-P</strong> <strong>-V</strong> &gt; test.ps
+Long. Lat. Evel Nvel Esig Nsig CorEN SITE
+(deg) (deg) (mm/yr) (mm/yr)
+0. -8. 0.0 0.0 4.0 6.0 0.500 4x6
+-8. 5. 3.0 3.0 0.0 0.0 0.500 3x3
+0. 0. 4.0 6.0 4.0 6.0 0.500
+-5. -5. 6.0 4.0 6.0 4.0 0.500 6x4
+5. 0. -6.0 4.0 6.0 4.0 -0.500 -6x4
+0. -5. 6.0 -4.0 6.0 4.0 -0.500 6x-4
+END</p>
+<p>This example should plot some residual rates of rotation in the Western
+Transverse Ranges, California. The wedges will be dark gray, with light
+gray wedges to represent the 2-sigma uncertainties.</p>
+<p><strong>psvelo</strong> &lt;&lt;END <strong>-Sw</strong>0.4/1.e7 <strong>-W</strong>0.75p <strong>-G</strong>darkgray
+<strong>-E</strong>lightgray <strong>-H</strong>1 <strong>-D</strong>2 <strong>-Jm</strong>2.2
+<strong>-R</strong>240./243./32.5/34.75 <strong>-B</strong>f10ma60m/WeSn <strong>-P</strong> &gt; test.ps
+lon lat spin(rad/yr) spin_sigma (rad/yr)
+241.4806 34.2073 5.65E-08 1.17E-08
+241.6024 34.4468 -4.85E-08 1.85E-08
+241.0952 34.4079 4.46E-09 3.07E-08
+241.2542 34.2581 1.28E-07 1.59E-08
+242.0593 34.0773 -6.62E-08 1.74E-08
+241.0553 34.5369 -2.38E-07 4.27E-08
+241.1993 33.1894 -2.99E-10 7.64E-09
+241.1084 34.2565 2.17E-08 3.53E-08
+END</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> , <a class="reference external" href="psbasemap.1.html">*psbasemap*(1)</a> ,
+<a class="reference external" href="psxy.1.html">*psxy*(1)</a></p>
+</div>
+<div class="section" id="id9">
+<h2><a class="reference external" href="#toc9">References</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.</p>
+</div>
+<div class="section" id="id10">
+<h2><a class="reference external" href="#toc10">Authors</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<p>Kurt Feigl
+CNRS UMR 5562
+Toulouse, France
+(Kurt.Feigl&#64;.cnes.fr)
+Genevieve Patau
+CNRS UMR 7580
+Seismology Dept.
+Institut de Physique du Globe de Paris
+(<a class="reference external" href="mailto:patau&#37;&#52;&#48;ipgp&#46;jussieu&#46;fr">patau<span>&#64;</span>ipgp<span>&#46;</span>jussieu<span>&#46;</span>fr</a>)</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">psvelo</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Vector Attributes</a></li>
+<li><a class="reference internal" href="#id7">Examples</a></li>
+<li><a class="reference internal" href="#id8">See Also</a></li>
+<li><a class="reference internal" href="#id9">References</a></li>
+<li><a class="reference internal" href="#id10">Authors</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pspolar.html"
+                        title="previous chapter">pspolar</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../mgd77/list.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/supplements/meca/psvelo.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../mgd77/list.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pspolar.html" title="pspolar"
+             >previous</a> |</li>
+        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
+          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

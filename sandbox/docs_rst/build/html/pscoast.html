@@ -1,0 +1,435 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pscoast &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="pscontour" href="pscontour.html" />
+    <link rel="prev" title="psclip" href="psclip.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="pscontour.html" title="pscontour"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="psclip.html" title="psclip"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pscoast">
+<h1>pscoast<a class="headerlink" href="#pscoast" title="Permalink to this headline">¶</a></h1>
+<p>pscoast - Plot continents, shorelines, rivers, and borders on maps</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>pscoast</strong> <strong>-J</strong><em>parameters</em>
+<strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>] [
+<strong>-A</strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+r</strong>|<strong>l</strong>][<strong>p</strong><em>percent</em>]
+] [ <strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ] [
+<strong>-C</strong>[<strong>l</strong>|<strong>r</strong>/]*fill* ] [ <strong>-D</strong><em>resolution</em>[<strong>+</strong>] ]
+[ <strong>-G</strong><em>fill</em>|<strong>c</strong> ] [ <strong>-I</strong><em>river</em>[/<em>pen</em>] ] [
+<strong>-Jz</strong>|<strong>Z</strong><em>parameters</em> ] [ <strong>-K</strong> ] [
+<strong>-L</strong>[<strong>f</strong>][<strong>x</strong>]<em>lon0</em>/<em>lat0</em>[/<em>slon</em>]/<em>slat</em>/<em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>][<strong>+l</strong><em>label</em>][<strong>+j</strong><em>just</em>][<strong>+p</strong><em>pen</em>][<strong>+f</strong><em>fill</em>][<strong>+u</strong>]
+] ] [ <strong>-M</strong> ] [ <strong>-N</strong><em>border</em>[/<em>pen</em>] ] [ <strong>-O</strong> ] [ <strong>-P</strong> ] [
+<strong>-Q</strong> ] [ <strong>-S</strong><em>fill</em>|<strong>c</strong> ] [
+<strong>-T</strong>[<strong>f</strong>|<strong>m</strong>][<strong>x</strong>]<em>lon0</em>/<em>lat0</em>/<em>size</em>[/<em>info</em>][<strong>:</strong><em>w</em>,<em>e</em>,<em>s</em>,<em>n</em><strong>:</strong>][<strong>+</strong><em>gint</em>[/<em>mint</em>]]
+] [ <strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] ] [
+<strong>-V</strong>[<em>level</em>] ] [ <strong>-W</strong>[<em>level</em>/]*pen* ] [
+<strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]
+] [
+<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]]
+] [ <strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] ] [ <strong>-c</strong><em>copies</em> ] [
+<strong>-p</strong><em>azim</em>/<em>elev</em>[/<em>zlevel</em>][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>]
+] [ <strong>-t</strong>[<em>transp</em>] ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>pscoast</strong> plots grayshaded, colored, or textured land-masses [or
+water-masses] on maps and [optionally] draws coastlines, rivers, and
+political boundaries. Alternatively, it <a class="reference external" href="can.1.html">can (1)</a> issue
+clip paths that will contain all land or all water areas, <a class="reference external" href="or.2.html">or
+(2)</a> dump the data to an ASCII table. The data files come
+in 5 different resolutions: (<strong>f</strong>)ull, (<strong>h</strong>)igh, (<strong>i</strong>)ntermediate,
+(<strong>l</strong>)ow, and (<strong>c</strong>)rude. The full resolution files amount to more
+than 55 Mb of data and provide great detail; for maps of larger
+geographical extent it is more economical to use one of the other
+resolutions. If the user selects to paint the land-areas and does not
+specify fill of water-areas then the latter will be transparent (i.e.,
+earlier graphics drawn in those areas will not be overwritten).
+Likewise, if the water-areas are painted and no land fill is set then
+the land-areas will be transparent. A map projection must be supplied.
+The <em>PostScript</em> code is written to standard output.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-J</strong><em>parameters</em> (*)</dt>
+<dd>Select map projection.</dd>
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <strong>r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing, if applicable) are copied from
+the grid.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-A</strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+r</strong>|<strong>l</strong>][<strong>p</strong><em>percent</em>]</dt>
+<dd>Features with an area smaller than <em>min_area</em> in km^2 or of
+hierarchical level that is lower than <em>min_level</em> or higher than
+<em>max_level</em> will not be plotted [Default is 0/0/4 (all features)].
+Level 2 (lakes) contains regular lakes and wide river bodies which
+we normally include as lakes; append <strong>+r</strong> to just get river-lakes
+or <strong>+l</strong> to just get regular lakes. Finally, append
+<strong>+p</strong><em>percent</em> to exclude polygons whose percentage area of the
+corresponding full-resolution feature is less than <em>percent</em>. See
+GSHHS INFORMATION below for more details.</dd>
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> (*)</dt>
+<dd>Set map boundary intervals.</dd>
+<dt><strong>-C</strong>[<strong>l</strong>|<strong>r</strong>/]*fill*</dt>
+<dd>Set the shade, color, or pattern for lakes and river-lakes [Default
+is the fill chosen for &#8220;wet&#8221; areas (<strong>-S</strong>)]. Optionally, specify
+separate fills by prepending <strong>l</strong>/ for lakes and <strong>r</strong>/ for
+river-lakes, repeating the <strong>-C</strong> option as needed.</dd>
+<dt><strong>-D</strong><em>resolution</em>[<strong>+</strong>]</dt>
+<dd>Selects the resolution of the data set to use ((<strong>f</strong>)ull,
+(<strong>h</strong>)igh, (<strong>i</strong>)ntermediate, (<strong>l</strong>)ow, and (<strong>c</strong>)rude). The
+resolution drops off by 80% between data sets [Default is <strong>l</strong>].
+Append )+) to automatically select a lower resolution should the one
+requested not be available [abort if not found].</dd>
+<dt><strong>-G</strong><em>fill</em>|<strong>c</strong></dt>
+<dd>Select filling or clipping of &#8220;dry&#8221; areas. Append the shade, color,
+or pattern; or use <strong>-Gc</strong> for clipping [Default is no fill].</dd>
+<dt><strong>-I</strong><em>river</em>[/<em>pen</em>]</dt>
+<dd>Draw rivers. Specify the type of rivers and [optionally] append pen
+attributes [Default pen: width = default, color = black, style =
+solid].
+Choose from the list of river types below; repeat option <strong>-I</strong> as
+often as necessary.
+`` `` `` `` 0 = Double-lined rivers (river-lakes)
+`` `` `` `` 1 = Permanent major rivers
+`` `` `` `` 2 = Additional major rivers
+`` `` `` `` 3 = Additional rivers
+`` `` `` `` 4 = Minor rivers
+`` `` `` `` 5 = Intermittent rivers - major
+`` `` `` `` 6 = Intermittent rivers - additional
+`` `` `` `` 7 = Intermittent rivers - minor
+`` `` `` `` 8 = Major canals
+`` `` `` `` 9 = Minor canals
+`` `` `` `` 10 = Irrigation canals
+`` `` `` `` You can also choose from several preconfigured river groups:
+`` `` `` `` a = All rivers and canals (0-10)
+`` `` `` `` A = All rivers and canals except river-lakes (1-10)
+`` `` `` `` r = All permanent rivers (0-4)
+`` `` `` `` R = All permanent rivers except river-lakes (1-4)
+`` `` `` `` i = All intermittent rivers (5-7)
+`` `` `` `` c = All canals (8-10)</dd>
+<dt><strong>-Jz</strong>|<strong>Z</strong><em>parameters</em> (*)</dt>
+<dd>Set z-axis scaling; same syntax as <strong>-Jx</strong>.</dd>
+<dt><strong>-K</strong> (*)</dt>
+<dd>Do not finalize the <em>PostScript</em> plot.</dd>
+<dt><strong>-L</strong>[<strong>f</strong>][<strong>x</strong>]<em>lon0</em>/<em>lat0</em>[/<em>slon</em>]/<em>slat</em>/<em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>][<strong>+l</strong><em>label</em>][<strong>+j</strong><em>just</em>][<strong>+p</strong><em>pen</em>][<strong>+f</strong><em>fill</em>][<strong>+u</strong>] ]</dt>
+<dd>Draws a simple map scale centered on <em>lon0/lat0</em>. Use <strong>-Lx</strong> to
+specify x/y position instead. Scale is calculated at latitude <em>slat</em>
+(optionally supply longitude <em>slon</em> for oblique projections [Default
+is central meridian]), <em>length</em> is in km, or append unit from
+<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>. Use <strong>-Lf</strong> to
+get a &#8220;fancy&#8221; scale [Default is plain]. Append <strong>+l</strong> to select the
+default label which equals the distance unit (meter, feet, km,
+miles, nautical miles) and is justified on top of the scale [t].
+Change this by giving your own label (append <strong>+l</strong><em>label</em>).
+Change label justification with <strong>+j</strong><em>justification</em> (choose
+among l(eft), r(ight), <a class="reference external" href="t.op.html">t(op)</a> , and
+<a class="reference external" href="b.ottom.html">b(ottom)</a> ). Apply <strong>+u</strong> to append the unit to all
+distance annotations along the scale. If you want to place a
+rectangle behind the scale, specify suitable <strong>+p</strong><em>pen</em> and/or
+<strong>+f</strong><em>fill</em> parameters.</dd>
+<dt><strong>-M</strong></dt>
+<dd>Dumps a single multisegment ASCII (or binary, see
+<strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>]) file to standard output. No plotting
+occurs. Specify any combination of <strong>-W</strong>, <strong>-I</strong>, <strong>-N</strong>.</dd>
+<dt><strong>-N</strong><em>border</em>[/<em>pen</em>]</dt>
+<dd>Draw political boundaries. Specify the type of boundary and
+[optionally] append pen attributes [Default pen: width = default,
+color = black, style = solid].
+Choose from the list of boundaries below. Repeat option <strong>-N</strong> as
+often as necessary.
+`` `` `` `` 1 = National boundaries
+`` `` `` `` 2 = State boundaries within the Americas
+`` `` `` `` 3 = Marine boundaries
+`` `` `` `` a = All boundaries (1-3)</dd>
+<dt><strong>-O</strong> (*)</dt>
+<dd>Append to existing <em>PostScript</em> plot.</dd>
+<dt><strong>-P</strong> (*)</dt>
+<dd>Select &#8220;Portrait&#8221; plot orientation.</dd>
+<dt><strong>-Q</strong></dt>
+<dd>Mark end of existing clip path. No projection information is needed.
+Also supply <strong>-X</strong> and <strong>-Y</strong> settings if you have moved since the
+clip started.</dd>
+<dt><strong>-S</strong><em>fill</em>|<strong>c</strong></dt>
+<dd>Select filling or clipping of &#8220;wet&#8221; areas. Append the shade, color,
+or pattern; or use <strong>-Sc</strong> for clipping [Default is no fill].</dd>
+<dt><strong>-T</strong>[<strong>f</strong>|<strong>m</strong>][<strong>x</strong>]<em>lon0</em>/<em>lat0</em>/<em>size</em>[/<em>info</em>][<strong>:</strong><em>w</em>,<em>e</em>,<em>s</em>,<em>n</em><strong>:</strong>][<strong>+</strong><em>gint</em>[/<em>mint</em>]]</dt>
+<dd>Draws a simple map directional rose centered on <em>lon0/lat0</em>. Use
+<strong>-Tx</strong> to specify x/y position instead. The <em>size</em> is the diameter
+of the rose, and optional label information can be specified to
+override the default values of W, E, S, and N (Give <strong>::</strong> to
+suppress all labels). The default [plain] map rose only labels
+north. Use <strong>-Tf</strong> to get a &#8220;fancy&#8221; rose, and specify in <em>info</em> what
+you want drawn. The default [<strong>1</strong>] draws the two principal E-W,
+N-S orientations, <strong>2</strong> adds the two intermediate NW-SE and NE-SW
+orientations, while <strong>3</strong> adds the eight minor orientations WNW-ESE,
+NNW-SSE, NNE-SSW, and ENE-WSW. For a magnetic compass rose, specify
+<strong>-Tm</strong>. If given, <em>info</em> must be the two parameters <em>dec/dlabel</em>,
+where <em>dec</em> is the magnetic declination and <em>dlabel</em> is a label for
+the magnetic compass needle (specify <strong>-</strong> to format a label from
+<em>dec</em>). Then, both directions to geographic and magnetic north are
+plotted [Default is geographic only]. If the north label is <strong>*</strong>
+then a north star is plotted instead of the north label. Annotation
+and two levels of tick intervals for both geographic and magnetic
+directions are 30/5/1 degrees; override these settings by appending
+<strong>+</strong><em>gints</em>[/<em>mints</em>]. Color and pen attributes for the rose
+are taken from <strong>COLOR_BACKGROUND</strong> and <strong>MAP_TICK_PEN</strong>,
+respectively, while label fonts, colors and sizes follow
+<strong>FONT_TITLE</strong> for the four major directions and <strong>FONT_LABEL</strong>
+for minor directions.</dd>
+<dt><strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] (*)</dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-W</strong>[<em>level</em>/]*pen*</dt>
+<dd>Draw shorelines [Default is no shorelines]. Append pen attributes
+[Defaults: width = default, color = black, style = solid] which
+apply to all four levels. To set the pen for each level differently,
+prepend <em>level</em>/, where <em>level</em> is 1-4 and represent coastline,
+lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
+Repeat <strong>-W</strong> as needed. When specific level pens are set, those not
+listed will not be drawn [Default draws all levels; but see <strong>-A</strong>].</dd>
+</dl>
+<p><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]
+<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] (*)</p>
+<blockquote>
+<div>Shift plot origin.</div></blockquote>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select binary output.</dd>
+<dt><strong>-c</strong><em>copies</em> (*)</dt>
+<dd>Specify number of plot copies [Default is 1].</dd>
+<dt><strong>-p</strong><em>azim</em>/<em>elev</em>[/<em>zlevel</em>][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] (*)</dt>
+<dd>Select perspective view.</dd>
+<dt><strong>-t</strong>[<em>transp</em>] (*)</dt>
+<dd>Set PDF transparency level.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>To plot a green Africa with white outline on blue background, with
+permanent major rivers in thick blue pen, additional major rivers in
+thin blue pen, and national borders as dashed lines on a Mercator map at
+scale 0.1 inch/degree, use</p>
+<p>pscoast -R-30/30/-40/40 <strong>-Jm</strong>0.1<strong>i</strong> -B5 -I1/1p,blue
+-I2/0.25p,blue -N1/0.25p,- -W0.25p,white -Ggreen -Sblue -P &gt; africa.ps</p>
+<p>To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a
+Mercator map at scale 1 cm/degree, run</p>
+<p>pscoast -R-30/-10/60/65 <strong>-Jm</strong>1<strong>c</strong> -B5 -Gp100/28 &gt; iceland.ps</p>
+<p>To initiate a clip path for Africa so that the subsequent colorimage of
+gridded topography is only seen over land, using a Mercator map at scale
+0.1 inch/degree, use</p>
+<p>pscoast -R-30/30/-40/40 <strong>-Jm</strong>0.1<strong>i</strong> -B5 -Gc -P -K &gt; africa.ps
+grdimage <strong>-Jm</strong>0.1<strong>i</strong> etopo5.nc -Ccolors.cpt -O -K &gt;&gt; africa.ps
+pscoast -Q -O &gt;&gt; africa.ps</p>
+<p><strong>pscoast</strong> will first look for coastline files in directory
+<strong>$GMT_SHAREDIR</strong>/coast If the desired file is not found, it will look
+for the file <strong>$GMT_SHAREDIR</strong>/coastline.conf. This file may contain
+any number of records that each holds the full pathname of an
+alternative directory. Comment lines (#) and blank lines are allowed.
+The desired file is then sought for in the alternate directories.</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">Gshhs Information</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>The coastline database is GSHHS which is compiled from two sources:
+World Vector Shorelines (WVS) and CIA World Data Bank II (WDBII). In
+particular, all level-1 polygons (ocean-land boundary) are derived from
+the more accurate WVS while all higher level polygons (level 2-4,
+representing land/lake, lake/island-in-lake, and
+island-in-lake/lake-in-island-in-lake boundaries) are taken from WDBII.
+Much processing has taken place to convert WVS and WDBII data into
+usable form for <strong>GMT</strong>: assembling closed polygons from line segments,
+checking for duplicates, and correcting for crossings between polygons.
+The area of each polygon has been determined so that the user may choose
+not to draw features smaller than a minimum area (see <strong>-A</strong>); one may
+also limit the highest hierarchical level of polygons to be included (4
+is the maximum). The 4 lower-resolution databases were derived from the
+full resolution database using the Douglas-Peucker line-simplification
+algorithm. The classification of rivers and borders follow that of the
+WDBII. See the <strong>GMT</strong> Cookbook and Technical Reference Appendix K for
+further details.</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc8">Bugs</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>The options to fill (<strong>-C</strong> <strong>-G</strong> <strong>-S</strong>) may not always work if the
+Azimuthal equidistant projection is chosen (<strong>-Je</strong>|<strong>E</strong>). If the
+antipole of the projection is in the oceans it will most likely work. If
+not, try to avoid using projection center coordinates that are even
+multiples of the coastline bin size (1, 2, 5, 10, and 20 degrees for
+<strong>f</strong>, <strong>h</strong>, <strong>i</strong>, <strong>l</strong>, <strong>c</strong>, respectively). This projection is not
+supported for clipping.
+The political borders are for the most part 1970s-style but have been
+updated to reflect more recent border rearrangements in Europe and
+elsewhere. Let us know if you find something out of date.
+The full-resolution coastlines are also from a digitizing effort in the
+1970-80s and it is difficult to assess the accuracy. Users who zoom in
+close enough may find that the GSHHS coastline is not matching other
+data, e.g., satellite images, more recent coastline data, etc. We are
+aware of such mismatches but cannot undertake band-aid solutions each
+time this occurs.
+Some users of <strong>pscoast</strong> will not be satisfied with what they find for
+the Antarctic shoreline. In Antarctica, the boundary between ice and
+ocean varies seasonally and inter-annually. There are some areas of
+permanent sea ice. In addition to these time-varying ice-ocean
+boundaries, there are also ice grounding lines where ice goes from
+floating on the sea to sitting on land, and lines delimiting areas of
+rock outcrop. For consistency’s sake, we have used the World Vector
+Shoreline throughout the world in pscoast, as described in the <strong>GMT</strong>
+Cookbook Appendix K. Users who need specific boundaries in Antarctica
+should get the Antarctic Digital Database, prepared by the British
+Antarctic Survey, Scott Polar Research Institute, World Conservation
+Monitoring Centre, under the auspices of the Scientific Committee on
+Antarctic Research. This data base contains various kinds of limiting
+lines for Antarctica and is available on CD-ROM. It is published by the
+Scientific Committee on Antarctic Research, Scott Polar Research
+Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.</p>
+</div>
+<div class="section" id="id9">
+<h2><a class="reference external" href="#toc9">See Also</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="gmt.conf.5.html">*gmt.conf*(5)</a> ,
+<a class="reference external" href="gmtcolors.5.html">*gmtcolors*(5)</a> ,
+<a class="reference external" href="grdlandmask.1.html">*grdlandmask*(1)</a> ,
+<a class="reference external" href="psbasemap.1.html">*psbasemap*(1)</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pscoast</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Examples</a></li>
+<li><a class="reference internal" href="#id7">Gshhs Information</a></li>
+<li><a class="reference internal" href="#id8">Bugs</a></li>
+<li><a class="reference internal" href="#id9">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="psclip.html"
+                        title="previous chapter">psclip</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pscontour.html"
+                        title="next chapter">pscontour</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pscoast.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="pscontour.html" title="pscontour"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="psclip.html" title="psclip"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

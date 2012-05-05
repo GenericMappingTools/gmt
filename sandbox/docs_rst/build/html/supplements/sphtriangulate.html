@@ -1,0 +1,264 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Name &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">GMT5 v0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p><a class="reference external" href="#toc">Table of Contents</a></p>
+<div class="section" id="id1">
+<h1><a class="reference external" href="#toc0">Name</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>sphtriangulate - Delaunay or Voronoi construction of spherical lon,lat
+data</p>
+</div>
+<div class="section" id="id2">
+<h1><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<p><strong>sphtriangulate</strong> [ <em>table</em> ] [ <strong>-A</strong> ] [ <strong>-C</strong> ] [ <strong>-D</strong> ] [
+<strong>-L</strong><em>unit</em> ] [ <strong>-N</strong><em>nfile</em> ] [ <strong>-Q</strong><strong>d</strong>|<strong>v</strong> ] [
+<strong>-T</strong> ] [ <strong>-V</strong>[<em>level</em>] ] [
+<strong>-b</strong>[<em>ncol</em>][<strong>t</strong>][<strong>+L</strong>|<strong>+B</strong>] ] [
+<strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
+<strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
+] [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+</div>
+<div class="section" id="id3">
+<h1><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<p><strong>sphtriangulate</strong> reads one or more ASCII [or binary] files (or
+standard input) containing lon, lat and performs a spherical Delaunay
+triangulation, i.e., it find how the points should be connected to give
+the most equilateral triangulation possible on the sphere. Optionally,
+you may choose <strong>-Qv</strong> which will do further processing to obtain the
+Voronoi polygons. Normally, either set of polygons will be written as
+fillable segment output; use <strong>-T</strong> to write unique arcs instead. As an
+option, compute the area of each triangle or polygon. The algorithm used
+is STRIPACK.</p>
+</div>
+<div class="section" id="id4">
+<h1><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id5">
+<h1><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
+<p>None.</p>
+</div>
+<div class="section" id="id6">
+<h1><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
+table file(s) holding a number of data columns. If no tables are
+given then we read from standard input.</dd>
+<dt><strong>-A</strong></dt>
+<dd>Compute the area of the spherical triangles (<strong>-Qd</strong>) or polygons
+(<strong>-Qv</strong>) and write the areas (in chosen units; see <strong>-L</strong>) in the
+output segment headers [no areas calculated].</dd>
+<dt><strong>-C</strong></dt>
+<dd>For large data set you can save some memory (at the expense of more
+processing) by only storing one form of location coordinates
+(geographic or Cartesian 3-D vectors) at any given time, translating
+from one form to the other when necessary [Default keeps both arrays
+in memory].</dd>
+<dt><strong>-D</strong></dt>
+<dd>Used with <strong>-m</strong> to skip the last (repeated) input vertex at the end
+of a closed segment if it equals the first point in the segment.
+Requires <strong>-m</strong> [Default uses all points].</dd>
+<dt><strong>-L</strong><em>unit</em></dt>
+<dd>Specify the unit used for distance and area calculations. Choose
+among <strong>e</strong> (m), <strong>k</strong> (km), <strong>m</strong> (mile), <strong>n</strong> (nautical mile), or
+<strong>d</strong> (spherical degree). A spherical approximation is used unless
+<strong>PROJ_ELLIPSOID</strong> is set to an actual ellipsoid, in which case we
+convert latitudes to authalic latitudes before calculating areas.
+When degree is selected the areas are given in steradians.</dd>
+<dt><strong>-N</strong><em>nfile</em></dt>
+<dd>Write the information pertaining to each polygon (for Delaunay: the
+three node number and the triangle area (if <strong>-A</strong> was set); for
+Voronoi the unique node lon, lat and polygon area (if <strong>-A</strong> was
+set)) to a separate file. This information is also encoded in the
+segment headers of ASCII output files]. Required if binary output is
+needed.</dd>
+<dt><strong>d</strong>|<strong>v</strong></dt>
+<dd>Select between <strong>d</strong>elaunay or <strong>v</strong>oronoi mode [Delaunay].</dd>
+<dt><strong>-T</strong></dt>
+<dd>Write the unique arcs of the construction [Default writes fillable
+triangles or polygons]. When used with <strong>-A</strong> we store arc lenght in
+the segment header in chosen unit (see <strong>-L</strong>).</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select binary input. [Default is 2 input columns].</dd>
+<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select binary output. [Default is same as input].</dd>
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
+<dd>Skip or produce header record(s).</dd>
+</dl>
+<p><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
+(*)</p>
+<blockquote>
+<div>Select input columns.</div></blockquote>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] (*)</dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id7">
+<h1><a class="reference external" href="#toc6">Ascii Format Precision</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <strong>gmt.conf</strong> file. Longitude and latitude are formatted
+according to <strong>FORMAT_GEO_OUT</strong>, whereas other values are formatted
+according to <strong>FORMAT_FLOAT_OUT</strong>. Be aware that the format in effect
+can lead to loss of precision in the output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <strong>FORMAT_FLOAT_OUT</strong> setting.</p>
+</div>
+<div class="section" id="id8">
+<h1><a class="reference external" href="#toc7">Grid Values Precision</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h1>
+<p>Regardless of the precision of the input data, GMT programs that create
+grid files will internally hold the grids in 4-byte floating point
+arrays. This is done to conserve memory and furthermore most if not all
+real data can be stored using 4-byte floating point values. Data with
+higher precision (i.e., double precision values) will lose that
+precision once GMT operates on the grid or writes out new grids. To
+limit loss of precision when processing data you should always consider
+normalizing the data prior to processing.</p>
+</div>
+<div class="section" id="id9">
+<h1><a class="reference external" href="#toc8">Examples</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h1>
+<p>To triangulate the points in the file testdata.txt, and make a Voronoi
+diagram via <strong>psxy</strong>, use</p>
+<p><strong>sphtriangulate</strong> testdata.txt <strong>-Qv</strong> | <strong>psxy</strong> <strong>-Rg</strong>
+<strong>-JG</strong>30/30/6i <strong>-m</strong> OPR(L) <strong>-P</strong> <strong>-W</strong>1p <strong>-B</strong>0g30 | gv -</p>
+<p>To compute the optimal Delaunay triangulation network based on the
+multiple segment file globalnodes.d and save the area of each triangle
+in the header record, try</p>
+<p><strong>sphtriangulate</strong> globalnodes.d <strong>-m</strong> <strong>-Qd</strong> <strong>-A</strong> &gt; global_tri.d</p>
+</div>
+<div class="section" id="id10">
+<h1><a class="reference external" href="#toc9">See Also</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> , <a class="reference external" href="triangulate.1.html">*triangulate*(1)</a>
+<a class="reference external" href="sphinterpolate.1.html">*sphinterpolate*(1)</a>
+<a class="reference external" href="sphdistance.1.html">*sphdistance*(1)</a></p>
+</div>
+<div class="section" id="id11">
+<h1><a class="reference external" href="#toc10">References</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h1>
+<p>Renka, R, J., 1997, Algorithm 772: STRIPACK: Delaunay Triangulation and
+Voronoi Diagram on the Surface of a Sphere, <em>AMC Trans. Math. Software</em>,
+<strong>23</strong>(3), 416-434.</p>
+<hr class="docutils" />
+<p><strong>Table of Contents</strong></p>
+<ul class="simple">
+<li><a class="reference external" href="#sect0">Name</a></li>
+<li><a class="reference external" href="#sect1">Synopsis</a></li>
+<li><a class="reference external" href="#sect2">Description</a></li>
+<li><a class="reference external" href="#sect3">Common Arguments And Specifications</a></li>
+<li><a class="reference external" href="#sect4">Required Arguments</a></li>
+<li><a class="reference external" href="#sect5">Optional Arguments</a></li>
+<li><a class="reference external" href="#sect6">Ascii Format Precision</a></li>
+<li><a class="reference external" href="#sect7">Grid Values Precision</a></li>
+<li><a class="reference external" href="#sect8">Examples</a></li>
+<li><a class="reference external" href="#sect9">See Also</a></li>
+<li><a class="reference external" href="#sect10">References</a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Name</a></li>
+<li><a class="reference internal" href="#id2">Synopsis</a></li>
+<li><a class="reference internal" href="#id3">Description</a></li>
+<li><a class="reference internal" href="#id4">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id5">Required Arguments</a></li>
+<li><a class="reference internal" href="#id6">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id7">Ascii Format Precision</a></li>
+<li><a class="reference internal" href="#id8">Grid Values Precision</a></li>
+<li><a class="reference internal" href="#id9">Examples</a></li>
+<li><a class="reference internal" href="#id10">See Also</a></li>
+<li><a class="reference internal" href="#id11">References</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/supplements/sphtriangulate.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">GMT5 v0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

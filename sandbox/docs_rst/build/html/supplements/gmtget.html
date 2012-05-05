@@ -1,0 +1,149 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gmtget &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">GMT5 v0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="gmtget">
+<h1>gmtget<a class="headerlink" href="#gmtget" title="Permalink to this headline">¶</a></h1>
+<p>gmtget - Get individual <strong>GMT</strong> default parameters</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmtget</strong> [ <strong>-G</strong><em>defaultsfile</em> ] [ <strong>-L</strong> ] <em>PARAMETER1</em> [
+<em>PARAMETER2</em> <em>PARAMETER3</em> ... ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmtget</strong> will list the value of one or more <strong>GMT</strong> default
+parameters.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Required Arguments</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>PARAMETER</dt>
+<dd>Provide one or several parameters of interest. The current value of
+those parameters will be writen to <em>stdout</em>. For a complete listing
+of available parameters and their meaning, see the <strong>gmt.conf</strong> man
+page.</dd>
+</dl>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Optional Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-G</strong><em>defaultsfile</em></dt>
+<dd>Name of specific <strong>gmt.conf</strong> file to read [Default looks first in
+current directory, then in your home directory, then in ~/.gmt and
+finally in the system defaults].</dd>
+<dt><strong>-L</strong></dt>
+<dd>Return the values of the parameters on separate lines [Default
+returns all selected parameter values on one line separated by
+spaces]</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Example</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>To list the value of the parameter PS_COMMENTS:</p>
+<p><strong>gmtget</strong> PS_COMMENTS To get both the values of the parameter
+GRID_CROSS_SIZE_PRIMARY and GRID_CROSS_SIZE_SECONDARY on one line,
+try</p>
+<p><strong>gmtget</strong> GRID_CROSS_SIZE_PRIMARY GRID_CROSS_SIZE_SECONDARY</p>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">See Also</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="gmt.html">*gmt*</a> , <a class="reference external" href="gmt.conf.html">*gmt.conf*</a> ,
+<a class="reference external" href="gmtset.html">*gmtset*</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gmtget</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Required Arguments</a></li>
+<li><a class="reference internal" href="#id4">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id5">Example</a></li>
+<li><a class="reference internal" href="#id6">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/supplements/gmtget.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">GMT5 v0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

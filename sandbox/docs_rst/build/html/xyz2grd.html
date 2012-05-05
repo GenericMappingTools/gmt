@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>xyz2grd &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="Supplements" href="supplements/supplements.html" />
+    <link rel="prev" title="triangulate" href="triangulate.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="supplements/supplements.html" title="Supplements"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="triangulate.html" title="triangulate"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="xyz2grd">
+<h1>xyz2grd<a class="headerlink" href="#xyz2grd" title="Permalink to this headline">¶</a></h1>
+<p>xyz2grd - Convert data table to a grid file</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>xyz2grd</strong> [ <em>table</em> ] <strong>-G</strong><em>grdfile</em>
+<strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>][/<em>yinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>]]
+<strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] [
+<strong>-A</strong>[<strong>f</strong>|<strong>l</strong>|<strong>m</strong>|<strong>n</strong>|<strong>r</strong>|<strong>s</strong>|<strong>u</strong>|<strong>z</strong>]
+] [ <strong>-D</strong><em>xname</em>/<em>yname</em>/<em>zname</em>/<em>scale</em>/<em>offset</em>/<em>title</em>/<em>remark</em> ]
+[ <strong>-N</strong><em>nodata</em> ] [ <strong>-S</strong>[<em>zfile</em>] ] [ <strong>-V</strong>[<em>level</em>] ] [
+<strong>-Z</strong>[<em>flags</em>] ] [ <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] ] [
+<strong>-f</strong><em>colinfo</em> ] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
+<strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
+] [ <strong>-r</strong> ] [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>xyz2grd</strong> reads one or more z or xyz tables and creates a binary grid
+file. <strong>xyz2grd</strong> will report if some of the nodes are not filled in
+with data. Such unconstrained nodes are set to a value specified by the
+user [Default is NaN]. Nodes with more than one value will be set to the
+mean value. As an option (using <strong>-Z</strong>), a 1-column z-table may be read
+assuming all nodes are present (z-tables can be in organized in a number
+of formats, see <strong>-Z</strong> below.)</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-G</strong><em>grdfile</em></dt>
+<dd><em>grdfile</em> is the name of the binary output grid file. (See GRID FILE
+FORMAT below.)</dd>
+<dt><strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>][/<em>yinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>]]</dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
+append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>:
+Append <strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc
+seconds. If one of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, or <strong>n</strong> is
+appended instead, the increment is assumed to be given in meter,
+feet, km, Miles, or nautical miles, respectively, and will be
+converted to the equivalent degrees longitude at the middle latitude
+of the region (the conversion depends on <strong>PROJ_ELLIPSOID</strong>). If
+/<em>y_inc</em> is given but set to 0 it will be reset equal to <em>x_inc</em>;
+otherwise it will be converted to degrees latitude. <strong>All
+coordinates</strong>: If <strong>=</strong> is appended then the corresponding max <em>x</em>
+(<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly adjusted to fit exactly
+the given increment [by default the increment may be adjusted
+slightly to fit the given domain]. Finally, instead of giving an
+increment you may specify the <em>number of nodes</em> desired by appending
+<strong>+</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The resulting
+increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see Appendix B for
+details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing
+has already been initialized; use <strong>-I</strong> to override the values.</dd>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
+<dd>Specify the region of interest.</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII [or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]]
+files holding z or (x,y,z) values. The xyz triplets do not have to
+be sorted. One-column z tables must be sorted and the <strong>-Z</strong> must be set.</dd>
+<dt><strong>-A</strong>[<strong>f</strong>|<strong>l</strong>|<strong>m</strong>|<strong>n</strong>|<strong>r</strong>|<strong>s</strong>|<strong>u</strong>|<strong>z</strong>]</dt>
+<dd>By default we will calculate mean values if multiple entries fall on
+the same node. Use <strong>-A</strong> to change this behavior, except it is
+ignored if <strong>-Z</strong> is given. Append <strong>f</strong> or <strong>s</strong> to simply keep the
+first or last data point that was assigned to each node. Append
+<strong>l</strong> or <strong>u</strong> to find the lowest (minimum) or upper (maximum) value
+at each node, respectively. Append <strong>m</strong> or <strong>r</strong> to compute mean or
+RMS value at each node, respectively. Append <strong>n</strong> to simply count
+the number of data points that were assigned to each node. Append
+<strong>z</strong> to sum multiple values that belong to the same node.</dd>
+<dt><strong>-D</strong><em>xname</em>/<em>yname</em>/<em>zname</em>/<em>scale</em>/<em>offset</em>/<em>title</em>/<em>remark</em></dt>
+<dd>Give values for <em>xname</em>, <em>yname</em>, <em>zname</em>, <em>scale</em>, <em>offset</em>,
+<em>title</em>, and <em>remark</em>. To leave some of these values untouched,
+specify = as the value. Alternatively, to allow &#8220;/&#8221; to be part of
+one of the values, use any non-alphanumeric character (and not the
+equal sign) as separator by both starting and ending with it. For
+example:
+<strong>-D</strong>:<em>xname</em>:<em>yname</em>:<em>zname</em>:<em>scale</em>:<em>offset</em>:<em>title</em>:<em>remark</em>:</dd>
+<dt><strong>-N</strong><em>nodata</em></dt>
+<dd>No data. Set nodes with no input xyz triplet to this value [Default
+is NaN]. For z-tables, this option is used to replace z-values that
+equal <em>nodata</em> with NaN.</dd>
+<dt><strong>-S</strong>[<em>zfile</em>]</dt>
+<dd>Swap the byte-order of the input only. No grid file is produced. You
+must also supply the <strong>-Z</strong> option. The output is written to <em>zfile</em>
+(or stdout if not supplied).</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-Z</strong>[<em>flags</em>]</dt>
+<dd><p class="first">Read a 1-column ASCII [or binary] table. This assumes that all the
+nodes are present and sorted according to specified ordering
+convention contained in <em>flags</em>. If incoming data represents rows,
+make <em>flags</em> start with <a class="reference external" href="T.op.html">**T**(op)</a> if first row is y
+= ymax or <a class="reference external" href="B.ottom.html">**B**(ottom)</a> if first row is y = ymin.
+Then, append <strong>L</strong> or <strong>R</strong> to indicate that first element is at
+left or right end of row. Likewise for column formats: start with
+<strong>L</strong> or <strong>R</strong> to position first column, and then append <strong>T</strong> or
+<strong>B</strong> to position first element in a row. For gridline registered
+grids: If data are periodic in x but the incoming data do not
+contain the (redundant) column at x = xmax, append <strong>x</strong>. For data
+periodic in y without redundant row at y = ymax, append <strong>y</strong>.
+Append <strong>s</strong><em>n</em> to skip the first <em>n</em> number of bytes (probably a
+header). If the byte-order needs to be swapped, append <strong>w</strong>. Select
+one of several data types (all binary except <strong>a</strong>):</p>
+<p>`` `` `` `` <strong>A</strong> ASCII representation of one or more floating point
+values per record</p>
+<p>`` `` `` `` <strong>a</strong> ASCII representation of a single item per record
+`` `` `` `` <strong>c</strong> signed 1-byte character
+`` `` `` `` <strong>u</strong> unsigned 1-byte character
+`` `` `` `` <strong>h</strong> signed 2-byte integer
+`` `` `` `` <strong>H</strong> unsigned 2-byte integer
+`` `` `` `` <strong>i</strong> signed 4-byte integer
+`` `` `` `` <strong>I</strong> unsigned 4-byte integer
+`` `` `` `` <strong>l</strong> long (8-byte) integer [requires 64-bit mode]
+`` `` `` `` <strong>L</strong> unsigned long (8-byte) integer [requires 64-bit mode]
+`` `` `` `` <strong>f</strong> 4-byte floating point single precision
+`` `` `` `` <strong>d</strong> 8-byte floating point double precision</p>
+<p class="last">Default format is scanline orientation of ASCII numbers: <strong>-ZTLa</strong>.
+Note that <strong>-Z</strong> only applies to 1-column input. The difference
+between <strong>A</strong> and <strong>a</strong> is that the latter can decode both
+<em>date</em><strong>T</strong><em>clock</em> and <em>ddd:mm:ss[.xx]</em> formats while the former
+is strictly for regular floating point values.</p>
+</dd>
+<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select binary input. [Default is 3 input columns]. This option only
+applies to xyz input files; see <strong>-Z</strong> for z tables.</dd>
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
+<dd>Specify data types of input and/or output columns.</dd>
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
+<dd>Skip or produce header record(s). Not used with binary data.</dd>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dd>Select input columns.</dd>
+<dt><strong>-r</strong></dt>
+<dd>Set pixel node registration [gridline].</dd>
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] (*)</dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Grid Values Precision</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>Regardless of the precision of the input data, GMT programs that create
+grid files will internally hold the grids in 4-byte floating point
+arrays. This is done to conserve memory and furthermore most if not all
+real data can be stored using 4-byte floating point values. Data with
+higher precision (i.e., double precision values) will lose that
+precision once GMT operates on the grid or writes out new grids. To
+limit loss of precision when processing data you should always consider
+normalizing the data prior to processing.</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">Grid File Formats</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>By default <strong>GMT</strong> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <strong>GMT</strong> is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called &#8220;packing&#8221; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision, scale and
+offset, the user should add the suffix
+<strong>=</strong><em>id</em>[<strong>/</strong><em>scale</em><strong>/</strong><em>offset</em>[<strong>/</strong><em>nan</em>]], where
+<em>id</em> is a two-letter identifier of the grid type and precision, and
+<em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
+to all grid values, and <em>nan</em> is the value used to indicate missing
+data. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
+of the GMT Technical Reference and Cookbook for more information.</p>
+<p>When writing a netCDF file, the grid is stored by default with the
+variable name &#8220;z&#8221;. To specify another variable name <em>varname</em>, append
+<strong>?</strong><em>varname</em> to the file name. Note that you may need to escape the
+special meaning of <strong>?</strong> in your shell program by putting a backslash in
+front of it, or by placing the filename and suffix between quotes or
+double quotes.</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc8">Geographical And Time Coordinates</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>When the output grid type is netCDF, the coordinates will be labeled
+&#8220;longitude&#8221;, &#8220;latitude&#8221;, or &#8220;time&#8221; based on the attributes of the input
+data or grid (if any) or on the <strong>-f</strong> or <strong>-R</strong> options. For example,
+both <strong>-f0x</strong> <strong>-f1t</strong> and <strong>-R</strong>90w/90e/0t/3t will result in a
+longitude/time grid. When the x, y, or z coordinate is time, it will be
+stored in the grid as relative time since epoch as specified by
+<strong>TIME_UNIT</strong> and <strong>TIME_EPOCH</strong> in the <strong>gmt.conf</strong> file or on the
+command line. In addition, the <strong>unit</strong> attribute of the time variable
+will indicate both this unit and epoch.</p>
+</div>
+<div class="section" id="id9">
+<h2><a class="reference external" href="#toc9">Examples</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>To create a grid file from the ASCII data in hawaii_grv.xyz, use</p>
+<p>xyz2grd hawaii_grv.xyz -Ddegree/degree/mGal/1/0/&#8221;Hawaiian
+Gravity&#8221;/&#8221;GRS-80 Ellipsoid used&#8221; -Ghawaii_grv_new.nc -R198/208/18/25
+-I5m -V</p>
+<p>To create a grid file from the raw binary (3-column, single-precision
+scanline-oriented data raw.b, use</p>
+<p>xyz2grd raw.b -Dm/m/m/1/0/=/= -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f</p>
+<p>To make a grid file from the raw binary USGS DEM (short integer
+scanline-oriented data topo30. on the NGDC global relief Data CD-ROM,
+with values of -9999 indicate missing data, one must on some machine
+reverse the byte-order. On such machines (like Sun, use</p>
+<p>xyz2grd topo30. -Dm/m/m/1/0/=/= -Gustopo.nc -R234/294/24/50 -I30s
+-N-9999 -B -ZTLhw</p>
+<p>Say you have received a binary file with 4-byte floating points that
+were written on a machine of different byte-order than yours. You can
+swap the byte-order with</p>
+<p>xyz2grd floats.bin -Snew_floats.bin -V -Zf</p>
+</div>
+<div class="section" id="id10">
+<h2><a class="reference external" href="#toc10">See Also</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="grd2xyz.1.html">*grd2xyz*(1)</a> ,
+<a class="reference external" href="grdedit.1.html">*grdedit*(1)</a>
+<a class="reference external" href="grdreformat.1.html">*grdreformat*(1)</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">xyz2grd</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Grid Values Precision</a></li>
+<li><a class="reference internal" href="#id7">Grid File Formats</a></li>
+<li><a class="reference internal" href="#id8">Geographical And Time Coordinates</a></li>
+<li><a class="reference internal" href="#id9">Examples</a></li>
+<li><a class="reference internal" href="#id10">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="triangulate.html"
+                        title="previous chapter">triangulate</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="supplements/supplements.html"
+                        title="next chapter">Supplements</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/xyz2grd.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="supplements/supplements.html" title="Supplements"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="triangulate.html" title="triangulate"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

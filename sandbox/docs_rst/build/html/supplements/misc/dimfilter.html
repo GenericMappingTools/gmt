@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dimfilter &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
+    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="next" title="gmtdigitize" href="gmtdigitize.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="list.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gmtdigitize.html" title="gmtdigitize"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="list.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
+          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dimfilter">
+<h1>dimfilter<a class="headerlink" href="#dimfilter" title="Permalink to this headline">¶</a></h1>
+<p>dimfilter - Directional filtering of 2-D gridded files in the space (or
+time) domain</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>dimfilter</strong> <em>input_file.nc</em> <strong>-D</strong><em>distance_flag</em>
+<strong>-F</strong><em>&lt;filtertype&gt;&lt;width&gt;</em>[<em>mode</em>] <strong>-G</strong><em>output_file.nc</em>
+<strong>-N</strong><em>&lt;filtertype&gt;&lt;n_sectors&gt;</em> [ <strong>-Q</strong><em>cols</em> ] [
+<strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>][/<em>yinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>]]
+] [ <strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] ] [ <strong>-T</strong> ] [
+<strong>-V</strong>[<em>level</em>] ] [ <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>dimfilter</strong> will filter a <em>.nc</em> file in the space (or time) domain by
+dividing the given filter circle into <em>n_sectors</em>, applying one of the
+selected primary convolution or non-convolution filters to each sector,
+and choosing the final outcome according to the selected secondary
+filter. It computes distances using Cartesian or Spherical geometries.
+The output <em>.nc</em> file can optionally be generated as a subregion of the
+input and/or with a new <strong>-I</strong>ncrement. In this way, one may have
+&#8220;extra space&#8221; in the input data so that there will be no edge effects
+for the output grid. If the filter is low-pass, then the output may be
+less frequently sampled than the input. <strong>-Q</strong> is for the error analysis
+mode and only requires the total number of columns in the input file,
+which contains the filtered depths. Finally, one should know that
+<strong>dimfilter</strong> will not produce a smooth output as other spatial filters
+do because it returns a minimum median out of <em>N</em> medians of <em>N</em>
+sectors. The output can be rought unless the input data is noise-free.
+Thus, an additional filtering (e.g., Gaussian via <strong>grdfilter</strong>) of the
+DiM-filtered data is generally recommended.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>input_file.nc</em></dt>
+<dd>The data grid to be filtered.</dd>
+<dt><strong>-D</strong><em>distance_flag</em></dt>
+<dd><p class="first">Distance <em>flag</em> tells how grid (x,y) relates to filter <em>width</em>, as
+follows:</p>
+<dl class="docutils">
+<dt><em>flag</em> = 0: grid (x,y) same units as <em>width</em>, Cartesian distances.</dt>
+<dd><em>flag</em> = 1: grid (x,y) in degrees, <em>width</em> in kilometers, Cartesian</dd>
+<dt>distances.</dt>
+<dd><em>flag</em> = 2: grid (x,y) in degrees, <em>width</em> in km, dx scaled by</dd>
+</dl>
+<p>cos(middle y), Cartesian distances.</p>
+<p>The above options are fastest because they allow weight matrix to be
+computed only once. The next three options are slower because they
+recompute weights for each latitude.</p>
+<p><em>flag</em> = 3: grid (x,y) in degrees, <em>width</em> in km, dx scaled by
+cosine(y), Cartesian distance calculation.</p>
+<blockquote>
+<div><em>flag</em> = 4: grid (x,y) in degrees, <em>width</em> in km, Spherical</div></blockquote>
+<p class="last">distance calculation.</p>
+</dd>
+<dt><strong>-F</strong><em>&lt;filtertype&gt;&lt;width&gt;</em>[<em>mode</em>]</dt>
+<dd><p class="first">Sets the primary filter type. Choose among convolution and
+non-convolution filters. Append the filter code followed by the full
+diameter <em>width</em>. Available convolution filters are:</p>
+<blockquote>
+<div>(<strong>b</strong>) Boxcar: All weights are equal.
+(<strong>c</strong>) Cosine Arch: Weights follow a cosine arch curve.
+(<strong>g</strong>) Gaussian: Weights are given by the Gaussian function.
+Non-convolution filters are:
+(<strong>m</strong>) Median: Returns median value.
+(<strong>p</strong>) Maximum likelihood probability (a mode estimator): Return</div></blockquote>
+<p class="last">modal value. If more than one mode is found we return their average
+value. Append - or + to the filter width if you rather want to
+return the smallest or largest of the modal values.</p>
+</dd>
+<dt><strong>-N</strong><em>&lt;filtertype&gt;&lt;n_sectors&gt;</em></dt>
+<dd><p class="first">Sets the secondary filter type and the number of bow-tie sectors.
+<em>n_sectors</em> must be integer and larger than 0. When <em>n_sectors</em> is
+set to 1, the secondary filter is not effective. Available secondary
+filters are:</p>
+<blockquote class="last">
+<div>(<strong>l</strong>) Lower: Return the minimum of all filtered values.
+(<strong>u</strong>) Upper: Return the maximum of all filtered values.
+(<strong>a</strong>) Average: Return the mean of all filtered values.
+(<strong>m</strong>) Median: Return the median of all filtered values.
+(<strong>p</strong>) Mode: Return the mode of all filtered values.</div></blockquote>
+</dd>
+<dt><strong>-G</strong><em>output_file.nc</em></dt>
+<dd><em>output_file.nc</em> is the output of the filter.</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-I</strong></dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the output Increment. Append
+<strong>m</strong> to indicate minutes, or <strong>c</strong> to indicate seconds. If the new
+<em>x_inc</em>, <em>y_inc</em> are NOT integer multiples of the old ones (in the
+input data), filtering will be considerably slower. [Default: Same
+as input.]</dd>
+<dt><strong>-R</strong></dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> defines the Region of the
+output points. [Default: Same as input.]</dd>
+<dt><strong>-T</strong></dt>
+<dd>Toggle the node registration for the output grid so as to become the
+opposite of the input grid [Default gives the same registration as
+the input grid].</dd>
+<dt><strong>-Q</strong><em>cols</em></dt>
+<dd><em>cols</em> is the total number of columns in the input text table file.
+For this mode, it expects to read depths consisted of several
+columns. Each column represents a filtered grid with a filter width,
+which can be obtained by ’grd2xyz -Z’. The outcome will be median,
+MAD, and mean. So, the column with the medians is used to generate
+the regional component and the column with the MADs is used to
+conduct the error analysis.</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
+<dd>Specify data types of input and/or output columns.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Grid File Formats</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>By default <strong>GMT</strong> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <strong>GMT</strong> is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called &#8220;packing&#8221; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision, scale and
+offset, the user should add the suffix
+<strong>=</strong><em>id</em>[<strong>/</strong><em>scale</em><strong>/</strong><em>offset</em>[<strong>/</strong><em>nan</em>]], where
+<em>id</em> is a two-letter identifier of the grid type and precision, and
+<em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
+to all grid values, and <em>nan</em> is the value used to indicate missing
+data. When reading grids, the format is generally automatically
+recognized. If not, the same suffix can be added to input grid file
+names. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
+of the GMT Technical Reference and Cookbook for more information.</p>
+<p>When reading a netCDF file that contains multiple grids, <strong>GMT</strong> will
+read, by default, the first 2-dimensional grid that can find in that
+file. To coax <strong>GMT</strong> into reading another multi-dimensional variable in
+the grid file, append <strong>?</strong><em>varname</em> to the file name, where <em>varname</em>
+is the name of the variable. Note that you may need to escape the
+special meaning of <strong>?</strong> in your shell program by putting a backslash in
+front of it, or by placing the filename and suffix between quotes or
+double quotes. The <strong>?</strong><em>varname</em> suffix can also be used for output
+grids to specify a variable name different from the default: &#8220;z&#8221;. See
+<a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.18 of the GMT
+Technical Reference and Cookbook for more information, particularly on
+how to read splices of 3-, 4-, or 5-dimensional grids.</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc7">Geographical And Time Coordinates</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>When the output grid type is netCDF, the coordinates will be labeled
+&#8220;longitude&#8221;, &#8220;latitude&#8221;, or &#8220;time&#8221; based on the attributes of the input
+data or grid (if any) or on the <strong>-f</strong> or <strong>-R</strong> options. For example,
+both <strong>-f0x</strong> <strong>-f1t</strong> and <strong>-R</strong>90w/90e/0t/3t will result in a
+longitude/time grid. When the x, y, or z coordinate is time, it will be
+stored in the grid as relative time since epoch as specified by
+<strong>TIME_UNIT</strong> and <strong>TIME_EPOCH</strong> in the <strong>gmt.conf</strong> file or on the
+command line. In addition, the <strong>unit</strong> attribute of the time variable
+will indicate both this unit and epoch.</p>
+</div>
+<div class="section" id="id9">
+<h2><a class="reference external" href="#toc8">Examples</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>Suppose that north_pacific_dbdb5.nc is a file of 5 minute bathymetry
+from 140E to 260E and 0N to 50N, and you want to find the medians of
+values within a 300km radius (600km full width) of the output points,
+which you choose to be from 150E to 250E and 10N to 40N, and you want
+the output values every 0.5 degree. To prevent the medians from being
+biased by the sloping plane, you want to divide the filter circle into 6
+sectors and to choose the lowest value among 6 medians. Using spherical
+distance calculations, you need:</p>
+<p><strong>dimfilter</strong> north_pacific_dbdb5.nc <strong>-G</strong>filtered_pacific.nc
+<strong>-Fm</strong>600 <strong>-D</strong>4 <strong>-N</strong>l6 <strong>-R</strong>150/250/10/40 <strong>-I</strong>0.5
+<strong>-V</strong></p>
+<p>Suppose that cape_verde.nc is a file of 0.5 minute bathymetry from 32W
+to 15W and 8N to 25N, and you want to remove small-length-scale features
+in order to define a swell in an area extending from 27.5W to 20.5W and
+12.5N to 19.5N, and you want the output value every 2 minute. Using
+cartesian distance calculations, you need:</p>
+<p><strong>dimfilter</strong> cape_verde.nc <strong>-G</strong>t.nc <strong>-Fm</strong>220 \fB-Nl8
+<strong>-D</strong>2 <strong>-R</strong>-27.5/-20.5/12.5/19.5 <strong>-I</strong>2m <strong>-V</strong></p>
+<blockquote>
+<div><strong>grdfilter</strong> t.nc <strong>-G</strong>cape_swell.nc <strong>&#8211;Fg</strong>50 <strong>-D</strong>2 <strong>-V</strong></div></blockquote>
+<p>Suppose that you found a range of filter widths for a given area, and
+you filtered the given bathymetric data using the range of filter widths
+(e.g., <em>f100.nc f110.nc f120.nc f130.nc</em>), and you want to define a
+regional trend using the range of filter widths, and you want to obtain
+median absolute deviation (MAD) estimates at each data point. Then, you
+will need to do:</p>
+<dl class="docutils">
+<dt><strong>grd2xyz</strong> f100.nc <strong>-Z</strong> &gt; f100.d</dt>
+<dd><strong>grd2xyz</strong> f110.nc <strong>-Z</strong> &gt; f110.d
+<strong>grd2xyz</strong> f120.nc <strong>-Z</strong> &gt; f120.d
+<strong>grd2xyz</strong> f130.nc <strong>-Z</strong> &gt; f130.d
+<strong>paste</strong> f100.d f110.d f120.d f130.d &gt; depths.d
+<strong>dimfilter</strong> depths.d <strong>-Q</strong>4 &gt; output.z</dd>
+</dl>
+</div>
+<div class="section" id="id10">
+<h2><a class="reference external" href="#toc9">Limitations</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<p>When working with geographic (lat, lon) grids, all three convolution
+filters (boxcar, cosine arch, and gaussian) will properly normalize the
+filter weights for the variation in gridbox size with latitude, and
+correctly determine which nodes are needed for the convolution when the
+filter &#8220;circle&#8221; crosses a periodic (0-360) boundary or contains a
+geographic pole. However, the spatial filters, such as median and mode
+filters, do not use weights and thus should only be used on Cartesian
+grids (or at very low latitudes) only. If you want to apply such spatial
+filters you should project your data to an equal-area projection and run
+dimfilter on the resulting Cartesian grid.</p>
+</div>
+<div class="section" id="id11">
+<h2><a class="reference external" href="#toc10">Script Template</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p>The dim.template.sh is a skeleton shell script that can be used to set
+up a complete DiM analysis, including the MAD analysis.</p>
+</div>
+<div class="section" id="id12">
+<h2><a class="reference external" href="#toc11">Reference</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<p>Kim, S.-S., and Wessel, P. (2008), Directional Median Filtering for
+Regional-Residual Separation of Bathymetry, <em>Geochem. Geophys.
+Geosyst.</em>, <strong>9</strong>, Q03005, doi:10.1029/2007GC001850.</p>
+</div>
+<div class="section" id="id13">
+<h2><a class="reference external" href="#toc12">See Also</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="GMT.html">*GMT*</a> , <a class="reference external" href="grdfilter.html">*grdfilter*</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">dimfilter</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Grid File Formats</a></li>
+<li><a class="reference internal" href="#id8">Geographical And Time Coordinates</a></li>
+<li><a class="reference internal" href="#id9">Examples</a></li>
+<li><a class="reference internal" href="#id10">Limitations</a></li>
+<li><a class="reference internal" href="#id11">Script Template</a></li>
+<li><a class="reference internal" href="#id12">Reference</a></li>
+<li><a class="reference internal" href="#id13">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="list.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gmtdigitize.html"
+                        title="next chapter">gmtdigitize</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/supplements/misc/dimfilter.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gmtdigitize.html" title="gmtdigitize"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="list.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
+          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

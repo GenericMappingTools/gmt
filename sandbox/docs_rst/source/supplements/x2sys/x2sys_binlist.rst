@@ -1,0 +1,108 @@
+**************
+x2sys\_binlist
+**************
+
+
+x2sys\_binlist - Create bin index listing from track data files
+
+`Synopsis <#toc1>`_
+-------------------
+
+**x2sys\_binlist** *track(s)* **-T**\ *TAG* [ **-D** ] [ **-E** ] [
+**-V**\ [*level*\ ] ]
+
+`Description <#toc2>`_
+----------------------
+
+**x2sys\_binlist** reads one or more track data files and produces a
+multisegment ASCII track bin-index file (tbf) with the track name in the
+header and one data record per bin crossed; these records contain *lon*,
+*lat*, *index*, *flags*\ [, *dist*], where *lon*, *lat* are the
+coordinates of the center of the bin, the *index* is the 1-D number of
+the bin, and *flags* is a bitflag that describes which data fields were
+available in this bin. The optional *dist* requires **-D**. The input
+files can be of any format, which must be described and passed with the
+**-T** option. The bin-index listing is a crude representation of where
+the track goes and is used by the data archivist to build an x2sys track
+data base for miscellaneous track queries, such as when needing to
+determine which tracks should be compared in a crossover analysis. You
+must run **x2ys\_init** to initialize the tag before you can run the
+indexing.
+
+`Common Arguments And Specifications <#toc3>`_
+----------------------------------------------
+
+All options marked with an asterisk (\*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the **gmt** man page. Note: No
+space is allowed between the option flag and the associated arguments.
+
+`Required Arguments <#toc4>`_
+-----------------------------
+
+*tracks*
+    Can be one or more ASCII, native binary, or COARDS netCDF 1-D data
+    files. To supply the data files via a text file with a list of
+    tracks (one per record), specify the name of the track list after a
+    leading equal-sign (e.g., =tracks.lis). If the names are missing
+    their file extension we will append the suffix specified for this
+    *TAG*. Track files will be searched for first in the current
+    directory and second in all directories listed in
+    **$X2SYS\_HOME**/*TAG*/*TAG*\ \_paths.txt (if it exists). [If
+    **$X2SYS\_HOME** is not set it will default to
+    **$GMT\_SHAREDIR**/x2sys]. (Note: MGD77 files will also be looked
+    for via **MGD77\_HOME**/mgd77\_paths.txt and \*.gmt files will be
+    searched for via **$GMT\_SHAREDIR**/mgg/gmtfile\_paths).
+**-T**\ *TAG*
+    Specify the x2sys *TAG* which tracks the attributes of this data
+    type.
+
+`Optional Arguments <#toc5>`_
+-----------------------------
+
+**-D**
+    Calculate the length of trackline segments per bin [Default skips
+    this step]. The length fragments are given as the 5th output column
+    (after the *flags*). The length units are obtained via the TAB
+    setting (see **x2sys\_init**).
+**-E**
+    Convert geographic data to a cylindrical equal-area projection prior
+    to binning. Basically, we apply the projection
+    **-JY**\ *lon0*/37:04:17.166076/360, where *lon0* is the
+    mid-longitude of the region. Requires **-D**, geographical data, and
+    a global region (e.g., **-Rg** or **-Rd**). This option is useful
+    for statistics related to trackline density but should not be used
+    when preparing bin-index files for the x2sys track data bases.
+**-V**\ [*level*\ ] (\*)
+    Select verbosity level [1].
+**-^** (\*)
+    Print a short message about the syntax of the command, then exits.
+**-?** (\*)
+    Print a full usage (help) message, including the explanation of
+    options, then exits.
+
+`Examples <#toc6>`_
+-------------------
+
+To create a bin index file from the MGD77 file 01030061.mgd77 using the
+settings associated with the tag MGD77, do
+
+**x2sys\_binlist** 01030061.mgd77 **-T**\ MGD77 > 01030061.tbf
+
+To create a track bin index file of all MGD77+ files residing in the
+current directory using the settings associated with the tag MGD77+ and
+calculate track distances, run
+
+**x2sys\_binlist** \*.nc **-T**\ MGD77+ **-D** > all.tbf
+
+`See Also <#toc7>`_
+-------------------
+
+`*x2sys\_cross*\ (1) <x2sys_cross.1.html>`_ ,
+`*x2sys\_datalist*\ (1) <x2sys_datalist.1.html>`_ ,
+`*x2sys\_get*\ (1) <x2sys_get.1.html>`_ ,
+`*x2sys\_init*\ (1) <x2sys_init.1.html>`_ ,
+`*x2sys\_put*\ (1) <x2sys_put.1.html>`_ ,
+`*x2sys\_report*\ (1) <x2sys_report.1.html>`_ ,
+`*x2sys\_solve*\ (1) <x2sys_solve.1.html>`_
+

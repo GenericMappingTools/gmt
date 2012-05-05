@@ -1,0 +1,199 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>testapi &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="trend1d" href="trend1d.html" />
+    <link rel="prev" title="surface" href="surface.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="trend1d.html" title="trend1d"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="surface.html" title="surface"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="testapi">
+<h1>testapi<a class="headerlink" href="#testapi" title="Permalink to this headline">¶</a></h1>
+<p>testapi - Test API i/o methods for any data type</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>testapi</strong>
+<strong>-I</strong><strong>c</strong>|<strong>d</strong>|<strong>f</strong>|<strong>r</strong>|<strong>s</strong>[/<strong>m</strong>|<strong>v</strong>]
+<strong>-T</strong><strong>c</strong>|<strong>d</strong>|<strong>g</strong>|GD(i)|GD(t)
+<strong>-W</strong><strong>c</strong>|<strong>d</strong>|<strong>f</strong>|<strong>r</strong>|<strong>s</strong>[/<strong>m</strong>|<strong>v</strong>]
+[ <strong>-V</strong>[<em>level</em>] ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>testapi</strong> will test the API for all i/o combinations. In general, data
+types (DATASET, TEXTSET, CPT, GRID, and IMAGE) can be read from or
+written to 5 different ways (file, stream, file descriptor, copy from
+memory, reference from memory). We use this tool to check the various
+possibilities, for each data type.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-I</strong><strong>c</strong>|<strong>d</strong>|<strong>f</strong>|<strong>r</strong>|<strong>s</strong>[/<strong>m</strong>|<strong>v</strong>]</dt>
+<dd>Set input method; choose from <strong>c</strong>opy from memory, file
+<strong>d</strong>escriptor, <strong>f</strong>ile, memory <strong>r</strong>eference, or
+<strong>s</strong>tream. For methods <strong>c</strong>|<strong>r</strong>, optionally append
+/<strong>m</strong>|<strong>v</strong>. Then, we obtain the values for the input dataset
+or grid via either a user matrix (<strong>m</strong>) or a set of user vectors
+(<strong>v</strong>). We simulate this internally by filling out a matrix or
+vectors and pass that as the source instead of a data file. <strong>-Td</strong>
+may take either <strong>m</strong>|<strong>v</strong> while <strong>-Tg</strong> can only take the
+<strong>m</strong> modifier.</dd>
+<dt><strong>-T</strong><strong>c</strong>|<strong>d</strong>|<strong>g</strong>|GD(i)|GD(t)</dt>
+<dd>Specify data type; choose from <strong>c</strong>pt, <strong>d</strong>ataset, <strong>g</strong>rid,
+<strong>i</strong>mage, or <strong>t</strong>extset.</dd>
+<dt><strong>-W</strong><strong>c</strong>|<strong>d</strong>|<strong>f</strong>|<strong>r</strong>|<strong>s</strong>[/<strong>m</strong>|<strong>v</strong>]</dt>
+<dd>Set output method; choose from <strong>c</strong>opy to memory, file
+<strong>d</strong>escriptor, <strong>f</strong>ile, memory <strong>r</strong>eference, or
+<strong>s</strong>tream. For methods <strong>c</strong>|<strong>r</strong>, optionally append
+/<strong>m</strong>|<strong>v</strong>. Then, we first write the values of the output
+dataset or grid via either a user matrix (<strong>m</strong>) or a set of user
+vectors (<strong>v</strong>). Finally, the matrix or vectors are written out to
+file. <strong>-Td</strong> may take either <strong>m</strong>|<strong>v</strong> while <strong>-Tg</strong> can
+only take the <strong>m</strong> modifier.</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>To check if reading and writing the test dataset file yields an identical copy, try</p>
+<p>testapi -Td -If -Wf -V</p>
+<p>To check if reading the test grid from memory and writing it to file
+yields an identical copy, try</p>
+<p>testapi -Tg -Ic -Wf -V</p>
+<p>To read the test grid via user matrix memory and writing it via another
+user matrix before saving to a grid file, try</p>
+<p>testapi -Tg -Ic/m -Wf/m -V</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="gmt.html">*gmt*</a> ,</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">testapi</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Examples</a></li>
+<li><a class="reference internal" href="#id7">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="surface.html"
+                        title="previous chapter">surface</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="trend1d.html"
+                        title="next chapter">trend1d</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/testapi.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="trend1d.html" title="trend1d"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="surface.html" title="surface"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

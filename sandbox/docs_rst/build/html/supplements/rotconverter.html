@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Name &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">GMT5 v0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p><a class="reference external" href="#toc">Table of Contents</a></p>
+<div class="section" id="id1">
+<h1><a class="reference external" href="#toc0">Name</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>rotconverter - Manipulate total reconstruction and stage rotations</p>
+</div>
+<div class="section" id="id2">
+<h1><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<p><strong>rotconverter</strong> [ <strong>+</strong>|<strong>-</strong> ] <em>rotA</em> [ <strong>+</strong>|<strong>-</strong> <em>rotB</em> ]
+[ <strong>+</strong>|<strong>-</strong> <em>rotC</em> ] ... [ <strong>-A</strong> ] [ <strong>-D</strong> ] [
+<strong>-E</strong>[<em>fact</em>] ] [ <strong>-F</strong><em>out</em> ] [ <strong>-G</strong> ] [ <strong>-N</strong> ] [ <strong>-S</strong> ]
+[ <strong>-T</strong> ] [ <strong>-V</strong>[<em>level</em>] ] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ]</p>
+</div>
+<div class="section" id="id3">
+<h1><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<p><strong>rotconverter</strong> reads one or more plate motion models (stage or total
+reconstruction rotations) stored in the given files. If more than one
+plate motion model is given we will add or subtract them in the order
+they were listed. The minus sign means we should first transpose the
+rotation and then add it to the previous rotation. If a file cannot be
+opened we will attempt to decode the file name as a single rotation
+whose parameters are separated by slashes.</p>
+</div>
+<div class="section" id="id4">
+<h1><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id5">
+<h1><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt><em>rotX</em></dt>
+<dd>Name of a file with a plate motion model. Separate several files
+with desired operator (+ or -). The very first file may also have a
+leading minus operator to imply a transpose. We also recognize
+filenames of the form A-B, where both A and B are uppercase plate
+abbreviations as used by GPlates, to indicate we should look up the
+rotation between the two plates in the GPlates rotation file (e.g.,
+PAC-MBL). If any of the specified rotation models cannot be opened
+as a file, we will try to decode the file name as
+<em>lon/lat/tstart</em>[<em>/tstop</em>]/<em>angle</em> for a single rotation given
+on the command line. The <em>tstop</em> argument is required for stage
+poles only. For a single total reconstruction rotation without any
+time information, give <em>lon/lat/angle</em> only.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h1><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt><strong>-A</strong></dt>
+<dd>Indicate that times are actually just opening angles [times in Myr].</dd>
+<dt><strong>-D</strong></dt>
+<dd>Report longitudes use the -180/+180 range [Default is 0/360].</dd>
+<dt><strong>-E</strong>[<em>fact</em>]</dt>
+<dd>Scale opening angles by <em>fact</em> on output. Requires stage pole output
+(see <strong>-F</strong>).</dd>
+<dt><strong>-F</strong><em>out</em></dt>
+<dd>Specify the output format for rotations. The <em>out</em> flag must be
+either <strong>t</strong> or <strong>s</strong> for total reconstruction or stage rotations,
+respectively. [Default is <strong>-Ft</strong> (output contains total
+reconstruction rotations)].</dd>
+<dt><strong>-G</strong></dt>
+<dd>Output final rotations in the Plates4 format used by GPlates
+[Default is spotter format].</dd>
+<dt><strong>-N</strong></dt>
+<dd>Place all output poles in the northern hemisphere [Default reports
+positive rotation angles].</dd>
+<dt><strong>-S</strong></dt>
+<dd>Place all output poles in the southern hemisphere [Default reports
+positive rotation angles].</dd>
+<dt><strong>-T</strong></dt>
+<dd>Transpose the final result, i.e., change the sign of the rotation
+angles.</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1]. Report statistics of extracted
+rotations.</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id7">
+<h1><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
+<p>To convert the total reconstruction rotations in the file
+model_total_reconstruction.APM to stage poles, run</p>
+<p><strong>rotconverter</strong> model_total_reconstruction.APM <strong>-Fs</strong> &gt;
+model_stages.APM</p>
+<p>To obtain Nazca motion relative to Pacific hotspots by adding the motion
+of Nazca relative to a fixed Pacific to the Pacific-Hotspot reference
+model DC85_stages.d, and report the result as total reconstruction
+reconstruction poles in the northern hemisphere, try</p>
+<p><strong>rotconverter</strong> DC85_stages.APM + Pac_Naz_stages.RPM <strong>-N</strong> <strong>-Ft</strong>
+&gt; Naz_HS_total reconstruction.APM</p>
+<p>To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0,
+11.4), try</p>
+<p><strong>rotconverter</strong> 150.1/70.5/-20.3 + 145/40/11.4</p>
+<blockquote>
+<div>which prints out 157.32, -80.44, 11.97.</div></blockquote>
+<p>To make stage rotations suitable for generating flowlines (fracture
+zones) from a model of relative plate motions PL1-PL2.RPM, assuming
+symmetric spreading,, try</p>
+<dl class="docutils">
+<dt><strong>rotconverter</strong> PL1-PL2.RPM <strong>-E</strong> <strong>-Fs</strong> &gt; PL1-PL2_half.RPM</dt>
+<dd><strong>rotconverter</strong> - PL1-PL2.RPM <strong>-E</strong> <strong>-Fs</strong> &gt; PL2-PL1_half.RPM</dd>
+</dl>
+<p>To compute rotations for India relative to a fixed Africa using the
+plate circuit India-Central Indian Basin-Antarctica-Africa, based on the
+GPlates rotations database, try</p>
+<p><strong>rotconverter</strong> IND-CIB CIB-ANT ANT-AFR &gt; India_AFrica.RPM</p>
+</div>
+<div class="section" id="id8">
+<h1><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="backtracker.1.html">*backtracker*(1)</a> ,
+<a class="reference external" href="grdrotater.1.html">*grdrotater*(1)</a> ,
+<a class="reference external" href="grdspotter.1.html">*grdspotter*(1)</a> ,
+<a class="reference external" href="hotspotter.1.html">*hotspotter*(1)</a> ,
+<a class="reference external" href="originator.1.html">*originator*(1)</a></p>
+<hr class="docutils" />
+<p><strong>Table of Contents</strong></p>
+<ul class="simple">
+<li><a class="reference external" href="#sect0">Name</a></li>
+<li><a class="reference external" href="#sect1">Synopsis</a></li>
+<li><a class="reference external" href="#sect2">Description</a></li>
+<li><a class="reference external" href="#sect3">Common Arguments And Specifications</a></li>
+<li><a class="reference external" href="#sect4">Required Arguments</a></li>
+<li><a class="reference external" href="#sect5">Optional Arguments</a></li>
+<li><a class="reference external" href="#sect6">Examples</a></li>
+<li><a class="reference external" href="#sect7">See Also</a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Name</a></li>
+<li><a class="reference internal" href="#id2">Synopsis</a></li>
+<li><a class="reference internal" href="#id3">Description</a></li>
+<li><a class="reference internal" href="#id4">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id5">Required Arguments</a></li>
+<li><a class="reference internal" href="#id6">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id7">Examples</a></li>
+<li><a class="reference internal" href="#id8">See Also</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/supplements/rotconverter.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">GMT5 v0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

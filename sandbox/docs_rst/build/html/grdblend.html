@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>grdblend &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="grdclip" href="grdclip.html" />
+    <link rel="prev" title="grd2xyz" href="grd2xyz.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdclip.html" title="grdclip"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="grd2xyz.html" title="grd2xyz"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="grdblend">
+<h1>grdblend<a class="headerlink" href="#grdblend" title="Permalink to this headline">¶</a></h1>
+<p>grdblend - Blend several partially over-lapping grids into one large
+grid</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdblend</strong> [ <em>blendfile</em> | <em>grid1</em> <em>grid2</em> ... ] <strong>-G</strong><em>outgrid</em>
+<strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>][/<em>yinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>]]
+<strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] [
+<strong>-C</strong><strong>f</strong>|<strong>l</strong>|<strong>o</strong>|<strong>u</strong> ] [ <strong>-N</strong><em>nodata</em> ] [
+<strong>-Q</strong> ] [ <strong>-Z</strong><em>scale</em> ] [ <strong>-V</strong>[<em>level</em>] ] [ <strong>-W</strong> ] [
+<strong>-f</strong><em>colinfo</em> ] [ <strong>-r</strong> ]</p>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdblend</strong> reads a listing of grid files and blend parameters and
+creates a binary grid file by blending the other grids using
+cosine-taper weights. <strong>grdblend</strong> will report if some of the nodes are
+not filled in with data. Such unconstrained nodes are set to a value
+specified by the user [Default is NaN]. Nodes with more than one value
+will be set to the weighted average value. Any input grid that does not
+share the final output grid’s node registration and grid spacing will
+automatically be resampled via calls to grdsample. Note: Due to the
+row-by-row i/o nature of operations in grdblend we only support the
+netCDF and native binary grid formats for both input and output.</p>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>All options marked with an asterisk (*) are common GMT command-line
+options. Their full syntax as well as how to specify pens, pattern
+fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
+space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-G</strong><em>outgrid</em></dt>
+<dd><em>outgrid</em> is the name of the binary output grid file. (See GRID FILE
+FORMATS below). Only netCDF and native binary grid formats are can
+be written directly. Other output format choices will be handled by
+reformatting the output once blending is complete.</dd>
+<dt><strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>][/<em>yinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>]]</dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
+append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>:
+Append <strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc
+seconds. If one of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, or <strong>n</strong> is
+appended instead, the increment is assumed to be given in meter,
+feet, km, Miles, or nautical miles, respectively, and will be
+converted to the equivalent degrees longitude at the middle latitude
+of the region (the conversion depends on <strong>PROJ_ELLIPSOID</strong>). If
+/<em>y_inc</em> is given but set to 0 it will be reset equal to <em>x_inc</em>;
+otherwise it will be converted to degrees latitude. <strong>All
+coordinates</strong>: If <strong>=</strong> is appended then the corresponding max <em>x</em>
+(<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly adjusted to fit exactly
+the given increment [by default the increment may be adjusted
+slightly to fit the given domain]. Finally, instead of giving an
+increment you may specify the <em>number of nodes</em> desired by appending
+<strong>+</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The resulting
+increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see Appendix B for
+details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing
+has already been initialized; use <strong>-I</strong> to override the values.</dd>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
+<dd>Specify the region of interest.</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>blendfile</em></dt>
+<dd>ASCII file with one record per grid file to include in the blend.
+Each record must contain three items, separated by spaces or tabs:
+the gridfile name, the <strong>-R</strong>-setting for the interior region, and
+the relative weight <em>wr</em>. In the combined weighting scheme, this
+grid will be given zero weight outside its domain, weight = <em>wr</em>
+inside the interior region, and a 2-D cosine-tapered weight between
+those end-members in the boundary strip. However, if a negative <em>wr</em>
+is given then the sense of tapering is inverted (i.e., zero weight
+inside its domain). If the inner region should instead exactly match
+the grid region then specify a - instead of the <strong>-R</strong>-setting.
+Finally, if only a gridfile name is found we will use the grid
+domain as inner region and set weight to 1. If the ASCII file is not
+given <strong>grdblend</strong> will read standard input. Alternatively, if you
+have more than one grid file to blend and you wish (a) all input
+grids to have the same <a class="reference external" href="weight.1.html">weight (1)</a> and (b) all
+grids should use their region as the interior region, then you may
+simply list all the grids on the command line instead of providing a
+<em>blendfile</em>. You must specify at least 2 input grids for this
+mechanism to work. Any grid that is not coregistered with the
+desired output layout implied by <strong>-R</strong>, <strong>-I</strong> (and <strong>-r</strong>) will
+first be resampled via <strong>grdsample</strong>. Also, grids that are not in
+netCDF or native binary format will first be reformatted via
+<strong>grdreformat</strong>.</dd>
+<dt><strong>-C</strong></dt>
+<dd>Clobber mode: Instead of blending, simply pick the value of one of
+the grids that covers a node. Select from the following modes: <strong>f</strong>
+for the first grid to visit a node; <strong>o</strong> for the last grid to visit
+a node; <strong>l</strong> for the grid with the lowest value, and <strong>u</strong> for the
+grid with the uppermost value. For modes <strong>f</strong> and <strong>o</strong> the
+ordering of grids in the <em>blendfile</em> will dictate which grid
+contributes to the final result. Weights and cosine tapering are not
+considered when clobber mode is active.</dd>
+<dt><strong>-N</strong><em>nodata</em></dt>
+<dd>No data. Set nodes with no input grid to this value [Default is NaN].</dd>
+<dt><strong>-Q</strong></dt>
+<dd>Create a header-less grid file suitable for use with <strong>grdraster</strong>.
+Requires that the output grid file is a native format (i.e., not netCDF).</dd>
+<dt><strong>-V</strong>[<em>level</em>] (*)</dt>
+<dd>Select verbosity level [1].</dd>
+<dt><strong>-W</strong></dt>
+<dd>Do not blend, just output the weights used for each node. This
+option is valid when only one input grid is provided [Default makes
+the blend].</dd>
+<dt><strong>-Z</strong><em>scale</em></dt>
+<dd>Scale output values by <em>scale</em> before writing to file. [1].</dd>
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
+<dd>Specify data types of input and/or output columns.</dd>
+<dt><strong>-r</strong></dt>
+<dd>Set pixel node registration [gridline].</dd>
+<dt><strong>-^</strong> (*)</dt>
+<dd>Print a short message about the syntax of the command, then exits.</dd>
+<dt><strong>-?</strong> (*)</dt>
+<dd>Print a full usage (help) message, including the explanation of
+options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Grid File Formats</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>By default <strong>GMT</strong> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <strong>GMT</strong> is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called &#8220;packing&#8221; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision, scale and
+offset, the user should add the suffix
+<strong>=</strong><em>id</em>[<strong>/</strong><em>scale</em><strong>/</strong><em>offset</em>[<strong>/</strong><em>nan</em>]], where
+<em>id</em> is a two-letter identifier of the grid type and precision, and
+<em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
+to all grid values, and <em>nan</em> is the value used to indicate missing
+data. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
+of the GMT Technical Reference and Cookbook for more information.</p>
+<p>When writing a netCDF file, the grid is stored by default with the
+variable name &#8220;z&#8221;. To specify another variable name <em>varname</em>, append
+<strong>?</strong><em>varname</em> to the file name. Note that you may need to escape the
+special meaning of <strong>?</strong> in your shell program by putting a backslash in
+front of it, or by placing the filename and suffix between quotes or
+double quotes.</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">Geographical And Time Coordinates</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>When the output grid type is netCDF, the coordinates will be labeled
+&#8220;longitude&#8221;, &#8220;latitude&#8221;, or &#8220;time&#8221; based on the attributes of the input
+data or grid (if any) or on the <strong>-f</strong> or <strong>-R</strong> options. For example,
+both <strong>-f0x</strong> <strong>-f1t</strong> and <strong>-R</strong>90w/90e/0t/3t will result in a
+longitude/time grid. When the x, y, or z coordinate is time, it will be
+stored in the grid as relative time since epoch as specified by
+<strong>TIME_UNIT</strong> and <strong>TIME_EPOCH</strong> in the <strong>gmt.conf</strong> file or on the
+command line. In addition, the <strong>unit</strong> attribute of the time variable
+will indicate both this unit and epoch.</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc8">Examples</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>To create a grid file from the four grid files piece_?.nc, make the
+blendfile like this</p>
+<p>piece_1.nc`` `` `` `` -R&lt;subregion_1&gt; 1
+piece_2.nc`` `` `` `` -R&lt;subregion_2&gt; 1
+piece_3.nc`` `` `` `` -R&lt;subregion_3&gt; 1
+piece_4.nc`` `` `` `` -R&lt;subregion_4&gt; 1</p>
+<p>Then run</p>
+<p>grdblend blend.job -Gblend.nc -R&lt;full_region&gt; -I&lt;dx/dy&gt; -V</p>
+<p>To blend all the grids called MB_*.nc given them all equal weight, try</p>
+<p>grdblend MB_*.nc -Gblend.nc -R&lt;full_region&gt; -I&lt;dx/dy&gt; -V</p>
+</div>
+<div class="section" id="id9">
+<h2><a class="reference external" href="#toc9">See Also</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="grd2xyz.1.html">*grd2xyz*(1)</a> ,
+<a class="reference external" href="grdedit.1.html">*grdedit*(1)</a>
+<a class="reference external" href="grdraster.1.html">*grdraster*(1)</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdblend</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Grid File Formats</a></li>
+<li><a class="reference internal" href="#id7">Geographical And Time Coordinates</a></li>
+<li><a class="reference internal" href="#id8">Examples</a></li>
+<li><a class="reference internal" href="#id9">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grd2xyz.html"
+                        title="previous chapter">grd2xyz</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdclip.html"
+                        title="next chapter">grdclip</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/grdblend.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdclip.html" title="grdclip"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="grd2xyz.html" title="grd2xyz"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>
