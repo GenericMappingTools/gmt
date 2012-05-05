@@ -581,11 +581,14 @@ GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code)
 	/* Returns the integer grid format ID that goes with the specified 2-character code */
 
 	GMT_LONG id, i, j;
+	COUNTER_MEDIUM ju;
 
 	if (isdigit ((int)code[0])) {	/* File format number given, look for old code */
 		j = atoi (code);
 		for (i = 0, id = -1; id < 0 && i < GMT_N_GRD_FORMATS; i++) {
-			if (C->session.grdcode[i] == j) id = i;
+			if (j < 0) continue;
+			ju = j;
+			if (C->session.grdcode[i] == ju) id = i;
 		}
 	}
 	else {	/* Character code given */

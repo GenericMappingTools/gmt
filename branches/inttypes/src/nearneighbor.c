@@ -383,7 +383,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			jj = row;
 			if (GMT_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range */
-
+			rowu = jj;
 			col_end = col_0 + d_col[jj];
 			for (col = col_0 - d_col[jj]; col <= col_end; col++) {
 
@@ -391,12 +391,13 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (GMT_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range */ 
 
 				/* Here, (ii,jj) [both are >= 0] is index of a node (kk) inside the grid */
+				colu = ii;
 
-				distance = GMT_distance (GMT, x0[ii], y0[jj], in[GMT_X], in[GMT_Y]);
+				distance = GMT_distance (GMT, x0[colu], y0[rowu], in[GMT_X], in[GMT_Y]);
 
 				if (distance > Ctrl->S.radius) continue;	/* Data constraint is too far from this node */
-				kk = GMT_IJ0 (Grid->header, jj, ii);		/* No padding used for gridnode array */
-				dx = in[GMT_X] - x0[ii];	dy = in[GMT_Y] - y0[jj];
+				kk = GMT_IJ0 (Grid->header, rowu, colu);	/* No padding used for gridnode array */
+				dx = in[GMT_X] - x0[colu];	dy = in[GMT_Y] - y0[rowu];
 
 				/* Check for wrap-around in x or y.  This should only occur if the
 				   search radius is larger than 1/2 the grid width/height so that
@@ -418,15 +419,15 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				*/
 
 				if (replicate_x) {	/* Must check if we have to replicate a column */
-					if (ii == 0) 	/* Must replicate left to right column */
+					if (colu == 0) 	/* Must replicate left to right column */
 						assign_node (GMT, &grid_node[kk+x_wrap], Ctrl->N.sectors, sector, distance, n);
-					else if (ii == Grid->header->nxp)	/* Must replicate right to left column */
+					else if (colu == Grid->header->nxp)	/* Must replicate right to left column */
 						assign_node (GMT, &grid_node[kk-x_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 				if (replicate_y) {	/* Must check if we have to replicate a row */
-					if (jj == 0)	/* Must replicate top to bottom row */
+					if (rowu == 0)	/* Must replicate top to bottom row */
 						assign_node (GMT, &grid_node[kk+y_wrap], Ctrl->N.sectors, sector, distance, n);
-					else if (jj == Grid->header->nyp)	/* Must replicate bottom to top row */
+					else if (rowu == Grid->header->nyp)	/* Must replicate bottom to top row */
 						assign_node (GMT, &grid_node[kk-y_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 			}

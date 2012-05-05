@@ -59,7 +59,7 @@ struct GMT_GRD_INFO {	/* Holds any -R -I -F settings passed indirectly via -R<gr
 };
 
 struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
-	GMT_LONG id;			/* The internal number of the grid */
+	COUNTER_MEDIUM id;			/* The internal number of the grid */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
 	struct GRD_HEADER *header;	/* Pointer to full GMT header for the grid */
 	float *data;			/* Pointer to the float grid */
@@ -68,7 +68,7 @@ struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 struct GMT_GRDFILE {
 	size_t size;		/* Bytes per item */
 	size_t n_byte;		/* Number of bytes for row */
-	GMT_LONG row;		/* Current row */
+	COUNTER_MEDIUM row;	/* Current row */
 	BOOLEAN check;		/* TRUE if we must replace NaNs with another representation on i/o */
 	BOOLEAN auto_advance;	/* TRUE if we want to read file sequentially */
 

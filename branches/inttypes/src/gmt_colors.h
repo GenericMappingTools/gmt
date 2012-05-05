@@ -74,7 +74,7 @@ struct GMT_LUT {
 	double z_low, z_high, i_dz;
 	double rgb_low[4], rgb_high[4], rgb_diff[4];
 	double hsv_low[4], hsv_high[4], hsv_diff[4];
-	GMT_LONG annot;		/* 1 for Lower, 2 for Upper, 3 for Both */
+	COUNTER_MEDIUM annot;		/* 1 for Lower, 2 for Upper, 3 for Both */
 	BOOLEAN skip;		/* TRUE means skip this slice */
 	struct GMT_FILL *fill;	/* Use by grdview */			/* Content not counted by sizeof (struct) */
 	char *label;		/* For non-number labels */		/* Content not counted by sizeof (struct) */
@@ -91,10 +91,10 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	COUNTER_MEDIUM n_headers;	/* Number of CPT file header records (0 if no header) */
 	struct GMT_LUT *range;		/* CPT lookup table read by GMT_read_cpt */
 	struct GMT_BFN_COLOR patch[3];	/* Structures with back/fore/nan colors */
-	COUNTER_MEDIUM n_colors;		/* Number of colors in CPT lookup table */
-	GMT_LONG cpt_flags;		/* Flags controling use of BFN colors */
-	GMT_LONG alloc_mode;		/* Allocation info [0] */
-	GMT_LONG model;			/* RGB, HSV, CMYK */
+	COUNTER_MEDIUM n_colors;	/* Number of colors in CPT lookup table */
+	COUNTER_MEDIUM cpt_flags;	/* Flags controling use of BFN colors */
+	COUNTER_MEDIUM alloc_mode;	/* Allocation info [0] */
+	COUNTER_MEDIUM model;		/* RGB, HSV, CMYK */
 	BOOLEAN is_gray;		/* TRUE if only grayshades are needed */
 	BOOLEAN is_bw;			/* TRUE if only black and white are needed */
 	BOOLEAN is_continuous;		/* TRUE if continuous color tables have been given */

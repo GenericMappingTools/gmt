@@ -54,7 +54,7 @@ struct GMT_COMMON {
 	} B;	
 	struct J {	/* -J<params> */
 		BOOLEAN active;
-		GMT_LONG id;
+		COUNTER_MEDIUM id;
 		double par[6];
 	} J;		
 	struct K {	/* -K */
@@ -74,7 +74,7 @@ struct GMT_COMMON {
 	} R;
 	struct U {	/* -U */
 		BOOLEAN active;
-		GMT_LONG just;
+		COUNTER_MEDIUM just;
 		double x, y;
 		char *label;		/* Content not counted by sizeof (struct) */
 	} U;
@@ -99,7 +99,7 @@ struct GMT_COMMON {
 		BOOLEAN output;	/* TRUE when we wish to build OGR output */
 		GMT_LONG col[MAX_ASPATIAL];
 		GMT_LONG ogr[MAX_ASPATIAL];
-		GMT_LONG type[MAX_ASPATIAL];
+		COUNTER_MEDIUM type[MAX_ASPATIAL];
 		char *name[MAX_ASPATIAL];
 	} a;
 	struct b {	/* -b[i][o][s|S][d|D][#cols][cvar1/var2/...] */

@@ -79,9 +79,9 @@ struct GRD_HEADER {
 	char *pocket;			/* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
 	double bcr_threshold;		/* sum of cardinals must >= threshold in bilinear; else NaN */
 	unsigned int bcr_interpolant;	/* Interpolation function used (0, 1, 2, 3) */
-	unsigned int bcr_n;			/* Width of the interpolation function */
-	GMT_LONG nxp;			/* if X periodic, nxp > 0 is the period in pixels  */
-	GMT_LONG nyp;			/* if Y periodic, nxp > 0 is the period in pixels  */
+	unsigned int bcr_n;		/* Width of the interpolation function */
+	COUNTER_MEDIUM nxp;		/* if X periodic, nxp > 0 is the period in pixels  */
+	COUNTER_MEDIUM nyp;		/* if Y periodic, nxp > 0 is the period in pixels  */
 	BOOLEAN no_BC;			/* If TRUE we skip BC stuff entirely */
 	BOOLEAN gn;			/* TRUE if top    edge will be set as N pole  */
 	BOOLEAN gs;			/* TRUE if bottom edge will be set as S pole  */
@@ -190,7 +190,7 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 /* New IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
 #define GMT_IJPGI(h,row,col) (((COUNTER_LARGE)(row)+(COUNTER_LARGE)h->pad[YHI])*((COUNTER_LARGE)h->mx*(COUNTER_LARGE)h->n_bands)+(COUNTER_LARGE)(col)+(COUNTER_LARGE)h->pad[XLO]*(COUNTER_LARGE)h->n_bands)
 
-/* Obtain GMT_LONG row and col from index */
+/* Obtain row and col from index */
 #define GMT_col(h,ij) (((ij) % h->mx) - h->pad[XLO])
 #define GMT_row(h,ij) (((ij) / h->mx) - h->pad[YHI])
 

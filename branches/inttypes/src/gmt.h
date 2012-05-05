@@ -131,7 +131,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	BOOLEAN z_periodic;			/* TRUE if grid values are 0-360 degrees (phases etc) */
 	COUNTER_MEDIUM n_lon_nodes;		/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
 	COUNTER_MEDIUM n_lat_nodes;		/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
-	GMT_LONG path_mode;			/* 0 if we should call GMT_fix_up_path to resample across gaps > path_step, 1 to leave alone */
+	COUNTER_MEDIUM path_mode;		/* 0 if we should call GMT_fix_up_path to resample across gaps > path_step, 1 to leave alone */
 	double width;				/* Full width in inches of this world map */
 	double height;				/* Full height in inches of this world map */
 	double half_width;			/* Half width in inches of this world map */
@@ -178,7 +178,7 @@ struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	COUNTER_LARGE n;			/* Number of such points */
 	size_t n_alloc;			/* Size of allocated plot arrays */
 	BOOLEAN r_theta_annot;		/* TRUE for special r-theta map annotation (see GMT_get_annot_label) */
-	GMT_LONG mode_3D;		/* Determines if we draw fore and/or back 3-D box lines [Default is both] */
+	COUNTER_MEDIUM mode_3D;		/* Determines if we draw fore and/or back 3-D box lines [Default is both] */
 	GMT_LONG *pen;			/* Pen (PSL_MOVE = up, PSL_DRAW = down) for these points */
 	struct GMT_PLOT_CALCLOCK calclock;
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
@@ -203,12 +203,12 @@ struct GMT_INTERNAL {
 	/* These are internal parameters that need to be passed around between
 	 * many GMT functions.  These may change during execution but are not
 	 * modified directly by user interaction. */
-	GMT_LONG func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  0 is top function */
+	COUNTER_MEDIUM func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  0 is top function */
 };
 
 struct GMT_SHORTHAND {	/* Holds information for each grid extension shorthand read from the user's .gmtio file */
 	double scale, offset, nan;
-	GMT_LONG id;
+	COUNTER_MEDIUM id;
 	char *suffix;
 };
 	
@@ -229,7 +229,7 @@ struct GMT_SESSION {
 	char unit_name[4][8];		/* Full name of the 4 units cm, inch, m, pt */
 	struct GMT_HASH rgb_hashnode[GMT_N_COLOR_NAMES];/* Used to translate colornames to r/g/b */
 	COUNTER_MEDIUM n_shorthands;			/* Length of arrray with shorthand information */
-	GMT_LONG grdcode[GMT_N_GRD_FORMATS];	/* Old (obsolete) grid ID code */
+	COUNTER_MEDIUM grdcode[GMT_N_GRD_FORMATS];	/* Old (obsolete) grid ID code */
 	char *grdformat[GMT_N_GRD_FORMATS];	/* Type and description of grid format */
 	PFL readinfo[GMT_N_GRD_FORMATS];	/* Pointers to grid read header functions */
 	PFL updateinfo[GMT_N_GRD_FORMATS];	/* Pointers to grid update header functions */
