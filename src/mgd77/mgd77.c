@@ -982,7 +982,7 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *C, char *file, struct 
 {	/* Applies to MGD77 files */
 	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[GMT_BUFSIZ];
 	int i, sequence, err, n_eols, c, n;
-	struct GMT_STAT buf;
+	struct stat buf;
 
 	n_eols = c = n = 0;	/* Also shuts up the boring compiler warnings */
 
@@ -990,7 +990,7 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *C, char *file, struct 
 
 	memset (H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
 	if (F->format == MGD77_FORMAT_M77) {			/* Can compute # records from file size because format is fixed */
-		if (GMT_STAT (F->path, &buf)) {	/* Inquiry about file failed somehow */
+		if (stat (F->path, &buf)) {	/* Inquiry about file failed somehow */
 			GMT_report (C, GMT_MSG_FATAL, "Unable to stat file %s\n", F->path);
 			GMT_exit (EXIT_FAILURE);
 		}

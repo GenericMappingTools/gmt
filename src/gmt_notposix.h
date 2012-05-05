@@ -62,10 +62,6 @@
 #	include "compat/stdbool.h"
 #endif
 
-#ifdef HAVE_STAT_H_
-#	include <sys/stat.h>
-#endif
-
 #ifdef HAVE_SYS_TYPES_H_
 #	include <sys/types.h>
 #endif
@@ -81,7 +77,6 @@
 
 #ifdef HAVE_STAT_H_
 #	include <sys/stat.h>
-#	define GMT_STAT stat
 #endif
 
 #ifdef HAVE_STDBOOL_H_
@@ -391,6 +386,12 @@
 #	define vsnprintf(s, n, format, arg) vsprintf(s, format, arg)
 #endif
 
+#ifdef HAVE__STATI64
+#	define stat _stati64
+#elif defined HAVE__STAT
+#	define stat _stat
+#endif
+
 #ifndef DECLARED_STRDUP
 	EXTERN_MSC char *strdup(const char *s);
 #endif
@@ -418,7 +419,7 @@
  * Windows tweaks
  */
 
-#if defined _WIN32 || defined WIN32
+#if defined _WIN32
 
 #	ifndef WIN32
 #		define WIN32
@@ -449,7 +450,7 @@
 	/* Support for inline functions */
 #	define inline __inline
 
-#endif /* defined _WIN32 || defined WIN32 */
+#endif /* defined _WIN32 */
 
 #ifndef PATH_SEPARATOR
 #	define PATH_SEPARATOR ':' /* Win uses ; while Unix uses : */

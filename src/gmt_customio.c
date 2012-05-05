@@ -513,11 +513,11 @@ GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	GMT_LONG nm, mx, status, size;
 	double item_size;
-	struct GMT_STAT buf;
+	struct stat buf;
 	struct GRD_HEADER t_head;
 
 	if (!strcmp (header->name, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if (GMT_STAT (header->name, &buf)) return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
+	if (stat (header->name, &buf)) return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
 	strcpy (t_head.name, header->name);
 	if ((status = GMT_native_read_grd_info (C, &t_head))) return (GMT_GRDIO_READ_FAILED);	/* Failed to read header */
 	if (t_head.nx <= 0 || t_head.ny <= 0) return (GMT_GRDIO_BAD_VAL);		/* Garbage for nx or ny */

@@ -211,7 +211,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 	double global_lon, lon_tol;
 	char path[GMT_BUFSIZ], buf[GRD_REMARK_LEN160], dir[GRD_REMARK_LEN160], *l = NULL, *record = NULL, *file = NULL;
 	struct GRDRASTER_INFO *rasinfo = NULL;
-	struct GMT_STAT F;
+	struct stat F;
 
 	/* Find and open the file grdraster.info */
 
@@ -574,7 +574,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 			expected_size = (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
 		if (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path) || GMT_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path)) {
 			strcpy (rasinfo[nfound].h.remark, path);
-			GMT_STAT (path, &F);
+			stat (path, &F);
 		}
 		else {	/* Inquiry about file failed somehow */
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Unable to find file %s - Skipping it.\n", rasinfo[nfound].h.remark);
