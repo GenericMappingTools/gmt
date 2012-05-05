@@ -59,7 +59,7 @@ struct GRDTRACK_CTRL {
 	} D;
 	struct G {	/* -G<grdfile> */
 		BOOLEAN active;
-		GMT_LONG n_grids;
+		COUNTER_MEDIUM n_grids;
 		char *file[MAX_GRIDS];
 		double scale[MAX_GRIDS], lat[MAX_GRIDS];
 		GMT_LONG mode[MAX_GRIDS];
@@ -83,7 +83,7 @@ void *New_grdtrack_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 }
 
 void Free_grdtrack_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Deallocate control structure */
-	GMT_LONG g;
+	COUNTER_MEDIUM g;
 	if (!C) return;
 	if (C->In.file) free (C->In.file);
 	if (C->D.file) free (C->D.file);
@@ -301,7 +301,7 @@ GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, COUNT
 GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* High-level function that implements the grdtrack task */
 
-	GMT_LONG status, error;
+	GMT_LONG status, error, ks;
 	COUNTER_LARGE n_points = 0, n_read = 0;
 	COUNTER_MEDIUM g, k;
 	BOOLEAN img_conv_needed = FALSE;
@@ -506,7 +506,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			}
 			else {	/* Simply copy other columns, append value, and output */
 				if (!out) out = GMT_memory (GMT, NULL, GMT->common.b.ncol[GMT_OUT], double);
-				for (k = 0; k < n_fields; k++) out[k] = in[k];
+				for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
 				for (g = 0; g < Ctrl->G.n_grids; g++, k++) out[k] = value[g];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}

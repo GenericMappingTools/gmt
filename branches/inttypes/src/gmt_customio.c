@@ -1010,7 +1010,7 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 	return (GMT_NOERROR);
 }
 
-void GMT_encode (struct GMT_CTRL *C, void *vptr, COUNTER_LARGE k, float z, GMT_LONG type)
+void GMT_encode (struct GMT_CTRL *C, void *vptr, COUNTER_LARGE k, float z, COUNTER_MEDIUM type)
 {	/* Place the z value in the array location of the (type) pointer */
 	switch (type) {
 		case 'b':
@@ -1035,7 +1035,7 @@ void GMT_encode (struct GMT_CTRL *C, void *vptr, COUNTER_LARGE k, float z, GMT_L
 	}
 }
 
-float GMT_decode (struct GMT_CTRL *C, void *vptr, COUNTER_LARGE k, GMT_LONG type)
+float GMT_decode (struct GMT_CTRL *C, void *vptr, COUNTER_LARGE k, COUNTER_MEDIUM type)
 {	/* Retrieve the z value from the array location of the (type) pointer */
 	float fval;
 

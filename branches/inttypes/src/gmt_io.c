@@ -3416,7 +3416,7 @@ GMT_LONG gmt_get_dms_order (struct GMT_CTRL *C, char *text, struct GMT_GEO_IO *S
 	return (GMT_NOERROR);
 }
 
-void gmt_clock_C_format (struct GMT_CTRL *C, char *form, struct GMT_CLOCK_IO *S, GMT_LONG mode)
+void gmt_clock_C_format (struct GMT_CTRL *C, char *form, struct GMT_CLOCK_IO *S, COUNTER_MEDIUM mode)
 {
 	/* Determine the order of H, M, S in input and output clock strings,
 	 * as well as the number of decimals in output seconds (if any), and
@@ -3463,7 +3463,7 @@ void gmt_clock_C_format (struct GMT_CTRL *C, char *form, struct GMT_CLOCK_IO *S,
 	}
 }
 
-void gmt_date_C_format (struct GMT_CTRL *C, char *form, struct GMT_DATE_IO *S, GMT_LONG mode)
+void gmt_date_C_format (struct GMT_CTRL *C, char *form, struct GMT_DATE_IO *S, COUNTER_MEDIUM mode)
 {
 	/* Determine the order of Y, M, D, J in input and output date strings.
 	* mode is 0 for input, 1 for output, and 2 for plot output.
@@ -4292,7 +4292,7 @@ GMT_LONG GMT_scanf_arg (struct GMT_CTRL *C, char *s, COUNTER_MEDIUM expectation,
 	return (GMT_scanf (C, s, expectation, val));
 }
 
-struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_type)
+struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, COUNTER_MEDIUM source_type)
 {
 	/* Reads an entire segment text data set into memory */
 
@@ -5285,7 +5285,7 @@ GMT_LONG gmt_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 	return (0);	/* OK status */
 }
 
-GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, struct GMT_TEXTSET *D, GMT_LONG table)
+GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_type, struct GMT_TEXTSET *D, GMT_LONG table)
 {	/* Writes an entire text set to file or stream */
 	GMT_LONG error;
 	COUNTER_MEDIUM tbl, append = 0;
@@ -5454,7 +5454,7 @@ struct GMT_TEXT_TABLE * gmt_alloc_texttable (struct GMT_CTRL *C, struct GMT_TEXT
 	return (T);
 }
 
-struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, GMT_LONG mode)
+struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, COUNTER_MEDIUM mode)
 {
 	/* Allocate new textset structure with same # of tables, segments and rows/segment as input data set.
 	 * We copy over headers and segment headers.
@@ -6385,7 +6385,7 @@ GMT_LONG gmt_ogr_get_geometry (char *item)
 	return (GMTAPI_NOTSET);
 }
 
-void GMT_free_ogr (struct GMT_CTRL *C, struct GMT_OGR **G, GMT_LONG mode)
+void GMT_free_ogr (struct GMT_CTRL *C, struct GMT_OGR **G, COUNTER_MEDIUM mode)
 {	/* Free up GMT/OGR structure, if used */
 	COUNTER_MEDIUM k;
 	if (!(*G)) return;	/* Nothing to do */
@@ -6475,10 +6475,10 @@ double GMT_get_aspatial_value (struct GMT_CTRL *C, COUNTER_MEDIUM col, struct GM
 	/* Return the value associated with the aspatial values given for this column col */
 
 	COUNTER_MEDIUM k;
-	GMT_LONG id;
+	GMT_LONG id, scol = col;
 	char *V = NULL;
 	for (k = 0; k < C->common.a.n_aspatial; k++) {	/* For each item specified in -a */
-		if (col != C->common.a.col[k]) continue;	/* Not the column we want */
+		if (scol != C->common.a.col[k]) continue;	/* Not the column we want */
 		id = gmt_get_ogr_id (C->current.io.OGR, C->common.a.name[k]);	/* Get the ID */
 		V = (S && S->ogr) ? S->ogr->value[id] : C->current.io.OGR->value[id];	/* Either from table or from segment (multi) */
 		return (gmt_convert_aspatial_value (C, C->current.io.OGR->type[id], V));
@@ -6492,10 +6492,10 @@ GMT_LONG GMT_load_aspatial_string (struct GMT_CTRL *C, struct GMT_OGR *G, COUNTE
 	/* Uses the info in -a and OGR to retrieve the requested aspatial string */
 
 	COUNTER_MEDIUM k, len;
-	GMT_LONG id = GMTAPI_NOTSET;
+	GMT_LONG id = GMTAPI_NOTSET, scol = col;
 	if (C->current.io.ogr != 1) return (0);		/* No point checking further since file is not GMT/OGR */
 	for (k = 0; k < C->common.a.n_aspatial; k++) {	/* For each item specified in -a */
-		if (C->common.a.col[k] == col) id = k;			/* ..that matches the given column */
+		if (C->common.a.col[k] == scol) id = k;			/* ..that matches the given column */
 	}
 	if (id == GMTAPI_NOTSET) return (0);
 	id = gmt_get_ogr_id (G, C->common.a.name[id]);

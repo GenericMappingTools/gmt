@@ -349,10 +349,11 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	BOOLEAN error = FALSE, done, need_to_project, normal_x, normal_y, resampled = FALSE, gray_only = FALSE;
-	COUNTER_MEDIUM k, nx = 0, ny = 0, index = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
+	COUNTER_MEDIUM k, nx = 0, ny = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
 	COUNTER_MEDIUM colormask_offset = 0, try;
 	COUNTER_LARGE node_RGBA = 0;		/* COUNTER_LARGE for the RGB(A) image array. */
 	COUNTER_LARGE node, kk, nm, byte;
+	GMT_LONG index = 0, ks;
 	
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
 
@@ -794,15 +795,15 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (P && Ctrl->Q.active) {	/* Check that we found an unused r/g/b value so colormasking will work OK */
 			index = (GMT_u255(P->patch[GMT_NAN].rgb[0])*256 + GMT_u255(P->patch[GMT_NAN].rgb[1]))*256 + GMT_u255(P->patch[GMT_NAN].rgb[2]);
 			if (rgb_used[index]) {	/* This r/g/b already appears in the image as a non-NaN color; we must find a replacement NaN color */
-				for (index = 0, k = -1; k == -1 && index < 256*256*256; index++) if (!rgb_used[index]) k = index;
-				if (k == -1) {
+				for (index = 0, ks = -1; ks == -1 && index < 256*256*256; index++) if (!rgb_used[index]) ks = index;
+				if (ks == -1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Warning: Colormasking will fail as there is no unused color that can represent transparency\n");
 					done = TRUE;
 				}
 				else {	/* Pick the first unused color (i.e., k) and let it play the role of the NaN color for transparency */
-					bitimage_24[0] = (unsigned char)(k >> 16);
-					bitimage_24[1] = (unsigned char)((k >> 8) & 255);
-					bitimage_24[2] = (unsigned char)(k & 255);
+					bitimage_24[0] = (unsigned char)(ks >> 16);
+					bitimage_24[1] = (unsigned char)((ks >> 8) & 255);
+					bitimage_24[2] = (unsigned char)(ks & 255);
 					GMT_report (GMT, GMT_MSG_NORMAL, "Warning: transparency color reset from %s to color %d/%d/%d\n", 
 						GMT_putrgb (GMT, P->patch[GMT_NAN].rgb), (int)bitimage_24[0], (int)bitimage_24[1], (int)bitimage_24[2]);
 					for (k = 0; k < 3; k++) P->patch[GMT_NAN].rgb[k] = GMT_is255 (bitimage_24[k]);	/* Set new NaN color */

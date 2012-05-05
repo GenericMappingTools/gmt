@@ -154,14 +154,14 @@ void GMT_free_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL *p, COUNT
 	}
 }
 
-void gmt_shore_path_shift (double *lon, GMT_LONG n, double edge)
+void gmt_shore_path_shift (double *lon, COUNTER_MEDIUM n, double edge)
 {
 	COUNTER_MEDIUM i;
 
 	for (i = 0; i < n; i++) if (lon[i] >= edge) lon[i] -= 360.0;
 }
 
-void gmt_shore_path_shift2 (double *lon, GMT_LONG n, double west, double east, GMT_LONG leftmost)
+void gmt_shore_path_shift2 (double *lon, COUNTER_MEDIUM n, double west, double east, GMT_LONG leftmost)
 {
 	COUNTER_MEDIUM i;
 
@@ -770,7 +770,7 @@ GMT_LONG GMT_init_br (struct GMT_CTRL *C, char which, char res, struct GMT_BR *c
 	return (0);
 }
 
-GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, COUNTER_MEDIUM b, struct GMT_BR *c, COUNTER_MEDIUM *level, COUNTER_MEDIUM n_levels)
+GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, COUNTER_MEDIUM b, struct GMT_BR *c, GMT_LONG *level, COUNTER_MEDIUM n_levels)
 /* b: index number into c->bins */
 /* level: Levels of features to extract */
 /* n_levels: # of such levels. 0 means use all levels */
@@ -778,7 +778,8 @@ GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, COUNTER_MEDIUM b, struct GMT_BR *c,
 	size_t start[1], count[1];
 	int *seg_start = NULL;
 	short *seg_n = NULL, *seg_level = NULL;
-	GMT_LONG s, i, k, err;
+	GMT_LONG s, i, err;
+	COUNTER_MEDIUM k;
 	BOOLEAN skip;
 	
 

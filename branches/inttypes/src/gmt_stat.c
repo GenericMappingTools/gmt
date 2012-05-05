@@ -681,7 +681,7 @@ double GMT_kn (struct GMT_CTRL *C, COUNTER_MEDIUM n, double x)
 {
 	/* Modified Bessel function Kn(x) */
 
-	GMT_LONG j;
+	COUNTER_MEDIUM j;
 	double bkm, bk, bkp, tox;
 
 	if (n == 0) return (GMT_k0 (C, x));

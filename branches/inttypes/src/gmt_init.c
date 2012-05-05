@@ -680,7 +680,7 @@ void GMT_label_syntax (struct GMT_CTRL *C, COUNTER_MEDIUM indent, COUNTER_MEDIUM
 	GMT_message (C, "%s   no space between annotation and prefix.\n", pad);
 }
 
-void GMT_cont_syntax (struct GMT_CTRL *C, COUNTER_MEDIUM indent, GMT_LONG kind)
+void GMT_cont_syntax (struct GMT_CTRL *C, COUNTER_MEDIUM indent, COUNTER_MEDIUM kind)
 {
 	/* Contour/line label placement specifications in *contour and psxy[z]
 	 * indent is the number of spaces to indent after the TAB.
@@ -1714,7 +1714,7 @@ GMT_LONG gmt_parse_dash_option (struct GMT_CTRL *C, char *text)
 	return (n);
 }
 
-void GMT_check_lattice (struct GMT_CTRL *C, double *inc, COUNTER_MEDIUM *pixel, BOOLEAN *active)
+void GMT_check_lattice (struct GMT_CTRL *C, double *inc, BOOLEAN *pixel, BOOLEAN *active)
 {	/* Uses provided settings to initialize the lattice settings from
 	 * the -R<grdfile> if it was given; else it does nothing.
 	 */
@@ -3642,17 +3642,20 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			(void) GMT_init_time_system_structure (C, &C->current.setting.time_system);
 			break;
 		case GMTCASE_TIME_WEEK_START:
-			C->current.setting.time_week_start = gmt_key_lookup (value, GMT_weekdays, 7);
+			ival = gmt_key_lookup (value, GMT_weekdays, 7);
 			if (C->current.setting.time_week_start < 0 || C->current.setting.time_week_start >= 7) {
 				error = TRUE;
 				C->current.setting.time_week_start = 0;
 			}
+			else
+				C->current.setting.time_week_start = ival;
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_Y2K_OFFSET_YEAR: GMT_COMPAT_CHANGE ("TIME_Y2K_OFFSET_YEAR");
 #endif
 		case GMTCASE_TIME_Y2K_OFFSET_YEAR:
-			if ((C->current.setting.time_Y2K_offset_year = atoi (value)) < 0) error = TRUE;
+			if ((ival = atoi (value)) < 0) error = TRUE;
+			else C->current.setting.time_Y2K_offset_year = ival;
 			/* Set the Y2K conversion parameters */
 			C->current.time.Y2K_fix.y2_cutoff = GMT_abs (C->current.setting.time_Y2K_offset_year) % 100;
 			C->current.time.Y2K_fix.y100 = C->current.setting.time_Y2K_offset_year - C->current.time.Y2K_fix.y2_cutoff;
@@ -4703,11 +4706,12 @@ GMT_LONG GMT_hash (struct GMT_CTRL *C, char *v, COUNTER_MEDIUM n_hash)
 GMT_LONG GMT_hash_lookup (struct GMT_CTRL *C, char *key, struct GMT_HASH *hashnode, COUNTER_MEDIUM n, COUNTER_MEDIUM n_hash)
 {
 	GMT_LONG i;
+	COUNTER_MEDIUM ui;
 	struct GMT_HASH *this = NULL;
 
 	i = GMT_hash (C, key, n_hash);	/* Get initial hash key */
 
-	if (i >= n || i < 0 || !hashnode[i].next) return (-1);	/* Bad key */
+	if (i < 0 || (ui = i) >= n || !hashnode[i].next) return (-1);	/* Bad key */
 	this = hashnode[i].next;
 	while (this && strcmp (this->key, key)) this = this->next;
 
@@ -6802,7 +6806,7 @@ GMT_LONG GMT_parse_front (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 
 #define GMT_VECTOR_CODES "mMvV="	/* The vector symbol codes */
 
-GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd)
+GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, COUNTER_MEDIUM mode, BOOLEAN cmd)
 {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = 1 when called to process command line options */
 	GMT_LONG decode_error = 0, bset = 0, j, n, k, slash = 0, colon, col_off = mode;

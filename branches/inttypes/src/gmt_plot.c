@@ -1426,7 +1426,8 @@ void gmt_map_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double *xx, double 
 	/* type = 0 for lon and 1 for lat */
 
 	double line_angle, text_angle, div, tick_length, o_len, len, ca, sa;
-	GMT_LONG i, justify, annot_type, flip;	
+	GMT_LONG i, justify, annot_type;
+	BOOLEAN flip;	
 
 	len = GMT_get_annot_offset (C, &flip, level);	/* Get annotation offset, and flip justification if "inside" */
 	annot_type = 2 << type;		/* 2 = NS, 4 = EW */
@@ -2097,7 +2098,7 @@ void gmt_vertical_wall (struct GMT_CTRL *C, struct PSL_CTRL *P, GMT_LONG quadran
 	PSL_plotbox (P, nesw[(quadrant+1)%4], C->current.proj.zmin, nesw[(quadrant+3)%4], C->current.proj.zmax);
 }
 
-void GMT_vertical_axis (struct GMT_CTRL *C, GMT_LONG mode)
+void GMT_vertical_axis (struct GMT_CTRL *C, COUNTER_MEDIUM mode)
 {
 	/* Mode means: 1 = background walls and title, 2 = foreground walls and axis, 3 = all */
 	GMT_LONG fore, back, old_plane, form;
