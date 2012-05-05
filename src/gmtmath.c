@@ -2188,7 +2188,8 @@ void table_PSI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 void table_PVQV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *S[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG col, GMT_LONG kind)
 {	/* kind: 0 = Pv, 1 = Qv */
 	COUNTER_LARGE s, i;
-	GMT_LONG prev = last - 1, first = last - 2, calc, n;
+	COUNTER_MEDIUM n;
+	GMT_LONG prev = last - 1, first = last - 2, calc;
 	double a = 0.0, x = 0.0, nu[2], pq[4];
 	static char *name[2] = {"PV", "QV"};
 	struct GMT_TABLE *T = (constant[last]) ? NULL : S[last]->table[0], *T_prev = (constant[prev]) ? NULL : S[prev]->table[0], *T_first = S[first]->table[0];
