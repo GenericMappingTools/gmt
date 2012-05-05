@@ -702,7 +702,7 @@ double gradspline2d_Parker (struct GMT_CTRL *GMT, double x, double par[], double
 
 double spline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], double *G)
 {	/* g = M_PI * Pv(-x)/sin (v*x) - log (1-x) normalized to 0-1 */
-	GMT_LONG n;
+	COUNTER_MEDIUM n;
 	double z[2], pq[4];
 
 	if (doubleAlmostEqual(x, 1.0))
@@ -725,7 +725,7 @@ double spline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], dou
 
 double gradspline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], double *G)
 {	/* g = -M_PI * (v+1)*[x*Pv(-x)+Pv+1(-x)]/(sin (v*x)*sin(theta)) - 1/(1-x), normalized to 0-1 */
-	GMT_LONG n;
+	COUNTER_MEDIUM n;
 	double z[2], v1[2], pq[4], s;
 	
 	if (x == +1.0 || x == -1.0) return (0.0);

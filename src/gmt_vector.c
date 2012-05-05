@@ -497,11 +497,11 @@ GMT_LONG GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, COUNTER_MEDIUM n_in, 
 
 #define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
 
-GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, COUNTER_MEDIUM m, COUNTER_MEDIUM n, double *w, double *v)
+GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, COUNTER_MEDIUM m_in, COUNTER_MEDIUM n_in, double *w, double *v)
 {
 	/* void svdcmp(double *a,int m,int n,double *w,double *v) */
 	
-	GMT_LONG flag,i,its,j,jj,k,l=0,nm = 0;
+	GMT_LONG flag,i,its,j,jj,k,l=0,nm = 0, n = n_in, m = m_in;
 	double c,f,h,s,x,y,z;
 	double anorm=0.0,tnorm, g=0.0,scale=0.0;
 	double *rv1 = NULL;
@@ -748,7 +748,7 @@ void gmt_mat_mult (double a[], GMT_LONG mrow, GMT_LONG ncol, double b[], GMT_LON
 GMT_LONG GMT_solve_svd (struct GMT_CTRL *GMT, double *u, COUNTER_MEDIUM m, COUNTER_MEDIUM n, double *v, double *w, double *b, COUNTER_MEDIUM k, double *x, double cutoff)
 {
 	double *ut = NULL, sing_max;
-	GMT_LONG i, j, n_use = 0;
+	COUNTER_MEDIUM i, j, n_use = 0;
 
 	/* allocate work space */
 	
@@ -1023,7 +1023,7 @@ COUNTER_LARGE GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_la
 	return (n_tmp);
 }
 
-COUNTER_LARGE GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a_y, COUNTER_LARGE n, double step, GMT_LONG mode)
+COUNTER_LARGE GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a_y, COUNTER_LARGE n, double step, COUNTER_MEDIUM mode)
 {
 	/* Takes pointers to a list of <n> x/y pairs (in user units) and adds
 	 * auxiliary points if the distance between two given points exceeds

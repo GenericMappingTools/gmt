@@ -34,7 +34,7 @@ struct GMT_XINGS {
         double xx[2], yy[2];    /* Cartesian coordinates of intersection with map boundary */
         double angle[2];        /* Angles of intersection */
         GMT_LONG sides[2];	/* Side id of intersection */
-        GMT_LONG nx;		/* Number of intersections (1 or 2) */
+        COUNTER_MEDIUM nx;	/* Number of intersections (1 or 2) */
 };
 
 #endif  /* _GMT_CROSSING_H */

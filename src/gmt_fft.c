@@ -2789,12 +2789,12 @@ GMT_LONG GMT_fft_1d_brenner (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM n, 
 	/* Forward(-1) or Inverse(+1) */
 	/* Real(0) or complex(1) data */
 	/* Work array */
-	GMT_LONG ksign, ndim = 1, n_signed = n;
+	GMT_LONG ksign, ndim = 1, n_signed = n, kmode = mode;
 	size_t work_size = 0;
 	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
 	if ((work_size = brenner_worksize (C, n, 1))) work = GMT_memory (C, NULL, work_size, float);
-	(void) BRENNER_fourt_ (data, &n_signed, &ndim, &ksign, &mode, work);
+	(void) BRENNER_fourt_ (data, &n_signed, &ndim, &ksign, &kmode, work);
 	if (work_size) GMT_free (C, work);
 	return (GMT_OK);
 }
@@ -2807,13 +2807,13 @@ GMT_LONG GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM nx,
 	/* Forward(-1) or Inverse(+1) */
 	/* Real(0) or complex(1) data */
 	/* Work array */
-	GMT_LONG ksign, ndim = 2, nn[2] = {nx, ny};
+	GMT_LONG ksign, ndim = 2, nn[2] = {nx, ny}, kmode = mode;
 	size_t work_size = 0;
 	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
 	if ((work_size = brenner_worksize (C, nx, ny))) work = GMT_memory (C, NULL, work_size, float);
 	GMT_report (C, GMT_MSG_VERBOSE, "Brenner_fourt_ work size = %ld\n", work_size);
-	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &mode, work);
+	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &kmode, work);
 	if (work_size) GMT_free (C, work);
 	return (GMT_OK);
 }

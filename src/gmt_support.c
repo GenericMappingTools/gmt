@@ -1917,7 +1917,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	h->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
 }
 
-struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors)
+struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *C, COUNTER_MEDIUM n_colors)
 {
 	/* Makes an empty palette table */
 	struct GMT_PALETTE *P = NULL;
@@ -8401,7 +8401,7 @@ GMT_LONG gmt_polar_adjust (struct GMT_CTRL *C, GMT_LONG side, double angle, doub
 	return (justify);
 }
 
-BOOLEAN gmt_get_label_parameters (struct GMT_CTRL *C, GMT_LONG side, double line_angle, GMT_LONG type, double *text_angle, GMT_LONG *justify)
+BOOLEAN gmt_get_label_parameters (struct GMT_CTRL *C, GMT_LONG side, double line_angle, GMT_LONG type, double *text_angle, COUNTER_MEDIUM *justify)
 {
 	BOOLEAN ok;
 
@@ -8482,7 +8482,7 @@ GMT_LONG gmt_gnomonic_adjust (struct GMT_CTRL *C, double angle, double x, double
 	return ((inside) ? 7 : 5);
 }
 
-GMT_LONG GMT_prepare_label (struct GMT_CTRL *C, double angle, GMT_LONG side, double x, double y, GMT_LONG type, double *line_angle, double *text_angle, GMT_LONG *justify)
+GMT_LONG GMT_prepare_label (struct GMT_CTRL *C, double angle, COUNTER_MEDIUM side, double x, double y, COUNTER_MEDIUM type, double *line_angle, double *text_angle, COUNTER_MEDIUM *justify)
 {
 	BOOLEAN set_angle;
 
@@ -8667,7 +8667,7 @@ double gmt_get_angle (struct GMT_CTRL *C, double lon1, double lat1, double lon2,
 	return (direction);
 }
 
-double GMT_get_annot_offset (struct GMT_CTRL *C, BOOLEAN *flip, GMT_LONG level)
+double GMT_get_annot_offset (struct GMT_CTRL *C, BOOLEAN *flip, COUNTER_MEDIUM level)
 {
 	/* Return offset in inches for text annotation.  If annotation
 	 * is to be placed 'inside' the map, set flip to TRUE */
@@ -8688,7 +8688,7 @@ double GMT_get_annot_offset (struct GMT_CTRL *C, BOOLEAN *flip, GMT_LONG level)
 	return (a);
 }
 
-GMT_LONG GMT_flip_justify (struct GMT_CTRL *C, GMT_LONG justify)
+GMT_LONG GMT_flip_justify (struct GMT_CTRL *C, COUNTER_MEDIUM justify)
 {
 	/* Return the opposite justification */
 

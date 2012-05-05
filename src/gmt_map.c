@@ -976,9 +976,9 @@ GMT_LONG GMT_clip_to_map (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_
 	/* This routine makes sure that all points are either inside or on the map boundary
 	 * and returns the number of points to be used for plotting (in x,y units) */
 
-	COUNTER_LARGE i, out, np2, n;
+	COUNTER_LARGE i, out, n;
 	COUNTER_LARGE total_nx = 0, polygon;
-	GMT_LONG out_x, out_y;
+	int64_t out_x, out_y, np2;
 	double *xx = NULL, *yy = NULL;
 
 	/* First check for trivial cases:  All points outside or all points inside */
@@ -1093,7 +1093,8 @@ GMT_LONG gmt_move_to_rect (struct GMT_CTRL *C, double *x_edge, double *y_edge, G
 GMT_LONG gmt_rect_clip_old (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n, double **x, double **y, GMT_LONG *total_nx)
 {
 	COUNTER_LARGE i, j = 0;
-	GMT_LONG nx, k, sides[4];
+	COUNTER_MEDIUM nx, k;
+	GMT_LONG sides[4];
 	size_t n_alloc = GMT_CHUNK;
 	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
 
@@ -1208,7 +1209,7 @@ GMT_LONG gmt_outside_upper_boundary (double val, double max) {return (val > max)
  * that boundary; this is then repeated for all boundaries.  Assumptions here are Cartesian coordinates
  * so all boundaries are straight lines in x or y. */
 
-GMT_LONG gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n, double **x, double **y, COUNTER_LARGE *total_nx)
 {
 	COUNTER_LARGE i, n_get, m;
 	size_t n_alloc = 0;
@@ -1402,7 +1403,8 @@ GMT_LONG gmt_move_to_wesn (struct GMT_CTRL *C, double *x_edge, double *y_edge, d
 GMT_LONG gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n, double **x, double **y, GMT_LONG *total_nx)
 {
 	COUNTER_LARGE i, j = 0;
-	GMT_LONG nx, k, sides[4];
+	COUNTER_MEDIUM nx, k;
+	GMT_LONG sides[4];
 	size_t n_alloc = GMT_CHUNK;
 	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
 
@@ -1460,7 +1462,7 @@ GMT_LONG gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, COUNTE
 	return (j);
 }
 
-GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n_orig, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n_orig, double **x, double **y, COUNTER_LARGE *total_nx)
 {
 	char *x_type = NULL;
 	size_t n_alloc = 0, n_x_alloc = 0;
@@ -1707,11 +1709,12 @@ void gmt_dumppol (GMT_LONG n, double *x, double *y, GMT_LONG *id)
 #endif
 
 
-GMT_LONG gmt_radial_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG np, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG gmt_radial_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE np, double **x, double **y, COUNTER_LARGE *total_nx)
 {
 	size_t n_alloc = 0;
 	COUNTER_LARGE n = 0, n_arc;
-	GMT_LONG i, sides[4], nx;
+	COUNTER_MEDIUM i, nx;
+	GMT_LONG sides[4];
 	BOOLEAN this = FALSE, add_boundary = FALSE;
 	double xlon[4], xlat[4], xc[4], yc[4], end_x[3], end_y[3], xr, yr;
 	double *xx = NULL, *yy = NULL, *xarc = NULL, *yarc = NULL;
@@ -4986,7 +4989,7 @@ GMT_LONG GMT_near_a_point (struct GMT_CTRL *C, double lon, double lat, struct GM
 	return (C->current.map.near_point_func (C, lon, lat, T, dist));
 }
 
-GMT_LONG GMT_near_lines (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near)
+GMT_LONG GMT_near_lines (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, COUNTER_MEDIUM return_mindist, double *dist_min, double *x_near, double *y_near)
 {	/* Compute distance to nearest line in T from (lon,lat) */
 	return (C->current.map.near_lines_func (C, lon, lat, T, return_mindist, dist_min, x_near, y_near));
 }
@@ -5533,7 +5536,7 @@ GMT_LONG GMT_great_circle_intersection (struct GMT_CTRL *T, double A[], double B
 	return (0);				/* Return zero if intersection is between A and B */
 }
 
-COUNTER_LARGE *GMT_split_line (struct GMT_CTRL *C, double **xx, double **yy, COUNTER_LARGE *nn, GMT_LONG add_crossings)
+COUNTER_LARGE *GMT_split_line (struct GMT_CTRL *C, double **xx, double **yy, COUNTER_LARGE *nn, BOOLEAN add_crossings)
 {	/* Accepts x/y array for a line in projected inches and looks for
 	 * map jumps.  If found it will insert the boundary crossing points and
 	 * build a split integer array with the nodes of the first point
@@ -5877,7 +5880,8 @@ GMT_LONG GMT_geo_to_xy_line (struct GMT_CTRL *C, double *lon, double *lat, COUNT
 	 * Pen moves are caused by breakthroughs of the map boundary or when
 	 * a point has lon = NaN or lat = NaN (this means "pick up pen") */
 	COUNTER_LARGE j, np;
-	GMT_LONG inside, sides[4], nx;
+	GMT_LONG inside, sides[4];
+	COUNTER_MEDIUM nx;
 	double xlon[4], xlat[4], xx[4], yy[4];
 	double this_x, this_y, last_x, last_y, dummy[4];
 
@@ -5970,7 +5974,7 @@ GMT_LONG GMT_compact_line (struct GMT_CTRL *C, double *x, double *y, COUNTER_LAR
 
 /* Routines to transform grdfiles to/from map projections */
 
-GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double *inc, COUNTER_MEDIUM nx, GMT_project_init ny, GMT_project_init dpi, GMT_project_init offset)
+GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double *inc, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, COUNTER_MEDIUM dpi, COUNTER_MEDIUM offset)
 {
 	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
 		header->nx = GMT_get_n (C, header->wesn[XLO], header->wesn[XHI], inc[GMT_X], offset);
@@ -6740,7 +6744,7 @@ void GMT_init_ellipsoid (struct GMT_CTRL *C)
 
 /* Datum conversion routines */
 
-void GMT_datum_init (struct GMT_CTRL *C, struct GMT_DATUM *from, struct GMT_DATUM *to, GMT_LONG heights)
+void GMT_datum_init (struct GMT_CTRL *C, struct GMT_DATUM *from, struct GMT_DATUM *to, BOOLEAN heights)
 {
 	/* Initialize datum conv structures based on the parsed values*/
 

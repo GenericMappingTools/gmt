@@ -323,7 +323,6 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (col_0 == Grid->header->nx) col_0--;	/* Was exactly on the xmax edge */
 					row_0 = GMT_grd_y_to_row (GMT, S->coord[GMT_Y][k], Grid->header);
 					if (row_0 == Grid->header->ny) row_0--;	/* Was exactly on the ymin edge */
-					assert (row_0 >= 0 && col_0 >= 0);	/* Sanity check */
 					ij = GMT_IJP (Grid->header, row_0, col_0);
 					Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is the nearest node */
 					if (Grid->header->registration == GMT_GRIDLINE_REG && (col_0 == 0 || col_0 == (Grid->header->nx-1)) && periodic_grid) {	/* Must duplicate the entry at periodic point */

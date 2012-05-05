@@ -117,7 +117,7 @@ void gmt_expand_filename (struct GMT_CTRL *C, char *file, char *fname)
 		strcpy (fname, file);
 }
 
-GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, GMT_LONG magic)
+GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, BOOLEAN magic)
 {
 	/* This functions does a couple of things:
 	 * 1. It tries to determine what kind of grid file this is. If a file is openeed for
@@ -546,7 +546,7 @@ GMT_LONG GMT_write_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 	return ((*C->session.writegrd[header->type]) (C, header, grid, wesn, pad, complex_mode));
 }
 
-size_t GMT_grd_data_size (struct GMT_CTRL *C, GMT_LONG format, double *nan_value)
+size_t GMT_grd_data_size (struct GMT_CTRL *C, COUNTER_MEDIUM format, double *nan_value)
 {
 	/* Determine size of data type and set NaN value, if not yet done so (integers only) */
 
@@ -1088,7 +1088,7 @@ void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *G, double shift)
 	if (n_warn) GMT_report (C, GMT_MSG_FATAL, "Gridline-registered global grid has inconsistent values at repeated node for %ld rows\n", n_warn);
 }
 
-GMT_LONG GMT_grd_is_global (struct GMT_CTRL *C, struct GRD_HEADER *h)
+BOOLEAN GMT_grd_is_global (struct GMT_CTRL *C, struct GRD_HEADER *h)
 {	/* Determine if grid could be global */
 
 	if (GMT_x_is_lon (C, GMT_IN)) {

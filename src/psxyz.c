@@ -27,8 +27,6 @@
 #include "pslib.h"
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd);
-
 /* Control structure for psxyz */
 
 struct PSXYZ_CTRL {
