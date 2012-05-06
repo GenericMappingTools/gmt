@@ -1,0 +1,836 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- lifted from troff+man by doclifter -->
+<refentry xmlns='http://docbook.org/ns/docbook' version='5.0' xml:lang='en' xml:id='mgd77sniffer1'>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<refmeta>
+<refentrytitle>MGD77SNIFFER</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='source'>Mar 22 2012</refmiscinfo>
+<refmiscinfo class='manual'>GMT 5.0.1b (SVN)</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>mgd77sniffer</refname>
+<refpurpose>Along-track quality control of MGD77 cruises</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+<refsynopsisdiv xml:id='synopsis'>
+<cmdsynopsis>
+  <command>mgd77sniffer</command>    <arg choice='plain'><replaceable>NGDC-ids</replaceable></arg>
+    <arg choice='opt'>-Afieldabbrev,scale,offset </arg>
+    <arg choice='opt'>-Cmaxspd </arg>
+    <group choice='opt'><arg choice='plain'>-Dd </arg><arg choice='plain'><replaceable>e</replaceable></arg><arg choice='plain'><replaceable>E</replaceable></arg><arg choice='plain'><replaceable>f</replaceable></arg><arg choice='plain'><replaceable>l</replaceable></arg><arg choice='plain'><replaceable>m</replaceable></arg><arg choice='plain'><replaceable>s</replaceable></arg><arg choice='plain'><replaceable>v</replaceable></arg><arg choice='opt'><replaceable>r</replaceable></arg></group>
+    <arg choice='opt'>-gfieldabbrev,imggrid,scale,mode </arg>
+    <arg choice='opt'>-Gfieldabbrev,grid </arg>
+    <arg choice='opt'>-H </arg>
+    <arg choice='opt'>-Ifieldabbrev,rec1,recN </arg>
+    <arg choice='opt'>-K </arg>
+    <arg choice='opt'>-Lcustom-limits-file </arg>
+    <arg choice='opt'>-N </arg>
+    <arg choice='opt'><arg choice='plain'>-Rwest/east/south/north </arg><arg choice='opt'><replaceable>r</replaceable></arg></arg>
+    <group choice='opt'><arg choice='plain'>-Sd </arg><arg choice='plain'><replaceable>s</replaceable></arg><arg choice='plain'><replaceable>t</replaceable></arg></group>
+    <arg choice='opt'>-Tgap </arg>
+    <arg choice='opt'><arg choice='plain'>-V </arg><arg choice='opt'><replaceable>level</replaceable></arg></arg>
+    <group choice='opt'><arg choice='plain'>-Wc </arg><arg choice='plain'><replaceable>g</replaceable></arg><arg choice='plain'><replaceable>o</replaceable></arg><arg choice='plain'><replaceable>s</replaceable></arg><arg choice='plain'><replaceable>t</replaceable></arg><arg choice='plain'><replaceable>v</replaceable></arg><arg choice='plain'><replaceable>x</replaceable></arg></group>
+    <arg choice='opt'><arg choice='plain'>-bo </arg><arg choice='opt'><replaceable>t</replaceable></arg></arg>
+    <arg choice='opt'><arg choice='plain'>-n </arg><arg choice='opt'>+tthreshold </arg></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+
+<refsect1 xml:id='description'><title>DESCRIPTION</title>
+<para><command>mgd77sniffer</command> scans old (pre-Y2K) and new format ASCII MGD77 files for errors using point-by-point
+sanity checking, along-track detection of excessive slopes, and optional comparison of
+cruise data with global gravity and predicted bathymetry grids. Detected data problems are output
+by default as verbose descriptions of each detected error, often resulting in multiple messages per 
+scanned record. Data problems are optionally output (<option>-De</option> option) using a computer-parseable format
+(see E77 ERROR FORMAT description below). Default error thresholds are derived from histograms of
+all MGD77 geophysical data collected between 1952 and January, 2006. Thresholds are adjustable with
+the <option>-L</option> option.</para>
+</refsect1>
+
+<refsect1 xml:id='requirements'><title>REQUIREMENTS</title>
+<para>The mgd77sniffer links with Generic Mapping Tools 4.0 or later along with the supplemental GMT
+packages x2sys and mgd77. See http://gmt.soest.hawaii.edu for GMT details. Grids for comparison with
+cruise data may be downloaded via the web.</para>
+</refsect1>
+
+<refsect1 xml:id='common_arguments_and_specifications'><title>COMMON ARGUMENTS AND SPECIFICATIONS</title>
+<para>All options marked with an asterisk (*) are common GMT command-line options.  Their full syntax as well as
+how to specify pens, pattern fills, colors, and fonts can be found in the <emphasis remap='B'>gmt</emphasis> man page.
+Note: No space is allowed between the option flag and the associated arguments.</para>
+</refsect1>
+
+<refsect1 xml:id='required_arguments'><title>REQUIRED ARGUMENTS</title>
+<variablelist remap='TP'>
+  <varlistentry>
+  <term><emphasis remap='I'>NGDC-ids</emphasis></term>
+  <listitem>
+<para>Can be one or more of five kinds of specifiers:
+<!-- .br -->
+1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
+<!-- .br -->
+2) 2-character &lt;agency&gt; codes which will return all cruises from each agency.
+<!-- .br -->
+3) 4-character &lt;agency&gt;&lt;vessel&gt; codes, which will return all cruises from those vessels.
+<!-- .br -->
+4) =&lt;list&gt;, where &lt;list&gt; is a table with NGDC IDs, one per line.
+<!-- .br -->
+5) If nothing is specified we return all cruises in the data base.
+<!-- .br -->
+(See mgd77info <option>-L</option> for agency and vessel codes).
+The ".mgd77" or ".nc" extensions will automatically be appended, if needed (use <option>-I</option>
+to ignore certain file types).  Cruise files will be looked for first in the current directory
+and second in all directories listed in <emphasis remap='B'>$MGD77_HOME</emphasis>/mgd77_paths.txt [If <emphasis remap='B'>$MGD77_HOME</emphasis>
+is not set it will default to <emphasis remap='B'>$GMT_SHAREDIR</emphasis>/mgd77].</para>
+<!-- .br -->
+  </listitem>
+  </varlistentry>
+</variablelist>
+</refsect1>
+
+<refsect1 xml:id='optional_arguments'><title>OPTIONAL ARGUMENTS</title>
+<variablelist remap='TP'>
+  <varlistentry>
+  <term><option>-A</option><replaceable>fieldabbrev</replaceable>,<emphasis remap='I'>scale</emphasis>,<emphasis remap='I'>offset</emphasis></term>
+  <listitem>
+<para>Apply scale factor and DC adjustment to specified data field. Allows adjustment of cruise data prior
+to along-track analysis. CAUTION: data must be thoroughly examined before applying these global data
+adjustments. May not be used for multiple cruises.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-C</option><replaceable>maxspd</replaceable></term>
+  <listitem>
+<para>Set maximum ship speed in m/s, or knots with <option>-N</option> option. Ship speeds exceeding 10 m/s (~20 knots)
+are flagged as excessive by default.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-D</option><replaceable>d</replaceable>|<emphasis remap='B'>e</emphasis>|<emphasis remap='B'>E</emphasis>|<emphasis remap='B'>f</emphasis>|<emphasis remap='B'>l</emphasis>|<emphasis remap='B'>m</emphasis>|<emphasis remap='B'>s</emphasis>|<emphasis remap='B'>v</emphasis>[<emphasis remap='I'>r</emphasis>]</term>
+  <listitem>
+<para>Suppress default warning output and only dump cruise data row-by-row such as values, gradients,
+grid-cruise differences, E77 error summaries for each record, re-created MGD77 records
+or sniffer limits. Append r to include all records (default omits records where navigation errors were detected).</para>
+<!-- .br -->
+
+<para><option>-Dd</option>
+output differences between cruise and grid data. Requires <option>-G</option> option. Output columns include:</para> 
+<!-- .br -->
+
+<para><emphasis remap='I'>lat lon dist cruiseZ gridZ diff [cruiseZ2 gridZ2 diff2 ...]</emphasis></para>
+<!-- .br -->
+
+<para>Note: grid values are subtracted from cruise data so a positive difference implies cruise &gt; grid.
+For multiple grid comparison, <emphasis remap='I'>cruiseZ gridZ diff</emphasis> are repeated for each grid comparison in command line order.</para>
+<!-- .br -->
+
+<para><option>-De</option>
+output E77 error classification format. Error output is divided into (1) a header containing
+information globally applicable to the cruise and (2) individual error records summarizing all
+errors encountered in each cruise record. mgd77sniffer writes E77 directly to &lt;ngdc_id.e77&gt;
+file handle. See <emphasis remap='B'>E77 ERROR FORMAT</emphasis> below for additional details.</para>
+<!-- .br -->
+
+<para><option>-DE</option>
+Same as <option>-De</option> but no regression tests will be carried out.</para>
+<!-- .br -->
+
+<para><option>-Df</option>
+output delta Z (change in geophysical field) column and delta S (change in distance) for each
+geophysical field. Distance between observations often differ for different fields depending
+on instrument sampling rate, so ds is included for each geophysical observation. Output
+columns include:</para> 
+<!-- .br -->
+
+<para><emphasis remap='I'>d[twt] ds d[depth] ds d[mtf1] ds d[mtf2] ds d[mag] ds d[diur] ds d[msd] ds d[gobs] ds d[eot] ds d[faa] ds</emphasis></para>
+<!-- .br -->
+
+<para><option>-Dl</option>
+display mgd77sniffer limits. Customize this output to create a custom limits file for 
+the <option>-L</option> option. No additional arguments are required. Output columns include:</para>
+<!-- .br -->
+
+<para><emphasis remap='I'>fieldabbrev min max maxSlope maxArea</emphasis></para>
+<!-- .br -->
+
+<para><option>-Dm</option>
+output MGD77 format records in Y2K-compliant MGD77 format</para>
+<!-- .br -->
+
+<para><option>-Dn</option>
+output distance to coast for each record. Requires <option>-Gnav</option> or <option>-gnav</option> option. Output columns include:</para> 
+<!-- .br -->
+
+<para><emphasis remap='I'>lat lon dist distToCoast</emphasis></para>
+<!-- .br -->
+
+<para><option>-Ds</option>
+output calculated gradients for speed and geophysical fields. Gradients correspond to the gradient type
+selected in the <option>-S</option> option (spatial derivatives by default). Output columns include:</para>
+<!-- .br -->
+
+<para><emphasis remap='I'>speed d[twt] d[depth] d[mtf1] d[mtf2] d[mag] d[diur] d[msd] d[gobs] d[eot] d[faa]</emphasis></para>
+<!-- .br -->
+
+<para>See <emphasis remap='B'>MGD77 FIELD INFO</emphasis> below for field and abbreviations descriptions.</para>
+<!-- .br -->
+
+<para><option>-Dv</option>
+display values for the twelve position and geophysical fields for each MGD77 data record (in this order):</para>
+<!-- .br -->
+
+<para><emphasis remap='I'>lat lon twt depth mtf1 mtf2 mag diur msens gobs eot faa</emphasis></para>
+<!-- .br -->
+
+<para>See below for <emphasis remap='B'>MGD77 FIELD INFO</emphasis>.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-g</option><replaceable>fieldabbrev</replaceable>,<emphasis remap='I'>imggrid</emphasis>,<emphasis remap='I'>scale</emphasis>,<emphasis remap='I'>mode</emphasis></term>
+  <listitem>
+<para>Compare cruise data to the specified grid in Sandwell/Smith Mercator format. Requires a valid MGD77 field abbreviation (see 
+<emphasis remap='B'>MGD77 FIELD INFO</emphasis> below) followed by a comma, the path (if not in current directory)
+and grid filename, a scale to multiply the data (1 or 0.1), and mode which stand for the following:
+(0) Img files with no constraint code, returns data at all points, (1) Img file with constraints coded,
+return data at all points, (2) Img file with constraints coded, return data only at constrained points
+and NaN elsewhere, and (3) Img file with constraints coded, return 1 at constraints and 0 elsewhere.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-G</option><replaceable>fieldabbrev</replaceable>,<emphasis remap='I'>grid</emphasis></term>
+  <listitem>
+<para>Compare cruise data to the specified grid. Requires a valid MGD77 field abbreviation (see 
+<emphasis remap='B'>MGD77 FIELD INFO</emphasis> below) followed by a comma, then the path (if not in current directory)
+and grid filename. Multiple grid comparison is supported by using separate <option>-g</option> or <option>-G</option> calls for each 
+grid. See <emphasis remap='B'>GRID FILE INFO</emphasis> below.</para>
+<!-- .br -->
+
+<para>Grid comparison activates several additional error checks. (1) Re-weighted Least Squares 
+Regression of ship versus grid data determines slope and DC shift, which when differing
+from expected 1 and 0, respectively, may indicate incorrectly scaled ship data, including
+incorrect units or instrument drift as well as erroneous gravity tie-in. (2) Accumulated ship
+grid offsets are computed along-track and excessive offsets are flagged according to <emphasis remap='I'>maxArea</emphasis>
+threshold (use <option>-L</option> option to adjust <emphasis remap='I'>maxArea</emphasis>). Warning: predicted bathymetry grids are
+constrained by cruise data so grids and cruise data are not always independent. Comparison of
+cruise bathymetry with predicted bathymetry grids also activates a "navigation crossing over land"
+check.</para>
+<!-- .br -->
+
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-H</option></term>
+  <listitem>
+<para>(with <option>-G</option>|<emphasis remap='B'>g</emphasis> only) disable (or force) decimation during RLS analysis of ship and gridded data.
+By default mgd77sniffer analyses both the full and decimated data sets then reports RLS statistics for the
+higher correlation regression.</para>
+<!-- .br -->
+
+<para><option>-Hb</option> analyze both (default), report better of two.</para>
+<!-- .br -->
+
+<para><option>-Hd</option> to disable data decimation (equivalent to -H with no argument).</para>
+<!-- .br -->
+
+<para><option>-Hf</option> to force data decimation.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-I</option><replaceable>fieldabbrev</replaceable>,<emphasis remap='I'>rec1</emphasis>,<emphasis remap='I'>recN</emphasis></term>
+  <listitem>
+<para>Append a field abbreviation and the first and last record in a range of records that should
+be flagged as bad (and set to NaN prior to the analysis). Repeat as many times as needed.
+May not be used for multiple cruises.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-K</option></term>
+  <listitem>
+<para>Reverse navigation quality flags (good to bad and vice versa). May be necessary when a
+majority of navigation fixes are erroneously flagged bad, which can happen when a cruise's
+first navigation fix is extremely erroneous. Caution! This will affect sniffer output and
+should only be attempted after careful manual navigation review.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-L</option><replaceable>custom-limits-file</replaceable></term>
+  <listitem>
+<para>Override mgd77sniffer default error detection limits. Supply path and filename to
+the custom limits file. Rows not beginning with a valid MGD77 field abbreviation are
+ignored. Field abbreviations are listed below in exact form under MGD77 FIELD INFO.
+Multiple field limits may be modified using one default file, one field per line.
+Field min, max, max slope and max area may be changed for each field. Max slope
+pertains to the gradient type selected using the <option>-S</option> option. Max area is used by the
+<option>-G</option> option as the threshold for flagging excessive offsets from the specified grid.
+Dump defaults <option>-Dl</option> to view syntax or to quickly create an editable custom limits file.</para>
+<!-- .br -->
+
+<para>Example custom default file contents (see below for units):</para>
+<!-- .br -->
+
+<table pgwide='0' frame='none'>
+  <caption>-</caption>
+  <tgroup cols='5' align='center'>
+    <colspec colname='c1'/>
+    <colspec colname='c2'/>
+    <colspec colname='c3'/>
+    <colspec colname='c4'/>
+    <colspec colname='c5'/>
+    <tbody>
+      <row>
+        <entry align='left'>\('## abbrev</entry>
+        <entry align='left'>min</entry>
+        <entry align='left'>max</entry>
+        <entry align='left'>maxSlope</entry>
+        <entry align='left'>maxArea\"'</entry>
+      </row>
+      <row>
+        <entry align='left'>twt</entry>
+        <entry align='left'>0</entry>
+        <entry align='left'>15</entry>
+        <entry align='left'>1</entry>
+        <entry align='left'>0</entry>
+      </row>
+      <row>
+        <entry align='left'>depth</entry>
+        <entry align='left'>0</entry>
+        <entry align='left'>11000</entry>
+        <entry align='left'>500</entry>
+        <entry align='left'>5000</entry>
+      </row>
+      <row>
+        <entry align='left'>mag</entry>
+        <entry align='left'>-800</entry>
+        <entry align='left'>800</entry>
+        <entry align='left'>-</entry>
+        <entry align='left'>-</entry>
+      </row>
+      <row>
+        <entry align='left'>faa</entry>
+        <entry align='left'>-300</entry>
+        <entry align='left'>300</entry>
+        <entry align='left'>100</entry>
+        <entry align='left'>2500</entry>
+      </row>
+    </tbody>
+  </tgroup>
+</table>
+
+
+
+<para>Use a dash '-' to retain a default limit.
+Hint: to test your custom limits, try: mgd77sniffer <option>-Dl</option> <option>-L</option>&lt;yourlimitsfile&gt;</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-N</option></term>
+  <listitem>
+<para>Use nautical units.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-P</option></term>
+  <listitem>
+<para>Flag regression statistics that are outside the specified confidence level.
+(i.e., -P5 flags coefficients m, b, rms, and r that fall outside 95%.)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-R</option><replaceable>west</replaceable>/<emphasis remap='I'>east</emphasis>/<emphasis remap='I'>south</emphasis>/<emphasis remap='I'>north</emphasis>[/<emphasis remap='I'>zmin</emphasis>/<emphasis remap='I'>zmax</emphasis>][<emphasis remap='B'>r</emphasis>]</term>
+  <listitem>
+<para><emphasis remap='I'>west</emphasis>, <emphasis remap='I'>east</emphasis>, <emphasis remap='I'>south</emphasis>, and <emphasis remap='I'>north</emphasis> specify the region of interest, and you may specify them
+in decimal degrees or in [+-]dd:mm[:ss.xxx][W|E|S|N] format.  Append <emphasis remap='B'>r</emphasis> if lower left and upper right
+map coordinates are given instead of w/e/s/n.  The two shorthands <option>-Rg</option> and <option>-Rd</option> stand for global domain
+(0/360 and -180/+180 in longitude respectively, with -90/+90 in latitude). Alternatively, specify the name
+of an existing grid file and the <option>-R</option> settings (and grid spacing, if applicable) are copied from the grid.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-S</option><replaceable>d</replaceable>|<emphasis remap='B'>s</emphasis>|<emphasis remap='B'>t</emphasis></term>
+  <listitem>
+<para>Specify gradient type for along-track excessive slope checking.
+<!-- .br -->
+<option>-Sd</option>
+Calculate change in z values along track (dz). Output is given in geophysical units,
+e.g. mGal.
+<!-- .br -->
+<option>-Ss</option>
+Calculate spatial gradients (dz/ds). Output is given in geophysical units per km along the
+survey track, e.g. mGal/km.
+<!-- .br -->
+<option>-St</option> Calculate time gradients (dz/dt)  [default]. Output is given in geophysical units
+per second along the survey track, e.g. mGal/sec.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-T</option><replaceable>gap</replaceable></term>
+  <listitem>
+<para>Adjusts mgd77sniffer gap handling. By default, data gaps greater than 5 km are skipped. Set to
+zero to de-activate gap skipping.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-W</option><replaceable>c</replaceable>|<emphasis remap='B'>g</emphasis>|<emphasis remap='B'>o</emphasis>|<emphasis remap='B'>s</emphasis>|<emphasis remap='B'>t</emphasis>|<emphasis remap='B'>v</emphasis>|<emphasis remap='B'>x</emphasis></term>
+  <listitem>
+<para>Print out only certain warning types for verbose error messages. Comma delimit any combination of
+<emphasis remap='B'>c|g|o|s|t|v|x</emphasis>: where (<emphasis remap='B'>c</emphasis>) type code warnings, (<emphasis remap='B'>g</emphasis>)radient out of range, (<emphasis remap='B'>o</emphasis>)ffsets
+from grid (requires <option>-G</option>|<emphasis remap='B'>g</emphasis>), (<emphasis remap='B'>s</emphasis>)peed out of range, (<emphasis remap='B'>t</emphasis>)ime warnings, (<emphasis remap='B'>v</emphasis>)alue out of 
+range, (<emphasis remap='B'>x</emphasis>) warning summaries. By default ALL warning messages are printed.Not compatible with any
+<option>-D</option> options.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-V</option><replaceable>level</replaceable> (*)</term>
+  <listitem>
+<para>Select verbosity level [1].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-bo</option><replaceable>ncol</replaceable>[<emphasis remap='B'>t</emphasis>]</term>
+  <listitem>
+<para>Output binary data for <option>-D</option>d|f|s|v option.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-n</option>[<emphasis remap='B'>b</emphasis>|<emphasis remap='B'>c</emphasis>|<emphasis remap='B'>l</emphasis>|<emphasis remap='B'>n</emphasis>][<option>+a</option>][<emphasis remap='B'>+b</emphasis><emphasis remap='I'>BC</emphasis>][<emphasis remap='B'>+t</emphasis><emphasis remap='I'>threshold</emphasis>] (*)</term>
+  <listitem>
+<para>Select interpolation mode for grids.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-^</option> (*)</term>
+  <listitem>
+<para>Print a short message about the syntax of the command, then exits.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-?</option> (*)</term>
+  <listitem>
+<para>Print a full usage (help) message, including the explanation of options, then exits.</para>
+
+  </listitem>
+  </varlistentry>
+</variablelist>
+</refsect1>
+
+<refsect1 xml:id='mgd77_field_info'><title>MGD77 FIELD INFO</title>
+
+<table pgwide='0' frame='none'>
+  <caption/>
+  <title></title>
+  <tgroup cols='3' align='center'>
+    <colspec colname='c1'/>
+    <colspec colname='c2'/>
+    <colspec colname='c3'/>
+    <tbody>
+      <row>
+        <entry align='left'><emphasis remap='I'>Field</emphasis></entry>
+        <entry align='left'><emphasis remap='I'>Abbreviation</emphasis></entry>
+        <entry align='left'><emphasis remap='I'>Units</emphasis></entry>
+        <entry align='left'></entry>
+        <entry align='left'></entry>
+      </row>
+      <row>
+        <entry align='left'>Two-way</entry>
+        <entry align='left'>Travel</entry>
+        <entry align='left'>Time</entry>
+        <entry align='left'>twt</entry>
+        <entry align='left'>sec</entry>
+      </row>
+      <row>
+        <entry align='left'>Corrected</entry>
+        <entry align='left'>Depth</entry>
+        <entry align='left'>depth</entry>
+        <entry align='left'>m</entry>
+        <entry align='left'></entry>
+      </row>
+      <row>
+        <entry align='left'>Mag</entry>
+        <entry align='left'>Total</entry>
+        <entry align='left'>Field1</entry>
+        <entry align='left'>mtf1</entry>
+        <entry align='left'>nT</entry>
+      </row>
+      <row>
+        <entry align='left'>Mag</entry>
+        <entry align='left'>Total</entry>
+        <entry align='left'>Field2</entry>
+        <entry align='left'>mtf2</entry>
+        <entry align='left'>nT</entry>
+      </row>
+      <row>
+        <entry align='left'>Residual</entry>
+        <entry align='left'>Magnetic</entry>
+        <entry align='left'>mag</entry>
+        <entry align='left'>nT</entry>
+        <entry align='left'></entry>
+      </row>
+      <row>
+        <entry align='left'>Diurnal</entry>
+        <entry align='left'>Correction</entry>
+        <entry align='left'>diur</entry>
+        <entry align='left'>nT</entry>
+        <entry align='left'></entry>
+      </row>
+      <row>
+        <entry align='left'>Mag</entry>
+        <entry align='left'>Sensor</entry>
+        <entry align='left'>Depth/Alt</entry>
+        <entry align='left'>msens</entry>
+        <entry align='left'>m</entry>
+      </row>
+      <row>
+        <entry align='left'>Observed</entry>
+        <entry align='left'>Gravity</entry>
+        <entry align='left'>gobs</entry>
+        <entry align='left'>mGal</entry>
+        <entry align='left'></entry>
+      </row>
+      <row>
+        <entry align='left'>Eotvos</entry>
+        <entry align='left'>Correction</entry>
+        <entry align='left'>eot</entry>
+        <entry align='left'>mGal</entry>
+        <entry align='left'></entry>
+      </row>
+      <row>
+        <entry align='left'>Free</entry>
+        <entry align='left'>Air</entry>
+        <entry align='left'>Anomaly</entry>
+        <entry align='left'>faa</entry>
+        <entry align='left'>mGal</entry>
+      </row>
+    </tbody>
+  </tgroup>
+</table>
+
+
+
+
+</refsect1>
+
+<refsect1 xml:id='grid_file_info'><title>GRID FILE INFO</title>
+<para>For <option>-g</option> the grids must be in the format used by Sandwell &amp; Smith, which is a spherical Mercator 2-byte grid with no header.
+For <option>-G</option> the grid files can be of any grid type supported by GMT and therefore must contain a GMT header. 
+A correctly formatted *.i2 grid file can be generated using grdraster as shown below.</para>
+<!-- .br -->
+
+<para>gmtset GRIDFILE_SHORTHAND TRUE</para>
+<!-- .br -->
+
+<para>Create/edit .gmt_io file to include the following rows:</para>
+<!-- .br -->
+
+<table pgwide='0' frame='none'>
+  <caption/>
+  <title></title>
+  <tgroup cols='5' align='center'>
+    <colspec colname='c1'/>
+    <colspec colname='c2'/>
+    <colspec colname='c3'/>
+    <colspec colname='c4'/>
+    <colspec colname='c5'/>
+    <tbody>
+      <row>
+        <entry align='left'>\('## GMT I/O shorthand file\"'</entry>
+        <entry align='left'></entry>
+        <entry align='left'></entry>
+        <entry align='left'></entry>
+        <entry align='left'></entry>
+      </row>
+      <row>
+        <entry align='left'>\('## suffix</entry>
+        <entry align='left'>format_id</entry>
+        <entry align='left'>scale</entry>
+        <entry align='left'>offset</entry>
+        <entry align='left'>NaN\"'</entry>
+      </row>
+      <row>
+        <entry align='left'>grd</entry>
+        <entry align='left'>0</entry>
+        <entry align='left'>-</entry>
+        <entry align='left'>-</entry>
+        <entry align='left'>-</entry>
+      </row>
+      <row>
+        <entry align='left'>i2</entry>
+        <entry align='left'>2</entry>
+        <entry align='left'>-</entry>
+        <entry align='left'>-</entry>
+        <entry align='left'>32767</entry>
+      </row>
+    </tbody>
+  </tgroup>
+</table>
+
+
+
+<para>grdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2</para>
+<!-- .br -->
+
+<para>The new grid, etopo5_hdr.i2 in this example, contains a GMT header and can be used in
+the <option>-G</option> option to compare cruise depth with grid values.</para>
+
+</refsect1>
+
+<refsect1 xml:id='e77_error_format'><title>E77 ERROR FORMAT</title>
+<variablelist remap='TP'>
+  <varlistentry>
+  <term><emphasis remap='B'>Header</emphasis></term>
+  <listitem>
+<para>Information pertaining to an entire cruise, such as NGDC and survey institution identification codes,
+cruise examination time, two-way travel time corrector information, data precision warnings, as well as 
+systematic scales, DC shifts and correlation coefficients from global grid comparisons are reported as
+E77 header information.</para>
+<!-- .br -->
+
+<para><emphasis remap='B'>Sample</emphasis>
+<!-- .br -->
+\('## Cruise 08010039 ID 74010908 MGD77 FILE VERSION: 19801230 N_RECS: 3066\"'
+<!-- .br -->
+\('## Examined: Wed Oct  3 16:30:13 2007 by mtchandl\"'
+<!-- .br -->
+\('## Arguments:  -De -Gdepth,/data/GRIDS/etopo5_hdr.i2\"'
+<!-- .br -->
+N Errata table verification status
+<!-- .br -->
+\('## mgd77manage applies corrections if the errata table is verified (toggle 'N' above to 'Y' after review)\"'
+<!-- .br -->
+\('## For instructions on E77 format and usage, see http://gmt.soest.hawaii.edu/mgd77/errata.php\"'
+<!-- .br -->
+\('## Verified by:\"'
+<!-- .br -->
+\('## Comments:\"'
+<!-- .br -->
+\('## Errata: Header\"'
+<!-- .br -->
+Y-E-08010039-H13-02: Invalid Magnetics Sampling Rate: (99) [  ]
+<!-- .br -->
+Y-W-08010039-H13-10: Survey year (1975) outside magnetic reference field IGRF 1965 time range (1965-1970)
+<!-- .br -->
+Y-I-08010039-depth-00: RLS m: 1.00053 b: 0 rms: 127.851 r: 0.973422 significant: 1 decimation: 0
+<!-- .br -->
+Y-W-08010039-twt-09: More recent bathymetry correction table available
+<!-- .br -->
+Y-W-08010039-mtf1-10: Integer precision
+<!-- .br -->
+Y-W-08010039-mag-10: Integer precision</para>
+<!-- .br -->
+
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>Error Record</emphasis></term>
+  <listitem>
+<para>Individual error records have strict format. Included is a time or distance column followed by record number,
+a formatted error code string, and finally a verbose description of errors detected in the record. Three error
+classes are encoded into the error code string with different alphabetic characters representing unique error
+types. See below for error code format description.</para>
+<!-- .br -->
+
+<para><emphasis remap='B'>Format</emphasis>
+<!-- .br -->
+&lt;time/distance&gt; &lt;record number&gt; &lt;error code string&gt; &lt;description&gt;</para>
+<!-- .br -->
+
+<para><emphasis remap='B'>Sample</emphasis>
+<!-- .br -->
+\('## Errata: Data\"'
+<!-- .br -->
+Y	08010039	1975-05-10T22:16:05.88	74	C-0-0	 NAV: excessive speed</para>
+<!-- .br -->
+
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>Error Code Description</emphasis></term>
+  <listitem>
+<para>Each of the three error classes is separated by a dash '-' and described by a
+combination of alphabetic characters or 0 signifying no detected problems.</para>
+<!-- .br -->
+
+<para>Error classes: NAV-VAL-GRAD</para>
+<!-- .br -->
+
+<para><emphasis remap='B'>Error Class Descriptions</emphasis>
+<!-- .br -->
+NAV (navigation):
+<!-- .br -->
+0 - fine
+<!-- .br -->
+A - time out of range
+<!-- .br -->
+B - time decreasing
+<!-- .br -->
+C - excessive speed
+<!-- .br -->
+D - above sea level
+<!-- .br -->
+E - lat undefined
+<!-- .br -->
+F - lon undefined</para>
+<!-- .br -->
+
+<para>VAL (value):
+<!-- .br -->
+0 - fine
+<!-- .br -->
+K - twt invalid
+<!-- .br -->
+L - depth invalid
+<!-- .br -->
+O - mtf1 invalid
+<!-- .br -->
+etc.</para>
+<!-- .br -->
+
+<para>GRAD (gradient):
+<!-- .br -->
+0 - fine
+<!-- .br -->
+K - d[twt] excessive
+<!-- .br -->
+L - d[depth] excessive
+<!-- .br -->
+O - d[mtf1] excessive
+<!-- .br -->
+etc.</para>
+<!-- .br -->
+
+<para>The NAV error class has unique cases while VAL and GRAD classes are
+described by alphabetic characters for each of the 24 numeric fields in MGD77 format order.</para>
+
+<para>  MGD77 bit-pattern w/ E77 alpha characters
+<!-- .br -->
+|-------------------------------------------------|----------|
+<!-- .br -->
+| X W V U T S R Q P O N M L K J I H G F E D C B A | E77 Code |
+<!-- .br -->
+| - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|
+<!-- .br -->
+| n f e g m d m m m m b b d t p l l m h d m y t d | F  I     |
+<!-- .br -->
+| q a o o s i s a t t t c e w t o a i o a o e z r | i  D     |
+<!-- .br -->
+| c a t b d u e g f f c c p t c n t n u y n a   t | e        |
+<!-- .br -->
+|       s   r n   2 1     t           r   t r     | l        |
+<!-- .br -->
+|             s           h               h       | d        |
+<!-- .br -->
+| - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|
+<!-- .br -->
+| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 | Bit place|
+<!-- .br -->
+| - G C G C C - G G G - - G G - - - T T T T T - - | Bit type |
+<!-- .br -->
+|-------------------------------------------------|----------|
+<!-- .br -->
+  Bit types: (G)eophysical, (C)orrection, (T)ime</para> 
+<!-- .br -->
+
+  </listitem>
+  </varlistentry>
+</variablelist>
+</refsect1>
+
+<refsect1 xml:id='examples'><title>EXAMPLES</title>
+<para>To scan for excessive values or gradients, try</para>
+<!-- .br -->
+
+<para><command>mgd77sniffer</command> 08010001</para>
+<!-- .br -->
+
+<para>To dump cruise gradients, try</para>
+<!-- .br -->
+
+<para><command>mgd77sniffer</command> 08010001 -Ds</para>
+<!-- .br -->
+
+<para>To compare cruise depth with ETOPO5 bathymetry and gravity with Sandwell/Smith 2 min gravity version 11, try</para>
+<!-- .br -->
+
+<para><command>mgd77sniffer</command> 08010001 <option>-G</option>depth,/data/GRIDS/etopo5_hdr.i2 <option>-g</option>faa,/data/GRIDS/grav.11.2.img,0.1,1</para>
+<!-- .br -->
+
+</refsect1>
+
+<refsect1 xml:id='see_also'><title>SEE ALSO</title>
+<para><citerefentry><refentrytitle>mgd77list</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>mgd77track</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+<citerefentry><refentrytitle>x2sys_init</refentrytitle><manvolnum>1</manvolnum></citerefentry></para>
+</refsect1>
+
+<refsect1 xml:id='references'><title>REFERENCES</title>
+<para>Wessel, P., W. H. F. Smith, R. Scharroo, and J. Luis,  2011, The Generic Mapping Tools (GMT) version
+5.0.0b Technical Reference &amp; Cookbook, SOEST/NOAA.
+<!-- .br -->
+Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic Mapping
+Tools Released, EOS Trans., AGU, 79 (47), p. 579.
+<!-- .br -->
+Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic Mapping Tools
+Released, EOS Trans., AGU, 76 (33), p. 329.
+<!-- .br -->
+Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic Mapping Tools
+Released, http://www.agu.org/eos_elec/95154e.html, Copyright 1995 by the
+American Geophysical Union.
+<!-- .br -->
+Wessel, P., and W. H. F. Smith, 1991, Free Software Helps Map and Display Data,
+EOS Trans., AGU, 72 (41), p. 441.
+<!-- .br -->
+The Marine Geophysical Data Exchange Format - MGD77, see
+<emphasis remap='I'>http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt</emphasis>.</para>
+</refsect1>
+</refentry>
+

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<section xmlns="http://docbook.org/ns/docbook"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xml:id="sec-conf-files">
+
+  <title>Configuration files</title>
+
+    <xi:include href="gmt.conf.5.xml" />
+    <!-- <xi:include href="gmtcommands.5.xml" /> -->
+
+</section>

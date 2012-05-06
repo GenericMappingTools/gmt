@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<info xmlns="http://docbook.org/ns/docbook"
+  xml:id="info">
+
+  <title>GMT User Guide</title>
+
+  <subtitle>Version @GMT_PACKAGE_VERSION_WITH_SVN_REVISION@</subtitle>
+
+  <author>
+    <personname>
+      <firstname>GMT</firstname>
+      <surname>Team</surname>
+    </personname>
+    <affiliation>
+      <orgname>The University of Hawaii</orgname>
+      <orgdiv>School of Ocean and Earth Science and Technology</orgdiv>
+    </affiliation>
+    <contrib>Author</contrib>
+  </author>
+
+  <copyright>
+    <year>1991–@YEAR@</year>
+    <holder>P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis</holder>
+  </copyright>
+
+  <date>@MONTHNAME@ @YEAR@</date>
+</info>

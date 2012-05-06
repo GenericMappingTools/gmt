@@ -1,0 +1,1197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- lifted from troff+man by doclifter -->
+<refentry xmlns='http://docbook.org/ns/docbook' version='5.0' xml:lang='en' xml:id='gmtconf5'>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<refmeta>
+<refentrytitle>GMT.CONF</refentrytitle>
+<manvolnum>5</manvolnum>
+<refmiscinfo class='source'>Mar 22 2012</refmiscinfo>
+<refmiscinfo class='manual'>GMT 5.0.1b (SVN)</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>gmt.conf</refname>
+<refpurpose>Configuration for GMT</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+
+<refsect1 xml:id='description'><title>DESCRIPTION</title>
+<para>The following is a list of the parameters that are user-definable in <emphasis remap='B'>GMT</emphasis>.  The
+parameter names are always given in UPPER CASE.  The parameter values are
+case-insensitive unless otherwise noted.  The
+system defaults are given in brackets [ for SI (and US) ].  Those marked <emphasis remap='B'>*</emphasis> can be set on the command
+line as well (the corresponding option is given in parentheses).  Note that default distances and
+lengths below are given in both cm or inch; the chosen default depends on your choice of default
+unit (see <emphasis remap='B'>PROJ_LENGTH_UNIT</emphasis>).  You can explicitly specify the unit used for distances and
+lengths by appending <emphasis remap='B'>c</emphasis> (cm), <emphasis remap='B'>i</emphasis> (inch), or <emphasis remap='B'>p</emphasis> (points).
+When no unit is indicated the value will be assumed to be in the unit set by <emphasis remap='B'>PROJ_LENGTH_UNIT</emphasis>.
+Several parameters take only <emphasis remap='B'>true</emphasis> or <emphasis remap='B'>false</emphasis>.
+Finally, most of these parameters can be changed on-the-fly via the <option>--PARAMETER</option>=<emphasis remap='I'>VALUE</emphasis> option to any
+<emphasis remap='B'>GMT</emphasis> program.  However, a few are static and are only read via the <emphasis remap='B'>gmt.conf</emphasis> file; these
+are labeled (static).</para>
+</refsect1>
+
+<refsect1 xml:id='common_specifications'><title>COMMON SPECIFICATIONS</title>
+<para>The full explanation for how to specify pens, pattern fills, colors, and fonts can be found in the <emphasis remap='B'>gmt</emphasis> man page.</para>
+<variablelist remap='TP'>
+  <varlistentry>
+  <term><emphasis remap='B'>COLOR_BACKGROUND</emphasis></term>
+  <listitem>
+<para>Color used for the background of images (i.e., when z &lt; lowest colortable entry)  [black].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>COLOR_FOREGROUND</emphasis></term>
+  <listitem>
+<para>Color used for the foreground of images (i.e., when z &gt; highest colortable entry)  [white].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>COLOR_HSV_MAX_SATURATION</emphasis></term>
+  <listitem>
+<para>Maximum saturation (0-1) assigned for most positive intensity value [0.1].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>COLOR_HSV_MIN_SATURATION</emphasis></term>
+  <listitem>
+<para>Minimum saturation (0-1) assigned for most negative intensity value [1.0].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>COLOR_HSV_MAX_VALUE</emphasis></term>
+  <listitem>
+<para>Maximum value (0-1) assigned for most positive intensity value [1.0].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>COLOR_HSV_MIN_VALUE</emphasis></term>
+  <listitem>
+<para>Minimum value (0-1) assigned for most negative intensity value [0.3].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>COLOR_MODEL</emphasis></term>
+  <listitem>
+<para>Selects in which color space a color palette should be interpolated.
+By default, color interpolation takes place directly on the RGB values which can produce
+some unexpected hues, whereas interpolation directly on the HSV values better preserves those hues.
+The choices are:
+<emphasis remap='B'>none</emphasis> (default: use whatever the COLOR_MODEL setting in the color palette file demands),
+<emphasis remap='B'>rgb</emphasis> (force interpolation in RGB),
+<emphasis remap='B'>hsv</emphasis> (force interpolation in HSV),
+<emphasis remap='B'>cmyk</emphasis> (assumes colors are in CMYK but interpolates in RGB).</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>COLOR_NAN</emphasis></term>
+  <listitem>
+<para>Color used for the non-defined areas of images (i.e., where z == NaN)  [127.5].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FONT</emphasis></term>
+  <listitem>
+<para>Sets the default for all fonts, except FONT_LOGO. This setting is not included in the <emphasis remap='B'>gmt.conf</emphasis> file.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FONT_ANNOT_PRIMARY</emphasis></term>
+  <listitem>
+<para>Font used for primary annotations, etc. [12p,Helvetica,black]. 
+When <emphasis remap='B'>+</emphasis> is prepended, scale fonts, offsets and ticklengths relative to <emphasis remap='B'>FONT_ANNOT_PRIMARY</emphasis>.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FONT_ANNOT_SECONDARY</emphasis></term>
+  <listitem>
+<para>Font to use for time axis secondary annotations [14p,Helvetica,black].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FONT_LABEL</emphasis></term>
+  <listitem>
+<para>Font to use when plotting labels below axes [16p,Helvetica,black].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FONT_LOGO</emphasis></term>
+  <listitem>
+<para>Font to use for text plotted as part of the GMT time logo [8p,Helvetica,black].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FONT_TITLE</emphasis></term>
+  <listitem>
+<para>Font to use when plotting titles over graphs [24p,Helvetica,black].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_CLOCK_IN</emphasis></term>
+  <listitem>
+<para>Formatting template that indicates how an input clock string is formatted.  This template
+is then used to guide the reading of clock strings in data fields.  To properly decode
+12-hour clocks, append am or pm (or upper case) to match your data records. As examples,
+try hh:mm, hh:mm:ssAM, etc. [hh:mm:ss].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_CLOCK_MAP</emphasis></term>
+  <listitem>
+<para>Formatting template that indicates how an output clock string is to be plotted.  This template
+is then used to guide the formatting of clock strings in plot annotations.  See <emphasis remap='B'>FORMAT_CLOCK_OUT</emphasis>
+for details. [hh:mm:ss].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_CLOCK_OUT</emphasis></term>
+  <listitem>
+<para>Formatting template that indicates how an output clock string is to be formatted.  This template
+is then used to guide the writing of clock strings in data fields.  To use a floating point
+format for the smallest unit (e.g. seconds), append .xxx, where the number of x indicates
+the desired precision.  If no floating point is indicated then the smallest specified unit
+will be rounded off to nearest integer.  For 12-hour clocks, append am, AM, a.m., or A.M. (<emphasis remap='B'>GMT</emphasis>
+will replace a|A with p|P for pm).  If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
+printed without leading zeros (default uses fixed width formats).  As examples, try
+hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc. [hh:mm:ss].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_DATE_IN</emphasis></term>
+  <listitem>
+<para>Formatting template that indicates how an input date string is formatted.  This template
+is then used to guide the reading of date strings in data fields.  You may specify either
+Gregorian calendar format or ISO week calendar format.  Gregorian calendar: Use any
+combination of yyyy (or yy for 2-digit years; if so see <emphasis remap='B'>TIME_Y2K_OFFSET_YEAR</emphasis>), mm (or o
+for abbreviated month name in the current time language),
+and dd, with or without delimiters.  For day-of-year data, use jjj instead of mm and/or dd.
+Examples can be ddmmyyyy, yy-mm-dd, dd-o-yyyy, yyyy/dd/mm, yyyy-jjj, etc.
+ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
+day.  Either template must be consistent, e.g., you cannot specify months if you do not specify
+years.  Examples are yyyyWwwd, yyyy-Www, etc. [yyyy-mm-dd].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_DATE_MAP</emphasis></term>
+  <listitem>
+<para>Formatting template that indicates how an output date string is to be plotted.  This template
+is then used to guide the plotting of date strings in data fields.  See <emphasis remap='B'>FORMAT_DATE_OUT</emphasis>
+for details.  In addition, you may use a single o instead of mm (to plot month name) and
+u instead of W[-]ww to plot "Week ##".  Both of these text strings will be affected by
+the <emphasis remap='B'>TIME_LANGUAGE</emphasis>, <emphasis remap='B'>FORMAT_TIME_PRIMARY_MAP</emphasis> and <emphasis remap='B'>FORMAT_TIME_SECONDARY_MAP</emphasis>
+setting.  [yyyy-mm-dd].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_DATE_OUT</emphasis></term>
+  <listitem>
+<para>Formatting template that indicates how an output date string is to be formatted.  This template
+is then used to guide the writing of date strings in data fields.  You may specify either
+Gregorian calendar format or ISO week calendar format.  Gregorian calendar: Use any
+combination of yyyy (or yy for 2-digit years; if so see <emphasis remap='B'>TIME_Y2K_OFFSET_YEAR</emphasis>), mm (or o for
+abbreviated month name in the current time language),
+and dd, with or without delimiters.  For day-of-year data, use jjj instead of mm and/or dd.
+As examples, try yy/mm/dd, yyyy=jjj, dd-o-yyyy, dd-mm-yy, yy-mm, etc.
+ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
+day.  Either template must be consistant, e.g., you cannot specify months if you do not specify
+years.  As examples, try yyyyWww, yy-W-ww-d, etc. If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
+printed without leading zeros (default uses fixed width formats) [yyyy-mm-dd].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_GEO_MAP</emphasis></term>
+  <listitem>
+<para>Formatting template that indicates how an output geographical coordinate is to be plotted.  This template
+is then used to guide the plotting of geographical coordinates in data fields.  See 
+<emphasis remap='B'>FORMAT_GEO_OUT</emphasis> for details.  In addition, you can append A which plots the absolute value of 
+the coordinate.  The default is ddd:mm:ss.  Not all items may be plotted as this depends on the annotation 
+interval.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_GEO_OUT</emphasis></term>
+  <listitem>
+<para>Formatting template that indicates how an output geographical coordinate is to be formatted.  This template
+is then used to guide the writing of geographical coordinates in data fields.  The template is in
+general of the form [+|-]D or [+|-]ddd[:mm[:ss]][.xxx][F].  By default, longitudes will be reported in the -180/+180 range.
+The various terms have the following purpose:</para>
+
+
+<para>+	Output longitude in the 0 to 360 range [-180/+180]</para>
+
+<para>-	Output longitude in the -360 to 0 range [-180/+180]</para>
+
+<para>D	Use <emphasis remap='B'>FORMAT_FLOAT_OUT</emphasis> for floating point degrees.</para>
+
+<para>ddd	Fixed format integer degrees</para>
+
+<para>:	delimiter used</para>
+
+<para>mm	Fixed format integer arc minutes</para>
+
+<para>ss	Fixed format integer arc seconds</para>
+
+<para>.xxx	Floating fraction of previous integer field, fixed width.</para>
+
+<para>F	Encode sign using WESN suffix</para>
+
+<para>G	Same as F but with a leading space before suffix</para>
+
+
+<para>The default is D.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_FLOAT_MAP</emphasis></term>
+  <listitem>
+<para>Format (C language printf syntax) to be used when plotting double precision floating point numbers on maps.
+For geographic coordinates, see <emphasis remap='B'>FORMAT_GEO_MAP</emphasis>. [%.12lg].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_FLOAT_OUT</emphasis></term>
+  <listitem>
+<para>Format (C language printf syntax) to be used when printing double precision floating point numbers to output files.
+For geographic coordinates, see <emphasis remap='B'>FORMAT_GEO_OUT</emphasis>. [%.12lg].  To give some columns a separate format, supply one or
+more comma-separated <emphasis remap='I'>cols</emphasis>:<emphasis remap='I'>format</emphasis> specifications, where <emphasis remap='I'>cols</emphasis> can be specific columns (e.g., 5 for 6th since 0 is the first)
+or a range of columns (e.g., 3-7).  The last specification without column information will override the format
+for all other columns.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_TIME_LOGO</emphasis></term>
+  <listitem>
+<para>Defines the format of the time information in the UNIX time stamp. This format is parsed by the C function <emphasis remap='B'>strftime</emphasis>,
+so that virtually any text can be used (even not containing any time information)  [%Y %b %d %H:%M:%S].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_TIME_PRIMARY_MAP</emphasis></term>
+  <listitem>
+<para>Controls how primary month-, week-, and weekday-names are formatted.  Choose among full, abbreviated, and
+character.  If the leading f, a, or c are replaced with F, A, and C the entire annotation will be in upper case  [full].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>FORMAT_TIME_SECONDARY_MAP</emphasis></term>
+  <listitem>
+<para>Controls how secondary month-, week-, and weekday-names are formatted.  Choose among full, abbreviated, and
+character.  If the leading f, a, or c are replaced with F, A, and C the entire annotation will be in upper case  [full].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>GMT_FFT</emphasis></term>
+  <listitem>
+<para>Determines which Fast Fourier Transform should be used among those that have been configured during installation.
+Choose from auto (pick the most suitable for the task among available algorithms), brenner (GMT's version of Normal Brenner's
+Fortran multi-dimensional FFT), fftw (The Fastest Fourier Transform in the West), accelerate (Use the Accelerate Framework under OS X), fftpack
+(use Paul N. Swarztrauber FFT pack translated from Fortran) or perflib (Sun Performance Library under Solaris) [auto].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>GMT_HISTORY</emphasis></term>
+  <listitem>
+<para>If true, passes the history of past common command options via the hidden .gmtcommands file [true].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>GMT_INTERPOLANT</emphasis></term>
+  <listitem>
+<para>Determines if linear (linear), Akima's spline (akima), natural cubic spline (cubic) or\"'
+no interpolation (none) should be used for 1-D interpolations in various programs [akima].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>GMT_TRIANGULATE</emphasis></term>
+  <listitem>
+<para>Determines if we use the <emphasis remap='B'>Watson</emphasis> [Default] or <emphasis remap='B'>Shewchuk</emphasis> algorithm (if configured during installation) for triangulation.
+Note that Shewchuk is required for operations involving Voronoi constructions.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>GMT_VERBOSE</emphasis></term>
+  <listitem>
+<para>(<emphasis remap='B'>* -V</emphasis>) Determines the level of verbosity used by <emphasis remap='B'>GMT</emphasis> programs.  Choose among 5 levels; each level
+adds to the verbosity of the lower levels: 0 = silence, 1 = fatal errors, 2 = warnings and progress reports,
+3 = extensive progress reports, 4 = debugging messages  [1].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>IO_COL_SEPARATOR</emphasis></term>
+  <listitem>
+<para>This setting determines what character will separate ASCII output data columns written by <emphasis remap='B'>GMT</emphasis>.  Choose
+from tab, space, comma, and none [tab].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>IO_GRIDFILE_FORMAT</emphasis></term>
+  <listitem>
+<para>Default file format for grids, with optional scale, offset and invalid value, written as
+<emphasis remap='I'>ff</emphasis>/<emphasis remap='I'>scale</emphasis>/<emphasis remap='I'>offset</emphasis>/<emphasis remap='I'>invalid</emphasis>. The 2-letter format indicator can be one of [<emphasis remap='B'>bcnsr</emphasis>][<emphasis remap='B'>bsifd</emphasis>]. The first
+letter indicates native <emphasis remap='B'>GMT</emphasis> binary, old format netCDF, COARDS-compliant netCDF, Surfer format or Sun
+Raster format. The second letter stands for byte, short, int, float and double, respectively. When
+/<emphasis remap='I'>invalid</emphasis> is omitted the appropriate value for the given format is used (NaN or largest negative).
+When /<emphasis remap='I'>scale</emphasis>/<emphasis remap='I'>offset</emphasis> is omitted, /1.0/0.0 is used. [nf].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>IO_GRIDFILE_SHORTHAND</emphasis></term>
+  <listitem>
+<para>If true, all grid file names are examined to see if they use the file extension
+shorthand discussed in Section 4.17 of the <emphasis remap='B'>GMT</emphasis> Technical Reference and Cookbook.
+If false, no filename expansion is done [false].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>IO_HEADER</emphasis></term>
+  <listitem>
+<para>(<emphasis remap='B'>* -H</emphasis>) Specifies whether input/output ASCII files have header record(s) or not  [false].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>IO_LONLAT_TOGGLE</emphasis></term>
+  <listitem>
+<para>(<emphasis remap='B'>* -:</emphasis>) Set if the first two columns of input and output files contain (latitude,longitude) or (y,x) rather than the expected
+(longitude,latitude) or (x,y).  false means we have (x,y) both on input and output.  true means both input and output
+should be (y,x).  IN means only input has (y,x), while OUT means only output should be (y,x).  [false].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>IO_N_HEADER_RECS</emphasis></term>
+  <listitem>
+<para>Specifies how many header records to expect if <option>-h</option> is used  [1].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>IO_NAN_RECORDS</emphasis></term>
+  <listitem>
+<para>Determines what happens when input records containing NaNs for <emphasis remap='I'>x</emphasis> or <emphasis remap='I'>y</emphasis> (and in some
+cases <emphasis remap='I'>z</emphasis>) are read.  Choose between <emphasis remap='B'>skip</emphasis>, which will simply report how many bad
+records were skipped, and <emphasis remap='B'>pass</emphasis> [Default], which will pass these records on to the calling programs.
+For most programs this will result in output records with NaNs as well, but some will interpret these
+NaN records to indicate gaps in a series; programs may then use that information to detect segmentation (if
+applicable).</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>IO_SEGMENT_MARKER</emphasis></term>
+  <listitem>
+<para>This holds the character we expect to indicate a segment header in an incoming ASCII data or text table  [&gt;].  If this
+marker should be different for output then append another character for the output segment marker.  The two
+characters must be separated by a comma.  Two marker characters have special meaning: B means "blank line" and
+will treat blank lines as initiating a new segment, whereas N means "NaN record" and will treat records with
+all NaNs as initiating a new segment.  If you choose B or N for the output marker then the normal GMT segment
+header is replaced by a blank or NaN record, respectively, and no segment header information is written. To use B or N as regular segment markers you must escape them with a leading backslash.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_ANNOT_MIN_ANGLE</emphasis></term>
+  <listitem>
+<para>If the angle between the map boundary and the annotation baseline is less than this minimum value (in degrees), the
+annotation is not plotted (this may occur for certain oblique projections.)  Give a value in the
+range 0-90. [20]</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_ANNOT_MIN_SPACING</emphasis></term>
+  <listitem>
+<para>If an annotation would be plotted less than this minimum distance from its closest neighbor, the
+annotation is not plotted (this may occur for certain oblique projections.) [0p]</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_ANNOT_OBLIQUE</emphasis></term>
+  <listitem>
+<para>This integer is a sum of 6 bit flags (most of which only are relevant for oblique projections):
+If bit 1 is set (1), annotations will occur wherever a gridline crosses the
+map boundaries, else longitudes will be annotated on the lower and upper boundaries only, and latitudes will be
+annotated on the left and right boundaries only.  If bit 2 is set (2), then longitude annotations will
+be plotted horizontally.  If bit 3 is set (4), then latitude annotations will be plotted horizontally.
+If bit 4 is set (8), then oblique tickmarks are extended to give a projection equal to the specified tick length.
+If bit 5 is set (16), tickmarks will be drawn normal to the border regardless of gridline angle.
+If bit 6 is set (32), then latitude annotations will be plotted parallel to the border.
+To set a combination of these, add up the values in parentheses. [1].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_ANNOT_OFFSET_PRIMARY</emphasis></term>
+  <listitem>
+<para>Distance from end of tickmark to start of annotation [5p].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_ANNOT_OFFSET_SECONDARY</emphasis></term>
+  <listitem>
+<para>Distance from base of primary annotation to the top of the secondary annotation [5p] (Only
+applies to time axes with both primary and secondary annotations).</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_ANNOT_ORTHO</emphasis></term>
+  <listitem>
+<para>Determines which axes will get their annotations (for linear projections) plotted orthogonally to the axes.
+Combine any <emphasis remap='B'>w</emphasis>, <emphasis remap='B'>e</emphasis>, <emphasis remap='B'>s</emphasis>, <emphasis remap='B'>n</emphasis>, <emphasis remap='B'>z</emphasis> (uppercase allowed as well). [we].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_DEFAULT_PEN</emphasis></term>
+  <listitem>
+<para>Sets the default of all pens related to <option>-W</option> options. Prepend <emphasis remap='B'>+</emphasis> to overrule the color of the
+parameters <emphasis remap='B'>MAP_GRID_PEN_PRIMARY</emphasis>, <emphasis remap='B'>MAP_GRID_PEN_SECONDARY</emphasis>, <emphasis remap='B'>MAP_FRAME_PEN</emphasis>, <emphasis remap='B'>MAP_TICK_PEN_PRIMARY</emphasis>, and <emphasis remap='B'>MAP_TICK_PEN_SECONDARY</emphasis>
+by the color of <emphasis remap='B'>MAP_DEFAULT_PEN</emphasis>  [default,black].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_DEGREE_SYMBOL</emphasis></term>
+  <listitem>
+<para>Determines what symbol is used to plot the degree symbol on geographic map annotations.  Choose between
+ring, degree, colon, or none [ring].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_FRAME_AXES</emphasis></term>
+  <listitem>
+<para>Sets which axes to draw and annotate.  Combine any uppercase <emphasis remap='B'>W</emphasis>, <emphasis remap='B'>E</emphasis>, <emphasis remap='B'>S</emphasis>, <emphasis remap='B'>N</emphasis>, <emphasis remap='B'>Z</emphasis> to draw and annotate
+west, east, south, north and/or vertical (perspective view only) axis.  Use lower case to draw the axis only, but not annotate.
+Add an optional <emphasis remap='B'>+</emphasis> to draw a cube of axes in perspective view.
+[WESN].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_FRAME_PEN</emphasis></term>
+  <listitem>
+<para>Pen attributes used to draw plain map frame [thicker,black].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_FRAME_TYPE</emphasis></term>
+  <listitem>
+<para>Choose between <emphasis remap='B'>inside</emphasis>, <emphasis remap='B'>plain</emphasis> and <emphasis remap='B'>fancy</emphasis> (thick boundary, alternating black/white frame; append <emphasis remap='B'>+</emphasis> for rounded corners)  [fancy].
+For some map projections (e.g., Oblique Mercator), plain is the only option even if fancy is set as default.
+In general, fancy only applies to situations where the projected x and y directions parallel the lon and lat
+directions (e.g., rectangular projections, polar projections).  For situations where all boundary ticks and annotations
+must be inside the maps (e.g., for preparing geotiffs), chose <emphasis remap='B'>inside</emphasis>.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_FRAME_WIDTH</emphasis></term>
+  <listitem>
+<para>Width (&gt; 0) of map borders for fancy map frame [5p].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_GRID_CROSS_SIZE_PRIMARY</emphasis></term>
+  <listitem>
+<para>Size (&gt;= 0) of grid cross at lon-lat intersections.  0 means draw continuous gridlines
+instead [0p].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_GRID_CROSS_SIZE_SECONDARY</emphasis></term>
+  <listitem>
+<para>Size (&gt;= 0) of grid cross at secondary lon-lat intersections.  0 means draw continuous gridlines
+instead [0p].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_GRID_PEN_PRIMARY</emphasis></term>
+  <listitem>
+<para>Pen attributes used to draw primary grid lines in dpi units or points (append p) [default,black].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_GRID_PEN_SECONDARY</emphasis></term>
+  <listitem>
+<para>Pen attributes used to draw secondary grid lines in dpi units or points (append p) [thinner,black].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_LABEL_OFFSET</emphasis></term>
+  <listitem>
+<para>Distance from base of axis annotations to the top of the axis label [8p].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_LINE_STEP</emphasis></term>
+  <listitem>
+<para>Determines the maximum length (&gt; 0) of individual straight line-segments when drawing arcuate lines  [0.75p]</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_LOGO</emphasis></term>
+  <listitem>
+<para>(<emphasis remap='B'>* -U</emphasis>) Specifies if a GMT logo with system timestamp should be plotted
+at the lower left corner of the plot  [false].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_LOGO_POS</emphasis></term>
+  <listitem>
+<para>(<emphasis remap='B'>* -U</emphasis>) Sets the justification and the position of the logo/timestamp box relative to the current plots lower left corner
+of the plot  [BL/-54p/-54p].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_ORIGIN_X</emphasis></term>
+  <listitem>
+<para>(<emphasis remap='B'>* -X</emphasis>) Sets the x-coordinate of the origin on the paper for a new plot [1i].
+For an overlay, the default offset is 0i.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_ORIGIN_Y</emphasis></term>
+  <listitem>
+<para>(<emphasis remap='B'>* -Y</emphasis>) Sets the y-coordinate of the origin on the paper for a new plot [1i].
+For an overlay, the default offset is 0i.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_POLAR_CAP</emphasis></term>
+  <listitem>
+<para>Controls the appearance of gridlines near the poles for all azimuthal projections and a few others in which
+the geographic poles are plotted as points (Lambert Conic, Hammer, Mollweide, Sinusoidal, and van der Grinten).  Specify either none (in which
+case there is no special handling) or <emphasis remap='I'>pc_lat</emphasis>/<emphasis remap='I'>pc_dlon</emphasis>.  In that case, normal gridlines are only drawn between
+the latitudes -<emphasis remap='I'>pc_lat</emphasis>/+<emphasis remap='I'>pc_lat</emphasis>, and above those latitudes the gridlines are spaced at the (presumably coarser)
+<emphasis remap='I'>pc_dlon</emphasis> interval; the two domains are separated by a small circle drawn at the <emphasis remap='I'>pc_lat</emphasis> latitude [85/90].
+Note for r-theta (polar) projection where r = 0 is at the center of the plot the meaning of the cap is reversed, i.e.,
+the default 85/90 will draw a r = 5 radius circle at the center of the map with less frequent radial lines there.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_SCALE_HEIGHT</emphasis></term>
+  <listitem>
+<para>Sets the height (&gt; 0) on the map of the map scale bars drawn by various programs [5p].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_TICK_LENGTH_PRIMARY</emphasis></term>
+  <listitem>
+<para>The length of a primary major/minor tickmarks  [5p/2.5p].
+If only the first value is set, the second is assumed to be 50% of the first.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_TICK_LENGTH_SECONDARY</emphasis></term>
+  <listitem>
+<para>The length of a secondary major/minor tickmarks  [15p/3.75p].
+If only the first value is set, the second is assumed to be 25% of the first.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_TICK_PEN_PRIMARY</emphasis></term>
+  <listitem>
+<para>Pen attributes to be used for primary tickmarks in dpi units or points (append p) [thinner,black].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_TICK_PEN_SECONDARY</emphasis></term>
+  <listitem>
+<para>Pen attributes to be used for secondary tickmarks in dpi units or points (append p) [thinner,black].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_TITLE_OFFSET</emphasis></term>
+  <listitem>
+<para>Distance from top of axis annotations (or axis label, if present) to base of plot title [14p].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>MAP_VECTOR_SHAPE</emphasis></term>
+  <listitem>
+<para>Determines the shape of the head of a vector.   Normally (i.e., for vector_shape = 0),
+the head will be triangular, but can be changed to an arrow (1) or an open V (2).
+Intermediate settings give something in between. Negative values (up to -2) are allowed as well  [0].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PROJ_ELLIPSOID</emphasis></term>
+  <listitem>
+<para>The (case sensitive) name of the ellipsoid used for the map projections  [WGS-84].  Choose among:</para>
+
+<para>Airy: Applies to Great Britain (1830)</para>
+
+<para>Airy-Ireland: Applies to Ireland in 1965 (1830)</para>
+
+<para>Andrae: Applies to Denmark and Iceland (1876)</para>
+
+<para>APL4.9: Appl. Physics (1965)</para>
+
+<para>ATS77: Average Terrestrial System, Canada Maritime provinces (1977)</para>
+
+<para>Australian: Applies to Australia (1965)</para>
+
+<para>Bessel: Applies to Central Europe, Chile, Indonesia (1841)</para>
+
+<para>Bessel-Namibia: Same as Bessel-Schwazeck (1841)</para>
+
+<para>Bessel-NGO1948: Modified Bessel for NGO 1948 (1841)</para>
+
+<para>Bessel-Schwazeck: Applies to Namibia (1841)</para>
+
+<para>Clarke-1858: Clarke's early ellipsoid (1858)</para>
+
+<para>Clarke-1866: Applies to North America, the Philippines (1866)</para>
+
+<para>Clarke-1866-Michigan: Modified Clarke-1866 for Michigan (1866)</para>
+
+<para>Clarke-1880: Applies to most of Africa, France (1880)</para>
+
+<para>Clarke-1880-Arc1950: Modified Clarke-1880 for Arc 1950 (1880)</para>
+
+<para>Clarke-1880-IGN: Modified Clarke-1880 for IGN (1880)</para>
+
+<para>Clarke-1880-Jamaica: Modified Clarke-1880 for Jamaica (1880)</para>
+
+<para>Clarke-1880-Merchich: Modified Clarke-1880 for Merchich (1880)</para>
+
+<para>Clarke-1880-Palestine: Modified Clarke-1880 for Palestine (1880)</para>
+
+<para>CPM : Comm. des Poids et Mesures, France (1799)</para>
+
+<para>Delambre: Applies to Belgium (1810)</para>
+
+<para>Engelis: Goddard Earth Models (1985)</para>
+
+<para>Everest-1830: India, Burma, Pakistan, Afghanistan, Thailand (1830)</para>
+
+<para>Everest-1830-Kalianpur: Modified Everest for Kalianpur (1956) (1830)</para>
+
+<para>Everest-1830-Kertau: Modified Everest for Kertau, Malaysia &amp; Singapore (1830)</para>
+
+<para>Everest-1830-Pakistan: Modified Everest for Pakistan (1830)</para>
+
+<para>Everest-1830-Timbalai: Modified Everest for Timbalai, Sabah Sarawak (1830)</para>
+
+<para>Fischer-1960: Used by NASA for Mercury program (1960)</para>
+
+<para>Fischer-1960-SouthAsia: Same as Modified-Fischer-1960 (1960)</para>
+
+<para>Fischer-1968: Used by NASA for Mercury program (1968)</para>
+
+<para>FlatEarth: As Sphere, but implies fast "Flat Earth" distance calculations (1984)</para>
+
+<para>GRS-67: International Geodetic Reference System (1967)</para>
+
+<para>GRS-80: International Geodetic Reference System (1980)</para>
+
+<para>Hayford-1909: Same as the International 1924 (1909)</para>
+
+<para>Helmert-1906: Applies to Egypt (1906)</para>
+
+<para>Hough: Applies to the Marshall Islands (1960)</para>
+
+<para>Hughes-1980: Hughes Aircraft Company for DMSP SSM/I grid products (1980)</para>
+
+<para>IAG-75: International Association of Geodesy (1975)</para>
+
+<para>Indonesian: Applies to Indonesia (1974)</para>
+
+<para>International-1924: Worldwide use (1924)</para>
+
+<para>International-1967: Worldwide use (1967)</para>
+
+<para>Kaula: From satellite tracking (1961)</para>
+
+<para>Krassovsky: Used in the (now former) Soviet Union (1940)</para>
+
+<para>Lerch: For geoid modelling (1979)</para>
+
+<para>Maupertius: Really old ellipsoid used in France (1738)</para>
+
+<para>Mercury-1960: Same as Fischer-1960 (1960)</para>
+
+<para>MERIT-83: United States Naval Observatory (1983)</para>
+
+<para>Modified-Airy: Same as Airy-Ireland (1830)</para>
+
+<para>Modified-Fischer-1960: Applies to Singapore (1960)</para>
+
+<para>Modified-Mercury-1968: Same as Fischer-1968 (1968)</para>
+
+<para>NWL-10D: Naval Weapons Lab (Same as WGS-72) (1972)</para>
+
+<para>NWL-9D: Naval Weapons Lab (Same as WGS-66) (1966)</para>
+
+<para>OSU86F: Ohio State University (1986)</para>
+
+<para>OSU91A: Ohio State University (1991)</para>
+
+<para>Plessis: Old ellipsoid used in France (1817)</para>
+
+<para>SGS-85: Soviet Geodetic System (1985)</para>
+
+<para>South-American: Applies to South America (1969)</para>
+
+<para>Sphere: The mean radius in WGS-84 (for spherical/plate tectonics applications) (1984)</para>
+
+<para>Struve: Friedrich Georg Wilhelm Struve (1860)</para>
+
+<para>TOPEX: Used commonly for altimetry (1990)</para>
+
+<para>Walbeck: First least squares solution by Finnish astronomer (1819)</para>
+
+<para>War-Office: Developed by G. T. McCaw (1926)</para>
+
+<para>WGS-60: World Geodetic System (1960)</para>
+
+<para>WGS-66: World Geodetic System (1966)</para>
+
+<para>WGS-72: World Geodetic System (1972)</para>
+
+<para>WGS-84: World Geodetic System [Default] (1984)</para>
+
+<para>Moon: Moon (IAU2000) (2000)</para>
+
+<para>Mercury: Mercury (IAU2000) (2000)</para>
+
+<para>Venus: Venus (IAU2000) (2000)</para>
+
+<para>Mars: Mars (IAU2000) (2000)</para>
+
+<para>Jupiter: Jupiter (IAU2000) (2000)</para>
+
+<para>Saturn: Saturn (IAU2000) (2000)</para>
+
+<para>Uranus: Uranus (IAU2000) (2000)</para>
+
+<para>Neptune: Neptune (IAU2000) (2000)</para>
+
+<para>Pluto: Pluto (IAU2000) (2000)</para>
+
+<para>Note that for some global projections, <emphasis remap='B'>GMT</emphasis> may use a spherical approximation of the
+ellipsoid chosen, setting the flattening to zero, and using a mean radius.
+A warning will be given when this happens.
+If a different
+ellipsoid name than those mentioned here is given, <emphasis remap='B'>GMT</emphasis> will attempt to parse the
+name to extract the semi-major axis (<emphasis remap='I'>a</emphasis> in m) and the flattening. Formats allowed are:</para>
+
+
+<para>	<emphasis remap='I'>a</emphasis>		implies a zero flattening</para>
+
+<para>	<emphasis remap='I'>a</emphasis>,<emphasis remap='I'>inv_f</emphasis>	where <emphasis remap='I'>inv_f</emphasis> is the inverse flattening</para>
+
+<para>	<emphasis remap='I'>a</emphasis>,<emphasis remap='B'>b=</emphasis><emphasis remap='I'>b</emphasis>	where <emphasis remap='I'>b</emphasis> is the semi-minor axis (in m)</para>
+
+<para>	<emphasis remap='I'>a</emphasis>,<emphasis remap='B'>f=</emphasis><emphasis remap='I'>f</emphasis>	where <emphasis remap='I'>f</emphasis> is the flattening</para>
+
+
+<para>This way a
+custom ellipsoid (e.g., those used for other planets) may be used. Further note that coordinate
+transformations in <emphasis remap='B'>mapproject</emphasis> can also specify specific datums; see the <emphasis remap='B'>mapproject</emphasis>
+man page for further details and how to view ellipsoid and datum parameters.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PROJ_LENGTH_UNIT</emphasis></term>
+  <listitem>
+<para>Sets the unit length.  Choose between <emphasis remap='B'>c</emphasis>m, <emphasis remap='B'>i</emphasis>nch, or <emphasis remap='B'>p</emphasis>oint  [c (or i)].  Note
+that, in <emphasis remap='B'>GMT</emphasis>, one point is defined as 1/72 inch (the <emphasis remap='I'>PostScript</emphasis> definition), while it
+is often defined as 1/72.27 inch in the typesetting industry.  There is no universal definition.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PROJ_SCALE_FACTOR</emphasis></term>
+  <listitem>
+<para>Changes the default map scale factor used for the Polar Stereographic [0.9996], UTM [0.9996], and Transverse Mercator [1] projections
+in order to minimize areal distortion.  Provide a new scale-factor or leave as default.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_CHAR_ENCODING</emphasis></term>
+  <listitem>
+<para>(static) Names the eight bit character set being used for text in files and in command line parameters. This allows <emphasis remap='B'>GMT</emphasis>
+to ensure that the <emphasis remap='I'>PostScript</emphasis> output generates the correct characters on the plot..  Choose from Standard, Standard+, ISOLatin1, ISOLatin1+,
+and ISO-8859-x (where x is in the ranges 1-10 or 13-15).  See Appendix F for details [ISOLatin1+ (or Standard+)].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_COLOR_MODEL</emphasis></term>
+  <listitem>
+<para>Determines whether <emphasis remap='I'>PostScript</emphasis> output should use RGB, HSV, CMYK, or GRAY when specifying color [rgb].
+Note if HSV is selected it does not apply to images which in that case uses RGB. When selecting GRAY, all
+colors will be converted to gray scale using YIQ (television) conversion.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_COMMENTS</emphasis></term>
+  <listitem>
+<para>(static) If true we will issue comments in the <emphasis remap='I'>PostScript</emphasis> file that explain the logic of operations.
+These are useful if you need to edit the file and make changes; otherwise you can set it to
+false which yields a somewhat slimmer <emphasis remap='I'>PostScript</emphasis> file [false].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_COPIES</emphasis></term>
+  <listitem>
+<para>(<emphasis remap='B'>* -c</emphasis>) Number of plot copies to make  [1].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_IMAGE_COMPRESS</emphasis></term>
+  <listitem>
+<para>(static) Determines if <emphasis remap='I'>PostScript</emphasis> images are compressed using the Run-Length Encoding scheme (rle),
+Lempel-Ziv-Welch compression (lzw), or not at all (none) [lzw].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_LINE_CAP</emphasis></term>
+  <listitem>
+<para>Determines how the ends of a line segment will be drawn.  Choose among a <emphasis remap='I'>butt</emphasis> cap (default)
+where there is no projection beyond the end of the path, a <emphasis remap='I'>round</emphasis> cap where a
+semicircular arc with diameter equal to the linewidth is drawn around the end points,
+and <emphasis remap='I'>square</emphasis> cap where a half square of size equal to the linewidth extends beyond
+the end of the path [butt].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_LINE_JOIN</emphasis></term>
+  <listitem>
+<para>Determines what happens at kinks in line segments.  Choose among a <emphasis remap='I'>miter</emphasis> join
+where the outer edges of the strokes for the two segments are extended until they
+meet at an angle (as in a picture frame; if the angle is too acute, a bevel join is used
+instead, with threshold set by <emphasis remap='B'>PS_MITER_LIMIT</emphasis>), <emphasis remap='I'>round</emphasis> join where a
+circular arc is used to fill in the cracks at the kinks, and <emphasis remap='I'>bevel</emphasis> join which
+is a miter join that is cut off so kinks are triangular in shape [miter].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_MEDIA</emphasis></term>
+  <listitem>
+<para>Sets the physical format of the current plot paper [a4 (or letter)].  The following
+formats (and their widths and heights in points) are recognized (Additional
+site-specific formats may be specified in
+the gmt_custom_media.conf file in <emphasis remap='B'>$GMT_SHAREDIR</emphasis>/conf or ~/.gmt; see that file for details):</para>
+
+
+<para>Media	width	height</para>
+
+<para>A0	2380	3368</para>
+
+<para>A1	1684	2380</para>
+
+<para>A2	1190	1684</para>
+
+<para>A3	842	1190</para>
+
+<para>A4	595	842</para>
+
+<para>A5	421	595</para>
+
+<para>A6	297	421</para>
+
+<para>A7	210	297</para>
+
+<para>A8	148	210</para>
+
+<para>A9	105	148</para>
+
+<para>A10	74	105</para>
+
+<para>B0	2836	4008</para>
+
+<para>B1	2004	2836</para>
+
+<para>B2	1418	2004</para>
+
+<para>B3	1002	1418</para>
+
+<para>B4	709	1002</para>
+
+<para>B5	501	709</para>
+
+<para>archA	648	864</para>
+
+<para>archB	864	1296</para>
+
+<para>archC	1296	1728</para>
+
+<para>archD	1728	2592</para>
+
+<para>archE	2592	3456</para>
+
+<para>flsa	612	936</para>
+
+<para>halfletter	396	612</para>
+
+<para>statement	396	612</para>
+
+<para>note	540	720</para>
+
+<para>letter	612	792</para>
+
+<para>legal	612	1008</para>
+
+<para>11x17	792	1224</para>
+
+<para>tabloid	792	1224</para>
+
+<para>ledger	1224	792</para>
+
+
+<para>For a completely custom format (e.g., for large format plotters) you may also
+specify WxH, where W and H are in points unless you append a unit
+to each dimension (<emphasis remap='B'>c</emphasis>, <emphasis remap='B'>i</emphasis>, <emphasis remap='B'>m</emphasis> or <emphasis remap='B'>p</emphasis> [Default]).</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_MITER_LIMIT</emphasis></term>
+  <listitem>
+<para>Sets the threshold angle in degrees (integer in 0-180 range) used for mitered joins only.
+When the angle between joining line segments is smaller than the threshold the corner will
+be bevelled instead of mitered.
+The default threshold is 35 degrees.
+Setting the threshold angle to 0 implies the <emphasis remap='I'>PostScript</emphasis> default of about 11 degrees.
+Setting the threshold angle to 180 causes all joins to be beveled.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_PAGE_COLOR</emphasis></term>
+  <listitem>
+<para>Sets the color of the imaging background, i.e., the paper  [white].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_PAGE_ORIENTATION</emphasis></term>
+  <listitem>
+<para>(<emphasis remap='B'>* -P</emphasis>) Sets the orientation of the page.  Choose portrait or landscape  [landscape].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_SCALE_X</emphasis></term>
+  <listitem>
+<para>Global x-scale (&gt; 0) to apply to plot-coordinates before plotting.  Normally used to shrink
+the entire output down to fit a specific height/width  [1.0].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_SCALE_Y</emphasis></term>
+  <listitem>
+<para>Global y-scale (&gt; 0) to apply to plot-coordinates before plotting.  Normally used to shrink
+the entire output down to fit a specific height/width  [1.0].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>PS_TRANSPARENCY</emphasis></term>
+  <listitem>
+<para>Sets the transparency mode to use when preparing PS for rendering to PDF.
+Choose from Color, ColorBurn, ColorDodge, Darken, Difference, Exclusion, HardLight, Hue,
+Lighten, Luminosity, Multiply, Normal, Overlay, Saturation, SoftLight, and Screen [Normal].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>TIME_EPOCH</emphasis></term>
+  <listitem>
+<para>Specifies the value of the calendar and clock at the origin (zero point) of relative time units (see <emphasis remap='B'>TIME_UNIT</emphasis>).
+It is a string of the form yyyy-mm-ddT[hh:mm:ss] (Gregorian) or yyyy-Www-ddT[hh:mm:ss] (ISO)
+Default is 2000-01-01T12:00:00, the epoch of the J2000 system.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>TIME_INTERVAL_FRACTION</emphasis></term>
+  <listitem>
+<para>Determines if partial intervals at the start and end of an axis should be annotated.  If the range of the partial
+interval exceeds the specified fraction of the normal interval stride we will place the annotation centered on the
+partial interval  [0.5].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>TIME_IS_INTERVAL</emphasis></term>
+  <listitem>
+<para>Used when input calendar data should be truncated and adjusted to the middle of the relevant interval.
+In the following discussion, the unit <emphasis remap='B'>u</emphasis> can be one of these time units: (<emphasis remap='B'>y</emphasis> year, <emphasis remap='B'>o</emphasis> month,
+<emphasis remap='B'>u</emphasis> ISO week, <emphasis remap='B'>d</emphasis> day, <emphasis remap='B'>h</emphasis> hour, <emphasis remap='B'>m</emphasis> minute, and <emphasis remap='B'>s</emphasis> second).  <emphasis remap='B'>TIME_IS_INTERVAL</emphasis>
+can have any of the following three values: (1) OFF [Default].  No adjustment, time is decoded as given.
+(2) +<emphasis remap='I'>n</emphasis><emphasis remap='B'>u</emphasis>.  Activate interval adjustment for input by truncate to previous whole number of <emphasis remap='I'>n</emphasis>
+units and then center time on the following interval.  (3) -<emphasis remap='I'>n</emphasis><emphasis remap='B'>u</emphasis>.  Same, but center time on the
+previous interval.  For example, with <emphasis remap='B'>TIME_IS_INTERVAL</emphasis> = +1o, an input data string like 1999-12 will
+be interpreted to mean 1999-12-15T12:00:00.0 (exactly middle of December), while if <emphasis remap='B'>TIME_IS_INTERVAL</emphasis> = off
+then that date is interpreted to mean 1999-12-01T00:00:00.0 (start of December)  [off].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>TIME_LANGUAGE</emphasis></term>
+  <listitem>
+<para>Language to use when plotting calendar items such as months and days.  Select from:</para>
+
+<para>BR	Brazilian Portuguese</para>
+
+<para>CN1	Simplified Chinese</para>
+
+<para>CN2	Traditional Chinese</para>
+
+<para>DE	German</para>
+
+<para>DK	Danish</para>
+
+<para>EH	Basque</para>
+
+<para>ES	Spanish</para>
+
+<para>FI	Finnish</para>
+
+<para>FR	French</para>
+
+<para>GR	Greek</para>
+
+<para>HI	Hawaiian</para>
+
+<para>HU	Hungarian</para>
+
+<para>IE	Irish</para>
+
+<para>IL	Hebrew</para>
+
+<para>IS	Icelandic</para>
+
+<para>IT	Italian</para>
+
+<para>JP	Japanese</para>
+
+<para>NL	Dutch</para>
+
+<para>NO	Norwegian</para>
+
+<para>PL	Polish</para>
+
+<para>PT	Portuguese</para>
+
+<para>RU	Russian</para>
+
+<para>SE	Swedish</para>
+
+<para>SG	Scottish Gaelic</para>
+
+<para>TO	Tongan</para>
+
+<para>TR	Turkish</para>
+
+<para>UK	British English</para>
+
+<para>US	US English</para>
+
+
+<para>If your language is not supported, please examine the <emphasis remap='B'>$GMT_SHAREDIR</emphasis>/time/us.d file and
+make a similar file.  Please submit it to the <emphasis remap='B'>GMT</emphasis> Developers for official inclusion. 
+Custom language files can be placed in directories <emphasis remap='B'>$GMT_SHAREDIR</emphasis>/time or ~/.gmt.
+Note: Some of these languages may require you to also change the <emphasis remap='B'>PS_CHAR_ENCODING</emphasis> setting.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>TIME_SYSTEM</emphasis></term>
+  <listitem>
+<para>Shorthand for a combination of <emphasis remap='B'>TIME_EPOCH</emphasis> and <emphasis remap='B'>TIME_UNIT</emphasis>, specifying
+which time epoch the relative time refers to and what the units are.
+Choose from one of the preset systems below (epoch and units are indicated):</para>
+
+<para>JD	-4713-11-25T12:00:00	d	(Julian Date)</para>
+
+<para>MJD	1858-11-27T00:00:00	d	(Modified Julian Date)</para>
+
+<para>J2000	2000-01-01T12:00:00	d	(Astronomical time)</para>
+
+<para>S1985	1985-01-01T00:00:00	s	(Altimetric time)</para>
+
+<para>UNIX	1970-01-01T00:00:00	s	(UNIX time)</para>
+
+<para>RD0001	0001-01-01T00:00:00	s</para>
+
+<para>RATA	0000-12-31T00:00:00	d</para>
+
+<para>This parameter is not stored in the <emphasis remap='B'>gmt.conf</emphasis> file but is translated to the respective
+values of <emphasis remap='B'>TIME_EPOCH</emphasis> and <emphasis remap='B'>TIME_UNIT</emphasis>.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>TIME_EPOCH</emphasis></term>
+  <listitem>
+<para>Specifies the epoch for relative time  [2000-01-01T12:00:00].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>TIME_UNIT</emphasis></term>
+  <listitem>
+<para>Specifies the units of relative time data since epoch (see <emphasis remap='B'>TIME_EPOCH</emphasis>).
+Choose y (year - assumes all years are 365.2425 days), o (month - assumes
+all months are of equal length y/12), d (day), h (hour), m (minute), or s (second)  [d].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>TIME_WEEK_START</emphasis></term>
+  <listitem>
+<para>When weeks are indicated on time axes, this parameter determines the first day of the week
+for Gregorian calendars.  (The ISO weekly calendar always begins weeks with Monday.)
+[Sunday].</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>TIME_Y2K_OFFSET_YEAR</emphasis></term>
+  <listitem>
+<para>When 2-digit years are used to represent 4-digit years (see various <emphasis remap='B'>FORMAT_DATE</emphasis>s), <emphasis remap='B'>TIME_Y2K_OFFSET_YEAR</emphasis> 
+gives the first year in a 100-year sequence.  For example, if <emphasis remap='B'>TIME_Y2K_OFFSET_YEAR</emphasis> is 1729, then numbers 
+29 through 99 correspond to 1729 through 1799, while numbers 00 through 28 correspond to 1800 through 
+1828. [1950].</para>
+
+  </listitem>
+  </varlistentry>
+</variablelist>
+</refsect1>
+
+<refsect1 xml:id='see_also'><title>SEE ALSO</title>
+<para><citerefentry><refentrytitle>gmt</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>gmtdefaults</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>gmtcolors</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>gmtget</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>gmtset</refentrytitle><manvolnum>1</manvolnum></citerefentry></para>
+</refsect1>
+</refentry>
+
