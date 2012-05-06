@@ -52,7 +52,7 @@ struct COLMATH_CTRL {
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
 		BOOLEAN active;
-		GMT_LONG inverse;
+		BOOLEAN inverse;
 		char *pattern;
 	} S;
 	struct T {	/* -T */
@@ -199,7 +199,7 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, FALSE);	/* Turn off segment headers on output */
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data input */
 	}
 	
@@ -274,7 +274,7 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Now ready for output */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 	

@@ -33,7 +33,7 @@
 struct GRDIMAGE_CTRL {
 	struct In {
 		BOOLEAN active;
-		GMT_LONG do_rgb;
+		BOOLEAN do_rgb;
 		char *file[3];
 	} In;
 	struct C {	/* -C<cptfile> */
@@ -42,7 +42,7 @@ struct GRDIMAGE_CTRL {
 	} C;
 	struct D {	/* -D to read GDAL file */
 		BOOLEAN active;
-		GMT_LONG mode;	/* Use info of -R option to reference image */
+		BOOLEAN mode;	/* Use info of -R option to reference image */
 	} D;
 	struct A {	/* -A to write a GDAL file */
 		BOOLEAN active;
@@ -51,8 +51,8 @@ struct GRDIMAGE_CTRL {
 	} A;
 	struct E {	/* -Ei|<dpi> */
 		BOOLEAN active;
-		GMT_LONG device_dpi;
-		GMT_LONG dpi;
+		BOOLEAN device_dpi;
+		COUNTER_MEDIUM dpi;
 	} E;
 	struct G {	/* -G[f|b]<rgb> */
 		BOOLEAN active;
@@ -463,7 +463,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 #ifdef USE_GDAL
 		else if (Ctrl->D.active) {
-			int64_t dim[1] = {256};
+			COUNTER_LARGE dim[1] = {256};
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
 			if ((P = GMT_Create_Data (API, GMT_IS_CPT, dim)) == NULL) Return (API->error);
 			P->model = GMT_RGB;

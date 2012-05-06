@@ -94,7 +94,7 @@ struct GRDTREND_CTRL {	/* All control options for this program (except common ar
 	} D;
 	struct N {	/* -N[r]<n_model> */
 		BOOLEAN active;
-		GMT_LONG robust;
+		BOOLEAN robust;
 		COUNTER_MEDIUM value;
 	} N;
 	struct T {	/* -T<trend.grd> */

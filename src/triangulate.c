@@ -37,7 +37,7 @@
 struct TRIANGULATE_CTRL {
 	struct D {	/* -Dx|y */
 		BOOLEAN active;
-		GMT_LONG dir;
+		COUNTER_MEDIUM dir;
 	} D;
 	struct E {	/* -E<value> */
 		BOOLEAN active;
@@ -66,7 +66,7 @@ struct TRIANGULATE_CTRL {
 };
 
 struct TRIANGULATE_EDGE {
-	GMT_LONG begin, end;
+	COUNTER_LARGE begin, end;
 };
 
 int compare_edge (const void *p1, const void *p2)
@@ -88,7 +88,7 @@ void *New_triangulate_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	C = GMT_memory (GMT, NULL, 1, struct TRIANGULATE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	C->D.dir = -1;	/* No derivatives */
+	C->D.dir = 2;	/* No derivatives */
 	return (C);
 }
 
@@ -287,7 +287,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -443,7 +443,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */

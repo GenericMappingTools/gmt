@@ -98,7 +98,8 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 	if (mxIsChar(prhs[0]))		/* Gave a file name */
 		i_string = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
  	else {				/* Input via two or more column vectors */
-		GMT_LONG col, in_ID, dim[1] = {n_cols};
+		GMT_LONG col, in_ID;
+		COUNTER_LARGE dim[1] = {n_cols};
 		//char buffer[GMT_BUFSIZ];
 		i_string = mxMalloc (GMT_BUFSIZ);
 		if ((*V = GMT_Create_Data (API, GMT_IS_VECTOR, dim)) == NULL) mexErrMsgTxt ("Failure to alloc GMT source vectors\n");
@@ -197,6 +198,7 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 {	/* Associate output data with Matlab/Octave vectors */
 	char *o_string = NULL;
 	GMT_LONG out_ID, col;
+	COUNTER_LARGE dim[1] = n_cols;
 	//char buffer[GMTAPI_STRLEN];
 
 	o_string = mxMalloc(GMTAPI_STRLEN);
@@ -207,7 +209,7 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 			mexErrMsgTxt ("Error: neither output file name with the '>' "
 					"redirection operator nor left hand side output args.");
 	}
-	if ((*V = GMT_Create_Data (API, GMT_IS_VECTOR, &n_cols)) == NULL) mexErrMsgTxt ("Failure to alloc GMT source vectors\n");
+	if ((*V = GMT_Create_Data (API, GMT_IS_VECTOR, dim)) == NULL) mexErrMsgTxt ("Failure to alloc GMT source vectors\n");
 	for (col = 0; col < n_cols; col++) (*V)->type[col] = GMTAPI_DOUBLE;
 	(*V)->alloc_mode = GMT_REFERENCE;
 	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, V, NULL)) == GMTAPI_NOTSET) {

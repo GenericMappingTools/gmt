@@ -39,7 +39,7 @@ EXTERN_MSC double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS
 struct PSSCALE_CTRL {
 	struct A {	/* -A */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} A;
 	struct C {	/* -C<cptfile> */
 		BOOLEAN active;
@@ -47,12 +47,12 @@ struct PSSCALE_CTRL {
 	} C;
 	struct D {	/* -D<xpos/ypos/length/width[h]> */
 		BOOLEAN active;
-		GMT_LONG horizontal;
+		BOOLEAN horizontal;
 		double x, y, width, length;
 	} D;
 	struct E {	/* -E[b|f][<length>][+n[<text>]] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		double length;
 		char *text;
 	} E;
@@ -92,7 +92,7 @@ struct PSSCALE_CTRL {
 
 void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSCALE_CTRL *C;
-	GMT_LONG k;
+	COUNTER_MEDIUM k;
 	
 	C = GMT_memory (GMT, NULL, 1, struct PSSCALE_CTRL);
 	
@@ -218,7 +218,7 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 				break;
 			case 'D':
 				Ctrl->D.active = TRUE;
-				n = (GMT_LONG)strlen(opt->arg) - 1;
+				n = strlen(opt->arg) - 1;
 				flag = opt->arg[n];
 				if (flag == 'h' || flag == 'H') {
 					Ctrl->D.horizontal = TRUE;
@@ -391,13 +391,13 @@ void fix_format (char *unit, char *format)
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[0].id].height)
 
 void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double length, double width, double *z_width, double bit_dpi, BOOLEAN flip, \
-	BOOLEAN B_set, BOOLEAN equi, BOOLEAN horizontal, BOOLEAN logscl, BOOLEAN intens, double *max_intens, GMT_LONG skip_lines, GMT_LONG extend, \
+	BOOLEAN B_set, BOOLEAN equi, BOOLEAN horizontal, BOOLEAN logscl, BOOLEAN intens, double *max_intens, BOOLEAN skip_lines, COUNTER_MEDIUM extend, \
 	double e_length, char *nan_text, double gap, BOOLEAN interval_annot, BOOLEAN monochrome, struct T Ctrl_T)
 {
 	COUNTER_MEDIUM i, ii, id, j, nb, ndec = 0, dec, p_val, depth, Label_justify, form;
 	COUNTER_MEDIUM cap = PSL->internal.line_cap, join = PSL->internal.line_join;
-	COUNTER_MEDIUM nx = 0, ny = 0, nm, barmem, k, justify, l_justify, this_just, use_labels = 0;
-	BOOLEAN reverse, all = TRUE, use_image, center = FALSE, const_width = TRUE, do_annot;
+	COUNTER_MEDIUM nx = 0, ny = 0, nm, barmem, k, justify, l_justify, this_just;
+	BOOLEAN reverse, all = TRUE, use_image, center = FALSE, const_width = TRUE, do_annot, use_labels = FALSE;
 	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
 	unsigned char *bar = NULL, *tmp = NULL;
 	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
@@ -423,7 +423,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	}
 	else {
 		for (i = 0; i < P->n_colors; i++) {
-			if (P->range[i].label) use_labels++;
+			if (P->range[i].label) use_labels = TRUE;
 			if (P->range[i].annot & 1) {
 				if ((dec = GMT_get_format (GMT, P->range[i].z_low, CNULL, CNULL, text)) > ndec) {
 					strcpy (format, text);

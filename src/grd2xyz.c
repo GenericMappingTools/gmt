@@ -30,7 +30,7 @@ struct GRD2XYZ_CTRL {
 #ifdef GMT_COMPAT
 	struct E {	/* -E[f][<nodata>] */
 		BOOLEAN active;
-		GMT_LONG floating;
+		BOOLEAN floating;
 		double nodata;
 	} E;
 #endif
@@ -238,7 +238,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->common.b.ncol[GMT_OUT] = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : 3);
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 0)) != GMT_OK) Return (error);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options) != GMT_OK) {	/* Registers stdout, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, 0, options) != GMT_OK) {	/* Registers stdout, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -352,7 +352,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 #endif
 		else {	/* Regular x,y,z[,w] output */
-			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options) != GMT_OK) {	/* Establishes data output */
+			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, 0, options) != GMT_OK) {	/* Establishes data output */
 				Return (API->error);
 			}
 

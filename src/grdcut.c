@@ -41,7 +41,7 @@ struct GRDCUT_CTRL {
 	} G;
 	struct Z {	/* -Z[min/max] */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 1 means NaN */
+		COUNTER_MEDIUM mode;	/* 1 means NaN */
 		double min, max;
 	} Z;
 };

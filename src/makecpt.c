@@ -41,7 +41,7 @@ struct MAKECPT_CTRL {
 	} Out;
 	struct A {	/* -A+ */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		double value;
 	} A;
 	struct C {	/* -C<cpt> */
@@ -50,11 +50,11 @@ struct MAKECPT_CTRL {
 	} C;
 	struct D {	/* -D[i|o] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} D;
 	struct F {	/* -F[r|R|h|c] */
 		BOOLEAN active;
-		GMT_LONG model;
+		COUNTER_MEDIUM model;
 	} F;
 	struct I {	/* -I */
 		BOOLEAN active;
@@ -67,13 +67,12 @@ struct MAKECPT_CTRL {
 	} N;
 	struct T {	/* -T<z0/z1/dz> */
 		BOOLEAN active;
-		GMT_LONG cpt;
 		double low, high, inc;
 		char *file;
 	} T;
 	struct Q {	/* -Q[i|o] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} Q;
 	struct W {	/* -W */
 		BOOLEAN active;

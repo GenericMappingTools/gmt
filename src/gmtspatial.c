@@ -29,8 +29,8 @@
 EXTERN_MSC GMT_LONG GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
 void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout);
 
-#define POL_IS_CW 1
-#define POL_IS_CCW 0
+#define POL_IS_CW	1
+#define POL_IS_CCW	0
 
 #define POL_UNION		0
 #define POL_INTERSECTION	1
@@ -83,34 +83,32 @@ struct GMTSPATIAL_CTRL {
 	} D;
 	struct E {	/* -D[-|+] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} E;
 	struct I {	/* -I[i|e] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} I;
 	struct L {	/* -L */
 		BOOLEAN active;
-		GMT_LONG mode;
 		char unit;
 		double s_cutoff, path_noise, box_offset;
 	} L;
 	struct N {	/* -N<file>[+a][+p>ID>][+r][+z] */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 0 for reporting ID in -Z<ID> header, 1 via data column, 2 just as a report */
-		GMT_LONG all;	/* All points in lines and polygons must be inside a polygon for us to report ID */
-		GMT_LONG start;	/* First ID for running polygon IDs */
-		GMT_LONG ID;	/* If 1 we use running numbers */
+		BOOLEAN all;	/* All points in lines and polygons must be inside a polygon for us to report ID */
+		COUNTER_MEDIUM mode;	/* 0 for reporting ID in -Z<ID> header, 1 via data column, 2 just as a report */
+		COUNTER_MEDIUM ID;	/* If 1 we use running numbers */
 		char *file;
 	} N;
 	struct Q {	/* -Q[+] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		BOOLEAN header;
 		char unit;
 	} Q;
 	struct S {	/* -S[u|i|c] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} S;
 	struct T {	/* -T[pol] */
 		BOOLEAN active;
@@ -120,7 +118,7 @@ struct GMTSPATIAL_CTRL {
 
 struct PAIR {
 	double node;
-	GMT_LONG pos;
+	COUNTER_LARGE pos;
 };
 
 void *New_gmtspatial_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -198,7 +196,7 @@ void centroid (struct GMT_CTRL *GMT, double x[], double y[], COUNTER_LARGE n, do
 	}
 }
 
-GMT_LONG area_size (struct GMT_CTRL *GMT, double x[], double y[], COUNTER_LARGE n, double *out, GMT_LONG *geo)
+COUNTER_MEDIUM area_size (struct GMT_CTRL *GMT, double x[], double y[], COUNTER_LARGE n, double *out, GMT_LONG *geo)
 {
 	COUNTER_LARGE i;
 	double wesn[4], xx, yy, size, ix, iy;
@@ -676,7 +674,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 #endif
 			case 'Q':	/* Measure area/length and handedness of polygons */
 				Ctrl->Q.active = TRUE;
-				if (strchr (opt->arg, '+')) Ctrl->Q.active = 2;
+				if (strchr (opt->arg, '+')) Ctrl->Q.header = TRUE;
 				if (opt->arg[0] && opt->arg[0] != '+') Ctrl->Q.unit = opt->arg[0];				
 				break;
 			case 'N':	/* Determine containing polygons for features */
@@ -693,8 +691,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 							Ctrl->N.all = TRUE;
 							break;
 						case 'p':	/* Set start of running numbers [0] */
-							Ctrl->N.ID = 1;
-							Ctrl->N.start = (p[1]) ? atoi (&p[1]) - 1 : -1;	/* We increment before use */
+							Ctrl->N.ID = (p[1]) ? atoi (&p[1]) : 1;
 							break;
 						case 'r':	/* Just give a report */
 							Ctrl->N.mode = 1;
@@ -805,7 +802,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read input data set */
 	
 	if (Ctrl->D.active) geometry = GMT_IS_LINE;
-	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read Input tables\n");
@@ -879,21 +876,21 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->Q.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
 		double out[3];
 		COUNTER_LARGE seg, row_f, row_l;
-		COUNTER_MEDIUM tbl, col;
-		GMT_LONG handedness = 0, mode, poly, geo = GMT_is_geographic (GMT, GMT_IN);
+		COUNTER_MEDIUM handedness = 0, tbl, col;
+		GMT_LONG mode, poly, geo = GMT_is_geographic (GMT, GMT_IN);
 
 		char line[GMT_BUFSIZ];
 		
 		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->Q.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
-		if (Ctrl->Q.active == 2) {
+		if (Ctrl->Q.header) {
 			mode = GMT_IS_POLY;
 		}
 		else {
 			mode = GMT_IS_POINT;
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, mode, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, mode, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -912,7 +909,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					handedness = area_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, out, &geo);
 					poly = TRUE;
 				}
-				if (Ctrl->Q.active == 2) {
+				if (Ctrl->Q.header) {
 					if (poly && Ctrl->E.active && handedness != Ctrl->E.mode) {	/* Must reverse line */
 						for (row_f = 0, row_l = S->n_rows - 1; row_f < S->n_rows/2; row_f++, row_l--) {
 							for (col = 0; col < S->n_columns; col++) d_swap (S->coord[col][row_f], S->coord[col][row_l]);
@@ -939,7 +936,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		/* Write out results */
-		if (Ctrl->Q.active == 2) {
+		if (Ctrl->Q.header) {
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
 				Return (API->error);
 			}
@@ -970,7 +967,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
-				int64_t dim[4] = {1, 1, 2, 5};
+				COUNTER_LARGE dim[4] = {1, 1, 2, 5};
 				if ((C = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);
 				S1 = C->table[0]->segment[0];
 				S1->coord[GMT_X][0] = S1->coord[GMT_X][3] = S1->coord[GMT_X][4] = GMT->common.R.wesn[XLO];
@@ -985,7 +982,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_OUT, C->n_columns)) != GMT_OK) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -1170,7 +1167,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Info = GMT_memory (GMT, NULL, C->n_tables, struct DUP_INFO *);
 		for (tbl = 0; tbl < C->n_tables; tbl++) Info[tbl] = GMT_memory (GMT, NULL, C->table[tbl]->n_segments, struct DUP_INFO);
 			
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 			Return (API->error);	/* Registers default output destination, unless already set */
 		}
 		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT) != GMT_OK) {
@@ -1276,7 +1273,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);
 		}
 		if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
-			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -1284,7 +1281,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		else {	/* Regular data output */
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 				Return (API->error);
 			}
 		}
@@ -1370,7 +1367,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		COUNTER_MEDIUM tbl;
 		COUNTER_LARGE n_split = 0, seg_out, seg, n_segs, kseg;
 		BOOLEAN crossing;
-		int64_t dim[4] = {0, 1, 0, 0};
+		COUNTER_LARGE dim[4] = {0, 1, 0, 0};
 		struct GMT_DATASET *Dout = NULL;
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT **L = NULL;

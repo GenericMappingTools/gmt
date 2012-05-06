@@ -29,12 +29,13 @@
 
 struct GMT_PROGRAMS {		/* Struct with name and mode for each GMT 4 program */
 	char name[GMT_TEXT_LEN64];	/* Program name */
-	GMT_LONG mode;			/* Either GMTAPI_GMT or GMTAPI_GMTPSL */
+	COUNTER_MEDIUM mode;		/* Either GMTAPI_GMT or GMTAPI_GMTPSL */
 };
 
-PFL lookup_program (char *prog, struct GMT_PROGRAMS *programs, GMT_LONG n_progs, GMT_LONG *mode)
+PFL lookup_program (char *prog, struct GMT_PROGRAMS *programs, COUNTER_MEDIUM n_progs, COUNTER_MEDIUM *mode)
 {
-	GMT_LONG k = 0, id = -1;
+	COUNTER_MEDIUM k = 0;
+	GMT_LONG id = -1;
 	PFL func = NULL;
 
 	for (k = 0; id == -1 && k < n_progs; k++) if (!strcmp (prog, programs[k].name)) id = k;	/* Get program id */
@@ -50,7 +51,7 @@ PFL lookup_program (char *prog, struct GMT_PROGRAMS *programs, GMT_LONG n_progs,
 int main (int argc, char *argv[]) {
 
 	GMT_LONG status = 0;			/* Status code from GMT API */
-	GMT_LONG mode = 0;			/* Mode of the selected function */
+	COUNTER_MEDIUM mode = 0;		/* Mode of the selected function */
 	PFL func = NULL;			/* Pointer to the selected function */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct GMT_PROGRAMS program[GMT_N_PROGRAMS] = {	/* Sorted array with program information */

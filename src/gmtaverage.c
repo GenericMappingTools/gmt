@@ -33,11 +33,11 @@
 struct GMTAVERAGE_CTRL {	/* All control options for this program (except common args) */
 	struct E {	/* -E[b] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} E;
 	struct T {	/* -T<quantile> */
 		BOOLEAN active;
-		GMT_LONG median;
+		BOOLEAN median;
 		double quantile;
 	} T;
 };
@@ -147,7 +147,7 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 						Ctrl->T.median = TRUE;
 						break;
 					default:
-						Ctrl->T.median = 2;	/* Flag bad modifier */
+						n_errors += GMT_check_condition (GMT, TRUE, "Syntax error: Bad modifier in -T option\n");
 						n_errors++;
 						break;
 				}
@@ -160,7 +160,6 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 	}
 	
 	n_errors += GMT_check_condition (GMT, !Ctrl->T.active, "Syntax error: Must specify -T option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.median == 2, "Syntax error: Bad modifier in -T option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.quantile < 0.0 || Ctrl->T.quantile >= 1.0,
 			"Syntax error: 0 < q < 1 for quantile in -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.mode && !Ctrl->T.median, "Syntax error: -Eb requires -Te|<q>\n");

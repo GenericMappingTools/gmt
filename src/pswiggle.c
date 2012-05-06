@@ -57,7 +57,7 @@ struct PSWIGGLE_CTRL {
 	} I;
 	struct S {	/* -S[x]<lon0>/<lat0>/<length>/<units> */
 		BOOLEAN active;
-		GMT_LONG cartesian;
+		BOOLEAN cartesian;
 		double lon, lat, length;
 		char *label;
 	} S;
@@ -452,7 +452,7 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	yy  = GMT_memory (GMT, NULL, n_alloc, double);
 	zz  = GMT_memory (GMT, NULL, n_alloc, double);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {

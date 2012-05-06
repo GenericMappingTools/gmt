@@ -867,12 +867,12 @@ GMT_LONG GMT_append_ogr_item (struct GMT_CTRL *C, char *name, COUNTER_MEDIUM typ
 	return (GMT_NOERROR);
 }
 
-GMT_LONG gmt_ogr_parser (struct GMT_CTRL *C, char *record)
+BOOLEAN gmt_ogr_parser (struct GMT_CTRL *C, char *record)
 {	/* Parsing of the GMT/OGR vector specification (v 1.0). See Appendix R */
 	return (C->current.io.ogr_parser (C, record));
 }
 
-GMT_LONG gmt_ogr_data_parser (struct GMT_CTRL *C, char *record)
+BOOLEAN gmt_ogr_data_parser (struct GMT_CTRL *C, char *record)
 {	/* Parsing of the GMT/OGR vector specification (v 1.0) for data feature records.
  	 * We KNOW C->current.io.ogr == +1, i.e., current file is a GMT/OGR file.
 	 * We also KNOW that C->current.io.OGR has been allocated by gmt_ogr_header_parser.
@@ -971,7 +971,7 @@ BOOLEAN gmt_ogr_header_parser (struct GMT_CTRL *C, char *record)
 	 */
 
 	COUNTER_MEDIUM n_aspatial, k;
-	GMT_LONG geometry = 0;
+	COUNTER_MEDIUM geometry = 0;
 	BOOLEAN quote;
 	char *p = NULL;
 	struct GMT_OGR *S = NULL;
@@ -5398,12 +5398,10 @@ void GMT_adjust_dataset (struct GMT_CTRL *C, struct GMT_DATASET *D, COUNTER_MEDI
 	D->n_columns = n_columns;
 }
 
-struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, COUNTER_MEDIUM n_tables, int64_t n_segments, COUNTER_LARGE n_rows)
+struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, COUNTER_MEDIUM n_tables, COUNTER_LARGE n_segments, COUNTER_LARGE n_rows, BOOLEAN alloc_only)
 {	/* Create an empty text set structure with the required number of empty tables, all set to hold n_segments with n_rows */
 	/* Allocate the new textset structure given the specified dimensions.
-	 * If n_segments or n_rows are negative we use the abs value to allocate
-	 * and set the n_alloc values but we do NOT set the corresponding
-	 * counters (i.e., n_rows, n_segments).  */
+	 * IF alloc_only is TRUE then we do NOT set the corresponding counters (i.e., n_segments).  */
 	COUNTER_MEDIUM tbl;
 	COUNTER_LARGE seg;
 	struct GMT_TEXT_TABLE *T = NULL;
@@ -5412,13 +5410,13 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, COUNTER_MEDIUM n_ta
 	D = GMT_memory (C, NULL, 1, struct GMT_TEXTSET);
 	D->table = GMT_memory (C, NULL, n_tables, struct GMT_TEXT_TABLE *);
 	D->n_tables = D->n_alloc = n_tables;
-	if (n_segments > 0) D->n_segments = n_tables * n_segments;
+	if (!alloc_only) D->n_segments = n_tables * n_segments;
 	for (tbl = 0; tbl < n_tables; tbl++) {
 		D->table[tbl] = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE);
 		T = D->table[tbl];
-		T->n_alloc = GMT_abs (n_segments);
+		T->n_alloc = n_segments;
 		T->segment = GMT_memory (C, NULL, T->n_alloc, struct GMT_TEXT_SEGMENT *);
-		if (n_segments > 0) T->n_segments = n_segments;
+		if (!alloc_only) T->n_segments = n_segments;
 		for (seg = 0; seg < T->n_segments; seg++) {
 			T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXT_SEGMENT);
 			T->segment[seg]->record = GMT_memory (C, NULL, n_rows, char *);
@@ -5577,25 +5575,22 @@ GMT_LONG GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, COUN
 	return (GMT_OK);
 }
 
-struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, int64_t n_segments, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows)
+struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, COUNTER_LARGE n_segments, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows, BOOLEAN alloc_only)
 {
 	/* Allocate the new Table structure given the specified dimensions.
 	 * If n_columns == 0 it means we don't know that dimension yet.
-	 * If n_segments is negative we use the abs value to allocate
-	 * and set the n_alloc values but we do NOT set the corresponding
-	 * counters (i.e., n_segments).  */
-	int64_t seg;
+	 * If alloc_only is TRUE then we do NOT set the corresponding counters (i.e., n_segments).  */
+	COUNTER_LARGE seg;
 	struct GMT_TABLE *T = NULL;
 	
 	T = GMT_memory (C, NULL, 1, struct GMT_TABLE);
-	if (n_segments > 0) T->n_segments = n_segments;
-	n_segments = GMT_abs (n_segments);
+	if (!alloc_only) T->n_segments = n_segments;
 	T->n_alloc = n_segments;
-	T->n_columns = n_columns;
 	if (n_columns) {
 		T->min = GMT_memory (C, NULL, n_columns, double);
 		T->max = GMT_memory (C, NULL, n_columns, double);
 	}
+	T->n_columns = n_columns;
 	if (n_segments) {
 		T->segment = GMT_memory (C, NULL, n_segments, struct GMT_LINE_SEGMENT *);
 		for (seg = 0; n_columns && seg < n_segments; seg++) {
@@ -5607,22 +5602,22 @@ struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, int64_t n_segments, COU
 	return (T);
 }
 
-struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, COUNTER_MEDIUM n_tables, int64_t n_segments, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows)
+struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, COUNTER_MEDIUM n_tables, COUNTER_LARGE n_segments, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows, BOOLEAN alloc_only)
 {	/* Create an empty data set structure with the required number of empty tables, all set to hold n_segments with n_columns */
 	COUNTER_MEDIUM tbl;
 	struct GMT_DATASET *D = NULL;
 	
 	D = GMT_memory (C, NULL, 1, struct GMT_DATASET);
-	D->n_columns = n_columns;
 	if (n_columns) {
 		D->min = GMT_memory (C, NULL, n_columns, double);
 		D->max = GMT_memory (C, NULL, n_columns, double);
 	}
+	D->n_columns = n_columns;
 	D->table = GMT_memory (C, NULL, n_tables, struct GMT_TABLE *);
 	D->n_tables = D->n_alloc = n_tables;
-	if (n_segments > 0) D->n_segments = D->n_tables * n_segments;
-	if (n_segments > 0) D->n_records = D->n_segments * n_rows;
-	for (tbl = 0; tbl < n_tables; tbl++) if ((D->table[tbl] = GMT_create_table (C, n_segments, n_columns, n_rows)) == NULL) return (NULL);
+	if (!alloc_only) D->n_segments = D->n_tables * n_segments;
+	if (!alloc_only) D->n_records = D->n_segments * n_rows;
+	for (tbl = 0; tbl < n_tables; tbl++) if ((D->table[tbl] = GMT_create_table (C, n_segments, n_columns, n_rows, alloc_only)) == NULL) return (NULL);
 	D->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
 	
 	return (D);
@@ -5707,7 +5702,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, COUNTER_MED
 	}
 	/* Allocate the Table structure with GMT_CHUNK segments, but none has any rows or columns */
 
-	T = GMT_create_table (C, GMT_CHUNK, 0, 0);
+	T = GMT_create_table (C, GMT_CHUNK, 0, 0, FALSE);
 
 	T->file[GMT_IN] = strdup (file);
 	T->header = GMT_memory (C, NULL, n_head_alloc, char *);

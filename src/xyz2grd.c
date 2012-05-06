@@ -47,7 +47,7 @@ struct XYZ2GRD_CTRL {
 #ifdef GMT_COMPAT
 	struct E {	/* -E[<nodata>] */
 		BOOLEAN active;
-		GMT_LONG set;
+		BOOLEAN set;
 		double nodata;
 	} E;
 #endif
@@ -341,7 +341,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				Return (API->error);
 			}
 		}
-		else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 			Return (API->error);
 		}
 		
@@ -509,7 +509,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (error);
 	}
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data input */
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {

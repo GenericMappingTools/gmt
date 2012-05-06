@@ -179,9 +179,9 @@ void make_rot0_matrix (struct GMT_CTRL *C, double lonp, double latp, double R[3]
 	R[2][2] = E[2] * E[2];
 }
 
-void reverse_rotation_order (struct GMT_CTRL *C, struct EULER *p, GMT_LONG n)
+void reverse_rotation_order (struct GMT_CTRL *C, struct EULER *p, COUNTER_MEDIUM n)
 {	/* Simply shuffles the array from 1:n to n:1 */
-	GMT_LONG i, j;
+	COUNTER_MEDIUM i, j;
 	struct EULER p_tmp;
 
 	for (i = 0; i < n/2; i++) {
@@ -194,7 +194,7 @@ void reverse_rotation_order (struct GMT_CTRL *C, struct EULER *p, GMT_LONG n)
 	}
 }
 
-void xyw_to_struct_euler (struct GMT_CTRL *C, struct EULER *p, double lon[], double lat[], double w[], GMT_LONG n, GMT_LONG stages, GMT_LONG convert)
+void xyw_to_struct_euler (struct GMT_CTRL *C, struct EULER *p, double lon[], double lat[], double w[], COUNTER_MEDIUM n, COUNTER_MEDIUM stages, BOOLEAN convert)
 {	/* Reload the EULER structure from the lon, lat, w arrays.
 	 * stages is TRUE if we are loading stage rotations (FALSE is finite poles).
 	 * convert is TRUE if we must change angles to rates or vice versa */
@@ -221,7 +221,7 @@ void set_I_matrix (struct GMT_CTRL *C, double R[3][3])
 	R[0][0] = R[1][1] = R[2][2] = 1.0;
 }
 
-GMT_LONG must_do_track (struct GMT_CTRL *C, GMT_LONG sideA[], GMT_LONG sideB[]) {
+BOOLEAN must_do_track (struct GMT_CTRL *C, GMT_LONG sideA[], GMT_LONG sideB[]) {
 	GMT_LONG dx, dy;
 	/* First check if any of the two points are inside the box */
 	if (sideA[0] == 0 && sideA[1] == 0) return (TRUE);
@@ -324,7 +324,7 @@ void spotter_cov_of_inverse (struct GMT_CTRL *C, struct EULER *e, double Ct[3][3
  * Based partly on Cox and Hart, 1986
  */
 
-void spotter_total_to_fwstages (struct GMT_CTRL *C, struct EULER p[], GMT_LONG n, GMT_LONG finite_rates, GMT_LONG stage_rates)
+void spotter_total_to_fwstages (struct GMT_CTRL *C, struct EULER p[], COUNTER_MEDIUM n, BOOLEAN finite_rates, BOOLEAN stage_rates)
 {
 	/* Convert finite rotations to forward stage rotations for flowlines */
 	/* p[]		: Array of structure elements with rotation parameters
@@ -333,7 +333,7 @@ void spotter_total_to_fwstages (struct GMT_CTRL *C, struct EULER p[], GMT_LONG n
 	 * stage_rates	: TRUE if stage rotations should be returned in degree/my [else we return opening angle]
 	 */
 	 
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	double *elon = NULL, *elat = NULL, *ew = NULL, t_old;
 	double R_young[3][3], R_old[3][3], R_stage[3][3];
 
@@ -374,7 +374,7 @@ void spotter_total_to_fwstages (struct GMT_CTRL *C, struct EULER p[], GMT_LONG n
 
 GMT_LONG spotter_GPlates_pair (char *file)
 {	/* Check if given file is actually a GPlates plate pair */
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
 	if (strlen (file) > GMT_TEXT_LEN64) return (FALSE);	/* Cannot be two pairs of tags */
 	if (sscanf (file, "%[^-]-%s", A, B) != 2) return (FALSE);
@@ -391,8 +391,8 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, BOOLEAN
 	/* total_out;	TRUE if we want to return finite (total construction poles) [alternative is stage poles] */
 	/* invert;	TRUE if we want to invert all the rotations */
 	/* t_max;	Extend earliest stage pole back to this age */
-	BOOLEAN GPlates = FALSE;
-	COUNTER_MEDIUM n, nf, i = 0, k, id, A_id = 0, B_id = 0, p1, p2, V1 = 0, V2 = 0, total_in = FALSE;
+	BOOLEAN GPlates = FALSE, total_in = FALSE;
+	COUNTER_MEDIUM n, nf, i = 0, k, id, A_id = 0, B_id = 0, p1, p2, V1 = 0, V2 = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double lon, lat, rot, t;
 	FILE *fp = NULL;
@@ -1234,7 +1234,7 @@ void set_rot_angle (struct GMT_CTRL *C, double w, double R[3][3], double E[])
 	double sin_w, cos_w, c, E_x, E_y, E_z;
 
 	sincos (w, &sin_w, &cos_w);
-	c = 1 - cos_w;
+	c = 1.0 - cos_w;
 
 	E_x = E[0] * sin_w;
 	E_y = E[1] * sin_w;
@@ -1255,7 +1255,7 @@ void set_rot_angle (struct GMT_CTRL *C, double w, double R[3][3], double E[])
 
 void spotter_matrix_mult (struct GMT_CTRL *C, double a[3][3], double b[3][3], double c[3][3])
 {	/* C = A * B */
-	GMT_LONG i, j, k;
+	COUNTER_MEDIUM i, j, k;
 
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 3; j++) {

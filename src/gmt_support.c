@@ -9707,7 +9707,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 
 	COUNTER_MEDIUM tbl, k, ii, np_cross, n_half_cross, n_tot_cols;
 	
-	int64_t dim[4] = {0, 0, 0, 0};
+	COUNTER_LARGE dim[4] = {0, 0, 0, 0};
 	
 	COUNTER_LARGE row, left, right, seg, seg_no;
 	size_t n_x_seg = 0, n_x_seg_alloc = 0;
@@ -9844,7 +9844,7 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 	
 	COUNTER_LARGE row, seg, seg_no;
 	
-	int64_t dim[4] = {0, 0, 0, 0};
+	COUNTER_LARGE dim[4] = {0, 0, 0, 0};
 	size_t n_x_seg = 0, n_x_seg_alloc = 0;
 
 	char buffer[GMT_BUFSIZ], seg_name[GMT_BUFSIZ], ID[GMT_BUFSIZ];

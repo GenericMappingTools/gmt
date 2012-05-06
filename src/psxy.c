@@ -34,7 +34,7 @@ EXTERN_MSC char * gmt_get_char_ptr (char **ptr);
 struct PSXY_CTRL {
 	struct A {	/* -A[m|p|step] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		double step;
 	} A;
 	struct C {	/* -C<cpt> */
@@ -47,8 +47,8 @@ struct PSXY_CTRL {
 	} D;
 	struct E {	/* -E[x|X][y|Y][cap][/[+|-]<pen>] */
 		BOOLEAN active;
-		GMT_LONG xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = box-whisker, 3 notched box-whisker */
-		GMT_LONG mode;	/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
+		COUNTER_MEDIUM xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = box-whisker, 3 notched box-whisker */
+		COUNTER_MEDIUM mode;	/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
 		double size;
 		struct GMT_PEN pen;
 	} E;
@@ -75,7 +75,7 @@ struct PSXY_CTRL {
 	} T;
 	struct W {	/* -W<pen> */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
+		COUNTER_MEDIUM mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
 	} W;
 };
@@ -716,7 +716,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
-		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, set_type, GMT_IN) != GMT_OK) {		/* Enables data input and sets access mode */
@@ -1001,7 +1001,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		COUNTER_LARGE seg;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 
-		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {

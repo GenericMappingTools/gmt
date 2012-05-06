@@ -45,7 +45,7 @@ struct GRD2CPT_CTRL {
 	} Out;
 	struct A {	/* -A+ */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		double value;
 	} A;
 	struct C {	/* -C<cpt> */
@@ -54,7 +54,7 @@ struct GRD2CPT_CTRL {
 	} C;
 	struct D {	/* -D[i|o] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} D;
 	struct E {	/* -E<nlevels> */
 		BOOLEAN active;
@@ -62,7 +62,7 @@ struct GRD2CPT_CTRL {
 	} E;
 	struct F {	/* -F[R|r|h|c] */
 		BOOLEAN active;
-		GMT_LONG model;
+		COUNTER_MEDIUM model;
 	} F;
 	struct I {	/* -I */
 		BOOLEAN active;
@@ -79,11 +79,10 @@ struct GRD2CPT_CTRL {
 	} N;
 	struct Q {	/* -Q[i|o] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} Q;
 	struct S {	/* -S<z_start>/<z_stop>/<z_inc> */
 		BOOLEAN active;
-		GMT_LONG cpt;
 		double low, high, inc;
 		char *file;
 	} S;

@@ -2168,7 +2168,8 @@ void GMT_map_clip_on (struct GMT_CTRL *C, double rgb[], COUNTER_MEDIUM flag)
 	 * be 0-3, as described in PSL_beginclipping().
 	 */
 
-	GMT_LONG np, donut;
+	GMT_LONG np;
+	BOOLEAN donut;
 	double *work_x = NULL, *work_y = NULL;
 	struct PSL_CTRL *P = C->PSL;
 	
@@ -2882,7 +2883,7 @@ GMT_LONG gmt_custum_failed_bool_test (struct GMT_CTRL *C, struct GMT_CUSTOM_SYMB
 	return (!result);			/* Return the opposite of the test result */
 }
 
-void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, double *y, COUNTER_LARGE *n, struct GMT_PEN *p, struct GMT_FILL *f, GMT_LONG outline, GMT_LONG *flush)
+void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, double *y, COUNTER_LARGE *n, struct GMT_PEN *p, struct GMT_FILL *f, GMT_LONG outline, BOOLEAN *flush)
 {
 	BOOLEAN draw_outline;
 

@@ -70,11 +70,11 @@ struct SURFACE_CTRL {
 		BOOLEAN active;
 		char *low, *high;
 		double min, max;
-		GMT_LONG lmode, hmode;
+		COUNTER_MEDIUM lmode, hmode;
 	} L;
 	struct N {	/* -N<max_iterations> */
 		BOOLEAN active;
-		GMT_LONG value;
+		COUNTER_MEDIUM value;
 	} N;
 	struct Q {	/* -Q */
 		BOOLEAN active;
@@ -597,7 +597,7 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		return (error);
 	}
-	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		return (GMT->parent->error);
 	}
 

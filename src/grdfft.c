@@ -50,12 +50,11 @@ struct GRDFFT_CTRL {
 	} D;
 	struct E {	/* -E[x_or_y][w] */
 		BOOLEAN active;
-		GMT_LONG give_wavelength;
+		BOOLEAN give_wavelength;
 		GMT_LONG mode;
 	} E;
 	struct F {	/* -F[x_or_y]<lc>/<lp>/<hp>/<hc> or -F[x_or_y]<lo>/<hi> */
 		BOOLEAN active;
-		GMT_LONG mode;
 		double lc, lp, hp, hc;
 	} F;
 	struct G {	/* -G<outfile> */
@@ -71,7 +70,7 @@ struct GRDFFT_CTRL {
 	} L;
 	struct N {	/* -N<stuff> */
 		BOOLEAN active;
-		GMT_LONG force_narray, suggest_narray, n_user_set;
+		BOOLEAN force_narray, suggest_narray, n_user_set;
 		unsigned int nx2, ny2;
 		double value;
 	} N;
@@ -595,8 +594,8 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	 */
 
 	char format[GMT_TEXT_LEN64];
-	int64_t dim[4] = {1, 1, 1, 0}, ifreq;
-	COUNTER_LARGE k, nk, nused;
+	COUNTER_LARGE dim[4] = {1, 1, 1, 0};
+	COUNTER_LARGE k, nk, nused, ifreq;
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
 	PFD get_k;
 	float *datac = Grid->data;
@@ -637,9 +636,9 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	
 	for (nused = 0, k = 2; k < Grid->header->size; k += 2) {
 		freq = (*get_k)(k, K);
-		ifreq = lrint (fabs (freq) * r_delta_k) - 1;
-		if (ifreq < 0) ifreq = 0;	/* Might happen when doing r spectrum  */
-		if ((COUNTER_LARGE)ifreq >= nk) continue;	/* Might happen when doing r spectrum  */
+		ifreq = lrint (fabs (freq) * r_delta_k);	/* Smallest value returned might be 0 when doing r spectrum*/
+		if (ifreq > 0) --ifreq;
+		if (ifreq >= nk) continue;	/* Might happen when doing r spectrum  */
 		power[ifreq] += hypot (datac[k], datac[k+1]);
 		nused++;
 	}
@@ -1046,12 +1045,13 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 				j = 0;
 				while (opt->arg[j]) {
 					switch (opt->arg[j]) {
-						case 'x': case 'X': par[0] = +1.0; break;
-						case 'y': case 'Y': par[0] = -1.0; break;
+						case 'x': case 'X': Ctrl->E.mode = +1; break;
+						case 'y': case 'Y': Ctrl->E.mode = -1; break;
 						case 'w': case 'W': Ctrl->E.give_wavelength = TRUE; break;
 					}
 					j++;
 				}
+				par[0] = Ctrl->E.mode;
 				add_operation (GMT, Ctrl, SPECTRUM, 1, par);
 				break;
 			case 'F':	/* Filter */

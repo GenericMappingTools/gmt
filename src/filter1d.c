@@ -54,7 +54,7 @@ struct FILTER1D_CTRL {
 		BOOLEAN active;
 		char filter;	/* Character codes for the filter */
 		double width;
-		GMT_LONG mode;
+		GMT_LONG mode;	/* -1/0/+1 */
 		char *file;	/* Character codes for the filter */
 	} F;
 	struct I {	/* -I<ignoreval> */
@@ -228,7 +228,7 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	GMT_LONG n_errors = 0, sval;
 	char c, txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -291,16 +291,18 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 #ifdef GMT_COMPAT
 				if (strchr (opt->arg, '/')) { /* Gave obsolete format */
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
-					if (sscanf (opt->arg, "%*s/%d", &Ctrl->N.col) != 1) {
+					if (sscanf (opt->arg, "%*s/%d", &sval) != 1) {
 						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Syntax is -N<tcol>\n");
 						++n_errors;
 					}
 				}
 				else if (!strchr (opt->arg, '/'))
-					Ctrl->N.col = atoi (opt->arg);
+					sval = atoi (opt->arg);
 #else
-					Ctrl->N.col = atoi (opt->arg);
+					sval = atoi (opt->arg);
 #endif
+				n_errors += GMT_check_condition (GMT, sval < 0, "Syntax error -N option: Time column cannot be negative.\n");
+				Ctrl->N.col = sval;
 				break;
 			case 'Q':	/* Assess quality of output */
 				Ctrl->Q.value = atof (opt->arg);
@@ -335,7 +337,6 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && (Ctrl->T.max - Ctrl->T.min) < Ctrl->F.width, "Syntax error -T option: Output interval < filterwidth\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "Syntax error -L option: Unreasonable lack-of-data interval\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.value < 0.0 || Ctrl->S.value > 1.0) , "Syntax error -S option: Enter a factor between 0 and 1\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.col < 0, "Syntax error -N option: Time column cannot be negative.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.value < 0.0 || Ctrl->Q.value > 1.0), "Syntax error -Q option: Enter a factor between 0 and 1\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -830,7 +831,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	F.equidist = TRUE;
 
 	/* Read the input data into memory */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error, "Error initializing input\n");
 	}
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
@@ -897,7 +898,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = FALSE;	/* Turn off default GMT NaN-handling */
 	GMT->current.io.skip_if_NaN[F.t_col] = TRUE;			/* ... But disallow NaN in "time" column */
 	GMT->common.b.ncol[GMT_OUT] = F.n_cols;
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error, "Error initializing input\n");
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */

@@ -43,7 +43,7 @@ struct GRDCLIP_CTRL {
 	} G;
 	struct S {	/* -Sa<high/above> or -Sb<low/below> */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		float high, above;
 		float low, below;
 	} S;

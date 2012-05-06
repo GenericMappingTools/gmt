@@ -39,13 +39,13 @@ struct PSLEGEND_CTRL {
 	} C;
 	struct D {	/* -D[x]<x0>/<y0>/w/h/just[/xoff/yoff] */
 		BOOLEAN active;
-		GMT_LONG cartesian;
+		BOOLEAN cartesian;
 		double lon, lat, width, height, dx, dy;
 		char justify[3];
 	} D;
 	struct F {	/* -F+r[<radius>][+p<pen>][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<fill>]] */
 		BOOLEAN active;
-		GMT_LONG mode;			/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade */
+		COUNTER_MEDIUM mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade */
 		double radius;			/* Radius for rounded corner */
 		double dx, dy;			/* Offset for background shaded rectangle (+s) */
 		double gap;			/* Space bewteen main and secondary frame */
@@ -286,7 +286,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
 	GMT_LONG status = 0, object_ID;
 	BOOLEAN flush_paragraph = FALSE, draw_vertical_line = FALSE, gave_label, gave_mapscale_options, did_old = FALSE;
-	int64_t dim[4] = {1, 1, 0, 2};
+	COUNTER_LARGE dim[4] = {1, 1, 0, 2};
 	 
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256];
 	char txt_f[GMT_TEXT_LEN256], key[GMT_TEXT_LEN256], sub[GMT_TEXT_LEN256], tmp[GMT_TEXT_LEN256], just;
@@ -345,7 +345,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	save_EOF = GMT->current.setting.io_seg_marker[GMT_IN];
 	GMT->current.setting.io_seg_marker[GMT_IN] = '#';
 #endif
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */

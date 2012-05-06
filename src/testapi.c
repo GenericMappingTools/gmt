@@ -35,13 +35,13 @@ struct TESTAPI_CTRL {
 	} T;
 	struct I {	/* -I sets input method */
 		BOOLEAN active;
-		GMT_LONG mode;
-		GMT_LONG via;
+		COUNTER_MEDIUM mode;
+		COUNTER_MEDIUM via;
 	} I;
 	struct W {	/* -W sets output method */
 		BOOLEAN active;
-		GMT_LONG mode;
-		GMT_LONG via;
+		COUNTER_MEDIUM mode;
+		COUNTER_MEDIUM via;
 	} W;
 };
 
@@ -172,7 +172,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG error = 0, in_ID, out_ID, via[2] = {0, 0};
 	GMT_LONG geometry[7] = {GMT_IS_POINT, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
 	COUNTER_LARGE k;
-	int64_t par[1] = {2};
+	COUNTER_LARGE par[1] = {2};
 	
 	float *fdata = NULL;
 	double *ddata = NULL;
@@ -248,7 +248,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read %s %s with method %s%s and write to %s with method %s%s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], method[Ctrl->I.mode], append[via[GMT_IN]], ofile[Ctrl->T.mode], method[Ctrl->W.mode], append[via[GMT_OUT]]);
 	
-	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_REG_FILES_IF_NONE, options) != GMT_OK) {	/* Registers default input destination, unless already set */
+	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_REG_FILES_IF_NONE, 0, options) != GMT_OK) {	/* Registers default input destination, unless already set */
 		Return (API->error);
 	}
 
@@ -417,7 +417,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			
 	/* Now put the data to the registered destination */
 	
-	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_OUT, GMT_REG_FILES_IF_NONE, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_OUT, GMT_REG_FILES_IF_NONE, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Put_Data (API, out_ID, 0, In) != GMT_OK) {

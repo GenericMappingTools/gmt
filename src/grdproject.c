@@ -119,7 +119,7 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	GMT_LONG n_errors = 0, n_files = 0, sval;
 #ifdef GMT_COMPAT
 	GMT_LONG ii = 0, jj = 0;
 	char format[GMT_BUFSIZ];
@@ -156,7 +156,9 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 				break;
 			case 'E':	/* Set dpi of grid */
 				Ctrl->E.active = TRUE;
-				Ctrl->E.dpi = atoi (opt->arg);
+				sval = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, sval <= 0, "Syntax error -E option: Must specify positive dpi\n");
+				Ctrl->E.dpi = sval;
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.file = strdup (opt->arg);
@@ -192,7 +194,6 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 	n_errors += GMT_check_condition (GMT, (Ctrl->M.active + Ctrl->A.active) == 2, "Syntax error: Can specify only one of -A and -M\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->D.active + Ctrl->E.active) > 1, "Syntax error: Must specify only one of -D or -E\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] < 0.0), "Syntax error -D option: Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.dpi <= 0, "Syntax error -E option: Must specify positive dpi\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

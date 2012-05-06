@@ -53,7 +53,8 @@ struct GMTSTITCH_CTRL {
 		char *file;
 	} Q;
 	struct T {	/* -T<cutoff[unit][/<nn_dist]> */
-		BOOLEAN active[2], mode;
+		BOOLEAN active[2];
+		GMT_LONG mode;
 		double dist[2];
 		char unit;
 	} T;
@@ -246,7 +247,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	COUNTER_MEDIUM j, tbl, n_columns, n_qfiles = 0, G;
 	
-	int64_t dim_tscr[4] = {1, 1, 0, 0};
+	COUNTER_LARGE dim_tscr[4] = {1, 1, 0, 0};
 	
 	size_t n_id_alloc = GMT_CHUNK, n_seg_alloc[2] = {0, 0}, n_alloc_pts;
 	
@@ -319,7 +320,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
@@ -598,7 +599,8 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	start_id = done = n_closed = 0;
+	start_id = n_closed = 0;
+	done = FALSE;
 	p_dummy_x = p_dummy_y = DBL_MAX;
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Assemble new segments\n");

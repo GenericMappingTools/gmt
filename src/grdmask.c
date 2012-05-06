@@ -33,7 +33,7 @@
 struct GRDMASK_CTRL {
 	struct A {	/* -A[m|p|step] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		double step;
 	} A;
 	struct G {	/* -G<maskfile> */
@@ -46,12 +46,12 @@ struct GRDMASK_CTRL {
 	} I;
 	struct N {	/* -N<maskvalues> */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 0 for out/on/in, 1 for polygon ID inside, 2 for polygon ID inside+path */
+		COUNTER_MEDIUM mode;	/* 0 for out/on/in, 1 for polygon ID inside, 2 for polygon ID inside+path */
 		double mask[GRDMASK_N_CLASSES];	/* values for each level */
 	} N;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		GMT_LONG mode;	/* Could be negative */
 		double radius;
 		char unit;
 	} S;
@@ -291,7 +291,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) Return (error);
 	gmode = (Ctrl->S.active) ? GMT_IS_POINT : GMT_IS_POLY;
 	GMT_skip_xy_duplicates (GMT, TRUE);	/* Avoid repeating x/y points in polygons */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {

@@ -993,7 +993,8 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 	B->inc[GMT_X] = B->inc[GMT_Y] = 1.0;
 	B->wesn[XLO] = 0.0;	B->wesn[XHI] = 360.0;	B->wesn[YLO] = -90.0;	B->wesn[YHI] = +90.0;
 	B->time_gap = B->dist_gap = dist = DBL_MAX;	/* Default is no data gap */
-	B->periodic = sfile[0] = suffix[0] = 0;
+	B->periodic = FALSE;
+	sfile[0] = suffix[0] = 0;
 
 	sprintf (tag_file, "%s/%s.tag", TAG, TAG);
 	if ((fp = x2sys_fopen (C, tag_file, "r")) == NULL) {	/* Not in current directory */

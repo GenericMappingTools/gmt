@@ -38,7 +38,7 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 	} A;
 	struct D {	/* -D<resolution> */
 		BOOLEAN active;
-		GMT_LONG force;	/* if TRUE, select next highest level if current set is not avaialble */
+		BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct E {	/* -E */
@@ -55,7 +55,7 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 	} I;
 	struct N {	/* -N<maskvalues>[o] */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
+		COUNTER_MEDIUM mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		double mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
 	} N;
 };

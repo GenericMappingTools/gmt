@@ -61,7 +61,7 @@ struct GRDBLEND_CTRL {
 	} G;
 	struct C {	/* -C */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} C;
 	struct I {	/* -Idx[/dy] */
 		BOOLEAN active;
@@ -625,7 +625,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Process blend parameters and populate blend structure and open input files and seek to first row inside the output grid */
 
 	if (Ctrl->In.n <= 1) {	/* Got a blend file (or stdin) */
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */

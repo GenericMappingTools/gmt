@@ -55,14 +55,14 @@ struct GMTCONVERT_CTRL {
 	} D;
 	struct E {	/* -E */
 		BOOLEAN active;
-		GMT_LONG mode;
+		GMT_LONG mode;	/* -3, -1, -1, 0, or increment stride */
 	} E;
 	struct L {	/* -L */
 		BOOLEAN active;
 	} L;
 	struct I {	/* -I[ast] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} I;
 	struct N {	/* -N */
 		BOOLEAN active;
@@ -73,9 +73,9 @@ struct GMTCONVERT_CTRL {
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
 		BOOLEAN active;
-		GMT_LONG inverse;
-		GMT_LONG regexp;
-		GMT_LONG caseless;
+		BOOLEAN inverse;
+		BOOLEAN regexp;
+		BOOLEAN caseless;
 		char *pattern;
 	} S;
 	struct T {	/* -T */
@@ -295,7 +295,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the gmtconvert main code ----------------------------*/
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data files or stdin */
 	}
 	

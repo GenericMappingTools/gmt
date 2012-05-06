@@ -289,8 +289,8 @@ struct GMT_PROJ {
 	double t_i1, t_i2, t_i3, t_i4, t_i5;
 	double t_r, t_ir;		/* Short for GMT->current.proj.EQ_RAD * GMT->current.setting.proj_scale_factor and its inverse */
 	GMT_LONG utm_hemisphere;	/* -1 for S, +1 for N, 0 if to be set by -R */
-	GMT_LONG utm_zonex;		/* The longitude component 1-60 */
-	GMT_LONG utm_zoney;		/* The latitude component A-Z */
+	COUNTER_MEDIUM utm_zonex;	/* The longitude component 1-60 */
+	char utm_zoney;			/* The latitude component A-Z */
 
 	/* Lambert Azimuthal Equal-Area Projection */
 

@@ -80,7 +80,8 @@ struct PSCOAST_CTRL {
 	} G;
 	struct I {	/* -I<feature>[/<pen>] */
 		BOOLEAN active;
-		GMT_LONG use[GSHHS_N_RLEVELS], n_rlevels;
+		BOOLEAN use[GSHHS_N_RLEVELS];
+		COUNTER_MEDIUM n_rlevels;
 		struct GMT_PEN pen[GSHHS_N_RLEVELS];
 	} I;
 	struct L {	/* -L */
@@ -92,7 +93,8 @@ struct PSCOAST_CTRL {
 	} M;
 	struct N {	/* -N<feature>[/<pen>] */
 		BOOLEAN active;
-		GMT_LONG use[GSHHS_N_BLEVELS], n_blevels;
+		BOOLEAN use[GSHHS_N_BLEVELS];
+		COUNTER_MEDIUM n_blevels;
 		struct GMT_PEN pen[GSHHS_N_BLEVELS];
 	} N;
 	struct Q {	/* -Q */
@@ -109,7 +111,7 @@ struct PSCOAST_CTRL {
 	} T;
 	struct W {	/* -W[<feature>/]<pen> */
 		BOOLEAN active;
-		GMT_LONG use[GSHHS_MAX_LEVEL];
+		BOOLEAN use[GSHHS_MAX_LEVEL];
 		struct GMT_PEN pen[GSHHS_MAX_LEVEL];
 	} W;
 #ifdef DEBUG
@@ -628,7 +630,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */

@@ -47,7 +47,7 @@ struct PSMASK_CTRL {
 		BOOLEAN active;
 		char *file;
 #ifdef DEBUG
-		GMT_LONG debug;
+		BOOLEAN debug;
 #endif
 	} D;
 	struct F {	/* -F */
@@ -66,11 +66,11 @@ struct PSMASK_CTRL {
 	} N;
 	struct Q {	/* -Q<cut> */
 		BOOLEAN active;
-		GMT_LONG min;
+		COUNTER_MEDIUM min;
 	} Q;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n|s] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		GMT_LONG mode;	/* May be negative */
 		double radius;
 		char unit;
 	} S;
@@ -545,7 +545,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!Ctrl->C.active && make_plot && GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
-		int64_t dim[4] = {1, 0, 2, 0};
+		COUNTER_LARGE dim[4] = {1, 0, 2, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_DATASET;
 		else {	/* Must determine the kind of output organization */
@@ -621,7 +621,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -748,7 +748,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		else {	/* Just paint tiles */
-			GMT_LONG start, n_use, np, plot_n;
+			COUNTER_LARGE start, n_use, np, plot_n;
 			double y_bot, y_top, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL;
 			GMT_report (GMT, GMT_MSG_NORMAL, "Tiling...\n");
 

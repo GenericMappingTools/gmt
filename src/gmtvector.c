@@ -44,22 +44,18 @@ struct GMTVECTOR_CTRL {
 	} Out;
 	struct In {	/* infile */
 		BOOLEAN active;
-		GMT_LONG n_args;
+		COUNTER_MEDIUM n_args;
 		char *arg;
 	} In;
 	struct A {	/* -A[m[<conf>]|<vec>] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		double conf;
 		char *arg;
 	} A;
 	struct C {	/* -C[i|o] */
 		BOOLEAN active[2];
 	} C;
-	struct D {	/* -D[dim] */
-		BOOLEAN active;
-		GMT_LONG mode;
-	} D;
 	struct E {	/* -E */
 		BOOLEAN active;
 	} E;
@@ -72,8 +68,8 @@ struct GMTVECTOR_CTRL {
 	} S;
 	struct T {	/* -T[operator] */
 		BOOLEAN active;
-		GMT_LONG mode;
-		GMT_LONG degree;
+		BOOLEAN degree;
+		COUNTER_MEDIUM mode;
 		double par[3];
 	} T;
 };
@@ -495,9 +491,9 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memset (vector_1, 3, double);
 	GMT_memset (vector_3, 3, double);
 	if (Ctrl->A.active) {	/* Want a single primary vector */
-		int64_t dim[4] = {1, 1, 3, 1};
+		COUNTER_LARGE dim[4] = {1, 1, 3, 1};
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 				Return (API->error);
 			}
 			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
@@ -527,7 +523,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		single = TRUE;
 	}
 	else {	/* Read input files or stdin */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 			Return (API->error);
 		}
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
@@ -627,7 +623,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Time to write out the results */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, Ctrl->Out.file, Dout) != GMT_OK) {

@@ -201,7 +201,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG k, error, gmode, level, version, greenwich, is_river, src, max_east = 270000000;
 	BOOLEAN must_swab, OK, first = TRUE;
 	
-	int64_t dim[4] = {1, 0, 2, 0};
+	COUNTER_LARGE dim[4] = {1, 0, 2, 0};
 	
 	size_t n_alloc = 0;
 

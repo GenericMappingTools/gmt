@@ -38,22 +38,22 @@ struct GRDFILTER_CTRL {
 #ifdef DEBUG
 	struct A {	/* -A<a|r|w|c>row/col */
 		BOOLEAN active;
-		GMT_LONG mode;
-		GMT_LONG ROW, COL;
+		char mode;
+		COUNTER_MEDIUM ROW, COL;
 		double x, y;
 	} A;
 #endif
 	struct D {	/* -D<distflag> */
 		BOOLEAN active;
-		GMT_LONG mode;
+		GMT_LONG mode;	/* -1 to 5 */
 	} D;
 	struct F {	/* <type>[-]<filter_width>[/<width2>][<mode>] */
 		BOOLEAN active;
-		GMT_LONG highpass;
+		BOOLEAN highpass;
 		char filter;	/* Character codes for the filter */
 		double width, width2, quantile;
-		GMT_LONG rect;
-		GMT_LONG mode;
+		BOOLEAN rect;
+		GMT_LONG mode;	/*-1 0 +1 */
 	} F;
 	struct G {	/* -G<file> */
 		BOOLEAN active;
@@ -66,7 +66,7 @@ struct GRDFILTER_CTRL {
 	} I;
 	struct N {	/* -Np|i|r */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 0 is default (i), 1 is replace (r), 2 is preserve (p) */
+		COUNTER_MEDIUM mode;	/* 0 is default (i), 1 is replace (r), 2 is preserve (p) */
 	} N;
 	struct T {	/* -T */
 		BOOLEAN active;
