@@ -164,7 +164,7 @@ int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, struct X2SY
 	return (track_id);
 }
 
-struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, GMT_LONG *found_it, struct X2SYS_BIX *B)
+struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, BOOLEAN *found_it, struct X2SYS_BIX *B)
 {	/* Looks for given track in data base and if found returns pointer to the track before it and sets found_it to TRUE.
 	 * I.e., the track is actually this_info->next_info.  If not found set found_it to FALSE and return pointer where
 	 * this track should be inserted */

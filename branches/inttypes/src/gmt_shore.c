@@ -369,7 +369,8 @@ GMT_LONG GMT_set_resolution (struct GMT_CTRL *C, char *res, char opt)
 }
 
 char GMT_shore_adjust_res (struct GMT_CTRL *C, char res) {	/* Returns the highest available resolution <= to specified resolution */
-	GMT_LONG k, orig, ok[5];
+	GMT_LONG k, orig;
+	BOOLEAN ok[5];
 	char *type = "clihf";
 	(void)gmt_shore_check (C, ok);		/* See which resolutions we have */
 	k = orig = gmt_res_to_int (res);	/* Get integer value of requested resolution */
@@ -1083,7 +1084,8 @@ GMT_LONG GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_o
 	 * We also explicitly close all polygons if they are not so already.
 	 */
 
-	COUNTER_MEDIUM k, np_new, n_use, n, start;
+	COUNTER_MEDIUM k, np_new, n, n_use;
+	COUNTER_LARGE start;
 	BOOLEAN close;
 	size_t n_alloc;
 	double *xtmp = NULL, *ytmp = NULL;

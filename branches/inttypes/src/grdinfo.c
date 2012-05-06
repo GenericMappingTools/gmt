@@ -38,7 +38,7 @@ struct GRDINFO_CTRL {
 	} F;
 	struct I {	/* -Idx[/dy] */
 		BOOLEAN active;
-		GMT_LONG status;
+		COUNTER_MEDIUM status;
 		double inc[2];
 	} I;
 	struct M {	/* -M */
@@ -46,11 +46,11 @@ struct GRDINFO_CTRL {
 	} M;
 	struct L {	/* -L[1|2] */
 		BOOLEAN active;
-		GMT_LONG norm;
+		COUNTER_MEDIUM norm;
 	} L;
 	struct T {	/* -T[s]<dz> */
 		BOOLEAN active;
-		GMT_LONG mode;
+		BOOLEAN mode;
 		double inc;
 	} T;
 };
@@ -159,7 +159,7 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 			case 'T':	/* CPT range */
 				Ctrl->T.active = TRUE;
 				if (opt->arg[0] == 's') {	/* Want symmetrical range about 0, i.e., -3500/3500/500 */
-					Ctrl->T.mode = 1;
+					Ctrl->T.mode = TRUE;
 					Ctrl->T.inc = atof (&opt->arg[1]);
 				}
 				else
@@ -228,7 +228,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	global_xmin = global_ymin = global_zmin = +DBL_MAX;
 	global_xmax = global_ymax = global_zmax = -DBL_MAX;
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */

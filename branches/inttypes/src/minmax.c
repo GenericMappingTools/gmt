@@ -37,30 +37,30 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 0 reports range for all tables, 1 is per table, 2 is per segment */
+		COUNTER_MEDIUM mode;	/* 0 reports range for all tables, 1 is per table, 2 is per segment */
 	} A;
 	struct C {	/* -C */
 		BOOLEAN active;
 	} C;
 	struct E {	/* -E<L|l|H|h><col> */
 		BOOLEAN active;
-		GMT_LONG abs;
-		GMT_LONG mode;
-		GMT_LONG col;
+		BOOLEAN abs;
+		GMT_LONG mode;	/* -1, 0, +1 */
+		COUNTER_MEDIUM col;
 	} E;
 	struct I {	/* -Idx[/dy[/<dz>..]] */
 		BOOLEAN active;
-		GMT_LONG ncol;
+		COUNTER_MEDIUM ncol;
 		double inc[GMT_MAX_COLUMNS];
 	} I;
 	struct S {	/* -S[x|y] */
 		BOOLEAN active;
-		GMT_LONG xbar, ybar;
+		BOOLEAN xbar, ybar;
 	} S;
 	struct T {	/* -T<dz>[/<col>] */
 		BOOLEAN active;
 		double inc;
-		GMT_LONG col;
+		COUNTER_MEDIUM col;
 	} T;
 };
 
@@ -133,6 +133,7 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 	 */
 
 	GMT_LONG n_errors = 0, j;
+	COUNTER_MEDIUM k;
 	BOOLEAN special = FALSE;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -222,8 +223,8 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.active && Ctrl->I.ncol < 2, "Syntax error: -Ip requires -C\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->T.active, "Syntax error: Only one of -I and -T can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 , "Syntax error -T option: Must specify a positive increment\n");
-	for (j = 0; Ctrl->I.active && j < Ctrl->I.ncol; j++) {
-		n_errors += GMT_check_condition (GMT, Ctrl->I.inc[j] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	for (k = 0; Ctrl->I.active && k < Ctrl->I.ncol; k++) {
+		n_errors += GMT_check_condition (GMT, Ctrl->I.inc[k] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	}
 	n_errors += GMT_check_binary_io (GMT, 1);
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -289,10 +290,10 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 

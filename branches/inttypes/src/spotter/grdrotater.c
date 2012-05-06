@@ -225,7 +225,7 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	 */
 
 	COUNTER_MEDIUM np = 0, add, i, j;
-	int64_t dim[4] = {1, 1, 2, 0};
+	COUNTER_LARGE dim[4] = {1, 1, 2, 0};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
 	

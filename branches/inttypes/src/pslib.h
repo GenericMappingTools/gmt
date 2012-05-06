@@ -40,15 +40,8 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Declaration of type PSL_LONG */
-#ifdef _WIN64
-typedef __int64 PSL_LONG;	/* A signed 8-byte integer */
-#define PSL_LL "ll"
-#else
-// typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 typedef int PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 #define PSL_LL "l"
-#endif
 
 /* Number of PostScript points in one inch */
 

@@ -50,14 +50,14 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 	} F;
 	struct G {	/* -G<inc>[/<colat>][+] */
 		BOOLEAN active;
-		GMT_LONG mode;
-		GMT_LONG header;
+		BOOLEAN header;
+		COUNTER_MEDIUM mode;
 		double inc;
 		double colat;
 	} G;
 	struct L {	/* -L[w][<l_min>/<l_max>] */
 		BOOLEAN active;
-		GMT_LONG constrain;
+		BOOLEAN constrain;
 		double min, max;
 	} L;
 	struct N {	/* -N */
@@ -87,12 +87,12 @@ struct PROJECT_DATA {
 
 struct PROJECT_INFO {
 	COUNTER_LARGE n_used;
-	GMT_LONG find_new_point;
 	GMT_LONG n_outputs;
-	GMT_LONG want_z_output;
 	GMT_LONG n_z;
-	GMT_LONG first;
 	GMT_LONG output_choice[PROJECT_N_FARGS];
+	BOOLEAN find_new_point;
+	BOOLEAN want_z_output;
+	BOOLEAN first;
 	double pole[3];
 	double plon, plat;	/* Pole location */
 };
@@ -799,7 +799,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers data output */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -889,7 +889,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */

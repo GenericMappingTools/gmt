@@ -49,7 +49,7 @@ struct GRDTRACK_CTRL {
 	} A;
 	struct C {	/* -C<length>/<ds>[/<spacing>] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		GMT_LONG mode;	/* May be negative */
 		char unit;
 		double ds, spacing, length;
 	} C;
@@ -332,7 +332,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	/*---------------------------- This is the grdtrack main code ----------------------------*/
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->C.active ? GMT_IS_LINE : GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->C.active ? GMT_IS_LINE : GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 
@@ -443,7 +443,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		
 		pure_ascii = !(GMT->common.b.active[GMT_IN] || GMT->common.b.active[GMT_OUT] || GMT->common.o.active);
 
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */

@@ -415,7 +415,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		xmax1 = xmax2 = -360.0;
 		ymin = 180.0;
 		ymax = -180.0;
-		GMT_memset (quad, 4, GMT_LONG);	/* Set all to FALSE */
+		GMT_memset (quad, 4, BOOLEAN);	/* Set all to FALSE */
 		GMT_memset (counter, MGD77_MAX_COLS, COUNTER_LARGE);
 	
 		for (i = 0; i < MGD77_MAX_COLS; i++) {

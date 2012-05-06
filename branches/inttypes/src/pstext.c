@@ -42,13 +42,13 @@ struct PSTEXT_CTRL {
 	} A;
 	struct C {	/* -C<dx>/<dy> */
 		BOOLEAN active;
-		GMT_LONG percent;
+		BOOLEAN percent;
 		double dx, dy;
 	} C;
 	struct D {	/* -D[j]<dx>[/<dy>][v[<pen>]] */
 		BOOLEAN active;
+		BOOLEAN line;
 		GMT_LONG justify;
-		GMT_LONG line;
 		double dx, dy;
 		struct GMT_PEN pen;
 	} D;
@@ -61,7 +61,7 @@ struct PSTEXT_CTRL {
 	} F;
 	struct G {	/* -G<fill> */
 		BOOLEAN active;
-		GMT_LONG mode;
+		BOOLEAN mode;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L */
@@ -593,7 +593,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	old_is_world = GMT->current.map.is_world;
 	GMT->current.map.is_world = TRUE;
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */

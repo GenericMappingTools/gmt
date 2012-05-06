@@ -43,15 +43,15 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -Ab|B|f|Fb|B|o|O<lon0>/<lat0> */
 		BOOLEAN active;
-		GMT_LONG azims;
-		GMT_LONG orient;	/* TRUE if we want orientations, not azimuths */
-		GMT_LONG reverse;	/* TRUE if we want back-azimuths instead of regular azimuths */
-		GMT_LONG geodesic;	/* TRUE if we want geodesic azimuths [Default is great circle azimuths] */
+		BOOLEAN azims;
+		BOOLEAN orient;	/* TRUE if we want orientations, not azimuths */
+		BOOLEAN reverse;	/* TRUE if we want back-azimuths instead of regular azimuths */
+		BOOLEAN geodesic;	/* TRUE if we want geodesic azimuths [Default is great circle azimuths] */
 		double lon, lat;	/* Fixed point of reference */
 	} A;
 	struct C {	/* -C[<false_easting>/<false_northing>] */
 		BOOLEAN active;
-		GMT_LONG shift;
+		BOOLEAN shift;
 		double easting, northing;	/* Shifts */
 	} C;
 	struct D {	/* -D<c|i|p> */
@@ -68,8 +68,8 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 	} F;
 	struct G {	/* -G<lon0>/<lat0>[d|e|f|k|m|M|n|s|c|C] */
 		BOOLEAN active;
-		GMT_LONG mode;		/* 1 = distance to fixed point, 2 = cumulative distances, 3 = incremental distances, 4 = 2nd point in cols 3/4 */
-		GMT_LONG sph;		/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
+		COUNTER_MEDIUM mode;		/* 1 = distance to fixed point, 2 = cumulative distances, 3 = incremental distances, 4 = 2nd point in cols 3/4 */
+		COUNTER_MEDIUM sph;		/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		double lon, lat;	/* Fixed point of reference */
 		char unit;
 	} G;
@@ -78,25 +78,25 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 	} I;
 	struct L {	/* -L<line.xy>[/<d|e|f|k|m|M|n|s|c|C>] */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 0 = dist to nearest point, 1 = also get the point, 2 = instead get seg#, pt# */
-		GMT_LONG sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
+		COUNTER_MEDIUM mode;	/* 0 = dist to nearest point, 1 = also get the point, 2 = instead get seg#, pt# */
+		COUNTER_MEDIUM sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		char *file;	/* Name of file with lines */
 		char unit;
 	} L;
 	struct N {	/* -N */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} N;
 	struct Q {	/* -Q[e|d] */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 1 = print =Qe, 2 print -Qd, 3 print both */
+		COUNTER_MEDIUM mode;	/* 1 = print =Qe, 2 print -Qd, 3 print both */
 	} Q;
 	struct S {	/* -S */
 		BOOLEAN active;
 	} S;
 	struct T {	/* -T[h]<from>[/<to>] */
 		BOOLEAN active;
-		GMT_LONG heights;	/* True if we have heights */
+		BOOLEAN heights;	/* True if we have heights */
 		struct GMT_DATUM from;	/* Contains a, f, xyz[3] */
 		struct GMT_DATUM to;	/* Contains a, f, xyz[3] */
 	} T;
@@ -587,7 +587,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->L.active) {
 		/* Initialize the i/o for doing table reading */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 			Return (API->error);
 		}
 
@@ -632,10 +632,10 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN,  0))) Return (error);
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 	rmode = (!GMT->common.b.active[GMT_IN] && !GMT->common.b.active[GMT_OUT] && !GMT->common.o.active && GMT_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;

@@ -72,8 +72,8 @@ struct PS2RASTER_CTRL {
 	} In;
 	struct A {	/* -A[u][-] [Adjust boundingbox] */
 		BOOLEAN active;
-		GMT_LONG strip;	/* Remove the -U time-stamp */
-		GMT_LONG reset;	/* The -A- turns -A off, overriding any automode in effect */
+		BOOLEAN strip;	/* Remove the -U time-stamp */
+		BOOLEAN reset;	/* The -A- turns -A off, overriding any automode in effect */
 		double margin[4];
 	} A;
 	struct C {	/* -C<option> */
@@ -86,7 +86,7 @@ struct PS2RASTER_CTRL {
 	} D;
 	struct E {	/* -E<resolution> */
 		BOOLEAN active;
-		GMT_LONG dpi;
+		COUNTER_MEDIUM dpi;
 	} E;
 	struct F {	/* -F<out_name> */
 		BOOLEAN active;
@@ -108,8 +108,8 @@ struct PS2RASTER_CTRL {
 	} P;
 	struct Q {	/* -Q[g|t]<bits> */
 		BOOLEAN active;
-		GMT_LONG on[2];	/* [0] for graphics, [1] for text antialiasing */
-		GMT_LONG bits[2];
+		BOOLEAN on[2];	/* [0] for graphics, [1] for text antialiasing */
+		COUNTER_MEDIUM bits[2];
 	} Q;
 	struct S {	/* -S */
 		BOOLEAN active;
@@ -117,14 +117,14 @@ struct PS2RASTER_CTRL {
 	struct T {	/* -T */
 		BOOLEAN active;
 		GMT_LONG eps;	/* 1 if we want to make EPS, -1 with /PageSize (possibly in addition to another format) */
-		GMT_LONG device;
+		GMT_LONG device;	/* May be negative */
 	} T;
 	struct W {	/* -W -- for world file production */
 		BOOLEAN active;
-		GMT_LONG folder;
-		GMT_LONG warp;
-		GMT_LONG kml;
-		GMT_LONG mode;	/* 0 = clamp at ground, 1 is relative to ground, 2 is absolute 3 is relative to seafloor, 4 is clamp at seafloor */
+		BOOLEAN folder;
+		BOOLEAN warp;
+		BOOLEAN kml;
+		COUNTER_MEDIUM mode;	/* 0 = clamp at ground, 1 is relative to ground, 2 is absolute 3 is relative to seafloor, 4 is clamp at seafloor */
 		GMT_LONG min_lod, max_lod;	/* minLodPixels and maxLodPixels settings */
 		GMT_LONG min_fade, max_fade;	/* minFadeExtent and maxFadeExtent settings */
 		char *doctitle;		/* Name of KML document */

@@ -66,8 +66,8 @@ struct GMT2KML_CTRL {
 	double t_transp;
 	struct A {	/* -A */
 		BOOLEAN active;
-		GMT_LONG mode;
-		GMT_LONG get_alt;
+		BOOLEAN get_alt;
+		COUNTER_MEDIUM mode;
 		double scale;
 		double altitude;
 	} A;
@@ -84,7 +84,7 @@ struct GMT2KML_CTRL {
 	} E;
 	struct F {	/* -F */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} F;
 	struct G {	/* -G<fill> */
 		BOOLEAN active[2];
@@ -101,12 +101,12 @@ struct GMT2KML_CTRL {
 	} L;
 	struct N {	/* -N */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		char *fmt;
 	} N;
 	struct R2 {	/* -R */
 		BOOLEAN active;
-		GMT_LONG automatic;
+		BOOLEAN automatic;
 	} R2;
 	struct S {	/* -S */
 		BOOLEAN active;
@@ -119,13 +119,13 @@ struct GMT2KML_CTRL {
 	} T;
 	struct W {	/* -W<pen> */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z */
 		BOOLEAN active;
-		GMT_LONG invisible;
-		GMT_LONG open;
+		BOOLEAN invisible;
+		BOOLEAN open;
 		double min[3], max[3];
 	} Z;
 };
@@ -742,7 +742,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		char *record = NULL, C[5][GMT_TEXT_LEN64];
 
 		ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -855,7 +855,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #else
 		char *t_opt = "-T";
 #endif
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 			Return (API->error);
 		}
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {

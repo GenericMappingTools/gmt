@@ -58,7 +58,7 @@ struct GRDVECTOR_CTRL {
 	} Q;
 	struct S {	/* -S[l]<scale>[<unit>] */
 		BOOLEAN active;
-		GMT_LONG constant;
+		BOOLEAN constant;
 		char unit;
 		double factor;
 	} S;

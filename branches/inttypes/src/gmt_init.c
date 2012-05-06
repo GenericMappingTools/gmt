@@ -2369,7 +2369,7 @@ void GMT_pickdefaults (struct GMT_CTRL *C, BOOLEAN lines, struct GMT_OPTION *opt
 	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now  */
 }
 
-BOOLEAN gmt_true_false_or_error (char *value, GMT_LONG *answer)
+BOOLEAN gmt_true_false_or_error (char *value, BOOLEAN *answer)
 {
 	/* Assigns 0 or 1 to answer, depending on whether value is false or true.
 	 * answer = 0, when value is "f", "false" or "0"
@@ -2626,7 +2626,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 {
 	COUNTER_MEDIUM pos, len;
 	GMT_LONG i, ival, case_val, manual;
-	BOOLEAN error = FALSE;
+	BOOLEAN error = FALSE, tf_answer;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], lower_value[GMT_BUFSIZ];
 	
 	double dval;
@@ -3351,7 +3351,8 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 #endif
 		case GMTCASE_PS_COMMENTS:
 			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
-			error = gmt_true_false_or_error (lower_value, &C->PSL->internal.comments);
+			error = gmt_true_false_or_error (lower_value, &tf_answer);
+			C->PSL->internal.comments = (tf_answer) ? 1 : 0;
 			break;
 
 		/* IO GROUP */
@@ -4272,7 +4273,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 				strcpy (value, "skip");
 			break;
 		case GMTCASE_IO_NC4_DEFLATION_LEVEL:
-			sprintf (value, "%ld", C->current.setting.io_nc4_deflation_level);
+			sprintf (value, "%d", C->current.setting.io_nc4_deflation_level);
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_XY_TOGGLE: GMT_COMPAT_WARN;
@@ -5954,7 +5955,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	return (error);
 }
 
-GMT_LONG gmt_project_type (char *args, GMT_LONG *pos, GMT_LONG *width_given)
+GMT_LONG gmt_project_type (char *args, GMT_LONG *pos, BOOLEAN *width_given)
 {
 	/* Parse the start of the -J option to determine the projection type.
 	 * If the first character of args is uppercase, width_given is set to 1.
@@ -6077,7 +6078,7 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 	 * C->current.proj structure.  The function returns TRUE if an error is encountered.
 	 */
 
-	GMT_LONG i, j, k = 9, m, n, nlen, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
+	GMT_LONG i, j, k, m, n, nlen, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
 	GMT_LONG n_slashes = 0, last_pos;
 	BOOLEAN width_given, error = FALSE, skip = FALSE;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
@@ -6646,10 +6647,11 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 				if (mod == 'I' || mod == 'O') error++;	/* No such zones */
 			}
 			C->current.proj.pars[0] = fabs (C->current.proj.pars[0]);
-			C->current.proj.utm_zonex = lrint (C->current.proj.pars[0]);
+			k = lrint (C->current.proj.pars[0]);
+			error += (k < 1 || k > 60);	/* Zones must be 1-60 */
+			C->current.proj.utm_zonex = k;
 			error += gmt_scale_or_width (C, txt_b, &C->current.proj.pars[1]);
 			error += !(n_slashes == 1 && n == 2);
-			error += (C->current.proj.utm_zonex < 1 || C->current.proj.utm_zonex > 60);	/* Zones must be 1-60 */
 			break;
 
 		default:

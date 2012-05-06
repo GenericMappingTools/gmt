@@ -38,18 +38,18 @@ struct GRDGRADIENT_CTRL {
 	} In;
 	struct A {	/* -A<azim>[/<azim2>] */
 		BOOLEAN active;
-		GMT_LONG two;
+		BOOLEAN two;
 		double azimuth[2];
 	} A;
 	struct D {	/* -D[a][o][n] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} D;
 	struct E {	/* -E[s|p]<azim>/<elev[ambient/diffuse/specular/shine]> */
 		BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		double azimuth, elevation;
 		double ambient, diffuse, specular, shine;
-		GMT_LONG mode;
 	} E;
 	struct G {	/* -G<file> */
 		BOOLEAN active;
@@ -57,7 +57,7 @@ struct GRDGRADIENT_CTRL {
 	} G;
 	struct N {	/* -N[t_or_e][<amp>[/<sigma>[/<offset>]]] */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 1 = atan, 2 = exp */
+		COUNTER_MEDIUM mode;	/* 1 = atan, 2 = exp */
 		double norm, sigma, offset;
 	} N;
 	struct S {	/* -S<slopefile> */

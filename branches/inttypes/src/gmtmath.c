@@ -66,7 +66,7 @@ struct GMTMATH_CTRL {	/* All control options for this program (except common arg
 	} A;
 	struct C {	/* -C<cols> */
 		BOOLEAN active;
-		GMT_LONG *cols;
+		BOOLEAN *cols;
 	} C;
 	struct I {	/* -I */
 		BOOLEAN active;
@@ -83,7 +83,7 @@ struct GMTMATH_CTRL {	/* All control options for this program (except common arg
 	} Q;
 	struct S {	/* -S[f|l] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		GMT_LONG mode;	/* -1 or +1 */
 	} S;
 	struct T {	/* -T[<tmin/tmax/t_inc>] | -T<file> */
 		BOOLEAN active;
@@ -2908,7 +2908,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_LARGE row, n_records, n_rows = 0, seg;
 	COUNTER_MEDIUM n_macros;
 	
-	int64_t dim[4] = {1, 1, 0, 0};
+	COUNTER_LARGE dim[4] = {1, 1, 0, 0};
 
 	double factor[GMTMATH_STACK_SIZE], t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
 
@@ -2988,9 +2988,9 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_hash_init (GMT, localhashnode, operator, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS);
 
-	GMT_memset (constant, GMTMATH_STACK_SIZE, GMT_LONG);
+	GMT_memset (constant, GMTMATH_STACK_SIZE, BOOLEAN);
 	GMT_memset (factor, GMTMATH_STACK_SIZE, double);
-	GMT_memset (alloc_mode, GMTMATH_STACK_SIZE, GMT_LONG);
+	GMT_memset (alloc_mode, GMTMATH_STACK_SIZE, COUNTER_MEDIUM);
 	GMT_memset (stack, GMTMATH_STACK_SIZE, struct GMT_DATASET *);
 
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = FALSE;	/* Turn off default GMT NaN-handling of x/y (e.g. lon/lat columns) */
@@ -3354,7 +3354,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (info.roots_found) {	/* Special treatment of root finding */
 		struct GMT_LINE_SEGMENT *S = stack[0]->table[0]->segment[0];
-		int64_t dim[4] = {1, 1, 1, 0};
+		COUNTER_LARGE dim[4] = {1, 1, 1, 0};
 		
 		dim[3] = info.n_roots;
 		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error)

@@ -49,7 +49,7 @@ EXTERN_MSC double GMT_great_circle_dist_cos (struct GMT_CTRL *C, double lon1, do
 struct GREENSPLINE_CTRL {
 	struct A {	/* -A<gradientfile> */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
+		COUNTER_MEDIUM mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
 		char *file;
 	} A	;
 	struct C {	/* -C<cutoff> */
@@ -59,7 +59,7 @@ struct GREENSPLINE_CTRL {
 	} C;
 	struct D {	/* -D<distflag> */
 		BOOLEAN active;
-		GMT_LONG mode;
+		GMT_LONG mode;	/* Can be negative */
 	} D;
 	struct G {	/* -G<output_grdfile> */
 		BOOLEAN active;
@@ -83,15 +83,15 @@ struct GREENSPLINE_CTRL {
 	} Q;
 	struct R3 {	/* -Rxmin/xmax[/ymin/ymax[/zmin/zmaz]] | -Ggridfile */
 		BOOLEAN active;
-		GMT_LONG mode;		/* TRUE if settings came from a grid file */
-		GMT_LONG dimension;	/* 1, 2, or 3 */
-		GMT_LONG offset;	/* 0 or 1 */
+		BOOLEAN mode;		/* TRUE if settings came from a grid file */
+		COUNTER_MEDIUM dimension;	/* 1, 2, or 3 */
+		COUNTER_MEDIUM offset;	/* 0 or 1 */
 		double range[6];	/* Min/max for each dimension */
 		double inc[2];		/* xinc/yinc when -Rgridfile was given*/
 	} R3;
 	struct S {	/* -S<mode>[/args] */
-		GMT_LONG active, fast;
-		GMT_LONG mode;
+		BOOLEAN active, fast;
+		COUNTER_MEDIUM mode;
 		double value[2];
 		double rval[2];
 		char *arg;
@@ -242,7 +242,8 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_items, k, j, dimension;
+	GMT_LONG n_errors = 0, n_items, k, j;
+	COUNTER_MEDIUM dimension;
 	char txt[6][GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -277,7 +278,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 					Ctrl->R3.inc[GMT_X] = G->header->inc[GMT_X];	Ctrl->R3.inc[GMT_Y] = G->header->inc[GMT_Y];
 					Ctrl->R3.offset = G->header->registration;
 					Ctrl->R3.dimension = 2;
-					Ctrl->R3.mode = 1;
+					Ctrl->R3.mode = TRUE;
 					if (GMT_Destroy_Data (C, GMT_ALLOCATED, &G) != GMT_OK) {
 						return (C->error);
 					}
@@ -1163,7 +1164,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Now we are ready to take on some input values */
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 
@@ -1640,7 +1641,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->G.active && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->G.file, NULL)) == GMTAPI_NOTSET) {
 				Return (error);
 			}
-			else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes std output */
+			else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes std output */
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */

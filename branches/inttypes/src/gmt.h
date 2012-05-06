@@ -139,22 +139,22 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	double dlon;				/* Steps taken in longitude along gridlines (gets reset in gmt_init.c) */
 	double dlat;				/* Steps taken in latitude along gridlines (gets reset in gmt_init.c) */
 	double path_step;			/* Sampling interval if resampling of paths should be done */
-	PFL outside;				/* Pointer to function checking if a lon/lat point is outside map */
+	PFB outside;				/* Pointer to function checking if a lon/lat point is outside map */
+	PFB overlap;				/* Pointer to function checking for overlap between 2 regions */
+	PFB near_lines_func;			/* Pointer to function returning distance to nearest line among a set of lines */
+	PFB near_a_line_func;			/* Pointer to function returning distance to line */
+	PFB near_point_func;			/* Pointer to function returning distance to nearest point */
+	PFB will_it_wrap;			/* TRUE if consecutive points indicate wrap */
+	PFB this_point_wraps;			/* Used in above */
 	PFL crossing;				/* Pointer to functions returning crossover point at boundary */
-	PFL overlap;				/* Pointer to function checking for overlap between 2 regions */
 	PFL clip;				/* Pointer to functions that clip a polygon to fit inside map */
+	PFL wrap_around_check;			/* Does x or y wrap checks */
+	PFL jump;				/* -1/0/+1 if we jump in x or y */
+	PFL truncate;				/* Truncate polygons agains boundaries */
 	PFD left_edge, right_edge;		/* Pointers to functions that return left/right edge of map */
 	struct GMT_DIST dist[3];		/* Pointers to functions/scales returning distance between two points points */
 	PFD azimuth_func;			/* Pointer to function returning azimuth between two points points */
-	PFL near_lines_func;			/* Pointer to function returning distance to nearest line among a set of lines */
-	PFL near_a_line_func;			/* Pointer to function returning distance to line */
-	PFL near_point_func;			/* Pointer to function returning distance to nearest point */
-	PFL wrap_around_check;			/* Does x or y wrap checks */
-	PFL jump;				/* TRUE if we jump in x or y */
-	PFL will_it_wrap;			/* TRUE if consecutive points indicate wrap */
-	PFL this_point_wraps;			/* Used in above */
 	PFV get_crossings;			/* Returns map crossings in x or y */
-	PFL truncate;				/* Truncate polygons agains boundaries */
 };
 
 struct GMT_TIME_CONV {		/* Holds all time-related parameters */

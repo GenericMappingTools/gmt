@@ -40,31 +40,31 @@ struct SAMPLE1D_CTRL {
 	} Out;
 	struct A {	/* -A[m|p] */
 		BOOLEAN active;
-		int mode;
+		COUNTER_MEDIUM mode;
 	} A;
 	struct F {	/* -Fl|a|c */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} F;
 	struct I {	/* -I<inc>[d|e|k||M|n|c|C] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		double inc;
 		char unit;
 	} I;
-	struct T {	/* -T<time_col> */
-		BOOLEAN active;
-		COUNTER_MEDIUM col;
-	} T;
 	struct N {	/* -N<knotfile> */
 		BOOLEAN active;
 		char *file;
 	} N;
 	struct S {	/* -S<xstart>[/<xstop>] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		double start, stop;
 	} S;
+	struct T {	/* -T<time_col> */
+		BOOLEAN active;
+		COUNTER_MEDIUM col;
+	} T;
 };
 
 void *New_sample1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -267,10 +267,10 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = FALSE;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
 	GMT->current.io.skip_if_NaN[Ctrl->T.col] = TRUE;				/* ... But disallow NaN in "time" column */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 
@@ -310,7 +310,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	nan_flag = GMT_memory (GMT, NULL, Din->n_columns, unsigned char);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
-		Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0);
+		Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0, FALSE);
 		Dout->table[tbl] = Tout;
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			GMT_memset (nan_flag, Din->n_columns, unsigned char);

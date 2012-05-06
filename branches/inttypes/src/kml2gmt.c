@@ -37,7 +37,6 @@ struct KML2GMT_CTRL {
 	} In;
 	struct Z {	/* -Z */
 		BOOLEAN active;
-		GMT_LONG n_cols;
 	} Z;
 };
 	
@@ -61,7 +60,7 @@ GMT_LONG GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "kml2gmt %s [API] - Extract GMT table data from Google Earth KML files\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: kml2gmt [<kmlfiles>] [-V] [%s] [%s] > GMTdata.txt\n", GMT_bo_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "usage: kml2gmt [<kmlfiles>] [-V] [-Z] [%s] [%s] > GMTdata.txt\n", GMT_bo_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -161,7 +160,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */

@@ -51,12 +51,12 @@ struct SPECTRUM1D_CTRL {
 	} D;
 	struct N {	/* -N[+]<namestem> */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		char *name;
 	} N;
 	struct S {	/* -S<segment_size> */
 		BOOLEAN active;
-		GMT_LONG size;
+		COUNTER_MEDIUM size;
 	} S;
 	struct W {	/* -W */
 		BOOLEAN active;
@@ -538,7 +538,7 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, window_test = 2;
+	GMT_LONG n_errors = 0, j, window_test = 2, sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -582,7 +582,9 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 				break;
 			case 'S':
 				Ctrl->S.active = TRUE;
-				Ctrl->S.size = atoi (opt->arg);
+				sval = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, sval <= 0, "Syntax error -S option: segment size must be positive\n");
+				Ctrl->S.size = sval;
 				while (window_test < Ctrl->S.size) {
 					window_test += window_test;
 				}
@@ -597,7 +599,6 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.size <= 0, "Syntax error -S option: segment size must be positive\n");
 	n_errors += GMT_check_condition (GMT, window_test != Ctrl->S.size, "Syntax error -S option: Segment size not radix 2.  Try %ld or %ld\n", (window_test/2), window_test);
 	n_errors += GMT_check_condition (GMT, Ctrl->D.inc <= 0.0, "Syntax error -D option: Sampling interval must be positive\n");
 	n_errors += GMT_check_binary_io (GMT, Ctrl->C.active + 1);
@@ -657,7 +658,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 1 + C.y_given)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
@@ -673,7 +674,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		if (one_table) {
-			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0);
+			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0, FALSE);
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */

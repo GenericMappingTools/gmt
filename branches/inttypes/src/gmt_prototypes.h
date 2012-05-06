@@ -146,8 +146,8 @@ EXTERN_MSC GMT_LONG GMT_ascii_output_col (struct GMT_CTRL *C, FILE *fp, double x
 EXTERN_MSC BOOLEAN GMT_not_numeric (struct GMT_CTRL *C, char *text);				/* Rules out _some_ text as possible numerics */
 EXTERN_MSC GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *pattern, char *out_string);
 EXTERN_MSC GMT_LONG GMT_set_cols (struct GMT_CTRL *C, GMT_LONG direction, COUNTER_MEDIUM expected);
-EXTERN_MSC struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, COUNTER_MEDIUM n_tables, int64_t n_segments, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows);
-EXTERN_MSC struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, int64_t n_segments, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows);
+EXTERN_MSC struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, COUNTER_MEDIUM n_tables, COUNTER_LARGE n_segments, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows, BOOLEAN alloc_only);
+EXTERN_MSC struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, COUNTER_LARGE n_segments, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows, BOOLEAN alloc_only);
 EXTERN_MSC void GMT_free_textset (struct GMT_CTRL *C, struct GMT_TEXTSET **data);
 EXTERN_MSC struct GMT_TEXTSET * GMT_duplicate_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, COUNTER_LARGE mode);
 EXTERN_MSC void GMT_adjust_dataset (struct GMT_CTRL *C, struct GMT_DATASET *D, COUNTER_MEDIUM n_columns);
@@ -194,7 +194,7 @@ EXTERN_MSC void GMT_check_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct G
 /* gmt_support.c: */
 
 EXTERN_MSC COUNTER_MEDIUM GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GMT_LINE_SEGMENT ***Lout);
-EXTERN_MSC GMT_LONG GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GMT_LINE_SEGMENT ***Lout);
+EXTERN_MSC COUNTER_MEDIUM GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GMT_LINE_SEGMENT ***Lout);
 EXTERN_MSC BOOLEAN GMT_x_is_outside (struct GMT_CTRL *C, double *x, double left, double right);
 EXTERN_MSC void GMT_set_xy_domain (struct GMT_CTRL *C, double wesn_extended[], struct GRD_HEADER *h);
 EXTERN_MSC GMT_LONG GMT_BC_init (struct GMT_CTRL *C, struct GRD_HEADER *h);
@@ -303,13 +303,13 @@ EXTERN_MSC void GMT_auto_frame_interval (struct GMT_CTRL *C, COUNTER_MEDIUM axis
 EXTERN_MSC double GMT_az_backaz (struct GMT_CTRL *C, double lonE, double latE, double lonS, double latS, BOOLEAN baz);
 EXTERN_MSC double GMT_distance (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE);
 EXTERN_MSC double GMT_azim_to_angle (struct GMT_CTRL *C, double lon, double lat, double c, double azim);
-EXTERN_MSC GMT_LONG GMT_clip_to_map (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE np, double **x, double **y);
-EXTERN_MSC GMT_LONG GMT_compact_line (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, GMT_LONG pen_flag, int *pen);
+EXTERN_MSC COUNTER_LARGE GMT_clip_to_map (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE np, double **x, double **y);
+EXTERN_MSC COUNTER_LARGE GMT_compact_line (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, GMT_LONG pen_flag, int *pen);
 EXTERN_MSC COUNTER_LARGE GMT_geo_to_xy_line (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n);
 EXTERN_MSC GMT_LONG GMT_graticule_path (struct GMT_CTRL *C, double **x, double **y, GMT_LONG dir, double w, double e, double s, double n);
 EXTERN_MSC GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRID *O, BOOLEAN inverse);
 EXTERN_MSC GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IMAGE *O, BOOLEAN inverse);
-EXTERN_MSC GMT_LONG GMT_map_clip_path (struct GMT_CTRL *C, double **x, double **y, BOOLEAN *donut);
+EXTERN_MSC COUNTER_MEDIUM GMT_map_clip_path (struct GMT_CTRL *C, double **x, double **y, BOOLEAN *donut);
 EXTERN_MSC GMT_LONG GMT_map_outside (struct GMT_CTRL *C, double lon, double lat);
 EXTERN_MSC BOOLEAN GMT_geo_to_xy (struct GMT_CTRL *C, double lon, double lat, double *x, double *y);
 EXTERN_MSC void GMT_geoz_to_xy (struct GMT_CTRL *C, double x, double y, double z, double *x_out, double *y_out);
@@ -322,17 +322,17 @@ EXTERN_MSC void GMT_xy_to_geo (struct GMT_CTRL *C, double *lon, double *lat, dou
 EXTERN_MSC void GMT_xyz_to_xy (struct GMT_CTRL *C, double x, double y, double z, double *x_out, double *y_out);
 EXTERN_MSC void GMT_xyz_to_xy_n (struct GMT_CTRL *C, double *x, double *y, double z, COUNTER_LARGE n);
 EXTERN_MSC double * GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], COUNTER_LARGE n, double scale, GMT_LONG dist_flag);
-EXTERN_MSC GMT_LONG GMT_map_truncate (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, COUNTER_LARGE start, GMT_LONG side);
-EXTERN_MSC GMT_LONG GMT_init_distaz (struct GMT_CTRL *C, char c, GMT_LONG mode, GMT_LONG type);
-EXTERN_MSC GMT_LONG GMT_near_lines (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, COUNTER_MEDIUM return_mindist, double *dist_min, double *x_near, double *y_near);
-EXTERN_MSC GMT_LONG GMT_near_a_line (struct GMT_CTRL *C, double lon, double lat, GMT_LONG seg, struct GMT_LINE_SEGMENT *S, COUNTER_MEDIUM return_mindist, double *dist_min, double *x_near, double *y_near);
-EXTERN_MSC GMT_LONG GMT_near_a_point (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist);
+EXTERN_MSC COUNTER_LARGE GMT_map_truncate (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, COUNTER_LARGE start, GMT_LONG side);
+EXTERN_MSC COUNTER_MEDIUM GMT_init_distaz (struct GMT_CTRL *C, char c, COUNTER_MEDIUM mode, COUNTER_MEDIUM type);
+EXTERN_MSC BOOLEAN GMT_near_lines (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, COUNTER_MEDIUM return_mindist, double *dist_min, double *x_near, double *y_near);
+EXTERN_MSC BOOLEAN GMT_near_a_line (struct GMT_CTRL *C, double lon, double lat, GMT_LONG seg, struct GMT_LINE_SEGMENT *S, COUNTER_MEDIUM return_mindist, double *dist_min, double *x_near, double *y_near);
+EXTERN_MSC BOOLEAN GMT_near_a_point (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist);
 EXTERN_MSC double GMT_great_circle_dist_meter (struct GMT_CTRL *C, double x0, double y0, double x1, double y1);
 EXTERN_MSC double GMT_lat_swap_quick (struct GMT_CTRL *C, double lat, double c[]);
 EXTERN_MSC double GMT_lat_swap (struct GMT_CTRL *C, double lat, COUNTER_MEDIUM itype);
 EXTERN_MSC void GMT_lat_swap_init (struct GMT_CTRL *C);
 EXTERN_MSC double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, COUNTER_LARGE *id);
-EXTERN_MSC BOOLEAN GMT_UTMzone_to_wesn (struct GMT_CTRL *C, GMT_LONG zone_x, GMT_LONG zone_y, GMT_LONG hemi, double wesn[]);
+EXTERN_MSC BOOLEAN GMT_UTMzone_to_wesn (struct GMT_CTRL *C, COUNTER_MEDIUM zone_x, char zone_y, GMT_LONG hemi, double wesn[]);
 EXTERN_MSC void GMT_ECEF_forward (struct GMT_CTRL *C, double in[], double out[]);
 EXTERN_MSC void GMT_ECEF_inverse (struct GMT_CTRL *C, double in[], double out[]);
 EXTERN_MSC void GMT_ECEF_init (struct GMT_CTRL *C, struct GMT_DATUM *D);

@@ -38,12 +38,12 @@ struct GRDCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
 	struct A {	/* -A[-][labelinfo] */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 1 turns off all labels */
+		COUNTER_MEDIUM mode;	/* 1 turns off all labels */
 		double interval;
 	} A;
 	struct C {	/* -C<cont_int> */
 		BOOLEAN active;
-		GMT_LONG cpt;
+		BOOLEAN cpt;
 		char *file;
 		double interval;
 	} C;
@@ -68,24 +68,24 @@ struct GRDCONTOUR_CTRL {
 	} Q;
 	struct S {	/* -S<smooth> */
 		BOOLEAN active;
-		GMT_LONG value;
+		COUNTER_MEDIUM value;
 	} S;
 	struct T {	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
 		BOOLEAN active;
-		GMT_LONG label;
-		GMT_LONG low, high;	/* TRUE to tick low and high locals */
+		BOOLEAN label;
+		BOOLEAN low, high;	/* TRUE to tick low and high locals */
 		double spacing, length;
 		char *txt[2];	/* Low and high label */
 	} T;
 	struct W {	/* -W[+]<type><pen> */
 		BOOLEAN active;
-		GMT_LONG color_cont;
-		GMT_LONG color_text;
+		BOOLEAN color_cont;
+		BOOLEAN color_text;
 		struct GMT_PEN pen[2];
 	} W;
 	struct Z {	/* -Z[<fact>[/shift>]][p] */
 		BOOLEAN active;
-		GMT_LONG periodic;
+		BOOLEAN periodic;
 		double scale, offset;
 	} Z;
 };
@@ -307,7 +307,9 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 				break;
 			case 'S':	/* Smoothing of contours */
 				Ctrl->S.active = TRUE;
-				Ctrl->S.value = atoi (opt->arg);
+				j = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, j < 0, "Syntax error -S option: Smooth_factor must be > 0\n");
+				Ctrl->S.value = j;
 				break;
 			case 'T':	/* Ticking of innermost closed contours */
 				Ctrl->T.active = Ctrl->T.high = Ctrl->T.low = TRUE;	/* Default if just -T is given */
@@ -399,7 +401,6 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0, "Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.low >= Ctrl->L.high, "Syntax error -L option: lower limit >= upper!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Syntax error -F option: Must also specify -D\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.value < 0, "Syntax error -S option: Smooth_factor must be > 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0, "Syntax error -G option: Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: factor must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option: + or - only valid if -C sets a cpt file\n");
@@ -936,7 +937,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);	/* Bit flags used to keep track of contours */
 
 	if (Ctrl->D.active) {
-		int64_t dim[4] = {0, 0, 3, 0};
+		COUNTER_LARGE dim[4] = {0, 0, 3, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_DATASET;
 		else {	/* Must determine the kind of output organization */

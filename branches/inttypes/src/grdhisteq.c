@@ -33,7 +33,7 @@ struct GRDHISTEQ_CTRL {
 	} In;
 	struct C {	/* -C<n_cells>*/
 		BOOLEAN active;
-		GMT_LONG value;
+		COUNTER_MEDIUM value;
 	} C;
 	struct D {	/* -D[<file>] */
 		BOOLEAN active;
@@ -110,7 +110,7 @@ GMT_LONG GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	GMT_LONG n_errors = 0, n_files = 0, sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -126,7 +126,9 @@ GMT_LONG GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl
 
 			case 'C':	/* Get # of cells */
 				Ctrl->C.active = TRUE;
-				Ctrl->C.value = atoi (opt->arg);
+				sval = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, sval <= 0, "Syntax error -C option: n_cells must be positive\n");
+				Ctrl->C.value = sval;
 				break;
 			case 'D':	/* Dump info to file or stdout */
 				Ctrl->D.active = TRUE;
@@ -153,7 +155,6 @@ GMT_LONG GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Must specify a single input grid file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->G.file, "Syntax error -N option: Must also specify output grid file with -G\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->N.active && Ctrl->C.value <= 0, "Syntax error -C option: n_cells must be positive\n");
 	n_errors += GMT_check_condition (GMT, !strcmp (Ctrl->In.file, "="), "Syntax error: Piping of input grid file not supported!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -366,7 +367,7 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 				Return (error);
 			}
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */

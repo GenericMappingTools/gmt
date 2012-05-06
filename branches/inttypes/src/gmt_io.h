@@ -322,7 +322,7 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 
 struct GMT_OGR {	/* Struct with all things GMT/OGR for a table*/
 	/* The first parameters are usually set once per data set and do not change */
-	GMT_LONG geometry;		/* @G: The geometry of this data set, if known [0 otherwise] */
+	COUNTER_MEDIUM geometry;	/* @G: The geometry of this data set, if known [0 otherwise] */
 	COUNTER_MEDIUM n_aspatial;	/* @T: The number of aspatial fields */
 	char *region;			/* @R: The region textstring [NULL if not set] */
 	char *proj[4];			/* @J: The 1-4 projection strings [NULL if not set] */
@@ -360,7 +360,7 @@ struct GMT_IO {				/* Used to process input data records */
 	PFL output;			/* Pointer to function writing ascii or binary tables */
 	PFI read_item;			/* Pointer to function reading 1-col z tables in grd2xyz */
 	PFI write_item;			/* Pointer to function writing 1-col z tables in xyz2grd */
-	PFL ogr_parser;			/* Set to handle either header or data OGR records */
+	PFB ogr_parser;			/* Set to handle either header or data OGR records */
 
 	COUNTER_MEDIUM pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */
 	COUNTER_MEDIUM inc_code[2];
@@ -609,6 +609,16 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0 = allocated, 1 = allocate as needed] */
 	union GMT_UNIVECTOR *data;	/* Array of uni-vectors */
 };
+
+#if 0
+struct GMT_SET_INFO {	/* Single container for user specification of empty data/textset */
+	COUNTER_MEDIUM n_tables;	/* Number of tables */
+	COUNTER_LARGE  n_segments;	/* Number of segments in each table */
+	COUNTER_MEDIUM n_columns;	/* Number of columns */
+	COUNTER_LARGE  n_rows;		/* Number of rows in each column */
+	BOOLEAN alloc_only;		/* Do NOT set the corresponding counters (i.e., n_segments) */
+};
+#endif
 
 /* Byteswap widths used with gmt_byteswap_file */
 typedef enum {

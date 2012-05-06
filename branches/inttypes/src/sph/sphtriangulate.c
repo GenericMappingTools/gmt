@@ -68,7 +68,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 {	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
 	COUNTER_LARGE i, ij;
 	BOOLEAN do_authalic;
-	int64_t dim[4] = {1, 0, 0, 0}, k;
+	COUNTER_LARGE dim[4] = {1, 0, 0, 0}, k;
 	double area_sphere = 0.0, area_triangle = GMT->session.d_NaN, V[3][3], R2, y, dist = GMT->session.d_NaN;
 	char segment_header[GMT_BUFSIZ];
 	struct GMT_LINE_SEGMENT *S[2] = {NULL, NULL};
@@ -178,7 +178,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, COUNTER_LARGE n, double *lon
 	BOOLEAN do_authalic;
 	
 	COUNTER_LARGE i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
-	int64_t dim[4] = {1, 0, 0, 0};
+	COUNTER_LARGE dim[4] = {1, 0, 0, 0};
 	size_t n_alloc = GMT_CHUNK, p_alloc = GMT_TINY_CHUNK;
 	
 	char segment_header[GMT_BUFSIZ];
@@ -525,7 +525,7 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -622,7 +622,7 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	Dout[0]->table[0]->n_headers = 1;
 	Dout[0]->table[0]->header[0] = strdup (header);
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output sources, unless already set */
 		Return (API->error);
 	}
 

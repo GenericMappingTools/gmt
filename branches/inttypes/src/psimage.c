@@ -48,7 +48,7 @@ struct PSIMAGE_CTRL {
 	} F;
 	struct G {	/* -G[f|b|t]<rgb> */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 0 for f|b, 1 for t */
+		COUNTER_MEDIUM mode;	/* 0 for f|b, 1 for t */
 		double f_rgb[4];
 		double b_rgb[4];
 		double t_rgb[4];
@@ -61,11 +61,11 @@ struct PSIMAGE_CTRL {
 	} M;
 	struct N {	/* -N<nx>/<ny> */
 		BOOLEAN active;
-		GMT_LONG nx, ny;
+		COUNTER_MEDIUM nx, ny;
 	} N;
 	struct W {	/* -W[-]<width>[/<height>] */
 		BOOLEAN active;
-		GMT_LONG interpolate;
+		BOOLEAN interpolate;
 		double width, height;
 	} W;
 };

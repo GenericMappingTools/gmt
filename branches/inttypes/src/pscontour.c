@@ -32,12 +32,12 @@ struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
 	struct A {	/* -A[-][labelinfo] */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 1 turns off all labels */
+		COUNTER_MEDIUM mode;	/* 1 turns off all labels */
 		double interval;
 	} A;
 	struct C {	/* -C<cpt> */
 		BOOLEAN active;
-		GMT_LONG cpt;
+		BOOLEAN cpt;
 		char *file;
 		double interval;
 	} C;
@@ -63,8 +63,8 @@ struct PSCONTOUR_CTRL {
 	} S;
 	struct T {	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
 		BOOLEAN active;
-		GMT_LONG label;
-		GMT_LONG low, high;	/* TRUE to tick low and high locals */
+		BOOLEAN label;
+		BOOLEAN low, high;	/* TRUE to tick low and high locals */
 		double spacing, length;
 		char *txt[2];	/* Low and high label */
 	} T;
@@ -74,8 +74,8 @@ struct PSCONTOUR_CTRL {
 	} Q;
 	struct W {	/* -W[+|-]<type><pen> */
 		BOOLEAN active;
-		GMT_LONG color_cont;
-		GMT_LONG color_text;
+		BOOLEAN color_cont;
+		BOOLEAN color_text;
 		struct GMT_PEN pen[2];
 	} W;
 };
@@ -89,7 +89,7 @@ struct SAVE {
 	double cval;
 	COUNTER_MEDIUM n;
 	struct GMT_PEN pen;
-	GMT_LONG do_it, high;
+	BOOLEAN do_it, high;
 };
 
 /* Returns the id of the node common to the two edges */
@@ -102,12 +102,13 @@ struct PSCONTOUR_LINE {	/* Beginning and end of straight contour segment */
 };
 
 struct PSCONTOUR {
-	size_t n_alloc;
-	COUNTER_MEDIUM nl;
 	double val;
 	double angle;
-	char type, do_tick;
+	size_t n_alloc;
+	COUNTER_MEDIUM nl;
+	BOOLEAN do_tick;
 	struct PSCONTOUR_LINE *L;
+	char type;
 };
 
 struct PSCONTOUR_PT {
@@ -644,7 +645,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -788,7 +789,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
 			cont[c].type = (P->range[i].annot && !Ctrl->A.mode) ? 'A' : 'C';
 			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
-			cont[c].do_tick = (char)Ctrl->T.active;
+			cont[c].do_tick = Ctrl->T.active;
 			c++;
 		}
 		cont[c].val = P->range[P->n_colors-1].z_high;
@@ -799,7 +800,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else
 			cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
 		cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
-		cont[c].do_tick = (char)Ctrl->T.active;
+		cont[c].do_tick = Ctrl->T.active;
 		n_contours = c + 1;
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
@@ -830,10 +831,10 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
 			if (cont[c].type == '\0') cont[c].type = 'C';
-			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? 1 : 0;
+			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? TRUE : FALSE;
 			cont[c].angle = (got == 3) ? tmp : GMT->session.d_NaN;
 			if (got == 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
-			cont[c].do_tick = (char)Ctrl->T.active;
+			cont[c].do_tick = Ctrl->T.active;
 			c++;
 		} while (TRUE);
 		
@@ -860,7 +861,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_SMALL) aval += Ctrl->A.interval;
 			cont[c].type = (fabs (cont[c].val - aval) < GMT_SMALL) ? 'A' : 'C';
 			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
-			cont[c].do_tick = (char)Ctrl->T.active;
+			cont[c].do_tick = Ctrl->T.active;
 		}
 		n_contours = c;
 	}
@@ -868,7 +869,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	cont = GMT_malloc (GMT, cont, 0, &c_alloc, struct PSCONTOUR);
 
 	if (Ctrl->D.active) {
-		int64_t dim[4] = {0, 0, 3, 0};
+		COUNTER_LARGE dim[4] = {0, 0, 3, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_DATASET;
 		else {	/* Must determine the kind of output organization */

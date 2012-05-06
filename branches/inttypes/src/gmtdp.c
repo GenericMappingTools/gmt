@@ -49,7 +49,7 @@ struct GMTDP_CTRL {
 	} Out;
 	struct T {	/* 	-T[-|=|+]<tolerance>[d|s|m|e|f|k|M|n] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		GMT_LONG mode;	/* Can be negative */
 		double tolerance;
 		char unit;
 	} T;
@@ -300,7 +300,7 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Now we are ready to take on some input values */
 	/* Allocate memory and read in all the files; each file can have many lines */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {

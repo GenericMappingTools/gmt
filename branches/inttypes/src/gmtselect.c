@@ -61,14 +61,14 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 	} A;
 	struct C {	/* [-C[-|=|+]<dist>[unit]/<ptfile>] */
 		BOOLEAN active;
-		GMT_LONG mode;	/* Form of distance calculation */
+		GMT_LONG mode;	/* Form of distance calculation (can be negative) */
 		double dist;	/* Radius of influence for each point */
 		char unit;	/* Unit name */
 		char *file;	/* Name of file with points */
 	} C;
 	struct D {	/* -D<resolution> */
 		BOOLEAN active;
-		GMT_LONG force;	/* if TRUE, select next highest level if current set is not avaialble */
+		BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct E {	/* -E<operators> , <op> = combination or f,n */
@@ -77,8 +77,8 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 	} E;
 	struct L {	/* -L[p][-|=|+]<dist>[unit]/<lfile> */
 		BOOLEAN active;
-		GMT_LONG end_mode;	/* Controls what happens beyond segment endpoints */
-		GMT_LONG mode;	/* Form of distance calculation */
+		COUNTER_MEDIUM end_mode;	/* Controls what happens beyond segment endpoints */
+		GMT_LONG mode;	/* Form of distance calculation (can be negative) */
 		double dist;	/* Distance of influence for each line */
 		char unit;	/* Unit name */
 		char *file;	/* Name of file with lines */
@@ -89,12 +89,12 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 	} F;
 	struct I {	/* -Icflrsz */
 		BOOLEAN active;
-		GMT_LONG pass[GMTSELECT_N_TESTS];	/* One flag for each setting */
+		BOOLEAN pass[GMTSELECT_N_TESTS];	/* One flag for each setting */
 	} I;
 	struct N {	/* -N<maskvalues> */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
-		GMT_LONG mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
+		COUNTER_MEDIUM mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
+		BOOLEAN mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
 	} N;
 	struct Z {	/* -Z<min>/<max> */
 		BOOLEAN active;
@@ -117,10 +117,10 @@ void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	C->A.info.high = GSHHS_MAX_LEVEL;				/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
-	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = GMT_ONEDGE;	/* Default is that points on a boundary are inside */
+	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = GMT_ONEDGE;		/* Default is that points on a boundary are inside */
 	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = TRUE;	/* Default is to pass if we are inside */
-	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, GMT_LONG);		/* Default for "wet" areas = 0 (outside) */
-	C->N.mask[1] = C->N.mask[3] = 1;				/* Default for "dry" areas = 1 (inside) */
+	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, BOOLEAN);		/* Default for "wet" areas = FALSE (outside) */
+	C->N.mask[1] = C->N.mask[3] = TRUE;				/* Default for "dry" areas = TRUE (inside) */
 	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
 	
 	return (C);
@@ -347,10 +347,10 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				while (j < GMTSELECT_N_CLASSES && (GMT_strtok (buffer, "/", &pos, ptr))) {
 					switch (ptr[0]) {
 						case 's':	/* Skip points in this level */
-							Ctrl->N.mask[j] = 0;
+							Ctrl->N.mask[j] = FALSE;
 							break;
 						case 'k':
-							Ctrl->N.mask[j] = 1;
+							Ctrl->N.mask[j] = TRUE;
 							break;
 						default:
 							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Bad modifier (use s or k)\n");
@@ -610,10 +610,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Gather input/output  file names (or stdin/out) and enable i/o */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */

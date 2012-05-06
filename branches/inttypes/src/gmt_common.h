@@ -93,10 +93,10 @@ struct GMT_COMMON {
 	} Y;
 	struct a {	/* -a<col>=<name>[:<type>][,col>=<name>[:<type>], etc][+g<geometry>] */
 		BOOLEAN active;
-		GMT_LONG geometry;
+		COUNTER_MEDIUM geometry;
 		COUNTER_MEDIUM n_aspatial;
 		BOOLEAN clip;		/* TRUE if we wish to clip lines/polygons at Dateline [FALSE] */
-		BOOLEAN output;	/* TRUE when we wish to build OGR output */
+		BOOLEAN output;		/* TRUE when we wish to build OGR output */
 		GMT_LONG col[MAX_ASPATIAL];
 		GMT_LONG ogr[MAX_ASPATIAL];
 		COUNTER_MEDIUM type[MAX_ASPATIAL];

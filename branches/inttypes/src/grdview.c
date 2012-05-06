@@ -65,7 +65,7 @@ struct GRDVIEW_CTRL {
 	} C;
 	struct G {	/* -G<drapefile> */
 		BOOLEAN active;
-		GMT_LONG image;
+		BOOLEAN image;
 		char *file[3];
 	} G;
 	struct I {	/* -G<intensfile> */
@@ -81,15 +81,15 @@ struct GRDVIEW_CTRL {
 	struct Q {	/* -Q<type>[g] */
 		BOOLEAN active, special;
 		BOOLEAN outline;
-		GMT_LONG mask;
+		BOOLEAN mask;
 		BOOLEAN monochrome;
-		GMT_LONG mode;	/* GRDVIEW_MESH, GRDVIEW_SURF, GRDVIEW_IMAGE */
-		GMT_LONG dpi;
+		COUNTER_MEDIUM mode;	/* GRDVIEW_MESH, GRDVIEW_SURF, GRDVIEW_IMAGE */
+		COUNTER_MEDIUM dpi;
 		struct GMT_FILL fill;
 	} Q;
 	struct S {	/* -S<smooth> */
 		BOOLEAN active;
-		GMT_LONG value;
+		COUNTER_MEDIUM value;
 	} S;
 	struct T {	/* -T[s][o[<pen>]] */
 		BOOLEAN active;
@@ -99,7 +99,7 @@ struct GRDVIEW_CTRL {
 	} T;
 	struct W {	/* -W[+]<type><pen> */
 		BOOLEAN active;
-		GMT_LONG contour;
+		BOOLEAN contour;
 		struct GMT_PEN pen[3];
 	} W;
 };
