@@ -514,8 +514,8 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char *filter_name[GRDFILTER_N_FILTERS+2] = {"Boxcar", "Cosine Arch", "Gaussian", "Median", "Mode", "Lower", \
 		"Lower+", "Upper", "Upper-", "Spherical Median", "Spherical Mode"};
 
-	fpair *work_data = NULL;
-	
+	struct OBSERVATION *work_data = NULL;
+
 	struct GMT_GRID *Gin = NULL, *Gout = NULL, *A = NULL, *L = NULL;
 	struct FILTER_INFO F;
 	struct GRDFILTER_CTRL *Ctrl = NULL;
@@ -726,7 +726,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->D.mode && filter_type < 5) {	/* Spherical (weighted) median/modes requires even more work */
 			slower = TRUE;
 			filter_type += 6;	/* To jump to the weighted versions */
-			work_data = GMT_memory (GMT, NULL, F.nx*F.ny, fpair);
+			work_data = GMT_memory (GMT, NULL, F.nx*F.ny, struct OBSERVATION);
 		}
 		else
 			work_array = GMT_memory (GMT, NULL, F.nx*F.ny, double);
@@ -851,8 +851,8 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					
 					if (slow) {	/* Add it to the relevant temporary work array */
 						if (slower) {	/* Need to store both value and weight */
-							work_data[n_in_median].x[0] = Gin->data[ij_in];
-							work_data[n_in_median++].x[1] = (float)(weight[ij_wt] * A->data[ij_in]);
+							work_data[n_in_median].value = Gin->data[ij_in];
+							work_data[n_in_median++].weight = (float)(weight[ij_wt] * A->data[ij_in]);
 						}
 						else	/* Only need to store values */
 							work_array[n_in_median++] = Gin->data[ij_in];

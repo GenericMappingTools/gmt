@@ -1563,37 +1563,43 @@ GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, double xmin
 	return (iteration);
 }
 
-int compare_fpair (const void *point_1, const void *point_2)
+int compare_observation (const void *a, const void *b)
 {
-	/* Sorts pairs into ascending order based on x[0]  */
-	if (((fpair *)point_1)->x[0] < ((fpair *)point_2)->x[0]) return (-1);
-	if (((fpair *)point_1)->x[0] > ((fpair *)point_2)->x[0]) return (+1);
-	return (0);
+	struct OBSERVATION *obs_1, *obs_2;
+	obs_1 = (struct OBSERVATION *)a;
+	obs_2 = (struct OBSERVATION *)b;
+
+	/* Sorts observations into ascending order based on obs->value */
+	if (obs_1->value < obs_2->value)
+		return -1;
+	if (obs_1->value > obs_2->value)
+		return 1;
+	return 0;
 }
 
-double GMT_median_weighted (struct GMT_CTRL *C, fpair *data, COUNTER_LARGE n, double quantile)
+double GMT_median_weighted (struct GMT_CTRL *C, struct OBSERVATION *data, COUNTER_LARGE n, double quantile)
 {
 	COUNTER_LARGE k;
 	double weight_half = 0.0, weight_count;
 
 	/* First sort data on z */
 
-	qsort (data, n, sizeof (fpair), compare_fpair);
-	
+	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
+
 	/* Find weight sum, then get half-value */
-	
-	for (k = 0; k < n; k++) weight_half += data[k].x[1];
+
+	for (k = 0; k < n; k++) weight_half += data[k].weight;
 	weight_half *= quantile;	/* Normally quantile = 0.5 hence the name "half" */
-	
+
 	/* Determine the point where we hit the desired quantile */
 
-	k = 0;	weight_count = data[k].x[1];
-	while (weight_count < weight_half) weight_count += data[++k].x[1];	/* Wind up until weight_count hits the mark */
+	k = 0;	weight_count = data[k].weight;
+	while (weight_count < weight_half) weight_count += data[++k].weight;	/* Wind up until weight_count hits the mark */
 
-	return ((double)((weight_count == weight_half) ? 0.5 * (data[k].x[0] + data[k+1].x[0]) : data[k].x[0]));
+	return ((double)((weight_count == weight_half) ? 0.5 * (data[k].value + data[k+1].value) : data[k].value));
 }
 
-double GMT_mode_weighted (struct GMT_CTRL *C, fpair *data, COUNTER_LARGE n)
+double GMT_mode_weighted (struct GMT_CTRL *C, struct OBSERVATION *data, COUNTER_LARGE n)
 {
 	/* Based on mode_output in blockmode_func.c */
 
@@ -1603,22 +1609,22 @@ double GMT_mode_weighted (struct GMT_CTRL *C, fpair *data, COUNTER_LARGE n)
 
 	/* First sort data on z */
 
-	qsort (data, n, sizeof (fpair), compare_fpair);
-	
+	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
+
 	/* Find weight sum, then get half-value */
-	
-	for (k = 0; k < n; k++) wsum += data[k].x[1];
+
+	for (k = 0; k < n; k++) wsum += data[k].weight;
 
 	top = wsum;
 
 	while ((j-i) > nh) {
-		topi = top - data[i].x[1];
-		topj = top - data[j].x[1];
-		bottomi = data[j].x[0] - data[i+1].x[0];
-		bottomj = data[j-1].x[0] - data[i].x[0];
+		topi = top - data[i].weight;
+		topj = top - data[j].weight;
+		bottomi = data[j].value - data[i+1].value;
+		bottomj = data[j-1].value - data[i].value;
 
-		if (bottomj == 0.0) return (data[j-1].x[0]);
-		if (bottomi == 0.0) return (data[i+1].x[0]);
+		if (bottomj == 0.0) return (data[j-1].value);
+		if (bottomi == 0.0) return (data[i+1].value);
 		pi = topi / bottomi;
 		pj = topj / bottomj;
 		if (pi > pj) {
@@ -1628,11 +1634,11 @@ double GMT_mode_weighted (struct GMT_CTRL *C, fpair *data, COUNTER_LARGE n)
 			j--;	top = topj;
 		}
 		else {
-			top -= (data[i].x[1] + data[j].x[1]);
+			top -= (data[i].weight + data[j].weight);
 			i++;	j--;
 		}
 	}
-	return ((double)(0.5 * (data[j].x[0] + data[i].x[0])));
+	return ((double)(0.5 * (data[j].value + data[i].value)));
 }
 
 GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, COUNTER_LARGE j, BOOLEAN sort, COUNTER_MEDIUM mode_selection, COUNTER_MEDIUM *n_multiples, double *mode_est)
