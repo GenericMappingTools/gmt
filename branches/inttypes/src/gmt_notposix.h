@@ -364,12 +364,6 @@
 #	define popen _popen
 #endif
 
-#if defined HAVE_QSORT_S && !defined HAVE_QSORT_R
-#	define qsort_r qsort_s
-#elif !defined HAVE_QSORT_R
-/* define custom function */
-#endif
-
 #if defined HAVE__SETMODE && !defined HAVE_SETMODE
 #	define setmode _setmode
 #endif
@@ -447,21 +441,16 @@
 #		pragma warning( disable : 4996 )
 #	endif
 
-	/* Support for inline functions */
-#	define inline __inline
-
 #endif /* defined _WIN32 */
 
 #ifndef PATH_SEPARATOR
 #	define PATH_SEPARATOR ':' /* Win uses ; while Unix uses : */
 #endif
 
-/* Must replace the system qsort with ours which is 64-bit compliant
- * See gmt_qsort.c. */
-#ifdef GMT_QSORT
-	EXTERN_MSC void GMT_qsort (void *a, size_t n, size_t es, int (*cmp) (const void *, const void *));
-#	define qsort GMT_qsort
-#endif /* GMT_QSORT */
+/* If GLIBC compatible qsort_r is not available */
+#ifndef HAVE_QSORT_R_GLIBC
+#	include "compat/qsort.h"
+#endif
 
 /* GMT normally gets these macros from unistd.h */
 #ifndef HAVE_UNISTD_H_

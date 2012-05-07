@@ -42,14 +42,14 @@
 #define _GSHHS
 #include "gmt_config.h"
 
-#include "gmt_notposix.h"
-
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_CTYPE_H_
-#	include <ctype.h>
-#endif
+#include <string.h>
 #include <math.h>
+
+#include "gmt_notposix.h"
+
+#include "common_byteswap.h"
 
 #ifndef M_PI
 #define M_PI          3.14159265358979323846
@@ -65,14 +65,10 @@
 #define GSHHS_MAXPOL	200000	/* Should never need to allocate more than this many polygons */
 #define GSHHS_SCL	1.0e-6	/* Convert micro-degrees to degrees */
 
-/* For byte swapping on little-endian systems (GSHHS is defined to be bigendian) */
-
-#define swabi4(i4) (((i4) >> 24) + (((i4) >> 8) & 65280) + (((i4) & 65280) << 8) + (((i4) & 255) << 24))
-
 struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines */
-	int id;		/* Unique polygon id number, starting at 0 */
-	int n;		/* Number of points in this polygon */
-	int flag;	/* = level + version << 8 + greenwich << 16 + source << 24 + river << 25 + p << 26 */
+	uint32_t id;		/* Unique polygon id number, starting at 0 */
+	uint32_t n;		/* Number of points in this polygon */
+	uint32_t flag;	/* = level + version << 8 + greenwich << 16 + source << 24 + river << 25 + p << 26 */
 	/* flag contains 6 items, as follows:
 	 * low byte:	level = flag & 255: Values: 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake
 	 * 2nd byte:	version = (flag >> 8) & 255: Values: Should be 9 for GSHHS release 9.
@@ -82,15 +78,42 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	 * 4th byte:	river = (flag >> 25) & 1: Values: 0 = not set, 1 = river-lake and GSHHS level = 2 (or WDBII class 0)
 	 * 4th byte:	area magnitude scale p (as in 10^p) = flag >> 26.  We divide area by 10^p.
 	 */
-	int west, east, south, north;	/* min/max extent in micro-degrees */
-	int area;	/* Area of polygon in km^2 * 10^p for this resolution file */
-	int area_full;	/* Area of corresponding full-resolution polygon in km^2 * 10^p */
-	int container;	/* Id of container polygon that encloses this polygon (-1 if none) */
-	int ancestor;	/* Id of ancestor polygon in the full resolution set that was the source of this polygon (-1 if none) */
+	int32_t west, east, south, north;	/* min/max extent in micro-degrees */
+	uint32_t area;	/* Area of polygon in km^2 * 10^p for this resolution file */
+	uint32_t area_full;	/* Area of corresponding full-resolution polygon in km^2 * 10^p */
+	int32_t container;	/* Id of container polygon that encloses this polygon (-1 if none) */
+	int32_t ancestor;	/* Id of ancestor polygon in the full resolution set that was the source of this polygon (-1 if none) */
 };
 
+/* byteswap all members of GSHHS struct */
+#define GSHHS_STRUCT_N_MEMBERS 11
+static inline void bswap_GSHHS_struct (struct GSHHS *h) {
+	uint32_t unsigned32[GSHHS_STRUCT_N_MEMBERS];
+	unsigned n;
+
+	/* since all members are 32 bit words: */
+	memcpy (&unsigned32, h, sizeof(struct GSHHS));
+
+	for (n = 0; n < GSHHS_STRUCT_N_MEMBERS; ++n)
+		unsigned32[n] = bswap32 (unsigned32[n]);
+
+	memcpy (h, &unsigned32, sizeof(struct GSHHS));
+}
+
 struct	POINT {	/* Each lon, lat pair is stored in micro-degrees in 4-byte integer format */
-	int x;
-	int y;
+	int32_t x;
+	int32_t y;
 };
+
+/* byteswap members of POINT struct */
+static inline void bswap_POINT_struct (struct POINT *p) {
+	uint32_t unsigned32;
+	memcpy (&unsigned32, &p->x, sizeof(uint32_t));
+	unsigned32 = bswap32 (unsigned32);
+	memcpy (&p->x, &unsigned32, sizeof(uint32_t));
+	memcpy (&unsigned32, &p->y, sizeof(uint32_t));
+	unsigned32 = bswap32 (unsigned32);
+	memcpy (&p->y, &unsigned32, sizeof(uint32_t));
+}
+
 #endif	/* _GSHHS */
