@@ -97,6 +97,28 @@ check_function_exists (llabs            HAVE_LLABS)
 check_function_exists (pclose           HAVE_PCLOSE)
 check_function_exists (popen            HAVE_POPEN)
 check_function_exists (qsort_r          HAVE_QSORT_R)
+if (HAVE_QSORT_R)
+	# check qsort_r compatibility
+	check_c_source_runs (
+		"
+		#include <stdlib.h>
+		#include <assert.h>
+		int cmp(const void *a, const void*b, void *c) {
+		assert(c == NULL);
+		return *(int*)a - *(int*)b;
+		}
+		int main() {
+		int array[5] = {7,3,5,2,8};
+		int i;
+		qsort_r(array,5,sizeof(int),cmp,NULL);
+		for (i=0;i<4;++i) {
+		assert(array[i] < array[i+1]);
+		}
+		return 0;
+		}
+		"
+		HAVE_QSORT_R_GLIBC)
+endif (HAVE_QSORT_R)
 check_function_exists (stricmp          HAVE_STRICMP)
 check_function_exists (strdup           HAVE_STRDUP)
 check_function_exists (strsep           HAVE_STRSEP)
@@ -110,7 +132,6 @@ if (WIN32)
 	check_function_exists (_popen         HAVE__POPEN)
 	check_function_exists (_stat          HAVE__STAT)
 	check_function_exists (_stati64       HAVE__STATI64)
-	check_function_exists (qsort_s        HAVE_QSORT_S)
 	check_function_exists (strtok_s       HAVE_STRTOK_S)
 endif (WIN32)
 

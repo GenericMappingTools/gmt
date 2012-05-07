@@ -42,14 +42,11 @@
 #define _GSHHS
 #include "gmt_config.h"
 
-#include "gmt_notposix.h"
-
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_CTYPE_H_
-#	include <ctype.h>
-#endif
 #include <math.h>
+
+#include "gmt_notposix.h"
 
 #ifndef M_PI
 #define M_PI          3.14159265358979323846
