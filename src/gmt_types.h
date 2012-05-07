@@ -58,7 +58,4 @@ typedef int (*PFI) ();          /* PFI declares a pointer to a function returnin
 typedef double (*PFD) ();       /* PFD declares a pointer to a function returning a double */
 typedef BOOLEAN (*PFB) ();	/* PFB declares a pointer to a function returning a BOOLEAN */
 
-typedef struct {float x[2];} fpair;	/* Can be used to hold pairs of data, e.g. real, imag or x, weight */
-typedef struct {double x[2];} dpair;	/* Same, at double precision */
-
 #endif  /* _GMT_TYPES_H */

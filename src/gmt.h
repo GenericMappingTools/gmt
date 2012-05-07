@@ -107,7 +107,6 @@ extern "C" {
 #include "gmt_map.h"            /* extern functions defined in gmt_map.c */
 #include "gmt_plot.h"           /* extern functions defined in gmt_plot.c */
 #include "gmt_init.h"           /* extern functions defined in gmt_init.c */
-#include "gmt_stat.h"           /* extern functions defined in gmt_stat.c */
 #include "gmt_support.h"        /* extern functions defined in gmt_support.c */
 #include "gmt_vector.h"         /* extern functions defined in gmt_vector.c */
 
@@ -262,12 +261,13 @@ struct GMT_CTRL {
 	struct GMTAPI_CTRL *parent;	/* Owner of this structure [or NULL]; gives access to the API from functions being passed *GMT only */
 };
 
-#include "gmtapi.h"			/* All GMT high-level API */
-#include "gmt_prototypes.h"      	/* All GMT low-level API */
-#include "common_math.h" /* Shared math functions */
-#include "common_string.h" /* All code shared between GMT and PSL */
+#include "gmtapi.h"             /* All GMT high-level API */
+#include "gmt_prototypes.h"     /* All GMT low-level API */
+#include "gmt_stat.h"           /* extern functions defined in gmt_stat.c */
+#include "common_math.h"        /* Shared math functions */
+#include "common_string.h"      /* All code shared between GMT and PSL */
 
-#include "gmt_modules.h"     	 	/* All GMT_* modules */
+#include "gmt_modules.h"        /* All GMT_* modules */
 
 #ifdef DEBUG
 /* Items needed if -DDEBUG is in effect */
