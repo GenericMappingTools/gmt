@@ -38,7 +38,6 @@ extern "C" {
 #include "declspec.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 
 typedef int PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 #define PSL_LL "l"

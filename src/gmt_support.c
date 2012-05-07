@@ -131,23 +131,6 @@ COUNTER_LARGE gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, v
 #endif
 #endif
 
-#ifndef HAVE_QSORT_R
-double *GMT_x2sys_Y;	/* Must use global variable if there is no qsort_r on this system */
-#elif defined(__APPLE__) || defined(__FreeBSD__)
-/* Wonderful news: BSD and GLIBC has different argument order in qsort_r */
-void qsort_r(void *base, size_t nel, size_t width, void *thunk, int (*compar)(void *, const void *, const void *));
-#elif defined(WIN32)
-/* More Wonderful news: Windows is a mix of BSD and GLIBC */
-void qsort_r(void *base, size_t nel, size_t width, int (*compar)(void *, const void *, const void *), void *thunk);
-#else
-void qsort_r(void *base, size_t nel, size_t width, int (*compar)(const void *, const void *, void *), void *thunk);
-#endif
-
-/*----------------------------------------------------------------------------- */
-#ifdef GMT_QSORT
-/* Need to replace OS X's qsort with one that works for 64-bit data */
-#include "gmt_qsort.c"
-#endif
 
 void gmt_rgb_to_hsv (struct GMT_CTRL *C, double rgb[], double hsv[])
 {
@@ -7560,34 +7543,20 @@ GMT_LONG GMT_get_arc (struct GMT_CTRL *C, double x0, double y0, double r, double
 }
 
 /* Here lies GMT Crossover core functions that previously was in X2SYS only */
-
 /* GMT_ysort must be an int since it is passed to qsort! */
-#ifndef HAVE_QSORT_R
-int GMT_ysort (const void *p1, const void *p2)			/* Must use qsort and thus rely on a global variable */
-/* The global double pointer GMT_x2sys_Y must be set to point to the relevant y-array
- * before this call!!! */
-#elif defined(__APPLE__) || defined(__FreeBSD__) || defined(WIN32)
-/* Wonderful news: BSD and GLIBC has different argument order in qsort_r */
-int GMT_ysort (void *data, const void *p1, const void *p2)	/* Can use qsort_r and pass the extra (first) argument */
-#else
-int GMT_ysort (const void *p1, const void *p2, void *data)	/* Can use qsort_r and pass the extra (last) argument */
-#endif
+int GMT_ysort (const void *p1, const void *p2, void *arg)
 {
 	struct GMT_XSEGMENT *a = (struct GMT_XSEGMENT *)p1, *b = (struct GMT_XSEGMENT *)p2;
-#ifdef HAVE_QSORT_R
-	double *GMT_x2sys_Y = data;
-#endif
+	double *x2sys_y = arg;
 
-	if (GMT_x2sys_Y[a->start] < GMT_x2sys_Y[b->start]) return -1;
-	if (GMT_x2sys_Y[a->start] > GMT_x2sys_Y[b->start]) return  1;
+	if (x2sys_y[a->start] < x2sys_y[b->start]) return -1;
+	if (x2sys_y[a->start] > x2sys_y[b->start]) return  1;
 
 	/* Here they have the same low y-value, now sort on other y value */
-
-	if (GMT_x2sys_Y[a->stop] < GMT_x2sys_Y[b->stop]) return -1;
-	if (GMT_x2sys_Y[a->stop] > GMT_x2sys_Y[b->stop]) return  1;
+	if (x2sys_y[a->stop] < x2sys_y[b->stop]) return -1;
+	if (x2sys_y[a->stop] > x2sys_y[b->stop]) return  1;
 
 	/* Identical */
-
 	return (0);
 }
 
@@ -7619,17 +7588,7 @@ GMT_LONG GMT_init_track (struct GMT_CTRL *C, double y[], COUNTER_LARGE n, struct
 	}
 
 	/* Sort on minimum y-coordinate, if tie then on 2nd coordinate */
-
-#ifndef HAVE_QSORT_R
-	GMT_x2sys_Y = y;	/* Sort routine needs this global variable pointer */
-	qsort (L, nl, sizeof (struct GMT_XSEGMENT), GMT_ysort);
-	GMT_x2sys_Y = NULL;	/* Set to NULL to indicate not in use */
-#elif defined(__APPLE__) || defined(__FreeBSD__)
-	/* Wonderful news: BSD and GLIBC has different argument order in qsort_r */
-	qsort_r (L, nl, sizeof (struct GMT_XSEGMENT), y, GMT_ysort);
-#else
 	qsort_r (L, nl, sizeof (struct GMT_XSEGMENT), GMT_ysort, y);
-#endif
 
 	*S = L;
 
