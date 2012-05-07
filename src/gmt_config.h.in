@@ -103,8 +103,7 @@
 #cmakedefine HAVE__PCLOSE
 #cmakedefine HAVE_POPEN
 #cmakedefine HAVE__POPEN
-#cmakedefine HAVE_QSORT_R
-#cmakedefine HAVE_QSORT_S
+#cmakedefine HAVE_QSORT_R_GLIBC
 #cmakedefine HAVE__SETMODE
 #cmakedefine HAVE_SNPRINTF_
 #cmakedefine HAVE__SNPRINTF_

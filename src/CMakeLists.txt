@@ -155,7 +155,7 @@ set (GMT_LIB_SRCS gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c
 	gmt_fft.c gmt_grdio.c gmt_io.c  gmt_nc.c gmt_notposix.c gmt_proj.c
 	gmt_shore.c gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c
 	gmtapi_parse.c gshhg_version.c gshhg_version.h
-	common_math.c common_string.c common_runpath.c
+	common_math.c common_string.c common_runpath.c compat/qsort.c
 	${GMT_PROGS_SRCS} ${GMT_TRIANGLE_SRCS})
 
 set (GMT_LIB_PS_SRCS gmt_init.c gmt_map.c gmt_plot.c gmtapi_util.c

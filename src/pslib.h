@@ -38,7 +38,6 @@ extern "C" {
 #include "declspec.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 
 /* Declaration of type PSL_LONG */
 #ifdef _WIN64
