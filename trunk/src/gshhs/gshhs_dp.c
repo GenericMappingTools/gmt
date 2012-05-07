@@ -56,13 +56,14 @@ int main (int argc, char **argv)
 {
 	FILE *fp_in = NULL, *fp_out = NULL;
 	size_t n_read;
-	int n_id, n_out, n, k, verbose = FALSE, *index;
+	unsigned k, n;
+	int n_id, n_out, verbose = FALSE, *index;
 	int n_tot_in, n_tot_out, n_use, flip, version;
 	int *x = NULL, *y = NULL;
 	double redux, redux2, tolerance = 0.0;
 	struct GSHHS h;
 	struct POINT p;
- 
+
 	int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band, int index[]);
 
 	if (argc < 2 || !(argc == 4 || argc == 5)) {
@@ -92,42 +93,31 @@ int main (int argc, char **argv)
 	flip = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 	
 	while (n_read == 1) {
-	
-		if (flip) {
-			h.id = swabi4 ((unsigned int)h.id);
-			h.n  = swabi4 ((unsigned int)h.n);
-			h.west  = swabi4 ((unsigned int)h.west);
-			h.east  = swabi4 ((unsigned int)h.east);
-			h.south = swabi4 ((unsigned int)h.south);
-			h.north = swabi4 ((unsigned int)h.north);
-			h.area  = swabi4 ((unsigned int)h.area);
-			h.flag   = swabi4 ((unsigned int)h.flag);
-			h.container  = swabi4 ((unsigned int)h.container);
-			h.ancestor  = swabi4 ((unsigned int)h.ancestor);
-		}
-		if (verbose) fprintf (stderr, "Poly %6d", h.id);	
-		
+
+		if (flip)
+			bswap_GSHHS_struct (&h);
+
+		if (verbose) fprintf (stderr, "Poly %6d", h.id);
+
 		x = get_memory (x, h.n, sizeof (int), "gshhs_dp");
 		y = get_memory (y, h.n, sizeof (int), "gshhs_dp");
 		index = get_memory (index, h.n, sizeof (int), "gshhs_dp");
-		
+
 		for (k = 0; k < h.n; k++) {
 			if (fread (&p, sizeof(struct POINT), (size_t)1, fp_in) != 1) {
 				fprintf (stderr,"gshhs_dp: Error reading data point.\n");
 				exit (EXIT_FAILURE);
 			}
-			if (flip) {
-				p.x = swabi4 ((unsigned int)p.x);
-				p.y = swabi4 ((unsigned int)p.y);
-			}
+			if (flip)
+				bswap_POINT_struct (&p);
 			x[k] = p.x;	y[k] = p.y;
 		}
 		n_tot_in += h.n;
-		
+
 		n_use = (x[0] == x[h.n-1] && y[0] == y[h.n-1]) ? h.n-1 : h.n;
 
 		n = Douglas_Peucker_i (x, y, n_use, tolerance, index);
-		
+
 		if (n > 2) {
 			index[n] = 0;
 			n++;

@@ -202,21 +202,21 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG must_swab, dim[4] = {1, 0, 2, 0}, OK, first = TRUE;
 
 	double w, e, s, n, area, f_area, scale = 10.0;
-	
+
 	char source, marker = 0, container[8], ancestor[8], header[GMT_BUFSIZ], *name[2] = {"polygon", "line"};
-	
+
 	FILE *fp = NULL;
-	
+
 	struct POINT p;
 	struct GSHHS h;
- 	struct GMT_DATASET *D = NULL;
- 	struct GMT_TEXTSET *X = NULL;
- 	struct GMT_LINE_SEGMENT **T = NULL;
- 	struct GMT_TEXT_SEGMENT *TX = NULL;
+	struct GMT_DATASET *D = NULL;
+	struct GMT_TEXTSET *X = NULL;
+	struct GMT_LINE_SEGMENT **T = NULL;
+	struct GMT_TEXT_SEGMENT *TX = NULL;
 	struct GSHHS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
-      
+
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
@@ -287,24 +287,14 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_read = fread (&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
 	version = (h.flag >> 8) & 255;
 	must_swab = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
-	
+
 	while (n_read == 1) {
 		n_seg++;
-		if (must_swab) {	/* Must deal with different endianness */
-			h.id 		= swabi4 ((unsigned int)h.id);
-			h.n 		= swabi4 ((unsigned int)h.n);
-			h.west		= swabi4 ((unsigned int)h.west);
-			h.east		= swabi4 ((unsigned int)h.east);
-			h.south		= swabi4 ((unsigned int)h.south);
-			h.north		= swabi4 ((unsigned int)h.north);
-			h.area		= swabi4 ((unsigned int)h.area);
-			h.area_full	= swabi4 ((unsigned int)h.area_full);
-			h.flag		= swabi4 ((unsigned int)h.flag);
-			h.container	= swabi4 ((unsigned int)h.container);
-			h.ancestor	= swabi4 ((unsigned int)h.ancestor);
-		}
+		if (must_swab) /* Must deal with different endianness */
+			bswap_GSHHS_struct (&h);
+
 		/* OK, we want to return info for this feature */
-		
+
 		level = h.flag & 255;				/* Level is 1-4 */
 		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
 		if (first) GMT_report (GMT, GMT_MSG_NORMAL, "Found GSHHS/WDBII version %ld in file %s\n", version, Ctrl->In.file);
@@ -386,10 +376,8 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s for %s %d, point %ld.\n", Ctrl->In.file, name[is_line], h.id, k);
 					Return (EXIT_FAILURE);
 				}
-				if (must_swab) {	/* Must deal with different endianness */
-					p.x = swabi4 ((unsigned int)p.x);
-					p.y = swabi4 ((unsigned int)p.y);
-				}
+				if (must_swab) /* Must deal with different endianness */
+					bswap_POINT_struct (&p);
 				T[seg_no]->coord[GMT_X][k] = p.x * GSHHS_SCL;
 				if ((greenwich && p.x > max_east) || (h.west > 180000000)) T[seg_no]->coord[GMT_X][k] -= 360.0;
 				T[seg_no]->coord[GMT_Y][k] = p.y * GSHHS_SCL;

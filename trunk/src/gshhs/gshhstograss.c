@@ -76,10 +76,10 @@ int main (int argc, char **argv)
 	int shore_levels = 5;
 	FILE	*fp = NULL, *ascii_fp = NULL, *att1_fp = NULL, *att2_fp = NULL;
 	size_t n_read;
-	int k, max = 270000000, flip, level, version, greenwich, shorelines;
+	int max = 270000000, flip, level, version, greenwich, shorelines;
 	struct POINT p;
 	struct GSHHS h;
-	int max_id=0;
+	unsigned k, max_id = 0;
 	time_t tloc;
 
 	progname = argv[0];
@@ -214,18 +214,8 @@ int main (int argc, char **argv)
 
 	while (n_read == 1) {
 
-		if (flip) {
-			h.id = swabi4 ((unsigned int)h.id);
-			h.n = swabi4 ((unsigned int)h.n);
-			h.west = swabi4 ((unsigned int)h.west);
-			h.east = swabi4 ((unsigned int)h.east);
-			h.south = swabi4 ((unsigned int)h.south);
-			h.north = swabi4 ((unsigned int)h.north);
-			h.area = swabi4 ((unsigned int)h.area);
-			h.flag = swabi4 ((unsigned int)h.flag);
-			h.container  = swabi4 ((unsigned int)h.container);
-			h.ancestor  = swabi4 ((unsigned int)h.ancestor);
-		}
+		if (flip)
+			bswap_GSHHS_struct (&h);
 		level = h.flag & 255;
 		version = (h.flag >> 8) & 255;
 		greenwich = (h.flag >> 16) & 3;
@@ -246,10 +236,8 @@ int main (int argc, char **argv)
 					fprintf (stderr, "%s:  Error reading file %s.b.\n", progname, dataname);
 					exit(EXIT_FAILURE);
 				}
-				if (flip) {
-					p.x = swabi4 ((unsigned int)p.x);
-					p.y = swabi4 ((unsigned int)p.y);
-				}
+				if (flip)
+					bswap_POINT_struct (&p);
 				lon = p.x * GSHHS_SCL;
 				if ((greenwich & 1) && p.x > max) lon -= 360.0;
 				lat = p.y * GSHHS_SCL;
@@ -286,7 +274,7 @@ int main (int argc, char **argv)
 	/* now fix up the number of categories */
 	fseek (att2_fp, (off_t)0, 0);
 	fprintf(att2_fp,"#!/bin/sh\n\n");
-	fprintf(att2_fp,"# %6d categories, starting at 0\n\n",max_id + 1);
+	fprintf(att2_fp,"# %6u categories, starting at 0\n\n",max_id + 1);
 
 	fclose(fp);
 	fclose(ascii_fp);
