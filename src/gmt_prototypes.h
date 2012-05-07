@@ -344,7 +344,7 @@ EXTERN_MSC void GMT_conv_datum (struct GMT_CTRL *C, double in[], double out[]);
 
 EXTERN_MSC void GMT_set_levels (struct GMT_CTRL *C, char *info, struct GMT_SHORE_SELECT *I);
 EXTERN_MSC GMT_LONG GMT_get_shore_bin (struct GMT_CTRL *C, COUNTER_MEDIUM b, struct GMT_SHORE *c);
-EXTERN_MSC GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, COUNTER_MEDIUM b, struct GMT_BR *c, GMT_LONG *level, COUNTER_MEDIUM n_levels);
+EXTERN_MSC GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, COUNTER_MEDIUM b, struct GMT_BR *c, COUNTER_MEDIUM *level, COUNTER_MEDIUM n_levels);
 EXTERN_MSC void GMT_free_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL *p, COUNTER_MEDIUM n);
 EXTERN_MSC void GMT_free_shore (struct GMT_CTRL *C, struct GMT_SHORE *c);
 EXTERN_MSC void GMT_free_br (struct GMT_CTRL *C, struct GMT_BR *c);

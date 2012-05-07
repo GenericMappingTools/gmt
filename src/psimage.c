@@ -289,6 +289,7 @@ GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
 GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0;
+	COUNTER_MEDIUM row, col;
 	BOOLEAN error = FALSE, free_GMT = FALSE;
 
 	double x, y, wesn[4];
@@ -343,7 +344,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef USE_GDAL
 	else  {	/* Read a raster image */
 		GMT_set_pad (GMT, 0);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
-		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		GMT_set_pad (GMT, 2);	/* Reset to GMT default */
@@ -448,14 +449,14 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
 
-	for (j = 0; j < Ctrl->N.ny; j++) {
-		y = Ctrl->C.y + j * Ctrl->W.height;
-		if (Ctrl->N.ny > 1) GMT_report (GMT, GMT_MSG_NORMAL, "Replicating image %ld times for row %ld\n", Ctrl->N.nx, j);
-		for (i = 0; i < Ctrl->N.nx; i++) {
-			x = Ctrl->C.x + i * Ctrl->W.width;
+	for (row = 0; row < Ctrl->N.ny; row++) {
+		y = Ctrl->C.y + row * Ctrl->W.height;
+		if (Ctrl->N.ny > 1) GMT_report (GMT, GMT_MSG_NORMAL, "Replicating image %ld times for row %ld\n", Ctrl->N.nx, row);
+		for (col = 0; col < Ctrl->N.nx; col++) {
+			x = Ctrl->C.x + col * Ctrl->W.width;
 			if (header.depth == 0)
-				PSL_plotepsimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, (GMT_LONG)header.length, 
-						header.width, header.height, (GMT_LONG)header.xorigin, (GMT_LONG)header.yorigin);
+				PSL_plotepsimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, header.length, 
+						header.width, header.height, header.xorigin, header.yorigin);
 			else if (header.depth == 1) {
 				/* Invert is opposite from what is expected. This is to match the behaviour of -Gp */
 				if (Ctrl->I.active)

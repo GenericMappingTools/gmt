@@ -80,7 +80,7 @@ void *New_minmax_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = GMT_memory (GMT, NULL, 1, struct MINMAX_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	
+	C->E.col = UINT_MAX;	/* Meaning not set */
 	return (C);
 }
 
@@ -237,7 +237,8 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	BOOLEAN error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
 	BOOLEAN brackets = FALSE, work_on_abs_value, do_report, save_range, done;
-	GMT_LONG i, j, ncol = 0, fixed_phase[2] = {1, 1};
+	GMT_LONG i, j;
+	COUNTER_MEDIUM col, ncol = 0, fixed_phase[2] = {1, 1}, min_cols;
 	COUNTER_LARGE n = 0;
 
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
@@ -307,7 +308,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->C.active) {	/* Must set output column types since each input col will take up two output cols. */
 		GMT_LONG col_type[GMT_MAX_COLUMNS];
 		GMT_memcpy (col_type, GMT->current.io.col_type[GMT_IN], GMT_MAX_COLUMNS, GMT_LONG);	/* Duplicate input col types */
-		for (i = 0; i < GMT_MAX_COLUMNS/2; i++) GMT->current.io.col_type[GMT_OUT][2*i] = GMT->current.io.col_type[GMT_OUT][2*i+1] = col_type[i];
+		for (col = 0; col < GMT_MAX_COLUMNS/2; col++) GMT->current.io.col_type[GMT_OUT][2*col] = GMT->current.io.col_type[GMT_OUT][2*col+1] = col_type[col];
 	}
 		
 	save_range = GMT->current.io.geo.range;
@@ -332,10 +333,10 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Here we must issue a report */
 			
 			do_report = TRUE;
- 			for (i = 0; i < ncol; i++) if (GMT->current.io.col_type[GMT_IN][i] == GMT_IS_LON) {	/* Must finalize longitudes first */
-				j = GMT_quad_finalize (GMT, &Q[i]);
-				GMT->current.io.geo.range = Q[i].range[j];		/* Override this setting explicitly */
-				xyzmin[i] = Q[i].min[j];	xyzmax[i] = Q[i].max[j];
+ 			for (col = 0; col < ncol; col++) if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Must finalize longitudes first */
+				j = GMT_quad_finalize (GMT, &Q[col]);
+				GMT->current.io.geo.range = Q[col].range[j];		/* Override this setting explicitly */
+				xyzmin[col] = Q[col].min[j];	xyzmax[col] = Q[col].max[j];
 			}
 			if (give_r_string) {	/* Return -R string */
 				if (fixed_phase[GMT_X] && fixed_phase[GMT_Y]) {	/* Got xy[z] data that lined up on a grid, so use the common phase shift */
@@ -380,30 +381,30 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					sprintf (buffer, ": N = %" PRIu64 "\t", n);					/* Number of records in this item */
 					strcat (record, buffer);
 				}
-				for (i = 0; i < ncol; i++) {	/* Report min/max for each column in the format controlled by -C */
-					if (xyzmin[i] == DBL_MAX)	/* Encountered NaNs only */
+				for (col = 0; col < ncol; col++) {	/* Report min/max for each column in the format controlled by -C */
+					if (xyzmin[col] == DBL_MAX)	/* Encountered NaNs only */
 						low = high = GMT->session.d_NaN;
-					else if (i < Ctrl->I.ncol) {	/* Special treatment for x and y (and perhaps more) if -I selected */
-						low  = (Ctrl->I.active) ? floor (xyzmin[i] / Ctrl->I.inc[i]) * Ctrl->I.inc[i] : xyzmin[i];
-						high = (Ctrl->I.active) ? ceil  (xyzmax[i] / Ctrl->I.inc[i]) * Ctrl->I.inc[i] : xyzmax[i];
+					else if (col < Ctrl->I.ncol) {	/* Special treatment for x and y (and perhaps more) if -I selected */
+						low  = (Ctrl->I.active) ? floor (xyzmin[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmin[col];
+						high = (Ctrl->I.active) ? ceil  (xyzmax[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmax[col];
 					}
 					else {	/* Just the facts, ma'am */
-						low = xyzmin[i];
-						high = xyzmax[i];
+						low = xyzmin[col];
+						high = xyzmax[col];
 					}
 					if (Ctrl->C.active) {
-						GMT->current.io.curr_rec[2*i] = low;
-						GMT->current.io.curr_rec[2*i+1] = high;
+						GMT->current.io.curr_rec[2*col] = low;
+						GMT->current.io.curr_rec[2*col+1] = high;
 					}
 					else {
 						if (brackets) strcat (record, "<");
-						GMT_ascii_format_col (GMT, buffer, low, i);
+						GMT_ascii_format_col (GMT, buffer, low, col);
 						strcat (record, buffer);
 						strcat (record, delimeter);
-						GMT_ascii_format_col (GMT, buffer, high, i);
+						GMT_ascii_format_col (GMT, buffer, high, col);
 						strcat (record, buffer);
 						if (brackets) strcat (record, ">");
-						if (i < (ncol - 1)) strcat (record, "\t");
+						if (col < (ncol - 1)) strcat (record, "\t");
 					}
 				}
 			}
@@ -415,9 +416,9 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
 			}
 			got_stuff = TRUE;		/* We have at least reported something */
-			for (i = 0; i < ncol; i++) {	/* Reset counters for next block */
-				xyzmin[i] = +DBL_MAX;
-				xyzmax[i] = -DBL_MAX;
+			for (col = 0; col < ncol; col++) {	/* Reset counters for next block */
+				xyzmin[col] = +DBL_MAX;
+				xyzmax[col] = -DBL_MAX;
 			}
 			GMT_quad_reset (GMT, Q, ncol);
 			n = 0;
@@ -432,8 +433,9 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (first_data_record) {	/* First time we read data, we must allocate arrays based on the number of columns */
 
 			ncol = GMT_get_cols (GMT, GMT_IN);
-			if (Ctrl->E.active && Ctrl->E.col == -1) Ctrl->E.col = ncol - 1;	/* Default is last column */
-			if (Ctrl->S.active && 2 + Ctrl->S.xbar + Ctrl->S.ybar > ncol) {
+			if (Ctrl->E.active && Ctrl->E.col == UINT_MAX) Ctrl->E.col = ncol - 1;	/* Default is last column */
+			min_cols = 2;	if (Ctrl->S.xbar) min_cols++;	if (Ctrl->S.ybar) min_cols++;
+			if (Ctrl->S.active && min_cols > ncol) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Not enough columns to support the -S option\n");
 				Return (EXIT_FAILURE);
 			}
@@ -454,9 +456,9 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			xyzmin = GMT_memory (GMT, NULL, ncol, double);
 			xyzmax = GMT_memory (GMT, NULL, ncol, double);
 
-			for (i = 0; i < ncol; i++) {	/* Initialize */
-				xyzmin[i] = +DBL_MAX;
-				xyzmax[i] = -DBL_MAX;
+			for (col = 0; col < ncol; col++) {	/* Initialize */
+				xyzmin[col] = +DBL_MAX;
+				xyzmax[col] = -DBL_MAX;
 			}
 			n = 0;
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = FALSE;
@@ -480,29 +482,29 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		else {	/* Update min/max values for each column */
-			for (i = 0; i < ncol; i++) {
-				if (GMT_is_dnan (in[i])) continue;	/* We always skip NaNs */
-				if (GMT->current.io.col_type[GMT_IN][i] == GMT_IS_LON) {	/* Longitude requires more work */
+			for (col = 0; col < ncol; col++) {
+				if (GMT_is_dnan (in[col])) continue;	/* We always skip NaNs */
+				if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Longitude requires more work */
 					/* We must keep separate min/max for both Dateline and Greenwich conventions */
-					GMT_quad_add (GMT, &Q[i], in[i]);
+					GMT_quad_add (GMT, &Q[col], in[col]);
 				}
-				else if ((i == 0 && Ctrl->S.xbar) || (i == 1 && Ctrl->S.ybar)) {
+				else if ((col == 0 && Ctrl->S.xbar) || (col == 1 && Ctrl->S.ybar)) {
 					/* Add/subtract value from error bar column */
-					j = (i == 1 && Ctrl->S.xbar) ? 3 : 2;
+					j = (col == 1 && Ctrl->S.xbar) ? 3 : 2;
 					value = fabs(in[j]);
-					if (in[i] - value < xyzmin[i]) xyzmin[i] = in[i] - value;
-					if (in[i] + value > xyzmax[i]) xyzmax[i] = in[i] + value;
+					if (in[col] - value < xyzmin[col]) xyzmin[col] = in[col] - value;
+					if (in[col] + value > xyzmax[col]) xyzmax[col] = in[col] + value;
 				}
 				else {	/* Plain column value */
-					if (in[i] < xyzmin[i]) xyzmin[i] = in[i];
-					if (in[i] > xyzmax[i]) xyzmax[i] = in[i];
+					if (in[col] < xyzmin[col]) xyzmin[col] = in[col];
+					if (in[col] > xyzmax[col]) xyzmax[col] = in[col];
 				}
-				if (give_r_string && i < GMT_Z && fixed_phase[i]) {
-					this_phase = MOD (in[i], Ctrl->I.inc[i]);
-					if (fixed_phase[i] == 1)
-						phase[i] = this_phase, fixed_phase[i] = 2;	/* Initializes phase the first time */
-					if (!doubleAlmostEqualZero (phase[i], this_phase))
-						fixed_phase[i] = 0;	/* Phase not constant, not a grid */
+				if (give_r_string && col < GMT_Z && fixed_phase[col]) {
+					this_phase = MOD (in[col], Ctrl->I.inc[col]);
+					if (fixed_phase[col] == 1)
+						phase[col] = this_phase, fixed_phase[col] = 2;	/* Initializes phase the first time */
+					if (!doubleAlmostEqualZero (phase[col], this_phase))
+						fixed_phase[col] = 0;	/* Phase not constant, not a grid */
 				}
 			}
 			n++;	/* Number of records processed in current block (all/table/segment; see -A) */

@@ -33,17 +33,17 @@ struct MGD77CONVERT_CTRL {	/* All control options for this program (except commo
 	} D;
 	struct L {	/* -L */
 		BOOLEAN active;
-		GMT_LONG mode;
-		GMT_LONG dest;
+		COUNTER_MEDIUM mode;
+		COUNTER_MEDIUM dest;
 	} L;
 	struct F {	/* -F */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		GMT_LONG format;
 	} F;
 	struct T {	/* -T */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		GMT_LONG format;
 	} T;
 };

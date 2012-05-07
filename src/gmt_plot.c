@@ -3139,7 +3139,7 @@ GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 
 	/* Save the lon, lat, angle, text for each annotation to specified file*/
 
-	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_OUT, name, NULL)) == GMTAPI_NOTSET) {
+	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_OUT, NULL, name)) == GMTAPI_NOTSET) {
 		return (EXIT_FAILURE);
 	}
 	if ((error = GMT_set_cols (C, GMT_OUT, 1)) != GMT_OK) {

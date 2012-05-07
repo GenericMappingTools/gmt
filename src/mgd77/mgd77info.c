@@ -34,25 +34,25 @@ struct MGD77INFO_CTRL {	/* All control options for this program (except common a
 	/* active is TRUE if the option has been activated */
 	struct C {	/* -C */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} C;
 	struct E {	/* -E */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} E;
 	struct I {	/* -I */
 		BOOLEAN active;
-		GMT_LONG n;
+		COUNTER_MEDIUM n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} L;
 	struct M {	/* -M */
 		BOOLEAN active;
-		GMT_LONG mode;
-		GMT_LONG flag;
+		COUNTER_MEDIUM mode;
+		COUNTER_MEDIUM flag;
 	} M;
 };
 
@@ -117,7 +117,7 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	GMT_LONG n_errors = 0, sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -151,8 +151,9 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 				Ctrl->M.active = TRUE;
 				if (opt->arg[0] == 'f') {
 					Ctrl->M.mode = FORMATTED_HEADER;
-					Ctrl->M.flag = MGD77_Select_Header_Item (GMT, M, &opt->arg[1]);
-					if (Ctrl->M.flag < 0) n_errors++;
+					sval = MGD77_Select_Header_Item (GMT, M, &opt->arg[1]);
+					if (sval < 0) n_errors++;
+					Ctrl->M.flag = sval;
 				}
 				else if (opt->arg[0] == 'r') {
 					Ctrl->M.mode = RAW_HEADER;

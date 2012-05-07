@@ -71,17 +71,17 @@ struct PSMECA_CTRL {
 	} N;
 	struct S {	/* -S<format><scale>[/fontsize[/justify/offset/angle/form]] */
 		BOOLEAN active;
-		GMT_LONG readmode;
-		GMT_LONG plotmode;
-		GMT_LONG justify;
-		GMT_LONG no_label;
+		BOOLEAN no_label;
+		COUNTER_MEDIUM readmode;
+		COUNTER_MEDIUM plotmode;
+		COUNTER_MEDIUM justify;
 		double scale;
 		double fontsize, offset;
 		struct GMT_FILL fill;
 	} S;
 	struct T {	/* -Tnplane[/<pen>] */
 		BOOLEAN active;
-		GMT_LONG n_plane;
+		COUNTER_MEDIUM n_plane;
 		struct GMT_PEN pen;
 	} T;
 	struct Z2 {	/* -z<pen>] */
@@ -520,7 +520,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	string[0] = '\0';
 
 	if (Ctrl->Z.active) {
-		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, NULL)) == NULL) {
+		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->Z.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 	}

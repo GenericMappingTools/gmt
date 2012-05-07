@@ -89,8 +89,8 @@ struct PSSEGYZ_CTRL {
 	} Q;
 	struct S {	/* -S */
 		bool active;
-		int fixed[2];
-		int mode[2];
+		bool fixed[2];
+		COUNTER_MEDIUM mode[2];
 		int value[2];
 		double orig[2];
 	} S;

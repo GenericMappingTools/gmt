@@ -74,7 +74,7 @@ struct PSVELO_CTRL {
 	struct S {	/* -r<fill> */
 		BOOLEAN active;
 		GMT_LONG symbol;
-		GMT_LONG readmode;
+		COUNTER_MEDIUM readmode;
 		double scale, wedge_amp, conrad;
 		double fontsize, confidence;
 		struct GMT_FILL fill;

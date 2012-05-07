@@ -771,14 +771,14 @@ GMT_LONG GMT_init_br (struct GMT_CTRL *C, char which, char res, struct GMT_BR *c
 	return (0);
 }
 
-GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, COUNTER_MEDIUM b, struct GMT_BR *c, GMT_LONG *level, COUNTER_MEDIUM n_levels)
+GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, COUNTER_MEDIUM b, struct GMT_BR *c, COUNTER_MEDIUM *level, COUNTER_MEDIUM n_levels)
 /* b: index number into c->bins */
 /* level: Levels of features to extract */
 /* n_levels: # of such levels. 0 means use all levels */
 {
 	size_t start[1], count[1];
 	int *seg_start = NULL;
-	short *seg_n = NULL, *seg_level = NULL;
+	short *seg_n = NULL, *seg_level = NULL, s_level;
 	GMT_LONG s, i, err;
 	COUNTER_MEDIUM k;
 	BOOLEAN skip;
@@ -807,7 +807,7 @@ GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, COUNTER_MEDIUM b, struct GMT_BR *c,
 			skip = FALSE;
 		else {
 			for (k = 0, skip = TRUE; skip && k < n_levels; k++)
-				if (seg_level[i] == level[k]) skip = FALSE;
+				if ((s_level = level[k]) == seg_level[i]) skip = FALSE;
 		}
 		if (skip) continue;
 		if (!c->seg) c->seg = GMT_memory (C, NULL, c->ns, struct GMT_BR_SEGMENT);

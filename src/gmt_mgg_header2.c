@@ -256,8 +256,8 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	char *tChar = NULL;
 	float *tFloat = NULL;
 	BOOLEAN piping = FALSE, swap_all = FALSE, is_float = FALSE;
-	COUNTER_MEDIUM first_col, last_col, first_row, last_row;
-	COUNTER_MEDIUM j, width_in, height_in, i_0_out, inc, off;
+	GMT_LONG j, first_col, last_col, first_row, last_row;
+	COUNTER_MEDIUM width_in, height_in, i_0_out, inc, off;
 	COUNTER_MEDIUM i, width_out, *actual_col = NULL;
 	COUNTER_LARGE kk, ij, j2;
 	off_t long_offset;	/* For fseek only */
@@ -336,7 +336,7 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		}
 	}
 	if (piping)	{ /* Skip data by reading it */
-		COUNTER_MEDIUM ny = header->ny;
+		GMT_LONG ny = header->ny;
 		for (j = last_row + 1; j < ny; j++) if (GMT_fread ( tLong, (size_t)abs (mggHeader.numType), n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
 	}
 		
@@ -355,10 +355,10 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 GMT_LONG GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
 {
 	MGG_GRID_HEADER_2 mggHeader;
-	BOOLEAN is_float = FALSE;
-	GMT_LONG check, err;
-	COUNTER_MEDIUM i2, j, width_out, height_out, inc, off, *actual_col = NULL;
-	COUNTER_MEDIUM first_col, last_col, first_row, last_row, i, width_in;
+	BOOLEAN is_float = FALSE, check;
+	GMT_LONG i, j, err;
+	COUNTER_MEDIUM i2, ju, iu, width_out, height_out, inc, off, width_in, *actual_col = NULL;
+	GMT_LONG first_col, last_col, first_row, last_row;
 	COUNTER_LARGE ij, kk, j2;
 	
 	int *tLong = NULL;
@@ -408,15 +408,15 @@ GMT_LONG GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	tShort = (short *) tLong;	tChar = (char *)tLong;	tFloat = (float *) tLong;
 	
 	i2 = first_col + pad[XLO];
-	for (j = 0, j2 = first_row + pad[YHI]; j < height_out; j++, j2++) {
+	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
 		ij = j2 * width_in + i2;
-		for (i = 0; i < width_out; i++) {
-			kk = inc * (ij+actual_col[i]) + off;
+		for (iu = 0; iu < width_out; iu++) {
+			kk = inc * (ij+actual_col[iu]) + off;
 			if (GMT_is_fnan (grid[kk])) {
-				if (mggHeader.numType == sizeof (int))       tLong[i]  = mggHeader.nanValue;
-				else if (is_float) tFloat[i]  = (float)mggHeader.nanValue;
-				else if (mggHeader.numType == sizeof (short)) tShort[i] = (short)mggHeader.nanValue;
-				else if (mggHeader.numType == sizeof (char))  tChar[i] = (char)mggHeader.nanValue;
+				if (mggHeader.numType == sizeof (int))       tLong[iu]  = mggHeader.nanValue;
+				else if (is_float) tFloat[iu]  = (float)mggHeader.nanValue;
+				else if (mggHeader.numType == sizeof (short)) tShort[iu] = (short)mggHeader.nanValue;
+				else if (mggHeader.numType == sizeof (char))  tChar[iu] = (char)mggHeader.nanValue;
 				else {
 					return (GMT_GRDIO_UNKNOWN_TYPE);
 				}
@@ -424,13 +424,13 @@ GMT_LONG GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 				if (grid[kk] > -0.1 && grid[kk] < 0) grid[kk] = (float)(-0.1);
 
 				if (mggHeader.numType == sizeof (int))
-					tLong[i] = (int)rint ((double)grid[kk] * mggHeader.precision);
+					tLong[iu] = (int)rint ((double)grid[kk] * mggHeader.precision);
 				else if (is_float)
-					tFloat[i] = grid[kk];
+					tFloat[iu] = grid[kk];
 				else if (mggHeader.numType == sizeof (short))
-					tShort[i] = (short) rint((double)grid[kk] * mggHeader.precision);
+					tShort[iu] = (short) rint((double)grid[kk] * mggHeader.precision);
 				else if (mggHeader.numType == sizeof (char))
-					tChar[i] = (char) rint((double)grid[kk] * mggHeader.precision);
+					tChar[iu] = (char) rint((double)grid[kk] * mggHeader.precision);
 				else
 					return (GMT_GRDIO_UNKNOWN_TYPE);
 			}

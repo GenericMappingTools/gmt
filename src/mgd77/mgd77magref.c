@@ -20,14 +20,14 @@
 struct MGD77MAGREF_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct MGD77_CM4 *CM4;
-	GMT_LONG copy_input;
-	GMT_LONG do_IGRF;
-	GMT_LONG do_CM4;
-	GMT_LONG joint_IGRF_CM4;
+	BOOLEAN copy_input;
+	BOOLEAN do_IGRF;
+	BOOLEAN do_CM4;
+	BOOLEAN joint_IGRF_CM4;
 	struct A {	/* -A */
 		BOOLEAN active;
-		GMT_LONG fixed_alt;
-		GMT_LONG fixed_time;
+		BOOLEAN fixed_alt;
+		BOOLEAN fixed_time;
 		GMT_LONG years;
 		GMT_LONG t_col;
 		double altitude;
@@ -39,21 +39,12 @@ struct MGD77MAGREF_CTRL {	/* All control options for this program (except common
 	struct D {	/* -D */
 		BOOLEAN active;
 	} D;
-	struct E {	/* -E */
-		BOOLEAN active;
-		GMT_LONG mode;
-	} E;
 	struct F {	/* -F */
 		BOOLEAN active;
 	} F;
 	struct G {	/* -G */
 		BOOLEAN active;
 	} G;
-	struct I {	/* -I */
-		BOOLEAN active;
-		GMT_LONG n;
-		char code[3];
-	} I;
 	struct L {	/* -L */
 		BOOLEAN active;
 	} L;
@@ -520,7 +511,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 	n_out = n_field_components + ((Ctrl->copy_input) ? Din->n_columns : 0);

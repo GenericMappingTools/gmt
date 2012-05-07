@@ -131,7 +131,7 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 	} D;
 	struct E {	/* -Erotfile */
 		BOOLEAN active;
-		GMT_LONG mode;
+		BOOLEAN mode;
 		char *file;
 	} E;
 	struct F {	/* -Ehotspotfile */
@@ -140,7 +140,7 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 	} F;
 	struct L {	/* -L */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		BOOLEAN degree;	/* Report degrees */
 	} L;
 	struct N {	/* -N */

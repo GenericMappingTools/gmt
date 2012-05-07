@@ -22,14 +22,14 @@ struct MGD77PATH_CTRL {	/* All control options for this program (except common a
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
 		BOOLEAN active;
-		GMT_LONG mode;
+		BOOLEAN mode;
 	} A;
 	struct D {	/* -D */
 		BOOLEAN active;
 	} D;
 	struct I {	/* -I */
 		BOOLEAN active;
-		GMT_LONG n;
+		COUNTER_MEDIUM n;
 		char code[3];
 	} I;
 };

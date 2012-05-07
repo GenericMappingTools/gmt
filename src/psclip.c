@@ -35,7 +35,7 @@
 struct PSCLIP_CTRL {
 	struct C {	/* -C */
 		BOOLEAN active;
-		COUNTER_MEDIUM n;	/* Number of levels to undo [1], or CLIP_STEXT, or CLIP_CTEXT */
+		GMT_LONG n;	/* Number of levels to undo [1], or CLIP_STEXT, or CLIP_CTEXT */
 	} C;
 	struct N {	/* -N */
 		BOOLEAN active;
@@ -254,7 +254,7 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 				Return (API->error);	/* Register data input */
 			}
-			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
 

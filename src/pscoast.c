@@ -80,7 +80,7 @@ struct PSCOAST_CTRL {
 	} G;
 	struct I {	/* -I<feature>[/<pen>] */
 		BOOLEAN active;
-		BOOLEAN use[GSHHS_N_RLEVELS];
+		COUNTER_MEDIUM use[GSHHS_N_RLEVELS];
 		COUNTER_MEDIUM n_rlevels;
 		struct GMT_PEN pen[GSHHS_N_RLEVELS];
 	} I;
@@ -93,7 +93,7 @@ struct PSCOAST_CTRL {
 	} M;
 	struct N {	/* -N<feature>[/<pen>] */
 		BOOLEAN active;
-		BOOLEAN use[GSHHS_N_BLEVELS];
+		COUNTER_MEDIUM use[GSHHS_N_BLEVELS];
 		COUNTER_MEDIUM n_blevels;
 		struct GMT_PEN pen[GSHHS_N_BLEVELS];
 	} N;
@@ -310,22 +310,22 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 				}
 				switch (opt->arg[0]) {
 					case 'a':
-						for (k = 0; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = 0; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					case 'A':
-						for (k = 1; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = 1; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					case 'r':
-						for (k = 0; k < GSHHS_RIVER_INTERMITTENT; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = 0; k < GSHHS_RIVER_INTERMITTENT; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					case 'R':
-						for (k = 1; k < GSHHS_RIVER_INTERMITTENT; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = 1; k < GSHHS_RIVER_INTERMITTENT; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					case 'i':
-						for (k = GSHHS_RIVER_INTERMITTENT; k < GSHHS_RIVER_CANALS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = GSHHS_RIVER_INTERMITTENT; k < GSHHS_RIVER_CANALS; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					case 'c':
-						for (k = GSHHS_RIVER_CANALS; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = GSHHS_RIVER_CANALS; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					default:
 						k = atoi (opt->arg);
@@ -334,7 +334,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 							n_errors++;
 						}
 						else
-							Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+							Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 				}
 				break;
@@ -365,7 +365,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 				}
 				switch (opt->arg[0]) {
 					case 'a':
-						for (k = 0; k < GSHHS_N_BLEVELS; k++) Ctrl->N.use[k] = TRUE, Ctrl->N.pen[k] = pen;
+						for (k = 0; k < GSHHS_N_BLEVELS; k++) Ctrl->N.use[k] = 1, Ctrl->N.pen[k] = pen;
 						break;
 					default:
 						k = opt->arg[0] - '1';
@@ -374,7 +374,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 							n_errors++;
 						}
 						else
-							Ctrl->N.use[k] = TRUE, Ctrl->N.pen[k] = pen;
+							Ctrl->N.use[k] = 1, Ctrl->N.pen[k] = pen;
 						break;
 				}
 				break;

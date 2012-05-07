@@ -66,16 +66,16 @@ struct GSHHS_CTRL {
 	} G;
 	struct I {	/* -I[<id>|c] */
 		BOOLEAN active;
-		GMT_LONG mode;
-		GMT_LONG id;
+		COUNTER_MEDIUM mode;
+		COUNTER_MEDIUM id;
 	} I;
 	struct N {	/* -N<level> */
 		BOOLEAN active;
-		GMT_LONG level;
+		COUNTER_MEDIUM level;
 	} N;
 	struct Q {	/* -Qe|i */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} Q;
 };
 
@@ -125,7 +125,7 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	GMT_LONG n_errors = 0, n_files = 0, sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -157,12 +157,17 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 				Ctrl->I.active = TRUE;
 				if (opt->arg[0] == 'c')
 					Ctrl->I.mode = 1;
-				else
-					Ctrl->I.id = atoi (opt->arg);
+				else {
+					sval = atoi (opt->arg);
+					n_errors += GMT_check_condition (GMT, sval < 0, "Syntax error -I: ID cannot be negative!\n");
+					Ctrl->I.id = sval;
+				}
 				break;
 			case 'N':
 				Ctrl->N.active = TRUE;
-				Ctrl->N.level = atoi (opt->arg);
+				sval = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, sval < 0, "Syntax error -N: Level cannot be negative!\n");
+				Ctrl->N.level = sval;
 				break;
 			case 'Q':
 				Ctrl->Q.active = TRUE;
@@ -180,9 +185,7 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 	}
 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: No data file specified!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.level < 0, "Syntax error -N: Level cannot be negative!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && Ctrl->A.min < 0.0, "Syntax error -A: area cannot be negative!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.id < 0, "Syntax error -I: ID cannot be negative!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.mode == 3, "Syntax error -Q: Append e or i!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -197,8 +200,8 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 
 GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	COUNTER_MEDIUM seg_no = 0, is_line = 0, n_seg = 0, n_read, m;
-	GMT_LONG k, error, gmode, level, version, greenwich, is_river, src, max_east = 270000000;
+	COUNTER_MEDIUM seg_no = 0, is_line = 0, n_seg = 0, n_read, m, level, this_id;
+	GMT_LONG k, error, gmode, version, greenwich, is_river, src, max_east = 270000000;
 	BOOLEAN must_swab, OK, first = TRUE;
 	
 	COUNTER_LARGE dim[4] = {1, 0, 2, 0};
@@ -330,8 +333,9 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		area = h.area / scale;				/* Now im km^2 */
 		f_area = h.area_full / scale;			/* Now im km^2 */
+		this_id = h.id;
 		
-		OK = ((!Ctrl->I.active || ((!Ctrl->I.mode && h.id == Ctrl->I.id) || (Ctrl->I.mode && h.id <= 5))) && area >= Ctrl->A.min);	/* Skip if not the one (-I) or too small (-A) */
+		OK = ((!Ctrl->I.active || ((!Ctrl->I.mode && this_id == Ctrl->I.id) || (Ctrl->I.mode && this_id <= 5))) && area >= Ctrl->A.min);	/* Skip if not the one (-I) or too small (-A) */
 		if (OK && Ctrl->Q.active && ((is_river && Ctrl->Q.mode == 1) || (!is_river && Ctrl->Q.mode == 2))) OK = FALSE;	/* Skip if riverlake/not riverlake (-Q) */
 		if (OK && Ctrl->N.active && Ctrl->N.level != level) OK = 0;		/* Skip if not the right level (-N) */
 		if (!OK) {	/* Not what we are looking for, skip to next */
@@ -412,7 +416,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			TX->record = GMT_memory (GMT, TX->record, seg_no, char *);
 		}
 		X->n_records = X->table[0]->n_records = TX->n_rows;
-		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, NULL, 0, Ctrl->Out.file, X) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_WRITE_SET, NULL, Ctrl->Out.file, X) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -422,7 +426,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		D->n_segments = D->table[0]->n_segments = seg_no;
 		gmode = (is_line) ? GMT_IS_LINE : GMT_IS_POLY;
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, gmode, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, gmode, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 			Return (API->error);
 		}
 	}

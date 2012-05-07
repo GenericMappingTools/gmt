@@ -382,7 +382,7 @@ The basic registration machinery involves a direct or indirect call to
 
 \begin{verbatim}
 long GMT_Register_IO (struct GMTAPI_CTRL *API, long family, long method, \
-   long geometry, long direction, void *ptr, double wesn[])
+   long geometry, long direction, double wesn[], void *ptr)
 \end{verbatim}
 where \texttt{family} specifies what kind of resource is to be registered
 (see Table \ref{tbl:family} for list of all families), \texttt{method} specifies
@@ -667,7 +667,7 @@ an generic form that covers all of them.
 To read an entire data set from a file, a stream, or file handle, use
 \begin{verbatim}
 void * GMT_Read_Data (struct GMTAPI_CTRL *API, int family, int method, \
-    int geometry, double wesn[], int mode, char *input, void *data)
+    int geometry, int mode, double wesn[], char *input, void *data)
 \end{verbatim}
 where \texttt{data} is usually NULL except when reading grids in two steps
 (i.e., first get a grid structure with a header, then read the data).
@@ -1171,7 +1171,7 @@ The prototype for writing to a file (via name, stream, or file handle) is
 
 \begin{verbatim}
 int GMT_Write_Data (struct GMTAPI_CTRL *API, int family, int method, \
-    int geometry, double wesn[], int mode, void *output, void *data)
+    int geometry, int mode, double wesn[], void *output, void *data)
 \end{verbatim}
 where \texttt{data} is a pointer to any of the four structures
 discussed previously.  Again, the \texttt{mode} parameter is specific to
@@ -1369,17 +1369,17 @@ The list of the basic 17 FORTRAN prototype functions thus becomes
 function GMT_Create_Session (tag, mode)
 function GMT_Destroy_Session ()
 function GMT_Register_IO (family, method, geometry, direction, \
-    resource, wesn)
+    wesn, resource)
 function GMT_Encode_ID (filename, ID)
 function GMT_Init_IO (family, geometry, direction, head)
 function GMT_Begin_IO (family, geometry, direction)
 function GMT_Create_Data (family, geometry, ipar)
-function GMT_Read_Data (family, method, geometry, wesn, mode, \
+function GMT_Read_Data (family, method, geometry, mode, wesn, \
 	input, data)
 function GMT_Get_Data (ID, mode, data)
 function GMT_Retrieve_Data (ID)
 function GMT_Get_Record (rec, mode, nfields)
-function GMT_Write_Data (family, method, geometry, wesn, mode, \
+function GMT_Write_Data (family, method, geometry, mode, wesn, \
 	output, data)
 function GMT_Put_Data (ID, mode, data)
 function GMT_Put_Record (mode, rec)

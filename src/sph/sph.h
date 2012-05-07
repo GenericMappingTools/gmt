@@ -27,13 +27,13 @@
  * in the Fortran-translated code could make unsigned. */
 
 struct STRIPACK_DELAUNAY {	/* Information about Delaunay triangulation */
-	int64_t n;		/* Number of Delaunay triangles */
+	COUNTER_LARGE n;	/* Number of Delaunay triangles */
 	int64_t *tri;		/* Delaunay triplet node numbers and more */
 };
 
 struct STRIPACK_VORONOI {	/* Information about Voronoi polygons */
 	double *lon, *lat;		/* Voronoi polygon vertices */
-	int64_t n;			/* Number of boundary nodes for Voronoi */
+	COUNTER_LARGE n;		/* Number of boundary nodes for Voronoi */
 	int64_t *lend, *listc, *lptr;	/* Voronoi vertex lists and pointers */
 	int64_t *list;			/* Additional list from trmesh */		
 };
