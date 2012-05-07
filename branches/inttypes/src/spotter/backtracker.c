@@ -76,16 +76,16 @@ struct BACKTRACKER_CTRL {	/* All control options for this program (except common
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A[young/old] */
 		BOOLEAN active;
-		GMT_LONG mode;	/* 1 specific limits for all input points, 2 if limits are in cols 4 + 5  */
+		COUNTER_MEDIUM mode;	/* 1 specific limits for all input points, 2 if limits are in cols 4 + 5  */
 		double t_low, t_high;
 	} A;
 	struct D {	/* -Df|b */
 		BOOLEAN active;
-		GMT_LONG mode;		/* 1 we go FROM hotspot to seamount, 0 is reverse */
+		COUNTER_MEDIUM mode;		/* 1 we go FROM hotspot to seamount, 0 is reverse */
 	} D;
 	struct E {	/* -E[+]rotfile */
 		BOOLEAN active;
-		GMT_LONG mode;
+		BOOLEAN mode;
 		char *file;
 	} E;
 	struct e {	/* -e<lon/lat/angle> */
@@ -98,8 +98,8 @@ struct BACKTRACKER_CTRL {	/* All control options for this program (except common
 	} F;
 	struct L {	/* -L */
 		BOOLEAN active;
-		GMT_LONG mode;		/* 0 = hotspot tracks, 1 = flowlines */
-		GMT_LONG stage_id;	/* 1 returns stage id instead of ages */
+		BOOLEAN mode;		/* FALSE = hotspot tracks, TRUE = flowlines */
+		BOOLEAN stage_id;	/* 1 returns stage id instead of ages */
 		double d_km;	/* Resampling spacing */
 	} L;
 	struct N {	/* -N */
@@ -434,7 +434,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->F.active) {	/* Get hotspot motion file */
-		if ((F = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->F.file, NULL)) == NULL) {
+		if ((F = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		H = F->table[0]->segment[0];	/* Only one table with one segment for histories */

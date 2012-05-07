@@ -675,7 +675,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			mode_length[0] = mean_radius;
 		}
 		else {	/* Get mode parameters from separate file */
-			if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+			if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 				Return (API->error);
 			}
 			P = Cin->table[0];	/* Can only be one table since we read a single file; We also only use the first segment */

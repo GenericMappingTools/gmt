@@ -86,7 +86,7 @@ struct PSSEGY_CTRL {
 	} Q;
 	struct S {	/* -S */
 		BOOLEAN active;
-		int mode;
+		COUNTER_MEDIUM mode;
 		int value;
 	} S;
 	struct T {	/* -T */

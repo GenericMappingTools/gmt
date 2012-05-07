@@ -211,16 +211,16 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	 *		for real and imaginary parts when processed by grdfft etc.
 	 */
 
-	COUNTER_MEDIUM first_col, last_col;		/* First and last column to deal with */
-	COUNTER_MEDIUM first_row, last_row;		/* First and last row to deal with */
+	GMT_LONG first_col, last_col, j, col;		/* First and last column to deal with */
+	GMT_LONG first_row, last_row, j_gmt, colend;		/* First and last row to deal with */
 	COUNTER_MEDIUM width_in;			/* Number of items in one row of the subregion */
 	COUNTER_MEDIUM width_out;			/* Width of row as return (may include padding) */
 	COUNTER_MEDIUM height_in;			/* Number of columns in subregion */
 	COUNTER_MEDIUM inc, off;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	COUNTER_MEDIUM i, j, j_gmt, i_0_out;		/* Misc. counters */
+	COUNTER_MEDIUM i, i_0_out;		/* Misc. counters */
 	COUNTER_MEDIUM *k = NULL;			/* Array with indices */
 	COUNTER_MEDIUM block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
-	COUNTER_MEDIUM datablockcol, datablockrow, rowstart, rowend, colstart, colend, row, col;
+	COUNTER_MEDIUM datablockcol, datablockrow, rowstart, rowend, colstart, row;
 	COUNTER_LARGE ij;
 	float z[ZBLOCKWIDTH][ZBLOCKHEIGHT];
 	FILE *fp = NULL;			/* File pointer to data or pipe */
@@ -257,12 +257,12 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	for (block = 0; block < n_blocks; block++) {
 		if (ReadRecord (fp, z)) return (GMT_GRDIO_READ_FAILED);
 		rowstart = datablockrow * ZBLOCKHEIGHT;
-		rowend = MIN (rowstart + ZBLOCKHEIGHT, (COUNTER_MEDIUM)header->ny);
+		rowend = MIN (rowstart + ZBLOCKHEIGHT, header->ny);
 		for (i = 0, row = rowstart; row < rowend; i++, row++) {
 			j_gmt = header->ny - 1 - row;	/* GMT internal row number */
 			if (j_gmt < first_row || j_gmt > last_row) continue;
 			colstart = datablockcol * ZBLOCKWIDTH;
-			colend = MIN (colstart + ZBLOCKWIDTH, (COUNTER_MEDIUM)header->nx);
+			colend = MIN (colstart + ZBLOCKWIDTH, header->nx);
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
 				ij = (((j_gmt - first_row) + pad[YHI]) * width_out + inc * (col - first_col)) + i_0_out;
@@ -299,18 +299,17 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	 */
 
 
-	COUNTER_MEDIUM first_col, last_col;		/* First and last column to deal with */
-	COUNTER_MEDIUM first_row, last_row;		/* First and last row to deal with */
+	GMT_LONG first_col, last_col, col, colend = 0;		/* First and last column to deal with */
+	GMT_LONG j_gmt, i, j, first_row, last_row;		/* First and last row to deal with */
 	COUNTER_MEDIUM width_in;			/* Number of items in one row of the subregion */
 	COUNTER_MEDIUM width_out;			/* Width of row as return (may include padding) */
 	COUNTER_MEDIUM height_out;			/* Number of columns in subregion */
 	COUNTER_MEDIUM inc;				/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	COUNTER_MEDIUM off;				/* Complex array offset: 0 for real, 1 for imaginary */
-	COUNTER_MEDIUM i, j, i2, j2;			/* Misc. counters */
+	COUNTER_MEDIUM i2, j2;			/* Misc. counters */
 	COUNTER_MEDIUM *k = NULL;			/* Array with indices */
 	COUNTER_MEDIUM block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
-	COUNTER_MEDIUM rowstart, rowend, colstart, colend = 0, datablockcol, datablockrow;
-	COUNTER_MEDIUM j_gmt, row, col;
+	COUNTER_MEDIUM row, rowstart, rowend, colstart, datablockcol, datablockrow;
 	COUNTER_LARGE ij;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
 	float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT];

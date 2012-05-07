@@ -47,7 +47,7 @@ struct SPHINTERPOLATE_CTRL {
 	} I;
 	struct Q {	/* -Q<interpolation> */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 		double value[2];
 	} Q;
 	struct T {	/* -T for variable tension */
@@ -198,7 +198,7 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode < 0 || Ctrl->Q.mode > 3, "Syntax error -T: Must specify a mode in the 0-3 range\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode > 3, "Syntax error -T: Must specify a mode in the 0-3 range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -208,7 +208,7 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 
 GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col;
+	COUNTER_MEDIUM row, col;
 	BOOLEAN error = FALSE;
 
 	size_t n_alloc = 0;
@@ -324,7 +324,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Write solution */
 	
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);
 	}
 

@@ -78,7 +78,7 @@ struct ROTCONVERTER_CTRL {	/* All control options for this program (except commo
 	} E;
 	struct F {	/* -F */
 		BOOLEAN active;
-		GMT_LONG mode;	/* out mode (TRUE if total reconstruction rotations) */
+		BOOLEAN mode;	/* out mode (TRUE if total reconstruction rotations) */
 	} F;
 	struct G {	/* -G */
 		BOOLEAN active;

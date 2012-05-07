@@ -806,7 +806,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read Input tables\n");
-	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 	
@@ -937,7 +937,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		/* Write out results */
 		if (Ctrl->Q.header) {
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 				Return (API->error);
 			}
 		}
@@ -962,7 +962,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		if (Ctrl->S.mode == POL_CLIP) {	/* Need to set up a separate table with the clip polygon */
 			if (Ctrl->T.file) {
-				if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->T.file, NULL)) == NULL) {
+				if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 					Return (API->error);
 				}
 			}
@@ -1152,7 +1152,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct DUP_INFO **Info = NULL, *I = NULL;
 		
 		if (Ctrl->D.file) {	/* Get trial features via a file */
-			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->D.file, NULL)) == NULL) {
+			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL) {
 				Return (API->error);
 			}
 			from = Ctrl->D.file;
@@ -1255,7 +1255,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				S->n_rows = np;
 			}
 		}
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -1269,7 +1269,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL, *S2 = NULL;
 		
-		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->N.file, NULL)) == NULL) {
+		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
@@ -1347,7 +1347,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		for (p = n_inside = 0; p < D->n_segments; p++) if (count[p]) n_inside++;
 		if (Ctrl->N.mode != 1) {	/* Write out results */
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 				Return (API->error);
 			}
 		}
@@ -1405,7 +1405,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Dout->table[tbl]->n_segments = seg_out;
 			Dout->n_segments += seg_out;
 		}
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, Dout) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 			Return (API->error);
 		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " segments split across the Dateline\n", n_split);

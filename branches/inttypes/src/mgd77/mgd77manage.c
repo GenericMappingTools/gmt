@@ -66,18 +66,18 @@ struct MGD77MANAGE_CTRL {	/* All control options for this program (except common
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
 		BOOLEAN active;
-		GMT_LONG replace;
-		GMT_LONG interpolate;
-		GMT_LONG ignore_verify;
-		GMT_LONG mode;
-		GMT_LONG kind;
-		GMT_LONG e77_skip_mode[N_E77_MODES];
+		BOOLEAN replace;
+		BOOLEAN interpolate;
+		BOOLEAN ignore_verify;
+		COUNTER_MEDIUM mode;
+		COUNTER_MEDIUM kind;
+		BOOLEAN e77_skip_mode[N_E77_MODES];
 		char *file;
 		double parameters[N_PAR];
 	} A;
 	struct C {	/* -C */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} C;
 	struct D {	/* -D */
 		BOOLEAN active;
@@ -631,7 +631,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (Ctrl->A.mode == MODE_g) {	/* Read regular GMT grid */
 
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->A.file, NULL)) == NULL) {	/* Get data */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get data */
 			Return (API->error);
 		}
 		interpolate = (GMT->common.n.threshold > 0.0);

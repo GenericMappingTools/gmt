@@ -50,7 +50,7 @@ int main (int argc, char *argv[]) {
 	Vi->data[0].f4 = x;	Vi->data[1].f4 = y;	Vi->data[2].f4 = z;
 	Vo = GMT_create_vector (API->GMT, 3);
 
-	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, Vi, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 
 	Vo->type[0] = Vo->type[1] = Vo->type[2] = GMTAPI_DOUBLE;
 	Vo->alloc_mode = GMT_REFERENCE;	/* To tell mapproject to allocate as needed */
@@ -72,7 +72,7 @@ int main (int argc, char *argv[]) {
 
 	/* 6. Create command options for GMT_xyz2grd */
 
-	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, Vi, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
@@ -103,7 +103,7 @@ int main (int argc, char *argv[]) {
 
 	Vo = GMT_create_vector (API->GMT, 3);
 	Vo->alloc_mode = GMT_REFERENCE;	/* To tell gmtselect to allocate as needed */
-	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, Vi, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_COPY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */

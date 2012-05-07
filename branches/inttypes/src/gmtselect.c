@@ -514,7 +514,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
 	
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
-		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, GMT_IO_ASCII, Ctrl->C.file, NULL)) == NULL) {
+		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (Cin->n_columns < 2) {	/* Trouble */
@@ -567,7 +567,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->L.active) {	/* Initialize lines structure used in test for proximity to lines [use Ctrl->L.dist, ] */
-		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, GMT_IO_ASCII, Ctrl->L.file, NULL)) == NULL) {
+		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_ASCII, NULL, Ctrl->L.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (Lin->n_columns < 2) {	/* Trouble */
@@ -588,7 +588,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (Ctrl->F.active) {	/* Initialize polygon structure used in test for polygon in/out test */
 		GMT_skip_xy_duplicates (GMT, TRUE);	/* Avoid repeating x/y points in polygons */
-		if ((Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, GMT_IO_ASCII, Ctrl->F.file, NULL)) == NULL) {
+		if ((Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_IO_ASCII, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */

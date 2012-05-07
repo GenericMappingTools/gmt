@@ -416,9 +416,9 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 {
 	GMT_LONG error;
 	BOOLEAN check, is_binary = FALSE, swap = FALSE;
-	COUNTER_MEDIUM inc, off, col, height_in, ii, in_nx;
-	COUNTER_MEDIUM first_col, last_col, first_row, last_row, n_left = 0;
-	COUNTER_MEDIUM row, row2, width_in, *actual_col = NULL;
+	COUNTER_MEDIUM inc, off, col, height_in, ii, in_nx, n_left = 0;
+	GMT_LONG row, first_col, last_col, first_row, last_row;
+	COUNTER_MEDIUM row2, width_in, *actual_col = NULL;
 	COUNTER_MEDIUM nBits = 32, i_0_out;
 	COUNTER_LARGE ij, kk, width_out;
 	size_t n_expected;
@@ -461,9 +461,9 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		tmp16 = GMT_memory (C, NULL, n_expected, int16_t);
 
 	if (is_binary) {
-
-		if (last_row - first_row + 1 != (COUNTER_MEDIUM)header->ny)		/* We have a sub-region */
-			if (fseek (fp, (off_t) (first_row * n_expected * 4 * nBits / 32), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+		GMT_LONG ny = header->ny;
+		if (last_row - first_row + 1 != ny)		/* We have a sub-region */
+			if (fseek (fp, (off_t) (first_row * n_expected * 4UL * nBits / 32UL), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 
 		i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 		ij = pad[YHI] * width_out + i_0_out;
@@ -557,7 +557,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode, GMT_LONG floating)
 {
 	COUNTER_MEDIUM inc, off, i2, j, j2, width_out, height_out, last;
-	COUNTER_MEDIUM first_col, last_col, first_row, last_row;
+	GMT_LONG first_col, last_col, first_row, last_row;
 	COUNTER_MEDIUM i, *actual_col = NULL;
 	COUNTER_LARGE ij, width_in, kk;
 	char item[GMT_TEXT_LEN64], c[2] = {0, 0};

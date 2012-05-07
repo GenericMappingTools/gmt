@@ -1196,7 +1196,7 @@ GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	}
 	if (!GMT_access (C, item, R_OK)) {	/* Gave a readable file, presumably a grid */
 		struct GMT_GRID *G = NULL;
-		if ((G = GMT_Read_Data (C->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, item, NULL)) == NULL) {	/* Read header */
+		if ((G = GMT_Read_Data (C->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, item, NULL)) == NULL) {	/* Read header */
 			return (C->parent->error);
 		}
 		GMT_memcpy (&(C->current.io.grd_info.grd), G->header, 1, struct GRD_HEADER);

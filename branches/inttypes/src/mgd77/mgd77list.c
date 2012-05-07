@@ -64,11 +64,11 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 	} A;
 	struct C {	/* -C */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} C;
 	struct D {	/* -D */
 		BOOLEAN active;
-		GMT_LONG mode;	/* TRUE to skip recs with time == NaN */
+		BOOLEAN mode;	/* TRUE to skip recs with time == NaN */
 		double start;	/* Start time */
 		double stop;	/* Stop time */
 	} D;
@@ -86,7 +86,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 	} G;
 	struct I {	/* -I */
 		BOOLEAN active;
-		GMT_LONG n;
+		COUNTER_MEDIUM n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
@@ -109,7 +109,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 	} S;
 	struct T {	/* -T */
 		BOOLEAN active;
-		GMT_LONG mode;
+		GMT_LONG mode;	/* May be -1 */
 	} T;
 	struct W {	/* -W */
 		BOOLEAN active;
@@ -117,7 +117,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 	} W;
 	struct Z {	/* -Z[-|+] */
 		BOOLEAN active;
-		GMT_LONG mode;
+		BOOLEAN mode;
 	} Z;
 };
 

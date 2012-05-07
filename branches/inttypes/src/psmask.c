@@ -547,7 +547,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
 		COUNTER_LARGE dim[4] = {1, 0, 2, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
-			io_mode = GMT_WRITE_DATASET;
+			io_mode = GMT_WRITE_SET;
 		else {	/* Must determine the kind of output organization */
 			k = 0;
 			while (Ctrl->D.file[k]) {
@@ -742,7 +742,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_free (GMT, y);
 			if (Ctrl->D.active) {	/* Write the clip polygon file(s) */
 				D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, n_seg, struct GMT_LINE_SEGMENT *);
-				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, io_mode, Ctrl->D.file, D) != GMT_OK) {
+				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
 					Return (API->error);
 				}
 			}

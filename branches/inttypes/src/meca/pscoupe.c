@@ -45,8 +45,8 @@ PostScript code is written to stdout.
 
 struct PSCOUPE_CTRL {
 	struct A {	/* -A[<params>] */
-		BOOLEAN active;
-		GMT_LONG frame, fuseau, polygon;
+		BOOLEAN active, frame, polygon;
+		GMT_LONG fuseau;
 		char proj_type;
 		double p_width, p_length, dmin, dmax;
 		double xlonref, ylatref;
@@ -77,12 +77,12 @@ struct PSCOUPE_CTRL {
 	} Q;
 	struct S {	/* -S and -s */
 		BOOLEAN active;
-		GMT_LONG readmode;
-		GMT_LONG plotmode;
-		GMT_LONG justify;
-		GMT_LONG no_label;
+		BOOLEAN zerotrace;
+		BOOLEAN no_label;
+		COUNTER_MEDIUM readmode;
+		COUNTER_MEDIUM plotmode;
+		COUNTER_MEDIUM justify;
 		GMT_LONG symbol;
-		GMT_LONG zerotrace;
 		char P_symbol, T_symbol;
 		double scale;
 		double fontsize, offset;
@@ -90,7 +90,7 @@ struct PSCOUPE_CTRL {
 	} S;
 	struct T {	/* -Tnplane[/<pen>] */
 		BOOLEAN active;
-		GMT_LONG n_plane;
+		COUNTER_MEDIUM n_plane;
 		struct GMT_PEN pen;
 	} T;
 	struct W {	/* -W<pen> */
@@ -812,7 +812,7 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memset (&moment, 1, moment);
 
 	if (Ctrl->Z.active) {
-		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, NULL)) == NULL) {
+		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->Z.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 	}

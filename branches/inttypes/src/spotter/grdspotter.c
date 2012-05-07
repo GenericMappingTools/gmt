@@ -125,7 +125,7 @@ struct GRDSPOTTER_CTRL {	/* All control options for this program (except common 
 	} D;
 	struct E {	/* -E[+rotfile */
 		BOOLEAN active;
-		GMT_LONG mode;
+		BOOLEAN mode;
 		char *file;
 	} E;
 	struct G {	/* -Ggrdfile */
@@ -153,8 +153,8 @@ struct GRDSPOTTER_CTRL {	/* All control options for this program (except common 
 	} PA;
 	struct Q {	/* -Q */
 		BOOLEAN active;
-		GMT_LONG mode;
-		GMT_LONG id;
+		COUNTER_MEDIUM mode;
+		COUNTER_MEDIUM id;
 		char *file;
 	} Q;
 	struct S2 {	/* -S2 */
@@ -174,7 +174,7 @@ struct GRDSPOTTER_CTRL {	/* All control options for this program (except common 
 	} W;
 	struct Z {	/* -Z */
 		BOOLEAN active;
-		GMT_LONG mode;
+		BOOLEAN mode;
 		double min, max, inc;
 	} Z;
 };
@@ -252,7 +252,7 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG m, n_errors = 0, k, n_files = 0;
+	GMT_LONG m, n_errors = 0, k, n_files = 0, sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -327,8 +327,9 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 					Ctrl->Q.mode = 2;
 					Ctrl->Q.file = strdup (opt->arg);
 				}
-				else if ((Ctrl->Q.id = atoi (opt->arg)) > 0) {	/* Got OK id value */
+				else if ((sval = atoi (opt->arg)) > 0) {	/* Got OK id value */
 					Ctrl->Q.mode = 1;
+					Ctrl->Q.id = sval;
 				}
 				else {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error -Q: Must give valid file or ID value\n");
@@ -583,7 +584,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	if ((Z = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {	/* Get data */
+	if ((Z = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get data */
 		Return (API->error);
 	}
 	area = 111.195 * Z->header->inc[GMT_Y] * 111.195 * Z->header->inc[GMT_X];	/* In km^2 at Equator */
@@ -600,26 +601,26 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	y_cva = GMT_memory (GMT, NULL, G->header->ny, double);
 	for (row = 0; row < G->header->ny; row++) y_cva[row] = GMT_grd_row_to_y (GMT, row, G->header);
 	if (Ctrl->A.file) {
-		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
+		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		if (!(A->header->nx == Z->header->nx && A->header->ny == Z->header->ny && A->header->wesn[XLO] == Z->header->wesn[XLO] && A->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Topo grid and age grid must coregister\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->A.file, A) == NULL) {	/* Get age data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->A.file, A) == NULL) {	/* Get age data */
 			Return (API->error);
 		}
 	}
 	if (Ctrl->L.file) {
-		if ((L = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->L.file, NULL)) == NULL) {	/* Get header only */
+		if ((L = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->L.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		if (!(L->header->nx == Z->header->nx && L->header->ny == Z->header->ny && L->header->wesn[XLO] == Z->header->wesn[XLO] && L->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Topo grid and ID grid must coregister\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->L.file, L) == NULL) {	/* Get ID data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->L.file, L) == NULL) {	/* Get ID data */
 			Return (API->error);
 		}
 		
@@ -790,7 +791,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 	GMT_report (GMT, GMT_MSG_NORMAL, "Write CVA grid %s\n", Ctrl->G.file);
 
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_OK) {
 		Return (API->error);
 	}
 
@@ -851,7 +852,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sprintf (file, format, layer);
 			G->data = CVA_inc;	/* Temporarily change the array pointer */
 			GMT_report (GMT, GMT_MSG_NORMAL, "Save z-slice CVA to file %s\n", file);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, file, G) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G) != GMT_OK) {
 				Return (API->error);
 			}
 		}
@@ -938,14 +939,14 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->D.active) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Write DI grid %s\n", Ctrl->D.file);
 			sprintf (DI->header->remark, "CVA maxima along flowlines from each node");
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->D.file, DI) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->D.file, DI) != GMT_OK) {
 				Return (API->error);
 			}
 		}
 		if (Ctrl->PA.active) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Write PA grid %s\n", Ctrl->PA.file);
 			sprintf (PA->header->remark, "Predicted age for each node");
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->PA.file, PA) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->PA.file, PA) != GMT_OK) {
 				Return (API->error);
 			}
 		}

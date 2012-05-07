@@ -1052,7 +1052,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int ID, unsigned int mode, s
 
 	S = API->object[item];	/* S is the object whose data we will export */
 	if (S->family != GMT_IS_DATASET) return (GMT_Report_Error (API, GMT_WRONG_KIND));			/* Called with wrong data type */
-	if (mode > GMT_WRITE_DATASET && !S->filename) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));	/* Must have filename when segments are to be written */
+	if (mode > GMT_WRITE_SET && !S->filename) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));	/* Must have filename when segments are to be written */
 	if (S->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once unless overridden by mode */
 		return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));
 	default_method = GMT_IS_FILE;
@@ -1317,7 +1317,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int ID, unsigned int mode, s
 	if (ID == GMTAPI_NOTSET) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));
 	if ((item = GMTAPI_Validate_ID (API, GMT_IS_TEXTSET, ID, GMT_OUT)) == GMTAPI_NOTSET) return (GMT_Report_Error (API, API->error));
 
-	default_method = (mode > GMT_WRITE_DATASET) ? GMT_IS_FILE : GMT_IS_STREAM;
+	default_method = (mode > GMT_WRITE_SET) ? GMT_IS_FILE : GMT_IS_STREAM;
 	S = API->object[item];
 	if (S->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once, unless overridden by mode */
 		return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));
@@ -2067,7 +2067,7 @@ int GMTAPI_Init_Import (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 						GMT_memcpy (wesn, API->GMT->common.R.wesn, 4, double);
 					}
 				}
-				if ((object_ID = GMT_Register_IO (API, family, GMT_IS_FILE, geometry, GMT_IN, current->arg, wesn)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register */
+				if ((object_ID = GMT_Register_IO (API, family, GMT_IS_FILE, geometry, GMT_IN, wesn, current->arg)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register */
 				n_new++;	/* Count of new items registered */
 				if (wesn) GMT_free (API->GMT, wesn);
 				if (first_ID == GMTAPI_NOTSET) first_ID = object_ID;	/* Found our first ID */
@@ -2081,7 +2081,7 @@ int GMTAPI_Init_Import (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 	/* Note that n_reg can have changed if we added file args above */
 	
 	if ((mode & GMT_REG_STD_ALWAYS) || ((mode & GMT_REG_STD_IF_NONE) && n_reg == 0)) {	/* Wish to register stdin pointer as a source */
-		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, API->GMT->session.std[GMT_IN], NULL)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register stdin */
+		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, NULL, API->GMT->session.std[GMT_IN])) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register stdin */
 		n_reg++;		/* Add the single item */
 		if (first_ID == GMTAPI_NOTSET) first_ID = object_ID;	/* Found our first ID */
 		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Import: Added stdin to registered sources\n");
@@ -2131,7 +2131,7 @@ int GMTAPI_Init_Export (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 			while (current) {		/* Loop over the list and look for output files (we know there is only one) */
 				if (current->option == GMTAPI_OPT_OUTFILE) {	/* File given, register it */
 					fprintf (stderr, "%c %s\n", current->option, current->arg);
-					if ((object_ID = GMT_Register_IO (API, family, GMT_IS_FILE, geometry, GMT_OUT, current->arg, NULL)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register */
+					if ((object_ID = GMT_Register_IO (API, family, GMT_IS_FILE, geometry, GMT_OUT, NULL, current->arg)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register */
 					GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Import: Added 1 new destination\n");
 				}
 				current = current->next;	/* Go to next option */
@@ -2143,7 +2143,7 @@ int GMTAPI_Init_Export (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 	if ((mode & GMT_REG_STD_ALWAYS) && n_reg == 1) return_value (API, GMT_ONLY_ONE_ALLOWED, GMTAPI_NOTSET);	/* Only one output destination allowed at once */
 	
 	if (n_reg == 0 && ((mode & GMT_REG_STD_ALWAYS) || (mode & GMT_REG_STD_IF_NONE))) {	/* Wish to register stdout pointer as a destination */
-		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, API->GMT->session.std[GMT_OUT], NULL)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register stdout?*/
+		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, NULL, API->GMT->session.std[GMT_OUT])) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register stdout?*/
 		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Export: Added stdout to registered destinations\n");
 		n_reg = 1;	/* Only have one item */
 	}
@@ -2584,7 +2584,7 @@ int GMT_Encode_ID_ (char *filename, unsigned int *object_ID, int len)
  * GMT_Put_Record.  This keeps data i/o in the modules uniform and simple across GMT.
  */
 
-int GMT_Register_IO (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, void *resource, double wesn[])
+int GMT_Register_IO (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource)
 {
 	/* Adds a new data object to the list of registered objects and returns a unique object ID.
 	 * Arguments are as listed for GMTAPI_Register_Im|Export (); see those for details.
@@ -2790,9 +2790,9 @@ int GMT_Register_IO (struct GMTAPI_CTRL *API, unsigned int family, unsigned int 
 }
 
 #ifdef FORTRAN_API
-int GMT_Register_IO_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *direction, void *input, double wesn[])
+int GMT_Register_IO_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *direction, double wesn[], void *input)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Register_IO (GMT_FORTRAN, *family, *method, *geometry, *direction, input, wesn));
+	return (GMT_Register_IO (GMT_FORTRAN, *family, *method, *geometry, *direction, wesn, input));
 }
 #endif
 
@@ -3014,7 +3014,7 @@ void * GMT_Get_Data_ (unsigned int *ID, int *mode, void *data)
 }
 #endif
 
-void * GMT_Read_Data (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, unsigned int geometry, double wesn[], unsigned int mode, char *input, void *data)
+void * GMT_Read_Data (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *input, void *data)
 {
 	/* Function to read data files directly into program memory as a set (not record-by-record).
 	 * We can combine the <register resource - import resource > sequence in
@@ -3031,10 +3031,10 @@ void * GMT_Read_Data (struct GMTAPI_CTRL *API, unsigned int family, unsigned int
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
 	
 	if (input) {	/* Case 1: Load from a single, given source. Register it first. */
-		if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, input, wesn)) == GMTAPI_NOTSET) return_null (API, API->error);
+		if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, input)) == GMTAPI_NOTSET) return_null (API, API->error);
 	}
 	else if (input == NULL && geometry) {	/* Case 2: Load from stdin.  Register stdin first */
-		if ((in_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, API->GMT->session.std[GMT_IN], wesn)) == GMTAPI_NOTSET) return_null (API, API->error);	/* Failure to register std??? */
+		if ((in_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, wesn, API->GMT->session.std[GMT_IN])) == GMTAPI_NOTSET) return_null (API, API->error);	/* Failure to register std??? */
 	}
 	else {	/* Case 3: input == NULL && geometry == 0, so use all previously registered sources (unless already used). */
 		if (!(family == GMT_IS_DATASET || family == GMT_IS_TEXTSET)) return_null (API, GMT_ONLY_ONE_ALLOWED);	/* Virtual source only applies to data and text tables */
@@ -3047,14 +3047,14 @@ void * GMT_Read_Data (struct GMTAPI_CTRL *API, unsigned int family, unsigned int
 }
 
 #ifdef FORTRAN_API
-void * GMT_Read_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, double *wesn, unsigned int *mode, char *input, void *data, int len)
+void * GMT_Read_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, char *input, void *data, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Data (GMT_FORTRAN, *family, *method, *geometry, wes, *mode, input, data));
+	return (GMT_Get_Data (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, input, data));
 	
 }
 #endif
 
-int GMT_Write_Data (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, unsigned int geometry, double wesn[], unsigned int mode, char *output, void *data)
+int GMT_Write_Data (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *output, void *data)
 {
 	/* Function to write data directly from program memory as a set (not record-by-record).
 	 * We can combine the <register resource - export resource > sequence in
@@ -3074,11 +3074,11 @@ int GMT_Write_Data (struct GMTAPI_CTRL *API, unsigned int family, unsigned int m
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 
 	if (output) {	/* Case 1: Save to a single specified destination.  Register it first. */
-		if ((out_ID = GMT_Register_IO (API, family, method, geometry, GMT_OUT, output, wesn)) == GMTAPI_NOTSET) return_error (API, API->error);
+		if ((out_ID = GMT_Register_IO (API, family, method, geometry, GMT_OUT, wesn, output)) == GMTAPI_NOTSET) return_error (API, API->error);
 	}
 	else if (output == NULL && geometry) {	/* Case 2: Save to stdout.  Register stdout first. */
 		if (family == GMT_IS_GRID) return_error (API, GMT_STREAM_NOT_ALLOWED);	/* Cannot write grids to stream */
-		if ((out_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, API->GMT->session.std[GMT_OUT], wesn)) == GMTAPI_NOTSET) return_error (API, API->error);	/* Failure to register std??? */
+		if ((out_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, wesn, API->GMT->session.std[GMT_OUT])) == GMTAPI_NOTSET) return_error (API, API->error);	/* Failure to register std??? */
 	}
 	else {	/* Case 3: output == NULL && geometry == 0, so use the previously registered destination */
 		if ((n_reg = GMTAPI_n_items (API, family, GMT_OUT, &out_ID)) != 1) return_error (API, GMT_NO_OUTPUT);	/* There is no registered output */
@@ -3089,9 +3089,9 @@ int GMT_Write_Data (struct GMTAPI_CTRL *API, unsigned int family, unsigned int m
 }
 
 #ifdef FORTRAN_API
-int GMT_Write_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, double *wesn, unsigned int *mode, char *output, void *data, int len)
+int GMT_Write_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, char *output, void *data, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Write_Data (GMT_FORTRAN, *family, *method, *geometry, wesn, *mode, output, data));
+	return (GMT_Write_Data (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, output, data));
 	
 }
 #endif

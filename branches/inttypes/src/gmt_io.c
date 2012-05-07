@@ -4865,7 +4865,7 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	/* Determine w/e/s/n via GMT_minmax */
 
 	/* Create option list, register D as input source via ref */
-	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D, NULL)) == GMTAPI_NOTSET) {
+	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, NULL, D)) == GMTAPI_NOTSET) {
 		return (C->parent->error);
 	}
 	if (GMT_Encode_ID (C->parent, in_string, object_ID) != GMT_OK) {
@@ -4887,7 +4887,7 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	
 	/* Time to reregister the original destination */
 	
-	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, D, NULL)) == GMTAPI_NOTSET) {
+	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, D)) == GMTAPI_NOTSET) {
 		return (C->parent->error);
 	}
 	if ((error = GMTAPI_Validate_ID (C->parent, GMT_IS_DATASET, object_ID, GMT_OUT, &item)) != GMT_OK) {

@@ -1018,7 +1018,8 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 	 */
 
 
-	GMT_LONG j, n_errors = 0, n_files = 0, pos = 0;
+	GMT_LONG j, n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM pos = 0;
 	char	p[GMT_TEXT_LEN256];
 	struct	GMT_OPTION *opt = NULL;
 	struct	GMT_CTRL *GMT = C->GMT;
@@ -1177,7 +1178,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT->current.io.pad[XLO] = GMT->current.io.pad[XHI] = n21-1;
 	GMT->current.io.pad[YLO] = GMT->current.io.pad[YHI] = m21-1;
 
-	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -1194,7 +1195,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT_grd_init (GMT, Gin->header, options, TRUE);
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn_new, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
@@ -1226,20 +1227,20 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* Section to deal with possible external grids with dip and dec for interpolation */
 
 	if (Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd) {
-		if ((Gdip = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->E.dipfile, NULL)) == NULL) {	/* Get header only */
+		if ((Gdip = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->E.dipfile, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 	
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->E.dipfile, Gdip) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn_new, Ctrl->E.dipfile, Gdip) == NULL) {
 			Return (API->error);
 		}
 	}
 	if (Ctrl->E.dip_dec_grd) {
-		if ((Gdec = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->E.decfile, NULL)) == NULL) {
+		if ((Gdec = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->E.decfile, NULL)) == NULL) {
 			Return (API->error);
 		}
 	
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->E.decfile, Gdec) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn_new, Ctrl->E.decfile, Gdec) == NULL) {
 			Return (API->error);
 		}
 	}
@@ -1488,10 +1489,10 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	strcpy (Gout->header->title, "Anomaly reducted to the pole");
 	strcpy (Gout->header->z_units, "nT");
 
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
 		Return (API->error);
 	}
-	if (Ctrl->Z.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->Z.file, Gfilt) != GMT_OK) {
+	if (Ctrl->Z.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Z.file, Gfilt) != GMT_OK) {
 		Return (API->error);
 	}
 

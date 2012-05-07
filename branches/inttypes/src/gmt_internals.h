@@ -87,7 +87,7 @@ EXTERN_MSC double GMT_half_map_width (struct GMT_CTRL *C, double y);
 EXTERN_MSC void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN init); /* step a time axis by time units */
 EXTERN_MSC int64_t GMT_rd_from_iywd (struct GMT_CTRL *C, GMT_LONG iy, GMT_LONG iw, GMT_LONG id);
 EXTERN_MSC GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code);
-EXTERN_MSC GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[], COUNTER_MEDIUM *width, COUNTER_MEDIUM *height, COUNTER_MEDIUM *first_col, COUNTER_MEDIUM *last_col, COUNTER_MEDIUM *first_row, COUNTER_MEDIUM *last_row, COUNTER_MEDIUM **index);
+EXTERN_MSC GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[], COUNTER_MEDIUM *width, COUNTER_MEDIUM *height, GMT_LONG *first_col, GMT_LONG *last_col, GMT_LONG *first_row, GMT_LONG *last_row, COUNTER_MEDIUM **index);
 EXTERN_MSC void GMT_scale_eqrad (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, COUNTER_MEDIUM size);
 GMT_LONG GMT_get_fill_from_z (struct GMT_CTRL *C, struct GMT_PALETTE *P, double value, struct GMT_FILL *fill);

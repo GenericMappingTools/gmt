@@ -67,8 +67,9 @@ void stripack_lists (struct GMT_CTRL *C, COUNTER_LARGE n_in, double *x, double *
 	 * NOTE: All indeces returned are C (0->) adjusted from FORTRAN (1->).
 	 */
 
+	COUNTER_LARGE kk;
 	int64_t *iwk = NULL, *list = NULL, *lptr = NULL, *lend = NULL;
-	int64_t n = n_in, k, ierror, lnew, nrow = TRI_NROW;	/* Since the Fortran funcs expect signed ints */
+	int64_t n = n_in, n_out, k, ierror, lnew, nrow = TRI_NROW;	/* Since the Fortran funcs expect signed ints */
 	size_t n_alloc;
 	double *ds = NULL;
 	
@@ -109,8 +110,9 @@ void stripack_lists (struct GMT_CTRL *C, COUNTER_LARGE n_in, double *x, double *
 	n_alloc = 2 * (n - 2);
 	T->D.tri = GMT_memory (C, NULL, TRI_NROW*n_alloc, int64_t);
 	GMT_report (C, GMT_MSG_VERBOSE, "Call STRIPACK TRLIST subroutine...");
-	trlist_ (&n, list, lptr, lend, &nrow, &T->D.n, T->D.tri, &ierror);
+	trlist_ (&n, list, lptr, lend, &nrow, &n_out, T->D.tri, &ierror);
 	GMT_report (C, GMT_MSG_VERBOSE, "OK\n");
+	T->D.n = n_out;
 
 	if (ierror) {
 		GMT_report (C, GMT_MSG_FATAL, "STRIPACK: Error in TRLIST.\n");
@@ -119,7 +121,6 @@ void stripack_lists (struct GMT_CTRL *C, COUNTER_LARGE n_in, double *x, double *
 	
 	if (T->mode == VORONOI) {	/* Construct the Voronoi diagram */
 		int64_t *lbtri = NULL;
-		COUNTER_LARGE kk;
 		double *rc = NULL;
 		double *xc = NULL, *yc = NULL, *zc = NULL;	/* Voronoi polygon vertices */
 	
@@ -135,8 +136,9 @@ void stripack_lists (struct GMT_CTRL *C, COUNTER_LARGE n_in, double *x, double *
 		lbtri = GMT_memory (C, NULL, 6*n, int64_t);
 
 		GMT_report (C, GMT_MSG_VERBOSE, "Call STRIPACK CRLIST subroutine...");
-		crlist_ (&n, &n, x, y, z, list, lend, lptr, &lnew, lbtri, T->V.listc, &T->V.n, xc, yc, zc, rc, &ierror);
+		crlist_ (&n, &n, x, y, z, list, lend, lptr, &lnew, lbtri, T->V.listc, &n_out, xc, yc, zc, rc, &ierror);
 		GMT_report (C, GMT_MSG_VERBOSE, "OK\n");
+		T->V.n = n_out;
 		GMT_free (C, lbtri);
 		GMT_free (C, rc);
 		T->V.lend = lend;	/* Save these for output */
@@ -167,7 +169,7 @@ void stripack_lists (struct GMT_CTRL *C, COUNTER_LARGE n_in, double *x, double *
 	}
 	
 	/* Adjust Fortran to C indeces */
-	for (k = 0; k < TRI_NROW*T->D.n; k++) T->D.tri[k]--;
+	for (kk = 0; kk < TRI_NROW*T->D.n; kk++) T->D.tri[kk]--;
 	
 	GMT_free (C, list);
 }

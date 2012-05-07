@@ -51,7 +51,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if ((API = GMT_Create_Session ("GMT/MEX-API", GMTAPI_GMT)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. READING IN A GRID */
-	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, filein, NULL)) == NULL)
+	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, filein, NULL)) == NULL)
 		mexErrMsgTxt ("GMT: (grdread) Read failure\n");
 	
 	/* Create a matrix for the return array */

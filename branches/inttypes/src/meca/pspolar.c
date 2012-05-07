@@ -71,10 +71,10 @@ struct PSPOLAR_CTRL {
 	} S;
 	struct S2 {	/* -r<fill> */
 		BOOLEAN active;
+		BOOLEAN scolor;
+		BOOLEAN vector;
 		GMT_LONG symbol;
 		GMT_LONG outline;
-		GMT_LONG scolor;
-		GMT_LONG vector;
 		char type;
 		double size;
 		double width, length, head;

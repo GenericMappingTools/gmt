@@ -669,7 +669,7 @@ GMT_LONG GMT_grd_RI_verify (struct GMT_CTRL *C, struct GRD_HEADER *h, COUNTER_ME
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[], COUNTER_MEDIUM *width, COUNTER_MEDIUM *height, COUNTER_MEDIUM *first_col, COUNTER_MEDIUM *last_col, COUNTER_MEDIUM *first_row, COUNTER_MEDIUM *last_row, COUNTER_MEDIUM **index)
+GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[], COUNTER_MEDIUM *width, COUNTER_MEDIUM *height, GMT_LONG *first_col, GMT_LONG *last_col, GMT_LONG *first_row, GMT_LONG *last_row, COUNTER_MEDIUM **index)
 {
 	/* Determines which rows and columns to extract to extract from a grid, based on w,e,s,n.
 	 * This routine first rounds the w,e,s,n boundaries to the nearest gridlines or pixels,

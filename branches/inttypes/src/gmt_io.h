@@ -141,6 +141,7 @@ enum GMT_enum_complex {
 
 enum GMT_enum_read {
 	GMT_READ_DOUBLE = 0,	/* Read ASCII data record and return double array */
+	GMT_READ_NORMAL = 0,	/* Normal read mode [Default] */
 	GMT_READ_TEXT = 1,			/* Read ASCII data record and return text string */
 	GMT_READ_MIXED = 2,			/* Read ASCII data record and return double array but tolerate conversion errors */
 	GMT_FILE_BREAK = 4};			/* Add to mode to indicate we want to know when each file end is reached [continuous] */
@@ -153,7 +154,7 @@ enum GMT_enum_write {
 
 enum GMT_enum_dest {
 	GMT_WRITE_OGR = -1,	/* Output OGR/GMT format [Requires proper -a setting] */
-	GMT_WRITE_DATASET,		/* Write all output tables and all their segments to one destination [Default] */
+	GMT_WRITE_SET,			/* Write all output tables and all their segments to one destination [Default] */
 	GMT_WRITE_TABLES,		/* Write each output table and all their segments to separate destinations */
 	GMT_WRITE_SEGMENTS,		/* Write all output tables' segments to separate destinations */
 	GMT_WRITE_TABLE_SEGMENTS};	/* Same as 2 but if no filenames we use both tbl and seg with format */

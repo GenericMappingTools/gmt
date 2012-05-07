@@ -308,8 +308,8 @@ GMT_LONG GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	BOOLEAN piping = FALSE, check;
-	COUNTER_MEDIUM first_col, last_col, first_row, last_row, inc, off;
-	COUNTER_MEDIUM i, j, width_in, height_in, i_0_out, *actual_row = NULL;
+	GMT_LONG j, first_col, last_col, first_row, last_row;
+	COUNTER_MEDIUM i, width_in, height_in, i_0_out, *actual_row = NULL, inc, off;
 	size_t n2;
 	COUNTER_LARGE kk, ij, j2, width_out;
 	FILE *fp = NULL;
@@ -369,7 +369,7 @@ GMT_LONG GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		}
 	}
 	if (piping) {	/* Skip data by reading it */
-		COUNTER_MEDIUM ny = header->ny;
+		GMT_LONG ny = header->ny;
 		for (j = last_row + 1; j < ny; j++) if (GMT_fread ( tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_READ_FAILED);
 	}
 	header->nx = (int)width_in;
@@ -394,8 +394,8 @@ GMT_LONG GMT_ras_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	/* 		If 64 is added we write no header */
 
 	BOOLEAN check, do_header = TRUE;
-	COUNTER_MEDIUM i, i2, j, width_out, height_out, n2, *actual_col = NULL;
-	COUNTER_MEDIUM inc = 1, off = 0, first_col, last_col, first_row, last_row;
+	COUNTER_MEDIUM inc = 1, off = 0, i, i2, j, width_out, height_out, n2, *actual_col = NULL;
+	GMT_LONG first_col, last_col, first_row, last_row;
 	COUNTER_LARGE kk, ij, j2, width_in;
 
 	unsigned char *tmp = NULL;
@@ -594,10 +594,10 @@ GMT_LONG GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
-	GMT_LONG err, bit;
+	GMT_LONG j, err, bit;
 	BOOLEAN piping = FALSE, check = FALSE;
-	COUNTER_MEDIUM first_col, last_col, first_row, last_row, word;
-	COUNTER_MEDIUM inc, off, i, j, width_in, height_in, i_0_out, mx;
+	GMT_LONG first_col, last_col, first_row, last_row;
+	COUNTER_MEDIUM inc, off, i, width_in, height_in, i_0_out, mx, word;
 	COUNTER_MEDIUM *actual_col = NULL;
 	COUNTER_LARGE kk, ij, j2, width_out;
 	FILE *fp = NULL;
@@ -656,7 +656,7 @@ GMT_LONG GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		}
 	}
 	if (piping) {	/* Skip data by reading it */
-		COUNTER_MEDIUM ny = header->ny;
+		GMT_LONG ny = header->ny;
 		for (j = last_row + 1; j < ny; j++) if (GMT_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);
 	}
 
@@ -680,9 +680,9 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		If 64 is added we write no header*/
 
-	COUNTER_MEDIUM j, width_out, height_out, mx, word, inc, off;
-	COUNTER_MEDIUM i, i2, first_col, last_col, first_row, last_row, *actual_col = NULL;
-	GMT_LONG bit, err;
+	COUNTER_MEDIUM i2, iu, ju, width_out, height_out, mx, word, inc, off, *actual_col = NULL;
+	GMT_LONG first_col, last_col, first_row, last_row;
+	GMT_LONG i, j, bit, err;
 	BOOLEAN check = FALSE, do_header;
 	COUNTER_LARGE kk, ij, j2, width_in;
 	unsigned int *tmp = NULL, ival;
@@ -735,13 +735,13 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	tmp = GMT_memory (C, NULL, mx, unsigned int);
 
 	i2 = first_col + pad[XLO];
-	for (j = 0, j2 = first_row + pad[YHI]; j < height_out; j++, j2++) {
+	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
 		GMT_memset (tmp, mx, unsigned int);
 		ij = j2 * width_in + i2;
-		for (i = 0; i < width_out; i++) {
-			kk = inc * (ij + actual_col[i]) + off;
-			word = i / 32;
-			bit = i % 32;
+		for (iu = 0; iu < width_out; iu++) {
+			kk = inc * (ij + actual_col[iu]) + off;
+			word = iu / 32;
+			bit = iu % 32;
 			ival = (unsigned int) lrint ((double)grid[kk]);
 			if (ival > 1) ival = 1;	/* Truncate to 1 */
 			tmp[word] |= (ival << bit);
@@ -823,14 +823,14 @@ GMT_LONG GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, flo
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
-	GMT_LONG type;			/* Data type */
+	GMT_LONG j, type;			/* Data type */
 	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	COUNTER_MEDIUM err, inc, off;		/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary), and offset */
-	COUNTER_MEDIUM first_col, last_col;	/* First and last column to deal with */
-	COUNTER_MEDIUM first_row, last_row;	/* First and last row to deal with */
+	GMT_LONG first_col, last_col;	/* First and last column to deal with */
+	GMT_LONG first_row, last_row;	/* First and last row to deal with */
 	COUNTER_MEDIUM height_in;		/* Number of columns in subregion */
-	COUNTER_MEDIUM i, j, i_0_out;	/* Misc. counters */
+	COUNTER_MEDIUM i, i_0_out;	/* Misc. counters */
 	COUNTER_MEDIUM *k = NULL;		/* Array with indices */
 	COUNTER_MEDIUM width_in;		/* Number of items in one row of the subregion */
 	COUNTER_LARGE kk, ij, j2, width_out;	/* Width of row as return (may include padding) */
@@ -898,7 +898,7 @@ GMT_LONG GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, flo
 		}
 	}
 	if (piping) {	/* Skip remaining data by reading it */
-		COUNTER_MEDIUM ny = header->ny;
+		GMT_LONG ny = header->ny;
 		for (j = last_row + 1; j < ny; j++) if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
 	}
 
@@ -925,15 +925,15 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 	/*		If 64 is added we write no header */
 
 	GMT_LONG err;			/* Offset in complex array: 0 for real part, 1 for imaginary */
-	GMT_LONG type;			/* Data type */
+	GMT_LONG i, j, type;			/* Data type */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	BOOLEAN do_header = TRUE;	/* TRUE if we should write the header first */
 	COUNTER_MEDIUM inc, off;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	COUNTER_MEDIUM first_col, last_col;	/* First and last column to deal with */
-	COUNTER_MEDIUM first_row, last_row;	/* First and last row to deal with */
+	GMT_LONG first_col, last_col;	/* First and last column to deal with */
+	GMT_LONG first_row, last_row;	/* First and last row to deal with */
 	COUNTER_MEDIUM width_out;		/* Width of row as return (may include padding) */
 	COUNTER_MEDIUM height_out;		/* Number of columns in subregion */
-	COUNTER_MEDIUM i, j, i2;		/* Misc. counters */
+	COUNTER_MEDIUM i2, ju, iu;		/* Misc. counters */
 	COUNTER_MEDIUM *k = NULL;		/* Array with indices */
 	COUNTER_LARGE ij, width_in, j2;
 	size_t size;			/* Length of data type */
@@ -996,9 +996,9 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 	tmp = GMT_memory (C, NULL, n_expected * size, char);
 
 	i2 = first_col + pad[XLO];
-	for (j = 0, j2 = first_row + pad[YHI]; j < height_out; j++, j2++) {
+	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
 		ij = j2 * width_in + i2;
-		for (i = 0; i < width_out; i++) GMT_encode (C, tmp, i, grid[inc*(ij+k[i])+off], type);
+		for (iu = 0; iu < width_out; iu++) GMT_encode (C, tmp, iu, grid[inc*(ij+k[iu])+off], type);
 		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
@@ -1287,14 +1287,14 @@ GMT_LONG GMT_srf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
-	GMT_LONG type;			/* Data type */
+	GMT_LONG j, type, ny;			/* Data type */
 	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	COUNTER_MEDIUM inc, off;		/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary), and offset */
-	COUNTER_MEDIUM first_col, last_col;	/* First and last column to deal with */
-	COUNTER_MEDIUM first_row, last_row;	/* First and last row to deal with */
+	GMT_LONG first_col, last_col;	/* First and last column to deal with */
+	GMT_LONG first_row, last_row;	/* First and last row to deal with */
 	COUNTER_MEDIUM width_in;		/* Number of items in one row of the subregion */
-	COUNTER_MEDIUM height_in, ny;		/* Number of columns in subregion */
-	COUNTER_MEDIUM i, j, i_0_out; 	/* Misc. counters */
+	COUNTER_MEDIUM height_in;		/* Number of columns in subregion */
+	COUNTER_MEDIUM i, i_0_out; 	/* Misc. counters */
 	COUNTER_MEDIUM *k = NULL;		/* Array with indices */
 	COUNTER_LARGE kk, ij, j2, width_out;
 	size_t size;			/* Length of data type */
@@ -1395,14 +1395,14 @@ GMT_LONG GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
-	GMT_LONG type;			/* Data type */
+	GMT_LONG i, j, type;			/* Data type */
 	COUNTER_MEDIUM inc;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	COUNTER_MEDIUM off;			/* Offset in complex array: 0 for real part, 1 for imaginary */
-	COUNTER_MEDIUM first_col, last_col;	/* First and last column to deal with */
-	COUNTER_MEDIUM first_row, last_row;	/* First and last row to deal with */
+	GMT_LONG first_col, last_col;	/* First and last column to deal with */
+	GMT_LONG first_row, last_row;	/* First and last row to deal with */
 	COUNTER_MEDIUM width_out;		/* Width of row as return (may include padding) */
 	COUNTER_MEDIUM height_out;		/* Number of columns in subregion */
-	COUNTER_MEDIUM i, j, i2;		/* Misc. counters */
+	COUNTER_MEDIUM i2, ju, iu;		/* Misc. counters */
 	COUNTER_MEDIUM *k = NULL;		/* Array with indices */
 	COUNTER_LARGE ij, j2, width_in;	/* Number of items in one row of the subregion */
 	size_t size;			/* Length of data type */
@@ -1470,9 +1470,9 @@ GMT_LONG GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	tmp = GMT_memory (C, NULL, n_expected * size, char);
 
 	i2 = first_col + pad[XLO];
-	for (j = 0, j2 = last_row + pad[YHI]; j < height_out; j++, j2--) {
+	for (ju = 0, j2 = last_row + pad[YHI]; ju < height_out; ju++, j2--) {
 		ij = j2 * width_in + i2;
-		for (i = 0; i < width_out; i++) GMT_encode (C, tmp, i, grid[inc*(ij+k[i])+off], type);
+		for (iu = 0; iu < width_out; iu++) GMT_encode (C, tmp, iu, grid[inc*(ij+k[iu])+off], type);
 		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
 	}
 

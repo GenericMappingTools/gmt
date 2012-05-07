@@ -346,11 +346,11 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the grdhisteq main code ----------------------------*/
 
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
-	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {
+	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (GMT_is_subset (GMT, Grid->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Grid->header), "");	/* Subset requested; make sure wesn matches header spacing */
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, Grid) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file, Grid) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 	(void)GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array */
@@ -361,7 +361,7 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {
 		if (Ctrl->D.active) {	/* Initialize file/stdout for table output */
 			GMT_LONG out_ID;
-			if (Ctrl->D.file && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->D.file, NULL)) == GMTAPI_NOTSET) {
+			if (Ctrl->D.file && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->D.file)) == GMTAPI_NOTSET) {
 				Return (EXIT_FAILURE);
 			}
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
@@ -377,7 +377,7 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = do_hist_equalization (GMT, Out, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active))) Return (EXIT_FAILURE);	/* Read error */
 		/* do_hist_equalization will also call GMT_End_IO if Ctrl->D.active was TRUE */
 	}
-	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Out) != GMT_OK) {
+	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_OK) {
 		Return (API->error);
 	}
 

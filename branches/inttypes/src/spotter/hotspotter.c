@@ -133,7 +133,7 @@ struct HOTSPOTTER_CTRL {	/* All control options for this program (except common 
 	} D;
 	struct E {	/* -E[+]rotfile */
 		BOOLEAN active;
-		GMT_LONG mode;
+		BOOLEAN mode;
 		char *file;
 	} E;
 	struct G {	/* -Goutfile */
@@ -564,7 +564,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Write CVA grid %s\n", Ctrl->G.file);
 
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_OK) {
 		Return (API->error);
 	}
 

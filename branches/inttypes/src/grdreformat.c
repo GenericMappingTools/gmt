@@ -183,7 +183,7 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	GMT_free_grid (GMT, &Grid, TRUE);
 
-	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->IO.file[0], NULL)) == NULL) {	/* Get header only */
+	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->IO.file[0], NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -196,11 +196,11 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Subset exceeds data domain!\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT->common.R.wesn, GMT_GRID_DATA, Ctrl->IO.file[0], Grid) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, GMT->common.R.wesn, Ctrl->IO.file[0], Grid) == NULL) {
 			Return (API->error);	/* Get subset */
 		}
 	}
-	else if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->IO.file[0], Grid) == NULL) {
+	else if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->IO.file[0], Grid) == NULL) {
 		Return (API->error);	/* Get all */
 	}
 
@@ -208,7 +208,7 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_grd_init (GMT, Grid->header, options, TRUE);
 
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, hmode, Ctrl->IO.file[1], Grid) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, hmode, NULL, Ctrl->IO.file[1], Grid) != GMT_OK) {
 		Return (API->error);
 	}
 

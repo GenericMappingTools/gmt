@@ -60,7 +60,7 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 	} I;
 	struct S {	/* -Sa|d|r|w|x|y|X|Y */
 		BOOLEAN active;
-		GMT_LONG mode;
+		COUNTER_MEDIUM mode;
 	} S;
 	struct T {	/* -T<fixtime> */
 		BOOLEAN active;
@@ -267,11 +267,11 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Check limits and get data file */
 
 	if (Ctrl->In.file) {	/* Gave an age grid */
-		if ((G_age = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		if ((G_age = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : G_age->header->wesn), 4, double);
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, G_age) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file, G_age) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
 		GMT_memcpy (inc, G_age->header->inc, 2, double);	/* Use same increment for output grid */
@@ -284,7 +284,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->F.active) {	/* Read the user's clip polygon file */
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->F.file, NULL)) == NULL) {
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		pol = D->table[0];	/* Since it is a single file */
@@ -413,7 +413,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			break;
 	}
 	sprintf (G_mod->header->remark, "Plate Model predictions of %s for model %s", quantity[Ctrl->S.mode], Ctrl->E.file);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G_mod) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G_mod) != GMT_OK) {
 		Return (API->error);
 	}
 

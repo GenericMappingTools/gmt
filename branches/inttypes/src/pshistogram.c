@@ -363,7 +363,7 @@ GMT_LONG GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	GMT_LONG n_errors = 0, n_files = 0, sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -426,7 +426,9 @@ GMT_LONG GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *
 				break;
 			case 'Z':
 				Ctrl->Z.active = TRUE;
-				Ctrl->Z.mode = atoi (opt->arg);
+				sval = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, sval < PSHISTOGRAM_COUNTS || sval > PSHISTOGRAM_LOG10_FREQ_PCT, "Syntax error -Z option: histogram type must be in 0-5 range\n");
+				Ctrl->Z.mode = sval;
 				break;
 
 			default:	/* Report bad options */
@@ -436,7 +438,6 @@ GMT_LONG GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *
 	}
 
 	n_errors += GMT_check_condition (GMT, !Ctrl->I.active && !GMT_IS_LINEAR (GMT), "Syntax error -J option: Only linear projection supported.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.mode < PSHISTOGRAM_COUNTS || Ctrl->Z.mode > PSHISTOGRAM_LOG10_FREQ_PCT, "Syntax error -Z option: histogram type must be in 0-5 range\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->W.active, "Syntax error -W option: Must specify bin width\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.inc <= 0.0, "Syntax error -W option: bin width must be nonzero\n");
 
@@ -509,7 +510,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (GMT_DATA_READ_ERROR);
 	}
 
@@ -628,7 +629,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				S->coord[GMT_X][ibox] = xx;
 				S->coord[GMT_Y][ibox] = yy;
 			}
-			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, D->io_mode, Ctrl->Out.file, D) != GMT_OK) {
+			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, D->io_mode, NULL, Ctrl->Out.file, D) != GMT_OK) {
 				Return (API->error);
 			}
 			if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D) != GMT_OK) {

@@ -198,7 +198,7 @@ void xyw_to_struct_euler (struct GMT_CTRL *C, struct EULER *p, double lon[], dou
 {	/* Reload the EULER structure from the lon, lat, w arrays.
 	 * stages is TRUE if we are loading stage rotations (FALSE is finite poles).
 	 * convert is TRUE if we must change angles to rates or vice versa */
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 
 	for (i = 0; i < n; i++) {
 		p[i].lon = lon[i];

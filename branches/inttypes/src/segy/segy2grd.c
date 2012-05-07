@@ -81,7 +81,7 @@ struct SEGY2GRD_CTRL {
 	} Q;
 	struct S {	/* -S */
 		BOOLEAN active;
-		int mode;
+		COUNTER_MEDIUM mode;
 		int value;
 	} S;
 };
@@ -547,7 +547,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	GMT_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);
 	}
 

@@ -538,7 +538,8 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, window_test = 2, sval;
+	GMT_LONG n_errors = 0, j, sval;
+	COUNTER_MEDIUM window_test = 2;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -658,10 +659,10 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 1 + C.y_given)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -695,7 +696,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	free_space_spectrum1d (GMT, &C);
 	
-	if (one_table && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout->io_mode, Ctrl->N.name, Dout) != GMT_OK) {
+	if (one_table && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, Dout->io_mode, NULL, Ctrl->N.name, Dout) != GMT_OK) {
 		Return (API->error);
 	}
 
