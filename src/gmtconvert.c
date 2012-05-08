@@ -175,7 +175,8 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 				break;
 			case 'D':	/* Write each segment to a separate output file */
 				Ctrl->D.active = TRUE;
-				Ctrl->D.name = strdup (opt->arg);
+				if (*opt->arg) /* optarg is optional */
+					Ctrl->D.name = strdup (opt->arg);
 				break;
 			case 'E':	/* Extract ends only */
 				Ctrl->E.active = TRUE;
@@ -447,26 +448,58 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 	}
-		
+
 	/* Now ready for output */
 
-	if (Ctrl->D.active) {	/* Must write individual segments to separate files so create the needed template */
+	if (Ctrl->D.active) {
+		/* TODO: move this block to GMT_gmtconvert_parse() and replace exit() with
+		 * Return() */
+		/* Must write individual segments to separate files so create the needed template */
 		GMT_LONG n_formats = 0;
-		if (!Ctrl->D.name) Ctrl->D.name = (GMT->common.b.active[GMT_OUT]) ? strdup ("gmtconvert_segment_%ld.bin") : strdup ("gmtconvert_segment_%ld.txt");
-		for (col = 0; Ctrl->D.name[col]; col++) if (Ctrl->D.name[col] == '%') n_formats++;
-		D[GMT_OUT]->io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENTS: GMT_WRITE_SEGMENTS;
-		/* The io_mode tells the i/o function to split segments into files */
-		if (Ctrl->Out.file) free ((void*)Ctrl->Out.file);
-		Ctrl->Out.file = strdup (Ctrl->D.name);
+		if (!Ctrl->D.name) {
+			Ctrl->D.name = GMT->common.b.active[GMT_OUT] ?
+					strdup ("gmtconvert_segment_%d.bin") : strdup ("gmtconvert_segment_%d.txt");
+			D[GMT_OUT]->io_mode = GMT_WRITE_SEGMENTS;
+		}
+		else { /* Ctrl->D.name */
+			/* need to check correct format */
+			char *p = Ctrl->D.name;
+			while ( (p = strchr (p, '%')) ) {
+				/* found %, now check format */
+				p += strspn (++p, "0123456789"); /* span past digits */
+				if ( strspn (p, "diu") == 0 ) {
+					/* no valid conversion specifier */
+					GMT_report (GMT, GMT_MSG_FATAL,
+							"Syntax error: Use of unsupported conversion specifier at %zu in format string '%s'.\n",
+							p - Ctrl->D.name + 1, Ctrl->D.name);
+					exit (EXIT_FAILURE);
+				}
+				++n_formats;
+			}
+			if ( n_formats == 0 || n_formats > 2 ) {
+				/* Incorrect number of format specifiers */
+					GMT_report (GMT, GMT_MSG_FATAL,
+							"Syntax error: Incorrect number of format specifiers in format string '%s'.\n",
+							Ctrl->D.name);
+					exit (EXIT_FAILURE);
+			}
+			D[GMT_OUT]->io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENTS: GMT_WRITE_SEGMENTS;
+			/* The io_mode tells the i/o function to split segments into files */
+			if (Ctrl->Out.file)
+				free (Ctrl->Out.file);
+			Ctrl->Out.file = strdup (Ctrl->D.name);
+		} /* Ctrl->D.name */
 	}
-	else {	/* Just register output to stdout or given file via ->outfile */
-		if (GMT->common.a.output) D[GMT_OUT]->io_mode = GMT_WRITE_OGR;
+	else {
+		/* Just register output to stdout or given file via ->outfile */
+		if (GMT->common.a.output)
+			D[GMT_OUT]->io_mode = GMT_WRITE_OGR;
 	}
-	
+
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, D[GMT_OUT]->io_mode, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 		Return (API->error);
 	}
-	
+
 	GMT_report (GMT, GMT_MSG_NORMAL, "%ld tables %s, %ld records passed (input cols = %ld; output cols = %ld)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
 	if (Ctrl->S.active) GMT_report (GMT, GMT_MSG_NORMAL, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->n_segments);
 
