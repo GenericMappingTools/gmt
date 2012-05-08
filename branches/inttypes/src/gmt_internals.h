@@ -248,6 +248,8 @@ EXTERN_MSC double GMT_left_sinusoidal (struct GMT_CTRL *C, double y);	/* For sin
 EXTERN_MSC double GMT_right_sinusoidal (struct GMT_CTRL *C, double y);	/* For sinusoidal maps	*/
 EXTERN_MSC double GMT_left_polyconic (struct GMT_CTRL *C, double y);	/* For polyconic maps	*/
 EXTERN_MSC double GMT_right_polyconic (struct GMT_CTRL *C, double y);	/* For polyconic maps	*/
+EXTERN_MSC double GMT_cartesian_dist (struct GMT_CTRL *C, double x0, double y0, double x1, double y1);
+EXTERN_MSC double GMT_cartesian_dist_proj (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
 
 /* Complex math from gmt_stat.c */
 EXTERN_MSC void gmt_Cmul (double A[], double B[], double C[]);
