@@ -1128,8 +1128,8 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 
 GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
-	GMT_LONG error = FALSE, wrote_one = FALSE;
-	GMT_LONG row, col, nx_new, ny_new, one_or_zero, m21, n21;
+	BOOLEAN error = FALSE, wrote_one = FALSE;
+	COUNTER_MEDIUM row, col, nx_new, ny_new, one_or_zero, m21, n21;
         GMT_LONG i, j, ij, k, l, i2, j2, i3, n_jlon, n_jlat, jj, n_coef;
         double	tmp_d, sloni, slati, slonf, slatf, slonm, slatm;
         double	*ftlon = NULL, *ftlat = NULL, *gxr = NULL, *gxi = NULL, *fxr = NULL;
@@ -1282,8 +1282,8 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	for (col = 0; col < Gin->header->nx; col++) ftlon[col] = GMT_grd_col_to_x (GMT, col, Gin->header);
 	for (row = 0; row < Gin->header->ny; row++) ftlat[row] = GMT_grd_row_to_y (GMT, row, Gin->header);
 
-	n_jlon = (int)((Gin->header->wesn[XHI] - Gin->header->wesn[XLO]) / Ctrl->W.wid) + 1;
-	n_jlat = (int)((Gin->header->wesn[YHI] - Gin->header->wesn[YLO]) / Ctrl->W.wid) + 1;
+	n_jlon = lrint ((Gin->header->wesn[XHI] - Gin->header->wesn[XLO]) / Ctrl->W.wid) + 1;
+	n_jlat = lrint ((Gin->header->wesn[YHI] - Gin->header->wesn[YLO]) / Ctrl->W.wid) + 1;
 
 	if (Ctrl->C.const_f) {
 		alfa = -cos(Ctrl->C.dip) * cos(Ctrl->C.dec);

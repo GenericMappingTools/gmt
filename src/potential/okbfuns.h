@@ -26,7 +26,7 @@ struct BODY_VERTS {
 };
 
 struct BODY_DESC {
-	GMT_LONG n_f, *n_v, *ind;
+	COUNTER_MEDIUM n_f, *n_v, *ind;
 };
 
 struct LOC_OR {
@@ -41,11 +41,11 @@ struct MAG_VAR {		/* Used when only the modulus of magnetization varies */
 	double	rk[3];
 } *mag_var;
 
-EXTERN_MSC double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, int is_grav, struct BODY_DESC bd_desc, struct BODY_VERTS *bd_vert, int km, int pm, struct LOC_OR *loc_or);
-EXTERN_MSC double okb_grv (int n_vert, struct LOC_OR *loc_or, double *c_phi);
-EXTERN_MSC double okb_mag (int n_vert, GMT_LONG km, GMT_LONG pm, struct LOC_OR *loc_or, double *c_tet, double *s_tet, double *c_phi, double *s_phi); 
+EXTERN_MSC double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, BOOLEAN is_grav, struct BODY_DESC bd_desc, struct BODY_VERTS *bd_vert, COUNTER_MEDIUM km, COUNTER_MEDIUM pm, struct LOC_OR *loc_or);
+EXTERN_MSC double okb_grv (COUNTER_MEDIUM n_vert, struct LOC_OR *loc_or, double *c_phi);
+EXTERN_MSC double okb_mag (COUNTER_MEDIUM n_vert, COUNTER_MEDIUM km, COUNTER_MEDIUM pm, struct LOC_OR *loc_or, double *c_tet, double *s_tet, double *c_phi, double *s_phi); 
 EXTERN_MSC double eq_30 (double c, double s, double x, double y, double z);
 EXTERN_MSC double eq_43 (double mz, double c, double tg, double auxil, double x, double y, double z);
-EXTERN_MSC void rot_17 (int n_vert, int top, struct LOC_OR *loc_or, double *c_tet, double *s_tet, double *c_phi, double *s_phi);
+EXTERN_MSC void rot_17 (COUNTER_MEDIUM n_vert, BOOLEAN top, struct LOC_OR *loc_or, double *c_tet, double *s_tet, double *c_phi, double *s_phi);
 
 #endif /* OKBFUNS_H */

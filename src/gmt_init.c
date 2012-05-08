@@ -1881,25 +1881,21 @@ double gmt_abs_col_map_dist (struct GMT_CTRL *C, GMT_LONG col)
 
 double gmt_xy_map_dist (struct GMT_CTRL *C, GMT_LONG col)
 {	/* Compute point-separation after mapping */
-	double GMT_cartesian_dist_proj (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
 	return (GMT_cartesian_dist_proj (C, C->current.io.prev_rec[GMT_X], C->current.io.prev_rec[GMT_Y], C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]));
 }
 
 double gmt_xy_deg_dist (struct GMT_CTRL *C, GMT_LONG col)
 {
-	double GMT_great_circle_dist_degree (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
 	return (GMT_great_circle_dist_degree (C, C->current.io.prev_rec[GMT_X], C->current.io.prev_rec[GMT_Y], C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]));
 }
 
 double gmt_xy_true_dist (struct GMT_CTRL *C, GMT_LONG col)
 {
-	double GMT_great_circle_dist_meter (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
 	return (GMT_great_circle_dist_meter (C, C->current.io.prev_rec[GMT_X], C->current.io.prev_rec[GMT_Y], C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]));
 }
 
 double gmt_xy_cart_dist (struct GMT_CTRL *C, GMT_LONG col)
 {
-	double GMT_cartesian_dist (struct GMT_CTRL *C, double x0, double y0, double x1, double y1);
 	return (GMT_cartesian_dist (C, C->current.io.prev_rec[GMT_X], C->current.io.prev_rec[GMT_Y], C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]));
 }
 
