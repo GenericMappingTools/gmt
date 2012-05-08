@@ -34,8 +34,8 @@ of columns.
 OPT(D)[IT(template)]
 For multiple segment data, dump each segment to a separate output file [Default writes a multiple segment
 file to stdout].  Append a format template for the individual file names; this template BD(must) contain a
-C format specifier that can format an long integer argument (the running segment number across all tables);
-this is usually %ld but could be %8.8ld which gives leading zeros, etc. [Default is gmtconvert_segment_%ld.{txt|bin},
+C format specifier that can format an integer argument (the running segment number across all tables);
+this is usually %d but could be %08d which gives leading zeros, etc. [Default is gmtconvert_segment_%d.{txt|bin},
 depending on GMT_bo_OPT].
 Alternatively, give a template with two C format specifiers and we will supply the table number and the segment
 number within the table to build the file name.
