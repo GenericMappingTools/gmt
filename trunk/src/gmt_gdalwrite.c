@@ -226,7 +226,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	GDALClose( hDstDS );
 	if (outByte) GMT_free(C, outByte);
 
-	if (!strcmpi(pszFormat,"netCDF")) {
+	if (!GMT_strlcmp(pszFormat,"netCDF")) {
 		/* Change some attributes written by GDAL (not finished) */
 		int ncid;
 		GMT_LONG err;
