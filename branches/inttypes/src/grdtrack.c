@@ -427,7 +427,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	}
 	
 	if (Ctrl->C.active) {	/* Special case of requesting cross-profiles for given line segments */
-		COUNTER_MEDIUM tbl, col;
+		COUNTER_MEDIUM tbl, col, n_cols = Ctrl->G.n_grids;
 		COUNTER_LARGE row, seg;
 		struct GMT_DATASET *Din = NULL, *Dout = NULL, *Dtmp = NULL;
 		struct GMT_TABLE *T = NULL;
@@ -459,7 +459,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			}
 		}
 		/* Get dataset with cross-profiles, with columns for x,y,d and the n_grids samples */
-		if ((Dout = GMT_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, Ctrl->G.n_grids)) == NULL) Return (API->error);
+		if ((Dout = GMT_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols)) == NULL) Return (API->error);
 		if (Ctrl->D.active) {
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dtmp) != GMT_OK) {
 				Return (API->error);
