@@ -39,23 +39,23 @@ struct REDPOL_CTRL {
 		char *file;
 	} In;
 	struct C {	/* -C */
-		GMT_LONG use_igrf;
-		GMT_LONG const_f;
+		BOOLEAN use_igrf;
+		BOOLEAN const_f;
 		double	dec;
 		double	dip;
 	} C;
 	struct E {	/* -E */
 		BOOLEAN active;
-		GMT_LONG dip_grd_only;
-		GMT_LONG dip_dec_grd;
+		BOOLEAN dip_grd_only;
+		BOOLEAN dip_dec_grd;
 		char *decfile;
 		char *dipfile;
 	} E;
 	struct F {	/* -F */
 		BOOLEAN active;
-		GMT_LONG	ncoef_row;
-		GMT_LONG	ncoef_col;
-		GMT_LONG	compute_n;	/* Compute ncoef_col */
+		COUNTER_MEDIUM	ncoef_row;
+		COUNTER_MEDIUM	ncoef_col;
+		COUNTER_MEDIUM	compute_n;	/* Compute ncoef_col */
 		double	width;
 	} F;
 	struct G {	/* -G<file> */
@@ -63,15 +63,15 @@ struct REDPOL_CTRL {
 		char	*file;
 	} G;
 	struct M {	/* -M */
-		GMT_LONG pad_zero;
-		GMT_LONG mirror;
+		BOOLEAN pad_zero;
+		BOOLEAN mirror;
 	} M;
 	struct N {	/* -N */
 		BOOLEAN active;
 	} N;
 	struct S {	/* -S, size of working grid */
-		GMT_LONG	nx;
-		GMT_LONG	ny;
+		COUNTER_MEDIUM	nx;
+		COUNTER_MEDIUM	ny;
 	} S;
 	struct T {	/* -T */
 		double	year;
@@ -115,11 +115,11 @@ void Free_redpol_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-void rtp_filt_colinear(GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr,double *gxi, double *gxar, 
+void rtp_filt_colinear (GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr,double *gxi, double *gxar, 
 		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double u, 
 		double v, double alfa, double beta, double gama, struct REDPOL_CTRL *Ctrl) {
 
-	GMT_LONG ij = ij_mn(Ctrl,i,j-n21+1);
+	COUNTER_LARGE ij = ij_mn(Ctrl,i,j-n21+1);
 	double ro, ro2, ro3, ro4, ro5, alfa_u, beta_v, gama_ro, gama_ro_2;
 	double alfa_u_beta_v, alfa_u_beta_v_2, rnr, rni, t2, t3;
 	ro2 = u * u + v * v;    ro = sqrt(ro2);     ro3 = ro2 * ro;
@@ -150,12 +150,12 @@ void rtp_filt_colinear(GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr,double 
 }
 
 
-void rtp_filt_NOTcolinear(GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr, double *gxi, double *gxar, 
+void rtp_filt_NOTcolinear (GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr, double *gxi, double *gxar, 
 		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double *gxtr, 
 		double *gxti, double *gxmr, double *gxmi, double *gxnr, double *gxni, double u, double v, double alfa, 
 		double beta, double gama, double tau, double mu, double nu, struct REDPOL_CTRL *Ctrl) {
 
-	GMT_LONG ij = ij_mn(Ctrl,i,j-n21+1);
+	COUNTER_LARGE ij = ij_mn(Ctrl,i,j-n21+1);
 	double ro, ro2, ro3, ro4, ro5, alfa_u, beta_v, gama_ro, gama_ro_2;
 	double alfa_u_beta_v, alfa_u_beta_v_2, rnr, rni, den_r, den_i1, den_i2;
 	double tau_u, mu_v, nu_ro, nu_ro_2, tau_u_mu_v, tau_u_mu_v_2, tau_u_mu_v_gama;
@@ -209,10 +209,11 @@ void mirror_edges (float *grid, GMT_LONG nc, GMT_LONG i_data_start, GMT_LONG j_d
 	   and the South and North borders by i_data_start times.
 	   nc	is the total number of columns by which the grid is extended
 	   Ctrl->S.nx & Ctrl->S.ny are the grid's original number of column/rows before extension */
-	GMT_LONG	i, j, ins, isn, iss, jww, jwe, jee, jew;
+	GMT_LONG	i, j, ins, isn, iss, jww, jwe, jee, jew, upper_nx, upper_ny;
 
 	/* First reflect about xmin and xmax, point symmetric about edge point */
 
+	upper_ny = Ctrl->S.ny+i_data_start;
 	for (j = 1; j <= j_data_start; j++) {	/* COLUMNS */
 		jww = j_data_start-j;		/* Minimum Outside xmin and aproaching West border  */
 		jee = Ctrl->S.nx + j_data_start + j-1;	/* Minimum Outside xmax and aproching East border  */
@@ -224,7 +225,7 @@ void mirror_edges (float *grid, GMT_LONG nc, GMT_LONG i_data_start, GMT_LONG j_d
 			jwe = j_data_start;			/* West border */
 			jew = Ctrl->S.nx + j_data_start - 1;	/* East border */
 		}
-		for (i = i_data_start; i < Ctrl->S.ny+i_data_start; i++) {	/* ROWS */
+		for (i = i_data_start; i < upper_ny; i++) {	/* ROWS */
 			grid[ij0_data(Ctrl,i,jww)] = grid[ij0_data(Ctrl,i,jwe)];	/* West border */
 			grid[ij0_data(Ctrl,i,jee)] = grid[ij0_data(Ctrl,i,jew)];	/* East border */
 		}
@@ -232,6 +233,7 @@ void mirror_edges (float *grid, GMT_LONG nc, GMT_LONG i_data_start, GMT_LONG j_d
 
 	/* Next, reflect about ymin and ymax. At the same time, since x has been reflected, we can use these vals */
 
+	upper_nx = Ctrl->S.nx + nc;
 	for (i = 0; i < i_data_start; i++) {	/* ROWS */
 		iss = Ctrl->S.ny+i_data_start+i;	/* Minimum Outside ymin and aproaching South border  */
 		if (Ctrl->M.mirror) {
@@ -242,7 +244,7 @@ void mirror_edges (float *grid, GMT_LONG nc, GMT_LONG i_data_start, GMT_LONG j_d
 			ins = i_data_start;			/* North border */
 			isn = Ctrl->S.ny+i_data_start-1;	/* South border */
 		}
-		for (j = 0; j < (Ctrl->S.nx + nc); j++) {	/* COLUMNS */
+		for (j = 0; j < upper_nx; j++) {	/* COLUMNS */
 			grid[ij0_data(Ctrl,i,j)] = grid[ij0_data(Ctrl,ins,j)];		/* North border */
 			grid[ij0_data(Ctrl,iss,j)] = grid[ij0_data(Ctrl,isn,j)];	/* South border */
 		}
@@ -1129,8 +1131,9 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	BOOLEAN error = FALSE, wrote_one = FALSE;
-	COUNTER_MEDIUM row, col, nx_new, ny_new, one_or_zero, m21, n21;
-        GMT_LONG i, j, ij, k, l, i2, j2, i3, n_jlon, n_jlat, jj, n_coef;
+	COUNTER_MEDIUM i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
+        COUNTER_MEDIUM k, l, i3, n_jlon, n_jlat, n_coef;
+	COUNTER_LARGE ij, jj;
         double	tmp_d, sloni, slati, slonf, slatf, slonm, slatm;
         double	*ftlon = NULL, *ftlat = NULL, *gxr = NULL, *gxi = NULL, *fxr = NULL;
 	double	*gxar = NULL, *gxai = NULL, *gxbr = NULL, *gxbi = NULL, *gxgr = NULL;
