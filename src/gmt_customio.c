@@ -1686,7 +1686,7 @@ GMT_LONG GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	to_GDALW->command = header->command;
 
 
-	if (!type[0] || !strcmpi(type, "float32")) {
+	if (!type[0] || !GMT_strlcmp(type, "float32")) {
 		/* Shift data to the begining of the array (i.e kinda of remove the padding). This is uggly and sould
 		   be done by GDALRasterIO directly but a GDAL limitation prevents it when using the MEM driver. */
 		for (row = 0; row < header->ny; row++)
