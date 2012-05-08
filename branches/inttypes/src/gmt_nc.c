@@ -105,9 +105,9 @@ void gmt_nc_get_units (struct GMT_CTRL *C, int ncid, int varid, char *name_units
 	 * nameunit		: long_name and units in form "long_name [units]"
 	 */
 	char name[GRD_UNIT_LEN80], units[GRD_UNIT_LEN80];
-	if (GMT_nc_get_att_text (C, ncid, varid, "long_name", name, (size_t)GRD_UNIT_LEN80)) 
+	if (GMT_nc_get_att_text (C, ncid, varid, "long_name", name, GRD_UNIT_LEN80)) 
 		nc_inq_varname (ncid, varid, name);
-	if (!GMT_nc_get_att_text (C, ncid, varid, "units", units, (size_t)GRD_UNIT_LEN80) && units[0]) 
+	if (!GMT_nc_get_att_text (C, ncid, varid, "units", units, GRD_UNIT_LEN80) && units[0]) 
 		sprintf (name_units, "%s [%s]", name, units);
 	else
 		strcpy (name_units, name);
@@ -297,11 +297,11 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 
 	if (job == 'r') {
 		/* Get global information */
-		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "title", header->title, (size_t)GRD_TITLE_LEN80))
-		    GMT_nc_get_att_text (C, ncid, z_id, "long_name", header->title, (size_t)GRD_TITLE_LEN80);
-		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "history", header->command, (size_t)GRD_COMMAND_LEN320))
-		    GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "source", header->command, (size_t)GRD_COMMAND_LEN320);
-		GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "description", header->remark, (size_t)GRD_REMARK_LEN160);
+		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "title", header->title, GRD_TITLE_LEN80))
+		    GMT_nc_get_att_text (C, ncid, z_id, "long_name", header->title, GRD_TITLE_LEN80);
+		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "history", header->command, GRD_COMMAND_LEN320))
+		    GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "source", header->command, GRD_COMMAND_LEN320);
+		GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "description", header->remark, GRD_REMARK_LEN160);
 
 		/* Create enough memory to store the x- and y-coordinate values */
 		xy = GMT_memory (C, NULL, MAX(header->nx,header->ny), double);
@@ -379,6 +379,7 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 	else {
 		/* Store global attributes */
 		COUNTER_MEDIUM row, col;
+		GMT_LONG reg;
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_CDF_CONVENTION), (const char *) GMT_CDF_CONVENTION));
 		if (header->title[0]) {
 			GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
@@ -390,7 +391,8 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		if (header->remark[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "GMT_version", strlen(GMT_VERSION), (const char *) GMT_VERSION));
 		if (header->registration == GMT_PIXEL_REG) {
-			GMT_err_trap (nc_put_att_uint (ncid, NC_GLOBAL, "node_offset", NC_LONG, (size_t)1, &header->registration));
+			reg = header->registration;
+			GMT_err_trap (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, 1U, &reg));
 		}
 		else
 			nc_del_att (ncid, NC_GLOBAL, "node_offset");
@@ -398,13 +400,13 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		/* Define x variable */
 		gmt_nc_put_units (ncid, ids[header->xy_dim[0]], header->x_units);
 		dummy[0] = header->wesn[XLO], dummy[1] = header->wesn[XHI];
-		GMT_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[0]], "actual_range", NC_DOUBLE, (size_t)2, dummy));
+		GMT_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[0]], "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* Define y variable */
 		gmt_nc_put_units (ncid, ids[header->xy_dim[1]], header->y_units);
 		header->y_order = 1;
 		dummy[(1-header->y_order)/2] = header->wesn[YLO], dummy[(1+header->y_order)/2] = header->wesn[YHI];
-		GMT_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[1]], "actual_range", NC_DOUBLE, (size_t)2, dummy));
+		GMT_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[1]], "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* When varname is given, and z_units is default, overrule z_units with varname */
 		if (header->varname[0] && !strcmp (header->z_units, "z")) strcpy (header->z_units, header->varname);
@@ -412,21 +414,21 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmt_nc_put_units (ncid, z_id, header->z_units);
 		if (header->z_scale_factor != 1.0) {
-			GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, (size_t)1, &header->z_scale_factor));
+			GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1U, &header->z_scale_factor));
 		}
 		else if (job == 'u')
 			nc_del_att (ncid, z_id, "scale_factor");
 		if (header->z_add_offset != 0.0) {
-			GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, (size_t)1, &header->z_add_offset));
+			GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1U, &header->z_add_offset));
 		}
 		else if (job == 'u')
 			nc_del_att (ncid, z_id, "add_offset");
 		if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-			GMT_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, (size_t) 1, &header->nan_value));
+			GMT_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
 		}
 		else {
 			i = lrint (header->nan_value);
-			GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, (size_t)1, &i));
+			GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, 1U, &i));
 		}
 
 		/* Limits need to be stored in actual, not internal grid, units */
@@ -436,7 +438,7 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		}
 		else
 			dummy[0] = 0.0, dummy[1] = 0.0;
-		GMT_err_trap (nc_put_att_double (ncid, z_id, "actual_range", NC_DOUBLE, (size_t)2, dummy));
+		GMT_err_trap (nc_put_att_double (ncid, z_id, "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* Store values along x and y axes */
 		GMT_err_trap (nc_enddef (ncid));
@@ -693,7 +695,7 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		GMT_report (C, GMT_MSG_FATAL, "Warning: No valid values in grid [%s]\n", header->name);
 		limit[0] = limit[1] = 0.0;
 	}
-	GMT_err_trap (nc_put_att_double (header->ncid, header->z_id, "actual_range", NC_DOUBLE, (size_t)2, limit));
+	GMT_err_trap (nc_put_att_double (header->ncid, header->z_id, "actual_range", NC_DOUBLE, 2U, limit));
 
 	/* Close grid */
 

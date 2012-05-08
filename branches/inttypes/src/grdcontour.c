@@ -652,7 +652,7 @@ void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_
 }
 
 GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, double *y, GMT_LONG n)
-{	/* Determine if this is a closed contour */
+{	/* Determine if this is a closed contour; returns a flag in the -3/+3 range */
 	GMT_LONG closed = 0;
 	double small_x = 0.01 * G->header->inc[GMT_X], small_y = 0.01 * G->header->inc[GMT_Y];	/* Use 1% noise to find near-closed contours */
 	if (fabs (x[0] - x[n-1]) < small_x && fabs (y[0] - y[n-1]) < small_y) {	/* Closed interior contour */
@@ -680,11 +680,11 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 
 GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the grdcontour task */
-	GMT_LONG error;
-	BOOLEAN need_proj, make_plot, two_only = FALSE, begin; 
+	GMT_LONG error, c, closed;
+	BOOLEAN need_proj, make_plot, two_only = FALSE, begin, is_closed; 
 	
-	COUNTER_MEDIUM id, n_contours, c, n_edges, tbl_scl = 1, io_mode = 0, closed;
-	COUNTER_MEDIUM cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, tbl, fmt[3] = {0, 0, 0};
+	COUNTER_MEDIUM id, n_contours, n_edges, tbl_scl = 1, io_mode = 0, uc, tbl;
+	COUNTER_MEDIUM cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, fmt[3] = {0, 0, 0};
 	
 	COUNTER_LARGE ij, *n_seg = NULL;
 
@@ -983,7 +983,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (!Ctrl->contour.delay) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
 
-	for (c = 0; c < n_contours; c++) {	/* For each contour value cval */
+	for (c = uc = 0; uc < n_contours; c++, uc++) {	/* For each contour value cval */
 
 		if (Ctrl->L.active && (contour[c] < Ctrl->L.low || contour[c] > Ctrl->L.high)) continue;	/* Outside desired range */
 
@@ -1016,12 +1016,13 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		while ((n = GMT_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)) > 0) {
 
 			closed = gmt_is_closed (GMT, G, x, y, n);	/* Closed interior/periodic boundary contour? */
+			is_closed = (closed != 0);
 
-			if (!closed || n >= Ctrl->Q.min) {	/* Passed our minimum point criteria */
+			if (!closed || n >= Ctrl->Q.min) {	/* Passed our minimum point criteria for closed contours */
 				if (Ctrl->D.active && n > 2) {	/* Save the contour as output data */
 					S = GMT_dump_contour (GMT, x, y, n, cval);
 					/* Select which table this segment should be added to */
-					tbl = (io_mode == GMT_WRITE_TABLES) ? ((two_only) ? closed : tbl_scl * c) : 0;
+					tbl = (io_mode == GMT_WRITE_TABLES) ? ((two_only) ? is_closed : tbl_scl * c) : 0;
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
 						size_t old_n_alloc = n_seg_alloc[tbl];
 						D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);

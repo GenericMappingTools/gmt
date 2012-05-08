@@ -738,7 +738,7 @@ GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double 
 
 	*index = actual_col;
 	GMT_report (C, GMT_MSG_DEBUG, "-> region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
-	GMT_report (C, GMT_MSG_DEBUG, "row: %ld %ld, col: %ld %ld\n", *first_row, *last_row, *first_col, *last_col);
+	GMT_report (C, GMT_MSG_DEBUG, "row: %d %d, col: %d %d\n", *first_row, *last_row, *first_col, *last_col);
 	
 	return (GMT_NOERROR);
 }
