@@ -59,7 +59,7 @@ GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 	
 	if (job == 'w') {
 		size_t nxny = (size_t)header->nx * (size_t)header->ny;
-		GMT_err_trap (nc_def_dim (ncid, "side", (size_t)2, &side_dim));
+		GMT_err_trap (nc_def_dim (ncid, "side", 2U, &side_dim));
 		GMT_err_trap (nc_def_dim (ncid, "xysize", nxny, &xysize_dim));
 
 		dims[0]	= side_dim;
@@ -107,17 +107,19 @@ GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 	if (job == 'u') GMT_err_trap (nc_redef (ncid));
 
 	if (job == 'r') {
+		GMT_LONG reg;
 		GMT_err_trap (nc_get_att_text (ncid, x_range_id, "units", header->x_units));
 		GMT_err_trap (nc_get_att_text (ncid, y_range_id, "units", header->y_units));
 		GMT_err_trap (nc_get_att_text (ncid, z_range_id, "units", header->z_units));
 		GMT_err_trap (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor));
 		GMT_err_trap (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset));
-		GMT_err_trap (nc_get_att_uint (ncid, z_id, "node_offset", &header->registration));
+		GMT_err_trap (nc_get_att_int (ncid, z_id, "node_offset", &reg));
+		header->registration = reg;
 		nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value);
 		GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title));
 		GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "source", text));
-		strncpy (header->command, text, (size_t)GRD_COMMAND_LEN320);
-		strncpy (header->remark, &text[GRD_COMMAND_LEN320], (size_t)GRD_REMARK_LEN160);
+		strncpy (header->command, text, GRD_COMMAND_LEN320);
+		strncpy (header->remark, &text[GRD_COMMAND_LEN320], GRD_REMARK_LEN160);
 
 		GMT_err_trap (nc_get_var_double (ncid, x_range_id, dummy));
 		header->wesn[XLO] = dummy[0];
@@ -137,23 +139,25 @@ GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 		header->y_order = -1;
 	}
 	else {
+		GMT_LONG reg;
 		strcpy (text, header->command);
 		strcpy (&text[GRD_COMMAND_LEN320], header->remark);
-		GMT_err_trap (nc_put_att_text (ncid, x_range_id, "units", (size_t)GRD_UNIT_LEN80, header->x_units));
-		GMT_err_trap (nc_put_att_text (ncid, y_range_id, "units", (size_t)GRD_UNIT_LEN80, header->y_units));
-		GMT_err_trap (nc_put_att_text (ncid, z_range_id, "units", (size_t)GRD_UNIT_LEN80, header->z_units));
-		GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, (size_t)1, &header->z_scale_factor));
-		GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, (size_t)1, &header->z_add_offset));
+		GMT_err_trap (nc_put_att_text (ncid, x_range_id, "units", GRD_UNIT_LEN80, header->x_units));
+		GMT_err_trap (nc_put_att_text (ncid, y_range_id, "units", GRD_UNIT_LEN80, header->y_units));
+		GMT_err_trap (nc_put_att_text (ncid, z_range_id, "units", GRD_UNIT_LEN80, header->z_units));
+		GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1U, &header->z_scale_factor));
+		GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1U, &header->z_add_offset));
 		if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-			GMT_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, (size_t)1, &header->nan_value));
+			GMT_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
 		}
 		else {
 			i = lrint (header->nan_value);
-			GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, (size_t)1, &i));
+			GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, 1U, &i));
 		}
-		GMT_err_trap (nc_put_att_uint (ncid, z_id, "node_offset", NC_LONG, (size_t)1, &header->registration));
-		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", (size_t)GRD_TITLE_LEN80, header->title));
-		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "source", (size_t)(GRD_COMMAND_LEN320+GRD_REMARK_LEN160), text));
+		reg = header->registration;
+		GMT_err_trap (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1U, &reg));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN80, header->title));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "source", GRD_COMMAND_LEN320+GRD_REMARK_LEN160, text));
 
 		GMT_err_trap (nc_enddef (ncid));
 

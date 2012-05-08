@@ -462,7 +462,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM n_stages;	/* Number of stage rotations (poles) */
 	COUNTER_MEDIUM try;		/* Number of current bootstrap estimate */
-	COUNTER_MEDIUM row, col, k_step;
+	COUNTER_MEDIUM row, row2, col, col2, k_step;
 	COUNTER_MEDIUM forth_flag;	/* Holds the do_time + 10 flag passed to forthtrack */
 	BOOLEAN error = FALSE;		/* TRUE when arguments are wrong */
 	BOOLEAN keep_flowlines = FALSE;	/* TRUE if Ctrl->D.active, Ctrl->PA.active, or bootstrap is TRUE */
@@ -724,10 +724,10 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			i = GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
 			yg = GMT_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 			j = GMT_grd_y_to_row (GMT, yg, G->header);
-			if (i < 0 || (col = i) >= G->header->nx || j < 0 || (row = j) >= G->header->ny)	/* Outside the CVA box, flag as outside */
+			if (i < 0 || (col2 = i) >= G->header->nx || j < 0 || (row2 = j) >= G->header->ny)	/* Outside the CVA box, flag as outside */
 				node = UINTMAX_MAX;
 			else								/* Inside the CVA box, assign node ij */
-				node = GMT_IJP (G->header, row, col);
+				node = GMT_IJP (G->header, row2, col2);
 			if (keep_flowlines) {
 				flowline[n_nodes].node[m] = node;
 				if (Ctrl->PA.active) flowline[n_nodes].PA[m] = (unsigned short) lrint (c[k++] * T_2_PA);
@@ -739,7 +739,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					processed_node[node] = TRUE;		/* Now we have visited this node */
 					n_unique_nodes++;
 #ifdef DEBUG2
-					printf ("%g\t%g\n", x_cva[col], y_cva[row]);
+					printf ("%g\t%g\n", x_cva[col2], y_cva[row2]);
 #endif
 				}
 				n_more_than_once += 1.0;

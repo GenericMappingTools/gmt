@@ -4033,11 +4033,12 @@ void gmt_setcontjump (float *z, COUNTER_LARGE nz)
 	}
 }
 
-COUNTER_LARGE gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, BOOLEAN test, COUNTER_MEDIUM *edge, double **x, double **y, COUNTER_MEDIUM col, COUNTER_MEDIUM row, COUNTER_MEDIUM side, COUNTER_LARGE offset, size_t *bit, COUNTER_MEDIUM *nan_flag)
+COUNTER_LARGE gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, BOOLEAN test, COUNTER_MEDIUM *edge, double **x, double **y, COUNTER_MEDIUM col, COUNTER_MEDIUM row, GMT_LONG side, COUNTER_LARGE offset, size_t *bit, COUNTER_MEDIUM *nan_flag)
 {
+	/* Note: side must be signed due to calculations like (side-2)%2 which will not work with unsigned */
 	COUNTER_MEDIUM this_side, old_side, n_exits, opposite_side, n_nan;
-	COUNTER_MEDIUM side_in, edge_word, edge_bit;
-	GMT_LONG p[5];
+	COUNTER_MEDIUM edge_word, edge_bit;
+	GMT_LONG side_in, p[5];
 	BOOLEAN more;
 	size_t n_alloc;
 	COUNTER_LARGE n = 1, m, ij0, ij_in, ij;
@@ -4164,7 +4165,6 @@ COUNTER_LARGE gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, BOOLEAN
 		}
 
 		/* Move on to next box (col,row,side) */
-
 		col -= (side-2)%2;
 		row -= (side-1)%2;
 		side = (side+2)%4;

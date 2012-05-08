@@ -158,7 +158,8 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0, j, entry, pos, n_opt_args = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0, j, entry, pos;
+	GMT_LONG n_opt_args = 0;
 	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;

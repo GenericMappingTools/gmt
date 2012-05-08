@@ -1467,7 +1467,7 @@ COUNTER_LARGE gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, C
 COUNTER_LARGE GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n_orig, double **x, double **y, COUNTER_LARGE *total_nx)
 {
 	char *x_type = NULL;
-	size_t n_alloc = 0, n_x_alloc = 0;
+	size_t n_alloc = 0, n_x_alloc = 0, n_t_alloc = 0;
 	COUNTER_LARGE i, n_get, n, m, n_cross = 0, *x_index = NULL;
 	COUNTER_MEDIUM new_n, range, j, np;
 	GMT_LONG way, side, in = 1, out = 0, cross = 0;
@@ -1533,8 +1533,8 @@ COUNTER_LARGE GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNT
 
 	/* Preallocate space for crossing information */
 
-	GMT_malloc (C, x_index, GMT_TINY_CHUNK, &n_x_alloc, COUNTER_LARGE);	n_x_alloc = 0;
-	GMT_malloc (C, x_type,  GMT_TINY_CHUNK, &n_x_alloc, char);
+	x_index = GMT_malloc (C, NULL, GMT_TINY_CHUNK, &n_x_alloc, COUNTER_LARGE);
+	x_type = GMT_malloc (C, NULL,  GMT_TINY_CHUNK, &n_t_alloc, char);
 
 #ifdef DEBUG
 	if (dump) {
@@ -1565,9 +1565,8 @@ COUNTER_LARGE GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNT
 				x_index[n_cross] = m;		/* Index of intersection point (which will be copied from xx[0], yy[0] below) */
 				x_type[n_cross] = cross;	/* -1 going out, +1 going in */
 				if (++n_cross == n_x_alloc) {
-					size_t tmp = n_x_alloc;
-					GMT_malloc (C, x_index, n_cross, &n_x_alloc, COUNTER_LARGE);	n_x_alloc = tmp;
-					GMT_malloc (C, x_type,  n_cross, &n_x_alloc, char);
+					x_index = GMT_malloc (C, x_index, n_cross, &n_x_alloc, COUNTER_LARGE);
+					x_type = GMT_malloc (C, x_type,  n_cross, &n_t_alloc, char);
 				}
 			}
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
@@ -7536,49 +7535,48 @@ GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 
 void gmt_set_distaz (struct GMT_CTRL *C, COUNTER_MEDIUM mode, COUNTER_MEDIUM type)
 {	/* Assigns pointers to the chosen distance and azimuth functions */
-	PFD az_func = NULL;
 	C->current.map.dist[type].scale = 1.0;	/* Default scale */
 
 	switch (mode) {	/* Set pointers to distance functions */
 		case GMT_CARTESIAN_DIST:	/* Cartesian 2-D x,y data */
 			C->current.map.dist[type].func = GMT_cartesian_dist;
-			az_func = gmt_az_backaz_cartesian;
+			C->current.map.azimuth_func = gmt_az_backaz_cartesian;
 			break;
 		case GMT_CARTESIAN_DIST_PROJ:	/* Cartesian distance after projecting 2-D lon,lat data */
 			C->current.map.dist[type].func = GMT_cartesian_dist_proj;
-			az_func = gmt_az_backaz_cartesian_proj;
+			C->current.map.azimuth_func = gmt_az_backaz_cartesian_proj;
 			break;
 		case GMT_DIST_M+GMT_FLATEARTH:	/* 2-D lon, lat data, but scale to Cartesian flat earth in meter */
 			C->current.map.dist[type].func = gmt_flatearth_dist_meter;
-			az_func  = gmt_az_backaz_flatearth;
+			C->current.map.azimuth_func  = gmt_az_backaz_flatearth;
 			break;
 		case GMT_DIST_M+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in meter */
 			C->current.map.dist[type].func = GMT_great_circle_dist_meter;
-			az_func = gmt_az_backaz_sphere;
+			C->current.map.azimuth_func = gmt_az_backaz_sphere;
 			break;
 		case GMT_DIST_M+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in meter */
 			C->current.map.dist[type].func = gmt_geodesic_dist_meter;
-			az_func = gmt_az_backaz_geodesic;
+			C->current.map.azimuth_func = gmt_az_backaz_geodesic;
 			break;
 		case GMT_DIST_DEG+GMT_FLATEARTH:	/* 2-D lon, lat data, use Flat Earth distances in degrees */
 			C->current.map.dist[type].func = gmt_flatearth_dist_degree;
-			az_func = gmt_az_backaz_flatearth;
+			C->current.map.azimuth_func = gmt_az_backaz_flatearth;
 			break;
 		case GMT_DIST_DEG+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in degrees */
 			C->current.map.dist[type].func = GMT_great_circle_dist_degree;
-			az_func = gmt_az_backaz_sphere;
+			C->current.map.azimuth_func = gmt_az_backaz_sphere;
 			break;
 		case GMT_DIST_DEG+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in degrees */
 			C->current.map.dist[type].func = gmt_geodesic_dist_degree;
-			az_func = gmt_az_backaz_geodesic;
+			C->current.map.azimuth_func = gmt_az_backaz_geodesic;
 			break;
 		case GMT_DIST_COS+GMT_GREATCIRCLE:	/* 2-D lon, lat data, and Green's function needs cosine of spherical distance */
 			C->current.map.dist[type].func = GMT_great_circle_dist_cos;
-			az_func = gmt_az_backaz_sphere;
+			C->current.map.azimuth_func = gmt_az_backaz_sphere;
 			break;
 		case GMT_DIST_COS+GMT_GEODESIC:	/* 2-D lon, lat data, and Green's function needs cosine of geodesic distance */
 			C->current.map.dist[type].func = GMT_geodesic_dist_cos;
-			az_func = gmt_az_backaz_geodesic;
+			C->current.map.azimuth_func = gmt_az_backaz_geodesic;
 			break;
 		default:	/* Cannot happen unless we make a bug */
 			GMT_report (C, GMT_MSG_FATAL, "Mode (=%ld) for distance function is unknown. Must be bug.\n", mode);
@@ -7588,16 +7586,15 @@ void gmt_set_distaz (struct GMT_CTRL *C, COUNTER_MEDIUM mode, COUNTER_MEDIUM typ
 	if (type > 0) return;	/* Contour-related assignemnts end here */
 
 	/* Mapping only */
-	C->current.map.azimuth_func = az_func;
 	if (mode == GMT_CARTESIAN_DIST)	{	/* Cartesian data */
-		C->current.map.near_lines_func  = (PFB) gmt_near_lines_cartesian;
-		C->current.map.near_a_line_func  = (PFB) gmt_near_a_line_cartesian;
-		C->current.map.near_point_func = (PFB) gmt_near_a_point_cartesian;
+		C->current.map.near_lines_func  = gmt_near_lines_cartesian;
+		C->current.map.near_a_line_func  = gmt_near_a_line_cartesian;
+		C->current.map.near_point_func = gmt_near_a_point_cartesian;
 	}
 	else {	/* Geographic data */
-		C->current.map.near_lines_func  = (PFB) gmt_near_lines_spherical;
-		C->current.map.near_a_line_func  = (PFB) gmt_near_a_line_spherical;
-		C->current.map.near_point_func = (PFB) gmt_near_a_point_spherical;
+		C->current.map.near_lines_func  = gmt_near_lines_spherical;
+		C->current.map.near_a_line_func  = gmt_near_a_line_spherical;
+		C->current.map.near_point_func = gmt_near_a_point_spherical;
 	}
 }
 

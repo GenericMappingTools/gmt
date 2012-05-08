@@ -396,8 +396,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 {
 	COUNTER_MEDIUM i, ii, id, j, nb, ndec = 0, dec, p_val, depth, Label_justify, form;
 	COUNTER_MEDIUM cap = PSL->internal.line_cap, join = PSL->internal.line_join;
-	COUNTER_MEDIUM nx = 0, ny = 0, nm, barmem, k, justify, l_justify, this_just;
-	BOOLEAN reverse, all = TRUE, use_image, center = FALSE, const_width = TRUE, do_annot, use_labels = FALSE;
+	COUNTER_MEDIUM nx = 0, ny = 0, nm, barmem, k, justify, l_justify, this_just, n_use_labels = 0;
+	BOOLEAN reverse, all = TRUE, use_image, center = FALSE, const_width = TRUE, do_annot, use_labels;
 	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
 	unsigned char *bar = NULL, *tmp = NULL;
 	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
@@ -423,7 +423,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	}
 	else {
 		for (i = 0; i < P->n_colors; i++) {
-			if (P->range[i].label) use_labels = TRUE;
+			if (P->range[i].label) n_use_labels++;
 			if (P->range[i].annot & 1) {
 				if ((dec = GMT_get_format (GMT, P->range[i].z_low, CNULL, CNULL, text)) > ndec) {
 					strcpy (format, text);
@@ -439,7 +439,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			if (P->range[i].annot) all = FALSE;
 		}
 	}
-	if (equi && use_labels == P->n_colors)
+	if (equi && n_use_labels == P->n_colors)
 		all = use_labels = TRUE;	/* Only use optional text labels for equal length scales */
 	else
 		use_labels = FALSE;

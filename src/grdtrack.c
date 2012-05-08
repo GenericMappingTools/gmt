@@ -68,6 +68,12 @@ struct GRDTRACK_CTRL {
 	struct N {	/* -N */
 		BOOLEAN active;
 	} N;
+	struct S {	/* -S<mode><modifiers> */
+		BOOLEAN active;
+		BOOLEAN selected[5];	/* For +a +d +D +r +s */
+		COUNTER_MEDIUM mode;
+		char *file;
+	} S;
 	struct Z {	/* -Z */
 		BOOLEAN active;
 	} Z;
@@ -97,7 +103,7 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "grdtrack %s [API] - Sample grids at specified (x,y) locations\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[m|p]] [-C<length>[u]/<ds>[u][/<spacing>[u]]]\n"); 
-	GMT_message (GMT, "\t[-D<dfile>] [-N] [%s] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
+	GMT_message (GMT, "\t[-D<dfile>] [-N] [%s] [-S<mode><modifiers] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -127,12 +133,32 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-T Set +/- dz for tracing.\n");
+	GMT_message (GMT, "\t-S In conjunction with -C, compute a single stacked profile from all profiles across each segment.\n");
+	GMT_message (GMT, "\t   Append how stacking should be computed: e = median, m = mean, o = mode, l = lower, u = upper.\n");
+	GMT_message (GMT, "\t   Add at least one modifier; choose among\n");
+	GMT_message (GMT, "\t     +a : Add stacked value to all cross-profiles.\n");
+	GMT_message (GMT, "\t     +d : Report stack deviations when writing stacked profile (requires +s).\n");
+	GMT_message (GMT, "\t     +D : Add stack deviations to all cross-profiles.\n");
+	GMT_message (GMT, "\t     +r : Add data residuals (data - stack) to all cross-profiles.\n");
+	GMT_message (GMT, "\t     +s<file> : Save stacked profile to <file>.\n");
+	GMT_message (GMT, "\t   Note: Deviations depend on mode and are L1 scale (e), st.dev (m), LMS scale (o), or range (l,u).\n");
 	GMT_message (GMT, "\t-Z Only output z-values [Default gives all columns].\n");
 	GMT_explain_options (GMT, "C2D0fghinos:.");
 	
 	return (EXIT_FAILURE);
 }
+
+enum grdtrack_enum_stack {STACK_MEDIAN = 0,	/* Compute stack as median value for same distance across all profiles */
+	STACK_MEAN,	/* Use mean instead */
+	STACK_MODE,	/* Use mode (LMS) instead */
+	STACK_LOWER,	/* Use lowest value encountered instead */
+	STACK_UPPER};	/* Use highest value encountered instead */
+
+enum grdtrack_enum_opt {STACK_ADD_VALUE = 0,	/* Append stacked value(s) at end of each output row for all profiles */
+	STACK_ADD_DEV,		/* Compute deviation and add to stacked profile output (requires +s) */
+	STACK_ADD_DEV_ALL,	/* Append deviation value(s) at end of each output row for all profiles */
+	STACK_ADD_RES,		/* Append residual(s) (value - stacked value) at end of each output row for all profiles */
+	STACK_ADD_FILE};	/* Write stacked profile to given file */
 
 GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struct GMT_OPTION *options) {
 
@@ -143,7 +169,8 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 	 */
 
 	GMT_LONG j, n_errors = 0, ng = 0, n_files = 0;
-	char line[GMT_BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64];
+	COUNTER_MEDIUM pos;
+	char line[GMT_BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64], p[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -218,18 +245,45 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 				}
 #endif
 				break;
-#ifdef GMT_COMPAT
-//			case 'N':	/* Backwards compatible */
-//				GMT->common.n.interpolant = BCR_NEARNEIGHBOR;
-//				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -N deprecated. Use -nn instead.\n");
-//				break;
-			case 'S':
-				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -S deprecated. Use -sa instead.\n");
-				GMT->current.setting.io_nan_mode = 3;
-				break;
-#endif
 			case 'N':
 				Ctrl->N.active = TRUE;
+				break;
+			case 'S':
+#ifdef GMT_COMPAT
+				if (opt->arg[0] == 0) {	/* Under COMPAT: Interpret -S (no args) as old-style -S option to skip output with NaNs */
+					GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -S deprecated. Use -sa instead.\n");
+					GMT->current.setting.io_nan_mode = 3;
+					break;
+				}
+#endif
+				Ctrl->S.active = TRUE;
+				switch (opt->arg[0]) {
+					case 'e': Ctrl->S.mode = STACK_MEDIAN; break;
+					case 'm': Ctrl->S.mode = STACK_MEAN; break;
+					case 'o': Ctrl->S.mode = STACK_MODE; break;
+					case 'l': Ctrl->S.mode = STACK_LOWER; break;
+					case 'u': Ctrl->S.mode = STACK_UPPER; break;
+					default:
+						n_errors++; 
+						GMT_report (GMT, GMT_MSG_FATAL, "Error: Bad mode (%c) given to -S.\n", (int)opt->arg[0]);
+						break;
+				}
+				pos = 0;
+				while (GMT_strtok (&opt->arg[1], "+", &pos, p)) {
+					switch (p[0]) {
+						case 'a': Ctrl->S.selected[STACK_ADD_VALUE] = TRUE; break;	/* Gave +a to add stacked result to all output profiles */
+						case 'd': Ctrl->S.selected[STACK_ADD_DEV] = TRUE; break;	/* Gave +d to add stacked deviations to stacked output profile */
+						case 'D': Ctrl->S.selected[STACK_ADD_DEV_ALL] = TRUE; break;	/* Gave +D to add stacked deviations to all output profiles */
+						case 'r': Ctrl->S.selected[STACK_ADD_RES] = TRUE; break;	/* Gave +r to add residual values (data - stack) to all output profiles */
+						case 's': Ctrl->S.selected[STACK_ADD_FILE] = TRUE;		/* Gave +s to write stacked profile to given file */
+							Ctrl->S.file = strdup (&p[1]);
+							break;
+						default:
+							n_errors++; 
+							GMT_report (GMT, GMT_MSG_FATAL, "Error: Bad modifier (%s) given to -S.\n", p[0]);
+							break;
+					}
+				}
 				break;
 			case 'Z':
 				Ctrl->Z.active = TRUE;
@@ -241,6 +295,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 		}
 	}
 	Ctrl->G.n_grids = ng;
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Syntax error -S: Requires -C.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Syntax error -D: Must specify file name.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.n_grids == 0, "Syntax error: Must specify -G at least once\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.ds < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C: Arguments must be positive\n");
