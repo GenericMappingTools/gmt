@@ -201,7 +201,8 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM row, seg_no = 0, is_line = 0, n_seg = 0, n_read, m, level, this_id;
-	GMT_LONG error, gmode, version, greenwich, is_river, src, max_east = 270000000;
+	GMT_LONG error, gmode, version, greenwich, is_river, src;
+	int32_t max_east = 270000000;
 	BOOLEAN must_swab, OK, first = TRUE;
 	
 	COUNTER_LARGE dim[4] = {1, 0, 2, 0};
