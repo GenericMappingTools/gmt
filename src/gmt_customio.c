@@ -1650,9 +1650,114 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 }
 
 GMT_LONG GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode) {
-	GMT_report (C, GMT_MSG_FATAL, "Error: Unable to write gdal files.\n");
+	GMT_LONG ij;
+	int node = 0, row, col;
+	char driver[16], type[16];
+	unsigned char *zu8;
+	short int *zi16;
+	unsigned short int *zu16;
+	int *zi32;
+	unsigned int *zu32;
+	struct GDALWRITE_CTRL *to_GDALW = NULL;
+	type[0] = '\0';
+
+	if (header->pocket == NULL) {
+		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot to write with gdal without knowing which driver to use.\n");
+		return (GMT_NOERROR);
+	}
+
+	sscanf (header->pocket, "%[^/]/%s", driver, type);
+	to_GDALW = GMT_memory (C, NULL, 1, struct GDALWRITE_CTRL);
+	to_GDALW->driver = strdup(driver);
+	to_GDALW->P.ProjectionRefPROJ4 = NULL;
+	to_GDALW->flipud = 0;
+	to_GDALW->geog = 0;
+	to_GDALW->nx = header->nx;
+	to_GDALW->ny = header->ny;
+	to_GDALW->n_bands = header->n_bands;
+	to_GDALW->registration = header->registration;
+	to_GDALW->pad[0] = header->pad[0];		to_GDALW->pad[1] = header->pad[1];
+	to_GDALW->pad[2] = header->pad[2];		to_GDALW->pad[3] = header->pad[3];
+	to_GDALW->ULx = C->common.R.wesn[XLO];
+	to_GDALW->ULy = C->common.R.wesn[YHI];
+	to_GDALW->x_inc = GMT_get_inc (C, header->wesn[XLO], header->wesn[XHI], header->nx, header->registration);
+	to_GDALW->y_inc = GMT_get_inc (C, header->wesn[YLO], header->wesn[YHI], header->ny, header->registration);
+	to_GDALW->nan_value = header->nan_value;
+	to_GDALW->command = header->command;
+
+
+	if (!type[0] || !strcmpi(type, "float32")) {
+		/* Shift data to the begining of the array (i.e kinda of remove the padding). This is uggly and sould
+		   be done by GDALRasterIO directly but a GDAL limitation prevents it when using the MEM driver. */
+		for (row = 0; row < header->ny; row++)
+			for (col = 0, ij = GMT_IJP (header, row, 0); col < header->nx; col++, ij++)
+				grid[node++] = grid[ij];
+
+		to_GDALW->data = grid;
+		to_GDALW->type = strdup("float32");
+		GMT_gdalwrite(C, header->name, to_GDALW);
+		GMT_free (C, to_GDALW);
+		return (GMT_NOERROR);
+	}
+	else if (!strcmp(type,"u8") || !strcmp(type,"u08")) {
+		zu8 = GMT_memory(C, NULL, header->nx*header->ny, unsigned char);
+		for (row = 0; row < header->ny; row++)
+			for (col = 0, ij = GMT_IJP (header, row, 0); col < header->nx; col++, ij++)
+				zu8[node++] = (unsigned char)grid[ij];
+
+		to_GDALW->data = zu8;
+		to_GDALW->type = strdup("uint8");
+	}
+	else if (!strcmp(type,"i16")) {
+		zi16 = GMT_memory(C, NULL, header->nx*header->ny, short int);
+		for (row = 0; row < header->ny; row++)
+			for (col = 0, ij = GMT_IJP (header, row, 0); col < header->nx; col++, ij++)
+				zi16[node++] = (short int)grid[ij];
+
+		to_GDALW->data = zi16;
+		to_GDALW->type = strdup("int16");
+	}
+	else if (!strcmp(type,"u16")) {
+		zu16 = GMT_memory(C, NULL, header->nx*header->ny, unsigned short int);
+		for (row = 0; row < header->ny; row++)
+			for (col = 0, ij = GMT_IJP (header, row, 0); col < header->nx; col++, ij++)
+				zu16[node++] = (unsigned short int)grid[ij];
+
+		to_GDALW->data = zu16;
+		to_GDALW->type = strdup("uint16");
+	}
+	else if (!strcmp(type,"i32")) {
+		zi32 = GMT_memory(C, NULL, header->nx*header->ny, int);
+		for (row = 0; row < header->ny; row++)
+			for (col = 0, ij = GMT_IJP (header, row, 0); col < header->nx; col++, ij++)
+				zi32[node++] = (int)grid[ij];
+
+		to_GDALW->data = zi32;
+		to_GDALW->type = strdup("int32");
+	}
+	else if (!strcmp(type,"u32")) {
+		zu32 = GMT_memory(C, NULL, header->nx*header->ny, unsigned int);
+		for (row = 0; row < header->ny; row++)
+			for (col = 0, ij = GMT_IJP (header, row, 0); col < header->nx; col++, ij++)
+				zu32[node++] = (unsigned int)grid[ij];
+
+		to_GDALW->data = zu32;
+		to_GDALW->type = strdup("uint32");
+	}
+	else {
+		GMT_report (C, GMT_MSG_FATAL, "Unknown or unsupported data type code in gmt_customio for writing file with GDAL.\n");
+		return (GMT_GRDIO_OPEN_FAILED);
+	}
+
+	GMT_gdalwrite(C, header->name, to_GDALW);
+	GMT_free (C, to_GDALW->data);
+
+	free(to_GDALW->driver);
+	free(to_GDALW->type);
+	GMT_free (C, to_GDALW);
 	return (GMT_NOERROR);
 }
+
 #endif
 
 /* Add custom code here */
