@@ -278,8 +278,8 @@ GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		}
 	}
 
-	header->nx = (int)width_in;
-	header->ny = (int)height_in;
+	header->nx = width_in;
+	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
 	GMT_err_trap (nc_close (ncid));
@@ -341,8 +341,8 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	if (pad[XHI] > 0) width_in += pad[XHI];
 
 	GMT_memcpy (header->wesn, wesn, 4, double);
-	header->nx = (int)width_out;
-	header->ny = (int)height_out;
+	header->nx = width_out;
+	header->ny = height_out;
 
 	/* Write grid header */
 

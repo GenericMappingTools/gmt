@@ -3288,7 +3288,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* Here we have an operator */
 
-		if (!strncmp (opt->arg, "ROOTS", (size_t)5) && !(opt->next && opt->next->arg[0] == '=')) {
+		if (!strncmp (opt->arg, "ROOTS", 5U) && !(opt->next && opt->next->arg[0] == '=')) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Only = may follow operator ROOTS\n");
 			Return (EXIT_FAILURE);
 		}

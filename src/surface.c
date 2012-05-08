@@ -1865,8 +1865,8 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	C.relax_old = 1.0 - C.relax_new;
 
-	C.nx = (GMT_LONG)C.Grid->header->nx;
-	C.ny = (GMT_LONG)C.Grid->header->ny;
+	C.nx = C.Grid->header->nx;
+	C.ny = C.Grid->header->ny;
 	C.nxny = C.Grid->header->nm;
 
 	C.mx = C.nx + 4;
@@ -1919,7 +1919,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Set up factors and reset grid to first value  */
 
 	C.grid = gcd_euclid (C.nx-1, C.ny-1);
-	C.n_fact = GMT_get_prime_factors (GMT, (GMT_LONG)C.grid, C.factors);
+	C.n_fact = GMT_get_prime_factors (GMT, C.grid, C.factors);
 	set_grid_parameters (&C);
 	while (C.block_nx < 4 || C.block_ny < 4) {
 		smart_divide (&C);

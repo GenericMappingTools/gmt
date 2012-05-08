@@ -272,7 +272,7 @@ GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
 		GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", file);
 		return (-1);
 	}
-	if (GMT_fread (c, (size_t)1, (size_t)4, fp) != (size_t)4) {
+	if (GMT_fread (c, 1U, 4U, fp) != 4U) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Could not read 4 bytes from file %s\n", file);
 		return (-1);
 	}

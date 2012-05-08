@@ -57,7 +57,7 @@ void *New_mgd77magref_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	struct MGD77MAGREF_CTRL *C = NULL;
 
 	C = GMT_memory (GMT, NULL, 1, struct MGD77MAGREF_CTRL);
-	C->CM4 = calloc ((size_t)1, sizeof (struct MGD77_CM4));
+	C->CM4 = calloc (1U, sizeof (struct MGD77_CM4));
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
@@ -424,7 +424,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the mgd77magref main code ----------------------------*/
 
-	Ctrl->CM4->CM4_D.dst = calloc((size_t)(1), sizeof(double));	/* We need at least a size of one in case a value is given in input */
+	Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = GMT_IS_ABSTIME;	/* By default, time is in 4th input column */
 
 	/* Shorthand for these */
@@ -511,7 +511,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 	n_out = n_field_components + ((Ctrl->copy_input) ? Din->n_columns : 0);

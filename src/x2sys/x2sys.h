@@ -309,4 +309,4 @@ EXTERN_MSC void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *s, c
 #define X2SYS_DIST_SELECTION	0
 #define X2SYS_SPEED_SELECTION	1
 
-#define X2SYS_bit(bit) ((GMT_LONG)1 << (bit))	/* Set the specified bit to 1.  1,2,4,8 etc for 0,1,2,3... */
+#define X2SYS_bit(bit) (1U << (bit))	/* Set the specified bit to 1.  1,2,4,8 etc for 0,1,2,3... */

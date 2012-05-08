@@ -550,7 +550,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
 		ymax = (Ctrl->C.active) ? GMT->current.proj.rect[YHI] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YHI];
 		if (Ctrl->F.active) {	/* Convert to GMT inches */
-			strncpy (unit_name, scale_unit_name, (size_t)GMT_TEXT_LEN64);
+			strncpy (unit_name, scale_unit_name, GMT_TEXT_LEN64);
 			xmin /= GMT->current.proj.scale[GMT_X];
 			xmax /= GMT->current.proj.scale[GMT_X];
 			ymin /= GMT->current.proj.scale[GMT_Y];

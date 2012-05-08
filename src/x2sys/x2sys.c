@@ -305,7 +305,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 			sscanf (cardcol, "%d-%d", &X->info[i].start_col, &X->info[i].stop_col);
 			X->info[i].n_cols = X->info[i].stop_col - X->info[i].start_col + 1;
 		}
-		c = (int)X->info[i].intype;
+		c = X->info[i].intype;
 		if (tolower (c) == 'a') X->file_type = X2SYS_ASCII;
 		c = (int)yes_no;
 		if (tolower (c) != 'Y') X->info[i].has_nan_proxy = TRUE;
@@ -802,7 +802,7 @@ GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data
 	MGD77_Ignore_Format (C, M.format);		/* ...only allow the specified input format */
 
 	for (i = 0; i < s->n_out_columns; i++) strcpy (M.desired_column[i], s->info[s->out_order[i]].name);	/* Set all the required fields */
-	M.n_out_columns = (int)s->n_out_columns;
+	M.n_out_columns = s->n_out_columns;
 
 	S = MGD77_Create_Dataset (C);	/* Get data structure w/header */
 

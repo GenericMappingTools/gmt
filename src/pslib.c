@@ -306,7 +306,7 @@ struct PSL_CTRL *New_PSL_Ctrl (char *session)
 
 	/* Initialize the PSL structure */
 
-	PSL = calloc ((size_t)1, sizeof (struct PSL_CTRL));
+	PSL = calloc (1U, sizeof (struct PSL_CTRL));
 	if (session) PSL->init.session = strdup (session);
 	for (i = 0; i < 3; i++) PSL->init.page_rgb[i] = -1.0;		/* Not set */
 
@@ -939,7 +939,7 @@ PSL_LONG PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsiz
 	PSL_command (PSL, "%d %d T\n", -ox, -oy);
 	PSL_command (PSL, "N %d %d M %d %d L %d %d L %d %d L P clip N\n", ox, oy, ox+nx, oy, ox+nx, oy+ny, ox, oy+ny);
 	PSL_command (PSL, "%%%%BeginDocument: psimage.eps\n");
-	fwrite (buffer, (size_t)1, (size_t)size, PSL->internal.fp);
+	fwrite (buffer, 1U, (size_t)size, PSL->internal.fp);
 	PSL_command (PSL, "%%%%EndDocument\n");
 	PSL_command (PSL, "PSL_eps_end\n");
 	return (PSL_NO_ERROR);
@@ -1755,7 +1755,7 @@ PSL_LONG PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize
 		if (ptr[0] == '!') {	/* Composite character */
 			ptr++;
 			if (ptr[0] == '\\') {	/* Octal code */
-				strncpy (piece, ptr, (size_t)4);
+				strncpy (piece, ptr, 4U);
 				piece[4] = 0;
 				ptr += 4;
 			}
@@ -1764,7 +1764,7 @@ PSL_LONG PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize
 				ptr++;
 			}
 			if (ptr[0] == '\\') {	/* Octal code again */
-				strncpy (piece2, ptr, (size_t)4);
+				strncpy (piece2, ptr, 4U);
 				piece2[4] = 0;
 				ptr += 4;
 			}
@@ -2732,7 +2732,7 @@ PSL_LONG psl_read_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h
 
 	for (i = i0; i <= i1; i++) {
 
-		if (fread (byte, sizeof (unsigned char), (size_t)4, fp) != 4) {
+		if (fread (byte, sizeof (unsigned char), 4U, fp) != 4U) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading rasterfile header\n");
 			return (-1);
 		}
@@ -3297,7 +3297,7 @@ PSL_LONG psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, unsi
 	n=0;
 	fseek (fp, (off_t)0, SEEK_SET);
 	buffer = PSL_memory (PSL, NULL, BLOCKSIZE, unsigned char);
-	while ((p = fread ((unsigned char *)buffer + n, (size_t)1, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE)
+	while ((p = fread ((unsigned char *)buffer + n, 1U, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE)
 	{
 		n+=BLOCKSIZE;
 		buffer = PSL_memory (PSL, buffer, n+BLOCKSIZE, unsigned char);
@@ -3348,7 +3348,7 @@ PSL_LONG psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *head
 		mx = (PSL_LONG) (ceil (header->width / 8.0));		/* However, PS wants only the bytes that matters, so mx may be one less */
 		ny = header->height;
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
+		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 1-bit Sun rasterfile!\n");
 			PSL_exit (EXIT_FAILURE);
 		}
@@ -3366,16 +3366,16 @@ PSL_LONG psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *head
 		red   = PSL_memory (PSL, NULL, get, unsigned char);
 		green = PSL_memory (PSL, NULL, get, unsigned char);
 		blue  = PSL_memory (PSL, NULL, get, unsigned char);
-		n  = fread (red,   (size_t)1, (size_t)get, fp);
-		n += fread (green, (size_t)1, (size_t)get, fp);
-		n += fread (blue,  (size_t)1, (size_t)get, fp);
+		n  = fread (red,   1U, (size_t)get, fp);
+		n += fread (green, 1U, (size_t)get, fp);
+		n += fread (blue,  1U, (size_t)get, fp);
 		if (n != header->maplength) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading colormap!\n");
 			return (PSL_READ_FAILURE);
 		}
 		odd = (PSL_LONG)header->width%2;
 		entry = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (entry, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
+		if (fread (entry, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 8-bit Sun rasterfile!\n");
 			return (PSL_READ_FAILURE);
 		}
@@ -3392,9 +3392,9 @@ PSL_LONG psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *head
 		}
 		header->depth = 24;
 	}
-	else if (header->depth == (size_t)8) {	/* 8-bit without color table (implicit grayramp) */
+	else if (header->depth == 8U) {	/* 8-bit without color table (implicit grayramp) */
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
+		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 8-bit Sun rasterfile!\n");
 			return (PSL_READ_FAILURE);
 		}
@@ -3406,15 +3406,15 @@ PSL_LONG psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *head
 		red   = PSL_memory (PSL, NULL, get, unsigned char);
 		green = PSL_memory (PSL, NULL, get, unsigned char);
 		blue  = PSL_memory (PSL, NULL, get, unsigned char);
-		n  = fread (red,   (size_t)1, (size_t)get, fp);
-		n += fread (green, (size_t)1, (size_t)get, fp);
-		n += fread (blue,  (size_t)1, (size_t)get, fp);
+		n  = fread (red,   1U, (size_t)get, fp);
+		n += fread (green, 1U, (size_t)get, fp);
+		n += fread (blue,  1U, (size_t)get, fp);
 		if ((size_t)n != (size_t)header->maplength) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading colormap!\n");
 			return (PSL_READ_FAILURE);
 		}
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
+		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 24-bit Sun rasterfile!\n");
 			return (PSL_READ_FAILURE);
 		}
@@ -3432,10 +3432,10 @@ PSL_LONG psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *head
 			if (odd && (j+3)%oddlength == 0) i++;
 		}
 	}
-	else if (header->depth == (size_t)24) {	/* 24-bit raster, no colormap */
+	else if (header->depth == 24U) {	/* 24-bit raster, no colormap */
 		unsigned char r, b;
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
+		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 24-bit Sun rasterfile!\n");
 			return (PSL_READ_FAILURE);
 		}
@@ -3459,15 +3459,15 @@ PSL_LONG psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *head
 		red   = PSL_memory (PSL, NULL, get, unsigned char);
 		green = PSL_memory (PSL, NULL, get, unsigned char);
 		blue  = PSL_memory (PSL, NULL, get, unsigned char);
-		n  = fread (red,   (size_t)1, (size_t)get, fp);
-		n += fread (green, (size_t)1, (size_t)get, fp);
-		n += fread (blue,  (size_t)1, (size_t)get, fp);
+		n  = fread (red,   1U, (size_t)get, fp);
+		n += fread (green, 1U, (size_t)get, fp);
+		n += fread (blue,  1U, (size_t)get, fp);
 		if ((size_t)n != (size_t)header->maplength) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading colormap!\n");
 			return (PSL_READ_FAILURE);
 		}
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
+		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 32-bit Sun rasterfile!\n");
 			return (PSL_READ_FAILURE);
 		}
@@ -3485,10 +3485,10 @@ PSL_LONG psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *head
 		}
 		header->depth = 24;
 	}
-	else if (header->depth == (size_t)32) {	/* 32-bit raster, no colormap */
+	else if (header->depth == 32U) {	/* 32-bit raster, no colormap */
 		unsigned char b;
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
+		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 32-bit Sun rasterfile!\n");
 			return (PSL_READ_FAILURE);
 		}
@@ -4505,16 +4505,16 @@ PSL_LONG psl_get_boundingbox (FILE *fp, PSL_LONG *llx, PSL_LONG *lly, PSL_LONG *
 
 	nested = 0; *llx = 1; *trx = 0;
 	while (fgets(buf, PSL_BUFSIZ, fp) != NULL) {
-		if (!nested && !strncmp(buf, "%%BoundingBox:", (size_t)14)) {
+		if (!nested && !strncmp(buf, "%%BoundingBox:", 14U)) {
 			if (!strstr(buf, "(atend)")) {
 				if (sscanf(strchr(buf, ':') + 1, "%d %d %d %d", llx, lly, trx, try) < 4) return 1;
 				break;
 			}
 		}
-		else if (!strncmp(buf, "%%Begin", (size_t)7)) {
+		else if (!strncmp(buf, "%%Begin", 7U)) {
 			++nested;
 		}
-		else if (nested && !strncmp(buf, "%%End", (size_t)5)) {
+		else if (nested && !strncmp(buf, "%%End", 5U)) {
 			--nested;
 		}
 	}

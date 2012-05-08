@@ -304,15 +304,15 @@ void gmt_grd_get_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		/* Change name of variable and unit to lower case for comparison */
 		GMT_str_tolower (string[i]);
 
-		if ((!strncmp (string[i], "longitude", (size_t)9) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] <= 360.0)) {
+		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] <= 360.0)) {
 			/* Input data type is longitude */
 			C->current.io.col_type[GMT_IN][i] = GMT_IS_LON;
 		}
-		else if ((!strncmp (string[i], "latitude", (size_t)8) || strstr (string[i], "degrees_n")) && (header->wesn[YLO] >= -90.0 && header->wesn[YHI] <= 90.0)) {
+		else if ((!strncmp (string[i], "latitude", 8U) || strstr (string[i], "degrees_n")) && (header->wesn[YLO] >= -90.0 && header->wesn[YHI] <= 90.0)) {
 			/* Input data type is latitude */
 			C->current.io.col_type[GMT_IN][i] = GMT_IS_LAT;
 		}
-		else if (!strcmp (string[i], "time") || !strncmp (string[i], "time [", (size_t)6)) {
+		else if (!strcmp (string[i], "time") || !strncmp (string[i], "time [", 6U)) {
 			/* Input data type is time */
 			C->current.io.col_type[GMT_IN][i] = GMT_IS_RELTIME;
 			C->current.proj.xyz_projection[i] = GMT_TIME;
@@ -774,19 +774,19 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 					GMT_memset (h->x_units, GRD_UNIT_LEN80, char);
 					if (strlen(ptr) >= GRD_UNIT_LEN80) GMT_report (C, GMT_MSG_FATAL, 
 						"Warning: X unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN80);
-					strncpy (h->x_units, ptr, (size_t)GRD_UNIT_LEN80);
+					strncpy (h->x_units, ptr, GRD_UNIT_LEN80);
 					break;
 				case 1:
 					GMT_memset (h->y_units, GRD_UNIT_LEN80, char);
 					if (strlen(ptr) >= GRD_UNIT_LEN80) GMT_report (C, GMT_MSG_FATAL, 
 						"Warning: Y unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN80);
-					strncpy (h->y_units, ptr, (size_t)GRD_UNIT_LEN80);
+					strncpy (h->y_units, ptr, GRD_UNIT_LEN80);
 					break;
 				case 2:
 					GMT_memset (h->z_units, GRD_UNIT_LEN80, char);
 					if (strlen(ptr) >= GRD_UNIT_LEN80) GMT_report (C, GMT_MSG_FATAL, 
 						"Warning: Z unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN80);
-					strncpy (h->z_units, ptr, (size_t)GRD_UNIT_LEN80);
+					strncpy (h->z_units, ptr, GRD_UNIT_LEN80);
 					break;
 				case 3:
 					h->z_scale_factor = atof (ptr);
@@ -797,12 +797,12 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 				case 5:
 					if (strlen(ptr) >= GRD_TITLE_LEN80) GMT_report (C, GMT_MSG_FATAL, 
 						"Warning: Title string exceeds upper length of %d characters (truncated)\n", GRD_TITLE_LEN80);
-					strncpy (h->title, ptr, (size_t)GRD_TITLE_LEN80);
+					strncpy (h->title, ptr, GRD_TITLE_LEN80);
 					break;
 				case 6:
 					if (strlen(ptr) >= GRD_REMARK_LEN160) GMT_report (C, GMT_MSG_FATAL, 
 						"Warning: Remark string exceeds upper length of %d characters (truncated)\n", GRD_REMARK_LEN160);
-					strncpy (h->remark, ptr, (size_t)GRD_REMARK_LEN160);
+					strncpy (h->remark, ptr, GRD_REMARK_LEN160);
 					break;
 				default:
 					break;
@@ -964,7 +964,7 @@ GMT_LONG GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, float *ro
 			break;
 		default:
 			for (col = 0; col < G->header.nx; col++) GMT_encode (C, tmp, col, row[col], C->session.grdformat[G->header.type][1]);
-			if (GMT_fwrite (tmp, (size_t)size, (size_t)G->header.nx, G->fp) < (size_t)G->header.nx) return (GMT_GRDIO_WRITE_FAILED);
+			if (GMT_fwrite (tmp, size, (size_t)G->header.nx, G->fp) < (size_t)G->header.nx) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
 	GMT_free (C, tmp);

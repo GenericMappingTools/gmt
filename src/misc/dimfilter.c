@@ -512,8 +512,8 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		y_width = Ctrl->F.width / (Gin->header->inc[GMT_Y] * y_scale);
 		F.d_flag = Ctrl->D.mode;
 		F.f_flag = Ctrl->F.filter;
-		F.y_half_width = (int) (ceil(y_width) / 2.0);
-		F.x_half_width = (int) (ceil(x_width) / 2.0);
+		F.y_half_width = lrint (ceil(y_width) / 2.0);
+		F.x_half_width = lrint (ceil(x_width) / 2.0);
 		F.dx = Gin->header->inc[GMT_X];
 		F.dy = Gin->header->inc[GMT_Y];
 
@@ -1029,7 +1029,7 @@ int main (int argc, char *argv[]) {
 	if ((API = GMT_Create_Session (argv[0], GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = (int)GMT_dimfilter (API, argc-1, (argv+1));
+	status = GMT_dimfilter (API, argc-1, (argv+1));
 
 	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);

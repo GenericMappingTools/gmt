@@ -90,7 +90,8 @@ enum GMT_enum_dimensions {
 /* GIS geometries, with GMT_IS_TEXT as 0 for no such thing */
 enum GMT_enum_geometries {
 	GMT_IS_TEXT = 0,
-	GMT_IS_POINT,
+	GMT_IS_ANY = 0,
+	GMT_IS_POINT = 1,
 	GMT_IS_LINE,
 	GMT_IS_POLY,
 	GMT_IS_SURFACE,

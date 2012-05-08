@@ -113,7 +113,7 @@ void MGD77_Write_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 	MGD77_Put_Param (C, F, "Source_Institution", strlen (P[0]->Source_Institution), P[0]->Source_Institution, strlen (P[1]->Source_Institution), P[1]->Source_Institution, L[MGD77_Param_Key(C,1,13)].revised);
 	MGD77_Put_Param (C, F, "Country", strlen (P[0]->Country), P[0]->Country, strlen (P[1]->Country), P[1]->Country, L[MGD77_Param_Key(C,2,1)].revised);
 	MGD77_Put_Param (C, F, "Platform_Name", strlen (P[0]->Platform_Name), P[0]->Platform_Name, strlen (P[1]->Platform_Name), P[1]->Platform_Name, L[MGD77_Param_Key(C,2,2)].revised);
-	MGD77_Put_Param (C, F, "Platform_Type_Code", (size_t)1, &P[0]->Platform_Type_Code, (size_t)1, &P[1]->Platform_Type_Code, L[MGD77_Param_Key(C,2,3)].revised);
+	MGD77_Put_Param (C, F, "Platform_Type_Code", 1U, &P[0]->Platform_Type_Code, 1U, &P[1]->Platform_Type_Code, L[MGD77_Param_Key(C,2,3)].revised);
 	MGD77_Put_Param (C, F, "Platform_Type", strlen (P[0]->Platform_Type), P[0]->Platform_Type, strlen (P[1]->Platform_Type), P[1]->Platform_Type, L[MGD77_Param_Key(C,2,4)].revised);
 	MGD77_Put_Param (C, F, "Chief_Scientist", strlen (P[0]->Chief_Scientist), P[0]->Chief_Scientist, strlen (P[1]->Chief_Scientist), P[1]->Chief_Scientist, L[MGD77_Param_Key(C,2,5)].revised);
 	MGD77_Put_Param (C, F, "Project_Cruise_Leg", strlen (P[0]->Project_Cruise_Leg), P[0]->Project_Cruise_Leg, strlen (P[1]->Project_Cruise_Leg), P[1]->Project_Cruise_Leg, L[MGD77_Param_Key(C,3,1)].revised);
@@ -136,7 +136,7 @@ void MGD77_Write_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 	MGD77_Put_Param (C, F, "Gravity_Add_Forms_of_Data", strlen (P[0]->Gravity_Add_Forms_of_Data), P[0]->Gravity_Add_Forms_of_Data, strlen (P[1]->Gravity_Add_Forms_of_Data), P[1]->Gravity_Add_Forms_of_Data, L[MGD77_Param_Key(C,8,2)].revised);
 	MGD77_Put_Param (C, F, "Seismic_Instrumentation", strlen (P[0]->Seismic_Instrumentation), P[0]->Seismic_Instrumentation, strlen (P[1]->Seismic_Instrumentation), P[1]->Seismic_Instrumentation, L[MGD77_Param_Key(C,9,1)].revised);
 	MGD77_Put_Param (C, F, "Seismic_Data_Formats", strlen (P[0]->Seismic_Data_Formats), P[0]->Seismic_Data_Formats, strlen (P[1]->Seismic_Data_Formats), P[1]->Seismic_Data_Formats, L[MGD77_Param_Key(C,9,2)].revised);
-	MGD77_Put_Param (C, F, "Format_Type", (size_t)1, &P[0]->Format_Type, (size_t)1, &P[1]->Format_Type, L[MGD77_Param_Key(C,10,1)].revised);
+	MGD77_Put_Param (C, F, "Format_Type", 1U, &P[0]->Format_Type, 1U, &P[1]->Format_Type, L[MGD77_Param_Key(C,10,1)].revised);
 	MGD77_Put_Param (C, F, "Format_Description", strlen (P[0]->Format_Description), P[0]->Format_Description, strlen (P[1]->Format_Description), P[1]->Format_Description, L[MGD77_Param_Key(C,10,2)].revised);
 	MGD77_Put_Param (C, F, "Topmost_Latitude", strlen (P[0]->Topmost_Latitude), P[0]->Topmost_Latitude, strlen (P[1]->Topmost_Latitude), P[1]->Topmost_Latitude, L[MGD77_Param_Key(C,11,1)].revised);
 	MGD77_Put_Param (C, F, "Bottommost_Latitude", strlen (P[0]->Bottommost_Latitude), P[0]->Bottommost_Latitude, strlen (P[1]->Bottommost_Latitude), P[1]->Bottommost_Latitude, L[MGD77_Param_Key(C,11,2)].revised);
@@ -157,9 +157,9 @@ void MGD77_Write_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 	MGD77_Put_Param (C, F, "Magnetics_Method_Applying_Res_Field", strlen (P[0]->Magnetics_Method_Applying_Res_Field), P[0]->Magnetics_Method_Applying_Res_Field, strlen (P[1]->Magnetics_Method_Applying_Res_Field), P[1]->Magnetics_Method_Applying_Res_Field, L[MGD77_Param_Key(C,13,8)].revised);
 	MGD77_Put_Param (C, F, "Gravity_Digitizing_Rate", strlen (P[0]->Gravity_Digitizing_Rate), P[0]->Gravity_Digitizing_Rate, strlen (P[1]->Gravity_Digitizing_Rate), P[1]->Gravity_Digitizing_Rate, L[MGD77_Param_Key(C,14,1)].revised);
 	MGD77_Put_Param (C, F, "Gravity_Sampling_Rate", strlen (P[0]->Gravity_Sampling_Rate), P[0]->Gravity_Sampling_Rate, strlen (P[1]->Gravity_Sampling_Rate), P[1]->Gravity_Sampling_Rate, L[MGD77_Param_Key(C,14,2)].revised);
-	MGD77_Put_Param (C, F, "Gravity_Theoretical_Formula_Code", (size_t)1, &P[0]->Gravity_Theoretical_Formula_Code, (size_t)1, &P[1]->Gravity_Theoretical_Formula_Code, L[MGD77_Param_Key(C,14,3)].revised);
+	MGD77_Put_Param (C, F, "Gravity_Theoretical_Formula_Code", 1U, &P[0]->Gravity_Theoretical_Formula_Code, 1U, &P[1]->Gravity_Theoretical_Formula_Code, L[MGD77_Param_Key(C,14,3)].revised);
 	MGD77_Put_Param (C, F, "Gravity_Theoretical_Formula", strlen (P[0]->Gravity_Theoretical_Formula), P[0]->Gravity_Theoretical_Formula, strlen (P[1]->Gravity_Theoretical_Formula), P[1]->Gravity_Theoretical_Formula, L[MGD77_Param_Key(C,14,4)].revised);
-	MGD77_Put_Param (C, F, "Gravity_Reference_System_Code", (size_t)1, &P[0]->Gravity_Reference_System_Code, (size_t)1, &P[1]->Gravity_Reference_System_Code, L[MGD77_Param_Key(C,14,5)].revised);
+	MGD77_Put_Param (C, F, "Gravity_Reference_System_Code", 1U, &P[0]->Gravity_Reference_System_Code, 1U, &P[1]->Gravity_Reference_System_Code, L[MGD77_Param_Key(C,14,5)].revised);
 	MGD77_Put_Param (C, F, "Gravity_Reference_System", strlen (P[0]->Gravity_Reference_System), P[0]->Gravity_Reference_System, strlen (P[1]->Gravity_Reference_System), P[1]->Gravity_Reference_System, L[MGD77_Param_Key(C,14,6)].revised);
 	MGD77_Put_Param (C, F, "Gravity_Corrections_Applied", strlen (P[0]->Gravity_Corrections_Applied), P[0]->Gravity_Corrections_Applied, strlen (P[1]->Gravity_Corrections_Applied), P[1]->Gravity_Corrections_Applied, L[MGD77_Param_Key(C,14,7)].revised);
 	MGD77_Put_Param (C, F, "Gravity_Departure_Base_Station", strlen (P[0]->Gravity_Departure_Base_Station), P[0]->Gravity_Departure_Base_Station, strlen (P[1]->Gravity_Departure_Base_Station), P[1]->Gravity_Departure_Base_Station, L[MGD77_Param_Key(C,15,1)].revised);

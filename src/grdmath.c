@@ -3013,7 +3013,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	for (opt = list; !G_in && opt; opt = opt->next) {	/* Look for a grid file, if given */
 		if (!(opt->option == GMTAPI_OPT_INFILE))	continue;	/* Skip command line options and output file */
-		if (opt->next && !(strncmp (opt->next->arg, "LDIST", (size_t)5) && strncmp (opt->next->arg, "PDIST", (size_t)5) && strncmp (opt->next->arg, "INSIDE", (size_t)6))) continue;	/* Not grids */
+		if (opt->next && !(strncmp (opt->next->arg, "LDIST", 5U) && strncmp (opt->next->arg, "PDIST", 5U) && strncmp (opt->next->arg, "INSIDE", 6U))) continue;	/* Not grids */
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
 		status = decode_grd_argument (GMT, opt, &value, localhashnode);		/* Determine what this is */
 		if (status == GRDMATH_ARG_IS_BAD) Return (EXIT_FAILURE);		/* Horrible */
@@ -3144,7 +3144,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (op < GRDMATH_ARG_IS_OPERATOR) {	/* File name or factor */
 
-			if (op == GRDMATH_ARG_IS_FILE && !(strncmp (opt->next->arg, "LDIST", (size_t)5) && strncmp (opt->next->arg, "PDIST", (size_t)5) && strncmp (opt->next->arg, "INSIDE", (size_t)6))) op = GRDMATH_ARG_IS_ASCIIFILE;
+			if (op == GRDMATH_ARG_IS_FILE && !(strncmp (opt->next->arg, "LDIST", 5U) && strncmp (opt->next->arg, "PDIST", 5U) && strncmp (opt->next->arg, "INSIDE", 6U))) op = GRDMATH_ARG_IS_ASCIIFILE;
 
 			if (nstack == GRDMATH_STACK_SIZE) {	/* Stack overflow */
 				error = TRUE;

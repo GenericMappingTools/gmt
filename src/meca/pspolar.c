@@ -296,7 +296,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 				if (strchr (opt->arg, 'V')) {
 					Ctrl->S2.vector = TRUE;
 					strcpy (txt, strchr (opt->arg, 'V'));
-					if (strncmp (txt,"VG",(size_t)2) == 0 || strncmp(txt,"VL",(size_t)2) == 0 || strlen (txt) == 1) {
+					if (strncmp (txt,"VG",2U) == 0 || strncmp(txt,"VL",2U) == 0 || strlen (txt) == 1) {
 						Ctrl->S2.width = 0.03; Ctrl->S2.length = 0.12; Ctrl->S2.head = 0.1; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
 						if (!GMT->current.setting.proj_length_unit) {
 							Ctrl->S2.width = 0.075; Ctrl->S2.length = 0.3; Ctrl->S2.head = 0.25; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;

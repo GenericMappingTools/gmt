@@ -405,13 +405,13 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding xll record\n");
 			Return (EXIT_FAILURE);
 		}
-		if (!strncmp (line, "xllcorner", (size_t)9)) Grid->header->registration = GMT_PIXEL_REG;	/* Pixel grid */
+		if (!strncmp (line, "xllcorner", 9U)) Grid->header->registration = GMT_PIXEL_REG;	/* Pixel grid */
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[YLO]) != 1) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding yll record\n");
 			Return (EXIT_FAILURE);
 		}
-		if (!strncmp (line, "yllcorner", (size_t)9)) Grid->header->registration = GMT_PIXEL_REG;	/* Pixel grid */
+		if (!strncmp (line, "yllcorner", 9U)) Grid->header->registration = GMT_PIXEL_REG;	/* Pixel grid */
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->inc[GMT_X]) != 1) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding cellsize record\n");

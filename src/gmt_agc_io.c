@@ -52,11 +52,11 @@ void SaveAGCHeader (char *remark, float *agchead)
 
 */
 
-# define ZBLOCKWIDTH 	40
-# define ZBLOCKHEIGHT 	40
-# define PREHEADSIZE	12
-# define POSTHEADSIZE	2
-# define HEADINDSIZE	6
+# define ZBLOCKWIDTH 	40U
+# define ZBLOCKHEIGHT 	40U
+# define PREHEADSIZE	12U
+# define POSTHEADSIZE	2U
+# define HEADINDSIZE	6U
 # define BUFFHEADSIZE	(HEADINDSIZE + POSTHEADSIZE)
 # define RECORDLENGTH 	(ZBLOCKWIDTH*ZBLOCKHEIGHT + PREHEADSIZE + POSTHEADSIZE)
 
@@ -78,9 +78,9 @@ GMT_LONG ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT])
 
 GMT_LONG WriteRecord (FILE *file, float rec[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec)
 {	/* Writes one block of data, including pre- and post-headers */
-	if (GMT_fwrite (prerec, sizeof(float), PREHEADSIZE, file) < (size_t)PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite (rec, sizeof(float), (ZBLOCKWIDTH * ZBLOCKHEIGHT), file) < (size_t)(ZBLOCKWIDTH * ZBLOCKHEIGHT)) return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite (postrec, sizeof(float), POSTHEADSIZE, file) < (size_t)POSTHEADSIZE)  return (GMT_GRDIO_WRITE_FAILED); 
+	if (GMT_fwrite (prerec, sizeof(float), PREHEADSIZE, file) < PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite (rec, sizeof(float), (ZBLOCKWIDTH * ZBLOCKHEIGHT), file) < (ZBLOCKWIDTH * ZBLOCKHEIGHT)) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite (postrec, sizeof(float), POSTHEADSIZE, file) < POSTHEADSIZE)  return (GMT_GRDIO_WRITE_FAILED); 
 	return (GMT_NOERROR);
 }
 
@@ -280,7 +280,7 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	}
 	GMT_free (C, k);
 
-	header->nx = (int)width_in;	header->ny = (int)height_in;
+	header->nx = width_in;	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
 	GMT_fclose (C, fp);

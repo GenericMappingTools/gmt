@@ -200,8 +200,8 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 
 GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	COUNTER_MEDIUM seg_no = 0, is_line = 0, n_seg = 0, n_read, m, level, this_id;
-	GMT_LONG k, error, gmode, version, greenwich, is_river, src, max_east = 270000000;
+	COUNTER_MEDIUM row, seg_no = 0, is_line = 0, n_seg = 0, n_read, m, level, this_id;
+	GMT_LONG error, gmode, version, greenwich, is_river, src, max_east = 270000000;
 	BOOLEAN must_swab, OK, first = TRUE;
 	
 	COUNTER_LARGE dim[4] = {1, 0, 2, 0};
@@ -291,7 +291,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		D->table[0]->segment = GMT_memory (GMT, NULL, n_alloc, struct GMT_LINE_SEGMENT *);
 		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
 	}
-	n_read = fread (&h, sizeof (struct GSHHS), (size_t)1, fp);
+	n_read = fread (&h, sizeof (struct GSHHS), 1U, fp);
 	version = (h.flag >> 8) & 255;
 	must_swab = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 
@@ -330,7 +330,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (OK && Ctrl->N.active && Ctrl->N.level != level) OK = 0;		/* Skip if not the right level (-N) */
 		if (!OK) {	/* Not what we are looking for, skip to next */
 			fseek (fp, (off_t)(h.n * sizeof(struct POINT)), SEEK_CUR);
-			n_read = fread (&h, sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
+			n_read = fread (&h, sizeof (struct GSHHS), 1U, fp);	/* Get the next GSHHS header */
 			continue;	/* Back to top of loop */
 		}
 		
@@ -379,23 +379,23 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				T[seg_no]->range = (greenwich & 2) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 			/* Allocate h.n number of data records */
 			GMT_alloc_segment (GMT, T[seg_no], dim[3], dim[2], TRUE);
-			for (k = 0; k < h.n; k++) {
-				if (fread (&p, sizeof (struct POINT), (size_t)1, fp) != 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s for %s %d, point %ld.\n", Ctrl->In.file, name[is_line], h.id, k);
+			for (row = 0; row < h.n; row++) {
+				if (fread (&p, sizeof (struct POINT), 1U, fp) != 1) {
+					GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s for %s %d, point %ld.\n", Ctrl->In.file, name[is_line], h.id, row);
 					Return (EXIT_FAILURE);
 				}
 				if (must_swab) /* Must deal with different endianness */
 					bswap_POINT_struct (&p);
-				T[seg_no]->coord[GMT_X][k] = p.x * GSHHS_SCL;
-				if ((greenwich && p.x > max_east) || (h.west > 180000000)) T[seg_no]->coord[GMT_X][k] -= 360.0;
-				T[seg_no]->coord[GMT_Y][k] = p.y * GSHHS_SCL;
+				T[seg_no]->coord[GMT_X][row] = p.x * GSHHS_SCL;
+				if ((greenwich && p.x > max_east) || (h.west > 180000000)) T[seg_no]->coord[GMT_X][row] -= 360.0;
+				T[seg_no]->coord[GMT_Y][row] = p.y * GSHHS_SCL;
 			}
-			T[seg_no]->coord[GMT_X][k] = T[seg_no]->coord[GMT_Y][k] = GMT->session.d_NaN;
+			T[seg_no]->coord[GMT_X][row] = T[seg_no]->coord[GMT_Y][row] = GMT->session.d_NaN;
 			D->n_records += T[seg_no]->n_rows;
 		}
 		seg_no++;
 		max_east = 180000000;	/* Only Eurasia (the first polygon) needs 270 */
-		n_read = fread (&h, sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
+		n_read = fread (&h, sizeof (struct GSHHS), 1U, fp);	/* Get the next GSHHS header */
 	}
 	GMT_fclose (GMT, fp);
 	

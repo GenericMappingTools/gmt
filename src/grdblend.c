@@ -106,13 +106,11 @@ GMT_LONG found_unsupported_format (struct GMT_CTRL *GMT, struct GRD_HEADER *h, c
 {	/* Check that grid files are not among the unsupported formats that has no row-by-row io yet */
 	COUNTER_MEDIUM i;
 	GMT_LONG s_code;
-	unsigned code;
 	static char *not_supported[N_NOT_SUPPORTED] = {"rb", "rf", "sf", "sd", "af", "ei", "ef", "gd"};
 	for (i = 0; i < N_NOT_SUPPORTED; i++) {	/* Only allow netcdf (both v3 and new) and native binary output */
 		s_code = GMT_grd_format_decoder (GMT, not_supported[i]);
 		assert (s_code > 0);
-		code = s_code;
-		if (h->type == code) {
+		if (h->type == s_code) {
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Grid format type %s for file %s is not directly supported\n", not_supported[i], file);
 			return (1);
 		}

@@ -291,14 +291,14 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	GMT_str_tolower (record);
-	if (!strncmp (record, "xllcorner", (size_t)9)) header->registration = GMT_PIXEL_REG;	/* Pixel grid */
+	if (!strncmp (record, "xllcorner", 9U)) header->registration = GMT_PIXEL_REG;	/* Pixel grid */
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->wesn[YLO]) != 1) {
 		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding yll record\n");
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	GMT_str_tolower (record);
-	if (!strncmp (record, "yllcorner", (size_t)9)) header->registration = GMT_PIXEL_REG;	/* Pixel grid */
+	if (!strncmp (record, "yllcorner", 9U)) header->registration = GMT_PIXEL_REG;	/* Pixel grid */
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->inc[GMT_X]) != 1) {
 		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding cellsize record\n");
@@ -514,7 +514,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		row2 = 0;	/* For the inside region */
 		check = !GMT_is_dnan (header->nan_value);
 		in_nx = header->nx;
-		header->nx = (int)width_in;	/* Needed to be set here due to GMT_IJP below */
+		header->nx = width_in;	/* Needed to be set here due to GMT_IJP below */
 		header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 		while (fscanf (fp, "%f", &value) == 1 && n_left) {	/* We read all values and skip those not inside our w/e/s/n */
 			tmp[col] = value;	/* Build up a single input row */
@@ -547,8 +547,8 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	header->nx = (int)width_in;
-	header->ny = (int)height_in;
+	header->nx = width_in;
+	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
 	return (GMT_NOERROR);

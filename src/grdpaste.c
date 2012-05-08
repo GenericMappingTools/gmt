@@ -213,12 +213,12 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < y_noise) {			/* B is exactly on top of A */
 			way = 1;
-			C->header->ny = A->header->ny + B->header->ny - (int)one_or_zero;
+			C->header->ny = A->header->ny + B->header->ny - one_or_zero;
 			C->header->wesn[YHI] = B->header->wesn[YHI];			/* ...but not for north */
 		}
 		else if (fabs (A->header->wesn[YLO] - B->header->wesn[YHI]) < y_noise) {	/* A is exactly on top of B */
 			way = 2;
-			C->header->ny = A->header->ny + B->header->ny - (int)one_or_zero;
+			C->header->ny = A->header->ny + B->header->ny - one_or_zero;
 			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
 		}
 		else if ( !one_or_zero && (fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < (C->header->inc[GMT_Y] + y_noise)) ) {
@@ -244,12 +244,12 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (fabs (A->header->wesn[XLO] - B->header->wesn[XHI]) < x_noise) {			/* A is on the right of B */
 			way = 3;
-			C->header->nx = A->header->nx + B->header->nx - (int)one_or_zero;
+			C->header->nx = A->header->nx + B->header->nx - one_or_zero;
 			C->header->wesn[XLO] = B->header->wesn[XLO];			/* ...but not for west */
 		}
 		else if (fabs (A->header->wesn[XHI] - B->header->wesn[XLO]) < x_noise) {	/* A is on the left of B */
 			way = 4;
-			C->header->nx = A->header->nx + B->header->nx - (int)one_or_zero;
+			C->header->nx = A->header->nx + B->header->nx - one_or_zero;
 			C->header->wesn[XHI] = B->header->wesn[XHI];			/* ...but not for east */
 		}
 		else if ( !one_or_zero && (fabs (A->header->wesn[XLO] - B->header->wesn[XHI]) < (C->header->inc[GMT_X] + x_noise)) ) {

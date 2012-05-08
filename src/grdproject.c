@@ -330,7 +330,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
 	ymax = (Ctrl->C.active) ? GMT->current.proj.rect[YHI] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YHI];
 	if (Ctrl->A.active) {	/* Convert to chosen units */
-		strncpy (unit_name, scale_unit_name, (size_t)GRD_UNIT_LEN80);
+		strncpy (unit_name, scale_unit_name, GRD_UNIT_LEN80);
 		xmin /= GMT->current.proj.scale[GMT_X];
 		xmax /= GMT->current.proj.scale[GMT_X];
 		ymin /= GMT->current.proj.scale[GMT_Y];
