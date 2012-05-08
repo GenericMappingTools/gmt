@@ -372,7 +372,7 @@ void fix_format (char *unit, char *format)
 
 	if (unit && unit[0]) {	/* Must append the unit string */
 		if (!strchr (unit, '%'))	/* No percent signs */
-			strncpy (text, unit, (size_t)GMT_TEXT_LEN64);
+			strncpy (text, unit, GMT_TEXT_LEN64);
 		else {
 			for (i = j = 0; i < strlen (unit); i++) {
 				text[j++] = unit[i];

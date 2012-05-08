@@ -509,12 +509,12 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_is_dnan(tmin) || GMT_is_dnan(tmax)) {
 			int yy[2], mm[2], dd[2];
 			GMT_report (GMT, GMT_MSG_NORMAL, "warning: cruise %s no time records.\n", M.NGDC_id);
-			yy[0] = (!D->H.mgd77[use]->Survey_Departure_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Year, ALL_BLANKS, (size_t)4)) ? 0 : atoi (D->H.mgd77[use]->Survey_Departure_Year);
-			yy[1] = (!D->H.mgd77[use]->Survey_Arrival_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Year, ALL_BLANKS, (size_t)4)) ? 0 : atoi (D->H.mgd77[use]->Survey_Arrival_Year);
-			mm[0] = (!D->H.mgd77[use]->Survey_Departure_Month[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Month, ALL_BLANKS, (size_t)2)) ? 1 : atoi (D->H.mgd77[use]->Survey_Departure_Month);
-			mm[1] = (!D->H.mgd77[use]->Survey_Arrival_Month[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Month, ALL_BLANKS, (size_t)2)) ? 1 : atoi (D->H.mgd77[use]->Survey_Arrival_Month);
-			dd[0] = (!D->H.mgd77[use]->Survey_Departure_Day[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Day, ALL_BLANKS, (size_t)2)) ? 1 : atoi (D->H.mgd77[use]->Survey_Departure_Day);
-			dd[1] = (!D->H.mgd77[use]->Survey_Arrival_Day[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Day, ALL_BLANKS, (size_t)2)) ? 1 : atoi (D->H.mgd77[use]->Survey_Arrival_Day);
+			yy[0] = (!D->H.mgd77[use]->Survey_Departure_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Year, ALL_BLANKS, 4U)) ? 0 : atoi (D->H.mgd77[use]->Survey_Departure_Year);
+			yy[1] = (!D->H.mgd77[use]->Survey_Arrival_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Year, ALL_BLANKS, 4U)) ? 0 : atoi (D->H.mgd77[use]->Survey_Arrival_Year);
+			mm[0] = (!D->H.mgd77[use]->Survey_Departure_Month[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Month, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Departure_Month);
+			mm[1] = (!D->H.mgd77[use]->Survey_Arrival_Month[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Month, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Arrival_Month);
+			dd[0] = (!D->H.mgd77[use]->Survey_Departure_Day[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Day, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Departure_Day);
+			dd[1] = (!D->H.mgd77[use]->Survey_Arrival_Day[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Day, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Arrival_Day);
 			if (! (yy[0] == 0 && yy[1] == 0)) {	/* With year we can do something */
 				rata_die = GMT_rd_from_gymd (GMT, yy[0], mm[0], dd[0]);
 				tmin = GMT_rdc2dt (GMT, rata_die, 0.0);

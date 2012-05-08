@@ -496,7 +496,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 				Return (API->error);
 			}
-			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
 			n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || GMT_is_geographic (GMT, GMT_IN))) ? 3 : 2;
@@ -526,7 +526,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 			Return (API->error);
 		}
-		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
 		n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || GMT_is_geographic (GMT, GMT_IN))) ? 3 : 2;

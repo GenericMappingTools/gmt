@@ -106,7 +106,7 @@ int main (int argc, char **argv)
 	y = get_memory (NULL, 1, sizeof (int), "gshhs_dp");
 	index = get_memory (NULL, 1, sizeof (int), "gshhs_dp");
 	
-	n_read = fread (&h, sizeof (struct GSHHS), (size_t)1, fp_in);
+	n_read = fread (&h, sizeof (struct GSHHS), 1U, fp_in);
 	version = (h.flag >> 8) & 255;
 	flip = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 	
@@ -122,7 +122,7 @@ int main (int argc, char **argv)
 		index = get_memory (index, h.n, sizeof (int), "gshhs_dp");
 
 		for (k = 0; k < h.n; k++) {
-			if (fread (&p, sizeof (struct POINT), (size_t)1, fp_in) != 1) {
+			if (fread (&p, sizeof (struct POINT), 1U, fp_in) != 1) {
 				fprintf (stderr,"gshhs_dp: Error reading data point.\n");
 				exit (EXIT_FAILURE);
 			}
@@ -142,14 +142,14 @@ int main (int argc, char **argv)
 			redux = 100.0 * (double) n / (double) h.n;
 			h.id = n_out;
 			h.n = n;
-			if (fwrite (&h, sizeof (struct GSHHS), (size_t)1, fp_out) != 1) {
+			if (fwrite (&h, sizeof (struct GSHHS), 1U, fp_out) != 1) {
 				fprintf(stderr,"gshhs_dp: Error writing file header.\n");
 				exit (EXIT_FAILURE);
 			}
 			for (k = 0; k < n; k++) {
 				p.x = x[index[k]];
 				p.y = y[index[k]];
-				if (fwrite(&p, sizeof (struct POINT), (size_t)1, fp_out) != 1) {
+				if (fwrite(&p, sizeof (struct POINT), 1U, fp_out) != 1) {
 					fprintf(stderr,"gshhs_dp: Error writing data point.\n");
 					exit (EXIT_FAILURE);
 				}
@@ -163,7 +163,7 @@ int main (int argc, char **argv)
 		
 		n_id++;
 
-		n_read = fread (&h, sizeof (struct GSHHS), (size_t)1, fp_in);
+		n_read = fread (&h, sizeof (struct GSHHS), 1U, fp_in);
 	}
 		
 	free (x);	

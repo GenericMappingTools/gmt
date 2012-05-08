@@ -1176,10 +1176,10 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				e_error++;
 			}
 			verified = FALSE;
-			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", (size_t)14)) {	/* Read until we get to Header record section */
+			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", 14U)) {	/* Read until we get to Header record section */
 				if (line[0] == '#') continue;	/* Skip comments */
 				GMT_chop (line);		/* Rid the world of CR/LF */
-				if (!strncmp (line, "Y Errata table verification status", (size_t)34)) verified = TRUE;
+				if (!strncmp (line, "Y Errata table verification status", 34U)) verified = TRUE;
 			}
 			if (!verified && !Ctrl->A.ignore_verify) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 file %s not yet verified.  E77 not applied\n", efile);
@@ -1231,7 +1231,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* OK, here we believe the E77 file contains the correct information for this cruise. Rewind and start from top */
 			
 			GMT_rewind (fp_e);
-			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", (size_t)14));	/* Read until we get to Header record section */
+			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", 14U));	/* Read until we get to Header record section */
 			
 			flags = GMT_memory (GMT, NULL, D->H.n_records, unsigned int);
 			n_E77_flags = n_E77_headers = n_E77_scales = n_E77_offsets = n_E77_recalcs = 0;
@@ -1239,7 +1239,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			MGD77_nc_status (GMT, nc_open (In.path, NC_WRITE, &In.nc_id));	/* Open the file */
 			MGD77_nc_status (GMT, nc_redef (In.nc_id));				/* Enter define mode */
 			old_flags = MGD77_Remove_E77 (GMT, &In);				/* Remove any previously revised header parameters */
-			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Data", (size_t)14)) {	/* Read until we get to data record section */
+			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Data", 14U)) {	/* Read until we get to data record section */
 				if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments */
 				GMT_chop (line);					/* Rid the world of CR/LF */
 				/* Example of expected line 
@@ -1297,9 +1297,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						value = atof (answer);
 						switch (number) {
 							case E77_HDR_PDR:	/* Must deal with undetected Precision Depth Recorder wrap-arounds - this also force recalc of depth when data is read*/
-								MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, NC_GLOBAL, "PDR_wrap", NC_DOUBLE, (size_t)1, &value));
+								MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, NC_GLOBAL, "PDR_wrap", NC_DOUBLE, 1U, &value));
 								cdf_adjust = MGD77_COL_ADJ_TWT;
-								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, (size_t)1, &cdf_adjust));
+								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, 1U, &cdf_adjust));
 								n_E77_recalcs++;
 								if ((id = MGD77_Get_Column (GMT, "depth", &In)) == MGD77_NOT_SET) {
 									GMT_message (GMT, "Warning: Correction implied for %s which is not in this cruise?\n", field);
@@ -1308,35 +1308,35 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 								/* no break - we want to fall through and also set depth adjustment */
 							case E77_HDR_CARTER:	/* Recalculate Carter depth from twt */
 								cdf_adjust = MGD77_COL_ADJ_DEPTH;
-								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, (size_t)1, &cdf_adjust));
+								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, 1U, &cdf_adjust));
 								n_E77_recalcs++;
 								break;
 							case E77_HDR_ANOM_MAG:	/* Recalculate anomaly mag as mtf1 - igrf */
 								cdf_adjust = MGD77_COL_ADJ_MAG;
-								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, (size_t)1, &cdf_adjust));
+								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, 1U, &cdf_adjust));
 								n_E77_recalcs++;
 								break;
 							case E77_HDR_ANOM_FAA:	/* Recalculate anomaly faa as gobs - igf */
 								cdf_adjust = MGD77_COL_ADJ_FAA;
-								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, (size_t)1, &cdf_adjust));
+								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, 1U, &cdf_adjust));
 								n_E77_recalcs++;
 								break;
 							case E77_HDR_ANOM_FAA_EOT:	/* Recalculate anomaly faa as gobs - igf + eot */
 								cdf_adjust = MGD77_COL_ADJ_FAA_EOT;
-								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, (size_t)1, &cdf_adjust));
+								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, 1U, &cdf_adjust));
 								n_E77_recalcs++;
 								break;
 							case E77_HDR_SCALE:	/* Correction scale factor */
 								if (D->H.info[set].col[id].corr_factor == 1.0) {	/* Must add a new attribute to the file */
 									D->H.info[set].col[id].corr_factor = value;
-									MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, D->H.info[set].col[id].var_id, "corr_factor", NC_DOUBLE, (size_t)1, &D->H.info[set].col[id].corr_factor));
+									MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, D->H.info[set].col[id].var_id, "corr_factor", NC_DOUBLE, 1U, &D->H.info[set].col[id].corr_factor));
 								}
 								n_E77_scales++;
 								break;
 							case E77_HDR_DCSHIFT:	/* Correction offset */
 								if (D->H.info[set].col[id].corr_offset == 0.0) {	/* Must add a new attribute to the file */
 									D->H.info[set].col[id].corr_offset = value;
-									MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, D->H.info[set].col[id].var_id, "corr_offset", NC_DOUBLE, (size_t)1, &D->H.info[set].col[id].corr_offset));
+									MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, D->H.info[set].col[id].var_id, "corr_offset", NC_DOUBLE, 1U, &D->H.info[set].col[id].corr_offset));
 								}
 								n_E77_offsets++;
 								break;
@@ -1478,7 +1478,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				else {	/* We need to define the flags for the first time */
 					dims[0] = In.nc_recid;
 					MGD77_nc_status (GMT, nc_def_var (In.nc_id, "MGD77_flags", NC_INT, 1, dims, &cdf_var_id));	/* Define an array variable */
-					memset (answer, 0, (size_t)GMT_BUFSIZ);	/* No default answer */
+					memset (answer, 0, GMT_BUFSIZ);	/* No default answer */
 					strcpy (answer, "MGD77 flags (ON = Bad, OFF = Good) derived from E77 errata");
 					MGD77_nc_status (GMT, nc_put_att_text (In.nc_id, cdf_var_id, "comment", strlen (answer), answer));
 					D->flags[0] = flags;
@@ -1571,12 +1571,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		if (Ctrl->I.c_name[0]) MGD77_nc_status (GMT, nc_put_att_text   (In.nc_id, cdf_var_id, "long_name", strlen (Ctrl->I.c_name), Ctrl->I.c_name));
 		if (Ctrl->I.c_units[0]) MGD77_nc_status (GMT, nc_put_att_text   (In.nc_id, cdf_var_id, "units", strlen (Ctrl->I.c_units), Ctrl->I.c_units));
-		MGD77_nc_status (GMT, nc_put_att_double   (In.nc_id, cdf_var_id, "actual_range", NC_DOUBLE, (size_t)2, limits));
+		MGD77_nc_status (GMT, nc_put_att_double   (In.nc_id, cdf_var_id, "actual_range", NC_DOUBLE, 2U, limits));
 		if (Ctrl->I.c_comment[0]) MGD77_nc_status (GMT, nc_put_att_text   (In.nc_id, cdf_var_id, "comment", strlen (Ctrl->I.c_comment), Ctrl->I.c_comment));
-		MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, cdf_var_id, "_FillValue", c_nc_type, (size_t)1, &MGD77_NaN_val[c_nc_type]));
-		MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, cdf_var_id, "missing_value", c_nc_type, (size_t)1, &MGD77_NaN_val[c_nc_type]));
-		if (Ctrl->A.parameters[COL_SCALE]  != 1.0) MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, cdf_var_id, "scale_factor", NC_DOUBLE, (size_t)1, &Ctrl->A.parameters[COL_SCALE]));
-		if (Ctrl->A.parameters[COL_OFFSET] != 0.0) MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, cdf_var_id, "add_offset",   NC_DOUBLE, (size_t)1, &Ctrl->A.parameters[COL_OFFSET]));
+		MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, cdf_var_id, "_FillValue", c_nc_type, 1U, &MGD77_NaN_val[c_nc_type]));
+		MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, cdf_var_id, "missing_value", c_nc_type, 1U, &MGD77_NaN_val[c_nc_type]));
+		if (Ctrl->A.parameters[COL_SCALE]  != 1.0) MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, cdf_var_id, "scale_factor", NC_DOUBLE, 1U, &Ctrl->A.parameters[COL_SCALE]));
+		if (Ctrl->A.parameters[COL_OFFSET] != 0.0) MGD77_nc_status (GMT, nc_put_att_double (In.nc_id, cdf_var_id, "add_offset",   NC_DOUBLE, 1U, &Ctrl->A.parameters[COL_OFFSET]));
 					
 		/* Update history */
 
@@ -1598,7 +1598,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (LEN)
 				MGD77_nc_status (GMT, nc_put_vara_schar (In.nc_id, cdf_var_id, start, &count[1], (signed char *)text));	/* Just write one text string */
 			else {
-				n_bad = MGD77_do_scale_offset_before_write (GMT, &single_val, colvalue, (size_t)1, Ctrl->A.parameters[COL_SCALE], Ctrl->A.parameters[COL_OFFSET], c_nc_type);
+				n_bad = MGD77_do_scale_offset_before_write (GMT, &single_val, colvalue, 1U, Ctrl->A.parameters[COL_SCALE], Ctrl->A.parameters[COL_OFFSET], c_nc_type);
 				MGD77_nc_status (GMT, nc_put_var1_double (In.nc_id, cdf_var_id, start, &single_val));
 			}
 		}

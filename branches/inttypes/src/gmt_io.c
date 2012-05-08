@@ -431,8 +431,8 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 		    nc_get_att_double (C->current.io.ncid, C->current.io.varid[i], "missing_value", &C->current.io.missing_value[i])) C->current.io.missing_value[i] = C->session.d_NaN;
 
 		/* Scan for geographical or time units */
-		if (GMT_nc_get_att_text (C, C->current.io.ncid, C->current.io.varid[i], "long_name", long_name, (size_t)GMT_TEXT_LEN256)) long_name[0] = 0;
-		if (GMT_nc_get_att_text (C, C->current.io.ncid, C->current.io.varid[i], "units", units, (size_t)GMT_TEXT_LEN256)) units[0] = 0;
+		if (GMT_nc_get_att_text (C, C->current.io.ncid, C->current.io.varid[i], "long_name", long_name, GMT_TEXT_LEN256)) long_name[0] = 0;
+		if (GMT_nc_get_att_text (C, C->current.io.ncid, C->current.io.varid[i], "units", units, GMT_TEXT_LEN256)) units[0] = 0;
 		GMT_str_tolower (long_name); GMT_str_tolower (units);
 
 		if (!strcmp (long_name, "longitude") || strstr (units, "degrees_e"))
@@ -1144,7 +1144,7 @@ BOOLEAN GMT_is_a_NaN_line (struct GMT_CTRL *C, char *line)
 	
 	while ((GMT_strtok (line, " \t,", &pos, p))) {
 		GMT_str_tolower (p);
-		if (strncmp (p, "nan", (size_t)3)) return (FALSE);
+		if (strncmp (p, "nan", 3U)) return (FALSE);
 	}
 	return (TRUE);
 }
@@ -1893,10 +1893,10 @@ void GMT_io_binary_header (struct GMT_CTRL *C, FILE *fp, GMT_LONG dir)
 	COUNTER_LARGE k;
 	char c = ' ';
 	if (dir == GMT_IN) {	/* Use fread since we dont know if input is a stream or a file */
-		for (k = 0; k < C->current.io.io_n_header_items; k++) GMT_fread (&c, sizeof (char), (size_t)1, fp);
+		for (k = 0; k < C->current.io.io_n_header_items; k++) GMT_fread (&c, sizeof (char), 1U, fp);
 	}
 	else {
-		for (k = 0; k < C->current.io.io_n_header_items; k++) GMT_fwrite (&c, sizeof (char), (size_t)1, fp);
+		for (k = 0; k < C->current.io.io_n_header_items; k++) GMT_fwrite (&c, sizeof (char), 1U, fp);
 	}
 }
 
@@ -4583,7 +4583,7 @@ GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_
 		/* Failure is OK since -Gjunk may appear in text strings - we then do nothing (hence no else clause) */
 	}
 	if (P && GMT_parse_segment_item (C, header, "-Z", line)) {	/* Found a potential -Z option to set symbol r/g/b via cpt-lookup */
-		if(!strncmp (line, "NaN", (size_t)3))	{	/* Got -ZNaN */
+		if(!strncmp (line, "NaN", 3U))	{	/* Got -ZNaN */
 			GMT_get_fill_from_z (C, P, C->session.d_NaN, fill);
 			*use_fill = TRUE;
 			change |= 2;
@@ -5110,7 +5110,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_ty
 
 GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_type, struct GMT_DATASET *D, BOOLEAN use_GMT_io, GMT_LONG table)
 {	/* Writes an entire data set to file or stream */
-	COUNTER_MEDIUM tbl;
+	COUNTER_MEDIUM tbl, u_table;
 	BOOLEAN close_file = FALSE;
 	GMT_LONG error, append = 0;
 	int *fd = NULL;
@@ -5170,7 +5170,7 @@ GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_
 		return (EXIT_FAILURE);
 	}	
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
-		if (table != GMTAPI_NOTSET && table != (GMT_LONG)tbl) continue;	/* Selected a specific table */
+		if (table != GMTAPI_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
 		if (D->io_mode > GMT_WRITE_TABLES) {	/* Write segments to separate files; must pass original file name in case a template */
 			if ((error = GMT_write_table (C, dest, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode))) return (error);
 		}
@@ -5288,7 +5288,7 @@ GMT_LONG gmt_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_type, struct GMT_TEXTSET *D, GMT_LONG table)
 {	/* Writes an entire text set to file or stream */
 	GMT_LONG error;
-	COUNTER_MEDIUM tbl, append = 0;
+	COUNTER_MEDIUM tbl, u_table, append = 0;
 	BOOLEAN close_file = FALSE;
 	int *fd = NULL;	/* Must be int, not GMT_LONG */
 	char file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
@@ -5339,7 +5339,7 @@ GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_
 	}
 
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
-		if (table != GMTAPI_NOTSET && table != (GMT_LONG)tbl) continue;	/* Selected a specific table */
+		if (table != GMTAPI_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
 		if (D->io_mode > GMT_WRITE_TABLES) {	/* Must pass original file name in case a template */
 			if ((error = gmt_write_texttable (C, dest, GMT_IS_FILE, D->table[tbl], D->io_mode))) return (error);
 		}

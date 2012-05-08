@@ -132,7 +132,7 @@ GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *
 	}
 
 	/* execute the RE against the subject string */
-	status = regexec(&re, subject, (size_t) 0, NULL, 0);
+	status = regexec(&re, subject, 0U, NULL, 0);
 	regfree(&re);     /* Release memory used for the compiled pattern */
 	if ( status == 0 )
 		return (1); /* Match succeded */

@@ -96,13 +96,13 @@ GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GM
 	/* Lets pretend that the raw file is a sunraster file. This way the grd2rgb code
 	   can be used with very little changes */
 	header->depth = 24;
-	header->width = (int)nx;
-	header->height = (int)ny;
+	header->width = nx;
+	header->height = ny;
 	nm = (size_t)nx * (size_t)ny * (size_t)byte_per_pixel;
-	header->length = (int)nm;
+	header->length = nm;
 
 	buffer = GMT_memory (GMT, NULL, nm, unsigned char);
-	if (GMT_fread (buffer, (size_t)1, nm, fp) != nm) {
+	if (GMT_fread (buffer, 1U, nm, fp) != nm) {
 		if (byte_per_pixel == 3)
 			GMT_report (GMT, GMT_MSG_FATAL, "Trouble reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
@@ -147,7 +147,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, COUNTER_MEDIUM byte_per_
 	img_pow = GMT_memory (GMT, NULL, n_pix/2, float);
 	GMT_memset (work, 2*n_pix, float);
 
-	if (GMT_fread (buffer, (size_t)1, img_size, fp) != img_size) {
+	if (GMT_fread (buffer, 1U, img_size, fp) != img_size) {
 		if (byte_per_pixel == 3)
 			GMT_report (GMT, GMT_MSG_FATAL, "Trouble_ reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
@@ -475,8 +475,8 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Grid->header->nx = GMT_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], Ctrl->I.inc[GMT_X], Grid->header->registration);
 		Grid->header->ny = GMT_get_n (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->I.inc[GMT_Y], Grid->header->registration);
 		if (Ctrl->W.active && !Ctrl->I.active) {		/* This isn't correct because it doesn't deal with -r */
-			Grid->header->nx = (int)Ctrl->W.nx;
-			Grid->header->ny = (int)Ctrl->W.ny;
+			Grid->header->nx = Ctrl->W.nx;
+			Grid->header->ny = Ctrl->W.ny;
 			Ctrl->I.inc[GMT_X] = GMT_get_inc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], Grid->header->nx, Grid->header->registration);
 			Ctrl->I.inc[GMT_Y] = GMT_get_inc (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Grid->header->ny, Grid->header->registration);
 		}

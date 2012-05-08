@@ -117,7 +117,7 @@ GMT_LONG get_digitize_raw (struct GMT_CTRL *GMT, GMT_LONG digunit, double *xdig,
 	GMT_LONG i, n, ix, iy;
 	char buffer[256], button;
 	
-	n = read (digunit, buffer, (size_t)255);
+	n = read (digunit, buffer, 255U);
 	if (n <= 0) return (END_BUTTON);
 	n--;
 	buffer[n] = 0;
@@ -155,7 +155,7 @@ FILE *next_file (struct GMT_CTRL *GMT, char *name, int n_segments, char *this_fi
 		if (strchr (name, '%') != NULL)	/* Individual file names */
 			sprintf (this_file, name, n_segments);
 		else
-			strncpy (this_file, name, (size_t)GMT_BUFSIZ);
+			strncpy (this_file, name, GMT_BUFSIZ);
 		if ((fp = GMT_fopen (GMT, this_file, "w")) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Could not create file %s\n", this_file);
 			return (NULL);
@@ -645,7 +645,7 @@ int main (int argc, char *argv[]) {
 	if ((API = GMT_Create_Session (argv[0], GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = (int)GMT_gmtdigitize (API, argc-1, (argv+1));
+	status = GMT_gmtdigitize (API, argc-1, (argv+1));
 
 	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);

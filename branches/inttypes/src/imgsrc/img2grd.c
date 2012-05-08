@@ -450,8 +450,8 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Re-adjust user's -R so that it falls on pixel coordinate boundaries */
 	
-	jinstart = navg * (int)floor (GMT_img_lat_to_ypix (wesn[YHI], &imgcoord) / navg);
-	jinstop  = navg * (int)ceil  (GMT_img_lat_to_ypix (wesn[YLO], &imgcoord) / navg);
+	jinstart = navg * lrint (floor (GMT_img_lat_to_ypix (wesn[YHI], &imgcoord) / navg));
+	jinstop  = navg * lrint (ceil  (GMT_img_lat_to_ypix (wesn[YLO], &imgcoord) / navg));
 	/* jinstart <= jinputrow < jinstop  */
 	Merc->header->ny = (int)((jinstop - jinstart) / navg);
 	north2 = wesn[YHI] = GMT_img_ypix_to_lat ((double)jinstart, &imgcoord);

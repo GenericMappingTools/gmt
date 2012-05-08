@@ -531,11 +531,11 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	xpix = xlen * PSL_DOTS_PER_INCH;	/* pixels in x direction */
 	/* xpix /= 8.0;
 	bm_nx = 1 +(int) xpix;*/
-	bm_nx = (int) ceil (xpix / 8.0); /* store 8 pixels per byte in x direction but must have
+	bm_nx = lrint (ceil (xpix / 8.0)); /* store 8 pixels per byte in x direction but must have
 		whole number of bytes per scan */
 	ylen = GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO];
 	ypix = ylen * PSL_DOTS_PER_INCH;	/* pixels in y direction */
-	bm_ny = (int) ypix;
+	bm_ny = lrint (ypix);
 	nm = bm_nx * bm_ny;
 
 	/* read in reel headers from segy file */

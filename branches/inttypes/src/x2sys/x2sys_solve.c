@@ -590,11 +590,11 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			
 			for (i = 0; i < 2; i++) {	/* Look up track IDs */
-				ID[i][n_COE] = (int)x2sys_find_track (GMT, trk[i], trk_list, n_tracks);	/* Return track id # for this leg */
+				ID[i][n_COE] = x2sys_find_track (GMT, trk[i], trk_list, n_tracks);	/* Return track id # for this leg */
 				if (ID[i][n_COE] == -1) {	/* Leg not in the data base yet */
 					if (grow_list) {	/* Add it */
 						trk_list[n_tracks] = strdup (trk[i]);
-						ID[i][n_COE] = (int)n_tracks++;
+						ID[i][n_COE] = n_tracks++;
 						if ((size_t)n_tracks == n_alloc_t) {
 							n_alloc_t <<= 1;
 							trk_list = GMT_memory (GMT, trk_list, n_alloc_t, char *);

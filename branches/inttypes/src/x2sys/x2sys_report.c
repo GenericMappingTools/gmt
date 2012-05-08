@@ -312,7 +312,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Tsum += COE;	Tsum2 += COE * COE;	Tnx++;
 		}
 		for (k = 0, sign = 1.0; n && k < 2; k++) {
-			R[P[p].id[k]].nx += (int)n;
+			R[P[p].id[k]].nx += n;
 			R[P[p].id[k]].sum += sign * sum;
 			R[P[p].id[k]].sum2 += sum2;
 			R[P[p].id[k]].d_max = P[p].dist[k];	/* Just copy over max distance for later */

@@ -233,7 +233,8 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	 * trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points
 	 */
 	 
-	static COUNTER_MEDIUM i0, j0, side, i, j, n = 0, n_edges, edge_word, edge_bit;
+	COUNTER_MEDIUM n_edges, edge_word, edge_bit, i, j, n = 0;
+	static COUNTER_MEDIUM i0, j0, side;
 	COUNTER_LARGE ij;
 	BOOLEAN go_on = TRUE;
 	 

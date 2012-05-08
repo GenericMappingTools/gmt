@@ -423,7 +423,7 @@ GMT_LONG sval;
 #ifdef GMT_COMPAT
 			case 'L':	/* BCs */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
-				strncpy (GMT->common.n.BC, opt->arg, (size_t)4);
+				strncpy (GMT->common.n.BC, opt->arg, 4U);
 				break;
 #endif
 			case 'N':	/* Facade */

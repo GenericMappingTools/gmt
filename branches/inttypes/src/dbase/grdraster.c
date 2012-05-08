@@ -585,7 +585,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		if (delta == GRD_HEADER_SIZE)
 			rasinfo[nfound].skip = (off_t)GRD_HEADER_SIZE;	/* Must skip GMT grd header */
 		else if (delta) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Metadata conflict: Actual size of file %s [%ld] differs from expected [%ld]. Verify file and its grdraster.info details.\n", rasinfo[nfound].h.remark, (GMT_LONG)F.st_size, expected_size);
+			GMT_report (GMT, GMT_MSG_FATAL, "Metadata conflict: Actual size of file %s [%" PRIi64 "] differs from expected [%ld]. Verify file and its grdraster.info details.\n", rasinfo[nfound].h.remark, (int64_t)F.st_size, expected_size);
 			continue;
 		}
 		nfound++;
@@ -988,7 +988,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 	if (myras.skip && fseek (fp, myras.skip, SEEK_CUR)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "ERROR skipping %ld bytes in %s.\n", (GMT_LONG)myras.skip, myras.h.remark);
+		GMT_report (GMT, GMT_MSG_FATAL, "ERROR skipping %" PRIi64 " bytes in %s.\n", (int64_t)myras.skip, myras.h.remark);
 		Return (EXIT_FAILURE);
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Reading from raster %s\n", myras.h.remark);

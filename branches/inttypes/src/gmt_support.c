@@ -168,7 +168,7 @@ void gmt_hsv_to_rgb (struct GMT_CTRL *C, double rgb[], double hsv[])
 		while (h >= 360.0) h -= 360.0;
 		while (h < 0.0) h += 360.0;
 		h /= 60.0;
-		i = (int) floor (h);
+		i = lrint (floor (h));
 		f = h - i;
 		p = hsv[2] * (1.0 - hsv[1]);
 		q = hsv[2] * (1.0 - (hsv[1] * f));
@@ -1823,7 +1823,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 		s = h->wesn[XHI] - h->wesn[XLO];
 		h->nx = lrint (s / h->inc[GMT_X]);
 		s /= h->nx;
-		h->nx += (int)one_or_zero;
+		h->nx += one_or_zero;
 		if (fabs (s - h->inc[GMT_X]) > 0.0) {
 			h->inc[GMT_X] = s;
 			GMT_report (C, GMT_MSG_VERBOSE, "Given domain implies x_inc = %g\n", h->inc[GMT_X]);
@@ -1876,7 +1876,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 		s = h->wesn[YHI] - h->wesn[YLO];
 		h->ny = lrint (s / h->inc[GMT_Y]);
 		s /= h->ny;
-		h->ny += (int)one_or_zero;
+		h->ny += one_or_zero;
 		if (fabs (s - h->inc[GMT_Y]) > 0.0) {
 			h->inc[GMT_Y] = s;
 			GMT_report (C, GMT_MSG_VERBOSE, "Given domain implies y_inc = %g\n", h->inc[GMT_Y]);
@@ -3137,7 +3137,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 #endif
 
 	if (nelem == SIZE_MAX) {	/* Probably 32-bit overflow */
-		GMT_report (C, GMT_MSG_FATAL, "Error: Requesting SIZE_MAX number of items (%ld) - exceeding 32-bit counting?\n", nelem);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Requesting SIZE_MAX number of items (%zu) - exceeding 32-bit counting?\n", nelem);
 #ifdef DEBUG
 		GMT_report (C, GMT_MSG_FATAL, "GMT_memory called by %s from file %s on line %ld\n", C->init.progname, fname, line);
 #endif
@@ -3157,7 +3157,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			GMT_report (C, GMT_MSG_FATAL, "Error: Could not reallocate memory [%.2f %s, %ld items of %ld bytes]\n", mem, m_unit[k], nelem, (GMT_LONG)size);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not reallocate memory [%.2f %s, %zu items of %zu bytes]\n", mem, m_unit[k], nelem, size);
 #ifdef DEBUG
 			GMT_report (C, GMT_MSG_FATAL, "GMT_memory [realloc] called by %s from file %s on line %ld\n", C->init.progname, fname, line);
 #endif
@@ -3178,7 +3178,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			GMT_report (C, GMT_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %ld items of %ld bytes]\n", mem, m_unit[k], nelem, (GMT_LONG)size);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %zu items of %zu bytes]\n", mem, m_unit[k], nelem, size);
 #ifdef DEBUG
 			GMT_report (C, GMT_MSG_FATAL, "GMT_memory [calloc] called by %s from file %s on line %ld\n", C->init.progname, fname, line);
 #endif
@@ -4033,12 +4033,11 @@ void gmt_setcontjump (float *z, COUNTER_LARGE nz)
 	}
 }
 
-COUNTER_LARGE gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, BOOLEAN test, COUNTER_MEDIUM *edge, double **x, double **y, COUNTER_MEDIUM col, COUNTER_MEDIUM row, GMT_LONG side, COUNTER_LARGE offset, size_t *bit, COUNTER_MEDIUM *nan_flag)
+COUNTER_LARGE gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, BOOLEAN test, COUNTER_MEDIUM *edge, double **x, double **y, COUNTER_MEDIUM col, COUNTER_MEDIUM row, COUNTER_MEDIUM side, COUNTER_LARGE offset, size_t *bit, COUNTER_MEDIUM *nan_flag)
 {
 	/* Note: side must be signed due to calculations like (side-2)%2 which will not work with unsigned */
-	COUNTER_MEDIUM this_side, old_side, n_exits, opposite_side, n_nan;
-	COUNTER_MEDIUM edge_word, edge_bit;
-	GMT_LONG side_in, p[5];
+	COUNTER_MEDIUM side_in, this_side, old_side, n_exits, opposite_side, n_nan, edge_word, edge_bit;
+	GMT_LONG p[5];
 	BOOLEAN more;
 	size_t n_alloc;
 	COUNTER_LARGE n = 1, m, ij0, ij_in, ij;
@@ -4164,10 +4163,12 @@ COUNTER_LARGE gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, BOOLEAN
 			continue;
 		}
 
-		/* Move on to next box (col,row,side) */
-		col -= (side-2)%2;
-		row -= (side-1)%2;
-		side = (side+2)%4;
+		switch (side) {	/* Move on to next box (col,row,side) */
+			case 0: row++; side = 2; break;	/* Go to row below */
+			case 1: col++; side = 3; break;	/* Go to col on right */
+			case 2: row--; side = 0; break;	/* Go to row above */
+			case 3: col--; side = 1; break;	/* Go to col on left */
+		}
 
 	} while (more);
 
@@ -5079,7 +5080,7 @@ GMT_LONG GMT_get_format (struct GMT_CTRL *C, double interval, char *unit, char *
 
 	if (unit && unit[0]) {	/* Must append the unit string */
 		if (!strchr (unit, '%'))	/* No percent signs */
-			strncpy (text, unit, (size_t)80);
+			strncpy (text, unit, 80U);
 		else {
 			for (i = j = 0; i < (GMT_LONG)strlen (unit); i++) {
 				text[j++] = unit[i];
@@ -5549,7 +5550,7 @@ GMT_LONG GMT_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, 
 
 	/* Allocate memory for input points */
 
-	In.numberofpoints = (int)n;
+	In.numberofpoints = n;
 	In.pointlist = GMT_memory (C, NULL, 2 * n, double);
 
 	/* Copy x,y points to In structure array */
@@ -5600,7 +5601,7 @@ GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, C
 
 	/* Allocate memory for input points */
 
-	In.numberofpoints = (int)n;
+	In.numberofpoints = n;
 	In.pointlist = GMT_memory (C, NULL, 2 * n, double);
 
 	/* Copy x,y points to In structure array */

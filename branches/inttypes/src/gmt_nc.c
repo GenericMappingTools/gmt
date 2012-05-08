@@ -616,8 +616,8 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	if (pad[XHI] > 0) width_in += pad[XHI];
 
 	GMT_memcpy (header->wesn, wesn, 4, double);
-	header->nx = (int)width_out;
-	header->ny = (int)height_out;
+	header->nx = width_out;
+	header->ny = height_out;
 
 	/* Write grid header without closing file afterwards */
 
