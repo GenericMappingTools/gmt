@@ -23,22 +23,27 @@
 
 /* Structure to control which options are transmited to GMT_gdalwrite */
 struct GDALWRITE_CTRL {
-	char	*driver;
-	char	*type;
-	double	ULx, ULy;
-	double	x_inc, y_inc;
-	int	geog;
-	int	nx, ny;
-	int	n_bands;
-	int	flipud;
-	int	registration;
+	char *driver;		/* The GDAL diver name */
+	char *type;			/* Data type */
+	char *command;		/* command line */
+	char *title;
+	char *remark;
+	int  geog;
+	int  nx, ny;
+	int  n_bands;
+	int  pad[4];
+	int  flipud;
+	int  registration;		/* Registration type. 0 -> grid registration; 1 -> pixel reg */
+	double	ULx, ULy;		/* x_min & y_max */
+	double	x_inc, y_inc;	/* Grid/Image increments */
+	double	nan_value;
 	void	*data;
 	struct GW_C {	/* Color map */
 		int active;
 		int n_colors;
 		float *cpt;
 	} C;
-	struct GW_P {	/* Proj4 string */
+	struct GW_P {			/* Proj4 string */
 		int	active;
 		char	*ProjectionRefPROJ4;
 	} P;
