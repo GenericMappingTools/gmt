@@ -3603,7 +3603,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	fno[id++] = C->current.setting.font_annot[0].id;
 	fno[id++] = C->current.setting.font_annot[1].id;
 
-	GMT_sort_array (C, fno, id, GMTAPI_LONG);
+	GMT_sort_array (C, fno, id, GMTAPI_INT);
 
 	last = -1;
 	for (k = n_fonts = 0; k < id; k++) {
