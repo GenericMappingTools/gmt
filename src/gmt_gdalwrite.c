@@ -70,11 +70,26 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	data = prhs->data;
 
 	/* Find out in which data type was given the input array */
-	if (!strcmp(prhs->type,"byte")) {
+	if (!strcmp(prhs->type,"byte")) {		/* This case arrives here via grdimage */
 		typeCLASS = GDT_Byte;
 		outByte = GMT_memory (C, NULL, nx*ny, unsigned char);
 	}
-	else if (!strcmp(prhs->type,"float")) {
+	else if (!strcmp(prhs->type,"uint8")) {
+		typeCLASS = GDT_Byte;
+	}
+	else if (!strcmp(prhs->type,"uint16")) {
+		typeCLASS = GDT_UInt16;
+	}
+	else if (!strcmp(prhs->type,"int16")) {
+		typeCLASS = GDT_Int16;
+	}
+	else if (!strcmp(prhs->type,"uint32")) {
+		typeCLASS = GDT_UInt32;
+	}
+	else if (!strcmp(prhs->type,"int32")) {
+		typeCLASS = GDT_Int32;
+	}
+	else if (!strcmp(prhs->type,"float32")) {
 		typeCLASS = GDT_Float32;
 	}
 	else {
@@ -179,13 +194,27 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 		}
 		switch( typeCLASS ) {
 			case GDT_Byte:
-			 	tmpByte = (unsigned char *)data;	
-				for (nn = 0; nn < nx*ny; nn++) {
-					outByte[nn] = tmpByte[nn*n_bands + i];
+				if (strcmp(prhs->type,"uint8")) {
+					/* This case arrives here from a separate path. It started in grdimage and an originaly
+					   data was in uchar but padded and possibly 3D (RGB) */
+			 		tmpByte = (unsigned char *)data;	
+					for (nn = 0; nn < nx*ny; nn++) {
+						outByte[nn] = tmpByte[nn*n_bands + i];
+					}
+					GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, outByte, nx, ny, typeCLASS, 0, 0 );
 				}
-				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, outByte, nx, ny, typeCLASS, 0, 0 );
+				else
+					/* Here 'data' was converted to uchar in gmt_customio.c/GMT_gdal_write_grd */
+					GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0 );
+				break;
+			case GDT_UInt16:
+			case GDT_Int16:
+			case GDT_UInt32:
+			case GDT_Int32:
+				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0 );
 				break;
 			case GDT_Float32:
+				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
 				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0 );
 				break;
 		}
@@ -195,8 +224,16 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	if ( hOutDS != NULL ) GDALClose( hOutDS );
 
 	GDALClose( hDstDS );
-
 	if (outByte) GMT_free(C, outByte);
+
+	if (!GMT_strlcmp(pszFormat,"netCDF")) {
+		/* Change some attributes written by GDAL (not finished) */
+		int ncid;
+		GMT_LONG err;
+		GMT_err_trap (nc_open (fname, NC_WRITE, &ncid));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(prhs->command), prhs->command));
+		GMT_err_trap (nc_close (ncid));
+	}
 
 	return (GMT_NOERROR);
 }

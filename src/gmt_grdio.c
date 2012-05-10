@@ -136,6 +136,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 	COUNTER_MEDIUM i = 0, j;
 	GMT_LONG val;
 	char code[GMT_TEXT_LEN64], tmp[GMT_BUFSIZ];
+	code[0] = '\0';			/* This avoids a crash when name = "fname.ext=" (that is with an soliton '=') */
 
 	gmt_expand_filename (C, file, header->name);	/* May append a suffix to header->name */
 
@@ -166,6 +167,12 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 		else if ( val == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '+' && header->name[i+3] == 'b' ) {	/* A Band request for GDAL */
 			header->pocket = strdup(&header->name[i+4]);
 			header->name[i-1] = '\0';
+		}
+		else if ( val == GMT_GRD_IS_GD && header->name[i+2] && strstr(&header->name[i+2], ":") ) {
+			char *pch;
+			pch = strstr(&header->name[i+2], ":");
+			header->pocket = strdup(++pch);
+			header->name[i-1] = '\0';			/* Done, rip the driver/outtype info from file name */
 		}
 		else {
 			j = (i == 1) ? i : i - 1;
