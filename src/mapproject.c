@@ -637,7 +637,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	rmode = (!GMT->common.b.active[GMT_IN] && !GMT->common.b.active[GMT_OUT] && !GMT->common.o.active && GMT_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
 	x_in_min = y_in_min = x_out_min = y_out_min = DBL_MAX;
-	x_in_max = y_in_max = x_out_max = y_out_max = -DBL_MAX;
+	x_in_max = y_in_max = x_out_max = y_out_max = DBL_MIN;
 
 	two = (Ctrl->E.active || (Ctrl->T.active && GMT->current.proj.datum.h_given)) ? 3 : 2;	/* # of output points from conversion */
 

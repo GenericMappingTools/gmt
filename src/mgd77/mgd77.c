@@ -3426,8 +3426,8 @@ void MGD77_Verify_Prep_m77 (struct GMT_CTRL *G, struct MGD77_CONTROL *F, struct 
 	GMT_LONG i, ix, iy;
 	double lon, lat, xpmin, xpmax, xnmin, xnmax, ymin, ymax;
 
-	xpmin = xnmin = ymin = +DBL_MAX;
-	xpmax = xnmax = ymax = -DBL_MAX;
+	xpmin = xnmin = ymin = DBL_MAX;
+	xpmax = xnmax = ymax = DBL_MIN;
 	memset ( C, 0, sizeof (struct MGD77_META));
 
 	C->verified = TRUE;
@@ -3500,8 +3500,8 @@ void MGD77_Verify_Prep (struct GMT_CTRL *G, struct MGD77_CONTROL *F, struct MGD7
 	values[0] = (double*)D->values[0];	/* time */
 	values[1] = (double*)D->values[3];	/* lat */
 	values[2] = (double*)D->values[4];	/* lon */
-	xpmin = xnmin = ymin = +DBL_MAX;
-	xpmax = xnmax = ymax = -DBL_MAX;
+	xpmin = xnmin = ymin = DBL_MAX;
+	xpmax = xnmax = ymax = DBL_MIN;
 	C = &(D->H.meta);
 	memset ( C, 0, sizeof (struct MGD77_META));
 	C->verified = TRUE;
@@ -3761,8 +3761,8 @@ void MGD77_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	MGD77_Low_val[NC_BYTE] = MGD77_Low_val[NC_CHAR] = CHAR_MIN;
 	MGD77_Low_val[NC_SHORT] = SHRT_MIN;
 	MGD77_Low_val[NC_INT] = INT_MIN;
-	MGD77_Low_val[NC_FLOAT] = -FLT_MAX;
-	MGD77_Low_val[NC_DOUBLE] = -DBL_MAX;
+	MGD77_Low_val[NC_FLOAT] = FLT_MIN;
+	MGD77_Low_val[NC_DOUBLE] = DBL_MIN;
 	MGD77_High_val[NC_BYTE] = MGD77_High_val[NC_CHAR] = CHAR_MAX;
 	MGD77_High_val[NC_SHORT] = SHRT_MAX;
 	MGD77_High_val[NC_INT] = INT_MAX;

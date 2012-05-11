@@ -1702,8 +1702,8 @@ void GMT_quad_reset (struct GMT_CTRL *C, struct GMT_QUAD *Q, GMT_LONG n_items)
 	
 	GMT_memset (Q, n_items, struct GMT_QUAD);	/* Set all to NULL/0 */
 	for (i = 0; i < n_items; i++) {
-		Q[i].min[0] = Q[i].min[1] = +DBL_MAX;
-		Q[i].max[0] = Q[i].max[1] = -DBL_MAX;
+		Q[i].min[0] = Q[i].min[1] = DBL_MAX;
+		Q[i].max[0] = Q[i].max[1] = DBL_MIN;
 		Q[i].range[0] = GMT_IS_M180_TO_P180_RANGE;
 		Q[i].range[1] = GMT_IS_0_TO_P360_RANGE;
 	}
@@ -4442,7 +4442,7 @@ void GMT_set_tbl_minmax (struct GMT_CTRL *C, struct GMT_TABLE *T)
 	if (!T->max) T->max = GMT_memory (C, NULL, T->n_columns, double);
 	for (k = 0; k < T->n_columns; k++) {	/* Initialize */
 		T->min[k] = DBL_MAX;
-		T->max[k] = -DBL_MAX;
+		T->max[k] = DBL_MIN;
 	}
 	for (seg = 0; seg < T->n_segments; seg++) {
 		S = T->segment[seg];
@@ -5318,8 +5318,8 @@ void gmt_adjust_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, GMT_LON
 	S->min = GMT_memory (C, S->min, n_columns, double);
 	S->max = GMT_memory (C, S->max, n_columns, double);
 	for (col = S->n_columns; col < n_columns; col++) {	/* Allocate new columns and initialize the min/max arrays */
-		S->min[col] = +DBL_MAX;
-		S->max[col] = -DBL_MAX;
+		S->min[col] = DBL_MAX;
+		S->max[col] = DBL_MIN;
 		S->coord[col] = GMT_memory (C, NULL, S->n_rows, double);
 	}
 	S->n_columns = n_columns;
@@ -5511,8 +5511,8 @@ GMT_LONG GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, GMT_
 		S->max = GMT_memory (C, NULL, n_columns, double);
 		S->n_columns = n_columns;
 		for (col = 0; col < n_columns; col++) {	/* Initialize the min/max array */
-			S->min[col] = +DBL_MAX;
-			S->max[col] = -DBL_MAX;
+			S->min[col] = DBL_MAX;
+			S->max[col] = DBL_MIN;
 		}
 	}
 	if (n_rows > 0) S->n_rows = n_rows;
@@ -5804,7 +5804,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG so
 	/* Determine table min,max values */
 	T->min = GMT_memory (C, NULL, T->n_columns, double);
 	T->max = GMT_memory (C, NULL, T->n_columns, double);
-	for (col = 0; col < T->n_columns; col++) {T->min[col] = DBL_MAX; T->max[col] = -DBL_MAX;}
+	for (col = 0; col < T->n_columns; col++) {T->min[col] = DBL_MAX; T->max[col] = DBL_MIN;}
 	for (seg = 0; seg < T->n_segments; seg++) {
 		for (col = 0; col < T->n_columns; col++) {
 			T->min[col] = MIN (T->min[col], T->segment[seg]->min[col]);

@@ -582,7 +582,7 @@ void new_initialize_grid (struct SURFACE_INFO *C)
 GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options)
 {
 	GMT_LONG i, j, k, kmax = 0, kmin = 0, error;
-	double *in, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
+	double *in, zmin = DBL_MAX, zmax = DBL_MIN, wesn_lim[4];
 	struct GRD_HEADER *h = C->Grid->header;
 
 	C->data = GMT_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
@@ -1485,7 +1485,7 @@ void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl)
 void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_TABLE *xyzline) {
 
 	GMT_LONG n_tot = 0, this_ini = 0, this_end = 0, n_int = 0, i, j, k = 0, n, n_alloc, kmax = 0, kmin = 0;
-	double *x = NULL, *y = NULL, *z = NULL, dx, dy, dz, r_dx, r_dy, zmin = DBL_MAX, zmax = -DBL_MAX;
+	double *x = NULL, *y = NULL, *z = NULL, dx, dy, dz, r_dx, r_dy, zmin = DBL_MAX, zmax = DBL_MIN;
 
 	n_alloc = GMT_CHUNK;
 	x = GMT_memory (GMT, NULL, n_alloc, double);

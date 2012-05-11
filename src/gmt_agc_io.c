@@ -245,7 +245,7 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 
 	/* Rows are read south to north */
 	
-	header->z_min = +DBL_MAX;	header->z_max = -DBL_MAX;
+	header->z_min = DBL_MAX;	header->z_max = DBL_MIN;
 	
 	n_blocks_y = lrint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
 	n_blocks_x = lrint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
@@ -332,7 +332,7 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	/* Find z_min/z_max */
 
-	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	header->z_min = DBL_MAX;	header->z_max = DBL_MIN;
 	for (j = first_row, j2 = pad[YHI]; j <= last_row; j++, j2++) {
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
 			ij = (j2 * width_in + i2) * inc + off;
