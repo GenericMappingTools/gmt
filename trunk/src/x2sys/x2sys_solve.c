@@ -623,7 +623,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	normalize = (Ctrl->E.mode == F_IS_DRIFT_T || Ctrl->E.mode == F_IS_DRIFT_D);
 	if (normalize) {	/* For numerical stability, normalize distances or times to fall in 0-1 range */
-		min_extent = DBL_MAX;	max_extent = -DBL_MAX;
+		min_extent = DBL_MAX;	max_extent = DBL_MIN;
 		j = (Ctrl->E.mode == F_IS_DRIFT_T) ? COL_T1 : COL_D1;	/* Which variable we are working on */
 		for (k = 0; k < n_COE; k++) {
 			for (i = 0; i < 2; i++) {

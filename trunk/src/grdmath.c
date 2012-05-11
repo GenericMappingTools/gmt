@@ -1888,7 +1888,7 @@ void grd_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 /*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
 {
 	GMT_LONG node, n = 0, row, col;
-	float a, z, zmin = FLT_MAX, zmax = -FLT_MAX;
+	float a, z, zmin = FLT_MAX, zmax = FLT_MIN;
 
 	if (constant[last]) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning, NORM of a constant gives NaN!\n");
@@ -2594,7 +2594,7 @@ void grd_UPPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 /*OPERATOR: UPPER 1 1 The highest (maximum) value of A.  */
 {
 	GMT_LONG row, col, node;
-	float high = -FLT_MAX;
+	float high = FLT_MIN;
 
 	if (constant[last]) {	/* Trivial case */
 		for (node = 0; node < info->size; node++) stack[last]->data[node] = (float)factor[last];

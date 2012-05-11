@@ -853,7 +853,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							z = DBL_MAX;
 							break;
 						case 1:	/* Upper bound */
-							z = -DBL_MAX;
+							z = DBL_MIN;
 							break;
 						case 2:	/* Average (mean) */
 							z = 0.0;
