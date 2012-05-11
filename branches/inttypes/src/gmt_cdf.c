@@ -263,7 +263,7 @@ GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	edge[0] = header->nx;
 	ij = pad[YHI] * width_out + i_0_out;
 	header->z_min =  DBL_MAX;
-	header->z_max = -DBL_MAX;
+	header->z_max = DBL_MIN;
 
 	for (j = first_row; j <= last_row; j++, ij += width_out) {
 		start[0] = j * header->nx;
@@ -307,7 +307,7 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_LONG first_col, last_col, first_row, last_row;
 	COUNTER_LARGE ij; 
 	float *tmp_f = NULL;
-	double limit[2] = {-FLT_MAX, FLT_MAX}, value;
+	double limit[2] = {FLT_MIN, FLT_MAX}, value;
 	nc_type z_type;
 
 	/* Determine the value to be assigned to missing data, if not already done so */
@@ -356,7 +356,7 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	edge[0] = width_out;
 	ij = first_col + pad[XLO] + (first_row + pad[YHI]) * width_in;
 	header->z_min =  DBL_MAX;
-	header->z_max = -DBL_MAX;
+	header->z_max = DBL_MIN;
 
 	/* Store z-variable */
 

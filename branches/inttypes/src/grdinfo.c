@@ -226,8 +226,8 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* OK, done parsing, now process all input grids in a loop */
 	
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
-	global_xmin = global_ymin = global_zmin = +DBL_MAX;
-	global_xmax = global_ymax = global_zmax = -DBL_MAX;
+	global_xmin = global_ymin = global_zmin = DBL_MAX;
+	global_xmax = global_ymax = global_zmax = DBL_MIN;
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
@@ -261,7 +261,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			COUNTER_LARGE ij_min, ij_max;
 			COUNTER_MEDIUM col, row;
 
-			z_min = DBL_MAX;	z_max = -DBL_MAX;
+			z_min = DBL_MAX;	z_max = DBL_MIN;
 			mean = median = sum2 = 0.0;
 			ij_min = ij_max = n = 0;
 			GMT_grd_loop (GMT, G, row, col, ij) {
@@ -439,8 +439,8 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 
 			if (Ctrl->M.active) {
-				if (z_min == -DBL_MAX) z_min = GMT->session.d_NaN;
-				if (z_max == +DBL_MAX) z_max = GMT->session.d_NaN;
+				if (z_min == DBL_MAX) z_min = GMT->session.d_NaN;
+				if (z_max == DBL_MIN) z_max = GMT->session.d_NaN;
 				sprintf (record, "%s: z_min: ", G->header->name);
 				GMT_ascii_format_col (GMT, text, z_min, GMT_Z);	strcat (record, text);
 				strcat (record, " at x = ");
@@ -504,8 +504,8 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	if (global_zmin == -DBL_MAX) global_zmin = GMT->session.d_NaN;	/* Never got set */
-	if (global_zmax == +DBL_MAX) global_zmax = GMT->session.d_NaN;
+	if (global_zmin == DBL_MAX) global_zmin = GMT->session.d_NaN;	/* Never got set */
+	if (global_zmax == DBL_MIN) global_zmax = GMT->session.d_NaN;
 
 	if (Ctrl->C.active && (Ctrl->I.active && Ctrl->I.status == 2)) {
 		global_xmin = floor (global_xmin / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];

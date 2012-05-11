@@ -1669,7 +1669,7 @@ void GMT_grd_zminmax (struct GMT_CTRL *C, struct GRD_HEADER *h, float *z)
 	COUNTER_MEDIUM row, col;
 	COUNTER_LARGE node, n = 0;
 	
-	h->z_min = DBL_MAX;	h->z_max = -DBL_MAX;
+	h->z_min = DBL_MAX;	h->z_max = DBL_MIN;
 	for (row = 0; row < h->ny; row++) {
 		for (col = 0, node = GMT_IJP (h, row, 0); col < h->nx; col++, node++) {
 			if (GMT_is_fnan (z[node])) continue;

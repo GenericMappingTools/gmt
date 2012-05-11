@@ -515,7 +515,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		check = !GMT_is_dnan (header->nan_value);
 		in_nx = header->nx;
 		header->nx = width_in;	/* Needed to be set here due to GMT_IJP below */
-		header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+		header->z_min = DBL_MAX;	header->z_max = DBL_MIN;
 		while (fscanf (fp, "%f", &value) == 1 && n_left) {	/* We read all values and skip those not inside our w/e/s/n */
 			tmp[col] = value;	/* Build up a single input row */
 			col++;

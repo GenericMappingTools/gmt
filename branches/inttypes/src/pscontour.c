@@ -609,7 +609,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	double xx[3], yy[3], zz[3], xout[5], yout[5], xyz[2][3], rgb[4], z_range, small;
 	double *xc = NULL, *yc = NULL, *zc = NULL, *x = NULL, *y = NULL, *z = NULL;
-	double current_contour = -DBL_MAX, *in = NULL, *xp = NULL, *yp = NULL;
+	double current_contour = DBL_MIN, *in = NULL, *xp = NULL, *yp = NULL;
 
 	char cont_label[GMT_TEXT_LEN256], format[GMT_TEXT_LEN256];
 	char *tri_algorithm[2] = {"Watson", "Shewchuk"};
@@ -673,7 +673,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	y = GMT_memory (GMT, NULL, n_alloc, double);
 	z = GMT_memory (GMT, NULL, n_alloc, double);
 
-	xyz[0][GMT_Z] = DBL_MAX;	xyz[1][GMT_Z] = -DBL_MAX;
+	xyz[0][GMT_Z] = DBL_MAX;	xyz[1][GMT_Z] = DBL_MIN;
 	n = 0;
 
 	do {	/* Keep returning records until we reach EOF */

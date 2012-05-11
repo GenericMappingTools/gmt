@@ -1884,7 +1884,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int ID, unsigned int mode, stru
 			GMT_memcpy (G->header->pad, API->GMT->current.io.pad, 4, GMT_LONG);		/* Set desired padding */
 			G_copy->header->size = GMTAPI_set_grdarray_size (API->GMT, G->header, S->wesn);	/* Get array dimension only, which may include padding */
 			G_copy->data = GMT_memory (API->GMT, NULL, G_copy->header->size, float);
-			G_copy->header->z_min = DBL_MAX;	G_copy->header->z_max = -DBL_MAX;	/* Must set zmin/zmax since we are not writing */
+			G_copy->header->z_min = DBL_MAX;	G_copy->header->z_max = DBL_MIN;	/* Must set zmin/zmax since we are not writing */
 			for (row = j0; row <= j1; row++) {
 				for (col = i0; col <= i1; col++, ij++) {
 					ij_orig = GMT_IJP (G->header, row, col);	/* Position of this (row,col) in original grid organization */

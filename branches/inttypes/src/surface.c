@@ -587,7 +587,7 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 {
 	GMT_LONG i, j, error;
 	COUNTER_LARGE k, kmax = 0, kmin = 0;
-	double *in, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
+	double *in, zmin = DBL_MAX, zmax = DBL_MIN, wesn_lim[4];
 	struct GRD_HEADER *h = C->Grid->header;
 
 	C->data = GMT_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
@@ -1497,7 +1497,7 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	COUNTER_LARGE k = 0, n, kmax = 0, kmin = 0, seg, row;
 	GMT_LONG i, j;
 	size_t n_alloc;
-	double *x = NULL, *y = NULL, *z = NULL, dx, dy, dz, r_dx, r_dy, zmin = DBL_MAX, zmax = -DBL_MAX;
+	double *x = NULL, *y = NULL, *z = NULL, dx, dy, dz, r_dx, r_dy, zmin = DBL_MAX, zmax = DBL_MIN;
 
 	n_alloc = GMT_CHUNK;
 	x = GMT_memory (GMT, NULL, n_alloc, double);
