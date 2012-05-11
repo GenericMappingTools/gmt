@@ -123,7 +123,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 	GMT_LONG k = 0, j, inc, i, l, even, n_pix;
 	unsigned char *buffer = NULL;
 	off_t img_size;
-	float *work = NULL, *datac = NULL, *img_pow = NULL, pow_max = FLT_MIN, pm;
+	float *work = NULL, *datac = NULL, *img_pow = NULL, pow_max = -FLT_MAX, pm;
 	int rgb[3];
 	FILE *fp = NULL;
 

@@ -708,7 +708,7 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 	/* read xyz[m] file with point data coordinates */
 
 	GMT_LONG n_alloc, ndata_xyz;
-	float x_min = FLT_MAX, x_max = FLT_MIN, y_min = FLT_MAX, y_max = FLT_MIN;
+	float x_min = FLT_MAX, x_max = -FLT_MAX, y_min = FLT_MAX, y_max = -FLT_MAX;
 	double in[8];
 	char line[GMT_TEXT_LEN256];
 	FILE *fp = NULL;

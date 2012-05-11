@@ -1818,7 +1818,7 @@ void gmt_xy_search (struct GMT_CTRL *C, double *x0, double *x1, double *y0, doub
 
 	/* Find min/max forward values */
 
-	xmax = ymax = DBL_MIN;
+	xmax = ymax = -DBL_MAX;
 	xmin = ymin = DBL_MAX;
 	dlon = fabs (e0 - w0) / 500;
 	dlat = fabs (n0 - s0) / 500;
@@ -4633,7 +4633,7 @@ void gmt_wesn_search (struct GMT_CTRL *C, double xmin, double xmax, double ymin,
 	dy = (ymax - ymin) / C->current.map.n_lat_nodes;
 	/* Need temp array to hold all the longitudes we compute */
 	lon = GMT_memory (C, NULL, 2 * (C->current.map.n_lon_nodes + C->current.map.n_lat_nodes + 2), double);
-	w = s = DBL_MAX;	e = n = DBL_MIN;
+	w = s = DBL_MAX;	e = n = -DBL_MAX;
 	for (i = k = 0; i <= C->current.map.n_lon_nodes; i++) {
 		x = (i == C->current.map.n_lon_nodes) ? xmax : xmin + i * dx;
 		GMT_xy_to_geo (C, &lon[k++], &lat, x, ymin);
@@ -7090,7 +7090,7 @@ GMT_LONG gmt_init_three_D (struct GMT_CTRL *C) {
 	if (!C->current.proj.three_D) easy = TRUE;
 
 	C->current.proj.z_project.xmin = C->current.proj.z_project.ymin = DBL_MAX;
-	C->current.proj.z_project.xmax = C->current.proj.z_project.ymax = DBL_MIN;
+	C->current.proj.z_project.xmax = C->current.proj.z_project.ymax = -DBL_MAX;
 
 	if (easy) {
 		double xx[4], yy[4];

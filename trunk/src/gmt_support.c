@@ -3589,7 +3589,7 @@ GMT_LONG gmt_code_to_lonlat (struct GMT_CTRL *C, char *code, double *lon, double
 				break;
 			case '-':	/* zmin-location */
 				if (z_OK)
-					*lon = *lat = DBL_MIN;
+					*lon = *lat = -DBL_MAX;
 				else
 					error++;
 				break;
@@ -3682,7 +3682,7 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double x
 						GMT_report (C, GMT_MSG_FATAL, "syntax error -%c:  z+ option not applicable here\n", G->flag);
 					}
 				}
-				else if (G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] == DBL_MIN) {	/* Meant zmin location */
+				else if (G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] == -DBL_MAX) {	/* Meant zmin location */
 					if (xyz) {
 						G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] = xyz[0][GMT_X];
 						G->xp->segment[G->xp->n_segments]->coord[GMT_Y][i] = xyz[0][GMT_Y];

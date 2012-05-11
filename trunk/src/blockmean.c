@@ -291,8 +291,8 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			slh[node].a[BLK_S] += (weighted_z * in[GMT_Z]);
 			if (Ctrl->W.weighted[GMT_IN]) np[node]++;
 			if (zw[node].a[BLK_W] == 0.0) {	/* Initialize low,high the first time */
-				slh[node].a[BLK_L] = DBL_MAX;
-				slh[node].a[BLK_H] = DBL_MIN;
+				slh[node].a[BLK_L] = +DBL_MAX;
+				slh[node].a[BLK_H] = -DBL_MAX;
 			}
 			if (in[GMT_Z] < slh[node].a[BLK_L]) slh[node].a[BLK_L] = in[GMT_Z];
 			if (in[GMT_Z] > slh[node].a[BLK_H]) slh[node].a[BLK_H] = in[GMT_Z];

@@ -314,8 +314,8 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 	
 	/* Must search for extent along perimeter */
 
-	r->wesn[XLO] = r->wesn[YLO] = DBL_MAX;
-	r->wesn[XHI] = r->wesn[YHI] = DBL_MIN;
+	r->wesn[XLO] = r->wesn[YLO] = +DBL_MAX;
+	r->wesn[XHI] = r->wesn[YHI] = -DBL_MAX;
 	k = (g->registration == GMT_GRIDLINE_REG) ? 1 : 0;
 	
 	for (i = 0; i < g->nx - k; i++) {	/* South and north sides */

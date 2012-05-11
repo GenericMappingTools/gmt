@@ -639,7 +639,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (got_table) {	/* Got a one- or two-column table to read */
 		GMT_LONG n_ave = 0;
-		double last_dnt = DBL_MIN, sum_z = 0.0;
+		double last_dnt = -DBL_MAX, sum_z = 0.0;
 		
 		if (Ctrl->A.file[0] == '-') {   /* Just read from standard input */
 			fp = GMT->session.std[GMT_IN];

@@ -114,7 +114,7 @@ void *New_grdcontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 	GMT_contlabel_init (GMT, &C->contour, 1);
 	C->D.file = strdup ("contour");
-	C->L.low = DBL_MIN;
+	C->L.low = -DBL_MAX;
 	C->L.high = DBL_MAX;
 	C->T.spacing = TICKED_SPACING * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 14p */
 	C->T.length  = TICKED_LENGTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 3p */
@@ -585,7 +585,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][3])
 {	/* Determine the grid's global min and max locations and z values */
 	GMT_LONG row, col, ij, i, i_minmax[2] = {0, 0};
-	float z_extreme[2] = {FLT_MAX, FLT_MIN};
+	float z_extreme[2] = {FLT_MAX, -FLT_MAX};
 
 	GMT_grd_loop (GMT, Grid, row, col, ij) {
 		if (GMT_is_fnan (Grid->data[ij])) continue;
