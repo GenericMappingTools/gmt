@@ -473,7 +473,7 @@ void dump_green (PFD G, PFD D, double par[], double x0, double x1, GMT_LONG N, d
 	double min_y, max_y, min_dy, max_dy;
 	
 	min_y = min_dy = DBL_MAX;
-	max_y = max_dy = DBL_MIN;
+	max_y = max_dy = -DBL_MAX;
 	
 	dx = (x1 - x0) / (N - 1);
 	for (i = 0; i < N; i++) {
@@ -917,7 +917,7 @@ void do_normalization_1d (double **X, double *obs, GMT_LONG n, GMT_LONG mode, do
 	
 	/* Remove linear trend (or mean) */
 	
-	coeff[5] = DBL_MAX;	coeff[6] = DBL_MIN;
+	coeff[5] = DBL_MAX;	coeff[6] = -DBL_MAX;
 	for (i = 0; i < n; i++) {	/* Also find min/max */
 		obs[i] -= coeff[GMT_Z];
 		if (mode == 2) obs[i] -= (coeff[3] * (X[i][GMT_X] - coeff[GMT_X]));
@@ -977,7 +977,7 @@ void do_normalization (double **X, double *obs, GMT_LONG n, GMT_LONG mode, doubl
 	
 	/* Remove plane (or mean) */
 	
-	coeff[5] = DBL_MAX;	coeff[6] = DBL_MIN;
+	coeff[5] = DBL_MAX;	coeff[6] = -DBL_MAX;
 	for (i = 0; i < n; i++) {	/* Also find min/max */
 		obs[i] -= coeff[GMT_Z];
 		if (mode == 2) obs[i] -= (coeff[3] * (X[i][GMT_X] - coeff[GMT_X]) + coeff[4] * (X[i][GMT_Y] - coeff[GMT_Y]));
@@ -1503,7 +1503,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Build linear system using %s\n", method[Ctrl->S.mode]);
 
-	Ctrl->S.rval[0] = DBL_MAX;	Ctrl->S.rval[1] = DBL_MIN;
+	Ctrl->S.rval[0] = DBL_MAX;	Ctrl->S.rval[1] = -DBL_MAX;
 	for (j = 0; j < nm; j++) {	/* For each value or slope constraint */
 		for (i = j; i < nm; i++) {
 			ij = j * nm + i;

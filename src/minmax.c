@@ -244,7 +244,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
 
 	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, phase[2] = {0.0, 0.0}, this_phase, off;
-	double west, east, south, north, low, high, value, e_min = DBL_MAX, e_max = DBL_MIN;
+	double west, east, south, north, low, high, value, e_min = DBL_MAX, e_max = -DBL_MAX;
 
 	struct GMT_QUAD *Q = NULL;
 	struct MINMAX_CTRL *Ctrl = NULL;
@@ -418,7 +418,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			got_stuff = TRUE;		/* We have at least reported something */
 			for (col = 0; col < ncol; col++) {	/* Reset counters for next block */
 				xyzmin[col] = DBL_MAX;
-				xyzmax[col] = DBL_MIN;
+				xyzmax[col] = -DBL_MAX;
 			}
 			GMT_quad_reset (GMT, Q, ncol);
 			n = 0;
@@ -458,7 +458,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			for (col = 0; col < ncol; col++) {	/* Initialize */
 				xyzmin[col] = DBL_MAX;
-				xyzmax[col] = DBL_MIN;
+				xyzmax[col] = -DBL_MAX;
 			}
 			n = 0;
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = FALSE;

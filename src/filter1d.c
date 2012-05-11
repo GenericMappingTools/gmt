@@ -877,7 +877,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		case 'u':
 			F.filter_type = FILTER1D_UPPER_ALL;
 			F.way = +1;
-			F.extreme = DBL_MIN;
+			F.extreme = -DBL_MAX;
 			break;
 		case 'U':
 			F.filter_type = FILTER1D_UPPER_NEG;
@@ -917,10 +917,10 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (F.robust || (F.filter_type == FILTER1D_MEDIAN) ) {
 				for (col = 0; col < F.n_cols; ++col) {
 					F.min_loc[col] = DBL_MAX;
-					F.max_loc[col] = DBL_MIN;
+					F.max_loc[col] = -DBL_MAX;
 				}
 			}
-			last_time = DBL_MIN;
+			last_time = -DBL_MAX;
 
 			for (row = F.n_rows = 0; row < D->table[tbl]->segment[seg]->n_rows; ++row, ++F.n_rows) {
 				in = D->table[tbl]->segment[seg]->coord[F.t_col][row];

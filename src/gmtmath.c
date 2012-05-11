@@ -1995,7 +1995,7 @@ void table_NORM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DAT
 /*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
 {
 	COUNTER_LARGE s, i, n;
-	double a, z, zmin = DBL_MAX, zmax = DBL_MIN;
+	double a, z, zmin = DBL_MAX, zmax = -DBL_MAX;
 	struct GMT_TABLE *T = S[last]->table[0];
 
 	if (constant[last]) {
@@ -2673,7 +2673,7 @@ void table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 /*OPERATOR: UPPER 1 1 The highest (maximum) value of A.  */
 {
 	COUNTER_LARGE s, i;
-	double high = DBL_MIN;
+	double high = -DBL_MAX;
 	struct GMT_TABLE *T = S[last]->table[0];
 
 	if (constant[last]) {	/* Trivial case */
@@ -2682,7 +2682,7 @@ void table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 	}
 
 	for (s = 0; s < info->T->n_segments; s++) {
-		if (info->local) high = DBL_MIN;
+		if (info->local) high = -DBL_MAX;
 		for (i = 0; i < info->T->segment[s]->n_rows; i++) {
 			if (GMT_is_dnan (T->segment[s]->coord[col][i])) continue;
 			if (T->segment[s]->coord[col][i] > high) high = T->segment[s]->coord[col][i];

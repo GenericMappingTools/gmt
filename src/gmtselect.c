@@ -121,7 +121,7 @@ void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = TRUE;	/* Default is to pass if we are inside */
 	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, BOOLEAN);		/* Default for "wet" areas = FALSE (outside) */
 	C->N.mask[1] = C->N.mask[3] = TRUE;				/* Default for "dry" areas = TRUE (inside) */
-	C->Z.min = DBL_MIN;	C->Z.max = DBL_MAX;			/* No limits on z-range */
+	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
 	
 	return (C);
 }

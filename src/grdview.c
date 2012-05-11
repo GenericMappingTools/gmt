@@ -156,8 +156,8 @@ void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, GMT_LONG d
 	/* We must find the projected min/max in y-direction */
 
 	/* Reset from whatever they were */
-	GMT->current.proj.z_project.ymin = DBL_MAX;
-	GMT->current.proj.z_project.ymax = DBL_MIN;
+	GMT->current.proj.z_project.ymin = +DBL_MAX;
+	GMT->current.proj.z_project.ymax = -DBL_MAX;
 
 	GMT_grd_loop (Topo, row, col, ij) {	/* First loop over all the grid-nodes */
 		if (GMT_is_fnan (Topo->data[ij])) continue;
