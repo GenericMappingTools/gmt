@@ -299,7 +299,7 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		if (fseek (fp, long_offset, 1)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 	
-	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	header->z_min = DBL_MAX;	header->z_max = DBL_MIN;
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		if (GMT_fread ( tLong, (size_t)abs (mggHeader.numType), n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
 		ij = (j2 + pad[YHI]) * width_out + i_0_out;
@@ -385,7 +385,7 @@ GMT_LONG GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	
 	/* Find xmin/zmax */
 	
-	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	header->z_min = DBL_MAX;	header->z_max = DBL_MIN;
 	for (j = first_row, j2 = pad[YHI]; j <= last_row; j++, j2++) {
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
 			ij = (j2 * width_in + i2) * inc + off;

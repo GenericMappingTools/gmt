@@ -791,7 +791,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (slow) {	/* Take median or mode of each work array for each sector */
 					if (slow2) {
 						z2_min = DBL_MAX;
-						z2_max = -DBL_MIN;
+						z2_max = DBL_MIN;
 					}
 					for (s = k = 0; s < Ctrl->N.n_sectors; s++) {
 						if (n_in_median[s]) {
@@ -799,7 +799,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef OBSOLETE											
 							if (Ctrl->E.active) {
 								z_min = DBL_MAX;
-								z_max = -DBL_MIN;
+								z_max = DBL_MIN;
 								for (ii = 0; ii < n_in_median[s]; ii++) {
 									work_array[s][ii] -= (intercept + slope_x * xx[s][ii] + slope_y * yy[s][ii]);
 									if (work_array[s][ii] < z_min) z_min = work_array[s][ii];
@@ -859,7 +859,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							z = DBL_MAX;
 							break;
 						case 1:	/* Upper bound */
-							z = -DBL_MAX;
+							z = DBL_MIN;
 							break;
 						case 2:	/* Average (mean) */
 							z = 0.0;

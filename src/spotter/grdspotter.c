@@ -774,8 +774,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */		
 		GMT_report (GMT, GMT_MSG_NORMAL, "Normalize CVS grid to percentages of max CVA\n");
-		G->header->z_min = +DBL_MAX;
-		G->header->z_max = -DBL_MAX;
+		G->header->z_min = DBL_MAX;
+		G->header->z_max = DBL_MIN;
 		GMT_grd_loop (GMT, G, row, col, node) {	/* Loop over all output nodes */
 			if (GMT_is_fnan (G->data[node])) continue;
 			if (G->data[node] < G->header->z_min) G->header->z_min = G->data[node];
@@ -834,8 +834,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Time to write out this z-slice grid */
 			if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */		
 				GMT_report (GMT, GMT_MSG_NORMAL, "Normalize CVS grid to percentages of max CVA\n");
-				G->header->z_min = +DBL_MAX;
-				G->header->z_max = -DBL_MAX;
+				G->header->z_min = DBL_MAX;
+				G->header->z_max = DBL_MIN;
 				GMT_grd_loop (GMT, G, row, col, node) {	/* Loop over all output nodes */
 					if (GMT_is_fnan (CVA_inc[node])) continue;
 					if (CVA_inc[node] < G->header->z_min) G->header->z_min = CVA_inc[node];

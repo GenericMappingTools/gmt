@@ -3585,14 +3585,16 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_DIR_TMP:
 			if (*value) {
 				/* Replace the session temp dir from the environment, if any */
-				if (C->session.TMPDIR) free (C->session.TMPDIR);
+				if (C->session.TMPDIR)
+					free (C->session.TMPDIR);
 				C->session.TMPDIR = strdup (value);
 			}
 			break;
 		case GMTCASE_DIR_USER:
 			if (*value) {
 				/* Replace the session user dir from the environment, if any */
-				if (C->session.USERDIR) free (C->session.USERDIR);
+				if (C->session.USERDIR)
+					free (C->session.USERDIR);
 				C->session.USERDIR = strdup (value);
 			}
 			break;
@@ -5027,7 +5029,8 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 			continue;
 		}
 		if ((id = GMT_hash_lookup (C, option, unique_hashnode, GMT_N_UNIQUE, GMT_N_UNIQUE)) < 0) continue;	/* Quietly skip malformed lines */
-		if (C->init.history[id]) free (C->init.history[id]);
+		if (C->init.history[id])
+			free (C->init.history[id]);
 		C->init.history[id] = strdup (value);
 	}
 
@@ -5330,7 +5333,7 @@ void GMT_set_env (struct GMT_CTRL *C)
 		C->session.HOMEDIR = strdup (this);
 #endif
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "Warning: Could not determine home directory!\n");
+		GMT_report (C, GMT_MSG_FATAL, "Error: Could not determine home directory!\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	DOS_path_fix (C->session.HOMEDIR);
@@ -5340,17 +5343,17 @@ void GMT_set_env (struct GMT_CTRL *C)
 	if ((this = getenv ("GMT_USERDIR")) != NULL)
 		/* GMT_USERDIR was set */
 		C->session.USERDIR = strdup (this);
-	else if (C->session.HOMEDIR) {
+	else {
 		/* Use default path for GMT_USERDIR (~/.gmt) */
 		sprintf (path, "%s/%s", C->session.HOMEDIR, ".gmt");
 		C->session.USERDIR = strdup (path);
 	}
+	DOS_path_fix (C->session.USERDIR);
 	if (C->session.USERDIR != NULL && access (C->session.USERDIR, R_OK)) {
 		/* If we cannot access this dir then we won't use it */
 		free (C->session.USERDIR);
 		C->session.USERDIR = NULL;
 	}
-	DOS_path_fix (C->session.USERDIR);
 
 #ifdef GMT_COMPAT
 	/* Check if obsolete GMT_CPTDIR was specified */
@@ -5367,13 +5370,11 @@ void GMT_set_env (struct GMT_CTRL *C)
 
 	if ((this = getenv ("GMT_DATADIR")) != NULL) {
 		/* GMT_DATADIR was set */
-		if (!strchr (this, PATH_SEPARATOR) && access (this, R_OK))
-			/* A single directory, but cannot be accessed */
-			C->session.DATADIR = NULL;
-		else
-			/* A list of directories */
+		if (strchr (this, PATH_SEPARATOR) || access (this, R_OK) == 0) {
+			/* A list of directories or a single directory that is accessible */
 			C->session.DATADIR = strdup (this);
-		DOS_path_fix (C->session.DATADIR);
+			DOS_path_fix (C->session.DATADIR);
+		}
 	}
 
 	/* Determine GMT_TMPDIR (for isolation mode). Needs to exist use it. */

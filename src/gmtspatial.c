@@ -203,7 +203,7 @@ COUNTER_MEDIUM area_size (struct GMT_CTRL *GMT, double x[], double y[], COUNTER_
 	double *xp = NULL, *yp = NULL;
 	
 	wesn[XLO] = wesn[YLO] = DBL_MAX;
-	wesn[XHI] = wesn[YHI] = -DBL_MAX;
+	wesn[XHI] = wesn[YHI] = DBL_MIN;
 	
 	centroid (GMT, x, y, n, out, *geo);	/* Get mean location */
 	
@@ -438,7 +438,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 			if (I->mode) {	/* Various items needed to compute median separation */
 				sep = GMT_memory (GMT, NULL, MAX (S->n_rows, Sp->n_rows), double);
 				low = DBL_MAX;
-				high = -DBL_MAX;
+				high = DBL_MIN;
 			}
 			for (row = np = 0; row < S->n_rows; row++) {	/* Process each point along the trace in S */
 				dist = DBL_MAX;
@@ -469,8 +469,8 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 	
 			separation[1] = length[1] = 0.0;
 			if (I->mode) {	/* Reset for median calculation */
-				low  = +DBL_MAX;
-				high = -DBL_MAX;
+				low  = DBL_MAX;
+				high = DBL_MIN;
 			}
 			for (row = np = 0; row < Sp->n_rows; row++) {	/* Process each point along the trace in S' */
 				dist = DBL_MAX;		/* Reset for each line to find distance to that line */

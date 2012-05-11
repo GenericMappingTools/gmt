@@ -310,7 +310,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	double azim, denom, max_gradient = 0.0, min_gradient = 0.0, rpi, lat, output;
 	double x_factor2 = 0.0, y_factor2 = 0.0, dzdx2 = 0.0, dzdy2 = 0.0, dzds1, dzds2;
 	double p0 = 0.0, q0 = 0.0, p0q0_cte = 1.0, norm_z, mag, s[3], lim_x, lim_y, lim_z;
-	double k_ads = 0.0, diffuse, spec, r_min = DBL_MAX, r_max = -DBL_MAX, scale;
+	double k_ads = 0.0, diffuse, spec, r_min = DBL_MAX, r_max = DBL_MIN, scale;
 	
 	struct GMT_GRID *Surf = NULL, *Slope = NULL, *Out = NULL;
 	struct GRDGRADIENT_CTRL *Ctrl = NULL;
@@ -406,7 +406,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Index offset of 4-star points relative to current node */
 	p[0] = 1;	p[1] = -1;	p[2] = Surf->header->mx;	p[3] = -Surf->header->mx;
 
-	min_gradient = DBL_MAX;	max_gradient = -DBL_MAX;	ave_gradient = 0.0;
+	min_gradient = DBL_MAX;	max_gradient = DBL_MIN;	ave_gradient = 0.0;
 	if (Ctrl->E.mode == 3) {
 		lim_x = Surf->header->wesn[XHI] - Surf->header->wesn[XLO];
 		lim_y = Surf->header->wesn[YHI] - Surf->header->wesn[YLO];

@@ -56,7 +56,7 @@ void *New_grdcut_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
+	C->Z.min = DBL_MIN;	C->Z.max = DBL_MAX;			/* No limits on z-range */
 	return (C);
 }
 

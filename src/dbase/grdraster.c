@@ -941,7 +941,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	Grid->header->registration = myras.h.registration;
 	Grid->header->z_min = DBL_MAX;
-	Grid->header->z_max = -DBL_MAX;
+	Grid->header->z_max = DBL_MIN;
 	GMT_set_grddim (GMT, Grid->header);
 	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 	myras.h.xy_off = 0.5 * myras.h.registration;

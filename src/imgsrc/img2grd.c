@@ -508,7 +508,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	strcpy (Merc->header->z_units, z_units);
 	strcpy (Merc->header->title, "Data from Altimetry");
-	Merc->header->z_min = DBL_MAX;	Merc->header->z_max = -DBL_MAX;
+	Merc->header->z_min = DBL_MAX;	Merc->header->z_max = DBL_MIN;
 
 	/* Now malloc some space for float grd array, integer pixel index, and int16_t data buffer.  */
 

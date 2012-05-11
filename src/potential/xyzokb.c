@@ -720,7 +720,7 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 
 	COUNTER_MEDIUM ndata_xyz;
 	size_t n_alloc;
-	float x_min = FLT_MAX, x_max = -FLT_MAX, y_min = FLT_MAX, y_max = -FLT_MAX;
+	float x_min = FLT_MAX, x_max = FLT_MIN, y_min = FLT_MAX, y_max = FLT_MIN;
 	double in[8];
 	char line[GMT_TEXT_LEN256];
 	FILE *fp = NULL;
