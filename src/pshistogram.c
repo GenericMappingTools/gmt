@@ -510,7 +510,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	data = GMT_memory (GMT, NULL, n_alloc , double);
 
 	n = 0;
-	x_min = DBL_MAX;	x_max = DBL_MIN;
+	x_min = DBL_MAX;	x_max = -DBL_MAX;
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */

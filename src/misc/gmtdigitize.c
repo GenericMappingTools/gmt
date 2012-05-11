@@ -497,9 +497,9 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		sprintf (format, "%s%s%s%s%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 	
 	x_in_min = y_in_min = x_out_min = y_out_min = DBL_MAX;
-	x_in_max = y_in_max = x_out_max = y_out_max = DBL_MIN;
-	last_xmap = DBL_MIN;
-	last_ymap = DBL_MIN;
+	x_in_max = y_in_max = x_out_max = y_out_max = -DBL_MAX;
+	last_xmap = -DBL_MAX;
+	last_ymap = -DBL_MAX;
 	
 	multi_files = (Ctrl->N.name && strchr (Ctrl->N.name, '%') != NULL);	/* Individual file names */
 
@@ -575,8 +575,8 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				GMT_write_segmentheader (GMT, fp, n_expected_fields);
 				GMT_report (GMT, GMT_MSG_NORMAL, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
-				last_xmap = DBL_MIN;
-				last_ymap = DBL_MIN;
+				last_xmap = -DBL_MAX;
+				last_ymap = -DBL_MAX;
 				n_segments++;
 			}
 			else if (m_button == 1)

@@ -546,8 +546,8 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		double scale;
 		
 		GMT_report (GMT, GMT_MSG_NORMAL, "Normalize CVS grid to percentages of max CVA\n");
-		G->header->z_min = DBL_MAX;
-		G->header->z_max = DBL_MIN;
+		G->header->z_min = +DBL_MAX;
+		G->header->z_max = -DBL_MAX;
 		GMT_grd_loop (GMT, G, row, col, node) {	/* Loop over all output nodes */
 			if (GMT_is_fnan (G->data[node])) continue;
 			if (G->data[node] < G->header->z_min) G->header->z_min = G->data[node];
