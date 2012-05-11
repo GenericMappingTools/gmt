@@ -875,7 +875,7 @@ void GMT_lambeq (struct GMT_CTRL *C, double lon, double lat, double *x, double *
 		}
 	}
 	else
-		*x = *y = DBL_MIN;
+		*x = *y = -DBL_MAX;
 }
 
 void GMT_ilambeq (struct GMT_CTRL *C, double *lon, double *lat, double x, double y)

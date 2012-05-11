@@ -678,7 +678,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	if (Ctrl->Z.active) GMT_report (GMT, GMT_MSG_NORMAL, "Output data will be scaled by %g\n", Ctrl->Z.scale);
 
-	S.header.z_min = DBL_MAX;	S.header.z_max = DBL_MIN;	/* These will be updated in the loop below */
+	S.header.z_min = DBL_MAX;	S.header.z_max = -DBL_MAX;	/* These will be updated in the loop below */
 	wrap_x = (GMT_is_geographic (GMT, GMT_OUT));	/* Periodic geographic grid */
 	if (wrap_x) nx_360 = lrint (360.0 * S.header.r_inc[GMT_X]);
 

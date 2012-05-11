@@ -540,7 +540,7 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 		first_row = header->ny - 1 - last_row;
 		last_row = header->ny - 1 - row;
 	}
-	header->z_min =  DBL_MAX;	header->z_max = DBL_MIN;
+	header->z_min =  DBL_MAX;	header->z_max = -DBL_MAX;
 
 	for (row = first_row; row <= last_row; row++, ij -= ((size_t)header->y_order * (size_t)width_out)) {
 		start[header->xy_dim[1]] = row;
@@ -627,7 +627,7 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 
 	edge[1] = width_out;
 	ij = (size_t)first_col + (size_t)pad[XLO] + ((size_t)last_row + (size_t)pad[YHI]) * (size_t)width_in;
-	header->z_min =  DBL_MAX;	header->z_max = DBL_MIN;
+	header->z_min =  DBL_MAX;	header->z_max = -DBL_MAX;
 
 	/* Store z-variable. Distinguish between floats and integers */
 

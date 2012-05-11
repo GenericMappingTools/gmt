@@ -897,7 +897,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							this_median = GMT_extreme (GMT, work_array, n_in_median, 0.0, +1, -1);
 							break;
 						case 7:	/* Upper of all values */
-							this_median = GMT_extreme (GMT, work_array, n_in_median, DBL_MIN, 0, +1);
+							this_median = GMT_extreme (GMT, work_array, n_in_median, -DBL_MAX, 0, +1);
 							break;
 						case 8:	/* Upper of negative values */
 							this_median = GMT_extreme (GMT, work_array, n_in_median, 0.0, -1, +1);
