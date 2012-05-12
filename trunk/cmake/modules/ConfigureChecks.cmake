@@ -272,7 +272,6 @@ endif (HAVE_M_LIBRARY)
 
 # check symbols
 check_symbol_exists (acosh       "${_math_h}" HAVE_ACOSH)
-check_symbol_exists (alphasincos "${_math_h}" HAVE_ALPHASINCOS)
 check_symbol_exists (asinh       "${_math_h}" HAVE_ASINH)
 check_symbol_exists (atanh       "${_math_h}" HAVE_ATANH)
 check_symbol_exists (copysign    "${_math_h}" HAVE_COPYSIGN)
