@@ -352,15 +352,15 @@ struct GMT_COL_INFO {	/* Used by -i and input parsing */
 struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 	int type;		/* Data type e.g., GMTAPI_FLOAT */
 	int skip;		/* Rather than read/write an item, jump skip bytes */
-	PFI io;			/* Pointer to the correct read or write function given type/swab */
+	p_func_i io;		/* Pointer to the correct read or write function given type/swab */
 };
 
 struct GMT_IO {				/* Used to process input data records */
-	PFP input;			/* Pointer to function reading ascii or binary tables */
-	PFL output;			/* Pointer to function writing ascii or binary tables */
-	PFI read_item;			/* Pointer to function reading 1-col z tables in grd2xyz */
-	PFI write_item;			/* Pointer to function writing 1-col z tables in xyz2grd */
-	PFL ogr_parser;			/* Set to handle either header or data OGR records */
+	p_func_vp input;		/* Pointer to function reading ascii or binary tables */
+	p_func_l output;		/* Pointer to function writing ascii or binary tables */
+	p_func_i read_item;		/* Pointer to function reading 1-col z tables in grd2xyz */
+	p_func_i write_item;		/* Pointer to function writing 1-col z tables in xyz2grd */
+	p_func_l ogr_parser;		/* Set to handle either header or data OGR records */
 
 	GMT_LONG pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */
 	GMT_LONG inc_code[2];
@@ -426,7 +426,7 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 	int swab;		/* TRUE if we must swap byte-order */
 	GMT_LONG x_missing;	/* 1 if a periodic (right) column is implicit (i.e., not stored) */
 	GMT_LONG y_missing;	/* 1 if a periodic (top) row is implicit (i.e., not stored) */
-	GMT_LONG binary;		/* TRUE if we are reading/writing binary data */
+	GMT_LONG binary;	/* TRUE if we are reading/writing binary data */
 	GMT_LONG input;		/* TRUE if we are reading, FALSE if we are writing */
 	GMT_LONG format;	/* Either GMT_COLUMN_FORMAT or GMT_ROW_FORMAT */
 	GMT_LONG x_step;	/* +1 if logical x values increase to right, else -1 */
@@ -439,7 +439,7 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 	GMT_LONG n_expected;	/* Number of data element expected to be read */
 	GMT_LONG gmt_i;		/* Current column number in the GMT registered grid */
 	GMT_LONG gmt_j;		/* Current row number in the GMT registered grid */
-	PFL get_gmt_ij;		/* Pointer to function that converts running number to GMT ij */
+	p_func_l get_gmt_ij;	/* Pointer to function that converts running number to GMT ij */
 };
 
 struct GMT_PARSE_Z_IO {	/* -Z[<flags>] */

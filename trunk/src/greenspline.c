@@ -137,7 +137,7 @@ struct ZGRID {
 
 GMT_LONG TEST = FALSE;	/* Global variable used for undocumented testing [under -DDEBUG only] */
 #ifdef DEBUG
-void dump_green (PFD G, PFD D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg);
+void dump_green (p_func_d G, p_func_d D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg);
 #endif
 
 void *New_greenspline_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -465,7 +465,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 
 #ifdef DEBUG
 /* Dump a table of x, G, dGdx for test purposes [requires option -+ and compilation with -DDEBUG]  */
-void dump_green (PFD G, PFD D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg)
+void dump_green (p_func_d G, p_func_d D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg)
 {
 	GMT_LONG i;
 	double x, dx, dy, y, t, ry, rdy;
@@ -1082,7 +1082,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	FILE *fp = NULL;
 
-	PFD G = NULL, dGdr = NULL;
+	p_func_d G = NULL, dGdr = NULL;
 
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct ZGRID Z;

@@ -138,7 +138,7 @@ struct X2SYS_INFO {
 	GMT_LONG *use_column;		/* Array of T/F for which columns to use */
 	GMT_LONG geodetic;		/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
 	GMT_LONG dist_flag;		/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
-	PFL read_file;			/* Pointer to function that reads this file */
+	p_func_l read_file;		/* Pointer to function that reads this file */
 	GMT_LONG file_type;		/* 0 = ASCII, 1 = native binary, 2 = netCDF */
 	GMT_LONG ascii_out;		/* TRUE if output should be in ascii */
 	GMT_LONG multi_segment;		/* TRUE if there are multiple segments in this file */

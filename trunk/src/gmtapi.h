@@ -62,7 +62,7 @@ struct GMTAPI_DATA_OBJECT {
 	void *data;				/* Points to container associated with this object [for garbage collection purposes] */
 	FILE *fp;				/* Pointer to source/destination stream [For rec-by-rec procession, NULL if memory location] */
 	char *filename;				/* Filename, stream, of file handle (otherwise NULL) */
-	PFP import;				/* Pointer to input function (for DATASET/TEXTSET only) */
+	p_func_vp import;			/* Pointer to input function (for DATASET/TEXTSET only) */
 };
 
 struct GMTAPI_CTRL {
@@ -102,7 +102,7 @@ EXTERN_MSC struct GMTAPI_CTRL * GMT_Create_Session	(char *tag, GMT_LONG mode);
 EXTERN_MSC void * GMT_Create_Data			(struct GMTAPI_CTRL *C, GMT_LONG type, GMT_LONG par[]);
 EXTERN_MSC void * GMT_Get_Data				(struct GMTAPI_CTRL *C, GMT_LONG ID, GMT_LONG mode, void *data);
 EXTERN_MSC void * GMT_Read_Data				(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, char *input, void *data);
-EXTERN_MSC void * GMT_Retrieve_Data			(struct GMTAPI_CTRL *API, GMT_LONG ID);
+EXTERN_MSC void * GMT_Retrieve_Data			(struct GMTAPI_CTRL *API, GMT_LONG object_ID);
 EXTERN_MSC void * GMT_Get_Record			(struct GMTAPI_CTRL *C, GMT_LONG mode, GMT_LONG *retval);
 EXTERN_MSC GMT_LONG GMT_Destroy_Session			(struct GMTAPI_CTRL **C);
 EXTERN_MSC GMT_LONG GMT_Register_IO			(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, GMT_LONG direction, void *resource, double wesn[]);
@@ -112,7 +112,7 @@ EXTERN_MSC GMT_LONG GMT_End_IO				(struct GMTAPI_CTRL *API, GMT_LONG direction, 
 EXTERN_MSC GMT_LONG GMT_Report_Error			(struct GMTAPI_CTRL *C, GMT_LONG error);
 EXTERN_MSC GMT_LONG GMT_Put_Data			(struct GMTAPI_CTRL *C, GMT_LONG ID, GMT_LONG mode, void *data);
 EXTERN_MSC GMT_LONG GMT_Write_Data			(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, char *output, void *data);
-EXTERN_MSC GMT_LONG GMT_Destroy_Data			(struct GMTAPI_CTRL *C, GMT_LONG mode, void *X);
+EXTERN_MSC GMT_LONG GMT_Destroy_Data			(struct GMTAPI_CTRL *C, GMT_LONG mode, void *object);
 EXTERN_MSC GMT_LONG GMT_Put_Record			(struct GMTAPI_CTRL *C, GMT_LONG mode, void *record);
 EXTERN_MSC GMT_LONG GMT_Encode_ID			(struct GMTAPI_CTRL *C, char *string, GMT_LONG object_ID);
 

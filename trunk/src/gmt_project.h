@@ -215,10 +215,10 @@ struct GMT_PROJ {
 	struct GMT_THREE_D z_project;
 	struct GMT_DATUM_CONV datum;	/* For datum conversions */
 	struct GMT_PROJ4 *proj4;	/* A read-only resource we allocate once and pass pointer around */
-	PFL fwd, inv;			/* Pointers to the selected mapping functions */
-	PFL fwd_x, inv_x;		/* Pointers to the selected linear functions */
-	PFL fwd_y, inv_y;		/* Pointers to the selected linear functions */
-	PFL fwd_z, inv_z;		/* Pointers to the selected linear functions */
+	p_func_l fwd, inv;		/* Pointers to the selected mapping functions */
+	p_func_l fwd_x, inv_x;		/* Pointers to the selected linear functions */
+	p_func_l fwd_y, inv_y;		/* Pointers to the selected linear functions */
+	p_func_l fwd_z, inv_z;		/* Pointers to the selected linear functions */
 
 	double pars[10];		/* Raw unprocessed map-projection parameters as passed on command line */
 	double z_pars[2];		/* Raw unprocessed z-projection parameters as passed on command line */
