@@ -50,8 +50,8 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	GDALColorEntry	sEntry;
 	GDALProgressFunc    pfnProgress = GDALTermProgress;
 
-	int	nx, ny, i, nn, n_bands, registration = 1;
-	int	typeCLASS, nColors, n_byteOffset;
+	int	nx, ny, i, nn;
+	int	typeCLASS, nColors, n_byteOffset, n_bands, registration = 1;
 	int	is_geog = 0;
 	void	*data;
 	unsigned char *outByte = NULL, *tmpByte;
@@ -230,7 +230,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 			case GDT_Float32:
 				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
 				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 
-				              (nx + prhs->pad[0] + prhs->pad[1]) * n_byteOffset );
+				              prhs->nXSizeFull * n_byteOffset );
 				break;
 		}
 	}
