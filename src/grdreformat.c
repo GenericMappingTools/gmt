@@ -59,7 +59,7 @@ GMT_LONG GMT_grdreformat_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdreformat %s [API] - Convert between different grid formats\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdreformat <ingrid>[=<id>[/<scale>/<offset>[/<nan>]]] <outgrid>[=<id>[/<scale>/<offset>[/<nan>]][:driver[/dataType]]]\n\t [-N] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "usage: grdreformat <ingrid>[=<id>[/<scale>/<offset>[/<nan>]]] <outgrid>[=<id>[/<scale>/<offset>[/<nan>]][:<driver>[/<dataType>]]]\n\t [-N] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -73,6 +73,12 @@ GMT_LONG GMT_grdreformat_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "\n	The following grid file formats are supported:\n\n");
 	for (i = 0; i < GMT_N_GRD_FORMATS; i++) if (!strstr (GMT->session.grdformat[i], "not supported")) GMT_message (GMT, "\t%s\n", GMT->session.grdformat[i]);
+#ifdef USE_GDAL
+	GMT_message (GMT, "\n	When <id>=gd for output it means the grid will be saved using the GDAL library.\n");
+	GMT_message (GMT, "	Specify <driver> and <dataType>. Driver names are as in GDAL (e.g netCDF, GTiFF, etc).\n");
+	GMT_message (GMT, "	<dataType> is u8|i8|u16|i16|u32|i32|float32; i|u stand for signed|unsigned integers.\n");
+	GMT_message (GMT, "	Both driver names and data types are case insensitive [Default is netCDF/float32].\n");
+#endif
 	return (EXIT_FAILURE);
 }
 
