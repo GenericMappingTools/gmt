@@ -4,7 +4,7 @@
 blockmedian \- Block average (IT(x),IT(y),IT(z)) data tables by L1 norm
 .SH SYNOPSIS
 BD(blockmedian) [ IT(table) ] GMT_I_OPT GMT_Rx_OPT 
-[ OPT(C) ] [ OPT(E)[BD(b)] ] [ OPT(Q) ] [ OPT(T)IT(quantile) ] 
+[ OPT(C) ] [ OPT(E)[BD(b)] ] [ OPT(E)BD(r)[BD(-)] ] [ OPT(Q) ] [ OPT(T)IT(quantile) ] 
 [ GMT_V_OPT ] [ OPT(W)[BD(i)|BD(o)] ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] 
 [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -39,6 +39,12 @@ becomes IT(x),IT(y),IT(z),IT(s),IT(l),IT(h)[,IT(w)]. [Default outputs IT(x),IT(y
 For box-and-whisker calculation, use OPT(Eb) which will output IT(x),IT(y),IT(z),IT(l),IT(q25),IT(q75),IT(h)[,IT(w)],
 where IT(q25) and IT(q75) are the 25% and 75% quantiles, respectively.
 See OPT(W) for IT(w) output.
+.TP
+OPT(E)BD(r)[BD(-)]
+Provide record number output, i.e., append the record number associated with the median value.
+If tied then report the record number of the higher of the two values; append BD(-) to instead
+report the record number of the lower value.  Note that both OPT(E)[BD(b)] and OPT(E)BD(r)[BD(-)]
+may be specified.
 .TP
 OPT(Q)
 (Quicker) Finds median IT(z) and (IT(x),IT(y)) at that the median IT(z) [Default finds median
