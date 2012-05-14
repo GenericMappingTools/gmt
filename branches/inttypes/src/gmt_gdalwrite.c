@@ -51,7 +51,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	GDALProgressFunc    pfnProgress = GDALTermProgress;
 
 	int	nx, ny, i, nn, n_bands, registration = 1;
-	int	typeCLASS, nColors;
+	int	typeCLASS, nColors, n_byteOffset;
 	int	is_geog = 0;
 	void	*data;
 	unsigned char *outByte = NULL, *tmpByte;
@@ -72,25 +72,32 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	/* Find out in which data type was given the input array */
 	if (!strcmp(prhs->type,"byte")) {		/* This case arrives here via grdimage */
 		typeCLASS = GDT_Byte;
+		n_byteOffset = 1;
 		outByte = GMT_memory (C, NULL, nx*ny, unsigned char);
 	}
 	else if (!strcmp(prhs->type,"uint8")) {
 		typeCLASS = GDT_Byte;
+		n_byteOffset = 1;
 	}
 	else if (!strcmp(prhs->type,"uint16")) {
 		typeCLASS = GDT_UInt16;
+		n_byteOffset = 2;
 	}
 	else if (!strcmp(prhs->type,"int16")) {
 		typeCLASS = GDT_Int16;
+		n_byteOffset = 2;
 	}
 	else if (!strcmp(prhs->type,"uint32")) {
 		typeCLASS = GDT_UInt32;
+		n_byteOffset = 4;
 	}
 	else if (!strcmp(prhs->type,"int32")) {
 		typeCLASS = GDT_Int32;
+		n_byteOffset = 4;
 	}
 	else if (!strcmp(prhs->type,"float32")) {
 		typeCLASS = GDT_Float32;
+		n_byteOffset = 4;
 	}
 	else {
 		GMT_report (C, GMT_MSG_FATAL, "GMT_gdalwrite: Unsuported input data class!\n");
@@ -186,6 +193,13 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	}
 
 	for (i = 0; i < n_bands; i++) {
+		/* A problem with writing to the MEM driver is that it tests that we dont overflow
+		   but the issue is that the test is done on the MEM declared size, whilst we are
+		   actually using a larger array, and the dimensions passed to GDALRasterIO refer
+		   to it. The trick was to offset the initial position of the 'data' array in 
+		   GMT_gdal_write_grd and adapt the line stride here (last GDALRasterIO argument).
+		   Thanks to Even Roualt, see: 
+		   osgeo-org.1560.n6.nabble.com/gdal-dev-writing-a-subregion-with-GDALRasterIO-td4960500.html */
 		hBand = GDALGetRasterBand( hDstDS, i+1 ); 
 		if( i == 1 && hColorTable != NULL ) {
 			if (GDALSetRasterColorTable( hBand, hColorTable ) == CE_Failure)
@@ -215,7 +229,8 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 				break;
 			case GDT_Float32:
 				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
-				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0 );
+				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 
+				              (nx + prhs->pad[0] + prhs->pad[1]) * n_byteOffset );
 				break;
 		}
 	}
@@ -226,7 +241,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	GDALClose( hDstDS );
 	if (outByte) GMT_free(C, outByte);
 
-	if (!GMT_strlcmp(pszFormat,"netCDF")) {
+	if (GMT_strlcmp(pszFormat,"netCDF")) {
 		/* Change some attributes written by GDAL (not finished) */
 		int ncid;
 		GMT_LONG err;

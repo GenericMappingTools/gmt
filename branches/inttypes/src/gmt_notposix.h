@@ -298,13 +298,8 @@
 	EXTERN_MSC double rint(double x);
 #endif
 
-/* On Dec Alpha OSF1 there is a sincos with different syntax.
- * Assembly wrapper provided by Lloyd Parkes <lloyd@must-have-coffee.gen.nz>
- * can be used instead. See alpha-sincos.s */
-#if !defined(HAVE_SINCOS) && !defined(HAVE_ALPHASINCOS)
+#ifndef HAVE_SINCOS
 	EXTERN_MSC void sincos (double x, double *s, double *c);
-#elif defined(HAVE_ALPHASINCOS)
-#	define sincos alpha_sincos
 #endif
 
 #ifndef HAVE_Y0

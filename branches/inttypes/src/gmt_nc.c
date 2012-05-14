@@ -519,7 +519,7 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 	/* Open the NetCDF file */
 
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
- 	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
+	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
 	check = !GMT_is_dnan (header->nan_value);
 	GMT_err_trap (nc_inq_varndims (ncid, header->z_id, &ndims));
 
@@ -658,7 +658,7 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		GMT_free (C, tmp_f);
 	}
 
-	else {
+	else { /* z_type != NC_FLOAT && z_type != NC_DOUBLE */
 		tmp_i = GMT_memory (C, NULL, width_in, int);
 		for (j = 0; j < height_out; j++, ij -= (size_t)width_in) {
 			start[0] = j;
@@ -693,7 +693,7 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	}
 	else {
 		GMT_report (C, GMT_MSG_FATAL, "Warning: No valid values in grid [%s]\n", header->name);
-		limit[0] = limit[1] = 0.0;
+		limit[0] = limit[1] = NAN; /* set limit to NaN */
 	}
 	GMT_err_trap (nc_put_att_double (header->ncid, header->z_id, "actual_range", NC_DOUBLE, 2U, limit));
 

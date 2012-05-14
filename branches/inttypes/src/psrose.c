@@ -182,7 +182,8 @@ GMT_LONG GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n, n_errors = 0, n_files = 0;
+	GMT_LONG n;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	double range;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
@@ -334,10 +335,10 @@ GMT_LONG GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, find_mean = FALSE, half_only = 0, do_fill = FALSE;
+	BOOLEAN error = FALSE, find_mean = FALSE, do_fill = FALSE;
 	BOOLEAN automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
-	GMT_LONG n_bins, n_annot, n_alpha, n_modes, form, n_in;
-	GMT_LONG k, bin;
+	COUNTER_MEDIUM n_bins, n_modes, form, n_in, half_only = 0, bin;
+	GMT_LONG k, n_annot, n_alpha;
 	
 	COUNTER_LARGE n = 0, i;
 	
@@ -498,11 +499,11 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else
 				this_az = azimuth[i];
-			bin = lrint ((this_az + az_offset) / Ctrl->A.inc);
+			bin = lrint (floor ((this_az + az_offset) / Ctrl->A.inc));
 			sum[bin] += length[i];
 			if (Ctrl->T.active) {	/* Also count its other end */
 				this_az += 180.0;	if (this_az >= 360.0) this_az -= 360.0;
-				bin = lrint ((this_az + az_offset) / Ctrl->A.inc);
+				bin = lrint (floor ((this_az + az_offset) / Ctrl->A.inc));
 				sum[bin] += length[i];
 			}
 		}
@@ -656,11 +657,12 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		y2 = (sum[n_bins-1] * Ctrl->S.scale) * s;
 		PSL_plotpoint (PSL, x1, y1, PSL_MOVE);
 		PSL_plotpoint (PSL, x2, y2, PSL_DRAW);
-		for (bin = n_bins-1; bin >= 0; bin--) {
-			az = bin * Ctrl->A.inc - az_offset + half_bin_width;
+		for (bin = n_bins; bin > 0; bin--) {
+			k = bin - 1;
+			az = k * Ctrl->A.inc - az_offset + half_bin_width;
 			angle1 = 90.0 - az - Ctrl->A.inc;
 			angle2 = angle1 + Ctrl->A.inc;
-			PSL_plotarc (PSL, 0.0, 0.0, sum[bin] * Ctrl->S.scale, angle1, angle2, (bin == 0) ? PSL_STROKE : PSL_DRAW);
+			PSL_plotarc (PSL, 0.0, 0.0, sum[k] * Ctrl->S.scale, angle1, angle2, (k == 0) ? PSL_STROKE : PSL_DRAW);
 		}
 	}
 

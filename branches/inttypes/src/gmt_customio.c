@@ -1694,8 +1694,8 @@ GMT_LONG GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	to_GDALW->ny = header->ny;
 	to_GDALW->n_bands = header->n_bands;
 	to_GDALW->registration = header->registration;
-	to_GDALW->pad[0] = header->pad[0];		to_GDALW->pad[1] = header->pad[1];
-	to_GDALW->pad[2] = header->pad[2];		to_GDALW->pad[3] = header->pad[3];
+	to_GDALW->pad[0] = header->pad[XLO];		to_GDALW->pad[1] = header->pad[XHI];
+	to_GDALW->pad[2] = header->pad[YLO];		to_GDALW->pad[3] = header->pad[YHI];
 	to_GDALW->ULx = C->common.R.wesn[XLO];
 	to_GDALW->ULy = C->common.R.wesn[YHI];
 	to_GDALW->x_inc = GMT_get_inc (C, header->wesn[XLO], header->wesn[XHI], header->nx, header->registration);
@@ -1703,21 +1703,16 @@ GMT_LONG GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	to_GDALW->nan_value = header->nan_value;
 	to_GDALW->command = header->command;
 
-
-	if (!type[0] || !GMT_strlcmp(type, "float32")) {
-		/* Shift data to the begining of the array (i.e kinda of remove the padding). This is uggly and sould
-		   be done by GDALRasterIO directly but a GDAL limitation prevents it when using the MEM driver. */
-		for (row = 0; row < header->ny; row++)
-			for (col = 0, ij = GMT_IJP (header, row, 0); col < header->nx; col++, ij++)
-				grid[node++] = grid[ij];
-
-		to_GDALW->data = grid;
+	if (!type[0] || GMT_strlcmp(type, "float32")) {
+		/* We have to shift the grid pointer in order to use the GDALRasterIO ability to extract a subregion. */
+		/* See: osgeo-org.1560.n6.nabble.com/gdal-dev-writing-a-subregion-with-GDALRasterIO-td4960500.html */
+		to_GDALW->data = &grid[2 * header->mx + header->pad[XLO]];
 		to_GDALW->type = strdup("float32");
 		GMT_gdalwrite(C, header->name, to_GDALW);
 		GMT_free (C, to_GDALW);
 		return (GMT_NOERROR);
 	}
-	else if (!strcmp(type,"u8") || !strcmp(type,"u08")) {
+	else if (GMT_strlcmp(type,"u8") || GMT_strlcmp(type,"u08")) {
 		zu8 = GMT_memory(C, NULL, header->nx*header->ny, unsigned char);
 		for (row = 0; row < header->ny; row++)
 			for (col = 0, ij = GMT_IJP (header, row, 0); col < header->nx; col++, ij++)
@@ -1726,7 +1721,7 @@ GMT_LONG GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 		to_GDALW->data = zu8;
 		to_GDALW->type = strdup("uint8");
 	}
-	else if (!strcmp(type,"i16")) {
+	else if (GMT_strlcmp(type,"i16")) {
 		zi16 = GMT_memory(C, NULL, header->nx*header->ny, short int);
 		for (row = 0; row < header->ny; row++)
 			for (col = 0, ij = GMT_IJP (header, row, 0); col < header->nx; col++, ij++)
@@ -1735,7 +1730,7 @@ GMT_LONG GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 		to_GDALW->data = zi16;
 		to_GDALW->type = strdup("int16");
 	}
-	else if (!strcmp(type,"u16")) {
+	else if (GMT_strlcmp(type,"u16")) {
 		zu16 = GMT_memory(C, NULL, header->nx*header->ny, unsigned short int);
 		for (row = 0; row < header->ny; row++)
 			for (col = 0, ij = GMT_IJP (header, row, 0); col < header->nx; col++, ij++)
@@ -1744,7 +1739,7 @@ GMT_LONG GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 		to_GDALW->data = zu16;
 		to_GDALW->type = strdup("uint16");
 	}
-	else if (!strcmp(type,"i32")) {
+	else if (GMT_strlcmp(type,"i32")) {
 		zi32 = GMT_memory(C, NULL, header->nx*header->ny, int);
 		for (row = 0; row < header->ny; row++)
 			for (col = 0, ij = GMT_IJP (header, row, 0); col < header->nx; col++, ij++)
@@ -1753,7 +1748,7 @@ GMT_LONG GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 		to_GDALW->data = zi32;
 		to_GDALW->type = strdup("int32");
 	}
-	else if (!strcmp(type,"u32")) {
+	else if (GMT_strlcmp(type,"u32")) {
 		zu32 = GMT_memory(C, NULL, header->nx*header->ny, unsigned int);
 		for (row = 0; row < header->ny; row++)
 			for (col = 0, ij = GMT_IJP (header, row, 0); col < header->nx; col++, ij++)

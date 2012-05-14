@@ -128,6 +128,10 @@
 # Number of parallel test jobs:
 #set (N_TEST_JOBS 4)
 
+# Enable this option to run GMT programs from within ${GMT_BINARY_DIR} without
+# installing or setting GMT_SHAREDIR and GMT_USERDIR first [unset]:
+#set (SUPPORT_EXEC_IN_BINARY_DIR ON)
+
 # Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel [Release]:
 #set (CMAKE_BUILD_TYPE Debug)
 
