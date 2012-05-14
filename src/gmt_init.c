@@ -5272,6 +5272,18 @@ void GMT_set_env (struct GMT_CTRL *C)
 {
 	char *this = NULL, path[PATH_MAX+1];
 
+#ifdef SUPPORT_EXEC_IN_BINARY_DIR
+	/* If SUPPORT_EXEC_IN_BINARY_DIR is defined we try to set the share dir to
+	 * ${GMT_SOURCE_DIR}/share and the user dir to ${GMT_BINARY_DIR}/share in
+	 * order to simplify debugging and running in GMT_BINARY_DIR, e.g., when
+	 * debugging with Xcode or Visual Studio. This saves us from setting the
+	 * env variables GMT_SHAREDIR and GMT_USERDIR and we do not have to install
+	 * src/share in its destination dir. */
+
+	/* Only true, when we are running in a subdir of GMT_BINARY_DIR_SRC_DEBUG: */
+	bool running_in_bindir_src = !strncmp (C->init.runtime_bindir, GMT_BINARY_DIR_SRC_DEBUG, sizeof(GMT_BINARY_DIR_SRC_DEBUG));
+#endif
+
 	/* Determine C->session.SHAREDIR (directory containing coast, cpt, etc. subdirectories) */
 
 	if ((this = getenv ("GMT5_SHAREDIR")) != NULL
@@ -5283,7 +5295,7 @@ void GMT_set_env (struct GMT_CTRL *C)
 		/* GMT_SHAREDIR was set */
 		C->session.SHAREDIR = strdup (this);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
-	else if ( access (GMT_SHARE_PATH_DEBUG, R_OK|X_OK) == 0 )
+	else if ( running_in_bindir_src && GMT_verify_sharedir_version (GMT_SHARE_PATH_DEBUG) )
 		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
 		C->session.SHAREDIR = strdup (GMT_SHARE_PATH_DEBUG);
 #endif
@@ -5326,8 +5338,8 @@ void GMT_set_env (struct GMT_CTRL *C)
 		/* GMT_USERDIR was set */
 		C->session.USERDIR = strdup (this);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
-	else if ( access (GMT_USER_PATH_DEBUG, R_OK|X_OK) == 0 )
-		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
+	else if ( running_in_bindir_src && access (GMT_USER_PATH_DEBUG, R_OK|X_OK) == 0 )
+		/* Use ${GMT_BINARY_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
 		C->session.USERDIR = strdup (GMT_USER_PATH_DEBUG);
 #endif
 	else {
