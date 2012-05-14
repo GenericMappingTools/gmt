@@ -144,18 +144,13 @@
 #	define _MSC_STDINT_H_
 #endif
 
-/* Math function sincos is a GNU extension */
-#define _GNU_SOURCE
-
-#cmakedefine WORDS_BIGENDIAN
-
-/* Byte swapping functions */
-#cmakedefine HAVE___BUILTIN_BSWAP16
-#cmakedefine HAVE___BUILTIN_BSWAP32
-#cmakedefine HAVE___BUILTIN_BSWAP64
-#cmakedefine HAVE__BYTESWAP_USHORT /* for 16 bit */
-#cmakedefine HAVE__BYTESWAP_ULONG /* for 32 bit */
-#cmakedefine HAVE__BYTESWAP_UINT64 /* for 64 bit */
+/* We prefer to use extensions (e.g., strdup, sincos) when available */
+#ifdef __GNUC__
+#	define _GNU_SOURCE
+#endif
+#if defined(__sun) || defined(__sun__)
+#	define __EXTENSIONS__
+#endif
 
 /* Math headers */
 
@@ -207,6 +202,15 @@
 #cmakedefine SIZEOF_WCHAR_T     @SIZEOF_WCHAR_T@
 #cmakedefine SIZEOF_WINT_T      @SIZEOF_WINT_T@
 #cmakedefine SIZEOF_VOID_P      @SIZEOF_VOID_P@
+#cmakedefine WORDS_BIGENDIAN
+
+/* Byte swapping functions */
+#cmakedefine HAVE___BUILTIN_BSWAP16
+#cmakedefine HAVE___BUILTIN_BSWAP32
+#cmakedefine HAVE___BUILTIN_BSWAP64
+#cmakedefine HAVE__BYTESWAP_USHORT /* for 16 bit */
+#cmakedefine HAVE__BYTESWAP_ULONG /* for 32 bit */
+#cmakedefine HAVE__BYTESWAP_UINT64 /* for 64 bit */
 
 /* Architecture type (32/64 bits) */
 #if SIZEOF_VOID_P == 4 /* on i386 */
