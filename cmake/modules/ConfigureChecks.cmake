@@ -29,8 +29,8 @@ if (NOT HAVE_TRADITIONAL_CPP)
 	if (MSVC)
 		# Visual C++
 		set (_cpp_cmdline /EP)
-	elseif (CMAKE_COMPILER_IS_GNUCC OR __COMPILER_GNU)
-		# GCC or Clang
+	elseif (CMAKE_C_COMPILER_ID MATCHES "(GNU|Clang|Intel)")
+		# GCC, Clang, or ICC
 		set (_cpp_cmdline -E -w -P -nostdinc -traditional-cpp)
 	endif (MSVC)
 	message (STATUS "Performing Test HAVE_TRADITIONAL_CPP")
@@ -71,13 +71,16 @@ check_include_file (direct.h            HAVE_DIRECT_H_)
 check_include_file (process.h           HAVE_PROCESS_H_)
 
 #
-# Check for C99 and POSIX conformity
+# Check for C99 and libc extensions
 #
 
-# sincos is a GNU extension:
+# strdup, sincos, ... are GNU/BSD/Sun extensions:
 cmake_push_check_state()
 set (CMAKE_REQUIRED_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
-	-D_GNU_SOURCE -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE)
+	-D_GNU_SOURCE
+	-D__EXTENSIONS__
+	-D_LARGEFILE_SOURCE
+	-D_LARGEFILE64_SOURCE)
 
 check_include_file (assert.h            HAVE_ASSERT_H_)
 check_include_file (dirent.h            HAVE_DIRENT_H_)
@@ -307,9 +310,8 @@ endif (WIN32)
 if (HAVE_SINCOS)
 	check_c_source_runs (
 		"
-		#ifndef _GNU_SOURCE
 		#define _GNU_SOURCE
-		#endif
+		#define __EXTENSIONS__
 		include <math.h>
 		int main () {
 		double s = 0.1, c = 0.2;
