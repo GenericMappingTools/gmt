@@ -1681,7 +1681,7 @@ void table_LOWER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 		if (info->local) for (i = 0; i < info->T->segment[s]->n_rows; i++) if (!GMT_is_dnan (T->segment[s]->coord[col][i])) T->segment[s]->coord[col][i] = low;
 	}
 	if (info->local) return;	/* Done with local */
-	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) if (!GMT_is_dnan (T->segment[s]->coord[col][i])) T->segment[s]->coord[col][i] = low;
+	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) T->segment[s]->coord[col][i] = low;
 }
 
 void table_LRAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *S[], BOOLEAN *constant, double *factor, COUNTER_MEDIUM last, COUNTER_MEDIUM col)
@@ -2687,7 +2687,7 @@ void table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 			if (GMT_is_dnan (T->segment[s]->coord[col][i])) continue;
 			if (T->segment[s]->coord[col][i] > high) high = T->segment[s]->coord[col][i];
 		}
-		if (info->local) for (i = 0; i < info->T->segment[s]->n_rows; i++) if (!GMT_is_dnan (T->segment[s]->coord[col][i])) T->segment[s]->coord[col][i] = high;
+		if (info->local) for (i = 0; i < info->T->segment[s]->n_rows; i++) T->segment[s]->coord[col][i] = high;
 	}
 	if (info->local) return;	/* DOne with local */
 	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) if (!GMT_is_dnan (T->segment[s]->coord[col][i])) T->segment[s]->coord[col][i] = high;

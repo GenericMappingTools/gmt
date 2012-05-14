@@ -41,8 +41,8 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 	} C;
 	struct E {	/* -E */
 		BOOLEAN active;
-#if defined(BLOCKMEDIAN)	/* Only blockmedian has a -Eb modifier */
-		COUNTER_MEDIUM mode;	/* Used in blockmedian to select box-and-whisker output (-Eb) */
+#if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -E mode selection */
+		COUNTER_MEDIUM mode;	/* Used to select box-and-whisker output (-Eb) [1] or in median/mode to get index (-Ei) [2|4] */
 #endif
 	} E;
 	struct I {	/* -Idx[/dy] */

@@ -165,7 +165,6 @@
 /* Math related */
 
 #cmakedefine HAVE_ACOSH
-#cmakedefine HAVE_ALPHASINCOS
 #cmakedefine HAVE_ASINH
 #cmakedefine HAVE_ATANH
 #cmakedefine HAVE_COPYSIGN

@@ -5305,6 +5305,11 @@ void GMT_set_env (struct GMT_CTRL *C)
 			&& GMT_verify_sharedir_version (this) )
 		/* GMT_SHAREDIR was set */
 		C->session.SHAREDIR = strdup (this);
+#ifdef SUPPORT_EXEC_IN_BINARY_DIR
+	else if ( access (GMT_SHARE_PATH_DEBUG, R_OK|X_OK) == 0 )
+		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
+		C->session.SHAREDIR = strdup (GMT_SHARE_PATH_DEBUG);
+#endif
 	else if ( GMT_verify_sharedir_version (GMT_SHARE_PATH) )
 		/* Found in hardcoded GMT_SHARE_PATH */
 		C->session.SHAREDIR = strdup (GMT_SHARE_PATH);
@@ -5343,6 +5348,11 @@ void GMT_set_env (struct GMT_CTRL *C)
 	if ((this = getenv ("GMT_USERDIR")) != NULL)
 		/* GMT_USERDIR was set */
 		C->session.USERDIR = strdup (this);
+#ifdef SUPPORT_EXEC_IN_BINARY_DIR
+	else if ( access (GMT_USER_PATH_DEBUG, R_OK|X_OK) == 0 )
+		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
+		C->session.USERDIR = strdup (GMT_USER_PATH_DEBUG);
+#endif
 	else {
 		/* Use default path for GMT_USERDIR (~/.gmt) */
 		sprintf (path, "%s/%s", C->session.HOMEDIR, ".gmt");

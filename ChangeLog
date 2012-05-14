@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-05-11	pwessel
+	* gmtmath.c:		Operators UPPER and LOWER did not assign output to rows
+				that contain NaN.
+	* misc/dimfilter.c:	Initialized a max value to -DBL_MIN instead of -DBL_MAX.
+
 2012-04-29	remko
 	* gmt_init.c, gmt_nc.c, etc.:
 				Introduced IO_NC4_DEFLATION_LEVEL setting to control netCDF4 deflation.

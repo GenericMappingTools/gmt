@@ -390,7 +390,7 @@ void fix_format (char *unit, char *format)
 
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[0].id].height)
 
-void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double length, double width, double *z_width, double bit_dpi, BOOLEAN flip, \
+void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double length, double width, double *z_width, double bit_dpi, COUNTER_MEDIUM flip, \
 	BOOLEAN B_set, BOOLEAN equi, BOOLEAN horizontal, BOOLEAN logscl, BOOLEAN intens, double *max_intens, BOOLEAN skip_lines, COUNTER_MEDIUM extend, \
 	double e_length, char *nan_text, double gap, BOOLEAN interval_annot, BOOLEAN monochrome, struct T Ctrl_T)
 {
@@ -1003,7 +1003,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				PSL_plottext (PSL, xleft + 0.5 * length, y_label, GMT->current.setting.font_label.size, label, 0.0, Label_justify, form);
 			}
 			else {	/* Set label text as column (AARRGGHH) */
-				y_label += 0.5 * ((flip & 2) - 1) * GMT->current.setting.font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
+				GMT_LONG dir = (flip & 2) - 1;
+				y_label += 0.5 * dir * GMT->current.setting.font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 				size = 0.9 * GMT->current.setting.font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 				x0 = 0.5 * (length + ((GMT_LONG)strlen (label) -1) * size);
 				text[1] = 0;
