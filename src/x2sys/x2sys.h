@@ -138,7 +138,7 @@ struct X2SYS_INFO {
 	BOOLEAN *use_column;		/* Array of T/F for which columns to use */
 	COUNTER_MEDIUM geodetic;		/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
 	COUNTER_MEDIUM dist_flag;		/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
-	PFL read_file;			/* Pointer to function that reads this file */
+	p_func_l read_file;		/* Pointer to function that reads this file */
 	COUNTER_MEDIUM file_type;		/* 0 = ASCII, 1 = native binary, 2 = netCDF */
 	BOOLEAN ascii_out;		/* TRUE if output should be in ascii */
 	BOOLEAN multi_segment;		/* TRUE if there are multiple segments in this file */

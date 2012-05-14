@@ -179,7 +179,7 @@ GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct GMTAVERAGE_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *t_ptr = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	PFL func = NULL;
+	p_func_l func = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

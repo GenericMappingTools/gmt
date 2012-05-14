@@ -4,7 +4,7 @@
 grdreformat \- Convert between different grid formats
 .SH SYNOPSIS
 BD(grdreformat) IT(ingrdfile)[IT(=id)[IT(/scale/offset)[IT(/NaNvalue)]]] 
-IT(outgrdfile)[IT(=id)[IT(/scale/offset)[IT(/NaNvalue)]]] 
+IT(outgrdfile)[IT(=id)[IT(/scale/offset)[IT(/NaNvalue)]][:driver[/datatype]]] 
 [ OPT(N) ] [ GMT_Rgeo_OPT ] [ GMT_f_OPT ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 BD(grdreformat) reads a grid file in one format and writes it out using another format.  As an option the
@@ -34,6 +34,11 @@ values (except for round-offs).
 If IT(scale) and IT(offset)
 are supplied you may also append a value that represents 'Not-a-Number' (for floating-point grids this
 is unnecessary since the IEEE NaN is used; however integers need a value which means no data available.)
+When IT(id)=IT(gd) it means that file will be saved using the GDAL library. Than one can select which 
+IT(driver) to use and the output data type. The driver names are those used by GDAL itself (e.g netCDF, GTiFF, etc)
+and the data type is one of IT(u8)|IT(i8)|IT(u16)|IT(i16)|IT(u32)|IT(i32)|IT(float32), where 'i' and 'u'
+stand for signed and unsigned integers respectively. Default is IT(netCDF)/IT(float32). Note also that both
+driver names and data types are case insensitive.
 .SH OPTIONAL ARGUMENTS
 .TP
 OPT(N)
@@ -126,6 +131,10 @@ To convert etopo2.nc to etopo2.i2 that can be used by BD(grdraster), try
 .br
 .sp
 grdreformat etopo2.nc etopo2.i2=bs -N -V
+.br
+.sp
+To creat a dumb file saved as a 32 bits float GeoTiff using GDAL
+grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grdmath (1)

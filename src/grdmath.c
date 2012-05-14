@@ -2941,7 +2941,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 #include "grdmath_op.h"
 
-	PFV call_operator[GRDMATH_N_OPERATORS];
+	p_func_v call_operator[GRDMATH_N_OPERATORS];
 
 	struct GMT_HASH localhashnode[GRDMATH_N_OPERATORS];
 	struct GRDMATH_INFO info;

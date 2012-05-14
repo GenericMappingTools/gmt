@@ -380,13 +380,13 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	char format[GMT_TEXT_LEN256];		/* format used for non-time annotations */
 	char *axis_chr[3] = {"ns", "ew", "zz"};	/* Characters corresponding to axes */
 	char **label_c = NULL;
-	PFD xyz_fwd = NULL;
+	p_func_d xyz_fwd = NULL;
 	struct PSL_CTRL *P = C->PSL;
 
 	/* Initialize parameters for this axis */
 
 	horizontal = (axis == GMT_X);	/* This is a horizontal axis */
-	xyz_fwd = (PFD) ((axis == GMT_X) ? GMT_x_to_xx : (axis == GMT_Y) ? GMT_y_to_yy : GMT_z_to_zz);
+	xyz_fwd = (p_func_d) ((axis == GMT_X) ? GMT_x_to_xx : (axis == GMT_Y) ? GMT_y_to_yy : GMT_z_to_zz);
 	primary = gmt_get_primary_annot (A);			/* Find primary axis items */
 	np = GMT_coordinate_array (C, val0, val1, &A->item[primary], &knots_p, NULL);	/* Get all the primary tick annotation knots */
 	if (strchr (C->current.setting.map_annot_ortho, axis_chr[axis][below])) ortho = TRUE;	/* Annotations are orthogonal */
@@ -2732,6 +2732,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 void gmt_draw_dir_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_ROSE *mr)
 {
 	COUNTER_MEDIUM i, kind, form, just[4] = {10, 5, 2, 7};
+	GMT_LONG k;
 	double angle, L[4], R[4], x[8], y[8], xp[8], yp[8], tx[3], ty[3], s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
 	struct GMT_FILL f;
 
@@ -2752,7 +2753,7 @@ void gmt_draw_dir_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 		R[2] = R[3] = ROSE_WIDTH_SCL3 * mr->size;
 		mr->kind--;	/* Turn 1-3 into 0-2 */
 		if (mr->kind == 2) mr->kind = 3;	/* Trick so that we can draw 8 rather than 4 points */
-		for (kind = mr->kind; kind >= 0; kind--) {
+		for (k = kind = mr->kind; k >= 0; k--, kind--) {
 			/* Do 4 blades 90 degrees apart, aligned with main axes & relative to (0,0) */
 			x[0] = L[kind], x[1] = x[7] = 0.5 * M_SQRT2 * R[kind], x[2] = x[6] = 0.0;
 			y[0] = y[4] = 0.0, y[1] = y[3] = 0.5 * M_SQRT2 * R[kind], y[2] = L[kind];
@@ -3749,7 +3750,7 @@ void gmt_geo_polygon (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARG
 	BOOLEAN jump;
 	COUNTER_LARGE k, first, i;
 	double *xp = NULL, *yp = NULL;
-	PFD x_on_border[2] = {NULL, NULL};
+	p_func_d x_on_border[2] = {NULL, NULL};
 	struct PSL_CTRL *P = C->PSL;
 
 	if (GMT_eq (P->current.rgb[PSL_IS_FILL][0], -1.0)) {

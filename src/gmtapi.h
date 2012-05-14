@@ -62,7 +62,7 @@ struct GMTAPI_DATA_OBJECT {
 	void *data;				/* Points to container associated with this object [for garbage collection purposes] */
 	FILE *fp;				/* Pointer to source/destination stream [For rec-by-rec procession, NULL if memory location] */
 	char *filename;				/* Filename, stream, of file handle (otherwise NULL) */
-	PFP import;				/* Pointer to input function (for DATASET/TEXTSET only) */
+	p_func_vp import;			/* Pointer to input function (for DATASET/TEXTSET only) */
 };
 
 struct GMTAPI_CTRL {
@@ -100,9 +100,9 @@ struct GMT_OPTION {	/* Structure for a single GMT command option */
 /* 17 Primary API functions */
 EXTERN_MSC struct GMTAPI_CTRL * GMT_Create_Session	(char *tag, unsigned int mode);
 EXTERN_MSC void * GMT_Create_Data			(struct GMTAPI_CTRL *C, unsigned int type, COUNTER_LARGE par[]);
-EXTERN_MSC void * GMT_Get_Data				(struct GMTAPI_CTRL *C, unsigned int ID, unsigned int mode, void *data);
+EXTERN_MSC void * GMT_Get_Data				(struct GMTAPI_CTRL *C, unsigned int object_ID, unsigned int mode, void *data);
 EXTERN_MSC void * GMT_Read_Data				(struct GMTAPI_CTRL *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *input, void *data);
-EXTERN_MSC void * GMT_Retrieve_Data			(struct GMTAPI_CTRL *C, unsigned int ID);
+EXTERN_MSC void * GMT_Retrieve_Data			(struct GMTAPI_CTRL *C, unsigned int object_ID);
 EXTERN_MSC void * GMT_Get_Record			(struct GMTAPI_CTRL *C, unsigned int mode, int *retval);
 EXTERN_MSC int GMT_Destroy_Session			(struct GMTAPI_CTRL **C);
 EXTERN_MSC int GMT_Register_IO				(struct GMTAPI_CTRL *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource);
@@ -110,9 +110,9 @@ EXTERN_MSC int GMT_Init_IO				(struct GMTAPI_CTRL *C, unsigned int family, unsig
 EXTERN_MSC int GMT_Begin_IO				(struct GMTAPI_CTRL *C, unsigned int family, unsigned int direction);
 EXTERN_MSC int GMT_End_IO				(struct GMTAPI_CTRL *C, unsigned int direction, unsigned int mode);
 EXTERN_MSC int GMT_Report_Error				(struct GMTAPI_CTRL *C, int error);
-EXTERN_MSC int GMT_Put_Data				(struct GMTAPI_CTRL *C, unsigned int ID, unsigned int mode, void *data);
+EXTERN_MSC int GMT_Put_Data				(struct GMTAPI_CTRL *C, unsigned int object_ID, unsigned int mode, void *data);
 EXTERN_MSC int GMT_Write_Data				(struct GMTAPI_CTRL *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *output, void *data);
-EXTERN_MSC int GMT_Destroy_Data				(struct GMTAPI_CTRL *C, unsigned int mode, void *X);
+EXTERN_MSC int GMT_Destroy_Data				(struct GMTAPI_CTRL *C, unsigned int mode, void *object);
 EXTERN_MSC int GMT_Put_Record				(struct GMTAPI_CTRL *C, unsigned int mode, void *record);
 EXTERN_MSC int GMT_Encode_ID				(struct GMTAPI_CTRL *C, char *string, unsigned int object_ID);
 

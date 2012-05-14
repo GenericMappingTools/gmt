@@ -128,7 +128,7 @@ struct GMT_COMMON {
 		enum GMT_enum_gaps method[GMT_N_GAP_METHODS];	/* How distances are computed for each criteria */
 		GMT_LONG col[GMT_N_GAP_METHODS];	/* Which column to use (-1 for x,y distance) */
 		double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
-		PFD get_dist[GMT_N_GAP_METHODS];	/* Pointers to functiosn that compute those distances */
+		p_func_d get_dist[GMT_N_GAP_METHODS];	/* Pointers to functiosn that compute those distances */
 	} g;
 	struct h {	/* -h[i][<nrecs>] */
 		BOOLEAN active;

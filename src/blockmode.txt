@@ -4,7 +4,7 @@
 blockmode \- Block average (IT(x),IT(y),IT(z)) data tables by mode estimation
 .SH SYNOPSIS
 BD(blockmode) [ IT(table) ] GMT_I_OPT GMT_Rx_OPT 
-[ OPT(C) ] [ OPT(E) ] [ OPT(Q) ] [ GMT_V_OPT ] 
+[ OPT(C) ] [ OPT(E) ] [ OPT(E)BD(r)[BD(-)] ] [ OPT(Q) ] [ GMT_V_OPT ] 
 [ OPT(W)[BD(i)|BD(o)] ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] 
 [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -37,6 +37,12 @@ Provide Extended report which includes BD(s) (the L1 scale of the mode),
 BD(l), the lowest value, and BD(h), the high value for each block. Output order
 becomes IT(x),IT(y),IT(z),IT(s),IT(l),IT(h)[,IT(w)]. [Default outputs IT(x),IT(y),IT(z)[,IT(w)].
 See OPT(W) for IT(w) output.
+.TP
+OPT(E)BD(r)[BD(-)]
+Provide record number output, i.e., append the record number associated with the modal value.
+If tied then report the record number of the higher of the two values; append BD(-) to instead
+report the record number of the lower value.  Note that both OPT(E) and OPT(E)BD(r)[BD(-)]
+may be specified.
 .TP
 OPT(Q)
 (Quicker) Finds mode IT(z) and mean (IT(x),IT(y)) [Default finds mode IT(x),

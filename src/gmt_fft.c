@@ -2892,8 +2892,8 @@ GMT_LONG GMT_fft_2d (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM nx, COUNTER
 void GMT_fft_initialization (struct GMT_CTRL *C) {
 	/* Called by GMT_begin and sets up pointers to the available FFT calls */
 	
-	GMT_memset (C->session.fft1d, N_GMT_FFT, PFL);	/* Start with nothing */
-	GMT_memset (C->session.fft2d, N_GMT_FFT, PFL);	/* Start with nothing */
+	GMT_memset (C->session.fft1d, N_GMT_FFT, p_func_l);	/* Start with nothing */
+	GMT_memset (C->session.fft2d, N_GMT_FFT, p_func_l);	/* Start with nothing */
 #ifdef WITH_ACCELERATE
 	C->session.fft1d[GMT_FFT_ACCELERATE] = GMT_fft_1d_accelerate;	/* OS X Accelerate Framework */
 	// C->session.fft2d[GMT_FFT_ACCELERATE] = GMT_fft_2d_accelerate;	/* OS X Accelerate Framework */

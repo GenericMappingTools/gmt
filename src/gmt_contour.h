@@ -124,8 +124,8 @@ struct GMT_CONTOUR {
 	char line_name[16];		/* Name of line: contour or line */
 	char flag;			/* Char for the option key */
 	char **f_label;			/* Array for fixed labels */
-	PFD dist_func;			/* Pointer to function that calculates distances */
-	PFD L_dist_func;		/* Pointer to function that calculates distances for label content only */
+	p_func_d dist_func;		/* Pointer to function that calculates distances */
+	p_func_d L_dist_func;		/* Pointer to function that calculates distances for label content only */
 	struct GMT_FONT font_label;	/* Which font */
 	struct GMT_TABLE *xp;		/* Table with list of structures with crossing-line coordinates */
 	struct GMT_XSEGMENT *ylist_XP;	/* Sorted y-segments for crossing-lines */

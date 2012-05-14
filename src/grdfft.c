@@ -116,7 +116,7 @@ struct F_INFO {
 	double llambda[3];	/* Low full-wavelength where Gauss amp = 0.5 for r, x, and y	*/
 	double hlambda[3];	/* High full-wavelength where Gauss amp = 0.5  for r, x, and y	*/
 	double bw_order;	/* Order, N, of Butterworth filter	*/
-	PFD filter;		/* Points to the correct filter function */
+	p_func_d filter;		/* Points to the correct filter function */
 	BOOLEAN do_this[3];	/* T/F this filter wanted for r, x, and y	*/
 	BOOLEAN set_already;	/* TRUE if we already filled in the structure */
 	GMT_LONG kind;		/* FILTER_EXP, FILTER_BW, FILTER_COS  */
@@ -560,18 +560,18 @@ BOOLEAN parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 			f_info->hc[j] = (2.0 * M_PI)/fourvals[3];
 			if (fourvals[2] != fourvals[3]) f_info->htaper[j] = 1.0/(f_info->hc[j] - f_info->hp[j]);
 		}
-		f_info->filter = (PFD) cosine_weight_grdfft;
+		f_info->filter = (p_func_d) cosine_weight_grdfft;
 	}
 	else if (f_info->kind == FILTER_BW) {	/* Butterworth specification */
 		f_info->llambda[j] = (fourvals[0] == -1.0) ? -1.0 : fourvals[0] / TWO_PI;	/* TWO_PI is used to counteract the 2*pi in the wavenumber */
 		f_info->hlambda[j] = (fourvals[1] == -1.0) ? -1.0 : fourvals[1] / TWO_PI;
 		f_info->bw_order = 2.0 * fourvals[2];
-		f_info->filter = (PFD) bw_weight;
+		f_info->filter = (p_func_d) bw_weight;
 	}
 	else {	/* Gaussian half-amp specifications */
 		f_info->llambda[j] = (fourvals[0] == -1.0) ? -1.0 : fourvals[0] / TWO_PI;	/* TWO_PI is used to counteract the 2*pi in the wavenumber */
 		f_info->hlambda[j] = (fourvals[1] == -1.0) ? -1.0 : fourvals[1] / TWO_PI;
-		f_info->filter = (PFD) gauss_weight;
+		f_info->filter = (p_func_d) gauss_weight;
 	}
 	f_info->arg = f_info->kind - FILTER_EXP;
 	return (FALSE);
@@ -597,7 +597,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	COUNTER_LARGE dim[4] = {1, 1, 1, 0};
 	COUNTER_LARGE k, nk, nused, ifreq;
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
-	PFD get_k;
+	p_func_d get_k;
 	float *datac = Grid->data;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
@@ -606,13 +606,13 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 		/* X spectrum desired  */
 		delta_k = K->delta_kx;
 		nk = K->nx2 / 2;
-		get_k = (PFD)kx;
+		get_k = (p_func_d)kx;
 	}
 	else if (*par < 0.0) {
 		/* Y spectrum desired  */
 		delta_k = K->delta_ky;
 		nk = K->ny2 / 2;
-		get_k = (PFD)ky;
+		get_k = (p_func_d)ky;
 	}
 	else {
 		/* R spectrum desired  */
@@ -624,7 +624,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 			delta_k = K->delta_ky;
 			nk = K->ny2 / 2;
 		}
-		get_k = (PFD)modk;
+		get_k = (p_func_d)modk;
 	}
 
 	/* Get an array for summing stuff */
