@@ -448,7 +448,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 		nx = GMT_coordinate_array (C, val0, val1, &A->item[k], &knots, &label_c);	/* Get all the annotation tick knots */
 		do_annot = (nx && k < GMT_TICK_UPPER && annotate && !GMT_axis_is_geo (C, axis) && T->unit != 'r');	/* Cannot annotate a Gregorian week */
 		do_tick = !((T->unit == 'K' || T->unit == 'k') && T->interval > 1 && fmod (T->interval, 7.0) > 0.0);	/* Do we want tick marks? */
-		nx1 = (nx > 0 && is_interval) ? nx - 1 : 0;
+		nx1 = (nx > 0 && is_interval) ? nx - 1 : nx;
 		/* First plot all the tick marks */
 
 		if (do_tick) {
@@ -932,7 +932,7 @@ void gmt_fancy_frame_straight_outline (struct GMT_CTRL *C, struct PSL_CTRL *P, d
 	dx =  C->current.setting.map_frame_width * s;
 	dy = -C->current.setting.map_frame_width * c;
 	PSL_plotsegment (P, x[0]-Ldx, y[0]-Ldy, x[1]+Ldx, y[1]+Ldy);
-	for (k = 0; kn; k++) {
+	for (k = 0; k < kn; k++) {
 		x[0] += scale*dx;
 		y[0] += scale*dy;
 		x[1] += scale*dx;
