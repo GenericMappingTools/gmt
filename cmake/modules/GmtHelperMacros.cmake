@@ -3,7 +3,7 @@
 #
 # - Usefull CMake macros
 #
-# Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -143,7 +143,7 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		# gmt_progcases.h
 		list_regex_replace (
 			"^([^# \t:]+):([^ \t]+)"
-			"\t\t\tfunc = (PFL)GMT_\\\\1#S\n\t\t\t*mode = \\\\2#S\n\t\t\tbreak#S"
+			"\t\t\tfunc = (p_func_l)GMT_\\\\1#S\n\t\t\t*mode = \\\\2#S\n\t\t\tbreak#S"
 			_raw_progcases ${GMT_PROGS} ${ARGN}
 			MATCHES_ONLY)
 		list (REMOVE_DUPLICATES _raw_progcases)

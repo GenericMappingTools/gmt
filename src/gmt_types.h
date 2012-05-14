@@ -54,11 +54,11 @@ typedef unsigned long long GMT_ULONG;
 #endif*/
 #endif
 
-typedef void (*PFV) ();         /* PFV declares a pointer to a function returning void */
-typedef void* (*PFP) ();        /* PFP declares a pointer to a function returning void* */
-typedef GMT_LONG (*PFL) ();     /* PFL declares a pointer to a function returning an GMT_LONG */
-typedef int (*PFI) ();          /* PFI declares a pointer to a function returning an int */
-typedef double (*PFD) ();       /* PFD declares a pointer to a function returning a double */
+typedef void (*p_func_v) ();         /* p_func_v declares a pointer to a function returning void */
+typedef void* (*p_func_vp) ();       /* p_func_vp declares a pointer to a function returning void* */
+typedef GMT_LONG (*p_func_l) ();     /* p_func_l declares a pointer to a function returning an GMT_LONG */
+typedef int (*p_func_i) ();          /* p_func_i declares a pointer to a function returning an int */
+typedef double (*p_func_d) ();       /* p_func_d declares a pointer to a function returning a double */
 
 typedef struct {float x[2];} fpair;	/* Can be used to hold pairs of data, e.g. real, imag or x, weight */
 typedef struct {double x[2];} dpair;	/* Same, at double precision */

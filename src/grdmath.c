@@ -2838,7 +2838,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 #include "grdmath_op.h"
 
-	PFV call_operator[GRDMATH_N_OPERATORS];
+	p_func_v call_operator[GRDMATH_N_OPERATORS];
 
 	struct GMT_HASH localhashnode[GRDMATH_N_OPERATORS];
 	struct GRDMATH_INFO info;
@@ -2966,7 +2966,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Make sure latitudes remain in range; if not apply geographic BC */
 		for (k = 0; k < info.G->header->pad[YHI]; k++) 
 			if (info.grd_y[k] > 90.0) info.grd_y[k] = (float)(2.0 * 90.0 - info.grd_y[k]);
-		for (k = 0, kk = info.G->header->my - info.G->header->pad[YLO]; k < info.G->header->pad[YLO]; k++, k++) 
+		for (k = 0, kk = info.G->header->my - info.G->header->pad[YLO]; k < info.G->header->pad[YLO]; kk++, k++) 
 			if (info.grd_y[kk] < -90.0) info.grd_y[kk] = (float)(-2.0 * 90.0 - info.grd_y[kk]);
 	}
 	off = 0.5 * (info.G->header->wesn[XHI] + info.G->header->wesn[XLO]);

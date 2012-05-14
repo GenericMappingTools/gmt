@@ -23,7 +23,7 @@
 
 #define GRDMATH_N_OPERATORS @GRDMATH_N_OPERATORS@
 
-void grdmath_init (PFV ops[], GMT_LONG n_args[], GMT_LONG n_out[])
+void grdmath_init (p_func_v ops[], GMT_LONG n_args[], GMT_LONG n_out[])
 {
 
 	/* Operator function	# of operands	# of outputs */

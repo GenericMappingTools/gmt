@@ -1971,31 +1971,31 @@ GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 	}
 	switch (C->common.g.method[i]) {
 		case GMT_NEGGAP_IN_COL:
-			C->common.g.get_dist[i] = (PFD) gmt_neg_col_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_neg_col_dist;
 			break;
 		case GMT_POSGAP_IN_COL:
-			C->common.g.get_dist[i] = (PFD) gmt_pos_col_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_pos_col_dist;
 			break;
 		case GMT_ABSGAP_IN_COL:
-			C->common.g.get_dist[i] = (PFD) gmt_abs_col_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_abs_col_dist;
 			break;
 		case GMT_NEGGAP_IN_MAP_COL:
-			C->common.g.get_dist[i] = (PFD) gmt_neg_col_map_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_neg_col_map_dist;
 			break;
 		case GMT_POSGAP_IN_MAP_COL:
-			C->common.g.get_dist[i] = (PFD) gmt_pos_col_map_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_pos_col_map_dist;
 			break;
 		case GMT_ABSGAP_IN_MAP_COL:
-			C->common.g.get_dist[i] = (PFD) gmt_abs_col_map_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_abs_col_map_dist;
 			break;
 		case GMT_GAP_IN_GDIST:
-			C->common.g.get_dist[i] = (PFD) gmt_xy_true_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_xy_true_dist;
 			break;
 		case GMT_GAP_IN_CDIST:
-			C->common.g.get_dist[i] = (PFD) gmt_xy_cart_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_xy_cart_dist;
 			break;
 		case GMT_GAP_IN_PDIST:
-			C->common.g.get_dist[i] = (PFD) gmt_xy_map_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_xy_map_dist;
 			break;
 		default:
 			break;	/* Already set, or will be reset below  */
@@ -2009,15 +2009,15 @@ GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 	if (C->common.g.method[i] == GMT_GAP_IN_GDIST) {	/* Convert any gap given to meters */
 		switch (txt[strlen(txt)-1]) {	/* Process unit information */
 			case 'd':	/* Arc degrees, reset pointer */
-				C->common.g.get_dist[i] = (PFD) gmt_xy_deg_dist;
+				C->common.g.get_dist[i] = (p_func_d) gmt_xy_deg_dist;
 				C->common.g.method[i] = GMT_GAP_IN_DDIST;
 				break;
 			case 'm':	/* Arc minutes, reset pointer */
-				C->common.g.get_dist[i] = (PFD) gmt_xy_deg_dist;
+				C->common.g.get_dist[i] = (p_func_d) gmt_xy_deg_dist;
 				C->common.g.method[i] = GMT_GAP_IN_DDIST;
 				C->common.g.gap[i] *= GMT_MIN2DEG;
 			case 's':	/* Arc seconds, reset pointer */
-				C->common.g.get_dist[i] = (PFD) gmt_xy_deg_dist;
+				C->common.g.get_dist[i] = (p_func_d) gmt_xy_deg_dist;
 				C->common.g.method[i] = GMT_GAP_IN_DDIST;
 				C->common.g.gap[i] *= GMT_SEC2DEG;
 			case 'f':	/* Feet  */
@@ -8031,8 +8031,8 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 
 	C->current.proj.projection = GMT_NO_PROJ;
 	/* We need some defaults here for the cases where we do not actually set these with GMT_map_setup */
-	C->current.proj.fwd_x = C->current.proj.fwd_y = C->current.proj.fwd_z = (PFL) GMT_translin;
-	C->current.proj.inv_x = C->current.proj.inv_y = C->current.proj.inv_z = (PFL) GMT_itranslin;
+	C->current.proj.fwd_x = C->current.proj.fwd_y = C->current.proj.fwd_z = (p_func_l) GMT_translin;
+	C->current.proj.inv_x = C->current.proj.inv_y = C->current.proj.inv_z = (p_func_l) GMT_itranslin;
 	/* z_level will be updated in GMT_init_three_D, but if it doesn't, it does not matter,
 	 * because by default, z_scale = 0.0 */
 	C->current.proj.z_level = DBL_MAX;
