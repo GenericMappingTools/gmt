@@ -535,8 +535,10 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		body_desc.ind = GMT_memory (GMT, NULL, body_desc.n_v[0], GMT_LONG);
 		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;
 	}
-	else
+	else {
 		GMT_report (GMT, GMT_MSG_FATAL, "It shouldn't pass here\n");
+		return (EXIT_FAILURE); /* should not happen but just in case */
+	}
 
 	/* Allocate a structure that will be used inside okabe().
 	   We do it here to avoid thousands of alloc/free that would result if done in okabe() */

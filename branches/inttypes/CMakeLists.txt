@@ -56,6 +56,7 @@ include (ConfigCMake)
 
 # Find UNIX commands
 include (FindUnixCommands)
+find_program (SVN svn)
 
 # Global test target
 add_custom_target (check
@@ -79,7 +80,6 @@ add_subdirectory (test)
 add_subdirectory (cmake/dist) # make distribution bundles (always last)
 
 # Source release target
-find_program (SVN svn)
 if (SVN AND HAVE_SVN_VERSION)
 	# Export svn working tree
 	add_custom_target (svn_export_release

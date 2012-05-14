@@ -47,6 +47,7 @@
 #cmakedefine SUPPORT_EXEC_IN_BINARY_DIR
 #define GMT_SHARE_PATH_DEBUG "@GMT_SOURCE_DIR@/share"
 #define GMT_USER_PATH_DEBUG "@GMT_BINARY_DIR@/share"
+#define GMT_BINARY_DIR_SRC_DEBUG "@GMT_BINARY_DIR@/src"
 
 /* path to documentation */
 #define GMT_DOC_PATH "@CMAKE_INSTALL_PREFIX@/@GMT_DOC_PATH@"

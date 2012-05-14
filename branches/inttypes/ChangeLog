@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-05-13	pwessel
+	* blockmedian.c:	Added -Er[-] to return as last column the record number that
+				gave the median value.  For ties, we return the record number
+				of the higher data value unless -Er- is given (return lower).
+	* blockmode.c:		---"---
+
 2012-05-11	pwessel
 	* gmtmath.c:		Operators UPPER and LOWER did not assign output to rows
 				that contain NaN.

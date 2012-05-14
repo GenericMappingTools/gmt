@@ -9,8 +9,6 @@
  * Edit F. Wobbe: use stdint sizes, fix buffer overflow check
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "segy_io.h"
 
 /************************ samp_rd() *******************************/

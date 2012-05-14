@@ -667,6 +667,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->C.active) {
+		COUNTER_MEDIUM mode;
 		if (!Ctrl->W.active[1]) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* No separate pen specified; use same as for rose outline */
 		if (!Ctrl->C.file) {	/* Not given, calculate and use mean direction only */
 			find_mean = TRUE;
@@ -700,13 +701,13 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		dim[6] = (double)Ctrl->M.S.v.status;
 		if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->W.pen[1]);
 		if (Ctrl->M.S.v.status & GMT_VEC_FILL2) GMT_setfill (GMT, &Ctrl->M.S.v.fill, TRUE);       /* Use fill structure */
-		for (k = 0; k < n_modes; k++) {
-			if (Ctrl->N.active) mode_length[k] = sqrt (mode_length[k]);
-			if (half_only && mode_direction[k] > 90.0 && mode_direction[k] <= 270.0) mode_direction[k] -= 180.0;
-			angle = start_angle - mode_direction[k];
+		for (mode = 0; mode < n_modes; mode++) {
+			if (Ctrl->N.active) mode_length[mode] = sqrt (mode_length[mode]);
+			if (half_only && mode_direction[mode] > 90.0 && mode_direction[mode] <= 270.0) mode_direction[mode] -= 180.0;
+			angle = start_angle - mode_direction[mode];
 			sincosd (angle, &s, &c);
-			xr = Ctrl->S.scale * mode_length[k] * c;
-			yr = Ctrl->S.scale * mode_length[k] * s;
+			xr = Ctrl->S.scale * mode_length[mode] * c;
+			yr = Ctrl->S.scale * mode_length[mode] * s;
 			dim[0] = xr, dim[1] = yr;
 			PSL_plotsymbol (PSL, 0.0, 0.0, dim, PSL_VECTOR);
 		}
@@ -738,8 +739,8 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		n_bins = (GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval > 0.0) ? lrint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) : -1;
-		for (k = 1; k <= n_bins; k++)
-			PSL_plotarc (PSL, 0.0, 0.0, k * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval * Ctrl->S.scale, 0.0, total_arc, PSL_MOVE + PSL_STROKE);
+		for (bin = 1; bin <= n_bins; bin++)
+			PSL_plotarc (PSL, 0.0, 0.0, bin * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval * Ctrl->S.scale, 0.0, total_arc, PSL_MOVE + PSL_STROKE);
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 		y = lsize + 6.0 * GMT->current.setting.map_annot_offset[0];
 		form = GMT_setfont (GMT, &GMT->current.setting.font_title);

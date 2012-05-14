@@ -378,7 +378,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	COUNTER_MEDIUM i, i1, i2;
 	BOOLEAN normalize = FALSE;
 	double t_0, t_1, time, w_sum;
-	PFD get_weight[3];		/* Selects desired weight function.  */
+	p_func_d get_weight[3];		/* Selects desired weight function.  */
 
 	t_0 = F->data[F->t_col][0];
 	t_1 = F->data[F->t_col][F->n_rows-1];
@@ -399,9 +399,9 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		F->filter_width = 2.0 * F->half_width;
 	}
 	else if (F->filter_type <= FILTER1D_CONVOLVE) {
-		get_weight[FILTER1D_BOXCAR] = (PFD)boxcar_weight;
-		get_weight[FILTER1D_COS_ARCH] = (PFD)cosine_weight_filter1d;
-		get_weight[FILTER1D_GAUSSIAN] = (PFD)gaussian_weight;
+		get_weight[FILTER1D_BOXCAR] = (p_func_d)boxcar_weight;
+		get_weight[FILTER1D_COS_ARCH] = (p_func_d)cosine_weight_filter1d;
+		get_weight[FILTER1D_GAUSSIAN] = (p_func_d)gaussian_weight;
 		F->half_width = 0.5 * F->filter_width;
 		F->half_n_f_wts = lrint (floor (F->half_width / F->dt));
 		F->n_f_wts = 2 * F->half_n_f_wts + 1;

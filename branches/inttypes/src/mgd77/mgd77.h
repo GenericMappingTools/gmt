@@ -386,8 +386,8 @@ struct MGD77_CONSTRAINT {
 	BOOLEAN exact;				/* If TRUE we MUST pass this test */
 	double d_constraint;			/* Value for testing */
 	char c_constraint[GMT_TEXT_LEN64];	/* String value for testing */
-	PFL double_test;			/* Pointer to function performing the chosen limit test on a double */
-	PFL string_test;			/* Pointer to function performing the chosen limit test on a string */
+	p_func_l double_test;			/* Pointer to function performing the chosen limit test on a double */
+	p_func_l string_test;			/* Pointer to function performing the chosen limit test on a string */
 };
 
 struct MGD77_PAIR {
@@ -464,7 +464,7 @@ struct MGD77_CORRECTION {	/* Holds parameters for one term of a correction for o
 	double origin;		/* Local origin to subtract from argument [0] */
 	double scale;		/* Scale to apply to (value - origin) */
 	double power;		/* Power we should raise the argument to [1] */
-	PFD modifier;		/* Pointer to function that will modify argument */
+	p_func_d modifier;	/* Pointer to function that will modify argument */
 	struct MGD77_CORRECTION *next;
 };
 

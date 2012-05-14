@@ -1,8 +1,6 @@
 /*	$Id$
  *    Public Domain NR stuff.
  */
- 
-#define _POSIX_SOURCE 1
 
 #include <stdio.h>
 #include <stddef.h>

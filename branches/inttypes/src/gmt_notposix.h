@@ -250,22 +250,22 @@
 			: sizeof (x) == sizeof (double) ? __inline_isnormal_d (x) \
 			:                                 __inline_isnormal (x))
 		static inline int __inline_isnormal_f ( float x ) {
-			float fabsf = fabsf(x);
+			float abs_x = fabsf(x);
 			if ( x != x )
 				return 0;
-			return fabsf < HUGE_VALF && fabsf >= FLT_MIN;
+			return abs_x < HUGE_VALF && abs_x >= FLT_MIN;
 		}
 		static inline int __inline_isnormal_d ( double x ) {
-			double fabsf = fabs(x);
+			double abs_x = fabs(x);
 			if ( x != x )
 				return 0;
-			return fabsf < HUGE_VAL && fabsf >= DBL_MIN;
+			return abs_x < HUGE_VAL && abs_x >= DBL_MIN;
 		}
 		static inline int __inline_isnormal ( long double x ) {
-			long double fabsf = fabsl(x);
+			long double abs_x = fabsl(x);
 			if ( x != x )
 				return 0;
-			return fabsf < HUGE_VALL && fabsf >= LDBL_MIN;
+			return abs_x < HUGE_VALL && abs_x >= LDBL_MIN;
 		}
 #	endif /* HAVE__FPCLASS */
 #endif /* !isnormal */

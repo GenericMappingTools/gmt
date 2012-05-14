@@ -1678,6 +1678,7 @@ void table_LOWER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 			if (GMT_is_dnan (T->segment[s]->coord[col][i])) continue;
 			if (T->segment[s]->coord[col][i] < low) low = T->segment[s]->coord[col][i];
 		}
+		if (low == DBL_MAX) low = GMT->session.d_NaN;
 		if (info->local) for (i = 0; i < info->T->segment[s]->n_rows; i++) if (!GMT_is_dnan (T->segment[s]->coord[col][i])) T->segment[s]->coord[col][i] = low;
 	}
 	if (info->local) return;	/* Done with local */
@@ -1803,12 +1804,12 @@ void table_MEAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DAT
 			n_a++;
 		}
 		if (info->local) {
-			sum_a = (n_a) ? sum_a / n_a : 0.0;
+			sum_a = (n_a) ? sum_a / n_a : GMT->session.d_NaN;
 			for (i = 0; i < info->T->segment[s]->n_rows; i++) T->segment[s]->coord[col][i] = sum_a;
 		}
 	}
 	if (info->local) return;	/* Done with local */
-	sum_a = (n_a) ? sum_a / n_a : 0.0;
+	sum_a = (n_a) ? sum_a / n_a : GMT->session.d_NaN;
 	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) T->segment[s]->coord[col][i] = sum_a;
 }
 
@@ -2514,7 +2515,7 @@ void table_STD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 		}
 	}
 	if (info->local) return;	/* Done with local */
-	sum2 = (n > 1) ? sqrt (sum2 / (n - 1)) : 0.0;
+	sum2 = (n > 1) ? sqrt (sum2 / (n - 1)) : GMT->session.d_NaN;
 	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) T->segment[s]->coord[col][i] = sum2;
 }
 
@@ -2687,9 +2688,10 @@ void table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 			if (GMT_is_dnan (T->segment[s]->coord[col][i])) continue;
 			if (T->segment[s]->coord[col][i] > high) high = T->segment[s]->coord[col][i];
 		}
+		if (high == -DBL_MAX) high = GMT->session.d_NaN;
 		if (info->local) for (i = 0; i < info->T->segment[s]->n_rows; i++) T->segment[s]->coord[col][i] = high;
 	}
-	if (info->local) return;	/* DOne with local */
+	if (info->local) return;	/* Done with local */
 	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) if (!GMT_is_dnan (T->segment[s]->coord[col][i])) T->segment[s]->coord[col][i] = high;
 }
 
@@ -2921,7 +2923,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char *outfile = CNULL;
 #include "gmtmath_op.h"
 
-	PFV call_operator[GMTMATH_N_OPERATORS];
+	p_func_v call_operator[GMTMATH_N_OPERATORS];
 
 	struct GMT_DATASET *stack[GMTMATH_STACK_SIZE], *A_in = NULL, *D_stdin = NULL, *D_in = NULL;
 	struct GMT_DATASET *T_in = NULL, *Template = NULL, *Time = NULL, *R = NULL;

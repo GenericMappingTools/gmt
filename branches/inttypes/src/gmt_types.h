@@ -48,14 +48,14 @@ typedef int GMT_LONG;			/* plain integer */
 typedef unsigned int GMT_ULONG;	/* plain unsigned */
 #define GMT_LL ""
 
-typedef void (*PFV) ();         /* PFV declares a pointer to a function returning void */
-typedef void* (*PFP) ();        /* PFP declares a pointer to a function returning void* */
-typedef GMT_LONG (*PFL) ();     /* PFL declares a pointer to a function returning an GMT_LONG */
-typedef size_t (*PFS) ();    	/* PFS declares a pointer to a function returning an size_t */
-typedef uint64_t (*PFU8) ();    /* PFU8 declares a pointer to a function returning an COUNTER_LARGE */
-typedef unsigned (*PFU4) ();    /* PFU4 declares a pointer to a function returning an unsigned int */
-typedef int (*PFI) ();          /* PFI declares a pointer to a function returning an int */
-typedef double (*PFD) ();       /* PFD declares a pointer to a function returning a double */
-typedef BOOLEAN (*PFB) ();	/* PFB declares a pointer to a function returning a BOOLEAN */
+typedef void (*p_func_v) ();         /* p_func_v declares a pointer to a function returning void */
+typedef void* (*p_func_vp) ();       /* p_func_vp declares a pointer to a function returning void* */
+typedef GMT_LONG (*p_func_l) ();     /* p_func_l declares a pointer to a function returning an GMT_LONG */
+typedef uint64_t (*p_func_u8) ();    /* p_func_u8 declares a pointer to a function returning an COUNTER_LARGE */
+typedef unsigned (*p_func_u4) ();    /* p_func_u4 declares a pointer to a function returning an unsigned int */
+typedef size_t (*p_func_s) ();	     /* p_func_s declares a pointer to a function returning an size_t */
+typedef int (*p_func_i) ();          /* p_func_i declares a pointer to a function returning an int */
+typedef double (*p_func_d) ();       /* p_func_d declares a pointer to a function returning a double */
+typedef BOOLEAN (*p_func_b) ();	     /* p_func_b declares a pointer to a function returning a BOOLEAN */
 
 #endif  /* _GMT_TYPES_H */

@@ -1973,31 +1973,31 @@ GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 	}
 	switch (C->common.g.method[i]) {
 		case GMT_NEGGAP_IN_COL:
-			C->common.g.get_dist[i] = (PFD) gmt_neg_col_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_neg_col_dist;
 			break;
 		case GMT_POSGAP_IN_COL:
-			C->common.g.get_dist[i] = (PFD) gmt_pos_col_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_pos_col_dist;
 			break;
 		case GMT_ABSGAP_IN_COL:
-			C->common.g.get_dist[i] = (PFD) gmt_abs_col_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_abs_col_dist;
 			break;
 		case GMT_NEGGAP_IN_MAP_COL:
-			C->common.g.get_dist[i] = (PFD) gmt_neg_col_map_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_neg_col_map_dist;
 			break;
 		case GMT_POSGAP_IN_MAP_COL:
-			C->common.g.get_dist[i] = (PFD) gmt_pos_col_map_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_pos_col_map_dist;
 			break;
 		case GMT_ABSGAP_IN_MAP_COL:
-			C->common.g.get_dist[i] = (PFD) gmt_abs_col_map_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_abs_col_map_dist;
 			break;
 		case GMT_GAP_IN_GDIST:
-			C->common.g.get_dist[i] = (PFD) gmt_xy_true_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_xy_true_dist;
 			break;
 		case GMT_GAP_IN_CDIST:
-			C->common.g.get_dist[i] = (PFD) gmt_xy_cart_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_xy_cart_dist;
 			break;
 		case GMT_GAP_IN_PDIST:
-			C->common.g.get_dist[i] = (PFD) gmt_xy_map_dist;
+			C->common.g.get_dist[i] = (p_func_d) gmt_xy_map_dist;
 			break;
 		default:
 			break;	/* Already set, or will be reset below  */
@@ -2011,15 +2011,15 @@ GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 	if (C->common.g.method[i] == GMT_GAP_IN_GDIST) {	/* Convert any gap given to meters */
 		switch (txt[strlen(txt)-1]) {	/* Process unit information */
 			case 'd':	/* Arc degrees, reset pointer */
-				C->common.g.get_dist[i] = (PFD) gmt_xy_deg_dist;
+				C->common.g.get_dist[i] = (p_func_d) gmt_xy_deg_dist;
 				C->common.g.method[i] = GMT_GAP_IN_DDIST;
 				break;
 			case 'm':	/* Arc minutes, reset pointer */
-				C->common.g.get_dist[i] = (PFD) gmt_xy_deg_dist;
+				C->common.g.get_dist[i] = (p_func_d) gmt_xy_deg_dist;
 				C->common.g.method[i] = GMT_GAP_IN_DDIST;
 				C->common.g.gap[i] *= GMT_MIN2DEG;
 			case 's':	/* Arc seconds, reset pointer */
-				C->common.g.get_dist[i] = (PFD) gmt_xy_deg_dist;
+				C->common.g.get_dist[i] = (p_func_d) gmt_xy_deg_dist;
 				C->common.g.method[i] = GMT_GAP_IN_DDIST;
 				C->common.g.gap[i] *= GMT_SEC2DEG;
 			case 'f':	/* Feet  */
@@ -5295,6 +5295,18 @@ void GMT_set_env (struct GMT_CTRL *C)
 {
 	char *this = NULL, path[PATH_MAX+1];
 
+#ifdef SUPPORT_EXEC_IN_BINARY_DIR
+	/* If SUPPORT_EXEC_IN_BINARY_DIR is defined we try to set the share dir to
+	 * ${GMT_SOURCE_DIR}/share and the user dir to ${GMT_BINARY_DIR}/share in
+	 * order to simplify debugging and running in GMT_BINARY_DIR, e.g., when
+	 * debugging with Xcode or Visual Studio. This saves us from setting the
+	 * env variables GMT_SHAREDIR and GMT_USERDIR and we do not have to install
+	 * src/share in its destination dir. */
+
+	/* Only true, when we are running in a subdir of GMT_BINARY_DIR_SRC_DEBUG: */
+	bool running_in_bindir_src = !strncmp (C->init.runtime_bindir, GMT_BINARY_DIR_SRC_DEBUG, sizeof(GMT_BINARY_DIR_SRC_DEBUG));
+#endif
+
 	/* Determine C->session.SHAREDIR (directory containing coast, cpt, etc. subdirectories) */
 
 	if ((this = getenv ("GMT5_SHAREDIR")) != NULL
@@ -5306,7 +5318,7 @@ void GMT_set_env (struct GMT_CTRL *C)
 		/* GMT_SHAREDIR was set */
 		C->session.SHAREDIR = strdup (this);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
-	else if ( access (GMT_SHARE_PATH_DEBUG, R_OK|X_OK) == 0 )
+	else if ( running_in_bindir_src && GMT_verify_sharedir_version (GMT_SHARE_PATH_DEBUG) )
 		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
 		C->session.SHAREDIR = strdup (GMT_SHARE_PATH_DEBUG);
 #endif
@@ -5349,8 +5361,8 @@ void GMT_set_env (struct GMT_CTRL *C)
 		/* GMT_USERDIR was set */
 		C->session.USERDIR = strdup (this);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
-	else if ( access (GMT_USER_PATH_DEBUG, R_OK|X_OK) == 0 )
-		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
+	else if ( running_in_bindir_src && access (GMT_USER_PATH_DEBUG, R_OK|X_OK) == 0 )
+		/* Use ${GMT_BINARY_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
 		C->session.USERDIR = strdup (GMT_USER_PATH_DEBUG);
 #endif
 	else {
@@ -8054,8 +8066,8 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 
 	C->current.proj.projection = GMT_NO_PROJ;
 	/* We need some defaults here for the cases where we do not actually set these with GMT_map_setup */
-	C->current.proj.fwd_x = C->current.proj.fwd_y = C->current.proj.fwd_z = (PFL) GMT_translin;
-	C->current.proj.inv_x = C->current.proj.inv_y = C->current.proj.inv_z = (PFL) GMT_itranslin;
+	C->current.proj.fwd_x = C->current.proj.fwd_y = C->current.proj.fwd_z = (p_func_l) GMT_translin;
+	C->current.proj.inv_x = C->current.proj.inv_y = C->current.proj.inv_z = (p_func_l) GMT_itranslin;
 	/* z_level will be updated in GMT_init_three_D, but if it doesn't, it does not matter,
 	 * because by default, z_scale = 0.0 */
 	C->current.proj.z_level = DBL_MAX;

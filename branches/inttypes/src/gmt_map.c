@@ -1157,7 +1157,7 @@ COUNTER_LARGE gmt_rect_clip_old (struct GMT_CTRL *C, double *lon, double *lat, C
  */
 #define INTERSECTION_COORD(x_curr,y_curr,x_prev,y_prev,border) x_curr + (x_prev - x_curr) * (border - y_curr) / (y_prev - y_curr)
 
-COUNTER_MEDIUM gmt_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, PFB inside, PFB outside, GMT_LONG *cross)
+COUNTER_MEDIUM gmt_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, p_func_b inside, p_func_b outside, GMT_LONG *cross)
 {	/* Clip against the south or north boundary (i.e., a horizontal line with y = border) */
 	*cross = 0;
 	if (doubleAlmostEqualZero (x_prev, x_curr) && doubleAlmostEqualZero (y_prev, y_curr))
@@ -1178,7 +1178,7 @@ COUNTER_MEDIUM gmt_clip_sn (double x_prev, double y_prev, double x_curr, double 
 	y[0] = border;	x[0] = INTERSECTION_COORD (x_curr, y_curr, x_prev, y_prev, border);	return (1);
 }
 
-COUNTER_MEDIUM gmt_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, PFB inside, PFB outside, GMT_LONG *cross)
+COUNTER_MEDIUM gmt_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, p_func_b inside, p_func_b outside, GMT_LONG *cross)
 {	/* Clip against the west or east boundary (i.e., a vertical line with x = border) */
 	*cross = 0;
 	if (doubleAlmostEqualZero (x_prev, x_curr) && doubleAlmostEqualZero (y_prev, y_curr))
@@ -1217,8 +1217,8 @@ COUNTER_LARGE gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNT
 	GMT_LONG side, in = 1, out = 0, j, np, cross = 0;
 	BOOLEAN polygon;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
-	PFU4 clipper[4];
-	PFB inside[4], outside[4];
+	p_func_u4 clipper[4];
+	p_func_b inside[4], outside[4];
 #ifdef DEBUG
 	FILE *fp = NULL;
 	BOOLEAN dump = FALSE;
@@ -1306,7 +1306,7 @@ COUNTER_MEDIUM GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_S
 	char label[GMT_BUFSIZ], *part = "EW";
 	double xx[2], yy[2];
 	struct GMT_LINE_SEGMENT **L = NULL;
-	PFB inside[2], outside[2];
+	p_func_b inside[2], outside[2];
 
 	inside[0] = gmt_inside_upper_boundary;	outside[0] = gmt_outside_upper_boundary;
 	inside[1] = gmt_inside_lower_boundary;	outside[1] = gmt_outside_lower_boundary;
@@ -1474,8 +1474,8 @@ COUNTER_LARGE GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNT
 	BOOLEAN curved, jump = FALSE, polygon, periodic = FALSE;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
 	double x1, x2, y1, y2;
-	PFU4 clipper[4];
-	PFB inside[4], outside[4];
+	p_func_u4 clipper[4];
+	p_func_b inside[4], outside[4];
 	struct GMT_QUAD *Q = NULL;
 #ifdef DEBUG
 	FILE *fp = NULL;
@@ -2501,10 +2501,10 @@ BOOLEAN gmt_map_init_linear (struct GMT_CTRL *C) {
 	BOOLEAN positive;
 	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
-	C->current.map.left_edge  = (PFD) gmt_left_rect;
-	C->current.map.right_edge = (PFD) gmt_right_rect;
-	C->current.proj.fwd = (PFL) gmt_linearxy;
-	C->current.proj.inv = (PFL) gmt_ilinearxy;
+	C->current.map.left_edge  = (p_func_d) gmt_left_rect;
+	C->current.map.right_edge = (p_func_d) gmt_right_rect;
+	C->current.proj.fwd = (p_func_l) gmt_linearxy;
+	C->current.proj.inv = (p_func_l) gmt_ilinearxy;
 	if (GMT_x_is_lon (C, GMT_IN)) {	/* x is longitude */
 		C->current.proj.central_meridian = 0.5 * (C->common.R.wesn[XLO] + C->common.R.wesn[XHI]);
 		C->current.map.is_world = GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI]);
@@ -2517,8 +2517,8 @@ BOOLEAN gmt_map_init_linear (struct GMT_CTRL *C) {
 	if (C->current.proj.scale[GMT_Y] < 0.0) C->current.proj.xyz_pos[GMT_Y] = FALSE;	/* User wants y to increase down */
 	switch ( (C->current.proj.xyz_projection[GMT_X]%3)) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
-			C->current.proj.fwd_x = (PFL) ((GMT_x_is_lon (C, GMT_IN)) ? GMT_translind : GMT_translin);
-			C->current.proj.inv_x = (PFL) ((GMT_x_is_lon (C, GMT_IN)) ? GMT_itranslind : GMT_itranslin);
+			C->current.proj.fwd_x = (p_func_l) ((GMT_x_is_lon (C, GMT_IN)) ? GMT_translind : GMT_translin);
+			C->current.proj.inv_x = (p_func_l) ((GMT_x_is_lon (C, GMT_IN)) ? GMT_itranslind : GMT_itranslin);
 			if (C->current.proj.xyz_pos[GMT_X]) {
 				(*C->current.proj.fwd_x) (C, C->common.R.wesn[XLO], &xmin);
 				(*C->current.proj.fwd_x) (C, C->common.R.wesn[XHI], &xmax);
@@ -2535,8 +2535,8 @@ BOOLEAN gmt_map_init_linear (struct GMT_CTRL *C) {
 			}
 			xmin = (C->current.proj.xyz_pos[GMT_X]) ? d_log10 (C, C->common.R.wesn[XLO]) : d_log10 (C, C->common.R.wesn[XHI]);
 			xmax = (C->current.proj.xyz_pos[GMT_X]) ? d_log10 (C, C->common.R.wesn[XHI]) : d_log10 (C, C->common.R.wesn[XLO]);
-			C->current.proj.fwd_x = (PFL) GMT_translog10;
-			C->current.proj.inv_x = (PFL) GMT_itranslog10;
+			C->current.proj.fwd_x = (p_func_l) GMT_translog10;
+			C->current.proj.inv_x = (p_func_l) GMT_itranslog10;
 			break;
 		case GMT_POW:	/* x^y transformation */
 			C->current.proj.xyz_pow[GMT_X] = C->current.proj.pars[2];
@@ -2544,16 +2544,16 @@ BOOLEAN gmt_map_init_linear (struct GMT_CTRL *C) {
 			positive = !((C->current.proj.xyz_pos[GMT_X] + (C->current.proj.xyz_pow[GMT_X] > 0.0)) % 2);
 			xmin = (positive) ? pow (C->common.R.wesn[XLO], C->current.proj.xyz_pow[GMT_X]) : pow (C->common.R.wesn[XHI], C->current.proj.xyz_pow[GMT_X]);
 			xmax = (positive) ? pow (C->common.R.wesn[XHI], C->current.proj.xyz_pow[GMT_X]) : pow (C->common.R.wesn[XLO], C->current.proj.xyz_pow[GMT_X]);
-			C->current.proj.fwd_x = (PFL) GMT_transpowx;
-			C->current.proj.inv_x = (PFL) GMT_itranspowx;
+			C->current.proj.fwd_x = (p_func_l) GMT_transpowx;
+			C->current.proj.inv_x = (p_func_l) GMT_itranspowx;
 			break;
 	}
 	switch (C->current.proj.xyz_projection[GMT_Y]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
 			ymin = (C->current.proj.xyz_pos[GMT_Y]) ? C->common.R.wesn[YLO] : C->common.R.wesn[YHI];
 			ymax = (C->current.proj.xyz_pos[GMT_Y]) ? C->common.R.wesn[YHI] : C->common.R.wesn[YLO];
-			C->current.proj.fwd_y = (PFL) GMT_translin;
-			C->current.proj.inv_y = (PFL) GMT_itranslin;
+			C->current.proj.fwd_y = (p_func_l) GMT_translin;
+			C->current.proj.inv_y = (p_func_l) GMT_itranslin;
 			break;
 		case GMT_LOG10:	/* Log10 transformation */
 			if (C->common.R.wesn[YLO] <= 0.0 || C->common.R.wesn[YHI] <= 0.0) {
@@ -2562,8 +2562,8 @@ BOOLEAN gmt_map_init_linear (struct GMT_CTRL *C) {
 			}
 			ymin = (C->current.proj.xyz_pos[GMT_Y]) ? d_log10 (C, C->common.R.wesn[YLO]) : d_log10 (C, C->common.R.wesn[YHI]);
 			ymax = (C->current.proj.xyz_pos[GMT_Y]) ? d_log10 (C, C->common.R.wesn[YHI]) : d_log10 (C, C->common.R.wesn[YLO]);
-			C->current.proj.fwd_y = (PFL) GMT_translog10;
-			C->current.proj.inv_y = (PFL) GMT_itranslog10;
+			C->current.proj.fwd_y = (p_func_l) GMT_translog10;
+			C->current.proj.inv_y = (p_func_l) GMT_itranslog10;
 			break;
 		case GMT_POW:	/* x^y transformation */
 			C->current.proj.xyz_pow[GMT_Y] = C->current.proj.pars[3];
@@ -2571,8 +2571,8 @@ BOOLEAN gmt_map_init_linear (struct GMT_CTRL *C) {
 			positive = !((C->current.proj.xyz_pos[GMT_Y] + (C->current.proj.xyz_pow[GMT_Y] > 0.0)) % 2);
 			ymin = (positive) ? pow (C->common.R.wesn[YLO], C->current.proj.xyz_pow[GMT_Y]) : pow (C->common.R.wesn[YHI], C->current.proj.xyz_pow[GMT_Y]);
 			ymax = (positive) ? pow (C->common.R.wesn[YHI], C->current.proj.xyz_pow[GMT_Y]) : pow (C->common.R.wesn[YLO], C->current.proj.xyz_pow[GMT_Y]);
-			C->current.proj.fwd_y = (PFL) GMT_transpowy;
-			C->current.proj.inv_y = (PFL) GMT_itranspowy;
+			C->current.proj.fwd_y = (p_func_l) GMT_transpowy;
+			C->current.proj.inv_y = (p_func_l) GMT_itranspowy;
 	}
 
 	/* Was given axes length instead of scale? */
@@ -2597,10 +2597,10 @@ BOOLEAN gmt_map_init_linear (struct GMT_CTRL *C) {
 	C->current.proj.KM_PR_DEG = C->current.proj.M_PR_DEG / METERS_IN_A_KM;
 
 	gmt_map_setxy (C, xmin, xmax, ymin, ymax);
-	C->current.map.outside = (PFB) gmt_rect_outside;
-	C->current.map.crossing = (PFL) gmt_rect_crossing;
-	C->current.map.overlap = (PFB) gmt_rect_overlap;
-	C->current.map.clip = (PFL) gmt_rect_clip;
+	C->current.map.outside = (p_func_b) gmt_rect_outside;
+	C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+	C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+	C->current.map.clip = (p_func_l) gmt_rect_clip;
 	C->current.map.frame.check_side = TRUE;
 	C->current.map.frame.horizontal = TRUE;
 	C->current.map.meridian_straight = C->current.map.parallel_straight = TRUE;
@@ -2630,10 +2630,10 @@ BOOLEAN gmt_map_init_polar (struct GMT_CTRL *C)
 			C->current.proj.edge[0] = FALSE;
 	}
 	if (GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI])) C->current.proj.edge[1] = C->current.proj.edge[3] = FALSE;
-	C->current.map.left_edge = (PFD) gmt_left_circle;
-	C->current.map.right_edge = (PFD) gmt_right_circle;
-	C->current.proj.fwd = (PFL) GMT_polar;
-	C->current.proj.inv = (PFL) GMT_ipolar;
+	C->current.map.left_edge = (p_func_d) gmt_left_circle;
+	C->current.map.right_edge = (p_func_d) gmt_right_circle;
+	C->current.proj.fwd = (p_func_l) GMT_polar;
+	C->current.proj.inv = (p_func_l) GMT_ipolar;
 	C->current.map.is_world = FALSE;	/* There is no wrapping around here */
 	gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[0];
@@ -2642,10 +2642,10 @@ BOOLEAN gmt_map_init_polar (struct GMT_CTRL *C)
 
 	/* C->current.proj.r = 0.5 * C->current.proj.rect[XHI]; */
 	C->current.proj.r = C->current.proj.scale[GMT_Y] * C->common.R.wesn[YHI];
-	C->current.map.outside = (PFB) gmt_polar_outside;
-	C->current.map.crossing = (PFL) gmt_wesn_crossing;
-	C->current.map.overlap = (PFB) gmt_wesn_overlap;
-	C->current.map.clip = (PFL) GMT_wesn_clip;
+	C->current.map.outside = (p_func_b) gmt_polar_outside;
+	C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+	C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+	C->current.map.clip = (p_func_l) GMT_wesn_clip;
 	C->current.map.frame.horizontal = TRUE;
 	if (!C->current.proj.got_elevations) C->current.plot.r_theta_annot = TRUE;	/* Special labeling case (see GMT_get_annot_label) */
 	C->current.map.n_lat_nodes = 2;
@@ -2674,8 +2674,8 @@ BOOLEAN gmt_map_init_merc (struct GMT_CTRL *C) {
 	GMT_vmerc (C, C->current.proj.pars[0], C->current.proj.pars[1]);
 	C->current.proj.j_x *= D;
 	C->current.proj.j_ix /= D;
-	C->current.proj.fwd = (PFL) GMT_merc_sph;
-	C->current.proj.inv = (PFL) GMT_imerc_sph;
+	C->current.proj.fwd = (p_func_l) GMT_merc_sph;
+	C->current.proj.inv = (p_func_l) GMT_imerc_sph;
 	(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 	(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
 	if (C->current.proj.units_pr_degree) C->current.proj.pars[2] /= (D * C->current.proj.M_PR_DEG);
@@ -2684,12 +2684,12 @@ BOOLEAN gmt_map_init_merc (struct GMT_CTRL *C) {
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[2]);
 	C->current.map.n_lat_nodes = 2;
 	C->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	C->current.map.outside = (PFB) gmt_wesn_outside;
-	C->current.map.crossing = (PFL) gmt_wesn_crossing;
-	C->current.map.overlap = (PFB) gmt_wesn_overlap;
-	C->current.map.clip = (PFL) GMT_wesn_clip;
-	C->current.map.left_edge = (PFD) gmt_left_rect;
-	C->current.map.right_edge = (PFD) gmt_right_rect;
+	C->current.map.outside = (p_func_b) gmt_wesn_outside;
+	C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+	C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+	C->current.map.clip = (p_func_l) GMT_wesn_clip;
+	C->current.map.left_edge = (p_func_d) gmt_left_rect;
+	C->current.map.right_edge = (p_func_d) gmt_right_rect;
 	C->current.map.frame.horizontal = TRUE;
 	C->current.map.frame.check_side = TRUE;
 	C->current.map.meridian_straight = C->current.map.parallel_straight = TRUE;
@@ -2731,14 +2731,14 @@ BOOLEAN gmt_map_init_cyleq (struct GMT_CTRL *C) {
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[2]);
 	C->current.map.n_lat_nodes = 2;
 	C->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	C->current.proj.fwd = (PFL) GMT_cyleq;
-	C->current.proj.inv = (PFL) GMT_icyleq;
-	C->current.map.outside = (PFB) gmt_wesn_outside;
-	C->current.map.crossing = (PFL) gmt_wesn_crossing;
-	C->current.map.overlap = (PFB) gmt_wesn_overlap;
-	C->current.map.clip = (PFL) GMT_wesn_clip;
-	C->current.map.left_edge = (PFD) gmt_left_rect;
-	C->current.map.right_edge = (PFD) gmt_right_rect;
+	C->current.proj.fwd = (p_func_l) GMT_cyleq;
+	C->current.proj.inv = (p_func_l) GMT_icyleq;
+	C->current.map.outside = (p_func_b) gmt_wesn_outside;
+	C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+	C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+	C->current.map.clip = (p_func_l) GMT_wesn_clip;
+	C->current.map.left_edge = (p_func_d) gmt_left_rect;
+	C->current.map.right_edge = (p_func_d) gmt_right_rect;
 	C->current.map.frame.horizontal = TRUE;
 	C->current.map.frame.check_side = TRUE;
 	C->current.map.meridian_straight = C->current.map.parallel_straight = TRUE;
@@ -2765,14 +2765,14 @@ BOOLEAN gmt_map_init_cyleqdist (struct GMT_CTRL *C) {
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[2]);
 	C->current.map.n_lat_nodes = 2;
 	C->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	C->current.proj.fwd = (PFL) GMT_cyleqdist;
-	C->current.proj.inv = (PFL) GMT_icyleqdist;
-	C->current.map.outside = (PFB) gmt_wesn_outside;
-	C->current.map.crossing = (PFL) gmt_wesn_crossing;
-	C->current.map.overlap = (PFB) gmt_wesn_overlap;
-	C->current.map.clip = (PFL) GMT_wesn_clip;
-	C->current.map.left_edge = (PFD) gmt_left_rect;
-	C->current.map.right_edge = (PFD) gmt_right_rect;
+	C->current.proj.fwd = (p_func_l) GMT_cyleqdist;
+	C->current.proj.inv = (p_func_l) GMT_icyleqdist;
+	C->current.map.outside = (p_func_b) gmt_wesn_outside;
+	C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+	C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+	C->current.map.clip = (p_func_l) GMT_wesn_clip;
+	C->current.map.left_edge = (p_func_d) gmt_left_rect;
+	C->current.map.right_edge = (p_func_d) gmt_right_rect;
 	C->current.map.frame.horizontal = TRUE;
 	C->current.map.frame.check_side = TRUE;
 	C->current.map.meridian_straight = C->current.map.parallel_straight = TRUE;
@@ -2799,14 +2799,14 @@ BOOLEAN gmt_map_init_miller (struct GMT_CTRL *C) {
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
 	C->current.map.n_lat_nodes = 2;
 	C->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	C->current.proj.fwd = (PFL) GMT_miller;
-	C->current.proj.inv = (PFL) GMT_imiller;
-	C->current.map.outside = (PFB) gmt_wesn_outside;
-	C->current.map.crossing = (PFL) gmt_wesn_crossing;
-	C->current.map.overlap = (PFB) gmt_wesn_overlap;
-	C->current.map.clip = (PFL) GMT_wesn_clip;
-	C->current.map.left_edge = (PFD) gmt_left_rect;
-	C->current.map.right_edge = (PFD) gmt_right_rect;
+	C->current.proj.fwd = (p_func_l) GMT_miller;
+	C->current.proj.inv = (p_func_l) GMT_imiller;
+	C->current.map.outside = (p_func_b) gmt_wesn_outside;
+	C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+	C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+	C->current.map.clip = (p_func_l) GMT_wesn_clip;
+	C->current.map.left_edge = (p_func_d) gmt_left_rect;
+	C->current.map.right_edge = (p_func_d) gmt_right_rect;
 	C->current.map.frame.horizontal = TRUE;
 	C->current.map.frame.check_side = TRUE;
 	C->current.map.meridian_straight = C->current.map.parallel_straight = TRUE;
@@ -2833,14 +2833,14 @@ BOOLEAN gmt_map_init_cylstereo (struct GMT_CTRL *C) {
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[2]);
 	C->current.map.n_lat_nodes = 2;
 	C->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	C->current.proj.fwd = (PFL) GMT_cylstereo;
-	C->current.proj.inv = (PFL) GMT_icylstereo;
-	C->current.map.outside = (PFB) gmt_wesn_outside;
-	C->current.map.crossing = (PFL) gmt_wesn_crossing;
-	C->current.map.overlap = (PFB) gmt_wesn_overlap;
-	C->current.map.clip = (PFL) GMT_wesn_clip;
-	C->current.map.left_edge = (PFD) gmt_left_rect;
-	C->current.map.right_edge = (PFD) gmt_right_rect;
+	C->current.proj.fwd = (p_func_l) GMT_cylstereo;
+	C->current.proj.inv = (p_func_l) GMT_icylstereo;
+	C->current.map.outside = (p_func_b) gmt_wesn_outside;
+	C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+	C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+	C->current.map.clip = (p_func_l) GMT_wesn_clip;
+	C->current.map.left_edge = (p_func_d) gmt_left_rect;
+	C->current.map.right_edge = (p_func_d) gmt_right_rect;
 	C->current.map.frame.horizontal = TRUE;
 	C->current.map.frame.check_side = TRUE;
 	C->current.map.meridian_straight = C->current.map.parallel_straight = TRUE;
@@ -2900,8 +2900,8 @@ BOOLEAN gmt_map_init_stereo (struct GMT_CTRL *C) {
 	C->current.proj.iDy = 1.0 / C->current.proj.Dy;
 
 	if (C->current.proj.polar) {	/* Polar aspect */
-		C->current.proj.fwd = (PFL) GMT_plrs_sph;
-		C->current.proj.inv = (PFL) GMT_iplrs_sph;
+		C->current.proj.fwd = (p_func_l) GMT_plrs_sph;
+		C->current.proj.inv = (p_func_l) GMT_iplrs_sph;
 		if (C->current.proj.units_pr_degree) {
 			(*C->current.proj.fwd) (C, C->current.proj.pars[0], C->current.proj.pars[4], &dummy, &radius);
 			C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = fabs (C->current.proj.pars[3] / radius);
@@ -2911,8 +2911,8 @@ BOOLEAN gmt_map_init_stereo (struct GMT_CTRL *C) {
 		C->current.map.meridian_straight = TRUE;
 	}
 	else {
-		C->current.proj.fwd = (GMT_IS_ZERO (C->current.proj.pole)) ? (PFL) GMT_stereo2_sph : (PFL) GMT_stereo1_sph;
-		C->current.proj.inv = (PFL) GMT_istereo_sph;
+		C->current.proj.fwd = (GMT_IS_ZERO (C->current.proj.pole)) ? (p_func_l) GMT_stereo2_sph : (p_func_l) GMT_stereo1_sph;
+		C->current.proj.inv = (p_func_l) GMT_istereo_sph;
 		if (C->current.proj.units_pr_degree) {
 			GMT_vstereo (C, 0.0, 90.0, C->current.proj.pars[2]);
 			(*C->current.proj.fwd) (C, 0.0, fabs (C->current.proj.pars[4]), &dummy, &radius);
@@ -2929,12 +2929,12 @@ BOOLEAN gmt_map_init_stereo (struct GMT_CTRL *C) {
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
 
-		C->current.map.outside = (PFB) gmt_rect_outside2;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside2;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = !(C->current.setting.map_annot_oblique & 1);
 		C->current.map.frame.horizontal = (fabs (C->current.proj.pars[1]) < 30.0 && fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]) < 30.0);
 	}
@@ -2957,10 +2957,10 @@ BOOLEAN gmt_map_init_stereo (struct GMT_CTRL *C) {
 			if (GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI])
 					|| doubleAlmostEqualZero (C->common.R.wesn[XHI], C->common.R.wesn[XLO]))
 				C->current.proj.edge[1] = C->current.proj.edge[3] = FALSE;
-			C->current.map.outside = (PFB) gmt_polar_outside;
-			C->current.map.crossing = (PFL) gmt_wesn_crossing;
-			C->current.map.overlap = (PFB) gmt_wesn_overlap;
-			C->current.map.clip = (PFL) GMT_wesn_clip;
+			C->current.map.outside = (p_func_b) gmt_polar_outside;
+			C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+			C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+			C->current.map.clip = (p_func_l) GMT_wesn_clip;
 			C->current.map.frame.horizontal = TRUE;
 			C->current.map.n_lat_nodes = 2;
 			gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
@@ -2976,14 +2976,14 @@ BOOLEAN gmt_map_init_stereo (struct GMT_CTRL *C) {
 			C->common.R.wesn[YHI] = 90.0;
 			xmax = ymax = C->current.proj.rho_max;
 			xmin = ymin = -xmax;
-			C->current.map.outside = (PFB) gmt_radial_outside;
-			C->current.map.crossing = (PFL) gmt_radial_crossing;
-			C->current.map.overlap = (PFB) gmt_radial_overlap;
-			C->current.map.clip = (PFL) gmt_radial_clip;
+			C->current.map.outside = (p_func_b) gmt_radial_outside;
+			C->current.map.crossing = (p_func_l) gmt_radial_crossing;
+			C->current.map.overlap = (p_func_b) gmt_radial_overlap;
+			C->current.map.clip = (p_func_l) gmt_radial_clip;
 			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
-		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) gmt_right_circle;
+		C->current.map.left_edge = (p_func_d) gmt_left_circle;
+		C->current.map.right_edge = (p_func_d) gmt_right_circle;
 	}
 
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[3]);
@@ -3006,34 +3006,34 @@ BOOLEAN gmt_map_init_lambert (struct GMT_CTRL *C) {
 	if (C->current.proj.units_pr_degree) C->current.proj.pars[4] /= C->current.proj.M_PR_DEG;
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[4];
 	if (GMT_IS_SPHERICAL (C) || C->current.proj.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
-		C->current.proj.fwd = (PFL) GMT_lamb_sph;
-		C->current.proj.inv = (PFL) GMT_ilamb_sph;
+		C->current.proj.fwd = (p_func_l) GMT_lamb_sph;
+		C->current.proj.inv = (p_func_l) GMT_ilamb_sph;
 	}
 	else {
-		C->current.proj.fwd = (PFL) GMT_lamb;
-		C->current.proj.inv = (PFL) GMT_ilamb;
+		C->current.proj.fwd = (p_func_l) GMT_lamb;
+		C->current.proj.inv = (p_func_l) GMT_ilamb;
 	}
 
 	if (C->common.R.oblique) {	/* Rectangular box given*/
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
 
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
 		gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) gmt_left_conic;
-		C->current.map.right_edge = (PFD) gmt_right_conic;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_conic;
+		C->current.map.right_edge = (p_func_d) gmt_right_conic;
 	}
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[4]);
 	C->current.map.is_world = GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI]);
@@ -3206,14 +3206,14 @@ BOOLEAN gmt_map_init_oblique (struct GMT_CTRL *C) {
 	GMT_imerc_sph (C, &e, &n, xmax, ymax);
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[4];
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[4]);
-	C->current.proj.fwd = (PFL) GMT_oblmrc;
-	C->current.proj.inv = (PFL) GMT_ioblmrc;
-	C->current.map.outside = (PFB) gmt_rect_outside;
-	C->current.map.crossing = (PFL) gmt_rect_crossing;
-	C->current.map.overlap = (PFB) gmt_rect_overlap;
-	C->current.map.clip = (PFL) gmt_rect_clip;
-	C->current.map.left_edge = (PFD) gmt_left_rect;
-	C->current.map.right_edge = (PFD) gmt_right_rect;
+	C->current.proj.fwd = (p_func_l) GMT_oblmrc;
+	C->current.proj.inv = (p_func_l) GMT_ioblmrc;
+	C->current.map.outside = (p_func_b) gmt_rect_outside;
+	C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+	C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+	C->current.map.clip = (p_func_l) gmt_rect_clip;
+	C->current.map.left_edge = (p_func_d) gmt_left_rect;
+	C->current.map.right_edge = (p_func_d) gmt_right_rect;
 
 	C->current.map.is_world = GMT_360_RANGE (w, e);
 	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
@@ -3326,11 +3326,11 @@ BOOLEAN gmt_map_init_tm (struct GMT_CTRL *C) {
 
 	/* Wrap and truncations are in y, not x for TM */
 
-	C->current.map.wrap_around_check = (PFL) gmt_wrap_around_check_tm;
-	C->current.map.jump = (PFL) gmt_map_jump_tm;
-	C->current.map.will_it_wrap = (PFB) gmt_will_it_wrap_tm;
-	C->current.map.this_point_wraps = (PFB) gmt_this_point_wraps_tm;
-	C->current.map.get_crossings = (PFV) gmt_get_crossings_tm;
+	C->current.map.wrap_around_check = (p_func_l) gmt_wrap_around_check_tm;
+	C->current.map.jump = (p_func_l) gmt_map_jump_tm;
+	C->current.map.will_it_wrap = (p_func_b) gmt_will_it_wrap_tm;
+	C->current.map.this_point_wraps = (p_func_b) gmt_this_point_wraps_tm;
+	C->current.map.get_crossings = (p_func_v) gmt_get_crossings_tm;
 
 	if (C->current.setting.proj_scale_factor == -1.0) C->current.setting.proj_scale_factor = 1.0;	/* Select default map scale for TM */
 	C->current.proj.GMT_convert_latitudes = gmt_quicktm (C, C->current.proj.pars[0], 10.0);
@@ -3339,12 +3339,12 @@ BOOLEAN gmt_map_init_tm (struct GMT_CTRL *C) {
 	if (C->current.proj.units_pr_degree) C->current.proj.pars[2] /= C->current.proj.M_PR_DEG;
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[2];
 	if (GMT_IS_SPHERICAL (C) || C->current.proj.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
-		C->current.proj.fwd = (PFL) GMT_tm_sph;
-		C->current.proj.inv = (PFL) GMT_itm_sph;
+		C->current.proj.fwd = (p_func_l) GMT_tm_sph;
+		C->current.proj.inv = (p_func_l) GMT_itm_sph;
 	}
 	else {
-		C->current.proj.fwd = (PFL) GMT_tm;
-		C->current.proj.inv = (PFL) GMT_itm;
+		C->current.proj.fwd = (p_func_l) GMT_tm;
+		C->current.proj.inv = (p_func_l) GMT_itm;
 	}
 
 	C->current.map.is_world = GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI]);
@@ -3362,12 +3362,12 @@ BOOLEAN gmt_map_init_tm (struct GMT_CTRL *C) {
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &dummy, &ymin);
 		ymax = ymin + (TWO_PI * C->current.proj.EQ_RAD * C->current.setting.proj_scale_factor);
 		GMT_vtm (C, C->current.proj.pars[0], C->current.proj.pars[1]);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 		C->current.map.is_world_tm = TRUE;
 		C->common.R.oblique = TRUE;	/* Since wesn was oblique, not geographical wesn */
@@ -3376,24 +3376,24 @@ BOOLEAN gmt_map_init_tm (struct GMT_CTRL *C) {
 	}
 	else if (!C->common.R.oblique) {
 		gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.is_world_tm = doubleAlmostEqualZero (C->common.R.wesn[YHI], C->common.R.wesn[YLO]);
 		C->current.map.is_world = FALSE;
 	}
 	else { /* Find min values */
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 		C->current.map.is_world_tm = FALSE;
 		C->current.map.is_world = (fabs (C->common.R.wesn[YLO] - C->common.R.wesn[YHI]) < GMT_SMALL);
@@ -3434,12 +3434,12 @@ BOOLEAN gmt_map_init_utm (struct GMT_CTRL *C) {
 			break;
 	}
 	if (GMT_IS_SPHERICAL (C) || C->current.proj.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
-		C->current.proj.fwd = (PFL) GMT_utm_sph;
-		C->current.proj.inv = (PFL) GMT_iutm_sph;
+		C->current.proj.fwd = (p_func_l) GMT_utm_sph;
+		C->current.proj.inv = (p_func_l) GMT_iutm_sph;
 	}
 	else {
-		C->current.proj.fwd = (PFL) GMT_utm;
-		C->current.proj.inv = (PFL) GMT_iutm;
+		C->current.proj.fwd = (p_func_l) GMT_utm;
+		C->current.proj.inv = (p_func_l) GMT_iutm;
 	}
 
 	if (fabs (C->common.R.wesn[XLO] - C->common.R.wesn[XHI]) > 360.0) {	/* -R in UTM meters */
@@ -3450,22 +3450,22 @@ BOOLEAN gmt_map_init_utm (struct GMT_CTRL *C) {
 	if (C->common.R.oblique) {
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
 		gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 	}
 
 	C->current.map.frame.horizontal = TRUE;
@@ -3557,8 +3557,8 @@ BOOLEAN gmt_map_init_lambeq (struct GMT_CTRL *C) {
 	C->current.proj.iDx = 1.0 / C->current.proj.Dx;
 	C->current.proj.iDy = 1.0 / C->current.proj.Dy;
 
-	C->current.proj.fwd = (PFL) GMT_lambeq;
-	C->current.proj.inv = (PFL) GMT_ilambeq;
+	C->current.proj.fwd = (p_func_l) GMT_lambeq;
+	C->current.proj.inv = (p_func_l) GMT_ilambeq;
 	if (C->current.proj.units_pr_degree) {
 		GMT_vlambeq (C, 0.0, 90.0, C->current.proj.pars[2]);
 		GMT_lambeq (C, 0.0, fabs (C->current.proj.pars[4]), &dummy, &radius);
@@ -3572,12 +3572,12 @@ BOOLEAN gmt_map_init_lambeq (struct GMT_CTRL *C) {
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
 
-		C->current.map.outside = (PFB) gmt_rect_outside2;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside2;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = !(C->current.setting.map_annot_oblique & 1);
 		C->current.map.frame.horizontal = (fabs (C->current.proj.pars[1]) < 30.0 && fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]) < 30.0);
 	}
@@ -3600,10 +3600,10 @@ BOOLEAN gmt_map_init_lambeq (struct GMT_CTRL *C) {
 			if (GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI])
 					|| doubleAlmostEqualZero (C->common.R.wesn[XHI], C->common.R.wesn[XLO]))
 				C->current.proj.edge[1] = C->current.proj.edge[3] = FALSE;
-			C->current.map.outside = (PFB) gmt_polar_outside;
-			C->current.map.crossing = (PFL) gmt_wesn_crossing;
-			C->current.map.overlap = (PFB) gmt_wesn_overlap;
-			C->current.map.clip = (PFL) GMT_wesn_clip;
+			C->current.map.outside = (p_func_b) gmt_polar_outside;
+			C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+			C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+			C->current.map.clip = (p_func_l) GMT_wesn_clip;
 			C->current.map.frame.horizontal = TRUE;
 			C->current.map.n_lat_nodes = 2;
 			gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
@@ -3619,14 +3619,14 @@ BOOLEAN gmt_map_init_lambeq (struct GMT_CTRL *C) {
 			C->common.R.wesn[YHI] = 90.0;
 			xmax = ymax = C->current.proj.rho_max;
 			xmin = ymin = -xmax;
-			C->current.map.outside = (PFB) gmt_radial_outside;
-			C->current.map.crossing = (PFL) gmt_radial_crossing;
-			C->current.map.overlap = (PFB) gmt_radial_overlap;
-			C->current.map.clip = (PFL) gmt_radial_clip;
+			C->current.map.outside = (p_func_b) gmt_radial_outside;
+			C->current.map.crossing = (p_func_l) gmt_radial_crossing;
+			C->current.map.overlap = (p_func_b) gmt_radial_overlap;
+			C->current.map.clip = (p_func_l) gmt_radial_clip;
 			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
-		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) gmt_right_circle;
+		C->current.map.left_edge = (p_func_d) gmt_left_circle;
+		C->current.map.right_edge = (p_func_d) gmt_right_circle;
 	}
 
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[3]);
@@ -3658,19 +3658,19 @@ BOOLEAN gmt_map_init_ortho (struct GMT_CTRL *C) {
 		C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[3];
 
 	GMT_vortho (C, C->current.proj.pars[0], C->current.proj.pars[1], C->current.proj.pars[2]);
-	C->current.proj.fwd = (PFL) GMT_ortho;
-	C->current.proj.inv = (PFL) GMT_iortho;
+	C->current.proj.fwd = (p_func_l) GMT_ortho;
+	C->current.proj.inv = (p_func_l) GMT_iortho;
 
 	if (C->common.R.oblique) {	/* Rectangular box given */
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
 
-		C->current.map.outside = (PFB) gmt_rect_outside2;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside2;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = !(C->current.setting.map_annot_oblique & 1);
 		C->current.map.frame.horizontal = (fabs (C->current.proj.pars[1]) < 30.0 && fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]) < 30.0);
 	}
@@ -3693,10 +3693,10 @@ BOOLEAN gmt_map_init_ortho (struct GMT_CTRL *C) {
 			if (GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI])
 					|| doubleAlmostEqualZero (C->common.R.wesn[XHI], C->common.R.wesn[XLO]))
 				C->current.proj.edge[1] = C->current.proj.edge[3] = FALSE;
-			C->current.map.outside = (PFB) gmt_polar_outside;
-			C->current.map.crossing = (PFL) gmt_wesn_crossing;
-			C->current.map.overlap = (PFB) gmt_wesn_overlap;
-			C->current.map.clip = (PFL) GMT_wesn_clip;
+			C->current.map.outside = (p_func_b) gmt_polar_outside;
+			C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+			C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+			C->current.map.clip = (p_func_l) GMT_wesn_clip;
 			C->current.map.frame.horizontal = TRUE;
 			C->current.map.n_lat_nodes = 2;
 			gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
@@ -3712,14 +3712,14 @@ BOOLEAN gmt_map_init_ortho (struct GMT_CTRL *C) {
 			C->common.R.wesn[YHI] = 90.0;
 			xmax = ymax = C->current.proj.rho_max * C->current.proj.EQ_RAD;
 			xmin = ymin = -xmax;
-			C->current.map.outside = (PFB) gmt_radial_outside;
-			C->current.map.crossing = (PFL) gmt_radial_crossing;
-			C->current.map.overlap = (PFB) gmt_radial_overlap;
-			C->current.map.clip = (PFL) gmt_radial_clip;
+			C->current.map.outside = (p_func_b) gmt_radial_outside;
+			C->current.map.crossing = (p_func_l) gmt_radial_crossing;
+			C->current.map.overlap = (p_func_b) gmt_radial_overlap;
+			C->current.map.clip = (p_func_l) gmt_radial_clip;
 			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
-		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) gmt_right_circle;
+		C->current.map.left_edge = (p_func_d) gmt_left_circle;
+		C->current.map.right_edge = (p_func_d) gmt_right_circle;
 	}
 
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[3]);
@@ -3771,8 +3771,8 @@ BOOLEAN gmt_map_init_genper (struct GMT_CTRL *C) {
 	}
 
 	GMT_vgenper (C, C->current.proj.pars[0], C->current.proj.pars[1], alt, azimuth, tilt, twist, width, height);
-	C->current.proj.fwd = (PFL) GMT_genper;
-	C->current.proj.inv = (PFL) GMT_igenper;
+	C->current.proj.fwd = (p_func_l) GMT_genper;
+	C->current.proj.inv = (p_func_l) GMT_igenper;
 
 	C->common.R.wesn[XLO] = 0.0;
 	C->common.R.wesn[XHI] = 360.0;
@@ -3790,12 +3790,12 @@ BOOLEAN gmt_map_init_genper (struct GMT_CTRL *C) {
 	if (C->current.proj.g_width != 0.0) {
 		C->common.R.oblique = FALSE;
 		if (C->current.proj.g_debug > 0) GMT_message (C, "using windowed region\n");
-		C->current.map.outside = (PFB) gmt_rect_outside2;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip_old;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside2;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip_old;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = !(C->current.setting.map_annot_oblique & 1);
 		C->current.map.frame.horizontal = (fabs (C->current.proj.pars[1]) < 30.0 && fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]) < 30.0);
 		search = TRUE;
@@ -3806,12 +3806,12 @@ BOOLEAN gmt_map_init_genper (struct GMT_CTRL *C) {
 		for (i = 0; i < GMT_GRID_UPPER; i++)
 			C->current.map.frame.axis[GMT_X].item[i].active = C->current.map.frame.axis[GMT_Y].item[i].active = FALSE,
 			C->current.map.frame.axis[GMT_X].item[i].interval = C->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
-		C->current.map.overlap = (PFB) gmt_genper_overlap;
-		C->current.map.crossing = (PFL) gmt_radial_crossing;
-		C->current.map.clip = (PFL) gmt_radial_clip;
-		C->current.map.outside = (PFB) gmt_radial_outside;
-		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) gmt_right_circle;
+		C->current.map.overlap = (p_func_b) gmt_genper_overlap;
+		C->current.map.crossing = (p_func_l) gmt_radial_crossing;
+		C->current.map.clip = (p_func_l) gmt_radial_clip;
+		C->current.map.outside = (p_func_b) gmt_radial_outside;
+		C->current.map.left_edge = (p_func_d) gmt_left_circle;
+		C->current.map.right_edge = (p_func_d) gmt_right_circle;
 
 		if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 
@@ -3871,19 +3871,19 @@ BOOLEAN gmt_map_init_gnomonic (struct GMT_CTRL *C) {
 		C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[3];
 
 	GMT_vgnomonic (C, C->current.proj.pars[0], C->current.proj.pars[1], C->current.proj.pars[2]);
-	C->current.proj.fwd = (PFL) GMT_gnomonic;
-	C->current.proj.inv = (PFL) GMT_ignomonic;
+	C->current.proj.fwd = (p_func_l) GMT_gnomonic;
+	C->current.proj.inv = (p_func_l) GMT_ignomonic;
 
 	if (C->common.R.oblique) {	/* Rectangular box given */
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
 
-		C->current.map.outside = (PFB) gmt_rect_outside2;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside2;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = !(C->current.setting.map_annot_oblique & 1);
 		C->current.map.frame.horizontal = (fabs (C->current.proj.pars[1]) < 30.0 && fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]) < 30.0);
 	}
@@ -3900,10 +3900,10 @@ BOOLEAN gmt_map_init_gnomonic (struct GMT_CTRL *C) {
 			if (GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI])
 					|| doubleAlmostEqualZero (C->common.R.wesn[XHI], C->common.R.wesn[XLO]))
 				C->current.proj.edge[1] = C->current.proj.edge[3] = FALSE;
-			C->current.map.outside = (PFB) gmt_polar_outside;
-			C->current.map.crossing = (PFL) gmt_wesn_crossing;
-			C->current.map.overlap = (PFB) gmt_wesn_overlap;
-			C->current.map.clip = (PFL) GMT_wesn_clip;
+			C->current.map.outside = (p_func_b) gmt_polar_outside;
+			C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+			C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+			C->current.map.clip = (p_func_l) GMT_wesn_clip;
 			C->current.map.frame.horizontal = TRUE;
 			C->current.map.n_lat_nodes = 2;
 			gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
@@ -3915,14 +3915,14 @@ BOOLEAN gmt_map_init_gnomonic (struct GMT_CTRL *C) {
 			C->common.R.wesn[YHI] = 90.0;
 			xmax = ymax = C->current.proj.rho_max * C->current.proj.EQ_RAD;
 			xmin = ymin = -xmax;
-			C->current.map.outside = (PFB) gmt_radial_outside;
-			C->current.map.crossing = (PFL) gmt_radial_crossing;
-			C->current.map.overlap = (PFB) gmt_radial_overlap;
-			C->current.map.clip = (PFL) gmt_radial_clip;
+			C->current.map.outside = (p_func_b) gmt_radial_outside;
+			C->current.map.crossing = (p_func_l) gmt_radial_crossing;
+			C->current.map.overlap = (p_func_b) gmt_radial_overlap;
+			C->current.map.clip = (p_func_l) gmt_radial_clip;
 			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
-		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) gmt_right_circle;
+		C->current.map.left_edge = (p_func_d) gmt_left_circle;
+		C->current.map.right_edge = (p_func_d) gmt_right_circle;
 	}
 
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[3]);
@@ -3954,19 +3954,19 @@ BOOLEAN gmt_map_init_azeqdist (struct GMT_CTRL *C) {
 		C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[3];
 
 	GMT_vazeqdist (C, C->current.proj.pars[0], C->current.proj.pars[1], C->current.proj.pars[2]);
-	C->current.proj.fwd = (PFL) GMT_azeqdist;
-	C->current.proj.inv = (PFL) GMT_iazeqdist;
+	C->current.proj.fwd = (p_func_l) GMT_azeqdist;
+	C->current.proj.inv = (p_func_l) GMT_iazeqdist;
 
 	if (C->common.R.oblique) {	/* Rectangular box given */
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
 
-		C->current.map.outside = (PFB) gmt_rect_outside2;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside2;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = !(C->current.setting.map_annot_oblique & 1);
 		C->current.map.frame.horizontal = (fabs (C->current.proj.pars[1]) < 60.0 && fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]) < 30.0);
 	}
@@ -3977,10 +3977,10 @@ BOOLEAN gmt_map_init_azeqdist (struct GMT_CTRL *C) {
 			if (GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI])
 					|| doubleAlmostEqualZero (C->common.R.wesn[XHI], C->common.R.wesn[XLO]))
 				C->current.proj.edge[1] = C->current.proj.edge[3] = FALSE;
-			C->current.map.outside = (PFB) gmt_polar_outside;
-			C->current.map.crossing = (PFL) gmt_wesn_crossing;
-			C->current.map.overlap = (PFB) gmt_wesn_overlap;
-			C->current.map.clip = (PFL) GMT_wesn_clip;
+			C->current.map.outside = (p_func_b) gmt_polar_outside;
+			C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+			C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+			C->current.map.clip = (p_func_l) GMT_wesn_clip;
 			C->current.map.frame.horizontal = TRUE;
 			C->current.map.n_lat_nodes = 2;
 			gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
@@ -3996,14 +3996,14 @@ BOOLEAN gmt_map_init_azeqdist (struct GMT_CTRL *C) {
 			C->common.R.wesn[YHI] = 90.0;
 			xmax = ymax = C->current.proj.rho_max * C->current.proj.EQ_RAD;
 			xmin = ymin = -xmax;
-			C->current.map.outside = (PFB) gmt_radial_outside;
-			C->current.map.crossing = (PFL) gmt_radial_crossing;
-			C->current.map.overlap = (PFB) gmt_radial_overlap;
-			C->current.map.clip = (PFL) gmt_radial_clip;
+			C->current.map.outside = (p_func_b) gmt_radial_outside;
+			C->current.map.crossing = (p_func_l) gmt_radial_crossing;
+			C->current.map.overlap = (p_func_b) gmt_radial_overlap;
+			C->current.map.clip = (p_func_l) gmt_radial_clip;
 			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
-		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) gmt_right_circle;
+		C->current.map.left_edge = (p_func_d) gmt_left_circle;
+		C->current.map.right_edge = (p_func_d) gmt_right_circle;
 	}
 
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[3]);
@@ -4036,12 +4036,12 @@ BOOLEAN gmt_map_init_mollweide (struct GMT_CTRL *C) {
 	if (C->common.R.oblique) {
 		GMT_mollweide (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		GMT_mollweide (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
@@ -4050,18 +4050,18 @@ BOOLEAN gmt_map_init_mollweide (struct GMT_CTRL *C) {
 		GMT_mollweide (C, C->common.R.wesn[XHI], y, &xmax, &dummy);
 		GMT_mollweide (C, C->current.proj.central_meridian, C->common.R.wesn[YLO], &dummy, &ymin);
 		GMT_mollweide (C, C->current.proj.central_meridian, C->common.R.wesn[YHI], &dummy, &ymax);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) gmt_left_ellipse;
-		C->current.map.right_edge = (PFD) gmt_right_ellipse;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_ellipse;
+		C->current.map.right_edge = (p_func_d) gmt_right_ellipse;
 		C->current.map.frame.horizontal = 2;
 		C->current.proj.polar = TRUE;
 	}
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
-	C->current.proj.fwd = (PFL) GMT_mollweide;
-	C->current.proj.inv = (PFL) GMT_imollweide;
+	C->current.proj.fwd = (p_func_l) GMT_mollweide;
+	C->current.proj.inv = (p_func_l) GMT_imollweide;
 	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	C->current.map.parallel_straight = TRUE;
 
@@ -4091,12 +4091,12 @@ BOOLEAN gmt_map_init_hammer (struct GMT_CTRL *C) {
 	if (C->common.R.oblique) {
 		GMT_hammer (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		GMT_hammer (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
@@ -4107,18 +4107,18 @@ BOOLEAN gmt_map_init_hammer (struct GMT_CTRL *C) {
 		GMT_hammer (C, C->common.R.wesn[XHI], y, &xmax, &dummy);
 		GMT_hammer (C, x, C->common.R.wesn[YLO], &dummy, &ymin);
 		GMT_hammer (C, x, C->common.R.wesn[YHI], &dummy, &ymax);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) gmt_left_ellipse;
-		C->current.map.right_edge = (PFD) gmt_right_ellipse;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_ellipse;
+		C->current.map.right_edge = (p_func_d) gmt_right_ellipse;
 		C->current.map.frame.horizontal = 2;
 		C->current.proj.polar = TRUE;
 	}
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
-	C->current.proj.fwd = (PFL) GMT_hammer;
-	C->current.proj.inv = (PFL) GMT_ihammer;
+	C->current.proj.fwd = (p_func_l) GMT_hammer;
+	C->current.proj.inv = (p_func_l) GMT_ihammer;
 	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	return (C->common.R.oblique);
 }
@@ -4144,12 +4144,12 @@ BOOLEAN gmt_map_init_grinten (struct GMT_CTRL *C) {
 	if (C->common.R.oblique) {
 		GMT_grinten (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		GMT_grinten (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
@@ -4160,19 +4160,19 @@ BOOLEAN gmt_map_init_grinten (struct GMT_CTRL *C) {
 		GMT_grinten (C, C->common.R.wesn[XHI], y, &xmax, &dummy);
 		GMT_grinten (C, x, C->common.R.wesn[YLO], &dummy, &ymin);
 		GMT_grinten (C, x, C->common.R.wesn[YHI], &dummy, &ymax);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) gmt_left_circle;
-		C->current.map.right_edge = (PFD) gmt_right_circle;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_circle;
+		C->current.map.right_edge = (p_func_d) gmt_right_circle;
 		C->current.map.frame.horizontal = 2;
 		C->current.proj.polar = TRUE;
 	}
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
 	C->current.proj.r = 0.5 * C->current.proj.rect[XHI];
-	C->current.proj.fwd = (PFL) GMT_grinten;
-	C->current.proj.inv = (PFL) GMT_igrinten;
+	C->current.proj.fwd = (p_func_l) GMT_grinten;
+	C->current.proj.inv = (p_func_l) GMT_igrinten;
 	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	return (C->common.R.oblique);
 }
@@ -4196,12 +4196,12 @@ BOOLEAN gmt_map_init_winkel (struct GMT_CTRL *C) {
 	if (C->common.R.oblique) {
 		GMT_winkel (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		GMT_winkel (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
@@ -4212,17 +4212,17 @@ BOOLEAN gmt_map_init_winkel (struct GMT_CTRL *C) {
 		GMT_winkel (C, C->common.R.wesn[XHI], y, &xmax, &dummy);
 		GMT_winkel (C, x, C->common.R.wesn[YLO], &dummy, &ymin);
 		GMT_winkel (C, x, C->common.R.wesn[YHI], &dummy, &ymax);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) GMT_left_winkel;
-		C->current.map.right_edge = (PFD) GMT_right_winkel;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) GMT_left_winkel;
+		C->current.map.right_edge = (p_func_d) GMT_right_winkel;
 		C->current.map.frame.horizontal = 2;
 	}
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
-	C->current.proj.fwd = (PFL) GMT_winkel;
-	C->current.proj.inv = (PFL) GMT_iwinkel;
+	C->current.proj.fwd = (p_func_l) GMT_winkel;
+	C->current.proj.inv = (p_func_l) GMT_iwinkel;
 	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	return (C->common.R.oblique);
 }
@@ -4247,12 +4247,12 @@ BOOLEAN gmt_map_init_eckert4 (struct GMT_CTRL *C) {
 	if (C->common.R.oblique) {
 		GMT_eckert4 (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		GMT_eckert4 (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
@@ -4262,17 +4262,17 @@ BOOLEAN gmt_map_init_eckert4 (struct GMT_CTRL *C) {
 		GMT_eckert4 (C, C->common.R.wesn[XHI], y, &xmax, &dummy);
 		GMT_eckert4 (C, C->current.proj.central_meridian, C->common.R.wesn[YLO], &dummy, &ymin);
 		GMT_eckert4 (C, C->current.proj.central_meridian, C->common.R.wesn[YHI], &dummy, &ymax);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) GMT_left_eckert4;
-		C->current.map.right_edge = (PFD) GMT_right_eckert4;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) GMT_left_eckert4;
+		C->current.map.right_edge = (p_func_d) GMT_right_eckert4;
 		C->current.map.frame.horizontal = 2;
 	}
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
-	C->current.proj.fwd = (PFL) GMT_eckert4;
-	C->current.proj.inv = (PFL) GMT_ieckert4;
+	C->current.proj.fwd = (p_func_l) GMT_eckert4;
+	C->current.proj.inv = (p_func_l) GMT_ieckert4;
 	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	C->current.map.parallel_straight = TRUE;
 
@@ -4299,12 +4299,12 @@ BOOLEAN gmt_map_init_eckert6 (struct GMT_CTRL *C) {
 	if (C->common.R.oblique) {
 		GMT_eckert6 (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		GMT_eckert6 (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
@@ -4314,17 +4314,17 @@ BOOLEAN gmt_map_init_eckert6 (struct GMT_CTRL *C) {
 		GMT_eckert6 (C, C->common.R.wesn[XHI], y, &xmax, &dummy);
 		GMT_eckert6 (C, C->current.proj.central_meridian, C->common.R.wesn[YLO], &dummy, &ymin);
 		GMT_eckert6 (C, C->current.proj.central_meridian, C->common.R.wesn[YHI], &dummy, &ymax);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) GMT_left_eckert6;
-		C->current.map.right_edge = (PFD) GMT_right_eckert6;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) GMT_left_eckert6;
+		C->current.map.right_edge = (p_func_d) GMT_right_eckert6;
 		C->current.map.frame.horizontal = 2;
 	}
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
-	C->current.proj.fwd = (PFL) GMT_eckert6;
-	C->current.proj.inv = (PFL) GMT_ieckert6;
+	C->current.proj.fwd = (p_func_l) GMT_eckert6;
+	C->current.proj.inv = (p_func_l) GMT_ieckert6;
 	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	C->current.map.parallel_straight = TRUE;
 
@@ -4350,12 +4350,12 @@ BOOLEAN gmt_map_init_robinson (struct GMT_CTRL *C) {
 	if (C->common.R.oblique) {
 		GMT_robinson (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		GMT_robinson (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
@@ -4365,17 +4365,17 @@ BOOLEAN gmt_map_init_robinson (struct GMT_CTRL *C) {
 		GMT_robinson (C, C->common.R.wesn[XHI], y, &xmax, &dummy);
 		GMT_robinson (C, C->current.proj.central_meridian, C->common.R.wesn[YLO], &dummy, &ymin);
 		GMT_robinson (C, C->current.proj.central_meridian, C->common.R.wesn[YHI], &dummy, &ymax);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) GMT_left_robinson;
-		C->current.map.right_edge = (PFD) GMT_right_robinson;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) GMT_left_robinson;
+		C->current.map.right_edge = (p_func_d) GMT_right_robinson;
 		C->current.map.frame.horizontal = 2;
 	}
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
-	C->current.proj.fwd = (PFL) GMT_robinson;
-	C->current.proj.inv = (PFL) GMT_irobinson;
+	C->current.proj.fwd = (p_func_l) GMT_robinson;
+	C->current.proj.inv = (p_func_l) GMT_irobinson;
 	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	C->current.map.parallel_straight = TRUE;
 
@@ -4400,19 +4400,19 @@ BOOLEAN gmt_map_init_sinusoidal (struct GMT_CTRL *C) {
 	GMT_vsinusoidal (C, C->current.proj.pars[0]);
 	if (C->current.proj.units_pr_degree) C->current.proj.pars[1] /= C->current.proj.M_PR_DEG;
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[1];
-	C->current.proj.fwd = (PFL) GMT_sinusoidal;
-	C->current.proj.inv = (PFL) GMT_isinusoidal;
+	C->current.proj.fwd = (p_func_l) GMT_sinusoidal;
+	C->current.proj.inv = (p_func_l) GMT_isinusoidal;
 	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 
 	if (C->common.R.oblique) {
 		GMT_sinusoidal (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		GMT_sinusoidal (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
@@ -4422,12 +4422,12 @@ BOOLEAN gmt_map_init_sinusoidal (struct GMT_CTRL *C) {
 		GMT_sinusoidal (C, C->current.proj.central_meridian, C->common.R.wesn[YHI], &dummy, &ymax);
 		GMT_sinusoidal (C, C->common.R.wesn[XLO], y, &xmin, &dummy);
 		GMT_sinusoidal (C, C->common.R.wesn[XHI], y, &xmax, &dummy);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) GMT_left_sinusoidal;
-		C->current.map.right_edge = (PFD) GMT_right_sinusoidal;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) GMT_left_sinusoidal;
+		C->current.map.right_edge = (p_func_d) GMT_right_sinusoidal;
 		C->current.map.frame.horizontal = 2;
 		C->current.proj.polar = TRUE;
 	}
@@ -4451,12 +4451,12 @@ BOOLEAN gmt_map_init_cassini (struct GMT_CTRL *C) {
 	if (too_big) gmt_set_spherical (C);	/* Cannot use ellipsoidal series for this area */
 	GMT_vcassini (C, C->current.proj.pars[0], C->current.proj.pars[1]);
 	if (GMT_IS_SPHERICAL (C)) {
-		C->current.proj.fwd = (PFL) GMT_cassini_sph;
-		C->current.proj.inv = (PFL) GMT_icassini_sph;
+		C->current.proj.fwd = (p_func_l) GMT_cassini_sph;
+		C->current.proj.inv = (p_func_l) GMT_icassini_sph;
 	}
 	else {
-		C->current.proj.fwd = (PFL) GMT_cassini;
-		C->current.proj.inv = (PFL) GMT_icassini;
+		C->current.proj.fwd = (p_func_l) GMT_cassini;
+		C->current.proj.inv = (p_func_l) GMT_icassini;
 	}
 	if (C->current.proj.units_pr_degree) C->current.proj.pars[2] /= C->current.proj.M_PR_DEG;
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[2];
@@ -4465,22 +4465,22 @@ BOOLEAN gmt_map_init_cassini (struct GMT_CTRL *C) {
 	if (C->common.R.oblique) {
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
 		gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) gmt_left_conic;
-		C->current.map.right_edge = (PFD) gmt_right_conic;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_conic;
+		C->current.map.right_edge = (p_func_d) gmt_right_conic;
 	}
 
 	C->current.map.frame.horizontal = TRUE;
@@ -4500,13 +4500,13 @@ BOOLEAN gmt_map_init_albers (struct GMT_CTRL *C) {
 	if (C->current.proj.GMT_convert_latitudes) GMT_scale_eqrad (C);
 	if (GMT_IS_SPHERICAL (C) || C->current.proj.GMT_convert_latitudes) {	/* Spherical code w/wo authalic latitudes */
 		GMT_valbers_sph (C, C->current.proj.pars[0], C->current.proj.pars[1], C->current.proj.pars[2], C->current.proj.pars[3]);
-		C->current.proj.fwd = (PFL) GMT_albers_sph;
-		C->current.proj.inv = (PFL) GMT_ialbers_sph;
+		C->current.proj.fwd = (p_func_l) GMT_albers_sph;
+		C->current.proj.inv = (p_func_l) GMT_ialbers_sph;
 	}
 	else {
 		GMT_valbers (C, C->current.proj.pars[0], C->current.proj.pars[1], C->current.proj.pars[2], C->current.proj.pars[3]);
-		C->current.proj.fwd = (PFL) GMT_albers;
-		C->current.proj.inv = (PFL) GMT_ialbers;
+		C->current.proj.fwd = (p_func_l) GMT_albers;
+		C->current.proj.inv = (p_func_l) GMT_ialbers;
 	}
 	if (C->current.proj.units_pr_degree) C->current.proj.pars[4] /= C->current.proj.M_PR_DEG;
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[4];
@@ -4514,22 +4514,22 @@ BOOLEAN gmt_map_init_albers (struct GMT_CTRL *C) {
 	if (C->common.R.oblique) {
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
 		gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) gmt_left_conic;
-		C->current.map.right_edge = (PFD) gmt_right_conic;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_conic;
+		C->current.map.right_edge = (p_func_d) gmt_right_conic;
 	}
 	C->current.map.frame.horizontal = TRUE;
 	C->current.map.n_lat_nodes = 2;
@@ -4558,30 +4558,29 @@ BOOLEAN gmt_map_init_econic (struct GMT_CTRL *C) {
 	C->current.proj.GMT_convert_latitudes = !GMT_IS_SPHERICAL (C);
 	if (C->current.proj.GMT_convert_latitudes) GMT_scale_eqrad (C);
 	GMT_veconic (C, C->current.proj.pars[0], C->current.proj.pars[1], C->current.proj.pars[2], C->current.proj.pars[3]);
-	C->current.proj.fwd = (PFL) GMT_econic;
-	C->current.proj.inv = (PFL) GMT_ieconic;
+	C->current.proj.fwd = (p_func_l) GMT_econic;
+	C->current.proj.inv = (p_func_l) GMT_ieconic;
 	if (C->current.proj.units_pr_degree) C->current.proj.pars[4] /= C->current.proj.M_PR_DEG;
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[4];
 
 	if (C->common.R.oblique) {
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
-		C->current.map.frame.check_side = TRUE;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 	}
 	else {
 		gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) gmt_left_conic;
-		C->current.map.right_edge = (PFD) gmt_right_conic;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_conic;
+		C->current.map.right_edge = (p_func_d) gmt_right_conic;
 	}
 	C->current.map.frame.horizontal = TRUE;
 	C->current.map.n_lat_nodes = 2;
@@ -4614,19 +4613,19 @@ BOOLEAN gmt_map_init_polyconic (struct GMT_CTRL *C) {
 	GMT_vpolyconic (C, C->current.proj.pars[0], C->current.proj.pars[1]);
 	if (C->current.proj.units_pr_degree) C->current.proj.pars[2] /= C->current.proj.M_PR_DEG;
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[2];
-	C->current.proj.fwd = (PFL) GMT_polyconic;
-	C->current.proj.inv = (PFL) GMT_ipolyconic;
+	C->current.proj.fwd = (p_func_l) GMT_polyconic;
+	C->current.proj.inv = (p_func_l) GMT_ipolyconic;
 	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 
 	if (C->common.R.oblique) {
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], C->common.R.wesn[YHI], &xmax, &ymax);
-		C->current.map.outside = (PFB) gmt_rect_outside;
-		C->current.map.crossing = (PFL) gmt_rect_crossing;
-		C->current.map.overlap = (PFB) gmt_rect_overlap;
-		C->current.map.clip = (PFL) gmt_rect_clip;
-		C->current.map.left_edge = (PFD) gmt_left_rect;
-		C->current.map.right_edge = (PFD) gmt_right_rect;
+		C->current.map.outside = (p_func_b) gmt_rect_outside;
+		C->current.map.crossing = (p_func_l) gmt_rect_crossing;
+		C->current.map.overlap = (p_func_b) gmt_rect_overlap;
+		C->current.map.clip = (p_func_l) gmt_rect_clip;
+		C->current.map.left_edge = (p_func_d) gmt_left_rect;
+		C->current.map.right_edge = (p_func_d) gmt_right_rect;
 		C->current.map.frame.check_side = TRUE;
 	}
 	else {
@@ -4636,12 +4635,12 @@ BOOLEAN gmt_map_init_polyconic (struct GMT_CTRL *C) {
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XHI], y, &xmax, &dummy);
 		(*C->current.proj.fwd) (C, C->current.proj.central_meridian, C->common.R.wesn[YLO], &dummy, &ymin);
 		(*C->current.proj.fwd) (C, C->current.proj.central_meridian, C->common.R.wesn[YHI], &dummy, &ymax);
-		C->current.map.outside = (PFB) gmt_wesn_outside;
-		C->current.map.crossing = (PFL) gmt_wesn_crossing;
-		C->current.map.overlap = (PFB) gmt_wesn_overlap;
-		C->current.map.clip = (PFL) GMT_wesn_clip;
-		C->current.map.left_edge = (PFD) GMT_left_polyconic;
-		C->current.map.right_edge = (PFD) GMT_right_polyconic;
+		C->current.map.outside = (p_func_b) gmt_wesn_outside;
+		C->current.map.crossing = (p_func_l) gmt_wesn_crossing;
+		C->current.map.overlap = (p_func_b) gmt_wesn_overlap;
+		C->current.map.clip = (p_func_l) GMT_wesn_clip;
+		C->current.map.left_edge = (p_func_d) GMT_left_polyconic;
+		C->current.map.right_edge = (p_func_d) GMT_right_polyconic;
 		C->current.proj.polar = TRUE;
 	}
 
@@ -7087,8 +7086,8 @@ GMT_LONG gmt_init_three_D (struct GMT_CTRL *C) {
 		case GMT_LINEAR:	/* Regular scaling */
 			zmin = (C->current.proj.xyz_pos[GMT_Z]) ? C->common.R.wesn[ZLO] : C->common.R.wesn[ZHI];
 			zmax = (C->current.proj.xyz_pos[GMT_Z]) ? C->common.R.wesn[ZHI] : C->common.R.wesn[ZLO];
-			C->current.proj.fwd_z = (PFL) GMT_translin;
-			C->current.proj.inv_z = (PFL) GMT_itranslin;
+			C->current.proj.fwd_z = (p_func_l) GMT_translin;
+			C->current.proj.inv_z = (p_func_l) GMT_itranslin;
 			break;
 		case GMT_LOG10:	/* Log10 transformation */
 			if (C->common.R.wesn[ZLO] <= 0.0 || C->common.R.wesn[ZHI] <= 0.0) {
@@ -7097,8 +7096,8 @@ GMT_LONG gmt_init_three_D (struct GMT_CTRL *C) {
 			}
 			zmin = (C->current.proj.xyz_pos[GMT_Z]) ? d_log10 (C, C->common.R.wesn[ZLO]) : d_log10 (C, C->common.R.wesn[ZHI]);
 			zmax = (C->current.proj.xyz_pos[GMT_Z]) ? d_log10 (C, C->common.R.wesn[ZHI]) : d_log10 (C, C->common.R.wesn[ZLO]);
-			C->current.proj.fwd_z = (PFL) GMT_translog10;
-			C->current.proj.inv_z = (PFL) GMT_itranslog10;
+			C->current.proj.fwd_z = (p_func_l) GMT_translog10;
+			C->current.proj.inv_z = (p_func_l) GMT_itranslog10;
 			break;
 		case GMT_POW:	/* x^y transformation */
 			C->current.proj.xyz_pow[GMT_Z] = C->current.proj.z_pars[1];
@@ -7106,8 +7105,8 @@ GMT_LONG gmt_init_three_D (struct GMT_CTRL *C) {
 			positive = !((C->current.proj.xyz_pos[GMT_Z] + (C->current.proj.xyz_pow[GMT_Z] > 0.0)) % 2);
 			zmin = (positive) ? pow (C->common.R.wesn[ZLO], C->current.proj.xyz_pow[GMT_Z]) : pow (C->common.R.wesn[ZHI], C->current.proj.xyz_pow[GMT_Z]);
 			zmax = (positive) ? pow (C->common.R.wesn[ZHI], C->current.proj.xyz_pow[GMT_Z]) : pow (C->common.R.wesn[ZLO], C->current.proj.xyz_pow[GMT_Z]);
-			C->current.proj.fwd_z = (PFL) GMT_transpowz;
-			C->current.proj.inv_z = (PFL) GMT_itranspowz;
+			C->current.proj.fwd_z = (p_func_l) GMT_transpowz;
+			C->current.proj.inv_z = (p_func_l) GMT_itranspowz;
 	}
 	if (C->current.proj.compute_scale[GMT_Z]) C->current.proj.scale[GMT_Z] /= fabs (zmin - zmax);
 	C->current.proj.zmax = (zmax - zmin) * C->current.proj.scale[GMT_Z];
@@ -7343,11 +7342,11 @@ GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 	if (C->current.proj.gave_map_width) C->current.proj.units_pr_degree = FALSE;
 
 	C->current.map.n_lon_nodes = C->current.map.n_lat_nodes = 0;
-	C->current.map.wrap_around_check = (PFL) gmt_wrap_around_check_x;
-	C->current.map.jump = (PFL) gmt_map_jump_x;
-	C->current.map.will_it_wrap = (PFB) gmt_will_it_wrap_x;
-	C->current.map.this_point_wraps = (PFB) gmt_this_point_wraps_x;
-	C->current.map.get_crossings = (PFV) gmt_get_crossings_x;
+	C->current.map.wrap_around_check = (p_func_l) gmt_wrap_around_check_x;
+	C->current.map.jump = (p_func_l) gmt_map_jump_x;
+	C->current.map.will_it_wrap = (p_func_b) gmt_will_it_wrap_x;
+	C->current.map.this_point_wraps = (p_func_b) gmt_this_point_wraps_x;
+	C->current.map.get_crossings = (p_func_v) gmt_get_crossings_x;
 
 	C->current.map.lon_wrap = TRUE;
 	GMT_lat_swap_init (C);
