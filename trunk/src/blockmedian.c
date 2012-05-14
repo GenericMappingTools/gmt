@@ -38,7 +38,7 @@ GMT_LONG GMT_blockmedian_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "blockmedian %s [API] - Block average (x,y,z) data tables by L1 norm\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: blockmedian [<table>] %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-C] [-E] [-Q] [-T<q>] [%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_message (GMT, "\t[-C] [-E[b]] [-Er[-]] [-Q] [-T<q>] [%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -51,6 +51,8 @@ GMT_LONG GMT_blockmedian_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-E Extend output with L1 scale (s), low (l), and high (h) value per block, i.e.,\n");
 	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
 	GMT_message (GMT, "\t   Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w]).\n");
+	GMT_message (GMT, "\t   Use -Er to report record number of the median value per block.\n");
+	GMT_message (GMT, "\t   For ties, report record number of largest value; append - for smallest.\n");
 	GMT_message (GMT, "\t-Q Quicker; get median z and x,y at that z [Default gets median x, median y, median z].\n");
 	GMT_message (GMT, "\t-T Set quantile (0 < q < 1) to report [Default is 0.5 which is the median of z].\n");
 	GMT_explain_options (GMT, "V");
@@ -91,8 +93,12 @@ GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *
 			case 'E':	/* Report extended statistics */
 				Ctrl->E.active = TRUE;			/* Report standard deviation, min, and max in cols 4-6 */
 				if (opt->arg[0] == 'b')
-					Ctrl->E.mode = 1;		/* Report min, 25%, 75% and max in cols 4-7 */
-				else if (opt->arg[0])
+					Ctrl->E.mode = BLK_DO_EXTEND4;		/* Report min, 25%, 75% and max in cols 4-7 */
+				else if (opt->arg[0] == 'r')
+					Ctrl->E.mode = (opt->arg[1] == '-') ? BLK_DO_INDEX_LO : BLK_DO_INDEX_HI;	/* Report row number of median */
+				else if (opt->arg[0] == '\0')
+					Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report L1scale, low, high in cols 4-6 */
+				else
 					n_errors++;
 				break;
 			case 'I':	/* Get block dimensions */
@@ -142,10 +148,10 @@ GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *
 }
 
 void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_in_cell, GMT_LONG first_in_new_cell, double weight_sum, double *out, double *extra,
-	GMT_LONG go_quickly, double *quantile, GMT_LONG n_quantiles, struct BLK_DATA *data)
+	GMT_LONG go_quickly, GMT_LONG emode, double *quantile, GMT_LONG n_quantiles, struct BLK_DATA *data)
 {
 	double weight_half, weight_count;
-	GMT_LONG node, n_in_cell, node1, k, k_for_xy;
+	GMT_LONG node, n_in_cell, node1, k, k_for_xy, way;
 
 	/* Remember: Data are already sorted on z for each cell */
 
@@ -170,6 +176,11 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_i
 				out[GMT_X] = 0.5 * (data[node].a[GMT_X] + data[node1].a[GMT_X]);
 				out[GMT_Y] = 0.5 * (data[node].a[GMT_Y] + data[node1].a[GMT_Y]);
 			}
+			if (k == 0 && emode) {	/* Return record number of median, selecting the high or the low value since it is a tie */
+				way = (data[node].a[BLK_Z] >= data[node1].a[BLK_Z]) ? +1 : -1;
+				if (emode & BLK_DO_INDEX_HI) extra[3] = (way == +1) ? data[node].rec_no : data[node1].rec_no;
+				else extra[3] = (way == +1) ? data[node1].rec_no : data[node].rec_no;
+			}
 		}
 		else {
 			extra[k] = data[node].a[BLK_Z];
@@ -177,6 +188,7 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_i
 				out[GMT_X] = data[node].a[GMT_X];
 				out[GMT_Y] = data[node].a[GMT_Y];
 			}
+			if (k == 0 && emode) extra[3] = data[node].rec_no;	/* Return record number of median */
 		}
 	}
 	out[GMT_Z] = extra[k_for_xy];	/* The desired quantile is passed via z */
@@ -215,14 +227,14 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_i
 
 GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, box_and_whisker = FALSE;
+	GMT_LONG error = FALSE, do_extra;
 	GMT_LONG nz, n_read, n_lost, node, first_in_cell, first_in_new_cell;
 	GMT_LONG n_alloc = 0, nz_alloc = 0, n_pitched, row, col, n_cells_filled;
-	GMT_LONG w_col, n_output, n_quantiles = 1, go_quickly = 0;
+	GMT_LONG w_col, i_col, emode = 0, n_output, n_quantiles = 1, go_quickly = 0;
 
-	double out[7], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[3], weight, *in = NULL, *z_tmp = NULL;
+	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, *in = NULL, *z_tmp = NULL;
 
-	char format[GMT_BUFSIZ];
+	char format[GMT_BUFSIZ], *old_format = NULL;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL;
@@ -259,17 +271,24 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -C overrides -Q\n");
 		go_quickly = 0;
 	}
-
 	if (Ctrl->C.active) go_quickly = 2;			/* Flag used in output calculation */
-	n_output = (Ctrl->W.weighted[GMT_OUT]) ? 4 : 3;		/* 3 coumns on output, plus 1 extra if -W  */
-	if (Ctrl->E.active) n_output += 3;			/* 6 columns, plus 1 extra if -W */
-	if (Ctrl->E.active && Ctrl->E.mode == 1) {
-		n_quantiles = 3;
-		box_and_whisker = TRUE;
-		n_output++;					/* 7 cols, plus 1 extra if -W */
+	n_output = (Ctrl->W.weighted[GMT_OUT]) ? 4 : 3;		/* 3 columns on output, plus 1 extra if -W  */
+	if (Ctrl->E.active) {					/* One or more -E settings */
+		if (Ctrl->E.mode & BLK_DO_EXTEND3) {	/* Add s,l,h cols */
+			n_output += 3;
+			do_extra = TRUE;
+		}
+		else if (Ctrl->E.mode & BLK_DO_EXTEND4) {	/* Add l, 25%, 75%, h cols */
+			n_output += 4;
+			n_quantiles = 3;
+			do_extra = TRUE;
+		}
+		if (Ctrl->E.mode & BLK_DO_INDEX_LO || Ctrl->E.mode & BLK_DO_INDEX_HI) {	/* Add index */
+			n_output++;
+			emode = Ctrl->E.mode & (BLK_DO_INDEX_LO + BLK_DO_INDEX_HI);
+		}
 	}
-	else
-		quantile[0] = Ctrl->T.quantile;
+	if (!(Ctrl->E.mode & BLK_DO_EXTEND4)) quantile[0] = Ctrl->T.quantile;	/* Just get the single quantile [median] */
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%ld ny: %%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
@@ -336,6 +355,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (n_pitched == n_alloc) data = GMT_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
 		data[n_pitched].i = node;
+		data[n_pitched].rec_no = n_read;
 		data[n_pitched].a[BLK_W] = ((Ctrl->W.weighted[GMT_IN]) ? in[3] : 1.0);
 		if (!Ctrl->C.active) {	/* Need to store (x,y) so we can compute median location later */
 			data[n_pitched].a[GMT_X] = in[GMT_X];
@@ -371,6 +391,11 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	w_col = GMT_get_cols (GMT, GMT_OUT) - 1;	/* Weights always reported in last output column */
+	if (emode) {					/* Index column last, with weight col just before */
+		i_col = w_col--;
+		old_format = GMT->current.io.o_format[i_col];		/* Need to restore this at end */
+		GMT->current.io.o_format[i_col] = strdup ("%.0f");	/* Integer format for rec_no */
+	}
 
 	/* Sort on node and Z value */
 
@@ -381,7 +406,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	first_in_cell = n_cells_filled = nz = 0;
 	while (first_in_cell < n_pitched) {
 		weight = data[first_in_cell].a[BLK_W];
-		if (Ctrl->E.active) {
+		if (do_extra) {
 			if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 			z_tmp[0] = data[first_in_cell].a[BLK_Z];
 			nz = 1;
@@ -389,7 +414,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		first_in_new_cell = first_in_cell + 1;
 		while ((first_in_new_cell < n_pitched) && (data[first_in_new_cell].i == data[first_in_cell].i)) {
 			weight += data[first_in_new_cell].a[BLK_W];
-			if (Ctrl->E.active) {	/* Must get a temporary copy of the sorted z array */
+			if (do_extra) {	/* Must get a temporary copy of the sorted z array */
 				if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 				z_tmp[nz++] = data[first_in_new_cell].a[BLK_Z];
 			}
@@ -398,15 +423,16 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* Now we have weight sum [and copy of z in case of -E]; now calculate the quantile(s): */
 
-		median_output (GMT, Grid->header, first_in_cell, first_in_new_cell, weight, out, extra, go_quickly, quantile, n_quantiles, data);
+		median_output (GMT, Grid->header, first_in_cell, first_in_new_cell, weight, out, extra, go_quickly, emode, quantile, n_quantiles, data);
+		/* Here, x,y,z are loaded into out */
 
-		if (box_and_whisker) {	/* Need 7 items: x, y, median, min, 25%, 75%, max [,weight] */
+		if (Ctrl->E.mode & BLK_DO_EXTEND4) {	/* Need 7 items: x, y, median, min, 25%, 75%, max [,weight] */
 			out[3] = z_tmp[0];	/* 0% quantile (min value) */
 			out[4] = extra[0];	/* 25% quantile */
 			out[5] = extra[2];	/* 75% quantile */
 			out[6] = z_tmp[nz-1];	/* 100% quantile (max value) */
 		}
-		else if (Ctrl->E.active) {	/* Need 6 items: x, y, median, MAD, min, max [,weight] */
+		else if (Ctrl->E.mode & BLK_DO_EXTEND3) {	/* Need 6 items: x, y, median, MAD, min, max [,weight] */
 			out[4] = z_tmp[0];	/* Low value */
 			out[5] = z_tmp[nz-1];	/* High value */
 			/* Turn z_tmp into absolute deviations from the median (out[GMT_Z]) */
@@ -420,6 +446,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				out[3] = GMT->session.d_NaN;
 		}
 		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = weight;
+		if (emode) out[i_col] = extra[3];
 
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 
@@ -435,9 +462,14 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_free_grid (GMT, &Grid, FALSE);	/* Free directly since not registered as a i/o resource */
 	GMT_free (GMT, data);
-	GMT_free (GMT, z_tmp);
+	if (do_extra) GMT_free (GMT, z_tmp);
 
 	GMT_set_pad (GMT, 2);			/* Restore to GMT padding defaults */
+
+	if (emode) {
+		free (GMT->current.io.o_format[i_col]);		/* Free the temporary integer format */
+		GMT->current.io.o_format[i_col] = old_format;	/* Restore previous format */
+	}
 
 	Return (GMT_OK);
 }

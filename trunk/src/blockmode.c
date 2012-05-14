@@ -38,7 +38,7 @@ GMT_LONG GMT_blockmode_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "blockmode %s [API] - Block average (x,y,z) data tables by mode estimation\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: blockmode [<table>] %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-C] [-E] [-Q] [%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_message (GMT, "\t[-C] [-E] [-Er[-]] [-Q] [%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -50,6 +50,8 @@ GMT_LONG GMT_blockmode_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-C Output center of block and mode z-value [Default is mode location (but see -Q)].\n");
 	GMT_message (GMT, "\t-E Extend output with LMS scale (s), low (l), and high (h) value per block, i.e.,\n");
 	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
+	GMT_message (GMT, "\t   Use -Er to report record number of the modal value per block.\n");
+	GMT_message (GMT, "\t   For ties, report record number of largest value; append - for smallest.\n");
 	GMT_message (GMT, "\t-Q Quicker; get mode z and mean x,y [Default gets mode x, mode y, mode z].\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Set Weight options.\n");
@@ -88,6 +90,12 @@ GMT_LONG GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl
 				break;
 			case 'E':
 				Ctrl->E.active = TRUE;		/* Extended report with standard deviation, min, and max in cols 4-6 */
+				if (opt->arg[0] == 'r')
+					Ctrl->E.mode = (opt->arg[1] == '-') ? BLK_DO_INDEX_LO : BLK_DO_INDEX_HI;	/* Report row number of median */
+				else if (opt->arg[0] == '\0')
+					Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report LMSscale, low, high in cols 4-6 */
+				else
+					n_errors++;
 				break;
 			case 'I':	/* Get block dimensions */
 				Ctrl->I.active = TRUE;
@@ -128,7 +136,7 @@ GMT_LONG GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double weighted_mode (struct BLK_DATA *d, double wsum, GMT_LONG n, GMT_LONG k)
+double weighted_mode (struct BLK_DATA *d, double wsum, GMT_LONG emode, GMT_LONG n, GMT_LONG k, GMT_LONG *index)
 {
 	/* Estimate mode by finding a maximum in the estimated
 	   pdf of weighted data.  Estimate the pdf as the finite
@@ -150,7 +158,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, GMT_LONG n, GMT_LONG k)
 	   I assumed n > 2 when I wrote this. [WHFS] */
 
 	double top, topj, topi, bottomj, bottomi, pj, pi;
-	GMT_LONG i = 0, j = n - 1, nh = n / 2;
+	GMT_LONG i = 0, j = n - 1, nh = n / 2, way;
 
 	top = wsum;
 
@@ -160,8 +168,14 @@ double weighted_mode (struct BLK_DATA *d, double wsum, GMT_LONG n, GMT_LONG k)
 		bottomi = d[j].a[k] - d[i+1].a[k];
 		bottomj = d[j-1].a[k] - d[i].a[k];
 
-		if (bottomj == 0.0) return (d[j-1].a[k]);
-		if (bottomi == 0.0) return (d[i+1].a[k]);
+		if (bottomj == 0.0) {
+			if (index) *index = d[j-1].rec_no;
+			return (d[j-1].a[k]);
+		}
+		if (bottomi == 0.0) {
+			if (index) *index = d[i+1].rec_no;
+			return (d[i+1].a[k]);
+		}
 		pi = topi / bottomi;
 		pj = topj / bottomj;
 		if (pi > pj) {
@@ -178,6 +192,11 @@ double weighted_mode (struct BLK_DATA *d, double wsum, GMT_LONG n, GMT_LONG k)
 			j--;
 		}
 	}
+	if (emode && index) {	/* Also return best rec_no for this mode */
+		way = (d[j].a[k] >= d[i].a[k]) ? +1 : -1;
+		if (emode & BLK_DO_INDEX_HI) *index = (way == +1) ? d[j].rec_no : d[i].rec_no;
+		else *index = (way == +1) ? d[i].rec_no : d[j].rec_no;
+	}
 	return (0.5 * (d[j].a[k] + d[i].a[k]));
 }
 
@@ -187,13 +206,13 @@ double weighted_mode (struct BLK_DATA *d, double wsum, GMT_LONG n, GMT_LONG k)
 
 GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, mode_xy, col, row, w_col, n_pitched;
-	GMT_LONG node, first_in_cell, first_in_new_cell, n_lost, n_read;
-	GMT_LONG n_cells_filled, n_in_cell, n_alloc = 0, nz_alloc = 0, nz;
+	GMT_LONG error = FALSE, mode_xy, col, row, w_col, i_col, n_pitched, emode = 0, do_extra;
+	GMT_LONG node, first_in_cell, first_in_new_cell, n_lost, n_read, n_output, way;
+	GMT_LONG n_cells_filled, n_in_cell, n_alloc = 0, nz_alloc = 0, nz, rec_no;
 
 	double out[7], wesn[4], i_n_in_cell, weight, *in = NULL, *z_tmp = NULL;
 
-	char format[GMT_BUFSIZ];
+	char format[GMT_BUFSIZ], *old_format = NULL;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL;
@@ -242,7 +261,16 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN,  3 + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
 		Return (error);
 	}
-	if ((error = GMT_set_cols (GMT, GMT_OUT, ((Ctrl->W.weighted[GMT_OUT]) ? 4 : 3) + 3 * Ctrl->E.active)) != GMT_OK) {
+	n_output = (Ctrl->W.weighted[GMT_OUT]) ? 4 : 3;
+	if (Ctrl->E.mode & BLK_DO_EXTEND3) {
+		n_output += 3;
+		do_extra = TRUE;
+	}
+	if (Ctrl->E.mode & BLK_DO_INDEX_LO || Ctrl->E.mode & BLK_DO_INDEX_HI) {	/* Add index */
+		n_output++;
+		emode = Ctrl->E.mode & (BLK_DO_INDEX_LO + BLK_DO_INDEX_HI);
+	}
+	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) {
 		Return (error);
 	}
 
@@ -296,6 +324,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (n_pitched == n_alloc) data = GMT_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
 		data[n_pitched].i = node;
+		data[n_pitched].rec_no = n_read;
 		if (mode_xy) {	/* Need to store (x,y) so we can compute modal location later */
 			data[n_pitched].a[GMT_X] = in[GMT_X];
 			data[n_pitched].a[GMT_Y] = in[GMT_Y];
@@ -331,6 +360,11 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	w_col = GMT_get_cols (GMT, GMT_OUT) - 1;	/* Weights always reported in last output column */
+	if (emode) {					/* Index column last, with weight col just before */
+		i_col = w_col--;
+		old_format = GMT->current.io.o_format[i_col];		/* Need to restore this at end */
+		GMT->current.io.o_format[i_col] = strdup ("%.0f");	/* Integer format for rec_no */
+	}
 
 	/* Sort on node and Z value */
 
@@ -341,7 +375,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	first_in_cell = n_cells_filled = nz = 0;
 	while (first_in_cell < n_pitched) {
 		weight = data[first_in_cell].a[BLK_W];
-		if (Ctrl->E.active) {
+		if (do_extra) {
 			if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 			z_tmp[0] = data[first_in_cell].a[BLK_Z];
 			nz = 1;
@@ -363,7 +397,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				out[GMT_X] += data[first_in_new_cell].a[GMT_X];
 				out[GMT_Y] += data[first_in_new_cell].a[GMT_Y];
 			}
-			if (Ctrl->E.active) {	/* Must get a temporary copy of the sorted z array */
+			if (do_extra) {	/* Must get a temporary copy of the sorted z array */
 				if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 				z_tmp[nz] = data[first_in_new_cell].a[BLK_Z];
 				nz++;
@@ -372,7 +406,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		n_in_cell = first_in_new_cell - first_in_cell;
 		if (n_in_cell > 2) {	/* data are already sorted on z; get z mode  */
-			out[GMT_Z] = weighted_mode (&data[first_in_cell], weight, n_in_cell, 2);
+			out[GMT_Z] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, 2, &rec_no);
 			if (Ctrl->Q.active) {
 				i_n_in_cell = 1.0 / n_in_cell;
 				out[GMT_X] *= i_n_in_cell;
@@ -380,10 +414,10 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else if (mode_xy) {
 				qsort (&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
-				out[GMT_X] = weighted_mode (&data[first_in_cell], weight, n_in_cell, 0);
+				out[GMT_X] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, 0, NULL);
 
 				qsort (&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
-				out[GMT_Y] = weighted_mode (&data[first_in_cell], weight, n_in_cell, 1);
+				out[GMT_Y] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, 1, NULL);
 			}
 		}
 		else if (n_in_cell == 2) {
@@ -397,6 +431,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					out[GMT_X] = data[first_in_cell].a[GMT_X];
 					out[GMT_Y] = data[first_in_cell].a[GMT_Y];
 				}
+				if (emode) rec_no = data[first_in_cell].rec_no;
 			}
 			else if (data[first_in_cell].a[BLK_W] < data[first_in_cell+1].a[BLK_W]) {
 				out[GMT_Z] = data[first_in_cell+1].a[BLK_Z];
@@ -408,6 +443,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					out[GMT_X] = data[first_in_cell+1].a[GMT_X];
 					out[GMT_Y] = data[first_in_cell+1].a[GMT_Y];
 				}
+				if (emode) rec_no = data[first_in_cell+1].rec_no;
 			}
 			else {
 				if (mode_xy) {	/* Need average location */
@@ -415,12 +451,19 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					out[GMT_Y] *= 0.5;
 				}
 				out[GMT_Z] = 0.5 * (data[first_in_cell].a[BLK_Z] + data[first_in_cell+1].a[BLK_Z]);
+				if (emode) {
+					way = (data[first_in_cell+1].a[BLK_Z] >= data[first_in_cell].a[BLK_Z]) ? +1 : -1;
+					if (emode & BLK_DO_INDEX_HI) rec_no = (way == +1) ? data[first_in_cell+1].rec_no : data[first_in_cell].rec_no;
+					else rec_no = (way == +1) ? data[first_in_cell].rec_no : data[first_in_cell+1].rec_no;
+				}
 			}
 		}
-		else
+		else {
 			out[GMT_Z] = data[first_in_cell].a[BLK_Z];
+			if (emode) rec_no = data[first_in_cell].rec_no;
+		}
 
-		if (Ctrl->E.active) {
+		if (Ctrl->E.mode & BLK_DO_EXTEND3) {
 			out[4] = z_tmp[0];	/* Low value */
 			out[5] = z_tmp[nz-1];	/* High value */
 			/* Turn z_tmp into absolute deviations from the mode (out[GMT_Z]) */
@@ -434,6 +477,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				out[3] = GMT->session.d_NaN;
 		}
 		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = weight;
+		if (emode) out[i_col] = rec_no;
 
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 
@@ -449,9 +493,14 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_free_grid (GMT, &Grid, FALSE);	/* Free directly since not registered as a i/o resource */
 	GMT_free (GMT, data);
-	GMT_free (GMT, z_tmp);
+	if (do_extra) GMT_free (GMT, z_tmp);
 
 	GMT_set_pad (GMT, 2);			/* Restore to GMT padding defaults */
+
+	if (emode) {
+		free (GMT->current.io.o_format[i_col]);		/* Free the temporary integer format */
+		GMT->current.io.o_format[i_col] = old_format;	/* Restore previous format */
+	}
 
 	Return (GMT_OK);
 }
