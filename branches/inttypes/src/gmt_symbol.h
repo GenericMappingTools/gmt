@@ -82,8 +82,8 @@ struct GMT_MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and ps
 	double f_int[2];	/* Tick (large) interval for geographic and magnetic directions */
 	double g_int[2];	/* Tick (small) interval for geographic and magnetic directions */
 	BOOLEAN plot;		/* TRUE if we want to draw the rose */
-	BOOLEAN fancy;		/* TRUE for a fancy map rose */
 	BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
+	COUNTER_MEDIUM type;	/* 0 for plain directional rose, 1 for a fancy directional map rose, 2 for magnetic rose */
 	COUNTER_MEDIUM kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
 	char label[4][GMT_TEXT_LEN64];	/* User-changable labels for W, E, S, N point */
 	char dlabel[GMT_TEXT_LEN256];	/* Magnetic declination label */

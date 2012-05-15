@@ -252,7 +252,7 @@ GMT_LONG decode_vector (struct GMT_CTRL *C, char *arg, double coord[], GMT_LONG 
 	
 	ix = (C->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 	n = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-	assert (n == 3);
+	assert (n >= 2);
 	n_out = n;
 	if (n == 2) {	/* Got lon/lat, r/theta, or x/y */
 		if (GMT_is_geographic (C, GMT_IN)) {

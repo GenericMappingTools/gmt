@@ -452,9 +452,9 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	BOOLEAN paint;			/* TRUE if -B +g<fill> was used */
 	BOOLEAN draw_box;		/* TRUE is a 3-D Z-box is desired */
 	BOOLEAN check_side;		/* TRUE if lon and lat annotations should be on x and y axis only */
-	BOOLEAN horizontal;		/* TRUE is S/N annotations should be parallel to axes */
 	BOOLEAN primary;		/* TRUE if current axis is primary, FALSE if secondary */
 	BOOLEAN slash;			/* TRUE if slashes were used in the -B argument */
+	COUNTER_MEDIUM horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
 	COUNTER_MEDIUM side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
 };
 

@@ -2743,7 +2743,7 @@ void gmt_draw_dir_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 
 	GMT_setpen (C, &C->current.setting.map_tick_pen[0]);
 
-	if (mr->fancy) {	/* Fancy scale */
+	if (mr->type == 1) {	/* Fancy scale */
 		mr->size *= 0.5;	/* Got diameter, use radius for calculations */
 		L[0] = mr->size;
 		L[1] = ROSE_LENGTH_SCL1 * mr->size;
@@ -2822,7 +2822,7 @@ void GMT_draw_map_rose (struct GMT_CTRL *C, struct GMT_MAP_ROSE *mr)
 	tmp_join = P->internal.line_join;	PSL_setlinejoin (P, 0);
 	tmp_limit = P->internal.miter_limit;	PSL_setmiterlimit (P, 0);
 
-	if (mr->fancy == 2)	/* Do magnetic compass rose */
+	if (mr->type == 2)	/* Do magnetic compass rose */
 		gmt_draw_mag_rose (C, P, mr);
 	else
 		gmt_draw_dir_rose (C, P, mr);

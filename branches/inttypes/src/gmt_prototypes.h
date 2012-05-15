@@ -405,7 +405,7 @@ EXTERN_MSC void GMT_init_pen (struct GMT_CTRL *C, struct GMT_PEN *pen, double wi
 EXTERN_MSC GMT_LONG GMT_colorname2index (struct GMT_CTRL *C, char *name);
 EXTERN_MSC void GMT_list_custom_symbols (struct GMT_CTRL *C);
 EXTERN_MSC struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, COUNTER_MEDIUM source_type, COUNTER_MEDIUM cpt_flags);
-EXTERN_MSC void GMT_smart_justify (struct GMT_CTRL *C, COUNTER_MEDIUM just, double angle, double dx, double dy, double *x_shift, double *y_shift, COUNTER_MEDIUM mode);
+EXTERN_MSC void GMT_smart_justify (struct GMT_CTRL *C, GMT_LONG just, double angle, double dx, double dy, double *x_shift, double *y_shift, COUNTER_MEDIUM mode);
 EXTERN_MSC void GMT_set_meminc (struct GMT_CTRL *C, size_t increment);
 EXTERN_MSC void GMT_reset_meminc (struct GMT_CTRL *C);
 EXTERN_MSC void * GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t size, char *fname, COUNTER_MEDIUM line);

@@ -1564,7 +1564,8 @@ void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G)
 		for (col = 1; col <= G->header->pad[XHI]; col++) G->data[ij_l+col] = 0.0;	/* Zero the left pad at this row */
 	}
 	if (G->header->pad[YLO]) {
-		ij_f = GMT_IJP (G->header, G->header->ny, -G->header->pad[XLO]);		/* Index of first column of bottom pad  */
+		GMT_LONG pad = G->header->pad[XLO];
+		ij_f = GMT_IJP (G->header, G->header->ny, -pad);				/* Index of first column of bottom pad  */
 		GMT_memset (&(G->data[ij_f]), G->header->pad[YLO] * G->header->mx, float);	/* Zero the bottom pad */
 	}
 	GMT_memset (G->header->BC, 4, GMT_LONG);				/* BCs no longer set for this grid */
