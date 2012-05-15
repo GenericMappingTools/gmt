@@ -116,7 +116,7 @@ extern "C" {
 
 struct GMT_MAP {		/* Holds all map-related parameters */
 	struct GMT_PLOT_FRAME frame;		/* Everything about the frame parameters */
-	GMT_LONG this_x_status;			/* Tells us what quadrant old and new points are in */
+	GMT_LONG this_x_status;			/* Tells us what quadrant old and new points are in (-4/4) */
 	GMT_LONG this_y_status;
 	GMT_LONG prev_x_status;
 	GMT_LONG prev_y_status;
