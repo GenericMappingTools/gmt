@@ -206,7 +206,7 @@ int compare_arc (const void *p1, const void *p2)
 void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double *w, COUNTER_LARGE n_in, COUNTER_MEDIUM mode, double *par, BOOLEAN vartens, struct GRD_HEADER *h, double *f)
 {
 	int64_t ierror, plus = 1, minus = -1, ij, nxp, k, n = n_in;
-	int64_t nm, i, n_sig, ist, iflgs, iter, itgs, nx = h->nx, ny = h->ny;
+	int64_t nm, n_sig, ist, iflgs, iter, itgs, nx = h->nx, ny = h->ny;
 	uint32_t row, col;
 	double *sigma = NULL, *grad = NULL, *plon = NULL, *plat = NULL, tol = 0.01, dsm, dgmx;
 	struct STRIPACK P;
@@ -238,7 +238,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 		for (row = 0; row < h->ny; row++) {
 			for (col = 0; col < h->nx; col++) {
 				ij = (COUNTER_LARGE)col * (COUNTER_LARGE)h->ny + (COUNTER_LARGE)(h->ny - row -1); /* Use Fortran indexing since calling program will transpose to GMT order */
-				intrc0_ (&n, &plat[row], &plon[i], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
+				intrc0_ (&n, &plat[row], &plon[col], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 	            		if (ierror < 0) {
 					GMT_report (C, GMT_MSG_FATAL, "Error in INTRC0: I = %ld, J = %ld, IER = %ld\n", row, col, ierror);

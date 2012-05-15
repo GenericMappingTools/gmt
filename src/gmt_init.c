@@ -7560,7 +7560,7 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 	 * The list passes all of these that we should consider.
 	 */
 
-	GMT_LONG error = 0, i, j_type;
+	GMT_LONG error = 0, i;
 
 	if (!list || !strchr (list, option)) return (FALSE);	/* Not a common option we accept */
 
@@ -7590,9 +7590,14 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 			break;
 
 		case 'J':
-			j_type = (item && (item[0] == 'Z' || item[0] == 'z')) ? 2 : 1;
-			error += (GMT_check_condition (C, C->common.J.active & j_type, "Warning: Option -J given more than once\n") || gmt_parse_J_option (C, item));
-			C->common.J.active |= j_type;
+			if (item && (item[0] == 'Z' || item[0] == 'z')) {	/* -JZ or -Jz */
+				error += (GMT_check_condition (C, C->common.J.zactive, "Warning: Option -JZ|z given more than once\n") || gmt_parse_J_option (C, item));
+				C->common.J.zactive = TRUE;
+			}
+			else {	/* Horizontal map projection */
+				error += (GMT_check_condition (C, C->common.J.active, "Warning: Option -J given more than once\n") || gmt_parse_J_option (C, item));
+				C->common.J.active = TRUE;
+			}
 			break;
 
 		case 'K':

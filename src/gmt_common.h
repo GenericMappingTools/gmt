@@ -53,7 +53,7 @@ struct GMT_COMMON {
 		BOOLEAN active[2];	/* 0 = primary annotation, 1 = secondary annotations */
 	} B;	
 	struct J {	/* -J<params> */
-		BOOLEAN active;
+		BOOLEAN active, zactive;
 		COUNTER_MEDIUM id;
 		double par[6];
 	} J;		

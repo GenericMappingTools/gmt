@@ -194,7 +194,7 @@ double get_intensity (struct GMT_CTRL *GMT, struct GMT_GRID *I, COUNTER_LARGE k)
 	return (0.25 * (I->data[k] + I->data[k+1] + I->data[k-I->header->mx] + I->data[k-I->header->mx+1]));
 }
 
-COUNTER_MEDIUM pixel_inside (struct GMT_CTRL *GMT, GMT_LONG ip, GMT_LONG jp, GMT_LONG *ix, GMT_LONG *iy, COUNTER_LARGE bin, int64_t bin_inc[])
+COUNTER_MEDIUM pixel_inside (struct GMT_CTRL *GMT, GMT_LONG ip, GMT_LONG jp, GMT_LONG *ix, GMT_LONG *iy, COUNTER_LARGE bin, GMT_LONG bin_inc[])
 {	/* Returns TRUE of the ip,jp point is inside the polygon defined by the tile */
 	COUNTER_MEDIUM i, what;
 	double x[6], y[6];
@@ -232,7 +232,7 @@ COUNTER_MEDIUM get_side (struct GMT_CTRL *GMT, double x, double y, double x_left
 	return (side);
 }
 
-void copy_points_fw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], COUNTER_MEDIUM ncont, int64_t *n) {
+void copy_points_fw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], COUNTER_MEDIUM ncont, COUNTER_LARGE *n) {
 	COUNTER_MEDIUM k;
 	for (k = 0; k < ncont; k++, (*n)++) {
 		x[*n] = xcont[k];
@@ -242,7 +242,7 @@ void copy_points_fw (struct GMT_CTRL *GMT, double x[], double y[], double z[], d
 	}
 }
 
-void copy_points_bw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], COUNTER_MEDIUM ncont, int64_t *n) {
+void copy_points_bw (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], COUNTER_MEDIUM ncont, COUNTER_LARGE *n) {
 	COUNTER_MEDIUM k, k2;
 	for (k2 = 0, k = ncont - 1; k2 < ncont; k2++, k--, (*n)++) {
 		x[*n] = xcont[k];
@@ -260,8 +260,8 @@ double get_z_ave (struct GMT_CTRL *GMT, double v[], double next_up, COUNTER_MEDI
 	return (z_ave / n);
 }
 
-void add_node (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], int64_t *k, GMT_LONG node, double X_vert[], double Y_vert[], float topo[], float zgrd[], COUNTER_LARGE ij) {
-	/* Adds a corner node to list of points and increments COUNTER_LARGE */
+void add_node (struct GMT_CTRL *GMT, double x[], double y[], double z[], double v[], COUNTER_LARGE *k, COUNTER_MEDIUM node, double X_vert[], double Y_vert[], float topo[], float zgrd[], COUNTER_LARGE ij) {
+	/* Adds a corner node to list of points and increments *k */
 	x[*k] = X_vert[node];
 	y[*k] = Y_vert[node];
 	z[*k] = topo[ij];
@@ -551,10 +551,11 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	BOOLEAN get_contours, bad, good, error = FALSE, pen_set, begin, saddle, drape_resample = FALSE;
 	COUNTER_MEDIUM c, nk, n4, row, col, n_drape = 0, n_edges, d_reg[3], i_reg = 0;
 	COUNTER_MEDIUM t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
-	GMT_LONG i, j, i_bin, j_bin, i_bin_old, j_bin_old, i_start, i_stop, j_start, j_stop, i_inc, j_inc, way;
+	GMT_LONG i, j, i_bin, j_bin, i_bin_old, j_bin_old, i_start, i_stop, j_start, j_stop;
+	GMT_LONG i_inc, j_inc, way, bin_inc[4], ij_inc[4];
 		
-	COUNTER_LARGE ij, sw, se, nw, ne, bin;
-	int64_t bin_inc[4], ij_inc[4], n;
+	COUNTER_LARGE ij, sw, se, nw, ne, bin, n;
+
 	size_t max_alloc;
 
 	double cval, x_left, x_right, y_top, y_bottom, small = GMT_SMALL, z_ave;
@@ -679,7 +680,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!GMT->current.proj.xyz_pos[2]) d_swap (GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI]);	/* Negative z-scale, must flip */
 
-	ij_inc[0] = 0;		ij_inc[1] = 1;	ij_inc[2] = 1 - Z->header->mx;	ij_inc[3] = -Z->header->mx;
+	GMT_grd_set_ij_inc (GMT, Z->header->mx, ij_inc);	/* Offsets for ij (with pad) indices */
 	nw = GMT_IJP (Topo->header, 0, 0);
 	ne = GMT_IJP (Topo->header, 0, Topo->header->nx - 1);
 	sw = GMT_IJP (Topo->header, Topo->header->ny - 1, 0);
@@ -695,7 +696,8 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	j_start = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? Z->header->ny - 1 : 1;
 	j_stop  = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? 0 : Z->header->ny;
 	j_inc   = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? -1 : 1;
-	bin_inc[0] = 0;		bin_inc[1] = 1;	bin_inc[2] = 1 - Z->header->nx;	bin_inc[3] = -Z->header->nx;
+	GMT_grd_set_ij_inc (GMT, Z->header->nx, bin_inc);	/* Offsets for bin (no pad) indices */
+	
 	x_inc[0] = x_inc[3] = 0.0;	x_inc[1] = x_inc[2] = Z->header->inc[GMT_X];
 	y_inc[0] = y_inc[1] = 0.0;	y_inc[2] = y_inc[3] = Z->header->inc[GMT_Y];
 
@@ -1576,7 +1578,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			PSL_plotpolygon (PSL, xx, yy, n);
 		}
 		if (!GMT->current.proj.z_project.draw[1]) {	/*	Eastern side */
-			for (row = n = 0, ij = ne; row < Z->header->ny; j++, ij += Topo->header->mx) {
+			for (row = n = 0, ij = ne; row < Z->header->ny; row++, ij += Topo->header->mx) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
 				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;

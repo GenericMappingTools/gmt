@@ -583,6 +583,16 @@ size_t GMT_grd_data_size (struct GMT_CTRL *C, COUNTER_MEDIUM format, double *nan
 	}
 }
 
+void GMT_grd_set_ij_inc (struct GMT_CTRL *C, COUNTER_MEDIUM nx, GMT_LONG *ij_inc)
+{	/* Set increments to the 4 nodes with ij as lower-left node, from a node at (i,j).
+	 * nx may be header->nx or header->mx depending on pad */
+	GMT_LONG s_nx = nx;	/* A signed version */
+	ij_inc[0] = 0;		/* No offset relative to itself */
+	ij_inc[1] = 1;		/* The node one column to the right relative to ij */
+	ij_inc[2] = 1 - s_nx;	/* The node one column to the right and one row up relative to ij */
+	ij_inc[3] = -s_nx;	/* The node one row up relative to ij */
+}
+
 GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code)
 {
 	/* Returns the integer grid format ID that goes with the specified 2-character code */

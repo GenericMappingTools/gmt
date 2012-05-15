@@ -78,6 +78,7 @@ EXTERN_MSC GMT_LONG GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *G, do
 EXTERN_MSC GMT_LONG GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *h, COUNTER_MEDIUM registration);
 EXTERN_MSC BOOLEAN GMT_grd_is_global (struct GMT_CTRL *C, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *Grid, double shift);
+EXTERN_MSC void GMT_grd_set_ij_inc (struct GMT_CTRL *C, COUNTER_MEDIUM nx, GMT_LONG *ij_inc);
 #ifdef USE_GDAL
 EXTERN_MSC GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, double *wesn, 
 			COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex);		/* Function to read true images via GDAL */
