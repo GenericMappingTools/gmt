@@ -554,7 +554,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG i, j, i_bin, j_bin, i_bin_old, j_bin_old, i_start, i_stop, j_start, j_stop;
 	GMT_LONG i_inc, j_inc, way, bin_inc[4], ij_inc[4];
 		
-	COUNTER_LARGE ij, sw, se, nw, ne, bin, n;
+	COUNTER_LARGE ij, sw, se, nw, ne, bin, n, pt;
 
 	size_t max_alloc;
 
@@ -731,20 +731,20 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			while ((n = GMT_contours (GMT, Z, Ctrl->S.value, GMT->current.setting.interpolant, 0, edge, &begin, &x, &y)) > 0) {
 
 				i_bin_old = j_bin_old = -1;
-				for (i = 1; i < n; i++) {
+				for (pt = 1; pt < n; pt++) {
 					/* Compute the lower-left bin i,j of the tile cut by the start of the contour (first 2 points) */
-					i_bin = lrint (floor (((0.5 * (x[i-1] + x[i]) - Z->header->wesn[XLO]) / Z->header->inc[GMT_X])));
-					j_bin = lrint (floor (((Z->header->wesn[YHI] - 0.5 * (y[i-1] + y[i])) / Z->header->inc[GMT_Y]))) + 1;
+					i_bin = lrint (floor (((0.5 * (x[pt-1] + x[pt]) - Z->header->wesn[XLO]) / Z->header->inc[GMT_X])));
+					j_bin = lrint (floor (((Z->header->wesn[YHI] - 0.5 * (y[pt-1] + y[pt])) / Z->header->inc[GMT_Y]))) + 1;
 					if (i_bin != i_bin_old || j_bin != j_bin_old) {	/* Entering new bin */
 						bin = j_bin * Z->header->nx + i_bin;
 						this_cont = get_cont_struct (GMT, bin, binij, cval);
 						this_cont->value = cval;
-						this_cont->first_point = get_point (GMT, x[i-1], y[i-1]);
+						this_cont->first_point = get_point (GMT, x[pt-1], y[pt-1]);
 						this_point = this_cont->first_point;
 						i_bin_old = i_bin;
 						j_bin_old = j_bin;
 					}
-					this_point->next_point = get_point (GMT, x[i], y[i]);
+					this_point->next_point = get_point (GMT, x[pt], y[pt]);
 					this_point = this_point->next_point;
 				}
 				GMT_free (GMT, x);

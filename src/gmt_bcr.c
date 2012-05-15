@@ -216,7 +216,7 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 	   B-spline or bicubic) at xx, yy. */
 
 	COUNTER_MEDIUM i, j;
-	COUNTER_LARGE ij;
+	COUNTER_LARGE ij, node;
 	double retval, wsum, wx[4], wy[4], w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
@@ -231,10 +231,11 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 	for (j = 0; j < G->header->bcr_n; j++) {
 		for (i = 0; i < G->header->bcr_n; i++) {
 			/* assure that index is inside bounds of the array G->data: */
-			assert (ij+i < G->header->size);
-			if (!GMT_is_fnan (G->data[ij+i])) {
+			node = ij + i;
+			assert (node < G->header->size);
+			if (!GMT_is_fnan (G->data[node])) {
 				w = wx[i] * wy[j];
-				retval += G->data[ij+i] * w;
+				retval += G->data[node] * w;
 				wsum += w;
 			}
 		}

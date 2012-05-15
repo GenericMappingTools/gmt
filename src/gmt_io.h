@@ -401,7 +401,7 @@ struct GMT_IO {				/* Used to process input data records */
 	char current_filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
 	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ascii format to overrule format_float_out */
 	int ncid;			/* NetCDF file ID (when opening netCDF file) */
-	COUNTER_MEDIUM nvars;			/* Number of requested variables in netCDF file */
+	int nvars;			/* Number of requested variables in netCDF file */
 	size_t ndim;			/* Length of the column dimension */
 	size_t nrec;			/* Record count */
 	struct GMT_DATE_IO date_input;	/* Has all info on how to decode input dates */

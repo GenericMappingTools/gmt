@@ -371,8 +371,7 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
  */
 {
 	char file[GMT_BUFSIZ], path[GMT_BUFSIZ];
-	COUNTER_MEDIUM i;
-	int j, nvars;
+	int i, j, nvars;
 	size_t n;
 	int64_t tmp_pointer;	/* To avoid 64-bit warnings */
 	char varnm[20][GMT_TEXT_LEN64], long_name[GMT_TEXT_LEN256], units[GMT_TEXT_LEN256], varname[GMT_TEXT_LEN64];
@@ -394,8 +393,10 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 		varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
 		varnm[11], varnm[12], varnm[13], varnm[14], varnm[15], varnm[16], varnm[17], varnm[18], varnm[19]);
 #endif
-	if (nvars <= 0) nc_inq_nvars (C->current.io.ncid, &nvars);
-	C->current.io.nvars = nvars;
+	if (nvars <= 0)
+		nc_inq_nvars (C->current.io.ncid, &C->current.io.nvars);
+	else
+		C->current.io.nvars = nvars;
 	C->current.io.varid = GMT_memory (C, NULL, C->current.io.nvars, int);
 	C->current.io.scale_factor = GMT_memory (C, NULL, C->current.io.nvars, double);
 	C->current.io.add_offset = GMT_memory (C, NULL, C->current.io.nvars, double);

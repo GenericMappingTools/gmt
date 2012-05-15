@@ -8059,7 +8059,8 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 
 	C->current.map.n_lon_nodes = 360;
 	C->current.map.n_lat_nodes = 180;
-	C->current.map.frame.check_side = C->current.map.frame.horizontal = FALSE;
+	C->current.map.frame.check_side = FALSE;
+	C->current.map.frame.horizontal = 0;
 	C->current.map.dlon = (C->common.R.wesn[XHI] - C->common.R.wesn[XLO]) / C->current.map.n_lon_nodes;
 	C->current.map.dlat = (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]) / C->current.map.n_lat_nodes;
 

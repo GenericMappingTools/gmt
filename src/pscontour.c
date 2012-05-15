@@ -322,7 +322,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 		}
 		if (s < GRDCONTOUR_MIN_LENGTH) continue;	/* Contour is too short to be ticked or labeled */
 
-		n_ticks = lrint (s / tick_gap);
+		n_ticks = lrint (floor (s / tick_gap));
 		if (n_ticks == 0) continue;	/* Too short to be ticked or labeled */
 
 		GMT_setpen (GMT, &save[i].pen);

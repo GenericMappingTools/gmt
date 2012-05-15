@@ -216,8 +216,9 @@ void remove_plane (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 
 void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 {
-	GMT_LONG il1, ir1, il2, ir2, jb1, jb2, jt1, jt2, j, end_j;
-	COUNTER_MEDIUM im, jm, ju, i, i_data_start, j_data_start;
+	GMT_LONG il1, ir1, il2, ir2, jb1, jb2, jt1, jt2, im, jm, j, end_j;
+	GMT_LONG i, i_data_start, j_data_start, mx;
+	COUNTER_MEDIUM ju;
 	float *datac = Grid->data;
 	double scale, cos_wt;
 	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
@@ -230,6 +231,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 
 	i_data_start = GMT->current.io.pad[XLO];	/* For readability */
 	j_data_start = GMT->current.io.pad[YHI];
+	mx = h->mx;
 	
 	/* First reflect about xmin and xmax, point symmetric about edge point */
 
@@ -256,7 +258,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 		jb2 = jb1 + h->ny - 1;	/* Inside ymax; bottom side of edge 2  */
 		jt2 = jt1 + h->ny - 1;	/* Outside ymax; bottom side of edge 2  */
 		cos_wt = 0.5 * (1.0 + cos(jm * scale) );
-		for (i = -i_data_start; i < h->mx - i_data_start; i++) {
+		for (i = -i_data_start; i < mx - i_data_start; i++) {
 			datac[GMT_IJPR(h,jb1,i)] = (float)(cos_wt * (2.0*datac[GMT_IJPR(h,0,i)] - datac[GMT_IJPR(h,jt1,i)]));
 			datac[GMT_IJPR(h,jt2,i)] = (float)(cos_wt * (2.0*datac[GMT_IJPR(h,h->ny-1,i)] - datac[GMT_IJPR(h,jb2,i)]));
 		}
@@ -311,7 +313,7 @@ double modk (GMT_LONG k, struct K_XY *K)
 	return (hypot (kx (k, K), ky (k, K)));
 }
 
-GMT_LONG do_differentiate (struct GMT_GRID *Grid, double *par, struct K_XY *K)
+COUNTER_MEDIUM do_differentiate (struct GMT_GRID *Grid, double *par, struct K_XY *K)
 {
 	COUNTER_LARGE k;
 	double scale, fact;
@@ -329,7 +331,7 @@ GMT_LONG do_differentiate (struct GMT_GRID *Grid, double *par, struct K_XY *K)
 	return (1);	/* Number of parameters used */
 }
 
-GMT_LONG do_integrate (struct GMT_GRID *Grid, double *par, struct K_XY *K)
+COUNTER_MEDIUM do_integrate (struct GMT_GRID *Grid, double *par, struct K_XY *K)
 {
 	/* Integrate in frequency domain by dividing by kr [scale optional] */
 	COUNTER_LARGE k;
@@ -346,7 +348,7 @@ GMT_LONG do_integrate (struct GMT_GRID *Grid, double *par, struct K_XY *K)
 	return (1);	/* Number of parameters used */
 }
 
-GMT_LONG do_continuation (struct GMT_GRID *Grid, double *zlevel, struct K_XY *K)
+COUNTER_MEDIUM do_continuation (struct GMT_GRID *Grid, double *zlevel, struct K_XY *K)
 {
 	COUNTER_LARGE k;
 	float tmp, *datac = Grid->data;
@@ -361,7 +363,7 @@ GMT_LONG do_continuation (struct GMT_GRID *Grid, double *zlevel, struct K_XY *K)
 	return (1);	/* Number of parameters used */
 }
 
-GMT_LONG do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struct K_XY *K)
+COUNTER_MEDIUM do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struct K_XY *K)
 {
 	COUNTER_LARGE k;
 	float tempr, tempi, fact, *datac = Grid->data;
@@ -380,7 +382,7 @@ GMT_LONG do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struct K_
 	return (1);	/* Number of parameters used */
 }
 
-GMT_LONG do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, double *par, struct K_XY *K)
+COUNTER_MEDIUM do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, double *par, struct K_XY *K)
 {
 
 	/* Do the isostatic response function convolution in the Freq domain.
@@ -519,7 +521,7 @@ BOOLEAN parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 			fourvals[n_tokens] = -1.0;
 		else {
 			if ((sscanf(p, "%lf", &fourvals[n_tokens])) != 1) {
-				GMT_report (GMT, GMT_MSG_FATAL, " Cannot read token %ld.\n", n_tokens);
+				GMT_report (GMT, GMT_MSG_FATAL, " Cannot read token %d.\n", n_tokens);
 				return (TRUE);
 			}
 		}
@@ -993,7 +995,8 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, n, k, n_errors = 0, n_files = 0, filter_type = 0;
+	COUNTER_MEDIUM j, k, n_errors = 0, n_files = 0, filter_type = 0;
+	GMT_LONG n_scan;
 	double par[5];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -1101,9 +1104,9 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 				break;
 			case 'T':	/* Flexural isostasy */
 				Ctrl->T.active = Ctrl->L.active = TRUE;
-				n = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
+				n_scan = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
 				for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
-				n_errors += GMT_check_condition (GMT, n != 5 || k > 0, 
+				n_errors += GMT_check_condition (GMT, n_scan != 5 || k > 0, 
 					"Syntax error -T option: Correct syntax:\n\t-T<te>/<rhol>/<rhom>/<rhow>/<rhoi>, all densities >= 0\n");
 				add_operation (GMT, Ctrl, -1, 0, par);
 				break;

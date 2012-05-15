@@ -7115,7 +7115,8 @@ GMT_LONG GMT_getrose (struct GMT_CTRL *C, char *text, struct GMT_MAP_ROSE *ms)
 
 	if (!text) { GMT_report (C, GMT_MSG_FATAL, "No argument given to GMT_getrose\n"); GMT_exit (EXIT_FAILURE); }
 
-	ms->fancy = ms->gave_xy = FALSE;
+	ms->type = 0;
+	ms->gave_xy = FALSE;
 	ms->size = 0.0;
 	ms->a_int[0] = 30.0;	ms->f_int[0] = 5.0;	ms->g_int[0] = 1.0;
 	ms->a_int[1] = 30.0;	ms->f_int[1] = 5.0;	ms->g_int[1] = 1.0;
@@ -7125,11 +7126,11 @@ GMT_LONG GMT_getrose (struct GMT_CTRL *C, char *text, struct GMT_MAP_ROSE *ms)
 	strcpy (ms->label[3], "W");
 
 	/* First deal with possible prefixes f and x (i.e., f|m, x, xf|m, f|mx) */
-	if (text[j] == 'f') ms->fancy = TRUE, j++;
-	if (text[j] == 'm') ms->fancy = 2, j++;
+	if (text[j] == 'f') ms->type = 1, j++;
+	if (text[j] == 'm') ms->type = 2, j++;
 	if (text[j] == 'x') ms->gave_xy = TRUE, j++;
-	if (text[j] == 'f') ms->fancy = TRUE, j++;	/* in case we got xf instead of fx */
-	if (text[j] == 'm') ms->fancy = 2, j++;		/* in case we got xm instead of mx */
+	if (text[j] == 'f') ms->type = 1, j++;		/* in case we got xf instead of fx */
+	if (text[j] == 'm') ms->type = 2, j++;		/* in case we got xm instead of mx */
 
 	/* Determine if we have the optional label components specified */
 
@@ -7174,7 +7175,7 @@ GMT_LONG GMT_getrose (struct GMT_CTRL *C, char *text, struct GMT_MAP_ROSE *ms)
 	}
 
 	/* -L[f][x]<x0>/<y0>/<size>[/<kind>][:label:] OR -L[m][x]<x0>/<y0>/<size>[/<dec>/<declabel>][:label:][+gint[/mint]] */
-	if (ms->fancy == 2) {	/* Magnetic rose */
+	if (ms->type == 2) {	/* Magnetic rose */
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", txt_a, txt_b, txt_c, txt_d, ms->dlabel);
 		if (! (k == 3 || k == 5)) {	/* Wrong number of parameters */
 			GMT_report (C, GMT_MSG_FATAL, "syntax error -T option:  Correct syntax\n");
@@ -7400,7 +7401,7 @@ GMT_LONG GMT_just_decode (struct GMT_CTRL *C, char *key, COUNTER_MEDIUM def)
 	return (j * 4 + i);
 }
 
-void GMT_smart_justify (struct GMT_CTRL *C, COUNTER_MEDIUM just, double angle, double dx, double dy, double *x_shift, double *y_shift, COUNTER_MEDIUM mode)
+void GMT_smart_justify (struct GMT_CTRL *C, GMT_LONG just, double angle, double dx, double dy, double *x_shift, double *y_shift, COUNTER_MEDIUM mode)
 {	/* mode = 2: Assume a radius offset so that corner shifts are adjusted by 1/sqrt(2) */
 	double s, c, xx, yy, f;
 	f = (mode == 2) ? 1.0 / M_SQRT2 : 1.0;

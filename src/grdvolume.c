@@ -447,7 +447,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Set node increments relative to the lower-left node of a 4-point box */
 	GMT_grd_set_ij_inc (GMT, Work->header->mx, ij_inc);
-	ij_inc[4] = ij_inc[4];	/* Repeat for convenience */
+	ij_inc[4] = ij_inc[0];	/* Repeat for convenience */
 	cellsize = Work->header->inc[GMT_X] * Work->header->inc[GMT_Y];
 	if (Ctrl->S.active) {
 		GMT_init_distaz (GMT, Ctrl->S.unit, 1, GMT_MAP_DIST);	/* Flat Earth mode */
